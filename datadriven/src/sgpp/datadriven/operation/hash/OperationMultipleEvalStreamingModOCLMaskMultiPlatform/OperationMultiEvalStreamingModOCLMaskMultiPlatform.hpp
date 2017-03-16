@@ -9,7 +9,7 @@
 
 #include <algorithm>
 #include <chrono>
-#include <mutex>
+#include <mutex>  // NOLINT(build/c++11)
 #include <vector>
 
 #include "Configuration.hpp"
@@ -18,8 +18,8 @@
 #include "sgpp/base/exception/operation_exception.hpp"
 #include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/base/tools/QueueLoadBalancerOpenMP.hpp"
 #include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
+#include "sgpp/base/tools/QueueLoadBalancerOpenMP.hpp"
 #include "sgpp/base/tools/SGppStopwatch.hpp"
 #include "sgpp/globaldef.hpp"
 
@@ -181,7 +181,8 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
                                          gridTo, datasetFrom, datasetTo);
       } catch (...) {
         // store the first exception thrown for rethrow
-        std::call_once(onceFlag, [&]() { exceptionPtr = std::current_exception(); });
+        std::call_once(onceFlag,
+                       [&]() { exceptionPtr = std::current_exception(); });  // NOLINT(build/c++11)
       }
     }
 
@@ -256,7 +257,8 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
             resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
       } catch (...) {
         // store the first exception thrown for rethrow
-        std::call_once(onceFlag, [&]() { exceptionPtr = std::current_exception(); });
+        std::call_once(onceFlag,
+                       [&]() { exceptionPtr = std::current_exception(); });  // NOLINT(build/c++11)
       }
     }
 

@@ -5,16 +5,17 @@
 #ifndef OPERATIONRHSMPI_H
 #define OPERATIONRHSMPI_H
 
-#include <sgpp/datadriven/operation/hash/OperationMPI/OperationGridBaseMPI.hpp>
-#include <sgpp/datadriven/operation/hash/OperationMPI/OperationGraphBaseMPI.hpp>
-#include <sgpp/datadriven/operation/hash/OperationMPI/OperationPackageBaseMPI.hpp>
 #include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMPI/OperationGraphBaseMPI.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMPI/OperationGridBaseMPI.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMPI/OperationPackageBaseMPI.hpp>
 #include <string>
 
 namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
-class DensityRhsWorker : public MPIWorkerGridBase, public MPIWorkerGraphBase,
+class DensityRhsWorker : public MPIWorkerGridBase,
+                         public MPIWorkerGraphBase,
                          public MPIWorkerPackageBase<double> {
  protected:
   double lambda;
@@ -22,11 +23,9 @@ class DensityRhsWorker : public MPIWorkerGridBase, public MPIWorkerGraphBase,
   base::DataMatrix *data_matrix;
 
   void receive_and_send_initial_data(void) {
-    if (data_matrix != NULL)
-      delete data_matrix;
+    if (data_matrix != NULL) delete data_matrix;
     data_matrix = new base::DataMatrix(dataset, dataset_size / dimensions, dimensions);
-    if (opencl_node)
-      op->initialize_dataset(*data_matrix);
+    if (opencl_node) op->initialize_dataset(*data_matrix);
   }
   void begin_opencl_operation(int *workpackage) {
     op->start_rhs_generation(workpackage[0], workpackage[1]);
@@ -38,17 +37,18 @@ class DensityRhsWorker : public MPIWorkerGridBase, public MPIWorkerGraphBase,
       result_buffer[i] = partial_rhs[i];
     }
   }
+
  public:
   DensityRhsWorker()
       : MPIWorkerBase("DensityRHSWorker"),
-        MPIWorkerGridBase("DensityRHSWorker"), MPIWorkerGraphBase("DensityRHSWorker"),
+        MPIWorkerGridBase("DensityRHSWorker"),
+        MPIWorkerGraphBase("DensityRHSWorker"),
         MPIWorkerPackageBase("DensityMultiplicationWorker", 1) {
     // Create opencl operation
     if (opencl_node) {
-      op = createDensityOCLMultiPlatformConfigured(gridpoints, complete_gridsize /
-                                                   (2 * grid_dimensions), grid_dimensions,
-                                                   0.0, parameters, opencl_platform,
-                                                   opencl_device);
+      op = createDensityOCLMultiPlatformConfigured(
+          gridpoints, complete_gridsize / (2 * grid_dimensions), grid_dimensions, 0.0, parameters,
+          opencl_platform, opencl_device);
     }
     data_matrix = NULL;
   }
@@ -60,15 +60,14 @@ class DensityRhsWorker : public MPIWorkerGridBase, public MPIWorkerGraphBase,
     data_matrix = NULL;
   }
   virtual ~DensityRhsWorker(void) {
-    if (opencl_node)
-      delete op;
+    if (opencl_node) delete op;
   }
 };
 class OperationDensityRhsMPI : public DensityRhsWorker {
  public:
-  OperationDensityRhsMPI(base::Grid &grid, sgpp::base::DataMatrix &data, std::string ocl_config_file) :
-      MPIWorkerBase("DensityRHSWorker"), DensityRhsWorker(grid, data, ocl_config_file) {
-  }
+  OperationDensityRhsMPI(base::Grid &grid, sgpp::base::DataMatrix &data,
+                         std::string ocl_config_file)
+      : MPIWorkerBase("DensityRHSWorker"), DensityRhsWorker(grid, data, ocl_config_file) {}
   virtual ~OperationDensityRhsMPI() {}
   virtual void generate_b(base::DataVector &b) {
     DensityRhsWorker::MPIWorkerGridBase::start_sub_workers();

@@ -1,11 +1,19 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #pragma once
 
-#include <cinttypes>
 #include <hpx/include/async.hpp>
 #include <hpx/include/components.hpp>
 #include <hpx/include/iostreams.hpp>
 #include <hpx/include/lcos.hpp>
+
+#include <cinttypes>
 #include <sstream>
+#include <string>
+#include <vector>
 
 #include "LoadBalancerComponent.hpp"
 #include "sgpp/base/datatypes/DataMatrix.hpp"
@@ -31,7 +39,6 @@ struct LocalityMultiplier
   std::unique_ptr<sgpp::base::OperationMultipleEval> nodeMultiEval;
   uint32_t managerId;
 
-  // TODO: why does this get called?
   LocalityMultiplier() : managerId(0) {}
 
   LocalityMultiplier(std::string serializedGrid, std::string serializedDataset,
@@ -45,8 +52,6 @@ struct LocalityMultiplier
 
     grid = std::unique_ptr<sgpp::base::Grid>(sgpp::base::Grid::unserialize(serializedGrid));
     dataset = sgpp::base::DataMatrix::fromString(serializedDataset);
-
-    // TODO: have to add toVector -> fromVector to LinearGrid
 
     // create node-level operation configuration
     sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
@@ -97,13 +102,13 @@ struct LocalityMultiplier
     hpx::wait_all(resultFutures);
   }
 
-  // TODO: add update grid action!
+  // TODO(pfandedd): add update grid action!
 
   HPX_DEFINE_COMPONENT_ACTION(sgpp::datadriven::MultipleEvalHPX::LocalityMultiplier, mult,
                               mult_action);
 };
-}
-}
-}
+}  // namespace MultipleEvalHPX
+}  // namespace datadriven
+}  // namespace sgpp
 
 HPX_REGISTER_ACTION_DECLARATION(sgpp::datadriven::MultipleEvalHPX::LocalityMultiplier::mult_action);

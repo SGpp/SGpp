@@ -368,7 +368,7 @@ std::shared_ptr<OCLOperationConfiguration> getConfigurationDefaultsSingleDevice(
       deviceNode.addIDAttr("COUNT", UINT64_C(1));
     }
   }
-  
+
   return parameters;
 }
 
@@ -379,7 +379,7 @@ std::shared_ptr<OCLOperationConfiguration> getConfigurationDefaultsMultiDevice()
 
   // filter all devices except for the first
   bool firstPlatform = true;
-    std::vector<std::string> platformNames = (*parameters)["PLATFORMS"].keys();
+  std::vector<std::string> platformNames = (*parameters)["PLATFORMS"].keys();
   for (std::string& platformName : platformNames) {
     if (firstPlatform) {
       firstPlatform = false;

@@ -5,14 +5,14 @@
 #pragma once
 
 #include <CL/cl.h>
-#include <sgpp/globaldef.hpp>
-#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
-#include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
 #include <sgpp/base/opencl/OCLBufferWrapperSD.hpp>
+#include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+#include <sgpp/globaldef.hpp>
 
+#include <limits>
 #include <string>
 #include <vector>
-#include <limits>
 
 #include "KernelSourceBuilderMult.hpp"
 
@@ -21,7 +21,7 @@ namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
 /// Class for the OpenCL density matrix vector multiplication
-template<typename T>
+template <typename T>
 class KernelDensityMult {
  private:
   /// Used opencl device
@@ -80,21 +80,35 @@ class KernelDensityMult {
  public:
   KernelDensityMult(std::shared_ptr<base::OCLDevice> dev, size_t dims,
                     std::shared_ptr<base::OCLManagerMultiPlatform> manager,
-                    json::Node &kernelConfiguration, std::vector<int> &points, T lambda) :
-      device(dev), dims(dims), lambda(lambda), err(CL_SUCCESS), devicePoints(device),
-      deviceAlpha(device), deviceResultData(device), deviceLevels(device),
-      deviceDivisors(device), devicehInverse(device), devicehs(device), devicePositions(device),
-      kernelMult(nullptr), kernelSourceBuilder(kernelConfiguration), manager(manager),
-      deviceTimingMult(0.0), kernelConfiguration(kernelConfiguration), use_level_cache(false),
-      use_less(false), do_not_use_ternary(false), preprocess_positions(false) {
+                    json::Node &kernelConfiguration, std::vector<int> &points, T lambda)
+      : device(dev),
+        dims(dims),
+        lambda(lambda),
+        err(CL_SUCCESS),
+        devicePoints(device),
+        deviceAlpha(device),
+        deviceResultData(device),
+        deviceLevels(device),
+        deviceDivisors(device),
+        devicehInverse(device),
+        devicehs(device),
+        devicePositions(device),
+        kernelMult(nullptr),
+        kernelSourceBuilder(kernelConfiguration),
+        manager(manager),
+        deviceTimingMult(0.0),
+        kernelConfiguration(kernelConfiguration),
+        use_level_cache(false),
+        use_less(false),
+        do_not_use_ternary(false),
+        preprocess_positions(false) {
     this->verbose = use_level_cache = kernelConfiguration["VERBOSE"].getBool();
-    gridSize = points.size()/(2*dims);
-    if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0
-        && kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() < dims) {
+    gridSize = points.size() / (2 * dims);
+    if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0 &&
+        kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() < dims) {
       std::stringstream errorString;
-      errorString
-          << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" "
-          << "requires value of \"KERNEL_MAX_DIM_UNROLL\"";
+      errorString << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" "
+                  << "requires value of \"KERNEL_MAX_DIM_UNROLL\"";
       errorString << " to be greater than the dimension of the data set, was set to"
                   << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() << "(device: \""
                   << device->deviceName << "\")" << std::endl;
@@ -116,8 +130,7 @@ class KernelDensityMult {
       use_level_cache = kernelConfiguration["USE_LEVEL_CACHE"].getBool();
       // Do not use level cache if preprocessed positions are enabled
       if (kernelConfiguration.contains("PREPROCESS_POSITIONS")) {
-        if (kernelConfiguration["PREPROCESS_POSITIONS"].getBool())
-          use_level_cache = false;
+        if (kernelConfiguration["PREPROCESS_POSITIONS"].getBool()) use_level_cache = false;
       }
     }
     if (use_level_cache) {
@@ -165,17 +178,17 @@ class KernelDensityMult {
       std::vector<T> positions;
       std::vector<T> hs;
       std::vector<int> hs_inverse;
-      for (size_t i = 0; i < points.size()/(2*dims); ++i) {
+      for (size_t i = 0; i < points.size() / (2 * dims); ++i) {
         for (size_t dim = 0; dim < dims; ++dim) {
-          hs_inverse.push_back(1 << points[i*2*dims + 2*dim + 1]);
-          hs.push_back(static_cast<T>(1.0 / (1 << points[i*2*dims + 2*dim + 1])));
-          positions.push_back(static_cast<T>(points[i*2*dims + 2*dim]) /
-                              static_cast<T>(1 << points[i*2*dims + 2*dim + 1]));
+          hs_inverse.push_back(1 << points[i * 2 * dims + 2 * dim + 1]);
+          hs.push_back(static_cast<T>(1.0 / (1 << points[i * 2 * dims + 2 * dim + 1])));
+          positions.push_back(static_cast<T>(points[i * 2 * dims + 2 * dim]) /
+                              static_cast<T>(1 << points[i * 2 * dims + 2 * dim + 1]));
         }
       }
-      devicehInverse.intializeTo(hs_inverse, 1, 0, points.size()/2);
-      devicehs.intializeTo(hs, 1, 0, points.size()/2);
-      devicePositions.intializeTo(positions, 1, 0, points.size()/2);
+      devicehInverse.intializeTo(hs_inverse, 1, 0, points.size() / 2);
+      devicehs.intializeTo(hs, 1, 0, points.size() / 2);
+      devicePositions.intializeTo(positions, 1, 0, points.size() / 2);
     }
 
     // Finish writing all buffers
@@ -191,18 +204,16 @@ class KernelDensityMult {
   }
 
   void initialize_alpha_buffer(std::vector<T> &alpha) {
-
     // Load data into buffers if not already done
-    for (size_t i = 0; i < localSize - gridSize % localSize; i++)
-      alpha.push_back(0.0);
+    for (size_t i = 0; i < localSize - gridSize % localSize; i++) alpha.push_back(0.0);
     deviceAlpha.intializeTo(alpha, 1, 0, alpha.size());
   }
 
   /// Executes part of one matrix-vector density multiplication from startid to startid + chunksize
   void start_mult(size_t startid, size_t chunksize) {
     if (verbose) {
-      std::cout << "entering mult, device: " << device->deviceName << " ("
-                << device->deviceId << ")" << std::endl;
+      std::cout << "entering mult, device: " << device->deviceName << " (" << device->deviceId
+                << ")" << std::endl;
     }
 
     // Calculate workrange for current multiplication
@@ -217,17 +228,13 @@ class KernelDensityMult {
 
     // Generate OpenCL source and build kernel if not already done
     if (this->kernelMult == nullptr) {
-      if (verbose)
-        std::cout << "generating kernel source" << std::endl;
+      if (verbose) std::cout << "generating kernel source" << std::endl;
       std::string program_src =
-          kernelSourceBuilder.generateSource(dims,
-                                             gridSize + (localSize - gridSize % localSize));
-      if (verbose)
-        std::cout << "Source: " << std::endl << program_src << std::endl;
-      if (verbose)
-        std::cout << "building kernel" << std::endl;
-      this->kernelMult = manager->buildKernel(program_src, device, kernelConfiguration,
-                                              "multdensity");
+          kernelSourceBuilder.generateSource(dims, gridSize + (localSize - gridSize % localSize));
+      if (verbose) std::cout << "Source: " << std::endl << program_src << std::endl;
+      if (verbose) std::cout << "building kernel" << std::endl;
+      this->kernelMult =
+          manager->buildKernel(program_src, device, kernelConfiguration, "multdensity");
     }
 
     if (!deviceResultData.isInitialized()) {
@@ -245,8 +252,7 @@ class KernelDensityMult {
                            this->devicePoints.getBuffer());
       if (err != CL_SUCCESS) {
         std::stringstream errorString;
-        errorString << "OCL Error: Failed to create kernel arguments (argument "
-                    << argument_counter
+        errorString << "OCL Error: Failed to create kernel arguments (argument " << argument_counter
                     << ") for device " << std::endl;
         throw base::operation_exception(errorString.str());
       }
@@ -256,18 +262,17 @@ class KernelDensityMult {
                            devicehInverse.getBuffer());
       if (err != CL_SUCCESS) {
         std::stringstream errorString;
-        errorString << "OCL Error: Failed to create kernel arguments (argument "
-                    << argument_counter
+        errorString << "OCL Error: Failed to create kernel arguments (argument " << argument_counter
                     << ") for device " << std::endl;
         throw base::operation_exception(errorString.str());
       }
       argument_counter++;
-      err = clSetKernelArg(this->kernelMult, argument_counter, sizeof(cl_mem),
-                           devicehs.getBuffer());
+      err =
+          clSetKernelArg(this->kernelMult, argument_counter, sizeof(cl_mem), devicehs.getBuffer());
       if (err != CL_SUCCESS) {
         std::stringstream errorString;
-        errorString << "OCL Error: Failed to create kernel arguments (argument "
-                    << argument_counter << ") for device " << std::endl;
+        errorString << "OCL Error: Failed to create kernel arguments (argument " << argument_counter
+                    << ") for device " << std::endl;
         throw base::operation_exception(errorString.str());
       }
       argument_counter++;
@@ -275,8 +280,8 @@ class KernelDensityMult {
                            devicePositions.getBuffer());
       if (err != CL_SUCCESS) {
         std::stringstream errorString;
-        errorString << "OCL Error: Failed to create kernel arguments (argument "
-                    << argument_counter << ") for device " << std::endl;
+        errorString << "OCL Error: Failed to create kernel arguments (argument " << argument_counter
+                    << ") for device " << std::endl;
         throw base::operation_exception(errorString.str());
       }
       argument_counter++;
@@ -326,8 +331,8 @@ class KernelDensityMult {
                            this->deviceLevels.getBuffer());
       if (err != CL_SUCCESS) {
         std::stringstream errorString;
-        errorString << "OCL Error: Failed to create kernel arguments (argument "
-                    << argument_counter << ") for device " << std::endl;
+        errorString << "OCL Error: Failed to create kernel arguments (argument " << argument_counter
+                    << ") for device " << std::endl;
         throw base::operation_exception(errorString.str());
       }
       argument_counter++;
@@ -337,8 +342,8 @@ class KernelDensityMult {
                            this->deviceDivisors.getBuffer());
       if (err != CL_SUCCESS) {
         std::stringstream errorString;
-        errorString << "OCL Error: Failed to create kernel arguments (argument "
-                    << argument_counter << ") for device " << std::endl;
+        errorString << "OCL Error: Failed to create kernel arguments (argument " << argument_counter
+                    << ") for device " << std::endl;
         throw base::operation_exception(errorString.str());
       }
     }
@@ -360,18 +365,15 @@ class KernelDensityMult {
   double finish_mult(std::vector<T> &result, int startid, int chunksize) {
     clFinish(device->commandQueue);
 
-    if (verbose)
-      std::cerr << "Finished kernel execution" << std::endl;
+    if (verbose) std::cerr << "Finished kernel execution" << std::endl;
     deviceResultData.readFromBuffer();
     clFinish(device->commandQueue);
 
     std::vector<T> &hostTemp = deviceResultData.getHostPointer();
     if (chunksize == 0) {
-      for (size_t i = 0; i < gridSize; i++)
-        result[i] = hostTemp[i];
+      for (size_t i = 0; i < gridSize; i++) result[i] = hostTemp[i];
     } else {
-      for (int i = 0; i < chunksize; i++)
-        result[i] = hostTemp[i];
+      for (int i = 0; i < chunksize; i++) result[i] = hostTemp[i];
     }
     // determine kernel execution time
     cl_ulong startTime = 0;
@@ -382,26 +384,25 @@ class KernelDensityMult {
 
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
-      errorString
-          << "OCL Error: Failed to read start-time from command queue (or crash in mult)!"
-          << " Error code: " << err << std::endl;
+      errorString << "OCL Error: Failed to read start-time from command queue (or crash in mult)!"
+                  << " Error code: " << err << std::endl;
       throw base::operation_exception(errorString.str());
     }
 
-    err = clGetEventProfilingInfo(clTiming, CL_PROFILING_COMMAND_END, sizeof(cl_ulong),
-                                  &endTime, nullptr);
+    err = clGetEventProfilingInfo(clTiming, CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime,
+                                  nullptr);
 
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
-      errorString << "OCL Error: Failed to read end-time from command queue! Error code: "
-                  << err << std::endl;
+      errorString << "OCL Error: Failed to read end-time from command queue! Error code: " << err
+                  << std::endl;
       throw base::operation_exception(errorString.str());
     }
 
     clReleaseEvent(clTiming);
 
     double time = 0.0;
-    time = static_cast<double> (endTime - startTime);
+    time = static_cast<double>(endTime - startTime);
     time *= 1e-9;
 
     if (verbose) {
@@ -421,10 +422,9 @@ class KernelDensityMult {
 
         const std::string &kernelName = "multdensity";
 
-        json::Node &kernelNode =
-            deviceNode["KERNELS"].contains(kernelName) ?
-            deviceNode["KERNELS"][kernelName] :
-            deviceNode["KERNELS"].addDictAttr(kernelName);
+        json::Node &kernelNode = deviceNode["KERNELS"].contains(kernelName)
+                                     ? deviceNode["KERNELS"][kernelName]
+                                     : deviceNode["KERNELS"].addDictAttr(kernelName);
 
         if (kernelNode.contains("VERBOSE") == false) {
           kernelNode.addIDAttr("VERBOSE", false);

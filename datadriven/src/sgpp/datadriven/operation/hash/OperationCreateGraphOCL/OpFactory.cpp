@@ -3,20 +3,19 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include "OpFactory.hpp"
 #include <sgpp/base/exception/factory_exception.hpp>
-#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManager.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/globaldef.hpp>
 #include <string>
-#include "OpFactory.hpp"
 #include "KernelCreateGraph.hpp"
 namespace sgpp {
 namespace datadriven {
 
-DensityOCLMultiPlatform::OperationCreateGraphOCL*
-createNearestNeighborGraphConfigured(base::DataMatrix &dataset, size_t k, size_t dimensions,
-                                     std::string opencl_conf, size_t platformid,
-                                     size_t deviceid) {
+DensityOCLMultiPlatform::OperationCreateGraphOCL *createNearestNeighborGraphConfigured(
+    base::DataMatrix &dataset, size_t k, size_t dimensions, std::string opencl_conf,
+    size_t platformid, size_t deviceid) {
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
 
   std::cout << "Using configuration file " << opencl_conf << std::endl;
@@ -26,15 +25,11 @@ createNearestNeighborGraphConfigured(base::DataMatrix &dataset, size_t k, size_t
   DensityOCLMultiPlatform::OperationCreateGraphOCL::load_default_parameters(parameters);
 
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
-    return new DensityOCLMultiPlatform::
-        OperationCreateGraphOCLSingleDevice<float>(dataset, dimensions, manager,
-                                                   parameters, k, platformid,
-                                                   deviceid);
+    return new DensityOCLMultiPlatform::OperationCreateGraphOCLSingleDevice<float>(
+        dataset, dimensions, manager, parameters, k, platformid, deviceid);
   } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
-    return new DensityOCLMultiPlatform::
-        OperationCreateGraphOCLSingleDevice<double>(dataset, dimensions, manager,
-                                                    parameters, k, platformid,
-                                                    deviceid);
+    return new DensityOCLMultiPlatform::OperationCreateGraphOCLSingleDevice<double>(
+        dataset, dimensions, manager, parameters, k, platformid, deviceid);
   } else {
     std::stringstream errorString;
     errorString << "Error creating operation\"CreateGraphOCL\": "
@@ -43,24 +38,19 @@ createNearestNeighborGraphConfigured(base::DataMatrix &dataset, size_t k, size_t
   }
   return NULL;
 }
-DensityOCLMultiPlatform::OperationCreateGraphOCL*
-createNearestNeighborGraphConfigured(double *dataset, size_t dataset_size, size_t k,
-                                     size_t dimensions,
-                                     sgpp::base::OCLOperationConfiguration *parameters,
-                                     size_t platformid, size_t deviceid) {
+DensityOCLMultiPlatform::OperationCreateGraphOCL *createNearestNeighborGraphConfigured(
+    double *dataset, size_t dataset_size, size_t k, size_t dimensions,
+    sgpp::base::OCLOperationConfiguration *parameters, size_t platformid, size_t deviceid) {
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
   DensityOCLMultiPlatform::OperationCreateGraphOCL::load_default_parameters(parameters);
   manager = std::make_shared<base::OCLManagerMultiPlatform>((*parameters)["VERBOSE"].getBool());
 
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
-    return new DensityOCLMultiPlatform::
-        OperationCreateGraphOCLSingleDevice<float>(dataset, dataset_size, dimensions, manager,
-                                                   parameters, k, platformid, deviceid);
+    return new DensityOCLMultiPlatform::OperationCreateGraphOCLSingleDevice<float>(
+        dataset, dataset_size, dimensions, manager, parameters, k, platformid, deviceid);
   } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
-    return new DensityOCLMultiPlatform::
-        OperationCreateGraphOCLSingleDevice<double>(dataset, dataset_size, dimensions, manager,
-                                                    parameters, k, platformid,
-                                                    deviceid);
+    return new DensityOCLMultiPlatform::OperationCreateGraphOCLSingleDevice<double>(
+        dataset, dataset_size, dimensions, manager, parameters, k, platformid, deviceid);
   } else {
     std::stringstream errorString;
     errorString << "Error creating operation\"CreateGraphOCL\": "
@@ -70,10 +60,9 @@ createNearestNeighborGraphConfigured(double *dataset, size_t dataset_size, size_
   return NULL;
 }
 
-DensityOCLMultiPlatform::OperationCreateGraphOCL*
-createNearestNeighborGraphConfigured(double *dataset, size_t dataset_size, size_t k,
-                                     size_t dimensions, std::string opencl_conf,
-                                     size_t platformid, size_t deviceid) {
+DensityOCLMultiPlatform::OperationCreateGraphOCL *createNearestNeighborGraphConfigured(
+    double *dataset, size_t dataset_size, size_t k, size_t dimensions, std::string opencl_conf,
+    size_t platformid, size_t deviceid) {
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
 
   std::cout << "Using configuration file " << opencl_conf << std::endl;
@@ -83,14 +72,11 @@ createNearestNeighborGraphConfigured(double *dataset, size_t dataset_size, size_
   DensityOCLMultiPlatform::OperationCreateGraphOCL::load_default_parameters(parameters);
 
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
-    return new DensityOCLMultiPlatform::
-        OperationCreateGraphOCLSingleDevice<float>(dataset, dataset_size, dimensions, manager,
-                                                   parameters, k, platformid, deviceid);
+    return new DensityOCLMultiPlatform::OperationCreateGraphOCLSingleDevice<float>(
+        dataset, dataset_size, dimensions, manager, parameters, k, platformid, deviceid);
   } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
-    return new DensityOCLMultiPlatform::
-        OperationCreateGraphOCLSingleDevice<double>(dataset, dataset_size, dimensions, manager,
-                                                    parameters, k, platformid,
-                                                    deviceid);
+    return new DensityOCLMultiPlatform::OperationCreateGraphOCLSingleDevice<double>(
+        dataset, dataset_size, dimensions, manager, parameters, k, platformid, deviceid);
   } else {
     std::stringstream errorString;
     errorString << "Error creating operation\"CreateGraphOCL\": "
@@ -99,10 +85,8 @@ createNearestNeighborGraphConfigured(double *dataset, size_t dataset_size, size_
   }
   return NULL;
 }
-DensityOCLMultiPlatform::OperationCreateGraphOCL*
-createNearestNeighborGraphConfigured(base::DataMatrix &dataset, size_t k,
-                                     size_t dimensions, std::string opencl_conf) {
-
+DensityOCLMultiPlatform::OperationCreateGraphOCL *createNearestNeighborGraphConfigured(
+    base::DataMatrix &dataset, size_t k, size_t dimensions, std::string opencl_conf) {
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
 
   std::cout << "Using configuration file " << opencl_conf << std::endl;
@@ -135,15 +119,11 @@ createNearestNeighborGraphConfigured(base::DataMatrix &dataset, size_t k,
   }
 
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
-    return new DensityOCLMultiPlatform::
-        OperationCreateGraphOCLSingleDevice<float>(dataset, dimensions, manager,
-                                                   parameters, k, platformid,
-                                                   deviceid);
+    return new DensityOCLMultiPlatform::OperationCreateGraphOCLSingleDevice<float>(
+        dataset, dimensions, manager, parameters, k, platformid, deviceid);
   } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
-    return new DensityOCLMultiPlatform::
-        OperationCreateGraphOCLSingleDevice<double>(dataset, dimensions, manager,
-                                                    parameters, k, platformid,
-                                                    deviceid);
+    return new DensityOCLMultiPlatform::OperationCreateGraphOCLSingleDevice<double>(
+        dataset, dimensions, manager, parameters, k, platformid, deviceid);
   } else {
     std::stringstream errorString;
     errorString << "Error creating operation\"CreateGraphOCL\": "

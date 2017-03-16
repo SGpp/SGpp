@@ -6,7 +6,6 @@
 #ifndef CREATE_GRAPH_OPFACTOR_H
 #define CREATE_GRAPH_OPFACTOR_H
 
-
 #include <sgpp/globaldef.hpp>
 #include <string>
 #include "OperationCreateGraphOCLSingleDevice.hpp"
@@ -14,23 +13,20 @@ namespace sgpp {
 namespace datadriven {
 
 /// Generates the k nearest neighbors graph creation using a specific opencl device and a datamatrix
-DensityOCLMultiPlatform::OperationCreateGraphOCL*
-createNearestNeighborGraphConfigured(base::DataMatrix &dataset, size_t k,
-                                     size_t dimensions, std::string opencl_conf,
-                                     size_t platformid, size_t devicdeid);
-/// Generates the k nearest neighbors graph creation using a specific opencl device and a double vector
-DensityOCLMultiPlatform::OperationCreateGraphOCL*
-createNearestNeighborGraphConfigured(double *dataset, size_t dataset_size, size_t k,
-                                     size_t dimensions, std::string opencl_conf,
-                                     size_t platformid, size_t devicdeid);
-DensityOCLMultiPlatform::OperationCreateGraphOCL*
-createNearestNeighborGraphConfigured(double *dataset, size_t dataset_size, size_t k,
-                                     size_t dimensions, sgpp::base::OCLOperationConfiguration *parameters,
-                                     size_t platformid, size_t deviceid);
+DensityOCLMultiPlatform::OperationCreateGraphOCL *createNearestNeighborGraphConfigured(
+    base::DataMatrix &dataset, size_t k, size_t dimensions, std::string opencl_conf,
+    size_t platformid, size_t devicdeid);
+/// Generates the k nearest neighbors graph creation using a specific opencl device and a double
+/// vector
+DensityOCLMultiPlatform::OperationCreateGraphOCL *createNearestNeighborGraphConfigured(
+    double *dataset, size_t dataset_size, size_t k, size_t dimensions, std::string opencl_conf,
+    size_t platformid, size_t devicdeid);
+DensityOCLMultiPlatform::OperationCreateGraphOCL *createNearestNeighborGraphConfigured(
+    double *dataset, size_t dataset_size, size_t k, size_t dimensions,
+    sgpp::base::OCLOperationConfiguration *parameters, size_t platformid, size_t deviceid);
 /// Generates the k nearest neighbors graph creation
-DensityOCLMultiPlatform::OperationCreateGraphOCL*
-createNearestNeighborGraphConfigured(base::DataMatrix &dataset, size_t k,
-                                     size_t dimensions, std::string opencl_conf);
+DensityOCLMultiPlatform::OperationCreateGraphOCL *createNearestNeighborGraphConfigured(
+    base::DataMatrix &dataset, size_t k, size_t dimensions, std::string opencl_conf);
 }  // namespace datadriven
 }  // namespace sgpp
 

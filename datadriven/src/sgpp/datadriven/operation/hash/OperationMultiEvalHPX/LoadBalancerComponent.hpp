@@ -1,6 +1,13 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #pragma once
 
 #include <hpx/include/components.hpp>
+
+#include <vector>
 
 #include "sgpp/base/tools/QueueLoadBalancerMutex.hpp"
 
@@ -32,11 +39,12 @@ struct LoadBalancerComponent
   HPX_DEFINE_COMPONENT_ACTION(sgpp::datadriven::MultipleEvalHPX::LoadBalancerComponent,
                               get_work_segment, get_work_segment_action);
 
-    void send_result_segment(std::vector<double> partialResult, size_t startIndexData, size_t endIndexData) {
+  void send_result_segment(std::vector<double> partialResult, size_t startIndexData,
+                           size_t endIndexData) {
     for (size_t i = 0; i < endIndexData - startIndexData; i++) {
       result[i + startIndexData] = partialResult[i];
     }
-  };
+  }
 
   HPX_DEFINE_COMPONENT_ACTION(sgpp::datadriven::MultipleEvalHPX::LoadBalancerComponent,
                               send_result_segment, send_result_segment_action);
@@ -50,9 +58,9 @@ struct LoadBalancerComponent
   std::vector<double> result;
   sgpp::base::QueueLoadBalancerMutex balancer;
 };
-}
-}
-}
+}  // namespace MultipleEvalHPX
+}  // namespace datadriven
+}  // namespace sgpp
 
 HPX_REGISTER_ACTION_DECLARATION(
     sgpp::datadriven::MultipleEvalHPX::LoadBalancerComponent::get_work_segment_action);
