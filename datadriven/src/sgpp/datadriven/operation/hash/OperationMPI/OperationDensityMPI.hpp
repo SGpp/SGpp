@@ -7,12 +7,13 @@
 
 #include <mpi.h>
 
+#include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMPI/OperationGridBaseMPI.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMPI/OperationPackageBaseMPI.hpp>
-#include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp>
 
-#include <sstream>
 #include <exception>
+#include <sstream>
+#include <string>
 
 namespace sgpp {
 namespace datadriven {
@@ -26,8 +27,7 @@ class DensityWorker : public MPIWorkerGridBase, public MPIWorkerPackageBase<doub
 
   void receive_and_send_initial_data(void) {
     receive_alpha(&alpha);
-    if (opencl_node)
-      op->initialize_alpha(alpha);
+    if (opencl_node) op->initialize_alpha(alpha);
     send_alpha(&alpha);
     if (verbose) {
       std::cout << "Received alpha on " << MPIEnviroment::get_node_rank() << std::endl;
@@ -39,6 +39,7 @@ class DensityWorker : public MPIWorkerGridBase, public MPIWorkerPackageBase<doub
   void finalize_opencl_operation(double *result_buffer, int *workpackage) {
     op->finish_partial_mult(result_buffer, workpackage[0], workpackage[1]);
   }
+
  public:
   DensityWorker()
       : MPIWorkerBase("DensityMultiplicationWorker"),
@@ -49,8 +50,7 @@ class DensityWorker : public MPIWorkerGridBase, public MPIWorkerPackageBase<doub
     // Receive lambda
     MPI_Status stat;
     MPI_Probe(0, 1, master_worker_comm, &stat);
-    MPI_Recv(&lambda, 1, MPI_DOUBLE, stat.MPI_SOURCE, stat.MPI_TAG,
-             master_worker_comm, &stat);
+    MPI_Recv(&lambda, 1, MPI_DOUBLE, stat.MPI_SOURCE, stat.MPI_TAG, master_worker_comm, &stat);
 
     // Send lambda
     for (int dest = 1; dest < MPIEnviroment::get_sub_worker_count() + 1; dest++)
@@ -58,14 +58,13 @@ class DensityWorker : public MPIWorkerGridBase, public MPIWorkerPackageBase<doub
 
     // Create opencl operation
     if (opencl_node) {
-      op = createDensityOCLMultiPlatformConfigured(gridpoints, complete_gridsize /
-                                                   (2 * grid_dimensions), grid_dimensions,
-                                                   lambda, parameters,
-                                                   opencl_platform, opencl_device);
+      op = createDensityOCLMultiPlatformConfigured(
+          gridpoints, complete_gridsize / (2 * grid_dimensions), grid_dimensions, lambda,
+          parameters, opencl_platform, opencl_device);
     }
     if (verbose) {
-      std::cout << "Created mpi opencl density operation on "
-                << MPIEnviroment::get_node_rank() << std::endl;
+      std::cout << "Created mpi opencl density operation on " << MPIEnviroment::get_node_rank()
+                << std::endl;
     }
   }
   DensityWorker(base::Grid &grid, double lambda)
@@ -77,8 +76,7 @@ class DensityWorker : public MPIWorkerGridBase, public MPIWorkerPackageBase<doub
     for (int dest = 1; dest < MPIEnviroment::get_sub_worker_count() + 1; dest++)
       MPI_Send(&lambda, 1, MPI_DOUBLE, dest, 1, sub_worker_comm);
     if (verbose) {
-      std::cout << "Density master node "
-                << MPIEnviroment::get_node_rank() << std::endl;
+      std::cout << "Density master node " << MPIEnviroment::get_node_rank() << std::endl;
     }
   }
   DensityWorker(base::Grid &grid, double lambda, std::string ocl_conf_filename)
@@ -90,8 +88,7 @@ class DensityWorker : public MPIWorkerGridBase, public MPIWorkerPackageBase<doub
     for (int dest = 1; dest < MPIEnviroment::get_sub_worker_count() + 1; dest++)
       MPI_Send(&lambda, 1, MPI_DOUBLE, dest, 1, sub_worker_comm);
     if (verbose) {
-      std::cout << "Density master node "
-                << MPIEnviroment::get_node_rank() << std::endl;
+      std::cout << "Density master node " << MPIEnviroment::get_node_rank() << std::endl;
     }
   }
   virtual ~DensityWorker() {
@@ -104,8 +101,8 @@ class DensityWorker : public MPIWorkerGridBase, public MPIWorkerPackageBase<doub
   void send_alpha(double **alpha) {
     // Send alpha vector
     for (int dest = 1; dest < MPIEnviroment::get_sub_worker_count() + 1; dest++)
-      MPI_Send(*alpha, static_cast<int>(complete_gridsize / (2 * grid_dimensions)),
-               MPI_DOUBLE, dest, 1, sub_worker_comm);
+      MPI_Send(*alpha, static_cast<int>(complete_gridsize / (2 * grid_dimensions)), MPI_DOUBLE,
+               dest, 1, sub_worker_comm);
   }
   void receive_alpha(double **alpha) {
     // Receive alpha vector
@@ -121,23 +118,22 @@ class DensityWorker : public MPIWorkerGridBase, public MPIWorkerPackageBase<doub
       throw std::logic_error(errorString.str());
     }
     if (gridsize != oldgridsize) {
-      if (*alpha != NULL)
-        delete [] (*alpha);
+      if (*alpha != NULL) delete[](*alpha);
       *alpha = new double[gridsize];
       oldgridsize = gridsize;
     }
-    MPI_Recv(*alpha, gridsize, MPI_DOUBLE, stat.MPI_SOURCE, stat.MPI_TAG,
-             master_worker_comm, &stat);
+    MPI_Recv(*alpha, gridsize, MPI_DOUBLE, stat.MPI_SOURCE, stat.MPI_TAG, master_worker_comm,
+             &stat);
   }
 };
 
 class OperationDensityMultMPI : public base::OperationMatrix, public DensityWorker {
  public:
-  OperationDensityMultMPI(base::Grid &grid, double lambda, std::string ocl_conf_filename) :
-      MPIWorkerBase("DensityMultiplicationWorker"), DensityWorker(grid, lambda, ocl_conf_filename) {
-  }
+  OperationDensityMultMPI(base::Grid &grid, double lambda, std::string ocl_conf_filename)
+      : MPIWorkerBase("DensityMultiplicationWorker"),
+        DensityWorker(grid, lambda, ocl_conf_filename) {}
   virtual ~OperationDensityMultMPI() {}
-  virtual void mult(base::DataVector& alpha, base::DataVector& result) {
+  virtual void mult(base::DataVector &alpha, base::DataVector &result) {
     start_sub_workers();
     double *alpha_ptr = alpha.getPointer();
     send_alpha(&alpha_ptr);

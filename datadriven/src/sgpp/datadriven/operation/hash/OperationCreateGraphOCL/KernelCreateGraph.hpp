@@ -6,10 +6,10 @@
 
 #include <CL/cl.h>
 
-#include <sgpp/globaldef.hpp>
-#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
-#include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
 #include <sgpp/base/opencl/OCLBufferWrapperSD.hpp>
+#include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <limits>
 #include <string>
@@ -22,7 +22,7 @@ namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
 /// OpenCL kernel class for operation to create a k nearest neighbor graph
-template<typename T>
+template <typename T>
 class KernelCreateGraph {
  private:
   /// Used opencl device
@@ -52,24 +52,31 @@ class KernelCreateGraph {
   std::vector<T> &data;
   size_t unpadded_datasize;
   cl_event clTiming = nullptr;
+
  public:
-  KernelCreateGraph(std::shared_ptr<base::OCLDevice> dev, size_t dims,
-                    size_t k, std::vector<T> &data,
-                    std::shared_ptr<base::OCLManagerMultiPlatform> manager,
-                    json::Node &kernelConfiguration) :
-      device(dev), dims(dims), k(k), err(CL_SUCCESS),
-      deviceData(device), deviceResultData(device), kernel(nullptr),
-      kernelSourceBuilder(kernelConfiguration, dims), manager(manager),
-      deviceTimingMult(0.0), verbose(false),
-      kernelConfiguration(kernelConfiguration), data(data) {
+  KernelCreateGraph(std::shared_ptr<base::OCLDevice> dev, size_t dims, size_t k,
+                    std::vector<T> &data, std::shared_ptr<base::OCLManagerMultiPlatform> manager,
+                    json::Node &kernelConfiguration)
+      : device(dev),
+        dims(dims),
+        k(k),
+        err(CL_SUCCESS),
+        deviceData(device),
+        deviceResultData(device),
+        kernel(nullptr),
+        kernelSourceBuilder(kernelConfiguration, dims),
+        manager(manager),
+        deviceTimingMult(0.0),
+        verbose(false),
+        kernelConfiguration(kernelConfiguration),
+        data(data) {
     this->verbose = kernelConfiguration["VERBOSE"].getBool();
 
-    if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0
-        && kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() < dims) {
+    if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0 &&
+        kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() < dims) {
       std::stringstream errorString;
-      errorString
-          << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" "
-          << "requires value of \"KERNEL_MAX_DIM_UNROLL\"";
+      errorString << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" "
+                  << "requires value of \"KERNEL_MAX_DIM_UNROLL\"";
       errorString << " to be greater than the dimension of the data set, was set to"
                   << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() << "(device: \""
                   << device->deviceName << "\")" << std::endl;
@@ -86,18 +93,17 @@ class KernelCreateGraph {
       if (approxRegCount < k || approxRegCount > localSize ||
           (approxRegCount & (approxRegCount - 1))) {
         std::stringstream errorString;
-        errorString
-            << "OCL Error: APPROX_REG_COUNT: " << approxRegCount << " is not a valid size!\n"
-            << "Needs to be a power of 2, greater than k and smaller than (or equal to) the"
-            << " parameter LOCAL_SIZE: " << localSize;
+        errorString << "OCL Error: APPROX_REG_COUNT: " << approxRegCount
+                    << " is not a valid size!\n"
+                    << "Needs to be a power of 2, greater than k and smaller than (or equal to) the"
+                    << " parameter LOCAL_SIZE: " << localSize;
         throw base::operation_exception(errorString.str());
       }
     }
 
     totalBlockSize = dataBlockingSize * localSize;
     unpadded_datasize = data.size();
-    for (size_t i = 0; i < (localSize - data.size() % localSize) * dims; i++)
-      data.push_back(2.0);
+    for (size_t i = 0; i < (localSize - data.size() % localSize) * dims; i++) data.push_back(2.0);
     deviceData.intializeTo(data, 1, 0, data.size());
   }
 
@@ -111,11 +117,9 @@ class KernelCreateGraph {
   /// Runs the opencl kernel to find the k nearest neighbors of all datapoints in the given chunk
   void begin_graph_creation(size_t startid, size_t chunksize) {
     if (verbose) {
-      std::cout << "entering graph, device: " << device->deviceName
-                << " (" << device->deviceId << ")"
-                << std::endl;
-      std::cout << "k: " << k << " Dims:" << dims
-                << std::endl;
+      std::cout << "entering graph, device: " << device->deviceName << " (" << device->deviceId
+                << ")" << std::endl;
+      std::cout << "k: " << k << " Dims:" << dims << std::endl;
     }
     size_t datasize = unpadded_datasize / dims;
 
@@ -129,19 +133,14 @@ class KernelCreateGraph {
 
     // Build kernel if not already done
     if (this->kernel == nullptr) {
-      if (verbose)
-        std::cout << "generating kernel source" << std::endl;
-      std::string program_src = kernelSourceBuilder.generateSource(dims, k, datasize,
-                                                                   (unpadded_datasize / dims) +
-                                                                   (localSize -
-                                                                    (unpadded_datasize /dims) %
-                                                                    localSize));
-      if (verbose)
-        std::cout << "Source: " << std::endl << program_src << std::endl;
-      if (verbose)
-        std::cout << "building kernel" << std::endl;
-      this->kernel = manager->buildKernel(program_src, device, kernelConfiguration,
-                                          "connectNeighbors");
+      if (verbose) std::cout << "generating kernel source" << std::endl;
+      std::string program_src = kernelSourceBuilder.generateSource(
+          dims, k, datasize,
+          (unpadded_datasize / dims) + (localSize - (unpadded_datasize / dims) % localSize));
+      if (verbose) std::cout << "Source: " << std::endl << program_src << std::endl;
+      if (verbose) std::cout << "building kernel" << std::endl;
+      this->kernel =
+          manager->buildKernel(program_src, device, kernelConfiguration, "connectNeighbors");
     }
 
     if (!deviceResultData.isInitialized())
@@ -177,16 +176,15 @@ class KernelCreateGraph {
                                  &localSize, 0, nullptr, &clTiming);
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
-      errorString << "OCL Error: Failed to enqueue kernel command! Error code: "
-                  << err << std::endl;
+      errorString << "OCL Error: Failed to enqueue kernel command! Error code: " << err
+                  << std::endl;
       throw base::operation_exception(errorString.str());
     }
   }
   double finalize_graph_creation(std::vector<int> &result, size_t startid, size_t chunksize) {
     clFinish(device->commandQueue);
 
-    if (verbose)
-      std::cout << "Finished kernel execution" << std::endl;
+    if (verbose) std::cout << "Finished kernel execution" << std::endl;
     deviceResultData.readFromBuffer();
     clFinish(device->commandQueue);
 
@@ -198,16 +196,13 @@ class KernelCreateGraph {
     } else {
       real_count = chunksize;
     }
-    for (size_t i = 0; i < real_count * k; i++)
-      result[i] = hostTemp[i];
-    if (verbose)
-      std::cout << "Read data from opencl device" << std::endl;
+    for (size_t i = 0; i < real_count * k; i++) result[i] = hostTemp[i];
+    if (verbose) std::cout << "Read data from opencl device" << std::endl;
     // determine kernel execution time
     cl_ulong startTime = 0;
     cl_ulong endTime = 0;
 
-    err = clGetEventProfilingInfo(clTiming,
-                                  CL_PROFILING_COMMAND_START, sizeof(cl_ulong),
+    err = clGetEventProfilingInfo(clTiming, CL_PROFILING_COMMAND_START, sizeof(cl_ulong),
                                   &startTime, nullptr);
 
     if (err != CL_SUCCESS) {
@@ -217,8 +212,8 @@ class KernelCreateGraph {
       throw base::operation_exception(errorString.str());
     }
 
-    err = clGetEventProfilingInfo(clTiming, CL_PROFILING_COMMAND_END, sizeof(cl_ulong),
-                                  &endTime, nullptr);
+    err = clGetEventProfilingInfo(clTiming, CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime,
+                                  nullptr);
 
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
@@ -230,7 +225,7 @@ class KernelCreateGraph {
     clReleaseEvent(clTiming);
 
     double time = 0.0;
-    time = static_cast<double> (endTime - startTime);
+    time = static_cast<double>(endTime - startTime);
     time *= 1e-9;
 
     if (verbose) {
@@ -250,10 +245,9 @@ class KernelCreateGraph {
 
         const std::string &kernelName = "connectNeighbors";
 
-        json::Node &kernelNode =
-            deviceNode["KERNELS"].contains(kernelName) ?
-            deviceNode["KERNELS"][kernelName] :
-            deviceNode["KERNELS"].addDictAttr(kernelName);
+        json::Node &kernelNode = deviceNode["KERNELS"].contains(kernelName)
+                                     ? deviceNode["KERNELS"][kernelName]
+                                     : deviceNode["KERNELS"].addDictAttr(kernelName);
 
         if (kernelNode.contains("VERBOSE") == false) {
           kernelNode.addIDAttr("VERBOSE", false);

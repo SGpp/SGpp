@@ -3,27 +3,27 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <boost/program_options.hpp>
+
 #include <chrono>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/grid/generation/GridGenerator.hpp>
-#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
-#include <sgpp/datadriven/operation/hash/OperationCreateGraphOCL/OpFactory.hpp>
-#include <sgpp/datadriven/operation/hash/OperationDensityMultiplicationAVX/OperationDensityMultiplicationAVX.hpp>
-#include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp>
-#include <sgpp/datadriven/operation/hash/OperationPruneGraphOCL/OpFactory.hpp>
-#include <sgpp/globaldef.hpp>
-#include <sgpp/solver/sle/ConjugateGradients.hpp>
+#include "sgpp/base/datatypes/DataVector.hpp"
+#include "sgpp/base/grid/Grid.hpp"
+#include "sgpp/base/grid/GridStorage.hpp"
+#include "sgpp/base/grid/generation/GridGenerator.hpp"
+#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 #include "sgpp/datadriven/DatadrivenOpFactory.hpp"
+#include "sgpp/datadriven/operation/hash/OperationCreateGraphOCL/OpFactory.hpp"
+#include "sgpp/datadriven/operation/hash/OperationDensityMultiplicationAVX/OperationDensityMultiplicationAVX.hpp"
+#include "sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp"
+#include "sgpp/datadriven/operation/hash/OperationPruneGraphOCL/OpFactory.hpp"
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
-
-#include <boost/program_options.hpp>
+#include "sgpp/globaldef.hpp"
+#include "sgpp/solver/sle/ConjugateGradients.hpp"
 
 int main(int argc, char **argv) {
   std::string datasetFileName;
@@ -117,7 +117,7 @@ int main(int argc, char **argv) {
 
   std::cout << "Solving density SLE" << std::endl;
   solver->solve(*operation_mult, alpha, b, false, true);
-  
+
   std::cout << "Creating evaluation grid" << std::endl;
   double h = 1.0 / std::pow(2.0, eval_grid_level);
   size_t dim_grid_points = 1 << eval_grid_level;
