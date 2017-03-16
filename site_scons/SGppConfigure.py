@@ -193,9 +193,9 @@ def checkZlib(config):
         else:
             if not config.CheckLibWithHeader("z","zlib.h", language="C++",autoadd=0):
                 Helper.printErrorAndExit("The flag USE_ZLIB was set, but the necessary header 'zlib.h' or library was not found.")
-            
+
                 config.env["CPPDEFINES"]["ZLIB"] = "1"
-        
+
 
 def checkBoostTests(config):
   # Check the availability of the boost unit test dependencies
@@ -373,7 +373,7 @@ def configureGNUCompiler(config):
   # check if using MinGW (g++ on win32)
   if config.env["PLATFORM"] == "win32":
     # disable warnings which occur when including Boost in the tests
-    config.env.Append(CPPFLAGS=["-Wno-switch-enum", "-Wno-deprecated-declarations"])
+    config.env.Append(CPPFLAGS=["-Wno-switch-enum", "-Wno-deprecated-declarations", "-Wa,-mbig-obj"])
     # also use "lib" prefix on MinGW for consistency with Linux (default is no prefix)
     config.env["SHLIBPREFIX"] = "lib"
 
