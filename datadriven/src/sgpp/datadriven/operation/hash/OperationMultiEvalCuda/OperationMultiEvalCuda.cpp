@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/globaldef.hpp>
 
@@ -20,11 +19,13 @@
 namespace sgpp {
 namespace datadriven {
 
+using namespace OpMultiEvalCudaDetail;
+
 /// Construct the class
 OperationMultiEvalCuda::OperationMultiEvalCuda(base::Grid& grid, base::DataMatrix& dataset,
     const uint32_t& grad) : base::OperationMultipleEval(grid, dataset) {
   polygrad = grad;
-  zorder = new MortonOrder(dataset);
+  zorder = new OpMultiEvalCudaDetail::MortonOrder(dataset);
   _ordered = true;
   if (zorder->isIdentity()) {
     delete zorder;
@@ -38,7 +39,7 @@ OperationMultiEvalCuda::OperationMultiEvalCuda(base::Grid& grid, base::DataMatri
     const uint32_t& grad, bool autocheck) : base::OperationMultipleEval(grid, dataset) {
   polygrad = grad;
   if (autocheck) {
-    zorder = new MortonOrder(dataset);
+    zorder = new OpMultiEvalCudaDetail::MortonOrder(dataset);
     _ordered = true;
     if (zorder->isIdentity()) {
       delete zorder;
@@ -57,7 +58,7 @@ OperationMultiEvalCuda::~OperationMultiEvalCuda() {
 }
 
 /// Standard evaluation
-void OperationMultiEvalCuda::mult(sgpp::base::DataVector& source, sgpp::base::DataVector& result) {
+void OperationMultiEvalCuda::mult(base::DataVector& source, base::DataVector& result) {
   // Copy stuff to device
   for (uint32_t i = 0; i < _N; ++i) {
     alpha[i] = source[i];
@@ -70,7 +71,7 @@ void OperationMultiEvalCuda::mult(sgpp::base::DataVector& source, sgpp::base::Da
   myTimer.start();
   // Call eval kernel
   evalCuda(data.dev(), alpha.dev(), node.dev(), pos.dev(),
-           M, maxlevel, levellimit.dev(), _b[maxlevel][DIM], subs.dev());
+                                  M, maxlevel, levellimit.dev(), _b[maxlevel][DIM], subs.dev());
   duration = myTimer.stop();
   // Copy result back to host
   CudaCheckError();
@@ -85,8 +86,8 @@ void OperationMultiEvalCuda::mult(sgpp::base::DataVector& source, sgpp::base::Da
 }
 
 /// Transposed evaluation
-void OperationMultiEvalCuda::multTranspose(sgpp::base::DataVector& source,
-    sgpp::base::DataVector& result) {
+void OperationMultiEvalCuda::multTranspose(base::DataVector& source,
+    base::DataVector& result) {
   // Copy stuff to device
   if (zorder) {
     zorder->orderDataVector(source, data.host());
@@ -102,7 +103,8 @@ void OperationMultiEvalCuda::multTranspose(sgpp::base::DataVector& source,
 
   myTimer.start();
   // Call transposed eval kernel
-  transposedCuda(alpha.dev(), node.dev(), pos.dev(), data.dev(), streamlimit.dev(), _N);
+  transposedCuda(alpha.dev(), node.dev(), pos.dev(),
+                                        data.dev(), streamlimit.dev(), _N);
   duration = myTimer.stop();
 
   // Copy result back to host
@@ -114,8 +116,8 @@ void OperationMultiEvalCuda::multTranspose(sgpp::base::DataVector& source,
 }
 
 /// Transposed evaluation with additional FMA
-void OperationMultiEvalCuda::multTransposeFMA(sgpp::base::DataVector& source,
-    sgpp::base::DataVector& prev, double lambda, sgpp::base::DataVector& result) {
+void OperationMultiEvalCuda::multTransposeFMA(base::DataVector& source,
+    base::DataVector& prev, double lambda, base::DataVector& result) {
   // Copy stuff to device
   HostDevPtr<double> b;
   b.HostAlloc(N);
@@ -142,8 +144,8 @@ void OperationMultiEvalCuda::multTransposeFMA(sgpp::base::DataVector& source,
 
   myTimer.start();
   // Call transposed evaluation kernel
-  transposedCuda(alpha.dev(), node.dev(), pos.dev(), data.dev(), streamlimit.dev(), b.dev(),
-    lambda, M, _M, _N);
+  transposedCuda(alpha.dev(), node.dev(), pos.dev(), data.dev(),
+                                        streamlimit.dev(), b.dev(), lambda, M, _M, _N);
   duration = myTimer.stop();
 
   // Copy result back to host
@@ -157,7 +159,7 @@ void OperationMultiEvalCuda::multTransposeFMA(sgpp::base::DataVector& source,
 /// Preprocessing
 void OperationMultiEvalCuda::prepare() {
   // Prepare grid
-  sgpp::base::GridStorage gs(grid.getStorage());
+  base::GridStorage gs(grid.getStorage());
   DIM = static_cast<uint32_t>(gs.getDimension());
   _N = static_cast<uint32_t>(gs.getSize());
   _M = static_cast<uint32_t>(dataset.getNrows());
@@ -169,7 +171,7 @@ void OperationMultiEvalCuda::prepare() {
   streamlimit.HostAlloc(N);
 
   // Copy SG++ grid structure to graph based datastructure on the GPU
-  sgpp::base::GridPoint gp;
+  base::GridPoint gp;
   maxlevel = 1;
   for (uint32_t i = 0; i < _N; ++i) {
     streamlimit[i].lower = 0;

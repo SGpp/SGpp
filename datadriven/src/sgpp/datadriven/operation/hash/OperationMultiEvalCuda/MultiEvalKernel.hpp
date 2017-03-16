@@ -8,6 +8,10 @@
 
 #include <stdint.h>
 
+namespace sgpp {
+namespace datadriven {
+namespace OpMultiEvalCudaDetail {
+
 /// Kernel wrapper for streaming limitation computation
 void streamboundCuda(double* pos, gridnode_t* node, limit_t* limit, uint32_t M, uint32_t _M,
                      uint32_t N);
@@ -27,5 +31,9 @@ void transposedCuda(double* a, gridnode_t* node, double* pos, double* y,
 /// Kernel wrapper for transposed evaluation
 void transposedCuda(double* a, gridnode_t* node, double* pos, double* y,
                     limit_t* limit, uint32_t N);
+
+}  // namespace OpMultiEvalCudaDetail
+}  // namespace datadriven
+}  // namespace sgpp
 
 #endif  // MULTIEVALKERNEL_HPP

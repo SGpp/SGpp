@@ -1,3 +1,8 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #include "MortonOrder.hpp"
 
 #include <stdint.h>
@@ -5,6 +10,11 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/globaldef.hpp>
+
+namespace sgpp {
+namespace datadriven {
+
+namespace MortonOrderDetail {
 
 union ext_double_t{
   double val;  // Value
@@ -76,11 +86,12 @@ void zorder(const sgpp::base::DataMatrix &data, std::vector<size_t> &perm) {
   }
 }
 
-namespace sgpp {
-namespace datadriven {
+}  // namespace MortonOrderDetail
+
+using namespace MortonOrderDetail;
 
 /// Constructor. Generates the permuation list on the GPU
-DatasetMortonOrder::DatasetMortonOrder(sgpp::datadriven::Dataset *dataset) : _dataset(dataset) {
+MortonOrder::MortonOrder(sgpp::datadriven::Dataset *dataset) : _dataset(dataset) {
   // Compute permuation
   zorder(_dataset->getData(), permutation);
 
@@ -94,7 +105,7 @@ DatasetMortonOrder::DatasetMortonOrder(sgpp::datadriven::Dataset *dataset) : _da
 }
 
 /// Re-arrange a Dataset object along Z-Curve inplace
-void DatasetMortonOrder::orderDataset() {
+void MortonOrder::orderDataset() {
   if (_isOrdered) return;
   sgpp::base::DataMatrix matrix(_dataset->getData());
   sgpp::base::DataVector vector(_dataset->getTargets());
@@ -108,7 +119,7 @@ void DatasetMortonOrder::orderDataset() {
 }
 
 /// Restores the original order of a Dataset object inplace
-void DatasetMortonOrder::restoreDataset() {
+void MortonOrder::restoreDataset() {
   if (!_isOrdered) return;
   sgpp::base::DataMatrix matrix(_dataset->getData());
   sgpp::base::DataVector vector(_dataset->getTargets());
@@ -122,12 +133,12 @@ void DatasetMortonOrder::restoreDataset() {
 }
 
 /// Check if permutation is identity
-bool DatasetMortonOrder::isIdentity() const {
+bool MortonOrder::isIdentity() const {
   return _isIdentity;
 }
 
 /// Check if Dataset is ordered
-bool DatasetMortonOrder::isOrdered() const {
+bool MortonOrder::isOrdered() const {
   return _isOrdered;
 }
 

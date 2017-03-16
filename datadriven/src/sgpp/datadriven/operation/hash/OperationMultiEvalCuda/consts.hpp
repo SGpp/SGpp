@@ -5,6 +5,11 @@
 
 #ifndef __CONSTS_HPP
 #define __CONSTS_HPP
+
+namespace sgpp {
+namespace datadriven {
+namespace OpMultiEvalCudaDetail { 
+
 /// Precomputed _b[l][d] = binom(d+l-2,l-1)
 const uint32_t _b[51][18] = {
 0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,  // NOLINT()
@@ -59,5 +64,9 @@ const uint32_t _b[51][18] = {
 0x00000000,0x00000001,0x00000031,0x000004c9,0x00005159,0x00042185,0x002bc9b5,0x018a175d,0x0c186e6d,0x54ab04fb,         0,         0,         0,         0,         0,         0,         0,         0,  // NOLINT()
 0x00000000,0x00000001,0x00000032,0x000004fb,0x00005654,0x000477d9,0x0030418e,0x01ba58eb,0x0dd2c758,0x627dcc53,         0,         0,         0,         0,         0,         0,         0,         0   // NOLINT()
 };
-#endif
 
+}  // namespace OpMultiEvalCudaDetail
+}  // namespace datadriven
+}  // namespace sgpp
+
+#endif

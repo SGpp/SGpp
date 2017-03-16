@@ -1,14 +1,15 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #ifndef OPERATIONMULTIEVALCUDA_HPP
 #define OPERATIONMULTIEVALCUDA_HPP
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
-#include <sgpp/base/exception/operation_exception.hpp>
-
-// Copyright (C) 2008-today The SG++ project
-// This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at
-// sgpp.sparsegrids.org
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 
 #include <stdint.h>
 
@@ -17,6 +18,7 @@
 #include "cudaHelper.hpp"
 #include "basicCuda.hpp"
 #include "MortonOrder.hpp"
+#include "consts.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -24,23 +26,23 @@ namespace datadriven {
 /** OperationMultipleEval for polynomial basis functions (grad >= 2) using CUDA on grids
  *  without boundary nodes
  */
-class OperationMultiEvalCuda: public base::OperationMultipleEval {
+class OperationMultiEvalCuda : public base::OperationMultipleEval {
  private:
   bool _ordered;
 
  protected:
-  MortonOrder *zorder;
+  OpMultiEvalCudaDetail::MortonOrder *zorder;
 
-  sgpp::base::SGppStopwatch myTimer;
+  base::SGppStopwatch myTimer;
   double duration;
 
-  HostDevPtr<gridnode_t> node;
-  HostDevPtr<double> alpha;
-  HostDevPtr<double> pos;
-  HostDevPtr<double> data;
-  HostDevPtr<limit_t> streamlimit;
-  HostDevPtr<uint32_t> levellimit;
-  HostDevPtr<uint32_t> subs;
+  OpMultiEvalCudaDetail::HostDevPtr<OpMultiEvalCudaDetail::gridnode_t> node;
+  OpMultiEvalCudaDetail::HostDevPtr<double> alpha;
+  OpMultiEvalCudaDetail::HostDevPtr<double> pos;
+  OpMultiEvalCudaDetail::HostDevPtr<double> data;
+  OpMultiEvalCudaDetail::HostDevPtr<OpMultiEvalCudaDetail::limit_t> streamlimit;
+  OpMultiEvalCudaDetail::HostDevPtr<uint32_t> levellimit;
+  OpMultiEvalCudaDetail::HostDevPtr<uint32_t> subs;
   uint32_t maxlevel;
 
   uint32_t DIM;
@@ -59,9 +61,9 @@ class OperationMultiEvalCuda: public base::OperationMultipleEval {
   /// Destructor
   ~OperationMultiEvalCuda();
   /// Standard evaluation
-  void mult(sgpp::base::DataVector& source, sgpp::base::DataVector& result) override;
+  void mult(base::DataVector& source, base::DataVector& result) override;
   /// Transposed evaluation
-  void multTranspose(sgpp::base::DataVector& source, sgpp::base::DataVector& result) override;
+  void multTranspose(base::DataVector& source, base::DataVector& result) override;
 
   /// Does all preprocessing for given grid and dataset and copies data to the GPU
   void prepare() override;
@@ -70,8 +72,8 @@ class OperationMultiEvalCuda: public base::OperationMultipleEval {
   double getDuration() override;
 
   /// Transposed evaluation with additional FMA. result = 1/M * B*source + lambda * prev
-  void multTransposeFMA(sgpp::base::DataVector& source, sgpp::base::DataVector& prev,
-                        double lambda, sgpp::base::DataVector& result);
+  void multTransposeFMA(base::DataVector& source, base::DataVector& prev,
+                        double lambda, base::DataVector& result);
 };
 
 }  // namespace datadriven

@@ -6,6 +6,10 @@
 #include <stdint.h>
 #include "basicCuda.hpp"
 
+namespace sgpp {
+namespace datadriven {
+namespace OpMultiEvalCudaDetail {
+
 /// Initializes all constants used in devvice code
 void initCudaConstants(const uint32_t DIM);
 
@@ -30,3 +34,7 @@ __global__ void gpu_transevel(double* a, gridnode_t* node, double* pos, double* 
 
 /// Kernel for preprocessing of straming boundary limitations
 __global__ void gpu_zbound(uint64_t* idx_p, gridnode_t* node, limit_t* limit, uint32_t M);
+
+}  // namespace OpMultiEvalCudaDetail
+}  // namespace datadriven
+}  // namespace sgpp

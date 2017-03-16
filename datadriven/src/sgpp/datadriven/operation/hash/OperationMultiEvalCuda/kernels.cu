@@ -7,6 +7,10 @@
 #include <algorithm>
 #include "kernels.cuh"
 
+namespace sgpp {
+namespace datadriven {
+namespace OpMultiEvalCudaDetail {
+
 /// Device variables for magic numbers
 __constant__ double __idxtable[4];
 __constant__ int32_t __idxtablei[4];
@@ -377,3 +381,7 @@ __global__ void gpu_zbound(uint64_t* idx_p, gridnode_t* node, limit_t* limit, ui
   limit[idx].lower  = l&(0xFFFFFFFF-(CUDA_BLOCKSIZE-1));
   limit[idx].upper = min((h+2)|(CUDA_BLOCKSIZE-1), M);
 }
+
+}  // namespace OpMultiEvalCudaDetail
+}  // namespace datadriven
+}  // namespace sgpp

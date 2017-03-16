@@ -8,6 +8,10 @@
 
 #include <stdint.h>
 
+namespace sgpp {
+namespace datadriven {
+namespace OpMultiEvalCudaDetail { 
+
 /// Magic numbers for computing polynomial basis functions
 const double idxtable[] = {1.0, 2.0, -2.0, -1.0};
 /// Magic numbers for computing polynomial basis functions
@@ -36,5 +40,9 @@ typedef struct {
 #define GRID_END 0xFFFFFFFF
 /// Index of root node
 #define GRID_START 0x00000000
+
+}  // namespace OpMultiEvalCudaDetail
+}  // namespace datadriven
+}  // namespace sgpp
 
 #endif  // BASICCUDA_HPP

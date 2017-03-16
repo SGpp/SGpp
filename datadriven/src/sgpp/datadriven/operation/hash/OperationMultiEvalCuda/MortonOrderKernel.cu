@@ -14,6 +14,10 @@
 #include "MortonOrderKernel.hpp"
 #include "kernels.cuh"
 
+namespace sgpp {
+namespace datadriven {
+namespace OpMultiEvalCudaDetail {
+
 /// Wrapper for the kernel call for Morton order curve index computation
 void zorder(double* pos, size_t* perm, size_t m, size_t DIM) {
   initCudaConstants(static_cast<uint32_t>(DIM));
@@ -26,4 +30,8 @@ void zorder(double* pos, size_t* perm, size_t m, size_t DIM) {
   // Sort according to this index
   thrust::stable_sort_by_key(idx.begin(), idx.end(), perm_p);
 }
+
+}  // namespace OpMultiEvalCudaDetail
+}  // namespace datadriven
+}  // namespace sgpp
 

@@ -5,10 +5,18 @@
 
 #ifndef MORTONORDERKERNEL_HPP
 #define MORTONORDERKERNEL_HPP
-
+  
 #include <stdint.h>
+
+namespace sgpp {
+namespace datadriven {
+namespace OpMultiEvalCudaDetail {
 
 /// Kernel wrapper for the Morton order generator
 void zorder(double* pos, size_t* perm, size_t m, size_t DIM);
+
+}  // namespace OpMultiEvalCudaDetail
+}  // namespace datadriven
+}  // namespace sgpp
 
 #endif  // MORTONORDERKERNEL_HPP
