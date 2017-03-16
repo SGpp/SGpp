@@ -7,12 +7,12 @@
 
 #include <sgpp/base/exception/generation_exception.hpp>
 
-#include <memory>
 #include <exception>
+#include <list>
+#include <memory>
+#include <string>
 #include <typeinfo>
 #include <unordered_map>
-#include <string>
-#include <list>
 #include <vector>
 
 namespace sgpp {
@@ -342,6 +342,7 @@ void HashGridStorage::recalcLeafProperty() {
   }
 }
 
+// TODO(someone): this looks very fishy...
 BoundingBox* HashGridStorage::getBoundingBox() {
   if (bUseStretching) {
     return stretching;
@@ -350,9 +351,7 @@ BoundingBox* HashGridStorage::getBoundingBox() {
   }
 }
 
-Stretching* HashGridStorage::getStretching() {
-  return stretching;
-}
+Stretching* HashGridStorage::getStretching() { return stretching; }
 
 void HashGridStorage::setBoundingBox(BoundingBox& boundingBox) {
   if (bUseStretching) {
