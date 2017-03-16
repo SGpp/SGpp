@@ -4,7 +4,9 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-## \page combigrid_gridConverter_py gridConverter.py This tutorial
+## \page combigrid_gridConverter_py gridConverter.py
+##
+## This tutorial
 ## contains examples on how to convert sparse grids with a
 ## hierarchical basis to a sparse grid defined on the combination of
 ## anisotropic full grids (combination technique). It just includes
@@ -12,22 +14,26 @@
 
 ## We distinguish between methods that convert (1) the anisotropic full
 ## grids to the hierarchical grids and (2) vice vera:
-## (1) Converting the levels from the combination technique to the
-##     hierarchical version is always possible
-##      -> convertCombigridToHierarchicalSparseGrid
-## (2) For spatially adaptive sparse grids it is possible that there
-##     exist just partially filled levels. Partially filled
-##     levels are not allowed in the combination technique. We,
-##     therefore, distinguish two cases where we
-##     (a) Add all levels where there exists at least one grid point
-##         in the hierarchical version
-##         -> convertHierarchicalSparseGridToCombigrid with
-##            conversion type GridConversionTypes_ALLSUBSPACES
-##     (b) Add just those levels where exist all the grid points in
-##         the hierarchical version
-##         -> convertHierarchicalSparseGridToCombigrid with
-##            conversion type GridConversionTypes_COMPLETESUBSPACES
-
+##
+## - Converting the levels from the combination technique to the
+##   hierarchical version is always possible
+##   -> convertCombigridToHierarchicalSparseGrid
+##
+## - For spatially adaptive sparse grids it is possible that there
+##   exist just partially filled levels. Partially filled
+##   levels are not allowed in the combination technique. We,
+##   therefore, distinguish two cases where we
+##
+##   - Add all levels where there exists at least one grid point
+##     in the hierarchical version
+##     -> convertHierarchicalSparseGridToCombigrid with
+##        conversion type GridConversionTypes_ALLSUBSPACES
+##
+##   - Add just those levels where exist all the grid points in
+##     the hierarchical version
+##     -> convertHierarchicalSparseGridToCombigrid with
+##     conversion type GridConversionTypes_COMPLETESUBSPACES
+##
 ## First, we import a the methods/classes we need for this example...
 import numpy as np
 from argparse import ArgumentParser
@@ -38,15 +44,17 @@ from pysgpp import CombigridOperation, multiFunc, DataVector, \
     Grid, convertCombigridToHierarchicalSparseGrid, convertHierarchicalSparseGridToCombigrid, \
     GridConversionTypes_ALLSUBSPACES, GridConversionTypes_COMPLETESUBSPACES, \
     createOperationHierarchisation, createOperationMultipleEval
-
+##
 ## ... and define we define the function we want to interpolate. It is
-## a parbola, which is zero for any $x_i=0$ and $x_i=1$ and evaluates
-## to $1$ for $\vec{x} = (0.5, \dots, 0.5)^T
+## a parbola, which is zero for any x_i=0 and x_i=1 and evaluates
+## to 1 for x = (0.5, .., 0.5)^T
 def f(x):
     return np.prod([4 * xi * (1 - xi) for xi in x.array()])
-
-
-## @section py_combigrid_grid_converter_1 Helper functions: We first define a few functions that remove boiler plate code from the actual examples.
+##
+## @section py_combigrid_grid_converter_1 Helper functions
+##
+## We first define a few functions that remove boiler plate code from
+## the actual examples.
 def interpolate(grid, f):
     """
     This helper functions cmoputes the coefficients of a sparse grid
@@ -66,7 +74,6 @@ def interpolate(grid, f):
         alpha[i] = f(p)
     createOperationHierarchisation(grid).doHierarchisation(alpha)
     return alpha
-
 
 def refineGrid(grid, alpha, f, refnums):
     """
@@ -98,15 +105,15 @@ def refineGrid(grid, alpha, f, refnums):
         # hierarchize
         createOperationHierarchisation(grid).doHierarchisation(alpha)
 
-## @section py_combigrid_grid_converter_2 Regular sparse grids to
-## regular combination technique and back: In this example we define a
-## regular sparse grid function with a piecewise $d$-linear hat basis
-## that interpolates the normal parabola. Then, we transform the
-## sparse grid to the corresponding anisotropic grids in the
-## combination technique and vice versa. We evaluate the resulting
-## surrogates at numSamples randomly chosen samples on the unit hypercube and
-## make sure that all of the surrogates we obtain by conversion are
-## equal.
+## @section py_combigrid_grid_converter_2 Regular sparse grids to regular combination technique and back
+##
+## In this example we define a regular sparse grid function with a
+## piecewise $d$-linear hat basis that interpolates the normal
+## parabola. Then, we transform the sparse grid to the corresponding
+## anisotropic grids in the combination technique and vice versa. We
+## evaluate the resulting surrogates at numSamples randomly chosen
+## samples on the unit hypercube and make sure that all of the
+## surrogates we obtain by conversion are equal.
 def regularGridToRegularGrid(numDims,
                              level,
                              f,
@@ -238,15 +245,16 @@ def regularGridToRegularGrid(numDims,
     assert grid_complete.getSize() == grid.getSize()
     assert grid_all.getSize() == grid.getSize()
 
-## @section py_combigrid_grid_converter_3 Spatially adaptive sparse
-## grids to regular combination technique and back: In this example we
-## define a spatially adaptive sparse grid function with a piecewise
-## $d$-linear hat basis that interpolates the normal parabola. Then,
-## we transform the sparse grid to the corresponding anisotropic grids
-## in the combination technique and vice versa. We evaluate the
-## resulting surrogates at numSamples randomly chosen samples on the
-## unit hypercube. This time, the results differ depending on which conversion algorithm we use and on the completeness of the subpsaces.
-
+## @section py_combigrid_grid_converter_3 Spatially adaptive sparse grids to regular combination technique and back
+##
+## In this example we define a spatially adaptive sparse grid function
+## with a piecewise d-linear hat basis that interpolates the normal
+## parabola. Then, we transform the sparse grid to the corresponding
+## anisotropic grids in the combination technique and vice versa. We
+## evaluate the resulting surrogates at numSamples randomly chosen
+## samples on the unit hypercube. This time, the results differ
+## depending on which conversion algorithm we use and on the
+## completeness of the subpsaces.
 def adaptiveGridToRegularGrid(numDims,
                               level,
                               refnums,
@@ -325,7 +333,7 @@ def adaptiveGridToRegularGrid(numDims,
 
     ## We start to transform the grids from the combination technique
     ## back to their hierarchical formulation. We, again, create a
-    ## grid with a piecewise $d$-linear basis and initialize the grid
+    ## grid with a piecewise d-linear basis and initialize the grid
     ## points in its storage by the ones available in the levels of
     ## the combination technique. We do it first for the combination
     ## grids that just contain just those levels where the original
@@ -398,16 +406,23 @@ def adaptiveGridToRegularGrid(numDims,
     assert grid_complete.getSize() <= grid_adaptive.getSize()
     assert grid_all.getSize() >= grid.getSize()
 
-
+## @section py_combigrid_grid_converter_4 How to start the examples
+##
+## You simply specify the parameters via the command line and run it
 if __name__ == '__main__':
-    parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
-    parser.add_argument('--numDims', default=4, type=int, help='number of dimensions')
-    parser.add_argument('--level', default=4, type=int, help='sparse grid level')
-    parser.add_argument('--refnums', default=0, type=int, help='number of refinement steps')
-    parser.add_argument('--plot', default=False, action='store_true', help='plot stuff')
-    parser.add_argument('--verbose', default=False, action='store_true', help='verbosity')
+    parser = ArgumentParser(description='Get a program and run it with input',
+                            version='%(prog)s 1.0')
+    parser.add_argument('--numDims', default=4, type=int,
+                        help='number of dimensions')
+    parser.add_argument('--level', default=4, type=int,
+                        help='sparse grid level')
+    parser.add_argument('--refnums', default=0, type=int,
+                        help='number of refinement steps')
+    parser.add_argument('--plot', default=False, action='store_true',
+                        help='plot stuff')
+    parser.add_argument('--verbose', default=False, action='store_true',
+                        help='verbosity')
     args = parser.parse_args()
-
     # select the right conversion method based on the input parameters
     if args.refnums == 0:
         regularGridToRegularGrid(args.numDims,
@@ -422,3 +437,4 @@ if __name__ == '__main__':
                                   f,
                                   plot=args.plot,
                                   verbose=args.verbose)
+##
