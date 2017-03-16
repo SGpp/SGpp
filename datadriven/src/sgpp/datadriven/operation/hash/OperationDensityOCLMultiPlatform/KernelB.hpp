@@ -4,10 +4,10 @@
 // sgpp.sparsegrids.org
 #pragma once
 
-#include <sgpp/globaldef.hpp>
-#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
-#include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
 #include <sgpp/base/opencl/OCLBufferWrapperSD.hpp>
+#include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <CL/cl.h>
 #include <string.h>
@@ -22,7 +22,7 @@ namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
 /// Class for the OpenCL density matrix vector multiplication
-template<typename T>
+template <typename T>
 class KernelDensityB {
  private:
   /// Used opencl device
@@ -53,7 +53,6 @@ class KernelDensityB {
   /// OpenCL configuration containing the building flags
   json::Node &kernelConfiguration;
 
-
   bool verbose;
 
   size_t localSize;
@@ -61,24 +60,30 @@ class KernelDensityB {
   size_t scheduleSize;
   size_t totalBlockSize;
   cl_event clTiming = nullptr;
+
  public:
   KernelDensityB(std::shared_ptr<base::OCLDevice> dev, size_t dims,
                  std::shared_ptr<base::OCLManagerMultiPlatform> manager,
-                 json::Node &kernelConfiguration,
-                 std::vector<int> &points) :
-      device(dev), dims(dims), err(CL_SUCCESS), devicePoints(device),
-      deviceData(device), deviceResultData(device), kernelB(nullptr),
-      kernelSourceBuilder(kernelConfiguration, dims), manager(manager),
-      deviceTimingMult(0.0), kernelConfiguration(kernelConfiguration) {
-    gridSize = points.size()/(2*dims);
+                 json::Node &kernelConfiguration, std::vector<int> &points)
+      : device(dev),
+        dims(dims),
+        err(CL_SUCCESS),
+        devicePoints(device),
+        deviceData(device),
+        deviceResultData(device),
+        kernelB(nullptr),
+        kernelSourceBuilder(kernelConfiguration, dims),
+        manager(manager),
+        deviceTimingMult(0.0),
+        kernelConfiguration(kernelConfiguration) {
+    gridSize = points.size() / (2 * dims);
     this->verbose = kernelConfiguration["VERBOSE"].getBool();
 
-    if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0
-        && kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() < dims) {
+    if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0 &&
+        kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() < dims) {
       std::stringstream errorString;
-      errorString
-          << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" "
-          << "requires value of \"KERNEL_MAX_DIM_UNROLL\"";
+      errorString << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" "
+                  << "requires value of \"KERNEL_MAX_DIM_UNROLL\"";
       errorString << " to be greater than the dimension of the data set, was set to"
                   << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() << "(device: \""
                   << device->deviceName << "\")" << std::endl;
@@ -101,27 +106,23 @@ class KernelDensityB {
   }
 
   void initialize_dataset(std::vector<T> &data) {
-    this->dataSize = data.size()/dims;
-    if (!deviceData.isInitialized())
-      deviceData.intializeTo(data, 1, 0, data.size());
+    this->dataSize = data.size() / dims;
+    if (!deviceData.isInitialized()) deviceData.intializeTo(data, 1, 0, data.size());
   }
 
   /// Generates part of the right hand side density vector
   void start_rhs_generation(size_t startid = 0, size_t chunksize = 0) {
     if (verbose) {
-      std::cout << "entering mult, device: " << device->deviceName << " ("
-                << device->deviceId << ")" << std::endl;
+      std::cout << "entering mult, device: " << device->deviceName << " (" << device->deviceId
+                << ")" << std::endl;
     }
-    
+
     // Build kernel if not already done
     if (this->kernelB == nullptr) {
-      if (verbose)
-        std::cout << "generating kernel source" << std::endl;
+      if (verbose) std::cout << "generating kernel source" << std::endl;
       std::string program_src = kernelSourceBuilder.generateSource(dims, dataSize);
-      if (verbose)
-        std::cout << "Source: " << std::endl << program_src << std::endl;
-      if (verbose)
-        std::cout << "building kernel" << std::endl;
+      if (verbose) std::cout << "Source: " << std::endl << program_src << std::endl;
+      if (verbose) std::cout << "building kernel" << std::endl;
       std::cout << std::flush;
       this->kernelB = manager->buildKernel(program_src, device, kernelConfiguration, "cscheme");
     }
@@ -183,8 +184,8 @@ class KernelDensityB {
     if (verbose)
       std::cout << "Starting the kernel with " << globalworkrange[0] << " workitems" << std::endl;
 
-    err = clEnqueueNDRangeKernel(device->commandQueue, this->kernelB, 1, 0, globalworkrange,
-                                 NULL, 0, nullptr, &clTiming);
+    err = clEnqueueNDRangeKernel(device->commandQueue, this->kernelB, 1, 0, globalworkrange, NULL,
+                                 0, nullptr, &clTiming);
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
       errorString << "OCL Error: Failed to enqueue kernel command! Error code: " << err
@@ -193,22 +194,18 @@ class KernelDensityB {
     }
   }
 
-  double finalize_rhs_generation(std::vector<T> &result, size_t startid = 0,
-                                 size_t chunksize = 0) {
+  double finalize_rhs_generation(std::vector<T> &result, size_t startid = 0, size_t chunksize = 0) {
     clFinish(device->commandQueue);
 
-    if (verbose)
-      std::cout << "Finished kernel execution" << std::endl;
+    if (verbose) std::cout << "Finished kernel execution" << std::endl;
     deviceResultData.readFromBuffer();
     clFinish(device->commandQueue);
 
     std::vector<T> &hostTemp = deviceResultData.getHostPointer();
     if (chunksize == 0) {
-      for (size_t i = 0; i < gridSize; i++)
-        result[i] = hostTemp[i];
+      for (size_t i = 0; i < gridSize; i++) result[i] = hostTemp[i];
     } else {
-      for (size_t i = 0; i < chunksize; i++)
-        result[i] = hostTemp[i];
+      for (size_t i = 0; i < chunksize; i++) result[i] = hostTemp[i];
     }
 
     // determine kernel execution time
@@ -220,26 +217,25 @@ class KernelDensityB {
 
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
-      errorString
-          << "OCL Error: Failed to read start-time from command queue (or crash in mult)!"
-          << " Error code: " << err << std::endl;
+      errorString << "OCL Error: Failed to read start-time from command queue (or crash in mult)!"
+                  << " Error code: " << err << std::endl;
       throw base::operation_exception(errorString.str());
     }
 
-    err = clGetEventProfilingInfo(clTiming, CL_PROFILING_COMMAND_END, sizeof(cl_ulong),
-                                  &endTime, nullptr);
+    err = clGetEventProfilingInfo(clTiming, CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime,
+                                  nullptr);
 
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
-      errorString << "OCL Error: Failed to read end-time from command queue! Error code: "
-                  << err << std::endl;
+      errorString << "OCL Error: Failed to read end-time from command queue! Error code: " << err
+                  << std::endl;
       throw base::operation_exception(errorString.str());
     }
 
     clReleaseEvent(clTiming);
 
     double time = 0.0;
-    time = static_cast<double> (endTime - startTime);
+    time = static_cast<double>(endTime - startTime);
     time *= 1e-9;
 
     if (verbose) {
@@ -251,7 +247,7 @@ class KernelDensityB {
     return 0;
   }
   /// Adds the possible building parameters to the configuration if they do not exist yet
-  static void augmentDefaultParameters(sgpp::base::OCLOperationConfiguration &parameters){
+  static void augmentDefaultParameters(sgpp::base::OCLOperationConfiguration &parameters) {
     for (std::string &platformName : parameters["PLATFORMS"].keys()) {
       json::Node &platformNode = parameters["PLATFORMS"][platformName];
       for (std::string &deviceName : platformNode["DEVICES"].keys()) {
@@ -259,10 +255,9 @@ class KernelDensityB {
 
         const std::string &kernelName = "cscheme";
 
-        json::Node &kernelNode =
-            deviceNode["KERNELS"].contains(kernelName) ?
-            deviceNode["KERNELS"][kernelName] :
-            deviceNode["KERNELS"].addDictAttr(kernelName);
+        json::Node &kernelNode = deviceNode["KERNELS"].contains(kernelName)
+                                     ? deviceNode["KERNELS"][kernelName]
+                                     : deviceNode["KERNELS"].addDictAttr(kernelName);
 
         if (kernelNode.contains("VERBOSE") == false) {
           kernelNode.addIDAttr("VERBOSE", false);

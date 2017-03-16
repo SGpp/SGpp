@@ -3,27 +3,27 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+#include <sgpp/datadriven/operation/hash/OperationCreateGraphOCL/OpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationPruneGraphOCL/OpFactory.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
-#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
-#include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp>
-#include <sgpp/datadriven/operation/hash/OperationCreateGraphOCL/OpFactory.hpp>
-#include <sgpp/datadriven/operation/hash/OperationPruneGraphOCL/OpFactory.hpp>
 
 #include <chrono>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 
 int main() {
-  size_t dimension = 10, tiefe = 5, k = 12; //tiefe 6 for testing
+  size_t dimension = 10, tiefe = 5, k = 12;  // tiefe 6 for testing
   double lambda = 0.001, treshold = 0.0;
   std::string filename = "../examplesMPI/dataset1_dim8.arff";
 
@@ -31,15 +31,14 @@ int main() {
   start = std::chrono::system_clock::now();
 
   std::cout << "Loading file: " << filename << std::endl;
-  sgpp::datadriven::Dataset data =
-      sgpp::datadriven::ARFFTools::readARFF(filename);
+  sgpp::datadriven::Dataset data = sgpp::datadriven::ARFFTools::readARFF(filename);
   sgpp::base::DataMatrix& dataset = data.getData();
   dimension = dataset.getNcols();
-  std::cout << "Loaded " << dataset.getNcols() << " dimensional dataset with "
-            << dataset.getNrows() << " datapoints." << std::endl;
+  std::cout << "Loaded " << dataset.getNcols() << " dimensional dataset with " << dataset.getNrows()
+            << " datapoints." << std::endl;
 
   // Create Grid
-  sgpp::base::Grid *grid = sgpp::base::Grid::createLinearGrid(dimension);
+  sgpp::base::Grid* grid = sgpp::base::Grid::createLinearGrid(dimension);
   sgpp::base::GridGenerator& gridGen = grid->getGenerator();
   gridGen.regular(tiefe);
   size_t gridsize = grid->getStorage().getSize();
@@ -49,14 +48,14 @@ int main() {
   sgpp::base::DataVector result(gridsize);
   alpha.setAll(1.0);
 
-  sgpp::solver::ConjugateGradients *solver = new sgpp::solver::ConjugateGradients(1000, 0.0001);
+  sgpp::solver::ConjugateGradients* solver = new sgpp::solver::ConjugateGradients(1000, 0.0001);
   sgpp::datadriven::DensityOCLMultiPlatform::OperationDensity* operation_mult =
       sgpp::datadriven::createDensityOCLMultiPlatformConfigured(*grid, dimension, lambda,
                                                                 "MyOCLConf.cfg");
 
   // operation_mult->mult(alpha, result);
 
-  std::cout  << "Creating rhs" << std::endl;
+  std::cout << "Creating rhs" << std::endl;
   sgpp::base::DataVector b(gridsize);
   operation_mult->generateb(dataset, b);
 
@@ -74,8 +73,7 @@ int main() {
   solver->solve(*operation_mult, alpha, b, false, true);
   double max = alpha.max();
   double min = alpha.min();
-  for (size_t i = 0; i < gridsize; i++)
-    alpha[i] = alpha[i]*1.0/(max-min);
+  for (size_t i = 0; i < gridsize; i++) alpha[i] = alpha[i] * 1.0 / (max - min);
 
   std::ofstream out_alpha("alpha_erg_dim2_depth11.txt");
   out_alpha.precision(17);
@@ -87,7 +85,7 @@ int main() {
   sgpp::datadriven::DensityOCLMultiPlatform::OperationCreateGraphOCL* operation_graph =
       sgpp::datadriven::createNearestNeighborGraphConfigured(dataset, k, dimension,
                                                              "MyOCLConf.cfg");
-  std::vector<int> graph(dataset.getNrows()*k);
+  std::vector<int> graph(dataset.getNrows() * k);
   operation_graph->create_graph(graph);
 
   std::ofstream out("graph_erg_dim2_depth11.txt");
@@ -120,7 +118,7 @@ int main() {
     out << datapoint << " ";
   }
   end = std::chrono::system_clock::now();
-  std::chrono::duration<double> elapsed_seconds = end-start;
+  std::chrono::duration<double> elapsed_seconds = end - start;
   std::time_t end_time = std::chrono::system_clock::to_time_t(end);
   std::cout << "finished computation at " << std::ctime(&end_time)
             << "elapsed time: " << elapsed_seconds.count() << "s\n";

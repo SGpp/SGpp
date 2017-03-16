@@ -7,9 +7,5 @@ import ModuleHelper
 
 Import("*")
 
-if (env["USE_OCL"]) and (env["COMPILER"].lower() == "openmpi"):
-  module.scanSource(".")
-elif (env["USE_OCL"]) and (env["COMPILER"].lower() == "mpich"):
-  module.scanSource(".")
-elif (env["USE_OCL"]) and (env["COMPILER"].lower() == "intel.mpi"):
+if (env["USE_OCL"]) and env["USE_MPI"]:
   module.scanSource(".")

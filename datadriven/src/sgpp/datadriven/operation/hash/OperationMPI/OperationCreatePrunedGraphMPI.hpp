@@ -15,6 +15,7 @@
 #include <sgpp/datadriven/operation/hash/OperationMPI/OperationPackageBaseMPI.hpp>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 namespace sgpp {
 namespace datadriven {
