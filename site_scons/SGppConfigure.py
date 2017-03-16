@@ -48,7 +48,9 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
 
   if config.env["COMPILER"] in ("openmpi", "mpich", "intel.mpi"):
     config.env["CPPDEFINES"]["USE_MPI"] = "1"
-    config.env["USE_MPI"] = "1"
+    config.env["USE_MPI"] = True
+  else:
+    config.env["USE_MPI"] = False
 
   # special treatment for different platforms
   if config.env["PLATFORM"] == "darwin":
