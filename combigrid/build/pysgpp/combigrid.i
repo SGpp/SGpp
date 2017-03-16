@@ -41,9 +41,9 @@
 %shared_ptr(sgpp::combigrid::AbstractCombigridStorage)
 %shared_ptr(sgpp::combigrid::CombigridTreeStorage)
 %shared_ptr(sgpp::combigrid::AbstractMultiStorage<double>)
-%shared_ptr(sgpp::combigrid::AbstractMultiStorage<std::uint8_t>)
+%shared_ptr(sgpp::combigrid::AbstractMultiStorage<uint8_t>)
 %shared_ptr(sgpp::combigrid::TreeStorage<double>)
-%shared_ptr(sgpp::combigrid::TreeStorage<std::uint8_t>)
+%shared_ptr(sgpp::combigrid::TreeStorage<uint8_t>)
 
 %shared_ptr(sgpp::combigrid::AbstractFullGridEvaluator<sgpp::combigrid::FloatScalarVector>)
 %shared_ptr(sgpp::combigrid::AbstractFullGridEvaluator<sgpp::combigrid::FloatArrayVector>)
@@ -148,9 +148,9 @@ namespace combigrid {
     %template(FloatScalarVectorMultiStorageIterator) AbstractMultiStorageIterator<FloatScalarVector>;
 
     %template(DoubleAbstractMultiStorage) AbstractMultiStorage<double>;
-    %template(Uint8AbstractMultiStorage) AbstractMultiStorage<std::uint8_t>;
+    %template(Uint8AbstractMultiStorage) AbstractMultiStorage<uint8_t>;
     %template(DoubleTreeStorage) TreeStorage<double>;
-    %template(Uint8TreeStorage) TreeStorage<std::uint8_t>;
+    %template(Uint8TreeStorage) TreeStorage<uint8_t>;
     %template(PyGridFunction) GeneralFunction<std::shared_ptr<TreeStorage<double>>, std::shared_ptr<TensorGrid>>;
 }
 }
