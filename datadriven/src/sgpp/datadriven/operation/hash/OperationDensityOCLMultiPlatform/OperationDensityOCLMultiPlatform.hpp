@@ -4,30 +4,31 @@
 // sgpp.sparsegrids.org
 #pragma once
 
+#include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/tools/SGppStopwatch.hpp>
-#include <sgpp/base/exception/operation_exception.hpp>
-#include <sgpp/globaldef.hpp>
-#include <sgpp/base/operation/hash/OperationMatrix.hpp>
-#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManager.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+#include <sgpp/base/operation/hash/OperationMatrix.hpp>
+#include <sgpp/base/tools/SGppStopwatch.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <chrono>
-#include <vector>
 #include <string>
+#include <vector>
+#include <algorithm>
 
-#include "OperationDensityOCL.hpp"
-#include "KernelMult.hpp"
 #include "KernelB.hpp"
+#include "KernelMult.hpp"
+#include "OperationDensityOCL.hpp"
 
 namespace sgpp {
 namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
 /// Class for opencl density multiplication and density right hand side vector
-template<typename T>
-class OperationDensityOCLMultiPlatform: public OperationDensity {
+template <typename T>
+class OperationDensityOCLMultiPlatform : public OperationDensity {
  private:
   size_t dims;
   size_t gridSize;
@@ -48,17 +49,19 @@ class OperationDensityOCLMultiPlatform: public OperationDensity {
 
  public:
   /// Normal constructor
-  OperationDensityOCLMultiPlatform(base::Grid& grid, size_t dimensions,
+  OperationDensityOCLMultiPlatform(base::Grid &grid, size_t dimensions,
                                    std::shared_ptr<base::OCLManagerMultiPlatform> manager,
-                                   sgpp::base::OCLOperationConfiguration *parameters,
-                                   T lambda, size_t platform_id, size_t device_id)
-      : OperationDensity(), dims(dimensions),
+                                   sgpp::base::OCLOperationConfiguration *parameters, T lambda,
+                                   size_t platform_id, size_t device_id)
+      : OperationDensity(),
+        dims(dimensions),
         gridSize(grid.getStorage().getSize()),
         devices(manager->getDevices()),
         verbose(false),
-        manager(manager), lambda(lambda) {
+        manager(manager),
+        lambda(lambda) {
     // Store Grid in a opencl compatible buffer
-    sgpp::base::GridStorage& gridStorage = grid.getStorage();
+    sgpp::base::GridStorage &gridStorage = grid.getStorage();
     size_t pointscount = 0;
     for (size_t i = 0; i < gridSize; i++) {
       sgpp::base::HashGridPoint &point = gridStorage.getPoint(i);
@@ -86,18 +89,16 @@ class OperationDensityOCLMultiPlatform: public OperationDensity {
         devicecounter++;
         old_device_id = device->deviceId;
       }
-      if (platformcounter == platform_id &&
-          devicecounter == device_id) {
+      if (platformcounter == platform_id && devicecounter == device_id) {
         json::Node &deviceNode =
             (*parameters)["PLATFORMS"][device->platformName]["DEVICES"][device->deviceName];
         json::Node &firstKernelConfig = deviceNode["KERNELS"]["multdensity"];
         json::Node &secondKernelConfig = deviceNode["KERNELS"]["cscheme"];
-        bKernel = new KernelDensityB<T>(devices[counter], dims, manager, secondKernelConfig,
-                                        points);
+        bKernel =
+            new KernelDensityB<T>(devices[counter], dims, manager, secondKernelConfig, points);
         multKernel = new KernelDensityMult<T>(devices[counter], dims, manager, firstKernelConfig,
                                               points, lambda);
-        if (firstKernelConfig["VERBOSE"].getBool())
-          verbose = true;
+        if (firstKernelConfig["VERBOSE"].getBool()) verbose = true;
         success = true;
         break;
       }
@@ -115,13 +116,15 @@ class OperationDensityOCLMultiPlatform: public OperationDensity {
   /// Constructor for mpi nodes - accepts grid als integer array
   OperationDensityOCLMultiPlatform(int *gridpoints, size_t gridsize, size_t dimensions,
                                    std::shared_ptr<base::OCLManagerMultiPlatform> manager,
-                                   sgpp::base::OCLOperationConfiguration *parameters,
-                                   T lambda, size_t platform_id, size_t device_id) :
-      OperationDensity(), dims(dimensions),
-      gridSize(gridsize),
-      devices(manager->getDevices()),
-      verbose(false),
-      manager(manager), lambda(lambda) {
+                                   sgpp::base::OCLOperationConfiguration *parameters, T lambda,
+                                   size_t platform_id, size_t device_id)
+      : OperationDensity(),
+        dims(dimensions),
+        gridSize(gridsize),
+        devices(manager->getDevices()),
+        verbose(false),
+        manager(manager),
+        lambda(lambda) {
     for (size_t i = 0; i < gridSize; i++) {
       for (size_t d = 0; d < dims; d++) {
         points.push_back(gridpoints[2 * dimensions * i + 2 * d]);
@@ -145,18 +148,16 @@ class OperationDensityOCLMultiPlatform: public OperationDensity {
         devicecounter++;
         old_device_id = device->deviceId;
       }
-      if (platformcounter == platform_id &&
-          devicecounter == device_id) {
+      if (platformcounter == platform_id && devicecounter == device_id) {
         json::Node &deviceNode =
             (*parameters)["PLATFORMS"][device->platformName]["DEVICES"][device->deviceName];
         json::Node &firstKernelConfig = deviceNode["KERNELS"]["multdensity"];
         json::Node &secondKernelConfig = deviceNode["KERNELS"]["cscheme"];
-        bKernel = new KernelDensityB<T>(devices[counter], dims, manager, secondKernelConfig,
-                                        points);
+        bKernel =
+            new KernelDensityB<T>(devices[counter], dims, manager, secondKernelConfig, points);
         multKernel = new KernelDensityMult<T>(devices[counter], dims, manager, firstKernelConfig,
                                               points, lambda);
-        if (firstKernelConfig["VERBOSE"].getBool())
-          verbose = true;
+        if (firstKernelConfig["VERBOSE"].getBool()) verbose = true;
         success = true;
         break;
       }
@@ -212,7 +213,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensity {
   }
 
   /// Execute one matrix-vector multiplication with the density matrix
-  void mult(base::DataVector& alpha, base::DataVector& result) override {
+  void mult(base::DataVector &alpha, base::DataVector &result) override {
     std::vector<T> alphaVector(gridSize);
     std::vector<T> resultVector(gridSize);
     for (size_t i = 0; i < gridSize; i++) {
@@ -232,8 +233,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensity {
     if (verbose) {
       std::cout << "duration mult ocl: " << elapsed_seconds.count() << std::endl;
     }
-    for (size_t i = 0; i < gridSize; i++)
-      result[i] = resultVector[i];
+    for (size_t i = 0; i < gridSize; i++) result[i] = resultVector[i];
   }
   void initialize_dataset(base::DataMatrix &dataset) override {
     if (std::is_same<T, double>::value) {
@@ -243,8 +243,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensity {
     } else {
       std::vector<T> datasetVector(dataset.getSize());
       double *data_raw = dataset.getPointer();
-      for (size_t i = 0; i < dataset.getSize(); i++)
-        datasetVector[i] = static_cast<T>(data_raw[i]);
+      for (size_t i = 0; i < dataset.getSize(); i++) datasetVector[i] = static_cast<T>(data_raw[i]);
       bKernel->initialize_dataset(datasetVector);
     }
   }
@@ -256,13 +255,12 @@ class OperationDensityOCLMultiPlatform: public OperationDensity {
                                size_t chunksize) override {
     std::vector<T> bVector(b.getSize());
     bKernel->finalize_rhs_generation(bVector, start_id, chunksize);
-    for (size_t i = 0; i < b.getSize(); i++)
-      b[i] = bVector[i];
+    for (size_t i = 0; i < b.getSize(); i++) b[i] = bVector[i];
   }
 
   /// Generates the right hand side vector for the density equation
-  void generateb(base::DataMatrix &dataset, sgpp::base::DataVector &b,
-                 size_t start_id = 0, size_t chunksize = 0) override {
+  void generateb(base::DataMatrix &dataset, sgpp::base::DataVector &b, size_t start_id = 0,
+                 size_t chunksize = 0) override {
     std::chrono::time_point<std::chrono::system_clock> start, end;
     if (verbose) {
       if (chunksize == 0)
@@ -273,8 +271,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensity {
     std::vector<T> bVector(b.getSize());
     std::vector<T> datasetVector(dataset.getSize());
     double *data_raw = dataset.getPointer();
-    for (size_t i = 0; i < dataset.getSize(); i++)
-      datasetVector[i] = static_cast<T>(data_raw[i]);
+    for (size_t i = 0; i < dataset.getSize(); i++) datasetVector[i] = static_cast<T>(data_raw[i]);
     start = std::chrono::system_clock::now();
 
     bKernel->initialize_dataset(datasetVector);
@@ -283,8 +280,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensity {
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
 
-    for (size_t i = 0; i < b.getSize(); i++)
-      b[i] = bVector[i];
+    for (size_t i = 0; i < b.getSize(); i++) b[i] = bVector[i];
     if (verbose) {
       std::cout << "duration rhs ocl: " << elapsed_seconds.count() << std::endl;
     }

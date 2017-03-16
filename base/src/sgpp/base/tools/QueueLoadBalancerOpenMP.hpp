@@ -5,14 +5,15 @@
 
 #pragma once
 
-#include <sgpp/globaldef.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace base {
 
 // Very important:
-// The OpenMP mutexes require OpenMP to be enabled and the program of the calling threads have to be OpenMP threads.
+// The OpenMP mutexes require OpenMP to be enabled and the program of the calling threads have to be
+// OpenMP threads.
 // Otherwise the critical section might not actually provide the mutex functionality.
 class QueueLoadBalancerOpenMP {
  private:
@@ -25,8 +26,7 @@ class QueueLoadBalancerOpenMP {
  public:
   // end is assumed to be padded for blocksize! might return segements that end
   // after end
-  QueueLoadBalancerOpenMP()
-      : isInitialized(false), start(0), end(0), range(0), currentStart(0) {}
+  QueueLoadBalancerOpenMP() : isInitialized(false), start(0), end(0), range(0), currentStart(0) {}
 
   void initialize(const size_t start, const size_t end) {
     this->start = start;
@@ -37,23 +37,19 @@ class QueueLoadBalancerOpenMP {
   }
 
   // is thread-safe
-  bool getNextSegment(const size_t scheduleSize, const size_t blockSize,
-                      size_t &segmentStart, size_t &segmentEnd) {
+  bool getNextSegment(const size_t scheduleSize, const size_t blockSize, size_t &segmentStart,
+                      size_t &segmentEnd) {
     if (!this->isInitialized) {
-      throw base::operation_exception(
-          "QueueLoadBalancer: queue load balancer not initialized!");
+      throw base::operation_exception("QueueLoadBalancer: queue load balancer not initialized!");
     } else if (blockSize == 0) {
-      throw base::operation_exception(
-          "QueueLoadBalancer: block size must not be zero!");
+      throw base::operation_exception("QueueLoadBalancer: block size must not be zero!");
     } else if (scheduleSize % blockSize != 0) {
       throw base::operation_exception(
           "QueueLoadBalancer: schedule size is not divisible by block size!");
     } else if (start % blockSize != 0) {
-      throw base::operation_exception(
-          "QueueLoadBalancer: start not divisible by block size");
+      throw base::operation_exception("QueueLoadBalancer: start not divisible by block size");
     } else if (end % blockSize != 0) {
-      throw base::operation_exception(
-          "QueueLoadBalancer: end not divisible by block size");
+      throw base::operation_exception("QueueLoadBalancer: end not divisible by block size");
     }
 
     bool segmentAvailable = true;

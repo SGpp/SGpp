@@ -8,11 +8,11 @@
 #include <sgpp/base/tools/json/DictNode.hpp>
 #include <sgpp/base/tools/json/Token.hpp>
 
-#include <vector>
-#include <map>
-#include <string>
-#include <memory>
 #include <iostream>
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace json {
 
@@ -34,10 +34,10 @@ class JSON : public DictNode {
   void clear();
 
   void serialize(const std::string& outFileName);
-  
+
   void deserialize(std::string content);
 
-  void deserializeFromString(const std::string &content);
+  void deserializeFromString(const std::string& content);
 
   using DictNode::serialize;
 };
