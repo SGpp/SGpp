@@ -59,7 +59,7 @@ std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::expL2Leja() {
 
 std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::expUniform() {
   return std::make_shared<NestedPointHierarchy>(
-      std::make_shared<UniformBoundaryPointDistribution>(),
+      std::make_shared<UniformPointDistribution>(),
       std::make_shared<ExponentialNoBoundaryPointOrdering>());
 }
 
