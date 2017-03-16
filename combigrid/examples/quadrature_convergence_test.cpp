@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 /**
- * \page example_quadrature_convergence_test_cpp Quadrature Example
+ * \page example_quadrature_convergence_test_cpp Quadrature convergence with combigrid
  * This tutorial shows how quadrature can be done using the combigrid module,
  * and presents the results of 3 methods:
  * - Trapezoidal quadrature on equidistant nodes
