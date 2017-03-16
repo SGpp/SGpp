@@ -373,7 +373,7 @@ def configureGNUCompiler(config):
   # check if using MinGW (g++ on win32)
   if config.env["PLATFORM"] == "win32":
     # disable warnings which occur when including Boost in the tests
-    config.env.Append(CPPFLAGS=["-Wno-switch-enum", "-Wno-deprecated-declarations", "-Wa,-mbig-obj"])
+    config.env.Append(CPPFLAGS=["-Wno-switch-enum", "-Wno-deprecated-declarations"])
     # also use "lib" prefix on MinGW for consistency with Linux (default is no prefix)
     config.env["SHLIBPREFIX"] = "lib"
 
