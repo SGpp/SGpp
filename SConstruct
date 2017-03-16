@@ -190,10 +190,11 @@ env["BOOST_LIBRARY_PATH"] = env.get("BOOST_LIBRARY_PATH", "/usr/lib/x86_64-linux
                                     if env["PLATFORM"] not in ["darwin", "win32"]
                                     else "")
 
-# don't create the Doxyfile if building Doxygen:
+# only create the Doxyfile if building Doxygen:
 if ("doxygen" in BUILD_TARGETS) and (not env.GetOption("clean")):
-#  print [moduleFolder in ModuleFolders if (not env["SG_" + moduleFolder.upper()])]
-  DoxygenHelper.prepareDoxygen(moduleFolders)
+  Helper.printInfo("Building Doxyfile for modules: "+
+                   ', '.join([moduleFolder for moduleFolder in moduleFolders if env["SG_" + moduleFolder.upper()]]))
+  DoxygenHelper.prepareDoxygen([moduleFolder for moduleFolder in moduleFolders if env["SG_" + moduleFolder.upper()]])
 
 if "CXX" in ARGUMENTS:
   Helper.printInfo("CXX: {}".format(ARGUMENTS["CXX"]))
