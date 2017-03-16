@@ -192,6 +192,7 @@ env["BOOST_LIBRARY_PATH"] = env.get("BOOST_LIBRARY_PATH", "/usr/lib/x86_64-linux
 
 # don't create the Doxyfile if building Doxygen:
 if ("doxygen" in BUILD_TARGETS) and (not env.GetOption("clean")):
+#  print [moduleFolder in ModuleFolders if (not env["SG_" + moduleFolder.upper()])]
   DoxygenHelper.prepareDoxygen(moduleFolders)
 
 if "CXX" in ARGUMENTS:
