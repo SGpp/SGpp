@@ -58,15 +58,15 @@ def refineGrid(grid, alpha, f, refnums):
     for _ in xrange(refnums):
         # refine a single grid point each time
         gridGen.refine(SurplusRefinementFunctor(alpha, 1))
-    
+
         # extend alpha vector (new entries uninitialized)
         alpha.resize(gs.getSize())
-    
+
         # set function values in alpha
         for i in xrange(gs.getSize()):
             gs.getCoordinates(gs.getPoint(i), x)
             alpha[i] = f(x)
-    
+
         # hierarchize
         createOperationHierarchisation(grid).doHierarchisation(alpha)
 
@@ -76,16 +76,16 @@ def regularGridToRegularGrid(numDims, level, f, n=1000):
     # # validate the grid conversion
     x = np.random.rand(n, numDims)
     parameters = DataMatrix(x)
-    
+
     ## We create a regular sparse grid as usual...
     grid = Grid.createLinearGrid(numDims)
     grid.getGenerator().regular(level)
     alpha = interpolate(grid, f)
-    
+
     # # We apply now both methods of the grid conversion
     treeStorage_all = allStorageLevels(grid.getStorage())
     treeStorage_full = fullStorageLevels(grid.getStorage())
-    
+
     # # Note, that we do the conversion just based on the grid points. With
     # # this approach you can easily use different basis function types on
     # # the same grid. We initialize the CombigridOperation on a grid that
@@ -94,19 +94,18 @@ def regularGridToRegularGrid(numDims, level, f, n=1000):
     func = multiFunc(f)
     opt_full = CombigridMultiOperation.createExpUniformLinearInterpolation(numDims, func)
     opt_all = CombigridMultiOperation.createExpUniformLinearInterpolation(numDims, func)
-    
+
     # # The CombigridOperation expects the points at which you want to
     # # evaluate the interpolant as DataMatrix with the shape (numDims x
     # # numSamples). We initialize the levels for both operations.
-    
+
     parameters.transpose()
     opt_full.setParameters(parameters)
     opt_full.getLevelManager().addLevelsFromStructure(treeStorage_full)
     opt_all.setParameters(parameters)
     opt_all.getLevelManager().addLevelsFromStructure(treeStorage_all)
     parameters.transpose()
-    
-    import idpb; ipdb.set_trace()
+
     print "-" * 80
     print "just full levels:"
     print opt_full.getLevelManager().getSerializedLevelStructure()
@@ -131,10 +130,10 @@ def regularGridToRegularGrid(numDims, level, f, n=1000):
     # # evaluate the surrogate functions
     y_sg_regular = DataVector(parameters.getNrows())
     createOperationMultipleEval(grid, parameters).eval(alpha, y_sg_regular)
-    
+
     y_sg_all = DataVector(parameters.getNrows())
     createOperationMultipleEval(grid_all, parameters).eval(alpha_all, y_sg_all)
-    
+
     y_sg_full = DataVector(parameters.getNrows())
     createOperationMultipleEval(grid_full, parameters).eval(alpha_full, y_sg_full)
 
