@@ -3,6 +3,19 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+/**
+ * \page example_quadrature_convergence_test_cpp Quadrature Example
+ * This tutorial shows how quadrature can be done using the combigrid module,
+ * and presents the results of 3 methods:
+ * - Trapezoidal quadrature on equidistant nodes
+ * - Clenshaw-Curtis quadrature on Chebyshev nodes
+ * - Gaussian quadrature on Legendre nodes
+ */
+
+#include <stdlib.h>
+#include <algorithm>
+#include <cmath>
+#include <iostream>
 #include <sgpp/combigrid/combigrid/CombiGrid.hpp>
 #include <sgpp/combigrid/combigrid/SerialCombiGrid.hpp>
 #include <sgpp/combigrid/combischeme/AbstractCombiScheme.hpp>
@@ -16,11 +29,19 @@
 #include <sgpp/combigrid/quadratures/ClenshawCurtisQuadrature.hpp>
 #include <sgpp/combigrid/quadratures/GaussPattersonQuadrature.hpp>
 #include <sgpp/combigrid/quadratures/TrapezoidalRule.hpp>
-#include <stdlib.h>
-#include <cmath>
-#include <iostream>
 #include <vector>
-#include <algorithm>
+
+/**
+ * Define function to be integrated:
+ * \f[
+ * 		f\colon [0, 1]^{dim} \to \mathbb{R}, \quad
+ * 		\textbf{x} = \left( x_1,\ x_2,\ldots\ x_{dim} \right), \quad
+ * 		f(\textbf{x}) = \prod_{d=1}^{dim} \left(1 + \frac{1}{dim} \right)
+ * 			x_d^{\frac{1}{dim}}
+ * \f]
+ * The function is defined for a generic dimension \f$dim\f$,
+ * but in this tutorial we will use \f$dim=5\f$
+ */
 
 int fcalls = 0;
 
@@ -38,9 +59,16 @@ double f(int dim, std::vector<double> coordinates) {
   return result;
 }
 
+/**
+ * Define a function that will perform the integration by a given rule
+ * on a given grid (or set of nodes)
+ */
+
 double integrateByRule(combigrid::AbstractQuadratureRule<double>* rule,
                        combigrid::CombiGrid<double>* grid) {
-  // fill grid with function values.
+  /**
+   * Fill the given grid with function values
+   */
   double result = 0.0;
   std::vector<double> coords(grid->getDim(), 0.0);
   int dim = grid->getDim();
@@ -58,14 +86,21 @@ double integrateByRule(combigrid::AbstractQuadratureRule<double>* rule,
     }
   }
 
+  /**
+   * Integrate by given rule
+   */
+
   result = rule->integrate(grid, NULL);
 
   return result;
 }
 
-int main(int argc, char** argv) {
-  // initialize the combigrid and setup the combischeme...
+/**
+ * Setup the problem parameters and variables.
+ * We integrate the defined function in 5D on a combigrid of maximum level 7
+ */
 
+int main(int argc, char** argv) {
   int dim = 5;
   int max_lvl = 7;
 
@@ -76,7 +111,10 @@ int main(int argc, char** argv) {
 
   double a = 0.;
   double b = 1.;
-  // create some quadratures...
+
+  /**
+   * Create the three quadrature rules and the three corresponding grid nodes
+   */
   combigrid::AbstractQuadratureRule<double>* trapz =
       new combigrid::TrapezoidalRule<double>(max_lvl);
   combigrid::AbstractQuadratureRule<double>* clenshaw =
@@ -85,12 +123,19 @@ int main(int argc, char** argv) {
       new combigrid::GaussPattersonQuadrature<double>(max_lvl);
 
   combigrid::AbstractStretchingMaker* equidistant = new combigrid::CombiEquidistantStretching();
-  combigrid::AbstractStretchingMaker* chebishev = new combigrid::CombiChebyshevStretching();
+  combigrid::AbstractStretchingMaker* chebyshev = new combigrid::CombiChebyshevStretching();
   combigrid::AbstractStretchingMaker* legendre = new combigrid::CombiLegendreStretching();
 
+  /**
+   * Iterate over combigrid levels
+   */
   for (int l = 1; l <= max_lvl; l++) {
     std::cout << "Computing errors for max level = " << l << "\n";
 
+    /**
+      * setup the domain
+      *
+      */
     std::vector<int> levels(dim, l);
     combigrid::CombiGrid<double>* grid = new combigrid::SerialCombiGrid<double>(dim, hasbdries);
     combigrid::AbstractCombiScheme<double>* scheme = new combigrid::CombiS_CT<double>(levels);
@@ -99,39 +144,46 @@ int main(int argc, char** argv) {
     grid->re_init();
     grid->createFullGrids();
 
-    /**
-    * Integration via trapezoidal rule
-    *
-    */
-
-    /*
-     * setup the domain
-     *
-     */
     std::vector<double> min(dim, a);
     std::vector<double> max(dim, b);
+
+    /**
+        * Integration via trapezoidal rule on equidistant nodes
+        *
+        */
     fcalls = 0;
     grid->initializeActiveGridsDomain(min, max, equidistant);
     *(errors + (l - 1) * 3) = fabs(integrateByRule(trapz, grid) - 1.0);
     *(Fcalls + (l - 1) * 3) = fcalls;
 
+    /**
+     * Integration via Clenshaw-Curtis rule on Chebyshev nodes
+     */
     fcalls = 0;
-    grid->initializeActiveGridsDomain(min, max, chebishev);
+    grid->initializeActiveGridsDomain(min, max, chebyshev);
     *(errors + (l - 1) * 3 + 1) = fabs(integrateByRule(clenshaw, grid) - 1.0);
     *(Fcalls + (l - 1) * 3 + 1) = fcalls;
 
+    /**
+     * Integration via Gaussian quadrature on Legendre nodes
+     */
     fcalls = 0;
     grid->initializeActiveGridsDomain(min, max, legendre);
     *(errors + (l - 1) * 3 + 2) = fabs(integrateByRule(gauss, grid) - 1.0);
     *(Fcalls + (l - 1) * 3 + 2) = fcalls;
 
+    /**
+     * Free objects
+     */
     delete grid;
     delete scheme;
   }
 
   std::cout << "Integration completed!\n";
 
-  // print the errors table...
+  /**
+   * Print results
+   */
   for (int i = 0; i < max_lvl; i++) {
     for (int j = 0; j < 3; j++) {
       std::cout << *(Fcalls + i * 3 + j) << " | " << *(errors + i * 3 + j) << "\t";
