@@ -270,10 +270,9 @@ class SimpleQueue {
   /**
    * Checks whether the queue has already finished
    *
-   * @param
    * @return Returns true if the queue has received results for all packages
    */
-  bool is_finished(void) {
+  bool is_finished() {
     if (received_packageindex == packagecount)
       return true;
     else

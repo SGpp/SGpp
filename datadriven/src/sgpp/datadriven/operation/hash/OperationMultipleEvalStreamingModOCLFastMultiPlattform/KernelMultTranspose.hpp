@@ -7,18 +7,18 @@
 
 #include <CL/cl.h>
 
-#include <string>
 #include <limits>
+#include <string>
 #include <vector>
 
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/opencl/LinearLoadBalancerMultiPlatform.hpp"
-#include "sgpp/base/opencl/OCLClonedBufferMultiPlatform.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
-#include "sgpp/base/opencl/OCLStretchedBufferMultiPlatform.hpp"
 #include "SourceBuilderMultTranspose.hpp"
+#include "sgpp/base/opencl/LinearLoadBalancerMultiPlatform.hpp"
 #include "sgpp/base/opencl/OCLBufferWrapperSD.hpp"
+#include "sgpp/base/opencl/OCLClonedBufferMultiPlatform.hpp"
+#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
+#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
+#include "sgpp/base/opencl/OCLStretchedBufferMultiPlatform.hpp"
+#include "sgpp/globaldef.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -60,6 +60,15 @@ class KernelMultTranspose {
   size_t totalBlockSize;
 
  public:
+  /**
+ * Creates a new instance of the kernel
+ *
+ * @param device The device managed by this instance
+ * @param dims the dimension of the dataset and grid
+ * @param manager the OpenCL platform mananger of the operation instance
+ * @param kernelConfiguration kernel configuration for this device
+ * @param queueBalancerMultTranpose load balancer of the operation
+ */
   KernelMultTranspose(std::shared_ptr<base::OCLDevice> device, size_t dims,
                       std::shared_ptr<base::OCLManagerMultiPlatform> manager,
                       json::Node &kernelConfiguration,
@@ -83,8 +92,8 @@ class KernelMultTranspose {
       std::stringstream errorString;
       errorString << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" requires value of "
                      "\"KERNEL_MAX_DIM_UNROLL\" to be greater than the dimension of the data "
-                     "set, was set to " << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt()
-                  << std::endl;
+                     "set, was set to "
+                  << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() << std::endl;
       throw sgpp::base::operation_exception(errorString.str());
     }
 
@@ -269,7 +278,8 @@ class KernelMultTranspose {
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read start-time from command "
-                         "queue (or crash in multTranspose)! Error code: " << err << std::endl;
+                         "queue (or crash in multTranspose)! Error code: "
+                      << err << std::endl;
           throw base::operation_exception(errorString.str());
         }
 
@@ -279,7 +289,8 @@ class KernelMultTranspose {
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read end-time from command "
-                         "queue! Error code: " << err << std::endl;
+                         "queue! Error code: "
+                      << err << std::endl;
           throw base::operation_exception(errorString.str());
         }
 

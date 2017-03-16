@@ -142,7 +142,7 @@ class KernelMultTranspose {
    * @param index Vector containing the d-dimensional indices of the grid, the order matches the
    * level vector
    * @param dataset Vector containing the d-dimensional data points
-   * @param source Vector \f$v\f
+   * @param source Vector \f$v\f$
    * @param result The results vector \f$v'\f$ of the operation
    * @param start_index_grid start of range of grid points to work on, currently not used
    * @param end_index_grid end of range of grid points to work on, currently not used
