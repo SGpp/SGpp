@@ -16,6 +16,7 @@
 
 namespace sgpp {
 namespace datadriven {
+namespace OpMultiEvalCudaDetail {
 
 /// Constructor. Generates the identity
 MortonOrder::MortonOrder(size_t size) {
@@ -142,5 +143,6 @@ bool MortonOrder::isIdentity() const {
   return true;
 }
 
+}  // namespace OpMultiEvalCudaDetail
 }  // namespace datadriven
 }  // namespace sgpp

@@ -16,6 +16,7 @@
 
 namespace sgpp {
 namespace datadriven {
+namespace OpMultiEvalCudaDetail {
 
 /// Class for re-arranging Datasets along a Morton order curve
 class MortonOrder {
@@ -49,6 +50,7 @@ class MortonOrder {
   std::vector<size_t> permutation;
 };
 
+}  // namespace OpMultiEvalCudaDetail
 }  // namespace datadriven
 }  // namespace sgpp
 

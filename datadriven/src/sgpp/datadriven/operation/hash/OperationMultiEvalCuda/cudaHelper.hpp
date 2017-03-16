@@ -10,6 +10,10 @@
 #ifndef CUDA_ERROR_CHECK
 #define CUDA_ERROR_CHECK
 
+namespace sgpp {
+namespace datadriven {
+namespace OpMultiEvalCudaDetail {
+
 /// Wrapper for __cudaSafeCall
 #define CudaSafeCall(err) __cudaSafeCall(err, __FILE__, __LINE__)
 /// Wrapper for __cudaCheckError
@@ -158,5 +162,10 @@ class HostDevPtr {
   size_t _size;
   bool _ref;
 };
+
+}  // namespace OpMultiEvalCudaDetail
+}  // namespace datadriven
+}  // namespace sgpp
+
 
 #endif  // CUDA_ERROR_CHECK

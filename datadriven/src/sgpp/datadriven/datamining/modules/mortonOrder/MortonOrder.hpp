@@ -17,10 +17,10 @@ namespace sgpp {
 namespace datadriven {
 
 /// Class for re-arranging Datasets along a Morton order curve
-class DatasetMortonOrder {
+class MortonOrder {
  public:
   /// Generates the permutation according to the given dataset.
-  explicit DatasetMortonOrder(sgpp::datadriven::Dataset *dataset);
+  explicit MortonOrder(sgpp::datadriven::Dataset *dataset);
 
   /// Re-arrange the Dataset object along Z-Curve
   void orderDataset();

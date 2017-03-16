@@ -9,6 +9,10 @@
 #include "MultiEvalKernel.hpp"
 #include "consts.hpp"
 
+namespace sgpp {
+namespace datadriven {
+namespace OpMultiEvalCudaDetail {
+
 /// Wrapper for kernel call of the stream boundary limitation
 void streamboundCuda(double* pos, gridnode_t* node, limit_t* limit, uint32_t M, uint32_t _M,
     uint32_t N) {
@@ -55,3 +59,7 @@ void transposedCuda(double* a, gridnode_t* node, double* pos, double* y,
   gpu_transevel<<<N, CUDA_BLOCKSIZE>>>(a, node, pos, y, limit);
   cudaDeviceSynchronize();
 }
+
+}  // namespace OpMultiEvalCudaDetail
+}  // namespace datadriven
+}  // namespace sgpp
