@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_LEVELMANAGER_HPP_
-#define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_LEVELMANAGER_HPP_
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 
@@ -226,8 +225,9 @@ class LevelManager {
 
   /**
    * Does the same as addRegularLevels(), but with parallel precomputation of function values.
-   * @param q: Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as
+   * @param q  Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as
    * in most papers).
+   * @param numThreads number of threads that should be used for computation
    * If you have a norm w with levels starting from 1, simply use q = w - dim().
    */
   void addRegularLevelsParallel(size_t q, size_t numThreads);
@@ -261,10 +261,23 @@ class LevelManager {
   void addLevelsFromStructure(std::shared_ptr<TreeStorage<uint8_t>> storage);
 
   /**
+   * Does the same as addLevelsFromStructure(), but with parallel precomputation of function values
+   * using numThreads threads.
+   */
+  void addLevelsFromStructureParallel(std::shared_ptr<TreeStorage<uint8_t>> storage,
+                                      size_t numThreads);
+
+  /**
    * Equivalent to deserializing serializedStructure and then calling addLevelsFromStructure().
    * "Inverse" operation to getSerializedLevelStructure().
    */
   void addLevelsFromSerializedStructure(std::string serializedStructure);
+
+  /**
+   * Does the same as addLevelsFromSerializedStructure(), but with parallel precomputation of
+   * function values using numThreads threads.
+   */
+  void addLevelsFromSerializedStructureParallel(std::string serializedStructure, size_t numThreads);
 
   /**
    * Adds levels in an adaptive manner, such that the given maximum number of function evaluations
@@ -309,7 +322,7 @@ class LevelManager {
   /**
    * Queue based addLevel-type function
    */
-  void addLevelsAdaptiveByNumLevels();
+  void addLevelsAdaptiveByNumLevels(size_t numLevels = 1);
 
   /**
    * @return An upper bound for the number of points (function evaluations) used for the current
@@ -320,5 +333,3 @@ class LevelManager {
 };
 }  // namespace combigrid
 }  // namespace sgpp
-
-#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_LEVELMANAGER_HPP_ */

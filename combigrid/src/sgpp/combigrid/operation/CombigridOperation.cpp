@@ -4,6 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/grid/distribution/ClenshawCurtisDistribution.hpp>
+#include <sgpp/combigrid/grid/distribution/UniformPointDistribution.hpp>
 #include <sgpp/combigrid/grid/growth/ExponentialGrowthStrategy.hpp>
 #include <sgpp/combigrid/grid/hierarchy/NestedPointHierarchy.hpp>
 #include <sgpp/combigrid/grid/ordering/ExponentialLevelorderPointOrdering.hpp>
@@ -96,7 +97,7 @@ double CombigridOperation::getResult() { return impl->combiEval->getValue().valu
 
 double CombigridOperation::evaluate(size_t q, base::DataVector const& param) {
   setParameters(param);
-  impl->combiEval->addRegularLevels(q);
+  impl->levelManager->addRegularLevels(q);
 
   return getResult();
 }
@@ -170,6 +171,37 @@ std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformPolynomi
 }
 
 std::shared_ptr<CombigridOperation>
+CombigridOperation::createExpUniformBoundaryPolynomialInterpolation(size_t numDimensions,
+                                                                    MultiFunction func) {
+  return std::make_shared<CombigridOperation>(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>>(numDimensions,
+                                                           CombiHierarchies::expUniformBoundary()),
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>>(
+          numDimensions, CombiEvaluators::polynomialInterpolation()),
+      std::make_shared<StandardLevelManager>(), func);
+}
+
+std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformLinearInterpolation(
+    size_t numDimensions, MultiFunction func) {
+  return std::make_shared<CombigridOperation>(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>>(numDimensions,
+                                                           CombiHierarchies::expUniform()),
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>>(
+          numDimensions, CombiEvaluators::linearInterpolation()),
+      std::make_shared<StandardLevelManager>(), func);
+}
+
+std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformBoundaryLinearInterpolation(
+    size_t numDimensions, MultiFunction func) {
+  return std::make_shared<CombigridOperation>(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>>(numDimensions,
+                                                           CombiHierarchies::expUniformBoundary()),
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>>(
+          numDimensions, CombiEvaluators::linearInterpolation()),
+      std::make_shared<StandardLevelManager>(), func);
+}
+
+std::shared_ptr<CombigridOperation>
 CombigridOperation::createLinearClenshawCurtisPolynomialInterpolation(size_t numDimensions,
                                                                       MultiFunction func) {
   return std::make_shared<CombigridOperation>(
@@ -216,6 +248,20 @@ std::shared_ptr<CombigridOperation> CombigridOperation::createLinearUniformPolyn
       std::make_shared<StandardLevelManager>(), func);
 }
 
+std::shared_ptr<CombigridOperation>
+CombigridOperation::createLinearUniformBoundaryPolynomialInterpolation(size_t numDimensions,
+                                                                       MultiFunction func) {
+  return std::make_shared<CombigridOperation>(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>>(
+          numDimensions, std::make_shared<NonNestedPointHierarchy>(
+                             std::make_shared<UniformBoundaryPointDistribution>(),
+                             std::make_shared<IdentityPointOrdering>(
+                                 std::make_shared<LinearGrowthStrategy>(2), true))),
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>>(
+          numDimensions, CombiEvaluators::polynomialInterpolation()),
+      std::make_shared<StandardLevelManager>(), func);
+}
+
 std::shared_ptr<CombigridOperation> CombigridOperation::createLinearLejaQuadrature(
     size_t numDimensions, MultiFunction func, size_t growthFactor) {
   return std::make_shared<CombigridOperation>(
@@ -243,16 +289,6 @@ std::shared_ptr<CombigridOperation> CombigridOperation::createExpClenshawCurtisQ
                                                            CombiHierarchies::expClenshawCurtis()),
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>>(
           numDimensions, CombiEvaluators::quadrature()),
-      std::make_shared<StandardLevelManager>(), func);
-}
-
-std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformLinearInterpolation(
-    size_t numDimensions, MultiFunction func) {
-  return std::make_shared<CombigridOperation>(
-      std::vector<std::shared_ptr<AbstractPointHierarchy>>(numDimensions,
-                                                           CombiHierarchies::expUniform()),
-      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>>(
-          numDimensions, CombiEvaluators::linearInterpolation()),
       std::make_shared<StandardLevelManager>(), func);
 }
 

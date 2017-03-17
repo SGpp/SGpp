@@ -16,13 +16,16 @@
 
 #include <sgpp/combigrid/common/AbstractPermutationIterator.hpp>
 #include <sgpp/combigrid/common/BoundedSumMultiIndexIterator.hpp>
+#include <sgpp/combigrid/common/GridConversion.hpp>
 #include <sgpp/combigrid/common/MultiIndexIterator.hpp>
 
 #include <sgpp/combigrid/grid/TensorGrid.hpp>
 #include <sgpp/combigrid/grid/distribution/AbstractPointDistribution.hpp>
+#include <sgpp/combigrid/grid/distribution/ChebyshevDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/ClenshawCurtisDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/L2LejaPointDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
+#include <sgpp/combigrid/grid/distribution/UniformBoundaryPointDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/UniformPointDistribution.hpp>
 #include <sgpp/combigrid/grid/growth/AbstractGrowthStrategy.hpp>
 #include <sgpp/combigrid/grid/growth/CustomGrowthStrategy.hpp>

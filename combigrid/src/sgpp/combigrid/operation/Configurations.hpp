@@ -29,7 +29,7 @@ class CombiHierarchies {
   static std::shared_ptr<AbstractPointHierarchy> expUniform();
   static std::shared_ptr<AbstractPointHierarchy> expClenshawCurtis();
   static std::shared_ptr<AbstractPointHierarchy> expChebyshev();
-  static std::shared_ptr<AbstractPointHierarchy> expUniformNoBoundary();
+  static std::shared_ptr<AbstractPointHierarchy> expUniformBoundary();
 
   typedef std::vector<std::shared_ptr<AbstractPointHierarchy>> Collection;
 };

@@ -17,8 +17,6 @@
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
 #include <sgpp/combigrid/utils/DataVectorHashing.hpp>
 
-#include <sgpp/combigrid/operation/multidim/LevelHelpers.hpp>  // TODO(holzmudd): remove with deprecated methods
-
 #include <cmath>
 #include <limits>
 #include <memory>
@@ -76,12 +74,7 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
    * value.
    */
   CombigridEvaluator(size_t numDimensions, std::shared_ptr<AbstractFullGridEvaluator<V>> multiEval)
-      : sum(V::zero()),
-        numDimensions(numDimensions),
-        partialDifferences(),
-        multiEval(multiEval),
-        levelQueue(),
-        refinementStrategy(AdaptiveRefinementStrategy::minStrategy()) {
+      : sum(V::zero()), numDimensions(numDimensions), partialDifferences(), multiEval(multiEval) {
     initPartialDifferences();
   }
 
@@ -91,12 +84,7 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
    */
   CombigridEvaluator(size_t numDimensions,
                      std::shared_ptr<FullGridLinearCallbackEvaluator<V>> multiEval)
-      : sum(V::zero()),
-        numDimensions(numDimensions),
-        partialDifferences(),
-        multiEval(multiEval),
-        levelQueue(),
-        refinementStrategy(AdaptiveRefinementStrategy::minStrategy()) {
+      : sum(V::zero()), numDimensions(numDimensions), partialDifferences(), multiEval(multiEval) {
     initPartialDifferences();
   }
 
@@ -191,11 +179,6 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
   }
 
   /**
-   * Deprecated. Functionality has moved to LevelManager.
-   */
-  void setRefinementStrategy(AdaptiveRefinementStrategy strategy) { refinementStrategy = strategy; }
-
-  /**
    * @return an estimate (upper bound, in the case of nested points normally exact) of the number of
    * new function evaluations (grid points) that have to be performed when adding this level.
    */
@@ -251,55 +234,6 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
    */
   double getDifferenceNorm(MultiIndex const &level) {
     return partialDifferences[numDimensions]->get(level).norm();
-  }
-
-  /**
-   * Deprecated. Functionality has moved to LevelManager.
-   * @param q: Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as
-   * in most papers).
-   * If you have a norm w with levels starting from 1, simply use q = w - dim().
-   */
-  void addRegularLevels(size_t q) {
-    BoundedSumMultiIndexIterator iterator(numDimensions, q);
-
-    while (iterator.isValid()) {
-      addLevel(iterator.value());
-      iterator.moveToNext();
-    }
-  }
-
-  /**
-   * Deprecated. Functionality has moved to LevelManager.
-   */
-  void addRegularLevelsByNumPoints(size_t maxNumPoints) {
-    size_t numPoints = 0;
-
-    size_t q = 0;
-
-    while (true) {
-      BoundedSumMultiIndexIterator iterator(numDimensions, q);
-
-      while (iterator.isValid()) {
-        MultiIndex nextLevel = iterator.value();
-
-        if (partialDifferences[0]->containsIndex(nextLevel)) {
-          iterator.moveToNext();
-          continue;
-        }
-
-        size_t maxNewPoints = multiEval->maxNewPoints(nextLevel);
-        numPoints += maxNewPoints;
-
-        if (numPoints > maxNumPoints) {
-          return;
-        }
-
-        addLevel(nextLevel);
-        iterator.moveToNext();
-      }
-
-      ++q;
-    }
   }
 
   /**
@@ -366,110 +300,6 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
   void addLevelsFromSerializedStructure(std::string serializedStructure) {
     addLevelsFromStructure(
         TreeStorageSerializationStrategy<uint8_t>(numDimensions).deserialize(serializedStructure));
-  }
-
-  /**
-   * Deprecated. Functionality has moved to LevelManager.
-   */
-  void addLevelsAdaptive(size_t maxNumPoints) {
-    CGLOG("addLevelsAdaptive(): start");
-    initAdaption();
-
-    CGLOG("addLevelsAdaptive(): adaption initialized");
-    size_t currentPointBound = 0;
-
-    while (!levelQueue.empty()) {
-      CGLOG("addLevelsAdaptive(): next queue entry");
-      QueueEntry entry = levelQueue.top();
-      levelQueue.pop();
-
-      currentPointBound += entry.maxNewPoints;
-
-      if (currentPointBound > maxNumPoints) {
-        break;
-      }
-
-      CGLOG("addLevelsAdaptive(): add next level");
-      bool validResult = addLevel(entry.level);
-
-      CGLOG("addLevelsAdaptive(): added next level");
-      if (validResult) {
-        tryAddSuccessorsToQueue(entry.level);
-      }
-    }
-  }
-
- private:
-  // This whole part is deprecated. Functionality has moved to LevelManager.
-
-  // data structures for adaptive refinement
-  typedef std::priority_queue<QueueEntry, std::vector<QueueEntry>, QueueComparator> MultiIndexQueue;
-  MultiIndexQueue levelQueue;
-  AdaptiveRefinementStrategy refinementStrategy;
-
-  void clearQueue() {
-    MultiIndexQueue other;
-    levelQueue.swap(other);  // unfortunately, there is no clear() method
-  }
-
-  void initAdaption() {
-    clearQueue();
-
-    auto it = partialDifferences[numDimensions]->getStoredDataIterator();
-
-    while (it->isValid()) {
-      tryAddSuccessorsToQueue(it->getMultiIndex());
-      it->moveToNext();
-    }
-
-    if (levelQueue.empty()) {
-      // no difference has yet been computed, so add start value
-      MultiIndex startIndex(numDimensions, 0);
-      levelQueue.push(QueueEntry(startIndex, 1.0, multiEval->maxNewPoints(startIndex)));
-    }
-  }
-
-  void tryAddSuccessorsToQueue(MultiIndex const &index) {
-    for (size_t d = 0; d < numDimensions; ++d) {
-      MultiIndex nextIndex = index;
-      ++nextIndex[d];
-
-      tryAddIndexToQueue(nextIndex);
-    }
-  }
-
-  void tryAddIndexToQueue(MultiIndex const &nextIndex) {
-    if (partialDifferences[numDimensions]->containsIndex(nextIndex)) {
-      return;
-    }
-
-    // calculate estimated value...
-    std::vector<double> predecessorNorms;
-
-    bool hasAllPredecessors = true;
-
-    for (size_t prevDim = 0; prevDim < numDimensions; ++prevDim) {
-      if (nextIndex[prevDim] > 0) {
-        MultiIndex prevIndex = nextIndex;
-        --prevIndex[prevDim];
-
-        if (partialDifferences[numDimensions]->containsIndex(prevIndex)) {
-          double norm = partialDifferences[numDimensions]->get(prevIndex).norm();
-          predecessorNorms.push_back(norm);
-        } else {
-          hasAllPredecessors = false;  // add index later, not all predecessors are available
-          break;
-        }
-      }
-    }
-
-    if (hasAllPredecessors) {
-      size_t maxNewPoints = multiEval->maxNewPoints(nextIndex);
-      double priority = refinementStrategy.computePriority(predecessorNorms, maxNewPoints);
-
-      QueueEntry nextEntry(nextIndex, priority, maxNewPoints);
-      levelQueue.push(nextEntry);
-    }
   }
 };
 }  // namespace combigrid
