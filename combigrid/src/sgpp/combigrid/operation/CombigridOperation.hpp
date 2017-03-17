@@ -9,7 +9,7 @@
 #include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
-#include <sgpp/combigrid/grid/distribution/UniformPointDistribution.hpp>
+#include <sgpp/combigrid/grid/distribution/UniformBoundaryPointDistribution.hpp>
 #include <sgpp/combigrid/grid/growth/LinearGrowthStrategy.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
 #include <sgpp/combigrid/grid/hierarchy/NestedPointHierarchy.hpp>
@@ -115,6 +115,12 @@ class CombigridOperation {
       size_t numDimensions, MultiFunction func);
   static std::shared_ptr<CombigridOperation> createExpUniformPolynomialInterpolation(
       size_t numDimensions, MultiFunction func);
+  static std::shared_ptr<CombigridOperation> createExpUniformBoundaryPolynomialInterpolation(
+      size_t numDimensions, MultiFunction func);
+  static std::shared_ptr<CombigridOperation> createExpUniformLinearInterpolation(
+      size_t numDimensions, MultiFunction func);
+  static std::shared_ptr<CombigridOperation> createExpUniformBoundaryLinearInterpolation(
+      size_t numDimensions, MultiFunction func);
   static std::shared_ptr<CombigridOperation> createLinearClenshawCurtisPolynomialInterpolation(
       size_t numDimensions, MultiFunction func);
   static std::shared_ptr<CombigridOperation> createLinearLejaPolynomialInterpolation(
@@ -122,6 +128,8 @@ class CombigridOperation {
   static std::shared_ptr<CombigridOperation> createLinearL2LejaPolynomialInterpolation(
       size_t numDimensions, MultiFunction func, size_t growthFactor = 2);
   static std::shared_ptr<CombigridOperation> createLinearUniformPolynomialInterpolation(
+      size_t numDimensions, MultiFunction func);
+  static std::shared_ptr<CombigridOperation> createLinearUniformBoundaryPolynomialInterpolation(
       size_t numDimensions, MultiFunction func);
   static std::shared_ptr<CombigridOperation> createLinearLejaQuadrature(size_t numDimensions,
                                                                         MultiFunction func,
@@ -131,8 +139,6 @@ class CombigridOperation {
                                                                           size_t growthFactor = 2);
   static std::shared_ptr<CombigridOperation> createExpClenshawCurtisQuadrature(size_t numDimensions,
                                                                                MultiFunction func);
-  static std::shared_ptr<CombigridOperation> createExpUniformLinearInterpolation(
-      size_t numDimensions, MultiFunction func);
 };
 } /* namespace combigrid */
 } /* namespace sgpp*/

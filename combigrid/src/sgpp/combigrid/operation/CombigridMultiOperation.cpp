@@ -5,7 +5,7 @@
 
 #include <sgpp/combigrid/grid/distribution/ClenshawCurtisDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
-#include <sgpp/combigrid/grid/distribution/UniformPointDistribution.hpp>
+#include <sgpp/combigrid/grid/distribution/UniformBoundaryPointDistribution.hpp>
 #include <sgpp/combigrid/grid/growth/ExponentialGrowthStrategy.hpp>
 #include <sgpp/combigrid/grid/growth/LinearGrowthStrategy.hpp>
 #include <sgpp/combigrid/grid/hierarchy/NestedPointHierarchy.hpp>
@@ -91,12 +91,21 @@ CombigridMultiOperation::CombigridMultiOperation(
           gridFunc)) {}
 
 void CombigridMultiOperation::setParameters(const std::vector<base::DataVector> &params) {
-  // TODO(holzmudd): check dimensionalities and sizes...
-  std::vector<FloatArrayVector> vecs(params[0].getSize());
+  if (params.size() == 0) {
+    throw std::runtime_error("CombigridMultiOperation::setParameters(): params.size() == 0");
+  }
+  size_t numParametersPerEvaluation = params[0].getSize();
+  std::vector<FloatArrayVector> vecs(numParametersPerEvaluation);
 
   for (size_t i = 0; i < params.size(); ++i) {
     auto &param = params[i];
-    for (size_t j = 0; j < param.getSize(); ++j) {
+
+    if (param.getSize() != numParametersPerEvaluation) {
+      throw std::runtime_error(
+          "CombigridMultiOperation::setParameters(): not all parameter vectors have the same "
+          "length");
+    }
+    for (size_t j = 0; j < numParametersPerEvaluation; ++j) {
       vecs[j].at(i) = param[j];
     }
   }
@@ -147,7 +156,7 @@ base::DataVector CombigridMultiOperation::evaluate(size_t q,
                                                    std::vector<base::DataVector> const &params) {
   setParameters(params);
 
-  impl->combiEval->addRegularLevels(q);
+  impl->levelManager->addRegularLevels(q);
 
   return getResult();
 }
@@ -155,7 +164,7 @@ base::DataVector CombigridMultiOperation::evaluate(size_t q,
 base::DataVector CombigridMultiOperation::evaluate(size_t q, base::DataMatrix const &params) {
   setParameters(params);
 
-  impl->combiEval->addRegularLevels(q);
+  impl->levelManager->addRegularLevels(q);
 
   return getResult();
 }
@@ -290,6 +299,17 @@ CombigridMultiOperation::createExpUniformLinearInterpolation(size_t numDimension
   return std::make_shared<CombigridMultiOperation>(
       std::vector<std::shared_ptr<AbstractPointHierarchy>>(numDimensions,
                                                            CombiHierarchies::expUniform()),
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
+          numDimensions, CombiEvaluators::multiLinearInterpolation()),
+      std::make_shared<StandardLevelManager>(), func);
+}
+
+std::shared_ptr<CombigridMultiOperation>
+CombigridMultiOperation::createExpUniformBoundaryLinearInterpolation(size_t numDimensions,
+                                                                     MultiFunction func) {
+  return std::make_shared<CombigridMultiOperation>(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>>(numDimensions,
+                                                           CombiHierarchies::expUniformBoundary()),
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
           numDimensions, CombiEvaluators::multiLinearInterpolation()),
       std::make_shared<StandardLevelManager>(), func);

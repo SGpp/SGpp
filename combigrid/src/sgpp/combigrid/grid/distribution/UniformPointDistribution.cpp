@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "UniformPointDistribution.hpp"
-
+#include <sgpp/combigrid/grid/distribution/UniformPointDistribution.hpp>
 #include <stdexcept>
 
 namespace sgpp {
@@ -14,14 +13,10 @@ UniformPointDistribution::~UniformPointDistribution() {}
 
 double UniformPointDistribution::compute(size_t numPoints, size_t j) {
   if (j >= numPoints) {
-    throw std::logic_error("UniformPointDistribution::compute: j >= numPoints");
+    throw std::logic_error("UniformNoBoundaryPointDistribution::compute: j >= numPoints");
   }
 
-  if (numPoints == 1) {
-    return 0.5;
-  }
-
-  return static_cast<double>(j) / static_cast<double>(numPoints - 1);
+  return static_cast<double>(j + 1) / static_cast<double>(numPoints + 1);
 }
 
 } /* namespace combigrid */

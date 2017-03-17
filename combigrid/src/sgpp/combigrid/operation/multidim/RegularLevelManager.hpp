@@ -9,7 +9,11 @@
 
 namespace sgpp {
 namespace combigrid {
-
+/**
+ * This class provides an adaption strategy that is equivalent to adding levels regularly. It can be
+ * used to polymorphically switch between regular and adaptive level generation by using this
+ * LevelManager or another LevelManager.
+ */
 class RegularLevelManager : public LevelManager {
   virtual double computePriority(MultiIndex const &level);
 

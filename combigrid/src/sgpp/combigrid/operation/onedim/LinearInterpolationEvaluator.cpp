@@ -23,15 +23,16 @@ LinearInterpolationEvaluator::LinearInterpolationEvaluator(
 void LinearInterpolationEvaluator::computeBasisCoefficients() {
   size_t numPoints = xValues.size();
 
-  basisCoefficients = std::vector<FloatScalarVector>(
-      numPoints, FloatScalarVector(0.0));  // TODO(holzmudd): could be optimized
+  basisCoefficients = std::vector<FloatScalarVector>(numPoints, FloatScalarVector(0.0));
 
   if (numPoints == 0) {
     return;
   }
 
   if (evaluationPoint <= xValues[0]) {
-    basisCoefficients[0] = FloatScalarVector::one();
+    if (std::abs(xValues[0]) > 1e-14) {
+      basisCoefficients[0] = FloatScalarVector(evaluationPoint / xValues[0]);
+    }
     return;
   }
 
@@ -50,7 +51,10 @@ void LinearInterpolationEvaluator::computeBasisCoefficients() {
   }
 
   // if we did not return in the loop, then evaluationPoint > all xValues...
-  basisCoefficients[numPoints - 1] = FloatScalarVector::one();
+  if (std::abs(xValues[numPoints - 1] - 1.0) > 1e-14) {
+    basisCoefficients[numPoints - 1] =
+        FloatScalarVector((evaluationPoint - 1.0) / (xValues[numPoints - 1] - 1.0));
+  }
 }
 
 void LinearInterpolationEvaluator::setGridPoints(const std::vector<double>& newXValues) {
