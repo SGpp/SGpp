@@ -139,7 +139,12 @@ void DataVector::setAll(double value) {
 
 void DataVector::set(size_t i, double value) { (*this)[i] = value; }
 
-void DataVector::copyFrom(const DataVector& vec) { *this = vec; }
+void DataVector::copyFrom(const DataVector& vec) {
+  if (*this == vec) {
+    return;
+  }
+  std::copy(vec.begin(), vec.begin() + std::min(this->size(), vec.size()), this->begin());
+}
 
 void DataVector::add(const DataVector& vec) {
   if (this->size() != vec.size()) {

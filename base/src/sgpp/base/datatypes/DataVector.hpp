@@ -27,10 +27,30 @@ class DataVector : public std::vector<double> {
    * Create a empty DataVector.
    */
   DataVector() = default;
+
+  /**
+   * Copy constructor.
+   */
   DataVector(const DataVector&) = default;
+
+  /**
+   * Move constructor
+   */
   DataVector(DataVector&&) = default;
+
+  /**
+   * Copy assignment operator
+   */
   DataVector& operator=(const DataVector&) = default;
+
+  /**
+   * Move assignment operator
+   */
   DataVector& operator=(DataVector&&) = default;
+
+  /**
+   * Destructor
+   */
   ~DataVector() = default;
 
   /**
@@ -95,8 +115,6 @@ class DataVector : public std::vector<double> {
 
   /**
    * Appends a new element and returns index of it.
-   * If the new element does not fit into the reserved memory,
-   * reserves memory for getInc() additional elements.
    *
    * @return Index of new element
    */
@@ -104,8 +122,6 @@ class DataVector : public std::vector<double> {
 
   /**
    * Appends a new element and returns index of new element.
-   * If the new element does not fit into the reserved memory,
-   * reserves memory for getInc() additional elements.
    *
    * @param value Value of new element
    * @return Index of new element
@@ -115,8 +131,6 @@ class DataVector : public std::vector<double> {
   using std::vector<double>::insert;
   /**
    * Inserts a new element at the given index.
-   * If the new element does not fit into the reserved memory,
-   * reserves memory for getInc() additional elements.
    *
    * @param index Index of new element
    * @param value Value of new element
