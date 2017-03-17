@@ -13,6 +13,7 @@
 #include <string>
 
 /**
+ * \page example_learnerSGDTest_cpp Learner SGD
  * This example shows how to perform online-classification using sparse
  * grids and averaged stochastic gradient descent method. It creates an
  * instance of LearnerSGD and runs the function train() where the
@@ -75,15 +76,15 @@ int main() {
       bool useValidData = false;
       // if fixed validation data should be used (required for convergence
       // monitor):
-      /*filename = "";  // specify file containing validation data here
+      //filename = "";  // specify file containing validation data here
       // load validation samples
-      std::cout << "# loading file: " << filename << std::endl;
-      sgpp::datadriven::Dataset valDataset =
-          sgpp::datadriven::ARFFTools::readARFF(filename);
-      validData = &(valDataset.getData());
+      //std::cout << "# loading file: " << filename << std::endl;
+      //sgpp::datadriven::Dataset valDataset =
+      //    sgpp::datadriven::ARFFTools::readARFF(filename);
+      //validData = &(valDataset.getData());
       // extract validation classes
-      validLabels = &(valDataset.getTargets());
-      useValidData = true;*/
+      //validLabels = &(valDataset.getTargets());
+      //useValidData = true;
 
       /**
        * The grid configuration.
@@ -201,19 +202,21 @@ int main() {
     avgErrorsFolds.mult(1.0 / static_cast<double>(totalFolds));
 
     // write error evaluation to csv file
-    /*std::ofstream output;
-    output.open("ASGD_avg_classification_error_"+std::to_string(numSets+1)+".csv");
-    if (output.fail()) {
-      std::cout << "failed to create .csv file!" << std::endl;
-    }
-    else {
-      for (size_t i = 0; i < avgErrorsFolds.getSize(); i++) {
-        output << avgErrorsFolds.get(i) << ";" << std::endl;
-      }
-      output.close();
-    }*/
+    //std::ofstream output;
+    //output.open("ASGD_avg_classification_error_"+std::to_string(numSets+1)+".csv");
+    //if (output.fail()) {
+    //  std::cout << "failed to create .csv file!" << std::endl;
+    //}
+    //else {
+    //  for (size_t i = 0; i < avgErrorsFolds.getSize(); i++) {
+    //    output << avgErrorsFolds.get(i) << ";" << std::endl;
+    //  }
+    //  output.close();
+    //}
   }
   // avgError = avgError / static_cast<double>(totalSets);
   // std::cout << "Average accuracy on test data: " << (1.0 - avgError) <<
   // std::endl;
+  ///
+
 }

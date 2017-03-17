@@ -96,10 +96,11 @@ class Scorer {
   /**
    * Helper method to generate an ordering for the samples of the dataset based on the shuffling
    * functor.
+   * @param data: Dataset to be permuted.
    * @param randomizedIndices: vector with the same size as the dataset. Will be initialized with
    * contiguous values (0 -> vector.size()) and permuted in place
    */
-  void randomizeIndices(std::vector<size_t>& randomizedIndices);
+  void randomizeIndices(const Dataset& data, std::vector<size_t>& randomizedIndices);
 
   /**
    * Split dataset into testing and training set.
