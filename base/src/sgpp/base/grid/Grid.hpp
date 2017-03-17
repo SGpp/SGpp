@@ -6,9 +6,9 @@
 #ifndef GRID_HPP
 #define GRID_HPP
 
+#include <sgpp/base/grid/generation/GridGenerator.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
-#include <sgpp/base/grid/generation/GridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -112,7 +112,13 @@ class Grid {
   static Grid* createGrid(RegularGridConfiguration gridConfig);
 
   /**
-   * creates a stencil for a linear grid without boundaries
+   * creates a stencil for a linear grid (without boundaries)
+   *
+   * <table border="0"><tr>
+   * <td><div class="image">
+   * <img src="createLinearGridStencil_C2J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid</div></div></td>
+   * </tr></table>
    *
    * @param dim the grid's dimension
    * @return grid
@@ -122,13 +128,27 @@ class Grid {
   /**
    * creates a stencil for a modified linear grid (without boundaries)
    *
+   * <table border="0"><tr>
+   * <td><div class="image">
+   * <img src="createModLinearGridStencil_C2J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid</div></div></td>
+   * </tr></table>
+   *
    * @param dim the grid's dimension
    * @return grid
    */
   static Grid* createModLinearGridStencil(size_t dim);
 
   /**
-   * creates a linear grid without boundaries
+   * Creates and returns a grid without grid points on the boundary (zero boundary conditions) with
+   * piecewise linear basis functions
+   *
+   * <table border="0"><tr>
+   * <td>\image html createLinearGrid_C2J-small.png "Level
+   * 4 sparse grid"</td>
+   * <td>\image html hiba_createLinearGrid_C2J-small.png "Hierarchical
+   * basis functions up to level 3"</td>
+   * </tr></table>
    *
    * @param dim the grid's dimension
    * @return grid
@@ -138,6 +158,15 @@ class Grid {
   /**
    * creates a linear stretched grid without boundaries
    *
+   * <table border="0"><tr>
+   * <td><div class="image">
+   * <img src="createLinearStretchedGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid</div></div></td>
+   * <td><div class="image">
+   * <img src="hiba_createLinearStretchedGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Hierarchical basis functions up to level 3</div></div></td>
+   * </tr></table>
+   *
    * @param dim the grid's dimension
    * @return grid
    */
@@ -145,6 +174,20 @@ class Grid {
 
   /**
    * creates a linear boundary grid
+   *
+    <table border="0"><tr>
+   * <td><div class="image">
+   * <img src="createLinearBoundaryGrid_C2,_0J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid with boundaryLevel = 0</div></div></td>
+   * <td><div class="image">
+   * <img src="createLinearBoundaryGrid_C2,_1J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid with boundaryLevel = 1</div></div></td>
+   * <td><div class="image">
+   * <img src="createLinearBoundaryGrid_C2,_2J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid with boundaryLevel = 2</div></div></td>
+   * <td><div class="image"><img src="hiba_createLinearGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Hierarchical basis functions up to level 3</div></div></td>
+   * </tr></table>
    *
    * @param dim the grid's dimension
    * @param boundaryLevel on which level the boundary grid points and
@@ -159,6 +202,15 @@ class Grid {
   /**
    * creates a linearstretched truncated boundary grid
    *
+   * <table border="0"><tr>
+   * <td><div class="image">
+   * <img src="createLinearStretchedBoundaryGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid</div></div></td>
+   * <td><div class="image">
+   * <img src="hiba_createLinearStretchedBoundaryGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Hierarchical basis functions up to level 3</div></div></td>
+   * </tr></table>
+   *
    * @param dim the grid's dimension
    */
   static Grid* createLinearStretchedBoundaryGrid(size_t dim);
@@ -166,13 +218,31 @@ class Grid {
   /**
    * creates a linear Clenshaw-Curtis grid
    *
+   * <table border="0"><tr>
+   * <td><div class="image">
+   * <img src="createLinearClenshawCurtisGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid</div></div></td>
+   * <td><div class="image">
+   * <img src="hiba_createLinearClenshawCurtisGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Hierarchical basis functions up to level 3</div></div></td>
+   * </tr></table>
+   *
    * @param dim the grid's dimension
    * @return grid
    */
   static Grid* createLinearClenshawCurtisGrid(size_t dim);
 
   /**
-   * creates a mod linear grid
+   * creates a modified linear grid
+   *
+   * <table border="0"><tr>
+   * <td><div class="image">
+   * <img src="createModLinearGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid</div></div></td>
+   * <td><div class="image">
+   * <img src="hiba_createModLinearGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Hierarchical basis functions up to level 3</div></div></td>
+   * </tr></table>
    *
    * @param dim the grid's dimension
    * @return grid
@@ -181,6 +251,15 @@ class Grid {
 
   /**
    * creates a polynomial grid
+   *
+   * <table border="0"><tr>
+   * <td><div class="image">
+   * <img src="createPolyGrid_C2,_3J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid</div></div></td>
+   * <td><div class="image">
+   * <img src="hiba_createPolyGrid_C2,_3J-small.png" height="200px"/>
+   * <div class="caption">Hierarchical basis functions up to level 3</div></div></td>
+   * </tr></table>
    *
    * @param dim the grid's dimension
    * @param degree the polynom's max. degree
@@ -191,6 +270,15 @@ class Grid {
   /**
    * creates a polynomial grid with truncated boundary
    *
+   * <table border="0"><tr>
+   * <td><div class="image">
+   * <img src="createPolyBoundaryGrid_C2,_3J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid</div></div></td>
+   * <td><div class="image">
+   * <img src="hiba_createPolyBoundaryGrid_C2,_3J-small.png" height="200px"/>
+   * <div class="caption">Hierarchical basis functions up to level 3</div></div></td>
+   * </tr></table>
+   *
    * @param dim the grid's dimension
    * @param degree the polynom's max. degree
    * @return grid
@@ -198,7 +286,16 @@ class Grid {
   static Grid* createPolyBoundaryGrid(size_t dim, size_t degree);
 
   /**
-   * creates a poly grid
+   * creates a modified polynomial grid
+   *
+   * <table border="0"><tr>
+   * <td><div class="image">
+   * <img src="createModPolyGrid_C2,_3J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid</div></div></td>
+   * <td><div class="image">
+   * <img src="hiba_createModPolyGrid_C2,_3J-small.png" height="200px"/>
+   * <div class="caption">Hierarchical basis functions up to level 3</div></div></td>
+   * </tr></table>
    *
    * @param dim the grid's dimension
    * @param degree the polynom's max. degree
@@ -209,6 +306,15 @@ class Grid {
   /**
    * creates a wavelet grid
    *
+   * <table border="0"><tr>
+   * <td><div class="image">
+   * <img src="createWaveletGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid</div></div></td>
+   * <td><div class="image">
+   * <img src="hiba_createWaveletGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Hierarchical basis functions up to level 3</div></div></td>
+   * </tr></table>
+   *
    * @param dim the grid's dimension
    * @return grid
    */
@@ -217,12 +323,30 @@ class Grid {
   /**
    * creates a wavelet trapezoid boundary grid
    *
+   * <table border="0"><tr>
+   * <td><div class="image">
+   * <img src="createWaveletBoundaryGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid</div></div></td>
+   * <td><div class="image">
+   * <img src="hiba_createWaveletBoundaryGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Hierarchical basis functions up to level 3</div></div></td>
+   * </tr></table>
+   *
    * @param dim the grid's dimension
    */
   static Grid* createWaveletBoundaryGrid(size_t dim);
 
   /**
-   * creates a mod wavelet grid
+   * creates a modified wavelet grid
+   *
+   * <table border="0"><tr>
+   * <td><div class="image">
+   * <img src="createModWaveletGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid</div></div></td>
+   * <td><div class="image">
+   * <img src="hiba_createModWaveletGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Hierarchical basis functions up to level 3</div></div></td>
+   * </tr></table>
    *
    * @param dim the grid's dimension
    * @return grid
@@ -230,7 +354,16 @@ class Grid {
   static Grid* createModWaveletGrid(size_t dim);
 
   /**
-   * creates a Bspline grid
+   * creates a B-spline grid
+   *
+   * <table border="0"><tr>
+   * <td><div class="image">
+   * <img src="createBsplineGrid_C2,_3J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid</div></div></td>
+   * <td><div class="image">
+   * <img src="hiba_createBsplineGrid_C2,_3J-small.png" height="200px"/>
+   * <div class="caption">Hierarchical basis functions up to level 3</div></div></td>
+   * </tr></table>
    *
    * @param dim the grid's dimension
    * @param degree the B-spline degree
@@ -239,7 +372,16 @@ class Grid {
   static Grid* createBsplineGrid(size_t dim, size_t degree);
 
   /**
-   * creates a Bspline trapezoid boundary grid
+   * creates a B-spline trapezoid boundary grid
+   *
+   * <table border="0"><tr>
+   * <td><div class="image">
+   * <img src="createBsplineBoundaryGrid_C2,_3J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid</div></div></td>
+   * <td><div class="image">
+   * <img src="hiba_createBsplineBoundaryGrid_C2,_3J-small.png" height="200px"/>
+   * <div class="caption">Hierarchical basis functions up to level 3</div></div></td>
+   * </tr></table>
    *
    * @param dim the grid's dimension
    * @param degree the B-spline degree
@@ -248,7 +390,16 @@ class Grid {
   static Grid* createBsplineBoundaryGrid(size_t dim, size_t degree);
 
   /**
-   * creates a Bspline Clenshaw-Curtis grid
+   * creates a B-spline Clenshaw-Curtis grid
+   *
+   * <table border="0"><tr>
+   * <td><div class="image">
+   * <img src="createBsplineClenshawCurtisGrid_C2,_3J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid</div></div></td>
+   * <td><div class="image">
+   * <img src="hiba_createBsplineClenshawCurtisGrid_C2,_3J-small.png" height="200px"/>
+   * <div class="caption">Hierarchical basis functions up to level 3</div></div></td>
+   * </tr></table>
    *
    * @param dim the grid's dimension
    * @param degree the B-spline degree
@@ -257,7 +408,16 @@ class Grid {
   static Grid* createBsplineClenshawCurtisGrid(size_t dim, size_t degree);
 
   /**
-   * creates a mod-Bspline grid
+   * creates a modified B-spline grid
+   *
+   * <table border="0"><tr>
+   * <td><div class="image">
+   * <img src="createModBsplineGrid_C2,_3J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid</div></div></td>
+   * <td><div class="image">
+   * <img src="hiba_createModBsplineGrid_C2,_3J-small.png" height="200px"/>
+   * <div class="caption">Hierarchical basis functions up to level 3</div></div></td>
+   * </tr></table>
    *
    * @param dim the grid's dimension
    * @param degree the B-spline degree
@@ -266,7 +426,16 @@ class Grid {
   static Grid* createModBsplineGrid(size_t dim, size_t degree);
 
   /**
-   * creates a mod-Bspline Clenshaw-Curtis grid
+   * creates a modified B-spline Clenshaw-Curtis grid
+   *
+   * <table border="0"><tr>
+   * <td><div class="image">
+   * <img src="createModBsplineClenshawCurtisGrid_C2,_3J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid</div></div></td>
+   * <td><div class="image">
+   * <img src="hiba_createModBsplineClenshawCurtisGrid_C2,_3J-small.png" height="200px"/>
+   * <div class="caption">Hierarchical basis functions up to level 3</div></div></td>
+   * </tr></table>
    *
    * @param dim the grid's dimension
    * @param degree the B-spline degree
@@ -277,6 +446,15 @@ class Grid {
   /**
    * creates a fundamental spline grid
    *
+   * <table border="0"><tr>
+   * <td><div class="image">
+   * <img src="createFundamentalSplineGrid_C2,_3J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid</div></div></td>
+   * <td><div class="image">
+   * <img src="hiba_createFundamentalSplineGrid_C2,_3J-small.png" height="200px"/>
+   * <div class="caption">Hierarchical basis functions up to level 3</div></div></td>
+   * </tr></table>
+   *
    * @param dim the grid's dimension
    * @param degree the B-spline degree
    * @return grid
@@ -284,7 +462,16 @@ class Grid {
   static Grid* createFundamentalSplineGrid(size_t dim, size_t degree);
 
   /**
-   * creates a mod-fundamental spline grid
+   * creates a modified fundamental spline grid
+   *
+   * <table border="0"><tr>
+   * <td><div class="image">
+   * <img src="createModFundamentalSplineGrid_C2,_3J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid</div></div></td>
+   * <td><div class="image">
+   * <img src="hiba_createModFundamentalSplineGrid_C2,_3J-small.png" height="200px"/>
+   * <div class="caption">Hierarchical basis functions up to level 3</div></div></td>
+   * </tr></table>
    *
    * @param dim the grid's dimension
    * @param degree the B-spline degree
@@ -295,13 +482,31 @@ class Grid {
   /**
    * creates a prewavelet grid
    *
+   * <table border="0"><tr>
+   * <td><div class="image">
+   * <img src="createPrewaveletGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid</div></div></td>
+   * <td><div class="image">
+   * <img src="hiba_createPrewaveletGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Hierarchical basis functions up to level 3</div></div></td>
+   * </tr></table>
+   *
    * @param dim the grid's dimension
    * @return grid
    */
   static Grid* createPrewaveletGrid(size_t dim);
 
   /**
-   * creates a square root grid(h-grid)
+   * creates a square root grid (h-grid)
+   *
+   * <table border="0"><tr>
+   * <td><div class="image">
+   * <img src="createSquareRootGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid</div></div></td>
+   * <td><div class="image">
+   * <img src="hiba_createSquareRootGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Hierarchical basis functions up to level 3</div></div></td>
+   * </tr></table>
    *
    * @param dim the grid's dimension
    * @return grid
@@ -312,6 +517,15 @@ class Grid {
    * creates a truncated boundary grid=contains all the gridpoints of the fullgrids which have
    * \f$|l|<level and li>=l_user\f$
    *
+   * <table border="0"><tr>
+   * <td><div class="image">
+   * <img src="createLinearTruncatedBoundaryGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid</div></div></td>
+   * <td><div class="image">
+   * <img src="hiba_createLinearTruncatedBoundaryGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Hierarchical basis functions up to level 3</div></div></td>
+   * </tr></table>
+   *
    * @param dim the grid's dimension
    * @return grid
    */
@@ -319,6 +533,15 @@ class Grid {
 
   /**
    * creates a periodic grid
+   *
+   * <table border="0"><tr>
+   * <td><div class="image">
+   * <img src="createPeriodicGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Level 4 sparse grid</div></div></td>
+   * <td><div class="image">
+   * <img src="hiba_createPeriodicGrid_C2J-small.png" height="200px"/>
+   * <div class="caption">Hierarchical basis functions up to level 3</div></div></td>
+   * </tr></table>
    *
    * @param dim the grid's dimension
    * @return grid
