@@ -14,6 +14,7 @@
 namespace sgpp {
 namespace datadriven {
 
+//@cond DOXY_IGNORE
 namespace MortonOrderDetail {
 
 union ext_double_t{
@@ -87,6 +88,7 @@ void zorder(const sgpp::base::DataMatrix &data, std::vector<size_t> &perm) {
 }
 
 }  // namespace MortonOrderDetail
+//@endcond
 
 using namespace MortonOrderDetail;
 

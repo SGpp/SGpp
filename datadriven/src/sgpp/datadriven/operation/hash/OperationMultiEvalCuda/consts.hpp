@@ -6,6 +6,7 @@
 #ifndef __CONSTS_HPP
 #define __CONSTS_HPP
 
+//@cond DOXY_IGNORE
 namespace sgpp {
 namespace datadriven {
 namespace OpMultiEvalCudaDetail { 
@@ -68,5 +69,6 @@ const uint32_t _b[51][18] = {
 }  // namespace OpMultiEvalCudaDetail
 }  // namespace datadriven
 }  // namespace sgpp
+//@endcond
 
 #endif

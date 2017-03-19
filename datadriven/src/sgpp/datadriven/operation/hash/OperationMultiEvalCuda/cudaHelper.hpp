@@ -10,6 +10,7 @@
 #ifndef CUDA_ERROR_CHECK
 #define CUDA_ERROR_CHECK
 
+//@cond DOXY_IGNORE
 namespace sgpp {
 namespace datadriven {
 namespace OpMultiEvalCudaDetail {
@@ -166,6 +167,6 @@ class HostDevPtr {
 }  // namespace OpMultiEvalCudaDetail
 }  // namespace datadriven
 }  // namespace sgpp
-
+//@endcond
 
 #endif  // CUDA_ERROR_CHECK
