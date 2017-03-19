@@ -142,5 +142,10 @@ bool MortonOrder::isOrdered() const {
   return _isOrdered;
 }
 
+/// Access to the permutation vector
+const std::vector<size_t>& MortonOrder::getPermutation() const {
+  return permutation;
+}
+
 }  // namespace datadriven
 }  // namespace sgpp
