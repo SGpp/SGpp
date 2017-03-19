@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 
+//@cond DOXY_IGNORE
 namespace sgpp {
 namespace datadriven {
 namespace OpMultiEvalCudaDetail { 
@@ -44,5 +45,6 @@ typedef struct {
 }  // namespace OpMultiEvalCudaDetail
 }  // namespace datadriven
 }  // namespace sgpp
+//@endcond
 
 #endif  // BASICCUDA_HPP

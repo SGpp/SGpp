@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 
+//@cond DOXY_IGNORE
 namespace sgpp {
 namespace datadriven {
 namespace OpMultiEvalCudaDetail {
@@ -35,5 +36,6 @@ void transposedCuda(double* a, gridnode_t* node, double* pos, double* y,
 }  // namespace OpMultiEvalCudaDetail
 }  // namespace datadriven
 }  // namespace sgpp
+//@endcond
 
 #endif  // MULTIEVALKERNEL_HPP
