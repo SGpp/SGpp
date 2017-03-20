@@ -30,6 +30,7 @@ from pysgpp.extensions.datadriven.uq.plot.plot3d import plotSG3d, plotDensity3d
 from pysgpp.pysgpp_swig import GridType_PolyBoundary, \
     MakePositiveCandidateSearchAlgorithm_FullGrid, GridType_LinearClenshawCurtis, \
     MakePositiveCandidateSearchAlgorithm_IntersectionsJoin
+from pysgpp.extensions.datadriven.uq.dists.Normal import Normal
 
 
 # parameters
@@ -38,14 +39,14 @@ gridConfig = RegularGridConfiguration()
 gridConfig.type_ = GridType_Linear
 gridConfig.boundaryLevel_ = 0
 # issues with: d = 5, l = 3, ref = 4
-numDims = 3
-level = 3
+numDims = 6
+level = 4
 refnums = 0
 consistentGrid = False
 # candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_FullGrid
 # candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_Intersections
-# candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_IntersectionsJoin
-candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_HybridFullIntersections
+candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_IntersectionsJoin
+# candidateSearchAlgorithm = MakePositiveCandidateSearchAlgorithm_HybridFullIntersections
 # interpolationAlgorithm = MakePositiveInterpolationAlgorithm_InterpolateBoundaries1d
 interpolationAlgorithm = MakePositiveInterpolationAlgorithm_SetToZero
 plot = True
@@ -59,7 +60,8 @@ gridConfig.maxDegree_ = level + 1
 mu = np.ones(numDims) * 0.5
 cov = np.diag(np.ones(numDims) * 0.1 / 10.)
 
-dist = MultivariateNormal(mu, cov, 0, 1)  # problems in 3d/l2
+dist = J([Normal(0.5, 1. / 16., 0, 1)] * numDims)
+# dist = MultivariateNormal(mu, cov, 0, 1)  # problems in 3d/l2
 # dist = J([Beta(5, 4, 0, 1)] * numDims)  # problems in 5d/l3
 # dist = J([Lognormal(0.2, 0.7, 0, 1)] * numDims)  # problems in 5d/l3
 
@@ -115,7 +117,8 @@ for refnum in xrange(refnums):
 
 
 alpha = alpha.array()
-sgdeDist = SGDEdist(grid, alpha)
+sgdeDist = SGDEdist(grid, alpha,
+                    trainData=trainSamples, bounds=dist.getBounds())
 print "l=%i: (gs=%i) -> %g (%g, %g)," % (level,
                                          sgdeDist.grid.getSize(),
                                          dist.klDivergence(sgdeDist, testSamples),
@@ -204,7 +207,8 @@ if len(neg) > 0:
 #                                                      [gp.getIndex(d) for d in xrange(numDims)],
 #                                                      yi)
 
-sgdeDist = SGDEdist(grid, alpha)
+sgdeDist = SGDEdist(grid, alpha,
+                    trainData=trainSamples, bounds=dist.getBounds())
 print "-" * 80
 print "(gs=%i) -> %g (%g, %g)" % (sgdeDist.grid.getSize(),
                                   dist.klDivergence(sgdeDist, testSamples),
