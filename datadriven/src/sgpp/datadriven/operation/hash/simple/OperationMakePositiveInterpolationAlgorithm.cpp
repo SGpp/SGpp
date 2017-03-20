@@ -163,11 +163,12 @@ void OperationMakePositiveInterpolateFunction::computeHierarchicalCoefficients(
   auto opEval = std::unique_ptr<base::OperationEval>(op_factory::createOperationEvalNaive(grid));
   base::DataVector x(gridStorage.getDimension());
 
+  double yi = 0, fi = 0;
   for (auto& i : addedGridPoints) {
     gridStorage.getPoint(i).getStandardCoordinates(x);
-    double yi = opEval->eval(alpha, x);
+    yi = opEval->eval(alpha, x);
     if (yi < tol) {
-      alpha[i] = alpha[i] - yi + f->eval(x);
+      alpha[i] = alpha[i] - yi + std::abs(f->eval(x));
     } else {
       alpha[i] = 0.0;
     }
