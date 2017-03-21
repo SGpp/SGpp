@@ -24,7 +24,6 @@ OperationMatrixLTwoDotPolyBoundary::~OperationMatrixLTwoDotPolyBoundary() {}
 void OperationMatrixLTwoDotPolyBoundary::mult(sgpp::base::DataVector& alpha,
                                       sgpp::base::DataVector& result) {
   const size_t p = dynamic_cast<sgpp::base::PolyBoundaryGrid*>(grid)->getDegree();
-  // const double pp1hDbl = static_cast<double>(pp1h);
   const size_t quadOrder = p + 1;
   // clenshawCurtisPoint Method does not leave base const so we cast const'ness away
   base::SBasis& basis = const_cast<base::SBasis&>(grid->getBasis());
