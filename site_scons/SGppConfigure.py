@@ -373,10 +373,7 @@ def configureGNUCompiler(config):
   # check if using MinGW (g++ on win32)
   if config.env["PLATFORM"] == "win32":
     # disable warnings which occur when including Boost in the tests
-    # note that definition of hypot is necessary for to the current version of 
-    # mingw (6.3) and the python interface (see http://stackoverflow.com/questions/10660524/error-building-boost-1-49-0-with-gcc-4-7-0)
-    # -> could be removed in the future hopefully
-    config.env.Append(CPPFLAGS=["-Wno-switch-enum", "-Wno-deprecated-declarations", "-D_hypot=hypot"])
+    config.env.Append(CPPFLAGS=["-Wno-switch-enum", "-Wno-deprecated-declarations"])
     # also use "lib" prefix on MinGW for consistency with Linux (default is no prefix)
     config.env["SHLIBPREFIX"] = "lib"
 
