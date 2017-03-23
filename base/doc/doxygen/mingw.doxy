@@ -92,7 +92,7 @@ It is advisable to install the requirements in this order:
    1. Download <tt>mingw-w64-install.exe</tt> from the
       <a href="http://sourceforge.net/projects/mingw-w64/" target="_blank">
       MinGW-w64 SourceForge page</a>.
-   2. Run the installer and select the architecture @c x86_64.
+   2. Run the installer and select version at least 6.3.0 and the architecture @c x86_64.
    3. Prepend <tt>C:\\PATH_TO_MINGW\\bin</tt> to the <tt>PATH</tt>
       environment variable.
 3. Python:
@@ -118,7 +118,7 @@ It is advisable to install the requirements in this order:
       (selecting a version for amd64 is important).
    2. Run the installer, selecting the Python version you installed earlier.
 6. Boost.Test:
-   1. Download <tt>boost_1_59_0.7z</tt> or similar from the
+   1. Download <tt>boost_1_63_0.7z</tt> or similar (but at least version 1.63) from the
       <a href="http://www.boost.org/" target="_blank">Boost page</a>.
    2. Unpack the archive.
    3. Run the following in <tt>cmd.exe</tt>:
