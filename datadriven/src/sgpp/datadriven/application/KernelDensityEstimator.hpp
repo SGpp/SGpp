@@ -20,7 +20,7 @@ namespace datadriven {
 // --------------------------------------------------------------------------------
 enum class KernelType { GAUSSIAN, EPANECHNIKOV };
 
-enum class BandwidthOptimizationType { NONE, RULEOFTHUMB, MAXIMUMLIKELIHOOD };
+enum class BandwidthOptimizationType { NONE, SILVERMANSRULE, SCOTTSRULE, MAXIMUMLIKELIHOOD };
 
 #ifndef M_SQRT2PI
 #define M_SQRT2PI 2.506628274631000241612355239340 /* sqrt(2*pi) */
@@ -66,16 +66,17 @@ class EpanechnikovKernel : public Kernel {
 
 class KernelDensityEstimator : public DensityEstimator {
  public:
-  explicit KernelDensityEstimator(
-      KernelType kernelType = KernelType::GAUSSIAN,
-      BandwidthOptimizationType bandwidthOptimizationType = BandwidthOptimizationType::RULEOFTHUMB);
-  explicit KernelDensityEstimator(
-      std::vector<std::shared_ptr<base::DataVector>>& samplesVec,
-      KernelType kernelType = KernelType::GAUSSIAN,
-      BandwidthOptimizationType bandwidthOptimizationType = BandwidthOptimizationType::RULEOFTHUMB);
-  explicit KernelDensityEstimator(
-      base::DataMatrix& samples, KernelType kernelType = KernelType::GAUSSIAN,
-      BandwidthOptimizationType bandwidthOptimizationType = BandwidthOptimizationType::RULEOFTHUMB);
+  explicit KernelDensityEstimator(KernelType kernelType = KernelType::GAUSSIAN,
+                                  BandwidthOptimizationType bandwidthOptimizationType =
+                                      BandwidthOptimizationType::SILVERMANSRULE);
+  explicit KernelDensityEstimator(std::vector<std::shared_ptr<base::DataVector>>& samplesVec,
+                                  KernelType kernelType = KernelType::GAUSSIAN,
+                                  BandwidthOptimizationType bandwidthOptimizationType =
+                                      BandwidthOptimizationType::SILVERMANSRULE);
+  explicit KernelDensityEstimator(base::DataMatrix& samples,
+                                  KernelType kernelType = KernelType::GAUSSIAN,
+                                  BandwidthOptimizationType bandwidthOptimizationType =
+                                      BandwidthOptimizationType::SILVERMANSRULE);
   KernelDensityEstimator(const KernelDensityEstimator& kde);
 
   virtual ~KernelDensityEstimator();
@@ -171,20 +172,26 @@ class KDEMaximumLikelihoodCrossValidation : public sgpp::optimization::ScalarFun
 
 class RuleOfThumb {
  public:
-  virtual ~RuleOfThumb();
-  static void optimizeBandwidths(KernelDensityEstimator* kde, base::DataVector& bandwidths);
-
- private:
   static double getSampleMean(base::DataVector& data);
   static double getSampleVariance(base::DataVector& data);
   static double getSampleStd(base::DataVector& data);
 };
 
-class MaximumLikelihoodCrossValidation {
+class SilvermansRule {
  public:
-  virtual ~MaximumLikelihoodCrossValidation();
   static void optimizeBandwidths(KernelDensityEstimator* kde, base::DataVector& bandwidths);
 };
+
+class ScottsRule {
+ public:
+  static void optimizeBandwidths(KernelDensityEstimator* kde, base::DataVector& bandwidths);
+};
+
+class MaximumLikelihoodCrossValidation {
+ public:
+  static void optimizeBandwidths(KernelDensityEstimator* kde, base::DataVector& bandwidths);
+};
+// --------------------------------------------------------------------------------
 
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -125,7 +125,10 @@ def plotLogLikelihood(densities, functionName, out=False):
         plt.show()
 
 
-def plotpvalueofChi2IndependenceTest(densities, functionName, out=False):
+def plotpvalueofChi2IndependenceTest(densities,
+                                     functionName,
+                                     c=0.0,
+                                     out=False):
     numDensities = len(densities)
     numIterations = 0
     for i, (setting, stats) in enumerate(densities.items()):
@@ -162,7 +165,6 @@ def plotpvalueofChi2IndependenceTest(densities, functionName, out=False):
             bins = np.linspace(0, 1, 10)
             samples = values["samples"]["shuffled"]["uniform_validation"]
             inner_samples = np.array([])
-            c = 0.25
             for sample in samples:
                 if c < sample[0] < 1 - c and c < sample[1] < 1 - c:
                     inner_samples = np.append(inner_samples, sample)
@@ -184,7 +186,6 @@ def plotpvalueofChi2IndependenceTest(densities, functionName, out=False):
 
             samples = values["samples"]["not_shuffled"]["uniform_validation"]
             inner_samples = np.array([])
-            c = 0.25
             for sample in samples:
                 if c < sample[0] < 1 - c and c < sample[1] < 1 - c:
                     inner_samples = np.append(inner_samples, sample)
@@ -212,22 +213,23 @@ def plotpvalueofChi2IndependenceTest(densities, functionName, out=False):
             data[j, 2 * i + 1] = pvalue_not_shuffled
 
     pos = np.arange(0, len(names))
-    fig = plt.figure(figsize=(17, 6.5))
+    fig = plt.figure(figsize=(17, 5))
     plt.violinplot(data, pos, points=60, widths=0.7, showmeans=True,
                    showextrema=True, showmedians=True, bw_method=0.5)
     plt.xticks(pos, names)
     plt.ylabel("$p$-value")
 
     if "moons" in functionName:
-        plt.title("Two moons: \n $\chi^2$ test",
+        plt.title("$\chi^2$ test",
                   fontproperties=load_font_properties())
     else:
-        plt.title("Multivariate Beta: \n $\chi^2$ test",
+        plt.title("$\chi^2$ test",
                   fontproperties=load_font_properties())
 
     if out:
         savefig(fig,
-                os.path.join("plots", "chi_squared_%s" % functionName),
+                os.path.join("plots", "chi_squared_%s_c%i" % (functionName, 
+                                                              np.round(c * 100))),
                 tikz=True)
         plt.close(fig)
     else:
@@ -275,17 +277,17 @@ def plotpvalueofKolmogorovSmirnovTest(densities, functionName, out=False):
             data[j, 2 * i + 1] = pvalues_not_shuffled.mean()
 
     pos = np.arange(0, len(names))
-    fig = plt.figure(figsize=(17, 6.5))
+    fig = plt.figure(figsize=(17, 5))
     plt.violinplot(data, pos, points=60, widths=0.7, showmeans=True,
                    showextrema=True, showmedians=True, bw_method=0.5)
     plt.xticks(pos, names)
     plt.ylabel("$p$-value")
 
     if "moons" in functionName:
-        plt.title("Two moons: \n Kolmogorov-Smirnov test",
+        plt.title("Kolmogorov-Smirnov test",
                   fontproperties=load_font_properties())
     else:
-        plt.title("Multivariate Beta: \n Kolmogorov-Smirnov test",
+        plt.title("Kolmogorov-Smirnov test",
                   fontproperties=load_font_properties())
 
     if out:
@@ -413,7 +415,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     densities = loadDensities(args.function)
-    plotpvalueofChi2IndependenceTest(densities, args.function, args.out)
+    plotpvalueofChi2IndependenceTest(densities, args.function, c=0.0, out=args.out)
+    plotpvalueofChi2IndependenceTest(densities, args.function, c=0.25, out=args.out)
 #     plotLogLikelihood(densities, args.function, args.out)
     plotpvalueofKolmogorovSmirnovTest(densities, args.function, args.out)
 #     plotDensities(densities, args.function, out=args.out)

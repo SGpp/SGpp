@@ -5,13 +5,13 @@ from pysgpp import (DataVector, DataMatrix, KernelDensityEstimator,
                     KernelType_GAUSSIAN,
                     createOperationRosenblattTransformationKDE,
                     createOperationInverseRosenblattTransformationKDE,
-                    BandwidthOptimizationType_RULEOFTHUMB,
                     KernelType_EPANECHNIKOV)
 from pysgpp.extensions.datadriven.uq.operations.general import isNumerical, isList, isMatrix
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
 from EstimatedDist import EstimatedDist
 from pysgpp.pysgpp_swig import BandwidthOptimizationType_NONE, \
-    BandwidthOptimizationType_MAXIMUMLIKELIHOOD
+    BandwidthOptimizationType_MAXIMUMLIKELIHOOD, \
+    BandwidthOptimizationType_SILVERMANSRULE
 
 
 
@@ -25,7 +25,7 @@ class KDEDist(EstimatedDist):
                  kde=None,
                  kernelType=KernelType_GAUSSIAN,
                  bandwidhts=None,
-                 bandwidthOptimizationType=BandwidthOptimizationType_RULEOFTHUMB,
+                 bandwidthOptimizationType=BandwidthOptimizationType_SILVERMANSRULE,
                  bounds=None):
         super(KDEDist, self).__init__(trainData.shape[1], trainData, bounds)
 
@@ -33,12 +33,16 @@ class KDEDist(EstimatedDist):
         if kde is not None:
             self.dist = kde
         elif bandwidhts is not None:
-            self.dist = KernelDensityEstimator(trainData_matrix, kernelType, BandwidthOptimizationType_NONE)
+            self.dist = KernelDensityEstimator(trainData_matrix,
+                                               kernelType,
+                                               BandwidthOptimizationType_NONE)
             bandwidhts_vec = DataVector(bandwidhts)
             self.dist.setBandwidths(bandwidhts_vec)
         else:
             # # just learn the kernel density
-            self.dist = KernelDensityEstimator(trainData_matrix, kernelType, bandwidthOptimizationType)
+            self.dist = KernelDensityEstimator(trainData_matrix,
+                                               kernelType,
+                                               bandwidthOptimizationType)
 
 
     def pdf(self, x):
