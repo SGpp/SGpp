@@ -609,10 +609,10 @@ class KraichnanOrszagTest(object):
             uqManager.uqSetting.writeToFile()
 
 
-def run_kraichnanOrszag_mc(setting, qoi,
+def run_kraichnanOrszag_mc(setting, qoi, numSamples,
                            out, plot):
     testSetting = KraichnanOrszagTest(setting, qoi)
-    testSetting.run_mc(out=out, plot=plot)
+    testSetting.run_mc(N=numSamples, out=out, plot=plot)
 
 def run_kraichnanOrszag_pce(sampler, expansion, maxNumSamples,
                             setting, qoi,
@@ -680,5 +680,6 @@ if __name__ == "__main__":
     else:
         run_kraichnanOrszag_mc(args.setting,
                                args.qoi,
+                               args.maxSamples,
                                args.out,
                                args.plot)
