@@ -254,6 +254,7 @@ class KraichnanOrszagTest(object):
                .withStartTime(self.t0)\
                .withTimestep(self.dt)\
                .withEndTime(self.tn)\
+	       .saveAfterEachRun(2200)\
                .verbose()
         if filename is not None:
             builder.fromFile(filename)
@@ -294,7 +295,7 @@ class KraichnanOrszagTest(object):
             filename = os.path.join(self.pathResults,
                                     "%s-qoi%s_%s.pkl" % (self.radix,
                                                          self.qoi,
-                                                         label))
+                                                         "mc"))
             fd = open(filename, "w")
             pkl.dump({'surrogate': 'mc',
                       'num_dims': self.numDims,
