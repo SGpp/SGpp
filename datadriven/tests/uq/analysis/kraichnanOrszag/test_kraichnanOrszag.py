@@ -160,6 +160,9 @@ class KraichnanOrszagTest(object):
 
         class KraichnanOrszagPreprocessor(Transformation):
 
+            def __init__(self, c_y2):
+                self.c_y2 = c_y2
+
             def unitToProbabilistic(self, p, *args, **kws):
                 y1, y2, y3 = p
                 return (y1, self.c_y2 * y2, y3)
@@ -180,7 +183,7 @@ class KraichnanOrszagTest(object):
                   lambda y, _:-y[1] * y[2],
                   lambda y, _:-y[0] * y[0] + y[1] * y[1]]
 
-        self.preprocessor = KraichnanOrszagPreprocessor()
+        self.preprocessor = KraichnanOrszagPreprocessor(self.c_y2)
         self.simulation = simulation
         self.postprocessor = postprocessor
 
