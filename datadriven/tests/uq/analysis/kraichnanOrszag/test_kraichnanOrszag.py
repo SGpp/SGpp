@@ -116,14 +116,17 @@ class KraichnanOrszagTest(object):
             up.new().isCalled('y1').withUniformDistribution(-1, 1).hasValue(1.0)
             up.new().isCalled('y2').withUniformDistribution(-1, 1)
             up.new().isCalled('y3').withUniformDistribution(-1, 1).hasValue(0.0)
+            self.c_y2 = 0.1
         elif setting == 2:
             up.new().isCalled('y1').withUniformDistribution(-1, 1).hasValue(1.0)
             up.new().isCalled('y2').withUniformDistribution(-1, 1)
             up.new().isCalled('y3').withUniformDistribution(-1, 1)
+            self.c_y2 = 0.1
         elif setting == 3:
             up.new().isCalled('y1').withUniformDistribution(-1, 1)
             up.new().isCalled('y2').withUniformDistribution(-1, 1)
             up.new().isCalled('y3').withUniformDistribution(-1, 1)
+            self.c_y2 = 1.0
         else:
             raise AttributeError("setting '%i' is unknown" % setting)
 
@@ -159,11 +162,11 @@ class KraichnanOrszagTest(object):
 
             def unitToProbabilistic(self, p, *args, **kws):
                 y1, y2, y3 = p
-                return (y1, 0.1 * y2, y3)
+                return (y1, self.c_y2 * y2, y3)
 
             def probabilisticToUnit(self, q, *args, **kws):
                 y1, y2, y3 = q
-                return (y1, y2 * 10., y3)
+                return (y1, y2 / self.c_y2, y3)
 
         def postprocessor(res, **kws):
             return {'y1': res[:, 0], 'y2': res[:, 1], 'y3': res[:, 2]}
