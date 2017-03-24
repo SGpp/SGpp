@@ -40,6 +40,7 @@ from pysgpp.extensions.datadriven.uq.transformation.Transformation import Transf
 from pysgpp.extensions.datadriven.uq.plot.plot1d import plotNodal1d, \
     plotSurplusLevelWise, plotSG1d
 from pysgpp.extensions.datadriven.tools import writeDataARFF
+from pysgpp.extensions.datadriven.uq.estimators.MCEstimator import MCEstimator
 
 
 class KraichnanOrszagTest(object):
@@ -202,18 +203,6 @@ class KraichnanOrszagTest(object):
                 uqSetting.runSamples(samples)
             uqSetting.writeToFile()
 
-        res = uqSetting.getTimeDependentResults(self.toi, qoi=self.qoi)
-        self.E_ref = np.ndarray([len(self.toi)], dtype='float')
-        self.V_ref = np.ndarray([len(self.toi)], dtype='float')
-        self.refSize = np.ndarray([len(self.toi)], dtype='float')
-
-        for i, t in enumerate(self.toi):
-            # estimate moments
-            vals = res[t].values()
-            self.V_ref[i] = np.var(vals, ddof=1)
-            self.E_ref[i] = np.mean(vals)
-            self.refSize[i] = len(vals)
-
         def f(y, t):
             return [fi(y, t) for fi in self.f]
 
@@ -258,74 +247,66 @@ class KraichnanOrszagTest(object):
 
         return builder
 
-    def defineUQSetting(self, builder, filename):
-        builder.fromFile(filename)\
-               .withPreprocessor(self.preprocessor)\
+    def defineUQSetting(self, builder, filename=None):
+        builder.withPreprocessor(self.preprocessor)\
                .withSimulation(self.simulation)\
                .withPostprocessor(self.postprocessor)\
                .withStartTime(self.t0)\
                .withTimestep(self.dt)\
                .withEndTime(self.tn)\
                .verbose()
+        if filename is not None:
+            builder.fromFile(filename)
 
-    def run_mc(self, out, plot):
-        label = "mc"
-        results = {'surrogate': label,
-                   'sampling_strategy': 'latin_hypercube',
-                   'num_model_evaluations': self.uqSettings["ref"].getSize(),
-                   'time_steps': self.toi,
-                   'setting': self.setting,
-                   'num_dims': self.numDims,
-                   'qoi': self.qoi,
-                   'results': {}}
 
-        samples = self.uqSettings["ref"].getTimeDependentResults(self.toi, qoi=self.qoi)
+    def run_mc(self, N=10, out=False, plot=False):
+        # ----------------------------------------------------------
+        # dicretize the stochastic space with Monte Carlo
+        # ----------------------------------------------------------
+        np.random.seed(1234567)
+
+        print "-" * 60
+        print "Latin Hypercube Sampling"
+        print "-" * 60
+        mcSampler = MCSampler.withLatinHypercubeSampleGenerator(self.params, N)
+        mcUQSettingBuilder = UQBuilder()
+        self.defineUQSetting(mcUQSettingBuilder)
+        mcUQSetting = mcUQSettingBuilder.andGetResult()
+
+        # ----------------------------------------------------------
+        # Monte Carlo Estimator
+        # ----------------------------------------------------------
+        samples = mcSampler.nextSamples(N)
+        mcUQSetting.runSamples(samples)
+        samples = mcUQSetting.getTimeDependentResults(self.toi, qoi=self.qoi)
+
+        # split the results into chunk of Ni samples
+        num_samples = len(samples.itervalues().next())
         analysis = MCAnalysis(self.params, samples)
-        mc_mean, mc_var = analysis.mean(), analysis.var()
-#         mc_confidence_intervals = analysis.confidenceInterval()
+        analysis.setVerbose(False)
 
-        pathResults = os.path.join(self.pathResults, label)
-        for i, t in enumerate(self.toi):
-            # load results
-            A = np.ndarray((len(samples[t]), self.numDims + 1))
-            for j, (sample, value) in enumerate(samples[t].items()):
-                A[j, :-1] = sample.getActiveProbabilistic()
-                A[j, -1] = value
-
-            print "-" * 80
-            print "plot: t=%g (i=%i), N=%i" % (t, i, A.shape[0])
-
-            if out and plot:
-                if self.numDims < 3:
-                    if self.numDims == 1:
-                        fig = plt.figure()
-                        plotNodal1d(A)
-                    elif self.numDims == 2:
-                        fig, _ = plotNodal3d(A)
-
-                    fig.savefig(os.path.join(pathResults, "nodal_t%g.png" % t))
-                    plt.close(fig)
-
-                # write nodal values to file
-                writeDataARFF({"filename": os.path.join(pathResults, "nodal_t%g.arff" % t),
-                               "names": self.params.activeParams().getNames() + ["value"],
-                               "data": DataMatrix(A)})
-
-            results["results"][t] = {}
-            results["results"][t]["num_model_evaluations"] = A.shape[0]
-            results["results"][t]["mean_estimated"] = mc_mean[t]["value"]
-            results["results"][t]["var_estimated"] = mc_var[t]["value"]
-#             results["results"][t]["confidence_interval"] = mc_confidence_intervals[t][0]
-        # --------------------------------------------
+        stats = {"num_model_evaluations": num_samples,
+                 "mean_estimated": analysis.mean(),
+                 "var_estimated": analysis.var()}
 
         if out:
             # store results
             filename = os.path.join(self.pathResults,
-                                    "%s-qoi%s_%s.pkl" % (self.radix, self.qoi,
+                                    "%s-qoi%s_%s.pkl" % (self.radix,
+                                                         self.qoi,
                                                          label))
             fd = open(filename, "w")
-            pkl.dump(results, fd)
+            pkl.dump({'surrogate': 'mc',
+                      'num_dims': self.numDims,
+                      'sampling_strategy': "latin_hypercube",
+                      'num_model_evaluations': num_samples,
+                      'time_steps': self.toi,
+                      'setting': self.setting,
+                      'qoi': self.qoi,
+                      'results': stats},
+                     fd)
             fd.close()
+
 
     def runAnalysis(self, analysis, uqManager, alabel, blabel,
                     out, plot, results):
