@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 
 from pysgpp.extensions.datadriven.uq.helper import sortPermutations
 from argparse import ArgumentParser
-from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend
+from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend, \
+    load_color, load_marker
 
 
 def get_key_pce(expansion, sampling_strategy, N):
@@ -19,13 +20,35 @@ def get_key_sg(gridType, maxGridSize, refinement, isFull):
 def get_key_mc(sampling_strategy, N):
     return (sampling_strategy, N)
 
+
+def parse_monte_carlo_results(results):
+    key = get_key_mc(sampling_strategy, numSamples)
+    time_steps = results["mc"][key]["time_steps"]
+    res = {}
+    for t in np.sort(time_steps):
+        res[t] = {}
+        for key_value in ["mean", "var"]:
+            key_error = "%s_error" % key_value
+            values = results["mc"][key]["results"]["%s_estimated" % key_value][t]
+
+            res[t][key_value] = values["value"]
+            res[t][key_error] = values["confidence_interval"]
+
+    return res
+
+
 def load_results(inputspace, setting, qoi, path="results"):
     ans = {"pce": {},
            "sg": {},
            "mc": {}}
     for root, dirs, files in os.walk(os.path.join(path, inputspace)):
         for filename in files:
-            if "pkl" in filename:
+            if "pkl" in filename and\
+                    "mc" in filename and\
+                    "qoi%s" % qoi in filename and\
+                    "s%i" % setting in filename:
+                print "-" * 80
+                print "load %s -> " % filename,
                 path = os.path.join(root, filename)
                 fd = open(path, "r")
                 currentStats = pkl.load(fd)
@@ -49,10 +72,18 @@ def load_results(inputspace, setting, qoi, path="results"):
                                          currentStats["num_model_evaluations"])
                         ans["mc"][key] = currentStats
 
-                    print "-" * 80
-                    print "loaded '%s'" % (key,)
-
+                    print key
+                else:
+                    print currentStats["qoi"], "==", qoi, ", ", currentStats["setting"], "==", setting
     return ans
+
+
+def plotMCResults(ts, values, err, color, marker, label):
+    plt.plot(ts, values, label=label, marker=marker, color=color)
+    plt.fill_between(ts, values, err[:, 0],
+                     facecolor=color, alpha=0.2)
+    plt.fill_between(ts, err[:, 1], values,
+                     facecolor=color, alpha=0.2)
 
 
 settings = {1: {'mc': [('latin_hypercube', 2000)],
@@ -69,7 +100,7 @@ settings = {1: {'mc': [('latin_hypercube', 2000)],
                        ],
                 'pce': [("full_tensor", 'gauss', 4000),
                         ('total_degree', 'gauss_leja', 4000)]},
-            3: {'mc': [('latin_hypercube', 2000)],
+            3: {'mc': [('latin_hypercube', 100000)],
                 'sg': [
                        (8, 1505, None, False),
                        (8, 1164, 'simple', False)
@@ -92,21 +123,25 @@ if __name__ == "__main__":
         mc_settings = settings[args.setting]["mc"]
         pce_settings = settings[args.setting]["pce"]
         sg_settings = settings[args.setting]["sg"]
-        plt.figure()
 
         # plot mc results to compare
+        fig = plt.figure()
         for sampling_strategy, numSamples in mc_settings:
-            key = get_key_mc(sampling_strategy, numSamples)
-            res = {'t': np.array([]),
-                   error_type: np.array([])}
-            for t, values in results["mc"][key]["results"].items():
-                res['t'] = np.append(res["t"], t)
-                res[error_type] = np.append(res[error_type], values["%s_estimated" % error_type])
+            res = parse_monte_carlo_results(results)
+            time_steps = np.array(res.keys())
+            ixs = np.argsort(time_steps)
+            values = np.ndarray(time_steps.shape)
+            err = np.ndarray((time_steps.size, 2))
+            for i, t in enumerate(time_steps[ixs]):
+                values[i] = res[t][error_type]
+                err[i, :] = res[t]["%s_error" % error_type]
 
-            ixs = np.argsort(res["t"])
-            plt.plot(res['t'][ixs], res[error_type][ixs], "-",
-                     linewidth=2,
-                     label="mc (N=%i)" % (numSamples,))
+            plotMCResults(time_steps[ixs],
+                          values,
+                          err,
+                          color=load_color(0),
+                          marker=load_marker(0),
+                          label=r"MC (M=$10^5$)")
 
 #         if args.surrogate in ["pce", "both"]:
 #             for expansion, sampling_strategy, N in pce_settings:
@@ -121,21 +156,20 @@ if __name__ == "__main__":
 #                 plt.loglog(num_evals[ixs], errors[ixs], "o-",
 #                            label=("pce (%s, %s)" % (expansion, sampling_strategy)).replace("_", " "))
 
-        if args.surrogate in ["sg", "both"]:
-            for gridType, maxGridSize, refinement, isFull in sg_settings:
-                key = get_key_sg(gridType, maxGridSize, refinement, isFull)
-                res = {'t': np.array([]),
-                       error_type: np.array([])}
-                for t, values in results["sg"][key]["results"].items():
-                    res['t'] = np.append(res["t"], t)
-                    res[error_type] = np.append(res[error_type], values.values()[-1]["%s_estimated" % error_type])
-
-                ixs = np.argsort(res["t"])
-                plt.plot(res['t'][ixs], res[error_type][ixs], "-",
-                         linewidth=2,
-                         label=("sg (%s, %s)" % (gridType, refinement)).replace("_", " "))
+#         if args.surrogate in ["sg", "both"]:
+#             for gridType, maxGridSize, refinement, isFull in sg_settings:
+#                 key = get_key_sg(gridType, maxGridSize, refinement, isFull)
+#                 res = {'t': np.array([]),
+#                        error_type: np.array([])}
+#                 for t, values in results["sg"][key]["results"].items():
+#                     res['t'] = np.append(res["t"], t)
+#                     res[error_type] = np.append(res[error_type], values.values()[-1]["%s_estimated" % error_type])
+#
+#                 ixs = np.argsort(res["t"])
+#                 plt.plot(res['t'][ixs], res[error_type][ixs], "-",
+#                          linewidth=2,
+#                          label=("sg (%s, %s)" % (gridType, refinement)).replace("_", " "))
 
         plt.title(error_type.replace("_", " "))
         lgd = insert_legend(fig, loc="bottom", ncol=2)
-
-    plt.show()
+        plt.show()
