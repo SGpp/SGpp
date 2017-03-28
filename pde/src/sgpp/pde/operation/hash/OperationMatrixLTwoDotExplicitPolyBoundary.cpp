@@ -54,31 +54,42 @@ void OperationMatrixLTwoDotExplicitPolyBoundary::buildMatrix(sgpp::base::Grid* g
         const base::level_t ljk = storage[j].getLevel(k);
         const base::index_t iik = storage[i].getIndex(k);
         const base::index_t ijk = storage[j].getIndex(k);
-        double left_i;
-        double right_i;
-        double left_j;
-        double right_j;
-        // correct boundary cases
-        // left i
-        if (iik == 0)
-          left_i = 0;
-        else
-          left_i = 1.0/(1 << lik) * (iik - 1);
-        // left j
-        if (ijk == 0)
-          left_j = 0;
-        else
-          left_j = 1.0/(1 << ljk) * (ijk - 1);
-        // right i
-        if (iik == static_cast<base::index_t>(1 << lik))
-          right_i = 1.0/(1 << lik) * iik;
-        else
-          right_i = 1.0/(1 << lik) * (iik + 1);
-        // right j
-        if (ijk == static_cast<base::index_t>(1 << ljk))
-          right_j = 1.0/(1 << ljk) * ijk;
-        else
-          right_j = 1.0/(1 << ljk) * (ijk + 1);
+        // double left_i;
+        // double right_i;
+        // double left_j;
+        // double right_j;
+        // // correct boundary cases
+        // // left i
+        // if (iik == 0)
+        //   left_i = 0;
+        // else
+        //   left_i = 1.0/(1 << lik) * (iik - 1);
+        // // left j
+        // if (ijk == 0)
+        //   left_j = 0;
+        // else
+        //   left_j = 1.0/(1 << ljk) * (ijk - 1);
+        // // right i
+        // if (iik == static_cast<base::index_t>(1 << lik))
+        //   right_i = 1.0/(1 << lik) * iik;
+        // else
+        //   right_i = 1.0/(1 << lik) * (iik + 1);
+        // // right j
+        // if (ijk == static_cast<base::index_t>(1 << ljk))
+        //   right_j = 1.0/(1 << ljk) * ijk;
+        // else
+        //   right_j = 1.0/(1 << ljk) * (ijk + 1);
+
+        const double left_i = (iik == 0) ? 0 : 1.0/(1 << lik) * (iik - 1);
+        const double right_i =
+          (iik ==  static_cast<base::index_t>(1 << lik))
+          ? 1.0/(1 << lik) * iik
+          : 1.0/(1 << lik) * (iik + 1);
+        const double left_j = (ijk == 0) ? 0 : 1.0/(1 << ljk) * (ijk - 1);
+        const double right_j =
+          (ijk ==  static_cast<base::index_t>(1 << ljk))
+          ? 1.0/(1 << ljk) * ijk
+          : 1.0/(1 << ljk) * (ijk + 1);
 
 
         if (left_j >= right_i || left_i >= right_j) {

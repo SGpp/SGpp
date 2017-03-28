@@ -21,7 +21,7 @@ namespace sgpp {
 namespace pde {
 
 OperationLaplacePoly::OperationLaplacePoly(sgpp::base::Grid* grid):
-		grid(grid) {}
+  grid(grid) {}
 
 OperationLaplacePoly::~OperationLaplacePoly() {}
 
