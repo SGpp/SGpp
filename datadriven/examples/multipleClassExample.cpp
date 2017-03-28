@@ -22,7 +22,8 @@
 #include <iomanip>
 #include <string>
 #include <vector>
-#include <sgpp/datadriven/application/MultipleClassPoint.hpp>
+
+#include "../../base/src/sgpp/base/tools/MultipleClassPoint.hpp"
 
 
 /**
@@ -54,7 +55,7 @@ std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
 
 int main() {
 
-    std::string filename2 = "../../datadriven/tests/data/mulitpleClassesTest.arff";
+    std::string filename2 = "../../datadriven/tests/data/mulitpleClassesTest2.arff";
     sgpp::datadriven::Dataset dataset =
             sgpp::datadriven::ARFFTools::readARFF(filename2);
     sgpp::base::DataMatrix dataTrain = dataset.getData();
@@ -104,19 +105,22 @@ int main() {
         learner.at(i).train(*grids2.at(i), *alphas2.at(i), dataCl.at(i), lambda);
     }
 
-    size_t numSteps = 3;
+    size_t numSteps = 5;
     std::vector<std::string> eval = doClassification(grids2, alphas2, dataTrain, targetTrain);
 
     std::cout << std::endl << "Start" << std::endl;
     size_t numRefinements = 3;
+    // amount of points refined in the single classes vs combined grid
+    // single classes: numRefinements - partCombined
+    // multigrid: partCombined
+    size_t partCombined = 0;
     bool levelPenalize = false;
     bool preCompute = false;
-    double thresh = 0.0;
+    double thresh = 0; // .001;
 
     sgpp::datadriven::MultipleClassRefinementFunctor mcrf(grids2, alphas2,
             numRefinements, levelPenalize, preCompute, thresh);
     sgpp::datadriven::MultiGridRefinementFunctor* multifun = &mcrf;
-    mcrf.printPointsPlott();
     std::cout << std::endl;
 
     std::cout << "Size: " << mcrf.getCombinedGrid()->getStorage().getSize() << std::endl;
@@ -127,18 +131,14 @@ int main() {
     std::cout << "------------------------------" << std::endl;
     std::cout << "   0   | " << eval.at(0) << " | " << eval.at(1) << std::endl;
     for ( size_t i = 1; i < numSteps + 1; i++ ) {
-        mcrf.refine();
-
+        mcrf.refine(partCombined);
+        std::cout << "refined: " << i << std::endl;
         // Re-train the grids. This has to happend AFTER all grids are refined
         for ( int i = 0 ; i < classes ; i++ ) {
             learner.at(i).train(*grids2.at(i), *alphas2.at(i), dataCl.at(i), lambda);
         }
-
-        mcrf.prepareGrid(grids2, alphas2);
         std::cout << std::endl;
         eval = doClassification(grids2, alphas2, dataTrain, targetTrain);
-        mcrf.printPointsPlott();
-        mcrf.printPointsInfo();
         std::cout << "   " << i << "   | " << eval.at(0) << " | " << eval.at(1)
              << std::endl;
     }

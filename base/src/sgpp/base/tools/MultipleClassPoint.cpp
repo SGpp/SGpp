@@ -3,10 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/tools/MultipleClassPoint.hpp>
+
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
-#include "MultipleClassPoint.hpp"
-
 #include <vector>
 #include <unordered_set>
 #include <cmath>
@@ -17,7 +17,7 @@
 #include <algorithm>
 
 namespace sgpp {
-namespace datadriven {
+namespace base {
 MultipleClassPoint::MultipleClassPoint(int classes) {
     // init all classes as 0.0
     for (int i = 0 ; i < classes ; i++) {
@@ -45,11 +45,7 @@ MultipleClassPoint::MultipleClassPoint(base::HashGridPoint& gp,
         classById.push_back(c1);
     }
 }
-/*
-MultipleClassPoint::~MultipleClassPoint() {
-    // TODO(degelkn): Auto-generated destructor stub
-}
-*/
+
 int MultipleClassPoint::getDominateClass() const {
     return std::get<1>(classByDensity.at(0));
 }
