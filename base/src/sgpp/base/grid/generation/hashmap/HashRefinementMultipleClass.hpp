@@ -5,40 +5,44 @@
  *      Author: katrin
  */
 
-#ifndef BASE_SRC_SGPP_BASE_GRID_GENERATION_HASHMAP_HASHREFINEMENTMULTIPLECLASS_HPP_
-#define BASE_SRC_SGPP_BASE_GRID_GENERATION_HASHMAP_HASHREFINEMENTMULTIPLECLASS_HPP_
+#ifndef HASHREFINEMENTMULTIPLECLASS_HPP
+#define HASHREFINEMENTMULTIPLECLASS_HPP
 
-#include "HashRefinement.hpp"
-#include <sgpp/datadriven/application/MultipleClassPoint.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-
+#include <iostream>
+#include <tuple>
+#include <cmath>
 #include <vector>
+#include <algorithm>
+#include <sgpp/base/tools/MultipleClassPoint.hpp>
+
 
 namespace sgpp {
 namespace base {
 
 class HashRefinementMultipleClass : public HashRefinement {
 public:
+    HashRefinementMultipleClass(Grid& grid,
+        std::vector<sgpp::base::MultipleClassPoint>& pts,
+        std::vector<Grid*>& classGrids);
 	virtual ~HashRefinementMultipleClass() {};
 	
-	void setCombineGridInfo(Grid* grid,
-	       std::vector<sgpp::datadriven::MultipleClassPoint> pts,
-	       std::vector<Grid*> grids);
 
 protected:
   void refineGridpointsCollection(
-    GridStorage& storage,
-    RefinementFunctor& functor,
-    AbstractRefinement::refinement_container_type& collection) override;
+        GridStorage& storage,
+        RefinementFunctor& functor,
+        AbstractRefinement::refinement_container_type& collection) override;
   void refineGridpoint(GridStorage& storage, size_t refine_index) override;
-  
+ 
   private:
-    std::vector<sgpp::datadriven::MultipleClassPoint> points;
-    Grid* multigrid;
-    std::vector<Grid*> grids;
+    std::vector<sgpp::base::MultipleClassPoint>& points;
+    Grid& multigrid;
+    std::vector<Grid*>& grids;
 };
 
 } /* namespace base */
 } /* namespace sgpp */
 
-#endif /* BASE_SRC_SGPP_BASE_GRID_GENERATION_HASHMAP_HASHREFINEMENTMULTIPLECLASS_HPP_ */
+#endif /* HASHREFINEMENTMULTIPLECLASS_HPP */

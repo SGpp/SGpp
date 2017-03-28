@@ -9,10 +9,10 @@
 #include "ZeroCrossingRefinementFunctor.hpp"
 
 
-#include <sgpp/datadriven/application/MultipleClassPoint.hpp>
 #include <vector>
 #include <tuple>
 #include <algorithm>
+#include <sgpp/base/tools/MultipleClassPoint.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -31,22 +31,20 @@ class MultipleClassRefinementFunctor: public ZeroCrossingRefinementFunctor {
 
   base::Grid* getCombinedGrid();
 
-  void prepareGrid(std::vector<base::Grid*> gridsNew,
-                     std::vector<base::DataVector*> alphasNew);
-
   void printPointsPlott();
   void printPointsInfo();
   void printScores();
   
-  void refine();
-  void refineCombinedGrid();
+  void refine(size_t partCombined);
 
  private:
-  std::vector<sgpp::datadriven::MultipleClassPoint> points;
+  std::vector<sgpp::base::MultipleClassPoint> points;
   base::Grid* multigrid;
   // print different scores
   mutable std::vector<std::string> scoresToPrint;
-  bool refineMulti;
+  bool refineMulti = false;
+
+  void prepareGrid();
 
   void findCrossings(size_t leftP, size_t rightP, size_t seq, size_t d);
   bool hasChild(const base::HashGridPoint& gp, size_t d, bool left) const;
