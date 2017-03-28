@@ -8,7 +8,7 @@
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/operation/hash/common/basis/ModPolyBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -21,7 +21,7 @@ namespace sgpp {
 namespace pde {
 
 OperationLaplaceModPoly::OperationLaplaceModPoly(sgpp::base::Grid* grid):
-		grid(grid) {}
+  grid(grid) {}
 
 OperationLaplaceModPoly::~OperationLaplaceModPoly() {}
 
@@ -31,7 +31,8 @@ void OperationLaplaceModPoly::mult(sgpp::base::DataVector& alpha,
   size_t gridDim = grid->getDimension();
   const size_t p = dynamic_cast<sgpp::base::ModPolyGrid*>(grid)->getDegree();
   const size_t quadOrder = p + 1;
-  sgpp::base::SModPolyBase& basis = dynamic_cast<sgpp::base::SModPolyBase&>(grid->getBasis());
+  sgpp::base::SPolyModifiedBase& basis
+    = dynamic_cast<sgpp::base::SPolyModifiedBase&>(grid->getBasis());
   sgpp::base::GridStorage& storage = grid->getStorage();
 
   sgpp::base::DataVector integrals1D(gridDim);
