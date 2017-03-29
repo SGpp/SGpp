@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from pysgpp.extensions.datadriven.uq.helper import sortPermutations
 from argparse import ArgumentParser
 from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend, \
-    load_color, load_marker
+    load_color, load_marker, savefig
 
 
 def get_key_pce(expansion, sampling_strategy, N):
@@ -37,15 +37,31 @@ def parse_monte_carlo_results(results):
     return res
 
 
+def parse_sg_results(gridType,
+                     maxGridSize,
+                     refinement,
+                     isFull,
+                     results):
+    key = get_key_sg(gridType, maxGridSize, refinement, isFull)
+    time_steps = results["sg"][key]["time_steps"]
+    for t in np.sort(time_steps):
+        res[t] = {}
+        for key_value in ["mean", "var"]:
+            values = results["sg"][key]["results"][t]
+            maxLevel = max(values.keys())
+            res[t][key_value] = values[maxLevel]["%s_estimated_per_iteration" % key_value][0]
+            res[t]["sobol_indices"] = values[maxLevel]["sobol_indices"]
+    return res
+
+
 def load_results(inputspace, setting, qoi, path="results"):
     ans = {"pce": {},
            "sg": {},
            "mc": {}}
     for root, dirs, files in os.walk(os.path.join(path, inputspace)):
         for filename in files:
-            if "pkl" in filename and\
-                    "mc" in filename and\
-                    "qoi%s" % qoi in filename and\
+            if "pkl" in filename and \
+                    "qoi%s" % qoi in filename and \
                     "s%i" % setting in filename:
                 print "-" * 80
                 print "load %s -> " % filename,
@@ -112,7 +128,7 @@ if __name__ == "__main__":
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
     parser.add_argument('--model', default="uniform", type=str, help="define which probabilistic model should be used")
     parser.add_argument('--surrogate', default="both", type=str, help="define which surrogate model should be used (sg, pce)")
-    parser.add_argument('--setting', default=1, type=int, help='parameter settign for test problem')
+    parser.add_argument('--setting', default=3, type=int, help='parameter settign for test problem')
     parser.add_argument('--qoi', default="y1", type=str, help="define the quantity of interest")
     args = parser.parse_args()
 
@@ -130,6 +146,9 @@ if __name__ == "__main__":
             res = parse_monte_carlo_results(results)
             time_steps = np.array(res.keys())
             ixs = np.argsort(time_steps)
+            time_steps = time_steps[ixs]
+            ixs = np.where(time_steps <= 6)[0]
+            time_steps = time_steps[ixs]
             values = np.ndarray(time_steps.shape)
             err = np.ndarray((time_steps.size, 2))
             for i, t in enumerate(time_steps[ixs]):
@@ -156,20 +175,40 @@ if __name__ == "__main__":
 #                 plt.loglog(num_evals[ixs], errors[ixs], "o-",
 #                            label=("pce (%s, %s)" % (expansion, sampling_strategy)).replace("_", " "))
 
-#         if args.surrogate in ["sg", "both"]:
-#             for gridType, maxGridSize, refinement, isFull in sg_settings:
-#                 key = get_key_sg(gridType, maxGridSize, refinement, isFull)
-#                 res = {'t': np.array([]),
-#                        error_type: np.array([])}
-#                 for t, values in results["sg"][key]["results"].items():
-#                     res['t'] = np.append(res["t"], t)
-#                     res[error_type] = np.append(res[error_type], values.values()[-1]["%s_estimated" % error_type])
-#
-#                 ixs = np.argsort(res["t"])
-#                 plt.plot(res['t'][ixs], res[error_type][ixs], "-",
-#                          linewidth=2,
-#                          label=("sg (%s, %s)" % (gridType, refinement)).replace("_", " "))
+        if args.surrogate in ["sg", "both"]:
+            for k, (gridType, maxGridSize, refinement, isFull) in enumerate(sg_settings):
+                res = parse_sg_results(gridType,
+                                       maxGridSize,
+                                       refinement,
+                                       isFull,
+                                       results)
+                time_steps = np.array(res.keys())
+                ixs = np.argsort(time_steps)
+                time_steps = time_steps[ixs]
+                ixs = np.where(time_steps <= 6)[0]
+                time_steps = time_steps[ixs]
+                values = np.ndarray(time_steps.shape)
+                err = np.ndarray((time_steps.size, 2))
+                for i, t in enumerate(time_steps):
+                    values[i] = res[t][error_type]
+                    err[i, :] = values[i]
+
+                if refinement is not None:
+                    label = r"SG ($N=%i$)" % (maxGridSize,)
+                else:
+                    label = r"aSG ($N=%i$)" % (maxGridSize,)
+
+                plotMCResults(time_steps,
+                              values,
+                              err,
+                              color=load_color(k + 1),
+                              marker=load_marker(k + 1),
+                              label=label)
 
         plt.title(error_type.replace("_", " "))
         lgd = insert_legend(fig, loc="bottom", ncol=2)
-        plt.show()
+        savefig(fig, "plots/kraichnan_orszag_%s_s%i_%s_%s" % (args.model,
+                                                              args.setting,
+                                                              args.qoi,
+                                                              error_type))
+        plt.close(fig)
