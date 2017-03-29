@@ -35,10 +35,13 @@ class NatafDist(EstimatedDist):
                                                  "samples": samples})
 
     @classmethod
-    def normal_marginals(cls, mean, stddev, covMatrix, bounds=None):
-        num_dims = covMatrix.shape[0]
-        corrMatrix = Dist().corrcoeff(covMatrix=covMatrix)
+    def normal_marginals(cls, mean, stddev,
+                         covMatrix=None, corrMatrix=None,
+                         bounds=None):
+        if corrMatrix is None:
+            corrMatrix = Dist().corrcoeff(covMatrix=covMatrix)
 
+        num_dims = corrMatrix.shape[0]
         nataf = NatafDensity()
         nataf.initialize_random_variable_types([GAUSSIAN] * num_dims)
         nataf.initialize_random_variable_parameters([mean] * num_dims,
@@ -48,15 +51,19 @@ class NatafDist(EstimatedDist):
         return cls(nataf, bounds=bounds, params={"name": "normal",
                                                  "mean": mean,
                                                  "stddev": stddev,
+                                                 "corrMatrix": corrMatrix,
                                                  "covMatrix": covMatrix})
 
     @classmethod
-    def gamma_marginals(cls, alpha, beta, covMatrix, bounds=None):
-        num_dims = covMatrix.shape[0]
+    def gamma_marginals(cls, alpha, beta,
+                        covMatrix=None, corrMatrix=None,
+                        bounds=None):
         mean = alpha * beta
         stddev = np.sqrt(alpha) * beta
-        corrMatrix = Dist().corrcoeff(covMatrix=covMatrix)
+        if corrMatrix is None:
+            corrMatrix = Dist().corrcoeff(covMatrix=covMatrix)
 
+        num_dims = corrMatrix.shape[0]
         nataf = NatafDensity()
         nataf.initialize_random_variable_types([GAMMA] * num_dims)
         nataf.initialize_random_variable_parameters([mean] * num_dims,
@@ -66,17 +73,20 @@ class NatafDist(EstimatedDist):
         return cls(nataf, bounds=bounds, params={"name": "gamma",
                                                  "alpha": alpha,
                                                  "beta": beta,
+                                                 "corrMatrix": corrMatrix,
                                                  "covMatrix": covMatrix})
 
     @classmethod
-    def beta_marginals(cls, lwr, upr, alpha, beta, covMatrix, bounds=None):
-        num_dims = covMatrix.shape[0]
-        
+    def beta_marginals(cls, lwr, upr, alpha, beta,
+                       covMatrix=None, corrMatrix=None,
+                       bounds=None):
         range = upr - lwr
         mean = lwr + alpha / (alpha + beta) * range
         stddev = np.sqrt(alpha * beta / (alpha + beta + 1.0)) / (alpha + beta) * range
-        corrMatrix = Dist().corrcoeff(covMatrix=covMatrix)
+        if corrMatrix is None:
+            corrMatrix = Dist().corrcoeff(covMatrix=covMatrix)
 
+        num_dims = corrMatrix.shape[0]
         nataf = NatafDensity()
         nataf.initialize_random_variable_types([STD_BETA] * num_dims)
         nataf.initialize_random_variable_parameters([mean] * num_dims,
@@ -88,6 +98,7 @@ class NatafDist(EstimatedDist):
                                                  "upr": upr,
                                                  "alpha": alpha,
                                                  "beta": beta,
+                                                 "corrMatrix": corrMatrix,
                                                  "covMatrix": covMatrix})
     # ------------------------------------------------------------------------
     def pdf(self, x):
@@ -174,20 +185,33 @@ class NatafDist(EstimatedDist):
             elif jsonObject[key]["name"] == "normal":
                 mean = jsonObject[key]["mean"]
                 stddev = jsonObject[key]["stddev"]
-                covMatrix = np.array(jsonObject[key]["covMatrix"])
-                return NatafDist.normal_marginals(mean, stddev, covMatrix, bounds)
+                if jsonObject[key]["corrMatrix"] is None:
+                    covMatrix = np.array(jsonObject[key]["corrMatrix"])
+                    return NatafDist.normal_marginals(lwr, upr, alpha, beta, corrMatrix=corrMatrix, bounds=bounds)
+                else:
+                    covMatrix = np.array(jsonObject[key]["covMatrix"])
+                    return NatafDist.normal_marginals(lwr, upr, alpha, beta, covMatrix=covMatrix, bounds=bounds)
             elif jsonObject[key]["name"] == "gamma":
                 alpha = jsonObject[key]["alpha"]
                 beta = jsonObject[key]["beta"]
                 covMatrix = np.array(jsonObject[key]["covMatrix"])
-                return NatafDist.gamma_marginals(alpha, beta, covMatrix, bounds)
+                if jsonObject[key]["corrMatrix"] is None:
+                    covMatrix = np.array(jsonObject[key]["corrMatrix"])
+                    return NatafDist.gamma_marginals(lwr, upr, alpha, beta, corrMatrix=corrMatrix, bounds=bounds)
+                else:
+                    covMatrix = np.array(jsonObject[key]["covMatrix"])
+                    return NatafDist.gamma_marginals(lwr, upr, alpha, beta, covMatrix=covMatrix, bounds=bounds)
             elif jsonObject[key]["name"] == "beta":
                 alpha = jsonObject[key]["alpha"]
                 beta = jsonObject[key]["beta"]
                 lwr = jsonObject[key]["lwr"]
                 upr = jsonObject[key]["upr"]
-                covMatrix = np.array(jsonObject[key]["covMatrix"])
-                return NatafDist.beta_marginals(lwr, upr, alpha, beta, covMatrix, bounds)
+                if jsonObject[key]["corrMatrix"] is None:
+                    covMatrix = np.array(jsonObject[key]["corrMatrix"])
+                    return NatafDist.beta_marginals(lwr, upr, alpha, beta, corrMatrix=corrMatrix, bounds=bounds)
+                else:
+                    covMatrix = np.array(jsonObject[key]["covMatrix"])
+                    return NatafDist.beta_marginals(lwr, upr, alpha, beta, covMatrix=covMatrix, bounds=bounds)
             else:
                 raise AttributeError("param setting not applicable for NatafDist")
         else:
