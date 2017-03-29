@@ -648,7 +648,7 @@ def run_kraichnanOrszag_sg(gridType, level, numGridPoints,
 if __name__ == "__main__":
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
-    parser.add_argument('--surrogate', default="sg", type=str, help="define which surrogate model should be used (sg, pce)")
+    parser.add_argument('--surrogate', default="sg", type=str, help="define which surrogate model should be used (sg, mc)")
     parser.add_argument('--setting', default=1, type=int, help='parameter settign for test problem')
     parser.add_argument('--qoi', default="y1", type=str, help="define the quantity of interest")
     parser.add_argument('--numGridPoints', default=1000, type=int, help='maximum number of grid points')
@@ -665,15 +665,7 @@ if __name__ == "__main__":
     parser.add_argument('--out', default=False, action='store_true', help='save plots to file')
 
     args = parser.parse_args()
-    if args.surrogate == "pce":
-        run_kraichnanOrszag_pce(args.sampler,
-                                args.expansion,
-                                args.maxSamples,
-                                args.setting,
-                                args.qoi,
-                                args.out,
-                                args.plot)
-    elif args.surrogate == "sg":
+    if args.surrogate == "sg":
         run_kraichnanOrszag_sg(args.gridType,
                                args.level,
                                args.numGridPoints,
