@@ -7,17 +7,19 @@ from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import 
 class SparseGridEstimationStrategy(object):
 
     def _extractPDFforMomentEstimation(self, U, T):
-        dists = U.getDistributions()
+        dists = []
         jointTrans = []
         vol = 1.
         # check if importance sampling has been used for some parameters
         for i, trans in enumerate(T.getTransformations()):
             # if this is the case replace them by a uniform distribution
             if isinstance(trans, RosenblattTransformation):
-                dists[i] = Uniform(0, 1)
-                jointTrans.append(LinearTransformation(0.0, 1.0))
+                for _ in xrange(trans.getSize()):
+                    dists.append(Uniform(0, 1))
+                    jointTrans.append(LinearTransformation(0.0, 1.0))
             else:
                 vol *= trans.vol()
+                dists.append(U.getDistributions()[i])
                 jointTrans.append(trans)
         return vol, J(dists), jointTrans
 

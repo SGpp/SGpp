@@ -29,12 +29,13 @@ from pysgpp.extensions.datadriven.uq.plot.colors import savefig
 
 class AnovaGenzTest(object):
 
-    def __init__(self, numDims=2):
+    def __init__(self, numDims=2, rosenblatt=False):
         self.radix = 'test_genz'
         self.plot = False
 
         self.pathResults = os.path.join("results")
 
+        self.rosenblatt = rosenblatt
         self.numDims = numDims
         self.correlation = 0.9
         corrMatrix = np.ones((self.numDims, self.numDims)) * self.correlation
@@ -45,18 +46,22 @@ class AnovaGenzTest(object):
                                              bounds=np.array([[0, 1], [0, 1]]))
 
         # --------------------------------------------------------
-        fig = plt.figure()
-        plotDensity2d(self.dist,
-                      color_bar_label=r'$f(\xi_1, \xi_2)$')
-        plt.xlabel(r"$\xi_1$")
-        plt.ylabel(r"$\xi_2$")
-        savefig(fig, "plots/correlated_beta_2d")
+        if False:
+            fig = plt.figure()
+            plotDensity2d(self.dist,
+                          color_bar_label=r'$f(\xi_1, \xi_2)$')
+            plt.xlabel(r"$\xi_1$")
+            plt.ylabel(r"$\xi_2$")
+            savefig(fig, "plots/correlated_beta_2d")
         # --------------------------------------------------------
         # set distributions of the input parameters
         # --------------------------------------------------------
         builder = ParameterBuilder()
         up = builder.defineUncertainParameters()
-        up.new().isCalled("x,y").withDistribution(self.dist)
+        if rosenblatt:
+            up.new().isCalled("x,y").withDistribution(self.dist).withRosenblattTransformation()
+        else:
+            up.new().isCalled("x,y").withDistribution(self.dist)
         self.params = builder.andGetResult()
 
         # --------------------------------------------------------
@@ -73,6 +78,8 @@ class AnovaGenzTest(object):
         test_values = np.zeros(test_samples.shape[0])
         for i, x in enumerate(test_samples):
             test_values[i] = self.simulation(x)
+        if self.rosenblatt:
+            test_samples = self.dist.cdf(test_samples)
         return test_samples, test_values
 
 
@@ -83,12 +90,12 @@ class AnovaGenzTest(object):
         return l2error, l1error, maxError
 
 
-    def run_regular_sparse_grid(self,
-                                gridTypeStr,
-                                level,
-                                maxGridSize,
-                                boundaryLevel=1,
-                                out=False):
+    def run_regular_sparse_grid_boundary(self,
+                                         gridTypeStr,
+                                         level,
+                                         maxGridSize,
+                                         boundaryLevel=1,
+                                         out=False):
         np.random.seed(1234567)
         test_samples, test_values = self.getTestSamples()
         gridType = Grid.stringToGridType(gridTypeStr)
@@ -164,6 +171,93 @@ class AnovaGenzTest(object):
             fd.close()
 
 
+    def run_regular_sparse_grid(self,
+                                gridTypeStr,
+                                level,
+                                maxGridSize,
+                                boundaryLevel=1,
+                                out=False):
+        np.random.seed(1234567)
+        test_samples, test_values = self.getTestSamples()
+        gridType = Grid.stringToGridType(gridTypeStr)
+
+        stats = {}
+        while True:
+            print "-" * 80
+            print "level = %i, boundary level = %i" % (level, boundaryLevel)
+            print "-" * 80
+            uqManager = TestEnvironmentSG().buildSetting(self.params,
+                                                         self.simulation,
+                                                         level,
+                                                         gridType,
+                                                         deg=20,
+                                                         maxGridSize=maxGridSize,
+                                                         boundaryLevel=boundaryLevel,
+                                                         knowledgeTypes=[KnowledgeTypes.SIMPLE])
+
+            if uqManager.sampler.getSize() > maxGridSize:
+                print "DONE: %i > %i" % (uqManager.sampler.getSize(), maxGridSize)
+                break
+
+            # ----------------------------------------------
+            # first run
+            while uqManager.hasMoreSamples():
+                uqManager.runNextSamples()
+
+            # ----------------------------------------------------------
+            # specify ASGC estimator
+            analysis = ASGCAnalysisBuilder().withUQManager(uqManager)\
+                                            .withMonteCarloEstimationStrategy(n=1000,
+                                                                              npaths=10)\
+                                            .andGetResult()
+
+            analysis.setVerbose(False)
+            # ----------------------------------------------------------
+            # expectation values and variances
+            sg_mean, sg_var = analysis.mean(), analysis.var()
+
+            # ----------------------------------------------------------
+            # estimate the l2 error
+            grid, alpha = uqManager.getKnowledge().getSparseGridFunction()
+            test_values_pred = evalSGFunction(grid, alpha, test_samples)
+            l2test, l1test, maxErrorTest = \
+                self.getErrors(test_values, test_values_pred)
+            print "-" * 60
+            print "test:  |.|_2 = %g" % l2test
+            # ----------------------------------------------------------
+            stats[level] = {'num_model_evaluations': grid.getSize(),
+                            'l2test': l2test,
+                            'l1test': l1test,
+                            'maxErrorTest': maxErrorTest,
+                            'mean_estimated': sg_mean["value"],
+                            'var_estimated': sg_var["value"]}
+
+            level += 1
+
+        if out:
+            # store results
+            radix = "%s_sg_d%i_%s_Nmax%i_N%i" % (self.radix,
+                                                 self.numDims,
+                                                 grid.getTypeAsString(),
+                                                 maxGridSize,
+                                                 grid.getSize())
+            if self.rosenblatt:
+                radix += "_rosenblatt"
+
+            filename = os.path.join(self.pathResults, "%s.pkl" % radix)
+            fd = open(filename, "w")
+            pkl.dump({'surrogate': 'sg',
+                      'num_dims': self.numDims,
+                      'grid_type': grid.getTypeAsString(),
+                      'max_grid_size': maxGridSize,
+                      'is_full': False,
+                      'refinement': False,
+                      'rosenblatt': self.rosenblatt,
+                      'results': stats},
+                     fd)
+            fd.close()
+
+
     def run_mc(self, N=100000, out=False, plot=False):
         # ----------------------------------------------------------
         # dicretize the stochastic space with Monte Carlo
@@ -224,13 +318,27 @@ def run_genz_sg(numDims,
                 level,
                 numGridPoints,
                 boundaryLevel,
+                rosenblatt,
                 out):
-    testSetting = AnovaGenzTest(numDims)
+    testSetting = AnovaGenzTest(numDims, rosenblatt)
     testSetting.run_regular_sparse_grid(gridType,
                                         level,
                                         numGridPoints,
                                         boundaryLevel,
                                         out)
+
+def run_genz_sg_boundary(numDims,
+                         gridType,
+                         level,
+                         numGridPoints,
+                         boundaryLevel,
+                         out):
+    testSetting = AnovaGenzTest(numDims)
+    testSetting.run_regular_sparse_grid_boundary(gridType,
+                                                 level,
+                                                 numGridPoints,
+                                                 boundaryLevel,
+                                                 out)
 
 
 if __name__ == "__main__":
@@ -238,20 +346,31 @@ if __name__ == "__main__":
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
     parser.add_argument('--numDims', default=2, type=int, help='number of dimensions')
     parser.add_argument('--surrogate', default="sg", type=str, help="define which surrogate model should be used (sg, mc)")
+    parser.add_argument('--setting', default="convergence", type=str, help="define which setting should be used (convergence, boundary)")
     parser.add_argument('--numGridPoints', default=10000, type=int, help='maximum number of grid points')
     parser.add_argument('--gridType', default="polyBoundary", type=str, help="define which sparse grid should be used (poly, polyClenshawcCurtis, polyBoundary, modPoly, modPolyClenshawCurtis, ...)")
     parser.add_argument('--level', default=9, type=int, help='level of the sparse grid')
     parser.add_argument('--boundaryLevel', default=1, type=int, help='level of the boundary of the sparse grid')
+    parser.add_argument('--rosenblatt', default=False, action='store_true', help='use rosenblatt transformation')
     parser.add_argument('--out', default=False, action='store_true', help='save plots to file')
 
     args = parser.parse_args()
     if args.surrogate == "sg":
-        run_genz_sg(args.numDims,
-                    args.gridType,
-                    args.level,
-                    args.numGridPoints,
-                    args.boundaryLevel,
-                    args.out)
+        if args.setting == "boundary":
+            run_genz_sg_boundary(args.numDims,
+                                 args.griType,
+                                 args.level,
+                                 args.numGridPoints,
+                                 args.boundaryLevel,
+                                 args.out)
+        else:
+            run_genz_sg(args.numDims,
+                        args.gridType,
+                        args.level,
+                        args.numGridPoints,
+                        args.boundaryLevel,
+                        args.rosenblatt,
+                        args.out)
     else:
         run_genz_mc(args.numDims,
                     args.maxSamples,

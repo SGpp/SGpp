@@ -66,12 +66,10 @@ def load_results(inputspace, setting, qoi, settings, path="results"):
                 load_file = True
                 if "sg" in filename:
                     load_file = False
-                    for _, maxGridSize, _, _ in settings[setting]["sg"]:
+                    for _, maxGridSize, _, _ in settings[setting]["sg"][qoi]:
                         if str(maxGridSize) in filename:
                             load_file = True
                             break
-                        
-                        
 
                 if load_file:
                     print "-" * 80
@@ -100,6 +98,9 @@ def load_results(inputspace, setting, qoi, settings, path="results"):
                             ans["mc"][key] = currentStats
 
                         print "  %s" % (key,)
+                else:
+                    print "-" * 80
+                    print "available %s -> " % filename
     return ans
 
 
@@ -126,18 +127,20 @@ settings = {1: {'mc': [('latin_hypercube', 2000)],
                 'pce': [("full_tensor", 'gauss', 4000),
                         ('total_degree', 'gauss_leja', 4000)]},
             3: {'mc': [('latin_hypercube', 100000)],
-                'sg': [
-                       (8, 1505, None, False),
-                       (8, 81, 'simple', False),
-                       (8, 125, 'simple', False),
-                       (8, 207, 'simple', False),
-                       (8, 281, 'simple', False),
-                       (8, 415, 'simple', False),
-                       (8, 535, 'simple', False),
-                       (8, 655, 'simple', False),
-                       (8, 821, 'simple', False),
-                       (8, 1015, 'simple', False)
-                       ],
+                'sg': {"y1": [
+                              (8, 1505, None, False),
+                              (3, 783, 'simple', False),
+                              (8, 643, 'simple', False),
+                              (8, 689, 'l2', False),
+                              (3, 757, 'l2', False)
+                              ],
+                       "y3":[
+                             (8, 1505, None, False),
+                             (3, 793, 'simple', False),
+                             (8, 821, 'simple', False),
+                             (8, 745, 'l2', False),
+                             (3, 701, 'l2', False)
+                             ]},
                 'pce': [("full_tensor", 'gauss', 4000),
                         ('total_degree', 'gauss_leja', 4000)]}}
 
@@ -155,7 +158,7 @@ if __name__ == "__main__":
     # extract the ones needed for the table
     mc_settings = settings[args.setting]["mc"]
     pce_settings = settings[args.setting]["pce"]
-    sg_settings = settings[args.setting]["sg"]
+    sg_settings = settings[args.setting]["sg"][args.qoi]
 
     # plot mc results to compare
     fig = plt.figure()
