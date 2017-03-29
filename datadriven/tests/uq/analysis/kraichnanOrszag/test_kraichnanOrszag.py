@@ -503,9 +503,6 @@ class KraichnanOrszagTest(object):
             oldSize = uqManager.uqSetting.getSize()
             while uqManager.hasMoreSamples():
                 uqManager.runNextSamples()
-
-            if oldSize < uqManager.uqSetting.getSize():
-                uqManager.uqSetting.writeToFile()
             # ----------------------------------------------------------
             # specify ASGC estimator
             analysis = ASGCAnalysisBuilder().withUQManager(uqManager)\
@@ -576,7 +573,7 @@ class KraichnanOrszagTest(object):
                                                      boundaryLevel=boundaryLevel,
                                                      qoi=self.qoi,
                                                      toi=self.toi,
-                                                     uqSetting=self.uqSettings['sg'],
+                                                     saveAfterN=-1,  # dont save at all
                                                      uqSettingRef=self.uqSettings['ref'])
         # ----------------------------------------------
         # first run

@@ -21,8 +21,8 @@ if __name__ == '__main__':
                                               "modlinear",
                                               "polyBoundary",
                                               "modpoly"],
-                                 'settings': [1, 2, 3],
-                                 'qois': ["y1", "y2", "y3"],
+                                 'settings': [3],
+                                 'qois': ["y1", "y3"],
                                  'level': [3],
                                  'refinement': [
                                                 None,
@@ -49,16 +49,16 @@ if __name__ == '__main__':
                             print "-" * 80
 
                             if args.parallel:
-                                myargs(gridType,
-                                       level,
-                                       maxGridPoints,
-                                       1,
-                                       False,
-                                       refinement,
-                                       setting,
-                                       qoi,
-                                       args.out,
-                                       False)
+                                myargs = (gridType,
+                                          level,
+                                          maxGridPoints,
+                                          1,
+                                          False,
+                                          refinement,
+                                          setting,
+                                          qoi,
+                                          args.out,
+                                          False)
                                 processes.append(Process(target=run_kraichnanOrszag_sg,
                                                          args=myargs))
                             else:
@@ -84,11 +84,11 @@ if __name__ == '__main__':
                 print "-" * 80
 
                 if args.parallel:
-                    myargs(setting,
-                           qoi,
-                           maxSamples,
-                           args.out,
-                           False)
+                    myargs = (setting,
+                              qoi,
+                              maxSamples,
+                              args.out,
+                              False)
                     processes.append(Process(target=run_kraichnanOrszag_mc,
                                              args=myargs))
                 else:
