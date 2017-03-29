@@ -102,7 +102,8 @@ class KraichnanOrszagTest(object):
 
         # time steps of interest
         dt = 0.1
-        self.toi = np.arange(self.t0, self.tn + dt, dt)
+        if setting == 3:
+            self.toi = np.arange(self.t0, self.tn + dt, dt)
 
         # compute reference values
         self.computeReferenceValues(self.uqSettings['ref'])
@@ -177,8 +178,13 @@ class KraichnanOrszagTest(object):
 
         # Simulation setting
         self.t0 = 0.
-        self.tn = 30.
         self.dt = .01
+        if self.setting == 1:
+            self.tn = 30.
+        elif self.setting == 2:
+            self.tn = 10.
+        elif self.setting == 3:
+            self.tn = 6.
 
         self.f = [lambda y, _: y[0] * y[2],
                   lambda y, _:-y[1] * y[2],
