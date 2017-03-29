@@ -54,7 +54,7 @@ def parse_sg_results(gridType,
     return res
 
 
-def load_results(inputspace, setting, qoi, path="results"):
+def load_results(inputspace, setting, qoi, settings, path="results"):
     ans = {"pce": {},
            "sg": {},
            "mc": {}}
@@ -63,34 +63,43 @@ def load_results(inputspace, setting, qoi, path="results"):
             if "pkl" in filename and \
                     "qoi%s" % qoi in filename and \
                     "s%i" % setting in filename:
-                print "-" * 80
-                print "load %s -> " % filename,
-                path = os.path.join(root, filename)
-                fd = open(path, "r")
-                currentStats = pkl.load(fd)
-                fd.close()
+                load_file = True
+                if "sg" in filename:
+                    load_file = False
+                    for _, maxGridSize, _, _ in settings[setting]["sg"]:
+                        if str(maxGridSize) in filename:
+                            load_file = True
+                            break
+                        
+                        
 
-                if currentStats["qoi"] == qoi and currentStats["setting"] == setting:
-                    if currentStats["surrogate"] == "pce":
-                        key = get_key_pce(currentStats["expansion"],
-                                          currentStats["sampling_strategy"],
-                                          currentStats["max_num_samples"])
-                        ans["pce"][key] = currentStats
-                    elif "sg" in currentStats["surrogate"]:
-                        key = get_key_sg(currentStats["grid_type"],
-                                         currentStats["max_grid_size"],
-                                         currentStats["refinement"],
-                                         currentStats["is_full"])
+                if load_file:
+                    print "-" * 80
+                    print "load %s -> " % filename
+                    path = os.path.join(root, filename)
+                    fd = open(path, "r")
+                    currentStats = pkl.load(fd)
+                    fd.close()
 
-                        ans["sg"][key] = currentStats
-                    else:
-                        key = get_key_mc(currentStats["sampling_strategy"],
-                                         currentStats["num_model_evaluations"])
-                        ans["mc"][key] = currentStats
+                    if currentStats["qoi"] == qoi and currentStats["setting"] == setting:
+                        if currentStats["surrogate"] == "pce":
+                            key = get_key_pce(currentStats["expansion"],
+                                              currentStats["sampling_strategy"],
+                                              currentStats["max_num_samples"])
+                            ans["pce"][key] = currentStats
+                        elif "sg" in currentStats["surrogate"]:
+                            key = get_key_sg(currentStats["grid_type"],
+                                             currentStats["max_grid_size"],
+                                             currentStats["refinement"],
+                                             currentStats["is_full"])
 
-                    print key
-                else:
-                    print currentStats["qoi"], "==", qoi, ", ", currentStats["setting"], "==", setting
+                            ans["sg"][key] = currentStats
+                        else:
+                            key = get_key_mc(currentStats["sampling_strategy"],
+                                             currentStats["num_model_evaluations"])
+                            ans["mc"][key] = currentStats
+
+                        print "  %s" % (key,)
     return ans
 
 
@@ -119,7 +128,15 @@ settings = {1: {'mc': [('latin_hypercube', 2000)],
             3: {'mc': [('latin_hypercube', 100000)],
                 'sg': [
                        (8, 1505, None, False),
-                       (8, 1164, 'simple', False)
+                       (8, 81, 'simple', False),
+                       (8, 125, 'simple', False),
+                       (8, 207, 'simple', False),
+                       (8, 281, 'simple', False),
+                       (8, 415, 'simple', False),
+                       (8, 535, 'simple', False),
+                       (8, 655, 'simple', False),
+                       (8, 821, 'simple', False),
+                       (8, 1015, 'simple', False)
                        ],
                 'pce': [("full_tensor", 'gauss', 4000),
                         ('total_degree', 'gauss_leja', 4000)]}}
@@ -132,35 +149,35 @@ if __name__ == "__main__":
     parser.add_argument('--qoi', default="y1", type=str, help="define the quantity of interest")
     args = parser.parse_args()
 
-    results = load_results(args.model, args.setting, args.qoi)
+    results = load_results(args.model, args.setting, args.qoi, settings)
 
-    for error_type in ["mean", "var"]:
-        # extract the ones needed for the table
-        mc_settings = settings[args.setting]["mc"]
-        pce_settings = settings[args.setting]["pce"]
-        sg_settings = settings[args.setting]["sg"]
+    error_type = "var"
+    # extract the ones needed for the table
+    mc_settings = settings[args.setting]["mc"]
+    pce_settings = settings[args.setting]["pce"]
+    sg_settings = settings[args.setting]["sg"]
 
-        # plot mc results to compare
-        fig = plt.figure()
-        for sampling_strategy, numSamples in mc_settings:
-            res = parse_monte_carlo_results(results)
-            time_steps = np.array(res.keys())
-            ixs = np.argsort(time_steps)
-            time_steps = time_steps[ixs]
-            ixs = np.where(time_steps <= 6)[0]
-            time_steps = time_steps[ixs]
-            values = np.ndarray(time_steps.shape)
-            err = np.ndarray((time_steps.size, 2))
-            for i, t in enumerate(time_steps[ixs]):
-                values[i] = res[t][error_type]
-                err[i, :] = res[t]["%s_error" % error_type]
+    # plot mc results to compare
+    fig = plt.figure()
+    for sampling_strategy, numSamples in mc_settings:
+        res = parse_monte_carlo_results(results)
+        time_steps = np.array(res.keys())
+        ixs = np.argsort(time_steps)
+        time_steps = time_steps[ixs]
+        ixs = np.where(time_steps <= 6)[0]
+        time_steps = time_steps[ixs]
+        values = np.ndarray(time_steps.shape)
+        err = np.ndarray((time_steps.size, 2))
+        for i, t in enumerate(time_steps[ixs]):
+            values[i] = res[t][error_type]
+            err[i, :] = res[t]["%s_error" % error_type]
 
-            plotMCResults(time_steps[ixs],
-                          values,
-                          err,
-                          color=load_color(0),
-                          marker=load_marker(0),
-                          label=r"MC (M=$10^5$)")
+        plotMCResults(time_steps[ixs],
+                      values,
+                      err,
+                      color=load_color(0),
+                      marker=load_marker(0),
+                      label=r"MC (M=$10^5$)")
 
 #         if args.surrogate in ["pce", "both"]:
 #             for expansion, sampling_strategy, N in pce_settings:
@@ -175,40 +192,40 @@ if __name__ == "__main__":
 #                 plt.loglog(num_evals[ixs], errors[ixs], "o-",
 #                            label=("pce (%s, %s)" % (expansion, sampling_strategy)).replace("_", " "))
 
-        if args.surrogate in ["sg", "both"]:
-            for k, (gridType, maxGridSize, refinement, isFull) in enumerate(sg_settings):
-                res = parse_sg_results(gridType,
-                                       maxGridSize,
-                                       refinement,
-                                       isFull,
-                                       results)
-                time_steps = np.array(res.keys())
-                ixs = np.argsort(time_steps)
-                time_steps = time_steps[ixs]
-                ixs = np.where(time_steps <= 6)[0]
-                time_steps = time_steps[ixs]
-                values = np.ndarray(time_steps.shape)
-                err = np.ndarray((time_steps.size, 2))
-                for i, t in enumerate(time_steps):
-                    values[i] = res[t][error_type]
-                    err[i, :] = values[i]
+    if args.surrogate in ["sg", "both"]:
+        for k, (gridType, maxGridSize, refinement, isFull) in enumerate(sg_settings):
+            res = parse_sg_results(gridType,
+                                   maxGridSize,
+                                   refinement,
+                                   isFull,
+                                   results)
+            time_steps = np.array(res.keys())
+            ixs = np.argsort(time_steps)
+            time_steps = time_steps[ixs]
+            ixs = np.where(time_steps <= 6)[0]
+            time_steps = time_steps[ixs]
+            values = np.ndarray(time_steps.shape)
+            err = np.ndarray((time_steps.size, 2))
+            for i, t in enumerate(time_steps):
+                values[i] = res[t][error_type]
+                err[i, :] = values[i]
 
-                if refinement is not None:
-                    label = r"SG ($N=%i$)" % (maxGridSize,)
-                else:
-                    label = r"aSG ($N=%i$)" % (maxGridSize,)
+            if refinement is None:
+                label = r"SG ($N=%i$)" % (maxGridSize,)
+            else:
+                label = r"aSG ($N=%i$)" % (maxGridSize,)
 
-                plotMCResults(time_steps,
-                              values,
-                              err,
-                              color=load_color(k + 1),
-                              marker=load_marker(k + 1),
-                              label=label)
+            plotMCResults(time_steps,
+                          values,
+                          err,
+                          color=load_color(k + 1),
+                          marker=load_marker(k + 1),
+                          label=label)
 
-        plt.title(error_type.replace("_", " "))
-        lgd = insert_legend(fig, loc="bottom", ncol=2)
-        savefig(fig, "plots/kraichnan_orszag_%s_s%i_%s_%s" % (args.model,
-                                                              args.setting,
-                                                              args.qoi,
-                                                              error_type))
-        plt.close(fig)
+    plt.ylabel("$\mathbb{V}$ of $y_%s$" % args.qoi[-1])
+    lgd = insert_legend(fig, loc="bottom", ncol=2)
+    savefig(fig, "plots/kraichnan_orszag_%s_s%i_%s_%s" % (args.model,
+                                                          args.setting,
+                                                          args.qoi,
+                                                          error_type))
+    plt.close(fig)
