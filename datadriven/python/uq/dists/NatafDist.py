@@ -127,6 +127,8 @@ class NatafDist(EstimatedDist):
         for i, ui in enumerate(x):
             ui = np.array([self.normal.ppf(uii) for uii in ui])
             ans[i, :] = self.natafTransformation.trans_U_to_X(ui)
+        if ans.shape[0] == 1:
+            ans = ans[0]
         return ans
 
     def rvs(self, n=1, *args, **kws):
