@@ -7,7 +7,8 @@ from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunctio
 from pysgpp.pysgpp_swig import DataVector
 
 
-def plotDensity2d(U, n=50, addContour=True, color_bar_label=r'$\hat{f}(\xi_1, \xi_2)$'):
+def plotDensity2d(U, n=50, addContour=True,
+                  color_bar_label=r'$\hat{f}(\xi_1, \xi_2)$'):
     xlim, ylim = U.getBounds()
 
     x = np.linspace(xlim[0], xlim[1], n)
