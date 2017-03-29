@@ -83,7 +83,7 @@ class KraichnanOrszagTest(object):
                                                            ranges=ranges)
 
         # available labels
-        levels = ['sg', 'ref']
+        levels = ['ref']
         filenames = [self.radix + '.' + label + '.uqSetting.gz'
                      for label in levels]
         self.uqSettingsFilenames = dict(zip(levels, filenames))
@@ -102,8 +102,7 @@ class KraichnanOrszagTest(object):
 
         # time steps of interest
         dt = 0.1
-        if setting == 3:
-            self.toi = np.arange(self.t0, self.tn + dt, dt)
+        self.toi = np.arange(self.t0, self.tn + dt, dt)
 
         # compute reference values
         self.computeReferenceValues(self.uqSettings['ref'])
@@ -235,7 +234,7 @@ class KraichnanOrszagTest(object):
                .learnWithTest()
 
         # define uq setting
-        self.defineUQSetting(builder.defineUQSetting(), self.uqSettingsFilenames["sg"])
+        self.defineUQSetting(builder.defineUQSetting())
         
         samplerSpec = builder.defineSampler()
         samplerSpec.withGrid().withLevel(4)
@@ -260,8 +259,9 @@ class KraichnanOrszagTest(object):
                .withStartTime(self.t0)\
                .withTimestep(self.dt)\
                .withEndTime(self.tn)\
-	       .saveAfterEachRun(2200)\
+	           .saveAfterEachRun(-1)\
                .verbose()
+
         if filename is not None:
             builder.fromFile(filename)
 
@@ -483,6 +483,9 @@ class KraichnanOrszagTest(object):
         while True:
             print "-" * 80
             print "level = %i, grid type = %s" % (level, gridTypeStr)
+            builder = UQBuilder()
+            self.defineUQSetting(builder)
+            uqSetting = builder.andGetResult()
             uqManager = TestEnvironmentSG().buildSetting(self.params,
                                                          level=level,
                                                          gridType=gridType,
@@ -492,7 +495,8 @@ class KraichnanOrszagTest(object):
                                                          boundaryLevel=boundaryLevel,
                                                          qoi=self.qoi,
                                                          toi=self.toi,
-                                                         uqSetting=self.uqSettings['sg'],
+                                                         saveAfterN=-1,
+                                                         uqSetting=uqSetting,
                                                          uqSettingRef=self.uqSettings['ref'])
 
             if uqManager.sampler.getSize() > maxGridSize:
@@ -560,6 +564,9 @@ class KraichnanOrszagTest(object):
         # ----------------------------------------------------------
         # define the learner
         # ----------------------------------------------------------
+        builder = UQBuilder()
+        self.defineUQSetting(builder)
+        uqSetting = builder.andGetResult()
         uqManager = TestEnvironmentSG().buildSetting(self.params,
                                                      level=level,
                                                      gridType=gridType,
@@ -574,6 +581,7 @@ class KraichnanOrszagTest(object):
                                                      qoi=self.qoi,
                                                      toi=self.toi,
                                                      saveAfterN=-1,  # dont save at all
+                                                     uqSetting=uqSetting,
                                                      uqSettingRef=self.uqSettings['ref'])
         # ----------------------------------------------
         # first run
@@ -608,9 +616,6 @@ class KraichnanOrszagTest(object):
                 fd = open(filename, "w")
                 pkl.dump(results, fd)
                 fd.close()
-
-        if oldSize < uqManager.uqSetting.getSize():
-            uqManager.uqSetting.writeToFile()
 
 
 def run_kraichnanOrszag_mc(setting, qoi, numSamples,
