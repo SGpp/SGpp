@@ -27,6 +27,7 @@ class TestEnvironmentSG(object):
                      adaptive=None,
                      refinementTechnique="refinement",
                      adaptPoints=3,
+                     saveAfterN=-1,
                      adaptRate=None,
                      uqSetting=None,
                      uqSettingRef=None,
@@ -47,12 +48,9 @@ class TestEnvironmentSG(object):
         if toi is not None:
             builder.withTimeStepsOfInterest(toi)
         if uqSetting is not None:
-            builder.asgcUQManager.uqSetting = uqSetting
-        else:
-            builder.defineUQSetting().withSimulation(f)
-
-        if uqSetting is not None:
             builder.useUQSetting(uqSetting)
+        else:
+            builder.defineUQSetting().withSimulation(f).saveAfterEachRun(saveAfterN)
 
         if uqSettingRef is not None and len(uqSettingRef) > 0:
             builder.withTestSet(uqSettingRef)\
