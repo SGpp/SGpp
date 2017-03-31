@@ -97,6 +97,7 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
       for (size_t l = currentEvaluators.size(); l <= currentLevel; ++l) {
         auto eval = evaluatorPrototypes[d]->cloneLinear();
         eval->setGridPoints(this->pointHierarchies[d]->getPoints(l, needsOrdered));
+        eval->setLevel(l);
         if (needsParam) {
           eval->setParameter(parameters[paramIndex]);
         }

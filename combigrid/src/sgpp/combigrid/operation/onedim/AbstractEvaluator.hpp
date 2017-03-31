@@ -23,8 +23,16 @@ namespace combigrid {
  */
 template <typename V>
 class AbstractEvaluator {
+ protected:
+  size_t level = 0;
+
  public:
   virtual ~AbstractEvaluator() {}
+
+  /**
+   * This is used to set the level in case an evaluator needs it
+   */
+  void setLevel(size_t level) { this->level = level; }
 
   /**
    * Sets the grid points for evaluation. The evaluation method should allow for arbitrary grid
