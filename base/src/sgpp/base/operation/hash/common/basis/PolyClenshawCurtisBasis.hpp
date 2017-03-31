@@ -91,7 +91,6 @@ class PolyClenshawCurtisBasis : public Basis<LT, IT> {
     // uses the logarithmic derivative method from the second answer
     // http://math.stackexchange.com/questions/809927/first-derivative-of-lagrange-polynomial
 
-    double hInvDbl = static_cast<double>(1 << level);
     size_t deg = std::min<size_t>(degree, level + 1);
     double result = eval(level, index, x);
     if (result == 0.0) return 0.0;

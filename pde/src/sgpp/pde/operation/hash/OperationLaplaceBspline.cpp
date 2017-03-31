@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/pde/operation/hash/OperationLaplaceExplicitBspline.hpp>
+#include <sgpp/pde/operation/hash/OperationLaplaceBspline.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
@@ -20,20 +20,13 @@
 namespace sgpp {
 namespace pde {
 
-OperationLaplaceExplicitBspline::OperationLaplaceExplicitBspline(
-    sgpp::base::DataMatrix* m, sgpp::base::Grid* grid)
-    : ownsMatrix_(false) {
-  m_ = m;
-  buildMatrix(grid);
-}
+OperationLaplaceBspline::OperationLaplaceBspline(sgpp::base::Grid* grid):
+  grid(grid) {}
 
-OperationLaplaceExplicitBspline::OperationLaplaceExplicitBspline(sgpp::base::Grid* grid)
-    : ownsMatrix_(true) {
-  m_ = new sgpp::base::DataMatrix(grid->getSize(), grid->getSize());
-  buildMatrix(grid);
-}
+OperationLaplaceBspline::~OperationLaplaceBspline() {}
 
-void OperationLaplaceExplicitBspline::buildMatrix(sgpp::base::Grid* grid) {
+void OperationLaplaceBspline::mult(sgpp::base::DataVector& alpha,
+                                sgpp::base::DataVector& result) {
   size_t gridSize = grid->getSize();
   size_t gridDim = grid->getDimension();
   const size_t p = dynamic_cast<sgpp::base::BsplineGrid*>(grid)->getDegree();
@@ -50,6 +43,17 @@ void OperationLaplaceExplicitBspline::buildMatrix(sgpp::base::Grid* grid) {
   sgpp::base::DataVector weights;
   sgpp::base::GaussLegendreQuadRule1D gauss;
   gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
+
+  size_t nrows = storage.getSize();
+  size_t ncols = storage.getSize();
+
+  if (alpha.getSize() != ncols || result.getSize() != nrows) {
+    throw sgpp::base::data_exception("Dimensions do not match!");
+  }
+
+  for (size_t i = 0; i < gridSize; i++) {
+    result[i] = 0;
+  }
 
   for (size_t i = 0; i < gridSize; i++) {
     for (size_t j = i; j < gridSize; j++) {
@@ -90,20 +94,20 @@ void OperationLaplaceExplicitBspline::buildMatrix(sgpp::base::Grid* grid) {
             stop = std::min(p, hInvjk + pp1h - ijk - 1);
           }
 
-          double temp_res = 0.0;
-          double temp_res_deriv = 0.0;
+          double temp_ij = 0.0;
+          double temp_ij_deriv = 0.0;
 
           for (size_t n = start; n <= stop; n++) {
             for (size_t c = 0; c < quadOrder; c++) {
               const double x = offset + scaling * (coordinates[c] + static_cast<double>(n));
-              temp_res += weights[c] * basis.eval(lik, iik, x) * basis.eval(ljk, ijk, x);
-              temp_res_deriv += weights[c] * basis.evalDx(lik, iik, x) *
+              temp_ij += weights[c] * basis.eval(lik, iik, x) * basis.eval(ljk, ijk, x);
+              temp_ij_deriv += weights[c] * basis.evalDx(lik, iik, x) *
                   basis.evalDx(ljk, ijk, x);
             }
           }
 
-          integrals1D[k] = scaling * temp_res;
-          integralsDeriv1D[k] = scaling * temp_res_deriv;
+          integrals1D[k] = scaling * temp_ij;
+          integralsDeriv1D[k] = scaling * temp_ij_deriv;
         }
       }
 
@@ -134,43 +138,14 @@ void OperationLaplaceExplicitBspline::buildMatrix(sgpp::base::Grid* grid) {
             break;
           }
         }
-
         res += temp_res;
       }
-      std::cout << "i,j:" << i << "," << j << " Expl: " << res << std::endl;
-      m_->set(i, j, res);
-      m_->set(j, i, res);
+      std::cout << "i,j:" << i << "," << j << " Impl: " << res << std::endl;
+      // multiplication and summation of results
+      result[i] += res * alpha[j];
+      if (i != j)
+        result[j] += res * alpha[i];
     }
-  }
-}
-
-OperationLaplaceExplicitBspline::~OperationLaplaceExplicitBspline() {
-  if (ownsMatrix_) delete m_;
-}
-
-void OperationLaplaceExplicitBspline::mult(sgpp::base::DataVector& alpha,
-                                                sgpp::base::DataVector& result) {
-  size_t nrows = m_->getNrows();
-  size_t ncols = m_->getNcols();
-
-  if (alpha.getSize() != ncols || result.getSize() != nrows) {
-    throw sgpp::base::data_exception("Dimensions do not match!");
-  }
-
-  double* data = m_->getPointer();
-
-  // Standard matrix multiplication:
-  double temp = 0.;
-  size_t acc = 0;
-
-  for (size_t i = 0; i < nrows; i++) {
-    for (size_t j = 0; j < ncols; j++) {
-      temp += data[j + acc] * alpha[j];
-    }
-
-    result[i] = temp;
-    temp = 0.;
-    acc += ncols;
   }
 }
 
