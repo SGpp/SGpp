@@ -4,66 +4,24 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/common/GridConversion.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
 
 namespace sgpp {
 namespace combigrid {
 
-std::shared_ptr<TreeStorage<uint8_t>> allStorageLevels(base::HashGridStorage* storage) {
-  size_t numDims = storage->getDimension();
-  auto treeStorage = std::make_shared<TreeStorage<uint8_t>>(numDims);
-
-  auto it = storage->begin();
-
-  for (; it != storage->end(); ++it) {
-    MultiIndex level(numDims);
-    for (size_t i = 0; i < numDims; ++i) {
-      level[i] = it->first->getLevel(i) - 1;
-    }
-
-    treeStorage->set(level, 1);
+std::shared_ptr<TreeStorage<uint8_t>> convertHierarchicalSparseGridToCombigrid(
+    base::HashGridStorage& storage, GridConversionTypes conversionType) {
+  switch (conversionType) {
+    case GridConversionTypes::ALLSUBSPACES:
+      return allStorageLevels(storage);
+    case GridConversionTypes::COMPLETESUBSPACES:
+    default:
+      return completeStorageLevels(storage);
   }
-
-  return treeStorage;
 }
 
-std::shared_ptr<TreeStorage<uint8_t>> fullStorageLevels(base::HashGridStorage* storage) {
-  size_t numDims = storage->getDimension();
-  auto treeStorage = std::make_shared<TreeStorage<uint8_t>>(numDims);
-  auto countStorage = std::make_shared<TreeStorage<size_t>>(numDims);
-
-  auto it = storage->begin();
-
-  for (; it != storage->end(); ++it) {
-    MultiIndex level(numDims);
-    for (size_t i = 0; i < numDims; ++i) {
-      level[i] = it->first->getLevel(i) - 1;
-    }
-
-    ++countStorage->get(level);
-  }
-
-  auto countIt = countStorage->getStoredDataIterator();
-
-  while (countIt->isValid()) {
-    auto level = countIt->getMultiIndex();
-
-    // compute number of points that are in the level if it is full
-    size_t prod = 1;
-    for (size_t dim = 0; dim < numDims; ++dim) {
-      prod *= 1 << level[dim];
-    }
-
-    if (countIt->value() == prod) {
-      treeStorage->set(level, 1);
-    }
-    countIt->moveToNext();
-  }
-
-  return treeStorage;
-}
-
-void toHashGridStorage(std::shared_ptr<TreeStorage<uint8_t>> levelStructure,
-                       base::HashGridStorage& storage) {
+void convertCombigridToHierarchicalSparseGrid(std::shared_ptr<TreeStorage<uint8_t>> levelStructure,
+                                              base::HashGridStorage& storage) {
   size_t d = levelStructure->getNumDimensions();
 
   auto it = levelStructure->getStoredDataIterator();
@@ -98,6 +56,60 @@ void toHashGridStorage(std::shared_ptr<TreeStorage<uint8_t>> levelStructure,
   }
 
   storage.recalcLeafProperty();
+}
+
+std::shared_ptr<TreeStorage<uint8_t>> allStorageLevels(base::HashGridStorage& storage) {
+  size_t numDims = storage.getDimension();
+  auto treeStorage = std::make_shared<TreeStorage<uint8_t>>(numDims);
+
+  auto it = storage.begin();
+
+  for (; it != storage.end(); ++it) {
+    MultiIndex level(numDims);
+    for (size_t i = 0; i < numDims; ++i) {
+      level[i] = it->first->getLevel(i) - 1;
+    }
+
+    treeStorage->set(level, 1);
+  }
+
+  return treeStorage;
+}
+
+std::shared_ptr<TreeStorage<uint8_t>> completeStorageLevels(base::HashGridStorage& storage) {
+  size_t numDims = storage.getDimension();
+  auto treeStorage = std::make_shared<TreeStorage<uint8_t>>(numDims);
+  auto countStorage = std::make_shared<TreeStorage<size_t>>(numDims);
+
+  auto it = storage.begin();
+
+  for (; it != storage.end(); ++it) {
+    MultiIndex level(numDims);
+    for (size_t i = 0; i < numDims; ++i) {
+      level[i] = it->first->getLevel(i) - 1;
+    }
+
+    ++countStorage->get(level);
+  }
+
+  auto countIt = countStorage->getStoredDataIterator();
+
+  while (countIt->isValid()) {
+    auto level = countIt->getMultiIndex();
+
+    // compute number of points that are in the level if it is full
+    size_t prod = 1;
+    for (size_t dim = 0; dim < numDims; ++dim) {
+      prod *= 1 << level[dim];
+    }
+
+    if (countIt->value() == prod) {
+      treeStorage->set(level, 1);
+    }
+    countIt->moveToNext();
+  }
+
+  return treeStorage;
 }
 
 } /* namespace combigrid */

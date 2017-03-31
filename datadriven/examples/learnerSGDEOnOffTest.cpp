@@ -17,6 +17,7 @@ using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 
 /**
+ * \page example_learnerSGDEOnOffTest_cpp Learner SGDE OnOff
  * This example shows how to perform offline/online-classification using sparse
  * grid density estimation and matrix decomposition methods. It creates an
  * instance of LearnerSGDEOnOff and runs the function train() where the
@@ -79,14 +80,14 @@ int main() {
       sgpp::base::DataVector* validLabels = nullptr;
       // if fixed validation data should be used (required for convergence
       // monitor):
-      /*filename = "";  // specify file containing validation data here
+      //filename = "";  // specify file containing validation data here
       // load validation samples
-      std::cout << "# loading file: " << filename << std::endl;
-      sgpp::datadriven::Dataset valDataset =
-          sgpp::datadriven::ARFFTools::readARFF(filename);
-      validData = &valDataset.getData();
+      //std::cout << "# loading file: " << filename << std::endl;
+      //sgpp::datadriven::Dataset valDataset =
+      //    sgpp::datadriven::ARFFTools::readARFF(filename);
+      //validData = &valDataset.getData();
       // extract validation classes
-      validLabels = &valDataset.getTargets();*/
+      //validLabels = &valDataset.getTargets();
 
       /**
        * Specify the number of classes and the corresponding class labels.
@@ -243,24 +244,27 @@ int main() {
        */
       std::cout << "Average accuracy on test data (set " +
                        std::to_string(numSets + 1) + "): "
-                << (1.0 - avgErrorFolds) << std::endl;
+                << (1.0 - avgErrorFolds) << "\n";
     }
     avgError += avgErrorFolds;
     avgErrorFolds = 0.0;
     avgErrorsFolds.mult(1.0 / static_cast<double>(totalFolds));
 
     // write error evaluation to csv-file
-    /*std::ofstream output;
-    output.open("SGDEOnOff_avg_classification_error_"+std::to_string(numSets+1)+".csv");
-    if (output.fail()) {
-      std::cout << "failed to create csv file!" << std::endl;
-    }
-    else {
-      for (size_t i = 0; i < avgErrorsFolds.getSize(); i++) {
-        output << avgErrorsFolds.get(i) << ";" << std::endl;
-      }
-      output.close();
-    }*/
+    //std::ofstream output;
+    //output.open("SGDEOnOff_avg_classification_error_"+std::to_string(numSets+1)+".csv");
+    //if (output.fail()) {
+    //  std::cout << "failed to create csv file!" << std::endl;
+    //}
+    //else {
+    //  for (size_t i = 0; i < avgErrorsFolds.getSize(); i++) {
+    //    output << avgErrorsFolds.get(i) << ";" << std::endl;
+    //  }
+    //  output.close();
+    //}
   }
-#endif /* USE_GSL */
+#endif // USE_GSL
+  ///
+
 }
+

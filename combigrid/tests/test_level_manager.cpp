@@ -130,8 +130,8 @@ BOOST_AUTO_TEST_CASE(testLevelManagerParallel) {
   levelManager->addRegularLevelsParallel(maxLevelSum, 4);
   levelManager->addLevelsAdaptiveParallel(300, 4);
 
-  std::cout << "test_level_manager: ";
-  std::cout << std::abs(combiGridEval->getValue().getValue() -
-                        func(DataVector(std::vector<double>{0.378934, 0.89340273})))
-            << "\n";
+  // std::cout << "test_level_manager: ";
+  // std::cout << std::abs(combiGridEval->getValue().getValue() -
+  //                       func(DataVector(std::vector<double>{0.378934, 0.89340273})))
+  //           << "\n";
 }

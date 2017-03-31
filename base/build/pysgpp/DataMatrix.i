@@ -154,6 +154,8 @@ $1 = PySequence_Check($input) ? 1 : 0;
 
 //    void toString(std::string& text) const; // otherwise overloaded duplicate
     std::string toString() const;
+    void toFile(const std::string& fileName) const;
+    static DataMatrix fromFile(const std::string& fileName);
 
     %extend {
     // Create a ndarray view from the DataMatrix data

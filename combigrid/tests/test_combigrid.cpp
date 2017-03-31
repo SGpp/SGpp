@@ -168,8 +168,8 @@ void printCTResults(size_t d, size_t q) {
         return result;
       });
 
-  std::cout << "d = " << d << ", q = " << q << ": "
-            << std::sqrt(integrator.average(domain, samples)) << std::endl;
+  // std::cout << "d = " << d << ", q = " << q << ": "
+  //           << std::sqrt(integrator.average(domain, samples)) << std::endl;
 }
 
 BOOST_AUTO_TEST_CASE(testInterpolation) {
@@ -177,7 +177,7 @@ BOOST_AUTO_TEST_CASE(testInterpolation) {
     for (size_t w = 2; w <= 8; ++w) {
       Stopwatch stopwatch;
       printCTResults(d, w);
-      stopwatch.log();
+      // stopwatch.log();
     }
   }
 
@@ -185,5 +185,5 @@ BOOST_AUTO_TEST_CASE(testInterpolation) {
       3, MultiFunction([](sgpp::base::DataVector const &x) { return 1.0; }));
   std::vector<DataVector> input(1, DataVector(0));
   auto result = quadrature->evaluate(3, input);
-  std::cout << "Quadrature result: " << result[0] << "\n";
+  // std::cout << "Quadrature result: " << result[0] << "\n";
 }
