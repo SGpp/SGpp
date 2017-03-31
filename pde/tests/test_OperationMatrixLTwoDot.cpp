@@ -58,7 +58,8 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitLinear) {
 
   // test if explicit equals implicit
   sgpp::base::OperationMatrix* opImplicit = sgpp::op_factory::createOperationLTwoDotProduct(*grid);
-  sgpp::base::DataVector alpha(grid->getSize());
+  sgpp::base::DataVector alpha(grid->getSize(), 1.0);
+
   sgpp::base::DataVector resultImplicit(grid->getSize());
   sgpp::base::DataVector resultExplicit(grid->getSize());
 
@@ -90,7 +91,8 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitModLinear) {
 
   // test if explicit equals implicit
   sgpp::base::OperationMatrix* opImplicit = sgpp::op_factory::createOperationLTwoDotProduct(*grid);
-  sgpp::base::DataVector alpha(grid->getSize());
+  sgpp::base::DataVector alpha(grid->getSize(), 1.0);
+
   sgpp::base::DataVector resultImplicit(grid->getSize());
   sgpp::base::DataVector resultExplicit(grid->getSize());
 
@@ -124,7 +126,8 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitPoly) {
 
   // test if explicit equals implicit
   sgpp::base::OperationMatrix* opImplicit = sgpp::op_factory::createOperationLTwoDotProduct(*grid);
-  sgpp::base::DataVector alpha(grid->getSize());
+  sgpp::base::DataVector alpha(grid->getSize(), 1.0);
+
   sgpp::base::DataVector resultImplicit(grid->getSize());
   sgpp::base::DataVector resultExplicit(grid->getSize());
 
@@ -158,7 +161,8 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitPolyBoundary) {
 
   // test if explicit equals implicit
   sgpp::base::OperationMatrix* opImplicit = sgpp::op_factory::createOperationLTwoDotProduct(*grid);
-  sgpp::base::DataVector alpha(grid->getSize());
+  sgpp::base::DataVector alpha(grid->getSize(), 1.0);
+
   sgpp::base::DataVector resultImplicit(grid->getSize());
   sgpp::base::DataVector resultExplicit(grid->getSize());
 
@@ -192,7 +196,8 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitModPoly) {
 
   // test if explicit equals implicit
   sgpp::base::OperationMatrix* opImplicit = sgpp::op_factory::createOperationLTwoDotProduct(*grid);
-  sgpp::base::DataVector alpha(grid->getSize());
+  sgpp::base::DataVector alpha(grid->getSize(), 1.0);
+
   sgpp::base::DataVector resultImplicit(grid->getSize());
   sgpp::base::DataVector resultExplicit(grid->getSize());
 
@@ -226,7 +231,8 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitPolyClenshawCurtis) {
 
   // test if explicit equals implicit
   sgpp::base::OperationMatrix* opImplicit = sgpp::op_factory::createOperationLTwoDotProduct(*grid);
-  sgpp::base::DataVector alpha(grid->getSize());
+  sgpp::base::DataVector alpha(grid->getSize(), 1.0);
+
   sgpp::base::DataVector resultImplicit(grid->getSize());
   sgpp::base::DataVector resultExplicit(grid->getSize());
 
@@ -260,7 +266,8 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitPolyClenshawCurtisBoundar
 
   // test if  explicit equals implicit
   sgpp::base::OperationMatrix* opImplicit = sgpp::op_factory::createOperationLTwoDotProduct(*grid);
-  sgpp::base::DataVector alpha(grid->getSize());
+  sgpp::base::DataVector alpha(grid->getSize(), 1.0);
+
   sgpp::base::DataVector resultImplicit(grid->getSize());
   sgpp::base::DataVector resultExplicit(grid->getSize());
 
@@ -294,7 +301,8 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitModPolyClenshawCurtis) {
 
   // test if explicit equals implicit
   sgpp::base::OperationMatrix* opImplicit = sgpp::op_factory::createOperationLTwoDotProduct(*grid);
-  sgpp::base::DataVector alpha(grid->getSize());
+  sgpp::base::DataVector alpha(grid->getSize(), 1.0);
+
   sgpp::base::DataVector resultImplicit(grid->getSize());
   sgpp::base::DataVector resultExplicit(grid->getSize());
 
@@ -327,7 +335,8 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitBspline) {
 
   // test if explicit equals implicit
   sgpp::base::OperationMatrix* opImplicit = sgpp::op_factory::createOperationLTwoDotProduct(*grid);
-  sgpp::base::DataVector alpha(grid->getSize());
+  sgpp::base::DataVector alpha(grid->getSize(), 1.0);
+
   sgpp::base::DataVector resultImplicit(grid->getSize());
   sgpp::base::DataVector resultExplicit(grid->getSize());
 
@@ -360,7 +369,8 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitBsplineBoundary) {
 
   // test if explicit equals implicit
   sgpp::base::OperationMatrix* opImplicit = sgpp::op_factory::createOperationLTwoDotProduct(*grid);
-  sgpp::base::DataVector alpha(grid->getSize());
+  sgpp::base::DataVector alpha(grid->getSize(), 1.0);
+
   sgpp::base::DataVector resultImplicit(grid->getSize());
   sgpp::base::DataVector resultExplicit(grid->getSize());
 
@@ -393,7 +403,8 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitModBspline) {
 
   // test if explicit equals implicit
   sgpp::base::OperationMatrix* opImplicit = sgpp::op_factory::createOperationLTwoDotProduct(*grid);
-  sgpp::base::DataVector alpha(grid->getSize());
+  sgpp::base::DataVector alpha(grid->getSize(), 1.0);
+
   sgpp::base::DataVector resultImplicit(grid->getSize());
   sgpp::base::DataVector resultExplicit(grid->getSize());
 
@@ -426,7 +437,8 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitBsplineClenshawCurtis) {
 
   // test if explicit equals implicit
   sgpp::base::OperationMatrix* opImplicit = sgpp::op_factory::createOperationLTwoDotProduct(*grid);
-  sgpp::base::DataVector alpha(grid->getSize());
+  sgpp::base::DataVector alpha(grid->getSize(), 1.0);
+
   sgpp::base::DataVector resultImplicit(grid->getSize());
   sgpp::base::DataVector resultExplicit(grid->getSize());
 

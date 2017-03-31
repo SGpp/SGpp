@@ -16,6 +16,12 @@
 #include <sgpp/pde/operation/hash/OperationLaplaceLinearStretched.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceLinearStretchedBoundary.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplacePoly.hpp>
+#include <sgpp/pde/operation/hash/OperationLaplaceModPoly.hpp>
+#include <sgpp/pde/operation/hash/OperationLaplacePolyBoundary.hpp>
+#include <sgpp/pde/operation/hash/OperationLaplacePolyClenshawCurtis.hpp>
+#include <sgpp/pde/operation/hash/OperationLaplacePolyClenshawCurtisBoundary.hpp>
+#include <sgpp/pde/operation/hash/OperationLaplaceModPolyClenshawCurtis.hpp>
+#include <sgpp/pde/operation/hash/OperationLaplaceBspline.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceExplicitBspline.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceExplicitModBspline.hpp>
 
@@ -82,6 +88,18 @@ base::OperationMatrix* createOperationLaplace(base::Grid& grid) {
     return new pde::OperationLaplaceLinearStretchedBoundary(&grid.getStorage());
   } else if (grid.getType() == base::GridType::Poly) {
     return new pde::OperationLaplacePoly(&grid);
+  } else if (grid.getType() == base::GridType::PolyBoundary) {
+    return new pde::OperationLaplacePolyBoundary(&grid);
+  } else if (grid.getType() == base::GridType::ModPoly) {
+    return new pde::OperationLaplaceModPoly(&grid);
+  } else if (grid.getType() == base::GridType::PolyClenshawCurtis) {
+    return new pde::OperationLaplacePolyClenshawCurtis(&grid);
+  } else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary) {
+    return new pde::OperationLaplacePolyClenshawCurtisBoundary(&grid);
+  } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
+    return new pde::OperationLaplaceModPolyClenshawCurtis(&grid);
+  } else if (grid.getType() == base::GridType::Bspline) {
+    return new pde::OperationLaplaceBspline(&grid);
   } else {
     throw base::factory_exception("OperationLaplace is not implemented for this grid type.");
   }

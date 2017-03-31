@@ -3,12 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/pde/operation/hash/OperationLaplacePolyClenshawCurtisBoundary.hpp>
+#include <sgpp/pde/operation/hash/OperationLaplaceModPolyClenshawCurtis.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
-#include <sgpp/base/grid/type/PolyClenshawCurtisBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/ModPolyClenshawCurtisGrid.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBoundaryBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyModifiedClenshawCurtisBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -20,21 +20,20 @@
 namespace sgpp {
 namespace pde {
 
-OperationLaplacePolyClenshawCurtisBoundary::OperationLaplacePolyClenshawCurtisBoundary(
-  sgpp::base::Grid* grid)
+OperationLaplaceModPolyClenshawCurtis::OperationLaplaceModPolyClenshawCurtis(sgpp::base::Grid* grid)
   : grid(grid),
     clenshawCurtisTable(base::ClenshawCurtisTable::getInstance()) {}
 
-OperationLaplacePolyClenshawCurtisBoundary::~OperationLaplacePolyClenshawCurtisBoundary() {}
+OperationLaplaceModPolyClenshawCurtis::~OperationLaplaceModPolyClenshawCurtis() {}
 
-void OperationLaplacePolyClenshawCurtisBoundary::mult(sgpp::base::DataVector& alpha,
+void OperationLaplaceModPolyClenshawCurtis::mult(sgpp::base::DataVector& alpha,
                                 sgpp::base::DataVector& result) {
   size_t gridSize = grid->getSize();
   size_t gridDim = grid->getDimension();
-  const size_t p = dynamic_cast<sgpp::base::PolyClenshawCurtisBoundaryGrid*>(grid)->getDegree();
+  const size_t p = dynamic_cast<sgpp::base::ModPolyClenshawCurtisGrid*>(grid)->getDegree();
   const size_t quadOrder = p + 1;
-  sgpp::base::SPolyClenshawCurtisBoundaryBase& basis
-    = dynamic_cast<sgpp::base::SPolyClenshawCurtisBoundaryBase&>(grid->getBasis());
+  sgpp::base::SPolyModifiedClenshawCurtisBase& basis
+    = dynamic_cast<sgpp::base::SPolyModifiedClenshawCurtisBase&>(grid->getBasis());
   sgpp::base::GridStorage& storage = grid->getStorage();
 
   sgpp::base::DataVector integrals1D(gridDim);
@@ -63,15 +62,10 @@ void OperationLaplacePolyClenshawCurtisBoundary::mult(sgpp::base::DataVector& al
         const base::level_t ljk = storage[j].getLevel(k);
         const base::index_t iik = storage[i].getIndex(k);
         const base::index_t ijk = storage[j].getIndex(k);
-        // points are not uniformly distributed thus we need to find the left and right boundarys
-        const double left_i = (iik == 0) ? 0 : clenshawCurtisTable.getPoint(lik, iik - 1);
-        const double left_j = (ijk == 0) ? 0 : clenshawCurtisTable.getPoint(ljk, ijk - 1);
-        const double right_i = (iik == static_cast<base::index_t>(1 << lik))
-          ? 1.0
-          : clenshawCurtisTable.getPoint(lik, iik + 1);
-        const double right_j = (ijk == static_cast<base::index_t>(1 << ljk))
-          ? 1.0
-          : clenshawCurtisTable.getPoint(ljk, ijk + 1);
+        const double left_i = clenshawCurtisTable.getPoint(lik, iik - 1);
+        const double right_i = clenshawCurtisTable.getPoint(lik, iik + 1);
+        const double left_j = clenshawCurtisTable.getPoint(ljk, ijk - 1);
+        const double right_j = clenshawCurtisTable.getPoint(ljk, ijk + 1);
 
         if (left_j >= right_i || left_i >= right_j) {
           // Ansatz functions do not not overlap:
