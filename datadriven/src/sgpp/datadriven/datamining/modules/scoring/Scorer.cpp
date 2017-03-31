@@ -37,11 +37,11 @@ Scorer& Scorer::operator=(const Scorer& rhs) {
   return *this;
 }
 
-void Scorer::randomizeIndices(std::vector<size_t>& randomizedIndices) {
+void Scorer::randomizeIndices(const Dataset& dataset, std::vector<size_t>& randomizedIndices) {
   for (size_t i = 0; i < randomizedIndices.size(); i++) {
     randomizedIndices[i] = i;
   }
-  shuffling->shuffle(randomizedIndices);
+  shuffling->shuffle(dataset, randomizedIndices);
 }
 
 void Scorer::splitSet(const Dataset& dataset, Dataset& trainDataset, Dataset& testDataset,

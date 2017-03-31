@@ -85,7 +85,7 @@ vars.Add("COMPILER", "Set the compiler, \"gnu\" means using gcc with standard co
                      "the following values are possible: " +
                      "gnu, clang, intel, openmpi, mpich, intel.mpi; " +
                      "when using the Intel Compiler, version 11 or higher must be used", "gnu")
-vars.Add(BoolVariable("OPT", "Set compiler optimization on and off", False))
+vars.Add(BoolVariable("OPT", "Set compiler optimization on and off", True))
 vars.Add(BoolVariable("RUN_PYTHON_TESTS", "Run Python unit tests", True))
 vars.Add(BoolVariable("PYDOC", "Build Python wrapper with docstrings", False))
 vars.Add(BoolVariable("SG_ALL", "Default value for the other SG_* variables; " +
@@ -193,9 +193,11 @@ env["BOOST_LIBRARY_PATH"] = env.get("BOOST_LIBRARY_PATH", "/usr/lib/x86_64-linux
                                     if env["PLATFORM"] not in ["darwin", "win32"]
                                     else "")
 
-# don't create the Doxyfile if building Doxygen:
+# only create the Doxyfile if building Doxygen:
 if ("doxygen" in BUILD_TARGETS) and (not env.GetOption("clean")):
-  DoxygenHelper.prepareDoxygen(moduleFolders)
+  Helper.printInfo("Building Doxyfile for modules: "+
+                   ', '.join([moduleFolder for moduleFolder in moduleFolders if env["SG_" + moduleFolder.upper()]]))
+  DoxygenHelper.prepareDoxygen([moduleFolder for moduleFolder in moduleFolders if env["SG_" + moduleFolder.upper()]])
 
 if "CXX" in ARGUMENTS:
   Helper.printInfo("CXX: {}".format(ARGUMENTS["CXX"]))
