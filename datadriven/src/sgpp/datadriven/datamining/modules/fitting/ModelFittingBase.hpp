@@ -91,8 +91,9 @@ class ModelFittingBase {
 
   /**
    * Improve accuracy of the model on the given training data by adaptive refinement of the grid.
+   * @return true if refinement was performed, else false.
    */
-  virtual void refine() = 0;
+  virtual bool refine() = 0;
 
   // TODO(lettrich): dataset should be const
   /**
