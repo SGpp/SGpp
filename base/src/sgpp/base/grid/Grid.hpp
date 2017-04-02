@@ -6,9 +6,9 @@
 #ifndef GRID_HPP
 #define GRID_HPP
 
+#include <sgpp/base/grid/generation/GridGenerator.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
-#include <sgpp/base/grid/generation/GridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -490,13 +490,13 @@ class Grid {
    * Returns the number of dimensions
    * @return the number of dimensions
    */
-  size_t getDimension();
+  size_t getDimension() const;
 
   /**
    * Returns the number of points on the grid
    * @return the number of points on the grid
    */
-  size_t getSize();
+  size_t getSize() const;
 
   /**
    * returns the algorithmic dimensions (the dimensions in which the Up Down
