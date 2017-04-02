@@ -34,7 +34,6 @@ namespace pde {
     opExplicit->mult(alpha, resultExplicit);
     opImplicit->mult(alpha, resultImplicit);
     for (size_t i = 0; i < grid->getSize(); i++) {
-      std::cout << "impl: " << resultImplicit.get(i) << "expl: " << resultExplicit.get(i) << std::endl;
       BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-15);
     }
   }
