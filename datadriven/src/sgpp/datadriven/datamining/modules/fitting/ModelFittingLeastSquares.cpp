@@ -29,7 +29,7 @@ namespace sgpp {
 namespace datadriven {
 
 ModelFittingLeastSquares::ModelFittingLeastSquares(const FitterConfigurationLeastSquares& config)
-    : ModelFittingBase{} {
+    : ModelFittingBase{}, refinementsPerformed{0} {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationLeastSquares>(config));
   solver = std::unique_ptr<SLESolver>{buildSolver(this->config->getSolverFinalConfig())};
@@ -50,6 +50,7 @@ void ModelFittingLeastSquares::evaluate(DataMatrix& samples, DataVector& results
 
 void ModelFittingLeastSquares::fit(Dataset& newDataset) {
   // clear model
+  resetState();
   grid.reset();
   dataset = &newDataset;
 
@@ -63,10 +64,9 @@ void ModelFittingLeastSquares::fit(Dataset& newDataset) {
   assembleSystemAndSolve(config->getSolverFinalConfig(), alpha);
 }
 
-void ModelFittingLeastSquares::refine() {
+bool ModelFittingLeastSquares::refine() {
   if (grid != nullptr) {
-    for (size_t refinementStep = 0; refinementStep < config->getRefinementConfig().numRefinements_;
-         refinementStep++) {
+    if (refinementsPerformed < config->getRefinementConfig().numRefinements_) {
       // create refinement functor
       SurplusRefinementFunctor refinementFunctor(alpha, config->getRefinementConfig().noPoints_,
                                                  config->getRefinementConfig().threshold_);
@@ -77,14 +77,22 @@ void ModelFittingLeastSquares::refine() {
       alpha.resizeZero(grid->getSize());
 
       assembleSystemAndSolve(config->getSolverRefineConfig(), alpha);
+      refinementsPerformed++;
+      return true;
+    } else {
+      return false;
     }
+
+  } else {
     throw application_exception(
         "ModelFittingLeastSquares: Can't refine before initial grid is created");
+    return false;
   }
 }
 
 void ModelFittingLeastSquares::update(Dataset& newDataset) {
   if (grid != nullptr) {
+    resetState();
     // reassign dataset
     dataset = &newDataset;
     // create sytem matrix
@@ -102,6 +110,8 @@ DMSystemMatrixBase* ModelFittingLeastSquares::buildSystemMatrix(
 
   return systemMatrix;
 }
+
+void ModelFittingLeastSquares::resetState() { refinementsPerformed = 0; }
 
 void ModelFittingLeastSquares::assembleSystemAndSolve(const SLESolverConfiguration& solverConfig,
                                                       DataVector& alpha) const {
