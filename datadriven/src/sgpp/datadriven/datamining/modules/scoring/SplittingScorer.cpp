@@ -23,6 +23,7 @@ SplittingScorer::SplittingScorer(Metric* metric, ShufflingFunctor* shuffling, in
 
 Scorer* SplittingScorer::clone() const { return new SplittingScorer{*this}; }
 
+// TODO(lettrich) :recycle
 double SplittingScorer::calculateScore(ModelFittingBase& model, Dataset& dataset,
                                        double* stdDeviation) {
   // perform randomization of indices
@@ -34,9 +35,9 @@ double SplittingScorer::calculateScore(ModelFittingBase& model, Dataset& dataset
   size_t testSize = dataset.getNumberInstances() - trainSize;
   size_t dim = dataset.getDimension();
 
-  std::cout << "starting training with testing. " << std::endl
-            << "test size:" << testSize << std::endl
-            << "train size:" << trainSize << std::endl;
+  std::cout << "starting training with testing.\n"
+            << "test size:" << testSize << "\n"
+            << "train size:" << trainSize << "\n";
 
   // create test and train datasets.
   Dataset testDataset{testSize, dim};
@@ -44,11 +45,10 @@ double SplittingScorer::calculateScore(ModelFittingBase& model, Dataset& dataset
   splitSet(dataset, trainDataset, testDataset, randomizedIndices);
 
   // fit model
-  std::cout << "###############" << std::endl << "fitting model" << std::endl;
   double score = train(model, trainDataset, testDataset);
-  std::cout << "###############" << std::endl
-            << "accuracy of fit:" << score << std::endl
-            << std::endl;
+
+  // refine it
+  score = refine(model, testDataset);
 
   if (stdDeviation) {
     *stdDeviation = 0;
