@@ -140,7 +140,6 @@ void OperationLaplaceBspline::mult(sgpp::base::DataVector& alpha,
         }
         res += temp_res;
       }
-      std::cout << "i,j:" << i << "," << j << " Impl: " << res << std::endl;
       // multiplication and summation of results
       result[i] += res * alpha[j];
       if (i != j)
