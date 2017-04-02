@@ -71,14 +71,18 @@ bool ModelFittingLeastSquares::refine() {
       SurplusRefinementFunctor refinementFunctor(alpha, config->getRefinementConfig().noPoints_,
                                                  config->getRefinementConfig().threshold_);
       // refine grid
+      auto noPoints = grid->getSize();
       grid->getGenerator().refine(refinementFunctor);
+      if (grid->getSize() > noPoints) {
+        // Tell the SLE manager that the grid changed (for interal data structures)
+        alpha.resizeZero(grid->getSize());
 
-      // tell the SLE manager that the grid changed (for interal data structures)
-      alpha.resizeZero(grid->getSize());
-
-      assembleSystemAndSolve(config->getSolverRefineConfig(), alpha);
-      refinementsPerformed++;
-      return true;
+        assembleSystemAndSolve(config->getSolverRefineConfig(), alpha);
+        refinementsPerformed++;
+        return true;
+      } else {
+        return false;
+      }
     } else {
       return false;
     }
