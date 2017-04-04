@@ -83,7 +83,7 @@ class DBMatOffline {
    * depending
    * on the type of decomposition
    */
-  virtual void buildMatrix() = 0;
+  virtual void buildMatrix();
 
   /**
    * Decomposes the matrix according to the chosen decomposition type.
