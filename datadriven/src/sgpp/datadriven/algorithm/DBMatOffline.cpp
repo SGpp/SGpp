@@ -295,4 +295,28 @@ void DBMatOffline::Tokenize(std::string& str, std::vector<std::string>& tokens,
 }  // namespace datadriven
 }  // namespace sgpp
 
+void sgpp::datadriven::DBMatOffline::buildMatrix() {
+  if (isConstructed) {  // Already constructed, do nothing
+    return;
+  }
+
+  size_t size;
+
+  InitializeGrid();
+
+  // check if grid was created
+  if (grid == nullptr) {
+    throw application_exception("DBMatOffline: grid was not initialized");
+  }
+
+  size = grid->getStorage().getSize();  // Size of the (quadratic) matrices A and C
+
+  // Construct matrix A
+  lhsMatrix = DataMatrix(size, size);
+
+  std::unique_ptr<OperationMatrix> op(
+      sgpp::op_factory::createOperationLTwoDotExplicit(&lhsMatrix, *grid));
+  isConstructed = true;
+}
+
 #endif /* USE_GSL */
