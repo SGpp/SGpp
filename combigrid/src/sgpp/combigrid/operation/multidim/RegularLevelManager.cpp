@@ -24,6 +24,10 @@ RegularLevelManager::RegularLevelManager(std::shared_ptr<AbstractLevelEvaluator>
 
 RegularLevelManager::RegularLevelManager() {}
 
+std::shared_ptr<LevelManager> RegularLevelManager::clone() {
+  return std::make_shared<RegularLevelManager>(*this);
+}
+
 RegularLevelManager::~RegularLevelManager() {}
 
 } /* namespace combigrid */

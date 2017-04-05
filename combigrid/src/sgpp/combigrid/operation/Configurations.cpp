@@ -148,5 +148,11 @@ std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> CombiEvaluators::mult
   return std::make_shared<ArrayEvaluator<QuadratureEvaluator>>(false);
 }
 
+std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> CombiEvaluators::multiQuadrature(
+    SingleFunction func, bool normalizeWeights) {
+  return std::make_shared<ArrayEvaluator<QuadratureEvaluator>>(
+      false, QuadratureEvaluator(func, normalizeWeights));
+}
+
 } /* namespace combigrid */
 } /* namespace sgpp */

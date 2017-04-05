@@ -26,6 +26,8 @@ class WeightedRatioLevelManager : public LevelManager {
                                      double w = 0.8);
   virtual ~WeightedRatioLevelManager();
 
+  virtual std::shared_ptr<LevelManager> clone();
+
  private:
   double w;
 };

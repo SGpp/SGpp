@@ -208,6 +208,7 @@ namespace std {
 
     %template(FloatScalarVectorVector) vector<sgpp::combigrid::FloatScalarVector>;
     %template(FloatArrayVectorVector) vector<sgpp::combigrid::FloatArrayVector>;
+    %template(DataVectorVector) vector<sgpp::base::DataVector>;
 
     // %template(PyTaskVector) std::vector<sgpp::combigrid::GeneralFunction1<void>>;
 
@@ -247,6 +248,7 @@ namespace std {
 // experimental
 
 %feature("director") sgpp::combigrid::GeneralFunctionDirector;
+%feature("director") sgpp::combigrid::GeneralFunctionDirector1;
 %include "combigrid/src/sgpp/combigrid/GeneralFunctionDirector.hpp"
 
 namespace sgpp {
@@ -346,5 +348,12 @@ def idleCallbackFunc(funcObj):
     dir.__disown__()
     return f
 %}
+
+// does some exception handling according to the SWIG website
+%feature("director:except") {
+    if ($error != NULL) {
+        throw Swig::DirectorMethodException();
+    }
+}
 
 #endif
