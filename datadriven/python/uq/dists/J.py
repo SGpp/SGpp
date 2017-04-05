@@ -160,7 +160,7 @@ class J(Dist):
 #         p = DataVector(gs.getDimension())
 #         nodalValues = DataVector(gs.size())
 #         for i in xrange(gs.size()):
-#             gs.getPoint(i).getStandardCoordinates(p)
+#             gs.getCoordinates(gs.getPoint(i), p)
 #             nodalValues[i] = self.pdf(p.array())
 #
 #         alpha = hierarchize(grid, nodalValues)
@@ -198,5 +198,7 @@ class J(Dist):
         if key in jsonObject:
             vals = jsonObject[key]
             dists = [Dist.fromJson(vals[key]) for key in sorted(vals.keys())]
+        else:
+            raise AttributeError("J: fromJson - the mandatory keyword '%s' does not exist" % key)
 
         return J(dists)

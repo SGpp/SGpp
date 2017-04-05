@@ -14,7 +14,12 @@ class LinearQuadratureStrategy(HashQuadrature):
     """
 
     def hasValue(self, gpi, d):
-        key = self._map.getKey([gpi], d)
+        if len(self._U) < d:
+            U = self._U[d]
+        else:
+            U = self._U[-1]
+
+        key = self._map.getKey(U, [gpi], d)
         if key in self._map:
             return True, key
         return False, key
@@ -33,13 +38,14 @@ class LinearQuadratureStrategy(HashQuadrature):
         for i in xrange(gs.size()):
             gpi = gs.getPoint(i)
             # compute bilinear form for one entry
-            v[i], erri = self.getLinearFormEntry(gpi, basis)
+            v[i], erri = self.getLinearFormEntry(gs, gpi, basis)
             err += erri
         return v, err
 
-    def computeLinearFormByList(self, gps, basis):
+    def computeLinearFormByList(self, gs, gps, basis):
         """
         Compute bilinear form for two lists of grid points
+        @param gs: HashGridStorage
         @param gps: list of HashGridPoint
         @param basis: SG++ basis for grid indices gpsi
         @return: numpy array
@@ -48,37 +54,45 @@ class LinearQuadratureStrategy(HashQuadrature):
         err = 0.
         # run over all items
         for i, gpi in enumerate(gps):
-            # run over all dimensions
-            for d in xrange(gpi.getDimension()):
-                # compute linear form for one entry
-                value, erri = self.getLinearFormEntry(gpi, basis, d)
-                # collect results
-                b[i] *= value
-                err += erri
+            # compute linear form for one entry
+            value, erri = self.getLinearFormEntry(gs, gpi, basis)
+
+            # collect results
+            b[i] = value
+            err += erri
         return b, err
 
-    def getLinearFormEntry(self, gp, basis, d):
+    def getLinearFormEntry(self, gs, gp, basis):
         """
         Restore the bilinear form of two grid points if it is available.
         If not, forward the result to the computation method.
+        @param gs: HashGridStorage
         @param gp: HashGridPoint
         @param basis: SG++ Basis
-        @param d: int dimension
         """
-        available, key = self.hasValue(gp, d)
-        if not available:
-            # there is no information available for the current combination
-            # of grid points
-            val, err = self.computeLinearFormEntry(gp, basis, d)
-            # store value
-            self._map[key] = val, err
-        else:
-            val, err = self._map[key]
-        return val, err
+        ans, err = 1.0, 0.0
 
-    def computeLinearFormEntry(self, gp, basis, d):
+        # run over all dimensions
+        for d in xrange(gp.getDimension()):
+            # compute linear form for one entry
+            available, keyd = self.hasValue(gp, d)
+            if not available:
+                val, erri = self.computeLinearFormEntry(gs, gp, basis, d)
+                # store value
+                self._map[keyd] = val, erri
+            else:
+                val, erri = self._map[keyd]
+
+            # collect results
+            ans *= val
+            err += erri
+
+        return ans, err
+
+    def computeLinearFormEntry(self, gs, gp, basis, d):
         """
         Compute the bilinear form of one grid point with another one
+        @param gs: HashGridStorage
         @param gp: HashGridPoint
         @param basis: SG++ Basis
         """

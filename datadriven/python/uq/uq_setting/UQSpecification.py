@@ -38,7 +38,7 @@ class UQSpecification(object):
 
         self.__postprocessor = postprocessor
         self.__reachesSteadyState = False
-        self.__save = False
+        self.__save = 1
 
         self.__interpolants = {}
 
@@ -161,5 +161,5 @@ class UQSpecification(object):
     def setSaveAfterEachRun(self, save):
         self.__save = save
 
-    def getSaveAfterEachRun(self):
-        return self.__save
+    def getSaveAfterEachRun(self, n):
+        return n % self.__save == 0

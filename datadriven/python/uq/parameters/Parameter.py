@@ -1,6 +1,7 @@
 from pysgpp.extensions.datadriven.uq.dists import Dist
 
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
+from pysgpp.extensions.datadriven.uq.transformation.Transformation import Transformation
 
 
 class Parameter(object):
@@ -48,7 +49,7 @@ class Parameter(object):
                               self.__module__ + '",\n'
 
         # serialize
-        for attrName in ('_name', '_value'):
+        for attrName in ('_name', '_value', '_trans'):
             attrValue = self.__getattribute__(attrName)
             serializationString += ju.parseAttribute(attrValue, attrName)
 
@@ -72,23 +73,26 @@ class Parameter(object):
         if key in jsonObject:
             name = jsonObject[key]
 
-        key = '_dist'
-        if key in jsonObject:
-            dist = Dist.fromJson(jsonObject[key])
-
         key = '_value'
-        if key in jsonObject:
+        if key in jsonObject and jsonObject[key] != "null":
             value = jsonObject[key]
         else:
             value = None
 
-        if jsonObject['module'] == 'parameters.UncertainParameter':
+        key = '_trans'
+        if key in jsonObject:
+            trans = Transformation.fromJson(jsonObject[key])
+
+        key = '_dist'
+        if key in jsonObject:
+            dist = Dist.fromJson(jsonObject[key])
+
+        if 'parameters.UncertainParameter' in jsonObject['module']:
             from pysgpp.extensions.datadriven.uq.parameters.UncertainParameter import UncertainParameter
-            return UncertainParameter(name, dist, value)
-        elif jsonObject['module'] == 'parameters.DeterministicParameter':
+            return UncertainParameter(name, dist, trans, value)
+        elif 'parameters.DeterministicParameter' in jsonObject['module']:
             from pysgpp.extensions.datadriven.uq.parameters.DeterministicParameter import \
                 DeterministicParameter
             return DeterministicParameter(name, value)
         else:
-            raise TypeError('Unknown parameter => Please register it \
-                             in fromJson function in Parameters.py')
+            raise TypeError("Unknown parameter '%s' => Please register it in fromJson function in Parameters.py" % jsonObject["module"])

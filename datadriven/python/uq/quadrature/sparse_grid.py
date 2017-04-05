@@ -4,20 +4,41 @@ from pysgpp import (createOperationQuadrature,
 from pysgpp.extensions.datadriven.uq.operations import getBasis
 from pysgpp import DataVector
 import numpy as np
+from pysgpp.pysgpp_swig import GridType_PolyClenshawCurtis, \
+    GridType_PolyClenshawCurtisBoundary, GridType_ModPoly, \
+    GridType_ModPolyClenshawCurtis, GridType_LinearClenshawCurtis, \
+    GridType_LinearClenshawCurtisBoundary, GridType_ModLinearClenshawCurtis, \
+    GridType_LinearTruncatedBoundary, GridType_Bspline, GridType_BsplineBoundary, \
+    GridType_ModBspline, GridType_BsplineClenshawCurtis, \
+    GridType_ModBsplineClenshawCurtis, GridType_ModLinear
 
 
 def getIntegral(grid, level, index):
     # create new grid
-    if grid.getType() in [GridType_LinearBoundary, GridType_LinearL0Boundary]:
+    if grid.getType() in [GridType_LinearBoundary,
+                          GridType_LinearTruncatedBoundary,
+                          GridType_LinearL0Boundary]:
         return np.power(2., -max(1, level))
     elif grid.getType() == GridType_Linear:
         # # employ 4/3 rule
         # if gp.isLeaf():
         #     q *= 4. / 3.
         return np.power(2., -level)
-    elif grid.getType() == GridType_Poly:
-        return getBasis(grid).getIntegral(level, index)
-    elif grid.getType() == GridType_PolyBoundary:
+    elif grid.getType() in [GridType_ModLinear,
+                            GridType_LinearClenshawCurtis,
+                            GridType_LinearClenshawCurtisBoundary,
+                            GridType_ModLinearClenshawCurtis,
+                            GridType_Poly,
+                            GridType_PolyBoundary,
+                            GridType_ModPoly,
+                            GridType_PolyClenshawCurtis,
+                            GridType_PolyClenshawCurtisBoundary,
+                            GridType_ModPolyClenshawCurtis,
+                            GridType_Bspline,
+                            GridType_BsplineBoundary,
+                            GridType_ModBspline,
+                            GridType_BsplineClenshawCurtis,
+                            GridType_ModBsplineClenshawCurtis]:
         return getBasis(grid).getIntegral(level, index)
     else:
         raise AttributeError('unsupported grid type %s' % grid.getType())
