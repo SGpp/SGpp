@@ -12,7 +12,6 @@
 
 @version  0.1
 """
-from pysgpp.extensions.datadriven.uq.dists import Corr
 from ParameterDescriptor import (UncertainParameterDesciptor,
                                  DeterministicParameterDescriptor)
 from ParameterSet import ParameterSet
@@ -92,29 +91,6 @@ class GeneralParameterBuilder(object):
                 correlated.append((newkey, builder))
             else:
                 ans.addParam(newkey, newparam)
-
-        # insert correlated variables
-        for newkey, builder in correlated:
-            found = False
-            newparam = builder.andGetResult()
-            for key, param in ans.items():
-                if param.getName() == correlations:
-                    # build correlated random variable
-                    names = [param.getName(), newparam.getName()]
-                    dist = Corr([param.getDistribution(),
-                                 newparam.getDistribution()])
-                    # set new distribution and new names
-                    newparam.setDistribution(dist)
-                    newparam.setName(names)
-
-                    # replace old parameter by new parameter
-                    ans.replaceParam(key, newparam)
-                    found = True
-            if not found:
-                raise AttributeError('the parameter "%s" was not found but is \
-                                      required by "%s"' %
-                                     (builder.correlatedTo,
-                                      newparam.getName()))
         return ans
 
 
