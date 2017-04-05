@@ -197,6 +197,8 @@ class LevelManager {
 
   virtual ~LevelManager();
 
+  virtual std::shared_ptr<LevelManager> clone() = 0;
+
   /**
    * Sets the level evaluator (normally a CombigridEvaluator).
    */
