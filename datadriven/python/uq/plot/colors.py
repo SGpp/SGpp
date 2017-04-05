@@ -55,11 +55,6 @@ def savefig(fig, filename, lgd=None, tikz=True, mpl3d=False):
         if lgd is None:
             fig.savefig("%s.png" % filename, bbox_inches='tight')
             fig.savefig("%s.pdf" % filename, bbox_inches='tight')
-            if tikz:
-                try:
-                    tikz_save("%s.tex" % filename)
-                except:
-                    pass
         else:
             fig.savefig("%s.png" % filename,
                         bbox_extra_artists=(lgd,),
@@ -67,11 +62,11 @@ def savefig(fig, filename, lgd=None, tikz=True, mpl3d=False):
             fig.savefig("%s.pdf" % filename,
                         bbox_extra_artists=(lgd,),
                         bbox_inches='tight')
-            if tikz:
-                try:
-                    tikz_save("%s.tex" % filename)
-                except:
-                    pass
+        if tikz:
+            try:
+                tikz_save("%s.tex" % filename, fig, econding="utf8")
+            except:
+                pass
 
     plt.close(fig)
 

@@ -78,7 +78,8 @@ try:
                                 'xtick.labelsize': pysgpp_uq_font["size"],
                                 'ytick.labelsize': pysgpp_uq_font["size"],
                                 'axes.unicode_minus': True,
-                                'figure.figsize': (5, 4.5)
+                                'figure.figsize': (5, 4.5),
+                                'image.cmap': 'viridis'
                                 }
     mpl.rcParams.update(pgf_with_custom_preamble)
 
