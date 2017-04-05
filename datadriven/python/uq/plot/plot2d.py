@@ -1,14 +1,15 @@
-from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
-from pysgpp import DataVector, DataMatrix
-
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib.pylab as plt
+import matplotlib.cm as cm
+
+from pysgpp import DataVector, DataMatrix
+from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunctionMulti
-from pysgpp.pysgpp_swig import DataVector
 
 
 def plotDensity2d(U, n=50, addContour=True,
-                  color_bar_label=r'$\hat{f}(\xi_1, \xi_2)$'):
+                  color_bar_label=r'$\hat{f}(\xi_1, \xi_2)$',
+                  levels=None):
     xlim, ylim = U.getBounds()
 
     x = np.linspace(xlim[0], xlim[1], n)
@@ -21,17 +22,26 @@ def plotDensity2d(U, n=50, addContour=True,
             Z[j, i] = U.pdf(np.array([xv[j, i], yv[j, i]]))
 
     # np.savetxt('density2d.csv', z.reshape(n * n, 3), delimiter=' ')
+    im = plt.imshow(Z,
+                    interpolation='bicubic',
+                    origin="lower",
+                    aspect='auto',
+                    extent=[xlim[0], xlim[1], ylim[0], ylim[1]])
 
-    plt.imshow(Z[::-1, :], interpolation='bicubic', aspect='auto',
-               extent=[xlim[0], xlim[1], ylim[0], ylim[1]])
-
-    plt.jet()
-    cbar = plt.colorbar()
+    cbar = plt.colorbar(im)
     cbar.ax.set_ylabel(color_bar_label)
 
     if addContour:
-        cs = plt.contour(xv, yv, Z, colors='white')
-        plt.clabel(cs, inline=1, fontsize=18)
+        if levels is not None:
+            cs = plt.contour(xv, yv, Z, colors='white')
+            plt.clabel(cs, levels,
+                       inline=1,
+                       color="white",
+                       fontsize=18,
+                       fmt='%1.0f')
+        else:
+            cs = plt.contour(xv, yv, Z, colors='white')
+            plt.clabel(cs, inline=1, fmt="%1.0f", fontsize=18)
 
 def plotSGDE2d(U, n=100):
     gs = U.grid.getStorage()
@@ -79,7 +89,8 @@ def plotSGDE2d(U, n=100):
 
 
 def plotFunction2d(f, addContour=True, n=101,
-                   xlim=[0, 1], ylim=[0, 1]):
+                   xlim=[0, 1], ylim=[0, 1],
+                   color_bar_label=r'$u(\xi_1, \xi_2)$'):
     x = np.linspace(xlim[0], xlim[1], n)
     y = np.linspace(ylim[0], ylim[1], n)
     Z = np.ones((n, n))
@@ -90,10 +101,9 @@ def plotFunction2d(f, addContour=True, n=101,
             Z[j, i] = f(np.array([xv[j, i], yv[j, i]]))
 
     # np.savetxt('density2d.csv', z.reshape(n * n, 3), delimiter=' ')
-    plt.imshow(Z[::-1, :], interpolation='bicubic', aspect='auto',
-               extent=[xlim[0], xlim[1], ylim[0], ylim[1]])
-    plt.jet()
-    cbar = plt.colorbar()
+    im = plt.imshow(Z[::-1, :], interpolation='bicubic', aspect='auto',
+                    extent=[xlim[0], xlim[1], ylim[0], ylim[1]])
+    cbar = plt.colorbar(im)
 
     if addContour:
         cs = plt.contour(xv, yv, Z, colors='white')
@@ -165,7 +175,7 @@ def plotSG2d(grid, alpha, addContour=True, n=100,
                 neg_z.append(res[k])
             k += 1
 
-    plt.imshow(Z[::-1, :], interpolation='bilinear', extent=(0, 1, 0, 1))
+    im = plt.imshow(Z[::-1, :], interpolation='bilinear', extent=(0, 1, 0, 1))
 
     if len(neg_z) > 0 and show_negative:
         plt.plot(neg_x, neg_y, linestyle=' ', marker='o', color='red')
@@ -181,8 +191,7 @@ def plotSG2d(grid, alpha, addContour=True, n=100,
         for i, x, y in numbers:
            plt.text(x, y, "%i" % i, color='yellow', fontsize=12)
 
-    plt.jet()
-    cbar = plt.colorbar()
+    cbar = plt.colorbar(im)
     cbar.set_label(colorbarLabel)
 
     if addContour:

@@ -4,6 +4,7 @@ from colors import load_color, load_font_properties
 from pysgpp import DataVector, DataMatrix
 from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import dehierarchize
+from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend
 
 
 def plotFunction1d(f, n=1000, xlim=[0, 1], **kws):
@@ -103,7 +104,7 @@ def plotSurplusLevelWise(data, maxLevel):
 
 
 def plotSobolIndices(sobolIndices, ts=None, legend=False,
-                     names=None):
+                     adjust_yaxis=True, names=None, mc_reference=None):
     fig = plt.figure()
     plots = []
 
@@ -120,7 +121,9 @@ def plotSobolIndices(sobolIndices, ts=None, legend=False,
 
         if legend:
             plt.xticks([0.5], ('sobol indices',))
-            plt.ylim(0, 1)
+            if adjust_yaxis:
+                plt.ylim(0, 1)
+
             plt.xlim(-0.2, 2)
             lgd = plt.legend(plots,
                              [r"$S_{%s}$ = %.3f" % (name, value)
@@ -130,25 +133,45 @@ def plotSobolIndices(sobolIndices, ts=None, legend=False,
 
     else:
         y0 = np.zeros(sobolIndices.shape[0])
+        offset = 1 if mc_reference is not None else 0
         for i in xrange(sobolIndices.shape[1]):
             y1 = y0 + sobolIndices[:, i]
-            color = load_color(i)
+            color = load_color(i + offset)
             myplot, = plt.plot(ts, y1, color=color, lw=4)
             plt.fill_between(ts, y0, y1, color=color, alpha=.5)
             y0 = y1
 
             plots = [myplot] + plots
 
+        labels = [r"$S_{%s}$" % (",".join(name),) for name in names[::-1]]
+        if mc_reference is not None:
+            myplot, = plt.plot(mc_reference["ts"],
+                               mc_reference["values"],
+                               marker=mc_reference["marker"],
+                               color=mc_reference["color"])
+            plt.fill_between(mc_reference["ts"],
+                             mc_reference["values"],
+                             mc_reference["err"][:, 0],
+                             facecolor=mc_reference["color"], alpha=0.2)
+            plt.fill_between(mc_reference["ts"],
+                             mc_reference["values"],
+                             mc_reference["err"][:, 1],
+                             facecolor=mc_reference["color"], alpha=0.2)
+            labels = [mc_reference["label"]] + labels
+            plots = [myplot] + plots
+
         if legend:
             plt.xlim(min(ts), max(ts))
-            plt.ylim(0, 1)
 
+            if adjust_yaxis:
+                plt.ylim(0, 1)
+
+            fig.tight_layout()
             ax = plt.gca()
             box = ax.get_position()
             ax.set_position([box.x0, box.y0, box.width * 0.85, box.height])
             lgd = plt.legend(plots,
-                             [r"$S_{%s}$" % (",".join(name),)
-                              for name in names[::-1]],
+                             labels,
                              loc='upper left',
                              bbox_to_anchor=(1.02, 1),
                              borderaxespad=0,

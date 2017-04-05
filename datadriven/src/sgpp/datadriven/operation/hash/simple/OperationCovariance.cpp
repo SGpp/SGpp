@@ -81,7 +81,6 @@ void OperationCovariance::doQuadrature(base::DataVector& alpha, base::DataMatrix
     // marginalize and normalize
     opMarg->margToDimX(&alpha, marginalizedGrid, marginalizedAlpha, idim);
     // load bounding box and compute moments
-    // load the boundaries for the current setting
     base::DataMatrix* boundsdd = loadBounds(1, bounds, idim);
     means[idim] = mean(*marginalizedGrid, *marginalizedAlpha, boundsdd);
     variances[idim] = variance(*marginalizedGrid, *marginalizedAlpha, boundsdd);

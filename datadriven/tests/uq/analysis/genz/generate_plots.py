@@ -6,11 +6,12 @@ import matplotlib.pyplot as plt
 
 from pysgpp.extensions.datadriven.uq.helper import sortPermutations
 from argparse import ArgumentParser
-from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend, savefig
+from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend, savefig, \
+    load_font_properties
 
 
-def get_key_sg(gridType, maxGridSize, rosenblatt):
-    return (gridType, maxGridSize, rosenblatt)
+def get_key_sg(gridType, maxGridSize, rosenblatt, boundaryLevel):
+    return (gridType, maxGridSize, rosenblatt, boundaryLevel)
 
 
 def get_key_mc(sampling_strategy, N):
@@ -29,11 +30,18 @@ def load_results(inputspace, path="results"):
 
                 if "rosenblatt" not in currentStats:
                     currentStats["rosenblatt"] = False
+                if "b3" in filename:
+                    currentStats["boundaryLevel"] = 3
+                if "b1" in filename:
+                    currentStats["boundaryLevel"] = 1
+                if "b10" in filename:
+                    currentStats["boundaryLevel"] = 10
 
                 if currentStats["surrogate"] == "sg":
                     key = get_key_sg(currentStats["grid_type"],
                                      currentStats["max_grid_size"],
-                                     currentStats["rosenblatt"])
+                                     currentStats["rosenblatt"],
+                                     currentStats["boundaryLevel"])
                     ans["sg"][key] = currentStats
                 else:
                     key = get_key_mc(currentStats["sampling_strategy"],
@@ -48,7 +56,8 @@ def load_results(inputspace, path="results"):
 
 def plotBoundaryResult(results):
     settings = {'beta': {'sg': [
-                                ("polyBoundary", 10000),
+                                ("polyBoundary", 10000, 10, "bound."),
+                                ("polyClenshawCurtisBoundary", 10000, 10, "CC-bound.")
                                 ]}}
 
 
@@ -56,34 +65,44 @@ def plotBoundaryResult(results):
     # extract the ones needed for the table
     sg_settings = settings[args.model]["sg"]
     fig = plt.figure()
-    for gridType, maxGridSize in sg_settings:
-        key = get_key_sg(gridType, maxGridSize, False)
+    for gridType, maxGridSize, boundaryLevel, gridTypeLabel in sg_settings:
+        key = get_key_sg(gridType, maxGridSize, False, boundaryLevel)
         n = len(results["sg"][key]["results"])
         num_evals = np.ndarray(n)
         errors = np.ndarray(n)
         for i, (boundaryLevel, values) in enumerate(results["sg"][key]["results"].items()):
             num_evals[i] = boundaryLevel
+#             num_evals[i] = values["num_model_evaluations"]
             errors[i] = values[error_type]
         ixs = np.argsort(num_evals)
         plt.plot(num_evals[ixs], errors[ixs], "o-",
-                 label=r"SG (polyBoundary, $\ell=9$)")
+                 label=r"%s ($\ell=9$)" % gridTypeLabel)
 
     plt.xlim(9.5, 0.5)
     ticks = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     plt.xticks(ticks, ticks)
+#     plt.xscale("log")
     plt.yscale("log")
     plt.ylabel(r"$||u - u_{\mathcal{I}}||_{L_2(\Xi)}$")
     plt.xlabel(r"$\ell^{\text{b}}$")
-    lgd = insert_legend(fig, loc="bottom")
+    plt.title(r"Regular SG (poly, $D=2$)",
+              fontproperties=load_font_properties())
+    lgd = insert_legend(fig, loc="bottom", ncol=1)
     savefig(fig, "plots/sg_boundary_results")
 
 
 def plotConvergenceResults(results):
     settings = {'beta': {'sg': [
-                                ("polyBoundary", 1000, False, "poly-boundary"),
-                                ("polyBoundary", 1000, True, "poly-boundary"),
-                                ("polyClenshawCurtisBoundary", 1000, False, "poly-CC-boundary"),
-                                ("polyClenshawCurtisBoundary", 1000, True, "poly-CC-boundary")
+                                ("polyBoundary", 10000, False, 1, "bound."),
+                                ("polyClenshawCurtisBoundary", 10000, False, 1, "CC-bound."),
+#                                 ("modpoly", 10000, False, 1, "modified"),
+#                                 ("modPolyClenshawCurtis", 10000, False, 1, "modified-CC"),
+                                ("polyBoundary", 10000, True, 1, "bound."),
+                                ("polyClenshawCurtisBoundary", 10000, True, 1, "CC-bound."),
+                                ("poly", 10000, False, 1, "no bound.")
+#                                 ("polyBoundary", 2000, False, 1, "poly-bound., exp"),
+#                                 ("polyBoundary", 2001, False, 1, "poly-bound., l2"),
+#                                 ("polyBoundary", 2002, False, 1, "poly-bound., simple")
                                 ]}}
 
 
@@ -91,23 +110,33 @@ def plotConvergenceResults(results):
     # extract the ones needed for the table
     sg_settings = settings[args.model]["sg"]
     fig = plt.figure()
-    for gridType, maxGridSize, rosenblatt, gridTypeLabel in sg_settings:
-        key = get_key_sg(gridType, maxGridSize, rosenblatt)
+    for gridType, maxGridSize, rosenblatt, boundaryLevel, gridTypeLabel in sg_settings:
+        key = get_key_sg(gridType, maxGridSize, rosenblatt, boundaryLevel)
         n = len(results["sg"][key]["results"])
         num_evals = np.ndarray(n)
         errors = np.ndarray(n)
         for i, (level, values) in enumerate(results["sg"][key]["results"].items()):
             num_evals[i] = values["num_model_evaluations"]
             errors[i] = values[error_type]
+        print num_evals
         ixs = np.argsort(num_evals)
-        if rosenblatt:
-            label = r"SG (%s, Rosenblatt)" % (gridTypeLabel,)
+        if "bound" in gridTypeLabel and "no" not in gridTypeLabel:
+            if rosenblatt:
+                label = "%s ($\\ell^{\\text{b}}=%i$, Rosen.)" % (gridTypeLabel, boundaryLevel)
+            else:
+                label = r"%s ($\ell^{\text{b}}=%i$)" % (gridTypeLabel, boundaryLevel)
         else:
-            label = r"SG (%s)" % (gridTypeLabel,)
+            if rosenblatt:
+                label = r"%s (Rosenblatt)" % (gridTypeLabel,)
+            else:
+                label = r"%s" % (gridTypeLabel,)
         plt.loglog(num_evals[ixs], errors[ixs], "o-",
                    label=label)
+
     plt.ylabel(r"$||u - u_{\mathcal{I}}||_{L_2(\Xi)}$")
     plt.xlabel(r"\# number of samples")
+    plt.title(r"Regular SG (poly, $D=2$)",
+              fontproperties=load_font_properties())
     lgd = insert_legend(fig, loc="bottom", ncol=1)
     savefig(fig, "plots/sg_convergence_results")
 

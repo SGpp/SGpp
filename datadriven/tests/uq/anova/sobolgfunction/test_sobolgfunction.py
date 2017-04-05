@@ -114,9 +114,9 @@ class SobolGFunctionSudret2008(object):
             quadrature_strategy = builder.define_approximate_fekete_samples(samples, pce, self.rv_trans)
             num_samples = int(num_samples * 1.6)
         elif sampling_strategy == "leja":
-            samples = 2 * np.random.random((self.effectiveDims, 30000)) - 1.
+            samples = 2 * np.random.random((self.effectiveDims, 50000)) - 1.
             quadrature_strategy = builder.define_approximate_leja_samples(samples, pce, self.rv_trans)
-            num_samples = int(num_samples * 1.6)
+            num_samples = 73  # 233  # int(num_samples * 1.6)
         else:
             raise AttributeError("sampling strategy '%s' is unknnown" % sampling_strategy)
 
@@ -144,6 +144,7 @@ class SobolGFunctionSudret2008(object):
         # get sobol indices
         sobol_indices = builder.getSortedSobolIndices(pce)
         total_effects = computeTotalEffects(sobol_indices)
+        print total_effects
         if out:
             # store results
             # store results
