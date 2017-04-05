@@ -17,7 +17,6 @@ from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import 
 from pysgpp.extensions.datadriven.uq.sampler.Sample import Sample, SampleType
 from pysgpp import DataVector
 
-from pysgpp.extensions.datadriven.uq.operations.discretization import discretizeFunction
 import numpy as np
 
 
@@ -113,17 +112,6 @@ class Dist(object):
                 corr[idim, jdim] = corr[jdim, idim] = corrij
             corr[idim, idim] = 1.0
         return corr
-
-    def discretize(self, *args, **kws):
-        """
-        discretize the pdf of the current distribution
-        using a sparse grid interpolant
-        """
-        bounds = self.getBounds()
-        if self.getDim() == 1:
-            bounds = [bounds]
-        return discretizeFunction(self.pdf, bounds, hasBorder=False,
-                                  *args, **kws)
 
     def klDivergence(self, dist, testSamplesUnit=None, testSamplesProb=None,
                      n=1e4):

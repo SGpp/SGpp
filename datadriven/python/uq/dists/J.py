@@ -14,9 +14,7 @@
 
 """
 from Dist import Dist
-from SGDEdist import SGDEdist
 import numpy as np
-from pysgpp.extensions.datadriven.uq.operations import discretizeFunction
 
 
 class J(Dist):
@@ -120,52 +118,6 @@ class J(Dist):
 
     def getDim(self):
         return self.__dim
-
-    def discretize(self, level=5, *args, **kws):
-        """
-        discretize the pdf of the current distribution
-        using a sparse grid interpolant
-        """
-        if self.sgdeDist is None:
-            def f(p):
-                return float(self.pdf(p))
-
-            # discretize pdf
-            grid, alpha, self.error = \
-                discretizeFunction(f, self.getBounds(),
-                                   level=level, *args, **kws)
-            # generate a SGDE function
-            self.sgdeDist = SGDEdist(grid, alpha)
-
-        return self.sgdeDist, self.error
-
-#
-#     def discretize(self, *args, **kws):
-#         ans = [None] * self.__n
-#         for i, dist in enumerate(self.__dists):
-#             ans[i] = dist.discretize(*args, **kws)
-#         if len(ans) > 1:
-#             grid, _, error = ans[0]
-#             err = error[-1, 1]
-#             for i in xrange(1, len(ans)):
-#                 # join the grids
-#                 grid2, _, error2 = ans[i]
-#                 grid = join(grid, grid2)
-#
-#                 # accumulate the error
-#                 err += error2[-1, 1]
-#
-#         # hierarchize the result
-#         gs = grid.getStorage()
-#         p = DataVector(gs.getDimension())
-#         nodalValues = DataVector(gs.size())
-#         for i in xrange(gs.size()):
-#             gs.getCoordinates(gs.getPoint(i), p)
-#             nodalValues[i] = self.pdf(p.array())
-#
-#         alpha = hierarchize(grid, nodalValues)
-#
-#         return grid, alpha, err
 
     def __str__(self):
         return "J(%s)" % str([str(dist) for dist in self.__dists])
