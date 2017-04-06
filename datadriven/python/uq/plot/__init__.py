@@ -38,7 +38,8 @@ from plot3d import (plotFunction3d,
                     plotGrid3d,
                     plotNodal3d,
                     plotSGNodal3d,
-                    plotError3d)
+                    plotError3d,
+                    insert_labels_3d)
 
 from plotGrid import plotGrid
 
@@ -50,8 +51,7 @@ from colors import intToRGB, rgbTpInt, load_color, load_marker, load_font, \
 try:
     import matplotlib as mpl
     import matplotlib.pyplot as plt
-    from colors import load_font
-
+    from colors import load_font, load_default_color_map
     from mpltools import layout
 
     pysgpp_uq_font = load_font()
@@ -79,7 +79,7 @@ try:
                                 'ytick.labelsize': pysgpp_uq_font["size"],
                                 'axes.unicode_minus': True,
                                 'figure.figsize': (5, 4.5),
-                                'image.cmap': 'viridis'
+                                'image.cmap': load_default_color_map(dtype="string")
                                 }
     mpl.rcParams.update(pgf_with_custom_preamble)
 
