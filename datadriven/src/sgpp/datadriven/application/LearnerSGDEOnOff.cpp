@@ -99,8 +99,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
   size_t totalInstances = 0;
   // contains list of removed grid points and number of added grid points
   // (is updated in each refinement/coarsening step)
-  std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse =
-      new std::vector<std::pair<std::list<size_t>, size_t>>(numClasses);
+  std::vector<std::pair<std::list<size_t>, size_t>> refineCoarse(numClasses);
 
   // auxiliary variables
   DataVector* alphaWork;  // required for surplus refinement
@@ -176,7 +175,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
       cnt += batchSize;
 
       // train the model with current batch
-      train(currentBatch, doCv, refineCoarse);
+      train(currentBatch, doCv, &refineCoarse);
 
       totalInstances += currentBatch.getNumberInstances();
 
@@ -231,6 +230,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         bool preCompute = true;      // Precomputes and caches evals for zrcr
         sgpp::datadriven::MultiGridRefinementFunctor* func = nullptr;
 
+        // TODO(lettrich): memory leaks!
         // Zero-crossing-based refinement
         sgpp::datadriven::ZeroCrossingRefinementFunctor funcZrcr =
             *(new sgpp::datadriven::ZeroCrossingRefinementFunctor(
@@ -246,6 +246,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         coeffA.push_back(1.2);  // ripley 1.2
         base::DataMatrix* trainDataRef = &(trainData.getData());
         base::DataVector* trainLabelsRef = &(trainData.getTargets());
+        // TODO(lettrich): memory leaks!
         sgpp::datadriven::DataBasedRefinementFunctor funcData =
             *(new sgpp::datadriven::DataBasedRefinementFunctor(
                 grids, alphas, trainDataRef, trainLabelsRef, offline->getConfig().ref_noPoints_,
@@ -333,14 +334,14 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
           std::cout << "grid size after adaptivity: " << grid.getSize() << "\n";
 
           newPoints = sizeAfterRefine - sizeBeforeRefine;
-          (*refineCoarse)[idx].second = newPoints;
+          refineCoarse[idx].second = newPoints;
           // apply grid changes to the Cholesky factorization
           if (offline->getConfig().decomp_type_ == DBMatDecompostionType::DBMatDecompChol) {
             static_cast<DBMatOfflineChol&>(densEst->getOfflineObject())
                 .choleskyModification(newPoints, deletedGridPoints, densEst->getBestLambda());
           }
           // update alpha vector
-          densEst->updateAlpha(&(*refineCoarse)[idx].first, (*refineCoarse)[idx].second);
+          densEst->updateAlpha(&refineCoarse[idx].first, refineCoarse[idx].second);
         }
         refCnt += 1;
         doRefine = false;
@@ -361,9 +362,6 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
 
   std::cout << "#Training finished"
             << "\n";
-
-  // delete offline;
-  delete refineCoarse;
 }
 
 void LearnerSGDEOnOff::train(Dataset& dataset, bool doCv,
