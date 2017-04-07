@@ -16,6 +16,7 @@
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
+#include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 
 #include <gsl/gsl_blas.h>
@@ -31,6 +32,7 @@
 #include <algorithm>
 #include <ctime>
 #include <fstream>
+#include <iomanip>
 #include <list>
 #include <string>
 #include <vector>
@@ -91,8 +93,7 @@ DBMatOffline::DBMatOffline(const std::string& fname)
   }
 
   std::vector<std::string> tokens;
-  std::string delim(",");
-  Tokenize(line, tokens, delim);
+  StringTokenizer::tokenize(line, ",", tokens);
 
   // ToDo: full grid not supported
   bool fullgrid = atoi(tokens[0].c_str());
@@ -230,72 +231,85 @@ void DBMatOffline::InitializeGrid() {
 
 void DBMatOffline::store(const std::string& fileName) {
   if (!isDecomposed) {
-    throw application_exception("Matrix not yet decomposed");
+    throw application_exception("Matrix not decomposed yet");
     return;
   }
 
   // Write configuration
-  FILE* f = fopen(fileName.c_str(), "w");
-  if (!(f != 0)) {
-    std::cout << "libtool: DBMatOffline: Error opening file " << fileName.c_str() << std::endl;
-    exit(-1);
+  std::ofstream outputFile(fileName, std::ofstream::out);
+
+  if (!outputFile) {
+    throw application_exception{"cannot open file for writing"};
   }
 
-  /*fprintf(f, "%d,%d,%d,%d,%d,%.10e,%d", config_->grid_type_, config_->grid_dim_,
-          config_->grid_level_, config_->regularization_, config_->lambda_,
-          config_->decomp_type_);
-  fprintf(f, "\n");
-  fclose(f);*/
-  // Write Matrix
-  f = fopen(fileName.c_str(), "ab");
-  gsl_matrix_view m =
+  outputFile << static_cast<int>(config.grid_type_) << "," << config.grid_dim_ << ","
+             << config.grid_level_ << "," << static_cast<int>(config.regularization_) << ","
+             << std::setprecision(12) << config.lambda_ << ","
+             << static_cast<int>(config.decomp_type_) << "\n";
+  outputFile.close();
+
+  // c file API needed for GSL
+  FILE* outputCFile = fopen(fileName.c_str(), "ab");
+  if (!outputCFile) {
+    throw application_exception{"cannot open file for writing"};
+  }
+  gsl_matrix_view matrixView =
       gsl_matrix_view_array(lhsMatrix.getPointer(), lhsMatrix.getNrows(), lhsMatrix.getNcols());
-  gsl_matrix_fwrite(f, &m.matrix);
+  gsl_matrix_fwrite(outputCFile, &matrixView.matrix);
 
-  // Write Permutation (if existing)
-  if (config.decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
-    gsl_permutation_fwrite(f, permutation.get());
-  }
+  fclose(outputCFile);
 
-  fclose(f);
+  //  FILE* f = fopen(fileName.c_str(), "w");
+  //  if (!(f != nullptr)) {
+  //    std::cout << "libtool: DBMatOffline: Error opening file " << fileName.c_str() << std::endl;
+  //    exit(-1);
+  //  }
+  //
+  //  fprintf(f, "%d,%d,%d,%d,%d,%.10e,%d", config.grid_type_, config.grid_dim_, config.grid_level_,
+  //          config.regularization_, config.lambda_, config.decomp_type_);
+  //  fprintf(f, "\n");
+  //  fclose(f);
+  //  // Write Matrix
+  //  f = fopen(fileName.c_str(), "ab");
+  //  gsl_matrix_view matrixView =
+  //      gsl_matrix_view_array(lhsMatrix.getPointer(), lhsMatrix.getNrows(), lhsMatrix.getNcols());
+  //  gsl_matrix_fwrite(f, &matrixView.matrix);
+  //
+  //  // Write Permutation (if existing)
+  //  if (config.decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
+  //    gsl_permutation_fwrite(f, permutation.get());
+  //  }
+  //
+  //  fclose(f);
 }
 
 void DBMatOffline::printMatrix() {
-  std::cout << "Size: " << lhsMatrix.getNrows() << " , " << lhsMatrix.getNcols() << std::endl;
-  for (size_t r = 0; r < lhsMatrix.getNrows(); r++) {
-    for (size_t c = 0; c < lhsMatrix.getNcols(); c++) {
-      std::cout << lhsMatrix.get(r, c) << ", ";
-    }
-    std::cout << std::endl;
-  }
-  std::cout << std::endl;
+  std::cout << "Size: " << lhsMatrix.getNrows() << " , " << lhsMatrix.getNcols() << "\n"
+            << lhsMatrix.toString();
 }
 
-void DBMatOffline::Tokenize(std::string& str, std::vector<std::string>& tokens,
-                            std::string& delimiters) {
-  /*if (!strcmp(delimiters.c_str(), "")) {*/
-  if (!delimiters.compare("")) {
-    delimiters = " ";
-  }
-  // Skip delimiters at beginning.
-  std::string::size_type lastPos = str.find_first_not_of(delimiters, 0);
-  // Find first "non-delimiter".
-  std::string::size_type pos = str.find_first_of(delimiters, lastPos);
+// void DBMatOffline::Tokenize(std::string& str, std::vector<std::string>& tokens,
+//                            std::string& delimiters) {
+//  /*if (!strcmp(delimiters.c_str(), "")) {*/
+//  if (!delimiters.compare("")) {
+//    delimiters = " ";
+//  }
+//  // Skip delimiters at beginning.
+//  std::string::size_type lastPos = str.find_first_not_of(delimiters, 0);
+//  // Find first "non-delimiter".
+//  std::string::size_type pos = str.find_first_of(delimiters, lastPos);
+//
+//  while (std::string::npos != pos || std::string::npos != lastPos) {
+//    // Found a token, add it to the vector.
+//    tokens.push_back(str.substr(lastPos, pos - lastPos));
+//    // Skip delimiters.  Note the "not_of"
+//    lastPos = str.find_first_not_of(delimiters, pos);
+//    // Find next "non-delimiter"
+//    pos = str.find_first_of(delimiters, lastPos);
+//  }
+//}
 
-  while (std::string::npos != pos || std::string::npos != lastPos) {
-    // Found a token, add it to the vector.
-    tokens.push_back(str.substr(lastPos, pos - lastPos));
-    // Skip delimiters.  Note the "not_of"
-    lastPos = str.find_first_not_of(delimiters, pos);
-    // Find next "non-delimiter"
-    pos = str.find_first_of(delimiters, lastPos);
-  }
-}
-
-}  // namespace datadriven
-}  // namespace sgpp
-
-void sgpp::datadriven::DBMatOffline::buildMatrix() {
+void DBMatOffline::buildMatrix() {
   if (isConstructed) {  // Already constructed, do nothing
     return;
   }
@@ -315,8 +329,10 @@ void sgpp::datadriven::DBMatOffline::buildMatrix() {
   lhsMatrix = DataMatrix(size, size);
 
   std::unique_ptr<OperationMatrix> op(
-      sgpp::op_factory::createOperationLTwoDotExplicit(&lhsMatrix, *grid));
+      op_factory::createOperationLTwoDotExplicit(&lhsMatrix, *grid));
   isConstructed = true;
 }
 
+}  // namespace datadriven
+}  // namespace sgpp
 #endif /* USE_GSL */
