@@ -96,7 +96,7 @@ def test_laplace(grid, lmax):
         op.mult(alpha, result)
         xs = np.linspace(0, 1, resolution)
         approx = sum([b.evalDx(gp.getLevel(0), gp.getIndex(0), x) * b.evalDx(gp.getLevel(0), gp.getIndex(0), x) for x in xs]) / resolution
-        if(abs(result.get(pointnr) - approx) > 1e-1):
+        if(abs(result.get(pointnr) - approx) > 1e-2):
             print "point:{}".format(pointnr)
             print "approx:{}".format(approx)
             print "result:{}".format(result.get(pointnr))
@@ -126,7 +126,7 @@ def plot_evaldx():
 # test_base()
 d = 1
 l = 5
-grid = pysgpp.Grid.createPolyGrid(d, 5)
+grid = pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 5)
 test_laplace(grid, l)
 # test_LTwoDot(grid, l)
 # test_LTwoDotImplicit(grid, l)

@@ -22,6 +22,9 @@
 #include <sgpp/pde/operation/hash/OperationLaplacePolyClenshawCurtisBoundary.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceModPolyClenshawCurtis.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceBspline.hpp>
+#include <sgpp/pde/operation/hash/OperationLaplaceModBspline.hpp>
+#include <sgpp/pde/operation/hash/OperationLaplaceBsplineBoundary.hpp>
+#include <sgpp/pde/operation/hash/OperationLaplaceBsplineClenshawCurtis.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceExplicitBspline.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceExplicitModBspline.hpp>
 
@@ -100,6 +103,12 @@ base::OperationMatrix* createOperationLaplace(base::Grid& grid) {
     return new pde::OperationLaplaceModPolyClenshawCurtis(&grid);
   } else if (grid.getType() == base::GridType::Bspline) {
     return new pde::OperationLaplaceBspline(&grid);
+  } else if (grid.getType() == base::GridType::ModBspline) {
+    return new pde::OperationLaplaceModBspline(&grid);
+  } else if (grid.getType() == base::GridType::BsplineBoundary) {
+    return new pde::OperationLaplaceBsplineBoundary(&grid);
+  } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
+    return new pde::OperationLaplaceBsplineClenshawCurtis(&grid);
   } else {
     throw base::factory_exception("OperationLaplace is not implemented for this grid type.");
   }
