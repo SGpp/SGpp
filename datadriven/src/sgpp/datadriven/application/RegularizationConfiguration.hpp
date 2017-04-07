@@ -7,7 +7,6 @@
 #define REGULARIZATIONCONFIGURATION_HPP_
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -20,7 +19,6 @@ struct RegularizationConfiguration {
   double l1Ratio_;
   double exponentBase_;
 };
-
 }  // namespace datadriven
 }  // namespace sgpp
 
