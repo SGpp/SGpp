@@ -228,13 +228,12 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         }
         bool levelPenalize = false;  // Multiplies penalzing term for fine levels
         bool preCompute = true;      // Precomputes and caches evals for zrcr
-        sgpp::datadriven::MultiGridRefinementFunctor* func = nullptr;
+        MultiGridRefinementFunctor* func = nullptr;
 
         // TODO(lettrich): memory leaks!
         // Zero-crossing-based refinement
-        sgpp::datadriven::ZeroCrossingRefinementFunctor funcZrcr =
-            *(new sgpp::datadriven::ZeroCrossingRefinementFunctor(
-                grids, alphas, offline->getConfig().ref_noPoints_, levelPenalize, preCompute));
+        ZeroCrossingRefinementFunctor funcZrcr{grids, alphas, offline->getConfig().ref_noPoints_,
+                                               levelPenalize, preCompute};
 
         // Data-based refinement. Needs a problem dependent coeffA. The values
         // can be determined by testing (aim at ~10 % of the training data is
@@ -246,11 +245,9 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         coeffA.push_back(1.2);  // ripley 1.2
         base::DataMatrix* trainDataRef = &(trainData.getData());
         base::DataVector* trainLabelsRef = &(trainData.getTargets());
-        // TODO(lettrich): memory leaks!
-        sgpp::datadriven::DataBasedRefinementFunctor funcData =
-            *(new sgpp::datadriven::DataBasedRefinementFunctor(
-                grids, alphas, trainDataRef, trainLabelsRef, offline->getConfig().ref_noPoints_,
-                levelPenalize, coeffA));
+        DataBasedRefinementFunctor funcData = DataBasedRefinementFunctor{
+            grids,         alphas, trainDataRef, trainLabelsRef, offline->getConfig().ref_noPoints_,
+            levelPenalize, coeffA};
         if (refType == "zero") {
           func = &funcZrcr;
         } else if (refType == "data") {
