@@ -49,7 +49,7 @@ using sgpp::base::application_exception;
 using sgpp::base::data_exception;
 using sgpp::base::OperationMatrix;
 
-DBMatOffline::DBMatOffline(DBMatDensityConfiguration& oc)
+DBMatOffline::DBMatOffline(const DBMatDensityConfiguration& oc)
     : config(oc),
       lhsMatrix(),
       isConstructed(false),

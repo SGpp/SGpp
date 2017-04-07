@@ -14,7 +14,7 @@ namespace datadriven {
 
 class DBMatOfflineChol : public DBMatOfflineGE {
  public:
-  DBMatOfflineChol(DBMatDensityConfiguration& oc);
+  DBMatOfflineChol(const DBMatDensityConfiguration& oc);
 
   /**
    * Decomposes the matrix according to the chosen decomposition type.

@@ -25,7 +25,7 @@ namespace datadriven {
 
 using sgpp::base::algorithm_exception;
 
-DBMatOfflineChol::DBMatOfflineChol(DBMatDensityConfiguration& oc) : DBMatOfflineGE(oc) {}
+DBMatOfflineChol::DBMatOfflineChol(const DBMatDensityConfiguration& oc) : DBMatOfflineGE(oc) {}
 
 void DBMatOfflineChol::decomposeMatrix() {
   if (isConstructed) {
@@ -50,7 +50,7 @@ void DBMatOfflineChol::decomposeMatrix() {
       isDecomposed = true;
     }
   } else {
-    throw algorithm_exception("Matrix has to be constructed before it can be decomposed!");
+    throw algorithm_exception("Matrix has to be constructed before it can be decomposed");
   }
 }
 

@@ -19,7 +19,7 @@ namespace sgpp {
 namespace datadriven {} /* namespace datadriven */
 } /* namespace sgpp */
 
-sgpp::datadriven::DBMatOfflineLU::DBMatOfflineLU(DBMatDensityConfiguration& oc)
+sgpp::datadriven::DBMatOfflineLU::DBMatOfflineLU(const DBMatDensityConfiguration& oc)
     : DBMatOfflineGE(oc) {}
 
 void sgpp::datadriven::DBMatOfflineLU::decomposeMatrix() {
