@@ -14,7 +14,7 @@ namespace datadriven {
 
 class DBMatOfflineGE : public DBMatOffline {
  public:
-  explicit DBMatOfflineGE(DBMatDensityConfiguration& oc);
+  explicit DBMatOfflineGE(const DBMatDensityConfiguration& oc);
 
   /**
    * Builds the right hand side matrix with or without the regularization term

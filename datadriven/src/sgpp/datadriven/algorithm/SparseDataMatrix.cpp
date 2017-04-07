@@ -26,6 +26,11 @@ SparseDataMatrix::SparseDataMatrix() : nrows{0}, ncols{0}, data{}, colIndex{}, r
 SparseDataMatrix::SparseDataMatrix(size_t nrows, size_t ncols)
     : nrows{nrows}, ncols{ncols}, data{}, colIndex{}, rowPtr(ncols, 0) {}
 
+SparseDataMatrix::SparseDataMatrix(DataMatrix& mat)
+    : SparseDataMatrix{mat.getNrows(), mat.getNcols()} {
+  SparseDataMatrix::fromDataMatrix(mat, *this);
+}
+
 SparseDataMatrix::SparseDataMatrix(size_t nrows, size_t ncols,
                                    const std::vector<double>& dataVector,
                                    const std::vector<size_t>& colIndexVector,

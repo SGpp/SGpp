@@ -28,7 +28,7 @@ using sgpp::base::application_exception;
 using sgpp::base::data_exception;
 using sgpp::base::OperationMatrix;
 
-DBMatOfflineEigen::DBMatOfflineEigen(DBMatDensityConfiguration& oc) : DBMatOffline(oc) {}
+DBMatOfflineEigen::DBMatOfflineEigen(const DBMatDensityConfiguration& oc) : DBMatOffline(oc) {}
 
 void DBMatOfflineEigen::decomposeMatrix() {
   if (isConstructed) {

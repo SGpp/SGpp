@@ -39,7 +39,7 @@ class DBMatOffline {
    *
    * @param oc configuration for this offline object
    */
-  explicit DBMatOffline(DBMatDensityConfiguration& oc);
+  explicit DBMatOffline(const DBMatDensityConfiguration& oc);
   /**
    * Constructor
    *

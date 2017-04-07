@@ -12,6 +12,7 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
@@ -56,6 +57,7 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& tr
       processedPoints{0},
       avgErrors{0} {
   // initialize offline object
+  offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildOfflineObject(dconf)};
   offline->buildMatrix();
   offline->decomposeMatrix();
 

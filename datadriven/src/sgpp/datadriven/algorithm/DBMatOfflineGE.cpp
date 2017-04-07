@@ -17,7 +17,7 @@ namespace datadriven {
 using sgpp::base::operation_exception;
 using sgpp::base::DataMatrix;
 
-DBMatOfflineGE::DBMatOfflineGE(DBMatDensityConfiguration& oc) : DBMatOffline(oc) {}
+DBMatOfflineGE::DBMatOfflineGE(const DBMatDensityConfiguration& oc) : DBMatOffline(oc) {}
 
 void DBMatOfflineGE::buildMatrix() {
   // build matrix

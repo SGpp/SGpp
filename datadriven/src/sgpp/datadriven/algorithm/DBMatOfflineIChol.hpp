@@ -3,37 +3,38 @@
  * use, please see the copyright notice provided with SG++ or at
  * sgpp.sparsegrids.org
  *
- * DBMatOfflineEigen.hpp
+ * DBMatOfflineIChol.hpp
  *
- *  Created on: 02.03.2017
+ *  Created on: Feb 27, 2017
  *      Author: Michael Lettrich
  */
-#ifdef USE_GSL
 
 #pragma once
 
-#include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 
 namespace sgpp {
 namespace datadriven {
 
-class DBMatOfflineEigen : public DBMatOffline {
+using sgpp::base::DataVector;
+using sgpp::base::DataMatrix;
+using sgpp::base::Grid;
+
+class DBMatOfflineIChol : public DBMatOfflineChol {
  public:
   /**
    * Constructor
    *
    * @param oc configuration for this offline object
    */
-  explicit DBMatOfflineEigen(const DBMatDensityConfiguration& oc);
+  explicit DBMatOfflineIChol(const DBMatDensityConfiguration& oc);
 
   /**
    * Decomposes the matrix according to the chosen decomposition type.
    * The number of rows of the stored result depends on the decomposition type.
    */
-  void decomposeMatrix() override;
+  virtual void decomposeMatrix() override;
 };
 
 } /* namespace datadriven */
 } /* namespace sgpp */
-
-#endif /* USE_GSL */

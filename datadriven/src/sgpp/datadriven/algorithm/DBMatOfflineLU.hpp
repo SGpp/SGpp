@@ -14,7 +14,7 @@ namespace datadriven {
 
 class DBMatOfflineLU : public DBMatOfflineGE {
  public:
-  DBMatOfflineLU(DBMatDensityConfiguration& oc);
+  DBMatOfflineLU(const DBMatDensityConfiguration& oc);
 
   void decomposeMatrix() override;
 
