@@ -112,8 +112,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
   double currentValidError = 0.0;
   double currentTrainError = 0.0;
   // create convergence monitor object
-  std::shared_ptr<ConvergenceMonitor> monitor(
-      new ConvergenceMonitor(accDeclineThreshold, accDeclineBufferSize, minRefInterval));
+  ConvergenceMonitor monitor{accDeclineThreshold, accDeclineBufferSize, minRefInterval};
   bool doRefine = false;  // is set to 'true' by refinement monitor
   // counts number of performed refinements
   size_t refCnt = 0;
@@ -193,7 +192,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
       } else if (refMonitor == "convergence") {
         // check convergence monitor
         if (validationData == nullptr) {
-          throw base::data_exception("No validation data for checking convergence provided!");
+          throw data_exception("No validation data for checking convergence provided!");
         }
         if ((offline->getConfig().decomp_type_ == DBMatDecompostionType::DBMatDecompChol) &&
             (refCnt < offline->getConfig().numRefinements_)) {
@@ -201,12 +200,12 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
           currentTrainError = getError(trainData);  // if train dataset is large
                                                     // use a subset for error
                                                     // evaluation
-          monitor->pushToBuffer(currentValidError, currentTrainError);
-          if (monitor->nextRefCnt > 0) {
-            monitor->nextRefCnt--;
+          monitor.pushToBuffer(currentValidError, currentTrainError);
+          if (monitor.nextRefCnt > 0) {
+            monitor.nextRefCnt--;
           }
-          if (monitor->nextRefCnt == 0) {
-            doRefine = monitor->checkConvergence();
+          if (monitor.nextRefCnt == 0) {
+            doRefine = monitor.checkConvergence();
           }
         }
       }
@@ -243,8 +242,8 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         std::vector<double> coeffA;
         coeffA.push_back(1.2);  // ripley 1.2
         coeffA.push_back(1.2);  // ripley 1.2
-        base::DataMatrix* trainDataRef = &(trainData.getData());
-        base::DataVector* trainLabelsRef = &(trainData.getTargets());
+        DataMatrix* trainDataRef = &(trainData.getData());
+        DataVector* trainLabelsRef = &(trainData.getTargets());
         DataBasedRefinementFunctor funcData = DataBasedRefinementFunctor{
             grids,         alphas, trainDataRef, trainLabelsRef, offline->getConfig().ref_noPoints_,
             levelPenalize, coeffA};
@@ -343,7 +342,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         refCnt += 1;
         doRefine = false;
         if (refMonitor == "convergence") {
-          monitor->nextRefCnt = monitor->minRefInterval;
+          monitor.nextRefCnt = monitor.minRefInterval;
         }
       }
 
@@ -446,8 +445,8 @@ double LearnerSGDEOnOff::getAccuracy() const {
   return acc;
 }
 
-base::DataVector LearnerSGDEOnOff::predict(DataMatrix& data) const {
-  base::DataVector result(data.getNrows());
+DataVector LearnerSGDEOnOff::predict(DataMatrix& data) const {
+  DataVector result(data.getNrows());
 
   /*if(not trained) {
     std::cerr << "LearnerSGDEOnOff: Not trained!\n";
@@ -575,7 +574,7 @@ void LearnerSGDEOnOff::storeResults() {
 }
 
 DataVector LearnerSGDEOnOff::getDensities(DataVector& point) const {
-  base::DataVector result(densityFunctions.size());
+  DataVector result(densityFunctions.size());
   for (size_t i = 0; i < densityFunctions.size(); i++) {
     auto& pair = densityFunctions[i];
     result[i] = pair.first->eval(point);
