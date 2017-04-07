@@ -65,7 +65,7 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(sgpp::base::DataMatrix& sou
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->isValidSequenceNumber(index.seq())) {
+          if (!this->storage->isInvalidSequenceNumber(index.seq())) {
             recBB_GL(fl2, fr2, i, index);
           }
 
@@ -78,7 +78,7 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(sgpp::base::DataMatrix& sou
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->isValidSequenceNumber(index.seq())) {
+          if (!this->storage->isInvalidSequenceNumber(index.seq())) {
             recBB_LG(fl1, fr1, i, index);
           }
 
@@ -91,7 +91,7 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(sgpp::base::DataMatrix& sou
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->isValidSequenceNumber(index.seq())) {
+          if (!this->storage->isInvalidSequenceNumber(index.seq())) {
             recBB_LL(fl1, fr1, fl2, fr2, i, index);
           }
 
@@ -110,7 +110,7 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(sgpp::base::DataMatrix& sou
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->isValidSequenceNumber(index.seq())) {
+          if (!this->storage->isInvalidSequenceNumber(index.seq())) {
             recBB_grad(i, index);
           }
 
@@ -122,7 +122,7 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(sgpp::base::DataMatrix& sou
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->isValidSequenceNumber(index.seq())) {
+          if (!this->storage->isInvalidSequenceNumber(index.seq())) {
             recBB(fl, fr, i, index);
           }
 
@@ -157,7 +157,7 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(sgpp::base::DataMatrix& sou
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->isValidSequenceNumber(index.seq())) {
+          if (!this->storage->isInvalidSequenceNumber(index.seq())) {
             rec_GL(fl2, fr2, i, index);
           }
 
@@ -170,7 +170,7 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(sgpp::base::DataMatrix& sou
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->isValidSequenceNumber(index.seq())) {
+          if (!this->storage->isInvalidSequenceNumber(index.seq())) {
             rec_LG(fl1, fr1, i, index);
           }
 
@@ -185,7 +185,7 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(sgpp::base::DataMatrix& sou
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->isValidSequenceNumber(index.seq())) {
+          if (!this->storage->isInvalidSequenceNumber(index.seq())) {
             rec_LL(fl_xmm, fr_xmm, i, index);
           }
 
@@ -197,7 +197,7 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(sgpp::base::DataMatrix& sou
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->isValidSequenceNumber(index.seq())) {
+          if (!this->storage->isInvalidSequenceNumber(index.seq())) {
             rec_LL(fl1, fr1, fl2, fr2, i, index);
           }
 
@@ -211,7 +211,7 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(sgpp::base::DataMatrix& sou
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->isValidSequenceNumber(index.seq())) {
+          if (!this->storage->isInvalidSequenceNumber(index.seq())) {
             rec_LL(fl_xmm, fr_xmm, i, index);
           }
 
@@ -223,7 +223,7 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(sgpp::base::DataMatrix& sou
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->isValidSequenceNumber(index.seq())) {
+          if (!this->storage->isInvalidSequenceNumber(index.seq())) {
             rec_LL(fl1, fr1, fl2, fr2, i, index);
           }
 
@@ -245,7 +245,7 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(sgpp::base::DataMatrix& sou
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->isValidSequenceNumber(index.seq())) {
+          if (!this->storage->isInvalidSequenceNumber(index.seq())) {
             rec_grad(i, index);
           }
 
@@ -257,7 +257,7 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(sgpp::base::DataMatrix& sou
         if (!index.hint()) {
           index.resetToLevelOne(dim);
 
-          if (!this->storage->isValidSequenceNumber(index.seq())) {
+          if (!this->storage->isInvalidSequenceNumber(index.seq())) {
             rec(fl, fr, i, index);
           }
 
