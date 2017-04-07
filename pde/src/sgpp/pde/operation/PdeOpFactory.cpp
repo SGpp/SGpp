@@ -25,6 +25,7 @@
 #include <sgpp/pde/operation/hash/OperationLaplaceModBspline.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceBsplineBoundary.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceBsplineClenshawCurtis.hpp>
+#include <sgpp/pde/operation/hash/OperationLaplaceModBsplineClenshawCurtis.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceExplicitBspline.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceExplicitModBspline.hpp>
 
@@ -109,6 +110,8 @@ base::OperationMatrix* createOperationLaplace(base::Grid& grid) {
     return new pde::OperationLaplaceBsplineBoundary(&grid);
   } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
     return new pde::OperationLaplaceBsplineClenshawCurtis(&grid);
+  } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
+      return new pde::OperationLaplaceModBsplineClenshawCurtis(&grid);
   } else {
     throw base::factory_exception("OperationLaplace is not implemented for this grid type.");
   }
