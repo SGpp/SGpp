@@ -140,7 +140,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
     auto densEst = onlineObject.first.get();
     Grid& grid = densEst->getOfflineObject().getGrid();
     std::cout << "#Initial grid size of grid for class" << onlineObject.second << " : "
-              << grid.getSize() << std::endl;
+              << grid.getSize() << "\n";
   }
 
   // auxiliary variable for accuracy (error) measurement
@@ -149,8 +149,8 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
 
   // main loop which performs the training process
   while (cntDataPasses < maxDataPasses) {
-    std::cout << "#batch-size: " << batchSize << std::endl;
-    std::cout << "#batches to process: " << numBatch << std::endl;
+    std::cout << "#batch-size: " << batchSize << "\n";
+    std::cout << "#batches to process: " << numBatch << "\n";
     // data point counter - determines offset when selecting next batch
     size_t cnt = 0;
     // iterate over total number of batches
@@ -217,7 +217,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
       if (doRefine) {
         // acc = getAccuracy();
         // avgErrors.append(1.0 - acc);
-        std::cout << "refinement at iteration: " << totalInstances << std::endl;
+        std::cout << "refinement at iteration: " << totalInstances << "\n";
         // bundle grids and surplus vector pointer needed for refinement
         // (for zero-crossings refinement, data-based refinement)
         std::vector<Grid*> grids;
@@ -260,10 +260,10 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         for (size_t idx = 0; idx < getNumClasses(); idx++) {
           // perform refinement/coarsening for grid which corresponds to current
           // index
-          std::cout << "Refinement and coarsening for class: " << idx << std::endl;
+          std::cout << "Refinement and coarsening for class: " << idx << "\n";
           auto densEst = onlineObjects[idx].first.get();
           Grid& grid = densEst->getOfflineObject().getGrid();
-          std::cout << "Size before adaptivity: " << grid.getSize() << std::endl;
+          std::cout << "Size before adaptivity: " << grid.getSize() << "\n";
 
           GridGenerator& gridGen = grid.getGenerator();
 
@@ -287,20 +287,20 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
             // Perform Coarsening (surplus based)
             /*if (coarseCnt < maxCoarseNum) {
               HashCoarsening coarse_;
-              //std::cout << std::endl << "Start coarsening" << std::endl;
+              //std::cout << "\n" << "Start coarsening\n";
 
               // Coarsening based on surpluses
               SurplusCoarseningFunctor scf(
                 alphaWeight, coarseNumPoints, coarseThreshold);
 
               //std::cout << "Size before coarsening:" << grid->getSize() <<
-            std::endl;
+            "\n";
               //int old_size = grid->getSize();
               coarse_.free_coarsen_NFirstOnly(
                 grid->getStorage(), scf, alphaWeight, grid->getSize());
 
               std::cout << "Size after coarsening:" << grid->getSize() <<
-            std::endl << std::endl;
+            "\n\n";
               //int new_size = grid->getSize();
 
               deletedGridPoints.clear();
@@ -330,7 +330,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
             sizeAfterRefine = grid.getSize();
           }
 
-          std::cout << "grid size after adaptivity: " << grid.getSize() << std::endl;
+          std::cout << "grid size after adaptivity: " << grid.getSize() << "\n";
 
           newPoints = sizeAfterRefine - sizeBeforeRefine;
           (*refineCoarse)[idx].second = newPoints;
@@ -359,7 +359,8 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
     processedPoints = 0;
   }  // end while
 
-  std::cout << "#Training finished" << std::endl;
+  std::cout << "#Training finished"
+            << "\n";
 
   // delete offline;
   delete refineCoarse;
@@ -444,8 +445,8 @@ double LearnerSGDEOnOff::getAccuracy() const {
       correctLabel2++;
     }
   }
-  // std::cout << "correct label (-1): " << correctLabel1 << std::endl;
-  // std::cout << "correct label (1): " << correctLabel2 << std::endl;
+  // std::cout << "correct label (-1): " << correctLabel1 << "\n";
+  // std::cout << "correct label (1): " << correctLabel2 << "\n";
 
   double acc = static_cast<double>(correct) / static_cast<double>(computedLabels.getSize());
   return acc;
@@ -455,7 +456,7 @@ base::DataVector LearnerSGDEOnOff::predict(DataMatrix& data) const {
   base::DataVector result(data.getNrows());
 
   /*if(not trained) {
-    std::cerr << "LearnerSGDEOnOff: Not trained!" << std::endl;
+    std::cerr << "LearnerSGDEOnOff: Not trained!\n";
     exit(-1);
   }*/
 
@@ -475,7 +476,8 @@ base::DataVector LearnerSGDEOnOff::predict(DataMatrix& data) const {
       }
     }
     if (max_class == 0) {
-      std::cerr << "LearnerSGDEOnOff: Warning: no best class found!" << std::endl;
+      std::cerr << "LearnerSGDEOnOff: Warning: no best class found!"
+                << "\n";
     }
     result[i] = max_class;
   }
@@ -513,12 +515,13 @@ void LearnerSGDEOnOff::storeResults() {
   // write predicted classes to csv file
   output.open("SGDEOnOff_predicted_classes.csv");
   if (output.fail()) {
-    std::cout << "failed to create csv file!" << std::endl;
+    std::cout << "failed to create csv file!"
+              << "\n";
   } else {
     for (size_t i = 0; i < classesComputed.getSize(); i++) {
       DataVector x(2);
       testData.getData().getRow(i, x);
-      output << x[0] << ";" << x[1] << ";" << classesComputed[i] << std::endl;
+      output << x[0] << ";" << x[1] << ";" << classesComputed[i] << "\n";
     }
     output.close();
   }
@@ -528,7 +531,8 @@ void LearnerSGDEOnOff::storeResults() {
     Grid& grid = densEst->getOfflineObject().getGrid();
     output.open("SGDEOnOff_grid_" + std::to_string(densityFunctions[i].second) + ".csv");
     if (output.fail()) {
-      std::cout << "failed to create csv file!" << std::endl;
+      std::cout << "failed to create csv file!"
+                << "\n";
     } else {
       GridStorage& storage = grid.getStorage();
       for (auto& iter : storage) {
@@ -538,7 +542,7 @@ void LearnerSGDEOnOff::storeResults() {
           if (d < gpCoord.getSize() - 1) {
             output << gpCoord[d] << ";";
           } else {
-            output << gpCoord[d] << std::endl;
+            output << gpCoord[d] << "\n";
           }
         }
       }
@@ -570,7 +574,8 @@ void LearnerSGDEOnOff::storeResults() {
       DataVector x(2);
       values.getRow(i, x);
       double density = pair.first->eval(x, true) * this->prior[pair.second];
-      output << density << ";" << std::endl;
+      output << density << ";"
+             << "\n";
     }
     output.close();
   }
