@@ -372,13 +372,14 @@ void LearnerSGDEOnOff::train(Dataset& dataset, bool doCv,
 
   // create an empty matrix for every class:
   std::vector<std::pair<DataMatrix*, double> > trainDataClasses;
+  trainDataClasses.reserve(classLabels.getSize());
+
   std::map<double, int> classIndices;  // maps class labels to indices
   int index = 0;
   for (size_t i = 0; i < classLabels.getSize(); i++) {
     DataMatrix* m = new DataMatrix(0, dim);
-    std::pair<DataMatrix*, double> p(m, classLabels[i]);
-    trainDataClasses.push_back(p);
-    classIndices.insert(std::pair<double, int>(classLabels[i], index));
+    trainDataClasses.emplace_back(std::make_pair(m, classLabels[i]));
+    classIndices.emplace(std::make_pair(classLabels[i], index));
     index++;
   }
   // split the data into the different classes:
