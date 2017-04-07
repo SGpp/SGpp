@@ -27,14 +27,20 @@
 %include "datadriven/src/sgpp/datadriven/application/RegularizationConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/ConvergenceMonitor.hpp"
 #ifdef USE_GSL
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOffline.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineEigen.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineGE.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineLU.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineChol.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineIChol.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnline.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDE.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSEigen.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSChol.hpp"
-%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp"
 #endif
 
 #ifdef __AVX__
