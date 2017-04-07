@@ -101,7 +101,7 @@ class DBMatOffline {
    *
    * @param fname the file name
    */
-  void store(const std::string& fname);
+  virtual void store(const std::string& fname);
 
   /**
    * Loads matrix and configuration from a file
@@ -119,10 +119,11 @@ class DBMatOffline {
   bool isDecomposed;                 // If the matrix was decomposed
 
   std::unique_ptr<gsl_permutation> permutation;  // Stores the permutation that was
-  // applied on the matrix during decomposition
+                                                 // applied on the matrix during decomposition
 
-  // An offline object either works on a
-  // hierarchical basis grid!
+  /**
+   * An offline object works on a hierarchical basis grid.
+   */
   std::unique_ptr<Grid> grid;
 
   /**
@@ -130,11 +131,11 @@ class DBMatOffline {
    */
   void InitializeGrid();
 
- private:
-  /**
-   * Used for reading input files
-   */
-  void Tokenize(std::string&, std::vector<std::string>&, std::string& delimiters);
+  // private:
+  //  /**
+  //   * Used for reading input files
+  //   */
+  //  void Tokenize(std::string&, std::vector<std::string>&, std::string& delimiters);
 };
 
 }  // namespace datadriven

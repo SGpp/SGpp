@@ -20,6 +20,8 @@
 #include <gsl/gsl_eigen.h>
 #include <gsl/gsl_linalg.h>
 
+#include <string>
+
 namespace sgpp {
 namespace datadriven {
 
@@ -64,6 +66,18 @@ void DBMatOfflineEigen::decomposeMatrix() {
   } else {
     throw data_exception("Matrix has to be constructed before it can be decomposed!");
   }
+}
+
+void DBMatOfflineEigen::store(const std::string& fileName) {
+  DBMatOffline::store(fileName);
+
+  // c file API needed for GSL
+  FILE* outputCFile = fopen(fileName.c_str(), "ab");
+  if (!outputCFile) {
+    throw application_exception{"cannot open file for writing"};
+  }
+  gsl_permutation_fwrite(outputCFile, permutation.get());
+  fclose(outputCFile);
 }
 
 } /* namespace datadriven */
