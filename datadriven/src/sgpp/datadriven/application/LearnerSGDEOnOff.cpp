@@ -531,10 +531,9 @@ void LearnerSGDEOnOff::storeResults() {
       std::cout << "failed to create csv file!" << std::endl;
     } else {
       GridStorage& storage = grid.getStorage();
-      GridStorage::grid_map_iterator end_iter = storage.end();
-      for (GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter; iter++) {
+      for (auto& iter : storage) {
         DataVector gpCoord(trainData.getDimension());
-        storage.getCoordinates(*(iter->first), gpCoord);
+        storage.getCoordinates(*(iter.first), gpCoord);
         for (size_t d = 0; d < gpCoord.getSize(); d++) {
           if (d < gpCoord.getSize() - 1) {
             output << gpCoord[d] << ";";
