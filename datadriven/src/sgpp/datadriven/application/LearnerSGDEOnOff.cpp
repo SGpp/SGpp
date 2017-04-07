@@ -99,8 +99,8 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
   size_t totalInstances = 0;
   // contains list of removed grid points and number of added grid points
   // (is updated in each refinement/coarsening step)
-  std::vector<std::pair<std::list<size_t>, size_t> >* refineCoarse =
-      new std::vector<std::pair<std::list<size_t>, size_t> >(numClasses);
+  std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse =
+      new std::vector<std::pair<std::list<size_t>, size_t>>(numClasses);
 
   // auxiliary variables
   DataVector* alphaWork;  // required for surplus refinement
@@ -367,18 +367,20 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
 }
 
 void LearnerSGDEOnOff::train(Dataset& dataset, bool doCv,
-                             std::vector<std::pair<std::list<size_t>, size_t> >* refineCoarse) {
+                             std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse) {
   size_t dim = dataset.getDimension();
 
   // create an empty matrix for every class:
-  std::vector<std::pair<DataMatrix*, double> > trainDataClasses;
+  std::vector<std::unique_ptr<DataMatrix>> classData;
+  classData.reserve(classLabels.getSize());
+  std::vector<std::pair<DataMatrix*, double>> trainDataClasses;
   trainDataClasses.reserve(classLabels.getSize());
 
   std::map<double, int> classIndices;  // maps class labels to indices
   int index = 0;
   for (size_t i = 0; i < classLabels.getSize(); i++) {
-    DataMatrix* m = new DataMatrix(0, dim);
-    trainDataClasses.emplace_back(std::make_pair(m, classLabels[i]));
+    classData.emplace_back(std::make_unique<DataMatrix>(0, dim));
+    trainDataClasses.emplace_back(std::make_pair(classData.back().get(), classLabels[i]));
     classIndices.emplace(std::make_pair(classLabels[i], index));
     index++;
   }
@@ -387,27 +389,23 @@ void LearnerSGDEOnOff::train(Dataset& dataset, bool doCv,
     double classLabel = dataset.getTargets()[i];
     DataVector vec(dim);
     dataset.getData().getRow(i, vec);
-    std::pair<DataMatrix*, double> p = trainDataClasses[classIndices[classLabel]];
+    auto& p = trainDataClasses[classIndices[classLabel]];
     p.first->appendRow(vec);
   }
+
   // compute density functions
   train(trainDataClasses, doCv, refineCoarse);
-
-  // delete DataMatrix pointers:
-  for (size_t i = 0; i < trainDataClasses.size(); i++) {
-    delete trainDataClasses[i].first;
-  }
 }
 
-void LearnerSGDEOnOff::train(std::vector<std::pair<DataMatrix*, double> >& trainDataClasses,
+void LearnerSGDEOnOff::train(std::vector<std::pair<DataMatrix*, double>>& trainDataClasses,
                              bool doCv,
-                             std::vector<std::pair<std::list<size_t>, size_t> >* refineCoarse) {
+                             std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse) {
   size_t numberOfDataPoints = 0;
   for (size_t i = 0; i < trainDataClasses.size(); i++) {
     numberOfDataPoints += trainDataClasses[i].first->getSize();
   }
   for (size_t i = 0; i < trainDataClasses.size(); i++) {
-    std::pair<DataMatrix*, double> p = trainDataClasses[i];
+    auto& p = trainDataClasses[i];
 
     if ((*p.first).getNrows() > 0) {
       // update density function for current class
@@ -477,8 +475,7 @@ base::DataVector LearnerSGDEOnOff::predict(DataMatrix& data) const {
       }
     }
     if (max_class == 0) {
-      std::cerr << "LearnerSGDEOnOff: Warning: no best class found!"
-                << "\n";
+      std::cerr << "LearnerSGDEOnOff: Warning: no best class found!\n";
     }
     result[i] = max_class;
   }
