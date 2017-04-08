@@ -41,11 +41,11 @@ class DBMatOffline {
    */
   explicit DBMatOffline(const DBMatDensityConfiguration& oc);
 
-  //  /**
-  //   * Constructor
-  //   *
-  //   * @param fname name of the file that stores the matrix + configuration
-  //   */
+  /**
+   * Constructor
+   *
+   * @param fname name of the file that stores the matrix + configuration
+   */
   explicit DBMatOffline(const std::string& fname);
 
   /**
