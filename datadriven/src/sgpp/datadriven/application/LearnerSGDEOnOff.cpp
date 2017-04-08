@@ -14,6 +14,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
@@ -71,13 +72,15 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& tr
     for (size_t classIndex = 0; classIndex < numClasses; classIndex++) {
       offlineContainer.emplace_back(
           std::make_unique<DBMatOfflineChol>(static_cast<DBMatOfflineChol&>(*offline)));
-      auto densEst = std::make_unique<DBMatOnlineDE>(*(offlineContainer.back()), beta);
+      auto densEst = std::unique_ptr<DBMatOnlineDE>{
+          DBMatOnlineDEFactory::buildDBMatOnlineDE(*(offlineContainer.back()), beta)};
       densityFunctions.emplace_back(std::make_pair(std::move(densEst), classLabels[classIndex]));
     }
   } else {
     densityFunctions.reserve(numClasses);
     for (size_t classIndex = 0; classIndex < numClasses; classIndex++) {
-      auto densEst = std::make_unique<DBMatOnlineDE>(*offline, beta);
+      auto densEst =
+          std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(*offline, beta)};
       densityFunctions.emplace_back(std::make_pair(std::move(densEst), classLabels[classIndex]));
     }
   }

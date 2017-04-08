@@ -115,6 +115,10 @@ class DBMatOnlineDE : public DBMatOnline {
   double normalize(size_t samples = 1000);
 
  protected:
+  virtual void solveSLE(DataVector& b, bool do_cv) = 0;
+  double computeL2Error();
+  double resDensity(DataVector& alpha);
+
   DataVector alpha;
   bool functionComputed;
   DataVector bSave;
@@ -129,10 +133,6 @@ class DBMatOnlineDE : public DBMatOnline {
   bool cvLogscale;
   double normFactor;
   size_t oDim;
-
- private:
-  double computeL2Error();
-  double resDensity(DataVector& alpha);
 };
 
 }  // namespace datadriven
