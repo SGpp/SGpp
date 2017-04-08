@@ -26,6 +26,8 @@ class DBMatOfflineLU : public DBMatOfflineGE {
 
   virtual ~DBMatOfflineLU() = default;
 
+  DBMatOffline* clone() override;
+
   void decomposeMatrix() override;
 
   void permuteVector(DataVector& b);

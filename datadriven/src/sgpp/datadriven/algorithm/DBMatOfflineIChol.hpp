@@ -29,6 +29,8 @@ class DBMatOfflineIChol : public DBMatOfflineChol {
    */
   explicit DBMatOfflineIChol(const DBMatDensityConfiguration& oc);
 
+  DBMatOffline* clone() override;
+
   /**
    * Decomposes the matrix according to the chosen decomposition type.
    * The number of rows of the stored result depends on the decomposition type.

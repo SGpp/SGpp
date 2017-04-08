@@ -32,6 +32,8 @@ using sgpp::base::OperationMatrix;
 
 DBMatOfflineEigen::DBMatOfflineEigen(const DBMatDensityConfiguration& oc) : DBMatOffline(oc) {}
 
+DBMatOffline* DBMatOfflineEigen::clone() { return new DBMatOfflineEigen{*this}; }
+
 void DBMatOfflineEigen::decomposeMatrix() {
   if (isConstructed) {
     if (isDecomposed) {
