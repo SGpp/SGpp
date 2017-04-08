@@ -16,6 +16,16 @@ class DBMatOfflineLU : public DBMatOfflineGE {
  public:
   DBMatOfflineLU(const DBMatDensityConfiguration& oc);
 
+  DBMatOfflineLU(const DBMatOfflineLU& rhs);
+
+  DBMatOfflineLU(DBMatOfflineLU&& rhs) = default;
+
+  DBMatOfflineLU& operator=(const DBMatOfflineLU& rhs);
+
+  DBMatOfflineLU& operator=(DBMatOfflineLU&& rhs) = default;
+
+  virtual ~DBMatOfflineLU() = default;
+
   void decomposeMatrix() override;
 
   void permuteVector(DataVector& b);

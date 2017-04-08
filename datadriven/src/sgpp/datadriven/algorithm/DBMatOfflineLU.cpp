@@ -21,14 +21,28 @@ namespace sgpp {
 namespace datadriven {
 
 using sgpp::base::algorithm_exception;
+using sgpp::base::DataVector;
 
 DBMatOfflineLU::DBMatOfflineLU(const DBMatDensityConfiguration& oc)
     : DBMatOfflineGE{oc}, permutation{nullptr} {}
 
+DBMatOfflineLU::DBMatOfflineLU(const DBMatOfflineLU& rhs)
+    : DBMatOfflineGE(rhs), permutation(nullptr) {
+  permutation =
+      std::unique_ptr<gsl_permutation>{gsl_permutation_alloc(rhs.grid->getStorage().getSize())};
+  gsl_permutation_memcpy(permutation.get(), rhs.permutation.get());
+}
 
+DBMatOfflineLU& DBMatOfflineLU::operator=(const DBMatOfflineLU& rhs) {
+  DBMatOffline::operator=(rhs);
+  permutation =
+      std::unique_ptr<gsl_permutation>{gsl_permutation_alloc(rhs.grid->getStorage().getSize())};
+  gsl_permutation_memcpy(permutation.get(), rhs.permutation.get());
 
-    void
-    DBMatOfflineLU::decomposeMatrix() {
+  return *this;
+}
+
+void DBMatOfflineLU::decomposeMatrix() {
   if (isConstructed) {
     if (isDecomposed) {
       // Already decomposed => Do nothing
@@ -54,7 +68,7 @@ void DBMatOfflineLU::permuteVector(DataVector& b) {
   if (isDecomposed) {
     gsl_permute(permutation->data, b.getPointer(), 1, b.getSize());
   } else {
-    throw algorithm_exception("Matrix was not decomposed, yet!");
+    throw algorithm_exception("Matrix was not decomposed yet.");
   }
 }
 
