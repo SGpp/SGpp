@@ -229,7 +229,6 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         bool preCompute = true;      // Precomputes and caches evals for zrcr
         MultiGridRefinementFunctor* func = nullptr;
 
-        // TODO(lettrich): memory leaks!
         // Zero-crossing-based refinement
         ZeroCrossingRefinementFunctor funcZrcr{grids, alphas, offline->getConfig().ref_noPoints_,
                                                levelPenalize, preCompute};
