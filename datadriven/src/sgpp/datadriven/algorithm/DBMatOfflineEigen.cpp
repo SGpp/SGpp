@@ -68,17 +68,5 @@ void DBMatOfflineEigen::decomposeMatrix() {
   }
 }
 
-void DBMatOfflineEigen::store(const std::string& fileName) {
-  DBMatOffline::store(fileName);
-
-  // c file API needed for GSL
-  FILE* outputCFile = fopen(fileName.c_str(), "ab");
-  if (!outputCFile) {
-    throw application_exception{"cannot open file for writing"};
-  }
-  gsl_permutation_fwrite(outputCFile, permutation.get());
-  fclose(outputCFile);
-}
-
 } /* namespace datadriven */
 } /* namespace sgpp */

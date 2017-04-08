@@ -19,6 +19,17 @@ class DBMatOfflineLU : public DBMatOfflineGE {
   void decomposeMatrix() override;
 
   void permuteVector(DataVector& b);
+
+  /**
+   * Store the decomposed matrix, the permutation and configuration.
+   *
+   * @param fname the file name
+   */
+  void store(const std::string& fname) override;
+
+ private:
+  std::unique_ptr<gsl_permutation> permutation;  // Stores the permutation that was
+                                                 // applied on the matrix during decomposition
 };
 
 } /* namespace datadriven */

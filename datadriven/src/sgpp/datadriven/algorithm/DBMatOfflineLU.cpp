@@ -15,14 +15,20 @@
 #include <gsl/gsl_permutation.h>
 #include <gsl/gsl_permute.h>
 
+#include <string>
+
 namespace sgpp {
-namespace datadriven {} /* namespace datadriven */
-} /* namespace sgpp */
+namespace datadriven {
 
-sgpp::datadriven::DBMatOfflineLU::DBMatOfflineLU(const DBMatDensityConfiguration& oc)
-    : DBMatOfflineGE(oc) {}
+using sgpp::base::algorithm_exception;
 
-void sgpp::datadriven::DBMatOfflineLU::decomposeMatrix() {
+DBMatOfflineLU::DBMatOfflineLU(const DBMatDensityConfiguration& oc)
+    : DBMatOfflineGE{oc}, permutation{nullptr} {}
+
+
+
+    void
+    DBMatOfflineLU::decomposeMatrix() {
   if (isConstructed) {
     if (isDecomposed) {
       // Already decomposed => Do nothing
@@ -44,10 +50,26 @@ void sgpp::datadriven::DBMatOfflineLU::decomposeMatrix() {
   }
 }
 
-void sgpp::datadriven::DBMatOfflineLU::permuteVector(DataVector& b) {
+void DBMatOfflineLU::permuteVector(DataVector& b) {
   if (isDecomposed) {
     gsl_permute(permutation->data, b.getPointer(), 1, b.getSize());
   } else {
-    throw base::algorithm_exception("Matrix was not decomposed, yet!");
+    throw algorithm_exception("Matrix was not decomposed, yet!");
   }
 }
+
+void DBMatOfflineLU::store(const std::string& fileName) {
+  // first store header and matrix
+  DBMatOffline::store(fileName);
+  // then store permutation.
+  // c file API needed for GSL
+  FILE* outputCFile = fopen(fileName.c_str(), "ab");
+  if (!outputCFile) {
+    throw algorithm_exception{"cannot open file for writing"};
+  }
+  gsl_permutation_fwrite(outputCFile, permutation.get());
+  fclose(outputCFile);
+}
+
+} /* namespace datadriven */
+} /* namespace sgpp */

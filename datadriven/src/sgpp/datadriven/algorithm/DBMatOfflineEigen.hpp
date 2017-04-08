@@ -31,13 +31,6 @@ class DBMatOfflineEigen : public DBMatOffline {
    * The number of rows of the stored result depends on the decomposition type.
    */
   void decomposeMatrix() override;
-
-  /**
-   * Store the decomposed matrix, the permutation and configuration.
-   *
-   * @param fname the file name
-   */
-  void store(const std::string& fname) override;
 };
 
 } /* namespace datadriven */
