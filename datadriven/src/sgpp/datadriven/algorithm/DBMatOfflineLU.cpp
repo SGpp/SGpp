@@ -70,6 +70,8 @@ void DBMatOfflineLU::decomposeMatrix() {
 DBMatOfflineLU::DBMatOfflineLU(const std::string& fileName)
     : DBMatOfflineGE(), permutation{nullptr} {
   parseConfig(fileName, config);
+  isConstructed = true;
+  isDecomposed = true;
   InitializeGrid();
 
   FILE* file = fopen(fileName.c_str(), "rb");
