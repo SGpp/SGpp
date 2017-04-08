@@ -89,91 +89,6 @@ DBMatOffline::DBMatOffline(const std::string& fileName)
   parseConfig(fileName, config);
   InitializeGrid();
 }
-//    : config(), lhsMatrix(), isConstructed(false), isDecomposed(false), grid(nullptr) {
-//  // Read configuration
-//  FILE* f = fopen(fname.c_str(), "rb");
-//  std::string line("");
-//  if (f == nullptr) {
-//    std::cout << "DBMatOffline: Error opening file " << line << std::endl;
-//    exit(-1);
-//  }
-//  char c = static_cast<char>(fgetc(f));
-//  line += c;
-//  while (c != '\n') {
-//    c = static_cast<char>(fgetc(f));
-//    line += c;
-//  }
-//
-//  std::vector<std::string> tokens;
-//  StringTokenizer::tokenize(line, ",", tokens);
-//
-//  // ToDo: full grid not supported
-//  bool fullgrid = atoi(tokens[0].c_str());
-//  if ((fullgrid && tokens.size() != 8) || (!fullgrid && tokens.size() != 7)) {
-//    std::cout << "DBMatOffline: Wrong file format: " << fname.c_str() << std::endl;
-//    exit(-1);
-//  }
-//
-//  GridType grid_type = (GridType)atoi(tokens[1].c_str());
-//
-//  size_t grid_dim = atoi(tokens[2].c_str());
-//  int grid_level = atoi(tokens[3].c_str());
-//  RegularizationType reg = (RegularizationType)atoi(tokens[4].c_str());
-//  double lambda = atof(tokens[5].c_str());
-//  DBMatDecompostionType decomp = (DBMatDecompostionType)atoi(tokens[6].c_str());
-//
-//  RegularGridConfiguration gconf;
-//  gconf.dim_ = grid_dim;
-//  gconf.level_ = grid_level;
-//  gconf.type_ = grid_type;
-//
-//  base::AdpativityConfiguration adaptivityConfig;
-//  adaptivityConfig.numRefinements_ = 0;
-//  adaptivityConfig.threshold_ = 0.0;
-//  adaptivityConfig.maxLevelType_ = false;
-//  adaptivityConfig.noPoints_ = 0;
-//  adaptivityConfig.percent_ = 0.0;
-//
-//  config = DBMatDensityConfiguration(gconf, adaptivityConfig, reg, lambda, decomp);
-//
-//  size_t size;
-//
-//  // Build grid
-//  InitializeGrid();
-//
-//  // check if grid was created
-//  if (grid == nullptr) return;
-//
-//  size = grid->getStorage().getSize();  // Size of the (quadratic) matrices A and C
-//
-//  // Read matrix
-//  gsl_matrix* a;
-//  if (decomp == DBMatDecompostionType::DBMatDecompLU) {
-//    a = gsl_matrix_alloc(size, size);
-//  } else if (decomp == DBMatDecompostionType::DBMatDecompEigen) {
-//    a = gsl_matrix_alloc(size + 1, size);
-//  } else if (decomp == DBMatDecompostionType::DBMatDecompChol) {
-//    a = gsl_matrix_alloc(size, size);
-//  } else {
-//    throw application_exception("Unsupported decomposition type!");
-//  }
-//
-//  gsl_matrix_fread(f, a);
-//  lhsMatrix = DataMatrix(a->data, a->size1, a->size2);
-//  // Read permutation
-//  //  if (decomp == DBMatDecompostionType::DBMatDecompLU) {
-//  //    permutation = std::unique_ptr<gsl_permutation>{gsl_permutation_alloc(size)};
-//  //    gsl_permutation_fread(f, permutation.get());
-//  //  }
-//
-//  fclose(f);
-//  gsl_matrix_free(a);
-//
-//  isConstructed = true;
-//  isDecomposed = true;
-//
-//  // std::cout << "Time: " << myStopwatch->stop() << std::endl;
-//}
 
 DBMatDensityConfiguration& DBMatOffline::getConfig() { return config; }
 
@@ -273,14 +188,8 @@ void sgpp::datadriven::DBMatOffline::parseConfig(const std::string& fileName,
   std::getline(file, str);
   file.close();
 
-  std::cout << str;
   std::vector<std::string> tokens;
   StringTokenizer::tokenize(str, ",", tokens);
-  std::cout << "tokens: ";
-  for (auto& item : tokens) {
-    std::cout << item << ",";
-  }
-  std::cout << std::endl;
 
   config.grid_type_ = static_cast<GridType>(std::stoi(tokens[0]));
   config.grid_dim_ = std::stoi(tokens[1]);
