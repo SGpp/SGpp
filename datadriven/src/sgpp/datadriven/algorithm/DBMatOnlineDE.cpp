@@ -11,9 +11,6 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinear.hpp>
-#include <sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp>
-#include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
-#include <sgpp/datadriven/algorithm/DBMatDMSEigen.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
@@ -126,71 +123,8 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
       b.mult(1. / static_cast<double>(numberOfPoints));
     }
 
-    // Solve the system:
-    alpha = DataVector(lhsMatrix.getNcols());
+    solveSLE(b, do_cv);
 
-    DBMatDecompostionType type = offlineObject.getConfig().decomp_type_;
-    if (type == DBMatDecompostionType::DBMatDecompLU) {
-      DBMatDMSBackSub lusolver;
-      lusolver.solve(lhsMatrix, alpha, b);
-    } else if (type == DBMatDecompostionType::DBMatDecompEigen) {
-      size_t n = lhsMatrix.getNcols();
-      DataVector e(n);
-      lhsMatrix.getRow(n, e);
-      DBMatDMSEigen esolver;
-
-      if (canCV && do_cv) {
-        double best_crit = 0;
-        double cur_lambda;
-        for (int i = 0; i < lambdaStep; i++) {
-          cur_lambda = lambdaStart + i * (lambdaEnd - lambdaStart) / (lambdaStep - 1);
-          if (cvLogscale) cur_lambda = exp(cur_lambda);
-          esolver.solve(lhsMatrix, e, alpha, b, cur_lambda);
-          // double crit = computeL2Error();
-          double crit = resDensity(alpha);
-          // std::cout << "cur_lambda: " << cur_lambda << ", crit: " << crit <<
-          // std::endl;
-          if (i == 0 || crit < best_crit) {
-            best_crit = crit;
-            lambda = cur_lambda;
-          }
-        }
-      }
-      esolver.solve(lhsMatrix, e, alpha, b, lambda);
-    } else if (type == DBMatDecompostionType::DBMatDecompChol) {
-      DBMatDMSChol cholsolver;
-
-      double old_lambda = lambda;
-      // Perform cross-validation based on rank one up- and downdates
-      // -> SHOULD NOT BE USED FOR LARGER GRID SETTINGS
-      // ToDo: May be speed up by parallelization
-      if (canCV && do_cv) {
-        double best_crit = 0;
-        double cur_lambda;
-        for (int i = 0; i < lambdaStep; i++) {
-          cur_lambda = lambdaStart + i * (lambdaEnd - lambdaStart) / (lambdaStep - 1);
-          if (cvLogscale) cur_lambda = exp(cur_lambda);
-          // std::cout << "Cur_lambda: " << cur_lambda << "  Old_lambda: " <<
-          // old_lambda << std::endl;
-          // Solve for density declaring coefficients alpha based on changed
-          // lambda
-          cholsolver.solve(lhsMatrix, alpha, b, old_lambda, cur_lambda);
-          old_lambda = cur_lambda;
-          double crit = resDensity(alpha);
-          // std::cout << ", crit: " << crit << std::endl;
-          if (i == 0 || crit < best_crit) {
-            best_crit = crit;
-            lambda = cur_lambda;
-          }
-        }
-      }
-      // Solve for density declaring coefficients alpha
-      // std::cout << "lambda: " << lambda << std::endl;
-      cholsolver.solve(lhsMatrix, alpha, b, old_lambda, lambda);
-
-    } else {
-      throw sgpp::base::application_exception("Unsupported decomposition type!");
-    }
     functionComputed = true;
   }
 }
@@ -294,6 +228,77 @@ double DBMatOnlineDE::normalize(size_t samples) {
   }
   return this->normFactor = static_cast<double>(samples) / sum;
 }
+
+// void DBMatOnlineDE::solveSLE(DataVector& b, bool do_cv) {
+//  //  DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
+//  //
+//  //  // Solve the system:
+//  //  alpha = DataVector(lhsMatrix.getNcols());
+//  //
+//  //  DBMatDecompostionType type = offlineObject.getConfig().decomp_type_;
+//  //  if (type == DBMatDecompostionType::DBMatDecompLU) {
+//  //    DBMatDMSBackSub lusolver;
+//  //    lusolver.solve(lhsMatrix, alpha, b);
+//  //  }
+//  //  } else if (type == DBMatDecompostionType::DBMatDecompEigen) {
+//  //    size_t n = lhsMatrix.getNcols();
+//  //    DataVector e(n);
+//  //    lhsMatrix.getRow(n, e);
+//  //    DBMatDMSEigen esolver;
+//  //
+//  //    if (canCV && do_cv) {
+//  //      double best_crit = 0;
+//  //      double cur_lambda;
+//  //      for (int i = 0; i < lambdaStep; i++) {
+//  //        cur_lambda = lambdaStart + i * (lambdaEnd - lambdaStart) / (lambdaStep - 1);
+//  //        if (cvLogscale) cur_lambda = exp(cur_lambda);
+//  //        esolver.solve(lhsMatrix, e, alpha, b, cur_lambda);
+//  //        // double crit = computeL2Error();
+//  //        double crit = resDensity(alpha);
+//  //        // std::cout << "cur_lambda: " << cur_lambda << ", crit: " << crit <<
+//  //        // std::endl;
+//  //        if (i == 0 || crit < best_crit) {
+//  //          best_crit = crit;
+//  //          lambda = cur_lambda;
+//  //        }
+//  //      }
+//  //    }
+//  //    esolver.solve(lhsMatrix, e, alpha, b, lambda);
+//  // }  // else if (type == DBMatDecompostionType::DBMatDecompChol) {
+//  //    DBMatDMSChol cholsolver;
+//  //
+//  //    double old_lambda = lambda;
+//  //    // Perform cross-validation based on rank one up- and downdates
+//  //    // -> SHOULD NOT BE USED FOR LARGER GRID SETTINGS
+//  //    // ToDo: May be speed up by parallelization
+//  //    if (canCV && do_cv) {
+//  //      double best_crit = 0;
+//  //      double cur_lambda;
+//  //      for (int i = 0; i < lambdaStep; i++) {
+//  //        cur_lambda = lambdaStart + i * (lambdaEnd - lambdaStart) / (lambdaStep - 1);
+//  //        if (cvLogscale) cur_lambda = exp(cur_lambda);
+//  //        // std::cout << "Cur_lambda: " << cur_lambda << "  Old_lambda: " <<
+//  //        // old_lambda << std::endl;
+//  //        // Solve for density declaring coefficients alpha based on changed
+//  //        // lambda
+//  //        cholsolver.solve(lhsMatrix, alpha, b, old_lambda, cur_lambda);
+//  //        old_lambda = cur_lambda;
+//  //        double crit = resDensity(alpha);
+//  //        // std::cout << ", crit: " << crit << std::endl;
+//  //        if (i == 0 || crit < best_crit) {
+//  //          best_crit = crit;
+//  //          lambda = cur_lambda;
+//  //        }
+//  //      }
+//  //    }
+//  //    // Solve for density declaring coefficients alpha
+//  //    // std::cout << "lambda: " << lambda << std::endl;
+//  //    cholsolver.solve(lhsMatrix, alpha, b, old_lambda, lambda);
+//  //}
+//  else {
+//    throw sgpp::base::application_exception("Unsupported decomposition type!");
+//  }
+//}
 
 }  // namespace datadriven
 }  // namespace sgpp
