@@ -107,10 +107,10 @@ int main() {
       DBMatDecompostionType dt;
       std::string decompType;
       // choose "LU decomposition"
-      // dt = DBMatDecompLU;
+      // dt = DBMatDecompostionType::DBMatDecompLU;
       // decompType = "LU decomposition";
       // choose"Eigen decomposition"
-      // dt = DBMatDecompEigen;
+      // dt = DBMatDecompostionType::DBMatDecompEigen;
       // decompType = "Eigen decomposition";
       // choose "Cholesky decomposition"
       dt = DBMatDecompostionType::DBMatDecompChol;
