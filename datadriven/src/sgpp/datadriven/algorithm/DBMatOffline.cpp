@@ -85,7 +85,7 @@ DBMatOffline& sgpp::datadriven::DBMatOffline::operator=(const DBMatOffline& rhs)
 }
 
 DBMatOffline::DBMatOffline(const std::string& fileName)
-    : config(), lhsMatrix(), isConstructed(false), isDecomposed(false), grid(nullptr) {
+    : config(), lhsMatrix(), isConstructed(true), isDecomposed(true), grid(nullptr) {
   parseConfig(fileName, config);
   InitializeGrid();
 }
@@ -288,17 +288,6 @@ void sgpp::datadriven::DBMatOffline::parseConfig(const std::string& fileName,
   config.regularization_ = static_cast<RegularizationType>(std::stoi(tokens[3]));
   config.lambda_ = std::stof(tokens[4]);
   config.decomp_type_ = static_cast<DBMatDecompostionType>(std::stoi(tokens[5]));
-
-  //  FILE* cFile = fopen(fileName.c_str(), "rb");
-  //  if (!cFile) {
-  //    throw application_exception{"Failed to open File"};
-  //  }
-  //
-  //  // seek end of first line
-  //  char c = 0;
-  //  while (c != '\n') {
-  //    c = static_cast<char>(fgetc(cFile));
-  //  }
 }
 
 }  // namespace datadriven
