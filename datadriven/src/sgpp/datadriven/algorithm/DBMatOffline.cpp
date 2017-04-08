@@ -52,32 +52,47 @@ using sgpp::base::data_exception;
 using sgpp::base::OperationMatrix;
 
 DBMatOffline::DBMatOffline(const DBMatDensityConfiguration& oc)
-    : config(oc),
-      lhsMatrix(),
-      isConstructed(false),
-      isDecomposed(false),
-      permutation(nullptr),
-      grid(nullptr) {}
+    : config(oc), lhsMatrix(), isConstructed(false), isDecomposed(false), grid(nullptr) {}
 
 DBMatOffline::DBMatOffline()
-    : config(),
-      lhsMatrix(),
-      isConstructed(false),
-      isDecomposed(false),
-      permutation(nullptr),
-      grid(nullptr) {}
+    : config(), lhsMatrix(), isConstructed(false), isDecomposed(false), grid(nullptr) {}
+
+DBMatOffline::DBMatOffline(const DBMatOffline& rhs)
+    : config(rhs.config),
+      lhsMatrix(rhs.lhsMatrix),
+      isConstructed(rhs.isConstructed),
+      isDecomposed(rhs.isDecomposed),
+      grid(nullptr) {
+  if (rhs.grid != nullptr) {
+    grid = std::unique_ptr<Grid>{rhs.grid->clone()};
+  }
+}
+
+DBMatOffline& sgpp::datadriven::DBMatOffline::operator=(const DBMatOffline& rhs) {
+  if (&rhs == this) {
+    return *this;
+  }
+
+  config = rhs.config;
+  lhsMatrix = rhs.lhsMatrix;
+  isConstructed = rhs.isConstructed;
+  isDecomposed = rhs.isDecomposed;
+
+  if (rhs.grid != nullptr) {
+    grid = std::unique_ptr<Grid>{rhs.grid->clone()};
+  }
+  return *this;
+}
+
+//  // Copy Permutation (if existing)
+//  if (config.decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
+//    permutation =
+// std::unique_ptr<gsl_permutation>{gsl_permutation_alloc(old.grid->getStorage().getSize())};
+//    gsl_permutation_memcpy(permutation.get(), old.permutation.get());
+//  }
 
 DBMatOffline::DBMatOffline(const std::string& fname)
-    : config(),
-      lhsMatrix(),
-      isConstructed(false),
-      isDecomposed(false),
-      permutation(nullptr),
-      grid(nullptr) {
-  // std::cout << "START READING MATRIX" << std::endl;
-  // SGppStopwatch* myStopwatch = new SGppStopwatch();
-  // myStopwatch->start();
-
+    : config(), lhsMatrix(), isConstructed(false), isDecomposed(false), grid(nullptr) {
   // Read configuration
   FILE* f = fopen(fname.c_str(), "rb");
   std::string line("");
@@ -149,10 +164,10 @@ DBMatOffline::DBMatOffline(const std::string& fname)
   gsl_matrix_fread(f, a);
   lhsMatrix = DataMatrix(a->data, a->size1, a->size2);
   // Read permutation
-  if (decomp == DBMatDecompostionType::DBMatDecompLU) {
-    permutation = std::unique_ptr<gsl_permutation>{gsl_permutation_alloc(size)};
-    gsl_permutation_fread(f, permutation.get());
-  }
+  //  if (decomp == DBMatDecompostionType::DBMatDecompLU) {
+  //    permutation = std::unique_ptr<gsl_permutation>{gsl_permutation_alloc(size)};
+  //    gsl_permutation_fread(f, permutation.get());
+  //  }
 
   fclose(f);
   gsl_matrix_free(a);
@@ -163,53 +178,13 @@ DBMatOffline::DBMatOffline(const std::string& fname)
   // std::cout << "Time: " << myStopwatch->stop() << std::endl;
 }
 
-DBMatOffline::DBMatOffline(const DBMatOffline& old)
-    : config(),
-      lhsMatrix(),
-      isConstructed(true),
-      isDecomposed(true),
-      permutation(nullptr),
-      grid(nullptr) {
-  if (!old.isDecomposed) {
-    throw application_exception("Matrix not yet decomposed");
-    return;
-  }
-
-  // Copy configuration
-  RegularGridConfiguration gconf;
-  gconf.dim_ = old.config.grid_dim_;
-  gconf.level_ = old.config.grid_level_;
-  gconf.type_ = old.config.grid_type_;
-
-  AdpativityConfiguration adaptConfig;
-  adaptConfig.numRefinements_ = old.config.numRefinements_;
-  adaptConfig.threshold_ = old.config.ref_threshold_;
-  adaptConfig.noPoints_ = old.config.ref_noPoints_;
-
-  config = DBMatDensityConfiguration{gconf, adaptConfig, old.config.regularization_,
-                                     old.config.lambda_, old.config.decomp_type_};
-
-  // Copy Matrix
-  lhsMatrix = DataMatrix(old.lhsMatrix);
-
-  // Copy Permutation (if existing)
-  if (config.decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
-    permutation =
-        std::unique_ptr<gsl_permutation>{gsl_permutation_alloc(old.grid->getStorage().getSize())};
-    gsl_permutation_memcpy(permutation.get(), old.permutation.get());
-  }
-
-  // Initialize Grid
-  InitializeGrid();
-}
-
 DBMatDensityConfiguration& DBMatOffline::getConfig() { return config; }
 
 DataMatrix& DBMatOffline::getDecomposedMatrix() {
   if (isDecomposed) {
     return lhsMatrix;
   } else {
-    throw data_exception("Matrix was not decomposed, yet!");
+    throw data_exception("Matrix was not decomposed yet");
   }
 }
 
@@ -248,7 +223,8 @@ void DBMatOffline::store(const std::string& fileName) {
              << static_cast<int>(config.decomp_type_) << "\n";
   outputFile.close();
 
-  // c file API needed for GSL
+  // write matrix
+  // switch to c FILE API for GSL
   FILE* outputCFile = fopen(fileName.c_str(), "ab");
   if (!outputCFile) {
     throw application_exception{"cannot open file for writing"};
@@ -335,4 +311,5 @@ void DBMatOffline::buildMatrix() {
 
 }  // namespace datadriven
 }  // namespace sgpp
+
 #endif /* USE_GSL */
