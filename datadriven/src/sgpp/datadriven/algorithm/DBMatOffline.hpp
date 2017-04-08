@@ -40,11 +40,12 @@ class DBMatOffline {
    * @param oc configuration for this offline object
    */
   explicit DBMatOffline(const DBMatDensityConfiguration& oc);
-  /**
-   * Constructor
-   *
-   * @param fname name of the file that stores the matrix + configuration
-   */
+
+  //  /**
+  //   * Constructor
+  //   *
+  //   * @param fname name of the file that stores the matrix + configuration
+  //   */
   explicit DBMatOffline(const std::string& fname);
 
   /**
@@ -103,14 +104,7 @@ class DBMatOffline {
    *
    * @param fname the file name
    */
-  virtual void store(const std::string& fname);
-
-  /**
-   * Loads matrix and configuration from a file
-   *
-   * @param fname the file name
-   */
-  /*void load(std::string fname);*/
+  virtual void store(const std::string& fileName);
 
  protected:
   DBMatOffline();
@@ -130,11 +124,7 @@ class DBMatOffline {
    */
   void InitializeGrid();
 
-  // private:
-  //  /**
-  //   * Used for reading input files
-  //   */
-  //  void Tokenize(std::string&, std::vector<std::string>&, std::string& delimiters);
+  void parseConfig(const std::string& fileName, DBMatDensityConfiguration& config) const;
 };
 
 }  // namespace datadriven

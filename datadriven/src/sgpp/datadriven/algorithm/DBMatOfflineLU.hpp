@@ -28,6 +28,8 @@ class DBMatOfflineLU : public DBMatOfflineGE {
 
   DBMatOffline* clone() override;
 
+  DBMatOfflineLU(const std::string& fileName);
+
   void decomposeMatrix() override;
 
   void permuteVector(DataVector& b);

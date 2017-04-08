@@ -13,6 +13,7 @@
 #pragma once
 
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
+#include <string>
 
 namespace sgpp {
 namespace datadriven {
@@ -25,6 +26,8 @@ class DBMatOfflineEigen : public DBMatOffline {
    * @param oc configuration for this offline object
    */
   explicit DBMatOfflineEigen(const DBMatDensityConfiguration& oc);
+
+  explicit DBMatOfflineEigen(const std::string& fileName);
 
   DBMatOffline* clone() override;
 

@@ -32,6 +32,31 @@ using sgpp::base::OperationMatrix;
 
 DBMatOfflineEigen::DBMatOfflineEigen(const DBMatDensityConfiguration& oc) : DBMatOffline(oc) {}
 
+sgpp::datadriven::DBMatOfflineEigen::DBMatOfflineEigen(const std::string& fileName)
+    : DBMatOffline{fileName} {
+  FILE* file = fopen(fileName.c_str(), "rb");
+  if (!file) {
+    throw application_exception{"Failed to open File"};
+  }
+
+  // seek end of first line
+  char c = 0;
+  while (c != '\n') {
+    c = static_cast<char>(fgetc(file));
+  }
+
+  // TODO(lettrich) : test if we can do this without copying.
+  // Read matrix
+  auto size = grid->getStorage().getSize();
+  gsl_matrix* matrix;
+  matrix = gsl_matrix_alloc(size + 1, size);
+  gsl_matrix_fread(file, matrix);
+  fclose(file);
+
+  lhsMatrix = DataMatrix(matrix->data, matrix->size1, matrix->size2);
+  gsl_matrix_free(matrix);
+}
+
 DBMatOffline* DBMatOfflineEigen::clone() { return new DBMatOfflineEigen{*this}; }
 
 void DBMatOfflineEigen::decomposeMatrix() {

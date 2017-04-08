@@ -15,12 +15,16 @@
 #include <sgpp/datadriven/algorithm/IChol.hpp>
 #include <sgpp/datadriven/algorithm/SparseDataMatrix.hpp>
 
+#include <string>
+
 namespace sgpp {
 namespace datadriven {
 
 using sgpp::base::algorithm_exception;
 
 DBMatOfflineIChol::DBMatOfflineIChol(const DBMatDensityConfiguration& oc) : DBMatOfflineChol(oc) {}
+
+DBMatOfflineIChol::DBMatOfflineIChol(const std::string& fileName) : DBMatOfflineChol{fileName} {}
 
 DBMatOffline* sgpp::datadriven::DBMatOfflineIChol::clone() { return new DBMatOfflineIChol{*this}; }
 
