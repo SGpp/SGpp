@@ -22,6 +22,8 @@ using sgpp::base::algorithm_exception;
 
 DBMatOfflineIChol::DBMatOfflineIChol(const DBMatDensityConfiguration& oc) : DBMatOfflineChol(oc) {}
 
+DBMatOffline* sgpp::datadriven::DBMatOfflineIChol::clone() { return new DBMatOfflineIChol{*this}; }
+
 void DBMatOfflineIChol::decomposeMatrix() {
   if (isConstructed) {
     if (isDecomposed) {

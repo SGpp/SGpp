@@ -62,7 +62,7 @@ class DBMatOffline {
 
   DBMatOffline& operator=(DBMatOffline&& rhs) = default;
 
-  // virtual DBMatOffline* clone() = 0;
+  virtual DBMatOffline* clone() = 0;
 
   /**
    * Returns a pointer to the configuration

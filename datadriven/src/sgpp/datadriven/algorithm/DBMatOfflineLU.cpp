@@ -42,6 +42,8 @@ DBMatOfflineLU& DBMatOfflineLU::operator=(const DBMatOfflineLU& rhs) {
   return *this;
 }
 
+DBMatOffline* DBMatOfflineLU::clone() { return new DBMatOfflineLU{*this}; }
+
 void DBMatOfflineLU::decomposeMatrix() {
   if (isConstructed) {
     if (isDecomposed) {

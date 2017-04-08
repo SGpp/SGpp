@@ -12,9 +12,13 @@
 namespace sgpp {
 namespace datadriven {
 
+using sgpp::base::DataVector;
+
 class DBMatOfflineChol : public DBMatOfflineGE {
  public:
   DBMatOfflineChol(const DBMatDensityConfiguration& oc);
+
+  DBMatOffline* clone() override;
 
   /**
    * Decomposes the matrix according to the chosen decomposition type.

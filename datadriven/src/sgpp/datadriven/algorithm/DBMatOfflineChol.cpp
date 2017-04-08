@@ -23,9 +23,13 @@
 namespace sgpp {
 namespace datadriven {
 
+using sgpp::base::DataMatrix;
+using sgpp::base::DataVector;
 using sgpp::base::algorithm_exception;
 
 DBMatOfflineChol::DBMatOfflineChol(const DBMatDensityConfiguration& oc) : DBMatOfflineGE(oc) {}
+
+DBMatOffline* DBMatOfflineChol::clone() { return new DBMatOfflineChol{*this}; }
 
 void DBMatOfflineChol::decomposeMatrix() {
   if (isConstructed) {
