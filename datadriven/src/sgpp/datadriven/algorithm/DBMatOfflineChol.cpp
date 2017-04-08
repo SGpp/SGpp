@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <list>
+#include <string>
 
 namespace sgpp {
 namespace datadriven {
@@ -366,3 +367,6 @@ void DBMatOfflineChol::choleskyPermutation(size_t k, size_t l, size_t job) {
 }
 } /* namespace datadriven */
 } /* namespace sgpp */
+
+sgpp::datadriven::DBMatOfflineChol::DBMatOfflineChol(const std::string& fileName)
+    : DBMatOfflineGE{fileName} {}

@@ -7,17 +7,50 @@
 
 #include <sgpp/datadriven/algorithm/DBMatOfflineGE.hpp>
 
+#include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 
+#include <gsl/gsl_linalg.h>
+#include <gsl/gsl_math.h>
+
 #include <list>
+#include <string>
 
 namespace sgpp {
 namespace datadriven {
 
 using sgpp::base::operation_exception;
+using sgpp::base::application_exception;
 using sgpp::base::DataMatrix;
 
+DBMatOfflineGE::DBMatOfflineGE() : DBMatOffline() {}
+
 DBMatOfflineGE::DBMatOfflineGE(const DBMatDensityConfiguration& oc) : DBMatOffline(oc) {}
+
+sgpp::datadriven::DBMatOfflineGE::DBMatOfflineGE(const std::string& fileName)
+    : DBMatOffline{fileName} {
+  FILE* file = fopen(fileName.c_str(), "rb");
+  if (!file) {
+    throw application_exception{"Failed to open File"};
+  }
+
+  // seek end of first line
+  char c = 0;
+  while (c != '\n') {
+    c = static_cast<char>(fgetc(file));
+  }
+
+  // TODO(lettrich) : test if we can do this without copying.
+  // Read matrix
+  auto size = grid->getStorage().getSize();
+  gsl_matrix* matrix;
+  matrix = gsl_matrix_alloc(size, size);
+  gsl_matrix_fread(file, matrix);
+  fclose(file);
+
+  lhsMatrix = DataMatrix(matrix->data, matrix->size1, matrix->size2);
+  gsl_matrix_free(matrix);
+}
 
 void DBMatOfflineGE::buildMatrix() {
   // build matrix

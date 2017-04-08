@@ -29,6 +29,8 @@ class DBMatOfflineIChol : public DBMatOfflineChol {
    */
   explicit DBMatOfflineIChol(const DBMatDensityConfiguration& oc);
 
+  explicit DBMatOfflineIChol(const std::string& fileName);
+
   DBMatOffline* clone() override;
 
   /**

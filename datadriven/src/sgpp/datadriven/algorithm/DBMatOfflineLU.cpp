@@ -22,6 +22,7 @@ namespace datadriven {
 
 using sgpp::base::algorithm_exception;
 using sgpp::base::DataVector;
+using sgpp::base::DataMatrix;
 
 DBMatOfflineLU::DBMatOfflineLU(const DBMatDensityConfiguration& oc)
     : DBMatOfflineGE{oc}, permutation{nullptr} {}
@@ -64,6 +65,39 @@ void DBMatOfflineLU::decomposeMatrix() {
   } else {
     throw base::algorithm_exception("Matrix has to be constructed before it can be decomposed!");
   }
+}
+
+DBMatOfflineLU::DBMatOfflineLU(const std::string& fileName)
+    : DBMatOfflineGE(), permutation{nullptr} {
+  parseConfig(fileName, config);
+  InitializeGrid();
+
+  FILE* file = fopen(fileName.c_str(), "rb");
+  if (!file) {
+    throw algorithm_exception{"Failed to open File"};
+  }
+
+  // seek end of first line
+  char c = 0;
+  while (c != '\n') {
+    c = static_cast<char>(fgetc(file));
+  }
+
+  // TODO(lettrich) : test if we can do this without copying.
+  // Read matrix
+  auto size = grid->getStorage().getSize();
+  gsl_matrix* matrix;
+  matrix = gsl_matrix_alloc(size, size);
+  gsl_matrix_fread(file, matrix);
+
+  // read permutation
+  permutation = std::unique_ptr<gsl_permutation>{gsl_permutation_alloc(size)};
+  gsl_permutation_fread(file, permutation.get());
+
+  fclose(file);
+
+  lhsMatrix = DataMatrix(matrix->data, matrix->size1, matrix->size2);
+  gsl_matrix_free(matrix);
 }
 
 void DBMatOfflineLU::permuteVector(DataVector& b) {

@@ -18,6 +18,8 @@ class DBMatOfflineChol : public DBMatOfflineGE {
  public:
   DBMatOfflineChol(const DBMatDensityConfiguration& oc);
 
+  DBMatOfflineChol(const std::string& fileName);
+
   DBMatOffline* clone() override;
 
   /**

@@ -19,6 +19,8 @@ namespace DBMatOfflineFactory {
 
 DBMatOffline* buildOfflineObject(const DBMatDensityConfiguration& config);
 
+DBMatOffline* buildFromFile(const std::string& fname);
+
 } /* namespace DBMatOfflineFactory */
 } /* namespace datadriven */
 } /* namespace sgpp */
