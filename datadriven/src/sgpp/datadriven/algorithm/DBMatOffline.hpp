@@ -50,17 +50,19 @@ class DBMatOffline {
   /**
    * Copy Constructor
    *
-   *
-   * The matrix needs to be already decomposed.
-   *
-   * @param old Object to copy
-   *
-   *TODO(lettrich): there is a bug. grid objects cannot be copied, so refined grids will not be
-   *copied properly.
+   * @param rhs Object to copy
    */
-  DBMatOffline(const DBMatOffline& old);
+  DBMatOffline(const DBMatOffline& rhs);
+
+  DBMatOffline(DBMatOffline&& rhs) = default;
 
   virtual ~DBMatOffline() = default;
+
+  DBMatOffline& operator=(const DBMatOffline& rhs);
+
+  DBMatOffline& operator=(DBMatOffline&& rhs) = default;
+
+  // virtual DBMatOffline* clone() = 0;
 
   /**
    * Returns a pointer to the configuration
@@ -117,9 +119,6 @@ class DBMatOffline {
   DataMatrix lhsMatrix;              // stores the (decomposed) matrix
   bool isConstructed;                // If the matrix was built
   bool isDecomposed;                 // If the matrix was decomposed
-
-  std::unique_ptr<gsl_permutation> permutation;  // Stores the permutation that was
-                                                 // applied on the matrix during decomposition
 
   /**
    * An offline object works on a hierarchical basis grid.
