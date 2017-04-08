@@ -12,6 +12,7 @@
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
@@ -200,6 +201,10 @@ class LearnerSGDEOnOff {
   ClassDensityConntainer& getDensityFunctions();
 
  private:
+  void refine(ConvergenceMonitor& monitor,
+              std::vector<std::pair<std::list<size_t>, size_t>>& refineCoarse,
+              std::string& refType);
+
   // The training data
   Dataset& trainData;
   // The test data

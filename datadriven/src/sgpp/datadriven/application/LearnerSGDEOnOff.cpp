@@ -104,10 +104,6 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
   // (is updated in each refinement/coarsening step)
   std::vector<std::pair<std::list<size_t>, size_t>> refineCoarse(numClasses);
 
-  // auxiliary variables
-  DataVector* alphaWork;  // required for surplus refinement
-  DataVector p(trainData.getDimension());
-
   // initialize counter for dataset passes
   size_t cntDataPasses = 0;
 
@@ -126,9 +122,6 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
   // size_t coarsePeriod = 50;
   // size_t coarseNumPoints = 1;
   // double coarseThreshold = 1.0;
-
-  std::list<size_t> deletedGridPoints;
-  size_t newPoints = 0;
 
   auto& onlineObjects = getDensityFunctions();
 
@@ -212,135 +205,13 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
           }
         }
       }
+
       // if the Cholesky decomposition is chosen as factorization method
       // refinement
       // and coarsening methods can be applied
       if (doRefine) {
-        // acc = getAccuracy();
-        // avgErrors.append(1.0 - acc);
         std::cout << "refinement at iteration: " << totalInstances << "\n";
-        // bundle grids and surplus vector pointer needed for refinement
-        // (for zero-crossings refinement, data-based refinement)
-        std::vector<Grid*> grids;
-        std::vector<DataVector*> alphas;
-        for (size_t i = 0; i < getNumClasses(); i++) {
-          auto densEst = onlineObjects[i].first.get();
-          grids.push_back(&(densEst->getOfflineObject().getGrid()));
-          alphas.push_back(densEst->getAlpha());
-        }
-        bool levelPenalize = false;  // Multiplies penalzing term for fine levels
-        bool preCompute = true;      // Precomputes and caches evals for zrcr
-        MultiGridRefinementFunctor* func = nullptr;
-
-        // Zero-crossing-based refinement
-        ZeroCrossingRefinementFunctor funcZrcr{grids, alphas, offline->getConfig().ref_noPoints_,
-                                               levelPenalize, preCompute};
-
-        // Data-based refinement. Needs a problem dependent coeffA. The values
-        // can be determined by testing (aim at ~10 % of the training data is
-        // to be marked relevant). Cross-validation or similar can/should be
-        // employed
-        // to determine this value.
-        std::vector<double> coeffA;
-        coeffA.push_back(1.2);  // ripley 1.2
-        coeffA.push_back(1.2);  // ripley 1.2
-        DataMatrix* trainDataRef = &(trainData.getData());
-        DataVector* trainLabelsRef = &(trainData.getTargets());
-        DataBasedRefinementFunctor funcData = DataBasedRefinementFunctor{
-            grids,         alphas, trainDataRef, trainLabelsRef, offline->getConfig().ref_noPoints_,
-            levelPenalize, coeffA};
-        if (refType == "zero") {
-          func = &funcZrcr;
-        } else if (refType == "data") {
-          func = &funcData;
-        }
-
-        // perform refinement/coarsening for each grid
-        for (size_t idx = 0; idx < getNumClasses(); idx++) {
-          // perform refinement/coarsening for grid which corresponds to current
-          // index
-          std::cout << "Refinement and coarsening for class: " << idx << "\n";
-          auto densEst = onlineObjects[idx].first.get();
-          Grid& grid = densEst->getOfflineObject().getGrid();
-          std::cout << "Size before adaptivity: " << grid.getSize() << "\n";
-
-          GridGenerator& gridGen = grid.getGenerator();
-
-          size_t sizeBeforeRefine = grid.getSize();
-          size_t sizeAfterRefine = grid.getSize();
-
-          if (refType == "surplus") {
-            std::unique_ptr<OperationEval> opEval(op_factory::createOperationEval(grid));
-            GridStorage& gridStorage = grid.getStorage();
-            alphaWork = densEst->getAlpha();
-            DataVector alphaWeight(alphaWork->getSize());
-            // determine surpluses
-            for (size_t k = 0; k < gridStorage.getSize(); k++) {
-              // sets values of p to the coordinates of the given GridPoint gp
-              gridStorage.getPoint(k).getStandardCoordinates(p);
-              // multiply k-th alpha with the evaluated function at grind-point
-              // k
-              alphaWeight[k] = alphaWork->get(k) * opEval->eval(*alphaWork, p);
-            }
-
-            // Perform Coarsening (surplus based)
-            /*if (coarseCnt < maxCoarseNum) {
-              HashCoarsening coarse_;
-              //std::cout << "\n" << "Start coarsening\n";
-
-              // Coarsening based on surpluses
-              SurplusCoarseningFunctor scf(
-                alphaWeight, coarseNumPoints, coarseThreshold);
-
-              //std::cout << "Size before coarsening:" << grid->getSize() <<
-            "\n";
-              //int old_size = grid->getSize();
-              coarse_.free_coarsen_NFirstOnly(
-                grid->getStorage(), scf, alphaWeight, grid->getSize());
-
-              std::cout << "Size after coarsening:" << grid->getSize() <<
-            "\n\n";
-              //int new_size = grid->getSize();
-
-              deletedGridPoints.clear();
-              deletedGridPoints = coarse_.getDeletedPoints();
-
-              (*refineCoarse)[idx].first = deletedGridPoints;
-
-              coarseCnt++;
-            }*/
-
-            // perform refinement (surplus based)
-            sizeBeforeRefine = grid.getSize();
-            // simple refinement based on surpluses
-            SurplusRefinementFunctor srf(alphaWeight, offline->getConfig().ref_noPoints_);
-            gridGen.refine(srf);
-            sizeAfterRefine = grid.getSize();
-          } else if ((refType == "data") || (refType == "zero")) {
-            if (preCompute) {
-              // precompute the evals (needs to be done once per step, before
-              // any refinement is done
-              func->preComputeEvaluations();
-            }
-            func->setGridIndex(idx);
-            // perform refinement (zero-crossings-based / data-based)
-            sizeBeforeRefine = grid.getSize();
-            gridGen.refine(*func);
-            sizeAfterRefine = grid.getSize();
-          }
-
-          std::cout << "grid size after adaptivity: " << grid.getSize() << "\n";
-
-          newPoints = sizeAfterRefine - sizeBeforeRefine;
-          refineCoarse[idx].second = newPoints;
-          // apply grid changes to the Cholesky factorization
-          if (offline->getConfig().decomp_type_ == DBMatDecompostionType::DBMatDecompChol) {
-            static_cast<DBMatOfflineChol&>(densEst->getOfflineObject())
-                .choleskyModification(newPoints, deletedGridPoints, densEst->getBestLambda());
-          }
-          // update alpha vector
-          densEst->updateAlpha(&refineCoarse[idx].first, refineCoarse[idx].second);
-        }
+        refine(monitor, refineCoarse, refType);
         refCnt += 1;
         doRefine = false;
         if (refMonitor == "convergence") {
@@ -603,6 +474,144 @@ size_t LearnerSGDEOnOff::getNumClasses() const { return numClasses; }
 void LearnerSGDEOnOff::getAvgErrors(DataVector& result) const { result = avgErrors; }
 
 ClassDensityConntainer& LearnerSGDEOnOff::getDensityFunctions() { return densityFunctions; }
+
+void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
+                              std::vector<std::pair<std::list<size_t>, size_t>>& refineCoarse,
+                              std::string& refType) {
+  auto& onlineObjects = getDensityFunctions();
+  DataVector* alphaWork;  // required for surplus refinement
+  // auxiliary variables
+  DataVector p(trainData.getDimension());
+
+  size_t newPoints = 0;
+  std::list<size_t> deletedGridPoints;
+
+  // acc = getAccuracy();
+  // avgErrors.append(1.0 - acc);
+
+  // bundle grids and surplus vector pointer needed for refinement
+  // (for zero-crossings refinement, data-based refinement)
+  std::vector<Grid*> grids;
+  std::vector<DataVector*> alphas;
+  for (size_t i = 0; i < getNumClasses(); i++) {
+    auto densEst = onlineObjects[i].first.get();
+    grids.push_back(&(densEst->getOfflineObject().getGrid()));
+    alphas.push_back(densEst->getAlpha());
+  }
+  bool levelPenalize = false;  // Multiplies penalzing term for fine levels
+  bool preCompute = true;      // Precomputes and caches evals for zrcr
+  MultiGridRefinementFunctor* func = nullptr;
+
+  // Zero-crossing-based refinement
+  ZeroCrossingRefinementFunctor funcZrcr{grids, alphas, offline->getConfig().ref_noPoints_,
+                                         levelPenalize, preCompute};
+
+  // Data-based refinement. Needs a problem dependent coeffA. The values
+  // can be determined by testing (aim at ~10 % of the training data is
+  // to be marked relevant). Cross-validation or similar can/should be
+  // employed
+  // to determine this value.
+  std::vector<double> coeffA;
+  coeffA.push_back(1.2);  // ripley 1.2
+  coeffA.push_back(1.2);  // ripley 1.2
+  DataMatrix* trainDataRef = &(trainData.getData());
+  DataVector* trainLabelsRef = &(trainData.getTargets());
+  DataBasedRefinementFunctor funcData = DataBasedRefinementFunctor{
+      grids,         alphas, trainDataRef, trainLabelsRef, offline->getConfig().ref_noPoints_,
+      levelPenalize, coeffA};
+  if (refType == "zero") {
+    func = &funcZrcr;
+  } else if (refType == "data") {
+    func = &funcData;
+  }
+
+  // perform refinement/coarsening for each grid
+  for (size_t idx = 0; idx < getNumClasses(); idx++) {
+    // perform refinement/coarsening for grid which corresponds to current
+    // index
+    std::cout << "Refinement and coarsening for class: " << idx << "\n";
+    auto densEst = onlineObjects[idx].first.get();
+    Grid& grid = densEst->getOfflineObject().getGrid();
+    std::cout << "Size before adaptivity: " << grid.getSize() << "\n";
+
+    GridGenerator& gridGen = grid.getGenerator();
+
+    size_t sizeBeforeRefine = grid.getSize();
+    size_t sizeAfterRefine = grid.getSize();
+
+    if (refType == "surplus") {
+      std::unique_ptr<OperationEval> opEval(op_factory::createOperationEval(grid));
+      GridStorage& gridStorage = grid.getStorage();
+      alphaWork = densEst->getAlpha();
+      DataVector alphaWeight(alphaWork->getSize());
+      // determine surpluses
+      for (size_t k = 0; k < gridStorage.getSize(); k++) {
+        // sets values of p to the coordinates of the given GridPoint gp
+        gridStorage.getPoint(k).getStandardCoordinates(p);
+        // multiply k-th alpha with the evaluated function at grind-point
+        // k
+        alphaWeight[k] = alphaWork->get(k) * opEval->eval(*alphaWork, p);
+      }
+
+      // Perform Coarsening (surplus based)
+      /*if (coarseCnt < maxCoarseNum) {
+        HashCoarsening coarse_;
+        //std::cout << "\n" << "Start coarsening\n";
+
+        // Coarsening based on surpluses
+        SurplusCoarseningFunctor scf(
+          alphaWeight, coarseNumPoints, coarseThreshold);
+
+        //std::cout << "Size before coarsening:" << grid->getSize() <<
+      "\n";
+        //int old_size = grid->getSize();
+        coarse_.free_coarsen_NFirstOnly(
+          grid->getStorage(), scf, alphaWeight, grid->getSize());
+
+        std::cout << "Size after coarsening:" << grid->getSize() <<
+      "\n\n";
+        //int new_size = grid->getSize();
+
+        deletedGridPoints.clear();
+        deletedGridPoints = coarse_.getDeletedPoints();
+
+        (*refineCoarse)[idx].first = deletedGridPoints;
+
+        coarseCnt++;
+      }*/
+
+      // perform refinement (surplus based)
+      sizeBeforeRefine = grid.getSize();
+      // simple refinement based on surpluses
+      SurplusRefinementFunctor srf(alphaWeight, offline->getConfig().ref_noPoints_);
+      gridGen.refine(srf);
+      sizeAfterRefine = grid.getSize();
+    } else if ((refType == "data") || (refType == "zero")) {
+      if (preCompute) {
+        // precompute the evals (needs to be done once per step, before
+        // any refinement is done
+        func->preComputeEvaluations();
+      }
+      func->setGridIndex(idx);
+      // perform refinement (zero-crossings-based / data-based)
+      sizeBeforeRefine = grid.getSize();
+      gridGen.refine(*func);
+      sizeAfterRefine = grid.getSize();
+    }
+
+    std::cout << "grid size after adaptivity: " << grid.getSize() << "\n";
+
+    newPoints = sizeAfterRefine - sizeBeforeRefine;
+    refineCoarse[idx].second = newPoints;
+    // apply grid changes to the Cholesky factorization
+    if (offline->getConfig().decomp_type_ == DBMatDecompostionType::DBMatDecompChol) {
+      static_cast<DBMatOfflineChol&>(densEst->getOfflineObject())
+          .choleskyModification(newPoints, deletedGridPoints, densEst->getBestLambda());
+    }
+    // update alpha vector
+    densEst->updateAlpha(&refineCoarse[idx].first, refineCoarse[idx].second);
+  }
+}
 
 }  // namespace datadriven
 }  // namespace sgpp
