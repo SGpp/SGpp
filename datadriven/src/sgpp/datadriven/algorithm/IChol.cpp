@@ -28,7 +28,7 @@ void IChol::decompose(SparseDataMatrix& matrix, size_t sweeps) {
 
   // for all sweeps
   for (auto sweep = 0u; sweep < sweeps; sweep++) {
-#pragma omp parallel for
+    //#pragma omp parallel for
     for (auto dataIter = 0u; dataIter < matData.size(); dataIter++) {
       const auto col = colIndices[dataIter];
       const auto row = [&]() {

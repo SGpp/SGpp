@@ -29,15 +29,19 @@ DBMatOfflineIChol::DBMatOfflineIChol(const std::string& fileName) : DBMatOffline
 DBMatOffline* sgpp::datadriven::DBMatOfflineIChol::clone() { return new DBMatOfflineIChol{*this}; }
 
 void DBMatOfflineIChol::decomposeMatrix() {
+  std::cout << "ichol decomposing\n";
   if (isConstructed) {
     if (isDecomposed) {
       return;
     } else {
+      // extract lower triangular matrix.
+      for (size_t i = 0; i < lhsMatrix.getNrows() - 1; i++) {
+        for (size_t j = i + 1; j < lhsMatrix.getNcols(); j++) {
+          lhsMatrix.set(i, j, 0);
+        }
+      }
       SparseDataMatrix sparseLHS(lhsMatrix);
-      DataVector norms{sparseLHS.getNrows()};
-      IChol::normToUnitDiagonal(sparseLHS, norms);
-      IChol::decompose(sparseLHS, 3);
-      IChol::reaplyDiagonal(sparseLHS, norms);
+      IChol::decompose(sparseLHS, 1);
       SparseDataMatrix::toDataMatrix(sparseLHS, lhsMatrix);
     }
 
