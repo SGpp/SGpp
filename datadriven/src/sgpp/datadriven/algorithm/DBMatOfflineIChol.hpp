@@ -37,7 +37,7 @@ class DBMatOfflineIChol : public DBMatOfflineChol {
    * Decomposes the matrix according to the chosen decomposition type.
    * The number of rows of the stored result depends on the decomposition type.
    */
-  virtual void decomposeMatrix() override;
+  void decomposeMatrix() override;
 };
 
 } /* namespace datadriven */
