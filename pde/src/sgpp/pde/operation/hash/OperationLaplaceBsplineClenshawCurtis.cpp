@@ -3,38 +3,37 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/pde/operation/hash/OperationLaplaceBsplineClenshawCurtis.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
-#include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
-#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineClenshawCurtisBasis.hpp>
+#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
+#include <sgpp/pde/operation/hash/OperationLaplaceBsplineClenshawCurtis.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 #include <string.h>
+#include <algorithm>
 #include <cmath>
 #include <vector>
-#include <algorithm>
 
 namespace sgpp {
 namespace pde {
 
 OperationLaplaceBsplineClenshawCurtis::OperationLaplaceBsplineClenshawCurtis(sgpp::base::Grid* grid)
-  : grid(grid),
-    clenshawCurtisTable(base::ClenshawCurtisTable::getInstance()) {}
+    : grid(grid), clenshawCurtisTable(base::ClenshawCurtisTable::getInstance()) {}
 
 OperationLaplaceBsplineClenshawCurtis::~OperationLaplaceBsplineClenshawCurtis() {}
 
 void OperationLaplaceBsplineClenshawCurtis::mult(sgpp::base::DataVector& alpha,
-                                sgpp::base::DataVector& result) {
+                                                 sgpp::base::DataVector& result) {
   size_t gridSize = grid->getSize();
   size_t gridDim = grid->getDimension();
   const size_t p = dynamic_cast<sgpp::base::BsplineClenshawCurtisGrid*>(grid)->getDegree();
   const size_t pp1h = (p + 1) / 2;
   const size_t quadOrder = p + 1;
-  sgpp::base::SBsplineClenshawCurtisBase& basis
-    = dynamic_cast<sgpp::base::SBsplineClenshawCurtisBase&>(grid->getBasis());
+  sgpp::base::SBsplineClenshawCurtisBase& basis =
+      dynamic_cast<sgpp::base::SBsplineClenshawCurtisBase&>(grid->getBasis());
   sgpp::base::GridStorage& storage = grid->getStorage();
 
   sgpp::base::DataVector integrals1D(gridDim);
@@ -67,16 +66,16 @@ void OperationLaplaceBsplineClenshawCurtis::mult(sgpp::base::DataVector& alpha,
         const int left_ijk = static_cast<int>(ijk) - static_cast<int>(pp1h);
         // clenshawCurtisPoint returns 0.0 if point is right of 1.0
         const double right_iik_point =
-          basis.clenshawCurtisPoint(lik, iik + static_cast<base::index_t>(pp1h));
+            basis.clenshawCurtisPoint(lik, iik + static_cast<base::index_t>(pp1h));
         const double right_ijk_point =
-          basis.clenshawCurtisPoint(ljk, ijk + static_cast<base::index_t>(pp1h));
+            basis.clenshawCurtisPoint(ljk, ijk + static_cast<base::index_t>(pp1h));
         // points are not uniformly distributed thus we need to find the left and right boundarys
-        const double left_i = ((left_iik > 0)? clenshawCurtisTable.getPoint(lik, left_iik) : 0.0);
-        const double right_i = (right_iik_point == 0.0 || (right_iik_point >= 1.0))
-          ? 1.0 : right_iik_point;
-        const double left_j = ((left_ijk > 0)? clenshawCurtisTable.getPoint(ljk, left_ijk) : 0.0);
-        const double right_j = (right_ijk_point == 0.0 || (right_ijk_point >= 1.0))
-          ? 1.0 : right_ijk_point;
+        const double left_i = ((left_iik > 0) ? clenshawCurtisTable.getPoint(lik, left_iik) : 0.0);
+        const double right_i =
+            (right_iik_point == 0.0 || (right_iik_point >= 1.0)) ? 1.0 : right_iik_point;
+        const double left_j = ((left_ijk > 0) ? clenshawCurtisTable.getPoint(ljk, left_ijk) : 0.0);
+        const double right_j =
+            (right_ijk_point == 0.0 || (right_ijk_point >= 1.0)) ? 1.0 : right_ijk_point;
 
         if (left_j > right_i && left_i > right_j) {
           // Ansatz functions do not not overlap:
@@ -105,21 +104,19 @@ void OperationLaplaceBsplineClenshawCurtis::mult(sgpp::base::DataVector& alpha,
 
           for (size_t n = start; n <= stop; n++) {
             double left = std::max(
-                          clenshawCurtisTable.getPoint(finest_l, static_cast<base::index_t>(n)),
-                          0.0);
+                clenshawCurtisTable.getPoint(finest_l, static_cast<base::index_t>(n)), 0.0);
             double right = std::min(
-                           clenshawCurtisTable.getPoint(finest_l, static_cast<base::index_t>(n+1)),
-                           1.0);
+                clenshawCurtisTable.getPoint(finest_l, static_cast<base::index_t>(n + 1)), 1.0);
             scaling = right - left;
             for (size_t c = 0; c < quadOrder; c++) {
-              const double x = left + scaling * (coordinates[c] + static_cast<double>(n));
-              temp_ij += weights[c] * basis.eval(lik, iik, x) * basis.eval(ljk, ijk, x);
-              temp_ij_deriv += weights[c] * basis.evalDx(lik, iik, x) *
-                  basis.evalDx(ljk, ijk, x);
+              const double x = left + scaling * coordinates[c];
+              temp_ij += scaling * weights[c] * basis.eval(lik, iik, x) * basis.eval(ljk, ijk, x);
+              temp_ij_deriv +=
+                  scaling * weights[c] * basis.evalDx(lik, iik, x) * basis.evalDx(ljk, ijk, x);
             }
           }
-          integrals1D[k] = scaling * temp_ij;
-          integralsDeriv1D[k] = scaling * temp_ij_deriv;
+          integrals1D[k] = temp_ij;
+          integralsDeriv1D[k] = temp_ij_deriv;
         }
       }
 
@@ -154,8 +151,7 @@ void OperationLaplaceBsplineClenshawCurtis::mult(sgpp::base::DataVector& alpha,
       }
       // multiplication and summation of results
       result[i] += res * alpha[j];
-      if (i != j)
-        result[j] += res * alpha[i];
+      if (i != j) result[j] += res * alpha[i];
     }
   }
 }
