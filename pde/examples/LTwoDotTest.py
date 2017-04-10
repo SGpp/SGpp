@@ -84,22 +84,30 @@ def test_laplace(grid, lmax):
     grid.getGenerator().regular(lmax)
     gridStorage = grid.getStorage()
     size = gridStorage.getSize()
+    b = getBasis(grid)
     op = pysgpp.createOperationLaplace(grid)
-    for pointnr in range(size):
-        gp = gridStorage.getPoint(pointnr)
-        alpha = pysgpp.DataVector(size)
-        result = pysgpp.DataVector(size)
-        b = getBasis(grid)
+    alpha = pysgpp.DataVector(size)
+    result = pysgpp.DataVector(size)
+
+    for point_i in range(size):
+      for point_j in range(size):
+        gp_i = gridStorage.getPoint(point_i)
+        gp_j = gridStorage.getPoint(point_j)
+        print("--------")
         for i in range(0, size):
-            alpha[i] = 0
-        alpha[pointnr] = 1
+          alpha[i] = 0
+        alpha[point_i] = 1
         op.mult(alpha, result)
         xs = np.linspace(0, 1, resolution)
-        approx = sum([b.evalDx(gp.getLevel(0), gp.getIndex(0), x) * b.evalDx(gp.getLevel(0), gp.getIndex(0), x) for x in xs]) / resolution
-        if(abs(result.get(pointnr) - approx) > 1e-2):
-            print "point:{}".format(pointnr)
-            print "approx:{}".format(approx)
-            print "result:{}".format(result.get(pointnr))
+        approx = sum([b.evalDx(gp_i.getLevel(0), gp_i.getIndex(0), x) * b.evalDx(gp_j.getLevel(0), gp_j.getIndex(0), x) for x in xs]) / resolution
+        print("i,j: {},{} result: {} approx:{}".format(point_i, point_j, result[point_j], approx))
+        if(abs(result.get(point_j) - approx) > 1e-1):
+          print "--------"
+          print "points: {},{} ".format(point_i, point_j)
+          print "approx:{}".format(approx)
+          print "result:{}".format(result.get(point_j))
+          # print result
+          print "--------"
 
 def test_poly_evaldx():
     l = 3
@@ -121,12 +129,21 @@ def plot_evaldx():
     plt.plot(xs, [b.evalDx(l, i, x) for x in xs])
     plt.show()
 
+def test_laplace2(grid, lmax):
+  # grid.getGenerator().regular(lmax)
+  gridStorage = grid.getStorage()
+  size = gridStorage.getSize()
+  m = pysgpp.DataMatrix(size, size)
+  op = pysgpp.createOperationLaplaceExplicit(m, grid)
+  print m
+
 # test_poly_evaldx()
 # plot_evaldx()
 # test_base()
 d = 1
-l = 5
-grid = pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 5)
+l = 2
+grid = pysgpp.Grid.createModBsplineClenshawCurtisGrid(d, 3)
 test_laplace(grid, l)
+# test_laplace2(grid, l)
 # test_LTwoDot(grid, l)
 # test_LTwoDotImplicit(grid, l)
