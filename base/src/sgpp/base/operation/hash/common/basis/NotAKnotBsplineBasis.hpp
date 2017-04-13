@@ -72,8 +72,16 @@ class NotAKnotBsplineBasis: public Basis<LT, IT> {
             return x;
           }
         } else if (l == 1) {
-          // l = 1, i = 1
-          return 1.0 - t * t;
+          if (i == 0) {
+            // l = 0, i = 0
+            return 0.5 * t * t - 1.5 * t + 1.0;
+          } else if (i == 1) {
+            // l = 1, i = 1
+            return 1.0 - t * t;
+          } else if (i == 2) {
+            // l = 1, i = 2
+            return 0.5 * t * t + 1.5 * t + 1.0;
+          }
         } else if ((i > 3) && (i < hInv - 3)) {
           // l >= 4, 3 < i < 2^l - 3
           return bsplineBasis.eval(l, i, x);
@@ -83,7 +91,18 @@ class NotAKnotBsplineBasis: public Basis<LT, IT> {
             t *= -1.0;
           }
 
-          if (l == 2) {
+          if (i == 0) {
+            // l >= 2, i = 0
+            if ((t < 0.0) || (t > 2.0)) {
+              return 0.0;
+            } else {
+              double result = -4.1666666666666664e-02;
+              result = 2.5000000000000000e-01 + result * t;
+              result = -5.0000000000000000e-01 + result * t;
+              result = 3.3333333333333331e-01 + result * t;
+              return result;
+            }
+          } else if ((l == 2) && (i == 1)) {
             // l = 2, i = 1
             if ((t < -1.0) || (t > 3.0)) {
               return 0.0;
@@ -100,6 +119,24 @@ class NotAKnotBsplineBasis: public Basis<LT, IT> {
               result = 3.0/20.0 + result * t;
               result = -3.0/10.0 + result * t;
               result = 1.0/5.0 + result * t;
+              return result;
+            }
+          } else if (l == 2) {
+            // l = 2, i = 2
+            if ((t < -2.0) || (t > 2.0)) {
+              return 0.0;
+            } else if (t < 0.0) {
+              t += 2.0;
+              double result = -8.3333333333333329e-02;
+              result = 2.0000000000000001e-01 + result * t;
+              result = 2.0000000000000001e-01 + result * t;
+              result = 6.6666666666666666e-02 + result * t;
+              return result;
+            } else {
+              double result = 8.3333333333333329e-02;
+              result = -2.9999999999999999e-01 + result * t;
+              result *= t;
+              result = 5.9999999999999998e-01 + result * t;
               return result;
             }
           } else if (i == 1) {
@@ -119,6 +156,31 @@ class NotAKnotBsplineBasis: public Basis<LT, IT> {
               result = 1.0/4.0 + result * t;
               result = -1.0/4.0 + result * t;
               result = 1.0/12.0 + result * t;
+              return result;
+            }
+          } else if (i == 2) {
+            // l >= 3, i = 2
+            if ((t < -2.0) || (t > 2.0)) {
+              return 0.0;
+            } else if (t < 0.0) {
+              t += 2.0;
+              double result = -1.2500000000000000e-01;
+              result = 2.5000000000000000e-01 + result * t;
+              result = 2.5000000000000000e-01 + result * t;
+              result = 8.3333333333333329e-02 + result * t;
+              return result;
+            } else if (t < 1.0) {
+              double result = 2.9166666666666669e-01;
+              result = -5.0000000000000000e-01 + result * t;
+              result = -2.5000000000000000e-01 + result * t;
+              result = 5.8333333333333337e-01 + result * t;
+              return result;
+            } else {
+              t -= 1.0;
+              double result = -1.2500000000000000e-01;
+              result = 3.7500000000000000e-01 + result * t;
+              result = -3.7500000000000000e-01 + result * t;
+              result = 1.2500000000000000e-01 + result * t;
               return result;
             }
           } else {
