@@ -113,8 +113,10 @@ int main() {
       // dt = DBMatDecompostionType::DBMatDecompEigen;
       // decompType = "Eigen decomposition";
       // choose "Cholesky decomposition"
-      dt = DBMatDecompostionType::DBMatDecompChol;
-      decompType = "Cholesky decomposition";
+      // dt = DBMatDecompostionType::DBMatDecompChol;
+      // decompType = "Cholesky decomposition";
+      dt = DBMatDecompostionType::DBMatDecompIChol;
+      decompType = "Incomplete Cholesky decomposition";
       std::cout << "Decomposition type: " << decompType << std::endl;
 
       /**
