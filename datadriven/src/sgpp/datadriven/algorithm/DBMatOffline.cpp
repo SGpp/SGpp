@@ -7,7 +7,7 @@
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
@@ -47,7 +47,7 @@ using sgpp::base::AdpativityConfiguration;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 using sgpp::base::operation_exception;
-using sgpp::base::application_exception;
+using sgpp::base::algorithm_exception;
 using sgpp::base::data_exception;
 using sgpp::base::OperationMatrix;
 
@@ -93,11 +93,11 @@ DBMatOffline::DBMatOffline(const std::string& fileName)
 DBMatDensityConfiguration& DBMatOffline::getConfig() { return config; }
 
 DataMatrix& DBMatOffline::getDecomposedMatrix() {
-  if (isDecomposed) {
-    return lhsMatrix;
-  } else {
-    throw data_exception("Matrix was not decomposed yet");
-  }
+  //  if (isDecomposed) {
+  return lhsMatrix;
+  //  } else {
+  //    throw data_exception("Matrix was not decomposed yet");
+  //  }
 }
 
 Grid& DBMatOffline::getGrid() { return *grid; }
@@ -108,8 +108,7 @@ void DBMatOffline::InitializeGrid() {
   } else if (config.grid_type_ == GridType::Linear) {
     grid = std::unique_ptr<Grid>{Grid::createLinearGrid(config.grid_dim_)};
   } else {
-    throw application_exception(
-        "LearnerBase::InitializeGrid: An unsupported grid type was chosen!");
+    throw algorithm_exception("LearnerBase::InitializeGrid: An unsupported grid type was chosen!");
   }
 
   // Generate regular Grid with LEVELS Levels
@@ -127,7 +126,7 @@ void DBMatOffline::buildMatrix() {
 
   // check if grid was created
   if (grid == nullptr) {
-    throw application_exception("DBMatOffline: grid was not initialized");
+    throw algorithm_exception("DBMatOffline: grid was not initialized");
   }
 
   size = grid->getStorage().getSize();  // Size of the (quadratic) matrices A and C
@@ -142,7 +141,7 @@ void DBMatOffline::buildMatrix() {
 
 void DBMatOffline::store(const std::string& fileName) {
   if (!isDecomposed) {
-    throw application_exception("Matrix not decomposed yet");
+    throw algorithm_exception("Matrix not decomposed yet");
     return;
   }
 
@@ -150,7 +149,7 @@ void DBMatOffline::store(const std::string& fileName) {
   std::ofstream outputFile(fileName, std::ofstream::out);
 
   if (!outputFile) {
-    throw application_exception{"cannot open file for writing"};
+    throw algorithm_exception{"cannot open file for writing"};
   }
 
   outputFile << static_cast<int>(config.grid_type_) << "," << config.grid_dim_ << ","
@@ -163,7 +162,7 @@ void DBMatOffline::store(const std::string& fileName) {
   // switch to c FILE API for GSL
   FILE* outputCFile = fopen(fileName.c_str(), "ab");
   if (!outputCFile) {
-    throw application_exception{"cannot open file for writing"};
+    throw algorithm_exception{"cannot open file for writing"};
   }
   gsl_matrix_view matrixView =
       gsl_matrix_view_array(lhsMatrix.getPointer(), lhsMatrix.getNrows(), lhsMatrix.getNcols());
@@ -182,7 +181,7 @@ void sgpp::datadriven::DBMatOffline::parseConfig(const std::string& fileName,
   std::ifstream file(fileName, std::istream::in);
   // Read configuration
   if (!file) {
-    throw application_exception("Failed to open File");
+    throw algorithm_exception("Failed to open File");
   }
   std::string str;
   std::getline(file, str);
