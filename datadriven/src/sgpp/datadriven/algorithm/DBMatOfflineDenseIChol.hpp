@@ -3,9 +3,9 @@
  * use, please see the copyright notice provided with SG++ or at
  * sgpp.sparsegrids.org
  *
- * DBMatOfflineIChol.hpp
+ * DBMatOfflineDenseIChol.hpp
  *
- *  Created on: Feb 27, 2017
+ *  Created on: Apr 15, 2017
  *      Author: Michael Lettrich
  */
 
@@ -16,16 +16,16 @@
 namespace sgpp {
 namespace datadriven {
 
-class DBMatOfflineIChol : public DBMatOfflineChol {
+class DBMatOfflineDenseIChol : public DBMatOfflineChol {
  public:
   /**
    * Constructor
    *
    * @param oc configuration for this offline object
    */
-  explicit DBMatOfflineIChol(const DBMatDensityConfiguration& oc);
+  explicit DBMatOfflineDenseIChol(const DBMatDensityConfiguration& oc);
 
-  explicit DBMatOfflineIChol(const std::string& fileName);
+  explicit DBMatOfflineDenseIChol(const std::string& fileName);
 
   DBMatOffline* clone() override;
 
