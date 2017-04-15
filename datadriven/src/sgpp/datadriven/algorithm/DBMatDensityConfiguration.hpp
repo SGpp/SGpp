@@ -13,13 +13,6 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 
-enum class DBMatDecompostionType {
-  DBMatDecompLU,
-  DBMatDecompEigen,
-  DBMatDecompChol,
-  DBMatDecompIChol
-};
-
 /**
  * Class that stores all the configuration information
  * for an offline object for classification with the
@@ -28,6 +21,13 @@ enum class DBMatDecompostionType {
 
 namespace sgpp {
 namespace datadriven {
+
+enum class DBMatDecompostionType {
+  LU,
+  Eigen,
+  Chol,
+  IChol
+};
 
 class DBMatDensityConfiguration {
  public:

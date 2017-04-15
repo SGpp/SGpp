@@ -104,7 +104,7 @@ int main() {
        * Select the desired decomposition type for the offline step.
        * Note: Refinement/Coarsening only possible for Cholesky decomposition.
        */
-      DBMatDecompostionType dt;
+      sgpp::datadriven::DBMatDecompostionType dt;
       std::string decompType;
       // choose "LU decomposition"
       // dt = DBMatDecompostionType::DBMatDecompLU;
@@ -113,9 +113,9 @@ int main() {
       // dt = DBMatDecompostionType::DBMatDecompEigen;
       // decompType = "Eigen decomposition";
       // choose "Cholesky decomposition"
-      // dt = DBMatDecompostionType::DBMatDecompChol;
-      // decompType = "Cholesky decomposition";
-      dt = DBMatDecompostionType::DBMatDecompIChol;
+      //      dt = DBMatDecompostionType::DBMatDecompChol;
+      //      decompType = "Cholesky decomposition";
+      dt = sgpp::datadriven::DBMatDecompostionType::IChol;
       decompType = "Incomplete Cholesky decomposition";
       std::cout << "Decomposition type: " << decompType << std::endl;
 
