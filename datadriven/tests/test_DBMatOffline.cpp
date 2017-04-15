@@ -17,6 +17,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineEigen.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineIChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 #include <sgpp/globaldef.hpp>
@@ -32,7 +33,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteCholesky) {
   config.grid_type_ = sgpp::base::GridType::Linear;
   config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
   config.lambda_ = 0.1;
-  config.decomp_type_ = DBMatDecompostionType::DBMatDecompChol;
+  config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::Chol;
 
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
       sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(config)};
@@ -78,7 +79,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteEigen) {
   config.grid_type_ = sgpp::base::GridType::Linear;
   config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
   config.lambda_ = 0.1;
-  config.decomp_type_ = DBMatDecompostionType::DBMatDecompEigen;
+  config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::Eigen;
 
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
       sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(config)};
@@ -124,7 +125,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteLU) {
   config.grid_type_ = sgpp::base::GridType::Linear;
   config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
   config.lambda_ = 0.1;
-  config.decomp_type_ = DBMatDecompostionType::DBMatDecompLU;
+  config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::LU;
 
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
       sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(config)};
@@ -160,6 +161,39 @@ BOOST_AUTO_TEST_CASE(testReadWriteLU) {
 
   for (size_t i = 0; i < newMatrix.getSize(); i++) {
     BOOST_CHECK_CLOSE(newMatrix[i], oldMatrix[i], 10e-5);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(testDBMatOfflineIcholBuildMatrix) {
+  // this test only works if decomposition checks are disabled manually.
+
+  sgpp::datadriven::DBMatDensityConfiguration config;
+  config.grid_dim_ = 2;
+  config.grid_level_ = 3;
+  config.grid_type_ = sgpp::base::GridType::Linear;
+  config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
+  config.lambda_ = 0.1;
+  config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::Chol;
+
+  sgpp::datadriven::DBMatOfflineChol chol(config);
+  chol.buildMatrix();
+  auto& cholMat = chol.getDecomposedMatrix();
+  for (size_t i = 0; i < cholMat.getNrows() - 1; i++) {
+    for (size_t j = i + 1; j < cholMat.getNcols(); j++) {
+      cholMat.set(i, j, 0.0);
+    }
+  }
+
+  std::cout << cholMat.toString() << "\n\n";
+
+  sgpp::datadriven::DBMatOfflineIChol ichol(config);
+  ichol.buildMatrix();
+  auto& icholMat = ichol.getDecomposedMatrix();
+
+  std::cout << icholMat.toString() << "\n\n";
+
+  for (size_t i = 0; i < cholMat.getSize(); i++) {
+    BOOST_CHECK_CLOSE(cholMat[i], icholMat[i], 10e-5);
   }
 }
 
