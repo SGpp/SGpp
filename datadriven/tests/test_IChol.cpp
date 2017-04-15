@@ -11,7 +11,11 @@
 
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/generation/GridGenerator.hpp>
+#include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/datadriven/algorithm/IChol.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
 
 #include <omp.h>
 #include <cmath>
@@ -19,6 +23,9 @@
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
+using sgpp::base::Grid;
+using sgpp::base::GridGenerator;
+using sgpp::base::OperationMatrix;
 using sgpp::datadriven::IChol;
 using sgpp::datadriven::SparseDataMatrix;
 
@@ -145,6 +152,36 @@ BOOST_AUTO_TEST_CASE(reaplyNorm) {
 
   for (auto i = 0u; i < aData.size(); i++) {
     BOOST_CHECK_CLOSE(aData[i], aSparse[i], 10e-5);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(normSGMatrix) {
+  auto dim = 5u;
+  auto lvl = 3u;
+  auto grid = std::unique_ptr<Grid>{Grid::createLinearGrid(dim)};
+  grid->getGenerator().regular(lvl);
+  auto size = grid->getSize();
+  DataMatrix lhsMatrix{size, size};
+  std::unique_ptr<OperationMatrix> op(
+      sgpp::op_factory::createOperationLTwoDotExplicit(&lhsMatrix, *grid));
+
+  // extract lower triangular matrix.
+  for (size_t i = 0; i < lhsMatrix.getNrows() - 1; i++) {
+    for (size_t j = i + 1; j < lhsMatrix.getNcols(); j++) {
+      lhsMatrix.set(i, j, 0);
+    }
+  }
+  SparseDataMatrix sparseLHS(lhsMatrix);
+  DataVector norm{size};
+  IChol::normToUnitDiagonal(sparseLHS, norm);
+  IChol::reaplyDiagonal(sparseLHS, norm);
+
+  DataMatrix normed{size, size};
+  SparseDataMatrix::toDataMatrix(sparseLHS, normed);
+
+  // test
+  for (auto i = 0u; i < normed.getSize(); i++) {
+    BOOST_CHECK_CLOSE(normed[i], lhsMatrix[i], 10e-5);
   }
 }
 
