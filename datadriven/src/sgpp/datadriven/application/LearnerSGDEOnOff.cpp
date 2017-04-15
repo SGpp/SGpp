@@ -339,7 +339,7 @@ DataVector LearnerSGDEOnOff::predict(DataMatrix& data) const {
       }
     }
     if (max_class == 0) {
-      // std::cerr << "LearnerSGDEOnOff: Warning: no best class found!\n";
+      std::cerr << "LearnerSGDEOnOff: Warning: no best class found!\n";
     }
     result[i] = max_class;
   }
