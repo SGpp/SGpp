@@ -25,6 +25,8 @@ from plot1d import (plotFunction1d,
                     plotSobolIndices)
 
 from plot2d import (plotSGDE2d,
+                    plotTimedependentDensity2dWithRawData,
+                    plotTimedependentDensity2d,
                     plotDensity2d,
                     plotSG2d,
                     plotSamples2d,

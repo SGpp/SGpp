@@ -11,6 +11,8 @@ Import("*")
 moduleDependencies = ["sgppoptimization", "sgpppde", "sgppsolver", "sgppbase"]
 
 additionalDependencies = []
+additionalBoostTestDependencies = []
+
 if env["USE_OCL"]:
   additionalDependencies += ["OpenCL"]
 if env["USE_GSL"]:

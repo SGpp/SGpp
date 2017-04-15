@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from pysgpp.extensions.datadriven.uq.helper import sortPermutations
 from argparse import ArgumentParser
 from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend, savefig, \
-    load_font_properties
+    load_font_properties, load_color, load_marker
 
 
 def get_key_sg(gridType, maxGridSize, rosenblatt, boundaryLevel):
@@ -65,7 +65,7 @@ def plotBoundaryResult(results):
     # extract the ones needed for the table
     sg_settings = settings[args.model]["sg"]
     fig = plt.figure()
-    for gridType, maxGridSize, boundaryLevel, gridTypeLabel in sg_settings:
+    for k, (gridType, maxGridSize, boundaryLevel, gridTypeLabel) in enumerate(sg_settings):
         key = get_key_sg(gridType, maxGridSize, False, boundaryLevel)
         n = len(results["sg"][key]["results"])
         num_evals = np.ndarray(n)
@@ -75,7 +75,9 @@ def plotBoundaryResult(results):
 #             num_evals[i] = values["num_model_evaluations"]
             errors[i] = values[error_type]
         ixs = np.argsort(num_evals)
-        plt.plot(num_evals[ixs], errors[ixs], "o-",
+        plt.plot(num_evals[ixs], errors[ixs],
+                 color=load_color(k),
+                 marker=load_marker(k),
                  label=r"%s ($\ell=9$)" % gridTypeLabel)
 
     plt.xlim(9.5, 0.5)
@@ -110,7 +112,7 @@ def plotConvergenceResults(results):
     # extract the ones needed for the table
     sg_settings = settings[args.model]["sg"]
     fig = plt.figure()
-    for gridType, maxGridSize, rosenblatt, boundaryLevel, gridTypeLabel in sg_settings:
+    for k, (gridType, maxGridSize, rosenblatt, boundaryLevel, gridTypeLabel) in enumerate(sg_settings):
         key = get_key_sg(gridType, maxGridSize, rosenblatt, boundaryLevel)
         n = len(results["sg"][key]["results"])
         num_evals = np.ndarray(n)
@@ -131,10 +133,12 @@ def plotConvergenceResults(results):
             else:
                 label = r"%s" % (gridTypeLabel,)
         plt.loglog(num_evals[ixs], errors[ixs], "o-",
+                   color=load_color(k),
+                   marker=load_marker(k),
                    label=label)
 
     plt.ylabel(r"$||u - u_{\mathcal{I}}||_{L_2(\Xi)}$")
-    plt.xlabel(r"\# number of samples")
+    plt.xlabel(r"\# number of grid points")
     plt.title(r"Regular SG (poly, $D=2$)",
               fontproperties=load_font_properties())
     lgd = insert_legend(fig, loc="bottom", ncol=1)
@@ -148,5 +152,5 @@ if __name__ == "__main__":
 
     results = load_results(args.model)
 
-#     plotBoundaryResult(results)
+    plotBoundaryResult(results)
     plotConvergenceResults(results)
