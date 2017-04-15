@@ -89,7 +89,7 @@ int main() {
       std::cout << "# create grid config" << std::endl;
       sgpp::base::RegularGridConfiguration gridConfig;
       gridConfig.dim_ = trainDataset.getDimension();
-      gridConfig.level_ = 3;
+      gridConfig.level_ = 8;
       gridConfig.type_ = sgpp::base::GridType::Linear;
       // gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
@@ -113,10 +113,12 @@ int main() {
       // dt = DBMatDecompostionType::DBMatDecompEigen;
       // decompType = "Eigen decomposition";
       // choose "Cholesky decomposition"
-      //      dt = DBMatDecompostionType::DBMatDecompChol;
+      //      dt = sgpp::datadriven::DBMatDecompostionType::Chol;
       //      decompType = "Cholesky decomposition";
       dt = sgpp::datadriven::DBMatDecompostionType::IChol;
       decompType = "Incomplete Cholesky decomposition";
+      //      dt = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
+      //      decompType = "Incomplete Cholesky decomposition on Dense Matrix";
       std::cout << "Decomposition type: " << decompType << std::endl;
 
       /**

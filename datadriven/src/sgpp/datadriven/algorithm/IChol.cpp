@@ -17,43 +17,89 @@
 namespace sgpp {
 namespace datadriven {
 
-void IChol::decompose(DataMatrix& matrix, size_t sweeps) {
+void IChol::decompose(const DataMatrix& matrix, DataMatrix& result, size_t sweeps) {
   // for all sweeps
   for (auto sweep = 0u; sweep < sweeps; sweep++) {
 // for each row
 #pragma omp parallel
     { /* omp parallel */
 #pragma omp for
-      for (auto i = 0u; i < matrix.getNrows(); i++) {
+      for (auto i = 0u; i < result.getNrows(); i++) {
         // in each column until diagonal element
         for (auto j = 0u; j < i; j++) {
           // calculate sum;
           auto s = matrix.get(i, j);
-          for (auto k = 0u; k < j; k++) {
-            s -= matrix.get(i, k) * matrix.get(j, k);
+          if (s > 0.0) {
+#pragma omp simd
+            for (auto k = 0u; k < j; k++) {
+              s -= result.get(i, k) * result.get(j, k);
+            }
+            result.set(i, j, s / result.get(j, j));
           }
-          matrix.set(i, j, s / matrix.get(j, j));
         }
         // do the diagonal element:
         // calculate sum;
         auto s = matrix.get(i, i);
+#pragma omp simd
         for (auto k = 0u; k < i; k++) {
-          s -= matrix.get(i, k) * matrix.get(i, k);
+          s -= result.get(i, k) * result.get(i, k);
         }
-        matrix.set(i, i, sqrt(s));
+        result.set(i, i, sqrt(s));
       }
     } /* omp parallel */
   }
 }
 
-void IChol::decompose(SparseDataMatrix& matrix, size_t sweeps) {
+void IChol::normToUnitDiagonal(DataMatrix& matrix, DataVector& norms) {
   const auto matSize = matrix.getNrows();
+  norms.resize(matSize);
+#pragma omp parallel for
+  for (auto i = 0u; i < matSize; i++) {
+    norms[i] = 1.0 / std::sqrt(matrix.get(i, i));
+  }
+  std::cout << norms.toString() << std::endl;
+// Calculate (D*A*D)
+#pragma omp parallel for
+  for (auto i = 0u; i < matSize; i++) {
+    const auto leftVecVal = norms[i];
+    for (auto j = 0u; j <= i; j++) {
+      const auto rightVecVal = norms[j];
+      const auto res = leftVecVal * matrix.get(i, j) * rightVecVal;
+      matrix.set(i, j, res);
+    }
+  }
+}
+
+void IChol::reaplyDiagonal(DataMatrix& matrix, const DataVector& norms) {
+#pragma omp parallel for
+  for (auto i = 0u; i < matrix.getNrows(); i++) {
+    const auto leftVecVal = norms[i];
+    for (auto j = 0u; j <= i; j++) {
+      const auto rightVecVal = norms[j];
+      const auto res = matrix.get(i, j) / (leftVecVal * rightVecVal);
+      matrix.set(i, j, res);
+    }
+  }
+}
+
+void IChol::reaplyDiagonalLowerTriangular(DataMatrix& matrix, const DataVector& norms) {
+#pragma omp parallel for
+  for (auto i = 0u; i < matrix.getNrows(); i++) {
+    for (auto j = 0u; j <= i; j++) {
+      const auto res = matrix.get(i, j) / norms[i];
+      matrix.set(i, j, res);
+    }
+  }
+}
+
+void IChol::decompose(const DataMatrix& matrix, SparseDataMatrix& result, size_t sweeps) {
+  const auto matSize = result.getNrows();
   // get the data vector
-  auto& matData = matrix.getDataVector();
+  auto& matData = result.getDataVector();
   // get the rows
-  const auto& rowPtrs = matrix.getRowPtrVector();
+  const auto& rowPtrs = result.getRowPtrVector();
   // get the cols
-  const auto& colIndices = matrix.getColIndexVector();
+  const auto& colIndices = result.getColIndexVector();
 
   // for all sweeps
   for (auto sweep = 0u; sweep < sweeps; sweep++) {
@@ -67,7 +113,7 @@ void IChol::decompose(SparseDataMatrix& matrix, size_t sweeps) {
             rowPtrs.begin());
       }();
 
-      auto s = matData[dataIter];
+      auto s = matrix.get(row, col);
 
       auto upperFirst = colIndices.begin() + rowPtrs[col];
       const auto upperLast =
@@ -144,7 +190,7 @@ void IChol::normToUnitDiagonal(SparseDataMatrix& matrix, DataVector& norms) {
   }
 }
 
-void IChol::reaplyDiagonal(SparseDataMatrix& matrix, DataVector& norms) {
+void IChol::reaplyDiagonal(SparseDataMatrix& matrix, const DataVector& norms) {
   const auto matSize = matrix.getNrows();
   // get the data vector
   auto& matData = matrix.getDataVector();
@@ -172,20 +218,17 @@ void IChol::reaplyDiagonal(SparseDataMatrix& matrix, DataVector& norms) {
   }
 }
 
-void IChol::reaplyDiagonalLowerTriangular(SparseDataMatrix& matrix, DataVector& norms) {
+void IChol::reaplyDiagonalLowerTriangular(SparseDataMatrix& matrix, const DataVector& norms) {
   const auto matSize = matrix.getNrows();
   // get the data vector
   auto& matData = matrix.getDataVector();
   // get the rows
   const auto& rowPtrs = matrix.getRowPtrVector();
-  // get the cols
-  const auto& colIndices = matrix.getColIndexVector();
 
-#pragma omp parallel for
+  //#pragma omp parallel for
   for (auto i = 0u; i < matSize - 1; i++) {
-    const auto leftVecVal = norms[i];
     for (auto j = rowPtrs[i]; j < rowPtrs[i + 1]; j++) {
-      matData[j] /= leftVecVal;
+      matData[j] /= norms[i];
     }
   }
 

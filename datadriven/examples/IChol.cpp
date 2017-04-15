@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
   sgpp::datadriven::IChol::normToUnitDiagonal(matrix, aNorm);
   SparseDataMatrix::toDataMatrix(matrix, A);
   std::cout << "normed:\n" << A.toString() << "\n";
-  sgpp::datadriven::IChol::decompose(matrix, 1);
+  sgpp::datadriven::IChol::decompose(A, matrix, 1);
   // IChol::reaplyDiagonal(A, aNorm);
 
   SparseDataMatrix::toDataMatrix(matrix, A);

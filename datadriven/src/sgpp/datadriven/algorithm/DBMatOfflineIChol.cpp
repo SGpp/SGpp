@@ -34,30 +34,16 @@ void DBMatOfflineIChol::decomposeMatrix() {
     if (isDecomposed) {
       return;
     } else {
-      //      std::cout << "Full:\n" << lhsMatrix.toString() << "\n\n";
+      // std::cout << "Full:\n" << lhsMatrix.toString() << "\n\n";
       // extract lower triangular matrix.
       for (size_t i = 0; i < lhsMatrix.getNrows() - 1; i++) {
         for (size_t j = i + 1; j < lhsMatrix.getNcols(); j++) {
           lhsMatrix.set(i, j, 0);
         }
       }
-
-      //      DataMatrix tmp;
       SparseDataMatrix sparseLHS(lhsMatrix);
-      //      std::cout << "DataMatrix:\n" << lhsMatrix.toString() << "\n\n";
-
-      DataVector norm{lhsMatrix.getNrows()};
-      IChol::normToUnitDiagonal(sparseLHS, norm);
-      //      SparseDataMatrix::toDataMatrix(sparseLHS, tmp);
-      //      std::cout << "Normed:\n" << tmp.toString() << "\n\n";
-
-      IChol::decompose(sparseLHS, 1);
-      //      SparseDataMatrix::toDataMatrix(sparseLHS, tmp);
-      //      std::cout << "decomposed:\n" << tmp.toString() << "\n\n";
-
-      IChol::reaplyDiagonal(sparseLHS, norm);
+      IChol::decompose(lhsMatrix, sparseLHS, 4);
       SparseDataMatrix::toDataMatrix(sparseLHS, lhsMatrix);
-      //      std::cout << "reapplied:\n" << lhsMatrix.toString() << "\n\n";
     }
 
     isDecomposed = true;
