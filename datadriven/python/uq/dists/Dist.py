@@ -12,13 +12,11 @@
 
 @version  0.1
 """
+import numpy as np
 
-from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
 from pysgpp.extensions.datadriven.uq.sampler.Sample import Sample, SampleType
 from pysgpp import DataVector
-
 from pysgpp.extensions.datadriven.uq.operations.discretization import discretizeFunction
-import numpy as np
 
 
 class Dist(object):
@@ -90,6 +88,16 @@ class Dist(object):
         @return: int number of marginal distributions
         """
         raise NotImplementedError()
+
+    def quad(self):
+        from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
+        from pysgpp.extensions.datadriven.uq.transformation.JointTransformation import JointTransformation
+        usamples = np.random.rand(10000, self.getDim())
+        trans = JointTransformation()
+        for a, b in self.getBounds():
+            trans.add(LinearTransformation(a, b))
+        xsamples = trans.unitToProbabilisticMatrix(usamples)
+        return trans.vol() * np.mean([self.pdf(xi) for xi in xsamples])
 
     def cov(self):
         """
