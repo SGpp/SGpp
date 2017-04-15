@@ -111,26 +111,24 @@ void DBMatOfflineChol::choleskyModification(size_t newPoints, std::list<size_t> 
 
     if (coarseCount_1 > 0) {
       // If some indices have been less than 'c'
-      DataMatrix* update_matrix = new DataMatrix(lhsMatrix.getNrows(), lhsMatrix.getNcols());
-      update_matrix->copyFrom(lhsMatrix);
+      DataMatrix update_matrix(lhsMatrix.getNrows(), lhsMatrix.getNcols());
+      update_matrix.copyFrom(lhsMatrix);
       // Resize copy of current Cholesky factor to
       // receive a matrix of rank one update vectors
-      update_matrix->resizeToSubMatrix(coarseCount_1 + 1, 1, lhsMatrix.getNrows(), coarseCount_1);
+      update_matrix.resizeToSubMatrix(coarseCount_1 + 1, 1, lhsMatrix.getNrows(), coarseCount_1);
       // Resize current Cholesky factor to required submatrix
       // for necessary rank one updates
       lhsMatrix.resizeToSubMatrix(coarseCount_1 + 1, coarseCount_1 + 1, lhsMatrix.getNrows(),
                                   lhsMatrix.getNrows());
-      DataVector* temp_col = new DataVector(update_matrix->getNrows());
+      DataVector temp_col(update_matrix.getNrows());
 
       // 'coarseCount_1' many rank one updates based on the columns of
       // 'update_matrix' are performed
       DBMatDMSChol cholsolver;
       for (size_t i = 0; i < coarseCount_1; i++) {
-        update_matrix->getColumn(i, *temp_col);
-        cholsolver.choleskyUpdate(lhsMatrix, temp_col, false);
+        update_matrix.getColumn(i, temp_col);
+        cholsolver.choleskyUpdate(lhsMatrix, &temp_col, false);
       }
-      delete update_matrix;
-      delete temp_col;
     } else {
       // If no indices have been less than 'c'
       lhsMatrix.resizeQuadratic(old_size - coarseCount_2);
@@ -143,7 +141,7 @@ void DBMatOfflineChol::choleskyModification(size_t newPoints, std::list<size_t> 
     size_t gridDim = grid->getStorage().getDimension();
 
     // DataMatrix to collect vectors to append
-    DataMatrix* mat_refine = new DataMatrix(gridSize, newPoints);
+    DataMatrix mat_refine(gridSize, newPoints);
 
     DataMatrix level(gridSize, gridDim);
     DataMatrix index(gridSize, gridDim);
@@ -199,9 +197,9 @@ void DBMatOfflineChol::choleskyModification(size_t newPoints, std::list<size_t> 
 
         // add current lambda to lower diagonal elements of mat_refine
         if (i == j) {
-          mat_refine->set(i, j - gridSize + newPoints, res + lambda_conf);
+          mat_refine.set(i, j - gridSize + newPoints, res + lambda_conf);
         } else {
-          mat_refine->set(i, j - gridSize + newPoints, res);
+          mat_refine.set(i, j - gridSize + newPoints, res);
         }
       }
     }
@@ -212,15 +210,13 @@ void DBMatOfflineChol::choleskyModification(size_t newPoints, std::list<size_t> 
     this->lhsMatrix.resizeQuadratic(gridSize);
 
     // Now its time to call 'choleskyAddPoint''countNewGridPoints' often
-    DataVector* temp_col = new DataVector(gridSize);
+    DataVector temp_col = DataVector(gridSize);
     for (size_t j = gridSize - newPoints; j < gridSize; j++) {
-      temp_col->resizeZero(gridSize);
-      mat_refine->getColumn(j - gridSize + newPoints, *temp_col);
-      temp_col->resizeZero(j + 1);
-      choleskyAddPoint(temp_col, j);
+      temp_col.resizeZero(gridSize);
+      mat_refine.getColumn(j - gridSize + newPoints, temp_col);
+      temp_col.resizeZero(j + 1);
+      choleskyAddPoint(&temp_col, j);
     }
-
-    delete temp_col;
   }
 
   return;
