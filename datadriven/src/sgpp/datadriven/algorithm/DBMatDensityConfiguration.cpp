@@ -19,7 +19,7 @@ DBMatDensityConfiguration::DBMatDensityConfiguration()
       ref_noPoints_(0),
       regularization_(RegularizationType::Identity),
       lambda_(0),
-      decomp_type_(DBMatDecompostionType::DBMatDecompChol) {}
+      decomp_type_(DBMatDecompostionType::Chol) {}
 
 DBMatDensityConfiguration::DBMatDensityConfiguration(const sgpp::base::RegularGridConfiguration& gc,
                                                      const sgpp::base::AdpativityConfiguration& ac,

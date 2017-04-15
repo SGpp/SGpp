@@ -31,16 +31,16 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(const DBMatDensityConfigur
   auto type = config.decomp_type_;
 
   switch (type) {
-    case (DBMatDecompostionType::DBMatDecompEigen):
+    case (DBMatDecompostionType::Eigen):
       return new DBMatOfflineEigen(config);
       break;
-    case (DBMatDecompostionType::DBMatDecompLU):
+    case (DBMatDecompostionType::LU):
       return new DBMatOfflineLU(config);
       break;
-    case (DBMatDecompostionType::DBMatDecompChol):
+    case (DBMatDecompostionType::Chol):
       return new DBMatOfflineChol(config);
       break;
-    case (DBMatDecompostionType::DBMatDecompIChol):
+    case (DBMatDecompostionType::IChol):
       return new DBMatOfflineIChol(config);
       break;
     default:
@@ -74,16 +74,16 @@ DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
   std::cout << "type: " << static_cast<int>(type) << std::endl;
 
   switch (type) {
-    case (DBMatDecompostionType::DBMatDecompEigen):
+    case (DBMatDecompostionType::Eigen):
       return new DBMatOfflineEigen(fileName);
       break;
-    case (DBMatDecompostionType::DBMatDecompLU):
+    case (DBMatDecompostionType::LU):
       return new DBMatOfflineLU(fileName);
       break;
-    case (DBMatDecompostionType::DBMatDecompChol):
+    case (DBMatDecompostionType::Chol):
       return new DBMatOfflineChol(fileName);
       break;
-    case (DBMatDecompostionType::DBMatDecompIChol):
+    case (DBMatDecompostionType::IChol):
       return new DBMatOfflineIChol(fileName);
       break;
     default:

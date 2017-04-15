@@ -67,7 +67,7 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
     B->multTranspose(y, b);
 
     // Perform permutation because of decomposition (LU)
-    if (offlineObject.getConfig().decomp_type_ == DBMatDecompostionType::DBMatDecompLU) {
+    if (offlineObject.getConfig().decomp_type_ == DBMatDecompostionType::LU) {
       static_cast<DBMatOfflineLU&>(offlineObject).permuteVector(b);
     }
 

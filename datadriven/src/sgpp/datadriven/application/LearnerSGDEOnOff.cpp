@@ -66,8 +66,8 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& tr
   densityFunctions.reserve(numClasses);
   // if the Cholesky decomposition is chosen declare separate Online-objects for
   // every class
-  if ((offline->getConfig().decomp_type_ == DBMatDecompostionType::DBMatDecompChol) ||
-      (offline->getConfig().decomp_type_ == DBMatDecompostionType::DBMatDecompIChol)) {
+  if ((offline->getConfig().decomp_type_ == DBMatDecompostionType::Chol) ||
+      (offline->getConfig().decomp_type_ == DBMatDecompostionType::IChol)) {
     offlineContainer.reserve(numClasses);
     // every class gets his own online object
     for (size_t classIndex = 0; classIndex < numClasses; classIndex++) {
@@ -181,8 +181,8 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
       // check if refinement should be performed
       if (refMonitor == "periodic") {
         // check periodic monitor
-        if (((offline->getConfig().decomp_type_ == DBMatDecompostionType::DBMatDecompChol) ||
-             (offline->getConfig().decomp_type_ == DBMatDecompostionType::DBMatDecompIChol)) &&
+        if (((offline->getConfig().decomp_type_ == DBMatDecompostionType::Chol) ||
+             (offline->getConfig().decomp_type_ == DBMatDecompostionType::IChol)) &&
             (totalInstances > 0) && (totalInstances % refPeriod == 0) &&
             (refCnt < offline->getConfig().numRefinements_)) {
           doRefine = true;
@@ -192,8 +192,8 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         if (validationData == nullptr) {
           throw data_exception("No validation data for checking convergence provided!");
         }
-        if (((offline->getConfig().decomp_type_ == DBMatDecompostionType::DBMatDecompChol) ||
-             (offline->getConfig().decomp_type_ == DBMatDecompostionType::DBMatDecompIChol)) &&
+        if (((offline->getConfig().decomp_type_ == DBMatDecompostionType::Chol) ||
+             (offline->getConfig().decomp_type_ == DBMatDecompostionType::IChol)) &&
             (refCnt < offline->getConfig().numRefinements_)) {
           currentValidError = getError(*validationData);
           currentTrainError = getError(trainData);  // if train dataset is large
@@ -607,8 +607,8 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
     newPoints = sizeAfterRefine - sizeBeforeRefine;
     refineCoarse[idx].second = newPoints;
     // apply grid changes to the Cholesky factorization
-    if ((offline->getConfig().decomp_type_ == DBMatDecompostionType::DBMatDecompChol) ||
-        (offline->getConfig().decomp_type_ == DBMatDecompostionType::DBMatDecompIChol)) {
+    if ((offline->getConfig().decomp_type_ == DBMatDecompostionType::Chol) ||
+        (offline->getConfig().decomp_type_ == DBMatDecompostionType::IChol)) {
       static_cast<DBMatOfflineChol&>(densEst->getOfflineObject())
           .choleskyModification(newPoints, deletedGridPoints, densEst->getBestLambda());
     }
