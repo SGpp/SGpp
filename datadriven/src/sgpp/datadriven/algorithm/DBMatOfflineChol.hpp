@@ -46,7 +46,7 @@ class DBMatOfflineChol : public DBMatOfflineGE {
    * @param size columns/rows of current Cholesky factor, necessary since the
             allocated memory is increased before the Cholesky factor is modified
    */
-  void choleskyAddPoint(DataVector* newCol, size_t size);
+  void choleskyAddPoint(DataVector& newCol, size_t size);
 
   /**
    * Permutes the rows of the cholesky factor based on permutations
