@@ -24,9 +24,9 @@ namespace IChol {
 /**
  * decompose in place
  */
-void decompose(SparseDataMatrix& matrix, size_t sweeps);
+void decompose(const DataMatrix& matrix, SparseDataMatrix& result, size_t sweeps);
 
-void decompose(DataMatrix& matrix, size_t sweeps);
+void decompose(const DataMatrix& matrix, DataMatrix& result, size_t sweeps);
 
 /**
  * do a cholesky update on the last n rows
@@ -35,9 +35,16 @@ void updateLastNRows(SparseDataMatrix& matrix, size_t numRows, size_t sweeps);
 
 void normToUnitDiagonal(SparseDataMatrix& matrix, DataVector& norms);
 
-void reaplyDiagonal(SparseDataMatrix& matrix, DataVector& norms);
+void reaplyDiagonal(SparseDataMatrix& matrix, const DataVector& norms);
 
-void reaplyDiagonalLowerTriangular(SparseDataMatrix& matrix, DataVector& norms);
+void reaplyDiagonalLowerTriangular(SparseDataMatrix& matrix, const DataVector& norms);
+
+void normToUnitDiagonal(DataMatrix& matrix, DataVector& norms);
+
+void reaplyDiagonal(DataMatrix& matrix, const DataVector& norms);
+
+void reaplyDiagonalLowerTriangular(DataMatrix& matrix, const DataVector& norms);
+
 } /* namespace IChol */
 } /* namespace datadriven */
 } /* namespace sgpp */

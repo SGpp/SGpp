@@ -36,9 +36,11 @@ BOOST_AUTO_TEST_CASE(decomp_identity) {
 
   auto size = 5u;
   SparseDataMatrix A{size, size, data, colIdx, colIdx};
+  DataMatrix B;
+  SparseDataMatrix::toDataMatrix(A, B);
 
   // decomp:
-  sgpp::datadriven::IChol::decompose(A, 1);
+  sgpp::datadriven::IChol::decompose(B, A, 1);
 
   // test
   const auto& aData = A.getDataVector();
@@ -54,9 +56,11 @@ BOOST_AUTO_TEST_CASE(decomp_diag) {
 
   auto size = 5u;
   SparseDataMatrix A{size, size, data, colIdx, colIdx};
+  DataMatrix B;
+  SparseDataMatrix::toDataMatrix(A, B);
 
   // decomp:
-  sgpp::datadriven::IChol::decompose(A, 1);
+  sgpp::datadriven::IChol::decompose(B, A, 1);
 
   // test
   const auto& aData = A.getDataVector();
@@ -88,9 +92,10 @@ BOOST_AUTO_TEST_CASE(decomp_arbitrary) {
                                     0.565333771083307, 3.599045012221992};
 
   SparseDataMatrix A{size, size, aSparse, colIdx, rowPtr};
-  DataVector aNorm(size);
+  DataMatrix B;
+  SparseDataMatrix::toDataMatrix(A, B);
   // decomp:
-  sgpp::datadriven::IChol::decompose(A, 1);
+  sgpp::datadriven::IChol::decompose(B, A, 1);
 
   // test
   const auto& aData = A.getDataVector();
@@ -183,5 +188,66 @@ BOOST_AUTO_TEST_CASE(normSGMatrix) {
     BOOST_CHECK_CLOSE(normed[i], lhsMatrix[i], 10e-5);
   }
 }
+
+// BOOST_AUTO_TEST_CASE(decompSGMatrix) {
+//  // we only get reproducable results if we run on 1 omp thread
+//  auto numThreads = 0;
+//
+//#pragma omp parallel
+//  {
+//#pragma omp single
+//    { numThreads = omp_get_num_threads(); }
+//  }
+//  omp_set_num_threads(1);
+//
+//  auto dim = 2u;
+//  auto lvl = 3u;
+//  auto grid = std::unique_ptr<Grid>{Grid::createLinearGrid(dim)};
+//  grid->getGenerator().regular(lvl);
+//  auto size = grid->getSize();
+//  DataMatrix lhsMatrix{size, size};
+//  std::unique_ptr<OperationMatrix> op(
+//      sgpp::op_factory::createOperationLTwoDotExplicit(&lhsMatrix, *grid));
+//
+//  std::cout << "lhs:\n" << lhsMatrix.toString() << "\n\n";
+//
+//  // extract lower triangular matrix.
+//  for (size_t i = 0; i < lhsMatrix.getNrows() - 1; i++) {
+//    for (size_t j = i + 1; j < lhsMatrix.getNcols(); j++) {
+//      lhsMatrix.set(i, j, 0);
+//    }
+//  }
+//  SparseDataMatrix sparseLHS(lhsMatrix);
+//  DataVector norm{size};
+//  SparseDataMatrix testSparseLHS(sparseLHS);
+//  DataMatrix testLhsMatrix(lhsMatrix);
+//
+//  sgpp::datadriven::IChol::normToUnitDiagonal(sparseLHS, norm);
+//  sgpp::datadriven::IChol::normToUnitDiagonal(lhsMatrix, norm);
+//  sgpp::datadriven::IChol::decompose(lhsMatrix, sparseLHS, 1);
+//  DataMatrix tmp;
+//  SparseDataMatrix::toDataMatrix(sparseLHS, tmp);
+//  sgpp::datadriven::IChol::reaplyDiagonalLowerTriangular(sparseLHS, norm);
+//
+//  DataMatrix normed{size, size};
+//  SparseDataMatrix::toDataMatrix(sparseLHS, normed);
+//
+//  sgpp::datadriven::IChol::decompose(testLhsMatrix, testSparseLHS, 1);
+//  DataMatrix testNormed{size, size};
+//  SparseDataMatrix::toDataMatrix(testSparseLHS, testNormed);
+//
+//  std::cout << "normed:\n" << normed.toString() << "\n\n";
+//
+//  std::cout << "testNormed:\n" << testNormed.toString() << "\n\n";
+//
+//
+//  auto frobA =
+//  // test
+//  for (auto i = 0u; i < normed.getSize(); i++) {
+//    BOOST_CHECK_CLOSE(testNormed[i], normed[i], 10e-1);
+//  }
+//
+//  omp_set_num_threads(numThreads);
+//}
 
 BOOST_AUTO_TEST_SUITE_END()

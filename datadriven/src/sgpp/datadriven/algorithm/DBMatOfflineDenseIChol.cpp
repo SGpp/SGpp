@@ -33,13 +33,8 @@ void DBMatOfflineDenseIChol::decomposeMatrix() {
     if (isDecomposed) {
       return;
     } else {
-      // extract lower triangular matrix.
-      for (size_t i = 0; i < lhsMatrix.getNrows() - 1; i++) {
-        for (size_t j = i + 1; j < lhsMatrix.getNcols(); j++) {
-          lhsMatrix.set(i, j, 0);
-        }
-      }
-      IChol::decompose(lhsMatrix, 1);
+      DataMatrix matrix(lhsMatrix);
+      IChol::decompose(matrix, lhsMatrix, 4);
     }
     isDecomposed = true;
   } else {
