@@ -65,6 +65,8 @@ class DBMatOffline {
 
   virtual DBMatOffline* clone() = 0;
 
+  virtual bool isRefineable() = 0;
+
   /**
    * Returns a pointer to the configuration
    */

@@ -30,7 +30,11 @@ using sgpp::base::algorithm_exception;
 
 DBMatOfflineChol::DBMatOfflineChol(const DBMatDensityConfiguration& oc) : DBMatOfflineGE(oc) {}
 
+DBMatOfflineChol::DBMatOfflineChol(const std::string& fileName) : DBMatOfflineGE{fileName} {}
+
 DBMatOffline* DBMatOfflineChol::clone() { return new DBMatOfflineChol{*this}; }
+
+bool DBMatOfflineChol::isRefineable() { return true; }
 
 void DBMatOfflineChol::decomposeMatrix() {
   if (isConstructed) {
@@ -367,6 +371,3 @@ void DBMatOfflineChol::choleskyPermutation(size_t k, size_t l, size_t job) {
 }
 } /* namespace datadriven */
 } /* namespace sgpp */
-
-sgpp::datadriven::DBMatOfflineChol::DBMatOfflineChol(const std::string& fileName)
-    : DBMatOfflineGE{fileName} {}
