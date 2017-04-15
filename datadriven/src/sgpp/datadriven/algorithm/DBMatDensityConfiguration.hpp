@@ -22,12 +22,7 @@
 namespace sgpp {
 namespace datadriven {
 
-enum class DBMatDecompostionType {
-  LU,
-  Eigen,
-  Chol,
-  IChol
-};
+enum class DBMatDecompostionType { LU, Eigen, Chol, IChol, DenseIchol };
 
 class DBMatDensityConfiguration {
  public:

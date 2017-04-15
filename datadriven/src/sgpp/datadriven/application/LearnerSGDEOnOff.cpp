@@ -67,7 +67,8 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& tr
   // if the Cholesky decomposition is chosen declare separate Online-objects for
   // every class
   if ((offline->getConfig().decomp_type_ == DBMatDecompostionType::Chol) ||
-      (offline->getConfig().decomp_type_ == DBMatDecompostionType::IChol)) {
+      (offline->getConfig().decomp_type_ == DBMatDecompostionType::IChol) ||
+      (offline->getConfig().decomp_type_ == DBMatDecompostionType::DenseIchol)) {
     offlineContainer.reserve(numClasses);
     // every class gets his own online object
     for (size_t classIndex = 0; classIndex < numClasses; classIndex++) {
@@ -182,7 +183,8 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
       if (refMonitor == "periodic") {
         // check periodic monitor
         if (((offline->getConfig().decomp_type_ == DBMatDecompostionType::Chol) ||
-             (offline->getConfig().decomp_type_ == DBMatDecompostionType::IChol)) &&
+             (offline->getConfig().decomp_type_ == DBMatDecompostionType::IChol) ||
+             (offline->getConfig().decomp_type_ == DBMatDecompostionType::DenseIchol)) &&
             (totalInstances > 0) && (totalInstances % refPeriod == 0) &&
             (refCnt < offline->getConfig().numRefinements_)) {
           doRefine = true;
@@ -193,7 +195,8 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
           throw data_exception("No validation data for checking convergence provided!");
         }
         if (((offline->getConfig().decomp_type_ == DBMatDecompostionType::Chol) ||
-             (offline->getConfig().decomp_type_ == DBMatDecompostionType::IChol)) &&
+             (offline->getConfig().decomp_type_ == DBMatDecompostionType::IChol) ||
+             (offline->getConfig().decomp_type_ == DBMatDecompostionType::DenseIchol)) &&
             (refCnt < offline->getConfig().numRefinements_)) {
           currentValidError = getError(*validationData);
           currentTrainError = getError(trainData);  // if train dataset is large

@@ -20,6 +20,7 @@ void DBMatOnline::setLambda(double lambda) {
     case DBMatDecompostionType::Eigen:
     case DBMatDecompostionType::Chol:
     case DBMatDecompostionType::IChol:
+    case DBMatDecompostionType::DenseIchol:
       offlineObject.getConfig().lambda_ = lambda;
       break;
     case DBMatDecompostionType::LU:

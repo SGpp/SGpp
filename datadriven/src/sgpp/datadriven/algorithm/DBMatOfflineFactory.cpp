@@ -13,6 +13,7 @@
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineEigen.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineIChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
@@ -42,6 +43,9 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(const DBMatDensityConfigur
       break;
     case (DBMatDecompostionType::IChol):
       return new DBMatOfflineIChol(config);
+      break;
+    case (DBMatDecompostionType::DenseIchol):
+      return new DBMatOfflineDenseIChol(config);
       break;
     default:
       throw algorithm_exception("Trying to build offline object from unknown decomposition type");
@@ -85,6 +89,9 @@ DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
       break;
     case (DBMatDecompostionType::IChol):
       return new DBMatOfflineIChol(fileName);
+      break;
+    case (DBMatDecompostionType::DenseIchol):
+      return new DBMatOfflineDenseIChol(fileName);
       break;
     default:
       throw algorithm_exception("Trying to build offline object from unknown decomposition type");
