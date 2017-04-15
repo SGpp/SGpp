@@ -215,14 +215,14 @@ void DBMatOfflineChol::choleskyModification(size_t newPoints, std::list<size_t> 
       temp_col.resizeZero(gridSize);
       mat_refine.getColumn(j - gridSize + newPoints, temp_col);
       temp_col.resizeZero(j + 1);
-      choleskyAddPoint(&temp_col, j);
+      choleskyAddPoint(temp_col, j);
     }
   }
 
   return;
 }
 
-void DBMatOfflineChol::choleskyAddPoint(DataVector* newCol, size_t size) {
+void DBMatOfflineChol::choleskyAddPoint(DataVector& newCol, size_t size) {
   if (!isDecomposed) {
     throw algorithm_exception("Matrix was not decomposed, yet!");
   }
@@ -232,7 +232,7 @@ void DBMatOfflineChol::choleskyAddPoint(DataVector* newCol, size_t size) {
   // because the allocations take place in 'choleskyModifications'
   size_t size_full = mat.getNrows();
   // Size of Cholesky factor after adding 'newCol'
-  size_t size_up = newCol->getSize();
+  size_t size_up = newCol.getSize();
 
   if (size_up != (size + 1)) {
     throw algorithm_exception(
@@ -246,7 +246,7 @@ void DBMatOfflineChol::choleskyAddPoint(DataVector* newCol, size_t size) {
   // procedures
   gsl_matrix_view m = gsl_matrix_submatrix(&m_full.matrix, 0, 0, size, size);
 
-  gsl_vector_view vvec = gsl_vector_view_array(newCol->getPointer(), size_up);
+  gsl_vector_view vvec = gsl_vector_view_array(newCol.getPointer(), size_up);
   gsl_vector* wkvec_a = gsl_vector_calloc(size);
 
   // Extract newCol(0:size-1) = a
@@ -272,16 +272,15 @@ void DBMatOfflineChol::choleskyAddPoint(DataVector* newCol, size_t size) {
   // Modify Choleskyfactor m (L)
 
   // DataVector full of zeros
-  DataVector* zeros = new DataVector(size_full, 0.0);
+  DataVector zeros(size_full, 0.0);
 
   // Add 'newCol' and 'zeros' to current Cholesky factor 'lhsMatrix_'
-  mat.setColumn(size, *zeros);
-  newCol->set(size_up - 1, phi);
-  newCol->resizeZero(size_full);
-  mat.setRow(size, *newCol);
+  mat.setColumn(size, zeros);
+  newCol.set(size_up - 1, phi);
+  newCol.resizeZero(size_full);
+  mat.setRow(size, newCol);
 
   gsl_vector_free(wkvec_a);
-  delete zeros;
 
   return;
 }
