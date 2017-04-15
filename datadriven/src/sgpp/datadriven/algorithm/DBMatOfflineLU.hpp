@@ -28,6 +28,8 @@ class DBMatOfflineLU : public DBMatOfflineGE {
 
   DBMatOffline* clone() override;
 
+  bool isRefineable() override;
+
   DBMatOfflineLU(const std::string& fileName);
 
   void decomposeMatrix() override;

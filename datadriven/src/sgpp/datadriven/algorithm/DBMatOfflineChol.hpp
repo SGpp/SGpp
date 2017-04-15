@@ -22,6 +22,8 @@ class DBMatOfflineChol : public DBMatOfflineGE {
 
   DBMatOffline* clone() override;
 
+  bool isRefineable() override;
+
   /**
    * Decomposes the matrix according to the chosen decomposition type.
    * The number of rows of the stored result depends on the decomposition type.
