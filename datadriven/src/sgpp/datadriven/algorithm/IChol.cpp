@@ -17,6 +17,35 @@
 namespace sgpp {
 namespace datadriven {
 
+void IChol::decompose(DataMatrix& matrix, size_t sweeps) {
+  // for all sweeps
+  for (auto sweep = 0u; sweep < sweeps; sweep++) {
+// for each row
+#pragma omp parallel
+    { /* omp parallel */
+#pragma omp for
+      for (auto i = 0u; i < matrix.getNrows(); i++) {
+        // in each column until diagonal element
+        for (auto j = 0u; j < i; j++) {
+          // calculate sum;
+          auto s = matrix.get(i, j);
+          for (auto k = 0u; k < j; k++) {
+            s -= matrix.get(i, k) * matrix.get(j, k);
+          }
+          matrix.set(i, j, s / matrix.get(j, j));
+        }
+        // do the diagonal element:
+        // calculate sum;
+        auto s = matrix.get(i, i);
+        for (auto k = 0u; k < i; k++) {
+          s -= matrix.get(i, k) * matrix.get(i, k);
+        }
+        matrix.set(i, i, sqrt(s));
+      }
+    } /* omp parallel */
+  }
+}
+
 void IChol::decompose(SparseDataMatrix& matrix, size_t sweeps) {
   const auto matSize = matrix.getNrows();
   // get the data vector
@@ -28,7 +57,7 @@ void IChol::decompose(SparseDataMatrix& matrix, size_t sweeps) {
 
   // for all sweeps
   for (auto sweep = 0u; sweep < sweeps; sweep++) {
-    //#pragma omp parallel for
+#pragma omp parallel for
     for (auto dataIter = 0u; dataIter < matData.size(); dataIter++) {
       const auto col = colIndices[dataIter];
       const auto row = [&]() {
@@ -135,6 +164,7 @@ void IChol::reaplyDiagonal(SparseDataMatrix& matrix, DataVector& norms) {
   }
 
   const auto i = matSize - 1;
+  // peel of last element to avoid branching for better auto vectorization.
   for (auto j = rowPtrs[i]; j < matData.size(); j++) {
     const auto rightVecVal = norms[colIndices[j]];
     const auto res = matData[j] / (norms[i] * rightVecVal);
@@ -142,5 +172,28 @@ void IChol::reaplyDiagonal(SparseDataMatrix& matrix, DataVector& norms) {
   }
 }
 
+void IChol::reaplyDiagonalLowerTriangular(SparseDataMatrix& matrix, DataVector& norms) {
+  const auto matSize = matrix.getNrows();
+  // get the data vector
+  auto& matData = matrix.getDataVector();
+  // get the rows
+  const auto& rowPtrs = matrix.getRowPtrVector();
+  // get the cols
+  const auto& colIndices = matrix.getColIndexVector();
+
+#pragma omp parallel for
+  for (auto i = 0u; i < matSize - 1; i++) {
+    const auto leftVecVal = norms[i];
+    for (auto j = rowPtrs[i]; j < rowPtrs[i + 1]; j++) {
+      matData[j] /= leftVecVal;
+    }
+  }
+
+  const auto i = matSize - 1;
+  // peel of last element to avoid branching for better auto vectorization.
+  for (auto j = rowPtrs[i]; j < matData.size(); j++) {
+    matData[j] /= norms[i];
+  }
+}
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -17,12 +17,12 @@ DBMatOnline::DBMatOnline(DBMatOffline& o) : offlineObject{o} {}
 
 void DBMatOnline::setLambda(double lambda) {
   switch (offlineObject.getConfig().decomp_type_) {
-    case DBMatDecompostionType::DBMatDecompEigen:
-    case DBMatDecompostionType::DBMatDecompChol:
-    case DBMatDecompostionType::DBMatDecompIChol:
+    case DBMatDecompostionType::Eigen:
+    case DBMatDecompostionType::Chol:
+    case DBMatDecompostionType::IChol:
       offlineObject.getConfig().lambda_ = lambda;
       break;
-    case DBMatDecompostionType::DBMatDecompLU:
+    case DBMatDecompostionType::LU:
     default:
       throw application_exception(
           "Lambda can not be changed in the online step for this decomposition "

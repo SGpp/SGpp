@@ -25,14 +25,14 @@ DBMatOnlineDE* DBMatOnlineDEFactory::buildDBMatOnlineDE(DBMatOffline& offline, d
   auto& config = offline.getConfig();
 
   switch (config.decomp_type_) {
-    case DBMatDecompostionType::DBMatDecompEigen:
+    case DBMatDecompostionType::Eigen:
       return new DBMatOnlineDEEigen(offline, beta);
       break;
-    case DBMatDecompostionType::DBMatDecompLU:
+    case DBMatDecompostionType::LU:
       return new DBMatOnlineDELU(offline, beta);
       break;
-    case DBMatDecompostionType::DBMatDecompChol:
-    case DBMatDecompostionType::DBMatDecompIChol:
+    case DBMatDecompostionType::Chol:
+    case DBMatDecompostionType::IChol:
       return new DBMatOnlineDEChol(offline, beta);
       break;
     default:

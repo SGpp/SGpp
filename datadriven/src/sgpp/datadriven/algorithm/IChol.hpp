@@ -19,22 +19,25 @@ namespace datadriven {
 
 using sgpp::base::DataVector;
 
-class IChol {
- public:
-  /**
-   * decompose in place
-   */
-  static void decompose(SparseDataMatrix& matrix, size_t sweeps);
+namespace IChol {
 
-  /**
-   * do a cholesky update on the last n rows
-   */
-  static void updateLastNRows(SparseDataMatrix& matrix, size_t numRows, size_t sweeps);
+/**
+ * decompose in place
+ */
+void decompose(SparseDataMatrix& matrix, size_t sweeps);
 
-  static void normToUnitDiagonal(SparseDataMatrix& matrix, DataVector& norms);
+void decompose(DataMatrix& matrix, size_t sweeps);
 
-  static void reaplyDiagonal(SparseDataMatrix& matrix, DataVector& norms);
-};
+/**
+ * do a cholesky update on the last n rows
+ */
+void updateLastNRows(SparseDataMatrix& matrix, size_t numRows, size_t sweeps);
 
+void normToUnitDiagonal(SparseDataMatrix& matrix, DataVector& norms);
+
+void reaplyDiagonal(SparseDataMatrix& matrix, DataVector& norms);
+
+void reaplyDiagonalLowerTriangular(SparseDataMatrix& matrix, DataVector& norms);
+} /* namespace IChol */
 } /* namespace datadriven */
 } /* namespace sgpp */

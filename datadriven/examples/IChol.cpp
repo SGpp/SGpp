@@ -17,7 +17,6 @@
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
-using sgpp::datadriven::IChol;
 using sgpp::datadriven::SparseDataMatrix;
 
 int main(int argc, char** argv) {
@@ -53,10 +52,10 @@ int main(int argc, char** argv) {
 
   // decomp:
   DataVector aNorm(size);
-  IChol::normToUnitDiagonal(matrix, aNorm);
+  sgpp::datadriven::IChol::normToUnitDiagonal(matrix, aNorm);
   SparseDataMatrix::toDataMatrix(matrix, A);
   std::cout << "normed:\n" << A.toString() << "\n";
-  IChol::decompose(matrix, 1);
+  sgpp::datadriven::IChol::decompose(matrix, 1);
   // IChol::reaplyDiagonal(A, aNorm);
 
   SparseDataMatrix::toDataMatrix(matrix, A);

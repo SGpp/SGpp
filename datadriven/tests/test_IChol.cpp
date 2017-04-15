@@ -26,7 +26,6 @@ using sgpp::base::DataVector;
 using sgpp::base::Grid;
 using sgpp::base::GridGenerator;
 using sgpp::base::OperationMatrix;
-using sgpp::datadriven::IChol;
 using sgpp::datadriven::SparseDataMatrix;
 
 BOOST_AUTO_TEST_SUITE(test_IChol)
@@ -39,7 +38,7 @@ BOOST_AUTO_TEST_CASE(decomp_identity) {
   SparseDataMatrix A{size, size, data, colIdx, colIdx};
 
   // decomp:
-  IChol::decompose(A, 1);
+  sgpp::datadriven::IChol::decompose(A, 1);
 
   // test
   const auto& aData = A.getDataVector();
@@ -57,7 +56,7 @@ BOOST_AUTO_TEST_CASE(decomp_diag) {
   SparseDataMatrix A{size, size, data, colIdx, colIdx};
 
   // decomp:
-  IChol::decompose(A, 1);
+  sgpp::datadriven::IChol::decompose(A, 1);
 
   // test
   const auto& aData = A.getDataVector();
@@ -91,7 +90,7 @@ BOOST_AUTO_TEST_CASE(decomp_arbitrary) {
   SparseDataMatrix A{size, size, aSparse, colIdx, rowPtr};
   DataVector aNorm(size);
   // decomp:
-  IChol::decompose(A, 1);
+  sgpp::datadriven::IChol::decompose(A, 1);
 
   // test
   const auto& aData = A.getDataVector();
@@ -116,7 +115,7 @@ BOOST_AUTO_TEST_CASE(norm) {
   SparseDataMatrix A{size, size, aSparse, colIdx, rowPtr};
   DataVector aNorm{size};
   // norm:
-  IChol::normToUnitDiagonal(A, aNorm);
+  sgpp::datadriven::IChol::normToUnitDiagonal(A, aNorm);
 
   // test
   const auto& aData = A.getDataVector();
@@ -145,7 +144,7 @@ BOOST_AUTO_TEST_CASE(reaplyNorm) {
   SparseDataMatrix A{size, size, bSparse, colIdx, rowPtr};
   DataVector aNorm{bVec, size};
   // norm:
-  IChol::reaplyDiagonal(A, aNorm);
+  sgpp::datadriven::IChol::reaplyDiagonal(A, aNorm);
 
   // test
   const auto& aData = A.getDataVector();
@@ -173,8 +172,8 @@ BOOST_AUTO_TEST_CASE(normSGMatrix) {
   }
   SparseDataMatrix sparseLHS(lhsMatrix);
   DataVector norm{size};
-  IChol::normToUnitDiagonal(sparseLHS, norm);
-  IChol::reaplyDiagonal(sparseLHS, norm);
+  sgpp::datadriven::IChol::normToUnitDiagonal(sparseLHS, norm);
+  sgpp::datadriven::IChol::reaplyDiagonal(sparseLHS, norm);
 
   DataMatrix normed{size, size};
   SparseDataMatrix::toDataMatrix(sparseLHS, normed);
