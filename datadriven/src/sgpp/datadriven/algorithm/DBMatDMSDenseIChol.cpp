@@ -12,5 +12,11 @@
 #include <sgpp/datadriven/algorithm/DBMatDMSDenseIChol.hpp>
 
 namespace sgpp {
-namespace datadriven {} /* namespace datadriven */
+namespace datadriven {
+
+void DBMatDMSDenseIChol::solve(sgpp::base::DataMatrix& DecompMatrix, sgpp::base::DataVector& alpha,
+                               const sgpp::base::DataVector& b, double lambda_old,
+                               double lambda_new) const {}
+
+} /* namespace datadriven */
 } /* namespace sgpp */
