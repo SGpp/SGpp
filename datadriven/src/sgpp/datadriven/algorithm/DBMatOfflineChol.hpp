@@ -37,7 +37,8 @@ class DBMatOfflineChol : public DBMatOfflineGE {
    * @param deletedPoints list of indices of last coarsed points
    * @param newPoints amount of refined points
    */
-  void choleskyModification(size_t newPoints, std::list<size_t> deletedPoints, double lambda);
+  virtual void choleskyModification(size_t newPoints, std::list<size_t> deletedPoints,
+                                    double lambda);
 
   /**
    * Updates the cholesky factor when a new grid point is added (e.g. refine)

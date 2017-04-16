@@ -602,7 +602,7 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
     refineCoarse[idx].second = newPoints;
     // apply grid changes to the Cholesky factorization
     if (offline->isRefineable()) {
-      static_cast<DBMatOfflineChol&>(densEst->getOfflineObject())
+      dynamic_cast<DBMatOfflineChol&>(densEst->getOfflineObject())
           .choleskyModification(newPoints, deletedGridPoints, densEst->getBestLambda());
     }
     // update alpha vector
