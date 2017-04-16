@@ -17,8 +17,8 @@ namespace sgpp {
 namespace datadriven {
 
 class DBMatDMSDenseIChol : public DBMatDMSChol {
-  void solve(sgpp::base::DataMatrix& DecompMatrix, sgpp::base::DataVector& alpha,
-             const sgpp::base::DataVector& b, double lambda_old, double lambda_new) const override;
+  //  void choleskyUpdateLambda(sgpp::base::DataMatrix& decompMatrix, double lambda_up) const
+  //  override;
 };
 
 } /* namespace datadriven */

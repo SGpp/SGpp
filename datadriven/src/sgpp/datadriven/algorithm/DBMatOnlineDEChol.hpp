@@ -13,6 +13,8 @@
 
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 
+#include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
+
 namespace sgpp {
 namespace datadriven {
 
@@ -24,6 +26,8 @@ class DBMatOnlineDEChol : public DBMatOnlineDE {
 
  protected:
   void solveSLE(DataVector& b, bool do_cv) override;
+
+  DBMatDMSChol* buildCholSolver(const DBMatOffline& offlineObject) const;
 };
 
 } /* namespace datadriven */

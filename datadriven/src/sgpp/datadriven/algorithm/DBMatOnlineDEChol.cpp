@@ -11,19 +11,19 @@
 
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEChol.hpp>
 
-#include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
 
 namespace sgpp {
-namespace datadriven {} /* namespace datadriven */
-} /* namespace sgpp */
+namespace datadriven {
 
-sgpp::datadriven::DBMatOnlineDEChol::DBMatOnlineDEChol(DBMatOffline& offline, double beta)
+DBMatOnlineDEChol::DBMatOnlineDEChol(DBMatOffline& offline, double beta)
     : DBMatOnlineDE{offline, beta} {}
 
-void sgpp::datadriven::DBMatOnlineDEChol::solveSLE(DataVector& b, bool do_cv) {
+void DBMatOnlineDEChol::solveSLE(DataVector& b, bool do_cv) {
   DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
   alpha = DataVector(lhsMatrix.getNcols());
-  DBMatDMSChol cholsolver;
+
+  auto cholsolver = std::unique_ptr<DBMatDMSChol>{buildCholSolver(offlineObject)};
 
   double old_lambda = lambda;
   // Perform cross-validation based on rank one up- and downdates
@@ -39,7 +39,7 @@ void sgpp::datadriven::DBMatOnlineDEChol::solveSLE(DataVector& b, bool do_cv) {
       // old_lambda << std::endl;
       // Solve for density declaring coefficients alpha based on changed
       // lambda
-      cholsolver.solve(lhsMatrix, alpha, b, old_lambda, cur_lambda);
+      cholsolver->solve(lhsMatrix, alpha, b, old_lambda, cur_lambda);
       old_lambda = cur_lambda;
       double crit = resDensity(alpha);
       // std::cout << ", crit: " << crit << std::endl;
@@ -51,5 +51,26 @@ void sgpp::datadriven::DBMatOnlineDEChol::solveSLE(DataVector& b, bool do_cv) {
   }
   // Solve for density declaring coefficients alpha
   // std::cout << "lambda: " << lambda << std::endl;
-  cholsolver.solve(lhsMatrix, alpha, b, old_lambda, lambda);
+  cholsolver->solve(lhsMatrix, alpha, b, old_lambda, lambda);
 }
+
+DBMatDMSChol* DBMatOnlineDEChol::buildCholSolver(const DBMatOffline& offlineObject) const {
+  // const cast is OK here, since we access the config read only.
+  switch (const_cast<DBMatOffline&>(offlineObject).getConfig().decomp_type_) {
+    case (DBMatDecompostionType::Chol):
+    case (DBMatDecompostionType::IChol):
+      return new DBMatDMSChol();
+      break;
+    case (DBMatDecompostionType::DenseIchol):
+
+      return new DBMatDMSChol();  // std::make_unique<DBMatDMSDenseIChol>(offlineObject);
+      break;
+    case (DBMatDecompostionType::LU):
+    case (DBMatDecompostionType::Eigen):
+    default:
+      throw sgpp::base::algorithm_exception{"Only Cholesky based solvers can use this Solver"};
+  }
+}
+
+} /* namespace datadriven */
+} /* namespace sgpp */

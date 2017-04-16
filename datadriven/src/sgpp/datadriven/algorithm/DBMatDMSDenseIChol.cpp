@@ -13,10 +13,37 @@
 
 namespace sgpp {
 namespace datadriven {
+using sgpp::base::DataMatrix;
 
-void DBMatDMSDenseIChol::solve(sgpp::base::DataMatrix& DecompMatrix, sgpp::base::DataVector& alpha,
-                               const sgpp::base::DataVector& b, double lambda_old,
-                               double lambda_new) const {}
+// void sgpp::datadriven::DBMatDMSDenseIChol::choleskyUpdateLambda(
+//    sgpp::base::DataMatrix& decompMatrix, double lambda_up) const {
+//#pragma omp parallel
+//#pragma omp single
+//
+//  DataMatrix systemMatrix{decompMatrix.getNrows(), decompMatrix.getNcols()};
+//
+//  { /*omp parallel region begin */
+//// we need the full matrix again
+//#pragma omp task
+//    { /* omp task begin */
+//
+//    } /* omp task end */
+//
+//// meanwhile we can update the system matrix
+//#pragma omp task
+//    { /* omp task begin */
+//#pragma omp simd
+//      for (size_t i = 0; i < decompMatrix.getNrows(); i++) {
+//        const auto val = decompMatrix.get(i, i);
+//        decompMatrix.set(i, i, val + lambda_up);
+//      }
+//    } /* omp task end */
+//  }   /*omp parallel region end */
+//
+//  // and run the decomposition again. Since out guess should be closer, we should converge much
+//  // faster.
+//  IChol::decompose(decompMatrix, decompMatrix, 2);
+//}
 
 } /* namespace datadriven */
 } /* namespace sgpp */
