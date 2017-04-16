@@ -34,8 +34,8 @@ class DBMatDMSChol : public DBMatDecompMatrixSolver {
    * @param lambda_new the new regularization paramter (e.g. if cross-validation
    * is applied)
    */
-  void solve(sgpp::base::DataMatrix& DecompMatrix, sgpp::base::DataVector& alpha,
-             sgpp::base::DataVector& b, double lambda_old, double lambda_new);
+  virtual void solve(sgpp::base::DataMatrix& DecompMatrix, sgpp::base::DataVector& alpha,
+                     sgpp::base::DataVector& b, double lambda_old, double lambda_new);
 
   /**
    * Performe a rank one cholesky update
