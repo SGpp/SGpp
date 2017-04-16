@@ -28,24 +28,22 @@ void DBMatDMSChol::solve(sgpp::base::DataMatrix& DecompMatrix, sgpp::base::DataV
 
   // If regularization paramter is changed enter
   if (lambda_up != 0) {
-    sgpp::base::DataVector* lambdaModification = new sgpp::base::DataVector(size, 0.0);
+    sgpp::base::DataVector lambdaModification(size, 0.0);
     // In case lambda is increased apply Cholesky rank one updates
     if (lambda_up > 0) {
       for (size_t i = 0; i < size; i++) {
-        lambdaModification->set(i, sqrt(lambda_up));
+        lambdaModification.set(i, sqrt(lambda_up));
         choleskyUpdate(DecompMatrix, lambdaModification, true);
-        lambdaModification->setAll(0.0);
+        lambdaModification.setAll(0.0);
       }
     } else if (lambda_up < 0) {
       // In case lambda is decreased apply Cholesky rank one downdates
       for (size_t i = 0; i < size; i++) {
-        lambdaModification->set(i, sqrt(fabs(lambda_up)));
+        lambdaModification.set(i, sqrt(fabs(lambda_up)));
         choleskyDowndate(DecompMatrix, lambdaModification, true);
-        lambdaModification->setAll(0.0);
+        lambdaModification.setAll(0.0);
       }
     }
-
-    delete lambdaModification;
   }
 
   // Solve (R + lambda * I)alpha = b to obtain density declaring coefficents
@@ -75,12 +73,12 @@ void DBMatDMSChol::solve(sgpp::base::DataMatrix& DecompMatrix, sgpp::base::DataV
 
 // Implement cholesky Update for given Decomposition and update vector
 void DBMatDMSChol::choleskyUpdate(sgpp::base::DataMatrix& DecompMatrix,
-                                  sgpp::base::DataVector* update, bool do_cv) {
+                                  const sgpp::base::DataVector& update, bool do_cv) const {
   // int i;
 
   size_t size = DecompMatrix.getNrows();
 
-  if (update->getSize() != size) {
+  if (update.getSize() != size) {
     throw sgpp::base::data_exception(
         "choleskyUpdate::Size of DecomposedMatrix and updateVector don´t "
         "match...");
@@ -88,12 +86,12 @@ void DBMatDMSChol::choleskyUpdate(sgpp::base::DataMatrix& DecompMatrix,
 
   // Create GSL matrix view for update procedures
   gsl_matrix_view m = gsl_matrix_view_array(DecompMatrix.getPointer(), size, size);
-  gsl_vector_const_view vvec = gsl_vector_const_view_array(update->getPointer(), update->getSize());
+  gsl_vector_const_view vvec = gsl_vector_const_view_array(update.getPointer(), update.getSize());
 
   // Define and declare Workingvector, Cosine- and Sinevector
-  gsl_vector* wkvec = gsl_vector_calloc(update->getSize());
-  gsl_vector* svec = gsl_vector_calloc(update->getSize());
-  gsl_vector* cvec = gsl_vector_calloc(update->getSize());
+  gsl_vector* wkvec = gsl_vector_calloc(update.getSize());
+  gsl_vector* svec = gsl_vector_calloc(update.getSize());
+  gsl_vector* cvec = gsl_vector_calloc(update.getSize());
 
   // Generate Givens rotations, update L
   // Copy Values of updateVector into WorkingVector
@@ -163,33 +161,34 @@ void DBMatDMSChol::choleskyUpdate(sgpp::base::DataMatrix& DecompMatrix,
 
 // Implement cholesky Downdate for given Decomposition and update vector
 void DBMatDMSChol::choleskyDowndate(sgpp::base::DataMatrix& DecompMatrix,
-                                    sgpp::base::DataVector* downdate, bool do_cv) {
+                                    const sgpp::base::DataVector& downdate, bool do_cv) const {
   size_t size = DecompMatrix.getNrows();
 
-  if (downdate->getSize() != size) {
+  if (downdate.getSize() != size) {
     throw sgpp::base::data_exception(
         "choleskyDowndate::Size of DecomposedMatrix and updateVector don´t "
         "match...");
   }
   // Create GSL matrix view for update procedures
   gsl_matrix_view m = gsl_matrix_view_array(DecompMatrix.getPointer(), size, size);
-  gsl_vector_view vvec = gsl_vector_view_array(downdate->getPointer(), downdate->getSize());
+  gsl_vector_const_view vvec =
+      gsl_vector_const_view_array(downdate.getPointer(), downdate.getSize());
 
   // Define and declare Workingvector, Cosine- and Sinevector
-  gsl_vector* wkvec = gsl_vector_calloc(downdate->getSize());
-  gsl_vector* svec = gsl_vector_calloc(downdate->getSize());
-  gsl_vector* cvec = gsl_vector_calloc(downdate->getSize());
+  gsl_vector* wkvec = gsl_vector_calloc(downdate.getSize());
+  gsl_vector* svec = gsl_vector_calloc(downdate.getSize());
+  gsl_vector* cvec = gsl_vector_calloc(downdate.getSize());
 
   // Compute p (if not given)
   // Copy Values of updateVector into WorkingVector
   gsl_blas_dcopy(&vvec.vector, wkvec);
 
   // Solve La = downdate and save a in vvec.vector
-  gsl_blas_dtrsv(CblasLower, CblasNoTrans, CblasNonUnit, &m.matrix, &vvec.vector);
+  gsl_blas_dtrsv(CblasLower, CblasNoTrans, CblasNonUnit, &m.matrix, wkvec);
 
   // Generate Givens rotations
   double rho;
-  gsl_blas_ddot(&vvec.vector, &vvec.vector, &rho);
+  gsl_blas_ddot(wkvec, wkvec, &rho);
   rho = 1 - rho;
 
   // Represents first index of downdate vector with entrie unequal to zero
@@ -201,12 +200,12 @@ void DBMatDMSChol::choleskyDowndate(sgpp::base::DataMatrix& DecompMatrix,
     for (int i = static_cast<int>(size) - 1; i >= 0; i--) {
       // If this method is applied in cross-validation do_cv == true and
       // shortcuts can be used
-      if (vvec.vector.data[i] == 0 && do_cv == true) {
+      if (wkvec->data[i] == 0 && do_cv == true) {
         cv_first_zero = i + 1;
         break;
       }
       // Determine Givens rotation
-      gsl_blas_drotg(&rho, vvec.vector.data + i, cvec->data + i, svec->data + i);
+      gsl_blas_drotg(&rho, wkvec->data + i, cvec->data + i, svec->data + i);
       // rho must remain positive
       if (rho < 0.0) {
         rho = -rho;

@@ -127,7 +127,7 @@ void DBMatOfflineChol::choleskyModification(size_t newPoints, std::list<size_t> 
       DBMatDMSChol cholsolver;
       for (size_t i = 0; i < coarseCount_1; i++) {
         update_matrix.getColumn(i, temp_col);
-        cholsolver.choleskyUpdate(lhsMatrix, &temp_col, false);
+        cholsolver.choleskyUpdate(lhsMatrix, temp_col, false);
       }
     } else {
       // If no indices have been less than 'c'
