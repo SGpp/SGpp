@@ -45,8 +45,8 @@ class DBMatDMSChol : public DBMatDecompMatrixSolver {
    * @param do_cv indicating if updates are used for cross valdiation
    * (using special structure of update vectors to save runtime)
    */
-  void choleskyUpdate(sgpp::base::DataMatrix& DecompMatrix, sgpp::base::DataVector* update,
-                      bool do_cv = false);
+  void choleskyUpdate(sgpp::base::DataMatrix& DecompMatrix, const sgpp::base::DataVector& update,
+                      bool do_cv = false) const;
 
   /**
    * Performe a rank one cholesky downdate
@@ -56,8 +56,8 @@ class DBMatDMSChol : public DBMatDecompMatrixSolver {
    * @param do_cv indicating if updates are used for cross valdiation
    * (using special structure of update vectors to save runtime)
    */
-  void choleskyDowndate(sgpp::base::DataMatrix& DecompMatrix, sgpp::base::DataVector* downdate,
-                        bool do_cv = false);
+  void choleskyDowndate(sgpp::base::DataMatrix& DecompMatrix,
+                        const sgpp::base::DataVector& downdate, bool do_cv = false) const;
 };
 
 }  // namespace datadriven
