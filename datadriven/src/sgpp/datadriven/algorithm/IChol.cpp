@@ -18,6 +18,32 @@ namespace sgpp {
 namespace datadriven {
 
 void IChol::decompose(const DataMatrix& matrix, DataMatrix& result, size_t sweeps) {
+  // first sweep copies
+
+  //#pragma omp parallel for
+  //  for (auto i = 0u; i < matrix.getNrows(); i++) {
+  //    // in each column until diagonal element
+  //    for (auto j = 0u; j < i; j++) {
+  //      // calculate sum;
+  //      auto s = matrix.get(i, j);
+  //      if (s > 0.0) {
+  //#pragma omp simd
+  //        for (auto k = 0u; k < j; k++) {
+  //          s -= matrix.get(i, k) * matrix.get(j, k);
+  //        }
+  //        result.set(i, j, s / matrix.get(j, j));
+  //      }
+  //    }
+  //    // do the diagonal element:
+  //    // calculate sum;
+  //    auto s = matrix.get(i, i);
+  //#pragma omp simd
+  //    for (auto k = 0u; k < i; k++) {
+  //      s -= matrix.get(i, k) * matrix.get(i, k);
+  //    }
+  //    result.set(i, i, sqrt(s));
+  //  }
+
   // for all sweeps
   for (auto sweep = 0u; sweep < sweeps; sweep++) {
 // for each row
