@@ -93,11 +93,11 @@ DBMatOffline::DBMatOffline(const std::string& fileName)
 DBMatDensityConfiguration& DBMatOffline::getConfig() { return config; }
 
 DataMatrix& DBMatOffline::getDecomposedMatrix() {
-  //  if (isDecomposed) {
-  return lhsMatrix;
-  //  } else {
-  //    throw data_exception("Matrix was not decomposed yet");
-  //  }
+  if (isDecomposed) {
+    return lhsMatrix;
+  } else {
+    throw data_exception("Matrix was not decomposed yet");
+  }
 }
 
 Grid& DBMatOffline::getGrid() { return *grid; }
