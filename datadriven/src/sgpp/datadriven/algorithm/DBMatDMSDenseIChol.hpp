@@ -18,7 +18,7 @@ namespace datadriven {
 
 class DBMatDMSDenseIChol : public DBMatDMSChol {
   void solve(sgpp::base::DataMatrix& DecompMatrix, sgpp::base::DataVector& alpha,
-             sgpp::base::DataVector& b, double lambda_old, double lambda_new) override;
+             const sgpp::base::DataVector& b, double lambda_old, double lambda_new) const override;
 };
 
 } /* namespace datadriven */

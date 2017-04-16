@@ -18,32 +18,18 @@
 namespace sgpp {
 namespace datadriven {
 
-void DBMatDMSChol::solve(sgpp::base::DataMatrix& DecompMatrix, sgpp::base::DataVector& alpha,
-                         sgpp::base::DataVector& b, double lambda_old, double lambda_new) {
-  size_t size = DecompMatrix.getNcols();
+void DBMatDMSChol::solve(sgpp::base::DataMatrix& decompMatrix, sgpp::base::DataVector& alpha,
+                         const sgpp::base::DataVector& b, double lambda_old,
+                         double lambda_new) const {
+  size_t size = decompMatrix.getNcols();
   // Performe Update based on Cholesky - afterwards perform n (GridPoints) many
   // rank-One-updates
 
   double lambda_up = lambda_new - lambda_old;
 
   // If regularization paramter is changed enter
-  if (lambda_up != 0) {
-    sgpp::base::DataVector lambdaModification(size, 0.0);
-    // In case lambda is increased apply Cholesky rank one updates
-    if (lambda_up > 0) {
-      for (size_t i = 0; i < size; i++) {
-        lambdaModification.set(i, sqrt(lambda_up));
-        choleskyUpdate(DecompMatrix, lambdaModification, true);
-        lambdaModification.setAll(0.0);
-      }
-    } else if (lambda_up < 0) {
-      // In case lambda is decreased apply Cholesky rank one downdates
-      for (size_t i = 0; i < size; i++) {
-        lambdaModification.set(i, sqrt(fabs(lambda_up)));
-        choleskyDowndate(DecompMatrix, lambdaModification, true);
-        lambdaModification.setAll(0.0);
-      }
-    }
+  if (lambda_up != 0.0) {
+    choleskyUpdateLambda(decompMatrix, lambda_up);
   }
 
   // Solve (R + lambda * I)alpha = b to obtain density declaring coefficents
@@ -51,32 +37,18 @@ void DBMatDMSChol::solve(sgpp::base::DataMatrix& DecompMatrix, sgpp::base::DataV
 
   // Forward Substitution:
   sgpp::base::DataVector y(size);
-  for (size_t i = 0; i < size; i++) {
-    y[i] = b[i];
-    for (size_t j = 0; j < i; j++) {
-      y[i] -= DecompMatrix.get(i, j) * y[j];
-    }
-    y[i] /= DecompMatrix.get(i, i);
-  }
+  choleskyForwardSolve(decompMatrix, b, y);
 
   // Backward Substitution:
-  for (int i = static_cast<int>(size) - 1; i >= 0; i--) {
-    alpha[i] = y[i];
-    for (size_t j = i + 1; j < size; j++) {
-      alpha[i] -= DecompMatrix.get(j, i) * alpha[j];
-    }
-    alpha[i] /= DecompMatrix.get(i, i);
-  }
-
-  return;
+  choleskyBackwardSolve(decompMatrix, y, alpha);
 }
 
 // Implement cholesky Update for given Decomposition and update vector
-void DBMatDMSChol::choleskyUpdate(sgpp::base::DataMatrix& DecompMatrix,
+void DBMatDMSChol::choleskyUpdate(sgpp::base::DataMatrix& decompMatrix,
                                   const sgpp::base::DataVector& update, bool do_cv) const {
   // int i;
 
-  size_t size = DecompMatrix.getNrows();
+  size_t size = decompMatrix.getNrows();
 
   if (update.getSize() != size) {
     throw sgpp::base::data_exception(
@@ -85,7 +57,7 @@ void DBMatDMSChol::choleskyUpdate(sgpp::base::DataMatrix& DecompMatrix,
   }
 
   // Create GSL matrix view for update procedures
-  gsl_matrix_view m = gsl_matrix_view_array(DecompMatrix.getPointer(), size, size);
+  gsl_matrix_view m = gsl_matrix_view_array(decompMatrix.getPointer(), size, size);
   gsl_vector_const_view vvec = gsl_vector_const_view_array(update.getPointer(), update.getSize());
 
   // Define and declare Workingvector, Cosine- and Sinevector
@@ -160,9 +132,9 @@ void DBMatDMSChol::choleskyUpdate(sgpp::base::DataMatrix& DecompMatrix,
 }
 
 // Implement cholesky Downdate for given Decomposition and update vector
-void DBMatDMSChol::choleskyDowndate(sgpp::base::DataMatrix& DecompMatrix,
+void DBMatDMSChol::choleskyDowndate(sgpp::base::DataMatrix& decompMatrix,
                                     const sgpp::base::DataVector& downdate, bool do_cv) const {
-  size_t size = DecompMatrix.getNrows();
+  size_t size = decompMatrix.getNrows();
 
   if (downdate.getSize() != size) {
     throw sgpp::base::data_exception(
@@ -170,7 +142,7 @@ void DBMatDMSChol::choleskyDowndate(sgpp::base::DataMatrix& DecompMatrix,
         "match...");
   }
   // Create GSL matrix view for update procedures
-  gsl_matrix_view m = gsl_matrix_view_array(DecompMatrix.getPointer(), size, size);
+  gsl_matrix_view m = gsl_matrix_view_array(decompMatrix.getPointer(), size, size);
   gsl_vector_const_view vvec =
       gsl_vector_const_view_array(downdate.getPointer(), downdate.getSize());
 
@@ -249,6 +221,55 @@ void DBMatDMSChol::choleskyDowndate(sgpp::base::DataMatrix& DecompMatrix,
   gsl_vector_free(cvec);
 
   return;
+}
+
+void DBMatDMSChol::choleskyUpdateLambda(sgpp::base::DataMatrix& decompMatrix,
+                                        double lambda_up) const {
+  size_t size = decompMatrix.getNcols();
+
+  sgpp::base::DataVector lambdaModification(size, 0.0);
+  // In case lambda is increased apply Cholesky rank one updates
+  if (lambda_up > 0) {
+    for (size_t i = 0; i < size; i++) {
+      lambdaModification.set(i, sqrt(lambda_up));
+      choleskyUpdate(decompMatrix, lambdaModification, true);
+      lambdaModification.setAll(0.0);
+    }
+  } else if (lambda_up < 0) {
+    // In case lambda is decreased apply Cholesky rank one downdates
+    for (size_t i = 0; i < size; i++) {
+      lambdaModification.set(i, sqrt(fabs(lambda_up)));
+      choleskyDowndate(decompMatrix, lambdaModification, true);
+      lambdaModification.setAll(0.0);
+    }
+  }
+}
+
+void DBMatDMSChol::choleskyBackwardSolve(const sgpp::base::DataMatrix& decompMatrix,
+                                         const sgpp::base::DataVector& y,
+                                         sgpp::base::DataVector& alpha) const {
+  size_t size = decompMatrix.getNcols();
+  for (int i = static_cast<int>(size) - 1; i >= 0; i--) {
+    alpha[i] = y[i];
+    for (size_t j = i + 1; j < size; j++) {
+      alpha[i] -= decompMatrix.get(j, i) * alpha[j];
+    }
+    alpha[i] /= decompMatrix.get(i, i);
+  }
+}
+
+void DBMatDMSChol::choleskyForwardSolve(const sgpp::base::DataMatrix& decompMatrix,
+                                        const sgpp::base::DataVector& b,
+                                        sgpp::base::DataVector& y) const {
+  size_t size = decompMatrix.getNcols();
+
+  for (size_t i = 0; i < size; i++) {
+    y[i] = b[i];
+    for (size_t j = 0; j < i; j++) {
+      y[i] -= decompMatrix.get(i, j) * y[j];
+    }
+    y[i] /= decompMatrix.get(i, i);
+  }
 }
 
 }  // namespace datadriven
