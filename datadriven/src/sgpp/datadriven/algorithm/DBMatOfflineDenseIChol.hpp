@@ -44,6 +44,11 @@ class DBMatOfflineDenseIChol : public DBMatOfflineChol {
    */
   void choleskyModification(size_t newPoints, std::list<size_t> deletedPoints,
                             double lambda) override;
+
+ protected:
+  void updateDecompRefine(size_t oldSize);
+
+  void ichol(const DataMatrix& matrix, DataMatrix& result, size_t sweeps = 5, size_t startRow = 0);
 };
 
 } /* namespace datadriven */

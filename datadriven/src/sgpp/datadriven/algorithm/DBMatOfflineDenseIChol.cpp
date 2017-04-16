@@ -36,7 +36,7 @@ void DBMatOfflineDenseIChol::decomposeMatrix() {
       return;
     } else {
       DataMatrix matrix(lhsMatrix);
-      IChol::decompose(matrix, lhsMatrix, 4);
+      ichol(matrix, lhsMatrix, 4);
     }
     isDecomposed = true;
   } else {
@@ -51,10 +51,12 @@ void DBMatOfflineDenseIChol::choleskyModification(size_t newPoints, std::list<si
     size_t gridSize = grid->getStorage().getSize();
     size_t gridDim = grid->getStorage().getDimension();
 
-    // DataMatrix to collect vectors to append
-    DataMatrix mat_refine(newPoints, gridSize);
+    lhsMatrix.resizeQuadratic(gridSize);
 
-    printf("mat size will be %d, %d\n", newPoints, gridSize);
+    // DataMatrix to collect vectors to append
+    // DataMatrix mat_refine(newPoints, gridSize);
+
+    // printf("mat size will be %d, %d\n", newPoints, gridSize);
 
     DataMatrix level(gridSize, gridDim);
     DataMatrix index(gridSize, gridDim);
@@ -111,16 +113,69 @@ void DBMatOfflineDenseIChol::choleskyModification(size_t newPoints, std::list<si
 
         // add current lambda to lower diagonal elements of mat_refine
         if (i == j) {
-          mat_refine.set(j - gridSize + newPoints, i, res + lambda_conf);
+          lhsMatrix.set(j, i, res + lambda_conf);
+          // mat_refine.set(j - gridSize + newPoints, i, res + lambda_conf);
         } else {
-          mat_refine.set(j - gridSize + newPoints, i, res);
+          lhsMatrix.set(j, i, res);
+          // mat_refine.set(j - gridSize + newPoints, i, res);
         }
+      }
+      // TODO(lettrich) : remove after done - only for "cosmetic purposes"
+      for (size_t i = j + 1; i < gridSize; i++) {
+        lhsMatrix.set(j, i, 0.0);
       }
     }
 
-    std::cout << "mat_refine:\n" << mat_refine.toString() << "\n\n";
+    // std::cout << "system matrix:\n" << lhsMatrix.toString() << "\n\n";
+    updateDecompRefine(gridSize - newPoints);
+    // throw sgpp::base::algorithm_exception{"stop!"};
   }
+}
+
+void sgpp::datadriven::DBMatOfflineDenseIChol::updateDecompRefine(size_t oldSize) {
+  DataMatrix matrix(lhsMatrix);
+  ichol(matrix, lhsMatrix, 4, oldSize);
 }
 
 } /* namespace datadriven */
 } /* namespace sgpp */
+
+void sgpp::datadriven::DBMatOfflineDenseIChol::ichol(const DataMatrix& matrix, DataMatrix& result,
+                                                     size_t sweeps, size_t startRow) {
+  if (startRow > matrix.getSize()) {
+    throw algorithm_exception{"Start row is larger then the matrix size"};
+  }
+
+  std::cout << "calling update from " << startRow << "\n";
+
+  // for all sweeps
+  for (auto sweep = 0u; sweep < sweeps; sweep++) {
+// for each row
+#pragma omp parallel
+    { /* omp parallel */
+#pragma omp for
+      for (auto i = startRow; i < result.getNrows(); i++) {
+        // in each column until diagonal element
+        for (auto j = 0u; j < i; j++) {
+          // calculate sum;
+          auto s = matrix.get(i, j);
+          if (s > 0.0) {
+#pragma omp simd
+            for (auto k = 0u; k < j; k++) {
+              s -= result.get(i, k) * result.get(j, k);
+            }
+            result.set(i, j, s / result.get(j, j));
+          }
+        }
+        // do the diagonal element:
+        // calculate sum;
+        auto s = matrix.get(i, i);
+#pragma omp simd
+        for (auto k = 0u; k < i; k++) {
+          s -= result.get(i, k) * result.get(i, k);
+        }
+        result.set(i, i, sqrt(s));
+      }
+    } /* omp parallel */
+  }
+}
