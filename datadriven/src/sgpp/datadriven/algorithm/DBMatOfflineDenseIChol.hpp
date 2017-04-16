@@ -34,6 +34,16 @@ class DBMatOfflineDenseIChol : public DBMatOfflineChol {
    * The number of rows of the stored result depends on the decomposition type.
    */
   void decomposeMatrix() override;
+
+  /**
+   * Updates offline cholesky factorization based on coarsed (deletedPoints)
+   * and refined (newPoints) gridPoints
+   *
+   * @param deletedPoints list of indices of last coarsed points
+   * @param newPoints amount of refined points
+   */
+  void choleskyModification(size_t newPoints, std::list<size_t> deletedPoints,
+                            double lambda) override;
 };
 
 } /* namespace datadriven */

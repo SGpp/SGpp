@@ -204,6 +204,8 @@ void DBMatOfflineChol::choleskyModification(size_t newPoints, std::list<size_t> 
       }
     }
 
+    std::cout << "mat_refine:\n" << mat_refine.toString() << "\n\n";
+
     // Resize Cholesky factor to new 'gridSize' before 'choleskyAddPoint' is
     // applied
     // in order to save runtime
