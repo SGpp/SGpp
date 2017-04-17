@@ -22,7 +22,7 @@ using sgpp::base::DataMatrix;
 
 class DBMatDMSDenseIChol : public DBMatDMSChol {
  public:
-  DBMatDMSDenseIChol(Grid* grid, double lambda, bool doCV);
+  DBMatDMSDenseIChol(Grid& grid, double lambda, bool doCV);
 
  protected:
   void choleskyUpdateLambda(sgpp::base::DataMatrix& decompMatrix, double lambdaUp) const override;
@@ -30,7 +30,6 @@ class DBMatDMSDenseIChol : public DBMatDMSChol {
  private:
   void updateProxyMatrixLambda(double lambda_up) const;
 
-  Grid* grid;
   mutable DataMatrix proxyMatrix;
 };
 
