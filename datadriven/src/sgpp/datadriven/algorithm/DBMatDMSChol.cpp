@@ -245,7 +245,7 @@ void DBMatDMSChol::choleskyUpdateLambda(sgpp::base::DataMatrix& decompMatrix,
   }
 }
 
-void DBMatDMSChol::choleskyBackwardSolve(const sgpp::base::DataMatrix& decompMatrix,
+void DBMatDMSChol::choleskyBackwardSolve(sgpp::base::DataMatrix& decompMatrix,
                                          const sgpp::base::DataVector& y,
                                          sgpp::base::DataVector& alpha) const {
   size_t size = decompMatrix.getNcols();

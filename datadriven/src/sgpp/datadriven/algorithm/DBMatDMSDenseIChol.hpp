@@ -27,6 +27,13 @@ class DBMatDMSDenseIChol : public DBMatDMSChol {
  protected:
   void choleskyUpdateLambda(sgpp::base::DataMatrix& decompMatrix, double lambdaUp) const override;
 
+  void choleskyBackwardSolve(sgpp::base::DataMatrix& decompMatrix, const sgpp::base::DataVector& y,
+                             sgpp::base::DataVector& alpha) const override;
+
+  void choleskyForwardSolve(const sgpp::base::DataMatrix& decompMatrix,
+                            const sgpp::base::DataVector& b,
+                            sgpp::base::DataVector& y) const override;
+
  private:
   void updateProxyMatrixLambda(double lambda_up) const;
 
