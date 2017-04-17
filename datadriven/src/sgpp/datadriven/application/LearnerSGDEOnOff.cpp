@@ -317,32 +317,30 @@ double LearnerSGDEOnOff::getAccuracy() const {
 }
 
 void LearnerSGDEOnOff::predict(DataMatrix& data, DataVector& result) const {
-  // DataVector result(data.getNrows());
+  // calculate per class densities
+  std::vector<DataVector> perClassDensities;
+  for (auto& densityFunction : densityFunctions) {
+    perClassDensities.emplace_back(data.getNrows());
+    densityFunction.first->eval(data, perClassDensities.back(), true);
+    perClassDensities.back().mult(prior.at(densityFunction.second));
+  }
 
-  /*if(not trained) {
-    std::cerr << "LearnerSGDEOnOff: Not trained!\n";
-    exit(-1);
-  }*/
-
-  for (size_t i = 0; i < data.getNrows(); i++) {
-    double max = std::numeric_limits<double>::max() * (-1);
-    double max_class = 0;
-    // compute the maximum density:
-    DataVector p(data.getNcols());
-    data.getRow(i, p);
-    for (size_t j = 0; j < densityFunctions.size(); j++) {
-      auto& pair = densityFunctions[j];
-      // double density = pair.first->eval(p)*this->prior[pair.second];
-      double density = pair.first->eval(p, true) * prior.at(pair.second);
-      if (density > max) {
-        max = density;
-        max_class = pair.second;
+// now select the appropriate class
+#pragma omp parallel for
+  for (auto point = 0u; point < data.getNrows(); point++) {
+    auto bestClass = 0.0;
+    auto maxDensity = std::numeric_limits<double>::max() * (-1);
+    for (auto classNum = 0u; classNum < numClasses; classNum++) {
+      auto density = perClassDensities[classNum][point];
+      if (density > maxDensity) {
+        maxDensity = density;
+        bestClass = densityFunctions[classNum].second;
       }
     }
-    if (max_class == 0) {
+    if (bestClass == 0) {
       std::cerr << "LearnerSGDEOnOff: Warning: no best class found!\n";
     }
-    result[i] = max_class;
+    result[point] = bestClass;
   }
 }
 

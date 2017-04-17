@@ -171,6 +171,17 @@ double DBMatOnlineDE::eval(const DataVector& p, bool force) {
   }
 }
 
+void DBMatOnlineDE::eval(DataMatrix& values, DataVector& results, bool force) {
+  if (functionComputed || force == true) {
+    std::unique_ptr<base::OperationMultipleEval> opEval(
+        sgpp::op_factory::createOperationMultipleEval(offlineObject.getGrid(), values));
+    opEval->eval(alpha, results);
+    results.mult(normFactor);
+  } else {
+    throw sgpp::base::data_exception("Density function not computed, yet!");
+  }
+}
+
 DataVector* DBMatOnlineDE::getAlpha() { return &alpha; }
 
 void DBMatOnlineDE::updateAlpha(std::list<size_t>* deletedPoints, size_t newPoints) {
