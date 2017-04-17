@@ -11,39 +11,49 @@
 
 #include <sgpp/datadriven/algorithm/DBMatDMSDenseIChol.hpp>
 
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/operation/hash/OperationMatrix.hpp>
+#include <sgpp/datadriven/algorithm/IChol.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
+
 namespace sgpp {
 namespace datadriven {
 using sgpp::base::DataMatrix;
+using sgpp::base::Grid;
+using sgpp::base::OperationMatrix;
 
-// void sgpp::datadriven::DBMatDMSDenseIChol::choleskyUpdateLambda(
-//    sgpp::base::DataMatrix& decompMatrix, double lambda_up) const {
-//#pragma omp parallel
-//#pragma omp single
-//
-//  DataMatrix systemMatrix{decompMatrix.getNrows(), decompMatrix.getNcols()};
-//
-//  { /*omp parallel region begin */
-//// we need the full matrix again
-//#pragma omp task
-//    { /* omp task begin */
-//
-//    } /* omp task end */
-//
-//// meanwhile we can update the system matrix
-//#pragma omp task
-//    { /* omp task begin */
-//#pragma omp simd
-//      for (size_t i = 0; i < decompMatrix.getNrows(); i++) {
-//        const auto val = decompMatrix.get(i, i);
-//        decompMatrix.set(i, i, val + lambda_up);
-//      }
-//    } /* omp task end */
-//  }   /*omp parallel region end */
-//
-//  // and run the decomposition again. Since out guess should be closer, we should converge much
-//  // faster.
-//  IChol::decompose(decompMatrix, decompMatrix, 2);
-//}
+DBMatDMSDenseIChol::DBMatDMSDenseIChol(Grid* const grid, double lambda, bool doCV)
+    : DBMatDMSChol{}, grid{grid}, proxyMatrix{} {
+  if (!this->grid) {
+    throw base::application_exception{"DBMatDMSDenseIChol constructed with empty grid."};
+  } else {
+    // initialize proxy matrix if we do cv
+    if (doCV) {
+      auto size = grid->getStorage().getSize();
+      proxyMatrix.resizeQuadratic(size);
+      std::unique_ptr<OperationMatrix> op(
+          sgpp::op_factory::createOperationLTwoDotExplicit(&proxyMatrix, *grid));
+
+      // set regularization parameter
+      updateProxyMatrixLambda(lambda);
+    }
+  }
+}
+
+void DBMatDMSDenseIChol::choleskyUpdateLambda(sgpp::base::DataMatrix& decompMatrix,
+                                              double lambdaUpdate) const {
+  updateProxyMatrixLambda(lambdaUpdate);
+  IChol::decompose(proxyMatrix, decompMatrix, 2);
+}
+
+void DBMatDMSDenseIChol::updateProxyMatrixLambda(double lambdaUpdate) const {
+  auto size = grid->getStorage().getSize();
+#pragma omp simd
+  for (auto i = 0u; i < size; i++) {
+    auto value = proxyMatrix.get(i, i) + lambdaUpdate;
+    proxyMatrix.set(i, i, value);
+  }
+}
 
 } /* namespace datadriven */
 } /* namespace sgpp */

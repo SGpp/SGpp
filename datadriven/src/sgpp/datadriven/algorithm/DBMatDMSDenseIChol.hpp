@@ -10,15 +10,28 @@
  */
 
 #pragma once
-
 #include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
+
+#include <sgpp/base/grid/Grid.hpp>
 
 namespace sgpp {
 namespace datadriven {
 
+using sgpp::base::Grid;
+using sgpp::base::DataMatrix;
+
 class DBMatDMSDenseIChol : public DBMatDMSChol {
-  //  void choleskyUpdateLambda(sgpp::base::DataMatrix& decompMatrix, double lambda_up) const
-  //  override;
+ public:
+  DBMatDMSDenseIChol(Grid* grid, double lambda, bool doCV);
+
+ protected:
+  void choleskyUpdateLambda(sgpp::base::DataMatrix& decompMatrix, double lambdaUp) const override;
+
+ private:
+  void updateProxyMatrixLambda(double lambda_up) const;
+
+  Grid* grid;
+  mutable DataMatrix proxyMatrix;
 };
 
 } /* namespace datadriven */
