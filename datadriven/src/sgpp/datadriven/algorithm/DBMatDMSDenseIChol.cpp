@@ -22,21 +22,17 @@ using sgpp::base::DataMatrix;
 using sgpp::base::Grid;
 using sgpp::base::OperationMatrix;
 
-DBMatDMSDenseIChol::DBMatDMSDenseIChol(Grid* const grid, double lambda, bool doCV)
-    : DBMatDMSChol{}, grid{grid}, proxyMatrix{} {
-  if (!this->grid) {
-    throw base::application_exception{"DBMatDMSDenseIChol constructed with empty grid."};
-  } else {
-    // initialize proxy matrix if we do cv
-    if (doCV) {
-      auto size = grid->getStorage().getSize();
-      proxyMatrix.resizeQuadratic(size);
-      std::unique_ptr<OperationMatrix> op(
-          sgpp::op_factory::createOperationLTwoDotExplicit(&proxyMatrix, *grid));
+DBMatDMSDenseIChol::DBMatDMSDenseIChol(Grid& grid, double lambda, bool doCV)
+    : DBMatDMSChol{}, proxyMatrix{} {
+  // initialize proxy matrix if we do cv
+  if (doCV) {
+    auto size = grid.getStorage().getSize();
+    proxyMatrix.resizeQuadratic(size);
+    std::unique_ptr<OperationMatrix> op(
+        sgpp::op_factory::createOperationLTwoDotExplicit(&proxyMatrix, grid));
 
-      // set regularization parameter
-      updateProxyMatrixLambda(lambda);
-    }
+    // set regularization parameter
+    updateProxyMatrixLambda(lambda);
   }
 }
 
@@ -47,7 +43,7 @@ void DBMatDMSDenseIChol::choleskyUpdateLambda(sgpp::base::DataMatrix& decompMatr
 }
 
 void DBMatDMSDenseIChol::updateProxyMatrixLambda(double lambdaUpdate) const {
-  auto size = grid->getStorage().getSize();
+  auto size = proxyMatrix.getNrows();
 #pragma omp simd
   for (auto i = 0u; i < size; i++) {
     auto value = proxyMatrix.get(i, i) + lambdaUpdate;

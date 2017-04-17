@@ -65,7 +65,7 @@ DBMatDMSChol* DBMatOnlineDEChol::buildCholSolver(DBMatOffline& offlineObject, bo
       break;
     case (DBMatDecompostionType::DenseIchol):
 
-      return new DBMatDMSDenseIChol(&offlineObject.getGrid(), offlineObject.getConfig().lambda_,
+      return new DBMatDMSDenseIChol(offlineObject.getGrid(), offlineObject.getConfig().lambda_,
                                     doCV);
       break;
     case (DBMatDecompostionType::LU):
