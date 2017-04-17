@@ -56,6 +56,15 @@ class DBMatOnlineDE : public DBMatOnline {
   double eval(const DataVector& p, bool force = false);
 
   /**
+   * Evaluates the density function at a certain point
+   *
+   * @param p the point at which the function is evaluated
+   * @param force if set, it will even try to evaluate if the internal state
+   * recommends otherwise
+   */
+  void eval(DataMatrix& values, DataVector& results, bool force = false);
+
+  /**
    * Return a reference to alpha
    */
   DataVector* getAlpha();
