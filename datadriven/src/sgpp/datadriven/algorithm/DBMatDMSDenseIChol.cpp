@@ -51,12 +51,13 @@ void DBMatDMSDenseIChol::choleskyBackwardSolve(sgpp::base::DataMatrix& decompMat
   }
 
   auto size = alpha.getSize();
-#pragma omp parallel for schedule(guided)
-  for (auto i = 0u; i < size; i++) {
-    for (auto j = 0u; j < i; j++) {
-      decompMatrix.set(j, i, decompMatrix.get(i, j));
-    }
-  }
+  // transposing seems to be too costy
+  //#pragma omp parallel for schedule(guided)
+  //  for (auto i = 0u; i < size; i++) {
+  //    for (auto j = 0u; j < i; j++) {
+  //      decompMatrix.set(j, i, decompMatrix.get(i, j));
+  //    }
+  //  }
 
   size_t sweeps = 2;
 
@@ -64,9 +65,11 @@ void DBMatDMSDenseIChol::choleskyBackwardSolve(sgpp::base::DataMatrix& decompMat
 #pragma omp parallel for schedule(guided)
     for (auto i = 0u; i < size; i++) {
       auto tmp = 0.0;
-#pragma omp simd
+      // TODO(lettrich) : find a smarter way
+      //#pragma omp simd
       for (auto j = i + 1; j < size; j++) {
-        tmp += decompMatrix.get(i, j) * alpha.get(j);
+        //        tmp += decompMatrix.get(i, j) * alpha.get(j);
+        tmp += decompMatrix.get(j, i) * alpha.get(j);
       }
       alpha.set(i, 1.0 / decompMatrix.get(i, i) * (y.get(i) - tmp));
     }
