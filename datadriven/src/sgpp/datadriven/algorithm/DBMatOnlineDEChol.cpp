@@ -12,6 +12,8 @@
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEChol.hpp>
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/algorithm/DBMatDMSDenseIChol.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -23,7 +25,7 @@ void DBMatOnlineDEChol::solveSLE(DataVector& b, bool do_cv) {
   DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
   alpha = DataVector(lhsMatrix.getNcols());
 
-  auto cholsolver = std::unique_ptr<DBMatDMSChol>{buildCholSolver(offlineObject)};
+  auto cholsolver = std::unique_ptr<DBMatDMSChol>{buildCholSolver(offlineObject, do_cv)};
 
   double old_lambda = lambda;
   // Perform cross-validation based on rank one up- and downdates
@@ -54,16 +56,17 @@ void DBMatOnlineDEChol::solveSLE(DataVector& b, bool do_cv) {
   cholsolver->solve(lhsMatrix, alpha, b, old_lambda, lambda);
 }
 
-DBMatDMSChol* DBMatOnlineDEChol::buildCholSolver(const DBMatOffline& offlineObject) const {
+DBMatDMSChol* DBMatOnlineDEChol::buildCholSolver(DBMatOffline& offlineObject, bool doCV) const {
   // const cast is OK here, since we access the config read only.
-  switch (const_cast<DBMatOffline&>(offlineObject).getConfig().decomp_type_) {
+  switch (offlineObject.getConfig().decomp_type_) {
     case (DBMatDecompostionType::Chol):
     case (DBMatDecompostionType::IChol):
       return new DBMatDMSChol();
       break;
     case (DBMatDecompostionType::DenseIchol):
 
-      return new DBMatDMSChol();  // std::make_unique<DBMatDMSDenseIChol>(offlineObject);
+      return new DBMatDMSDenseIChol(&offlineObject.getGrid(), offlineObject.getConfig().lambda_,
+                                    doCV);
       break;
     case (DBMatDecompostionType::LU):
     case (DBMatDecompostionType::Eigen):
