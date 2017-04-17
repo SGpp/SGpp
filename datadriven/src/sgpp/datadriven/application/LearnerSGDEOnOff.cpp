@@ -446,13 +446,11 @@ void LearnerSGDEOnOff::storeResults() {
   }
 }
 
-DataVector LearnerSGDEOnOff::getDensities(DataVector& point) const {
-  DataVector result(densityFunctions.size());
+void LearnerSGDEOnOff::getDensities(DataVector& point, DataVector& density) const {
   for (size_t i = 0; i < densityFunctions.size(); i++) {
     auto& pair = densityFunctions[i];
-    result[i] = pair.first->eval(point);
+    density[i] = pair.first->eval(point);
   }
-  return result;
 }
 
 void LearnerSGDEOnOff::setCrossValidationParameters(int lambdaStep, double lambdaStart,
