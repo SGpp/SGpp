@@ -162,7 +162,7 @@ class LearnerSGDEOnOff {
    * @param point The point for which the density functions should be evaluated
    * @return The function evaluations
    */
-  DataVector getDensities(DataVector& point) const;
+  void getDensities(DataVector& point, DataVector& density) const;
 
   /**
    * Sets the cross-validation parameters.
