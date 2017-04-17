@@ -42,6 +42,61 @@ void DBMatDMSDenseIChol::choleskyUpdateLambda(sgpp::base::DataMatrix& decompMatr
   IChol::decompose(proxyMatrix, decompMatrix, 2);
 }
 
+void DBMatDMSDenseIChol::choleskyBackwardSolve(sgpp::base::DataMatrix& decompMatrix,
+                                               const sgpp::base::DataVector& y,
+                                               sgpp::base::DataVector& alpha) const {
+#pragma omp simd
+  for (auto i = 0u; i < alpha.getSize(); i++) {
+    alpha.set(i, 0.0);
+  }
+
+  auto size = alpha.getSize();
+#pragma omp parallel for schedule(guided)
+  for (auto i = 0u; i < size; i++) {
+    for (auto j = 0u; j < i; j++) {
+      decompMatrix.set(j, i, decompMatrix.get(i, j));
+    }
+  }
+
+  size_t sweeps = 2;
+
+  for (auto sweep = 0u; sweep < sweeps; sweep++) {
+#pragma omp parallel for schedule(guided)
+    for (auto i = 0u; i < size; i++) {
+      auto tmp = 0.0;
+#pragma omp simd
+      for (auto j = i + 1; j < size; j++) {
+        tmp += decompMatrix.get(i, j) * alpha.get(j);
+      }
+      alpha.set(i, 1.0 / decompMatrix.get(i, i) * (y.get(i) - tmp));
+    }
+  }
+}
+
+void DBMatDMSDenseIChol::choleskyForwardSolve(const sgpp::base::DataMatrix& decompMatrix,
+                                              const sgpp::base::DataVector& b,
+                                              sgpp::base::DataVector& y) const {
+#pragma omp simd
+  for (auto i = 0u; i < y.getSize(); i++) {
+    y.set(i, 0.0);
+  }
+
+  auto size = y.getSize();
+  size_t sweeps = 2;
+
+  for (auto sweep = 0u; sweep < sweeps; sweep++) {
+#pragma omp parallel for schedule(guided)
+    for (auto i = 0u; i < size; i++) {
+      auto tmp = 0.0;
+#pragma omp simd
+      for (auto j = 0u; j < i; j++) {
+        tmp += decompMatrix.get(i, j) * y.get(j);
+      }
+      y.set(i, 1.0 / decompMatrix.get(i, i) * (b.get(i) - tmp));
+    }
+  }
+}
+
 void DBMatDMSDenseIChol::updateProxyMatrixLambda(double lambdaUpdate) const {
   auto size = proxyMatrix.getNrows();
 #pragma omp simd

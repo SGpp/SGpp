@@ -14,7 +14,6 @@
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
-#include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
