@@ -294,7 +294,8 @@ void LearnerSGDEOnOff::train(std::vector<std::pair<DataMatrix*, double>>& trainD
 }
 
 double LearnerSGDEOnOff::getAccuracy() const {
-  DataVector computedLabels = predict(testData.getData());
+  DataVector computedLabels{testData.getNumberInstances()};
+  predict(testData.getData(), computedLabels);
   size_t correct = 0;
   size_t correctLabel1 = 0;
   size_t correctLabel2 = 0;
@@ -315,8 +316,8 @@ double LearnerSGDEOnOff::getAccuracy() const {
   return acc;
 }
 
-DataVector LearnerSGDEOnOff::predict(DataMatrix& data) const {
-  DataVector result(data.getNrows());
+void LearnerSGDEOnOff::predict(DataMatrix& data, DataVector& result) const {
+  // DataVector result(data.getNrows());
 
   /*if(not trained) {
     std::cerr << "LearnerSGDEOnOff: Not trained!\n";
@@ -343,20 +344,21 @@ DataVector LearnerSGDEOnOff::predict(DataMatrix& data) const {
     }
     result[i] = max_class;
   }
-  return result;
 }
 
 int LearnerSGDEOnOff::predict(DataVector& p) const {
   DataMatrix ptmp(1, p.getSize());
   ptmp.setRow(0, p);
-  DataVector r = this->predict(ptmp);
+  DataVector r{ptmp.getNrows()};
+  this->predict(ptmp, r);
   return static_cast<int>(r[0]);
 }
 
 double LearnerSGDEOnOff::getError(Dataset& dataset) const {
   double res = -1.0;
 
-  DataVector computedLabels = predict(dataset.getData());
+  DataVector computedLabels{dataset.getNumberInstances()};
+  predict(dataset.getData(), computedLabels);
   size_t correct = 0;
   for (size_t i = 0; i < computedLabels.getSize(); i++) {
     if (computedLabels.get(i) == dataset.getTargets().get(i)) {
@@ -371,7 +373,8 @@ double LearnerSGDEOnOff::getError(Dataset& dataset) const {
 }
 
 void LearnerSGDEOnOff::storeResults() {
-  DataVector classesComputed = predict(testData.getData());
+  DataVector classesComputed{testData.getNumberInstances()};
+  predict(testData.getData(), classesComputed);
 
   std::ofstream output;
   // write predicted classes to csv file
