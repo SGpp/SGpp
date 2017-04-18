@@ -33,20 +33,20 @@ class DataVector : public std::vector<double> {
    */
   DataVector(const DataVector&) = default;
 
-  /**
-   * Move constructor
-   */
-  DataVector(DataVector&&) = default;
+  // /**
+  //  * Move constructor
+  //  */
+  // DataVector(DataVector&&) = default;
 
   /**
    * Copy assignment operator
    */
   DataVector& operator=(const DataVector&) = default;
 
-  /**
-   * Move assignment operator
-   */
-  DataVector& operator=(DataVector&&) = default;
+  // /**
+  //  * Move assignment operator
+  //  */
+  // DataVector& operator=(DataVector&&) = default;
 
   /**
    * Destructor
@@ -128,7 +128,6 @@ class DataVector : public std::vector<double> {
    */
   size_t append(double value);
 
-  using std::vector<double>::insert;
   /**
    * Inserts a new element at the given index.
    *
@@ -387,6 +386,7 @@ class DataVector : public std::vector<double> {
   void toFile(const std::string& fileName) const;
 
  private:
+  using std::vector<double>::insert;
   /// Corrections for Kahan's summation in accumulate()
   std::vector<double> correction;
 };
