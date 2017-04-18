@@ -426,6 +426,14 @@ class KernelDensityMult {
                                      ? deviceNode["KERNELS"][kernelName]
                                      : deviceNode["KERNELS"].addDictAttr(kernelName);
 
+        if (kernelNode.contains("REUSE_SOURCE") == false) {
+          kernelNode.addIDAttr("REUSE_SOURCE", false);
+        }
+
+        if (kernelNode.contains("WRITE_SOURCE") == false) {
+          kernelNode.addIDAttr("WRITE_SOURCE", false);
+        }
+
         if (kernelNode.contains("VERBOSE") == false) {
           kernelNode.addIDAttr("VERBOSE", false);
         }
