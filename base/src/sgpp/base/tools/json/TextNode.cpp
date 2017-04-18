@@ -47,45 +47,75 @@ void TextNode::setupInternalType() {
   }
 
   // try validating as unsigned integer
-  try {
-    std::string::size_type size;
-    uint64_t asUnsigned = stoull(this->value, &size);
+  // try {
+  //   std::string::size_type size;
+  //   uint64_t asUnsigned = stoull(this->value, &size);
 
-    if (this->value.size() == size) {
-      this->isUnsigned = true;
-      this->unsignedValue = asUnsigned;
-      //            this->internalType = InternalIDType::UINT;
-      //      return;
-    }
-  } catch (std::invalid_argument& e) {
+  //   if (this->value.size() == size) {
+  //     this->isUnsigned = true;
+  //     this->unsignedValue = asUnsigned;
+  //     //            this->internalType = InternalIDType::UINT;
+  //     //      return;
+  //   }
+  // } catch (std::invalid_argument& e) {
+  // }
+  {
+      std::stringstream conv_stream;
+      conv_stream << this->value;
+      uint64_t r;
+      conv_stream >> r;
+      if (conv_stream.fail()) {
+          this->isUnsigned = true;
+          this->unsignedValue = r;
+      }
   }
 
   // try validating as signed integer
-  try {
-    std::string::size_type size;
-    int64_t asSigned = stoll(this->value, &size);
+  // try {
+  //   std::string::size_type size;
+  //   int64_t asSigned = stoll(this->value, &size);
 
-    if (this->value.size() == size) {
-      this->isSigned = true;
-      this->signedValue = asSigned;
-      //            this->internalType = InternalIDType::INT;
-      //      return;
-    }
-  } catch (std::invalid_argument& e) {
+  //   if (this->value.size() == size) {
+  //     this->isSigned = true;
+  //     this->signedValue = asSigned;
+  //     //            this->internalType = InternalIDType::INT;
+  //     //      return;
+  //   }
+  // } catch (std::invalid_argument& e) {
+  // }
+  {
+      std::stringstream conv_stream;
+      conv_stream << this->value;
+      int64_t r;
+      conv_stream >> r;
+      if (conv_stream.fail()) {
+          this->isSigned = true;
+          this->signedValue = r;
+      }
   }
 
   // try validating as double
-  try {
-    std::string::size_type size;
-    double asDouble = stod(this->value, &size);
+  // try {
+  //   std::string::size_type size;
+  //   double asDouble = stod(this->value, &size);
 
-    if (this->value.size() == size) {
-      this->isDouble = true;
-      this->doubleValue = asDouble;
-      //            this->internalType = InternalIDType::DOUBLE;
-      //      return;
-    }
-  } catch (std::invalid_argument& e) {
+  //   if (this->value.size() == size) {
+  //     this->isDouble = true;
+  //     this->doubleValue = asDouble;
+  //     //            this->internalType = InternalIDType::DOUBLE;
+  //     //      return;
+  //   }
+  // } catch (std::invalid_argument& e) {
+  // }
+  {
+      std::stringstream conv_stream;
+      conv_stream << this->value;
+      double r;
+      conv_stream >> r;
+      if (conv_stream.fail()) {
+          this->isDouble = true;
+          this->doubleValue = r;
+      }
   }
 }
 
