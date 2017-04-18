@@ -8,9 +8,9 @@
 
 #include <limits>
 #include <map>
+#include <string>
 #include <utility>
 #include <vector>
-#include <string>
 
 namespace sgpp {
 namespace datadriven {

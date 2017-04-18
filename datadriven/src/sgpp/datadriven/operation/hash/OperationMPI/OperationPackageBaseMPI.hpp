@@ -12,10 +12,10 @@
 #include <sgpp/datadriven/operation/hash/OperationMPI/MPIEnviroment.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMPI/OperationMPI.hpp>
 
+#include <algorithm>
 #include <exception>
 #include <sstream>
 #include <string>
-#include <algorithm>
 
 namespace sgpp {
 namespace datadriven {
@@ -24,28 +24,26 @@ namespace clusteringmpi {
 template <class T>
 class MPIWorkerPackageBase : virtual public MPIWorkerBase {
  protected:
-  int packagesize_multiplier;
-  MPI_Datatype mpi_typ;
   bool opencl_node;
+  int packagesize_multiplier;
   bool overseer_node;
-
   MPI_Comm &master_worker_comm;
   MPI_Comm &sub_worker_comm;
   bool prefetching;
   bool redistribute;
-  int secondary_workpackage[2];
-  int size;
-
-  int opencl_platform = 0;
-  int opencl_device = 0;
-
   base::OCLOperationConfiguration *parameters;
+
+  MPI_Datatype mpi_typ;
+  int secondary_workpackage[2];
+  size_t size;
+  size_t opencl_platform = 0;
+  size_t opencl_device = 0;
 
   void divide_workpackages(int *package, T *erg) {
     // Divide into more work packages
-    int packagesize = size;
+    size_t packagesize = size;
     if (redistribute) {
-      int logical_package_count =
+      size_t logical_package_count =
           (package[1] / (packagesize * MPIEnviroment::get_sub_worker_count()));
       if (logical_package_count < 1) logical_package_count = 1;
       packagesize += (package[1] % (packagesize * MPIEnviroment::get_sub_worker_count())) /

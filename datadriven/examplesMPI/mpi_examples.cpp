@@ -45,8 +45,8 @@ int main(int argc, char *argv[]) {
   std::cout << "Loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset data = sgpp::datadriven::ARFFTools::readARFF(filename);
   sgpp::base::DataMatrix &dataset = data.getData();
-  int dim = data.getDimension();
-  int level = std::stoi(argv[3]);
+  size_t dim = data.getDimension();
+  size_t level = std::stoi(argv[3]);
 
   sgpp::base::OperationConfiguration network_conf(argv[1]);
   sgpp::datadriven::clusteringmpi::MPIEnviroment::connect_nodes(network_conf);
