@@ -113,6 +113,9 @@ def convertExampleSourceToDoxy(sourcePath):
   doxy += "*/\n"
   doxyPath = "{}/doc/doxygen/{}.doxy".format(moduleName, pageName)
 
+  # create path if not there
+  if not os.path.exists(os.path.dirname(doxyPath)):
+    os.makedirs(os.path.dirname(doxyPath))  
   # write *.doxy file
   with open(doxyPath, "w") as f: f.write(doxy)
   return {"pageName" : pageName, "language" : sourceFileType, "moduleName" : moduleName}

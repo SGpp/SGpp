@@ -29,7 +29,7 @@ we list here the most important changes:
 - Major redesign of SCons scripts, change of SCons parameters, better diagnostic output
 - Add support for Clang 3.8
 - Overall improvement of the code quality due to fixed Clang warnings
-- Removal of single precision support and of float_t
+- Removal of single precision support and of double
 - Removal of MSVC++ support
 - More unit tests
 - Small changes and bug fixes in code and documentation
