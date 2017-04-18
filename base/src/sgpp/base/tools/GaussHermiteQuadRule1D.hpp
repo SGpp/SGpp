@@ -17,6 +17,9 @@ class GaussHermiteQuadRule1D : public QuadRule1D {
   GaussHermiteQuadRule1D();
   ~GaussHermiteQuadRule1D() override;
 
+  // delete the copy constructor
+  GaussHermiteQuadRule1D(const GaussHermiteQuadRule1D& that) = delete;
+
   /**
    * load gauss quadrature points for standard normal weight function. The points
    * and the weights are generated with numpy.polynomial.hermite.hermgauss,
@@ -32,13 +35,14 @@ class GaussHermiteQuadRule1D : public QuadRule1D {
    * @param coordinates returns the x-coordinates in [-infty, infty]
    * @param weights returns the corresponding weights (scaled by sqrt(2))
    * @param mean mean of the normal distribution the coordinates should be transformed to
-   * @param stdd standard deviation of the normal distribution the coordinates should be transformed to
+   * @param stdd standard deviation of the normal distribution the coordinates should be transformed
+   * to
    */
-  void getLevelPointsAndWeightsNormalized(size_t level,
-                                          base::DataVector& coordinates,
-                                          base::DataVector& weights,
-                                          double mean = 0.0f,
+  void getLevelPointsAndWeightsNormalized(size_t level, base::DataVector& coordinates,
+                                          base::DataVector& weights, double mean = 0.0f,
                                           double stdd = 1.0f);
+
+  static GaussHermiteQuadRule1D& getInstance();
 };
 
 }  // namespace base

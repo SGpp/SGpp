@@ -101,6 +101,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     checkDoxygen(config)
     checkDot(config)
   checkOpenCL(config)
+  checkZlib(config)
   checkGSL(config)
   checkBoostTests(config)
   checkSWIG(config)
@@ -249,6 +250,16 @@ def checkGSL(config):
       Helper.printErrorAndExit("libsgl/libgslcblas not found, but required for GSL")
 
     config.env["CPPDEFINES"]["USE_GSL"] = "1"
+
+def checkZlib(config):
+#zlib needed for datamining
+    if(config.env["USE_ZLIB"]):
+        if config.env["PLATFORM"] == "win32":
+            Helper.printWarning("zlib is currently not supported on Windows. Continuing withouth zlib.")
+        else:
+            if not config.CheckLibWithHeader("z","zlib.h", language="C++",autoadd=0):
+                Helper.printErrorAndExit("The flag USE_ZLIB was set, but the necessary header 'zlib.h' or library was not found.")
+                config.env["CPPDEFINES"]["ZLIB"] = "1"
 
 def checkBoostTests(config):
   # Check the availability of the boost unit test dependencies
@@ -450,7 +461,10 @@ def configureGNUCompiler(config):
   # check if using MinGW (g++ on win32)
   if config.env["PLATFORM"] == "win32":
     # disable warnings which occur when including Boost in the tests
-    config.env.Append(CPPFLAGS=["-Wno-switch-enum", "-Wno-deprecated-declarations"])
+    # note that definition of hypot is necessary for to the current version of
+    # mingw (6.3) and the python interface (see http://stackoverflow.com/questions/10660524/error-building-boost-1-49-0-with-gcc-4-7-0)
+    # -> could be removed in the future hopefully
+    config.env.Append(CPPFLAGS=["-Wno-switch-enum", "-Wno-deprecated-declarations", "-D_hypot=hypot"])
     # also use "lib" prefix on MinGW for consistency with Linux (default is no prefix)
     config.env["SHLIBPREFIX"] = "lib"
 

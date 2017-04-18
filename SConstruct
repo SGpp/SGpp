@@ -98,6 +98,9 @@ vars.Add(BoolVariable("SG_ALL", "Default value for the other SG_* variables; " +
                                 "by setting SG_DATADRIVEN=1", True))
 vars.Add(BoolVariable("SG_PYTHON", "Build with Python support (default: value of SG_ALL)", None))
 vars.Add(BoolVariable("SG_JAVA", "Build with Java support (default: value of SG_ALL)", None))
+vars.Add("SWIGFLAGS", "Set additional swig flags, they are compiler-dependent " +
+                      "(multiple flags combined with comma, e.g. -Wall,-Wextra)", "",
+                      converter=Helper.multiParamConverter)
 
 for moduleName in moduleNames:
   vars.Add(BoolVariable(moduleName, "Build the module " + moduleName +
@@ -149,6 +152,8 @@ vars.Add(BoolVariable("USE_UMFPACK", "Set if UMFPACK should be used " +
                                      "(only relevant for sgpp::optimization)", False))
 vars.Add(BoolVariable("USE_GSL", "Set if GNU Scientific Library should be used " +
                                      "(only relevant for sgpp::datadriven::application::LearnerSGDEOnOff)", False))
+vars.Add(BoolVariable("USE_ZLIB", "Set if zlib should be used " +
+                                     "(relevant for sgpp::datadriven to read compressed dataset files), not available for windows", False))
 vars.Add(BoolVariable("BUILD_STATICLIB", "Set if static libraries should be built " +
                                          "instead of shared libraries", False))
 vars.Add(BoolVariable("PRINT_INSTRUCTIONS", "Print instructions for installing SG++", True))
@@ -201,9 +206,11 @@ env["BOOST_LIBRARY_PATH"] = env.get("BOOST_LIBRARY_PATH", "/usr/lib/x86_64-linux
                                     if env["PLATFORM"] not in ["darwin", "win32"]
                                     else "")
 
-# don't create the Doxyfile if building Doxygen:
+# only create the Doxyfile if building Doxygen:
 if ("doxygen" in BUILD_TARGETS) and (not env.GetOption("clean")):
-  DoxygenHelper.prepareDoxygen(moduleFolders)
+  Helper.printInfo("Building Doxyfile for modules: "+
+                   ', '.join([moduleFolder for moduleFolder in moduleFolders if env["SG_" + moduleFolder.upper()]]))
+  DoxygenHelper.prepareDoxygen([moduleFolder for moduleFolder in moduleFolders if env["SG_" + moduleFolder.upper()]])
 
 if "CXX" in ARGUMENTS:
   Helper.printInfo("CXX: {}".format(ARGUMENTS["CXX"]))
@@ -225,6 +232,9 @@ if "CPPPATH" in ARGUMENTS:
   env["CPPPATH"] = ARGUMENTS["CPPPATH"].split(",")
 if "LIBPATH" in ARGUMENTS:
   env["LIBPATH"] = ARGUMENTS["LIBPATH"].split(",")
+
+if "SWIGFLAGS" in ARGUMENTS:
+    env["SWIGFLAGS"] = ARGUMENTS["SWIGFLAGS"].split(",")
 
 env.Export("moduleNames")
 env.Export("moduleFolders")
