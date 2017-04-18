@@ -8,8 +8,8 @@
 #pragma once
 
 #include <iostream>
-#include <vector>
 #include <map>
+#include <vector>
 
 //////////////////////////////////////////////////////////////////////
 // Caution: Subspace-skipping is disabled by default for this kernel
@@ -18,19 +18,16 @@
 #include "omp.h"
 
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp>
-#include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/SubspaceNodeSimple.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimpleParameters.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/SubspaceNodeSimple.hpp>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace datadriven {
 
-class OperationMultipleEvalSubspaceSimple: public
-  AbstractOperationMultipleEvalSubspace {
+class OperationMultipleEvalSubspaceSimple : public AbstractOperationMultipleEvalSubspace {
  private:
-
   size_t dim = -1;
   size_t maxLevel = 0;
 
@@ -46,7 +43,7 @@ class OperationMultipleEvalSubspaceSimple: public
 
   void createFlatStorage();
 
-  void setSurplus(std::vector<size_t>&  level, std::vector<size_t>& maxIndices,
+  void setSurplus(std::vector<size_t>& level, std::vector<size_t>& maxIndices,
                   std::vector<size_t>& index, double value);
 
   void getSurplus(std::vector<size_t>& level, std::vector<size_t>& maxIndices,
@@ -57,18 +54,16 @@ class OperationMultipleEvalSubspaceSimple: public
   void unflatten(base::DataVector& result);
 
   // NOLINT
-  size_t flattenIndex(size_t dim, std::vector<size_t>& maxIndices,
-                      std::vector<size_t>& index);
+  size_t flattenIndex(size_t dim, std::vector<size_t>& maxIndices, std::vector<size_t>& index);
 
   // NOLINT
-  size_t flattenIndex(size_t* intermediates, size_t dim, size_t* maxIndicesPtr,
-                      size_t* indexPtr,
+  size_t flattenIndex(size_t* intermediates, size_t dim, size_t* maxIndicesPtr, size_t* indexPtr,
                       size_t toRecalc);
 
   size_t flattenLevel(size_t dim, size_t maxLevel, std::vector<size_t>& level);
 
   static inline size_t calculateIndexComponent(double unadjusted) {
-    //implies flooring
+    // implies flooring
     size_t rounded = static_cast<size_t>(unadjusted);
 
     size_t mask = 0x1;
@@ -79,21 +74,17 @@ class OperationMultipleEvalSubspaceSimple: public
   }
 
  public:
-
-  OperationMultipleEvalSubspaceSimple(base::Grid& grid,
-                                      base::DataMatrix& dataset);
+  OperationMultipleEvalSubspaceSimple(base::Grid& grid, base::DataMatrix& dataset);
 
   ~OperationMultipleEvalSubspaceSimple();
 
   void prepare() override;
 
-  void multTransposeImpl(sgpp::base::DataVector& alpha,
-                         sgpp::base::DataVector& result, const size_t start_index_data,
-                         const size_t end_index_data) override;
+  void multTransposeImpl(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
+                         const size_t start_index_data, const size_t end_index_data) override;
 
   void multImpl(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
-                const size_t start_index_data,
-                const size_t end_index_data) override;
+                const size_t start_index_data, const size_t end_index_data) override;
 
   size_t getAlignment() override;
 

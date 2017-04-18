@@ -106,12 +106,13 @@ class DensityWorker : public MPIWorkerGridBase, public MPIWorkerPackageBase<doub
   }
   void receive_alpha(double **alpha) {
     // Receive alpha vector
-    int gridsize = complete_gridsize / (2 * grid_dimensions);
+    size_t gridsize = complete_gridsize / (2 * grid_dimensions);
     int buffer_size = 0;
     MPI_Status stat;
     MPI_Probe(0, 1, master_worker_comm, &stat);
+
     MPI_Get_count(&stat, MPI_DOUBLE, &buffer_size);
-    if (buffer_size != gridsize) {
+    if (static_cast<size_t>(buffer_size) != gridsize) {
       std::stringstream errorString;
       errorString << "Error: Gridsize " << gridsize << " and the size of the alpha vector "
                   << buffer_size << " should match!" << std::endl;
@@ -122,8 +123,8 @@ class DensityWorker : public MPIWorkerGridBase, public MPIWorkerPackageBase<doub
       *alpha = new double[gridsize];
       oldgridsize = gridsize;
     }
-    MPI_Recv(*alpha, gridsize, MPI_DOUBLE, stat.MPI_SOURCE, stat.MPI_TAG, master_worker_comm,
-             &stat);
+    MPI_Recv(*alpha, static_cast<int>(gridsize), MPI_DOUBLE, stat.MPI_SOURCE, stat.MPI_TAG,
+             master_worker_comm, &stat);
   }
 };
 

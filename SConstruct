@@ -278,9 +278,7 @@ Export("JSGPP_BUILD_PATH")
 EXAMPLE_DIR = Dir(os.path.join("bin", "examples"))
 Export("EXAMPLE_DIR")
 
-# don't configure if we're cleaning:
-if (not env.GetOption("clean")) and (not env.GetOption("help")):
-  SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
+SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
 
 # fix for "command line too long" errors on MinGW
 # (from https://bitbucket.org/scons/scons/wiki/LongCmdLinesOnWin32)
