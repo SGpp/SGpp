@@ -159,6 +159,9 @@ class SimpleQueue {
     } else if (packagesize > workitem_count / (commsize * 2)) {
       packagesize = static_cast<int>(workitem_count / (commsize * 2));
     }
+    if (packagesize % 128 != 0)
+       packagesize -= packagesize % 128;
+
     packagecount = static_cast<unsigned int>(workitem_count / packagesize) + 1;
     startindices = new unsigned int[commsize];
     secondary_indices = new unsigned int[commsize];
