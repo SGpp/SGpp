@@ -104,7 +104,7 @@ $1 = PySequence_Check($input) ? 1 : 0;
     void resizeZero(size_t nrows);
     void transpose();
 
-    void addSize(size_t inc_nrows);
+    void reserveAdditionalRows(size_t inc_nrows);
     size_t appendRow();
     void setAll(double value);
     void copyFrom(const DataMatrix& matr);
@@ -135,12 +135,9 @@ $1 = PySequence_Check($input) ? 1 : 0;
     double sum() const;
 
     size_t getSize() const;
-    size_t getUnused() const;
     size_t getNumberNonZero() const;
     size_t getNrows() const;
     size_t getNcols() const;
-    size_t getInc() const;
-    void setInc(size_t inc_rows);
 
     void normalizeDimension(size_t d);
     void normalizeDimension(size_t d, double border);
