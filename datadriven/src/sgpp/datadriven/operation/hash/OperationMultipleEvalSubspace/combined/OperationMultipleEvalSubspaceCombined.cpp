@@ -8,8 +8,8 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <vector>
 #include <string>
+#include <vector>
 
 using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
@@ -18,6 +18,12 @@ using sgpp::base::DataVector;
 namespace sgpp {
 namespace datadriven {
 
+/**
+ * Creates a new instance of the OperationMultipleEvalSubspaceCombined class.
+ *
+ * @param grid grid to be evaluated
+ * @param dataset set of evaluation points
+ */
 OperationMultipleEvalSubspaceCombined::OperationMultipleEvalSubspaceCombined(Grid& grid,
                                                                              DataMatrix& dataset)
     : AbstractOperationMultipleEvalSubspace(grid, dataset) {
@@ -51,12 +57,19 @@ OperationMultipleEvalSubspaceCombined::OperationMultipleEvalSubspaceCombined(Gri
 #endif
 }
 
+/**
+ * Destructor
+ */
 OperationMultipleEvalSubspaceCombined::~OperationMultipleEvalSubspaceCombined() {
 #ifdef X86COMBINED_WRITE_STATS
   this->statsFile.close();
 #endif
 }
 
+/**
+ * Updates the internal data structures to reflect changes to the grid, e.g. due to refinement.
+ *
+ */
 void OperationMultipleEvalSubspaceCombined::prepare() {
   this->allLevelsIndexMap.clear();
   this->allSubspaceNodes.clear();
@@ -172,6 +185,12 @@ uint32_t OperationMultipleEvalSubspaceCombined::flattenLevel(size_t dim, size_t 
   return levelFlat;
 }
 
+/**
+ * Pads the dataset.
+ *
+ * @param dataset dataset to be padded
+ * @result padded dataset
+ */
 DataMatrix* OperationMultipleEvalSubspaceCombined::padDataset(sgpp::base::DataMatrix& dataset) {
   size_t chunkSize = X86COMBINED_PARALLEL_DATA_POINTS;
 
@@ -216,14 +235,30 @@ DataMatrix* OperationMultipleEvalSubspaceCombined::padDataset(sgpp::base::DataMa
   return paddedDataset;
 }
 
+/**
+ * Size of the dataset after padding.
+ *
+ * @result size of the padded dataset>
+ */
 size_t OperationMultipleEvalSubspaceCombined::getPaddedDatasetSize() {
   return this->paddedDataset->getNrows();
 }
 
+/**
+ * Alignment required by the vector instruction set SG++ is compiled with.
+ *
+ * @result alignment requirement
+ */
 size_t OperationMultipleEvalSubspaceCombined::getAlignment() {
   return X86COMBINED_PARALLEL_DATA_POINTS;
 }
 
+/**
+ * Name of the implementation, useful for benchmarking different implementation approaches.
+ *
+ * @result name of the implementation
+ */
 std::string OperationMultipleEvalSubspaceCombined::getImplementationName() { return "COMBINED"; }
+
 }  // namespace datadriven
 }  // namespace sgpp

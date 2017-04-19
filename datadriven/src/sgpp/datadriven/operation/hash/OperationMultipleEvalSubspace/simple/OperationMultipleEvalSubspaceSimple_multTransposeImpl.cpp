@@ -10,6 +10,16 @@
 namespace sgpp {
 namespace datadriven {
 
+/**
+ * Internal eval operator, should not be called directly.
+ *
+ * @see OperationMultipleEval
+ *
+ * @param alpha surplusses of the grid
+ * @param result will contain the evaluation results for the given range.
+ * @param start_index_data beginning of the range to evaluate
+ * @param ebd_index_data end of the range to evaluate
+ */
 void OperationMultipleEvalSubspaceSimple::multTransposeImpl(sgpp::base::DataVector& alpha,
                                                             sgpp::base::DataVector& result,
                                                             // const size_t start_index_grid,
