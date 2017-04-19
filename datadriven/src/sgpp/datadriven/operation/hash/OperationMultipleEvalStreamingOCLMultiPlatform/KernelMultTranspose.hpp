@@ -88,7 +88,7 @@ class KernelMultTranspose {
   KernelMultTranspose(std::shared_ptr<base::OCLDevice> device, size_t dims,
                       std::shared_ptr<base::OCLManagerMultiPlatform> manager,
                       json::Node &kernelConfiguration,
-                      std::shared_ptr<base::QueueLoadBalancerOpenMP> queueBalancerMultTranpose)
+                      std::shared_ptr<base::QueueLoadBalancerOpenMP> queueBalancerMultTranspose)
       : device(device),
         dims(dims),
         err(CL_SUCCESS),
@@ -102,7 +102,7 @@ class KernelMultTranspose {
         kernelSourceBuilder(device, kernelConfiguration, dims),
         manager(manager),
         kernelConfiguration(kernelConfiguration),
-        queueLoadBalancerMultTranspose(queueBalancerMultTranpose),
+        queueLoadBalancerMultTranspose(queueBalancerMultTranspose),
         buildDuration(0.0) {
     if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0 &&
         dims > kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt()) {
@@ -144,8 +144,6 @@ class KernelMultTranspose {
    * @param dataset Vector containing the d-dimensional data points
    * @param source Vector \f$v\f$
    * @param result The results vector \f$v'\f$ of the operation
-   * @param start_index_grid start of range of grid points to work on, currently not used
-   * @param end_index_grid end of range of grid points to work on, currently not used
    * @param start_index_data start of range of data points to work on, currently not used
    * @param end_index_data end of range of data points to work on, currently not used
    */
@@ -361,7 +359,6 @@ class KernelMultTranspose {
    *
    * @param level Levels vectors of the grid
    * @param index Index vectors of the grid
-   * @param alpha Surpluses of the grid
    * @param kernelStartGrid start of the range to be processed by the device
    * @param kernelEndGrid End of the range to be processed by the device
    */
@@ -390,8 +387,8 @@ class KernelMultTranspose {
    * Initializes the device buffers that contain the result of the multTranspose operation.
    * This is expensive, as it triggers host to device memory copies.
    *
-   * @param kernelStartData Start of the range to be processed by the device
-   * @param kernelEndData End of the range to be processed by the device
+   * @param kernelStartGrid Start of the range to be processed by the device
+   * @param kernelEndGrid End of the range to be processed by the device
    */
   void initGridResultBuffersTranspose(size_t kernelStartGrid, size_t kernelEndGrid) {
     size_t range = kernelEndGrid - kernelStartGrid;
