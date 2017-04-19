@@ -26,6 +26,12 @@
 namespace sgpp {
 namespace datadriven {
 
+/**
+ * Multiple evaluation operation that uses the subspace structure to save work
+ * compared to the naive or streaming variants.
+ * Verification and debugging variant, should not be used. Instead, use the
+ * @OperationMultipleEvalSubspaceCombined.
+ */
 class OperationMultipleEvalSubspaceSimple : public AbstractOperationMultipleEvalSubspace {
  private:
   size_t dim = -1;
@@ -74,20 +80,63 @@ class OperationMultipleEvalSubspaceSimple : public AbstractOperationMultipleEval
   }
 
  public:
+  /**
+   * Creates a new instance of the OperationMultipleEvalSubspaceSimple class.
+   *
+   * @param grid grid to be evaluated
+   * @param dataset set of evaluation points
+   */
   OperationMultipleEvalSubspaceSimple(base::Grid& grid, base::DataMatrix& dataset);
 
+  /**
+   * Destructor
+   */
   ~OperationMultipleEvalSubspaceSimple();
 
+  /**
+   * Updates the internal data structures to reflect changes to the grid, e.g. due to refinement.
+   *
+   */
   void prepare() override;
 
+  /**
+   * Internal eval operator, should not be called directly.
+   *
+   * @see OperationMultipleEval
+   *
+   * @param alpha surplusses of the grid
+   * @param result will contain the evaluation results for the given range.
+   * @param start_index_data beginning of the range to evaluate
+   * @param ebd_index_data end of the range to evaluate
+   */
   void multTransposeImpl(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                          const size_t start_index_data, const size_t end_index_data) override;
 
+  /**
+   * Internal mult operator, should not be called directly.
+   *
+   * @see OperationMultipleEval
+   *
+   * @param source source operand for the operator
+   * @param result stores the result
+   * @param start_index_data beginning of the range to process
+   * @param ebd_index_data end of the range to process
+   */
   void multImpl(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
                 const size_t start_index_data, const size_t end_index_data) override;
 
+  /**
+   * Alignment required by the vector instruction set SG++ is compiled with.
+   *
+   * @result alignment requirement
+   */
   size_t getAlignment() override;
 
+  /**
+   * Name of the implementation, useful for benchmarking different implementation approaches.
+   *
+   * @result name of the implementation
+   */
   std::string getImplementationName() override;
 };
 }
