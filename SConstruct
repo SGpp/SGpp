@@ -392,7 +392,7 @@ if env["RUN_PYTHON_TESTS"] and env["SG_PYTHON"]:
   env.Append(BUILDERS={"SimpleTest" : builder})
 
 if env["COMPILE_BOOST_TESTS"]:
-  builder = Builder(action="./$SOURCE")
+  builder = Builder(action="./$SOURCE --log_level=test_suite")
   env.Append(BUILDERS={"BoostTest" : builder})
 
 # Building the modules
