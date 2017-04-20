@@ -140,9 +140,9 @@ void sgpp::datadriven::DBMatOfflineDenseIChol::ichol(const DataMatrix& matrix, D
 // for each row
 #pragma omp parallel
     { /* omp parallel */
-#pragma omp for
       for (auto i = startRow; i < result.getNrows(); i++) {
-        // in each column until diagonal element
+// in each column until diagonal element
+#pragma omp for schedule(guided)
         for (auto j = 0u; j < i; j++) {
           // calculate sum;
           auto s = matrix.get(i - startRow, j);
