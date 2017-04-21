@@ -22,8 +22,9 @@ using sgpp::base::DataMatrix;
 using sgpp::base::Grid;
 using sgpp::base::OperationMatrix;
 
-DBMatDMSDenseIChol::DBMatDMSDenseIChol(Grid& grid, double lambda, bool doCV)
-    : DBMatDMSChol{}, proxyMatrix{} {
+DBMatDMSDenseIChol::DBMatDMSDenseIChol(const DBMatOfflineIcholParameters& params, Grid& grid,
+                                       double lambda, bool doCV)
+    : DBMatDMSChol{}, params{params}, proxyMatrix{} {
   // initialize proxy matrix if we do cv
   if (doCV) {
     auto size = grid.getStorage().getSize();
@@ -39,25 +40,24 @@ DBMatDMSDenseIChol::DBMatDMSDenseIChol(Grid& grid, double lambda, bool doCV)
 void DBMatDMSDenseIChol::choleskyUpdateLambda(sgpp::base::DataMatrix& decompMatrix,
                                               double lambdaUpdate) const {
   updateProxyMatrixLambda(lambdaUpdate);
-  IChol::decompose(proxyMatrix, decompMatrix, 2);
+  DBMatOfflineDenseIChol::ichol(proxyMatrix, decompMatrix, params.sweepsUpdateLambda);
 }
 
-void DBMatDMSDenseIChol::choleskyBackwardSolve(sgpp::base::DataMatrix& decompMatrix,
+void DBMatDMSDenseIChol::choleskyBackwardSolve(const sgpp::base::DataMatrix& decompMatrix,
                                                const sgpp::base::DataVector& y,
                                                sgpp::base::DataVector& alpha) const {
   DataVector tmpVec{alpha.getSize()};
   alpha.setAll(0.0);
   auto size = alpha.getSize();
-  size_t sweeps = 2;
 
 #pragma omp parallel
   {
-    for (auto sweep = 0u; sweep < sweeps; sweep++) {
+    for (auto sweep = 0u; sweep < params.sweepsSolver; sweep++) {
       tmpVec.setAll(0.0);
 #pragma omp for schedule(guided)
       for (auto i = 0u; i < size; i++) {
 #pragma omp simd
-        for (auto j = 0; j < i; j++) {
+        for (auto j = 0u; j < i; j++) {
           tmpVec[j] += decompMatrix.get(i, j) * alpha.get(i);
         }
       }
@@ -75,11 +75,10 @@ void DBMatDMSDenseIChol::choleskyForwardSolve(const sgpp::base::DataMatrix& deco
   y.setAll(0.0);
 
   auto size = y.getSize();
-  size_t sweeps = 2;
 
 #pragma omp parallel
   {
-    for (auto sweep = 0u; sweep < sweeps; sweep++) {
+    for (auto sweep = 0u; sweep < params.sweepsSolver; sweep++) {
 #pragma omp parallel for schedule(guided)
       for (auto i = 0u; i < size; i++) {
         auto tmp = 0.0;

@@ -48,7 +48,7 @@ void DBMatOfflineDenseIChol::decomposeMatrix() {
         }
       }
 
-      ichol(tmpMatrix, lhsMatrix, 4);
+      ichol(tmpMatrix, lhsMatrix, config.icholParameters.sweepsDecompose);
     }
     isDecomposed = true;
   } else {
@@ -147,8 +147,7 @@ void DBMatOfflineDenseIChol::choleskyModification(size_t newPoints, std::list<si
       }
     }
 
-    // std::cout << "system matrix:\n" << lhsMatrix.toString() << "\n\n";
-    ichol(matRefine, lhsMatrix, 4, (gridSize - newPoints));
+    ichol(matRefine, lhsMatrix, config.icholParameters.sweepsRefine, (gridSize - newPoints));
   }
 }
 

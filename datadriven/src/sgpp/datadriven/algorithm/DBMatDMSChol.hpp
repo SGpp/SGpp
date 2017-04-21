@@ -62,7 +62,7 @@ class DBMatDMSChol : public DBMatDecompMatrixSolver {
  protected:
   virtual void choleskyUpdateLambda(sgpp::base::DataMatrix& decompMatrix, double lambda_up) const;
 
-  virtual void choleskyBackwardSolve(sgpp::base::DataMatrix& decompMatrix,
+  virtual void choleskyBackwardSolve(const sgpp::base::DataMatrix& decompMatrix,
                                      const sgpp::base::DataVector& y,
                                      sgpp::base::DataVector& alpha) const;
 

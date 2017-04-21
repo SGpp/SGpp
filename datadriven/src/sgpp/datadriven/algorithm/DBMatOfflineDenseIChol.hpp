@@ -16,6 +16,8 @@
 namespace sgpp {
 namespace datadriven {
 
+using sgpp::base::DataMatrix;
+
 class DBMatOfflineDenseIChol : public DBMatOfflineChol {
  public:
   /**
@@ -45,8 +47,8 @@ class DBMatOfflineDenseIChol : public DBMatOfflineChol {
   void choleskyModification(size_t newPoints, std::list<size_t> deletedPoints,
                             double lambda) override;
 
- protected:
-  void ichol(const DataMatrix& matrix, DataMatrix& result, size_t sweeps = 5, size_t startRow = 0);
+  static void ichol(const DataMatrix& matrix, DataMatrix& result, size_t sweeps = 4,
+                    size_t startRow = 0);
 };
 
 } /* namespace datadriven */
