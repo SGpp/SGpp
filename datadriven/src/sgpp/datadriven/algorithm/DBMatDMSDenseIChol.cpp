@@ -50,19 +50,21 @@ void DBMatDMSDenseIChol::choleskyBackwardSolve(sgpp::base::DataMatrix& decompMat
   auto size = alpha.getSize();
   size_t sweeps = 2;
 
-  for (auto sweep = 0u; sweep < sweeps; sweep++) {
-    tmpVec.setAll(0.0);
-
-#pragma omp parallel for schedule(guided)
-    for (auto i = 0u; i < size; i++) {
+#pragma omp parallel
+  {
+    for (auto sweep = 0u; sweep < sweeps; sweep++) {
+      tmpVec.setAll(0.0);
+#pragma omp for schedule(guided)
+      for (auto i = 0u; i < size; i++) {
 #pragma omp simd
-      for (auto j = 0; j < i; j++) {
-        tmpVec[j] += decompMatrix.get(i, j) * alpha.get(i);
+        for (auto j = 0; j < i; j++) {
+          tmpVec[j] += decompMatrix.get(i, j) * alpha.get(i);
+        }
       }
-    }
-#pragma omp simd
-    for (auto i = 0u; i < size; i++) {
-      alpha.set(i, 1.0 / decompMatrix.get(i, i) * (y.get(i) - tmpVec.get(i)));
+#pragma omp parallel
+      for (auto i = 0u; i < size; i++) {
+        alpha.set(i, 1.0 / decompMatrix.get(i, i) * (y.get(i) - tmpVec.get(i)));
+      }
     }
   }
 }
@@ -75,15 +77,18 @@ void DBMatDMSDenseIChol::choleskyForwardSolve(const sgpp::base::DataMatrix& deco
   auto size = y.getSize();
   size_t sweeps = 2;
 
-  for (auto sweep = 0u; sweep < sweeps; sweep++) {
+#pragma omp parallel
+  {
+    for (auto sweep = 0u; sweep < sweeps; sweep++) {
 #pragma omp parallel for schedule(guided)
-    for (auto i = 0u; i < size; i++) {
-      auto tmp = 0.0;
+      for (auto i = 0u; i < size; i++) {
+        auto tmp = 0.0;
 #pragma omp simd
-      for (auto j = 0u; j < i; j++) {
-        tmp += decompMatrix.get(i, j) * y.get(j);
+        for (auto j = 0u; j < i; j++) {
+          tmp += decompMatrix.get(i, j) * y.get(j);
+        }
+        y.set(i, 1.0 / decompMatrix.get(i, i) * (b.get(i) - tmp));
       }
-      y.set(i, 1.0 / decompMatrix.get(i, i) * (b.get(i) - tmp));
     }
   }
 }
