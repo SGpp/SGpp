@@ -40,6 +40,15 @@ DataMatrix::DataMatrix(const DataMatrix& matr) : DataMatrix(matr.nrows, matr.nco
   std::memcpy(this->data, matr.data, nrows * ncols * sizeof(double));
 }
 
+DataMatrix::DataMatrix(DataMatrix&& matr)
+    : nrows(matr.nrows),
+      ncols(matr.ncols),
+      unused(matr.unused),
+      inc_rows(matr.unused),
+      data(matr.data) {
+  matr.data = nullptr;
+}
+
 DataMatrix::DataMatrix(double* input, size_t nrows, size_t ncols) : DataMatrix(nrows, ncols) {
   // copy data
   std::memcpy(this->data, input, nrows * ncols * sizeof(double));
@@ -56,7 +65,14 @@ DataMatrix DataMatrix::fromFile(const std::string& fileName) {
 DataMatrix DataMatrix::fromString(const std::string& serializedVector) {
   DataMatrix m;
 
-  enum class PARSER_STATE { INIT, ROW, ROWVALUE, ROWCOMMAEND, COMMAEND, END };
+  enum class PARSER_STATE {
+    INIT,
+    ROW,
+    ROWVALUE,
+    ROWCOMMAEND,
+    COMMAEND,
+    END
+  };
 
   PARSER_STATE state = PARSER_STATE::INIT;
 
@@ -249,7 +265,7 @@ void DataMatrix::resizeZero(size_t nrows, size_t ncols) {
 }
 
 void DataMatrix::resizeToSubMatrix(size_t row_1, size_t col_1, size_t row_2, size_t col_2) {
-  if ((row_1 > row_2) ||(col_1 > col_2)) {
+  if ((row_1 > row_2) || (col_1 > col_2)) {
     throw sgpp::base::data_exception(
         "DataMatrix::getSubMatrix : Expected indices do not fulfill requirements");
   } else if ((this->nrows < row_2) || (this->ncols < col_2)) {
@@ -264,7 +280,7 @@ void DataMatrix::resizeToSubMatrix(size_t row_1, size_t col_1, size_t row_2, siz
 
   for (size_t i = 0; i < (row_2 - row_1 + 1); i++) {
     std::memcpy(&newdata[i * (col_2 - col_1 + 1)],
-                this->data + (row_1 - 1) * this->ncols + (col_1 -1) + i * this->ncols,
+                this->data + (row_1 - 1) * this->ncols + (col_1 - 1) + i * this->ncols,
                 (col_2 - col_1 + 1) * sizeof(double));
   }
 
@@ -335,10 +351,10 @@ size_t DataMatrix::appendCol(const DataVector& vec) {
   }
 
   // create new vector
-  double* newdata = new double[this->nrows  * (this->ncols + 1)];
+  double* newdata = new double[this->nrows * (this->ncols + 1)];
 
   for (size_t i = 0; i < this->nrows; i++) {
-    std::memcpy(&newdata[i * (this->ncols+1)], this->data + i * (this->ncols),
+    std::memcpy(&newdata[i * (this->ncols + 1)], this->data + i * (this->ncols),
                 this->ncols * sizeof(double));
   }
 
@@ -350,7 +366,7 @@ size_t DataMatrix::appendCol(const DataVector& vec) {
   this->data = newdata;
   this->ncols++;
   unused = 0;
-  return(this->ncols);
+  return (this->ncols);
 }
 
 void DataMatrix::setAll(double value) {
