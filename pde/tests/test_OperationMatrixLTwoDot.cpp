@@ -25,11 +25,15 @@ double uniform_distributed_approximation(sgpp::base::Grid* grid, size_t i, size_
     const sgpp::base::level_t ljk = storage.getPoint(j).getLevel(k);
     const sgpp::base::index_t iik = storage.getPoint(i).getIndex(k);
     const sgpp::base::index_t ijk = storage.getPoint(j).getIndex(k);
+    // trapezoidal rule
     double temp_res = 0.0;
-    for (size_t c = 0; c < resolution; c++) {
+    for (size_t c = 1; c < resolution; c++) {
       double x = static_cast<double>(c)/static_cast<double>(resolution);
       temp_res += basis.eval(lik, iik, x) * basis.eval(ljk, ijk, x);
     }
+    temp_res += 0.5 * basis.eval(lik, iik, 0) * basis.eval(ljk, ijk, 0);
+    temp_res += 0.5 * basis.eval(lik, iik, 1) * basis.eval(ljk, ijk, 1);
+
     res *= temp_res/static_cast<double>(resolution);
   }
   return res;

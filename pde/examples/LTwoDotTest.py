@@ -80,7 +80,7 @@ def test_LTwoDotImplicit(grid, l):
             print "resultExplicit:{}".format(resultExplicit[i])
 
 def test_laplace(grid, lmax):
-    resolution = 10000
+    resolution = 100000
     grid.getGenerator().regular(lmax)
     gridStorage = grid.getStorage()
     size = gridStorage.getSize()
@@ -129,6 +129,22 @@ def plot_evaldx():
     plt.plot(xs, [b.evalDx(l, i, x) for x in xs])
     plt.show()
 
+def plot_evaldx_prod(grid, lmax, i, j):
+    grid.getGenerator().regular(lmax)
+    gridStorage = grid.getStorage()
+    b = getBasis(grid)
+    gp_i = gridStorage.getPoint(i)
+    gp_j = gridStorage.getPoint(j)
+    lik = gp_i.getLevel(0)
+    ljk = gp_j.getLevel(0)
+    iik = gp_i.getIndex(0)
+    ijk = gp_j.getIndex(0)
+    xs = np.linspace(0, 1, 100000)
+
+    plt.plot(xs, [b.evalDx(lik, iik, x) * b.evalDx(ljk, ijk, x) for x in xs])
+    plt.show()
+
+
 def test_laplace2(grid, lmax):
   # grid.getGenerator().regular(lmax)
   gridStorage = grid.getStorage()
@@ -141,9 +157,10 @@ def test_laplace2(grid, lmax):
 # plot_evaldx()
 # test_base()
 d = 1
-l = 2
-grid = pysgpp.Grid.createModBsplineClenshawCurtisGrid(d, 3)
-test_laplace(grid, l)
+l = 4
+grid = pysgpp.Grid.createModPolyGrid(d, 3)
+plot_evaldx_prod(grid, 4, 1, 4)
+# test_laplace(grid, l)
 # test_laplace2(grid, l)
 # test_LTwoDot(grid, l)
 # test_LTwoDotImplicit(grid, l)
