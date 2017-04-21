@@ -11,6 +11,7 @@
 
 #pragma once
 #include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
 
 #include <sgpp/base/grid/Grid.hpp>
 
@@ -22,21 +23,23 @@ using sgpp::base::DataMatrix;
 
 class DBMatDMSDenseIChol : public DBMatDMSChol {
  public:
-  DBMatDMSDenseIChol(Grid& grid, double lambda, bool doCV);
+  DBMatDMSDenseIChol(const DBMatOfflineIcholParameters& params, Grid& grid, double lambda,
+                     bool doCV);
 
  protected:
   void choleskyUpdateLambda(sgpp::base::DataMatrix& decompMatrix, double lambdaUp) const override;
 
-  void choleskyBackwardSolve(sgpp::base::DataMatrix& decompMatrix, const sgpp::base::DataVector& y,
-                             sgpp::base::DataVector& alpha) const override;
+  void choleskyBackwardSolve(const sgpp::base::DataMatrix& decompMatrix,
+                             const sgpp::base::DataVector& y, sgpp::base::DataVector& alpha) const
+      override;
 
   void choleskyForwardSolve(const sgpp::base::DataMatrix& decompMatrix,
-                            const sgpp::base::DataVector& b,
-                            sgpp::base::DataVector& y) const override;
+                            const sgpp::base::DataVector& b, sgpp::base::DataVector& y) const
+      override;
 
  private:
   void updateProxyMatrixLambda(double lambda_up) const;
-
+  DBMatOfflineIcholParameters params;
   mutable DataMatrix proxyMatrix;
 };
 
