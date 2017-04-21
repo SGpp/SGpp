@@ -43,6 +43,127 @@ namespace pde {
     }
   }
 
+  BOOST_AUTO_TEST_CASE(testOperationLaplaceBsplineBoundary1D) {
+    const size_t resolution = 10000;
+    const size_t d = 1;
+    const size_t l = 4;
+    sgpp::base::Grid* grid(sgpp::base::Grid::createBsplineBoundaryGrid(d, 3));
+    grid->getGenerator().regular(l);
+    sgpp::base::GridStorage& storage = grid->getStorage();
+    sgpp::base::SBsplineBoundaryBase basis =
+      dynamic_cast<sgpp::base::SBsplineBoundaryBase&>(grid->getBasis());
+
+    sgpp::base::OperationMatrix* op =
+      sgpp::op_factory::createOperationLaplace(*grid);
+
+    sgpp::base::DataVector result(grid->getSize(), 0);
+    for (size_t i = 0; i < grid->getSize(); i++) {
+      sgpp::base::DataVector alpha(grid->getSize(), 0.0);
+      alpha[i] = 1.0;
+      op->mult(alpha, result);
+
+      for (size_t j = 0; j < grid->getSize(); j++) {
+        double approx = 0.0;
+        const sgpp::base::level_t lik = storage.getPoint(i).getLevel(0);
+        const sgpp::base::level_t ljk = storage.getPoint(j).getLevel(0);
+        const sgpp::base::index_t iik = storage.getPoint(i).getIndex(0);
+        const sgpp::base::index_t ijk = storage.getPoint(j).getIndex(0);
+        // trapezoidal rule
+        for (size_t c = 1; c < resolution; c++) {
+          double x = static_cast<double>(c)/static_cast<double>(resolution);
+          approx += basis.evalDx(lik, iik, x) * basis.evalDx(ljk, ijk, x);
+        }
+        approx += 0.5 * basis.evalDx(lik, iik, 0) * basis.evalDx(ljk, ijk, 0);
+        approx += 0.5 * basis.evalDx(lik, iik, 1) * basis.evalDx(ljk, ijk, 1);
+
+        approx /= static_cast<double>(resolution);
+        if (result.get(j) > 1e-4)
+          BOOST_CHECK_CLOSE(result.get(j), approx, 7);
+      }
+    }
+  }
+
+  BOOST_AUTO_TEST_CASE(testOperationLaplaceBsplineClenshawCurtis1D) {
+    const size_t resolution = 20000;
+    const size_t d = 1;
+    const size_t l = 4;
+    sgpp::base::Grid* grid(sgpp::base::Grid::createBsplineClenshawCurtisGrid(d, 3));
+    grid->getGenerator().regular(l);
+    sgpp::base::GridStorage& storage = grid->getStorage();
+    sgpp::base::SBsplineClenshawCurtisBase basis =
+      dynamic_cast<sgpp::base::SBsplineClenshawCurtisBase&>(grid->getBasis());
+
+    sgpp::base::OperationMatrix* op =
+      sgpp::op_factory::createOperationLaplace(*grid);
+
+    sgpp::base::DataVector result(grid->getSize(), 0);
+    for (size_t i = 0; i < grid->getSize(); i++) {
+      sgpp::base::DataVector alpha(grid->getSize(), 0.0);
+      alpha[i] = 1.0;
+      op->mult(alpha, result);
+
+      for (size_t j = 0; j < grid->getSize(); j++) {
+        double approx = 0.0;
+        const sgpp::base::level_t lik = storage.getPoint(i).getLevel(0);
+        const sgpp::base::level_t ljk = storage.getPoint(j).getLevel(0);
+        const sgpp::base::index_t iik = storage.getPoint(i).getIndex(0);
+        const sgpp::base::index_t ijk = storage.getPoint(j).getIndex(0);
+        // trapezoidal rule
+        for (size_t c = 1; c < resolution; c++) {
+          double x = static_cast<double>(c)/static_cast<double>(resolution);
+          approx += basis.evalDx(lik, iik, x) * basis.evalDx(ljk, ijk, x);
+        }
+        approx += 0.5 * basis.evalDx(lik, iik, 0) * basis.evalDx(ljk, ijk, 0);
+        approx += 0.5 * basis.evalDx(lik, iik, 1) * basis.evalDx(ljk, ijk, 1);
+
+        approx /= static_cast<double>(resolution);
+        if (result.get(j) > 1e-4)
+          BOOST_CHECK_CLOSE(result.get(j), approx, 10);
+      }
+    }
+  }
+
+  BOOST_AUTO_TEST_CASE(testOperationLaplaceModBsplineClenshawCurtis1D) {
+    const size_t resolution = 10000;
+    const size_t d = 1;
+    const size_t l = 4;
+    sgpp::base::Grid* grid(sgpp::base::Grid::createModBsplineClenshawCurtisGrid(d, 3));
+    grid->getGenerator().regular(l);
+    sgpp::base::GridStorage& storage = grid->getStorage();
+    sgpp::base::SBsplineModifiedClenshawCurtisBase basis =
+      dynamic_cast<sgpp::base::SBsplineModifiedClenshawCurtisBase&>(grid->getBasis());
+
+    sgpp::base::OperationMatrix* op =
+      sgpp::op_factory::createOperationLaplace(*grid);
+
+    sgpp::base::DataVector result(grid->getSize(), 0);
+    for (size_t i = 0; i < grid->getSize(); i++) {
+      sgpp::base::DataVector alpha(grid->getSize(), 0.0);
+      alpha[i] = 1.0;
+      op->mult(alpha, result);
+
+      for (size_t j = 0; j < grid->getSize(); j++) {
+        double approx = 0.0;
+        const sgpp::base::level_t lik = storage.getPoint(i).getLevel(0);
+        const sgpp::base::level_t ljk = storage.getPoint(j).getLevel(0);
+        const sgpp::base::index_t iik = storage.getPoint(i).getIndex(0);
+        const sgpp::base::index_t ijk = storage.getPoint(j).getIndex(0);
+        // trapezoidal rule
+        for (size_t c = 1; c < resolution; c++) {
+          double x = static_cast<double>(c)/static_cast<double>(resolution);
+          approx += basis.evalDx(lik, iik, x) * basis.evalDx(ljk, ijk, x);
+        }
+        approx += 0.5 * basis.evalDx(lik, iik, 0) * basis.evalDx(ljk, ijk, 0);
+        approx += 0.5 * basis.evalDx(lik, iik, 1) * basis.evalDx(ljk, ijk, 1);
+
+        approx /= static_cast<double>(resolution);
+        if (result.get(j) > 1e-4)
+          BOOST_CHECK_CLOSE(result.get(j), approx, 7);
+      }
+    }
+  }
+
+
   BOOST_AUTO_TEST_CASE(testOperationLaplacePoly1D) {
     const size_t resolution = 10000;
     const size_t d = 1;
