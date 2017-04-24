@@ -311,11 +311,16 @@ class SGDEdist(EstimatedDist):
         # use inverse Rosenblatt transformation to get samples
         uniform_samples = np.random.random((n, self.dim))
         unit_samples = self.ppf(uniform_samples, shuffle=shuffle)
+        if self.dim == 1:
+            unit_samples = np.vstack((unit_samples))
         prob_samples = self.trans.unitToProbabilisticMatrix(unit_samples)
-        return prob_samples
+        if self.dim == 1:
+            return prob_samples[:, 0]
+        else:
+            return prob_samples
 
     def __str__(self):
-        return "SGDE"
+        return "SGDE (D=%i, N=%i)" % (self.getDim(), self.grid.getSize())
 
     def crossEntropy(self, samples,
                      dtype=SampleType.ACTIVEPROBABILISTIC):
