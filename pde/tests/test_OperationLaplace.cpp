@@ -61,7 +61,6 @@ namespace pde {
       sgpp::base::DataVector alpha(grid->getSize(), 0.0);
       alpha[i] = 1.0;
       op->mult(alpha, result);
-
       for (size_t j = 0; j < grid->getSize(); j++) {
         double approx = 0.0;
         const sgpp::base::level_t lik = storage.getPoint(i).getLevel(0);
@@ -141,7 +140,6 @@ namespace pde {
       sgpp::base::DataVector alpha(grid->getSize(), 0.0);
       alpha[i] = 1.0;
       op->mult(alpha, result);
-
       for (size_t j = 0; j < grid->getSize(); j++) {
         double approx = 0.0;
         const sgpp::base::level_t lik = storage.getPoint(i).getLevel(0);
@@ -172,7 +170,6 @@ namespace pde {
     grid->getGenerator().regular(l);
     sgpp::base::GridStorage& storage = grid->getStorage();
     sgpp::base::SPolyBase basis = dynamic_cast<sgpp::base::SPolyBase&>(grid->getBasis());
-
     sgpp::base::OperationMatrix* op =
       sgpp::op_factory::createOperationLaplace(*grid);
 
