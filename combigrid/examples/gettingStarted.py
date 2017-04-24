@@ -32,7 +32,7 @@ func = pysgpp.multiFunc(f)
 d = 3
 
 
-## @section combigrid_example_1 Example 1: Leja quadrature with linear growth of grid points
+## @section py_combigrid_example_1 Example 1: Leja quadrature with linear growth of grid points
 ##
 ## Here comes the first and very simple example.
 def example1():
@@ -59,7 +59,7 @@ def example1():
     ## which stores computed function values:
     print("Number of function evaluations: " + str(operation.numGridPoints()))
 
-## @section combigrid_example_2 Example 2: Polynomial interpolation on nested Clenshaw Curtis grids
+## @section py_combigrid_example_2 Example 2: Polynomial interpolation on nested Clenshaw Curtis grids
 ##
 ## The next example uses interpolation.
 def example2():
@@ -68,7 +68,8 @@ def example2():
     ## one level is a subset of the set of grid points at the next level. Nesting can drastically
     ## reduce the number of needed function evaluations. Using these grid points, we will do
     ## polynomial interpolation at a single point.
-    operation = pysgpp.CombigridOperation.createExpClenshawCurtisPolynomialInterpolation(d, func)
+    #operation = pysgpp.CombigridOperation.createExpClenshawCurtisPolynomialInterpolation(d, func)
+    operation = pysgpp.CombigridOperation.createExpL2LejaPolynomialInterpolation(d, func)
 
     ## Now create a point where to evaluate the interpolated function:
     evaluationPoint = pysgpp.DataVector([0.1572, 0.6627, 0.2378])
@@ -142,7 +143,7 @@ def example2():
     plt.show()
 
 
-## @section combigrid_example_3 Example 3: Evaluation at multiple points
+## @section py_combigrid_example_3 Example 3: Evaluation at multiple points
 ##
 ## Now, we want to do interpolation at multiple evaluation points efficiently.
 def example3():
@@ -212,7 +213,7 @@ def example4():
     result = operation3.evaluate(2)
     print("Result computed (3rd time): " + str(result))
 
-## @section combigrid_example_5 Example 5: Using different operations in each dimension
+## @section py_combigrid_example_5 Example 5: Using different operations in each dimension
 ##
 ## This example shows how to apply different operators in different dimensions.
 def example5():
@@ -231,7 +232,7 @@ def example5():
     ## interpolation. To make them nested, again the slowest possible exponential growth is selected
     ## by the CombiHierarchies class.
     grids.push_back(pysgpp.CombiHierarchies.linearLeja(3))
-    grids.push_back(pysgpp.CombiHierarchies.expUniform())
+    grids.push_back(pysgpp.CombiHierarchies.expUniformBoundary())
 
     ## The next thing we have to configure is the linear operation that is performed in those
     ## directions. We will use polynomial interpolation in the 0th dimension, quadrature in the 1st
@@ -258,7 +259,7 @@ def example5():
     print("Result: " + str(result))
 
 
-## @section combigrid_example_6 Example 6: Using a function operating on grids
+## @section py_combigrid_example_6 Example 6: Using a function operating on grids
 ## This example shows how to apply different operators in different dimensions.
 
 ##In some applications, you might not want to have a callback function that is called at single
@@ -287,7 +288,7 @@ def example6():
 
 
     ## To create a CombigridOperation, we currently have to use the longer way as in example 5.
-    grids = pysgpp.AbstractPointHierarchyVector(d, pysgpp.CombiHierarchies.expUniform())
+    grids = pysgpp.AbstractPointHierarchyVector(d, pysgpp.CombiHierarchies.expUniformBoundary())
     evaluators = pysgpp.FloatScalarAbstractLinearEvaluatorVector(d, pysgpp.CombiEvaluators.cubicSplineInterpolation())
     levelManager = pysgpp.WeightedRatioLevelManager()
 

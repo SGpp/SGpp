@@ -167,7 +167,7 @@ void OperationMakePositiveInterpolateFunction::computeHierarchicalCoefficients(
     gridStorage.getPoint(i).getStandardCoordinates(x);
     double yi = opEval->eval(alpha, x);
     if (yi < tol) {
-      alpha[i] = alpha[i] - yi + f->eval(x);
+      alpha[i] = alpha[i] - yi + std::abs(f->eval(x));
     } else {
       alpha[i] = 0.0;
     }

@@ -121,6 +121,13 @@ class OperationMakePositive {
 
   /**
    *
+   * @return number of newly added grid points for guaranteeing
+   * positivity per iteration
+   */
+  base::DataVector& numAddedGridPointsForPositivityPerIteration();
+
+  /**
+   *
    * @return
    */
   OperationMakePositiveCandidateSetAlgorithm& getCandidateSetAlgorithm();
@@ -176,6 +183,8 @@ class OperationMakePositive {
   std::vector<size_t> addedGridPointsForPositivity;
   /// newly added grid points
   std::vector<size_t> addedGridPoints;
+  /// counter for the number of added grid points for positivity in each iteration
+  base::DataVector countAddedGridPointsForPositivityPerIteration;
   /// sets if a consistent grid is computed or not
   bool generateConsistentGrid;
 

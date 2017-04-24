@@ -199,6 +199,10 @@ void OperationMakePositive::addFullGridPoints(
               << (numAddedGridPointsForPositivity() - oldNumNewGridPointsForPositivity)
               << " <= " << addedGridPoints.size() << " : # added grid points" << std::endl;
   }
+  // add the number of new grid points to the corresponding vector
+  size_t numIterations = countAddedGridPointsForPositivityPerIteration.getSize();
+  countAddedGridPointsForPositivityPerIteration.resize(numIterations + 1);
+  countAddedGridPointsForPositivityPerIteration[numIterations] = static_cast<double>(numAddedGridPointsForPositivity() - oldNumNewGridPointsForPositivity);
 
   // recompute the leaf property
   grid.getStorage().recalcLeafProperty();
@@ -301,6 +305,10 @@ size_t OperationMakePositive::numAddedGridPoints() { return addedGridPoints.size
 
 size_t OperationMakePositive::numAddedGridPointsForPositivity() {
   return addedGridPointsForPositivity.size();
+}
+
+base::DataVector& OperationMakePositive::numAddedGridPointsForPositivityPerIteration() {
+  return countAddedGridPointsForPositivityPerIteration;
 }
 
 std::vector<size_t>& OperationMakePositive::getAddedGridPoints() { return addedGridPoints; }

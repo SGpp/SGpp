@@ -24,7 +24,7 @@ from pysgpp.extensions.datadriven.uq.dists.Beta import Beta
 from pysgpp.extensions.datadriven.uq.dists.J import J
 from pysgpp.pysgpp_swig import BandwidthOptimizationType_MAXIMUMLIKELIHOOD, \
     createOperationMakePositive, DataVector, \
-    BandwidthOptimizationType_RULEOFTHUMB
+    BandwidthOptimizationType_SILVERMANSRULE
 from pysgpp.extensions.datadriven.uq.plot.plot3d import plotSG3d
 
 from positivity.plot import plotResults, plotCostsPerIteration
@@ -578,7 +578,7 @@ def run_densityEstimation(functionName,
                           numDims=2,
                           numSamples=1000,
                           candidates="join",
-                          bandwidthOptimizationType=BandwidthOptimizationType_RULEOFTHUMB,
+                          bandwidthOptimizationType=BandwidthOptimizationType_SILVERMANSRULE,
                           out=True,
                           plot=False,
                           tikz=False):

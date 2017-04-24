@@ -22,7 +22,8 @@ class WeightedRatioLevelManager : public LevelManager {
 
  public:
   explicit WeightedRatioLevelManager(double w = 0.8);
-  WeightedRatioLevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator, double w = 0.8);
+  explicit WeightedRatioLevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator,
+                                     double w = 0.8);
   virtual ~WeightedRatioLevelManager();
 
  private:
