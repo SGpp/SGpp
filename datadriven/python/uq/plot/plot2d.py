@@ -8,6 +8,47 @@ from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunctio
 from matplotlib.patches import Rectangle
 
 
+def addContours(xv, yv, Z,
+                levels=None,
+                clabels=None,
+                manual_locations=None):
+    if levels is not None:
+        cs = plt.contour(xv, yv, Z,
+                         levels=levels,
+                         colors='white')
+        if clabels is None:
+            clabels = levels
+
+        fmt = {}
+        for level in clabels:
+            if level % 1 == 0:
+                fmt[level] = "%1.0f" % level
+            elif level * 10 % 1 == 0:
+                fmt[level] = "%1.1f" % level
+            elif level * 100 % 1 == 0:
+                fmt[level] = "%1.2f" % level
+            else:
+                fmt[level] = "%1.3f" % level
+
+        plt.clabel(cs, clabels,
+                   inline=1,
+                   color="white",
+                   fontsize=18,
+                   fmt=fmt,
+                   manual=manual_locations)
+
+        #             # add white rectangles under clabels
+        #             rect = Rectangle((10 * (24 * 60 * 60), 0.6),
+#                              11 * (24 * 60 * 60), 0.8,
+#                              facecolor="white",
+#                              alpha=0.95, zorder=5)
+#             ax = plt.gca()
+#             ax.add_patch(rect)
+    else:
+        cs = plt.contour(xv, yv, Z, colors='white')
+        plt.clabel(cs, inline=1, fmt="%1.2f", fontsize=18)
+
+
 def plotTimedependentDensity2dWithRawData(xv, yv, Z, ts, us,
                                           addContour=True,
                                           color_bar_label=r'$\hat{F}(\xi_1, \xi_2)$',
@@ -26,42 +67,7 @@ def plotTimedependentDensity2dWithRawData(xv, yv, Z, ts, us,
     plt.clim(0, 1)
 
     if addContour:
-        if levels is not None:
-            cs = plt.contour(xv, yv, Z,
-                             levels=levels,
-                             colors='white')
-            if clabels is None:
-                clabels = levels
-
-            fmt = {}
-            for level in clabels:
-                if level % 1 == 0:
-                    fmt[level] = "%1.0f" % level
-                elif level * 10 % 1 == 0:
-                    fmt[level] = "%1.1f" % level
-                elif level * 100 % 1 == 0:
-                    fmt[level] = "%1.2f" % level
-                else:
-                    fmt[level] = "%1.3f" % level
-
-            plt.clabel(cs, clabels,
-                       inline=1,
-                       color="white",
-                       fontsize=18,
-                       fmt=fmt,
-                       manual=manual_locations)
-
-#             # add white rectangles under clabels
-#             rect = Rectangle((10 * (24 * 60 * 60), 0.6),
-#                              11 * (24 * 60 * 60), 0.8,
-#                              facecolor="white",
-#                              alpha=0.95, zorder=5)
-#             ax = plt.gca()
-#             ax.add_patch(rect)
-        else:
-            cs = plt.contour(xv, yv, Z, colors='white')
-            plt.clabel(cs, inline=1, fmt="%1.2f", fontsize=18)
-
+        addContours(xv, yv, Z, levels, clabels, manual_locations)
 
 def plotTimedependentDensity2d(Us, us, ts,
                                addContour=True,
@@ -88,46 +94,14 @@ def plotTimedependentDensity2d(Us, us, ts,
     plt.clim(0, 1)
 
     if addContour:
-        if levels is not None:
-            cs = plt.contour(xv, yv, Z,
-                             levels=levels,
-                             colors='white')
-            if clabels is None:
-                clabels = levels
-
-            fmt = {}
-            for level in clabels:
-                if level % 1 == 0:
-                    fmt[level] = "%1.0f" % level
-                elif level * 10 % 1 == 0:
-                    fmt[level] = "%1.1f" % level
-                elif level * 100 % 1 == 0:
-                    fmt[level] = "%1.2f" % level
-                else:
-                    fmt[level] = "%1.3f" % level
-
-            plt.clabel(cs, clabels,
-                       inline=1,
-                       color="white",
-                       fontsize=18,
-                       fmt=fmt,
-                       manual=manual_locations)
-
-#             # add white rectangles under clabels
-#             rect = Rectangle((10 * (24 * 60 * 60), 0.6),
-#                              11 * (24 * 60 * 60), 0.8,
-#                              facecolor="white",
-#                              alpha=0.95, zorder=5)
-#             ax = plt.gca()
-#             ax.add_patch(rect)
-        else:
-            cs = plt.contour(xv, yv, Z, colors='white')
-            plt.clabel(cs, inline=1, fmt="%1.2f", fontsize=18)
+        addContours(xv, yv, Z, levels, clabels, manual_locations)
 
 
 def plotDensity2d(U, n=50, addContour=True,
                   color_bar_label=r'$\hat{f}(\xi_1, \xi_2)$',
-                  levels=None):
+                  levels=None,
+                  clabels=None,
+                  manual_locations=None):
     xlim, ylim = U.getBounds()
 
     x = np.linspace(xlim[0], xlim[1], n)
@@ -150,16 +124,8 @@ def plotDensity2d(U, n=50, addContour=True,
     cbar.ax.set_ylabel(color_bar_label)
 
     if addContour:
-        if levels is not None:
-            cs = plt.contour(xv, yv, Z, colors='white')
-            plt.clabel(cs, levels,
-                       inline=1,
-                       color="white",
-                       fontsize=18,
-                       fmt='%1.0f')
-        else:
-            cs = plt.contour(xv, yv, Z, colors='white')
-            plt.clabel(cs, inline=1, fmt="%1.0f", fontsize=18)
+        addContours(xv, yv, Z, levels, clabels, manual_locations)
+
 
 def plotSGDE2d(U, n=100):
     gs = U.grid.getStorage()
@@ -208,7 +174,10 @@ def plotSGDE2d(U, n=100):
 
 def plotFunction2d(f, addContour=True, n=101,
                    xlim=[0, 1], ylim=[0, 1],
-                   color_bar_label=r'$u(\xi_1, \xi_2)$'):
+                   color_bar_label=r'$u(\xi_1, \xi_2)$',
+                   levels=None,
+                   clabels=None,
+                   manual_locations=None):
     x = np.linspace(xlim[0], xlim[1], n)
     y = np.linspace(ylim[0], ylim[1], n)
     Z = np.ones((n, n))
@@ -225,17 +194,16 @@ def plotFunction2d(f, addContour=True, n=101,
     cbar.ax.set_ylabel(color_bar_label)
 
     if addContour:
-        cs = plt.contour(xv, yv, Z, colors='white')
-#                          levels=[2, 6, 20])
-        plt.clabel(cs, inline=1, fontsize=18)
-
-    return
+        addContours(xv, yv, Z, levels, clabels, manual_locations)
 
 
 def plotSG2d(grid, alpha, addContour=True, n=100,
              show_negative=False, show_grid_points=False,
              show_numbers=False,
-             colorbarLabel=r"$\hat{f}_{\mathcal{I}}(\boldsymbol{\xi})$"):
+             colorbarLabel=r"$\hat{f}_{\mathcal{I}}(\boldsymbol{\xi})$",
+             levels=None,
+             clabels=None,
+             manual_locations=None):
     gs = grid.getStorage()
 
     gpxp = []
@@ -314,8 +282,7 @@ def plotSG2d(grid, alpha, addContour=True, n=100,
     cbar.set_label(colorbarLabel)
 
     if addContour:
-        cs = plt.contour(xv, yv, Z, colors='white')
-        plt.clabel(cs, inline=1, fontsize=18)
+        addContours(xv, yv, Z, levels, clabels, manual_locations)
 
     return res
 
