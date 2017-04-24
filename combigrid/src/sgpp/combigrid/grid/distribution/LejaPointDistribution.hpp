@@ -6,9 +6,9 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_DISTRIBUTION_LEJAPOINTDISTRIBUTION_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_DISTRIBUTION_LEJAPOINTDISTRIBUTION_HPP_
 
+#include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/grid/distribution/AbstractPointDistribution.hpp>
-#include <sgpp/combigrid/GeneralFunction.hpp>
 
 #include <cmath>
 #include <functional>
@@ -41,6 +41,9 @@ class LejaPointDistribution : public AbstractPointDistribution {
   virtual double compute(size_t numPoints, size_t j);
 
   // used only internally and for the test cases
+  /**
+   * @param epsilon error threshold
+   */
   static void calc_leja_points(std::vector<double>& sortedPoints, std::vector<double>& points,
                                int number, double lower_bound, double upper_bound,
                                std::function<double(double)> weight_func, double epsilon = 1e-12);

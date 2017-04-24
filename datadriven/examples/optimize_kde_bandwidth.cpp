@@ -67,7 +67,7 @@ int main(int argc, const char* argv[]) {
   randn(samples);
 
   KernelDensityEstimator kdeRot(samples, KernelType::GAUSSIAN,
-                                BandwidthOptimizationType::RULEOFTHUMB);
+                                BandwidthOptimizationType::SILVERMANSRULE);
   kdeRot.getBandwidths(bandwidths);
   std::cout << "h_rot = " << bandwidths.toString() << " -> " << kdeRot.crossEntropy(samples)
             << std::endl;

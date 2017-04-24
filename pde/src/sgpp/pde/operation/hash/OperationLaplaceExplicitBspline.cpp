@@ -20,8 +20,8 @@
 namespace sgpp {
 namespace pde {
 
-OperationLaplaceExplicitBspline::OperationLaplaceExplicitBspline(
-    sgpp::base::DataMatrix* m, sgpp::base::Grid* grid)
+OperationLaplaceExplicitBspline::OperationLaplaceExplicitBspline(sgpp::base::DataMatrix* m,
+                                                                 sgpp::base::Grid* grid)
     : ownsMatrix_(false) {
   m_ = m;
   buildMatrix(grid);
@@ -97,8 +97,7 @@ void OperationLaplaceExplicitBspline::buildMatrix(sgpp::base::Grid* grid) {
             for (size_t c = 0; c < quadOrder; c++) {
               const double x = offset + scaling * (coordinates[c] + static_cast<double>(n));
               temp_res += weights[c] * basis.eval(lik, iik, x) * basis.eval(ljk, ijk, x);
-              temp_res_deriv += weights[c] * basis.evalDx(lik, iik, x) *
-                  basis.evalDx(ljk, ijk, x);
+              temp_res_deriv += weights[c] * basis.evalDx(lik, iik, x) * basis.evalDx(ljk, ijk, x);
             }
           }
 
@@ -148,7 +147,7 @@ OperationLaplaceExplicitBspline::~OperationLaplaceExplicitBspline() {
 }
 
 void OperationLaplaceExplicitBspline::mult(sgpp::base::DataVector& alpha,
-                                                sgpp::base::DataVector& result) {
+                                           sgpp::base::DataVector& result) {
   size_t nrows = m_->getNrows();
   size_t ncols = m_->getNcols();
 

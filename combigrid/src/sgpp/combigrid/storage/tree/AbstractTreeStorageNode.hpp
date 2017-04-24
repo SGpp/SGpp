@@ -40,6 +40,7 @@ class AbstractTreeStorageNode {
 
   /**
    * @param depth Level of the node in the tree, starting from zero.
+   * @param index Index of the node to get.
    * @return Returns a reference to the storage entry for the given multi-index.
    * If the entry does not already exist, it is created and initialized with the value resulting
    * from calling the default-value-function.
@@ -50,6 +51,8 @@ class AbstractTreeStorageNode {
    * Stores the given value at the given multi-index. If the storage entry does not exist, it is
    * created. The default-value-function is not called.
    * @param depth Level of the node in the tree, starting from zero.
+   * @param index Index of the node to set.
+   * @param value Value to set.
    */
   virtual void set(MultiIndex const &index, T const &value, size_t depth = 0) = 0;
 

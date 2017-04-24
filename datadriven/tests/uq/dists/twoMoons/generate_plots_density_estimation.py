@@ -12,6 +12,7 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from estimateDensity import load_data_set
+from scipy.stats import chi2_contingency
 
 from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
 from estimateDensity import density_configs
@@ -87,7 +88,7 @@ def plotLogLikelihood(densities, functionName, out=False):
 
     pos = np.arange(0, numDensities)
 
-    fig = plt.figure(figsize=(13, 4.5))
+    fig = plt.figure(figsize=(13, 6.5))
     ax = fig.add_subplot(111)
 #     plt.violinplot(data, pos, points=60, widths=0.7, showmeans=True,
 #                    showextrema=True, showmedians=True, bw_method=0.5)
@@ -119,6 +120,117 @@ def plotLogLikelihood(densities, functionName, out=False):
                 os.path.join("plots", "log_likelihood_%s" % functionName),
                 tikz=True,
                 lgd=lgd)
+        plt.close(fig)
+    else:
+        plt.show()
+
+
+def plotpvalueofChi2IndependenceTest(densities,
+                                     functionName,
+                                     c=0.0,
+                                     out=False):
+    numDensities = len(densities)
+    numIterations = 0
+    for i, (setting, stats) in enumerate(densities.items()):
+        numIterations = max(numIterations, len(stats))
+
+    data = np.zeros((numIterations, 2 * numDensities))
+    names = [None] * data.shape[1]
+    i = 0
+    for i, setting in enumerate(["kde_gaussian",
+                                 "kde_epanechnikov",
+                                 "sgde_zero",
+                                 "sgde_boundaries"]):
+        stats = densities[setting]
+        if "sgde" in setting:
+            if "zero" in setting:
+                names[2 * i] = "SGDE \n set-to-zero \n shuffled"
+                names[2 * i + 1] = "SGDE \n set-to-zero \n not shuffled"
+            else:
+                names[2 * i] = "SGDE \n interp. bound. \n shuffled"
+                names[2 * i + 1] = "SGDE \n interp. bound. \n not shuffled"
+        elif "nataf" in setting:
+            names[2 * i] = "Nataf \n shuffled"
+            names[2 * i + 1] = "Nataf \n not shuffled"
+        elif "gaussian" in setting:
+            names[2 * i] = "KDE \n Gaussian \n shuffled"
+            names[2 * i + 1] = "KDE \n Gaussian \n not shuffled"
+        elif "epanechnikov" in setting:
+            names[2 * i] = "KDE \n Epan. \n shuffled"
+            names[2 * i + 1] = "KDE \n Epan. \n not shuffled"
+        for j, values in enumerate(stats.values()):
+            numDims = values["config"]["numDims"]
+
+            # apply the chi 2 test
+            bins = np.linspace(0, 1, 10)
+            samples = values["samples"]["shuffled"]["uniform_validation"]
+            inner_samples = np.array([])
+            for sample in samples:
+                if c < sample[0] < 1 - c and c < sample[1] < 1 - c:
+                    inner_samples = np.append(inner_samples, sample)
+            inner_samples = inner_samples.reshape(inner_samples.size / 2, 2)
+            h0 = np.histogram2d(inner_samples[:, 0],
+                                inner_samples[:, 1],
+                                bins=bins)[0][2:-2, 2:-2]
+            pvalue_shuffled = chi2_contingency(h0)[1]
+
+            if False and j == 0:
+                plt.figure()
+                plt.scatter(inner_samples[:, 0], inner_samples[:, 1])
+
+                plt.figure()
+                plt.hist2d(inner_samples[:, 0], inner_samples[:, 1], bins=20)
+                plt.colorbar()
+                plt.title("%s shuffled, %g" % (setting.replace("_", " "),
+                                               pvalue_shuffled))
+
+            samples = values["samples"]["not_shuffled"]["uniform_validation"]
+            inner_samples = np.array([])
+            for sample in samples:
+                if c < sample[0] < 1 - c and c < sample[1] < 1 - c:
+                    inner_samples = np.append(inner_samples, sample)
+            inner_samples = inner_samples.reshape(inner_samples.size / 2, 2)
+            h0 = np.histogram2d(inner_samples[:, 0],
+                                inner_samples[:, 1],
+                                bins=bins)[0][2:-2, 2:-2]
+            pvalue_not_shuffled = chi2_contingency(h0)[1]
+
+            if False and j == 0:
+                plt.figure()
+                plt.scatter(inner_samples[:, 0],
+                            inner_samples[:, 1])
+
+                plt.figure()
+                plt.hist2d(inner_samples[:, 0],
+                           inner_samples[:, 1], bins=20)
+                plt.colorbar()
+                plt.title("%s not shuffled, %g" % (setting.replace("_", " "),
+                                                   pvalue_not_shuffled))
+
+                plt.show()
+
+            data[j, 2 * i] = pvalue_shuffled
+            data[j, 2 * i + 1] = pvalue_not_shuffled
+
+    pos = np.arange(0, len(names))
+    fig = plt.figure(figsize=(17, 5))
+    plt.violinplot(data, pos, points=60, widths=0.7, showmeans=True,
+                   showextrema=True, showmedians=True, bw_method=0.5)
+    plt.xticks(pos, names)
+    plt.ylabel("$p$-value")
+
+    if "moons" in functionName:
+        plt.title("$\chi^2$ test",
+                  fontproperties=load_font_properties())
+    else:
+        plt.title("$\chi^2$ test",
+                  fontproperties=load_font_properties())
+
+    if out:
+        savefig(fig,
+                os.path.join("plots", "chi_squared_%s_c%i" % (functionName, 
+                                                              np.round(c * 100))),
+                tikz=True)
         plt.close(fig)
     else:
         plt.show()
@@ -165,17 +277,17 @@ def plotpvalueofKolmogorovSmirnovTest(densities, functionName, out=False):
             data[j, 2 * i + 1] = pvalues_not_shuffled.mean()
 
     pos = np.arange(0, len(names))
-    fig = plt.figure(figsize=(16, 4.5))
+    fig = plt.figure(figsize=(17, 5))
     plt.violinplot(data, pos, points=60, widths=0.7, showmeans=True,
                    showextrema=True, showmedians=True, bw_method=0.5)
     plt.xticks(pos, names)
     plt.ylabel("$p$-value")
 
     if "moons" in functionName:
-        plt.title("Two moons: \n Kolmogorov-Smirnov test",
+        plt.title("Kolmogorov-Smirnov test",
                   fontproperties=load_font_properties())
     else:
-        plt.title("Multivariate Beta: \n Kolmogorov-Smirnov test",
+        plt.title("Kolmogorov-Smirnov test",
                   fontproperties=load_font_properties())
 
     if out:
@@ -303,8 +415,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     densities = loadDensities(args.function)
-    plotCovarianceConvergence(densities, "mult_beta", args.out)
+    plotpvalueofChi2IndependenceTest(densities, args.function, c=0.0, out=args.out)
+    plotpvalueofChi2IndependenceTest(densities, args.function, c=0.25, out=args.out)
 #     plotLogLikelihood(densities, args.function, args.out)
-#     plotpvalueofKolmogorovSmirnovTest(densities, args.function, args.out)
+    plotpvalueofKolmogorovSmirnovTest(densities, args.function, args.out)
 #     plotDensities(densities, args.function, out=args.out)
 #     plotDataset(args.function, out=args.out)
+#     plotCovarianceConvergence(densities, "mult_beta", args.out)

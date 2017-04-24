@@ -40,6 +40,7 @@ from pysgpp.extensions.datadriven.uq.transformation.Transformation import Transf
 from pysgpp.extensions.datadriven.uq.plot.plot1d import plotNodal1d, \
     plotSurplusLevelWise, plotSG1d
 from pysgpp.extensions.datadriven.tools import writeDataARFF
+from pysgpp.extensions.datadriven.uq.estimators.MCEstimator import MCEstimator
 
 
 class KraichnanOrszagTest(object):
@@ -82,7 +83,7 @@ class KraichnanOrszagTest(object):
                                                            ranges=ranges)
 
         # available labels
-        levels = ['sg', 'ref']
+        levels = ['ref']
         filenames = [self.radix + '.' + label + '.uqSetting.gz'
                      for label in levels]
         self.uqSettingsFilenames = dict(zip(levels, filenames))
@@ -116,14 +117,17 @@ class KraichnanOrszagTest(object):
             up.new().isCalled('y1').withUniformDistribution(-1, 1).hasValue(1.0)
             up.new().isCalled('y2').withUniformDistribution(-1, 1)
             up.new().isCalled('y3').withUniformDistribution(-1, 1).hasValue(0.0)
+            self.c_y2 = 0.1
         elif setting == 2:
             up.new().isCalled('y1').withUniformDistribution(-1, 1).hasValue(1.0)
             up.new().isCalled('y2').withUniformDistribution(-1, 1)
             up.new().isCalled('y3').withUniformDistribution(-1, 1)
+            self.c_y2 = 0.1
         elif setting == 3:
             up.new().isCalled('y1').withUniformDistribution(-1, 1)
             up.new().isCalled('y2').withUniformDistribution(-1, 1)
             up.new().isCalled('y3').withUniformDistribution(-1, 1)
+            self.c_y2 = 1.0
         else:
             raise AttributeError("setting '%i' is unknown" % setting)
 
@@ -157,27 +161,35 @@ class KraichnanOrszagTest(object):
 
         class KraichnanOrszagPreprocessor(Transformation):
 
+            def __init__(self, c_y2):
+                self.c_y2 = c_y2
+
             def unitToProbabilistic(self, p, *args, **kws):
                 y1, y2, y3 = p
-                return (y1, 0.1 * y2, y3)
+                return (y1, self.c_y2 * y2, y3)
 
             def probabilisticToUnit(self, q, *args, **kws):
                 y1, y2, y3 = q
-                return (y1, y2 * 10., y3)
+                return (y1, y2 / self.c_y2, y3)
 
         def postprocessor(res, **kws):
             return {'y1': res[:, 0], 'y2': res[:, 1], 'y3': res[:, 2]}
 
         # Simulation setting
         self.t0 = 0.
-        self.tn = 30.
         self.dt = .01
+        if self.setting == 1:
+            self.tn = 30.
+        elif self.setting == 2:
+            self.tn = 10.
+        elif self.setting == 3:
+            self.tn = 6.
 
         self.f = [lambda y, _: y[0] * y[2],
                   lambda y, _:-y[1] * y[2],
                   lambda y, _:-y[0] * y[0] + y[1] * y[1]]
 
-        self.preprocessor = KraichnanOrszagPreprocessor()
+        self.preprocessor = KraichnanOrszagPreprocessor(self.c_y2)
         self.simulation = simulation
         self.postprocessor = postprocessor
 
@@ -195,18 +207,6 @@ class KraichnanOrszagTest(object):
                 samples = mcSampler.nextSamples(n - uqSetting.getSize())
                 uqSetting.runSamples(samples)
             uqSetting.writeToFile()
-
-        res = uqSetting.getTimeDependentResults(self.toi, qoi=self.qoi)
-        self.E_ref = np.ndarray([len(self.toi)], dtype='float')
-        self.V_ref = np.ndarray([len(self.toi)], dtype='float')
-        self.refSize = np.ndarray([len(self.toi)], dtype='float')
-
-        for i, t in enumerate(self.toi):
-            # estimate moments
-            vals = res[t].values()
-            self.V_ref[i] = np.var(vals, ddof=1)
-            self.E_ref[i] = np.mean(vals)
-            self.refSize[i] = len(vals)
 
         def f(y, t):
             return [fi(y, t) for fi in self.f]
@@ -234,7 +234,7 @@ class KraichnanOrszagTest(object):
                .learnWithTest()
 
         # define uq setting
-        self.defineUQSetting(builder.defineUQSetting(), self.uqSettingsFilenames["sg"])
+        self.defineUQSetting(builder.defineUQSetting())
         
         samplerSpec = builder.defineSampler()
         samplerSpec.withGrid().withLevel(4)
@@ -252,74 +252,68 @@ class KraichnanOrszagTest(object):
 
         return builder
 
-    def defineUQSetting(self, builder, filename):
-        builder.fromFile(filename)\
-               .withPreprocessor(self.preprocessor)\
+    def defineUQSetting(self, builder, filename=None):
+        builder.withPreprocessor(self.preprocessor)\
                .withSimulation(self.simulation)\
                .withPostprocessor(self.postprocessor)\
                .withStartTime(self.t0)\
                .withTimestep(self.dt)\
                .withEndTime(self.tn)\
+	           .saveAfterEachRun(-1)\
                .verbose()
 
-    def run_mc(self, out, plot):
-        label = "mc"
-        results = {'surrogate': label,
-                   'sampling_strategy': 'latin_hypercube',
-                   'num_model_evaluations': self.uqSettings["ref"].getSize(),
-                   'time_steps': self.toi,
-                   'setting': self.setting,
-                   'num_dims': self.numDims,
-                   'qoi': self.qoi,
-                   'results': {}}
+        if filename is not None:
+            builder.fromFile(filename)
 
-        samples = self.uqSettings["ref"].getTimeDependentResults(self.toi, qoi=self.qoi)
+
+    def run_mc(self, N=10, out=False, plot=False):
+        # ----------------------------------------------------------
+        # dicretize the stochastic space with Monte Carlo
+        # ----------------------------------------------------------
+        np.random.seed(1234567)
+
+        print "-" * 60
+        print "Latin Hypercube Sampling"
+        print "-" * 60
+        mcSampler = MCSampler.withLatinHypercubeSampleGenerator(self.params, N)
+        mcUQSettingBuilder = UQBuilder()
+        self.defineUQSetting(mcUQSettingBuilder)
+        mcUQSetting = mcUQSettingBuilder.andGetResult()
+
+        # ----------------------------------------------------------
+        # Monte Carlo Estimator
+        # ----------------------------------------------------------
+        samples = mcSampler.nextSamples(N)
+        mcUQSetting.runSamples(samples)
+        samples = mcUQSetting.getTimeDependentResults(self.toi, qoi=self.qoi)
+
+        # split the results into chunk of Ni samples
+        num_samples = len(samples.itervalues().next())
         analysis = MCAnalysis(self.params, samples)
-        mc_mean, mc_var = analysis.mean(), analysis.var()
-#         mc_confidence_intervals = analysis.confidenceInterval()
+        analysis.setVerbose(False)
 
-        pathResults = os.path.join(self.pathResults, label)
-        for i, t in enumerate(self.toi):
-            # load results
-            A = np.ndarray((len(samples[t]), self.numDims + 1))
-            for j, (sample, value) in enumerate(samples[t].items()):
-                A[j, :-1] = sample.getActiveProbabilistic()
-                A[j, -1] = value
-
-            print "-" * 80
-            print "plot: t=%g (i=%i), N=%i" % (t, i, A.shape[0])
-
-            if out and plot:
-                if self.numDims < 3:
-                    if self.numDims == 1:
-                        fig = plt.figure()
-                        plotNodal1d(A)
-                    elif self.numDims == 2:
-                        fig, _ = plotNodal3d(A)
-
-                    fig.savefig(os.path.join(pathResults, "nodal_t%g.png" % t))
-                    plt.close(fig)
-
-                # write nodal values to file
-                writeDataARFF({"filename": os.path.join(pathResults, "nodal_t%g.arff" % t),
-                               "names": self.params.activeParams().getNames() + ["value"],
-                               "data": DataMatrix(A)})
-
-            results["results"][t] = {}
-            results["results"][t]["num_model_evaluations"] = A.shape[0]
-            results["results"][t]["mean_estimated"] = mc_mean[t]["value"]
-            results["results"][t]["var_estimated"] = mc_var[t]["value"]
-#             results["results"][t]["confidence_interval"] = mc_confidence_intervals[t][0]
-        # --------------------------------------------
+        stats = {"num_model_evaluations": num_samples,
+                 "mean_estimated": analysis.mean(),
+                 "var_estimated": analysis.var()}
 
         if out:
             # store results
             filename = os.path.join(self.pathResults,
-                                    "%s-qoi%s_%s.pkl" % (self.radix, self.qoi,
-                                                         label))
+                                    "%s-qoi%s_%s.pkl" % (self.radix,
+                                                         self.qoi,
+                                                         "mc"))
             fd = open(filename, "w")
-            pkl.dump(results, fd)
+            pkl.dump({'surrogate': 'mc',
+                      'num_dims': self.numDims,
+                      'sampling_strategy': "latin_hypercube",
+                      'num_model_evaluations': num_samples,
+                      'time_steps': self.toi,
+                      'setting': self.setting,
+                      'qoi': self.qoi,
+                      'results': stats},
+                     fd)
             fd.close()
+
 
     def runAnalysis(self, analysis, uqManager, alabel, blabel,
                     out, plot, results):
@@ -489,6 +483,9 @@ class KraichnanOrszagTest(object):
         while True:
             print "-" * 80
             print "level = %i, grid type = %s" % (level, gridTypeStr)
+            builder = UQBuilder()
+            self.defineUQSetting(builder)
+            uqSetting = builder.andGetResult()
             uqManager = TestEnvironmentSG().buildSetting(self.params,
                                                          level=level,
                                                          gridType=gridType,
@@ -498,7 +495,8 @@ class KraichnanOrszagTest(object):
                                                          boundaryLevel=boundaryLevel,
                                                          qoi=self.qoi,
                                                          toi=self.toi,
-                                                         uqSetting=self.uqSettings['sg'],
+                                                         saveAfterN=-1,
+                                                         uqSetting=uqSetting,
                                                          uqSettingRef=self.uqSettings['ref'])
 
             if uqManager.sampler.getSize() > maxGridSize:
@@ -509,9 +507,6 @@ class KraichnanOrszagTest(object):
             oldSize = uqManager.uqSetting.getSize()
             while uqManager.hasMoreSamples():
                 uqManager.runNextSamples()
-
-            if oldSize < uqManager.uqSetting.getSize():
-                uqManager.uqSetting.writeToFile()
             # ----------------------------------------------------------
             # specify ASGC estimator
             analysis = ASGCAnalysisBuilder().withUQManager(uqManager)\
@@ -569,6 +564,9 @@ class KraichnanOrszagTest(object):
         # ----------------------------------------------------------
         # define the learner
         # ----------------------------------------------------------
+        builder = UQBuilder()
+        self.defineUQSetting(builder)
+        uqSetting = builder.andGetResult()
         uqManager = TestEnvironmentSG().buildSetting(self.params,
                                                      level=level,
                                                      gridType=gridType,
@@ -582,7 +580,8 @@ class KraichnanOrszagTest(object):
                                                      boundaryLevel=boundaryLevel,
                                                      qoi=self.qoi,
                                                      toi=self.toi,
-                                                     uqSetting=self.uqSettings['sg'],
+                                                     saveAfterN=-1,  # dont save at all
+                                                     uqSetting=uqSetting,
                                                      uqSettingRef=self.uqSettings['ref'])
         # ----------------------------------------------
         # first run
@@ -618,14 +617,11 @@ class KraichnanOrszagTest(object):
                 pkl.dump(results, fd)
                 fd.close()
 
-        if oldSize < uqManager.uqSetting.getSize():
-            uqManager.uqSetting.writeToFile()
 
-
-def run_kraichnanOrszag_mc(setting, qoi,
+def run_kraichnanOrszag_mc(setting, qoi, numSamples,
                            out, plot):
     testSetting = KraichnanOrszagTest(setting, qoi)
-    testSetting.run_mc(out=out, plot=plot)
+    testSetting.run_mc(N=numSamples, out=out, plot=plot)
 
 def run_kraichnanOrszag_pce(sampler, expansion, maxNumSamples,
                             setting, qoi,
@@ -654,7 +650,7 @@ def run_kraichnanOrszag_sg(gridType, level, numGridPoints,
 if __name__ == "__main__":
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
-    parser.add_argument('--surrogate', default="sg", type=str, help="define which surrogate model should be used (sg, pce)")
+    parser.add_argument('--surrogate', default="sg", type=str, help="define which surrogate model should be used (sg, mc)")
     parser.add_argument('--setting', default=1, type=int, help='parameter settign for test problem')
     parser.add_argument('--qoi', default="y1", type=str, help="define the quantity of interest")
     parser.add_argument('--numGridPoints', default=1000, type=int, help='maximum number of grid points')
@@ -671,15 +667,7 @@ if __name__ == "__main__":
     parser.add_argument('--out', default=False, action='store_true', help='save plots to file')
 
     args = parser.parse_args()
-    if args.surrogate == "pce":
-        run_kraichnanOrszag_pce(args.sampler,
-                                args.expansion,
-                                args.maxSamples,
-                                args.setting,
-                                args.qoi,
-                                args.out,
-                                args.plot)
-    elif args.surrogate == "sg":
+    if args.surrogate == "sg":
         run_kraichnanOrszag_sg(args.gridType,
                                args.level,
                                args.numGridPoints,
@@ -693,5 +681,6 @@ if __name__ == "__main__":
     else:
         run_kraichnanOrszag_mc(args.setting,
                                args.qoi,
+                               args.maxSamples,
                                args.out,
                                args.plot)

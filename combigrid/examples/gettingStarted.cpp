@@ -337,7 +337,7 @@ void example5() {
    * by the CombiHierarchies class.
    */
   grids.push_back(sgpp::combigrid::CombiHierarchies::linearLeja(3));
-  grids.push_back(sgpp::combigrid::CombiHierarchies::expUniform());
+  grids.push_back(sgpp::combigrid::CombiHierarchies::expUniformBoundary());
 
   /**
    * The next thing we have to configure is the linear operation that is performed in those
@@ -410,7 +410,7 @@ void example6() {
    * To create a CombigridOperation, we currently have to use the longer way as in example 5.
    */
   sgpp::combigrid::CombiHierarchies::Collection grids(
-      d, sgpp::combigrid::CombiHierarchies::expUniform());
+      d, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
   sgpp::combigrid::CombiEvaluators::Collection evaluators(
       d, sgpp::combigrid::CombiEvaluators::cubicSplineInterpolation());
   std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(

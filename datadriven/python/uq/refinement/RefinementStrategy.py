@@ -252,9 +252,6 @@ class VarianceOptRanking(Ranking):
                                                                            gpswi, basis,
                                                                            [gpi], basis,
                                                                            self.W, self.D)
-        b, _ = self._estimationStrategy.computeSystemMatrixForMeanList(gs,
-                                                                       gpswi, basis,
-                                                                       self.W, self.D)
         return np.dot(w, A)
 
     def compute_mean_uwi(self, gs, gpswi, w, basis):
@@ -262,7 +259,7 @@ class VarianceOptRanking(Ranking):
                                                                        gpswi, basis,
                                                                        self.W, self.D)
         return np.dot(w, b)
-    
+
     def compute_mean_phii(self, gs, gpi, basisi):
         mean_phii, _ = self._estimationStrategy.computeSystemMatrixForMeanList(gs, [gpi], basisi,
                                                                                self.W, self.D)

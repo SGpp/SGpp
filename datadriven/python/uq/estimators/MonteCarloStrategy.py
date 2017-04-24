@@ -53,10 +53,12 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
             ans = W.rvs(self.__n)
 
             # transform them to the unit hypercube
+            jointT = JointTransformation()
+            for Ti in T:
+                jointT.add(Ti, Ti.getSize())
+
             for i in xrange(ans.shape[0]):
-                # transform them to the unit hypercube
-                ans[i, :] = np.array([T[j].probabilisticToUnit(ans[i, j])
-                                      for j in xrange(len(T))])
+                ans[i, :] = jointT.probabilisticToUnit(ans[i, :])
         else:
             # bootstrapping on the available samples
             if bootstrapping:

@@ -374,8 +374,11 @@ void KernelDensityEstimator::computeAndSetOptKDEbdwth() {
   switch (bandwidthOptimizationType) {
     case BandwidthOptimizationType::NONE:
       break;
-    case BandwidthOptimizationType::RULEOFTHUMB:
-      RuleOfThumb::optimizeBandwidths(this, sigma);
+    case BandwidthOptimizationType::SILVERMANSRULE:
+      SilvermansRule::optimizeBandwidths(this, sigma);
+      break;
+    case BandwidthOptimizationType::SCOTTSRULE:
+      ScottsRule::optimizeBandwidths(this, sigma);
       break;
     case BandwidthOptimizationType::MAXIMUMLIKELIHOOD:
       MaximumLikelihoodCrossValidation::optimizeBandwidths(this, sigma);
@@ -501,8 +504,6 @@ KernelType EpanechnikovKernel::getType() { return KernelType::EPANECHNIKOV; }
 // ----------------------------------------------------------------------------------
 // bandwidth optimizers
 
-RuleOfThumb::~RuleOfThumb() {}
-
 double RuleOfThumb::getSampleMean(base::DataVector& data) {
   double res = 0.;
   size_t n = data.getSize();
@@ -532,8 +533,8 @@ double RuleOfThumb::getSampleVariance(base::DataVector& data) {
 double RuleOfThumb::getSampleStd(base::DataVector& data) {
   return std::sqrt(getSampleVariance(data));
 }
-
-void RuleOfThumb::optimizeBandwidths(KernelDensityEstimator* kde, base::DataVector& bandwidths) {
+// ----------------------------------------------------------------------------------
+void SilvermansRule::optimizeBandwidths(KernelDensityEstimator* kde, base::DataVector& bandwidths) {
   size_t numDims = kde->getDim();
   bandwidths.resize(numDims);
 
@@ -571,7 +572,7 @@ void RuleOfThumb::optimizeBandwidths(KernelDensityEstimator* kde, base::DataVect
     }
 
     // compute the standard deviation
-    stdd = getSampleStd(*samples1d);
+    stdd = RuleOfThumb::getSampleStd(*samples1d);
 
     // compute the bandwidth in dimension idim
     bandwidths[idim] =
@@ -580,6 +581,27 @@ void RuleOfThumb::optimizeBandwidths(KernelDensityEstimator* kde, base::DataVect
         stdd * std::pow(static_cast<double>(numSamples), -1. / (static_cast<double>(numDims) + 4.));
   }
 }
+// ----------------------------------------------------------------------------------
+void ScottsRule::optimizeBandwidths(KernelDensityEstimator* kde, base::DataVector& bandwidths) {
+  size_t numDims = kde->getDim();
+  bandwidths.resize(numDims);
+
+  std::shared_ptr<base::DataVector> samples1d;
+  double stdd;
+
+  for (size_t idim = 0; idim < numDims; idim++) {
+    samples1d = kde->getSamples(idim);
+    size_t numSamples = samples1d->getSize();
+
+    // compute the standard deviation
+    stdd = RuleOfThumb::getSampleStd(*samples1d);
+
+    // compute the bandwidth in dimension idim
+    bandwidths[idim] =
+        stdd * std::pow(static_cast<double>(numSamples), -1. / (static_cast<double>(numDims) + 4.));
+  }
+}
+// ----------------------------------------------------------------------------------
 
 KDEMaximumLikelihoodCrossValidation::KDEMaximumLikelihoodCrossValidation(
     KernelDensityEstimator& kde, size_t kfold, std::uint64_t seedValue)
@@ -631,7 +653,6 @@ KDEMaximumLikelihoodCrossValidation::KDEMaximumLikelihoodCrossValidation(
   }
 }
 
-MaximumLikelihoodCrossValidation::~MaximumLikelihoodCrossValidation() {}
 void MaximumLikelihoodCrossValidation::optimizeBandwidths(KernelDensityEstimator* kde,
                                                           base::DataVector& bandwidths) {
   KDEMaximumLikelihoodCrossValidation f(*kde);
