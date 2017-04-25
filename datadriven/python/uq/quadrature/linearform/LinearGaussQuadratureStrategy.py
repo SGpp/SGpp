@@ -3,6 +3,8 @@ Created on Aug 6, 2014
 
 @author: franzefn
 """
+import numpy as np
+
 from LinearQuadratureStrategy import LinearQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.operations import getBoundsOfSupport, bsplineGridTypes
 from pysgpp.extensions.datadriven.uq.dists.Uniform import Uniform
