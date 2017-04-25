@@ -98,7 +98,6 @@ datadriven/tests/uq/dists/co2
 datadriven/tests/uq/dists/dist
 datadriven/tests/uq/dists/sgde
 datadriven/tests/uq/dists/*.arff
-datadriven/tests/uq/dists/*.csv
 datadriven/tests/uq/dists/twoMoons/data/*
 datadriven/tests/uq/dists/twoMoons/plots/*
 datadriven/tests/uq/analysis/genz/plots/
