@@ -2,6 +2,7 @@ import numpy as np
 
 from EstimatedDist import EstimatedDist
 from Normal import Normal
+from Beta import Beta
 from Dist import Dist
 
 from pysgpp.extensions.datadriven.uq.jsonLib import reprVal
@@ -146,6 +147,21 @@ class NatafDist(EstimatedDist):
 
     def getDistributions(self):
         return [self]
+
+    def marginalizeToDimX(self, idim):
+        if self.params["name"] == "normal":
+            return Normal(self.params["mean"],
+                          self.params["stddev"],
+                          self.bounds[idim][0],
+                          self.bounds[idim][1])
+        elif self.params["name"] == "beta":
+            return Beta(self.params["alpha"],
+                        self.params["beta"],
+                        self.params["lwr"],
+                        self.params["upr"] - self.params["lwr"])
+        else:
+            raise AttributeError("marginalization impossible")
+
 
     def __str__(self):
         return "NatafDist"

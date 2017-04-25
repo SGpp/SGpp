@@ -17,6 +17,11 @@ def rgbTpInt(rgb):
     i = (red << 16) + (green << 8) + blue
     return i
 
+def load_default_color_map(dtype="cmap"):
+    if dtype == "cmap":
+        return plt.get_cmap('viridis')
+    else:
+        return 'viridis'
 
 def load_color(i):
     colors = list(plt.rcParams['axes.prop_cycle'])
@@ -47,19 +52,14 @@ def load_font_properties(size=None,
 #     return colors
 
 def savefig(fig, filename, lgd=None, tikz=True, mpl3d=False):
-    fig.tight_layout()
     if mpl3d:
         fig.savefig("%s.png" % filename)
         fig.savefig("%s.pdf" % filename)
     else:
+        fig.tight_layout()
         if lgd is None:
             fig.savefig("%s.png" % filename, bbox_inches='tight')
             fig.savefig("%s.pdf" % filename, bbox_inches='tight')
-            if tikz:
-                try:
-                    tikz_save("%s.tex" % filename)
-                except:
-                    pass
         else:
             fig.savefig("%s.png" % filename,
                         bbox_extra_artists=(lgd,),
@@ -67,11 +67,11 @@ def savefig(fig, filename, lgd=None, tikz=True, mpl3d=False):
             fig.savefig("%s.pdf" % filename,
                         bbox_extra_artists=(lgd,),
                         bbox_inches='tight')
-            if tikz:
-                try:
-                    tikz_save("%s.tex" % filename)
-                except:
-                    pass
+        if tikz:
+            try:
+                tikz_save("%s.tex" % filename, fig, econding="utf8")
+            except:
+                pass
 
     plt.close(fig)
 

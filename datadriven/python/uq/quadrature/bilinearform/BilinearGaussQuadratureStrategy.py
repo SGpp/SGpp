@@ -3,6 +3,8 @@ Created on Aug 6, 2014
 
 @author: franzefn
 """
+import numpy as np
+
 from BilinearQuadratureStrategy import BilinearQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.operations import getBoundsOfSupport, bsplineGridTypes
 from pysgpp.extensions.datadriven.uq.dists.Uniform import Uniform
@@ -38,8 +40,10 @@ class BilinearGaussQuadratureStrategy(BilinearQuadratureStrategy):
         else:
             # ----------------------------------------------------
             # use scipy for integration
+            bounds = self._U[d].getBounds()
             if self._U is None or (isinstance(self._U[d], Uniform) and \
-                                   self._U[d].getBounds() == [0.0, 1.0]):
+                                   np.abs(bounds[0]) < 1e-14 and \
+                                   np.abs(bounds[1] - 1.0) < 1e-14):
                 def f(p):
                     return basisi.eval(lid, iid, p) * \
                         basisj.eval(ljd, ijd, p)

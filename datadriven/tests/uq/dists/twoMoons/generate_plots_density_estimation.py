@@ -358,13 +358,17 @@ def plotDataset(functionName, numSamples=10000, numDims=2, out=False):
     plt.ylabel(r"$\xi_2$")
     plt.xlim(bounds[0])
     plt.ylim(bounds[1])
+    xticks = np.arange(0, 1.2, 0.2)
+    plt.xticks(xticks, [str(xi) for xi in xticks])
+    plt.yticks(xticks, [str(xi) for xi in xticks])
     plt.title("Two-moons dataset",
               fontproperties=load_font_properties())
 
     if out:
-        savefig(fig,
-                os.path.join("plots", "%s_dataset" % functionName),
-                tikz=True)
+        filename = os.path.join("plots", "%s_dataset" % functionName)
+        print filename
+        fig.set_size_inches(5.7, 5, forward=True)
+        savefig(fig, filename, tikz=True)
         plt.close(fig)
     else:
         plt.show()
@@ -389,12 +393,16 @@ def plotDensities(densities, functionName, out=False):
             plotDensity2d(U, color_bar_label=label)
             plt.xlabel(r"$\xi_1$")
             plt.ylabel(r"$\xi_2$")
+            xticks = np.arange(0, 1.2, 0.2)
+            plt.xticks(xticks, [str(xi) for xi in xticks])
+            plt.yticks(xticks, [str(xi) for xi in xticks])
             plt.title(title,
                       fontproperties=load_font_properties())
             if out:
-                savefig(fig,
-                        os.path.join("plots", "%s_%s" % (functionName, setting)),
-                        tikz=True)
+                filename = os.path.join("plots", "%s_%s" % (functionName, setting))
+                print filename
+                fig.set_size_inches(5.7, 5, forward=True)
+                savefig(fig, filename, tikz=True)
                 plt.close(fig)
             
     if not out:
@@ -415,10 +423,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     densities = loadDensities(args.function)
-    plotpvalueofChi2IndependenceTest(densities, args.function, c=0.0, out=args.out)
-    plotpvalueofChi2IndependenceTest(densities, args.function, c=0.25, out=args.out)
+#     plotpvalueofChi2IndependenceTest(densities, args.function, c=0.0, out=args.out)
+#     plotpvalueofChi2IndependenceTest(densities, args.function, c=0.25, out=args.out)
 #     plotLogLikelihood(densities, args.function, args.out)
-    plotpvalueofKolmogorovSmirnovTest(densities, args.function, args.out)
+#     plotpvalueofKolmogorovSmirnovTest(densities, args.function, args.out)
 #     plotDensities(densities, args.function, out=args.out)
-#     plotDataset(args.function, out=args.out)
+    plotDataset(args.function, out=args.out)
 #     plotCovarianceConvergence(densities, "mult_beta", args.out)

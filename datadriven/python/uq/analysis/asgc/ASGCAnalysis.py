@@ -98,8 +98,18 @@ class ASGCAnalysis(Analysis):
         trans = self.__params.getJointTransformation()
         return trans.probabilisticToUnitMatrix(samples)
 
-    def estimateDensity(self, ts=[0], n=10000, dtype="kde", config={}):
-        samples = self.generateUnitSamples(n)
+    def estimateDensity(self,
+                        ts=[0],
+                        n=10000,
+                        dtype="kde",
+                        samples=None,
+                        config={}):
+        if samples is None:
+            samples = self.generateUnitSamples(n)
+        else:
+            trans = self.__params.getJointTransformation()
+            samples = trans.probabilisticToUnitMatrix(samples)
+
         time_dependent_values = np.vstack(self.eval(samples, ts=ts))
 
         if len(ts) == 1:

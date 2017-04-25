@@ -30,6 +30,7 @@ from work.probabilistic_transformations_for_inference.preconditioner import Chri
 from work.probabilistic_transformations_for_inference.convergence_study import eval_pce, compute_coefficients
 from work.probabilistic_transformations_for_inference.sampling import ApproximateFeketeSampleGeneratorStrategy, \
     TensorQuadratureSampleGenerationStrategy, LejaSampleGeneratorStrategy
+from pysgpp.extensions.datadriven.uq.plot.plot2d import plotFunction2d
 
 
 class IshigamiSudret2008(object):
@@ -56,6 +57,7 @@ class IshigamiSudret2008(object):
             return np.sin(x1) + a * np.sin(x2) ** 2 + b * x3 ** 4 * np.sin(x1)
 
         self.simulation = f
+
         # --------------------------------------------------------
         # analytic reference values
         # --------------------------------------------------------

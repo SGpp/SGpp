@@ -6,6 +6,7 @@
 from pysgpp.extensions.datadriven.uq.dists.KDEDist import KDEDist
 from pysgpp.extensions.datadriven.uq.dists.SGDEdist import SGDEdist
 from scipy.stats.mstats_basic import moment
+from pysgpp.pysgpp_swig import BandwidthOptimizationType_SILVERMANSRULE
 """
 @file    ASGC.py
 @author  Fabian Franzelin <franzefn@ipvs.uni-stuttgart.de>
@@ -182,7 +183,9 @@ class Analysis(object):
             bounds = np.ndarray((1, 2))
             bounds[:, 0] = np.min(samples)
             bounds[:, 1] = np.max(samples)
-            return KDEDist(samples, bounds=bounds)
+            return KDEDist(samples,
+                           bandwidthOptimizationType=BandwidthOptimizationType_SILVERMANSRULE,
+                           bounds=bounds)
         elif dtype == "sgde":
             # compute bounds of samples
             bounds = np.ndarray((1, 2))

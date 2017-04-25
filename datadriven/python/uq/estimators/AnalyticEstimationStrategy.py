@@ -68,7 +68,14 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
             # the distribution is given analytically, handle them
             # analytically in the integration of the basis functions
             if isinstance(dist, Dist) and len(dims) > 1:
-                raise AttributeError('analytic quadrature not supported for multivariate distributions')
+#                 print "WARNINING: results are just approximated -> not independent random variables"
+                # marginalize the densities and continue
+                marg_dists = [None] * len(dims)
+                for i, idim in enumerate(dims):
+                    marg_dists[i] = dist.marginalizeToDimX(idim)
+                dist = marg_dists
+                trans = trans.getTransformations()
+
             if isinstance(dist, Dist):
                 dist = [dist]
                 trans = [trans]
@@ -151,7 +158,13 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
             # the distribution is given analytically, handle them
             # analytically in the integration of the basis functions
             if isinstance(dist, Dist) and len(dims) > 1:
-                raise AttributeError('analytic quadrature not supported for multivariate distributions')
+#                 print "WARNINING: results are just approximated -> not independent random variables"
+                # marginalize the densities and continue
+                marg_dists = [None] * len(dims)
+                for i, idim in enumerate(dims):
+                    marg_dists[i] = dist.marginalizeToDimX(idim)
+                dist = marg_dists
+                trans = trans.getTransformations()
 
             if isinstance(dist, Dist):
                 dist = [dist]

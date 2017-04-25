@@ -44,9 +44,7 @@ class KDEDist(EstimatedDist):
                                                kernelType,
                                                bandwidthOptimizationType)
 
-
     def pdf(self, x):
-        # transform the samples to the unit hypercube
         x = self._convertEvalPoint(x)
         x_matrix = DataMatrix(x)
         res_vec = DataVector(x.shape[0])
@@ -59,7 +57,6 @@ class KDEDist(EstimatedDist):
             return res
 
     def cdf(self, x, shuffle=False):
-        # transform the samples to the unit hypercube
         x = self._convertEvalPoint(x)
         x_matrix = DataMatrix(x)
         res_matrix = DataMatrix(x_matrix.getNrows(), x_matrix.getNcols())
@@ -81,7 +78,6 @@ class KDEDist(EstimatedDist):
             return res
 
     def ppf(self, x, shuffle=False):
-        # transform the samples to the unit hypercube
         x = self._convertEvalPoint(x)
         x_matrix = DataMatrix(x)
         res_matrix = DataMatrix(x_matrix.getNrows(), x_matrix.getNcols())
