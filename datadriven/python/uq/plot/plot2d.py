@@ -200,7 +200,7 @@ def plotFunction2d(f, addContour=True, n=101,
 def plotSG2d(grid, alpha, addContour=True, n=100,
              show_negative=False, show_grid_points=False,
              show_numbers=False,
-             colorbarLabel=r"$\hat{f}_{\mathcal{I}}(\boldsymbol{\xi})$",
+             colorbarLabel=r"$\hat{f}_{\mathcal{I}}(\xi)$",
              levels=None,
              clabels=None,
              manual_locations=None):
