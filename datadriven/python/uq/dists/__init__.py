@@ -43,6 +43,9 @@ from SGDEdist import SGDEdist
 from LibAGFDist import LibAGFDist
 from DTreesDist import DTreesDist
 from KDEDist import KDEDist
-from NatafDist import NatafDist
+try:
+    from NatafDist import NatafDist
+except:
+    pass
 
 # import optimization

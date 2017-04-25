@@ -33,7 +33,7 @@ from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
 class SGDEdistTest(unittest.TestCase):
 
     def testExpPoly2d(self):
-        trainSamples = np.loadtxt("/home/franzefn/Promotion/UQ/matlab/sgpp/exp_2d.csv").T
+        trainSamples = np.loadtxt("exp_2d.csv").T
         # build parameter set
         dist = SGDEdist.byLearnerSGDEConfig(trainSamples,
                                             config={"grid_level": 3,
@@ -81,7 +81,7 @@ class SGDEdistTest(unittest.TestCase):
 #                                                     "sgde_makePositive_interpolationAlgorithm": "setToZero",
 #                                                     "sgde_makePositive_verbose": True,
 #                                                     "sgde_unitIntegrand": True})
-# 
+#
 #         fig, ax = plotDensity3d(dist)
 #         ax.scatter(trainSamples[:, 0], trainSamples[:, 1], np.zeros(trainSamples.shape[0]))
 #         ax.set_title("%.12f" % dist.vol)
@@ -95,7 +95,7 @@ class SGDEdistTest(unittest.TestCase):
 #         np.random.seed(1234567)
 #         trainSamples = np.array([U.rvs(1000)]).T
 #         testSamples = np.array([U.rvs(1000)]).T
-# 
+#
 #         # build parameter set
 #         dist = SGDEdist.byLearnerSGDEConfig(trainSamples,
 #                                             config={"grid_level": 5,
@@ -116,7 +116,7 @@ class SGDEdistTest(unittest.TestCase):
 #                                                     "sgde_makePositive_verbose": True,
 #                                                     "sgde_unitIntegrand": False},
 #                                             bounds=np.array([U.getBounds()]))
-# 
+#
 #         print dist.alpha.min(), dist.alpha.max(), dist.vol
 #         fig = plt.figure()
 #         plotDensity1d(U)
@@ -128,11 +128,11 @@ class SGDEdistTest(unittest.TestCase):
 # #                                                                        dist.var(),
 # #                                                                        np.abs(np.var(trainSamples) - dist.var()) / np.var(trainSamples)
 # #                                                                        ))
-# 
+#
 # #         print "1d: mean = %g ~ %g (err=%g)" % (np.mean(trainSamples), dist.mean(), np.abs(np.mean(trainSamples) - dist.mean()) / np.mean(trainSamples))
 # #         print "1d: var = %g ~ %g (err=%g)" % (np.var(trainSamples), dist.var(), np.abs(np.var(trainSamples) - dist.var()) / np.var(trainSamples))
 #         plt.show()
-# 
+#
 #         print "KL = %g" % U.klDivergence(dist, testSamples, testSamples)
 #         print "CE = %g" % dist.crossEntropy(testSamples)
 #         print "MSE = %g" % dist.l2error(U, testSamples, testSamples)
@@ -468,39 +468,39 @@ class SGDEdistTest(unittest.TestCase):
 #         # prepare data
 #         U = dists.Normal(0.5, 2, -8, 8)
 # #         U = dists.Normal(0.5, .2, 0, 1)
-# 
+#
 #         # define linear transformation
 #         trans = JointTransformation()
 #         a, b = U.getBounds()
 #         trans.add(LinearTransformation(a, b))
-# 
+#
 #         # get a sparse grid approximation
 #         grid = Grid.createLinearGrid(U.getDim())
 #         grid.getGenerator().regular(5)
 #         gs = grid.getStorage()
-# 
+#
 #         # now refine adaptively 5 times
 #         p = DataVector(gs.getDimension())
 #         nodalValues = np.ndarray(gs.getSize())
-# 
+#
 #         # set function values in alpha
 #         for i in xrange(gs.getSize()):
 #             gs.getPoint(i).getStandardCoordinates(p)
 #             nodalValues[i] = U.pdf(trans.unitToProbabilistic(p.array()))
-# 
+#
 #         # hierarchize
 #         alpha = hierarchize(grid, nodalValues)
-# 
+#
 #         dist = SGDEdist(grid, alpha, bounds=U.getBounds())
-# 
+#
 #         fig = plt.figure()
 #         plotDensity1d(U)
 #         fig.show()
-# 
+#
 #         fig = plt.figure()
 #         plotSG1d(dist.grid, dist.alpha, show_grid_points=True)
 #         fig.show()
-# 
+#
 #         print "1d: mean = %g ~ %g" % (U.mean(), dist.mean())
 #         print "1d: var = %g ~ %g" % (U.var(), dist.var())
 #         plt.show()
