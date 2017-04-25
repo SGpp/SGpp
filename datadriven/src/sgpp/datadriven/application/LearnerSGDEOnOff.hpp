@@ -23,6 +23,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <iomanip>
 
 namespace sgpp {
 namespace datadriven {

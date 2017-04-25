@@ -62,6 +62,27 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& tr
   offline->buildMatrix();
   offline->decomposeMatrix();
 
+  //  DBMatOfflineChol offlineRef(dconf);
+  //  offlineRef.buildMatrix();
+  //  offlineRef.decomposeMatrix();
+  //
+  //  auto& icholMat = offline->getDecomposedMatrix();
+  //  auto& cholMat = offlineRef.getDecomposedMatrix();
+  //
+  //  for (auto i = 0u; i < cholMat.getNrows(); i++) {
+  //    for (auto j = i + 1; j < cholMat.getNcols(); j++) {
+  //      cholMat.set(i, j, 0.0);
+  //      icholMat.set(i, j, 0.0);
+  //    }
+  //  }
+  //
+  //  cholMat.sub(icholMat);
+  //  cholMat.abs();
+  //  cholMat.sqr();
+  //  std::cout << "norm with " << dconf.icholParameters.sweepsDecompose
+  //            << " sweeps is: " << std::scientific << std::setprecision(10) << sqrt(cholMat.sum())
+  //            << "\n";
+
   // initialize density functions for each class
   densityFunctions.reserve(numClasses);
   // if the Cholesky decomposition is chosen declare separate Online-objects for
@@ -499,8 +520,8 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
   MultiGridRefinementFunctor* func = nullptr;
 
   // Zero-crossing-based refinement
-  ZeroCrossingRefinementFunctor funcZrcr{grids, alphas, offline->getConfig().ref_noPoints_,
-                                         levelPenalize, preCompute};
+  ZeroCrossingRefinementFunctor funcZrcr{
+      grids, alphas, offline->getConfig().ref_noPoints_, levelPenalize, preCompute};
 
   // Data-based refinement. Needs a problem dependent coeffA. The values
   // can be determined by testing (aim at ~10 % of the training data is
@@ -513,8 +534,9 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
   DataMatrix* trainDataRef = &(trainData.getData());
   DataVector* trainLabelsRef = &(trainData.getTargets());
   DataBasedRefinementFunctor funcData = DataBasedRefinementFunctor{
-      grids,         alphas, trainDataRef, trainLabelsRef, offline->getConfig().ref_noPoints_,
-      levelPenalize, coeffA};
+      grids,                              alphas,        trainDataRef, trainLabelsRef,
+      offline->getConfig().ref_noPoints_, levelPenalize, coeffA};
+
   if (refType == "zero") {
     func = &funcZrcr;
   } else if (refType == "data") {
