@@ -15,6 +15,8 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSDenseIChol.hpp>
 
+#include <iomanip>
+
 namespace sgpp {
 namespace datadriven {
 
@@ -54,6 +56,18 @@ void DBMatOnlineDEChol::solveSLE(DataVector& b, bool do_cv) {
   // Solve for density declaring coefficients alpha
   // std::cout << "lambda: " << lambda << std::endl;
   cholsolver->solve(lhsMatrix, alpha, b, old_lambda, lambda);
+
+  //  DBMatDMSChol myCholSolver;
+  //  DataVector myAlpha{alpha.getSize()};
+  //  myCholSolver.solve(lhsMatrix, myAlpha, b, old_lambda, lambda);
+  //
+  //  myAlpha.sub(alpha);
+  //  myAlpha.abs();
+  //  myAlpha.sqr();
+  //  auto res = sqrt(myAlpha.sum());
+  //  std::cout << "solving with " << offlineObject.getConfig().icholParameters.sweepsSolver
+  //            << " sweeps results in error: " << std::scientific << std::setprecision(10) << res
+  //            << "\n";
 }
 
 DBMatDMSChol* DBMatOnlineDEChol::buildCholSolver(DBMatOffline& offlineObject, bool doCV) const {
@@ -64,7 +78,6 @@ DBMatDMSChol* DBMatOnlineDEChol::buildCholSolver(DBMatOffline& offlineObject, bo
       return new DBMatDMSChol();
       break;
     case(DBMatDecompostionType::DenseIchol) :
-
       return new DBMatDMSDenseIChol(offlineObject.getConfig().icholParameters,
                                     offlineObject.getGrid(), offlineObject.getConfig().lambda_,
                                     doCV);
