@@ -25,6 +25,8 @@ from plot1d import (plotFunction1d,
                     plotSobolIndices)
 
 from plot2d import (plotSGDE2d,
+                    plotTimedependentDensity2dWithRawData,
+                    plotTimedependentDensity2d,
                     plotDensity2d,
                     plotSG2d,
                     plotSamples2d,
@@ -38,7 +40,8 @@ from plot3d import (plotFunction3d,
                     plotGrid3d,
                     plotNodal3d,
                     plotSGNodal3d,
-                    plotError3d)
+                    plotError3d,
+                    insert_labels_3d)
 
 from plotGrid import plotGrid
 
@@ -50,8 +53,7 @@ from colors import intToRGB, rgbTpInt, load_color, load_marker, load_font, \
 try:
     import matplotlib as mpl
     import matplotlib.pyplot as plt
-    from colors import load_font
-
+    from colors import load_font, load_default_color_map
     from mpltools import layout
 
     pysgpp_uq_font = load_font()
@@ -78,7 +80,8 @@ try:
                                 'xtick.labelsize': pysgpp_uq_font["size"],
                                 'ytick.labelsize': pysgpp_uq_font["size"],
                                 'axes.unicode_minus': True,
-                                'figure.figsize': (5, 4.5)
+                                'figure.figsize': (5, 4.5),
+                                'image.cmap': load_default_color_map(dtype="string")
                                 }
     mpl.rcParams.update(pgf_with_custom_preamble)
 

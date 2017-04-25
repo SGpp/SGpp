@@ -18,13 +18,15 @@ from pysgpp.extensions.datadriven.uq.plot.plot3d import plotFunction3d, plotSG3d
 from pysgpp.extensions.datadriven.uq.estimators.MCEstimator import MCEstimator
 from pysgpp.extensions.datadriven.uq.sampler.MCSampler import MCSampler
 from pysgpp.extensions.datadriven.uq.analysis.mc.MCAnalysis import MCAnalysis
-from pysgpp.pysgpp_swig import GridType_PolyBoundary, Grid
+from pysgpp.pysgpp_swig import GridType_PolyBoundary, Grid, DataMatrix
 from pysgpp.extensions.datadriven.uq.dists.NatafDist import NatafDist
 from argparse import ArgumentParser
 from pysgpp.extensions.datadriven.uq.models.testEnvironments import TestEnvironmentSG
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunction
-from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d
-from pysgpp.extensions.datadriven.uq.plot.colors import savefig
+from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d, \
+    plotFunction2d, plotSG2d, plotSamples2d
+from pysgpp.extensions.datadriven.uq.plot.colors import savefig, load_color, \
+    insert_legend
 
 
 class AnovaGenzTest(object):
@@ -46,14 +48,6 @@ class AnovaGenzTest(object):
                                              bounds=np.array([[0, 1], [0, 1]]))
 
         # --------------------------------------------------------
-        if False:
-            fig = plt.figure()
-            plotDensity2d(self.dist,
-                          color_bar_label=r'$f(\xi_1, \xi_2)$')
-            plt.xlabel(r"$\xi_1$")
-            plt.ylabel(r"$\xi_2$")
-            savefig(fig, "plots/correlated_beta_2d")
-        # --------------------------------------------------------
         # set distributions of the input parameters
         # --------------------------------------------------------
         builder = ParameterBuilder()
@@ -72,6 +66,45 @@ class AnovaGenzTest(object):
             return np.cos(np.sum(c * x))
 
         self.simulation = f
+
+        # --------------------------------------------------------
+        def insert_labels(ax, zlabel):
+            ax.set_xticks([0, 0.5, 1])
+            ax.set_yticks([0, 0.5, 1])
+            ax.set_xlabel(r"$\xi_1$")
+            ax.set_ylabel(r"$\xi_2$")
+            ax.set_zlabel(zlabel)
+            ax.xaxis.labelpad = 13
+            ax.yaxis.labelpad = 13
+            ax.zaxis.labelpad = 10
+
+        if False:
+            fig = plt.figure()
+            plotFunction2d(self.dist.pdf,
+                           color_bar_label=r'$f(\xi_1, \xi_2)$',
+                           addContour=False)
+            plt.xlabel(r"$\xi_1$")
+            plt.ylabel(r"$\xi_2$")
+            savefig(fig, "plots/correlated_beta_2d", tikz=False)
+
+            fig = plt.figure()
+            fig, ax, _ = plotFunction3d(self.dist.pdf)
+            insert_labels(ax, r"$f(\xi_1, \xi_2)$")
+            savefig(fig, "plots/correlated_beta_3d", tikz=False)
+        # --------------------------------------------------------
+        if False:
+            fig = plt.figure()
+            plotFunction2d(self.simulation,
+                           color_bar_label=r'$u(\xi_1, \xi_2)$',
+                           addContour=False)
+            plt.xlabel(r"$\xi_1$")
+            plt.ylabel(r"$\xi_2$")
+            savefig(fig, "plots/oscillating_genz_2d", tikz=False)
+
+            fig, ax, _ = plotFunction3d(self.simulation)
+            insert_labels(ax, r"$u(\xi_1, \xi_2)$")
+            savefig(fig, "plots/oscillating_genz_3d", mpl3d=True)
+        # --------------------------------------------------------
 
     def getTestSamples(self, num_samples=1000, dtype="unit"):
         test_samples = self.dist.rvs(num_samples)
@@ -192,7 +225,7 @@ class AnovaGenzTest(object):
                                                          gridType,
                                                          deg=20,
                                                          maxGridSize=maxGridSize,
-                                                         boundaryLevel=boundaryLevel,
+                                                         boundaryLevel=min(level, boundaryLevel),
                                                          knowledgeTypes=[KnowledgeTypes.SIMPLE])
 
             if uqManager.sampler.getSize() > maxGridSize:
@@ -204,6 +237,20 @@ class AnovaGenzTest(object):
             while uqManager.hasMoreSamples():
                 uqManager.runNextSamples()
 
+            # ----------------------------------------------------------
+            if False:
+                grid, alpha = uqManager.knowledge.getSparseGridFunction()
+                samples = DataMatrix(grid.getSize(), self.numDims)
+                grid.getStorage().getCoordinateArrays(samples)
+                samples = self.dist.ppf(samples.array())
+                fig = plt.figure()
+                plotFunction2d(self.simulation, color_bar_label=r"$u(\xi_1, \xi_2)$")
+                plt.scatter(samples[:, 0], samples[:, 1], color=load_color(3),
+                            label=r"SG (CC-bound., $\ell=%i, \ell^{\text{b}}=%i$)" % (level, boundaryLevel))
+                plt.xlabel(r"$\xi_1$")
+                plt.xlabel(r"$\xi_2$")
+                lgd = insert_legend(fig, loc="bottom", ncol=1)
+                savefig(fig, "plots/genz_with_grid_l%i_b%i" % (level, boundaryLevel), lgd, tikz=False)
             # ----------------------------------------------------------
             # specify ASGC estimator
             analysis = ASGCAnalysisBuilder().withUQManager(uqManager)\
@@ -236,11 +283,12 @@ class AnovaGenzTest(object):
 
         if out:
             # store results
-            radix = "%s_sg_d%i_%s_Nmax%i_N%i" % (self.radix,
-                                                 self.numDims,
-                                                 grid.getTypeAsString(),
-                                                 maxGridSize,
-                                                 grid.getSize())
+            radix = "%s_sg_d%i_%s_Nmax%i_N%i_b%i" % (self.radix,
+                                                     self.numDims,
+                                                     grid.getTypeAsString(),
+                                                     maxGridSize,
+                                                     grid.getSize(),
+                                                     boundaryLevel)
             if self.rosenblatt:
                 radix += "_rosenblatt"
 
@@ -253,6 +301,100 @@ class AnovaGenzTest(object):
                       'is_full': False,
                       'refinement': False,
                       'rosenblatt': self.rosenblatt,
+                      'boundaryLevel': boundaryLevel,
+                      'results': stats},
+                     fd)
+            fd.close()
+
+
+    def run_adaptive_sparse_grid(self,
+                                gridTypeStr,
+                                level,
+                                maxGridSize,
+                                boundaryLevel=1,
+                                refinement="l2",
+                                out=False):
+
+        np.random.seed(1234567)
+        test_samples, test_values = self.getTestSamples()
+        gridType = Grid.stringToGridType(gridTypeStr)
+
+        print "-" * 80
+        print "level = %i, boundary level = %i" % (level, boundaryLevel)
+        print "-" * 80
+        uqManager = TestEnvironmentSG().buildSetting(self.params,
+                                                     self.simulation,
+                                                     level,
+                                                     gridType,
+                                                     deg=20,
+                                                     maxGridSize=maxGridSize,
+                                                     adaptive=refinement,
+                                                     adaptRate=0.1,
+                                                     adaptPoints=20,
+                                                     epsilon=1e-15,
+                                                     boundaryLevel=min(level, boundaryLevel),
+                                                     knowledgeTypes=[KnowledgeTypes.SIMPLE,
+                                                                     KnowledgeTypes.SQUARED])
+
+        # ----------------------------------------------
+        # first run
+        while uqManager.hasMoreSamples():
+            uqManager.runNextSamples()
+
+        # ----------------------------------------------------------
+        # specify ASGC estimator
+        # ----------------------------------------------------------
+        analysis = ASGCAnalysisBuilder().withUQManager(uqManager)\
+                                        .withMonteCarloEstimationStrategy(n=1000,
+                                                                          npaths=10)\
+                                        .andGetResult()
+        analysis.setVerbose(False)
+        # ----------------------------------------------------------
+        # expectation values and variances
+        stats = {}
+        iterations = uqManager.getKnowledge().getAvailableIterations()
+        for k, iteration in enumerate(iterations):
+            # ----------------------------------------------------------
+            # estimate the l2 error
+            grid, alpha = uqManager.getKnowledge().getSparseGridFunction(iteration=iteration)
+            test_values_pred = evalSGFunction(grid, alpha, test_samples)
+            l2test, l1test, maxErrorTest = \
+                self.getErrors(test_values, test_values_pred)
+            print "-" * 60
+            print "iteration=%i, N=%i" % (iteration, grid.getSize())
+            print "test:  |.|_2 = %g" % l2test
+#             sg_mean, sg_var = analysis.mean(iterations=[iteration]), analysis.var(iterations=[iteration])
+            # ----------------------------------------------------------
+            stats[grid.getSize()] = {'num_model_evaluations': grid.getSize(),
+                                     'l2test': l2test,
+                                     'l1test': l1test,
+                                     'maxErrorTest': maxErrorTest,
+                                     'mean_estimated': None,  #  sg_mean["value"],
+                                     'var_estimated': None  # sg_var["value"]
+                                     }
+
+        if out:
+            # store results
+            radix = "%s_sg_d%i_%s_Nmax%i_r%s_N%i_b%i" % (self.radix,
+                                                         self.numDims,
+                                                         grid.getTypeAsString(),
+                                                         maxGridSize,
+                                                         refinement,
+                                                         grid.getSize(),
+                                                         boundaryLevel)
+            if self.rosenblatt:
+                radix += "_rosenblatt"
+
+            filename = os.path.join(self.pathResults, "%s.pkl" % radix)
+            fd = open(filename, "w")
+            pkl.dump({'surrogate': 'sg',
+                      'num_dims': self.numDims,
+                      'grid_type': grid.getTypeAsString(),
+                      'max_grid_size': maxGridSize,
+                      'is_full': False,
+                      'refinement': refinement,
+                      'rosenblatt': self.rosenblatt,
+                      'boundaryLevel': boundaryLevel,
                       'results': stats},
                      fd)
             fd.close()
@@ -314,18 +456,27 @@ def run_genz_mc(numDims,
     testSetting.run_mc(N=numSamples, out=out, plot=plot)
 
 def run_genz_sg(numDims,
-                gridType,
                 level,
+                gridType,
                 numGridPoints,
                 boundaryLevel,
+                refinement,
                 rosenblatt,
                 out):
     testSetting = AnovaGenzTest(numDims, rosenblatt)
-    testSetting.run_regular_sparse_grid(gridType,
-                                        level,
-                                        numGridPoints,
-                                        boundaryLevel,
-                                        out)
+    if refinement is None:
+        testSetting.run_regular_sparse_grid(gridType,
+                                            level,
+                                            numGridPoints,
+                                            boundaryLevel,
+                                            out)
+    else:
+        testSetting.run_adaptive_sparse_grid(gridType,
+                                             level,
+                                             numGridPoints,
+                                             boundaryLevel,
+                                             refinement,
+                                             out)
 
 def run_genz_sg_boundary(numDims,
                          gridType,
@@ -351,6 +502,7 @@ if __name__ == "__main__":
     parser.add_argument('--gridType', default="polyBoundary", type=str, help="define which sparse grid should be used (poly, polyClenshawcCurtis, polyBoundary, modPoly, modPolyClenshawCurtis, ...)")
     parser.add_argument('--level', default=9, type=int, help='level of the sparse grid')
     parser.add_argument('--boundaryLevel', default=1, type=int, help='level of the boundary of the sparse grid')
+    parser.add_argument('--refinement', default=None, type=str, help='refine the discretized grid adaptively (simple, exp, var, squared)')
     parser.add_argument('--rosenblatt', default=False, action='store_true', help='use rosenblatt transformation')
     parser.add_argument('--out', default=False, action='store_true', help='save plots to file')
 
@@ -358,17 +510,18 @@ if __name__ == "__main__":
     if args.surrogate == "sg":
         if args.setting == "boundary":
             run_genz_sg_boundary(args.numDims,
-                                 args.griType,
+                                 args.gridType,
                                  args.level,
                                  args.numGridPoints,
                                  args.boundaryLevel,
                                  args.out)
         else:
             run_genz_sg(args.numDims,
-                        args.gridType,
                         args.level,
+                        args.gridType,
                         args.numGridPoints,
                         args.boundaryLevel,
+                        args.refinement,
                         args.rosenblatt,
                         args.out)
     else:

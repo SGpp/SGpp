@@ -1,12 +1,14 @@
-from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
-
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 from mpl_toolkits.mplot3d import Axes3D
-from pysgpp import DataVector, createOperationEval, createOperationEvalNaive
-
+from matplotlib import colors
 import matplotlib.pyplot as plt
 import numpy as np
+
+from pysgpp import DataVector, createOperationEval, createOperationEvalNaive
+from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
+
+from colors import load_default_color_map
 
 
 def plotDensity3d(U, n=36):
@@ -56,8 +58,25 @@ def plotGrid3d(grid, grid_points_at=0, ax=None):
            " ", c="red", marker="o", ms=15)
 
 
-def plotSG3d(grid, alpha, n=36, f=lambda x: x, grid_points_at=0, z_min=np.Inf,
-             isConsistent=True, show_grid=True):
+def insert_labels_3d(ax,
+                     xlabel=r"$\xi_1$",
+                     ylabel=r"$\xi_2$",
+                     zlabel=r"$u(\xi_1, \xi_2)$"):
+    ax.set_xticks([0, 0.5, 1])
+    ax.set_yticks([0, 0.5, 1])
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_zlabel(zlabel)
+    ax.xaxis.labelpad = 13
+    ax.yaxis.labelpad = 13
+    ax.zaxis.labelpad = 12
+
+
+def plotSG3d(grid, alpha, n=36,
+             f=lambda x: x, grid_points_at=0, z_min=np.Inf,
+             isConsistent=True, show_grid=True,
+             surface_plot=False,
+             xoffset=0.0, yoffset=1.0,):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     x = np.linspace(0, 1, n + 1, endpoint=True)
@@ -79,16 +98,24 @@ def plotSG3d(grid, alpha, n=36, f=lambda x: x, grid_points_at=0, z_min=np.Inf,
         gs.getCoordinates(gs.getPoint(i), p)
         gps[i, :] = p.array()
 
-    ax.plot_wireframe(xv, yv, Z, color="black")
+    if surface_plot:
+        cmap = load_default_color_map()
+        norm = colors.Normalize(vmin = Z.min(),
+                                vmax = Z.max(),
+                                clip = False)
+        ax.plot_surface(xv, yv, Z,
+                        rstride=1, cstride=1,
+                        norm=norm, cmap=cmap)
+    else:
+        ax.plot_wireframe(xv, yv, Z, color="black")
+
     z_min, z_max = min(np.min(Z), z_min), np.max(Z)
     ax.set_zlim(z_min, z_max)
     if np.any(np.abs(alpha) > 1e-13):
         cset = ax.contour(xv, yv, Z, zdir='z', offset=z_min, cmap=cm.coolwarm)
-        cset = ax.contour(xv, yv, Z, zdir='x', offset=0, cmap=cm.coolwarm)
-        cset = ax.contour(xv, yv, Z, zdir='y', offset=1, cmap=cm.coolwarm)
+        cset = ax.contour(xv, yv, Z, zdir='x', offset=xoffset, cmap=cm.coolwarm)
+        cset = ax.contour(xv, yv, Z, zdir='y', offset=yoffset, cmap=cm.coolwarm)
 
-#     surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
-#                            linewidth=0, antialiased=False)
     if show_grid:
         ax.plot(gps[:, 0], gps[:, 1], np.ones(gps.shape[0]) * grid_points_at,
                " ", c="red", marker="o", ms=15)

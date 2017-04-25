@@ -388,7 +388,7 @@ class ParameterSet(object):
 
     def marginalize(self):
         """
-        NOTE: jusr returns the marginalized active subset of params
+        NOTE: just returns the marginalized active subset of params
         """
         # marginalize the distribution
         margDistList = []

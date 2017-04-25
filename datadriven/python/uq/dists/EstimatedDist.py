@@ -71,7 +71,10 @@ class EstimatedDist(Dist):
         return [self]
 
     def getBounds(self):
-        return self.bounds
+        if self.getDim() == 1:
+            return self.bounds[0]
+        else:
+            return self.bounds
 
     def getDim(self):
         return self.dim
