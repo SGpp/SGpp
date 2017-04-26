@@ -58,7 +58,7 @@ class SGDEdist(EstimatedDist):
         self.trainData = trainData.copy()
         self.config = config
         self.unitIntegrand = unitIntegrand
-        
+
         if learner is None and trainData is not None:
             trainData_vec = DataMatrix(trainData)
             self.learner = LearnerSGDE(self.grid, self.alpha_vec, trainData_vec)
@@ -186,7 +186,7 @@ class SGDEdist(EstimatedDist):
                 raise Exception('The data file "%s" does not exist' % trainDataFile)
 
         return cls(grid, alpha, trainData, bounds, config)
-    
+
     def getJointTransformation(self):
         return self.computeLinearTransformation(self.bounds)
 
