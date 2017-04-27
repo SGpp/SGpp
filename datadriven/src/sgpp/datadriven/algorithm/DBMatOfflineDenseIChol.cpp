@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <list>
 #include <string>
+#include <chrono>
 
 namespace sgpp {
 namespace datadriven {
@@ -33,6 +34,7 @@ DBMatOffline* DBMatOfflineDenseIChol::clone() {
 }
 
 void DBMatOfflineDenseIChol::decomposeMatrix() {
+  auto begin = std::chrono::high_resolution_clock::now();
   if (isConstructed) {
     if (isDecomposed) {
       return;
@@ -51,6 +53,10 @@ void DBMatOfflineDenseIChol::decomposeMatrix() {
       ichol(tmpMatrix, lhsMatrix, config.icholParameters.sweepsDecompose);
     }
     isDecomposed = true;
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "IChol decompostition took"
+              << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms"
+              << std::endl;
   } else {
     throw algorithm_exception("Matrix has to be constructed before it can be decomposed");
   }
@@ -60,6 +66,8 @@ void DBMatOfflineDenseIChol::choleskyModification(size_t newPoints, std::list<si
                                                   double lambda) {
   std::cout << "dense ichol modification\n";
   if (newPoints > 0) {
+    auto begin = std::chrono::high_resolution_clock::now();
+
     size_t gridSize = grid->getStorage().getSize();
     size_t gridDim = grid->getStorage().getDimension();
 
@@ -148,6 +156,11 @@ void DBMatOfflineDenseIChol::choleskyModification(size_t newPoints, std::list<si
     }
 
     ichol(matRefine, lhsMatrix, config.icholParameters.sweepsRefine, (gridSize - newPoints));
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "IChol refinement took"
+              << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms"
+              << std::endl;
   }
 }
 
