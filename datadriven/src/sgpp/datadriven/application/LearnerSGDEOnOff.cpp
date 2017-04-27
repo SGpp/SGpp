@@ -169,6 +169,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
     size_t cnt = 0;
     // iterate over total number of batches
     for (size_t step = 1; step <= numBatch; step++) {
+      std::cout << "#processing batch: " << step << "\n";
       // check if cross-validation should be performed
       bool doCv = false;
       if (enableCv) {
