@@ -25,11 +25,9 @@ namespace pde {
     const size_t l = 3;
     sgpp::base::Grid* grid(sgpp::base::Grid::createBsplineGrid(d, 3));
     grid->getGenerator().regular(l);
-
     sgpp::base::OperationMatrix* opExplicit =
       sgpp::op_factory::createOperationLaplaceExplicit(*grid);
-
-    sgpp::base::OperationMatrix* opImplicit =
+      sgpp::base::OperationMatrix* opImplicit =
       sgpp::op_factory::createOperationLaplace(*grid);
 
     sgpp::base::DataVector alpha(grid->getSize(), 1.0);
