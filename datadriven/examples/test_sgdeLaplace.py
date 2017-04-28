@@ -29,14 +29,18 @@ from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
 def test_sgdeLaplace():
     l2_samples = 10000
     # sample_range = np.arange(10, 500, 50)
-    sample_range = [10, 20, 50, 100, 200, 500, 1000, 2000]
-    grids = ["poly",
+    sample_range = [10, 20, 50, 100, 200, 500]
+    points = {}
+    grids = ["linear",
+             # "modlinear", # keine OperationQuadrature
+             "poly",
+             "modpoly",
              "polyBoundary",
              "polyClenshawCurtis",
              "modPolyClenshawCurtis",
              "polyClenshawCurtisBoundary",
-             "bsplineClenshawCurtis",
-             # "modBsplineClenshawCurtis"
+             # "bsplineClenshawCurtis",
+             # "modBsplineClenshawCurtis" # keine OperationMultipleEval
     ]
 
     U = dists.J([dists.Lognormal.by_alpha(0.5, 0.1, 0.001),
@@ -45,15 +49,21 @@ def test_sgdeLaplace():
     l2_errors = {}
     for grid in grids:
         l2_errors[grid] = []
+        points[grid] = []
 
     l2_errors["kde"] = []
-    for samples in sample_range:
+    samples = 500
+    # for samples in sample_range:
+
+    for lvl in range(1, 6):
         trainSamples = U.rvs(samples)
         testSamples = U.rvs(l2_samples)
         for grid_name in grids:
             # build parameter set
+
+            print("--------------------Samples: {} Grid: {}--------------------".format(samples, grid_name))
             dist_sgde = SGDEdist.byLearnerSGDEConfig(trainSamples,
-                                                     config={"grid_level": 4,
+                                                     config={"grid_level": lvl,
                                                              "grid_type": grid_name,
                                                              "grid_maxDegree": 6,
                                                              "refinement_numSteps": 0,
@@ -70,19 +80,24 @@ def test_sgdeLaplace():
                                                              "sgde_makePositive_interpolationAlgorithm": "setToZero",
                                                              "sgde_makePositive_verbose": True,
                                                              "sgde_unitIntegrand": True})
-
+            points[grid_name].append(dist_sgde.grid.getSize())
             l2_errors[grid_name].append(dist_sgde.l2error(U, testSamplesUnit=testSamples))
 
-        dist_kde = dists.KDEDist(trainSamples,
-                                 kernelType=KernelType_GAUSSIAN,
-                                 bandwidthOptimizationType=BandwidthOptimizationType_SILVERMANSRULE)
+    dist_kde = dists.KDEDist(trainSamples,
+                             kernelType=KernelType_GAUSSIAN,
+                             bandwidthOptimizationType=BandwidthOptimizationType_SILVERMANSRULE)
 
-        l2_errors["kde"].append(dist_kde.l2error(U, testSamplesUnit=testSamples))
+    l2_errors["kde"].append(dist_kde.l2error(U, testSamplesUnit=testSamples))
 
     for grid_name in grids:
-        plt.plot(sample_range, l2_errors[grid_name], label=grid_name)
-    plt.plot(sample_range, l2_errors["kde"], label="KDE")
-    plt.xlabel("# Trainings-Samples")
+        # plt.plot(sample_range, l2_errors[grid_name], label=grid_name)
+        plt.plot(points[grid], l2_errors[grid_name],".-", label=grid_name)
+
+    # plt.plot(sample_range, l2_errors["kde"], label="KDE")
+
+    plt.plot([x for x in range(1,500, 100)], [l2_errors["kde"][0] for i in range(1,6)], label="KDE")
+
+    plt.xlabel("# Gitterpunkte")
     plt.ylabel("L2-Fehler")
     plt.yscale("log")
     plt.legend()
