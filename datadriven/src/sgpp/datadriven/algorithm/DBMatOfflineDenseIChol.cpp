@@ -14,9 +14,9 @@
 #include <sgpp/datadriven/algorithm/IChol.hpp>
 
 #include <algorithm>
+#include <chrono>
 #include <list>
 #include <string>
-#include <chrono>
 
 namespace sgpp {
 namespace datadriven {
@@ -29,9 +29,7 @@ DBMatOfflineDenseIChol::DBMatOfflineDenseIChol(const DBMatDensityConfiguration& 
 DBMatOfflineDenseIChol::DBMatOfflineDenseIChol(const std::string& fileName)
     : DBMatOfflineChol{fileName} {}
 
-DBMatOffline* DBMatOfflineDenseIChol::clone() {
-  return new DBMatOfflineDenseIChol{*this};
-}
+DBMatOffline* DBMatOfflineDenseIChol::clone() { return new DBMatOfflineDenseIChol{*this}; }
 
 void DBMatOfflineDenseIChol::decomposeMatrix() {
   auto begin = std::chrono::high_resolution_clock::now();
@@ -158,7 +156,7 @@ void DBMatOfflineDenseIChol::choleskyModification(size_t newPoints, std::list<si
     ichol(matRefine, lhsMatrix, config.icholParameters.sweepsRefine, (gridSize - newPoints));
 
     auto end = std::chrono::high_resolution_clock::now();
-    std::cout << "IChol refinement took"
+    std::cout << "IChol refinement took "
               << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms"
               << std::endl;
   }
@@ -170,11 +168,9 @@ void sgpp::datadriven::DBMatOfflineDenseIChol::ichol(const DataMatrix& matrix, D
     throw algorithm_exception{"Start row is larger then the matrix size"};
   }
 
-  std::cout << "calling update from " << startRow << "\n";
-
 // for all sweeps
 #pragma omp parallel
-  {/* omp parallel */
+  { /* omp parallel */
     for (auto sweep = 0u; sweep < sweeps; sweep++) {
       // for each row
       for (auto i = startRow; i < result.getNrows(); i++) {

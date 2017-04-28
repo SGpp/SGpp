@@ -12,6 +12,7 @@
 #include <gsl/gsl_matrix_double.h>
 
 #include <math.h>
+#include <chrono>
 #include <ctime>
 #include <iostream>
 
@@ -21,6 +22,8 @@ namespace datadriven {
 void DBMatDMSChol::solve(sgpp::base::DataMatrix& decompMatrix, sgpp::base::DataVector& alpha,
                          const sgpp::base::DataVector& b, double lambda_old,
                          double lambda_new) const {
+  auto begin = std::chrono::high_resolution_clock::now();
+
   size_t size = decompMatrix.getNcols();
   // Performe Update based on Cholesky - afterwards perform n (GridPoints) many
   // rank-One-updates
@@ -41,6 +44,11 @@ void DBMatDMSChol::solve(sgpp::base::DataMatrix& decompMatrix, sgpp::base::DataV
 
   // Backward Substitution:
   choleskyBackwardSolve(decompMatrix, y, alpha);
+
+  auto end = std::chrono::high_resolution_clock::now();
+  std::cout << "Solving SLE took "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms"
+            << std::endl;
 }
 
 // Implement cholesky Update for given Decomposition and update vector

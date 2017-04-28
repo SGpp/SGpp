@@ -49,14 +49,16 @@ int main() {
   config.ref_threshold_ = 0.0;
 
   config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
-  config.lambda_ = 5 * 10e-4;
+  config.lambda_ = 5 * 10e-5;
 
   config.icholParameters.sweepsDecompose = 2;
   config.icholParameters.sweepsRefine = 2;
   config.icholParameters.sweepsSolver = 2;
 
-  config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
-  auto decompType = "Incomplete Cholesky decomposition on Dense Matrix";
+  //  config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
+  //  auto decompType = "Incomplete Cholesky decomposition on Dense Matrix";
+  config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::Chol;
+  auto decompType = "Cholesky decomposition";
   std::cout << "Decomposition type: " << decompType << std::endl;
 
   config.icholParameters.sweepsDecompose = 2;
