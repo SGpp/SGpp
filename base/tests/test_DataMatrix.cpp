@@ -380,8 +380,9 @@ BOOST_AUTO_TEST_CASE(appendToColTest) {
         size_t k = 0;
         for (size_t i = 0; i < rows; ++i) {
           for (size_t j = 0; j < cols + 1; ++j) {
-            BOOST_CHECK_MESSAGE(m(i, j) == k, "rows=" << rows << " cols=" << cols << " m(" << i
-                                                      << "," << j << ")=" << m(i, j) << "!=" << k);
+            BOOST_CHECK_MESSAGE(m(i, j) == static_cast<double>(k),
+                                "rows=" << rows << " cols=" << cols << " m(" << i
+                                        << "," << j << ")=" << m(i, j) << "!=" << k);
             ++k;
           }
         }
