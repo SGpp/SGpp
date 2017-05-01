@@ -18,6 +18,7 @@ enum class GridConversionTypes { ALLSUBSPACES, COMPLETESUBSPACES };
  * Depending on the conversion type, it considers all available subspaces or
  * just the complete ones.
  *
+ * @param storage
  * @param conversionType
  * @return level structure of anisotropic full grids of combination technique
  */
