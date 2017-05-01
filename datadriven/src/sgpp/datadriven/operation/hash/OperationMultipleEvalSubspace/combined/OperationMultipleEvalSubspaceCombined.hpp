@@ -118,7 +118,7 @@ class OperationMultipleEvalSubspaceCombined : public AbstractOperationMultipleEv
    * @param alpha surplusses of the grid
    * @param result will contain the evaluation results for the given range.
    * @param start_index_data beginning of the range to evaluate
-   * @param ebd_index_data end of the range to evaluate
+   * @param end_index_data end of the range to evaluate
    */
   void multTransposeImpl(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                          const size_t start_index_data, const size_t end_index_data) override;
@@ -131,7 +131,7 @@ class OperationMultipleEvalSubspaceCombined : public AbstractOperationMultipleEv
    * @param source source operand for the operator
    * @param result stores the result
    * @param start_index_data beginning of the range to process
-   * @param ebd_index_data end of the range to process
+   * @param end_index_data end of the range to process
    */
   void multImpl(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
                 const size_t start_index_data, const size_t end_index_data) override;

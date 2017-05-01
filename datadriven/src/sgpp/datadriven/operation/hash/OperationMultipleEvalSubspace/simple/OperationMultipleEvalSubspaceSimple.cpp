@@ -60,21 +60,12 @@ void printSubspace(size_t* base, size_t dim, size_t cur, int subspaceSize) {
 }
 }  // namespace x86simple
 
-/**
- * Creates a new instance of the OperationMultipleEvalSubspaceSimple class.
- *
- * @param grid grid to be evaluated
- * @param dataset set of evaluation points
- */
 OperationMultipleEvalSubspaceSimple::OperationMultipleEvalSubspaceSimple(base::Grid& grid,
                                                                          base::DataMatrix& dataset)
     : AbstractOperationMultipleEvalSubspace(grid, dataset) {
   this->dim = this->dataset.getNcols();
 }
 
-/**
- * Destructor
- */
 OperationMultipleEvalSubspaceSimple::~OperationMultipleEvalSubspaceSimple() {
   if (this->allSurplusses != nullptr) {
     delete[] this->allSurplusses;
@@ -88,10 +79,6 @@ OperationMultipleEvalSubspaceSimple::~OperationMultipleEvalSubspaceSimple() {
   }
 }
 
-/**
- * Updates the internal data structures to reflect changes to the grid, e.g. due to refinement.
- *
- */
 void OperationMultipleEvalSubspaceSimple::prepare() {
   if (this->allSurplusses != nullptr) {
     delete[] this->allSurplusses;
@@ -500,18 +487,8 @@ size_t OperationMultipleEvalSubspaceSimple::flattenIndex(size_t* intermediates, 
   return indexFlat;
 }
 
-/**
- * Alignment required by the vector instruction set SG++ is compiled with.
- *
- * @result alignment requirement
- */
 size_t OperationMultipleEvalSubspaceSimple::getAlignment() { return 1; }
 
-/**
- * Name of the implementation, useful for benchmarking different implementation approaches.
- *
- * @result name of the implementation
- */
 std::string OperationMultipleEvalSubspaceSimple::getImplementationName() { return "SIMPLE"; }
 }  // namespace datadriven
 }  // namespace sgpp

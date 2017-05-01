@@ -1932,6 +1932,7 @@ INCLUDE_FILE_PATTERNS  =
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
 PREDEFINED             = _OPENMP \
+                         __AVX__ \
                          USEARMADILLO \
                          USEEIGEN \
                          USEUMFPACK \
