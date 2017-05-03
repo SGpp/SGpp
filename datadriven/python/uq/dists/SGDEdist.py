@@ -96,7 +96,12 @@ class SGDEdist(EstimatedDist):
             self.alpha_vec.mult(1. / self.vol)
 
     @classmethod
-    def byLearnerSGDEConfig(cls, samples, grid=None, bounds=None, config={}):
+    def byLearnerSGDEConfig(cls,
+                            samples,
+                            grid=None,
+                            bounds=None,
+                            unitIntegrand=True,
+                            config={}):
         """
 
         @param cls:
@@ -160,7 +165,7 @@ class SGDEdist(EstimatedDist):
                   bounds=bounds,
                   config=config,
                   learner=learner,
-                  unitIntegrand=True,
+                  unitIntegrand=unitIntegrand,
                   isPositive=isPositive)
         return ans
 
