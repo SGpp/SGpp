@@ -24,9 +24,8 @@ namespace sgpp {
 namespace datadriven {
 namespace StreamingModOCLUnified {
 
-template <typename real_type>
-class KernelMult {
- private:
+template <typename real_type> class KernelMult {
+private:
   std::shared_ptr<base::OCLDevice> device;
 
   size_t dims;
@@ -59,30 +58,27 @@ class KernelMult {
   size_t scheduleSize;
   size_t totalBlockSize;
 
- public:
+public:
   KernelMult(std::shared_ptr<base::OCLDevice> device, size_t dims,
              std::shared_ptr<base::OCLManagerMultiPlatform> manager,
              json::Node &kernelConfiguration,
              std::shared_ptr<base::QueueLoadBalancerOpenMP> queueBalancerMult)
-      : device(device),
-        dims(dims),
-        err(CL_SUCCESS),
-        deviceLevel(device),
-        deviceIndex(device),
-        deviceAlpha(device),
-        deviceData(device),
-        deviceResultData(device),
-        kernelMult(nullptr),
+      : device(device), dims(dims), err(CL_SUCCESS), deviceLevel(device),
+        deviceIndex(device), deviceAlpha(device), deviceData(device),
+        deviceResultData(device), kernelMult(nullptr),
         kernelSourceBuilder(device, kernelConfiguration, dims),
-        manager(manager),
-        kernelConfiguration(kernelConfiguration),
+        manager(manager), kernelConfiguration(kernelConfiguration),
         queueLoadBalancerMult(queueBalancerMult) {
-    if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0 &&
+    if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") ==
+            0 &&
         dims > kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt()) {
       std::stringstream errorString;
-      errorString << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" requires value of "
-                     "\"KERNEL_MAX_DIM_UNROLL\" to be greater than the dimension of the data "
-                     "set, was set to " << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt()
+      errorString << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" "
+                     "requires value of "
+                     "\"KERNEL_MAX_DIM_UNROLL\" to be greater than the "
+                     "dimension of the data "
+                     "set, was set to "
+                  << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt()
                   << std::endl;
       throw sgpp::base::operation_exception(errorString.str());
     }
@@ -117,14 +113,15 @@ class KernelMult {
               const size_t end_index_grid, const size_t start_index_data,
               const size_t end_index_data) {
     // check if there is something to do at all
-    if (!(end_index_grid > start_index_grid && end_index_data > start_index_data)) {
+    if (!(end_index_grid > start_index_grid &&
+          end_index_data > start_index_data)) {
       return 0.0;
     }
 
     if (this->kernelMult == nullptr) {
       std::string program_src = kernelSourceBuilder.generateSource();
-      this->kernelMult =
-          manager->buildKernel(program_src, device, kernelConfiguration, "multOCLUnified");
+      this->kernelMult = manager->buildKernel(
+          program_src, device, kernelConfiguration, "multOCLUnified");
     }
 
     initGridBuffers(level, index, alpha, start_index_grid, end_index_grid);
@@ -139,8 +136,8 @@ class KernelMult {
       size_t kernelStartGrid = start_index_grid;
       size_t kernelEndGrid = end_index_grid;
 
-      bool segmentAvailable = queueLoadBalancerMult->getNextSegment(scheduleSize, totalBlockSize,
-                                                                    kernelStartData, kernelEndData);
+      bool segmentAvailable = queueLoadBalancerMult->getNextSegment(
+          scheduleSize, kernelStartData, kernelEndData);
       if (!segmentAvailable) {
         break;
       }
@@ -148,8 +145,10 @@ class KernelMult {
       size_t rangeSizeUnblocked = kernelEndData - kernelStartData;
 
       if (verbose) {
-        std::cout << "device: " << device->deviceId << " kernel from: " << kernelStartData
-                  << " to: " << kernelEndData << " -> range: " << rangeSizeUnblocked << std::endl;
+        std::cout << "device: " << device->deviceId
+                  << " kernel from: " << kernelStartData
+                  << " to: " << kernelEndData
+                  << " -> range: " << rangeSizeUnblocked << std::endl;
       }
 
       initDatasetBuffers(dataset, kernelStartData, kernelEndData);
@@ -159,58 +158,81 @@ class KernelMult {
       //            std::cout << "wrote to device: " << device->deviceId << ""
       //            << std::endl;
 
-      size_t rangeSizeBlocked =
-          (kernelEndData / dataBlockingSize) - (kernelStartData / dataBlockingSize);
+      size_t rangeSizeBlocked = (kernelEndData / dataBlockingSize) -
+                                (kernelStartData / dataBlockingSize);
 
       if (rangeSizeBlocked > 0) {
-        err = clSetKernelArg(this->kernelMult, 0, sizeof(cl_mem), this->deviceLevel.getBuffer());
+        err = clSetKernelArg(this->kernelMult, 0, sizeof(cl_mem),
+                             this->deviceLevel.getBuffer());
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
-          errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+          errorString
+              << "OCL Error: Failed to create kernel arguments for device "
+              << std::endl;
           throw sgpp::base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(this->kernelMult, 1, sizeof(cl_mem), this->deviceIndex.getBuffer());
+        err = clSetKernelArg(this->kernelMult, 1, sizeof(cl_mem),
+                             this->deviceIndex.getBuffer());
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
-          errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+          errorString
+              << "OCL Error: Failed to create kernel arguments for device "
+              << std::endl;
           throw sgpp::base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(this->kernelMult, 2, sizeof(cl_mem), this->deviceData.getBuffer());
+        err = clSetKernelArg(this->kernelMult, 2, sizeof(cl_mem),
+                             this->deviceData.getBuffer());
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
-          errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+          errorString
+              << "OCL Error: Failed to create kernel arguments for device "
+              << std::endl;
           throw sgpp::base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(this->kernelMult, 3, sizeof(cl_mem), this->deviceAlpha.getBuffer());
+        err = clSetKernelArg(this->kernelMult, 3, sizeof(cl_mem),
+                             this->deviceAlpha.getBuffer());
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
-          errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+          errorString
+              << "OCL Error: Failed to create kernel arguments for device "
+              << std::endl;
+          throw sgpp::base::operation_exception(errorString.str());
+        }
+        err = clSetKernelArg(this->kernelMult, 4, sizeof(cl_mem),
+                             this->deviceResultData.getBuffer());
+        if (err != CL_SUCCESS) {
+          std::stringstream errorString;
+          errorString
+              << "OCL Error: Failed to create kernel arguments for device "
+              << std::endl;
+          throw sgpp::base::operation_exception(errorString.str());
+        }
+        err = clSetKernelArg(
+            this->kernelMult, 5, sizeof(cl_int),
+            &rangeSizeUnblocked); // resultsize == number of entries in dataset
+        if (err != CL_SUCCESS) {
+          std::stringstream errorString;
+          errorString
+              << "OCL Error: Failed to create kernel arguments for device "
+              << std::endl;
+          throw sgpp::base::operation_exception(errorString.str());
+        }
+        err = clSetKernelArg(this->kernelMult, 6, sizeof(cl_int),
+                             &kernelStartGrid);
+        if (err != CL_SUCCESS) {
+          std::stringstream errorString;
+          errorString
+              << "OCL Error: Failed to create kernel arguments for device "
+              << std::endl;
           throw sgpp::base::operation_exception(errorString.str());
         }
         err =
-            clSetKernelArg(this->kernelMult, 4, sizeof(cl_mem), this->deviceResultData.getBuffer());
+            clSetKernelArg(this->kernelMult, 7, sizeof(cl_int), &kernelEndGrid);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
-          errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-          throw sgpp::base::operation_exception(errorString.str());
-        }
-        err = clSetKernelArg(this->kernelMult, 5, sizeof(cl_int),
-                             &rangeSizeUnblocked);  // resultsize == number of entries in dataset
-        if (err != CL_SUCCESS) {
-          std::stringstream errorString;
-          errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-          throw sgpp::base::operation_exception(errorString.str());
-        }
-        err = clSetKernelArg(this->kernelMult, 6, sizeof(cl_int), &kernelStartGrid);
-        if (err != CL_SUCCESS) {
-          std::stringstream errorString;
-          errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-          throw sgpp::base::operation_exception(errorString.str());
-        }
-        err = clSetKernelArg(this->kernelMult, 7, sizeof(cl_int), &kernelEndGrid);
-        if (err != CL_SUCCESS) {
-          std::stringstream errorString;
-          errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+          errorString
+              << "OCL Error: Failed to create kernel arguments for device "
+              << std::endl;
           throw sgpp::base::operation_exception(errorString.str());
         }
 
@@ -218,23 +240,26 @@ class KernelMult {
 
         char deviceName[128] = {0};
         cl_uint err;
-        err = clGetDeviceInfo(device->deviceId, CL_DEVICE_NAME, 128 * sizeof(char), &deviceName,
-                              nullptr);
+        err = clGetDeviceInfo(device->deviceId, CL_DEVICE_NAME,
+                              128 * sizeof(char), &deviceName, nullptr);
 
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
-          errorString << "OCL Error: Failed to read the device name for device: "
-                      << device->deviceId << std::endl;
+          errorString
+              << "OCL Error: Failed to read the device name for device: "
+              << device->deviceId << std::endl;
           throw sgpp::base::operation_exception(errorString.str());
         }
 
-        err = clEnqueueNDRangeKernel(device->commandQueue, this->kernelMult, 1, 0,
-                                     &rangeSizeBlocked, &localSize, 0, nullptr, &clTiming);
+        err = clEnqueueNDRangeKernel(device->commandQueue, this->kernelMult, 1,
+                                     0, &rangeSizeBlocked, &localSize, 0,
+                                     nullptr, &clTiming);
 
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
-          errorString << "OCL Error: Failed to enqueue kernel command! Error code: " << err
-                      << std::endl;
+          errorString
+              << "OCL Error: Failed to enqueue kernel command! Error code: "
+              << err << std::endl;
           throw sgpp::base::operation_exception(errorString.str());
         }
 
@@ -255,23 +280,25 @@ class KernelMult {
         cl_ulong startTime = 0;
         cl_ulong endTime = 0;
 
-        err = clGetEventProfilingInfo(clTiming, CL_PROFILING_COMMAND_START, sizeof(cl_ulong),
-                                      &startTime, nullptr);
+        err = clGetEventProfilingInfo(clTiming, CL_PROFILING_COMMAND_START,
+                                      sizeof(cl_ulong), &startTime, nullptr);
 
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read start-time from command "
-                         "queue (or crash in mult)! Error code: " << err << std::endl;
+                         "queue (or crash in mult)! Error code: "
+                      << err << std::endl;
           throw sgpp::base::operation_exception(errorString.str());
         }
 
-        err = clGetEventProfilingInfo(clTiming, CL_PROFILING_COMMAND_END, sizeof(cl_ulong),
-                                      &endTime, nullptr);
+        err = clGetEventProfilingInfo(clTiming, CL_PROFILING_COMMAND_END,
+                                      sizeof(cl_ulong), &endTime, nullptr);
 
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read end-time from command "
-                         "queue! Error code: " << err << std::endl;
+                         "queue! Error code: "
+                      << err << std::endl;
           throw sgpp::base::operation_exception(errorString.str());
         }
 
@@ -282,7 +309,8 @@ class KernelMult {
         time *= 1e-9;
 
         if (verbose) {
-          std::cout << "device: " << device->deviceId << " duration: " << time << std::endl;
+          std::cout << "device: " << device->deviceId << " duration: " << time
+                    << std::endl;
         }
 
         this->deviceTimingMult += time;
@@ -292,8 +320,9 @@ class KernelMult {
     return this->deviceTimingMult;
   }
 
- private:
-  void initGridBuffers(std::vector<real_type> &level, std::vector<real_type> &index,
+private:
+  void initGridBuffers(std::vector<real_type> &level,
+                       std::vector<real_type> &index,
                        std::vector<real_type> &alpha, size_t kernelStartGrid,
                        size_t kernelEndGrid) {
     deviceLevel.intializeTo(level, dims, kernelStartGrid, kernelEndGrid);
@@ -301,8 +330,8 @@ class KernelMult {
     deviceAlpha.intializeTo(alpha, 1, kernelStartGrid, kernelEndGrid);
   }
 
-  void initDatasetBuffers(std::vector<real_type> &dataset, size_t kernelStartData,
-                          size_t kernelEndData) {
+  void initDatasetBuffers(std::vector<real_type> &dataset,
+                          size_t kernelStartData, size_t kernelEndData) {
     deviceData.intializeTo(dataset, dims, kernelStartData, kernelEndData, true);
   }
 
@@ -317,6 +346,6 @@ class KernelMult {
     deviceResultData.intializeTo(zeros, 1, 0, range);
   }
 };
-}  // namespace StreamingModOCLUnified
-}  // namespace datadriven
-}  // namespace sgpp
+} // namespace StreamingModOCLUnified
+} // namespace datadriven
+} // namespace sgpp
