@@ -45,24 +45,24 @@ def test_sgdeLaplace():
 
     U = dists.J([dists.Lognormal.by_alpha(0.5, 0.1, 0.001),
                  dists.Lognormal.by_alpha(0.5, 0.1, 0.001)])
-
     l2_errors = {}
     for grid in grids:
         l2_errors[grid] = []
         points[grid] = []
 
     l2_errors["kde"] = []
-    samples = 500
+    samples = 1000
     # for samples in sample_range:
 
-    for lvl in range(1, 6):
+    for lvl in range(5, 6):
         trainSamples = U.rvs(samples)
         testSamples = U.rvs(l2_samples)
         for grid_name in grids:
             # build parameter set
-
             print("--------------------Samples: {} Grid: {}--------------------".format(samples, grid_name))
             dist_sgde = SGDEdist.byLearnerSGDEConfig(trainSamples,
+                                                     bounds=U.getBounds(),
+                                                     unitIntegrand=True,
                                                      config={"grid_level": lvl,
                                                              "grid_type": grid_name,
                                                              "grid_maxDegree": 6,
@@ -74,14 +74,16 @@ def test_sgdeLaplace():
                                                              "crossValidation_lambda": 1e-6,
                                                              "crossValidation_enable": True,
                                                              "crossValidation_kfold": 5,
-                                                             "crossValidation_silent": False,
-                                                             "sgde_makePositive": False,
-                                                             "sgde_makePositive_candidateSearchAlgorithm": "joined",
-                                                             "sgde_makePositive_interpolationAlgorithm": "setToZero",
-                                                             "sgde_makePositive_verbose": True,
-                                                             "sgde_unitIntegrand": True})
+                                                             "crossValidation_lambdaSteps": 10,
+                                                             "crossValidation_silent": False})
             points[grid_name].append(dist_sgde.grid.getSize())
             l2_errors[grid_name].append(dist_sgde.l2error(U, testSamplesUnit=testSamples))
+
+            plt.figure()
+            plotDensity2d(U, levels=(10, 20, 40, 50, 60))
+            plt.figure()
+            plotDensity2d(dist_sgde, levels=(10, 20, 40, 50, 60))
+            plt.show()
 
     dist_kde = dists.KDEDist(trainSamples,
                              kernelType=KernelType_GAUSSIAN,
