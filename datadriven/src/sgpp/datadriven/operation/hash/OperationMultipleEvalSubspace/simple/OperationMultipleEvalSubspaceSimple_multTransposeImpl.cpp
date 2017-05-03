@@ -18,7 +18,7 @@ namespace datadriven {
  * @param alpha surplusses of the grid
  * @param result will contain the evaluation results for the given range.
  * @param start_index_data beginning of the range to evaluate
- * @param ebd_index_data end of the range to evaluate
+ * @param end_index_data end of the range to evaluate
  */
 void OperationMultipleEvalSubspaceSimple::multTransposeImpl(sgpp::base::DataVector& alpha,
                                                             sgpp::base::DataVector& result,

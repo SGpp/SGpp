@@ -22,7 +22,7 @@ namespace datadriven {
  * @param source source operand for the operator
  * @param result stores the result
  * @param start_index_data beginning of the range to process
- * @param ebd_index_data end of the range to process
+ * @param end_index_data end of the range to process
  */
 void OperationMultipleEvalSubspaceCombined::multImpl(sgpp::base::DataVector& source,
                                                      sgpp::base::DataVector& result,

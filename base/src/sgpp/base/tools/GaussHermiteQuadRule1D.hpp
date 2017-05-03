@@ -43,6 +43,58 @@ class GaussHermiteQuadRule1D : public QuadRule1D {
                                           double stdd = 1.0f);
 
   static GaussHermiteQuadRule1D& getInstance();
+
+ protected:
+  inline void setGaussHermiteValuesForDegree0();
+  inline void setGaussHermiteValuesForDegree1();
+  inline void setGaussHermiteValuesForDegree2();
+  inline void setGaussHermiteValuesForDegree3();
+  inline void setGaussHermiteValuesForDegree4();
+  inline void setGaussHermiteValuesForDegree5();
+  inline void setGaussHermiteValuesForDegree6();
+  inline void setGaussHermiteValuesForDegree7();
+  inline void setGaussHermiteValuesForDegree8();
+  inline void setGaussHermiteValuesForDegree9();
+  inline void setGaussHermiteValuesForDegree10();
+  inline void setGaussHermiteValuesForDegree11();
+  inline void setGaussHermiteValuesForDegree12();
+  inline void setGaussHermiteValuesForDegree13();
+  inline void setGaussHermiteValuesForDegree14();
+  inline void setGaussHermiteValuesForDegree15();
+  inline void setGaussHermiteValuesForDegree16();
+  inline void setGaussHermiteValuesForDegree17();
+  inline void setGaussHermiteValuesForDegree18();
+  inline void setGaussHermiteValuesForDegree19();
+  inline void setGaussHermiteValuesForDegree20();
+  inline void setGaussHermiteValuesForDegree21();
+  inline void setGaussHermiteValuesForDegree22();
+  inline void setGaussHermiteValuesForDegree23();
+  inline void setGaussHermiteValuesForDegree24();
+  inline void setGaussHermiteValuesForDegree25();
+  inline void setGaussHermiteValuesForDegree26();
+  inline void setGaussHermiteValuesForDegree27();
+  inline void setGaussHermiteValuesForDegree28();
+  inline void setGaussHermiteValuesForDegree29();
+  inline void setGaussHermiteValuesForDegree30();
+  inline void setGaussHermiteValuesForDegree31();
+  inline void setGaussHermiteValuesForDegree32();
+  inline void setGaussHermiteValuesForDegree33();
+  inline void setGaussHermiteValuesForDegree34();
+  inline void setGaussHermiteValuesForDegree35();
+  inline void setGaussHermiteValuesForDegree36();
+  inline void setGaussHermiteValuesForDegree37();
+  inline void setGaussHermiteValuesForDegree38();
+  inline void setGaussHermiteValuesForDegree39();
+  inline void setGaussHermiteValuesForDegree40();
+  inline void setGaussHermiteValuesForDegree41();
+  inline void setGaussHermiteValuesForDegree42();
+  inline void setGaussHermiteValuesForDegree43();
+  inline void setGaussHermiteValuesForDegree44();
+  inline void setGaussHermiteValuesForDegree45();
+  inline void setGaussHermiteValuesForDegree46();
+  inline void setGaussHermiteValuesForDegree47();
+  inline void setGaussHermiteValuesForDegree48();
+  inline void setGaussHermiteValuesForDegree49();
 };
 
 }  // namespace base
