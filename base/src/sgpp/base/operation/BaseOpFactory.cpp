@@ -52,6 +52,7 @@
 
 #include <sgpp/base/operation/hash/OperationQuadrature.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureLinear.hpp>
+#include <sgpp/base/operation/hash/OperationQuadratureModLinear.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureLinearClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureLinearClenshawCurtisBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureModLinearClenshawCurtis.hpp>
@@ -248,6 +249,8 @@ base::OperationQuadrature* createOperationQuadrature(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
     return new base::OperationQuadratureLinearBoundary(grid.getStorage());
+  } else if (grid.getType() == base::GridType::ModLinear) {
+    return new base::OperationQuadratureModLinear(grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
     return new base::OperationQuadratureLinearClenshawCurtis(grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearClenshawCurtisBoundary) {
