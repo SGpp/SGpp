@@ -367,7 +367,6 @@ def lintAction(target, source, env):
          "If so, make const or use a pointer:" in line) or \
         ("Consider using rand_r(...) instead of rand(...) for " +
          "improved thread safety." in line) or \
-        ("<chrono> is an unapproved C++11 header." in line) or \
         (line == ""):
       pass
     else:
@@ -392,7 +391,7 @@ if env["RUN_PYTHON_TESTS"] and env["SG_PYTHON"]:
   env.Append(BUILDERS={"SimpleTest" : builder})
 
 if env["COMPILE_BOOST_TESTS"]:
-  builder = Builder(action="./$SOURCE")
+  builder = Builder(action="./$SOURCE --log_level=test_suite")
   env.Append(BUILDERS={"BoostTest" : builder})
 
 # Building the modules

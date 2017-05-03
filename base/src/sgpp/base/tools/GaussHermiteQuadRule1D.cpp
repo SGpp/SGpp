@@ -9,16 +9,15 @@
 namespace sgpp {
 namespace base {
 
-GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
-  //------------------------------------------------------------
-  // n = 0
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree0() {
   coordinates[0] = new DataVector(1);
   coordinates[0]->set(0, 0.000000000000000);
   //------------------------------------------------------------
   weights[0] = new DataVector(1);
   weights[0]->set(0, 1.772453850905516);
-  //------------------------------------------------------------
-  // n = 1
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree1() {
   coordinates[1] = new DataVector(2);
   coordinates[1]->set(0, -0.707106781186547);
   coordinates[1]->set(1, 0.707106781186547);
@@ -26,8 +25,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[1] = new DataVector(2);
   weights[1]->set(0, 0.886226925452758);
   weights[1]->set(1, 0.886226925452758);
-  //------------------------------------------------------------
-  // n = 2
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree2() {
   coordinates[2] = new DataVector(3);
   coordinates[2]->set(0, -1.224744871391589);
   coordinates[2]->set(1, 0.000000000000000);
@@ -37,8 +37,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[2]->set(0, 0.295408975150919);
   weights[2]->set(1, 1.181635900603677);
   weights[2]->set(2, 0.295408975150919);
-  //------------------------------------------------------------
-  // n = 3
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree3() {
   coordinates[3] = new DataVector(4);
   coordinates[3]->set(0, -1.650680123885785);
   coordinates[3]->set(1, -0.524647623275290);
@@ -50,8 +51,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[3]->set(1, 0.804914090005513);
   weights[3]->set(2, 0.804914090005513);
   weights[3]->set(3, 0.081312835447245);
-  //------------------------------------------------------------
-  // n = 4
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree4() {
   coordinates[4] = new DataVector(5);
   coordinates[4]->set(0, -2.020182870456086);
   coordinates[4]->set(1, -0.958572464613819);
@@ -65,8 +67,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[4]->set(2, 0.945308720482942);
   weights[4]->set(3, 0.393619323152241);
   weights[4]->set(4, 0.019953242059046);
-  //------------------------------------------------------------
-  // n = 5
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree5() {
   coordinates[5] = new DataVector(6);
   coordinates[5]->set(0, -2.350604973674492);
   coordinates[5]->set(1, -1.335849074013697);
@@ -82,8 +85,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[5]->set(3, 0.724629595224392);
   weights[5]->set(4, 0.157067320322856);
   weights[5]->set(5, 0.004530009905509);
-  //------------------------------------------------------------
-  // n = 6
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree6() {
   coordinates[6] = new DataVector(7);
   coordinates[6]->set(0, -2.651961356835233);
   coordinates[6]->set(1, -1.673551628767471);
@@ -101,8 +105,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[6]->set(4, 0.425607252610128);
   weights[6]->set(5, 0.054515582819127);
   weights[6]->set(6, 0.000971781245100);
-  //------------------------------------------------------------
-  // n = 7
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree7() {
   coordinates[7] = new DataVector(8);
   coordinates[7]->set(0, -2.930637420257244);
   coordinates[7]->set(1, -1.981656756695843);
@@ -122,8 +127,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[7]->set(5, 0.207802325814892);
   weights[7]->set(6, 0.017077983007413);
   weights[7]->set(7, 0.000199604072211);
-  //------------------------------------------------------------
-  // n = 8
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree8() {
   coordinates[8] = new DataVector(9);
   coordinates[8]->set(0, -3.190993201781528);
   coordinates[8]->set(1, -2.266580584531843);
@@ -145,8 +151,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[8]->set(6, 0.088474527394377);
   weights[8]->set(7, 0.004943624275537);
   weights[8]->set(8, 0.000039606977263);
-  //------------------------------------------------------------
-  // n = 9
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree9() {
   coordinates[9] = new DataVector(10);
   coordinates[9]->set(0, -3.436159118837737);
   coordinates[9]->set(1, -2.532731674232790);
@@ -170,8 +177,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[9]->set(7, 0.033874394455481);
   weights[9]->set(8, 0.001343645746781);
   weights[9]->set(9, 0.000007640432855);
-  //------------------------------------------------------------
-  // n = 10
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree10() {
   coordinates[10] = new DataVector(11);
   coordinates[10]->set(0, -3.668470846559583);
   coordinates[10]->set(1, -2.783290099781651);
@@ -197,8 +205,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[10]->set(8, 0.011911395444912);
   weights[10]->set(9, 0.000346819466323);
   weights[10]->set(10, 0.000001439560394);
-  //------------------------------------------------------------
-  // n = 11
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree11() {
   coordinates[11] = new DataVector(12);
   coordinates[11]->set(0, -3.889724897869782);
   coordinates[11]->set(1, -3.020637025120890);
@@ -226,8 +235,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[11]->set(9, 0.003905390584629);
   weights[11]->set(10, 0.000085736870436);
   weights[11]->set(11, 0.000000265855168);
-  //------------------------------------------------------------
-  // n = 12
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree12() {
   coordinates[12] = new DataVector(13);
   coordinates[12]->set(0, -4.101337596178640);
   coordinates[12]->set(1, -3.246608978372410);
@@ -257,8 +267,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[12]->set(10, 0.001207459992719);
   weights[12]->set(11, 0.000020430360403);
   weights[12]->set(12, 0.000000048257319);
-  //------------------------------------------------------------
-  // n = 13
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree13() {
   coordinates[13] = new DataVector(14);
   coordinates[13]->set(0, -4.304448570473632);
   coordinates[13]->set(1, -3.462656933602271);
@@ -290,8 +301,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[13]->set(11, 0.000355092613552);
   weights[13]->set(12, 0.000004716484355);
   weights[13]->set(13, 0.000000008628591);
-  //------------------------------------------------------------
-  // n = 14
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree14() {
   coordinates[14] = new DataVector(15);
   coordinates[14]->set(0, -4.499990707309392);
   coordinates[14]->set(1, -3.669950373404453);
@@ -325,8 +337,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[14]->set(12, 0.000100004441232);
   weights[14]->set(13, 0.000001059115548);
   weights[14]->set(14, 0.000000001522476);
-  //------------------------------------------------------------
-  // n = 15
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree15() {
   coordinates[15] = new DataVector(16);
   coordinates[15]->set(0, -4.688738939305819);
   coordinates[15]->set(1, -3.869447904860123);
@@ -362,8 +375,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[15]->set(13, 0.000027118600925);
   weights[15]->set(14, 0.000000232098084);
   weights[15]->set(15, 0.000000000265481);
-  //------------------------------------------------------------
-  // n = 16
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree16() {
   coordinates[16] = new DataVector(17);
   coordinates[16]->set(0, -4.871345193674403);
   coordinates[16]->set(1, -4.061946675875475);
@@ -401,8 +415,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[16]->set(14, 0.000007112289140);
   weights[16]->set(15, 0.000000049770790);
   weights[16]->set(16, 0.000000000045806);
-  //------------------------------------------------------------
-  // n = 17
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree17() {
   coordinates[17] = new DataVector(18);
   coordinates[17]->set(0, -5.048364008874467);
   coordinates[17]->set(1, -4.248117873568127);
@@ -442,8 +457,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[17]->set(15, 0.000001810654481);
   weights[17]->set(16, 0.000000010467206);
   weights[17]->set(17, 0.000000000007828);
-  //------------------------------------------------------------
-  // n = 18
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree18() {
   coordinates[18] = new DataVector(19);
   coordinates[18]->set(0, -5.220271690537482);
   coordinates[18]->set(1, -4.428532806603779);
@@ -485,8 +501,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[18]->set(16, 0.000000448824315);
   weights[18]->set(17, 0.000000002163051);
   weights[18]->set(18, 0.000000000001326);
-  //------------------------------------------------------------
-  // n = 19
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree19() {
   coordinates[19] = new DataVector(20);
   coordinates[19]->set(0, -5.387480890011233);
   coordinates[19]->set(1, -4.603682449550744);
@@ -530,8 +547,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[19]->set(17, 0.000000108606937);
   weights[19]->set(18, 0.000000000439934);
   weights[19]->set(19, 0.000000000000223);
-  //------------------------------------------------------------
-  // n = 20
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree20() {
   coordinates[20] = new DataVector(21);
   coordinates[20]->set(0, -5.550351873264678);
   coordinates[20]->set(1, -4.773992343411219);
@@ -577,8 +595,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[20]->set(18, 0.000000025712302);
   weights[20]->set(19, 0.000000000088186);
   weights[20]->set(20, 0.000000000000037);
-  //------------------------------------------------------------
-  // n = 21
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree21() {
   coordinates[21] = new DataVector(22);
   coordinates[21]->set(0, -5.709201353205263);
   coordinates[21]->set(1, -4.939834131060176);
@@ -626,8 +645,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[21]->set(19, 0.000000005966991);
   weights[21]->set(20, 0.000000000017443);
   weights[21]->set(21, 0.000000000000006);
-  //------------------------------------------------------------
-  // n = 22
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree22() {
   coordinates[22] = new DataVector(23);
   coordinates[22]->set(0, -5.864309498984572);
   coordinates[22]->set(1, -5.101534610476677);
@@ -677,8 +697,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[22]->set(20, 0.000000001359630);
   weights[22]->set(21, 0.000000000003408);
   weights[22]->set(22, 0.000000000000001);
-  //------------------------------------------------------------
-  // n = 23
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree23() {
   coordinates[23] = new DataVector(24);
   coordinates[23]->set(0, -6.015925561425740);
   coordinates[23]->set(1, -5.259382927668044);
@@ -730,8 +751,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[23]->set(21, 0.000000000304625);
   weights[23]->set(22, 0.000000000000658);
   weights[23]->set(23, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 24
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree24() {
   coordinates[24] = new DataVector(25);
   coordinates[24]->set(0, -6.164272434052452);
   coordinates[24]->set(1, -5.413636355280033);
@@ -785,8 +807,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[24]->set(22, 0.000000000067196);
   weights[24]->set(23, 0.000000000000126);
   weights[24]->set(24, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 25
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree25() {
   coordinates[25] = new DataVector(26);
   coordinates[25]->set(0, -6.309550385625694);
   coordinates[25]->set(1, -5.564524981950103);
@@ -842,8 +865,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[25]->set(23, 0.000000000014610);
   weights[25]->set(24, 0.000000000000024);
   weights[25]->set(25, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 26
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree26() {
   coordinates[26] = new DataVector(27);
   coordinates[26]->set(0, -6.451940140753472);
   coordinates[26]->set(1, -5.712255552816536);
@@ -901,8 +925,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[26]->set(24, 0.000000000003134);
   weights[26]->set(25, 0.000000000000004);
   weights[26]->set(26, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 27
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree27() {
   coordinates[27] = new DataVector(28);
   coordinates[27]->set(0, -6.591605442367743);
   coordinates[27]->set(1, -5.857014641382850);
@@ -962,8 +987,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[27]->set(25, 0.000000000000664);
   weights[27]->set(26, 0.000000000000001);
   weights[27]->set(27, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 28
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree28() {
   coordinates[28] = new DataVector(29);
   coordinates[28]->set(0, -6.728695198608850);
   coordinates[28]->set(1, -5.998971289463820);
@@ -1025,8 +1051,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[28]->set(26, 0.000000000000139);
   weights[28]->set(27, 0.000000000000000);
   weights[28]->set(28, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 29
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree29() {
   coordinates[29] = new DataVector(30);
   coordinates[29]->set(0, -6.863345293529892);
   coordinates[29]->set(1, -6.138279220123935);
@@ -1090,8 +1117,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[29]->set(27, 0.000000000000029);
   weights[29]->set(28, 0.000000000000000);
   weights[29]->set(29, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 30
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree30() {
   coordinates[30] = new DataVector(31);
   coordinates[30]->set(0, -6.995680123718540);
   coordinates[30]->set(1, -6.275078704942860);
@@ -1157,8 +1185,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[30]->set(28, 0.000000000000006);
   weights[30]->set(29, 0.000000000000000);
   weights[30]->set(30, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 31
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree31() {
   coordinates[31] = new DataVector(32);
   coordinates[31]->set(0, -7.125813909830728);
   coordinates[31]->set(1, -6.409498149269661);
@@ -1226,8 +1255,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[31]->set(29, 0.000000000000001);
   weights[31]->set(30, 0.000000000000000);
   weights[31]->set(31, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 32
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree32() {
   coordinates[32] = new DataVector(33);
   coordinates[32]->set(0, -7.253851822015201);
   coordinates[32]->set(1, -6.541655445738077);
@@ -1297,8 +1327,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[32]->set(30, 0.000000000000000);
   weights[32]->set(31, 0.000000000000000);
   weights[32]->set(32, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 33
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree33() {
   coordinates[33] = new DataVector(34);
   coordinates[33]->set(0, -7.379890950481246);
   coordinates[33]->set(1, -6.671659136070170);
@@ -1370,8 +1401,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[33]->set(31, 0.000000000000000);
   weights[33]->set(32, 0.000000000000000);
   weights[33]->set(33, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 34
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree34() {
   coordinates[34] = new DataVector(35);
   coordinates[34]->set(0, -7.504021146448936);
   coordinates[34]->set(1, -6.799609413284130);
@@ -1445,8 +1477,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[34]->set(32, 0.000000000000000);
   weights[34]->set(33, 0.000000000000000);
   weights[34]->set(34, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 35
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree35() {
   coordinates[35] = new DataVector(36);
   coordinates[35]->set(0, -7.626325754003894);
   coordinates[35]->set(1, -6.925598990259942);
@@ -1522,8 +1555,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[35]->set(33, 0.000000000000000);
   weights[35]->set(34, 0.000000000000000);
   weights[35]->set(35, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 36
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree36() {
   coordinates[36] = new DataVector(37);
   coordinates[36]->set(0, -7.746882249649456);
   coordinates[36]->set(1, -7.049713855778229);
@@ -1601,8 +1635,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[36]->set(34, 0.000000000000000);
   weights[36]->set(35, 0.000000000000000);
   weights[36]->set(36, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 37
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree37() {
   coordinates[37] = new DataVector(38);
   coordinates[37]->set(0, -7.865762803380042);
   coordinates[37]->set(1, -7.172033935320031);
@@ -1682,8 +1717,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[37]->set(35, 0.000000000000000);
   weights[37]->set(36, 0.000000000000000);
   weights[37]->set(37, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 38
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree38() {
   coordinates[38] = new DataVector(39);
   coordinates[38]->set(0, -7.983034772719781);
   coordinates[38]->set(1, -7.292633670865721);
@@ -1765,8 +1801,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[38]->set(36, 0.000000000000000);
   weights[38]->set(37, 0.000000000000000);
   weights[38]->set(38, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 39
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree39() {
   coordinates[39] = new DataVector(40);
   coordinates[39]->set(0, -8.098761139250851);
   coordinates[39]->set(1, -7.411582531485469);
@@ -1850,8 +1887,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[39]->set(37, 0.000000000000000);
   weights[39]->set(38, 0.000000000000000);
   weights[39]->set(39, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 40
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree40() {
   coordinates[40] = new DataVector(41);
   coordinates[40]->set(0, -8.213000895598281);
   coordinates[40]->set(1, -7.528945464539621);
@@ -1937,8 +1975,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[40]->set(38, 0.000000000000000);
   weights[40]->set(39, 0.000000000000000);
   weights[40]->set(40, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 41
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree41() {
   coordinates[41] = new DataVector(42);
   coordinates[41]->set(0, -8.325809389566931);
   coordinates[41]->set(1, -7.644783295704742);
@@ -2026,8 +2065,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[41]->set(39, 0.000000000000000);
   weights[41]->set(40, 0.000000000000000);
   weights[41]->set(41, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 42
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree42() {
   coordinates[42] = new DataVector(43);
   coordinates[42]->set(0, -8.437238631083376);
   coordinates[42]->set(1, -7.759153084732534);
@@ -2117,8 +2157,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[42]->set(40, 0.000000000000000);
   weights[42]->set(41, 0.000000000000000);
   weights[42]->set(42, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 43
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree43() {
   coordinates[43] = new DataVector(44);
   coordinates[43]->set(0, -8.547337566735539);
   coordinates[43]->set(1, -7.872108442774851);
@@ -2210,8 +2251,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[43]->set(41, 0.000000000000000);
   weights[43]->set(42, 0.000000000000000);
   weights[43]->set(43, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 44
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree44() {
   coordinates[44] = new DataVector(45);
   coordinates[44]->set(0, -8.656152325990329);
   coordinates[44]->set(1, -7.983699816222003);
@@ -2305,8 +2347,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[44]->set(42, 0.000000000000000);
   weights[44]->set(43, 0.000000000000000);
   weights[44]->set(44, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 45
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree45() {
   coordinates[45] = new DataVector(46);
   coordinates[45]->set(0, -8.763726442576393);
   coordinates[45]->set(1, -8.093974741267118);
@@ -2402,8 +2445,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[45]->set(43, 0.000000000000000);
   weights[45]->set(44, 0.000000000000000);
   weights[45]->set(45, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 46
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree46() {
   coordinates[46] = new DataVector(47);
   coordinates[46]->set(0, -8.870101054023253);
   coordinates[46]->set(1, -8.202978072797794);
@@ -2501,8 +2545,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[46]->set(44, 0.000000000000000);
   weights[46]->set(45, 0.000000000000000);
   weights[46]->set(46, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 47
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree47() {
   coordinates[47] = new DataVector(48);
   coordinates[47]->set(0, -8.975315081931686);
   coordinates[47]->set(1, -8.310752190704784);
@@ -2602,8 +2647,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[47]->set(45, 0.000000000000000);
   weights[47]->set(46, 0.000000000000000);
   weights[47]->set(47, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 48
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree48() {
   coordinates[48] = new DataVector(49);
   coordinates[48]->set(0, -9.079405395199434);
   coordinates[48]->set(1, -8.417337186267979);
@@ -2705,8 +2751,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[48]->set(46, 0.000000000000000);
   weights[48]->set(47, 0.000000000000000);
   weights[48]->set(48, 0.000000000000000);
-  //------------------------------------------------------------
-  // n = 49
+}
+
+inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree49() {
   coordinates[49] = new DataVector(50);
   coordinates[49]->set(0, -9.182406958129317);
   coordinates[49]->set(1, -8.522771030917804);
@@ -2810,6 +2857,59 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
   weights[49]->set(47, 0.000000000000000);
   weights[49]->set(48, 0.000000000000000);
   weights[49]->set(49, 0.000000000000000);
+}
+
+GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
+  setGaussHermiteValuesForDegree0();
+  setGaussHermiteValuesForDegree1();
+  setGaussHermiteValuesForDegree2();
+  setGaussHermiteValuesForDegree3();
+  setGaussHermiteValuesForDegree4();
+  setGaussHermiteValuesForDegree5();
+  setGaussHermiteValuesForDegree6();
+  setGaussHermiteValuesForDegree7();
+  setGaussHermiteValuesForDegree8();
+  setGaussHermiteValuesForDegree9();
+  setGaussHermiteValuesForDegree10();
+  setGaussHermiteValuesForDegree11();
+  setGaussHermiteValuesForDegree12();
+  setGaussHermiteValuesForDegree13();
+  setGaussHermiteValuesForDegree14();
+  setGaussHermiteValuesForDegree15();
+  setGaussHermiteValuesForDegree16();
+  setGaussHermiteValuesForDegree17();
+  setGaussHermiteValuesForDegree18();
+  setGaussHermiteValuesForDegree19();
+  setGaussHermiteValuesForDegree20();
+  setGaussHermiteValuesForDegree21();
+  setGaussHermiteValuesForDegree22();
+  setGaussHermiteValuesForDegree23();
+  setGaussHermiteValuesForDegree24();
+  setGaussHermiteValuesForDegree25();
+  setGaussHermiteValuesForDegree26();
+  setGaussHermiteValuesForDegree27();
+  setGaussHermiteValuesForDegree28();
+  setGaussHermiteValuesForDegree29();
+  setGaussHermiteValuesForDegree30();
+  setGaussHermiteValuesForDegree31();
+  setGaussHermiteValuesForDegree32();
+  setGaussHermiteValuesForDegree33();
+  setGaussHermiteValuesForDegree34();
+  setGaussHermiteValuesForDegree35();
+  setGaussHermiteValuesForDegree36();
+  setGaussHermiteValuesForDegree37();
+  setGaussHermiteValuesForDegree38();
+  setGaussHermiteValuesForDegree39();
+  setGaussHermiteValuesForDegree40();
+  setGaussHermiteValuesForDegree41();
+  setGaussHermiteValuesForDegree42();
+  setGaussHermiteValuesForDegree43();
+  setGaussHermiteValuesForDegree44();
+  setGaussHermiteValuesForDegree45();
+  setGaussHermiteValuesForDegree46();
+  setGaussHermiteValuesForDegree47();
+  setGaussHermiteValuesForDegree48();
+  setGaussHermiteValuesForDegree49();
 }
 
 GaussHermiteQuadRule1D::~GaussHermiteQuadRule1D() {}

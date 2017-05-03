@@ -30,7 +30,7 @@ namespace datadriven {
  * Multiple evaluation operation that uses the subspace structure to save work
  * compared to the naive or streaming variants.
  * Verification and debugging variant, should not be used. Instead, use the
- * @OperationMultipleEvalSubspaceCombined.
+ * @ref OperationMultipleEvalSubspaceCombined.
  */
 class OperationMultipleEvalSubspaceSimple : public AbstractOperationMultipleEvalSubspace {
  private:
@@ -107,7 +107,7 @@ class OperationMultipleEvalSubspaceSimple : public AbstractOperationMultipleEval
    * @param alpha surplusses of the grid
    * @param result will contain the evaluation results for the given range.
    * @param start_index_data beginning of the range to evaluate
-   * @param ebd_index_data end of the range to evaluate
+   * @param end_index_data end of the range to evaluate
    */
   void multTransposeImpl(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                          const size_t start_index_data, const size_t end_index_data) override;
@@ -120,7 +120,7 @@ class OperationMultipleEvalSubspaceSimple : public AbstractOperationMultipleEval
    * @param source source operand for the operator
    * @param result stores the result
    * @param start_index_data beginning of the range to process
-   * @param ebd_index_data end of the range to process
+   * @param end_index_data end of the range to process
    */
   void multImpl(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
                 const size_t start_index_data, const size_t end_index_data) override;

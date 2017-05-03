@@ -15,6 +15,5 @@ module.buildLibrary()
 module.generatePythonDocstrings()
 module.buildExamples()
 module.buildBoostTests()
-# TODO(secklesn): enable after fixing current problems
-# module.runBoostTests()
+module.runBoostTests()
 module.runCpplint()
