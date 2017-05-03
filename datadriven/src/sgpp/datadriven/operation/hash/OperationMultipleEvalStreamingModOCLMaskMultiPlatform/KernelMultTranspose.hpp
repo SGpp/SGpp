@@ -155,7 +155,7 @@ class KernelMultTranspose {
       size_t kernelEndGrid;
 
       bool segmentAvailable = queueLoadBalancerMultTranspose->getNextSegment(
-          scheduleSize, totalBlockSize, kernelStartGrid, kernelEndGrid);
+          scheduleSize, kernelStartGrid, kernelEndGrid);
       if (!segmentAvailable) {
         break;
       }

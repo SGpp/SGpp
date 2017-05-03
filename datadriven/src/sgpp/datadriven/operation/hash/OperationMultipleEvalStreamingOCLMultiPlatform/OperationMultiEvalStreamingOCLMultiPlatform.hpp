@@ -56,7 +56,6 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
 
   size_t datasetSizeUnpadded;
   size_t datasetSizePadded;
-  size_t datasetSizeBuffers;
 
   //  // includes padding
   //  size_t datasetSize;
@@ -68,7 +67,6 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
 
   size_t gridSizeUnpadded;
   size_t gridSizePadded;
-  size_t gridSizeBuffers;
 
   //  // includes padding
   //  size_t gridSize;
@@ -130,12 +128,10 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
     // initialized in padDataset
     datasetSizeUnpadded = 0;
     datasetSizePadded = 0;
-    datasetSizeBuffers = 0;
 
     // initialized in prepare
     gridSizeUnpadded = 0;
     gridSizePadded = 0;
-    gridSizeBuffers = 0;
 
     this->padDataset(this->preparedDataset);
     this->preparedDataset.transpose();
@@ -200,7 +196,7 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
     size_t datasetFrom = startIndexDataPadded;
     size_t datasetTo = endIndexDataPadded;
 
-    queueLoadBalancerMult->initialize(datasetFrom, datasetTo);
+    queueLoadBalancerMult->initialize(datasetFrom, datasetTo, commonDatasetPadding);
 
     std::vector<T> alphaArray(this->gridSizePadded);
 
@@ -277,6 +273,9 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
     // ensure padding requirements are fulfilled by start and end index
     size_t startIndexGridPadded = this->padIndexDown(startIndexGrid, commonGridPadding);
     size_t endIndexGridPadded = this->padIndexUp(endIndexGrid, commonGridPadding);
+    std::cout << "endIndexGrid: " << endIndexGrid << std::endl;
+    std::cout << "commonGridPadding: " << commonGridPadding << std::endl;
+    std::cout << "endIndexGridPadded: " << endIndexGridPadded << std::endl;
 
     if (startIndexGrid > endIndexGrid) {
       std::stringstream errorString;
@@ -291,7 +290,7 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
     size_t datasetFrom = 0;
     size_t datasetTo = this->datasetSizePadded;
 
-    queueLoadBalancerMultTranspose->initialize(gridFrom, gridTo);
+    queueLoadBalancerMultTranspose->initialize(gridFrom, gridTo, commonGridPadding);
 
     std::vector<T> sourceArray(this->datasetSizePadded);
 
@@ -375,14 +374,13 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
     size_t padding = commonDatasetPadding - remainder;
     datasetSizeUnpadded = dataset.getNrows();
     datasetSizePadded = dataset.getNrows() + padding;
-    datasetSizeBuffers = dataset.getNrows() + commonDatasetPadding;
 
     // replicate last row for padding
     base::DataVector lastRow(dims);
     dataset.getRow(datasetSizeUnpadded - 1, lastRow);
-    dataset.resize(datasetSizeBuffers);
+    dataset.resize(datasetSizePadded);
 
-    for (size_t i = datasetSizeUnpadded; i < datasetSizeBuffers; i++) {
+    for (size_t i = datasetSizeUnpadded; i < datasetSizePadded; i++) {
       dataset.setRow(i, lastRow);
     }
   }
@@ -404,10 +402,12 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
 
     gridSizeUnpadded = storage.getSize();
     gridSizePadded = storage.getSize() + padding;
-    gridSizeBuffers = storage.getSize() + commonGridPadding;
 
-    level = std::vector<T>(gridSizeBuffers * dims);
-    index = std::vector<T>(gridSizeBuffers * dims);
+    std::cout << "gridSizePadded: " << gridSizePadded << std::endl;
+    std::cout << "commonGridPadding: " << commonGridPadding << std::endl; 
+    
+    level = std::vector<T>(gridSizePadded * dims);
+    index = std::vector<T>(gridSizePadded * dims);
 
     base::HashGridPoint::level_type curLevel;
     base::HashGridPoint::index_type curIndex;
@@ -421,7 +421,7 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
       }
     }
 
-    for (size_t i = storage.getSize(); i < gridSizeBuffers; i++) {
+    for (size_t i = storage.getSize(); i < gridSizePadded; i++) {
       for (size_t dim = 0; dim < storage.getDimension(); dim++) {
         level[i * dims + dim] = 1.0;
         index[i * dims + dim] = 1.0;
@@ -475,12 +475,18 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
   // pads an index to make it divisible by the provided blocksize ()
   size_t padIndexUp(size_t index, size_t blockSize) {
     size_t remainder = index % blockSize;
+    if (remainder == 0) {
+      return index;
+    }
     return index + (blockSize - remainder);
   }
 
   // pads an index to make it divisible by the provided blocksize
   size_t padIndexDown(size_t index, size_t blockSize) {
     size_t remainder = index % blockSize;
+    if (remainder == 0) {
+      return index;
+    }    
     return index - remainder;
   }
 };
