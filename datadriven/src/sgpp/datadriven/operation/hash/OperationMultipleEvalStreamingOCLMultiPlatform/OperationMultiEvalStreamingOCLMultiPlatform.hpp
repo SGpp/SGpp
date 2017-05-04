@@ -402,9 +402,6 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
 
     gridSizeUnpadded = storage.getSize();
     gridSizePadded = storage.getSize() + padding;
-
-    std::cout << "gridSizePadded: " << gridSizePadded << std::endl;
-    std::cout << "commonGridPadding: " << commonGridPadding << std::endl; 
     
     level = std::vector<T>(gridSizePadded * dims);
     index = std::vector<T>(gridSizePadded * dims);
