@@ -139,8 +139,8 @@ public:
       size_t kernelEndData = end_index_data;
 
       // set kernel arguments
-      size_t kernelStartGrid;
-      size_t kernelEndGrid;
+      size_t kernelStartGrid = 0;
+      size_t kernelEndGrid = 0;
 
       bool segmentAvailable = queueLoadBalancerMultTranspose->getNextSegment(
           scheduleSize, kernelStartGrid, kernelEndGrid);

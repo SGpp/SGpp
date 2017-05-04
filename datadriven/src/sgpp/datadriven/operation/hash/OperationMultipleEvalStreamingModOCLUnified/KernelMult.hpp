@@ -129,8 +129,8 @@ public:
     this->deviceTimingMult = 0.0;
 
     while (true) {
-      size_t kernelStartData;
-      size_t kernelEndData;
+      size_t kernelStartData = 0;
+      size_t kernelEndData = 0;
 
       // set kernel arguments
       size_t kernelStartGrid = start_index_grid;
@@ -155,8 +155,6 @@ public:
       initDatasetResultBuffers(kernelStartData, kernelEndData);
 
       clFinish(device->commandQueue);
-      //            std::cout << "wrote to device: " << device->deviceId << ""
-      //            << std::endl;
 
       size_t rangeSizeBlocked = (kernelEndData / dataBlockingSize) -
                                 (kernelStartData / dataBlockingSize);

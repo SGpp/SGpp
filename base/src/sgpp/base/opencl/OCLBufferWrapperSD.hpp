@@ -159,13 +159,6 @@ public:
     size_t range = offsetEnd - offsetStart;
     size_t totalElements = range * dim;
 
-    std::cout << "dim: " << dim << std::endl;
-    std::cout << "offsetStart: " << offsetStart << std::endl;
-    std::cout << "offsetEnd: " << offsetEnd << std::endl;
-
-    std::cout << "dataPoints: " << (hostBuffer.size() / dim) << std::endl;
-    std::cout << "hostBuffer.size(): " << hostBuffer.size() << std::endl;
-
     if (!this->isInitialized()) {
       this->initializeBuffer(totalElements);
     } else if (totalElements != this->size()) {
