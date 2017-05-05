@@ -28,7 +28,7 @@ enum class OperationMultipleEvalSubType {
   OCLUNIFIED
 };
 
-enum class OperationMultipleEvalMPIType { NONE, MASTERSLAVE };
+enum class OperationMultipleEvalMPIType { NONE, MASTERSLAVE, HPX };
 
 class OperationMultipleEvalConfiguration {
  private:
@@ -70,6 +70,7 @@ class OperationMultipleEvalConfiguration {
                                      std::string name = "unnamed") {
     this->type = type;
     this->subType = subType;
+    this->mpiType = mpiType;
     this->name = name;
     this->parameters = std::shared_ptr<base::OperationConfiguration>(parameters.clone());
   }

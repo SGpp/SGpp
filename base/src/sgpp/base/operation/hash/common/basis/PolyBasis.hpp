@@ -52,7 +52,7 @@ class PolyBasis : public Basis<LT, IT> {
   /**
    * Destructor
    */
-  ~PolyBasis() override { delete idxtable; }
+  ~PolyBasis() override { delete[] idxtable; }
 
   /**
    * Evaluates all the hierarchical ancestors of the node defined by level
