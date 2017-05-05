@@ -49,6 +49,7 @@
 
 #include <sgpp/base/operation/hash/OperationFirstMomentLinear.hpp>
 #include <sgpp/base/operation/hash/OperationFirstMomentLinearBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationFirstMomentModLinear.hpp>
 
 #include <sgpp/base/operation/hash/OperationQuadrature.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureLinear.hpp>
@@ -309,6 +310,8 @@ base::OperationFirstMoment* createOperationFirstMoment(base::Grid& grid) {
              grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearTruncatedBoundary) {
     return new base::OperationFirstMomentLinearBoundary(grid.getStorage());
+  } else if (grid.getType() == base::GridType::ModLinear) {
+    return new base::OperationFirstMomentModLinear(grid.getStorage());
   } else {
     throw base::factory_exception(
         "createOperationFirstMoment is not implemented for this grid type.");
