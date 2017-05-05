@@ -32,15 +32,15 @@ def test_sgdeLaplace():
     sample_range = [10, 20, 50, 100, 200, 500]
     points = {}
     grids = ["linear",
-             # "modlinear", # keine OperationQuadrature
+             "modlinear", # keine OperationQuadrature
              "poly",
              "modpoly",
              "polyBoundary",
              "polyClenshawCurtis",
              "modPolyClenshawCurtis",
              "polyClenshawCurtisBoundary",
-             # "bsplineClenshawCurtis",
-             # "modBsplineClenshawCurtis" # keine OperationMultipleEval
+             "bsplineClenshawCurtis",
+             "modBsplineClenshawCurtis" # keine OperationMultipleEval
     ]
 
     U = dists.J([dists.Lognormal.by_alpha(0.5, 0.1, 0.001),
@@ -52,9 +52,9 @@ def test_sgdeLaplace():
 
     l2_errors["kde"] = []
     samples = 1000
-    # for samples in sample_range:
+    for samples in sample_range:
 
-    for lvl in range(5, 6):
+    # for lvl in range(5, 6):
         trainSamples = U.rvs(samples)
         testSamples = U.rvs(l2_samples)
         for grid_name in grids:
@@ -63,7 +63,7 @@ def test_sgdeLaplace():
             dist_sgde = SGDEdist.byLearnerSGDEConfig(trainSamples,
                                                      bounds=U.getBounds(),
                                                      unitIntegrand=True,
-                                                     config={"grid_level": lvl,
+                                                     config={"grid_level": 3,
                                                              "grid_type": grid_name,
                                                              "grid_maxDegree": 6,
                                                              "refinement_numSteps": 0,
@@ -73,17 +73,17 @@ def test_sgdeLaplace():
                                                              "regularization_type": "Laplace",
                                                              "crossValidation_lambda": 1e-6,
                                                              "crossValidation_enable": True,
-                                                             "crossValidation_kfold": 5,
+                                                             "crossValidation_kfold": 4,
                                                              "crossValidation_lambdaSteps": 10,
                                                              "crossValidation_silent": False})
             points[grid_name].append(dist_sgde.grid.getSize())
             l2_errors[grid_name].append(dist_sgde.l2error(U, testSamplesUnit=testSamples))
 
-            plt.figure()
-            plotDensity2d(U, levels=(10, 20, 40, 50, 60))
-            plt.figure()
-            plotDensity2d(dist_sgde, levels=(10, 20, 40, 50, 60))
-            plt.show()
+            # plt.figure()
+            # plotDensity2d(U, levels=(10, 20, 40, 50, 60))
+            # plt.figure()
+            # plotDensity2d(dist_sgde, levels=(10, 20, 40, 50, 60))
+            # plt.show()
 
     dist_kde = dists.KDEDist(trainSamples,
                              kernelType=KernelType_GAUSSIAN,
@@ -92,12 +92,12 @@ def test_sgdeLaplace():
     l2_errors["kde"].append(dist_kde.l2error(U, testSamplesUnit=testSamples))
 
     for grid_name in grids:
-        # plt.plot(sample_range, l2_errors[grid_name], label=grid_name)
-        plt.plot(points[grid], l2_errors[grid_name],".-", label=grid_name)
+        plt.plot(sample_range, l2_errors[grid_name], label=grid_name)
+        # plt.plot(points[grid], l2_errors[grid_name],".-", label=grid_name)
 
-    # plt.plot(sample_range, l2_errors["kde"], label="KDE")
+    plt.plot(sample_range, l2_errors["kde"], label="KDE")
 
-    plt.plot([x for x in range(1,500, 100)], [l2_errors["kde"][0] for i in range(1,6)], label="KDE")
+    # plt.plot([x for x in range(1,300, 100)], [l2_errors["kde"][0] for i in range(1,4)], label="KDE")
 
     plt.xlabel("# Gitterpunkte")
     plt.ylabel("L2-Fehler")
