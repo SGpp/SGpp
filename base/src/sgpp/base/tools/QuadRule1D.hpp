@@ -20,11 +20,13 @@ class QuadRule1D {
   QuadRule1D();
   virtual ~QuadRule1D();
 
+  size_t getMaxSupportedLevel() const;
+
   void getLevelPointsAndWeights(size_t level, base::DataVector& coordinates,
                                 base::DataVector& weights);
 
  protected:
-  const size_t maxSupportedLevel = 20;
+  const size_t maxSupportedLevel = 50;
   std::vector<DataVector*> coordinates;
   std::vector<DataVector*> weights;
 };

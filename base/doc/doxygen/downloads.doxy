@@ -12,7 +12,7 @@ http://sgpp.sparsegrids.org.
 <!-- ############################################################# -->
 @section downloads__history Versions
 
-@subsection downloads_history_200 Version 2.1.0, 2016/08/12
+@subsection downloads_history_210 Version 2.1.0, 2016/08/12
 - Download:
   <a href="http://sgpp.sparsegrids.org/downloads/sgpp_2.1.0.tar.gz">
   sgpp_2.1.0.tar.gz</a>
@@ -46,7 +46,7 @@ we list here the most important changes:
 - Major redesign of SCons scripts, change of SCons parameters, better diagnostic output
 - Add support for Clang 3.8
 - Overall improvement of the code quality due to fixed Clang warnings
-- Removal of single precision support and of float_t
+- Removal of single precision support and of double
 - Removal of MSVC++ support
 - More unit tests
 - Small changes and bug fixes in code and documentation

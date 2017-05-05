@@ -12,7 +12,7 @@
 ## We compute the sparse grid interpolant of the function \f$ f(x) =
 ## \sin(10x_0)+x_1.\f$ We perform dimension-adaptive
 ## refinement of the sparse grid model, which means we add a complete hierarchical subspace
-#$ in some dimensions.
+## in some dimensions.
 ## 
 ## For details on dimension-adaptive refinement see
 ## \verbatim
@@ -35,7 +35,7 @@ from mpl_toolkits.mplot3d import Axes3D
 f = lambda x0, x1: math.sin(x0*10)+x1
 
 
-## reate a two-dimensional piecewise bi-linear grid
+## create a two-dimensional piecewise bi-linear grid
 dim = 2
 grid = Grid.createLinearGrid(dim)
 HashGridStorage = grid.getStorage()
