@@ -83,7 +83,7 @@ void QuadratureEvaluator::setGridPoints(std::vector<double> const& newXValues) {
 
     // multiply the weights with the weight function
     for (size_t i = 0; i < weights.size(); ++i) {
-      weights[i].scalarMult(weight_function(xValues[i]));
+      // weights[i].scalarMult(weight_function(xValues[i]));
       sum += weights[i].getValue();
     }
 
@@ -92,11 +92,12 @@ void QuadratureEvaluator::setGridPoints(std::vector<double> const& newXValues) {
     for (size_t i = 0; i < weights.size(); ++i) {
       weights[i].scalarMult(sumInv);
     }
-  } else {
+  }
+  /*else {
     for (size_t i = 0; i < weights.size(); ++i) {
       weights[i].scalarMult(weight_function(xValues[i]));
     }
-  }
+  }*/
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector> > QuadratureEvaluator::cloneLinear() {
