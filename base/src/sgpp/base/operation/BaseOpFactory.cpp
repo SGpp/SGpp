@@ -50,6 +50,7 @@
 #include <sgpp/base/operation/hash/OperationFirstMomentLinear.hpp>
 #include <sgpp/base/operation/hash/OperationFirstMomentLinearBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationFirstMomentModLinear.hpp>
+#include <sgpp/base/operation/hash/OperationFirstMomentPoly.hpp>
 
 #include <sgpp/base/operation/hash/OperationQuadrature.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureLinear.hpp>
@@ -312,6 +313,8 @@ base::OperationFirstMoment* createOperationFirstMoment(base::Grid& grid) {
     return new base::OperationFirstMomentLinearBoundary(grid.getStorage());
   } else if (grid.getType() == base::GridType::ModLinear) {
     return new base::OperationFirstMomentModLinear(grid.getStorage());
+  } else if (grid.getType() == base::GridType::Poly) {
+    return new base::OperationFirstMomentPoly(&grid);
   } else {
     throw base::factory_exception(
         "createOperationFirstMoment is not implemented for this grid type.");
