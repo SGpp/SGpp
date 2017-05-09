@@ -113,20 +113,20 @@ class KDEDistTest(unittest.TestCase):
 #
 #         trainSamples = U.rvs(300)
 #         testSamples = U.rvs(1000)
-# 
+#
 #         # build parameter set
 #         dist = dists.KDEDist(trainSamples, bounds=U.getBounds())
 #         samples = dist.rvs(1000, shuffle=True)
-# 
-# #         fig = plt.figure()
-# #         plotDensity2d(U)
-# #         fig.show()
-# #
-# #         fig = plt.figure()
-# #         plotDensity2d(dist)
-# #         plt.scatter(samples[:, 0], samples[:, 1])
-# #         fig.show()
-# 
+#
+#         fig = plt.figure()
+#         plotDensity2d(U)
+#         fig.show()
+#
+#         fig = plt.figure()
+#         plotDensity2d(dist)
+#         plt.scatter(samples[:, 0], samples[:, 1])
+#         fig.show()
+#
 #         print "mc = %g" % dist.quad()
 #         print "quad = %s" % (dblquad(lambda x, y: dist.pdf([x, y]),
 #                                      0, 2, lambda _: 0, lambda _: 1),)
@@ -135,10 +135,10 @@ class KDEDistTest(unittest.TestCase):
 #         print "KL = %g" % U.klDivergence(dist, testSamples, testSamples)
 #         print "CE = %g" % dist.crossEntropy(testSamples)
 #         print "MSE = %g" % dist.l2error(U, testSamples, testSamples)
-# 
+#
 #         plt.show()
-# 
-# 
+
+
 #     def test2DNormalMoments(self):
 #         mean = 0
 #         var = 0.5

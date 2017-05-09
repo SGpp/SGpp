@@ -13,6 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <vector>
+#include <random>
 
 namespace sgpp {
 namespace datadriven {
@@ -133,7 +134,7 @@ class KernelDensityEstimator : public DensityEstimator {
   base::DataVector norm;
   /// conditionalization factors
   base::DataVector cond;
-  double sumCond;
+  double sumCondInv;
 
   /// bandwith optimization type
   BandwidthOptimizationType bandwidthOptimizationType;
