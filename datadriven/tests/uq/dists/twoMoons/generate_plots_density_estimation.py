@@ -378,7 +378,7 @@ def plotDensities(densities, functionName, out=False):
         if setting != "nataf":
             U = stats[0]["dist"]
             if "kde" in setting:
-                label = r'$f_{\mathcal{S}_M}(\xi_1, \xi_2)$'
+                label = r'$f_{\mathcal{S}_M}^{\kappa}(\xi_1, \xi_2)$'
                 if "gaussian" in setting:
                     title = "KDE (Gaussian)"
                 else:
@@ -427,6 +427,6 @@ if __name__ == "__main__":
 #     plotpvalueofChi2IndependenceTest(densities, args.function, c=0.25, out=args.out)
 #     plotLogLikelihood(densities, args.function, args.out)
 #     plotpvalueofKolmogorovSmirnovTest(densities, args.function, args.out)
-#     plotDensities(densities, args.function, out=args.out)
-    plotDataset(args.function, out=args.out)
+    plotDensities(densities, args.function, out=args.out)
+#     plotDataset(args.function, out=args.out)
 #     plotCovarianceConvergence(densities, "mult_beta", args.out)

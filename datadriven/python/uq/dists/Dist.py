@@ -94,8 +94,12 @@ class Dist(object):
         from pysgpp.extensions.datadriven.uq.transformation.JointTransformation import JointTransformation
         usamples = np.random.rand(10000, self.getDim())
         trans = JointTransformation()
-        for a, b in self.getBounds():
+        if self.getDim() == 1:
+            a, b = self.getBounds()
             trans.add(LinearTransformation(a, b))
+        else:
+            for a, b in self.getBounds():
+                trans.add(LinearTransformation(a, b))
         xsamples = trans.unitToProbabilisticMatrix(usamples)
         return trans.vol() * np.mean([self.pdf(xi) for xi in xsamples])
 
