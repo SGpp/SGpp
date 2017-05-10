@@ -20,8 +20,8 @@
 #include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
 
+#include <chrono>
 #include <cmath>
-#include <ctime>
 #include <limits>
 #include <list>
 #include <map>
@@ -170,6 +170,9 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
     // iterate over total number of batches
     for (size_t step = 1; step <= numBatch; step++) {
       std::cout << "#processing batch: " << step << "\n";
+
+      auto begin = std::chrono::high_resolution_clock::now();
+
       // check if cross-validation should be performed
       bool doCv = false;
       if (enableCv) {
@@ -243,6 +246,11 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         acc = getAccuracy();
         avgErrors.append(1.0 - acc);
       }
+
+      auto end = std::chrono::high_resolution_clock::now();
+      std::cout << "Processing batch in "
+                << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
+                << "ms" << std::endl;
     }
     cntDataPasses++;
     processedPoints = 0;
@@ -521,8 +529,8 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
   MultiGridRefinementFunctor* func = nullptr;
 
   // Zero-crossing-based refinement
-  ZeroCrossingRefinementFunctor funcZrcr{
-      grids, alphas, offline->getConfig().ref_noPoints_, levelPenalize, preCompute};
+  ZeroCrossingRefinementFunctor funcZrcr{grids, alphas, offline->getConfig().ref_noPoints_,
+                                         levelPenalize, preCompute};
 
   // Data-based refinement. Needs a problem dependent coeffA. The values
   // can be determined by testing (aim at ~10 % of the training data is
@@ -535,8 +543,8 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
   DataMatrix* trainDataRef = &(trainData.getData());
   DataVector* trainLabelsRef = &(trainData.getTargets());
   DataBasedRefinementFunctor funcData = DataBasedRefinementFunctor{
-      grids,                              alphas,        trainDataRef, trainLabelsRef,
-      offline->getConfig().ref_noPoints_, levelPenalize, coeffA};
+      grids,         alphas, trainDataRef, trainLabelsRef, offline->getConfig().ref_noPoints_,
+      levelPenalize, coeffA};
 
   if (refType == "zero") {
     func = &funcZrcr;
