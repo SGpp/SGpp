@@ -170,8 +170,6 @@ void sgpp::datadriven::DBMatOfflineDenseIChol::ichol(const DataMatrix& matrix, D
     throw algorithm_exception{"Start row is larger then the matrix size"};
   }
 
-  std::cout << "calling update from " << startRow << "\n";
-
 // for all sweeps
 #pragma omp parallel
   {/* omp parallel */

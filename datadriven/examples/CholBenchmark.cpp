@@ -28,17 +28,18 @@ int main() {
 #ifdef USE_GSL
 
   sgpp::datadriven::DBMatDensityConfiguration config;
-  config.grid_dim_ = 8;
+  config.grid_dim_ = 4;
   config.grid_level_ = 5;
   config.lambda_ = 0;
   config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
   config.icholParameters.sweepsDecompose = 2;
 
-  config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
+  config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::Chol;
   auto decompType = "Incomplete Cholesky decomposition on Dense Matrix";
   std::cout << "Decomposition type: " << decompType << std::endl;
 
   sgpp::datadriven::DBMatOfflineDenseIChol offline(config);
+  // sgpp::datadriven::DBMatOfflineChol offline(config);
 
   offline.buildMatrix();
 
@@ -47,6 +48,5 @@ int main() {
   auto end = std::chrono::high_resolution_clock::now();
   std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms"
             << std::endl;
-
 #endif /* USE_GSL */
 }
