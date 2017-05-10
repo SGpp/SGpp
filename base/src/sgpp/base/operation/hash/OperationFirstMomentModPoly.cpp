@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/operation/hash/OperationFirstMomentPoly.hpp>
-#include <sgpp/base/grid/type/PolyGrid.hpp>
+#include <sgpp/base/operation/hash/OperationFirstMomentModPoly.hpp>
+#include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 
@@ -13,7 +13,7 @@
 namespace sgpp {
 namespace base {
 
-double OperationFirstMomentPoly::doQuadrature(const DataVector& alpha, DataMatrix* bounds) {
+double OperationFirstMomentModPoly::doQuadrature(const DataVector& alpha, DataMatrix* bounds) {
   // handle bounds
   GridStorage& storage = grid->getStorage();
   size_t numDims = storage.getDimension();
@@ -21,7 +21,7 @@ double OperationFirstMomentPoly::doQuadrature(const DataVector& alpha, DataMatri
   // check if the boundaries are given in the right shape
   if (bounds != nullptr && (bounds->getNcols() != 2 || bounds->getNrows() != numDims)) {
     throw application_exception(
-        "OperationFirstMomentPoly::doQuadrature - bounds matrix has the wrong shape");
+        "OperationFirstMomentModPoly::doQuadrature - bounds matrix has the wrong shape");
   }
 
   double res = 0;
@@ -31,7 +31,7 @@ double OperationFirstMomentPoly::doQuadrature(const DataVector& alpha, DataMatri
   base::level_t level;
   double xlower = 0.0;
   double xupper = 0.0;
-  const size_t quadOrder =  dynamic_cast<sgpp::base::PolyGrid*>(grid)->getDegree() + 1;
+  const size_t quadOrder =  dynamic_cast<sgpp::base::ModPolyGrid*>(grid)->getDegree() + 1;
   base::SBasis& basis = const_cast<base::SBasis&>(grid->getBasis());
   base::DataVector coordinates;
   base::DataVector weights;
