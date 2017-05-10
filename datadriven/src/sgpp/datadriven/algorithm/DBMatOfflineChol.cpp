@@ -18,6 +18,7 @@
 #include <gsl/gsl_permute.h>
 
 #include <algorithm>
+#include <chrono>
 #include <list>
 #include <string>
 
@@ -42,6 +43,8 @@ void DBMatOfflineChol::decomposeMatrix() {
       // Already decomposed => Do nothing
       return;
     } else {
+      auto begin = std::chrono::high_resolution_clock::now();
+
       size_t n = lhsMatrix.getNrows();
       gsl_matrix_view m = gsl_matrix_view_array(lhsMatrix.getPointer(), n,
                                                 n);  // Create GSL matrix view for decomposition
@@ -57,6 +60,10 @@ void DBMatOfflineChol::decomposeMatrix() {
         }
       }
       isDecomposed = true;
+      auto end = std::chrono::high_resolution_clock::now();
+      std::cout << "Chol decomp took "
+                << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
+                << "ms" << std::endl;
     }
   } else {
     throw algorithm_exception("Matrix has to be constructed before it can be decomposed");
@@ -65,6 +72,8 @@ void DBMatOfflineChol::decomposeMatrix() {
 
 void DBMatOfflineChol::choleskyModification(size_t newPoints, std::list<size_t> deletedPoints,
                                             double lambda) {
+  auto begin = std::chrono::high_resolution_clock::now();
+
   // Start coarsening
   // If list 'deletedPoints' is not empty, grid points got removed
   if (deletedPoints.size() > 0) {
@@ -221,7 +230,10 @@ void DBMatOfflineChol::choleskyModification(size_t newPoints, std::list<size_t> 
     }
   }
 
-  return;
+  auto end = std::chrono::high_resolution_clock::now();
+  std::cout << "Chol modification took "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms"
+            << std::endl;
 }
 
 void DBMatOfflineChol::choleskyAddPoint(DataVector& newCol, size_t size) {
