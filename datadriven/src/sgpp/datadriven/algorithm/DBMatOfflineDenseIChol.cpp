@@ -29,7 +29,9 @@ DBMatOfflineDenseIChol::DBMatOfflineDenseIChol(const DBMatDensityConfiguration& 
 DBMatOfflineDenseIChol::DBMatOfflineDenseIChol(const std::string& fileName)
     : DBMatOfflineChol{fileName} {}
 
-DBMatOffline* DBMatOfflineDenseIChol::clone() { return new DBMatOfflineDenseIChol{*this}; }
+DBMatOffline* DBMatOfflineDenseIChol::clone() {
+  return new DBMatOfflineDenseIChol{*this};
+}
 
 void DBMatOfflineDenseIChol::decomposeMatrix() {
   auto begin = std::chrono::high_resolution_clock::now();
@@ -170,7 +172,7 @@ void sgpp::datadriven::DBMatOfflineDenseIChol::ichol(const DataMatrix& matrix, D
 
 // for all sweeps
 #pragma omp parallel
-  { /* omp parallel */
+  {/* omp parallel */
     for (auto sweep = 0u; sweep < sweeps; sweep++) {
       // for each row
       for (auto i = startRow; i < result.getNrows(); i++) {
@@ -190,7 +192,7 @@ void sgpp::datadriven::DBMatOfflineDenseIChol::ichol(const DataMatrix& matrix, D
         // do the diagonal element:
         // calculate sum;
         auto s = matrix.get(i - startRow, i);
-#pragma omp for nowait
+#pragma omp simd
         for (auto k = 0u; k < i; k++) {
           s -= result.get(i, k) * result.get(i, k);
         }
