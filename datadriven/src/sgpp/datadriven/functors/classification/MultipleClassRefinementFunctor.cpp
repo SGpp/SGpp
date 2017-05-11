@@ -25,12 +25,13 @@ namespace datadriven {
 
 MultipleClassRefinementFunctor::MultipleClassRefinementFunctor(std::vector<base::Grid*> grids,
                                 std::vector<base::DataVector*> alphas,
-                                size_t refinements_num, bool level_penalize,
-                                bool pre_compute, double thresh) :
+                                size_t refinements_num, double thresh) :
                 ZeroCrossingRefinementFunctor(grids, alphas, refinements_num,
-                                level_penalize, pre_compute, thresh) {
+                                false, false, thresh) {
     // create grid
-    prepareGrid();
+    // prepareGrid();
+    topPercent = 0.2;
+    borderPenalty = 1;
 }
 
 double MultipleClassRefinementFunctor::operator()(base::GridStorage&
@@ -57,64 +58,71 @@ double MultipleClassRefinementFunctor::operator()(base::GridStorage&
     
     base::MultipleClassPoint mcp = points.at(seq);
     base::HashGridPoint& gp = multigrid->getStorage().getPoint(seq);
-    std::vector<std::tuple<int, size_t, bool>> neighbors = mcp.getNeighbors();
+    std::vector<std::tuple<size_t, size_t, bool>> neighbors = mcp.getNeighbors();
 
     double score = 0.0;
 
-    // score connections
+    // score neighbors
     for (size_t n = 0 ; n < neighbors.size() ; n++) {
-        int nextPoint = std::get<0>(neighbors.at(n));
+        size_t nextPoint = std::get<0>(neighbors.at(n));
         size_t dimension = std::get<1>(neighbors.at(n));
 
-        // score on change in class
+        // change in class
         double ctdt = mcp.getDensity(mcp.getDominateClass());
         double ctdn = mcp.getDensity(points.at(nextPoint).getDominateClass());
         double cndt = points.at(nextPoint).getDensity(mcp.getDominateClass());
         double cndn = points.at(nextPoint).getDensity(points.at(nextPoint).getDominateClass());
 
-        double test1 = (ctdt - cndt) + (ctdn - cndn);
-        double test2 = (ctdt - cndt) - (ctdn - cndn);
-        double test3 = (ctdt + cndn) + (ctdt - cndt) - (ctdn - cndn);
+        double sCon = std::abs((ctdt - cndt) - (ctdn - cndn)) /
+                static_cast<double>(grids.at(current_grid_index)->getDimension());
 
-        double sCon = std::abs(test2) / static_cast<double>(grids.at(current_grid_index)->getDimension());
-
-        // score on level
+        // level penalising
         size_t maxD = multigrid->getStorage().getPoint(nextPoint).getLevel(dimension);
         maxD = ( maxD < gp.getLevel(dimension) ) ? gp.getLevel(dimension) : maxD;
 
-        sCon = sCon / pow(2, maxD);
-        if (!refineMulti) {
+        sCon = sCon / pow(2.0, maxD);
+        if (refineMulti) {
+            score = score + sCon;
+        } else {
             bool c1 = mcp.getDominateClass() == current_grid_index;
             bool c2 = points.at(nextPoint).getDominateClass() == current_grid_index;
             if ( c1 || c2 ) {
-                // one dominate class is looked for
+                // one dominate class is scored
                 score = score + sCon;
             }
-        } else {
-            score = score + sCon;
         }
     }
+
+    // score borders
+    double scoreB = borderPenalty * (mcp.getBorderScore() /
+                    static_cast<double>(grids.at(0)->getDimension()));
+    if (refineMulti) {
+        scoreB = scoreB * mcp.getDensity(mcp.getDominateClass());
+    } else {
+        scoreB = scoreB * mcp.getDensity(current_grid_index);
+    }
+    if (scoreB > 0) {
+        score = score + scoreB;
+    }
+    borderCnt += 1.0;
+    borderSum += mcp.getBorderScore() * mcp.getDensity(mcp.getDominateClass());
 
     // score point on its own
-    std::vector<std::tuple<double, int, bool>> top = mcp.getTopClasses(0.2);
-    for (size_t n = 0 ; n < top.size() ; n++) {
-        if (std::get<1>(top.at(n)) == current_grid_index) {
-            // add to score if class in close classes
-            score = score * (1+top.size()/static_cast<double>(grids.size()));
-            std::cout << seq << ": factor: "
-                << 1+top.size()/static_cast<double>(grids.size()) << std::endl;
-            // mulitply score with a value > 1
-            // if all classes are close = 2
+    std::vector<std::tuple<double, size_t, bool>> top = mcp.getTopClasses(topPercent);
+    if (refineMulti) {
+        score = score * (1+(top.size()/static_cast<double>(grids.size())));
+    } else {
+        for (size_t n = 0 ; n < top.size() ; n++) {
+            if (std::get<1>(top.at(n)) == current_grid_index) {
+                // add to score if class in close classes
+                score = score * (1+(top.size()/static_cast<double>(grids.size())));
+                break;
+                // mulitply score with a value > 1
+                // if all classes are close == 2
+                // 1/classes <= factor <= 1
+            }
         }
     }
-    
-    if (refineMulti) {
-        scoresToPrint.at(seq).append("m");
-    } else {
-        scoresToPrint.at(seq).append(std::to_string(current_grid_index));
-    }
-    scoresToPrint.at(seq).append(": " + std::to_string(score) + " | ");
-
     return score;
 }
 
@@ -143,19 +151,11 @@ void MultipleClassRefinementFunctor::prepareGrid() {
         }
     }
     multigrid->getStorage().recalcLeafProperty();
-    // size_t allP = multigrid->getStorage().getSize() + 10;
     findCrossings(-1, -1, 0, 0);
-
-    if ( scoresToPrint.size() != points.size() ) {
-        scoresToPrint.clear();
-        std::vector<std::string> v(points.size(),  std::string(""));
-        scoresToPrint = v;
-    }
 }
 
 void MultipleClassRefinementFunctor::findCrossings(
             size_t leftP, size_t rightP, size_t seq, size_t dim) {
-
     if ( seq >= points.size() ) {
         return;
     }
@@ -176,20 +176,18 @@ void MultipleClassRefinementFunctor::findCrossings(
                         multigrid->getStorage().getSequenceNumber(child), d);
         }
       } else {
-        std::cout << seq << ": r neighbor in dim: " << d;
         if ( d == dim && seq < points.size() && leftP < points.size() ) {
-            std::cout << " neighbor: "<< leftP << std::endl;
+                // std::cout << " neighbor: "<< leftP << std::endl;
             if (points.at(seq).getDominateClass() !=
                         points.at(leftP).getDominateClass()) {
                 points.at(leftP).addNeighbor(seq, d, false);
                 points.at(seq).addNeighbor(leftP, d, true);
             }
-        } else if ( d == dim ) {
-            // get borders
-            std::cout << " border: " << leftP << std::endl;
+        }
+        if ( gp.getIndex(d) > 1 ) {
         } else {
-            // get borders
-            std::cout << " border ?: "<< leftP << std::endl;
+            // add border
+            points.at(seq).addBorder(d, gp.getLevel(d), true);
         }
       }
 
@@ -205,20 +203,20 @@ void MultipleClassRefinementFunctor::findCrossings(
                     multigrid->getStorage().getSequenceNumber(child), d);
         }
       } else {
-        std::cout << seq << ": l neighbor in dim: " << d;
+        // std::cout << seq << ": l neighbor in dim: " << d;
         if ( d == dim && seq < points.size() && rightP < points.size() ) {
-            std::cout << " neighbor: "<< rightP << std::endl;
+            // has neighbor in direction
+            // std::cout << " neighbor: "<< rightP << std::endl;
             if ( points.at(seq).getDominateClass() !=
                         points.at(rightP).getDominateClass() ) {
                 points.at(seq).addNeighbor(rightP, d, false);
                 points.at(rightP).addNeighbor(seq, d, true);
             }
-        } else if ( d == dim ) {
-            // get borders
-            std::cout << " border: "<< rightP << std::endl;
+        }
+        if ( gp.getIndex(d) < pow(2.0, gp.getLevel(d)) - 1 ) {
         } else {
-            // get borders
-            std::cout << " border ?: "<< rightP << std::endl;
+            // add border
+            points.at(seq).addBorder(d, gp.getLevel(d), false);
         }
       }
     }
@@ -226,46 +224,52 @@ void MultipleClassRefinementFunctor::findCrossings(
 
 void MultipleClassRefinementFunctor::refine(size_t partCombined) {
     prepareGrid();
-    // TODO (degel_kn): update refine generall?
-    // refine methode
-    // insert in both combined and classgrid
-    // check if neighbors have given class, insert neighbors
 
-    // code from generator.refine():
-    // base::HashRefinement refine;
-    // refine.free_refine(this->storage, func);
-    // update for HashRefinementMultipleClass
-    base::HashRefinementMultipleClass refine(*multigrid, points, grids);
+    base::HashRefinementMultipleClass refine(*multigrid, &points, grids,
+            borderSum, borderCnt, topPercent);
+    borderSum = 0.0;
+    borderCnt = 0.0;
 
     // refine every class for itself
     size_t tmp = refinements_num;
     refineMulti = false; // use grid index
     refinements_num = refinements_num - partCombined;
-    for (size_t i = 0; i < grids.size() ; i++) {
-        setGridIndex(i);
-        // grids.at(i)->getGenerator().refine(*this);
-        std::cout << "refine class: "<< i << std::endl;
-        refine.free_refine(grids.at(i)->getStorage(), *this);
+    if (refinements_num > 0) {
+        for (size_t i = 0; i < grids.size() ; i++) {
+            setGridIndex(i);
+            refine.free_refine(grids.at(i)->getStorage(), *this);
+            borderSum = 0.0;
+            borderCnt = 0.0;
+        }
     }
 
     // refine combined grid
     refineMulti = true;
     refinements_num = partCombined;
-    refine.free_refine(multigrid->getStorage(), *this);
-
-    printScores();
-    printPointsPlott();
-    printPointsInfo();
-    refinements_num = tmp;
-    
-    for (size_t i = 0; i < grids.size() ; i++) {
-        grids.at(i)->getStorage().recalcLeafProperty();
+    if (refinements_num > 0) {
+        refine.free_refine(multigrid->getStorage(), *this);
     }
-    multigrid->getStorage().recalcLeafProperty();
+
+    // printScores();
+    // printPointsPlott();
+    // printPointsInfo();
+    refinements_num = tmp;
 }
 
-base::Grid* MultipleClassRefinementFunctor::getCombinedGrid() {
-    return multigrid;
+double MultipleClassRefinementFunctor::getTopPercent() {
+    return topPercent;
+}
+
+void MultipleClassRefinementFunctor::setTopPercent(double newPercent) {
+    topPercent = newPercent;
+}
+
+double MultipleClassRefinementFunctor::getBorderPenalty() {
+    return borderPenalty;
+}
+
+void MultipleClassRefinementFunctor::setBorderPenalty(double newPenalty) {
+    borderPenalty = newPenalty;
 }
 
 bool MultipleClassRefinementFunctor::hasChild(const base::HashGridPoint& gp,
@@ -280,6 +284,7 @@ bool MultipleClassRefinementFunctor::hasChild(const base::HashGridPoint& gp,
 }
 
 void MultipleClassRefinementFunctor::printPointsPlott() {
+    prepareGrid();
     for (size_t i = 0; i < points.size() ; i++) {
         // used as name for printing
         std::cout << i << ",";
@@ -298,6 +303,7 @@ void MultipleClassRefinementFunctor::printPointsPlott() {
 }
 
 void MultipleClassRefinementFunctor::printPointsInfo() {
+    prepareGrid();
     for (size_t i = 0; i < points.size() ; i++) {
         std::cout << "Point " << i << ": ";
         std::cout << points.at(i).getDominateClass() << " ~";
@@ -309,13 +315,5 @@ void MultipleClassRefinementFunctor::printPointsInfo() {
         std::cout << points.at(i).toString() << std::endl;
     }
 }
-
-void MultipleClassRefinementFunctor::printScores() {
-    for (size_t i = 0; i < scoresToPrint.size() ; i++) {
-        std::cout << i << " - "<< scoresToPrint.at(i) << std::endl;
-    }
-    
-}
-
 } /* namespace datadriven */
 } /* namespace sgpp */

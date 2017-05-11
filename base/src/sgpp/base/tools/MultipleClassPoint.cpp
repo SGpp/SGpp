@@ -18,11 +18,11 @@
 
 namespace sgpp {
 namespace base {
-MultipleClassPoint::MultipleClassPoint(int classes) {
+MultipleClassPoint::MultipleClassPoint(size_t classes) {
     // init all classes as 0.0
-    for (int i = 0 ; i < classes ; i++) {
-        std::tuple<double, int, bool>* c1 =
-                new std::tuple<double, int, bool> { 0.0 , i , false };
+    for (size_t i = 0 ; i < classes ; i++) {
+        std::tuple<double, size_t, bool>* c1 =
+                new std::tuple<double, size_t, bool> { 0.0 , i , false };
         insertDensitySorted(c1);
         classById.push_back(c1);
     }
@@ -38,29 +38,29 @@ MultipleClassPoint::MultipleClassPoint(base::HashGridPoint& gp,
               opEval(op_factory::createOperationEval(*grids.at(t)));
         gp.getStandardCoordinates(coords);
         double eval = opEval->eval(*alphas.at(t), coords);
-        std::tuple<double, int, bool>* c1 =
-               new std::tuple<double, int, bool> { eval, t,
+        std::tuple<double, size_t, bool>* c1 =
+               new std::tuple<double, size_t, bool> { eval, t,
                     grids.at(t)->getStorage().isContaining(gp) };
         insertDensitySorted(c1);
         classById.push_back(c1);
     }
 }
 
-int MultipleClassPoint::getDominateClass() const {
+size_t MultipleClassPoint::getDominateClass() const {
     return std::get<1>(classByDensity.at(0));
 }
 
-double MultipleClassPoint::getDensity(int classId) const {
+double MultipleClassPoint::getDensity(size_t classId) const {
     return std::get<0>(*classById.at(classId));
 }
 
-void MultipleClassPoint::updateClass(int classId, double newDen, bool hasPoint) {
-    std::tuple<double, int, bool>* c1 =
-           new std::tuple<double, int, bool> { newDen , classId , hasPoint };
+void MultipleClassPoint::updateClass(size_t classId, double newDen, bool hasPoint) {
+    std::tuple<double, size_t, bool>* c1 =
+           new std::tuple<double, size_t, bool> { newDen , classId , hasPoint };
     struct ClassCompare {
-     std::tuple<double, int, bool> oldClass;
-     public: ClassCompare(std::tuple<double, int, bool> i):oldClass(i) {}
-     bool operator()(const std::tuple<double, int, bool>& t1) {
+     std::tuple<double, size_t, bool> oldClass;
+     public: ClassCompare(std::tuple<double, size_t, bool> i):oldClass(i) {}
+     bool operator()(const std::tuple<double, size_t, bool>& t1) {
        return std::get<1>(t1) == std::get<1>(oldClass);
      }
     };
@@ -69,36 +69,55 @@ void MultipleClassPoint::updateClass(int classId, double newDen, bool hasPoint) 
     classById.at(classId) = c1;
 }
 
-void MultipleClassPoint::addNeighbor(int neighbor, size_t dim, bool isLeft) {
-    std::tuple<int, size_t, bool> neigh = { neighbor, dim, isLeft };
+void MultipleClassPoint::addNeighbor(size_t neighbor, size_t dim, bool isLeft) {
+    std::tuple<size_t, size_t, bool> neigh = { neighbor, dim, isLeft };
     if ( std::find(neighbors.begin(), neighbors.end(), neigh) == neighbors.end() ) {
         neighbors.push_back(neigh);
     }
 }
 
-std::vector<std::tuple<int, size_t, bool>> MultipleClassPoint::getNeighbors() {
+std::vector<std::tuple<size_t, size_t, bool>> MultipleClassPoint::getNeighbors() const {
     return neighbors;
+}
+
+void MultipleClassPoint::addBorder(size_t dim, size_t level, bool isLeft) {
+    std::tuple<size_t, size_t, bool> b = { dim, level, isLeft };
+    if ( std::find(borders.begin(), borders.end(), b) == borders.end() ) {
+        borders.push_back(b);
+    }
+}
+
+std::vector<std::tuple<size_t, size_t, bool>> MultipleClassPoint::getBorders() const {
+    return borders;
+}
+
+double MultipleClassPoint::getBorderScore() const {
+    double result = 0.0;
+    for ( size_t i = 0 ; i < borders.size() ; i++ ) {
+        result += 1 / pow(2.0, std::get<1>(borders.at(i)));
+    }
+    return result;
 }
 
 void MultipleClassPoint::resortClasses() {
     // resort vector
     struct ClassCompare {
-        bool operator() (const std::tuple<double, int, bool> & t1,
-                         const std::tuple<double, int, bool> & t2) {
+        bool operator() (const std::tuple<double, size_t, bool> & t1,
+                         const std::tuple<double, size_t, bool> & t2) {
             return std::get<0>(t1) > std::get<0>(t2);
         }
     };
     std::sort(classByDensity.begin(), classByDensity.end(), ClassCompare());
 }
 
-bool MultipleClassPoint::isClassSet(int classId) {
+bool MultipleClassPoint::isClassSet(size_t classId) const {
     return std::get<2>(*(classById.at(classId)));
 }
 
-std::vector<std::tuple<double, int, bool>> MultipleClassPoint::getTopClasses(double percent) {
-    std::vector<std::tuple<double, int, bool>> result;
+std::vector<std::tuple<double, size_t, bool>> MultipleClassPoint::getTopClasses(double percent) const {
+    std::vector<std::tuple<double, size_t, bool>> result;
     double minDenNeeded = (1.0 - percent) * std::get<0>(classByDensity.at(0));
-    for ( unsigned int i = 0 ; i < classByDensity.size() &&
+    for ( size_t i = 0 ; i < classByDensity.size() &&
                 std::get<0>(classByDensity.at(i)) > minDenNeeded ; i++ ) {
         result.push_back(classByDensity.at(i));
     }
@@ -106,33 +125,41 @@ std::vector<std::tuple<double, int, bool>> MultipleClassPoint::getTopClasses(dou
 }
 
 std::string MultipleClassPoint::toString() {
-    std::string s = "-> ";
-    for ( unsigned int i = 0 ; i < neighbors.size() ; i++ ) {
-        s += std::to_string(std::get<0>(neighbors.at(i)))+ ", ";
-    }
-    s += "\n";
-    for ( unsigned int i = 0 ; i < classById.size() ; i++ ) {
-        std::tuple<double, int, bool> tmp = *(classById.at(i));
+    std::string s = "->\n";
+    for ( size_t i = 0 ; i < classById.size() ; i++ ) {
+        std::tuple<double, size_t, bool> tmp = *(classById.at(i));
         s += " - (" + std::to_string(std::get<0>(tmp)) + ",";
         s += std::to_string(std::get<1>(tmp)) + ",";
         s += std::to_string(std::get<2>(tmp)) + ")";
     }
     s += "\n";
-    for ( unsigned int i = 0 ; i < classByDensity.size() ; i++ ) {
+    for ( size_t i = 0 ; i < classByDensity.size() ; i++ ) {
         s += " - (" + std::to_string(std::get<0>(classByDensity.at(i))) + ",";
         s += std::to_string(std::get<1>(classByDensity.at(i))) + ")";
+    }
+    s += "\nN:";
+    for ( size_t i = 0 ; i < neighbors.size() ; i++ ) {
+        s += " - (" + std::to_string(std::get<0>(neighbors.at(i))) + ",";
+        s += std::to_string(std::get<1>(neighbors.at(i))) + ",";
+        s += std::to_string(std::get<2>(neighbors.at(i))) + ")";
+    }
+    s += "\nB:";
+    for ( size_t i = 0 ; i < borders.size() ; i++ ) {
+        s += " - (" + std::to_string(std::get<0>(borders.at(i))) + ",";
+        s += std::to_string(std::get<1>(borders.at(i))) + ",";
+        s += std::to_string(std::get<2>(borders.at(i))) + ")";
     }
     return s;
 }
 
-void MultipleClassPoint::insertDensitySorted(std::tuple<double, int, bool>* ins) {
+void MultipleClassPoint::insertDensitySorted(std::tuple<double, size_t, bool>* ins) {
     struct ClassCompare {
-        bool operator() (const std::tuple<double, int, bool> & t1,
-                         const std::tuple<double, int, bool> & t2) {
+        bool operator() (const std::tuple<double, size_t, bool> & t1,
+                         const std::tuple<double, size_t, bool> & t2) {
             return std::get<0>(t1) > std::get<0>(t2);
         }
     };
-    std::vector<std::tuple<double, int, bool>>::iterator iter = std::lower_bound(
+    std::vector<std::tuple<double, size_t, bool>>::iterator iter = std::lower_bound(
             classByDensity.begin(), classByDensity.end(), *ins, ClassCompare());
     classByDensity.insert(iter, *ins);
 }

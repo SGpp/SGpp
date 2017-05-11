@@ -11,6 +11,7 @@
 
 #include <vector>
 #include <tuple>
+#include <string>
 #include <algorithm>
 #include <sgpp/base/tools/MultipleClassPoint.hpp>
 
@@ -22,32 +23,35 @@ class MultipleClassRefinementFunctor: public ZeroCrossingRefinementFunctor {
   MultipleClassRefinementFunctor(std::vector<base::Grid*> grids,
                                 std::vector<base::DataVector*> alphas,
                                 size_t refinements_num,
-                                bool level_penalize,
-                                bool pre_compute,
                                 double thresh);
 
   double operator()(base::GridStorage& storage,
                     size_t seq) const override;
 
-  base::Grid* getCombinedGrid();
+  double getTopPercent();
+  void setTopPercent(double newPercent);
+  double getBorderPenalty();
+  void setBorderPenalty(double newPenalty);
 
   void printPointsPlott();
   void printPointsInfo();
-  void printScores();
-  
+
   void refine(size_t partCombined);
 
  private:
   std::vector<sgpp::base::MultipleClassPoint> points;
   base::Grid* multigrid;
-  // print different scores
-  mutable std::vector<std::string> scoresToPrint;
   bool refineMulti = false;
+  mutable double borderSum;
+  mutable double borderCnt;
 
   void prepareGrid();
 
   void findCrossings(size_t leftP, size_t rightP, size_t seq, size_t d);
   bool hasChild(const base::HashGridPoint& gp, size_t d, bool left) const;
+
+  double topPercent;
+  double borderPenalty;
 };
 
 } /* namespace datadriven */
