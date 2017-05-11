@@ -60,7 +60,7 @@ std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
 
 int main(int argc, char* argv[]) {
     bool useZCRF = false;
-    size_t x = 4;
+ /*   size_t x = 4;
     size_t y = 2;
     size_t z = 2;
     if ( argc == 5 ) {
@@ -68,8 +68,8 @@ int main(int argc, char* argv[]) {
         x = std::atoi(argv[2]);
         y = std::atoi(argv[3]);
         z = std::atoi(argv[4]);
-    }
-///*
+    }*/
+/*
     std::string filename2 = "exDim4Class" + std::to_string(z);
     size_t classes = z;
     size_t dim = 4;
@@ -99,7 +99,7 @@ int main(int argc, char* argv[]) {
     size_t numRefinements = 4;
     size_t partCombined = 1;
 //*/
-/*
+///*
     std::string filename2 = "starsgalaxies";
     size_t classes = 3;
     size_t dim = 4;
@@ -119,25 +119,25 @@ int main(int argc, char* argv[]) {
     size_t numRefinements = 3;
     size_t partCombined = 0;
 //*/
-    if ( argc == 5 ) {
+/*    if ( argc == 5 ) {
         numRefinements = x;
         partCombined = y;
-    }
+    }*/
     // additional star_test.arff star_train.arff
     
     //------------- only calculation after -------------------------
     std::time_t starttime = std::time(nullptr);
     
-    // sgpp::datadriven::Dataset dataset =
-    //        sgpp::datadriven::ARFFTools::readARFF(
-    //        "../../datadriven/tests/data/" + filename2 + ".arff");
     sgpp::datadriven::Dataset dataset =
             sgpp::datadriven::ARFFTools::readARFF(
-            "/home/katrin/Desktop/multiClass/" + filename2 + ".arff");
+            "../../datadriven/tests/data/" + filename2 + ".arff");
+    /*sgpp::datadriven::Dataset dataset =
+            sgpp::datadriven::ARFFTools::readARFF(
+            "/home/katrin/Desktop/multiClass/" + filename2 + ".arff");*/
     sgpp::base::DataMatrix dataTrain = dataset.getData();
     sgpp::base::DataVector targetTrain = dataset.getTargets();
 
-
+/*
     // write log to file
     std::string filename = "/home/katrin/Desktop/multi_log_"
             + filename2 + "_" + std::to_string(numRefinements)
@@ -145,6 +145,7 @@ int main(int argc, char* argv[]) {
             + "_" + std::to_string(useZCRF) +  ".log";
     std::ofstream out(filename);
     std::cout.rdbuf(out.rdbuf());
+    */
     
 
     std::cout << "Read training data: " << dataTrain.getNrows() << std::endl;
