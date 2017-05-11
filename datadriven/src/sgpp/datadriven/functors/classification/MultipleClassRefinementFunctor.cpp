@@ -61,7 +61,6 @@ double MultipleClassRefinementFunctor::operator()(base::GridStorage&
     std::vector<std::tuple<size_t, size_t, bool>> neighbors = mcp.getNeighbors();
 
     double score = 0.0;
-
     // score neighbors
     for (size_t n = 0 ; n < neighbors.size() ; n++) {
         size_t nextPoint = std::get<0>(neighbors.at(n));
