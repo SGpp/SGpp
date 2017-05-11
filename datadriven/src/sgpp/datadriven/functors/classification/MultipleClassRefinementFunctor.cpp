@@ -116,9 +116,6 @@ double MultipleClassRefinementFunctor::operator()(base::GridStorage&
                 // add to score if class in close classes
                 score = score * (1+(top.size()/static_cast<double>(grids.size())));
                 break;
-                // mulitply score with a value > 1
-                // if all classes are close == 2
-                // 1/classes <= factor <= 1
             }
         }
     }
