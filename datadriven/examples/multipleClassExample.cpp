@@ -59,6 +59,26 @@ std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
 
 
 int main(int argc, char* argv[]) {
+    bool useZCRF = false;
+    size_t x = 4;
+    size_t y = 2;
+    size_t z = 2;
+    if ( argc == 5 ) {
+        useZCRF = std::atoi(argv[1]) == 1;
+        x = std::atoi(argv[2]);
+        y = std::atoi(argv[3]);
+        z = std::atoi(argv[4]);
+    }
+///*
+    std::string filename2 = "exDim4Class" + std::to_string(z);
+    size_t classes = z;
+    size_t dim = 4;
+    size_t level = 5;
+    double lambda = 1e-7;
+    size_t numSteps = 5;
+    size_t numRefinements = x;
+    size_t partCombined = y;
+//*/
 /*
     std::string filename2 = "mulitpleClassesTest";
     size_t classes = 4;
@@ -79,7 +99,7 @@ int main(int argc, char* argv[]) {
     size_t numRefinements = 4;
     size_t partCombined = 1;
 //*/
-///*
+/*
     std::string filename2 = "starsgalaxies";
     size_t classes = 3;
     size_t dim = 4;
@@ -99,32 +119,33 @@ int main(int argc, char* argv[]) {
     size_t numRefinements = 3;
     size_t partCombined = 0;
 //*/
-    bool useZCRF = false;
-    if ( argc == 4 ) {
-        useZCRF = std::atoi(argv[1]) == 1;
-        numRefinements = std::atoi(argv[2]);
-        partCombined = std::atoi(argv[3]);
+    if ( argc == 5 ) {
+        numRefinements = x;
+        partCombined = y;
     }
     // additional star_test.arff star_train.arff
     
     //------------- only calculation after -------------------------
     std::time_t starttime = std::time(nullptr);
     
+    // sgpp::datadriven::Dataset dataset =
+    //        sgpp::datadriven::ARFFTools::readARFF(
+    //        "../../datadriven/tests/data/" + filename2 + ".arff");
     sgpp::datadriven::Dataset dataset =
             sgpp::datadriven::ARFFTools::readARFF(
-            "../../datadriven/tests/data/" + filename2 + ".arff");
+            "/home/katrin/Desktop/multiClass/" + filename2 + ".arff");
     sgpp::base::DataMatrix dataTrain = dataset.getData();
     sgpp::base::DataVector targetTrain = dataset.getTargets();
 
-/*
+
     // write log to file
-    std::string filename = "/home/katrin/Desktop/log_"
+    std::string filename = "/home/katrin/Desktop/multi_log_"
             + filename2 + "_" + std::to_string(numRefinements)
             + "_" + std::to_string(partCombined)
             + "_" + std::to_string(useZCRF) +  ".log";
     std::ofstream out(filename);
     std::cout.rdbuf(out.rdbuf());
-    */
+    
 
     std::cout << "Read training data: " << dataTrain.getNrows() << std::endl;
 
@@ -377,20 +398,23 @@ std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
       }
     }
 
-    // print array
-    std::cout << std::setw(10) << std:: left << "classes" << " | "; 
-    std::cout << std::setw(10) << std:: left << "all Points" << " | "; 
-    for (size_t a = 0; a < grids.size(); a++) {
-      std::cout << "map in " << std::setw(3) << std:: left << a << " | "; 
-    }
-    std::cout << std::setw(10) << std:: left << "wrong map" << std::endl;
-    for (size_t a = 0; a < grids.size(); a++) {
-      std::cout << " Class: " << std::setw(2) << std:: left << a << " | "; 
-      std::cout << std::setw(10) << std::right << classCounts.at(a) << " | "; 
-      for (size_t b = 0; b < grids.size(); b++) {
-        std::cout << std::setw(10) << std::right << gridEval[a][b] << " | ";
-      }
-      std::cout << std::setw(10) << std::right << classErrorCounts.at(a) << std::endl;
+    bool printMapping = false;
+    if ( printMapping ) {
+        // print array
+        std::cout << std::setw(10) << std:: left << "classes" << " | "; 
+        std::cout << std::setw(10) << std:: left << "all Points" << " | "; 
+        for (size_t a = 0; a < grids.size(); a++) {
+          std::cout << "map in " << std::setw(3) << std:: left << a << " | "; 
+        }
+        std::cout << std::setw(10) << std:: left << "wrong map" << std::endl;
+        for (size_t a = 0; a < grids.size(); a++) {
+          std::cout << " Class: " << std::setw(2) << std:: left << a << " | "; 
+          std::cout << std::setw(10) << std::right << classCounts.at(a) << " | "; 
+          for (size_t b = 0; b < grids.size(); b++) {
+            std::cout << std::setw(10) << std::right << gridEval[a][b] << " | ";
+          }
+          std::cout << std::setw(10) << std::right << classErrorCounts.at(a) << std::endl;
+        }
     }
 
     // Format and return the classification percentages
