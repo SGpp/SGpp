@@ -3,28 +3,26 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "HashRefinementMultipleClass.hpp"
+#include <sgpp/base/grid/generation/hashmap/HashRefinementMultipleClass.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/tools/MultipleClassPoint.hpp>
 
 #include <iostream>
 #include <tuple>
-#include <cmath>
 #include <vector>
 #include <algorithm>
-#include <sgpp/base/tools/MultipleClassPoint.hpp>
+#include <cmath>
 
 namespace sgpp {
 namespace base {
 
-    // TODO (degel_kn): general
 HashRefinementMultipleClass::HashRefinementMultipleClass(Grid& grid,
         std::vector<sgpp::base::MultipleClassPoint>* pts,
         std::vector<Grid*>& classGrids, double &borderSum, double &borderCnt,
-        double topPercent)
-         : HashRefinement(), points(pts), multigrid(grid), grids(classGrids),
-        borderSum(borderSum), borderCnt(borderCnt), topPercent(topPercent) {
-
+        double topPercent) : HashRefinement(), points(pts),
+        multigrid(grid), grids(classGrids), borderSum(borderSum),
+        borderCnt(borderCnt), topPercent(topPercent) {
 }
 
 void HashRefinementMultipleClass::refineGridpoint(GridStorage& storage,
@@ -51,7 +49,7 @@ void HashRefinementMultipleClass::refineGridpoint(GridStorage& storage,
     // add neighbors
     std::vector<std::tuple<size_t, size_t, bool>> neighbors = mcp.getNeighbors();
     for (size_t n = 0 ; n < neighbors.size() ; n++) {
-        int nextPoint = std::get<0>(neighbors.at(n));
+        size_t nextPoint = std::get<0>(neighbors.at(n));
         sgpp::base::MultipleClassPoint neighP = points->at(nextPoint);
         size_t dim = std::get<1>(neighbors.at(n));
         bool isLeft = std::get<2>(neighbors.at(n));
@@ -71,7 +69,7 @@ void HashRefinementMultipleClass::refineGridpoint(GridStorage& storage,
         // from refineGridpoint1D
         index_t source_index;
         level_t source_level;
-        if (point.getLevel(dim) < nPoint.getLevel(dim) ) {
+        if ( point.getLevel(dim) < nPoint.getLevel(dim) ) {
             nPoint.get(dim, source_level, source_index);
             isLeft = !isLeft;
         } else {
@@ -90,7 +88,7 @@ void HashRefinementMultipleClass::refineGridpoint(GridStorage& storage,
 
         point.set(dim, source_level, source_index);
     }
-    
+
     // add points to border
     std::vector<std::tuple<size_t, size_t, bool>> borders = mcp.getBorders();
     if ( borderSum/borderCnt <
@@ -126,10 +124,8 @@ void HashRefinementMultipleClass::addGridpoint(GridStorage& storage, GridPoint& 
 void HashRefinementMultipleClass::refineGridpointsCollection(GridStorage& storage,
             RefinementFunctor& functor,
             AbstractRefinement::refinement_container_type& collection) {
-    // TODO (degel_kn): override source: HashRefinement
-    // is this method needed?
     double threshold = functor.getRefinementThreshold();
-    
+
     for (AbstractRefinement::refinement_pair_type& pair : collection) {
         if (pair.second >= threshold) {
             refineGridpoint(storage, pair.first->getSeq());

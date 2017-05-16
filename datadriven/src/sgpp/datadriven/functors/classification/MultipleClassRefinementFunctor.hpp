@@ -6,14 +6,13 @@
 #ifndef MULTIPLECLASSREFINEMENTFUNCTOR_HPP
 #define MULTIPLECLASSREFINEMENTFUNCTOR_HPP
 
-#include "ZeroCrossingRefinementFunctor.hpp"
-
+#include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
+#include <sgpp/base/tools/MultipleClassPoint.hpp>
 
 #include <vector>
 #include <tuple>
 #include <string>
 #include <algorithm>
-#include <sgpp/base/tools/MultipleClassPoint.hpp>
 
 namespace sgpp {
 namespace datadriven {

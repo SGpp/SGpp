@@ -94,7 +94,7 @@ std::vector<std::tuple<size_t, size_t, bool>> MultipleClassPoint::getBorders() c
 double MultipleClassPoint::getBorderScore() const {
     double result = 0.0;
     for ( size_t i = 0 ; i < borders.size() ; i++ ) {
-        result += 1 / pow(2.0, std::get<1>(borders.at(i)));
+        result += 1 / pow(2.0, static_cast<double>(std::get<1>(borders.at(i))));
     }
     return result;
 }
@@ -114,7 +114,8 @@ bool MultipleClassPoint::isClassSet(size_t classId) const {
     return std::get<2>(*(classById.at(classId)));
 }
 
-std::vector<std::tuple<double, size_t, bool>> MultipleClassPoint::getTopClasses(double percent) const {
+std::vector<std::tuple<double, size_t, bool>> MultipleClassPoint::getTopClasses(
+                double percent) const {
     std::vector<std::tuple<double, size_t, bool>> result;
     double minDenNeeded = (1.0 - percent) * std::get<0>(classByDensity.at(0));
     for ( size_t i = 0 ; i < classByDensity.size() &&
@@ -164,5 +165,5 @@ void MultipleClassPoint::insertDensitySorted(std::tuple<double, size_t, bool>* i
     classByDensity.insert(iter, *ins);
 }
 
-} /* namespace datadriven */
+} /* namespace base */
 } /* namespace sgpp */

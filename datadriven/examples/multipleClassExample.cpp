@@ -3,39 +3,33 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/application/LearnerSGDE.hpp>
-#include <sgpp/datadriven/tools/ARFFTools.hpp>
 
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/tools/MultipleClassPoint.hpp>
 
-#include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
-#include <sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp>
-#include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
-#include <sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp>
+#include <sgpp/datadriven/application/LearnerSGDE.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/MultipleClassRefinementFunctor.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
 
-
+#include <sys/resource.h>
 #include <cmath>
 #include <ctime>
+
 #include <sstream>
 #include <iomanip>
 #include <string>
 #include <vector>
 #include <locale>
 #include <chrono>
-#include <sys/resource.h>
-
-#include "../../base/src/sgpp/base/tools/MultipleClassPoint.hpp"
-
 
 /**
  * Helper to create learner
  */
 sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
                                                 double lambda);
- 
+
 /**
  * Helper to evaluate the classifiers
  */
@@ -60,7 +54,7 @@ std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
 
 int main(int argc, char* argv[]) {
     bool useZCRF = false;
- /*   size_t x = 4;
+    size_t x = 4;
     size_t y = 2;
     size_t z = 2;
     if ( argc == 5 ) {
@@ -68,22 +62,22 @@ int main(int argc, char* argv[]) {
         x = std::atoi(argv[2]);
         y = std::atoi(argv[3]);
         z = std::atoi(argv[4]);
-    }*/
+    }
 /*
     std::string filename2 = "exDim4Class" + std::to_string(z);
     size_t classes = z;
     size_t dim = 4;
-    size_t level = 5;
-    double lambda = 1e-7;
-    size_t numSteps = 5;
+    size_t level = 4;
+    double lambda = 1e-2;
+    size_t numSteps = 8;
     size_t numRefinements = x;
     size_t partCombined = y;
 //*/
-/*
+///*
     std::string filename2 = "mulitpleClassesTest";
     size_t classes = 4;
     size_t dim = 2;
-    size_t level = 3;
+    size_t level = 4;
     double lambda = 1e-2;
     size_t numSteps = 5;
     size_t numRefinements = 3;
@@ -99,7 +93,7 @@ int main(int argc, char* argv[]) {
     size_t numRefinements = 4;
     size_t partCombined = 1;
 //*/
-///*
+/*
     std::string filename2 = "starsgalaxies";
     size_t classes = 3;
     size_t dim = 4;
@@ -119,25 +113,22 @@ int main(int argc, char* argv[]) {
     size_t numRefinements = 3;
     size_t partCombined = 0;
 //*/
-/*    if ( argc == 5 ) {
+    if ( argc == 5 ) {
         numRefinements = x;
         partCombined = y;
-    }*/
-    // additional star_test.arff star_train.arff
-    
+    }
     //------------- only calculation after -------------------------
     std::time_t starttime = std::time(nullptr);
-    
+
+   /* sgpp::datadriven::Dataset dataset =
+            sgpp::datadriven::ARFFTools::readARFF(
+            "../../datadriven/tests/data/" + filename2 + ".arff");*/
     sgpp::datadriven::Dataset dataset =
             sgpp::datadriven::ARFFTools::readARFF(
-            "../../datadriven/tests/data/" + filename2 + ".arff");
-    /*sgpp::datadriven::Dataset dataset =
-            sgpp::datadriven::ARFFTools::readARFF(
-            "/home/katrin/Desktop/multiClass/" + filename2 + ".arff");*/
+            "/home/katrin/Desktop/multiClass/" + filename2 + ".arff");
     sgpp::base::DataMatrix dataTrain = dataset.getData();
     sgpp::base::DataVector targetTrain = dataset.getTargets();
 
-/*
     // write log to file
     std::string filename = "/home/katrin/Desktop/multi_log_"
             + filename2 + "_" + std::to_string(numRefinements)
@@ -145,8 +136,6 @@ int main(int argc, char* argv[]) {
             + "_" + std::to_string(useZCRF) +  ".log";
     std::ofstream out(filename);
     std::cout.rdbuf(out.rdbuf());
-    */
-    
 
     std::cout << "Read training data: " << dataTrain.getNrows() << std::endl;
 
@@ -230,13 +219,14 @@ int main(int argc, char* argv[]) {
           << " ms  | eval: "
           << std::chrono::duration_cast<std::chrono::milliseconds>(c_end-c_eval).count()
           << " ms" << std::endl;
+
     // amount of points refined in the single classes vs combined grid
     // class grid: numRefinements - partCombined
     // combined grid: partCombined
     bool levelPenalize = true;
     bool preCompute = false;
     double thresh = 0;
-    
+
     // Zero-crossing-based refinement
     sgpp::datadriven::MultiGridRefinementFunctor* fun = nullptr;
     sgpp::datadriven::ZeroCrossingRefinementFunctor funZrcr(grids2, alphas2,
@@ -247,6 +237,7 @@ int main(int argc, char* argv[]) {
     sgpp::datadriven::MultipleClassRefinementFunctor mcrf(grids2, alphas2,
             numRefinements, thresh);
     multifun = &mcrf;
+    multifun->printPointsPlott();
 
     for ( size_t i = 1; i < numSteps + 1; i++ ) {
         std::cout << "---------------------------------------------" << std::endl;
@@ -300,6 +291,7 @@ int main(int argc, char* argv[]) {
         << " kB  | time user: " << usage.ru_utime.tv_sec
         << " s  | time system: " << usage.ru_stime.tv_sec
         << " s" << std::endl;
+    multifun->printPointsInfo();
     return 0;
 }
 
@@ -402,15 +394,15 @@ std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
     bool printMapping = false;
     if ( printMapping ) {
         // print array
-        std::cout << std::setw(10) << std:: left << "classes" << " | "; 
-        std::cout << std::setw(10) << std:: left << "all Points" << " | "; 
+        std::cout << std::setw(10) << std:: left << "classes" << " | ";
+        std::cout << std::setw(10) << std:: left << "all Points" << " | ";
         for (size_t a = 0; a < grids.size(); a++) {
-          std::cout << "map in " << std::setw(3) << std:: left << a << " | "; 
+          std::cout << "map in " << std::setw(3) << std:: left << a << " | ";
         }
         std::cout << std::setw(10) << std:: left << "wrong map" << std::endl;
         for (size_t a = 0; a < grids.size(); a++) {
-          std::cout << " Class: " << std::setw(2) << std:: left << a << " | "; 
-          std::cout << std::setw(10) << std::right << classCounts.at(a) << " | "; 
+          std::cout << " Class: " << std::setw(2) << std:: left << a << " | ";
+          std::cout << std::setw(10) << std::right << classCounts.at(a) << " | ";
           for (size_t b = 0; b < grids.size(); b++) {
             std::cout << std::setw(10) << std::right << gridEval[a][b] << " | ";
           }

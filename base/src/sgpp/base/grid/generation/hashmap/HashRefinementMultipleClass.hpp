@@ -8,26 +8,27 @@
 
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/tools/MultipleClassPoint.hpp>
+
 #include <iostream>
 #include <tuple>
 #include <cmath>
 #include <vector>
 #include <algorithm>
-#include <sgpp/base/tools/MultipleClassPoint.hpp>
 
 
 namespace sgpp {
 namespace base {
 
 class HashRefinementMultipleClass : public HashRefinement {
-public:
+ public:
     HashRefinementMultipleClass(Grid& grid,
         std::vector<sgpp::base::MultipleClassPoint>* pts,
         std::vector<Grid*>& classGrids,
         double &borderSum, double &borderCnt, double topPercent);
     virtual ~HashRefinementMultipleClass() {}
 
-protected:
+ protected:
   void refineGridpointsCollection(
         GridStorage& storage,
         RefinementFunctor& functor,
@@ -37,7 +38,7 @@ protected:
         RefinementFunctor& functor,
         AbstractRefinement::refinement_container_type& collection) override;
 
-private:
+ private:
     std::vector<sgpp::base::MultipleClassPoint>* points;
     Grid& multigrid;
     std::vector<Grid*>& grids;

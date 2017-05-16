@@ -6,19 +6,21 @@
 #ifndef MULTIPLECLASSPOINT_HPP
 #define MULTIPLECLASSPOINT_HPP
 
+#include <sgpp/base/grid/Grid.hpp>
+
 #include <vector>
 #include <tuple>
 #include <array>
-#include <sgpp/base/grid/Grid.hpp>
+#include <string>
 
 namespace sgpp {
 namespace base {
 class MultipleClassPoint{
-    public:
+ public:
         explicit MultipleClassPoint(size_t classes);
         MultipleClassPoint(base::HashGridPoint& gp, std::vector<base::Grid*> grids,
                     std::vector<base::DataVector*> alphas);
-        virtual ~MultipleClassPoint() {};
+        virtual ~MultipleClassPoint() {}
 
         size_t getDominateClass() const;
         double getDensity(size_t classId) const;
@@ -37,17 +39,17 @@ class MultipleClassPoint{
 
         std::string toString();
 
-    private:
-        int classes;
-        // tuple: density, classId, points exits in class
-        std::vector<std::tuple<double, size_t, bool> *> classById;
-        std::vector<std::tuple<double, size_t, bool>> classByDensity;
-        // sequence number and dimension of neighbors with a change in dominate classes, isLeft
-        std::vector<std::tuple<size_t, size_t, bool>> neighbors;
-        // dimension, level of point, direction isLeft
-        std::vector<std::tuple<size_t, size_t, bool>> borders;
+ private:
+    int classes;
+    // tuple: density, classId, points exits in class
+    std::vector<std::tuple<double, size_t, bool> *> classById;
+    std::vector<std::tuple<double, size_t, bool>> classByDensity;
+    // sequence number and dimension of neighbors with a change in dominate classes, isLeft
+    std::vector<std::tuple<size_t, size_t, bool>> neighbors;
+    // dimension, level of point, direction isLeft
+    std::vector<std::tuple<size_t, size_t, bool>> borders;
 
-        void insertDensitySorted(std::tuple<double, size_t, bool>* density);
+    void insertDensitySorted(std::tuple<double, size_t, bool>* density);
 };
 
 
