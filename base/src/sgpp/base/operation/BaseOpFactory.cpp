@@ -53,6 +53,9 @@
 #include <sgpp/base/operation/hash/OperationFirstMomentPoly.hpp>
 #include <sgpp/base/operation/hash/OperationFirstMomentModPoly.hpp>
 #include <sgpp/base/operation/hash/OperationFirstMomentPolyBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationFirstMomentPolyClenshawCurtis.hpp>
+#include <sgpp/base/operation/hash/OperationFirstMomentModPolyClenshawCurtis.hpp>
+#include <sgpp/base/operation/hash/OperationFirstMomentPolyClenshawCurtisBoundary.hpp>
 
 #include <sgpp/base/operation/hash/OperationQuadrature.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureLinear.hpp>
@@ -321,6 +324,12 @@ base::OperationFirstMoment* createOperationFirstMoment(base::Grid& grid) {
     return new base::OperationFirstMomentPolyBoundary(&grid);
   } else if (grid.getType() == base::GridType::ModPoly) {
     return new base::OperationFirstMomentModPoly(&grid);
+  } else if (grid.getType() == base::GridType::PolyClenshawCurtis) {
+    return new base::OperationFirstMomentPolyClenshawCurtis(&grid);
+  } else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary) {
+    return new base::OperationFirstMomentPolyClenshawCurtisBoundary(&grid);
+  } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
+    return new base::OperationFirstMomentModPolyClenshawCurtis(&grid);
   } else {
     throw base::factory_exception(
         "createOperationFirstMoment is not implemented for this grid type.");

@@ -31,7 +31,10 @@ double OperationFirstMomentModPoly::doQuadrature(const DataVector& alpha, DataMa
   base::level_t level;
   double xlower = 0.0;
   double xupper = 0.0;
-  const size_t quadOrder =  dynamic_cast<sgpp::base::ModPolyGrid*>(grid)->getDegree() + 1;
+
+  const size_t quadOrder =  static_cast<size_t>(
+    ceil(static_cast<double>(dynamic_cast<sgpp::base::ModPolyGrid*>(grid)->getDegree()) / 2.))
+    + 1;
   base::SBasis& basis = const_cast<base::SBasis&>(grid->getBasis());
   base::DataVector coordinates;
   base::DataVector weights;
