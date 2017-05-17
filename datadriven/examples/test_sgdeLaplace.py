@@ -53,17 +53,16 @@ def test_sgdeLaplace():
     l2_errors["kde"] = []
     samples = 1000
     for samples in sample_range:
-
     # for lvl in range(5, 6):
         trainSamples = U.rvs(samples)
-        testSamples = U.rvs(l2_samples)
+        # testSamples = U.rvs(l2_samples)
         for grid_name in grids:
             # build parameter set
             print("--------------------Samples: {} Grid: {}--------------------".format(samples, grid_name))
             dist_sgde = SGDEdist.byLearnerSGDEConfig(trainSamples,
                                                      bounds=U.getBounds(),
                                                      unitIntegrand=True,
-                                                     config={"grid_level": 3,
+                                                     config={"grid_level": 1,
                                                              "grid_type": grid_name,
                                                              "grid_maxDegree": 6,
                                                              "refinement_numSteps": 0,
@@ -77,19 +76,18 @@ def test_sgdeLaplace():
                                                              "crossValidation_lambdaSteps": 10,
                                                              "crossValidation_silent": False})
             points[grid_name].append(dist_sgde.grid.getSize())
-            l2_errors[grid_name].append(dist_sgde.l2error(U, testSamplesUnit=testSamples))
-
+            # l2_errors[grid_name].append(dist_sgde.l2error(U, testSamplesUnit=testSamples))
+            l2_errors[grid_name].append(dist_sgde.l2error(U, n=l2_samples))
             # plt.figure()
             # plotDensity2d(U, levels=(10, 20, 40, 50, 60))
             # plt.figure()
             # plotDensity2d(dist_sgde, levels=(10, 20, 40, 50, 60))
             # plt.show()
 
-    dist_kde = dists.KDEDist(trainSamples,
-                             kernelType=KernelType_GAUSSIAN,
-                             bandwidthOptimizationType=BandwidthOptimizationType_SILVERMANSRULE)
-
-    l2_errors["kde"].append(dist_kde.l2error(U, testSamplesUnit=testSamples))
+        dist_kde = dists.KDEDist(trainSamples,
+                                 kernelType=KernelType_GAUSSIAN,
+                                 bandwidthOptimizationType=BandwidthOptimizationType_SILVERMANSRULE)
+        l2_errors["kde"].append(dist_kde.l2error(U, testSamplesUnit=testSamples))
 
     for grid_name in grids:
         plt.plot(sample_range, l2_errors[grid_name], label=grid_name)

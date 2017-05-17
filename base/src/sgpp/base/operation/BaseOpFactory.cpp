@@ -56,6 +56,7 @@
 #include <sgpp/base/operation/hash/OperationFirstMomentPolyClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationFirstMomentModPolyClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationFirstMomentPolyClenshawCurtisBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationFirstMomentBspline.hpp>
 
 #include <sgpp/base/operation/hash/OperationQuadrature.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureLinear.hpp>
@@ -330,6 +331,8 @@ base::OperationFirstMoment* createOperationFirstMoment(base::Grid& grid) {
     return new base::OperationFirstMomentPolyClenshawCurtisBoundary(&grid);
   } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
     return new base::OperationFirstMomentModPolyClenshawCurtis(&grid);
+  } else if (grid.getType() == base::GridType::Bspline) {
+    return new base::OperationFirstMomentBspline(&grid);
   } else {
     throw base::factory_exception(
         "createOperationFirstMoment is not implemented for this grid type.");
