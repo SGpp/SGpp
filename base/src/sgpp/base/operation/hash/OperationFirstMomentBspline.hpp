@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef OPERATIONFIRSTMOMENTMODPOLYCLENSHAWCURTIS_HPP
-#define OPERATIONFIRSTMOMENTMODPOLYCLENSHAWCURTIS_HPP
+#ifndef OPERATIONFIRSTMOMENTBSPLINE_HPP
+#define OPERATIONFIRSTMOMENTBSPLINE_HPP
 
 #include <sgpp/base/operation/hash/OperationFirstMoment.hpp>
 #include <sgpp/base/grid/Grid.hpp>
@@ -15,18 +15,18 @@ namespace sgpp {
 namespace base {
 
 /**
- * FirstMomemnt of sparse grid function, ModPolyClenshawCurtis grid 
+ * FirstMomemnt of sparse grid function, linear grid without boundaries
  */
-class OperationFirstMomentModPolyClenshawCurtis : public OperationFirstMoment {
+class OperationFirstMomentBspline : public OperationFirstMoment {
  public:
   /**
-   * Constructor of OperationFirstMomentModPolyClenshawCurtis
+   * Constructor of OperationFirstMomentBspline
    *
    * @param storage Pointer to the grid's GridStorage object
    */
-  explicit OperationFirstMomentModPolyClenshawCurtis(Grid* grid) : grid(grid),
-           clenshawCurtisTable(base::ClenshawCurtisTable::getInstance()) {}
-  ~OperationFirstMomentModPolyClenshawCurtis() override {}
+  explicit OperationFirstMomentBspline(Grid* grid) : grid(grid) {}
+
+  ~OperationFirstMomentBspline() override {}
 
   /**
    * Compute first moment of the function
@@ -40,10 +40,9 @@ class OperationFirstMomentModPolyClenshawCurtis : public OperationFirstMoment {
  protected:
   // Pointer to the grid object (Grid needed for getDegree() function)
   sgpp::base::Grid* grid;
-  sgpp::base::ClenshawCurtisTable& clenshawCurtisTable;
 };
 
 }  // namespace base
 }  // namespace sgpp
 
-#endif /* OPERATIONFIRSTMOMENTMODPOLYCLENSHAWCURTIS_HPP */
+#endif /* OPERATIONFIRSTMOMENTBSPLINE_HPP */
