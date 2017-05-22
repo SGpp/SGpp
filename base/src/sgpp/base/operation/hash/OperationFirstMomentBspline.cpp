@@ -9,6 +9,7 @@
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 
 #include <sgpp/globaldef.hpp>
+#include <algorithm>
 
 namespace sgpp {
 namespace base {
@@ -55,15 +56,16 @@ double OperationFirstMomentBspline::doQuadrature(const DataVector& alpha, DataMa
 
       size_t start = ((index > pp1h) ? 0 : (pp1h - index));
       size_t stop = static_cast<size_t>(std::min(pDbl, hInv + pp1hDbl - indexDbl - 1));
-      double scaling = 1./hInv; // for a single Bspline section
+      double scaling = 1./hInv;  // for a single Bspline section
       double sum_1d = 0.;
       for (size_t n = start; n <= stop; n++) {
-        double offset = scaling * (n + index);
+        double offset = scaling * static_cast<double>(n + index - pp1h);
         for (size_t c = 0; c < quadOrder; c++) {
           const double x = offset + scaling * coordinates[c];
           sum_1d += weights[c] * x * basis.eval(level, index, x);
         }
       }
+      sum_1d *= scaling;
       tmpres *=
         width * sum_1d + xlower * basis.getIntegral(level, index);
     }
