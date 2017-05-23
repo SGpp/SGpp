@@ -85,7 +85,9 @@
 
 #include <sgpp/base/operation/hash/OperationSecondMomentLinear.hpp>
 #include <sgpp/base/operation/hash/OperationSecondMomentLinearBoundary.hpp>
-
+#include <sgpp/base/operation/hash/OperationSecondMomentPoly.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentModPoly.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentPolyBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationConvertPrewavelet.hpp>
 
 #include <sgpp/base/operation/hash/OperationEvalLinear.hpp>
@@ -358,6 +360,12 @@ base::OperationSecondMoment* createOperationSecondMoment(base::Grid& grid) {
              grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearTruncatedBoundary) {
     return new base::OperationSecondMomentLinearBoundary(grid.getStorage());
+  } else if (grid.getType() == base::GridType::Poly) {
+    return new base::OperationSecondMomentPoly(&grid);
+  } else if (grid.getType() == base::GridType::ModPoly) {
+    return new base::OperationSecondMomentModPoly(&grid);
+  } else if (grid.getType() == base::GridType::PolyBoundary) {
+    return new base::OperationSecondMomentPolyBoundary(&grid);
   } else {
     throw base::factory_exception(
         "createOperationSecondMoment is not implemented for this grid type.");
