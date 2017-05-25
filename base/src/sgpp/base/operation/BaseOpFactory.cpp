@@ -88,6 +88,15 @@
 #include <sgpp/base/operation/hash/OperationSecondMomentPoly.hpp>
 #include <sgpp/base/operation/hash/OperationSecondMomentModPoly.hpp>
 #include <sgpp/base/operation/hash/OperationSecondMomentPolyBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentPolyClenshawCurtis.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentModPolyClenshawCurtis.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentPolyClenshawCurtisBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentBspline.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentModBspline.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentBsplineBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentBsplineClenshawCurtis.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentModBsplineClenshawCurtis.hpp>
+
 #include <sgpp/base/operation/hash/OperationConvertPrewavelet.hpp>
 
 #include <sgpp/base/operation/hash/OperationEvalLinear.hpp>
@@ -366,6 +375,12 @@ base::OperationSecondMoment* createOperationSecondMoment(base::Grid& grid) {
     return new base::OperationSecondMomentModPoly(&grid);
   } else if (grid.getType() == base::GridType::PolyBoundary) {
     return new base::OperationSecondMomentPolyBoundary(&grid);
+  } else if (grid.getType() == base::GridType::PolyClenshawCurtis) {
+    return new base::OperationSecondMomentPolyClenshawCurtis(&grid);
+  } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
+    return new base::OperationSecondMomentModPolyClenshawCurtis(&grid);
+  } else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary) {
+    return new base::OperationSecondMomentPolyClenshawCurtisBoundary(&grid);
   } else {
     throw base::factory_exception(
         "createOperationSecondMoment is not implemented for this grid type.");

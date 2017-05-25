@@ -3,10 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef OPERATIONFIRSTMOMENTMODBSPLINE_HPP
-#define OPERATIONFIRSTMOMENTMODBSPLINE_HPP
+#ifndef OPERATIONSECONDMOMENTMODBSPLINE_HPP
+#define OPERATIONSECONDMOMENTMODBSPLINE_HPP
 
-#include <sgpp/base/operation/hash/OperationFirstMoment.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMoment.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -17,16 +17,16 @@ namespace base {
 /**
  * FirstMomemnt of sparse grid function, linear grid without boundaries
  */
-class OperationFirstMomentModBspline : public OperationFirstMoment {
+class OperationSecondMomentModBspline : public OperationSecondMoment {
  public:
   /**
-   * Constructor of OperationFirstMomentModBspline
+   * Constructor of OperationSecondMomentModBspline
    *
    * @param storage Pointer to the grid's GridStorage object
    */
-  explicit OperationFirstMomentModBspline(Grid* grid) : grid(grid) {}
+  explicit OperationSecondMomentModBspline(Grid* grid) : grid(grid) {}
 
-  ~OperationFirstMomentModBspline() override {}
+  ~OperationSecondMomentModBspline() override {}
 
   /**
    * Compute first moment of the function
@@ -35,7 +35,7 @@ class OperationFirstMomentModBspline : public OperationFirstMoment {
    * @param alpha Coefficient vector for current grid
    * @param bounds describes the boundaries of the hypercube of the original function
    */
-  double doQuadrature(const DataVector& alpha, DataMatrix* bounds = nullptr) override;
+  double doQuadrature(DataVector& alpha, DataMatrix* bounds = nullptr) override;
 
  protected:
   // Pointer to the grid object (Grid needed for getDegree() function)
@@ -45,4 +45,4 @@ class OperationFirstMomentModBspline : public OperationFirstMoment {
 }  // namespace base
 }  // namespace sgpp
 
-#endif /* OPERATIONFIRSTMOMENTMODBSPLINE_HPP */
+#endif /* OPERATIONSECONDMOMENTMODBSPLINE_HPP */
