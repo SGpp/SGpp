@@ -13,7 +13,7 @@
 namespace sgpp {
 namespace base {
 
-double OperationSecondMomentPolyBoundary::doQuadrature(const DataVector& alpha, DataMatrix* bounds) {
+double OperationSecondMomentPolyBoundary::doQuadrature(DataVector& alpha, DataMatrix* bounds) {
   // handle bounds
   GridStorage& storage = grid->getStorage();
   size_t numDims = storage.getDimension();

@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/operation/hash/OperationFirstMomentPolyClenshawCurtisBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentPolyClenshawCurtisBoundary.hpp>
 #include <sgpp/base/grid/type/PolyClenshawCurtisBoundaryGrid.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
@@ -13,7 +13,7 @@
 namespace sgpp {
 namespace base {
 
-double OperationFirstMomentPolyClenshawCurtisBoundary::doQuadrature(const DataVector& alpha,
+double OperationSecondMomentPolyClenshawCurtisBoundary::doQuadrature(DataVector& alpha,
                                                                     DataMatrix* bounds) {
   // handle bounds
   GridStorage& storage = grid->getStorage();
@@ -22,7 +22,7 @@ double OperationFirstMomentPolyClenshawCurtisBoundary::doQuadrature(const DataVe
   // check if the boundaries are given in the right shape
   if (bounds != nullptr && (bounds->getNcols() != 2 || bounds->getNrows() != numDims)) {
     throw application_exception(
-        "OperationFirstMomentPolyClenshawCurtisBoundary::doQuadrature -"
+        "OperationSecondMomentPolyClenshawCurtisBoundary::doQuadrature -"
         " bounds matrix has the wrong shape");
   }
 
@@ -36,7 +36,7 @@ double OperationFirstMomentPolyClenshawCurtisBoundary::doQuadrature(const DataVe
   const size_t quadOrder =  static_cast<size_t>(
     ceil(static_cast<double>(
          dynamic_cast<sgpp::base::PolyClenshawCurtisBoundaryGrid*>(grid)->getDegree()) / 2.))
-    + 1;
+    + 2;
   base::SBasis& basis = const_cast<base::SBasis&>(grid->getBasis());
   base::DataVector coordinates;
   base::DataVector weights;
@@ -61,7 +61,7 @@ double OperationFirstMomentPolyClenshawCurtisBoundary::doQuadrature(const DataVe
       double gaussQuadSum = 0.;
       for (size_t c = 0; c < quadOrder; c++) {
         const double x = left + scaling * coordinates[c];
-        gaussQuadSum += weights[c] * x * basis.eval(level, index, x);
+        gaussQuadSum += weights[c] * x * x * basis.eval(level, index, x);
       }
 
       tmpres *=
