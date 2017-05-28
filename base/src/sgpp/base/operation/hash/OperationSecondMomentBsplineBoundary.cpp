@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/operation/hash/OperationFirstMomentBsplineBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentBsplineBoundary.hpp>
 #include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
@@ -14,8 +14,8 @@
 namespace sgpp {
 namespace base {
 
-double OperationFirstMomentBsplineBoundary::doQuadrature(const DataVector& alpha,
-                                                         DataMatrix* bounds) {
+double OperationSecondMomentBsplineBoundary::doQuadrature(DataVector& alpha,
+                                                          DataMatrix* bounds) {
   // handle bounds
   GridStorage& storage = grid->getStorage();
   size_t numDims = storage.getDimension();
@@ -23,7 +23,7 @@ double OperationFirstMomentBsplineBoundary::doQuadrature(const DataVector& alpha
   // check if the boundaries are given in the right shape
   if (bounds != nullptr && (bounds->getNcols() != 2 || bounds->getNrows() != numDims)) {
     throw application_exception(
-        "OperationFirstMomentBsplineBoundary::doQuadrature - bounds matrix has the wrong shape");
+        "OperationSecondMomentBsplineBoundary::doQuadrature - bounds matrix has the wrong shape");
   }
   size_t p = dynamic_cast<sgpp::base::BsplineBoundaryGrid*>(grid)->getDegree();
   double pDbl = static_cast<double>(p);
@@ -36,7 +36,7 @@ double OperationFirstMomentBsplineBoundary::doQuadrature(const DataVector& alpha
   double xupper = 0.0;
   const size_t pp1h = (p + 1) >> 1;  // (p + 1) / 2
   const double pp1hDbl = static_cast<double>(pp1h);
-  const size_t quadOrder = static_cast<size_t>(ceil(pDbl / 2.)) + 1;
+  const size_t quadOrder = static_cast<size_t>(ceil(pDbl / 2.)) + 2;
   base::SBasis& basis = const_cast<base::SBasis&>(grid->getBasis());
   base::DataVector coordinates;
   base::DataVector weights;
@@ -63,7 +63,7 @@ double OperationFirstMomentBsplineBoundary::doQuadrature(const DataVector& alpha
         double offset = scaling * static_cast<double>(n + index - pp1h);
         for (size_t c = 0; c < quadOrder; c++) {
           const double x = offset + scaling * coordinates[c];
-          sum_1d += weights[c] * x * basis.eval(level, index, x);
+          sum_1d += weights[c] * x * x * basis.eval(level, index, x);
         }
       }
       sum_1d *= scaling;

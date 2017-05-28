@@ -3,10 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef OPERATIONFIRSTMOMENTPOLYCLENSHAWCURTIS_HPP
-#define OPERATIONFIRSTMOMENTPOLYCLENSHAWCURTIS_HPP
+#ifndef OPERATIONSECONDMOMENTPOLYCLENSHAWCURTIS_HPP
+#define OPERATIONSECONDMOMENTPOLYCLENSHAWCURTIS_HPP
 
-#include <sgpp/base/operation/hash/OperationFirstMoment.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMoment.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -17,16 +17,16 @@ namespace base {
 /**
  * FirstMomemnt of sparse grid function, linear grid without boundaries
  */
-class OperationFirstMomentPolyClenshawCurtis : public OperationFirstMoment {
+class OperationSecondMomentPolyClenshawCurtis : public OperationSecondMoment {
  public:
   /**
-   * Constructor of OperationFirstMomentPolyClenshawCurtis
+   * Constructor of OperationSecondMomentPolyClenshawCurtis
    *
    * @param storage Pointer to the grid's GridStorage object
    */
-  explicit OperationFirstMomentPolyClenshawCurtis(Grid* grid) : grid(grid),
+  explicit OperationSecondMomentPolyClenshawCurtis(Grid* grid) : grid(grid),
            clenshawCurtisTable(base::ClenshawCurtisTable::getInstance()) {}
-  ~OperationFirstMomentPolyClenshawCurtis() override {}
+  ~OperationSecondMomentPolyClenshawCurtis() override {}
 
   /**
    * Compute first moment of the function
@@ -35,7 +35,7 @@ class OperationFirstMomentPolyClenshawCurtis : public OperationFirstMoment {
    * @param alpha Coefficient vector for current grid
    * @param bounds describes the boundaries of the hypercube of the original function
    */
-  double doQuadrature(const DataVector& alpha, DataMatrix* bounds = nullptr) override;
+  double doQuadrature(DataVector& alpha, DataMatrix* bounds = nullptr) override;
 
  protected:
   // Pointer to the grid object (Grid needed for getDegree() function)
@@ -46,4 +46,4 @@ class OperationFirstMomentPolyClenshawCurtis : public OperationFirstMoment {
 }  // namespace base
 }  // namespace sgpp
 
-#endif /* OPERATIONFIRSTMOMENTPOLYCLENSHAWCURTIS_HPP */
+#endif /* OPERATIONSECONDMOMENTPOLYCLENSHAWCURTIS_HPP */
