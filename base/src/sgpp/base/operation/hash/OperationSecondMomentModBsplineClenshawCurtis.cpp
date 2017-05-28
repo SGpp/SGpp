@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/operation/hash/OperationFirstMomentModBsplineClenshawCurtis.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentModBsplineClenshawCurtis.hpp>
 #include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
@@ -14,8 +14,8 @@
 namespace sgpp {
 namespace base {
 
-double OperationFirstMomentModBsplineClenshawCurtis::doQuadrature(const DataVector& alpha,
-                                                               DataMatrix* bounds) {
+double OperationSecondMomentModBsplineClenshawCurtis::doQuadrature(DataVector& alpha,
+                                                                   DataMatrix* bounds) {
   // handle bounds
   GridStorage& storage = grid->getStorage();
   size_t numDims = storage.getDimension();
@@ -23,7 +23,7 @@ double OperationFirstMomentModBsplineClenshawCurtis::doQuadrature(const DataVect
   // check if the boundaries are given in the right shape
   if (bounds != nullptr && (bounds->getNcols() != 2 || bounds->getNrows() != numDims)) {
     throw application_exception(
-    "OperationFirstMomentModBsplineClenshawCurtis::doQuadrature"
+    "OperationSecondMomentModBsplineClenshawCurtis::doQuadrature"
     "- bounds matrix has the wrong shape");
   }
   size_t p = dynamic_cast<sgpp::base::ModBsplineClenshawCurtisGrid*>(grid)->getDegree();
@@ -37,7 +37,7 @@ double OperationFirstMomentModBsplineClenshawCurtis::doQuadrature(const DataVect
   double xupper = 0.0;
   const size_t pp1h = (p + 1) >> 1;  // (p + 1) / 2
   const double pp1hDbl = static_cast<double>(pp1h);
-  const size_t quadOrder = static_cast<size_t>(ceil(pDbl / 2.)) + 1;
+  const size_t quadOrder = static_cast<size_t>(ceil(pDbl / 2.)) + 2;
   base::SBasis& basis = const_cast<base::SBasis&>(grid->getBasis());
   base::DataVector coordinates;
   base::DataVector weights;
@@ -66,7 +66,7 @@ double OperationFirstMomentModBsplineClenshawCurtis::doQuadrature(const DataVect
         for (size_t c = 0; c < quadOrder; c++) {
           double scaling = right - left;
           const double x = left + scaling * coordinates[c];
-          sum_1d += scaling * weights[c] * x * basis.eval(level, index, x);
+          sum_1d += scaling * weights[c] * x * x * basis.eval(level, index, x);
         }
       }
       tmpres *=
