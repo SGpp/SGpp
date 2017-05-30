@@ -15,6 +15,9 @@
 
 namespace sgpp {
 namespace pde {
+
+double epsilon = 1e-6;        // maximum difference between the approximation and result
+
 double firstMomentApproximation(base::Grid* grid, base::DataVector& alpha) {
   const size_t resolution = 10000;
   const double h = 1.0 / static_cast<double>(resolution);
@@ -57,7 +60,19 @@ BOOST_AUTO_TEST_CASE(testOperationFirstMomentLinear) {
   base::DataVector alpha(grid->getSize(), 1.0);
   double approx = firstMomentApproximation(grid, alpha);
   double res = op->doQuadrature(alpha, nullptr);
-  BOOST_CHECK_SMALL(approx - res, 1e-15);
+  BOOST_CHECK_SMALL(approx - res, epsilon);
+}
+
+BOOST_AUTO_TEST_CASE(testOperationFirstMomentModLinear) {
+  const size_t d = 1;
+  const size_t l = 5;
+  base::Grid* grid(sgpp::base::Grid::createModLinearGrid(d));
+  grid->getGenerator().regular(l);
+  base::OperationFirstMoment* op = sgpp::op_factory::createOperationFirstMoment(*grid);
+  base::DataVector alpha(grid->getSize(), 1.0);
+  double approx = firstMomentApproximation(grid, alpha);
+  double res = op->doQuadrature(alpha, nullptr);
+  BOOST_CHECK_SMALL(approx - res, epsilon);
 }
 
 BOOST_AUTO_TEST_CASE(testOperationFirstMomentPoly) {
@@ -69,11 +84,130 @@ BOOST_AUTO_TEST_CASE(testOperationFirstMomentPoly) {
   base::DataVector alpha(grid->getSize(), 1.0);
   double approx = firstMomentApproximation(grid, alpha);
   double res = op->doQuadrature(alpha, nullptr);
-  BOOST_CHECK_SMALL(approx - res, 1e-15);
+  BOOST_CHECK_SMALL(approx - res, epsilon);
 }
 
-  BOOST_AUTO_TEST_CASE(testOperationFirstMomentModLinear) {
-  }
-  BOOST_AUTO_TEST_SUITE_END()
+BOOST_AUTO_TEST_CASE(testOperationFirstMomentModPoly) {
+  const size_t d = 1;
+  const size_t l = 4;
+  base::Grid* grid(sgpp::base::Grid::createModPolyGrid(d, 3));
+  grid->getGenerator().regular(l);
+  base::OperationFirstMoment* op = sgpp::op_factory::createOperationFirstMoment(*grid);
+  base::DataVector alpha(grid->getSize(), 1.0);
+  double approx = firstMomentApproximation(grid, alpha);
+  double res = op->doQuadrature(alpha, nullptr);
+  BOOST_CHECK_SMALL(approx - res, epsilon);
+}
+
+BOOST_AUTO_TEST_CASE(testOperationFirstMomentPolyBoundary) {
+  const size_t d = 1;
+  const size_t l = 4;
+  base::Grid* grid(sgpp::base::Grid::createPolyBoundaryGrid(d, 3));
+  grid->getGenerator().regular(l);
+  base::OperationFirstMoment* op = sgpp::op_factory::createOperationFirstMoment(*grid);
+  base::DataVector alpha(grid->getSize(), 1.0);
+  double approx = firstMomentApproximation(grid, alpha);
+  double res = op->doQuadrature(alpha, nullptr);
+  BOOST_CHECK_SMALL(approx - res, epsilon);
+}
+
+BOOST_AUTO_TEST_CASE(testOperationFirstMomentPolyClenshwCurtis) {
+  const size_t d = 1;
+  const size_t l = 4;
+  base::Grid* grid(sgpp::base::Grid::createPolyClenshawCurtisGrid(d, 3));
+  grid->getGenerator().regular(l);
+  base::OperationFirstMoment* op = sgpp::op_factory::createOperationFirstMoment(*grid);
+  base::DataVector alpha(grid->getSize(), 1.0);
+  double approx = firstMomentApproximation(grid, alpha);
+  double res = op->doQuadrature(alpha, nullptr);
+  BOOST_CHECK_SMALL(approx - res, epsilon);
+}
+
+BOOST_AUTO_TEST_CASE(testOperationFirstMomentModPolyClenshawCurtis) {
+  const size_t d = 1;
+  const size_t l = 4;
+  base::Grid* grid(sgpp::base::Grid::createModPolyClenshawCurtisGrid(d, 3));
+  grid->getGenerator().regular(l);
+  base::OperationFirstMoment* op = sgpp::op_factory::createOperationFirstMoment(*grid);
+  base::DataVector alpha(grid->getSize(), 1.0);
+  double approx = firstMomentApproximation(grid, alpha);
+  double res = op->doQuadrature(alpha, nullptr);
+  BOOST_CHECK_SMALL(approx - res, epsilon);
+}
+
+BOOST_AUTO_TEST_CASE(testOperationFirstMomentPolyClenshawCurtisBoundary) {
+  const size_t d = 1;
+  const size_t l = 4;
+  base::Grid* grid(sgpp::base::Grid::createPolyClenshawCurtisBoundaryGrid(d, 3));
+  grid->getGenerator().regular(l);
+  base::OperationFirstMoment* op = sgpp::op_factory::createOperationFirstMoment(*grid);
+  base::DataVector alpha(grid->getSize(), 1.0);
+  double approx = firstMomentApproximation(grid, alpha);
+  double res = op->doQuadrature(alpha, nullptr);
+  BOOST_CHECK_SMALL(approx - res, epsilon);
+}
+
+
+BOOST_AUTO_TEST_CASE(testOperationFirstMomentBspline) {
+  const size_t d = 1;
+  const size_t l = 4;
+  base::Grid* grid(sgpp::base::Grid::createBsplineGrid(d, 3));
+  grid->getGenerator().regular(l);
+  base::OperationFirstMoment* op = sgpp::op_factory::createOperationFirstMoment(*grid);
+  base::DataVector alpha(grid->getSize(), 1.0);
+  double approx = firstMomentApproximation(grid, alpha);
+  double res = op->doQuadrature(alpha, nullptr);
+  BOOST_CHECK_SMALL(approx - res, epsilon);
+}
+
+BOOST_AUTO_TEST_CASE(testOperationFirstMomentModBspline) {
+  const size_t d = 1;
+  const size_t l = 4;
+  base::Grid* grid(sgpp::base::Grid::createModBsplineGrid(d, 3));
+  grid->getGenerator().regular(l);
+  base::OperationFirstMoment* op = sgpp::op_factory::createOperationFirstMoment(*grid);
+  base::DataVector alpha(grid->getSize(), 1.0);
+  double approx = firstMomentApproximation(grid, alpha);
+  double res = op->doQuadrature(alpha, nullptr);
+  BOOST_CHECK_SMALL(approx - res, epsilon);
+}
+
+BOOST_AUTO_TEST_CASE(testOperationFirstMomentBsplineBoundary) {
+  const size_t d = 1;
+  const size_t l = 4;
+  base::Grid* grid(sgpp::base::Grid::createBsplineBoundaryGrid(d, 3));
+  grid->getGenerator().regular(l);
+  base::OperationFirstMoment* op = sgpp::op_factory::createOperationFirstMoment(*grid);
+  base::DataVector alpha(grid->getSize(), 1.0);
+  double approx = firstMomentApproximation(grid, alpha);
+  double res = op->doQuadrature(alpha, nullptr);
+  BOOST_CHECK_SMALL(approx - res, epsilon);
+}
+
+BOOST_AUTO_TEST_CASE(testOperationFirstMomentBsplineClenshwCurtis) {
+  const size_t d = 1;
+  const size_t l = 4;
+  base::Grid* grid(sgpp::base::Grid::createBsplineClenshawCurtisGrid(d, 3));
+  grid->getGenerator().regular(l);
+  base::OperationFirstMoment* op = sgpp::op_factory::createOperationFirstMoment(*grid);
+  base::DataVector alpha(grid->getSize(), 1.0);
+  double approx = firstMomentApproximation(grid, alpha);
+  double res = op->doQuadrature(alpha, nullptr);
+  BOOST_CHECK_SMALL(approx - res, epsilon);
+}
+
+BOOST_AUTO_TEST_CASE(testOperationFirstMomentModBsplineClenshawCurtis) {
+  const size_t d = 1;
+  const size_t l = 4;
+  base::Grid* grid(sgpp::base::Grid::createModBsplineClenshawCurtisGrid(d, 3));
+  grid->getGenerator().regular(l);
+  base::OperationFirstMoment* op = sgpp::op_factory::createOperationFirstMoment(*grid);
+  base::DataVector alpha(grid->getSize(), 1.0);
+  double approx = firstMomentApproximation(grid, alpha);
+  double res = op->doQuadrature(alpha, nullptr);
+  BOOST_CHECK_SMALL(approx - res, epsilon);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
 }  // namespace pde
 }  // namespace sgpp
