@@ -61,7 +61,7 @@ double OperationFirstMomentPolyBoundary::doQuadrature(const DataVector& alpha, D
       }
 
       tmpres *=
-        width * gaussQuadSum + xlower * basis.getIntegral(level, index);
+        width * scaling * gaussQuadSum + xlower * basis.getIntegral(level, index);
     }
 
     res += alpha.get(iter->second) * tmpres;
