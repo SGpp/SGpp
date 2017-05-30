@@ -348,9 +348,9 @@ base::OperationFirstMoment* createOperationFirstMoment(base::Grid& grid) {
     return new base::OperationFirstMomentModPolyClenshawCurtis(&grid);
   } else if (grid.getType() == base::GridType::Bspline) {
     return new base::OperationFirstMomentBspline(&grid);
-  } else if (grid.getType() == base::GridType::Bspline) {
+  } else if (grid.getType() == base::GridType::ModBspline) {
     return new base::OperationFirstMomentModBspline(&grid);
-  } else if (grid.getType() == base::GridType::Bspline) {
+  } else if (grid.getType() == base::GridType::BsplineBoundary) {
     return new base::OperationFirstMomentBsplineBoundary(&grid);
   } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
     return new base::OperationFirstMomentBsplineClenshawCurtis(&grid);
