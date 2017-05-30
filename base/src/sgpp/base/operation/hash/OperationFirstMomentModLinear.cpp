@@ -41,9 +41,9 @@ double OperationFirstMomentModLinear::doQuadrature(const DataVector& alpha, Data
       if (level == 1)
         tmpres *= width * 0.5 + xlower;
       else if (index == 1)
-        tmpres *= width * std::pow(4.0, 1 - level) / 3 + 2. / hInv;
+        tmpres *= width * std::pow(4.0, 1 - level) / 3.0 + 2. / hInv + xlower * std::pow(2.0, -level);
       else if (index == hInv - 1)
-        tmpres *= width * ( (1 << static_cast<int>(1 - 2*level)) * (3. * hInv - 2) ) / 3. + 2. / hInv;
+        tmpres *= width * ( std::pow(2.0, 1 - 2*level) * (3. * hInv - 2) ) / 3. + 2. / hInv + xlower * std::pow(2.0, -level);
       else
         tmpres *=
           width * index * std::pow(4.0, -level) + xlower * std::pow(2.0, -level);

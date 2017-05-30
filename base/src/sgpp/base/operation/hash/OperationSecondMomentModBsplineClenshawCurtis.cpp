@@ -60,7 +60,7 @@ double OperationSecondMomentModBsplineClenshawCurtis::doQuadrature(DataVector& a
       size_t stop = static_cast<size_t>(std::min(pDbl, hInv + pp1hDbl - indexDbl - 1));
       double sum_1d = 0.;
       for (size_t n = start; n <= stop; n++) {
-        index_t left_index =  static_cast<index_t>(n + index - pp1h);
+        index_t left_index = static_cast<index_t>(n + index - pp1h);
         double left = clenshawCurtisTable.getPoint(level, left_index);
         double right = clenshawCurtisTable.getPoint(level, left_index + 1);
         for (size_t c = 0; c < quadOrder; c++) {
