@@ -157,7 +157,7 @@ def test_laplace2(grid, lmax):
 
 def test_firstMoment(grid, lmax):
   grid.getGenerator().regular(lmax)
-  resolution = 10000
+  resolution = 100000
   gridStorage = grid.getStorage()
   b = grid.getBasis()
   op = pysgpp.createOperationFirstMoment(grid)
@@ -182,11 +182,12 @@ def test_firstMoment(grid, lmax):
 # plot_evaldx()
 # test_base()
 d = 1
-l = 4
-grid = pysgpp.Grid.createPolyGrid(d,3)
+l = 5
+grid = pysgpp.Grid.createModLinearGrid(d)
 # plot_evaldx_prod(grid, 4, 1, 4)
 # test_laplace(grid, l)
 # test_laplace2(grid, l)
 # test_LTwoDot(grid, l)
 # test_LTwoDotImplicit(grid, l)
 test_firstMoment(grid, l)
+abc(grid)
