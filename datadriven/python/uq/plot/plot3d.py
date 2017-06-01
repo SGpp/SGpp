@@ -76,7 +76,7 @@ def plotSG3d(grid, alpha, n=36,
              f=lambda x: x, grid_points_at=0, z_min=np.Inf,
              isConsistent=True, show_grid=True,
              surface_plot=False,
-             xoffset=0.0, yoffset=1.0,):
+             xoffset=0.0, yoffset=1.0):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     x = np.linspace(0, 1, n + 1, endpoint=True)
@@ -89,14 +89,6 @@ def plotSG3d(grid, alpha, n=36,
             Z[j, i] = f(evalSGFunction(grid, alpha,
                                        np.array([xv[j, i], yv[j, i]]),
                                        isConsistent=isConsistent))
-
-    # get grid points
-    gs = grid.getStorage()
-    gps = np.zeros([gs.getSize(), 2])
-    p = DataVector(2)
-    for i in xrange(gs.getSize()):
-        gs.getCoordinates(gs.getPoint(i), p)
-        gps[i, :] = p.array()
 
     if surface_plot:
         cmap = load_default_color_map()
@@ -117,8 +109,18 @@ def plotSG3d(grid, alpha, n=36,
         cset = ax.contour(xv, yv, Z, zdir='y', offset=yoffset, cmap=cm.coolwarm)
 
     if show_grid:
-        ax.plot(gps[:, 0], gps[:, 1], np.ones(gps.shape[0]) * grid_points_at,
-               " ", c="red", marker="o", ms=15)
+        # get grid points
+        gs = grid.getStorage()
+        gps = np.zeros([gs.getSize(), 2])
+        p = DataVector(2)
+        for i in xrange(gs.getSize()):
+            gs.getCoordinates(gs.getPoint(i), p)
+            p0, p1 = p.array()
+            color = "red" if alpha[i] < 0 else "blue"
+            ax.plot(np.array([p0]),
+                    np.array([p1]),
+                    np.array([grid_points_at]),
+                    " ", c=color, marker="o", ms=15)
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
     # ax.set_zlim(0, 2)
@@ -128,7 +130,8 @@ def plotSG3d(grid, alpha, n=36,
 
 
 
-def plotFunction3d(f, xlim=[0, 1], ylim=[0, 1], n=36):
+def plotFunction3d(f, xlim=[0, 1], ylim=[0, 1], n=36,
+                   z_min=np.Inf, xoffset=0.0, yoffset=1.0):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     x = np.linspace(xlim[0], xlim[1], n + 1, endpoint=True)
@@ -141,9 +144,12 @@ def plotFunction3d(f, xlim=[0, 1], ylim=[0, 1], n=36):
             Z[j, i] = f(np.array([xv[j, i], yv[j, i]]))
 
     ax.plot_wireframe(xv, yv, Z, color="black")
-    cset = ax.contour(xv, yv, Z, zdir='z', offset=np.min(Z), cmap=cm.coolwarm)
-    cset = ax.contour(xv, yv, Z, zdir='x', offset=xlim[0], cmap=cm.coolwarm)
-    cset = ax.contour(xv, yv, Z, zdir='y', offset=ylim[1], cmap=cm.coolwarm)
+
+    z_min, z_max = min(np.min(Z), z_min), np.max(Z)
+    ax.set_zlim(z_min, z_max)
+    cset = ax.contour(xv, yv, Z, zdir='z', offset=z_min, cmap=cm.coolwarm)
+    cset = ax.contour(xv, yv, Z, zdir='x', offset=xoffset, cmap=cm.coolwarm)
+    cset = ax.contour(xv, yv, Z, zdir='y', offset=yoffset, cmap=cm.coolwarm)
 
     ax.set_xlim(xlim[0], xlim[1])
     ax.set_ylim(ylim[0], ylim[1])
