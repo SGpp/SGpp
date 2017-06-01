@@ -596,7 +596,7 @@ def evalSGFunctionBasedOnParents(grid, alpha, gpi):
     ux = 0.0
     p = DataVector(gs.getDimension())
     gs.getCoordinates(gpi, p)
-    
+
     def f(gp, p):
         ans = 1.0
         for idim in xrange(p.shape[0]):
@@ -665,8 +665,8 @@ def hierarchizeEvalHierToTop(grid, nodalValues):
     alpha = np.ndarray(1)
     # add root node to the new grid
     newGs.insert(gs.getPoint(0))
-    alpha[0] = nodalValues[0] 
-    
+    alpha[0] = nodalValues[0]
+
     # sort points by levelsum
     ixs = {}
     for i in xrange(gs.getSize()):
@@ -677,7 +677,7 @@ def hierarchizeEvalHierToTop(grid, nodalValues):
                 ixs[levelsum].append(i)
             else:
                 ixs[levelsum] = [i]
-    
+
     # run over the grid points by level sum
     x = DataVector(numDims)
     for levelsum in np.sort(ixs.keys()):
@@ -685,7 +685,7 @@ def hierarchizeEvalHierToTop(grid, nodalValues):
         newixs = [None] * len(ixs[levelsum])
         for i, ix in enumerate(ixs[levelsum]):
             newixs[i] = (newGs.insert(gs.getPoint(ix)), nodalValues[ix])
-        
+
         # update the alpha values
         alpha = np.append(alpha, np.zeros(newGs.getSize() - len(alpha)))
         newAlpha = np.copy(alpha)
@@ -785,13 +785,15 @@ def hierarchizeBruteForce(grid, nodalValues, ignore=None):
 def hierarchize(grid, nodalValues, isConsistent=True, ignore=None):
     try:
         # if ignore is None or len(ignore) > 0:
+        maxLevel = grid.getStorage().getMaxLevel()
         if grid.getType() in [GridType_Bspline,
                               GridType_BsplineClenshawCurtis,
                               GridType_BsplineBoundary,
                               GridType_ModBsplineClenshawCurtis,
                               GridType_ModBspline]:
             opHier = createOperationMultipleHierarchisation(grid)
-        elif grid.getType() in [GridType_LinearBoundary,
+        elif maxLevel > 1 and \
+             grid.getType() in [GridType_LinearBoundary,
                                 GridType_LinearClenshawCurtisBoundary,
                                 GridType_PolyBoundary,
                                 GridType_PolyClenshawCurtisBoundary]:
