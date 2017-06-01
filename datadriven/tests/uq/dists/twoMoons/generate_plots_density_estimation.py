@@ -213,11 +213,14 @@ def plotpvalueofChi2IndependenceTest(densities,
             data[j, 2 * i + 1] = pvalue_not_shuffled
 
     pos = np.arange(0, len(names))
+    xlim = (np.min(pos) - 0.5, np.max(pos) + 0.5)
     fig = plt.figure(figsize=(17, 5))
     plt.violinplot(data, pos, points=60, widths=0.7, showmeans=True,
                    showextrema=True, showmedians=True, bw_method=0.5)
     plt.xticks(pos, names)
     plt.ylabel("$p$-value")
+    plt.hlines(0.05, xlim[0], xlim[1], linestyle="--")
+    plt.xlim(xlim)
 
     if "moons" in functionName:
         plt.title("$\chi^2$ test",
@@ -277,11 +280,15 @@ def plotpvalueofKolmogorovSmirnovTest(densities, functionName, out=False):
             data[j, 2 * i + 1] = pvalues_not_shuffled.mean()
 
     pos = np.arange(0, len(names))
+    xlim = (np.min(pos) - 0.5, np.max(pos) + 0.5)
     fig = plt.figure(figsize=(17, 5))
     plt.violinplot(data, pos, points=60, widths=0.7, showmeans=True,
                    showextrema=True, showmedians=True, bw_method=0.5)
     plt.xticks(pos, names)
     plt.ylabel("$p$-value")
+    plt.hlines(0.05, xlim[0], xlim[1], linestyle="--")
+    plt.xlim(xlim)
+
 
     if "moons" in functionName:
         plt.title("Kolmogorov-Smirnov test",
@@ -423,10 +430,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     densities = loadDensities(args.function)
-#     plotpvalueofChi2IndependenceTest(densities, args.function, c=0.0, out=args.out)
+    plotpvalueofChi2IndependenceTest(densities, args.function, c=0.0, out=args.out)
 #     plotpvalueofChi2IndependenceTest(densities, args.function, c=0.25, out=args.out)
 #     plotLogLikelihood(densities, args.function, args.out)
-#     plotpvalueofKolmogorovSmirnovTest(densities, args.function, args.out)
-    plotDensities(densities, args.function, out=args.out)
+    plotpvalueofKolmogorovSmirnovTest(densities, args.function, args.out)
+#     plotDensities(densities, args.function, out=args.out)
 #     plotDataset(args.function, out=args.out)
 #     plotCovarianceConvergence(densities, "mult_beta", args.out)

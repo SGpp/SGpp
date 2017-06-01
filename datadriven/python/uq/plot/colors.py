@@ -96,7 +96,7 @@ def insert_legend(fig, loc="right", ncol=3, has_axis=True):
                         prop=load_font_properties())
     elif loc == "left":
         lgd = plt.legend(loc='upper right',
-                         bbox_to_anchor=(-0.1, 1),
+                         bbox_to_anchor=(-0.33, 1),
                          borderaxespad=0,
                          prop=load_font_properties())
     else:
