@@ -62,6 +62,8 @@ double OperationSecondMomentPoly::doQuadrature(DataVector& alpha, DataMatrix* bo
         gaussQuadSumFirstMoment += weights[c] * x * basis.eval(level, index, x);
       }
 
+      gaussQuadSumSecondMoment *= scaling;
+      gaussQuadSumFirstMoment *= scaling;
       tmpres *=
         width * width * gaussQuadSumSecondMoment
         + 2 * width * xlower * gaussQuadSumFirstMoment

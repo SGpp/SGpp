@@ -85,6 +85,7 @@
 
 #include <sgpp/base/operation/hash/OperationSecondMomentLinear.hpp>
 #include <sgpp/base/operation/hash/OperationSecondMomentLinearBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentModLinear.hpp>
 #include <sgpp/base/operation/hash/OperationSecondMomentPoly.hpp>
 #include <sgpp/base/operation/hash/OperationSecondMomentModPoly.hpp>
 #include <sgpp/base/operation/hash/OperationSecondMomentPolyBoundary.hpp>
@@ -369,6 +370,8 @@ base::OperationSecondMoment* createOperationSecondMoment(base::Grid& grid) {
              grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearTruncatedBoundary) {
     return new base::OperationSecondMomentLinearBoundary(grid.getStorage());
+  } else if (grid.getType() == base::GridType::ModLinear) {
+    return new base::OperationSecondMomentModLinear(grid.getStorage());
   } else if (grid.getType() == base::GridType::Poly) {
     return new base::OperationSecondMomentPoly(&grid);
   } else if (grid.getType() == base::GridType::ModPoly) {
@@ -381,6 +384,16 @@ base::OperationSecondMoment* createOperationSecondMoment(base::Grid& grid) {
     return new base::OperationSecondMomentModPolyClenshawCurtis(&grid);
   } else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary) {
     return new base::OperationSecondMomentPolyClenshawCurtisBoundary(&grid);
+  } else if (grid.getType() == base::GridType::Bspline) {
+    return new base::OperationSecondMomentBspline(&grid);
+  } else if (grid.getType() == base::GridType::ModBspline) {
+    return new base::OperationSecondMomentModBspline(&grid);
+  } else if (grid.getType() == base::GridType::BsplineBoundary) {
+    return new base::OperationSecondMomentBsplineBoundary(&grid);
+  } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
+    return new base::OperationSecondMomentBsplineClenshawCurtis(&grid);
+  } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
+    return new base::OperationSecondMomentModBsplineClenshawCurtis(&grid);
   } else {
     throw base::factory_exception(
         "createOperationSecondMoment is not implemented for this grid type.");
