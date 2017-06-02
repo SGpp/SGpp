@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#if USE_OCL == 1
+#ifdef __AVX__
 
 #define BOOST_TEST_DYN_LINK
 #include <zlib.h>

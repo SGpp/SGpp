@@ -218,7 +218,7 @@ LearnerTiming LearnerBase::train(sgpp::base::DataMatrix& trainDataset,
         grid->getGenerator().refine(myRefineFunc);
       }
 
-      // tell the SLE manager that the grid changed (for internal data
+      // tell the SLE manager that the grid changed (for interal data
       // structures)
       DMSystem->prepareGrid();
 

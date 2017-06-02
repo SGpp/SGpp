@@ -12,6 +12,13 @@
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/tools/OperationConfiguration.hpp"
 
+#if USE_OCL == 0
+#error "OCL is not enabled"
+#endif
+#ifndef USE_OCL
+#error "OCL is not defined"
+#endif
+
 namespace sgpp {
 namespace base {
 
@@ -24,6 +31,8 @@ class OCLOperationConfiguration : public OperationConfiguration {
   OperationConfiguration* clone() override;
 
   std::vector<std::reference_wrapper<json::Node>> getAllDeviceNodes();
+
+  static std::unique_ptr<OCLOperationConfiguration> fromString(std::string &parametersString);
 };
 
 }  // namespace base

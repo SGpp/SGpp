@@ -289,14 +289,7 @@ Grid* Grid::clone() {
     default:
       throw generation_exception("Grid::clone - grid type not known");
   }
-
-  base::HashGridStorage& newGridStorage = newGrid->getStorage();
-
-  // run through grid and add points to newGrid
-  for (size_t i = 0; i < storage.getSize(); i++) {
-    newGridStorage.insert(storage.getPoint(i));
-  }
-  newGridStorage.recalcLeafProperty();
+  newGrid->storage = HashGridStorage{this->storage};
 
   return newGrid;
 }
@@ -529,7 +522,15 @@ GridStorage& Grid::getStorage() { return storage; }
 
 BoundingBox& Grid::getBoundingBox() { return *storage.getBoundingBox(); }
 
-Stretching& Grid::getStretching() { return *storage.getStretching(); }
+Stretching& Grid::getStretching() {
+  auto* stretching = storage.getStretching();
+
+  if (stretching != nullptr) {
+    return *stretching;
+  } else {
+    throw generation_exception("Grid does not use stretching.");
+  }
+}
 
 void Grid::setBoundingBox(BoundingBox& boundingBox) { storage.setBoundingBox(boundingBox); }
 
