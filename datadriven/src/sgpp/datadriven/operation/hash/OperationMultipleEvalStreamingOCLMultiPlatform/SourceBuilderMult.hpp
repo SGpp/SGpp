@@ -5,18 +5,28 @@
 
 #pragma once
 
+#include <algorithm>
 #include <fstream>
 #include <string>
-#include <algorithm>
 
 #include "sgpp/base/exception/operation_exception.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 #include "sgpp/base/opencl/KernelSourceBuilderBase.hpp"
+#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 
 namespace sgpp {
 namespace datadriven {
 namespace StreamingOCLMultiPlatform {
 
+/**
+ * Class for creating compute kernels for the MultiEval operation \f$v:= B^T \alpha\f$.
+ * This class uses the parameters of the provided configuration to create OpenCL source code.
+ * The generated code is specific to a single device, there each KernelMult requires its own
+ * SourceBuilderMult.
+ * For the code generation, a code fragment concatenation approach is used.
+ *
+ * @see StreamingOCLMultiPlatform::Configuration
+ * @see StreamingOCLMultiPlatform::KernelMult
+ */
 template <typename real_type>
 class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
  private:
@@ -32,6 +42,12 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
   uint64_t maxDimUnroll;
   size_t prefetchSize;
 
+  /**
+   * Generates code fragments that models a dataset access.
+   *
+   * @param dim dimension to be accessed
+   * @param dataBlockingIndex data blocking information to be taken into account
+   */
   std::string getData(std::string dim, size_t dataBlockingIndex) {
     std::stringstream output;
     if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("array") == 0) {
@@ -48,6 +64,12 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
     return output.str();
   }
 
+  /**
+   * Generates code fragments that models a dataset access.
+   *
+   * @param dim dimension to be accessed
+   * @param dataBlockingIndex data blocking information to be taken into account
+   */
   std::string getData(size_t dim, size_t dataBlockingIndex) {
     std::stringstream dimStringStream;
     dimStringStream << dim;
@@ -55,6 +77,16 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
     return this->getData(dimString, dataBlockingIndex);
   }
 
+  /**
+   * Generates code fragments for an basis function evaluation.
+   * Creates only dimension after another without a loop.
+   *
+   * @param dims Number of dimensions to be implemented
+   * @param startDim First dimension of the unroll, useful for implementing loop unrolling
+   * @param endDim Last dimension of the unrolled implementation
+   * @param unrollVariable Variable used for partial unrolling, can be an empty string if everything
+   * is unrolled
+   */
   std::string unrolledBasisFunctionEvalulation(size_t dims, size_t startDim, size_t endDim,
                                                std::string unrollVariable) {
     std::stringstream output;
@@ -104,6 +136,13 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
   }
 
  public:
+  /**
+   * Constructor
+   *
+   * @param device The device this code generators creates for
+   * @param kernelConfiguration The configuration for this device
+   * @param dims Dimension of the data mining problem
+   */
   SourceBuilderMult(std::shared_ptr<base::OCLDevice> device, json::Node &kernelConfiguration,
                     size_t dims)
       : device(device), kernelConfiguration(kernelConfiguration), dims(dims) {
@@ -114,6 +153,10 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
     prefetchSize = kernelConfiguration["KERNEL_PREFETCH_SIZE"].getUInt();
   }
 
+  /**
+   * Entry point of source generator.
+   * Creates compute kernel for the MultiEval operation.
+   */
   std::string generateSource() {
     if (kernelConfiguration["REUSE_SOURCE"].getBool()) {
       return this->reuseSource("StreamingOCLMultiPlatform_mult.cl");
@@ -122,8 +165,7 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
     std::stringstream sourceStream;
 
     if (std::is_same<real_type, double>::value) {
-      sourceStream << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable" << std::endl
-                   << std::endl;
+      sourceStream << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable" << std::endl << std::endl;
     }
 
     sourceStream << "__kernel" << std::endl;

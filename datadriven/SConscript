@@ -45,7 +45,7 @@ performanceTestFlag = "COMPILE_BOOST_PERFORMANCE_TESTS"
 performanceTestRunFlag = "RUN_BOOST_PERFORMANCE_TESTS"
 
 if env[performanceTestFlag]:
-  additionalBoostTestDependencies.extend(["boost_filesystem", "boost_system"])
+    additionalBoostTestDependencies.extend(["boost_filesystem", "boost_system"])
 
 module = ModuleHelper.Module(moduleDependencies, additionalDependencies,
                              additionalBoostTestDependencies)
@@ -55,14 +55,21 @@ module.buildLibrary()
 module.generatePythonDocstrings()
 
 if env["ARCH"] == "mic":
-  module.buildExamples("examplesMIC")
+    module.buildExamples("examplesMIC")
 else:
-  module.buildExamples()
+    module.buildExamples()
 if env["USE_OCL"]:
-  module.buildExamples("examplesOCL",
-      additionalExampleDependencies=["boost_program_options",
-                                     "boost_filesystem",
-                                     "boost_system"])
+    module.buildExamples("examplesOCL",
+                         additionalExampleDependencies=["boost_program_options",
+                                                        "boost_filesystem",
+                                                        "boost_system"])
+if env["USE_MPI"] and env["USE_OCL"]:
+    module.buildExamples("examplesMPI")
+if (env["ARCH"].lower() == "avx2"):
+    module.buildExamples("examplesAVX")
+if env["USE_HPX"]:
+    module.buildExamples("examplesHPX")
+
 
 module.runPythonTests()
 module.buildBoostTests()

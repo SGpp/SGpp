@@ -3,6 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+/**
+ * \page example_detectPlatformConfiguration_cpp Detect the configuration of OpenCL platforms
+ *
+ * This code detects the configuration of the OpenCL platforms available on the
+ * machine and outputs it to a file.
+ * It can be used as a quick check whether OpenCL is working.
+ */
+
 #include <iostream>
 
 #if USE_OCL == 1

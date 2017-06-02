@@ -5,7 +5,7 @@
 
 #pragma once
 
-//subspace skipping is disabled by default for this kernel!
+// subspace skipping is disabled by default for this kernel!
 #ifndef X86SIMPLE_ENABLE_SUBSPACE_SKIPPING
 #define X86SIMPLE_ENABLE_SUBSPACE_SKIPPING 0
 #endif
