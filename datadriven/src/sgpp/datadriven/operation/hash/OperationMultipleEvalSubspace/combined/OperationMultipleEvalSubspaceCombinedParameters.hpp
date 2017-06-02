@@ -10,9 +10,9 @@
  *
  */
 
-//number of data elements processed in parallel
-//should be divisible by vector size
-//corresponds to data chunk size
+// number of data elements processed in parallel
+// should be divisible by vector size
+// corresponds to data chunk size
 #ifndef X86COMBINED_PARALLEL_DATA_POINTS
 //#define X86COMBINED_PARALLEL_DATA_POINTS 4
 #define X86COMBINED_PARALLEL_DATA_POINTS 256
@@ -25,7 +25,7 @@
 
 #ifndef X86COMBINED_UNROLL
 #define X86COMBINED_UNROLL 0
-//implies X86COMBINED_VEC_PADDING == 8
+// implies X86COMBINED_VEC_PADDING == 8
 #endif
 
 #ifndef X86COMBINED_VEC_PADDING
@@ -48,6 +48,5 @@
 #define X86COMBINED_ENABLE_PARTIAL_RESULT_REUSAGE 1
 #endif
 
-//only set from the outside
+// only set from the outside
 //#define X86COMBINED_WRITE_STATS "stats.out"
-

@@ -29,7 +29,7 @@ double CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset
 
   // perform randomization of indices
   std::vector<size_t> randomizedIndices(dataset.getNumberInstances());
-  randomizeIndices(randomizedIndices);
+  randomizeIndices(dataset, randomizedIndices);
 
   // perform actual folding
 

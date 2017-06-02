@@ -10,9 +10,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <algorithm>
 #include <string>
 #include <vector>
-#include <algorithm>
 
 namespace sgpp {
 namespace base {
@@ -25,12 +25,37 @@ namespace base {
  * or normalizing all data points to the unit interval for a certain dimension are
  * provided.
  */
-class DataMatrix {
+class DataMatrix : public std::vector<double> {
  public:
   /**
    * Creates a empty two-dimensional DataMatrix.
    */
-  DataMatrix();
+  DataMatrix() = default;
+
+  /**
+   * Copy constructor.
+   */
+  DataMatrix(const DataMatrix&) = default;
+
+  // /**
+  //  * Move constructor
+  //  */
+  // DataMatrix(DataMatrix&&) = default;
+
+  /**
+   * Copy assignment operator
+   */
+  DataMatrix& operator=(const DataMatrix&) = default;
+
+  // /**
+  //  * Move assignment operator
+  //  */
+  // DataMatrix& operator=(DataMatrix&&) = default;
+
+  /**
+   * Destructor
+   */
+  ~DataMatrix() = default;
 
   /**
    * Create a two-dimensional DataMatrix with @em nrows rows and
@@ -52,15 +77,6 @@ class DataMatrix {
   DataMatrix(size_t nrows, size_t ncols, double value);
 
   /**
-   * Create a new DataMatrix that is a copy of matr.
-   *
-   * @param matr Reference to another instance of DataMatrix
-   */
-  DataMatrix(const DataMatrix& matr);
-
-  DataMatrix(DataMatrix&& matr);
-
-  /**
    * Create a new DataMatrix from a double array.
    * The double array contains the entries row-wise:
    * x0_0,x0_1,...,x0_ncol-1,
@@ -72,7 +88,7 @@ class DataMatrix {
    * @param nrows number of rows
    * @param ncols number of columns
    */
-  DataMatrix(double* input, size_t nrows, size_t ncols);
+  DataMatrix(const double* input, size_t nrows, size_t ncols);
 
   static DataMatrix fromFile(const std::string& fileName);
 
@@ -83,10 +99,33 @@ class DataMatrix {
    * All new additional entries are uninitialized.
    * If nrows is smaller than the current number of rows,
    * all superfluous entries are removed.
+   * \deprecated use resizeRows
    *
    * @param nrows New number of rows of the DataMatrix
    */
   void resize(size_t nrows);
+
+  /**
+   * Resizes the DataMatrix to nrows rows.
+   * All new additional entries are uninitialized.
+   * If nrows is smaller than the current number of rows,
+   * all superfluous entries are removed.
+   *
+   * @param nrows New number of rows of the DataMatrix
+   */
+  void resizeRows(size_t nrows);
+
+  /**
+   * Resizes the DataMatrix to nrows rows and ncols columns.
+   * All new additional entries are uninitialized.
+   * If nrows*ncols is smaller than the current number of entries,
+   * all superfluous entries are removed.
+   * \deprecated use resizeRowsCols
+   *
+   * @param nrows New number of rows of the DataMatrix
+   * @param ncols New number of columns of the DataMatrix
+   */
+  void resize(size_t nrows, size_t ncols);
 
   /**
    * Resizes the DataMatrix to nrows rows and ncols columns.
@@ -97,7 +136,7 @@ class DataMatrix {
    * @param nrows New number of rows of the DataMatrix
    * @param ncols New number of columns of the DataMatrix
    */
-  void resize(size_t nrows, size_t ncols);
+  void resizeRowsCols(size_t nrows, size_t ncols);
 
   /**
    * Resizes the quadratic DataMatrix to size rows and size columns.
@@ -114,6 +153,7 @@ class DataMatrix {
    * All new additional entries are set to zero.
    * If nrows is smaller than the current number of rows,
    * all superfluous entries are removed.
+   * \deprecated use resizeRows
    *
    * @param nrows New number of rows of the DataMatrix
    */
@@ -124,6 +164,7 @@ class DataMatrix {
    * All new additional entries are set to zero.
    * If nrows*ncols is smaller than the current number of entries,
    * all superfluous entries are removed.
+   * \deprecated use resizeRowsCols
    *
    * @param nrows New number of rows of the DataMatrix
    * @param ncols New number of columns of the DataMatrix
@@ -146,12 +187,10 @@ class DataMatrix {
    *
    * @param inc_nrows Number of additional rows for which storage is to be reserved.
    */
-  void addSize(size_t inc_nrows);
+  void reserveAdditionalRows(size_t inc_nrows);
 
   /**
    * Appends a new row and returns index of it.
-   * If the new row does not fit into the reserved memory,
-   * reserves memory for getIncRows() additional rows.
    *
    * @return Index of new row
    */
@@ -160,8 +199,6 @@ class DataMatrix {
   /**
    * Appends a new row with data contained in DataVector vec
    * and returns index of new row.
-   * If the new row does not fit into the reserved memory,
-   * reserves memory for getIncRows() additional rows.
    *
    * @param vec DataVector (length has to match getNcols()) with data
    * @return Index of new row
@@ -202,31 +239,13 @@ class DataMatrix {
   void transpose();
 
   /**
-   * Copies the data from another DataMatrix.
-   * Dimensions have to match.
-   *
-   * @param matr the DataMatrix containing the data
-   * @return *this
-   */
-  DataMatrix& operator=(const DataMatrix& matr);
-
-  /**
    * Returns the value of the element at position [row,col]
    *
    * @param row Row
    * @param col Column
    * @return reference to the element
    */
-  inline double& operator()(size_t row, size_t col) { return data[row * ncols + col]; }
-
-  /**
-   * Returns the i-th element.
-   * For the 5th element in the third row, i would be 2*getNcols()+4.
-   *
-   * @param i position of the element
-   * @return data[i]
-   */
-  inline double& operator[](size_t i) { return data[i]; }
+  inline double& operator()(size_t row, size_t col) { return (*this)[row * ncols + col]; }
 
   /**
    * Returns the value of the element at position [row,col]
@@ -235,7 +254,9 @@ class DataMatrix {
    * @param col Column
    * @return constant reference to the element
    */
-  inline const double& operator()(size_t row, size_t col) const { return data[row * ncols + col]; }
+  inline const double& operator()(size_t row, size_t col) const {
+    return (*this)[row * ncols + col];
+  }
 
   /**
    * Returns the value of the element at position [row,col]
@@ -244,7 +265,7 @@ class DataMatrix {
    * @param col Column
    * @return Value of the element
    */
-  inline double get(size_t row, size_t col) const { return data[row * ncols + col]; }
+  inline double get(size_t row, size_t col) const { return (*this)[row * ncols + col]; }
 
   /**
    * Sets the element at position [row,col] to value.
@@ -253,7 +274,7 @@ class DataMatrix {
    * @param col Column
    * @param value New value for element
    */
-  inline void set(size_t row, size_t col, double value) { data[row * ncols + col] = value; }
+  inline void set(size_t row, size_t col, double value) { (*this)[row * ncols + col] = value; }
 
   /**
    * Copies the values of a row to the DataVector vec.
@@ -472,14 +493,16 @@ class DataMatrix {
    *
    * @return Number of elements stored in the matrix
    */
-  inline size_t getSize() const { return ncols * nrows; }
+  inline size_t getSize() const { return this->ncols * this->nrows; }
 
   /**
    * Returns the number of unused rows.
    *
    * @return number of unused rows
    */
-  inline size_t getUnused() const { return unused; }
+  inline size_t getAdditionallyReservedRows() const {
+    return this->size() / this->ncols - this->nrows;
+  }
 
   /**
    * Determines the number of non-zero elements in the vector.
@@ -493,31 +516,14 @@ class DataMatrix {
    *
    * @return Number of rows
    */
-  inline size_t getNrows() const { return nrows; }
+  inline size_t getNrows() const { return this->nrows; }
 
   /**
    * Returns the number of columns of the DataMatrix.
    *
    * @return Number of columns
    */
-  inline size_t getNcols() const { return ncols; }
-
-  /**
-   * Get the current number of rows by which the DataMatrix is extended,
-   * if appendRow() is called and no unused rows are left
-   *
-   * @return Row increment
-   */
-  inline size_t getInc() const { return inc_rows; }
-
-  /**
-   * Sets the current number of rows by which the DataMatrix is extended,
-   * if appendRow() is called and no unused rows are left.
-   * Defaults to 100.
-   *
-   * @param inc_rows Row increment
-   */
-  void setInc(size_t inc_rows) { this->inc_rows = inc_rows; }
+  inline size_t getNcols() const { return this->ncols; }
 
   /**
    * Normalizes the d-th dimension (entries in the d-th column) to @f$[0,1]@f$.
@@ -554,25 +560,23 @@ class DataMatrix {
    */
   std::string toString() const;
 
-  /**
-   * Destructor
-   */
-  virtual ~DataMatrix();
-
  private:
-  /// Pointer to the data
-  double* data;
+  inline iterator row_begin(size_t row) { return this->begin() + row * this->ncols; }
+
+  inline const_iterator row_begin(size_t row) const { return this->row_cbegin(row); }
+
+  inline const_iterator row_cbegin(size_t row) const { return this->cbegin() + row * this->ncols; }
+
+  inline iterator row_end(size_t row) { return this->row_begin(row + 1); }
+
+  inline const_iterator row_end(size_t row) const { return this->row_cend(row); }
+
+  inline const_iterator row_cend(size_t row) const { return this->row_cbegin(row + 1); }
+
   /// Number of rows of the data matrix
   size_t nrows;
   /// Number of columns of the data matrix
   size_t ncols;
-  /// Number of additional rows for which memory has already been reserved
-  size_t unused;
-  /**
-   * Number of rows by which the reserved memory is increased, if
-   * adding a row would exceed the storage reserved so far.
-   */
-  size_t inc_rows;
 };
 
 }  // namespace base

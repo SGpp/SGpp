@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -85,9 +86,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
 
   for (int i = 0; i < nrows; ++i) {
     for (int j = 0; j < ncols; ++j) {
-      d2.set(i, j, 1.0 +
-                       2.123 * (static_cast<double>(rand()) /
-                                static_cast<double>(RAND_MAX)) +
+      d2.set(i, j, 1.0 + 2.123 * (static_cast<double>(rand()) / static_cast<double>(RAND_MAX)) +
                        static_cast<double>(i * j));
     }
   }
@@ -330,6 +329,94 @@ BOOST_AUTO_TEST_CASE(testOps) {
   for (int i = 0; i < nrows; ++i) {
     for (int j = 0; j < ncols; ++j) {
       BOOST_CHECK_EQUAL(d.get(j, i), d_rand(i, j));
+    }
+  }
+}
+
+BOOST_AUTO_TEST_CASE(quadraticTransposeTest) {
+  for (size_t rows : {0, 1, 2, 3, 5, 7, 10, 20}) {
+    for (size_t cols : {0, 1, 2, 3, 5, 7, 10, 20}) {
+      DataMatrix m(rows, cols);
+      {
+        size_t k = 0;
+        for (size_t i = 0; i < rows; ++i) {
+          for (size_t j = 0; j < cols; ++j) {
+            m(i, j) = static_cast<double>(k);
+            ++k;
+          }
+        }
+      }
+      DataMatrix t = m;
+      t.transpose();
+      for (size_t i = 0; i < rows; ++i) {
+        for (size_t j = 0; j < cols; ++j) {
+          BOOST_CHECK_MESSAGE(m(i, j) == t(j, i), "rows=" << rows << " cols=" << cols << " m(" << i
+                                                          << "," << j << ")=" << m(i, j)
+                                                          << "!=" << t(j, i));
+        }
+      }
+    }
+  }
+}
+
+BOOST_AUTO_TEST_CASE(appendToColTest) {
+  for (size_t rows = 0; rows < 20; ++rows) {
+    for (size_t cols = 0; cols < 20; ++cols) {
+      DataMatrix m(rows, cols);
+      DataVector v(rows);
+      {
+        size_t k = 0;
+        for (size_t i = 0; i < rows; ++i) {
+          for (size_t j = 0; j < cols; ++j) {
+            m(i, j) = static_cast<double>(k);
+            ++k;
+          }
+          v[i] = static_cast<double>(k);
+          ++k;
+        }
+      }
+      m.appendCol(v);
+      {
+        size_t k = 0;
+        for (size_t i = 0; i < rows; ++i) {
+          for (size_t j = 0; j < cols + 1; ++j) {
+            BOOST_CHECK_MESSAGE(m(i, j) == static_cast<double>(k),
+                                "rows=" << rows << " cols=" << cols << " m(" << i
+                                        << "," << j << ")=" << m(i, j) << "!=" << k);
+            ++k;
+          }
+        }
+      }
+    }
+  }
+}
+
+BOOST_AUTO_TEST_CASE(resizeToSubMatrixTests) {
+  size_t rows = 20;
+  size_t cols = 10;
+
+  DataMatrix m(rows, cols);
+  {
+    size_t k = 0;
+    for (size_t i = 0; i < rows; ++i) {
+      for (size_t j = 0; j < cols; ++j) {
+        m(i, j) = static_cast<double>(k);
+        ++k;
+      }
+    }
+  }
+  size_t x1 = 12;
+  size_t x2 = 18;
+  size_t y1 = 4;
+  size_t y2 = 9;
+  m.resizeToSubMatrix(x1, y1, x2, y2);
+  BOOST_CHECK_EQUAL(m.getNrows(), x2 - x1 + 1);
+  BOOST_CHECK_EQUAL(m.getNcols(), y2 - y1 + 1);
+  {
+    for (size_t i = 0; i < x2 - x1 + 1; ++i) {
+      for (size_t j = 0; j < y2 - y1 + 1; ++j) {
+        BOOST_CHECK_EQUAL(m(i, j), (i + (x1 - 1)) * cols + (y1 - 1) + j);
+      }
     }
   }
 }
