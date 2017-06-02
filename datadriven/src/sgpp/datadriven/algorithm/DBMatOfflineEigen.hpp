@@ -22,16 +22,11 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * TODO(lettrich) : write documentation
+ * DBMatOffline specialization that uses a eigen factorization on
+ * a dense matrix. Eigen factorization allows cheap changing of the regularization parameter.
  */
-
 class DBMatOfflineEigen : public DBMatOffline {
  public:
-  /**
-   * Constructor
-   *
-   * @param oc configuration for this offline object
-   */
   explicit DBMatOfflineEigen(const DBMatDensityConfiguration& oc);
 
   explicit DBMatOfflineEigen(const std::string& fileName);
@@ -40,10 +35,6 @@ class DBMatOfflineEigen : public DBMatOffline {
 
   bool isRefineable() override;
 
-  /**
-   * Decomposes the matrix according to the chosen decomposition type.
-   * The number of rows of the stored result depends on the decomposition type.
-   */
   void decomposeMatrix() override;
 };
 
