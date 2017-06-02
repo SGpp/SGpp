@@ -17,7 +17,6 @@ using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 
 /**
- * \page example_learnerSGDEOnOffTest_cpp Learner SGDE OnOff
  * This example shows how to perform offline/online-classification using sparse
  * grid density estimation and matrix decomposition methods. It creates an
  * instance of LearnerSGDEOnOff and runs the function train() where the
@@ -62,40 +61,19 @@ int main() {
       // load training samples
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset trainDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
-<<<<<<< HEAD
-=======
-      sgpp::base::DataMatrix& trainData = trainDataset.getData();
-      // extract training classes
-      sgpp::base::DataVector& trainLabels = trainDataset.getTargets();
->>>>>>> refs/remotes/origin/master
 
       filename = "../../datasets/ripley/ripleyGarcke.test.arff";
       // load test samples
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset testDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
-<<<<<<< HEAD
-=======
-      sgpp::base::DataMatrix& testData = testDataset.getData();
-      // extract test classes
-      sgpp::base::DataVector& testLabels = testDataset.getTargets();
->>>>>>> refs/remotes/origin/master
 
       // if fixed validation data should be used (required for convergence
       // monitor):
-      // filename = "";  // specify file containing validation data here
+      /*filename = "";  // specify file containing validation data here
       // load validation samples
-<<<<<<< HEAD
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset validationDataset =
           sgpp::datadriven::ARFFTools::readARFF(filename); */
-=======
-      // std::cout << "# loading file: " << filename << std::endl;
-      // sgpp::datadriven::Dataset valDataset =
-      //    sgpp::datadriven::ARFFTools::readARFF(filename);
-      // validData = &valDataset.getData();
-      // extract validation classes
-      // validLabels = &valDataset.getTargets();
->>>>>>> refs/remotes/origin/master
 
       /**
        * Specify the number of classes and the corresponding class labels.
@@ -111,7 +89,7 @@ int main() {
       std::cout << "# create grid config" << std::endl;
       sgpp::base::RegularGridConfiguration gridConfig;
       gridConfig.dim_ = trainDataset.getDimension();
-      gridConfig.level_ = 9;
+      gridConfig.level_ = 3;
       gridConfig.type_ = sgpp::base::GridType::Linear;
       // gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
@@ -191,11 +169,7 @@ int main() {
       // initial weighting factor
       double beta = 0.0;
       // configuration
-<<<<<<< HEAD
       sgpp::datadriven::DBMatDensityConfiguration dconf(gridConfig, adaptConfig,
-=======
-      sgpp::datadriven::DBMatDensityConfiguration dconf(&gridConfig, &adaptConfig,
->>>>>>> refs/remotes/origin/master
                                                         regularizationConfig.regType_, lambda, dt);
       // specify if prior should be used to predict class labels
       bool usePrior = false;
@@ -207,14 +181,8 @@ int main() {
        * Create the learner.
        */
       std::cout << "# create learner" << std::endl;
-<<<<<<< HEAD
       sgpp::datadriven::LearnerSGDEOnOff learner(dconf, trainDataset, testDataset, nullptr,
                                                  classLabels, classNum, usePrior, beta, lambda);
-=======
-      sgpp::datadriven::LearnerSGDEOnOff learner(dconf, trainData, trainLabels, testData,
-                                                 testLabels, validData, validLabels, classLabels,
-                                                 classNum, usePrior, beta, lambda);
->>>>>>> refs/remotes/origin/master
 
       /**
        * Configure cross-validation.
@@ -265,31 +233,25 @@ int main() {
       /**
        * Average accuracy on test data reagarding 5-fold cv.
        */
-<<<<<<< HEAD
       std::cout << "Average accuracy on test data (set " + std::to_string(numSets + 1) +
                        "): " << (1.0 - avgErrorFolds) << std::endl;
-=======
-      std::cout << "Average accuracy on test data (set " + std::to_string(numSets + 1) + "): "
-                << (1.0 - avgErrorFolds) << "\n";
->>>>>>> refs/remotes/origin/master
     }
     avgError += avgErrorFolds;
     avgErrorFolds = 0.0;
     avgErrorsFolds.mult(1.0 / static_cast<double>(totalFolds));
 
     // write error evaluation to csv-file
-    // std::ofstream output;
-    // output.open("SGDEOnOff_avg_classification_error_"+std::to_string(numSets+1)+".csv");
-    // if (output.fail()) {
-    //  std::cout << "failed to create csv file!" << std::endl;
-    //}
-    // else {
-    //  for (size_t i = 0; i < avgErrorsFolds.getSize(); i++) {
-    //    output << avgErrorsFolds.get(i) << ";" << std::endl;
-    //  }
-    //  output.close();
-    //}
+    /*std::ofstream output;
+    output.open("SGDEOnOff_avg_classification_error_"+std::to_string(numSets+1)+".csv");
+    if (output.fail()) {
+      std::cout << "failed to create csv file!" << std::endl;
+    }
+    else {
+      for (size_t i = 0; i < avgErrorsFolds.getSize(); i++) {
+        output << avgErrorsFolds.get(i) << ";" << std::endl;
+      }
+      output.close();
+    }*/
   }
-#endif  // USE_GSL
-  ///
+#endif /* USE_GSL */
 }

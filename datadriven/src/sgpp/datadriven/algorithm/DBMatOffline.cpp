@@ -18,13 +18,7 @@
 #include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 
-#include <gsl/gsl_blas.h>
-#include <gsl/gsl_eigen.h>
-#include <gsl/gsl_linalg.h>
-#include <gsl/gsl_math.h>
 #include <gsl/gsl_matrix_double.h>
-#include <gsl/gsl_permutation.h>
-#include <gsl/gsl_permute.h>
 
 #include <math.h>
 #include <stdio.h>
@@ -92,11 +86,11 @@ DBMatOffline::DBMatOffline(const std::string& fileName)
 DBMatDensityConfiguration& DBMatOffline::getConfig() { return config; }
 
 DataMatrix& DBMatOffline::getDecomposedMatrix() {
-  //  if (isDecomposed) {
-  return lhsMatrix;
-  //  } else {
-  //    throw data_exception("Matrix was not decomposed yet");
-  //  }
+  if (isDecomposed) {
+    return lhsMatrix;
+  } else {
+    throw data_exception("Matrix was not decomposed yet");
+  }
 }
 
 Grid& DBMatOffline::getGrid() { return *grid; }
@@ -171,8 +165,12 @@ void DBMatOffline::store(const std::string& fileName) {
 }
 
 void DBMatOffline::printMatrix() {
-  std::cout << "Size: " << lhsMatrix.getNrows() << " , " << lhsMatrix.getNcols() << "\n"
-            << lhsMatrix.toString();
+  if (isDecomposed) {
+    std::cout << "Size: " << lhsMatrix.getNrows() << " , " << lhsMatrix.getNcols() << "\n"
+              << lhsMatrix.toString();
+  } else {
+    throw data_exception("Matrix was not decomposed yet");
+  }
 }
 
 void sgpp::datadriven::DBMatOffline::parseConfig(const std::string& fileName,

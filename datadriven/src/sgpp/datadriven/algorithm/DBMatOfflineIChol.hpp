@@ -16,6 +16,10 @@
 namespace sgpp {
 namespace datadriven {
 
+/**
+ * TODO(lettrich) : write documentation
+ */
+
 class DBMatOfflineIChol : public DBMatOfflineChol {
  public:
   /**

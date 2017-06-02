@@ -22,6 +22,10 @@
 using sgpp::datadriven::SparseDataMatrix;
 using sgpp::base::DataMatrix;
 
+/**
+ * TODO(lettrich) : write documentation
+ */
+
 BOOST_AUTO_TEST_SUITE(test_SparseDataMatrix)
 
 BOOST_AUTO_TEST_CASE(testToDataMatrix) {

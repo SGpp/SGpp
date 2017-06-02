@@ -18,6 +18,10 @@ namespace datadriven {
 
 using sgpp::base::DataVector;
 
+/**
+ * TODO(lettrich) : write documentation
+ */
+
 class DBMatOnlineDELU : public DBMatOnlineDE {
  public:
   explicit DBMatOnlineDELU(DBMatOffline& offline, double beta = 0.);

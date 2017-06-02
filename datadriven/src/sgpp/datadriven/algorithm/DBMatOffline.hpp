@@ -11,8 +11,6 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 
-#include <gsl/gsl_permutation.h>
-
 #include <list>
 #include <string>
 #include <vector>
@@ -36,17 +34,19 @@ class DBMatOffline {
  public:
   /**
    * Constructor
+   * Build DBMatOffline Object from configuration
    *
-   * @param oc configuration for this offline object
+   * @param config configuration for this offline object
    */
-  explicit DBMatOffline(const DBMatDensityConfiguration& oc);
+  explicit DBMatOffline(const DBMatDensityConfiguration& config);
 
   /**
    * Constructor
+   * Create offline object from serialized offline object
    *
-   * @param fname name of the file that stores the matrix + configuration
+   * @param fileName path to the file that stores serialized offline object
    */
-  explicit DBMatOffline(const std::string& fname);
+  explicit DBMatOffline(const std::string& fileName);
 
   /**
    * Copy Constructor
@@ -55,38 +55,60 @@ class DBMatOffline {
    */
   DBMatOffline(const DBMatOffline& rhs);
 
+  /**
+   * Default move constructor
+   */
   DBMatOffline(DBMatOffline&& rhs) = default;
 
+  /**
+   * Default virtual destructor
+   */
   virtual ~DBMatOffline() = default;
 
+  /**
+   * Default copy assign operator
+   */
   DBMatOffline& operator=(const DBMatOffline& rhs);
 
+  /**
+   * Default move assign operator
+   */
   DBMatOffline& operator=(DBMatOffline&& rhs) = default;
 
+  /**
+   * Interface for the clone idiom
+   * @return a copy of this very object as a pointer to a new DBMatOffline object which is owned by
+   * the caller.
+   */
   virtual DBMatOffline* clone() = 0;
 
+  /**
+   * Only Offline objects based on Cholesky decomposition can be refined
+   * @return true if object can be refined, else false;
+   */
   virtual bool isRefineable() = 0;
 
   /**
-   * Returns a pointer to the configuration
+   * Get a reference to the configuration object
+   * @return Configuration object
    */
   DBMatDensityConfiguration& getConfig();
 
   /**
-   * Returns a pointer to the decomposed matrix
+   * Get a reference to the decomposed matrix. Throws if matrix has not yet been decomposed.
+   * @return decomposed matrix
    */
   DataMatrix& getDecomposedMatrix();
 
   /**
    * Returns a reference to the sparse grid
-   * (if this offline object uses a sparse grid, otherwise NULL)
+   * @return grid
    */
   Grid& getGrid();
 
   /**
-   * Builds the right hand side matrix with or without the regularization term
-   * depending
-   * on the type of decomposition
+   * Builds the right hand side matrix with or without the regularization term depending on the type
+   * of decomposition
    */
   virtual void buildMatrix();
 
@@ -102,9 +124,8 @@ class DBMatOffline {
   void printMatrix();
 
   /**
-   * Stores the matrix + configuration
-   *
-   * @param fname the file name
+   * Serialize the DBMatOffline Object
+   * @param fileName path where to store the file.
    */
   virtual void store(const std::string& fileName);
 
@@ -122,10 +143,15 @@ class DBMatOffline {
   std::unique_ptr<Grid> grid;
 
   /**
-   * Method to initialize a sparse grid
+   * Build the initial sparse grid
    */
   void InitializeGrid();
 
+  /**
+   * Read the DBMatDensityConfiguration object from a serialized DBMatOfflibe object.
+   * @param fileName path of the serialized DBMatOffline object
+   * @param config the configuration file to populate
+   */
   void parseConfig(const std::string& fileName, DBMatDensityConfiguration& config) const;
 };
 

@@ -18,6 +18,10 @@ namespace datadriven {
 
 using sgpp::datadriven::DataVector;
 
+/**
+ * TODO(lettrich) : write documentation
+ */
+
 class DBMatOnlineDEEigen : public DBMatOnlineDE {
  public:
   explicit DBMatOnlineDEEigen(DBMatOffline& offline, double beta = 0.);

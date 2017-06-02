@@ -63,6 +63,10 @@ class SparseDataMatrix {
   std::vector<double> data;
   std::vector<size_t> colIndex;
   std::vector<size_t> rowPtr;
+
+  /**
+   * TODO(lettrich) : remove
+   */
 };
 
 } /* namespace datadriven */

@@ -20,6 +20,10 @@ using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 
 /**
+ * TODO(lettrich) : write documentation
+ */
+
+/**
  * Class that captures a density function as an online object
  */
 class DBMatOnlineDE : public DBMatOnline {

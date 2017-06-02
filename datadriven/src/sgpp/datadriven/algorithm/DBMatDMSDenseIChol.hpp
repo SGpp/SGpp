@@ -20,26 +20,54 @@ namespace datadriven {
 
 using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
+using sgpp::base::DataVector;
 
+/**
+ * Solve the system of equations with a LL'-decomposed matrix where LL' is created by an iterative,
+ * incomplete
+ * cholesky factorization on a dense matrix
+ */
 class DBMatDMSDenseIChol : public DBMatDMSChol {
  public:
   DBMatDMSDenseIChol(const DBMatOfflineIcholParameters& params, Grid& grid, double lambda,
                      bool doCV);
 
  protected:
-  void choleskyUpdateLambda(sgpp::base::DataMatrix& decompMatrix, double lambdaUp) const override;
+  /**
+   * Update the regularization factor of the decomposition. This is a very costly operation as the
+   * iterative algorithm will need to recalculate the entire decomposition. However the current
+   * solution is used as an initial guess, reducing the required amount of sweeps.
+   * @param decompMatrix
+   * @param lambdaUp
+   */
+  void choleskyUpdateLambda(DataMatrix& decompMatrix, double lambdaUp) const override;
 
-  void choleskyBackwardSolve(const sgpp::base::DataMatrix& decompMatrix,
-                             const sgpp::base::DataVector& y, sgpp::base::DataVector& alpha) const
-      override;
+  /**
+   * Perform backward substit
+   */
+  void choleskyBackwardSolve(const DataMatrix& decompMatrix, const DataVector& y,
+                             DataVector& alpha) const override;
 
-  void choleskyForwardSolve(const sgpp::base::DataMatrix& decompMatrix,
-                            const sgpp::base::DataVector& b, sgpp::base::DataVector& y) const
-      override;
+  /**
+   * TODO(lettrich) : write documentation
+   */
+  void choleskyForwardSolve(const DataMatrix& decompMatrix, const DataVector& b,
+                            DataVector& y) const override;
 
  private:
+  /**
+   * TODO(lettrich) : write documentation
+   */
   void updateProxyMatrixLambda(double lambda_up) const;
+
+  /**
+   * TODO(lettrich) : write documentation
+   */
   DBMatOfflineIcholParameters params;
+
+  /**
+   * TODO(lettrich) : write documentation
+   */
   mutable DataMatrix proxyMatrix;
 };
 
