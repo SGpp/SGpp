@@ -13,9 +13,9 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * TODO(lettrich) : write documentation
+ * DBMatOffline specialization as a base class for all algorithms based on gaussian elimination on
+ * a dense matrix.
  */
-
 class DBMatOfflineGE : public DBMatOffline {
  public:
   explicit DBMatOfflineGE(const DBMatDensityConfiguration& oc);
@@ -23,9 +23,7 @@ class DBMatOfflineGE : public DBMatOffline {
   explicit DBMatOfflineGE(const std::string& fileName);
 
   /**
-   * Builds the right hand side matrix with or without the regularization term
-   * depending
-   * on the type of decomposition
+   * Builds the right hand side matrix with identity regularization term
    */
   void buildMatrix() override;
 
