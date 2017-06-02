@@ -22,8 +22,9 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * DBMatOffline specialization that uses a eigen factorization on
- * a dense matrix. Eigen factorization allows cheap changing of the regularization parameter.
+ * DBMatOffline specialization that uses an Eigen factorization on a dense matrix. Eigen
+ * factorization allows cheap changing of the regularization parameter but does not allow
+ * refinement.
  */
 class DBMatOfflineEigen : public DBMatOffline {
  public:
@@ -33,6 +34,10 @@ class DBMatOfflineEigen : public DBMatOffline {
 
   DBMatOffline* clone() override;
 
+  /**
+   * This decomposition type is not refineable.
+   * @return always returns false;
+   */
   bool isRefineable() override;
 
   void decomposeMatrix() override;

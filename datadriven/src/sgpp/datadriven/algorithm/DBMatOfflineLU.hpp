@@ -11,16 +11,18 @@
 
 #include <gsl/gsl_permutation.h>
 
-/**
- * TODO(lettrich) : write documentation
- */
-
 namespace sgpp {
 namespace datadriven {
 
+/**
+ * DBMatOffline specialization that uses a LU factorization on
+ * a dense matrix. Does not allow refinement nor changes of regularization parameter.
+ */
 class DBMatOfflineLU : public DBMatOfflineGE {
  public:
   DBMatOfflineLU(const DBMatDensityConfiguration& oc);
+
+  DBMatOfflineLU(const std::string& fileName);
 
   DBMatOfflineLU(const DBMatOfflineLU& rhs);
 
@@ -34,24 +36,28 @@ class DBMatOfflineLU : public DBMatOfflineGE {
 
   DBMatOffline* clone() override;
 
+  /**
+   * This decomposition type is not refineable.
+   * @return always returns false;
+   */
   bool isRefineable() override;
-
-  DBMatOfflineLU(const std::string& fileName);
 
   void decomposeMatrix() override;
 
+  /**
+   * Apply permutation vector to the LU factors
+   * @param b permutation vector
+   */
   void permuteVector(DataVector& b);
 
-  /**
-   * Store the decomposed matrix, the permutation and configuration.
-   *
-   * @param fname the file name
-   */
   void store(const std::string& fname) override;
 
  private:
-  std::unique_ptr<gsl_permutation> permutation;  // Stores the permutation that was
-                                                 // applied on the matrix during decomposition
+  /**
+   * Stores the permutation that was applied on the matrix during decomposition for stability
+   * reasons.
+   */
+  std::unique_ptr<gsl_permutation> permutation;
 };
 
 } /* namespace datadriven */
