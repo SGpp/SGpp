@@ -20,25 +20,7 @@ if env["USE_ZLIB"]:
 if env["USE_OCL"]:
   additionalDependencies += ["OpenCL"]
 if env["USE_GSL"]:
-    additionalDependencies += ["gsl"]
-    
-    if env["USE_GSL_MKL"]:
-        
-        if not os.environ['MKLROOT']:
-            print('Can not find MKLROOT environment variable. Are MKL scripts sourced?')
-            exit(1)
-        
-        
-        env.Append(CCFLAGS = '-fopenmp' if env['COMPILER'] == 'gnu' else '-qopenmp')
-        env.Append(CCFLAGS = '-m64'if env['COMPILER'] == 'gnu' else None)
-        env.Append(CCFLAGS = '-I{}/include'.format(os.environ['MKLROOT']))
-        
-        env.Append(LINKFLAGS ='-Wl,--no-as-needed')
-        env.Append(LINKFLAGS ='-L{}/lib/intel64'.format(os.environ['MKLROOT']))
-        additionalDependencies +=['mkl_intel_lp64', 'mkl_core', 'pthread', 'm', 'dl']
-        additionalDependencies.append('mkl_gnu_thread' if env['COMPILER'] == 'gnu' else 'mkl_intel_thread')
-    else:
-        additionalDependencies += ["gslcblas"]
+    additionalDependencies += ["gsl", "gslcblas"]
 
 additionalBoostTestDependencies = ["z"]
 performanceTestFlag = "COMPILE_BOOST_PERFORMANCE_TESTS"
