@@ -25,27 +25,28 @@ using sgpp::base::DataVector;
 
 int main() {
 #ifdef USE_GSL
+
   /**
    * Get the training, test and validation data
    */
-  // auto filename = "../../datasets/ripley/ripleyGarcke.train.arff";
-  auto filename = "dr10_train.arff";
+  auto filename = "../../datasets/ripley/ripleyGarcke.train.arff";
+  // auto filename = "dr10_train.arff";
   // load training samples
   std::cout << "# loading file: " << filename << std::endl;
   auto trainDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
-  // filename = "../../datasets/ripley/ripleyGarcke.test.arff";
+  filename = "../../datasets/ripley/ripleyGarcke.test.arff";
   // load test samples
-  filename = "dr10_test.arff";
+  // filename = "dr10_test.arff";
   std::cout << "# loading file: " << filename << std::endl;
   auto testDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
 
   sgpp::datadriven::DBMatDensityConfiguration config;
   config.grid_type_ = sgpp::base::GridType::Linear;
-  config.grid_dim_ = trainDataset.getDimension() - 1;
-  config.grid_level_ = 6;
+  config.grid_dim_ = trainDataset.getDimension();
+  config.grid_level_ = 2;
 
-  config.numRefinements_ = 16;
-  config.ref_noPoints_ = 3;
+  config.numRefinements_ = 10;
+  config.ref_noPoints_ = 1;
   config.ref_threshold_ = 0.0;
 
   config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
@@ -55,14 +56,14 @@ int main() {
   config.icholParameters.sweepsRefine = 2;
   config.icholParameters.sweepsSolver = 2;
 
-  //  config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
-  //  auto decompType = "Incomplete Cholesky decomposition on Dense Matrix";
-  config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::Chol;
-  auto decompType = "Cholesky decomposition";
+  config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
+  auto decompType = "Incomplete Cholesky decomposition on Dense Matrix";
+  //  config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::Chol;
+  //  auto decompType = "Cholesky decomposition";
   std::cout << "Decomposition type: " << decompType << std::endl;
 
-  config.icholParameters.sweepsDecompose = 2;
-  config.icholParameters.sweepsRefine = 2;
+  config.icholParameters.sweepsDecompose = 8;
+  config.icholParameters.sweepsRefine = 8;
 
   /**
    * Specify the number of classes and the corresponding class labels.
@@ -100,11 +101,11 @@ int main() {
   std::cout << "Refinement monitor: " << refMonitor << std::endl;
   std::string refType;
   // select surplus refinement
-  // refType = "surplus";
+  refType = "surplus";
   // select data-based refinement
   // refType = "data";
   // select zero-crossings-based refinement
-  refType = "zero";
+  //  refType = "zero";
   std::cout << "Refinement type: " << refType << std::endl;
 
   // initial weighting factor
@@ -125,14 +126,15 @@ int main() {
    * Learn the data.
    */
   std::cout << "# start to train the learner" << std::endl;
-  learner.train(40000, 1, refType, refMonitor, refPeriod, accDeclineThreshold, accDeclineBufferSize,
-                minRefInterval, false, 0);
+  learner.train(trainDataset.getNumberInstances(), 10, refType, refMonitor, refPeriod,
+                accDeclineThreshold, accDeclineBufferSize, minRefInterval, false, 0);
 
   /**
    * Accuracy on test data.
    */
   double acc = learner.getAccuracy();
   std::cout << "# accuracy (test data): " << acc << std::endl;
+  std::cout << "#####################################################################\n";
 
 // store results (classified data, grids, density functions)
 // learner.storeResults();

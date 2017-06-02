@@ -14,6 +14,7 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
 #include <sgpp/datadriven/algorithm/IChol.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 
@@ -101,6 +102,45 @@ BOOST_AUTO_TEST_CASE(decomp_arbitrary) {
   const auto& aData = A.getDataVector();
   for (auto i = 0u; i < aData.size(); i++) {
     BOOST_CHECK_CLOSE(aData[i], results[i], 10e-5);
+  }
+  omp_set_num_threads(numThreads);
+}
+
+BOOST_AUTO_TEST_CASE(decomp_arbitraryDense) {
+  // we only get reproducable results if we run on 1 omp thread
+  auto numThreads = 0;
+
+#pragma omp parallel
+  {
+#pragma omp single
+    { numThreads = omp_get_num_threads(); }
+  }
+  omp_set_num_threads(1);
+
+  auto size = 5u;
+
+  // initialize
+  const std::vector<double> aSparse{2, 2, 6, 1, 6, 1, 6, 1, 4, 2, 16};
+  const std::vector<size_t> colIdx{0, 0, 1, 0, 2, 2, 3, 0, 2, 3, 4};
+  const std::vector<size_t> rowPtr{0, 1, 3, 5, 7};
+  const std::vector<double> results{1.414213562373095, 1.414213562373095, 2.000000000000000,
+                                    0.707106781186547, 2.345207879911715, 0.426401432711221,
+                                    2.412090756622109, 0.707106781186547, 1.492405014489273,
+                                    0.565333771083307, 3.599045012221992};
+
+  SparseDataMatrix Asparse{size, size, aSparse, colIdx, rowPtr};
+  SparseDataMatrix Rsparse{size, size, results, colIdx, rowPtr};
+  DataMatrix R;
+  DataMatrix A;
+  SparseDataMatrix::toDataMatrix(Asparse, A);
+  SparseDataMatrix::toDataMatrix(Rsparse, R);
+  DataMatrix L = A;
+  // decomp:
+  sgpp::datadriven::DBMatOfflineDenseIChol::ichol(A, L, 1);
+
+  // test
+  for (auto i = 0u; i < R.getSize(); i++) {
+    BOOST_CHECK_CLOSE(L[i], R[i], 10e-5);
   }
   omp_set_num_threads(numThreads);
 }
