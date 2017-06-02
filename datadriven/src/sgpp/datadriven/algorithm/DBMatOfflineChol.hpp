@@ -14,6 +14,10 @@ namespace datadriven {
 
 using sgpp::base::DataVector;
 
+/**
+ * DBMatOffline specialization that uses a cholesky factorization on
+ * a dense matrix. The resulting factorization can be updated when the grid changes.
+ */
 class DBMatOfflineChol : public DBMatOfflineGE {
  public:
   DBMatOfflineChol(const DBMatDensityConfiguration& oc);

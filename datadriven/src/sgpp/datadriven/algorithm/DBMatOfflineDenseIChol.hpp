@@ -16,19 +16,14 @@
 namespace sgpp {
 namespace datadriven {
 
-/**
- * TODO(lettrich) : write documentation
- */
-
 using sgpp::base::DataMatrix;
 
+/**
+ * DBMatOfflineChol specialization that uses a parallel, iterative incomplete cholesky factorization
+ * on a dense matrix. The current implementation is a proof of concept.
+ */
 class DBMatOfflineDenseIChol : public DBMatOfflineChol {
  public:
-  /**
-   * Constructor
-   *
-   * @param oc configuration for this offline object
-   */
   explicit DBMatOfflineDenseIChol(const DBMatDensityConfiguration& oc);
 
   explicit DBMatOfflineDenseIChol(const std::string& fileName);
@@ -43,14 +38,23 @@ class DBMatOfflineDenseIChol : public DBMatOfflineChol {
 
   /**
    * Updates offline cholesky factorization based on coarsed (deletedPoints)
-   * and refined (newPoints) gridPoints
+   * and refined (newPoints) gridPoints. We ignore coarsening.
    *
-   * @param deletedPoints list of indices of last coarsed points
+   * @param deletedPoints list of indices of last coarsed points that are ignored.
    * @param newPoints amount of refined points
    */
   void choleskyModification(size_t newPoints, std::list<size_t> deletedPoints,
                             double lambda) override;
 
+  /**
+   * perform parlallel incomplete cholesky factorization of a matrix. This is an out of place
+   * operation.
+   * @param matrix the matrix to be decomposed
+   * @param result data matrix that will hold the decomposed matrix
+   * @param sweeps how many iterations of the algorithm are required until the result is good
+   * enough?
+   * @param startRow on which row to start the decomposition (needed for refinement)
+   */
   static void ichol(const DataMatrix& matrix, DataMatrix& result, size_t sweeps = 4,
                     size_t startRow = 0);
 };
