@@ -47,7 +47,7 @@
 #include "sgpp_parallel.hpp"
 #endif
 #ifdef SG_COMBIGRID
-#include "combigrid.hpp"
+#include "sgpp_combigrid.hpp"
 #endif
 #ifdef SG_QUADRATURE
 #include "sgpp_quadrature.hpp"

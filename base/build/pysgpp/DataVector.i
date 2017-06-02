@@ -67,11 +67,8 @@ $1 = PySequence_Check($input) ? 1 : 0;
   DataVector(DataVector& vec);
   DataVector(double *input, size_t size);
   DataVector(std::vector<double> input);
-  DataVector(sgpp::base::DataVectorDefinition& DataVectorDef);
 
-  void resize(size_t size);
   void resizeZero(size_t size);
-  void addSize(size_t add);
   size_t append();
   size_t append(double value);
   
@@ -80,7 +77,6 @@ $1 = PySequence_Check($input) ? 1 : 0;
   void setAll(double value);
   
   void copyFrom(const DataVector& vec);
-//  void copySmall(const DataVector& vec);
   DataVector& operator=(const DataVector& vec); 
   
   double get(size_t i) const;
@@ -106,9 +102,6 @@ $1 = PySequence_Check($input) ? 1 : 0;
   void axpy(double alpha, DataVector& x);
   
   size_t getSize() const;
-  size_t getUnused() const;
-  size_t getInc() const;
-  void setInc(size_t inc_elems);
   size_t getNumberNonZero() const;
     
   void partitionClasses(double border);
@@ -116,6 +109,8 @@ $1 = PySequence_Check($input) ? 1 : 0;
   void normalize(double border);
   
   std::string toString() const;
+  void toFile(const std::string& fileName) const;
+  static DataVector fromFile(const std::string& fileName);
   
   %extend {
     // Create a ndarray view from the DataVector data

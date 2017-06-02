@@ -196,7 +196,7 @@ HashGridIterator::getGridDepth(size_t dim) {
         this->set(dim, cur_level, *reinterpret_cast<unsigned int*>(&i));
 
         // does this index exist?
-        if (!storage.isValidSequenceNumber(this->seq())) {
+        if (!storage.isInvalidSequenceNumber(this->seq())) {
           if (this->hintLeft(dim)) {
             depth++;
             this->leftChild(dim);

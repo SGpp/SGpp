@@ -28,7 +28,7 @@ double SplittingScorer::calculateScore(ModelFittingBase& model, Dataset& dataset
                                        double* stdDeviation) {
   // perform randomization of indices
   std::vector<size_t> randomizedIndices(dataset.getNumberInstances());
-  randomizeIndices(randomizedIndices);
+  randomizeIndices(dataset, randomizedIndices);
 
   // calculate size of testing and training portions
   size_t trainSize = std::lround(static_cast<double>(dataset.getNumberInstances()) * trainPortion);

@@ -11,6 +11,9 @@
  */
 
 #include <sgpp/datadriven/datamining/modules/scoring/RandomShufflingFunctor.hpp>
+
+#include <sgpp/datadriven/tools/Dataset.hpp>
+
 #include <vector>
 
 namespace sgpp {
@@ -20,7 +23,7 @@ ShufflingFunctor* RandomShufflingFunctor::clone() const {
   return new RandomShufflingFunctor{*this};
 }
 
-void RandomShufflingFunctor::shuffle(std::vector<size_t>& indices) {
+void RandomShufflingFunctor::shuffle(const Dataset& data, std::vector<size_t>& indices) {
   std::shuffle(indices.begin(), indices.end(), generator);
 }
 } /* namespace datadriven */
