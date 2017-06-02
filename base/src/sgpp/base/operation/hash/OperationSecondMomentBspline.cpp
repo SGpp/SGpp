@@ -57,17 +57,24 @@ double OperationSecondMomentBspline::doQuadrature(DataVector& alpha, DataMatrix*
       size_t start = ((index > pp1h) ? 0 : (pp1h - index));
       size_t stop = static_cast<size_t>(std::min(pDbl, hInv + pp1hDbl - indexDbl - 1));
       double scaling = 1./hInv;  // for a single Bspline section
-      double sum_1d = 0.;
+
+      double sum_1d_secondMoment = 0.;
+      double sum_1d_firstMoment = 0.;
       for (size_t n = start; n <= stop; n++) {
         double offset = scaling * static_cast<double>(n + index - pp1h);
         for (size_t c = 0; c < quadOrder; c++) {
           const double x = offset + scaling * coordinates[c];
-          sum_1d += weights[c] * x * x * basis.eval(level, index, x);
+          sum_1d_secondMoment += weights[c] * x * x * basis.eval(level, index, x);
+          sum_1d_firstMoment += weights[c] * x * basis.eval(level, index, x);
         }
       }
-      sum_1d *= scaling;
+
+      sum_1d_secondMoment *= scaling;
+      sum_1d_firstMoment *= scaling;
       tmpres *=
-        width * sum_1d + xlower * basis.getIntegral(level, index);
+        width * width * sum_1d_secondMoment
+        + 2 * width * xlower * sum_1d_firstMoment
+        + xlower * xlower * basis.getIntegral(level, index);
     }
 
     res += alpha.get(iter->second) * tmpres;

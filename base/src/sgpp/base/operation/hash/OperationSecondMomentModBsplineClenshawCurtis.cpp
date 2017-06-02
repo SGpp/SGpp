@@ -58,21 +58,26 @@ double OperationSecondMomentModBsplineClenshawCurtis::doQuadrature(DataVector& a
 
       size_t start = ((index > pp1h) ? 0 : (pp1h - index));
       size_t stop = static_cast<size_t>(std::min(pDbl, hInv + pp1hDbl - indexDbl - 1));
-      double sum_1d = 0.;
+
+      double sum_1d_secondMoment = 0.;
+      double sum_1d_firstMoment = 0.;
       for (size_t n = start; n <= stop; n++) {
-        index_t left_index = static_cast<index_t>(n + index - pp1h);
+        index_t left_index =  static_cast<index_t>(n + index - pp1h);
         double left = clenshawCurtisTable.getPoint(level, left_index);
         double right = clenshawCurtisTable.getPoint(level, left_index + 1);
         for (size_t c = 0; c < quadOrder; c++) {
           double scaling = right - left;
           const double x = left + scaling * coordinates[c];
-          sum_1d += scaling * weights[c] * x * x * basis.eval(level, index, x);
+          sum_1d_secondMoment += scaling * weights[c] * x * x * basis.eval(level, index, x);
+          sum_1d_firstMoment += scaling * weights[c] * x * basis.eval(level, index, x);
         }
       }
-      tmpres *=
-        width * sum_1d + xlower * basis.getIntegral(level, index);
-    }
 
+      tmpres *=
+        width * width * sum_1d_secondMoment
+        + 2 * width * xlower * sum_1d_firstMoment
+        + xlower * xlower * basis.getIntegral(level, index);
+    }
     res += alpha.get(iter->second) * tmpres;
   }
 
