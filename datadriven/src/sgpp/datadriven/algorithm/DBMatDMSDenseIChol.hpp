@@ -24,8 +24,7 @@ using sgpp::base::DataVector;
 
 /**
  * Solve the system of equations with a LL'-decomposed matrix where LL' is created by an iterative,
- * incomplete
- * cholesky factorization on a dense matrix
+ * incomplete cholesky factorization on a dense matrix
  */
 class DBMatDMSDenseIChol : public DBMatDMSChol {
  public:
@@ -43,30 +42,38 @@ class DBMatDMSDenseIChol : public DBMatDMSChol {
   void choleskyUpdateLambda(DataMatrix& decompMatrix, double lambdaUp) const override;
 
   /**
-   * Perform backward substit
+   * Perform backward substitution solving the triangular system $A \alpha = y$ with a parallel
+   * Jaccobi solver.
+   * @param decompMatrix Triangular matrix
+   * @param y right hand side obtained by forward substitution
+   * @param alpha the vector of unknowns we solve for
    */
   void choleskyBackwardSolve(const DataMatrix& decompMatrix, const DataVector& y,
                              DataVector& alpha) const override;
 
   /**
-   * TODO(lettrich) : write documentation
+   * Perform forward substitution solving the triangular system $L y = b$ with a parallel
+   * Jaccobi solver.
+   * @param decompMatrix Triangular matrix
+   * @param right hand side of our initial system matrix we solve for
+   * @param y the vector of unknowns we solve for
    */
   void choleskyForwardSolve(const DataMatrix& decompMatrix, const DataVector& b,
                             DataVector& y) const override;
 
  private:
   /**
-   * TODO(lettrich) : write documentation
+   * update the mutable proxy object to avoid costly copy operations when modifying lambda.
    */
   void updateProxyMatrixLambda(double lambda_up) const;
 
   /**
-   * TODO(lettrich) : write documentation
+   * Parameters to configure the amount of sweeps for the parallel algorithms
    */
   DBMatOfflineIcholParameters params;
 
   /**
-   * TODO(lettrich) : write documentation
+   * proxy object to avoid costly copy operations when modifying lambda.
    */
   mutable DataMatrix proxyMatrix;
 };
