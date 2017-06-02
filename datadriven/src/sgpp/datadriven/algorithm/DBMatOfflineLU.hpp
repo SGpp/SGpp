@@ -9,6 +9,12 @@
 
 #include <sgpp/datadriven/algorithm/DBMatOfflineGE.hpp>
 
+#include <gsl/gsl_permutation.h>
+
+/**
+ * TODO(lettrich) : write documentation
+ */
+
 namespace sgpp {
 namespace datadriven {
 

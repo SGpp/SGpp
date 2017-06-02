@@ -12,6 +12,10 @@
 namespace sgpp {
 namespace datadriven {
 
+/**
+ * TODO(lettrich) : write documentation
+ */
+
 class DBMatOfflineGE : public DBMatOffline {
  public:
   explicit DBMatOfflineGE(const DBMatDensityConfiguration& oc);

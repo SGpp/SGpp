@@ -22,6 +22,10 @@
 #include <cmath>
 #include <vector>
 
+/**
+ * TODO(lettrich) : check
+ */
+
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 using sgpp::base::Grid;

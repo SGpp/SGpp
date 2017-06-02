@@ -45,6 +45,10 @@ void reaplyDiagonal(DataMatrix& matrix, const DataVector& norms);
 
 void reaplyDiagonalLowerTriangular(DataMatrix& matrix, const DataVector& norms);
 
+/**
+ * TODO(lettrich) : remove
+ */
+
 } /* namespace IChol */
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -14,7 +14,7 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * Class to solve the system of equations with a LU-decomposed matrix
+ * Class to solve the system of equations with a LL'-decomposed matrix
  */
 
 class DBMatDMSChol : public DBMatDecompMatrixSolver {
@@ -60,12 +60,21 @@ class DBMatDMSChol : public DBMatDecompMatrixSolver {
                         const sgpp::base::DataVector& downdate, bool do_cv = false) const;
 
  protected:
+  /**
+   * TODO(lettrich) : write documentation
+   */
   virtual void choleskyUpdateLambda(sgpp::base::DataMatrix& decompMatrix, double lambda_up) const;
 
+  /**
+   * TODO(lettrich) : write documentation
+   */
   virtual void choleskyBackwardSolve(const sgpp::base::DataMatrix& decompMatrix,
                                      const sgpp::base::DataVector& y,
                                      sgpp::base::DataVector& alpha) const;
 
+  /**
+   * TODO(lettrich) : write documentation
+   */
   virtual void choleskyForwardSolve(const sgpp::base::DataMatrix& decompMatrix,
                                     const sgpp::base::DataVector& b,
                                     sgpp::base::DataVector& y) const;

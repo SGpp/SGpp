@@ -24,6 +24,10 @@
 
 #include <string>
 
+/**
+ * TODO(lettrich) : write documentation and see if this makes sense
+ */
+
 BOOST_AUTO_TEST_SUITE(test_DBMatOffline)
 
 BOOST_AUTO_TEST_CASE(testReadWriteCholesky) {

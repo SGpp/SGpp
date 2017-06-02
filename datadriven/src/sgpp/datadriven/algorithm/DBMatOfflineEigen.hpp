@@ -13,10 +13,17 @@
 #pragma once
 
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
+
+#include <gsl/gsl_permutation.h>
+
 #include <string>
 
 namespace sgpp {
 namespace datadriven {
+
+/**
+ * TODO(lettrich) : write documentation
+ */
 
 class DBMatOfflineEigen : public DBMatOffline {
  public:

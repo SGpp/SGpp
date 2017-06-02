@@ -15,6 +15,10 @@
 
 #include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
 
+/**
+ * TODO(lettrich) : write documentation
+ */
+
 namespace sgpp {
 namespace datadriven {
 

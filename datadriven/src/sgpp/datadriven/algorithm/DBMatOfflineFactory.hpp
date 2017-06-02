@@ -17,6 +17,10 @@ namespace sgpp {
 namespace datadriven {
 namespace DBMatOfflineFactory {
 
+/**
+ * TODO(lettrich) : write documentation
+ */
+
 DBMatOffline* buildOfflineObject(const DBMatDensityConfiguration& config);
 
 DBMatOffline* buildFromFile(const std::string& fname);

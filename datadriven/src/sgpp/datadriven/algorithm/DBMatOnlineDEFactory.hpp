@@ -17,6 +17,10 @@ namespace sgpp {
 namespace datadriven {
 namespace DBMatOnlineDEFactory {
 
+/**
+ * TODO(lettrich) : write documentation
+ */
+
 DBMatOnlineDE* buildDBMatOnlineDE(DBMatOffline& offline, double beta = 0);
 } /* namespace DBMatOnlineDEFactory */
 } /* namespace datadriven */
