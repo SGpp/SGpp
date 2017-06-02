@@ -54,14 +54,18 @@ double OperationSecondMomentPoly::doQuadrature(DataVector& alpha, DataMatrix* bo
       double scaling = (index != 0 && indexDbl != hInv) ? 2./hInv : 1./hInv;
       double left = (indexDbl - 1) * (1./hInv);
 
-      double gaussQuadSum = 0.;
+      double gaussQuadSumSecondMoment = 0.;
+      double gaussQuadSumFirstMoment = 0.;
       for (size_t c = 0; c < quadOrder; c++) {
         const double x = left + scaling * coordinates[c];
-        gaussQuadSum += weights[c] * x * x * basis.eval(level, index, x);
+        gaussQuadSumSecondMoment += weights[c] * x * x * basis.eval(level, index, x);
+        gaussQuadSumFirstMoment += weights[c] * x * basis.eval(level, index, x);
       }
 
       tmpres *=
-        width * gaussQuadSum + xlower * basis.getIntegral(level, index);
+        width * width * gaussQuadSumSecondMoment
+        + 2 * width * xlower * gaussQuadSumFirstMoment
+        + xlower * xlower * basis.getIntegral(level, index);
     }
 
     res += alpha.get(iter->second) * tmpres;

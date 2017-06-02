@@ -178,6 +178,29 @@ def test_firstMoment(grid, lmax):
   print op.doQuadrature(alpha, bounds)
   print (res - op.doQuadrature(alpha, bounds))
 
+def test_secondtMoment(grid, lmax):
+  grid.getGenerator().regular(lmax)
+  resolution = 100000
+  gridStorage = grid.getStorage()
+  b = grid.getBasis()
+  op = pysgpp.createOperationSecondMoment(grid)
+  alpha = pysgpp.DataVector(grid.getSize(), 1.0)
+  bounds = pysgpp.DataMatrix(1, 2, 0.0)
+  bounds.set(0, 1, 1.0)
+  res = 0.0
+  for i in range(grid.getSize()):
+    lev = gridStorage.getPoint(i).getLevel(0)
+    ind = gridStorage.getPoint(i).getIndex(0)
+    temp_res = 0.0
+    for c in range(resolution):
+        x = float(c) / resolution
+        temp_res += x * x *b.eval(lev, ind, x)
+    res += alpha.get(i) * temp_res / resolution
+
+  print res
+  print op.doQuadrature(alpha, bounds)
+  print (res - op.doQuadrature(alpha, bounds))
+
 # test_poly_evaldx()
 # plot_evaldx()
 # test_base()
@@ -189,5 +212,5 @@ grid = pysgpp.Grid.createModLinearGrid(d)
 # test_laplace2(grid, l)
 # test_LTwoDot(grid, l)
 # test_LTwoDotImplicit(grid, l)
-test_firstMoment(grid, l)
-abc(grid)
+# test_firstMoment(grid, l)
+test_secondtMoment(grid, l)
