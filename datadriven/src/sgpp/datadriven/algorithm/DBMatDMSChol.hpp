@@ -61,19 +61,29 @@ class DBMatDMSChol : public DBMatDecompMatrixSolver {
 
  protected:
   /**
-   * TODO(lettrich) : write documentation
+   * Update the decomposition if the regularization parameter changes. This may be more expensive
+   * then recalculating the decomposition.
+   * @param decompMatrix decomposed matrix to be modified
+   * @param lambdaUpdate the value by which the regularization parameter modifies the diagonal.
    */
-  virtual void choleskyUpdateLambda(sgpp::base::DataMatrix& decompMatrix, double lambda_up) const;
+  virtual void choleskyUpdateLambda(sgpp::base::DataMatrix& decompMatrix,
+                                    double lambdaUpdate) const;
 
   /**
-   * TODO(lettrich) : write documentation
+   * Perform Backward substitution solving the triangular system $A \alpha = y$
+   * @param decompMatrix Triangular matrix
+   * @param y right hand side obtained by forward substitution
+   * @param alpha the vector of unknowns we solve for
    */
   virtual void choleskyBackwardSolve(const sgpp::base::DataMatrix& decompMatrix,
                                      const sgpp::base::DataVector& y,
                                      sgpp::base::DataVector& alpha) const;
 
   /**
-   * TODO(lettrich) : write documentation
+   * Perform forward substitution solving the triangular system $L y = b$
+   * @param decompMatrix Triangular matrix
+   * @param right hand side of our initial system matrix we solve for
+   * @param y the vector of unknowns we solve for
    */
   virtual void choleskyForwardSolve(const sgpp::base::DataMatrix& decompMatrix,
                                     const sgpp::base::DataVector& b,
