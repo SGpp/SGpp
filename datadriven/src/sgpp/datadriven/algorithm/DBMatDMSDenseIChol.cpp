@@ -46,6 +46,7 @@ void DBMatDMSDenseIChol::choleskyUpdateLambda(sgpp::base::DataMatrix& decompMatr
 void DBMatDMSDenseIChol::choleskyBackwardSolve(const sgpp::base::DataMatrix& decompMatrix,
                                                const sgpp::base::DataVector& y,
                                                sgpp::base::DataVector& alpha) const {
+  // cache efficient version of jaccobi based backward substitution
   DataVector tmpVec{alpha.getSize()};
   alpha.setAll(0.0);
   auto size = alpha.getSize();
@@ -72,6 +73,7 @@ void DBMatDMSDenseIChol::choleskyBackwardSolve(const sgpp::base::DataMatrix& dec
 void DBMatDMSDenseIChol::choleskyForwardSolve(const sgpp::base::DataMatrix& decompMatrix,
                                               const sgpp::base::DataVector& b,
                                               sgpp::base::DataVector& y) const {
+  // initial guess for y
   y.setAll(0.0);
 
   auto size = y.getSize();
