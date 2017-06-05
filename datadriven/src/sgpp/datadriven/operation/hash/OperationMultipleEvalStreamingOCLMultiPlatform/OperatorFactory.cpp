@@ -3,13 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/base/exception/factory_exception.hpp"
-#include "OperationMultiEvalStreamingOCLMultiPlatform.hpp"
-#include "sgpp/globaldef.hpp"
-#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 #include "Configuration.hpp"
+#include "OperationMultiEvalStreamingOCLMultiPlatform.hpp"
+#include "sgpp/base/exception/factory_exception.hpp"
+#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
+#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
+#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
+#include "sgpp/globaldef.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -42,10 +42,10 @@ base::OperationMultipleEval* createStreamingOCLMultiPlatformConfigured(
   //  std::cout << "INTERNAL_PRECISION: " << (*parameters)["INTERNAL_PRECISION"].get() << std::endl;
   if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
     return new datadriven::StreamingOCLMultiPlatform::OperationMultiEvalStreamingOCLMultiPlatform<
-        float>(grid, dataset, manager, parameters, (*parameters));
+        float>(grid, dataset, manager, parameters);
   } else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
     return new datadriven::StreamingOCLMultiPlatform::OperationMultiEvalStreamingOCLMultiPlatform<
-        double>(grid, dataset, manager, parameters, (*parameters));
+        double>(grid, dataset, manager, parameters);
   } else {
     throw base::factory_exception(
         "Error creating "

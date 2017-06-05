@@ -16,16 +16,14 @@ namespace datadriven {
 
 class SubspaceNodeCombined {
  public:
-  enum SubspaceType {
-    NOT_SET, ARRAY, LIST
-  };
+  enum SubspaceType { NOT_SET, ARRAY, LIST };
 
   std::vector<uint32_t> level;
   std::vector<uint32_t> hInverse;
   uint32_t gridPointsOnLevel;
   uint32_t existingGridPointsOnLevel;
   SubspaceType type;
-  //for list representation (and future streaming subspaces)
+  // for list representation (and future streaming subspaces)
   std::vector<uint32_t> indices;
   std::vector<std::pair<uint32_t, double> > indexFlatSurplusPairs;
   std::vector<double> subspaceArray;
@@ -38,8 +36,7 @@ class SubspaceNodeCombined {
   uint32_t arriveDiff;
 
   SubspaceNodeCombined(std::vector<uint32_t>& level, uint32_t flatLevel,
-                       std::vector<uint32_t>& hInverse,
-                       std::vector<uint32_t>& index);
+                       std::vector<uint32_t>& hInverse, std::vector<uint32_t>& index);
 
   SubspaceNodeCombined(size_t dim, uint32_t index);
 
@@ -47,7 +44,7 @@ class SubspaceNodeCombined {
 
   void unlockSubspace();
 
-  //increases number of grid points on the subspace
+  // increases number of grid points on the subspace
   void addGridPoint(std::vector<uint32_t>& index);
 
   void printLevel();
@@ -65,12 +62,9 @@ class SubspaceNodeCombined {
   double getSurplus(size_t indexFlat);
 
   static uint32_t compareLexicographically(SubspaceNodeCombined& current,
-      SubspaceNodeCombined& last);
+                                           SubspaceNodeCombined& last);
 
-  static bool subspaceCompare(SubspaceNodeCombined left,
-                              SubspaceNodeCombined right);
-
+  static bool subspaceCompare(SubspaceNodeCombined left, SubspaceNodeCombined right);
 };
-
 }
 }

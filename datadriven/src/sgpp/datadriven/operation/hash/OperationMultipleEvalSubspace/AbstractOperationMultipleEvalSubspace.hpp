@@ -7,45 +7,36 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/datadriven/tools/PartitioningTool.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace datadriven {
 
-class AbstractOperationMultipleEvalSubspace: public
-  base::OperationMultipleEval {
+class AbstractOperationMultipleEvalSubspace : public base::OperationMultipleEval {
  protected:
   base::GridStorage* storage;
 
  private:
   base::SGppStopwatch timer;
   double duration;
+
  public:
-  AbstractOperationMultipleEvalSubspace(base::Grid& grid,
-                                        base::DataMatrix& dataset) :
-    base::OperationMultipleEval(grid, dataset), storage(&grid.getStorage()),
-    duration(-1.0) {
+  AbstractOperationMultipleEvalSubspace(base::Grid& grid, base::DataMatrix& dataset)
+      : base::OperationMultipleEval(grid, dataset), storage(&grid.getStorage()), duration(-1.0) {}
 
-  }
-
-  ~AbstractOperationMultipleEvalSubspace() {
-  }
+  ~AbstractOperationMultipleEvalSubspace() {}
 
   virtual void multImpl(base::DataVector& alpha, base::DataVector& result,
-                        const size_t start_index_data,
-                        const size_t end_index_data) = 0;
+                        const size_t start_index_data, const size_t end_index_data) = 0;
 
-  virtual void multTransposeImpl(sgpp::base::DataVector& source,
-                                 sgpp::base::DataVector& result,
+  virtual void multTransposeImpl(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
                                  const size_t start_index_data, const size_t end_index_data) = 0;
 
-  void multTranspose(sgpp::base::DataVector& alpha,
-                     sgpp::base::DataVector& result) override {
+  void multTranspose(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) override {
     if (!this->isPrepared) {
       this->prepare();
     }
@@ -55,19 +46,18 @@ class AbstractOperationMultipleEvalSubspace: public
     const size_t start_index_data = 0;
     const size_t end_index_data = this->getPaddedDatasetSize();
 
-    //pad the alpha vector to the padded size of the dataset
+    // pad the alpha vector to the padded size of the dataset
     alpha.resizeZero(this->getPaddedDatasetSize());
 
     this->timer.start();
     result.setAll(0.0);
 
-    #pragma omp parallel
+#pragma omp parallel
     {
       size_t start;
       size_t end;
-      PartitioningTool::getOpenMPPartitionSegment(start_index_data, end_index_data,
-          &start, &end,
-          this->getAlignment());
+      PartitioningTool::getOpenMPPartitionSegment(start_index_data, end_index_data, &start, &end,
+                                                  this->getAlignment());
       this->multTransposeImpl(alpha, result, start, end);
     }
 
@@ -75,9 +65,7 @@ class AbstractOperationMultipleEvalSubspace: public
     this->duration = this->timer.stop();
   }
 
-  void mult(sgpp::base::DataVector& source,
-            sgpp::base::DataVector& result) override {
-
+  void mult(sgpp::base::DataVector& source, sgpp::base::DataVector& result) override {
     if (!this->isPrepared) {
       this->prepare();
     }
@@ -91,13 +79,12 @@ class AbstractOperationMultipleEvalSubspace: public
     this->timer.start();
     result.setAll(0.0);
 
-    #pragma omp parallel
+#pragma omp parallel
     {
       size_t start;
       size_t end;
-      PartitioningTool::getOpenMPPartitionSegment(start_index_data, end_index_data,
-          &start, &end,
-          this->getAlignment());
+      PartitioningTool::getOpenMPPartitionSegment(start_index_data, end_index_data, &start, &end,
+                                                  this->getAlignment());
       this->multImpl(source, result, start, end);
     }
 
@@ -106,25 +93,16 @@ class AbstractOperationMultipleEvalSubspace: public
     this->duration = this->timer.stop();
   }
 
-  virtual size_t getPaddedDatasetSize() {
-    return this->dataset.getNrows();
-  }
+  virtual size_t getPaddedDatasetSize() { return this->dataset.getNrows(); }
 
   virtual size_t getAlignment() = 0;
 
-  virtual double getDuration () override {
-    return this->duration;
-  }
+  virtual double getDuration() override { return this->duration; }
 
-  static inline size_t getChunkGridPoints() {
-    return 12;
-  }
+  static inline size_t getChunkGridPoints() { return 12; }
   static inline size_t getChunkDataPoints() {
-    return 24; // must be divisible by 24
+    return 24;  // must be divisible by 24
   }
-
 };
-
 }
 }
-

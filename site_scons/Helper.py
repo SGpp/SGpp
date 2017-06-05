@@ -309,6 +309,20 @@ def CheckExec(context, cmd):
   context.Result(ret)
   return ret
 
+def CheckCompiler(context):
+
+  checkSrcFile = """
+int main(int argc, char **argv) {
+  /**
+   * Does nothing, just a test whether the compile works.
+   */
+}
+  """
+  context.Message("Testing whether compiler works... ")
+  result = context.TryCompile(checkSrcFile, ".cpp")
+  context.Result(result)
+  return result
+
 def CheckFlag(context, flagString):
 
   checkSrcFile = """
@@ -366,4 +380,3 @@ def CheckJNI(context):
 
   context.Result("... nothing found!")
   return 0
-
