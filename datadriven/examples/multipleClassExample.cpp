@@ -3,89 +3,95 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/application/LearnerSGDE.hpp>
-#include <sgpp/datadriven/tools/ARFFTools.hpp>
 
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/tools/MultipleClassPoint.hpp>
 
-#include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
-#include <sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp>
-#include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
-#include <sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp>
+#include <sgpp/datadriven/application/LearnerSGDE.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/MultipleClassRefinementFunctor.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
 
-
+#include <sys/resource.h>
 #include <cmath>
+#include <ctime>
+
 #include <sstream>
 #include <iomanip>
 #include <string>
 #include <vector>
-#include <sgpp/datadriven/application/MultipleClassPoint.hpp>
-
+#include <locale>
+#include <chrono>
 
 /**
  * Helper to create learner
  */
 sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
                                                 double lambda);
- 
+
 /**
  * Helper to evaluate the classifiers
  */
 std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
                                           std::vector<sgpp::base::DataVector*> alphas,
                                           sgpp::base::DataMatrix& testData,
-                                          sgpp::base::DataVector& testLabel);
+                                          sgpp::base::DataVector& testLabel,
+                                          size_t classes);
 /**
- * TODO
- * \page example_classificationRefinementExample_cpp Classification Example
+ * \page example_multipleClassExample_cpp Classification Example MultipleClassRefinement
  *
- * This example shows how classification specific refinement strategies
- * are used. To do classification, for each class a PDF is approximated with
+ * This example shows how the multiple class classification refinement strategy
+ * is used. To do classification, for each class a PDF is approximated with
  * LearnerSGDE and the class with the highest probability gets assigned for
  * new data points to be classified.
- * The ripley data sets is used, although the small number of training data
- * poitns in combination with only a basic setup does not yield good results
- * for any refinement strategy. This example is merely a tech-example.
+ * This example is merely a tech-example.
  */
 
-
 int main() {
+    std::string filepath = "../../datadriven/tests/data/";
+    std::string filename = "mulitpleClassesTest.arff";
+    size_t classes = 4;
+    size_t dim = 2;
+    size_t level = 4;
+    double lambda = 1e-2;
+    size_t numSteps = 5;
+    size_t numRefinements = 3;
+    size_t partCombined = 0;
+    double thresh = 0;
 
-    std::string filename2 = "../../datadriven/tests/data/mulitpleClassesTest.arff";
+    //  ------------- only calculation after -------------------------
+
     sgpp::datadriven::Dataset dataset =
-            sgpp::datadriven::ARFFTools::readARFF(filename2);
+            sgpp::datadriven::ARFFTools::readARFF(filepath + filename);
     sgpp::base::DataMatrix dataTrain = dataset.getData();
     sgpp::base::DataVector targetTrain = dataset.getTargets();
+
     std::cout << "Read training data: " << dataTrain.getNrows() << std::endl;
-    int classes = 4;
 
     std::vector<sgpp::base::DataMatrix> dataCl;
     std::vector<sgpp::datadriven::LearnerSGDE> learner;
-    for ( int i = 0 ; i < classes ; i++ ) {
+    for ( size_t i = 0 ; i < classes ; i++ ) {
         dataCl.push_back(sgpp::base::DataMatrix(0.0, dataTrain.getNcols()));
     }
 
+    /**
+     * If classes are set to [0,classes-1] points are seperated into given classes.
+     * Independent of the amount of classes needed
+     */
     sgpp::base::DataVector row(dataTrain.getNcols());
     for ( size_t i = 0 ; i < dataTrain.getNrows() ; i++ ) {
         dataTrain.getRow(i, row);
-        dataCl.at((int)targetTrain.get(i)).appendRow(row);
-    }
-    for ( int i = 0 ; i < classes ; i++ ) {
-        std::cout << "Data points of class " << i << ": ";
-        std::cout << dataCl.at(i).getNrows() << std::endl;
+        dataCl.at((size_t)targetTrain.get(i)).appendRow(row);
     }
 
     /**
-    * Approximate a probability density function for the class data using
-    * LearnerSGDE, one for each class. Initialize the learners with the data
-    */
-    size_t dim = 2;
-    int level = 3;
-    double lambda = 1e-1;//größer (start 5)
-    for ( int i = 0 ; i < classes ; i++ ) {
+     * Approximate a probability density function for the class data using
+     * LearnerSGDE, one for each class. Initialize the learners with the data
+     */
+    for ( size_t i = 0 ; i < classes ; i++ ) {
+        std::cout << "Data points of class " << std::setw(3) << std::right << i << ": ";
+        std::cout << std::setw(14) << std::right << dataCl.at(i).getNrows() << "   | ";
         learner.push_back(createSGDELearner(dim, level, lambda));
         learner.back().initialize(dataCl.at(i));
     }
@@ -96,57 +102,38 @@ int main() {
      */
     std::vector<sgpp::base::Grid*> grids2;
     std::vector<sgpp::base::DataVector*> alphas2;
-    for ( int i = 0 ; i < classes ; i++ ) {
+    for ( size_t i = 0 ; i < classes ; i++ ) {
         grids2.push_back(learner.at(i).getGrid().get());
         alphas2.push_back(learner.at(i).getSurpluses().get());
     }
-    for ( int i = 0 ; i < classes ; i++ ) {
+
+    std::cout << "---------------------------------------------" << std::endl;
+
+    for ( size_t i = 0 ; i < classes ; i++ ) {
         learner.at(i).train(*grids2.at(i), *alphas2.at(i), dataCl.at(i), lambda);
     }
-
-    size_t numSteps = 3;
-    std::vector<std::string> eval = doClassification(grids2, alphas2, dataTrain, targetTrain);
-
-    std::cout << std::endl << "Start" << std::endl;
-    size_t numRefinements = 3;
-    bool levelPenalize = false;
-    bool preCompute = false;
-    double thresh = 0.0;
+    std::vector<std::string> eval = doClassification(grids2, alphas2,
+                    dataTrain, targetTrain, classes);
+    std::cout << "   0   | " << eval.at(0) << " | " << eval.at(1) << std::endl;
 
     sgpp::datadriven::MultipleClassRefinementFunctor mcrf(grids2, alphas2,
-            numRefinements, levelPenalize, preCompute, thresh);
-    sgpp::datadriven::MultiGridRefinementFunctor* multifun = &mcrf;
-    mcrf.printPointsPlott();
-    std::cout << std::endl;
+            numRefinements, partCombined, thresh);
+    sgpp::datadriven::MultipleClassRefinementFunctor* multifun = &mcrf;
 
-    std::cout << "Size: " << mcrf.getCombinedGrid()->getStorage().getSize() << std::endl;
-    std::cout << "Dim: " << mcrf.getCombinedGrid()->getDimension() << std::endl;
-    std::cout << std::endl;
-
-    std::cout << "Evaluation:" << std::endl << std::endl;
-    std::cout << "------------------------------" << std::endl;
-    std::cout << "   0   | " << eval.at(0) << " | " << eval.at(1) << std::endl;
     for ( size_t i = 1; i < numSteps + 1; i++ ) {
-        mcrf.refine();
+        std::cout << "---------------------------------------------" << std::endl;
+
+        multifun->refine();
 
         // Re-train the grids. This has to happend AFTER all grids are refined
-        for ( int i = 0 ; i < classes ; i++ ) {
+        for ( size_t i = 0 ; i < classes ; i++ ) {
             learner.at(i).train(*grids2.at(i), *alphas2.at(i), dataCl.at(i), lambda);
         }
 
-        mcrf.prepareGrid(grids2, alphas2);
-        std::cout << std::endl;
-        eval = doClassification(grids2, alphas2, dataTrain, targetTrain);
-        mcrf.printPointsPlott();
-        mcrf.printPointsInfo();
+        eval = doClassification(grids2, alphas2, dataTrain, targetTrain, classes);
         std::cout << "   " << i << "   | " << eval.at(0) << " | " << eval.at(1)
              << std::endl;
     }
-
-    // double totalScore = multifun->getTotalRefinementValue(mcrf.getCombinedGrid()->getStorage());
-    // std::cout << "TotalRefinementValue: " << totalScore << std::endl;
-
-    return 0;
 }
 
 sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
@@ -199,8 +186,9 @@ sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptConfig,
 std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
                   std::vector<sgpp::base::DataVector*> alphas,
                   sgpp::base::DataMatrix& testData,
-                  sgpp::base::DataVector& testLabel) {
-    double best_eval = 0.0;
+                  sgpp::base::DataVector& testLabel,
+                  size_t classes) {
+    double best_eval = -1000.0;
     double eval = 0.0;
     sgpp::base::DataVector p(testData.getNcols());
     sgpp::base::DataVector indices(testData.getNrows());
@@ -213,12 +201,10 @@ std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
     }
 
     // Get predictions and save to evals (confidence) and indices (class)
+    std::vector<std::vector<int> > gridEval(classes+1, std::vector<int>(classes+1, 0));
     for (size_t i = 0; i < testData.getNrows(); i++) {
       testData.getRow(i, p);
-      indices.set(i, 0.0);
-      best_eval = evalOps.at(0)->eval(*alphas.at(0), p);
-      evals.set(i, best_eval);
-      for (size_t j = 1; j < grids.size(); j++) {
+      for (size_t j = 0; j < grids.size(); j++) {
         eval = evalOps.at(j)->eval(*alphas.at(j), p);
         if (eval > best_eval) {
           best_eval = eval;
@@ -226,6 +212,7 @@ std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
           evals.set(i, best_eval);
         }
       }
+      best_eval = -1000.0;
     }
 
     // Count the error for all classes
@@ -256,6 +243,7 @@ std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
     ss2 << std::fixed << std::setprecision(3);
     ss2 << (100.0 * (1.0 - (static_cast<double>(totalCount) /
                             static_cast<double>(testData.getNrows()))));
+
     std::vector<std::string> result;
     result.push_back(ss.str());
     result.push_back(ss2.str());

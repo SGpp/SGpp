@@ -52,41 +52,13 @@ int main() {
   /**
    * Get the training/test data
    */
-  std::string basePath = "../../datasets/ripley/ripleyGarcke";
-  sgpp::datadriven::Dataset datasetTr =
-    sgpp::datadriven::ARFFTools::readARFF(basePath + ".train.arff");
-  sgpp::datadriven::Dataset datasetTs =
-    sgpp::datadriven::ARFFTools::readARFF(basePath + ".test.arff");
-  sgpp::base::DataMatrix dataTrain = datasetTr.getData();
-  sgpp::base::DataVector targetTrain = datasetTr.getTargets();
-  sgpp::base::DataMatrix dataTest = datasetTs.getData();
-  sgpp::base::DataVector targetTest = datasetTs.getTargets();
+    sgpp::datadriven::Dataset dataset =
+            sgpp::datadriven::ARFFTools::readARFF(
+            "../../datadriven/tests/data/mulitpleClassesTest2.arff");
+  sgpp::base::DataMatrix dataTrain = dataset.getData();
+  sgpp::base::DataVector targetTrain = dataset.getTargets();
   std::cout << "Read training data: " << dataTrain.getNrows() << std::endl;
-  std::cout << "Read test data    : " << dataTest.getNrows() << std::endl;
 
-
-  /**
-   * Only uint class labels starting 0 and incrementing by 1 per class
-   * are possible right no (to match grid-indices in vectors).
-   * For use in DataVector class labels are cast to double.
-   * Preprocess to have class label 0, 1, ...
-   * -1 -> 0 and 1 -> 1
-   */
-  for (size_t i = 0; i < targetTrain.getSize(); i++) {
-    if (targetTrain.get(i) < 0.0) {
-      targetTrain.set(i, 0.0);
-    } else {
-      targetTrain.set(i, 1.0);
-    }
-  }
-  for (size_t i = 0; i < targetTest.getSize(); i++) {
-    if (targetTest.get(i) < 0.0) {
-      targetTest.set(i, 0.0);
-    } else {
-      targetTest.set(i, 1.0);
-    }
-  }
-  std::cout << "Preprocessing the data" << std::endl;
 
 
   /**
@@ -94,6 +66,8 @@ int main() {
    */
   sgpp::base::DataMatrix dataCl1(0.0, dataTrain.getNcols());
   sgpp::base::DataMatrix dataCl2(0.0, dataTrain.getNcols());
+  sgpp::base::DataMatrix dataCl3(0.0, dataTrain.getNcols());
+  sgpp::base::DataMatrix dataCl4(0.0, dataTrain.getNcols());
   sgpp::base::DataVector row(dataTrain.getNcols());
   for (size_t i = 0; i < dataTrain.getNrows(); i++) {
     dataTrain.getRow(i, row);
@@ -114,8 +88,12 @@ int main() {
   double lambda = 1e-5;
   sgpp::datadriven::LearnerSGDE learner1 = createSGDELearner(2, 3, lambda);
   sgpp::datadriven::LearnerSGDE learner2 = createSGDELearner(2, 3, lambda);
+  sgpp::datadriven::LearnerSGDE learner3 = createSGDELearner(2, 3, lambda);
+  sgpp::datadriven::LearnerSGDE learner4 = createSGDELearner(2, 3, lambda);
   learner1.initialize(dataCl1);
   learner2.initialize(dataCl2);
+  learner1.initialize(dataCl3);
+  learner2.initialize(dataCl4);
 
 
   /**
@@ -184,11 +162,11 @@ int main() {
    * An initial evaluation with the regular grid is done at "step 0"
    */
   size_t numSteps = 5;
-  std::vector<std::string> eval = doClassification(grids, alphas, dataTest, targetTest);
+  // std::vector<std::string> eval = doClassification(grids, alphas, dataTest, targetTest);
   std::cout << "Evaluation:" << std::endl << std::endl;
   std::cout << " Step  |  c=1    c=2  | total" << std::endl;
   std::cout << "------------------------------" << std::endl;
-  std::cout << "   0   | " << eval.at(0) << " | " << eval.at(1) << std::endl;
+  // std::cout << "   0   | " << eval.at(0) << " | " << eval.at(1) << std::endl;
   for (size_t i = 1; i < numSteps + 1; i++) {
     if (preCompute) {
       // precompute the evals. Needs to be done once per step, before
@@ -207,9 +185,9 @@ int main() {
     learner1.train(*grids.at(0), *alphas.at(0), dataCl1, lambda);
     learner2.train(*grids.at(1), *alphas.at(1), dataCl2, lambda);
 
-    eval = doClassification(grids, alphas, dataTest, targetTest);
-    std::cout << "   " << i << "   | " << eval.at(0) << " | " << eval.at(1)
-         << std::endl;
+    // eval = doClassification(grids, alphas, dataTest, targetTest);
+    // std::cout << "   " << i << "   | " << eval.at(0) << " | " << eval.at(1)
+    //     << std::endl;
   }
   std::cout << std::endl << "Done" << std::endl;
   return 0;

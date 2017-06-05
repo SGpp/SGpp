@@ -6,47 +6,70 @@
 #ifndef MULTIPLECLASSREFINEMENTFUNCTOR_HPP
 #define MULTIPLECLASSREFINEMENTFUNCTOR_HPP
 
-#include "ZeroCrossingRefinementFunctor.hpp"
+#include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
+#include <sgpp/base/tools/MultipleClassPoint.hpp>
 
-
-#include <sgpp/datadriven/application/MultipleClassPoint.hpp>
 #include <vector>
 #include <tuple>
+#include <string>
 #include <algorithm>
 
 namespace sgpp {
 namespace datadriven {
 
+/**
+ * Multiple class refinement is based on the zero-crossing based refinement.
+ * The zero-crossings are not determinated by pairwise comparing the signes
+ * of PDFS f_1 - f_2, but by comparing the dominating class at geometric 
+ * neighbors, determined for each dimension separately.
+ *
+ * Finer levels are pealized by 2^{-|l|}.
+ */
 class MultipleClassRefinementFunctor: public ZeroCrossingRefinementFunctor {
  public:
+  /**
+   * Constructor.
+   *
+   * @param grids Vector of grids. current_grid_index specifies the grid to be refined
+   * @param alphas Vector of surpluses related to the grids
+   * @param refinements_num Maximum number of refinements done
+   * @param partCombined Number of refinement done in the combined grid
+   * @param threshold Threshold for refinement scores
+   */
   MultipleClassRefinementFunctor(std::vector<base::Grid*> grids,
                                 std::vector<base::DataVector*> alphas,
                                 size_t refinements_num,
-                                bool level_penalize,
-                                bool pre_compute,
+                                size_t partCombined,
                                 double thresh);
 
   double operator()(base::GridStorage& storage,
                     size_t seq) const override;
 
-  base::Grid* getCombinedGrid();
+  double getTopPercent();
+  void setTopPercent(double newPercent);
+  double getBorderPenalty();
+  void setBorderPenalty(double newPenalty);
 
-  void prepareGrid(std::vector<base::Grid*> gridsNew,
-                     std::vector<base::DataVector*> alphasNew);
-
-  void printPointsPlott();
-  void printPointsInfo();
-  void printScores();
-  
+  /**
+   * Organizes the refinement of the classes
+   * uses set parameter to execute the refinement step.
+   *
+   * Creates the combined grid and starts the refinement.
+   */
   void refine();
-  void refineCombinedGrid();
 
  private:
-  std::vector<sgpp::datadriven::MultipleClassPoint> points;
+  std::vector<sgpp::base::MultipleClassPoint> points;
   base::Grid* multigrid;
-  // print different scores
-  mutable std::vector<std::string> scoresToPrint;
-  bool refineMulti;
+  size_t partCombined;
+  double topPercent;
+  double borderPenalty;
+
+  bool refineMulti = false;
+  mutable double borderSum;
+  mutable double borderCnt;
+
+  void prepareGrid();
 
   void findCrossings(size_t leftP, size_t rightP, size_t seq, size_t d);
   bool hasChild(const base::HashGridPoint& gp, size_t d, bool left) const;
