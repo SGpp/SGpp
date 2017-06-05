@@ -20,8 +20,24 @@
 namespace sgpp {
 namespace base {
 
+/**
+ * Refinement class for sparse grids
+ * Used by the MultipleClassRefinementFuntor
+ * Scores all grid points and refines points based on the information
+ * given in the vector of MulitpleClassPoint
+ */
 class HashRefinementMultipleClass : public HashRefinement {
  public:
+  /**
+   * Constructor.
+   *
+   * @param grid Grid to be refined. current_grid_index specifies the grid to be refined
+   * @param pts Vector of MultipleClassPoints with additional information
+   * @param classGrids Vector of grids
+   * @param borderSum Sum of the border scores for all points
+   * @param borderCnt amount of points scored towards the border
+   * @param topPercent range when densities are concidered close
+   */
     HashRefinementMultipleClass(Grid& grid,
         std::vector<sgpp::base::MultipleClassPoint>* pts,
         std::vector<Grid*>& classGrids,
@@ -29,10 +45,6 @@ class HashRefinementMultipleClass : public HashRefinement {
     virtual ~HashRefinementMultipleClass() {}
 
  protected:
-  void refineGridpointsCollection(
-        GridStorage& storage,
-        RefinementFunctor& functor,
-        AbstractRefinement::refinement_container_type& collection) override;
   void refineGridpoint(GridStorage& storage, size_t refine_index) override;
   void collectRefinablePoints(GridStorage& storage,
         RefinementFunctor& functor,

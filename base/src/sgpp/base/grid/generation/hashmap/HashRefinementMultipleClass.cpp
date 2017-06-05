@@ -121,18 +121,6 @@ void HashRefinementMultipleClass::addGridpoint(GridStorage& storage, GridPoint& 
     }
 }
 
-void HashRefinementMultipleClass::refineGridpointsCollection(GridStorage& storage,
-            RefinementFunctor& functor,
-            AbstractRefinement::refinement_container_type& collection) {
-    double threshold = functor.getRefinementThreshold();
-
-    for (AbstractRefinement::refinement_pair_type& pair : collection) {
-        if (pair.second >= threshold) {
-            refineGridpoint(storage, pair.first->getSeq());
-        }
-    }
-}
-
 void HashRefinementMultipleClass::collectRefinablePoints(GridStorage& storage,
     RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) {
