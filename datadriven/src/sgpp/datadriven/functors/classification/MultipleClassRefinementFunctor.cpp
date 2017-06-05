@@ -21,12 +21,14 @@
 
 namespace sgpp {
 namespace datadriven {
-
 MultipleClassRefinementFunctor::MultipleClassRefinementFunctor(std::vector<base::Grid*> grids,
                                 std::vector<base::DataVector*> alphas,
-                                size_t refinements_num, double thresh) :
+                                size_t refinements_num,
+                                size_t partCombined,
+                                double thresh) :
                 ZeroCrossingRefinementFunctor(grids, alphas, refinements_num,
                                 false, false, thresh) {
+    partCombined = partCombined;
     // set default
     topPercent = 0.2;
     borderPenalty = 1;
@@ -206,9 +208,8 @@ void MultipleClassRefinementFunctor::findCrossings(
     }
 }
 
-void MultipleClassRefinementFunctor::refine(size_t partCombined) {
+void MultipleClassRefinementFunctor::refine() {
     prepareGrid();
-    std::cout << "Combined Grid Size: " << multigrid->getStorage().getSize() << std::endl;
 
     base::HashRefinementMultipleClass refine(*multigrid, &points, grids,
             borderSum, borderCnt, topPercent);
@@ -262,41 +263,6 @@ bool MultipleClassRefinementFunctor::hasChild(const base::HashGridPoint& gp,
     } else {
       return iter.hintRight(d);
     }
-}
-
-void MultipleClassRefinementFunctor::printPointsPlott() {
-    prepareGrid();
-    for (size_t i = 0; i < points.size() ; i++) {
-        // used as name for printing
-        std::cout << i << ",";
-        // coordinates in all dimensions
-        sgpp::base::GridPoint& gp = multigrid->getStorage().getPoint(i);
-        for (size_t d = 0; d < multigrid->getStorage().getDimension(); d++) {
-            std::cout << gp.getStandardCoordinate(d) << ",";
-        }
-        sgpp::base::MultipleClassPoint mcp = points.at(i);
-        for (size_t d = 0; d < grids.size(); d++) {
-            std::cout << mcp.isClassSet(d) << ",";
-        }
-        // dominate class
-        std::cout << points.at(i).getDominateClass() << std::endl;
-    }
-}
-
-void MultipleClassRefinementFunctor::printPointsInfo() {
-    prepareGrid();
-    std::cout << "Combined Grid Size: " << multigrid->getStorage().getSize() << std::endl;
-    /*
-    for (size_t i = 0; i < points.size() ; i++) {
-        std::cout << "Point " << i << ": ";
-        std::cout << points.at(i).getDominateClass() << " ~";
-
-        sgpp::base::GridPoint& gp = multigrid->getStorage().getPoint(i);
-        for (size_t d = 0; d < multigrid->getStorage().getDimension(); d++) {
-            std::cout << " " << gp.getStandardCoordinate(d) << " -";
-        }
-        std::cout << points.at(i).toString() << std::endl;
-    }*/
 }
 } /* namespace datadriven */
 } /* namespace sgpp */
