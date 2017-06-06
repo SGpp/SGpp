@@ -45,9 +45,34 @@ class MultipleClassRefinementFunctor: public ZeroCrossingRefinementFunctor {
   double operator()(base::GridStorage& storage,
                     size_t seq) const override;
 
+  /**
+   * Gets the range in which densities are considered to be close.
+   * Gives a percentage [0,1].
+   *
+   * @return Range in which densities are consideres close
+   */
   double getTopPercent();
+  /**
+   * Sets the range in which densities are considered to be close.
+   * Set the percentage [0,1] the densities need to have, compared to the
+   * density of the dominating class.
+   *
+   * @param newPercent Set the new range
+   */
   void setTopPercent(double newPercent);
+  /**
+   * Gets the factor, the borders are penalized with.
+   *
+   * @return The border penalty
+   */
   double getBorderPenalty();
+  /**
+   * Sets the factor, used to penalize the borders.
+   * The border score is multiplied with the factor before beeing added
+   * to the overall score.
+   *
+   * @param newPenalty Factor to penalize the borders
+   */
   void setBorderPenalty(double newPenalty);
 
   /**
