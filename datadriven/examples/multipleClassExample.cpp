@@ -49,18 +49,28 @@ std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
  */
 
 int main() {
-    std::string filepath = "../../datadriven/tests/data/";
+    /**
+     * All parameters are set in the beginning.
+     * Allows to have an overview over set parameter.
+     */
+    // Parameter of data set
+    std::string filepath = "../tests/data/";
     std::string filename = "mulitpleClassesTest.arff";
+    // classes set in ARFF are in [0,(classes-1)]
     size_t classes = 4;
+
+    // Parameter for initial grid generation
     size_t dim = 2;
     size_t level = 4;
     double lambda = 1e-2;
+
+    // Parameter for refinement
     size_t numSteps = 5;
     size_t numRefinements = 3;
     size_t partCombined = 0;
     double thresh = 0;
 
-    //  ------------- only calculation after -------------------------
+    // Only calculation after here, no additional parameters set
 
     sgpp::datadriven::Dataset dataset =
             sgpp::datadriven::ARFFTools::readARFF(filepath + filename);
@@ -69,6 +79,10 @@ int main() {
 
     std::cout << "Read training data: " << dataTrain.getNrows() << std::endl;
 
+    /**
+     * Empty DataMartix are created to be filled with the data points from the data set
+     * Using a vector, to be flexible for the amount of classes
+     */
     std::vector<sgpp::base::DataMatrix> dataCl;
     std::vector<sgpp::datadriven::LearnerSGDE> learner;
     for ( size_t i = 0 ; i < classes ; i++ ) {
@@ -78,6 +92,8 @@ int main() {
     /**
      * If classes are set to [0,classes-1] points are seperated into given classes.
      * Independent of the amount of classes needed
+     *
+     * Seperates the points into the different DataMatrix dependent on class
      */
     sgpp::base::DataVector row(dataTrain.getNcols());
     for ( size_t i = 0 ; i < dataTrain.getNrows() ; i++ ) {
@@ -100,37 +116,41 @@ int main() {
      * Bundle grids and surplus vector pointer needed for refinement and
      * evaluation
      */
-    std::vector<sgpp::base::Grid*> grids2;
-    std::vector<sgpp::base::DataVector*> alphas2;
+    std::vector<sgpp::base::Grid*> grids;
+    std::vector<sgpp::base::DataVector*> alphas;
     for ( size_t i = 0 ; i < classes ; i++ ) {
-        grids2.push_back(learner.at(i).getGrid().get());
-        alphas2.push_back(learner.at(i).getSurpluses().get());
+        grids.push_back(learner.at(i).getGrid().get());
+        alphas.push_back(learner.at(i).getSurpluses().get());
     }
 
     std::cout << "---------------------------------------------" << std::endl;
 
+    // Train the grids initially
     for ( size_t i = 0 ; i < classes ; i++ ) {
-        learner.at(i).train(*grids2.at(i), *alphas2.at(i), dataCl.at(i), lambda);
+        learner.at(i).train(*grids.at(i), *alphas.at(i), dataCl.at(i), lambda);
     }
-    std::vector<std::string> eval = doClassification(grids2, alphas2,
+    std::vector<std::string> eval = doClassification(grids, alphas,
                     dataTrain, targetTrain, classes);
     std::cout << "   0   | " << eval.at(0) << " | " << eval.at(1) << std::endl;
 
-    sgpp::datadriven::MultipleClassRefinementFunctor mcrf(grids2, alphas2,
+    // Create the MultipleClassRefinementFunctor with the set parameter
+    sgpp::datadriven::MultipleClassRefinementFunctor mcrf(grids, alphas,
             numRefinements, partCombined, thresh);
     sgpp::datadriven::MultipleClassRefinementFunctor* multifun = &mcrf;
 
     for ( size_t i = 1; i < numSteps + 1; i++ ) {
         std::cout << "---------------------------------------------" << std::endl;
 
+        // The refinement step is organizes by the Functor
         multifun->refine();
 
         // Re-train the grids. This has to happend AFTER all grids are refined
         for ( size_t i = 0 ; i < classes ; i++ ) {
-            learner.at(i).train(*grids2.at(i), *alphas2.at(i), dataCl.at(i), lambda);
+            learner.at(i).train(*grids.at(i), *alphas.at(i), dataCl.at(i), lambda);
         }
 
-        eval = doClassification(grids2, alphas2, dataTrain, targetTrain, classes);
+        // Evaluate the result of the last refinement step
+        eval = doClassification(grids, alphas, dataTrain, targetTrain, classes);
         std::cout << "   " << i << "   | " << eval.at(0) << " | " << eval.at(1)
              << std::endl;
     }
@@ -178,11 +198,11 @@ sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptConfig,
                 solverConfig, regularizationConfig, crossvalidationConfig);
     return learner;
 }
+
 /**
  * Helper function
  * it does the classification, gets the predictions and generates some error-output
  */
-
 std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
                   std::vector<sgpp::base::DataVector*> alphas,
                   sgpp::base::DataMatrix& testData,

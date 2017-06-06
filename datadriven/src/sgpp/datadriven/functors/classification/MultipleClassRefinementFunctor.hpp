@@ -49,7 +49,7 @@ class MultipleClassRefinementFunctor: public ZeroCrossingRefinementFunctor {
    * Gets the range in which densities are considered to be close.
    * Gives a percentage [0,1].
    *
-   * @return Range in which densities are consideres close
+   * @return Range in which densities are considered close
    */
   double getTopPercent();
   /**
@@ -84,18 +84,38 @@ class MultipleClassRefinementFunctor: public ZeroCrossingRefinementFunctor {
   void refine();
 
  private:
+  // Vector saving the additional informations for each GridPoint
   std::vector<sgpp::base::MultipleClassPoint> points;
+  // Combined grid, containing all points of the grids from each class
   base::Grid* multigrid;
+  // Points refined in the combined grid, not in the classes
   size_t partCombined;
+  // Range for close densities
   double topPercent;
+  // factor to penalize the boundaries
   double borderPenalty;
 
+  // what grid is refined, if false, use current_grid_index
   bool refineMulti = false;
   mutable double borderSum;
   mutable double borderCnt;
 
+  /**
+   * Creates the combined grid for the following refinement step.
+   * Sets the variable multigrid.
+   */
   void prepareGrid();
 
+  /**
+   * Finds all neighbors with different dominating class.
+   * Sets neighbors/borders in multigrid.
+   * Recursively searches all GridPoints and all dimensions
+   *
+   * @param leftP Sequence number of left neighbor, greater than GridSize if not found
+   * @param rightP Sequence number of right neighbor, greater than GridSize if not found
+   * @param seq Sequence number of the currently calculated GridPoint
+   * @param d Dimension currently searched
+   */
   void findCrossings(size_t leftP, size_t rightP, size_t seq, size_t d);
   bool hasChild(const base::HashGridPoint& gp, size_t d, bool left) const;
 };

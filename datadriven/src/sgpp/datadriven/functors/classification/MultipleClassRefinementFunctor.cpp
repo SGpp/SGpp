@@ -29,8 +29,7 @@ MultipleClassRefinementFunctor::MultipleClassRefinementFunctor(std::vector<base:
                                 double thresh) :
                 ZeroCrossingRefinementFunctor(grids, alphas, refinements_num,
                                 false, false, thresh), partCombined(partCombined) {
-    //   partComb = partCombined;
-    // set default
+    // Set default values
     topPercent = 0.2;
     borderPenalty = 1;
 }
@@ -38,14 +37,14 @@ MultipleClassRefinementFunctor::MultipleClassRefinementFunctor(std::vector<base:
 double MultipleClassRefinementFunctor::operator()(base::GridStorage&
                               storage, size_t seq) const {
     if (!refineMulti) {
-        // use grid index for class, calc with combined grid
+        // Use grid index for class, calculate with combined grid
         base::HashGridPoint& gPoint = grids.at(current_grid_index)
                 ->getStorage().getPoint(seq);
         size_t seqNew = multigrid->getStorage().getSequenceNumber(gPoint);
         seq = seqNew;
     }
     if ( seq >= points.size() ) {
-        // new added Points not scored
+        // New added Points not scored
         return 0.0;
     }
 
@@ -54,12 +53,12 @@ double MultipleClassRefinementFunctor::operator()(base::GridStorage&
     std::vector<std::tuple<size_t, size_t, bool>> neighbors = mcp.getNeighbors();
 
     double score = 0.0;
-    // score neighbors
+    // Score neighbors
     for (size_t n = 0 ; n < neighbors.size() ; n++) {
         size_t nextPoint = std::get<0>(neighbors.at(n));
         size_t dimension = std::get<1>(neighbors.at(n));
 
-        // change in class
+        // Change in class
         double ctdt = mcp.getDensity(mcp.getDominateClass());
         double ctdn = mcp.getDensity(points.at(nextPoint).getDominateClass());
         double cndt = points.at(nextPoint).getDensity(mcp.getDominateClass());
@@ -68,24 +67,26 @@ double MultipleClassRefinementFunctor::operator()(base::GridStorage&
         double sCon = std::abs((ctdt - cndt) - (ctdn - cndn)) /
                 static_cast<double>(grids.at(current_grid_index)->getDimension());
 
-        // level penalising
+        // Level penalising
         size_t maxD = multigrid->getStorage().getPoint(nextPoint).getLevel(dimension);
         maxD = (maxD < gp.getLevel(dimension)) ? gp.getLevel(dimension) : maxD;
 
         sCon = sCon / pow(2.0, static_cast<double>(maxD));
+        // Add only if scored class is involved
         if (refineMulti) {
+            // Always add, if combined grid is scored
             score = score + sCon;
         } else {
             bool c1 = mcp.getDominateClass() == current_grid_index;
             bool c2 = points.at(nextPoint).getDominateClass() == current_grid_index;
             if ( c1 || c2 ) {
-                // one dominate class is scored
+                // One of the dominating classes is scored
                 score = score + sCon;
             }
         }
     }
 
-    // score borders
+    // Score borders
     double scoreB = borderPenalty * (mcp.getBorderScore() /
                     static_cast<double>(grids.at(0)->getDimension()));
     if (refineMulti) {
@@ -99,7 +100,7 @@ double MultipleClassRefinementFunctor::operator()(base::GridStorage&
     borderCnt += 1.0;
     borderSum += mcp.getBorderScore() * mcp.getDensity(mcp.getDominateClass());
 
-    // score point on its own
+    // Score point on its own
     std::vector<std::tuple<double, size_t, bool>> top = mcp.getTopClasses(topPercent);
     double scoreP = 1+(static_cast<double>(top.size()) / static_cast<double>(grids.size()));
     if (refineMulti) {
@@ -107,7 +108,7 @@ double MultipleClassRefinementFunctor::operator()(base::GridStorage&
     } else {
         for (size_t n = 0 ; n < top.size() ; n++) {
             if (std::get<1>(top.at(n)) == current_grid_index) {
-                // add to score if class in close classes
+                // Add to score if class in close classes
                 score = score * scoreP;
                 break;
             }
@@ -120,12 +121,13 @@ void MultipleClassRefinementFunctor::prepareGrid() {
     size_t dim = grids.at(0)->getDimension();
     points.clear();
 
+    // Create combined grid for refinement step
     multigrid = base::Grid::createLinearGrid(dim);
     for (size_t n = 0; n < grids.size() ; n++) {
         for (size_t seq = 0; seq < grids.at(n)->getSize(); seq++) {
             base::HashGridPoint& gp = grids.at(n)->getStorage().getPoint(seq);
             if ( !multigrid->getStorage().isContaining(gp) ) {
-                // insert a new point
+                // Insert a new point
                 unsigned int* level = new unsigned int[dim];
                 unsigned int* index = new unsigned int[dim];
                 bool leaf = gp.isLeaf();
@@ -141,6 +143,7 @@ void MultipleClassRefinementFunctor::prepareGrid() {
         }
     }
     multigrid->getStorage().recalcLeafProperty();
+    // Find/Set all neighbors/borders for the combined grid
     findCrossings(-1, -1, 0, 0);
 }
 
@@ -167,15 +170,17 @@ void MultipleClassRefinementFunctor::findCrossings(
         }
       } else {
         if ( d == dim && seq < points.size() && leftP < points.size() ) {
+            // Neighbor found
             if (points.at(seq).getDominateClass() !=
                         points.at(leftP).getDominateClass()) {
+                // Save if different dominating class
                 points.at(leftP).addNeighbor(seq, d, false);
                 points.at(seq).addNeighbor(leftP, d, true);
             }
         }
         if ( gp.getIndex(d) > 1 ) {
         } else {
-            // add border
+            // Add border
             points.at(seq).addBorder(d, gp.getLevel(d), true);
         }
       }
@@ -193,16 +198,17 @@ void MultipleClassRefinementFunctor::findCrossings(
         }
       } else {
         if ( d == dim && seq < points.size() && rightP < points.size() ) {
-            // has neighbor in direction
+            // Neighbor in direction found
             if ( points.at(seq).getDominateClass() !=
                         points.at(rightP).getDominateClass() ) {
+                // Save if different dominating class
                 points.at(seq).addNeighbor(rightP, d, false);
                 points.at(rightP).addNeighbor(seq, d, true);
             }
         }
         if ( gp.getIndex(d) < pow(2.0, gp.getLevel(d)) - 1 ) {
         } else {
-            // add border
+            // Add border
             points.at(seq).addBorder(d, gp.getLevel(d), false);
         }
       }
@@ -210,6 +216,7 @@ void MultipleClassRefinementFunctor::findCrossings(
 }
 
 void MultipleClassRefinementFunctor::refine() {
+    // Create multigrid
     prepareGrid();
 
     base::MultipleClassRefinement refine(*multigrid, &points, grids,
@@ -217,7 +224,7 @@ void MultipleClassRefinementFunctor::refine() {
     borderSum = 0.0;
     borderCnt = 0.0;
 
-    // refine every class for itself
+    // Refine every class for itself
     size_t tmp = refinements_num;
     refineMulti = false;
     refinements_num = refinements_num - partCombined;
@@ -230,7 +237,7 @@ void MultipleClassRefinementFunctor::refine() {
         }
     }
 
-    // refine combined grid
+    // Refine combined grid (multigrid)
     refineMulti = true;
     refinements_num = partCombined;
     if (refinements_num > 0) {
