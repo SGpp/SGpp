@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef HASHREFINEMENTMULTIPLECLASS_HPP
-#define HASHREFINEMENTMULTIPLECLASS_HPP
+#ifndef MULTIPLECLASSREFINEMENT_HPP
+#define MULTIPLECLASSREFINEMENT_HPP
 
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/grid/Grid.hpp>
@@ -26,23 +26,23 @@ namespace base {
  * Scores all grid points and refines points based on the information
  * given in the vector of MulitpleClassPoint
  */
-class HashRefinementMultipleClass : public HashRefinement {
+class MultipleClassRefinement : public HashRefinement {
  public:
   /**
    * Constructor.
    *
-   * @param grid Grid to be refined. current_grid_index specifies the grid to be refined
+   * @param grid Combined grid. current_grid_index specifies the grid to be refined
    * @param pts Vector of MultipleClassPoints with additional information
    * @param classGrids Vector of grids
    * @param borderSum Sum of the border scores for all points
    * @param borderCnt amount of points scored towards the border
    * @param topPercent range when densities are concidered close
    */
-    HashRefinementMultipleClass(Grid& grid,
+    MultipleClassRefinement(Grid& grid,
         std::vector<sgpp::base::MultipleClassPoint>* pts,
         std::vector<Grid*>& classGrids,
         double &borderSum, double &borderCnt, double topPercent);
-    virtual ~HashRefinementMultipleClass() {}
+    virtual ~MultipleClassRefinement() {}
 
  protected:
   void refineGridpoint(GridStorage& storage, size_t refine_index) override;
@@ -64,4 +64,4 @@ class HashRefinementMultipleClass : public HashRefinement {
 } /* namespace base */
 } /* namespace sgpp */
 
-#endif /* HASHREFINEMENTMULTIPLECLASS_HPP */
+#endif /* MULTIPLECLASSREFINEMENT_HPP */

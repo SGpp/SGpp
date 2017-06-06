@@ -3,7 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/grid/generation/hashmap/HashRefinementMultipleClass.hpp>
+#include "MultipleClassRefinement.hpp"
+
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/tools/MultipleClassPoint.hpp>
@@ -17,7 +18,7 @@
 namespace sgpp {
 namespace base {
 
-HashRefinementMultipleClass::HashRefinementMultipleClass(Grid& grid,
+MultipleClassRefinement::MultipleClassRefinement(Grid& grid,
         std::vector<sgpp::base::MultipleClassPoint>* pts,
         std::vector<Grid*>& classGrids, double &borderSum, double &borderCnt,
         double topPercent) : HashRefinement(), points(pts),
@@ -25,7 +26,7 @@ HashRefinementMultipleClass::HashRefinementMultipleClass(Grid& grid,
         borderCnt(borderCnt), topPercent(topPercent) {
 }
 
-void HashRefinementMultipleClass::refineGridpoint(GridStorage& storage,
+void MultipleClassRefinement::refineGridpoint(GridStorage& storage,
                                      size_t refine_index) {
     // find index in combined grid
     GridPoint point(storage[refine_index]);
@@ -115,13 +116,13 @@ void HashRefinementMultipleClass::refineGridpoint(GridStorage& storage,
     }
 }
 
-void HashRefinementMultipleClass::addGridpoint(GridStorage& storage, GridPoint& point) {
+void MultipleClassRefinement::addGridpoint(GridStorage& storage, GridPoint& point) {
     if (!storage.isContaining(point)) {
         createGridpoint(storage, point);
     }
 }
 
-void HashRefinementMultipleClass::collectRefinablePoints(GridStorage& storage,
+void MultipleClassRefinement::collectRefinablePoints(GridStorage& storage,
     RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) {
   size_t refinements_num = functor.getRefinementsNum();
