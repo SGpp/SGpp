@@ -19,11 +19,11 @@ namespace datadriven {
 
 /**
  * Multiple class refinement is based on the zero-crossing based refinement.
- * The zero-crossings are not determinated by pairwise comparing the signes
+ * The zero-crossings are not determinate by pairwise comparing the sings
  * of PDFS f_1 - f_2, but by comparing the dominating class at geometric 
  * neighbors, determined for each dimension separately.
  *
- * Finer levels are pealized by 2^{-|l|}.
+ * Finer levels are penalized by 2^{-|l|}.
  */
 class MultipleClassRefinementFunctor: public ZeroCrossingRefinementFunctor {
  public:

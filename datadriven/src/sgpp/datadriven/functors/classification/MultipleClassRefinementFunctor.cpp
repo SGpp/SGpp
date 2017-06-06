@@ -4,8 +4,8 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/grid/generation/hashmap/HashRefinementMultipleClass.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
+#include <sgpp/base/grid/generation/refinement_strategy/MultipleClassRefinement.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/tools/MultipleClassPoint.hpp>
@@ -19,6 +19,7 @@
 #include <vector>
 #include <algorithm>
 
+
 namespace sgpp {
 namespace datadriven {
 MultipleClassRefinementFunctor::MultipleClassRefinementFunctor(std::vector<base::Grid*> grids,
@@ -27,8 +28,8 @@ MultipleClassRefinementFunctor::MultipleClassRefinementFunctor(std::vector<base:
                                 size_t partCombined,
                                 double thresh) :
                 ZeroCrossingRefinementFunctor(grids, alphas, refinements_num,
-                                false, false, thresh) {
-    partCombined = partCombined;
+                                false, false, thresh), partCombined(partCombined) {
+    //   partComb = partCombined;
     // set default
     topPercent = 0.2;
     borderPenalty = 1;
@@ -211,7 +212,7 @@ void MultipleClassRefinementFunctor::findCrossings(
 void MultipleClassRefinementFunctor::refine() {
     prepareGrid();
 
-    base::HashRefinementMultipleClass refine(*multigrid, &points, grids,
+    base::MultipleClassRefinement refine(*multigrid, &points, grids,
             borderSum, borderCnt, topPercent);
     borderSum = 0.0;
     borderCnt = 0.0;

@@ -551,10 +551,10 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha,
                                     solverConfig.eps_);
     myCG.solve(SMatrix, alpha, rhs, false, false, solverConfig.threshold_);
 
-    /*if (myCG.getResiduum() > solverConfig.threshold_) {
+    if (myCG.getResiduum() > solverConfig.threshold_) {
       throw base::operation_exception(
           "LearnerSGDE - train: conjugate gradients is not converged");
-    }*/
+    }
 
     if (ref < adaptivityConfig.numRefinements_) {
       if (!crossvalidationConfig.silent_) {
