@@ -55,7 +55,7 @@ int main() {
      */
     // Parameter of data set
     std::string filepath = "../tests/data/";
-    std::string filename = "mulitpleClassesTest.arff";
+    std::string filename = "multipleClassesTest.arff";
     // classes set in ARFF are in [0,(classes-1)]
     size_t classes = 4;
 
