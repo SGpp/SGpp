@@ -70,6 +70,7 @@
 #include <sgpp/base/grid/generation/refinement_strategy/ForwardSelectorRefinement.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/ImpurityRefinement.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/SubspaceRefinement.hpp>
+#include <sgpp/base/grid/generation/refinement_strategy/MultipleClassRefinement.hpp>
 // #include <sgpp/base/grid/generation/refinement_strategy/PredictiveSubspaceGSGRefinement.hpp>
 /*#include <sgpp/base/grid/generation/refinement_strategy/PredictiveANOVARefinement.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimension.hpp>
@@ -127,6 +128,7 @@
 #include <sgpp/base/tools/QuadRule1D.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/base/tools/StdNormalDistribution.hpp>
+#include <sgpp/base/tools/MultipleClassPoint.hpp>
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
