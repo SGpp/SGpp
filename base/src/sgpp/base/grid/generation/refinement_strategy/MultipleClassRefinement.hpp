@@ -21,8 +21,8 @@ namespace sgpp {
 namespace base {
 
 /**
- * Refinement class for sparse grids
- * Used by the MultipleClassRefinementFuntor
+ * Refinement class for sparse grids.
+ * Used by the MultipleClassRefinementFuntor.
  * Scores all grid points and refines points based on the information
  * given in the vector of MulitpleClassPoint
  */
@@ -32,7 +32,7 @@ class MultipleClassRefinement : public HashRefinement {
    * Constructor.
    *
    * @param grid Combined grid. current_grid_index specifies the grid to be refined
-   * @param pts Vector of MultipleClassPoints with additional information
+   * @param pts Vector of MultipleClassPoint with additional information
    * @param classGrids Vector of grids
    * @param borderSum Sum of the border scores for all points
    * @param borderCnt amount of points scored towards the border
@@ -51,13 +51,23 @@ class MultipleClassRefinement : public HashRefinement {
         AbstractRefinement::refinement_container_type& collection) override;
 
  private:
+    // Additional data for combined grid
     std::vector<sgpp::base::MultipleClassPoint>* points;
+    // Combined grid
     Grid& multigrid;
+    // Grids of the classes
     std::vector<Grid*>& grids;
     double &borderSum;
     double &borderCnt;
+    // Range for close densities
     double topPercent;
 
+    /**
+     * Adds the given Gridpoint into the given GridStorage if not already inside.
+     *
+     * @param storage GridStorage the Gridpoint should be inserted
+     * @param point Gridpoint to insert into given GridStorage
+     */
     void addGridpoint(GridStorage& storage, GridPoint& point);
 };
 

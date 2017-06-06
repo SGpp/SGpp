@@ -21,7 +21,7 @@ namespace base {
 MultipleClassPoint::MultipleClassPoint(base::HashGridPoint& gp,
                                     std::vector<base::Grid*> grids,
                                     std::vector<base::DataVector*> alphas) {
-    // init all classes
+    // Init all classes
     for (size_t t =  0 ; t < grids.size() ; t++) {
         base::DataVector coords(grids.at(t)->getDimension());
         std::unique_ptr<base::OperationEval>
@@ -75,7 +75,7 @@ double MultipleClassPoint::getBorderScore() const {
 }
 
 void MultipleClassPoint::resortClasses() {
-    // resort vector
+    // Resort classByDensity vector
     struct ClassCompare {
         bool operator() (const std::tuple<double, size_t, bool> & t1,
                          const std::tuple<double, size_t, bool> & t2) {

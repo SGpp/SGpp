@@ -28,26 +28,26 @@ MultipleClassRefinement::MultipleClassRefinement(Grid& grid,
 
 void MultipleClassRefinement::refineGridpoint(GridStorage& storage,
                                      size_t refine_index) {
-    // find index in combined grid
+    // Find index in combined grid
     GridPoint point(storage[refine_index]);
     size_t multiSeq = multigrid.getStorage().getSequenceNumber(point);
 
     if ( multiSeq >= points->size() ) {
-        // new point, not in combined grid
+        // New point, not in combined grid
         return;
     }
     sgpp::base::MultipleClassPoint mcp = points->at(multiSeq);
     GridStorage& tStorage = grids.at(mcp.getDominateClass())->getStorage();
 
-    // add top classes
+    // Add top classes
     std::vector<std::tuple<double, size_t, bool>> top = mcp.getTopClasses(topPercent);
     for (size_t n = 0 ; n < top.size() ; n++) {
-        // add points to all top classes
+        // Add points to all top classes
         GridStorage& nStorage = grids.at(std::get<1>(top.at(n)))->getStorage();
         addGridpoint(nStorage, point);
     }
 
-    // add neighbors
+    // Add neighbors
     std::vector<std::tuple<size_t, size_t, bool>> neighbors = mcp.getNeighbors();
     for (size_t n = 0 ; n < neighbors.size() ; n++) {
         size_t nextPoint = std::get<0>(neighbors.at(n));
@@ -58,39 +58,41 @@ void MultipleClassRefinement::refineGridpoint(GridStorage& storage,
         GridStorage& nStorage = grids.at(neighP.getDominateClass())->getStorage();
         GridPoint nPoint = multigrid.getStorage().getPoint(nextPoint);
 
-        // adds original point to needed grid
+        // Adds original point to needed grid
         addGridpoint(tStorage, point);
         addGridpoint(nStorage, point);
 
-        // adds neighbor to needed grid
+        // Adds neighbor to needed grid
         addGridpoint(tStorage, nPoint);
         addGridpoint(nStorage, nPoint);
 
-        // create children in given dimension/direction
-        // from refineGridpoint1D
+        // Create children in given dimension/direction
+        // From refineGridpoint1D
         index_t source_index;
         level_t source_level;
         if ( point.getLevel(dim) < nPoint.getLevel(dim) ) {
             nPoint.get(dim, source_level, source_index);
+            // Find point, who adds the child
+            // Revert isLeft, if neighbor adds child
             isLeft = !isLeft;
         } else {
             point.get(dim, source_level, source_index);
         }
         if ( isLeft ) {
-            // generate left child, if necessary
+            // Generate left child, if necessary
             point.set(dim, source_level + 1, 2 * source_index - 1);
         } else {
-            // generate right child, if necessary
+            // Generate right child, if necessary
             point.set(dim, source_level + 1, 2 * source_index + 1);
         }
-        // insert point in both dominate classes
+        // Insert point in both dominating classes
         addGridpoint(tStorage, point);
         addGridpoint(nStorage, point);
 
         point.set(dim, source_level, source_index);
     }
 
-    // add points to border
+    // Add points towards boundaries
     std::vector<std::tuple<size_t, size_t, bool>> borders = mcp.getBorders();
     if ( borderSum/borderCnt <
             mcp.getBorderScore() * mcp.getDensity(mcp.getDominateClass())) {
@@ -103,10 +105,10 @@ void MultipleClassRefinement::refineGridpoint(GridStorage& storage,
             point.get(dim, source_level, source_index);
 
             if ( isLeft ) {
-                // generate left child, if necessary
+                // Generate left child, if necessary
                 point.set(dim, source_level + 1, 2 * source_index - 1);
             } else {
-                // generate right child, if necessary
+                // Generate right child, if necessary
                 point.set(dim, source_level + 1, 2 * source_index + 1);
             }
             addGridpoint(grids.at(mcp.getDominateClass())->getStorage(), point);
@@ -127,17 +129,17 @@ void MultipleClassRefinement::collectRefinablePoints(GridStorage& storage,
     AbstractRefinement::refinement_container_type& collection) {
   size_t refinements_num = functor.getRefinementsNum();
 
-  // max value equals min value
+  // Max value equals min value
   GridPoint point;
   GridStorage::grid_map_iterator end_iter = storage.end();
 
-  // start iterating over whole grid
+  // Start iterating over whole grid
   for (GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter;
        iter++) {
     point = *(iter->first);
     GridStorage::grid_map_iterator child_iter;
 
-    // all points can be refined
+    // All points can be refined
     AbstractRefinement::refinement_list_type current_value_list =
         getIndicator(storage, iter, functor);
     addElementToCollection(iter, current_value_list, refinements_num,
