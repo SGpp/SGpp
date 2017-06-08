@@ -11,16 +11,15 @@
 namespace sgpp {
 namespace base {
 
-GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
-  //------------------------------------------------------------
-  // n = 0
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree0() {
   coordinates[0] = new DataVector(1);
   coordinates[0]->set(0, 0.000000000000000);
   //------------------------------------------------------------
   weights[0] = new DataVector(1);
   weights[0]->set(0, 2.000000000000000);
-  //------------------------------------------------------------
-  // n = 1
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree1() {
   coordinates[1] = new DataVector(2);
   coordinates[1]->set(0, -0.577350269189626);
   coordinates[1]->set(1, 0.577350269189626);
@@ -28,8 +27,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[1] = new DataVector(2);
   weights[1]->set(0, 1.000000000000000);
   weights[1]->set(1, 1.000000000000000);
-  //------------------------------------------------------------
-  // n = 2
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree2() {
   coordinates[2] = new DataVector(3);
   coordinates[2]->set(0, -0.774596669241483);
   coordinates[2]->set(1, 0.000000000000000);
@@ -39,8 +39,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[2]->set(0, 0.555555555555556);
   weights[2]->set(1, 0.888888888888889);
   weights[2]->set(2, 0.555555555555556);
-  //------------------------------------------------------------
-  // n = 3
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree3() {
   coordinates[3] = new DataVector(4);
   coordinates[3]->set(0, -0.861136311594053);
   coordinates[3]->set(1, -0.339981043584856);
@@ -52,8 +53,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[3]->set(1, 0.652145154862546);
   weights[3]->set(2, 0.652145154862546);
   weights[3]->set(3, 0.347854845137454);
-  //------------------------------------------------------------
-  // n = 4
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree4() {
   coordinates[4] = new DataVector(5);
   coordinates[4]->set(0, -0.906179845938664);
   coordinates[4]->set(1, -0.538469310105683);
@@ -67,8 +69,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[4]->set(2, 0.568888888888889);
   weights[4]->set(3, 0.478628670499366);
   weights[4]->set(4, 0.236926885056189);
-  //------------------------------------------------------------
-  // n = 5
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree5() {
   coordinates[5] = new DataVector(6);
   coordinates[5]->set(0, -0.932469514203152);
   coordinates[5]->set(1, -0.661209386466264);
@@ -84,8 +87,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[5]->set(3, 0.467913934572691);
   weights[5]->set(4, 0.360761573048139);
   weights[5]->set(5, 0.171324492379170);
-  //------------------------------------------------------------
-  // n = 6
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree6() {
   coordinates[6] = new DataVector(7);
   coordinates[6]->set(0, -0.949107912342758);
   coordinates[6]->set(1, -0.741531185599394);
@@ -103,8 +107,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[6]->set(4, 0.381830050505118);
   weights[6]->set(5, 0.279705391489277);
   weights[6]->set(6, 0.129484966168871);
-  //------------------------------------------------------------
-  // n = 7
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree7() {
   coordinates[7] = new DataVector(8);
   coordinates[7]->set(0, -0.960289856497536);
   coordinates[7]->set(1, -0.796666477413627);
@@ -124,8 +129,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[7]->set(5, 0.313706645877887);
   weights[7]->set(6, 0.222381034453374);
   weights[7]->set(7, 0.101228536290377);
-  //------------------------------------------------------------
-  // n = 8
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree8() {
   coordinates[8] = new DataVector(9);
   coordinates[8]->set(0, -0.968160239507626);
   coordinates[8]->set(1, -0.836031107326636);
@@ -147,8 +153,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[8]->set(6, 0.260610696402936);
   weights[8]->set(7, 0.180648160694857);
   weights[8]->set(8, 0.081274388361575);
-  //------------------------------------------------------------
-  // n = 9
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree9() {
   coordinates[9] = new DataVector(10);
   coordinates[9]->set(0, -0.973906528517172);
   coordinates[9]->set(1, -0.865063366688985);
@@ -172,8 +179,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[9]->set(7, 0.219086362515982);
   weights[9]->set(8, 0.149451349150580);
   weights[9]->set(9, 0.066671344308688);
-  //------------------------------------------------------------
-  // n = 10
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree10() {
   coordinates[10] = new DataVector(11);
   coordinates[10]->set(0, -0.978228658146057);
   coordinates[10]->set(1, -0.887062599768095);
@@ -199,8 +207,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[10]->set(8, 0.186290210927734);
   weights[10]->set(9, 0.125580369464905);
   weights[10]->set(10, 0.055668567116173);
-  //------------------------------------------------------------
-  // n = 11
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree11() {
   coordinates[11] = new DataVector(12);
   coordinates[11]->set(0, -0.981560634246719);
   coordinates[11]->set(1, -0.904117256370475);
@@ -228,8 +237,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[11]->set(9, 0.160078328543346);
   weights[11]->set(10, 0.106939325995319);
   weights[11]->set(11, 0.047175336386512);
-  //------------------------------------------------------------
-  // n = 12
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree12() {
   coordinates[12] = new DataVector(13);
   coordinates[12]->set(0, -0.984183054718588);
   coordinates[12]->set(1, -0.917598399222978);
@@ -259,8 +269,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[12]->set(10, 0.138873510219787);
   weights[12]->set(11, 0.092121499837729);
   weights[12]->set(12, 0.040484004765316);
-  //------------------------------------------------------------
-  // n = 13
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree13() {
   coordinates[13] = new DataVector(14);
   coordinates[13]->set(0, -0.986283808696812);
   coordinates[13]->set(1, -0.928434883663574);
@@ -292,8 +303,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[13]->set(11, 0.121518570687903);
   weights[13]->set(12, 0.080158087159760);
   weights[13]->set(13, 0.035119460331752);
-  //------------------------------------------------------------
-  // n = 14
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree14() {
   coordinates[14] = new DataVector(15);
   coordinates[14]->set(0, -0.987992518020485);
   coordinates[14]->set(1, -0.937273392400706);
@@ -327,8 +339,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[14]->set(12, 0.107159220467172);
   weights[14]->set(13, 0.070366047488108);
   weights[14]->set(14, 0.030753241996119);
-  //------------------------------------------------------------
-  // n = 15
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree15() {
   coordinates[15] = new DataVector(16);
   coordinates[15]->set(0, -0.989400934991650);
   coordinates[15]->set(1, -0.944575023073233);
@@ -364,8 +377,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[15]->set(13, 0.095158511682493);
   weights[15]->set(14, 0.062253523938648);
   weights[15]->set(15, 0.027152459411754);
-  //------------------------------------------------------------
-  // n = 16
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree16() {
   coordinates[16] = new DataVector(17);
   coordinates[16]->set(0, -0.990575475314417);
   coordinates[16]->set(1, -0.950675521768768);
@@ -403,8 +417,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[16]->set(14, 0.085036148317179);
   weights[16]->set(15, 0.055459529373987);
   weights[16]->set(16, 0.024148302868550);
-  //------------------------------------------------------------
-  // n = 17
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree17() {
   coordinates[17] = new DataVector(18);
   coordinates[17]->set(0, -0.991565168420931);
   coordinates[17]->set(1, -0.955823949571398);
@@ -444,8 +459,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[17]->set(15, 0.076425730254889);
   weights[17]->set(16, 0.049714548894969);
   weights[17]->set(17, 0.021616013526484);
-  //------------------------------------------------------------
-  // n = 18
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree18() {
   coordinates[18] = new DataVector(19);
   coordinates[18]->set(0, -0.992406843843584);
   coordinates[18]->set(1, -0.960208152134830);
@@ -487,8 +503,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[18]->set(16, 0.069044542737641);
   weights[18]->set(17, 0.044814226765700);
   weights[18]->set(18, 0.019461788229728);
-  //------------------------------------------------------------
-  // n = 19
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree19() {
   coordinates[19] = new DataVector(20);
   coordinates[19]->set(0, -0.993128599185095);
   coordinates[19]->set(1, -0.963971927277914);
@@ -532,8 +549,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[19]->set(17, 0.062672048334109);
   weights[19]->set(18, 0.040601429800386);
   weights[19]->set(19, 0.017614007139153);
-  //------------------------------------------------------------
-  // n = 20
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree20() {
   coordinates[20] = new DataVector(21);
   coordinates[20]->set(0, -0.993752170620389);
   coordinates[20]->set(1, -0.967226838566306);
@@ -579,8 +597,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[20]->set(18, 0.057134425426857);
   weights[20]->set(19, 0.036953789770853);
   weights[20]->set(20, 0.016017228257774);
-  //------------------------------------------------------------
-  // n = 21
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree21() {
   coordinates[21] = new DataVector(22);
   coordinates[21]->set(0, -0.994294585482399);
   coordinates[21]->set(1, -0.970060497835429);
@@ -628,8 +647,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[21]->set(19, 0.052293335152683);
   weights[21]->set(20, 0.033774901584815);
   weights[21]->set(21, 0.014627995298275);
-  //------------------------------------------------------------
-  // n = 22
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree22() {
   coordinates[22] = new DataVector(23);
   coordinates[22]->set(0, -0.994769334997552);
   coordinates[22]->set(1, -0.972542471218115);
@@ -679,8 +699,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[22]->set(20, 0.048037671731085);
   weights[22]->set(21, 0.030988005856979);
   weights[22]->set(22, 0.013411859487142);
-  //------------------------------------------------------------
-  // n = 23
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree23() {
   coordinates[23] = new DataVector(24);
   coordinates[23]->set(0, -0.995187219997021);
   coordinates[23]->set(1, -0.974728555971309);
@@ -732,8 +753,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[23]->set(21, 0.044277438817420);
   weights[23]->set(22, 0.028531388628934);
   weights[23]->set(23, 0.012341229799987);
-  //------------------------------------------------------------
-  // n = 24
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree24() {
   coordinates[24] = new DataVector(25);
   coordinates[24]->set(0, -0.995556969790498);
   coordinates[24]->set(1, -0.976663921459518);
@@ -787,8 +809,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[24]->set(22, 0.040939156701307);
   weights[24]->set(23, 0.026354986615032);
   weights[24]->set(24, 0.011393798501028);
-  //------------------------------------------------------------
-  // n = 25
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree25() {
   coordinates[25] = new DataVector(26);
   coordinates[25]->set(0, -0.995885701145617);
   coordinates[25]->set(1, -0.978385445956471);
@@ -844,8 +867,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[25]->set(23, 0.037962383294363);
   weights[25]->set(24, 0.024417851092632);
   weights[25]->set(25, 0.010551372617343);
-  //------------------------------------------------------------
-  // n = 26
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree26() {
   coordinates[26] = new DataVector(27);
   coordinates[26]->set(0, -0.996179262888989);
   coordinates[26]->set(1, -0.979923475961501);
@@ -903,8 +927,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[26]->set(24, 0.035297053757419);
   weights[26]->set(25, 0.022686231596181);
   weights[26]->set(26, 0.009798996051294);
-  //------------------------------------------------------------
-  // n = 27
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree27() {
   coordinates[27] = new DataVector(28);
   coordinates[27]->set(0, -0.996442497573954);
   coordinates[27]->set(1, -0.981303165370873);
@@ -964,8 +989,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[27]->set(25, 0.032901427782305);
   weights[27]->set(26, 0.021132112592771);
   weights[27]->set(27, 0.009124282593094);
-  //------------------------------------------------------------
-  // n = 28
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree28() {
   coordinates[28] = new DataVector(29);
   coordinates[28]->set(0, -0.996679442260597);
   coordinates[28]->set(1, -0.982545505261413);
@@ -1027,8 +1053,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[28]->set(26, 0.030740492202093);
   weights[28]->set(27, 0.019732085056123);
   weights[28]->set(28, 0.008516903878747);
-  //------------------------------------------------------------
-  // n = 29
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree29() {
   coordinates[29] = new DataVector(30);
   coordinates[29]->set(0, -0.996893484074650);
   coordinates[29]->set(1, -0.983668123279747);
@@ -1092,8 +1119,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[29]->set(27, 0.028784707883323);
   weights[29]->set(28, 0.018466468311091);
   weights[29]->set(29, 0.007968192496170);
-  //------------------------------------------------------------
-  // n = 30
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree30() {
   coordinates[30] = new DataVector(31);
   coordinates[30]->set(0, -0.997087481819477);
   coordinates[30]->set(1, -0.984685909665152);
@@ -1159,8 +1187,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[30]->set(28, 0.027009019184979);
   weights[30]->set(29, 0.017318620790311);
   weights[30]->set(30, 0.007470831579251);
-  //------------------------------------------------------------
-  // n = 31
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree31() {
   coordinates[31] = new DataVector(32);
   coordinates[31]->set(0, -0.997263861849482);
   coordinates[31]->set(1, -0.985611511545268);
@@ -1228,8 +1257,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[31]->set(29, 0.025392065309262);
   weights[31]->set(30, 0.016274394730906);
   weights[31]->set(31, 0.007018610009469);
-  //------------------------------------------------------------
-  // n = 32
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree32() {
   coordinates[32] = new DataVector(33);
   coordinates[32]->set(0, -0.997424694246455);
   coordinates[32]->set(1, -0.986455726230642);
@@ -1299,8 +1329,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[32]->set(30, 0.023915548101749);
   weights[32]->set(31, 0.015321701512935);
   weights[32]->set(32, 0.006606227847589);
-  //------------------------------------------------------------
-  // n = 33
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree33() {
   coordinates[33] = new DataVector(34);
   coordinates[33]->set(0, -0.997571753790842);
   coordinates[33]->set(1, -0.987227816406310);
@@ -1372,8 +1403,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[33]->set(31, 0.022563721985495);
   weights[33]->set(32, 0.014450162748595);
   weights[33]->set(33, 0.006229140555910);
-  //------------------------------------------------------------
-  // n = 34
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree34() {
   coordinates[34] = new DataVector(35);
   coordinates[34]->set(0, -0.997706569099600);
   coordinates[34]->set(1, -0.987935764443852);
@@ -1447,8 +1479,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[34]->set(32, 0.021322979911484);
   weights[34]->set(33, 0.013650828348361);
   weights[34]->set(34, 0.005883433420442);
-  //------------------------------------------------------------
-  // n = 35
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree35() {
   coordinates[35] = new DataVector(36);
   coordinates[35]->set(0, -0.997830462484086);
   coordinates[35]->set(1, -0.988586478902212);
@@ -1524,8 +1557,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[35]->set(33, 0.020181515297735);
   weights[35]->set(34, 0.012915947284064);
   weights[35]->set(35, 0.005565719664248);
-  //------------------------------------------------------------
-  // n = 36
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree36() {
   coordinates[36] = new DataVector(37);
   coordinates[36]->set(0, -0.997944582477914);
   coordinates[36]->set(1, -0.989185963214319);
@@ -1603,8 +1637,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[36]->set(34, 0.019129044489083);
   weights[36]->set(35, 0.012238780100307);
   weights[36]->set(36, 0.005273057279501);
-  //------------------------------------------------------------
-  // n = 37
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree37() {
   coordinates[37] = new DataVector(38);
   coordinates[37]->set(0, -0.998049930535688);
   coordinates[37]->set(1, -0.989739454266386);
@@ -1684,8 +1719,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[37]->set(35, 0.018156577709613);
   weights[37]->set(36, 0.011613444716468);
   weights[37]->set(37, 0.005002880749639);
-  //------------------------------------------------------------
-  // n = 38
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree38() {
   coordinates[38] = new DataVector(39);
   coordinates[38]->set(0, -0.998147383066433);
   coordinates[38]->set(1, -0.990251536854686);
@@ -1767,8 +1803,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[38]->set(36, 0.017256229093725);
   weights[38]->set(37, 0.011034788939163);
   weights[38]->set(38, 0.004752944691633);
-  //------------------------------------------------------------
-  // n = 39
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree39() {
   coordinates[39] = new DataVector(40);
   coordinates[39]->set(0, -0.998237709710559);
   coordinates[39]->set(1, -0.990726238699457);
@@ -1852,8 +1889,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[39]->set(37, 0.016421058381907);
   weights[39]->set(38, 0.010498284531152);
   weights[39]->set(39, 0.004521277098530);
-  //------------------------------------------------------------
-  // n = 40
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree40() {
   coordinates[40] = new DataVector(41);
   coordinates[40]->set(0, -0.998321588574771);
   coordinates[40]->set(1, -0.991167109699016);
@@ -1939,8 +1977,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[40]->set(38, 0.015644938407819);
   weights[40]->set(39, 0.009999938773905);
   weights[40]->set(40, 0.004306140358162);
-  //------------------------------------------------------------
-  // n = 41
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree41() {
   coordinates[41] = new DataVector(42);
   coordinates[41]->set(0, -0.998399618990062);
   coordinates[41]->set(1, -0.991577288340861);
@@ -2028,8 +2067,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[41]->set(39, 0.014922443697357);
   weights[41]->set(40, 0.009536220301748);
   weights[41]->set(41, 0.004105998604647);
-  //------------------------------------------------------------
-  // n = 42
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree42() {
   coordinates[42] = new DataVector(43);
   coordinates[42]->set(0, -0.998472332242508);
   coordinates[42]->set(1, -0.991959557593244);
@@ -2119,8 +2159,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[42]->set(40, 0.014248756431576);
   weights[42]->set(41, 0.009103996637401);
   weights[42]->set(42, 0.003919490253848);
-  //------------------------------------------------------------
-  // n = 43
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree43() {
   coordinates[43] = new DataVector(44);
   coordinates[43]->set(0, -0.998540200636774);
   coordinates[43]->set(1, -0.992316392138516);
@@ -2212,8 +2253,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[43]->set(41, 0.013619586755579);
   weights[43]->set(42, 0.008700481367524);
   weights[43]->set(43, 0.003745404803116);
-  //------------------------------------------------------------
-  // n = 44
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree44() {
   coordinates[44] = new DataVector(45);
   coordinates[44]->set(0, -0.998603645181937);
   coordinates[44]->set(1, -0.992649998447204);
@@ -2307,8 +2349,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[44]->set(42, 0.013031104991583);
   weights[44]->set(43, 0.008323189296218);
   weights[44]->set(44, 0.003582663155281);
-  //------------------------------------------------------------
-  // n = 45
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree45() {
   coordinates[45] = new DataVector(46);
   coordinates[45]->set(0, -0.998663042133818);
   coordinates[45]->set(1, -0.992962348906174);
@@ -2404,8 +2447,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[45]->set(43, 0.012479883770989);
   weights[45]->set(44, 0.007969898229724);
   weights[45]->set(45, 0.003430300868109);
-  //------------------------------------------------------------
-  // n = 46
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree46() {
   coordinates[46] = new DataVector(47);
   coordinates[46]->set(0, -0.998718728584212);
   coordinates[46]->set(1, -0.993255210987769);
@@ -2503,8 +2547,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[46]->set(44, 0.011962848464312);
   weights[46]->set(45, 0.007638616295848);
   weights[46]->set(46, 0.003287453842531);
-  //------------------------------------------------------------
-  // n = 47
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree47() {
   coordinates[47] = new DataVector(48);
   coordinates[47]->set(0, -0.998771007252426);
   coordinates[47]->set(1, -0.993530172266351);
@@ -2604,8 +2649,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[47]->set(45, 0.011477234579235);
   weights[47]->set(46, 0.007327553901276);
   weights[47]->set(47, 0.003153346052309);
-  //------------------------------------------------------------
-  // n = 48
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree48() {
   coordinates[48] = new DataVector(49);
   coordinates[48]->set(0, -0.998820150606635);
   coordinates[48]->set(1, -0.993788661944168);
@@ -2707,8 +2753,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[48]->set(46, 0.011020551031593);
   weights[48]->set(47, 0.007035099590087);
   weights[48]->set(48, 0.003027278988927);
-  //------------------------------------------------------------
-  // n = 49
+}
+
+inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree49() {
   coordinates[49] = new DataVector(50);
   coordinates[49]->set(0, -0.998866404420071);
   coordinates[49]->set(1, -0.994031969432091);
@@ -2812,6 +2859,59 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
   weights[49]->set(47, 0.010590548383652);
   weights[49]->set(48, 0.006759799195746);
   weights[49]->set(49, 0.002908622553158);
+}
+
+GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
+  setGaussLegendreValuesForDegree0();
+  setGaussLegendreValuesForDegree1();
+  setGaussLegendreValuesForDegree2();
+  setGaussLegendreValuesForDegree3();
+  setGaussLegendreValuesForDegree4();
+  setGaussLegendreValuesForDegree5();
+  setGaussLegendreValuesForDegree6();
+  setGaussLegendreValuesForDegree7();
+  setGaussLegendreValuesForDegree8();
+  setGaussLegendreValuesForDegree9();
+  setGaussLegendreValuesForDegree10();
+  setGaussLegendreValuesForDegree11();
+  setGaussLegendreValuesForDegree12();
+  setGaussLegendreValuesForDegree13();
+  setGaussLegendreValuesForDegree14();
+  setGaussLegendreValuesForDegree15();
+  setGaussLegendreValuesForDegree16();
+  setGaussLegendreValuesForDegree17();
+  setGaussLegendreValuesForDegree18();
+  setGaussLegendreValuesForDegree19();
+  setGaussLegendreValuesForDegree20();
+  setGaussLegendreValuesForDegree21();
+  setGaussLegendreValuesForDegree22();
+  setGaussLegendreValuesForDegree23();
+  setGaussLegendreValuesForDegree24();
+  setGaussLegendreValuesForDegree25();
+  setGaussLegendreValuesForDegree26();
+  setGaussLegendreValuesForDegree27();
+  setGaussLegendreValuesForDegree28();
+  setGaussLegendreValuesForDegree29();
+  setGaussLegendreValuesForDegree30();
+  setGaussLegendreValuesForDegree31();
+  setGaussLegendreValuesForDegree32();
+  setGaussLegendreValuesForDegree33();
+  setGaussLegendreValuesForDegree34();
+  setGaussLegendreValuesForDegree35();
+  setGaussLegendreValuesForDegree36();
+  setGaussLegendreValuesForDegree37();
+  setGaussLegendreValuesForDegree38();
+  setGaussLegendreValuesForDegree39();
+  setGaussLegendreValuesForDegree40();
+  setGaussLegendreValuesForDegree41();
+  setGaussLegendreValuesForDegree42();
+  setGaussLegendreValuesForDegree43();
+  setGaussLegendreValuesForDegree44();
+  setGaussLegendreValuesForDegree45();
+  setGaussLegendreValuesForDegree46();
+  setGaussLegendreValuesForDegree47();
+  setGaussLegendreValuesForDegree48();
+  setGaussLegendreValuesForDegree49();
 }
 
 GaussLegendreQuadRule1D::~GaussLegendreQuadRule1D() {}

@@ -148,7 +148,7 @@ void printDifferences(size_t d, std::shared_ptr<AbstractMultiStorage<FloatArrayV
 
 void printCTResults(size_t d, size_t q) {
   auto func = testFunction3;
-  const size_t samples = 100;
+  // const size_t samples = 100;
   auto ctInterpolator =
       CombigridMultiOperation::createLinearL2LejaPolynomialInterpolation(d, MultiFunction(func));
   auto domain = std::vector<std::pair<double, double>>(d, std::pair<double, double>(0.0, 1.0));

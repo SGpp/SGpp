@@ -12,6 +12,23 @@ http://sgpp.sparsegrids.org.
 <!-- ############################################################# -->
 @section downloads__history Versions
 
+@subsection downloads_history_210 Version 2.1.0, 2016/08/12
+- Download:
+  <a href="http://sgpp.sparsegrids.org/downloads/sgpp_2.1.0.tar.gz">
+  sgpp_2.1.0.tar.gz</a>
+
+Important changes:
+- We are modifying the preliminary combigrid module; therefore it is not included in this release
+- Introduced C++11 features
+  - smart pointers
+- Completely restructured documentation of examples
+- A lot more examples
+- Improved build system
+- Better unser instructions for build system
+- More tests
+- Clone method for Grids
+- New learner functionality
+
 @subsection downloads_history_200 Version 2.0.0, 2016/05/20
 - Download:
   <a href="http://sgpp.sparsegrids.org/downloads/sgpp_2.0.0.tar.gz">

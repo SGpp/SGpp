@@ -58,8 +58,7 @@ int main() {
       std::string filename = "../../datasets/ripley/ripleyGarcke.train.arff";
       // load training samples
       std::cout << "# loading file: " << filename << std::endl;
-      sgpp::datadriven::Dataset trainDataset =
-          sgpp::datadriven::ARFFTools::readARFF(filename);
+      sgpp::datadriven::Dataset trainDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
       sgpp::base::DataMatrix& trainData = trainDataset.getData();
       // extract training classes
       sgpp::base::DataVector& trainLabels = trainDataset.getTargets();
@@ -67,8 +66,7 @@ int main() {
       filename = "../../datasets/ripley/ripleyGarcke.test.arff";
       // load test samples
       std::cout << "# loading file: " << filename << std::endl;
-      sgpp::datadriven::Dataset testDataset =
-          sgpp::datadriven::ARFFTools::readARFF(filename);
+      sgpp::datadriven::Dataset testDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
       sgpp::base::DataMatrix& testData = testDataset.getData();
       // extract test classes
       sgpp::base::DataVector& testLabels = testDataset.getTargets();
@@ -77,14 +75,14 @@ int main() {
       sgpp::base::DataVector* validLabels = nullptr;
       // if fixed validation data should be used (required for convergence
       // monitor):
-      //filename = "";  // specify file containing validation data here
+      // filename = "";  // specify file containing validation data here
       // load validation samples
-      //std::cout << "# loading file: " << filename << std::endl;
-      //sgpp::datadriven::Dataset valDataset =
+      // std::cout << "# loading file: " << filename << std::endl;
+      // sgpp::datadriven::Dataset valDataset =
       //    sgpp::datadriven::ARFFTools::readARFF(filename);
-      //validData = &valDataset.getData();
+      // validData = &valDataset.getData();
       // extract validation classes
-      //validLabels = &valDataset.getTargets();
+      // validLabels = &valDataset.getTargets();
 
       /**
        * Specify the ocurring class labels.
@@ -164,8 +162,7 @@ int main() {
        */
       std::cout << "# create regularization config" << std::endl;
       sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-      regularizationConfig.regType_ =
-          sgpp::datadriven::RegularizationType::Identity;
+      regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Identity;
       // regularizationConfig.regType_ =
       // sgpp::datadriven::RegularizationType::Laplace;
 
@@ -173,8 +170,7 @@ int main() {
        * Configure cross-validation.
        */
       std::cout << "# create cross-validation config" << std::endl;
-      sgpp::datadriven::CrossvalidationForRegularizationConfiguration
-          crossvalidationConfig;
+      sgpp::datadriven::CrossvalidationForRegularizationConfiguration crossvalidationConfig;
       crossvalidationConfig.lambda_ = 0.01;
       crossvalidationConfig.enable_ = false;  // set 'true' to perform cv
 
@@ -191,9 +187,8 @@ int main() {
        * Create the learner.
        */
       std::cout << "# creating the learner" << std::endl;
-      sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptConfig,
-                                            solverConfig, regularizationConfig,
-                                            crossvalidationConfig);
+      sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptConfig, solverConfig,
+                                            regularizationConfig, crossvalidationConfig);
       learner.initialize(trainData);
 
       // specify if prior should be used to predict class labels
@@ -205,9 +200,8 @@ int main() {
        * Learn the data.
        */
       std::cout << "# start to train the learner" << std::endl;
-      learner.trainOnline(trainLabels, testData, testLabels, validData,
-                          validLabels, classLabels, maxDataPasses, refType,
-                          refMonitor, refPeriod, accDeclineThreshold,
+      learner.trainOnline(trainLabels, testData, testLabels, validData, validLabels, classLabels,
+                          maxDataPasses, refType, refMonitor, refPeriod, accDeclineThreshold,
                           accDeclineBufferSize, minRefInterval, usePrior);
 
       std::cout << "# finished training" << std::endl;
@@ -230,10 +224,8 @@ int main() {
     /**
      * Average accuracy on test data reagarding 5-fold cv.
      */
-    if ( (totalSets > 1) && (totalFolds > 1) ) {
-
-      std::cout << "Average accuracy on test data (set " +
-                       std::to_string(numSets + 1) + "): "
+    if ((totalSets > 1) && (totalFolds > 1)) {
+      std::cout << "Average accuracy on test data (set " + std::to_string(numSets + 1) + "): "
                 << (1.0 - avgErrorFolds) << "\n";
     }
     ///
@@ -243,12 +235,12 @@ int main() {
     avgErrorsFolds.mult(1.0 / static_cast<double>(totalFolds));
 
     // write error evaluation to csv file
-    //std::ofstream output;
-    //output.open("SGDE_avg_classification_error_"+std::to_string(numSets+1)+".csv");
-    //if (output.fail()) {
+    // std::ofstream output;
+    // output.open("SGDE_avg_classification_error_"+std::to_string(numSets+1)+".csv");
+    // if (output.fail()) {
     //  std::cout << "failed to create csv file!" << std::endl;
     // }
-    //else {
+    // else {
     //  for (size_t i = 0; i < avgErrorsFolds.getSize(); i++) {
     //    output << avgErrorsFolds.get(i) << ";" << std::endl;
     // }
@@ -257,5 +249,3 @@ int main() {
   }
   ///
 }
-
-

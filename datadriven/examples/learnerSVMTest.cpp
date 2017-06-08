@@ -55,8 +55,7 @@ int main() {
       std::string filename = "../../datasets/ripley/ripleyGarcke.train.arff";
       // load training samples
       std::cout << "# loading file: " << filename << std::endl;
-      sgpp::datadriven::Dataset trainDataset =
-          sgpp::datadriven::ARFFTools::readARFF(filename);
+      sgpp::datadriven::Dataset trainDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
       sgpp::base::DataMatrix& trainData = trainDataset.getData();
       // extract training classes
       sgpp::base::DataVector& trainLabels = trainDataset.getTargets();
@@ -64,8 +63,7 @@ int main() {
       filename = "../../datasets/ripley/ripleyGarcke.test.arff";
       // load test samples
       std::cout << "# loading file: " << filename << std::endl;
-      sgpp::datadriven::Dataset testDataset =
-          sgpp::datadriven::ARFFTools::readARFF(filename);
+      sgpp::datadriven::Dataset testDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
       sgpp::base::DataMatrix& testData = testDataset.getData();
       // extract test classes
       sgpp::base::DataVector& testLabels = testDataset.getTargets();
@@ -74,14 +72,14 @@ int main() {
       sgpp::base::DataVector* validLabels = nullptr;
       // if fixed validation data should be used (required for convergence
       // monitor):
-      //filename = "";  // specify file containing validation data here
+      // filename = "";  // specify file containing validation data here
       // load validation samples
-      //std::cout << "# loading file: " << filename << std::endl;
-      //sgpp::datadriven::Dataset valDataset =
+      // std::cout << "# loading file: " << filename << std::endl;
+      // sgpp::datadriven::Dataset valDataset =
       //    sgpp::datadriven::ARFFTools::readARFF(filename);
-      //validData = &(valDataset.getData());
+      // validData = &(valDataset.getData());
       // extract validation classes
-      //validLabels = &(valDataset.getTargets());
+      // validLabels = &(valDataset.getTargets());
 
       /**
        * The grid configuration.
@@ -147,10 +145,8 @@ int main() {
        * Create the learner.
        */
       std::cout << "# creating the learner" << std::endl;
-      sgpp::datadriven::LearnerSVM learner(gridConfig, adaptConfig,
-                                           trainData, trainLabels,
-                                           testData, testLabels,
-                                           validData, validLabels);
+      sgpp::datadriven::LearnerSVM learner(gridConfig, adaptConfig, trainData, trainLabels,
+                                           testData, testLabels, validData, validLabels);
 
       // initialize learner (create grid, svm)
       learner.initialize(budget);
@@ -159,9 +155,8 @@ int main() {
        * Learn the data.
        */
       std::cout << "# start to train the learner" << std::endl;
-      learner.train(maxDataPasses, lambda, betaRef, refType, refMonitor,
-                    refPeriod, errorDeclineThreshold, errorDeclineBufferSize,
-                    minRefInterval);
+      learner.train(maxDataPasses, lambda, betaRef, refType, refMonitor, refPeriod,
+                    errorDeclineThreshold, errorDeclineBufferSize, minRefInterval);
 
       std::cout << "# finished training" << std::endl;
 
@@ -180,12 +175,11 @@ int main() {
       avgErrorsFolds.add(learner.avgErrors);
     }
     avgErrorFolds = avgErrorFolds / static_cast<double>(totalFolds);
-    if ( (totalSets > 1) && (totalFolds > 1) ) {
+    if ((totalSets > 1) && (totalFolds > 1)) {
       /**
        * Average accuracy on test data reagarding 5-fold cv.
        */
-      std::cout << "Average accuracy on test data (set " +
-                       std::to_string(numSets + 1) + "): "
+      std::cout << "Average accuracy on test data (set " + std::to_string(numSets + 1) + "): "
                 << (1.0 - avgErrorFolds) << std::endl;
     }
     avgError += avgErrorFolds;
@@ -193,12 +187,12 @@ int main() {
     avgErrorsFolds.mult(1.0 / static_cast<double>(totalFolds));
 
     // write error evaluation to csv file
-    //std::ofstream output;
-    //output.open("SVM_avg_classification_error_"+std::to_string(numSets+1)+".csv");
-    //if (output.fail()) {
+    // std::ofstream output;
+    // output.open("SVM_avg_classification_error_"+std::to_string(numSets+1)+".csv");
+    // if (output.fail()) {
     //  std::cout << "failed to create csv file!" << std::endl;
     //}
-    //else {
+    // else {
     // for (size_t i = 0; i < avgErrorsFolds.getSize(); i++) {
     //    output << avgErrorsFolds.get(i) << ";" << std::endl;
     //  }
@@ -210,4 +204,3 @@ int main() {
   // std::endl;
   ///
 }
-
