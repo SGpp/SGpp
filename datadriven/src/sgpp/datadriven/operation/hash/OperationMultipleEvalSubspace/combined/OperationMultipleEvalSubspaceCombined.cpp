@@ -3,13 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "../../OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined.hpp"
+#include "OperationMultipleEvalSubspaceCombined.hpp"
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp>
 
 #include <sgpp/globaldef.hpp>
 
-#include <vector>
 #include <string>
+#include <vector>
 
 using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
@@ -202,12 +202,12 @@ DataMatrix* OperationMultipleEvalSubspaceCombined::padDataset(sgpp::base::DataMa
   // X86COMBINED_PARALLEL_DATA_POINTS)
   // add X86COMBINED_VEC_PADDING dummy data points to avoid that problem
   // add X86COMBINED_VEC_PADDING * 2 to also enable the calculateIndexCombined2() method
-  // this works due to special semantics of "addSize()", this function adds additional unused (and
-  // uncounted) rows
-  paddedDataset->addSize(X86COMBINED_VEC_PADDING * 2);
+  // this works due to special semantics of "reserveAdditionalRows()", this function adds additional
+  // unused (and uncounted) rows
+  paddedDataset->reserveAdditionalRows(X86COMBINED_VEC_PADDING * 2);
 
   for (size_t i = paddedDataset->getNrows();
-       i < paddedDataset->getNrows() + paddedDataset->getUnused(); i++) {
+       i < paddedDataset->getNrows() + paddedDataset->getAdditionallyReservedRows(); i++) {
     for (size_t j = 0; j < paddedDataset->getNcols(); j++) {
       paddedDataset->set(i, j, 0.0);
     }
@@ -225,5 +225,6 @@ size_t OperationMultipleEvalSubspaceCombined::getAlignment() {
 }
 
 std::string OperationMultipleEvalSubspaceCombined::getImplementationName() { return "COMBINED"; }
+
 }  // namespace datadriven
 }  // namespace sgpp

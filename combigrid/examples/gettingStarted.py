@@ -164,7 +164,7 @@ def example3():
     print("First result: " + str(result[0]) + ", function value: " + str(func(pysgpp.DataVector(firstParam))))
     print("Second result: " + str(result[1]) + ", function value: " + str(func(pysgpp.DataVector(secondParam))))
 
-## @section combigrid_example_4 Example 4: Serialization and lookup tables
+## @section py_combigrid_example_4 Example 4: Serialization and lookup tables
 ##
 ## This example shows how to store and retrieve computed function values.
 ## At first, we create a function that prints a string if it is called.

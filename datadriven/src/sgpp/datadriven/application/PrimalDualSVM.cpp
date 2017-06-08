@@ -24,7 +24,7 @@ PrimalDualSVM::PrimalDualSVM(size_t dim, size_t dataDim, size_t budget,
       budget(budget),
       useBias(useBias),
       bias(0.0) {
-  svs.setInc(budget);
+  svs.reserveAdditionalRows(budget);
 }
 
 PrimalDualSVM::~PrimalDualSVM() {}
