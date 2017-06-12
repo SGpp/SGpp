@@ -62,7 +62,7 @@ double OperationFirstMomentModPoly::doQuadrature(const DataVector& alpha, DataMa
       }
 
       tmpres *=
-        width * gaussQuadSum + xlower * basis.getIntegral(level, index);
+        width * scaling * gaussQuadSum + xlower * basis.getIntegral(level, index);
     }
 
     res += alpha.get(iter->second) * tmpres;

@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/operation/hash/OperationFirstMomentModLinear.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentModLinear.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -11,14 +11,14 @@
 namespace sgpp {
 namespace base {
 
-double OperationFirstMomentModLinear::doQuadrature(const DataVector& alpha, DataMatrix* bounds) {
+double OperationSecondMomentModLinear::doQuadrature(DataVector& alpha, DataMatrix* bounds) {
   // handle bounds
   size_t numDims = storage.getDimension();
 
   // check if the boundaries are given in the right shape
   if (bounds != nullptr && (bounds->getNcols() != 2 || bounds->getNrows() != numDims)) {
     throw application_exception(
-        "OperationFirstMomentModLinear::doQuadrature - bounds matrix has the wrong shape");
+        "OperationSecondMomentModLinear::doQuadrature - bounds matrix has the wrong shape");
   }
 
   double res = 0;
@@ -38,16 +38,32 @@ double OperationFirstMomentModLinear::doQuadrature(const DataVector& alpha, Data
       xlower = bounds == nullptr ? 0.0 : bounds->get(dim, 0);
       xupper = bounds == nullptr ? 1.0 : bounds->get(dim, 1);
       double width = xupper - xlower;
-      if (level == 1)
-        tmpres *= width * 0.5 + xlower;
-      else if (index == 1)
-        tmpres *= width * std::pow(4.0, 1 - level) / 3.0 + (2. / hInv) * xlower;
-      else if (index == hInv - 1)
-        tmpres *=
-          width * (std::pow(2.0, 1 - 2*level) * (3. * hInv - 2) ) / 3. + (2. / hInv) * xlower;
-      else
-        tmpres *=
-          width * index * std::pow(4.0, -level) + xlower * std::pow(2.0, -level);
+      double val_secondMoment;
+      double val_firstMoment;
+      double val_baseIntegral;
+      if (level == 1) {
+        val_secondMoment = 1./3.0;
+        val_firstMoment = 0.5;
+        val_baseIntegral = 1.0;
+      } else if (index == 1) {
+        val_secondMoment = std::pow(2, 2 - 3*level) / 3.0;
+        val_firstMoment = std::pow(4.0, 1 - level) / 3.0;
+        val_baseIntegral = (2. / hInv);
+      } else if (index == hInv - 1) {
+        val_secondMoment = (std::pow(2.0, 1 - 3*level) *
+                            (2.0 - std::pow(2.0, 2 + level) + 3 * std::pow(4, level)))
+          / 3.0;
+        val_baseIntegral = (2. / hInv);
+        val_firstMoment = std::pow(2.0, 1 - 2*level) * (3. * hInv - 2) / 3.0;
+      } else {
+        val_secondMoment = (index * index + 1. / 6.) * std::pow(8, -level);
+        val_baseIntegral = std::pow(2.0, level);
+        val_firstMoment = std::pow(4.0, -level);
+      }
+      tmpres *=
+        width * width * val_secondMoment
+        + 2 * width * xlower * val_firstMoment
+        + xlower * xlower * val_baseIntegral;
     }
 
     res += alpha.get(iter->second) * tmpres;

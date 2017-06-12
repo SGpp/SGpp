@@ -52,7 +52,7 @@ double OperationFirstMomentPolyBoundary::doQuadrature(const DataVector& alpha, D
       xupper = bounds == nullptr ? 1.0 : bounds->get(dim, 1);
       double width = xupper - xlower;
       double scaling = (index != 0 && indexDbl != hInv) ? 2./hInv : 1./hInv;
-      double left = (indexDbl - 1) * (1./hInv);
+      double left = (index != 0) ? (indexDbl - 1) * (1./hInv) : 0.0;
 
       double gaussQuadSum = 0.;
       for (size_t c = 0; c < quadOrder; c++) {
@@ -61,7 +61,7 @@ double OperationFirstMomentPolyBoundary::doQuadrature(const DataVector& alpha, D
       }
 
       tmpres *=
-        width * gaussQuadSum + xlower * basis.getIntegral(level, index);
+        width * scaling * gaussQuadSum + xlower * basis.getIntegral(level, index);
     }
 
     res += alpha.get(iter->second) * tmpres;
