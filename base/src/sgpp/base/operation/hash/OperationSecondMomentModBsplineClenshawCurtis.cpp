@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/operation/hash/OperationFirstMomentBspline.hpp>
-#include <sgpp/base/grid/type/BsplineGrid.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentModBsplineClenshawCurtis.hpp>
+#include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 
@@ -14,7 +14,8 @@
 namespace sgpp {
 namespace base {
 
-double OperationFirstMomentBspline::doQuadrature(const DataVector& alpha, DataMatrix* bounds) {
+double OperationSecondMomentModBsplineClenshawCurtis::doQuadrature(DataVector& alpha,
+                                                                   DataMatrix* bounds) {
   // handle bounds
   GridStorage& storage = grid->getStorage();
   size_t numDims = storage.getDimension();
@@ -22,9 +23,10 @@ double OperationFirstMomentBspline::doQuadrature(const DataVector& alpha, DataMa
   // check if the boundaries are given in the right shape
   if (bounds != nullptr && (bounds->getNcols() != 2 || bounds->getNrows() != numDims)) {
     throw application_exception(
-        "OperationFirstMomentBspline::doQuadrature - bounds matrix has the wrong shape");
+    "OperationSecondMomentModBsplineClenshawCurtis::doQuadrature"
+    "- bounds matrix has the wrong shape");
   }
-  size_t p = dynamic_cast<sgpp::base::BsplineGrid*>(grid)->getDegree();
+  size_t p = dynamic_cast<sgpp::base::ModBsplineClenshawCurtisGrid*>(grid)->getDegree();
   double pDbl = static_cast<double>(p);
   double res = 0;
   double tmpres = 1;
@@ -35,7 +37,7 @@ double OperationFirstMomentBspline::doQuadrature(const DataVector& alpha, DataMa
   double xupper = 0.0;
   const size_t pp1h = (p + 1) >> 1;  // (p + 1) / 2
   const double pp1hDbl = static_cast<double>(pp1h);
-  const size_t quadOrder = static_cast<size_t>(ceil(pDbl / 2.)) + 1;
+  const size_t quadOrder = static_cast<size_t>(ceil(pDbl / 2.)) + 2;
   base::SBasis& basis = const_cast<base::SBasis&>(grid->getBasis());
   base::DataVector coordinates;
   base::DataVector weights;
@@ -56,20 +58,26 @@ double OperationFirstMomentBspline::doQuadrature(const DataVector& alpha, DataMa
 
       size_t start = ((index > pp1h) ? 0 : (pp1h - index));
       size_t stop = static_cast<size_t>(std::min(pDbl, hInv + pp1hDbl - indexDbl - 1));
-      double scaling = 1./hInv;  // for a single Bspline section
-      double sum_1d = 0.;
+
+      double sum_1d_secondMoment = 0.;
+      double sum_1d_firstMoment = 0.;
       for (size_t n = start; n <= stop; n++) {
-        double offset = scaling * static_cast<double>(n + index - pp1h);
+        index_t left_index =  static_cast<index_t>(n + index - pp1h);
+        double left = clenshawCurtisTable.getPoint(level, left_index);
+        double right = clenshawCurtisTable.getPoint(level, left_index + 1);
         for (size_t c = 0; c < quadOrder; c++) {
-          const double x = offset + scaling * coordinates[c];
-          sum_1d += weights[c] * x * basis.eval(level, index, x);
+          double scaling = right - left;
+          const double x = left + scaling * coordinates[c];
+          sum_1d_secondMoment += scaling * weights[c] * x * x * basis.eval(level, index, x);
+          sum_1d_firstMoment += scaling * weights[c] * x * basis.eval(level, index, x);
         }
       }
-      sum_1d *= scaling;
-      tmpres *=
-        width * sum_1d + xlower * basis.getIntegral(level, index);
-    }
 
+      tmpres *=
+        width * width * sum_1d_secondMoment
+        + 2 * width * xlower * sum_1d_firstMoment
+        + xlower * xlower * basis.getIntegral(level, index);
+    }
     res += alpha.get(iter->second) * tmpres;
   }
 

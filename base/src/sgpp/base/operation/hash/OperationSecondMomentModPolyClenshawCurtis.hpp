@@ -3,10 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef OPERATIONFIRSTMOMENTPOLYCLENSHAWCURTISBOUNDARY_HPP
-#define OPERATIONFIRSTMOMENTPOLYCLENSHAWCURTISBOUNDARY_HPP
+#ifndef OPERATIONSECONDMOMENTMODPOLYCLENSHAWCURTIS_HPP
+#define OPERATIONSECONDMOMENTMODPOLYCLENSHAWCURTIS_HPP
 
-#include <sgpp/base/operation/hash/OperationFirstMoment.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMoment.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -15,19 +15,18 @@ namespace sgpp {
 namespace base {
 
 /**
- * FirstMomemnt of sparse grid function, linear grid without boundaries
+ * FirstMomemnt of sparse grid function, ModPolyClenshawCurtis grid 
  */
-class OperationFirstMomentPolyClenshawCurtisBoundary : public OperationFirstMoment {
+class OperationSecondMomentModPolyClenshawCurtis : public OperationSecondMoment {
  public:
   /**
-   * Constructor of OperationFirstMomentPolyClenshawCurtisBoundary
+   * Constructor of OperationSecondMomentModPolyClenshawCurtis
    *
    * @param storage Pointer to the grid's GridStorage object
    */
-  explicit OperationFirstMomentPolyClenshawCurtisBoundary(Grid* grid) : grid(grid),
+  explicit OperationSecondMomentModPolyClenshawCurtis(Grid* grid) : grid(grid),
            clenshawCurtisTable(base::ClenshawCurtisTable::getInstance()) {}
-
-  ~OperationFirstMomentPolyClenshawCurtisBoundary() override {}
+  ~OperationSecondMomentModPolyClenshawCurtis() override {}
 
   /**
    * Compute first moment of the function
@@ -36,7 +35,7 @@ class OperationFirstMomentPolyClenshawCurtisBoundary : public OperationFirstMome
    * @param alpha Coefficient vector for current grid
    * @param bounds describes the boundaries of the hypercube of the original function
    */
-  double doQuadrature(const DataVector& alpha, DataMatrix* bounds = nullptr) override;
+  double doQuadrature(DataVector& alpha, DataMatrix* bounds = nullptr) override;
 
  protected:
   // Pointer to the grid object (Grid needed for getDegree() function)
@@ -47,4 +46,4 @@ class OperationFirstMomentPolyClenshawCurtisBoundary : public OperationFirstMome
 }  // namespace base
 }  // namespace sgpp
 
-#endif /* OPERATIONFIRSTMOMENTPOLYCLENSHAWCURTISBOUNDARY_HPP */
+#endif /* OPERATIONSECONDMOMENTMODPOLYCLENSHAWCURTIS_HPP */

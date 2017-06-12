@@ -153,14 +153,66 @@ def test_laplace2(grid, lmax):
   op = pysgpp.createOperationLaplaceExplicit(m, grid)
   print m
 
+
+
+def test_firstMoment(grid, lmax):
+  grid.getGenerator().regular(lmax)
+  resolution = 100000
+  gridStorage = grid.getStorage()
+  b = grid.getBasis()
+  op = pysgpp.createOperationFirstMoment(grid)
+  alpha = pysgpp.DataVector(grid.getSize(), 1.0)
+  bounds = pysgpp.DataMatrix(1, 2, 0.0)
+  bounds.set(0, 1, 1.0)
+  res = 0.0
+  for i in range(grid.getSize()):
+    lev = gridStorage.getPoint(i).getLevel(0)
+    ind = gridStorage.getPoint(i).getIndex(0)
+    temp_res = 0.0
+    for c in range(resolution):
+        x = float(c) / resolution
+        temp_res += x * b.eval(lev, ind, x)
+    res += alpha.get(i) * temp_res / resolution
+  print "--FirstMoment--"
+  print res
+  print op.doQuadrature(alpha, bounds)
+  print (res - op.doQuadrature(alpha, bounds))
+
+def test_secondtMoment(grid, lmax):
+  gridStorage = grid.getStorage()
+  gridStorage.clear()
+  grid.getGenerator().regular(lmax)
+  resolution = 1000000
+  b = grid.getBasis()
+  op = pysgpp.createOperationSecondMoment(grid)
+  alpha = pysgpp.DataVector(grid.getSize(), 1.0)
+  bounds = pysgpp.DataMatrix(1, 2, 0.0)
+  bounds.set(0, 1, 1.0)
+  res = 0.0
+  for i in range(grid.getSize()):
+    lev = gridStorage.getPoint(i).getLevel(0)
+    ind = gridStorage.getPoint(i).getIndex(0)
+    temp_res = 0.0
+    for c in range(resolution):
+        x = float(c) / resolution
+        temp_res += x * x *b.eval(lev, ind, x)
+    res += alpha.get(i) * temp_res / resolution
+
+  print "--SecondMoment--"
+  print res
+  print op.doQuadrature(alpha, bounds)
+  print (res - op.doQuadrature(alpha, bounds))
+
 # test_poly_evaldx()
 # plot_evaldx()
 # test_base()
 d = 1
-l = 4
-grid = pysgpp.Grid.createModPolyGrid(d, 3)
-plot_evaldx_prod(grid, 4, 1, 4)
+l = 3
+grid = pysgpp.Grid.createModLinearGrid(d)
+# plot_evaldx_prod(grid, 4, 1, 4)
 # test_laplace(grid, l)
 # test_laplace2(grid, l)
 # test_LTwoDot(grid, l)
 # test_LTwoDotImplicit(grid, l)
+test_firstMoment(grid, l)
+test_secondtMoment(grid, l)

@@ -22,7 +22,7 @@ double OperationFirstMomentModPolyClenshawCurtis::doQuadrature(const DataVector&
   // check if the boundaries are given in the right shape
   if (bounds != nullptr && (bounds->getNcols() != 2 || bounds->getNrows() != numDims)) {
     throw application_exception(
-                                "OperationFirstMomentPoly::doQuadrature - bounds matrix has the wrong shape");
+          "OperationFirstMomentPoly::doQuadrature - bounds matrix has the wrong shape");
   }
 
   double res = 0;
@@ -64,7 +64,7 @@ double OperationFirstMomentModPolyClenshawCurtis::doQuadrature(const DataVector&
       }
 
       tmpres *=
-        width * gaussQuadSum + xlower * basis.getIntegral(level, index);
+        width * scaling * gaussQuadSum + xlower * basis.getIntegral(level, index);
     }
 
     res += alpha.get(iter->second) * tmpres;

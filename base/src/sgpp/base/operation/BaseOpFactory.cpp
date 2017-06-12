@@ -57,6 +57,10 @@
 #include <sgpp/base/operation/hash/OperationFirstMomentModPolyClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationFirstMomentPolyClenshawCurtisBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationFirstMomentBspline.hpp>
+#include <sgpp/base/operation/hash/OperationFirstMomentModBspline.hpp>
+#include <sgpp/base/operation/hash/OperationFirstMomentBsplineBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationFirstMomentBsplineClenshawCurtis.hpp>
+#include <sgpp/base/operation/hash/OperationFirstMomentModBsplineClenshawCurtis.hpp>
 
 #include <sgpp/base/operation/hash/OperationQuadrature.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureLinear.hpp>
@@ -81,6 +85,18 @@
 
 #include <sgpp/base/operation/hash/OperationSecondMomentLinear.hpp>
 #include <sgpp/base/operation/hash/OperationSecondMomentLinearBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentModLinear.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentPoly.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentModPoly.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentPolyBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentPolyClenshawCurtis.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentModPolyClenshawCurtis.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentPolyClenshawCurtisBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentBspline.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentModBspline.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentBsplineBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentBsplineClenshawCurtis.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMomentModBsplineClenshawCurtis.hpp>
 
 #include <sgpp/base/operation/hash/OperationConvertPrewavelet.hpp>
 
@@ -333,6 +349,14 @@ base::OperationFirstMoment* createOperationFirstMoment(base::Grid& grid) {
     return new base::OperationFirstMomentModPolyClenshawCurtis(&grid);
   } else if (grid.getType() == base::GridType::Bspline) {
     return new base::OperationFirstMomentBspline(&grid);
+  } else if (grid.getType() == base::GridType::ModBspline) {
+    return new base::OperationFirstMomentModBspline(&grid);
+  } else if (grid.getType() == base::GridType::BsplineBoundary) {
+    return new base::OperationFirstMomentBsplineBoundary(&grid);
+  } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
+    return new base::OperationFirstMomentBsplineClenshawCurtis(&grid);
+  } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
+    return new base::OperationFirstMomentModBsplineClenshawCurtis(&grid);
   } else {
     throw base::factory_exception(
         "createOperationFirstMoment is not implemented for this grid type.");
@@ -346,6 +370,30 @@ base::OperationSecondMoment* createOperationSecondMoment(base::Grid& grid) {
              grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearTruncatedBoundary) {
     return new base::OperationSecondMomentLinearBoundary(grid.getStorage());
+  } else if (grid.getType() == base::GridType::ModLinear) {
+    return new base::OperationSecondMomentModLinear(grid.getStorage());
+  } else if (grid.getType() == base::GridType::Poly) {
+    return new base::OperationSecondMomentPoly(&grid);
+  } else if (grid.getType() == base::GridType::ModPoly) {
+    return new base::OperationSecondMomentModPoly(&grid);
+  } else if (grid.getType() == base::GridType::PolyBoundary) {
+    return new base::OperationSecondMomentPolyBoundary(&grid);
+  } else if (grid.getType() == base::GridType::PolyClenshawCurtis) {
+    return new base::OperationSecondMomentPolyClenshawCurtis(&grid);
+  } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
+    return new base::OperationSecondMomentModPolyClenshawCurtis(&grid);
+  } else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary) {
+    return new base::OperationSecondMomentPolyClenshawCurtisBoundary(&grid);
+  } else if (grid.getType() == base::GridType::Bspline) {
+    return new base::OperationSecondMomentBspline(&grid);
+  } else if (grid.getType() == base::GridType::ModBspline) {
+    return new base::OperationSecondMomentModBspline(&grid);
+  } else if (grid.getType() == base::GridType::BsplineBoundary) {
+    return new base::OperationSecondMomentBsplineBoundary(&grid);
+  } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
+    return new base::OperationSecondMomentBsplineClenshawCurtis(&grid);
+  } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
+    return new base::OperationSecondMomentModBsplineClenshawCurtis(&grid);
   } else {
     throw base::factory_exception(
         "createOperationSecondMoment is not implemented for this grid type.");
