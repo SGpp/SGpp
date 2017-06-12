@@ -8,19 +8,19 @@ import numpy as np
 import json
 
 from matplotlib import rc
+from scipy.integrate.quadpack import dblquad
 
+from pysgpp import createOperationDensityMarginalize, \
+    createOperationLTwoDotExplicit, createOperationQuadrature, \
+    createOperationMakePositive, DataVector, Grid, \
+    BandwidthOptimizationType_SILVERMANSRULE, \
+    KernelType_GAUSSIAN
 import pysgpp.extensions.datadriven.uq.dists as dists
 from pysgpp.extensions.datadriven.uq.dists import J, Normal, Uniform, SGDEdist
 from pysgpp.extensions.datadriven.uq.plot import plotDensity2d
 from pysgpp.extensions.datadriven.uq.plot.plot1d import plotDensity1d, plotSG1d
-from scipy.integrate.quadpack import dblquad
-from pysgpp._pysgpp_swig import createOperationDensityMarginalize, \
-    createOperationLTwoDotExplicit, createOperationQuadrature, \
-    createOperationMakePositive
-import json
-from pysgpp.extensions.datadriven.uq.plot.plot3d import plotDensity3d
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSGDE2d, plotSG2d
-from pysgpp.pysgpp_swig import DataVector, Grid
+from pysgpp.extensions.datadriven.uq.plot.plot3d import plotDensity3d, plotSG3d
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import hierarchize
 from pysgpp.extensions.datadriven.uq.transformation.JointTransformation import JointTransformation
 from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
@@ -35,30 +35,43 @@ class SGDEdistTest(unittest.TestCase):
     def testExpPoly2d(self):
         trainSamples = np.loadtxt("exp_2d.csv").T
         # build parameter set
-        dist = SGDEdist.byLearnerSGDEConfig(trainSamples,
-                                            config={"grid_level": 3,
-                                                    "grid_type": "modpoly",
-                                                    "grid_maxDegree": 6,
-                                                    "refinement_numSteps": 0,
-                                                    "refinement_numPoints": 10,
-                                                    "solver_threshold": 1e-10,
-                                                    "solver_verbose": False,
-                                                    "regularization_type": "Identity",
-                                                    "crossValidation_lambda": 0.000562341,
-                                                    "crossValidation_enable": True,
-                                                    "crossValidation_kfold": 5,
-                                                    "crossValidation_silent": False,
-                                                    "sgde_makePositive": False,
-                                                    "sgde_makePositive_candidateSearchAlgorithm": "joined",
-                                                    "sgde_makePositive_interpolationAlgorithm": "setToZero",
-                                                    "sgde_makePositive_verbose": True,
-                                                    "sgde_unitIntegrand": True})
+        dist_sgde = SGDEdist.byLearnerSGDEConfig(trainSamples,
+                                                 config={"grid_level": 5,
+                                                         "grid_type": "polyBoundary",
+                                                         "grid_maxDegree": 6,
+                                                         "refinement_numSteps": 0,
+                                                         "refinement_numPoints": 10,
+                                                         "solver_threshold": 1e-10,
+                                                         "solver_verbose": False,
+                                                         "regularization_type": "Laplace",
+                                                         "crossValidation_lambda": 1e-6,
+                                                         "crossValidation_enable": True,
+                                                         "crossValidation_kfold": 5,
+                                                         "crossValidation_silent": False,
+                                                         "sgde_makePositive": False,
+                                                         "sgde_makePositive_candidateSearchAlgorithm": "joined",
+                                                         "sgde_makePositive_interpolationAlgorithm": "setToZero",
+                                                         "sgde_makePositive_verbose": True,
+                                                         "sgde_unitIntegrand": True})
 
-        fig = plt.figure()
-        plotSG2d(dist.grid, dist.alpha, show_grid_points=True)
-        plt.scatter(trainSamples[:, 0], trainSamples[:, 1], np.zeros(trainSamples.shape[0]))
-        plt.title("%.12f" % dist.vol)
+        # build parameter set
+        dist_kde = dists.KDEDist(trainSamples,
+                                 kernelType=KernelType_GAUSSIAN,
+                                 bandwidthOptimizationType=BandwidthOptimizationType_SILVERMANSRULE)
+
+
+        # fig = plt.figure()
+        # plotSG2d(dist.grid, dist.alpha, show_grid_points=True)
+        # plt.scatter(trainSamples[:, 0], trainSamples[:, 1], np.zeros(trainSamples.shape[0]))
+        # plt.title("%.12f" % dist.vol)
+
+        fig, _, _ = plotDensity3d(dist_sgde)
+        plt.title("SGDE: vol=%g" % dist_sgde.vol)
+
+        fig, _, _ = plotDensity3d(dist_kde)
+        plt.title("KDE: vol=1.0")
         plt.show()
+
 
 #     def testExp2d(self):
 #         trainSamples = np.loadtxt("/home/franzefn/Promotion/UQ/matlab/sgpp/exp_2d.csv").T

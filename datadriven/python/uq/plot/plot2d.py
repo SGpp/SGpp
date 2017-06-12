@@ -129,10 +129,10 @@ def plotDensity2d(U, n=50, addContour=True,
 
 def plotSGDE2d(U, n=100):
     gs = U.grid.getStorage()
-    x = [0.0] * gs.size()
-    y = [0.0] * gs.size()
+    x = [0.0] * gs.getSize()
+    y = [0.0] * gs.getSize()
 
-    for i in xrange(gs.size()):
+    for i in xrange(gs.getSize()):
         x[i] = gs.getCoordinate(gs.getPoint(i), 0)
         y[i] = gs.getCoordinate(gs.getPoint(i), 1)
 
@@ -200,7 +200,7 @@ def plotFunction2d(f, addContour=True, n=101,
 def plotSG2d(grid, alpha, addContour=True, n=100,
              show_negative=False, show_grid_points=False,
              show_numbers=False,
-             colorbarLabel=r"$\hat{f}_{\mathcal{I}}(\boldsymbol{\xi})$",
+             colorbarLabel=r"$\hat{f}_{\mathcal{I}}(\xi)$",
              levels=None,
              clabels=None,
              manual_locations=None):

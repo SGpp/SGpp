@@ -541,6 +541,7 @@ base::OperationMultipleEval* LearnerSGDE::computeMultipleEvalMatrix(base::Grid& 
   if (grid.getType() == base::GridType::Bspline || grid.getType() == base::GridType::ModBspline ||
       grid.getType() == base::GridType::BsplineBoundary ||
       grid.getType() == base::GridType::BsplineClenshawCurtis ||
+      grid.getType() == base::GridType::ModBsplineClenshawCurtis ||
       grid.getType() == base::GridType::ModBspline ||
       grid.getType() == base::GridType::PolyClenshawCurtis ||
       grid.getType() == base::GridType::PolyClenshawCurtisBoundary ||

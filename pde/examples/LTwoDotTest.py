@@ -1,4 +1,5 @@
 import pysgpp
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBasis
 import numpy as np
 import random
 import matplotlib.pyplot as plt
@@ -54,7 +55,6 @@ def test_LTwoDot(grid, l):
                 print "iik:{} lik:{} ijk:{} ljk:{} error: {}".format(iik, lik, ijk, ljk, error)
                 print "is:{} should:{}".format(m.get(i,j), sol)
 
-
 def test_LTwoDotImplicit(grid, l):
     grid.getGenerator().regular(l)
     gridStorage = grid.getStorage()
@@ -79,21 +79,88 @@ def test_LTwoDotImplicit(grid, l):
             print "result:{}".format(result[i])
             print "resultExplicit:{}".format(resultExplicit[i])
 
+def test_laplace(grid, lmax):
+    resolution = 100000
+    grid.getGenerator().regular(lmax)
+    gridStorage = grid.getStorage()
+    size = gridStorage.getSize()
+    b = getBasis(grid)
+    op = pysgpp.createOperationLaplace(grid)
+    alpha = pysgpp.DataVector(size)
+    result = pysgpp.DataVector(size)
+
+    for point_i in range(size):
+      for point_j in range(size):
+        gp_i = gridStorage.getPoint(point_i)
+        gp_j = gridStorage.getPoint(point_j)
+        print("--------")
+        for i in range(0, size):
+          alpha[i] = 0
+        alpha[point_i] = 1
+        op.mult(alpha, result)
+        xs = np.linspace(0, 1, resolution)
+        approx = sum([b.evalDx(gp_i.getLevel(0), gp_i.getIndex(0), x) * b.evalDx(gp_j.getLevel(0), gp_j.getIndex(0), x) for x in xs]) / resolution
+        print("i,j: {},{} result: {} approx:{}".format(point_i, point_j, result[point_j], approx))
+        if(abs(result.get(point_j) - approx) > 1e-1):
+          print "--------"
+          print "points: {},{} ".format(point_i, point_j)
+          print "approx:{}".format(approx)
+          print "result:{}".format(result.get(point_j))
+          # print result
+          print "--------"
+
 def test_poly_evaldx():
     l = 3
     i = 1
     x = 0.12
     eps = 0.0001
-    b = pysgpp.SPolyBase(3)
+    b = pysgpp.SPolyModifiedClenshawCurtisBase(3)
     tang = b.evalDx(l, i, x)
     sec = (b.eval(l, i, x + eps) -  b.eval(l, i, x - eps)) / (2*eps)
     print "evalDx:{}".format(tang)
     print "sekante:{}".format(sec)
     print "evals: {} {}".format( b.eval(l, i, x - eps), b.eval(l, i, x + eps) )
+
+def plot_evaldx():
+    l = 3
+    i = 1
+    xs = np.linspace(0, 1, 50)
+    b = pysgpp.SPolyClenshawCurtisBase(3)
+    plt.plot(xs, [b.evalDx(l, i, x) for x in xs])
+    plt.show()
+
+def plot_evaldx_prod(grid, lmax, i, j):
+    grid.getGenerator().regular(lmax)
+    gridStorage = grid.getStorage()
+    b = getBasis(grid)
+    gp_i = gridStorage.getPoint(i)
+    gp_j = gridStorage.getPoint(j)
+    lik = gp_i.getLevel(0)
+    ljk = gp_j.getLevel(0)
+    iik = gp_i.getIndex(0)
+    ijk = gp_j.getIndex(0)
+    xs = np.linspace(0, 1, 100000)
+
+    plt.plot(xs, [b.evalDx(lik, iik, x) * b.evalDx(ljk, ijk, x) for x in xs])
+    plt.show()
+
+
+def test_laplace2(grid, lmax):
+  # grid.getGenerator().regular(lmax)
+  gridStorage = grid.getStorage()
+  size = gridStorage.getSize()
+  m = pysgpp.DataMatrix(size, size)
+  op = pysgpp.createOperationLaplaceExplicit(m, grid)
+  print m
+
 # test_poly_evaldx()
+# plot_evaldx()
 # test_base()
 d = 1
-l = 5
-grid = pysgpp.Grid.createModPolyClenshawCurtisGrid(d, 3)
+l = 4
+grid = pysgpp.Grid.createModPolyGrid(d, 3)
+plot_evaldx_prod(grid, 4, 1, 4)
+# test_laplace(grid, l)
+# test_laplace2(grid, l)
 # test_LTwoDot(grid, l)
-test_LTwoDotImplicit(grid, l)
+# test_LTwoDotImplicit(grid, l)

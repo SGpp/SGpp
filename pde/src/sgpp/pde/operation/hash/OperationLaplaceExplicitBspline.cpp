@@ -136,7 +136,6 @@ void OperationLaplaceExplicitBspline::buildMatrix(sgpp::base::Grid* grid) {
 
         res += temp_res;
       }
-
       m_->set(i, j, res);
       m_->set(j, i, res);
     }

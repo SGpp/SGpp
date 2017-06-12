@@ -24,7 +24,6 @@ OperationMatrixLTwoDotModPoly::~OperationMatrixLTwoDotModPoly() {}
 void OperationMatrixLTwoDotModPoly::mult(sgpp::base::DataVector& alpha,
                                          sgpp::base::DataVector& result) {
   const size_t p = dynamic_cast<sgpp::base::ModPolyGrid*>(grid)->getDegree();
-  // const double pp1hDbl = static_cast<double>(pp1h);
   const size_t quadOrder = p + 1;
   // clenshawCurtisPoint Method does not leave base const so we cast const'ness away
   base::SBasis& basis = const_cast<base::SBasis&>(grid->getBasis());
@@ -75,7 +74,6 @@ void OperationMatrixLTwoDotModPoly::mult(sgpp::base::DataVector& alpha,
             const double x = left + scaling * coordinates[c];
             temp_res += weights[c] * basis.eval(lik, iik, x) * basis.eval(ljk, ijk, x);
           }
-          // std::cout << "k:" << k << " temp_res:" << temp_res*scaling << std::endl;
           temp_ij *= scaling*temp_res;
         }
       }

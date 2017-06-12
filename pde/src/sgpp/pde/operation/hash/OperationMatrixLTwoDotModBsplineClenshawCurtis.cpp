@@ -69,11 +69,11 @@ void OperationMatrixLTwoDotModBsplineClenshawCurtis::mult(sgpp::base::DataVector
           basis.clenshawCurtisPoint(ljk, ijk + static_cast<base::index_t>(pp1h));
         // points are not uniformly distributed thus we need to find the left and right boundarys
         const double left_i = ((left_iik > 0)? basis.clenshawCurtisPoint(lik, left_iik) : 0.0);
-        const double right_i = (right_iik_point == 0.0
-                                || (right_iik_point >= 1.0)) ? 1.0 : right_iik_point;
+        const double right_i = (right_iik_point == 0.0 || (right_iik_point >= 1.0))
+          ? 1.0 : right_iik_point;
         const double left_j = ((left_ijk > 0)? basis.clenshawCurtisPoint(ljk, left_ijk) : 0.0);
-        const double right_j = (right_ijk_point == 0.0
-                                || (right_ijk_point >= 1.0)) ? 1.0 : right_ijk_point;
+        const double right_j = (right_ijk_point == 0.0 || (right_ijk_point >= 1.0))
+          ? 1.0 : right_ijk_point;
 
         if (left_j > right_i && left_i > right_j) {
           // Ansatz functions do not not overlap:
