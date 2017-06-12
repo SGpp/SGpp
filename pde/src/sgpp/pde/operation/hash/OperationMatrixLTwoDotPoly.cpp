@@ -24,7 +24,6 @@ OperationMatrixLTwoDotPoly::~OperationMatrixLTwoDotPoly() {}
 void OperationMatrixLTwoDotPoly::mult(sgpp::base::DataVector& alpha,
                                       sgpp::base::DataVector& result) {
   const size_t p = dynamic_cast<sgpp::base::PolyGrid*>(grid)->getDegree();
-  // const double pp1hDbl = static_cast<double>(pp1h);
   const size_t quadOrder = p + 1;
   base::SBasis& basis = const_cast<base::SBasis&>(grid->getBasis());
   base::GridStorage& storage = grid->getStorage();

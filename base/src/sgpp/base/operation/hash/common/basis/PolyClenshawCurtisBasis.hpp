@@ -91,8 +91,6 @@ class PolyClenshawCurtisBasis : public Basis<LT, IT> {
     // uses the logarithmic derivative method from the second answer
     // http://math.stackexchange.com/questions/809927/first-derivative-of-lagrange-polynomial
 
-    double hInvDbl = static_cast<double>(1 << level);
-    double h = 1 / hInvDbl;
     size_t deg = std::min<size_t>(degree, level + 1);
     double result = eval(level, index, x);
     if (result == 0.0) return 0.0;
@@ -103,13 +101,13 @@ class PolyClenshawCurtisBasis : public Basis<LT, IT> {
     size_t id = root;
     root++;
     HashGridPoint gp(1);
-    gp.setAsHierarchicalGridPoint(0, level, root);
+    gp.setAsHierarchicalGridPoint(0, level, static_cast<IT>(root));
 
     double xroot = clenshawCurtisTable.getPoint(gp.getLevel(0), gp.getIndex(0));
     sum += 1 / (x - xroot);
     root -= 2;
     for (size_t j = 2; j < static_cast<size_t>(1 << deg); j *= 2) {
-      gp.setAsHierarchicalGridPoint(0, level, root);
+      gp.setAsHierarchicalGridPoint(0, level, static_cast<IT>(root));
       xroot = clenshawCurtisTable.getPoint(gp.getLevel(0), gp.getIndex(0));
       sum += 1 / (x - xroot);
       root += idxtable[id & 3] * j;
