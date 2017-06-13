@@ -28,11 +28,10 @@ MultipleClassPoint::MultipleClassPoint(base::HashGridPoint& gp,
               opEval(op_factory::createOperationEval(*grids.at(t)));
         gp.getStandardCoordinates(coords);
         double eval = opEval->eval(*alphas.at(t), coords);
-        std::tuple<double, size_t, bool>* c1 =
-               new std::tuple<double, size_t, bool> { eval, t,
+        std::tuple<double, size_t, bool> c1 { eval, t,
                     grids.at(t)->getStorage().isContaining(gp) };
-        insertDensitySorted(c1);
-        classById.push_back(c1);
+        insertDensitySorted(&c1);
+        classById.push_back(&c1);
     }
 }
 
@@ -45,7 +44,7 @@ double MultipleClassPoint::getDensity(size_t classId) const {
 }
 
 void MultipleClassPoint::addNeighbor(size_t neighbor, size_t dim, bool isLeft) {
-    std::tuple<size_t, size_t, bool> neigh = { neighbor, dim, isLeft };
+    std::tuple<size_t, size_t, bool> neigh { neighbor, dim, isLeft };
     if ( std::find(neighbors.begin(), neighbors.end(), neigh) == neighbors.end() ) {
         neighbors.push_back(neigh);
     }
@@ -56,7 +55,7 @@ std::vector<std::tuple<size_t, size_t, bool>> MultipleClassPoint::getNeighbors()
 }
 
 void MultipleClassPoint::addBorder(size_t dim, size_t level, bool isLeft) {
-    std::tuple<size_t, size_t, bool> b = { dim, level, isLeft };
+    std::tuple<size_t, size_t, bool> b { dim, level, isLeft };
     if ( std::find(borders.begin(), borders.end(), b) == borders.end() ) {
         borders.push_back(b);
     }
