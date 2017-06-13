@@ -138,7 +138,7 @@ int main() {
             numRefinements, partCombined, thresh);
     sgpp::datadriven::MultipleClassRefinementFunctor* multifun = &mcrf;
 
-    for ( size_t i = 1; i < numSteps + 1; i++ ) {
+    for ( size_t x = 1; x < numSteps + 1; x++ ) {
         std::cout << "---------------------------------------------" << std::endl;
 
         // The refinement step is organizes by the Functor
@@ -151,7 +151,7 @@ int main() {
 
         // Evaluate the result of the last refinement step
         eval = doClassification(grids, alphas, dataTrain, targetTrain, classes);
-        std::cout << "   " << i << "   | " << eval.at(0) << " | " << eval.at(1)
+        std::cout << "   " << x << "   | " << eval.at(0) << " | " << eval.at(1)
              << std::endl;
     }
 }

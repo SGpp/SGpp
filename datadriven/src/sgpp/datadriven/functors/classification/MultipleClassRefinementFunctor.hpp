@@ -34,7 +34,7 @@ class MultipleClassRefinementFunctor: public ZeroCrossingRefinementFunctor {
    * @param alphas Vector of surpluses related to the grids
    * @param refinements_num Maximum number of refinements done
    * @param partCombined Number of refinement done in the combined grid
-   * @param threshold Threshold for refinement scores
+   * @param thresh Threshold for refinement scores
    */
   MultipleClassRefinementFunctor(std::vector<base::Grid*> grids,
                                 std::vector<base::DataVector*> alphas,
