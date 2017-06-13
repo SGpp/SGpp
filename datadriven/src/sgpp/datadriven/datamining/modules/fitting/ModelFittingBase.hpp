@@ -176,7 +176,7 @@ class ModelFittingBase {
   DataVector alpha;
 
   /**
-   * Pointer to #sgpp::base::Dataset. The initial grid is fitted on the given data. Adaptive
+   * Pointer to #sgpp::datadriven::Dataset. The initial grid is fitted on the given data. Adaptive
    * refinement is then performed on the very same data. The used dataset used for refinement
    * overwritten once either fit() or update() introduce a new dataset.
    */
