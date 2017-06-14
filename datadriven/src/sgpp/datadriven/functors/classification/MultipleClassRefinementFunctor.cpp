@@ -13,7 +13,6 @@
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/MultipleClassRefinementFunctor.hpp>
 
-#include <iostream>
 #include <tuple>
 #include <cmath>
 #include <vector>

@@ -8,10 +8,7 @@
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <vector>
-#include <unordered_set>
 #include <cmath>
-#include <sstream>
-#include <iomanip>
 #include <tuple>
 #include <string>
 #include <algorithm>
