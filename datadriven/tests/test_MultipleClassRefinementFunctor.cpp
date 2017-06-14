@@ -6,15 +6,15 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-#include <sgpp/base/grid/generation/refinement_strategy/MultipleClassRefinement.hpp>
-#include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
-#include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridPoint.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
+#include <sgpp/base/grid/generation/refinement_strategy/MultipleClassRefinement.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/datadriven/functors/classification/MultipleClassRefinementFunctor.hpp>
 
 #include <vector>
@@ -146,14 +146,16 @@ BOOST_AUTO_TEST_CASE(testRefine2class) {
     grids.push_back(grid2.get());
     alphas.push_back(&alphas2);
 
-    BOOST_CHECK_EQUAL(grid1->getStorage().getSize(), 17);
-    BOOST_CHECK_EQUAL(grid2->getStorage().getSize(), 17);
+    size_t sizeGrids = 17;
 
-    sgpp::datadriven::MultipleClassRefinementFunctor mcrf(grids, alphas, 1, 0, 0);
+    BOOST_CHECK_EQUAL(grid1->getStorage().getSize(), sizeGrids);
+    BOOST_CHECK_EQUAL(grid2->getStorage().getSize(), sizeGrids);
+
+    sgpp::datadriven::MultipleClassRefinementFunctor mcrf(grids, alphas, 2, 0, 0);
     mcrf.refine();
 
-    BOOST_CHECK_GT(grid1->getStorage().getSize(), 17);
-    BOOST_CHECK_GT(grid2->getStorage().getSize(), 17);
+    BOOST_CHECK_GT(grid1->getStorage().getSize(), sizeGrids);
+    BOOST_CHECK_GT(grid2->getStorage().getSize(), sizeGrids);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
