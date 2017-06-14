@@ -108,9 +108,17 @@ base::OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid, i
 datadriven::OperationDensityMarginalize* createOperationDensityMarginalize(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear)
     return new datadriven::OperationDensityMarginalizeLinear(&grid);
-  else if (grid.getType() == base::GridType::Poly ||
+  else if (grid.getType() == base::GridType::LinearBoundary ||
+           grid.getType() == base::GridType::ModLinear ||
+           grid.getType() == base::GridType::Poly ||
            grid.getType() == base::GridType::PolyBoundary ||
-           grid.getType() == base::GridType::LinearBoundary)
+           grid.getType() == base::GridType::PolyClenshawCurtis ||
+           grid.getType() == base::GridType::PolyClenshawCurtisBoundary ||
+           grid.getType() == base::GridType::ModPolyClenshawCurtis ||
+           grid.getType() == base::GridType::Bspline ||
+           grid.getType() == base::GridType::BsplineBoundary ||
+           grid.getType() == base::GridType::BsplineClenshawCurtis ||
+           grid.getType() == base::GridType::ModBsplineClenshawCurtis)
     return new datadriven::OperationDensityMarginalize(&grid);
   else
     throw base::factory_exception(
@@ -119,8 +127,17 @@ datadriven::OperationDensityMarginalize* createOperationDensityMarginalize(base:
 
 datadriven::OperationDensityMargTo1D* createOperationDensityMargTo1D(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear ||
-      grid.getType() == base::GridType::LinearBoundary || grid.getType() == base::GridType::Poly ||
-      grid.getType() == base::GridType::PolyBoundary)
+      grid.getType() == base::GridType::LinearBoundary ||
+      grid.getType() == base::GridType::ModLinear ||
+      grid.getType() == base::GridType::Poly ||
+      grid.getType() == base::GridType::PolyBoundary ||
+      grid.getType() == base::GridType::PolyClenshawCurtis ||
+      grid.getType() == base::GridType::PolyClenshawCurtisBoundary ||
+      grid.getType() == base::GridType::ModPolyClenshawCurtis ||
+      grid.getType() == base::GridType::Bspline ||
+      grid.getType() == base::GridType::BsplineBoundary ||
+      grid.getType() == base::GridType::BsplineClenshawCurtis ||
+      grid.getType() == base::GridType::ModBsplineClenshawCurtis)
     return new datadriven::OperationDensityMargTo1D(&grid);
   else
     throw base::factory_exception(
