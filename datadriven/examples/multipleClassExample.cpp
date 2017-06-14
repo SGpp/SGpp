@@ -13,16 +13,12 @@
 #include <sgpp/datadriven/functors/classification/MultipleClassRefinementFunctor.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 
-#include <sys/resource.h>
 #include <cmath>
-#include <ctime>
 
 #include <sstream>
 #include <iomanip>
 #include <string>
 #include <vector>
-#include <locale>
-#include <chrono>
 
 /**
  * Helper to create learner
@@ -56,7 +52,7 @@ int main() {
     // Parameter of data set
     std::string filepath = "../tests/data/";
     std::string filename = "multipleClassesTest.arff";
-    // classes set in ARFF are in [0,(classes-1)]
+    // classes in ARFF are in [0,(classes-1)]
     size_t classes = 4;
 
     // Parameter for initial grid generation

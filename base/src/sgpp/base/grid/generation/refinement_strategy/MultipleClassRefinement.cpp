@@ -9,7 +9,6 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/tools/MultipleClassPoint.hpp>
 
-#include <iostream>
 #include <tuple>
 #include <vector>
 #include <algorithm>
