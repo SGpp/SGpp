@@ -49,7 +49,7 @@ class DBMatDMSChol : public DBMatDecompMatrixSolver {
    * Performe a rank one cholesky downdate
    *
    * @param decompMatrix the LL' lower triangular cholesky factor
-   * @param downdate, the vector representing the rank one matrix (xx')
+   * @param downdate the vector representing the rank one matrix (xx')
    * @param do_cv indicating if updates are used for cross valdiation
    * (using special structure of update vectors to save runtime)
    */
