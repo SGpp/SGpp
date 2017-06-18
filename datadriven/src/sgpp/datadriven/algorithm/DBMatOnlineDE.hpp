@@ -48,17 +48,17 @@ class DBMatOnlineDE : public DBMatOnline {
    * Evaluates the density function at a certain point
    *
    * @param p the point at which the function is evaluated
-   * @param force if set, it will even try to evaluate if the internal state
-   * recommends otherwise
+   * @param force if set, it will even try to evaluate if the internal state recommends otherwise
+   * @return the result of the evaluation
    */
   double eval(const DataVector& p, bool force = false);
 
   /**
-   * Evaluates the density function at a certain point
+   * Evaluates the density function on multiple points
    *
-   * @param p the point at which the function is evaluated
-   * @param force if set, it will even try to evaluate if the internal state
-   * recommends otherwise
+   * @param values the points at which the function is evaluated
+   * @param results the result of the evaluation
+   * @param force if set, it will even try to evaluate if the internal state recommends otherwise
    */
   void eval(DataMatrix& values, DataVector& results, bool force = false);
 

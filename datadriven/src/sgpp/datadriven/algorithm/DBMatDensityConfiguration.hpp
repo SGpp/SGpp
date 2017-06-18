@@ -34,7 +34,7 @@ class DBMatDensityConfiguration {
   /**
    * Constructor for hierarchical basis grids
    *
-   * @param rg the configuration for the sparse grid
+   * @param gc the configuration for the sparse grid
    * @param ac the adaptivity configuration
    * @param reg the type of regularization
    * @param lambda the weighting factor for the regularization term

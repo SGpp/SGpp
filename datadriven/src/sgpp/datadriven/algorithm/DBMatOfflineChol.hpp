@@ -47,6 +47,7 @@ class DBMatOfflineChol : public DBMatOfflineGE {
    *
    * @param deletedPoints list of indices of last coarsed points
    * @param newPoints amount of refined points
+   * @param lambda the regularization parameter
    */
   virtual void choleskyModification(size_t newPoints, std::list<size_t> deletedPoints,
                                     double lambda);
