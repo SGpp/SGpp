@@ -11,7 +11,6 @@
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineSparseIChol.hpp>
-#include <sgpp/datadriven/algorithm/IChol.hpp>
 #include <sgpp/datadriven/algorithm/SparseDataMatrix.hpp>
 
 #include <string>
@@ -32,24 +31,31 @@ DBMatOffline* sgpp::datadriven::DBMatOfflineSparseIChol::clone() {
 }
 
 void DBMatOfflineSparseIChol::decomposeMatrix() {
-  //  std::cout << "ichol decomposing\n";
   if (isConstructed) {
     if (isDecomposed) {
       return;
     } else {
-      // extract lower triangular matrix.
-      for (size_t i = 0; i < lhsMatrix.getNrows() - 1; i++) {
-        for (size_t j = i + 1; j < lhsMatrix.getNcols(); j++) {
-          lhsMatrix.set(i, j, 0);
+      //  auto begin = std::chrono::high_resolution_clock::now();
+
+      DataMatrix tmpMatrix{lhsMatrix.getNrows(), lhsMatrix.getNcols()};
+
+// only copy lower triangular matrix
+#pragma omp parallel for schedule(guided)
+      for (auto i = 0u; i < tmpMatrix.getNrows(); i++) {
+#pragma omp simd
+        for (auto j = 0u; j <= i; j++) {
+          tmpMatrix.set(i, j, lhsMatrix.get(i, j));
         }
       }
-      SparseDataMatrix sparseLHS(lhsMatrix);
-      IChol::decompose(lhsMatrix, sparseLHS, 4);
-      SparseDataMatrix::toDataMatrix(sparseLHS, lhsMatrix);
+
+      ichol(tmpMatrix, lhsMatrix, config.icholParameters.sweepsDecompose);
     }
-
     isDecomposed = true;
-
+    //    auto end = std::chrono::high_resolution_clock::now();
+    //    std::cout << "IChol decompostition took"
+    //              << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() <<
+    //              "ms"
+    //              << std::endl;
   } else {
     throw algorithm_exception("Matrix has to be constructed before it can be decomposed");
   }

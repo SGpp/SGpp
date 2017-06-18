@@ -11,7 +11,6 @@
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
-#include <sgpp/datadriven/algorithm/IChol.hpp>
 
 #include <algorithm>
 #include <chrono>
@@ -156,7 +155,7 @@ void DBMatOfflineDenseIChol::choleskyModification(size_t newPoints, std::list<si
 
     ichol(matRefine, lhsMatrix, config.icholParameters.sweepsRefine, (gridSize - newPoints));
 
-    auto end = std::chrono::high_resolution_clock::now();
+    //    auto end = std::chrono::high_resolution_clock::now();
     //    std::cout << "IChol refinement took "
     //              << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() <<
     //              "ms"
