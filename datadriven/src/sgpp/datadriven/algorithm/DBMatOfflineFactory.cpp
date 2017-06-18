@@ -15,8 +15,8 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineEigen.hpp>
-#include <sgpp/datadriven/algorithm/DBMatOfflineIChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineSparseIChol.hpp>
 #include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 
 #include <string>
@@ -42,7 +42,7 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(const DBMatDensityConfigur
       return new DBMatOfflineChol(config);
       break;
     case (DBMatDecompostionType::IChol):
-      return new DBMatOfflineIChol(config);
+      return new DBMatOfflineSparseIChol(config);
       break;
     case (DBMatDecompostionType::DenseIchol):
       return new DBMatOfflineDenseIChol(config);
@@ -88,7 +88,7 @@ DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
       return new DBMatOfflineChol(fileName);
       break;
     case (DBMatDecompostionType::IChol):
-      return new DBMatOfflineIChol(fileName);
+      return new DBMatOfflineSparseIChol(fileName);
       break;
     case (DBMatDecompostionType::DenseIchol):
       return new DBMatOfflineDenseIChol(fileName);
