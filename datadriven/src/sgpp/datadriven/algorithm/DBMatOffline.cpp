@@ -7,6 +7,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
@@ -163,6 +164,8 @@ void DBMatOffline::store(const std::string& fileName) {
   gsl_matrix_fwrite(outputCFile, &matrixView.matrix);
 
   fclose(outputCFile);
+#else
+  throw base::not_implemented_exception("built withot GSL");
 #endif /* USE_GSL */
 }
 

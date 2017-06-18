@@ -5,7 +5,7 @@
  *      Author: michael
  */
 
-#ifdef GSL
+#ifdef USE_GSL
 #pragma once
 
 #include <sgpp/datadriven/algorithm/DBMatOfflineGE.hpp>
