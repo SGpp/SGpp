@@ -174,8 +174,6 @@ void IChol::decompose(const DataMatrix& matrix, SparseDataMatrix& result, size_t
   }
 }
 
-void IChol::updateLastNRows(SparseDataMatrix& matrix, size_t numRows, size_t sweeps) {}
-
 void IChol::normToUnitDiagonal(SparseDataMatrix& matrix, DataVector& norms) {
   const auto matSize = matrix.getNrows();
   norms.resize(matSize);
