@@ -17,10 +17,10 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 
+#include <omp.h>
+
 #include <chrono>
 #include <string>
-
-#include <omp.h>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;

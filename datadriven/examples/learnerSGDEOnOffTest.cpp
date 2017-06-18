@@ -5,10 +5,8 @@
 
 #include <sgpp/globaldef.hpp>
 
-#ifdef USE_GSL
 #include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
-#endif /* USE_GSL */
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 
 #include <string>
@@ -35,7 +33,6 @@ using sgpp::base::DataVector;
  */
 
 int main() {
-#ifdef USE_GSL
   /**
    * Specify the number of runs to perform.
    * If only one specific example should be executed, set
@@ -233,8 +230,8 @@ int main() {
       /**
        * Average accuracy on test data reagarding 5-fold cv.
        */
-      std::cout << "Average accuracy on test data (set " + std::to_string(numSets + 1) +
-                       "): " << (1.0 - avgErrorFolds) << std::endl;
+      std::cout << "Average accuracy on test data (set " + std::to_string(numSets + 1) + "): "
+                << (1.0 - avgErrorFolds) << std::endl;
     }
     avgError += avgErrorFolds;
     avgErrorFolds = 0.0;
@@ -253,5 +250,4 @@ int main() {
       output.close();
     }*/
   }
-#endif /* USE_GSL */
 }
