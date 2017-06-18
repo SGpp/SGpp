@@ -67,7 +67,7 @@ class DBMatDMSChol : public DBMatDecompMatrixSolver {
                                     double lambdaUpdate) const;
 
   /**
-   * Perform Backward substitution solving the triangular system $A \alpha = y$
+   * Perform Backward substitution solving the triangular system $A alpha = y$
    * @param decompMatrix Triangular matrix
    * @param y right hand side obtained by forward substitution
    * @param alpha the vector of unknowns we solve for
@@ -79,7 +79,7 @@ class DBMatDMSChol : public DBMatDecompMatrixSolver {
   /**
    * Perform forward substitution solving the triangular system $L y = b$
    * @param decompMatrix Triangular matrix
-   * @param right hand side of our initial system matrix we solve for
+   * @param b right hand side of our initial system matrix we solve for
    * @param y the vector of unknowns we solve for
    */
   virtual void choleskyForwardSolve(const sgpp::base::DataMatrix& decompMatrix,

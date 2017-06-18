@@ -42,7 +42,7 @@ class DBMatDMSDenseIChol : public DBMatDMSChol {
   void choleskyUpdateLambda(DataMatrix& decompMatrix, double lambdaUp) const override;
 
   /**
-   * Perform backward substitution solving the triangular system $A \alpha = y$ with a parallel
+   * Perform backward substitution solving the triangular system $A alpha = y$ with a parallel
    * Jaccobi solver.
    * @param decompMatrix Triangular matrix
    * @param y right hand side obtained by forward substitution
@@ -55,7 +55,7 @@ class DBMatDMSDenseIChol : public DBMatDMSChol {
    * Perform forward substitution solving the triangular system $L y = b$ with a parallel
    * Jaccobi solver.
    * @param decompMatrix Triangular matrix
-   * @param right hand side of our initial system matrix we solve for
+   * @param b right hand side of our initial system matrix we solve for
    * @param y the vector of unknowns we solve for
    */
   void choleskyForwardSolve(const DataMatrix& decompMatrix, const DataVector& b,

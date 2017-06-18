@@ -42,9 +42,9 @@ class DBMatOfflineDenseIChol : public DBMatOfflineChol {
   /**
    * Updates offline cholesky factorization based on coarsed (deletedPoints)
    * and refined (newPoints) gridPoints. We ignore coarsening.
-   *
-   * @param deletedPoints list of indices of last coarsed points that are ignored.
    * @param newPoints amount of refined points
+   * @param deletedPoints list of indices of last coarsed points that are ignored.
+   * @param lambda the regularization parameter
    */
   void choleskyModification(size_t newPoints, std::list<size_t> deletedPoints,
                             double lambda) override;

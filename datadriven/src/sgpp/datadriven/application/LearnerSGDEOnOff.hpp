@@ -47,7 +47,7 @@ class LearnerSGDEOnOff {
    * @param dconf The configuration of the offline object
    * @param trainData The (mandatory) training dataset
    * @param testData The (mandatory) test dataset
-   * @param validData The (optional) validation dataset
+   * @param validationData The (optional) validation dataset
    * @param classLabels The class labels (e.g. -1, 1)
    * @param classNumber Total number of classes
    * @param usePrior Determines if prior probabilities should be used to compute
@@ -125,8 +125,8 @@ class LearnerSGDEOnOff {
   /**
    * Predicts the class labels of the test data points.
    *
-   * @param The test data points
-   * @return A vector containing the predicted class labels
+   * @param test The data points for which labels will be precicted
+   * @oaram classLabels vector containing the predicted class labels
    */
   void predict(DataMatrix& test, DataVector& classLabels) const;
 
@@ -158,7 +158,7 @@ class LearnerSGDEOnOff {
    * Returns the values of all density functions for a specified data point.
    *
    * @param point The point for which the density functions should be evaluated
-   * @return The function evaluations
+   * @param density The function evaluations
    */
   void getDensities(DataVector& point, DataVector& density) const;
 
