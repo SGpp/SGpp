@@ -522,7 +522,7 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
   for (size_t i = 0; i < getNumClasses(); i++) {
     auto densEst = onlineObjects[i].first.get();
     grids.push_back(&(densEst->getOfflineObject().getGrid()));
-    alphas.push_back(densEst->getAlpha());
+    alphas.push_back(&(densEst->getAlpha()));
   }
   bool levelPenalize = false;  // Multiplies penalzing term for fine levels
   bool preCompute = true;      // Precomputes and caches evals for zrcr
@@ -569,7 +569,7 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
     if (refType == "surplus") {
       std::unique_ptr<OperationEval> opEval(op_factory::createOperationEval(grid));
       GridStorage& gridStorage = grid.getStorage();
-      alphaWork = densEst->getAlpha();
+      alphaWork = &(densEst->getAlpha());
       DataVector alphaWeight(alphaWork->getSize());
       // determine surpluses
       for (size_t k = 0; k < gridStorage.getSize(); k++) {

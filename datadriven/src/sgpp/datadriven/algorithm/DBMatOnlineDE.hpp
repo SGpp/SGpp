@@ -20,20 +20,17 @@ using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 
 /**
- * TODO(lettrich) : write documentation
- */
-
-/**
- * Class that captures a density function as an online object
+ * Class that stores, generates and manipulates a density function during online phase in on/off
+ * learning.
  */
 class DBMatOnlineDE : public DBMatOnline {
  public:
   /**
    * Constructor
    *
+   * @param offline The offline object we base our evaluations on.
    * @param beta The initial weighting factor
    */
-
   explicit DBMatOnlineDE(DBMatOffline& offline, double beta = 0.);
 
   /**
@@ -70,8 +67,9 @@ class DBMatOnlineDE : public DBMatOnline {
 
   /**
    * Return a reference to alpha
+   *
    */
-  DataVector* getAlpha();
+  DataVector& getAlpha();
 
   /**
    * Update alpha vector, i.e. delete entries specified by 'deletedPoints'
