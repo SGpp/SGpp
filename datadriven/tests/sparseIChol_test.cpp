@@ -22,10 +22,6 @@
 #include <cmath>
 #include <vector>
 
-/**
- * TODO(lettrich) : check
- */
-
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 using sgpp::base::Grid;
@@ -33,7 +29,7 @@ using sgpp::base::GridGenerator;
 using sgpp::base::OperationMatrix;
 using sgpp::datadriven::SparseDataMatrix;
 
-BOOST_AUTO_TEST_SUITE(test_IChol)
+BOOST_AUTO_TEST_SUITE(sparseIChol_test)
 
 BOOST_AUTO_TEST_CASE(decomp_identity) {
   const std::vector<double> data{1, 1, 1, 1, 1};
