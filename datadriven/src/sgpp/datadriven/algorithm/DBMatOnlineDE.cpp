@@ -13,7 +13,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 
-#ifdef GSL
+#ifdef USE_GSL
 #include <gsl/gsl_blas.h>
 #endif /* USE_GSL */
 
@@ -67,7 +67,7 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
 
     // Perform permutation because of decomposition (LU)
     if (offlineObject.getConfig().decomp_type_ == DBMatDecompostionType::LU) {
-#ifdef GSL
+#ifdef USE_GSL
       static_cast<DBMatOfflineLU&>(offlineObject).permuteVector(b);
 #else
       throw algorithm_exception("built withot GSL");

@@ -12,9 +12,8 @@
 
 #ifdef USE_GSL
 
-#include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
-
 #include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
 
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_math.h>
