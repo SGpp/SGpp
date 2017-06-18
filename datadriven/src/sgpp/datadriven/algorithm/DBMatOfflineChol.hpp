@@ -1,13 +1,20 @@
-/*
+/* Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
  * DBMatOfflineChol.hpp
  *
  *  Created on: 02.03.2017
- *      Author: michael
+ *      Author: Michael Lettrich
  */
 
 #pragma once
 
 #include <sgpp/datadriven/algorithm/DBMatOfflineGE.hpp>
+
+#include <list>
+#include <string>
 
 namespace sgpp {
 namespace datadriven {
@@ -20,9 +27,9 @@ using sgpp::base::DataVector;
  */
 class DBMatOfflineChol : public DBMatOfflineGE {
  public:
-  DBMatOfflineChol(const DBMatDensityConfiguration& oc);
+  explicit DBMatOfflineChol(const DBMatDensityConfiguration& oc);
 
-  DBMatOfflineChol(const std::string& fileName);
+  explicit DBMatOfflineChol(const std::string& fileName);
 
   DBMatOffline* clone() override;
 
@@ -32,7 +39,7 @@ class DBMatOfflineChol : public DBMatOfflineGE {
    * Decomposes the matrix according to the chosen decomposition type.
    * The number of rows of the stored result depends on the decomposition type.
    */
-  virtual void decomposeMatrix() override;
+  void decomposeMatrix() override;
 
   /**
    * Updates offline cholesky factorization based on coarsed (deletedPoints)

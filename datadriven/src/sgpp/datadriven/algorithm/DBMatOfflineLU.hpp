@@ -1,8 +1,12 @@
-/*
+/* Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
  * DBMatOfflineLU.hpp
  *
  *  Created on: 02.03.2017
- *      Author: michael
+ *      Author: Michael Lettrich
  */
 
 #ifdef USE_GSL
@@ -11,6 +15,8 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineGE.hpp>
 
 #include <gsl/gsl_permutation.h>
+
+#include <string>
 
 namespace sgpp {
 namespace datadriven {
@@ -21,9 +27,9 @@ namespace datadriven {
  */
 class DBMatOfflineLU : public DBMatOfflineGE {
  public:
-  DBMatOfflineLU(const DBMatDensityConfiguration& oc);
+  explicit DBMatOfflineLU(const DBMatDensityConfiguration& oc);
 
-  DBMatOfflineLU(const std::string& fileName);
+  explicit DBMatOfflineLU(const std::string& fileName);
 
   DBMatOfflineLU(const DBMatOfflineLU& rhs);
 

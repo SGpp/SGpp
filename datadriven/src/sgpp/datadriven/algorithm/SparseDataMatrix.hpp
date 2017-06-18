@@ -23,8 +23,7 @@ using sgpp::base::DataMatrix;
 class SparseDataMatrix {
  public:
   SparseDataMatrix();
-  // TODO (lettrich):implement
-  SparseDataMatrix(DataMatrix& mat);
+  explicit SparseDataMatrix(DataMatrix& mat);
   SparseDataMatrix(size_t nrows, size_t ncols);
   SparseDataMatrix(size_t nrows, size_t ncols, const std::vector<double>& dataVector,
                    const std::vector<size_t>& colIndexVector,
