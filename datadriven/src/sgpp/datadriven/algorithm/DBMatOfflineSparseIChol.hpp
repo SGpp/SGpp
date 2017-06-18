@@ -20,16 +20,16 @@ namespace datadriven {
  * TODO(lettrich) : write documentation
  */
 
-class DBMatOfflineIChol : public DBMatOfflineChol {
+class DBMatOfflineSparseIChol : public DBMatOfflineChol {
  public:
   /**
    * Constructor
    *
    * @param oc configuration for this offline object
    */
-  explicit DBMatOfflineIChol(const DBMatDensityConfiguration& oc);
+  explicit DBMatOfflineSparseIChol(const DBMatDensityConfiguration& oc);
 
-  explicit DBMatOfflineIChol(const std::string& fileName);
+  explicit DBMatOfflineSparseIChol(const std::string& fileName);
 
   DBMatOffline* clone() override;
 

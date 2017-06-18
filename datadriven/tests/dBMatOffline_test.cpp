@@ -17,7 +17,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineEigen.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
-#include <sgpp/datadriven/algorithm/DBMatOfflineIChol.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineSparseIChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 #include <sgpp/globaldef.hpp>

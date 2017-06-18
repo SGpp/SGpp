@@ -9,9 +9,8 @@
  *      Author: Michael Lettrich
  */
 
-#include <sgpp/datadriven/algorithm/DBMatOfflineIChol.hpp>
-
 #include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineSparseIChol.hpp>
 #include <sgpp/datadriven/algorithm/IChol.hpp>
 #include <sgpp/datadriven/algorithm/SparseDataMatrix.hpp>
 
@@ -22,13 +21,13 @@ namespace datadriven {
 
 using sgpp::base::algorithm_exception;
 
-DBMatOfflineIChol::DBMatOfflineIChol(const DBMatDensityConfiguration& oc) : DBMatOfflineChol(oc) {}
+DBMatOfflineSparseIChol::DBMatOfflineSparseIChol(const DBMatDensityConfiguration& oc) : DBMatOfflineChol(oc) {}
 
-DBMatOfflineIChol::DBMatOfflineIChol(const std::string& fileName) : DBMatOfflineChol{fileName} {}
+DBMatOfflineSparseIChol::DBMatOfflineSparseIChol(const std::string& fileName) : DBMatOfflineChol{fileName} {}
 
-DBMatOffline* sgpp::datadriven::DBMatOfflineIChol::clone() { return new DBMatOfflineIChol{*this}; }
+DBMatOffline* sgpp::datadriven::DBMatOfflineSparseIChol::clone() { return new DBMatOfflineSparseIChol{*this}; }
 
-void DBMatOfflineIChol::decomposeMatrix() {
+void DBMatOfflineSparseIChol::decomposeMatrix() {
   //  std::cout << "ichol decomposing\n";
   if (isConstructed) {
     if (isDecomposed) {
