@@ -78,7 +78,7 @@ void DBMatOfflineSparseIChol::ichol(const DataMatrix& matrix, DataMatrix& result
 #pragma omp parallel for
     for (auto dataIter = rowPtrs[startRow]; dataIter < matData.size(); dataIter++) {
       const auto col = colIndices[dataIter];
-      const auto row = [&]() {
+      const auto row = [&rowPtrs, dataIter]() {
         const auto find = std::lower_bound(std::begin(rowPtrs), std::end(rowPtrs), dataIter);
         return static_cast<size_t>(
             ((*find > dataIter || find == std::end(rowPtrs)) ? (find - 1) : find) -

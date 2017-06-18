@@ -13,6 +13,9 @@
 
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 
+#include <list>
+#include <string>
+
 namespace sgpp {
 namespace datadriven {
 

@@ -13,6 +13,8 @@
 
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 
+#include <string>
+
 namespace sgpp {
 namespace datadriven {
 

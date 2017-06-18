@@ -40,10 +40,10 @@ SparseDataMatrix::SparseDataMatrix(size_t nrows, size_t ncols,
       data{dataVector},
       colIndex{colIndexVector},
       rowPtr{rowPtrVector} {}
-
-SparseDataMatrix::SparseDataMatrix(size_t nrows, size_t ncols, std::vector<double>&& dataVector,
-                                   std::vector<size_t>&& colIndexVector,
-                                   std::vector<size_t>&& rowPtrVector)
+SparseDataMatrix::SparseDataMatrix(size_t nrows, size_t ncols,
+                                   std::vector<double>&& dataVector,      // NOLINT(build/c++11)
+                                   std::vector<size_t>&& colIndexVector,  // NOLINT(build/c++11)
+                                   std::vector<size_t>&& rowPtrVector)    // NOLINT(build/c++11)
     : nrows(nrows),
       ncols(ncols),
       data{std::move(dataVector)},
