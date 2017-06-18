@@ -126,7 +126,7 @@ class LearnerSGDEOnOff {
    * Predicts the class labels of the test data points.
    *
    * @param test The data points for which labels will be precicted
-   * @oaram classLabels vector containing the predicted class labels
+   * @param classLabels vector containing the predicted class labels
    */
   void predict(DataMatrix& test, DataVector& classLabels) const;
 
