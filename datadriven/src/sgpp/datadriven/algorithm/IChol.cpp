@@ -17,65 +17,6 @@
 namespace sgpp {
 namespace datadriven {
 
-void IChol::decompose(const DataMatrix& matrix, DataMatrix& result, size_t sweeps) {
-  // first sweep copies
-
-  //#pragma omp parallel for
-  //  for (auto i = 0u; i < matrix.getNrows(); i++) {
-  //    // in each column until diagonal element
-  //    for (auto j = 0u; j < i; j++) {
-  //      // calculate sum;
-  //      auto s = matrix.get(i, j);
-  //      if (s > 0.0) {
-  //#pragma omp simd
-  //        for (auto k = 0u; k < j; k++) {
-  //          s -= matrix.get(i, k) * matrix.get(j, k);
-  //        }
-  //        result.set(i, j, s / matrix.get(j, j));
-  //      }
-  //    }
-  //    // do the diagonal element:
-  //    // calculate sum;
-  //    auto s = matrix.get(i, i);
-  //#pragma omp simd
-  //    for (auto k = 0u; k < i; k++) {
-  //      s -= matrix.get(i, k) * matrix.get(i, k);
-  //    }
-  //    result.set(i, i, sqrt(s));
-  //  }
-
-  // for all sweeps
-  for (auto sweep = 0u; sweep < sweeps; sweep++) {
-// for each row
-#pragma omp parallel
-    { /* omp parallel */
-#pragma omp for
-      for (auto i = 0u; i < result.getNrows(); i++) {
-        // in each column until diagonal element
-        for (auto j = 0u; j < i; j++) {
-          // calculate sum;
-          auto s = matrix.get(i, j);
-          if (s > 0.0) {
-#pragma omp simd
-            for (auto k = 0u; k < j; k++) {
-              s -= result.get(i, k) * result.get(j, k);
-            }
-            result.set(i, j, s / result.get(j, j));
-          }
-        }
-        // do the diagonal element:
-        // calculate sum;
-        auto s = matrix.get(i, i);
-#pragma omp simd
-        for (auto k = 0u; k < i; k++) {
-          s -= result.get(i, k) * result.get(i, k);
-        }
-        result.set(i, i, sqrt(s));
-      }
-    } /* omp parallel */
-  }
-}
-
 void IChol::normToUnitDiagonal(DataMatrix& matrix, DataVector& norms) {
   const auto matSize = matrix.getNrows();
   norms.resize(matSize);
@@ -114,62 +55,6 @@ void IChol::reaplyDiagonalLowerTriangular(DataMatrix& matrix, const DataVector& 
     for (auto j = 0u; j <= i; j++) {
       const auto res = matrix.get(i, j) / norms[i];
       matrix.set(i, j, res);
-    }
-  }
-}
-
-void IChol::decompose(const DataMatrix& matrix, SparseDataMatrix& result, size_t sweeps) {
-  const auto matSize = result.getNrows();
-  // get the data vector
-  auto& matData = result.getDataVector();
-  // get the rows
-  const auto& rowPtrs = result.getRowPtrVector();
-  // get the cols
-  const auto& colIndices = result.getColIndexVector();
-
-  // for all sweeps
-  for (auto sweep = 0u; sweep < sweeps; sweep++) {
-#pragma omp parallel for
-    for (auto dataIter = 0u; dataIter < matData.size(); dataIter++) {
-      const auto col = colIndices[dataIter];
-      const auto row = [&]() {
-        const auto find = std::lower_bound(std::begin(rowPtrs), std::end(rowPtrs), dataIter);
-        return static_cast<size_t>(
-            ((*find > dataIter || find == std::end(rowPtrs)) ? (find - 1) : find) -
-            rowPtrs.begin());
-      }();
-
-      auto s = matrix.get(row, col);
-
-      auto upperFirst = colIndices.begin() + rowPtrs[col];
-      const auto upperLast =
-          colIndices.begin() + (col + 1 < matSize ? (rowPtrs[col + 1] - 1) : dataIter);
-      auto lowerFist = colIndices.begin() + rowPtrs[row];
-      const auto lowerLast = colIndices.begin() + dataIter;
-
-      // sparse dot product by merging in O(n+m)
-      while (lowerFist != lowerLast) {
-        // if we're out of nonzeors in the upper row, then we're also done.
-        if (upperFirst == upperLast) {
-          break;
-        }
-        if (*upperFirst < *lowerFist) {
-          ++upperFirst;
-        } else if (*lowerFist < *upperFirst) {
-          ++lowerFist;
-        } else {
-          s -= matData[upperFirst - colIndices.begin()] * matData[lowerFist - colIndices.begin()];
-          ++upperFirst;
-          ++lowerFist;
-        }
-      }
-
-      if (row != col) {
-        const auto index = rowPtrs[col + 1] - 1;
-        matData[dataIter] = s / matData[index];
-      } else {
-        matData[dataIter] = sqrt(s);
-      }
     }
   }
 }

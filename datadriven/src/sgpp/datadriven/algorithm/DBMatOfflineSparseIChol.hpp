@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -20,7 +20,7 @@ namespace datadriven {
  * TODO(lettrich) : write documentation
  */
 
-class DBMatOfflineSparseIChol : public DBMatOfflineChol {
+class DBMatOfflineSparseIChol : public DBMatOfflineDenseIChol {
  public:
   /**
    * Constructor
@@ -38,6 +38,9 @@ class DBMatOfflineSparseIChol : public DBMatOfflineChol {
    * The number of rows of the stored result depends on the decomposition type.
    */
   void decomposeMatrix() override;
+
+  static void ichol(const DataMatrix& matrix, DataMatrix& result, size_t sweeps = 4,
+                    size_t startRow = 0);
 };
 
 } /* namespace datadriven */
