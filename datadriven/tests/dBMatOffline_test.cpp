@@ -8,7 +8,7 @@
  *  Created on: Apr 8, 2017
  *      Author: Michael Lettrich
  */
-
+#ifdef USE_GSL
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
@@ -17,8 +17,8 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineEigen.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
-#include <sgpp/datadriven/algorithm/DBMatOfflineSparseIChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineSparseIChol.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 #include <sgpp/globaldef.hpp>
 
@@ -198,3 +198,5 @@ BOOST_AUTO_TEST_CASE(testReadWriteLU) {
 //}
 
 BOOST_AUTO_TEST_SUITE_END()
+
+#endif /*USE_GSL*/

@@ -8,10 +8,13 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineGE.hpp>
 
 #include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 
+#ifdef GSL
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_math.h>
+#endif
 
 #include <list>
 #include <string>
@@ -29,6 +32,7 @@ DBMatOfflineGE::DBMatOfflineGE(const DBMatDensityConfiguration& oc) : DBMatOffli
 
 sgpp::datadriven::DBMatOfflineGE::DBMatOfflineGE(const std::string& fileName)
     : DBMatOffline{fileName} {
+#ifdef GSL
   FILE* file = fopen(fileName.c_str(), "rb");
   if (!file) {
     throw application_exception{"Failed to open File"};
@@ -50,6 +54,9 @@ sgpp::datadriven::DBMatOfflineGE::DBMatOfflineGE(const std::string& fileName)
 
   lhsMatrix = DataMatrix(matrix->data, matrix->size1, matrix->size2);
   gsl_matrix_free(matrix);
+#else
+  throw base::not_implemented_exception("built withot GSL");
+#endif
 }
 
 void DBMatOfflineGE::buildMatrix() {

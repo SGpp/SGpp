@@ -3,10 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifdef USE_GSL
-
-#ifndef DBMatDMSChol_HPP_
-#define DBMatDMSChol_HPP_
+#pragma once
 
 #include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
 
@@ -92,7 +89,3 @@ class DBMatDMSChol : public DBMatDecompMatrixSolver {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* DBMatDMSChol_HPP_ */
-
-#endif /* USE_GSL */

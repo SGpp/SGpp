@@ -9,26 +9,25 @@
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
+#ifdef USE_GSL
 
 #include <sgpp/globaldef.hpp>
 
-#ifdef USE_GSL
 #include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
-#include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
-#endif /* USE_GSL */
+#include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 
-#include <string>
 #include <chrono>
+#include <string>
 
 #include <omp.h>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
+#endif /* USE_GSL */
 
 int main() {
 #ifdef USE_GSL
-
   // ###################################################################################
   sgpp::datadriven::DBMatDensityConfiguration fullConfig;
   fullConfig.grid_dim_ = 4;
@@ -111,6 +110,5 @@ int main() {
               << " sweeps is: " << std::scientific << std::setprecision(10) << sqrt(tmpIMat2.sum())
               << "\n";
   }
-
 #endif /* USE_GSL */
 }

@@ -26,10 +26,18 @@ DBMatOnlineDE* DBMatOnlineDEFactory::buildDBMatOnlineDE(DBMatOffline& offline, d
 
   switch (config.decomp_type_) {
     case DBMatDecompostionType::Eigen:
+#ifdef USE_GSL
       return new DBMatOnlineDEEigen(offline, beta);
+#else
+      throw factory_exception("built withot GSL");
+#endif /*USE_GSL*/
       break;
     case DBMatDecompostionType::LU:
+#ifdef USE_GSL
       return new DBMatOnlineDELU(offline, beta);
+#else
+      throw factory_exception("built withot GSL");
+#endif /*USE_GSL*/
       break;
     case DBMatDecompostionType::Chol:
     case DBMatDecompostionType::IChol:

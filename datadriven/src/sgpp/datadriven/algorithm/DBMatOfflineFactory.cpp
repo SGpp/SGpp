@@ -11,7 +11,7 @@
 
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 
-#include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineEigen.hpp>
@@ -26,20 +26,32 @@ namespace sgpp {
 namespace datadriven {
 
 using sgpp::base::GridType;
-using sgpp::base::algorithm_exception;
+using sgpp::base::factory_exception;
 
 DBMatOffline* DBMatOfflineFactory::buildOfflineObject(const DBMatDensityConfiguration& config) {
   auto type = config.decomp_type_;
 
   switch (type) {
     case (DBMatDecompostionType::Eigen):
+#ifdef USE_GSL
       return new DBMatOfflineEigen(config);
+#else
+      throw factory_exception("built withot GSL");
+#endif
       break;
     case (DBMatDecompostionType::LU):
+#ifdef USE_GSL
       return new DBMatOfflineLU(config);
+#else
+      throw factory_exception("built withot GSL");
+#endif
       break;
     case (DBMatDecompostionType::Chol):
+#ifdef USE_GSL
       return new DBMatOfflineChol(config);
+#else
+      throw factory_exception("built withot GSL");
+#endif
       break;
     case (DBMatDecompostionType::IChol):
       return new DBMatOfflineSparseIChol(config);
@@ -48,7 +60,7 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(const DBMatDensityConfigur
       return new DBMatOfflineDenseIChol(config);
       break;
     default:
-      throw algorithm_exception("Trying to build offline object from unknown decomposition type");
+      throw factory_exception("Trying to build offline object from unknown decomposition type");
       return nullptr;
   }
 }
@@ -57,7 +69,7 @@ DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
   std::ifstream file(fileName, std::istream::in);
 
   if (!file) {
-    throw algorithm_exception("Failed to open File");
+    throw factory_exception("Failed to open File");
   }
 
   std::string str;
@@ -79,13 +91,25 @@ DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
 
   switch (type) {
     case (DBMatDecompostionType::Eigen):
+#ifdef USE_GSL
       return new DBMatOfflineEigen(fileName);
+#else
+      throw factory_exception("built withot GSL");
+#endif
       break;
     case (DBMatDecompostionType::LU):
+#ifdef USE_GSL
       return new DBMatOfflineLU(fileName);
+#else
+      throw factory_exception("built withot GSL");
+#endif
       break;
     case (DBMatDecompostionType::Chol):
+#ifdef USE_GSL
       return new DBMatOfflineChol(fileName);
+#else
+      throw factory_exception("built withot GSL");
+#endif
       break;
     case (DBMatDecompostionType::IChol):
       return new DBMatOfflineSparseIChol(fileName);
@@ -94,7 +118,7 @@ DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
       return new DBMatOfflineDenseIChol(fileName);
       break;
     default:
-      throw algorithm_exception("Trying to build offline object from unknown decomposition type");
+      throw factory_exception("Trying to build offline object from unknown decomposition type");
       return nullptr;
   }
 }

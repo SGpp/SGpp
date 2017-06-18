@@ -9,6 +9,8 @@
  *      Author: Michael Lettrich
  */
 
+#ifdef USE_GSL
+
 #pragma once
 
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
@@ -32,3 +34,5 @@ class DBMatOnlineDEEigen : public DBMatOnlineDE {
 
 } /* namespace datadriven */
 } /* namespace sgpp */
+
+#endif

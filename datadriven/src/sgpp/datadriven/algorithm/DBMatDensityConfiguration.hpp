@@ -3,10 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifdef USE_GSL
-
-#ifndef DBMATDENSITYCONFIGURATION_H_
-#define DBMATDENSITYCONFIGURATION_H_
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 
@@ -22,16 +19,9 @@
 namespace sgpp {
 namespace datadriven {
 
-enum class DBMatDecompostionType {
-  LU,
-  Eigen,
-  Chol,
-  IChol,
-  DenseIchol
-};
+enum class DBMatDecompostionType { LU, Eigen, Chol, IChol, DenseIchol };
 
 struct DBMatOfflineIcholParameters {
-
   size_t sweepsDecompose = 4;
   size_t sweepsRefine = 4;
   size_t sweepsUpdateLambda = 2;
@@ -79,7 +69,3 @@ class DBMatDensityConfiguration {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* DBMATDENSITYCONFIGURATION_H_ */
-
-#endif /* USE_GSL */

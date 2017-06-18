@@ -3,11 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifdef USE_GSL
-
-#include <sgpp/base/exception/application_exception.hpp>
-#include <sgpp/base/exception/data_exception.hpp>
-#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinear.hpp>
@@ -17,14 +13,17 @@
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 
+#ifdef GSL
 #include <gsl/gsl_blas.h>
+#endif
 
-#include <ctime>
 #include <list>
 #include <vector>
 
 namespace sgpp {
 namespace datadriven {
+
+using sgpp::base::algorithm_exception;
 
 DBMatOnlineDE::DBMatOnlineDE(DBMatOffline& offline, double beta)
     : DBMatOnline{offline},
@@ -68,7 +67,11 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
 
     // Perform permutation because of decomposition (LU)
     if (offlineObject.getConfig().decomp_type_ == DBMatDecompostionType::LU) {
+#ifdef GSL
       static_cast<DBMatOfflineLU&>(offlineObject).permuteVector(b);
+#else
+      throw algorithm_exception("built withot GSL");
+#endif /*USE_GSL*/
     }
 
     // std::cout << b.getSize() << std::endl;
@@ -167,7 +170,7 @@ double DBMatOnlineDE::eval(const DataVector& p, bool force) {
     res = opEval->eval(alpha, p);
     return res * normFactor;
   } else {
-    throw sgpp::base::data_exception("Density function not computed, yet!");
+    throw algorithm_exception("Density function not computed, yet!");
   }
 }
 
@@ -178,7 +181,7 @@ void DBMatOnlineDE::eval(DataMatrix& values, DataVector& results, bool force) {
     opEval->eval(alpha, results);
     results.mult(normFactor);
   } else {
-    throw sgpp::base::data_exception("Density function not computed, yet!");
+    throw algorithm_exception("Density function not computed, yet!");
   }
 }
 
@@ -242,5 +245,3 @@ double DBMatOnlineDE::normalize(size_t samples) {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* USE_GSL */

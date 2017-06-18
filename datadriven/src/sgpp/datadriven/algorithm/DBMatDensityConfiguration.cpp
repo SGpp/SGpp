@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifdef USE_GSL
-
 #include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 
 namespace sgpp {
@@ -37,5 +35,3 @@ DBMatDensityConfiguration::DBMatDensityConfiguration(const sgpp::base::RegularGr
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* USE_GSL */

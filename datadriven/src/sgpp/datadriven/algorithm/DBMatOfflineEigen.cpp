@@ -8,6 +8,8 @@
  *  Created on: 02.03.2017
  *      Author: michael
  */
+
+#ifdef USE_GSL
 #include <sgpp/datadriven/algorithm/DBMatOfflineEigen.hpp>
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
@@ -99,3 +101,5 @@ void DBMatOfflineEigen::decomposeMatrix() {
 
 } /* namespace datadriven */
 } /* namespace sgpp */
+
+#endif
