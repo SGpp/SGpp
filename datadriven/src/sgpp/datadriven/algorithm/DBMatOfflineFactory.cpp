@@ -37,21 +37,21 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(const DBMatDensityConfigur
       return new DBMatOfflineEigen(config);
 #else
       throw factory_exception("built withot GSL");
-#endif
+#endif /* USE_GSL */
       break;
     case (DBMatDecompostionType::LU):
 #ifdef USE_GSL
       return new DBMatOfflineLU(config);
 #else
       throw factory_exception("built withot GSL");
-#endif
+#endif /* USE_GSL */
       break;
     case (DBMatDecompostionType::Chol):
 #ifdef USE_GSL
       return new DBMatOfflineChol(config);
 #else
       throw factory_exception("built withot GSL");
-#endif
+#endif /* USE_GSL */
       break;
     case (DBMatDecompostionType::IChol):
       return new DBMatOfflineSparseIChol(config);
@@ -95,21 +95,21 @@ DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
       return new DBMatOfflineEigen(fileName);
 #else
       throw factory_exception("built withot GSL");
-#endif
+#endif /* USE_GSL */
       break;
     case (DBMatDecompostionType::LU):
 #ifdef USE_GSL
       return new DBMatOfflineLU(fileName);
 #else
       throw factory_exception("built withot GSL");
-#endif
+#endif /* USE_GSL */
       break;
     case (DBMatDecompostionType::Chol):
 #ifdef USE_GSL
       return new DBMatOfflineChol(fileName);
 #else
       throw factory_exception("built withot GSL");
-#endif
+#endif /* USE_GSL */
       break;
     case (DBMatDecompostionType::IChol):
       return new DBMatOfflineSparseIChol(fileName);

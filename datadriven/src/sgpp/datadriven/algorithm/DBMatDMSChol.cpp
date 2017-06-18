@@ -10,7 +10,7 @@
 #ifdef USE_GSL
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_matrix_double.h>
-#endif
+#endif /* USE_GSL */
 
 #include <math.h>
 #include <ctime>
@@ -131,7 +131,7 @@ void DBMatDMSChol::choleskyUpdate(sgpp::base::DataMatrix& decompMatrix,
   gsl_vector_free(cvec);
 #else
   throw base::not_implemented_exception("built withot GSL");
-#endif
+#endif /* USE_GSL */
 }
 
 // Implement cholesky Downdate for given Decomposition and update vector
@@ -225,7 +225,7 @@ void DBMatDMSChol::choleskyDowndate(sgpp::base::DataMatrix& decompMatrix,
   gsl_vector_free(cvec);
 #else
   throw base::not_implemented_exception("built withot GSL");
-#endif
+#endif /* USE_GSL */
 }
 
 void DBMatDMSChol::choleskyUpdateLambda(sgpp::base::DataMatrix& decompMatrix,

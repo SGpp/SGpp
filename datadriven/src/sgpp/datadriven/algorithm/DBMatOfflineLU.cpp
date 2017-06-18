@@ -129,4 +129,4 @@ void DBMatOfflineLU::store(const std::string& fileName) {
 
 } /* namespace datadriven */
 } /* namespace sgpp */
-#endif
+#endif /* USE_GSL */

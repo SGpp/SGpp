@@ -163,7 +163,7 @@ void DBMatOffline::store(const std::string& fileName) {
   gsl_matrix_fwrite(outputCFile, &matrixView.matrix);
 
   fclose(outputCFile);
-#endif
+#endif /* USE_GSL */
 }
 
 void DBMatOffline::printMatrix() {
