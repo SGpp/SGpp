@@ -22,11 +22,7 @@
 using sgpp::datadriven::SparseDataMatrix;
 using sgpp::base::DataMatrix;
 
-/**
- * TODO(lettrich) : write documentation
- */
-
-BOOST_AUTO_TEST_SUITE(test_SparseDataMatrix)
+BOOST_AUTO_TEST_SUITE(sparseDataMatrix_test)
 
 BOOST_AUTO_TEST_CASE(testToDataMatrix) {
   const double a_vec[]{-2, 1, 0, 0, 0, 1,  -2, 1, 0, 0, 0, 1, -2,
@@ -43,10 +39,6 @@ BOOST_AUTO_TEST_CASE(testToDataMatrix) {
   aData.insert(std::begin(aData), std::begin(a_sparse), std::end(a_sparse));
   aColIdx.insert(std::begin(aColIdx), std::begin(a_colIdx), std::end(a_colIdx));
   std::copy(std::begin(a_rowPtr), std::end(a_rowPtr), std::begin(aRowPtr));
-  //  aData = a_sparse;
-  //  aColIdx = a_colIdx;
-  //  aRowPtr = a_rowPtr;
-
   DataMatrix B{};
 
   SparseDataMatrix::toDataMatrix(A, B);
@@ -59,7 +51,7 @@ BOOST_AUTO_TEST_CASE(testToDataMatrix) {
   }
 }
 
-BOOST_AUTO_TEST_CASE(testResize_shrink) {
+BOOST_AUTO_TEST_CASE(testResizeShrink) {
   const double a_vec[]{-2, 1, 0, 0, 1, -2, 1, 0, 0, 1, -2, 1, 0, 0, 1, -2};
   const std::vector<double> a_sparse{-2, 1, 1, -2, 1, 1, -2, 1, 1, -2, 1, 1, -2};
   const std::vector<size_t> a_colIdx{0, 1, 0, 1, 2, 1, 2, 3, 2, 3, 4, 3, 4};
