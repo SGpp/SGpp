@@ -182,7 +182,7 @@ void DBMatOnlineDE::eval(DataMatrix& values, DataVector& results, bool force) {
   }
 }
 
-DataVector* DBMatOnlineDE::getAlpha() { return &alpha; }
+DataVector& DBMatOnlineDE::getAlpha() { return alpha; }
 
 void DBMatOnlineDE::updateAlpha(std::list<size_t>* deletedPoints, size_t newPoints) {
   if (alpha.getSize() != 0 && deletedPoints != nullptr && !deletedPoints->empty()) {
