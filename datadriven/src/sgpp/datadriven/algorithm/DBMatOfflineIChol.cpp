@@ -34,7 +34,6 @@ void DBMatOfflineIChol::decomposeMatrix() {
     if (isDecomposed) {
       return;
     } else {
-      // std::cout << "Full:\n" << lhsMatrix.toString() << "\n\n";
       // extract lower triangular matrix.
       for (size_t i = 0; i < lhsMatrix.getNrows() - 1; i++) {
         for (size_t j = i + 1; j < lhsMatrix.getNcols(); j++) {
