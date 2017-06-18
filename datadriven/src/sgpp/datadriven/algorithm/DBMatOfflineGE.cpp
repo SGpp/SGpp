@@ -14,7 +14,7 @@
 #ifdef GSL
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_math.h>
-#endif
+#endif /* USE_GSL */
 
 #include <list>
 #include <string>
@@ -56,7 +56,7 @@ sgpp::datadriven::DBMatOfflineGE::DBMatOfflineGE(const std::string& fileName)
   gsl_matrix_free(matrix);
 #else
   throw base::not_implemented_exception("built withot GSL");
-#endif
+#endif /* USE_GSL */
 }
 
 void DBMatOfflineGE::buildMatrix() {

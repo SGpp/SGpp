@@ -35,4 +35,4 @@ class DBMatOnlineDEEigen : public DBMatOnlineDE {
 } /* namespace datadriven */
 } /* namespace sgpp */
 
-#endif
+#endif /* USE_GSL */

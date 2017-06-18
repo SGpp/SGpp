@@ -3,10 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifdef USE_GSL
-
-#ifndef LEARNERSGDEONOFF_HPP
-#define LEARNERSGDEONOFF_HPP
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 
@@ -18,12 +15,12 @@
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 
+#include <iomanip>
 #include <list>
 #include <map>
 #include <string>
 #include <utility>
 #include <vector>
-#include <iomanip>
 
 namespace sgpp {
 namespace datadriven {
@@ -244,7 +241,3 @@ class LearnerSGDEOnOff {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* LEARNERSGDEONOFF_HPP */
-
-#endif /* USE_GSL */

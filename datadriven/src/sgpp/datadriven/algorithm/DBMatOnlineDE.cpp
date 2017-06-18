@@ -15,7 +15,7 @@
 
 #ifdef GSL
 #include <gsl/gsl_blas.h>
-#endif
+#endif /* USE_GSL */
 
 #include <list>
 #include <vector>

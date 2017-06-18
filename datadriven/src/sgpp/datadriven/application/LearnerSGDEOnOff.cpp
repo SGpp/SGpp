@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifdef USE_GSL
-
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
@@ -642,5 +640,3 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* USE_GSL */

@@ -17,7 +17,7 @@
 #include <gsl/gsl_matrix_double.h>
 #include <gsl/gsl_permutation.h>
 #include <gsl/gsl_permute.h>
-#endif
+#endif /* USE_GSL */
 
 #include <algorithm>
 #include <chrono>

@@ -63,4 +63,4 @@ class DBMatOfflineLU : public DBMatOfflineGE {
 
 } /* namespace datadriven */
 } /* namespace sgpp */
-#endif
+#endif /* USE_GSL */
