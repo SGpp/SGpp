@@ -12,22 +12,12 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-#include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/grid/generation/GridGenerator.hpp>
-#include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
-#include <sgpp/datadriven/algorithm/IChol.hpp>
-#include <sgpp/pde/operation/PdeOpFactory.hpp>
 
 #include <omp.h>
 #include <vector>
 
 using sgpp::base::DataMatrix;
-using sgpp::base::DataVector;
-using sgpp::base::Grid;
-using sgpp::base::GridGenerator;
-using sgpp::base::OperationMatrix;
-using sgpp::datadriven::SparseDataMatrix;
 
 BOOST_AUTO_TEST_SUITE(DenseIChol_test)
 
