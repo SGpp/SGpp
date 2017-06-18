@@ -13,7 +13,6 @@
 
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
-#include <sgpp/datadriven/algorithm/IChol.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 
 namespace sgpp {
