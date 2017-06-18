@@ -29,8 +29,10 @@ class SparseDataMatrix {
                    const std::vector<size_t>& colIndexVector,
                    const std::vector<size_t>& rowPtrVector);
 
-  SparseDataMatrix(size_t nrows, size_t ncols, std::vector<double>&& dataVector,
-                   std::vector<size_t>&& colIndexVector, std::vector<size_t>&& rowPtrVector);
+  SparseDataMatrix(size_t nrows, size_t ncols,
+                   std::vector<double>&& dataVector,      // NOLINT(build/c++11)
+                   std::vector<size_t>&& colIndexVector,  // NOLINT(build/c++11)
+                   std::vector<size_t>&& rowPtrVector);   // NOLINT(build/c++11)
 
   size_t getNrows() const;
 
