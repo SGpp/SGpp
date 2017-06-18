@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifdef USE_GSL
-
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 
@@ -39,5 +37,3 @@ const DBMatOffline& DBMatOnline::getOfflineObject() const { return offlineObject
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* USE_GSL */

@@ -5,6 +5,7 @@
  *      Author: michael
  */
 
+#ifdef GSL
 #pragma once
 
 #include <sgpp/datadriven/algorithm/DBMatOfflineGE.hpp>
@@ -62,3 +63,4 @@ class DBMatOfflineLU : public DBMatOfflineGE {
 
 } /* namespace datadriven */
 } /* namespace sgpp */
+#endif

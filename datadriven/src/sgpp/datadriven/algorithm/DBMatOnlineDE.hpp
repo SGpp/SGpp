@@ -3,10 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifdef USE_GSL
-
-#ifndef DBMATONLINEDE_HPP_
-#define DBMATONLINEDE_HPP_
+#pragma once
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
@@ -148,7 +145,3 @@ class DBMatOnlineDE : public DBMatOnline {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* DBMATONLINEDE_HPP_ */
-
-#endif /* USE_GSL */

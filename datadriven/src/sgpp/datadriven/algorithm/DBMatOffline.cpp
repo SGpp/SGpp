@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifdef USE_GSL
-
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
@@ -18,7 +16,9 @@
 #include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 
+#ifdef USE_GSL
 #include <gsl/gsl_matrix_double.h>
+#endif /* USE_GSL */
 
 #include <math.h>
 #include <stdio.h>
@@ -133,6 +133,7 @@ void DBMatOffline::buildMatrix() {
 }
 
 void DBMatOffline::store(const std::string& fileName) {
+#ifdef USE_GSL
   if (!isDecomposed) {
     throw algorithm_exception("Matrix not decomposed yet");
     return;
@@ -162,6 +163,7 @@ void DBMatOffline::store(const std::string& fileName) {
   gsl_matrix_fwrite(outputCFile, &matrixView.matrix);
 
   fclose(outputCFile);
+#endif
 }
 
 void DBMatOffline::printMatrix() {
@@ -197,5 +199,3 @@ void sgpp::datadriven::DBMatOffline::parseConfig(const std::string& fileName,
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* USE_GSL */

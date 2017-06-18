@@ -5,6 +5,8 @@
  *      Author: michael
  */
 
+#ifdef USE_GSL
+
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
@@ -127,3 +129,4 @@ void DBMatOfflineLU::store(const std::string& fileName) {
 
 } /* namespace datadriven */
 } /* namespace sgpp */
+#endif

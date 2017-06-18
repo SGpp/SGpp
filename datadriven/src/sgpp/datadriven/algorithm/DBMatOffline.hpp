@@ -3,10 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifdef USE_GSL
-
-#ifndef DBMATOFFLINE_H_
-#define DBMATOFFLINE_H_
+#pragma once
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
@@ -157,7 +154,3 @@ class DBMatOffline {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* DBMATOFFLINE_H_ */
-
-#endif /* USE_GSL */

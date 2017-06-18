@@ -3,16 +3,16 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifdef USE_GSL
-
 #include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
 
+#ifdef USE_GSL
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_matrix_double.h>
+#endif
 
 #include <math.h>
-#include <chrono>
 #include <ctime>
 #include <iostream>
 
@@ -22,8 +22,6 @@ namespace datadriven {
 void DBMatDMSChol::solve(sgpp::base::DataMatrix& decompMatrix, sgpp::base::DataVector& alpha,
                          const sgpp::base::DataVector& b, double lambda_old,
                          double lambda_new) const {
-  auto begin = std::chrono::high_resolution_clock::now();
-
   size_t size = decompMatrix.getNcols();
   // Performe Update based on Cholesky - afterwards perform n (GridPoints) many
   // rank-One-updates
@@ -44,16 +42,12 @@ void DBMatDMSChol::solve(sgpp::base::DataMatrix& decompMatrix, sgpp::base::DataV
 
   // Backward Substitution:
   choleskyBackwardSolve(decompMatrix, y, alpha);
-
-  auto end = std::chrono::high_resolution_clock::now();
-  std::cout << "Solving SLE took "
-            << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms"
-            << std::endl;
 }
 
 // Implement cholesky Update for given Decomposition and update vector
 void DBMatDMSChol::choleskyUpdate(sgpp::base::DataMatrix& decompMatrix,
                                   const sgpp::base::DataVector& update, bool do_cv) const {
+#ifdef USE_GSL
   // int i;
 
   size_t size = decompMatrix.getNrows();
@@ -135,13 +129,15 @@ void DBMatDMSChol::choleskyUpdate(sgpp::base::DataMatrix& decompMatrix,
   gsl_vector_free(wkvec);
   gsl_vector_free(svec);
   gsl_vector_free(cvec);
-
-  return;
+#else
+  throw base::not_implemented_exception("built withot GSL");
+#endif
 }
 
 // Implement cholesky Downdate for given Decomposition and update vector
 void DBMatDMSChol::choleskyDowndate(sgpp::base::DataMatrix& decompMatrix,
                                     const sgpp::base::DataVector& downdate, bool do_cv) const {
+#ifdef USE_GSL
   size_t size = decompMatrix.getNrows();
 
   if (downdate.getSize() != size) {
@@ -227,8 +223,9 @@ void DBMatDMSChol::choleskyDowndate(sgpp::base::DataMatrix& decompMatrix,
   gsl_vector_free(wkvec);
   gsl_vector_free(svec);
   gsl_vector_free(cvec);
-
-  return;
+#else
+  throw base::not_implemented_exception("built withot GSL");
+#endif
 }
 
 void DBMatDMSChol::choleskyUpdateLambda(sgpp::base::DataMatrix& decompMatrix,
@@ -282,5 +279,3 @@ void DBMatDMSChol::choleskyForwardSolve(const sgpp::base::DataMatrix& decompMatr
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* USE_GSL */

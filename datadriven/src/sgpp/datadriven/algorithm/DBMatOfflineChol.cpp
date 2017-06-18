@@ -10,12 +10,14 @@
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
 
+#ifdef GSL
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_matrix_double.h>
 #include <gsl/gsl_permutation.h>
 #include <gsl/gsl_permute.h>
+#endif
 
 #include <algorithm>
 #include <chrono>
@@ -38,6 +40,7 @@ DBMatOffline* DBMatOfflineChol::clone() { return new DBMatOfflineChol{*this}; }
 bool DBMatOfflineChol::isRefineable() { return true; }
 
 void DBMatOfflineChol::decomposeMatrix() {
+#ifdef GSL
   if (isConstructed) {
     if (isDecomposed) {
       // Already decomposed => Do nothing
@@ -68,11 +71,14 @@ void DBMatOfflineChol::decomposeMatrix() {
   } else {
     throw algorithm_exception("Matrix has to be constructed before it can be decomposed");
   }
+#else
+  throw algorithm_exception("built withot GSL");
+#endif /*USE_GSL*/
 }
 
 void DBMatOfflineChol::choleskyModification(size_t newPoints, std::list<size_t> deletedPoints,
                                             double lambda) {
-  auto begin = std::chrono::high_resolution_clock::now();
+#ifdef GSL
 
   // Start coarsening
   // If list 'deletedPoints' is not empty, grid points got removed
@@ -229,14 +235,13 @@ void DBMatOfflineChol::choleskyModification(size_t newPoints, std::list<size_t> 
       choleskyAddPoint(temp_col, j);
     }
   }
-
-  auto end = std::chrono::high_resolution_clock::now();
-  std::cout << "Chol modification took "
-            << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms"
-            << std::endl;
+#else
+  throw algorithm_exception("built withot GSL");
+#endif /*USE_GSL*/
 }
 
 void DBMatOfflineChol::choleskyAddPoint(DataVector& newCol, size_t size) {
+#ifdef GSL
   if (!isDecomposed) {
     throw algorithm_exception("Matrix was not decomposed, yet!");
   }
@@ -295,11 +300,13 @@ void DBMatOfflineChol::choleskyAddPoint(DataVector& newCol, size_t size) {
   mat.setRow(size, newCol);
 
   gsl_vector_free(wkvec_a);
-
-  return;
+#else
+  throw algorithm_exception("built withot GSL");
+#endif /*USE_GSL*/
 }
 
 void DBMatOfflineChol::choleskyPermutation(size_t k, size_t l, size_t job) {
+#ifdef GSL
   if (!isDecomposed) {
     throw algorithm_exception("Matrix was not decomposed, yet!");
   }
@@ -375,8 +382,9 @@ void DBMatOfflineChol::choleskyPermutation(size_t k, size_t l, size_t job) {
 
   gsl_vector_free(svec);
   gsl_vector_free(cvec);
-
-  return;
+#else
+  throw algorithm_exception("built withot GSL");
+#endif /*USE_GSL*/
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

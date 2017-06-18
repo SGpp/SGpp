@@ -9,6 +9,8 @@
  *      Author: Michael Lettrich
  */
 
+#ifdef USE_GSL
+
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEEigen.hpp>
 
 #include <sgpp/datadriven/algorithm/DBMatDMSEigen.hpp>
@@ -51,3 +53,5 @@ void DBMatOnlineDEEigen::solveSLE(DataVector& b, bool do_cv) {
 
 } /* namespace datadriven */
 } /* namespace sgpp */
+
+#endif /*USE_GSL*/

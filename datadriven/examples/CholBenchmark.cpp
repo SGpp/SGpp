@@ -14,15 +14,16 @@
 
 #ifdef USE_GSL
 #include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
-#include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
-#endif /* USE_GSL */
+#include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 
-#include <string>
 #include <chrono>
+#include <string>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
+
+#endif /* USE_GSL */
 
 int main() {
 #ifdef USE_GSL

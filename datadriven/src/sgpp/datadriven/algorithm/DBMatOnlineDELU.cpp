@@ -9,6 +9,8 @@
  *      Author: Michael Lettrich
  */
 
+#ifdef USE_GSL
+
 #include <sgpp/datadriven/algorithm/DBMatOnlineDELU.hpp>
 
 #include <sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp>
@@ -32,3 +34,4 @@ void sgpp::datadriven::DBMatOnlineDELU::solveSLE(DataVector& b, bool do_cv) {
 
 } /* namespace datadriven */
 } /* namespace sgpp */
+#endif /*USE_GSL*/
