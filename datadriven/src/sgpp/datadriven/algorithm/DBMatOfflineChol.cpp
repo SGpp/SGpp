@@ -15,7 +15,7 @@
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
 
-#ifdef GSL
+#ifdef USE_GSL
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_math.h>
@@ -45,7 +45,7 @@ DBMatOffline* DBMatOfflineChol::clone() { return new DBMatOfflineChol{*this}; }
 bool DBMatOfflineChol::isRefineable() { return true; }
 
 void DBMatOfflineChol::decomposeMatrix() {
-#ifdef GSL
+#ifdef USE_GSL
   if (isConstructed) {
     if (isDecomposed) {
       // Already decomposed => Do nothing
@@ -83,7 +83,7 @@ void DBMatOfflineChol::decomposeMatrix() {
 
 void DBMatOfflineChol::choleskyModification(size_t newPoints, std::list<size_t> deletedPoints,
                                             double lambda) {
-#ifdef GSL
+#ifdef USE_GSL
 
   // Start coarsening
   // If list 'deletedPoints' is not empty, grid points got removed
@@ -246,7 +246,7 @@ void DBMatOfflineChol::choleskyModification(size_t newPoints, std::list<size_t> 
 }
 
 void DBMatOfflineChol::choleskyAddPoint(DataVector& newCol, size_t size) {
-#ifdef GSL
+#ifdef USE_GSL
   if (!isDecomposed) {
     throw algorithm_exception("Matrix was not decomposed, yet!");
   }
@@ -311,7 +311,7 @@ void DBMatOfflineChol::choleskyAddPoint(DataVector& newCol, size_t size) {
 }
 
 void DBMatOfflineChol::choleskyPermutation(size_t k, size_t l, size_t job) {
-#ifdef GSL
+#ifdef USE_GSL
   if (!isDecomposed) {
     throw algorithm_exception("Matrix was not decomposed, yet!");
   }

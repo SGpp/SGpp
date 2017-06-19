@@ -16,7 +16,7 @@
 #include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 
-#ifdef GSL
+#ifdef USE_GSL
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_math.h>
 #endif /* USE_GSL */
@@ -37,7 +37,7 @@ DBMatOfflineGE::DBMatOfflineGE(const DBMatDensityConfiguration& oc) : DBMatOffli
 
 sgpp::datadriven::DBMatOfflineGE::DBMatOfflineGE(const std::string& fileName)
     : DBMatOffline{fileName} {
-#ifdef GSL
+#ifdef USE_GSL
   FILE* file = fopen(fileName.c_str(), "rb");
   if (!file) {
     throw application_exception{"Failed to open File"};
