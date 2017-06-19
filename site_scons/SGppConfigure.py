@@ -259,7 +259,8 @@ def checkZlib(config):
         else:
             if not config.CheckLibWithHeader("z","zlib.h", language="C++",autoadd=0):
                 Helper.printErrorAndExit("The flag USE_ZLIB was set, but the necessary header 'zlib.h' or library was not found.")
-                config.env["CPPDEFINES"]["ZLIB"] = "1"
+                
+            config.env["CPPDEFINES"]["ZLIB"] = "1"
 
 def checkBoostTests(config):
   # Check the availability of the boost unit test dependencies

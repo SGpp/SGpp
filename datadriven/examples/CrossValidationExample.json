@@ -16,6 +16,12 @@
 			"gridType": "modlinear",
 			"level": 2
 		},
+		"adaptivityConfig": {
+			"numRefinements": 3,
+			"threshold": 0.05,
+			"maxLevelType": false,
+			"noPoints": 3
+		},
 		"regularizationConfig": {
 			"lambda": 10e-1
 		}
