@@ -63,7 +63,8 @@ void DBMatOfflineSparseIChol::decomposeMatrix() {
 
 void DBMatOfflineSparseIChol::ichol(const DataMatrix& matrix, DataMatrix& result, size_t sweeps,
                                     size_t startRow) {
-  SparseDataMatrix sparseResult(result);
+  SparseDataMatrix sparseResult(result.getNrows(), result.getNcols());
+  SparseDataMatrix::fromDataMatrixTriangular(result, sparseResult);
 
   const auto matSize = sparseResult.getNrows();
   // get the data vector
