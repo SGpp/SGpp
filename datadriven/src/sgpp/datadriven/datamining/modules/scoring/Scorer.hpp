@@ -120,13 +120,34 @@ class Scorer {
                 const std::vector<size_t>& randomizedIndices, size_t offset = 0);
 
   /**
-   * Train the model on a test set and a evaluate the accuracy on the test set using the #metric.
+   * evaluate the accuracy on the test set using the #metric.
+   *
+   * @param model model to be fitted based on the train dataset.
+   * @param testDataset dataset used quantify accuracy using #metric.
+   * @return accuracy of the fit.
+   */
+  double test(ModelFittingBase& model, Dataset& testDataset);
+
+  /**
+   * Fit the model on the train dataset and evaluate the accuracy on the test set. Includes some
+   * verbose output.
    *
    * @param model model to be fitted based on the train dataset
-   * @param trainDataset dataset to be used for fitting
-   * @param testDataset dataset used quantify accuracy using #metric
+   * @param trainDataset dataset used for fitting the model.
+   * @param testDataset dataset used quantify accuracy using #metric.
+   * @return accuracy of the fit.
    */
   double train(ModelFittingBase& model, Dataset& trainDataset, Dataset& testDataset);
+
+  /**
+   * Fit the model on the train dataset and evaluate the accuracy on the test set. Includes some
+   * verbose output.
+   *
+   * @param model model which is refined based on train dataset.
+   * @param testDataset dataset used quantify accuracy using #metric.
+   * @return accuracy of the fit after refinement.
+   */
+  double refine(ModelFittingBase& model, Dataset& testDataset);
 
   /**
    * #sgpp::datadriven::Metric to be used to quantify accuracy of the fit.

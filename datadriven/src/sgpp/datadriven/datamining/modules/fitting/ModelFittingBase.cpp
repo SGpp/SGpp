@@ -28,15 +28,23 @@ using base::GridPoint;
 using base::factory_exception;
 using base::GridGenerator;
 using base::RegularGridConfiguration;
+using base::application_exception;
 using sgpp::solver::SLESolver;
 using sgpp::solver::SLESolverType;
 using sgpp::solver::ConjugateGradients;
 using sgpp::solver::BiCGStab;
 using sgpp::solver::SLESolverConfiguration;
 
-ModelFittingBase::ModelFittingBase() : config{nullptr}, grid{nullptr}, alpha{}, solver{nullptr} {}
+ModelFittingBase::ModelFittingBase()
+    : config{nullptr}, grid{nullptr}, alpha{}, dataset{nullptr}, solver{nullptr} {}
 
-const Grid& ModelFittingBase::getGrid() const { return *grid; }
+const Grid& ModelFittingBase::getGrid() const {
+  if (grid != nullptr) {
+    return *grid;
+  } else {
+    throw application_exception("No grid was fitted yet");
+  }
+}
 
 const DataVector& ModelFittingBase::getSurpluses() const { return alpha; }
 
