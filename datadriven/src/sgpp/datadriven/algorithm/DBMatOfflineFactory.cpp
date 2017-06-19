@@ -66,6 +66,7 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(const DBMatDensityConfigur
 }
 
 DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
+#ifdef USE_GSL
   std::ifstream file(fileName, std::istream::in);
 
   if (!file) {
@@ -91,25 +92,13 @@ DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
 
   switch (type) {
     case (DBMatDecompostionType::Eigen):
-#ifdef USE_GSL
       return new DBMatOfflineEigen(fileName);
-#else
-      throw factory_exception("built withot GSL");
-#endif /* USE_GSL */
       break;
     case (DBMatDecompostionType::LU):
-#ifdef USE_GSL
       return new DBMatOfflineLU(fileName);
-#else
-      throw factory_exception("built withot GSL");
-#endif /* USE_GSL */
       break;
     case (DBMatDecompostionType::Chol):
-#ifdef USE_GSL
       return new DBMatOfflineChol(fileName);
-#else
-      throw factory_exception("built withot GSL");
-#endif /* USE_GSL */
       break;
     case (DBMatDecompostionType::IChol):
       return new DBMatOfflineSparseIChol(fileName);
@@ -121,6 +110,9 @@ DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
       throw factory_exception("Trying to build offline object from unknown decomposition type");
       return nullptr;
   }
+#else
+  throw factory_exception("built withot GSL");
+#endif /* USE_GSL */
 }
 
 } /* namespace datadriven */
