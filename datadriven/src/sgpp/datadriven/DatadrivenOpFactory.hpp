@@ -204,7 +204,7 @@ datadriven::OperationMakePositive* createOperationMakePositive(
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
         datadriven::MakePositiveInterpolationAlgorithm::SetToZero,
     bool generateConsistentGrid = true, bool verbose = false,
-    optimization::ScalarFunction* f = nullptr);
+    sgpp::optimization::ScalarFunction* f = nullptr);
 
 /**
  * Factory method, returning an OperationLimitFunctionValueRange for the grid at hand.
@@ -218,7 +218,7 @@ datadriven::OperationLimitFunctionValueRange* createOperationLimitFunctionValueR
         datadriven::MakePositiveCandidateSearchAlgorithm::Intersections,
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
         datadriven::MakePositiveInterpolationAlgorithm::SetToZero,
-    bool verbose = false, optimization::ScalarFunction* f = nullptr);
+    bool verbose = false, sgpp::optimization::ScalarFunction* f = nullptr);
 
 /**
  * Factory method, returning an OperationCovariance for the grid at hand.

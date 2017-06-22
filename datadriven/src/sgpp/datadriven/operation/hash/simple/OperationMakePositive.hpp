@@ -58,7 +58,7 @@ class OperationMakePositive {
                                      MakePositiveInterpolationAlgorithm::SetToZero,
 
                                  bool generateConsistentGrid = true, bool verbose = false,
-                                 optimization::ScalarFunction* f = nullptr);
+                                 sgpp::optimization::ScalarFunction* f = nullptr);
 
   /**
    * Descrutor
@@ -194,7 +194,7 @@ class OperationMakePositive {
 
   std::shared_ptr<datadriven::OperationMakePositiveCandidateSetAlgorithm> candidateSearch;
   std::shared_ptr<datadriven::OperationMakePositiveInterpolationAlgorithm> interpolation;
-  optimization::ScalarFunction* f;
+  sgpp::optimization::ScalarFunction* f;
 
   /// verbosity
   bool verbose;

@@ -538,7 +538,7 @@ base::OperationMatrix* LearnerSGDE::computeLTwoDotProductMatrix(base::Grid& grid
 
 base::OperationMultipleEval* LearnerSGDE::computeMultipleEvalMatrix(base::Grid& grid,
                                                                     base::DataMatrix& train) {
-  if (grid.getType() == base::GridType::Bspline || grid.getType() == base::GridType::ModBspline ||
+  if (grid.getType() == base::GridType::Bspline ||
       grid.getType() == base::GridType::BsplineBoundary ||
       grid.getType() == base::GridType::BsplineClenshawCurtis ||
       grid.getType() == base::GridType::ModBsplineClenshawCurtis ||
@@ -558,11 +558,7 @@ base::OperationMatrix* LearnerSGDE::computeRegularizationMatrix(base::Grid& grid
   if (regularizationConfig.regType_ == datadriven::RegularizationType::Identity) {
     C = op_factory::createOperationIdentity(grid);
   } else if (regularizationConfig.regType_ == datadriven::RegularizationType::Laplace) {
-    if (grid.getType() == base::GridType::Bspline || grid.getType() == base::GridType::ModBspline) {
-      C = op_factory::createOperationLaplaceExplicit(grid);
-    } else {
-      C = op_factory::createOperationLaplace(grid);
-    }
+    C = op_factory::createOperationLaplace(grid);
   } else {
     throw base::application_exception("LearnerSGDE::train : unknown regularization type");
   }

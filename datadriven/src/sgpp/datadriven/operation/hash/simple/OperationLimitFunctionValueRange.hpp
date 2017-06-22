@@ -26,7 +26,7 @@ class OperationLimitFunctionValueRange {
           MakePositiveCandidateSearchAlgorithm::Intersections,
       datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
           MakePositiveInterpolationAlgorithm::SetToZero,
-      bool verbose = false, optimization::ScalarFunction* f = nullptr);
+      bool verbose = false, sgpp::optimization::ScalarFunction* f = nullptr);
 
   virtual ~OperationLimitFunctionValueRange();
 
