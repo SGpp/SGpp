@@ -23,7 +23,7 @@ class OperationCovariance {
    * Constructor
    * @param grid grid
    */
-  OperationCovariance(base::Grid& grid) : grid(grid) {}
+  explicit OperationCovariance(base::Grid& grid) : grid(grid) {}
 
   /**
    * Destructor

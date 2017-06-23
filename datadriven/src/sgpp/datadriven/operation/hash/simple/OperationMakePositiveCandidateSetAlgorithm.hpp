@@ -19,40 +19,98 @@ namespace datadriven {
 
 // -------------------------------------------------------------------------------------------
 
+/**
+ *
+ */
 struct HashGridPointCompare {
   bool operator()(const std::shared_ptr<base::HashGridPoint>& lhs,
                   const std::shared_ptr<base::HashGridPoint>& rhs) {
     return lhs->getHash() < rhs->getHash();
-  };
+  }
 };
 
+/**
+ *
+ */
 class OperationMakePositiveCandidateSetAlgorithm {
  public:
-  OperationMakePositiveCandidateSetAlgorithm(size_t maxLevel);
+  /**
+   * Constructor
+   *
+   * @param maxLevel maximum level for candidate set
+   */
+  explicit OperationMakePositiveCandidateSetAlgorithm(size_t maxLevel);
+
+  /**
+   * Desctructor
+   */
   virtual ~OperationMakePositiveCandidateSetAlgorithm();
 
+  /**
+   * Load the next candidate set that contains grid points with the currently explored levelsum.
+   *
+   * @param grid current sparse grid that needs to be extended
+   * @param alpha corresponding coefficient vector
+   * @param levelSum current levelsum to be explored
+   * @param candidates vector that contains the candidate set for the current levelsum
+   */
   virtual void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
                               std::vector<std::shared_ptr<base::HashGridPoint>>& candidates) = 0;
 
-  // statistics
+  /**
+   * @return number of candidates that have been computed per levelsum
+   */
   base::DataVector& numCandidatesPerLevel();
+
+  /**
+   * @return number of comparisons that have been computed in total
+   */
   size_t costsComputingCandidates();
+
+  /**
+   * @return number of comparisons that have been computed per iteration
+   */
   base::DataVector& costsComputingCandidatesPerIteration();
 
+  /**
+   * @return total number of candidates
+   */
   virtual size_t numCandidates() = 0;
+
+  /**
+   * @return number of candidates that have been computed per iteration
+   */
   virtual base::DataVector& numCandidatesPerIteration() = 0;
 
+  /**
+   * Set verbosity level
+   *
+   * @param pverbose verbosity level
+   */
   void setVerbose(bool pverbose);
 
  protected:
+  /**
+   * Extract grid points with negative coefficient
+   *
+   * @param alpha coefficient vector
+   * @param negativeGridPoints vector that contains the indices of the grid points with negative
+   * coefficient
+   * @param tol tolerance for positivity
+   */
   void findNodesWithNegativeCoefficients(base::DataVector& alpha,
                                          std::vector<size_t>& negativeGridPoints,
                                          double tol = -1e-14);
 
+  /// iteration counter
   size_t iteration;
+  /// maximum full grid level for the candidate set
   size_t maxLevel;
+  /// candiddate grid points per level
   base::DataVector gridPointsPerLevel;
+  /// comparison costs per iteration
   base::DataVector costsPerIteration;
+  /// verbosity level
   bool verbose;
 };
 
@@ -60,7 +118,7 @@ class OperationMakePositiveCandidateSetAlgorithm {
 class OperationMakePositiveFindIntersectionCandidates
     : public OperationMakePositiveCandidateSetAlgorithm {
  public:
-  OperationMakePositiveFindIntersectionCandidates(size_t maxLevel);
+  explicit OperationMakePositiveFindIntersectionCandidates(size_t maxLevel);
   virtual ~OperationMakePositiveFindIntersectionCandidates();
 
   void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
@@ -99,11 +157,11 @@ class OperationMakePositiveFindIntersectionCandidates
 class OperationMakePositiveFindIntersectionCandidatesJoin
     : public OperationMakePositiveFindIntersectionCandidates {
  public:
-  OperationMakePositiveFindIntersectionCandidatesJoin(size_t maxLevel);
+  explicit OperationMakePositiveFindIntersectionCandidatesJoin(size_t maxLevel);
   virtual ~OperationMakePositiveFindIntersectionCandidatesJoin();
 
  protected:
-  virtual void findIntersections(
+  void findIntersections(
       base::Grid& grid, base::DataVector& alpha, size_t levelSum,
       std::unordered_map<size_t, std::shared_ptr<base::HashGridPoint>>& res) override;
 
@@ -114,7 +172,7 @@ class OperationMakePositiveFindIntersectionCandidatesJoin
 class OperationMakePositiveLoadFullGridCandidates
     : public OperationMakePositiveCandidateSetAlgorithm {
  public:
-  OperationMakePositiveLoadFullGridCandidates(size_t maxLevel);
+  explicit OperationMakePositiveLoadFullGridCandidates(size_t maxLevel);
   virtual ~OperationMakePositiveLoadFullGridCandidates();
 
   void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
@@ -134,7 +192,7 @@ class OperationMakePositiveLoadFullGridCandidates
 class OperationMakePositiveHybridFindIntersectionCandidates
     : public OperationMakePositiveFindIntersectionCandidates {
  public:
-  OperationMakePositiveHybridFindIntersectionCandidates(size_t maxLevel);
+  explicit OperationMakePositiveHybridFindIntersectionCandidates(size_t maxLevel);
   virtual ~OperationMakePositiveHybridFindIntersectionCandidates();
 
   void findIntersections(
