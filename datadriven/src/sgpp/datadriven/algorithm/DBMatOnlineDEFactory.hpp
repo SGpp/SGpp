@@ -18,9 +18,10 @@ namespace datadriven {
 namespace DBMatOnlineDEFactory {
 
 /**
- * TODO(lettrich) : write documentation
+ * Factory to build a DBMatOnlineDE object to manipulate the decomposition in offline object
+ * @param offline offline object that holds the decomposed system matrix
+ * @param beta plasticity weighting factor. If set to 0, no plasticity takes place.
  */
-
 DBMatOnlineDE* buildDBMatOnlineDE(DBMatOffline& offline, double beta = 0);
 } /* namespace DBMatOnlineDEFactory */
 } /* namespace datadriven */
