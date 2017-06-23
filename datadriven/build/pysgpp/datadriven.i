@@ -39,9 +39,9 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineGE.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineChol.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp"
-#endif /* _WIN32 */
+#ifndef _WIN32
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineSparseIChol.hpp"
-#endif /*
+#endif /* _WIN32 */
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnline.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDE.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDEChol.hpp"
