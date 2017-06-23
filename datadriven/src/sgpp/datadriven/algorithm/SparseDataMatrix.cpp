@@ -8,7 +8,7 @@
  *  Created on: Feb 4, 2017
  *      Author: Michael Lettrich
  */
-
+#ifndef _WIN32
 #include "SparseDataMatrix.hpp"
 
 #include <sgpp/base/exception/application_exception.hpp>
@@ -193,3 +193,4 @@ void SparseDataMatrix::toDataMatrix(const SparseDataMatrix& in, DataMatrix& out)
 
 } /* namespace datadriven */
 } /* namespace sgpp */
+#endif /* _WIN32 */
