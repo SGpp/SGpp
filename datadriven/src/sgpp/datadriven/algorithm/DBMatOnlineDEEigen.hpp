@@ -21,9 +21,9 @@ namespace datadriven {
 using sgpp::datadriven::DataVector;
 
 /**
- * TODO(lettrich) : write documentation
+ * Class that stores, generates and manipulates a density function during online phase in on/off
+ * learning. This specialization operates on offline objects based on a Eigen decomposition.
  */
-
 class DBMatOnlineDEEigen : public DBMatOnlineDE {
  public:
   explicit DBMatOnlineDEEigen(DBMatOffline& offline, double beta = 0.);

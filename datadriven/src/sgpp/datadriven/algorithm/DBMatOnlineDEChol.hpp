@@ -16,9 +16,10 @@
 #include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
 
 /**
- * TODO(lettrich) : write documentation
+ * Class that stores, generates and manipulates a density function during online phase in on/off
+ * learning. This specialization operates on offline objects based on different Cholesky
+ * decompositions.
  */
-
 namespace sgpp {
 namespace datadriven {
 
