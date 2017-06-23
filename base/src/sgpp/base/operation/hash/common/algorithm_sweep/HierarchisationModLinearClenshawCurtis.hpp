@@ -42,7 +42,6 @@ class HierarchisationModLinearClenshawCurtis {
    *
    * @param storage the grid storage object of the the grid, on which the hierarchisation should be
    * executed
-   * @param base The polynomial basis functions
    */
   HierarchisationModLinearClenshawCurtis(GridStorage& storage);
 

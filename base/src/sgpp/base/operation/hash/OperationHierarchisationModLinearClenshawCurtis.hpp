@@ -24,7 +24,6 @@ class OperationHierarchisationModLinearClenshawCurtis : public OperationHierarch
    * Constructor
    *
    * @param storage the grid's GridStorage object
-   * @param degree the polynom's max. degree
    */
   OperationHierarchisationModLinearClenshawCurtis(GridStorage& storage) : storage(storage) {}
 

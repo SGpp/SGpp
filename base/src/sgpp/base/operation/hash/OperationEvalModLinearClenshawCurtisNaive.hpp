@@ -21,7 +21,6 @@ class OperationEvalModLinearClenshawCurtisNaive : public OperationEval {
    * Constructor.
    *
    * @param storage   storage of the sparse grid
-   * @param degree    polynomial degree
    */
   OperationEvalModLinearClenshawCurtisNaive(GridStorage& storage)
       : storage(storage), pointInUnitCube(storage.getDimension()) {}
