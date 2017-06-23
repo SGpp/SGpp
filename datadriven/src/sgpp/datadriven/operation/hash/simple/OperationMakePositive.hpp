@@ -42,15 +42,14 @@ class OperationMakePositive {
   typedef std::map<size_t, base::HashGridPoint> gridPointCandidatesMap;
 
   /**
-   * Constructor
+   * Constructor.
    *
    * @param candidateSearchAlgorithm defines how to generate the full grid candidate set
    * @param interpolationAlgorithm defines how to compute the coefficients for the new grid points
-   * @param f scalar function to be interpolated
-   * @param tol tolerance for positivity
    * @param generateConsistentGrid define if the hierarchical ancestors of all new grid points are
    * inserted as well
    * @param verbose print information or not
+   * @param f scalar function to be interpolated
    */
   explicit OperationMakePositive(MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
                                      MakePositiveCandidateSearchAlgorithm::IntersectionsJoin,
@@ -76,10 +75,9 @@ class OperationMakePositive {
   /**
    * Make the sparse grid function defined by grid and coefficient vector positive.
    *
-   * @param newGrid Grid where the new grid is stored
-   * @param newAlpha coefficient vector of new grid
-   * @param resetGrid if set, the grid in newGrid is deleted and a copy of the object variable is
-   * used
+   * @param grid Grid where the new grid is stored
+   * @param alpha coefficient vector of new grid
+   * @param forcePositiveNodalValues nodal values are forced to be non-negative or not
    */
   void makePositive(base::Grid& grid, base::DataVector& alpha,
                     bool forcePositiveNodalValues = false);
@@ -91,6 +89,7 @@ class OperationMakePositive {
    *
    * @param grid grid
    * @param alpha coefficient vector
+   * @param tol tolerance for negativity
    */
   void makeCurrentNodalValuesPositive(base::Grid& grid, base::DataVector& alpha,
                                       double tol = -1e-14);
@@ -127,8 +126,7 @@ class OperationMakePositive {
   base::DataVector& numAddedGridPointsForPositivityPerIteration();
 
   /**
-   *
-   * @return
+   * @return candidate set algorithm
    */
   OperationMakePositiveCandidateSetAlgorithm& getCandidateSetAlgorithm();
 
