@@ -20,12 +20,14 @@
 %include "datadriven/src/sgpp/datadriven/tools/Dataset.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/ConvergenceMonitor.hpp"
 
+#ifdef _WIN32
 %ignore sgpp::datadriven::SparseDataMatrix::SparseDataMatrix(size_t,size_t,std::vector< double > &&,std::vector< size_t > &&,std::vector< size_t > &&);
 %rename (getConstColIndexVector) sgpp::datadriven::SparseDataMatrix::getColIndexVector() const;
 %rename (getConstDataVector) sgpp::datadriven::SparseDataMatrix::getDataVector() const;
 %rename (getConstRowPtrVector) sgpp::datadriven::SparseDataMatrix::getRowPtrVector();
-
 %include "datadriven/src/sgpp/datadriven/algorithm/SparseDataMatrix.hpp"
+#endif /* _WIN32 */
+
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSChol.hpp"
@@ -35,7 +37,9 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineGE.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineChol.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp"
+#ifdef _WIN32
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineSparseIChol.hpp"
+#endif /* _WIN32 */
 %rename (getConstOfflineObject) sgpp::datadriven::DBMatOnline::getOfflineObject() const;
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnline.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDE.hpp"

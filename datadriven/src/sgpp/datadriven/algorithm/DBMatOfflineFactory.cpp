@@ -54,7 +54,9 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(const DBMatDensityConfigur
 #endif /* USE_GSL */
       break;
     case (DBMatDecompostionType::IChol):
+#ifndef _WIN32
       return new DBMatOfflineSparseIChol(config);
+#endif /* _WIN32 */
       break;
     case (DBMatDecompostionType::DenseIchol):
       return new DBMatOfflineDenseIChol(config);
@@ -101,7 +103,9 @@ DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
       return new DBMatOfflineChol(fileName);
       break;
     case (DBMatDecompostionType::IChol):
+#ifndef _WIN32
       return new DBMatOfflineSparseIChol(fileName);
+#endif /* _WIN32 */
       break;
     case (DBMatDecompostionType::DenseIchol):
       return new DBMatOfflineDenseIChol(fileName);
