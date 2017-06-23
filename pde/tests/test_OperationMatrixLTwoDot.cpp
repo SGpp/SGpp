@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitLinear) {
   opExplicit->mult(alpha, resultExplicit);
   opImplicit->mult(alpha, resultImplicit);
   for (size_t i = 0; i < grid->getSize(); i++) {
-    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-15);
+    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-13);
   }
 }
 
@@ -246,7 +246,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitPolyClenshawCurtis) {
   opExplicit->mult(alpha, resultExplicit);
   opImplicit->mult(alpha, resultImplicit);
   for (size_t i = 0; i < grid->getSize(); i++) {
-    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-15);
+    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-13);
   }
 }
 
@@ -281,7 +281,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitPolyClenshawCurtisBoundar
   opExplicit->mult(alpha, resultExplicit);
   opImplicit->mult(alpha, resultImplicit);
   for (size_t i = 0; i < grid->getSize(); i++) {
-    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-15);
+    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-13);
   }
 }
 
@@ -316,7 +316,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitModPolyClenshawCurtis) {
   opExplicit->mult(alpha, resultExplicit);
   opImplicit->mult(alpha, resultImplicit);
   for (size_t i = 0; i < grid->getSize(); i++) {
-    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-15);
+    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-13);
   }
 }
 
@@ -452,7 +452,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitBsplineClenshawCurtis) {
   opExplicit->mult(alpha, resultExplicit);
   opImplicit->mult(alpha, resultImplicit);
   for (size_t i = 0; i < grid->getSize(); i++) {
-    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-15);
+    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-13);
   }
 }
 
