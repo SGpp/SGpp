@@ -38,6 +38,9 @@ namespace sgpp {
  * If Cholesky decomposition is chosen, refinement/coarsening can be applied.
  */
 
+        struct RefinementResult;
+        struct DataBatch;
+
         class LearnerSGDEOnOffParallel : public DBMatOnline {
         public:
             /**
@@ -104,15 +107,15 @@ namespace sgpp {
              *
              * @param trainData The next data batch to process
              * @param classes The class labels corresponding to the data batch
-             * @param doCv Enable cross-validation
-             * @param vectorPairListDeletedGridPointsNumAddedListPoints Vector of pairs containing a list representing indices
+             * @param doCrossValidation Enable cross-validation
+             * @param vectorRefinementResults Vector of pairs containing a list representing indices
              *        of removed grid points and an unsigned int representing added grid
              * points
              */
-            void train(base::DataMatrix &trainData, base::DataVector &classes,
-                       bool doCv = false,
-                       std::vector<std::pair<std::list<size_t>, size_t> > *vectorPairListDeletedGridPointsNumAddedListPoints =
-                       nullptr);
+            void train(
+                    DataBatch *dataBatch,
+                    bool doCrossValidation = false,
+                    std::vector<RefinementResult> *vectorRefinementResults);
 
             /**
              * Trains the learner with the given data batch that is already split up wrt
@@ -122,16 +125,16 @@ namespace sgpp {
              * @param trainDataClasses A vector of pairs; Each pair contains the data
              * points that belong to
              *        one class and the corresponding class label
-             * @param doCv Enable cross-validation
-             * @param vectorPairListDeletedGridPointsNumAddedListPoints Vector of pairs containing a list representing indices
+             * @param doCrossValidation Enable cross-validation
+             * @param vectorRefinementResults Vector of pairs containing a list representing indices
              * of
              *        removed grid points and an unsigned int representing added grid
              * points
              */
             void train(
                     std::vector<std::pair<base::DataMatrix *, double> > &trainDataClasses,
-                    bool doCv = false,
-                    std::vector<std::pair<std::list<size_t>, size_t> > *vectorPairListDeletedGridPointsNumAddedListPoints =
+                    bool doCrossValidation = false,
+                    std::vector<RefinementResult> *vectorRefinementResults =
                     nullptr);
 
             /**
@@ -289,29 +292,25 @@ namespace sgpp {
                                              base::Grid *grid,
                                              base::GridGenerator &gridGen) const;
 
-            void checkRefinementNecessary(const std::string &refMonitor, size_t refPeriod,
+            bool checkRefinementNecessary(const std::string &refMonitor, size_t refPeriod,
                                           size_t totalInstances, double currentValidError,
                                           double currentTrainError, size_t numberOfCompletedRefinements,
-                                          std::shared_ptr<ConvergenceMonitor> &monitor, bool &doRefine);
+                                          std::shared_ptr<ConvergenceMonitor> &monitor);
 
-            std::pair<base::DataMatrix *, base::DataVector *> &
-            assembleNextBatchData(size_t batchSize, std::pair<base::DataMatrix *, base::DataVector *> &curPair,
-                                  size_t dim,
-                                  size_t *cnt) const;
+            void assembleNextBatchData(size_t batchSize, DataBatch *dataBatch,
+                                       size_t dataDimensionality,
+                                       size_t *batchOffset) const;
 
             void
             doRefinementForClass(const std::string &refType,
-                                 const std::vector<std::pair<std::list<size_t>, size_t>> *vectorPairListDeletedGridPointsNumAddedListPoints,
-                                 const std::list<size_t> &deletedGridPoints,
-                                 size_t numberOfNewPoints,
+                                 const std::vector<RefinementResult> *vectorRefinementResults,
                                  const std::vector<std::pair<DBMatOnlineDE *, double>> *onlineObjects,
                                  bool preCompute, MultiGridRefinementFunctor *refinementFunctor,
                                  size_t classIndex) const;
 
-            void doRefinementForAll(const std::string &refinementFunctorType, const std::string &refinementMonitorType,
-                                    const std::vector<std::pair<std::list<size_t>, size_t>> *vectorPairListDeletedGridPointsNumAddedListPoints,
-                                    const std::list<size_t> &deletedGridPoints,
-                                    size_t newPoints,
+            void doRefinementForAll(const std::string &refinementFunctorType,
+                                    const std::string &refinementMonitorType,
+                                    const std::vector<RefinementResult> *vectorRefinementResults,
                                     const std::vector<std::pair<DBMatOnlineDE *, double>> *onlineObjects,
                                     std::shared_ptr<ConvergenceMonitor> &monitor);
 
@@ -323,7 +322,7 @@ namespace sgpp {
                                        std::map<double, int> &classIndices) const;
 
             void
-            splitBatchIntoClasses(const base::DataMatrix &trainData, const base::DataVector &trainClasses, size_t dim,
+            splitBatchIntoClasses(const DataBatch *dataBatch, size_t dim,
                                   const std::vector<std::pair<base::DataMatrix *, double>> &trainDataClasses,
                                   std::map<double, int> &classIndices) const;
 
@@ -334,9 +333,11 @@ namespace sgpp {
             bool isMaster() const;
 
             void updateVariablesAfterRefinement(
-                    const std::vector<std::pair<std::list<size_t>, size_t>> *vectorPairListDeletedGridPointsNumAddedListPoints,
-                    const std::list<size_t> &deletedGridPoints, size_t newPoints, size_t idx,
+                    const std::vector<RefinementResult> *vectorPairListDeletedGridPointsNumAddedListPoints,
+                    size_t idx,
                     DBMatOnlineDE *densEst) const;
+
+            void sendGridComponentsUpdate(std::vector<RefinementResult> *refinementResult);
         };
     }   //namespace datadriven
 }  // namespace sgpp

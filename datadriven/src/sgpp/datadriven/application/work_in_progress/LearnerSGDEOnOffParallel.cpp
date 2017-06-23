@@ -28,6 +28,24 @@
 namespace sgpp {
     namespace datadriven {
 
+        struct RefinementResult {
+            size_t numAddedGridPoints;
+            std::list<size_t> deletedGridPointsIndexes;
+        };
+
+        struct DataBatch {
+            // pointer to the next batch (data points + class labels) to be processed
+            sgpp::base::DataMatrix *dataPoints;
+            sgpp::base::DataVector *classLabels;
+        };
+
+        enum MPI_COMMAND_ID {
+            UPDATE_GRID
+        };
+
+        const size_t MASTER_RANK = 0;
+
+
         LearnerSGDEOnOffParallel::LearnerSGDEOnOffParallel(
                 sgpp::datadriven::DBMatDensityConfiguration &dconf,
                 sgpp::base::DataMatrix &trainData, sgpp::base::DataVector &trainDataLabels,
@@ -122,15 +140,12 @@ namespace sgpp {
             // counts total number of processed data points
             size_t numProcessedDataPoints = 0;
             // pointer to the next batch (data points + class labels) to be processed
-            std::pair<sgpp::base::DataMatrix *, sgpp::base::DataVector *> curPair;
+            DataBatch dataBatch;
 
             // contains list of removed grid points and number of added grid points
             // (is updated in each refinement/coarsening step)
-            std::vector<std::pair<std::list<size_t>, size_t> > *vectorPairListDeletedGridPointsNumAddedListPoints =
-                    new std::vector<std::pair<std::list<size_t>, size_t> >(classNumber);
-
-            // auxiliary variables
-            sgpp::base::DataVector p(trainData.getNcols());
+            std::vector<RefinementResult> *vectorRefinementResults =
+                    new std::vector<RefinementResult>(classNumber);
 
             // initialize counter for dataset passes
             size_t completedDataPasses = 0;
@@ -141,7 +156,7 @@ namespace sgpp {
             // create convergence monitor object
             std::shared_ptr<ConvergenceMonitor> monitor(new ConvergenceMonitor(
                     accDeclineThreshold, accDeclineBufferSize, minRefInterval));
-            bool doRefine = false;  // is set to 'true' by refinement monitor
+
             // counts number of performed refinements
             size_t numberOfCompletedRefinements = 0;
 
@@ -151,9 +166,6 @@ namespace sgpp {
             // size_t coarsePeriod = 50;
             // size_t coarseNumPoints = 1;
             // double coarseThreshold = 1.0;
-
-            std::list<size_t> listDeletedGridPoints;
-            size_t newPoints = 0;
 
             std::vector<std::pair<DBMatOnlineDE *, double> > *onlineObjects;
 
@@ -175,25 +187,34 @@ namespace sgpp {
             while (completedDataPasses < maxDataPasses) {
                 std::cout << "#batch-size: " << batchSize << std::endl;
                 std::cout << "#batches to process: " << numBatch << std::endl;
+
                 // data point counter - determines offset when selecting next batch
                 size_t cnt = 0;
+
                 // iterate over total number of batches
-                for (size_t step = 1; step <= numBatch; step++) {
+                for (size_t currentBatchNum = 1; currentBatchNum <= numBatch; currentBatchNum++) {
                     // check if cross-validation should be performed
-                    bool doCv = false;
+                    bool doCrossValidation = false;
                     if (enableCv) {
-                        if (nextCvStep == step) {
-                            doCv = true;
+                        if (nextCvStep == currentBatchNum) {
+                            doCrossValidation = true;
                             nextCvStep *= 5;
                         }
                     }
                     // assemble next batch
-                    curPair = assembleNextBatchData(batchSize, curPair, dim, &cnt);
+                    assembleNextBatchData(batchSize, &dataBatch, dim, &cnt);
 
                     // train the model with current batch
-                    train(*(curPair.first), *(curPair.second), doCv, vectorPairListDeletedGridPointsNumAddedListPoints);
+                    train(&dataBatch, doCrossValidation, vectorRefinementResults);
 
-                    numProcessedDataPoints += (curPair.first)->getNrows();
+                    numProcessedDataPoints += (dataBatch.dataPoints)->getNrows();
+
+                    //TODO: This
+//                    if(isMaster()) {
+//                        receiveGridsFromLearners();
+//                    } else {
+//                        sendCurrentGridToMaster();
+//                    }
 
                     // access DBMatOnlineDE-objects of all classes in order
                     // to apply adaptivity to the specific sparse grids later on
@@ -203,30 +224,31 @@ namespace sgpp {
                     if (isMaster()) {
 
                         // check if refinement should be performed
-                        checkRefinementNecessary(refMonitor, refPeriod, numProcessedDataPoints, currentValidError,
-                                                 currentTrainError, numberOfCompletedRefinements, monitor, doRefine);
+                        if (checkRefinementNecessary(refMonitor, refPeriod, numProcessedDataPoints, currentValidError,
+                                                     currentTrainError, numberOfCompletedRefinements, monitor)) {
+                            // if the Cholesky decomposition is chosen as factorization method
+                            // refinement
+                            // and coarsening methods can be applied
 
-                        // if the Cholesky decomposition is chosen as factorization method
-                        // refinement
-                        // and coarsening methods can be applied
-
-                        if (doRefine) {
                             std::cout << "refinement at iteration: " << numProcessedDataPoints << std::endl;
-                            doRefinementForAll(refinementFunctorType, refMonitor,
-                                               vectorPairListDeletedGridPointsNumAddedListPoints,
-                                               listDeletedGridPoints,
-                                               newPoints, onlineObjects,
-                                               monitor);
+                            doRefinementForAll(refinementFunctorType, refMonitor, vectorRefinementResults,
+                                               onlineObjects, monitor);
                             numberOfCompletedRefinements += 1;
-                            doRefine = false;
+
+                            //TODO If not master, the grid needs to be adjusted here
+                            if (isMaster()) {
+                                //TODO Send and Receive Delta
+                                //TODO Adjust Grid
+                                sendGridComponentsUpdate(vectorRefinementResults);
+                            }
                         }
 
 
                     } else {
                         //TODO: Otherwise, merge grids if any are available
                     }
-                    delete curPair.first;
-                    delete curPair.second;
+                    delete dataBatch.dataPoints;
+                    delete dataBatch.classLabels;
 
                     // save current error
                     if (numProcessedDataPoints % 10 == 0) {
@@ -247,10 +269,12 @@ namespace sgpp {
             error = 1.0 - getAccuracy();
 
             // delete offline;
-            delete vectorPairListDeletedGridPointsNumAddedListPoints;
+            delete vectorRefinementResults;
         }
 
-        bool LearnerSGDEOnOffParallel::isMaster() const { return parallel::myGlobalMPIComm->getMyRank() == 0; }
+        bool LearnerSGDEOnOffParallel::isMaster() const {
+            return sgpp::parallel::myGlobalMPIComm->getMyRank() == MASTER_RANK;
+        }
 
         void LearnerSGDEOnOffParallel::printGridSizeStatistics(
                 std::vector<std::pair<DBMatOnlineDE *, double>> *onlineObjects,
@@ -265,9 +289,7 @@ namespace sgpp {
 
         void LearnerSGDEOnOffParallel::doRefinementForAll(const std::string &refinementFunctorType,
                                                           const std::string &refinementMonitorType,
-                                                          const std::vector<std::pair<std::list<size_t>, size_t>> *vectorPairListDeletedGridPointsNumAddedListPoints,
-                                                          const std::list<size_t> &deletedGridPoints,
-                                                          size_t newPoints,
+                                                          const std::vector<RefinementResult> *vectorRefinementResults,
                                                           const std::vector<std::pair<DBMatOnlineDE *, double>> *onlineObjects,
                                                           std::shared_ptr<ConvergenceMonitor> &monitor) {
             // acc = getAccuracy();
@@ -298,6 +320,7 @@ namespace sgpp {
             // to be marked relevant). Cross-validation or similar can/should be
             // employed
             // to determine this value.
+            //TODO: Investigate this
             std::vector<double> coeffA;
             coeffA.push_back(1.2);  // ripley 1.2
             coeffA.push_back(1.2);  // ripley 1.2
@@ -315,8 +338,8 @@ namespace sgpp {
 
             // perform refinement/coarsening for each grid
             for (size_t idx = 0; idx < this->getNumClasses(); idx++) {
-                this->doRefinementForClass(refinementFunctorType, vectorPairListDeletedGridPointsNumAddedListPoints,
-                                           deletedGridPoints, newPoints, onlineObjects,
+                this->doRefinementForClass(refinementFunctorType, vectorRefinementResults,
+                                           onlineObjects,
                                            preCompute, func, idx);
             }
             if (refinementMonitorType == "convergence") {
@@ -325,9 +348,7 @@ namespace sgpp {
         }
 
         void LearnerSGDEOnOffParallel::doRefinementForClass(const std::string &refType,
-                                                            const std::vector<std::pair<std::list<size_t>, size_t>> *vectorPairListDeletedGridPointsNumAddedListPoints,
-                                                            const std::list<size_t> &deletedGridPoints,
-                                                            size_t numberOfNewPoints,
+                                                            const std::vector<RefinementResult> *vectorRefinementResults,
                                                             const std::vector<std::pair<DBMatOnlineDE *, double>> *onlineObjects,
                                                             bool preCompute,
                                                             MultiGridRefinementFunctor *refinementFunctor,
@@ -342,7 +363,7 @@ namespace sgpp {
 
             base::GridGenerator &gridGen = grid->getGenerator();
 
-            numberOfNewPoints = 0;
+            size_t numberOfNewPoints = 0;
 
             if (refType == "surplus") {
                 numberOfNewPoints = handleSurplusBasedRefinement(densEst, grid, gridGen);
@@ -355,62 +376,57 @@ namespace sgpp {
             std::cout << "grid size after adaptivity: " << grid->getSize()
                       << std::endl;
 
-            (*vectorPairListDeletedGridPointsNumAddedListPoints)[classIndex].second = numberOfNewPoints;
-            updateVariablesAfterRefinement(vectorPairListDeletedGridPointsNumAddedListPoints, deletedGridPoints,
-                                           numberOfNewPoints, classIndex, densEst);
+            (*vectorRefinementResults)[classIndex].numAddedGridPoints = numberOfNewPoints;
+
+            updateVariablesAfterRefinement(vectorRefinementResults, classIndex, densEst);
         }
 
         void LearnerSGDEOnOffParallel::updateVariablesAfterRefinement(
-                const std::vector<std::pair<std::list<size_t>, size_t>> *vectorPairListDeletedGridPointsNumAddedListPoints,
-                const std::list<size_t> &deletedGridPoints, size_t newPoints, size_t idx,
+                const std::vector<RefinementResult> *vectorRefinementResults,
+                size_t classIndex,
                 DBMatOnlineDE *densEst) const {
-            //TODO If not master, the grid needs to be adjusted here
-            if (!isMaster()) {
-                //TODO Adjust Grid
-            }
 
             // apply grid changes to the Cholesky factorization
             densEst->getOffline()->choleskyModification(
-                    newPoints, deletedGridPoints, densEst->getBestLambda());
+                    (*vectorRefinementResults)[classIndex].numAddedGridPoints,
+                    (*vectorRefinementResults)[classIndex].deletedGridPointsIndexes, densEst->getBestLambda());
             // update alpha vector
-            densEst->updateAlpha(&(*vectorPairListDeletedGridPointsNumAddedListPoints)[idx].first,
-                                 (*vectorPairListDeletedGridPointsNumAddedListPoints)[idx].second);
+            densEst->updateAlpha(&(*vectorRefinementResults)[classIndex].deletedGridPointsIndexes,
+                                 (*vectorRefinementResults)[classIndex].numAddedGridPoints);
         }
 
-        std::pair<base::DataMatrix *, base::DataVector *> &
-        LearnerSGDEOnOffParallel::assembleNextBatchData(size_t batchSize,
-                                                        std::pair<base::DataMatrix *, base::DataVector *> &curPair,
-                                                        size_t dim,
-                                                        size_t *cnt) const {
+        void LearnerSGDEOnOffParallel::assembleNextBatchData(size_t batchSize,
+                                                             DataBatch *dataBatch,
+                                                             size_t dataDimensionality,
+                                                             size_t *batchOffset) const {
             base::DataMatrix *batch =
-                    new base::DataMatrix(batchSize, dim);
+                    new base::DataMatrix(batchSize, dataDimensionality);
             base::DataVector *batchLabels =
                     new base::DataVector(batchSize);
             for (size_t j = 0; j < batchSize; j++) {
-                base::DataVector x(dim);
-                trainData.getRow(j + *cnt, x);
-                double y = trainLabels.get(j + *cnt);
-                batch->setRow(j, x);
+                base::DataVector dataPoint(dataDimensionality);
+                trainData.getRow(j + *batchOffset, dataPoint);
+                double y = trainLabels.get(j + *batchOffset);
+                batch->setRow(j, dataPoint);
                 batchLabels->set(j, y);
             }
-            curPair = std::pair<base::DataMatrix *, base::DataVector *>(
-                    batch, batchLabels);
-            *cnt += batchSize;
-            return curPair;
+            dataBatch->dataPoints = batch;
+            dataBatch->classLabels = batchLabels;
+
+            *batchOffset += batchSize;
         }
 
-        void LearnerSGDEOnOffParallel::checkRefinementNecessary(const std::string &refMonitor, size_t refPeriod,
+        bool LearnerSGDEOnOffParallel::checkRefinementNecessary(const std::string &refMonitor, size_t refPeriod,
                                                                 size_t totalInstances, double currentValidError,
                                                                 double currentTrainError,
                                                                 size_t numberOfCompletedRefinements,
-                                                                std::shared_ptr<ConvergenceMonitor> &monitor,
-                                                                bool &doRefine) {
+                                                                std::shared_ptr<ConvergenceMonitor> &monitor) {
             if (refMonitor == "periodic") {
                 // check periodic monitor
                 if ((this->offline->getConfig()->decomp_type_ == DBMatDecompChol) &&
                     (totalInstances > 0) && (totalInstances % refPeriod == 0) &&
                     (numberOfCompletedRefinements < this->offline->getConfig()->numRefinements_)) {
-                    doRefine = true;
+                    return true;
                 }
             } else if (refMonitor == "convergence") {
                 // check convergence monitor
@@ -430,10 +446,11 @@ namespace sgpp {
                         monitor->nextRefCnt--;
                     }
                     if (monitor->nextRefCnt == 0) {
-                        doRefine = monitor->checkConvergence();
+                        return monitor->checkConvergence();
                     }
                 }
             }
+            return false;
         }
 
         size_t
@@ -513,11 +530,11 @@ namespace sgpp {
 
         // Train from an entire Batch
         void LearnerSGDEOnOffParallel::train(
-                sgpp::base::DataMatrix &trainData, sgpp::base::DataVector &trainClasses,
-                bool doCv,
-                std::vector<std::pair<std::list<size_t>, size_t> > *vectorPairListDeletedGridPointsNumAddedListPoints) {
+                DataBatch *dataBatch,
+                bool doCrossValidation,
+                std::vector<RefinementResult> *vectorRefinementResults) {
             if (initDone) {
-                if (trainData.getNrows() != trainClasses.getSize()) {
+                if (trainData.getNrows() != dataBatch->classLabels->getSize()) {
                     throw sgpp::base::data_exception(
                             "Sizes of train data set and class label vector do not fit!");
                 }
@@ -530,10 +547,10 @@ namespace sgpp {
                 allocateClassMatrices(dim, trainDataClasses, classIndices);
 
                 // split the data into the different classes:
-                splitBatchIntoClasses(trainData, trainClasses, dim, trainDataClasses, classIndices);
+                splitBatchIntoClasses(dataBatch, dim, trainDataClasses, classIndices);
 
                 // compute density functions
-                train(trainDataClasses, doCv, vectorPairListDeletedGridPointsNumAddedListPoints);
+                train(trainDataClasses, doCrossValidation, vectorRefinementResults);
 
                 // delete DataMatrix pointers:
                 for (size_t i = 0; i < trainDataClasses.size(); i++) {
@@ -543,13 +560,12 @@ namespace sgpp {
         }
 
         void
-        LearnerSGDEOnOffParallel::splitBatchIntoClasses(const base::DataMatrix &trainData,
-                                                        const base::DataVector &trainClasses,
+        LearnerSGDEOnOffParallel::splitBatchIntoClasses(const DataBatch *dataBatch,
                                                         size_t dim,
                                                         const std::vector<std::pair<base::DataMatrix *, double>> &trainDataClasses,
                                                         std::map<double, int> &classIndices) const {
-            for (size_t i = 0; i < trainData.getNrows(); i++) {
-                double classLabel = trainClasses[i];
+            for (size_t i = 0; i < dataBatch->dataPoints->getNrows(); i++) {
+                double classLabel = dataBatch->classLabels->[i];
                 base::DataVector vec(dim);
                 trainData.getRow(i, vec);
                 std::pair<base::DataMatrix *, double> p =
@@ -574,8 +590,9 @@ namespace sgpp {
         //Train from a Batch already split up into its classes
         void LearnerSGDEOnOffParallel::train(
                 std::vector<std::pair<sgpp::base::DataMatrix *, double> > &trainDataClasses,
-                bool doCv,
-                std::vector<std::pair<std::list<size_t>, size_t> > *vectorPairListDeletedGridPointsNumAddedListPoints) {
+                bool doCrossValidation,
+                std::vector<RefinementResult> *vectorRefinementResults) {
+
             //Calculate the total number of data points
             size_t numberOfDataPoints = 0;
             for (size_t i = 0; i < trainDataClasses.size(); i++) {
@@ -589,10 +606,10 @@ namespace sgpp {
                 if ((*p.first).getNrows() > 0) {
                     // update density function for current class
                     (*destFunctions)[i].first->computeDensityFunction(
-                            *p.first, true, doCv, &(*vectorPairListDeletedGridPointsNumAddedListPoints)[i].first,
-                            (*vectorPairListDeletedGridPointsNumAddedListPoints)[i].second);
-                    (*vectorPairListDeletedGridPointsNumAddedListPoints)[i].first.clear();
-                    (*vectorPairListDeletedGridPointsNumAddedListPoints)[i].second = 0;
+                            *p.first, true, doCrossValidation, &(*vectorRefinementResults)[i].deletedGridPointsIndexes,
+                            (*vectorRefinementResults)[i].numAddedGridPoints);
+                    (*vectorRefinementResults)[i].deletedGridPointsIndexes.clear();
+                    (*vectorRefinementResults)[i].numAddedGridPoints = 0;
 
                     if (usePrior) {
                         this->prior[p.second] =
@@ -816,6 +833,14 @@ namespace sgpp {
 
         void LearnerSGDEOnOffParallel::synchronizeEndOfDataPass() {
             sgpp::parallel::myGlobalMPIComm->Barrier();
+        }
+
+        void LearnerSGDEOnOffParallel::sendGridComponentsUpdate(std::vector<RefinementResult> *refinementResult) {
+            size_t commandID = UPDATE_GRID;
+            MPI_Request mpiRequestCommandID;
+            MPI_Request mpiRequestAddedPointsBroadcast;
+            MPI_Ibcast(&commandID, 1, MPI_UNSIGNED_SHORT, MASTER_RANK, MPI_COMM_WORLD, &mpiRequestCommandID);
+            //TODO Finish
         }
 
 
