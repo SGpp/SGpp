@@ -10,7 +10,6 @@
 // base class is not exported from the configuration
 %warnfilter(401) sgpp::datadriven::LearnerSGDEConfiguration;
 
-
 // The Good, i.e. without any modifications
 #ifdef SG_DATADRIVEN
 %include "datadriven/src/sgpp/datadriven/algorithm/test_dataset.hpp"
@@ -82,6 +81,7 @@
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMarginalize.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp"
 
+%ignore sgpp::datadriven::HashGridPointCompare::operator();
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationMakePositiveCandidateSetAlgorithm.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationLimitFunctionValueRange.hpp"
