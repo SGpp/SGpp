@@ -17,7 +17,6 @@ void DBMatOnline::setLambda(double lambda) {
   switch (offlineObject.getConfig().decomp_type_) {
     case DBMatDecompostionType::Eigen:
     case DBMatDecompostionType::Chol:
-    case DBMatDecompostionType::IChol:
     case DBMatDecompostionType::DenseIchol:
       offlineObject.getConfig().lambda_ = lambda;
       break;

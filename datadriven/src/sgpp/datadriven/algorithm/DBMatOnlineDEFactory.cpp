@@ -40,7 +40,6 @@ DBMatOnlineDE* DBMatOnlineDEFactory::buildDBMatOnlineDE(DBMatOffline& offline, d
 #endif /*USE_GSL*/
       break;
     case DBMatDecompostionType::Chol:
-    case DBMatDecompostionType::IChol:
     case DBMatDecompostionType::DenseIchol:
       return new DBMatOnlineDEChol(offline, beta);
       break;

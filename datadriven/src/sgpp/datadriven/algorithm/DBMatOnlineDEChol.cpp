@@ -73,17 +73,16 @@ void DBMatOnlineDEChol::solveSLE(DataVector& b, bool do_cv) {
 DBMatDMSChol* DBMatOnlineDEChol::buildCholSolver(DBMatOffline& offlineObject, bool doCV) const {
   // const cast is OK here, since we access the config read only.
   switch (offlineObject.getConfig().decomp_type_) {
-    case(DBMatDecompostionType::Chol) :
-    case(DBMatDecompostionType::IChol) :
+    case (DBMatDecompostionType::Chol):
       return new DBMatDMSChol();
       break;
-    case(DBMatDecompostionType::DenseIchol) :
+    case (DBMatDecompostionType::DenseIchol):
       return new DBMatDMSDenseIChol(offlineObject.getConfig().icholParameters,
                                     offlineObject.getGrid(), offlineObject.getConfig().lambda_,
                                     doCV);
       break;
-    case(DBMatDecompostionType::LU) :
-    case(DBMatDecompostionType::Eigen) :
+    case (DBMatDecompostionType::LU):
+    case (DBMatDecompostionType::Eigen):
     default:
       throw sgpp::base::algorithm_exception{"Only Cholesky based solvers can use this Solver"};
   }
