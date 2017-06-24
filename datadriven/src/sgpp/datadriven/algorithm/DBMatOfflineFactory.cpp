@@ -16,9 +16,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineEigen.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
-#ifndef _WIN32
 #include <sgpp/datadriven/algorithm/DBMatOfflineSparseIChol.hpp>
-#endif /* _WIN32 */
 #include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 
 #include <string>
@@ -56,11 +54,7 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(const DBMatDensityConfigur
 #endif /* USE_GSL */
       break;
     case (DBMatDecompostionType::IChol):
-#ifndef _WIN32
       return new DBMatOfflineSparseIChol(config);
-#else
-      throw factory_exception("not available on WIN32 platform");
-#endif /* _WIN32 */
       break;
     case (DBMatDecompostionType::DenseIchol):
       return new DBMatOfflineDenseIChol(config);
@@ -107,11 +101,7 @@ DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
       return new DBMatOfflineChol(fileName);
       break;
     case (DBMatDecompostionType::IChol):
-#ifndef _WIN32
       return new DBMatOfflineSparseIChol(fileName);
-#else
-      throw factory_exception("not available on WIN32 platform");
-#endif /* _WIN32 */
       break;
     case (DBMatDecompostionType::DenseIchol):
       return new DBMatOfflineDenseIChol(fileName);

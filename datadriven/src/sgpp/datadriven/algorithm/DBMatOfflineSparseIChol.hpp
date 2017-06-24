@@ -9,7 +9,6 @@
  *      Author: Michael Lettrich
  */
 
-#ifndef _WIN32
 #pragma once
 
 #include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
@@ -41,7 +40,6 @@ class DBMatOfflineSparseIChol : public DBMatOfflineDenseIChol {
   static void ichol(const DataMatrix& matrix, DataMatrix& result, size_t sweeps = 4,
                     size_t startRow = 0);
 };
-#endif /* _WIN32 */
 
 } /* namespace datadriven */
 } /* namespace sgpp */
