@@ -42,9 +42,9 @@ void DBMatOfflineSparseIChol::decomposeMatrix() {
 
 // only copy lower triangular matrix
 #pragma omp parallel for schedule(guided)
-      for (auto i = 0u; i < tmpMatrix.getNrows(); i++) {
+      for (size_t i = 0u; i < tmpMatrix.getNrows(); i++) {
 #pragma omp simd
-        for (auto j = 0u; j <= i; j++) {
+        for (size_t j = 0u; j <= i; j++) {
           tmpMatrix.set(i, j, lhsMatrix.get(i, j));
         }
       }
@@ -67,7 +67,7 @@ void DBMatOfflineSparseIChol::ichol(const DataMatrix& matrix, DataMatrix& result
   SparseDataMatrix sparseResult(result.getNrows(), result.getNcols());
   SparseDataMatrix::fromDataMatrixTriangular(result, sparseResult);
 
-  const auto matSize = sparseResult.getNrows();
+  const size_t matSize = sparseResult.getNrows();
   // get the data vector
   auto& matData = sparseResult.getDataVector();
   // get the rows
@@ -76,18 +76,18 @@ void DBMatOfflineSparseIChol::ichol(const DataMatrix& matrix, DataMatrix& result
   const auto& colIndices = sparseResult.getColIndexVector();
 
   // for all sweeps
-  for (auto sweep = 0u; sweep < sweeps; sweep++) {
+  for (size_t sweep = 0; sweep < sweeps; sweep++) {
 #pragma omp parallel for
     for (auto dataIter = rowPtrs[startRow]; dataIter < matData.size(); dataIter++) {
-      const auto col = colIndices[dataIter];
-      const auto row = [&rowPtrs, dataIter]() {
+      const size_t col = colIndices[dataIter];
+      const size_t row = [&rowPtrs, dataIter]() {
         const auto find = std::lower_bound(std::begin(rowPtrs), std::end(rowPtrs), dataIter);
         return static_cast<size_t>(
             ((*find > dataIter || find == std::end(rowPtrs)) ? (find - 1) : find) -
             rowPtrs.begin());
       }();
 
-      auto s = matrix.get(row, col);
+      double s = matrix.get(row, col);
 
       auto upperFirst = colIndices.begin() + rowPtrs[col];
       const auto upperLast =
