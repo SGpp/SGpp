@@ -41,9 +41,9 @@ void DBMatOfflineDenseIChol::decomposeMatrix() {
 
 // only copy lower triangular matrix
 #pragma omp parallel for schedule(guided)
-      for (auto i = 0u; i < tmpMatrix.getNrows(); i++) {
+      for (size_t i = 0u; i < tmpMatrix.getNrows(); i++) {
 #pragma omp simd
-        for (auto j = 0u; j <= i; j++) {
+        for (size_t j = 0u; j <= i; j++) {
           tmpMatrix.set(i, j, lhsMatrix.get(i, j));
         }
       }
@@ -75,9 +75,9 @@ void DBMatOfflineDenseIChol::choleskyModification(size_t newPoints, std::list<si
 
 // only copy lower triangular matrix
 #pragma omp parallel for schedule(guided)
-    for (auto i = 0u; i < tmpMatrix.getNrows(); i++) {
+    for (size_t i = 0u; i < tmpMatrix.getNrows(); i++) {
 #pragma omp simd
-      for (auto j = 0u; j <= i; j++) {
+      for (size_t j = 0u; j <= i; j++) {
         lhsMatrix.set(i, j, tmpMatrix.get(i, j));
       }
     }
@@ -172,17 +172,17 @@ void sgpp::datadriven::DBMatOfflineDenseIChol::ichol(const DataMatrix& matrix, D
 // for all sweeps
 #pragma omp parallel
   { /* omp parallel */
-    for (auto sweep = 0u; sweep < sweeps; sweep++) {
+    for (size_t sweep = 0u; sweep < sweeps; sweep++) {
       // for each row
-      for (auto i = startRow; i < result.getNrows(); i++) {
+      for (size_t i = startRow; i < result.getNrows(); i++) {
 // in each column until diagonal element
 #pragma omp for schedule(guided) nowait
-        for (auto j = 0u; j <= i; j++) {
+        for (size_t j = 0u; j <= i; j++) {
           // calculate sum;
           auto s = matrix.get(i - startRow, j);
           if (s > 0.0) {
 #pragma omp simd
-            for (auto k = 0u; k < j; k++) {
+            for (size_t k = 0u; k < j; k++) {
               s -= result.get(i, k) * result.get(j, k);
             }
             if (i != j) {
