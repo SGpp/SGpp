@@ -9,7 +9,6 @@
  *      Author: Michael Lettrich
  */
 
-#ifndef _WIN32
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineSparseIChol.hpp>
 #include <sgpp/datadriven/algorithm/SparseDataMatrix.hpp>
@@ -125,4 +124,3 @@ void DBMatOfflineSparseIChol::ichol(const DataMatrix& matrix, DataMatrix& result
 
 } /* namespace datadriven */
 } /* namespace sgpp */
-#endif /* _WIN32*/

@@ -27,6 +27,7 @@
 %include "datadriven/src/sgpp/datadriven/application/RegularizationConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/ConvergenceMonitor.hpp"
 
+%include "datadriven/src/sgpp/datadriven/algorithm/SparseDataMatrix.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSChol.hpp"
@@ -36,6 +37,7 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineGE.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineChol.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineSparseIChol.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnline.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDE.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDEChol.hpp"

@@ -13,9 +13,7 @@
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 #include <sgpp/datadriven/algorithm/test_dataset.hpp>
 
-#ifndef _WIN32
 #include <sgpp/datadriven/algorithm/SparseDataMatrix.hpp>
-#endif /* _WIN32 */
 
 #ifdef USE_GSL
 #include <sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp>
@@ -35,9 +33,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineGE.hpp>
-#ifndef _WIN32
 #include <sgpp/datadriven/algorithm/DBMatOfflineSparseIChol.hpp>
-#endif /* _WIN32 */
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEChol.hpp>

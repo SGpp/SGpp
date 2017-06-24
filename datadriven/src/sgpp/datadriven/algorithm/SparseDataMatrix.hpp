@@ -8,7 +8,6 @@
  *  Created on: Feb 4, 2017
  *      Author: Michael Lettrich
  */
-#ifndef _WIN32
 
 #pragma once
 
@@ -183,5 +182,3 @@ class SparseDataMatrix {
 
 } /* namespace datadriven */
 } /* namespace sgpp */
-
-#endif /* _WIN_32 */
