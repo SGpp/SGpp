@@ -25,6 +25,7 @@
 #include <utility>
 #include <vector>
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
+#include <mpi.h>
 
 namespace sgpp {
     namespace datadriven {
@@ -40,6 +41,7 @@ namespace sgpp {
 
         struct RefinementResult;
         struct DataBatch;
+        struct PendingMPIRequest;
 
         class LearnerSGDEOnOffParallel : public DBMatOnline {
         public:
@@ -283,6 +285,13 @@ namespace sgpp {
             base::DataMatrix *cvSaveTest;
             base::DataMatrix *cvSaveTestRes;
 
+            //Pending MPI Requests
+            std::vector<PendingMPIRequest> pendingMPIRequests;
+            int mpiWorldSize;
+
+            //Batches assigned by master
+            std::vector<DataBatch> assignedBatches;
+
             size_t
             handleSurplusBasedRefinement(DBMatOnlineDE *densEst, base::Grid *grid,
                                          base::GridGenerator &gridGen) const;
@@ -302,19 +311,6 @@ namespace sgpp {
                                        size_t *batchOffset) const;
 
             void
-            doRefinementForClass(const std::string &refType,
-                                 const std::vector<RefinementResult> *vectorRefinementResults,
-                                 const std::vector<std::pair<DBMatOnlineDE *, double>> *onlineObjects,
-                                 bool preCompute, MultiGridRefinementFunctor *refinementFunctor,
-                                 size_t classIndex) const;
-
-            void doRefinementForAll(const std::string &refinementFunctorType,
-                                    const std::string &refinementMonitorType,
-                                    const std::vector<RefinementResult> *vectorRefinementResults,
-                                    const std::vector<std::pair<DBMatOnlineDE *, double>> *onlineObjects,
-                                    std::shared_ptr<ConvergenceMonitor> &monitor);
-
-            void
             printGridSizeStatistics(std::vector<std::pair<DBMatOnlineDE *, double>> *onlineObjects,
                                     const char *messageString);
 
@@ -326,18 +322,37 @@ namespace sgpp {
                                   const std::vector<std::pair<base::DataMatrix *, double>> &trainDataClasses,
                                   std::map<double, int> &classIndices) const;
 
-            void doInitMPI();
+            void initMPI();
 
             void synchronizeEndOfDataPass();
 
             bool isMaster() const;
 
-            void updateVariablesAfterRefinement(
-                    const std::vector<RefinementResult> *vectorPairListDeletedGridPointsNumAddedListPoints,
-                    size_t idx,
-                    DBMatOnlineDE *densEst) const;
+            void sendGridComponentsUpdate(std::vector<RefinementResult> *refinementResults);
 
-            void sendGridComponentsUpdate(std::vector<RefinementResult> *refinementResult);
+
+            void waitForMPIRequestsToComplete();
+
+            void processCompletedMPIRequests();
+
+            void sendCommandIDToWorkers(sgpp::datadriven::MPI_COMMAND_ID commandID) const;
+
+            void processIncomingMPICommands(sgpp::datadriven::MPI_Packet *mpiPacket);
+
+            void receiveGridComponentsUpdate(sgpp::datadriven::RefinementResultNetworkMessage *networkMessage);
+
+            void updateVariablesAfterRefinement(RefinementResult *refinementResult, size_t classIndex,
+                                                DBMatOnlineDE *densEst) const;
+
+            void doRefinementForClass(const std::string &refType, RefinementResult *refinementResult,
+                                      const std::pair<DBMatOnlineDE *, double> *onlineObjects, bool preCompute,
+                                      MultiGridRefinementFunctor *refinementFunctor, size_t classIndex) const;
+
+            void doRefinementForAll(const std::string &refinementFunctorType,
+                                    const std::string &refinementMonitorType,
+                                    std::vector<RefinementResult> *vectorRefinementResults,
+                                    const std::vector<std::pair<DBMatOnlineDE *, double>> *onlineObjects,
+                                    std::shared_ptr<ConvergenceMonitor> &monitor);
         };
     }   //namespace datadriven
 }  // namespace sgpp
