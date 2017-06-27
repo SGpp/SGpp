@@ -28,6 +28,8 @@
 namespace sgpp {
     namespace datadriven {
 
+        static const int MPI_PACKET_MAX_PAYLOAD_SIZE = 512;
+
         struct RefinementResult {
             size_t numAddedGridPoints;
             std::list<size_t> deletedGridPointsIndexes;
@@ -39,11 +41,29 @@ namespace sgpp {
             sgpp::base::DataVector *classLabels;
         };
 
-        enum MPI_COMMAND_ID {
-            UPDATE_GRID
+        struct PendingMPIRequest {
+            MPI_Request request;
+            MPI_Packet *buffer;
+            std::function<void(void *)> callback;
+            bool disposeAfterCallback;
         };
 
-        const size_t MASTER_RANK = 0;
+        struct MPI_Packet {
+            MPI_COMMAND_ID commandID;
+            unsigned char payload[MPI_PACKET_MAX_PAYLOAD_SIZE];
+        };
+
+        enum MPI_COMMAND_ID {
+            UPDATE_GRID,
+            MERGE_GRID,
+            ASSIGN_BATCH
+        };
+
+        enum MPI_COMMAND_TAG {
+
+        };
+
+        const int MPI_MASTER_RANK = 0;
 
 
         LearnerSGDEOnOffParallel::LearnerSGDEOnOffParallel(
@@ -76,22 +96,7 @@ namespace sgpp {
 
             readOffline(offline);  // set offlineObject_ of DBMatOnline class
 
-            // if the Cholesky decomposition is chosen declare separate Online-objects for
-            // every class
-            if (offline->getConfig()->decomp_type_ == DBMatDecompChol) {
-                destFunctions = new std::vector<std::pair<DBMatOnlineDE *, double> >(classNumber);
-                // every class gets his own online object
-                for (size_t i = 0; i < classNumber; i++) {
-                    DBMatOnlineDE *densEst = new DBMatOnlineDE(beta);
-                    DBMatOffline *offlineRead = new DBMatOffline(*offline);
-                    densEst->readOffline(offlineRead);
-                    std::pair<DBMatOnlineDE *, double> pdest(densEst, classLabels[i]);
-                    (*destFunctions)[i] = pdest;
-                }
-                initDone = true;
-            } else {
-                init();
-            }
+            init();
 
             cvSaved = false;
             processedPoints = 0;
@@ -107,19 +112,35 @@ namespace sgpp {
             if (initDone) {
                 return;
             }
-            destFunctions = new std::vector<std::pair<DBMatOnlineDE *, double> >(classNumber);
-            for (size_t idx = 0; idx < classNumber; idx++) {
-                DBMatOnlineDE *densEst = new DBMatOnlineDE(beta);
-                densEst->readOffline(offline);
-                std::pair<DBMatOnlineDE *, double> pdest(densEst, classLabels[idx]);
-                (*destFunctions)[idx] = pdest;
+
+            // if the Cholesky decomposition is chosen declare separate Online-objects for
+            // every class
+            if (offline->getConfig()->decomp_type_ == DBMatDecompChol) {
+                destFunctions = new std::vector<std::pair<DBMatOnlineDE *, double> >(classNumber);
+                // every class gets his own online object
+                for (size_t i = 0; i < classNumber; i++) {
+                    DBMatOnlineDE *densEst = new DBMatOnlineDE(beta);
+                    //This is the difference
+                    DBMatOffline *offlineRead = new DBMatOffline(*offline);
+                    densEst->readOffline(offlineRead);
+                    std::pair<DBMatOnlineDE *, double> pdest(densEst, classLabels[i]);
+                    (*destFunctions)[i] = pdest;
+                }
+            } else {
+                destFunctions = new std::vector<std::pair<DBMatOnlineDE *, double> >(classNumber);
+                for (size_t idx = 0; idx < classNumber; idx++) {
+                    DBMatOnlineDE *densEst = new DBMatOnlineDE(beta);
+                    densEst->readOffline(offline);
+                    std::pair<DBMatOnlineDE *, double> pdest(densEst, classLabels[idx]);
+                    (*destFunctions)[idx] = pdest;
+                }
+                if (cvSaved) {
+                    setCrossValidationParameters(cvSaveLambdaStep, cvSaveLambdaStart,
+                                                 cvSaveLambdaEnd, cvSaveTest, cvSaveTestRes,
+                                                 cvSaveLogscale);
+                }
             }
-            if (cvSaved) {
-                setCrossValidationParameters(cvSaveLambdaStep, cvSaveLambdaStart,
-                                             cvSaveLambdaEnd, cvSaveTest, cvSaveTestRes,
-                                             cvSaveLogscale);
-            }
-            doInitMPI();
+            initMPI();
             initDone = true;
         }
 
@@ -209,13 +230,6 @@ namespace sgpp {
 
                     numProcessedDataPoints += (dataBatch.dataPoints)->getNrows();
 
-                    //TODO: This
-//                    if(isMaster()) {
-//                        receiveGridsFromLearners();
-//                    } else {
-//                        sendCurrentGridToMaster();
-//                    }
-
                     // access DBMatOnlineDE-objects of all classes in order
                     // to apply adaptivity to the specific sparse grids later on
                     onlineObjects = getDestFunctions();
@@ -273,7 +287,7 @@ namespace sgpp {
         }
 
         bool LearnerSGDEOnOffParallel::isMaster() const {
-            return sgpp::parallel::myGlobalMPIComm->getMyRank() == MASTER_RANK;
+            return sgpp::parallel::myGlobalMPIComm->getMyRank() == MPI_MASTER_RANK;
         }
 
         void LearnerSGDEOnOffParallel::printGridSizeStatistics(
@@ -289,7 +303,7 @@ namespace sgpp {
 
         void LearnerSGDEOnOffParallel::doRefinementForAll(const std::string &refinementFunctorType,
                                                           const std::string &refinementMonitorType,
-                                                          const std::vector<RefinementResult> *vectorRefinementResults,
+                                                          std::vector<RefinementResult> *vectorRefinementResults,
                                                           const std::vector<std::pair<DBMatOnlineDE *, double>> *onlineObjects,
                                                           std::shared_ptr<ConvergenceMonitor> &monitor) {
             // acc = getAccuracy();
@@ -338,8 +352,9 @@ namespace sgpp {
 
             // perform refinement/coarsening for each grid
             for (size_t idx = 0; idx < this->getNumClasses(); idx++) {
-                this->doRefinementForClass(refinementFunctorType, vectorRefinementResults,
-                                           onlineObjects,
+                this->doRefinementForClass(refinementFunctorType,
+                                           &((*vectorRefinementResults)[idx]),
+                                           &((*onlineObjects)[idx]),
                                            preCompute, func, idx);
             }
             if (refinementMonitorType == "convergence") {
@@ -348,15 +363,16 @@ namespace sgpp {
         }
 
         void LearnerSGDEOnOffParallel::doRefinementForClass(const std::string &refType,
-                                                            const std::vector<RefinementResult> *vectorRefinementResults,
-                                                            const std::vector<std::pair<DBMatOnlineDE *, double>> *onlineObjects,
+                                                            RefinementResult *refinementResult,
+                                                            const std::pair<DBMatOnlineDE *, double> *onlineObjects,
                                                             bool preCompute,
                                                             MultiGridRefinementFunctor *refinementFunctor,
-                                                            size_t classIndex) const {// perform refinement/coarsening for grid which corresponds to current
+                                                            size_t classIndex) const {
+            // perform refinement/coarsening for grid which corresponds to current
             // index
             std::cout << "Refinement and coarsening for class: " << classIndex
                       << std::endl;
-            DBMatOnlineDE *densEst = (*onlineObjects)[classIndex].first;
+            DBMatOnlineDE *densEst = (*onlineObjects).first;
             base::Grid *grid = densEst->getOffline()->getGridPointer();
             std::cout << "Size before adaptivity: " << grid->getSize()
                       << std::endl;
@@ -376,23 +392,25 @@ namespace sgpp {
             std::cout << "grid size after adaptivity: " << grid->getSize()
                       << std::endl;
 
-            (*vectorRefinementResults)[classIndex].numAddedGridPoints = numberOfNewPoints;
+            refinementResult->numAddedGridPoints = numberOfNewPoints;
 
-            updateVariablesAfterRefinement(vectorRefinementResults, classIndex, densEst);
+            updateVariablesAfterRefinement(refinementResult, classIndex, densEst);
         }
 
         void LearnerSGDEOnOffParallel::updateVariablesAfterRefinement(
-                const std::vector<RefinementResult> *vectorRefinementResults,
+                RefinementResult *refinementResult,
                 size_t classIndex,
                 DBMatOnlineDE *densEst) const {
 
             // apply grid changes to the Cholesky factorization
             densEst->getOffline()->choleskyModification(
-                    (*vectorRefinementResults)[classIndex].numAddedGridPoints,
-                    (*vectorRefinementResults)[classIndex].deletedGridPointsIndexes, densEst->getBestLambda());
+                    refinementResult->numAddedGridPoints,
+                    refinementResult->deletedGridPointsIndexes,
+                    densEst->getBestLambda());
             // update alpha vector
-            densEst->updateAlpha(&(*vectorRefinementResults)[classIndex].deletedGridPointsIndexes,
-                                 (*vectorRefinementResults)[classIndex].numAddedGridPoints);
+            densEst->updateAlpha(
+                    &refinementResult->deletedGridPointsIndexes,
+                    refinementResult->numAddedGridPoints);
         }
 
         void LearnerSGDEOnOffParallel::assembleNextBatchData(size_t batchSize,
@@ -827,21 +845,186 @@ namespace sgpp {
             return destFunctions;
         }
 
-        void LearnerSGDEOnOffParallel::doInitMPI() {
-            //TODO: Initialize OpenMPI here
+        static const int MPI_MAX_PROCESSOR_NAME_LENGTH = 256;
+
+        void LearnerSGDEOnOffParallel::initMPI() {
+            MPI_Init(NULL, NULL);
+
+            // Get World Size
+            MPI_Comm_size(MPI_COMM_WORLD, &mpiWorldSize);
+
+            //Get Rank
+            int world_rank;
+            MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+
+            //Get Processor Name
+            char mpiProcessorName[MPI_MAX_PROCESSOR_NAME_LENGTH];
+            int nameLength;
+            MPI_Get_processor_name(mpiProcessorName, &nameLength);
+
+            printf("Processor %s (rank %i) has joined MPI pool of size %i\n", mpiProcessorName, world_rank,
+                   mpiWorldSize);
+
+            //Setup receiving messages from master/workers
+            {
+                PendingMPIRequest unicastInputRequest;
+                MPI_Packet *mpiPacket = new MPI_Packet;
+                unicastInputRequest.buffer = mpiPacket;
+                unicastInputRequest.disposeAfterCallback = false;
+                unicastInputRequest.callback = [](PendingMPIRequest request) {
+                    processIncomingMPICommands(request.buffer);
+                    MPI_Irecv(request.buffer, MPI_PACKET_MAX_PAYLOAD_SIZE, MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE,
+                              MPI_ANY_TAG, MPI_COMM_WORLD, &(request.request));
+                };
+
+                MPI_Irecv(mpiPacket, MPI_PACKET_MAX_PAYLOAD_SIZE, MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG,
+                          MPI_COMM_WORLD,
+                          &(unicastInputRequest.request));
+
+                pendingMPIRequests.push_back(unicastInputRequest);
+                printf("Started listening for unicasts from any sources\n");
+            }
+            if (!isMaster()) {
+                PendingMPIRequest broadcastInputRequest;
+                MPI_Packet *mpiPacket = new MPI_Packet;
+                broadcastInputRequest.buffer = mpiPacket;
+                broadcastInputRequest.disposeAfterCallback = false;
+                broadcastInputRequest.callback = [](PendingMPIRequest request) {
+                    processIncomingMPICommands(request.buffer);
+                    MPI_Ibcast(request.buffer, MPI_PACKET_MAX_PAYLOAD_SIZE, MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
+                               MPI_COMM_WORLD, &(request.request));
+                };
+                MPI_Ibcast(mpiPacket, MPI_PACKET_MAX_PAYLOAD_SIZE, MPI_UNSIGNED_CHAR, MPI_MASTER_RANK, MPI_COMM_WORLD,
+                           &(broadcastInputRequest.request));
+                pendingMPIRequests.push_back(broadcastInputRequest);
+
+                printf("Started listening for broadcasts from task master\n");
+            }
+
         }
 
         void LearnerSGDEOnOffParallel::synchronizeEndOfDataPass() {
             sgpp::parallel::myGlobalMPIComm->Barrier();
         }
 
-        void LearnerSGDEOnOffParallel::sendGridComponentsUpdate(std::vector<RefinementResult> *refinementResult) {
-            size_t commandID = UPDATE_GRID;
-            MPI_Request mpiRequestCommandID;
-            MPI_Request mpiRequestAddedPointsBroadcast;
-            MPI_Ibcast(&commandID, 1, MPI_UNSIGNED_SHORT, MASTER_RANK, MPI_COMM_WORLD, &mpiRequestCommandID);
-            //TODO Finish
+        struct RefinementResultNetworkMessage {
+            int classIndex;
+            int numAddedGridPoints;
+            int numDeletedPoints;
+            int deletedGridpoints[(MPI_PACKET_MAX_PAYLOAD_SIZE - 3) / sizeof(int)];
+        };
+
+        void LearnerSGDEOnOffParallel::sendGridComponentsUpdate(std::vector<RefinementResult> *refinementResults) {
+            //TODO Cannot IProbe a Broadcast Message
+            sendCommandIDToWorkers(UPDATE_GRID);
+
+            for (size_t classIndex = 0; classIndex < refinementResults->size(); classIndex++) {
+                RefinementResult refinementResult = (*refinementResults)[classIndex];
+
+                //Variables to copy block
+                size_t numDeletedPoints = 0;
+                std::list<size_t>::iterator iterator = refinementResult.deletedGridPointsIndexes.begin();
+
+                for (int deletedPointsIndex = 0; deletedPointsIndex <
+                                                 refinementResult.deletedGridPointsIndexes.size(); deletedPointsIndex += numDeletedPoints) {
+                    MPI_Packet *mpiPacket = new MPI_Packet;
+                    RefinementResultNetworkMessage *networkMessage = (RefinementResultNetworkMessage *) mpiPacket->payload;
+
+                    //First size_t is the class index
+                    //Second is the number of added grid points
+                    //Third is current number of deletedPoints
+                    //More are deleted grid point indices
+                    networkMessage->classIndex = classIndex;
+
+                    //The number of added grid points should only be sent the first time
+                    networkMessage->numAddedGridPoints =
+                            deletedPointsIndex > 0 ? 0 : refinementResult.deletedGridPointsIndexes;
+
+                    numDeletedPoints = std::min(refinementResult.deletedGridPointsIndexes.size() - deletedPointsIndex,
+                                                MPI_PACKET_MAX_PAYLOAD_SIZE);
+
+                    //Copy data from list into network buffer
+                    for (int bufferIndex = 0; bufferIndex < numDeletedPoints; bufferIndex++) {
+                        networkMessage->deletedGridpoints[bufferIndex] = *iterator;
+                        iterator++;
+                    }
+
+                    //TODO More MPI Packets
+
+                    printf("Sending update for class %zu with %i additions and %zu deletions", classIndex,
+                           networkMessage->numAddedGridPoints, numDeletedPoints);
+                    PendingMPIRequest pendingMPIRequest;
+                    pendingMPIRequest.buffer = mpiPacket;
+                    pendingMPIRequests.push_back(pendingMPIRequest);
+
+                    //Send the smallest packet possible
+                    MPI_Ibcast(&networkMessage, numDeletedPoints + 3, MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
+                               MPI_COMM_WORLD, &(pendingMPIRequest.request));
+                }
+            }
         }
+
+        void LearnerSGDEOnOffParallel::processCompletedMPIRequests() {
+            MPI_Status mpiStatus;
+            int operationCompleted;
+
+            for (std::vector<PendingMPIRequest>::const_iterator pendingMPIRequestIterator = pendingMPIRequests.begin();
+                 pendingMPIRequestIterator != pendingMPIRequests.end();
+                 pendingMPIRequestIterator++) {
+                MPI_Test(&(pendingMPIRequestIterator->request), &operationCompleted, &mpiStatus);
+                if (operationCompleted) {
+                    //Execute the callback
+                    pendingMPIRequestIterator->callback(pendingMPIRequestIterator->buffer);
+
+                    if (pendingMPIRequestIterator->disposeAfterCallback) {
+                        //TODO Deleting a void pointer here
+                        delete[] pendingMPIRequestIterator->buffer;
+                        pendingMPIRequests.erase(pendingMPIRequestIterator);
+                    }
+                }
+            }
+        }
+
+        void LearnerSGDEOnOffParallel::waitForMPIRequestsToComplete() {
+            for (PendingMPIRequest &pendingMPIRequest : pendingMPIRequests) {
+                MPI_Wait(&(pendingMPIRequest.request), MPI_STATUS_IGNORE);
+            }
+
+            processCompletedMPIRequests();
+        }
+
+        void LearnerSGDEOnOffParallel::receiveGridComponentsUpdate(RefinementResultNetworkMessage *networkMessage) {
+            //TODO
+            std::list<size_t> deletedGridPointsIndexes;
+
+            for (int deletedGridPoint : networkMessage->deletedGridpoints) {
+                deletedGridPointsIndexes.push_back((size_t) deletedGridPoint);
+            }
+
+            RefinementResult refinementResult;
+            refinementResult.numAddedGridPoints = networkMessage->numAddedGridPoints;
+            refinementResult.deletedGridPointsIndexes = deletedGridPointsIndexes;
+            updateVariablesAfterRefinement(&refinementResult, networkMessage->classIndex,
+                                           (*getDestFunctions())[networkMessage->classIndex].first);
+        }
+
+
+        void LearnerSGDEOnOffParallel::processIncomingMPICommands(MPI_Packet *mpiPacket) {
+            switch (mpiPacket->commandID) {
+                case UPDATE_GRID:
+                    receiveGridComponentsUpdate((RefinementResultNetworkMessage *) (mpiPacket->payload));
+                    break;
+                case MERGE_GRID:
+
+                    break;
+                case ASSIGN_BATCH:
+                    break;
+                default:
+                    printf("Error: MPI unknown command id: %i", mpiPacket->commandID);
+                    break;
+            }
+        }
+
 
 
     }  // namespace datadriven
