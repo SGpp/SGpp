@@ -106,7 +106,10 @@ void DBMatOffline::InitializeGrid() {
   }
 
   // Generate regular Grid with LEVELS Levels
-  grid->getGenerator().regular(config.grid_level_);
+  if(config.geomAware_){
+    grid->getGenerator().regularInter(config.grid_level_, config.interactions_, 0.0);
+  }
+  else grid->getGenerator().regular(config.grid_level_);
 }
 
 void DBMatOffline::buildMatrix() {

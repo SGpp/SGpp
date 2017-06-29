@@ -26,12 +26,15 @@ DBMatDensityConfiguration::DBMatDensityConfiguration(const sgpp::base::RegularGr
     : grid_type_(gc.type_),
       grid_dim_(gc.dim_),
       grid_level_(gc.level_),
+      geomAware_(gc.geomAware_),
       numRefinements_(ac.numRefinements_),
       ref_threshold_(ac.threshold_),
       ref_noPoints_(ac.noPoints_),
       regularization_(reg),
       lambda_(lambda),
-      decomp_type_(dt) {}
+      decomp_type_(dt) {
+        interactions_ = gc.getInteractions();
+      }
 
 }  // namespace datadriven
 }  // namespace sgpp
