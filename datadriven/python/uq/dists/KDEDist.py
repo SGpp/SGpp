@@ -39,7 +39,7 @@ class KDEDist(EstimatedDist):
             bandwidhts_vec = DataVector(bandwidhts)
             self.dist.setBandwidths(bandwidhts_vec)
         else:
-            # # just learn the kernel density
+            # just learn the kernel density
             self.dist = KernelDensityEstimator(trainData_matrix,
                                                kernelType,
                                                bandwidthOptimizationType)
@@ -203,4 +203,3 @@ class KDEDist(EstimatedDist):
 
         return KDEDist(trainData, bounds=bounds, bandwidhts=bandwidths,
                        kernelType=kernelType)
-

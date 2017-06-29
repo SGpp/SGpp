@@ -6,6 +6,57 @@ try:
 except:
     pass
 
+def load_custom_pgf_preamble(dtype="standard"):
+    pysgpp_uq_font = load_font()
+
+    pgf_preamble = {"font.family": pysgpp_uq_font["family"],  # use serif/main font for text elements
+                    "text.usetex": True,  # use inline math for ticks
+                    "text.latex.preamble": [
+                                            r'\usepackage{amsmath}',
+                                            r'\usepackage[scientific-notation=true]{siunitx}',
+                                            r"\usepackage[utf8x]{inputenc}",
+                                            r"\usepackage[T1]{fontenc}",
+                                            r"\usepackage{tikz}",
+                                            r"\usepackage{pgfplots}",
+                                            r"\usepackage{amssymb}",
+                                            r"\usepackage{amsmath}"
+                                            ],
+                    'axes.labelsize': pysgpp_uq_font["size"],
+                    'font.size': pysgpp_uq_font["size"],
+                    'legend.fontsize': pysgpp_uq_font["size"],
+                    'xtick.labelsize': pysgpp_uq_font["size"],
+                    'ytick.labelsize': pysgpp_uq_font["size"],
+                    'axes.unicode_minus': True,
+                    'figure.figsize': (5, 4.5),
+                    'image.cmap': load_default_color_map(dtype="string")
+                    }
+    if dtype == "springer":
+        pgf_preamble["text.latex.preamble"] += [r"\usepackage{mathptmx}        % selects Times Roman as basic font",
+                                                 r"\usepackage{helvet}          % selects Helvetica as sans-serif font",
+                                                 r"\usepackage{courier}         % selects Courier as typewriter font",
+                                                 r"\usepackage{type1cm}         % activate if the above 3 fonts are",
+                                                 r"                             % not available on your system",
+                                                 r"\usepackage{makeidx}         % allows index generation",
+                                                 r"\usepackage{graphicx}        % standard LaTeX graphics tool",
+                                                 r"                             % when including figure files",
+                                                 r"\usepackage{multicol}        % used for the two-column index",
+                                                 r"\usepackage[bottom]{footmisc}% places footnotes at page bottom"]
+
+    return pgf_preamble
+
+
+def initialize_plotting_style(dtype="standard"):
+    import matplotlib as mpl
+    import matplotlib.pyplot as plt
+
+    plt.style.use('seaborn-paper')
+
+    # Include packages `amssymb` and `amsmath` in LaTeX preamble
+    # as they include extended math support (symbols, envisonments etc.)
+    pgf_with_custom_preamble = load_custom_pgf_preamble(dtype)
+    mpl.rcParams.update(pgf_with_custom_preamble)
+
+
 def intToRGB(i):
     blue = i & 255
     green = (i >> 8) & 255

@@ -102,7 +102,7 @@ void randn(DataMatrix& rvar, std::uint64_t seedValue = std::mt19937_64::default_
 }
 
 void testEqualityRosenblattInverseRosenblatt1D(
-    Grid& grid, DataVector& alpha, size_t numSamples = 1000, double tolerance = 1e-14,
+    Grid& grid, DataVector& alpha, size_t numSamples = 1000, double tolerance = 1e-12,
     std::uint64_t seedValue = std::mt19937_64::default_seed) {
   size_t numDims = grid.getStorage().getDimension();
   DataVector u_vars(numSamples);
@@ -130,7 +130,7 @@ void testEqualityRosenblattInverseRosenblatt1D(
 }
 
 void testEqualityRosenblattInverseRosenblattDD(
-    Grid& grid, DataVector& alpha, size_t numSamples = 1000, double tolerance = 1e-14,
+    Grid& grid, DataVector& alpha, size_t numSamples = 1000, double tolerance = 1e-12,
     std::uint64_t seedValue = std::mt19937_64::default_seed) {
   size_t numDims = grid.getStorage().getDimension();
   DataMatrix x_vars(numSamples, numDims);
@@ -168,7 +168,7 @@ void testEqualityRosenblattInverseRosenblattDD(
 }
 
 void testEqualityRosenblattInverseRosenblattKDE(
-    KernelDensityEstimator& kde, size_t numSamples = 1000, double tolerance = 1e-13,
+    KernelDensityEstimator& kde, size_t numSamples = 1000, double tolerance = 1e-12,
     std::uint64_t seedValue = std::mt19937_64::default_seed) {
   size_t numDims = kde.getDim();
   DataMatrix x_vars(numSamples, numDims);

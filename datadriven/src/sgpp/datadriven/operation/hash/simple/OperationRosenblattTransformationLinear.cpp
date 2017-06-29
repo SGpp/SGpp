@@ -191,7 +191,6 @@ double OperationRosenblattTransformationLinear::doTransformation1D(base::Grid* g
                                                                    base::DataVector* alpha1d,
                                                                    double coord1d) {
   /***************** STEP 1. Compute CDF  ********************/
-
   // compute PDF, sort by coordinates
   std::multimap<double, double> coord_pdf, coord_cdf;
   std::multimap<double, double>::iterator it1, it2, it3;
