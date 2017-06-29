@@ -51,6 +51,9 @@ class DBMatDensityConfiguration {
   size_t grid_dim_;                 // number of dimensions
   int grid_level_;                  // grid_level (only for hierarchical basis grids)
 
+  bool geomAware_;
+  std::vector<std::vector<size_t>> interactions_;
+
   // REFINEMENT
   size_t numRefinements_;  // number of refinements
   double ref_threshold_;   // refinement threshold for surpluses
