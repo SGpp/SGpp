@@ -609,7 +609,10 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
       sizeBeforeRefine = grid.getSize();
       // simple refinement based on surpluses
       SurplusRefinementFunctor srf(alphaWeight, offline->getConfig().ref_noPoints_);
-      gridGen.refineInter(srf, offline->getConfig().interactions_);
+      if(offline->getConfig().geomAware_){
+        gridGen.refineInter(srf, offline->getConfig().interactions_);
+      }
+      else gridGen.refine(srf);
       sizeAfterRefine = grid.getSize();
     } else if ((refType == "data") || (refType == "zero")) {
       if (preCompute) {
@@ -620,7 +623,10 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
       func->setGridIndex(idx);
       // perform refinement (zero-crossings-based / data-based)
       sizeBeforeRefine = grid.getSize();
-      gridGen.refineInter(*func, offline->getConfig().interactions_);
+      if(offline->getConfig().geomAware_){
+        gridGen.refineInter(*func, offline->getConfig().interactions_);
+      }
+      else gridGen.refine(*func);
       sizeAfterRefine = grid.getSize();
     }
 
