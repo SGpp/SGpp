@@ -15,35 +15,47 @@
 
 #ifdef USE_GSL
 #include <sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp>
-#include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSEigen.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineEigen.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDEEigen.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDELU.hpp>
+#endif /* USE_GSL */
+
+#include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
+#include <sgpp/datadriven/algorithm/DBMatDMSDenseIChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineGE.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
-#endif /* USE_GSL */
+#include <sgpp/datadriven/algorithm/DBMatOnlineDEChol.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
+
 #include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp>
+#include <sgpp/datadriven/functors/classification/MultipleClassRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
 
 #include <sgpp/datadriven/application/ClassificationLearner.hpp>
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
 #include <sgpp/datadriven/application/GaussianKDE.hpp>
 #include <sgpp/datadriven/application/Learner.hpp>
-#include <sgpp/datadriven/application/LearnerSGDE.hpp>
-#include <sgpp/datadriven/application/RegressionLearner.hpp>
-#include <sgpp/datadriven/tools/NearestNeighbors.hpp>
-#ifdef USE_GSL
-#include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
-#endif /* USE_GSL */
 #include <sgpp/datadriven/application/LearnerSGD.hpp>
+#include <sgpp/datadriven/application/LearnerSGDE.hpp>
+#include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/application/LearnerSVM.hpp>
 #include <sgpp/datadriven/application/PrimalDualSVM.hpp>
+#include <sgpp/datadriven/application/RegressionLearner.hpp>
+#include <sgpp/datadriven/tools/NearestNeighbors.hpp>
 
 #include <sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonal.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationTest.hpp>
