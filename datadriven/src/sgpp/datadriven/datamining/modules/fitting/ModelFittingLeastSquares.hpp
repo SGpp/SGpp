@@ -50,8 +50,10 @@ class ModelFittingLeastSquares : public ModelFittingBase {
   /**
    * Improve accuracy of the fit on the given training data by adaptive refinement of the grid and
    * recalculate weights.
+   * @return true if refinement could be performed based on the refinement configuration, else
+   * false.
    */
-  void refine() override;
+  bool refine() override;
 
   void update(Dataset& dataset) override;
 
@@ -72,6 +74,16 @@ class ModelFittingLeastSquares : public ModelFittingBase {
   void evaluate(DataMatrix& samples, DataVector& results) override;
 
  private:
+  /**
+   * Count the amount of refinement operations performed on the current dataset.
+   */
+  size_t refinementsPerformed;
+
+  /**
+   * Reset the state of the object when a new dataset is used;
+   */
+  void resetState();
+
   // TODO(lettrich): grid and train dataset as well as OperationMultipleEvalConfiguration should be
   // const.
   /**
@@ -82,9 +94,13 @@ class ModelFittingLeastSquares : public ModelFittingBase {
                                         OperationMultipleEvalConfiguration& config) const;
 
   /**
-   * System matrix for least squares regression.
+   * based on the current dataset and grid, assemble a system of linear equations and solve for the
+   * hierarchical surplus vector alpha.
+   * @param solverConfig: Configuration of the SLESolver (refinement, or final solver).
+   * @param alpha: Reference to a data vector where hierarchical surpluses will be stored into. Make
+   * sure the vector size is equal to the amount of grid points.
    */
-  std::unique_ptr<DMSystemMatrixBase> systemMatrix;
+  void assembleSystemAndSolve(const SLESolverConfiguration& solverConfig, DataVector& alpha) const;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
