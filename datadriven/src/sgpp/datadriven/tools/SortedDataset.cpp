@@ -14,7 +14,7 @@ namespace sgpp {
 namespace datadriven {
 
 //@cond DOXY_IGNORE
-namespace MortonOrderDetail {
+namespace SortedDatasetDetail {
 
 union ext_double_t{
   double val;  // Value
@@ -86,10 +86,10 @@ void zorder(const sgpp::base::DataMatrix &data, std::vector<size_t> &perm) {
   }
 }
 
-}  // namespace MortonOrderDetail
+}  // namespace SortedDatasetDetail
 //@endcond
 
-using namespace MortonOrderDetail;
+using namespace SortedDatasetDetail;
 
 /**
  * Constructs an empty dataset (zero size).
