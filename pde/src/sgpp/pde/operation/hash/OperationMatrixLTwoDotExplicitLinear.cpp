@@ -3,16 +3,16 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitLinear.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitLinear.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 #include <string.h>
+#include <algorithm>
 #include <cmath>
 #include <vector>
-#include <algorithm>
 
 namespace sgpp {
 namespace pde {
@@ -40,6 +40,7 @@ void OperationMatrixLTwoDotExplicitLinear::buildMatrix(sgpp::base::Grid* grid) {
   grid->getStorage().getLevelIndexArraysForEval(level, index);
 
   for (size_t i = 0; i < gridSize; i++) {
+#pragma omp parallel for schedule(guided)
     for (size_t j = i; j < gridSize; j++) {
       double res = 1;
 
@@ -66,13 +67,13 @@ void OperationMatrixLTwoDotExplicitLinear::buildMatrix(sgpp::base::Grid* grid) {
             break;
           } else {
             // Use formula for different overlapping ansatz functions:
-            if (lik > ljk) {                             // Phi_i_k is the "smaller" ansatz function
+            if (lik > ljk) {                            // Phi_i_k is the "smaller" ansatz function
               double diff = (iik / lik) - (ijk / ljk);  // x_i_k - x_j_k
               double temp_res = fabs(diff - (1 / lik)) + fabs(diff + (1 / lik)) - fabs(diff);
               temp_res *= ljk;
               temp_res = (1 - temp_res) / lik;
               res *= temp_res;
-            } else {                                     // Phi_j_k is the "smaller" ansatz function
+            } else {                                    // Phi_j_k is the "smaller" ansatz function
               double diff = (ijk / ljk) - (iik / lik);  // x_j_k - x_i_k
               double temp_res = fabs(diff - (1 / ljk)) + fabs(diff + (1 / ljk)) - fabs(diff);
               temp_res *= lik;

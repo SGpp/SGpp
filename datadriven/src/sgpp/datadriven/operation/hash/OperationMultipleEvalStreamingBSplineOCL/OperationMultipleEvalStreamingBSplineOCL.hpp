@@ -125,6 +125,7 @@ class OperationMultiEvalStreamingBSplineOCL : public base::OperationMultipleEval
     std::chrono::duration<double> elapsed_seconds = end - start;
     std::cout << "duration mult ocl B-spline: " << elapsed_seconds.count() << std::endl;
 
+    result.resize(this->datasetSize);
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
@@ -167,6 +168,7 @@ class OperationMultiEvalStreamingBSplineOCL : public base::OperationMultipleEval
     std::chrono::duration<double> elapsed_seconds = end - start;
     std::cout << "duration multTranspose ocl B-spline: " << elapsed_seconds.count() << std::endl;
 
+    result.resize(this->gridSize);
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }

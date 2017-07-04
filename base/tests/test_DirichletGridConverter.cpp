@@ -155,6 +155,6 @@ BOOST_AUTO_TEST_CASE(test_DirichletGridConverter) {
     BOOST_CHECK_EQUAL(boundaryGridCoeffsActual.get(i), boundaryGridCoeffs.get(i));
   }
 
-  delete conCoefArray;
+  delete[] conCoefArray;
   delete innerGridExact;
 }
