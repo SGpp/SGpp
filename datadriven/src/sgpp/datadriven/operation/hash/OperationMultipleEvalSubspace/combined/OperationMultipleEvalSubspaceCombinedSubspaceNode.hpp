@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include <vector>
 #include <limits>
+#include <vector>
 
 #include <omp.h>
 
@@ -14,23 +14,19 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace sgpp {
 namespace datadriven {
 
 class SubspaceNodeCombined {
  public:
-  enum class SubspaceType {
-    NOT_SET, ARRAY, LIST
-  };
+  enum class SubspaceType { NOT_SET, ARRAY, LIST };
 
   std::vector<uint32_t> level;
   std::vector<uint32_t> hInverse;
   uint32_t gridPointsOnLevel;
   uint32_t existingGridPointsOnLevel;
   SubspaceType type;
-  std::vector<uint32_t>
-  indices; //for list representation (and future streaming subspaces
+  std::vector<uint32_t> indices;  // for list representation (and future streaming subspaces
   std::vector<std::pair<uint32_t, double> > indexFlatSurplusPairs;
   double* subspaceArray;
   omp_lock_t subspaceLock;
@@ -42,8 +38,7 @@ class SubspaceNodeCombined {
   uint32_t arriveDiff;
 
   SubspaceNodeCombined(std::vector<uint32_t>& level, uint32_t flatLevel,
-                       std::vector<uint32_t>& hInverse,
-                       std::vector<uint32_t>& index) {
+                       std::vector<uint32_t>& hInverse, std::vector<uint32_t>& index) {
     size_t dim = level.size();
     this->level = level;
     this->hInverse = hInverse;
@@ -58,17 +53,17 @@ class SubspaceNodeCombined {
 
     for (size_t j = 0; j < dim; j++) {
       uint32_t dimTemp = hInverse[j];
-      dimTemp >>= 1; //skip even indices
+      dimTemp >>= 1;  // skip even indices
       this->gridPointsOnLevel *= dimTemp;
     }
 
     this->subspaceArray = nullptr;
 
-    //initalize other member variables with dummies
+    // initalize other member variables with dummies
     this->jumpTargetIndex = 9999;
     this->arriveDiff = 9999;
 
-    //initialize the lock for this subspace
+    // initialize the lock for this subspace
     omp_init_lock(&this->subspaceLock);
   }
 
@@ -83,7 +78,7 @@ class SubspaceNodeCombined {
     this->flatLevel = 0;
     this->type = SubspaceType::NOT_SET;
 
-    //initalize other member variables with dummies
+    // initalize other member variables with dummies
     this->jumpTargetIndex = index;
     this->arriveDiff = 9999;
 
@@ -96,15 +91,11 @@ class SubspaceNodeCombined {
     }
   }
 
-  void lockSubspace() {
-    omp_set_lock(&this->subspaceLock);
-  }
+  void lockSubspace() { omp_set_lock(&this->subspaceLock); }
 
-  void unlockSubspace() {
-    omp_unset_lock(&this->subspaceLock);
-  }
+  void unlockSubspace() { omp_unset_lock(&this->subspaceLock); }
 
-  //increases number of grid points on the subspace
+  // increases number of grid points on the subspace
   void addGridPoint(std::vector<uint32_t>& index) {
     size_t dim = index.size();
 
@@ -131,11 +122,10 @@ class SubspaceNodeCombined {
   // this method will decide how to best represent the subspace (list or array type)
   // and prepare the subspace for its representation
   void unpack() {
-    double usageRatio = (double) this->existingGridPointsOnLevel /
-                         (double) this->gridPointsOnLevel;
+    double usageRatio = (double)this->existingGridPointsOnLevel / (double)this->gridPointsOnLevel;
 
-    if (usageRatio < X86COMBINED_LIST_RATIO
-        && this->existingGridPointsOnLevel < X86COMBINED_STREAMING_THRESHOLD) {
+    if (usageRatio < X86COMBINED_LIST_RATIO &&
+        this->existingGridPointsOnLevel < X86COMBINED_STREAMING_THRESHOLD) {
       this->type = SubspaceType::LIST;
     } else {
       this->type = SubspaceType::ARRAY;
@@ -174,7 +164,6 @@ class SubspaceNodeCombined {
 
   // the first call initializes the array for ARRAY type subspaces
   double getSurplus(size_t indexFlat) {
-
     if (this->type == SubspaceType::ARRAY) {
       return this->subspaceArray[indexFlat];
     } else if (this->type == SubspaceType::LIST) {
@@ -189,7 +178,7 @@ class SubspaceNodeCombined {
   }
 
   static uint32_t compareLexicographically(SubspaceNodeCombined& current,
-      SubspaceNodeCombined& last) {
+                                           SubspaceNodeCombined& last) {
     for (uint32_t i = 0; i < current.level.size(); i++) {
       if (current.level[i] != last.level[i]) {
         return i;
@@ -199,8 +188,7 @@ class SubspaceNodeCombined {
     throw "illegal input";
   }
 
-  static bool subspaceCompare(SubspaceNodeCombined left,
-                              SubspaceNodeCombined right) {
+  static bool subspaceCompare(SubspaceNodeCombined left, SubspaceNodeCombined right) {
     for (size_t i = 0; i < left.level.size(); i++) {
       if (left.level[i] >= right.level[i]) {
         if (left.level[i] > right.level[i]) {
@@ -213,8 +201,6 @@ class SubspaceNodeCombined {
 
     return 1;
   }
-
 };
-
 }
 }

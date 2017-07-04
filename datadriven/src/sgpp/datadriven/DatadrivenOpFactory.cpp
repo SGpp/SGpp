@@ -48,6 +48,18 @@
 #include "operation/hash/OperationMultipleEvalStreamingModOCLMaskMultiPlatform/OperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalStreamingModOCLOpt/OperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/OperatorFactory.hpp"
+
+#include "operation/hash/OperationCreateGraphOCL/OpFactory.hpp"
+#include "operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp"
+#include "operation/hash/OperationPruneGraphOCL/OpFactory.hpp"
+#endif
+
+#ifdef USE_MPI
+#include "operation/hash/OperationMultiEvalMPI/OperationMultiEvalMPI.hpp"
+#endif
+
+#ifdef USE_HPX
+#include "operation/hash/OperationMultiEvalHPX/OperationMultiEvalHPX.hpp"
 #endif
 
 #ifdef USE_CUDA
@@ -212,6 +224,29 @@ datadriven::OperationDensityConditionalKDE* createOperationDensityConditionalKDE
 base::OperationMultipleEval* createOperationMultipleEval(
     base::Grid& grid, base::DataMatrix& dataset,
     sgpp::datadriven::OperationMultipleEvalConfiguration& configuration) {
+  if (configuration.getMPIType() == sgpp::datadriven::OperationMultipleEvalMPIType::MASTERSLAVE) {
+#ifdef USE_MPI
+    if (grid.getType() == base::GridType::Linear) {
+      return new datadriven::OperationMultiEvalMPI(
+          grid, dataset, sgpp::datadriven::OperationMultipleEvalType::STREAMING,
+          sgpp::datadriven::OperationMultipleEvalSubType::DEFAULT);
+    }
+#else
+    throw base::factory_exception(
+        "Error creating function: the library wasn't compiled with MPI support");
+#endif
+  } else if (configuration.getMPIType() == sgpp::datadriven::OperationMultipleEvalMPIType::HPX) {
+#ifdef USE_HPX
+    if (grid.getType() == base::GridType::Linear) {
+      return new datadriven::OperationMultiEvalHPX(grid, dataset, configuration);
+    }
+#else
+    throw base::factory_exception(
+        "Error creating function: the library wasn't compiled with HPX support");
+#endif
+  }
+
+  // can now assume that MPI type is NONE
   if (configuration.getType() == sgpp::datadriven::OperationMultipleEvalType::DEFAULT) {
     return createOperationMultipleEval(grid, dataset);
   }
