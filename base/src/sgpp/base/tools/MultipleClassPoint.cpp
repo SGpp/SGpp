@@ -25,10 +25,10 @@ MultipleClassPoint::MultipleClassPoint(base::HashGridPoint& gp,
               opEval(op_factory::createOperationEval(*grids.at(t)));
         gp.getStandardCoordinates(coords);
         double eval = opEval->eval(*alphas.at(t), coords);
-        std::tuple<double, size_t, bool> c1 { eval, t,
-                    grids.at(t)->getStorage().isContaining(gp) };
-        insertDensitySorted(&c1);
-        classById.push_back(&c1);
+        std::tuple<double, size_t, bool>* c1 = new std::tuple<double, size_t, bool>
+            ( eval, t, grids.at(t)->getStorage().isContaining(gp) );
+        insertDensitySorted(c1);
+        classById.push_back(c1);
     }
 }
 
