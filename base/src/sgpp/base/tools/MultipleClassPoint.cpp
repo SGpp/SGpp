@@ -29,7 +29,6 @@ MultipleClassPoint::MultipleClassPoint(base::HashGridPoint& gp,
                     grids.at(t)->getStorage().isContaining(gp) };
         insertDensitySorted(&c1);
         classById.push_back(c1);
-
     }
 }
 
