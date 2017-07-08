@@ -20,7 +20,8 @@ LinearClenshawCurtisBoundaryGrid::LinearClenshawCurtisBoundaryGrid(std::istream&
   generator.setBoundaryLevel(boundaryLevel);
 }
 
-LinearClenshawCurtisBoundaryGrid::LinearClenshawCurtisBoundaryGrid(size_t dim, level_t boundaryLevel)
+LinearClenshawCurtisBoundaryGrid::LinearClenshawCurtisBoundaryGrid(size_t dim,
+                                                                  level_t boundaryLevel)
     : Grid(dim), generator(storage, boundaryLevel), boundaryLevel(boundaryLevel) {
   std::vector<BoundingBox1D> boundingBox1Ds(dim, BoundingBox1D());
   std::vector<Stretching1D> stretching1Ds(dim, Stretching1D("cc"));
