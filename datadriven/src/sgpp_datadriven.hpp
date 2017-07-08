@@ -53,6 +53,7 @@
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimpleParameters.hpp>
 
+#include <sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonal.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationTransformation1D.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationKDE.hpp>

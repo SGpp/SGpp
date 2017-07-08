@@ -24,6 +24,7 @@ class OperationArbitraryBoundaryHierarchisation : public OperationHierarchisatio
  public:
   /**
    * Constructor
+   * @param grid Grid which is to be used for hierarchisation
    */
   OperationArbitraryBoundaryHierarchisation(Grid& grid);
 
@@ -51,6 +52,13 @@ class OperationArbitraryBoundaryHierarchisation : public OperationHierarchisatio
   std::unique_ptr<Grid> boundaryGrid;
   std::unique_ptr<Grid> innerGrid;
 
+  /**
+   * Creates an operation multiple eval depending on the grid.
+   *
+   * @param grid Grid to be used for evaluation
+   * @param coordinates coordinates at which the function is evaluated
+   * @return
+   */
   OperationMultipleEval* createOperationMultipleEval(Grid& grid, DataMatrix& coordinates);
 };
 

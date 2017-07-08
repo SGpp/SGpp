@@ -42,7 +42,6 @@ class DehierarchisationModLinearClenshawCurtis {
    *
    * @param storage the grid storage object of the the grid, on which the dehierarchisation should
    * be executed
-   * @param base Linearnomial basis
    */
   explicit DehierarchisationModLinearClenshawCurtis(GridStorage& storage);
   /**

@@ -175,7 +175,7 @@ class Grid {
    * @param boundaryLevel level of the boundary
    * @return grid
    */
-  static Grid* createLinearClenshawCurtisBoundaryGrid(size_t dim, level_t boundarLevel = 1);
+  static Grid* createLinearClenshawCurtisBoundaryGrid(size_t dim, level_t boundaryLevel = 1);
 
   /**
    * creates a linear Clenshaw-Curtis grid

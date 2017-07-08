@@ -28,7 +28,7 @@ namespace datadriven {
 OperationMakePositive::OperationMakePositive(
     MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
     MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool generateConsistentGrid,
-    bool verbose, optimization::ScalarFunction* f)
+    bool verbose, sgpp::optimization::ScalarFunction* f)
     : maxLevel(0),
       minimumLevelSum(0),
       maximumLevelSum(0),
@@ -202,7 +202,8 @@ void OperationMakePositive::addFullGridPoints(
   // add the number of new grid points to the corresponding vector
   size_t numIterations = countAddedGridPointsForPositivityPerIteration.getSize();
   countAddedGridPointsForPositivityPerIteration.resize(numIterations + 1);
-  countAddedGridPointsForPositivityPerIteration[numIterations] = static_cast<double>(numAddedGridPointsForPositivity() - oldNumNewGridPointsForPositivity);
+  countAddedGridPointsForPositivityPerIteration[numIterations] =
+      static_cast<double>(numAddedGridPointsForPositivity() - oldNumNewGridPointsForPositivity);
 
   // recompute the leaf property
   grid.getStorage().recalcLeafProperty();

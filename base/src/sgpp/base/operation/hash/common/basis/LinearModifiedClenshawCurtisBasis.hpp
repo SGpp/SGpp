@@ -37,8 +37,6 @@ class LinearModifiedClenshawCurtisBasis : public Basis<LT, IT> {
  public:
   /**
    * Constructor
-   *
-   * @param degree the polynom's max. degree
    */
   explicit LinearModifiedClenshawCurtisBasis()
       : clenshawCurtisTable(ClenshawCurtisTable::getInstance()) {}

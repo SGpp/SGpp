@@ -332,7 +332,7 @@ base::OperationMultipleEval* createOperationMultipleEval(
 datadriven::OperationMakePositive* createOperationMakePositive(
     datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm,
-    bool generateConsistentGrid, bool verbose, optimization::ScalarFunction* f) {
+    bool generateConsistentGrid, bool verbose, sgpp::optimization::ScalarFunction* f) {
   return new datadriven::OperationMakePositive(candidateSearchAlgorithm, interpolationAlgorithm,
                                                generateConsistentGrid, verbose, f);
 }
@@ -340,7 +340,7 @@ datadriven::OperationMakePositive* createOperationMakePositive(
 datadriven::OperationLimitFunctionValueRange* createOperationLimitFunctionValueRange(
     datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose,
-    optimization::ScalarFunction* f) {
+    sgpp::optimization::ScalarFunction* f) {
   return new datadriven::OperationLimitFunctionValueRange(candidateSearchAlgorithm,
                                                           interpolationAlgorithm, verbose, f);
 }
