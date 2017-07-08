@@ -23,8 +23,11 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonalLinearBoundary.hpp>
+
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DLinear.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPoly.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationLinear.hpp>
+
 #include <sgpp/datadriven/operation/hash/simple/OperationTestLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationTestLinearBoundary.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationTestLinearStretched.hpp>
@@ -193,6 +196,8 @@ datadriven::OperationRosenblattTransformation* createOperationRosenblattTransfor
 datadriven::OperationTransformation1D* createOperationRosenblattTransformation1D(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear)
     return new datadriven::OperationRosenblattTransformation1DLinear(&grid);
+  else if (grid.getType() == base::GridType::Poly)
+    return new datadriven::OperationRosenblattTransformation1DPoly(&grid);
   else
     throw base::factory_exception(
         "OperationRosenblattTransformation1D is not implemented for this grid type.");
