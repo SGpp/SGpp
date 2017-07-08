@@ -198,19 +198,37 @@ base::OperationMultipleEval* createOperationMultipleEval(
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationMakePositive object for the Grid grid
  */
+
+/**
+ * Factory method, returning an OperationLimitFunctionValueRange for an arbitrary function f or some
+ * sparse grid, which is yet to be defined.
+ * Note: object has to be freed after use.
+ *
+ * @param candidateSearchAlgorithm defines algorithm for candidate set enumeration
+ * @param interpolationAlgorithm defines algorithm for coefficient estimation of extension set
+ * @param verbose verbosity
+ * @param f function to be approximated (as an alternative to a sparse grid function)
+ *
+ * @return Pointer to the new OperationMakePositive object for the Grid grid
+ */
 datadriven::OperationMakePositive* createOperationMakePositive(
     datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
         datadriven::MakePositiveCandidateSearchAlgorithm::Intersections,
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
         datadriven::MakePositiveInterpolationAlgorithm::SetToZero,
     bool generateConsistentGrid = true, bool verbose = false,
-    optimization::ScalarFunction* f = nullptr);
+    sgpp::optimization::ScalarFunction* f = nullptr);
 
 /**
- * Factory method, returning an OperationLimitFunctionValueRange for the grid at hand.
+ * Factory method, returning an OperationLimitFunctionValueRange for an arbitrary function f or some
+ * sparse grid, which is yet to be defined.
  * Note: object has to be freed after use.
  *
- * @param grid Grid which is to be used
+ * @param candidateSearchAlgorithm defines algorithm for candidate set enumeration
+ * @param interpolationAlgorithm defines algorithm for coefficient estimation of extension set
+ * @param verbose verbosity
+ * @param f function to be approximated (as an alternative to a sparse grid function)
+ *
  * @return Pointer to the new OperationLimitFunctionValueRange object for the Grid grid
  */
 datadriven::OperationLimitFunctionValueRange* createOperationLimitFunctionValueRange(
@@ -218,7 +236,7 @@ datadriven::OperationLimitFunctionValueRange* createOperationLimitFunctionValueR
         datadriven::MakePositiveCandidateSearchAlgorithm::Intersections,
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
         datadriven::MakePositiveInterpolationAlgorithm::SetToZero,
-    bool verbose = false, optimization::ScalarFunction* f = nullptr);
+    bool verbose = false, sgpp::optimization::ScalarFunction* f = nullptr);
 
 /**
  * Factory method, returning an OperationCovariance for the grid at hand.

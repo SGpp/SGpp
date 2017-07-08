@@ -6,6 +6,61 @@ try:
 except:
     pass
 
+def load_custom_pgf_preamble(dtype="standard", macros="thesis"):
+    pysgpp_uq_font = load_font()
+
+    pgf_preamble = {"font.family": pysgpp_uq_font["family"],  # use serif/main font for text elements
+                    "text.usetex": True,  # use inline math for ticks
+                    "text.latex.preamble": [r"\usepackage[utf8x]{inputenc}",
+                                            r'\usepackage{amsmath}',
+                                            r"\usepackage{amssymb}",
+                                            r"\usepackage{tikz}",
+                                            r"\usepackage{pgfplots}",
+                                            r'\usepackage[scientific-notation=true]{siunitx}'
+                                            ],
+                    'axes.labelsize': pysgpp_uq_font["size"],
+                    'font.size': pysgpp_uq_font["size"],
+                    'legend.fontsize': pysgpp_uq_font["size"],
+                    'xtick.labelsize': pysgpp_uq_font["size"],
+                    'ytick.labelsize': pysgpp_uq_font["size"],
+                    'axes.unicode_minus': True,
+                    'figure.figsize': (5, 4.5),
+                    'image.cmap': load_default_color_map(dtype="string")
+                    }
+
+    if dtype == "springer":
+        pgf_preamble["text.latex.preamble"] += [r"\usepackage{mathptmx}",
+                                                r"\usepackage{rsfso}"]
+    else:
+        pgf_preamble["text.latex.preamble"] += [r"\usepackage[T1]{fontenc}"]
+        
+    if macros == "thesis":
+        cmd_filename = r"/home/franzefn/Promotion/UQ/repos/dissertation/thesis/commands.tex"
+    else:
+        cmd_filename = r"/home/franzefn/Promotion/Paper/repos/SGA16/paper/commands.tex"
+
+    fd = open(cmd_filename, "r")
+    for paramstring in fd.readlines():
+        decoded_paramstring = paramstring.decode('utf8')
+        if decoded_paramstring[0] not in ["%", "\n"]:
+            pgf_preamble["text.latex.preamble"].append(decoded_paramstring)
+
+    return pgf_preamble
+
+
+def initialize_plotting_style(dtype="standard", macros="thesis"):
+    import matplotlib as mpl
+    import matplotlib.pyplot as plt
+
+    plt.style.use('seaborn-paper')
+
+    # Include packages `amssymb` and `amsmath` in LaTeX preamble
+    # as they include extended math support (symbols, envisonments etc.)
+    pgf_with_custom_preamble = load_custom_pgf_preamble(dtype=dtype,
+                                                        macros=macros)
+    mpl.rcParams.update(pgf_with_custom_preamble)
+
+
 def intToRGB(i):
     blue = i & 255
     green = (i >> 8) & 255
@@ -96,7 +151,7 @@ def insert_legend(fig, loc="right", ncol=3, has_axis=True):
                         prop=load_font_properties())
     elif loc == "left":
         lgd = plt.legend(loc='upper right',
-                         bbox_to_anchor=(-0.1, 1),
+                         bbox_to_anchor=(-0.33, 1),
                          borderaxespad=0,
                          prop=load_font_properties())
     else:

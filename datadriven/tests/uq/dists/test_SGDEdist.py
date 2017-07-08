@@ -37,15 +37,15 @@ class SGDEdistTest(unittest.TestCase):
         # build parameter set
         dist_sgde = SGDEdist.byLearnerSGDEConfig(trainSamples,
                                                  config={"grid_level": 5,
-                                                         "grid_type": "polyBoundary",
+                                                         "grid_type": "modpoly",
                                                          "grid_maxDegree": 6,
                                                          "refinement_numSteps": 0,
                                                          "refinement_numPoints": 10,
                                                          "solver_threshold": 1e-10,
-                                                         "solver_verbose": False,
+                                                         "solver_verbose": True,
                                                          "regularization_type": "Laplace",
-                                                         "crossValidation_lambda": 1e-6,
-                                                         "crossValidation_enable": True,
+                                                         "crossValidation_lambda": 0.000562341,
+                                                         "crossValidation_enable": False,
                                                          "crossValidation_kfold": 5,
                                                          "crossValidation_silent": False,
                                                          "sgde_makePositive": False,
@@ -112,7 +112,7 @@ class SGDEdistTest(unittest.TestCase):
 #         # build parameter set
 #         dist = SGDEdist.byLearnerSGDEConfig(trainSamples,
 #                                             config={"grid_level": 5,
-#                                                     "grid_type": "ModBspline",
+#                                                     "grid_type": "modBsplineClenshawCurtis",
 #                                                     "grid_maxDegree": 3,
 #                                                     "refinement_numSteps": 0,
 #                                                     "refinement_numPoints": 10,
@@ -142,13 +142,13 @@ class SGDEdistTest(unittest.TestCase):
 # #                                                                        np.abs(np.var(trainSamples) - dist.var()) / np.var(trainSamples)
 # #                                                                        ))
 #
-# #         print "1d: mean = %g ~ %g (err=%g)" % (np.mean(trainSamples), dist.mean(), np.abs(np.mean(trainSamples) - dist.mean()) / np.mean(trainSamples))
-# #         print "1d: var = %g ~ %g (err=%g)" % (np.var(trainSamples), dist.var(), np.abs(np.var(trainSamples) - dist.var()) / np.var(trainSamples))
-#         plt.show()
 #
+#         print "1d: mean = %g ~ %g (err=%g)" % (np.mean(trainSamples), dist.mean(), np.abs(np.mean(trainSamples) - dist.mean()) / np.mean(trainSamples))
+#         print "1d: var = %g ~ %g (err=%g)" % (np.var(trainSamples), dist.var(), np.abs(np.var(trainSamples) - dist.var()) / np.var(trainSamples))
 #         print "KL = %g" % U.klDivergence(dist, testSamples, testSamples)
 #         print "CE = %g" % dist.crossEntropy(testSamples)
 #         print "MSE = %g" % dist.l2error(U, testSamples, testSamples)
+#         plt.show()
 
 #     def test2DNormalDist(self):
 #         # prepare data
@@ -164,8 +164,8 @@ class SGDEdistTest(unittest.TestCase):
 #
 #         # build parameter set
 #         dist = SGDEdist.byLearnerSGDEConfig(trainSamples,
-#                                             config={"grid_level": 4,
-#                                                     "grid_type": "linear",
+#                                             config={"grid_level": 5,
+#                                                     "grid_type": "polyBoundary",
 #                                                     "refinement_numSteps": 0,
 #                                                     "refinement_numPoints": 10,
 #                                                     "regularization_type": "Laplace",
@@ -173,7 +173,7 @@ class SGDEdistTest(unittest.TestCase):
 #                                                     "crossValidation_enable": False,
 #                                                     "crossValidation_kfold": 5,
 #                                                     "crossValidation_silent": False,
-#                                                     "sgde_makePositive": True,
+#                                                     "sgde_makePositive": False,
 #                                                     "sgde_makePositive_candidateSearchAlgorithm": "joined",
 #                                                     "sgde_makePositive_interpolationAlgorithm": "setToZero",
 #                                                     "sgde_makePositive_generateConsistentGrid": False,
@@ -189,7 +189,6 @@ class SGDEdistTest(unittest.TestCase):
 #                  show_negative=True, show_grid_points=True)
 #         fig.show()
 #
-#         print np.where(np.abs(dist.alpha.array()) < 1e-10)[0].shape, dist.alpha.sum()
 #         print "2d: mean = %g ~ %g" % (U.mean(), dist.mean())
 #         print "2d: var = %g ~ %g" % (U.var(), dist.var())
 #         plt.show()

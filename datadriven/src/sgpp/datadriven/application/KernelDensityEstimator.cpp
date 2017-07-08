@@ -35,7 +35,7 @@ KernelDensityEstimator::KernelDensityEstimator(KernelType kernelType,
       bandwidths(0),
       norm(0),
       cond(0),
-      sumCond(1.0),
+      sumCondInv(1.0),
       bandwidthOptimizationType(bandwidthOptimizationType) {
   initializeKernel(kernelType);
 }
@@ -48,7 +48,7 @@ KernelDensityEstimator::KernelDensityEstimator(
       bandwidths(samplesVec.size()),
       norm(samplesVec.size()),
       cond(0.0),
-      sumCond(0.0),
+      sumCondInv(0.0),
       bandwidthOptimizationType(bandwidthOptimizationType) {
   initializeKernel(kernelType);
   initialize(samplesVec);
@@ -61,7 +61,7 @@ KernelDensityEstimator::KernelDensityEstimator(base::DataMatrix& samples, Kernel
       bandwidths(samples.getNcols()),
       norm(samples.getNcols()),
       cond(samples.getNrows()),
-      sumCond(0.0),
+      sumCondInv(0.0),
       bandwidthOptimizationType(bandwidthOptimizationType) {
   initializeKernel(kernelType);
   initialize(samples);
@@ -74,7 +74,7 @@ KernelDensityEstimator::KernelDensityEstimator(const KernelDensityEstimator& kde
   bandwidths = base::DataVector(kde.bandwidths);
   norm = base::DataVector(kde.norm);
   cond = base::DataVector(kde.cond);
-  sumCond = kde.sumCond;
+  sumCondInv = kde.sumCondInv;
   bandwidthOptimizationType = kde.bandwidthOptimizationType;
 
   initializeKernel(kde.kernel->getType());
@@ -116,7 +116,7 @@ void KernelDensityEstimator::initialize(base::DataMatrix& samples) {
       // initialize conditionalization factor
       cond.resize(nsamples);
       cond.setAll(1.0);
-      sumCond = static_cast<double>(nsamples);
+      sumCondInv = 1. / static_cast<double>(nsamples);
 
       // initialize normalization factors
       norm.resize(ndim);
@@ -154,7 +154,7 @@ void KernelDensityEstimator::initialize(std::vector<std::shared_ptr<base::DataVe
       // initialize conditionalization factors
       cond.resize(nsamples);
       cond.setAll(1.0);
-      sumCond = static_cast<double>(nsamples);
+      sumCondInv = 1. / static_cast<double>(nsamples);
 
       // initialize normalization factors
       norm.resize(ndim);
@@ -246,7 +246,7 @@ double KernelDensityEstimator::pdf(base::DataVector& x) {
     res += evalKernel(x, isample);
   }
 
-  return res / sumCond;
+  return res * sumCondInv;
 }
 
 double KernelDensityEstimator::evalSubset(base::DataVector& x, std::vector<size_t> skipElements) {
@@ -343,10 +343,10 @@ double KernelDensityEstimator::mean() {
       kernelMean *= samplesVec[idim]->get(isample);
     }
 
-    res += kernelMean;
+    res += cond[isample] * kernelMean;
   }
 
-  return res / sumCond;
+  return res * sumCondInv;
 }
 
 double KernelDensityEstimator::variance() {
@@ -358,9 +358,9 @@ double KernelDensityEstimator::variance() {
       kernelVariance *= sigma * sigma * kernel->variance() + x * x;
     }
 
-    meansquared += kernelVariance;
+    meansquared += cond[isample] * kernelVariance;
   }
-  meansquared /= sumCond;
+  meansquared *= sumCondInv;
 
   double mu = mean();
   double var = meansquared - mu * mu;
@@ -402,12 +402,14 @@ void KernelDensityEstimator::getConditionalizationFactor(base::DataVector& pcond
 }
 
 void KernelDensityEstimator::setConditionalizationFactor(base::DataVector& pcond) {
-  sumCond = 0.0;
+  double sumCond = 0.0;
 
   for (size_t isample = 0; isample < nsamples; isample++) {
     cond[isample] = pcond[isample];
     sumCond += cond[isample];
   }
+
+  sumCondInv = 1. / sumCond;
 }
 
 void KernelDensityEstimator::updateConditionalizationFactors(base::DataVector& x,

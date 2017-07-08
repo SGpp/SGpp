@@ -9,6 +9,7 @@ from pysgpp.extensions.datadriven.uq.manager.ASGCUQManagerBuilder import ASGCUQM
 from pysgpp.extensions.datadriven.uq.analysis.KnowledgeTypes import KnowledgeTypes
 from pysgpp.extensions.datadriven.uq.sampler import MCSampler
 from pysgpp.extensions.datadriven.uq.uq_setting.UQBuilder import UQBuilder
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import hasBorder
 
 class TestEnvironmentSG(object):
 
@@ -21,7 +22,7 @@ class TestEnvironmentSG(object):
                      deg=1,
                      maxGridSize=1000,
                      isFull=False,
-                     boundaryLevel=None,
+                     boundaryLevel=1,
                      balancing=True,
                      epsilon=1e-15,
                      adaptive=None,
@@ -71,19 +72,19 @@ class TestEnvironmentSG(object):
                 gridSpec.withDegree(deg)
             if isFull:
                 gridSpec.isFull()
-            if boundaryLevel is not None:
+            if hasBorder(gridType) and boundaryLevel is not None:
                 gridSpec.withBoundaryLevel(boundaryLevel)
 
         if adaptive is not None:
             # specify the refinement
             refinement = samplerSpec.withRefinement()
-            
+
             refinement.withAdaptThreshold(epsilon)\
                       .withAdaptPoints(adaptPoints)
 
             if balancing:
                 refinement.withBalancing()
-                
+
             if adaptRate is not None:
                 refinement.withAdaptRate(adaptRate)
 
@@ -122,7 +123,7 @@ class TestEnvironmentSG(object):
                     addNodes.withWeightedL2OptimizationRanking()
                 else:
                     raise AttributeError("unknown ranking method: predictive, %s" % adaptive)
-                    
+
             if toi is not None:
                 refinement.withAverageWeightening()
 
@@ -171,10 +172,10 @@ class TestEnvironmentMC(object):
 
 
 class ProbabilisticSpaceSGpp(object):
-    
+
     def __init__(self, numDims):
         self.numDims = numDims
-    
+
     def uniform(self, a=0, b=1):
         # set distributions of the input parameters
         builder = ParameterBuilder()
@@ -223,10 +224,10 @@ class PCEBuilderHeat(object):
 
     def define_full_tensor_samples(self, sample_type, rv_trans, expansion):
         return TensorQuadratureSampleGenerationStrategy("uniform", rv_trans, expansion)
-    
+
     def define_approximate_fekete_samples(self, samples, pce, rv_trans):
         return ApproximateFeketeSampleGeneratorStrategy(samples, pce, rv_trans)
-    
+
     def define_approximate_leja_samples(self, samples, pce, rv_trans):
         return LejaSampleGeneratorStrategy(samples, pce, rv_trans)
 
