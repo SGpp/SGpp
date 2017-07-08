@@ -26,16 +26,16 @@ namespace sgpp {
 
         };
 
-        struct PendingMPIRequest {
-            MPI_Request request;
-            MPI_Packet *buffer;
-            std::function<void(void *)> callback;
-            bool disposeAfterCallback;
-        };
-
         struct MPI_Packet {
             MPI_COMMAND_ID commandID;
             unsigned char payload[MPI_PACKET_MAX_PAYLOAD_SIZE];
+        };
+
+        struct PendingMPIRequest {
+            MPI_Request request;
+            sgpp::datadriven::MPI_Packet *buffer;
+            std::function<void(PendingMPIRequest &)> callback;
+            bool disposeAfterCallback;
         };
 
         enum RefinementResultsUpdateType {

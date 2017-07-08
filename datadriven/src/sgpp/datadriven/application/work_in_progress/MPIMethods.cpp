@@ -6,8 +6,6 @@
 #include <sgpp/datadriven/application/work_in_progress/LearnerSGDEOnOffParallel.hpp>
 #include <sgpp/datadriven/application/work_in_progress/NetworkMessageData.hpp>
 #include <sgpp/datadriven/application/work_in_progress/MPIMethods.hpp>
-#include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
-#include <sgpp/parallel/tools/MPI/GlobalMPIComm.hpp>
 #include <cstring>
 #include <sgpp/base/exception/application_exception.hpp>
 
@@ -15,7 +13,9 @@ namespace sgpp {
     namespace datadriven {
 
         bool MPIMethods::isMaster() {
-            return sgpp::parallel::myGlobalMPIComm->getMyRank() == MPI_MASTER_RANK;
+            int rank;
+            MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+            return rank == MPI_MASTER_RANK;
         }
 
         void MPIMethods::initMPI(LearnerSGDEOnOffParallel *learnerInstance) {
@@ -42,7 +42,7 @@ namespace sgpp {
                 MPI_Packet *mpiPacket = new MPI_Packet;
                 unicastInputRequest.buffer = mpiPacket;
                 unicastInputRequest.disposeAfterCallback = false;
-                unicastInputRequest.callback = [](PendingMPIRequest request) {
+                unicastInputRequest.callback = [&learnerInstance](PendingMPIRequest &request) {
                     processIncomingMPICommands(learnerInstance, request.buffer);
                     MPI_Irecv(request.buffer, MPI_PACKET_MAX_PAYLOAD_SIZE, MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE,
                               MPI_ANY_TAG, MPI_COMM_WORLD, &(request.request));
@@ -60,7 +60,7 @@ namespace sgpp {
                 MPI_Packet *mpiPacket = new MPI_Packet;
                 broadcastInputRequest.buffer = mpiPacket;
                 broadcastInputRequest.disposeAfterCallback = false;
-                broadcastInputRequest.callback = [](PendingMPIRequest request) {
+                broadcastInputRequest.callback = [&learnerInstance](PendingMPIRequest &request) {
                     processIncomingMPICommands(learnerInstance, request.buffer);
                     MPI_Ibcast(request.buffer, MPI_PACKET_MAX_PAYLOAD_SIZE, MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
                                MPI_COMM_WORLD, &(request.request));
@@ -75,7 +75,8 @@ namespace sgpp {
         }
 
         void MPIMethods::synchronizeEndOfDataPass() {
-            sgpp::parallel::myGlobalMPIComm->Barrier();
+            throw sgpp::base::application_exception("Not implemented");
+//            sgpp::parallel::myGlobalMPIComm->Barrier();
         }
 
         void MPIMethods::sendGridComponentsUpdate(std::vector<RefinementResult> *refinementResults) {
@@ -83,17 +84,26 @@ namespace sgpp {
             for (size_t classIndex = 0; classIndex < refinementResults->size(); classIndex++) {
                 RefinementResult refinementResult = (*refinementResults)[classIndex];
 
+                std::list<unsigned long>::const_iterator deletedPointsIterator = std::begin(
+                        refinementResult.deletedGridPointsIndexes);
+                std::list<unsigned long>::const_iterator deletedPointsEnd = std::end(
+                        refinementResult.deletedGridPointsIndexes);
                 sendRefinementUpdates(classIndex, DELETED_GRID_POINTS_LIST,
-                                      std::begin(refinementResult.deletedGridPointsIndexes),
-                                      std::end(refinementResult.deletedGridPointsIndexes));
-                sendRefinementUpdates(classIndex, ADDED_GRID_POINTS_LIST, std::begin(refinementResult.addedGridPoints),
-                                      std::end(refinementResult.addedGridPoints));
+                                      deletedPointsIterator,
+                                      deletedPointsEnd);
+                std::list<sgpp::base::DataVector>::const_iterator addedPointsIterator = std::begin(
+                        refinementResult.addedGridPoints);
+                std::list<sgpp::base::DataVector>::const_iterator addedPointsEnd = std::end(
+                        refinementResult.addedGridPoints);
+                sendRefinementUpdates(classIndex, ADDED_GRID_POINTS_LIST, addedPointsIterator,
+                                      addedPointsEnd);
             }
         }
 
-        void MPIMethods::sendRefinementUpdates(size_t classIndex, const RefinementResultsUpdateType &updateType,
-                                               const std::list::iterator &iterator,
-                                               const std::list::iterator &listEnd) {
+        template<typename DataType>
+        void MPIMethods::sendRefinementUpdates(size_t &classIndex, const RefinementResultsUpdateType updateType,
+                                               typename std::list<DataType>::const_iterator &iterator,
+                                               typename std::list<DataType>::const_iterator &listEnd) {
             while (iterator != listEnd) {
                     MPI_Packet *mpiPacket = new MPI_Packet;
                     RefinementResultNetworkMessage *networkMessage = (RefinementResultNetworkMessage *) mpiPacket->payload;
@@ -152,6 +162,7 @@ namespace sgpp {
         }
 
         //TODO: This was imported from Merge
+/*
         size_t MPIMethods::sendRefinementResultPacket(size_t classIndex, RefinementResultsUpdateType updateType,
                                                       const RefinementResult &refinementResult, int offset,
                                                       std::list::iterator &iterator) {
@@ -200,6 +211,7 @@ namespace sgpp {
                        MPI_COMM_WORLD, &(pendingMPIRequest.request));
             return numPointsInPacket;
         }
+*/
 
         //TODO: This was imported from Merge
         size_t
@@ -230,12 +242,14 @@ namespace sgpp {
         }
 
 
+        //TODO: !!!!!!!!! Compiler Errors
 
         //TODO: Ensure compiler calls the correct method
         template<typename DataType>
-        static size_t
-        MPIMethods::fillBufferWithVectorData(void *buffer, void *bufferEnd, std::list<std::vector>::iterator iterator,
-                                             std::list::iterator listEnd) {
+        size_t
+        MPIMethods::fillBufferWithVectorData(void *buffer, void *bufferEnd,
+                                             typename std::vector<DataType>::iterator iterator,
+                                             typename DataType::iterator listEnd) {
             //TODO: Implement vector
             DataType *bufferPointer = (DataType *) buffer;
             size_t copiedVectors = 0;
@@ -248,8 +262,9 @@ namespace sgpp {
         }
 
         template<typename DataType>
-        static size_t MPIMethods::fillBufferWithData(void *buffer, void *bufferEnd, std::list::iterator iterator,
-                                                     std::list::iterator listEnd) {
+        size_t
+        MPIMethods::fillBufferWithData(void *buffer, void *bufferEnd, typename DataType::iterator iterator,
+                                       typename DataType::iterator listEnd) {
             DataType *bufferPointer = (DataType *) buffer;
             size_t copiedValues = 0;
             while (bufferPointer + sizeof(DataType) < bufferEnd && iterator != listEnd) {
@@ -264,13 +279,13 @@ namespace sgpp {
             MPI_Status mpiStatus;
             int operationCompleted;
 
-            for (std::vector::const_iterator pendingMPIRequestIterator = pendingMPIRequests.begin();
+            for (std::vector<sgpp::datadriven::PendingMPIRequest>::iterator pendingMPIRequestIterator = pendingMPIRequests.begin();
                  pendingMPIRequestIterator != pendingMPIRequests.end();
                  pendingMPIRequestIterator++) {
                 MPI_Test(&(pendingMPIRequestIterator->request), &operationCompleted, &mpiStatus);
                 if (operationCompleted) {
                     //Execute the callback
-                    pendingMPIRequestIterator->callback(pendingMPIRequestIterator->buffer);
+                    pendingMPIRequestIterator->callback(*pendingMPIRequestIterator);
 
                     if (pendingMPIRequestIterator->disposeAfterCallback) {
                         //TODO Deleting a void pointer here

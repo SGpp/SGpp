@@ -18,13 +18,15 @@
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
+#include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
+#include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
+
 
 #include <list>
 #include <map>
 #include <string>
 #include <utility>
 #include <vector>
-#include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <mpi.h>
 
 namespace sgpp {
@@ -124,8 +126,9 @@ namespace sgpp {
              */
             void train(
                     DataBatch *dataBatch,
-                    bool doCrossValidation = false,
-                    std::vector<RefinementResult> *vectorRefinementResults);
+                    std::vector<RefinementResult> *vectorRefinementResults,
+                    bool doCrossValidation = false
+            );
 
             /**
              * Trains the learner with the given data batch that is already split up wrt
@@ -316,7 +319,7 @@ namespace sgpp {
             bool checkRefinementNecessary(const std::string &refMonitor, size_t refPeriod,
                                           size_t totalInstances, double currentValidError,
                                           double currentTrainError, size_t numberOfCompletedRefinements,
-                                          std::shared_ptr<ConvergenceMonitor> &monitor);
+                                          std::shared_ptr<sgpp::datadriven::ConvergenceMonitor> &monitor);
 
             void assembleNextBatchData(size_t batchSize, DataBatch *dataBatch,
                                        size_t dataDimensionality,
@@ -342,7 +345,7 @@ namespace sgpp {
                                     const std::string &refinementMonitorType,
                                     std::vector<RefinementResult> *vectorRefinementResults,
                                     const std::vector<std::pair<DBMatOnlineDE *, double>> *onlineObjects,
-                                    std::shared_ptr<ConvergenceMonitor> &monitor);
+                                    std::shared_ptr<sgpp::datadriven::ConvergenceMonitor> &monitor);
 
         };
     }   //namespace datadriven
