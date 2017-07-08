@@ -188,7 +188,7 @@ namespace sgpp {
                     assembleNextBatchData(batchSize, &dataBatch, dim, &cnt);
 
                     // train the model with current batch
-                    train(&dataBatch, doCrossValidation, vectorRefinementResults);
+                    train(&dataBatch, vectorRefinementResults, doCrossValidation);
 
                     numProcessedDataPoints += (dataBatch.dataPoints)->getNrows();
 
@@ -378,7 +378,7 @@ namespace sgpp {
                 for (sgpp::base::DataVector dataVector : refinementResult->addedGridPoints) {
                     sgpp::base::GridPoint gridPoint;
                     //TODO: What happens when other points are changed (ie Leaf boolean etc)
-                    gridPoint.;
+//                    gridPoint.;
 
                     grid->getStorage().insert(gridPoint);
                 }
@@ -531,8 +531,8 @@ namespace sgpp {
         // Train from an entire Batch
         void LearnerSGDEOnOffParallel::train(
                 DataBatch *dataBatch,
-                bool doCrossValidation,
-                std::vector<RefinementResult> *vectorRefinementResults) {
+                std::vector<RefinementResult> *vectorRefinementResults,
+                bool doCrossValidation) {
             if (initDone) {
                 if (trainData.getNrows() != dataBatch->classLabels->getSize()) {
                     throw sgpp::base::data_exception(
@@ -565,7 +565,7 @@ namespace sgpp {
                                                         const std::vector<std::pair<base::DataMatrix *, double>> &trainDataClasses,
                                                         std::map<double, int> &classIndices) const {
             for (size_t i = 0; i < dataBatch->dataPoints->getNrows(); i++) {
-                double classLabel = dataBatch->classLabels->[i];
+                double classLabel = (*(dataBatch->classLabels))[i];
                 base::DataVector vec(dim);
                 trainData.getRow(i, vec);
                 std::pair<base::DataMatrix *, double> p =

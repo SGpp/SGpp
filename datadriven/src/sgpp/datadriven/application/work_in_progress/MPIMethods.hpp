@@ -5,6 +5,8 @@
 #ifndef SGPP_MPIMETHODS_H
 #define SGPP_MPIMETHODS_H
 
+#include <sgpp/datadriven/application/work_in_progress/NetworkMessageData.hpp>
+
 namespace sgpp {
     namespace datadriven {
         class MPIMethods {
@@ -22,16 +24,17 @@ namespace sgpp {
 
             static void processCompletedMPIRequests();
 
-            static void processIncomingMPICommands(LearnerSGDEOnOffParallel *learnerInstance, MPI_Packet *mpiPacket);
+            static void processIncomingMPICommands(LearnerSGDEOnOffParallel *learnerInstance,
+                                                   sgpp::datadriven::MPI_Packet *mpiPacket);
 
 
             static void
             receiveGridComponentsUpdate(LearnerSGDEOnOffParallel *learnerInstance,
-                                        RefinementResultNetworkMessage *networkMessage);
+                                        sgpp::datadriven::RefinementResultNetworkMessage *networkMessage);
 
         protected:
             //Pending MPI Requests
-            static std::vector<PendingMPIRequest> pendingMPIRequests;
+            static std::vector<sgpp::datadriven::PendingMPIRequest> pendingMPIRequests;
             static int mpiWorldSize;
 
             static void startSynchronizingPackets();
@@ -39,21 +42,22 @@ namespace sgpp {
             void initMPI(LearnerSGDEOnOffParallel *learnerInstance);
 
             template<typename DataType>
-            static size_t fillBufferWithData(void *buffer, void *bufferEnd, std::list::iterator iterator,
-                                             std::list::iterator listEnd);
+            static size_t fillBufferWithData(void *buffer, void *bufferEnd, typename DataType::iterator iterator,
+                                             typename DataType::iterator listEnd);
 
             template<typename DataType>
             static size_t
-            fillBufferWithVectorData(void *buffer, void *bufferEnd, std::list<std::vector>::iterator iterator,
-                                     std::list::iterator listEnd);
+            fillBufferWithVectorData(void *buffer, void *bufferEnd, typename std::vector<DataType>::iterator iterator,
+                                     typename DataType::iterator listEnd);
 
-            static void sendRefinementUpdates(size_t classIndex, const RefinementResultsUpdateType &updateType,
-                                              const std::list::iterator &iterator,
-                                              const std::list<unsigned long>::iterator &listEnd);
+            template<typename DataType>
+            static void sendRefinementUpdates(size_t &classIndex, const RefinementResultsUpdateType updateType,
+                                              typename std::list<DataType>::const_iterator &iterator,
+                                              typename std::list<DataType>::const_iterator &listEnd);
 
-            static size_t sendRefinementResultPacket(size_t classIndex, RefinementResultsUpdateType updateType,
-                                                     const RefinementResult &refinementResult, int offset,
-                                                     std::list::iterator &iterator);
+//            static size_t sendRefinementResultPacket(size_t classIndex, RefinementResultsUpdateType updateType,
+//                                                     const RefinementResult &refinementResult, int offset,
+//                                                     std::list::iterator &iterator);
 
             void sendMergeGridCommand(std::vector<base::DataVector *> &alphas);
         };
