@@ -20,7 +20,9 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityRejectionSamplingLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensitySampling1DLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensitySamplingLinear.hpp>
+
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DLinear.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DPoly.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonalLinearBoundary.hpp>
 
@@ -216,6 +218,8 @@ datadriven::OperationTransformation1D* createOperationInverseRosenblattTransform
     base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear)
     return new datadriven::OperationInverseRosenblattTransformation1DLinear(&grid);
+  if (grid.getType() == base::GridType::Poly)
+    return new datadriven::OperationInverseRosenblattTransformation1DPoly(&grid);
   else
     throw base::factory_exception(
         "OperationInverseRosenblattTransformation1D is not implemented for this grid type.");
