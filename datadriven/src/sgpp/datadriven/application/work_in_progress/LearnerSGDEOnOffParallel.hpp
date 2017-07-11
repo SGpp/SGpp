@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 //TODO: Delete this Definition after Refactoring
-#define USE_GSL=1
+#define USE_GSL
 
 #ifdef USE_GSL
 
