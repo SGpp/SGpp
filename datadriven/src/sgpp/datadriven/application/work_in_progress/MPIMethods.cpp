@@ -84,19 +84,19 @@ namespace sgpp {
             for (size_t classIndex = 0; classIndex < refinementResults->size(); classIndex++) {
                 RefinementResult refinementResult = (*refinementResults)[classIndex];
 
-                std::list<unsigned long>::const_iterator deletedPointsIterator = std::begin(
+                std::list<size_t>::const_iterator deletedPointsIterator = std::begin(
                         refinementResult.deletedGridPointsIndexes);
-                std::list<unsigned long>::const_iterator deletedPointsEnd = std::end(
+                std::list<size_t>::const_iterator deletedPointsEnd = std::end(
                         refinementResult.deletedGridPointsIndexes);
-                sendRefinementUpdates(classIndex, DELETED_GRID_POINTS_LIST,
-                                      deletedPointsIterator,
-                                      deletedPointsEnd);
+                sendRefinementUpdates<size_t>(classIndex, DELETED_GRID_POINTS_LIST,
+                                              deletedPointsIterator,
+                                              deletedPointsEnd);
                 std::list<sgpp::base::DataVector>::const_iterator addedPointsIterator = std::begin(
                         refinementResult.addedGridPoints);
                 std::list<sgpp::base::DataVector>::const_iterator addedPointsEnd = std::end(
                         refinementResult.addedGridPoints);
-                sendRefinementUpdates(classIndex, ADDED_GRID_POINTS_LIST, addedPointsIterator,
-                                      addedPointsEnd);
+                sendRefinementUpdates<sgpp::base::DataVector>(classIndex, ADDED_GRID_POINTS_LIST, addedPointsIterator,
+                                                              addedPointsEnd);
             }
         }
 
@@ -115,14 +115,18 @@ namespace sgpp {
                 size_t numPointsInBuffer;
                 switch (updateType) {
                     case DELETED_GRID_POINTS_LIST: {
-                        numPointsInBuffer = fillBufferWithData(networkMessage->payload,
-                                                               std::end(networkMessage->payload), iterator, listEnd);
+                        numPointsInBuffer = fillBufferWithData<DataType>((void *) networkMessage->payload,
+                                                                         (void *) std::end(networkMessage->payload),
+                                                                         iterator,
+                                                                         listEnd);
                     }
                         break;
                     case ADDED_GRID_POINTS_LIST:
-                        numPointsInBuffer = fillBufferWithVectorData(networkMessage->payload,
-                                                                     std::end(networkMessage->payload), iterator,
-                                                                     listEnd);
+                        numPointsInBuffer = fillBufferWithVectorData<DataType>((void *) networkMessage->payload,
+                                                                               (void *) std::end(
+                                                                                       networkMessage->payload),
+                                                                               iterator,
+                                                                               listEnd);
                         break;
                     }
 
@@ -248,8 +252,8 @@ namespace sgpp {
         template<typename DataType>
         size_t
         MPIMethods::fillBufferWithVectorData(void *buffer, void *bufferEnd,
-                                             typename std::vector<DataType>::iterator iterator,
-                                             typename DataType::iterator listEnd) {
+                                             typename std::vector<DataType>::const_iterator iterator,
+                                             typename DataType::const_iterator listEnd) {
             //TODO: Implement vector
             DataType *bufferPointer = (DataType *) buffer;
             size_t copiedVectors = 0;
@@ -263,8 +267,8 @@ namespace sgpp {
 
         template<typename DataType>
         size_t
-        MPIMethods::fillBufferWithData(void *buffer, void *bufferEnd, typename DataType::iterator iterator,
-                                       typename DataType::iterator listEnd) {
+        MPIMethods::fillBufferWithData(void *buffer, void *bufferEnd, typename DataType::const_iterator iterator,
+                                       typename DataType::const_iterator listEnd) {
             DataType *bufferPointer = (DataType *) buffer;
             size_t copiedValues = 0;
             while (bufferPointer + sizeof(DataType) < bufferEnd && iterator != listEnd) {
