@@ -1,11 +1,19 @@
 from matplotlib import pyplot as plt
 import numpy as np
+import pysgpp
 
 
 def testplot():
-    data = np.loadtxt("hermiteBasisTest.txt")
 
-    return data[:, :1], data[:, 1:2], data[:, 2:3]
+    X = np.linspace(0, 1, 900)
+
+    psiBase = pysgpp.SPsiHermiteBase()
+    zetaBase = pysgpp.SZetaHermiteBase()
+
+    psi_values = [psiBase.eval(1, 1, x) for x in X]
+    zeta_values = [zetaBase.eval(1, 1, x) for x in X]
+
+    return X, psi_values, zeta_values
 
 
 def psi(x):
@@ -39,9 +47,10 @@ ax.plot(X,  psi_values, label='$\psi$')
 ax.plot(X, zeta_values, label="$\zeta$")
 plt.legend()
 
-#x axis "labels"
+# x axis "labels"
 ax.set_xticks([0, 0.5, 1])
 ax.set_xticklabels([0, 1, 2])
+ax.set_xlabel("index")
 
 
 # copy paste for the 0 centered axis
