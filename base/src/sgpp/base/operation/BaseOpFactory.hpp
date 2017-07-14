@@ -25,7 +25,6 @@
  * This file contains factory methods for operations.
  */
 
-#include <sgpp/globaldef.hpp>
 #include "hash/OperationEvalGradient.hpp"
 #include "hash/OperationEvalHessian.hpp"
 #include "hash/OperationEvalPartialDerivative.hpp"
