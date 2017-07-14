@@ -8,11 +8,9 @@
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
-#include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
-#include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp_optimization.hpp>
 #include <sgpp_datadriven.hpp>
@@ -33,31 +31,24 @@ namespace datadriven {
  * WARNING: the grid must be a 1D grid!
  */
 OperationInverseRosenblattTransformation1DPoly::OperationInverseRosenblattTransformation1DPoly(
-    base::Grid* grid)
-    : grid(grid) {}
+  base::Grid* grid)
+  : grid(grid) {}
 
 OperationInverseRosenblattTransformation1DPoly::~OperationInverseRosenblattTransformation1DPoly() {}
 
 double OperationInverseRosenblattTransformation1DPoly::doTransformation1D(base::DataVector* alpha1d,
-                                                                         double coord1d) {
+                                                                          double coord1d) {
 
+  std::cout << "INVERSE" << std::endl;
   OperationRosenblattTransformation1DPoly* opRosenblatt
     = static_cast<OperationRosenblattTransformation1DPoly*>
     (op_factory::createOperationRosenblattTransformation1D(*grid));
-  std::unique_ptr<base::Grid> optGrid(base::Grid::createBsplineBoundaryGrid(1, 3));
-  optGrid->getGenerator().regular(grid->getStorage().getMaxLevel());
-  base::GridStorage& gridStorage = optGrid->getStorage();
-  sgpp::base::DataVector coeffs(gridStorage.getSize());
-  for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    base::GridPoint& gp = gridStorage.getPoint(i);
-    double x = gp.getStandardCoordinate(0);
-    coeffs[i] = opRosenblatt->doTransformation1D(alpha1d, x);
-  }
-  auto hierarch = sgpp::op_factory::createOperationMultipleHierarchisation(*optGrid);
-  hierarch->doHierarchisation(coeffs);
+
   std::function<double(const base::DataVector&)> optFunc =
-    [coord1d](const base::DataVector& x) -> double {
-    return (x[0] - coord1d) *  (x[0] - coord1d);};
+    [coord1d, opRosenblatt, alpha1d](const base::DataVector& x) -> double {
+    double F_x = opRosenblatt->doTransformation1D(alpha1d, x[0]);
+    return  (F_x - coord1d) * (F_x - coord1d);};
+
   optimization::WrapperScalarFunction f(1, optFunc);
   optimization::optimizer::NelderMead nelderMead(f);
   nelderMead.optimize();

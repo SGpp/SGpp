@@ -27,7 +27,9 @@ class interpolation_function():
       if self.alpha[i] < self.min_f:
           self.min_f = self.alpha[i]
           self.min_x = x
+    print(self.alpha)
     self.hierarch.doHierarchisation(self.alpha)
+    print(self.alpha)
 
   def __call__(self, x):
     if (self.d == 1 and not isinstance(x, list)):
@@ -48,14 +50,24 @@ def eval_rosenblatt(sg_pdf, xs):
         ys.append(op.doTransformation1D(sg_pdf.alpha, x))
         print("------------------------------")
     return ys
-# ---------------------------------------------
+  # ---------------------------------------------
+
+def eval_inverse_rosenblatt(sg_pdf, xs):
+  op = pysgpp.createOperationInverseRosenblattTransformation1D(sg_pdf.grid)
+  ys = []
+  for x in xs:
+    ys.append(op.doTransformation1D(sg_pdf.alpha, x))
+    print("------------------------------")
+  return ys
 
 interpolation = interpolation_function(1, distrib)
-interpolation.create_interpolation(6)
+interpolation.create_interpolation(2)
 
-xs = np.arange(0, 1, 1e-2)
+xs = np.arange(0, 1, 0.01)
 # ys = [interpolation(x) for x in xs]
-ys = eval_rosenblatt(interpolation, xs)
+# ys = eval_rosenblatt(interpolation, xs)
+ys = eval_inverse_rosenblatt(interpolation, xs)
+print(ys)
 plt.plot(xs, ys)
 plt.legend()
 plt.show()
