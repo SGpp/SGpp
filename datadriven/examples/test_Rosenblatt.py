@@ -60,14 +60,38 @@ def eval_inverse_rosenblatt(sg_pdf, xs):
     print("------------------------------")
   return ys
 
+l_max = 4
 interpolation = interpolation_function(1, distrib)
-interpolation.create_interpolation(2)
+interpolation.create_interpolation(l_max)
 
-xs = np.arange(0, 1, 0.01)
+xs = np.arange(0, 1.01, 0.01)
+grid_points = np.arange(0, 1.01, 2**-l_max)
 # ys = [interpolation(x) for x in xs]
-# ys = eval_rosenblatt(interpolation, xs)
-ys = eval_inverse_rosenblatt(interpolation, xs)
-print(ys)
+ys = eval_rosenblatt(interpolation, xs)
+
+grid_points = np.arange(0, 1.01, 2**-l_max)
+grid_point_values = eval_rosenblatt(interpolation, grid_points)
+
+diffs = []
+
+
+def test():
+  ys = [0, 0.153888, 0.307776, 0.461665, 0.615553, 1.52762, 2.39577, 3.01498, 3.23902, 3.01498, 2.39577, 1.52762, 0.615553, 0.461665, 0.307776, 0.153888, 0]
+
+  xs = [i*2**-4 for i in range(0, 2**4 + 1)]
+  plt.plot(xs ,ys)
+
+for i in range(1, len(grid_points)):
+  diffs.append(grid_point_values[i] - grid_point_values[i-1])
+# print(xs)
+# print(ys)
+for i in range(1, len(ys)):
+  if (ys[i] <= ys[i-1]):
+    print("ERROR {} <= {}".format(ys[i], ys[i-1]))
+print(grid_points)
+print(diffs)
 plt.plot(xs, ys)
-plt.legend()
+# test()
+plt.scatter(grid_points, np.zeros_like(grid_points))
+# plt.legend()
 plt.show()
