@@ -39,7 +39,7 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
   /***************** STEP 1. Compute CDF  ********************/
 
   // compute PDF, sort by coordinates
-  std::multimap<double, double> coord_cdf;
+  std::multimap<double, double> coord_cdf, coord_pdf;
   std::vector<double> ordered_grid_points;
   std::multimap<double, double>::iterator it1;
 
@@ -69,6 +69,8 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
   ordered_grid_points.push_back(0.0);
   ordered_grid_points.push_back(1.0);
 
+  coord_pdf.insert(std::pair<double, double>(0.0, 0.0));
+
   coord_cdf.insert(std::pair<double, double>(0.0, 0.0));
   coord_cdf.insert(std::pair<double, double>(1.0, 1.0));
   std::sort(ordered_grid_points.begin(), ordered_grid_points.end());
@@ -78,8 +80,9 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
   for (size_t i = 1; i < ordered_grid_points.size(); i++) {
     coord[0] = ordered_grid_points[i];
     double eval_res = opEval->eval(*alpha1d, coord);
-    std::cout << "pdf("
-             << coord[0] << ")=" << eval_res << std::endl;
+    std::cout << "l_function_value:" << left_function_value << std::endl;
+    std::cout << "pdf(" << coord[0] << ")=" << eval_res << std::endl;
+
     double gaussQuadSum = 0.;
     double left = left_coord;
     double scaling = coord[0] - left;
@@ -91,13 +94,11 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
     std::cout << "from " << left_coord << " to " << left+scaling << std::endl;
     std::cout << "area:" << area << std::endl;
 
-    if (area < 0) {
+    if (area < 0 || eval_res < 0) {
       // make sure that the cdf is monotonically increasing
       // WARNING: THIS IS A HACK THAT OVERCOMES THE PROBLEM
       // OF NON POSITIVE DENSITY
-      std::cerr << "warning: negative pdf value encountered pdf("
-               << coord[0] << ")=" << eval_res
-               << std::endl;
+      std::cerr << "warning: negative pdf value encountered " << std::endl;
 
       // we look for the next grid point with pdf(x) >= 0
       size_t j;
@@ -106,33 +107,38 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
         right_coord = ordered_grid_points[j];
         coord[0] = right_coord;
         right_function_value = opEval->eval(*alpha1d, coord);
-        if (right_function_value >= 0)
+        if (right_function_value >= 0 && right_function_value != left_function_value)
           break;
       }
       std::cout << "Found j: " << j << std::endl;
       std::cout << right_coord << ";" << right_function_value << std::endl;
-      // get last function value and coordinate with pdf(x) > 0
+      // get last function value and coordinate with pdf(x) >= 0
       // interpolate every value in between linearly
+      double left_value_for_interpolation = left_function_value;
+      double left_coord_for_interpolation = left_coord;
       for (; i < j; i++) {
         coord[0] = ordered_grid_points[i];
         std::cout << "interpolating i:" << i << std::endl;
-        eval_res = left_function_value
-          + (right_function_value + left_function_value) / (right_coord - left_coord)
-          * (coord[0] - left_coord);
+        eval_res = left_value_for_interpolation
+          + (right_function_value - left_value_for_interpolation) /
+            (right_coord - left_coord_for_interpolation)
+          * (coord[0] - left_coord_for_interpolation);
         std::cout << "For x=" << coord[0] << "interp: " << eval_res << std::endl;
         area = (eval_res + left_function_value) / 2 * (coord[0] - left_coord);
         sum += area;
         std::cout << "from " << left_coord << " to " << coord[0] << std::endl;
         std::cout << "area:" << area << std::endl;
+        coord_pdf.insert(std::pair<double, double>(ordered_grid_points[i], eval_res));
         patch_areas.push_back(area);
-        left_function_value = eval_res;
         left_coord = coord[0];
+        left_function_value = eval_res;
       }
       area = (right_function_value + left_function_value) / 2 * (right_coord - left_coord);
       sum += area;
       std::cout << "from " << left_coord << " to " << right_coord << std::endl;
       std::cout << "area:" << area << std::endl;
       patch_areas.push_back(area);
+      coord_pdf.insert(std::pair<double, double>(ordered_grid_points[i], right_function_value));
       left_coord = right_coord;
       left_function_value = right_function_value;
     } else {
@@ -140,6 +146,7 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
       sum += area;
       left_coord = left + scaling;
       left_function_value = eval_res;
+      coord_pdf.insert(std::pair<double, double>(ordered_grid_points[i], eval_res));
       patch_areas.push_back(area);
     }
   }
@@ -168,8 +175,14 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
   std::cout << "Size cdf: " << coord_cdf.size() << std::endl;
   std::cout << "coord cdf: " << std::endl;
   for (it1 = coord_cdf.begin(); it1 != coord_cdf.end(); ++it1) {
-    std::cout << it1->second << std::endl;
+    std::cout << it1->first << ":" << it1->second << std::endl;
   }
+
+  std::cout << "coord pdf: " << std::endl;
+  for (it1 = coord_pdf.begin(); it1 != coord_pdf.end(); ++it1) {
+    std::cout << it1->second << ", ";
+  }
+  std::cout << std::endl;
   // find cdf interval
   for (it1 = coord_cdf.begin(); it1 != coord_cdf.end(); ++it1) {
     if (it1->first >= coord1d) break;
