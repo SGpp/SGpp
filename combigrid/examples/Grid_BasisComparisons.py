@@ -7,7 +7,7 @@ import numpy as np
 import pysgpp
 
 
-# sinnvoller einfach zu implementieren
+
 # umwandlung in combigrid kompatibles format
 def getfuncwrapper(func, dim):
     def function(x):
@@ -128,11 +128,11 @@ evaluationLinear = gridOperationEval(opEval, alpha)
 
 print("\n\n")
 
-# combigrid test
+# combigrid 
 opCombi = linearCombiGridOp(dim, testFunction)
 
 
-# bspline test
+# bspline 
 print("bspline calculations")
 grid, coeffs = bSplineGrid(dim, 3, level, testfunc)
 opEvalBspline = pysgpp.createOperationEvalNaive(grid)
