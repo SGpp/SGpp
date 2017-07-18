@@ -42,20 +42,20 @@ namespace sgpp {
 
             void initMPI(LearnerSGDEOnOffParallel *learnerInstance);
 
-            template<typename DataType>
-            static size_t fillBufferWithData(void *buffer, void *bufferEnd, typename DataType::const_iterator iterator,
-                                             typename DataType::const_iterator listEnd);
+            template<typename Iterator>
+            static size_t fillBufferWithData(void *buffer, void *bufferEnd, Iterator iterator,
+                                             Iterator listEnd);
 
-            template<typename DataType>
+            template<typename Iterator>
             static size_t
             fillBufferWithVectorData(void *buffer, void *bufferEnd,
-                                     typename std::vector<DataType>::const_iterator iterator,
-                                     typename DataType::const_iterator listEnd);
+                                     Iterator iterator,
+                                     Iterator listEnd);
 
-            template<typename DataType>
+            template<typename Iterator>
             static void sendRefinementUpdates(size_t &classIndex, const RefinementResultsUpdateType updateType,
-                                              typename std::list<DataType>::const_iterator &iterator,
-                                              typename std::list<DataType>::const_iterator &listEnd);
+                                              Iterator &iterator,
+                                              Iterator &listEnd);
 
 //            static size_t sendRefinementResultPacket(size_t classIndex, RefinementResultsUpdateType updateType,
 //                                                     const RefinementResult &refinementResult, int offset,
