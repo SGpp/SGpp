@@ -5,6 +5,7 @@
 #ifndef SGPP_MPIMETHODS_H
 #define SGPP_MPIMETHODS_H
 
+#include <sgpp/datadriven/application/work_in_progress/LearnerSGDEOnOffParallel.hpp>
 #include <sgpp/datadriven/application/work_in_progress/NetworkMessageData.hpp>
 
 namespace sgpp {
