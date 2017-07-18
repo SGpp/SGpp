@@ -342,7 +342,7 @@ namespace sgpp {
                 }
             }
             learnerInstance->updateVariablesAfterRefinement(&refinementResult, networkMessage->classIndex,
-                                                            (*learnerInstance->getDestFunctions())[networkMessage->classIndex].first);
+                                                            learnerInstance->getDensityFunctions()[networkMessage->classIndex].first.get());
         }
 
         void MPIMethods::processIncomingMPICommands(LearnerSGDEOnOffParallel *learnerInstance, MPI_Packet *mpiPacket) {
