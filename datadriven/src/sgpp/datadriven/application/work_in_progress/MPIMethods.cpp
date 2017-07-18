@@ -88,22 +88,23 @@ namespace sgpp {
                         refinementResult.deletedGridPointsIndexes);
                 std::list<size_t>::const_iterator deletedPointsEnd = std::end(
                         refinementResult.deletedGridPointsIndexes);
-                sendRefinementUpdates<size_t>(classIndex, DELETED_GRID_POINTS_LIST,
-                                              deletedPointsIterator,
-                                              deletedPointsEnd);
+                sendRefinementUpdates<std::list<size_t>::const_iterator>(classIndex, DELETED_GRID_POINTS_LIST,
+                                                                         deletedPointsIterator,
+                                                                         deletedPointsEnd);
                 std::list<sgpp::base::DataVector>::const_iterator addedPointsIterator = std::begin(
                         refinementResult.addedGridPoints);
                 std::list<sgpp::base::DataVector>::const_iterator addedPointsEnd = std::end(
                         refinementResult.addedGridPoints);
-                sendRefinementUpdates<sgpp::base::DataVector>(classIndex, ADDED_GRID_POINTS_LIST, addedPointsIterator,
-                                                              addedPointsEnd);
+                sendRefinementUpdates<std::list<DataVector>::const_iterator>(classIndex, ADDED_GRID_POINTS_LIST,
+                                                                             addedPointsIterator,
+                                                                             addedPointsEnd);
             }
         }
 
-        template<typename DataType>
+        template<typename Iterator>
         void MPIMethods::sendRefinementUpdates(size_t &classIndex, const RefinementResultsUpdateType updateType,
-                                               typename std::list<DataType>::const_iterator &iterator,
-                                               typename std::list<DataType>::const_iterator &listEnd) {
+                                               Iterator &iterator,
+                                               Iterator &listEnd) {
             while (iterator != listEnd) {
                     MPI_Packet *mpiPacket = new MPI_Packet;
                     RefinementResultNetworkMessage *networkMessage = (RefinementResultNetworkMessage *) mpiPacket->payload;
@@ -115,14 +116,14 @@ namespace sgpp {
                 size_t numPointsInBuffer;
                 switch (updateType) {
                     case DELETED_GRID_POINTS_LIST: {
-                        numPointsInBuffer = fillBufferWithData<DataType>((void *) networkMessage->payload,
+                        numPointsInBuffer = fillBufferWithData<Iterator>((void *) networkMessage->payload,
                                                                          (void *) std::end(networkMessage->payload),
                                                                          iterator,
                                                                          listEnd);
                     }
                         break;
                     case ADDED_GRID_POINTS_LIST:
-                        numPointsInBuffer = fillBufferWithVectorData<DataType>((void *) networkMessage->payload,
+                        numPointsInBuffer = fillBufferWithVectorData<Iterator>((void *) networkMessage->payload,
                                                                                (void *) std::end(
                                                                                        networkMessage->payload),
                                                                                iterator,
@@ -249,15 +250,16 @@ namespace sgpp {
         //TODO: !!!!!!!!! Compiler Errors
 
         //TODO: Ensure compiler calls the correct method
-        template<typename DataType>
+        template<typename Iterator>
         size_t
         MPIMethods::fillBufferWithVectorData(void *buffer, void *bufferEnd,
-                                             typename std::vector<DataType>::const_iterator iterator,
-                                             typename DataType::const_iterator listEnd) {
+                                             Iterator iterator,
+                                             Iterator listEnd) {
             //TODO: Implement vector
-            DataType *bufferPointer = (DataType *) buffer;
+            typename std::iterator_traits<Iterator>::value_type *bufferPointer = (typename std::iterator_traits<Iterator>::value_type *) buffer;
             size_t copiedVectors = 0;
-            while (bufferPointer + iterator->size() * sizeof(DataType) < bufferEnd && iterator != listEnd) {
+            while (bufferPointer + iterator->size() * sizeof(typename std::iterator_traits<Iterator>::value_type) <
+                   bufferEnd && iterator != listEnd) {
                 std::memcpy(&((*iterator)[0]), bufferPointer, iterator->size());
                 iterator++;
                 copiedVectors++;
@@ -265,13 +267,14 @@ namespace sgpp {
             return copiedVectors;
         }
 
-        template<typename DataType>
+        template<typename Iterator>
         size_t
-        MPIMethods::fillBufferWithData(void *buffer, void *bufferEnd, typename DataType::const_iterator iterator,
-                                       typename DataType::const_iterator listEnd) {
-            DataType *bufferPointer = (DataType *) buffer;
+        MPIMethods::fillBufferWithData(void *buffer, void *bufferEnd, Iterator iterator,
+                                       Iterator listEnd) {
+            typename std::iterator_traits<Iterator>::value_type *bufferPointer = (typename std::iterator_traits<Iterator>::value_type *) buffer;
             size_t copiedValues = 0;
-            while (bufferPointer + sizeof(DataType) < bufferEnd && iterator != listEnd) {
+            while (bufferPointer + sizeof(typename std::iterator_traits<Iterator>::value_type) < bufferEnd &&
+                   iterator != listEnd) {
                 *bufferPointer = *iterator;
                 iterator++;
                 copiedValues++;
