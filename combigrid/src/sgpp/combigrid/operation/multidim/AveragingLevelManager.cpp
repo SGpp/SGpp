@@ -32,5 +32,9 @@ AveragingLevelManager::AveragingLevelManager() : LevelManager() {}
 
 AveragingLevelManager::~AveragingLevelManager() {}
 
+std::shared_ptr<LevelManager> AveragingLevelManager::clone() {
+  return std::make_shared<AveragingLevelManager>(*this);
+}
+
 } /* namespace combigrid */
 } /* namespace sgpp*/

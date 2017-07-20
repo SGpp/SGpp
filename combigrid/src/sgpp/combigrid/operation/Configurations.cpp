@@ -36,9 +36,25 @@ std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::linearLeja(size_t grow
                                               false));
 }
 
+std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::linearLeja(SingleFunction weightFunction,
+                                                                     size_t growthFactor) {
+  return std::make_shared<NestedPointHierarchy>(
+      std::make_shared<LejaPointDistribution>(weightFunction),
+      std::make_shared<IdentityPointOrdering>(std::make_shared<LinearGrowthStrategy>(growthFactor),
+                                              false));
+}
+
 std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::linearL2Leja(size_t growthFactor) {
   return std::make_shared<NestedPointHierarchy>(
       std::make_shared<L2LejaPointDistribution>(),
+      std::make_shared<IdentityPointOrdering>(std::make_shared<LinearGrowthStrategy>(growthFactor),
+                                              false));
+}
+
+std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::linearL2Leja(
+    SingleFunction weightFunction, size_t growthFactor) {
+  return std::make_shared<NestedPointHierarchy>(
+      std::make_shared<L2LejaPointDistribution>(weightFunction),
       std::make_shared<IdentityPointOrdering>(std::make_shared<LinearGrowthStrategy>(growthFactor),
                                               false));
 }
@@ -50,9 +66,23 @@ std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::expLeja() {
                                               false));
 }
 
+std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::expLeja(SingleFunction weightFunction) {
+  return std::make_shared<NestedPointHierarchy>(
+      std::make_shared<LejaPointDistribution>(weightFunction),
+      std::make_shared<IdentityPointOrdering>(std::make_shared<ExponentialGrowthStrategy>(),
+                                              false));
+}
+
 std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::expL2Leja() {
   return std::make_shared<NestedPointHierarchy>(
       std::make_shared<L2LejaPointDistribution>(),
+      std::make_shared<IdentityPointOrdering>(std::make_shared<ExponentialGrowthStrategy>(),
+                                              false));
+}
+
+std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::expL2Leja(SingleFunction weightFunction) {
+  return std::make_shared<NestedPointHierarchy>(
+      std::make_shared<L2LejaPointDistribution>(weightFunction),
       std::make_shared<IdentityPointOrdering>(std::make_shared<ExponentialGrowthStrategy>(),
                                               false));
 }
@@ -116,6 +146,12 @@ CombiEvaluators::multiCubicSplineInterpolation() {
 
 std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> CombiEvaluators::multiQuadrature() {
   return std::make_shared<ArrayEvaluator<QuadratureEvaluator>>(false);
+}
+
+std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> CombiEvaluators::multiQuadrature(
+    SingleFunction func, bool normalizeWeights) {
+  return std::make_shared<ArrayEvaluator<QuadratureEvaluator>>(
+      false, QuadratureEvaluator(func, normalizeWeights));
 }
 
 } /* namespace combigrid */

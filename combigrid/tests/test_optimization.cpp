@@ -30,8 +30,8 @@ BOOST_AUTO_TEST_CASE(testTrisectionOptimizer) {
 
   auto result = trOpt.minimize(sgpp::combigrid::OptimizationGuess::initial(0.0, 1.0, f), 50, 10);
 
-  watch.log();
-  std::cout << "Difference: " << fabs(result.b - minValue) << "\n";
+  // watch.log();
+  // std::cout << "Difference: " << fabs(result.b - minValue) << "\n";
 
   BOOST_CHECK_CLOSE(result.b, minValue, tolerance);
 }
@@ -47,8 +47,8 @@ BOOST_AUTO_TEST_CASE(testNewtonOptimizer) {
 
   auto result = nOpt.minimize(sgpp::combigrid::OptimizationGuess::initial(0.0, 1.0, f), 3);
 
-  watch.log();
-  std::cout << "Difference: " << fabs(result.b - minValue) << "\n";
+  // watch.log();
+  // std::cout << "Difference: " << fabs(result.b - minValue) << "\n";
 
   BOOST_CHECK_CLOSE(result.b, minValue, tolerance);
 }
@@ -63,8 +63,8 @@ BOOST_AUTO_TEST_CASE(testMixedOptimizer) {
 
   auto result = opt.minimize(sgpp::combigrid::OptimizationGuess::initial(0.0, 2.0, f));
 
-  watch.log();
-  std::cout << "Difference: " << fabs(result.b - minValue) << "\n";
+  // watch.log();
+  // std::cout << "Difference: " << fabs(result.b - minValue) << "\n";
 
   BOOST_CHECK_CLOSE(result.b, minValue, tolerance);
 }

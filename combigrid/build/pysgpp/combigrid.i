@@ -63,6 +63,7 @@
 %shared_ptr(sgpp::combigrid::LevelManager)
 %shared_ptr(sgpp::combigrid::AveragingLevelManager)
 %shared_ptr(sgpp::combigrid::WeightedRatioLevelManager)
+%shared_ptr(sgpp::combigrid::RegularLevelManager)
 
 %shared_ptr(sgpp::combigrid::TensorGrid)
 %shared_ptr(sgpp::combigrid::ThreadPool)
@@ -207,6 +208,7 @@ namespace std {
 
     %template(FloatScalarVectorVector) vector<sgpp::combigrid::FloatScalarVector>;
     %template(FloatArrayVectorVector) vector<sgpp::combigrid::FloatArrayVector>;
+    %template(DataVectorVector) vector<sgpp::base::DataVector>;
 
     // %template(PyTaskVector) std::vector<sgpp::combigrid::GeneralFunction1<void>>;
 
@@ -232,6 +234,7 @@ namespace std {
 %include "combigrid/src/sgpp/combigrid/operation/multidim/LevelManager.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/multidim/RegularLevelManager.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/CombigridOperation.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/CombigridMultiOperation.hpp"
 
@@ -245,6 +248,7 @@ namespace std {
 // experimental
 
 %feature("director") sgpp::combigrid::GeneralFunctionDirector;
+%feature("director") sgpp::combigrid::GeneralFunctionDirector1;
 %include "combigrid/src/sgpp/combigrid/GeneralFunctionDirector.hpp"
 
 namespace sgpp {
@@ -344,5 +348,12 @@ def idleCallbackFunc(funcObj):
     dir.__disown__()
     return f
 %}
+
+// does some exception handling according to the SWIG website
+%feature("director:except") {
+    if ($error != NULL) {
+        throw Swig::DirectorMethodException();
+    }
+}
 
 #endif
