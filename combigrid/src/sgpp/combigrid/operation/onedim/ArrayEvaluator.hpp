@@ -47,6 +47,12 @@ class ArrayEvaluator : public AbstractLinearEvaluator<FloatArrayVector> {
         xValues(),
         doesNeedParameter(doesNeedParameter) {}
 
+  explicit ArrayEvaluator(bool doesNeedParameter, ScalarEvaluator *evaluatorPrototype)
+      : evaluators(1, *evaluatorPrototype),
+        basisCoefficients(),
+        xValues(),
+        doesNeedParameter(doesNeedParameter) {}
+
   ArrayEvaluator(ArrayEvaluator<ScalarEvaluator> const &other)
       : evaluators(other.evaluators),
         basisCoefficients(other.basisCoefficients),
