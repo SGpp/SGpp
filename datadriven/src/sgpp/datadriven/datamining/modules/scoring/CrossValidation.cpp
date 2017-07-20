@@ -47,7 +47,7 @@ double CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset
     size_t offset = fold * (dataset.getNumberInstances() / foldNumber);
 
     std::cout << "starting fold " << fold << " with full set:" << dataset.getNumberInstances()
-              << ", test size:" << testSize << ", train size:" << trainSize << std::endl;
+              << ", test size:" << testSize << ", train size:" << trainSize << "\n";
     // create testing & training datasets;
     Dataset testDataset{testSize, dim};
     Dataset trainDataset{trainSize, dim};
@@ -56,11 +56,9 @@ double CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset
     splitSet(dataset, trainDataset, testDataset, randomizedIndices, offset);
 
     // fit model
-    std::cout << "###############" << std::endl << "fitting model" << std::endl;
     scores[fold] = train(model, trainDataset, testDataset);
-    std::cout << "###############" << std::endl
-              << "accuracy of fit:" << scores[fold] << std::endl
-              << std::endl;
+
+    scores[fold] = refine(model, testDataset);
   }
 
   // calculate final score as AVG

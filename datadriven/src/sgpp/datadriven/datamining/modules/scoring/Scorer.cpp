@@ -84,13 +84,35 @@ void Scorer::splitSet(const Dataset& dataset, Dataset& trainDataset, Dataset& te
   }
 }
 
-double Scorer::train(ModelFittingBase& model, Dataset& trainDataset, Dataset& testDataset) {
-  model.fit(trainDataset);
-
+double Scorer::test(ModelFittingBase& model, Dataset& testDataset) {
   DataVector predictedValues{testDataset.getNumberInstances()};
   model.evaluate(testDataset.getData(), predictedValues);
   // set score
   return metric->measure(predictedValues, testDataset.getTargets());
+}
+
+double Scorer::train(ModelFittingBase& model, Dataset& trainDataset, Dataset& testDataset) {
+  // fit model
+  std::cout << "###############\nfitting model\n";
+  model.fit(trainDataset);
+  auto score = test(model, testDataset);
+  std::cout << "###############\naccuracy of fit:" << score << "\n\n";
+  return score;
+}
+
+double Scorer::refine(ModelFittingBase& model, Dataset& testDataset) {
+  auto wasRefined = false;
+  auto score = 0.0;
+
+  do {
+    std::cout << "###############\nrefining model\n"
+              << "Current size is " << model.getGrid().getSize() << "\n";
+    wasRefined = model.refine();
+    std::cout << "Refined Size is " << model.getGrid().getSize() << "\n";
+    score = test(model, testDataset);
+    std::cout << "###############\naccuracy of fit after refinement:" << score << "\n\n";
+  } while (wasRefined);
+  return score;
 }
 
 } /* namespace datadriven */
