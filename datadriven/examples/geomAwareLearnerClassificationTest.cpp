@@ -56,16 +56,16 @@ std::vector<std::vector<size_t>> getAllInteractions(size_t dimension) {
 sgpp::datadriven::ClassificationLearner getLearner(size_t dimension) {
   auto gridConfig = sgpp::base::RegularGridConfiguration();
   gridConfig.dim_ = dimension;
-  gridConfig.level_ = 4;
+  gridConfig.level_ = 3;
   gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
   auto adaptivityConfig = sgpp::base::AdpativityConfiguration();
-  adaptivityConfig.noPoints_ = 0;
+  adaptivityConfig.noPoints_ = 100;
   adaptivityConfig.numRefinements_ = 0;
 
   auto solverConfig = sgpp::solver::SLESolverConfiguration();
   solverConfig.type_ = sgpp::solver::SLESolverType::CG;
-  solverConfig.maxIterations_ = 500;
+  solverConfig.maxIterations_ = 10000;
   solverConfig.eps_ = 1e-8;
 
   auto regularizationConfig = sgpp::datadriven::RegularizationConfiguration();
@@ -104,4 +104,34 @@ int main(int argc, char** argv) {
   learner.train(xTrain, yTrain);
   const auto accuracy = learner.getAccuracy(xTrain, yTrain);
   std::cout << "Best config got a training acc of " << accuracy << "!" << std::endl;
+
+  const auto filenameTest =
+      std::string("../../datasets/house_numbers/test_gray8x8.test.arff");
+
+
+
+  auto dataTest = sgpp::datadriven::ARFFTools::readARFF(filenameTest);
+  std::cout << "Read file " << filenameTest << "." << std::endl;
+  auto xTest = dataTest.getData();
+  auto yTest = dataTest.getTargets();
+  const auto dimensionsTest = dataTest.getDimension();
+
+
+  std::cout << "Dimensions " << dimensionsTest << "." << std::endl;
+
+
+  auto predictTest = learner.predict(xTest);
+
+  size_t confusion [10][10] = {0};
+
+  for(size_t i = 0; i < dataTest.getNumberInstances(); i++){
+    confusion[(size_t)predictTest.get(i)][(size_t)yTest.get(i)]++;
+  }
+
+  for(size_t real = 0; real < 10; real++){
+    for(size_t pred = 0; pred < 10; pred++){
+      std::cout << confusion[pred][real] << "\t";
+    }
+    std::cout << std::endl;
+  }
 }
