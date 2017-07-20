@@ -91,8 +91,9 @@ class ModelFittingBase {
 
   /**
    * Improve accuracy of the model on the given training data by adaptive refinement of the grid.
+   * @return true if refinement was performed, else false.
    */
-  virtual void refine() = 0;
+  virtual bool refine() = 0;
 
   // TODO(lettrich): dataset should be const
   /**
@@ -173,6 +174,13 @@ class ModelFittingBase {
    * hierarchical surpluses of the #grid.
    */
   DataVector alpha;
+
+  /**
+   * Pointer to #sgpp::datadriven::Dataset. The initial grid is fitted on the given data. Adaptive
+   * refinement is then performed on the very same data. The used dataset used for refinement
+   * overwritten once either fit() or update() introduce a new dataset.
+   */
+  Dataset* dataset;
 
   /**
    * Solver for the learning problem

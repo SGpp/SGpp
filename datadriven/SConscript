@@ -6,6 +6,7 @@
 import Helper
 import ModuleHelper
 import Helper
+import os
 
 Import("*")
 
@@ -19,7 +20,7 @@ if env["USE_ZLIB"]:
 if env["USE_OCL"]:
   additionalDependencies += ["OpenCL"]
 if env["USE_GSL"]:
-  additionalDependencies += ["gsl", "gslcblas"]
+    additionalDependencies += ["gsl", "gslcblas"]
 
 additionalBoostTestDependencies = ["z"]
 performanceTestFlag = "COMPILE_BOOST_PERFORMANCE_TESTS"

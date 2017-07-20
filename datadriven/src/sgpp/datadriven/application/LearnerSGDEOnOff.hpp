@@ -3,19 +3,19 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifdef USE_GSL
-
-#ifndef LEARNERSGDEONOFF_HPP
-#define LEARNERSGDEONOFF_HPP
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
+#include <sgpp/datadriven/tools/Dataset.hpp>
 
+#include <iomanip>
 #include <list>
 #include <map>
 #include <string>
@@ -24,6 +24,11 @@
 
 namespace sgpp {
 namespace datadriven {
+
+using sgpp::base::DataMatrix;
+using sgpp::base::DataVector;
+
+typedef std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, double>> ClassDensityConntainer;
 
 /**
  * LearnerSGDEOnOff learns the data using sparse grid density estimation. The
@@ -34,18 +39,15 @@ namespace datadriven {
  * If Cholesky decomposition is chosen, refinement/coarsening can be applied.
  */
 
-class LearnerSGDEOnOff : public DBMatOnline {
+class LearnerSGDEOnOff {
  public:
   /**
    * Constructor.
    *
    * @param dconf The configuration of the offline object
-   * @param trainData The training data
-   * @param trainDataLabels The corresponding training labels
-   * @param testData The test data
-   * @param testDataLabels The corresponding test labels
-   * @param validData The validation data
-   * @param validDataLabels The corresponding validation labels
+   * @param trainData The (mandatory) training dataset
+   * @param testData The (mandatory) test dataset
+   * @param validationData The (optional) validation dataset
    * @param classLabels The class labels (e.g. -1, 1)
    * @param classNumber Total number of classes
    * @param usePrior Determines if prior probabilities should be used to compute
@@ -53,19 +55,9 @@ class LearnerSGDEOnOff : public DBMatOnline {
    * @param beta The initial weighting factor
    * @param lambda The initial regularization parameter
    */
-  LearnerSGDEOnOff(sgpp::datadriven::DBMatDensityConfiguration& dconf,
-                   base::DataMatrix& trainData,
-                   base::DataVector& trainDataLabels,
-                   base::DataMatrix& testData, base::DataVector& testDataLabels,
-                   base::DataMatrix* validData,
-                   base::DataVector* validDataLabels,
-                   base::DataVector& classLabels, size_t classNumber,
+  LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& trainData, Dataset& testData,
+                   Dataset* validationData, DataVector& classLabels, size_t classNumber,
                    bool usePrior, double beta, double lambda);
-
-  /**
-   * Destructor.
-   */
-  ~LearnerSGDEOnOff();
 
   /**
    * Trains the learner with the given dataset.
@@ -90,25 +82,21 @@ class LearnerSGDEOnOff : public DBMatOnline {
    * training process or not
    * @param nextCvStep Determines when next cross-validation has to be triggered
    */
-  void train(size_t batchSize, size_t maxDataPasses, std::string refType,
-             std::string refMonitor, size_t refPeriod, double accDeclineThreshold,
-             size_t accDeclineBufferSize, size_t minRefInterval, bool enableCv,
-             size_t nextCvStep);
+  void train(size_t batchSize, size_t maxDataPasses, std::string refType, std::string refMonitor,
+             size_t refPeriod, double accDeclineThreshold, size_t accDeclineBufferSize,
+             size_t minRefInterval, bool enableCv, size_t nextCvStep);
 
   /**
    * Trains the learner with the given data batch
    *
-   * @param trainData The next data batch to process
-   * @param classes The class labels corresponding to the data batch
+   * @param dataset The next data batch to process
    * @param doCv Enable cross-validation
    * @param refineCoarse Vector of pairs containing a list representing indices
    *        of removed grid points and an unsigned int representing added grid
    * points
    */
-  void train(base::DataMatrix& trainData, base::DataVector& classes,
-             bool doCv = false,
-             std::vector<std::pair<std::list<size_t>, size_t> >* refineCoarse =
-                 nullptr);
+  void train(Dataset& dataset, bool doCv = false,
+             std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse = nullptr);
 
   /**
    * Trains the learner with the given data batch that is already split up wrt
@@ -124,26 +112,23 @@ class LearnerSGDEOnOff : public DBMatOnline {
    *        removed grid points and an unsigned int representing added grid
    * points
    */
-  void train(
-      std::vector<std::pair<base::DataMatrix*, double> >& trainDataClasses,
-      bool doCv = false,
-      std::vector<std::pair<std::list<size_t>, size_t> >* refineCoarse =
-          nullptr);
+  void train(std::vector<std::pair<DataMatrix*, double>>& trainDataClasses, bool doCv = false,
+             std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse = nullptr);
 
   /**
    * Returns the accuracy of the classifier measured on the test data.
    *
    * @return The classification accuracy measured on the test data
    */
-  double getAccuracy();
+  double getAccuracy() const;
 
   /**
    * Predicts the class labels of the test data points.
    *
-   * @param The test data points
-   * @return A vector containing the predicted class labels
+   * @param test The data points for which labels will be precicted
+   * @param classLabels vector containing the predicted class labels
    */
-  sgpp::base::DataVector predict(base::DataMatrix& test);
+  void predict(DataMatrix& test, DataVector& classLabels) const;
 
   /**
    * Predicts the class label of the given data point.
@@ -151,20 +136,17 @@ class LearnerSGDEOnOff : public DBMatOnline {
    * @param p The data point
    * @return The predicted class label
    */
-  int predict(base::DataVector& p);
+  int predict(DataVector& p) const;
 
   /**
    * Error evaluation required for convergence-based refinement.
    *
-   * @param data The data points to measure the error on
-   * @param labels The corresponding class labels
-   * @param errorType The error type (only "Acc" possible, i.e. classification
-   * error
-   *        based on accuracy)
+   * @param dataset The data to measure the error on
    * @return The error evaluation
    */
-  double getError(base::DataMatrix& data, base::DataVector& labels,
-                  std::string errorType);
+  double getError(Dataset& dataset) const;
+
+  void getAvgErrors(DataVector& result) const;
 
   /**
    * Stores classified data, grids and density function evaluations to csv
@@ -176,9 +158,9 @@ class LearnerSGDEOnOff : public DBMatOnline {
    * Returns the values of all density functions for a specified data point.
    *
    * @param point The point for which the density functions should be evaluated
-   * @return The function evaluations
+   * @param density The function evaluations
    */
-  base::DataVector getDensities(base::DataVector& point);
+  void getDensities(DataVector& point, DataVector& density) const;
 
   /**
    * Sets the cross-validation parameters.
@@ -192,9 +174,8 @@ class LearnerSGDEOnOff : public DBMatOnline {
    * @param logscale Indicates whether the values between lambdaStart
    *        and lambdaEnd are searched using logscale or not
    */
-  void setCrossValidationParameters(int lambdaStep, double lambdaStart,
-                                    double lambdaEnd, base::DataMatrix* test,
-                                    base::DataMatrix* testRes, bool logscale);
+  void setCrossValidationParameters(int lambdaStep, double lambdaStart, double lambdaEnd,
+                                    DataMatrix* test, DataMatrix* testRes, bool logscale);
 
   /**
   * In case of crossvalidation, returns the current best lambda.
@@ -204,82 +185,59 @@ class LearnerSGDEOnOff : public DBMatOnline {
   // double getBestLambda();
 
   /**
-  * Initialization of online objects in case of Eigen- or LU-decomposition.
-  */
-  void init();
-
-  /**
   * Returns the number of existing classes.
   *
   * @return The number of classes
   */
-  size_t getNumClasses();
+  size_t getNumClasses() const;
 
   /**
    * Returns the density functions mapped to class labels.
    *
    * @return The density function objects mapped to class labels
    */
-  std::vector<std::pair<DBMatOnlineDE*, double> >* getDestFunctions();
+  ClassDensityConntainer& getDensityFunctions();
 
-  // Stores prior values mapped to class labels
-  std::map<double, double> prior;
+ private:
+  void refine(ConvergenceMonitor& monitor,
+              std::vector<std::pair<std::list<size_t>, size_t>>& refineCoarse,
+              std::string& refType);
 
-  // The final classification error
-  double error;
-
-  // A vector to store error evaluations
-  base::DataVector avgErrors;
-
- protected:
   // The training data
-  base::DataMatrix& trainData;
-  // The corresponding training class labels
-  base::DataVector& trainLabels;
+  Dataset& trainData;
   // The test data
-  base::DataMatrix& testData;
-  // The corresponding test class labels
-  base::DataVector& testLabels;
-  // The validation data
-  base::DataMatrix* validData;
-  // The corresponding validation class labels
-  base::DataVector* validLabels;
+  Dataset& testData;
+  // The (optional) validationData
+  Dataset* validationData;
 
   // The class labels (e.g -1, 1)
-  base::DataVector classLabels;
+  DataVector classLabels;
   // The total number of different classes
-  size_t classNumber;
-
-  // Indicates whether the model has been trained or not
-  bool trained;
-  // Indicates whether the learner has been initialized or not
-  bool initDone;
+  size_t numClasses;
   // Specifies whether prior should be used for class prediction or not
   bool usePrior;
+  // Stores prior values mapped to class labels
+  std::map<double, double> prior;
   // Weighting factor
   double beta;
+  // Indicates whether the model has been trained or not
+  bool trained;
 
   // The offline object (contains decomposed matrix)
-  DBMatOffline* offline;
+  std::unique_ptr<DBMatOffline> offline;
+  std::vector<std::unique_ptr<DBMatOffline>> offlineContainer;
   // The online objects (density functions)
-  std::vector<std::pair<DBMatOnlineDE*, double> >* destFunctions;
+  ClassDensityConntainer densityFunctions;
 
   // Counter for total number of data points processed within ona data pass
   size_t processedPoints;
 
-  // Cross-validation parameters
-  int cvSaveLambdaStep;
-  double cvSaveLambdaStart;
-  double cvSaveLambdaEnd;
-  bool cvSaveLogscale;
-  bool cvSaved;
-  base::DataMatrix* cvSaveTest;
-  base::DataMatrix* cvSaveTestRes;
+  // The final classification error
+  // double error;
+
+  // A vector to store error evaluations
+  DataVector avgErrors;
 };
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* LEARNERSGDEONOFF_HPP */
-
-#endif /* USE_GSL */
