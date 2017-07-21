@@ -45,7 +45,19 @@ DBMatOffline::DBMatOffline(sgpp::datadriven::DBMatDensityConfiguration& oc)
       decomposed_(false),
       ownsConfig_(false),
       perm_(nullptr),
-      grid_(nullptr) {}
+      grid_(nullptr) {
+  interactions = std::vector<std::vector<size_t>>()
+}
+DBMatOffline::DBMatOffline(sgpp::datadriven::DBMatDensityConfiguration& oc, std::vector<std::vector<size_t>> inter)
+    : config_(&oc),
+      lhsMatrix_(nullptr),
+      constructed_(false),
+      decomposed_(false),
+      ownsConfig_(false),
+      perm_(nullptr),
+      grid_(nullptr) {
+  interactions = inter;
+}
 
 DBMatOffline::DBMatOffline()
     : config_(nullptr),
@@ -54,7 +66,9 @@ DBMatOffline::DBMatOffline()
       decomposed_(false),
       ownsConfig_(false),
       perm_(nullptr),
-      grid_(nullptr) {}
+      grid_(nullptr) {
+  interactions = std::vector<std::vector<size_t>>()
+}
 
 DBMatOffline::DBMatOffline(std::string fname)
     : config_(nullptr),
@@ -64,6 +78,7 @@ DBMatOffline::DBMatOffline(std::string fname)
       ownsConfig_(true),
       perm_(nullptr),
       grid_(nullptr) {
+  interactions = std::vector<std::vector<size_t>>()
   // std::cout << "START READING MATRIX" << std::endl;
   // sgpp::base::SGppStopwatch* myStopwatch = new sgpp::base::SGppStopwatch();
   // myStopwatch->start();
@@ -239,7 +254,12 @@ void DBMatOffline::InitializeGrid() {
   }
 
   // Generate regular Grid with LEVELS Levels
-  grid_->getGenerator().regular(config_->grid_level_);
+  if(interactions.size() == 0){
+    grid_->getGenerator().regular(config_->grid_level_);
+  }
+  else{
+    grid_->getGenerator().regularInter(config_->grid_level_, interactions, config_->t_);
+  }
 }
 
 void DBMatOffline::buildMatrix() {

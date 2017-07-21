@@ -32,6 +32,9 @@ class DBMatOffline {
  protected:
   DBMatOffline();
 
+  // Interactions for a geometrically aware grid
+  std::vector<std::vector<size_t>> interactions;
+
   sgpp::datadriven::DBMatDensityConfiguration*
       config_;                         // configuration for this offline object
   sgpp::base::DataMatrix* lhsMatrix_;  // stores the (decomposed) matrix
@@ -58,6 +61,13 @@ class DBMatOffline {
    * @param oc configuration for this offline object
    */
   explicit DBMatOffline(sgpp::datadriven::DBMatDensityConfiguration& oc);
+  /**
+   * Constructor
+   *
+   * @param oc configuration for this offline object
+   * @param inter vector of Interactions for a geometrically aware grid
+   */
+  explicit DBMatOffline(sgpp::datadriven::DBMatDensityConfiguration& oc, std::vector<std::vector<size_t>> inter);
   /**
    * Constructor
    *
