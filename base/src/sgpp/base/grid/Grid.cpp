@@ -49,6 +49,24 @@
 namespace sgpp {
 namespace base {
 
+
+std::vector<std::vector<size_t>> RegularGridConfiguration::getInteractions() const{
+  std::vector<std::vector<size_t>> interactions;
+  if(!geomAware_) return interactions;
+
+  //TODO
+}
+
+void RegularGridConfiguration::setGeometricDimensions(std::vector<size_t> geomDim){
+  geomDim_ = geomDim;
+  geomAware_ = true;
+
+  dim_ = 1;
+  for(size_t a : geomDim){
+    dim_ *= a;
+  }
+}
+
 Grid* Grid::createLinearGridStencil(size_t dim) { return new LinearGridStencil(dim); }
 
 Grid* Grid::createModLinearGridStencil(size_t dim) { return new ModLinearGridStencil(dim); }

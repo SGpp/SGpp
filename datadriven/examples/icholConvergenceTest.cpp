@@ -5,8 +5,10 @@
 
 #include <sgpp/globaldef.hpp>
 
+#ifdef USE_GSL
 #include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
+#endif /* USE_GSL */
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 
 #include <string>
@@ -33,6 +35,7 @@ using sgpp::base::DataVector;
  */
 
 int main() {
+#ifdef USE_GSL
   /**
    * Specify the number of runs to perform.
    * If only one specific example should be executed, set
@@ -86,7 +89,7 @@ int main() {
       std::cout << "# create grid config" << std::endl;
       sgpp::base::RegularGridConfiguration gridConfig;
       gridConfig.dim_ = trainDataset.getDimension();
-      gridConfig.level_ = 3;
+      gridConfig.level_ = 5;
       gridConfig.type_ = sgpp::base::GridType::Linear;
       // gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
@@ -157,7 +160,7 @@ int main() {
        * Specify number of refinement steps and the max number
        * of grid points to refine each step.
        */
-      adaptConfig.numRefinements_ = 2;
+      adaptConfig.numRefinements_ = 0;
       adaptConfig.noPoints_ = 7;
       adaptConfig.threshold_ = 0.0;  // only required for surplus refinement
 
@@ -172,7 +175,7 @@ int main() {
       bool usePrior = false;
 
       dconf.icholParameters.sweepsDecompose = 2;
-      dconf.icholParameters.sweepsRefine = 2;
+      dconf.icholParameters.sweepsSolver = 2;
 
       /**
        * Create the learner.
@@ -200,7 +203,7 @@ int main() {
 
       // specify batch size
       // (set to 1 for processing only a single data point each iteration)
-      size_t batchSize = 1;
+      size_t batchSize = 250;
       // specify max number of passes over traininig data set
       size_t maxDataPasses = 2;
 
@@ -230,8 +233,8 @@ int main() {
       /**
        * Average accuracy on test data reagarding 5-fold cv.
        */
-      std::cout << "Average accuracy on test data (set " + std::to_string(numSets + 1) + "): "
-                << (1.0 - avgErrorFolds) << std::endl;
+      std::cout << "Average accuracy on test data (set " + std::to_string(numSets + 1) +
+                       "): " << (1.0 - avgErrorFolds) << std::endl;
     }
     avgError += avgErrorFolds;
     avgErrorFolds = 0.0;
@@ -250,4 +253,5 @@ int main() {
       output.close();
     }*/
   }
+#endif /* USE_GSL */
 }
