@@ -60,8 +60,8 @@ sgpp::datadriven::ClassificationLearner getLearner(size_t dimension) {
   gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
   auto adaptivityConfig = sgpp::base::AdpativityConfiguration();
-  adaptivityConfig.noPoints_ = 100;
-  adaptivityConfig.numRefinements_ = 0;
+  adaptivityConfig.noPoints_ = 10;
+  adaptivityConfig.numRefinements_ = 5;
 
   auto solverConfig = sgpp::solver::SLESolverConfiguration();
   solverConfig.type_ = sgpp::solver::SLESolverType::CG;
@@ -87,7 +87,7 @@ sgpp::datadriven::ClassificationLearner getLearner(size_t dimension) {
  */
 int main(int argc, char** argv) {
   const auto filenameTrain =
-      std::string("../../datasets/house_numbers/SVHN_8x8.extra.arff");
+      std::string("../../datasets/house_numbers/SVHN_8x8.train.arff");
 
 
   auto dataTrain = sgpp::datadriven::ARFFTools::readARFF(filenameTrain);

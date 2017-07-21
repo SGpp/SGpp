@@ -60,7 +60,7 @@ class LearnerSGDEOnOff : public DBMatOnline {
                    base::DataMatrix* validData,
                    base::DataVector* validDataLabels,
                    base::DataVector& classLabels, size_t classNumber,
-                   bool usePrior, double beta, double lambda);
+                   bool usePrior, double beta, double lambda, std::vector<std::vector<size_t>> interactions=nullptr);
 
   /**
    * Destructor.

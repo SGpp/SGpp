@@ -35,7 +35,7 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(
     sgpp::base::DataMatrix& testData, sgpp::base::DataVector& testDataLabels,
     sgpp::base::DataMatrix* validData, sgpp::base::DataVector* validDataLabels,
     sgpp::base::DataVector& classLabels, size_t classNumber,
-    bool usePrior, double beta, double lambda)
+    bool usePrior, double beta, double lambda, std::vector<std::vector<size_t>> interactions)
     : trainData(trainData),
       trainLabels(trainDataLabels),
       testData(testData),
@@ -49,14 +49,16 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(
       usePrior(usePrior),
       beta(beta),
       destFunctions(nullptr) {
-  offline = new DBMatOffline(dconf);
+  offline = (interactions==nullptr)? new DBMatOffline(dconf): new DBMatOffline(dconf, interactions);
   offline->buildMatrix();
   // clock_t begin = clock();
   offline->decomposeMatrix();
+
   // clock_t end = clock();
   // double elapsed_secs = double(end-begin)/CLOCKS_PER_SEC;
   // std::cout << "#Decompose matrix: " << elapsed_secs << std::endl;
 
+  offline->store("8x8Neighbor.dbOfflineMat");
   readOffline(offline);  // set offlineObject_ of DBMatOnline class
 
   // if the Cholesky decomposition is chosen declare separate Online-objects for
