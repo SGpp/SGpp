@@ -70,6 +70,23 @@ struct RegularGridConfiguration {
   std::string filename_;
   /// subgrid selection value t
   double t_ = 0.0;
+
+  /**
+   * Interactions of a geometrically aware grid
+   * @return vector of interactions (used by generator.regularInter())
+   */
+  std::vector<std::vector<size_t>> getInteractions() const;
+  
+  /**
+   * makes the grid geometrically aware
+   * @param geomDim Geometric Dimensions of the Data (e.g. [32,32] for a 32x32 image)
+   */
+  void setGeometricDimensions(std::vector<size_t> geomDim);
+
+  /// whether the grid should be geometrically aware
+  bool geomAware_ = false;
+  /// an array containing the geometric dimension
+  std::vector<size_t> geomDim_;
 };
 
 /**
