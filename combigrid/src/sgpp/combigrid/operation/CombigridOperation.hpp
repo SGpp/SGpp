@@ -139,6 +139,15 @@ class CombigridOperation {
                                                                           size_t growthFactor = 2);
   static std::shared_ptr<CombigridOperation> createExpClenshawCurtisQuadrature(size_t numDimensions,
                                                                                MultiFunction func);
+  static std::shared_ptr<CombigridOperation> createExpUniformPsiHermiteInterpolation(
+      size_t numDimensions, MultiFunction func);
+  /*
+     \param zetaDimension the one dimension where Zeta is used
+  */
+  static std::shared_ptr<CombigridOperation> createExpUniformPsiHermiteInterpolation(
+      size_t numDimensions, size_t zetaDimension, MultiFunction func);
+  static std::shared_ptr<CombigridOperation> createExpUniformZetaHermiteInterpolation(
+      size_t numDimensions, MultiFunction func);
 };
 } /* namespace combigrid */
 } /* namespace sgpp*/

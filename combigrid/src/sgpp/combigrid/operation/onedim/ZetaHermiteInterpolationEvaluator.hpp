@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_PSIHERMITEINTERPOLATIONEVALUATOR_HPP_
-#define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_PSIHERMITEINTERPOLATIONEVALUATOR_HPP_
+#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_ZETAHERMITEINTERPOLATIONEVALUATOR_HPP_
+#define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_ZETAHERMITEINTERPOLATIONEVALUATOR_HPP_
 
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/combigrid/definitions.hpp>
@@ -20,7 +20,7 @@ namespace combigrid {
  * This evaluator does linear interpolation on the given grid points. If the evaluation point is
  * outside the grid points, it will just use the function value of the nearest grid point.
  */
-class PsiHermiteInterpolationEvaluator : public AbstractLinearEvaluator<FloatScalarVector> {
+class ZetaHermiteInterpolationEvaluator : public AbstractLinearEvaluator<FloatScalarVector> {
   double evaluationPoint;
   std::vector<FloatScalarVector> basisCoefficients;
   std::vector<double> xValues;
@@ -28,9 +28,9 @@ class PsiHermiteInterpolationEvaluator : public AbstractLinearEvaluator<FloatSca
   void computeBasisCoefficients();
 
  public:
-  PsiHermiteInterpolationEvaluator();
-  virtual ~PsiHermiteInterpolationEvaluator();
-  PsiHermiteInterpolationEvaluator(PsiHermiteInterpolationEvaluator const &other);
+  ZetaHermiteInterpolationEvaluator();
+  virtual ~ZetaHermiteInterpolationEvaluator();
+  ZetaHermiteInterpolationEvaluator(ZetaHermiteInterpolationEvaluator const &other);
 
   virtual std::vector<FloatScalarVector> getBasisCoefficients() { return basisCoefficients; }
 
@@ -45,4 +45,4 @@ class PsiHermiteInterpolationEvaluator : public AbstractLinearEvaluator<FloatSca
 } /* namespace combigrid */
 } /* namespace sgpp*/
 
-#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_PSIHERMITEINTERPOLATIONEVALUATOR_HPP_ */
+#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_ZETAHERMITEINTERPOLATIONEVALUATOr_HPP_ */

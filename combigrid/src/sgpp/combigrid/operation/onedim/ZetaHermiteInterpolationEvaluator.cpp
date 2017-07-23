@@ -3,24 +3,24 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/operation/onedim/PsiHermiteInterpolationEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/ZetaHermiteInterpolationEvaluator.hpp>
 #include <vector>
 
 namespace sgpp {
 namespace combigrid {
 
-PsiHermiteInterpolationEvaluator::PsiHermiteInterpolationEvaluator()
+ZetaHermiteInterpolationEvaluator::ZetaHermiteInterpolationEvaluator()
     : evaluationPoint(0.0), basisCoefficients(), xValues() {}
 
-PsiHermiteInterpolationEvaluator::~PsiHermiteInterpolationEvaluator() {}
+ZetaHermiteInterpolationEvaluator::~ZetaHermiteInterpolationEvaluator() {}
 
-PsiHermiteInterpolationEvaluator::PsiHermiteInterpolationEvaluator(
-    const PsiHermiteInterpolationEvaluator& other)
+ZetaHermiteInterpolationEvaluator::ZetaHermiteInterpolationEvaluator(
+    const ZetaHermiteInterpolationEvaluator& other)
     : evaluationPoint(other.evaluationPoint),
       basisCoefficients(other.basisCoefficients),
       xValues(other.xValues) {}
 
-void PsiHermiteInterpolationEvaluator::computeBasisCoefficients() {
+void ZetaHermiteInterpolationEvaluator::computeBasisCoefficients() {
   size_t numPoints = xValues.size();
 
   basisCoefficients = std::vector<FloatScalarVector>(numPoints, FloatScalarVector(0.0));
@@ -57,37 +57,42 @@ void PsiHermiteInterpolationEvaluator::computeBasisCoefficients() {
     basisCoefficients[numPoints - 1] =
         FloatScalarVector(evalUniform(weight));
   }
+
 }
 
-void PsiHermiteInterpolationEvaluator::setGridPoints(const std::vector<double>& newXValues) {
+void ZetaHermiteInterpolationEvaluator::setGridPoints(const std::vector<double>& newXValues) {
   xValues = newXValues;
   computeBasisCoefficients();
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector> >
-PsiHermiteInterpolationEvaluator::cloneLinear() {
+ZetaHermiteInterpolationEvaluator::cloneLinear() {
   return std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector> >(
-      new PsiHermiteInterpolationEvaluator(*this));
+      new ZetaHermiteInterpolationEvaluator(*this));
 }
 
-bool PsiHermiteInterpolationEvaluator::needsOrderedPoints() { return true; }
+bool ZetaHermiteInterpolationEvaluator::needsOrderedPoints() { return true; }
 
-bool PsiHermiteInterpolationEvaluator::needsParameter() { return true; }
+bool ZetaHermiteInterpolationEvaluator::needsParameter() { return true; }
 
-void PsiHermiteInterpolationEvaluator::setParameter(const FloatScalarVector& param) {
+void ZetaHermiteInterpolationEvaluator::setParameter(const FloatScalarVector& param) {
   evaluationPoint = param.value();
   computeBasisCoefficients();
 }
 
-double PsiHermiteInterpolationEvaluator::evalUniform(double x) {
-  if (x > 1 || x < -1)
-    return 0;
+double ZetaHermiteInterpolationEvaluator::evalUniform(double x) {
 
-  else if (x < 0) {
-    return -2.0 * pow(x, 3) + -3.0 * pow(x, 2) + 1.0;
-  } else {
-    return 2.0 * pow(x, 3) - 3.0 * pow(x, 2) + 1.0;
-  }
+  if (x > 1 || x < -1)
+      return 0;
+
+    else if (x  < 0) {
+      return pow(x, 3) + 2 * pow(x, 2) + x;
+      
+      
+    } else {
+      return pow(x, 3) - 2 * pow(x, 2) + x;
+      
+    }
 }
 
 } /* namespace combigrid */

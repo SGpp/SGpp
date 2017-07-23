@@ -32,6 +32,8 @@
 %shared_ptr(sgpp::combigrid::PolynomialInterpolationEvaluator)
 %shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::PolynomialInterpolationEvaluator>)
 %shared_ptr(sgpp::combigrid::LinearInterpolationEvaluator)
+%shared_ptr(sgpp::combigrid::PsiHermiteInterpolationEvaluator)
+%shared_ptr(sgpp::combigrid::ZetaHermiteInterpolationEvaluator)
 %shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::LinearInterpolationEvaluator>)
 %shared_ptr(sgpp::combigrid::CubicSplineInterpolationEvaluator)
 %shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::CubicSplineInterpolationEvaluator>)
@@ -160,6 +162,8 @@ namespace combigrid {
 %include "combigrid/src/sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/onedim/PsiHermiteInterpolationEvaluator.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/onedim/ZetaHermiteInterpolationEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/CubicSplineInterpolationEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp"

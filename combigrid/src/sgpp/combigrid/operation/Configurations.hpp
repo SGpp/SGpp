@@ -43,6 +43,9 @@ class CombiEvaluators {
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> linearInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cubicSplineInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> quadrature();
+  static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> psiHermiteInterpolation();
+  static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> zetaHermiteInterpolation();
+
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiPolynomialInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiLinearInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiCubicSplineInterpolation();
