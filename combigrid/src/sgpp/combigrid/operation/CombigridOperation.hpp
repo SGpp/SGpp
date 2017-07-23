@@ -141,12 +141,17 @@ class CombigridOperation {
                                                                                MultiFunction func);
   static std::shared_ptr<CombigridOperation> createExpUniformPsiHermiteInterpolation(
       size_t numDimensions, MultiFunction func);
-  /*
-     \param zetaDimension the one dimension where Zeta is used
-  */
+  static std::shared_ptr<CombigridOperation> createExpUniformBoundaryPsiHermiteInterpolation(
+      size_t numDimensions, MultiFunction func);
+
+  //   \param zetaDimension the one dimension where Zeta is used
   static std::shared_ptr<CombigridOperation> createExpUniformPsiHermiteInterpolation(
       size_t numDimensions, size_t zetaDimension, MultiFunction func);
+  static std::shared_ptr<CombigridOperation> createExpUniformBoundaryPsiHermiteInterpolation(
+      size_t numDimensions, size_t zetaDimension, MultiFunction func);
   static std::shared_ptr<CombigridOperation> createExpUniformZetaHermiteInterpolation(
+      size_t numDimensions, MultiFunction func);
+  static std::shared_ptr<CombigridOperation> createExpUniformBoundaryZetaHermiteInterpolation(
       size_t numDimensions, MultiFunction func);
 };
 } /* namespace combigrid */
