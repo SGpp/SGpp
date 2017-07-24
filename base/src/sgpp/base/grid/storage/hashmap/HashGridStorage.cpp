@@ -261,7 +261,7 @@ size_t HashGridStorage::getNumberOfInnerPoints() const {
 
 size_t HashGridStorage::getDimension() const { return dimension; }
 
-size_t HashGridStorage::insert(point_type& index) {
+size_t HashGridStorage::insert(const point_type& index) {
   point_pointer insert = new HashGridPoint(index);
   list.push_back(insert);
   return (map[insert] = list.size() - 1);
