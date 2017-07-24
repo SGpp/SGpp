@@ -106,6 +106,30 @@ HashGridStorage::HashGridStorage(HashGridStorage& copyFrom)
   }
 }
 
+void HashGridStorage::operator=(const HashGridStorage& other) {
+  clear();
+
+  if (bUseStretching) {
+    delete stretching;
+  } else {
+    delete boundingBox;
+  }
+
+  dimension = other.dimension;
+  algoDims = other.algoDims;
+  bUseStretching = other.bUseStretching;
+
+  if (other.bUseStretching) {
+    stretching = new Stretching(*other.stretching);
+  } else {
+    boundingBox = new BoundingBox(*other.boundingBox);
+  }
+
+  for (size_t i = 0; i < other.getSize(); i++) {
+    this->insert(other[i]);
+  }
+}
+
 HashGridStorage::~HashGridStorage() {
   // delete all grid points
   if (bUseStretching) {
