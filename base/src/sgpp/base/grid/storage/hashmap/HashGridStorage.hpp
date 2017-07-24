@@ -225,7 +225,7 @@ class HashGridStorage {
    *
    * @return
    */
-  size_t insert(point_type& index);
+  size_t insert(const point_type& index);
 
   /**
    * updates an already stored index
