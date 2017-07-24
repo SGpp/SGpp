@@ -114,6 +114,11 @@ class HashGridStorage {
   explicit HashGridStorage(HashGridStorage& copyFrom);
 
   /**
+   * Assignment operator
+   */
+  void operator=(const HashGridStorage& other);
+
+  /**
    * Destructor
    */
   ~HashGridStorage();
