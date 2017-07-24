@@ -53,6 +53,7 @@ namespace std {
 %rename(operatorParentheses) sgpp::base::HashGridPointHashFunctor::operator();
 %rename(operatorParentheses) sgpp::base::HashGridPointEqualityFunctor::operator();
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridPoint.hpp"
+%rename(operatorAssignment) sgpp::base::HashGridStorage::operator=;
 %ignore sgpp::base::HashGridStorage::operator[];
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridStorage.hpp"
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridIterator.hpp"
