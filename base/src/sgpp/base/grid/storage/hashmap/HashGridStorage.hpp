@@ -114,6 +114,11 @@ class HashGridStorage {
   explicit HashGridStorage(HashGridStorage& copyFrom);
 
   /**
+   * Assignment operator
+   */
+  void operator=(const HashGridStorage& other);
+
+  /**
    * Destructor
    */
   ~HashGridStorage();
@@ -225,7 +230,7 @@ class HashGridStorage {
    *
    * @return
    */
-  size_t insert(point_type& index);
+  size_t insert(const point_type& index);
 
   /**
    * updates an already stored index
