@@ -3,10 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifdef USE_GSL
-
-#ifndef DBMATONLINE_HPP_
-#define DBMATONLINE_HPP_
+#pragma once
 
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 
@@ -22,46 +19,38 @@ class DBMatOnline {
  public:
   /**
    * Constructor
-   */
-  DBMatOnline();
-
-  /**
-   * Constructor
    *
    * @param o a offline object
    */
-  explicit DBMatOnline(DBMatOffline* o);
+  explicit DBMatOnline(DBMatOffline& o);
 
+  DBMatOnline(const DBMatOnline& rhs) = delete;
+  DBMatOnline(DBMatOnline&& rhs) = default;
+
+  DBMatOnline& operator=(const DBMatOnline& rhs) = delete;
+  DBMatOnline& operator=(DBMatOnline&& rhs) = default;
   /**
    * Destructor
    */
-  virtual ~DBMatOnline();
+  virtual ~DBMatOnline() = default;
+
+  //  /**
+  //   * Changes the weighting factor for the regularization term,
+  //   * if possible (might depend on the kind of decomposition for classification)
+  //   */
+  void setLambda(double lambda);
 
   /**
-   * Reads an offline object
-   *
-   * @param o the offline object
+   * Returns a reference to the offline object
+   * @return reference to the stored offline object
    */
-  virtual void readOffline(DBMatOffline* o);
+  DBMatOffline& getOfflineObject();
 
-  /**
-   * Changes the weighting factor for the regularization term,
-   * if possible (might depend on the kind of decomposition for classification)
-   */
-  virtual void setLambda(double lambda);
-
-  /**
-   * Returns a pointer to the offline object
-   */
-  DBMatOffline* getOffline();
+  const DBMatOffline& getOfflineObject() const;
 
  protected:
-  DBMatOffline* offlineObject_;
+  DBMatOffline& offlineObject;
 };
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* DBMATONLINE_HPP_ */
-
-#endif /* USE_GSL */

@@ -26,16 +26,31 @@
 %include "datadriven/src/sgpp/datadriven/tools/Dataset.hpp"
 %include "datadriven/src/sgpp/datadriven/application/RegularizationConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/ConvergenceMonitor.hpp"
-#ifdef USE_GSL
+
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSChol.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSDenseIChol.hpp"
+%ignore *::operator=;
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOffline.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineGE.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineChol.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnline.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDE.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDEChol.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp"
+
+#ifdef USE_GSL
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSEigen.hpp"
-%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSChol.hpp"
-%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp"
-#endif
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineEigen.hpp"
+%ignore sgpp::datadriven::DBMatOfflineLU::DBMatOfflineLU(DBMatOfflineLU &&);
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineLU.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDEEigen.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDELU.hpp"
+#endif /* USE_GSL */
 
 #ifdef __AVX__
 %include "datadriven/src/sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp"
@@ -53,9 +68,7 @@
 %include "datadriven/src/sgpp/datadriven/application/RegressionLearner.hpp"
 %include "datadriven/src/sgpp/datadriven/application/ClassificationLearner.hpp"
 %include "datadriven/src/sgpp/datadriven/tools/NearestNeighbors.hpp"
-#ifdef USE_GSL
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGDEOnOff.hpp"
-#endif
 
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGD.hpp"
 %include "datadriven/src/sgpp/datadriven/application/LearnerSVM.hpp"
@@ -138,9 +151,6 @@
 
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMarginalize.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp"
-
-//TODO(lettrich): this does not work yet. make it work.
-
 
 // --------------------------------------
 // renaming ambiguous function declarations for python

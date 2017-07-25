@@ -16,8 +16,7 @@ namespace datadriven {
 ShufflingFunctor::ShufflingFunctor() {
   std::random_device rd;
   seed = rd();
-  seed = 1;
-  generator = std::mt19937(rd());
+  generator = std::mt19937(seed);
 }
 
 int64_t ShufflingFunctor::getSeed() const { return seed; }
