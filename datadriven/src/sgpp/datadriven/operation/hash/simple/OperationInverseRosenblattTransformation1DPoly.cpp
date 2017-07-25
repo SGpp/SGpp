@@ -39,7 +39,6 @@ OperationInverseRosenblattTransformation1DPoly::~OperationInverseRosenblattTrans
 double OperationInverseRosenblattTransformation1DPoly::doTransformation1D(base::DataVector* alpha1d,
                                                                           double coord1d) {
 
-  std::cout << "INVERSE" << std::endl;
   OperationRosenblattTransformation1DPoly* opRosenblatt
     = static_cast<OperationRosenblattTransformation1DPoly*>
     (op_factory::createOperationRosenblattTransformation1D(*grid));

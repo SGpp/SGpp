@@ -11,6 +11,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
+#include <sgpp/base/tools/HermiteBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
 #include <map>
@@ -20,6 +21,7 @@
 #include <utility>
 #include <vector>
 #include <algorithm>
+#include <functional>
 
 namespace sgpp {
 namespace datadriven {
@@ -113,27 +115,102 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
       std::cout << "Found j: " << j << std::endl;
       std::cout << right_coord << ";" << right_function_value << std::endl;
       // get last function value and coordinate with pdf(x) >= 0
-      // interpolate every value in between linearly
+      // perform montonic cubic interpolation based on:
+      // https://en.wikipedia.org/wiki/Monotone_cubic_interpolation
+
+      // cubic interpolation -> use three points:
+      // - the last with pdf(x) >= 0 (left from negative interval)
+      // - the first with pdf(x) >= 0 (right from negative inteval)
+      // - the right neighbor of the right one
+      double secants[2];
+      double tangents[3];
+      double function_values[3];
+      function_values[0] = left_function_value;
+      function_values[1] = right_function_value;
+      secants[0] = (right_function_value - left_function_value) / (right_coord - left_coord);
+      tangents[0] = secants[0];
+      if (j != ordered_grid_points.size()  - 1) {
+        coord[0] = ordered_grid_points[j + 1];
+        function_values[2] = opEval->eval(*alpha1d, coord);
+      } else {
+        // if j is the last grid point choose the next one with the same step size
+        // and set it's function value to one
+        coord[0] = 1 + ordered_grid_points[j] - ordered_grid_points[j - 1];
+        function_values[2] = 1.0;
+      }
+      secants[1] = (function_values[2] - function_values[1]) / (coord[0] - ordered_grid_points[j]);
+      tangents[2] = secants[1];
+      // secants left and right of current point
+      if (secants[0] == 0 || secants[1] == 0)
+         // if one of the secants is zero
+        tangents[1] = 0;
+      else if ((secants[0] > 0 && secants[1] < 0) || (secants[0] < 0 && secants[1] > 0))
+        // if the secants dont have the same sign
+        tangents[1] = 0;
+      else
+        tangents[1] = (secants[0] + secants[1]) / 2;
+
+      // correction to make the interpolation strict monotonic
+      for (size_t c = 0; c < 2; c++) {
+        double alpha = tangents[c]/secants[c];
+        double beta = tangents[c + 1]/secants[c];
+        if (alpha*alpha + beta*beta > 9) {
+          double tau = 3. / std::sqrt(alpha*alpha + beta*beta);
+          tangents[c] = tau*alpha*secants[c];
+          tangents[c + 1] = tau*beta*secants[c];
+        }
+      }
+      // interpolation that can be evaluated between left_coord and right_coord
+
+
+      std::cout << "tangents: " << tangents[0] << "," << tangents[1] << "," << tangents[2] << std::endl;
+      std::function<double(double)> interpolation =
+        [right_coord, left_coord, left_function_value, right_function_value, tangents](double x)
+        -> double {
+        double h = right_coord - left_coord;
+        double t = (x - left_coord) / h;
+        return left_function_value*base::HermiteBasis::h_0_0(t)
+        + h * tangents[0] * base::HermiteBasis::h_1_0(t) +
+        + right_function_value * base::HermiteBasis::h_0_1(t) +
+        + h * tangents[1]* base::HermiteBasis::h_1_1(t);
+      };
+      std::cout << "interp from: " << left_coord << "to: " << right_coord << std::endl;
+
+
       double left_value_for_interpolation = left_function_value;
       double left_coord_for_interpolation = left_coord;
       for (; i < j; i++) {
         coord[0] = ordered_grid_points[i];
         std::cout << "interpolating i:" << i << std::endl;
-        eval_res = left_value_for_interpolation
-          + (right_function_value - left_value_for_interpolation) /
-            (right_coord - left_coord_for_interpolation)
-          * (coord[0] - left_coord_for_interpolation);
+        // kann eig entfernt werden
+        eval_res = interpolation(coord[0]);
         std::cout << "For x=" << coord[0] << "interp: " << eval_res << std::endl;
-        area = (eval_res + left_function_value) / 2 * (coord[0] - left_coord);
+        double gaussQuadSum = 0.;
+        double left = left_coord;
+        double scaling = coord[0] - left;
+        for (size_t c = 0; c < quadOrder; c++) {
+          coord[0] = left + scaling * gauss_coordinates[c];
+          gaussQuadSum += weights[c] * interpolation(coord[0]);
+        }
+
+        area = gaussQuadSum * scaling;
         sum += area;
-        std::cout << "from " << left_coord << " to " << coord[0] << std::endl;
+        std::cout << "from " << left_coord << " to " << ordered_grid_points[i] << std::endl;
         std::cout << "area:" << area << std::endl;
         coord_pdf.insert(std::pair<double, double>(ordered_grid_points[i], eval_res));
         patch_areas.push_back(area);
-        left_coord = coord[0];
-        left_function_value = eval_res;
+        left_coord = ordered_grid_points[i];
+        // left_function_value = eval_res;
       }
-      area = (right_function_value + left_function_value) / 2 * (right_coord - left_coord);
+      double gaussQuadSum = 0.;
+      double left = left_coord;
+      double scaling = right_coord - left;
+      for (size_t c = 0; c < quadOrder; c++) {
+        coord[0] = left + scaling * gauss_coordinates[c];
+        gaussQuadSum += weights[c] * interpolation(coord[0]);
+      }
+
+      area = gaussQuadSum * scaling;
       sum += area;
       std::cout << "from " << left_coord << " to " << right_coord << std::endl;
       std::cout << "area:" << area << std::endl;
@@ -193,6 +270,8 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
   --it1;
   x1 = it1->first;
   y1 = it1->second;
+  std::cout << "x=" << coord1d << " x1=" << x1 << " x2="<< x2
+           << " y1=" << y1 << " y2=" << y2 << std::endl;
   // find x (linear interpolation): (y-y1)/(x-x1) = (y2-y1)/(x2-x1)
   y = (y2 - y1) / (x2 - x1) * (coord1d - x1) + y1;
 
