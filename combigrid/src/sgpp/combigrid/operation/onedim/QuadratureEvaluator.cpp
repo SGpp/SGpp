@@ -9,7 +9,9 @@
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
 
+#include <cmath>
 #include <iomanip>
+#include <iostream>
 #include <vector>
 
 namespace sgpp {
@@ -98,6 +100,20 @@ void QuadratureEvaluator::setGridPoints(std::vector<double> const& newXValues) {
       weights[i].scalarMult(weight_function(xValues[i]));
     }
   }*/
+}
+
+double QuadratureEvaluator::getAbsoluteWeightSum() const {
+  double abssum = 0.0;
+  // double sum = 0.0;
+
+  for (size_t i = 0; i < weights.size(); ++i) {
+    // sum += weights[i].value();
+    abssum += fabs(weights[i].value());
+  }
+
+  // std::cout << "sum: " << sum << "\n";
+
+  return abssum;
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector> > QuadratureEvaluator::cloneLinear() {

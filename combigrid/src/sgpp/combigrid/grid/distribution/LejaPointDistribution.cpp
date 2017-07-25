@@ -59,8 +59,8 @@ void LejaPointDistribution::calc_leja_points(std::vector<double>& sortedPoints,
       // optimize the remainder polynomial if the current patch is wide enough
       if (std::abs(x_lower - x_upper) > 1e-10) {
         auto myLejaFunc = SingleFunction(leja_func);
-        auto result =
-            MixedOptimizer(myLejaFunc).minimize(OptimizationGuess::initial(0.0, 1.0, myLejaFunc));
+        auto result = MixedOptimizer(myLejaFunc)
+                          .minimize(OptimizationGuess::initial(x_lower, x_upper, myLejaFunc));
         x_val = result.b;
         y_val = result.fb;
       }
