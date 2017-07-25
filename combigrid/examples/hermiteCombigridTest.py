@@ -256,7 +256,7 @@ def example_combicombigrid_2D_linear():
     level = 4
     n_samples = 100
     testfunc = pysgpp.OptRosenbrockObjective(d)
-    #f2D = getfuncwrapper(testfunc, d)
+    f2D = getfuncwrapper(testfunc, d)
 
     operation = combi_combigrid_2D_linear(f2D)
 
