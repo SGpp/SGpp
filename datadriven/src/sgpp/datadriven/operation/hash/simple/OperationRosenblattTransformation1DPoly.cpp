@@ -43,6 +43,7 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
   // compute PDF, sort by coordinates
   std::multimap<double, double> coord_cdf, coord_pdf;
   std::vector<double> ordered_grid_points;
+  std::vector<bool> is_negative_patch;
   std::multimap<double, double>::iterator it1;
 
   base::GridStorage* gs = &this->grid->getStorage();
@@ -67,10 +68,10 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
     // inserting dummy points into coord_cdf to make it have the right size
     coord_cdf.insert(std::pair<double, double>(coord[0], 0.0));
   }
-
   ordered_grid_points.push_back(0.0);
   ordered_grid_points.push_back(1.0);
 
+  std::vector<std::function<double(double)>> patch_functions;
   coord_pdf.insert(std::pair<double, double>(0.0, 0.0));
 
   coord_cdf.insert(std::pair<double, double>(0.0, 0.0));
@@ -199,6 +200,9 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
         std::cout << "area:" << area << std::endl;
         coord_pdf.insert(std::pair<double, double>(ordered_grid_points[i], eval_res));
         patch_areas.push_back(area);
+        is_negative_patch.push_back(true);
+        patch_functions.push_back(interpolation);
+        std::cout << "set patch_function for:" << i - 1 << std::endl;
         left_coord = ordered_grid_points[i];
         // left_function_value = eval_res;
       }
@@ -215,6 +219,9 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
       std::cout << "from " << left_coord << " to " << right_coord << std::endl;
       std::cout << "area:" << area << std::endl;
       patch_areas.push_back(area);
+      is_negative_patch.push_back(true);
+      patch_functions.push_back(interpolation);
+      std::cout << "set patch_function for:" << i - 1 << std::endl;
       coord_pdf.insert(std::pair<double, double>(ordered_grid_points[i], right_function_value));
       left_coord = right_coord;
       left_function_value = right_function_value;
@@ -225,6 +232,7 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
       left_function_value = eval_res;
       coord_pdf.insert(std::pair<double, double>(ordered_grid_points[i], eval_res));
       patch_areas.push_back(area);
+      is_negative_patch.push_back(false);
     }
   }
 
@@ -242,7 +250,6 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
   /***************** STEP 1. Done  ********************/
 
   /***************** STEP 2. Sampling  ********************/
-  double y, x1, x2, y1, y2;
 
   std::cout << "Areas: " << std::endl;
   for (size_t i = 0; i < patch_areas.size(); i++) {
@@ -261,22 +268,52 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
   }
   std::cout << std::endl;
   // find cdf interval
+  size_t patch_nr = 0;
+  size_t negative_patch_counter = 0;
   for (it1 = coord_cdf.begin(); it1 != coord_cdf.end(); ++it1) {
-    if (it1->first >= coord1d) break;
+    if (it1->first == coord1d)
+      return it1->second;
+    else if (it1->first >= coord1d)
+      break;
+    if (is_negative_patch[patch_nr]) ++negative_patch_counter;
+    ++patch_nr;
+  }
+  --patch_nr;
+  --negative_patch_counter;
+
+  std::cout << "patch_nr: " << patch_nr << std::endl;
+  std::cout << "patch_func size: " << patch_functions.size() << std::endl;
+  --it1;
+  double gaussQuadSum = 0.;
+  double left = it1->first;
+  double scaling = coord1d - left;
+  if (is_negative_patch[patch_nr]) {
+    std::cout << "is negative" << std::endl;
+    for (size_t c = 0; c < quadOrder; c++) {
+      coord[0] = left + scaling * gauss_coordinates[c];
+      gaussQuadSum += weights[c] * patch_functions[negative_patch_counter](coord[0]);
+    }
+  } else {
+    std::cout << "is not negative" << std::endl;
+    for (size_t c = 0; c < quadOrder; c++) {
+      coord[0] = left + scaling * gauss_coordinates[c];
+      gaussQuadSum += weights[c] * opEval->eval(*alpha1d, coord);
+    }
   }
 
-  x2 = it1->first;
-  y2 = it1->second;
-  --it1;
-  x1 = it1->first;
-  y1 = it1->second;
-  std::cout << "x=" << coord1d << " x1=" << x1 << " x2="<< x2
-           << " y1=" << y1 << " y2=" << y2 << std::endl;
-  // find x (linear interpolation): (y-y1)/(x-x1) = (y2-y1)/(x2-x1)
-  y = (y2 - y1) / (x2 - x1) * (coord1d - x1) + y1;
+  std::cout << "y=" << it1->second << "+" << gaussQuadSum*scaling << std::endl;
+  // x2 = it1->first;
+  // y2 = it1->second;
+  // --it1;
+  // x1 = it1->first;
+  // y1 = it1->second;
+  // std::cout << "x=" << coord1d << " x1=" << x1 << " x2="<< x2
+  //          << " y1=" << y1 << " y2=" << y2 << std::endl;
+  // // find x (linear interpolation): (y-y1)/(x-x1) = (y2-y1)/(x2-x1)
+  // y = (y2 - y1) / (x2 - x1) * (coord1d - x1) + y1;
 
   /***************** STEP 2. Done  ********************/
-  return y;
+  return it1->second + (gaussQuadSum * scaling) / sum;
 }  // end of compute_1D_cdf()
 }  // namespace datadriven
 }  // namespace sgpp
