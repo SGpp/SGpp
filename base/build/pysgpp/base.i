@@ -73,6 +73,7 @@ namespace std {
 %include "base/src/sgpp/base/grid/storage/hashmap/SerializationVersion.hpp"
 %ignore sgpp::base::HashGridPoint::operator=;
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridPoint.hpp"
+%ignore sgpp::base::HashGridStorage::operator=;
 %ignore sgpp::base::HashGridStorage::operator[];
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridStorage.hpp"
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridIterator.hpp"
