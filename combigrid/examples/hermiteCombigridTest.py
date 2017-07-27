@@ -160,11 +160,12 @@ def generate1DGrid(samples, level, operation):
 
     return X, X_eval, Y
 
-def plot1DGrid(X, Y):
+def plot1DGrid(X, Y, text=" "):
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    ax.plot(X,  Y, label='$\psi$-evaluation')
+    ax.plot(X,  Y, label=text)
+    plt.legend()
 
 
 def plot2DGrid(n_samples, level, operation, func=None):
@@ -221,12 +222,14 @@ def example_combicombigrid_1D():
     x2 = pysgpp.DataVector([1.0])
     k = 0
     d = 1
-    level = 2
+    level = 1
 
     f1D_grad = getgradkfunc(f1D, 0)
     f1D_grad_wrap = pysgpp.multiFunc(f1D_grad)
     f1D_wrap = pysgpp.multiFunc(f1D)
     operation = combi_combigrid_1D(f1D, f1D_grad)
+    
+    # plot derivative instead
     # operation=pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(1,f1D_wrap)
 
     print(f1D_grad(x), "ableitung (0,5)")
@@ -238,7 +241,7 @@ def example_combicombigrid_1D():
     # plot the grid
     X, X_eval, Y = generate1DGrid(500, level, operation)
     print(operation.operation_zeta.numGridPoints(), "grid points in zeta/psi")
-    plot1DGrid(X, Y)
+    plot1DGrid(X, Y, "combi_combigrid_1D")
 
     # plot real values
     Y_compare = [f1D(X_eval[i])for i in range(len(X_eval))]
@@ -270,4 +273,6 @@ example_1D_psi()
 #example_2D_psi()
 example_combicombigrid_1D()
 #example_combicombigrid_2D_linear()
+
+
 plt.show()

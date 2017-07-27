@@ -31,7 +31,7 @@ void ZetaHermiteInterpolationEvaluator::computeBasisCoefficients() {
 
   if (evaluationPoint <= xValues[0]) {
     if (std::abs(xValues[0]) > 1e-14) {
-      basisCoefficients[0] = FloatScalarVector(evalUniform((evaluationPoint/ xValues[0]) -1 ));
+      basisCoefficients[0] = FloatScalarVector(evalUniform((evaluationPoint/ xValues[0]) -1 )*xValues[0]);
     }
     return;
   }
@@ -44,8 +44,8 @@ void ZetaHermiteInterpolationEvaluator::computeBasisCoefficients() {
 
       // translate to uniformpoint
       double weight = (evaluationPoint - x0) / (x1 - x0);
-      basisCoefficients[i - 1] = FloatScalarVector(evalUniform(weight));
-      basisCoefficients[i] = FloatScalarVector(evalUniform(weight - 1));
+      basisCoefficients[i - 1] = FloatScalarVector(evalUniform(weight)*(x1 - x0));
+      basisCoefficients[i] = FloatScalarVector(evalUniform(weight - 1)*(x1 - x0));
 
       return;
     }
@@ -55,7 +55,7 @@ void ZetaHermiteInterpolationEvaluator::computeBasisCoefficients() {
   if (std::abs(xValues[numPoints - 1] - 1.0) > 1e-14) {
     double weight =(evaluationPoint - xValues[numPoints - 1]) / (1.0- xValues[numPoints - 1]);
     basisCoefficients[numPoints - 1] =
-        FloatScalarVector(evalUniform(weight));
+        FloatScalarVector(evalUniform(weight)*(1.0- xValues[numPoints - 1]));
   }
 
 }
