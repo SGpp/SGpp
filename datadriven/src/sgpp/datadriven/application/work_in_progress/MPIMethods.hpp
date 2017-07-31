@@ -48,7 +48,7 @@ namespace sgpp {
 
             template<typename Iterator>
             static size_t
-            fillBufferWithVectorData(void *buffer, void *bufferEnd,
+            fillBufferWithVectorData(void *buffer, const void *bufferEnd,
                                      Iterator iterator,
                                      Iterator listEnd);
 

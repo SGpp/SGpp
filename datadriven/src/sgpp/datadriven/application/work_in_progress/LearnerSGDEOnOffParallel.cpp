@@ -102,9 +102,6 @@ namespace sgpp {
             // pointer to the next batch (data points + class labels) to be processed
             Dataset dataBatch(batchSize, dim);
 
-
-            onlineObjects = getDensityFunctions();
-
             // print initial grid size
             printGridSizeStatistics(onlineObjects, "#Initial grid size of grid ");
 
@@ -145,7 +142,8 @@ namespace sgpp {
 
                     // access DBMatOnlineDE-objects of all classes in order
                     // to apply adaptivity to the specific sparse grids later on
-                    onlineObjects = getDensityFunctions();
+                    //TODO: check if this is necessary
+//                    onlineObjects = getDensityFunctions();
 
                     // Refinement only occurs on the Master Node
                     if (MPIMethods::isMaster()) {

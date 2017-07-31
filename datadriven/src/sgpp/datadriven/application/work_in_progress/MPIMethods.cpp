@@ -252,19 +252,22 @@ namespace sgpp {
         //TODO: Ensure compiler calls the correct method
         template<typename Iterator>
         size_t
-        MPIMethods::fillBufferWithVectorData(void *buffer, void *bufferEnd,
+        MPIMethods::fillBufferWithVectorData(void *buffer, const void *bufferEnd,
                                              Iterator iterator,
                                              Iterator listEnd) {
+            printf("Not implemented");
             //TODO: Implement vector
-            typename std::iterator_traits<Iterator>::value_type *bufferPointer = (typename std::iterator_traits<Iterator>::value_type *) buffer;
-            size_t copiedVectors = 0;
-            while (bufferPointer + iterator->size() * sizeof(typename std::iterator_traits<Iterator>::value_type) <
-                   bufferEnd && iterator != listEnd) {
-                std::memcpy(&((*iterator)[0]), bufferPointer, iterator->size());
-                iterator++;
-                copiedVectors++;
-            }
-            return copiedVectors;
+//            typename std::iterator_traits<Iterator>::value_type *bufferPointer = (typename std::iterator_traits<Iterator>::value_type *) buffer;
+//            size_t copiedVectors = 0;
+//            while (bufferPointer /* + iterator->size()  */ /* * sizeof(typename std::iterator_traits<Iterator>::value_type) */ <
+//                   bufferEnd && iterator != listEnd) {
+//                void* originPointer = &(*iterator);
+////                std::memcpy(originPointer, bufferPointer, sizeof(*iterator));
+//                std::copy()
+//                iterator++;
+//                copiedVectors++;
+//            }
+//            return copiedVectors;
         }
 
         template<typename Iterator>
