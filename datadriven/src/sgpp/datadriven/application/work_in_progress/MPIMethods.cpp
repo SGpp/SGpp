@@ -3,10 +3,12 @@
 //
 
 #include <ctime>
+#include <mpi.h>
+#include <cstring>
+
 #include <sgpp/datadriven/application/work_in_progress/LearnerSGDEOnOffParallel.hpp>
 #include <sgpp/datadriven/application/work_in_progress/NetworkMessageData.hpp>
 #include <sgpp/datadriven/application/work_in_progress/MPIMethods.hpp>
-#include <cstring>
 #include <sgpp/base/exception/application_exception.hpp>
 
 namespace sgpp {
