@@ -256,6 +256,8 @@ int main() {
     //  output.close();
     //}
   }
+#else
+    cout << "GSL support not enabled" << std::endl;
 #endif  // USE_GSL
     ///
 }
