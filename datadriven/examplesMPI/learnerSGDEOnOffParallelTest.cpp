@@ -3,16 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/globaldef.hpp>
-
 #ifdef USE_GSL
 #include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #endif /* USE_GSL */
 
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
-
-#include <string>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
