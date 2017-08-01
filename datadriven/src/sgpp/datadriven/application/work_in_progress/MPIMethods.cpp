@@ -14,6 +14,11 @@
 namespace sgpp {
     namespace datadriven {
 
+        //Pending MPI Requests
+        std::vector<sgpp::datadriven::PendingMPIRequest> MPIMethods::pendingMPIRequests;
+        int MPIMethods::mpiWorldSize = -1;
+
+
         bool MPIMethods::isMaster() {
             int rank;
             MPI_Comm_rank(MPI_COMM_WORLD, &rank);
