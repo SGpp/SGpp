@@ -137,12 +137,10 @@ namespace sgpp {
             // The final classification error
             double error;
 
-
-            size_t getDimensionality();
-
-
             void updateVariablesAfterRefinement(RefinementResult *refinementResult, size_t classIndex,
                                                 DBMatOnlineDE *densEst);
+
+            size_t getDimensionality() const;
 
         protected:
             //Batches assigned by master
@@ -185,6 +183,7 @@ namespace sgpp {
             void splitBatchIntoClasses(const Dataset &dataset, size_t dim,
                                        const std::vector<std::pair<DataMatrix *, double>> &trainDataClasses,
                                        std::map<double, int> &classIndices) const;
+
         };
     }   //namespace datadriven
 }  // namespace sgpp

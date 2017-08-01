@@ -57,7 +57,7 @@ namespace sgpp {
         }
 
         void LearnerSGDEOnOffParallel::init(double lambda) {
-            MPIMethods::initMPI();
+            MPIMethods::initMPI(this);
         }
 
         void LearnerSGDEOnOffParallel::train(size_t batchSize, size_t maxDataPasses,
@@ -94,7 +94,7 @@ namespace sgpp {
 
             auto &onlineObjects = getDensityFunctions();
 
-            size_t dim = trainData.getDimension();
+            size_t dim = getDimensionality();
 
             // determine number of batches to process
             size_t numBatch = trainData.getNumberInstances() / batchSize;
@@ -200,6 +200,8 @@ namespace sgpp {
             // delete offline;
             delete vectorRefinementResults;
         }
+
+        size_t LearnerSGDEOnOffParallel::getDimensionality() const { return trainData.getDimension(); }
 
         void LearnerSGDEOnOffParallel::printGridSizeStatistics(
                 ClassDensityContainer &onlineObjects,
