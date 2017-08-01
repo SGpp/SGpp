@@ -12,7 +12,8 @@ namespace sgpp {
     namespace datadriven {
         class MPIMethods {
         public:
-            static void initMPI();
+
+            static void initMPI(LearnerSGDEOnOffParallel *learnerInstance);
 
             static void synchronizeEndOfDataPass();
 
@@ -40,7 +41,6 @@ namespace sgpp {
 
             static void startSynchronizingPackets();
 
-            void initMPI(LearnerSGDEOnOffParallel *learnerInstance);
 
             template<typename Iterator>
             static size_t fillBufferWithData(void *buffer, void *bufferEnd, Iterator iterator,
@@ -61,7 +61,6 @@ namespace sgpp {
 //                                                     const RefinementResult &refinementResult, int offset,
 //                                                     std::list::iterator &iterator);
 
-            void sendMergeGridCommand(std::vector<base::DataVector *> &alphas);
         };
     }
 }
