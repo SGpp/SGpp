@@ -197,7 +197,8 @@ namespace sgpp {
                 }
 
                 // Synchronize end of Data Pass
-                MPIMethods::synchronizeEndOfDataPass();
+                std::cout << "Synchronizing end of data pass " << completedDataPasses << std::endl;
+                MPIMethods::synchronizeBarrier();
 
                 completedDataPasses++;
                 processedPoints = 0;

@@ -85,11 +85,6 @@ namespace sgpp {
             MPI_Barrier(MPI_COMM_WORLD);
         }
 
-        void MPIMethods::synchronizeEndOfDataPass() {
-            throw sgpp::base::application_exception("Not implemented");
-//            sgpp::parallel::myGlobalMPIComm->Barrier();
-        }
-
         void MPIMethods::sendGridComponentsUpdate(std::vector<RefinementResult> *refinementResults) {
 
             std::cout << "Updating the grid components on workers..." << std::endl;
@@ -156,7 +151,7 @@ namespace sgpp {
 
                 std::cout << "Sending updated for class " << networkMessage->classIndex
                           << "with " << networkMessage->listLength
-                          << " modifications";
+                          << " modifications" << std::endl;
 
                     PendingMPIRequest pendingMPIRequest;
                     pendingMPIRequest.buffer = mpiPacket;
