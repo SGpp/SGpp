@@ -60,6 +60,10 @@ namespace sgpp {
             MPIMethods::initMPI(this);
         }
 
+        void LearnerSGDEOnOffParallel::finalize() {
+            MPIMethods::finalizeMPI();
+        }
+
         void LearnerSGDEOnOffParallel::train(size_t batchSize, size_t maxDataPasses,
                                              std::string refinementFunctorType, std::string refMonitor,
                                              size_t refPeriod, double accDeclineThreshold,
