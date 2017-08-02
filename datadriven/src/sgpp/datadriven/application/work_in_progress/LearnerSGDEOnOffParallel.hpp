@@ -132,9 +132,9 @@ namespace sgpp {
 
             virtual ~LearnerSGDEOnOffParallel();
 
+            void shutdown();
+
         protected:
-            //Batches assigned by master
-            std::vector<Dataset> assignedBatches;
 
 
             size_t
@@ -142,9 +142,7 @@ namespace sgpp {
                                              base::Grid &grid,
                                              base::GridGenerator &gridGen) const;
 
-            void assembleNextBatchData(size_t batchSize, Dataset *dataBatch,
-                                       size_t dataDimensionality,
-                                       size_t *batchOffset) const;
+            void assembleNextBatchData(Dataset *dataBatch, size_t *batchOffset) const;
 
 
             void allocateClassMatrices(size_t dim, std::vector<std::pair<base::DataMatrix *, double>> &trainDataClasses,
@@ -174,6 +172,7 @@ namespace sgpp {
                                        const std::vector<std::pair<DataMatrix *, double>> &trainDataClasses,
                                        std::map<double, int> &classIndices) const;
 
+            bool workerActive;
         };
     }   //namespace datadriven
 }  // namespace sgpp

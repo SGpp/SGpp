@@ -19,7 +19,8 @@ namespace sgpp {
             END_SYNCHRONIZE_PACKETS,
             UPDATE_GRID,
             MERGE_GRID,
-            ASSIGN_BATCH
+            ASSIGN_BATCH,
+            SHUTDOWN
         };
 
         enum MPI_COMMAND_TAG {

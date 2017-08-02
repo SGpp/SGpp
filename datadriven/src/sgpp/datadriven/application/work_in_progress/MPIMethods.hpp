@@ -36,6 +36,8 @@ namespace sgpp {
 
             static void finalizeMPI();
 
+            static void bcastCommandNoArgs(MPI_COMMAND_ID commandId);
+
         protected:
             //Pending MPI Requests
             static std::vector<sgpp::datadriven::PendingMPIRequest> pendingMPIRequests;
@@ -43,6 +45,7 @@ namespace sgpp {
 
             static void startSynchronizingPackets();
 
+            static void sendIBcast(MPI_Packet *mpiPacket);
 
             template<typename Iterator>
             static size_t fillBufferWithData(void *buffer, void *bufferEnd, Iterator &iterator,
@@ -62,6 +65,12 @@ namespace sgpp {
 //            static size_t sendRefinementResultPacket(size_t classIndex, RefinementResultsUpdateType updateType,
 //                                                     const RefinementResult &refinementResult, int offset,
 //                                                     std::list::iterator &iterator);
+
+            static void endSynchronizingPackets();
+
+            void sendISend(int destinationRank, MPI_Packet *mpiPacket);
+
+            void sendCommandNoArgs(int destinationRank, MPI_COMMAND_ID commandId);
 
         };
     }
