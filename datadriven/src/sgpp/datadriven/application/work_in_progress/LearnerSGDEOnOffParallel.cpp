@@ -51,19 +51,14 @@ namespace sgpp {
                 : LearnerSGDEOnOff(dconf, trainData, testData, validationData, classLabels, numClassesInit, usePrior,
                                    beta, lambda) {
 
-            init(lambda);
-
-
-        }
-
-        void LearnerSGDEOnOffParallel::init(double lambda) {
             MPIMethods::initMPI(this);
+
         }
 
-        void LearnerSGDEOnOffParallel::finalize() {
+        LearnerSGDEOnOffParallel::~LearnerSGDEOnOffParallel() {
             MPIMethods::finalizeMPI();
         }
-
+        
         void LearnerSGDEOnOffParallel::train(size_t batchSize, size_t maxDataPasses,
                                              std::string refinementFunctorType, std::string refMonitor,
                                              size_t refPeriod, double accDeclineThreshold,

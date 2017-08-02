@@ -132,7 +132,7 @@ namespace sgpp {
             /**
             * Initialization of online objects in case of Eigen- or LU-decomposition.
             */
-            void init(double d);
+            void init();
 
             // The final classification error
             double error;
@@ -141,6 +141,8 @@ namespace sgpp {
                                                 DBMatOnlineDE *densEst);
 
             size_t getDimensionality() const;
+
+            virtual ~LearnerSGDEOnOffParallel();
 
         protected:
             //Batches assigned by master
