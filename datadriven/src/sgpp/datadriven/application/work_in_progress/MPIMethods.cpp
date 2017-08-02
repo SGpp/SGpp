@@ -156,15 +156,41 @@ namespace sgpp {
                           << "with " << networkMessage->listLength
                           << " modifications" << std::endl;
 
-                    PendingMPIRequest pendingMPIRequest;
-                    pendingMPIRequest.buffer = mpiPacket;
-                    pendingMPIRequests.push_back(pendingMPIRequest);
+                sendIBcast(mpiPacket);
+            }
+        }
 
-                //TODO: NiceToHave Send the smallest packet possible
-                MPI_Ibcast(networkMessage, sizeof(RefinementResultNetworkMessage), MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
-                           MPI_COMM_WORLD, &(pendingMPIRequest.request));
+        void MPIMethods::bcastCommandNoArgs(MPI_COMMAND_ID commandId) {
+            MPI_Packet mpiPacket{};
+            mpiPacket.commandID = commandId;
 
-                }
+            sendIBcast(&mpiPacket);
+        }
+
+        void MPIMethods::sendCommandNoArgs(int destinationRank, MPI_COMMAND_ID commandId) {
+            MPI_Packet mpiPacket{};
+            mpiPacket.commandID = commandId;
+
+            sendISend(destinationRank, &mpiPacket);
+        }
+
+        void MPIMethods::sendIBcast(MPI_Packet *mpiPacket) {
+            PendingMPIRequest pendingMPIRequest;
+            pendingMPIRequest.buffer = mpiPacket;
+            pendingMPIRequests.push_back(pendingMPIRequest);
+
+            MPI_Ibcast(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
+                       MPI_COMM_WORLD, &(pendingMPIRequest.request));
+        }
+
+        void MPIMethods::sendISend(int destinationRank, MPI_Packet *mpiPacket) {
+            PendingMPIRequest pendingMPIRequest;
+            pendingMPIRequest.buffer = mpiPacket;
+            pendingMPIRequests.push_back(pendingMPIRequest);
+
+            MPI_Isend(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, destinationRank, MPI_ANY_TAG,
+                      MPI_COMM_WORLD, &(pendingMPIRequest.request));
+
         }
 
         //TODO: This was imported from Merge
@@ -381,14 +407,22 @@ namespace sgpp {
                 case START_SYNCHRONIZE_PACKETS:
                     startSynchronizingPackets();
                     break;
+                case END_SYNCHRONIZE_PACKETS:
+                    endSynchronizingPackets();
+                    break;
                 case UPDATE_GRID:
                     receiveGridComponentsUpdate(learnerInstance,
                                                 (RefinementResultNetworkMessage *) (mpiPacket->payload));
                     break;
                 case MERGE_GRID:
-
+                    std::cout << "Merge grid not implemented" << std::endl;
                     break;
                 case ASSIGN_BATCH:
+                    std::cout << "Assign batch not implemented" << std::endl;
+                    break;
+                case SHUTDOWN:
+                    std::cout << "Worker shutdown requested" << std::endl;
+                    learnerInstance->shutdown();
                     break;
                 default:
                     std::cout << "Error: MPI unknown command id: " << mpiPacket->commandID << std::endl;
@@ -398,10 +432,16 @@ namespace sgpp {
 
         void MPIMethods::startSynchronizingPackets() {
             //TODO
+            std::cout << "Synchronizing not implemented" << std::endl;
         }
 
         void MPIMethods::finalizeMPI() {
             MPI_Finalize();
+        }
+
+        void MPIMethods::endSynchronizingPackets() {
+            //TODO
+            std::cout << "Synchronizing not implemented" << std::endl;
         }
 
     }

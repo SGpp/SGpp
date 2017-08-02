@@ -38,6 +38,8 @@ using sgpp::base::SurplusRefinementFunctor;
 namespace sgpp {
     namespace datadriven {
 
+        //Batches assigned by master
+        std::vector<Dataset> assignedBatches;
 
 
         LearnerSGDEOnOffParallel::LearnerSGDEOnOffParallel(
@@ -64,6 +66,15 @@ namespace sgpp {
                                              size_t refPeriod, double accDeclineThreshold,
                                              size_t accDeclineBufferSize, size_t minRefInterval,
                                              bool enableCv, size_t nextCvStep) {
+            if (!MPIMethods::isMaster()) {
+                while (workerActive) {
+                    std::cout << "Client looping" << std::endl;
+                    MPIMethods::waitForMPIRequestsToComplete();
+                }
+                std::cout << "Worker shutdown." << std::endl;
+                return;
+            }
+
             // counts total number of processed data points
             size_t numProcessedDataPoints = 0;
 
@@ -135,7 +146,7 @@ namespace sgpp {
                         }
                     }
                     // assemble next batch
-                    assembleNextBatchData(batchSize, &dataBatch, dim, &cnt);
+                    assembleNextBatchData(&dataBatch, &cnt);
 
                     // train the model with current batch
                     train(dataBatch, doCrossValidation, vectorRefinementResults);
@@ -177,7 +188,7 @@ namespace sgpp {
 
                     } else {
                         std::cout << "Not implemented" << std::endl;
-                        exit(0);
+                        //exit(0);
                         //TODO: Otherwise, merge grids if any are available
                     }
 
@@ -202,6 +213,8 @@ namespace sgpp {
                 completedDataPasses++;
                 processedPoints = 0;
             }  // end while
+
+            shutdown();
 
             std::cout << "#Training finished" << std::endl;
 
@@ -358,11 +371,10 @@ namespace sgpp {
                                  refinementResult->addedGridPoints.size());
         }
 
-        void LearnerSGDEOnOffParallel::assembleNextBatchData(size_t batchSize,
-                                                             Dataset *dataBatch,
-                                                             size_t dataDimensionality,
-                                                             size_t *batchOffset) const {
+        void LearnerSGDEOnOffParallel::assembleNextBatchData(Dataset *dataBatch, size_t *batchOffset) const {
 
+            size_t batchSize = dataBatch->getNumberInstances();
+            size_t dataDimensionality = dataBatch->getDimension();
             std::cout << "Assembling batch of size " << batchSize << " at offset " << *batchOffset << std::endl;
 
             for (size_t j = 0; j < batchSize; j++) {
@@ -580,6 +592,15 @@ namespace sgpp {
 
             this->processedPoints += numberOfDataPoints;
             trained = true;
+        }
+
+        void LearnerSGDEOnOffParallel::shutdown() {
+            if (MPIMethods::isMaster()) {
+                std::cout << "Broadcasting shutdown" << std::endl;
+                MPIMethods::bcastCommandNoArgs(SHUTDOWN);
+            } else {
+                workerActive = false;
+            }
         }
 
     }  // namespace datadriven
