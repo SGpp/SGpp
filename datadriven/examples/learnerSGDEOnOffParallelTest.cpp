@@ -12,6 +12,7 @@
 #endif /* USE_GSL */
 
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/datadriven/application/work_in_progress/LearnerSGDEOnOffParallel.hpp>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -189,8 +190,8 @@ int main() {
        * Create the learner.
        */
       std::cout << "# create learner" << std::endl;
-        sgpp::datadriven::LearnerSGDEOnOff learner(dconf, trainDataset, testDataset, nullptr,
-                                                   classLabels, classNum, usePrior, beta, lambda);
+        sgpp::datadriven::LearnerSGDEOnOffParallel learner(dconf, trainDataset, testDataset, nullptr,
+                                                           classLabels, classNum, usePrior, beta, lambda);
 
       /**
        * Configure cross-validation.
