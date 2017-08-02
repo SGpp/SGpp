@@ -23,6 +23,7 @@ sgpp::datadriven::Dataset loadDataset(const std::string &filename) {// load test
 
     if (dataset.getDimension() <= 0) {
         std::cout << "# Failed to read dataset! " << filename << std::endl;
+        exit(-1);
     } else {
         std::cout << "# dataset dimensionality: " << dataset.getDimension() << std::endl;
     }
