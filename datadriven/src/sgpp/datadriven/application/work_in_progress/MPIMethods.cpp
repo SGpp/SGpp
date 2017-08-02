@@ -26,7 +26,7 @@ namespace sgpp {
         }
 
         void MPIMethods::initMPI(LearnerSGDEOnOffParallel *learnerInstance) {
-            MPI_Init(NULL, NULL);
+            MPI_Init(nullptr, nullptr);
 
             // Get World Size
             MPI_Comm_size(MPI_COMM_WORLD, &mpiWorldSize);
@@ -40,13 +40,13 @@ namespace sgpp {
             int nameLength;
             MPI_Get_processor_name(mpiProcessorName, &nameLength);
 
-            printf("Processor %s (rank %i) has joined MPI pool of size %i\n", mpiProcessorName, world_rank,
-                   mpiWorldSize);
+            std::cout << "Processor " << mpiProcessorName << " (rank " << world_rank
+                      << ") has joined MPI pool of size " << mpiWorldSize << std::endl;
 
             //Setup receiving messages from master/workers
             {
                 sgpp::datadriven::PendingMPIRequest unicastInputRequest;
-                MPI_Packet *mpiPacket = new MPI_Packet;
+                auto *mpiPacket = new MPI_Packet;
                 unicastInputRequest.buffer = mpiPacket;
                 unicastInputRequest.disposeAfterCallback = false;
                 unicastInputRequest.callback = [&learnerInstance](PendingMPIRequest &request) {
@@ -60,11 +60,11 @@ namespace sgpp {
                           &(unicastInputRequest.request));
 
                 pendingMPIRequests.push_back(unicastInputRequest);
-                printf("Started listening for unicasts from any sources\n");
+                std::cout << "Started listening for unicasts from any sources" << std::endl;
             }
             if (!isMaster()) {
                 PendingMPIRequest broadcastInputRequest;
-                MPI_Packet *mpiPacket = new MPI_Packet;
+                auto *mpiPacket = new MPI_Packet;
                 broadcastInputRequest.buffer = mpiPacket;
                 broadcastInputRequest.disposeAfterCallback = false;
                 broadcastInputRequest.callback = [&learnerInstance](PendingMPIRequest &request) {
@@ -76,7 +76,7 @@ namespace sgpp {
                            &(broadcastInputRequest.request));
                 pendingMPIRequests.push_back(broadcastInputRequest);
 
-                printf("Started listening for broadcasts from task master\n");
+                std::cout << "Started listening for broadcasts from task master" << std::endl;
             }
 
         }
@@ -112,7 +112,7 @@ namespace sgpp {
                                                                              addedPointsEnd);
             }
 
-            std::cout << "Finished updateing the grid components on workers." << std::endl;
+            std::cout << "Finished updating the grid components on workers." << std::endl;
         }
 
         template<typename Iterator>
@@ -120,8 +120,8 @@ namespace sgpp {
                                                Iterator &iterator,
                                                Iterator &listEnd) {
             while (iterator != listEnd) {
-                    MPI_Packet *mpiPacket = new MPI_Packet;
-                    RefinementResultNetworkMessage *networkMessage = (RefinementResultNetworkMessage *) mpiPacket->payload;
+                auto *mpiPacket = new MPI_Packet;
+                auto *networkMessage = (RefinementResultNetworkMessage *) mpiPacket->payload;
 
                     networkMessage->classIndex = classIndex;
 
@@ -145,6 +145,9 @@ namespace sgpp {
                                 listEnd,
                                 sizeof(double)); //TODO: Size of double represents the size of a data value in DataVector
                         break;
+                    default:
+                        std::cout << "ERROR: Unknown update type" << std::endl;
+                        exit(-1);
                     }
 
                 networkMessage->listLength = numPointsInBuffer;
@@ -173,14 +176,13 @@ namespace sgpp {
                 throw applicationException;
             }
 
-            double *payload = (double *) networkMessage.payload;
-            for (size_t index; index < networkMessage.payloadLength; index++) {
+            auto *payload = (double *) networkMessage.payload;
+            for (size_t index = 0; index < networkMessage.payloadLength; index++) {
                 alphaVector[networkMessage.payloadOffset + index] = payload[index];
             }
 
-            printf("Updated alpha values from network message offset %i, length %i", networkMessage.payloadOffset,
-                   networkMessage.payloadLength);
-
+            std::cout << "Updated alpha values from network message offset " << networkMessage.payloadOffset
+                      << ", length " << networkMessage.payloadLength;
         }
 
         //TODO: This was imported from Merge
@@ -276,7 +278,7 @@ namespace sgpp {
             auto *bufferPointer = buffer;
             size_t copiedVectors = 0;
             while (iterator != listEnd) {
-                typename std::vector<ValueType> dataVector = (typename std::vector<ValueType>) *iterator;
+                auto dataVector = (typename std::vector<ValueType>) *iterator;
                 size_t vectorMemLength = dataVector.size() * sizeOfDataType;
 
                 if (bufferPointer + vectorMemLength >= bufferEnd) {
@@ -295,7 +297,7 @@ namespace sgpp {
         size_t
         MPIMethods::fillBufferWithData(void *buffer, void *bufferEnd, Iterator &iterator,
                                        Iterator &listEnd) {
-            typename std::iterator_traits<Iterator>::value_type *bufferPointer = (typename std::iterator_traits<Iterator>::value_type *) buffer;
+            auto *bufferPointer = (typename std::iterator_traits<Iterator>::value_type *) buffer;
             size_t copiedValues = 0;
             while (bufferPointer + sizeof(typename std::iterator_traits<Iterator>::value_type) < bufferEnd &&
                    iterator != listEnd) {
@@ -309,14 +311,14 @@ namespace sgpp {
         }
 
         void MPIMethods::processCompletedMPIRequests() {
-            MPI_Status mpiStatus;
+            MPI_Status mpiStatus{};
             int operationCompleted;
 
-            for (std::vector<sgpp::datadriven::PendingMPIRequest>::iterator pendingMPIRequestIterator = pendingMPIRequests.begin();
+            for (auto pendingMPIRequestIterator = pendingMPIRequests.begin();
                  pendingMPIRequestIterator != pendingMPIRequests.end();
                  pendingMPIRequestIterator++) {
                 MPI_Test(&(pendingMPIRequestIterator->request), &operationCompleted, &mpiStatus);
-                if (operationCompleted) {
+                if (operationCompleted != 0) {
                     //Execute the callback
                     pendingMPIRequestIterator->callback(*pendingMPIRequestIterator);
 
@@ -340,13 +342,13 @@ namespace sgpp {
         void MPIMethods::receiveGridComponentsUpdate(LearnerSGDEOnOffParallel *learnerInstance,
                                                      RefinementResultNetworkMessage *networkMessage) {
             //TODO
-            RefinementResult refinementResult;
+            RefinementResult refinementResult = sgpp::datadriven::RefinementResult();
 
             void *bufferEnd = std::end(networkMessage->payload);
             switch (networkMessage->updateType) {
                 case DELETED_GRID_POINTS_LIST: {
                     //TODO: This probably casts each unsigned char into a size_t instead of re-interpreting
-                    size_t *bufferIterator = (size_t *) networkMessage->payload;
+                    auto *bufferIterator = (size_t *) networkMessage->payload;
                     while (bufferIterator < bufferEnd) {
                         refinementResult.deletedGridPointsIndexes.push_back(*bufferIterator);
                         bufferIterator++;
@@ -355,7 +357,7 @@ namespace sgpp {
                     break;
                 case ADDED_GRID_POINTS_LIST: {
                     //TODO double?
-                    double *bufferIterator = (double *) networkMessage->payload;
+                    auto *bufferIterator = (double *) networkMessage->payload;
                     size_t dimensionality = learnerInstance->getDimensionality();
                     while (bufferIterator < bufferEnd) {
                         size_t index = 0;
@@ -389,8 +391,8 @@ namespace sgpp {
                 case ASSIGN_BATCH:
                     break;
                 default:
-                    printf("Error: MPI unknown command id: %i", mpiPacket->commandID);
-                    break;
+                    std::cout << "Error: MPI unknown command id: " << mpiPacket->commandID << std::endl;
+                    exit(-1);
             }
         }
 
