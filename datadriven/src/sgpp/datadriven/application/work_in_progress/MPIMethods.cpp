@@ -419,6 +419,8 @@ namespace sgpp {
                     break;
                 case ASSIGN_BATCH:
                     std::cout << "Assign batch not implemented" << std::endl;
+                    assignBatch(mpiPacket,
+                                learnerInstance);
                     break;
                 case SHUTDOWN:
                     std::cout << "Worker shutdown requested" << std::endl;
@@ -442,6 +444,12 @@ namespace sgpp {
         void MPIMethods::endSynchronizingPackets() {
             //TODO
             std::cout << "Synchronizing not implemented" << std::endl;
+        }
+
+        void MPIMethods::assignBatch(MPI_Packet *mpiPacket, LearnerSGDEOnOffParallel *learnerInstance) {
+            Dataset dataset;
+            //TODO continue
+            learnerInstance->workBatch(dataset);
         }
 
     }

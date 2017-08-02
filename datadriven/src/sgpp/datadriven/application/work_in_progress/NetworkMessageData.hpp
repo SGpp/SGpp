@@ -63,6 +63,11 @@ namespace sgpp {
             unsigned char payload[(MPI_PACKET_MAX_PAYLOAD_SIZE - 4 * sizeof(int))];
         };
 
+        struct AssignBatchNetworkMessage {
+            int batchOffset;
+            int batchSize;
+        };
+
     }
 }
 
