@@ -148,6 +148,7 @@ namespace sgpp {
                     // Refinement only occurs on the Master Node
                     if (MPIMethods::isMaster()) {
 
+                        std::cout << "Checking if refinement is necessary." << std::endl;
                         // check if refinement should be performed
                         if (checkRefinementNecessary(refMonitor, refPeriod, numProcessedDataPoints, currentValidError,
                                                      currentTrainError, numberOfCompletedRefinements, monitor)) {
@@ -167,10 +168,13 @@ namespace sgpp {
                                 //TODO Adjust Grid
                                 MPIMethods::sendGridComponentsUpdate(vectorRefinementResults);
                             }
+                        } else {
+                            std::cout << "No refinement necessary" << std::endl;
                         }
 
 
                     } else {
+                        std::cout << "Not implemented" << std::endl;
                         //TODO: Otherwise, merge grids if any are available
                     }
 
@@ -184,6 +188,7 @@ namespace sgpp {
                     std::cout << "Processing batch in "
                               << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
                               << "ms" << std::endl;
+                    std::cout << "Processed " << cnt << " data points so far" << std::endl;
 
                 }
 
@@ -353,7 +358,8 @@ namespace sgpp {
                                                              Dataset *dataBatch,
                                                              size_t dataDimensionality,
                                                              size_t *batchOffset) const {
-            printf("Assembling batch of size %zu at offset %zu\n", batchSize, *batchOffset);
+
+            std::cout << "Assembling batch of size " << batchSize << " at offset " << *batchOffset << std::endl;
 
             for (size_t j = 0; j < batchSize; j++) {
                 base::DataVector dataPoint(dataDimensionality);
@@ -364,7 +370,7 @@ namespace sgpp {
             }
             *batchOffset += batchSize;
 
-            printf("Assembled batch\n");
+            std::cout << "Finished assembling batch" << std::endl;
         }
 
         bool LearnerSGDEOnOffParallel::checkRefinementNecessary(const std::string &refMonitor, size_t refPeriod,
@@ -481,9 +487,9 @@ namespace sgpp {
         // Train from an entire Batch
         void LearnerSGDEOnOffParallel::train(Dataset &dataset, bool doCrossValidation,
                                              std::vector<RefinementResult> *vectorRefinementResults) {
-
             size_t dim = dataset.getDimension();
 
+            std::cout << "Starting train cycle (dataset size: " << dataset.getNumberInstances() << ")" << std::endl;
 
             // create an empty matrix for every class:
             std::vector<std::unique_ptr<DataMatrix>> classData;
@@ -501,6 +507,7 @@ namespace sgpp {
             // compute density functions
             train(trainDataClasses, doCrossValidation, vectorRefinementResults);
 
+            std::cout << "Finished train cycle." << std::endl;
         }
 
         void
