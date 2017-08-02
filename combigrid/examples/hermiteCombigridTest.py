@@ -417,8 +417,8 @@ def example_combicombigrid_2D_linear(l, func_standard):
     grad_1=getgradkfunc(operation_wrap, 1)
 
     x1 = pysgpp.DataVector([0.5,0.5])
-    print(grad_0(x1))
-    print(grad_1(x1))
+    #print(grad_0(x1))
+    #print(grad_1(x1))
 
 
     error=estimatel2Error(20000,2,operation_wrap,func_standard)
@@ -456,15 +456,15 @@ def example_combicombigrid_2D_hermite(l):
 # example_combicombigrid_1D(3)
 
 
-func = pysgpp.OptBubbleWrapObjective(2)
-func_standard=pysgpp.multiFunc(func)
+func = pysgpp.OptRosenbrockObjective(2)
+func_wrap=getfuncwrapper(func)
 
-#getfuncwrapper(func)
+func_standard=pysgpp.multiFunc(func_wrap)
 
 example_2D_comparison_function(func_standard)
 #example_2D_psi()
-example_2D_linear(3,func_standard)
-example_combicombigrid_2D_linear(3,func_standard)
+example_2D_linear(2,func_standard)
+example_combicombigrid_2D_linear(2,func_standard) # with "contourplot"
 #example_combicombigrid_2D_hermite(3)
 
 
