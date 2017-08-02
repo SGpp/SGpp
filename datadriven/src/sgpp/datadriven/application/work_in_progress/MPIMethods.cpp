@@ -235,33 +235,33 @@ namespace sgpp {
         }
 */
 
-        //TODO: This was imported from Merge
-        size_t
-        sendMergeGridNetworkMessage(size_t classIndex, base::DataVector &alphaVector, size_t offset, size_t length) {
-            //TODO
-            MPI_Packet *mpiPacket = new MPI_Packet;
-            MergeGridNetworkMessage *networkMessage = (MergeGridNetworkMessage *) mpiPacket->payload;
-
-            networkMessage->classIndex = classIndex;
-//            networkMessage->gridversion = gridversion;
-            networkMessage->payloadOffset = offset;
-
-            size_t endOfPayload = sizeof(MergeGridNetworkMessage::payload) / sizeof(double);
-            size_t numPointsInPacket = 0;
-
-            size_t endOfCopy = std::min(length, endOfPayload);
-
-            double *alphaValues = (double *) networkMessage->payload;
-            for (size_t bufferIndex = 0; bufferIndex < endOfCopy; bufferIndex++) {
-                alphaValues[bufferIndex] = alphaVector[offset + bufferIndex];
-                numPointsInPacket++;
-            }
-
-            printf("Sending merge for class %zu offset %zu and %zu modifications", classIndex, offset,
-                   numPointsInPacket);
-            networkMessage->payloadLength = numPointsInPacket;
-            return numPointsInPacket;
-        }
+//        //TODO: This was imported from Merge
+//        size_t
+//        sendMergeGridNetworkMessage(size_t classIndex, base::DataVector &alphaVector, size_t offset, size_t length) {
+//            //TODO
+//            MPI_Packet *mpiPacket = new MPI_Packet;
+//            MergeGridNetworkMessage *networkMessage = (MergeGridNetworkMessage *) mpiPacket->payload;
+//
+//            networkMessage->classIndex = classIndex;
+////            networkMessage->gridversion = gridversion;
+//            networkMessage->payloadOffset = offset;
+//
+//            size_t endOfPayload = sizeof(MergeGridNetworkMessage::payload) / sizeof(double);
+//            size_t numPointsInPacket = 0;
+//
+//            size_t endOfCopy = std::min(length, endOfPayload);
+//
+//            double *alphaValues = (double *) networkMessage->payload;
+//            for (size_t bufferIndex = 0; bufferIndex < endOfCopy; bufferIndex++) {
+//                alphaValues[bufferIndex] = alphaVector[offset + bufferIndex];
+//                numPointsInPacket++;
+//            }
+//
+//            printf("Sending merge for class %zu offset %zu and %zu modifications", classIndex, offset,
+//                   numPointsInPacket);
+//            networkMessage->payloadLength = numPointsInPacket;
+//            return numPointsInPacket;
+//        }
 
 
         //TODO: !!!!!!!!! Compiler Errors
