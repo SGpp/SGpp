@@ -55,7 +55,7 @@ namespace sgpp {
                                      Iterator &listEnd, size_t sizeOfDataType);
 
             template<typename Iterator>
-            static void sendRefinementUpdates(size_t &classIndex, const RefinementResultsUpdateType updateType,
+            static void sendRefinementUpdates(size_t &classIndex, RefinementResultsUpdateType updateType,
                                               Iterator &iterator,
                                               Iterator &listEnd);
 

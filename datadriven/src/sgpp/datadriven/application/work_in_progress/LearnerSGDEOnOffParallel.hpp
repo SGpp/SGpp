@@ -122,18 +122,6 @@ namespace sgpp {
                     std::vector<RefinementResult> *vectorRefinementResults =
                     nullptr);
 
-            /**
-            * In case of crossvalidation, returns the current best lambda.
-            *
-            * @return The lambda value
-            */
-            // double getBestLambda();
-
-            /**
-            * Initialization of online objects in case of Eigen- or LU-decomposition.
-            */
-            void init();
-
             // The final classification error
             double error;
 
@@ -186,7 +174,6 @@ namespace sgpp {
                                        const std::vector<std::pair<DataMatrix *, double>> &trainDataClasses,
                                        std::map<double, int> &classIndices) const;
 
-            void finalize();
         };
     }   //namespace datadriven
 }  // namespace sgpp

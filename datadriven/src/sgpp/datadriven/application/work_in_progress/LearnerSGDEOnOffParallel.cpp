@@ -58,7 +58,7 @@ namespace sgpp {
         LearnerSGDEOnOffParallel::~LearnerSGDEOnOffParallel() {
             MPIMethods::finalizeMPI();
         }
-        
+
         void LearnerSGDEOnOffParallel::train(size_t batchSize, size_t maxDataPasses,
                                              std::string refinementFunctorType, std::string refMonitor,
                                              size_t refPeriod, double accDeclineThreshold,
@@ -338,7 +338,7 @@ namespace sgpp {
                 grid.getStorage().deletePoints(refinementResult->deletedGridPointsIndexes);
 
                 //Add grid points added on master thread
-                for (sgpp::base::DataVector dataVector : refinementResult->addedGridPoints) {
+                for (const sgpp::base::DataVector &dataVector : refinementResult->addedGridPoints) {
                     sgpp::base::GridPoint gridPoint;
                     //TODO: What happens when other points are changed (ie Leaf boolean etc)
 //                    gridPoint.;
@@ -534,7 +534,7 @@ namespace sgpp {
                                                              std::map<double, int> &classIndices) const {
             int index = 0;
             for (size_t i = 0; i < classLabels.getSize(); i++) {
-                base::DataMatrix *m = new base::DataMatrix(0, dim);
+                auto *m = new base::DataMatrix(0, dim);
                 std::pair<base::DataMatrix *, double> p(m, classLabels[i]);
                 trainDataClasses.push_back(p);
                 classIndices.insert(std::pair<double, int>(classLabels[i], index));
@@ -550,8 +550,8 @@ namespace sgpp {
 
             //Calculate the total number of data points
             size_t numberOfDataPoints = 0;
-            for (size_t i = 0; i < trainDataClasses.size(); i++) {
-                numberOfDataPoints += trainDataClasses[i].first->getSize();
+            for (auto &trainDataClass : trainDataClasses) {
+                numberOfDataPoints += trainDataClass.first->getSize();
             }
 
             // Learn from each Class
