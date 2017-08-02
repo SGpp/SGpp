@@ -72,6 +72,7 @@ namespace sgpp {
 
             void sendCommandNoArgs(int destinationRank, MPI_COMMAND_ID commandId);
 
+            static void assignBatch(MPI_Packet *pPacket, LearnerSGDEOnOffParallel *learnerInstance);
         };
     }
 }

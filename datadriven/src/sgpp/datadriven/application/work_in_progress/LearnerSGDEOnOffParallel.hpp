@@ -159,7 +159,7 @@ namespace sgpp {
                                     ConvergenceMonitor &monitor);
 
 
-            void printGridSizeStatistics(ClassDensityContainer &onlineObjects, const char *messageString);
+            void printGridSizeStatistics(const char *messageString, ClassDensityContainer &onlineObjects);
 
             bool checkRefinementNecessary(const std::string &refMonitor, size_t refPeriod, size_t totalInstances,
                                           double currentValidError, double currentTrainError,

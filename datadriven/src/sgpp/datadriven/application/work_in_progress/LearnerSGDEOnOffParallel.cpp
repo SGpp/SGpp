@@ -113,7 +113,7 @@ namespace sgpp {
             Dataset dataBatch(batchSize, dim);
 
             // print initial grid size
-            printGridSizeStatistics(onlineObjects, "#Initial grid size of grid ");
+            printGridSizeStatistics("#Initial grid size of grid ", onlineObjects);
 
             // auxiliary variable for accuracy (error) measurement
             double acc = getAccuracy();
@@ -122,8 +122,7 @@ namespace sgpp {
 
             // main loop which performs the training process
             while (completedDataPasses < maxDataPasses) {
-                std::cout << "Synchronizing start of data pass " << completedDataPasses << std::endl;
-                MPIMethods::synchronizeBarrier();
+                std::cout << "Start of data pass " << completedDataPasses << std::endl;
 
                 std::cout << "#batch-size: " << batchSize << std::endl;
                 std::cout << "#batches to process: " << numBatch << std::endl;
@@ -159,37 +158,29 @@ namespace sgpp {
 //                    onlineObjects = getDensityFunctions();
 
                     // Refinement only occurs on the Master Node
-                    if (MPIMethods::isMaster()) {
 
-                        std::cout << "Checking if refinement is necessary." << std::endl;
-                        // check if refinement should be performed
-                        if (checkRefinementNecessary(refMonitor, refPeriod, numProcessedDataPoints, currentValidError,
-                                                     currentTrainError, numberOfCompletedRefinements, monitor)) {
-                            // if the Cholesky decomposition is chosen as factorization method
-                            // refinement
-                            // and coarsening methods can be applied
+                    std::cout << "Checking if refinement is necessary." << std::endl;
+                    // check if refinement should be performed
+                    if (checkRefinementNecessary(refMonitor, refPeriod, numProcessedDataPoints, currentValidError,
+                                                 currentTrainError, numberOfCompletedRefinements, monitor)) {
+                        // if the Cholesky decomposition is chosen as factorization method
+                        // refinement
+                        // and coarsening methods can be applied
 
-                            std::cout << "refinement at iteration: " << numProcessedDataPoints << std::endl;
-                            doRefinementForAll(refinementFunctorType, refMonitor, vectorRefinementResults,
-                                               onlineObjects, monitor);
-                            numberOfCompletedRefinements += 1;
-                            std::cout << "Refinement " << numProcessedDataPoints << " complete" << std::endl;
+                        std::cout << "refinement at iteration: " << numProcessedDataPoints << std::endl;
+                        doRefinementForAll(refinementFunctorType, refMonitor, vectorRefinementResults,
+                                           onlineObjects, monitor);
+                        numberOfCompletedRefinements += 1;
+                        std::cout << "Refinement " << numProcessedDataPoints << " complete" << std::endl;
 
-                            //TODO If not master, the grid needs to be adjusted here
-                            if (MPIMethods::isMaster()) {
-                                //TODO Send and Receive Delta
-                                //TODO Adjust Grid
-                                MPIMethods::sendGridComponentsUpdate(vectorRefinementResults);
-                            }
-                        } else {
-                            std::cout << "No refinement necessary" << std::endl;
+                        //TODO If not master, the grid needs to be adjusted here
+                        if (MPIMethods::isMaster()) {
+                            //TODO Send and Receive Delta
+                            //TODO Adjust Grid
+                            MPIMethods::sendGridComponentsUpdate(vectorRefinementResults);
                         }
-
-
                     } else {
-                        std::cout << "Not implemented" << std::endl;
-                        //exit(0);
-                        //TODO: Otherwise, merge grids if any are available
+                        std::cout << "No refinement necessary" << std::endl;
                     }
 
                     // save current error
@@ -207,8 +198,7 @@ namespace sgpp {
                 }
 
                 // Synchronize end of Data Pass
-                std::cout << "Synchronizing end of data pass " << completedDataPasses << std::endl;
-                MPIMethods::synchronizeBarrier();
+                std::cout << "End of data pass " << completedDataPasses << std::endl;
 
                 completedDataPasses++;
                 processedPoints = 0;
@@ -226,14 +216,14 @@ namespace sgpp {
 
         size_t LearnerSGDEOnOffParallel::getDimensionality() const { return trainData.getDimension(); }
 
-        void LearnerSGDEOnOffParallel::printGridSizeStatistics(
-                ClassDensityContainer &onlineObjects,
-                const char *messageString) {
+        void LearnerSGDEOnOffParallel::printGridSizeStatistics(const char *messageString,
+                                                               ClassDensityContainer &onlineObjects) {
             // print initial grid size
             for (auto &onlineObject : onlineObjects) {
                 auto densEst = onlineObject.first.get();
                 Grid &grid = densEst->getOfflineObject().getGrid();
-                printf(messageString, onlineObject.second, grid.getSize());
+                std::cout << messageString << onlineObject.second << ", " << grid.getSize() << std::endl;
+
             }
         }
 
