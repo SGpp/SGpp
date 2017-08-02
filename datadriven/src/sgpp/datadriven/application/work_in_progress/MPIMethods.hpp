@@ -34,6 +34,8 @@ namespace sgpp {
             receiveGridComponentsUpdate(LearnerSGDEOnOffParallel *learnerInstance,
                                         sgpp::datadriven::RefinementResultNetworkMessage *networkMessage);
 
+            static void synchronizeBarrier();
+
         protected:
             //Pending MPI Requests
             static std::vector<sgpp::datadriven::PendingMPIRequest> pendingMPIRequests;
@@ -43,14 +45,14 @@ namespace sgpp {
 
 
             template<typename Iterator>
-            static size_t fillBufferWithData(void *buffer, void *bufferEnd, Iterator iterator,
-                                             Iterator listEnd);
+            static size_t fillBufferWithData(void *buffer, void *bufferEnd, Iterator &iterator,
+                                             Iterator &listEnd);
 
             template<typename Iterator, typename ValueType>
             static size_t
             fillBufferWithVectorData(void *buffer, const void *bufferEnd,
-                                     Iterator iterator,
-                                     Iterator listEnd, size_t sizeOfDataType);
+                                     Iterator &iterator,
+                                     Iterator &listEnd, size_t sizeOfDataType);
 
             template<typename Iterator>
             static void sendRefinementUpdates(size_t &classIndex, const RefinementResultsUpdateType updateType,

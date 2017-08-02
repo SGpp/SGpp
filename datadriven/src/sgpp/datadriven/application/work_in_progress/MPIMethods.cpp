@@ -81,6 +81,10 @@ namespace sgpp {
 
         }
 
+        void MPIMethods::synchronizeBarrier() {
+            MPI_Barrier(MPI_COMM_WORLD);
+        }
+
         void MPIMethods::synchronizeEndOfDataPass() {
             throw sgpp::base::application_exception("Not implemented");
 //            sgpp::parallel::myGlobalMPIComm->Barrier();
@@ -150,8 +154,9 @@ namespace sgpp {
 
                 networkMessage->listLength = numPointsInBuffer;
 
-                printf("Sending class %i update with %i deleted grid points\n", networkMessage->classIndex,
-                       networkMessage->listLength);
+                std::cout << "Sending updated for class " << networkMessage->classIndex
+                          << "with " << networkMessage->listLength
+                          << " modifications";
 
                     PendingMPIRequest pendingMPIRequest;
                     pendingMPIRequest.buffer = mpiPacket;
@@ -270,8 +275,8 @@ namespace sgpp {
         template<typename Iterator, typename ValueType>
         size_t
         MPIMethods::fillBufferWithVectorData(void *buffer, const void *bufferEnd,
-                                             Iterator iterator,
-                                             Iterator listEnd, size_t sizeOfDataType) {
+                                             Iterator &iterator,
+                                             Iterator &listEnd, size_t sizeOfDataType) {
             //TODO: Implement vector
             auto *bufferPointer = buffer;
             size_t copiedVectors = 0;
@@ -293,8 +298,8 @@ namespace sgpp {
 
         template<typename Iterator>
         size_t
-        MPIMethods::fillBufferWithData(void *buffer, void *bufferEnd, Iterator iterator,
-                                       Iterator listEnd) {
+        MPIMethods::fillBufferWithData(void *buffer, void *bufferEnd, Iterator &iterator,
+                                       Iterator &listEnd) {
             typename std::iterator_traits<Iterator>::value_type *bufferPointer = (typename std::iterator_traits<Iterator>::value_type *) buffer;
             size_t copiedValues = 0;
             while (bufferPointer + sizeof(typename std::iterator_traits<Iterator>::value_type) < bufferEnd &&
