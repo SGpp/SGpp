@@ -15,8 +15,6 @@ namespace sgpp {
 
             static void initMPI(LearnerSGDEOnOffParallel *learnerInstance);
 
-            static void synchronizeEndOfDataPass();
-
             static bool isMaster();
 
             static void sendGridComponentsUpdate(std::vector<RefinementResult> *refinementResults);
