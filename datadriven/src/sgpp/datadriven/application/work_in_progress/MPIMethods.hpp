@@ -34,6 +34,8 @@ namespace sgpp {
 
             static void synchronizeBarrier();
 
+            static void finalizeMPI();
+
         protected:
             //Pending MPI Requests
             static std::vector<sgpp::datadriven::PendingMPIRequest> pendingMPIRequests;

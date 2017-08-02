@@ -398,5 +398,9 @@ namespace sgpp {
             //TODO
         }
 
+        void MPIMethods::finalizeMPI() {
+            MPI_Finalize();
+        }
+
     }
 }

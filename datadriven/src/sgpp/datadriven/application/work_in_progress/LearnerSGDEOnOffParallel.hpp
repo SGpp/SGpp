@@ -184,6 +184,7 @@ namespace sgpp {
                                        const std::vector<std::pair<DataMatrix *, double>> &trainDataClasses,
                                        std::map<double, int> &classIndices) const;
 
+            void finalize();
         };
     }   //namespace datadriven
 }  // namespace sgpp
