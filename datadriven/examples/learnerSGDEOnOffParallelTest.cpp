@@ -16,6 +16,18 @@
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 
+sgpp::datadriven::Dataset loadDataset(const std::string &filename) {// load test samples
+    std::cout << "# loading file: " << filename << std::endl;
+    sgpp::datadriven::Dataset dataset = sgpp::datadriven::ARFFTools::readARFF(filename);
+
+    if (dataset.getDimension() <= 0) {
+        std::cout << "# Failed to read dataset! " << filename << std::endl;
+    } else {
+        std::cout << "# dataset dimensionality: " << dataset.getDimension() << std::endl;
+    }
+    return dataset;
+}
+
 /**
  * \page example_learnerSGDEOnOffTest_cpp Learner SGDE OnOff
  * This example shows how to perform offline/online-classification using sparse
@@ -38,7 +50,7 @@ using sgpp::base::DataVector;
 int main() {
 #ifdef USE_GSL
 
-    std::cout << "LearnerSGDEOnOffParallelTest" << std::endl << "Loading..." << std::endl;
+    std::cout << "LearnerSGDEOnOffParallelTest" << std::endl;
   /**
    * Specify the number of runs to perform.
    * If only one specific example should be executed, set
@@ -60,17 +72,10 @@ int main() {
       /**
        * Get the training, test and validation data
        */
-      std::string filename = "../../datasets/ripley/ripleyGarcke.train.arff";
-      // load training samples
-      std::cout << "# loading file: " << filename << std::endl;
-      sgpp::datadriven::Dataset trainDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
+        sgpp::datadriven::Dataset trainDataset = loadDataset("../../datasets/ripley/ripleyGarcke.train.arff");
+        sgpp::datadriven::Dataset testDataset = loadDataset("../../datasets/ripley/ripleyGarcke.test.arff");
 
-      filename = "../../datasets/ripley/ripleyGarcke.test.arff";
-      // load test samples
-      std::cout << "# loading file: " << filename << std::endl;
-      sgpp::datadriven::Dataset testDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
-
-      // if fixed validation data should be used (required for convergence
+        // if fixed validation data should be used (required for convergence
       // monitor):
         /*filename = "";  // specify file containing validation data here
         // load validation samples
