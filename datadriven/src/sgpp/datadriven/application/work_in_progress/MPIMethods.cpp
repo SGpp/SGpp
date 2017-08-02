@@ -140,7 +140,7 @@ namespace sgpp {
 
                 networkMessage->listLength = numPointsInBuffer;
 
-                printf("Sending class %i update with %i deleted grid points", networkMessage->classIndex,
+                printf("Sending class %i update with %i deleted grid points\n", networkMessage->classIndex,
                        networkMessage->listLength);
 
                     PendingMPIRequest pendingMPIRequest;
@@ -262,7 +262,8 @@ namespace sgpp {
         MPIMethods::fillBufferWithVectorData(void *buffer, const void *bufferEnd,
                                              Iterator iterator,
                                              Iterator listEnd) {
-            printf("Not implemented");
+            printf("Not implemented\n");
+            exit(0);
             //TODO: Implement vector
 //            typename std::iterator_traits<Iterator>::value_type *bufferPointer = (typename std::iterator_traits<Iterator>::value_type *) buffer;
 //            size_t copiedVectors = 0;
