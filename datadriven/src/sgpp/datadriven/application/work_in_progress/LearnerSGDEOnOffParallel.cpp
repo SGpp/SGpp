@@ -112,6 +112,9 @@ namespace sgpp {
 
             // main loop which performs the training process
             while (completedDataPasses < maxDataPasses) {
+                std::cout << "Synchronizing start of data pass " << completedDataPasses << std::endl;
+                MPIMethods::synchronizeBarrier();
+
                 std::cout << "#batch-size: " << batchSize << std::endl;
                 std::cout << "#batches to process: " << numBatch << std::endl;
 
@@ -175,6 +178,7 @@ namespace sgpp {
 
                     } else {
                         std::cout << "Not implemented" << std::endl;
+                        exit(0);
                         //TODO: Otherwise, merge grids if any are available
                     }
 
