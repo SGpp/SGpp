@@ -88,8 +88,14 @@ namespace sgpp {
 
         void MPIMethods::sendGridComponentsUpdate(std::vector<RefinementResult> *refinementResults) {
 
+            std::cout << "Updating the grid components on workers..." << std::endl;
+
             for (size_t classIndex = 0; classIndex < refinementResults->size(); classIndex++) {
                 RefinementResult refinementResult = (*refinementResults)[classIndex];
+
+                std::cout << "Updating grid for class " << classIndex
+                          << " (" << refinementResult.addedGridPoints.size() << " additions, "
+                          << refinementResult.deletedGridPointsIndexes.size() << " deletions)" << std::endl;
 
                 std::list<size_t>::const_iterator deletedPointsIterator = std::begin(
                         refinementResult.deletedGridPointsIndexes);
@@ -106,6 +112,8 @@ namespace sgpp {
                                                                              addedPointsIterator,
                                                                              addedPointsEnd);
             }
+
+            std::cout << "Finished updateing the grid components on workers." << std::endl;
         }
 
         template<typename Iterator>
@@ -130,11 +138,13 @@ namespace sgpp {
                     }
                         break;
                     case ADDED_GRID_POINTS_LIST:
-                        numPointsInBuffer = fillBufferWithVectorData<Iterator>((void *) networkMessage->payload,
-                                                                               (void *) std::end(
+                        numPointsInBuffer = fillBufferWithVectorData<Iterator, double_t>(
+                                (void *) networkMessage->payload,
+                                (void *) std::end(
                                                                                        networkMessage->payload),
-                                                                               iterator,
-                                                                               listEnd);
+                                iterator,
+                                listEnd,
+                                sizeof(double)); //TODO: Size of double represents the size of a data value in DataVector
                         break;
                     }
 
@@ -148,8 +158,8 @@ namespace sgpp {
                     pendingMPIRequests.push_back(pendingMPIRequest);
 
                 //TODO: NiceToHave Send the smallest packet possible
-                MPI_Ibcast(&networkMessage, sizeof(RefinementResultNetworkMessage), MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
-                               MPI_COMM_WORLD, &(pendingMPIRequest.request));
+                MPI_Ibcast(networkMessage, sizeof(RefinementResultNetworkMessage), MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
+                           MPI_COMM_WORLD, &(pendingMPIRequest.request));
 
                 }
         }
@@ -257,25 +267,28 @@ namespace sgpp {
         //TODO: !!!!!!!!! Compiler Errors
 
         //TODO: Ensure compiler calls the correct method
-        template<typename Iterator>
+        template<typename Iterator, typename ValueType>
         size_t
         MPIMethods::fillBufferWithVectorData(void *buffer, const void *bufferEnd,
                                              Iterator iterator,
-                                             Iterator listEnd) {
-            printf("Not implemented\n");
-            exit(0);
+                                             Iterator listEnd, size_t sizeOfDataType) {
             //TODO: Implement vector
-//            typename std::iterator_traits<Iterator>::value_type *bufferPointer = (typename std::iterator_traits<Iterator>::value_type *) buffer;
-//            size_t copiedVectors = 0;
-//            while (bufferPointer /* + iterator->size()  */ /* * sizeof(typename std::iterator_traits<Iterator>::value_type) */ <
-//                   bufferEnd && iterator != listEnd) {
-//                void* originPointer = &(*iterator);
-////                std::memcpy(originPointer, bufferPointer, sizeof(*iterator));
-//                std::copy()
-//                iterator++;
-//                copiedVectors++;
-//            }
-//            return copiedVectors;
+            auto *bufferPointer = buffer;
+            size_t copiedVectors = 0;
+            while (iterator != listEnd) {
+                typename std::vector<ValueType> dataVector = (typename std::vector<ValueType>) *iterator;
+                size_t vectorMemLength = dataVector.size() * sizeOfDataType;
+
+                if (bufferPointer + vectorMemLength >= bufferEnd) {
+                    break;
+                }
+
+                std::memcpy(&(dataVector[0]), bufferPointer, vectorMemLength);
+                bufferPointer += vectorMemLength;
+                iterator++;
+                copiedVectors++;
+            }
+            return copiedVectors;
         }
 
         template<typename Iterator>
@@ -287,6 +300,8 @@ namespace sgpp {
             while (bufferPointer + sizeof(typename std::iterator_traits<Iterator>::value_type) < bufferEnd &&
                    iterator != listEnd) {
                 *bufferPointer = *iterator;
+
+                bufferPointer++;
                 iterator++;
                 copiedValues++;
             }

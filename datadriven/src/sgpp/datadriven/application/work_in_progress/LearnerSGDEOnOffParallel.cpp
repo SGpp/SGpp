@@ -159,6 +159,7 @@ namespace sgpp {
                             doRefinementForAll(refinementFunctorType, refMonitor, vectorRefinementResults,
                                                onlineObjects, monitor);
                             numberOfCompletedRefinements += 1;
+                            std::cout << "Refinement " << numProcessedDataPoints << " complete" << std::endl;
 
                             //TODO If not master, the grid needs to be adjusted here
                             if (MPIMethods::isMaster()) {
