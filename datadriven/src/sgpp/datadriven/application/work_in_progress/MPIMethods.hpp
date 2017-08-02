@@ -46,11 +46,11 @@ namespace sgpp {
             static size_t fillBufferWithData(void *buffer, void *bufferEnd, Iterator iterator,
                                              Iterator listEnd);
 
-            template<typename Iterator>
+            template<typename Iterator, typename ValueType>
             static size_t
             fillBufferWithVectorData(void *buffer, const void *bufferEnd,
                                      Iterator iterator,
-                                     Iterator listEnd);
+                                     Iterator listEnd, size_t sizeOfDataType);
 
             template<typename Iterator>
             static void sendRefinementUpdates(size_t &classIndex, const RefinementResultsUpdateType updateType,
