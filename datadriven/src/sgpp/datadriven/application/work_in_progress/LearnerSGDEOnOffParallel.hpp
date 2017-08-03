@@ -125,6 +125,7 @@ namespace sgpp {
             // The final classification error
             double error;
 
+
             void updateVariablesAfterRefinement(RefinementResult *refinementResult, size_t classIndex,
                                                 DBMatOnlineDE *densEst);
 
@@ -134,12 +135,13 @@ namespace sgpp {
 
             void shutdown();
 
-            void workBatch(Dataset dataset);
-
             void assembleNextBatchData(Dataset *dataBatch, size_t *batchOffset) const;
+
+            void workBatch(Dataset dataset, size_t batchOffset, bool doCrossValidation);
 
         protected:
 
+            std::vector<RefinementResult> vectorRefinementResults;
 
             size_t
             handleDataAndZeroBasedRefinement(bool preCompute, MultiGridRefinementFunctor *func, size_t idx,
@@ -175,6 +177,12 @@ namespace sgpp {
                                        std::map<double, int> &classIndices) const;
 
             bool workerActive;
+            int lastWorkerID;
+
+            void assignBatchToWorker(Dataset dataset, size_t batchOffset, bool doCrossValidation);
+
+            int getNextWorkerID();
+
         };
     }   //namespace datadriven
 }  // namespace sgpp

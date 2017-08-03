@@ -38,6 +38,12 @@ namespace sgpp {
 
             static void bcastCommandNoArgs(MPI_COMMAND_ID commandId);
 
+            static size_t sendMergeGridNetworkMessage(size_t classIndex, DataVector &alphaVector);
+
+            static void assignBatch(const int workerID, size_t batchOffset, size_t batchSize, bool doCrossValidation);
+
+            static int getWorldSize();
+
         protected:
             //Pending MPI Requests
             static std::vector<sgpp::datadriven::PendingMPIRequest> pendingMPIRequests;
@@ -68,11 +74,16 @@ namespace sgpp {
 
             static void endSynchronizingPackets();
 
-            void sendISend(int destinationRank, MPI_Packet *mpiPacket);
+            static void sendISend(const int destinationRank, MPI_Packet *mpiPacket);
 
-            void sendCommandNoArgs(int destinationRank, MPI_COMMAND_ID commandId);
+            void sendCommandNoArgs(const int destinationRank, MPI_COMMAND_ID commandId);
 
-            static void assignBatch(MPI_Packet *pPacket, LearnerSGDEOnOffParallel *learnerInstance);
+            static void runBatch(MPI_Packet *pPacket, LearnerSGDEOnOffParallel *learnerInstance);
+
+            size_t
+            receiveMergeGridNetworkMessage(int gridversion, MergeGridNetworkMessage &networkMessage,
+                                           DataVector &alphaVector);
+
         };
     }
 }

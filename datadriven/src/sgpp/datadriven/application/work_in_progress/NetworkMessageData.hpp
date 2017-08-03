@@ -55,17 +55,18 @@ namespace sgpp {
         };
 
         struct MergeGridNetworkMessage {
-            int gridversion;
-            int classIndex;
-            int payloadOffset;
-            int payloadLength;
+            unsigned int gridversion;
+            unsigned int classIndex;
+            unsigned int payloadOffset;
+            unsigned int payloadLength;
 
             unsigned char payload[(MPI_PACKET_MAX_PAYLOAD_SIZE - 4 * sizeof(int))];
         };
 
         struct AssignBatchNetworkMessage {
-            int batchOffset;
-            int batchSize;
+            unsigned int batchOffset;
+            unsigned int batchSize;
+            bool doCrossValidation;
         };
 
     }

@@ -167,7 +167,7 @@ namespace sgpp {
             sendIBcast(&mpiPacket);
         }
 
-        void MPIMethods::sendCommandNoArgs(int destinationRank, MPI_COMMAND_ID commandId) {
+        void MPIMethods::sendCommandNoArgs(const int destinationRank, MPI_COMMAND_ID commandId) {
             MPI_Packet mpiPacket{};
             mpiPacket.commandID = commandId;
 
@@ -183,7 +183,7 @@ namespace sgpp {
                        MPI_COMM_WORLD, &(pendingMPIRequest.request));
         }
 
-        void MPIMethods::sendISend(int destinationRank, MPI_Packet *mpiPacket) {
+        void MPIMethods::sendISend(const int destinationRank, MPI_Packet *mpiPacket) {
             PendingMPIRequest pendingMPIRequest;
             pendingMPIRequest.buffer = mpiPacket;
             pendingMPIRequests.push_back(pendingMPIRequest);
@@ -194,8 +194,8 @@ namespace sgpp {
         }
 
         //TODO: This was imported from Merge
-        size_t receiveMergeGridNetworkMessage(int gridversion, MergeGridNetworkMessage &networkMessage,
-                                              base::DataVector &alphaVector) {
+        size_t MPIMethods::receiveMergeGridNetworkMessage(int gridversion, MergeGridNetworkMessage &networkMessage,
+                                                          base::DataVector &alphaVector) {
             if (gridversion != networkMessage.gridversion) {
                 sgpp::base::application_exception applicationException(
                         "Received grid merge request with incorrect grid version!");
@@ -263,33 +263,39 @@ namespace sgpp {
         }
 */
 
-//        //TODO: This was imported from Merge
-//        size_t
-//        sendMergeGridNetworkMessage(size_t classIndex, base::DataVector &alphaVector, size_t offset, size_t length) {
-//            //TODO
-//            MPI_Packet *mpiPacket = new MPI_Packet;
-//            MergeGridNetworkMessage *networkMessage = (MergeGridNetworkMessage *) mpiPacket->payload;
-//
-//            networkMessage->classIndex = classIndex;
-////            networkMessage->gridversion = gridversion;
-//            networkMessage->payloadOffset = offset;
-//
-//            size_t endOfPayload = sizeof(MergeGridNetworkMessage::payload) / sizeof(double);
-//            size_t numPointsInPacket = 0;
-//
-//            size_t endOfCopy = std::min(length, endOfPayload);
-//
-//            double *alphaValues = (double *) networkMessage->payload;
-//            for (size_t bufferIndex = 0; bufferIndex < endOfCopy; bufferIndex++) {
-//                alphaValues[bufferIndex] = alphaVector[offset + bufferIndex];
-//                numPointsInPacket++;
-//            }
-//
-//            printf("Sending merge for class %zu offset %zu and %zu modifications", classIndex, offset,
-//                   numPointsInPacket);
-//            networkMessage->payloadLength = numPointsInPacket;
-//            return numPointsInPacket;
-//        }
+        size_t
+        MPIMethods::sendMergeGridNetworkMessage(size_t classIndex, base::DataVector &alphaVector) {
+            size_t offset = 0;
+            while (offset < alphaVector.size()) {
+                //TODO Memory leak?
+                MPI_Packet *mpiPacket = new MPI_Packet;
+                MergeGridNetworkMessage *networkMessage = (MergeGridNetworkMessage *) mpiPacket->payload;
+
+                networkMessage->classIndex = classIndex;
+//            networkMessage->gridversion = gridversion;
+                networkMessage->payloadOffset = offset;
+
+                size_t endOfPayload = sizeof(MergeGridNetworkMessage::payload) / sizeof(double);
+                size_t numPointsInPacket = 0;
+
+                size_t endOfCopy = std::min(alphaVector.size(), endOfPayload);
+
+                double *alphaValues = (double *) networkMessage->payload;
+                for (size_t bufferIndex = 0; bufferIndex < endOfCopy; bufferIndex++) {
+                    alphaValues[bufferIndex] = alphaVector[offset + bufferIndex];
+                    numPointsInPacket++;
+                }
+                networkMessage->payloadLength = numPointsInPacket;
+
+                std::cout << "Sending merge for class " << classIndex
+                          << " offset " << offset
+                          << " and " << numPointsInPacket << " values" << std::endl;
+                sendISend(MPI_MASTER_RANK, mpiPacket);
+                offset += numPointsInPacket;
+            }
+
+            return offset;
+        }
 
 
         //TODO: !!!!!!!!! Compiler Errors
@@ -418,9 +424,8 @@ namespace sgpp {
                     std::cout << "Merge grid not implemented" << std::endl;
                     break;
                 case ASSIGN_BATCH:
-                    std::cout << "Assign batch not implemented" << std::endl;
-                    assignBatch(mpiPacket,
-                                learnerInstance);
+                    runBatch(mpiPacket,
+                             learnerInstance);
                     break;
                 case SHUTDOWN:
                     std::cout << "Worker shutdown requested" << std::endl;
@@ -446,12 +451,24 @@ namespace sgpp {
             std::cout << "Synchronizing not implemented" << std::endl;
         }
 
-        void MPIMethods::assignBatch(MPI_Packet *mpiPacket, LearnerSGDEOnOffParallel *learnerInstance) {
+        void MPIMethods::assignBatch(const int workerID, size_t batchOffset, size_t batchSize, bool doCrossValidation) {
+            MPI_Packet *mpiPacket = new MPI_Packet;
+            auto *message = (AssignBatchNetworkMessage *) mpiPacket->payload;
+            message->batchOffset = batchOffset;
+            message->batchSize = batchSize;
+            message->doCrossValidation = doCrossValidation;
+
+            sendISend(workerID, mpiPacket);
+        }
+
+        void MPIMethods::runBatch(MPI_Packet *mpiPacket, LearnerSGDEOnOffParallel *learnerInstance) {
             auto *message = (AssignBatchNetworkMessage *) mpiPacket->payload;
             Dataset dataset{message->batchSize, learnerInstance->getDimensionality()};
-            learnerInstance->assembleNextBatchData(&dataset, &(static_cast<size_t > (message->batchOffset)));
-            //TODO continue
-            learnerInstance->workBatch(dataset);
+            learnerInstance->workBatch(dataset, message->batchOffset, message->doCrossValidation);
+        }
+
+        int MPIMethods::getWorldSize() {
+            return mpiWorldSize;
         }
 
     }
