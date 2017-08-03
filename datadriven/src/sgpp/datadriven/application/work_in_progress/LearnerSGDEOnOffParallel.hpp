@@ -134,6 +134,10 @@ namespace sgpp {
 
             void shutdown();
 
+            void workBatch(Dataset dataset);
+
+            void assembleNextBatchData(Dataset *dataBatch, size_t *batchOffset) const;
+
         protected:
 
 
@@ -141,8 +145,6 @@ namespace sgpp {
             handleDataAndZeroBasedRefinement(bool preCompute, MultiGridRefinementFunctor *func, size_t idx,
                                              base::Grid &grid,
                                              base::GridGenerator &gridGen) const;
-
-            void assembleNextBatchData(Dataset *dataBatch, size_t *batchOffset) const;
 
 
             void allocateClassMatrices(size_t dim, std::vector<std::pair<base::DataMatrix *, double>> &trainDataClasses,

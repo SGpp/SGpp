@@ -350,6 +350,7 @@ namespace sgpp {
                 }
             }
 
+            //TODO: We might need to transfer the results here.
             // apply grid changes to the Cholesky factorization
             if (offline->isRefineable()) {
                 dynamic_cast<DBMatOfflineChol &>(densEst->getOfflineObject())
@@ -591,6 +592,12 @@ namespace sgpp {
             } else {
                 workerActive = false;
             }
+        }
+
+        void LearnerSGDEOnOffParallel::workBatch(Dataset dataset) {
+            std::cout << "Learning with batch of size " << dataset.getNumberInstances();
+            std::cout << "Not implemented" << std::endl;
+            exit(-1);
         }
 
     }  // namespace datadriven

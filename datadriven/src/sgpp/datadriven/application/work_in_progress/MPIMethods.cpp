@@ -447,7 +447,9 @@ namespace sgpp {
         }
 
         void MPIMethods::assignBatch(MPI_Packet *mpiPacket, LearnerSGDEOnOffParallel *learnerInstance) {
-            Dataset dataset;
+            auto *message = (AssignBatchNetworkMessage *) mpiPacket->payload;
+            Dataset dataset{message->batchSize, learnerInstance->getDimensionality()};
+            learnerInstance->assembleNextBatchData(&dataset, &(static_cast<size_t > (message->batchOffset)));
             //TODO continue
             learnerInstance->workBatch(dataset);
         }
