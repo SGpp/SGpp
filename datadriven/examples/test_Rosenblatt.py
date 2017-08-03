@@ -63,14 +63,14 @@ def test(grid_points):
   plt.plot(grid_points, ys)
 
 xs = np.arange(0, 1.01, 0.01)
-l_max = 6
+l_max = 3
 interpolation = interpolation_function(1, distrib)
 interpolation.create_interpolation(l_max)
 
 # grid_points = np.arange(0, 1.01, 2**-l_max)
 # ys = [interpolation(x) for x in xs]
-ys = eval_rosenblatt(interpolation, xs)
-# ys = eval_inverse_rosenblatt(interpolation, xs)
+# ys = eval_rosenblatt(interpolation, xs)
+ys = eval_inverse_rosenblatt(interpolation, xs)
 grid_points = np.arange(0, 1.01, 2**-l_max)
 for i in range(len(ys) - 1):
   if (ys[i] >= ys[i+1]):
