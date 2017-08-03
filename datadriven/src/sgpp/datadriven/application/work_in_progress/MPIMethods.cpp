@@ -188,7 +188,7 @@ namespace sgpp {
             pendingMPIRequest.buffer = mpiPacket;
             pendingMPIRequests.push_back(pendingMPIRequest);
 
-            MPI_Isend(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, destinationRank, MPI_ANY_TAG,
+            MPI_Isend(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, destinationRank, COMMAND_TAG,
                       MPI_COMM_WORLD, &(pendingMPIRequest.request));
 
         }
