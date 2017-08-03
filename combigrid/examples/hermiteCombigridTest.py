@@ -13,6 +13,10 @@ def operationwrapper(combi_operation, level):
     return operation
 
 
+
+
+
+
 # for functions from sgpp::optimization
 def getfuncwrapper(func):
     def function(x):
@@ -40,27 +44,6 @@ def estimatel2Error(n, dim, gridOpEval, targetFunc):
     sum = sum / n
     sum = np.sqrt(sum)
     return sum
-
-
-def generateGridpoints_1D(level):
-    gridpoints = []
-
-    if (level is 0):
-        return [0.5]
-
-    i = 0
-    while i * 2 ** (-level) <= 1:
-        gridpoints.append(i * 2 ** (-level))
-        i += 1
-
-    return gridpoints
-
-
-def generateGridpoints_2D(level):
-
-    gp1D=generateGridpoints_1D(level)
-    X,Y=np.meshgrid(gp1D,gp1D)
-    return X,Y
 
 
 
@@ -128,6 +111,8 @@ class CombiCombigrid1d_hermite:
         return self.operation_psi.evaluate(level,
                                            x) + 1 * self.operation_zeta.evaluate(
             level, x)
+    def getLevelManager(self):
+        return self.operation_psi.getLevelManager()
 
 
 # not ready
@@ -156,6 +141,9 @@ class CombiCombigrid2dHermite:
         sum += self.operation_zeta(level, x)
         return sum
 
+    def getLevelManager(self):
+        return self.operation_psi.getLevelManager()
+
 
 class CombiCombigrid2dLinear:
     def __init__(self, function):
@@ -183,6 +171,9 @@ class CombiCombigrid2dLinear:
         sum -= self.operation_linear.evaluate(level, x)
         return sum
 
+    def getLevelManager(self):
+        return self.operation_linear.getLevelManager()
+
 
 # returns the plotgridpoints and the points wrapped as DataVector
 def generate1DGrid(samples):
@@ -197,7 +188,11 @@ def calculate_grid_y_values(X, operation, level):
     X_eval = [pysgpp.DataVector([i]) for i in X]
     Y = [operation.evaluate(level, X_eval[i]) for i in range(len(X_eval))]
 
-    gridpoints = generateGridpoints_1D(level)
+    z = operation.getLevelManager().getGridPointMatrix()
+    gridpoints = [z.get(0, x) for x in range(z.getNcols())]
+
+
+
 
     return Y, gridpoints
 
@@ -223,6 +218,8 @@ def plot2DGrid(n_samples, level, operation,title=""):
     Y = np.linspace(0 + epsilon, 1, n_samples)
 
     X, Y = np.meshgrid(X, Y)
+
+
 
     z = np.zeros((n_samples, n_samples))
     for i in range(n_samples):
@@ -279,9 +276,13 @@ def plot2DContour(n_samples, level, operation):
     ax.clabel(CS, inline=1, fontsize=10)
 
 
-    X,Y=generateGridpoints_2D(level)
+   # grid generation
+    z=operation.getLevelManager().getGridPointMatrix()
+    X=[z.get(0,x) for x in range(z.getNcols())]
+    Y = [z.get(1, y) for y in range(z.getNcols())]
 
 
+    print(X)
 
     points=ax.plot(X,Y,'.',c="black",markersize=10)
 
@@ -410,6 +411,15 @@ def example_combicombigrid_2D_linear(l, func_standard):
     plot2DGrid(n_samples,level,operation,"combicombi_linear")
     plot2DContour(n_samples, level, operation)
 
+
+
+
+
+
+
+
+
+
     # derivatives
 
 
@@ -453,7 +463,7 @@ def example_combicombigrid_2D_hermite(l):
 
 # example_1D_realfunction()
 # example_1D_psi(3)
-# example_combicombigrid_1D(3)
+#example_combicombigrid_1D(3)
 
 
 func = pysgpp.OptRosenbrockObjective(2)
@@ -461,9 +471,9 @@ func_wrap=getfuncwrapper(func)
 
 func_standard=pysgpp.multiFunc(func_wrap)
 
-example_2D_comparison_function(func_standard)
+#example_2D_comparison_function(func_standard)
 #example_2D_psi()
-example_2D_linear(2,func_standard)
+#example_2D_linear(2,func_standard)
 example_combicombigrid_2D_linear(2,func_standard) # with "contourplot"
 #example_combicombigrid_2D_hermite(3)
 
