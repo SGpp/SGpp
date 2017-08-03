@@ -24,7 +24,7 @@ namespace sgpp {
         };
 
         enum MPI_COMMAND_TAG {
-
+            COMMAND_TAG,
         };
 
         struct MPI_Packet {
