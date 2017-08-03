@@ -38,10 +38,6 @@ using sgpp::base::SurplusRefinementFunctor;
 namespace sgpp {
     namespace datadriven {
 
-        //Batches assigned by master
-        std::vector<Dataset> assignedBatches;
-
-
         LearnerSGDEOnOffParallel::LearnerSGDEOnOffParallel(
                 sgpp::datadriven::DBMatDensityConfiguration &dconf,
                 Dataset &trainData,
@@ -80,8 +76,7 @@ namespace sgpp {
 
             // contains list of removed grid points and number of added grid points
             // (is updated in each refinement/coarsening step)
-            std::vector<RefinementResult> *vectorRefinementResults =
-                    new std::vector<RefinementResult>(numClasses);
+//            vectorRefinementResults = new ...
 
             // initialize counter for dataset passes
             size_t completedDataPasses = 0;
@@ -128,7 +123,7 @@ namespace sgpp {
                 std::cout << "#batches to process: " << numBatch << std::endl;
 
                 // data point counter - determines offset when selecting next batch
-                size_t cnt = 0;
+                size_t batchOffset = 0;
 
                 // iterate over total number of batches
                 for (size_t currentBatchNum = 1; currentBatchNum <= numBatch; currentBatchNum++) {
@@ -144,11 +139,14 @@ namespace sgpp {
                             nextCvStep *= 5;
                         }
                     }
-                    // assemble next batch
-                    assembleNextBatchData(&dataBatch, &cnt);
+                    //This was moved into work batch
+//                    // assemble next batch
+//                    assembleNextBatchData(&dataBatch, &batchOffset);
+//
+//                    // train the model with current batch
+//                    train(dataBatch, doCrossValidation, vectorRefinementResults);
 
-                    // train the model with current batch
-                    train(dataBatch, doCrossValidation, vectorRefinementResults);
+                    assignBatchToWorker(dataBatch, batchOffset, doCrossValidation);
 
                     numProcessedDataPoints += dataBatch.getData().getNrows();
 
@@ -168,7 +166,7 @@ namespace sgpp {
                         // and coarsening methods can be applied
 
                         std::cout << "refinement at iteration: " << numProcessedDataPoints << std::endl;
-                        doRefinementForAll(refinementFunctorType, refMonitor, vectorRefinementResults,
+                        doRefinementForAll(refinementFunctorType, refMonitor, &vectorRefinementResults,
                                            onlineObjects, monitor);
                         numberOfCompletedRefinements += 1;
                         std::cout << "Refinement " << numProcessedDataPoints << " complete" << std::endl;
@@ -177,7 +175,7 @@ namespace sgpp {
                         if (MPIMethods::isMaster()) {
                             //TODO Send and Receive Delta
                             //TODO Adjust Grid
-                            MPIMethods::sendGridComponentsUpdate(vectorRefinementResults);
+                            MPIMethods::sendGridComponentsUpdate(&vectorRefinementResults);
                         }
                     } else {
                         std::cout << "No refinement necessary" << std::endl;
@@ -193,7 +191,7 @@ namespace sgpp {
                     std::cout << "Processing batch in "
                               << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
                               << "ms" << std::endl;
-                    std::cout << "Processed " << cnt << " data points so far" << std::endl;
+                    std::cout << "Processed " << batchOffset << " data points so far" << std::endl;
 
                 }
 
@@ -211,7 +209,7 @@ namespace sgpp {
             error = 1.0 - getAccuracy();
 
             // delete offline;
-            delete vectorRefinementResults;
+//            delete vectorRefinementResults;
         }
 
         size_t LearnerSGDEOnOffParallel::getDimensionality() const { return trainData.getDimension(); }
@@ -594,10 +592,42 @@ namespace sgpp {
             }
         }
 
-        void LearnerSGDEOnOffParallel::workBatch(Dataset dataset) {
-            std::cout << "Learning with batch of size " << dataset.getNumberInstances();
-            std::cout << "Not implemented" << std::endl;
-            exit(-1);
+        void LearnerSGDEOnOffParallel::workBatch(Dataset dataset, size_t batchOffset, bool doCrossValidation) {
+
+            // assemble next batch
+            std::cout << "Learning with batch of size " << dataset.getNumberInstances()
+                      << " at offset " << batchOffset << std::endl;
+            assembleNextBatchData(&dataset, &batchOffset);
+            std::cout << "Batch " << batchOffset << " assembled, starting with training." << std::endl;
+
+            // train the model with current batch
+            train(dataset, doCrossValidation, &vectorRefinementResults);
+
+            std::cout << "Batch " << batchOffset << " completed." << std::endl;
+            auto &densityFunctions = getDensityFunctions();
+            for (size_t classIndex = 0; classIndex < getNumClasses(); classIndex++) {
+                std::cout << "Updating master for class " << classIndex << std::endl;
+                auto &classDensityContainer = densityFunctions[classIndex];
+                DataVector alphaVector = classDensityContainer.first.get()->getAlpha();
+                MPIMethods::sendMergeGridNetworkMessage(classIndex, alphaVector);
+            }
+
+            std::cout << "Completed work batch " << batchOffset << " requested by master." << std::endl;
+        }
+
+        void
+        LearnerSGDEOnOffParallel::assignBatchToWorker(Dataset dataset, size_t batchOffset, bool doCrossValidation) {
+            int workerID = getNextWorkerID();
+            std::cout << "Assigning batch " << batchOffset << " to worker " << workerID << std::endl;
+            MPIMethods::assignBatch(workerID, batchOffset, dataset.getNumberInstances(), doCrossValidation);
+        }
+
+
+        int LearnerSGDEOnOffParallel::getNextWorkerID() {
+            if (lastWorkerID + 1 >= MPIMethods::getWorldSize()) {
+                lastWorkerID = 0;
+            }
+            return lastWorkerID++;
         }
 
     }  // namespace datadriven
