@@ -219,13 +219,7 @@ namespace sgpp {
         }
 
         size_t LearnerSGDEOnOffParallel::getDimensionality() {
-            std::cout << "Requested dimension" << std::endl;
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-//            std::cout << "Address of train data " << &trainData << std::endl;
-//            std::this_thread::sleep_for(std::chrono::seconds(1));
-//            std::cout << "Dimension: " << trainData.getDimension() << std::endl;
-//            return trainData.getDimension();
-            return 2;
+            return trainData.getDimension();
         }
 
         void LearnerSGDEOnOffParallel::printGridSizeStatistics(const char *messageString,
