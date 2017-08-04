@@ -26,6 +26,7 @@
 
 
 #include <chrono>
+#include <thread>
 
 using sgpp::base::Grid;
 using sgpp::base::GridStorage;
@@ -65,7 +66,9 @@ namespace sgpp {
             if (!MPIMethods::isMaster()) {
                 while (workerActive) {
                     std::cout << "Client looping" << std::endl;
-                    MPIMethods::waitForMPIRequestsToComplete();
+//                    MPIMethods::waitForAnyMPIRequestsToComplete();
+                    std::this_thread::sleep_for(std::chrono::seconds(1));
+                    MPIMethods::processCompletedMPIRequests();
                 }
                 std::cout << "Worker shutdown." << std::endl;
                 return;
@@ -148,7 +151,15 @@ namespace sgpp {
 
                     assignBatchToWorker(dataBatch, batchOffset, doCrossValidation);
 
-                    numProcessedDataPoints += dataBatch.getData().getNrows();
+                    numProcessedDataPoints += dataBatch.getNumberInstances();
+
+                    std::cout << numProcessedDataPoints << " have already been assigned." << std::endl;
+
+                    std::this_thread::sleep_for(std::chrono::seconds(5));
+
+                    std::cout << "Master is now processing incoming requests." << std::endl;
+                    MPIMethods::processCompletedMPIRequests();
+                    std::cout << "Master finished processing incoming requests." << std::endl;
 
                     // access DBMatOnlineDE-objects of all classes in order
                     // to apply adaptivity to the specific sparse grids later on
@@ -171,12 +182,7 @@ namespace sgpp {
                         numberOfCompletedRefinements += 1;
                         std::cout << "Refinement " << numProcessedDataPoints << " complete" << std::endl;
 
-                        //TODO If not master, the grid needs to be adjusted here
-                        if (MPIMethods::isMaster()) {
-                            //TODO Send and Receive Delta
-                            //TODO Adjust Grid
-                            MPIMethods::sendGridComponentsUpdate(&vectorRefinementResults);
-                        }
+                        MPIMethods::sendGridComponentsUpdate(&vectorRefinementResults);
                     } else {
                         std::cout << "No refinement necessary" << std::endl;
                     }
@@ -212,7 +218,15 @@ namespace sgpp {
 //            delete vectorRefinementResults;
         }
 
-        size_t LearnerSGDEOnOffParallel::getDimensionality() const { return trainData.getDimension(); }
+        size_t LearnerSGDEOnOffParallel::getDimensionality() {
+            std::cout << "Requested dimension" << std::endl;
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+//            std::cout << "Address of train data " << &trainData << std::endl;
+//            std::this_thread::sleep_for(std::chrono::seconds(1));
+//            std::cout << "Dimension: " << trainData.getDimension() << std::endl;
+//            return trainData.getDimension();
+            return 2;
+        }
 
         void LearnerSGDEOnOffParallel::printGridSizeStatistics(const char *messageString,
                                                                ClassDensityContainer &onlineObjects) {
@@ -618,7 +632,9 @@ namespace sgpp {
         void
         LearnerSGDEOnOffParallel::assignBatchToWorker(Dataset dataset, size_t batchOffset, bool doCrossValidation) {
             int workerID = getNextWorkerID();
-            std::cout << "Assigning batch " << batchOffset << " to worker " << workerID << std::endl;
+            std::cout << "Assigning batch " << batchOffset
+                      << " to worker " << workerID
+                      << " with size " << dataset.getNumberInstances() << std::endl;
             MPIMethods::assignBatch(workerID, batchOffset, dataset.getNumberInstances(), doCrossValidation);
         }
 
@@ -627,7 +643,7 @@ namespace sgpp {
             if (lastWorkerID + 1 >= MPIMethods::getWorldSize()) {
                 lastWorkerID = 0;
             }
-            return lastWorkerID++;
+            return ++lastWorkerID;
         }
 
     }  // namespace datadriven

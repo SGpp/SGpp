@@ -10,6 +10,7 @@
 #include <sgpp/datadriven/application/work_in_progress/NetworkMessageData.hpp>
 #include <sgpp/datadriven/application/work_in_progress/MPIMethods.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
+#include <thread>
 
 namespace sgpp {
     namespace datadriven {
@@ -17,6 +18,7 @@ namespace sgpp {
         //Pending MPI Requests
         std::vector<sgpp::datadriven::PendingMPIRequest> MPIMethods::pendingMPIRequests;
         int MPIMethods::mpiWorldSize = -1;
+        LearnerSGDEOnOffParallel *MPIMethods::learnerInstance;
 
 
         bool MPIMethods::isMaster() {
@@ -49,13 +51,13 @@ namespace sgpp {
                 auto *mpiPacket = new MPI_Packet;
                 unicastInputRequest.buffer = mpiPacket;
                 unicastInputRequest.disposeAfterCallback = false;
-                unicastInputRequest.callback = [&learnerInstance](PendingMPIRequest &request) {
-                    processIncomingMPICommands(learnerInstance, request.buffer);
-                    MPI_Irecv(request.buffer, MPI_PACKET_MAX_PAYLOAD_SIZE, MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE,
+                unicastInputRequest.callback = [](PendingMPIRequest &request) {
+                    processIncomingMPICommands(request.buffer);
+                    MPI_Irecv(request.buffer, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE,
                               MPI_ANY_TAG, MPI_COMM_WORLD, &(request.request));
                 };
 
-                MPI_Irecv(mpiPacket, MPI_PACKET_MAX_PAYLOAD_SIZE, MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG,
+                MPI_Irecv(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG,
                           MPI_COMM_WORLD,
                           &(unicastInputRequest.request));
 
@@ -67,15 +69,16 @@ namespace sgpp {
                 auto *mpiPacket = new MPI_Packet;
                 broadcastInputRequest.buffer = mpiPacket;
                 broadcastInputRequest.disposeAfterCallback = false;
-                broadcastInputRequest.callback = [&learnerInstance](PendingMPIRequest &request) {
-                    processIncomingMPICommands(learnerInstance, request.buffer);
-                    MPI_Ibcast(request.buffer, MPI_PACKET_MAX_PAYLOAD_SIZE, MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
+                broadcastInputRequest.callback = [](PendingMPIRequest &request) {
+                    processIncomingMPICommands(request.buffer);
+                    MPI_Ibcast(request.buffer, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
                                MPI_COMM_WORLD, &(request.request));
                 };
-                MPI_Ibcast(mpiPacket, MPI_PACKET_MAX_PAYLOAD_SIZE, MPI_UNSIGNED_CHAR, MPI_MASTER_RANK, MPI_COMM_WORLD,
+                MPI_Ibcast(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_MASTER_RANK, MPI_COMM_WORLD,
                            &(broadcastInputRequest.request));
                 pendingMPIRequests.push_back(broadcastInputRequest);
 
+                MPIMethods::learnerInstance = learnerInstance;
                 std::cout << "Started listening for broadcasts from task master" << std::endl;
             }
 
@@ -350,6 +353,7 @@ namespace sgpp {
                  pendingMPIRequestIterator != pendingMPIRequests.end();
                  pendingMPIRequestIterator++) {
                 MPI_Test(&(pendingMPIRequestIterator->request), &operationCompleted, &mpiStatus);
+                std::cout << "Pending request has status " << operationCompleted << std::endl;
                 if (operationCompleted != 0) {
                     //Execute the callback
                     pendingMPIRequestIterator->callback(*pendingMPIRequestIterator);
@@ -363,16 +367,21 @@ namespace sgpp {
             }
         }
 
-        void MPIMethods::waitForMPIRequestsToComplete() {
+        void MPIMethods::waitForAllMPIRequestsToComplete() {
             for (PendingMPIRequest &pendingMPIRequest : pendingMPIRequests) {
                 MPI_Wait(&(pendingMPIRequest.request), MPI_STATUS_IGNORE);
             }
-
-            processCompletedMPIRequests();
         }
 
-        void MPIMethods::receiveGridComponentsUpdate(LearnerSGDEOnOffParallel *learnerInstance,
-                                                     RefinementResultNetworkMessage *networkMessage) {
+        void MPIMethods::waitForAnyMPIRequestsToComplete() {
+            int completedRequest;
+            std::cout << "Not implemented" << std::endl;
+            exit(-1);
+            //TODO: The pending MPI requests aren't held in memory sequentially
+//            MPI_Waitany(pendingMPIRequests.size(), &pendingMPIRequests[0].request, &completedRequest, MPI_STATUS_IGNORE);
+        }
+
+        void MPIMethods::receiveGridComponentsUpdate(RefinementResultNetworkMessage *networkMessage) {
             //TODO
             RefinementResult refinementResult = sgpp::datadriven::RefinementResult();
 
@@ -408,7 +417,8 @@ namespace sgpp {
                                                             learnerInstance->getDensityFunctions()[networkMessage->classIndex].first.get());
         }
 
-        void MPIMethods::processIncomingMPICommands(LearnerSGDEOnOffParallel *learnerInstance, MPI_Packet *mpiPacket) {
+        void MPIMethods::processIncomingMPICommands(MPI_Packet *mpiPacket) {
+            std::cout << "Processing incoming command " << mpiPacket->commandID << std::endl;
             switch (mpiPacket->commandID) {
                 case START_SYNCHRONIZE_PACKETS:
                     startSynchronizingPackets();
@@ -417,20 +427,21 @@ namespace sgpp {
                     endSynchronizingPackets();
                     break;
                 case UPDATE_GRID:
-                    receiveGridComponentsUpdate(learnerInstance,
-                                                (RefinementResultNetworkMessage *) (mpiPacket->payload));
+                    receiveGridComponentsUpdate((RefinementResultNetworkMessage *) (mpiPacket->payload));
                     break;
                 case MERGE_GRID:
                     std::cout << "Merge grid not implemented" << std::endl;
                     break;
                 case ASSIGN_BATCH:
-                    runBatch(mpiPacket,
-                             learnerInstance);
+                    runBatch(mpiPacket);
                     break;
                 case SHUTDOWN:
                     std::cout << "Worker shutdown requested" << std::endl;
                     learnerInstance->shutdown();
                     break;
+                case NULL_COMMAND:
+                    std::cout << "Error: Incoming command has undefined command id" << std::endl;
+                    exit(-1);
                 default:
                     std::cout << "Error: MPI unknown command id: " << mpiPacket->commandID << std::endl;
                     exit(-1);
@@ -453,6 +464,8 @@ namespace sgpp {
 
         void MPIMethods::assignBatch(const int workerID, size_t batchOffset, size_t batchSize, bool doCrossValidation) {
             MPI_Packet *mpiPacket = new MPI_Packet;
+            mpiPacket->commandID = ASSIGN_BATCH;
+
             auto *message = (AssignBatchNetworkMessage *) mpiPacket->payload;
             message->batchOffset = batchOffset;
             message->batchSize = batchSize;
@@ -461,8 +474,11 @@ namespace sgpp {
             sendISend(workerID, mpiPacket);
         }
 
-        void MPIMethods::runBatch(MPI_Packet *mpiPacket, LearnerSGDEOnOffParallel *learnerInstance) {
+        void MPIMethods::runBatch(MPI_Packet *mpiPacket) {
             auto *message = (AssignBatchNetworkMessage *) mpiPacket->payload;
+            std::cout << "runbatch dim " << learnerInstance->getDimensionality() << std::endl;
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            std::cout << "creating dataset" << std::endl;
             Dataset dataset{message->batchSize, learnerInstance->getDimensionality()};
             learnerInstance->workBatch(dataset, message->batchOffset, message->doCrossValidation);
         }

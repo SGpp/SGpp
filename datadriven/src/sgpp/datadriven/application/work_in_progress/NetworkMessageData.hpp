@@ -5,16 +5,18 @@
 #ifndef SGPP_NETWORKMESSAGEDATA_H
 #define SGPP_NETWORKMESSAGEDATA_H
 
+#define MPI_PACKET_MAX_PAYLOAD_SIZE 512
+#define MPI_MASTER_RANK 0
+#define MPI_MAX_PROCESSOR_NAME_LENGTH 256
+
 #include <mpi.h>
 #include <functional>
 
 namespace sgpp {
     namespace datadriven {
-        static const int MPI_PACKET_MAX_PAYLOAD_SIZE = 512;
-        static const int MPI_MASTER_RANK = 0;
-        static const int MPI_MAX_PROCESSOR_NAME_LENGTH = 256;
 
         enum MPI_COMMAND_ID {
+            NULL_COMMAND,
             START_SYNCHRONIZE_PACKETS,
             END_SYNCHRONIZE_PACKETS,
             UPDATE_GRID,

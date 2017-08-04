@@ -19,18 +19,13 @@ namespace sgpp {
 
             static void sendGridComponentsUpdate(std::vector<RefinementResult> *refinementResults);
 
-
-            static void waitForMPIRequestsToComplete();
-
             static void processCompletedMPIRequests();
 
-            static void processIncomingMPICommands(LearnerSGDEOnOffParallel *learnerInstance,
-                                                   sgpp::datadriven::MPI_Packet *mpiPacket);
+            static void processIncomingMPICommands(sgpp::datadriven::MPI_Packet *mpiPacket);
 
 
             static void
-            receiveGridComponentsUpdate(LearnerSGDEOnOffParallel *learnerInstance,
-                                        sgpp::datadriven::RefinementResultNetworkMessage *networkMessage);
+            receiveGridComponentsUpdate(sgpp::datadriven::RefinementResultNetworkMessage *networkMessage);
 
             static void synchronizeBarrier();
 
@@ -44,10 +39,13 @@ namespace sgpp {
 
             static int getWorldSize();
 
+            static void waitForAnyMPIRequestsToComplete();
+
         protected:
             //Pending MPI Requests
             static std::vector<sgpp::datadriven::PendingMPIRequest> pendingMPIRequests;
             static int mpiWorldSize;
+            static LearnerSGDEOnOffParallel *learnerInstance;
 
             static void startSynchronizingPackets();
 
@@ -78,11 +76,13 @@ namespace sgpp {
 
             void sendCommandNoArgs(const int destinationRank, MPI_COMMAND_ID commandId);
 
-            static void runBatch(MPI_Packet *pPacket, LearnerSGDEOnOffParallel *learnerInstance);
+            static void runBatch(MPI_Packet *pPacket);
 
             size_t
             receiveMergeGridNetworkMessage(int gridversion, MergeGridNetworkMessage &networkMessage,
                                            DataVector &alphaVector);
+
+            void waitForAllMPIRequestsToComplete();
 
         };
     }

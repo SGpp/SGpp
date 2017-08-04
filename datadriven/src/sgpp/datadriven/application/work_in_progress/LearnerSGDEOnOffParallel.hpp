@@ -129,7 +129,7 @@ namespace sgpp {
             void updateVariablesAfterRefinement(RefinementResult *refinementResult, size_t classIndex,
                                                 DBMatOnlineDE *densEst);
 
-            size_t getDimensionality() const;
+            size_t getDimensionality();
 
             virtual ~LearnerSGDEOnOffParallel();
 
