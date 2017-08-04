@@ -63,6 +63,8 @@ namespace sgpp {
                                              size_t refPeriod, double accDeclineThreshold,
                                              size_t accDeclineBufferSize, size_t minRefInterval,
                                              bool enableCv, size_t nextCvStep) {
+            vectorRefinementResults = new std::vector<RefinementResult>;
+
             if (!MPIMethods::isMaster()) {
                 while (workerActive) {
                     std::cout << "Client looping" << std::endl;
@@ -177,12 +179,12 @@ namespace sgpp {
                         // and coarsening methods can be applied
 
                         std::cout << "refinement at iteration: " << numProcessedDataPoints << std::endl;
-                        doRefinementForAll(refinementFunctorType, refMonitor, &vectorRefinementResults,
+                        doRefinementForAll(refinementFunctorType, refMonitor, vectorRefinementResults,
                                            onlineObjects, monitor);
                         numberOfCompletedRefinements += 1;
                         std::cout << "Refinement " << numProcessedDataPoints << " complete" << std::endl;
 
-                        MPIMethods::sendGridComponentsUpdate(&vectorRefinementResults);
+                        MPIMethods::sendGridComponentsUpdate(vectorRefinementResults);
                     } else {
                         std::cout << "No refinement necessary" << std::endl;
                     }
@@ -215,7 +217,7 @@ namespace sgpp {
             error = 1.0 - getAccuracy();
 
             // delete offline;
-//            delete vectorRefinementResults;
+            delete vectorRefinementResults;
         }
 
         size_t LearnerSGDEOnOffParallel::getDimensionality() {
@@ -512,11 +514,14 @@ namespace sgpp {
 
             std::map<double, int> classIndices;  // maps class labels to indices
 
+            std::cout << "Allocating class matrices" << std::endl;
             allocateClassMatrices(dim, trainDataClasses, classIndices);
 
+            std::cout << "Splitting batch into classes" << std::endl;
             // split the data into the different classes:
             splitBatchIntoClasses(dataset, dim, trainDataClasses, classIndices);
 
+            std::cout << "Computing density functions" << std::endl;
             // compute density functions
             train(trainDataClasses, doCrossValidation, vectorRefinementResults);
 
@@ -609,7 +614,7 @@ namespace sgpp {
             std::cout << "Batch " << batchOffset << " assembled, starting with training." << std::endl;
 
             // train the model with current batch
-            train(dataset, doCrossValidation, &vectorRefinementResults);
+            train(dataset, doCrossValidation, vectorRefinementResults);
 
             std::cout << "Batch " << batchOffset << " completed." << std::endl;
             auto &densityFunctions = getDensityFunctions();
