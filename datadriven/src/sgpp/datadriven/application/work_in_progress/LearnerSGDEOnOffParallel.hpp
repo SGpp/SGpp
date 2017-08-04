@@ -141,7 +141,7 @@ namespace sgpp {
 
         protected:
 
-            std::vector<RefinementResult> vectorRefinementResults;
+            std::vector<RefinementResult> *vectorRefinementResults;
 
             size_t
             handleDataAndZeroBasedRefinement(bool preCompute, MultiGridRefinementFunctor *func, size_t idx,
