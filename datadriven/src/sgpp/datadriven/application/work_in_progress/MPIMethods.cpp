@@ -16,7 +16,7 @@ namespace sgpp {
     namespace datadriven {
 
         //Pending MPI Requests
-        std::vector<sgpp::datadriven::PendingMPIRequest> MPIMethods::pendingMPIRequests;
+        std::list<sgpp::datadriven::PendingMPIRequest> MPIMethods::pendingMPIRequests;
         int MPIMethods::mpiWorldSize = -1;
         LearnerSGDEOnOffParallel *MPIMethods::learnerInstance;
 
@@ -47,12 +47,16 @@ namespace sgpp {
 
             //Setup receiving messages from master/workers
             {
-                sgpp::datadriven::PendingMPIRequest unicastInputRequest;
                 auto *mpiPacket = new MPI_Packet;
-                unicastInputRequest.buffer = mpiPacket;
+                auto &unicastInputRequest = createPendingMPIRequest(mpiPacket);
                 unicastInputRequest.disposeAfterCallback = false;
                 unicastInputRequest.callback = [](PendingMPIRequest &request) {
+                    std::cout << "Incoming MPI unicast" << std::endl;
                     processIncomingMPICommands(request.buffer);
+
+//                    std::cout << "Zeroing MPI Request" << std::endl;
+//                    std::memset(request.request, 0, sizeof(MPI_Request));
+
                     MPI_Irecv(request.buffer, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE,
                               MPI_ANY_TAG, MPI_COMM_WORLD, &(request.request));
                 };
@@ -61,22 +65,24 @@ namespace sgpp {
                           MPI_COMM_WORLD,
                           &(unicastInputRequest.request));
 
-                pendingMPIRequests.push_back(unicastInputRequest);
                 std::cout << "Started listening for unicasts from any sources" << std::endl;
             }
             if (!isMaster()) {
-                PendingMPIRequest broadcastInputRequest;
                 auto *mpiPacket = new MPI_Packet;
-                broadcastInputRequest.buffer = mpiPacket;
+                auto &broadcastInputRequest = createPendingMPIRequest(mpiPacket);
                 broadcastInputRequest.disposeAfterCallback = false;
                 broadcastInputRequest.callback = [](PendingMPIRequest &request) {
+                    std::cout << "Incoming MPI broadcast" << std::endl;
                     processIncomingMPICommands(request.buffer);
+
+//                    std::cout << "Zeroing MPI Request" << std::endl;
+//                    std::memset(request.request, 0, sizeof(MPI_Request));
+
                     MPI_Ibcast(request.buffer, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
                                MPI_COMM_WORLD, &(request.request));
                 };
                 MPI_Ibcast(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_MASTER_RANK, MPI_COMM_WORLD,
                            &(broadcastInputRequest.request));
-                pendingMPIRequests.push_back(broadcastInputRequest);
 
                 MPIMethods::learnerInstance = learnerInstance;
                 std::cout << "Started listening for broadcasts from task master" << std::endl;
@@ -164,36 +170,43 @@ namespace sgpp {
         }
 
         void MPIMethods::bcastCommandNoArgs(MPI_COMMAND_ID commandId) {
-            MPI_Packet mpiPacket{};
-            mpiPacket.commandID = commandId;
+            MPI_Packet *mpiPacket = new MPI_Packet;
+            mpiPacket->commandID = commandId;
 
-            sendIBcast(&mpiPacket);
+            sendIBcast(mpiPacket);
         }
 
         void MPIMethods::sendCommandNoArgs(const int destinationRank, MPI_COMMAND_ID commandId) {
-            MPI_Packet mpiPacket{};
-            mpiPacket.commandID = commandId;
+            MPI_Packet *mpiPacket = new MPI_Packet;
+            mpiPacket->commandID = commandId;
 
-            sendISend(destinationRank, &mpiPacket);
+            sendISend(destinationRank, mpiPacket);
         }
 
         void MPIMethods::sendIBcast(MPI_Packet *mpiPacket) {
-            PendingMPIRequest pendingMPIRequest;
-            pendingMPIRequest.buffer = mpiPacket;
-            pendingMPIRequests.push_back(pendingMPIRequest);
+            PendingMPIRequest &pendingMPIRequest = createPendingMPIRequest(mpiPacket);
 
             MPI_Ibcast(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
                        MPI_COMM_WORLD, &(pendingMPIRequest.request));
         }
 
         void MPIMethods::sendISend(const int destinationRank, MPI_Packet *mpiPacket) {
-            PendingMPIRequest pendingMPIRequest;
-            pendingMPIRequest.buffer = mpiPacket;
-            pendingMPIRequests.push_back(pendingMPIRequest);
+            PendingMPIRequest &pendingMPIRequest = createPendingMPIRequest(mpiPacket);
 
+            //Point to the request in vector instead of stack
             MPI_Isend(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, destinationRank, COMMAND_TAG,
                       MPI_COMM_WORLD, &(pendingMPIRequest.request));
+        }
 
+        PendingMPIRequest &MPIMethods::createPendingMPIRequest(MPI_Packet *mpiPacket) {
+            pendingMPIRequests.emplace_back();
+            PendingMPIRequest &pendingMPIRequest = pendingMPIRequests.back();
+            pendingMPIRequest.disposeAfterCallback = true;
+            pendingMPIRequest.callback = [](PendingMPIRequest &request) {
+                std::cout << "Pending MPI request " << &request << "completed. " << std::endl;
+            };
+            pendingMPIRequest.buffer = mpiPacket;
+            return pendingMPIRequest;
         }
 
         //TODO: This was imported from Merge
@@ -257,6 +270,7 @@ namespace sgpp {
                    networkMessage->listLength);
             PendingMPIRequest pendingMPIRequest;
             pendingMPIRequest.buffer = mpiPacket;
+            //TODO: DANGEROUS
             pendingMPIRequests.push_back(pendingMPIRequest);
 
             //Send the smallest packet possible
@@ -270,8 +284,9 @@ namespace sgpp {
         MPIMethods::sendMergeGridNetworkMessage(size_t classIndex, base::DataVector &alphaVector) {
             size_t offset = 0;
             while (offset < alphaVector.size()) {
-                //TODO Memory leak?
                 MPI_Packet *mpiPacket = new MPI_Packet;
+                mpiPacket->commandID = MERGE_GRID;
+
                 MergeGridNetworkMessage *networkMessage = (MergeGridNetworkMessage *) mpiPacket->payload;
 
                 networkMessage->classIndex = classIndex;
@@ -346,23 +361,50 @@ namespace sgpp {
         }
 
         void MPIMethods::processCompletedMPIRequests() {
-            MPI_Status mpiStatus{};
-            int operationCompleted;
+
+            std::cout << "Checking " << pendingMPIRequests.size() << " pending MPI requests" << std::endl;
 
             for (auto pendingMPIRequestIterator = pendingMPIRequests.begin();
                  pendingMPIRequestIterator != pendingMPIRequests.end();
                  pendingMPIRequestIterator++) {
-                MPI_Test(&(pendingMPIRequestIterator->request), &operationCompleted, &mpiStatus);
-                std::cout << "Pending request has status " << operationCompleted << std::endl;
+                MPI_Status mpiStatus{};
+                int operationCompleted;
+
+                std::cout << "Testing request " << &*pendingMPIRequestIterator << std::endl;
+                if (MPI_Test(&(pendingMPIRequestIterator->request), &operationCompleted, &mpiStatus)) {
+                    std::cout << "Error MPI Test reported" << std::endl;
+                    exit(-1);
+                }
+                std::cout << "Pending request has status " << operationCompleted
+                          << " MPI_ERROR: " << mpiStatus.MPI_ERROR
+                          << " MPI SOURCE: " << mpiStatus.MPI_SOURCE
+                          << " MPI TAG: " << mpiStatus.MPI_TAG << std::endl;
                 if (operationCompleted != 0) {
+
+                    std::cout << "Executing callback" << std::endl;
                     //Execute the callback
                     pendingMPIRequestIterator->callback(*pendingMPIRequestIterator);
+                    std::cout << "Callback complete" << std::endl;
+
 
                     if (pendingMPIRequestIterator->disposeAfterCallback) {
                         //TODO Deleting a void pointer here
+                        std::cout << "Attempting to delete pending mpi request" << std::endl;
                         delete[] pendingMPIRequestIterator->buffer;
+                        //TODO: !!! DELETING STUFF HERE WILL MOVE OTHER PENDING REQUESTS. THIS CAUSES SEGMENTATION FAULTS
                         pendingMPIRequests.erase(pendingMPIRequestIterator);
+                        std::cout << "Deleted pending mpi request" << std::endl;
+                    } else {
+//                        std::cout << "Zeroing MPI Request" << std::endl;
+//                        std::memset(pendingMPIRequestIterator->request, 0, sizeof(MPI_Request));
+//
+//                        std::cout << "Zeroing Buffer" << std::endl;
+//                        std::memset(pendingMPIRequestIterator->buffer, 0, sizeof(MPI_Packet));
+
                     }
+                    std::cout << "Relaunching processCompletedMPIRequests" << std::endl;
+                    processCompletedMPIRequests();
+                    break;
                 }
             }
         }
@@ -431,6 +473,7 @@ namespace sgpp {
                     break;
                 case MERGE_GRID:
                     std::cout << "Merge grid not implemented" << std::endl;
+//                    receiveMergeGridNetworkMessage(learnerInstance->getGridVersion(), reinterpret_cast<MergeGridNetworkMessage>(mpiPacket->payload), learnerInstance->getAlphaVector());
                     break;
                 case ASSIGN_BATCH:
                     runBatch(mpiPacket);

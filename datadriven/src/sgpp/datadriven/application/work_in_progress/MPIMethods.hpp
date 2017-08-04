@@ -43,7 +43,7 @@ namespace sgpp {
 
         protected:
             //Pending MPI Requests
-            static std::vector<sgpp::datadriven::PendingMPIRequest> pendingMPIRequests;
+            static std::list<sgpp::datadriven::PendingMPIRequest> pendingMPIRequests;
             static int mpiWorldSize;
             static LearnerSGDEOnOffParallel *learnerInstance;
 
@@ -84,6 +84,7 @@ namespace sgpp {
 
             void waitForAllMPIRequestsToComplete();
 
+            static PendingMPIRequest &createPendingMPIRequest(MPI_Packet *mpiPacket);
         };
     }
 }
