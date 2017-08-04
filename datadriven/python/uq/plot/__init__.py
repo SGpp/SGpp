@@ -25,6 +25,8 @@ from plot1d import (plotFunction1d,
                     plotSobolIndices)
 
 from plot2d import (plotSGDE2d,
+                    plotTimedependentDensity2dWithRawData,
+                    plotTimedependentDensity2d,
                     plotDensity2d,
                     plotSG2d,
                     plotSamples2d,
@@ -38,7 +40,8 @@ from plot3d import (plotFunction3d,
                     plotGrid3d,
                     plotNodal3d,
                     plotSGNodal3d,
-                    plotError3d)
+                    plotError3d,
+                    insert_labels_3d)
 
 from plotGrid import plotGrid
 
@@ -50,42 +53,12 @@ from colors import intToRGB, rgbTpInt, load_color, load_marker, load_font, \
 try:
     import matplotlib as mpl
     import matplotlib.pyplot as plt
-    from colors import load_font
+    from colors import initialize_plotting_style
 
-    from mpltools import layout
-
-    pysgpp_uq_font = load_font()
-
-    plt.style.use('seaborn-paper')
-
-    # Include packages `amssymb` and `amsmath` in LaTeX preamble
-    # as they include extended math support (symbols, envisonments etc.)
-    pgf_with_custom_preamble = {"font.family": pysgpp_uq_font["family"],  # use serif/main font for text elements
-                                "text.usetex": True,  # use inline math for ticks
-                                "text.latex.preamble": [
-                                                 r'\usepackage{amsmath}',
-                                                 r'\usepackage[scientific-notation=true]{siunitx}',
-                                                 r"\usepackage[utf8x]{inputenc}",
-                                                 r"\usepackage[T1]{fontenc}",
-                                                 r"\usepackage{tikz}",
-                                                 r"\usepackage{pgfplots}",
-                                                 r"\usepackage{amssymb}",
-                                                 r"\usepackage{amsmath}"
-                                                 ],
-                                'axes.labelsize': pysgpp_uq_font["size"],
-                                'font.size': pysgpp_uq_font["size"],
-                                'legend.fontsize': pysgpp_uq_font["size"],
-                                'xtick.labelsize': pysgpp_uq_font["size"],
-                                'ytick.labelsize': pysgpp_uq_font["size"],
-                                'axes.unicode_minus': True,
-                                'figure.figsize': (5, 4.5),
-                                'image.cmap': 'viridis'
-                                }
-    mpl.rcParams.update(pgf_with_custom_preamble)
+    initialize_plotting_style()
 
     __all__.append('plt')
-    __all__.append('rc')
     __all__.append('mpl')
 except:
-    print "Error"
+    print "Error initializing plotting style"
     pass

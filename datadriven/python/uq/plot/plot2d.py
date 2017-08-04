@@ -5,11 +5,103 @@ import matplotlib.cm as cm
 from pysgpp import DataVector, DataMatrix
 from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunctionMulti
+from matplotlib.patches import Rectangle
+
+
+def addContours(xv, yv, Z,
+                levels=None,
+                clabels=None,
+                manual_locations=None):
+    if levels is not None:
+        cs = plt.contour(xv, yv, Z,
+                         levels=levels,
+                         colors='white')
+        if clabels is None:
+            clabels = levels
+
+        fmt = {}
+        for level in clabels:
+            if level % 1 == 0:
+                fmt[level] = "%1.0f" % level
+            elif level * 10 % 1 == 0:
+                fmt[level] = "%1.1f" % level
+            elif level * 100 % 1 == 0:
+                fmt[level] = "%1.2f" % level
+            else:
+                fmt[level] = "%1.3f" % level
+
+        plt.clabel(cs, clabels,
+                   inline=1,
+                   color="white",
+                   fontsize=18,
+                   fmt=fmt,
+                   manual=manual_locations)
+
+        #             # add white rectangles under clabels
+        #             rect = Rectangle((10 * (24 * 60 * 60), 0.6),
+#                              11 * (24 * 60 * 60), 0.8,
+#                              facecolor="white",
+#                              alpha=0.95, zorder=5)
+#             ax = plt.gca()
+#             ax.add_patch(rect)
+    else:
+        cs = plt.contour(xv, yv, Z, colors='white')
+        plt.clabel(cs, inline=1, fmt="%1.2f", fontsize=18)
+
+
+def plotTimedependentDensity2dWithRawData(xv, yv, Z, ts, us,
+                                          addContour=True,
+                                          color_bar_label=r'$\hat{F}(\xi_1, \xi_2)$',
+                                          levels=None,
+                                          clabels=None,
+                                          manual_locations=None):
+    # np.savetxt('density2d.csv', z.reshape(n * n, 3), delimiter=' ')
+    im = plt.imshow(Z,
+                    interpolation='bicubic',
+                    origin="lower",
+                    aspect='auto',
+                    extent=[ts.min(), ts.max(), us.min(), us.max()])
+
+    cbar = plt.colorbar(im)
+    cbar.ax.set_ylabel(color_bar_label)
+    plt.clim(0, 1)
+
+    if addContour:
+        addContours(xv, yv, Z, levels, clabels, manual_locations)
+
+def plotTimedependentDensity2d(Us, us, ts,
+                               addContour=True,
+                               color_bar_label=r'$\hat{F}(\xi_1, \xi_2)$',
+                               levels=None,
+                               clabels=None,
+                               manual_locations=None):
+    Z = np.ones((us.shape[0], ts.shape[0]))
+
+    xv, yv = np.meshgrid(ts, us, sparse=False, indexing='xy')
+    for i in xrange(len(ts)):
+        for j in xrange(len(us)):
+            Z[j, i] = Us[i](np.array([yv[j, i]]))
+
+    # np.savetxt('density2d.csv', z.reshape(n * n, 3), delimiter=' ')
+    im = plt.imshow(Z,
+                    interpolation='bicubic',
+                    origin="lower",
+                    aspect='auto',
+                    extent=[ts.min(), ts.max(), us.min(), us.max()])
+
+    cbar = plt.colorbar(im)
+    cbar.ax.set_ylabel(color_bar_label)
+    plt.clim(0, 1)
+
+    if addContour:
+        addContours(xv, yv, Z, levels, clabels, manual_locations)
 
 
 def plotDensity2d(U, n=50, addContour=True,
                   color_bar_label=r'$\hat{f}(\xi_1, \xi_2)$',
-                  levels=None):
+                  levels=None,
+                  clabels=None,
+                  manual_locations=None):
     xlim, ylim = U.getBounds()
 
     x = np.linspace(xlim[0], xlim[1], n)
@@ -32,23 +124,15 @@ def plotDensity2d(U, n=50, addContour=True,
     cbar.ax.set_ylabel(color_bar_label)
 
     if addContour:
-        if levels is not None:
-            cs = plt.contour(xv, yv, Z, colors='white')
-            plt.clabel(cs, levels,
-                       inline=1,
-                       color="white",
-                       fontsize=18,
-                       fmt='%1.0f')
-        else:
-            cs = plt.contour(xv, yv, Z, colors='white')
-            plt.clabel(cs, inline=1, fmt="%1.0f", fontsize=18)
+        addContours(xv, yv, Z, levels, clabels, manual_locations)
+
 
 def plotSGDE2d(U, n=100):
     gs = U.grid.getStorage()
-    x = [0.0] * gs.size()
-    y = [0.0] * gs.size()
+    x = [0.0] * gs.getSize()
+    y = [0.0] * gs.getSize()
 
-    for i in xrange(gs.size()):
+    for i in xrange(gs.getSize()):
         x[i] = gs.getCoordinate(gs.getPoint(i), 0)
         y[i] = gs.getCoordinate(gs.getPoint(i), 1)
 
@@ -90,7 +174,10 @@ def plotSGDE2d(U, n=100):
 
 def plotFunction2d(f, addContour=True, n=101,
                    xlim=[0, 1], ylim=[0, 1],
-                   color_bar_label=r'$u(\xi_1, \xi_2)$'):
+                   color_bar_label=r'$u(\xi_1, \xi_2)$',
+                   levels=None,
+                   clabels=None,
+                   manual_locations=None):
     x = np.linspace(xlim[0], xlim[1], n)
     y = np.linspace(ylim[0], ylim[1], n)
     Z = np.ones((n, n))
@@ -104,19 +191,19 @@ def plotFunction2d(f, addContour=True, n=101,
     im = plt.imshow(Z[::-1, :], interpolation='bicubic', aspect='auto',
                     extent=[xlim[0], xlim[1], ylim[0], ylim[1]])
     cbar = plt.colorbar(im)
+    cbar.ax.set_ylabel(color_bar_label)
 
     if addContour:
-        cs = plt.contour(xv, yv, Z, colors='white')
-#                          levels=[2, 6, 20])
-        plt.clabel(cs, inline=1, fontsize=18)
-
-    return
+        addContours(xv, yv, Z, levels, clabels, manual_locations)
 
 
 def plotSG2d(grid, alpha, addContour=True, n=100,
              show_negative=False, show_grid_points=False,
              show_numbers=False,
-             colorbarLabel=r"$\hat{f}_{\mathcal{I}}(\boldsymbol{\xi})$"):
+             colorbarLabel=r"$\hat{f}_{\mathcal{I}}(\xi)$",
+             levels=None,
+             clabels=None,
+             manual_locations=None):
     gs = grid.getStorage()
 
     gpxp = []
@@ -129,7 +216,7 @@ def plotSG2d(grid, alpha, addContour=True, n=100,
     gpyz = []
 
     numbers = []
-    
+
     p = DataVector(2)
     for i in xrange(gs.getSize()):
         gs.getCoordinates(gs.getPoint(i), p)
@@ -143,7 +230,7 @@ def plotSG2d(grid, alpha, addContour=True, n=100,
         else:
             gpxz.append(p[0])
             gpyz.append(p[1])
-        
+
         numbers.append((i, p[0], p[1]))
 
     x = np.linspace(0, 1, n)
@@ -195,8 +282,7 @@ def plotSG2d(grid, alpha, addContour=True, n=100,
     cbar.set_label(colorbarLabel)
 
     if addContour:
-        cs = plt.contour(xv, yv, Z, colors='white')
-        plt.clabel(cs, inline=1, fontsize=18)
+        addContours(xv, yv, Z, levels, clabels, manual_locations)
 
     return res
 
@@ -243,4 +329,3 @@ def plotSamples2d(samples):
     for i, sample in enumerate(samples):
         X[i], Y[i] = sample.getActiveProbabilistic()
     plt.plot(X, Y, linestyle=' ', marker='o')
-
