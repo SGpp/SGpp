@@ -63,7 +63,7 @@ namespace sgpp {
                                              size_t refPeriod, double accDeclineThreshold,
                                              size_t accDeclineBufferSize, size_t minRefInterval,
                                              bool enableCv, size_t nextCvStep) {
-            vectorRefinementResults = new std::vector<RefinementResult>;
+            vectorRefinementResults = new std::vector<RefinementResult>(numClasses);
 
             if (!MPIMethods::isMaster()) {
                 while (workerActive) {
@@ -75,6 +75,8 @@ namespace sgpp {
                 std::cout << "Worker shutdown." << std::endl;
                 return;
             }
+
+            MPIMethods::processCompletedMPIRequests();
 
             // counts total number of processed data points
             size_t numProcessedDataPoints = 0;
@@ -157,7 +159,7 @@ namespace sgpp {
 
                     std::cout << numProcessedDataPoints << " have already been assigned." << std::endl;
 
-                    std::this_thread::sleep_for(std::chrono::seconds(5));
+                    std::this_thread::sleep_for(std::chrono::seconds(2));
 
                     std::cout << "Master is now processing incoming requests." << std::endl;
                     MPIMethods::processCompletedMPIRequests();
@@ -326,7 +328,7 @@ namespace sgpp {
 
 
             //Collect new grid points into the refinement result for shipping
-            for (int i = 0; i < numberOfNewPoints; i++) {
+            for (unsigned int i = 0; i < numberOfNewPoints; i++) {
                 sgpp::base::DataVector dataVector;
                 //TODO: Replace absolute coordinate with level-index vectors
                 grid.getStorage()[oldGridSize + i].getStandardCoordinates(dataVector);
@@ -574,9 +576,11 @@ namespace sgpp {
 
                 if ((*p.first).getNrows() > 0) {
                     // update density function for current class
+                    std::cout << "Calling compute density function" << std::endl;
                     densityFunctions[i].first->computeDensityFunction(
                             *p.first, true, doCrossValidation, &(*vectorRefinementResults)[i].deletedGridPointsIndexes,
                             (*vectorRefinementResults)[i].addedGridPoints.size());
+                    std::cout << "Clearing the refinement results" << std::endl;
                     (*vectorRefinementResults)[i].deletedGridPointsIndexes.clear();
                     (*vectorRefinementResults)[i].addedGridPoints.clear();
 
@@ -617,14 +621,14 @@ namespace sgpp {
             train(dataset, doCrossValidation, vectorRefinementResults);
 
             std::cout << "Batch " << batchOffset << " completed." << std::endl;
-            auto &densityFunctions = getDensityFunctions();
-            for (size_t classIndex = 0; classIndex < getNumClasses(); classIndex++) {
-                std::cout << "Updating master for class " << classIndex << std::endl;
-                auto &classDensityContainer = densityFunctions[classIndex];
-                DataVector alphaVector = classDensityContainer.first.get()->getAlpha();
-                MPIMethods::sendMergeGridNetworkMessage(classIndex, alphaVector);
-            }
-
+//            auto &densityFunctions = getDensityFunctions();
+//            for (size_t classIndex = 0; classIndex < getNumClasses(); classIndex++) {
+//                std::cout << "Updating master for class " << classIndex << std::endl;
+//                auto &classDensityContainer = densityFunctions[classIndex];
+//                DataVector alphaVector = classDensityContainer.first.get()->getAlpha();
+//                MPIMethods::sendMergeGridNetworkMessage(classIndex, alphaVector);
+//            }
+            std::cout << "Not sending grid merge request" << std::endl;
             std::cout << "Completed work batch " << batchOffset << " requested by master." << std::endl;
         }
 
