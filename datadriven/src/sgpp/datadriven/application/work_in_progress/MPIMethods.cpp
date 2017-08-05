@@ -162,7 +162,7 @@ namespace sgpp {
                 networkMessage->listLength = numPointsInBuffer;
 
                 std::cout << "Sending updated for class " << networkMessage->classIndex
-                          << "with " << networkMessage->listLength
+                          << " with " << networkMessage->listLength
                           << " modifications" << std::endl;
 
                 sendIBcast(mpiPacket);
