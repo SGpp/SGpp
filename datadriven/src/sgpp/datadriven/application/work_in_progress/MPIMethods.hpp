@@ -33,7 +33,7 @@ namespace sgpp {
 
             static void bcastCommandNoArgs(MPI_COMMAND_ID commandId);
 
-            static void assignBatch(const int workerID, size_t batchOffset, size_t batchSize, bool doCrossValidation);
+            static void assignBatch(int workerID, size_t batchOffset, size_t batchSize, bool doCrossValidation);
 
             static int getWorldSize();
 
@@ -72,9 +72,9 @@ namespace sgpp {
 
             static void endSynchronizingPackets();
 
-            static void sendISend(const int destinationRank, MPI_Packet *mpiPacket);
+            static void sendISend(int destinationRank, MPI_Packet *mpiPacket);
 
-            void sendCommandNoArgs(const int destinationRank, MPI_COMMAND_ID commandId);
+            void sendCommandNoArgs(int destinationRank, MPI_COMMAND_ID commandId);
 
             static void runBatch(MPI_Packet *pPacket);
 
