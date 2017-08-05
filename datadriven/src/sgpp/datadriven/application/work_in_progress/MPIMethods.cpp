@@ -133,7 +133,7 @@ namespace sgpp {
                 auto *mpiPacket = new MPI_Packet;
                 auto *networkMessage = (RefinementResultNetworkMessage *) mpiPacket->payload;
 
-                    networkMessage->classIndex = classIndex;
+                networkMessage->classIndex = classIndex;
 
                 networkMessage->updateType = updateType;
 
@@ -150,7 +150,7 @@ namespace sgpp {
                         numPointsInBuffer = fillBufferWithVectorData<Iterator, double_t>(
                                 (void *) networkMessage->payload,
                                 (void *) std::end(
-                                                                                       networkMessage->payload),
+                                        networkMessage->payload),
                                 iterator,
                                 listEnd,
                                 sizeof(double)); //TODO: Size of double represents the size of a data value in DataVector
@@ -158,7 +158,7 @@ namespace sgpp {
                     default:
                         std::cout << "ERROR: Unknown update type" << std::endl;
                         exit(-1);
-                    }
+                }
 
                 networkMessage->listLength = numPointsInBuffer;
 
@@ -213,9 +213,10 @@ namespace sgpp {
         //TODO: This was imported from Merge
         size_t MPIMethods::receiveMergeGridNetworkMessage(MergeGridNetworkMessage &networkMessage) {
             if (networkMessage.gridversion != learnerInstance->getCurrentGridVersion()) {
-                sgpp::base::application_exception applicationException(
-                        "Received grid merge request with incorrect grid version!");
-                throw applicationException;
+                std::cout << "Received merge grid request with incorrect grid version!"
+                          << " local: " << learnerInstance->getCurrentGridVersion()
+                          << ", remote: " << networkMessage.gridversion
+                          << std::endl;
             }
 
             base::DataVector alphaVector(networkMessage.payloadLength);
