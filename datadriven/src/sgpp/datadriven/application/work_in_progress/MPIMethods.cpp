@@ -483,8 +483,8 @@ namespace sgpp {
                     break;
                 }
             }
-            learnerInstance->updateVariablesAfterRefinement(&refinementResult, networkMessage->classIndex,
-                                                            learnerInstance->getDensityFunctions()[networkMessage->classIndex].first.get());
+            learnerInstance->updateClassVariablesAfterRefinement(&refinementResult,
+                                                                 learnerInstance->getDensityFunctions()[networkMessage->classIndex].first.get());
             learnerInstance->setLocalGridVersion(networkMessage->gridversion);
         }
 
