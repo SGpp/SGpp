@@ -230,7 +230,7 @@ namespace sgpp {
             learnerInstance->mergeAlphaValues(networkMessage.classIndex, alphaVector, networkMessage.batchSize);
 
             std::cout << "Updated alpha values from network message offset " << networkMessage.payloadOffset
-                      << ", length " << networkMessage.payloadLength;
+                      << ", length " << networkMessage.payloadLength << std::endl;
         }
 
         //TODO: This was imported from Merge
