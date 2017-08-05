@@ -85,10 +85,10 @@ namespace sgpp {
                 MPI_Ibcast(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_MASTER_RANK, MPI_COMM_WORLD,
                            &(broadcastInputRequest.request));
 
-                MPIMethods::learnerInstance = learnerInstance;
                 std::cout << "Started listening for broadcasts from task master" << std::endl;
             }
 
+            MPIMethods::learnerInstance = learnerInstance;
         }
 
         void MPIMethods::synchronizeBarrier() {
