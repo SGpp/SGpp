@@ -403,8 +403,8 @@ namespace sgpp {
 //                        std::cout << "Zeroing MPI Request" << std::endl;
 //                        std::memset(pendingMPIRequestIterator->request, 0, sizeof(MPI_Request));
 //
-//                        std::cout << "Zeroing Buffer" << std::endl;
-//                        std::memset(pendingMPIRequestIterator->buffer, 0, sizeof(MPI_Packet));
+                        std::cout << "Zeroing Buffer" << std::endl;
+                        std::memset(pendingMPIRequestIterator->buffer, 0, sizeof(MPI_Packet));
 
                     }
                     std::cout << "Relaunching processCompletedMPIRequests" << std::endl;
