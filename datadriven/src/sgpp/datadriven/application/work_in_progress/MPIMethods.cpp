@@ -12,6 +12,8 @@
 #include <sgpp/base/exception/application_exception.hpp>
 #include <thread>
 
+static_assert(sizeof(size_t) <= sizeof(unsigned int), "size_t larger than unsigned int");
+
 namespace sgpp {
     namespace datadriven {
 
@@ -170,14 +172,14 @@ namespace sgpp {
         }
 
         void MPIMethods::bcastCommandNoArgs(MPI_COMMAND_ID commandId) {
-            MPI_Packet *mpiPacket = new MPI_Packet;
+            auto *mpiPacket = new MPI_Packet;
             mpiPacket->commandID = commandId;
 
             sendIBcast(mpiPacket);
         }
 
         void MPIMethods::sendCommandNoArgs(const int destinationRank, MPI_COMMAND_ID commandId) {
-            MPI_Packet *mpiPacket = new MPI_Packet;
+            auto *mpiPacket = new MPI_Packet;
             mpiPacket->commandID = commandId;
 
             sendISend(destinationRank, mpiPacket);
@@ -369,7 +371,7 @@ namespace sgpp {
                 int operationCompleted;
 
                 std::cout << "Testing request " << &*pendingMPIRequestIterator << std::endl;
-                if (MPI_Test(&(pendingMPIRequestIterator->request), &operationCompleted, &mpiStatus)) {
+                if (MPI_Test(&(pendingMPIRequestIterator->request), &operationCompleted, &mpiStatus) != 0) {
                     std::cout << "Error MPI Test reported" << std::endl;
                     exit(-1);
                 }
@@ -504,7 +506,7 @@ namespace sgpp {
         }
 
         void MPIMethods::assignBatch(const int workerID, size_t batchOffset, size_t batchSize, bool doCrossValidation) {
-            MPI_Packet *mpiPacket = new MPI_Packet;
+            auto *mpiPacket = new MPI_Packet;
             mpiPacket->commandID = ASSIGN_BATCH;
 
             auto *message = (AssignBatchNetworkMessage *) mpiPacket->payload;
