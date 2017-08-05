@@ -628,7 +628,6 @@ namespace sgpp {
                 DataVector alphaVector = classDensityContainer.first->getAlpha();
                 MPIMethods::sendMergeGridNetworkMessage(classIndex, dataset.getNumberInstances(), alphaVector);
             }
-            std::cout << "Not sending grid merge request" << std::endl;
             std::cout << "Completed work batch " << batchOffset << " requested by master." << std::endl;
         }
 
