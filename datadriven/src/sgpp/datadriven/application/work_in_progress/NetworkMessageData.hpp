@@ -47,27 +47,29 @@ namespace sgpp {
         };
 
         struct RefinementResultNetworkMessage {
-            unsigned int gridversion;
-            unsigned int classIndex;
+            unsigned long gridversion;
+            unsigned long classIndex;
             RefinementResultsUpdateType updateType;
-            unsigned int listLength;
+            unsigned long listLength;
 
-            unsigned char payload[(MPI_PACKET_MAX_PAYLOAD_SIZE - 2 * sizeof(unsigned int) -
-                                   sizeof(RefinementResultsUpdateType))];
+            unsigned char payload[(MPI_PACKET_MAX_PAYLOAD_SIZE
+                                   - 3 * sizeof(unsigned long)
+                                   - sizeof(RefinementResultsUpdateType))];
         };
 
         struct MergeGridNetworkMessage {
-            unsigned int gridversion;
-            unsigned int classIndex;
-            unsigned int payloadOffset;
-            unsigned int payloadLength;
+            unsigned long gridversion;
+            unsigned long classIndex;
+            unsigned long payloadOffset;
+            unsigned long payloadLength;
 
-            unsigned char payload[(MPI_PACKET_MAX_PAYLOAD_SIZE - 4 * sizeof(int))];
+            unsigned char payload[(MPI_PACKET_MAX_PAYLOAD_SIZE
+                                   - 4 * sizeof(unsigned long))];
         };
 
         struct AssignBatchNetworkMessage {
-            unsigned int batchOffset;
-            unsigned int batchSize;
+            unsigned long batchOffset;
+            unsigned long batchSize;
             bool doCrossValidation;
         };
 
