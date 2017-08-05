@@ -55,8 +55,9 @@ namespace sgpp {
                     std::cout << "Incoming MPI unicast" << std::endl;
                     processIncomingMPICommands(request.buffer);
 
-//                    std::cout << "Zeroing MPI Request" << std::endl;
-//                    std::memset(request.request, 0, sizeof(MPI_Request));
+                    std::cout << "Zeroing MPI Request" << std::endl;
+                    std::memset(request.request, 0, sizeof(MPI_Request));
+
                     std::cout << "Zeroing Buffer" << std::endl;
                     std::memset(request.buffer, 0, sizeof(MPI_Packet));
 
