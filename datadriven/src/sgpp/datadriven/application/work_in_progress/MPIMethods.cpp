@@ -12,7 +12,6 @@
 #include <sgpp/base/exception/application_exception.hpp>
 #include <thread>
 
-static_assert(sizeof(size_t) <= sizeof(unsigned int), "size_t larger than unsigned int");
 
 namespace sgpp {
     namespace datadriven {
@@ -283,7 +282,7 @@ namespace sgpp {
 */
 
         size_t
-        MPIMethods::sendMergeGridNetworkMessage(size_t classIndex, base::DataVector &alphaVector) {
+        MPIMethods::sendMergeGridNetworkMessage(size_t classIndex, size_t batchSize, base::DataVector &alphaVector) {
             size_t offset = 0;
             while (offset < alphaVector.size()) {
                 auto *mpiPacket = new MPI_Packet;
@@ -294,6 +293,7 @@ namespace sgpp {
                 networkMessage->classIndex = classIndex;
 //            networkMessage->gridversion = gridversion;
                 networkMessage->payloadOffset = offset;
+                networkMessage->batchSize = batchSize;
 
                 size_t numPointsInPacket = 0;
 

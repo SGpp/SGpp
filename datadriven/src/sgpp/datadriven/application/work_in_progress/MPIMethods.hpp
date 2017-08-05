@@ -33,13 +33,13 @@ namespace sgpp {
 
             static void bcastCommandNoArgs(MPI_COMMAND_ID commandId);
 
-            static size_t sendMergeGridNetworkMessage(size_t classIndex, DataVector &alphaVector);
-
             static void assignBatch(const int workerID, size_t batchOffset, size_t batchSize, bool doCrossValidation);
 
             static int getWorldSize();
 
             static void waitForAnyMPIRequestsToComplete();
+
+            static size_t sendMergeGridNetworkMessage(size_t classIndex, size_t batchSize, DataVector &alphaVector);
 
         protected:
             //Pending MPI Requests
@@ -85,6 +85,7 @@ namespace sgpp {
             void waitForAllMPIRequestsToComplete();
 
             static PendingMPIRequest &createPendingMPIRequest(MPI_Packet *mpiPacket);
+
         };
     }
 }
