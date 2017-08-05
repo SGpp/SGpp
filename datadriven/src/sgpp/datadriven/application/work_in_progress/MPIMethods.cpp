@@ -57,7 +57,11 @@ namespace sgpp {
 
 //                    std::cout << "Zeroing MPI Request" << std::endl;
 //                    std::memset(request.request, 0, sizeof(MPI_Request));
+                    std::cout << "Zeroing Buffer" << std::endl;
+                    std::memset(request.buffer, 0, sizeof(MPI_Packet));
 
+
+                    std::cout << "Restarting irecv request." << std::endl;
                     MPI_Irecv(request.buffer, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE,
                               MPI_ANY_TAG, MPI_COMM_WORLD, &(request.request));
                 };
@@ -79,6 +83,10 @@ namespace sgpp {
 //                    std::cout << "Zeroing MPI Request" << std::endl;
 //                    std::memset(request.request, 0, sizeof(MPI_Request));
 
+                    std::cout << "Zeroing Buffer" << std::endl;
+                    std::memset(request.buffer, 0, sizeof(MPI_Packet));
+
+                    std::cout << "Restarting ibcast request." << std::endl;
                     MPI_Ibcast(request.buffer, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
                                MPI_COMM_WORLD, &(request.request));
                 };
@@ -403,8 +411,9 @@ namespace sgpp {
 //                        std::cout << "Zeroing MPI Request" << std::endl;
 //                        std::memset(pendingMPIRequestIterator->request, 0, sizeof(MPI_Request));
 //
-                        std::cout << "Zeroing Buffer" << std::endl;
-                        std::memset(pendingMPIRequestIterator->buffer, 0, sizeof(MPI_Packet));
+//                        //TODO: This is done after the request has been re-launched
+//                        std::cout << "Zeroing Buffer" << std::endl;
+//                        std::memset(pendingMPIRequestIterator->buffer, 0, sizeof(MPI_Packet));
 
                     }
                     std::cout << "Relaunching processCompletedMPIRequests" << std::endl;
