@@ -49,8 +49,8 @@ namespace sgpp {
         struct RefinementResultNetworkMessage {
             unsigned long gridversion;
             unsigned long classIndex;
-            RefinementResultsUpdateType updateType;
             unsigned long listLength;
+            RefinementResultsUpdateType updateType;
 
             unsigned char payload[(MPI_PACKET_MAX_PAYLOAD_SIZE
                                    - 3 * sizeof(unsigned long)
@@ -62,9 +62,10 @@ namespace sgpp {
             unsigned long classIndex;
             unsigned long payloadOffset;
             unsigned long payloadLength;
+            unsigned long batchSize;
 
             unsigned char payload[(MPI_PACKET_MAX_PAYLOAD_SIZE
-                                   - 4 * sizeof(unsigned long))];
+                                   - 5 * sizeof(unsigned long))];
         };
 
         struct AssignBatchNetworkMessage {
@@ -72,6 +73,13 @@ namespace sgpp {
             unsigned long batchSize;
             bool doCrossValidation;
         };
+
+        static_assert(sizeof(size_t) <= sizeof(unsigned long), "size_t larger than unsigned long");
+        static_assert(sizeof(MergeGridNetworkMessage) <= MPI_PACKET_MAX_PAYLOAD_SIZE,
+                      "Merge Grid Network Message too long.");
+        static_assert(sizeof(RefinementResultNetworkMessage) <= MPI_PACKET_MAX_PAYLOAD_SIZE,
+                      "Refinement result Network Message too long.");
+
 
     }
 }
