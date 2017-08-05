@@ -140,6 +140,8 @@ namespace sgpp {
                                                Iterator &listEnd) {
             while (iterator != listEnd) {
                 auto *mpiPacket = new MPI_Packet;
+                mpiPacket->commandID = UPDATE_GRID;
+
                 auto *networkMessage = (RefinementResultNetworkMessage *) mpiPacket->payload;
 
                 networkMessage->classIndex = classIndex;
