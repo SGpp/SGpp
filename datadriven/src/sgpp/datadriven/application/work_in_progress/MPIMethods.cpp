@@ -122,13 +122,13 @@ namespace sgpp {
                 sendRefinementUpdates<std::list<size_t>::const_iterator>(classIndex, DELETED_GRID_POINTS_LIST,
                                                                          deletedPointsIterator,
                                                                          deletedPointsEnd);
-                std::list<sgpp::base::DataVector>::const_iterator addedPointsIterator = std::begin(
+                std::list<LevelIndexVector>::const_iterator addedPointsIterator = std::begin(
                         refinementResult.addedGridPoints);
-                std::list<sgpp::base::DataVector>::const_iterator addedPointsEnd = std::end(
+                std::list<LevelIndexVector>::const_iterator addedPointsEnd = std::end(
                         refinementResult.addedGridPoints);
-                sendRefinementUpdates<std::list<DataVector>::const_iterator>(classIndex, ADDED_GRID_POINTS_LIST,
-                                                                             addedPointsIterator,
-                                                                             addedPointsEnd);
+                sendRefinementUpdates<std::list<LevelIndexVector>::const_iterator>(classIndex, ADDED_GRID_POINTS_LIST,
+                                                                                   addedPointsIterator,
+                                                                                   addedPointsEnd);
             }
 
             std::cout << "Finished updating the grid components on workers." << std::endl;
@@ -158,13 +158,13 @@ namespace sgpp {
                     }
                         break;
                     case ADDED_GRID_POINTS_LIST:
-                        numPointsInBuffer = fillBufferWithVectorData<Iterator, double_t>(
+                        numPointsInBuffer = fillBufferWithVectorData<Iterator, LevelIndexPair>(
                                 (void *) networkMessage->payload,
                                 (void *) std::end(
                                         networkMessage->payload),
                                 iterator,
                                 listEnd,
-                                sizeof(double)); //TODO: Size of double represents the size of a data value in DataVector
+                                sizeof(LevelIndexPair)); //TODO: Size of double represents the size of a data value in DataVector
                         break;
                     default:
                         std::cout << "ERROR: Unknown update type" << std::endl;
@@ -448,30 +448,37 @@ namespace sgpp {
             //TODO
             RefinementResult refinementResult = sgpp::datadriven::RefinementResult();
 
+            size_t listLength = networkMessage->listLength;
+            size_t processedPoints = 0;
             void *bufferEnd = std::end(networkMessage->payload);
             switch (networkMessage->updateType) {
                 case DELETED_GRID_POINTS_LIST: {
                     //TODO: This probably casts each unsigned char into a size_t instead of re-interpreting
                     auto *bufferIterator = (size_t *) networkMessage->payload;
-                    while (bufferIterator < bufferEnd) {
+                    while (bufferIterator < bufferEnd && processedPoints < listLength) {
                         refinementResult.deletedGridPointsIndexes.push_back(*bufferIterator);
                         bufferIterator++;
+                        processedPoints++;
                     }
                 }
                     break;
                 case ADDED_GRID_POINTS_LIST: {
-                    //TODO double?
-                    auto *bufferIterator = (double *) networkMessage->payload;
+
+                    auto *bufferIterator = (unsigned long *) networkMessage->payload;
                     size_t dimensionality = learnerInstance->getDimensionality();
-                    while (bufferIterator < bufferEnd) {
-                        size_t index = 0;
-                        sgpp::base::DataVector dataVector;
-                        while (index < dimensionality && bufferIterator < bufferEnd) {
-                            dataVector.push_back(*bufferIterator);
-                            index++;
+                    while (bufferIterator < bufferEnd && processedPoints < listLength) {
+                        size_t currentDimension = 0;
+                        LevelIndexVector dataVector;
+                        while (currentDimension < dimensionality && bufferIterator < bufferEnd) {
+                            dataVector[currentDimension].level = *bufferIterator;
                             bufferIterator++;
+                            dataVector[currentDimension].index = *bufferIterator;
+                            bufferIterator++;
+
+                            currentDimension++;
                         }
                         refinementResult.addedGridPoints.push_back(dataVector);
+                        processedPoints++;
                     }
                     break;
                 }

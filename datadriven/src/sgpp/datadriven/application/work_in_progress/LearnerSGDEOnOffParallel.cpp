@@ -327,12 +327,21 @@ namespace sgpp {
                       << std::endl;
 
 
+            size_t numDimensions = getDimensionality();
             //Collect new grid points into the refinement result for shipping
             for (unsigned int i = 0; i < numberOfNewPoints; i++) {
-                sgpp::base::DataVector dataVector;
+                LevelIndexVector levelIndexVector(numDimensions);
                 //TODO: Replace absolute coordinate with level-index vectors
-                grid.getStorage()[oldGridSize + i].getStandardCoordinates(dataVector);
-                refinementResult->addedGridPoints.push_back(dataVector);
+                for (size_t currentDimension = 0; currentDimension < numDimensions; currentDimension += 1) {
+                    base::HashGridPoint::level_type pointLevel;
+                    base::HashGridPoint::index_type pointIndex;
+                    grid.getStorage()[oldGridSize + i].get(currentDimension, pointLevel, pointIndex);
+
+                    levelIndexVector[currentDimension].level = pointLevel;
+                    levelIndexVector[currentDimension].index = pointIndex;
+                }
+
+                refinementResult->addedGridPoints.push_back(levelIndexVector);
             }
 
             updateVariablesAfterRefinement(refinementResult, classIndex, densEst);
@@ -346,17 +355,24 @@ namespace sgpp {
             base::Grid &grid = densEst->getOfflineObject().getGrid();
 
             if (!MPIMethods::isMaster()) {
+                size_t numDimensions = getDimensionality();
+
                 //TODO: Modify the actual grid
                 //Delete the grid points removed on master thread
                 grid.getStorage().deletePoints(refinementResult->deletedGridPointsIndexes);
 
                 //Add grid points added on master thread
-                for (const sgpp::base::DataVector &dataVector : refinementResult->addedGridPoints) {
-                    sgpp::base::GridPoint gridPoint;
+                for (LevelIndexVector &levelIndexVector : refinementResult->addedGridPoints) {
+                    auto *gridPoint = new sgpp::base::HashGridStorage::point_type(numDimensions);
                     //TODO: What happens when other points are changed (ie Leaf boolean etc)
 //                    gridPoint.;
 
-                    grid.getStorage().insert(gridPoint);
+                    for (size_t currentDimension = 0; currentDimension < numDimensions; currentDimension++) {
+                        gridPoint->set(currentDimension,
+                                       levelIndexVector[currentDimension].level,
+                                       levelIndexVector[currentDimension].index);
+                    }
+                    grid.getStorage().insert(*gridPoint);
                 }
             }
 
