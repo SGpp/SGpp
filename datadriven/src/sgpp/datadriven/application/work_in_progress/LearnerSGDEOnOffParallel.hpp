@@ -148,6 +148,10 @@ namespace sgpp {
         protected:
 
             std::vector<RefinementResult> *vectorRefinementResults;
+            size_t localGridVersion;
+            bool workerActive;
+            int lastWorkerID;
+
 
             size_t
             handleDataAndZeroBasedRefinement(bool preCompute, MultiGridRefinementFunctor *func, size_t idx,
@@ -182,14 +186,10 @@ namespace sgpp {
                                        const std::vector<std::pair<DataMatrix *, double>> &trainDataClasses,
                                        std::map<double, int> &classIndices) const;
 
-            bool workerActive;
-            int lastWorkerID;
-
             void assignBatchToWorker(Dataset dataset, size_t batchOffset, bool doCrossValidation);
 
             int getNextWorkerID();
 
-            size_t localGridVersion;
         };
     }   //namespace datadriven
 }  // namespace sgpp

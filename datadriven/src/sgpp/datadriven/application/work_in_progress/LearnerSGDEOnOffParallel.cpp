@@ -64,6 +64,7 @@ namespace sgpp {
                                              size_t accDeclineBufferSize, size_t minRefInterval,
                                              bool enableCv, size_t nextCvStep) {
             vectorRefinementResults = new std::vector<RefinementResult>(numClasses);
+            localGridVersion = 0;
 
             if (!MPIMethods::isMaster()) {
                 while (workerActive) {
@@ -80,8 +81,6 @@ namespace sgpp {
 
             // counts total number of processed data points
             size_t numProcessedDataPoints = 0;
-
-            localGridVersion = 0;
 
             // contains list of removed grid points and number of added grid points
             // (is updated in each refinement/coarsening step)
