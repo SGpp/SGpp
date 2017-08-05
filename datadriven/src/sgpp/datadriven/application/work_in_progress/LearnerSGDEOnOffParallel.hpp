@@ -55,7 +55,6 @@ namespace sgpp {
         typedef std::vector<LevelIndexPair> LevelIndexVector;
 
         struct RefinementResult {
-            unsigned int gridversion;
             std::list<LevelIndexVector> addedGridPoints;
             std::list<size_t> deletedGridPointsIndexes;
         };
