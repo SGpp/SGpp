@@ -31,7 +31,8 @@ from plot2d import (plotSGDE2d,
                     plotSG2d,
                     plotSamples2d,
                     plotGrid2d,
-                    plotFunction2d)
+                    plotFunction2d,
+                    plotScatter2d)
 
 from plot3d import (plotFunction3d,
                     plotDensity3d,

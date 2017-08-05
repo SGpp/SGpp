@@ -21,14 +21,37 @@ def plotCDF1d(U, n=1000, *args, **kws):
 
     plt.plot(x, y, *args, **kws)
 
-def plotDensity1d(U, n=1000, *args, **kws):
+def plotDensity1d(U, n=1000,
+                  alpha_value=None,
+                  mean_label=r"$\mathbb{E}(f)$",
+                  facecolor=load_color(1),
+                  interval_label=None,
+                  *args, **kws):
     bounds = U.getBounds()
     if len(bounds) == 1:
         bounds = bounds[0]
     x = np.linspace(bounds[0], bounds[1], n)
-    y = [U.pdf(xi) for xi in x]
+    y = np.array([U.pdf(xi) for xi in x])
 
     plt.plot(x, y, *args, **kws)
+
+    if alpha_value is not None:
+        # define label for interval plot
+        if interval_label is None:
+            interval_label = r"$[F(\alpha / 2), F(1 - \alpha/2)]$"
+        # show interval that contains 1 - alpha
+        x_min, x_max = U.ppf(alpha_value / 2.), U.ppf(1. - alpha_value / 2.)
+        ixs = np.intersect1d(np.where(x_min <= x),
+                             np.where(x <= x_max))
+        plt.vlines(U.mean(), 0.0, U.pdf(U.mean()), color=facecolor, label=mean_label)
+#         plt.vlines(x_min, 0.0, y[ixs.min()], color=facecolor, label=interval_label)
+#         plt.vlines(x_max, 0.0, y[ixs.max()], color=facecolor)
+        plt.fill_between(x[ixs],
+                         y[ixs],
+                         np.zeros(y[ixs].shape[0]),
+                         facecolor=facecolor, alpha=0.2,
+                         label=interval_label)
+
 
 def plotSGDE1d(U, n=1000):
     x = np.linspace(0, 1, n, endpoint=True)

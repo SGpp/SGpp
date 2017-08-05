@@ -33,17 +33,18 @@ def load_custom_pgf_preamble(dtype="standard", macros="thesis"):
                                                 r"\usepackage{rsfso}"]
     else:
         pgf_preamble["text.latex.preamble"] += [r"\usepackage[T1]{fontenc}"]
-        
+
     if macros == "thesis":
         cmd_filename = r"/home/franzefn/Promotion/UQ/repos/dissertation/thesis/commands.tex"
     else:
         cmd_filename = r"/home/franzefn/Promotion/Paper/repos/SGA16/paper/commands.tex"
 
-    fd = open(cmd_filename, "r")
-    for paramstring in fd.readlines():
-        decoded_paramstring = paramstring.decode('utf8')
-        if decoded_paramstring[0] not in ["%", "\n"]:
-            pgf_preamble["text.latex.preamble"].append(decoded_paramstring)
+    if os.path.exists(cmd_filename):
+        fd = open(cmd_filename, "r")
+        for paramstring in fd.readlines():
+            decoded_paramstring = paramstring.decode('utf8')
+            if decoded_paramstring[0] not in ["%", "\n"]:
+                pgf_preamble["text.latex.preamble"].append(decoded_paramstring)
 
     return pgf_preamble
 
@@ -83,8 +84,16 @@ def load_color(i):
     return colors[i % len(colors)]["color"]
 
 def load_marker(i):
-    markers = ["o", "v", "D", "s", "*", "d", "^"]
+    markers = ["o", "v", "D", "s", "*", "d", "^", "x", "+"]
     return markers[i % len(markers)]
+
+def load_linestyle(i):
+    linestyles = [":", "-.", "--", "-"]
+    return linestyles[i % len(linestyles)]
+
+def load_bw_color(i, nmax=11):
+    colors = np.linspace(0, 0.75, nmax, endpoint=True, dtype=str)
+    return colors[i % len(colors)]
 
 
 def load_font():
@@ -106,7 +115,7 @@ def load_font_properties(size=None,
 #
 #     return colors
 
-def savefig(fig, filename, lgd=None, tikz=True, mpl3d=False):
+def savefig(fig, filename, lgd=None, tikz=False, mpl3d=False):
     if mpl3d:
         fig.savefig("%s.png" % filename)
         fig.savefig("%s.pdf" % filename)
@@ -123,10 +132,10 @@ def savefig(fig, filename, lgd=None, tikz=True, mpl3d=False):
                         bbox_extra_artists=(lgd,),
                         bbox_inches='tight')
         if tikz:
-            try:
-                tikz_save("%s.tex" % filename, fig, econding="utf8")
-            except:
-                pass
+#             try:
+            tikz_save("%s.tex" % filename, fig)
+#             except:
+#                 pass
 
     plt.close(fig)
 
