@@ -284,25 +284,23 @@ namespace sgpp {
         MPIMethods::sendMergeGridNetworkMessage(size_t classIndex, base::DataVector &alphaVector) {
             size_t offset = 0;
             while (offset < alphaVector.size()) {
-                MPI_Packet *mpiPacket = new MPI_Packet;
+                auto *mpiPacket = new MPI_Packet;
                 mpiPacket->commandID = MERGE_GRID;
 
-                MergeGridNetworkMessage *networkMessage = (MergeGridNetworkMessage *) mpiPacket->payload;
+                auto *networkMessage = (MergeGridNetworkMessage *) mpiPacket->payload;
 
                 networkMessage->classIndex = classIndex;
 //            networkMessage->gridversion = gridversion;
                 networkMessage->payloadOffset = offset;
 
-                size_t endOfPayload = sizeof(MergeGridNetworkMessage::payload) / sizeof(double);
                 size_t numPointsInPacket = 0;
 
-                size_t endOfCopy = std::min(alphaVector.size(), endOfPayload);
+                const std::vector<double>::iterator &beginIterator = alphaVector.begin();
+                const std::vector<double>::iterator &endIterator = alphaVector.end();
 
-                double *alphaValues = (double *) networkMessage->payload;
-                for (size_t bufferIndex = 0; bufferIndex < endOfCopy; bufferIndex++) {
-                    alphaValues[bufferIndex] = alphaVector[offset + bufferIndex];
-                    numPointsInPacket++;
-                }
+                numPointsInPacket = fillBufferWithData(networkMessage->payload, std::end(networkMessage->payload),
+                                                       beginIterator, endIterator);
+
                 networkMessage->payloadLength = numPointsInPacket;
 
                 std::cout << "Sending merge for class " << classIndex
