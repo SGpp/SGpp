@@ -211,18 +211,21 @@ namespace sgpp {
         }
 
         //TODO: This was imported from Merge
-        size_t MPIMethods::receiveMergeGridNetworkMessage(int gridversion, MergeGridNetworkMessage &networkMessage,
-                                                          base::DataVector &alphaVector) {
-            if (gridversion != networkMessage.gridversion) {
+        size_t MPIMethods::receiveMergeGridNetworkMessage(int gridversion, MergeGridNetworkMessage &networkMessage) {
+            if (networkMessage.gridversion != learnerInstance->getCurrentGridVersion()) {
                 sgpp::base::application_exception applicationException(
                         "Received grid merge request with incorrect grid version!");
                 throw applicationException;
             }
 
+            base::DataVector alphaVector;
+
             auto *payload = (double *) networkMessage.payload;
             for (size_t index = 0; index < networkMessage.payloadLength; index++) {
                 alphaVector[networkMessage.payloadOffset + index] = payload[index];
             }
+
+            learnerInstance->mergeAlphaValues(networkMessage.classIndex, alphaVector, networkMessage.batchSize);
 
             std::cout << "Updated alpha values from network message offset " << networkMessage.payloadOffset
                       << ", length " << networkMessage.payloadLength;
@@ -457,6 +460,7 @@ namespace sgpp {
             }
             learnerInstance->updateVariablesAfterRefinement(&refinementResult, networkMessage->classIndex,
                                                             learnerInstance->getDensityFunctions()[networkMessage->classIndex].first.get());
+            learnerInstance->setLocalGridVersion(networkMessage->gridversion);
         }
 
         void MPIMethods::processIncomingMPICommands(MPI_Packet *mpiPacket) {
