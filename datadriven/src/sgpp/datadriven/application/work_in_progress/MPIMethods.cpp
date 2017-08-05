@@ -301,7 +301,9 @@ namespace sgpp {
                 auto *mpiPacket = new MPI_Packet;
                 mpiPacket->commandID = MERGE_GRID;
 
-                auto *networkMessage = (MergeGridNetworkMessage *) mpiPacket->payload;
+                void *payloadPointer = &(mpiPacket->payload);
+
+                auto *networkMessage = static_cast<MergeGridNetworkMessage *>(payloadPointer);
 
                 networkMessage->classIndex = classIndex;
 //            networkMessage->gridversion = gridversion;
