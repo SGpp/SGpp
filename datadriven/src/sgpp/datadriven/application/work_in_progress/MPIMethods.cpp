@@ -468,7 +468,7 @@ namespace sgpp {
                     size_t dimensionality = learnerInstance->getDimensionality();
                     while (bufferIterator < bufferEnd && processedPoints < listLength) {
                         size_t currentDimension = 0;
-                        LevelIndexVector dataVector;
+                        LevelIndexVector dataVector(currentDimension);
                         while (currentDimension < dimensionality && bufferIterator < bufferEnd) {
                             dataVector[currentDimension].level = *bufferIterator;
                             bufferIterator++;
