@@ -129,8 +129,6 @@ namespace sgpp {
                 std::cout << "#batch-size: " << batchSize << std::endl;
                 std::cout << "#batches to process: " << numBatch << std::endl;
 
-                // data point counter - determines offset when selecting next batch
-                size_t batchOffset = 0;
 
                 // iterate over total number of batches
                 for (size_t currentBatchNum = 1; currentBatchNum <= numBatch; currentBatchNum++) {
@@ -153,7 +151,7 @@ namespace sgpp {
 //                    // train the model with current batch
 //                    train(dataBatch, doCrossValidation, vectorRefinementResults);
 
-                    assignBatchToWorker(dataBatch, batchOffset, doCrossValidation);
+                    assignBatchToWorker(dataBatch, numProcessedDataPoints, doCrossValidation);
 
                     numProcessedDataPoints += dataBatch.getNumberInstances();
 
@@ -201,7 +199,7 @@ namespace sgpp {
                     std::cout << "Processing batch in "
                               << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
                               << "ms" << std::endl;
-                    std::cout << "Processed " << batchOffset << " data points so far" << std::endl;
+                    std::cout << "Processed " << numProcessedDataPoints << " data points so far" << std::endl;
 
                 }
 
