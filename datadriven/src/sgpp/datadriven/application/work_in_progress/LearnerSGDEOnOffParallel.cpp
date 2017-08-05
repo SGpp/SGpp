@@ -619,13 +619,13 @@ namespace sgpp {
             train(dataset, doCrossValidation, vectorRefinementResults);
 
             std::cout << "Batch " << batchOffset << " completed." << std::endl;
-//            auto &densityFunctions = getDensityFunctions();
-//            for (size_t classIndex = 0; classIndex < getNumClasses(); classIndex++) {
-//                std::cout << "Updating master for class " << classIndex << std::endl;
-//                auto &classDensityContainer = densityFunctions[classIndex];
-//                DataVector alphaVector = classDensityContainer.first.get()->getAlpha();
-//                MPIMethods::sendMergeGridNetworkMessage(classIndex, alphaVector);
-//            }
+            auto &densityFunctions = getDensityFunctions();
+            for (size_t classIndex = 0; classIndex < getNumClasses(); classIndex++) {
+                std::cout << "Updating master for class " << classIndex << std::endl;
+                auto &classDensityContainer = densityFunctions[classIndex];
+                DataVector alphaVector = classDensityContainer.first.get()->getAlpha();
+                MPIMethods::sendMergeGridNetworkMessage(classIndex, alphaVector);
+            }
             std::cout << "Not sending grid merge request" << std::endl;
             std::cout << "Completed work batch " << batchOffset << " requested by master." << std::endl;
         }
