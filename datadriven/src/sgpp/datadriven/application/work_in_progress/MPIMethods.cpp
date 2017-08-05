@@ -203,7 +203,7 @@ namespace sgpp {
             PendingMPIRequest &pendingMPIRequest = pendingMPIRequests.back();
             pendingMPIRequest.disposeAfterCallback = true;
             pendingMPIRequest.callback = [](PendingMPIRequest &request) {
-                std::cout << "Pending MPI request " << &request << "completed. " << std::endl;
+                std::cout << "Pending MPI request " << &request << " completed." << std::endl;
             };
             pendingMPIRequest.buffer = mpiPacket;
             return pendingMPIRequest;
