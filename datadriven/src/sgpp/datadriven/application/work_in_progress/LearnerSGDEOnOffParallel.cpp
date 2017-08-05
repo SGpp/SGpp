@@ -145,12 +145,6 @@ namespace sgpp {
                             nextCvStep *= 5;
                         }
                     }
-                    //This was moved into work batch
-//                    // assemble next batch
-//                    assembleNextBatchData(&dataBatch, &batchOffset);
-//
-//                    // train the model with current batch
-//                    train(dataBatch, doCrossValidation, vectorRefinementResults);
 
                     assignBatchToWorker(dataBatch, numProcessedDataPoints, doCrossValidation);
 
@@ -184,7 +178,7 @@ namespace sgpp {
                                            onlineObjects, monitor);
                         numberOfCompletedRefinements += 1;
                         localGridVersion++;
-                        std::cout << "Refinement " << numProcessedDataPoints << " complete" << std::endl;
+                        std::cout << "Refinement at " << numProcessedDataPoints << " complete" << std::endl;
 
                         MPIMethods::sendGridComponentsUpdate(vectorRefinementResults);
                     } else {
@@ -331,7 +325,6 @@ namespace sgpp {
             //Collect new grid points into the refinement result for shipping
             for (unsigned int i = 0; i < numberOfNewPoints; i++) {
                 LevelIndexVector levelIndexVector(numDimensions);
-                //TODO: Replace absolute coordinate with level-index vectors
                 for (size_t currentDimension = 0; currentDimension < numDimensions; currentDimension += 1) {
                     base::HashGridPoint::level_type pointLevel;
                     base::HashGridPoint::index_type pointIndex;
@@ -344,13 +337,11 @@ namespace sgpp {
                 refinementResult->addedGridPoints.push_back(levelIndexVector);
             }
 
-            updateVariablesAfterRefinement(refinementResult, classIndex, densEst);
+            updateClassVariablesAfterRefinement(refinementResult, densEst);
         }
 
-        void LearnerSGDEOnOffParallel::updateVariablesAfterRefinement(
-                RefinementResult *refinementResult,
-                size_t classIndex,
-                DBMatOnlineDE *densEst) {
+        void LearnerSGDEOnOffParallel::updateClassVariablesAfterRefinement(RefinementResult *refinementResult,
+                                                                           DBMatOnlineDE *densEst) {
 
             base::Grid &grid = densEst->getOfflineObject().getGrid();
 
@@ -365,7 +356,6 @@ namespace sgpp {
                 for (LevelIndexVector &levelIndexVector : refinementResult->addedGridPoints) {
                     auto *gridPoint = new sgpp::base::HashGridStorage::point_type(numDimensions);
                     //TODO: What happens when other points are changed (ie Leaf boolean etc)
-//                    gridPoint.;
 
                     for (size_t currentDimension = 0; currentDimension < numDimensions; currentDimension++) {
                         gridPoint->set(currentDimension,
@@ -383,6 +373,7 @@ namespace sgpp {
                         .choleskyModification(refinementResult->addedGridPoints.size(),
                                               refinementResult->deletedGridPointsIndexes, densEst->getBestLambda());
             }
+
             // update alpha vector
             densEst->updateAlpha(&(refinementResult->deletedGridPointsIndexes),
                                  refinementResult->addedGridPoints.size());

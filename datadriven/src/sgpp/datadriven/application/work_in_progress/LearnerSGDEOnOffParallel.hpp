@@ -133,8 +133,7 @@ namespace sgpp {
             double error;
 
 
-            void updateVariablesAfterRefinement(RefinementResult *refinementResult, size_t classIndex,
-                                                DBMatOnlineDE *densEst);
+            void updateClassVariablesAfterRefinement(RefinementResult *refinementResult, DBMatOnlineDE *densEst);
 
             size_t getDimensionality();
 
