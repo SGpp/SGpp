@@ -239,6 +239,7 @@ namespace sgpp {
             learnerInstance->mergeAlphaValues(networkMessage.classIndex, alphaVector, networkMessage.batchSize);
 
             std::cout << "Updated alpha values from network message offset " << networkMessage.payloadOffset
+                      << ", class " << networkMessage.classIndex
                       << ", length " << networkMessage.payloadLength << std::endl;
         }
 
@@ -307,7 +308,7 @@ namespace sgpp {
                 auto *networkMessage = static_cast<MergeGridNetworkMessage *>(payloadPointer);
 
                 networkMessage->classIndex = classIndex;
-//            networkMessage->gridversion = gridversion;
+                networkMessage->gridversion = learnerInstance->getCurrentGridVersion();
                 networkMessage->payloadOffset = offset;
                 networkMessage->batchSize = batchSize;
 
@@ -323,7 +324,8 @@ namespace sgpp {
 
                 std::cout << "Sending merge for class " << classIndex
                           << " offset " << offset
-                          << " and " << numPointsInPacket << " values" << std::endl;
+                          << " with " << numPointsInPacket << " values"
+                          << " and grid version " << networkMessage->gridversion << std::endl;
                 sendISend(MPI_MASTER_RANK, mpiPacket);
                 offset += numPointsInPacket;
             }
