@@ -1,11 +1,12 @@
 import numpy as np
 import matplotlib.pylab as plt
 import matplotlib.cm as cm
+from matplotlib.patches import Rectangle
+from matplotlib.mlab import griddata
 
 from pysgpp import DataVector, DataMatrix
 from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunctionMulti
-from matplotlib.patches import Rectangle
 
 
 def addContours(xv, yv, Z,
@@ -329,3 +330,35 @@ def plotSamples2d(samples):
     for i, sample in enumerate(samples):
         X[i], Y[i] = sample.getActiveProbabilistic()
     plt.plot(X, Y, linestyle=' ', marker='o')
+
+
+def plotScatter2d(samples, values, bounds=None,
+                  color_bar_label=r"$u(x)$"):
+    # define grid.
+    if bounds is None:
+        x_min, x_max = samples[:, 0].min(), samples[:, 0].max()
+        y_min, y_max = samples[:, 1].min(), samples[:, 1].max()
+    else:
+        x_min, x_max = bounds[0]
+        y_min, y_max = bounds[1]
+
+    xs = np.linspace(x_min, x_max, 100)
+    ys = np.linspace(y_min, y_max, 100)
+    # grid the data.
+    zs = griddata(samples[:, 0],
+                  samples[:, 1],
+                  values,
+                  xs, ys,
+                  interp="nn")
+    # contour the gridded data, plotting dots at the randomly spaced data points.
+    cs = plt.contour(xs, ys, zs, 15, linewidths=0.5, colors='k')
+    cs = plt.contourf(xs, ys, zs, 15)
+
+    plt.xlim(x_min, x_max)
+    plt.ylim(y_min, y_max)
+
+    cbar = plt.colorbar()
+    cbar.ax.set_ylabel(color_bar_label)
+        
+        
+    

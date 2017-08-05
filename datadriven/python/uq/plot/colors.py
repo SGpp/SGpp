@@ -134,7 +134,7 @@ def savefig(fig, filename, lgd=None, tikz=False, mpl3d=False):
                         bbox_inches='tight')
         if tikz:
             try:
-                tikz_save("%s.tex" % filename, fig, econding="utf8")
+                tikz_save("%s.tex" % filename, fig)
             except:
                 pass
 
