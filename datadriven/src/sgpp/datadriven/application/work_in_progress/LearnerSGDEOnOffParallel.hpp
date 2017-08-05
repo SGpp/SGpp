@@ -139,6 +139,12 @@ namespace sgpp {
 
             void workBatch(Dataset dataset, size_t batchOffset, bool doCrossValidation);
 
+            void mergeAlphaValues(size_t classIndex, DataVector &dataVector, size_t batchSize);
+
+            size_t getCurrentGridVersion();
+
+            void setLocalGridVersion(size_t gridVersion);
+
         protected:
 
             std::vector<RefinementResult> *vectorRefinementResults;
@@ -183,6 +189,7 @@ namespace sgpp {
 
             int getNextWorkerID();
 
+            size_t localGridVersion;
         };
     }   //namespace datadriven
 }  // namespace sgpp

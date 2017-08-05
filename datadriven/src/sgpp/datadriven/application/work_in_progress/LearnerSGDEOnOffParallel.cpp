@@ -81,6 +81,8 @@ namespace sgpp {
             // counts total number of processed data points
             size_t numProcessedDataPoints = 0;
 
+            localGridVersion = 0;
+
             // contains list of removed grid points and number of added grid points
             // (is updated in each refinement/coarsening step)
 //            vectorRefinementResults = new ...
@@ -182,6 +184,7 @@ namespace sgpp {
                         doRefinementForAll(refinementFunctorType, refMonitor, vectorRefinementResults,
                                            onlineObjects, monitor);
                         numberOfCompletedRefinements += 1;
+                        localGridVersion++;
                         std::cout << "Refinement " << numProcessedDataPoints << " complete" << std::endl;
 
                         MPIMethods::sendGridComponentsUpdate(vectorRefinementResults);
@@ -538,8 +541,8 @@ namespace sgpp {
                 double classLabel = dataset.getTargets()[i];
                 DataVector vec(dim);
                 dataset.getData().getRow(i, vec);
-                auto &p = trainDataClasses[classIndices[classLabel]];
-                p.first->appendRow(vec);
+                auto &classPairDataMatrixDouble = trainDataClasses[classIndices[classLabel]];
+                classPairDataMatrixDouble.first->appendRow(vec);
             }
         }
 
@@ -623,7 +626,7 @@ namespace sgpp {
             for (size_t classIndex = 0; classIndex < getNumClasses(); classIndex++) {
                 std::cout << "Updating master for class " << classIndex << std::endl;
                 auto &classDensityContainer = densityFunctions[classIndex];
-                DataVector alphaVector = classDensityContainer.first.get()->getAlpha();
+                DataVector alphaVector = classDensityContainer.first->getAlpha();
                 MPIMethods::sendMergeGridNetworkMessage(classIndex, dataset.getNumberInstances(), alphaVector);
             }
             std::cout << "Not sending grid merge request" << std::endl;
@@ -645,6 +648,24 @@ namespace sgpp {
                 lastWorkerID = 0;
             }
             return ++lastWorkerID;
+        }
+
+        void LearnerSGDEOnOffParallel::mergeAlphaValues(size_t classIndex, DataVector &dataVector, size_t batchSize) {
+            dataVector.mult(batchSize);
+            DataVector &localAlpha = getDensityFunctions()[classIndex].first->getAlpha();
+            if (localAlpha.size() != dataVector.size()) {
+                std::cout << "Received merge request with smaller size than local values" << std::endl;
+                exit(-1);
+            }
+            localAlpha.add(dataVector);
+        }
+
+        size_t LearnerSGDEOnOffParallel::getCurrentGridVersion() {
+            return localGridVersion;
+        }
+
+        void LearnerSGDEOnOffParallel::setLocalGridVersion(size_t gridVersion) {
+            localGridVersion = gridVersion;
         }
 
     }  // namespace datadriven

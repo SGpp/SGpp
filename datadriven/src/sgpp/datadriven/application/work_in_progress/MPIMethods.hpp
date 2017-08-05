@@ -79,8 +79,7 @@ namespace sgpp {
             static void runBatch(MPI_Packet *pPacket);
 
             size_t
-            receiveMergeGridNetworkMessage(int gridversion, MergeGridNetworkMessage &networkMessage,
-                                           DataVector &alphaVector);
+            receiveMergeGridNetworkMessage(int gridversion, MergeGridNetworkMessage &networkMessage);
 
             void waitForAllMPIRequestsToComplete();
 
