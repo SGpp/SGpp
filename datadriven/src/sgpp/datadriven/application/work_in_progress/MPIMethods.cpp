@@ -218,7 +218,7 @@ namespace sgpp {
                 throw applicationException;
             }
 
-            base::DataVector alphaVector;
+            base::DataVector alphaVector(networkMessage.payloadLength);
 
             auto *payload = (double *) networkMessage.payload;
             for (size_t index = 0; index < networkMessage.payloadLength; index++) {
