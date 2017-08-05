@@ -467,8 +467,8 @@ namespace sgpp {
                     auto *bufferIterator = (unsigned long *) networkMessage->payload;
                     size_t dimensionality = learnerInstance->getDimensionality();
                     while (bufferIterator < bufferEnd && processedPoints < listLength) {
+                        LevelIndexVector dataVector(dimensionality);
                         size_t currentDimension = 0;
-                        LevelIndexVector dataVector(currentDimension);
                         while (currentDimension < dimensionality && bufferIterator < bufferEnd) {
                             dataVector[currentDimension].level = *bufferIterator;
                             bufferIterator++;
