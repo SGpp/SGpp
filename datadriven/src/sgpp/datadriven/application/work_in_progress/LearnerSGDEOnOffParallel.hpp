@@ -47,11 +47,19 @@ namespace sgpp {
  * If Cholesky decomposition is chosen, refinement/coarsening can be applied.
  */
 
+        struct LevelIndexPair {
+            unsigned long level;
+            unsigned long index;
+        };
+
+        typedef std::vector<LevelIndexPair> LevelIndexVector;
+
         struct RefinementResult {
             unsigned int gridversion;
-            std::list<sgpp::base::DataVector> addedGridPoints;
+            std::list<LevelIndexVector> addedGridPoints;
             std::list<size_t> deletedGridPointsIndexes;
         };
+
 
         class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
         public:
