@@ -295,8 +295,8 @@ namespace sgpp {
 
                 size_t numPointsInPacket = 0;
 
-                const std::vector<double>::iterator &beginIterator = alphaVector.begin();
-                const std::vector<double>::iterator &endIterator = alphaVector.end();
+                auto beginIterator = alphaVector.begin();
+                auto endIterator = alphaVector.end();
 
                 numPointsInPacket = fillBufferWithData(networkMessage->payload, std::end(networkMessage->payload),
                                                        beginIterator, endIterator);
