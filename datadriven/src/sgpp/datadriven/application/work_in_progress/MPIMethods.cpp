@@ -211,7 +211,7 @@ namespace sgpp {
         }
 
         //TODO: This was imported from Merge
-        size_t MPIMethods::receiveMergeGridNetworkMessage(int gridversion, MergeGridNetworkMessage &networkMessage) {
+        size_t MPIMethods::receiveMergeGridNetworkMessage(MergeGridNetworkMessage &networkMessage) {
             if (networkMessage.gridversion != learnerInstance->getCurrentGridVersion()) {
                 sgpp::base::application_exception applicationException(
                         "Received grid merge request with incorrect grid version!");
@@ -465,6 +465,8 @@ namespace sgpp {
 
         void MPIMethods::processIncomingMPICommands(MPI_Packet *mpiPacket) {
             std::cout << "Processing incoming command " << mpiPacket->commandID << std::endl;
+            void *networkMessagePointer = &(mpiPacket->payload);
+
             switch (mpiPacket->commandID) {
                 case START_SYNCHRONIZE_PACKETS:
                     startSynchronizingPackets();
@@ -472,12 +474,15 @@ namespace sgpp {
                 case END_SYNCHRONIZE_PACKETS:
                     endSynchronizingPackets();
                     break;
-                case UPDATE_GRID:
-                    receiveGridComponentsUpdate((RefinementResultNetworkMessage *) (mpiPacket->payload));
+                case UPDATE_GRID: {
+                    auto *refinementResultNetworkMessage = static_cast<RefinementResultNetworkMessage *>(networkMessagePointer);
+                    receiveGridComponentsUpdate(refinementResultNetworkMessage);
+                }
                     break;
-                case MERGE_GRID:
-                    std::cout << "Merge grid not implemented" << std::endl;
-//                    receiveMergeGridNetworkMessage(learnerInstance->getGridVersion(), reinterpret_cast<MergeGridNetworkMessage>(mpiPacket->payload), learnerInstance->getAlphaVector());
+                case MERGE_GRID: {
+                    auto *mergeGridNetworkMessage = static_cast<MergeGridNetworkMessage *>(networkMessagePointer);
+                    receiveMergeGridNetworkMessage(*mergeGridNetworkMessage);
+                }
                     break;
                 case ASSIGN_BATCH:
                     runBatch(mpiPacket);
