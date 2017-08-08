@@ -63,7 +63,7 @@ def test(grid_points):
   plt.plot(grid_points, ys)
 
 xs = np.arange(0, 1.01, 0.01)
-l_max = 3
+l_max = 6
 interpolation = interpolation_function(1, distrib)
 interpolation.create_interpolation(l_max)
 
