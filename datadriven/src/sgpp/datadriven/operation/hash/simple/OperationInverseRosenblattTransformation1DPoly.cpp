@@ -52,7 +52,7 @@ void OperationInverseRosenblattTransformation1DPoly::init(base::DataVector* alph
   double area = 0.0;
   double right_coord, right_function_value;
   size_t p = dynamic_cast<sgpp::base::PolyGrid*>(grid)->getDegree();
-  quadOrder =  (p + 1) / 2;
+  quadOrder = (p + 1) / 2;
 
   gauss.getLevelPointsAndWeightsNormalized(quadOrder, gauss_coordinates, weights);
 
@@ -205,13 +205,10 @@ void OperationInverseRosenblattTransformation1DPoly::init(base::DataVector* alph
     ++i;
     it1->second = tmp_sum / sum;
   }
-
-
-  std::cout << "PFs size on exit: " << patch_functions.size() << std::endl;
 }
 
 double OperationInverseRosenblattTransformation1DPoly::sample(base::DataVector* alpha1d,
-                                                               double coord1d) {
+                                                             double coord1d) {
   if (coord1d == 0.0)
     return 0.0;
 
@@ -232,35 +229,32 @@ double OperationInverseRosenblattTransformation1DPoly::sample(base::DataVector* 
   }
   --patch_nr;
   --negative_patch_counter;
-  std::cout << "negative_patch_counter: " << negative_patch_counter << std::endl;
-  std::cout << "patch_nr: " << patch_nr << std::endl;
-  std::cout << "PAs size: " << patch_areas.size() << std::endl;
-  std::cout << "PFs size : " << patch_functions.size() << std::endl;
+  // std::cout << "negative_patch_counter: " << negative_patch_counter << std::endl;
+  // std::cout << "patch_nr: " << patch_nr << std::endl;
+  // std::cout << "PAs size: " << patch_areas.size() << std::endl;
+  // std::cout << "PFs size : " << patch_functions.size() << std::endl;
   --it1;
   double gaussQuadSum = 0.;
   double left = it1->first;
   double scaling = coord1d - left;
   if (is_negative_patch[patch_nr]) {
-    std::cout << "is negative" << std::endl;
     for (size_t c = 0; c < quadOrder; c++) {
       coord[0] = left + scaling * gauss_coordinates[c];
       gaussQuadSum += weights[c] * patch_functions[negative_patch_counter](coord[0]);
     }
   } else {
-    std::cout << "is not negative" << std::endl;
     for (size_t c = 0; c < quadOrder; c++) {
       coord[0] = left + scaling * gauss_coordinates[c];
       gaussQuadSum += weights[c] * opEval->eval(*alpha1d, coord);
     }
   }
-
   return it1->second + (gaussQuadSum * scaling) / sum;
 }
 
 double OperationInverseRosenblattTransformation1DPoly::doTransformation1D(base::DataVector* alpha1d,
                                                                           double coord1d) {
   init(alpha1d);
-  std::cout << "PFs size after exit: " << patch_functions.size() << std::endl;
+  // std::cout << "PFs size after exit: " << patch_functions.size() << std::endl;
   std::function<double(const base::DataVector&)> optFunc =
     [this, coord1d, alpha1d](const base::DataVector& x) -> double {
     double F_x = sample(alpha1d, x[0]);
