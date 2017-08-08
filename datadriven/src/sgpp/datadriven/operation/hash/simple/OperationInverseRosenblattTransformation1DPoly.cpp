@@ -43,6 +43,7 @@ void OperationInverseRosenblattTransformation1DPoly::init(base::DataVector* alph
   ordered_grid_points.clear();
   patch_functions.clear();
   coord_cdf.clear();
+  sum = 0;
   opEval = std::unique_ptr<base::OperationEval>(op_factory::createOperationEval(*grid));
 
   base::DataVector coord(1);
@@ -64,8 +65,6 @@ void OperationInverseRosenblattTransformation1DPoly::init(base::DataVector* alph
   }
   ordered_grid_points.push_back(0.0);
   ordered_grid_points.push_back(1.0);
-
-  std::vector<std::function<double(double)>> patch_functions;
 
   coord_cdf.insert(std::pair<double, double>(0.0, 0.0));
   coord_cdf.insert(std::pair<double, double>(1.0, 1.0));
@@ -181,7 +180,7 @@ void OperationInverseRosenblattTransformation1DPoly::init(base::DataVector* alph
         sum += area;
         patch_areas.push_back(area);
         is_negative_patch.push_back(true);
-        patch_functions.push_back(const_cast<std::function<double(double)>*>(&interpolation));
+        patch_functions.push_back(interpolation);
         left_coord = ordered_grid_points[i];
       }
       --i;
@@ -209,16 +208,10 @@ void OperationInverseRosenblattTransformation1DPoly::init(base::DataVector* alph
 
 
   std::cout << "PFs size on exit: " << patch_functions.size() << std::endl;
-  initialized = true;
 }
 
 double OperationInverseRosenblattTransformation1DPoly::sample(base::DataVector* alpha1d,
                                                                double coord1d) {
-  std::cout << "coord1d:" << coord1d << std::endl;
-  if (!initialized) {
-    throw base::operation_exception(
-        "Error in OperationInverseRosenblattTransformation1DPoly: not initialized");
-  }
   if (coord1d == 0.0)
     return 0.0;
 
@@ -251,7 +244,7 @@ double OperationInverseRosenblattTransformation1DPoly::sample(base::DataVector* 
     std::cout << "is negative" << std::endl;
     for (size_t c = 0; c < quadOrder; c++) {
       coord[0] = left + scaling * gauss_coordinates[c];
-      gaussQuadSum += weights[c] * *(patch_functions[negative_patch_counter])(coord[0]);
+      gaussQuadSum += weights[c] * patch_functions[negative_patch_counter](coord[0]);
     }
   } else {
     std::cout << "is not negative" << std::endl;
@@ -266,11 +259,8 @@ double OperationInverseRosenblattTransformation1DPoly::sample(base::DataVector* 
 
 double OperationInverseRosenblattTransformation1DPoly::doTransformation1D(base::DataVector* alpha1d,
                                                                           double coord1d) {
-  if (!initialized)
-    init(alpha1d);
-
+  init(alpha1d);
   std::cout << "PFs size after exit: " << patch_functions.size() << std::endl;
-  std::cout << "initialized" << std::endl;
   std::function<double(const base::DataVector&)> optFunc =
     [this, coord1d, alpha1d](const base::DataVector& x) -> double {
     double F_x = sample(alpha1d, x[0]);
