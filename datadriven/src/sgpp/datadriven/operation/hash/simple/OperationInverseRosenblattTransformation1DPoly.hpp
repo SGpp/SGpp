@@ -27,11 +27,10 @@ class OperationInverseRosenblattTransformation1DPoly : public OperationTransform
   std::vector<double> patch_areas;
   std::vector<bool> is_negative_patch;
   std::vector<double> ordered_grid_points;
-  std::vector<std::function<double(double)>*> patch_functions;
+  std::vector<std::function<double(double)>> patch_functions;
   std::multimap<double, double> coord_cdf;
   double sum;
   size_t quadOrder;
-  bool initialized = false;
 
   /**
    * this function computes the CDF (i.e. the patch areas)
