@@ -21,14 +21,16 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationDensitySampling1DLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensitySamplingLinear.hpp>
 
+
+#include <sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonalLinearBoundary.hpp>
+
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DPoly.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationLinear.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonalLinearBoundary.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationPoly.hpp>
 
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPoly.hpp>
-
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationPoly.hpp>
 
@@ -213,6 +215,8 @@ datadriven::OperationInverseRosenblattTransformation*
 createOperationInverseRosenblattTransformation(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear)
     return new datadriven::OperationInverseRosenblattTransformationLinear(&grid);
+  else if (grid.getType() == base::GridType::Poly)
+    return new datadriven::OperationInverseRosenblattTransformationPoly(&grid);
   else
     throw base::factory_exception(
         "OperationInverseRosenblattTransformation is not implemented for this grid type.");
