@@ -28,7 +28,9 @@
 
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPoly.hpp>
+
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationLinear.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationPoly.hpp>
 
 #include <sgpp/datadriven/operation/hash/simple/OperationTestLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationTestLinearBoundary.hpp>
@@ -190,6 +192,8 @@ datadriven::OperationRosenblattTransformation* createOperationRosenblattTransfor
     base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear)
     return new datadriven::OperationRosenblattTransformationLinear(&grid);
+  else if (grid.getType() == base::GridType::Linear)
+    return new datadriven::OperationRosenblattTransformationPoly(&grid);
   else
     throw base::factory_exception(
         "OperationRosenblattTransformation is not implemented for this grid type.");
