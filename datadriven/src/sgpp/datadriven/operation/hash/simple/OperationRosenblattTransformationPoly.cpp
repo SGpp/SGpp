@@ -7,6 +7,7 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityConditional.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensitySampling1D.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPoly.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
@@ -31,8 +32,8 @@ namespace sgpp {
 namespace datadriven {
 
 void OperationRosenblattTransformationPoly::doTransformation(base::DataVector* alpha,
-                                                               base::DataMatrix* points,
-                                                               base::DataMatrix* pointscdf) {
+                                                            base::DataMatrix* points,
+                                                            base::DataMatrix* pointscdf) {
   size_t num_dims = this->grid->getDimension();
 
   // 1. marginalize to all possible start dimensions
@@ -89,9 +90,9 @@ void OperationRosenblattTransformationPoly::doTransformation(base::DataVector* a
 }
 
 void OperationRosenblattTransformationPoly::doTransformation(base::DataVector* alpha,
-                                                               base::DataMatrix* points,
-                                                               base::DataMatrix* pointscdf,
-                                                               size_t dim_start) {
+                                                            base::DataMatrix* points,
+                                                            base::DataMatrix* pointscdf,
+                                                            size_t dim_start) {
   // 1. marginalize to dim_start
   base::Grid* g1d = NULL;
   base::DataVector* a1d = NULL;
@@ -188,109 +189,13 @@ void OperationRosenblattTransformationPoly::doTransformation_in_next_dim(
 }
 
 double OperationRosenblattTransformationPoly::doTransformation1D(base::Grid* grid1d,
-                                                                   base::DataVector* alpha1d,
-                                                                   double coord1d) {
-  /***************** STEP 1. Compute CDF  ********************/
-  // compute PDF, sort by coordinates
-  std::multimap<double, double> coord_pdf, coord_cdf;
-  std::multimap<double, double>::iterator it1, it2, it3;
+                                                                base::DataVector* alpha1d,
+                                                                double coord1d) {
+  std::unique_ptr<OperationTransformation1D> opRosenblatt
+    = static_cast<std::unique_ptr<OperationTransformation1D>>
+    (op_factory::createOperationRosenblattTransformation1D(*grid1d));
 
-  base::GridStorage* gs = &grid1d->getStorage();
-  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*(grid1d)));
-  base::DataVector coord(1);
-
-  for (unsigned int i = 0; i < gs->getSize(); i++) {
-    coord[0] = gs->getPoint(i).getStandardCoordinate(0);
-    coord_pdf.insert(std::pair<double, double>(coord[0], opEval->eval(*alpha1d, coord)));
-    coord_cdf.insert(std::pair<double, double>(coord[0], i));
-  }
-
-  // include values at the boundary [0,1]
-  coord_pdf.insert(std::pair<double, double>(0.0, 0.0));
-  coord_pdf.insert(std::pair<double, double>(1.0, 0.0));
-  coord_cdf.insert(std::pair<double, double>(0.0, 0.0));
-  coord_cdf.insert(std::pair<double, double>(1.0, 1.0));
-
-  // make sure that all the pdf values are positive
-  // if not, interpolate between the closest positive neighbors
-  it1 = coord_pdf.begin();
-  it2 = coord_pdf.begin();
-
-  it1->second = std::max(it1->second, 0.0);
-  for (++it2; it2 != coord_pdf.end(); ++it2) {
-    if (it2->second < 0.0) {
-      // search for next right neighbor that has a positive function value
-      it3 = it2;
-      while (it3->second <= 0.0 && it3 != coord_pdf.end()) {
-        it3++;
-      }
-      it2->second = (it1->second + it3->second) / 2.0;
-    }
-
-    it1 = it2;
-  }
-
-  // Composite rule: trapezoidal (b-a)/2 * (f(a)+f(b))
-  it1 = coord_pdf.begin();
-  it2 = coord_pdf.begin();
-  std::vector<double> tmp;
-  tmp.push_back(0.0);
-  double sum = 0.0, area;
-
-  for (++it2; it2 != coord_pdf.end(); ++it2) {
-    // (*it).first : the coordinate
-    // (*it).second : the function value
-    area = ((*it2).first - (*it1).first) / 2 * ((*it1).second + (*it2).second);
-
-    // make sure that the cdf is monotonically increasing
-    // WARNING: THIS IS A HACK THAT OVERCOMES THE PROBLEM
-    // OF NON POSITIVE DENSITY
-    if (area < 0) {
-      std::cerr << "warning: negative area encountered " << (*it1).second << ", " << (*it2).second
-                << std::endl;
-      area = 0;
-    }
-
-    tmp.push_back(area);
-    sum += area;
-    ++it1;
-  }
-
-  // compute CDF
-  double tmp_sum;
-  unsigned int i = 0;
-
-  for (it1 = coord_cdf.begin(); it1 != coord_cdf.end(); ++it1) {
-    tmp_sum = 0.0;
-
-    for (unsigned int j = 0; j <= i; ++j) tmp_sum += tmp[j];
-
-    ++i;
-    (*it1).second = tmp_sum / sum;
-  }
-
-  tmp.clear();
-  coord_pdf.clear();
-  /***************** STEP 1. Done  ********************/
-
-  /***************** STEP 2. Sampling  ********************/
-  double y, x1, x2, y1, y2;
-
-  // find cdf interval
-  for (it1 = coord_cdf.begin(); it1 != coord_cdf.end(); ++it1) {
-    if ((*it1).first >= coord1d) break;
-  }
-
-  x2 = (*it1).first;
-  y2 = (*it1).second;
-  --it1;
-  x1 = (*it1).first;
-  y1 = (*it1).second;
-  // find x (linear interpolation): (y-y1)/(x-x1) = (y2-y1)/(x2-x1)
-  y = (y2 - y1) / (x2 - x1) * (coord1d - x1) + y1;
-
-  /***************** STEP 2. Done  ********************/
-  return y;
+  return opRosenblatt->doTransformation1D(alpha1d, coord1d);
 }  // end of compute_1D_cdf()
 }  // namespace datadriven
 }  // namespace sgpp
