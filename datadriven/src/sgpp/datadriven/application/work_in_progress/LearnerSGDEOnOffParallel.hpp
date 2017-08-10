@@ -29,6 +29,7 @@
 #include <vector>
 #include <mpi.h>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
+#include <sgpp/datadriven/application/work_in_progress/MPITaskScheduler.hpp>
 
 namespace sgpp {
     namespace datadriven {
@@ -66,31 +67,31 @@ namespace sgpp {
             LearnerSGDEOnOffParallel(DBMatDensityConfiguration &dconf, Dataset &trainData, Dataset &testData,
                                      Dataset *validationData, DataVector &classLabels, size_t numClassesInit,
                                      bool usePrior,
-                                     double beta, double lambda);
+                                     double beta, double lambda, MPITaskScheduler &mpiTaskScheduler);
 
             /**
-                         * Trains the learner with the given dataset.
-                         *
-                         * @param batchSize Size of subset of data points used for each training step
-                         * @param maxDataPasses The number of passes over the whole training data
-                         * @param refinementFunctorType The refinement indicator (surplus, zero-crossings or
-                         * data-based)
-                         * @param refMonitor The refinement strategy (periodic or convergence-based)
-                         * @param refPeriod The refinement interval (if periodic refinement is chosen)
-                         * @param accDeclineThreshold The convergence threshold
-                         *        (if convergence-based refinement is chosen)
-                         * @param accDeclineBufferSize The number of accuracy measurements which are
-                         * used to check
-                         *        convergence (if convergence-based refinement is chosen)
-                         * @param minRefInterval The minimum number of data points (or data batches)
-                         * which have to be
-                         *        processed before next refinement can be scheduled (if
-                         * convergence-based refinement
-                         *        is chosen)
-                         * @param enableCv Specifies whether to perform cross-validation during
-                         * training process or not
-                         * @param nextCvStep Determines when next cross-validation has to be triggered
-                         */
+                                     * Trains the learner with the given dataset.
+                                     *
+                                     * @param batchSize Size of subset of data points used for each training step
+                                     * @param maxDataPasses The number of passes over the whole training data
+                                     * @param refinementFunctorType The refinement indicator (surplus, zero-crossings or
+                                     * data-based)
+                                     * @param refMonitor The refinement strategy (periodic or convergence-based)
+                                     * @param refPeriod The refinement interval (if periodic refinement is chosen)
+                                     * @param accDeclineThreshold The convergence threshold
+                                     *        (if convergence-based refinement is chosen)
+                                     * @param accDeclineBufferSize The number of accuracy measurements which are
+                                     * used to check
+                                     *        convergence (if convergence-based refinement is chosen)
+                                     * @param minRefInterval The minimum number of data points (or data batches)
+                                     * which have to be
+                                     *        processed before next refinement can be scheduled (if
+                                     * convergence-based refinement
+                                     *        is chosen)
+                                     * @param enableCv Specifies whether to perform cross-validation during
+                                     * training process or not
+                                     * @param nextCvStep Determines when next cross-validation has to be triggered
+                                     */
             void train(size_t batchSize, size_t maxDataPasses, std::string refinementFunctorType,
                        std::string refMonitor, size_t refPeriod, double accDeclineThreshold,
                        size_t accDeclineBufferSize, size_t minRefInterval, bool enableCv,
@@ -156,8 +157,7 @@ namespace sgpp {
             std::vector<RefinementResult> *vectorRefinementResults;
             size_t localGridVersion;
             bool workerActive;
-            int lastWorkerID;
-
+            MPITaskScheduler &mpiTaskScheduler;
 
             size_t
             handleDataAndZeroBasedRefinement(bool preCompute, MultiGridRefinementFunctor *func, size_t idx,
@@ -192,9 +192,7 @@ namespace sgpp {
                                        const std::vector<std::pair<DataMatrix *, double>> &trainDataClasses,
                                        std::map<double, int> &classIndices) const;
 
-            void assignBatchToWorker(Dataset dataset, size_t batchOffset, bool doCrossValidation);
-
-            int getNextWorkerID();
+            size_t assignBatchToWorker(size_t batchOffset, bool doCrossValidation);
 
         };
     }   //namespace datadriven

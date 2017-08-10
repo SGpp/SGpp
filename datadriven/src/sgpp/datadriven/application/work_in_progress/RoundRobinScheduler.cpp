@@ -7,20 +7,18 @@
 
 namespace sgpp {
     namespace datadriven {
-        RoundRobinScheduler::RoundRobinScheduler(size_t worldSize, size_t batchSize) {
-            this->worldSize = worldSize;
+        RoundRobinScheduler::RoundRobinScheduler(size_t batchSize) {
             this->batchSize = batchSize;
             this->lastWorkerID = 0;
         }
 
-        void RoundRobinScheduler::assignTaskVariableTaskSize(TaskType taskType, size_t maximumTaskSize,
-                                                             AssignTaskResult &result) {
+        void RoundRobinScheduler::assignTaskVariableTaskSize(TaskType taskType, AssignTaskResult &result) {
             assignTaskStaticTaskSize(taskType, result);
-            result.taskSize = std::min(maximumTaskSize, batchSize);
+            result.taskSize = batchSize;
         }
 
         void RoundRobinScheduler::assignTaskStaticTaskSize(TaskType taskType, AssignTaskResult &result) {
-            if (lastWorkerID + 1 >= worldSize) {
+            if (lastWorkerID + 1 >= MPIMethods::getWorldSize()) {
                 lastWorkerID = 0;
             }
             result.workerID = ++lastWorkerID;

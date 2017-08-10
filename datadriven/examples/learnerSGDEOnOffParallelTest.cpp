@@ -13,6 +13,7 @@
 
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/datadriven/application/work_in_progress/LearnerSGDEOnOffParallel.hpp>
+#include <sgpp/datadriven/application/work_in_progress/RoundRobinScheduler.hpp>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -187,12 +188,16 @@ int main() {
         dconf.icholParameters.sweepsDecompose = 2;
         dconf.icholParameters.sweepsRefine = 2;
 
+
+        // Create the MPI Task Scheduling using the round robin algorithm
+        sgpp::datadriven::RoundRobinScheduler scheduler(1);
+
       /**
        * Create the learner.
        */
       std::cout << "# create learner" << std::endl;
         sgpp::datadriven::LearnerSGDEOnOffParallel learner(dconf, trainDataset, testDataset, nullptr,
-                                                           classLabels, classNum, usePrior, beta, lambda);
+                                                           classLabels, classNum, usePrior, beta, lambda, scheduler);
 
       /**
        * Configure cross-validation.
