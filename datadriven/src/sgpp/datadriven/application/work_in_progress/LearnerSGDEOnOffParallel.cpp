@@ -153,7 +153,7 @@ namespace sgpp {
                     while (MPIMethods::getQueueSize() > 4) {
                         std::cout << "Waiting for " << MPIMethods::getQueueSize()
                                   << " queue operations to complete before continuing" << std::endl;
-                        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+                        std::this_thread::sleep_for(std::chrono::seconds(1));
                         MPIMethods::processCompletedMPIRequests();
                     }
 
