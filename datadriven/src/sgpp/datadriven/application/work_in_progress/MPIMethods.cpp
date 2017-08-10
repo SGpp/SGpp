@@ -136,8 +136,8 @@ namespace sgpp {
                     auto *networkMessage = (RefinementResultNetworkMessage *) mpiPacket->payload;
 
                     networkMessage->classIndex = classIndex;
-
                     networkMessage->updateType = DELETED_GRID_POINTS_LIST;
+                    networkMessage->gridversion = learnerInstance->getCurrentGridVersion();
 
                     size_t numPointsInBuffer = fillBufferWithData<std::list<size_t>::const_iterator>(
                             (void *) networkMessage->payload,
@@ -164,8 +164,8 @@ namespace sgpp {
                     auto *networkMessage = (RefinementResultNetworkMessage *) mpiPacket->payload;
 
                     networkMessage->classIndex = classIndex;
-
                     networkMessage->updateType = ADDED_GRID_POINTS_LIST;
+                    networkMessage->gridversion = learnerInstance->getCurrentGridVersion();
 
                     size_t numPointsInBuffer = fillBufferWithLevelIndexData(networkMessage->payload,
                                                                             std::end(networkMessage->payload), iterator,
