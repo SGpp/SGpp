@@ -452,8 +452,7 @@ namespace sgpp {
         }
 
         void MPIMethods::receiveGridComponentsUpdate(RefinementResultNetworkMessage *networkMessage) {
-            //TODO
-            RefinementResult refinementResult = sgpp::datadriven::RefinementResult();
+            RefinementResult &refinementResult = learnerInstance->getRefinementResult(networkMessage->classIndex);
 
             size_t listLength = networkMessage->listLength;
             size_t processedPoints = 0;
@@ -492,7 +491,7 @@ namespace sgpp {
                     break;
                 }
             }
-            std::cout << "Received refinement result (" << refinementResult.addedGridPoints.size()
+            std::cout << "Updated refinement result (" << refinementResult.addedGridPoints.size()
                       << " additions, "
                       << refinementResult.deletedGridPointsIndexes.size() <<
                       " deletions)" << std::endl;

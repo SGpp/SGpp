@@ -594,12 +594,13 @@ namespace sgpp {
                 if ((*p.first).getNrows() > 0) {
                     // update density function for current class
                     std::cout << "Calling compute density function" << std::endl;
+                    RefinementResult &classRefinementResult = (*vectorRefinementResults)[i];
                     densityFunctions[i].first->computeDensityFunction(
-                            *p.first, true, doCrossValidation, &(*vectorRefinementResults)[i].deletedGridPointsIndexes,
-                            (*vectorRefinementResults)[i].addedGridPoints.size());
+                            *p.first, true, doCrossValidation, &classRefinementResult.deletedGridPointsIndexes,
+                            classRefinementResult.addedGridPoints.size());
                     std::cout << "Clearing the refinement results" << std::endl;
-                    (*vectorRefinementResults)[i].deletedGridPointsIndexes.clear();
-                    (*vectorRefinementResults)[i].addedGridPoints.clear();
+                    classRefinementResult.deletedGridPointsIndexes.clear();
+                    classRefinementResult.addedGridPoints.clear();
 
                     if (usePrior) {
                         this->prior[p.second] =
@@ -679,6 +680,10 @@ namespace sgpp {
 
         void LearnerSGDEOnOffParallel::setLocalGridVersion(size_t gridVersion) {
             localGridVersion = gridVersion;
+        }
+
+        RefinementResult &LearnerSGDEOnOffParallel::getRefinementResult(size_t classIndex) {
+            return (*vectorRefinementResults)[classIndex];
         }
 
     }  // namespace datadriven

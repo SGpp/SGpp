@@ -152,6 +152,8 @@ namespace sgpp {
 
             void setLocalGridVersion(size_t gridVersion);
 
+            RefinementResult &getRefinementResult(size_t classIndex);
+
         protected:
 
             std::vector<RefinementResult> *vectorRefinementResults;
