@@ -450,13 +450,15 @@ namespace sgpp {
         }
 
         void MPIMethods::receiveGridComponentsUpdate(RefinementResultNetworkMessage *networkMessage) {
-            RefinementResult &refinementResult = learnerInstance->getRefinementResult(networkMessage->classIndex);
+            unsigned long classIndex = networkMessage->classIndex;
+            RefinementResult &refinementResult = learnerInstance->getRefinementResult(classIndex);
 
             size_t listLength = networkMessage->listLength;
             size_t processedPoints = 0;
             void *bufferEnd = std::end(networkMessage->payload);
 
-            std::cout << "Receiving " << listLength << " grid modifications" << std::endl;
+            std::cout << "Receiving " << listLength << " grid modifications for class " << classIndex
+                      << std::endl;
 
             switch (networkMessage->updateType) {
                 case DELETED_GRID_POINTS_LIST: {
@@ -489,12 +491,13 @@ namespace sgpp {
                     break;
                 }
             }
-            std::cout << "Updated refinement result (" << refinementResult.addedGridPoints.size()
+            std::cout << "Updated refinement result " << classIndex << " ("
+                      << refinementResult.addedGridPoints.size()
                       << " additions, "
                       << refinementResult.deletedGridPointsIndexes.size() <<
                       " deletions)" << std::endl;
             learnerInstance->updateClassVariablesAfterRefinement(&refinementResult,
-                                                                 learnerInstance->getDensityFunctions()[networkMessage->classIndex].first.get());
+                                                                 learnerInstance->getDensityFunctions()[classIndex].first.get());
             learnerInstance->setLocalGridVersion(networkMessage->gridversion);
         }
 
