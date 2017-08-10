@@ -24,16 +24,11 @@ namespace sgpp {
 
         public:
             virtual void
-            assignTaskVariableTaskSize(TaskType taskType, size_t maximumTaskSize, AssignTaskResult &result);
+            assignTaskVariableTaskSize(TaskType taskType, AssignTaskResult &result);
 
             virtual void assignTaskStaticTaskSize(TaskType taskType, AssignTaskResult &result);
 
-            void MPITaskScheduler::setScheduler(MPITaskScheduler &instance);
-
-            MPITaskScheduler &MPITaskScheduler::getInstance();
-
         protected:
-            MPITaskScheduler &MPITaskScheduler::instance;
 
         };
 

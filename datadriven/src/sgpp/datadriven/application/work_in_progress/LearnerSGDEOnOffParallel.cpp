@@ -39,19 +39,16 @@ using sgpp::base::SurplusRefinementFunctor;
 namespace sgpp {
     namespace datadriven {
 
-        LearnerSGDEOnOffParallel::LearnerSGDEOnOffParallel(
-                sgpp::datadriven::DBMatDensityConfiguration &dconf,
-                Dataset &trainData,
-                Dataset &testData,
-                Dataset *validationData,
-                sgpp::base::DataVector &classLabels,
-                size_t numClassesInit,
-                bool usePrior, double beta, double lambda)
+        LearnerSGDEOnOffParallel::LearnerSGDEOnOffParallel(sgpp::datadriven::DBMatDensityConfiguration &dconf,
+                                                           Dataset &trainData, Dataset &testData,
+                                                           Dataset *validationData,
+                                                           sgpp::base::DataVector &classLabels, size_t numClassesInit,
+                                                           bool usePrior, double beta, double lambda,
+                                                           MPITaskScheduler &mpiTaskScheduler)
                 : LearnerSGDEOnOff(dconf, trainData, testData, validationData, classLabels, numClassesInit, usePrior,
-                                   beta, lambda) {
+                                   beta, lambda), mpiTaskScheduler(mpiTaskScheduler) {
 
             MPIMethods::initMPI(this);
-
         }
 
         LearnerSGDEOnOffParallel::~LearnerSGDEOnOffParallel() {
@@ -146,7 +143,7 @@ namespace sgpp {
                         }
                     }
 
-                    assignBatchToWorker(dataBatch, numProcessedDataPoints, doCrossValidation);
+                    assignBatchToWorker(numProcessedDataPoints, doCrossValidation);
 
                     numProcessedDataPoints += dataBatch.getNumberInstances();
 
@@ -643,13 +640,16 @@ namespace sgpp {
             std::cout << "Completed work batch " << batchOffset << " requested by master." << std::endl;
         }
 
-        void
-        LearnerSGDEOnOffParallel::assignBatchToWorker(Dataset dataset, size_t batchOffset, bool doCrossValidation) {
-            int workerID = getNextWorkerID();
+        size_t
+        LearnerSGDEOnOffParallel::assignBatchToWorker(size_t batchOffset, bool doCrossValidation) {
+            AssignTaskResult assignTaskResult{};
+            mpiTaskScheduler.assignTaskVariableTaskSize(TRAIN_FROM_BATCH, assignTaskResult);
             std::cout << "Assigning batch " << batchOffset
-                      << " to worker " << workerID
-                      << " with size " << dataset.getNumberInstances() << std::endl;
-            MPIMethods::assignBatch(workerID, batchOffset, dataset.getNumberInstances(), doCrossValidation);
+                      << " to worker " << assignTaskResult.workerID
+                      << " with size " << assignTaskResult.taskSize << std::endl;
+            MPIMethods::assignBatch(assignTaskResult.workerID, batchOffset, assignTaskResult.taskSize,
+                                    doCrossValidation);
+            return assignTaskResult.taskSize;
         }
 
 
