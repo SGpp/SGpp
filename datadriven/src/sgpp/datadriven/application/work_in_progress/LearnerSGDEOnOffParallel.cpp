@@ -699,7 +699,8 @@ namespace sgpp {
             dataVector.mult(batchSize);
             DataVector &localAlpha = getDensityFunctions()[classIndex].first->getAlpha();
             if (localAlpha.size() != dataVector.size()) {
-                std::cout << "Received merge request with smaller size than local values" << std::endl;
+                std::cout << "Received merge request with incorrect size (local" << localAlpha.size() << ", remote "
+                          << dataVector.size() << ")" << std::endl;
                 exit(-1);
             }
             localAlpha.add(dataVector);
