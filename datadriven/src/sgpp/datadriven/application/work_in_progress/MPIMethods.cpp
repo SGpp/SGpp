@@ -394,11 +394,13 @@ namespace sgpp {
             std::cout << "Checking " << pendingMPIRequests.size() << " pending MPI requests" << std::endl;
             auto pendingMPIRequestIterator = pendingMPIRequests.end();
             auto listBegin = pendingMPIRequests.begin();
+            auto mpiRequestIterator = mpiRequestStorage.end();
 
             // In order to process the send requests first we start from the back
 
             while (pendingMPIRequestIterator != listBegin) {
                 pendingMPIRequestIterator--;
+                mpiRequestIterator--;
 
                 MPI_Status mpiStatus{};
                 int operationCompleted;
@@ -426,8 +428,7 @@ namespace sgpp {
                         delete[] pendingMPIRequestIterator->buffer;
 
                         std::cout << "Deleting MPI_Request in storage" << std::endl;
-                        mpiRequestStorage.erase(std::find(mpiRequestStorage.begin(), mpiRequestStorage.end(),
-                                                          *(pendingMPIRequestIterator->request)));
+                        mpiRequestStorage.erase(mpiRequestIterator);
 
                         pendingMPIRequests.erase(pendingMPIRequestIterator);
                         std::cout << "Deleted pending mpi request" << std::endl;
