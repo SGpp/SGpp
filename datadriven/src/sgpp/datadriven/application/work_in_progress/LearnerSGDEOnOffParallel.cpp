@@ -346,6 +346,9 @@ namespace sgpp {
             base::Grid &grid = densEst->getOfflineObject().getGrid();
 
             if (!MPIMethods::isMaster()) {
+                std::cout << "Old grid size is " << grid.getSize() << std::endl;
+
+
                 size_t numDimensions = getDimensionality();
 
                 //TODO: Modify the actual grid
@@ -364,11 +367,13 @@ namespace sgpp {
                     }
                     grid.getStorage().insert(*gridPoint);
                 }
+                std::cout << "New grid size is " << grid.getSize() << std::endl;
             }
 
             //TODO: We might need to transfer the results here.
             // apply grid changes to the Cholesky factorization
             if (offline->isRefineable()) {
+                std::cout << "Grid size before cholesky " << grid.getSize() << std::endl;
                 dynamic_cast<DBMatOfflineChol &>(densEst->getOfflineObject())
                         .choleskyModification(refinementResult->addedGridPoints.size(),
                                               refinementResult->deletedGridPointsIndexes, densEst->getBestLambda());
@@ -647,13 +652,6 @@ namespace sgpp {
             MPIMethods::assignBatch(workerID, batchOffset, dataset.getNumberInstances(), doCrossValidation);
         }
 
-
-        int LearnerSGDEOnOffParallel::getNextWorkerID() {
-            if (lastWorkerID + 1 >= MPIMethods::getWorldSize()) {
-                lastWorkerID = 0;
-            }
-            return ++lastWorkerID;
-        }
 
         void LearnerSGDEOnOffParallel::mergeAlphaValues(size_t classIndex, DataVector &dataVector, size_t batchSize) {
             dataVector.mult(batchSize);
