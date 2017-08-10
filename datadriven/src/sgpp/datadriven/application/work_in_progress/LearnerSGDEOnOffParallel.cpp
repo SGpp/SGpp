@@ -370,6 +370,7 @@ namespace sgpp {
                                        levelIndexVector[currentDimension].index);
                     }
                     grid.getStorage().insert(*gridPoint);
+                    std::cout << "Inserted grid point " << gridPoint->getHash() << " into grid." << std::endl;
                 }
                 std::cout << "New grid size is " << grid.getSize() << std::endl;
             }

@@ -496,7 +496,7 @@ namespace sgpp {
             std::cout << "Received refinement result (" << refinementResult.addedGridPoints.size()
                       << " additions, "
                       << refinementResult.deletedGridPointsIndexes.size() <<
-                      "deletions)" << std::endl;
+                      " deletions)" << std::endl;
             learnerInstance->updateClassVariablesAfterRefinement(&refinementResult,
                                                                  learnerInstance->getDensityFunctions()[networkMessage->classIndex].first.get());
             learnerInstance->setLocalGridVersion(networkMessage->gridversion);
