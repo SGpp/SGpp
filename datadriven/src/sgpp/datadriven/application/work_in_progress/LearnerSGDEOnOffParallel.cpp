@@ -321,23 +321,32 @@ namespace sgpp {
             }
 
             std::cout << "grid size after adaptivity: " << grid.getSize()
+                      << ", " << numberOfNewPoints << " new points on grid"
                       << std::endl;
 
 
             size_t numDimensions = getDimensionality();
             //Collect new grid points into the refinement result for shipping
-            for (unsigned int i = 0; i < numberOfNewPoints; i++) {
+            for (size_t i = 0; i < numberOfNewPoints; i++) {
                 LevelIndexVector levelIndexVector(numDimensions);
+                base::HashGridPoint &gridPoint = grid.getStorage()[oldGridSize + i];
                 for (size_t currentDimension = 0; currentDimension < numDimensions; currentDimension += 1) {
                     base::HashGridPoint::level_type pointLevel;
                     base::HashGridPoint::index_type pointIndex;
-                    grid.getStorage()[oldGridSize + i].get(currentDimension, pointLevel, pointIndex);
+                    gridPoint.get(currentDimension, pointLevel, pointIndex);
 
                     levelIndexVector[currentDimension].level = pointLevel;
                     levelIndexVector[currentDimension].index = pointIndex;
+
+                    std::cout << "Fetched level index vector: dimension " << currentDimension
+                              << ", level " << pointLevel <<
+                              ", index " << pointIndex << std::endl;
                 }
 
                 refinementResult->addedGridPoints.push_back(levelIndexVector);
+
+                std::cout << "Exported grid point " << gridPoint.getHash()
+                          << std::endl;
             }
 
             updateClassVariablesAfterRefinement(refinementResult, densEst);
@@ -355,9 +364,10 @@ namespace sgpp {
 
                 size_t numDimensions = getDimensionality();
 
-                //TODO: Modify the actual grid
                 //Delete the grid points removed on master thread
                 grid.getStorage().deletePoints(refinementResult->deletedGridPointsIndexes);
+
+                std::cout << "Grid size after deleting is " << grid.getSize() << std::endl;
 
                 //Add grid points added on master thread
                 for (LevelIndexVector &levelIndexVector : refinementResult->addedGridPoints) {
@@ -368,9 +378,14 @@ namespace sgpp {
                         gridPoint->set(currentDimension,
                                        levelIndexVector[currentDimension].level,
                                        levelIndexVector[currentDimension].index);
+                        std::cout << "Setting level index vector: dimension, " << currentDimension
+                                  << ", level " << levelIndexVector[currentDimension].level << ", index "
+                                  << levelIndexVector[currentDimension].index << std::endl;
                     }
                     grid.getStorage().insert(*gridPoint);
-                    std::cout << "Inserted grid point " << gridPoint->getHash() << " into grid." << std::endl;
+                    std::cout << "Inserted grid point " << gridPoint->getHash() << " into grid (new size "
+                              << grid.getSize()
+                              << ")" << std::endl;
                 }
                 std::cout << "New grid size is " << grid.getSize() << std::endl;
             }
