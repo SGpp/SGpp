@@ -695,7 +695,7 @@ namespace sgpp {
 
         void LearnerSGDEOnOffParallel::mergeAlphaValues(size_t classIndex, DataVector &dataVector, size_t batchSize) {
             std::cout << "Alpha sum is " << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;
-            std::cout << "Batch size is" << batchSize << std::endl;
+            std::cout << "Batch size is " << batchSize << std::endl;
             dataVector.mult(batchSize);
             DataVector &localAlpha = getDensityFunctions()[classIndex].first->getAlpha();
             if (localAlpha.size() != dataVector.size()) {
