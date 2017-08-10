@@ -24,9 +24,9 @@ namespace sgpp {
 
         public:
             virtual void
-            assignTaskVariableTaskSize(TaskType taskType, AssignTaskResult &result);
+            assignTaskVariableTaskSize(TaskType taskType, AssignTaskResult &result) = 0;
 
-            virtual void assignTaskStaticTaskSize(TaskType taskType, AssignTaskResult &result);
+            virtual void assignTaskStaticTaskSize(TaskType taskType, AssignTaskResult &result) = 0;
 
         protected:
 
