@@ -150,7 +150,7 @@ namespace sgpp {
 
                     std::cout << numProcessedDataPoints << " have already been assigned." << std::endl;
 
-                    while (MPIMethods::getQueueSize() > 4) {
+                    while (MPIMethods::getQueueSize() > 1) {
                         std::cout << "Waiting for " << MPIMethods::getQueueSize()
                                   << " queue operations to complete before continuing" << std::endl;
                         std::this_thread::sleep_for(std::chrono::seconds(1));
