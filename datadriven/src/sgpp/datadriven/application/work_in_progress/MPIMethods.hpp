@@ -41,6 +41,8 @@ namespace sgpp {
 
             static size_t sendMergeGridNetworkMessage(size_t classIndex, size_t batchSize, DataVector &alphaVector);
 
+            static size_t getQueueSize();
+
         protected:
             //Pending MPI Requests
             static std::list<sgpp::datadriven::PendingMPIRequest> pendingMPIRequests;
