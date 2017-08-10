@@ -27,6 +27,7 @@
 
 #include <chrono>
 #include <thread>
+#include <numeric>
 
 using sgpp::base::Grid;
 using sgpp::base::GridStorage;
@@ -343,6 +344,7 @@ namespace sgpp {
             base::Grid &grid = densEst->getOfflineObject().getGrid();
 
             if (!MPIMethods::isMaster()) {
+                std::cout << "Applying refinement result from master" << std::endl;
                 std::cout << "Old grid size is " << grid.getSize() << std::endl;
 
 
@@ -654,6 +656,8 @@ namespace sgpp {
 
 
         void LearnerSGDEOnOffParallel::mergeAlphaValues(size_t classIndex, DataVector &dataVector, size_t batchSize) {
+            std::cout << "Alpha sum is " << std::accumulate(dataVector.begin(), dataVector.end(), 0) << std::endl;
+            std::cout << "Batch size is" << batchSize << std::endl;
             dataVector.mult(batchSize);
             DataVector &localAlpha = getDensityFunctions()[classIndex].first->getAlpha();
             if (localAlpha.size() != dataVector.size()) {
