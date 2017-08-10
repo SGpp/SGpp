@@ -19,7 +19,7 @@ namespace sgpp {
 
         //Pending MPI Requests
         std::list<sgpp::datadriven::PendingMPIRequest> MPIMethods::pendingMPIRequests;
-        std::vector<MPI_Request> mpiRequestStorage;
+        std::vector<MPI_Request> MPIMethods::mpiRequestStorage;
         int MPIMethods::mpiWorldSize = -1;
         LearnerSGDEOnOffParallel *MPIMethods::learnerInstance;
 
