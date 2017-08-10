@@ -200,6 +200,8 @@ namespace sgpp {
 
             MPI_Ibcast(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
                        MPI_COMM_WORLD, &(pendingMPIRequest.request));
+
+            std::cout << "Ibcast request stored at " << &pendingMPIRequest << std::endl;
         }
 
         void MPIMethods::sendISend(const int destinationRank, MPI_Packet *mpiPacket) {
@@ -208,6 +210,7 @@ namespace sgpp {
             //Point to the request in vector instead of stack
             MPI_Isend(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, destinationRank, COMMAND_TAG,
                       MPI_COMM_WORLD, &(pendingMPIRequest.request));
+            std::cout << "Isend request stored at " << &pendingMPIRequest << std::endl;
         }
 
         PendingMPIRequest &MPIMethods::createPendingMPIRequest(MPI_Packet *mpiPacket) {
