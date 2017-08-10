@@ -67,7 +67,7 @@ namespace sgpp {
                 while (workerActive) {
                     std::cout << "Client looping" << std::endl;
 //                    MPIMethods::waitForAnyMPIRequestsToComplete();
-                    std::this_thread::sleep_for(std::chrono::seconds(1));
+                    std::this_thread::sleep_for(std::chrono::milliseconds(500));
                     MPIMethods::processCompletedMPIRequests();
                 }
                 std::cout << "Worker shutdown." << std::endl;
@@ -149,7 +149,7 @@ namespace sgpp {
 
                     std::cout << numProcessedDataPoints << " have already been assigned." << std::endl;
 
-                    std::this_thread::sleep_for(std::chrono::seconds(2));
+                    std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
                     std::cout << "Master is now processing incoming requests." << std::endl;
                     MPIMethods::processCompletedMPIRequests();
