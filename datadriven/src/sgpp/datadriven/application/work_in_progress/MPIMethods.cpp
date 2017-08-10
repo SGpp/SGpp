@@ -357,10 +357,10 @@ namespace sgpp {
                     *bufferPointer = levelIndexPair.level;
                     bufferPointer++;
                     *bufferPointer = levelIndexPair.index;
+                    bufferPointer++;
                 }
                 copiedValues++;
                 iterator++;
-                bufferPointer++;
             }
             return copiedValues;
         }
