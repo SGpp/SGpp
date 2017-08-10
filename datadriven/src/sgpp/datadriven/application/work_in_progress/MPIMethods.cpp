@@ -387,10 +387,15 @@ namespace sgpp {
         void MPIMethods::processCompletedMPIRequests() {
 
             std::cout << "Checking " << pendingMPIRequests.size() << " pending MPI requests" << std::endl;
+            auto pendingMPIRequestIterator = pendingMPIRequests.end();
+            auto listBeginPlusOne = std::next(pendingMPIRequests.begin());
 
-            for (auto pendingMPIRequestIterator = pendingMPIRequests.begin();
-                 pendingMPIRequestIterator != pendingMPIRequests.end();
-                 pendingMPIRequestIterator++) {
+            // In order to process the send requests first we start from the back
+            // We go until we reach the start (listBegin + 1) --;
+
+            while (pendingMPIRequestIterator != listBeginPlusOne) {
+                pendingMPIRequestIterator--;
+
                 MPI_Status mpiStatus{};
                 int operationCompleted;
 
@@ -415,7 +420,6 @@ namespace sgpp {
                         //TODO Deleting a void pointer here
                         std::cout << "Attempting to delete pending mpi request" << std::endl;
                         delete[] pendingMPIRequestIterator->buffer;
-                        //TODO: !!! DELETING STUFF HERE WILL MOVE OTHER PENDING REQUESTS. THIS CAUSES SEGMENTATION FAULTS
                         pendingMPIRequests.erase(pendingMPIRequestIterator);
                         std::cout << "Deleted pending mpi request" << std::endl;
                     } else {
