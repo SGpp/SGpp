@@ -127,8 +127,8 @@ namespace sgpp {
                                                std::list<LevelIndexVector> &addedGridPoints) {
             // Deleted grid points
             {
-                auto iterator = deletedGridPointsIndexes.begin();
-                auto listEnd = deletedGridPointsIndexes.end();
+                std::list<size_t>::const_iterator iterator = deletedGridPointsIndexes.begin();
+                std::list<size_t>::const_iterator listEnd = deletedGridPointsIndexes.end();
                 while (iterator != listEnd) {
                     auto *mpiPacket = new MPI_Packet;
                     mpiPacket->commandID = UPDATE_GRID;
@@ -156,7 +156,7 @@ namespace sgpp {
             // Added grid points
             {
                 auto iterator = addedGridPoints.begin();
-                auto listEnd = addedGridPoints.end();
+                std::list<LevelIndexVector>::const_iterator listEnd = addedGridPoints.end();
                 while (iterator != listEnd) {
                     auto *mpiPacket = new MPI_Packet;
                     mpiPacket->commandID = UPDATE_GRID;
