@@ -388,12 +388,11 @@ namespace sgpp {
 
             std::cout << "Checking " << pendingMPIRequests.size() << " pending MPI requests" << std::endl;
             auto pendingMPIRequestIterator = pendingMPIRequests.end();
-            auto listBeginPlusOne = std::next(pendingMPIRequests.begin());
+            auto listBegin = pendingMPIRequests.begin();
 
             // In order to process the send requests first we start from the back
-            // We go until we reach the start (listBegin + 1) --;
 
-            while (pendingMPIRequestIterator != listBeginPlusOne) {
+            while (pendingMPIRequestIterator != listBegin) {
                 pendingMPIRequestIterator--;
 
                 MPI_Status mpiStatus{};
