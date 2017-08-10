@@ -329,7 +329,8 @@ namespace sgpp {
                           << " offset " << offset
                           << " with " << numPointsInPacket << " values"
                           << " and grid version " << networkMessage->gridversion << std::endl;
-                std::cout << "Alpha sum is " << std::accumulate(alphaVector.begin(), alphaVector.end(), 0) << std::endl;
+                std::cout << "Alpha sum is " << std::accumulate(alphaVector.begin(), alphaVector.end(), 0.0)
+                          << std::endl;
                 sendISend(MPI_MASTER_RANK, mpiPacket);
                 offset += numPointsInPacket;
             }
