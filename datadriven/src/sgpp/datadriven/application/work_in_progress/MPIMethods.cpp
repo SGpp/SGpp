@@ -458,7 +458,7 @@ namespace sgpp {
 
             switch (networkMessage->updateType) {
                 case DELETED_GRID_POINTS_LIST: {
-                    auto *bufferIterator = static_cast<size_t *>(networkMessage->payload);
+                    auto *bufferIterator = (size_t *) networkMessage->payload;
                     while (bufferIterator < bufferEnd && processedPoints < listLength) {
                         refinementResult.deletedGridPointsIndexes.push_back(*bufferIterator);
                         bufferIterator++;
