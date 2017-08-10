@@ -116,69 +116,68 @@ namespace sgpp {
                           << " (" << refinementResult.addedGridPoints.size() << " additions, "
                           << refinementResult.deletedGridPointsIndexes.size() << " deletions)" << std::endl;
 
-                std::list<size_t>::const_iterator deletedPointsIterator = std::begin(
-                        refinementResult.deletedGridPointsIndexes);
-                std::list<size_t>::const_iterator deletedPointsEnd = std::end(
-                        refinementResult.deletedGridPointsIndexes);
-                sendRefinementUpdates<std::list<size_t>::const_iterator>(classIndex, DELETED_GRID_POINTS_LIST,
-                                                                         deletedPointsIterator,
-                                                                         deletedPointsEnd);
-                std::list<LevelIndexVector>::const_iterator addedPointsIterator = std::begin(
-                        refinementResult.addedGridPoints);
-                std::list<LevelIndexVector>::const_iterator addedPointsEnd = std::end(
-                        refinementResult.addedGridPoints);
-                sendRefinementUpdates<std::list<LevelIndexVector>::const_iterator>(classIndex, ADDED_GRID_POINTS_LIST,
-                                                                                   addedPointsIterator,
-                                                                                   addedPointsEnd);
+                sendRefinementUpdates(classIndex, refinementResult.deletedGridPointsIndexes,
+                                      refinementResult.addedGridPoints);
             }
 
             std::cout << "Finished updating the grid components on workers." << std::endl;
         }
 
-        template<typename Iterator>
-        void MPIMethods::sendRefinementUpdates(size_t &classIndex, const RefinementResultsUpdateType updateType,
-                                               Iterator &iterator,
-                                               Iterator &listEnd) {
-            while (iterator != listEnd) {
-                auto *mpiPacket = new MPI_Packet;
-                mpiPacket->commandID = UPDATE_GRID;
+        void MPIMethods::sendRefinementUpdates(size_t &classIndex, std::list<size_t> &deletedGridPointsIndexes,
+                                               std::list<LevelIndexVector> &addedGridPoints) {
+            // Deleted grid points
+            {
+                auto iterator = deletedGridPointsIndexes.begin();
+                auto listEnd = deletedGridPointsIndexes.end();
+                while (iterator != listEnd) {
+                    auto *mpiPacket = new MPI_Packet;
+                    mpiPacket->commandID = UPDATE_GRID;
 
-                auto *networkMessage = (RefinementResultNetworkMessage *) mpiPacket->payload;
+                    auto *networkMessage = (RefinementResultNetworkMessage *) mpiPacket->payload;
 
-                networkMessage->classIndex = classIndex;
+                    networkMessage->classIndex = classIndex;
 
-                networkMessage->updateType = updateType;
+                    networkMessage->updateType = DELETED_GRID_POINTS_LIST;
 
-                size_t numPointsInBuffer;
-                switch (updateType) {
-                    case DELETED_GRID_POINTS_LIST: {
-                        numPointsInBuffer = fillBufferWithData<Iterator>((void *) networkMessage->payload,
-                                                                         (void *) std::end(networkMessage->payload),
-                                                                         iterator,
-                                                                         listEnd);
-                    }
-                        break;
-                    case ADDED_GRID_POINTS_LIST:
-                        numPointsInBuffer = fillBufferWithVectorData<Iterator, LevelIndexPair>(
-                                (void *) networkMessage->payload,
-                                (void *) std::end(
-                                        networkMessage->payload),
-                                iterator,
-                                listEnd,
-                                sizeof(LevelIndexPair)); //TODO: Size of double represents the size of a data value in DataVector
-                        break;
-                    default:
-                        std::cout << "ERROR: Unknown update type" << std::endl;
-                        exit(-1);
+                    size_t numPointsInBuffer = fillBufferWithData<std::list<size_t>::const_iterator>(
+                            (void *) networkMessage->payload,
+                            (void *) std::end(networkMessage->payload),
+                            iterator,
+                            listEnd);
+                    networkMessage->listLength = numPointsInBuffer;
+
+                    std::cout << "Sending updated for class " << networkMessage->classIndex
+                              << " with " << networkMessage->listLength
+                              << " deletions" << std::endl;
+
+                    sendIBcast(mpiPacket);
                 }
+            }
+            // Added grid points
+            {
+                auto iterator = addedGridPoints.begin();
+                auto listEnd = addedGridPoints.end();
+                while (iterator != listEnd) {
+                    auto *mpiPacket = new MPI_Packet;
+                    mpiPacket->commandID = UPDATE_GRID;
 
-                networkMessage->listLength = numPointsInBuffer;
+                    auto *networkMessage = (RefinementResultNetworkMessage *) mpiPacket->payload;
 
-                std::cout << "Sending updated for class " << networkMessage->classIndex
-                          << " with " << networkMessage->listLength
-                          << " modifications" << std::endl;
+                    networkMessage->classIndex = classIndex;
 
-                sendIBcast(mpiPacket);
+                    networkMessage->updateType = ADDED_GRID_POINTS_LIST;
+
+                    size_t numPointsInBuffer = fillBufferWithLevelIndexData(networkMessage->payload,
+                                                                            std::end(networkMessage->payload), iterator,
+                                                                            listEnd);
+                    networkMessage->listLength = numPointsInBuffer;
+
+                    std::cout << "Sending updated for class " << networkMessage->classIndex
+                              << " with " << networkMessage->listLength
+                              << " additions" << std::endl;
+
+                    sendIBcast(mpiPacket);
+                }
             }
         }
 
@@ -343,28 +342,25 @@ namespace sgpp {
         //TODO: !!!!!!!!! Compiler Errors
 
         //TODO: Ensure compiler calls the correct method
-        template<typename Iterator, typename ValueType>
         size_t
-        MPIMethods::fillBufferWithVectorData(void *buffer, const void *bufferEnd,
-                                             Iterator &iterator,
-                                             Iterator &listEnd, size_t sizeOfDataType) {
-            //TODO: Implement vector
-            auto *bufferPointer = buffer;
-            size_t copiedVectors = 0;
-            while (iterator != listEnd) {
-                auto dataVector = (typename std::vector<ValueType>) *iterator;
-                size_t vectorMemLength = dataVector.size() * sizeOfDataType;
-
-                if (bufferPointer + vectorMemLength >= bufferEnd) {
+        MPIMethods::fillBufferWithLevelIndexData(void *buffer, const void *bufferEnd,
+                                                 std::list<LevelIndexVector>::iterator &iterator,
+                                                 std::list<LevelIndexVector>::const_iterator &listEnd) {
+            size_t copiedValues = 0;
+            auto *bufferPointer = static_cast<unsigned long *>(buffer);
+            while (iterator != listEnd && bufferPointer < bufferEnd) {
+                LevelIndexVector levelIndexVector = *iterator;
+                if (bufferPointer + 2 * levelIndexVector.size() * sizeof(unsigned long) >= bufferEnd) {
                     break;
                 }
-
-                std::memcpy(&(dataVector[0]), bufferPointer, vectorMemLength);
-                bufferPointer += vectorMemLength;
-                iterator++;
-                copiedVectors++;
+                for (auto &levelIndexPair : levelIndexVector) {
+                    *bufferPointer = levelIndexPair.level;
+                    bufferPointer++;
+                    *bufferPointer = levelIndexPair.index;
+                }
+                copiedValues++;
             }
-            return copiedVectors;
+            return copiedValues;
         }
 
         template<typename Iterator>
