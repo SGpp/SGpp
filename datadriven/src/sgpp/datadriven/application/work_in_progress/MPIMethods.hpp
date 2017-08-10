@@ -43,6 +43,20 @@ namespace sgpp {
 
             static size_t getQueueSize();
 
+            static size_t fillBufferWithLevelIndexData(void *buffer, const void *bufferEnd,
+                                                       std::list<std::vector<sgpp::datadriven::LevelIndexPair>>::iterator &iterator,
+                                                       std::list<std::vector<sgpp::datadriven::LevelIndexPair>>::const_iterator &listEnd);
+
+            static void sendIBcast(MPI_Packet *mpiPacket);
+
+            template<typename Iterator>
+            static size_t fillBufferWithData(void *buffer, void *bufferEnd, Iterator &iterator,
+                                             Iterator &listEnd);
+
+            static void sendRefinementUpdates(size_t &classIndex, std::list<size_t> &deletedGridPointsIndexes,
+                                              std::list<LevelIndexVector> &addedGridPoints);
+
+
         protected:
             //Pending MPI Requests
             static std::list<sgpp::datadriven::PendingMPIRequest> pendingMPIRequests;
@@ -51,22 +65,6 @@ namespace sgpp {
 
             static void startSynchronizingPackets();
 
-            static void sendIBcast(MPI_Packet *mpiPacket);
-
-            template<typename Iterator>
-            static size_t fillBufferWithData(void *buffer, void *bufferEnd, Iterator &iterator,
-                                             Iterator &listEnd);
-
-            template<typename Iterator, typename ValueType>
-            static size_t
-            fillBufferWithVectorData(void *buffer, const void *bufferEnd,
-                                     Iterator &iterator,
-                                     Iterator &listEnd, size_t sizeOfDataType);
-
-            template<typename Iterator>
-            static void sendRefinementUpdates(size_t &classIndex, RefinementResultsUpdateType updateType,
-                                              Iterator &iterator,
-                                              Iterator &listEnd);
 
 //            static size_t sendRefinementResultPacket(size_t classIndex, RefinementResultsUpdateType updateType,
 //                                                     const RefinementResult &refinementResult, int offset,
