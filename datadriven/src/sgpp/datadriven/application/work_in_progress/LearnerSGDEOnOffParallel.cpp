@@ -326,6 +326,20 @@ namespace sgpp {
                       << "), " << numberOfNewPoints << " new points on grid"
                       << std::endl;
 
+            std::cout << "Preparing refinement result update" << std::endl;
+            if (refinementResult->addedGridPoints.size() > 0) {
+                std::cout << "Clearing old added grid points" << std::endl;
+                refinementResult->addedGridPoints.clear();
+            } else {
+                std::cout << "Added grid points list already empty" << std::endl;
+            }
+
+            if (refinementResult->deletedGridPointsIndexes.size() > 0) {
+                std::cout << "Clearing old deleted grid points" << std::endl;
+                refinementResult->deletedGridPointsIndexes.clear();
+            } else {
+                std::cout << "Deleted grid points list already empty" << std::endl;
+            }
 
             size_t numDimensions = getDimensionality();
             //Collect new grid points into the refinement result for shipping
