@@ -459,6 +459,8 @@ namespace sgpp {
             std::cout << "Waiting for " << pendingMPIRequests.size() << " MPI requests to complete" << std::endl;
             MPI_Waitany(pendingMPIRequests.size(), &(mpiRequestStorage[0]), &completedRequest, MPI_STATUS_IGNORE);
             std::cout << "MPI request " << completedRequest << " completed" << std::endl;
+            auto request = std::next(pendingMPIRequests.begin(), completedRequest);
+            processIncomingMPICommands(request->buffer);
         }
 
         void MPIMethods::receiveGridComponentsUpdate(RefinementResultNetworkMessage *networkMessage) {
