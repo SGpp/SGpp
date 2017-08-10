@@ -304,12 +304,13 @@ namespace sgpp {
                       << std::endl;
             auto densEst = onlineObjects[classIndex].first.get();
             Grid &grid = densEst->getOfflineObject().getGrid();
-            std::cout << "Size before adaptivity: " << grid.getSize()
+
+            size_t oldGridSize = grid.getSize();
+            std::cout << "Size before adaptivity: " << oldGridSize
                       << std::endl;
 
             base::GridGenerator &gridGen = grid.getGenerator();
 
-            size_t oldGridSize = grid.getSize();
             size_t numberOfNewPoints = 0;
 
             if (refType == "surplus") {
@@ -321,7 +322,8 @@ namespace sgpp {
             }
 
             std::cout << "grid size after adaptivity: " << grid.getSize()
-                      << ", " << numberOfNewPoints << " new points on grid"
+                      << " (previously " << oldGridSize
+                      << "), " << numberOfNewPoints << " new points on grid"
                       << std::endl;
 
 
