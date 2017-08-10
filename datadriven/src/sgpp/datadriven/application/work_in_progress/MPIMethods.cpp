@@ -11,6 +11,7 @@
 #include <sgpp/datadriven/application/work_in_progress/MPIMethods.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 #include <thread>
+#include <numeric>
 
 
 namespace sgpp {
@@ -328,6 +329,7 @@ namespace sgpp {
                           << " offset " << offset
                           << " with " << numPointsInPacket << " values"
                           << " and grid version " << networkMessage->gridversion << std::endl;
+                std::cout << "Alpha sum is " << std::accumulate(alphaVector.begin(), alphaVector.end(), 0) << std::endl;
                 sendISend(MPI_MASTER_RANK, mpiPacket);
                 offset += numPointsInPacket;
             }
@@ -451,10 +453,12 @@ namespace sgpp {
             size_t listLength = networkMessage->listLength;
             size_t processedPoints = 0;
             void *bufferEnd = std::end(networkMessage->payload);
+
+            std::cout << "Receiving " << listLength << " grid modifications" << std::endl;
+
             switch (networkMessage->updateType) {
                 case DELETED_GRID_POINTS_LIST: {
-                    //TODO: This probably casts each unsigned char into a size_t instead of re-interpreting
-                    auto *bufferIterator = (size_t *) networkMessage->payload;
+                    auto *bufferIterator = static_cast<size_t *>(networkMessage->payload);
                     while (bufferIterator < bufferEnd && processedPoints < listLength) {
                         refinementResult.deletedGridPointsIndexes.push_back(*bufferIterator);
                         bufferIterator++;
@@ -483,6 +487,10 @@ namespace sgpp {
                     break;
                 }
             }
+            std::cout << "Received refinement result (" << refinementResult.addedGridPoints.size()
+                      << " additions, "
+                      << refinementResult.deletedGridPointsIndexes.size() <<
+                      "deletions)" << std::endl;
             learnerInstance->updateClassVariablesAfterRefinement(&refinementResult,
                                                                  learnerInstance->getDensityFunctions()[networkMessage->classIndex].first.get());
             learnerInstance->setLocalGridVersion(networkMessage->gridversion);
