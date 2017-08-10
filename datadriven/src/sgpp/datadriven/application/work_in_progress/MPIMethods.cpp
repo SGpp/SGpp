@@ -572,5 +572,9 @@ namespace sgpp {
             return mpiWorldSize;
         }
 
+        size_t MPIMethods::getQueueSize() {
+            return pendingMPIRequests.size();
+        }
+
     }
 }
