@@ -67,8 +67,7 @@ namespace sgpp {
             if (!MPIMethods::isMaster()) {
                 while (workerActive) {
                     std::cout << "Client looping" << std::endl;
-//                    MPIMethods::waitForAnyMPIRequestsToComplete();
-                    std::this_thread::sleep_for(std::chrono::milliseconds(250));
+                    MPIMethods::waitForAnyMPIRequestsToComplete();
                     MPIMethods::processCompletedMPIRequests();
                 }
                 std::cout << "Worker shutdown." << std::endl;
@@ -153,7 +152,7 @@ namespace sgpp {
                     while (MPIMethods::getQueueSize() > 1) {
                         std::cout << "Waiting for " << MPIMethods::getQueueSize()
                                   << " queue operations to complete before continuing" << std::endl;
-                        std::this_thread::sleep_for(std::chrono::seconds(1));
+                        MPIMethods::waitForAnyMPIRequestsToComplete();
                         MPIMethods::processCompletedMPIRequests();
                     }
 

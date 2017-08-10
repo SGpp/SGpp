@@ -35,7 +35,7 @@ namespace sgpp {
         };
 
         struct PendingMPIRequest {
-            MPI_Request request;
+            MPI_Request *request;
             sgpp::datadriven::MPI_Packet *buffer;
             std::function<void(PendingMPIRequest &)> callback;
             bool disposeAfterCallback;

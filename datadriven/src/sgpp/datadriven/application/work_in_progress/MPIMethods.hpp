@@ -60,6 +60,7 @@ namespace sgpp {
         protected:
             //Pending MPI Requests
             static std::list<sgpp::datadriven::PendingMPIRequest> pendingMPIRequests;
+            static std::vector<MPI_Request> mpiRequestStorage;
             static int mpiWorldSize;
             static LearnerSGDEOnOffParallel *learnerInstance;
 
