@@ -229,7 +229,8 @@ namespace sgpp {
                           << " local: " << learnerInstance->getCurrentGridVersion()
                           << ", remote: " << networkMessage.gridversion
                           << std::endl;
-                exit(-1);
+                std::cout << "!#!#!# IGNORING ERROR #!#!#!" << std::endl;
+                return 0;
             }
 
             base::DataVector alphaVector(networkMessage.payloadLength);
