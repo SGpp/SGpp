@@ -34,13 +34,6 @@ namespace sgpp {
             unsigned char payload[MPI_PACKET_MAX_PAYLOAD_SIZE];
         };
 
-        struct PendingMPIRequest {
-            MPI_Request *request;
-            sgpp::datadriven::MPI_Packet *buffer;
-            std::function<void(PendingMPIRequest &)> callback;
-            bool disposeAfterCallback;
-        };
-
         enum RefinementResultsUpdateType {
             ADDED_GRID_POINTS_LIST,
             DELETED_GRID_POINTS_LIST
