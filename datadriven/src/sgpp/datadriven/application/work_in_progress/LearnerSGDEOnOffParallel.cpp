@@ -50,7 +50,7 @@ namespace sgpp {
                                    beta, lambda), mpiTaskScheduler(mpiTaskScheduler) {
 
             vectorRefinementResults = new std::vector<RefinementResult>(numClasses);
-            localGridVersions.reserve(numClasses);
+            localGridVersions.insert(localGridVersions.begin(), numClasses, 0);
 
             MPIMethods::initMPI(this);
         }
