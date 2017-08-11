@@ -708,16 +708,21 @@ namespace sgpp {
                           << ", remote: " << gridVersion
                           << std::endl;
                 if (gridVersion + 1 == getCurrentGridVersion(classIndex)) {
-                    std::cout << "Attempting to automatically compensate for outdated grid." << std::endl;
                     RefinementResult &refinementResult = (*vectorRefinementResults)[classIndex];
                     std::list<size_t> &deletedPoints = refinementResult.deletedGridPointsIndexes;
                     std::list<LevelIndexVector> &addedPoints = refinementResult.addedGridPoints;
+
+                    std::cout << "Attempting to automatically compensate for outdated grid." << std::endl <<
+                              "Refinement result has " << addedPoints.size() << " additions and "
+                              << deletedPoints.size() << " deletions" << std::endl <<
+                              "The original remote size is " << dataVector.size() << std::endl;
                     if (!deletedPoints.empty()
                         || !addedPoints.empty()) {
                         std::cout << "Found necessary refinement data" << std::endl;
 
                         //See DBMatOnlineDe::updateAlpha()
                         if (!deletedPoints.empty()) {
+                            std::cout << "Copying vector (deleting deleted grid points)." << std::endl;
                             DataVector newAlpha{dataVector.getSize() - deletedPoints.size() + addedPoints.size()};
                             for (size_t i = 0; i < dataVector.getSize(); i++) {
                                 if (std::find(deletedPoints.begin(), deletedPoints.end(), i) != deletedPoints.end()) {
@@ -725,7 +730,6 @@ namespace sgpp {
                                 }
 
                                 newAlpha.append(dataVector.get(i));
-
                             }
                             // set new alpha
                             dataVector = newAlpha;
@@ -746,7 +750,7 @@ namespace sgpp {
             DataVector &localAlpha = getDensityFunctions()[classIndex].first->getAlpha();
             if (localAlpha.size() != dataVector.size()) {
                 std::cout << "Received merge request with incorrect size (local " << localAlpha.size() << ", remote "
-                          << dataVector.size() << ") but identical version " << localGridVersions[classIndex]
+                          << dataVector.size() << "), local version is " << localGridVersions[classIndex]
                           << std::endl;
                 exit(-1);
             }
