@@ -7,6 +7,7 @@
 
 #include <sgpp/datadriven/application/work_in_progress/LearnerSGDEOnOffParallel.hpp>
 #include <sgpp/datadriven/application/work_in_progress/NetworkMessageData.hpp>
+#include "PendingMPIRequest.h"
 
 namespace sgpp {
     namespace datadriven {
@@ -59,8 +60,8 @@ namespace sgpp {
 
         protected:
             //Pending MPI Requests
-            static std::list<sgpp::datadriven::PendingMPIRequest> pendingMPIRequests;
-            static std::vector<MPI_Request> mpiRequestStorage;
+            static std::list<PendingMPIRequest> pendingMPIRequests;
+            static MPIRequestPool mpiRequestStorage;
             static int mpiWorldSize;
             static LearnerSGDEOnOffParallel *learnerInstance;
 
