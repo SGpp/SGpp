@@ -8,18 +8,21 @@
 namespace sgpp {
     namespace datadriven {
         size_t MPIRequestPool::createMPIRequestHandle() {
-            if (freedRequests.size() > 0) {
+
+            printPoolStatistics();
+
+            if (!freedRequests.empty()) {
                 auto iterator = freedRequests.begin();
                 size_t index = *iterator;
                 freedRequests.erase(iterator);
                 std::memset(mpiRequestStorage[index], 0, sizeof(MPI_Request));
                 std::cout << "Reused freed request " << index << std::endl;
                 return index;
-            } else {
-                mpiRequestStorage.emplace_back();
-                printPoolStatistics();
-                return mpiRequestStorage.size() - 1;
             }
+
+            mpiRequestStorage.emplace_back();
+            return mpiRequestStorage.size() - 1;
+
         }
 
         void MPIRequestPool::deleteMPIRequestHandle(size_t handleIndex) {
