@@ -146,7 +146,7 @@ namespace sgpp {
 
             void workBatch(Dataset dataset, size_t batchOffset, bool doCrossValidation);
 
-            void mergeAlphaValues(size_t classIndex, DataVector &dataVector, size_t batchSize);
+            void mergeAlphaValues(size_t classIndex, size_t gridVersion, DataVector &dataVector, size_t batchSize);
 
             size_t getCurrentGridVersion(size_t classIndex);
 
