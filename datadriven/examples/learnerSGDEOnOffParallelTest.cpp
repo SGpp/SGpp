@@ -59,32 +59,32 @@ int main() {
    * If only one specific example should be executed, set
    * totalSets=1.
    */
-  size_t totalSets = 1;
-  size_t totalFolds = 1;  // set to 5 to perform 5-fold cv
-  double avgError = 0.0;
-  double avgErrorFolds = 0.0;
-  for (size_t numSets = 0; numSets < totalSets; numSets++) {
-    /**
-     * A vector to compute average classification error throughout
-     * the learning process. The length of the vector determines
-     * the total number of error observations.
-     */
-    sgpp::base::DataVector avgErrorsFolds(51, 0.0);
-
-    for (size_t numFolds = 0; numFolds < totalFolds; numFolds++) {
+//  size_t totalSets = 1;
+//  size_t totalFolds = 1;  // set to 5 to perform 5-fold cv
+//  double avgError = 0.0;
+//  double avgErrorFolds = 0.0;
+//  for (size_t numSets = 0; numSets < totalSets; numSets++) {
+//    /**
+//     * A vector to compute average classification error throughout
+//     * the learning process. The length of the vector determines
+//     * the total number of error observations.
+//     */
+//    sgpp::base::DataVector avgErrorsFolds(51, 0.0);
+//
+//    for (size_t numFolds = 0; numFolds < totalFolds; numFolds++) {
       /**
        * Get the training, test and validation data
        */
-        sgpp::datadriven::Dataset trainDataset = loadDataset("../../datasets/ripley/ripleyGarcke.train.arff");
-        sgpp::datadriven::Dataset testDataset = loadDataset("../../datasets/ripley/ripleyGarcke.test.arff");
+    sgpp::datadriven::Dataset trainDataset = loadDataset("../../datasets/ripley/ripleyGarcke.train.arff");
+    sgpp::datadriven::Dataset testDataset = loadDataset("../../datasets/ripley/ripleyGarcke.test.arff");
 
-        // if fixed validation data should be used (required for convergence
+    // if fixed validation data should be used (required for convergence
       // monitor):
-        /*filename = "";  // specify file containing validation data here
-        // load validation samples
-        std::cout << "# loading file: " << filename << std::endl;
-        sgpp::datadriven::Dataset validationDataset =
-            sgpp::datadriven::ARFFTools::readARFF(filename); */
+    /*filename = "";  // specify file containing validation data here
+    // load validation samples
+    std::cout << "# loading file: " << filename << std::endl;
+    sgpp::datadriven::Dataset validationDataset =
+        sgpp::datadriven::ARFFTools::readARFF(filename); */
 
       /**
        * Specify the number of classes and the corresponding class labels.
@@ -115,21 +115,21 @@ int main() {
        * Select the desired decomposition type for the offline step.
        * Note: Refinement/Coarsening only possible for Cholesky decomposition.
        */
-        sgpp::datadriven::DBMatDecompostionType dt;
+    sgpp::datadriven::DBMatDecompostionType dt;
       std::string decompType;
       // choose "LU decomposition"
-        // dt = DBMatDecompostionType::DBMatDecompLU;
+    // dt = DBMatDecompostionType::DBMatDecompLU;
       // decompType = "LU decomposition";
       // choose"Eigen decomposition"
-        // dt = DBMatDecompostionType::DBMatDecompEigen;
+    // dt = DBMatDecompostionType::DBMatDecompEigen;
       // decompType = "Eigen decomposition";
       // choose "Cholesky decomposition"
-        //      dt = sgpp::datadriven::DBMatDecompostionType::Chol;
-        //      decompType = "Cholesky decomposition";
-        //      dt = sgpp::datadriven::DBMatDecompostionType::IChol;
-        //      decompType = "Incomplete Cholesky decomposition";
-        dt = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
-        decompType = "Incomplete Cholesky decomposition on Dense Matrix";
+    //      dt = sgpp::datadriven::DBMatDecompostionType::Chol;
+    //      decompType = "Cholesky decomposition";
+    //      dt = sgpp::datadriven::DBMatDecompostionType::IChol;
+    //      decompType = "Incomplete Cholesky decomposition";
+    dt = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
+    decompType = "Incomplete Cholesky decomposition on Dense Matrix";
       std::cout << "Decomposition type: " << decompType << std::endl;
 
       /**
@@ -180,24 +180,24 @@ int main() {
       // initial weighting factor
       double beta = 0.0;
       // configuration
-        sgpp::datadriven::DBMatDensityConfiguration dconf(gridConfig, adaptConfig,
-                                                          regularizationConfig.regType_, lambda, dt);
+    sgpp::datadriven::DBMatDensityConfiguration dconf(gridConfig, adaptConfig,
+                                                      regularizationConfig.regType_, lambda, dt);
       // specify if prior should be used to predict class labels
       bool usePrior = false;
 
-        dconf.icholParameters.sweepsDecompose = 2;
-        dconf.icholParameters.sweepsRefine = 2;
+    dconf.icholParameters.sweepsDecompose = 2;
+    dconf.icholParameters.sweepsRefine = 2;
 
 
-        // Create the MPI Task Scheduling using the round robin algorithm
-        sgpp::datadriven::RoundRobinScheduler scheduler(1);
+    // Create the MPI Task Scheduling using the round robin algorithm
+    sgpp::datadriven::RoundRobinScheduler scheduler(1);
 
       /**
        * Create the learner.
        */
       std::cout << "# create learner" << std::endl;
-        sgpp::datadriven::LearnerSGDEOnOffParallel learner(dconf, trainDataset, testDataset, nullptr,
-                                                           classLabels, classNum, usePrior, beta, lambda, scheduler);
+    sgpp::datadriven::LearnerSGDEOnOffParallel learner(dconf, trainDataset, testDataset, nullptr,
+                                                       classLabels, classNum, usePrior, beta, lambda, scheduler);
 
       /**
        * Configure cross-validation.
@@ -211,8 +211,8 @@ int main() {
       double cvLambdaEnd = 1e-10;
       int cvLambdaSteps = 10;
       bool cvLogScale = true;
-        sgpp::base::DataMatrix *cvTestData = &testDataset.getData();
-        sgpp::base::DataMatrix *cvTestDataRes = nullptr;  // needed?
+    sgpp::base::DataMatrix *cvTestData = &testDataset.getData();
+    sgpp::base::DataMatrix *cvTestDataRes = nullptr;  // needed?
       learner.setCrossValidationParameters(cvLambdaSteps, cvLambdaStart, cvLambdaEnd, cvTestData,
                                            cvTestDataRes, cvLogScale);
 
@@ -238,22 +238,22 @@ int main() {
       // store results (classified data, grids, density functions)
       // learner.storeResults();
 
-        sgpp::base::DataVector tmp{};
-        avgErrorFolds += 1.0 - learner.getAccuracy();
-        learner.getAvgErrors(tmp);
-        avgErrorsFolds.add(tmp);
-    }
-    avgErrorFolds = avgErrorFolds / static_cast<double>(totalFolds);
-    if ((totalSets > 1) && (totalFolds > 1)) {
-      /**
-       * Average accuracy on test data reagarding 5-fold cv.
-       */
-      std::cout << "Average accuracy on test data (set " + std::to_string(numSets + 1) + "): "
-                << (1.0 - avgErrorFolds) << std::endl;
-    }
-    avgError += avgErrorFolds;
-    avgErrorFolds = 0.0;
-    avgErrorsFolds.mult(1.0 / static_cast<double>(totalFolds));
+//        sgpp::base::DataVector tmp{};
+//        avgErrorFolds += 1.0 - learner.getAccuracy();
+//        learner.getAvgErrors(tmp);
+//        avgErrorsFolds.add(tmp);
+//    }
+//    avgErrorFolds = avgErrorFolds / static_cast<double>(totalFolds);
+//    if ((totalSets > 1) && (totalFolds > 1)) {
+//      /**
+//       * Average accuracy on test data reagarding 5-fold cv.
+//       */
+//      std::cout << "Average accuracy on test data (set " + std::to_string(numSets + 1) + "): "
+//                << (1.0 - avgErrorFolds) << std::endl;
+//    }
+//    avgError += avgErrorFolds;
+//    avgErrorFolds = 0.0;
+//    avgErrorsFolds.mult(1.0 / static_cast<double>(totalFolds));
 
     // write error evaluation to csv-file
       /*std::ofstream output;
@@ -267,9 +267,9 @@ int main() {
         }
         output.close();
       }*/
+//  }
 #else
       std::cout << "GSL not enabled at compile time" << std::endl;
 #endif  // USE_GSL
     ///
-  }
 }
