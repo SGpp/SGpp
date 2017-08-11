@@ -19,5 +19,9 @@ namespace sgpp {
             return mpiRequestPool.getMPIRequestHandle(mpiRequestIndex);
         }
 
+        size_t PendingMPIRequest::getMPIRequestIndex() {
+            return mpiRequestIndex;
+        }
+
     }
 }

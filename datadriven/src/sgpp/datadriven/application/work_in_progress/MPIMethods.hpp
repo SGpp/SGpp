@@ -90,6 +90,9 @@ namespace sgpp {
             static void
             processCompletedMPIRequest(
                     const std::list<sgpp::datadriven::PendingMPIRequest>::iterator &pendingMPIRequestIterator);
+
+            static std::list<sgpp::datadriven::PendingMPIRequest>::iterator findPendingMPIRequest(
+                    int completedRequestIndex);
         };
     }
 }

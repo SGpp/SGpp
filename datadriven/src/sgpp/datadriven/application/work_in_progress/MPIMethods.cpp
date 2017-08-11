@@ -469,7 +469,20 @@ namespace sgpp {
                 std::cout << "Error: Completed requests returned invalid index" << std::endl;
                 exit(-1);
             }
-            processCompletedMPIRequest(std::next(pendingMPIRequests.begin(), completedRequest));
+            processCompletedMPIRequest(findPendingMPIRequest(completedRequest));
+        }
+
+        std::list<PendingMPIRequest>::iterator MPIMethods::findPendingMPIRequest(int completedRequestIndex) {
+            auto iterator = pendingMPIRequests.begin();
+            const std::list<sgpp::datadriven::PendingMPIRequest>::iterator &listEnd = pendingMPIRequests.end();
+            while (iterator != listEnd) {
+                if (iterator->getMPIRequestIndex() == completedRequestIndex) {
+                    return iterator;
+                }
+                iterator++;
+            }
+            std::cout << "Pending MPI Request not found: " << completedRequestIndex << std::endl;
+            exit(-1);
         }
 
         void MPIMethods::receiveGridComponentsUpdate(RefinementResultNetworkMessage *networkMessage) {

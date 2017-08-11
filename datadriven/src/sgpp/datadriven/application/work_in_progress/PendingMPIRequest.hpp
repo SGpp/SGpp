@@ -22,6 +22,8 @@ namespace sgpp {
 
             MPI_Request *getMPIRequestHandle();
 
+            size_t getMPIRequestIndex();
+
         protected:
             sgpp::datadriven::MPIRequestPool &mpiRequestPool;
             size_t mpiRequestIndex;
