@@ -73,6 +73,8 @@ namespace sgpp {
                 }
                 std::cout << "Worker shutdown." << std::endl;
                 MPIMethods::sendCommandNoArgs(MPI_MASTER_RANK, WORKER_SHUTDOWN_SUCCESS);
+                MPIMethods::waitForAnyMPIRequestsToComplete();
+                std::cout << "Sent acknowledgement" << std::endl;
                 return;
             }
 
@@ -653,7 +655,7 @@ namespace sgpp {
             if (MPIMethods::isMaster()) {
                 std::cout << "Broadcasting shutdown" << std::endl;
                 MPIMethods::bcastCommandNoArgs(SHUTDOWN);
-                while (numShutdownWorkers != MPIMethods::getWorldSize()) {
+                while (numShutdownWorkers != MPIMethods::getWorldSize() - 1) {
                     std::cout << "Have shutdown acknowledge from " << numShutdownWorkers << "/"
                               << MPIMethods::getWorldSize() << std::endl;
                     MPIMethods::waitForAnyMPIRequestsToComplete();
