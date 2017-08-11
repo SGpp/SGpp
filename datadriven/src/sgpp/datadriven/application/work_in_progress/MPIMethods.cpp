@@ -526,7 +526,7 @@ namespace sgpp {
                       " deletions)" << std::endl;
             learnerInstance->updateClassVariablesAfterRefinement(&refinementResult,
                                                                  learnerInstance->getDensityFunctions()[classIndex].first.get());
-            learnerInstance->setLocalGridVersion(0, networkMessage->gridversion);
+            learnerInstance->setLocalGridVersion(classIndex, networkMessage->gridversion);
         }
 
         void MPIMethods::processIncomingMPICommands(MPI_Packet *mpiPacket) {
