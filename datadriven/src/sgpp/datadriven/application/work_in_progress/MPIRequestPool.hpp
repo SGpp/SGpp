@@ -7,6 +7,7 @@
 
 #include <sgpp/datadriven/application/work_in_progress/NetworkMessageData.hpp>
 #include <vector>
+#include <set>
 
 namespace sgpp {
     namespace datadriven {
@@ -24,6 +25,7 @@ namespace sgpp {
             size_t size();
 
         protected:
+            std::set<size_t> freedRequests;
             std::vector<MPI_Request> mpiRequestStorage;
 
             void printPoolStatistics() const;
