@@ -51,6 +51,7 @@ namespace sgpp {
 
             vectorRefinementResults = new std::vector<RefinementResult>(numClasses);
             localGridVersions.insert(localGridVersions.begin(), numClasses, 0);
+            numShutdownWorkers = 0;
 
             MPIMethods::initMPI(this);
         }
@@ -66,11 +67,12 @@ namespace sgpp {
                                              bool enableCv, size_t nextCvStep) {
 
             if (!MPIMethods::isMaster()) {
-                while (workerActive) {
+                while (workerActive || MPIMethods::getQueueSize() > 2) {
                     std::cout << "Client looping" << std::endl;
                     MPIMethods::waitForAnyMPIRequestsToComplete();
                 }
                 std::cout << "Worker shutdown." << std::endl;
+                MPIMethods::sendCommandNoArgs(MPI_MASTER_RANK, WORKER_SHUTDOWN_SUCCESS);
                 return;
             }
 
@@ -651,6 +653,11 @@ namespace sgpp {
             if (MPIMethods::isMaster()) {
                 std::cout << "Broadcasting shutdown" << std::endl;
                 MPIMethods::bcastCommandNoArgs(SHUTDOWN);
+                while (numShutdownWorkers != MPIMethods::getWorldSize()) {
+                    std::cout << "Have shutdown acknowledge from " << numShutdownWorkers << "/"
+                              << MPIMethods::getWorldSize() << std::endl;
+                    MPIMethods::waitForAnyMPIRequestsToComplete();
+                }
             } else {
                 workerActive = false;
             }
@@ -780,6 +787,10 @@ namespace sgpp {
 
         RefinementResult &LearnerSGDEOnOffParallel::getRefinementResult(size_t classIndex) {
             return (*vectorRefinementResults)[classIndex];
+        }
+
+        void LearnerSGDEOnOffParallel::onWorkerShutdown() {
+            numShutdownWorkers++;
         }
 
     }  // namespace datadriven

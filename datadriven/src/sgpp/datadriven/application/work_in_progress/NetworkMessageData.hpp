@@ -22,7 +22,8 @@ namespace sgpp {
             UPDATE_GRID,
             MERGE_GRID,
             ASSIGN_BATCH,
-            SHUTDOWN
+            SHUTDOWN,
+            WORKER_SHUTDOWN_SUCCESS
         };
 
         enum MPI_COMMAND_TAG {
