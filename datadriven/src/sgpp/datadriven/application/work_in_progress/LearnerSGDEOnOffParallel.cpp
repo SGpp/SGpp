@@ -698,7 +698,6 @@ namespace sgpp {
             std::cout << "Remote alpha sum " << classIndex << " is "
                       << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;
             std::cout << "Batch size is " << batchSize << std::endl;
-            dataVector.mult(batchSize);
             DataVector &localAlpha = getDensityFunctions()[classIndex].first->getAlpha();
             if (localAlpha.size() != dataVector.size()) {
                 std::cout << "Received merge request with incorrect size (local" << localAlpha.size() << ", remote "
@@ -706,6 +705,15 @@ namespace sgpp {
                 std::cout << "!#!#!# IGNORING ERROR #!#!#!" << std::endl;
                 return;
             }
+
+            if (usePrior) {
+                std::cout << "Use prior not implemented" << std::endl;
+                exit(-1);
+            } else {
+                std::cout << "Setting prior [" << classLabels[classIndex] << "] to -1" << std::endl;
+                prior[classLabels[classIndex]] = 1.0;
+            }
+
             std::cout << "Local alpha sum " << classIndex << " was "
                       << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;
             localAlpha.add(dataVector);
