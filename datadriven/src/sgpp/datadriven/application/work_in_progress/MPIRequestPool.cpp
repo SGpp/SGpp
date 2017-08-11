@@ -15,6 +15,7 @@ namespace sgpp {
         void MPIRequestPool::deleteMPIRequestHandle(size_t handleIndex) {
 //            mpiRequestStorage[handleIndex] = MPI_REQUEST_NULL;
 
+            std::cout << "Received delete request for handle " << handleIndex << std::endl;
             printPoolStatistics();
             freedRequests.insert(handleIndex);
 
