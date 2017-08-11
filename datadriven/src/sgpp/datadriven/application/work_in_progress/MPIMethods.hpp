@@ -7,7 +7,7 @@
 
 #include <sgpp/datadriven/application/work_in_progress/LearnerSGDEOnOffParallel.hpp>
 #include <sgpp/datadriven/application/work_in_progress/NetworkMessageData.hpp>
-#include "PendingMPIRequest.h"
+#include "PendingMPIRequest.hpp"
 
 namespace sgpp {
     namespace datadriven {

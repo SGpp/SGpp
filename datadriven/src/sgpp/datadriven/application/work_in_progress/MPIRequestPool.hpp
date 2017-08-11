@@ -7,7 +7,6 @@
 
 #include <sgpp/datadriven/application/work_in_progress/NetworkMessageData.hpp>
 #include <vector>
-#include "PendingMPIRequest.h"
 
 namespace sgpp {
     namespace datadriven {
