@@ -578,6 +578,11 @@ namespace sgpp {
         }
 
         void MPIMethods::finalizeMPI() {
+            for (PendingMPIRequest &pendingMPIRequest : pendingMPIRequests) {
+                std::cout << "Cancelling pending mpi request " << &pendingMPIRequest << std::endl;
+                MPI_Cancel(pendingMPIRequest.getMPIRequestHandle());
+            }
+            std::cout << "Finalizing MPI" << std::endl;
             MPI_Finalize();
         }
 
