@@ -603,7 +603,6 @@ namespace sgpp {
         void MPIMethods::runBatch(MPI_Packet *mpiPacket) {
             auto *message = (AssignBatchNetworkMessage *) mpiPacket->payload;
             std::cout << "runbatch dim " << learnerInstance->getDimensionality() << std::endl;
-            std::this_thread::sleep_for(std::chrono::seconds(1));
             std::cout << "creating dataset" << std::endl;
             Dataset dataset{message->batchSize, learnerInstance->getDimensionality()};
             learnerInstance->workBatch(dataset, message->batchOffset, message->doCrossValidation);
