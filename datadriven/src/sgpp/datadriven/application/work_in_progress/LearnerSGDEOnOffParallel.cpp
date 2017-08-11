@@ -694,7 +694,8 @@ namespace sgpp {
             if (localAlpha.size() != dataVector.size()) {
                 std::cout << "Received merge request with incorrect size (local" << localAlpha.size() << ", remote "
                           << dataVector.size() << ")" << std::endl;
-                exit(-1);
+                std::cout << "!#!#!# IGNORING ERROR #!#!#!" << std::endl;
+                return;
             }
             localAlpha.add(dataVector);
         }
