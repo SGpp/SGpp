@@ -465,6 +465,10 @@ namespace sgpp {
                       << " MPI_ERROR: " << mpiStatus.MPI_ERROR
                       << " MPI SOURCE: " << mpiStatus.MPI_SOURCE
                       << " MPI TAG: " << mpiStatus.MPI_TAG << std::endl;
+            if (completedRequest < 0 || completedRequest > pendingMPIRequests.size()) {
+                std::cout << "Error: Completed requests returned invalid index" << std::endl;
+                exit(-1);
+            }
             processCompletedMPIRequest(std::next(pendingMPIRequests.begin(), completedRequest));
         }
 
