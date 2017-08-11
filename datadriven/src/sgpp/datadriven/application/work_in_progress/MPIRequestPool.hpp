@@ -21,6 +21,8 @@ namespace sgpp {
 
             MPI_Request *getMPIRequests();
 
+            size_t size();
+
         protected:
             std::vector<MPI_Request> mpiRequestStorage;
 
