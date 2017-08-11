@@ -87,6 +87,9 @@ namespace sgpp {
 
             static PendingMPIRequest &createPendingMPIRequest(MPI_Packet *mpiPacket);
 
+            static void
+            processCompletedMPIRequest(
+                    const std::list<sgpp::datadriven::PendingMPIRequest>::iterator &pendingMPIRequestIterator);
         };
     }
 }
