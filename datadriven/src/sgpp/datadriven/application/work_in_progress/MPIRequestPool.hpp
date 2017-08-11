@@ -24,6 +24,7 @@ namespace sgpp {
         protected:
             std::vector<MPI_Request> mpiRequestStorage;
 
+            void printPoolStatistics() const;
         };
 
     }
