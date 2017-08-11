@@ -459,7 +459,7 @@ namespace sgpp {
             int completedRequest;
             MPI_Status mpiStatus{};
             std::cout << "Waiting for " << pendingMPIRequests.size() << " MPI requests to complete" << std::endl;
-            MPI_Waitany(pendingMPIRequests.size(), mpiRequestStorage.getMPIRequests(), &completedRequest,
+            MPI_Waitany(mpiRequestStorage.size(), mpiRequestStorage.getMPIRequests(), &completedRequest,
                         &mpiStatus);
             std::cout << "MPI request " << completedRequest << " completed"
                       << " MPI_ERROR: " << mpiStatus.MPI_ERROR

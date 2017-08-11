@@ -8,6 +8,7 @@ namespace sgpp {
     namespace datadriven {
         size_t MPIRequestPool::createMPIRequestHandle() {
             mpiRequestStorage.emplace_back();
+            printPoolStatistics();
             return mpiRequestStorage.size() - 1;
         }
 
@@ -41,6 +42,10 @@ namespace sgpp {
 
         MPI_Request *MPIRequestPool::getMPIRequests() {
             return getMPIRequestHandle(0);
+        }
+
+        size_t MPIRequestPool::size() {
+            return mpiRequestStorage.size();
         }
     }
 }
