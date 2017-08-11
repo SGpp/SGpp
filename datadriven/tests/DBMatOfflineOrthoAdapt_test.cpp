@@ -10,16 +10,15 @@
  */
 
 #define BOOST_TEST_DYN_LINK
+
+#include <gsl/gsl_blas.h>
+
 #include <boost/test/unit_test.hpp>
 
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
-#include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
-#include <sgpp/datadriven/algorithm/DBMatOfflineEigen.hpp>
-#include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
-#include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 #include <sgpp/globaldef.hpp>
 
@@ -27,10 +26,10 @@
 
 BOOST_AUTO_TEST_SUITE(OrthoAdapt_test)
 
-BOOST_AUTO_TEST_CASE(offline_case) {
+BOOST_AUTO_TEST_CASE(offline_object) {
   sgpp::datadriven::DBMatDensityConfiguration config;
   config.grid_dim_ = 3;
-  config.grid_level_ = 3;  // grid lvl = 1 --> error
+  config.grid_level_ = 5;  // grid lvl = 1 --> error, grid lvl = 10 --> bad alloc
   config.grid_type_ = sgpp::base::GridType::Linear;
   config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
   config.lambda_ = 0.0001;
@@ -38,14 +37,16 @@ BOOST_AUTO_TEST_CASE(offline_case) {
   sgpp::datadriven::DBMatOfflineOrthoAdapt off_object(config);
 
   size_t n = off_object.getDimA();
-  std::cout << "Testing hessenberg_decomposition: \ndim = " << n << std::endl;
-  BOOST_CHECK_EQUAL(n, 31);  // 31 points for dim = 3 and lvl = 3
+  std::cout << "Created Offline Object: \nMatrix Dimension = " << n << std::endl;
+  std::cout << "Testing hessenberg_decomposition...\n";
 
-  std::cout << ".";
-  off_object.hessenberg_decomposition();
-  std::cout << ".";
+  // allocating sub-, super- and diagonal vectors of T
+  gsl_vector* gsl_diag = gsl_vector_alloc(n);
+  gsl_vector* gsl_subdiag = gsl_vector_alloc(n - 1);
 
-  // checks Q for orthogonality
+  off_object.hessenberg_decomposition(gsl_diag, gsl_subdiag);
+
+  // checks Q for orthogonality: Q*Q^t == I
   sgpp::base::DataVector row(n, 0.0);
   sgpp::base::DataVector col(n, 0.0);
   for (size_t i = 0; i < n; i++) {
@@ -54,58 +55,50 @@ BOOST_AUTO_TEST_CASE(offline_case) {
       off_object.getQ().getColumn(j, row);  // getColumn equals getRow of Q_transpose
       const double value = row.dotProduct(col);
       if (i == j) {
-        BOOST_CHECK_CLOSE(value, 1.0, 1e-2);
+        BOOST_CHECK_CLOSE(value, 1.0, 1e-8);
       } else {
-        BOOST_CHECK_SMALL(value, 1e-2);
+        BOOST_CHECK_SMALL(value, 1e-10);
       }
     }
   }
-  std::cout << ".passed!\n";
 
-  // copy diag and subdiag for validation
-  // todo: copy constructor doesn't work, --> manual copy
-  sgpp::base::DataVector diag(n);
-  sgpp::base::DataVector subdiag(n);
-
+  // creating explicit T for testing
+  sgpp::base::DataMatrix T(n, n, 0.0);
   for (size_t i = 0; i < n; i++) {
-    diag.set(i, off_object.getDiag().get(i));
+    T.set(i, i, gsl_vector_get(gsl_diag, i));
   }
   for (size_t i = 0; i < n - 1; i++) {
-    subdiag.set(i, off_object.getSubDiag().get(i));
+    T.set(i + 1, i, gsl_vector_get(gsl_subdiag, i));
+    T.set(i, i + 1, gsl_vector_get(gsl_subdiag, i));
   }
 
-  std::cout << "Testing invert_tridiag: \n.";
-  off_object.invert_tridiag();
-  std::cout << ".";
+  std::cout << "Testing invert_symmetric_tridiag...\n";
+  off_object.invert_symmetric_tridiag(gsl_diag, gsl_subdiag);
 
-  // checks T_inv * T = Id
+  gsl_vector_free(gsl_diag);
+  gsl_vector_free(gsl_subdiag);
+
+  gsl_matrix_view T_view = gsl_matrix_view_array(T.getPointer(), n, n);
+  gsl_matrix_view T_inv_view = gsl_matrix_view_array(off_object.getTinv().getPointer(), n, n);
+  double* tt = new double[n * n];
+  gsl_matrix_view tt_view = gsl_matrix_view_array(tt, n, n);
+
+  // basically does T*T_inv
+  gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &T_view.matrix, &T_inv_view.matrix, 0.0,
+                 &tt_view.matrix);
+
+  // checks if T_inv is inverse: T_inv * T == I
   for (size_t i = 0; i < n; i++) {
-    // make row of T_inv
-    off_object.getTinv().getRow(i, row);
     for (size_t j = 0; j < n; j++) {
-      // std::cout << " \n\ni=" << i << "   j=" << j << std::endl;
-      // make column of T
-      col.setAll(0.0);
-      if (j == 0) {
-        col.set(j + 1, subdiag.get(j));
-        col.set(j, diag.get(j));
-      } else if (j == n - 1) {
-        col.set(j - 1, subdiag.get(j));
-        col.set(j, diag.get(j));
-      } else {
-        col.set(j - 1, subdiag.get(j - 1));
-        col.set(j, diag.get(j));
-        col.set(j + 1, subdiag.get(j));
-      }
-      const double value = row.dotProduct(col);
+      double value = tt[i * n + j];
       if (i == j) {
-        BOOST_CHECK_CLOSE(value, 1.0, 1e-2);
+        BOOST_CHECK_CLOSE(value, 1.0, 1e-8);
       } else {
-        BOOST_CHECK_SMALL(value, 1e-2);
+        BOOST_CHECK_SMALL(value, 1e-10);
       }
     }
   }
-  std::cout << ".passed!\n";
+  delete[] tt;
 }
 
 BOOST_AUTO_TEST_SUITE_END()
