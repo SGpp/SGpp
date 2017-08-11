@@ -412,13 +412,25 @@ namespace sgpp {
                           << " MPI TAG: " << mpiStatus.MPI_TAG << std::endl;
                 if (operationCompleted != 0) {
 
-                    std::cout << "Executing callback" << std::endl;
-                    //Execute the callback
-                    pendingMPIRequestIterator->callback(*pendingMPIRequestIterator);
-                    std::cout << "Callback complete" << std::endl;
+                    processCompletedMPIRequest(pendingMPIRequestIterator);
 
 
-                    if (pendingMPIRequestIterator->disposeAfterCallback) {
+                    std::cout << "Relaunching processCompletedMPIRequests" << std::endl;
+                    processCompletedMPIRequests();
+                    break;
+                }
+            }
+        }
+
+        void MPIMethods::processCompletedMPIRequest(
+                const std::list<sgpp::datadriven::PendingMPIRequest>::iterator &pendingMPIRequestIterator) {
+            std::cout << "Executing callback" << std::endl;
+            //Execute the callback
+            pendingMPIRequestIterator->callback(*pendingMPIRequestIterator);
+            std::cout << "Callback complete" << std::endl;
+
+
+            if (pendingMPIRequestIterator->disposeAfterCallback) {
                         //TODO Deleting a void pointer here
                         std::cout << "Attempting to delete pending mpi request" << std::endl;
                         delete[] pendingMPIRequestIterator->buffer;
@@ -435,11 +447,6 @@ namespace sgpp {
 //                        std::memset(pendingMPIRequestIterator->buffer, 0, sizeof(MPI_Packet));
 
                     }
-                    std::cout << "Relaunching processCompletedMPIRequests" << std::endl;
-                    processCompletedMPIRequests();
-                    break;
-                }
-            }
         }
 
         void MPIMethods::waitForAllMPIRequestsToComplete() {
@@ -454,6 +461,7 @@ namespace sgpp {
             MPI_Waitany(pendingMPIRequests.size(), mpiRequestStorage.getMPIRequests(), &completedRequest,
                         MPI_STATUS_IGNORE);
             std::cout << "MPI request " << completedRequest << " completed" << std::endl;
+            processCompletedMPIRequest(std::next(pendingMPIRequests.begin(), completedRequest));
         }
 
         void MPIMethods::receiveGridComponentsUpdate(RefinementResultNetworkMessage *networkMessage) {
