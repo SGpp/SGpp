@@ -2,18 +2,17 @@
 // Created by Vincent_Bode on 11.08.2017.
 //
 
-#ifndef SGPP_PENDINGMPIREQUEST_H
-#define SGPP_PENDINGMPIREQUEST_H
+#ifndef SGPP_PENDINGMPIREQUEST_HPP
+#define SGPP_PENDINGMPIREQUEST_HPP
 
 
-#include "NetworkMessageData.hpp"
-#include "MPIRequestPool.hpp"
+#include <sgpp/datadriven/application/work_in_progress/MPIRequestPool.hpp>
 
 namespace sgpp {
     namespace datadriven {
         class PendingMPIRequest {
         public:
-            explicit PendingMPIRequest(MPIRequestPool *requestPool);
+            explicit PendingMPIRequest(sgpp::datadriven::MPIRequestPool *requestPool);
 
             ~PendingMPIRequest();
 
@@ -24,7 +23,7 @@ namespace sgpp {
             MPI_Request *getMPIRequestHandle();
 
         protected:
-            MPIRequestPool &mpiRequestPool;
+            sgpp::datadriven::MPIRequestPool &mpiRequestPool;
             size_t mpiRequestIndex;
 
         };
@@ -33,4 +32,4 @@ namespace sgpp {
 }
 
 
-#endif //SGPP_PENDINGMPIREQUEST_H
+#endif //SGPP_PENDINGMPIREQUEST_HPP

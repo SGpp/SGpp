@@ -2,7 +2,7 @@
 // Created by Vincent_Bode on 11.08.2017.
 //
 
-#include "PendingMPIRequest.h"
+#include <sgpp/datadriven/application/work_in_progress/PendingMPIRequest.hpp>
 
 namespace sgpp {
     namespace datadriven {
