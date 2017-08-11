@@ -21,15 +21,14 @@ namespace datadriven {
 
 DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const DBMatDensityConfiguration& config)
     : DBMatOffline(config) {
-  // todo: alternativ: berechne size ohne buildMatrix()
+  // todo: berechne size ohne buildMatrix()
   this->buildMatrix();
+
   this->dim_a = this->getGrid().getStorage().getSize();
   this->lambda = config.lambda_;
 
-  q_ortho_matrix_ = sgpp::base::DataMatrix(dim_a, dim_a);
-  t_tridiag_inv_matrix_ = sgpp::base::DataMatrix(dim_a, dim_a);
-  diag_ = sgpp::base::DataVector(dim_a);
-  subdiag_ = sgpp::base::DataVector(dim_a - 1);
+  this->q_ortho_matrix_ = sgpp::base::DataMatrix(dim_a, dim_a);
+  this->t_tridiag_inv_matrix_ = sgpp::base::DataMatrix(dim_a, dim_a);
 }
 
 DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const std::string& fileName)
@@ -41,95 +40,81 @@ DBMatOffline* DBMatOfflineOrthoAdapt::clone() { return new DBMatOfflineOrthoAdap
 
 bool DBMatOfflineOrthoAdapt::isRefineable() { return true; }
 
-void DBMatOfflineOrthoAdapt::buildMatrix() {
-  // build lhs matrix R
-  DBMatOffline::buildMatrix();
+void DBMatOfflineOrthoAdapt::buildMatrix() { DBMatOffline::buildMatrix(); }
 
-  // set dimension of matrices Q, T_inv, etc.
-  // this->dim_a = this->grid->getStorage().getSize(); // done in constructor
+void DBMatOfflineOrthoAdapt::decomposeMatrix() {
+  // allocating sub-, super- and diagonal vectors of T
+  gsl_vector* gsl_diag = gsl_vector_alloc(dim_a);
+  gsl_vector* gsl_subdiag = gsl_vector_alloc(this->dim_a - 1);
 
-  isConstructed = true;
-  /*
-   * note: the regularization parameter lambda is added in the function
-   * "invert_tridiag", right before the inverting computations start. This is
-   * possible because R+lambda*I = Q*(T + lambda*I)*Q_t
-   */
+  // decomposing: lhs = Q * T * Q^t
+  this->hessenberg_decomposition(gsl_diag, gsl_subdiag);
+
+  // inverting T+lambda*I, by solving L*R*x_i = e_i, for every i-th column x_i of T_inv
+  this->invert_symmetric_tridiag(gsl_diag, gsl_subdiag);
+
+  // decomposed matrix: (lhs+lambda*I) = Q * T_inv * Q^t
+  this->isDecomposed = true;
 }
 
-void DBMatOfflineOrthoAdapt::decomposeMatrix() {}
-
-void DBMatOfflineOrthoAdapt::hessenberg_decomposition() {
-  // todo:
-  // currently this function uses gsl and relies on gsl_matrices, which means
-  // it has to copy between gsl matrices and sgpp matrices, which is inefficient
-  // gsl matrix view ?
-  if (dim_a == 1) {
-    this->q_ortho_matrix_.set(0, 0, 1.0);
-    return;
-  }
-  gsl_vector* gsl_diag = gsl_vector_alloc(dim_a);
-  gsl_vector* gsl_subdiag = gsl_vector_alloc(dim_a - 1);
+void DBMatOfflineOrthoAdapt::hessenberg_decomposition(gsl_vector* diag, gsl_vector* subdiag) {
   gsl_vector* tau = gsl_vector_alloc(dim_a - 1);
-  gsl_matrix* gsl_lhs = gsl_matrix_alloc(dim_a, dim_a);
-  gsl_matrix* gsl_q = gsl_matrix_alloc(dim_a, dim_a);
+  gsl_matrix_view gsl_lhs = gsl_matrix_view_array(this->lhsMatrix.getPointer(), dim_a, dim_a);
+  gsl_matrix_view gsl_q = gsl_matrix_view_array(this->q_ortho_matrix_.getPointer(), dim_a, dim_a);
 
-  for (size_t i = 0; i < dim_a; i++) {
-    for (size_t j = 0; j < dim_a; j++) {
-      gsl_matrix_set(gsl_lhs, i, j, this->lhsMatrix.get(i, j));
-    }
-  }
+  gsl_linalg_symmtd_decomp(&gsl_lhs.matrix, tau);
+  gsl_linalg_symmtd_unpack(&gsl_lhs.matrix, tau, &gsl_q.matrix, diag, subdiag);
 
-  gsl_linalg_symmtd_decomp(gsl_lhs, tau);
-  gsl_linalg_symmtd_unpack(gsl_lhs, tau, gsl_q, gsl_diag, gsl_subdiag);
-
-  // write computed values into members of class
-  for (size_t i = 0; i < dim_a; i++) {
-    (this->getDiag()).set(i, gsl_vector_get(gsl_diag, i));
-    if (i < dim_a - 1) {
-      this->subdiag_.set(i, gsl_vector_get(gsl_subdiag, i));
-    }
-    for (size_t j = 0; j < dim_a; j++) {
-      this->q_ortho_matrix_.set(i, j, gsl_matrix_get(gsl_q, i, j));
-    }
-  }
+  gsl_vector_free(tau);
   return;
 }
 
-// inverts a symmetric tridiag matrix
-void DBMatOfflineOrthoAdapt::invert_tridiag() {
-  size_t n = this->dim_a;
+void DBMatOfflineOrthoAdapt::invert_symmetric_tridiag(gsl_vector* diag, gsl_vector* subdiag) {
+  /*
+   * note: instead gsl_vector_get/set, gsl_vector->data[index] is used
+   * this eliminates unnecessary range checking
+   */
+  const size_t n = this->dim_a;       // size of quadratic matrix to invert
+  double* superdiag = new double[n];  // superdiagonal of T
 
-  // todo: copy constructor doesn't work?, therefore manual copy
-  sgpp::base::DataVector superdiag(n, 0.0);
-  for (size_t i = 0; i < n; i++) {
-    superdiag.set(i, this->subdiag_.get(i));
-  }
-
-  // LR-decomposition
+  // LR-decomposition:
+  // constructing T = LR and superdiag out of the vectors diag and subdiag
   for (size_t i = 0; i < n - 1; i++) {
+    // copy subdiag into superdiag for later uses of old values
+    superdiag[i] = subdiag->data[i];
     // l_i = l_i / a_i
-    this->subdiag_.set(i, this->subdiag_.get(i) / this->diag_.get(i));
-    // a_(i+1) = a_(i+1) - l_i*u_i
-    this->diag_.set(i + 1, this->diag_.get(i + 1) - this->subdiag_.get(i) * superdiag.get(i));
+    subdiag->data[i] = superdiag[i] / diag->data[i];
+    // a_{i+1} = a_{i+1} - l_i*u_i
+    diag->data[i + 1] = diag->data[i + 1] - subdiag->data[i] * superdiag[i];
   }
-
-  // L*R*T_inv = Id, solve for columns of T_inv
-  for (size_t i = 0; i < n; i++) {  // i-th column of T_inv
+  // L*R*T_inv = Id, solve for columns x_i of T_inv
+  for (size_t i = 0; i < n; i++) {
+    //
     // forward subst. L*y = e_i
-    sgpp::base::DataVector y(n, 0.0);
-    y.set(0, i == 0 ? 1.0 : 0.0);  // y_0 = (e_i)_0
+    double* y = new double[n];
+    // y_0 = {e_i}_0
+    y[0] = (i == 0 ? 1.0 : 0.0);
+    // y_j = {e_i}_j - l_{j-1} * y_{j-1}
     for (size_t j = 1; j < n; j++) {
-      y.set(j, (i == j ? 1.0 : 0.0) - y.get(j - 1) * this->subdiag_.get(j - 1));
+      y[j] = (i == j ? 1.0 : 0.0) - subdiag->data[j - 1] * y[j - 1];
     }
 
-    // backward subst. R*x = y, where x = columnf of T_inv
-    this->t_tridiag_inv_matrix_.set(n - 1, i, y.get(n - 1) / this->diag_.get(n - 1));
-    for (size_t j = n; j > 0; j--) {  // index-shift +1, because size_t >= 0
-      double value = y.get(j - 1) - this->t_tridiag_inv_matrix_.get(j, i) * superdiag.get(j - 1);
-      value /= this->diag_.get(j - 1);
-      this->t_tridiag_inv_matrix_.set(j - 1, i, value);
+    // backward subst. R*x_i = y
+    // {x_i}_{n-1} = y_{n-1} / a_{n-1}
+    this->t_tridiag_inv_matrix_.set(n - 1, i, y[n - 1] / diag->data[n - 1]);
+    // {x_i}_j = (y_j - u_j * x_{j+1} / a_j
+    for (size_t j = n - 2; j >= i; j--) {  // j >= i, because symmetric
+      double value =
+          (y[j] - superdiag[j] * this->t_tridiag_inv_matrix_.get(j + 1, i)) / diag->data[j];
+      this->t_tridiag_inv_matrix_.set(j, i, value);
+      this->t_tridiag_inv_matrix_.set(i, j, value);
+      // j >= i >= 0, because size_t, but i++ makes this only relevant for i==0
+      if (j == 0) break;
     }
+    delete[] y;
   }
+  delete[] superdiag;
+  return;
 }
 }  // namespace datadriven
 }  // namespace sgpp
