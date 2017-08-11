@@ -25,6 +25,16 @@
 
 BOOST_AUTO_TEST_SUITE(dBMatOffline_test)
 
+BOOST_AUTO_TEST_CASE(testReadWriteOrthoAdapt) {
+  sgpp::datadriven::DBMatDensityConfiguration config;
+  config.grid_dim_ = 2;
+  config.grid_level_ = 3;
+  config.grid_type_ = sgpp::base::GridType::Linear;
+  config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
+  config.lambda_ = 0.1;
+  config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::OrthoAdapt;
+}
+
 BOOST_AUTO_TEST_CASE(testReadWriteCholesky) {
   sgpp::datadriven::DBMatDensityConfiguration config;
   config.grid_dim_ = 2;
