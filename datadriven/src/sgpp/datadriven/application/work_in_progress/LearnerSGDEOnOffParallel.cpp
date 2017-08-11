@@ -696,10 +696,54 @@ namespace sgpp {
         }
 
 
-        void LearnerSGDEOnOffParallel::mergeAlphaValues(size_t classIndex, DataVector &dataVector, size_t batchSize) {
+        void LearnerSGDEOnOffParallel::mergeAlphaValues(size_t classIndex, size_t gridVersion, DataVector &dataVector,
+                                                        size_t batchSize) {
             std::cout << "Remote alpha sum " << classIndex << " is "
                       << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;
             std::cout << "Batch size is " << batchSize << std::endl;
+
+            if (gridVersion != getCurrentGridVersion(classIndex)) {
+                std::cout << "Received merge grid request with incorrect grid version!"
+                          << " local: " << getCurrentGridVersion(classIndex)
+                          << ", remote: " << gridVersion
+                          << std::endl;
+                if (gridVersion + 1 == getCurrentGridVersion(classIndex)) {
+                    std::cout << "Attempting to automatically compensate for outdated grid." << std::endl;
+                    RefinementResult &refinementResult = (*vectorRefinementResults)[classIndex];
+                    std::list<size_t> &deletedPoints = refinementResult.deletedGridPointsIndexes;
+                    std::list<LevelIndexVector> &addedPoints = refinementResult.addedGridPoints;
+                    if (!deletedPoints.empty()
+                        || !addedPoints.empty()) {
+                        std::cout << "Found necessary refinement data" << std::endl;
+
+                        //See DBMatOnlineDe::updateAlpha()
+                        if (!deletedPoints.empty()) {
+                            DataVector newAlpha{dataVector.getSize() - deletedPoints.size() + addedPoints.size()};
+                            for (size_t i = 0; i < dataVector.getSize(); i++) {
+                                if (std::find(deletedPoints.begin(), deletedPoints.end(), i) != deletedPoints.end()) {
+                                    continue;
+                                }
+
+                                newAlpha.append(dataVector.get(i));
+
+                            }
+                            // set new alpha
+                            dataVector = newAlpha;
+                        }
+                        dataVector.resizeZero(dataVector.size() + addedPoints.size());
+                        std::cout << "New alpha vector is now " << dataVector.size() << " elements long." << std::endl;
+                    } else {
+                        std::cout << "Refinement data has already been deleted." << std::endl
+                                  << "This is probably because the master is training from batches. " << std::endl
+                                  << "Cannot compensate, will now fail." << std::endl;
+                        exit(-1);
+                    }
+                }
+
+                return;
+            }
+
+
             DataVector &localAlpha = getDensityFunctions()[classIndex].first->getAlpha();
             if (localAlpha.size() != dataVector.size()) {
                 std::cout << "Received merge request with incorrect size (local " << localAlpha.size() << ", remote "

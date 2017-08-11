@@ -138,7 +138,7 @@ namespace sgpp {
 
                     networkMessage->classIndex = classIndex;
                     networkMessage->updateType = DELETED_GRID_POINTS_LIST;
-                    networkMessage->gridversion = learnerInstance->getCurrentGridVersion(0);
+                    networkMessage->gridversion = learnerInstance->getCurrentGridVersion(classIndex);
 
                     size_t numPointsInBuffer = fillBufferWithData<std::list<size_t>::const_iterator>(
                             (void *) networkMessage->payload,
@@ -166,7 +166,7 @@ namespace sgpp {
 
                     networkMessage->classIndex = classIndex;
                     networkMessage->updateType = ADDED_GRID_POINTS_LIST;
-                    networkMessage->gridversion = learnerInstance->getCurrentGridVersion(0);
+                    networkMessage->gridversion = learnerInstance->getCurrentGridVersion(classIndex);
 
                     size_t numPointsInBuffer = fillBufferWithLevelIndexData(networkMessage->payload,
                                                                             std::end(networkMessage->payload), iterator,
@@ -228,14 +228,6 @@ namespace sgpp {
 
         //TODO: This was imported from Merge
         size_t MPIMethods::receiveMergeGridNetworkMessage(MergeGridNetworkMessage &networkMessage) {
-            if (networkMessage.gridversion != learnerInstance->getCurrentGridVersion(0)) {
-                std::cout << "Received merge grid request with incorrect grid version!"
-                          << " local: " << learnerInstance->getCurrentGridVersion(0)
-                          << ", remote: " << networkMessage.gridversion
-                          << std::endl;
-                std::cout << "!#!#!# IGNORING ERROR #!#!#!" << std::endl;
-                return 0;
-            }
 
             base::DataVector alphaVector(networkMessage.payloadLength);
 
@@ -244,7 +236,7 @@ namespace sgpp {
                 alphaVector[networkMessage.payloadOffset + index] = payload[index];
             }
 
-            learnerInstance->mergeAlphaValues(networkMessage.classIndex, alphaVector, networkMessage.batchSize);
+            learnerInstance->mergeAlphaValues(networkMessage.classIndex, 0, alphaVector, networkMessage.batchSize);
 
             std::cout << "Updated alpha values from network message offset " << networkMessage.payloadOffset
                       << ", class " << networkMessage.classIndex
@@ -316,7 +308,7 @@ namespace sgpp {
                 auto *networkMessage = static_cast<MergeGridNetworkMessage *>(payloadPointer);
 
                 networkMessage->classIndex = classIndex;
-                networkMessage->gridversion = learnerInstance->getCurrentGridVersion(0);
+                networkMessage->gridversion = learnerInstance->getCurrentGridVersion(classIndex);
                 networkMessage->payloadOffset = offset;
                 networkMessage->batchSize = batchSize;
 
