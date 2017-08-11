@@ -236,7 +236,8 @@ namespace sgpp {
                 alphaVector[networkMessage.payloadOffset + index] = payload[index];
             }
 
-            learnerInstance->mergeAlphaValues(networkMessage.classIndex, 0, alphaVector, networkMessage.batchSize);
+            learnerInstance->mergeAlphaValues(networkMessage.classIndex, networkMessage.gridversion, alphaVector,
+                                              networkMessage.batchSize);
 
             std::cout << "Updated alpha values from network message offset " << networkMessage.payloadOffset
                       << ", class " << networkMessage.classIndex
@@ -394,7 +395,8 @@ namespace sgpp {
                 int operationCompleted;
 
                 std::cout << "Testing request " << &*pendingMPIRequestIterator << std::endl;
-                if (MPI_Test(pendingMPIRequestIterator->getMPIRequestHandle(), &operationCompleted, &mpiStatus) != 0) {
+                if (MPI_Test(pendingMPIRequestIterator->getMPIRequestHandle(), &operationCompleted, &mpiStatus) !=
+                    MPI_SUCCESS) {
                     std::cout << "Error MPI Test reported" << std::endl;
                     exit(-1);
                 }
