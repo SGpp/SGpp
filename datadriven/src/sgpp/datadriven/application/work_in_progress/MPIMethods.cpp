@@ -216,7 +216,7 @@ namespace sgpp {
         }
 
         PendingMPIRequest &MPIMethods::createPendingMPIRequest(MPI_Packet *mpiPacket) {
-            pendingMPIRequests.emplace_back();
+            pendingMPIRequests.emplace_back(&mpiRequestStorage);
             PendingMPIRequest &pendingMPIRequest = pendingMPIRequests.back();
             pendingMPIRequest.disposeAfterCallback = true;
             pendingMPIRequest.callback = [](PendingMPIRequest &request) {
@@ -450,7 +450,7 @@ namespace sgpp {
         }
 
         void MPIMethods::waitForAllMPIRequestsToComplete() {
-            for (PendingMPIRequest &pendingMPIRequest(<#initializer#>) : pendingMPIRequests) {
+            for (PendingMPIRequest &pendingMPIRequest : pendingMPIRequests) {
                 MPI_Wait(pendingMPIRequest.getMPIRequestHandle(), MPI_STATUS_IGNORE);
             }
         }

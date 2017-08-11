@@ -6,8 +6,8 @@
 
 namespace sgpp {
     namespace datadriven {
-        PendingMPIRequest::PendingMPIRequest(MPIRequestPool &mpiRequestPool)
-                : mpiRequestPool(mpiRequestPool) {
+        PendingMPIRequest::PendingMPIRequest(MPIRequestPool *requestPool)
+                : mpiRequestPool(*requestPool) {
             mpiRequestIndex = mpiRequestPool.createMPIRequestHandle();
         }
 
