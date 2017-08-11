@@ -16,15 +16,21 @@ namespace sgpp {
 //            mpiRequestStorage[handleIndex] = MPI_REQUEST_NULL;
 
             printPoolStatistics();
+            freedRequests.insert(handleIndex);
 
             if (handleIndex == mpiRequestStorage.size() - 1) {
                 auto iterator = mpiRequestStorage.end();
                 auto vectorStart = mpiRequestStorage.begin();
+                size_t index = mpiRequestStorage.size() - 1;
                 iterator--;
-                while (*iterator == MPI_REQUEST_NULL && iterator != vectorStart) {
+                while (freedRequests.count(index) == 1 && iterator != vectorStart) {
                     mpiRequestStorage.erase(iterator);
+                    freedRequests.erase(index);
+
+                    //Reset invalidated iterator
                     iterator = mpiRequestStorage.end();
                     iterator--;
+                    index--;
                     std::cout << "Removing unused pool handle" << std::endl;
                 }
                 printPoolStatistics();
@@ -33,7 +39,7 @@ namespace sgpp {
 
         inline void MPIRequestPool::printPoolStatistics() const {
             std::cout << "MPI_Request pool size is " << mpiRequestStorage.size() << " (vector capacity "
-                      << mpiRequestStorage.capacity() << ")" << std::endl;
+                      << mpiRequestStorage.capacity() << ", secondary " << freedRequests.size() << ")" << std::endl;
         }
 
         MPI_Request *MPIRequestPool::getMPIRequestHandle(size_t handleIndex) {
