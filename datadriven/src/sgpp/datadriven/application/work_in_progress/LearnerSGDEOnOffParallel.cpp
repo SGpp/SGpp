@@ -174,7 +174,6 @@ namespace sgpp {
                         doRefinementForAll(refinementFunctorType, refMonitor, vectorRefinementResults,
                                            onlineObjects, monitor);
                         numberOfCompletedRefinements += 1;
-                        localGridVersion++;
                         std::cout << "Refinement at " << numProcessedDataPoints << " complete" << std::endl;
 
                         MPIMethods::sendGridComponentsUpdate(vectorRefinementResults);
@@ -360,6 +359,8 @@ namespace sgpp {
             }
 
             updateClassVariablesAfterRefinement(refinementResult, densEst);
+
+            localGridVersions[classIndex]++;
         }
 
         void LearnerSGDEOnOffParallel::updateClassVariablesAfterRefinement(RefinementResult *refinementResult,
