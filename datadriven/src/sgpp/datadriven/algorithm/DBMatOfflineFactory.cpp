@@ -61,12 +61,12 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(const DBMatDensityConfigur
       break;
 
     case (DBMatDecompostionType::OrthoAdapt):
-      // #ifdef USE_GSL
+#ifdef USE_GSL
       return new DBMatOfflineOrthoAdapt(config);
       break;
-      // #else
+#else
       throw factory_exception("built without GSL");
-    // #endif /* USE_GSL */
+#endif /* USE_GSL */
 
     default:
       throw factory_exception("Trying to build offline object from unknown decomposition type");

@@ -11,8 +11,6 @@
 
 #define BOOST_TEST_DYN_LINK
 
-#include <gsl/gsl_blas.h>
-
 #include <boost/test/unit_test.hpp>
 
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
@@ -23,6 +21,9 @@
 #include <sgpp/globaldef.hpp>
 
 #include <string>
+
+#ifdef USE_GSL
+#include <gsl/gsl_blas.h>
 
 BOOST_AUTO_TEST_SUITE(OrthoAdapt_test)
 
@@ -35,6 +36,7 @@ BOOST_AUTO_TEST_CASE(offline_object) {
   config.lambda_ = 0.0001;
 
   sgpp::datadriven::DBMatOfflineOrthoAdapt off_object(config);
+  off_object.buildMatrix();
 
   size_t n = off_object.getDimA();
   std::cout << "Created Offline Object: \nMatrix Dimension = " << n << std::endl;
@@ -100,5 +102,7 @@ BOOST_AUTO_TEST_CASE(offline_object) {
   }
   delete[] tt;
 }
-
+#else
+throw sgpp::base::algorithm_exception("USE_GSL is not set to true");
+#endif /* USE_GSL */
 BOOST_AUTO_TEST_SUITE_END()
