@@ -68,7 +68,6 @@ namespace sgpp {
                 while (workerActive) {
                     std::cout << "Client looping" << std::endl;
                     MPIMethods::waitForAnyMPIRequestsToComplete();
-                    MPIMethods::processCompletedMPIRequests();
                 }
                 std::cout << "Worker shutdown." << std::endl;
                 return;
