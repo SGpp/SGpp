@@ -22,6 +22,7 @@ namespace sgpp {
                 iterator--;
                 while (*iterator == MPI_REQUEST_NULL && iterator != vectorStart) {
                     mpiRequestStorage.erase(iterator);
+                    iterator = mpiRequestStorage.end();
                     iterator--;
                 }
                 std::cout << "New MPI_Request pool size is " << mpiRequestStorage.size();
