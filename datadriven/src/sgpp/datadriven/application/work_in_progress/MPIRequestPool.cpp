@@ -12,7 +12,7 @@ namespace sgpp {
         }
 
         void MPIRequestPool::deleteMPIRequestHandle(size_t handleIndex) {
-            mpiRequestStorage[handleIndex] = MPI_REQUEST_NULL;
+//            mpiRequestStorage[handleIndex] = MPI_REQUEST_NULL;
 
             printPoolStatistics();
 
