@@ -4,9 +4,6 @@
  * sgpp.sparsegrids.org
  *
  * test_DBMatOffline.cpp
- *
- *  Created on: Apr 8, 2017
- *      Author: Michael Lettrich
  */
 #ifdef USE_GSL
 #define BOOST_TEST_DYN_LINK
@@ -18,6 +15,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineEigen.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 #include <sgpp/globaldef.hpp>
 
@@ -33,6 +31,64 @@ BOOST_AUTO_TEST_CASE(testReadWriteOrthoAdapt) {
   config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
   config.lambda_ = 0.1;
   config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::OrthoAdapt;
+
+  auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
+      sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(config)};
+  offline->buildMatrix();
+  offline->decomposeMatrix();
+  std::string filename = "test.dbmat";
+  offline->store(filename);
+  auto newOffline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
+      sgpp::datadriven::DBMatOfflineFactory::buildFromFile(filename)};
+  auto newConfig = newOffline->getConfig();
+
+  /**
+   * Check Configuration
+   */
+  BOOST_CHECK_EQUAL(config.grid_dim_, newConfig.grid_dim_);
+  BOOST_CHECK_EQUAL(config.grid_level_, newConfig.grid_level_);
+  BOOST_CHECK_EQUAL(static_cast<int>(config.grid_type_), static_cast<int>(newConfig.grid_type_));
+  BOOST_CHECK_EQUAL(static_cast<int>(config.regularization_),
+                    static_cast<int>(newConfig.regularization_));
+  BOOST_CHECK_CLOSE(config.lambda_, newConfig.lambda_, 10e-5);
+  BOOST_CHECK_EQUAL(static_cast<int>(config.decomp_type_),
+                    static_cast<int>(newConfig.decomp_type_));
+  /**
+   * Check matrices
+   */
+  // lhsMatrix of parent object
+  auto& oldMatrix = offline->getDecomposedMatrix();
+  auto& newMatrix = newOffline->getDecomposedMatrix();
+
+  BOOST_CHECK_EQUAL(oldMatrix.getSize(), newMatrix.getSize());
+
+  for (size_t i = 0; i < newMatrix.getSize(); i++) {
+    BOOST_CHECK_CLOSE(newMatrix[i], oldMatrix[i], 10e-5);
+  }
+
+  // q_ortho_matrix_
+  sgpp::datadriven::DBMatOfflineOrthoAdapt* child =
+      static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&*offline);
+  auto& oldMatrixQ = child->getQ();
+  sgpp::datadriven::DBMatOfflineOrthoAdapt* newChild =
+      static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&*newOffline);
+  auto& newMatrixQ = newChild->getQ();
+
+  BOOST_CHECK_EQUAL(oldMatrixQ.getSize(), newMatrixQ.getSize());
+
+  for (size_t i = 0; i < newMatrixQ.getSize(); i++) {
+    BOOST_CHECK_CLOSE(newMatrixQ[i], oldMatrixQ[i], 10e-5);
+  }
+
+  // t_tridiag_inv
+  auto& oldMatrixTinv = child->getTinv();
+  auto& newMatrixTinv = newChild->getTinv();
+
+  BOOST_CHECK_EQUAL(oldMatrixTinv.getSize(), newMatrixTinv.getSize());
+
+  for (size_t i = 0; i < newMatrixTinv.getSize(); i++) {
+    BOOST_CHECK_CLOSE(newMatrixTinv[i], oldMatrixTinv[i], 10e-5);
+  }
 }
 
 BOOST_AUTO_TEST_CASE(testReadWriteCholesky) {

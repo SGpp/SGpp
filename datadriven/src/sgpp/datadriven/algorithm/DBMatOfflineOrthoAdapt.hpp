@@ -12,6 +12,9 @@
 
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 
+#include <string>
+
+#ifdef USE_GSL
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_matrix.h>
@@ -76,6 +79,20 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    */
   void invert_symmetric_tridiag(gsl_vector* diag, gsl_vector* subdiag);
 
+  /**
+   * Serialize the DBMatOfflineOrthoAdapt object
+   * The lhsMatrix is stored in the form of compact tridiagonal decomposition,
+   * which means the diagonal and subdiagonal of lhsMatrix are stored, and the
+   * lower left part of the matrix takes the householder vectors.
+   *
+   * q_ortho_matrix and t_inv_tridiag
+   * are also stored into the specified file, which is the explicit representation
+   * of the decomposition needed for the online phase.
+   *
+   * @param fileName path where to store the file
+   */
+  void store(const std::string& fileName);
+
   // getter and setter, for testing only
   size_t& getDimA() { return this->dim_a; };
 
@@ -93,3 +110,6 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
 };
 }  // namespace datadriven
 }  // namespace sgpp
+#else
+throw sgpp::base::algorithm_exception("USE_GSL is not set to true");
+#endif /* USE_GSL */

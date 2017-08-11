@@ -10,21 +10,21 @@
  *  Author: Dmitrij Boschko
  */
 
-// #ifdef USE_GSL
-
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
 
+#include <sgpp/base/exception/algorithm_exception.hpp>
+
+#include <iomanip>
 #include <string>
+
+#ifdef USE_GSL
 
 namespace sgpp {
 namespace datadriven {
 
 DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const DBMatDensityConfiguration& config)
     : DBMatOffline(config) {
-  // todo: berechne size ohne buildMatrix()
-  this->buildMatrix();
-
-  this->dim_a = this->getGrid().getStorage().getSize();
+  this->dim_a = 1;
   this->lambda = config.lambda_;
 
   this->q_ortho_matrix_ = sgpp::base::DataMatrix(dim_a, dim_a);
@@ -33,14 +33,53 @@ DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const DBMatDensityConfiguration& 
 
 DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const std::string& fileName)
     : DBMatOffline(fileName) {
-  // todo: Q and T_inv from file
+  // grid already initialized in super constructor
+  this->dim_a = this->getGrid().getStorage().getSize();
+  this->lambda = this->config.lambda_;
+
+  this->lhsMatrix.resizeQuadratic(dim_a);
+  this->q_ortho_matrix_.resizeQuadratic(dim_a);
+  this->t_tridiag_inv_matrix_.resizeQuadratic(dim_a);
+
+  gsl_matrix_view lhs_view =
+      gsl_matrix_view_array(this->lhsMatrix.getPointer(), this->dim_a, this->dim_a);
+  gsl_matrix_view q_view =
+      gsl_matrix_view_array(this->q_ortho_matrix_.getPointer(), this->dim_a, this->dim_a);
+  gsl_matrix_view t_inv_view =
+      gsl_matrix_view_array(this->t_tridiag_inv_matrix_.getPointer(), this->dim_a, this->dim_a);
+
+  FILE* file = fopen(fileName.c_str(), "rb");
+  if (!file) {
+    throw sgpp::base::algorithm_exception{"Failed to open File"};
+  }
+
+  // seek end of first line
+  char c = 0;
+  while (c != '\n') {
+    c = static_cast<char>(fgetc(file));
+  }
+
+  gsl_matrix_fread(file, &lhs_view.matrix);
+  gsl_matrix_fread(file, &q_view.matrix);
+  gsl_matrix_fread(file, &t_inv_view.matrix);
+
+  fclose(file);
+
+  this->isConstructed = true;
+  this->isDecomposed = true;
 }
 
 DBMatOffline* DBMatOfflineOrthoAdapt::clone() { return new DBMatOfflineOrthoAdapt{*this}; }
 
 bool DBMatOfflineOrthoAdapt::isRefineable() { return true; }
 
-void DBMatOfflineOrthoAdapt::buildMatrix() { DBMatOffline::buildMatrix(); }
+void DBMatOfflineOrthoAdapt::buildMatrix() {
+  DBMatOffline::buildMatrix();
+  this->dim_a = this->getGrid().getStorage().getSize();
+
+  this->q_ortho_matrix_.resizeQuadratic(dim_a);
+  this->t_tridiag_inv_matrix_.resizeQuadratic(dim_a);
+}
 
 void DBMatOfflineOrthoAdapt::decomposeMatrix() {
   // allocating sub-, super- and diagonal vectors of T
@@ -55,6 +94,9 @@ void DBMatOfflineOrthoAdapt::decomposeMatrix() {
 
   // decomposed matrix: (lhs+lambda*I) = Q * T_inv * Q^t
   this->isDecomposed = true;
+
+  gsl_vector_free(gsl_diag);
+  gsl_vector_free(gsl_subdiag);
 }
 
 void DBMatOfflineOrthoAdapt::hessenberg_decomposition(gsl_vector* diag, gsl_vector* subdiag) {
@@ -116,6 +158,32 @@ void DBMatOfflineOrthoAdapt::invert_symmetric_tridiag(gsl_vector* diag, gsl_vect
   delete[] superdiag;
   return;
 }
+
+void DBMatOfflineOrthoAdapt::store(const std::string& fileName) {
+  DBMatOffline::store(fileName);
+
+  // #ifdef USE_GSL
+  FILE* outCFile = fopen(fileName.c_str(), "ab");
+  if (!outCFile) {
+    throw sgpp::base::algorithm_exception{"cannot open file for writing"};
+  }
+
+  // store q_ortho_matrix_
+  gsl_matrix_view q_view =
+      gsl_matrix_view_array(this->q_ortho_matrix_.getPointer(), this->dim_a, this->dim_a);
+  gsl_matrix_fwrite(outCFile, &q_view.matrix);
+
+  // store t_inv_tridiag
+  gsl_matrix_view t_inv_view =
+      gsl_matrix_view_array(this->t_tridiag_inv_matrix_.getPointer(), this->dim_a, this->dim_a);
+  gsl_matrix_fwrite(outCFile, &t_inv_view.matrix);
+  fclose(outCFile);
+  // #else
+  // throw base::not_implemented_exception("built withot GSL");
+  // #endif /* USE_GSL */
+}
 }  // namespace datadriven
 }  // namespace sgpp
-// #endif /* USE_GSL */
+#else
+throw sgpp::base::algorithm_exception("USE_GSL is not set to true");
+#endif /* USE_GSL */
