@@ -740,7 +740,6 @@ namespace sgpp {
                     }
                 }
 
-                return;
             }
 
 
