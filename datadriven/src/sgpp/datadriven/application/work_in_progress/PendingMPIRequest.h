@@ -13,7 +13,7 @@ namespace sgpp {
     namespace datadriven {
         class PendingMPIRequest {
         public:
-            explicit PendingMPIRequest(MPIRequestPool &mpiRequestPool);
+            explicit PendingMPIRequest(MPIRequestPool *requestPool);
 
             ~PendingMPIRequest();
 
