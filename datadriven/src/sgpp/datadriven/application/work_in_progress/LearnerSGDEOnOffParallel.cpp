@@ -49,6 +49,9 @@ namespace sgpp {
                 : LearnerSGDEOnOff(dconf, trainData, testData, validationData, classLabels, numClassesInit, usePrior,
                                    beta, lambda), mpiTaskScheduler(mpiTaskScheduler) {
 
+            vectorRefinementResults = new std::vector<RefinementResult>(numClasses);
+            localGridVersions.reserve(numClasses);
+
             MPIMethods::initMPI(this);
         }
 
@@ -61,8 +64,6 @@ namespace sgpp {
                                              size_t refPeriod, double accDeclineThreshold,
                                              size_t accDeclineBufferSize, size_t minRefInterval,
                                              bool enableCv, size_t nextCvStep) {
-            vectorRefinementResults = new std::vector<RefinementResult>(numClasses);
-            localGridVersion = 0;
 
             if (!MPIMethods::isMaster()) {
                 while (workerActive) {
@@ -700,10 +701,10 @@ namespace sgpp {
             std::cout << "Batch size is " << batchSize << std::endl;
             DataVector &localAlpha = getDensityFunctions()[classIndex].first->getAlpha();
             if (localAlpha.size() != dataVector.size()) {
-                std::cout << "Received merge request with incorrect size (local" << localAlpha.size() << ", remote "
-                          << dataVector.size() << ")" << std::endl;
-                std::cout << "!#!#!# IGNORING ERROR #!#!#!" << std::endl;
-                return;
+                std::cout << "Received merge request with incorrect size (local " << localAlpha.size() << ", remote "
+                          << dataVector.size() << ") but identical version " << localGridVersions[classIndex]
+                          << std::endl;
+                exit(-1);
             }
 
             if (usePrior) {
@@ -721,12 +722,12 @@ namespace sgpp {
                       << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;
         }
 
-        size_t LearnerSGDEOnOffParallel::getCurrentGridVersion() {
-            return localGridVersion;
+        size_t LearnerSGDEOnOffParallel::getCurrentGridVersion(size_t classIndex) {
+            return localGridVersions[classIndex];
         }
 
-        void LearnerSGDEOnOffParallel::setLocalGridVersion(size_t gridVersion) {
-            localGridVersion = gridVersion;
+        void LearnerSGDEOnOffParallel::setLocalGridVersion(size_t classIndex, size_t gridVersion) {
+            localGridVersions[classIndex] = gridVersion;
         }
 
         RefinementResult &LearnerSGDEOnOffParallel::getRefinementResult(size_t classIndex) {

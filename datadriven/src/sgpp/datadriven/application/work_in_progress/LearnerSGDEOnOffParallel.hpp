@@ -148,16 +148,16 @@ namespace sgpp {
 
             void mergeAlphaValues(size_t classIndex, DataVector &dataVector, size_t batchSize);
 
-            size_t getCurrentGridVersion();
+            size_t getCurrentGridVersion(size_t classIndex);
 
-            void setLocalGridVersion(size_t gridVersion);
+            void setLocalGridVersion(size_t classIndex, size_t gridVersion);
 
             RefinementResult &getRefinementResult(size_t classIndex);
 
         protected:
 
             std::vector<RefinementResult> *vectorRefinementResults;
-            size_t localGridVersion;
+            std::vector<size_t> localGridVersions;
             bool workerActive;
             MPITaskScheduler &mpiTaskScheduler;
 
