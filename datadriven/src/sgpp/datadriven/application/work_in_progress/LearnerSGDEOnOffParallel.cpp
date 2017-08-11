@@ -154,10 +154,6 @@ namespace sgpp {
                         MPIMethods::waitForAnyMPIRequestsToComplete();
                     }
 
-                    std::cout << "Master is now processing incoming requests." << std::endl;
-                    MPIMethods::processCompletedMPIRequests();
-                    std::cout << "Master finished processing incoming requests." << std::endl;
-
                     // access DBMatOnlineDE-objects of all classes in order
                     // to apply adaptivity to the specific sparse grids later on
                     //TODO: check if this is necessary
