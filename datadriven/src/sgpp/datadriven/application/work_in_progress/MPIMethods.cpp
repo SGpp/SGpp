@@ -559,6 +559,10 @@ namespace sgpp {
                     std::cout << "Worker shutdown requested" << std::endl;
                     learnerInstance->shutdown();
                     break;
+                case WORKER_SHUTDOWN_SUCCESS:
+                    std::cout << "Worker has acknowledge shutdown" << std::endl;
+                    learnerInstance->onWorkerShutdown();
+                    break;
                 case NULL_COMMAND:
                     std::cout << "Error: Incoming command has undefined command id" << std::endl;
                     exit(-1);

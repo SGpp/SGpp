@@ -154,6 +154,8 @@ namespace sgpp {
 
             RefinementResult &getRefinementResult(size_t classIndex);
 
+            void onWorkerShutdown();
+
         protected:
 
             std::vector<RefinementResult> *vectorRefinementResults;
@@ -196,6 +198,7 @@ namespace sgpp {
 
             size_t assignBatchToWorker(size_t batchOffset, bool doCrossValidation);
 
+            size_t numShutdownWorkers;
         };
     }   //namespace datadriven
 }  // namespace sgpp

@@ -58,6 +58,8 @@ namespace sgpp {
                                               std::list<LevelIndexVector> &addedGridPoints);
 
 
+            static void sendCommandNoArgs(int destinationRank, MPI_COMMAND_ID commandId);
+
         protected:
             //Pending MPI Requests
             static std::list<PendingMPIRequest> pendingMPIRequests;
@@ -75,8 +77,6 @@ namespace sgpp {
             static void endSynchronizingPackets();
 
             static void sendISend(int destinationRank, MPI_Packet *mpiPacket);
-
-            void sendCommandNoArgs(int destinationRank, MPI_COMMAND_ID commandId);
 
             static void runBatch(MPI_Packet *pPacket);
 
