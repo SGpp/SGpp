@@ -12,7 +12,7 @@ namespace sgpp {
         }
 
         PendingMPIRequest::~PendingMPIRequest() {
-            mpiRequestPool.deleteMPIRequestHandle(0);
+            mpiRequestPool.deleteMPIRequestHandle(mpiRequestIndex);
         }
 
         MPI_Request *PendingMPIRequest::getMPIRequestHandle() {
