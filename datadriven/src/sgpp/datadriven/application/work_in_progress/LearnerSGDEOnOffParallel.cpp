@@ -627,12 +627,15 @@ namespace sgpp {
                     classRefinementResult.addedGridPoints.clear();
 
                     if (usePrior) {
+                        double newPrior = ((this->prior[p.second] * static_cast<double>(processedPoints)) +
+                                           static_cast<double>(p.first->getSize())) /
+                                          (static_cast<double>(numberOfDataPoints) +
+                                           static_cast<double>(processedPoints));
+                        std::cout << "Setting prior[" << p.second << "] to " << newPrior << std::endl;
                         this->prior[p.second] =
-                                ((this->prior[p.second] * static_cast<double>(processedPoints)) +
-                                 static_cast<double>(p.first->getSize())) /
-                                (static_cast<double>(numberOfDataPoints) +
-                                 static_cast<double>(processedPoints));
+                                newPrior;
                     } else {
+                        std::cout << "Setting prior[" << p.second << "] to 1.0" << std::endl;
                         this->prior[p.second] = 1.;
                     }
                 }
@@ -669,6 +672,11 @@ namespace sgpp {
                 auto &classDensityContainer = densityFunctions[classIndex];
                 DataVector alphaVector = classDensityContainer.first->getAlpha();
                 MPIMethods::sendMergeGridNetworkMessage(classIndex, dataset.getNumberInstances(), alphaVector);
+
+                DataVector &dataVector = getDensityFunctions()[classIndex].first->getAlpha();
+                std::cout << "Local alpha sum " << classIndex << " is now "
+                          << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;
+
             }
             std::cout << "Completed work batch " << batchOffset << " requested by master." << std::endl;
         }
@@ -687,7 +695,8 @@ namespace sgpp {
 
 
         void LearnerSGDEOnOffParallel::mergeAlphaValues(size_t classIndex, DataVector &dataVector, size_t batchSize) {
-            std::cout << "Alpha sum is " << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;
+            std::cout << "Remote alpha sum " << classIndex << " is "
+                      << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;
             std::cout << "Batch size is " << batchSize << std::endl;
             dataVector.mult(batchSize);
             DataVector &localAlpha = getDensityFunctions()[classIndex].first->getAlpha();
@@ -697,7 +706,11 @@ namespace sgpp {
                 std::cout << "!#!#!# IGNORING ERROR #!#!#!" << std::endl;
                 return;
             }
+            std::cout << "Local alpha sum " << classIndex << " was "
+                      << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;
             localAlpha.add(dataVector);
+            std::cout << "Local alpha sum " << classIndex << " is now "
+                      << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;
         }
 
         size_t LearnerSGDEOnOffParallel::getCurrentGridVersion() {
