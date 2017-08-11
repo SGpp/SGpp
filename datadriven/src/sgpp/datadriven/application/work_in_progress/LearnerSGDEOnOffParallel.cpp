@@ -152,7 +152,6 @@ namespace sgpp {
                         std::cout << "Waiting for " << MPIMethods::getQueueSize()
                                   << " queue operations to complete before continuing" << std::endl;
                         MPIMethods::waitForAnyMPIRequestsToComplete();
-                        MPIMethods::processCompletedMPIRequests();
                     }
 
                     std::cout << "Master is now processing incoming requests." << std::endl;
