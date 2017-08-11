@@ -32,7 +32,7 @@ namespace sgpp {
 
         inline void MPIRequestPool::printPoolStatistics() const {
             std::cout << "MPI_Request pool size is " << mpiRequestStorage.size() << " (vector capacity "
-                      << mpiRequestStorage.capacity() << std::endl;
+                      << mpiRequestStorage.capacity() << ")" << std::endl;
         }
 
         MPI_Request *MPIRequestPool::getMPIRequestHandle(size_t handleIndex) {
