@@ -7,8 +7,10 @@
 #define USE_GSL
 
 #ifdef USE_GSL
+
 #include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
+
 #endif /* USE_GSL */
 
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
@@ -50,15 +52,21 @@ sgpp::datadriven::Dataset loadDataset(const std::string &filename) {// load test
  * can affect the result.
  */
 
-int main() {
+int main(int argc, char *argv[]) {
 #ifdef USE_GSL
 
     std::cout << "LearnerSGDEOnOffParallelTest" << std::endl;
-  /**
-   * Specify the number of runs to perform.
-   * If only one specific example should be executed, set
-   * totalSets=1.
-   */
+
+    if (argc != 4) {
+        std::cout << "Usage:" << std::endl
+                  << "learnerSGDEOnOffParallelTest <trainDataFile> <testDataFile> <batchSize> <refPeriod>" << std::endl;
+        return -1;
+    }
+    /**
+     * Specify the number of runs to perform.
+     * If only one specific example should be executed, set
+     * totalSets=1.
+     */
 //  size_t totalSets = 1;
 //  size_t totalFolds = 1;  // set to 5 to perform 5-fold cv
 //  double avgError = 0.0;
@@ -72,171 +80,171 @@ int main() {
 //    sgpp::base::DataVector avgErrorsFolds(51, 0.0);
 //
 //    for (size_t numFolds = 0; numFolds < totalFolds; numFolds++) {
-      /**
-       * Get the training, test and validation data
-       */
-    sgpp::datadriven::Dataset trainDataset = loadDataset("../../datasets/ripley/ripleyGarcke.train.arff");
-    sgpp::datadriven::Dataset testDataset = loadDataset("../../datasets/ripley/ripleyGarcke.test.arff");
+    /**
+     * Get the training, test and validation data
+     */
+    sgpp::datadriven::Dataset trainDataset = loadDataset(argv[0]);
+    sgpp::datadriven::Dataset testDataset = loadDataset(argv[1]);
 
     // if fixed validation data should be used (required for convergence
-      // monitor):
+    // monitor):
     /*filename = "";  // specify file containing validation data here
     // load validation samples
     std::cout << "# loading file: " << filename << std::endl;
     sgpp::datadriven::Dataset validationDataset =
         sgpp::datadriven::ARFFTools::readARFF(filename); */
 
-      /**
-       * Specify the number of classes and the corresponding class labels.
-       */
-      size_t classNum = 2;
-      sgpp::base::DataVector classLabels(classNum);
-      classLabels[0] = -1;
-      classLabels[1] = 1;
+    /**
+     * Specify the number of classes and the corresponding class labels.
+     */
+    size_t classNum = 2;
+    sgpp::base::DataVector classLabels(classNum);
+    classLabels[0] = -1;
+    classLabels[1] = 1;
 
-      /**
-       * The grid configuration.
-       */
-      std::cout << "# create grid config" << std::endl;
-      sgpp::base::RegularGridConfiguration gridConfig;
-      gridConfig.dim_ = trainDataset.getDimension();
-      gridConfig.level_ = 3;
-      gridConfig.type_ = sgpp::base::GridType::Linear;
-      // gridConfig.type_ = sgpp::base::GridType::ModLinear;
+    /**
+     * The grid configuration.
+     */
+    std::cout << "# create grid config" << std::endl;
+    sgpp::base::RegularGridConfiguration gridConfig;
+    gridConfig.dim_ = trainDataset.getDimension();
+    gridConfig.level_ = 3;
+    gridConfig.type_ = sgpp::base::GridType::Linear;
+    // gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
-      /**
-       * Configure regularization.
-       */
-      std::cout << "# create regularization config" << std::endl;
-      sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-      regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Identity;
+    /**
+     * Configure regularization.
+     */
+    std::cout << "# create regularization config" << std::endl;
+    sgpp::datadriven::RegularizationConfiguration regularizationConfig;
+    regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Identity;
 
-      /**
-       * Select the desired decomposition type for the offline step.
-       * Note: Refinement/Coarsening only possible for Cholesky decomposition.
-       */
+    /**
+     * Select the desired decomposition type for the offline step.
+     * Note: Refinement/Coarsening only possible for Cholesky decomposition.
+     */
     sgpp::datadriven::DBMatDecompostionType dt;
-      std::string decompType;
-      // choose "LU decomposition"
+    std::string decompType;
+    // choose "LU decomposition"
     // dt = DBMatDecompostionType::DBMatDecompLU;
-      // decompType = "LU decomposition";
-      // choose"Eigen decomposition"
+    // decompType = "LU decomposition";
+    // choose"Eigen decomposition"
     // dt = DBMatDecompostionType::DBMatDecompEigen;
-      // decompType = "Eigen decomposition";
-      // choose "Cholesky decomposition"
+    // decompType = "Eigen decomposition";
+    // choose "Cholesky decomposition"
     //      dt = sgpp::datadriven::DBMatDecompostionType::Chol;
     //      decompType = "Cholesky decomposition";
     //      dt = sgpp::datadriven::DBMatDecompostionType::IChol;
     //      decompType = "Incomplete Cholesky decomposition";
     dt = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
     decompType = "Incomplete Cholesky decomposition on Dense Matrix";
-      std::cout << "Decomposition type: " << decompType << std::endl;
+    std::cout << "Decomposition type: " << decompType << std::endl;
 
-      /**
-       * Configure adaptive refinement (if Cholesky is chosen). As refinement
-       * monitor the periodic monitor or the convergence monitor
-       * can be chosen. Possible refinement indicators are
-       * surplus refinement, data-based refinement, zero-crossings-based
-       * refinement.
-       */
-      std::cout << "# create adaptive refinement configuration" << std::endl;
-      std::string refMonitor;
-      // select periodic monitor - perform refinements in fixed intervals
-      refMonitor = "periodic";
-      size_t refPeriod = 40;  // the refinement interval
-      // select convergence monitor - perform refinements if algorithm has
-      // converged
-      // (convergence measured with respect to changes of the classification
-      // accuracy)
-      // refMonitor = "convergence";
-      // the convergence threshold
-      double accDeclineThreshold = 0.001;
-      // number of accuracy measurements which
-      // are considered for convergence check
-      size_t accDeclineBufferSize = 140;
-      // minimum number of iterations before next refinement
-      // is allowed to be performed
-      size_t minRefInterval = 10;
-      std::cout << "Refinement monitor: " << refMonitor << std::endl;
-      std::string refType;
-      // select surplus refinement
-      // refType = "surplus";
-      // select data-based refinement
-      // refType = "data";
-      // select zero-crossings-based refinement
-      refType = "zero";
-      std::cout << "Refinement type: " << refType << std::endl;
-      sgpp::base::AdpativityConfiguration adaptConfig;
-      /**
-       * Specify number of refinement steps and the max number
-       * of grid points to refine each step.
-       */
-      adaptConfig.numRefinements_ = 2;
-      adaptConfig.noPoints_ = 7;
-      adaptConfig.threshold_ = 0.0;  // only required for surplus refinement
+    /**
+     * Configure adaptive refinement (if Cholesky is chosen). As refinement
+     * monitor the periodic monitor or the convergence monitor
+     * can be chosen. Possible refinement indicators are
+     * surplus refinement, data-based refinement, zero-crossings-based
+     * refinement.
+     */
+    std::cout << "# create adaptive refinement configuration" << std::endl;
+    std::string refMonitor;
+    // select periodic monitor - perform refinements in fixed intervals
+    refMonitor = "periodic";
+    size_t refPeriod = atoi(argv[3]);  // the refinement interval
+    // select convergence monitor - perform refinements if algorithm has
+    // converged
+    // (convergence measured with respect to changes of the classification
+    // accuracy)
+    // refMonitor = "convergence";
+    // the convergence threshold
+    double accDeclineThreshold = 0.001;
+    // number of accuracy measurements which
+    // are considered for convergence check
+    size_t accDeclineBufferSize = 140;
+    // minimum number of iterations before next refinement
+    // is allowed to be performed
+    size_t minRefInterval = 10;
+    std::cout << "Refinement monitor: " << refMonitor << std::endl;
+    std::string refType;
+    // select surplus refinement
+    // refType = "surplus";
+    // select data-based refinement
+    // refType = "data";
+    // select zero-crossings-based refinement
+    refType = "zero";
+    std::cout << "Refinement type: " << refType << std::endl;
+    sgpp::base::AdpativityConfiguration adaptConfig;
+    /**
+     * Specify number of refinement steps and the max number
+     * of grid points to refine each step.
+     */
+    adaptConfig.numRefinements_ = 2;
+    adaptConfig.noPoints_ = 7;
+    adaptConfig.threshold_ = 0.0;  // only required for surplus refinement
 
-      // initial regularization parameter lambda
-      double lambda = 0.01;
-      // initial weighting factor
-      double beta = 0.0;
-      // configuration
+    // initial regularization parameter lambda
+    double lambda = 0.01;
+    // initial weighting factor
+    double beta = 0.0;
+    // configuration
     sgpp::datadriven::DBMatDensityConfiguration dconf(gridConfig, adaptConfig,
                                                       regularizationConfig.regType_, lambda, dt);
-      // specify if prior should be used to predict class labels
-      bool usePrior = false;
+    // specify if prior should be used to predict class labels
+    bool usePrior = false;
 
     dconf.icholParameters.sweepsDecompose = 2;
     dconf.icholParameters.sweepsRefine = 2;
 
 
     // Create the MPI Task Scheduling using the round robin algorithm
-    sgpp::datadriven::RoundRobinScheduler scheduler(1);
+    sgpp::datadriven::RoundRobinScheduler scheduler(atoi(argv[2]));
 
-      /**
-       * Create the learner.
-       */
-      std::cout << "# create learner" << std::endl;
+    /**
+     * Create the learner.
+     */
+    std::cout << "# create learner" << std::endl;
     sgpp::datadriven::LearnerSGDEOnOffParallel learner(dconf, trainDataset, testDataset, nullptr,
                                                        classLabels, classNum, usePrior, beta, lambda, scheduler);
 
-      /**
-       * Configure cross-validation.
-       * Set enableCv=true to perform cross-validation
-       * during the learning process.
-       */
-      bool enableCv = false;
-      // set cv configuration if cv enabled
-      size_t nextCvStep = 50;
-      double cvLambdaStart = 1e-1;
-      double cvLambdaEnd = 1e-10;
-      int cvLambdaSteps = 10;
-      bool cvLogScale = true;
+    /**
+     * Configure cross-validation.
+     * Set enableCv=true to perform cross-validation
+     * during the learning process.
+     */
+    bool enableCv = false;
+    // set cv configuration if cv enabled
+    size_t nextCvStep = 50;
+    double cvLambdaStart = 1e-1;
+    double cvLambdaEnd = 1e-10;
+    int cvLambdaSteps = 10;
+    bool cvLogScale = true;
     sgpp::base::DataMatrix *cvTestData = &testDataset.getData();
     sgpp::base::DataMatrix *cvTestDataRes = nullptr;  // needed?
-      learner.setCrossValidationParameters(cvLambdaSteps, cvLambdaStart, cvLambdaEnd, cvTestData,
-                                           cvTestDataRes, cvLogScale);
+    learner.setCrossValidationParameters(cvLambdaSteps, cvLambdaStart, cvLambdaEnd, cvTestData,
+                                         cvTestDataRes, cvLogScale);
 
-      // specify batch size
-      // (set to 1 for processing only a single data point each iteration)
-      size_t batchSize = 1;
-      // specify max number of passes over traininig data set
-      size_t maxDataPasses = 2;
+    // specify batch size
+    // (set to 1 for processing only a single data point each iteration)
+    size_t batchSize = 1;
+    // specify max number of passes over traininig data set
+    size_t maxDataPasses = 2;
 
-      /**
-       * Learn the data.
-       */
-      std::cout << "# start to train the learner" << std::endl;
-      learner.train(batchSize, maxDataPasses, refType, refMonitor, refPeriod, accDeclineThreshold,
-                    accDeclineBufferSize, minRefInterval, enableCv, nextCvStep);
+    /**
+     * Learn the data.
+     */
+    std::cout << "# start to train the learner" << std::endl;
+    learner.train(batchSize, maxDataPasses, refType, refMonitor, refPeriod, accDeclineThreshold,
+                  accDeclineBufferSize, minRefInterval, enableCv, nextCvStep);
 
-      /**
-       * Accuracy on test data.
-       */
-      double acc = learner.getAccuracy();
-      std::cout << "# accuracy (test data): " << acc << std::endl;
+    /**
+     * Accuracy on test data.
+     */
+    double acc = learner.getAccuracy();
+    std::cout << "# accuracy (test data): " << acc << std::endl;
 
-      // store results (classified data, grids, density functions)
-      // learner.storeResults();
+    // store results (classified data, grids, density functions)
+    // learner.storeResults();
 
 //        sgpp::base::DataVector tmp{};
 //        avgErrorFolds += 1.0 - learner.getAccuracy();
@@ -256,20 +264,20 @@ int main() {
 //    avgErrorsFolds.mult(1.0 / static_cast<double>(totalFolds));
 
     // write error evaluation to csv-file
-      /*std::ofstream output;
-      output.open("SGDEOnOff_avg_classification_error_"+std::to_string(numSets+1)+".csv");
-      if (output.fail()) {
-        std::cout << "failed to create csv file!" << std::endl;
+    /*std::ofstream output;
+    output.open("SGDEOnOff_avg_classification_error_"+std::to_string(numSets+1)+".csv");
+    if (output.fail()) {
+      std::cout << "failed to create csv file!" << std::endl;
+    }
+    else {
+      for (size_t i = 0; i < avgErrorsFolds.getSize(); i++) {
+        output << avgErrorsFolds.get(i) << ";" << std::endl;
       }
-      else {
-        for (size_t i = 0; i < avgErrorsFolds.getSize(); i++) {
-          output << avgErrorsFolds.get(i) << ";" << std::endl;
-        }
-        output.close();
-      }*/
+      output.close();
+    }*/
 //  }
 #else
-      std::cout << "GSL not enabled at compile time" << std::endl;
+    std::cout << "GSL not enabled at compile time" << std::endl;
 #endif  // USE_GSL
     ///
 }
