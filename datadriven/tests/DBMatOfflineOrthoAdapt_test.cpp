@@ -29,8 +29,8 @@ BOOST_AUTO_TEST_SUITE(OrthoAdapt_test)
 
 BOOST_AUTO_TEST_CASE(offline_object) {
   sgpp::datadriven::DBMatDensityConfiguration config;
-  config.grid_dim_ = 3;
-  config.grid_level_ = 5;  // grid lvl = 1 --> error, grid lvl = 10 --> bad alloc
+  config.grid_dim_ = 2;
+  config.grid_level_ = 3;  // grid lvl = 1 --> error, grid lvl = 10 --> bad alloc
   config.grid_type_ = sgpp::base::GridType::Linear;
   config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
   config.lambda_ = 0.0001;
@@ -67,6 +67,8 @@ BOOST_AUTO_TEST_CASE(offline_object) {
   // creating explicit T for testing
   sgpp::base::DataMatrix T(n, n, 0.0);
   for (size_t i = 0; i < n; i++) {
+    // adding lambda to diagonal
+    gsl_vector_set(gsl_diag, i, gsl_vector_get(gsl_diag, i) + config.lambda_);
     T.set(i, i, gsl_vector_get(gsl_diag, i));
   }
   for (size_t i = 0; i < n - 1; i++) {
