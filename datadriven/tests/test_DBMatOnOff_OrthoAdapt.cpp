@@ -4,9 +4,6 @@
  * sgpp.sparsegrids.org
  *
  * DBMatOfflineOrthoAdapt_test.cpp
- *
- *  Created on: 01.08.2017
- *  Author: Dmitrij Boschko
  */
 
 #define BOOST_TEST_DYN_LINK

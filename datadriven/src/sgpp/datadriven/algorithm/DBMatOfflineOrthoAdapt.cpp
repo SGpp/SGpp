@@ -5,9 +5,6 @@
  * sgpp.sparsegrids.org
  *
  * DBMatOfflineOrthoAdapt.cpp
- *
- *  Created on: 01.08.2017
- *  Author: Dmitrij Boschko
  */
 
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
