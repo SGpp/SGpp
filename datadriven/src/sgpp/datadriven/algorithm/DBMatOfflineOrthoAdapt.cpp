@@ -89,6 +89,11 @@ void DBMatOfflineOrthoAdapt::decomposeMatrix() {
   // decomposing: lhs = Q * T * Q^t
   this->hessenberg_decomposition(gsl_diag, gsl_subdiag);
 
+  // adding configuration parameter lambda to diag before inverting T
+  for (size_t i = 0; i < this->dim_a; i++) {
+    gsl_diag->data[i] += this->lambda;
+  }
+
   // inverting T+lambda*I, by solving L*R*x_i = e_i, for every i-th column x_i of T_inv
   this->invert_symmetric_tridiag(gsl_diag, gsl_subdiag);
 
