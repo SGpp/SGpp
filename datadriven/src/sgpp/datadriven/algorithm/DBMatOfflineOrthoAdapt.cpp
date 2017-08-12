@@ -37,9 +37,9 @@ DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const std::string& fileName)
   this->dim_a = this->getGrid().getStorage().getSize();
   this->lambda = this->config.lambda_;
 
-  this->lhsMatrix.resizeQuadratic(dim_a);
-  this->q_ortho_matrix_.resizeQuadratic(dim_a);
-  this->t_tridiag_inv_matrix_.resizeQuadratic(dim_a);
+  this->lhsMatrix = sgpp::base::DataMatrix(dim_a, dim_a);
+  this->q_ortho_matrix_ = sgpp::base::DataMatrix(dim_a, dim_a);
+  this->t_tridiag_inv_matrix_ = sgpp::base::DataMatrix(dim_a, dim_a);
 
   gsl_matrix_view lhs_view =
       gsl_matrix_view_array(this->lhsMatrix.getPointer(), this->dim_a, this->dim_a);
