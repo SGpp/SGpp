@@ -196,9 +196,13 @@ int main(int argc, char *argv[]) {
     dconf.icholParameters.sweepsDecompose = 2;
     dconf.icholParameters.sweepsRefine = 2;
 
+    // specify batch size
+    // (set to 1 for processing only a single data point each iteration)
+    size_t batchSize = atoi(argv[3]);
+
 
     // Create the MPI Task Scheduling using the round robin algorithm
-    sgpp::datadriven::RoundRobinScheduler scheduler(atoi(argv[3]));
+    sgpp::datadriven::RoundRobinScheduler scheduler(batchSize);
 
     /**
      * Create the learner.
@@ -224,9 +228,6 @@ int main(int argc, char *argv[]) {
     learner.setCrossValidationParameters(cvLambdaSteps, cvLambdaStart, cvLambdaEnd, cvTestData,
                                          cvTestDataRes, cvLogScale);
 
-    // specify batch size
-    // (set to 1 for processing only a single data point each iteration)
-    size_t batchSize = 1;
     // specify max number of passes over traininig data set
     size_t maxDataPasses = 2;
 
