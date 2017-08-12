@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
 
     std::cout << "LearnerSGDEOnOffParallelTest" << std::endl;
 
-    if (argc != 4) {
+    if (argc != 5) {
         std::cout << "Usage:" << std::endl
                   << "learnerSGDEOnOffParallelTest <trainDataFile> <testDataFile> <batchSize> <refPeriod>" << std::endl;
         return -1;
@@ -83,8 +83,8 @@ int main(int argc, char *argv[]) {
     /**
      * Get the training, test and validation data
      */
-    sgpp::datadriven::Dataset trainDataset = loadDataset(argv[0]);
-    sgpp::datadriven::Dataset testDataset = loadDataset(argv[1]);
+    sgpp::datadriven::Dataset trainDataset = loadDataset(argv[1]);
+    sgpp::datadriven::Dataset testDataset = loadDataset(argv[2]);
 
     // if fixed validation data should be used (required for convergence
     // monitor):
@@ -151,7 +151,7 @@ int main(int argc, char *argv[]) {
     std::string refMonitor;
     // select periodic monitor - perform refinements in fixed intervals
     refMonitor = "periodic";
-    size_t refPeriod = atoi(argv[3]);  // the refinement interval
+    size_t refPeriod = atoi(argv[4]);  // the refinement interval
     // select convergence monitor - perform refinements if algorithm has
     // converged
     // (convergence measured with respect to changes of the classification
@@ -198,7 +198,7 @@ int main(int argc, char *argv[]) {
 
 
     // Create the MPI Task Scheduling using the round robin algorithm
-    sgpp::datadriven::RoundRobinScheduler scheduler(atoi(argv[2]));
+    sgpp::datadriven::RoundRobinScheduler scheduler(atoi(argv[3]));
 
     /**
      * Create the learner.
