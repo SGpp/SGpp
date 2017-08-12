@@ -229,7 +229,7 @@ namespace sgpp {
         //TODO: This was imported from Merge
         size_t MPIMethods::receiveMergeGridNetworkMessage(MergeGridNetworkMessage &networkMessage) {
 
-            base::DataVector alphaVector(networkMessage.payloadLength);
+            base::DataVector alphaVector(networkMessage.alphaTotalSize);
 
             auto *payload = (double *) networkMessage.payload;
             for (size_t index = 0; index < networkMessage.payloadLength; index++) {
@@ -312,6 +312,7 @@ namespace sgpp {
                 networkMessage->gridversion = learnerInstance->getCurrentGridVersion(classIndex);
                 networkMessage->payloadOffset = offset;
                 networkMessage->batchSize = batchSize;
+                networkMessage->alphaTotalSize = alphaVector.size();
 
                 size_t numPointsInPacket = 0;
 
