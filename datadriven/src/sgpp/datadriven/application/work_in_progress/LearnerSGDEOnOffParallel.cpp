@@ -67,7 +67,7 @@ namespace sgpp {
                                              bool enableCv, size_t nextCvStep) {
 
             if (!MPIMethods::isMaster()) {
-                while (workerActive || MPIMethods::getQueueSize() > 2) {
+                while (workerActive || MPIMethods::getQueueSize() > 1) {
                     std::cout << "Client looping" << std::endl;
                     MPIMethods::waitForAnyMPIRequestsToComplete();
                 }
