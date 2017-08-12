@@ -5,9 +5,6 @@
  * sgpp.sparsegrids.org
  *
  * DBMatOfflineOrthoAdapt.hpp
- *
- *  Created on: 01.08.2017
- *  Author: Dmitrij Boschko
  */
 
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
@@ -83,7 +80,7 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    * Serialize the DBMatOfflineOrthoAdapt object
    * The lhsMatrix is stored in the form of compact tridiagonal decomposition,
    * which means the diagonal and subdiagonal of lhsMatrix are stored, and the
-   * lower left part of the matrix takes the householder vectors.
+   * lower left part of the matrix holds the householder vectors.
    *
    * q_ortho_matrix and t_inv_tridiag
    * are also stored into the specified file, which is the explicit representation
