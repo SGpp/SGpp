@@ -55,7 +55,7 @@ namespace sgpp {
                 unicastInputRequest.disposeAfterCallback = false;
                 unicastInputRequest.callback = [](PendingMPIRequest &request) {
                     std::cout << "Incoming MPI unicast" << std::endl;
-                    processIncomingMPICommands(request.buffer);
+                    processIncomingMPICommands(request);
 
                     std::cout << "Zeroing MPI Request" << std::endl;
                     std::memset(request.getMPIRequestHandle(), 0, sizeof(MPI_Request));
@@ -81,7 +81,7 @@ namespace sgpp {
                 broadcastInputRequest.disposeAfterCallback = false;
                 broadcastInputRequest.callback = [](PendingMPIRequest &request) {
                     std::cout << "Incoming MPI broadcast" << std::endl;
-                    processIncomingMPICommands(request.buffer);
+                    processIncomingMPICommands(request);
 
                     std::cout << "Zeroing MPI Request" << std::endl;
                     std::memset(request.getMPIRequestHandle(), 0, sizeof(MPI_Request));
@@ -425,14 +425,14 @@ namespace sgpp {
 
 
             if (pendingMPIRequestIterator->disposeAfterCallback) {
-                        //TODO Deleting a void pointer here
-                        std::cout << "Attempting to delete pending mpi request" << std::endl;
-                        delete[] pendingMPIRequestIterator->buffer;
+                //TODO Deleting a void pointer here
+                std::cout << "Attempting to delete pending mpi request" << std::endl;
+                delete[] pendingMPIRequestIterator->buffer;
 
-                        pendingMPIRequests.erase(pendingMPIRequestIterator);
-                        std::cout << "Deleted pending mpi request" << std::endl;
+                pendingMPIRequests.erase(pendingMPIRequestIterator);
+                std::cout << "Deleted pending mpi request" << std::endl;
 
-                    } else {
+            } else {
 //                        std::cout << "Zeroing MPI Request" << std::endl;
 //                        std::memset(pendingMPIRequestIterator->request, 0, sizeof(MPI_Request));
 //
@@ -440,7 +440,7 @@ namespace sgpp {
 //                        std::cout << "Zeroing Buffer" << std::endl;
 //                        std::memset(pendingMPIRequestIterator->buffer, 0, sizeof(MPI_Packet));
 
-                    }
+            }
         }
 
         void MPIMethods::waitForAllMPIRequestsToComplete() {
@@ -531,7 +531,8 @@ namespace sgpp {
             learnerInstance->setLocalGridVersion(classIndex, networkMessage->gridversion);
         }
 
-        void MPIMethods::processIncomingMPICommands(MPI_Packet *mpiPacket) {
+        void MPIMethods::processIncomingMPICommands(PendingMPIRequest &pendingMPIRequest) {
+            MPI_Packet *mpiPacket = pendingMPIRequest.buffer;
             std::cout << "Processing incoming command " << mpiPacket->commandID << std::endl;
             void *networkMessagePointer = &(mpiPacket->payload);
 
@@ -558,6 +559,8 @@ namespace sgpp {
                 case SHUTDOWN:
                     std::cout << "Worker shutdown requested" << std::endl;
                     learnerInstance->shutdown();
+                    std::cout << "Marking pending mpi request for dispose" << std::endl;
+                    pendingMPIRequest.disposeAfterCallback = true;
                     break;
                 case WORKER_SHUTDOWN_SUCCESS:
                     std::cout << "Worker has acknowledge shutdown" << std::endl;
@@ -580,7 +583,9 @@ namespace sgpp {
         void MPIMethods::finalizeMPI() {
             for (PendingMPIRequest &pendingMPIRequest : pendingMPIRequests) {
                 std::cout << "Cancelling pending mpi request " << &pendingMPIRequest << std::endl;
-                MPI_Cancel(pendingMPIRequest.getMPIRequestHandle());
+                MPI_Request *mpiRequestHandle = pendingMPIRequest.getMPIRequestHandle();
+                MPI_Cancel(mpiRequestHandle);
+                MPI_Wait(mpiRequestHandle, MPI_STATUS_IGNORE);
             }
             std::cout << "Finalizing MPI" << std::endl;
             MPI_Finalize();
