@@ -241,7 +241,8 @@ namespace sgpp {
 
             std::cout << "Updated alpha values from network message offset " << networkMessage.payloadOffset
                       << ", class " << networkMessage.classIndex
-                      << ", length " << networkMessage.payloadLength << std::endl;
+                      << ", length " << networkMessage.payloadLength << ", alpha vector length "
+                      << networkMessage.alphaTotalSize << std::endl;
         }
 
         //TODO: This was imported from Merge
