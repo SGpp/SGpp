@@ -22,7 +22,7 @@ namespace sgpp {
 
             static void processCompletedMPIRequests();
 
-            static void processIncomingMPICommands(sgpp::datadriven::MPI_Packet *mpiPacket);
+            static void processIncomingMPICommands(PendingMPIRequest &pendingMPIRequest);
 
 
             static void
