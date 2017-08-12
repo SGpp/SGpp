@@ -57,9 +57,10 @@ namespace sgpp {
             unsigned long payloadOffset;
             unsigned long payloadLength;
             unsigned long batchSize;
+            unsigned long alphaTotalSize;
 
             unsigned char payload[(MPI_PACKET_MAX_PAYLOAD_SIZE
-                                   - 5 * sizeof(unsigned long))];
+                                   - 6 * sizeof(unsigned long))];
         };
 
         struct AssignBatchNetworkMessage {
