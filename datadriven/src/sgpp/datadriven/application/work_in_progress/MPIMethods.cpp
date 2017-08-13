@@ -152,7 +152,7 @@ namespace sgpp {
 
                     std::cout << "Sending updated for class " << networkMessage->classIndex
                               << " with " << networkMessage->listLength
-                              << " deletions" << std::endl;
+                              << " deletions" << " (grid version " << networkMessage->gridversion << ")" << std::endl;
 
                     sendIBcast(mpiPacket);
                 }
@@ -169,16 +169,19 @@ namespace sgpp {
 
                     networkMessage->classIndex = classIndex;
                     networkMessage->updateType = ADDED_GRID_POINTS_LIST;
-                    networkMessage->gridversion = learnerInstance->getCurrentGridVersion(classIndex);
 
                     size_t numPointsInBuffer = fillBufferWithLevelIndexData(networkMessage->payload,
                                                                             std::end(networkMessage->payload), iterator,
                                                                             listEnd);
                     networkMessage->listLength = numPointsInBuffer;
 
+                    networkMessage->gridversion = (iterator == listEnd) ? learnerInstance->getCurrentGridVersion(
+                            classIndex) : 0;
+
+
                     std::cout << "Sending updated for class " << networkMessage->classIndex
                               << " with " << networkMessage->listLength
-                              << " additions" << std::endl;
+                              << " additions" << " (grid version " << networkMessage->gridversion << ")" << std::endl;
 
                     sendIBcast(mpiPacket);
                 }
@@ -378,20 +381,11 @@ namespace sgpp {
                    iterator != listEnd) {
                 *bufferPointer = *iterator;
 
-                std::cout << "Fill buffer data status pointer " << bufferPointer << ", end " << bufferEnd
-                          << ", iterator position "
-                          << &*iterator << ", list end position " << &*listEnd << ", copied values " << copiedValues
-                          << std::endl;
-
 
                 bufferPointer++;
                 iterator++;
                 copiedValues++;
             }
-            std::cout << "Fill buffer data status pointer " << bufferPointer << ", end " << bufferEnd
-                      << ", iterator position "
-                      << &*iterator << ", list end position " << &*listEnd << ", copied values " << copiedValues
-                      << std::endl;
             return copiedValues;
         }
 
