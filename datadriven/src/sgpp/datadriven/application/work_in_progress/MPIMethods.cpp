@@ -138,7 +138,6 @@ namespace sgpp {
 
                     networkMessage->classIndex = classIndex;
                     networkMessage->updateType = DELETED_GRID_POINTS_LIST;
-                    networkMessage->gridversion = learnerInstance->getCurrentGridVersion(classIndex);
 
                     size_t numPointsInBuffer = fillBufferWithData<std::list<size_t>::const_iterator>(
                             (void *) networkMessage->payload,
@@ -146,6 +145,10 @@ namespace sgpp {
                             iterator,
                             listEnd);
                     networkMessage->listLength = numPointsInBuffer;
+
+                    networkMessage->gridversion = (iterator == listEnd) ? learnerInstance->getCurrentGridVersion(
+                            classIndex) : 0;
+
 
                     std::cout << "Sending updated for class " << networkMessage->classIndex
                               << " with " << networkMessage->listLength
@@ -538,8 +541,12 @@ namespace sgpp {
                       << " additions, "
                       << refinementResult.deletedGridPointsIndexes.size() <<
                       " deletions)" << std::endl;
-            learnerInstance->updateClassVariablesAfterRefinement(&refinementResult,
-                                                                 learnerInstance->getDensityFunctions()[classIndex].first.get());
+
+            //If this is not the last message in a series (gridversion != 0), then don't update variables yet
+            if (networkMessage->gridversion != 0) {
+                learnerInstance->updateClassVariablesAfterRefinement(&refinementResult,
+                                                                     learnerInstance->getDensityFunctions()[classIndex].first.get());
+            }
             learnerInstance->setLocalGridVersion(classIndex, networkMessage->gridversion);
         }
 
