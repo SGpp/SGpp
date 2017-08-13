@@ -13,13 +13,19 @@ void DBMatDMSOrthoAdapt::solve(sgpp::base::DataMatrix& T_inv, sgpp::base::DataMa
                                sgpp::base::DataMatrix& B, sgpp::base::DataVector& b,
                                sgpp::base::DataVector& alpha) {
   // assert dimensions
-  bool dimension_check = Q.getNrows() == b.getSize() && B.getNcols() == alpha.getSize();
-  if (!dimension_check) {
+  if (B.getNcols() != b.getSize()) {
     throw sgpp::base::data_exception("Dimensions of b or alpha do not match the system");
   }
 
+  /**
+   * Note: T_inv and Q have only zeroes on indices reaching out the quadratic
+   * size of offline.dimA(), which is the size of the original non refined grid
+   */
+
   // stores interim values
-  sgpp::base::DataVector buffer(alpha.getSize(), 0.0);
+  sgpp::base::DataVector QTQb(Q.getNrows(), 0.0);
+  sgpp::base::DataVector interim(Q.getNcols(), 0.0);
+
 
   // start with Q^t * x, doing this manually until sgpp supports transpose operations
   for (size_t i = 0; i < Q.getNcols(); i++) {
@@ -27,20 +33,21 @@ void DBMatDMSOrthoAdapt::solve(sgpp::base::DataMatrix& T_inv, sgpp::base::DataMa
     for (size_t j = 0; j < Q.getNrows(); j++) {
       acc += Q.get(j, i) * b.get(j);  // note: i and j are switched in Q
     }
-    alpha.set(i, acc);
+    QTQb.set(i, acc);
   }
 
   // T_inv * Q^t * x
-  T_inv.mult(alpha, buffer);
+  T_inv.mult(QTQb, interim);
 
   // Q * T_inv * Q^t * x
-  Q.mult(buffer, alpha);
+  Q.mult(interim, QTQb);
 
   // B * b
-  B.mult(b, buffer);
+  B.mult(b, alpha);
 
   // Q*T_inv*Q^t*b + B*b
-  alpha.add(buffer);
+  QTQb.resize(alpha.getSize(), 0.0);
+  alpha.add(QTQb);
 }
 }  // namespace datadriven
 }  // namespace sgpp
