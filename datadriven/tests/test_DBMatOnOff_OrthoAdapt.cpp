@@ -7,27 +7,30 @@
  */
 
 #define BOOST_TEST_DYN_LINK
+// #ifdef USE_GSL
+#include <gsl/gsl_blas.h>
 
 #include <boost/test/unit_test.hpp>
 
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <string>
+#include <vector>
 
-#ifdef USE_GSL
-#include <gsl/gsl_blas.h>
-
-BOOST_AUTO_TEST_SUITE(OrthoAdapt_test)
+BOOST_AUTO_TEST_SUITE(OrthoAdapt_tests)
 
 BOOST_AUTO_TEST_CASE(offline_object) {
   sgpp::datadriven::DBMatDensityConfiguration config;
   config.grid_dim_ = 2;
-  config.grid_level_ = 3;  // grid lvl = 1 --> error, grid lvl = 10 --> bad alloc
+  config.grid_level_ = 3;
   config.grid_type_ = sgpp::base::GridType::Linear;
   config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
   config.lambda_ = 0.0001;
@@ -101,7 +104,52 @@ BOOST_AUTO_TEST_CASE(offline_object) {
   }
   delete[] tt;
 }
-#else
-throw sgpp::base::algorithm_exception("USE_GSL is not set to true");
-#endif /* USE_GSL */
+
+BOOST_AUTO_TEST_CASE(online_object) {
+  sgpp::datadriven::DBMatDensityConfiguration config;
+  config.grid_dim_ = 2;
+  config.grid_level_ = 3;
+  config.grid_type_ = sgpp::base::GridType::Linear;
+  config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
+  config.lambda_ = 0.0001;
+  config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::OrthoAdapt;
+
+  sgpp::datadriven::DBMatOfflineOrthoAdapt offline_base(config);
+  offline_base.buildMatrix();
+  offline_base.decomposeMatrix();
+
+  // create offline object like it should be after refined/coarsened Pts
+  config.grid_level_++;
+  sgpp::datadriven::DBMatOfflineOrthoAdapt offline_refined(config);
+  offline_refined.buildMatrix();
+
+  // create online object based on offline_base
+  auto online = std::unique_ptr<sgpp::datadriven::DBMatOnlineDE>{
+      sgpp::datadriven::DBMatOnlineDEFactory::buildDBMatOnlineDE(offline_base)};
+
+  // gather points to refine from bigger lhs_matrix
+  size_t oldSize = offline_base.getGrid().getStorage().getSize();
+  size_t newSize = offline_refined.getGrid().getStorage().getSize();
+  size_t numberOfPoints = newSize - oldSize;
+  sgpp::base::DataMatrix refinePts(newSize, numberOfPoints);
+
+  // write points to refine into refinePts matrix
+  for (size_t i = oldSize; i < newSize; i++) {
+    sgpp::base::DataVector refPt(newSize);
+    offline_refined.getDecomposedMatrix(true).getColumn(i, refPt);
+    refinePts.setColumn(i, refPt);
+    // also adding lambdas to "diagonals"
+    refinePts.set(i - 1, i - oldSize - 1, refinePts.get(i - 1, i - oldSize - 1) + config.lambda_);
+  }
+/*
+  // online object performs refinement now
+  sgpp::datadriven::DBMatOnlineDEOrthoAdapt* thisChildPtr =
+      static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt*>(&*online);
+  std::vector<size_t> coarsePts = {};
+  thisChildPtr->adapt(refinePts, coarsePts); */
+}
+
+// #else
+// throw sgpp::base::algorithm_exception("USE_GSL is not set to true");
+// #endif /* USE_GSL */
 BOOST_AUTO_TEST_SUITE_END()

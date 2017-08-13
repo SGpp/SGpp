@@ -14,18 +14,20 @@
 #include <iomanip>
 #include <string>
 
-#ifdef USE_GSL
+// #ifdef USE_GSL
 
 namespace sgpp {
 namespace datadriven {
 
 DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const DBMatDensityConfiguration& config)
     : DBMatOffline(config) {
-  this->dim_a = 1;
   this->lambda = config.lambda_;
 
-  this->q_ortho_matrix_ = sgpp::base::DataMatrix(dim_a, dim_a);
-  this->t_tridiag_inv_matrix_ = sgpp::base::DataMatrix(dim_a, dim_a);
+  this->q_ortho_matrix_ = sgpp::base::DataMatrix(1, 1);
+  this->t_tridiag_inv_matrix_ = sgpp::base::DataMatrix(1, 1);
+
+  // dim_a = 0, indirectly tells the online object if build() or decompose() were performed
+  this->dim_a = 0;
 }
 
 DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const std::string& fileName)
@@ -186,6 +188,6 @@ void DBMatOfflineOrthoAdapt::store(const std::string& fileName) {
 }
 }  // namespace datadriven
 }  // namespace sgpp
-#else
-throw sgpp::base::algorithm_exception("USE_GSL is not set to true");
-#endif /* USE_GSL */
+// #else
+// throw sgpp::base::algorithm_exception("USE_GSL is not set to true");
+// #endif /* USE_GSL */

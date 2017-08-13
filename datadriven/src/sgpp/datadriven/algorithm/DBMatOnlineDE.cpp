@@ -9,8 +9,10 @@
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinear.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 
 #ifdef USE_GSL
@@ -124,6 +126,17 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
     } else {
       // 1 / M * Bt * 1
       b.mult(1. / static_cast<double>(numberOfPoints));
+    }
+
+    // refine/coarsen Points in case of OrthoAdapt
+    if (offlineObject.getConfig().decomp_type_ == DBMatDecompostionType::OrthoAdapt) {
+#ifdef USE_GSL
+      sgpp::datadriven::DBMatOnlineDEOrthoAdapt* thisChildPtr =
+          static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt*>(this);
+      // thisChildPtr->adapt(m, deletedPoints);
+#else
+      throw algorithm_exception("built withot GSL");
+#endif /*USE_GSL*/
     }
 
     solveSLE(b, do_cv);
