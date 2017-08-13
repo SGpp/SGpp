@@ -301,6 +301,9 @@ namespace sgpp {
         size_t
         MPIMethods::sendMergeGridNetworkMessage(size_t classIndex, size_t batchSize, base::DataVector &alphaVector) {
             size_t offset = 0;
+            auto beginIterator = alphaVector.begin();
+            auto endIterator = alphaVector.end();
+
             while (offset < alphaVector.size()) {
                 auto *mpiPacket = new MPI_Packet;
                 mpiPacket->commandID = MERGE_GRID;
@@ -316,9 +319,6 @@ namespace sgpp {
                 networkMessage->alphaTotalSize = alphaVector.size();
 
                 size_t numPointsInPacket = 0;
-
-                auto beginIterator = alphaVector.begin();
-                auto endIterator = alphaVector.end();
 
                 numPointsInPacket = fillBufferWithData(networkMessage->payload, std::end(networkMessage->payload),
                                                        beginIterator, endIterator);
@@ -375,10 +375,20 @@ namespace sgpp {
                    iterator != listEnd) {
                 *bufferPointer = *iterator;
 
+                std::cout << "Fill buffer data status pointer " << bufferPointer << ", end " << bufferEnd
+                          << ", iterator position "
+                          << &*iterator << ", list end position " << &*listEnd << ", copied values " << copiedValues
+                          << std::endl;
+
+
                 bufferPointer++;
                 iterator++;
                 copiedValues++;
             }
+            std::cout << "Fill buffer data status pointer " << bufferPointer << ", end " << bufferEnd
+                      << ", iterator position "
+                      << &*iterator << ", list end position " << &*listEnd << ", copied values " << copiedValues
+                      << std::endl;
             return copiedValues;
         }
 
