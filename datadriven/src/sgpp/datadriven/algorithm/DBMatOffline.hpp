@@ -93,9 +93,11 @@ class DBMatOffline {
 
   /**
    * Get a reference to the decomposed matrix. Throws if matrix has not yet been decomposed.
+   *
+   * @param FOR_TESTING_ONLY forces return of undecomposed matrix
    * @return decomposed matrix
    */
-  DataMatrix& getDecomposedMatrix();
+  DataMatrix& getDecomposedMatrix(bool FOR_TESTING_ONLY = false);
 
   /**
    * Returns a reference to the sparse grid

@@ -86,8 +86,8 @@ DBMatOffline::DBMatOffline(const std::string& fileName)
 
 DBMatDensityConfiguration& DBMatOffline::getConfig() { return config; }
 
-DataMatrix& DBMatOffline::getDecomposedMatrix() {
-  if (isDecomposed) {
+DataMatrix& DBMatOffline::getDecomposedMatrix(bool FOR_TESTING_ONLY) {
+  if (isDecomposed || FOR_TESTING_ONLY) {
     return lhsMatrix;
   } else {
     throw data_exception("Matrix was not decomposed yet");

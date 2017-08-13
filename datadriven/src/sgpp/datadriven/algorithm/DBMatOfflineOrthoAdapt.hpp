@@ -11,7 +11,7 @@
 
 #include <string>
 
-#ifdef USE_GSL
+// #ifdef USE_GSL
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_matrix.h>
@@ -90,7 +90,7 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    */
   void store(const std::string& fileName);
 
-  // getter and setter, for testing only
+  // getter and setter
   size_t& getDimA() { return this->dim_a; };
 
   double getLambda() { return this->lambda; };
@@ -107,6 +107,6 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
 };
 }  // namespace datadriven
 }  // namespace sgpp
-#else
-throw sgpp::base::algorithm_exception("USE_GSL is not set to true");
-#endif /* USE_GSL */
+// #else
+// throw sgpp::base::algorithm_exception("USE_GSL is not set to true");
+// #endif /* USE_GSL */
