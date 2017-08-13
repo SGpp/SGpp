@@ -16,7 +16,7 @@ namespace sgpp {
                 size_t index = *iterator;
                 freedRequests.erase(iterator);
                 std::memset(mpiRequestStorage[index], 0, sizeof(MPI_Request));
-                std::cout << "Reused freed request " << index << std::endl;
+//                std::cout << "Reused freed request " << index << std::endl;
                 return index;
             }
 
@@ -28,8 +28,8 @@ namespace sgpp {
         void MPIRequestPool::deleteMPIRequestHandle(size_t handleIndex) {
 //            mpiRequestStorage[handleIndex] = MPI_REQUEST_NULL;
 
-            std::cout << "Received delete request for handle " << handleIndex << std::endl;
-            printPoolStatistics();
+//            std::cout << "Received delete request for handle " << handleIndex << std::endl;
+//            printPoolStatistics();
             freedRequests.insert(handleIndex);
 
             if (handleIndex == mpiRequestStorage.size() - 1) {
@@ -45,7 +45,7 @@ namespace sgpp {
                     iterator = mpiRequestStorage.end();
                     iterator--;
                     index--;
-                    std::cout << "Removing unused pool handle" << std::endl;
+//                    std::cout << "Removing unused pool handle" << std::endl;
                 }
                 printPoolStatistics();
             }
