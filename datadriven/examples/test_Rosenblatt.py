@@ -2,6 +2,7 @@ import pysgpp
 import numpy as np
 import matplotlib.pyplot as plt
 import math
+from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
 
 pi = math.pi
 
@@ -41,7 +42,13 @@ def distrib(x):
         x = x[0]
     return (np.sin(2.5*pi*x - (pi - pi/4.)) + 1./2**0.5) / 0.527044
 
-def eval_rosenblatt(sg_pdf, xs):
+def parabola(x):
+  res = 1.
+  for i in range(len(x)):
+    res *= x[i] * (1. - x[i]) * 4.;
+  return res
+
+def eval_rosenblatt1d(sg_pdf, xs):
     op = pysgpp.createOperationRosenblattTransformation1D(sg_pdf.grid)
     ys = []
     for i,x in enumerate(xs):
@@ -50,7 +57,19 @@ def eval_rosenblatt(sg_pdf, xs):
     return ys
   # ---------------------------------------------
 
-def eval_inverse_rosenblatt(sg_pdf, xs):
+def eval_rosenblattdd(sg_pdf, xs):
+    op = pysgpp.createOperationRosenblattTransformation(sg_pdf.grid)
+    X, Y = np.meshgrid(xs, xs)
+    input_points = pysgpp.DataMatrix(len(xs), sg_pdf.d)
+    output_points = pysgpp.DataMatrix(len(xs), sg_pdf.d)
+    for i in range(len(xs)):
+      for j in range(sg_pdf.d):
+        input_points.set(i, j , 0.5)
+    op.doTransformation(sg_pdf.alpha, input_points, output_points)
+  # ---------------------------------------------
+
+
+def eval_inverse_rosenblatt1d(sg_pdf, xs):
   op = pysgpp.createOperationInverseRosenblattTransformation1D(sg_pdf.grid)
   ys = []
   for i,x in enumerate(xs):
@@ -62,23 +81,20 @@ def test(grid_points):
   ys = [0, 0.151638, 0.615553, 2.39577, 3.23902, 2.39577, 0.615553, 0.230832, 0]
   plt.plot(grid_points, ys)
 
-xs = np.arange(0, 1.01, 0.01)
-l_max = 6
-interpolation = interpolation_function(1, distrib)
+xs = np.arange(0, 1.01, 0.05)
+l_max = 3
+d = 2
+interpolation = interpolation_function(d, parabola)
 interpolation.create_interpolation(l_max)
 
 # grid_points = np.arange(0, 1.01, 2**-l_max)
 # ys = [interpolation(x) for x in xs]
-# ys = eval_rosenblatt(interpolation, xs)
-ys = eval_inverse_rosenblatt(interpolation, xs)
-grid_points = np.arange(0, 1.01, 2**-l_max)
-for i in range(len(ys) - 1):
-  if (ys[i] >= ys[i+1]):
-    print("error: ", i)
-    print ys
-# test(grid_points)
-# print(xs)
-# print(ys)
-plt.plot(xs, ys)
+
+# plotSG2d(interpolation.grid, interpolation.alpha)
+# ys = eval_rosenblatt1d(interpolation, xs)
+# ys = eval_inverse_rosenblatt1d(interpolation, xs)
+eval_rosenblattdd(interpolation, xs)
+# plt.plot(xs, ys)
 # plt.scatter(grid_points, np.zeros_like(grid_points))
-plt.show()
+# plt.pcolormesh(X, Y, Z)
+# plt.show()

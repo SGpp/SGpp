@@ -194,7 +194,7 @@ datadriven::OperationRosenblattTransformation* createOperationRosenblattTransfor
     base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear)
     return new datadriven::OperationRosenblattTransformationLinear(&grid);
-  else if (grid.getType() == base::GridType::Linear)
+  else if (grid.getType() == base::GridType::Poly)
     return new datadriven::OperationRosenblattTransformationPoly(&grid);
   else
     throw base::factory_exception(
