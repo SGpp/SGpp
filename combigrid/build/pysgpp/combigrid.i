@@ -218,6 +218,7 @@ namespace std {
     // %template(CombiEvaluatorsCollection) std::vector<std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatScalarVector>>>;
     // %template(CombiEvaluatorsMultiCollection) std::vector<std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatArrayVector>>>;
     // %template(MultidimFunction) std::function<double(sgpp::base::DataVector const &)>;
+    %template(VectorDataVector) std::vector<sgpp::base::DataVector>; 
 }
 
 %include "combigrid/src/sgpp/combigrid/common/AbstractPermutationIterator.hpp"
