@@ -252,7 +252,7 @@ double OperationInverseRosenblattTransformation1DPoly::sample(base::DataVector* 
 }
 
 double OperationInverseRosenblattTransformation1DPoly::doTransformation1D(base::DataVector* alpha1d,
-                                                                          double coord1d) {
+                                                                         double coord1d) {
   init(alpha1d);
   // std::cout << "PFs size after exit: " << patch_functions.size() << std::endl;
   std::function<double(const base::DataVector&)> optFunc =

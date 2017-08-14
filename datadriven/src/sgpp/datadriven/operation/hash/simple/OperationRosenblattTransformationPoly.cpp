@@ -41,9 +41,12 @@ void OperationRosenblattTransformationPoly::doTransformation(base::DataVector* a
   std::vector<base::DataVector*> alphas1d(num_dims);
   std::unique_ptr<OperationDensityMargTo1D> marg1d(
       op_factory::createOperationDensityMargTo1D(*this->grid));
+  std::cout << "abc1" << std::endl;
   for (size_t idim = 0; idim < num_dims; idim++) {
+    std::cout << "idim:" << idim << std::endl;
     marg1d->margToDimX(alpha, grids1d[idim], alphas1d[idim], idim);
   }
+  std::cout << "abc2" << std::endl;
 
   // 2. compute the start dimension for each sample
   size_t num_samples = pointscdf->getNrows();
@@ -191,11 +194,12 @@ void OperationRosenblattTransformationPoly::doTransformation_in_next_dim(
 double OperationRosenblattTransformationPoly::doTransformation1D(base::Grid* grid1d,
                                                                 base::DataVector* alpha1d,
                                                                 double coord1d) {
-  std::unique_ptr<OperationTransformation1D> opRosenblatt
-    = static_cast<std::unique_ptr<OperationTransformation1D>>
+  OperationRosenblattTransformation1DPoly* opRosenblatt
+    = static_cast<OperationRosenblattTransformation1DPoly*>
     (op_factory::createOperationRosenblattTransformation1D(*grid1d));
-
-  return opRosenblatt->doTransformation1D(alpha1d, coord1d);
+  double y = opRosenblatt->doTransformation1D(alpha1d, coord1d);
+  delete opRosenblatt;
+  return y;
 }  // end of compute_1D_cdf()
 }  // namespace datadriven
 }  // namespace sgpp

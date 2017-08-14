@@ -189,7 +189,7 @@ double OperationInverseRosenblattTransformationPoly::doTransformation1D(base::Gr
                                                                        double coord1d) {
   std::unique_ptr<OperationTransformation1D> opInverseRosenblatt
     = static_cast<std::unique_ptr<OperationTransformation1D>>
-    (op_factory::createOperationRosenblattTransformation1D(*grid1d));
+    (op_factory::createOperationInverseRosenblattTransformation1D(*grid1d));
 
   return opInverseRosenblatt->doTransformation1D(alpha1d, coord1d);
 }  // end of compute_1D_cdf()
