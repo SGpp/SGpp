@@ -29,6 +29,14 @@ void LinearInterpolationEvaluator::computeBasisCoefficients() {
     return;
   }
 
+
+  // "fix for zero evaluations"
+  if(evaluationPoint== 0 && xValues[0]==0){
+    basisCoefficients[0] = FloatScalarVector(1);
+
+    return;
+  }
+
   if (evaluationPoint <= xValues[0]) {
     if (std::abs(xValues[0]) > 1e-14) {
       basisCoefficients[0] = FloatScalarVector(evaluationPoint / xValues[0]);

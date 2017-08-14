@@ -29,6 +29,15 @@ void ZetaHermiteInterpolationEvaluator::computeBasisCoefficients() {
     return;
   }
 
+
+  // without this evaluation always zero on this point
+  /*if(evaluationPoint== 0 && xValues[0]==0){
+    basisCoefficients[0] = FloatScalarVector(evalUniform(evaluationPoint  ));
+
+    return;
+  }
+  */
+
   if (evaluationPoint <= xValues[0]) {
     if (std::abs(xValues[0]) > 1e-14) {
       basisCoefficients[0] = FloatScalarVector(evalUniform((evaluationPoint/ xValues[0]) -1 )*xValues[0]);

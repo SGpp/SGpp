@@ -29,8 +29,15 @@ void PsiHermiteInterpolationEvaluator::computeBasisCoefficients() {
     return;
   }
 
+  if(evaluationPoint== 0 && xValues[0]==0){
+    basisCoefficients[0] = FloatScalarVector(evalUniform(evaluationPoint  ));
+
+    return;
+  }
+
+
   if (evaluationPoint <= xValues[0]) {
-    if (std::abs(xValues[0]) > 1e-14) {
+    if (std::abs(xValues[0]) >= 1e-14) {
       basisCoefficients[0] = FloatScalarVector(evalUniform((evaluationPoint/ xValues[0]) -1 ));
     }
     return;
