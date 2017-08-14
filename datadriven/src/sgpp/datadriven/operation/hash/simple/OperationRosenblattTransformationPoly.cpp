@@ -41,12 +41,9 @@ void OperationRosenblattTransformationPoly::doTransformation(base::DataVector* a
   std::vector<base::DataVector*> alphas1d(num_dims);
   std::unique_ptr<OperationDensityMargTo1D> marg1d(
       op_factory::createOperationDensityMargTo1D(*this->grid));
-  std::cout << "abc1" << std::endl;
   for (size_t idim = 0; idim < num_dims; idim++) {
-    std::cout << "idim:" << idim << std::endl;
     marg1d->margToDimX(alpha, grids1d[idim], alphas1d[idim], idim);
   }
-  std::cout << "abc2" << std::endl;
 
   // 2. compute the start dimension for each sample
   size_t num_samples = pointscdf->getNrows();
