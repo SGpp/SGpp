@@ -1,11 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * DBMatOnlineDEOrthoAdapt.cpp
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 // #ifdef USE_GSL
 #include <gsl/gsl_blas.h>
@@ -62,19 +58,113 @@ DBMatOnlineDEOrthoAdapt::DBMatOnlineDEOrthoAdapt(DBMatOffline& offline, double b
   }
 }
 
-void DBMatOnlineDEOrthoAdapt::adapt(sgpp::base::DataMatrix& refinePts,
-                                    std::vector<size_t>& coarsePts) {
-  if (refinePts.getNcols() > 0) {
-    this->sherman_morrison_adapt(refinePts, coarsePts, true);
+// not tested yet
+void DBMatOnlineDEOrthoAdapt::getAdaptPointsCartesian(bool refine,
+                                                      sgpp::base::DataMatrix& adapt_matrix,
+                                                      std::vector<size_t> coarsenIndices) {
+  // at this point, the old grid size equals to the dimension of the b_adapt_matrix_
+  sgpp::datadriven::DBMatOfflineOrthoAdapt* childPtr =
+      static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&this->offlineObject);
+  size_t oldGridSize = this->b_is_refined ? this->b_adapt_matrix_.getNcols() : childPtr->getDimA();
+  size_t newGridSize = this->getOfflineObject().getGrid().getStorage().getSize();
+  size_t gridDim;
+
+  if (refine) {
+    // when refining, the dimension of the point is equal to the size of new grid
+    gridDim = this->getOfflineObject().getGrid().getStorage().getDimension();
+  } else {
+    // when coarsening, the dimension of the points is equal to the prior grid
+    // which is equal to b_adapt_matrix
+    gridDim = this->b_adapt_matrix_.getNcols();
   }
-  if (coarsePts.size() > 0) {
-    this->sherman_morrison_adapt(refinePts, coarsePts, false);
+
+  size_t numberAdaptPoints = refine ? newGridSize - oldGridSize : oldGridSize - newGridSize;
+  if (numberAdaptPoints <= 0) {
+    std::cout << "ain't nuthin' to adapt, yo\n";
+    return;
+  }
+  sgpp::base::DataMatrix level(newGridSize, gridDim);
+  sgpp::base::DataMatrix index(newGridSize, gridDim);
+
+  this->getOfflineObject().getGrid().getStorage().getLevelIndexArraysForEval(level, index);
+  double lambda_conf = this->lambda;
+  // Loop to calculate all L2-products of added points based on the
+  // hat-function as basis function
+  for (size_t i = 0; i < newGridSize; i++) {
+    // Loops all new added points
+    for (size_t j = oldGridSize; j < newGridSize; j++) {
+      double res = 1;
+      for (size_t k = 0; k < gridDim; k++) {
+        double lik = level.get(i, k);
+        double ljk = level.get(j, k);
+        double iik = index.get(i, k);
+        double ijk = index.get(j, k);
+
+        if (lik == ljk) {
+          if (iik == ijk) {
+            // Use formula for identical ansatz functions:
+            res *= 2 / lik / 3;
+          } else {
+            // Different index, but same level => ansatz functions do not
+            // overlap:
+            res = 0.;
+            break;
+          }
+        } else {
+          if (std::max((iik - 1) / lik, (ijk - 1) / ljk) >=
+              std::min((iik + 1) / lik, (ijk + 1) / ljk)) {
+            // Ansatz functions do not not overlap:
+            res = 0.;
+            break;
+          } else {
+            // Use formula for different overlapping ansatz functions:
+            if (lik > ljk) {                            // Phi_i_k is the "smaller" ansatz function
+              double diff = (iik / lik) - (ijk / ljk);  // x_i_k - x_j_k
+              double temp_res = fabs(diff - (1 / lik)) + fabs(diff + (1 / lik)) - fabs(diff);
+              temp_res *= ljk;
+              temp_res = (1 - temp_res) / lik;
+              res *= temp_res;
+            } else {                                    // Phi_j_k is the "smaller" ansatz function
+              double diff = (ijk / ljk) - (iik / lik);  // x_j_k - x_i_k
+              double temp_res = fabs(diff - (1 / ljk)) + fabs(diff + (1 / ljk)) - fabs(diff);
+              temp_res *= lik;
+              temp_res = (1 - temp_res) / ljk;
+              res *= temp_res;
+            }
+          }
+        }
+      }
+      // The new Rows/Cols are stored in mat_refine
+
+      // add current lambda to lower diagonal elements of mat_refine
+      if (i == j) {
+        adapt_matrix.set(i, j - newGridSize + numberAdaptPoints, res + lambda_conf);
+      } else {
+        adapt_matrix.set(i, j - newGridSize + numberAdaptPoints, res);
+      }
+    }
   }
 }
+
+void DBMatOnlineDEOrthoAdapt::adapt(sgpp::base::DataMatrix& refine_points, bool refine,
+                                    std::vector<size_t> coarsenIndices) {
+  // todo: add parameter "list of coarsen points"
+  // and gather the points to refine/coarsen in this very function
+  if (refine) {
+    this->sherman_morrison_adapt(refine_points, refine);
+  } else {
+    if (refine_points.getNcols() != coarsenIndices.size()) {
+      throw sgpp::base::algorithm_exception("coarsen point indices and amount dont match");
+    }
+    this->sherman_morrison_adapt(refine_points, refine, coarsenIndices);
+  }
+}
+
 void DBMatOnlineDEOrthoAdapt::solveSLE(DataVector& b, bool do_cv) {}
 
-void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(sgpp::base::DataMatrix& refinePts,
-                                                     std::vector<size_t>& coarsePts, bool refine) {
+void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(sgpp::base::DataMatrix& adapt_points,
+                                                     bool refine,
+                                                     std::vector<size_t> coarsenIndices) {
   std::cout << "\n-----------------------------------\n"
             << "--- check if offline is decomposed ---"
             << "\n-----------------------------------\n";
@@ -91,12 +181,15 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(sgpp::base::DataMatrix& ref
             << "\n-----------------------------------\n";
   // determine the final size of the matrix system
   size_t oldSize = this->b_is_refined ? this->b_adapt_matrix_.getNcols() : childPtr->getDimA();
-  size_t newSize = refine ? (oldSize + refinePts.getNcols()) : (oldSize - coarsePts.size());
-  size_t adaptSteps = newSize > oldSize ? (newSize - oldSize) : (oldSize - newSize);
+  size_t newSize = refine ? (oldSize + adapt_points.getNcols()) : (oldSize - coarsenIndices.size());
+  size_t adaptSteps = (newSize > oldSize) ? (newSize - oldSize) : (oldSize - newSize);
 
   // -----debugging---------------------------------------------------------------------------------
   std::cout << "adapting a size -- " << oldSize << " -- matrix to a size -- " << newSize
             << "\nwhich means number of steps is -- " << adaptSteps << std::endl;
+  std::cout
+      << "newSize was calculated with (coarsening): oldSize - coarsenIndices.size(), which is\n"
+      << oldSize << " minus " << coarsenIndices.size() << std::endl;
   // -----debugging---------------------------------------------------------------------------------
 
   std::cout << "\n-----------------------------------\n"
@@ -105,8 +198,9 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(sgpp::base::DataMatrix& ref
 
   // todo: If instead these points should just be ignored, change this to kill some coarsePts
   // If coarsening points in base grid or out of grid
-  for (size_t i = 0; i < coarsePts.size(); i++) {
-    if (coarsePts[i] < childPtr->getDimA() || coarsePts[i] > this->b_adapt_matrix_.getNcols()) {
+  for (size_t i = 0; i < coarsenIndices.size(); i++) {
+    if (coarsenIndices[i] < childPtr->getDimA() ||
+        coarsenIndices[i] > this->b_adapt_matrix_.getNcols()) {
       // todo: split condition and kill points here with coarsePts.delete
       throw sgpp::base::algorithm_exception(
           "OrthoAdapt can't coarsen points, which were not refined before");
@@ -138,6 +232,7 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(sgpp::base::DataMatrix& ref
   // ( one for each point
   // refining/coarsening )
   for (size_t k = 0; k < adaptSteps; k++) {
+    std::cout << "\nentered big for loop of sherman morrison\n";
     // fetch point with according size
     // refine -> size gets bigger by 1
     // coarse -> size stays the same
@@ -145,11 +240,12 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(sgpp::base::DataMatrix& ref
     std::cout << "current_size = " << current_size << std::endl;
     sgpp::base::DataVector x((refine ? newSize : oldSize));
     std::cout << "allocated x of size " << x.size() << std::endl;
+
+    // configure x according to sherman morrison formula
     if (refine) {
-      // configure x according to sherman morrison formula
-      refinePts.getColumn(k, x);
+      adapt_points.getColumn(k, x);
       // debugstuff
-      std::cout << "refined point will be: " << std::endl;
+      std::cout << "adapted point will be: " << std::endl;
       for (size_t index = 0; index < x.size(); index++) {
         std::cout << std::setprecision(5) << std::fixed << x.get(index) << "  ";
       }
@@ -162,16 +258,31 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(sgpp::base::DataMatrix& ref
         std::cout << std::setprecision(5) << std::fixed << x.get(index) << "  ";
       }
     } else {
-      // determine former value of vector x, given only its index in the grid
-      // todo: retrieve x vector out of index for coarsening
+      adapt_points.getColumn(k, x);
+      // debugstuff
+      std::cout << "adapted point will be the " << k
+                << "-th column of adapt_matrix " << std::endl;
+      for (size_t index = 0; index < x.size(); index++) {
+        std::cout << std::setprecision(5) << std::fixed << x.get(index) << "  ";
+      }
+      // no clipping off when coarsening
+
+      double config_x_value =
+          (x.get(coarsenIndices[k]) - 1) * 0.5;  // lambda is added already on all of refinePts
+      x.set(coarsenIndices[k], config_x_value);
+      std::cout << "\nadapted diagonal: " << std::endl;
+      for (size_t index = 0; index < x.size(); index++) {
+        std::cout << std::setprecision(5) << std::fixed << x.get(index) << "  ";
+      }
     }
+
     std::cout << "\n-----------------------------------\n"
               << "--- still in loop, calculating stuff ---"
               << "\n-----------------------------------\n";
     // configure unit vector depending on
     // refine/coarsen
     // e[unit_index] = unit_value, others are zero
-    size_t unit_index = refine ? current_size - 1 : coarsePts[k];
+    size_t unit_index = refine ? current_size - 1 : coarsenIndices[k];
     std::cout << "nonzero index of unitvector is " << unit_index << std::endl;
 
     std::cout << "generating gsl_views and space for terms..." << std::endl;
@@ -249,11 +360,11 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(sgpp::base::DataMatrix& ref
 
     // calculating the divisor of sherman morrison formula: 1 - e^t * x_term - e^t * bx_term
     std::cout << "\n\ncalculating divisor: " << std::endl;
-    double eQTQx = (refine ? 0.0 : gsl_matrix_get(x_term, unit_index, 0));
+    double eQTQx = 0.0;  // (refine ? 0.0 : gsl_matrix_get(x_term, unit_index, 0));
     std::cout << "e^t * Q * T^-1 * Q^t * x  =  " << eQTQx << std::endl;
     double eBx = (refine ? 1.0 : -1.0) * gsl_matrix_get(bx_term, unit_index, 0);
     std::cout << "e^t * B * x  =  " << eBx << std::endl;
-    double divisor = (refine ? 1.0 : -1.0) * (1 + eQTQx + eBx);
+    double divisor = 1 + eQTQx + eBx;
     std::cout << "divisor = " << divisor << std::endl;
 
     // calculating: bx_term + x_term, where x_term is filled with zero to fit dimension of bx
@@ -264,14 +375,16 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(sgpp::base::DataMatrix& ref
 
     std::cout << "\n-----------------------------------\n"
               << "--- calculating B_tilde =           ---"
-              << "\n-----------------------------------\n";
+              << "\n-----------------------------------\n"
+              << "current_size = " << current_size << std::endl;
     // subtracting the matrices B - ( x_term * e_term ) / divisor
     // where the vector product is an outer product yielding a matrix
     for (size_t i = 0; i < current_size; i++) {
       for (size_t j = 0; j < current_size; j++) {
         double final_value =
             this->b_adapt_matrix_.get(i, j) -
-            (bx_term->data[i] * this->b_adapt_matrix_.get(unit_index, j)) / divisor;
+            (bx_term->data[i] * (refine ? 1.0 : -1.0) * this->b_adapt_matrix_.get(unit_index, j)) /
+                divisor;
         this->b_adapt_matrix_.set(i, j, final_value);
       }
     }
@@ -297,7 +410,7 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(sgpp::base::DataMatrix& ref
     std::cout << "e^t * Q * T^-1 * Q^t * x  =  " << eQTQx << "  same as before" << std::endl;
     eBx = (refine ? 1.0 : -1.0) * gsl_matrix_get(bx_term, unit_index, 0);
     std::cout << "e^t * B * x  =  " << eBx << std::endl;
-    divisor = (refine ? 1.0 : -1.0) * (1 + eQTQx + eBx);
+    divisor = 1 + eQTQx + eBx;
     std::cout << "divisor = " << divisor << std::endl;
 
     // calculating: bx_tilde_term + x_term
@@ -311,7 +424,8 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(sgpp::base::DataMatrix& ref
 
     std::cout << "\n-----------------------------------\n"
               << "--- calculating B_final_n =           ---"
-              << "\n-----------------------------------\n";
+              << "\n-----------------------------------\n"
+              << "current_size = " << current_size << std::endl;
     // subtracting the matrices B_tilde - ( x_term * b_tilde_term ) / divisor
     // where the vector product is an outer product yielding a matrix
     // note: as the order is flipped, i and j have to be changed AND b column now
@@ -319,7 +433,8 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(sgpp::base::DataMatrix& ref
       for (size_t j = 0; j < current_size; j++) {
         double final_value =
             this->b_adapt_matrix_.get(i, j) -
-            (bx_term->data[j] * this->b_adapt_matrix_.get(i, unit_index)) / divisor;
+            (bx_term->data[j] * (refine ? 1.0 : -1.0) * this->b_adapt_matrix_.get(i, unit_index)) /
+                divisor;
         this->b_adapt_matrix_.set(i, j, final_value);
       }
     }
@@ -330,25 +445,31 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(sgpp::base::DataMatrix& ref
   // on the indices of the coarsened points. In the following algorithm, the symmetry
   // of b_adapt_matrix is used to fit the blocks together again.
   if (!refine) {
-    std::sort(coarsePts.begin(), coarsePts.end());
+    std::cout << "sorting out blocks of matrix b_adapt after coarsening\n";
+    std::sort(coarsenIndices.begin(), coarsenIndices.end());
     size_t vj = 0;  // number of indices already considered in rows
     size_t vi = 0;  // number of indices already considered in columns
-    for (size_t i = 0; i < newSize - coarsePts.size(); i++) {
-      for (size_t j = i; j < newSize - coarsePts.size(); j++) {
+    for (size_t i = 0; i < oldSize - coarsenIndices.size(); i++) {
+      if (i == coarsenIndices[vi] - vi) {  // then skip this row
+        vi++;
+      }
+      for (size_t j = i; j < oldSize - coarsenIndices.size(); j++) {
+        if (j == coarsenIndices[vj] - vj) {  // then skip this column
+          vj++;
+        }
         double value = this->b_adapt_matrix_.get(i + vi, j + vj);
         this->b_adapt_matrix_.set(i, j, value);
         this->b_adapt_matrix_.set(j, i, value);
-        if (j == coarsePts[vj] - vj) {  // then skip this column
-          vj++;
-        }
       }
-      if (i == coarsePts[vi] - vi) {  // then skip this row
-        vi++;
-      }
+
       vj = 0;  // new row, new count
     }
     this->b_adapt_matrix_.resizeQuadratic(newSize);
+    printMatrix(this->b_adapt_matrix_);
   }
+
+  // determine, if any refined information is in matrix b_adapt
+  this->b_is_refined = this->b_adapt_matrix_.getNcols() <= childPtr->getDimA() ? false : true;
 }
 }  // namespace datadriven
 }  // namespace sgpp

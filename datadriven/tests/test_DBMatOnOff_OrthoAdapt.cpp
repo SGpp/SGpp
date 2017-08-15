@@ -1,10 +1,7 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * DBMatOfflineOrthoAdapt_test.cpp
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #define BOOST_TEST_DYN_LINK
 // #ifdef USE_GSL
@@ -12,6 +9,7 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <sgpp/datadriven/algorithm/DBMatDMSOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
@@ -22,8 +20,19 @@
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 #include <sgpp/globaldef.hpp>
 
+#include <iomanip>
 #include <string>
 #include <vector>
+
+// print datamatrices for debugging
+static void printMatrix(sgpp::base::DataMatrix a) {
+  for (size_t i = 0; i < a.getNrows(); i++) {
+    for (size_t j = 0; j < a.getNcols(); j++) {
+      std::cout << std::setprecision(5) << std::fixed << a.get(i, j) << "  ";
+    }
+    std::cout << std::endl;
+  }
+}
 
 BOOST_AUTO_TEST_SUITE(OrthoAdapt_tests)
 
@@ -107,8 +116,8 @@ BOOST_AUTO_TEST_CASE(offline_object) {
 
 BOOST_AUTO_TEST_CASE(online_object) {
   sgpp::datadriven::DBMatDensityConfiguration config;
-  config.grid_dim_ = 2;
-  config.grid_level_ = 3;
+  config.grid_dim_ = 1;
+  config.grid_level_ = 2;
   config.grid_type_ = sgpp::base::GridType::Linear;
   config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
   config.lambda_ = 0.0001;
@@ -116,9 +125,10 @@ BOOST_AUTO_TEST_CASE(online_object) {
 
   sgpp::datadriven::DBMatOfflineOrthoAdapt offline_base(config);
   offline_base.buildMatrix();
+  sgpp::base::DataMatrix copy_small_lhs(offline_base.getDecomposedMatrix(true));
   offline_base.decomposeMatrix();
 
-  // create offline object like it should be after refined/coarsened Pts
+  // create offline object like it should be after refined Pts
   config.grid_level_++;
   sgpp::datadriven::DBMatOfflineOrthoAdapt offline_refined(config);
   offline_refined.buildMatrix();
@@ -137,19 +147,105 @@ BOOST_AUTO_TEST_CASE(online_object) {
   for (size_t i = oldSize; i < newSize; i++) {
     sgpp::base::DataVector refPt(newSize);
     offline_refined.getDecomposedMatrix(true).getColumn(i, refPt);
-    refinePts.setColumn(i, refPt);
+    refinePts.setColumn(i - oldSize, refPt);
     // also adding lambdas to "diagonals"
-    refinePts.set(i - 1, i - oldSize - 1, refinePts.get(i - 1, i - oldSize - 1) + config.lambda_);
+    refinePts.set(i, i - oldSize, refinePts.get(i, i - oldSize) + config.lambda_);
   }
-/*
-  // online object performs refinement now
+
+  std::cout << "bigger grid lhsMatrix is \n";
+  printMatrix(offline_refined.getDecomposedMatrix(true));
+
+  std::cout << "\nand the refined points are: \n";
+  printMatrix(refinePts);
+
+  /**
+   * Testing refinement now
+   */
   sgpp::datadriven::DBMatOnlineDEOrthoAdapt* thisChildPtr =
       static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt*>(&*online);
-  std::vector<size_t> coarsePts = {};
-  thisChildPtr->adapt(refinePts, coarsePts); */
+
+  // refines!
+  std::vector<size_t> coarsenPts = {6, 5, 4, 3};
+  thisChildPtr->adapt(refinePts, true, coarsenPts);
+
+  // create arbitrary right side b
+  sgpp::base::DataVector b(newSize);
+  double z = 1;
+  for (size_t i = 0; i < b.getSize(); i++) {
+    b.set(i, z);
+    z = z * z * 0.25;
+  }
+
+  // create storage for alpha
+  sgpp::base::DataVector alpha(newSize, 0.0);
+  sgpp::base::DataVector test_result(newSize, 0.0);
+
+  // solve the created system
+  sgpp::datadriven::DBMatDMSOrthoAdapt* solver = new sgpp::datadriven::DBMatDMSOrthoAdapt();
+  solver->solve(offline_base.getTinv(), offline_base.getQ(), thisChildPtr->getB(), b, alpha);
+
+  // now to test, it should hold that (lhs + lambda*I) * alpha = b
+  // where the matrix is the one of the created big grid and alpha was
+  // obtained from refining the smaller grid up to match the big one, ... so:
+  for (size_t i = 0; i < newSize; i++) {
+    double value = offline_refined.getDecomposedMatrix(true).get(i, i);
+    offline_refined.getDecomposedMatrix(true).set(i, i, value + config.lambda_);
+  }
+  offline_refined.getDecomposedMatrix(true).mult(alpha, test_result);
+
+  // test the results agains the original values of b
+  for (size_t i = 0; i < alpha.getSize(); i++) {
+    BOOST_CHECK_SMALL(test_result.get(i) - b.get(i), 1e-10);
+  }
+
+  std::cout << "\n\n\n\n\n\n\n";
+  /**
+   * Testing coarsening now
+   */
+  // now the algorithm can coarse the same points that were refined to test coarsening
+  // refinePts must be sordet accordingly, because coarsen indices have to be in descendand
+  // order, and must correspont to the index of refinePts
+  // reminder: coarsePts = {6, 5, 4, 3}
+  sgpp::base::DataMatrix coarsenMatrix(newSize, numberOfPoints);
+  sgpp::base::DataVector puf(newSize, 0.0);
+
+  // 3 --> 0
+  refinePts.getColumn(3, puf);
+  coarsenMatrix.setColumn(0, puf);
+  // 2 --> 1
+  refinePts.getColumn(2, puf);
+  coarsenMatrix.setColumn(1, puf);
+  // 1 --> 2
+  refinePts.getColumn(1, puf);
+  coarsenMatrix.setColumn(2, puf);
+  // 0 --> 3
+  refinePts.getColumn(0, puf);
+  coarsenMatrix.setColumn(3, puf);
+
+
+  // coarsenes!
+  thisChildPtr->adapt(coarsenMatrix, false, coarsenPts);
+
+  // adapt vectors to the smaller dimension
+  b.resize(oldSize);
+  alpha.resize(oldSize);
+  test_result.resize(oldSize);
+
+  // solve the created system
+  solver->solve(offline_base.getTinv(), offline_base.getQ(), thisChildPtr->getB(), b, alpha);
+
+  // this time test agains smaller lhs matrix, (lhs + lambda*I) * alpha = b
+  for (size_t i = 0; i < oldSize; i++) {
+    double value = copy_small_lhs.get(i, i);
+    copy_small_lhs.set(i, i, value + config.lambda_);
+  }
+  copy_small_lhs.mult(alpha, test_result);
+
+  // test the results agains the original values of b
+  for (size_t i = 0; i < alpha.getSize(); i++) {
+    BOOST_CHECK_SMALL(test_result.get(i) - b.get(i), 1e-10);
+  }
 }
 
-// #else
-// throw sgpp::base::algorithm_exception("USE_GSL is not set to true");
 // #endif /* USE_GSL */
 BOOST_AUTO_TEST_SUITE_END()

@@ -1,11 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * DBMatOnlineDEOrthoAdapt.hpp
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
@@ -27,10 +23,27 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
   /**
    * Rank-one updates/downdates the system matrix, based on the sherman-morrison-formula
    *
-   * @param adaptPts Points to refine/coarsen
    * @param doCoarsen triggers between refine/coarsen
    */
-  void adapt(sgpp::base::DataMatrix& refinePts, std::vector<size_t>& coarsePts);
+  void adapt(sgpp::base::DataMatrix& adapt_matrix, bool refine,
+             std::vector<size_t> coarsen_indices);
+
+  // getter and setter
+  sgpp::base::DataMatrix& getB() { return this->b_adapt_matrix_; };
+
+  //
+  //
+  //
+  //
+
+  /**
+   * Computes the cartesian values of the points to adapt, given a changed grid
+   * If the grid has not been refined/coarsened yet, nothing will happen
+   *
+   * @param refine Chooses between refining/coarsening
+   */
+  void getAdaptPointsCartesian(bool refine, sgpp::base::DataMatrix& adapt_matrix,
+                               std::vector<size_t> coarsen_indices);
 
  protected:
   // matrix, which holds information about refined/coarsened points
@@ -58,8 +71,8 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    * @param coarsePts Points to coarsen
    * @param refine    Decides: true for refine, false for coarsen
    */
-  void sherman_morrison_adapt(sgpp::base::DataMatrix& refinePts, std::vector<size_t>& coarsePts,
-                              bool refine);
+  void sherman_morrison_adapt(sgpp::base::DataMatrix& adapt_points, bool refine,
+                              std::vector<size_t> coarsen_indices = {});
 };
 }  // namespace datadriven
 }  // namespace sgpp
