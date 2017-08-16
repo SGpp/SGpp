@@ -230,6 +230,50 @@ class CombiCombigrid2dHermite:
         return self.operation_psi.getLevelManager()
 
 
+class CombiCombigridHermite:
+    def __init__(self, function, dim):
+        self.d = dim
+        self.func = pysgpp.multiFunc(function)
+        self.grad = []
+        ##derivatives
+        for i in range(dim):
+            self.grad.append(pysgpp.multiFunc(getgradkfunc(self.func, i)))
+
+        self.mixed_grad = self.func
+        for i in range(dim):
+            self.mixed_grad = getgradkfunc(self.mixed_grad, i)
+
+        #operations
+        self.operation_psi = \
+            pysgpp.CombigridOperation.createExpUniformBoundaryPsiHermiteInterpolation(
+            self.d, self.func)
+
+        self.operation_zeta_psi = []
+        for i in range(dim):
+            self.operation_zeta_psi.append(
+                pysgpp.CombigridOperation.createExpUniformBoundaryPsiHermiteInterpolation(self.d,
+                                                                                          i,
+                                                                                          self.grad[
+                                                                                              i]))
+
+        self.operation_mixed = (
+            pysgpp.CombigridOperation.createExpUniformBoundaryZetaLinearInterpolation(
+                self.d, i, self.grad[i]))
+
+    def evaluate(self, level, x):
+        sum = 0
+
+        sum += self.operation_psi.evaluate(level, x)
+        for op in self.operation_zeta_psi:
+            sum += op.evaluate(level, x)
+
+        sum += self.operation_mixed.evaluate(level, x)
+        return sum
+
+    def getLevelManager(self):
+        return self.operation_psi.getLevelManager()
+
+
 class CombiCombigrid2dLinear:
     def __init__(self, function):
         self.func = pysgpp.multiFunc(function)
@@ -435,7 +479,7 @@ def calc_error_ilevels(operation, targetfunc, dim, maxlevel):
     errors = []
     for l in range(maxlevel):
         operation_wrap = operationwrapper(operation, l)
-        gridpterror = estimatel2Error(10000, dim, operation_wrap, targetfunc)
+        gridpterror = estimatel2Error(5000, dim, operation_wrap, targetfunc)
         errors.append(gridpterror)
         nr_gridpoints.append(operation.getLevelManager().numGridPoints())
     return nr_gridpoints, errors
@@ -625,7 +669,7 @@ def example_combicombigrid_2D_hermite(l, func_standard):
 def example_plot_error(func_standard, dim):
     operation_count = 3
     operation = CombiCombigridLinear(func_standard, dim)
-    operation2 = CombiCombigrid2dHermite(func_standard)
+    operation2 = CombiCombigridHermite(func_standard,dim)
     operation3 = pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(
         dim, func_standard)
 
@@ -662,13 +706,14 @@ dim = 2
 func = pysgpp.OptRosenbrockObjective(dim)
 func_wrap = getfuncwrapper(func)
 
-func_standard = pysgpp.multiFunc(f2D)
+func_standard = pysgpp.multiFunc(func_wrap)
 
 # example_2D_comparison_function(func_standard)
 # example_2D_psi()
 # example_2D_linear(2,func_standard)
-# example_combicombigrid_2D_linear(3, func_standard)  # with "contourplot"
+example_combicombigrid_2D_linear(3, func_standard)  # with "contourplot"
+print()
 example_combicombigrid_2D_hermite(3, func_standard)
-# example_plot_error(func_standard, dim)
+#example_plot_error(func_standard, dim)
 
 plt.show()
