@@ -240,7 +240,7 @@ class CombiCombigridHermite:
         self.mixed_grad = self.func
         for i in range(dim):
             self.mixed_grad = getgradkfunc(self.mixed_grad, i)
-
+        self.mixed_grad=pysgpp.multiFunc(self.mixed_grad)
         # operations
         self.operation_psi = \
             pysgpp.CombigridOperation.createExpUniformBoundaryPsiHermiteInterpolation(
@@ -255,8 +255,8 @@ class CombiCombigridHermite:
                                                                                               i]))
 
         self.operation_mixed = (
-            pysgpp.CombigridOperation.createExpUniformBoundaryZetaLinearInterpolation(
-                self.d, i, self.grad[i]))
+            pysgpp.CombigridOperation.createExpUniformBoundaryZetaHermiteInterpolation(
+                self.d,  self.mixed_grad))
 
     def evaluate(self, level, x):
         sum = 0
@@ -477,7 +477,7 @@ def calc_error_ilevels(operation, targetfunc, dim, maxlevel):
     errors = []
     for l in range(maxlevel):
         operation_wrap = operationwrapper(operation, l)
-        gridpterror = estimatel2Error(5000, dim, operation_wrap, targetfunc)
+        gridpterror = estimatel2Error(10000, dim, operation_wrap, targetfunc)
         errors.append(gridpterror)
         nr_gridpoints.append(operation.getLevelManager().numGridPoints())
     return nr_gridpoints, errors
@@ -645,7 +645,7 @@ def example_combicombigrid_2D_hermite(l, func_standard):
     level = l
     n_samples = 50
 
-    operation = CombiCombigrid2dHermite(func_standard)
+    operation = CombiCombigridHermite(func_standard,2)
     operation_wrap = operationwrapper(operation, level)
 
     # operation.operation_zeta for mixed
@@ -700,9 +700,9 @@ def testf(x):
 # example_combicombigrid_1D(3)
 
 
-dim = 2
-func = pysgpp.OptBubbleWrapObjective(dim)
-# func = pysgpp.OptRosenbrockObjective(dim)
+dim = 3
+
+func = pysgpp.OptRosenbrockObjective(dim)
 func_wrap = getfuncwrapper(func)
 
 func_standard = pysgpp.multiFunc(func_wrap)
@@ -710,9 +710,9 @@ func_standard = pysgpp.multiFunc(func_wrap)
 # example_2D_comparison_function(func_standard)
 # example_2D_psi()
 # example_2D_linear(2,func_standard)
-example_combicombigrid_2D_linear(3, func_standard)  # with "contourplot"
-print()
-example_combicombigrid_2D_hermite(3, func_standard)
-# example_plot_error(func_standard, dim)
+#example_combicombigrid_2D_linear(3, func_standard)  # with "contourplot"
+#print()
+#example_combicombigrid_2D_hermite(3, func_standard)
+example_plot_error(func_standard, dim)
 
 plt.show()
