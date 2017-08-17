@@ -49,7 +49,7 @@ def calc_error_on_gridpts(gridpoints, gridOpEval, targetFunc):
 
     for i in range(len(gridpoints)):
         x = gridpoints[i]
-        error += abs(gridOpEval(x) - targetFunc(x))
+        error = max(gridOpEval(x) - targetFunc(x), error)
         # print(str(x[0]) + "   " + str(x[1]), abs(gridOpEval(x) - targetFunc(x)), gridOpEval(x),
         # targetFunc(x))
 
@@ -57,28 +57,26 @@ def calc_error_on_gridpts(gridpoints, gridOpEval, targetFunc):
 
 
 def calc_error_gradient(gridpoints, gridOpEval, targetFunc, dim):
-    error = 0
+    error = []
 
     # iterate over dimensions
     for d in range(dim):
         grad_i = getgradkfunc(targetFunc, d)
         opEvalgrad_i = getgradkfunc(gridOpEval, d)
-        error += calc_error_on_gridpts(gridpoints, opEvalgrad_i, grad_i)
-        # print("-------------------------------------------------------------")
+        error.append(calc_error_on_gridpts(gridpoints, opEvalgrad_i, grad_i))
+        #print("-------------------------------------------------------------")
 
     return error
 
 
 def calc_error_mixed_gradient(gridpoints, gridOpEval, targetFunc, dim):
-    error = 0
-
     mixgrad = targetFunc
     opEval_mixgrad = gridOpEval
     for d in range(dim):
         mixgrad = getgradkfunc(mixgrad, d)
-        opEval_mixgrad = getgradkfunc(gridOpEval, d)
+        opEval_mixgrad = getgradkfunc(opEval_mixgrad, d)
     # print("-------------------------------------------------------------")
-    error += calc_error_on_gridpts(gridpoints, opEval_mixgrad, mixgrad)
+    error = calc_error_on_gridpts(gridpoints, opEval_mixgrad, mixgrad)
     return error
 
 
@@ -108,7 +106,7 @@ returns the k-th gradient with finite differences method
 
 
 def grad_xk(x, k, function):
-    h = 1e-07
+    h = 1e-06
 
     if x[k] == 0:
         gy = (function(displace(x, k, h)) - function(x)) / (h)
@@ -243,10 +241,10 @@ class CombiCombigridHermite:
         for i in range(dim):
             self.mixed_grad = getgradkfunc(self.mixed_grad, i)
 
-        #operations
+        # operations
         self.operation_psi = \
             pysgpp.CombigridOperation.createExpUniformBoundaryPsiHermiteInterpolation(
-            self.d, self.func)
+                self.d, self.func)
 
         self.operation_zeta_psi = []
         for i in range(dim):
@@ -637,9 +635,9 @@ def example_combicombigrid_2D_linear(l, func_standard):
                                               operation_wrap,
                                               func_standard, d)
 
-    print(str(gridpterror) + "is the error of function value on gridpoint")
-    print(str(grad_error) + "is the error of all grradients 1st order on gridpoint")
-    print(str(mixgrad_error) + "is the error of the mixed gradient on gridpoints")
+    print("estimtaded l2 error for combicombihermite: " + str(error))
+    print("1st gradient errors:" + str(grad_error))
+    print("mixed gradient error:" + str(mixgrad_error))
 
 
 def example_combicombigrid_2D_hermite(l, func_standard):
@@ -661,15 +659,15 @@ def example_combicombigrid_2D_hermite(l, func_standard):
                                               operation_wrap,
                                               func_standard, d)
     # calculate error
-    print("the estimtaded l2 error for combicombihermite: " + str(error))
-    print(str(grad_error) + "is the error of all grradients 1st order on gridpoints")
-    print(str(mixgrad_error) + "is the error of the mixed gradient on gridpoints")
+    print("estimtaded l2 error for combicombihermite: " + str(error))
+    print( "1st gradient errors:"+str(grad_error))
+    print( "mixed gradient error:"+str(mixgrad_error) )
 
 
 def example_plot_error(func_standard, dim):
     operation_count = 3
     operation = CombiCombigridLinear(func_standard, dim)
-    operation2 = CombiCombigridHermite(func_standard,dim)
+    operation2 = CombiCombigridHermite(func_standard, dim)
     operation3 = pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(
         dim, func_standard)
 
@@ -703,7 +701,8 @@ def testf(x):
 
 
 dim = 2
-func = pysgpp.OptRosenbrockObjective(dim)
+func = pysgpp.OptBubbleWrapObjective(dim)
+# func = pysgpp.OptRosenbrockObjective(dim)
 func_wrap = getfuncwrapper(func)
 
 func_standard = pysgpp.multiFunc(func_wrap)
@@ -714,6 +713,6 @@ func_standard = pysgpp.multiFunc(func_wrap)
 example_combicombigrid_2D_linear(3, func_standard)  # with "contourplot"
 print()
 example_combicombigrid_2D_hermite(3, func_standard)
-#example_plot_error(func_standard, dim)
+# example_plot_error(func_standard, dim)
 
 plt.show()
