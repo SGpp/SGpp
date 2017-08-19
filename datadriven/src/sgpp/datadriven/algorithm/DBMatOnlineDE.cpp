@@ -128,19 +128,7 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
       b.mult(1. / static_cast<double>(numberOfPoints));
     }
 
-    // refine/coarsen Points in case of OrthoAdapt
-    if (offlineObject.getConfig().decomp_type_ == DBMatDecompostionType::OrthoAdapt) {
-#ifdef USE_GSL
-      sgpp::datadriven::DBMatOnlineDEOrthoAdapt* thisChildPtr =
-          static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt*>(this);
-      // thisChildPtr->adapt(m, deletedPoints);
-#else
-      throw algorithm_exception("built withot GSL");
-#endif /*USE_GSL*/
-    }
-
     solveSLE(b, do_cv);
-
     functionComputed = true;
   }
 }
