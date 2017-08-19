@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(offline_object) {
   off_object.buildMatrix();
 
   size_t n = off_object.getDimA();
-  std::cout << "Created Offline Object: \nMatrix Dimension = " << n << std::endl;
+  // std::cout << "Created Offline Object: \nMatrix Dimension = " << n << std::endl;
   std::cout << "Testing hessenberg_decomposition...\n";
 
   // allocating sub-, super- and diagonal vectors of T
@@ -152,15 +152,16 @@ BOOST_AUTO_TEST_CASE(online_object) {
     refinePts.set(i, i - oldSize, refinePts.get(i, i - oldSize) + config.lambda_);
   }
 
-  std::cout << "bigger grid lhsMatrix is \n";
-  printMatrix(offline_refined.getDecomposedMatrix(true));
+  // std::cout << "bigger grid lhsMatrix is \n";
+  // printMatrix(offline_refined.getDecomposedMatrix(true));
 
-  std::cout << "\nand the refined points are: \n";
-  printMatrix(refinePts);
+  // std::cout << "\nand the refined points are: \n";
+  // printMatrix(refinePts);
 
   /**
    * Testing refinement now
    */
+  std::cout << "Testing refinement now ..." << std::endl;
   sgpp::datadriven::DBMatOnlineDEOrthoAdapt* thisChildPtr =
       static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt*>(&*online);
 
@@ -198,10 +199,11 @@ BOOST_AUTO_TEST_CASE(online_object) {
     BOOST_CHECK_SMALL(test_result.get(i) - b.get(i), 1e-10);
   }
 
-  std::cout << "\n\n\n\n\n\n\n";
   /**
    * Testing coarsening now
    */
+  std::cout << "Testing coarsening now ..." << std::endl;
+
   // now the algorithm can coarse the same points that were refined to test coarsening
   // refinePts must be sordet accordingly, because coarsen indices have to be in descendand
   // order, and must correspont to the index of refinePts
@@ -222,8 +224,7 @@ BOOST_AUTO_TEST_CASE(online_object) {
   refinePts.getColumn(0, puf);
   coarsenMatrix.setColumn(3, puf);
 
-
-  // coarsenes!
+  // coarsening!
   thisChildPtr->adapt(coarsenMatrix, false, coarsenPts);
 
   // adapt vectors to the smaller dimension

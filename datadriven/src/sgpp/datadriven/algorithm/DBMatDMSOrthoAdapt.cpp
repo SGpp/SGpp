@@ -13,7 +13,7 @@ void DBMatDMSOrthoAdapt::solve(sgpp::base::DataMatrix& T_inv, sgpp::base::DataMa
                                sgpp::base::DataMatrix& B, sgpp::base::DataVector& b,
                                sgpp::base::DataVector& alpha) {
   // assert dimensions
-  if (B.getNcols() != b.getSize()) {
+  if (B.getNcols() != 1 && B.getNcols() != b.getSize()) {
     throw sgpp::base::data_exception("Dimensions of b or alpha do not match the system");
   }
 
@@ -25,7 +25,6 @@ void DBMatDMSOrthoAdapt::solve(sgpp::base::DataMatrix& T_inv, sgpp::base::DataMa
   // stores interim values
   sgpp::base::DataVector QTQb(Q.getNrows(), 0.0);
   sgpp::base::DataVector interim(Q.getNcols(), 0.0);
-
 
   // start with Q^t * x, doing this manually until sgpp supports transpose operations
   for (size_t i = 0; i < Q.getNcols(); i++) {
@@ -40,14 +39,24 @@ void DBMatDMSOrthoAdapt::solve(sgpp::base::DataMatrix& T_inv, sgpp::base::DataMa
   T_inv.mult(QTQb, interim);
 
   // Q * T_inv * Q^t * x
-  Q.mult(interim, QTQb);
+  if (B.getNcols() != 1) {
+    Q.mult(interim, QTQb);
+  } else if (Q.getNcols() == alpha.getSize()) {
+    Q.mult(interim, alpha);
+  } else {
+    throw sgpp::base::data_exception("dimension of alpha doesn't match dimension of Q*T_inv*Q^t");
+  }
 
-  // B * b
-  B.mult(b, alpha);
+  // if B is of size 1, then no refinement has taken place and
+  // alpha is just Q * T_inv * Q^t * b
+  if (B.getNcols() != 1) {
+    // B * b
+    B.mult(b, alpha);
 
-  // Q*T_inv*Q^t*b + B*b
-  QTQb.resize(alpha.getSize(), 0.0);
-  alpha.add(QTQb);
+    // Q*T_inv*Q^t*b + B*b
+    QTQb.resize(alpha.getSize(), 0.0);
+    alpha.add(QTQb);
+  }
 }
 }  // namespace datadriven
 }  // namespace sgpp
