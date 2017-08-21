@@ -36,7 +36,7 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
 
   DBMatOffline* clone();
 
-  bool isRefineable();
+  bool isRefineable() override;
 
   /**
    * Builds the right hand side matrix without the regularization term
