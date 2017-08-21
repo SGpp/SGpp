@@ -26,7 +26,6 @@ class QuadRule1D {
                                 base::DataVector& weights);
 
  protected:
-  const size_t maxSupportedLevel = 50;
   std::vector<DataVector*> coordinates;
   std::vector<DataVector*> weights;
 };
