@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
+#include <sgpp/base/exception/factory_exception.hpp>
 
 #include <iostream>
 
@@ -11031,7 +11031,7 @@ void GaussLegendreQuadRule1D::getLevelPointsAndWeightsNormalized(size_t level,
   if (level < 1 || level > maxSupportedLevel) {
     throw factory_exception(
         "GaussLegendreQuadRule1D::getLevelPointsAndWeightsNormalized : "
-        "order of gauss quadrature has to be within {1, ..., 100}");
+        "order of gauss quadrature has to be within {1, ..., 101}");
   }
 
   getLevelPointsAndWeights(level, pcoordinates, pweights);
