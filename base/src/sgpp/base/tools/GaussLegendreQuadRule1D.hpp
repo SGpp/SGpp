@@ -38,6 +38,8 @@ class GaussLegendreQuadRule1D : public QuadRule1D {
   static GaussLegendreQuadRule1D& getInstance();
 
  protected:
+  const size_t maxSupportedLevel = 100;
+
   inline void setGaussLegendreValuesForDegree0();
   inline void setGaussLegendreValuesForDegree1();
   inline void setGaussLegendreValuesForDegree2();

@@ -94,11 +94,9 @@ void LejaPointDistribution::calc_leja_points(std::vector<double>& sortedPoints,
 }
 
 /**
- * Calculates the Starting Point by weighting the weight function with a wide normal distribution
- * and searching via optimizer for the maximum
+ * Calculates the Starting Point by searching via optimizer for the maximum of the weight function.
  */
 double LejaPointDistribution::calcStartingPoint(double epsilon) {
-  // weight the weight function with the normal distribution
   std::function<double(double)> w = [this](double x) { return -this->weightFunction(x); };
 
   // optimize it
