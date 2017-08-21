@@ -49,9 +49,7 @@ void OperationDensityMarginalize::doMarginalize(base::DataVector& alpha, base::G
 
     if (!mgs->isContaining(mgp)) mgs->insert(mgp);
   }
-
   mgs->recalcLeafProperty();
-
   /**
    * Compute coefficients for marginalized density
    * Each coefficient has to be weighted with the integral of
@@ -61,21 +59,19 @@ void OperationDensityMarginalize::doMarginalize(base::DataVector& alpha, base::G
   malpha.setAll(0.0);
   size_t mseqNr;
   auto& basis = grid->getBasis();
-
   for (size_t seqNr = 0; seqNr < gs->getSize(); seqNr++) {
     sgpp::base::GridPoint& gp = gs->getPoint(seqNr);
-
     for (unsigned int d = 0; d < gs->getDimension(); d++) {
-      if (d < mdim)
+      if (d == mdim)
+        continue;
+      else if (d < mdim)
         mgp.set(d, gp.getLevel(d), gp.getIndex(d));
       else
         mgp.set(d - 1, gp.getLevel(d), gp.getIndex(d));
     }
-
     if (!mgs->isContaining(mgp))
       throw sgpp::base::operation_exception(
           "Key not found! This should not happen! There is something seriously wrong!");
-
     // get index in alpha vector for current basis function
     mseqNr = mgs->getSequenceNumber(mgp);
     /**

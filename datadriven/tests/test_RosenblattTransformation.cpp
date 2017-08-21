@@ -19,6 +19,7 @@
 
 #include <vector>
 #include <random>
+#include <iostream>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -49,20 +50,20 @@ double parabola(DataVector& input) {
   return result;
 }
 
-Grid* hierarchize(std::uint32_t dim, std::uint32_t level, DataVector& alpha,
-                  double (*func)(DataVector&)) {
-  std::unique_ptr<Grid> grid(Grid::createLinearGrid(dim));
+void hierarchize(Grid* grid, std::uint32_t level, DataVector& alpha,
+                 double (*func)(DataVector&)) {
+  size_t dim = grid->getDimension();
+  GridStorage& gs = grid->getStorage();
+  gs.clear();
   grid->getGenerator().regular(level);
   alpha.resize(grid->getSize());
 
   DataVector coords(dim);
-  GridStorage& gs = grid->getStorage();
   for (size_t i = 0; i < grid->getSize(); i++) {
     gs.getPoint(i).getStandardCoordinates(coords);
     alpha[i] = func(coords);
   }
   sgpp::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
-  return grid.release();
 }
 
 void randu(DataVector& rvar, std::mt19937& generator) {
@@ -206,26 +207,50 @@ void testEqualityRosenblattInverseRosenblattKDE(
 BOOST_AUTO_TEST_SUITE(testRosenblattTransformation)
 
 BOOST_AUTO_TEST_CASE(testRosenblattLinear1D) {
-  Grid* grid = NULL;
+  Grid* grid = Grid::createLinearGrid(1);
   DataVector alpha(20);
   std::uint32_t numSamples = 1000;
   for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
-    grid = hierarchize(1, ilevel, alpha, &parabola);
+    hierarchize(grid, ilevel, alpha, &parabola);
     testEqualityRosenblattInverseRosenblatt1D(*grid, alpha, numSamples);
+  }
+  delete grid;
+}
+
+BOOST_AUTO_TEST_CASE(testRosenblattLinearDD) {
+  DataVector alpha(20);
+  std::uint32_t numSamples = 1000;
+  for (std::uint32_t dim = 2; dim < 4; dim++) {
+    Grid* grid = Grid::createLinearGrid(dim);
+    for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+      hierarchize(grid, ilevel, alpha, &parabola);
+      testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
+    }
     delete grid;
   }
 }
 
-BOOST_AUTO_TEST_CASE(testRosenblattLinearDD) {
-  Grid* grid = NULL;
+BOOST_AUTO_TEST_CASE(testRosenblattPoly1D) {
+  Grid* grid = Grid::createPolyGrid(1, 3);
+  DataVector alpha(20);
+  std::uint32_t numSamples = 1000;
+  for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+    hierarchize(grid, ilevel, alpha, &parabola);
+    testEqualityRosenblattInverseRosenblatt1D(*grid, alpha, numSamples);
+  }
+  delete grid;
+}
+
+BOOST_AUTO_TEST_CASE(testRosenblattPolyDD) {
   DataVector alpha(20);
   std::uint32_t numSamples = 1000;
   for (std::uint32_t dim = 2; dim < 4; dim++) {
+    Grid* grid = Grid::createPolyGrid(dim, 3);
     for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
-      grid = hierarchize(dim, ilevel, alpha, &parabola);
+      hierarchize(grid, ilevel, alpha, &parabola);
       testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
-      delete grid;
     }
+    delete grid;
   }
 }
 
