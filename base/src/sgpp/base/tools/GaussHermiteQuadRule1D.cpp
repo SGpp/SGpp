@@ -2914,6 +2914,9 @@ GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() : QuadRule1D(50) {
 
 GaussHermiteQuadRule1D::~GaussHermiteQuadRule1D() {}
 
+size_t GaussHermiteQuadRule1D::getMaxSupportedLevel() const { return maxSupportedLevel; }
+
+
 void GaussHermiteQuadRule1D::getLevelPointsAndWeightsNormalized(size_t level,
                                                                 DataVector& pcoordinates,
                                                                 DataVector& pweights, double mean,
