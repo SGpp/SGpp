@@ -25,6 +25,9 @@ class GaussLegendreQuadRule1D : public QuadRule1D {
   // delete the copy constructor
   GaussLegendreQuadRule1D(const GaussLegendreQuadRule1D& that) = delete;
 
+  // get the maximum level that is supported by the quadrature rule
+  size_t getMaxSupportedLevel() const override;
+
   /**
    * the coordinates are normalized to [0, 1].
    *
