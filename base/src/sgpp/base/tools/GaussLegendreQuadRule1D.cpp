@@ -11025,6 +11025,9 @@ GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
 
 GaussLegendreQuadRule1D::~GaussLegendreQuadRule1D() {}
 
+size_t GaussLegendreQuadRule1D::getMaxSupportedLevel() const { return maxSupportedLevel; }
+
+
 void GaussLegendreQuadRule1D::getLevelPointsAndWeightsNormalized(size_t level,
                                                                  DataVector& pcoordinates,
                                                                  DataVector& pweights) {
