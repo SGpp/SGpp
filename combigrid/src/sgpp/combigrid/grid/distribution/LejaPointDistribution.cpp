@@ -98,10 +98,13 @@ void LejaPointDistribution::calc_leja_points(std::vector<double>& sortedPoints,
  * and searching via optimizer for the maximum
  */
 double LejaPointDistribution::calcStartingPoint(double epsilon) {
+  // weight the weight function with the normal distribution
+  std::function<double(double)> w = [this](double x) { return -this->weightFunction(x); };
+
   // optimize it
   double x_val = 0.5;
-  auto result =
-      MixedOptimizer(weightFunction).minimize(OptimizationGuess::initial(0.0, 1.0, weightFunction));
+  auto myFunc = SingleFunction(w);
+  auto result = MixedOptimizer(myFunc).minimize(OptimizationGuess::initial(0.0, 1.0, myFunc));
   x_val = result.b;
   return x_val;
 }
