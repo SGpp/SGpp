@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
+#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 
 #include <iostream>
 
@@ -10919,7 +10919,7 @@ inline void GaussLegendreQuadRule1D::setGaussLegendreValuesForDegree100() {
   weights[100]->set(100, 0.000720231706399);
 }
 
-GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
+GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() : QuadRule1D(101) {
   setGaussLegendreValuesForDegree0();
   setGaussLegendreValuesForDegree1();
   setGaussLegendreValuesForDegree2();

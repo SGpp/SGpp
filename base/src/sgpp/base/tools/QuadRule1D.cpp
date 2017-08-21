@@ -9,7 +9,10 @@
 namespace sgpp {
 namespace base {
 
-QuadRule1D::QuadRule1D() : coordinates(maxSupportedLevel), weights(maxSupportedLevel) {}
+QuadRule1D::QuadRule1D(size_t maxSupportedLevel)
+    : maxSupportedLevel(maxSupportedLevel),
+      coordinates(maxSupportedLevel),
+      weights(maxSupportedLevel) {}
 
 QuadRule1D::~QuadRule1D() {
   for (size_t i = 0; i < coordinates.size(); i++) {

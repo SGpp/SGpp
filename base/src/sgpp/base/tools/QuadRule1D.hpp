@@ -17,7 +17,7 @@ namespace base {
 
 class QuadRule1D {
  public:
-  QuadRule1D();
+  QuadRule1D(size_t maxSupportedLevel);
   virtual ~QuadRule1D();
 
   size_t getMaxSupportedLevel() const;
@@ -26,6 +26,8 @@ class QuadRule1D {
                                 base::DataVector& weights);
 
  protected:
+  size_t maxSupportedLevel;
+
   std::vector<DataVector*> coordinates;
   std::vector<DataVector*> weights;
 };
