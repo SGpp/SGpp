@@ -11,6 +11,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
+#include <sgpp/base/tools/HermiteBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
 #include <map>
@@ -20,6 +21,7 @@
 #include <utility>
 #include <vector>
 #include <algorithm>
+#include <functional>
 
 namespace sgpp {
 namespace datadriven {
@@ -39,8 +41,9 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
   /***************** STEP 1. Compute CDF  ********************/
 
   // compute PDF, sort by coordinates
-  std::multimap<double, double> coord_cdf, coord_pdf;
+  std::multimap<double, double> coord_cdf;
   std::vector<double> ordered_grid_points;
+  std::vector<bool> is_negative_patch;
   std::multimap<double, double>::iterator it1;
 
   base::GridStorage* gs = &this->grid->getStorage();
@@ -55,7 +58,7 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
   gauss.getLevelPointsAndWeightsNormalized(quadOrder, gauss_coordinates, weights);
 
   double right_coord, right_function_value;
-  std::cout << "size:" << gs->getSize() << std::endl;
+  // std::cout << "size:" << gs->getSize() << std::endl;
   double sum = 0.0 , area = 0.0;
 
   // need an ordered list of the grid points
@@ -65,11 +68,10 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
     // inserting dummy points into coord_cdf to make it have the right size
     coord_cdf.insert(std::pair<double, double>(coord[0], 0.0));
   }
-
   ordered_grid_points.push_back(0.0);
   ordered_grid_points.push_back(1.0);
 
-  coord_pdf.insert(std::pair<double, double>(0.0, 0.0));
+  std::vector<std::function<double(double)>> patch_functions;
 
   coord_cdf.insert(std::pair<double, double>(0.0, 0.0));
   coord_cdf.insert(std::pair<double, double>(1.0, 1.0));
@@ -80,21 +82,24 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
   for (size_t i = 1; i < ordered_grid_points.size(); i++) {
     coord[0] = ordered_grid_points[i];
     double eval_res = opEval->eval(*alpha1d, coord);
-    std::cout << "l_function_value:" << left_function_value << std::endl;
-    std::cout << "pdf(" << coord[0] << ")=" << eval_res << std::endl;
+    // std::cout << "l_function_value:" << left_function_value << std::endl;
+    // std::cout << "pdf(" << coord[0] << ")=" << eval_res << std::endl;
 
     double gaussQuadSum = 0.;
     double left = left_coord;
     double scaling = coord[0] - left;
+    bool negative_value_encountered = false;
     for (size_t c = 0; c < quadOrder; c++) {
       coord[0] = left + scaling * gauss_coordinates[c];
-      gaussQuadSum += weights[c] * opEval->eval(*alpha1d, coord);
+      double value = opEval->eval(*alpha1d, coord);
+      gaussQuadSum += weights[c] * value;
+      negative_value_encountered = negative_value_encountered || (value < 0);
     }
     area = gaussQuadSum * scaling;
-    std::cout << "from " << left_coord << " to " << left+scaling << std::endl;
-    std::cout << "area:" << area << std::endl;
+    // std::cout << "from " << left_coord << " to " << left+scaling << std::endl;
+    // std::cout << "area:" << area << std::endl;
 
-    if (area < 0 || eval_res < 0) {
+    if (negative_value_encountered || eval_res < 0) {
       // make sure that the cdf is monotonically increasing
       // WARNING: THIS IS A HACK THAT OVERCOMES THE PROBLEM
       // OF NON POSITIVE DENSITY
@@ -103,51 +108,110 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
       // we look for the next grid point with pdf(x) >= 0
       size_t j;
       for (j = i; j < ordered_grid_points.size(); j++) {
-        std::cout << "j:" << j << std::endl;
+        // std::cout << "j:" << j << std::endl;
         right_coord = ordered_grid_points[j];
         coord[0] = right_coord;
         right_function_value = opEval->eval(*alpha1d, coord);
         if (right_function_value >= 0 && right_function_value != left_function_value)
           break;
       }
-      std::cout << "Found j: " << j << std::endl;
-      std::cout << right_coord << ";" << right_function_value << std::endl;
+      // std::cout << "Found j: " << j << std::endl;
+      // std::cout << right_coord << ";" << right_function_value << std::endl;
       // get last function value and coordinate with pdf(x) >= 0
-      // interpolate every value in between linearly
-      double left_value_for_interpolation = left_function_value;
-      double left_coord_for_interpolation = left_coord;
-      for (; i < j; i++) {
-        coord[0] = ordered_grid_points[i];
-        std::cout << "interpolating i:" << i << std::endl;
-        eval_res = left_value_for_interpolation
-          + (right_function_value - left_value_for_interpolation) /
-            (right_coord - left_coord_for_interpolation)
-          * (coord[0] - left_coord_for_interpolation);
-        std::cout << "For x=" << coord[0] << "interp: " << eval_res << std::endl;
-        area = (eval_res + left_function_value) / 2 * (coord[0] - left_coord);
-        sum += area;
-        std::cout << "from " << left_coord << " to " << coord[0] << std::endl;
-        std::cout << "area:" << area << std::endl;
-        coord_pdf.insert(std::pair<double, double>(ordered_grid_points[i], eval_res));
-        patch_areas.push_back(area);
-        left_coord = coord[0];
-        left_function_value = eval_res;
+      // perform montonic cubic interpolation based on:
+      // https://en.wikipedia.org/wiki/Monotone_cubic_interpolation
+
+      // cubic interpolation -> use three points:
+      // - the last with pdf(x) >= 0 (left from negative interval)
+      // - the first with pdf(x) >= 0 (right from negative inteval)
+      // - the right neighbor of the right one
+      double secants[2];
+      double tangents[3];
+      double function_values[3];
+      function_values[0] = left_function_value;
+      function_values[1] = right_function_value;
+      secants[0] = (right_function_value - left_function_value) / (right_coord - left_coord);
+      tangents[0] = secants[0];
+      if (j != ordered_grid_points.size()  - 1) {
+        coord[0] = ordered_grid_points[j + 1];
+        function_values[2] = opEval->eval(*alpha1d, coord);
+      } else {
+        // if j is the last grid point choose the next one with the same step size
+        // and set it's function value to one
+        coord[0] = 1 + ordered_grid_points[j] - ordered_grid_points[j - 1];
+        function_values[2] = 1.0;
       }
-      area = (right_function_value + left_function_value) / 2 * (right_coord - left_coord);
-      sum += area;
-      std::cout << "from " << left_coord << " to " << right_coord << std::endl;
-      std::cout << "area:" << area << std::endl;
-      patch_areas.push_back(area);
-      coord_pdf.insert(std::pair<double, double>(ordered_grid_points[i], right_function_value));
-      left_coord = right_coord;
+      secants[1] = (function_values[2] - function_values[1]) / (coord[0] - ordered_grid_points[j]);
+      tangents[2] = secants[1];
+      // secants left and right of current point
+      if (secants[0] == 0 || secants[1] == 0)
+         // if one of the secants is zero
+        tangents[1] = 0;
+      else if ((secants[0] > 0 && secants[1] < 0) || (secants[0] < 0 && secants[1] > 0))
+        // if the secants dont have the same sign
+        tangents[1] = 0;
+      else
+        tangents[1] = (secants[0] + secants[1]) / 2;
+
+      // correction to make the interpolation strict monotonic
+      for (size_t c = 0; c < 2; c++) {
+        double alpha = tangents[c]/secants[c];
+        double beta = tangents[c + 1]/secants[c];
+        if (alpha*alpha + beta*beta > 9) {
+          double tau = 3. / std::sqrt(alpha*alpha + beta*beta);
+          tangents[c] = tau*alpha*secants[c];
+          tangents[c + 1] = tau*beta*secants[c];
+        }
+      }
+      // interpolation that can be evaluated between left_coord and right_coord
+
+
+      std::function<double(double)> interpolation =
+        [right_coord, left_coord, left_function_value, right_function_value, tangents](double x)
+        -> double {
+        double h = right_coord - left_coord;
+        double t = (x - left_coord) / h;
+        return left_function_value*base::HermiteBasis::h_0_0(t)
+        + h * tangents[0] * base::HermiteBasis::h_1_0(t) +
+        + right_function_value * base::HermiteBasis::h_0_1(t) +
+        + h * tangents[1]* base::HermiteBasis::h_1_1(t);
+      };
+      // std::cout << "interp from: " << left_coord << "to: " << right_coord << std::endl;
+
+
+      for (; i <= j; i++) {
+        coord[0] = ordered_grid_points[i];
+        // std::cout << "interpolating i:" << i << std::endl;
+        // kann eig entfernt werden
+        eval_res = interpolation(coord[0]);
+        // std::cout << "For x=" << coord[0] << "interp: " << eval_res << std::endl;
+        double gaussQuadSum = 0.;
+        double left = left_coord;
+        double scaling = coord[0] - left;
+        for (size_t c = 0; c < quadOrder; c++) {
+          coord[0] = left + scaling * gauss_coordinates[c];
+          gaussQuadSum += weights[c] * interpolation(coord[0]);
+        }
+
+        area = gaussQuadSum * scaling;
+        sum += area;
+        // std::cout << "from " << left_coord << " to " << ordered_grid_points[i] << std::endl;
+        // std::cout << "area:" << area << std::endl;
+        patch_areas.push_back(area);
+        is_negative_patch.push_back(true);
+        patch_functions.push_back(interpolation);
+        // std::cout << "set patch_function for:" << i - 1 << std::endl;
+        left_coord = ordered_grid_points[i];
+      }
+      --i;
       left_function_value = right_function_value;
     } else {
       // use the (positive) result of the Gauss-Quadrature
       sum += area;
       left_coord = left + scaling;
       left_function_value = eval_res;
-      coord_pdf.insert(std::pair<double, double>(ordered_grid_points[i], eval_res));
       patch_areas.push_back(area);
+      is_negative_patch.push_back(false);
     }
   }
 
@@ -165,39 +229,57 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
   /***************** STEP 1. Done  ********************/
 
   /***************** STEP 2. Sampling  ********************/
-  double y, x1, x2, y1, y2;
 
-  std::cout << "Areas: " << std::endl;
-  for (size_t i = 0; i < patch_areas.size(); i++) {
-    std::cout << patch_areas[i] << std::endl;
-  }
-  std::cout << "Size areas: " << patch_areas.size() << std::endl;
-  std::cout << "Size cdf: " << coord_cdf.size() << std::endl;
-  std::cout << "coord cdf: " << std::endl;
-  for (it1 = coord_cdf.begin(); it1 != coord_cdf.end(); ++it1) {
-    std::cout << it1->first << ":" << it1->second << std::endl;
-  }
+  // std::cout << "Areas: " << std::endl;
+  // for (size_t i = 0; i < patch_areas.size(); i++) {
+    // std::cout << patch_areas[i] << std::endl;
+  // }
+  // std::cout << "Size areas: " << patch_areas.size() << std::endl;
+  // std::cout << "Size cdf: " << coord_cdf.size() << std::endl;
+  // std::cout << "coord cdf: " << std::endl;
+  // for (it1 = coord_cdf.begin(); it1 != coord_cdf.end(); ++it1) {
+    // std::cout << it1->first << ":" << it1->second << std::endl;
+  // }
 
-  std::cout << "coord pdf: " << std::endl;
-  for (it1 = coord_pdf.begin(); it1 != coord_pdf.end(); ++it1) {
-    std::cout << it1->second << ", ";
-  }
-  std::cout << std::endl;
   // find cdf interval
+  size_t patch_nr = 0;
+  int negative_patch_counter = 0;
   for (it1 = coord_cdf.begin(); it1 != coord_cdf.end(); ++it1) {
-    if (it1->first >= coord1d) break;
+    if (it1->first == coord1d)
+      return it1->second;
+    else if (it1->first >= coord1d)
+      break;
+    if (is_negative_patch[patch_nr]) {
+      // std::cout << "patch " << patch_nr << "is negative" << std::endl;
+      ++negative_patch_counter;
+    }
+    ++patch_nr;
   }
+  --patch_nr;
+  --negative_patch_counter;
 
-  x2 = it1->first;
-  y2 = it1->second;
+  // std::cout << "patch_nr: " << patch_nr << std::endl;
+  // std::cout << "patch_func size: " << patch_functions.size() << std::endl;
   --it1;
-  x1 = it1->first;
-  y1 = it1->second;
-  // find x (linear interpolation): (y-y1)/(x-x1) = (y2-y1)/(x2-x1)
-  y = (y2 - y1) / (x2 - x1) * (coord1d - x1) + y1;
+  double gaussQuadSum = 0.;
+  double left = it1->first;
+  double scaling = coord1d - left;
+  if (is_negative_patch[patch_nr]) {
+    // std::cout << "is negative" << std::endl;
+    for (size_t c = 0; c < quadOrder; c++) {
+      coord[0] = left + scaling * gauss_coordinates[c];
+      gaussQuadSum += weights[c] * patch_functions[negative_patch_counter](coord[0]);
+    }
+  } else {
+    // std::cout << "is not negative" << std::endl;
+    for (size_t c = 0; c < quadOrder; c++) {
+      coord[0] = left + scaling * gauss_coordinates[c];
+      gaussQuadSum += weights[c] * opEval->eval(*alpha1d, coord);
+    }
+  }
 
   /***************** STEP 2. Done  ********************/
-  return y;
+  return it1->second + (gaussQuadSum * scaling) / sum;
 }  // end of compute_1D_cdf()
 }  // namespace datadriven
 }  // namespace sgpp
