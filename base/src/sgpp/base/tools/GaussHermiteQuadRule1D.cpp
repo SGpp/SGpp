@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/tools/GaussHermiteQuadRule1D.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
+#include <sgpp/base/tools/GaussHermiteQuadRule1D.hpp>
 
 namespace sgpp {
 namespace base {
@@ -2859,7 +2859,7 @@ inline void GaussHermiteQuadRule1D::setGaussHermiteValuesForDegree49() {
   weights[49]->set(49, 0.000000000000000);
 }
 
-GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() {
+GaussHermiteQuadRule1D::GaussHermiteQuadRule1D() : QuadRule1D(50) {
   setGaussHermiteValuesForDegree0();
   setGaussHermiteValuesForDegree1();
   setGaussHermiteValuesForDegree2();
