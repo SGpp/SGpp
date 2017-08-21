@@ -45,6 +45,8 @@ class GaussHermiteQuadRule1D : public QuadRule1D {
   static GaussHermiteQuadRule1D& getInstance();
 
  protected:
+  const size_t maxSupportedLevel = 50;
+
   inline void setGaussHermiteValuesForDegree0();
   inline void setGaussHermiteValuesForDegree1();
   inline void setGaussHermiteValuesForDegree2();
