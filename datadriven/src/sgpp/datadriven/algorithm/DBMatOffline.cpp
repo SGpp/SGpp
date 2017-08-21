@@ -86,8 +86,8 @@ DBMatOffline::DBMatOffline(const std::string& fileName)
 
 DBMatDensityConfiguration& DBMatOffline::getConfig() { return config; }
 
-DataMatrix& DBMatOffline::getDecomposedMatrix(bool FOR_TESTING_ONLY) {
-  if (isDecomposed || FOR_TESTING_ONLY) {
+DataMatrix& DBMatOffline::getDecomposedMatrix() {
+  if (isDecomposed) {
     return lhsMatrix;
   } else {
     throw data_exception("Matrix was not decomposed yet");
@@ -199,6 +199,8 @@ void sgpp::datadriven::DBMatOffline::parseConfig(const std::string& fileName,
   config.lambda_ = std::stof(tokens[4]);
   config.decomp_type_ = static_cast<DBMatDecompostionType>(std::stoi(tokens[5]));
 }
+
+sgpp::base::DataMatrix& DBMatOffline::getLhsMatrix_ONLY_FOR_TESTING() { return this->lhsMatrix; }
 
 }  // namespace datadriven
 }  // namespace sgpp

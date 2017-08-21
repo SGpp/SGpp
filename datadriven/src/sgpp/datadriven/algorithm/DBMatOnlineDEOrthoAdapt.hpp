@@ -21,43 +21,49 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
   explicit DBMatOnlineDEOrthoAdapt(sgpp::datadriven::DBMatOffline& offline, double beta = 0.);
 
   /**
-   * Rank-one updates/downdates the system matrix, based on the sherman-morrison-formula
+   * Performs refinement/coarsening on the offline and/or online objects
+   * Returns points, which could not be coarsened
    *
-   * @param doCoarsen triggers between refine/coarsen
+   * @param deletedPoints list of indices of last coarsed points
+   * @param newPoints amount of refined points
+   * @param lambda the regularization parameter
    */
-  void adapt(sgpp::base::DataMatrix& adapt_matrix, bool refine,
-             std::vector<size_t> coarsen_indices);
-
-  // getter and setter
-  sgpp::base::DataMatrix& getB() { return this->b_adapt_matrix_; };
-
-  //
-  //
-  //
-  //
+  std::vector<size_t> adapt(size_t newPoints, std::list<size_t> deletedPoints, double lambda);
 
   /**
-   * Computes the cartesian values of the points to adapt, given a changed grid
-   * If the grid has not been refined/coarsened yet, nothing will happen
-   *
-   * @param refine Chooses between refining/coarsening
+   * returns the additive component of the sherman-morrison-formula, which
+   * yields all the information about the refined points
    */
-  void getAdaptPointsCartesian(bool refine, sgpp::base::DataMatrix& adapt_matrix,
-                               std::vector<size_t> coarsen_indices);
+  sgpp::base::DataMatrix& getB() { return this->b_adapt_matrix_; };
+
+  /**
+   * adds new DataVector to list of refined points
+   *
+   * @param the DataVector to add
+   */
+  void add_new_refine_point(sgpp::base::DataVector& x) { this->refined_points_.push_back(x); };
+
+  std::vector<sgpp::base::DataVector>* getRefinedPointsPointer() {
+    return &(this->refined_points_);
+  };
 
  protected:
   // matrix, which holds information about refined/coarsened points
   sgpp::base::DataMatrix b_adapt_matrix_;
 
+  // holds all prior refined points, to know what to coarsen
+  std::vector<sgpp::base::DataVector> refined_points_;
+
   // bool, which tells if refinement/coarsening has been performed yet
   bool b_is_refined;
+
   /**
    * Solves the system (R + lambda*I) * alpha = b, and obtains alpha
    * The solving is done after offline and online phase and looks as follows:
    * (R + lambda*I)^{-1} * b = ((Q*T^{-1}*Q^{t} + B) * b = alpha,
    * where B yields the refine/coarsen information
    *
-   * @param b     The right hand side of the system
+   * @param b The right hand side of the system
    * @param do_cv Specifies, if cross-validation should be done
    */
   void solveSLE(sgpp::base::DataVector& b, bool do_cv) override;
@@ -67,12 +73,21 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    * Rank-one updates/downdates the system matrix, based on the sherman-morrison-formula
    * In the current version of the parent functions, the refinePts already are adapted
    * to the configuration parameter lambda.
-   * @param refinePts Points to refine
-   * @param coarsePts Points to coarsen
-   * @param refine    Decides: true for refine, false for coarsen
+   *
+   * @param newPoints number of refined points
+   * @param refine Decides: true for refine, false for coarsen
+   * @param coarsen_indices the indices of points to coarsen sorted descendantly
    */
-  void sherman_morrison_adapt(sgpp::base::DataMatrix& adapt_points, bool refine,
+  void sherman_morrison_adapt(size_t newPoints, bool refine,
                               std::vector<size_t> coarsen_indices = {});
+
+  /**
+   * Computes the L_2 products of the refined gridpoints. The Vector of the products
+   * corresponds to a row/column of the lhs matrix
+   *
+   * @param newPoints The number of points to refine
+   */
+  void compute_L2_gridvectors(size_t newPoints);
 };
 }  // namespace datadriven
 }  // namespace sgpp
