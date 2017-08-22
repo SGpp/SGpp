@@ -23,53 +23,72 @@ namespace combigrid {
  */
 template <typename ScalarEvaluator>
 class ArrayEvaluator : public AbstractLinearEvaluator<FloatArrayVector> {
-  std::vector<ScalarEvaluator> evaluators;
+  ScalarEvaluator evaluator;
+  FloatArrayVector params;
   std::vector<FloatArrayVector> basisCoefficients;
+  bool coefficientsComputed = false;
   std::vector<double> xValues;
   bool doesNeedParameter;
 
   void computeBasisCoefficients() {
     basisCoefficients = std::vector<FloatArrayVector>(xValues.size(), FloatArrayVector::zero());
 
-    for (size_t i = 0; i < evaluators.size(); ++i) {
-      auto coeff = evaluators[i].getBasisCoefficients();
+    if (params.size() == 0) {
+      auto coeff = evaluator.getBasisCoefficients();
       for (size_t j = 0; j < coeff.size(); ++j) {
-        basisCoefficients[j].at(i) = coeff[j];
+        basisCoefficients[j].at(0) = coeff[j];
+      }
+    } else {
+      for (size_t i = 0; i < params.size(); ++i) {
+        evaluator.setParameter(params[i]);
+        auto coeff = evaluator.getBasisCoefficients();
+        for (size_t j = 0; j < coeff.size(); ++j) {
+          basisCoefficients[j].at(i) = coeff[j];
+        }
       }
     }
+
+    coefficientsComputed = true;
   }
 
  public:
   explicit ArrayEvaluator(bool doesNeedParameter,
                           ScalarEvaluator evaluatorPrototype = ScalarEvaluator())
-      : evaluators(1, evaluatorPrototype),
+      : evaluator(evaluatorPrototype),
+        params(),
         basisCoefficients(),
         xValues(),
         doesNeedParameter(doesNeedParameter) {}
 
   explicit ArrayEvaluator(bool doesNeedParameter, ScalarEvaluator *evaluatorPrototype)
-      : evaluators(1, *evaluatorPrototype),
+      : evaluator(*evaluatorPrototype),
+        params(),
         basisCoefficients(),
         xValues(),
         doesNeedParameter(doesNeedParameter) {}
 
   ArrayEvaluator(ArrayEvaluator<ScalarEvaluator> const &other)
-      : evaluators(other.evaluators),
+      : evaluator(other.evaluator),
+        params(other.params),
         basisCoefficients(other.basisCoefficients),
+        coefficientsComputed(other.coefficientsComputed),
         xValues(other.xValues),
         doesNeedParameter(other.doesNeedParameter) {}
 
   ~ArrayEvaluator() {}
 
-  virtual std::vector<FloatArrayVector> getBasisCoefficients() { return basisCoefficients; }
+  virtual std::vector<FloatArrayVector> getBasisCoefficients() {
+    if (!coefficientsComputed) {
+      computeBasisCoefficients();
+    }
+    return basisCoefficients;
+  }
 
   virtual void setGridPoints(std::vector<double> const &xValues) {
     this->xValues = xValues;
-    for (auto &eval : evaluators) {
-      eval.setGridPoints(xValues);
-    }
+    evaluator.setGridPoints(xValues);
 
-    computeBasisCoefficients();
+    coefficientsComputed = false;
   }
 
   virtual std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> cloneLinear() {
@@ -77,27 +96,13 @@ class ArrayEvaluator : public AbstractLinearEvaluator<FloatArrayVector> {
         new ArrayEvaluator<ScalarEvaluator>(*this));
   }
 
-  virtual bool needsOrderedPoints() { return evaluators[0].needsOrderedPoints(); }
+  virtual bool needsOrderedPoints() { return evaluator.needsOrderedPoints(); }
 
   virtual bool needsParameter() { return doesNeedParameter; }
 
   virtual void setParameter(FloatArrayVector const &param) {
-    if (evaluators.size() > param.size()) {
-      evaluators.resize(param.size());
-    } else {
-      if (evaluators.size() == 0) {
-        evaluators.emplace_back();
-        evaluators.back().setGridPoints(xValues);
-      }
-      while (evaluators.size() < param.size()) {
-        evaluators.push_back(evaluators.back());
-      }
-    }
-    for (size_t i = 0; i < param.size(); ++i) {
-      evaluators[i].setParameter(param[i]);
-    }
-
-    computeBasisCoefficients();
+    this->params = param;
+    coefficientsComputed = false;
   }
 };
 
