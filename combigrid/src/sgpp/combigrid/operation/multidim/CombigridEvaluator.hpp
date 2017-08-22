@@ -108,8 +108,14 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
       if (level[d] > 0) {
         MultiIndex l = level;
         --l[d];
-        addLevel(l);  // should not affect performance because nothing is computed if the storage
-                      // already contains a value
+
+        // should not affect performance because nothing is computed if the storage
+        // already contains a value
+        bool success = addLevel(l);
+
+        if (!success) {
+          return false;
+        }
       }
     }
 
