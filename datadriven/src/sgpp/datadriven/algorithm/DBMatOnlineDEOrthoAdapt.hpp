@@ -87,7 +87,7 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    *
    * @param newPoints The number of points to refine
    */
-  void compute_L2_gridvectors(size_t newPoints);
+  void compute_L2_gridvectors(size_t newPoints, double newLambda);
 };
 }  // namespace datadriven
 }  // namespace sgpp
