@@ -69,12 +69,11 @@ void DBMatDMSOrthoAdapt::solve(sgpp::base::DataMatrix& T_inv, sgpp::base::DataMa
   gsl_matrix_view t_inv_view =
       gsl_matrix_view_array(T_inv.getPointer(), T_inv.getNrows(), T_inv.getNcols());
   gsl_matrix_view b_matrix_view = gsl_matrix_view_array(B.getPointer(), B.getNrows(), B.getNcols());
-  gsl_matrix_view b_vector_view = gsl_matrix_view_array(b.getPointer(), b.getSize(), 1);
   gsl_matrix_view b_vector_view_cut = gsl_matrix_view_array(b.getPointer(), Q.getNrows(), 1);
+  gsl_matrix_view b_vector_view = gsl_matrix_view_array(b.getPointer(), b.getSize(), 1);
   gsl_matrix_view alpha_view_cut = gsl_matrix_view_array(alpha.getPointer(), Q.getNrows(), 1);
   gsl_matrix_view alpha_view = gsl_matrix_view_array(alpha.getPointer(), alpha.getSize(), 1);
 
-  gsl_matrix* interim1 = gsl_matrix_alloc(Q.getNrows(), 1);
   gsl_matrix* interim2 = gsl_matrix_alloc(Q.getNrows(), 1);
 
   // starting calculation: Q * T^{-1} * Q^t * b
@@ -102,7 +101,7 @@ void DBMatDMSOrthoAdapt::solve(sgpp::base::DataMatrix& T_inv, sgpp::base::DataMa
   // std::cout << std::endl;
   // if B should not be considered
   if (!prior_refined || B.getNcols() == Q.getNcols()) {
-    if (interim1->size1 != alpha.getSize()) {
+    if (interim2->size1 != alpha.getSize()) {
       throw sgpp::base::data_exception(
           "ortho_adapt_solver: alpha does not match Q * T^{-1} * Q^t * b");
     }
