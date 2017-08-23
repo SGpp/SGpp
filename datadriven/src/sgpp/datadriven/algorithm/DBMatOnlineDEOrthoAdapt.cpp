@@ -102,27 +102,27 @@ void DBMatOnlineDEOrthoAdapt::solveSLE(DataVector& b, bool do_cv) {
 
 void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refine,
                                                      std::vector<size_t> coarsenIndices) {
-  std::cout << "entered sherman_morrison_adapt: " << std::endl;
+  // std::cout << "entered sherman_morrison_adapt: " << std::endl;
   // check, if offline object has been decomposed
   sgpp::datadriven::DBMatOfflineOrthoAdapt* childPtr =
       static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&this->offlineObject);
 
-  std::cout << "checking if decomposed" << std::endl;
+  // std::cout << "checking if decomposed" << std::endl;
   if (childPtr->getDimA() == 0) {
     throw sgpp::base::algorithm_exception(
         "offline object wasn't decomposed yet ...\ncan't apply sherman_morrison this way");
   }
 
-  std::cout << "calculating sizes" << std::endl;
+  // std::cout << "calculating sizes" << std::endl;
 
   // determine the final size of the matrix system
   size_t oldSize = this->b_is_refined ? this->b_adapt_matrix_.getNcols() : childPtr->getDimA();
   size_t newSize = refine ? (oldSize + newPoints) : (oldSize - coarsenIndices.size());
   size_t adaptSteps = (newSize > oldSize) ? (newSize - oldSize) : (oldSize - newSize);
 
-  std::cout << "oldSize = " << oldSize << std::endl;
-  std::cout << "newSize = " << newSize << std::endl;
-  std::cout << "adaptSteps = " << adaptSteps << std::endl;
+  // std::cout << "oldSize = " << oldSize << std::endl;
+  // std::cout << "newSize = " << newSize << std::endl;
+  // std::cout << "adaptSteps = " << adaptSteps << std::endl;
 
   size_t refine_start_index = oldSize - childPtr->getDimA();
 
@@ -143,15 +143,15 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
   // ( one for each point
   // refining/coarsening )
   for (size_t k = 0; k < adaptSteps; k++) {
-    std::cout << "sherman-morrison-loop: " << k << std::endl;
+    // std::cout << "sherman-morrison-loop: " << k << std::endl;
     // fetch point with according size
     // refine -> size gets bigger by 1
     // coarse -> size stays the same
     size_t current_size = oldSize + (refine ? k + 1 : 0);
-    std::cout << "current size = " << current_size << std::endl;
-    std::cout << "getting refinepoint at index: "
-              << (refine ? refine_start_index + k : coarsenIndices[k] - childPtr->getDimA())
-              << std::endl;
+    // std::cout << "current size = " << current_size << std::endl;
+    // std::cout << "getting refinepoint at index: "
+    //           << (refine ? refine_start_index + k : coarsenIndices[k] - childPtr->getDimA())
+    //           << std::endl;
     sgpp::base::DataVector x =
         this->refined_points_[refine ? refine_start_index + k
                                      : coarsenIndices[k] - childPtr->getDimA()];
@@ -162,17 +162,17 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
           (x.get(current_size - 1) - 1) * 0.5;  // lambda is added already on all of refinePts
       x.set(current_size - 1, config_x_value);
     } else {
-      std::cout << "coarsenindex of the matrix would be: " << coarsenIndices[k] << std::endl;
+    //   std::cout << "coarsenindex of the matrix would be: " << coarsenIndices[k] << std::endl;
       // no clipping off when coarsening
       double config_x_value =
           (x.get(coarsenIndices[k]) - 1) * 0.5;  // lambda is added already on all of refinePts
       x.set(coarsenIndices[k], config_x_value);
     }
-    std::cout << "refined point will be: " << std::endl;
-    for (size_t i = 0; i < current_size; i++) {
-      std::cout << x.get(i) << "   ";
-    }
-    std::cout << std::endl;
+    // std::cout << "refined point will be: " << std::endl;
+    // for (size_t i = 0; i < current_size; i++) {
+    //   std::cout << x.get(i) << "   ";
+    // }
+    // std::cout << std::endl;
 
     // configure unit vector depending on
     // refine/coarsen
@@ -210,10 +210,10 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
     // calculating bx_term = B * x
     gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &b_adapt_view.matrix, &x_view.matrix, 0.0,
                    bx_term);
-    std::cout << "\n\nbx_term = B * x = \n";
-    for (size_t i = 0; i < bx_term->size1; i++) {
-      std::cout << bx_term->data[i] << " ";
-    }
+    // std::cout << "\n\nbx_term = B * x = \n";
+    // for (size_t i = 0; i < bx_term->size1; i++) {
+    //   std::cout << bx_term->data[i] << " ";
+    // }
     // calculating x_term = Q*T^{-1}*Q^t * x_cut
     gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &q_view.matrix, &x_cut_view.matrix, 0.0,
                    x_term);  // x_term = Q^t * x_cut
@@ -223,15 +223,15 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
 
     gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &q_view.matrix, buffer, 0.0,
                    x_term);  // x_term = Q*T^{-1}*Q^t * x_cut
-    std::cout << "\n\nx_term = Q * T_inv * Q_t * x = \n";
-    for (size_t i = 0; i < x_term->size1; i++) {
-      std::cout << x_term->data[i] << " ";
-    }
+    // std::cout << "\n\nx_term = Q * T_inv * Q_t * x = \n";
+    // for (size_t i = 0; i < x_term->size1; i++) {
+    //   std::cout << x_term->data[i] << " ";
+    // }
     // calculating the divisor of sherman morrison formula: 1 - e^t * x_term - e^t * bx_term
     double eQTQx = 0.0;  // is always zero, because initial gridpoints cannot be refined
     double eBx = (refine ? 1.0 : -1.0) * gsl_matrix_get(bx_term, unit_index, 0);
     double divisor = 1 + eQTQx + eBx;
-    std::cout << "\n\ndivisor = " << divisor << std::endl;
+    // std::cout << "\n\ndivisor = " << divisor << std::endl;
     divisor = 1.0 / divisor;
 
     // calculating: bx_term + x_term, where x_term is filled with zero to fit dimension of bx
@@ -239,11 +239,11 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
     for (size_t i = 0; i < childPtr->getDimA(); i++) {
       bx_term->data[i] += x_term->data[i];
     }
-    std::cout << "bx_term + x_term = " << std::endl;
-    for (size_t i = 0; i < bx_term->size1; i++) {
-      std::cout << std::setprecision(7) << std::fixed << bx_term->data[i] << "  ";
-    }
-    std::cout << std::endl;
+    // std::cout << "bx_term + x_term = " << std::endl;
+    // for (size_t i = 0; i < bx_term->size1; i++) {
+    //   std::cout << std::setprecision(7) << std::fixed << bx_term->data[i] << "  ";
+    // }
+    // std::cout << std::endl;
 
     // subtracting the matrices B - ( x_term * e_term ) / divisor
     // where the vector product is an outer product yielding a matrix
@@ -256,8 +256,8 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
         this->b_adapt_matrix_.set(i, j, final_value);
       }
     }
-    std::cout << "B_tilde = " << std::endl;
-    printMatrix(this->b_adapt_matrix_);
+    // std::cout << "B_tilde = " << std::endl;
+    // printMatrix(this->b_adapt_matrix_);
     /*
      * starting calculations: second sherman morrison update/downdate
      * reusing value of first step
@@ -265,11 +265,11 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
     // calculating new bx_term = x^t * B_tilde = B_tilde^t * x
     gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &b_adapt_view.matrix, &x_view.matrix, 0.0,
                    bx_term);
-    std::cout << "\n\nbx_term = B * x = \n";
-    for (size_t i = 0; i < bx_term->size1; i++) {
-      std::cout << bx_term->data[i] << " ";
-    }
-    std::cout << std::endl;
+    // std::cout << "\n\nbx_term = B * x = \n";
+    // for (size_t i = 0; i < bx_term->size1; i++) {
+    //   std::cout << bx_term->data[i] << " ";
+    // }
+    // std::cout << std::endl;
 
     // calculating the divisor of sherman morrison formula: 1 - e^t * x_term - e^t *
     // b_tilde_x_term
@@ -295,8 +295,8 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
         this->b_adapt_matrix_.set(i, j, final_value);
       }
     }
-    std::cout << "B_final = " << std::endl;
-    printMatrix(this->b_adapt_matrix_);
+    // std::cout << "B_final = " << std::endl;
+    // printMatrix(this->b_adapt_matrix_);
   } /*** ending sherman morrison update/downdate calculations ***/
 
   // If points were coarsened the b_adapt_matrix will now have empty rows and columns
@@ -323,8 +323,8 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
     }
     this->b_adapt_matrix_.resizeQuadratic(newSize);
 
-    std::cout << "after removing rows/columns: " << std::endl;
-    printMatrix(this->b_adapt_matrix_);
+    // std::cout << "after removing rows/columns: " << std::endl;
+    // printMatrix(this->b_adapt_matrix_);
   }
 
   // determine, if any refined information is in matrix b_adapt

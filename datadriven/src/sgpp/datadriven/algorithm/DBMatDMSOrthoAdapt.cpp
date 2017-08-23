@@ -34,6 +34,8 @@ void DBMatDMSOrthoAdapt::solve(sgpp::base::DataMatrix& T_inv, sgpp::base::DataMa
 
   if (prior_refined) {
     if (B.getNcols() != b.getSize()) {
+      std::cout << "B size: " << B.getNcols() << "x" << B.getNrows() << std::endl;
+      std::cout << "b size: " << b.getSize() << std::endl;
       throw sgpp::base::data_exception(
           "ortho_adapt_solver: Matrix B and Vector b don't match for mult.");
     }
@@ -49,18 +51,18 @@ void DBMatDMSOrthoAdapt::solve(sgpp::base::DataMatrix& T_inv, sgpp::base::DataMa
    * so the operations Q * T_inv * Q_t * b will be capped to size dimA()
    */
 
-  std::cout << "Entered solver: \n";
-  std::cout << "Q = \n";
-  printMatrix(Q);
-  std::cout << "T_inv = \n";
-  printMatrix(T_inv);
-  std::cout << "B = \n";
-  printMatrix(B);
-  std::cout << "b = \n";
-  for (int i = 0; i < b.getSize(); i++) {
-    std::cout << b.get(i) << "  ";
-  }
-  std::cout << "\n";
+  // std::cout << "Entered solver: \n";
+  // std::cout << "Q = \n";
+  // printMatrix(Q);
+  // std::cout << "T_inv = \n";
+  // printMatrix(T_inv);
+  // std::cout << "B = \n";
+  // printMatrix(B);
+  // std::cout << "b = \n";
+  // for (int i = 0; i < b.getSize(); i++) {
+  //   std::cout << b.get(i) << "  ";
+  // }
+  // std::cout << "\n";
 
   // creating gsl_matrix_views to be able to use BLAS operations
   gsl_matrix_view q_view = gsl_matrix_view_array(Q.getPointer(), Q.getNrows(), Q.getNcols());
@@ -79,33 +81,33 @@ void DBMatDMSOrthoAdapt::solve(sgpp::base::DataMatrix& T_inv, sgpp::base::DataMa
   // calculating Q^t * b
   gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &q_view.matrix, &b_vector_view_cut.matrix, 0.0,
                  &alpha_view_cut.matrix);
-  std::cout << "\nQ^t * b = \n";
-  for (size_t i = 0; i < alpha_view_cut.matrix.size1; i++) {
-    std::cout << alpha_view_cut.matrix.data[i] << " ";
-  }
+  // std::cout << "\nQ^t * b = \n";
+  // for (size_t i = 0; i < alpha_view_cut.matrix.size1; i++) {
+  //   std::cout << alpha_view_cut.matrix.data[i] << " ";
+  // }
   // calculating T^{-1} * Q^t * b
   gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &t_inv_view.matrix, &alpha_view_cut.matrix, 0.0,
                  interim2);
-  std::cout << "\nT^{-1} * Q^t * b = \n";
-  for (size_t i = 0; i < interim2->size1; i++) {
-    std::cout << interim2->data[i] << " ";
-  }
+  // std::cout << "\nT^{-1} * Q^t * b = \n";
+  // for (size_t i = 0; i < interim2->size1; i++) {
+  //   std::cout << interim2->data[i] << " ";
+  // }
   // calculating Q * T^{-1} * Q^t * b
   gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &q_view.matrix, interim2, 0.0,
                  &alpha_view_cut.matrix);
-  std::cout << "\nQ * T^{-1} * Q^t * b = \n";
-  for (size_t i = 0; i < alpha_view_cut.matrix.size1; i++) {
-    std::cout << alpha_view_cut.matrix.data[i] << " ";
-  }
-  std::cout << std::endl;
+  // std::cout << "\nQ * T^{-1} * Q^t * b = \n";
+  // for (size_t i = 0; i < alpha_view_cut.matrix.size1; i++) {
+  //   std::cout << alpha_view_cut.matrix.data[i] << " ";
+  // }
+  // std::cout << std::endl;
   // if B should not be considered
   if (!prior_refined || B.getNcols() == Q.getNcols()) {
     if (interim1->size1 != alpha.getSize()) {
       throw sgpp::base::data_exception(
           "ortho_adapt_solver: alpha does not match Q * T^{-1} * Q^t * b");
     }
-  } else {  // add the B*b term
-    std::cout << "adding B*b to small alpha\n";
+  } else {  // add the B*b term: alpha = alpha + B*b
+    // std::cout << "adding B*b to small alpha\n";
     gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &b_matrix_view.matrix, &b_vector_view.matrix,
                    1.0, &alpha_view.matrix);  // gsl_blas allows to add to the target after mult.
   }

@@ -106,16 +106,22 @@ int main() {
       // choose "LU decomposition"
       // dt = DBMatDecompostionType::DBMatDecompLU;
       // decompType = "LU decomposition";
+
       // choose"Eigen decomposition"
       // dt = DBMatDecompostionType::DBMatDecompEigen;
       // decompType = "Eigen decomposition";
+
       // choose "Cholesky decomposition"
-      //      dt = sgpp::datadriven::DBMatDecompostionType::Chol;
-      //      decompType = "Cholesky decomposition";
-      //      dt = sgpp::datadriven::DBMatDecompostionType::IChol;
-      //      decompType = "Incomplete Cholesky decomposition";
-      dt = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
-      decompType = "Incomplete Cholesky decomposition on Dense Matrix";
+      // dt = sgpp::datadriven::DBMatDecompostionType::Chol;
+      // decompType = "Cholesky decomposition";
+      // dt = sgpp::datadriven::DBMatDecompostionType::IChol;
+      // decompType = "Incomplete Cholesky decomposition";
+      // dt = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
+
+      // choose "orthogonal Adaptivity"
+      dt = sgpp::datadriven::DBMatDecompostionType::OrthoAdapt;
+      decompType = "orthogonal Adaptivity";
+
       std::cout << "Decomposition type: " << decompType << std::endl;
 
       /**
@@ -200,7 +206,7 @@ int main() {
 
       // specify batch size
       // (set to 1 for processing only a single data point each iteration)
-      size_t batchSize = 1;
+      size_t batchSize = 9;  // todo: hier triggern ... 90ster punkt macht fehler i-wie
       // specify max number of passes over traininig data set
       size_t maxDataPasses = 2;
 
