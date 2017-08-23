@@ -111,6 +111,9 @@ void DBMatOfflineOrthoAdapt::hessenberg_decomposition(gsl_vector* diag, gsl_vect
   return;
 }
 
+void DBMatOfflineOrthoAdapt::invert_symmetric_tridiag_gsl(gsl_vector* diag, gsl_vector* subdiag) {
+  // stuffs
+}
 void DBMatOfflineOrthoAdapt::invert_symmetric_tridiag(gsl_vector* diag, gsl_vector* subdiag) {
   /*
    * note: instead gsl_vector_get/set, gsl_vector->data[index] is used

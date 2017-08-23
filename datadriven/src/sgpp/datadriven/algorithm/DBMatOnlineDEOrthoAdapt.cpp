@@ -32,18 +32,7 @@ namespace datadriven {
 static void printMatrix(sgpp::base::DataMatrix a) {
   for (size_t i = 0; i < a.getNrows(); i++) {
     for (size_t j = 0; j < a.getNcols(); j++) {
-      std::cout << std::setprecision(7) << std::fixed << a.get(i, j) << "  ";
-    }
-    std::cout << std::endl;
-  }
-  std::cout << std::endl;
-}
-
-static void printMatrixView(gsl_matrix_view a) {
-  for (size_t i = 0; i < (&a.matrix)->size1; i++) {
-    for (size_t j = 0; j < (&a.matrix)->size2; j++) {
-      std::cout << std::setprecision(5) << std::fixed
-                << (&a.matrix)->data[i * (&a.matrix)->size1 + j] << "  ";
+      std::cout << std::setprecision(10) << std::fixed << a.get(i, j) << "  ";
     }
     std::cout << std::endl;
   }
@@ -117,6 +106,7 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
   // check, if offline object has been decomposed
   sgpp::datadriven::DBMatOfflineOrthoAdapt* childPtr =
       static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&this->offlineObject);
+
   std::cout << "checking if decomposed" << std::endl;
   if (childPtr->getDimA() == 0) {
     throw sgpp::base::algorithm_exception(
