@@ -13,6 +13,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
@@ -351,6 +352,11 @@ void LearnerSGDEOnOff::predict(DataMatrix& data, DataVector& result) const {
     perClassDensities.emplace_back(data.getNrows());
     densityFunction.first->eval(data, perClassDensities.back(), true);
     perClassDensities.back().mult(prior.at(densityFunction.second));
+    // todo: test
+    for (size_t i = 0; i < perClassDensities.back().getSize(); i++) {
+      std::cout << "density von class: " << perClassDensities.back().get(i) << "\t";
+    }
+    std::cout << std::endl;
   }
 
 // now select the appropriate class
@@ -360,6 +366,7 @@ void LearnerSGDEOnOff::predict(DataMatrix& data, DataVector& result) const {
     auto maxDensity = std::numeric_limits<double>::max() * (-1);
     for (auto classNum = 0u; classNum < numClasses; classNum++) {
       auto density = perClassDensities[classNum][point];
+      std::cout << "\ndensity: " << density << std::endl;
       if (density > maxDensity) {
         maxDensity = density;
         bestClass = densityFunctions[classNum].second;
@@ -550,91 +557,120 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
     func = &funcData;
   }
 
-  // perform refinement/coarsening for each grid
-  for (size_t idx = 0; idx < getNumClasses(); idx++) {
-    // perform refinement/coarsening for grid which corresponds to current
-    // index
-    std::cout << "Refinement and coarsening for class: " << idx << "\n";
-    auto densEst = onlineObjects[idx].first.get();
-    Grid& grid = densEst->getOfflineObject().getGrid();
-    std::cout << "Size before adaptivity: " << grid.getSize() << "\n";
+  if (offline->isRefineable()) {
+    // perform refinement/coarsening for each grid
+    for (size_t idx = 0; idx < getNumClasses(); idx++) {
+      // perform refinement/coarsening for grid which corresponds to current
+      // index
+      std::cout << "Refinement and coarsening for class: " << idx << "\n";
+      auto densEst = onlineObjects[idx].first.get();
+      Grid& grid = densEst->getOfflineObject().getGrid();
+      std::cout << "Size before adaptivity: " << grid.getSize() << "\n";
 
-    GridGenerator& gridGen = grid.getGenerator();
+      GridGenerator& gridGen = grid.getGenerator();
 
-    size_t sizeBeforeRefine = grid.getSize();
-    size_t sizeAfterRefine = grid.getSize();
+      size_t sizeBeforeRefine = grid.getSize();
+      size_t sizeAfterRefine = grid.getSize();
 
-    if (refType == "surplus") {
-      std::unique_ptr<OperationEval> opEval(op_factory::createOperationEval(grid));
-      GridStorage& gridStorage = grid.getStorage();
-      alphaWork = &(densEst->getAlpha());
-      DataVector alphaWeight(alphaWork->getSize());
-      // determine surpluses
-      for (size_t k = 0; k < gridStorage.getSize(); k++) {
-        // sets values of p to the coordinates of the given GridPoint gp
-        gridStorage.getPoint(k).getStandardCoordinates(p);
-        // multiply k-th alpha with the evaluated function at grind-point
-        // k
-        alphaWeight[k] = alphaWork->get(k) * opEval->eval(*alphaWork, p);
+      if (refType == "surplus") {
+        std::unique_ptr<OperationEval> opEval(op_factory::createOperationEval(grid));
+        GridStorage& gridStorage = grid.getStorage();
+        alphaWork = &(densEst->getAlpha());
+        DataVector alphaWeight(alphaWork->getSize());
+        // determine surpluses
+        for (size_t k = 0; k < gridStorage.getSize(); k++) {
+          // sets values of p to the coordinates of the given GridPoint gp
+          gridStorage.getPoint(k).getStandardCoordinates(p);
+          // multiply k-th alpha with the evaluated function at grind-point
+          // k
+          alphaWeight[k] = alphaWork->get(k) * opEval->eval(*alphaWork, p);
+        }
+
+        // Perform Coarsening (surplus based)
+        /*if (coarseCnt < maxCoarseNum) {
+          HashCoarsening coarse_;
+          //std::cout << "\n" << "Start coarsening\n";
+
+          // Coarsening based on surpluses
+          SurplusCoarseningFunctor scf(
+            alphaWeight, coarseNumPoints, coarseThreshold);
+
+          //std::cout << "Size before coarsening:" << grid->getSize() <<
+        "\n";
+          //int old_size = grid->getSize();
+          coarse_.free_coarsen_NFirstOnly(
+            grid->getStorage(), scf, alphaWeight, grid->getSize());
+
+          std::cout << "Size after coarsening:" << grid->getSize() <<
+        "\n\n";
+          //int new_size = grid->getSize();
+
+          deletedGridPoints.clear();
+          deletedGridPoints = coarse_.getDeletedPoints();
+
+          (*refineCoarse)[idx].first = deletedGridPoints;
+
+          coarseCnt++;
+        }*/
+
+        // perform refinement (surplus based)
+        sizeBeforeRefine = grid.getSize();
+        // simple refinement based on surpluses
+        SurplusRefinementFunctor srf(alphaWeight, offline->getConfig().ref_noPoints_);
+        gridGen.refine(srf);
+        sizeAfterRefine = grid.getSize();
+      } else if ((refType == "data") || (refType == "zero")) {
+        if (preCompute) {
+          // precompute the evals (needs to be done once per step, before
+          // any refinement is done
+          func->preComputeEvaluations();
+        }
+        func->setGridIndex(idx);
+        // perform refinement (zero-crossings-based / data-based)
+        sizeBeforeRefine = grid.getSize();
+        gridGen.refine(*func);
+        sizeAfterRefine = grid.getSize();
       }
 
-      // Perform Coarsening (surplus based)
-      /*if (coarseCnt < maxCoarseNum) {
-        HashCoarsening coarse_;
-        //std::cout << "\n" << "Start coarsening\n";
+      std::cout << "grid size after adaptivity: " << grid.getSize() << "\n";
 
-        // Coarsening based on surpluses
-        SurplusCoarseningFunctor scf(
-          alphaWeight, coarseNumPoints, coarseThreshold);
+      newPoints = sizeAfterRefine - sizeBeforeRefine;
+      refineCoarse[idx].second = newPoints;
 
-        //std::cout << "Size before coarsening:" << grid->getSize() <<
-      "\n";
-        //int old_size = grid->getSize();
-        coarse_.free_coarsen_NFirstOnly(
-          grid->getStorage(), scf, alphaWeight, grid->getSize());
+      // if decomp_type_ == ortho_adapt
+      if (offline->getConfig().decomp_type_ ==
+          sgpp::datadriven::DBMatDecompostionType::OrthoAdapt) {
+        /*
+         * hier returned array mit "nicht gecoarseten" punkten die dann wieder ins grid rein
+         * müssen, und zwar jeder einzelne punkt (auf grid objekt ebene)
+         */
+        // refines, coarsenes and then
+        // takes the points which couldn't be coarsened as return
+        std::cout << "ENTERED ON OFF CASE Ortho_Adapt:" << std::endl;
+        std::vector<size_t> not_coarsed_points =
+            static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt&>(*densEst).adapt(
+                newPoints, deletedGridPoints, densEst->getBestLambda());
 
-        std::cout << "Size after coarsening:" << grid->getSize() <<
-      "\n\n";
-        //int new_size = grid->getSize();
-
-        deletedGridPoints.clear();
-        deletedGridPoints = coarse_.getDeletedPoints();
-
-        (*refineCoarse)[idx].first = deletedGridPoints;
-
-        coarseCnt++;
-      }*/
-
-      // perform refinement (surplus based)
-      sizeBeforeRefine = grid.getSize();
-      // simple refinement based on surpluses
-      SurplusRefinementFunctor srf(alphaWeight, offline->getConfig().ref_noPoints_);
-      gridGen.refine(srf);
-      sizeAfterRefine = grid.getSize();
-    } else if ((refType == "data") || (refType == "zero")) {
-      if (preCompute) {
-        // precompute the evals (needs to be done once per step, before
-        // any refinement is done
-        func->preComputeEvaluations();
+        // not coarsened points must be added to the grid again
+        // todo: add not_coarsed_points to grid
+        std::cout << "points which couldn't be coarsened: " << std::endl;
+        for (auto a : not_coarsed_points) {
+          std::cout << a << std::endl;
+        }
       }
-      func->setGridIndex(idx);
-      // perform refinement (zero-crossings-based / data-based)
-      sizeBeforeRefine = grid.getSize();
-      gridGen.refine(*func);
-      sizeAfterRefine = grid.getSize();
-    }
 
-    std::cout << "grid size after adaptivity: " << grid.getSize() << "\n";
+      // if decomp_type_ == cholesky (any of them)
+      if (offline->getConfig().decomp_type_ == sgpp::datadriven::DBMatDecompostionType::Chol ||
+          offline->getConfig().decomp_type_ ==
+              sgpp::datadriven::DBMatDecompostionType::DenseIchol) {
+        // apply grid changes to the Cholesky factorization
+        dynamic_cast<DBMatOfflineChol&>(densEst->getOfflineObject())
+            .choleskyModification(newPoints, deletedGridPoints, densEst->getBestLambda());
+      }
 
-    newPoints = sizeAfterRefine - sizeBeforeRefine;
-    refineCoarse[idx].second = newPoints;
-    // apply grid changes to the Cholesky factorization
-    if (offline->isRefineable()) {
-      dynamic_cast<DBMatOfflineChol&>(densEst->getOfflineObject())
-          .choleskyModification(newPoints, deletedGridPoints, densEst->getBestLambda());
+      // update alpha vector
+      densEst->updateAlpha(&refineCoarse[idx].first, refineCoarse[idx].second);
     }
-    // update alpha vector
-    densEst->updateAlpha(&refineCoarse[idx].first, refineCoarse[idx].second);
   }
 }
 
