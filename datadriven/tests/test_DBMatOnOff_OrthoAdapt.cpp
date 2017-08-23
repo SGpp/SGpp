@@ -25,8 +25,8 @@
 #include <string>
 #include <vector>
 
-static size_t static_dim = 1;
-static int static_lvl = 2;
+static size_t static_dim = 2;
+static int static_lvl = 5;
 
 // print datamatrices for debugging
 static void printMatrix(sgpp::base::DataMatrix a) {
