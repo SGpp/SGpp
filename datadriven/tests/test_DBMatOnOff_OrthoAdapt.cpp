@@ -26,13 +26,13 @@
 #include <vector>
 
 static size_t static_dim = 1;
-static size_t static_lvl = 3;
+static int static_lvl = 2;
 
 // print datamatrices for debugging
 static void printMatrix(sgpp::base::DataMatrix a) {
   for (size_t i = 0; i < a.getNrows(); i++) {
     for (size_t j = 0; j < a.getNcols(); j++) {
-      std::cout << std::setprecision(7) << std::fixed << a.get(i, j) << "  ";
+      std::cout << std::setprecision(10) << std::fixed << a.get(i, j) << "  ";
     }
     std::cout << std::endl;
   }
@@ -50,6 +50,8 @@ static void calc_A_inv(sgpp::base::DataMatrix Q, sgpp::base::DataMatrix T_inv,
   gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &q_view.matrix, &t_view.matrix, 0.0, interim);
 
   gsl_blas_dgemm(CblasNoTrans, CblasTrans, 1.0, interim, &q_view.matrix, 0.0, &a_view.matrix);
+  std::cout << "\ncalculated inverse of A: \n";
+  printMatrix(A);
 }
 
 BOOST_AUTO_TEST_SUITE(OrthoAdapt_tests)
@@ -64,6 +66,7 @@ BOOST_AUTO_TEST_CASE(offline_object) {
 
   sgpp::datadriven::DBMatOfflineOrthoAdapt off_object(config);
   off_object.buildMatrix();
+  std::cout << "testing matrix size " << off_object.getDimA() << std::endl;
 
   size_t n = off_object.getDimA();
   // std::cout << "Created Offline Object: \nMatrix Dimension = " << n << std::endl;
@@ -133,36 +136,59 @@ BOOST_AUTO_TEST_CASE(offline_object) {
 }
 
 BOOST_AUTO_TEST_CASE(solver_test) {
-  // hard-coded values, just to see if solver does the right calculations
+  sgpp::datadriven::DBMatDensityConfiguration config;
+  config.grid_dim_ = static_dim;
+  config.grid_level_ = static_lvl;
+  config.grid_type_ = sgpp::base::GridType::Linear;
+  config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
+  config.lambda_ = 0.0001;
+
+  sgpp::datadriven::DBMatOfflineOrthoAdapt off_object(config);
+  off_object.buildMatrix();
+  sgpp::base::DataMatrix lhs_copy(off_object.getLhsMatrix_ONLY_FOR_TESTING());
+
+  size_t n = lhs_copy.getNcols();
+  gsl_matrix_view lhs_view = gsl_matrix_view_array(lhs_copy.getPointer(), n, n);
+  for (size_t i = 0; i < n; i++) {
+    double val = gsl_matrix_get(&lhs_view.matrix, i, i) + config.lambda_;
+    gsl_matrix_set(&lhs_view.matrix, i, i, val);
+  }
+  std::cout << "lhs_matrix + lambda*I: \n";
+  printMatrix(lhs_copy);
+
+  sgpp::base::DataVector b_array(n);
+  for (size_t i = 0; i < n; i++) {
+    b_array.set(i, i);
+  }
+  gsl_vector_view b_view = gsl_vector_view_array(b_array.getPointer(), n);
+  sgpp::base::DataVector b(b_array);
+
+  gsl_linalg_HH_svx(&lhs_view.matrix, &b_view.vector);
+
+  sgpp::base::DataMatrix B_dummy(1, 1);
+  sgpp::base::DataVector alpha(n);
+
+  // solve the created system
   sgpp::datadriven::DBMatDMSOrthoAdapt* solver = new sgpp::datadriven::DBMatDMSOrthoAdapt();
+  off_object.decomposeMatrix();
+  solver->solve(off_object.getTinv(), off_object.getQ(), B_dummy, b, alpha);
 
-  // clang-format off
-  double b_a[] = {0, 1, 2, 3};
+  // compare alpha values
+  std::cout << "alpha from gsl_solver = \n";
+  for (size_t i = 0; i < n; i++) {
+    std::cout << std::setprecision(20) << b_view.vector.data[i] << "   ";
+  }
+  std::cout << std::endl;
+  std::cout << "alpha from own solver = \n";
+  for (size_t i = 0; i < n; i++) {
+    std::cout << std::setprecision(20) << alpha.get(i) << "   ";
+  }
+  std::cout << std::endl;
 
-  double q_a[] = {1, 2, 1, 2,
-                  1, 2, 3, 4,
-                  2, 2, 3, 4,
-                  3, 2, 1, 2};
-
-  double t_a[] = {1, 2, 3, 4,
-                  2, 3, 4, 5,
-                  3, 4, 5, 6,
-                  4, 5, 6, 7};
-
-  sgpp::base::DataMatrix Q(q_a, 4, 4);
-  sgpp::base::DataMatrix T_inv(t_a, 4, 4);
-  sgpp::base::DataVector b(b_a, 4);
-
-  sgpp::base::DataMatrix B(1, 1);
-
-  sgpp::base::DataVector alpha(4);
-  solver->solve(T_inv, Q, B, b, alpha);
-
-  BOOST_CHECK_EQUAL(alpha.get(0), 1436);
-  BOOST_CHECK_EQUAL(alpha.get(1), 2580);
-  BOOST_CHECK_EQUAL(alpha.get(2), 2726);
-  BOOST_CHECK_EQUAL(alpha.get(3), 1728);
-  // clang-format on
+  // check alphas
+  for (size_t i = 0; i < n; i++) {
+    BOOST_CHECK_SMALL(alpha.get(i) - b_view.vector.data[i], 1e-4);  // checkrange = lambda
+  }
 }
 
 BOOST_AUTO_TEST_CASE(online_object) {
@@ -177,6 +203,8 @@ BOOST_AUTO_TEST_CASE(online_object) {
   sgpp::datadriven::DBMatOfflineOrthoAdapt offline_base(config);
   offline_base.buildMatrix();
   sgpp::base::DataMatrix copy_small_lhs(offline_base.getLhsMatrix_ONLY_FOR_TESTING());
+  sgpp::base::DataMatrix copy_small_lhs_for_solve(offline_base.getLhsMatrix_ONLY_FOR_TESTING());
+
   offline_base.decomposeMatrix();
 
   // create offline object like it should be after refined Pts
@@ -219,9 +247,7 @@ BOOST_AUTO_TEST_CASE(online_object) {
     std::cout << std::endl;
   }
   std::cout << std::endl;
-  /**
-   * Testing refinement now
-   */
+
   // refines!
   std::list<size_t> coarsenPtsDummy = {};
   online->adapt(numberOfPoints, coarsenPtsDummy, config.lambda_);
@@ -255,24 +281,21 @@ BOOST_AUTO_TEST_CASE(online_object) {
 
   std::cout << "alpha is: " << std::endl;
   for (size_t i = 0; i < alpha.getSize(); i++) {
-    std::cout << std::setprecision(5) << std::fixed << alpha.get(i) << "  ";
+    std::cout << std::fixed << alpha.get(i) << "  ";
   }
   std::cout << std::endl;
 
-  std::cout << "(R + lambda*I) * alpha is: " << std::endl;
+  std::cout << "(R_big + lambda*I) * alpha is: " << std::endl;
   for (size_t i = 0; i < test_result.getSize(); i++) {
-    std::cout << std::setprecision(5) << std::fixed << test_result.get(i) << "  ";
+    std::cout << std::fixed << test_result.get(i) << "  ";
   }
   std::cout << std::endl;
 
-  // test the results agains the original values of b
+  // test the results against the original values of b
   for (size_t i = 0; i < alpha.getSize(); i++) {
     BOOST_CHECK_SMALL(test_result.get(i) - b.get(i), 1e-10);
   }
 
-  /**
-   * Testing coarsening now
-   */
   std::cout << "Testing coarsening now ..." << std::endl;
 
   // get indices for coarsen points
@@ -292,17 +315,47 @@ BOOST_AUTO_TEST_CASE(online_object) {
   // solve the created system
   solver->solve(offline_base.getTinv(), offline_base.getQ(), online->getB(), b, alpha);
 
+  std::cout << "alpha is: " << std::endl;
+  for (size_t i = 0; i < alpha.getSize(); i++) {
+    std::cout << std::fixed << alpha.get(i) << "  ";
+  }
+  std::cout << std::endl;
+
+  // sgpp::base::DataMatrix A_inv(oldSize, oldSize);
+  // calc_A_inv(offline_base.getQ(), offline_base.getTinv(), A_inv);
+  // std::cout << "\n\nkonkretes A_inv von der kleinen matrix: \n";
+  // printMatrix(A_inv);
+  // A_inv.mult(b, alpha);
+  // std::cout << "but alpha should be ( " << alpha.getSize() << "-dim Vector)" << std::endl;
+  // for (size_t i = 0; alpha.getSize(); i++) {
+  // std::cout << std::setprecision(7) << std::fixed << alpha.get(i) << "  ";
+  // }
+
   // this time test agains smaller lhs matrix, (lhs + lambda*I) * alpha = b
   for (size_t i = 0; i < oldSize; i++) {
     double value = copy_small_lhs.get(i, i);
     copy_small_lhs.set(i, i, value + config.lambda_);
   }
+  std::cout << "small_lhs ist: \n";
+  printMatrix(copy_small_lhs);
   copy_small_lhs.mult(alpha, test_result);
 
+  std::cout << "und (R_small + lambda*I) * alpha ist\n";
+  for (size_t i = 0; i < test_result.getSize(); i++) {
+    std::cout << std::fixed << test_result.get(i) << "  ";
+  }
+  std::cout << std::endl;
+
   // test the results agains the original values of b
+
   for (size_t i = 0; i < alpha.getSize(); i++) {
     BOOST_CHECK_SMALL(test_result.get(i) - b.get(i), 1e-10);
   }
+  std::cout << "DAS WAR TEST: dim = " << config.grid_dim_
+            << "\n              lvl:  " << config.grid_level_ - 1 << " ---> " << config.grid_level_
+            << std::endl;
+  std::cout << "              size: " << offline_base.getDimA() << " ---> "
+            << offline_refined.getDimA() << std::endl;
 }
 
 // #endif /* USE_GSL */

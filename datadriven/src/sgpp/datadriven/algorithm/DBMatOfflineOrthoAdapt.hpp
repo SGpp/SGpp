@@ -71,7 +71,7 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    * @param subdiag and superdiagonal entries of T (symmetric)
    */
   void invert_symmetric_tridiag(gsl_vector* diag, gsl_vector* subdiag);
-
+  void invert_symmetric_tridiag_gsl(gsl_vector* diag, gsl_vector* subdiag);
   /**
    * Serialize the DBMatOfflineOrthoAdapt object
    * The lhsMatrix is stored in the form of compact tridiagonal decomposition,
