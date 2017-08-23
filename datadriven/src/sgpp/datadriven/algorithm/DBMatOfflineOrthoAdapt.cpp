@@ -111,55 +111,22 @@ void DBMatOfflineOrthoAdapt::hessenberg_decomposition(gsl_vector* diag, gsl_vect
   return;
 }
 
-void DBMatOfflineOrthoAdapt::invert_symmetric_tridiag_gsl(gsl_vector* diag, gsl_vector* subdiag) {
-  // stuffs
-}
 void DBMatOfflineOrthoAdapt::invert_symmetric_tridiag(gsl_vector* diag, gsl_vector* subdiag) {
-  /*
-   * note: instead gsl_vector_get/set, gsl_vector->data[index] is used
-   * this eliminates unnecessary range checking
-   */
-  const size_t n = this->dim_a;       // size of quadratic matrix to invert
-  double* superdiag = new double[n];  // superdiagonal of T
+  // gsl stuffs
+  // gsl_linalg_solve_symm_tridiag
+  // (const gsl_vector * diag, const gsl_vector * subdiag, const gsl_vector * b (is e hier),
+  // gsl_vector * x (target))
+  gsl_vector* e = gsl_vector_calloc(diag->size);  // c_alloc is zeroAll
+  gsl_vector* x = gsl_vector_alloc(diag->size);   // target of solving
 
-  // LR-decomposition:
-  // constructing T = LR and superdiag out of the vectors diag and subdiag
-  for (size_t i = 0; i < n - 1; i++) {
-    // copy subdiag into superdiag for later uses of old values
-    superdiag[i] = subdiag->data[i];
-    // l_i = l_i / a_i
-    subdiag->data[i] = superdiag[i] / diag->data[i];
-    // a_{i+1} = a_{i+1} - l_i*u_i
-    diag->data[i + 1] = diag->data[i + 1] - subdiag->data[i] * superdiag[i];
-  }
-  // L*R*T_inv = Id, solve for columns x_i of T_inv
-  for (size_t i = 0; i < n; i++) {
-    //
-    // forward subst. L*y = e_i
-    double* y = new double[n];
-    // y_0 = {e_i}_0
-    y[0] = (i == 0 ? 1.0 : 0.0);
-    // y_j = {e_i}_j - l_{j-1} * y_{j-1}
-    for (size_t j = 1; j < n; j++) {
-      y[j] = (i == j ? 1.0 : 0.0) - subdiag->data[j - 1] * y[j - 1];
+  for (size_t k = 0; k < this->t_tridiag_inv_matrix_.getNcols(); k++) {
+    e->data[k] = 1;
+    gsl_linalg_solve_symm_tridiag(diag, subdiag, e, x);
+    for (size_t i = 0; i < this->t_tridiag_inv_matrix_.getNrows(); i++) {
+      this->t_tridiag_inv_matrix_.set(k, i, x->data[i]);
     }
-
-    // backward subst. R*x_i = y
-    // {x_i}_{n-1} = y_{n-1} / a_{n-1}
-    this->t_tridiag_inv_matrix_.set(n - 1, i, y[n - 1] / diag->data[n - 1]);
-    // {x_i}_j = (y_j - u_j * x_{j+1} / a_j
-    for (size_t j = n - 2; j >= i; j--) {  // j >= i, because symmetric
-      double value =
-          (y[j] - superdiag[j] * this->t_tridiag_inv_matrix_.get(j + 1, i)) / diag->data[j];
-      this->t_tridiag_inv_matrix_.set(j, i, value);
-      this->t_tridiag_inv_matrix_.set(i, j, value);
-      // j >= i >= 0, because size_t, but i++ makes this only relevant for i==0
-      if (j == 0) break;
-    }
-    delete[] y;
+    e->data[k] = 0;
   }
-  delete[] superdiag;
-  return;
 }
 
 void DBMatOfflineOrthoAdapt::store(const std::string& fileName) {
