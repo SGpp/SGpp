@@ -162,7 +162,7 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
           (x.get(current_size - 1) - 1) * 0.5;  // lambda is added already on all of refinePts
       x.set(current_size - 1, config_x_value);
     } else {
-    //   std::cout << "coarsenindex of the matrix would be: " << coarsenIndices[k] << std::endl;
+      //   std::cout << "coarsenindex of the matrix would be: " << coarsenIndices[k] << std::endl;
       // no clipping off when coarsening
       double config_x_value =
           (x.get(coarsenIndices[k]) - 1) * 0.5;  // lambda is added already on all of refinePts

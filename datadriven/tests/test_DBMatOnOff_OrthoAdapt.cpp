@@ -25,8 +25,10 @@
 #include <string>
 #include <vector>
 
-static size_t static_dim = 2;
-static int static_lvl = 5;
+static size_t static_dim =
+    1;  // leave that to 1 until tests use dinamically generated refined matrix generation...
+        // the problem is that dim > 1 lvl++ doesn't have the right vectors to refine as columns
+static int static_lvl = 2;
 
 // print datamatrices for debugging
 static void printMatrix(sgpp::base::DataMatrix a) {
@@ -136,59 +138,44 @@ BOOST_AUTO_TEST_CASE(offline_object) {
 }
 
 BOOST_AUTO_TEST_CASE(solver_test) {
-  sgpp::datadriven::DBMatDensityConfiguration config;
-  config.grid_dim_ = static_dim;
-  config.grid_level_ = static_lvl;
-  config.grid_type_ = sgpp::base::GridType::Linear;
-  config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
-  config.lambda_ = 0.0001;
+  // clang-format off
+  double Q_array[] = {1, 0,
+                      0, -1};
+  sgpp::base::DataMatrix Q(Q_array, 2, 2);
 
-  sgpp::datadriven::DBMatOfflineOrthoAdapt off_object(config);
-  off_object.buildMatrix();
-  sgpp::base::DataMatrix lhs_copy(off_object.getLhsMatrix_ONLY_FOR_TESTING());
+  double T_array[] = {1, 0,
+                      0, 2};
+  sgpp::base::DataMatrix T(T_array, 2, 2);
 
-  size_t n = lhs_copy.getNcols();
-  gsl_matrix_view lhs_view = gsl_matrix_view_array(lhs_copy.getPointer(), n, n);
-  for (size_t i = 0; i < n; i++) {
-    double val = gsl_matrix_get(&lhs_view.matrix, i, i) + config.lambda_;
-    gsl_matrix_set(&lhs_view.matrix, i, i, val);
-  }
-  std::cout << "lhs_matrix + lambda*I: \n";
-  printMatrix(lhs_copy);
+  double b_array[] = {1, 2, 3, 4, 5};
+  sgpp::base::DataVector b_cut(b_array, 2);
+  sgpp::base::DataVector b(b_array, 4);
 
-  sgpp::base::DataVector b_array(n);
-  for (size_t i = 0; i < n; i++) {
-    b_array.set(i, i);
-  }
-  gsl_vector_view b_view = gsl_vector_view_array(b_array.getPointer(), n);
-  sgpp::base::DataVector b(b_array);
+  double B_array[] = {1, 2, 0, 0,
+                      2, 1, 0, 0,
+                      0, 0, 3, -1,
+                      0, 0, -1, 3};
+  sgpp::base::DataMatrix B(B_array, 4, 4);
+  // clang-format on
 
-  gsl_linalg_HH_svx(&lhs_view.matrix, &b_view.vector);
-
-  sgpp::base::DataMatrix B_dummy(1, 1);
-  sgpp::base::DataVector alpha(n);
-
-  // solve the created system
   sgpp::datadriven::DBMatDMSOrthoAdapt* solver = new sgpp::datadriven::DBMatDMSOrthoAdapt();
-  off_object.decomposeMatrix();
-  solver->solve(off_object.getTinv(), off_object.getQ(), B_dummy, b, alpha);
 
-  // compare alpha values
-  std::cout << "alpha from gsl_solver = \n";
-  for (size_t i = 0; i < n; i++) {
-    std::cout << std::setprecision(20) << b_view.vector.data[i] << "   ";
-  }
-  std::cout << std::endl;
-  std::cout << "alpha from own solver = \n";
-  for (size_t i = 0; i < n; i++) {
-    std::cout << std::setprecision(20) << alpha.get(i) << "   ";
-  }
-  std::cout << std::endl;
+  // first case: no refinement, B = 0
+  sgpp::base::DataVector first_alpha(2);
+  sgpp::base::DataMatrix B_dummy(1, 1);
+  solver->solve(T, Q, B_dummy, b_cut, first_alpha);
+  // hard-coded calculated alpha values
+  BOOST_CHECK_EQUAL(first_alpha.get(0), 1);
+  BOOST_CHECK_EQUAL(first_alpha.get(1), 4);
 
-  // check alphas
-  for (size_t i = 0; i < n; i++) {
-    BOOST_CHECK_SMALL(alpha.get(i) - b_view.vector.data[i], 1e-4);  // checkrange = lambda
-  }
+  // second case: simulated "refinement", B != 0, so: alpha = QT^{-1}Q^t * b + Bb
+  sgpp::base::DataVector second_alpha(4);
+  solver->solve(T, Q, B, b, second_alpha);
+  // hard-coded calculated alpha values
+  BOOST_CHECK_EQUAL(second_alpha.get(0), 6);
+  BOOST_CHECK_EQUAL(second_alpha.get(1), 8);
+  BOOST_CHECK_EQUAL(second_alpha.get(2), 5);
+  BOOST_CHECK_EQUAL(second_alpha.get(3), 9);
 }
 
 BOOST_AUTO_TEST_CASE(online_object) {
