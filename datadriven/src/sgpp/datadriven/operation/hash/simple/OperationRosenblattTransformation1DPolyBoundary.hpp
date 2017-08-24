@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef OPERATIONROSENBLATTTRANSFORMATION1DPOLY_HPP
-#define OPERATIONROSENBLATTTRANSFORMATION1DPOLY_HPP
+#ifndef OPERATIONROSENBLATTTRANSFORMATION1DPOLYBOUNDARY_HPP
+#define OPERATIONROSENBLATTTRANSFORMATION1DPOLYBOUNDARY_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationTransformation1D.hpp>
@@ -13,13 +13,13 @@
 
 namespace sgpp {
 namespace datadriven {
-class OperationRosenblattTransformation1DPoly : public OperationTransformation1D {
+class OperationRosenblattTransformation1DPolyBoundary : public OperationTransformation1D {
  protected:
   base::Grid* grid;
 
  public:
-  explicit OperationRosenblattTransformation1DPoly(base::Grid* grid);
-  virtual ~OperationRosenblattTransformation1DPoly();
+  explicit OperationRosenblattTransformation1DPolyBoundary(base::Grid* grid);
+  virtual ~OperationRosenblattTransformation1DPolyBoundary();
 
   /**
    * Rosenblatt Transformation 1D
@@ -32,4 +32,4 @@ class OperationRosenblattTransformation1DPoly : public OperationTransformation1D
 }  // namespace datadriven
 }  // namespace sgpp
 
-#endif /* OPERATIONROSENBLATTTRANSFORMATION1DPOLY_HPP */
+#endif /* OPERATIONROSENBLATTTRANSFORMATION1DPOLYBOUNDARY_HPP */

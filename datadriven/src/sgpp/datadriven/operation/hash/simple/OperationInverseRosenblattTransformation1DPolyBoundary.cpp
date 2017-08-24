@@ -3,14 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DPoly.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPoly.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DPolyBoundary.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPolyBoundary.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/grid/type/PolyGrid.hpp>
+#include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp_optimization.hpp>
 #include <sgpp_datadriven.hpp>
@@ -31,13 +31,13 @@ namespace datadriven {
 /**
  * WARNING: the grid must be a 1D grid!
  */
-OperationInverseRosenblattTransformation1DPoly::OperationInverseRosenblattTransformation1DPoly(
+OperationInverseRosenblattTransformation1DPolyBoundary::OperationInverseRosenblattTransformation1DPolyBoundary(
   base::Grid* grid)
   : grid(grid) {}
 
-OperationInverseRosenblattTransformation1DPoly::~OperationInverseRosenblattTransformation1DPoly() {}
+OperationInverseRosenblattTransformation1DPolyBoundary::~OperationInverseRosenblattTransformation1DPolyBoundary() {}
 
-void OperationInverseRosenblattTransformation1DPoly::init(base::DataVector* alpha1d) {
+void OperationInverseRosenblattTransformation1DPolyBoundary::init(base::DataVector* alpha1d) {
   patch_areas.clear();
   is_negative_patch.clear();
   ordered_grid_points.clear();
@@ -51,7 +51,7 @@ void OperationInverseRosenblattTransformation1DPoly::init(base::DataVector* alph
   base::GridStorage* gs = &this->grid->getStorage();
   double area = 0.0;
   double right_coord, right_function_value;
-  size_t p = dynamic_cast<sgpp::base::PolyGrid*>(grid)->getDegree();
+  size_t p = dynamic_cast<sgpp::base::PolyBoundaryGrid*>(grid)->getDegree();
   quadOrder = (p + 1) / 2;
 
   gauss.getLevelPointsAndWeightsNormalized(quadOrder, gauss_coordinates, weights);
@@ -207,7 +207,7 @@ void OperationInverseRosenblattTransformation1DPoly::init(base::DataVector* alph
   }
 }
 
-double OperationInverseRosenblattTransformation1DPoly::sample(base::DataVector* alpha1d,
+double OperationInverseRosenblattTransformation1DPolyBoundary::sample(base::DataVector* alpha1d,
                                                              double coord1d) {
   if (coord1d == 0.0)
     return 0.0;
@@ -251,7 +251,7 @@ double OperationInverseRosenblattTransformation1DPoly::sample(base::DataVector* 
   return it1->second + (gaussQuadSum * scaling) / sum;
 }
 
-double OperationInverseRosenblattTransformation1DPoly::doTransformation1D(base::DataVector* alpha1d,
+double OperationInverseRosenblattTransformation1DPolyBoundary::doTransformation1D(base::DataVector* alpha1d,
                                                                          double coord1d) {
   init(alpha1d);
   // std::cout << "PFs size after exit: " << patch_functions.size() << std::endl;

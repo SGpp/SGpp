@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef OPERATIONINVERSEROSENBLATTTRANSFORMATIONPOLY1D_HPP
-#define OPERATIONINVERSEROSENBLATTTRANSFORMATIONPOLY1D_HPP
+#ifndef OPERATIONINVERSEROSENBLATTTRANSFORMATIONPOLYBOUNDARY1D_HPP
+#define OPERATIONINVERSEROSENBLATTTRANSFORMATIONPOLYBOUNDARY1D_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationTransformation1D.hpp>
@@ -18,7 +18,7 @@
 namespace sgpp {
 namespace datadriven {
 
-class OperationInverseRosenblattTransformation1DPoly : public OperationTransformation1D {
+class OperationInverseRosenblattTransformation1DPolyBoundary : public OperationTransformation1D {
  private:
   base::GaussLegendreQuadRule1D gauss;
   base::DataVector weights;
@@ -50,8 +50,8 @@ class OperationInverseRosenblattTransformation1DPoly : public OperationTransform
   base::Grid* grid;
 
  public:
-  explicit OperationInverseRosenblattTransformation1DPoly(base::Grid* grid);
-  virtual ~OperationInverseRosenblattTransformation1DPoly();
+  explicit OperationInverseRosenblattTransformation1DPolyBoundary(base::Grid* grid);
+  virtual ~OperationInverseRosenblattTransformation1DPolyBoundary();
 
   /**
    * Inverse Rosenblatt Transformation 1D
@@ -65,4 +65,4 @@ class OperationInverseRosenblattTransformation1DPoly : public OperationTransform
 }  // namespace datadriven
 }  // namespace sgpp
 
-#endif /* OPERATIONINVERSEROSENBLATTTRANSFORMATIONPOLY1D_HPP */
+#endif /* OPERATIONINVERSEROSENBLATTTRANSFORMATIONPOLYBOUNDARY1D_HPP */
