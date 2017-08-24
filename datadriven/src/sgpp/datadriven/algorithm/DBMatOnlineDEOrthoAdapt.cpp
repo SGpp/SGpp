@@ -63,7 +63,7 @@ std::vector<size_t> DBMatOnlineDEOrthoAdapt::adapt(size_t newPoints,
   if (!deletedPoints.empty()) {
     // indices of coarsened points and their corresponding slot
     std::vector<size_t> coarsen_points = {};
-    size_t dima =  // dimension of offline lhs matrix, also the name of the author of the code :P
+    size_t dima =  // dimension of offline lhs matrix
         (static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&this->offlineObject))->getDimA();
     while (!deletedPoints.empty()) {
       size_t cur = deletedPoints.back();
