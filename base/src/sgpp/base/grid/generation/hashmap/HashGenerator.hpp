@@ -402,10 +402,12 @@ class HashGenerator {
               } else {
                 idx.push(d, l, i, false);
               }
+              idx.rehash();
               idx.getStandardCoordinates(coords);
               decodeCoords(coords, coordsBool);
               if (terms.find(coordsBool) != terms.end()) {
                 storage.insert(idx);
+
               }
             } else {
               // is leaf?
@@ -418,8 +420,8 @@ class HashGenerator {
               decodeCoords(coords, coordsBool);
               if (terms.find(coordsBool) != terms.end()) {
                 storage.update(idx, g);
+              	first = false;
               }
-              first = false;
             }
           }
         }
