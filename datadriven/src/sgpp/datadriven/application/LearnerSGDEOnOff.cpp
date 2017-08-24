@@ -38,6 +38,90 @@ using sgpp::base::SurplusRefinementFunctor;
 namespace sgpp {
 namespace datadriven {
 
+/**
+ * todo: Kilian! evtl refactor. diese funktion ist entnommen (mit paar veränderugen) aus der
+ * HashCoarsening Klasse. Wenn diese funktion nützlich ist, dann vllt mit in HashCoarsening
+ * aufnehmen als funktion die die indizes predicted die coarsened werden. dann kann man diese fkt
+ * aufrufen bevor man coarsened und durch die indizes die gridPoints holen, um sie dann im falle
+ * von ortho_adapt wieder ins grid zu refinen.
+ */
+static std::vector<sgpp::base::GridPoint> list_of_predicted_not_coarsened_points;
+
+static std::vector<size_t> predict_coarsen_NFirst_only(GridStorage& storage,
+                                                       sgpp::base::CoarseningFunctor& functor,
+                                                       DataVector& alpha, size_t numFirstPoints) {
+  // return list, which will contain the indices of the points which will be coarsened
+  std::vector<size_t> return_list = {};
+
+  // check if the grid has any points
+  if (storage.getSize() == 0) {
+    throw sgpp::base::generation_exception("storage empty");
+  }
+
+  // Perepare temp-data in order to determine the removable grid points
+  // -> leafs with minimal surplus
+  size_t remove_num = functor.getRemovementsNum();
+
+  if (remove_num == 0) return return_list;
+
+  // create an array that will contain the GridPoints
+  // (pair of the grid Point's index and its surplus)
+  // that should be removed
+  sgpp::base::HashCoarsening::GridPointPair* removePoints =
+      new sgpp::base::HashCoarsening::GridPointPair[remove_num];
+
+  // init the removePoints array:
+  // set initial surplus and set all indices to zero
+  for (size_t i = 0; i < remove_num; i++) {
+    removePoints[i].second = functor.start();
+    removePoints[i].first = 0;
+  }
+
+  // help variable to store the gridpoint with highest
+  // surplus in removePoints
+  size_t max_idx = 0;
+
+  // assure that only the first numFirstPoints are checked for coarsening
+  for (size_t z = 0; z < numFirstPoints; z++) {
+    sgpp::base::GridPoint& point = storage.getPoint(z);
+
+    if (point.isLeaf() && point.isInnerPoint()) {
+      sgpp::base::CoarseningFunctor::value_type current_value = functor(storage, z);
+
+      if (current_value < removePoints[max_idx].second) {
+        // Replace the maximum point array of removable candidates,
+        // find the new maximal point
+        removePoints[max_idx].second = current_value;
+        removePoints[max_idx].first = z;
+
+        // find new maximum entry
+        max_idx = 0;
+
+        for (size_t i = 1; i < remove_num; i++) {
+          if (removePoints[i].second > removePoints[max_idx].second) {
+            max_idx = i;
+          }
+        }
+      }
+    }
+  }
+
+  // remove the marked grid point if their surplus
+  // is below the given threshold
+  sgpp::base::CoarseningFunctor::value_type threshold = functor.getCoarseningThreshold();
+  sgpp::base::CoarseningFunctor::value_type initValue = functor.start();
+
+  // vector to save remaining points
+  std::vector<size_t> remainingIndex;
+
+  for (size_t i = 0; i < remove_num; i++) {
+    if (removePoints[i].second < initValue && removePoints[i].second <= threshold) {
+      return_list.push_back(removePoints[i].first);
+    }
+  }
+  return return_list;
+}
+
 LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& trainData,
                                    Dataset& testData, Dataset* validationData,
                                    DataVector& classLabels, size_t numClassesInit, bool usePrior,
@@ -601,6 +685,19 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
           // std::cout << "Size before coarsening:" << grid->getSize() << "\n";
 
           // int old_size = grid->getSize();
+
+          // todo: disen code ab hier hab ich geschrieben von // START bis // ENDE
+          // START
+          list_of_predicted_not_coarsened_points = {};
+          std::vector<size_t> list_of_predicted_not_coarsened_indices =
+              predict_coarsen_NFirst_only(grid.getStorage(), scf, alphaWeight, grid.getSize());
+          std::cout << "size of list of predicted INDICES: "
+                    << list_of_predicted_not_coarsened_indices.size() << std::endl;
+          for (size_t k : list_of_predicted_not_coarsened_indices) {
+            std::cout << "the push was REAL\n";
+            list_of_predicted_not_coarsened_points.push_back(grid.getStorage().getPoint(k));
+          }
+          // ENDE
           coarse_.free_coarsen_NFirstOnly(grid.getStorage(), scf, alphaWeight, grid.getSize());
 
           std::cout << "Size after coarsening:" << grid.getSize() << "\n\n";
@@ -644,21 +741,40 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
       if (offline->getConfig().decomp_type_ ==
           sgpp::datadriven::DBMatDecompostionType::OrthoAdapt) {
         std::cout << "ENTERED ON OFF CASE Ortho_Adapt:" << std::endl;
-        std::vector<size_t> not_coarsed_points =
+        std::vector<size_t> not_coarsened_points =
             static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt&>(*densEst).adapt(
                 newPoints, deletedGridPoints, densEst->getBestLambda());
 
         // not coarsened points are added to the grid again for consistency reasons
         std::cout << "points which couldn't be coarsened: " << std::endl;
-        for (auto a : not_coarsed_points) {
-          // todo: Kilian! An dieser Stelle müsste man die lvl und dim arrays vom punkt holen bevor
-          // man ihn einfügt. Außerdem ist das hier evtl. inkonsistent, da nicht ausführlichst
-          // getestet
-          //
-          // vg, Dima
+        for (auto a : not_coarsened_points) {
+          // todo: Kilian!
           std::cout << a << std::endl;
-          grid.insertPoint(grid.getDimension(), {}, {}, false);
+          std::cout << "size of points_list: " << list_of_predicted_not_coarsened_points.size()
+                    << std::endl;
+          for (auto& point : list_of_predicted_not_coarsened_points) {
+            std::cout << "stats of point which will be refined back into grid:\n";
+            std::cout << point.toString() << std::endl;
+            grid.getStorage().insert(point);
+          }
           grid.getStorage().recalcLeafProperty();
+          // todo:
+          // get lvl und index of point somehow
+          // insert Point
+          // rehash point on grid
+          // recalcLeafProperty
+          //
+          // versuche:
+          // mir fehlen hier die index und dimension arrays ...
+          // grid.insertPoint(grid.getDimension(), {}, {}, false);
+          // sgpp::base::DataVector vec(grid.getStorage().getSize(), 0.0);
+          // vec.set(a, 1.0);
+          // grid.refine(vec, not_coarsened_points.size());
+
+          //###### so stimmen wenigstens die dimensionen komplett, aba werte fehlen
+          // sgpp::base::GridPoint pointIndex(grid.getDimension());
+          // grid.getStorage().insert(pointIndex);
+          // grid.getStorage().recalcLeafProperty();
         }
       }
 
