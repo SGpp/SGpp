@@ -58,6 +58,7 @@ namespace sgpp {
         struct RefinementResult {
             std::list<LevelIndexVector> addedGridPoints;
             std::list<size_t> deletedGridPointsIndexes;
+            std::vector<double> choleskyDecomposition;
         };
 
 
@@ -134,7 +135,8 @@ namespace sgpp {
             double error;
 
 
-            void updateClassVariablesAfterRefinement(RefinementResult *refinementResult, DBMatOnlineDE *densEst);
+            void updateClassVariablesAfterRefinement(size_t classIndex, RefinementResult *refinementResult,
+                                                     DBMatOnlineDE *densEst);
 
             size_t getDimensionality();
 
@@ -155,6 +157,8 @@ namespace sgpp {
             RefinementResult &getRefinementResult(size_t classIndex);
 
             void onWorkerShutdown();
+
+            void computeNewCholeskyDecomposition(size_t classIndex);
 
         protected:
 
@@ -199,6 +203,7 @@ namespace sgpp {
             size_t assignBatchToWorker(size_t batchOffset, bool doCrossValidation);
 
             size_t numShutdownWorkers;
+
         };
     }   //namespace datadriven
 }  // namespace sgpp

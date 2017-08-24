@@ -125,7 +125,8 @@ namespace sgpp {
         }
 
         void MPIMethods::sendRefinementUpdates(size_t &classIndex, std::list<size_t> &deletedGridPointsIndexes,
-                                               std::list<LevelIndexVector> &addedGridPoints) {
+                                               std::list<LevelIndexVector> &addedGridPoints,
+                                               DataMatrix &newCholeskyDecomposition) {
             // Deleted grid points
             {
                 std::list<size_t>::const_iterator iterator = deletedGridPointsIndexes.begin();
@@ -183,6 +184,47 @@ namespace sgpp {
                               << " with " << networkMessage->listLength
                               << " additions" << " (grid version " << networkMessage->gridversion << ")" << std::endl;
 
+                    sendIBcast(mpiPacket);
+                }
+            }
+            //Cholesky Decomposition
+            {
+                sendCholeskyDecomposition(classIndex, newCholeskyDecomposition, MPI_ANY_SOURCE);
+            }
+        }
+
+        //USE MPI_ANY_SOURCE to send a broadcast from master
+        void MPIMethods::sendCholeskyDecomposition(const size_t &classIndex, DataMatrix &newCholeskyDecomposition,
+                                                   int mpiTarget) {
+            auto iterator = newCholeskyDecomposition.begin();
+            auto listEnd = newCholeskyDecomposition.end();
+            while (iterator != listEnd) {
+                auto *mpiPacket = new MPI_Packet;
+                mpiPacket->commandID = UPDATE_GRID;
+
+                auto *networkMessage = (RefinementResultNetworkMessage *) mpiPacket->payload;
+
+                networkMessage->classIndex = classIndex;
+                networkMessage->updateType = CHOLESKY_DECOMPOSITION;
+
+                size_t numPointInBuffer = fillBufferWithData(networkMessage->payload, std::end(networkMessage->payload),
+                                                             iterator, listEnd);
+                networkMessage->listLength = numPointInBuffer;
+
+                //TODO: There is a bug here, the grid version is sent non null once for each deleted, added, and choleksy
+                networkMessage->gridversion = (iterator == listEnd) ? learnerInstance->getCurrentGridVersion(
+                        classIndex) : 0;
+
+                if (mpiTarget != MPI_ANY_SOURCE) {
+                    std::cout << "Sending cholesky for class " << networkMessage->classIndex
+                              << " with " << networkMessage->listLength
+                              << " values" << " (grid version " << networkMessage->gridversion << ", target "
+                              << mpiTarget << ")" << std::endl;
+                    sendISend(mpiTarget, mpiPacket);
+                } else {
+                    std::cout << "Broadcasting cholesky for class " << networkMessage->classIndex
+                              << " with " << networkMessage->listLength
+                              << " values" << " (grid version " << networkMessage->gridversion << ")" << std::endl;
                     sendIBcast(mpiPacket);
                 }
             }
@@ -529,6 +571,15 @@ namespace sgpp {
                     }
                     break;
                 }
+                case CHOLESKY_DECOMPOSITION: {
+                    if (isMaster()) {
+                        std::cout << "Broadcasting incoming cholesky decomposition " << classIndex << std::endl;
+                        sendCholeskyDecomposition(classIndex,
+                                                  learnerInstance->getDensityFunctions()[classIndex].first.get()->getOfflineObject().getDecomposedMatrix(),
+                                                  MPI_ANY_SOURCE);
+                    }
+                    break;
+                }
             }
             std::cout << "Updated refinement result " << classIndex << " ("
                       << refinementResult.addedGridPoints.size()
@@ -538,7 +589,7 @@ namespace sgpp {
 
             //If this is not the last message in a series (gridversion != 0), then don't update variables yet
             if (networkMessage->gridversion != 0) {
-                learnerInstance->updateClassVariablesAfterRefinement(&refinementResult,
+                learnerInstance->updateClassVariablesAfterRefinement(classIndex, &refinementResult,
                                                                      learnerInstance->getDensityFunctions()[classIndex].first.get());
             }
             learnerInstance->setLocalGridVersion(classIndex, networkMessage->gridversion);
@@ -568,6 +619,10 @@ namespace sgpp {
                     break;
                 case ASSIGN_BATCH:
                     runBatch(mpiPacket);
+                    break;
+                case UPDATE_CHOLESKY_DECOMPOSITION:
+                    size_t classIndex = static_cast<AssignCholeskyUpdateNetworkMessage *>(networkMessagePointer)->classIndex;
+                    learnerInstance->computeNewCholeskyDecomposition(classIndex);
                     break;
                 case SHUTDOWN:
                     std::cout << "Worker shutdown requested" << std::endl;
@@ -627,6 +682,16 @@ namespace sgpp {
             std::cout << "creating dataset" << std::endl;
             Dataset dataset{message->batchSize, learnerInstance->getDimensionality()};
             learnerInstance->workBatch(dataset, message->batchOffset, message->doCrossValidation);
+        }
+
+        void MPIMethods::assignCholeskyUpdate(const int workerID, size_t classIndex) {
+            auto *mpiPacket = new MPI_Packet;
+            mpiPacket->commandID = UPDATE_CHOLESKY_DECOMPOSITION;
+
+            auto *message = (AssignCholeskyUpdateNetworkMessage *) mpiPacket->payload;
+            message->classIndex = classIndex;
+
+            sendISend(workerID, mpiPacket);
         }
 
         int MPIMethods::getWorldSize() {

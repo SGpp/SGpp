@@ -12,7 +12,7 @@ namespace sgpp {
 
         enum TaskType {
             TRAIN_FROM_BATCH,
-            UPDATE_CHOLESKY_DECOMPOSITION
+            RECOMPUTE_CHOLESKY_DECOMPOSITION
         };
         struct AssignTaskResult {
             unsigned long workerID;

@@ -22,6 +22,7 @@ namespace sgpp {
             UPDATE_GRID,
             MERGE_GRID,
             ASSIGN_BATCH,
+            UPDATE_CHOLESKY_DECOMPOSITION,
             SHUTDOWN,
             WORKER_SHUTDOWN_SUCCESS
         };
@@ -37,7 +38,8 @@ namespace sgpp {
 
         enum RefinementResultsUpdateType {
             ADDED_GRID_POINTS_LIST,
-            DELETED_GRID_POINTS_LIST
+            DELETED_GRID_POINTS_LIST,
+            CHOLESKY_DECOMPOSITION
         };
 
         struct RefinementResultNetworkMessage {
@@ -67,6 +69,10 @@ namespace sgpp {
             unsigned long batchOffset;
             unsigned long batchSize;
             bool doCrossValidation;
+        };
+
+        struct AssignCholeskyUpdateNetworkMessage {
+            unsigned long classIndex;
         };
 
         static_assert(sizeof(size_t) <= sizeof(unsigned long), "size_t larger than unsigned long");

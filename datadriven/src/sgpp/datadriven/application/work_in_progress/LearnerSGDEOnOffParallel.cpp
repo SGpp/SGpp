@@ -351,23 +351,24 @@ namespace sgpp {
                     levelIndexVector[currentDimension].level = pointLevel;
                     levelIndexVector[currentDimension].index = pointIndex;
 
-                    std::cout << "Fetched level index vector: dimension " << currentDimension
-                              << ", level " << pointLevel <<
-                              ", index " << pointIndex << std::endl;
+//                    std::cout << "Fetched level index vector: dimension " << currentDimension
+//                              << ", level " << pointLevel <<
+//                              ", index " << pointIndex << std::endl;
                 }
 
                 refinementResult->addedGridPoints.push_back(levelIndexVector);
 
-                std::cout << "Exported grid point " << gridPoint.getHash()
-                          << std::endl;
+//                std::cout << "Exported grid point " << gridPoint.getHash()
+//                          << std::endl;
             }
 
-            updateClassVariablesAfterRefinement(refinementResult, densEst);
+            updateClassVariablesAfterRefinement(classIndex, refinementResult, densEst);
 
             localGridVersions[classIndex]++;
         }
 
-        void LearnerSGDEOnOffParallel::updateClassVariablesAfterRefinement(RefinementResult *refinementResult,
+        void LearnerSGDEOnOffParallel::updateClassVariablesAfterRefinement(size_t classIndex,
+                                                                           RefinementResult *refinementResult,
                                                                            DBMatOnlineDE *densEst) {
 
             base::Grid &grid = densEst->getOfflineObject().getGrid();
@@ -393,30 +394,47 @@ namespace sgpp {
                         gridPoint->set(currentDimension,
                                        levelIndexVector[currentDimension].level,
                                        levelIndexVector[currentDimension].index);
-                        std::cout << "Setting level index vector: dimension, " << currentDimension
-                                  << ", level " << levelIndexVector[currentDimension].level << ", index "
-                                  << levelIndexVector[currentDimension].index << std::endl;
+//                        std::cout << "Setting level index vector: dimension, " << currentDimension
+//                                  << ", level " << levelIndexVector[currentDimension].level << ", index "
+//                                  << levelIndexVector[currentDimension].index << std::endl;
                     }
                     grid.getStorage().insert(*gridPoint);
-                    std::cout << "Inserted grid point " << gridPoint->getHash() << " into grid (new size "
-                              << grid.getSize()
-                              << ")" << std::endl;
+//                    std::cout << "Inserted grid point " << gridPoint->getHash() << " into grid (new size "
+//                              << grid.getSize()
+//                              << ")" << std::endl;
                 }
                 std::cout << "New grid size is " << grid.getSize() << std::endl;
             }
-
             //TODO: We might need to transfer the results here.
+                //TODO: This needs to be moved and replaced by a request.
             // apply grid changes to the Cholesky factorization
-            if (offline->isRefineable()) {
-                std::cout << "Grid size before cholesky " << grid.getSize() << std::endl;
-                dynamic_cast<DBMatOfflineChol &>(densEst->getOfflineObject())
-                        .choleskyModification(refinementResult->addedGridPoints.size(),
-                                              refinementResult->deletedGridPointsIndexes, densEst->getBestLambda());
+            else if (offline->isRefineable()) {
+                AssignTaskResult assignTaskResult{};
+                mpiTaskScheduler.assignTaskStaticTaskSize(RECOMPUTE_CHOLESKY_DECOMPOSITION, assignTaskResult);
+
+                std::cout << "Assigning update of cholesky decomposition " << classIndex << " to worker "
+                          << assignTaskResult.workerID << std::endl;
+                MPIMethods::assignCholeskyUpdate(assignTaskResult.workerID, classIndex);
             }
 
             // update alpha vector
             densEst->updateAlpha(&(refinementResult->deletedGridPointsIndexes),
                                  refinementResult->addedGridPoints.size());
+        }
+
+        void
+        LearnerSGDEOnOffParallel::computeNewCholeskyDecomposition(size_t classIndex) {
+
+            std::cout << "Computing cholesky modification for class " << classIndex << std::endl;
+            DBMatOnlineDE *densEst = getDensityFunctions()[classIndex].first.get();
+            DBMatOfflineChol &dbMatOfflineChol = dynamic_cast<DBMatOfflineChol &>(densEst->getOfflineObject());
+            RefinementResult *refinementResult = &((*vectorRefinementResults)[classIndex]);
+            dbMatOfflineChol.choleskyModification(refinementResult->addedGridPoints.size(),
+                                                  refinementResult->deletedGridPointsIndexes, densEst->getBestLambda());
+
+            std::cout << "Send choleksy update to master for class " << classIndex << std::endl;
+            DataMatrix &newDecomposition = dbMatOfflineChol.getDecomposedMatrix();
+            MPIMethods::sendCholeskyDecomposition(classIndex, newDecomposition, 0);
         }
 
         void LearnerSGDEOnOffParallel::assembleNextBatchData(Dataset *dataBatch, size_t *batchOffset) const {
