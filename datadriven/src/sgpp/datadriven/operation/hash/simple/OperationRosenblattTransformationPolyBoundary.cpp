@@ -3,11 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationPoly.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationPolyBoundary.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityConditional.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensitySampling1D.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPoly.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPolyBoundary.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
@@ -31,9 +31,9 @@
 namespace sgpp {
 namespace datadriven {
 
-void OperationRosenblattTransformationPoly::doTransformation(base::DataVector* alpha,
-                                                            base::DataMatrix* points,
-                                                            base::DataMatrix* pointscdf) {
+void OperationRosenblattTransformationPolyBoundary::doTransformation(base::DataVector* alpha,
+                                                                    base::DataMatrix* points,
+                                                                    base::DataMatrix* pointscdf) {
   size_t num_dims = this->grid->getDimension();
 
   // 1. marginalize to all possible start dimensions
@@ -89,7 +89,7 @@ void OperationRosenblattTransformationPoly::doTransformation(base::DataVector* a
   }
 }
 
-void OperationRosenblattTransformationPoly::doTransformation(base::DataVector* alpha,
+void OperationRosenblattTransformationPolyBoundary::doTransformation(base::DataVector* alpha,
                                                             base::DataMatrix* points,
                                                             base::DataMatrix* pointscdf,
                                                             size_t dim_start) {
@@ -122,7 +122,7 @@ void OperationRosenblattTransformationPoly::doTransformation(base::DataVector* a
   delete a1d;
 }
 
-void OperationRosenblattTransformationPoly::doTransformation_start_dimX(
+void OperationRosenblattTransformationPolyBoundary::doTransformation_start_dimX(
     base::Grid* g_in, base::DataVector* a_in, size_t dim_start, base::DataVector* coords1d,
     base::DataVector* cdfs1d) {
   size_t dims = coords1d->getSize();  // total dimensions
@@ -139,7 +139,7 @@ void OperationRosenblattTransformationPoly::doTransformation_start_dimX(
   return;
 }
 
-void OperationRosenblattTransformationPoly::doTransformation_in_next_dim(
+void OperationRosenblattTransformationPolyBoundary::doTransformation_in_next_dim(
     base::Grid* g_in, base::DataVector* a_in, size_t op_dim, base::DataVector* coords1d,
     base::DataVector* cdfs1d, size_t& curr_dim) {
   size_t dims = coords1d->getSize();  // total dimensions
@@ -188,11 +188,11 @@ void OperationRosenblattTransformationPoly::doTransformation_in_next_dim(
   return;
 }
 
-double OperationRosenblattTransformationPoly::doTransformation1D(base::Grid* grid1d,
+double OperationRosenblattTransformationPolyBoundary::doTransformation1D(base::Grid* grid1d,
                                                                 base::DataVector* alpha1d,
                                                                 double coord1d) {
-  OperationRosenblattTransformation1DPoly* opRosenblatt
-    = static_cast<OperationRosenblattTransformation1DPoly*>
+  OperationRosenblattTransformation1DPolyBoundary* opRosenblatt
+    = static_cast<OperationRosenblattTransformation1DPolyBoundary*>
     (op_factory::createOperationRosenblattTransformation1D(*grid1d));
   double y = opRosenblatt->doTransformation1D(alpha1d, coord1d);
   delete opRosenblatt;
