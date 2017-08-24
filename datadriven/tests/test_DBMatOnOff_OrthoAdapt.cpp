@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #define BOOST_TEST_DYN_LINK
-// #ifdef USE_GSL
+#ifdef USE_GSL
 #include <gsl/gsl_blas.h>
 
 #include <boost/test/unit_test.hpp>
@@ -25,50 +25,18 @@
 #include <string>
 #include <vector>
 
-static size_t static_dim =
-    1;  // leave that to 1 until tests use dinamically generated refined matrix generation...
-        // the problem is that dim > 1 lvl++ doesn't have the right vectors to refine as columns
-static int static_lvl = 2;
-
-// print datamatrices for debugging
-static void printMatrix(sgpp::base::DataMatrix a) {
-  for (size_t i = 0; i < a.getNrows(); i++) {
-    for (size_t j = 0; j < a.getNcols(); j++) {
-      std::cout << std::setprecision(10) << std::fixed << a.get(i, j) << "  ";
-    }
-    std::cout << std::endl;
-  }
-}
-
-static void calc_A_inv(sgpp::base::DataMatrix Q, sgpp::base::DataMatrix T_inv,
-                       sgpp::base::DataMatrix A) {
-  gsl_matrix_view q_view = gsl_matrix_view_array(Q.getPointer(), Q.getNrows(), Q.getNcols());
-  gsl_matrix_view t_view =
-      gsl_matrix_view_array(T_inv.getPointer(), T_inv.getNrows(), T_inv.getNcols());
-  gsl_matrix_view a_view = gsl_matrix_view_array(A.getPointer(), A.getNrows(), A.getNcols());
-
-  gsl_matrix* interim = gsl_matrix_alloc(Q.getNrows(), Q.getNcols());
-
-  gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &q_view.matrix, &t_view.matrix, 0.0, interim);
-
-  gsl_blas_dgemm(CblasNoTrans, CblasTrans, 1.0, interim, &q_view.matrix, 0.0, &a_view.matrix);
-  std::cout << "\ncalculated inverse of A: \n";
-  printMatrix(A);
-}
-
 BOOST_AUTO_TEST_SUITE(OrthoAdapt_tests)
 
 BOOST_AUTO_TEST_CASE(offline_object) {
   sgpp::datadriven::DBMatDensityConfiguration config;
-  config.grid_dim_ = static_dim;
-  config.grid_level_ = static_lvl;
+  config.grid_dim_ = 2;
+  config.grid_level_ = 3;
   config.grid_type_ = sgpp::base::GridType::Linear;
   config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
   config.lambda_ = 0.0001;
 
   sgpp::datadriven::DBMatOfflineOrthoAdapt off_object(config);
   off_object.buildMatrix();
-  std::cout << "testing matrix size " << off_object.getDimA() << std::endl;
 
   size_t n = off_object.getDimA();
   // std::cout << "Created Offline Object: \nMatrix Dimension = " << n << std::endl;
@@ -80,18 +48,16 @@ BOOST_AUTO_TEST_CASE(offline_object) {
 
   off_object.hessenberg_decomposition(gsl_diag, gsl_subdiag);
 
+  gsl_matrix_view q_view = gsl_matrix_view_array(off_object.getQ().getPointer(), n, n);
+  gsl_matrix* test_matrix = gsl_matrix_alloc(n, n);
+  gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &q_view.matrix, &q_view.matrix, 0.0, test_matrix);
   // checks Q for orthogonality: Q*Q^t == I
-  sgpp::base::DataVector row(n, 0.0);
-  sgpp::base::DataVector col(n, 0.0);
   for (size_t i = 0; i < n; i++) {
     for (size_t j = 0; j < n; j++) {
-      off_object.getQ().getColumn(i, col);
-      off_object.getQ().getColumn(j, row);  // getColumn equals getRow of Q_transpose
-      const double value = row.dotProduct(col);
       if (i == j) {
-        BOOST_CHECK_SMALL(value - 1.0, 1e-12);
+        BOOST_CHECK_SMALL(test_matrix->data[n * i + j] - 1.0, 1e-12);
       } else {
-        BOOST_CHECK_SMALL(value, 1e-12);
+        BOOST_CHECK_SMALL(test_matrix->data[n * i + j], 1e-12);
       }
     }
   }
@@ -116,25 +82,21 @@ BOOST_AUTO_TEST_CASE(offline_object) {
 
   gsl_matrix_view T_view = gsl_matrix_view_array(T.getPointer(), n, n);
   gsl_matrix_view T_inv_view = gsl_matrix_view_array(off_object.getTinv().getPointer(), n, n);
-  double* tt = new double[n * n];
-  gsl_matrix_view tt_view = gsl_matrix_view_array(tt, n, n);
 
   // basically does T*T_inv
   gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &T_view.matrix, &T_inv_view.matrix, 0.0,
-                 &tt_view.matrix);
+                 test_matrix);
 
   // checks if T_inv is inverse: T_inv * T == I
   for (size_t i = 0; i < n; i++) {
     for (size_t j = 0; j < n; j++) {
-      double value = tt[i * n + j];
       if (i == j) {
-        BOOST_CHECK_SMALL(value - 1.0, 1e-12);
+        BOOST_CHECK_SMALL(test_matrix->data[n * i + j] - 1.0, 1e-12);
       } else {
-        BOOST_CHECK_SMALL(value, 1e-12);
+        BOOST_CHECK_SMALL(test_matrix->data[n * i + j], 1e-12);
       }
     }
   }
-  delete[] tt;
 }
 
 BOOST_AUTO_TEST_CASE(solver_test) {
@@ -168,7 +130,7 @@ BOOST_AUTO_TEST_CASE(solver_test) {
   BOOST_CHECK_EQUAL(first_alpha.get(0), 1);
   BOOST_CHECK_EQUAL(first_alpha.get(1), 4);
 
-  // second case: simulated "refinement", B != 0, so: alpha = QT^{-1}Q^t * b + Bb
+  // second case: simulated "refinement", B != 0, so: alpha = Q * T^{-1} * Q^t * b + B * b
   sgpp::base::DataVector second_alpha(4);
   solver->solve(T, Q, B, b, second_alpha);
   // hard-coded calculated alpha values
@@ -178,172 +140,276 @@ BOOST_AUTO_TEST_CASE(solver_test) {
   BOOST_CHECK_EQUAL(second_alpha.get(3), 9);
 }
 
+/**
+ * This test creates the offline/online setup, gets somewhat arbitrary points to refine
+ * from a bigger lhs matrix, and then performs 2x refinement, after that 2x coarsening
+ * in a different order. Values of solved alpha always are checked in between
+ */
 BOOST_AUTO_TEST_CASE(online_object) {
   sgpp::datadriven::DBMatDensityConfiguration config;
-  config.grid_dim_ = static_dim;
-  config.grid_level_ = static_lvl;
+  config.grid_dim_ = 2;
+  config.grid_level_ = 3;
   config.grid_type_ = sgpp::base::GridType::Linear;
   config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
-  config.lambda_ = 0.0001;
+  config.lambda_ = 0.0001;  // arbitrary lambda
   config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::OrthoAdapt;
 
+  // creating offline objects
   sgpp::datadriven::DBMatOfflineOrthoAdapt offline_base(config);
-  offline_base.buildMatrix();
-  sgpp::base::DataMatrix copy_small_lhs(offline_base.getLhsMatrix_ONLY_FOR_TESTING());
-  sgpp::base::DataMatrix copy_small_lhs_for_solve(offline_base.getLhsMatrix_ONLY_FOR_TESTING());
+  offline_base.buildMatrix();  // creating lhs matrix
+  sgpp::base::DataMatrix lhs(offline_base.getLhsMatrix_ONLY_FOR_TESTING());
+  sgpp::base::DataMatrix lhs_copy_small(offline_base.getLhsMatrix_ONLY_FOR_TESTING());
+  offline_base.decomposeMatrix();  // calculating Q and T^{-1}
 
-  offline_base.decomposeMatrix();
-
-  // create offline object like it should be after refined Pts
-  config.grid_level_++;
-  sgpp::datadriven::DBMatOfflineOrthoAdapt offline_refined(config);
-  offline_refined.buildMatrix();
-
-  // create online object based on offline_base
+  // creating online object, based on offline object
   auto online_parent = std::unique_ptr<sgpp::datadriven::DBMatOnlineDE>{
       sgpp::datadriven::DBMatOnlineDEFactory::buildDBMatOnlineDE(offline_base)};
   sgpp::datadriven::DBMatOnlineDEOrthoAdapt* online =
       static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt*>(&*online_parent);
 
-  // gather points to refine from bigger lhs_matrix
+  // creating offline object of one bigger lvl as source for points to refine
+  config.grid_level_++;
+  sgpp::datadriven::DBMatOfflineOrthoAdapt offline_source(config);
+  offline_source.buildMatrix();
+
+  // calculate sizes of old and new matrices
   size_t oldSize = offline_base.getGrid().getStorage().getSize();
-  size_t newSize = offline_refined.getGrid().getStorage().getSize();
-  size_t numberOfPoints = newSize - oldSize;
-  std::vector<sgpp::base::DataVector> refine_points = {};
+  size_t newSize = offline_source.getGrid().getStorage().getSize();
+  size_t numberOfNewPoints = newSize - oldSize;  // always even, due to grid middle point
 
-  // write points to refine into refinePts matrix
-  for (size_t i = oldSize; i < newSize; i++) {
+  //############################################################################
+  //
+  // first refinement test: refine half of the points
+  //
+  //############################################################################
+  std::cout << "Testing refinement ..." << std::endl;
+
+  // build expected already refined lhs matrix
+  sgpp::base::DataMatrix lhs_copy_big(lhs_copy_small);
+  lhs_copy_big.resizeQuadratic(oldSize + numberOfNewPoints / 2);
+
+  // write first half of points to container and the expected refined lhs matrix
+  for (size_t i = oldSize; i < oldSize + numberOfNewPoints / 2; i++) {
     sgpp::base::DataVector refPt(newSize);
-    offline_refined.getLhsMatrix_ONLY_FOR_TESTING().getColumn(i, refPt);
+    offline_source.getLhsMatrix_ONLY_FOR_TESTING().getColumn(i, refPt);
     refPt.set(i, refPt.get(i) + config.lambda_);
-    online->add_new_refine_point(refPt);
-  }
+    online->add_new_refine_point(refPt);  // pushes point to container
 
-  std::cout << "smaller grid lhsMatrix is \n";
-  printMatrix(copy_small_lhs);
-
-  std::cout << "bigger grid lhsMatrix is \n";
-  printMatrix(offline_refined.getLhsMatrix_ONLY_FOR_TESTING());
-
-  std::cout << "\nand the refined points are: \n";
-  for (size_t j = 0; j < newSize; j++) {
-    for (size_t i = 0; i < numberOfPoints; i++) {
-      std::cout << std::setprecision(7) << std::fixed
-                << (*online->getRefinedPointsPointer())[i].get(j) << "  ";
+    // fill the corresponding rows/columns of matrix with the new data
+    for (size_t j = 0; j < lhs_copy_big.getNrows(); j++) {
+      lhs_copy_big.set(i, j, refPt.get(j));
+      lhs_copy_big.set(j, i, refPt.get(j));
     }
-    std::cout << std::endl;
   }
-  std::cout << std::endl;
 
-  // refines!
-  std::list<size_t> coarsenPtsDummy = {};
-  online->adapt(numberOfPoints, coarsenPtsDummy, config.lambda_);
+  // perform the refining
+  std::vector<size_t> dummy_coarsen_points = {};
+  online->sherman_morrison_adapt(numberOfNewPoints / 2, true, dummy_coarsen_points);
 
-  // create arbitrary right side b
-  sgpp::base::DataVector b(newSize);
-  double z = 0;
-  for (size_t i = 0; i < b.getSize(); i++) {
-    b.set(i, z);
+  // creating space for alpha and values for b
+  sgpp::base::DataVector alpha_half_refined(oldSize + numberOfNewPoints / 2);
+  sgpp::base::DataVector b_half_refined(oldSize + numberOfNewPoints / 2);
+  double z = 0.0;
+  for (size_t i = 0; i < b_half_refined.getSize(); i++) {
+    b_half_refined.set(i, z);
     z++;
   }
 
-  // create storage for alpha
-  sgpp::base::DataVector alpha(newSize, 0.0);
-  sgpp::base::DataVector test_result(newSize, 0.0);
-
-  // solve the created system
+  // create ortho_adapt solver and solve the system for alpha
   sgpp::datadriven::DBMatDMSOrthoAdapt* solver = new sgpp::datadriven::DBMatDMSOrthoAdapt();
-  solver->solve(offline_base.getTinv(), offline_base.getQ(), online->getB(), b, alpha);
+  solver->solve(offline_base.getTinv(), offline_base.getQ(), online->getB(), b_half_refined,
+                alpha_half_refined);
 
-  // now to test, it should hold that (lhs + lambda*I) * alpha = b
-  // where the matrix is the one of the created big grid and alpha was
-  // obtained from refining the smaller grid up to match the big one, ... so:
-  for (size_t i = 0; i < newSize; i++) {
-    double value = offline_refined.getLhsMatrix_ONLY_FOR_TESTING().get(i, i);
-    offline_refined.getLhsMatrix_ONLY_FOR_TESTING().set(i, i, value + config.lambda_);
-  }
-  std::cout << "lambda adapted on diagonal big lhs: " << std::endl;
-  printMatrix(offline_refined.getLhsMatrix_ONLY_FOR_TESTING());
-  offline_refined.getLhsMatrix_ONLY_FOR_TESTING().mult(alpha, test_result);
+  // compute expected alpha with gsl QR solver
+  gsl_vector_view gsl_alpha_half_refined_view =
+      gsl_vector_view_array(alpha_half_refined.getPointer(), oldSize + numberOfNewPoints / 2);
 
-  std::cout << "alpha is: " << std::endl;
-  for (size_t i = 0; i < alpha.getSize(); i++) {
-    std::cout << std::fixed << alpha.get(i) << "  ";
-  }
-  std::cout << std::endl;
+  gsl_vector_view gsl_b_half_refined_view =
+      gsl_vector_view_array(b_half_refined.getPointer(), oldSize + numberOfNewPoints / 2);
 
-  std::cout << "(R_big + lambda*I) * alpha is: " << std::endl;
-  for (size_t i = 0; i < test_result.getSize(); i++) {
-    std::cout << std::fixed << test_result.get(i) << "  ";
-  }
-  std::cout << std::endl;
+  sgpp::base::DataMatrix lhs_half_refined(lhs_copy_big);
+  gsl_matrix_view gsl_lhs_half_refined_view =
+      gsl_matrix_view_array(lhs_half_refined.getPointer(), oldSize + numberOfNewPoints / 2,
+                            oldSize + numberOfNewPoints / 2);
 
-  // test the results against the original values of b
-  for (size_t i = 0; i < alpha.getSize(); i++) {
-    BOOST_CHECK_SMALL(test_result.get(i) - b.get(i), 1e-10);
+  gsl_vector* tau = gsl_vector_alloc(oldSize + numberOfNewPoints / 2);
+  gsl_linalg_QR_decomp(&gsl_lhs_half_refined_view.matrix, tau);
+  gsl_linalg_QR_solve(&gsl_lhs_half_refined_view.matrix, tau, &gsl_b_half_refined_view.vector,
+                      &gsl_alpha_half_refined_view.vector);
+
+  // check calculated alpha against expected alpha
+  BOOST_CHECK_EQUAL(alpha_half_refined.getSize(), gsl_alpha_half_refined_view.vector.size);
+  for (size_t i = 0; i < alpha_half_refined.getSize(); i++) {
+    BOOST_CHECK_SMALL(alpha_half_refined.get(i) - gsl_alpha_half_refined_view.vector.data[i],
+                      1e-10);
   }
 
-  std::cout << "Testing coarsening now ..." << std::endl;
+  //############################################################################
+  //
+  // second refinement test: refine the other half of the points
+  //
+  //############################################################################
 
-  // get indices for coarsen points
-  std::list<size_t> coarsen_points = {};
-  for (size_t i = oldSize; i < newSize; i++) {
-    coarsen_points.push_back(i);
+  // resize expected lhs matrix to full big size
+  lhs_copy_big.resizeQuadratic(newSize);
+
+  // write second half of points to container and the expected refined lhs matrix
+  for (size_t i = oldSize + numberOfNewPoints / 2; i < newSize; i++) {
+    sgpp::base::DataVector refPt(newSize);
+    offline_source.getLhsMatrix_ONLY_FOR_TESTING().getColumn(i, refPt);
+    refPt.set(i, refPt.get(i) + config.lambda_);
+    online->add_new_refine_point(refPt);  // pushes point to container
+
+    // fill the corresponding rows/columns of matrix with the new data
+    for (size_t j = 0; j < lhs_copy_big.getNrows(); j++) {
+      lhs_copy_big.set(i, j, refPt.get(j));
+      lhs_copy_big.set(j, i, refPt.get(j));
+    }
   }
 
-  // coarsening!
-  online->adapt(0, coarsen_points, config.lambda_);
+  // perform the refining
+  online->sherman_morrison_adapt(numberOfNewPoints / 2, true, dummy_coarsen_points);
 
-  // adapt vectors to the smaller dimension
-  b.resize(oldSize);
-  alpha.resize(oldSize);
-  test_result.resize(oldSize);
-
-  // solve the created system
-  solver->solve(offline_base.getTinv(), offline_base.getQ(), online->getB(), b, alpha);
-
-  std::cout << "alpha is: " << std::endl;
-  for (size_t i = 0; i < alpha.getSize(); i++) {
-    std::cout << std::fixed << alpha.get(i) << "  ";
+  // creating space for alpha and values for b
+  sgpp::base::DataVector alpha_full_refined(newSize);
+  sgpp::base::DataVector b_full_refined(newSize);
+  z = 0.0;
+  for (size_t i = 0; i < b_full_refined.getSize(); i++) {
+    b_full_refined.set(i, z);
+    z++;
   }
-  std::cout << std::endl;
 
-  // sgpp::base::DataMatrix A_inv(oldSize, oldSize);
-  // calc_A_inv(offline_base.getQ(), offline_base.getTinv(), A_inv);
-  // std::cout << "\n\nkonkretes A_inv von der kleinen matrix: \n";
-  // printMatrix(A_inv);
-  // A_inv.mult(b, alpha);
-  // std::cout << "but alpha should be ( " << alpha.getSize() << "-dim Vector)" << std::endl;
-  // for (size_t i = 0; alpha.getSize(); i++) {
-  // std::cout << std::setprecision(7) << std::fixed << alpha.get(i) << "  ";
-  // }
+  // solve the system for alpha
+  solver->solve(offline_base.getTinv(), offline_base.getQ(), online->getB(), b_full_refined,
+                alpha_full_refined);
 
-  // this time test agains smaller lhs matrix, (lhs + lambda*I) * alpha = b
-  for (size_t i = 0; i < oldSize; i++) {
-    double value = copy_small_lhs.get(i, i);
-    copy_small_lhs.set(i, i, value + config.lambda_);
+  // compute expected alpha with gsl QR solver
+  gsl_vector_view gsl_alpha_full_refined_view =
+      gsl_vector_view_array(alpha_full_refined.getPointer(), newSize);
+
+  gsl_vector_view gsl_b_full_refined_view =
+      gsl_vector_view_array(b_full_refined.getPointer(), newSize);
+
+  sgpp::base::DataMatrix lhs_full_refined(lhs_copy_big);
+  gsl_matrix_view gsl_lhs_full_refined_view =
+      gsl_matrix_view_array(lhs_full_refined.getPointer(), newSize, newSize);
+
+  tau = gsl_vector_alloc(newSize);
+  gsl_linalg_QR_decomp(&gsl_lhs_full_refined_view.matrix, tau);
+  gsl_linalg_QR_solve(&gsl_lhs_full_refined_view.matrix, tau, &gsl_b_full_refined_view.vector,
+                      &gsl_alpha_full_refined_view.vector);
+
+  // check calculated alpha against expected alpha
+  BOOST_CHECK_EQUAL(alpha_full_refined.getSize(), gsl_alpha_full_refined_view.vector.size);
+  for (size_t i = 0; i < alpha_full_refined.getSize(); i++) {
+    BOOST_CHECK_SMALL(alpha_full_refined.get(i) - gsl_alpha_full_refined_view.vector.data[i],
+                      1e-10);
   }
-  std::cout << "small_lhs ist: \n";
-  printMatrix(copy_small_lhs);
-  copy_small_lhs.mult(alpha, test_result);
 
-  std::cout << "und (R_small + lambda*I) * alpha ist\n";
-  for (size_t i = 0; i < test_result.getSize(); i++) {
-    std::cout << std::fixed << test_result.get(i) << "  ";
+  //############################################################################
+  //
+  // first coarsening test: refine the first half of the points refined before
+  //
+  //############################################################################
+  std::cout << "Testing coarsening ..." << std::endl;
+
+  // create the list of indices which to coarsen
+  std::vector<size_t> coarsen_indices_first_half;
+  for (size_t i = oldSize; i < oldSize + numberOfNewPoints / 2; i++) {
+    coarsen_indices_first_half.push_back(i);
   }
-  std::cout << std::endl;
 
-  // test the results agains the original values of b
+  // write second half of points to the expected refined lhs matrix
+  // it should be the offline_base lhs matrix with added vectors from the second
+  // batch of the refine points, because the first batch will be coarsened
+  lhs_copy_big.resizeQuadratic(oldSize + numberOfNewPoints / 2);
+  for (size_t i = oldSize + numberOfNewPoints / 2; i < newSize; i++) {
+    sgpp::base::DataVector refPt(newSize);
+    offline_source.getLhsMatrix_ONLY_FOR_TESTING().getColumn(i, refPt);
+    refPt.set(i, refPt.get(i) + config.lambda_);
+    // no adding to container here, since this is coarsening
 
-  for (size_t i = 0; i < alpha.getSize(); i++) {
-    BOOST_CHECK_SMALL(test_result.get(i) - b.get(i), 1e-10);
+    // erase the entries of the obtained rows/columns at coarsened indices and resize
+    refPt.erase(refPt.begin() + oldSize, refPt.begin() + oldSize + numberOfNewPoints / 2);
+
+    // fill the corresponding rows/columns of matrix with the new data
+    for (size_t j = 0; j < lhs_copy_big.getNrows(); j++) {
+      lhs_copy_big.set(i, j, refPt.get(j));
+      lhs_copy_big.set(j, i, refPt.get(j));
+    }
   }
-  std::cout << "DAS WAR TEST: dim = " << config.grid_dim_
-            << "\n              lvl:  " << config.grid_level_ - 1 << " ---> " << config.grid_level_
-            << std::endl;
-  std::cout << "              size: " << offline_base.getDimA() << " ---> "
-            << offline_refined.getDimA() << std::endl;
+
+  // perform the coarsening
+  online->sherman_morrison_adapt(0, false, coarsen_indices_first_half);
+
+  // solve the system for alpha
+  // note: it doesn't matter that the entries of b didn't get erased on the correct positions
+  //       because the validation works for any b, it just has to be the same
+  solver->solve(offline_base.getTinv(), offline_base.getQ(), online->getB(), b_half_refined,
+                alpha_half_refined);
+
+  // compute expected alpha with gsl QR solver
+  sgpp::base::DataMatrix lhs_half_coarsened(lhs_copy_big);  // lhs_copy_big is coarsened matrix here
+  gsl_matrix_view gsl_lhs_half_coarsened_view =
+      gsl_matrix_view_array(lhs_half_coarsened.getPointer(), oldSize + numberOfNewPoints / 2,
+                            oldSize + numberOfNewPoints / 2);
+
+  tau = gsl_vector_alloc(oldSize + numberOfNewPoints / 2);
+  gsl_linalg_QR_decomp(&gsl_lhs_half_coarsened_view.matrix, tau);
+  gsl_linalg_QR_solve(&gsl_lhs_half_coarsened_view.matrix, tau, &gsl_b_half_refined_view.vector,
+                      &gsl_alpha_half_refined_view.vector);
+
+  // check calculated alpha against expected alpha
+  BOOST_CHECK_EQUAL(alpha_full_refined.getSize(), gsl_alpha_full_refined_view.vector.size);
+  for (size_t i = 0; i < alpha_full_refined.getSize(); i++) {
+    BOOST_CHECK_SMALL(alpha_full_refined.get(i) - gsl_alpha_full_refined_view.vector.data[i],
+                      1e-10);
+  }
+
+  //############################################################################
+  //
+  // second coarsening test: coarsen the rest of the points refined before
+  //
+  //############################################################################
+
+  // create the list of indices which to coarsen
+  std::vector<size_t> coarsen_indices_second_half;
+  for (size_t i = oldSize + numberOfNewPoints / 2; i < newSize; i++) {
+    coarsen_indices_second_half.push_back(i);
+  }
+
+  // in this case no need to create matrices, because the expected fully coarsened matrix
+  // is the small lhs matrix of the initial offline grid, which was copied before
+
+  // perform the coarsening
+  online->sherman_morrison_adapt(0, false, coarsen_indices_first_half);
+
+  // create alpha and b by resizing the old ones to the old size
+  alpha_half_refined.resize(oldSize);
+  b_half_refined.resize(oldSize);
+
+  // solve the system for alpha, which was resized in the lines above
+  solver->solve(offline_base.getTinv(), offline_base.getQ(), online->getB(), b_half_refined,
+                alpha_half_refined);
+
+  // compute expected alpha with gsl QR solver
+  gsl_vector_view gsl_alpha_view = gsl_vector_view_array(alpha_half_refined.getPointer(), oldSize);
+
+  gsl_vector_view gsl_b_view = gsl_vector_view_array(b_half_refined.getPointer(), oldSize);
+
+  gsl_matrix_view gsl_lhs_view =
+      gsl_matrix_view_array(lhs_copy_small.getPointer(), oldSize, oldSize);
+
+  tau = gsl_vector_alloc(oldSize);
+  gsl_linalg_QR_decomp(&gsl_lhs_view.matrix, tau);
+  gsl_linalg_QR_solve(&gsl_lhs_view.matrix, tau, &gsl_b_view.vector, &gsl_alpha_view.vector);
+
+  // check calculated alpha against expected alpha
+  BOOST_CHECK_EQUAL(alpha_half_refined.getSize(), gsl_alpha_view.vector.size);
+  for (size_t i = 0; i < alpha_half_refined.getSize(); i++) {
+    BOOST_CHECK_SMALL(alpha_half_refined.get(i) - gsl_alpha_view.vector.data[i], 1e-10);
+  }
 }
 
-// #endif /* USE_GSL */
 BOOST_AUTO_TEST_SUITE_END()
+#endif /* USE_GSL */

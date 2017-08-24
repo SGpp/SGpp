@@ -3,14 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#ifdef USE_GSL
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
 
 #include <iomanip>
 #include <string>
-
-// #ifdef USE_GSL
 
 namespace sgpp {
 namespace datadriven {
@@ -77,7 +76,7 @@ void DBMatOfflineOrthoAdapt::buildMatrix() {
 }
 
 void DBMatOfflineOrthoAdapt::decomposeMatrix() {
-  // allocating sub-, super- and diagonal vectors of T
+  // allocating subdiagonal and diagonal vectors of T
   gsl_vector* gsl_diag = gsl_vector_alloc(dim_a);
   gsl_vector* gsl_subdiag = gsl_vector_alloc(this->dim_a - 1);
 
@@ -92,11 +91,8 @@ void DBMatOfflineOrthoAdapt::decomposeMatrix() {
   // inverting T+lambda*I, by solving L*R*x_i = e_i, for every i-th column x_i of T_inv
   this->invert_symmetric_tridiag(gsl_diag, gsl_subdiag);
 
-  // decomposed matrix: (lhs+lambda*I) = Q * T_inv * Q^t
+  // decomposed matrix: (lhs+lambda*I) = Q * T^{-1} * Q^t
   this->isDecomposed = true;
-
-  gsl_vector_free(gsl_diag);
-  gsl_vector_free(gsl_subdiag);
 }
 
 void DBMatOfflineOrthoAdapt::hessenberg_decomposition(gsl_vector* diag, gsl_vector* subdiag) {
@@ -106,17 +102,10 @@ void DBMatOfflineOrthoAdapt::hessenberg_decomposition(gsl_vector* diag, gsl_vect
 
   gsl_linalg_symmtd_decomp(&gsl_lhs.matrix, tau);
   gsl_linalg_symmtd_unpack(&gsl_lhs.matrix, tau, &gsl_q.matrix, diag, subdiag);
-
-  gsl_vector_free(tau);
-  return;
 }
 
 void DBMatOfflineOrthoAdapt::invert_symmetric_tridiag(gsl_vector* diag, gsl_vector* subdiag) {
-  // gsl stuffs
-  // gsl_linalg_solve_symm_tridiag
-  // (const gsl_vector * diag, const gsl_vector * subdiag, const gsl_vector * b (is e hier),
-  // gsl_vector * x (target))
-  gsl_vector* e = gsl_vector_calloc(diag->size);  // c_alloc is zeroAll
+  gsl_vector* e = gsl_vector_calloc(diag->size);  // calloc set all values to zero
   gsl_vector* x = gsl_vector_alloc(diag->size);   // target of solving
 
   for (size_t k = 0; k < this->t_tridiag_inv_matrix_.getNcols(); k++) {
@@ -132,7 +121,6 @@ void DBMatOfflineOrthoAdapt::invert_symmetric_tridiag(gsl_vector* diag, gsl_vect
 void DBMatOfflineOrthoAdapt::store(const std::string& fileName) {
   DBMatOffline::store(fileName);
 
-  // #ifdef USE_GSL
   FILE* outCFile = fopen(fileName.c_str(), "ab");
   if (!outCFile) {
     throw sgpp::base::algorithm_exception{"cannot open file for writing"};
@@ -143,17 +131,12 @@ void DBMatOfflineOrthoAdapt::store(const std::string& fileName) {
       gsl_matrix_view_array(this->q_ortho_matrix_.getPointer(), this->dim_a, this->dim_a);
   gsl_matrix_fwrite(outCFile, &q_view.matrix);
 
-  // store t_inv_tridiag
+  // store t_inv_tridiag_
   gsl_matrix_view t_inv_view =
       gsl_matrix_view_array(this->t_tridiag_inv_matrix_.getPointer(), this->dim_a, this->dim_a);
   gsl_matrix_fwrite(outCFile, &t_inv_view.matrix);
   fclose(outCFile);
-  // #else
-  // throw base::not_implemented_exception("built withot GSL");
-  // #endif /* USE_GSL */
 }
 }  // namespace datadriven
 }  // namespace sgpp
-// #else
-// throw sgpp::base::algorithm_exception("USE_GSL is not set to true");
-// #endif /* USE_GSL */
+#endif /* USE_GSL */

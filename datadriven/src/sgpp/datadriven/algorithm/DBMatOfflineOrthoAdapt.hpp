@@ -7,7 +7,7 @@
 
 #include <string>
 
-// #ifdef USE_GSL
+#ifdef USE_GSL
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_matrix.h>
@@ -39,13 +39,13 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
   bool isRefineable() override;
 
   /**
-   * Builds the right hand side matrix without the regularization term
+   * Builds the left hand side matrix without the regularization term
    */
   void buildMatrix();
 
   /**
    * Decomposes and inverts the lhsMatrix of the offline object
-   * (lhs + lambda*I)^-1 = Q * (T + lambda*I)^-1 * Q^t = Q * T_inv * Q^t
+   * (lhs + lambda*I)^{-1} = Q * (T + lambda*I)^{-1} * Q^t = Q * T_inv * Q^t
    *
    * The matrix lhsMatrix of the parent object will be altered during the process
    * uses: hessenberg_decomposition, invert_symmetric_tridiag
@@ -54,18 +54,18 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
 
   /**
    * Decomposes the lhsMatrix into lhs = Q * T * Q^t and stores the orthogonal
-   * matrix Q into the member q_ortho_matrix. The information to reconstruct T
+   * matrix Q into the member q_ortho_matrix_. The information to reconstruct T
    * is written into diag and subdiag
    *
    * @param diag diagonal entries of T
-   * @param subdiagonal and superdiagonal entries of T (symmetric)
+   * @param sub- and superdiagonal entries of T (symmetric)
    */
   void hessenberg_decomposition(gsl_vector* diag, gsl_vector* subdiag);
 
   /**
    * Inverts a symmetric tridiagonal matrix T, which is given in the form of
-   * its diagonal and subdiagonal vectors. When finished, diag and subdiag no more
-   * hold their initial values.
+   * its diagonal and subdiagonal vectors. When finished, diag and subdiag no
+   * more hold their initial values.
    *
    * @param diag diagonal entries of T
    * @param subdiag and superdiagonal entries of T (symmetric)
@@ -73,14 +73,14 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
   void invert_symmetric_tridiag(gsl_vector* diag, gsl_vector* subdiag);
 
   /**
-   * Serialize the DBMatOfflineOrthoAdapt object
+   * Serializes the DBMatOfflineOrthoAdapt object
    * The lhsMatrix is stored in the form of compact tridiagonal decomposition,
    * which means the diagonal and subdiagonal of lhsMatrix are stored, and the
    * lower left part of the matrix holds the householder vectors.
    *
-   * q_ortho_matrix and t_inv_tridiag
-   * are also stored into the specified file, which is the explicit representation
-   * of the decomposition needed for the online phase.
+   * q_ortho_matrix_ and t_inv_tridiag_ are also stored into the specified file,
+   * which is the explicit representation of the decomposition needed for the
+   * online phase
    *
    * @param fileName path where to store the file
    */
@@ -97,12 +97,10 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
 
  protected:
   size_t dim_a;                                  // quadratic matrix size of matrix to decompose
-  double lambda;                                 // configuration
-  sgpp::base::DataMatrix q_ortho_matrix_;        // orthogonal matrix
-  sgpp::base::DataMatrix t_tridiag_inv_matrix_;  // inverse of the tridiag matrix
+  double lambda;                                 // regularization parameter
+  sgpp::base::DataMatrix q_ortho_matrix_;        // orthogonal matrix of decomposition
+  sgpp::base::DataMatrix t_tridiag_inv_matrix_;  // inverse of the tridiag matrix of decomposition
 };
 }  // namespace datadriven
 }  // namespace sgpp
-// #else
-// throw sgpp::base::algorithm_exception("USE_GSL is not set to true");
-// #endif /* USE_GSL */
+#endif /* USE_GSL */

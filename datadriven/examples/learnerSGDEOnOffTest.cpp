@@ -125,8 +125,8 @@ int main() {
       std::cout << "Decomposition type: " << decompType << std::endl;
 
       /**
-       * Configure adaptive refinement (if Cholesky is chosen). As refinement
-       * monitor the periodic monitor or the convergence monitor
+       * Configure adaptive refinement (if Cholesky or OrthoAdapt is chosen).
+       * As refinement monitor the periodic monitor or the convergence monitor
        * can be chosen. Possible refinement indicators are
        * surplus refinement, data-based refinement, zero-crossings-based
        * refinement.
@@ -152,11 +152,11 @@ int main() {
       std::cout << "Refinement monitor: " << refMonitor << std::endl;
       std::string refType;
       // select surplus refinement
-      // refType = "surplus";
+      refType = "surplus";
       // select data-based refinement
       // refType = "data";
       // select zero-crossings-based refinement
-      refType = "zero";
+      // refType = "zero";
       std::cout << "Refinement type: " << refType << std::endl;
       sgpp::base::AdpativityConfiguration adaptConfig;
       /**
@@ -206,7 +206,7 @@ int main() {
 
       // specify batch size
       // (set to 1 for processing only a single data point each iteration)
-      size_t batchSize = 9;  // todo: hier triggern ... 90ster punkt macht fehler i-wie
+      size_t batchSize = 1;
       // specify max number of passes over traininig data set
       size_t maxDataPasses = 2;
 
