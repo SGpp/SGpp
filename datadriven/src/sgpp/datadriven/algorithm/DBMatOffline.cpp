@@ -46,10 +46,14 @@ using sgpp::base::data_exception;
 using sgpp::base::OperationMatrix;
 
 DBMatOffline::DBMatOffline(const DBMatDensityConfiguration& oc)
-    : config(oc), lhsMatrix(), isConstructed(false), isDecomposed(false), grid(nullptr) {}
+    : config(oc), lhsMatrix(), isConstructed(false), isDecomposed(false), grid(nullptr) {
+  interactions = std::vector<std::vector<size_t>>();
+}
 
 DBMatOffline::DBMatOffline()
-    : config(), lhsMatrix(), isConstructed(false), isDecomposed(false), grid(nullptr) {}
+    : config(), lhsMatrix(), isConstructed(false), isDecomposed(false), grid(nullptr) {
+  interactions = std::vector<std::vector<size_t>>();
+}
 
 DBMatOffline::DBMatOffline(const DBMatOffline& rhs)
     : config(rhs.config),
@@ -57,6 +61,8 @@ DBMatOffline::DBMatOffline(const DBMatOffline& rhs)
       isConstructed(rhs.isConstructed),
       isDecomposed(rhs.isDecomposed),
       grid(nullptr) {
+  interactions = std::vector<std::vector<size_t>>();
+
   if (rhs.grid != nullptr) {
     grid = std::unique_ptr<Grid>{rhs.grid->clone()};
   }
@@ -80,8 +86,14 @@ DBMatOffline& sgpp::datadriven::DBMatOffline::operator=(const DBMatOffline& rhs)
 
 DBMatOffline::DBMatOffline(const std::string& fileName)
     : config(), lhsMatrix(), isConstructed(true), isDecomposed(true), grid(nullptr) {
+  std::cout << "parsing Config..." << std::endl;
   parseConfig(fileName, config);
+  std::cout << "Parsing Interactions..." << std::endl;
+  interactions = std::vector<std::vector<size_t>>();
+  parseInter(fileName, interactions);
+  std::cout << "Setting up Grid..." << std::endl;
   InitializeGrid();
+  std::cout << "Grid set up! Start reading Matrix" << std::endl;
 }
 
 DBMatDensityConfiguration& DBMatOffline::getConfig() { return config; }
@@ -106,7 +118,13 @@ void DBMatOffline::InitializeGrid() {
   }
 
   // Generate regular Grid with LEVELS Levels
-  grid->getGenerator().regular(config.grid_level_);
+  if (interactions.size() == 0){
+    grid->getGenerator().regular(config.grid_level_);
+  }
+  else{
+    grid->getGenerator().regularInter(config.grid_level_, interactions, 0.0);
+  }
+  std::cout << grid->getSize() << std::endl;
 }
 
 void DBMatOffline::buildMatrix() {
@@ -147,10 +165,19 @@ void DBMatOffline::store(const std::string& fileName) {
     throw algorithm_exception{"cannot open file for writing"};
   }
 
+  std::string inter = "," + std::to_string(interactions.size());
+  for(std::vector<size_t> i : interactions){
+    inter.append("," + std::to_string(i.size()));
+    for(size_t j:i){
+      inter.append("," + std::to_string(j));
+    }
+  }
+  std::cout << inter << std::endl;
+
   outputFile << static_cast<int>(config.grid_type_) << "," << config.grid_dim_ << ","
              << config.grid_level_ << "," << static_cast<int>(config.regularization_) << ","
              << std::setprecision(12) << config.lambda_ << ","
-             << static_cast<int>(config.decomp_type_) << "\n";
+             << static_cast<int>(config.decomp_type_) << inter << "\n";
   outputFile.close();
 
   // write matrix
@@ -198,6 +225,33 @@ void sgpp::datadriven::DBMatOffline::parseConfig(const std::string& fileName,
   config.regularization_ = static_cast<RegularizationType>(std::stoi(tokens[3]));
   config.lambda_ = std::stof(tokens[4]);
   config.decomp_type_ = static_cast<DBMatDecompostionType>(std::stoi(tokens[5]));
+}
+
+void sgpp::datadriven::DBMatOffline::parseInter(const std::string& fileName,
+                                                 std::vector<std::vector<size_t>>& interactions) const {
+  std::ifstream file(fileName, std::istream::in);
+  // Read configuration
+  if (!file) {
+    throw algorithm_exception("Failed to open File");
+  }
+  std::string str;
+  std::getline(file, str);
+  file.close();
+
+  std::vector<std::string> tokens;
+  StringTokenizer::tokenize(str, ",", tokens);
+
+  for(size_t i = 7; i < tokens.size(); i+= std::stoi(tokens[i])+1){
+    std::vector<size_t> tmp = std::vector<size_t>();
+    for(size_t j = 1; j <= std::stoi(tokens[i]); j++){
+      tmp.push_back(std::stoi(tokens[i+j]));
+    }
+    interactions.push_back(tmp);
+  }
+}
+
+void sgpp::datadriven::DBMatOffline::setInter(std::vector<std::vector <size_t>> inter){
+  interactions = inter;
 }
 
 }  // namespace datadriven

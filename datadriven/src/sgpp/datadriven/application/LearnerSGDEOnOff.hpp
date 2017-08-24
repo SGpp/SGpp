@@ -57,7 +57,7 @@ class LearnerSGDEOnOff {
    */
   LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& trainData, Dataset& testData,
                    Dataset* validationData, DataVector& classLabels, size_t classNumber,
-                   bool usePrior, double beta, double lambda);
+                   bool usePrior, double beta, double lambda, std::string matrixfile = "");
 
   /**
    * Trains the learner with the given dataset.

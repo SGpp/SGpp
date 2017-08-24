@@ -125,7 +125,6 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
       // 1 / M * Bt * 1
       b.mult(1. / static_cast<double>(numberOfPoints));
     }
-
     solveSLE(b, do_cv);
 
     functionComputed = true;
