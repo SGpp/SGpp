@@ -572,6 +572,8 @@ namespace sgpp {
                     break;
                 }
                 case CHOLESKY_DECOMPOSITION: {
+                    std::cout << "Cholesky update not implemented." << std::endl;
+                    exit(-1);
                     if (isMaster()) {
                         std::cout << "Broadcasting incoming cholesky decomposition " << classIndex << std::endl;
                         sendCholeskyDecomposition(classIndex,
