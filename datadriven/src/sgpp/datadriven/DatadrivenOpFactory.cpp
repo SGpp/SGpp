@@ -27,16 +27,24 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DPoly.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DModPoly.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DPolyBoundary.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DPolyClenshawCurtis.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationPoly.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationModPoly.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationPolyBoundary.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationPolyClenshawCurtis.hpp>
 
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPoly.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DModPoly.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPolyBoundary.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPolyClenshawCurtis.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationPoly.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationModPoly.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationPolyBoundary.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationPolyClenshawCurtis.hpp>
 
 #include <sgpp/datadriven/operation/hash/simple/OperationTestLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationTestLinearBoundary.hpp>
@@ -202,6 +210,10 @@ datadriven::OperationRosenblattTransformation* createOperationRosenblattTransfor
     return new datadriven::OperationRosenblattTransformationPoly(&grid);
   else if (grid.getType() == base::GridType::ModPoly)
     return new datadriven::OperationRosenblattTransformationModPoly(&grid);
+  else if (grid.getType() == base::GridType::PolyBoundary)
+    return new datadriven::OperationRosenblattTransformationPolyBoundary(&grid);
+  else if (grid.getType() == base::GridType::PolyClenshawCurtis)
+    return new datadriven::OperationRosenblattTransformationPolyClenshawCurtis(&grid);
   else
     throw base::factory_exception(
         "OperationRosenblattTransformation is not implemented for this grid type.");
@@ -214,6 +226,10 @@ datadriven::OperationTransformation1D* createOperationRosenblattTransformation1D
     return new datadriven::OperationRosenblattTransformation1DPoly(&grid);
   else if (grid.getType() == base::GridType::ModPoly)
     return new datadriven::OperationRosenblattTransformation1DModPoly(&grid);
+  else if (grid.getType() == base::GridType::PolyBoundary)
+    return new datadriven::OperationRosenblattTransformation1DPolyBoundary(&grid);
+  else if (grid.getType() == base::GridType::PolyClenshawCurtis)
+    return new datadriven::OperationRosenblattTransformation1DPolyClenshawCurtis(&grid);
   else
     throw base::factory_exception(
         "OperationRosenblattTransformation1D is not implemented for this grid type.");
@@ -227,6 +243,10 @@ datadriven::OperationInverseRosenblattTransformation*
     return new datadriven::OperationInverseRosenblattTransformationPoly(&grid);
   else if (grid.getType() == base::GridType::ModPoly)
     return new datadriven::OperationInverseRosenblattTransformationModPoly(&grid);
+  else if (grid.getType() == base::GridType::PolyBoundary)
+    return new datadriven::OperationInverseRosenblattTransformationPolyBoundary(&grid);
+  else if (grid.getType() == base::GridType::PolyClenshawCurtis)
+    return new datadriven::OperationInverseRosenblattTransformationPolyClenshawCurtis(&grid);
   else
     throw base::factory_exception(
         "OperationInverseRosenblattTransformation is not implemented for this grid type.");
@@ -240,6 +260,10 @@ datadriven::OperationTransformation1D* createOperationInverseRosenblattTransform
     return new datadriven::OperationInverseRosenblattTransformation1DPoly(&grid);
   else if (grid.getType() == base::GridType::ModPoly)
     return new datadriven::OperationInverseRosenblattTransformation1DModPoly(&grid);
+  else if (grid.getType() == base::GridType::PolyBoundary)
+    return new datadriven::OperationInverseRosenblattTransformation1DPolyBoundary(&grid);
+  else if (grid.getType() == base::GridType::PolyClenshawCurtis)
+    return new datadriven::OperationInverseRosenblattTransformation1DPolyClenshawCurtis(&grid);
   else
     throw base::factory_exception(
         "OperationInverseRosenblattTransformation1D is not implemented for this grid type.");

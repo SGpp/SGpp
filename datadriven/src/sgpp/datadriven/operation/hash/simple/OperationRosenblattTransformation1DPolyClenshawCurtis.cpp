@@ -3,13 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPoly.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPolyClenshawCurtis.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/grid/type/PolyGrid.hpp>
+#include <sgpp/base/grid/type/PolyClenshawCurtisGrid.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/base/tools/HermiteBasis.hpp>
 
@@ -28,14 +28,15 @@ namespace datadriven {
 /**
  * WARNING: the grid must be a 1D grid!
  */
-OperationRosenblattTransformation1DPoly::OperationRosenblattTransformation1DPoly(
-    base::Grid* grid)
+OperationRosenblattTransformation1DPolyClenshawCurtis::
+  OperationRosenblattTransformation1DPolyClenshawCurtis(base::Grid* grid)
     : grid(grid) {}
 
-OperationRosenblattTransformation1DPoly::~OperationRosenblattTransformation1DPoly() {}
+OperationRosenblattTransformation1DPolyClenshawCurtis::
+  ~OperationRosenblattTransformation1DPolyClenshawCurtis() {}
 
-double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVector* alpha1d,
-                                                                  double coord1d) {
+double OperationRosenblattTransformation1DPolyClenshawCurtis::
+  doTransformation1D(base::DataVector* alpha1d, double coord1d) {
   if (coord1d == 0.0)
     return 0.0;
   /***************** STEP 1. Compute CDF  ********************/
@@ -53,7 +54,7 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
   base::DataVector weights;
   base::GaussLegendreQuadRule1D gauss;
   std::vector<double> patch_areas;
-  size_t p = dynamic_cast<sgpp::base::PolyGrid*>(grid)->getDegree();
+  size_t p = dynamic_cast<sgpp::base::PolyClenshawCurtisGrid*>(grid)->getDegree();
   const size_t quadOrder =  (p + 1) / 2;
   gauss.getLevelPointsAndWeightsNormalized(quadOrder, gauss_coordinates, weights);
 

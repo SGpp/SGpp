@@ -7,7 +7,7 @@
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationPoly.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationPolyClenshawCurtis.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityConditional.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensitySampling1D.hpp>
@@ -29,9 +29,8 @@
 namespace sgpp {
 namespace datadriven {
 
-void OperationInverseRosenblattTransformationPoly::doTransformation(base::DataVector* alpha,
-                                                                   base::DataMatrix* pointscdf,
-                                                                   base::DataMatrix* points) {
+void OperationInverseRosenblattTransformationPolyClenshawCurtis::
+  doTransformation(base::DataVector* alpha, base::DataMatrix* pointscdf, base::DataMatrix* points) {
   size_t dim_start = 0;
   size_t num_dims = this->grid->getDimension();
   size_t num_samples = pointscdf->getNrows();
@@ -87,10 +86,9 @@ void OperationInverseRosenblattTransformationPoly::doTransformation(base::DataVe
   }
 }
 
-void OperationInverseRosenblattTransformationPoly::doTransformation(base::DataVector* alpha,
-                                                                   base::DataMatrix* pointscdf,
-                                                                   base::DataMatrix* points,
-                                                                   size_t dim_start) {
+void OperationInverseRosenblattTransformationPolyClenshawCurtis::
+  doTransformation(base::DataVector* alpha, base::DataMatrix* pointscdf,
+                   base::DataMatrix* points, size_t dim_start) {
   // 1. marginalize to dim_start
   base::Grid* g1d = NULL;
   base::DataVector* a1d = NULL;
@@ -120,7 +118,7 @@ void OperationInverseRosenblattTransformationPoly::doTransformation(base::DataVe
   delete a1d;
 }
 
-void OperationInverseRosenblattTransformationPoly::doTransformation_start_dimX(
+void OperationInverseRosenblattTransformationPolyClenshawCurtis::doTransformation_start_dimX(
     base::Grid* g_in, base::DataVector* a_in, size_t dim_start, base::DataVector* cdfs1d,
     base::DataVector* coords1d) {
   size_t dims = coords1d->getSize();  // total dimensions
@@ -137,7 +135,7 @@ void OperationInverseRosenblattTransformationPoly::doTransformation_start_dimX(
   return;
 }
 
-void OperationInverseRosenblattTransformationPoly::doTransformation_in_next_dim(
+void OperationInverseRosenblattTransformationPolyClenshawCurtis::doTransformation_in_next_dim(
     base::Grid* g_in, base::DataVector* a_in, size_t op_dim, base::DataVector* cdfs1d,
     base::DataVector* coords1d, size_t& curr_dim) {
   size_t dims = cdfs1d->getSize();  // total dimensions
@@ -184,9 +182,8 @@ void OperationInverseRosenblattTransformationPoly::doTransformation_in_next_dim(
   return;
 }
 
-double OperationInverseRosenblattTransformationPoly::doTransformation1D(base::Grid* grid1d,
-                                                                       base::DataVector* alpha1d,
-                                                                       double coord1d) {
+double OperationInverseRosenblattTransformationPolyClenshawCurtis::
+  doTransformation1D(base::Grid* grid1d, base::DataVector* alpha1d, double coord1d) {
   std::unique_ptr<OperationTransformation1D> opInverseRosenblatt
     = static_cast<std::unique_ptr<OperationTransformation1D>>
     (op_factory::createOperationInverseRosenblattTransformation1D(*grid1d));
