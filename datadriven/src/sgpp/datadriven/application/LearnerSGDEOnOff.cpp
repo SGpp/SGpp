@@ -40,7 +40,7 @@ namespace datadriven {
 LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& trainData,
                                    Dataset& testData, Dataset* validationData,
                                    DataVector& classLabels, size_t numClassesInit, bool usePrior,
-                                   double beta, double lambda)
+                                   double beta, double lambda, std::string matrixfile)
     : trainData{trainData},
       testData{testData},
       validationData{validationData},
@@ -56,9 +56,14 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& tr
       processedPoints{0},
       avgErrors{0} {
   // initialize offline object
-  offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildOfflineObject(dconf)};
-  offline->buildMatrix();
-  offline->decomposeMatrix();
+  if(matrixfile.empty()){
+    offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildOfflineObject(dconf)};
+    offline->buildMatrix();
+    offline->decomposeMatrix();
+  }
+  else{
+    offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildFromFile(matrixfile)};
+  }
 
   //  DBMatOfflineChol offlineRef(dconf);
   //  offlineRef.buildMatrix();
@@ -156,7 +161,8 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
   }
 
   // auxiliary variable for accuracy (error) measurement
-  double acc = getAccuracy();
+  //double acc = getAccuracy();
+  double acc = 0.0;
   avgErrors.append(1.0 - acc);
 
   // main loop which performs the training process
@@ -202,6 +208,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
       // check if refinement should be performed
       if (refMonitor == "periodic") {
         // check periodic monitor
+		//std::cout << offline->isRefineable() << (totalInstances > 0) << (totalInstances % refPeriod == 0) << (refCnt < offline->getConfig().numRefinements_) << std::endl;
         if (offline->isRefineable() && (totalInstances > 0) && (totalInstances % refPeriod == 0) &&
             (refCnt < offline->getConfig().numRefinements_)) {
           doRefine = true;
@@ -241,7 +248,8 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
 
       // save current error
       if (totalInstances % 10 == 0) {
-        acc = getAccuracy();
+        //acc = getAccuracy();
+        acc = 0;
         avgErrors.append(1.0 - acc);
       }
 

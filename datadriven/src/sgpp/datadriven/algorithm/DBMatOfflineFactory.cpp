@@ -82,7 +82,7 @@ DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
   }
   std::cout << std::endl;
 
-  DBMatDecompostionType type = static_cast<DBMatDecompostionType>(std::stoi(tokens.back()));
+  DBMatDecompostionType type = static_cast<DBMatDecompostionType>(std::stoi(tokens[5]));
 
   std::cout << "type: " << static_cast<int>(type) << std::endl;
 

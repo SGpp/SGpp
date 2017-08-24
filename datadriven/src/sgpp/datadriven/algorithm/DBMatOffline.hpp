@@ -126,6 +126,12 @@ class DBMatOffline {
    */
   virtual void store(const std::string& fileName);
 
+  /**
+   * Sets interaction Term
+   * @param inter Interaction terms used for geometrically aware grids
+   */
+  void setInter(std::vector<std::vector <size_t>> interactions);
+
  protected:
   DBMatOffline();
 
@@ -139,6 +145,10 @@ class DBMatOffline {
    */
   std::unique_ptr<Grid> grid;
 
+
+  std::vector<std::vector <size_t>> interactions; //vector of interactions (if size() == 0: a regular SG is created)
+
+
   /**
    * Build the initial sparse grid
    */
@@ -150,6 +160,14 @@ class DBMatOffline {
    * @param config the configuration file to populate
    */
   void parseConfig(const std::string& fileName, DBMatDensityConfiguration& config) const;
+  
+
+  /**
+   * Read the Interactionsterms from a serialized DBMatOfflibe object.
+   * @param fileName path of the serialized DBMatOffline object
+   * @param interactions the interactions to populate
+   */
+  void parseInter(const std::string& fileName, std::vector<std::vector<size_t>>& interactions) const;
 };
 
 }  // namespace datadriven
