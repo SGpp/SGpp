@@ -26,6 +26,7 @@
 
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DPoly.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DModPoly.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationPoly.hpp>
 
@@ -218,7 +219,7 @@ datadriven::OperationTransformation1D* createOperationRosenblattTransformation1D
 }
 
 datadriven::OperationInverseRosenblattTransformation*
-createOperationInverseRosenblattTransformation(base::Grid& grid) {
+    createOperationInverseRosenblattTransformation(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear)
     return new datadriven::OperationInverseRosenblattTransformationLinear(&grid);
   else if (grid.getType() == base::GridType::Poly)
@@ -232,8 +233,10 @@ datadriven::OperationTransformation1D* createOperationInverseRosenblattTransform
     base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear)
     return new datadriven::OperationInverseRosenblattTransformation1DLinear(&grid);
-  if (grid.getType() == base::GridType::Poly)
+  else if (grid.getType() == base::GridType::Poly)
     return new datadriven::OperationInverseRosenblattTransformation1DPoly(&grid);
+  else if (grid.getType() == base::GridType::ModPoly)
+    return new datadriven::OperationInverseRosenblattTransformation1DModPoly(&grid);
   else
     throw base::factory_exception(
         "OperationInverseRosenblattTransformation1D is not implemented for this grid type.");
