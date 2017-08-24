@@ -352,11 +352,6 @@ void LearnerSGDEOnOff::predict(DataMatrix& data, DataVector& result) const {
     perClassDensities.emplace_back(data.getNrows());
     densityFunction.first->eval(data, perClassDensities.back(), true);
     perClassDensities.back().mult(prior.at(densityFunction.second));
-    // todo: test
-    for (size_t i = 0; i < perClassDensities.back().getSize(); i++) {
-      std::cout << "density von class: " << perClassDensities.back().get(i) << "\t";
-    }
-    std::cout << std::endl;
   }
 
 // now select the appropriate class
@@ -366,7 +361,6 @@ void LearnerSGDEOnOff::predict(DataMatrix& data, DataVector& result) const {
     auto maxDensity = std::numeric_limits<double>::max() * (-1);
     for (auto classNum = 0u; classNum < numClasses; classNum++) {
       auto density = perClassDensities[classNum][point];
-      std::cout << "\ndensity: " << density << std::endl;
       if (density > maxDensity) {
         maxDensity = density;
         bestClass = densityFunctions[classNum].second;
@@ -557,6 +551,15 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
     func = &funcData;
   }
 
+  // note: comment out coarsening settings if not surplus based refinement config is used,
+  //       also comment out corresponding code section. Look for "### begin" to jump to section
+  // coarsening
+  size_t coarseCnt = 0;
+  size_t maxCoarseNum = 5;
+  size_t coarsePeriod = 50;
+  size_t coarseNumPoints = 1;
+  double coarseThreshold = 1.0;
+
   if (offline->isRefineable()) {
     // perform refinement/coarsening for each grid
     for (size_t idx = 0; idx < getNumClasses(); idx++) {
@@ -586,32 +589,31 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
           alphaWeight[k] = alphaWork->get(k) * opEval->eval(*alphaWork, p);
         }
 
+        // ### begin: comment this out if non-surplus based strategy is used
         // Perform Coarsening (surplus based)
-        /*if (coarseCnt < maxCoarseNum) {
-          HashCoarsening coarse_;
-          //std::cout << "\n" << "Start coarsening\n";
+        if (coarseCnt < maxCoarseNum) {
+          sgpp::base::HashCoarsening coarse_;
+          // std::cout << "\n" << "Start coarsening\n";
 
           // Coarsening based on surpluses
-          SurplusCoarseningFunctor scf(
-            alphaWeight, coarseNumPoints, coarseThreshold);
+          sgpp::base::SurplusCoarseningFunctor scf(alphaWeight, coarseNumPoints, coarseThreshold);
 
-          //std::cout << "Size before coarsening:" << grid->getSize() <<
-        "\n";
-          //int old_size = grid->getSize();
-          coarse_.free_coarsen_NFirstOnly(
-            grid->getStorage(), scf, alphaWeight, grid->getSize());
+          // std::cout << "Size before coarsening:" << grid->getSize() << "\n";
 
-          std::cout << "Size after coarsening:" << grid->getSize() <<
-        "\n\n";
-          //int new_size = grid->getSize();
+          // int old_size = grid->getSize();
+          coarse_.free_coarsen_NFirstOnly(grid.getStorage(), scf, alphaWeight, grid.getSize());
+
+          std::cout << "Size after coarsening:" << grid.getSize() << "\n\n";
+          // int new_size = grid->getSize();
 
           deletedGridPoints.clear();
           deletedGridPoints = coarse_.getDeletedPoints();
 
-          (*refineCoarse)[idx].first = deletedGridPoints;
+          (refineCoarse)[idx].first = deletedGridPoints;
 
           coarseCnt++;
-        }*/
+        }
+        // ### end: comment this out if non-surplus based strategy is used
 
         // perform refinement (surplus based)
         sizeBeforeRefine = grid.getSize();
@@ -638,24 +640,25 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
       refineCoarse[idx].second = newPoints;
 
       // if decomp_type_ == ortho_adapt
+      // refines, coarsenes and inserts the not-possible-to-coarsen-points back into the grid
       if (offline->getConfig().decomp_type_ ==
           sgpp::datadriven::DBMatDecompostionType::OrthoAdapt) {
-        /*
-         * hier returned array mit "nicht gecoarseten" punkten die dann wieder ins grid rein
-         * müssen, und zwar jeder einzelne punkt (auf grid objekt ebene)
-         */
-        // refines, coarsenes and then
-        // takes the points which couldn't be coarsened as return
         std::cout << "ENTERED ON OFF CASE Ortho_Adapt:" << std::endl;
         std::vector<size_t> not_coarsed_points =
             static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt&>(*densEst).adapt(
                 newPoints, deletedGridPoints, densEst->getBestLambda());
 
-        // not coarsened points must be added to the grid again
-        // todo: add not_coarsed_points to grid
+        // not coarsened points are added to the grid again for consistency reasons
         std::cout << "points which couldn't be coarsened: " << std::endl;
         for (auto a : not_coarsed_points) {
+          // todo: Kilian! An dieser Stelle müsste man die lvl und dim arrays vom punkt holen bevor
+          // man ihn einfügt. Außerdem ist das hier evtl. inkonsistent, da nicht ausführlichst
+          // getestet
+          //
+          // vg, Dima
           std::cout << a << std::endl;
+          grid.insertPoint(grid.getDimension(), {}, {}, false);
+          grid.getStorage().recalcLeafProperty();
         }
       }
 

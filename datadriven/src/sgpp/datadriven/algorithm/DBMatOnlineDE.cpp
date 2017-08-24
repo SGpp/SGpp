@@ -71,7 +71,8 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
     DataVector b(use_B_size ? thisOrthoAdaptPtr->getB().getNcols() : lhsMatrix.getNcols());
     b.setAll(0);
     if (b.getSize() != offlineObject.getGrid().getStorage().getSize()) {
-      throw sgpp::base::algorithm_exception("b hat nicht korrekte länge yo");
+      throw sgpp::base::algorithm_exception(
+          "In DBMatOnlineDE::computeDensityFunction: b doesn't match size of system matrix");
     }
 
     std::unique_ptr<sgpp::base::OperationMultipleEval> B(
