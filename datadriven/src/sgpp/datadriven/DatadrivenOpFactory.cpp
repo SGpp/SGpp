@@ -34,6 +34,7 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DModPoly.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationPoly.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationModPoly.hpp>
 
 #include <sgpp/datadriven/operation/hash/simple/OperationTestLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationTestLinearBoundary.hpp>
@@ -197,6 +198,8 @@ datadriven::OperationRosenblattTransformation* createOperationRosenblattTransfor
     return new datadriven::OperationRosenblattTransformationLinear(&grid);
   else if (grid.getType() == base::GridType::Poly)
     return new datadriven::OperationRosenblattTransformationPoly(&grid);
+  else if (grid.getType() == base::GridType::ModPoly)
+    return new datadriven::OperationRosenblattTransformationModPoly(&grid);
   else
     throw base::factory_exception(
         "OperationRosenblattTransformation is not implemented for this grid type.");
