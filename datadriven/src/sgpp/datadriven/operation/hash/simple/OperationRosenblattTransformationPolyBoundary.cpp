@@ -3,17 +3,19 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationPoly.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityConditional.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensitySampling1D.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPoly.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationModPoly.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationDensityConditional.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationDensitySampling1D.hpp>
-#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
 #include <sgpp/globaldef.hpp>
+
 #include <map>
 #include <cstdlib>
 #include <fstream>
@@ -29,13 +31,10 @@
 namespace sgpp {
 namespace datadriven {
 
-void OperationInverseRosenblattTransformationModPoly::doTransformation(base::DataVector* alpha,
-                                                                      base::DataMatrix* pointscdf,
-                                                                      base::DataMatrix* points) {
-  size_t dim_start = 0;
+void OperationRosenblattTransformationPoly::doTransformation(base::DataVector* alpha,
+                                                            base::DataMatrix* points,
+                                                            base::DataMatrix* pointscdf) {
   size_t num_dims = this->grid->getDimension();
-  size_t num_samples = pointscdf->getNrows();
-  size_t bucket_size = num_samples / num_dims + 1;
 
   // 1. marginalize to all possible start dimensions
   std::vector<base::Grid*> grids1d(num_dims);
@@ -47,10 +46,13 @@ void OperationInverseRosenblattTransformationModPoly::doTransformation(base::Dat
   }
 
   // 2. compute the start dimension for each sample
+  size_t num_samples = pointscdf->getNrows();
   std::vector<size_t> startindices(num_samples);
   // change the starting dimension when the bucket_size is arrived
   // this distributes the error in the projection uniformly to all
   // dimensions and make it therefore stable
+  size_t dim_start = 0;
+  size_t bucket_size = num_samples / num_dims + 1;
   for (size_t i = 0; i < num_samples; i++) {
     if (((i + 1) % bucket_size) == 0 && (i + 1) < pointscdf->getNrows()) {
       ++dim_start;
@@ -62,21 +64,21 @@ void OperationInverseRosenblattTransformationModPoly::doTransformation(base::Dat
 #pragma omp parallel
   {
 #pragma omp for schedule(dynamic)
-    for (size_t i = 0; i < pointscdf->getNrows(); i++) {
+    for (size_t i = 0; i < points->getNrows(); i++) {
       // transform the point in the current dimension
       size_t idim = startindices[i];
-      double y = doTransformation1D(grids1d[idim], alphas1d[idim], pointscdf->get(i, idim));
+      double y = doTransformation1D(grids1d[idim], alphas1d[idim], points->get(i, idim));
       // and write it to the output
-      points->set(i, idim, y);
+      pointscdf->set(i, idim, y);
 
       // prepare the next dimensions -> read samples
       base::DataVector cdfs1d(num_dims);
       base::DataVector coords1d(num_dims);
 
-      pointscdf->getRow(i, cdfs1d);
       points->getRow(i, coords1d);
-      doTransformation_start_dimX(this->grid, alpha, idim, &cdfs1d, &coords1d);
-      points->setRow(i, coords1d);
+      pointscdf->getRow(i, cdfs1d);
+      doTransformation_start_dimX(this->grid, alpha, idim, &coords1d, &cdfs1d);
+      pointscdf->setRow(i, cdfs1d);
     }
   }
 
@@ -87,10 +89,10 @@ void OperationInverseRosenblattTransformationModPoly::doTransformation(base::Dat
   }
 }
 
-void OperationInverseRosenblattTransformationModPoly::doTransformation(base::DataVector* alpha,
-                                                                   base::DataMatrix* pointscdf,
-                                                                   base::DataMatrix* points,
-                                                                   size_t dim_start) {
+void OperationRosenblattTransformationPoly::doTransformation(base::DataVector* alpha,
+                                                            base::DataMatrix* points,
+                                                            base::DataMatrix* pointscdf,
+                                                            size_t dim_start) {
   // 1. marginalize to dim_start
   base::Grid* g1d = NULL;
   base::DataVector* a1d = NULL;
@@ -101,18 +103,18 @@ void OperationInverseRosenblattTransformationModPoly::doTransformation(base::Dat
 #pragma omp parallel
   {
 #pragma omp for schedule(dynamic)
-    for (size_t i = 0; i < pointscdf->getNrows(); i++) {
-      // 2. 1D transformation on dim_start
-      double y = doTransformation1D(g1d, a1d, pointscdf->get(i, dim_start));
-      points->set(i, dim_start, y);
-      // 3. for every missing dimension do...
-      base::DataVector cdfs1d(pointscdf->getNcols());
-      base::DataVector coords1d(points->getNcols());
 
-      pointscdf->getRow(i, cdfs1d);
+    for (size_t i = 0; i < points->getNrows(); i++) {
+      base::DataVector coords1d(points->getNcols());
+      base::DataVector cdfs1d(points->getNcols());
+      // 2. 1D transformation on dim_start
+      double y = doTransformation1D(g1d, a1d, points->get(i, dim_start));
+      pointscdf->set(i, dim_start, y);
+      // 3. for every missing dimension do...
       points->getRow(i, coords1d);
-      doTransformation_start_dimX(this->grid, alpha, dim_start, &cdfs1d, &coords1d);
-      points->setRow(i, coords1d);
+      pointscdf->getRow(i, cdfs1d);
+      doTransformation_start_dimX(this->grid, alpha, dim_start, &coords1d, &cdfs1d);
+      pointscdf->setRow(i, cdfs1d);
     }
   }
 
@@ -120,14 +122,14 @@ void OperationInverseRosenblattTransformationModPoly::doTransformation(base::Dat
   delete a1d;
 }
 
-void OperationInverseRosenblattTransformationModPoly::doTransformation_start_dimX(
-    base::Grid* g_in, base::DataVector* a_in, size_t dim_start, base::DataVector* cdfs1d,
-    base::DataVector* coords1d) {
+void OperationRosenblattTransformationPoly::doTransformation_start_dimX(
+    base::Grid* g_in, base::DataVector* a_in, size_t dim_start, base::DataVector* coords1d,
+    base::DataVector* cdfs1d) {
   size_t dims = coords1d->getSize();  // total dimensions
 
   if ((dims > 1) && (dim_start <= dims - 1)) {
     size_t curr_dim = dim_start;
-    doTransformation_in_next_dim(g_in, a_in, dim_start, cdfs1d, coords1d, curr_dim);
+    doTransformation_in_next_dim(g_in, a_in, dim_start, coords1d, cdfs1d, curr_dim);
   } else if (dims == 1) {
     throw base::operation_exception("Error: # of dimensions = 1. No operation needed!");
   } else {
@@ -137,10 +139,12 @@ void OperationInverseRosenblattTransformationModPoly::doTransformation_start_dim
   return;
 }
 
-void OperationInverseRosenblattTransformationModPoly::doTransformation_in_next_dim(
-    base::Grid* g_in, base::DataVector* a_in, size_t op_dim, base::DataVector* cdfs1d,
-    base::DataVector* coords1d, size_t& curr_dim) {
-  size_t dims = cdfs1d->getSize();  // total dimensions
+void OperationRosenblattTransformationPoly::doTransformation_in_next_dim(
+    base::Grid* g_in, base::DataVector* a_in, size_t op_dim, base::DataVector* coords1d,
+    base::DataVector* cdfs1d, size_t& curr_dim) {
+  size_t dims = coords1d->getSize();  // total dimensions
+  // unsigned int op_dim = curr_dim + 1;  // (curr_dim < dim_x) ? 0 : (unsigned int) dim_x; //
+  // actual dim to be operated on
 
   /* Step 1: do conditional in current dim */
   base::Grid* g_out = NULL;
@@ -153,7 +157,7 @@ void OperationInverseRosenblattTransformationModPoly::doTransformation_in_next_d
   op_dim = (op_dim + 1) % g_out->getDimension();
 
   /* Step 2: draw a sample in next dim */
-  double x = 0;
+  double y = 0;
 
   if (g_out->getDimension() > 1) {
     // Marginalize to next dimension
@@ -162,21 +166,21 @@ void OperationInverseRosenblattTransformationModPoly::doTransformation_in_next_d
     op_factory::createOperationDensityMargTo1D(*g_out)->margToDimX(a_out, g1d, a1d, op_dim);
 
     // Draw a sample in next dimension
-    x = doTransformation1D(g1d, a1d, cdfs1d->get(curr_dim));
+    y = doTransformation1D(g1d, a1d, coords1d->get(curr_dim));
     delete g1d;
     delete a1d;
 
   } else {
     // skip Marginalize, directly draw a sample in next dimension
-    x = doTransformation1D(g_out, a_out, cdfs1d->get(curr_dim));
+    y = doTransformation1D(g_out, a_out, coords1d->get(curr_dim));
   }
 
   /* Step 3: copy sample to output */
-  coords1d->set(curr_dim, x);
+  cdfs1d->set(curr_dim, y);
 
   /* Step 4: sample in next dimension */
   if (g_out->getDimension() > 1)
-    doTransformation_in_next_dim(g_out, a_out, op_dim, cdfs1d, coords1d, curr_dim);
+    doTransformation_in_next_dim(g_out, a_out, op_dim, coords1d, cdfs1d, curr_dim);
 
   delete g_out;
   delete a_out;
@@ -184,14 +188,15 @@ void OperationInverseRosenblattTransformationModPoly::doTransformation_in_next_d
   return;
 }
 
-double OperationInverseRosenblattTransformationModPoly::doTransformation1D(base::Grid* grid1d,
-                                                                          base::DataVector* alpha1d,
-                                                                          double coord1d) {
-  std::unique_ptr<OperationTransformation1D> opInverseRosenblatt
-    = static_cast<std::unique_ptr<OperationTransformation1D>>
-    (op_factory::createOperationInverseRosenblattTransformation1D(*grid1d));
-
-  return opInverseRosenblatt->doTransformation1D(alpha1d, coord1d);
+double OperationRosenblattTransformationPoly::doTransformation1D(base::Grid* grid1d,
+                                                                base::DataVector* alpha1d,
+                                                                double coord1d) {
+  OperationRosenblattTransformation1DPoly* opRosenblatt
+    = static_cast<OperationRosenblattTransformation1DPoly*>
+    (op_factory::createOperationRosenblattTransformation1D(*grid1d));
+  double y = opRosenblatt->doTransformation1D(alpha1d, coord1d);
+  delete opRosenblatt;
+  return y;
 }  // end of compute_1D_cdf()
 }  // namespace datadriven
 }  // namespace sgpp

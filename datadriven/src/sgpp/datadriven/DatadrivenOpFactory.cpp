@@ -29,6 +29,7 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DModPoly.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationPoly.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationModPoly.hpp>
 
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPoly.hpp>
@@ -224,6 +225,8 @@ datadriven::OperationInverseRosenblattTransformation*
     return new datadriven::OperationInverseRosenblattTransformationLinear(&grid);
   else if (grid.getType() == base::GridType::Poly)
     return new datadriven::OperationInverseRosenblattTransformationPoly(&grid);
+  else if (grid.getType() == base::GridType::ModPoly)
+    return new datadriven::OperationInverseRosenblattTransformationModPoly(&grid);
   else
     throw base::factory_exception(
         "OperationInverseRosenblattTransformation is not implemented for this grid type.");
