@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef OPERATIONROSENBLATTTRANSFORMATIONPOLY_HPP
-#define OPERATIONROSENBLATTTRANSFORMATIONPOLY_HPP
+#ifndef OPERATIONROSENBLATTTRANSFORMATIONPOLYCLENSHAWCURTIS_HPP
+#define OPERATIONROSENBLATTTRANSFORMATIONPOLYCLENSHAWCURTIS_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation.hpp>
@@ -18,10 +18,10 @@ namespace datadriven {
  * keep applying marginalize to function until it's reduced to only 1 dimension
  */
 
-class OperationRosenblattTransformationPoly : public OperationRosenblattTransformation {
+class OperationRosenblattTransformationPolyClenshawCurtis : public OperationRosenblattTransformation {
  public:
-  explicit OperationRosenblattTransformationPoly(base::Grid* grid) : grid(grid) {}
-  virtual ~OperationRosenblattTransformationPoly() {}
+  explicit OperationRosenblattTransformationPolyClenshawCurtis(base::Grid* grid) : grid(grid) {}
+  virtual ~OperationRosenblattTransformationPolyClenshawCurtis() {}
 
   /**
    * Transformation with mixed starting dimensions
@@ -57,4 +57,4 @@ class OperationRosenblattTransformationPoly : public OperationRosenblattTransfor
 }  // namespace datadriven
 }  // namespace sgpp
 
-#endif /* OPERATIONROSENBLATTTRANSFORMATIONPOLY_HPP */
+#endif /* OPERATIONROSENBLATTTRANSFORMATIONPOLYCLENSHAWCURTIS_HPP */
