@@ -106,27 +106,26 @@ namespace sgpp {
             MPI_Barrier(MPI_COMM_WORLD);
         }
 
-//        void MPIMethods::sendGridComponentsUpdate(std::vector<RefinementResult> *refinementResults) {
-//
-//            std::cout << "Updating the grid components on workers..." << std::endl;
-//
-//            for (size_t classIndex = 0; classIndex < refinementResults->size(); classIndex++) {
-//                RefinementResult refinementResult = (*refinementResults)[classIndex];
-//
-//                std::cout << "Updating grid for class " << classIndex
-//                          << " (" << refinementResult.addedGridPoints.size() << " additions, "
-//                          << refinementResult.deletedGridPointsIndexes.size() << " deletions)" << std::endl;
-//
-//                sendRefinementUpdates(classIndex, refinementResult.deletedGridPointsIndexes,
-//                                      refinementResult.addedGridPoints);
-//            }
-//
-//            std::cout << "Finished updating the grid components on workers." << std::endl;
-//        }
+        void MPIMethods::sendGridComponentsUpdate(std::vector<RefinementResult> *refinementResults) {
+
+            std::cout << "Updating the grid components on workers..." << std::endl;
+
+            for (size_t classIndex = 0; classIndex < refinementResults->size(); classIndex++) {
+                RefinementResult refinementResult = (*refinementResults)[classIndex];
+
+                std::cout << "Updating grid for class " << classIndex
+                          << " (" << refinementResult.addedGridPoints.size() << " additions, "
+                          << refinementResult.deletedGridPointsIndexes.size() << " deletions)" << std::endl;
+
+                sendRefinementUpdates(classIndex, refinementResult.deletedGridPointsIndexes,
+                                      refinementResult.addedGridPoints);
+            }
+
+            std::cout << "Finished updating the grid components on workers." << std::endl;
+        }
 
         void MPIMethods::sendRefinementUpdates(size_t &classIndex, std::list<size_t> &deletedGridPointsIndexes,
-                                               std::list<LevelIndexVector> &addedGridPoints,
-                                               DataMatrix &newCholeskyDecomposition) {
+                                               std::list<LevelIndexVector> &addedGridPoints) {
             // Deleted grid points
             {
                 std::list<size_t>::const_iterator iterator = deletedGridPointsIndexes.begin();
@@ -187,10 +186,10 @@ namespace sgpp {
                     sendIBcast(mpiPacket);
                 }
             }
-            //Cholesky Decomposition
-            {
-                sendCholeskyDecomposition(classIndex, newCholeskyDecomposition, MPI_ANY_SOURCE);
-            }
+//            //Cholesky Decomposition
+//            {
+//                sendCholeskyDecomposition(classIndex, newCholeskyDecomposition, MPI_ANY_SOURCE);
+//            }
         }
 
         //USE MPI_ANY_SOURCE to send a broadcast from master
@@ -513,7 +512,12 @@ namespace sgpp {
         }
 
         void MPIMethods::waitForAnyMPIRequestsToComplete() {
-            int completedRequest;
+            int completedRequest = executeMPIWaitAny();
+            processCompletedMPIRequest(findPendingMPIRequest(completedRequest));
+        }
+
+        int MPIMethods::executeMPIWaitAny() {
+            int completedRequest = -1;
             MPI_Status mpiStatus{};
             std::cout << "Waiting for " << pendingMPIRequests.size() << " MPI requests to complete" << std::endl;
             MPI_Waitany(mpiRequestStorage.size(), mpiRequestStorage.getMPIRequests(), &completedRequest,
@@ -526,7 +530,23 @@ namespace sgpp {
                 std::cout << "Error: Completed requests returned invalid index" << std::endl;
                 exit(-1);
             }
-            processCompletedMPIRequest(findPendingMPIRequest(completedRequest));
+            return completedRequest;
+        }
+
+        void MPIMethods::waitForIncomingMessageType(MPI_COMMAND_ID commandId, size_t numOccurrences = 1) {
+            std::cout << "Waiting for " << numOccurrences << " messages of type " << commandId << std::endl;
+            size_t i = 0;
+            while (i < numOccurrences) {
+                int completedRequest = executeMPIWaitAny();
+                const auto &pendingMPIRequestIterator = findPendingMPIRequest(completedRequest);
+                if (pendingMPIRequestIterator->buffer->commandID == commandId) {
+                    i++;
+                }
+                processCompletedMPIRequest(pendingMPIRequestIterator);
+                std::cout << "Received " << i << "/" << numOccurrences << " messages of type " << commandId
+                          << std::endl;
+            }
+            std::cout << "Received all " << numOccurrences << " messages of type " << commandId << std::endl;
         }
 
         std::list<PendingMPIRequest>::iterator MPIMethods::findPendingMPIRequest(int completedRequestIndex) {
@@ -607,7 +627,7 @@ namespace sgpp {
                         std::cout << "Received cholesky decomposition for class " << classIndex
                                   << ", will now send refinement results" << std::endl;
                         sendRefinementUpdates(classIndex, refinementResult.deletedGridPointsIndexes,
-                                              refinementResult.addedGridPoints, choleskyDecomposition);
+                                              refinementResult.addedGridPoints);
                     }
                     break;
                 }
@@ -663,8 +683,7 @@ namespace sgpp {
                     pendingMPIRequest.disposeAfterCallback = true;
                     break;
                 case WORKER_SHUTDOWN_SUCCESS:
-                    std::cout << "Worker has acknowledge shutdown" << std::endl;
-                    learnerInstance->onWorkerShutdown();
+                    std::cout << "Worker has acknowledged shutdown" << std::endl;
                     break;
                 case NULL_COMMAND:
                     std::cout << "Error: Incoming command has undefined command id" << std::endl;
