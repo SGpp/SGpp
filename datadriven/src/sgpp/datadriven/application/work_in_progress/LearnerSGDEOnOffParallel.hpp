@@ -58,7 +58,6 @@ namespace sgpp {
         struct RefinementResult {
             std::list<LevelIndexVector> addedGridPoints;
             std::list<size_t> deletedGridPointsIndexes;
-            std::vector<double> choleskyDecomposition;
         };
 
 
