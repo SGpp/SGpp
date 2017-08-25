@@ -441,11 +441,11 @@ namespace sgpp {
 
             // The first check is to ensure that all segments of an update have been received (intermediate segments set grid version to 0)
             RefinementResult &refinementResult = (*vectorRefinementResults)[classIndex];
-            size_t currentGridVersion = getCurrentGridVersion(classIndex);
-            while (currentGridVersion == 0 || (
+            while (getCurrentGridVersion(classIndex) == 0 || (
                     refinementResult.deletedGridPointsIndexes.empty() &&
                     refinementResult.addedGridPoints.empty())) {
-                std::cout << "Refinement results have not arrived yet (grid version " << currentGridVersion
+                std::cout << "Refinement results have not arrived yet (grid version "
+                          << getCurrentGridVersion(classIndex)
                           << ", additions " << refinementResult.addedGridPoints.size() << ", deletions "
                           << refinementResult.deletedGridPointsIndexes.size() << "). Waiting..." << std::endl;
                 MPIMethods::waitForIncomingMessageType(UPDATE_GRID, 1);
