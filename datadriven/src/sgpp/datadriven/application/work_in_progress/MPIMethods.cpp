@@ -146,8 +146,11 @@ namespace sgpp {
                             listEnd);
                     networkMessage->listLength = numPointsInBuffer;
 
-                    networkMessage->gridversion = (iterator == listEnd) ? learnerInstance->getCurrentGridVersion(
-                            classIndex) : 0;
+//                    networkMessage->gridversion = (iterator == listEnd) ? learnerInstance->getCurrentGridVersion(
+//                            classIndex) : 0;
+
+                    //Mark grid as invalid until cholesky arrives
+                    networkMessage->gridversion = 0;
 
 
                     std::cout << "Sending updated for class " << networkMessage->classIndex
@@ -175,8 +178,11 @@ namespace sgpp {
                                                                             listEnd);
                     networkMessage->listLength = numPointsInBuffer;
 
-                    networkMessage->gridversion = (iterator == listEnd) ? learnerInstance->getCurrentGridVersion(
-                            classIndex) : 0;
+//                    networkMessage->gridversion = (iterator == listEnd) ? learnerInstance->getCurrentGridVersion(
+//                            classIndex) : 0;
+
+                    //Mark grid as invalid until cholesky arrives
+                    networkMessage->gridversion = 0;
 
 
                     std::cout << "Sending updated for class " << networkMessage->classIndex
