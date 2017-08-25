@@ -50,7 +50,7 @@ namespace sgpp {
                                    beta, lambda), mpiTaskScheduler(mpiTaskScheduler) {
 
             vectorRefinementResults = new std::vector<RefinementResult>(numClasses);
-            localGridVersions.insert(localGridVersions.begin(), numClasses, 1);
+            localGridVersions.insert(localGridVersions.begin(), numClasses, 10);
 
             MPIMethods::initMPI(this);
         }
@@ -469,7 +469,7 @@ namespace sgpp {
 
             // The first check is to ensure that all segments of an update have been received (intermediate segments set grid version to 0)
             RefinementResult &refinementResult = (*vectorRefinementResults)[classIndex];
-            while (getCurrentGridVersion(classIndex) == 0 || (
+            while (getCurrentGridVersion(classIndex) == GRID_TEMPORARILY_INCONSISTENT || (
                     refinementResult.deletedGridPointsIndexes.empty() &&
                     refinementResult.addedGridPoints.empty())) {
                 std::cout << "Refinement results have not arrived yet (grid version "

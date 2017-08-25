@@ -146,12 +146,8 @@ namespace sgpp {
                             listEnd);
                     networkMessage->listLength = numPointsInBuffer;
 
-//                    networkMessage->gridversion = (iterator == listEnd) ? learnerInstance->getCurrentGridVersion(
-//                            classIndex) : 0;
-
-                    //Mark grid as invalid until cholesky arrives
-                    networkMessage->gridversion = 0;
-
+                    networkMessage->gridversion = (iterator == listEnd) ? GRID_RECEIVED_DELETED_INDEXES
+                                                                        : GRID_TEMPORARILY_INCONSISTENT;
 
                     std::cout << "Sending updated for class " << networkMessage->classIndex
                               << " with " << networkMessage->listLength
@@ -178,11 +174,8 @@ namespace sgpp {
                                                                             listEnd);
                     networkMessage->listLength = numPointsInBuffer;
 
-//                    networkMessage->gridversion = (iterator == listEnd) ? learnerInstance->getCurrentGridVersion(
-//                            classIndex) : 0;
-
-                    //Mark grid as invalid until cholesky arrives
-                    networkMessage->gridversion = 0;
+                    networkMessage->gridversion = (iterator == listEnd) ? GRID_RECEIVED_ADDED_POINTS
+                                                                        : GRID_TEMPORARILY_INCONSISTENT;
 
 
                     std::cout << "Sending updated for class " << networkMessage->classIndex
@@ -229,7 +222,7 @@ namespace sgpp {
 
                 //TODO: There is a bug here, the grid version is sent non null once for each deleted, added, and cholesky
                 networkMessage->gridversion = (iterator == listEnd) ? learnerInstance->getCurrentGridVersion(
-                        classIndex) : 0;
+                        classIndex) : GRID_TEMPORARILY_INCONSISTENT;
 
 
                 if (mpiTarget != MPI_ANY_SOURCE) {

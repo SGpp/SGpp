@@ -9,6 +9,10 @@
 #include <sgpp/datadriven/application/work_in_progress/NetworkMessageData.hpp>
 #include "PendingMPIRequest.hpp"
 
+#define GRID_TEMPORARILY_INCONSISTENT 5
+#define GRID_RECEIVED_DELETED_INDEXES 6
+#define GRID_RECEIVED_ADDED_POINTS 7
+
 namespace sgpp {
     namespace datadriven {
         class MPIMethods {
