@@ -16,7 +16,6 @@
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/datadriven/application/work_in_progress/LearnerSGDEOnOffParallel.hpp>
 #include <sgpp/datadriven/application/work_in_progress/RoundRobinScheduler.hpp>
-#include <sgpp/datadriven/application/work_in_progress/MPIMethods.hpp>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -245,7 +244,6 @@ int main(int argc, char *argv[]) {
     double acc = learner.getAccuracy();
     std::cout << "# accuracy (test data): " << acc << std::endl;
 
-    sgpp::datadriven::MPIMethods::finalizeMPI();
     // store results (classified data, grids, density functions)
     // learner.storeResults();
 

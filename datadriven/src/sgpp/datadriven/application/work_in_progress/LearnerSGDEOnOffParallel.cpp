@@ -56,7 +56,7 @@ namespace sgpp {
         }
 
         LearnerSGDEOnOffParallel::~LearnerSGDEOnOffParallel() {
-//            MPIMethods::finalizeMPI();
+            MPIMethods::finalizeMPI();
         }
 
         void LearnerSGDEOnOffParallel::train(size_t batchSize, size_t maxDataPasses,
