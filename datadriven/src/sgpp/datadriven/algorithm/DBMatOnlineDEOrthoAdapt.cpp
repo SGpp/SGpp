@@ -97,6 +97,8 @@ void DBMatOnlineDEOrthoAdapt::solveSLE(DataVector& b, bool do_cv) {
   // solve the created system
   this->alpha = sgpp::base::DataVector(b.getSize());
   solver->solve(offline->getTinv(), offline->getQ(), this->getB(), b, this->alpha);
+
+  free(solver);
 }
 
 void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refine,
@@ -273,6 +275,10 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
 
     // adjust current_refine_index of online object
     this->current_refine_index += refine ? 1 : -1;
+
+    gsl_matrix_free(buffer);
+    gsl_matrix_free(x_term);
+    gsl_matrix_free(bx_term);
   }
 
   //##########################################################################
@@ -326,6 +332,9 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
  * choleskyModification function is an offline class.
  * If you want to refactor, also look at the adjusted part of this function by
  * searching for //### begin adjusted part
+ *
+ * greets,
+ * Dima
  */
 void DBMatOnlineDEOrthoAdapt::compute_L2_gridvectors(size_t newPoints, double newLambda) {
   if (newPoints > 0) {

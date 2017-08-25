@@ -93,6 +93,9 @@ void DBMatOfflineOrthoAdapt::decomposeMatrix() {
 
   // decomposed matrix: (lhs+lambda*I) = Q * T^{-1} * Q^t
   this->isDecomposed = true;
+
+  gsl_vector_free(gsl_diag);
+  gsl_vector_free(gsl_subdiag);
 }
 
 void DBMatOfflineOrthoAdapt::hessenberg_decomposition(gsl_vector* diag, gsl_vector* subdiag) {
@@ -102,6 +105,8 @@ void DBMatOfflineOrthoAdapt::hessenberg_decomposition(gsl_vector* diag, gsl_vect
 
   gsl_linalg_symmtd_decomp(&gsl_lhs.matrix, tau);
   gsl_linalg_symmtd_unpack(&gsl_lhs.matrix, tau, &gsl_q.matrix, diag, subdiag);
+
+  gsl_vector_free(tau);
 }
 
 void DBMatOfflineOrthoAdapt::invert_symmetric_tridiag(gsl_vector* diag, gsl_vector* subdiag) {
@@ -116,6 +121,9 @@ void DBMatOfflineOrthoAdapt::invert_symmetric_tridiag(gsl_vector* diag, gsl_vect
     }
     e->data[k] = 0;
   }
+
+  gsl_vector_free(e);
+  gsl_vector_free(x);
 }
 
 void DBMatOfflineOrthoAdapt::store(const std::string& fileName) {
