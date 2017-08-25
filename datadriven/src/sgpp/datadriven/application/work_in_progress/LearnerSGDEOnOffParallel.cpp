@@ -438,19 +438,22 @@ namespace sgpp {
             std::cout << "Computing cholesky modification for class " << classIndex << std::endl;
 
             // The first check is to ensure that all segments of an update have been received (intermediate segments set grid version to 0)
-            while (getCurrentGridVersion(classIndex) == 0 || (
-                    (*vectorRefinementResults)[classIndex].deletedGridPointsIndexes.empty() &&
-                    (*vectorRefinementResults)[classIndex].addedGridPoints.empty())) {
-                std::cout << "Refinement results have not arrived yet. Waiting..." << std::endl;
+            RefinementResult &refinementResult = (*vectorRefinementResults)[classIndex];
+            size_t currentGridVersion = getCurrentGridVersion(classIndex);
+            while (currentGridVersion == 0 || (
+                    refinementResult.deletedGridPointsIndexes.empty() &&
+                    refinementResult.addedGridPoints.empty())) {
+                std::cout << "Refinement results have not arrived yet (grid version " << currentGridVersion
+                          << ", additions " << refinementResult.addedGridPoints.size() << ", deletions "
+                          << refinementResult.deletedGridPointsIndexes.size() << "). Waiting..." << std::endl;
                 MPIMethods::waitForIncomingMessageType(UPDATE_GRID, 1);
                 std::cout << "Updates have arrived. Attempting to resume." << std::endl;
             }
 
             DBMatOnlineDE *densEst = getDensityFunctions()[classIndex].first.get();
             DBMatOfflineChol &dbMatOfflineChol = dynamic_cast<DBMatOfflineChol &>(densEst->getOfflineObject());
-            RefinementResult *refinementResult = &((*vectorRefinementResults)[classIndex]);
-            dbMatOfflineChol.choleskyModification(refinementResult->addedGridPoints.size(),
-                                                  refinementResult->deletedGridPointsIndexes, densEst->getBestLambda());
+            dbMatOfflineChol.choleskyModification(refinementResult.addedGridPoints.size(),
+                                                  refinementResult.deletedGridPointsIndexes, densEst->getBestLambda());
 
             std::cout << "Send choleksy update to master for class " << classIndex << std::endl;
             DataMatrix &newDecomposition = dbMatOfflineChol.getDecomposedMatrix();
@@ -818,6 +821,7 @@ namespace sgpp {
         }
 
         void LearnerSGDEOnOffParallel::setLocalGridVersion(size_t classIndex, size_t gridVersion) {
+            std::cout << "Grid " << classIndex << " now has version " << gridVersion << std::endl;
             localGridVersions[classIndex] = gridVersion;
         }
 
