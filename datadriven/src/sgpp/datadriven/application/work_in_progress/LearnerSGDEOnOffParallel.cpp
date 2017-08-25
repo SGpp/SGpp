@@ -180,7 +180,8 @@ namespace sgpp {
                         numberOfCompletedRefinements += 1;
                         std::cout << "Refinement at " << numProcessedDataPoints << " complete" << std::endl;
 
-                        MPIMethods::sendGridComponentsUpdate(vectorRefinementResults);
+                        // Note: calling this is no longer necessary as it will be called for each class individually when its cholesky decomposition arrives
+//                        MPIMethods::sendGridComponentsUpdate(vectorRefinementResults);
                     } else {
                         std::cout << "No refinement necessary" << std::endl;
                     }

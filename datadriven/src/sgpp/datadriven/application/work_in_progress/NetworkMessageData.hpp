@@ -9,6 +9,10 @@
 #define MPI_MASTER_RANK 0
 #define MPI_MAX_PROCESSOR_NAME_LENGTH 256
 
+#define REFINENEMT_RESULT_PAYLOAD_SIZE (MPI_PACKET_MAX_PAYLOAD_SIZE\
+                                   - 3 * sizeof(unsigned long)\
+                                   - sizeof(RefinementResultsUpdateType))
+
 #include <mpi.h>
 #include <functional>
 
@@ -48,9 +52,15 @@ namespace sgpp {
             unsigned long listLength;
             RefinementResultsUpdateType updateType;
 
-            unsigned char payload[(MPI_PACKET_MAX_PAYLOAD_SIZE
-                                   - 3 * sizeof(unsigned long)
-                                   - sizeof(RefinementResultsUpdateType))];
+            unsigned char payload[REFINENEMT_RESULT_PAYLOAD_SIZE];
+        };
+
+        struct RefinementResultCholeskyNetworkMessage {
+            unsigned long matrixWidth;
+            unsigned long matrixHeight;
+            unsigned long offset;
+
+            unsigned char payload[REFINENEMT_RESULT_PAYLOAD_SIZE - 3 * sizeof(unsigned long)];
         };
 
         struct MergeGridNetworkMessage {
@@ -80,6 +90,8 @@ namespace sgpp {
                       "Merge Grid Network Message too long.");
         static_assert(sizeof(RefinementResultNetworkMessage) <= MPI_PACKET_MAX_PAYLOAD_SIZE,
                       "Refinement result Network Message too long.");
+        static_assert(sizeof(RefinementResultCholeskyNetworkMessage) <= MPI_PACKET_MAX_PAYLOAD_SIZE,
+                      "Refinement result Cholesky Network Message too long.");
 
 
     }

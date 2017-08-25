@@ -106,23 +106,23 @@ namespace sgpp {
             MPI_Barrier(MPI_COMM_WORLD);
         }
 
-        void MPIMethods::sendGridComponentsUpdate(std::vector<RefinementResult> *refinementResults) {
-
-            std::cout << "Updating the grid components on workers..." << std::endl;
-
-            for (size_t classIndex = 0; classIndex < refinementResults->size(); classIndex++) {
-                RefinementResult refinementResult = (*refinementResults)[classIndex];
-
-                std::cout << "Updating grid for class " << classIndex
-                          << " (" << refinementResult.addedGridPoints.size() << " additions, "
-                          << refinementResult.deletedGridPointsIndexes.size() << " deletions)" << std::endl;
-
-                sendRefinementUpdates(classIndex, refinementResult.deletedGridPointsIndexes,
-                                      refinementResult.addedGridPoints);
-            }
-
-            std::cout << "Finished updating the grid components on workers." << std::endl;
-        }
+//        void MPIMethods::sendGridComponentsUpdate(std::vector<RefinementResult> *refinementResults) {
+//
+//            std::cout << "Updating the grid components on workers..." << std::endl;
+//
+//            for (size_t classIndex = 0; classIndex < refinementResults->size(); classIndex++) {
+//                RefinementResult refinementResult = (*refinementResults)[classIndex];
+//
+//                std::cout << "Updating grid for class " << classIndex
+//                          << " (" << refinementResult.addedGridPoints.size() << " additions, "
+//                          << refinementResult.deletedGridPointsIndexes.size() << " deletions)" << std::endl;
+//
+//                sendRefinementUpdates(classIndex, refinementResult.deletedGridPointsIndexes,
+//                                      refinementResult.addedGridPoints);
+//            }
+//
+//            std::cout << "Finished updating the grid components on workers." << std::endl;
+//        }
 
         void MPIMethods::sendRefinementUpdates(size_t &classIndex, std::list<size_t> &deletedGridPointsIndexes,
                                                std::list<LevelIndexVector> &addedGridPoints,
@@ -198,6 +198,8 @@ namespace sgpp {
                                                    int mpiTarget) {
             auto iterator = newCholeskyDecomposition.begin();
             auto listEnd = newCholeskyDecomposition.end();
+
+            size_t offset = 0;
             while (iterator != listEnd) {
                 auto *mpiPacket = new MPI_Packet;
                 mpiPacket->commandID = UPDATE_GRID;
@@ -207,13 +209,23 @@ namespace sgpp {
                 networkMessage->classIndex = classIndex;
                 networkMessage->updateType = CHOLESKY_DECOMPOSITION;
 
-                size_t numPointInBuffer = fillBufferWithData(networkMessage->payload, std::end(networkMessage->payload),
+                auto *choleskyNetworkMessage = (RefinementResultCholeskyNetworkMessage *) networkMessage->payload;
+
+                choleskyNetworkMessage->matrixWidth = newCholeskyDecomposition.getNcols();
+                choleskyNetworkMessage->matrixHeight = newCholeskyDecomposition.getNrows();
+                choleskyNetworkMessage->offset = offset;
+
+                size_t numPointInBuffer = fillBufferWithData(choleskyNetworkMessage->payload,
+                                                             std::end(choleskyNetworkMessage->payload),
                                                              iterator, listEnd);
                 networkMessage->listLength = numPointInBuffer;
 
-                //TODO: There is a bug here, the grid version is sent non null once for each deleted, added, and choleksy
+                offset += numPointInBuffer;
+
+                //TODO: There is a bug here, the grid version is sent non null once for each deleted, added, and cholesky
                 networkMessage->gridversion = (iterator == listEnd) ? learnerInstance->getCurrentGridVersion(
                         classIndex) : 0;
+
 
                 if (mpiTarget != MPI_ANY_SOURCE) {
                     std::cout << "Sending cholesky for class " << networkMessage->classIndex
@@ -572,13 +584,30 @@ namespace sgpp {
                     break;
                 }
                 case CHOLESKY_DECOMPOSITION: {
-                    std::cout << "Cholesky update not implemented." << std::endl;
-                    exit(-1);
-                    if (isMaster()) {
-                        std::cout << "Broadcasting incoming cholesky decomposition " << classIndex << std::endl;
-                        sendCholeskyDecomposition(classIndex,
-                                                  learnerInstance->getDensityFunctions()[classIndex].first.get()->getOfflineObject().getDecomposedMatrix(),
-                                                  MPI_ANY_SOURCE);
+                    auto *choleskyNetworkMessage = (RefinementResultCholeskyNetworkMessage *) networkMessage->payload;
+                    DataMatrix &choleskyDecomposition = learnerInstance->getDensityFunctions()[classIndex].first->getOfflineObject().getDecomposedMatrix();
+
+                    std::cout << "Receiving cholesky decomposition update at offset " << choleskyNetworkMessage->offset
+                              << std::endl;
+
+                    if (choleskyNetworkMessage->offset == 0) {
+                        choleskyDecomposition.resizeRowsCols(choleskyNetworkMessage->matrixHeight,
+                                                             choleskyNetworkMessage->matrixWidth);
+                    }
+
+                    auto *bufferIterator = (double *) choleskyNetworkMessage->payload;
+                    while (bufferIterator < bufferEnd && processedPoints < listLength) {
+                        choleskyDecomposition[choleskyNetworkMessage->offset + processedPoints] = *bufferIterator;
+                        bufferIterator++;
+                        processedPoints++;
+                    }
+
+                    if (isMaster() &&
+                        choleskyNetworkMessage->offset + processedPoints == choleskyDecomposition.size()) {
+                        std::cout << "Received cholesky decomposition for class " << classIndex
+                                  << ", will now send refinement results" << std::endl;
+                        sendRefinementUpdates(classIndex, refinementResult.deletedGridPointsIndexes,
+                                              refinementResult.addedGridPoints, choleskyDecomposition);
                     }
                     break;
                 }
@@ -622,10 +651,11 @@ namespace sgpp {
                 case ASSIGN_BATCH:
                     runBatch(mpiPacket);
                     break;
-                case UPDATE_CHOLESKY_DECOMPOSITION:
+                case UPDATE_CHOLESKY_DECOMPOSITION: {
                     size_t classIndex = static_cast<AssignCholeskyUpdateNetworkMessage *>(networkMessagePointer)->classIndex;
                     learnerInstance->computeNewCholeskyDecomposition(classIndex);
                     break;
+                }
                 case SHUTDOWN:
                     std::cout << "Worker shutdown requested" << std::endl;
                     learnerInstance->shutdown();

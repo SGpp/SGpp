@@ -18,7 +18,7 @@ namespace sgpp {
 
             static bool isMaster();
 
-            static void sendGridComponentsUpdate(std::vector<RefinementResult> *refinementResults);
+//            static void sendGridComponentsUpdate(std::vector<RefinementResult> *refinementResults);
 
             static void processCompletedMPIRequests();
 
@@ -64,7 +64,7 @@ namespace sgpp {
             static void
             sendCholeskyDecomposition(const size_t &classIndex, DataMatrix &newCholeskyDecomposition, int mpiTarget);
 
-            static void assignCholeskyUpdate(const int workerID, size_t classIndex);
+            static void assignCholeskyUpdate(int workerID, size_t classIndex);
 
         protected:
             //Pending MPI Requests
