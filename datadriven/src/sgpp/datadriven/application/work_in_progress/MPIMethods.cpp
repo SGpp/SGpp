@@ -576,7 +576,7 @@ namespace sgpp {
             void *bufferEnd = std::end(networkMessage->payload);
 
             std::cout << "Receiving " << listLength << " grid modifications for class " << classIndex
-                      << " (grid version " << networkMessage->gridversion << ")"
+                      << " (remote grid version " << networkMessage->gridversion << ")"
                       << std::endl;
 
             switch (networkMessage->updateType) {
