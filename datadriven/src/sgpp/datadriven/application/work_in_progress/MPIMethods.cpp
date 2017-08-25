@@ -533,7 +533,8 @@ namespace sgpp {
             return completedRequest;
         }
 
-        void MPIMethods::waitForIncomingMessageType(MPI_COMMAND_ID commandId, size_t numOccurrences = 1) {
+        void MPIMethods::waitForIncomingMessageType(MPI_COMMAND_ID commandId, size_t numOccurrences,
+                                                    std::function<bool(PendingMPIRequest &)> predicate) {
             std::cout << "Waiting for " << numOccurrences << " messages of type " << commandId << std::endl;
             size_t i = 0;
             while (i < numOccurrences) {
@@ -541,13 +542,15 @@ namespace sgpp {
                 const auto &pendingMPIRequestIterator = findPendingMPIRequest(completedRequest);
                 //Correct command ID and incoming (id < 2 for client, id < 1 for master)
                 if (pendingMPIRequestIterator->buffer->commandID == commandId &&
-                    (completedRequest < 1 || (!isMaster() && completedRequest < 2))) {
+                    (completedRequest < 1 || (!isMaster() && completedRequest < 2))
+                    && predicate) {
                     i++;
                 }
                 processCompletedMPIRequest(pendingMPIRequestIterator);
                 std::cout << "Received " << i << "/" << numOccurrences << " messages of type " << commandId
                           << std::endl;
             }
+
             std::cout << "Received all " << numOccurrences << " messages of type " << commandId << std::endl;
         }
 
