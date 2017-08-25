@@ -625,7 +625,7 @@ namespace sgpp {
                     if (isMaster() &&
                         choleskyNetworkMessage->offset + processedPoints == choleskyDecomposition.size()) {
                         std::cout << "Received cholesky decomposition for class " << classIndex
-                                  << ", will now send refinement results" << std::endl;
+                                  << ", will now broadcast decomposition" << std::endl;
                         sendCholeskyDecomposition(classIndex, choleskyDecomposition, MPI_ANY_SOURCE);
                     }
                     break;
