@@ -626,6 +626,8 @@ namespace sgpp {
 
                     if (isMaster() &&
                         choleskyNetworkMessage->offset + processedPoints == choleskyDecomposition.size()) {
+                        learnerInstance->setLocalGridVersion(classIndex, networkMessage->gridversion);
+
                         std::cout << "Received cholesky decomposition for class " << classIndex
                                   << ", will now broadcast decomposition" << std::endl;
                         sendCholeskyDecomposition(classIndex, choleskyDecomposition, MPI_ANY_SOURCE);
