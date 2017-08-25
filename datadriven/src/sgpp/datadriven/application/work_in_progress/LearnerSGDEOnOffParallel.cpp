@@ -447,8 +447,11 @@ namespace sgpp {
             }
 
             // update alpha vector
+            size_t oldSize = densEst->getAlpha().size();
             densEst->updateAlpha(&(refinementResult->deletedGridPointsIndexes),
                                  refinementResult->addedGridPoints.size());
+            std::cout << "Updated alpha vector (old size " << oldSize << ", new size " <<
+                      densEst->getAlpha().size() << ")" << std::endl;
         }
 
         void
