@@ -125,6 +125,7 @@ class AlgorithmEvaluationTransposed {
           result[seq] += alpha * new_value;
         } else {
           rec(basis, point, current_dim + 1, new_value, working, source, alpha, result);
+          if(!working.hint()) working.resetToLevelOne(current_dim+1);
         }
       }
 
@@ -146,7 +147,7 @@ class AlgorithmEvaluationTransposed {
       }
     }
 
-    working.resetToLevelOne(current_dim);
+    //working.resetToLevelOne(current_dim);
   }
 };
 
