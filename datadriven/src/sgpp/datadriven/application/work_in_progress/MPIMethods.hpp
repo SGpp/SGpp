@@ -65,7 +65,9 @@ namespace sgpp {
 
             static void assignCholeskyUpdate(int workerID, size_t classIndex);
 
-            static void waitForIncomingMessageType(MPI_COMMAND_ID commandId, size_t numOccurrences);
+            static void waitForIncomingMessageType(MPI_COMMAND_ID commandId, size_t numOccurrences,
+                                                   std::function<bool(PendingMPIRequest &)> predicate = [](
+                                                           PendingMPIRequest &request) { return true; });
 
         protected:
             //Pending MPI Requests

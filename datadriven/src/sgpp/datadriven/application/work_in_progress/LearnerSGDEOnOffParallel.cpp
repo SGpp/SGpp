@@ -290,7 +290,12 @@ namespace sgpp {
             }
 
             //Wait for all new cholesky decompositions to come back
-            MPIMethods::waitForIncomingMessageType(UPDATE_CHOLESKY_DECOMPOSITION, getNumClasses());
+            MPIMethods::waitForIncomingMessageType(UPDATE_GRID, getNumClasses(), [](PendingMPIRequest &request) {
+                auto *refinementResultNetworkMessage = (RefinementResultNetworkMessage *) request.buffer->payload;
+                //Ensure it is a cholesky packet and the last in the sequence
+                return refinementResultNetworkMessage->gridversion != 0 &&
+                       refinementResultNetworkMessage->updateType == CHOLESKY_DECOMPOSITION;
+            });
         }
 
         void LearnerSGDEOnOffParallel::doRefinementForClass(const std::string &refType,
@@ -448,7 +453,7 @@ namespace sgpp {
                           << getCurrentGridVersion(classIndex)
                           << ", additions " << refinementResult.addedGridPoints.size() << ", deletions "
                           << refinementResult.deletedGridPointsIndexes.size() << "). Waiting..." << std::endl;
-                MPIMethods::waitForIncomingMessageType(UPDATE_GRID, 1);
+                MPIMethods::waitForIncomingMessageType(UPDATE_GRID, 0, nullptr);
                 std::cout << "Updates have arrived. Attempting to resume." << std::endl;
             }
 
@@ -698,7 +703,7 @@ namespace sgpp {
             if (MPIMethods::isMaster()) {
                 std::cout << "Broadcasting shutdown" << std::endl;
                 MPIMethods::bcastCommandNoArgs(SHUTDOWN);
-                MPIMethods::waitForIncomingMessageType(WORKER_SHUTDOWN_SUCCESS, MPIMethods::getWorldSize());
+                MPIMethods::waitForIncomingMessageType(WORKER_SHUTDOWN_SUCCESS, MPIMethods::getWorldSize() - 1);
             } else {
                 workerActive = false;
             }
