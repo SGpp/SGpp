@@ -734,6 +734,15 @@ namespace sgpp {
 
         void LearnerSGDEOnOffParallel::workBatch(Dataset dataset, size_t batchOffset, bool doCrossValidation) {
 
+
+            if (std::any_of(localGridVersions.begin(), localGridVersions.end(),
+                            [](size_t version) { return version == 0; })) {
+                std::cout << "Attempted to train from an inconsistent batch #"
+                          << *std::find(localGridVersions.begin(), localGridVersions.end(),
+                                        [](size_t version) { return version == 0; }) << std::endl;
+                exit(-1);
+            }
+
             // assemble next batch
             std::cout << "Learning with batch of size " << dataset.getNumberInstances()
                       << " at offset " << batchOffset << std::endl;
