@@ -437,7 +437,9 @@ namespace sgpp {
 
             std::cout << "Computing cholesky modification for class " << classIndex << std::endl;
 
-            while ((*vectorRefinementResults)[classIndex].deletedGridPointsIndexes.empty() &&
+            // The first check is to ensure that all segments of an update have been received (intermediate segments set grid version to 0)
+            while (getCurrentGridVersion(classIndex) != 0 &&
+                   (*vectorRefinementResults)[classIndex].deletedGridPointsIndexes.empty() &&
                    (*vectorRefinementResults)[classIndex].addedGridPoints.empty()) {
                 std::cout << "Refinement results have not arrived yet. Waiting..." << std::endl;
                 MPIMethods::waitForIncomingMessageType(UPDATE_GRID, 1);
