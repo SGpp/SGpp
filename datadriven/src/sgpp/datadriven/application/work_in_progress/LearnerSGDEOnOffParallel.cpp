@@ -50,7 +50,7 @@ namespace sgpp {
                                    beta, lambda), mpiTaskScheduler(mpiTaskScheduler) {
 
             vectorRefinementResults = new std::vector<RefinementResult>(numClasses);
-            localGridVersions.insert(localGridVersions.begin(), numClasses, 0);
+            localGridVersions.insert(localGridVersions.begin(), numClasses, 1);
 
             MPIMethods::initMPI(this);
         }
@@ -832,7 +832,8 @@ namespace sgpp {
         }
 
         void LearnerSGDEOnOffParallel::setLocalGridVersion(size_t classIndex, size_t gridVersion) {
-            std::cout << "Grid " << classIndex << " now has version " << gridVersion << std::endl;
+            std::cout << "Grid " << classIndex << " now has version " << gridVersion << " (previously "
+                      << localGridVersions[classIndex] << ")" << std::endl;
             localGridVersions[classIndex] = gridVersion;
         }
 
