@@ -738,8 +738,7 @@ namespace sgpp {
             if (std::any_of(localGridVersions.begin(), localGridVersions.end(),
                             [](size_t version) { return version == 0; })) {
                 std::cout << "Attempted to train from an inconsistent batch #"
-                          << *std::find(localGridVersions.begin(), localGridVersions.end(),
-                                        [](size_t version) { return version == 0; }) << std::endl;
+                          << *std::find(localGridVersions.begin(), localGridVersions.end(), 0) << std::endl;
                 exit(-1);
             }
 
