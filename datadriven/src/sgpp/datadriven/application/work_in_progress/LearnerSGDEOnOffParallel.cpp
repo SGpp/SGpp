@@ -424,7 +424,13 @@ namespace sgpp {
             // apply grid changes to the Cholesky factorization
             else {
 
-                setLocalGridVersion(classIndex, getCurrentGridVersion(classIndex) + 1);
+                size_t currentGridVersion = getCurrentGridVersion(classIndex);
+                if (currentGridVersion == 0) {
+                    std::cout << "Attempting to increment grid version on non consistent grid! Fail." << std::endl;
+                    exit(-1);
+                }
+
+                setLocalGridVersion(classIndex, currentGridVersion + 1);
 
                 // Send class update in preparation for cholesky
                 MPIMethods::sendRefinementUpdates(classIndex, refinementResult->deletedGridPointsIndexes,
