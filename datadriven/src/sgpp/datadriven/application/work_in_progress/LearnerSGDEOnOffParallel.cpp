@@ -368,7 +368,6 @@ namespace sgpp {
 
             updateClassVariablesAfterRefinement(classIndex, refinementResult, densEst);
 
-            localGridVersions[classIndex]++;
         }
 
         void LearnerSGDEOnOffParallel::updateClassVariablesAfterRefinement(size_t classIndex,
@@ -413,6 +412,9 @@ namespace sgpp {
                 //TODO: This needs to be moved and replaced by a request.
             // apply grid changes to the Cholesky factorization
             else {
+
+                setLocalGridVersion(classIndex, getCurrentGridVersion(classIndex) + 1);
+
                 // Send class update in preparation for cholesky
                 MPIMethods::sendRefinementUpdates(classIndex, refinementResult->deletedGridPointsIndexes,
                                                   refinementResult->addedGridPoints);
