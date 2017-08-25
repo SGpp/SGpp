@@ -640,7 +640,7 @@ namespace sgpp {
                       " deletions)" << std::endl;
 
             //If this is not the last message in a series (gridversion != 0), then don't update variables yet
-            if (networkMessage->gridversion != 0) {
+            if (networkMessage->gridversion != 0 && !isMaster()) {
                 learnerInstance->updateClassVariablesAfterRefinement(classIndex, &refinementResult,
                                                                      learnerInstance->getDensityFunctions()[classIndex].first.get());
             }
