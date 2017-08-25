@@ -51,7 +51,6 @@ namespace sgpp {
 
             vectorRefinementResults = new std::vector<RefinementResult>(numClasses);
             localGridVersions.insert(localGridVersions.begin(), numClasses, 0);
-            numShutdownWorkers = 0;
 
             MPIMethods::initMPI(this);
         }
@@ -180,7 +179,8 @@ namespace sgpp {
                         numberOfCompletedRefinements += 1;
                         std::cout << "Refinement at " << numProcessedDataPoints << " complete" << std::endl;
 
-                        // Note: calling this is no longer necessary as it will be called for each class individually when its cholesky decomposition arrives
+                        //Send the grid component update
+                        //Note: This was moved to updateClassVariablesAfterRefinement as it needs to run before the cholesky update
 //                        MPIMethods::sendGridComponentsUpdate(vectorRefinementResults);
                     } else {
                         std::cout << "No refinement necessary" << std::endl;
@@ -288,6 +288,9 @@ namespace sgpp {
             if (refinementMonitorType == "convergence") {
                 monitor.nextRefCnt = monitor.minRefInterval;
             }
+
+            //Wait for all new cholesky decompositions to come back
+            MPIMethods::waitForIncomingMessageType(UPDATE_CHOLESKY_DECOMPOSITION, getNumClasses());
         }
 
         void LearnerSGDEOnOffParallel::doRefinementForClass(const std::string &refType,
@@ -409,13 +412,19 @@ namespace sgpp {
             //TODO: We might need to transfer the results here.
                 //TODO: This needs to be moved and replaced by a request.
             // apply grid changes to the Cholesky factorization
-            else if (offline->isRefineable()) {
-                AssignTaskResult assignTaskResult{};
-                mpiTaskScheduler.assignTaskStaticTaskSize(RECOMPUTE_CHOLESKY_DECOMPOSITION, assignTaskResult);
+            else {
+                // Send class update in preparation for cholesky
+                MPIMethods::sendRefinementUpdates(classIndex, refinementResult->deletedGridPointsIndexes,
+                                                  refinementResult->addedGridPoints);
 
-                std::cout << "Assigning update of cholesky decomposition " << classIndex << " to worker "
-                          << assignTaskResult.workerID << std::endl;
-                MPIMethods::assignCholeskyUpdate(assignTaskResult.workerID, classIndex);
+                if (offline->isRefineable()) {
+                    AssignTaskResult assignTaskResult{};
+                    mpiTaskScheduler.assignTaskStaticTaskSize(RECOMPUTE_CHOLESKY_DECOMPOSITION, assignTaskResult);
+
+                    std::cout << "Assigning update of cholesky decomposition " << classIndex << " to worker "
+                              << assignTaskResult.workerID << std::endl;
+                    MPIMethods::assignCholeskyUpdate(assignTaskResult.workerID, classIndex);
+                }
             }
 
             // update alpha vector
@@ -674,11 +683,7 @@ namespace sgpp {
             if (MPIMethods::isMaster()) {
                 std::cout << "Broadcasting shutdown" << std::endl;
                 MPIMethods::bcastCommandNoArgs(SHUTDOWN);
-                while (numShutdownWorkers != MPIMethods::getWorldSize() - 1) {
-                    std::cout << "Have shutdown acknowledge from " << numShutdownWorkers << "/"
-                              << MPIMethods::getWorldSize() << std::endl;
-                    MPIMethods::waitForAnyMPIRequestsToComplete();
-                }
+                MPIMethods::waitForIncomingMessageType(WORKER_SHUTDOWN_SUCCESS, MPIMethods::getWorldSize());
             } else {
                 workerActive = false;
             }
@@ -808,10 +813,6 @@ namespace sgpp {
 
         RefinementResult &LearnerSGDEOnOffParallel::getRefinementResult(size_t classIndex) {
             return (*vectorRefinementResults)[classIndex];
-        }
-
-        void LearnerSGDEOnOffParallel::onWorkerShutdown() {
-            numShutdownWorkers++;
         }
 
     }  // namespace datadriven

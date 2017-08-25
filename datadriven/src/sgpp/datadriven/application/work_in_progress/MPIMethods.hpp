@@ -55,8 +55,7 @@ namespace sgpp {
                                              Iterator &listEnd);
 
             static void sendRefinementUpdates(size_t &classIndex, std::list<size_t> &deletedGridPointsIndexes,
-                                              std::list<LevelIndexVector> &addedGridPoints,
-                                              DataMatrix &newCholeskyDecomposition);
+                                              std::list<LevelIndexVector> &addedGridPoints);
 
 
             static void sendCommandNoArgs(int destinationRank, MPI_COMMAND_ID commandId);
@@ -65,6 +64,8 @@ namespace sgpp {
             sendCholeskyDecomposition(const size_t &classIndex, DataMatrix &newCholeskyDecomposition, int mpiTarget);
 
             static void assignCholeskyUpdate(int workerID, size_t classIndex);
+
+            static void waitForIncomingMessageType(MPI_COMMAND_ID commandId, size_t numOccurrences);
 
         protected:
             //Pending MPI Requests
@@ -100,6 +101,9 @@ namespace sgpp {
             static std::list<sgpp::datadriven::PendingMPIRequest>::iterator findPendingMPIRequest(
                     int completedRequestIndex);
 
+            void sendGridComponentsUpdate(std::vector<RefinementResult> *refinementResults);
+
+            static int executeMPIWaitAny();
         };
     }
 }

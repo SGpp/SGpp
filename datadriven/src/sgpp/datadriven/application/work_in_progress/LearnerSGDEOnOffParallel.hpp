@@ -155,8 +155,6 @@ namespace sgpp {
 
             RefinementResult &getRefinementResult(size_t classIndex);
 
-            void onWorkerShutdown();
-
             void computeNewCholeskyDecomposition(size_t classIndex);
 
         protected:
@@ -200,8 +198,6 @@ namespace sgpp {
                                        std::map<double, int> &classIndices) const;
 
             size_t assignBatchToWorker(size_t batchOffset, bool doCrossValidation);
-
-            size_t numShutdownWorkers;
 
         };
     }   //namespace datadriven
