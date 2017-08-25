@@ -453,7 +453,7 @@ namespace sgpp {
                           << getCurrentGridVersion(classIndex)
                           << ", additions " << refinementResult.addedGridPoints.size() << ", deletions "
                           << refinementResult.deletedGridPointsIndexes.size() << "). Waiting..." << std::endl;
-                MPIMethods::waitForIncomingMessageType(UPDATE_GRID, 0, nullptr);
+                MPIMethods::waitForIncomingMessageType(UPDATE_GRID);
                 std::cout << "Updates have arrived. Attempting to resume." << std::endl;
             }
 
