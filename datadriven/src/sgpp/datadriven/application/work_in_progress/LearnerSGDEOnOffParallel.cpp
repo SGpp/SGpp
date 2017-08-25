@@ -156,7 +156,7 @@ namespace sgpp {
 
                     std::cout << numProcessedDataPoints << " have already been assigned." << std::endl;
 
-                    while (MPIMethods::getQueueSize() > 1) {
+                    while (!checkReadyForRefinement()) {
                         std::cout << "Waiting for " << MPIMethods::getQueueSize()
                                   << " queue operations to complete before continuing" << std::endl;
                         MPIMethods::waitForAnyMPIRequestsToComplete();
@@ -219,6 +219,14 @@ namespace sgpp {
 
             // delete offline;
             delete vectorRefinementResults;
+        }
+
+        bool LearnerSGDEOnOffParallel::checkReadyForRefinement() const {
+            // Queue size smaller than one
+            // All local grids in a consistent state
+            return MPIMethods::getQueueSize() < 1
+                   && std::all_of(localGridVersions.begin(), localGridVersions.end(),
+                                  [](size_t gridVersion) { return gridVersion != 0; });
         }
 
         size_t LearnerSGDEOnOffParallel::getDimensionality() {
