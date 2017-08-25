@@ -224,11 +224,6 @@ namespace sgpp {
         bool LearnerSGDEOnOffParallel::checkReadyForRefinement() const {
             // Queue size equal to one
             // All local grids in a consistent state
-            size_t i = 0;
-            for (size_t gridVersion : localGridVersions) {
-                std::cout << "Grid version " << i << " is " << gridVersion << std::endl;
-                i++;
-            }
             return MPIMethods::getQueueSize() <= 1
                    && std::all_of(localGridVersions.begin(), localGridVersions.end(),
                                   [](size_t gridVersion) { return gridVersion != 0; });
