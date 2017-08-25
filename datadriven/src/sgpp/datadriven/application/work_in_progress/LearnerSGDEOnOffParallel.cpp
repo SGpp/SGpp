@@ -72,7 +72,7 @@ namespace sgpp {
                 }
                 std::cout << "Worker shutdown." << std::endl;
                 MPIMethods::sendCommandNoArgs(MPI_MASTER_RANK, WORKER_SHUTDOWN_SUCCESS);
-                MPIMethods::waitForAnyMPIRequestsToComplete();
+                MPIMethods::waitForAllMPIRequestsToComplete();
                 std::cout << "Sent acknowledgement" << std::endl;
                 return;
             }

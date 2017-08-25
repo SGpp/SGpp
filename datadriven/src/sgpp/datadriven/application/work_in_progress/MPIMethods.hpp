@@ -69,6 +69,8 @@ namespace sgpp {
                                                    std::function<bool(PendingMPIRequest &)> predicate = [](
                                                            PendingMPIRequest &request) { return true; });
 
+            static void waitForAllMPIRequestsToComplete();
+
         protected:
             //Pending MPI Requests
             static std::list<PendingMPIRequest> pendingMPIRequests;
@@ -91,8 +93,6 @@ namespace sgpp {
 
             static size_t
             receiveMergeGridNetworkMessage(MergeGridNetworkMessage &networkMessage);
-
-            void waitForAllMPIRequestsToComplete();
 
             static PendingMPIRequest &createPendingMPIRequest(MPI_Packet *mpiPacket);
 
