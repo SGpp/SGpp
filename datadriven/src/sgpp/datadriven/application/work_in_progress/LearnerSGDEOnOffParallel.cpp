@@ -436,6 +436,14 @@ namespace sgpp {
         LearnerSGDEOnOffParallel::computeNewCholeskyDecomposition(size_t classIndex) {
 
             std::cout << "Computing cholesky modification for class " << classIndex << std::endl;
+
+            while ((*vectorRefinementResults)[classIndex].deletedGridPointsIndexes.empty() &&
+                   (*vectorRefinementResults)[classIndex].addedGridPoints.empty()) {
+                std::cout << "Refinement results have not arrived yet. Waiting..." << std::endl;
+                MPIMethods::waitForIncomingMessageType(UPDATE_GRID, 1);
+                std::cout << "Updates have arrived. Attempting to resume." << std::endl;
+            }
+
             DBMatOnlineDE *densEst = getDensityFunctions()[classIndex].first.get();
             DBMatOfflineChol &dbMatOfflineChol = dynamic_cast<DBMatOfflineChol &>(densEst->getOfflineObject());
             RefinementResult *refinementResult = &((*vectorRefinementResults)[classIndex]);
