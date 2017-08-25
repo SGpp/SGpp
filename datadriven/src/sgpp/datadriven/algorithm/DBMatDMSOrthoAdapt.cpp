@@ -76,6 +76,8 @@ void DBMatDMSOrthoAdapt::solve(sgpp::base::DataMatrix& T_inv, sgpp::base::DataMa
     gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &b_matrix_view.matrix, &b_vector_view.matrix,
                    1.0, &alpha_view.matrix);  // gsl_blas allows to add to the target after mult.
   }
+
+  gsl_matrix_free(interim2);
 }
 }  // namespace datadriven
 }  // namespace sgpp
