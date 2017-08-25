@@ -297,6 +297,8 @@ namespace sgpp {
             MPIMethods::waitForIncomingMessageType(UPDATE_GRID, getNumClasses(), [](PendingMPIRequest &request) {
                 auto *refinementResultNetworkMessage = (RefinementResultNetworkMessage *) request.buffer->payload;
                 //Ensure it is a cholesky packet and the last in the sequence
+                std::cout << "Test packet grid version " << refinementResultNetworkMessage->gridversion
+                          << ", update type " << refinementResultNetworkMessage->updateType << std::endl;
                 return refinementResultNetworkMessage->gridversion != 0 &&
                        refinementResultNetworkMessage->updateType == CHOLESKY_DECOMPOSITION;
             });
@@ -466,7 +468,7 @@ namespace sgpp {
             dbMatOfflineChol.choleskyModification(refinementResult.addedGridPoints.size(),
                                                   refinementResult.deletedGridPointsIndexes, densEst->getBestLambda());
 
-            std::cout << "Send choleksy update to master for class " << classIndex << std::endl;
+            std::cout << "Send cholesky update to master for class " << classIndex << std::endl;
             DataMatrix &newDecomposition = dbMatOfflineChol.getDecomposedMatrix();
             MPIMethods::sendCholeskyDecomposition(classIndex, newDecomposition, 0);
         }
