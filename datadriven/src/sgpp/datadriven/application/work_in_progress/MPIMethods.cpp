@@ -644,8 +644,8 @@ namespace sgpp {
                       << refinementResult.deletedGridPointsIndexes.size() <<
                       " deletions)" << std::endl;
 
-            //If this is not the last message in a series (gridversion != 0), then don't update variables yet
-            if (networkMessage->gridversion != 0 && !isMaster()) {
+            //If this is not the last message in a series (gridversion inconsistent), then don't update variables yet
+            if (learnerInstance->isVersionConsistent(networkMessage->gridversion) && !isMaster()) {
                 learnerInstance->updateClassVariablesAfterRefinement(classIndex, &refinementResult,
                                                                      learnerInstance->getDensityFunctions()[classIndex].first.get());
             }
@@ -766,7 +766,7 @@ namespace sgpp {
         void MPIMethods::waitForGridConsistent(size_t classIndex) {
             while (!learnerInstance->checkGridStateConsistent(classIndex)) {
                 std::cout << "Grid " << classIndex << " is not yet consistent (version "
-                          << learnerInstance->getCurrentGridVersion(classIndex) << "), waiting for update."
+                          << learnerInstance->getCurrentGridVersion(classIndex) << ")f, waiting for update."
                           << std::endl;
                 waitForIncomingMessageType(UPDATE_GRID);
             }

@@ -159,6 +159,8 @@ namespace sgpp {
 
             bool checkGridStateConsistent(size_t classIndex);
 
+            bool isVersionConsistent(size_t version) const;
+
         protected:
 
             std::vector<RefinementResult> *vectorRefinementResults;
@@ -203,7 +205,6 @@ namespace sgpp {
 
             bool checkReadyForRefinement() const;
 
-            bool isVersionConsistent(size_t version) const;
         };
     }   //namespace datadriven
 }  // namespace sgpp
