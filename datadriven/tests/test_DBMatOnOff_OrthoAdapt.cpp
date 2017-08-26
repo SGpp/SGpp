@@ -25,6 +25,17 @@
 #include <string>
 #include <vector>
 
+// print datamatrices for debugging
+static void printMatrix(sgpp::base::DataMatrix& a) {
+  for (size_t i = 0; i < a.getNrows(); i++) {
+    for (size_t j = 0; j < a.getNcols(); j++) {
+      std::cout << std::setprecision(4) << std::fixed << a.get(i, j) << "   ";
+    }
+    std::cout << std::endl;
+  }
+  std::cout << std::endl;
+}
+
 BOOST_AUTO_TEST_SUITE(OrthoAdapt_tests)
 
 BOOST_AUTO_TEST_CASE(offline_object) {
@@ -39,7 +50,7 @@ BOOST_AUTO_TEST_CASE(offline_object) {
   off_object.buildMatrix();
 
   size_t n = off_object.getDimA();
-  // std::cout << "Created Offline Object: \nMatrix Dimension = " << n << std::endl;
+
   std::cout << "Testing hessenberg_decomposition...\n";
 
   // allocating sub-, super- and diagonal vectors of T
@@ -147,8 +158,8 @@ BOOST_AUTO_TEST_CASE(solver_test) {
  */
 BOOST_AUTO_TEST_CASE(online_object) {
   sgpp::datadriven::DBMatDensityConfiguration config;
-  config.grid_dim_ = 2;
-  config.grid_level_ = 3;
+  config.grid_dim_ = 1;
+  config.grid_level_ = 2;
   config.grid_type_ = sgpp::base::GridType::Linear;
   config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
   config.lambda_ = 0.0001;  // arbitrary lambda
@@ -171,6 +182,7 @@ BOOST_AUTO_TEST_CASE(online_object) {
   config.grid_level_++;
   sgpp::datadriven::DBMatOfflineOrthoAdapt offline_source(config);
   offline_source.buildMatrix();
+  printMatrix(offline_source.getLhsMatrix_ONLY_FOR_TESTING());
 
   // calculate sizes of old and new matrices
   size_t oldSize = offline_base.getGrid().getStorage().getSize();
@@ -308,10 +320,19 @@ BOOST_AUTO_TEST_CASE(online_object) {
 
   //############################################################################
   //
-  // first coarsening test: refine the first half of the points refined before
+  // first coarsening test: coarsen the first half of the points refined before
   //
   //############################################################################
   std::cout << "Testing coarsening ..." << std::endl;
+
+  // testy
+  std::cout << "points to refine in container: \n";
+  for (size_t j = 0; j < newSize; j++) {
+    for (size_t i = 0; i < online->refined_points_.size(); i++) {
+      std::cout << std::setprecision(3) << std::fixed << online->refined_points_[i].get(j) << "   ";
+    }
+    std::cout << std::endl;
+  }
 
   // create the list of indices which to coarsen
   std::vector<size_t> coarsen_indices_first_half;
@@ -371,6 +392,15 @@ BOOST_AUTO_TEST_CASE(online_object) {
   // second coarsening test: coarsen the rest of the points refined before
   //
   //############################################################################
+
+  // testy
+  std::cout << "points to refine in container: \n";
+  for (size_t j = 0; j < newSize; j++) {
+    for (size_t i = 0; i < online->refined_points_.size(); i++) {
+      std::cout << std::setprecision(3) << std::fixed << online->refined_points_[i].get(j) << "   ";
+    }
+    std::cout << std::endl;
+  }
 
   // create the list of indices which to coarsen
   std::vector<size_t> coarsen_indices_second_half;

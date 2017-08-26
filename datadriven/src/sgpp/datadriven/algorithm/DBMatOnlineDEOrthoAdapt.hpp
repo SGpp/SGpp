@@ -62,12 +62,14 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
   void sherman_morrison_adapt(size_t newPoints, bool refine,
                               std::vector<size_t> coarsen_indices = {});
 
+  // holds all prior refined points, to know what to coarsen later on
+  std::vector<sgpp::base::DataVector> refined_points_;
+
+
  protected:
   // matrix, which holds information about refined/coarsened points
   sgpp::base::DataMatrix b_adapt_matrix_;
 
-  // holds all prior refined points, to know what to coarsen later on
-  std::vector<sgpp::base::DataVector> refined_points_;
 
   // points to end of refined_points_, !which already were processed!
   size_t current_refine_index;

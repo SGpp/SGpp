@@ -25,6 +25,16 @@
 #include <list>
 #include <vector>
 
+// print datamatrices for debugging
+static void printMatrix(sgpp::base::DataMatrix& a) {
+  for (size_t i = 0; i < a.getNrows(); i++) {
+    for (size_t j = 0; j < a.getNcols(); j++) {
+      std::cout << std::setprecision(3) << std::fixed << a.get(i, j) << "   ";
+    }
+    std::cout << std::endl;
+  }
+  std::cout << std::endl;
+}
 namespace sgpp {
 namespace datadriven {
 
@@ -50,13 +60,6 @@ std::vector<size_t> DBMatOnlineDEOrthoAdapt::adapt(size_t newPoints,
                                                    double newLambda) {
   // points not possible to coarsen
   std::vector<size_t> return_vector = {};
-
-  // refinement:
-  if (newPoints > 0) {
-    // get the L2_gridvectors from the new refined grid and do sherman-morrison refinement
-    this->compute_L2_gridvectors(newPoints, newLambda);
-    this->sherman_morrison_adapt(newPoints, true);
-  }
 
   // coarsening:
   // split the valid coarsen indices and the non valid ones and do sherman-morrison coarsening
@@ -86,6 +89,14 @@ std::vector<size_t> DBMatOnlineDEOrthoAdapt::adapt(size_t newPoints,
       this->sherman_morrison_adapt(0, false, coarsen_points);
     }
   }
+
+  // refinement:
+  if (newPoints > 0) {
+    // get the L2_gridvectors from the new refined grid and do sherman-morrison refinement
+    this->compute_L2_gridvectors(newPoints, newLambda);
+    this->sherman_morrison_adapt(newPoints, true);
+  }
+
   return return_vector;
 }
 
@@ -107,7 +118,6 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
       static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&this->offlineObject);
 
   // dimension of offline's lhs matrix A^{-1} = Q * T^{-1} * Q^t
-  // also, the name of the author of this code, trololo :D
   size_t dima = offlinePtr->getDimA();
 
   // check, if offline object has been decomposed yet
@@ -147,6 +157,13 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
 
     sgpp::base::DataVector x =
         this->refined_points_[refine ? refine_start_index + k : coarsenIndices[k] - dima];
+    if (!refine) {
+      // std::cout << "coarsening a point with index " << coarsenIndices[k] << std::endl;
+      // std::cout << "index in refine_container: " << coarsenIndices[k] - dima << std::endl;
+      // std::cout << "size in refine_container is " << x.getSize() << " but should be "
+      //          << current_size << std::endl;
+    }
+
     // configure x according to sherman morrison formula
     if (refine) {
       // clipping off not needed entries
@@ -162,6 +179,12 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
       // lambda is added already on all of refinePts
       x.set(coarsenIndices[k], config_x_value);
     }
+
+    // std::cout << "x = " << std::endl;
+    // for (size_t i = 0; i < x.getSize(); i++) {
+    //   std::cout << x.get(i) << "  ";
+    // }
+    // std::cout << std::endl;
 
     // configure unit vector depending on refine/coarsen
     // e[unit_index] = 1 when refining, -1 when coarsening
@@ -228,16 +251,40 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
 
     // subtracting the matrices B - ( x_term * e_term ) / divisor
     // where the vector product is an outer product yielding a matrix
+    // saving the row of B, because it gets overwritten after unit_index-th step
+    sgpp::base::DataVector b_row(refine ? newSize : oldSize);
+    this->b_adapt_matrix_.getRow(unit_index, b_row);
+    // std::cout << "copied row: " << std::endl;
+    // for (size_t i = 0; i < b_row.getSize(); i++) {
+    //   std::cout << b_row.get(i) << "   ";
+    // }
+    // std::cout << std::endl;
     for (size_t i = 0; i < current_size; i++) {
       for (size_t j = 0; j < current_size; j++) {
-        double final_value =
-            this->b_adapt_matrix_.get(i, j) -
-            (bx_term->data[i] * (refine ? 1.0 : -1.0) * this->b_adapt_matrix_.get(unit_index, j)) *
-                divisor;
+        // caluclate matrix entry new value according to Sherman-Morrison-formula
+        double final_value = this->b_adapt_matrix_.get(i, j) -
+                             (bx_term->data[i] * (refine ? 1.0 : -1.0) * b_row.get(j) * divisor);
+
+        // by algorithm, the column of B at the index of coarsening
+        // should be zero, except for the diagonal entry
+        if (!refine) {
+          if (j == unit_index && i != unit_index) {
+            // if (final_value > 1e-5) {
+            //   std::cout << "Bei B_" << i << "_" << j << " = " << final_value << std::endl;
+            //   std::cout << "eintrag von skalarprodukt war: "
+            //             << this->b_adapt_matrix_.get(unit_index, j) << std::endl;
+            // }
+            final_value = 0.0;
+          }
+        }
+
         this->b_adapt_matrix_.set(i, j, final_value);
       }
     }
 
+    // std::cout << "B_tilde: \n";
+    // std::cout << "current_size was: " << current_size << std::endl;
+    // printMatrix(this->b_adapt_matrix_);
     //##########################################################################
     //
     // second sherman morrison update/downdate, calculating B
@@ -259,26 +306,39 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
       bx_term->data[i] += x_term->data[i];
     }
 
-    // subtracting the matrices B_tilde - ( x_term * b_tilde_term ) / divisor
+    // subtracting the matrices B_final - ( x_term * b_tilde_term ) / divisor
     // where the vector product is an outer product yielding a matrix
     // note: as the order is flipped, i and j have to be changed AND
-    // the b_term now is take out of b_adapt_matrix_'s column instead of row
+    // the b_term now is taken out of b_adapt_matrix_'s column instead of row
+
+    // saving the column of B, because it gets overwritten after unit_index-th step
+    sgpp::base::DataVector b_col(refine ? newSize : oldSize);
+    this->b_adapt_matrix_.getColumn(unit_index, b_col);
     for (size_t i = 0; i < current_size; i++) {
       for (size_t j = 0; j < current_size; j++) {
-        double final_value =
-            this->b_adapt_matrix_.get(i, j) -
-            (bx_term->data[j] * (refine ? 1.0 : -1.0) * this->b_adapt_matrix_.get(i, unit_index)) *
-                divisor;
+        double final_value = this->b_adapt_matrix_.get(i, j) -
+                             (bx_term->data[j] * (refine ? 1.0 : -1.0) * b_col.get(i)) * divisor;
+
+        // By algorithm, the row of B at the index of coarsening
+        // should be now the unit vector, and can be discarded after coarsening.
+        // Since it will be discarded, the unit entry will be set to zero, to not
+        // meddle with other dimensions of the matrix
+        if (!refine) {
+          if (i == unit_index) {
+            final_value = 0.0;
+          }
+        }
         this->b_adapt_matrix_.set(i, j, final_value);
       }
     }
 
-    // adjust current_refine_index of online object
-    this->current_refine_index += refine ? 1 : -1;
-
     gsl_matrix_free(buffer);
     gsl_matrix_free(x_term);
     gsl_matrix_free(bx_term);
+
+    // std::cout << "B_final: \n";
+    // std::cout << "current_size was: " << current_size << std::endl;
+    // printMatrix(this->b_adapt_matrix_);
   }
 
   //##########################################################################
@@ -292,31 +352,62 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
   // of b_adapt_matrix is used to fit the blocks together again.
   if (!refine) {
     std::sort(coarsenIndices.begin(), coarsenIndices.end());
-    size_t vj = 0;  // number of indices already considered in rows
-    size_t vi = 0;  // number of indices already considered in columns
-    for (size_t i = 0; i < oldSize - coarsenIndices.size(); i++) {
-      if (i == coarsenIndices[vi] - vi) {  // then skip this row
+    // for (auto i : coarsenIndices) {
+      // std::cout << i << "   ";
+    // }
+    // std::cout << std::endl;
+    // very simple and unefficient size fitting algorithm
+    size_t vi = 1;  // skipps points
+    sgpp::base::DataVector copied_row(oldSize);
+    // std::cout << "i start: " << coarsenIndices[0] << std::endl;
+    // std::cout << "i endet: " << oldSize - coarsenIndices.size() - 1 << std::endl;
+
+    for (size_t i = coarsenIndices[0]; i < oldSize - coarsenIndices.size(); i++) {
+      // std::cout << "i = " << i << std::endl;
+      // std::cout << "k = " << vi << std::endl;
+
+      // find amount of successive indices, to skip a block of zeroes
+      while (i + vi == coarsenIndices[vi]) {
         vi++;
-      }
-      for (size_t j = i; j < oldSize - coarsenIndices.size(); j++) {
-        if (j == coarsenIndices[vj] - vj) {  // then skip this column
-          vj++;
-        }
-        double value = this->b_adapt_matrix_.get(i + vi, j + vj);
-        this->b_adapt_matrix_.set(i, j, value);
-        this->b_adapt_matrix_.set(j, i, value);
+        // std::cout << "skipped row" << std::endl;
       }
 
-      vj = 0;  // new row, new count
+      // set current row and column to copied one
+      this->b_adapt_matrix_.getRow(i + vi, copied_row);
+      this->b_adapt_matrix_.setRow(i, copied_row);
+      this->b_adapt_matrix_.setColumn(i, copied_row);  // symmetry
+
+      // copy diagonal elements too
+      double value = this->b_adapt_matrix_.get(i + vi, i + vi);
+      this->b_adapt_matrix_.set(i, i, value);
+
+      // std::cout << "copied row " << i + vi << " into row " << i << std::endl << std::endl;
     }
+
+    // std::cout << "After coarsening and size fitting: B_final: \n";
+    // printMatrix(this->b_adapt_matrix_);
     this->b_adapt_matrix_.resizeQuadratic(newSize);
+    // size fitting algorithm end
 
-    // remove coarsened point from online's refined_vectors
-    if (!refine) {
-      for (size_t k = 0; k < adaptSteps; k++) {
-        this->refined_points_.erase(this->refined_points_.begin() + coarsenIndices[k] - dima);
-      }
+    // remove coarsened points from online's refined_vectors
+    for (size_t k = adaptSteps; k > 0; k--) {
+      // std::cout << "Erasing the container point with container index "
+      //           << coarsenIndices[k - 1] - dima << std::endl;
+      this->refined_points_.erase(this->refined_points_.begin() + coarsenIndices[k - 1] - dima);
+
+      // adjust current_refine_index of online object
+      this->current_refine_index--;
     }
+    // std::cout << "the pointer to end of container is now at index " << this->current_refine_index
+    //          << std::endl;
+
+    // std::cout << "After resizing of the fitting: B_final: \n";
+    // printMatrix(this->b_adapt_matrix_);
+  }
+
+  // move the index of the container to the end of it
+  if (refine) {
+    this->current_refine_index += adaptSteps;
   }
 
   // determine, if any refined information now is contained in matrix b_adapt
@@ -407,6 +498,18 @@ void DBMatOnlineDEOrthoAdapt::compute_L2_gridvectors(size_t newPoints, double ne
           this->refined_points_[j - gridSize + newPoints + this->current_refine_index].set(i, res);
         }
         //### end adjusted part
+      }
+    }
+
+    // fill in the new L2 products in the older points, and resize them
+    // loop all the old points of this->refined_points_
+    for (size_t i = 0; i < this->current_refine_index; i++) {
+      this->refined_points_[i].resize(gridSize);
+      // std::cout << i << "-ter Punkt resized zu größe " << gridSize << std::endl;
+      for (size_t j = this->current_refine_index; j < this->current_refine_index + newPoints; j++) {
+        double xxx = this->refined_points_[j].get(i);
+        // std::cout << i << "-ter Punkt, " << j << "-ter eintrag, kriegt " << xxx << std::endl;
+        this->refined_points_[i].set(j, xxx);
       }
     }
   }

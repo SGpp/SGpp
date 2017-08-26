@@ -86,7 +86,7 @@ int main() {
       std::cout << "# create grid config" << std::endl;
       sgpp::base::RegularGridConfiguration gridConfig;
       gridConfig.dim_ = trainDataset.getDimension();
-      gridConfig.level_ = 3;
+      gridConfig.level_ = 10;
       gridConfig.type_ = sgpp::base::GridType::Linear;
       // gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
@@ -99,7 +99,8 @@ int main() {
 
       /**
        * Select the desired decomposition type for the offline step.
-       * Note: Refinement/Coarsening only possible for Cholesky decomposition.
+       * Note: Refinement/Coarsening only possible for Cholesky decomposition
+       * and OrthoAdapt
        */
       sgpp::datadriven::DBMatDecompostionType dt;
       std::string decompType;
@@ -163,8 +164,8 @@ int main() {
        * Specify number of refinement steps and the max number
        * of grid points to refine each step.
        */
-      adaptConfig.numRefinements_ = 2;
-      adaptConfig.noPoints_ = 7;
+      adaptConfig.numRefinements_ = 20;
+      adaptConfig.noPoints_ = 30;
       adaptConfig.threshold_ = 0.0;  // only required for surplus refinement
 
       // initial regularization parameter lambda
@@ -206,7 +207,7 @@ int main() {
 
       // specify batch size
       // (set to 1 for processing only a single data point each iteration)
-      size_t batchSize = 1;
+      size_t batchSize = 10;
       // specify max number of passes over traininig data set
       size_t maxDataPasses = 2;
 
@@ -244,7 +245,7 @@ int main() {
     avgErrorsFolds.mult(1.0 / static_cast<double>(totalFolds));
 
     // write error evaluation to csv-file
-    /*std::ofstream output;
+    std::ofstream output;
     output.open("SGDEOnOff_avg_classification_error_"+std::to_string(numSets+1)+".csv");
     if (output.fail()) {
       std::cout << "failed to create csv file!" << std::endl;
@@ -254,6 +255,6 @@ int main() {
         output << avgErrorsFolds.get(i) << ";" << std::endl;
       }
       output.close();
-    }*/
+    }
   }
 }
