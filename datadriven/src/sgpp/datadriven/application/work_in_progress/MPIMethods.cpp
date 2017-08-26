@@ -519,14 +519,16 @@ namespace sgpp {
             int completedRequest = -1;
             MPI_Status mpiStatus{};
             std::cout << "Waiting for " << pendingMPIRequests.size() << " MPI requests to complete" << std::endl;
-            MPI_Waitany(mpiRequestStorage.size(), mpiRequestStorage.getMPIRequests(), &completedRequest,
-                        &mpiStatus);
+            int requestStatus = MPI_Waitany(mpiRequestStorage.size(), mpiRequestStorage.getMPIRequests(),
+                                            &completedRequest,
+                                            &mpiStatus);
             std::cout << "MPI request " << completedRequest << " completed"
                       << " MPI_ERROR: " << mpiStatus.MPI_ERROR
                       << " MPI SOURCE: " << mpiStatus.MPI_SOURCE
-                      << " MPI TAG: " << mpiStatus.MPI_TAG << std::endl;
-            if (completedRequest < 0 || completedRequest > mpiRequestStorage.size()) {
-                std::cout << "Error: Completed requests returned invalid index" << std::endl;
+                      << " MPI TAG: " << mpiStatus.MPI_TAG << " MPI REQUEST STATUS: " << requestStatus << std::endl;
+            if (requestStatus != MPI_SUCCESS || completedRequest < 0 || completedRequest > mpiRequestStorage.size()) {
+                std::cout << "Error: Completed requests returned invalid index " << completedRequest
+                          << " operation status " << requestStatus << std::endl;
                 exit(-1);
             }
             return completedRequest;
