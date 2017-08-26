@@ -477,6 +477,7 @@ namespace sgpp {
                           << getCurrentGridVersion(classIndex)
                           << ", additions " << refinementResult.addedGridPoints.size() << ", deletions "
                           << refinementResult.deletedGridPointsIndexes.size() << "). Waiting..." << std::endl;
+                // Do not use waitForConsistent here, we want GRID_ADDITIONS or GRID_DELETIONS, not consistency
                 MPIMethods::waitForIncomingMessageType(UPDATE_GRID);
                 std::cout << "Updates have arrived. Attempting to resume." << std::endl;
             }
@@ -736,11 +737,16 @@ namespace sgpp {
         void LearnerSGDEOnOffParallel::workBatch(Dataset dataset, size_t batchOffset, bool doCrossValidation) {
 
 
-            for (size_t classIndex = 0; classIndex < localGridVersions.size(); classIndex++) {
+            size_t classIndex = 0;
+            while (classIndex < localGridVersions.size()) {
                 if (!checkGridStateConsistent(classIndex)) {
                     std::cout << "Attempted to train from an inconsistent grid "
                               << classIndex << " version " << getCurrentGridVersion(classIndex) << std::endl;
-                    exit(-1);
+                    MPIMethods::waitForGridConsistent(classIndex);
+                    //start over, waiting might have changed other grids
+                    classIndex = 0;
+                } else {
+                    classIndex++;
                 }
             }
 

@@ -75,6 +75,8 @@ namespace sgpp {
 
             static void waitForAllMPIRequestsToComplete();
 
+            static void waitForGridConsistent(size_t classIndex);
+
         protected:
             //Pending MPI Requests
             static std::list<PendingMPIRequest> pendingMPIRequests;
