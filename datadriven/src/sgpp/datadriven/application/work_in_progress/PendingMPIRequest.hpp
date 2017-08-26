@@ -19,6 +19,7 @@ namespace sgpp {
             sgpp::datadriven::MPI_Packet *buffer;
             std::function<void(PendingMPIRequest &)> callback;
             bool disposeAfterCallback;
+            bool inbound;
 
             MPI_Request *getMPIRequestHandle();
 

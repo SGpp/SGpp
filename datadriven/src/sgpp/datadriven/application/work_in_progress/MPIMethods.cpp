@@ -51,18 +51,11 @@ namespace sgpp {
             //Setup receiving messages from master/workers
             {
                 auto *mpiPacket = new MPI_Packet;
-                auto &unicastInputRequest = createPendingMPIRequest(mpiPacket);
+                auto &unicastInputRequest = createPendingMPIRequest(mpiPacket, true);
                 unicastInputRequest.disposeAfterCallback = false;
                 unicastInputRequest.callback = [](PendingMPIRequest &request) {
                     std::cout << "Incoming MPI unicast" << std::endl;
-                    processIncomingMPICommands(request);
-
-                    std::cout << "Zeroing MPI Request" << std::endl;
-                    std::memset(request.getMPIRequestHandle(), 0, sizeof(MPI_Request));
-
-                    std::cout << "Zeroing Buffer" << std::endl;
-                    std::memset(request.buffer, 0, sizeof(MPI_Packet));
-
+                    handleIncommingRequestFromCallback(request);
 
                     std::cout << "Restarting irecv request." << std::endl;
                     MPI_Irecv(request.buffer, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE,
@@ -75,19 +68,34 @@ namespace sgpp {
 
                 std::cout << "Started listening for unicasts from any sources" << std::endl;
             }
+            //Setup receiving high priority messages from master/workers
+            {
+                auto *mpiPacket = new MPI_Packet;
+                auto &unicastInputRequest = createPendingMPIRequest(mpiPacket, true);
+                unicastInputRequest.disposeAfterCallback = false;
+                unicastInputRequest.callback = [](PendingMPIRequest &request) {
+                    std::cout << "Incoming MPI high priority unicast" << std::endl;
+                    handleIncommingRequestFromCallback(request);
+
+                    std::cout << "Restarting irecv request." << std::endl;
+                    MPI_Irecv(request.buffer, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE,
+                              MPI_ANY_TAG, MPI_COMM_WORLD, request.getMPIRequestHandle());
+                };
+
+                MPI_Irecv(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE,
+                          MPI_TAG_HIGH_PRIORITY_NO_BLOCK,
+                          MPI_COMM_WORLD,
+                          unicastInputRequest.getMPIRequestHandle());
+
+                std::cout << "Started listening for high priority unicasts from any sources" << std::endl;
+            }
             if (!isMaster()) {
                 auto *mpiPacket = new MPI_Packet;
-                auto &broadcastInputRequest = createPendingMPIRequest(mpiPacket);
+                auto &broadcastInputRequest = createPendingMPIRequest(mpiPacket, true);
                 broadcastInputRequest.disposeAfterCallback = false;
                 broadcastInputRequest.callback = [](PendingMPIRequest &request) {
                     std::cout << "Incoming MPI broadcast" << std::endl;
-                    processIncomingMPICommands(request);
-
-                    std::cout << "Zeroing MPI Request" << std::endl;
-                    std::memset(request.getMPIRequestHandle(), 0, sizeof(MPI_Request));
-
-                    std::cout << "Zeroing Buffer" << std::endl;
-                    std::memset(request.buffer, 0, sizeof(MPI_Packet));
+                    handleIncommingRequestFromCallback(request);
 
                     std::cout << "Restarting ibcast request." << std::endl;
                     MPI_Ibcast(request.buffer, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
@@ -100,6 +108,16 @@ namespace sgpp {
             }
 
             MPIMethods::learnerInstance = learnerInstance;
+        }
+
+        void MPIMethods::handleIncommingRequestFromCallback(PendingMPIRequest &request) {
+            processIncomingMPICommands(request);
+
+            std::cout << "Zeroing MPI Request" << std::endl;
+            memset(request.getMPIRequestHandle(), 0, sizeof(MPI_Request));
+
+            std::cout << "Zeroing Buffer" << std::endl;
+            memset(request.buffer, 0, sizeof(MPI_Packet));
         }
 
         void MPIMethods::synchronizeBarrier() {
@@ -255,7 +273,7 @@ namespace sgpp {
         }
 
         void MPIMethods::sendIBcast(MPI_Packet *mpiPacket) {
-            PendingMPIRequest &pendingMPIRequest = createPendingMPIRequest(mpiPacket);
+            PendingMPIRequest &pendingMPIRequest = createPendingMPIRequest(mpiPacket, false);
 
             MPI_Ibcast(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
                        MPI_COMM_WORLD, pendingMPIRequest.getMPIRequestHandle());
@@ -263,22 +281,25 @@ namespace sgpp {
             std::cout << "Ibcast request stored at " << &pendingMPIRequest << std::endl;
         }
 
-        void MPIMethods::sendISend(const int destinationRank, MPI_Packet *mpiPacket) {
-            PendingMPIRequest &pendingMPIRequest = createPendingMPIRequest(mpiPacket);
+        void MPIMethods::sendISend(const int destinationRank, MPI_Packet *mpiPacket, bool highPriority) {
+            PendingMPIRequest &pendingMPIRequest = createPendingMPIRequest(mpiPacket, false);
 
             //Point to the request in vector instead of stack
-            MPI_Isend(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, destinationRank, COMMAND_TAG,
+            MPI_Isend(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, destinationRank,
+                      highPriority ? MPI_TAG_HIGH_PRIORITY_NO_BLOCK : MPI_TAG_STANDARD_COMMAND,
                       MPI_COMM_WORLD, pendingMPIRequest.getMPIRequestHandle());
 
             std::cout << "Isend request stored at " << &pendingMPIRequest << std::endl;
         }
 
-        PendingMPIRequest &MPIMethods::createPendingMPIRequest(MPI_Packet *mpiPacket) {
+        PendingMPIRequest &MPIMethods::createPendingMPIRequest(MPI_Packet *mpiPacket, bool isInbound) {
             pendingMPIRequests.emplace_back(&mpiRequestStorage);
             PendingMPIRequest &pendingMPIRequest = pendingMPIRequests.back();
             pendingMPIRequest.disposeAfterCallback = true;
+            pendingMPIRequest.inbound = isInbound;
             pendingMPIRequest.callback = [](PendingMPIRequest &request) {
-                std::cout << "Pending MPI request " << &request << " completed." << std::endl;
+                std::cout << "Pending MPI request " << &request << " (" << (request.inbound ? "inbound" : "outbound")
+                          << ") completed." << std::endl;
             };
             pendingMPIRequest.buffer = mpiPacket;
             return pendingMPIRequest;
@@ -543,7 +564,7 @@ namespace sgpp {
                 const auto &pendingMPIRequestIterator = findPendingMPIRequest(completedRequest);
                 //Correct command ID and incoming (id < 2 for client, id < 1 for master)
                 if (pendingMPIRequestIterator->buffer->commandID == commandId &&
-                    (completedRequest < 1 || (!isMaster() && completedRequest < 2))
+                    pendingMPIRequestIterator->inbound
                     && predicate(*pendingMPIRequestIterator)) {
                     i++;
                 }
