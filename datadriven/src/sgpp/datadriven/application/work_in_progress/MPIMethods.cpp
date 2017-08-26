@@ -763,5 +763,12 @@ namespace sgpp {
             return pendingMPIRequests.size();
         }
 
+        void MPIMethods::waitForGridConsistent(size_t classIndex) {
+            while (!learnerInstance->checkGridStateConsistent(classIndex)) {
+                std::cout << "Grid " << classIndex << " is not yet consistent, waiting for update." << std::endl;
+                waitForIncomingMessageType(UPDATE_GRID);
+            }
+        }
+
     }
 }
