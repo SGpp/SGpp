@@ -159,7 +159,7 @@ namespace sgpp {
 
             bool checkGridStateConsistent(size_t classIndex);
 
-            bool isVersionConsistent(size_t version) const;
+            static bool isVersionConsistent(size_t version);
 
         protected:
 
