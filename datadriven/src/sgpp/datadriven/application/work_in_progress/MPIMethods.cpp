@@ -60,10 +60,10 @@ namespace sgpp {
 
                     std::cout << "Restarting irecv request." << std::endl;
                     MPI_Irecv(request.buffer, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE,
-                              MPI_ANY_TAG, MPI_COMM_WORLD, request.getMPIRequestHandle());
+                              MPI_TAG_STANDARD_COMMAND, MPI_COMM_WORLD, request.getMPIRequestHandle());
                 };
 
-                MPI_Irecv(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG,
+                MPI_Irecv(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE, MPI_TAG_STANDARD_COMMAND,
                           MPI_COMM_WORLD,
                           unicastInputRequest.getMPIRequestHandle());
 
@@ -250,13 +250,13 @@ namespace sgpp {
                               << " with " << networkMessage->listLength
                               << " values" << " (grid version " << networkMessage->gridversion << ", target "
                               << mpiTarget << ")" << std::endl;
-                    sendISend(mpiTarget, mpiPacket, true);
+                    PendingMPIRequest &pendingMPIRequest = sendISend(mpiTarget, mpiPacket, true);
                 } else {
                     std::cout << "Broadcasting cholesky for class " << networkMessage->classIndex
                               << " offset " << choleskyNetworkMessage->offset
                               << " with " << networkMessage->listLength
                               << " values" << " (grid version " << networkMessage->gridversion << ")" << std::endl;
-                    sendIBcast(mpiPacket);
+                    PendingMPIRequest &pendingMPIRequest = sendIBcast(mpiPacket);
                 }
             }
         }
@@ -275,16 +275,17 @@ namespace sgpp {
             sendISend(destinationRank, mpiPacket);
         }
 
-        void MPIMethods::sendIBcast(MPI_Packet *mpiPacket) {
+        PendingMPIRequest &MPIMethods::sendIBcast(MPI_Packet *mpiPacket) {
             PendingMPIRequest &pendingMPIRequest = createPendingMPIRequest(mpiPacket, false);
 
             MPI_Ibcast(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
                        MPI_COMM_WORLD, pendingMPIRequest.getMPIRequestHandle());
 
             std::cout << "Ibcast request stored at " << &pendingMPIRequest << std::endl;
+            return pendingMPIRequest;
         }
 
-        void MPIMethods::sendISend(const int destinationRank, MPI_Packet *mpiPacket, bool highPriority) {
+        PendingMPIRequest &MPIMethods::sendISend(const int destinationRank, MPI_Packet *mpiPacket, bool highPriority) {
             PendingMPIRequest &pendingMPIRequest = createPendingMPIRequest(mpiPacket, false);
 
             //Point to the request in vector instead of stack
@@ -293,6 +294,7 @@ namespace sgpp {
                       MPI_COMM_WORLD, pendingMPIRequest.getMPIRequestHandle());
 
             std::cout << "Isend request stored at " << &pendingMPIRequest << std::endl;
+            return pendingMPIRequest;
         }
 
         PendingMPIRequest &MPIMethods::createPendingMPIRequest(MPI_Packet *mpiPacket, bool isInbound) {

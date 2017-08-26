@@ -58,7 +58,7 @@ namespace sgpp {
                                                        std::list<std::vector<sgpp::datadriven::LevelIndexPair>>::iterator &iterator,
                                                        std::list<std::vector<sgpp::datadriven::LevelIndexPair>>::const_iterator &listEnd);
 
-            static void sendIBcast(MPI_Packet *mpiPacket);
+            static PendingMPIRequest & sendIBcast(MPI_Packet *mpiPacket);
 
             template<typename Iterator>
             static size_t fillBufferWithData(void *buffer, void *bufferEnd, Iterator &iterator,
@@ -102,7 +102,7 @@ namespace sgpp {
 
             static void endSynchronizingPackets();
 
-            static void sendISend(int destinationRank, MPI_Packet *mpiPacket, bool highPriority = false);
+            static PendingMPIRequest & sendISend(int destinationRank, MPI_Packet *mpiPacket, bool highPriority = false);
 
             static void runBatch(MPI_Packet *pPacket);
 
