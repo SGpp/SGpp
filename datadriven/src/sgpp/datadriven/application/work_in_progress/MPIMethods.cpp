@@ -620,7 +620,8 @@ namespace sgpp {
             void *bufferEnd = std::end(networkMessage->payload);
 
             std::cout << "Receiving " << listLength << " grid modifications for class " << classIndex
-                      << " (remote grid version " << networkMessage->gridversion << ")"
+                      << " (update type " << networkMessage->updateType << ", remote grid version "
+                      << networkMessage->gridversion << ")"
                       << std::endl;
 
             switch (networkMessage->updateType) {
@@ -683,7 +684,7 @@ namespace sgpp {
                     break;
                 }
             }
-            std::cout << "Updated refinement result " << classIndex << " ("
+            std::cout << "Updated refinement result or cholesky decomposition " << classIndex << " ("
                       << refinementResult.addedGridPoints.size()
                       << " additions, "
                       << refinementResult.deletedGridPointsIndexes.size() <<
