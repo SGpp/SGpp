@@ -66,14 +66,17 @@ namespace sgpp {
                                              bool enableCv, size_t nextCvStep) {
 
             if (!MPIMethods::isMaster()) {
-                while (workerActive || MPIMethods::getQueueSize() > 1) {
+                //TODO: Avoid queue size check
+                while (workerActive || MPIMethods::getQueueSize() > 2) {
                     std::cout << "Client looping" << std::endl;
                     MPIMethods::waitForAnyMPIRequestsToComplete();
                 }
                 std::cout << "Worker shutdown." << std::endl;
                 MPIMethods::sendCommandNoArgs(MPI_MASTER_RANK, WORKER_SHUTDOWN_SUCCESS);
-                while (MPIMethods::getQueueSize() > 1) {
-                    std::cout << "Waiting for " << MPIMethods::getQueueSize() - 1 << " operations to complete"
+                //TODO: Avoid queue size check
+                while (MPIMethods::getQueueSize() > 2) {
+                    //TODO: Avoid queue size check
+                    std::cout << "Waiting for " << MPIMethods::getQueueSize() - 2 << " operations to complete"
                               << std::endl;
                     MPIMethods::waitForAnyMPIRequestsToComplete();
                 }
@@ -222,9 +225,10 @@ namespace sgpp {
         }
 
         bool LearnerSGDEOnOffParallel::checkReadyForRefinement() const {
-            // Queue size equal to one
+            // Queue size equal to two
             // All local grids in a consistent state
-            return MPIMethods::getQueueSize() <= 1
+            //TODO: Avoid a queue size check
+            return MPIMethods::getQueueSize() <= 2
                    && std::all_of(localGridVersions.begin(), localGridVersions.end(),
                                   [](size_t version) { return isVersionConsistent(version); });
         }
