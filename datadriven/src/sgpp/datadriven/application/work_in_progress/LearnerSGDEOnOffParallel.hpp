@@ -200,6 +200,10 @@ namespace sgpp {
             size_t assignBatchToWorker(size_t batchOffset, bool doCrossValidation);
 
             bool checkReadyForRefinement() const;
+
+            bool checkGridStateConsistent(size_t classIndex);
+
+            bool isVersionConsistent(size_t version) const;
         };
     }   //namespace datadriven
 }  // namespace sgpp

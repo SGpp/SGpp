@@ -433,8 +433,9 @@ namespace sgpp {
             else {
 
                 size_t currentGridVersion = getCurrentGridVersion(classIndex);
-                if (currentGridVersion == 0) {
-                    std::cout << "Attempting to increment grid version on non consistent grid! Fail." << std::endl;
+                if (!checkGridStateConsistent(classIndex)) {
+                    std::cout << "Attempting to increment grid version on non consistent grid " << classIndex
+                              << " version " << currentGridVersion << std::endl;
                     exit(-1);
                 }
 
@@ -736,7 +737,7 @@ namespace sgpp {
 
 
             if (std::any_of(localGridVersions.begin(), localGridVersions.end(),
-                            [](size_t version) { return version == 0; })) {
+                            [](size_t version) { return !isVersionConsistent(version); })) {
                 std::cout << "Attempted to train from an inconsistent batch #"
                           << *std::find(localGridVersions.begin(), localGridVersions.end(), 0) << std::endl;
                 exit(-1);
@@ -767,6 +768,8 @@ namespace sgpp {
             std::cout << "Completed work batch " << batchOffset << " requested by master." << std::endl;
         }
 
+        bool LearnerSGDEOnOffParallel::isVersionConsistent(size_t version) const { return version >= 10; }
+
         size_t
         LearnerSGDEOnOffParallel::assignBatchToWorker(size_t batchOffset, bool doCrossValidation) {
             AssignTaskResult assignTaskResult{};
@@ -785,6 +788,12 @@ namespace sgpp {
             std::cout << "Remote alpha sum " << classIndex << " is "
                       << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;
             std::cout << "Batch size is " << batchSize << std::endl;
+
+            if (!isVersionConsistent(gridVersion)) {
+                std::cout << "Received merge request with inconsistent grid " << classIndex << " version "
+                          << gridVersion << std::endl;
+                exit(-1);
+            }
 
             if (gridVersion != getCurrentGridVersion(classIndex)) {
                 std::cout << "Received merge grid request with incorrect grid version!"
@@ -856,6 +865,10 @@ namespace sgpp {
 
         size_t LearnerSGDEOnOffParallel::getCurrentGridVersion(size_t classIndex) {
             return localGridVersions[classIndex];
+        }
+
+        bool LearnerSGDEOnOffParallel::checkGridStateConsistent(size_t classIndex) {
+            return isVersionConsistent(localGridVersions[classIndex]);
         }
 
         void LearnerSGDEOnOffParallel::setLocalGridVersion(size_t classIndex, size_t gridVersion) {
