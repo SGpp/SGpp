@@ -248,7 +248,7 @@ namespace sgpp {
                               << " with " << networkMessage->listLength
                               << " values" << " (grid version " << networkMessage->gridversion << ", target "
                               << mpiTarget << ")" << std::endl;
-                    sendISend(mpiTarget, mpiPacket);
+                    sendISend(mpiTarget, mpiPacket, true);
                 } else {
                     std::cout << "Broadcasting cholesky for class " << networkMessage->classIndex
                               << " with " << networkMessage->listLength
