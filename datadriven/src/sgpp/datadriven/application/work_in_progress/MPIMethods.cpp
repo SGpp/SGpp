@@ -671,14 +671,14 @@ namespace sgpp {
 
                     auto *bufferIterator = (double *) choleskyNetworkMessage->payload;
                     while (bufferIterator < bufferEnd && processedPoints < listLength) {
-                        std::cout << "Copy from " << &*bufferIterator << " to "
-                                  << (choleskyNetworkMessage->offset + processedPoints) << std::endl;
+//                        std::cout << "Copy from " << &*bufferIterator << " to "
+//                                  << (choleskyNetworkMessage->offset + processedPoints) << std::endl;
                         choleskyDecomposition[choleskyNetworkMessage->offset + processedPoints] = *bufferIterator;
                         bufferIterator++;
                         processedPoints++;
                     }
 
-                    std::cout << "Copy successful" << std::endl;
+//                    std::cout << "Copy successful" << std::endl;
                     if (isMaster() &&
                         choleskyNetworkMessage->offset + processedPoints == choleskyDecomposition.size()) {
                         learnerInstance->setLocalGridVersion(classIndex, networkMessage->gridversion);
