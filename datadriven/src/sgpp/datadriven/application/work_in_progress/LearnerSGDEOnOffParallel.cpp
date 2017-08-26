@@ -464,7 +464,7 @@ namespace sgpp {
         }
 
         void
-        LearnerSGDEOnOffParallel::computeNewCholeskyDecomposition(size_t classIndex) {
+        LearnerSGDEOnOffParallel::computeNewCholeskyDecomposition(size_t classIndex, size_t gridversion) {
 
             std::cout << "Computing cholesky modification for class " << classIndex << std::endl;
 
@@ -488,6 +488,7 @@ namespace sgpp {
             dbMatOfflineChol.choleskyModification(refinementResult.addedGridPoints.size(),
                                                   refinementResult.deletedGridPointsIndexes, densEst->getBestLambda());
 
+            setLocalGridVersion(classIndex, gridversion);
             std::cout << "Send cholesky update to master for class " << classIndex << std::endl;
             DataMatrix &newDecomposition = dbMatOfflineChol.getDecomposedMatrix();
             MPIMethods::sendCholeskyDecomposition(classIndex, newDecomposition, 0);

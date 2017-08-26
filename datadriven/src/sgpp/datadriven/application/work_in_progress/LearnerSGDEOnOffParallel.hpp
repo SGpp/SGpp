@@ -155,7 +155,7 @@ namespace sgpp {
 
             RefinementResult &getRefinementResult(size_t classIndex);
 
-            void computeNewCholeskyDecomposition(size_t classIndex);
+            void computeNewCholeskyDecomposition(size_t classIndex, size_t gridversion);
 
             bool checkGridStateConsistent(size_t classIndex);
 

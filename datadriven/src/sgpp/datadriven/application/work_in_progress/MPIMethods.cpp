@@ -681,8 +681,8 @@ namespace sgpp {
                     runBatch(mpiPacket);
                     break;
                 case UPDATE_CHOLESKY_DECOMPOSITION: {
-                    size_t classIndex = static_cast<AssignCholeskyUpdateNetworkMessage *>(networkMessagePointer)->classIndex;
-                    learnerInstance->computeNewCholeskyDecomposition(classIndex);
+                    AssignCholeskyUpdateNetworkMessage *message = static_cast<AssignCholeskyUpdateNetworkMessage *>(networkMessagePointer);
+                    learnerInstance->computeNewCholeskyDecomposition(message->classIndex, message->gridversion);
                     break;
                 }
                 case SHUTDOWN:
@@ -753,6 +753,7 @@ namespace sgpp {
             mpiPacket->commandID = UPDATE_CHOLESKY_DECOMPOSITION;
 
             auto *message = (AssignCholeskyUpdateNetworkMessage *) mpiPacket->payload;
+            message->gridversion = learnerInstance->getCurrentGridVersion(classIndex);
             message->classIndex = classIndex;
 
             sendISend(workerID, mpiPacket);
