@@ -478,6 +478,7 @@ namespace sgpp {
                           << ", additions " << refinementResult.addedGridPoints.size() << ", deletions "
                           << refinementResult.deletedGridPointsIndexes.size() << "). Waiting..." << std::endl;
                 // Do not use waitForConsistent here, we want GRID_ADDITIONS or GRID_DELETIONS, not consistency
+
                 MPIMethods::waitForIncomingMessageType(UPDATE_GRID);
                 std::cout << "Updates have arrived. Attempting to resume." << std::endl;
             }
@@ -792,6 +793,8 @@ namespace sgpp {
 
         void LearnerSGDEOnOffParallel::mergeAlphaValues(size_t classIndex, size_t gridVersion, DataVector &dataVector,
                                                         size_t batchSize) {
+            MPIMethods::waitForGridConsistent(classIndex);
+
             std::cout << "Remote alpha sum " << classIndex << " is "
                       << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;
             std::cout << "Batch size is " << batchSize << std::endl;
@@ -842,6 +845,10 @@ namespace sgpp {
                                   << "Cannot compensate, will now fail." << std::endl;
                         exit(-1);
                     }
+                } else {
+                    std::cout << "Merge request older than one refinement cycle. Increase the refinement period."
+                              << std::endl;
+                    exit(-1);
                 }
 
             }
