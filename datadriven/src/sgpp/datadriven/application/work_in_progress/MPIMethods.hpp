@@ -15,6 +15,12 @@
 
 namespace sgpp {
     namespace datadriven {
+        struct MessageTrackRequest {
+            std::function<bool(PendingMPIRequest &)> predicate;
+            unsigned int targetHits;
+            unsigned int currentHits;
+        };
+
         class MPIMethods {
         public:
 
@@ -78,6 +84,9 @@ namespace sgpp {
             static void waitForGridConsistent(size_t classIndex);
 
         protected:
+
+            static std::list<MessageTrackRequest> messageTrackRequests;
+
             //Pending MPI Requests
             static std::list<PendingMPIRequest> pendingMPIRequests;
             static MPIRequestPool mpiRequestStorage;
@@ -114,6 +123,9 @@ namespace sgpp {
             static int executeMPIWaitAny();
 
             static void handleIncommingRequestFromCallback(PendingMPIRequest &request);
+
+            static MessageTrackRequest
+            createTrackRequest(unsigned int numOccurrences, const std::function<bool(PendingMPIRequest &)> &predicate);
         };
     }
 }
