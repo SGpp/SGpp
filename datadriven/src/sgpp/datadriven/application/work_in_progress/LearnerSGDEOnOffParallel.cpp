@@ -427,9 +427,9 @@ namespace sgpp {
                 }
                 std::cout << "New grid size is " << grid.getSize() << std::endl;
             }
-            //TODO: We might need to transfer the results here.
+                //TODO: We might need to transfer the results here.
                 //TODO: This needs to be moved and replaced by a request.
-            // apply grid changes to the Cholesky factorization
+                // apply grid changes to the Cholesky factorization
             else {
 
                 size_t currentGridVersion = getCurrentGridVersion(classIndex);
@@ -736,11 +736,12 @@ namespace sgpp {
         void LearnerSGDEOnOffParallel::workBatch(Dataset dataset, size_t batchOffset, bool doCrossValidation) {
 
 
-            if (std::any_of(localGridVersions.begin(), localGridVersions.end(),
-                            [](size_t version) { return !isVersionConsistent(version); })) {
-                std::cout << "Attempted to train from an inconsistent batch #"
-                          << *std::find(localGridVersions.begin(), localGridVersions.end(), 0) << std::endl;
-                exit(-1);
+            for (size_t classIndex = 0; classIndex < localGridVersions.size(); classIndex++) {
+                if (!checkGridStateConsistent(classIndex)) {
+                    std::cout << "Attempted to train from an inconsistent grid "
+                              << classIndex << " version " << getCurrentGridVersion(classIndex) << std::endl;
+                    exit(-1);
+                }
             }
 
             // assemble next batch
