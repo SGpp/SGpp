@@ -246,12 +246,14 @@ namespace sgpp {
 
                 if (mpiTarget != MPI_ANY_SOURCE) {
                     std::cout << "Sending cholesky for class " << networkMessage->classIndex
+                              << " offset " << choleskyNetworkMessage->offset
                               << " with " << networkMessage->listLength
                               << " values" << " (grid version " << networkMessage->gridversion << ", target "
                               << mpiTarget << ")" << std::endl;
                     sendISend(mpiTarget, mpiPacket, true);
                 } else {
                     std::cout << "Broadcasting cholesky for class " << networkMessage->classIndex
+                              << " offset " << choleskyNetworkMessage->offset
                               << " with " << networkMessage->listLength
                               << " values" << " (grid version " << networkMessage->gridversion << ")" << std::endl;
                     sendIBcast(mpiPacket);
