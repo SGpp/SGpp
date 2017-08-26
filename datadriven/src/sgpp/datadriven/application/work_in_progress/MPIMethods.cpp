@@ -79,7 +79,7 @@ namespace sgpp {
 
                     std::cout << "Restarting irecv request." << std::endl;
                     MPI_Irecv(request.buffer, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE,
-                              MPI_ANY_TAG, MPI_COMM_WORLD, request.getMPIRequestHandle());
+                              MPI_TAG_HIGH_PRIORITY_NO_BLOCK, MPI_COMM_WORLD, request.getMPIRequestHandle());
                 };
 
                 MPI_Irecv(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE,
