@@ -667,6 +667,11 @@ namespace sgpp {
                                                              choleskyNetworkMessage->matrixWidth);
                         std::cout << "Adjusted size of cholesky decomposition from " << oldSize << " to "
                                   << choleskyDecomposition.size() << std::endl;
+                    } else if (learnerInstance->getCurrentGridVersion(classIndex) != GRID_TEMPORARILY_INCONSISTENT) {
+                        std::cout
+                                << "Update with non-null offset arrived but grid version not set to inconsistent (version is "
+                                << learnerInstance->getCurrentGridVersion(classIndex) << std::endl;
+                        exit(-1);
                     }
 
                     auto *bufferIterator = (double *) choleskyNetworkMessage->payload;
