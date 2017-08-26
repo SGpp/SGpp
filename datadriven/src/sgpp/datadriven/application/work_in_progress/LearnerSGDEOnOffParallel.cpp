@@ -472,7 +472,7 @@ namespace sgpp {
 
             std::cout << "Computing cholesky modification for class " << classIndex << std::endl;
 
-            // The first check is to ensure that all segments of an update have been received (intermediate segments set grid version to 0)
+            // The first check is to ensure that all segments of an update have been received (intermediate segments set grid version to TEMPORARILY_INCONSISTENT)
             RefinementResult &refinementResult = (*vectorRefinementResults)[classIndex];
             while (getCurrentGridVersion(classIndex) == GRID_TEMPORARILY_INCONSISTENT || (
                     refinementResult.deletedGridPointsIndexes.empty() &&
