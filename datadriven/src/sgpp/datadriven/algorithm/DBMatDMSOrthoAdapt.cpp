@@ -77,6 +77,12 @@ void DBMatDMSOrthoAdapt::solve(sgpp::base::DataMatrix& T_inv, sgpp::base::DataMa
                    1.0, &alpha_view.matrix);  // gsl_blas allows to add to the target after mult.
   }
 
+  // DEBUG: print alpha after solving
+  // std::cout << "alpha after ortho_adapt_solve: \n";
+  // for (size_t i = 0; i < alpha.getSize(); i++) {
+  //   std::cout << alpha.get(i) << "   ";
+  // }
+  // std::cout << std::endl;
   gsl_matrix_free(interim2);
 }
 }  // namespace datadriven
