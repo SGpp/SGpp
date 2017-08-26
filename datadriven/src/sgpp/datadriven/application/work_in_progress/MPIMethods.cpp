@@ -544,7 +544,7 @@ namespace sgpp {
                 //Correct command ID and incoming (id < 2 for client, id < 1 for master)
                 if (pendingMPIRequestIterator->buffer->commandID == commandId &&
                     (completedRequest < 1 || (!isMaster() && completedRequest < 2))
-                    && predicate) {
+                    && predicate(*pendingMPIRequestIterator)) {
                     i++;
                 }
                 processCompletedMPIRequest(pendingMPIRequestIterator);
