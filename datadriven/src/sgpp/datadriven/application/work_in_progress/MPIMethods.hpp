@@ -124,7 +124,7 @@ namespace sgpp {
 
             static void handleIncommingRequestFromCallback(PendingMPIRequest &request);
 
-            static MessageTrackRequest
+            static std::list<sgpp::datadriven::MessageTrackRequest>::iterator
             createTrackRequest(unsigned int numOccurrences, const std::function<bool(PendingMPIRequest &)> &predicate);
         };
     }

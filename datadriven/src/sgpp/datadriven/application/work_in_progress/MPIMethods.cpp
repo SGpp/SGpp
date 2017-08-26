@@ -22,7 +22,7 @@ namespace sgpp {
         MPIRequestPool MPIMethods::mpiRequestStorage;
         int MPIMethods::mpiWorldSize = -1;
         LearnerSGDEOnOffParallel *MPIMethods::learnerInstance;
-        std::vector<MessageTrackRequest> MPIMethods::messageTrackRequests;
+        std::list<MessageTrackRequest> MPIMethods::messageTrackRequests;
 
 
         bool MPIMethods::isMaster() {
@@ -568,33 +568,33 @@ namespace sgpp {
         void MPIMethods::waitForIncomingMessageType(MPI_COMMAND_ID commandId, size_t numOccurrences,
                                                     std::function<bool(PendingMPIRequest &)> predicate) {
             std::cout << "Waiting for " << numOccurrences << " messages of type " << commandId << std::endl;
-            MessageTrackRequest trackRequest = createTrackRequest(numOccurrences, [commandId, predicate](
+            auto trackRequest = createTrackRequest(numOccurrences, [commandId, predicate](
                     PendingMPIRequest &mpiRequest) {
                 return mpiRequest.inbound && mpiRequest.buffer->commandID == commandId && predicate(mpiRequest);
             });
 
-            while (trackRequest.currentHits < trackRequest.targetHits) {
+            while (trackRequest->currentHits < trackRequest->targetHits) {
                 int completedRequest = executeMPIWaitAny();
                 const auto &pendingMPIRequestIterator = findPendingMPIRequest(completedRequest);
 
                 processCompletedMPIRequest(pendingMPIRequestIterator);
-                std::cout << "Received " << trackRequest.currentHits << "/" << trackRequest.targetHits
+                std::cout << "Received " << trackRequest->currentHits << "/" << trackRequest->targetHits
                           << " messages of type " << commandId
                           << std::endl;
             }
 
-            std::cout << "Received all " << trackRequest.targetHits << " messages of type " << commandId << std::endl;
-            messageTrackRequests.remove(trackRequest);
+            std::cout << "Received all " << trackRequest->targetHits << " messages of type " << commandId << std::endl;
+            messageTrackRequests.erase(trackRequest);
         }
 
-        MessageTrackRequest
+        std::list<sgpp::datadriven::MessageTrackRequest>::iterator
         MPIMethods::createTrackRequest(unsigned int numOccurrences,
                                        const std::function<bool(PendingMPIRequest &)> &predicate) {
-            messageTrackRequests.emplace_back();
-            MessageTrackRequest &trackRequest = messageTrackRequests.back();
-            trackRequest.currentHits = 0;
-            trackRequest.predicate = predicate;
-            trackRequest.targetHits = numOccurrences;
+            messageTrackRequests.emplace_front();
+            auto trackRequest = messageTrackRequests.begin();
+            trackRequest->currentHits = 0;
+            trackRequest->predicate = predicate;
+            trackRequest->targetHits = numOccurrences;
             return trackRequest;
         }
 
