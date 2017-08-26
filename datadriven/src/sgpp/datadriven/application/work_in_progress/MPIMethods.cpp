@@ -683,6 +683,11 @@ namespace sgpp {
                     }
                     break;
                 }
+                default: {
+                    std::cout << "Received an update request with unknown id " << networkMessage->updateType
+                              << std::endl;
+                    exit(-1);
+                }
             }
             std::cout << "Updated refinement result or cholesky decomposition " << classIndex << " ("
                       << refinementResult.addedGridPoints.size()
