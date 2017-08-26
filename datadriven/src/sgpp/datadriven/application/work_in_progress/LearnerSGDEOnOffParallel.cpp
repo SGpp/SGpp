@@ -226,7 +226,7 @@ namespace sgpp {
             // All local grids in a consistent state
             return MPIMethods::getQueueSize() <= 1
                    && std::all_of(localGridVersions.begin(), localGridVersions.end(),
-                                  [](size_t gridVersion) { return gridVersion != 0; });
+                                  [](size_t version) { return isVersionConsistent(version); });
         }
 
         size_t LearnerSGDEOnOffParallel::getDimensionality() {
@@ -307,7 +307,7 @@ namespace sgpp {
                 //Ensure it is a cholesky packet and the last in the sequence
                 std::cout << "Test packet grid version " << refinementResultNetworkMessage->gridversion
                           << ", update type " << refinementResultNetworkMessage->updateType << std::endl;
-                return refinementResultNetworkMessage->gridversion != 0 &&
+                return isVersionConsistent(refinementResultNetworkMessage->gridversion) &&
                        refinementResultNetworkMessage->updateType == CHOLESKY_DECOMPOSITION;
             });
         }
@@ -777,7 +777,7 @@ namespace sgpp {
             std::cout << "Completed work batch " << batchOffset << " requested by master." << std::endl;
         }
 
-        bool LearnerSGDEOnOffParallel::isVersionConsistent(size_t version) const { return version >= 10; }
+        bool LearnerSGDEOnOffParallel::isVersionConsistent(size_t version) { return version >= 10; }
 
         size_t
         LearnerSGDEOnOffParallel::assignBatchToWorker(size_t batchOffset, bool doCrossValidation) {
