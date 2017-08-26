@@ -216,7 +216,7 @@ namespace sgpp {
 
             shutdown();
 
-            std::cout << "#Training finished" << std::endl;
+            std::cout << "#Training finished (This is MASTER)" << std::endl;
 
             error = 1.0 - getAccuracy();
 
