@@ -645,7 +645,10 @@ namespace sgpp {
                       " deletions)" << std::endl;
 
             //If this is not the last message in a series (gridversion inconsistent), then don't update variables yet
-            if (learnerInstance->isVersionConsistent(networkMessage->gridversion) && !isMaster()) {
+            //TODO: What if only deleted points?
+            if (networkMessage->gridversion == GRID_RECEIVED_ADDED_POINTS && !isMaster()) {
+                std::cout << "Updating class variables as grid is now consistent with version "
+                          << networkMessage->gridversion << std::endl;
                 learnerInstance->updateClassVariablesAfterRefinement(classIndex, &refinementResult,
                                                                      learnerInstance->getDensityFunctions()[classIndex].first.get());
             }
