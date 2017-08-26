@@ -93,14 +93,14 @@ namespace sgpp {
 
             static void endSynchronizingPackets();
 
-            static void sendISend(int destinationRank, MPI_Packet *mpiPacket);
+            static void sendISend(int destinationRank, MPI_Packet *mpiPacket, bool highPriority = false);
 
             static void runBatch(MPI_Packet *pPacket);
 
             static size_t
             receiveMergeGridNetworkMessage(MergeGridNetworkMessage &networkMessage);
 
-            static PendingMPIRequest &createPendingMPIRequest(MPI_Packet *mpiPacket);
+            static PendingMPIRequest &createPendingMPIRequest(MPI_Packet *mpiPacket, bool isInbound);
 
             static void
             processCompletedMPIRequest(
@@ -112,6 +112,8 @@ namespace sgpp {
             void sendGridComponentsUpdate(std::vector<RefinementResult> *refinementResults);
 
             static int executeMPIWaitAny();
+
+            static void handleIncommingRequestFromCallback(PendingMPIRequest &request);
         };
     }
 }

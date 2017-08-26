@@ -8,6 +8,8 @@
 #define MPI_PACKET_MAX_PAYLOAD_SIZE 4096
 #define MPI_MASTER_RANK 0
 #define MPI_MAX_PROCESSOR_NAME_LENGTH 256
+#define MPI_TAG_HIGH_PRIORITY_NO_BLOCK 42
+#define MPI_TAG_STANDARD_COMMAND 41
 
 #define REFINENEMT_RESULT_PAYLOAD_SIZE (MPI_PACKET_MAX_PAYLOAD_SIZE\
                                    - 3 * sizeof(unsigned long)\
@@ -29,10 +31,6 @@ namespace sgpp {
             UPDATE_CHOLESKY_DECOMPOSITION,
             SHUTDOWN,
             WORKER_SHUTDOWN_SUCCESS
-        };
-
-        enum MPI_COMMAND_TAG {
-            COMMAND_TAG,
         };
 
         struct MPI_Packet {
