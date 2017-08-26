@@ -22,6 +22,7 @@ namespace sgpp {
         MPIRequestPool MPIMethods::mpiRequestStorage;
         int MPIMethods::mpiWorldSize = -1;
         LearnerSGDEOnOffParallel *MPIMethods::learnerInstance;
+        std::vector<MessageTrackRequest> MPIMethods::messageTrackRequests;
 
 
         bool MPIMethods::isMaster() {
@@ -500,6 +501,14 @@ namespace sgpp {
 
         void MPIMethods::processCompletedMPIRequest(
                 const std::list<sgpp::datadriven::PendingMPIRequest>::iterator &pendingMPIRequestIterator) {
+
+            std::cout << "Updating " << messageTrackRequests.size() << " track requests" << std::endl;
+            for (MessageTrackRequest &trackRequest : messageTrackRequests) {
+                if (trackRequest.predicate(*pendingMPIRequestIterator)) {
+                    trackRequest.currentHits++;
+                }
+            }
+
             std::cout << "Executing callback" << std::endl;
             //Execute the callback
             pendingMPIRequestIterator->callback(*pendingMPIRequestIterator);
@@ -555,25 +564,38 @@ namespace sgpp {
             return completedRequest;
         }
 
+        //TODO: We need a hook that will count the messages processed in sub-requests.
         void MPIMethods::waitForIncomingMessageType(MPI_COMMAND_ID commandId, size_t numOccurrences,
                                                     std::function<bool(PendingMPIRequest &)> predicate) {
             std::cout << "Waiting for " << numOccurrences << " messages of type " << commandId << std::endl;
-            size_t i = 0;
-            while (i < numOccurrences) {
+            MessageTrackRequest trackRequest = createTrackRequest(numOccurrences, [commandId, predicate](
+                    PendingMPIRequest &mpiRequest) {
+                return mpiRequest.inbound && mpiRequest.buffer->commandID == commandId && predicate(mpiRequest);
+            });
+
+            while (trackRequest.currentHits < trackRequest.targetHits) {
                 int completedRequest = executeMPIWaitAny();
                 const auto &pendingMPIRequestIterator = findPendingMPIRequest(completedRequest);
-                //Correct command ID and incoming (id < 2 for client, id < 1 for master)
-                if (pendingMPIRequestIterator->buffer->commandID == commandId &&
-                    pendingMPIRequestIterator->inbound
-                    && predicate(*pendingMPIRequestIterator)) {
-                    i++;
-                }
+
                 processCompletedMPIRequest(pendingMPIRequestIterator);
-                std::cout << "Received " << i << "/" << numOccurrences << " messages of type " << commandId
+                std::cout << "Received " << trackRequest.currentHits << "/" << trackRequest.targetHits
+                          << " messages of type " << commandId
                           << std::endl;
             }
 
-            std::cout << "Received all " << numOccurrences << " messages of type " << commandId << std::endl;
+            std::cout << "Received all " << trackRequest.targetHits << " messages of type " << commandId << std::endl;
+            messageTrackRequests.remove(trackRequest);
+        }
+
+        MessageTrackRequest
+        MPIMethods::createTrackRequest(unsigned int numOccurrences,
+                                       const std::function<bool(PendingMPIRequest &)> &predicate) {
+            messageTrackRequests.emplace_back();
+            MessageTrackRequest &trackRequest = messageTrackRequests.back();
+            trackRequest.currentHits = 0;
+            trackRequest.predicate = predicate;
+            trackRequest.targetHits = numOccurrences;
+            return trackRequest;
         }
 
         std::list<PendingMPIRequest>::iterator MPIMethods::findPendingMPIRequest(int completedRequestIndex) {
