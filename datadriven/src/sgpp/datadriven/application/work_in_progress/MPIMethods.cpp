@@ -662,17 +662,23 @@ namespace sgpp {
                               << std::endl;
 
                     if (choleskyNetworkMessage->offset == 0) {
+                        size_t oldSize = choleskyDecomposition.size();
                         choleskyDecomposition.resizeRowsCols(choleskyNetworkMessage->matrixHeight,
                                                              choleskyNetworkMessage->matrixWidth);
+                        std::cout << "Adjusted size of cholesky decomposition from " << oldSize << " to "
+                                  << choleskyDecomposition.size() << std::endl;
                     }
 
                     auto *bufferIterator = (double *) choleskyNetworkMessage->payload;
                     while (bufferIterator < bufferEnd && processedPoints < listLength) {
+                        std::cout << "Copy from " << &*bufferIterator << " to "
+                                  << (choleskyNetworkMessage->offset + processedPoints) << std::endl;
                         choleskyDecomposition[choleskyNetworkMessage->offset + processedPoints] = *bufferIterator;
                         bufferIterator++;
                         processedPoints++;
                     }
 
+                    std::cout << "Copy successful" << std::endl;
                     if (isMaster() &&
                         choleskyNetworkMessage->offset + processedPoints == choleskyDecomposition.size()) {
                         learnerInstance->setLocalGridVersion(classIndex, networkMessage->gridversion);
