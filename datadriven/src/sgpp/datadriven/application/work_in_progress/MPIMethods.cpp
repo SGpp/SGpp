@@ -769,7 +769,7 @@ namespace sgpp {
         void MPIMethods::waitForGridConsistent(size_t classIndex) {
             while (!learnerInstance->checkGridStateConsistent(classIndex)) {
                 std::cout << "Grid " << classIndex << " is not yet consistent (version "
-                          << learnerInstance->getCurrentGridVersion(classIndex) << ")f, waiting for update."
+                          << learnerInstance->getCurrentGridVersion(classIndex) << ") waiting for update."
                           << std::endl;
                 waitForIncomingMessageType(UPDATE_GRID);
             }
