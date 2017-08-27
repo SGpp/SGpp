@@ -401,8 +401,8 @@ namespace sgpp {
             base::Grid &grid = densEst->getOfflineObject().getGrid();
 
             if (!MPIMethods::isMaster()) {
-                std::cout << "Applying refinement result from master" << std::endl;
-                std::cout << "Old grid size is " << grid.getSize() << std::endl;
+                std::cout << "Applying refinement result class " << classIndex << " from master" << std::endl;
+                std::cout << "Old grid " << classIndex << " size is " << grid.getSize() << std::endl;
 
 
                 size_t numDimensions = getDimensionality();
@@ -438,7 +438,7 @@ namespace sgpp {
                 grid.getStorage().recalcLeafProperty();
 
                 size_t sizeAfterAdditions = grid.getSize();
-                std::cout << "New grid size is " << sizeAfterAdditions << std::endl;
+                std::cout << "New grid " << classIndex << " size is " << sizeAfterAdditions << std::endl;
                 if (sizeAfterAdditions - sizeBeforeAdditions != refinementResult->addedGridPoints.size()) {
                     std::cout << "Grid growth not correlated to refinement results (grid delta "
                               << sizeAfterAdditions - sizeBeforeAdditions << ", additions "
@@ -478,7 +478,7 @@ namespace sgpp {
             size_t oldSize = densEst->getAlpha().size();
             densEst->updateAlpha(&(refinementResult->deletedGridPointsIndexes),
                                  refinementResult->addedGridPoints.size());
-            std::cout << "Updated alpha vector (old size " << oldSize << ", new size " <<
+            std::cout << "Updated alpha vector " << classIndex << " (old size " << oldSize << ", new size " <<
                       densEst->getAlpha().size() << ")" << std::endl;
         }
 
@@ -717,25 +717,26 @@ namespace sgpp {
 
                 if ((*p.first).getNrows() > 0) {
                     // update density function for current class
-                    std::cout << "Calling compute density function" << std::endl;
+                    std::cout << "Calling compute density function class " << i << std::endl;
                     RefinementResult &classRefinementResult = (*vectorRefinementResults)[i];
                     densityFunctions[i].first->computeDensityFunction(
                             *p.first, true, doCrossValidation, &classRefinementResult.deletedGridPointsIndexes,
                             classRefinementResult.addedGridPoints.size());
-                    std::cout << "Clearing the refinement results" << std::endl;
+                    std::cout << "Clearing the refinement results class " << i << std::endl;
                     classRefinementResult.deletedGridPointsIndexes.clear();
                     classRefinementResult.addedGridPoints.clear();
 
                     if (usePrior) {
+                        //TODO: This probably doesn't work
                         double newPrior = ((this->prior[p.second] * static_cast<double>(processedPoints)) +
                                            static_cast<double>(p.first->getSize())) /
                                           (static_cast<double>(numberOfDataPoints) +
                                            static_cast<double>(processedPoints));
-                        std::cout << "Setting prior[" << p.second << "] to " << newPrior << std::endl;
+                        D(std::cout << "Setting prior[" << p.second << "] to " << newPrior << std::endl;)
                         this->prior[p.second] =
                                 newPrior;
                     } else {
-                        std::cout << "Setting prior[" << p.second << "] to 1.0" << std::endl;
+                        D(std::cout << "Setting prior[" << p.second << "] to 1.0" << std::endl;)
                         this->prior[p.second] = 1.;
                     }
                 }
@@ -775,7 +776,8 @@ namespace sgpp {
             std::cout << "Learning with batch of size " << dataset.getNumberInstances()
                       << " at offset " << batchOffset << std::endl;
             assembleNextBatchData(&dataset, &batchOffset);
-            std::cout << "Batch " << batchOffset << " assembled, starting with training." << std::endl;
+            std::cout << "Batch of size " << dataset.getNumberInstances() << " assembled, starting with training."
+                      << std::endl;
 
             // train the model with current batch
             train(dataset, doCrossValidation, vectorRefinementResults);
