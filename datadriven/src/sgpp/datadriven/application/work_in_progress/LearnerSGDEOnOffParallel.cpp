@@ -387,8 +387,7 @@ namespace sgpp {
 
                 refinementResult->addedGridPoints.push_back(levelIndexVector);
 
-//                std::cout << "Exported grid point " << gridPoint.getHash()
-//                          << std::endl;
+                D(printPoint(gridPoint))
             }
 
             updateClassVariablesAfterRefinement(classIndex, refinementResult, densEst);
