@@ -244,17 +244,17 @@ namespace sgpp {
 
 
                 if (mpiTarget != MPI_ANY_SOURCE) {
-                    std::cout << "Sending cholesky for class " << networkMessage->classIndex
-                              << " offset " << choleskyNetworkMessage->offset
-                              << " with " << networkMessage->listLength
-                              << " values" << " (grid version " << networkMessage->gridversion << ", target "
-                              << mpiTarget << ")" << std::endl;
+                    D(std::cout << "Sending cholesky for class " << networkMessage->classIndex
+                                << " offset " << choleskyNetworkMessage->offset
+                                << " with " << networkMessage->listLength
+                                << " values" << " (grid version " << networkMessage->gridversion << ", target "
+                                << mpiTarget << ")" << std::endl;)
                     PendingMPIRequest &pendingMPIRequest = sendISend(mpiTarget, mpiPacket, true);
                 } else {
-                    std::cout << "Broadcasting cholesky for class " << networkMessage->classIndex
-                              << " offset " << choleskyNetworkMessage->offset
-                              << " with " << networkMessage->listLength
-                              << " values" << " (grid version " << networkMessage->gridversion << ")" << std::endl;
+                    D(std::cout << "Broadcasting cholesky for class " << networkMessage->classIndex
+                                << " offset " << choleskyNetworkMessage->offset
+                                << " with " << networkMessage->listLength
+                                << " values" << " (grid version " << networkMessage->gridversion << ")" << std::endl;)
                     PendingMPIRequest &pendingMPIRequest = sendIBcast(mpiPacket);
                 }
             }
@@ -570,7 +570,7 @@ namespace sgpp {
         //TODO: We need a hook that will count the messages processed in sub-requests.
         void MPIMethods::waitForIncomingMessageType(MPI_COMMAND_ID commandId, size_t numOccurrences,
                                                     std::function<bool(PendingMPIRequest &)> predicate) {
-            std::cout << "Waiting for " << numOccurrences << " messages of type " << commandId << std::endl;
+            D(std::cout << "Waiting for " << numOccurrences << " messages of type " << commandId << std::endl;)
             auto trackRequest = createTrackRequest(numOccurrences, [commandId, predicate](
                     PendingMPIRequest &mpiRequest) {
                 return mpiRequest.inbound && mpiRequest.buffer->commandID == commandId && predicate(mpiRequest);
@@ -581,12 +581,13 @@ namespace sgpp {
                 const auto &pendingMPIRequestIterator = findPendingMPIRequest(completedRequest);
 
                 processCompletedMPIRequest(pendingMPIRequestIterator);
-                std::cout << "Received " << trackRequest->currentHits << "/" << trackRequest->targetHits
-                          << " messages of type " << commandId
-                          << std::endl;
+                D(std::cout << "Received " << trackRequest->currentHits << "/" << trackRequest->targetHits
+                            << " messages of type " << commandId
+                            << std::endl;)
             }
 
-            std::cout << "Received all " << trackRequest->targetHits << " messages of type " << commandId << std::endl;
+            D(std::cout << "Received all " << trackRequest->targetHits << " messages of type " << commandId
+                        << std::endl;)
             messageTrackRequests.erase(trackRequest);
         }
 
@@ -703,16 +704,16 @@ namespace sgpp {
                     exit(-1);
                 }
             }
-            std::cout << "Updated refinement result or cholesky decomposition " << classIndex << " ("
-                      << refinementResult.addedGridPoints.size()
-                      << " additions, "
-                      << refinementResult.deletedGridPointsIndexes.size() <<
-                      " deletions)" << std::endl;
+            D(std::cout << "Updated refinement result or cholesky decomposition " << classIndex << " ("
+                        << refinementResult.addedGridPoints.size()
+                        << " additions, "
+                        << refinementResult.deletedGridPointsIndexes.size() <<
+                        " deletions)" << std::endl;)
 
             //If this is not the last message in a series (gridversion inconsistent), then don't update variables yet
             //TODO: What if only deleted points?
             if (networkMessage->gridversion == GRID_RECEIVED_ADDED_POINTS && !isMaster()) {
-                std::cout << "Updating class variables as grid is now consistent with version "
+                std::cout << "Updating class " << classIndex << " variables as grid is now consistent with version "
                           << networkMessage->gridversion << std::endl;
                 learnerInstance->updateClassVariablesAfterRefinement(classIndex, &refinementResult,
                                                                      learnerInstance->getDensityFunctions()[classIndex].first.get());
