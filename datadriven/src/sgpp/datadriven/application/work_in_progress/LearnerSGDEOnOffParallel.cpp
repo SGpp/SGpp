@@ -409,6 +409,7 @@ namespace sgpp {
 
                 //Add grid points added on master thread
                 for (LevelIndexVector &levelIndexVector : refinementResult->addedGridPoints) {
+                    size_t sizeBeforePoint = grid.getSize();
                     auto *gridPoint = new sgpp::base::HashGridStorage::point_type(numDimensions);
                     //TODO: What happens when other points are changed (ie Leaf boolean etc)
 
@@ -424,6 +425,13 @@ namespace sgpp {
 //                    std::cout << "Inserted grid point " << gridPoint->getHash() << " into grid (new size "
 //                              << grid.getSize()
 //                              << ")" << std::endl;
+                    size_t sizeAfterPoint = grid.getSize();
+                    if (sizeAfterPoint - sizeBeforePoint != 1) {
+                        std::cout << "Inserted grid point but size change incorrect (old " << sizeBeforePoint
+                                  << ", new " << sizeAfterPoint << "), point " << gridPoint->getHash() << std::endl;
+
+                        exit(-1);
+                    }
                 }
                 size_t sizeAfterAdditions = grid.getSize();
                 std::cout << "New grid size is " << sizeAfterAdditions << std::endl;
