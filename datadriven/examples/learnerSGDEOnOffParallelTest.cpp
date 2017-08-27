@@ -18,6 +18,7 @@
 #include <sgpp/datadriven/application/work_in_progress/RoundRobinScheduler.hpp>
 #include <chrono>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
+#include <sgpp/datadriven/application/work_in_progress/MPIMethods.hpp>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -248,8 +249,14 @@ int main(int argc, char *argv[]) {
      * Accuracy on test data.
      */
     double acc = learner.getAccuracy();
-    std::cout << "# accuracy (test data): " << acc << std::endl;
-    std::cout << "# delta time training: " << deltaTime << std::endl;
+    if (sgpp::datadriven::MPIMethods::isMaster()) {
+        std::cout << "# accuracy (test data): " << acc << std::endl;
+        std::cout << "# delta time training: " << deltaTime << std::endl;
+
+    } else {
+        std::cout << "# accuracy (client, test data): " << acc << std::endl;
+        std::cout << "# delta time training (client): " << deltaTime << std::endl;
+    }
     // store results (classified data, grids, density functions)
     // learner.storeResults();
 
