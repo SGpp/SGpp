@@ -134,7 +134,7 @@ namespace sgpp {
                 std::cout << "#batch-size: " << batchSize << std::endl;
 
                 // iterate over total number of batches
-                while (processedPoints < dataBatch.getNumberInstances()) {
+                while (processedPoints < trainData.getNumberInstances()) {
                     std::cout << "#processing batch: " << processedPoints << "\n";
 
                     auto begin = std::chrono::high_resolution_clock::now();
