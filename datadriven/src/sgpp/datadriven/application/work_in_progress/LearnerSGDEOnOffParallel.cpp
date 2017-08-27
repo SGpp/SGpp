@@ -155,8 +155,8 @@ namespace sgpp {
                     std::cout << processedPoints << " have already been assigned." << std::endl;
 
                     while (!checkReadyForRefinement()) {
-                        std::cout << "Waiting for " << MPIMethods::getQueueSize()
-                                  << " queue operations to complete before continuing" << std::endl;
+                        D(std::cout << "Waiting for " << MPIMethods::getQueueSize()
+                                    << " queue operations to complete before continuing" << std::endl;)
                         MPIMethods::waitForAnyMPIRequestsToComplete();
                     }
 
@@ -485,22 +485,22 @@ namespace sgpp {
         void
         LearnerSGDEOnOffParallel::computeNewCholeskyDecomposition(size_t classIndex, size_t gridversion) {
 
-            std::cout << "Computing cholesky modification for class " << classIndex << std::endl;
-
             // The first check is to ensure that all segments of an update have been received (intermediate segments set grid version to TEMPORARILY_INCONSISTENT)
             RefinementResult &refinementResult = (*vectorRefinementResults)[classIndex];
             while (getCurrentGridVersion(classIndex) == GRID_TEMPORARILY_INCONSISTENT || (
                     refinementResult.deletedGridPointsIndexes.empty() &&
                     refinementResult.addedGridPoints.empty())) {
-                std::cout << "Refinement results have not arrived yet (grid version "
-                          << getCurrentGridVersion(classIndex)
-                          << ", additions " << refinementResult.addedGridPoints.size() << ", deletions "
-                          << refinementResult.deletedGridPointsIndexes.size() << "). Waiting..." << std::endl;
+                D(std::cout << "Refinement results have not arrived yet (grid version "
+                            << getCurrentGridVersion(classIndex)
+                            << ", additions " << refinementResult.addedGridPoints.size() << ", deletions "
+                            << refinementResult.deletedGridPointsIndexes.size() << "). Waiting..." << std::endl;)
                 // Do not use waitForConsistent here, we want GRID_ADDITIONS or GRID_DELETIONS, not consistency
 
                 MPIMethods::waitForIncomingMessageType(UPDATE_GRID);
                 D(std::cout << "Updates have arrived. Attempting to resume." << std::endl;)
             }
+
+            std::cout << "Computing cholesky modification for class " << classIndex << std::endl;
 
             DBMatOnlineDE *densEst = getDensityFunctions()[classIndex].first.get();
             DBMatOfflineChol &dbMatOfflineChol = dynamic_cast<DBMatOfflineChol &>(densEst->getOfflineObject());
@@ -517,7 +517,7 @@ namespace sgpp {
 
             size_t batchSize = dataBatch->getNumberInstances();
             size_t dataDimensionality = dataBatch->getDimension();
-            std::cout << "Assembling batch of size " << batchSize << " at offset " << *batchOffset << std::endl;
+            D(std::cout << "Assembling batch of size " << batchSize << " at offset " << *batchOffset << std::endl;)
 
             for (size_t j = 0; j < batchSize; j++) {
                 base::DataVector dataPoint(dataDimensionality);
@@ -528,7 +528,7 @@ namespace sgpp {
             }
             *batchOffset += batchSize;
 
-            std::cout << "Finished assembling batch" << std::endl;
+            D(std::cout << "Finished assembling batch" << std::endl;)
         }
 
         bool LearnerSGDEOnOffParallel::checkRefinementNecessary(const std::string &refMonitor, size_t refPeriod,
@@ -657,18 +657,18 @@ namespace sgpp {
 
             std::map<double, int> classIndices;  // maps class labels to indices
 
-            std::cout << "Allocating class matrices" << std::endl;
+            D(std::cout << "Allocating class matrices" << std::endl;)
             allocateClassMatrices(dim, trainDataClasses, classIndices);
 
-            std::cout << "Splitting batch into classes" << std::endl;
+            D(std::cout << "Splitting batch into classes" << std::endl;)
             // split the data into the different classes:
             splitBatchIntoClasses(dataset, dim, trainDataClasses, classIndices);
 
-            std::cout << "Computing density functions" << std::endl;
+            D(std::cout << "Computing density functions" << std::endl;)
             // compute density functions
             train(trainDataClasses, doCrossValidation, vectorRefinementResults);
 
-            std::cout << "Finished train cycle." << std::endl;
+            D(std::cout << "Finished train cycle." << std::endl;)
         }
 
         void
@@ -717,8 +717,10 @@ namespace sgpp {
 
                 if ((*p.first).getNrows() > 0) {
                     // update density function for current class
-                    std::cout << "Calling compute density function class " << i << std::endl;
                     RefinementResult &classRefinementResult = (*vectorRefinementResults)[i];
+                    std::cout << "Calling compute density function class " << i << " (refinement +"
+                              << classRefinementResult.addedGridPoints.size() << ", -"
+                              << classRefinementResult.deletedGridPointsIndexes.size() << ")" << std::endl;
                     densityFunctions[i].first->computeDensityFunction(
                             *p.first, true, doCrossValidation, &classRefinementResult.deletedGridPointsIndexes,
                             classRefinementResult.addedGridPoints.size());
@@ -776,26 +778,30 @@ namespace sgpp {
             std::cout << "Learning with batch of size " << dataset.getNumberInstances()
                       << " at offset " << batchOffset << std::endl;
             assembleNextBatchData(&dataset, &batchOffset);
-            std::cout << "Batch of size " << dataset.getNumberInstances() << " assembled, starting with training."
-                      << std::endl;
+            D(std::cout << "Batch of size " << dataset.getNumberInstances() << " assembled, starting with training."
+                        << std::endl;)
 
             // train the model with current batch
             train(dataset, doCrossValidation, vectorRefinementResults);
 
-            std::cout << "Batch " << batchOffset << " completed." << std::endl;
+            // Batch offset was already modified by assembleNextBatch
+            D(std::cout << "Batch " << batchOffset - dataset.getNumberInstances() << " completed." << std::endl;)
             auto &densityFunctions = getDensityFunctions();
             for (size_t classIndex = 0; classIndex < getNumClasses(); classIndex++) {
-                std::cout << "Updating master for class " << classIndex << std::endl;
+                std::cout << "Sending alpha values to master for class " << classIndex << " with grid version "
+                          << getCurrentGridVersion(classIndex) << std::endl;
                 auto &classDensityContainer = densityFunctions[classIndex];
                 DataVector alphaVector = classDensityContainer.first->getAlpha();
-                MPIMethods::sendMergeGridNetworkMessage(classIndex, dataset.getNumberInstances(), alphaVector);
+                MPIMethods::sendMergeGridNetworkMessage(classIndex, batchOffset, dataset.getNumberInstances(),
+                                                        alphaVector);
 
                 DataVector &dataVector = getDensityFunctions()[classIndex].first->getAlpha();
-                std::cout << "Local alpha sum " << classIndex << " is now "
-                          << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;
+                D(std::cout << "Local alpha sum " << classIndex << " is now "
+                            << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;)
 
             }
-            std::cout << "Completed work batch " << batchOffset << " requested by master." << std::endl;
+            std::cout << "Completed work batch " << batchOffset - dataset.getNumberInstances()
+                      << " requested by master." << std::endl;
         }
 
         bool LearnerSGDEOnOffParallel::isVersionConsistent(size_t version) { return version >= 10; }
@@ -814,12 +820,12 @@ namespace sgpp {
 
 
         void LearnerSGDEOnOffParallel::mergeAlphaValues(size_t classIndex, size_t gridVersion, DataVector &dataVector,
-                                                        size_t batchSize) {
+                                                        size_t batchOffset, size_t batchSize) {
             MPIMethods::waitForGridConsistent(classIndex);
 
-            std::cout << "Remote alpha sum " << classIndex << " is "
-                      << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;
-            std::cout << "Batch size is " << batchSize << std::endl;
+            D(std::cout << "Remote alpha sum " << classIndex << " is "
+                        << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;
+                      std::cout << "Batch size is " << batchSize << std::endl;)
 
             if (!isVersionConsistent(gridVersion)) {
                 std::cout << "Received merge request with inconsistent grid " << classIndex << " version "
@@ -868,7 +874,8 @@ namespace sgpp {
                         exit(-1);
                     }
                 } else {
-                    std::cout << "Merge request older than one refinement cycle. Increase the refinement period."
+                    std::cout << "Merge request " << batchOffset << ", size " << batchSize
+                              << ", older than one refinement cycle. Increase the refinement period."
                               << std::endl;
                     exit(-1);
                 }
@@ -885,18 +892,19 @@ namespace sgpp {
             }
 
             if (usePrior) {
+                //TODO: Not implemented
                 std::cout << "Use prior not implemented" << std::endl;
                 exit(-1);
             } else {
-                std::cout << "Setting prior [" << classLabels[classIndex] << "] to -1" << std::endl;
+                D(std::cout << "Setting prior [" << classLabels[classIndex] << "] to -1" << std::endl;)
                 prior[classLabels[classIndex]] = 1.0;
             }
 
-            std::cout << "Local alpha sum " << classIndex << " was "
-                      << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;
+            D(std::cout << "Local alpha sum " << classIndex << " was "
+                        << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;)
             localAlpha.add(dataVector);
-            std::cout << "Local alpha sum " << classIndex << " is now "
-                      << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;
+            D(std::cout << "Local alpha sum " << classIndex << " is now "
+                        << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;)
         }
 
         size_t LearnerSGDEOnOffParallel::getCurrentGridVersion(size_t classIndex) {
@@ -908,8 +916,8 @@ namespace sgpp {
         }
 
         void LearnerSGDEOnOffParallel::setLocalGridVersion(size_t classIndex, size_t gridVersion) {
-            std::cout << "Grid " << classIndex << " now has version " << gridVersion << " (previously "
-                      << localGridVersions[classIndex] << ")" << std::endl;
+            D(std::cout << "Grid " << classIndex << " now has version " << gridVersion << " (previously "
+                        << localGridVersions[classIndex] << ")" << std::endl;)
             localGridVersions[classIndex] = gridVersion;
         }
 

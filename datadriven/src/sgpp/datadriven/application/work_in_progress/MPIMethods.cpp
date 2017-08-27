@@ -167,9 +167,10 @@ namespace sgpp {
                     networkMessage->gridversion = (iterator == listEnd) ? GRID_RECEIVED_DELETED_INDEXES
                                                                         : GRID_TEMPORARILY_INCONSISTENT;
 
-                    std::cout << "Sending updated for class " << networkMessage->classIndex
-                              << " with " << networkMessage->listLength
-                              << " deletions" << " (grid version " << networkMessage->gridversion << ")" << std::endl;
+                    D(std::cout << "Sending updated for class " << networkMessage->classIndex
+                                << " with " << networkMessage->listLength
+                                << " deletions" << " (grid version " << networkMessage->gridversion << ")"
+                                << std::endl;)
 
                     sendIBcast(mpiPacket);
                 }
@@ -196,9 +197,10 @@ namespace sgpp {
                                                                         : GRID_TEMPORARILY_INCONSISTENT;
 
 
-                    std::cout << "Sending updated for class " << networkMessage->classIndex
-                              << " with " << networkMessage->listLength
-                              << " additions" << " (grid version " << networkMessage->gridversion << ")" << std::endl;
+                    D(std::cout << "Sending updated for class " << networkMessage->classIndex
+                                << " with " << networkMessage->listLength
+                                << " additions" << " (grid version " << networkMessage->gridversion << ")"
+                                << std::endl;)
 
                     sendIBcast(mpiPacket);
                 }
@@ -320,12 +322,13 @@ namespace sgpp {
             }
 
             learnerInstance->mergeAlphaValues(networkMessage.classIndex, networkMessage.gridversion, alphaVector,
+                                              networkMessage.batchOffset,
                                               networkMessage.batchSize);
 
-            std::cout << "Updated alpha values from network message offset " << networkMessage.payloadOffset
-                      << ", class " << networkMessage.classIndex
-                      << ", length " << networkMessage.payloadLength << ", alpha vector length "
-                      << networkMessage.alphaTotalSize << std::endl;
+            D(std::cout << "Updated alpha values from network message offset " << networkMessage.payloadOffset
+                        << ", class " << networkMessage.classIndex
+                        << ", length " << networkMessage.payloadLength << ", alpha vector length "
+                        << networkMessage.alphaTotalSize << std::endl;)
         }
 
         //TODO: This was imported from Merge
@@ -382,7 +385,8 @@ namespace sgpp {
 */
 
         size_t
-        MPIMethods::sendMergeGridNetworkMessage(size_t classIndex, size_t batchSize, base::DataVector &alphaVector) {
+        MPIMethods::sendMergeGridNetworkMessage(size_t classIndex, size_t batchOffset, size_t batchSize,
+                                                base::DataVector &alphaVector) {
             size_t offset = 0;
             auto beginIterator = alphaVector.begin();
             auto endIterator = alphaVector.end();
@@ -399,6 +403,7 @@ namespace sgpp {
                 networkMessage->gridversion = learnerInstance->getCurrentGridVersion(classIndex);
                 networkMessage->payloadOffset = offset;
                 networkMessage->batchSize = batchSize;
+                networkMessage->batchOffset = batchOffset;
                 networkMessage->alphaTotalSize = alphaVector.size();
 
                 size_t numPointsInPacket = 0;
@@ -408,12 +413,12 @@ namespace sgpp {
 
                 networkMessage->payloadLength = numPointsInPacket;
 
-                std::cout << "Sending merge for class " << classIndex
-                          << " offset " << offset
-                          << " with " << numPointsInPacket << " values"
-                          << " and grid version " << networkMessage->gridversion << std::endl;
+                D(std::cout << "Sending merge for class " << classIndex
+                            << " offset " << offset
+                            << " with " << numPointsInPacket << " values"
+                            << " and grid version " << networkMessage->gridversion << std::endl;
                 std::cout << "Alpha sum is " << std::accumulate(alphaVector.begin(), alphaVector.end(), 0.0)
-                          << std::endl;
+                          << std::endl;)
                 sendISend(MPI_MASTER_RANK, mpiPacket);
                 offset += numPointsInPacket;
             }
@@ -623,15 +628,15 @@ namespace sgpp {
             size_t processedPoints = 0;
             void *bufferEnd = std::end(networkMessage->payload);
 
-            std::cout << "Receiving " << listLength << " grid modifications for class " << classIndex
-                      << " (update type " << networkMessage->updateType << ", remote grid version "
-                      << networkMessage->gridversion << ")"
-                      << std::endl;
+            D(std::cout << "Receiving " << listLength << " grid modifications for class " << classIndex
+                        << " (update type " << networkMessage->updateType << ", remote grid version "
+                        << networkMessage->gridversion << ")"
+                        << std::endl;)
 
             if (learnerInstance->checkGridStateConsistent(classIndex) &&
                 !learnerInstance->isVersionConsistent(networkMessage->gridversion)) {
-                std::cout << "Received first message in multi segment grid update of type "
-                          << networkMessage->updateType << std::endl;
+                D(std::cout << "Received first message in multi segment grid update of type "
+                            << networkMessage->updateType << std::endl;)
                 if (!isMaster() && networkMessage->updateType != CHOLESKY_DECOMPOSITION
                     && (!refinementResult.addedGridPoints.empty() ||
                         !refinementResult.deletedGridPointsIndexes.empty())) {
@@ -676,14 +681,16 @@ namespace sgpp {
                     auto *choleskyNetworkMessage = (RefinementResultCholeskyNetworkMessage *) networkMessage->payload;
                     DataMatrix &choleskyDecomposition = learnerInstance->getDensityFunctions()[classIndex].first->getOfflineObject().getDecomposedMatrix();
 
-                    std::cout << "Receiving cholesky decomposition update at offset " << choleskyNetworkMessage->offset
-                              << std::endl;
+                    D(std::cout << "Receiving cholesky decomposition update at offset "
+                                << choleskyNetworkMessage->offset
+                                << std::endl;)
 
                     if (choleskyNetworkMessage->offset == 0) {
                         size_t oldSize = choleskyDecomposition.size();
                         choleskyDecomposition.resizeRowsCols(choleskyNetworkMessage->matrixHeight,
                                                              choleskyNetworkMessage->matrixWidth);
-                        std::cout << "Adjusted size of cholesky decomposition from " << oldSize << " to "
+                        std::cout << "Adjusted size of cholesky decomposition " << classIndex << " from " << oldSize
+                                  << " to "
                                   << choleskyDecomposition.size() << std::endl;
                     } else if (learnerInstance->getCurrentGridVersion(classIndex) != GRID_TEMPORARILY_INCONSISTENT) {
                         std::cout
@@ -737,7 +744,7 @@ namespace sgpp {
 
         void MPIMethods::processIncomingMPICommands(PendingMPIRequest &pendingMPIRequest) {
             MPI_Packet *mpiPacket = pendingMPIRequest.buffer;
-            std::cout << "Processing incoming command " << mpiPacket->commandID << std::endl;
+            D(std::cout << "Processing incoming command " << mpiPacket->commandID << std::endl;)
             void *networkMessagePointer = &(mpiPacket->payload);
 
             switch (mpiPacket->commandID) {
@@ -849,9 +856,9 @@ namespace sgpp {
 
         void MPIMethods::waitForGridConsistent(size_t classIndex) {
             while (!learnerInstance->checkGridStateConsistent(classIndex)) {
-                std::cout << "Grid " << classIndex << " is not yet consistent (version "
-                          << learnerInstance->getCurrentGridVersion(classIndex) << ") waiting for update."
-                          << std::endl;
+                D(std::cout << "Grid " << classIndex << " is not yet consistent (version "
+                            << learnerInstance->getCurrentGridVersion(classIndex) << ") waiting for update."
+                            << std::endl;)
                 waitForIncomingMessageType(UPDATE_GRID);
             }
         }

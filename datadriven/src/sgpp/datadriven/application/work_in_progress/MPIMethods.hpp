@@ -50,7 +50,8 @@ namespace sgpp {
 
             static void waitForAnyMPIRequestsToComplete();
 
-            static size_t sendMergeGridNetworkMessage(size_t classIndex, size_t batchSize, DataVector &alphaVector);
+            static size_t sendMergeGridNetworkMessage(size_t classIndex, size_t batchOffset, size_t batchSize,
+                                                      base::DataVector &alphaVector);
 
             static size_t getQueueSize();
 
