@@ -651,9 +651,9 @@ namespace sgpp {
 
             // create an empty matrix for every class:
             std::vector<std::unique_ptr<DataMatrix>> classData;
-            classData.reserve(classLabels.getSize());
+            classData.reserve(getNumClasses());
             std::vector<std::pair<DataMatrix *, double>> trainDataClasses;
-            trainDataClasses.reserve(classLabels.getSize());
+            trainDataClasses.reserve(getNumClasses());
 
             std::map<double, int> classIndices;  // maps class labels to indices
 
@@ -690,7 +690,7 @@ namespace sgpp {
                                                              std::vector<std::pair<base::DataMatrix *, double>> &trainDataClasses,
                                                              std::map<double, int> &classIndices) const {
             int index = 0;
-            for (size_t i = 0; i < classLabels.getSize(); i++) {
+            for (size_t i = 0; i < getNumClasses(); i++) {
                 auto *m = new base::DataMatrix(0, dim);
                 std::pair<base::DataMatrix *, double> p(m, classLabels[i]);
                 trainDataClasses.push_back(p);
