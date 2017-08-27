@@ -429,10 +429,13 @@ namespace sgpp {
                     if (sizeAfterPoint - sizeBeforePoint != 1) {
                         std::cout << "Inserted grid point but size change incorrect (old " << sizeBeforePoint
                                   << ", new " << sizeAfterPoint << "), point " << gridPoint->getHash() << std::endl;
-
                         exit(-1);
                     }
                 }
+
+                //TODO: This might be unnecessary
+                grid.getStorage().recalcLeafProperty();
+
                 size_t sizeAfterAdditions = grid.getSize();
                 std::cout << "New grid size is " << sizeAfterAdditions << std::endl;
                 if (sizeAfterAdditions - sizeBeforeAdditions != refinementResult->addedGridPoints.size()) {
