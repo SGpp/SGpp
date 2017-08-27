@@ -628,6 +628,17 @@ namespace sgpp {
                       << networkMessage->gridversion << ")"
                       << std::endl;
 
+            if (learnerInstance->checkGridStateConsistent(classIndex) &&
+                !learnerInstance->isVersionConsistent(networkMessage->gridversion)) {
+                std::cout << "Received first message in multi segment grid update of type "
+                          << networkMessage->updateType << std::endl;
+                if (!refinementResult.addedGridPoints.empty() || !refinementResult.deletedGridPointsIndexes.empty()) {
+                    std::cout
+                            << "Received first message in multi segment grid update, however refinement results have not been cleared."
+                            << std::endl;
+                    exit(-1);
+                }
+            }
             switch (networkMessage->updateType) {
                 case DELETED_GRID_POINTS_LIST: {
                     auto *bufferIterator = (size_t *) networkMessage->payload;
@@ -639,7 +650,6 @@ namespace sgpp {
                 }
                     break;
                 case ADDED_GRID_POINTS_LIST: {
-
                     auto *bufferIterator = (unsigned long *) networkMessage->payload;
                     size_t dimensionality = learnerInstance->getDimensionality();
                     while (bufferIterator < bufferEnd && processedPoints < listLength) {
