@@ -68,7 +68,7 @@ namespace sgpp {
             if (!MPIMethods::isMaster()) {
                 //TODO: Avoid queue size check
                 while (workerActive || MPIMethods::getQueueSize() > 2) {
-                    std::cout << "Client looping" << std::endl;
+                    D(std::cout << "Client looping" << std::endl;)
                     MPIMethods::waitForAnyMPIRequestsToComplete();
                 }
                 std::cout << "Worker shutdown." << std::endl;
@@ -304,8 +304,8 @@ namespace sgpp {
             MPIMethods::waitForIncomingMessageType(UPDATE_GRID, getNumClasses(), [](PendingMPIRequest &request) {
                 auto *refinementResultNetworkMessage = (RefinementResultNetworkMessage *) request.buffer->payload;
                 //Ensure it is a cholesky packet and the last in the sequence
-                std::cout << "Test packet grid version " << refinementResultNetworkMessage->gridversion
-                          << ", update type " << refinementResultNetworkMessage->updateType << std::endl;
+                D(std::cout << "Test packet grid version " << refinementResultNetworkMessage->gridversion
+                            << ", update type " << refinementResultNetworkMessage->updateType << std::endl;)
                 return isVersionConsistent(refinementResultNetworkMessage->gridversion) &&
                        refinementResultNetworkMessage->updateType == CHOLESKY_DECOMPOSITION;
             });
@@ -498,7 +498,7 @@ namespace sgpp {
                 // Do not use waitForConsistent here, we want GRID_ADDITIONS or GRID_DELETIONS, not consistency
 
                 MPIMethods::waitForIncomingMessageType(UPDATE_GRID);
-                std::cout << "Updates have arrived. Attempting to resume." << std::endl;
+                D(std::cout << "Updates have arrived. Attempting to resume." << std::endl;)
             }
 
             DBMatOnlineDE *densEst = getDensityFunctions()[classIndex].first.get();
