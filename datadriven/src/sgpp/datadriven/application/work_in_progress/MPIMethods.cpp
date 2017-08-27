@@ -632,7 +632,8 @@ namespace sgpp {
                 !learnerInstance->isVersionConsistent(networkMessage->gridversion)) {
                 std::cout << "Received first message in multi segment grid update of type "
                           << networkMessage->updateType << std::endl;
-                if (!refinementResult.addedGridPoints.empty() || !refinementResult.deletedGridPointsIndexes.empty()) {
+                if (!isMaster() && !refinementResult.addedGridPoints.empty() ||
+                    !refinementResult.deletedGridPointsIndexes.empty()) {
                     std::cout
                             << "Received first message in multi segment grid update, however refinement results have not been cleared."
                             << std::endl;
