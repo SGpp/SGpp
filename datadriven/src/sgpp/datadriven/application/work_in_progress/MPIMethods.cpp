@@ -13,6 +13,11 @@
 #include <thread>
 #include <numeric>
 
+#ifdef DEBUG
+#define D(x) x
+#else
+#define D(x)
+#endif
 
 namespace sgpp {
     namespace datadriven {
@@ -55,10 +60,10 @@ namespace sgpp {
                 auto &unicastInputRequest = createPendingMPIRequest(mpiPacket, true);
                 unicastInputRequest.disposeAfterCallback = false;
                 unicastInputRequest.callback = [](PendingMPIRequest &request) {
-                    std::cout << "Incoming MPI unicast" << std::endl;
+                    D(std::cout << "Incoming MPI unicast" << std::endl;)
                     handleIncommingRequestFromCallback(request);
 
-                    std::cout << "Restarting irecv request." << std::endl;
+                    D(std::cout << "Restarting irecv request." << std::endl;)
                     MPI_Irecv(request.buffer, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE,
                               MPI_TAG_STANDARD_COMMAND, MPI_COMM_WORLD, request.getMPIRequestHandle());
                 };
@@ -75,10 +80,10 @@ namespace sgpp {
                 auto &unicastInputRequest = createPendingMPIRequest(mpiPacket, true);
                 unicastInputRequest.disposeAfterCallback = false;
                 unicastInputRequest.callback = [](PendingMPIRequest &request) {
-                    std::cout << "Incoming MPI high priority unicast" << std::endl;
+                    D(std::cout << "Incoming MPI high priority unicast" << std::endl;)
                     handleIncommingRequestFromCallback(request);
 
-                    std::cout << "Restarting irecv request." << std::endl;
+                    D(std::cout << "Restarting irecv request." << std::endl;)
                     MPI_Irecv(request.buffer, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE,
                               MPI_TAG_HIGH_PRIORITY_NO_BLOCK, MPI_COMM_WORLD, request.getMPIRequestHandle());
                 };
@@ -95,10 +100,10 @@ namespace sgpp {
                 auto &broadcastInputRequest = createPendingMPIRequest(mpiPacket, true);
                 broadcastInputRequest.disposeAfterCallback = false;
                 broadcastInputRequest.callback = [](PendingMPIRequest &request) {
-                    std::cout << "Incoming MPI broadcast" << std::endl;
+                    D(std::cout << "Incoming MPI broadcast" << std::endl;)
                     handleIncommingRequestFromCallback(request);
 
-                    std::cout << "Restarting ibcast request." << std::endl;
+                    D(std::cout << "Restarting ibcast request." << std::endl;)
                     MPI_Ibcast(request.buffer, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
                                MPI_COMM_WORLD, request.getMPIRequestHandle());
                 };
@@ -114,10 +119,10 @@ namespace sgpp {
         void MPIMethods::handleIncommingRequestFromCallback(PendingMPIRequest &request) {
             processIncomingMPICommands(request);
 
-            std::cout << "Zeroing MPI Request" << std::endl;
+            D(std::cout << "Zeroing MPI Request" << std::endl;)
             memset(request.getMPIRequestHandle(), 0, sizeof(MPI_Request));
 
-            std::cout << "Zeroing Buffer" << std::endl;
+            D(std::cout << "Zeroing Buffer" << std::endl;)
             memset(request.buffer, 0, sizeof(MPI_Packet));
         }
 
@@ -281,7 +286,7 @@ namespace sgpp {
             MPI_Ibcast(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
                        MPI_COMM_WORLD, pendingMPIRequest.getMPIRequestHandle());
 
-            std::cout << "Ibcast request stored at " << &pendingMPIRequest << std::endl;
+            D(std::cout << "Ibcast request stored at " << &pendingMPIRequest << std::endl;)
             return pendingMPIRequest;
         }
 
@@ -293,7 +298,7 @@ namespace sgpp {
                       highPriority ? MPI_TAG_HIGH_PRIORITY_NO_BLOCK : MPI_TAG_STANDARD_COMMAND,
                       MPI_COMM_WORLD, pendingMPIRequest.getMPIRequestHandle());
 
-            std::cout << "Isend request stored at " << &pendingMPIRequest << std::endl;
+            D(std::cout << "Isend request stored at " << &pendingMPIRequest << std::endl;)
             return pendingMPIRequest;
         }
 
@@ -303,8 +308,8 @@ namespace sgpp {
             pendingMPIRequest.disposeAfterCallback = true;
             pendingMPIRequest.inbound = isInbound;
             pendingMPIRequest.callback = [](PendingMPIRequest &request) {
-                std::cout << "Pending MPI request " << &request << " (" << (request.inbound ? "inbound" : "outbound")
-                          << ") completed." << std::endl;
+                D(std::cout << "Pending MPI request " << &request << " (" << (request.inbound ? "inbound" : "outbound")
+                            << ") completed." << std::endl;)
             };
             pendingMPIRequest.buffer = mpiPacket;
             return pendingMPIRequest;
@@ -469,7 +474,7 @@ namespace sgpp {
 
         void MPIMethods::processCompletedMPIRequests() {
 
-            std::cout << "Checking " << pendingMPIRequests.size() << " pending MPI requests" << std::endl;
+            D(std::cout << "Checking " << pendingMPIRequests.size() << " pending MPI requests" << std::endl;)
             auto pendingMPIRequestIterator = pendingMPIRequests.end();
             auto listBegin = pendingMPIRequests.begin();
 
@@ -481,22 +486,22 @@ namespace sgpp {
                 MPI_Status mpiStatus{};
                 int operationCompleted;
 
-                std::cout << "Testing request " << &*pendingMPIRequestIterator << std::endl;
+                D(std::cout << "Testing request " << &*pendingMPIRequestIterator << std::endl;)
                 if (MPI_Test(pendingMPIRequestIterator->getMPIRequestHandle(), &operationCompleted, &mpiStatus) !=
                     MPI_SUCCESS) {
                     std::cout << "Error MPI Test reported" << std::endl;
                     exit(-1);
                 }
-                std::cout << "Pending request has status " << operationCompleted
-                          << " MPI_ERROR: " << mpiStatus.MPI_ERROR
-                          << " MPI SOURCE: " << mpiStatus.MPI_SOURCE
-                          << " MPI TAG: " << mpiStatus.MPI_TAG << std::endl;
+                D(std::cout << "Pending request has status " << operationCompleted
+                            << " MPI_ERROR: " << mpiStatus.MPI_ERROR
+                            << " MPI SOURCE: " << mpiStatus.MPI_SOURCE
+                            << " MPI TAG: " << mpiStatus.MPI_TAG << std::endl;)
                 if (operationCompleted != 0) {
 
                     processCompletedMPIRequest(pendingMPIRequestIterator);
 
 
-                    std::cout << "Relaunching processCompletedMPIRequests" << std::endl;
+                    D(std::cout << "Relaunching processCompletedMPIRequests" << std::endl;)
                     processCompletedMPIRequests();
                     break;
                 }
@@ -506,26 +511,26 @@ namespace sgpp {
         void MPIMethods::processCompletedMPIRequest(
                 const std::list<sgpp::datadriven::PendingMPIRequest>::iterator &pendingMPIRequestIterator) {
 
-            std::cout << "Updating " << messageTrackRequests.size() << " track requests" << std::endl;
+            D(std::cout << "Updating " << messageTrackRequests.size() << " track requests" << std::endl;)
             for (MessageTrackRequest &trackRequest : messageTrackRequests) {
                 if (trackRequest.predicate(*pendingMPIRequestIterator)) {
                     trackRequest.currentHits++;
                 }
             }
 
-            std::cout << "Executing callback" << std::endl;
+            D(std::cout << "Executing callback" << std::endl;)
             //Execute the callback
             pendingMPIRequestIterator->callback(*pendingMPIRequestIterator);
-            std::cout << "Callback complete" << std::endl;
+            D(std::cout << "Callback complete" << std::endl;)
 
 
             if (pendingMPIRequestIterator->disposeAfterCallback) {
                 //TODO Deleting a void pointer here
-                std::cout << "Attempting to delete pending mpi request" << std::endl;
+                D(std::cout << "Attempting to delete pending mpi request" << std::endl;)
                 delete[] pendingMPIRequestIterator->buffer;
 
                 pendingMPIRequests.erase(pendingMPIRequestIterator);
-                std::cout << "Deleted pending mpi request" << std::endl;
+                D(std::cout << "Deleted pending mpi request" << std::endl;)
 
             } else {
 //                        std::cout << "Zeroing MPI Request" << std::endl;
@@ -552,14 +557,14 @@ namespace sgpp {
         int MPIMethods::executeMPIWaitAny() {
             int completedRequest = -1;
             MPI_Status mpiStatus{};
-            std::cout << "Waiting for " << pendingMPIRequests.size() << " MPI requests to complete" << std::endl;
+            D(std::cout << "Waiting for " << pendingMPIRequests.size() << " MPI requests to complete" << std::endl;)
             int requestStatus = MPI_Waitany(mpiRequestStorage.size(), mpiRequestStorage.getMPIRequests(),
                                             &completedRequest,
                                             &mpiStatus);
-            std::cout << "MPI request " << completedRequest << " completed"
-                      << " MPI_ERROR: " << mpiStatus.MPI_ERROR
-                      << " MPI SOURCE: " << mpiStatus.MPI_SOURCE
-                      << " MPI TAG: " << mpiStatus.MPI_TAG << " MPI REQUEST STATUS: " << requestStatus << std::endl;
+            D(std::cout << "MPI request " << completedRequest << " completed"
+                        << " MPI_ERROR: " << mpiStatus.MPI_ERROR
+                        << " MPI SOURCE: " << mpiStatus.MPI_SOURCE
+                        << " MPI TAG: " << mpiStatus.MPI_TAG << " MPI REQUEST STATUS: " << requestStatus << std::endl;)
             if (requestStatus != MPI_SUCCESS || completedRequest < 0 || completedRequest > mpiRequestStorage.size()) {
                 std::cout << "Error: Completed requests returned invalid index " << completedRequest
                           << " operation status " << requestStatus << std::endl;
