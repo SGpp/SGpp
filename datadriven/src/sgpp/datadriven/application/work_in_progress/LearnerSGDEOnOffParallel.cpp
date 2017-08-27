@@ -340,10 +340,17 @@ namespace sgpp {
                                                                      gridGen);
             }
 
-            std::cout << "grid size after adaptivity: " << grid.getSize()
+            size_t newGridSize = grid.getSize();
+            std::cout << "grid size after adaptivity: " << newGridSize
                       << " (previously " << oldGridSize
                       << "), " << numberOfNewPoints << " new points on grid"
                       << std::endl;
+
+            if (numberOfNewPoints != newGridSize - oldGridSize) {
+                std::cout << "Reported grid sizes do not match up (refined " << numberOfNewPoints << ", old "
+                          << oldGridSize << ", new " << newGridSize << ")" << std::endl;
+                exit(-1);
+            }
 
             std::cout << "Preparing refinement result update" << std::endl;
             if (!refinementResult->addedGridPoints.empty()) {
