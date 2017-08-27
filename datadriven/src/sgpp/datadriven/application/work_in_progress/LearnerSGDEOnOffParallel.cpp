@@ -404,7 +404,8 @@ namespace sgpp {
                 //Delete the grid points removed on master thread
                 grid.getStorage().deletePoints(refinementResult->deletedGridPointsIndexes);
 
-                std::cout << "Grid size after deleting is " << grid.getSize() << std::endl;
+                size_t sizeBeforeAdditions = grid.getSize();
+                std::cout << "Grid size after deleting is " << sizeBeforeAdditions << std::endl;
 
                 //Add grid points added on master thread
                 for (LevelIndexVector &levelIndexVector : refinementResult->addedGridPoints) {
@@ -424,7 +425,14 @@ namespace sgpp {
 //                              << grid.getSize()
 //                              << ")" << std::endl;
                 }
-                std::cout << "New grid size is " << grid.getSize() << std::endl;
+                size_t sizeAfterAdditions = grid.getSize();
+                std::cout << "New grid size is " << sizeAfterAdditions << std::endl;
+                if (sizeAfterAdditions - sizeBeforeAdditions != refinementResult->addedGridPoints.size()) {
+                    std::cout << "Grid growth not correlated to refinement results (grid delta "
+                              << sizeAfterAdditions - sizeBeforeAdditions << ", additions "
+                              << refinementResult->addedGridPoints.size() << ")" << std::endl;
+                    exit(-1);
+                }
             }
                 //TODO: We might need to transfer the results here.
                 //TODO: This needs to be moved and replaced by a request.
