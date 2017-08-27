@@ -31,6 +31,13 @@
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/application/work_in_progress/MPITaskScheduler.hpp>
 
+#ifdef DEBUG
+#define D(x) x
+#else
+#define D(x)
+#endif
+
+
 namespace sgpp {
     namespace datadriven {
 

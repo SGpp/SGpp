@@ -13,12 +13,6 @@
 #include <thread>
 #include <numeric>
 
-#ifdef DEBUG
-#define D(x) x
-#else
-#define D(x)
-#endif
-
 namespace sgpp {
     namespace datadriven {
 
