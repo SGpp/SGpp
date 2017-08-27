@@ -417,18 +417,13 @@ namespace sgpp {
                         gridPoint->set(currentDimension,
                                        levelIndexVector[currentDimension].level,
                                        levelIndexVector[currentDimension].index);
-//                        std::cout << "Setting level index vector: dimension, " << currentDimension
-//                                  << ", level " << levelIndexVector[currentDimension].level << ", index "
-//                                  << levelIndexVector[currentDimension].index << std::endl;
                     }
                     grid.getStorage().insert(*gridPoint);
-//                    std::cout << "Inserted grid point " << gridPoint->getHash() << " into grid (new size "
-//                              << grid.getSize()
-//                              << ")" << std::endl;
                     size_t sizeAfterPoint = grid.getSize();
                     if (sizeAfterPoint - sizeBeforePoint != 1) {
                         std::cout << "Inserted grid point but size change incorrect (old " << sizeBeforePoint
                                   << ", new " << sizeAfterPoint << "), point " << gridPoint->getHash() << std::endl;
+                        printPoint(gridPoint);
                         exit(-1);
                     }
                 }
@@ -912,6 +907,20 @@ namespace sgpp {
 
         RefinementResult &LearnerSGDEOnOffParallel::getRefinementResult(size_t classIndex) {
             return (*vectorRefinementResults)[classIndex];
+        }
+
+        void LearnerSGDEOnOffParallel::printPoint(base::HashGridStorage::point_type *gridPoint) {
+            std::cout << "Grid point " << gridPoint->getHash() << std::endl;
+
+            for (size_t currentDimension = 0; currentDimension < getDimensionality(); currentDimension++) {
+                sgpp::base::HashGridPoint::level_type level = 0;
+                sgpp::base::HashGridPoint::index_type index = 0;
+                gridPoint->get(currentDimension, level, index);
+                std::cout << "Dimension " << currentDimension
+                          << ", level " << level << ", index "
+                          << index << std::endl;
+            }
+
         }
 
     }  // namespace datadriven

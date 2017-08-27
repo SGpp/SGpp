@@ -212,6 +212,7 @@ namespace sgpp {
 
             bool checkReadyForRefinement() const;
 
+            void printPoint(base::HashGridStorage::point_type *pPoint);
         };
     }   //namespace datadriven
 }  // namespace sgpp
