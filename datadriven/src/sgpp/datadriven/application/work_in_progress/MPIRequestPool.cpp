@@ -4,6 +4,8 @@
 
 #include <cstring>
 #include "MPIRequestPool.hpp"
+#include "LearnerSGDEOnOffParallel.hpp"
+
 
 namespace sgpp {
     namespace datadriven {
@@ -53,8 +55,8 @@ namespace sgpp {
         }
 
         inline void MPIRequestPool::printPoolStatistics() const {
-            std::cout << "MPI_Request pool size is now " << mpiRequestStorage.size() << " (vector capacity "
-                      << mpiRequestStorage.capacity() << ", secondary " << freedRequests.size() << ")" << std::endl;
+            D(std::cout << "MPI_Request pool size is now " << mpiRequestStorage.size() << " (vector capacity "
+                        << mpiRequestStorage.capacity() << ", secondary " << freedRequests.size() << ")" << std::endl;)
         }
 
         MPI_Request *MPIRequestPool::getMPIRequestHandle(size_t handleIndex) {
