@@ -86,9 +86,6 @@ namespace sgpp {
 
             MPIMethods::processCompletedMPIRequests();
 
-            // counts total number of processed data points
-            size_t numProcessedDataPoints = 0;
-
             // contains list of removed grid points and number of added grid points
             // (is updated in each refinement/coarsening step)
 //            vectorRefinementResults = new ...
@@ -135,29 +132,27 @@ namespace sgpp {
                 std::cout << "Start of data pass " << completedDataPasses << std::endl;
 
                 std::cout << "#batch-size: " << batchSize << std::endl;
-                std::cout << "#batches to process: " << numBatch << std::endl;
-
 
                 // iterate over total number of batches
-                for (size_t currentBatchNum = 1; currentBatchNum <= numBatch; currentBatchNum++) {
-                    std::cout << "#processing batch: " << currentBatchNum << "\n";
+                while (processedPoints < dataBatch.getNumberInstances()) {
+                    std::cout << "#processing batch: " << processedPoints << "\n";
 
                     auto begin = std::chrono::high_resolution_clock::now();
 
                     // check if cross-validation should be performed
                     bool doCrossValidation = false;
                     if (enableCv) {
-                        if (nextCvStep == currentBatchNum) {
+                        if (nextCvStep == processedPoints) {
                             doCrossValidation = true;
                             nextCvStep *= 5;
                         }
                     }
 
-                    assignBatchToWorker(numProcessedDataPoints, doCrossValidation);
+                    assignBatchToWorker(processedPoints, doCrossValidation);
 
-                    numProcessedDataPoints += dataBatch.getNumberInstances();
+                    processedPoints += dataBatch.getNumberInstances();
 
-                    std::cout << numProcessedDataPoints << " have already been assigned." << std::endl;
+                    std::cout << processedPoints << " have already been assigned." << std::endl;
 
                     while (!checkReadyForRefinement()) {
                         std::cout << "Waiting for " << MPIMethods::getQueueSize()
@@ -174,17 +169,17 @@ namespace sgpp {
 
                     std::cout << "Checking if refinement is necessary." << std::endl;
                     // check if refinement should be performed
-                    if (checkRefinementNecessary(refMonitor, refPeriod, numProcessedDataPoints, currentValidError,
+                    if (checkRefinementNecessary(refMonitor, refPeriod, processedPoints, currentValidError,
                                                  currentTrainError, numberOfCompletedRefinements, monitor)) {
                         // if the Cholesky decomposition is chosen as factorization method
                         // refinement
                         // and coarsening methods can be applied
 
-                        std::cout << "refinement at iteration: " << numProcessedDataPoints << std::endl;
+                        std::cout << "refinement at iteration: " << processedPoints << std::endl;
                         doRefinementForAll(refinementFunctorType, refMonitor, vectorRefinementResults,
                                            onlineObjects, monitor);
                         numberOfCompletedRefinements += 1;
-                        std::cout << "Refinement at " << numProcessedDataPoints << " complete" << std::endl;
+                        std::cout << "Refinement at " << processedPoints << " complete" << std::endl;
 
                         //Send the grid component update
                         //Note: This was moved to updateClassVariablesAfterRefinement as it needs to run before the cholesky update
@@ -194,7 +189,7 @@ namespace sgpp {
                     }
 
                     // save current error
-                    if (numProcessedDataPoints % 10 == 0) {
+                    if (processedPoints % 10 == 0) {
                         acc = getAccuracy();
                         avgErrors.append(1.0 - acc);
                     }
@@ -203,7 +198,7 @@ namespace sgpp {
                     std::cout << "Processing batch in "
                               << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
                               << "ms" << std::endl;
-                    std::cout << "Processed " << numProcessedDataPoints << " data points so far" << std::endl;
+                    std::cout << "Processed " << processedPoints << " data points so far" << std::endl;
 
                 }
 

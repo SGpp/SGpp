@@ -220,7 +220,9 @@ int main(int argc, char *argv[]) {
      */
     bool enableCv = false;
     // set cv configuration if cv enabled
-    size_t nextCvStep = 50;
+    // cv steps are now measured in data points instead of batches
+    // TODO: What needs to be done about CV?
+    size_t nextCvStep = 50000;
     double cvLambdaStart = 1e-1;
     double cvLambdaEnd = 1e-10;
     int cvLambdaSteps = 10;
