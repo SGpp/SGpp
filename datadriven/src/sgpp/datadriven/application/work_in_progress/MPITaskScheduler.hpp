@@ -6,10 +6,12 @@
 #define SGPP_MPITASKSCHEDULER_HPP
 
 #include <cstdlib>
-#include "LearnerSGDEOnOffParallel.hpp"
 
 namespace sgpp {
     namespace datadriven {
+
+        //Forward declere Learner, as we use only pointer
+        class LearnerSGDEOnOffParallel;
 
         enum TaskType {
             TRAIN_FROM_BATCH,

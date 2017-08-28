@@ -30,10 +30,13 @@ namespace sgpp {
         }
 
         bool RoundRobinScheduler::isReadyForRefinement() {
+            //Limit number of outstanding batch requests
+            bool outStandingOK = numOutstandingBatchTracker.back() / learnerInstance->getNumClasses() <
+                                 MPIMethods::getWorldSize() * 2;
             if (numOutstandingBatchTracker.size() <= 1) {
-                return true;
+                return outStandingOK;
             }
-            return numOutstandingBatchTracker[numOutstandingBatchTracker.size() - 2] == 0;
+            return numOutstandingBatchTracker[numOutstandingBatchTracker.size() - 2] == 0 && outStandingOK;
         }
 
         void RoundRobinScheduler::onMergeRequestIncoming(size_t batchOffset, size_t batchSize) {
