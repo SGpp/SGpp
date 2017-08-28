@@ -10,12 +10,12 @@ namespace sgpp {
         RoundRobinScheduler::RoundRobinScheduler(size_t batchSize) {
             this->batchSize = batchSize;
             this->lastWorkerID = 0;
+            numOutstandingBatchTracker.emplace_back(0);
         }
 
         void RoundRobinScheduler::assignTaskVariableTaskSize(TaskType taskType, AssignTaskResult &result) {
             assignTaskStaticTaskSize(taskType, result);
             result.taskSize = batchSize;
-            numOutstandingBatchTracker.reserve(1);
         }
 
         void RoundRobinScheduler::assignTaskStaticTaskSize(TaskType taskType, AssignTaskResult &result) {
@@ -39,8 +39,10 @@ namespace sgpp {
             return numOutstandingBatchTracker[numOutstandingBatchTracker.size() - 2] == 0 && outStandingOK;
         }
 
-        void RoundRobinScheduler::onMergeRequestIncoming(size_t batchOffset, size_t batchSize) {
-            numOutstandingBatchTracker.back()--;
+        void RoundRobinScheduler::onMergeRequestIncoming(unsigned long batchOffset, unsigned long batchSize,
+                                                         size_t remoteGridVersion, size_t localGridVersion) {
+            //TODO: Ugly constant
+            numOutstandingBatchTracker[remoteGridVersion - 10]--;
         }
 
         void RoundRobinScheduler::onRefinementStarted() {

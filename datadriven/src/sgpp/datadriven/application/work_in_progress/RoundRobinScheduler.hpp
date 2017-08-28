@@ -23,11 +23,12 @@ namespace sgpp {
             size_t batchSize;
             std::vector<size_t> numOutstandingBatchTracker;
 
-            bool isReadyForRefinement();
+            bool isReadyForRefinement() override;
 
-            void onMergeRequestIncoming(size_t batchOffset, size_t batchSize);
+            void onMergeRequestIncoming(unsigned long batchOffset, unsigned long batchSize,
+                                        size_t remoteGridVersion, size_t localGridVersion) override;
 
-            void onRefinementStarted();
+            void onRefinementStarted() override;
         };
 
     }

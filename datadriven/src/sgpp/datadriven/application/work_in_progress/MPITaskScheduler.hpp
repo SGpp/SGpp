@@ -35,7 +35,9 @@ namespace sgpp {
 
             virtual void onRefinementStarted() = 0;
 
-            virtual void onMergeRequestIncoming(size_t batchOffset, size_t batchSize) = 0;
+            virtual void
+            onMergeRequestIncoming(unsigned long batchOffset, unsigned long batchSize, size_t remoteGridVersion,
+                                   size_t localGridVersion) = 0;
 
             void setLearnerInstance(LearnerSGDEOnOffParallel *instance);
         protected:
