@@ -38,12 +38,12 @@ void TextNode::setupInternalType() {
     //        this->internalType = InternalIDType::BOOL;
     this->isBool = true;
     this->boolValue = true;
-    return;
+    // return;
   } else if (this->value.compare("false") == 0) {
     //        this->internalType = InternalIDType::BOOL;
     this->isBool = true;
     this->boolValue = false;
-    return;
+    // return;
   }
 
   // try validating as unsigned integer
@@ -64,7 +64,7 @@ void TextNode::setupInternalType() {
       conv_stream << this->value;
       uint64_t r;
       conv_stream >> r;
-      if (conv_stream.fail()) {
+      if (!conv_stream.fail()) {
           this->isUnsigned = true;
           this->unsignedValue = r;
       }
@@ -88,7 +88,7 @@ void TextNode::setupInternalType() {
       conv_stream << this->value;
       int64_t r;
       conv_stream >> r;
-      if (conv_stream.fail()) {
+      if (!conv_stream.fail()) {
           this->isSigned = true;
           this->signedValue = r;
       }
@@ -112,7 +112,7 @@ void TextNode::setupInternalType() {
       conv_stream << this->value;
       double r;
       conv_stream >> r;
-      if (conv_stream.fail()) {
+      if (!conv_stream.fail()) {
           this->isDouble = true;
           this->doubleValue = r;
       }
