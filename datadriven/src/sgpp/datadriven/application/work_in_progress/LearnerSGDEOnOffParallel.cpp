@@ -827,9 +827,6 @@ namespace sgpp {
                                                         unsigned long batchSize, bool isLastPacketInSeries) {
             MPIMethods::waitForGridConsistent(classIndex);
 
-            if (isLastPacketInSeries) {
-                mpiTaskScheduler.onMergeRequestIncoming(batchOffset, batchSize);
-            }
 
             D(std::cout << "Remote alpha sum " << classIndex << " is "
                         << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;
@@ -841,12 +838,17 @@ namespace sgpp {
                 exit(-1);
             }
 
-            if (gridVersion != getCurrentGridVersion(classIndex)) {
+            size_t localGridVersion = getCurrentGridVersion(classIndex);
+            if (isLastPacketInSeries) {
+                mpiTaskScheduler.onMergeRequestIncoming(batchOffset, batchSize, gridVersion, localGridVersion);
+            }
+
+            if (gridVersion != localGridVersion) {
                 std::cout << "Received merge grid request with incorrect grid version!"
-                          << " local: " << getCurrentGridVersion(classIndex)
+                          << " local: " << localGridVersion
                           << ", remote: " << gridVersion
                           << std::endl;
-                if (gridVersion + 1 == getCurrentGridVersion(classIndex)) {
+                if (gridVersion + 1 == localGridVersion) {
                     RefinementResult &refinementResult = (*vectorRefinementResults)[classIndex];
                     std::list<size_t> &deletedPoints = refinementResult.deletedGridPointsIndexes;
                     std::list<LevelIndexVector> &addedPoints = refinementResult.addedGridPoints;
