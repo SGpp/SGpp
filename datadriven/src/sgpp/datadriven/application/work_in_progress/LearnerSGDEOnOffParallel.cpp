@@ -51,6 +51,7 @@ namespace sgpp {
 
             vectorRefinementResults = new std::vector<RefinementResult>(numClasses);
             localGridVersions.insert(localGridVersions.begin(), numClasses, 10);
+            mpiTaskScheduler.setLearnerInstance(this);
 
             MPIMethods::initMPI(this);
         }
@@ -176,6 +177,8 @@ namespace sgpp {
                         // and coarsening methods can be applied
 
                         std::cout << "refinement at iteration: " << processedPoints << std::endl;
+                        mpiTaskScheduler.onRefinementStarted();
+
                         doRefinementForAll(refinementFunctorType, refMonitor, vectorRefinementResults,
                                            onlineObjects, monitor);
                         numberOfCompletedRefinements += 1;
@@ -223,7 +226,7 @@ namespace sgpp {
             // Queue size equal to two
             // All local grids in a consistent state
             //TODO: Avoid a queue size check
-            return MPIMethods::getQueueSize() <= 2
+            return mpiTaskScheduler.isReadyForRefinement()
                    && std::all_of(localGridVersions.begin(), localGridVersions.end(),
                                   [](size_t version) { return isVersionConsistent(version); });
         }
@@ -819,9 +822,14 @@ namespace sgpp {
         }
 
 
-        void LearnerSGDEOnOffParallel::mergeAlphaValues(size_t classIndex, size_t gridVersion, DataVector &dataVector,
-                                                        size_t batchOffset, size_t batchSize) {
+        void LearnerSGDEOnOffParallel::mergeAlphaValues(unsigned long classIndex, unsigned long gridVersion,
+                                                        DataVector dataVector, unsigned long batchOffset,
+                                                        unsigned long batchSize, bool isLastPacketInSeries) {
             MPIMethods::waitForGridConsistent(classIndex);
+
+            if (isLastPacketInSeries) {
+                mpiTaskScheduler.onMergeRequestIncoming(batchOffset, batchSize);
+            }
 
             D(std::cout << "Remote alpha sum " << classIndex << " is "
                         << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;

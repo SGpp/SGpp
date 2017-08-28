@@ -7,5 +7,8 @@
 namespace sgpp {
     namespace datadriven {
 
+        void MPITaskScheduler::setLearnerInstance(LearnerSGDEOnOffParallel *instance) {
+            learnerInstance = instance;
+        }
     }
 }
