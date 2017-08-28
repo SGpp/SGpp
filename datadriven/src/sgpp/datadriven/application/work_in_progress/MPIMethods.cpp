@@ -321,9 +321,12 @@ namespace sgpp {
                 alphaVector[networkMessage.payloadOffset + index] = payload[index];
             }
 
+            bool isLastPacketInSeries =
+                    networkMessage.payloadLength + networkMessage.payloadOffset == networkMessage.alphaTotalSize;
+
             learnerInstance->mergeAlphaValues(networkMessage.classIndex, networkMessage.gridversion, alphaVector,
-                                              networkMessage.batchOffset,
-                                              networkMessage.batchSize);
+                                              networkMessage.batchOffset, networkMessage.batchSize,
+                                              isLastPacketInSeries);
 
             D(std::cout << "Updated alpha values from network message offset " << networkMessage.payloadOffset
                         << ", class " << networkMessage.classIndex

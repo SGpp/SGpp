@@ -21,7 +21,13 @@ namespace sgpp {
         protected:
             size_t lastWorkerID;
             size_t batchSize;
+            std::vector<size_t> numOutstandingBatchTracker;
 
+            bool isReadyForRefinement();
+
+            void onMergeRequestIncoming(size_t batchOffset, size_t batchSize);
+
+            void onRefinementStarted();
         };
 
     }

@@ -15,13 +15,33 @@ namespace sgpp {
         void RoundRobinScheduler::assignTaskVariableTaskSize(TaskType taskType, AssignTaskResult &result) {
             assignTaskStaticTaskSize(taskType, result);
             result.taskSize = batchSize;
+            numOutstandingBatchTracker.reserve(1);
         }
 
         void RoundRobinScheduler::assignTaskStaticTaskSize(TaskType taskType, AssignTaskResult &result) {
             if (lastWorkerID + 1 >= MPIMethods::getWorldSize()) {
                 lastWorkerID = 0;
             }
+            if (taskType == TRAIN_FROM_BATCH) {
+                // Assigning Batch
+                numOutstandingBatchTracker.back() += learnerInstance->getNumClasses();
+            }
             result.workerID = ++lastWorkerID;
+        }
+
+        bool RoundRobinScheduler::isReadyForRefinement() {
+            if (numOutstandingBatchTracker.size() <= 1) {
+                return true;
+            }
+            return numOutstandingBatchTracker[numOutstandingBatchTracker.size() - 2] == 0;
+        }
+
+        void RoundRobinScheduler::onMergeRequestIncoming(size_t batchOffset, size_t batchSize) {
+            numOutstandingBatchTracker.back()--;
+        }
+
+        void RoundRobinScheduler::onRefinementStarted() {
+            numOutstandingBatchTracker.emplace_back(0);
         }
     }
 }

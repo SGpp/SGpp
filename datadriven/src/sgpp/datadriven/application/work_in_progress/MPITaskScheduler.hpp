@@ -6,6 +6,7 @@
 #define SGPP_MPITASKSCHEDULER_HPP
 
 #include <cstdlib>
+#include "LearnerSGDEOnOffParallel.hpp"
 
 namespace sgpp {
     namespace datadriven {
@@ -28,8 +29,15 @@ namespace sgpp {
 
             virtual void assignTaskStaticTaskSize(TaskType taskType, AssignTaskResult &result) = 0;
 
-        protected:
+            virtual bool isReadyForRefinement() = 0;
 
+            virtual void onRefinementStarted() = 0;
+
+            virtual void onMergeRequestIncoming(size_t batchOffset, size_t batchSize) = 0;
+
+            void setLearnerInstance(LearnerSGDEOnOffParallel *instance);
+        protected:
+            LearnerSGDEOnOffParallel *learnerInstance;
         };
 
     }
