@@ -30,8 +30,8 @@ namespace sgpp {
 namespace datadriven {
 
 void OperationInverseRosenblattTransformationPoly::doTransformation(base::DataVector* alpha,
-                                                                   base::DataMatrix* pointscdf,
-                                                                   base::DataMatrix* points) {
+                                                                    base::DataMatrix* pointscdf,
+                                                                    base::DataMatrix* points) {
   size_t dim_start = 0;
   size_t num_dims = this->grid->getDimension();
   size_t num_samples = pointscdf->getNrows();
@@ -88,9 +88,9 @@ void OperationInverseRosenblattTransformationPoly::doTransformation(base::DataVe
 }
 
 void OperationInverseRosenblattTransformationPoly::doTransformation(base::DataVector* alpha,
-                                                                   base::DataMatrix* pointscdf,
-                                                                   base::DataMatrix* points,
-                                                                   size_t dim_start) {
+                                                                    base::DataMatrix* pointscdf,
+                                                                    base::DataMatrix* points,
+                                                                    size_t dim_start) {
   // 1. marginalize to dim_start
   base::Grid* g1d = NULL;
   base::DataVector* a1d = NULL;
@@ -185,13 +185,12 @@ void OperationInverseRosenblattTransformationPoly::doTransformation_in_next_dim(
 }
 
 double OperationInverseRosenblattTransformationPoly::doTransformation1D(base::Grid* grid1d,
-                                                                       base::DataVector* alpha1d,
-                                                                       double coord1d) {
-  std::unique_ptr<OperationTransformation1D> opInverseRosenblatt
-    = static_cast<std::unique_ptr<OperationTransformation1D>>
-    (op_factory::createOperationInverseRosenblattTransformation1D(*grid1d));
-
+                                                                        base::DataVector* alpha1d,
+                                                                        double coord1d) {
+  std::unique_ptr<OperationTransformation1D> opInverseRosenblatt(
+      op_factory::createOperationInverseRosenblattTransformation1D(*grid1d));
   return opInverseRosenblatt->doTransformation1D(alpha1d, coord1d);
 }  // end of compute_1D_cdf()
+
 }  // namespace datadriven
 }  // namespace sgpp
