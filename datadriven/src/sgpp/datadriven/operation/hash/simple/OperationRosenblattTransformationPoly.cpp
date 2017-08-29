@@ -32,8 +32,8 @@ namespace sgpp {
 namespace datadriven {
 
 void OperationRosenblattTransformationPoly::doTransformation(base::DataVector* alpha,
-                                                            base::DataMatrix* points,
-                                                            base::DataMatrix* pointscdf) {
+                                                             base::DataMatrix* points,
+                                                             base::DataMatrix* pointscdf) {
   size_t num_dims = this->grid->getDimension();
 
   // 1. marginalize to all possible start dimensions
@@ -90,9 +90,9 @@ void OperationRosenblattTransformationPoly::doTransformation(base::DataVector* a
 }
 
 void OperationRosenblattTransformationPoly::doTransformation(base::DataVector* alpha,
-                                                            base::DataMatrix* points,
-                                                            base::DataMatrix* pointscdf,
-                                                            size_t dim_start) {
+                                                             base::DataMatrix* points,
+                                                             base::DataMatrix* pointscdf,
+                                                             size_t dim_start) {
   // 1. marginalize to dim_start
   base::Grid* g1d = NULL;
   base::DataVector* a1d = NULL;
@@ -122,9 +122,11 @@ void OperationRosenblattTransformationPoly::doTransformation(base::DataVector* a
   delete a1d;
 }
 
-void OperationRosenblattTransformationPoly::doTransformation_start_dimX(
-    base::Grid* g_in, base::DataVector* a_in, size_t dim_start, base::DataVector* coords1d,
-    base::DataVector* cdfs1d) {
+void OperationRosenblattTransformationPoly::doTransformation_start_dimX(base::Grid* g_in,
+                                                                        base::DataVector* a_in,
+                                                                        size_t dim_start,
+                                                                        base::DataVector* coords1d,
+                                                                        base::DataVector* cdfs1d) {
   size_t dims = coords1d->getSize();  // total dimensions
 
   if ((dims > 1) && (dim_start <= dims - 1)) {
@@ -189,14 +191,11 @@ void OperationRosenblattTransformationPoly::doTransformation_in_next_dim(
 }
 
 double OperationRosenblattTransformationPoly::doTransformation1D(base::Grid* grid1d,
-                                                                base::DataVector* alpha1d,
-                                                                double coord1d) {
-  OperationRosenblattTransformation1DPoly* opRosenblatt
-    = static_cast<OperationRosenblattTransformation1DPoly*>
-    (op_factory::createOperationRosenblattTransformation1D(*grid1d));
-  double y = opRosenblatt->doTransformation1D(alpha1d, coord1d);
-  delete opRosenblatt;
-  return y;
+                                                                 base::DataVector* alpha1d,
+                                                                 double coord1d) {
+  std::unique_ptr<OperationTransformation1D> opRosenblatt(
+      op_factory::createOperationRosenblattTransformation1D(*grid1d));
+  return opRosenblatt->doTransformation1D(alpha1d, coord1d);
 }  // end of compute_1D_cdf()
 }  // namespace datadriven
 }  // namespace sgpp

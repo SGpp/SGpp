@@ -132,8 +132,8 @@ int main(int argc, char** argv) {
   //  var_KDE(x)"
   //            << std::endl;
 
-  sgpp::base::DataMatrix* bounds = new DataMatrix(4, 2);
-  for (size_t idim = 0; idim < dataset.getDimension(); idim++) {
+  sgpp::base::DataMatrix* bounds = new DataMatrix(gridConfig.dim_, 2);
+  for (size_t idim = 0; idim < gridConfig.dim_; idim++) {
     bounds->set(idim, 0, 0.0);
     bounds->set(idim, 1, 1.0);
   }
@@ -151,10 +151,11 @@ int main(int argc, char** argv) {
   // inverse Rosenblatt transformation
   auto opInvRos =
       sgpp::op_factory::createOperationInverseRosenblattTransformation(learner.getGrid());
-  sgpp::base::DataMatrix points(12, gridConfig.dim_);
+  sgpp::base::DataMatrix points(3, gridConfig.dim_);
   randu(points);
 
   std::cout << "------------------------------------------------------" << std::endl;
+  std::cout << "uniform space" << std::endl;
   std::cout << points.toString() << std::endl;
 
   sgpp::base::DataMatrix pointsCdf(points.getNrows(), points.getNcols());
@@ -164,7 +165,9 @@ int main(int argc, char** argv) {
   auto opRos = sgpp::op_factory::createOperationRosenblattTransformation(learner.getGrid());
   opRos->doTransformation(&learner.getSurpluses(), &pointsCdf, &points);
   std::cout << "------------------------------------------------------" << std::endl;
+  std::cout << "original space" << std::endl;
   std::cout << pointsCdf.toString() << std::endl;
   std::cout << "------------------------------------------------------" << std::endl;
+  std::cout << "uniform space" << std::endl;
   std::cout << points.toString() << std::endl;
 }
