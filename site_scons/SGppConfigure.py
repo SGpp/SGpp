@@ -330,6 +330,8 @@ def configureGNUCompiler(config):
     Helper.printInfo("Using mpich.")
 
   versionString = subprocess.check_output([config.env["CXX"], "-dumpversion"]).strip()
+  if versionString.find('.') == -1:
+      versionString = subprocess.check_output([config.env["CXX"], "-dumpfullversion"]).strip()
   version = config.env._get_major_minor_revision(versionString)
   Helper.printInfo("Using {} {}".format(config.env["CXX"], versionString))
 
