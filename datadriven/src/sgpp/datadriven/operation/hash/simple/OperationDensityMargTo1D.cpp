@@ -84,7 +84,7 @@ void OperationDensityMargTo1D::marg_next_dim(base::Grid* g_in, base::DataVector*
   base::DataVector* a_tmp = new base::DataVector(1);
   op_factory::createOperationDensityMarginalize(*g_in)->doMarginalize(*a_in, g_tmp, *a_tmp, op_dim);
 
-  if (g_tmp->getDimension() > 1) {
+  if (ix + 1 < margDims.size()) {
     marg_next_dim(g_tmp, a_tmp, g_out, a_out, margDims, ix + 1);
     delete g_tmp;
     delete a_tmp;
