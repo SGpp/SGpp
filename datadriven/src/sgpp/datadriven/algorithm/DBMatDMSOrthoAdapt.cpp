@@ -13,8 +13,8 @@
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSOrthoAdapt.hpp>
 
-#include <iomanip>
 #include <iostream>
+
 namespace sgpp {
 namespace datadriven {
 
@@ -22,7 +22,7 @@ void DBMatDMSOrthoAdapt::solve(sgpp::base::DataMatrix& T_inv, sgpp::base::DataMa
                                sgpp::base::DataMatrix& B, sgpp::base::DataVector& b,
                                sgpp::base::DataVector& alpha) {
   // assert dimensions
-  bool prior_refined = (B.getNcols() > 1);  // if B.getNcols <= 1, then not refined yet
+  bool prior_refined = (B.getNcols() > 1);  // if B.getNcols <= 1, then no refining yet
 
   if (prior_refined) {
     if (B.getNcols() != b.getSize()) {
@@ -46,35 +46,34 @@ void DBMatDMSOrthoAdapt::solve(sgpp::base::DataMatrix& T_inv, sgpp::base::DataMa
   gsl_matrix_view t_inv_view =
       gsl_matrix_view_array(T_inv.getPointer(), T_inv.getNrows(), T_inv.getNcols());
   gsl_matrix_view b_matrix_view = gsl_matrix_view_array(B.getPointer(), B.getNrows(), B.getNcols());
-  gsl_matrix_view b_vector_view_cut = gsl_matrix_view_array(b.getPointer(), Q.getNrows(), 1);
-  gsl_matrix_view b_vector_view = gsl_matrix_view_array(b.getPointer(), b.getSize(), 1);
-  gsl_matrix_view alpha_view_cut = gsl_matrix_view_array(alpha.getPointer(), Q.getNrows(), 1);
-  gsl_matrix_view alpha_view = gsl_matrix_view_array(alpha.getPointer(), alpha.getSize(), 1);
 
-  gsl_matrix* interim2 = gsl_matrix_alloc(Q.getNrows(), 1);
+  gsl_vector_view b_vector_view_cut = gsl_vector_view_array(b.getPointer(), Q.getNrows());
+  gsl_vector_view b_vector_view = gsl_vector_view_array(b.getPointer(), b.getSize());
+  gsl_vector_view alpha_view_cut = gsl_vector_view_array(alpha.getPointer(), Q.getNrows());
+  gsl_vector_view alpha_view = gsl_vector_view_array(alpha.getPointer(), alpha.getSize());
 
-  // calculating: Q * T^{-1} * Q^t * b
-  gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &q_view.matrix, &b_vector_view_cut.matrix, 0.0,
-                 &alpha_view_cut.matrix);
+  gsl_vector* interim2 = gsl_vector_alloc(Q.getNrows());
+
+  // calculating Q^t * b
+  gsl_blas_dgemv(CblasTrans, 1.0, &q_view.matrix, &b_vector_view_cut.vector, 0.0,
+                 &alpha_view_cut.vector);
 
   // calculating T^{-1} * Q^t * b
-  gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &t_inv_view.matrix, &alpha_view_cut.matrix, 0.0,
-                 interim2);
+  gsl_blas_dgemv(CblasNoTrans, 1.0, &t_inv_view.matrix, &alpha_view_cut.vector, 0.0, interim2);
 
   // calculating Q * T^{-1} * Q^t * b
-  gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &q_view.matrix, interim2, 0.0,
-                 &alpha_view_cut.matrix);
+  gsl_blas_dgemv(CblasNoTrans, 1.0, &q_view.matrix, interim2, 0.0, &alpha_view_cut.vector);
 
   // if B should not be considered
   if (!prior_refined || B.getNcols() == Q.getNcols()) {
-    if (interim2->size1 != alpha.getSize()) {
+    if (interim2->size != alpha.getSize()) {
       throw sgpp::base::algorithm_exception(
           "In DBMatDMSOrthoAdapt::solve: vector alpha does not match Q * T^{-1} * Q^t * b");
     }
   } else {
     // add the B*b term: alpha = alpha + B*b
-    gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &b_matrix_view.matrix, &b_vector_view.matrix,
-                   1.0, &alpha_view.matrix);  // gsl_blas allows to add to the target after mult.
+    gsl_blas_dgemv(CblasNoTrans, 1.0, &b_matrix_view.matrix, &b_vector_view.vector, 1.0,
+                   &alpha_view.vector);  // gsl_blas allows to add to the target after mult.
   }
 
   // DEBUG: print alpha after solving
@@ -83,7 +82,7 @@ void DBMatDMSOrthoAdapt::solve(sgpp::base::DataMatrix& T_inv, sgpp::base::DataMa
   //   std::cout << alpha.get(i) << "   ";
   // }
   // std::cout << std::endl;
-  gsl_matrix_free(interim2);
+  gsl_vector_free(interim2);
 }
 }  // namespace datadriven
 }  // namespace sgpp

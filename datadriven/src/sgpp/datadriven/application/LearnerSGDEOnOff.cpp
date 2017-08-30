@@ -556,7 +556,7 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
   size_t coarseCnt = 0;
   size_t maxCoarseNum = 3;
   // size_t coarsePeriod = 50;
-  size_t coarseNumPoints = 20;
+  size_t coarseNumPoints = 15;
   double coarseThreshold = 1.0;
 
   if (offline->isRefineable()) {
@@ -610,7 +610,7 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
 
           // int old_size = grid->getSize();
 
-          std::cout << "minIndexAllowed: " << minIndexAllowed << std::endl;
+          // std::cout << "minIndexAllowed: " << minIndexAllowed << std::endl;
           std::cout << "gridSize: " << grid.getSize() << std::endl;
           coarse_.free_coarsen_NFirstOnly(grid.getStorage(), scf, alphaWeight, grid.getSize(),
                                           minIndexAllowed);
@@ -658,7 +658,7 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
           sgpp::datadriven::DBMatDecompostionType::OrthoAdapt) {
         // todo: Kilian! the .adapt function of online_ortho_adapt is currently designed to
         // return a list of gridpoints which weren't allowed to be coarsened. But it seems
-        // appropriate to redesign the functors in a way, that allready consideres these points
+        // appropriate to redesign the functors in a way, that already considers these points
         // when coarsening the grid itself.
 
         // std::vector<size_t> not_coarsened_points =
