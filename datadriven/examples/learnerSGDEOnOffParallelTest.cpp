@@ -234,7 +234,7 @@ int main(int argc, char *argv[]) {
                                          cvTestDataRes, cvLogScale);
 
     // specify max number of passes over traininig data set
-    size_t maxDataPasses = 2;
+    size_t maxDataPasses = 1;
 
     /**
      * Learn the data.
