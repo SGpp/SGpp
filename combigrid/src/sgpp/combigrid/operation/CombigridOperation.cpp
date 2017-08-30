@@ -13,6 +13,7 @@
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearCallbackEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/AbstractPrecalculatedWeightsEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
@@ -290,6 +291,18 @@ std::shared_ptr<CombigridOperation> CombigridOperation::createExpClenshawCurtisQ
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>>(
           numDimensions, CombiEvaluators::quadrature()),
       std::make_shared<StandardLevelManager>(), func);
+}
+
+std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformBsplineInterpolation(
+    size_t numDimensions, MultiFunction func) {
+  return std::make_shared<CombigridOperation>(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>>(numDimensions,
+                                                           CombiHierarchies::expUniform()),
+      std::vector<std::shared_ptr<
+          AbstractLinearEvaluator<FloatScalarVector>>>(            // replace by PrecalulatedWeights
+          numDimensions, CombiEvaluators::linearInterpolation()),  // replace by Bspline!
+      std::make_shared<StandardLevelManager>(),
+      func);
 }
 
 } /* namespace combigrid */
