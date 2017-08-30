@@ -126,7 +126,7 @@ namespace sgpp {
 
         void MPIMethods::sendGridComponentsUpdate(std::vector<RefinementResult> *refinementResults) {
 
-            std::cout << "Updating the grid components on workers..." << std::endl;
+            D(std::cout << "Updating the grid components on workers..." << std::endl;)
 
             for (size_t classIndex = 0; classIndex < refinementResults->size(); classIndex++) {
                 RefinementResult refinementResult = (*refinementResults)[classIndex];
@@ -139,7 +139,7 @@ namespace sgpp {
                                       refinementResult.addedGridPoints);
             }
 
-            std::cout << "Finished updating the grid components on workers." << std::endl;
+            D(std::cout << "Finished updating the grid components on workers." << std::endl;)
         }
 
         void MPIMethods::sendRefinementUpdates(size_t &classIndex, std::list<size_t> &deletedGridPointsIndexes,
@@ -312,7 +312,7 @@ namespace sgpp {
         }
 
         //TODO: This was imported from Merge
-        size_t MPIMethods::receiveMergeGridNetworkMessage(MergeGridNetworkMessage &networkMessage) {
+        void MPIMethods::receiveMergeGridNetworkMessage(MergeGridNetworkMessage &networkMessage) {
 
             base::DataVector alphaVector(networkMessage.alphaTotalSize);
 
@@ -416,12 +416,14 @@ namespace sgpp {
 
                 networkMessage->payloadLength = numPointsInPacket;
 
-                D(std::cout << "Sending merge for class " << classIndex
-                            << " offset " << offset
-                            << " with " << numPointsInPacket << " values"
-                            << " and grid version " << networkMessage->gridversion << std::endl;
-                std::cout << "Alpha sum is " << std::accumulate(alphaVector.begin(), alphaVector.end(), 0.0)
-                          << std::endl;)
+                D(
+                        std::cout << "Sending merge for class " << classIndex
+                                  << " offset " << offset
+                                  << " with " << numPointsInPacket << " values"
+                                  << " and grid version " << networkMessage->gridversion << std::endl;
+                        std::cout << "Alpha sum is " << std::accumulate(alphaVector.begin(), alphaVector.end(), 0.0)
+                                  << std::endl;
+                )
                 sendISend(MPI_MASTER_RANK, mpiPacket);
                 offset += numPointsInPacket;
             }
@@ -560,9 +562,27 @@ namespace sgpp {
             int completedRequest = -1;
             MPI_Status mpiStatus{};
             D(std::cout << "Waiting for " << pendingMPIRequests.size() << " MPI requests to complete" << std::endl;)
+
+            D(auto begin = std::chrono::high_resolution_clock::now();)
             int requestStatus = MPI_Waitany(mpiRequestStorage.size(), mpiRequestStorage.getMPIRequests(),
                                             &completedRequest,
                                             &mpiStatus);
+            D(
+                    auto end = std::chrono::high_resolution_clock::now();
+
+                    long deltaMilliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+                    if (deltaMilliseconds > 100) {
+                        std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(begin.time_since_epoch()).count() - 1
+                                  << " active 1" << std::endl;
+                        std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(begin.time_since_epoch()).count()
+                                  << " active 0" << std::endl;
+                        std::cout << "Idle time " << deltaMilliseconds << "ms" << std::endl;
+                        std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end.time_since_epoch()).count()
+                                  << " active 0" << std::endl;
+                        std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end.time_since_epoch()).count() + 1
+                                  << " active 1" << std::endl;
+                    }
+            )
             D(std::cout << "MPI request " << completedRequest << " completed"
                         << " MPI_ERROR: " << mpiStatus.MPI_ERROR
                         << " MPI SOURCE: " << mpiStatus.MPI_SOURCE
@@ -716,8 +736,8 @@ namespace sgpp {
                         choleskyNetworkMessage->offset + processedPoints == choleskyDecomposition.size()) {
                         learnerInstance->setLocalGridVersion(classIndex, networkMessage->gridversion);
 
-                        std::cout << "Received cholesky decomposition for class " << classIndex
-                                  << ", will now broadcast decomposition" << std::endl;
+                        D(std::cout << "Received cholesky decomposition for class " << classIndex
+                                    << ", will now broadcast decomposition" << std::endl;)
                         sendCholeskyDecomposition(classIndex, choleskyDecomposition, MPI_ANY_SOURCE);
                     }
                     break;
@@ -737,8 +757,8 @@ namespace sgpp {
             //If this is not the last message in a series (gridversion inconsistent), then don't update variables yet
             //TODO: What if only deleted points?
             if (networkMessage->gridversion == GRID_RECEIVED_ADDED_POINTS && !isMaster()) {
-                std::cout << "Updating class " << classIndex << " variables as grid is now consistent with version "
-                          << networkMessage->gridversion << std::endl;
+                D(std::cout << "Updating class " << classIndex << " variables as grid is now consistent with version "
+                            << networkMessage->gridversion << std::endl;)
                 learnerInstance->updateClassVariablesAfterRefinement(classIndex, &refinementResult,
                                                                      learnerInstance->getDensityFunctions()[classIndex].first.get());
             }
@@ -832,8 +852,8 @@ namespace sgpp {
 
         void MPIMethods::runBatch(MPI_Packet *mpiPacket) {
             auto *message = (AssignBatchNetworkMessage *) mpiPacket->payload;
-            std::cout << "runbatch dim " << learnerInstance->getDimensionality() << std::endl;
-            std::cout << "creating dataset" << std::endl;
+            D(std::cout << "runbatch dim " << learnerInstance->getDimensionality() << std::endl;)
+            D(std::cout << "creating dataset" << std::endl;)
             Dataset dataset{message->batchSize, learnerInstance->getDimensionality()};
             learnerInstance->workBatch(dataset, message->batchOffset, message->doCrossValidation);
         }

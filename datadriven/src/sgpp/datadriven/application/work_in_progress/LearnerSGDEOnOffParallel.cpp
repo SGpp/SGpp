@@ -136,7 +136,7 @@ namespace sgpp {
 
                 // iterate over total number of batches
                 while (processedPoints < trainData.getNumberInstances()) {
-                    std::cout << "#processing batch: " << processedPoints << "\n";
+                    D(std::cout << "#processing batch: " << processedPoints << "\n";)
 
                     auto begin = std::chrono::high_resolution_clock::now();
 
@@ -155,11 +155,6 @@ namespace sgpp {
 
                     std::cout << processedPoints << " have already been assigned." << std::endl;
 
-                    while (!checkReadyForRefinement()) {
-                        D(std::cout << "Waiting for " << MPIMethods::getQueueSize()
-                                    << " queue operations to complete before continuing" << std::endl;)
-                        MPIMethods::waitForAnyMPIRequestsToComplete();
-                    }
 
                     // access DBMatOnlineDE-objects of all classes in order
                     // to apply adaptivity to the specific sparse grids later on
@@ -168,10 +163,17 @@ namespace sgpp {
 
                     // Refinement only occurs on the Master Node
 
-                    std::cout << "Checking if refinement is necessary." << std::endl;
+                    D(std::cout << "Checking if refinement is necessary." << std::endl;)
                     // check if refinement should be performed
                     if (checkRefinementNecessary(refMonitor, refPeriod, processedPoints, currentValidError,
                                                  currentTrainError, numberOfCompletedRefinements, monitor)) {
+
+                        while (!checkReadyForRefinement()) {
+                            D(std::cout << "Waiting for " << MPIMethods::getQueueSize()
+                                        << " queue operations to complete before continuing" << std::endl;)
+                            MPIMethods::waitForAnyMPIRequestsToComplete();
+                        }
+
                         // if the Cholesky decomposition is chosen as factorization method
                         // refinement
                         // and coarsening methods can be applied
@@ -182,27 +184,30 @@ namespace sgpp {
                         doRefinementForAll(refinementFunctorType, refMonitor, vectorRefinementResults,
                                            onlineObjects, monitor);
                         numberOfCompletedRefinements += 1;
-                        std::cout << "Refinement at " << processedPoints << " complete" << std::endl;
+                        D(std::cout << "Refinement at " << processedPoints << " complete" << std::endl;)
 
                         //Send the grid component update
                         //Note: This was moved to updateClassVariablesAfterRefinement as it needs to run before the cholesky update
 //                        MPIMethods::sendGridComponentsUpdate(vectorRefinementResults);
                     } else {
-                        std::cout << "No refinement necessary" << std::endl;
+                        D(std::cout << "No refinement necessary" << std::endl;)
                     }
 
-                    // save current error
-                    if (processedPoints % 10 == 0) {
-                        acc = getAccuracy();
-                        avgErrors.append(1.0 - acc);
-                    }
+                    //TODO: Evil
+//                    // save current error
+//                    if ((processedPoints / batchSize) % 10 == 0) {
+//                        acc = getAccuracy();
+//                        std::cout << "Saving current error " << acc << std::endl;
+//                        avgErrors.append(1.0 - acc);
+//                    }
 
                     auto end = std::chrono::high_resolution_clock::now();
-                    std::cout << "Processing batch in "
-                              << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
-                              << "ms" << std::endl;
-                    std::cout << "Processed " << processedPoints << " data points so far" << std::endl;
-
+                    D(
+                            std::cout << "Processing batch in "
+                                      << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
+                                      << "ms" << std::endl;
+                            std::cout << "Processed " << processedPoints << " data points so far" << std::endl;
+                    )
                 }
 
                 // Synchronize end of Data Pass
@@ -328,8 +333,8 @@ namespace sgpp {
             Grid &grid = densEst->getOfflineObject().getGrid();
 
             size_t oldGridSize = grid.getSize();
-            std::cout << "Size before adaptivity: " << oldGridSize
-                      << std::endl;
+            D(std::cout << "Size before adaptivity: " << oldGridSize
+                        << std::endl;)
 
             base::GridGenerator &gridGen = grid.getGenerator();
 
@@ -355,20 +360,13 @@ namespace sgpp {
                 exit(-1);
             }
 
-            std::cout << "Preparing refinement result update" << std::endl;
-            if (!refinementResult->addedGridPoints.empty()) {
-                std::cout << "Clearing old added grid points" << std::endl;
-                refinementResult->addedGridPoints.clear();
-            } else {
-                std::cout << "Added grid points list already empty" << std::endl;
-            }
+            D(std::cout << "Preparing refinement result update" << std::endl;)
+            D(std::cout << "Clearing old added grid points" << std::endl;)
+            refinementResult->addedGridPoints.clear();
 
-            if (!refinementResult->deletedGridPointsIndexes.empty()) {
-                std::cout << "Clearing old deleted grid points" << std::endl;
-                refinementResult->deletedGridPointsIndexes.clear();
-            } else {
-                std::cout << "Deleted grid points list already empty" << std::endl;
-            }
+            D(std::cout << "Clearing old deleted grid points" << std::endl;)
+            refinementResult->deletedGridPointsIndexes.clear();
+
 
             size_t numDimensions = getDimensionality();
             //Collect new grid points into the refinement result for shipping
@@ -405,7 +403,7 @@ namespace sgpp {
 
             if (!MPIMethods::isMaster()) {
                 std::cout << "Applying refinement result class " << classIndex << " from master" << std::endl;
-                std::cout << "Old grid " << classIndex << " size is " << grid.getSize() << std::endl;
+                D(std::cout << "Old grid " << classIndex << " size is " << grid.getSize() << std::endl;)
 
 
                 size_t numDimensions = getDimensionality();
@@ -414,7 +412,7 @@ namespace sgpp {
                 grid.getStorage().deletePoints(refinementResult->deletedGridPointsIndexes);
 
                 size_t sizeBeforeAdditions = grid.getSize();
-                std::cout << "Grid size after deleting is " << sizeBeforeAdditions << std::endl;
+                D(std::cout << "Grid size after deleting is " << sizeBeforeAdditions << std::endl;)
 
                 //Add grid points added on master thread
                 for (LevelIndexVector &levelIndexVector : refinementResult->addedGridPoints) {
@@ -428,20 +426,23 @@ namespace sgpp {
                                        levelIndexVector[currentDimension].index);
                     }
                     grid.getStorage().insert(*gridPoint);
-                    size_t sizeAfterPoint = grid.getSize();
-                    if (sizeAfterPoint - sizeBeforePoint != 1) {
-                        std::cout << "Inserted grid point but size change incorrect (old " << sizeBeforePoint
-                                  << ", new " << sizeAfterPoint << "), point " << gridPoint->getHash() << std::endl;
-                        printPoint(gridPoint);
-                        exit(-1);
-                    }
+                    D(
+                            size_t sizeAfterPoint = grid.getSize();
+                            if (sizeAfterPoint - sizeBeforePoint != 1) {
+                                std::cout << "Inserted grid point but size change incorrect (old " << sizeBeforePoint
+                                          << ", new " << sizeAfterPoint << "), point " << gridPoint->getHash()
+                                          << std::endl;
+                                printPoint(gridPoint);
+                                exit(-1);
+                            }
+                    )
                 }
 
                 //TODO: This might be unnecessary
                 grid.getStorage().recalcLeafProperty();
 
                 size_t sizeAfterAdditions = grid.getSize();
-                std::cout << "New grid " << classIndex << " size is " << sizeAfterAdditions << std::endl;
+                D(std::cout << "New grid " << classIndex << " size is " << sizeAfterAdditions << std::endl;)
                 if (sizeAfterAdditions - sizeBeforeAdditions != refinementResult->addedGridPoints.size()) {
                     std::cout << "Grid growth not correlated to refinement results (grid delta "
                               << sizeAfterAdditions - sizeBeforeAdditions << ", additions "
@@ -481,8 +482,8 @@ namespace sgpp {
             size_t oldSize = densEst->getAlpha().size();
             densEst->updateAlpha(&(refinementResult->deletedGridPointsIndexes),
                                  refinementResult->addedGridPoints.size());
-            std::cout << "Updated alpha vector " << classIndex << " (old size " << oldSize << ", new size " <<
-                      densEst->getAlpha().size() << ")" << std::endl;
+            D(std::cout << "Updated alpha vector " << classIndex << " (old size " << oldSize << ", new size " <<
+                        densEst->getAlpha().size() << ")" << std::endl;)
         }
 
         void
@@ -511,7 +512,7 @@ namespace sgpp {
                                                   refinementResult.deletedGridPointsIndexes, densEst->getBestLambda());
 
             setLocalGridVersion(classIndex, gridversion);
-            std::cout << "Send cholesky update to master for class " << classIndex << std::endl;
+            D(std::cout << "Send cholesky update to master for class " << classIndex << std::endl;)
             DataMatrix &newDecomposition = dbMatOfflineChol.getDecomposedMatrix();
             MPIMethods::sendCholeskyDecomposition(classIndex, newDecomposition, 0);
         }
@@ -727,7 +728,7 @@ namespace sgpp {
                     densityFunctions[i].first->computeDensityFunction(
                             *p.first, true, doCrossValidation, &classRefinementResult.deletedGridPointsIndexes,
                             classRefinementResult.addedGridPoints.size());
-                    std::cout << "Clearing the refinement results class " << i << std::endl;
+                    D(std::cout << "Clearing the refinement results class " << i << std::endl;)
                     classRefinementResult.deletedGridPointsIndexes.clear();
                     classRefinementResult.addedGridPoints.clear();
 
@@ -791,8 +792,8 @@ namespace sgpp {
             D(std::cout << "Batch " << batchOffset - dataset.getNumberInstances() << " completed." << std::endl;)
             auto &densityFunctions = getDensityFunctions();
             for (size_t classIndex = 0; classIndex < getNumClasses(); classIndex++) {
-                std::cout << "Sending alpha values to master for class " << classIndex << " with grid version "
-                          << getCurrentGridVersion(classIndex) << std::endl;
+                D(std::cout << "Sending alpha values to master for class " << classIndex << " with grid version "
+                            << getCurrentGridVersion(classIndex) << std::endl;)
                 auto &classDensityContainer = densityFunctions[classIndex];
                 DataVector alphaVector = classDensityContainer.first->getAlpha();
                 MPIMethods::sendMergeGridNetworkMessage(classIndex, batchOffset, dataset.getNumberInstances(),
@@ -803,8 +804,8 @@ namespace sgpp {
                             << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;)
 
             }
-            std::cout << "Completed work batch " << batchOffset - dataset.getNumberInstances()
-                      << " requested by master." << std::endl;
+            D(std::cout << "Completed work batch " << batchOffset - dataset.getNumberInstances()
+                        << " requested by master." << std::endl;)
         }
 
         bool LearnerSGDEOnOffParallel::isVersionConsistent(size_t version) { return version >= 10; }
@@ -828,9 +829,11 @@ namespace sgpp {
             MPIMethods::waitForGridConsistent(classIndex);
 
 
-            D(std::cout << "Remote alpha sum " << classIndex << " is "
+            D(
+                    std::cout << "Remote alpha sum " << classIndex << " is "
                         << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;
-                      std::cout << "Batch size is " << batchSize << std::endl;)
+                    std::cout << "Batch size is " << batchSize << std::endl;
+            )
 
             if (!isVersionConsistent(gridVersion)) {
                 std::cout << "Received merge request with inconsistent grid " << classIndex << " version "
@@ -844,26 +847,26 @@ namespace sgpp {
             }
 
             if (gridVersion != localGridVersion) {
-                std::cout << "Received merge grid request with incorrect grid version!"
-                          << " local: " << localGridVersion
-                          << ", remote: " << gridVersion
-                          << std::endl;
+                D(std::cout << "Received merge grid request with incorrect grid version!"
+                            << " local: " << localGridVersion
+                            << ", remote: " << gridVersion
+                            << std::endl;)
                 if (gridVersion + 1 == localGridVersion) {
                     RefinementResult &refinementResult = (*vectorRefinementResults)[classIndex];
                     std::list<size_t> &deletedPoints = refinementResult.deletedGridPointsIndexes;
                     std::list<LevelIndexVector> &addedPoints = refinementResult.addedGridPoints;
 
-                    std::cout << "Attempting to automatically compensate for outdated grid." << std::endl <<
-                              "Refinement result has " << addedPoints.size() << " additions and "
-                              << deletedPoints.size() << " deletions" << std::endl <<
-                              "The original remote size is " << dataVector.size() << std::endl;
+                    D(std::cout << "Attempting to automatically compensate for outdated grid." << std::endl <<
+                                "Refinement result has " << addedPoints.size() << " additions and "
+                                << deletedPoints.size() << " deletions" << std::endl <<
+                                "The original remote size is " << dataVector.size() << std::endl;)
                     if (!deletedPoints.empty()
                         || !addedPoints.empty()) {
-                        std::cout << "Found necessary refinement data" << std::endl;
+                        D(std::cout << "Found necessary refinement data" << std::endl;)
 
                         //See DBMatOnlineDe::updateAlpha()
                         if (!deletedPoints.empty()) {
-                            std::cout << "Copying vector (deleting deleted grid points)." << std::endl;
+                            D(std::cout << "Copying vector (deleting deleted grid points)." << std::endl;)
                             DataVector newAlpha{dataVector.getSize() - deletedPoints.size() + addedPoints.size()};
                             for (size_t i = 0; i < dataVector.getSize(); i++) {
                                 if (std::find(deletedPoints.begin(), deletedPoints.end(), i) != deletedPoints.end()) {
@@ -876,7 +879,8 @@ namespace sgpp {
                             dataVector = newAlpha;
                         }
                         dataVector.resizeZero(dataVector.size() + addedPoints.size());
-                        std::cout << "New alpha vector is now " << dataVector.size() << " elements long." << std::endl;
+                        D(std::cout << "New alpha vector is now " << dataVector.size() << " elements long."
+                                    << std::endl;)
                     } else {
                         std::cout << "Refinement data has already been deleted." << std::endl
                                   << "This is probably because the master is training from batches. " << std::endl
@@ -926,8 +930,15 @@ namespace sgpp {
         }
 
         void LearnerSGDEOnOffParallel::setLocalGridVersion(size_t classIndex, size_t gridVersion) {
-            D(std::cout << "Grid " << classIndex << " now has version " << gridVersion << " (previously "
-                        << localGridVersions[classIndex] << ")" << std::endl;)
+            D(
+                    if (localGridVersions[classIndex] != gridVersion) {
+                        std::cout << "Grid " << classIndex << " now has version " << gridVersion << " (previously "
+                                  << localGridVersions[classIndex] << ")" << std::endl;
+                    }
+            )
+            if (!checkGridStateConsistent(localGridVersions[classIndex]) && checkGridStateConsistent(classIndex)) {
+                std::cout << "Grid " << classIndex << " has been fully updated to version " << std::endl;
+            }
             localGridVersions[classIndex] = gridVersion;
         }
 

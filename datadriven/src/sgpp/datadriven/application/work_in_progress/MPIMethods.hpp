@@ -107,7 +107,7 @@ namespace sgpp {
 
             static void runBatch(MPI_Packet *pPacket);
 
-            static size_t
+            static void
             receiveMergeGridNetworkMessage(MergeGridNetworkMessage &networkMessage);
 
             static PendingMPIRequest &createPendingMPIRequest(MPI_Packet *mpiPacket, bool isInbound);
