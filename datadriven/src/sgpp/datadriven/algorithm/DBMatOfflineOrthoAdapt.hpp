@@ -48,7 +48,6 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    * (lhs + lambda*I)^{-1} = Q * (T + lambda*I)^{-1} * Q^t = Q * T_inv * Q^t
    *
    * The matrix lhsMatrix of the parent object will be altered during the process
-   * uses: hessenberg_decomposition, invert_symmetric_tridiag
    */
   void decomposeMatrix();
 
@@ -65,20 +64,17 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
   /**
    * Inverts a symmetric tridiagonal matrix T, which is given in the form of
    * its diagonal and subdiagonal vectors. When finished, diag and subdiag no
-   * more hold their initial values.
+   * longer hold their initial values.
    *
    * @param diag diagonal entries of T
-   * @param subdiag and superdiagonal entries of T (symmetric)
+   * @param subdiag sub- and superdiagonal entries of T (symmetric)
    */
   void invert_symmetric_tridiag(gsl_vector* diag, gsl_vector* subdiag);
 
   /**
    * Serializes the DBMatOfflineOrthoAdapt object
-   * The lhsMatrix is stored in the form of compact tridiagonal decomposition,
-   * which means the diagonal and subdiagonal of lhsMatrix are stored, and the
-   * lower left part of the matrix holds the householder vectors.
    *
-   * q_ortho_matrix_ and t_inv_tridiag_ are also stored into the specified file,
+   * q_ortho_matrix_ and t_inv_tridiag_ are stored into the specified file,
    * which is the explicit representation of the decomposition needed for the
    * online phase
    *

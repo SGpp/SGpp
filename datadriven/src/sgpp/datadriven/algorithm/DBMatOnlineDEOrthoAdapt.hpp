@@ -46,30 +46,31 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    */
   void add_new_refine_point(sgpp::base::DataVector& x) { this->refined_points_.push_back(x); };
 
+  /**
+   * Gets pointer to the container of refined points, only for testing purposes
+   */
   std::vector<sgpp::base::DataVector>* getRefinedPointsPointer() {
     return &(this->refined_points_);
   };
 
   /**
-   * Rank-one updates/downdates the system matrix, based on the sherman-morrison-formula
+   * Rank-one updates/downdates the system matrix, based on the Sherman-Morrison-formula
    * In the current version of the function, the refinePts already are adapted
    * to the regularization parameter lambda.
    *
    * @param newPoints number of refined points
    * @param refine decides: true for refine, false for coarsen
-   * @param coarsen_indices the indices of points to coarsen sorted in descendant order
+   * @param coarsen_indices the indices of points to coarsen
    */
   void sherman_morrison_adapt(size_t newPoints, bool refine,
                               std::vector<size_t> coarsen_indices = {});
-
-  // holds all prior refined points, to know what to coarsen later on
-  std::vector<sgpp::base::DataVector> refined_points_;
-
 
  protected:
   // matrix, which holds information about refined/coarsened points
   sgpp::base::DataMatrix b_adapt_matrix_;
 
+  // holds all prior refined points, to know what to coarsen later on
+  std::vector<sgpp::base::DataVector> refined_points_;
 
   // points to end of refined_points_, !which already were processed!
   size_t current_refine_index;
@@ -81,7 +82,7 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    * Solves the system (R + lambda*I) * alpha = b, and obtains alpha
    * The solving is done after offline and online phase and works as follows:
    * (R + lambda*I)^{-1} * b = ((Q*T^{-1}*Q^{t} + B) * b = alpha,
-   * where B yields the refine/coarsen information
+   * where B holds the refine/coarsen information
    *
    * @param b The right hand side of the system
    * @param do_cv Specifies, if cross-validation should be done (todo: currently not implemented)

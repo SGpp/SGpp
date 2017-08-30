@@ -8,7 +8,6 @@
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
 
-#include <iomanip>
 #include <string>
 
 namespace sgpp {
@@ -103,16 +102,20 @@ void DBMatOfflineOrthoAdapt::hessenberg_decomposition(gsl_vector* diag, gsl_vect
   gsl_matrix_view gsl_lhs = gsl_matrix_view_array(this->lhsMatrix.getPointer(), dim_a, dim_a);
   gsl_matrix_view gsl_q = gsl_matrix_view_array(this->q_ortho_matrix_.getPointer(), dim_a, dim_a);
 
+  // does the decomposition
   gsl_linalg_symmtd_decomp(&gsl_lhs.matrix, tau);
+
+  // unpacks information out of matrix to explicitly create Q, and T
   gsl_linalg_symmtd_unpack(&gsl_lhs.matrix, tau, &gsl_q.matrix, diag, subdiag);
 
   gsl_vector_free(tau);
 }
 
 void DBMatOfflineOrthoAdapt::invert_symmetric_tridiag(gsl_vector* diag, gsl_vector* subdiag) {
-  gsl_vector* e = gsl_vector_calloc(diag->size);  // calloc set all values to zero
+  gsl_vector* e = gsl_vector_calloc(diag->size);  // calloc sets all values to zero
   gsl_vector* x = gsl_vector_alloc(diag->size);   // target of solving
 
+  // loops columns of T_inv
   for (size_t k = 0; k < this->t_tridiag_inv_matrix_.getNcols(); k++) {
     e->data[k] = 1;
     gsl_linalg_solve_symm_tridiag(diag, subdiag, e, x);
@@ -143,6 +146,7 @@ void DBMatOfflineOrthoAdapt::store(const std::string& fileName) {
   gsl_matrix_view t_inv_view =
       gsl_matrix_view_array(this->t_tridiag_inv_matrix_.getPointer(), this->dim_a, this->dim_a);
   gsl_matrix_fwrite(outCFile, &t_inv_view.matrix);
+
   fclose(outCFile);
 }
 }  // namespace datadriven

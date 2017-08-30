@@ -9,6 +9,7 @@
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 
+#include <chrono>
 #include <string>
 
 using sgpp::base::DataMatrix;
@@ -33,6 +34,7 @@ using sgpp::base::DataVector;
  */
 
 int main() {
+  auto begin = std::chrono::high_resolution_clock::now();
   /**
    * Specify the number of runs to perform.
    * If only one specific example should be executed, set
@@ -86,7 +88,7 @@ int main() {
       std::cout << "# create grid config" << std::endl;
       sgpp::base::RegularGridConfiguration gridConfig;
       gridConfig.dim_ = trainDataset.getDimension();
-      gridConfig.level_ = 10;
+      gridConfig.level_ = 8;
       gridConfig.type_ = sgpp::base::GridType::Linear;
       // gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
@@ -164,8 +166,8 @@ int main() {
        * Specify number of refinement steps and the max number
        * of grid points to refine each step.
        */
-      adaptConfig.numRefinements_ = 20;
-      adaptConfig.noPoints_ = 30;
+      adaptConfig.numRefinements_ = 10;
+      adaptConfig.noPoints_ = 10;
       adaptConfig.threshold_ = 0.0;  // only required for surplus refinement
 
       // initial regularization parameter lambda
@@ -246,15 +248,18 @@ int main() {
 
     // write error evaluation to csv-file
     std::ofstream output;
-    output.open("SGDEOnOff_avg_classification_error_"+std::to_string(numSets+1)+".csv");
+    output.open("SGDEOnOff_avg_classification_error_" + std::to_string(numSets + 1) + ".csv");
     if (output.fail()) {
       std::cout << "failed to create csv file!" << std::endl;
-    }
-    else {
+    } else {
       for (size_t i = 0; i < avgErrorsFolds.getSize(); i++) {
         output << avgErrorsFolds.get(i) << ";" << std::endl;
       }
       output.close();
     }
   }
+  auto end = std::chrono::high_resolution_clock::now();
+  std::cout << "whole learnerSGDEOnOff test took "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms"
+            << std::endl;
 }
