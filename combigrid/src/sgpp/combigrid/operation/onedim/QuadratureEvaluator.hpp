@@ -26,6 +26,7 @@ namespace combigrid {
 class QuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVector> {
   std::vector<double> xValues;
   std::vector<FloatScalarVector> weights;
+  std::vector<double> basisCoefficients;
   sgpp::combigrid::SingleFunction weight_function;
   bool normalizeWeights;
   bool isCustomWeightFunction;
@@ -53,19 +54,21 @@ class QuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVector> {
   QuadratureEvaluator(QuadratureEvaluator const &other);
   virtual ~QuadratureEvaluator();
 
-  virtual std::vector<FloatScalarVector> getBasisCoefficients() { return weights; }
+  std::vector<FloatScalarVector> getBasisValues() override { return weights; }
+  std::vector<double> getBasisCoefficients() override { return basisCoefficients; }
 
-  virtual void setGridPoints(std::vector<double> const &newXValues);
+  void setGridPoints(std::vector<double> const &newXValues) override;
+  void setFunctionValuesAtGridPoints(std::vector<double> &functionValues) override;
 
-  virtual bool needsOrderedPoints();
-  virtual bool needsParameter();
-  virtual void setParameter(FloatScalarVector const &param);
+  bool needsOrderedPoints() override;
+  bool needsParameter() override;
+  void setParameter(FloatScalarVector const &param) override;
 
   // can be used as a measure of stability of the quadrature algorithm. Minimum (and optimum) in
   // case of normalized weights is 1.0, i.e. all weights are non-negative.
   double getAbsoluteWeightSum() const;
 
-  virtual std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cloneLinear();
+  std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cloneLinear() override;
 };
 
 #endif /* QUADRATUREEVALUATOR_HPP_ */

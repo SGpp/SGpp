@@ -156,6 +156,7 @@ def example3():
     firstParam = [0.2, 0.6, 0.7]
     secondParam = [0.3, 0.9, 1.0]
     parameters = pysgpp.DataMatrix([firstParam, secondParam])
+    print parameters
 
     ## Let's use the simple interface for this example and stop the time:
     stopwatch = pysgpp.Stopwatch()
@@ -312,20 +313,20 @@ def example6():
 
 # Call the examples
 
-print("Example 1:")
-example1()
-
-print("\nExample 2:")
-example2()
+# print("Example 1:")
+# example1()
+#
+# print("\nExample 2:")
+# example2()
 
 print("\nExample 3:")
 example3()
 
-print("\nExample 4:")
-example4()
-
-print("\nExample 5:")
-example5()
-
-print("\nExample 6:")
-example6()
+# print("\nExample 4:")
+# example4()
+#
+# print("\nExample 5:")
+# example5()
+#
+# print("\nExample 6:")
+# example6()

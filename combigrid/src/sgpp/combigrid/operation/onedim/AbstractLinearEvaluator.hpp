@@ -7,6 +7,7 @@
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_ABSTRACTLINEAREVALUATOR_HPP_
 
 #include <sgpp/combigrid/operation/onedim/AbstractEvaluator.hpp>
+#include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 
 #include <vector>
 
@@ -36,8 +37,10 @@ class AbstractLinearEvaluator : public AbstractEvaluator<V> {
    * Continuing the example above, if you would have evaluation points 0.2 and 0.4, the basis
    * coefficients returned should be ((0.6, 0.2), (0.4, 0.8)).
    */
-  virtual std::vector<V> getBasisCoefficients() = 0;
+  virtual std::vector<V> getBasisValues() = 0;
+  virtual std::vector<double> getBasisCoefficients() = 0;
 
+  virtual void setFunctionValuesAtGridPoints(std::vector<double> &functionValues) = 0;
   virtual void setGridPoints(std::vector<double> const &xValues) = 0;
 
   /**
@@ -53,31 +56,14 @@ class AbstractLinearEvaluator : public AbstractEvaluator<V> {
    * AbstractLinearEvaluator provides a standard implementation of this method based on
    * getBasisCoefficients().
    */
-  virtual V eval(std::vector<double> const &functionValues) {
+  virtual V eval() {
+    auto basisValues = getBasisValues();
     auto basisCoefficients = getBasisCoefficients();
 
     V sum = V::zero();
-    for (size_t i = 0; i < functionValues.size(); ++i) {
-      V v = basisCoefficients[i];
-      v.scalarMult(functionValues[i]);
-      sum.add(v);
-    }
-
-    return sum;
-  }
-
-  /**
-   * AbstractLinearEvaluator provides a standard implementation of this method based on
-   * getBasisCoefficients().
-   */
-  virtual V eval(std::vector<V> const &functionValues) {
-    auto basisCoefficients = getBasisCoefficients();
-
-    V sum = V::zero();
-
-    for (size_t i = 0; i < functionValues.size(); ++i) {
-      V v = basisCoefficients[i];
-      v.componentwiseMult(functionValues[i]);
+    for (size_t i = 0; i < basisCoefficients.size(); ++i) {
+      V v = basisValues[i];
+      v.scalarMult(basisCoefficients[i]);
       sum.add(v);
     }
 
