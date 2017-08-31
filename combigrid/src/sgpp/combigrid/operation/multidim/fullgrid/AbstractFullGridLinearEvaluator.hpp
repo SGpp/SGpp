@@ -14,8 +14,9 @@
 #include <sgpp/combigrid/threading/PtrGuard.hpp>
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FunctionValuesCoefficientsStorage.hpp>
-
+#include <sgpp/combigrid/operation/multidim/fullgrid/SLECoefficientsStorage.hpp>
 #include <vector>
+#include <memory>
 
 namespace sgpp {
 namespace combigrid {
@@ -81,11 +82,24 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
       orderingConfiguration[d] = evaluatorPrototypes[d]->needsOrderedPoints();
     }
 
-    // init coefficient storage
-    coefficientsStorage = std::make_shared<FunctionValuesCoefficientsStorage>();
+    initializeCoefficientStorage();
   }
 
   virtual ~AbstractFullGridLinearEvaluator() {}
+
+  void initializeCoefficientStorage() {
+    size_t d = 0;
+    while (d < evaluatorPrototypes.size()) {
+      auto &currentEvaluator = evaluatorPrototypes[d];
+      if (currentEvaluator->getBasisCoefficientComputationType() ==
+          BasisCoefficientsComputationType::SLE) {
+        coefficientsStorage = std::make_shared<SLECoefficientsStorage>();
+      }
+      d++;
+    }
+
+    coefficientsStorage = std::make_shared<FunctionValuesCoefficientsStorage>();
+  }
 
   /**
    * Evaluates the function given through the storage for a certain level-multi-index (see class
