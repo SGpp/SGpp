@@ -51,7 +51,7 @@ namespace sgpp {
                 : LearnerSGDEOnOff(dconf, trainData, testData, validationData, classLabels, numClassesInit, usePrior,
                                    beta, lambda), mpiTaskScheduler(mpiTaskScheduler) {
 
-            vectorRefinementResults = new std::vector<RefinementResult>(numClasses);
+            vectorRefinementResults.reserve(numClasses);
             localGridVersions.insert(localGridVersions.begin(), numClasses, 10);
             mpiTaskScheduler.setLearnerInstance(this);
             workerActive = true;
@@ -184,8 +184,7 @@ namespace sgpp {
                         std::cout << "refinement at iteration: " << processedPoints << std::endl;
                         mpiTaskScheduler.onRefinementStarted();
 
-                        doRefinementForAll(refinementFunctorType, refMonitor, vectorRefinementResults,
-                                           onlineObjects, monitor);
+                        doRefinementForAll(refinementFunctorType, refMonitor, onlineObjects, monitor);
                         numberOfCompletedRefinements += 1;
                         D(std::cout << "Refinement at " << processedPoints << " complete" << std::endl;)
 
@@ -226,8 +225,6 @@ namespace sgpp {
 
             error = 1.0 - getAccuracy();
 
-            // delete offline;
-            delete vectorRefinementResults;
         }
 
         bool LearnerSGDEOnOffParallel::checkReadyForRefinement() const {
@@ -256,7 +253,6 @@ namespace sgpp {
 
         void LearnerSGDEOnOffParallel::doRefinementForAll(const std::string &refinementFunctorType,
                                                           const std::string &refinementMonitorType,
-                                                          std::vector<RefinementResult> *vectorRefinementResults,
                                                           const ClassDensityContainer &onlineObjects,
                                                           ConvergenceMonitor &monitor) {
             // acc = getAccuracy();
@@ -303,7 +299,7 @@ namespace sgpp {
             // perform refinement/coarsening for each grid
             for (size_t idx = 0; idx < this->getNumClasses(); idx++) {
                 this->doRefinementForClass(refinementFunctorType,
-                                           &((*vectorRefinementResults)[idx]),
+                                           &(vectorRefinementResults[idx]),
                                            onlineObjects,
                                            preCompute, func, idx);
             }
@@ -493,7 +489,7 @@ namespace sgpp {
         LearnerSGDEOnOffParallel::computeNewCholeskyDecomposition(size_t classIndex, size_t gridversion) {
 
             // The first check is to ensure that all segments of an update have been received (intermediate segments set grid version to TEMPORARILY_INCONSISTENT)
-            RefinementResult &refinementResult = (*vectorRefinementResults)[classIndex];
+            RefinementResult &refinementResult = vectorRefinementResults[classIndex];
             while (getCurrentGridVersion(classIndex) == GRID_TEMPORARILY_INCONSISTENT || (
                     refinementResult.deletedGridPointsIndexes.empty() &&
                     refinementResult.addedGridPoints.empty())) {
@@ -650,8 +646,7 @@ namespace sgpp {
         }
 
         // Train from an entire Batch
-        void LearnerSGDEOnOffParallel::train(Dataset &dataset, bool doCrossValidation,
-                                             std::vector<RefinementResult> *vectorRefinementResults) {
+        void LearnerSGDEOnOffParallel::train(Dataset &dataset, bool doCrossValidation) {
             size_t dim = dataset.getDimension();
 
             std::cout << "Starting train cycle (dataset size: " << dataset.getNumberInstances() << ")" << std::endl;
@@ -673,7 +668,7 @@ namespace sgpp {
 
             D(std::cout << "Computing density functions" << std::endl;)
             // compute density functions
-            train(trainDataClasses, doCrossValidation, vectorRefinementResults);
+            train(trainDataClasses, doCrossValidation);
 
             D(std::cout << "Finished train cycle." << std::endl;)
         }
@@ -707,10 +702,9 @@ namespace sgpp {
         }
 
         //Train from a Batch already split up into its classes
-        void LearnerSGDEOnOffParallel::train(
-                std::vector<std::pair<sgpp::base::DataMatrix *, double> > &trainDataClasses,
-                bool doCrossValidation,
-                std::vector<RefinementResult> *vectorRefinementResults) {
+        void
+        LearnerSGDEOnOffParallel::train(std::vector<std::pair<sgpp::base::DataMatrix *, double> > &trainDataClasses,
+                                        bool doCrossValidation) {
 
             //Calculate the total number of data points
             size_t numberOfDataPoints = 0;
@@ -724,7 +718,7 @@ namespace sgpp {
 
                 if ((*p.first).getNrows() > 0) {
                     // update density function for current class
-                    RefinementResult &classRefinementResult = (*vectorRefinementResults)[i];
+                    RefinementResult &classRefinementResult = vectorRefinementResults[i];
                     std::cout << "Calling compute density function class " << i << " (refinement +"
                               << classRefinementResult.addedGridPoints.size() << ", -"
                               << classRefinementResult.deletedGridPointsIndexes.size() << ")" << std::endl;
@@ -768,18 +762,7 @@ namespace sgpp {
         void LearnerSGDEOnOffParallel::workBatch(Dataset dataset, size_t batchOffset, bool doCrossValidation) {
 
 
-            size_t classIndex = 0;
-            while (classIndex < localGridVersions.size()) {
-                if (!checkGridStateConsistent(classIndex)) {
-                    std::cout << "Attempted to train from an inconsistent grid "
-                              << classIndex << " version " << getCurrentGridVersion(classIndex) << std::endl;
-                    MPIMethods::waitForGridConsistent(classIndex);
-                    //start over, waiting might have changed other grids
-                    classIndex = 0;
-                } else {
-                    classIndex++;
-                }
-            }
+            waitForAllGridsConsistent();
 
             // assemble next batch
             std::cout << "Learning with batch of size " << dataset.getNumberInstances()
@@ -789,7 +772,7 @@ namespace sgpp {
                         << std::endl;)
 
             // train the model with current batch
-            train(dataset, doCrossValidation, vectorRefinementResults);
+            train(dataset, doCrossValidation);
 
             // Batch offset was already modified by assembleNextBatch
             D(std::cout << "Batch " << batchOffset - dataset.getNumberInstances() << " completed." << std::endl;)
@@ -809,6 +792,21 @@ namespace sgpp {
             }
             D(std::cout << "Completed work batch " << batchOffset - dataset.getNumberInstances()
                         << " requested by master." << std::endl;)
+        }
+
+        void LearnerSGDEOnOffParallel::waitForAllGridsConsistent() {
+            size_t classIndex = 0;
+            while (classIndex < localGridVersions.size()) {
+                if (!checkGridStateConsistent(classIndex)) {
+                    std::cout << "Attempted to train from an inconsistent grid "
+                              << classIndex << " version " << getCurrentGridVersion(classIndex) << std::endl;
+                    MPIMethods::waitForGridConsistent(classIndex);
+                    //start over, waiting might have changed other grids
+                    classIndex = 0;
+                } else {
+                    classIndex++;
+                }
+            }
         }
 
         bool LearnerSGDEOnOffParallel::isVersionConsistent(size_t version) { return version >= 10; }
@@ -861,7 +859,7 @@ namespace sgpp {
                             << ", remote: " << gridVersion
                             << std::endl;)
                 if (gridVersion + 1 == localGridVersion) {
-                    RefinementResult &refinementResult = (*vectorRefinementResults)[classIndex];
+                    RefinementResult &refinementResult = vectorRefinementResults[classIndex];
                     std::list<size_t> &deletedPoints = refinementResult.deletedGridPointsIndexes;
                     std::list<LevelIndexVector> &addedPoints = refinementResult.addedGridPoints;
 
@@ -955,7 +953,7 @@ namespace sgpp {
         }
 
         RefinementResult &LearnerSGDEOnOffParallel::getRefinementResult(size_t classIndex) {
-            return (*vectorRefinementResults)[classIndex];
+            return vectorRefinementResults[classIndex];
         }
 
         void LearnerSGDEOnOffParallel::printPoint(base::HashGridStorage::point_type *gridPoint) {
