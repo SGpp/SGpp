@@ -117,9 +117,6 @@ namespace sgpp {
 
             size_t dim = getDimensionality();
 
-            // determine number of batches to process
-            size_t numBatch = trainData.getNumberInstances() / batchSize;
-
             // pointer to the next batch (data points + class labels) to be processed
             Dataset dataBatch(batchSize, dim);
 
@@ -158,11 +155,6 @@ namespace sgpp {
 
                     std::cout << processedPoints << " have already been assigned." << std::endl;
 
-
-                    // access DBMatOnlineDE-objects of all classes in order
-                    // to apply adaptivity to the specific sparse grids later on
-                    //TODO: check if this is necessary
-//                    onlineObjects = getDensityFunctions();
 
                     // Refinement only occurs on the Master Node
 
@@ -228,9 +220,7 @@ namespace sgpp {
         }
 
         bool LearnerSGDEOnOffParallel::checkReadyForRefinement() const {
-            // Queue size equal to two
-            // All local grids in a consistent state
-            //TODO: Avoid a queue size check
+            // All local grids in a consistent state and have OK from scheduler
             return mpiTaskScheduler.isReadyForRefinement()
                    && std::all_of(localGridVersions.begin(), localGridVersions.end(),
                                   [](size_t version) { return isVersionConsistent(version); });
@@ -280,7 +270,6 @@ namespace sgpp {
             // to be marked relevant). Cross-validation or similar can/should be
             // employed
             // to determine this value.
-            //TODO: Investigate this
             std::vector<double> coeffA;
             coeffA.push_back(1.2);  // ripley 1.2
             coeffA.push_back(1.2);  // ripley 1.2
@@ -449,11 +438,8 @@ namespace sgpp {
                     exit(-1);
                 }
             }
-                //TODO: We might need to transfer the results here.
-                //TODO: This needs to be moved and replaced by a request.
-                // apply grid changes to the Cholesky factorization
             else {
-
+                // apply grid changes to the Cholesky factorization
                 size_t currentGridVersion = getCurrentGridVersion(classIndex);
                 if (!checkGridStateConsistent(classIndex)) {
                     std::cout << "Attempting to increment grid version on non consistent grid " << classIndex
@@ -473,7 +459,7 @@ namespace sgpp {
 
                     std::cout << "Assigning update of cholesky decomposition " << classIndex << " to worker "
                               << assignTaskResult.workerID << std::endl;
-                    MPIMethods::assignCholeskyUpdate(assignTaskResult.workerID, classIndex);
+                    MPIMethods::assignSystemMatrixUpdate(assignTaskResult.workerID, classIndex);
                 }
             }
 
@@ -506,7 +492,7 @@ namespace sgpp {
             std::cout << "Computing cholesky modification for class " << classIndex << std::endl;
 
             DBMatOnlineDE *densEst = getDensityFunctions()[classIndex].first.get();
-            DBMatOfflineChol &dbMatOfflineChol = dynamic_cast<DBMatOfflineChol &>(densEst->getOfflineObject());
+            auto &dbMatOfflineChol = dynamic_cast<DBMatOfflineChol &>(densEst->getOfflineObject());
             dbMatOfflineChol.choleskyModification(refinementResult.addedGridPoints.size(),
                                                   refinementResult.deletedGridPointsIndexes, densEst->getBestLambda());
 
@@ -914,8 +900,7 @@ namespace sgpp {
 
             if (usePrior) {
                 //TODO: Not implemented
-                std::cout << "Use prior not implemented" << std::endl;
-                exit(-1);
+                throw algorithm_exception("Use prior not implemented");
             } else {
                 D(std::cout << "Setting prior [" << classLabels[classIndex] << "] to -1" << std::endl;)
                 prior[classLabels[classIndex]] = 1.0;

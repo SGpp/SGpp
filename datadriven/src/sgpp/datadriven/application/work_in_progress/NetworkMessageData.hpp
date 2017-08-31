@@ -28,7 +28,7 @@ namespace sgpp {
             UPDATE_GRID,
             MERGE_GRID,
             ASSIGN_BATCH,
-            UPDATE_CHOLESKY_DECOMPOSITION,
+            UPDATE_SYSTEM_MATRIX_DECOMPOSITION,
             SHUTDOWN,
             WORKER_SHUTDOWN_SUCCESS
         };
