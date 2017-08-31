@@ -114,8 +114,7 @@ namespace sgpp {
              *        of removed grid points and an unsigned int representing added grid
              * points
              */
-            void train(Dataset &dataBatch, bool doCrossValidation,
-                       std::vector<RefinementResult> *vectorRefinementResults);
+            void train(Dataset &dataBatch, bool doCrossValidation);
 
             /**
              * Trains the learner with the given data batch that is already split up wrt
@@ -131,11 +130,8 @@ namespace sgpp {
              *        removed grid points and an unsigned int representing added grid
              * points
              */
-            void train(
-                    std::vector<std::pair<base::DataMatrix *, double> > &trainDataClasses,
-                    bool doCrossValidation = false,
-                    std::vector<RefinementResult> *vectorRefinementResults =
-                    nullptr);
+            void train(std::vector<std::pair<sgpp::base::DataMatrix *, double> > &trainDataClasses,
+                       bool doCrossValidation);
 
             // The final classification error
             double error;
@@ -172,7 +168,7 @@ namespace sgpp {
 
         protected:
 
-            std::vector<RefinementResult> *vectorRefinementResults;
+            std::vector<RefinementResult> vectorRefinementResults;
             std::vector<size_t> localGridVersions;
             bool workerActive;
             MPITaskScheduler &mpiTaskScheduler;
@@ -192,7 +188,6 @@ namespace sgpp {
 
             void doRefinementForAll(const std::string &refinementFunctorType,
                                     const std::string &refinementMonitorType,
-                                    std::vector<RefinementResult> *vectorRefinementResults,
                                     const ClassDensityContainer &onlineObjects,
                                     ConvergenceMonitor &monitor);
 
@@ -215,6 +210,8 @@ namespace sgpp {
             bool checkReadyForRefinement() const;
 
             void printPoint(base::HashGridStorage::point_type *pPoint);
+
+            void waitForAllGridsConsistent();
         };
     }   //namespace datadriven
 }  // namespace sgpp
