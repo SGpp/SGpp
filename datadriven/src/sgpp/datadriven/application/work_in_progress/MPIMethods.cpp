@@ -55,7 +55,7 @@ namespace sgpp {
                 unicastInputRequest.disposeAfterCallback = false;
                 unicastInputRequest.callback = [](PendingMPIRequest &request) {
                     D(std::cout << "Incoming MPI unicast" << std::endl;)
-                    handleIncommingRequestFromCallback(request);
+                    handleIncomingRequestFromCallback(request);
 
                     D(std::cout << "Restarting irecv request." << std::endl;)
                     MPI_Irecv(request.buffer, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE,
@@ -75,7 +75,7 @@ namespace sgpp {
                 unicastInputRequest.disposeAfterCallback = false;
                 unicastInputRequest.callback = [](PendingMPIRequest &request) {
                     D(std::cout << "Incoming MPI high priority unicast" << std::endl;)
-                    handleIncommingRequestFromCallback(request);
+                    handleIncomingRequestFromCallback(request);
 
                     D(std::cout << "Restarting irecv request." << std::endl;)
                     MPI_Irecv(request.buffer, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE,
@@ -95,7 +95,7 @@ namespace sgpp {
                 broadcastInputRequest.disposeAfterCallback = false;
                 broadcastInputRequest.callback = [](PendingMPIRequest &request) {
                     D(std::cout << "Incoming MPI broadcast" << std::endl;)
-                    handleIncommingRequestFromCallback(request);
+                    handleIncomingRequestFromCallback(request);
 
                     D(std::cout << "Restarting ibcast request." << std::endl;)
                     MPI_Ibcast(request.buffer, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
@@ -110,7 +110,7 @@ namespace sgpp {
             MPIMethods::learnerInstance = learnerInstance;
         }
 
-        void MPIMethods::handleIncommingRequestFromCallback(PendingMPIRequest &request) {
+        void MPIMethods::handleIncomingRequestFromCallback(PendingMPIRequest &request) {
             processIncomingMPICommands(request);
 
             D(std::cout << "Zeroing MPI Request" << std::endl;)
@@ -118,28 +118,6 @@ namespace sgpp {
 
             D(std::cout << "Zeroing Buffer" << std::endl;)
             memset(request.buffer, 0, sizeof(MPI_Packet));
-        }
-
-        void MPIMethods::synchronizeBarrier() {
-            MPI_Barrier(MPI_COMM_WORLD);
-        }
-
-        void MPIMethods::sendGridComponentsUpdate(std::vector<RefinementResult> *refinementResults) {
-
-            D(std::cout << "Updating the grid components on workers..." << std::endl;)
-
-            for (size_t classIndex = 0; classIndex < refinementResults->size(); classIndex++) {
-                RefinementResult refinementResult = (*refinementResults)[classIndex];
-
-                std::cout << "Updating grid for class " << classIndex
-                          << " (" << refinementResult.addedGridPoints.size() << " additions, "
-                          << refinementResult.deletedGridPointsIndexes.size() << " deletions)" << std::endl;
-
-                sendRefinementUpdates(classIndex, refinementResult.deletedGridPointsIndexes,
-                                      refinementResult.addedGridPoints);
-            }
-
-            D(std::cout << "Finished updating the grid components on workers." << std::endl;)
         }
 
         void MPIMethods::sendRefinementUpdates(size_t &classIndex, std::list<size_t> &deletedGridPointsIndexes,
@@ -311,7 +289,6 @@ namespace sgpp {
             return pendingMPIRequest;
         }
 
-        //TODO: This was imported from Merge
         void MPIMethods::receiveMergeGridNetworkMessage(MergeGridNetworkMessage &networkMessage) {
 
             base::DataVector alphaVector(networkMessage.alphaTotalSize);
@@ -333,59 +310,6 @@ namespace sgpp {
                         << ", length " << networkMessage.payloadLength << ", alpha vector length "
                         << networkMessage.alphaTotalSize << std::endl;)
         }
-
-        //TODO: This was imported from Merge
-/*
-        size_t MPIMethods::sendRefinementResultPacket(size_t classIndex, RefinementResultsUpdateType updateType,
-                                                      const RefinementResult &refinementResult, int offset,
-                                                      std::list::iterator &iterator) {
-            MPI_Packet *mpiPacket = new MPI_Packet;
-            RefinementResultNetworkMessage *networkMessage = (RefinementResultNetworkMessage *) mpiPacket->payload;
-
-            networkMessage->classIndex = classIndex;
-            networkMessage->gridversion = refinementResult.gridversion;
-            networkMessage->updateType = updateType;
-
-            //Minimum between remaining grid points and maximum number of grid points that will still fit
-            size_t numPointsInPacket = 0;
-
-            if (updateType == DELETED_GRID_POINTS_LIST) {
-                size_t endOfPayload = sizeof(RefinementResultNetworkMessage::payload) / sizeof(int);
-
-                //Copy data from list into network buffer
-                int *deletedGridPoints = (int *) networkMessage->payload;
-                for (int bufferIndex = 0; bufferIndex < endOfPayload; bufferIndex++) {
-                    deletedGridPoints[bufferIndex] = *iterator;
-                    iterator++;
-                    numPointsInPacket++;
-                }
-            } else if (updateType == ADDED_GRID_POINTS_LIST) {
-                //TODO: These vectors do not have a constant grid size
-                size_t endOfPayload = sizeof(RefinementResultNetworkMessage::payload) / sizeof(sgpp::base::DataVector);
-                //Copy data from list into network buffer
-                sgpp::base::DataVector *addedGridPoints = (sgpp::base::DataVector *) networkMessage->payload;
-                for (int bufferIndex = 0; bufferIndex < endOfPayload; bufferIndex++) {
-                    addedGridPoints[bufferIndex] = *iterator;
-                    iterator++;
-                    numPointsInPacket++;
-                }
-            }
-
-            networkMessage->listLength = numPointsInPacket;
-
-            printf("Sending update for class %zu with %i modifications", classIndex,
-                   networkMessage->listLength);
-            PendingMPIRequest pendingMPIRequest;
-            pendingMPIRequest.buffer = mpiPacket;
-            //TODO: DANGEROUS
-            pendingMPIRequests.push_back(pendingMPIRequest);
-
-            //Send the smallest packet possible
-            MPI_Ibcast(&networkMessage, numPointsInPacket + 3, MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
-                       MPI_COMM_WORLD, &(pendingMPIRequest.request));
-            return numPointsInPacket;
-        }
-*/
 
         size_t
         MPIMethods::sendMergeGridNetworkMessage(size_t classIndex, size_t batchOffset, size_t batchSize,
@@ -432,9 +356,6 @@ namespace sgpp {
         }
 
 
-        //TODO: !!!!!!!!! Compiler Errors
-
-        //TODO: Ensure compiler calls the correct method
         size_t
         MPIMethods::fillBufferWithLevelIndexData(void *buffer, const void *bufferEnd,
                                                  std::list<LevelIndexVector>::iterator &iterator,
@@ -529,9 +450,7 @@ namespace sgpp {
 
 
             if (pendingMPIRequestIterator->disposeAfterCallback) {
-                //TODO Deleting a void pointer here
                 D(std::cout << "Attempting to delete pending mpi request" << std::endl;)
-//                delete[] pendingMPIRequestIterator->buffer;
                 delete pendingMPIRequestIterator->buffer;
 
                 pendingMPIRequests.erase(pendingMPIRequestIterator);
@@ -545,12 +464,6 @@ namespace sgpp {
 //                        std::cout << "Zeroing Buffer" << std::endl;
 //                        std::memset(pendingMPIRequestIterator->buffer, 0, sizeof(MPI_Packet));
 
-            }
-        }
-
-        void MPIMethods::waitForAllMPIRequestsToComplete() {
-            for (PendingMPIRequest &pendingMPIRequest : pendingMPIRequests) {
-                MPI_Wait(pendingMPIRequest.getMPIRequestHandle(), MPI_STATUS_IGNORE);
             }
         }
 
@@ -596,7 +509,6 @@ namespace sgpp {
             return completedRequest;
         }
 
-        //TODO: We need a hook that will count the messages processed in sub-requests.
         void MPIMethods::waitForIncomingMessageType(MPI_COMMAND_ID commandId, size_t numOccurrences,
                                                     std::function<bool(PendingMPIRequest &)> predicate) {
             D(std::cout << "Waiting for " << numOccurrences << " messages of type " << commandId << std::endl;)
@@ -772,12 +684,6 @@ namespace sgpp {
             void *networkMessagePointer = &(mpiPacket->payload);
 
             switch (mpiPacket->commandID) {
-                case START_SYNCHRONIZE_PACKETS:
-                    startSynchronizingPackets();
-                    break;
-                case END_SYNCHRONIZE_PACKETS:
-                    endSynchronizingPackets();
-                    break;
                 case UPDATE_GRID: {
                     auto *refinementResultNetworkMessage = static_cast<RefinementResultNetworkMessage *>(networkMessagePointer);
                     receiveGridComponentsUpdate(refinementResultNetworkMessage);
@@ -791,8 +697,8 @@ namespace sgpp {
                 case ASSIGN_BATCH:
                     runBatch(mpiPacket);
                     break;
-                case UPDATE_CHOLESKY_DECOMPOSITION: {
-                    AssignCholeskyUpdateNetworkMessage *message = static_cast<AssignCholeskyUpdateNetworkMessage *>(networkMessagePointer);
+                case UPDATE_SYSTEM_MATRIX_DECOMPOSITION: {
+                    auto *message = static_cast<AssignCholeskyUpdateNetworkMessage *>(networkMessagePointer);
                     learnerInstance->computeNewCholeskyDecomposition(message->classIndex, message->gridversion);
                     break;
                 }
@@ -814,11 +720,6 @@ namespace sgpp {
             }
         }
 
-        void MPIMethods::startSynchronizingPackets() {
-            //TODO
-            std::cout << "Synchronizing not implemented" << std::endl;
-        }
-
         void MPIMethods::finalizeMPI() {
             std::cout << pendingMPIRequests.size() << " MPI requests pending before finalize" << std::endl;
             size_t requestNum = 0;
@@ -834,11 +735,6 @@ namespace sgpp {
             pendingMPIRequests.clear();
             std::cout << "Finalizing MPI" << std::endl;
             MPI_Finalize();
-        }
-
-        void MPIMethods::endSynchronizingPackets() {
-            //TODO
-            std::cout << "Synchronizing not implemented" << std::endl;
         }
 
         void MPIMethods::assignBatch(const int workerID, size_t batchOffset, size_t batchSize, bool doCrossValidation) {
@@ -861,9 +757,9 @@ namespace sgpp {
             learnerInstance->workBatch(dataset, message->batchOffset, message->doCrossValidation);
         }
 
-        void MPIMethods::assignCholeskyUpdate(const int workerID, size_t classIndex) {
+        void MPIMethods::assignSystemMatrixUpdate(const int workerID, size_t classIndex) {
             auto *mpiPacket = new MPI_Packet;
-            mpiPacket->commandID = UPDATE_CHOLESKY_DECOMPOSITION;
+            mpiPacket->commandID = UPDATE_SYSTEM_MATRIX_DECOMPOSITION;
 
             auto *message = (AssignCholeskyUpdateNetworkMessage *) mpiPacket->payload;
             message->gridversion = learnerInstance->getCurrentGridVersion(classIndex);

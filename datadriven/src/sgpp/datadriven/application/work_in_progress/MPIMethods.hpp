@@ -38,8 +38,6 @@ namespace sgpp {
             static void
             receiveGridComponentsUpdate(sgpp::datadriven::RefinementResultNetworkMessage *networkMessage);
 
-            static void synchronizeBarrier();
-
             static void finalizeMPI();
 
             static void bcastCommandNoArgs(MPI_COMMAND_ID commandId);
@@ -74,13 +72,11 @@ namespace sgpp {
             static void
             sendCholeskyDecomposition(const size_t &classIndex, DataMatrix &newCholeskyDecomposition, int mpiTarget);
 
-            static void assignCholeskyUpdate(int workerID, size_t classIndex);
+            static void assignSystemMatrixUpdate(const int workerID, size_t classIndex);
 
             static void waitForIncomingMessageType(MPI_COMMAND_ID commandId, size_t numOccurrences = 1,
                                                    std::function<bool(PendingMPIRequest &)> predicate = [](
                                                            PendingMPIRequest &request) { return true; });
-
-            static void waitForAllMPIRequestsToComplete();
 
             static void waitForGridConsistent(size_t classIndex);
 
@@ -94,14 +90,10 @@ namespace sgpp {
             static int mpiWorldSize;
             static LearnerSGDEOnOffParallel *learnerInstance;
 
-            static void startSynchronizingPackets();
-
 
 //            static size_t sendRefinementResultPacket(size_t classIndex, RefinementResultsUpdateType updateType,
 //                                                     const RefinementResult &refinementResult, int offset,
 //                                                     std::list::iterator &iterator);
-
-            static void endSynchronizingPackets();
 
             static PendingMPIRequest & sendISend(int destinationRank, MPI_Packet *mpiPacket, bool highPriority = false);
 
@@ -119,11 +111,9 @@ namespace sgpp {
             static std::list<sgpp::datadriven::PendingMPIRequest>::iterator findPendingMPIRequest(
                     int completedRequestIndex);
 
-            void sendGridComponentsUpdate(std::vector<RefinementResult> *refinementResults);
-
             static int executeMPIWaitAny();
 
-            static void handleIncommingRequestFromCallback(PendingMPIRequest &request);
+            static void handleIncomingRequestFromCallback(PendingMPIRequest &request);
 
             static std::list<sgpp::datadriven::MessageTrackRequest>::iterator
             createTrackRequest(unsigned int numOccurrences, const std::function<bool(PendingMPIRequest &)> &predicate);
