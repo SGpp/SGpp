@@ -293,17 +293,5 @@ std::shared_ptr<CombigridOperation> CombigridOperation::createExpClenshawCurtisQ
       std::make_shared<StandardLevelManager>(), func);
 }
 
-std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformBsplineInterpolation(
-    size_t numDimensions, MultiFunction func) {
-  return std::make_shared<CombigridOperation>(
-      std::vector<std::shared_ptr<AbstractPointHierarchy>>(numDimensions,
-                                                           CombiHierarchies::expUniform()),
-      std::vector<std::shared_ptr<
-          AbstractLinearEvaluator<FloatScalarVector>>>(            // replace by PrecalulatedWeights
-          numDimensions, CombiEvaluators::linearInterpolation()),  // replace by Bspline!
-      std::make_shared<StandardLevelManager>(),
-      func);
-}
-
 } /* namespace combigrid */
 } /* namespace sgpp*/
