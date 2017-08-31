@@ -23,6 +23,7 @@
 #include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
 #include <sgpp/datadriven/application/work_in_progress/MPIMethods.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
 
 
 #include <chrono>
@@ -33,6 +34,7 @@ using sgpp::base::Grid;
 using sgpp::base::GridStorage;
 using sgpp::base::GridGenerator;
 using sgpp::base::OperationEval;
+using sgpp::base::algorithm_exception;
 using sgpp::base::data_exception;
 using sgpp::base::SurplusRefinementFunctor;
 
@@ -52,6 +54,7 @@ namespace sgpp {
             vectorRefinementResults = new std::vector<RefinementResult>(numClasses);
             localGridVersions.insert(localGridVersions.begin(), numClasses, 10);
             mpiTaskScheduler.setLearnerInstance(this);
+            workerActive = true;
 
             MPIMethods::initMPI(this);
         }
@@ -814,6 +817,12 @@ namespace sgpp {
         LearnerSGDEOnOffParallel::assignBatchToWorker(size_t batchOffset, bool doCrossValidation) {
             AssignTaskResult assignTaskResult{};
             mpiTaskScheduler.assignTaskVariableTaskSize(TRAIN_FROM_BATCH, assignTaskResult);
+
+            if (assignTaskResult.taskSize + batchOffset > trainData.getNumberInstances()) {
+                std::cout << "Shortening last batch." << std::endl;
+                assignTaskResult.taskSize = trainData.getNumberInstances() - batchOffset;
+            }
+
             std::cout << "Assigning batch " << batchOffset
                       << " to worker " << assignTaskResult.workerID
                       << " with size " << assignTaskResult.taskSize << std::endl;
@@ -926,6 +935,9 @@ namespace sgpp {
         }
 
         bool LearnerSGDEOnOffParallel::checkGridStateConsistent(size_t classIndex) {
+            if (localGridVersions.size() < classIndex) {
+                throw algorithm_exception("Received request for consistency of class " + classIndex);
+            }
             return isVersionConsistent(localGridVersions[classIndex]);
         }
 
@@ -936,8 +948,8 @@ namespace sgpp {
                                   << localGridVersions[classIndex] << ")" << std::endl;
                     }
             )
-            if (!checkGridStateConsistent(localGridVersions[classIndex]) && checkGridStateConsistent(classIndex)) {
-                std::cout << "Grid " << classIndex << " has been fully updated to version " << std::endl;
+            if (!checkGridStateConsistent(classIndex) && isVersionConsistent(gridVersion)) {
+                std::cout << "Grid " << classIndex << " has been fully updated to version " << gridVersion << std::endl;
             }
             localGridVersions[classIndex] = gridVersion;
         }

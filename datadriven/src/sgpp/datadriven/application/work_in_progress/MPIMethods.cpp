@@ -531,7 +531,8 @@ namespace sgpp {
             if (pendingMPIRequestIterator->disposeAfterCallback) {
                 //TODO Deleting a void pointer here
                 D(std::cout << "Attempting to delete pending mpi request" << std::endl;)
-                delete[] pendingMPIRequestIterator->buffer;
+//                delete[] pendingMPIRequestIterator->buffer;
+                delete pendingMPIRequestIterator->buffer;
 
                 pendingMPIRequests.erase(pendingMPIRequestIterator);
                 D(std::cout << "Deleted pending mpi request" << std::endl;)
@@ -827,8 +828,10 @@ namespace sgpp {
                 MPI_Request *mpiRequestHandle = pendingMPIRequest.getMPIRequestHandle();
                 MPI_Cancel(mpiRequestHandle);
                 MPI_Wait(mpiRequestHandle, MPI_STATUS_IGNORE);
+                delete pendingMPIRequest.buffer;
                 requestNum++;
             }
+            pendingMPIRequests.clear();
             std::cout << "Finalizing MPI" << std::endl;
             MPI_Finalize();
         }
