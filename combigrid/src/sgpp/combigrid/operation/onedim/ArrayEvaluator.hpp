@@ -25,30 +25,31 @@ template <typename ScalarEvaluator>
 class ArrayEvaluator : public AbstractLinearEvaluator<FloatArrayVector> {
   ScalarEvaluator evaluator;
   FloatArrayVector params;
-  std::vector<FloatArrayVector> basisCoefficients;
-  bool coefficientsComputed = false;
+  std::vector<FloatArrayVector> basisValues;
+  std::vector<double> basisCoefficients;
+  bool valuesComputed = false;
   std::vector<double> xValues;
   bool doesNeedParameter;
 
-  void computeBasisCoefficients() {
-    basisCoefficients = std::vector<FloatArrayVector>(xValues.size(), FloatArrayVector::zero());
+  void computeBasisValues() {
+    basisValues = std::vector<FloatArrayVector>(xValues.size(), FloatArrayVector::zero());
 
     if (params.size() == 0) {
-      auto coeff = evaluator.getBasisCoefficients();
+      auto coeff = evaluator.getBasisValues();
       for (size_t j = 0; j < coeff.size(); ++j) {
-        basisCoefficients[j].at(0) = coeff[j];
+        basisValues[j].at(0) = coeff[j];
       }
     } else {
       for (size_t i = 0; i < params.size(); ++i) {
         evaluator.setParameter(params[i]);
-        auto coeff = evaluator.getBasisCoefficients();
+        auto coeff = evaluator.getBasisValues();
         for (size_t j = 0; j < coeff.size(); ++j) {
-          basisCoefficients[j].at(i) = coeff[j];
+          basisValues[j].at(i) = coeff[j];
         }
       }
     }
 
-    coefficientsComputed = true;
+    valuesComputed = true;
   }
 
  public:
@@ -56,53 +57,59 @@ class ArrayEvaluator : public AbstractLinearEvaluator<FloatArrayVector> {
                           ScalarEvaluator evaluatorPrototype = ScalarEvaluator())
       : evaluator(evaluatorPrototype),
         params(),
-        basisCoefficients(),
+        basisValues(),
         xValues(),
         doesNeedParameter(doesNeedParameter) {}
 
   explicit ArrayEvaluator(bool doesNeedParameter, ScalarEvaluator *evaluatorPrototype)
       : evaluator(*evaluatorPrototype),
         params(),
-        basisCoefficients(),
+        basisValues(),
         xValues(),
         doesNeedParameter(doesNeedParameter) {}
 
   ArrayEvaluator(ArrayEvaluator<ScalarEvaluator> const &other)
       : evaluator(other.evaluator),
         params(other.params),
-        basisCoefficients(other.basisCoefficients),
-        coefficientsComputed(other.coefficientsComputed),
+        basisValues(other.basisValues),
+        valuesComputed(other.valuesComputed),
         xValues(other.xValues),
         doesNeedParameter(other.doesNeedParameter) {}
 
   ~ArrayEvaluator() {}
 
-  virtual std::vector<FloatArrayVector> getBasisCoefficients() {
-    if (!coefficientsComputed) {
-      computeBasisCoefficients();
+  std::vector<FloatArrayVector> getBasisValues() override {
+    if (!valuesComputed) {
+      computeBasisValues();
     }
-    return basisCoefficients;
+    return basisValues;
   }
 
-  virtual void setGridPoints(std::vector<double> const &xValues) {
+  std::vector<double> getBasisCoefficients() override { return basisCoefficients; }
+
+  void setGridPoints(std::vector<double> const &xValues) override {
     this->xValues = xValues;
     evaluator.setGridPoints(xValues);
 
-    coefficientsComputed = false;
+    valuesComputed = false;
   }
 
-  virtual std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> cloneLinear() {
+  void setFunctionValuesAtGridPoints(std::vector<double> &functionValues) override {
+    basisCoefficients = functionValues;
+  }
+
+  std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> cloneLinear() override {
     return std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>(
         new ArrayEvaluator<ScalarEvaluator>(*this));
   }
 
-  virtual bool needsOrderedPoints() { return evaluator.needsOrderedPoints(); }
+  bool needsOrderedPoints() override { return evaluator.needsOrderedPoints(); }
 
-  virtual bool needsParameter() { return doesNeedParameter; }
+  bool needsParameter() override { return doesNeedParameter; }
 
-  virtual void setParameter(FloatArrayVector const &param) {
+  void setParameter(FloatArrayVector const &param) override {
     this->params = param;
-    coefficientsComputed = false;
+    valuesComputed = false;
   }
 };
 

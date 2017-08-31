@@ -10,20 +10,20 @@ namespace sgpp {
 namespace combigrid {
 
 LinearInterpolationEvaluator::LinearInterpolationEvaluator()
-    : evaluationPoint(0.0), basisCoefficients(), xValues() {}
+    : evaluationPoint(0.0), basisValues(), xValues() {}
 
 LinearInterpolationEvaluator::~LinearInterpolationEvaluator() {}
 
 LinearInterpolationEvaluator::LinearInterpolationEvaluator(
     const LinearInterpolationEvaluator& other)
     : evaluationPoint(other.evaluationPoint),
-      basisCoefficients(other.basisCoefficients),
+      basisValues(other.basisValues),
       xValues(other.xValues) {}
 
-void LinearInterpolationEvaluator::computeBasisCoefficients() {
+void LinearInterpolationEvaluator::computeBasisValues() {
   size_t numPoints = xValues.size();
 
-  basisCoefficients = std::vector<FloatScalarVector>(numPoints, FloatScalarVector(0.0));
+  basisValues = std::vector<FloatScalarVector>(numPoints, FloatScalarVector(0.0));
 
   if (numPoints == 0) {
     return;
@@ -31,7 +31,7 @@ void LinearInterpolationEvaluator::computeBasisCoefficients() {
 
   if (evaluationPoint <= xValues[0]) {
     if (std::abs(xValues[0]) > 1e-14) {
-      basisCoefficients[0] = FloatScalarVector(evaluationPoint / xValues[0]);
+      basisValues[0] = FloatScalarVector(evaluationPoint / xValues[0]);
     }
     return;
   }
@@ -43,8 +43,8 @@ void LinearInterpolationEvaluator::computeBasisCoefficients() {
       double x1 = xValues[i];
 
       double weight = (x1 - evaluationPoint) / (x1 - x0);
-      basisCoefficients[i - 1] = FloatScalarVector(weight);
-      basisCoefficients[i] = FloatScalarVector(1 - weight);
+      basisValues[i - 1] = FloatScalarVector(weight);
+      basisValues[i] = FloatScalarVector(1 - weight);
 
       return;
     }
@@ -52,14 +52,19 @@ void LinearInterpolationEvaluator::computeBasisCoefficients() {
 
   // if we did not return in the loop, then evaluationPoint > all xValues...
   if (std::abs(xValues[numPoints - 1] - 1.0) > 1e-14) {
-    basisCoefficients[numPoints - 1] =
+    basisValues[numPoints - 1] =
         FloatScalarVector((evaluationPoint - 1.0) / (xValues[numPoints - 1] - 1.0));
   }
 }
 
 void LinearInterpolationEvaluator::setGridPoints(const std::vector<double>& newXValues) {
   xValues = newXValues;
-  computeBasisCoefficients();
+  computeBasisValues();
+}
+
+void LinearInterpolationEvaluator::setFunctionValuesAtGridPoints(
+    std::vector<double>& functionValues) {
+  basisCoefficients = functionValues;
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector> >
@@ -74,7 +79,7 @@ bool LinearInterpolationEvaluator::needsParameter() { return true; }
 
 void LinearInterpolationEvaluator::setParameter(const FloatScalarVector& param) {
   evaluationPoint = param.value();
-  computeBasisCoefficients();
+  computeBasisValues();
 }
 
 } /* namespace combigrid */

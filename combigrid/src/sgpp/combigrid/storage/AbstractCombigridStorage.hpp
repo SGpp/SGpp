@@ -39,12 +39,12 @@ class AbstractCombigridStorage {
    * underlying MultiIndexIterator.
    * If the values are not already stored, they are created during iteration.
    */
-  virtual std::shared_ptr<AbstractMultiStorageIterator<double> > getGuidedIterator(
+  virtual std::shared_ptr<AbstractMultiStorageIterator<double>> getGuidedIterator(
       MultiIndex const &level, MultiIndexIterator &iterator,
       std::vector<bool> orderingConfiguration) = 0;
 
   /**
-   * @return Returns the number of stored values (cumulated over all levels).
+   * @return Returns the number of stored values (accumulated over all levels).
    */
   virtual size_t getNumEntries() = 0;
 

@@ -63,11 +63,17 @@ class AbstractEvaluator {
   virtual void setParameter(V const &param) = 0;
 
   /**
+   * sets the function values and can be used to compute the coefficients of the linear combination
+   * @param functionValues
+   */
+  virtual void setFunctionValuesAtGridPoints(std::vector<double> &functionValues) = 0;
+
+  /**
    * Evaluates the numerical method on the already set grid points.
    * @param functionValues function values at the grid points, the order must match the one of the
    * grid points.
    */
-  virtual V eval(std::vector<double> const &functionValues) = 0;
+  virtual V eval() = 0;
 
   /**
    * (Currently not used). Via the template type V, multiple arrays of function values for multiple
@@ -75,7 +81,7 @@ class AbstractEvaluator {
    * This could be used in an alternative implementation to FullGridTensorEvaluator that would also
    * be able to handle non-linear one-dimensional methods.
    */
-  virtual V eval(std::vector<V> const &functionValues) = 0;
+  //  virtual V eval(std::vector<V> const &functionValues) = 0;
 };
 
 } /* namespace combigrid */

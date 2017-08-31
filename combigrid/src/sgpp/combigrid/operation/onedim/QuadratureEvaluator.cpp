@@ -47,9 +47,8 @@ double QuadratureEvaluator::getWeight(std::vector<double>& points, size_t point)
   p.point = point;
   size_t numGaussPoints = (p.degree() + 2) / 2 + numAdditionalPoints;
 
-  return GaussLegendreQuadrature(numGaussPoints).evaluate([&p, this](double x) {
-    return p.evaluate(x) * this->weight_function(x);
-  });
+  return GaussLegendreQuadrature(numGaussPoints)
+      .evaluate([&p, this](double x) { return p.evaluate(x) * this->weight_function(x); });
 }
 
 /**
@@ -143,6 +142,10 @@ QuadratureEvaluator::QuadratureEvaluator(QuadratureEvaluator const& other)
       numAdditionalPoints(other.numAdditionalPoints) {}
 
 void QuadratureEvaluator::setParameter(const FloatScalarVector& param) { return; }
+
+void QuadratureEvaluator::setFunctionValuesAtGridPoints(std::vector<double>& functionValues) {
+  basisCoefficients = functionValues;
+}
 
 } /* namespace combigrid */
 } /* namespace sgpp*/
