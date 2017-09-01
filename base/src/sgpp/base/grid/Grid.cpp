@@ -227,10 +227,9 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
   }
 }
 
-Grid* Grid::createGridOfEquivalentType() {
+Grid* Grid::createGridOfEquivalentType(size_t numDims) {
   Grid* newGrid = nullptr;
 
-  size_t numDims = storage.getDimension();
   level_t boundaryLevel = 0;
   size_t degree = 1;
   switch (getType()) {
@@ -356,7 +355,7 @@ Grid* Grid::createGridOfEquivalentType() {
 
 Grid* Grid::clone() {
   // clone grid of the same type
-  Grid* newGrid = createGridOfEquivalentType();
+  Grid* newGrid = createGridOfEquivalentType(getDimension());
   base::HashGridStorage& newGridStorage = newGrid->getStorage();
 
   // run through grid and add points to newGrid

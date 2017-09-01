@@ -55,7 +55,11 @@ class SGDEdist(EstimatedDist):
         self.grid = grid.clone()
         self.alpha = alpha.copy()
         self.alpha_vec = DataVector(alpha)
-        self.trainData = trainData.copy()
+        if trainData is not None:
+            self.trainData = trainData.copy()
+        else:
+            self.trainData = None
+
         self.config = config
         self.unitIntegrand = unitIntegrand
 
@@ -87,11 +91,12 @@ class SGDEdist(EstimatedDist):
             values = evalSGFunction(grid, alpha, samples)
             self.vol = np.mean([max(0.0, value) for value in values])
 
-        self.vol *= self.trans.vol()
+        # scale the coefficients such that it has unit integrand
+        self.unnormalized_alpha = np.array(self.alpha / self.vol)
+        self.unnormalized_alpha_vec = DataVector(self.unnormalized_alpha)
 
+        self.vol *= self.trans.vol()
         if unitIntegrand and self.vol > 1e-13:
-            self.unnormalized_alpha = np.array(self.alpha)
-            self.unnormalized_alpha_vec = DataVector(self.alpha)
             self.alpha /= self.vol
             self.alpha_vec.mult(1. / self.vol)
 
@@ -229,7 +234,7 @@ class SGDEdist(EstimatedDist):
             op = createOperationRosenblattTransformation1D(self.grid)
             ans = np.ndarray(x.shape[0])
             for i, xi in enumerate(x_unit[:, 0]):
-                ans[i] = op.doTransformation1D(self.alpha_vec, xi)
+                ans[i] = op.doTransformation1D(self.unnormalized_alpha_vec, xi)
             if len(ans) == 1:
                 return ans[0]
             else:
@@ -259,35 +264,50 @@ class SGDEdist(EstimatedDist):
         # do the transformation
         if self.dim == 1:
             op = createOperationInverseRosenblattTransformation1D(self.grid)
-            ans = np.ndarray(x.shape[0])
+            x_unit = np.ndarray((x.shape[0], x.shape[1]))
             for i, xi in enumerate(x[:, 0]):
-                ans[i] = op.doTransformation1D(self.alpha_vec, xi)
-            if len(ans) == 1:
-                return ans[0]
+                x_unit[i, 0] = op.doTransformation1D(self.unnormalized_alpha_vec, xi)
+
+            # transform the samples to the unit hypercube
+            if self.trans is not None:
+                x_prob = self.trans.unitToProbabilisticMatrix(x_unit)
             else:
-                return ans
+                x_prob = x
+
+            # extract the outcome
+            if x_prob.shape[0] == 1 and x_prob.shape[1] == 1:
+                return x_prob[:, 0]
+            else:
+                return x_prob.flatten()
         else:
-            A = DataMatrix(x)
-            B = DataMatrix(x.shape[0], x.shape[1])
-            B.setAll(0.0)
+            A_vec = DataMatrix(x)
+            B_vec = DataMatrix(x.shape[0], x.shape[1])
+            B_vec.setAll(0.0)
 
             # do the transformation
             op = createOperationInverseRosenblattTransformation(self.grid)
             if shuffle:
-                op.doTransformation(self.alpha_vec, A, B)
+                op.doTransformation(self.unnormalized_alpha_vec, A_vec, B_vec)
             else:
-                op.doTransformation(self.alpha_vec, A, B, 0)
+                op.doTransformation(self.unnormalized_alpha_vec, A_vec, B_vec, 0)
+
+            # transform the samples to the unit hypercube
+            B = B_vec.array()
+            if self.trans is not None:
+                B_prob = self.trans.unitToProbabilisticMatrix(B)
+            else:
+                B_prob = B
 
             # extract the outcome
             if x.shape == (1, 1):
-                return B.get(0, 0)
+                return B_prob.get(0, 0)
             else:
-                return B.array()
+                return B_prob
 
     def mean(self):
         opQuad = createOperationFirstMoment(self.grid)
         if self.trans is None:
-            firstMoment = opQuad.doQuadrature(self.alpha_vec)
+            firstMoment = opQuad.doQuadrature(self.unnormalized_alpha_vec)
         else:
             bounds = DataMatrix(self.trans.getBounds())
             firstMoment = opQuad.doQuadrature(self.unnormalized_alpha_vec,
@@ -298,7 +318,7 @@ class SGDEdist(EstimatedDist):
     def var(self):
         opQuad = createOperationSecondMoment(self.grid)
         if self.trans is None:
-            secondMoment = opQuad.doQuadrature(self.alpha_vec)
+            secondMoment = opQuad.doQuadrature(self.unnormalized_alpha_vec)
         else:
             bounds = DataMatrix(self.trans.getBounds())
             secondMoment = opQuad.doQuadrature(self.unnormalized_alpha_vec,
@@ -345,9 +365,14 @@ class SGDEdist(EstimatedDist):
         grid = margLearner.getGrid().clone()
         alpha = margLearner.getSurpluses().array().copy()
 
+        if self.trainData is None:
+            trainData = None
+        else:
+            trainData = np.vstack((self.trainData[:, idim]))
+
         return SGDEdist(grid,
                         alpha,
-                        trainData=np.vstack((self.trainData[:, idim])),
+                        trainData=trainData,
                         bounds=np.array([self.bounds[idim]]),
                         config=self.config,
                         learner=margLearner,
@@ -360,9 +385,14 @@ class SGDEdist(EstimatedDist):
         grid = margLearner.getGrid().clone()
         alpha = margLearner.getSurpluses().array().copy()
 
+        if self.trainData is None:
+            trainData = None
+        else:
+            trainData = np.delete(self.trainData, idim, axis=1)
+
         return SGDEdist(grid,
                         alpha,
-                        trainData=np.delete(self.trainData, idim, axis=1),
+                        trainData=trainData,
                         bounds=np.delete(self.bounds, idim, axis=0),
                         config=self.config,
                         learner=margLearner,

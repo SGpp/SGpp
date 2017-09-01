@@ -279,7 +279,7 @@ class ParameterSet(object):
 
             accLevel += cnt
 
-        return ans
+        return tuple(ans)
 
     def extractActiveSubset(self, data):
         """
@@ -290,7 +290,7 @@ class ParameterSet(object):
         ans = {}
         cnt = 0
         for p, v in data.items():
-            if self.isValidUnitSample(p):
+            if len(p) == self.getDim():
                 up = self.extractActiveTuple(p)
                 ans[up] = v
             else:
