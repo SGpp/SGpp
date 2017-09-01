@@ -6,8 +6,8 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_ABSTRACTLINEAREVALUATOR_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_ABSTRACTLINEAREVALUATOR_HPP_
 
-#include <sgpp/combigrid/operation/onedim/AbstractEvaluator.hpp>
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
+#include <sgpp/combigrid/operation/onedim/AbstractEvaluator.hpp>
 
 #include <vector>
 
