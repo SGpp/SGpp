@@ -43,7 +43,7 @@
 %newobject sgpp::base::Grid::createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
 
 %newobject sgpp::base::Grid::unserialize(std::string& istr);
-%newobject sgpp::base::Grid::createGridOfEquivalentType();
+%newobject sgpp::base::Grid::createGridOfEquivalentType(size_t numDims);
 %newobject sgpp::base::Grid::clone();
 
 %include "stl.i"
@@ -183,7 +183,7 @@ public:
 
   std::string getTypeAsString();
 
-  Grid* createGridOfEquivalentType();
+  Grid* createGridOfEquivalentType(size_t numDims);
   Grid* clone();
 };
 }

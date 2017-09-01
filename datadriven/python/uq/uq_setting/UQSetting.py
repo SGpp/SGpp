@@ -873,7 +873,7 @@ class UQSetting(object):
             # select the key
             sample = self.__stats_samples[p]
             if sampleType == UQSampleType.PREPROCESSED:
-                key = self.__stats_preprocessor[tuple(p.getExpandedUnit())]
+                key = self.__stats_preprocessor[tuple(self.__stats_samples[p].getExpandedUnit())]
             else:
                 # sampleType == UQSampleType.RAW
                 key = p
