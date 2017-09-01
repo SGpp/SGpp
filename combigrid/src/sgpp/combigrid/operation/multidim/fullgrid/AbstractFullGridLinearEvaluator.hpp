@@ -5,18 +5,19 @@
 
 #pragma once
 
+#include <iostream>
+#include <memory>
 #include <sgpp/combigrid/common/MultiIndexIterator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FunctionValuesCoefficientsStorage.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/SLECoefficientsStorage.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/threading/PtrGuard.hpp>
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
-#include <sgpp/combigrid/operation/multidim/fullgrid/FunctionValuesCoefficientsStorage.hpp>
-#include <sgpp/combigrid/operation/multidim/fullgrid/SLECoefficientsStorage.hpp>
 #include <vector>
-#include <memory>
 
 namespace sgpp {
 namespace combigrid {
@@ -237,8 +238,24 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
       bool needsParam = evaluatorPrototypes[d]->needsParameter();
       for (size_t l = currentEvaluators.size(); l <= currentLevel; ++l) {
         auto eval = evaluatorPrototypes[d]->cloneLinear();
-        eval->setGridPoints(this->pointHierarchies[d]->getPoints(l, orderingConfiguration[d]));
         eval->setLevel(l);
+
+        // ToDo (rehmemk) Add evaluated B-Spline values to GridPoints in method setGridPoints in
+        // LinearInterpolationEvaluator.
+
+        if (evaluatorPrototypes[d]->getBasisCoefficientComputationType() ==
+            BasisCoefficientsComputationType::FUNCTION_VALUES) {
+          eval->setGridPoints(this->pointHierarchies[d]->getPoints(l, orderingConfiguration[d]));
+        } else if (evaluatorPrototypes[d]->getBasisCoefficientComputationType() ==
+                   BasisCoefficientsComputationType::SLE) {
+          // setGridPoints Bspline!
+        }
+
+        // ToDo (rehmemk) Add SLE solving to setFunctionValuesAtGridPoints in
+        // LinearInterpolationEvaluator.cpp and call it here so that as 'FunctionValues' the
+        // coefficients alpha can be used
+
+        this->pointHierarchies[d]->getPoints(l, orderingConfiguration[d]);
         if (needsParam) {
           eval->setParameter(parameters[paramIndex]);
         }

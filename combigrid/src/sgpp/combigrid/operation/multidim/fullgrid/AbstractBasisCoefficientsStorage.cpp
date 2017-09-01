@@ -6,8 +6,8 @@
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractBasisCoefficientsStorage.hpp>
 #include <sgpp/combigrid/storage/AbstractMultiStorageIterator.hpp>
 
-#include <vector>
 #include <memory>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {

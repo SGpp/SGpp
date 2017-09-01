@@ -59,11 +59,15 @@ void LinearInterpolationEvaluator::computeBasisValues() {
 
 void LinearInterpolationEvaluator::setGridPoints(const std::vector<double>& newXValues) {
   xValues = newXValues;
+
+  // ToDo (rehmemk) Compute B-Spline evaluations at Grid Points. Hand over a flag "SLE" or
+  // "FunctionValues" for computeBasisValues()
   computeBasisValues();
 }
 
 void LinearInterpolationEvaluator::setFunctionValuesAtGridPoints(
     std::vector<double>& functionValues) {
+  // ToDo (rehmemk) Compute coefficients via SLE
   basisCoefficients = functionValues;
 }
 

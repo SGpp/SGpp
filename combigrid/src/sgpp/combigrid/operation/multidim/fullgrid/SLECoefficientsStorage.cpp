@@ -6,16 +6,16 @@
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractBasisCoefficientsStorage.hpp>
 #include <sgpp/combigrid/storage/AbstractMultiStorageIterator.hpp>
 
-#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/SLECoefficientsStorage.hpp>
 
 #include <sgpp/optimization/sle/solver/Armadillo.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 
-#include <vector>
 #include <memory>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
@@ -24,9 +24,10 @@ SLECoefficientsStorage::SLECoefficientsStorage() : AbstractBasisCoefficientsStor
 
 SLECoefficientsStorage::~SLECoefficientsStorage() {}
 
-void SLECoefficientsStorage::computeCoefficients(
-    MultiIndex const& level, std::shared_ptr<AbstractCombigridStorage>& storage,
-    MultiIndex& multiBounds, std::vector<bool>& orderingConfiguration) {
+void SLECoefficientsStorage::computeCoefficients(MultiIndex const& level,
+                                                 std::shared_ptr<AbstractCombigridStorage>& storage,
+                                                 MultiIndex& multiBounds,
+                                                 std::vector<bool>& orderingConfiguration) {
   MultiIndexIterator it(multiBounds);
   auto funcIter = storage->getGuidedIterator(level, it, orderingConfiguration);
 
@@ -44,6 +45,10 @@ void SLECoefficientsStorage::computeCoefficients(
       break;  // all indices have been traversed, stop iteration
     }
   }
+
+  // ToDo (rehmemk) This is the SLE for Bspline interpolation only. Create a flag or something to
+  // distinguish Bspline and potential other basis functions that might be used
+
   size_t numGridPoints = functionValues.size();
   base::DataMatrix A(numGridPoints, numGridPoints);
   A.setAll(0.0);
