@@ -33,7 +33,8 @@ void OperationLaplaceBsplineBoundary::mult(sgpp::base::DataVector& alpha,
   const size_t pp1h = (p + 1) / 2;
   const double pp1hDbl = static_cast<double>(pp1h);
   const size_t quadOrder = p + 1;
-  sgpp::base::SBsplineBoundaryBase& basis = dynamic_cast<sgpp::base::SBsplineBoundaryBase&>(grid->getBasis());
+  sgpp::base::SBsplineBoundaryBase& basis
+    = dynamic_cast<sgpp::base::SBsplineBoundaryBase&>(grid->getBasis());
   sgpp::base::GridStorage& storage = grid->getStorage();
 
   sgpp::base::DataVector integrals1D(gridDim);

@@ -3,28 +3,28 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/grid/type/PolyGrid.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
+#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
+#include <sgpp/base/tools/HermiteBasis.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DPoly.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPoly.hpp>
-#include <sgpp/base/exception/operation_exception.hpp>
-#include <sgpp/base/exception/algorithm_exception.hpp>
-#include <sgpp/base/operation/hash/OperationEval.hpp>
-#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
-#include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/grid/type/PolyGrid.hpp>
-#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
-#include <sgpp_optimization.hpp>
 #include <sgpp_datadriven.hpp>
-#include <sgpp/base/tools/HermiteBasis.hpp>
-
+#include <sgpp_optimization.hpp>
 #include <sgpp/globaldef.hpp>
-#include <map>
+
+#include <algorithm>
 #include <cstdlib>
 #include <fstream>
+#include <functional>
 #include <iostream>
+#include <map>
 #include <utility>
 #include <vector>
-#include <algorithm>
-#include <functional>
 
 namespace sgpp {
 namespace datadriven {
@@ -251,8 +251,8 @@ double OperationInverseRosenblattTransformation1DPoly::doTransformation1D(base::
                                                                           double coord1d) {
   init(alpha1d);
   // std::cout << "PFs size after exit: " << patch_functions.size() << std::endl;
-  std::function<double(const base::DataVector&)> optFunc = [this, coord1d, alpha1d](
-      const base::DataVector& x) -> double {
+  std::function<double(const base::DataVector&)> optFunc =
+      [this, coord1d, alpha1d](const base::DataVector& x) -> double {
     double F_x = sample(alpha1d, x[0]);
     return (F_x - coord1d) * (F_x - coord1d);
   };
