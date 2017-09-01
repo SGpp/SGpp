@@ -114,10 +114,10 @@ namespace sgpp {
             processIncomingMPICommands(request);
 
             D(std::cout << "Zeroing MPI Request" << std::endl;)
-            memset(request.getMPIRequestHandle(), 0, sizeof(MPI_Request));
+            std::memset(request.getMPIRequestHandle(), 0, sizeof(MPI_Request));
 
             D(std::cout << "Zeroing Buffer" << std::endl;)
-            memset(request.buffer, 0, sizeof(MPI_Packet));
+            std::memset(request.buffer, 0, sizeof(MPI_Packet));
         }
 
         void MPIMethods::sendRefinementUpdates(size_t &classIndex, std::list<size_t> &deletedGridPointsIndexes,
