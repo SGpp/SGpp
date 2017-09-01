@@ -51,7 +51,8 @@ namespace sgpp {
                 : LearnerSGDEOnOff(dconf, trainData, testData, validationData, classLabels, numClassesInit, usePrior,
                                    beta, lambda), mpiTaskScheduler(mpiTaskScheduler) {
 
-            vectorRefinementResults.reserve(numClasses);
+            RefinementResult initResult{};
+            vectorRefinementResults.insert(vectorRefinementResults.begin(), getNumClasses(), initResult);
             localGridVersions.insert(localGridVersions.begin(), numClasses, 10);
             mpiTaskScheduler.setLearnerInstance(this);
             workerActive = true;
