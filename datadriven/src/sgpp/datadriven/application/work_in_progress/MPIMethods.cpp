@@ -9,9 +9,7 @@
 #include <sgpp/datadriven/application/work_in_progress/LearnerSGDEOnOffParallel.hpp>
 #include <sgpp/datadriven/application/work_in_progress/NetworkMessageData.hpp>
 #include <sgpp/datadriven/application/work_in_progress/MPIMethods.hpp>
-#include <sgpp/base/exception/application_exception.hpp>
 #include <thread>
-#include <numeric>
 
 namespace sgpp {
     namespace datadriven {
@@ -219,7 +217,7 @@ namespace sgpp {
                 offset += numPointInBuffer;
 
                 //TODO: There is a bug here, the grid version is sent non null once for each deleted, added, and cholesky
-                networkMessage->gridversion = (iterator == listEnd) ? learnerInstance->getCurrentGridVersion(
+                networkMessage->gridversion = (iterator == listEnd) ? learnerInstance->getLocalGridVersion(
                         classIndex) : GRID_TEMPORARILY_INCONSISTENT;
 
 
@@ -328,7 +326,7 @@ namespace sgpp {
                 auto *networkMessage = static_cast<MergeGridNetworkMessage *>(payloadPointer);
 
                 networkMessage->classIndex = classIndex;
-                networkMessage->gridversion = learnerInstance->getCurrentGridVersion(classIndex);
+                networkMessage->gridversion = learnerInstance->getLocalGridVersion(classIndex);
                 networkMessage->payloadOffset = offset;
                 networkMessage->batchSize = batchSize;
                 networkMessage->batchOffset = batchOffset;
@@ -559,7 +557,8 @@ namespace sgpp {
 
         void MPIMethods::receiveGridComponentsUpdate(RefinementResultNetworkMessage *networkMessage) {
             unsigned long classIndex = networkMessage->classIndex;
-            RefinementResult &refinementResult = learnerInstance->getRefinementResult(classIndex);
+            RefinementResult &refinementResult = learnerInstance->getRefinementHandler().getRefinementResult(
+                    classIndex);
 
             size_t listLength = networkMessage->listLength;
             size_t processedPoints = 0;
@@ -629,10 +628,10 @@ namespace sgpp {
                         std::cout << "Adjusted size of cholesky decomposition " << classIndex << " from " << oldSize
                                   << " to "
                                   << choleskyDecomposition.size() << std::endl;
-                    } else if (learnerInstance->getCurrentGridVersion(classIndex) != GRID_TEMPORARILY_INCONSISTENT) {
+                    } else if (learnerInstance->getLocalGridVersion(classIndex) != GRID_TEMPORARILY_INCONSISTENT) {
                         std::cout
                                 << "Update with non-null offset arrived but grid version not set to inconsistent (version is "
-                                << learnerInstance->getCurrentGridVersion(classIndex) << std::endl;
+                                << learnerInstance->getLocalGridVersion(classIndex) << std::endl;
                         exit(-1);
                     }
 
@@ -673,8 +672,9 @@ namespace sgpp {
             if (networkMessage->gridversion == GRID_RECEIVED_ADDED_POINTS && !isMaster()) {
                 D(std::cout << "Updating class " << classIndex << " variables as grid is now consistent with version "
                             << networkMessage->gridversion << std::endl;)
-                learnerInstance->updateClassVariablesAfterRefinement(classIndex, &refinementResult,
-                                                                     learnerInstance->getDensityFunctions()[classIndex].first.get());
+                learnerInstance->getRefinementHandler().updateClassVariablesAfterRefinement(classIndex,
+                                                                                            &refinementResult,
+                                                                                            learnerInstance->getDensityFunctions()[classIndex].first.get());
             }
             learnerInstance->setLocalGridVersion(classIndex, networkMessage->gridversion);
         }
@@ -767,7 +767,7 @@ namespace sgpp {
             mpiPacket->commandID = UPDATE_SYSTEM_MATRIX_DECOMPOSITION;
 
             auto *message = (AssignSystemMatrixUpdateNetworkMessage *) mpiPacket->payload;
-            message->gridversion = learnerInstance->getCurrentGridVersion(classIndex);
+            message->gridversion = learnerInstance->getLocalGridVersion(classIndex);
             message->classIndex = classIndex;
 
             sendISend(workerID, mpiPacket, calculateTotalPacketSize(sizeof(AssignSystemMatrixUpdateNetworkMessage)),
@@ -785,7 +785,7 @@ namespace sgpp {
         void MPIMethods::waitForGridConsistent(size_t classIndex) {
             while (!learnerInstance->checkGridStateConsistent(classIndex)) {
                 D(std::cout << "Grid " << classIndex << " is not yet consistent (version "
-                            << learnerInstance->getCurrentGridVersion(classIndex) << ") waiting for update."
+                            << learnerInstance->getLocalGridVersion(classIndex) << ") waiting for update."
                             << std::endl;)
                 waitForIncomingMessageType(UPDATE_GRID);
             }

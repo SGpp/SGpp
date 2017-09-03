@@ -16,9 +16,9 @@
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/datadriven/application/work_in_progress/LearnerSGDEOnOffParallel.hpp>
 #include <sgpp/datadriven/application/work_in_progress/RoundRobinScheduler.hpp>
-#include <chrono>
-#include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/datadriven/application/work_in_progress/MPIMethods.hpp>
+#include <omp.h>
+//#include <valgrind/callgrind.h>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -57,6 +57,8 @@ sgpp::datadriven::Dataset loadDataset(const std::string &filename) {// load test
 
 int main(int argc, char *argv[]) {
 #ifdef USE_GSL
+
+    omp_set_num_threads(1);
 
     std::cout << "LearnerSGDEOnOffParallelTest" << std::endl;
 
@@ -239,12 +241,23 @@ int main(int argc, char *argv[]) {
     /**
      * Learn the data.
      */
+
+    MPI_Barrier(MPI_COMM_WORLD);
+
     std::cout << "# start to train the learner" << std::endl;
     sgpp::base::SGppStopwatch stopwatch;
+
+//    CALLGRIND_START_INSTRUMENTATION;
+
     stopwatch.start();
     learner.train(batchSize, maxDataPasses, refType, refMonitor, refPeriod, accDeclineThreshold,
                   accDeclineBufferSize, minRefInterval, enableCv, nextCvStep);
     double deltaTime = stopwatch.stop();
+
+//    CALLGRIND_STOP_INSTRUMENTATION;
+
+    MPI_Barrier(MPI_COMM_WORLD);
+
     /**
      * Accuracy on test data.
      */
