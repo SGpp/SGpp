@@ -21,8 +21,9 @@ namespace sgpp {
         protected:
             size_t lastWorkerID;
             size_t batchSize;
-            std::vector<size_t> numOutstandingBatchTracker;
 
+            size_t numOutstandingRequestsCurrentRefinement;
+            size_t numOutstandingRequestsLastRefinement;
             bool isReadyForRefinement() override;
 
             void onMergeRequestIncoming(unsigned long batchOffset, unsigned long batchSize,

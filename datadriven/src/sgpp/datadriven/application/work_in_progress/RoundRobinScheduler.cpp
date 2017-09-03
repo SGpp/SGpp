@@ -4,13 +4,15 @@
 
 #include <sgpp/datadriven/application/work_in_progress/MPIMethods.hpp>
 #include <sgpp/datadriven/application/work_in_progress/RoundRobinScheduler.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
 
 namespace sgpp {
     namespace datadriven {
         RoundRobinScheduler::RoundRobinScheduler(size_t batchSize) {
             this->batchSize = batchSize;
             this->lastWorkerID = 0;
-            numOutstandingBatchTracker.emplace_back(0);
+            numOutstandingRequestsCurrentRefinement = 0;
+            numOutstandingRequestsLastRefinement = 0;
         }
 
         void RoundRobinScheduler::assignTaskVariableTaskSize(TaskType taskType, AssignTaskResult &result) {
@@ -24,29 +26,33 @@ namespace sgpp {
             }
             if (taskType == TRAIN_FROM_BATCH) {
                 // Assigning Batch
-                numOutstandingBatchTracker.back() += learnerInstance->getNumClasses();
+                numOutstandingRequestsCurrentRefinement += learnerInstance->getNumClasses();
             }
             result.workerID = ++lastWorkerID;
         }
 
         bool RoundRobinScheduler::isReadyForRefinement() {
-            //Limit number of outstanding batch requests
-            bool outStandingOK = numOutstandingBatchTracker.back() / learnerInstance->getNumClasses() <
-                                 MPIMethods::getWorldSize() * 2;
-            if (numOutstandingBatchTracker.size() <= 1) {
-                return outStandingOK;
-            }
-            return numOutstandingBatchTracker[numOutstandingBatchTracker.size() - 2] == 0 && outStandingOK;
+            return numOutstandingRequestsLastRefinement == 0;
         }
 
         void RoundRobinScheduler::onMergeRequestIncoming(unsigned long batchOffset, unsigned long batchSize,
                                                          size_t remoteGridVersion, size_t localGridVersion) {
             //TODO: Ugly constant
-            numOutstandingBatchTracker[remoteGridVersion - 10]--;
+            if (remoteGridVersion == localGridVersion) {
+                numOutstandingRequestsCurrentRefinement--;
+            } else if (remoteGridVersion + 1 == localGridVersion) {
+                numOutstandingRequestsLastRefinement--;
+            } else {
+                throw sgpp::base::algorithm_exception("Received merge request that was too old.");
+            }
         }
 
         void RoundRobinScheduler::onRefinementStarted() {
-            numOutstandingBatchTracker.emplace_back(0);
+            if (numOutstandingRequestsLastRefinement != 0) {
+                throw sgpp::base::algorithm_exception("Refinement started illegally.");
+            }
+            numOutstandingRequestsLastRefinement = numOutstandingRequestsCurrentRefinement;
+            numOutstandingRequestsCurrentRefinement = 0;
         }
     }
 }
