@@ -54,8 +54,8 @@ namespace sgpp {
             static size_t getQueueSize();
 
             static size_t fillBufferWithLevelIndexData(void *buffer, const void *bufferEnd,
-                                                       std::list<std::vector<sgpp::datadriven::LevelIndexPair>>::iterator &iterator,
-                                                       std::list<std::vector<sgpp::datadriven::LevelIndexPair>>::const_iterator &listEnd);
+                                                       std::list<std::vector<LevelIndexPair>>::iterator &iterator,
+                                                       std::list<std::vector<LevelIndexPair>>::const_iterator &listEnd);
 
             static PendingMPIRequest & sendIBcast(MPI_Packet *mpiPacket);
 

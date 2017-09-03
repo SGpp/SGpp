@@ -26,9 +26,7 @@
 #include <sgpp/base/exception/algorithm_exception.hpp>
 
 
-#include <chrono>
 #include <thread>
-#include <numeric>
 
 using sgpp::base::Grid;
 using sgpp::base::GridStorage;
@@ -42,6 +40,8 @@ using sgpp::base::SurplusRefinementFunctor;
 namespace sgpp {
     namespace datadriven {
 
+        static const int MINIMUM_CONSISTENT_GRID_VERSION = 10;
+
         LearnerSGDEOnOffParallel::LearnerSGDEOnOffParallel(sgpp::datadriven::DBMatDensityConfiguration &dconf,
                                                            Dataset &trainData, Dataset &testData,
                                                            Dataset *validationData,
@@ -49,13 +49,13 @@ namespace sgpp {
                                                            bool usePrior, double beta, double lambda,
                                                            MPITaskScheduler &mpiTaskScheduler)
                 : LearnerSGDEOnOff(dconf, trainData, testData, validationData, classLabels, numClassesInit, usePrior,
-                                   beta, lambda), mpiTaskScheduler(mpiTaskScheduler) {
+                                   beta, lambda), mpiTaskScheduler(mpiTaskScheduler), refinementHandler(nullptr, 0) {
 
-            RefinementResult initResult{};
-            vectorRefinementResults.insert(vectorRefinementResults.begin(), getNumClasses(), initResult);
-            localGridVersions.insert(localGridVersions.begin(), numClasses, 10);
+            localGridVersions.insert(localGridVersions.begin(), numClasses, MINIMUM_CONSISTENT_GRID_VERSION);
             mpiTaskScheduler.setLearnerInstance(this);
             workerActive = true;
+
+            refinementHandler = LearnerSGDEOnOffParallelHandler(this, numClassesInit);
 
             MPIMethods::initMPI(this);
         }
@@ -116,10 +116,6 @@ namespace sgpp {
 
             auto &onlineObjects = getDensityFunctions();
 
-            size_t dim = getDimensionality();
-
-            // pointer to the next batch (data points + class labels) to be processed
-            Dataset dataBatch(batchSize, dim);
 
             // print initial grid size
             printGridSizeStatistics("#Initial grid size of grid ", onlineObjects);
@@ -151,9 +147,7 @@ namespace sgpp {
                         }
                     }
 
-                    assignBatchToWorker(processedPoints, doCrossValidation);
-
-                    processedPoints += dataBatch.getNumberInstances();
+                    processedPoints += assignBatchToWorker(processedPoints, doCrossValidation);
 
                     std::cout << processedPoints << " have already been assigned." << std::endl;
 
@@ -162,10 +156,12 @@ namespace sgpp {
 
                     D(std::cout << "Checking if refinement is necessary." << std::endl;)
                     // check if refinement should be performed
-                    if (checkRefinementNecessary(refMonitor, refPeriod, processedPoints, currentValidError,
-                                                 currentTrainError, numberOfCompletedRefinements, monitor)) {
+                    if (refinementHandler.checkRefinementNecessary(refMonitor, refPeriod, processedPoints,
+                                                                   currentValidError,
+                                                                   currentTrainError, numberOfCompletedRefinements,
+                                                                   monitor)) {
 
-                        while (!checkReadyForRefinement()) {
+                        while (!refinementHandler.checkReadyForRefinement()) {
                             D(std::cout << "Waiting for " << MPIMethods::getQueueSize()
                                         << " queue operations to complete before continuing" << std::endl;)
                             MPIMethods::waitForAnyMPIRequestsToComplete();
@@ -220,13 +216,6 @@ namespace sgpp {
             //TODO This is also evil
 //            error = 1.0 - getAccuracy();
 
-        }
-
-        bool LearnerSGDEOnOffParallel::checkReadyForRefinement() const {
-            // All local grids in a consistent state and have OK from scheduler
-            return mpiTaskScheduler.isReadyForRefinement()
-                   && std::all_of(localGridVersions.begin(), localGridVersions.end(),
-                                  [](size_t version) { return isVersionConsistent(version); });
         }
 
         size_t LearnerSGDEOnOffParallel::getDimensionality() {
@@ -289,11 +278,11 @@ namespace sgpp {
             }
 
             // perform refinement/coarsening for each grid
-            for (size_t idx = 0; idx < this->getNumClasses(); idx++) {
-                this->doRefinementForClass(refinementFunctorType,
-                                           &(vectorRefinementResults[idx]),
-                                           onlineObjects,
-                                           preCompute, func, idx);
+            for (size_t classIndex = 0; classIndex < this->getNumClasses(); classIndex++) {
+                refinementHandler.doRefinementForClass(refinementFunctorType,
+                                                       &(refinementHandler.getRefinementResult(classIndex)),
+                                                       onlineObjects,
+                                                       preCompute, func, classIndex);
             }
             if (refinementMonitorType == "convergence") {
                 monitor.nextRefCnt = monitor.minRefInterval;
@@ -310,180 +299,16 @@ namespace sgpp {
             });
         }
 
-        void LearnerSGDEOnOffParallel::doRefinementForClass(const std::string &refType,
-                                                            RefinementResult *refinementResult,
-                                                            const ClassDensityContainer &onlineObjects,
-                                                            bool preCompute,
-                                                            MultiGridRefinementFunctor *refinementFunctor,
-                                                            size_t classIndex) {
-            // perform refinement/coarsening for grid which corresponds to current
-            // index
-            std::cout << "Refinement and coarsening for class: " << classIndex
-                      << std::endl;
-            auto densEst = onlineObjects[classIndex].first.get();
-            Grid &grid = densEst->getOfflineObject().getGrid();
-
-            size_t oldGridSize = grid.getSize();
-            D(std::cout << "Size before adaptivity: " << oldGridSize
-                        << std::endl;)
-
-            base::GridGenerator &gridGen = grid.getGenerator();
-
-            size_t numberOfNewPoints = 0;
-
-            if (refType == "surplus") {
-                numberOfNewPoints = handleSurplusBasedRefinement(densEst, grid, gridGen);
-
-            } else if ((refType == "data") || (refType == "zero")) {
-                numberOfNewPoints = handleDataAndZeroBasedRefinement(preCompute, refinementFunctor, classIndex, grid,
-                                                                     gridGen);
-            }
-
-            size_t newGridSize = grid.getSize();
-            std::cout << "grid size after adaptivity: " << newGridSize
-                      << " (previously " << oldGridSize
-                      << "), " << numberOfNewPoints << " new points on grid"
-                      << std::endl;
-
-            if (numberOfNewPoints != newGridSize - oldGridSize) {
-                std::cout << "Reported grid sizes do not match up (refined " << numberOfNewPoints << ", old "
-                          << oldGridSize << ", new " << newGridSize << ")" << std::endl;
-                exit(-1);
-            }
-
-            D(std::cout << "Preparing refinement result update" << std::endl;)
-            D(std::cout << "Clearing old added grid points" << std::endl;)
-            refinementResult->addedGridPoints.clear();
-
-            D(std::cout << "Clearing old deleted grid points" << std::endl;)
-            refinementResult->deletedGridPointsIndexes.clear();
-
-
-            size_t numDimensions = getDimensionality();
-            //Collect new grid points into the refinement result for shipping
-            for (size_t i = 0; i < numberOfNewPoints; i++) {
-                LevelIndexVector levelIndexVector(numDimensions);
-                base::HashGridPoint &gridPoint = grid.getStorage()[oldGridSize + i];
-                for (size_t currentDimension = 0; currentDimension < numDimensions; currentDimension += 1) {
-                    base::HashGridPoint::level_type pointLevel;
-                    base::HashGridPoint::index_type pointIndex;
-                    gridPoint.get(currentDimension, pointLevel, pointIndex);
-
-                    levelIndexVector[currentDimension].level = pointLevel;
-                    levelIndexVector[currentDimension].index = pointIndex;
-
-//                    std::cout << "Fetched level index vector: dimension " << currentDimension
-//                              << ", level " << pointLevel <<
-//                              ", index " << pointIndex << std::endl;
-                }
-
-                refinementResult->addedGridPoints.push_back(levelIndexVector);
-
-                D(printPoint(gridPoint))
-            }
-
-            updateClassVariablesAfterRefinement(classIndex, refinementResult, densEst);
-
-        }
-
-        void LearnerSGDEOnOffParallel::updateClassVariablesAfterRefinement(size_t classIndex,
-                                                                           RefinementResult *refinementResult,
-                                                                           DBMatOnlineDE *densEst) {
-
-            base::Grid &grid = densEst->getOfflineObject().getGrid();
-
-            if (!MPIMethods::isMaster()) {
-                std::cout << "Applying refinement result class " << classIndex << " from master" << std::endl;
-                D(std::cout << "Old grid " << classIndex << " size is " << grid.getSize() << std::endl;)
-
-
-                size_t numDimensions = getDimensionality();
-
-                //Delete the grid points removed on master thread
-                grid.getStorage().deletePoints(refinementResult->deletedGridPointsIndexes);
-
-                size_t sizeBeforeAdditions = grid.getSize();
-                D(std::cout << "Grid size after deleting is " << sizeBeforeAdditions << std::endl;)
-
-                //Add grid points added on master thread
-                for (LevelIndexVector &levelIndexVector : refinementResult->addedGridPoints) {
-                    size_t sizeBeforePoint = grid.getSize();
-                    auto *gridPoint = new sgpp::base::HashGridStorage::point_type(numDimensions);
-                    //TODO: What happens when other points are changed (ie Leaf boolean etc)
-
-                    for (size_t currentDimension = 0; currentDimension < numDimensions; currentDimension++) {
-                        gridPoint->set(currentDimension,
-                                       levelIndexVector[currentDimension].level,
-                                       levelIndexVector[currentDimension].index);
-                    }
-                    grid.getStorage().insert(*gridPoint);
-                    D(
-                            size_t sizeAfterPoint = grid.getSize();
-                            if (sizeAfterPoint - sizeBeforePoint != 1) {
-                                std::cout << "Inserted grid point but size change incorrect (old " << sizeBeforePoint
-                                          << ", new " << sizeAfterPoint << "), point " << gridPoint->getHash()
-                                          << std::endl;
-                                printPoint(gridPoint);
-                                exit(-1);
-                            }
-                    )
-                }
-
-                //TODO: This might be unnecessary
-                grid.getStorage().recalcLeafProperty();
-
-                size_t sizeAfterAdditions = grid.getSize();
-                D(std::cout << "New grid " << classIndex << " size is " << sizeAfterAdditions << std::endl;)
-                if (sizeAfterAdditions - sizeBeforeAdditions != refinementResult->addedGridPoints.size()) {
-                    std::cout << "Grid growth not correlated to refinement results (grid delta "
-                              << sizeAfterAdditions - sizeBeforeAdditions << ", additions "
-                              << refinementResult->addedGridPoints.size() << ")" << std::endl;
-                    exit(-1);
-                }
-            }
-            else {
-                // apply grid changes to the Cholesky factorization
-                size_t currentGridVersion = getCurrentGridVersion(classIndex);
-                if (!checkGridStateConsistent(classIndex)) {
-                    std::cout << "Attempting to increment grid version on non consistent grid " << classIndex
-                              << " version " << currentGridVersion << std::endl;
-                    exit(-1);
-                }
-
-                setLocalGridVersion(classIndex, currentGridVersion + 1);
-
-                // Send class update in preparation for cholesky
-                MPIMethods::sendRefinementUpdates(classIndex, refinementResult->deletedGridPointsIndexes,
-                                                  refinementResult->addedGridPoints);
-
-                if (offline->isRefineable()) {
-                    AssignTaskResult assignTaskResult{};
-                    mpiTaskScheduler.assignTaskStaticTaskSize(RECOMPUTE_CHOLESKY_DECOMPOSITION, assignTaskResult);
-
-                    std::cout << "Assigning update of cholesky decomposition " << classIndex << " to worker "
-                              << assignTaskResult.workerID << std::endl;
-                    MPIMethods::assignSystemMatrixUpdate(assignTaskResult.workerID, classIndex);
-                }
-            }
-
-            // update alpha vector
-            size_t oldSize = densEst->getAlpha().size();
-            densEst->updateAlpha(&(refinementResult->deletedGridPointsIndexes),
-                                 refinementResult->addedGridPoints.size());
-            D(std::cout << "Updated alpha vector " << classIndex << " (old size " << oldSize << ", new size " <<
-                        densEst->getAlpha().size() << ")" << std::endl;)
-        }
-
         void
-        LearnerSGDEOnOffParallel::computeNewCholeskyDecomposition(size_t classIndex, size_t gridversion) {
+        LearnerSGDEOnOffParallel::computeNewCholeskyDecomposition(size_t classIndex, size_t gridVersion) {
 
             // The first check is to ensure that all segments of an update have been received (intermediate segments set grid version to TEMPORARILY_INCONSISTENT)
-            RefinementResult &refinementResult = vectorRefinementResults[classIndex];
-            while (getCurrentGridVersion(classIndex) == GRID_TEMPORARILY_INCONSISTENT || (
+            RefinementResult &refinementResult = refinementHandler.getRefinementResult(classIndex);
+            while (getLocalGridVersion(classIndex) == GRID_TEMPORARILY_INCONSISTENT || (
                     refinementResult.deletedGridPointsIndexes.empty() &&
                     refinementResult.addedGridPoints.empty())) {
                 D(std::cout << "Refinement results have not arrived yet (grid version "
-                            << getCurrentGridVersion(classIndex)
+                            << getLocalGridVersion(classIndex)
                             << ", additions " << refinementResult.addedGridPoints.size() << ", deletions "
                             << refinementResult.deletedGridPointsIndexes.size() << "). Waiting..." << std::endl;)
                 // Do not use waitForConsistent here, we want GRID_ADDITIONS or GRID_DELETIONS, not consistency
@@ -499,7 +324,7 @@ namespace sgpp {
             dbMatOfflineChol.choleskyModification(refinementResult.addedGridPoints.size(),
                                                   refinementResult.deletedGridPointsIndexes, densEst->getBestLambda());
 
-            setLocalGridVersion(classIndex, gridversion);
+            setLocalGridVersion(classIndex, gridVersion);
             D(std::cout << "Send cholesky update to master for class " << classIndex << std::endl;)
             DataMatrix &newDecomposition = dbMatOfflineChol.getDecomposedMatrix();
             MPIMethods::sendCholeskyDecomposition(classIndex, newDecomposition, 0);
@@ -521,117 +346,6 @@ namespace sgpp {
             *batchOffset += batchSize;
 
             D(std::cout << "Finished assembling batch" << std::endl;)
-        }
-
-        bool LearnerSGDEOnOffParallel::checkRefinementNecessary(const std::string &refMonitor, size_t refPeriod,
-                                                                size_t totalInstances, double currentValidError,
-                                                                double currentTrainError,
-                                                                size_t numberOfCompletedRefinements,
-                                                                ConvergenceMonitor &monitor) {
-
-            // access DBMatOnlineDE-objects of all classes in order
-            // to apply adaptivity to the specific sparse grids later on
-
-            // check if refinement should be performed
-            if (refMonitor == "periodic") {
-                // check periodic monitor
-                if (offline->isRefineable() && (totalInstances > 0) && (totalInstances % refPeriod == 0) &&
-                    (numberOfCompletedRefinements < offline->getConfig().numRefinements_)) {
-                    return true;
-                }
-            } else if (refMonitor == "convergence") {
-                // check convergence monitor
-                if (validationData == nullptr) {
-                    throw data_exception("No validation data for checking convergence provided!");
-                }
-                if (offline->isRefineable() && (numberOfCompletedRefinements < offline->getConfig().numRefinements_)) {
-                    currentValidError = getError(*validationData);
-                    currentTrainError = getError(trainData);  // if train dataset is large
-                    // use a subset for error
-                    // evaluation
-                    monitor.pushToBuffer(currentValidError, currentTrainError);
-                    if (monitor.nextRefCnt > 0) {
-                        monitor.nextRefCnt--;
-                    }
-                    if (monitor.nextRefCnt == 0) {
-                        return monitor.checkConvergence();
-                    }
-                }
-            }
-            return false;
-        }
-
-        size_t
-        LearnerSGDEOnOffParallel::handleDataAndZeroBasedRefinement(bool preCompute, MultiGridRefinementFunctor *func,
-                                                                   size_t idx, base::Grid &grid,
-                                                                   base::GridGenerator &gridGen) const {
-            if (preCompute) {
-                // precompute the evals (needs to be done once per step, before
-                // any refinement is done
-                func->preComputeEvaluations();
-            }
-            func->setGridIndex(idx);
-            // perform refinement (zero-crossings-based / data-based)
-            size_t gridSizeBeforeRefine = grid.getSize();
-            gridGen.refine(*func);
-            size_t gridSizeAfterRefine = grid.getSize();
-            return gridSizeAfterRefine - gridSizeBeforeRefine;
-        }
-
-        size_t LearnerSGDEOnOffParallel::handleSurplusBasedRefinement(DBMatOnlineDE *densEst, base::Grid &grid,
-                                                                      base::GridGenerator &gridGen) const {
-            DataVector *alphaWork;  // required for surplus refinement
-            // auxiliary variables
-            DataVector p(trainData.getDimension());
-
-
-            std::unique_ptr<OperationEval> opEval(op_factory::createOperationEval(grid));
-            GridStorage &gridStorage = grid.getStorage();
-            alphaWork = &(densEst->getAlpha());
-            DataVector alphaWeight(alphaWork->getSize());
-            // determine surpluses
-            for (size_t k = 0; k < gridStorage.getSize(); k++) {
-                // sets values of p to the coordinates of the given GridPoint gp
-                gridStorage.getPoint(k).getStandardCoordinates(p);
-                // multiply k-th alpha with the evaluated function at grind-point
-                // k
-                alphaWeight[k] = alphaWork->get(k) * opEval->eval(*alphaWork, p);
-            }
-
-            // Perform Coarsening (surplus based)
-            /*if (coarseCnt < maxCoarseNum) {
-              HashCoarsening coarse_;
-              //std::cout << "\n" << "Start coarsening\n";
-
-              // Coarsening based on surpluses
-              SurplusCoarseningFunctor scf(
-                alphaWeight, coarseNumPoints, coarseThreshold);
-
-              //std::cout << "Size before coarsening:" << grid->getSize() <<
-            "\n";
-              //int old_size = grid->getSize();
-              coarse_.free_coarsen_NFirstOnly(
-                grid->getStorage(), scf, alphaWeight, grid->getSize());
-
-              std::cout << "Size after coarsening:" << grid->getSize() <<
-            "\n\n";
-              //int new_size = grid->getSize();
-
-              deletedGridPoints.clear();
-              deletedGridPoints = coarse_.getDeletedPoints();
-
-              (*refineCoarse)[idx].first = deletedGridPoints;
-
-              coarseCnt++;
-            }*/
-
-            // perform refinement (surplus based)
-            size_t sizeBeforeRefine = grid.getSize();
-            // simple refinement based on surpluses
-            SurplusRefinementFunctor srf(alphaWeight, offline->getConfig().ref_noPoints_);
-            gridGen.refine(srf);
-            size_t sizeAfterRefine = grid.getSize();
-            return sizeAfterRefine - sizeBeforeRefine;
         }
 
         // Train from an entire Batch
@@ -702,19 +416,19 @@ namespace sgpp {
             }
 
             // Learn from each Class
-            for (size_t i = 0; i < trainDataClasses.size(); i++) {
-                std::pair<sgpp::base::DataMatrix *, double> p = trainDataClasses[i];
+            for (size_t classIndex = 0; classIndex < trainDataClasses.size(); classIndex++) {
+                std::pair<sgpp::base::DataMatrix *, double> p = trainDataClasses[classIndex];
 
                 if ((*p.first).getNrows() > 0) {
                     // update density function for current class
-                    RefinementResult &classRefinementResult = vectorRefinementResults[i];
-                    std::cout << "Calling compute density function class " << i << " (refinement +"
+                    RefinementResult &classRefinementResult = refinementHandler.getRefinementResult(classIndex);
+                    std::cout << "Calling compute density function class " << classIndex << " (refinement +"
                               << classRefinementResult.addedGridPoints.size() << ", -"
                               << classRefinementResult.deletedGridPointsIndexes.size() << ")" << std::endl;
-                    densityFunctions[i].first->computeDensityFunction(
+                    densityFunctions[classIndex].first->computeDensityFunction(
                             *p.first, true, doCrossValidation, &classRefinementResult.deletedGridPointsIndexes,
                             classRefinementResult.addedGridPoints.size());
-                    D(std::cout << "Clearing the refinement results class " << i << std::endl;)
+                    D(std::cout << "Clearing the refinement results class " << classIndex << std::endl;)
                     classRefinementResult.deletedGridPointsIndexes.clear();
                     classRefinementResult.addedGridPoints.clear();
 
@@ -768,7 +482,7 @@ namespace sgpp {
             auto &densityFunctions = getDensityFunctions();
             for (size_t classIndex = 0; classIndex < getNumClasses(); classIndex++) {
                 D(std::cout << "Sending alpha values to master for class " << classIndex << " with grid version "
-                            << getCurrentGridVersion(classIndex) << std::endl;)
+                            << getLocalGridVersion(classIndex) << std::endl;)
                 auto &classDensityContainer = densityFunctions[classIndex];
                 DataVector alphaVector = classDensityContainer.first->getAlpha();
                 MPIMethods::sendMergeGridNetworkMessage(classIndex, batchOffset, dataset.getNumberInstances(),
@@ -788,7 +502,7 @@ namespace sgpp {
             while (classIndex < localGridVersions.size()) {
                 if (!checkGridStateConsistent(classIndex)) {
                     std::cout << "Attempted to train from an inconsistent grid "
-                              << classIndex << " version " << getCurrentGridVersion(classIndex) << std::endl;
+                              << classIndex << " version " << getLocalGridVersion(classIndex) << std::endl;
                     MPIMethods::waitForGridConsistent(classIndex);
                     //start over, waiting might have changed other grids
                     classIndex = 0;
@@ -798,7 +512,10 @@ namespace sgpp {
             }
         }
 
-        bool LearnerSGDEOnOffParallel::isVersionConsistent(size_t version) { return version >= 10; }
+        bool LearnerSGDEOnOffParallel::isVersionConsistent(size_t version) {
+            return version >=
+                   MINIMUM_CONSISTENT_GRID_VERSION;
+        }
 
         size_t
         LearnerSGDEOnOffParallel::assignBatchToWorker(size_t batchOffset, bool doCrossValidation) {
@@ -819,7 +536,7 @@ namespace sgpp {
         }
 
 
-        void LearnerSGDEOnOffParallel::mergeAlphaValues(unsigned long classIndex, unsigned long gridVersion,
+        void LearnerSGDEOnOffParallel::mergeAlphaValues(unsigned long classIndex, unsigned long remoteGridVersion,
                                                         DataVector dataVector, unsigned long batchOffset,
                                                         unsigned long batchSize, bool isLastPacketInSeries) {
             MPIMethods::waitForGridConsistent(classIndex);
@@ -831,24 +548,24 @@ namespace sgpp {
                     std::cout << "Batch size is " << batchSize << std::endl;
             )
 
-            if (!isVersionConsistent(gridVersion)) {
+            if (!isVersionConsistent(remoteGridVersion)) {
                 std::cout << "Received merge request with inconsistent grid " << classIndex << " version "
-                          << gridVersion << std::endl;
+                          << remoteGridVersion << std::endl;
                 exit(-1);
             }
 
-            size_t localGridVersion = getCurrentGridVersion(classIndex);
+            size_t localGridVersion = getLocalGridVersion(classIndex);
             if (isLastPacketInSeries) {
-                mpiTaskScheduler.onMergeRequestIncoming(batchOffset, batchSize, gridVersion, localGridVersion);
+                mpiTaskScheduler.onMergeRequestIncoming(batchOffset, batchSize, remoteGridVersion, localGridVersion);
             }
 
-            if (gridVersion != localGridVersion) {
+            if (remoteGridVersion != localGridVersion) {
                 D(std::cout << "Received merge grid request with incorrect grid version!"
                             << " local: " << localGridVersion
-                            << ", remote: " << gridVersion
+                            << ", remote: " << remoteGridVersion
                             << std::endl;)
-                if (gridVersion + 1 == localGridVersion) {
-                    RefinementResult &refinementResult = vectorRefinementResults[classIndex];
+                if (remoteGridVersion + 1 == localGridVersion) {
+                    RefinementResult &refinementResult = refinementHandler.getRefinementResult(classIndex);
                     std::list<size_t> &deletedPoints = refinementResult.deletedGridPointsIndexes;
                     std::list<LevelIndexVector> &addedPoints = refinementResult.addedGridPoints;
 
@@ -916,12 +633,17 @@ namespace sgpp {
                         << std::accumulate(dataVector.begin(), dataVector.end(), 0.0) << std::endl;)
         }
 
-        size_t LearnerSGDEOnOffParallel::getCurrentGridVersion(size_t classIndex) {
+        size_t LearnerSGDEOnOffParallel::getLocalGridVersion(size_t classIndex) {
             return localGridVersions[classIndex];
         }
 
+        bool LearnerSGDEOnOffParallel::checkAllGridsConsistent() {
+            return std::all_of(localGridVersions.begin(), localGridVersions.end(),
+                               [](unsigned long version) { return isVersionConsistent(version); });
+        }
+
         bool LearnerSGDEOnOffParallel::checkGridStateConsistent(size_t classIndex) {
-            if (localGridVersions.size() < classIndex) {
+            if (localGridVersions.size() < classIndex || classIndex < 0) {
                 throw algorithm_exception("Received request for consistency of class " + classIndex);
             }
             return isVersionConsistent(localGridVersions[classIndex]);
@@ -940,10 +662,6 @@ namespace sgpp {
             localGridVersions[classIndex] = gridVersion;
         }
 
-        RefinementResult &LearnerSGDEOnOffParallel::getRefinementResult(size_t classIndex) {
-            return vectorRefinementResults[classIndex];
-        }
-
         void LearnerSGDEOnOffParallel::printPoint(base::HashGridStorage::point_type *gridPoint) {
             std::cout << "Grid point " << gridPoint->getHash() << std::endl;
 
@@ -956,6 +674,26 @@ namespace sgpp {
                           << index << std::endl;
             }
 
+        }
+
+        MPITaskScheduler &LearnerSGDEOnOffParallel::getScheduler() {
+            return mpiTaskScheduler;
+        }
+
+        std::unique_ptr<DBMatOffline> &LearnerSGDEOnOffParallel::getOffline() {
+            return offline;
+        }
+
+        Dataset &LearnerSGDEOnOffParallel::getTrainData() {
+            return trainData;
+        }
+
+        Dataset *LearnerSGDEOnOffParallel::getValidationData() {
+            return validationData;
+        }
+
+        LearnerSGDEOnOffParallelHandler &LearnerSGDEOnOffParallel::getRefinementHandler() {
+            return refinementHandler;
         }
 
     }  // namespace datadriven
