@@ -125,9 +125,10 @@ namespace sgpp {
             printGridSizeStatistics("#Initial grid size of grid ", onlineObjects);
 
             // auxiliary variable for accuracy (error) measurement
-            double acc = getAccuracy();
-
-            avgErrors.append(1.0 - acc);
+            // TODO Evil
+//            double acc = getAccuracy();
+//
+//            avgErrors.append(1.0 - acc);
 
             // main loop which performs the training process
             while (completedDataPasses < maxDataPasses) {
@@ -216,7 +217,8 @@ namespace sgpp {
 
             std::cout << "#Training finished (This is MASTER)" << std::endl;
 
-            error = 1.0 - getAccuracy();
+            //TODO This is also evil
+//            error = 1.0 - getAccuracy();
 
         }
 
