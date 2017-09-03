@@ -16,7 +16,7 @@ namespace sgpp {
                 auto iterator = freedRequests.begin();
                 size_t index = *iterator;
                 freedRequests.erase(iterator);
-                std::memset(mpiRequestStorage[index], 0, sizeof(MPI_Request));
+//                std::memset(mpiRequestStorage[index], 0, sizeof(MPI_Request));
 //                std::cout << "Reused freed request " << index << std::endl;
                 printPoolStatistics();
                 return index;

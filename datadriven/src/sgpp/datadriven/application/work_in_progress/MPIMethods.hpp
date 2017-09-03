@@ -95,7 +95,9 @@ namespace sgpp {
 //                                                     const RefinementResult &refinementResult, int offset,
 //                                                     std::list::iterator &iterator);
 
-            static PendingMPIRequest & sendISend(int destinationRank, MPI_Packet *mpiPacket, bool highPriority = false);
+            static PendingMPIRequest &
+            sendISend(int destinationRank, MPI_Packet *mpiPacket, size_t packetSize = sizeof(MPI_Packet),
+                      bool highPriority = false);
 
             static void runBatch(MPI_Packet *pPacket);
 
@@ -117,6 +119,8 @@ namespace sgpp {
 
             static std::list<sgpp::datadriven::MessageTrackRequest>::iterator
             createTrackRequest(unsigned int numOccurrences, const std::function<bool(PendingMPIRequest &)> &predicate);
+
+            static size_t calculateTotalPacketSize(size_t containedPacketSize);
         };
     }
 }
