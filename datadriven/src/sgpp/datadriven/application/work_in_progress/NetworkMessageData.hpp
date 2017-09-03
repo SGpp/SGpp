@@ -80,7 +80,7 @@ namespace sgpp {
             bool doCrossValidation;
         };
 
-        struct AssignCholeskyUpdateNetworkMessage {
+        struct AssignSystemMatrixUpdateNetworkMessage {
             unsigned long classIndex;
             unsigned long gridversion;
         };

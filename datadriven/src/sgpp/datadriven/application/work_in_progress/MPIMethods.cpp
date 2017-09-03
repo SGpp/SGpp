@@ -114,7 +114,7 @@ namespace sgpp {
             processIncomingMPICommands(request);
 
             D(std::cout << "Zeroing MPI Request" << std::endl;)
-            std::memset(request.getMPIRequestHandle(), 0, sizeof(MPI_Request));
+//            std::memset(request.getMPIRequestHandle(), 0, sizeof(MPI_Request));
 
             D(std::cout << "Zeroing Buffer" << std::endl;)
             std::memset(request.buffer, 0, sizeof(MPI_Packet));
@@ -229,13 +229,13 @@ namespace sgpp {
                                 << " with " << networkMessage->listLength
                                 << " values" << " (grid version " << networkMessage->gridversion << ", target "
                                 << mpiTarget << ")" << std::endl;)
-                    PendingMPIRequest &pendingMPIRequest = sendISend(mpiTarget, mpiPacket, true);
+                    sendISend(mpiTarget, mpiPacket, sizeof(MPI_Packet), true);
                 } else {
                     D(std::cout << "Broadcasting cholesky for class " << networkMessage->classIndex
                                 << " offset " << choleskyNetworkMessage->offset
                                 << " with " << networkMessage->listLength
                                 << " values" << " (grid version " << networkMessage->gridversion << ")" << std::endl;)
-                    PendingMPIRequest &pendingMPIRequest = sendIBcast(mpiPacket);
+                    sendIBcast(mpiPacket);
                 }
             }
         }
@@ -264,11 +264,12 @@ namespace sgpp {
             return pendingMPIRequest;
         }
 
-        PendingMPIRequest &MPIMethods::sendISend(const int destinationRank, MPI_Packet *mpiPacket, bool highPriority) {
+        PendingMPIRequest &
+        MPIMethods::sendISend(const int destinationRank, MPI_Packet *mpiPacket, size_t packetSize, bool highPriority) {
             PendingMPIRequest &pendingMPIRequest = createPendingMPIRequest(mpiPacket, false);
 
             //Point to the request in vector instead of stack
-            MPI_Isend(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, destinationRank,
+            MPI_Isend(mpiPacket, packetSize, MPI_UNSIGNED_CHAR, destinationRank,
                       highPriority ? MPI_TAG_HIGH_PRIORITY_NO_BLOCK : MPI_TAG_STANDARD_COMMAND,
                       MPI_COMM_WORLD, pendingMPIRequest.getMPIRequestHandle());
 
@@ -698,7 +699,7 @@ namespace sgpp {
                     runBatch(mpiPacket);
                     break;
                 case UPDATE_SYSTEM_MATRIX_DECOMPOSITION: {
-                    auto *message = static_cast<AssignCholeskyUpdateNetworkMessage *>(networkMessagePointer);
+                    auto *message = static_cast<AssignSystemMatrixUpdateNetworkMessage *>(networkMessagePointer);
                     learnerInstance->computeNewCholeskyDecomposition(message->classIndex, message->gridversion);
                     break;
                 }
@@ -746,7 +747,11 @@ namespace sgpp {
             message->batchSize = batchSize;
             message->doCrossValidation = doCrossValidation;
 
-            sendISend(workerID, mpiPacket);
+            sendISend(workerID, mpiPacket, calculateTotalPacketSize(sizeof(AssignBatchNetworkMessage)));
+        }
+
+        size_t MPIMethods::calculateTotalPacketSize(size_t containedPacketSize) {
+            return offsetof(MPI_Packet, MPI_Packet::payload) + containedPacketSize;
         }
 
         void MPIMethods::runBatch(MPI_Packet *mpiPacket) {
@@ -761,11 +766,12 @@ namespace sgpp {
             auto *mpiPacket = new MPI_Packet;
             mpiPacket->commandID = UPDATE_SYSTEM_MATRIX_DECOMPOSITION;
 
-            auto *message = (AssignCholeskyUpdateNetworkMessage *) mpiPacket->payload;
+            auto *message = (AssignSystemMatrixUpdateNetworkMessage *) mpiPacket->payload;
             message->gridversion = learnerInstance->getCurrentGridVersion(classIndex);
             message->classIndex = classIndex;
 
-            sendISend(workerID, mpiPacket);
+            sendISend(workerID, mpiPacket, calculateTotalPacketSize(sizeof(AssignSystemMatrixUpdateNetworkMessage)),
+                      true);
         }
 
         int MPIMethods::getWorldSize() {
