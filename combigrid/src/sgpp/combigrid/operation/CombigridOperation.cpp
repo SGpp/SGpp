@@ -319,6 +319,9 @@ std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformBoundary
                                               func);
 }
 
+
+
+
 std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformPsiHermiteInterpolation(
     size_t numDimensions, MultiFunction func) {
   return std::make_shared<CombigridOperation>(
@@ -365,6 +368,19 @@ std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformBoundary
                                               func);
 }
 
+std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformBoundaryZetaHermiteInterpolation(
+    size_t numDimensions, size_t zetaDimension, MultiFunction func) {
+  std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> evaluators(
+      numDimensions, CombiEvaluators::psiHermiteInterpolation());
+
+  evaluators[zetaDimension] = CombiEvaluators::zetaHermiteInterpolation();
+
+  return std::make_shared<CombigridOperation>(std::vector<std::shared_ptr<AbstractPointHierarchy>>(
+                                                  numDimensions, CombiHierarchies::expUniformBoundary()),
+                                              evaluators, std::make_shared<StandardLevelManager>(),
+                                              func);
+}
+
 std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformZetaHermiteInterpolation(
     size_t numDimensions, MultiFunction func) {
   return std::make_shared<CombigridOperation>(
@@ -383,6 +399,40 @@ std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformBoundary
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>>(
           numDimensions, CombiEvaluators::zetaHermiteInterpolation()),
       std::make_shared<StandardLevelManager>(), func);
+}
+
+
+// TODO andere psi funktion anpassen
+std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformBoundaryZetaInterpolation(
+    size_t numDimensions, std::vector<int> zetaDimensions, MultiFunction func) {
+  std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> evaluators(
+      numDimensions, CombiEvaluators::psiHermiteInterpolation());
+
+      for(int i : zetaDimensions) {
+        evaluators[i]=CombiEvaluators::zetaHermiteInterpolation();
+      }
+
+
+  return std::make_shared<CombigridOperation>(std::vector<std::shared_ptr<AbstractPointHierarchy>>(
+                                                  numDimensions, CombiHierarchies::expUniformBoundary()),
+                                              evaluators, std::make_shared<StandardLevelManager>(),
+                                              func);
+}
+
+std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformBoundaryPsiInterpolation(
+    size_t numDimensions, std::vector<int> psiDimensions, MultiFunction func) {
+  std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> evaluators(
+      numDimensions, CombiEvaluators::zetaHermiteInterpolation());
+
+      for(int i : psiDimensions) {
+        evaluators[i]=CombiEvaluators::psiHermiteInterpolation();
+      }
+
+
+  return std::make_shared<CombigridOperation>(std::vector<std::shared_ptr<AbstractPointHierarchy>>(
+                                                  numDimensions, CombiHierarchies::expUniformBoundary()),
+                                              evaluators, std::make_shared<StandardLevelManager>(),
+                                              func);
 }
 
 } /* namespace combigrid */
