@@ -225,6 +225,7 @@ class Learner(object):
         # if C Operator is Identity: use the single precision vectorized version
         if self.specification.getCOperatorType() == 'identity' \
             and self.specification.getVectorizationType() != None:
+	    # THIS DOESN'T EXIST ANYMORE!!!
             self.linearSystem = DMSystemMatrixVectorizedIdentity(self.grid,
                                                set.getPoints(),
                                                self.specification.getL(),
