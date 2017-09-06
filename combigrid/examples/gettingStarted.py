@@ -14,6 +14,7 @@ import pysgpp
 import math
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+import numpy as np
 
 ## The first thing we need is a function to evaluate. This function will be evaluated on the domain
 ## \f$[0, 1]^d\f$. This particular function can be used with any number of dimensions.
@@ -153,9 +154,11 @@ def example3():
 
     ## We slightly deviate from the C++ example here and pass the interpolation points via a DataMatrix.
     ## We will use 2 interpolation points.
+    ## IMPORTANT: For python, the parameters matrix needs to be transposed
     firstParam = [0.2, 0.6, 0.7]
     secondParam = [0.3, 0.9, 1.0]
-    parameters = pysgpp.DataMatrix([firstParam, secondParam])
+    params = np.array([firstParam, secondParam])
+    parameters = pysgpp.DataMatrix(params.transpose())
 
     ## Let's use the simple interface for this example and stop the time:
     stopwatch = pysgpp.Stopwatch()
