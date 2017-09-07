@@ -3,26 +3,26 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationPoly.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityConditional.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensitySampling1D.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPoly.hpp>
-#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
-#include <sgpp/base/exception/operation_exception.hpp>
-#include <sgpp/base/operation/hash/OperationEval.hpp>
-#include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationPoly.hpp>
 
 #include <sgpp/globaldef.hpp>
 
-#include <map>
+#include <algorithm>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
-#include <vector>
+#include <map>
 #include <utility>
-#include <algorithm>
+#include <vector>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -160,7 +160,6 @@ void OperationRosenblattTransformationPoly::doTransformation_in_next_dim(
 
   /* Step 2: draw a sample in next dim */
   double y = 0;
-
   if (g_out->getDimension() > 1) {
     // Marginalize to next dimension
     base::Grid* g1d = NULL;
