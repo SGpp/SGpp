@@ -10,7 +10,7 @@ class interpolation_function():
   def __init__(self, d, f):
     self.f = f
     self.d = d
-    self.grid = pysgpp.Grid.createPolyGrid(d, 3)
+    self.grid = pysgpp.Grid.createLinearGrid(d)
     self.gridStorage = self.grid.getStorage()
     self.hierarch = pysgpp.createOperationHierarchisation(self.grid)
     self.opeval = pysgpp.createOperationEval(self.grid)
@@ -48,6 +48,9 @@ def parabola(x):
     res *= x[i] * (1. - x[i]) * 4.;
   return res
 
+def const_0(x):
+  return 0.0
+
 def eval_rosenblatt1d(sg_pdf, xs):
     op = pysgpp.createOperationRosenblattTransformation1D(sg_pdf.grid)
     ys = []
@@ -66,6 +69,8 @@ def eval_rosenblattdd(sg_pdf, xs):
       for j in range(sg_pdf.d):
         input_points.set(i, j , 0.5)
     op.doTransformation(sg_pdf.alpha, input_points, output_points)
+    print(output_points)
+
   # ---------------------------------------------
 
 
@@ -81,10 +86,10 @@ def test(grid_points):
   ys = [0, 0.151638, 0.615553, 2.39577, 3.23902, 2.39577, 0.615553, 0.230832, 0]
   plt.plot(grid_points, ys)
 
-xs = np.arange(0, 1.01, 0.05)
+xs = np.arange(0, 1.01, 0.1)
 l_max = 3
 d = 2
-interpolation = interpolation_function(d, parabola)
+interpolation = interpolation_function(d, const_0)
 interpolation.create_interpolation(l_max)
 
 # grid_points = np.arange(0, 1.01, 2**-l_max)

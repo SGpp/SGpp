@@ -212,6 +212,7 @@ double OperationRosenblattTransformation1DPolyBoundary::doTransformation1D(
     }
   }
 
+  if (sum == 0) return 0;
   // compute CDF
   double tmp_sum;
   unsigned int i = 0;

@@ -207,7 +207,7 @@ void OperationInverseRosenblattTransformation1DPoly::init(base::DataVector* alph
 double OperationInverseRosenblattTransformation1DPoly::sample(base::DataVector* alpha1d,
                                                               double coord1d) {
   if (coord1d == 0.0) return 0.0;
-
+  if (sum == 0) return 0;
   base::DataVector coord(1);
   std::multimap<double, double>::iterator it1;
   size_t patch_nr = 0;

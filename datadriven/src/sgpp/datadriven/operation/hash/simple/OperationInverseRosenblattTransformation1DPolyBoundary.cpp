@@ -13,9 +13,9 @@
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DPolyBoundary.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPolyBoundary.hpp>
+#include <sgpp/globaldef.hpp>
 #include <sgpp_datadriven.hpp>
 #include <sgpp_optimization.hpp>
-#include <sgpp/globaldef.hpp>
 
 #include <algorithm>
 #include <cstdlib>
@@ -208,6 +208,7 @@ void OperationInverseRosenblattTransformation1DPolyBoundary::init(base::DataVect
 double OperationInverseRosenblattTransformation1DPolyBoundary::sample(base::DataVector* alpha1d,
                                                                       double coord1d) {
   if (coord1d == 0.0) return 0.0;
+  if (sum == 0) return 0;
 
   base::DataVector coord(1);
   std::multimap<double, double>::iterator it1;

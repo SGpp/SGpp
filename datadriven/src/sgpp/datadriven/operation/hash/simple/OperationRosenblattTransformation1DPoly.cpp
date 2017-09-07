@@ -96,8 +96,6 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
       negative_value_encountered = negative_value_encountered || (value < 0);
     }
     area = gaussQuadSum * scaling;
-    // std::cout << "from " << left_coord << " to " << left+scaling << std::endl;
-    // std::cout << "area:" << area << std::endl;
 
     if (negative_value_encountered || eval_res < 0) {
       // make sure that the cdf is monotonically increasing
@@ -205,7 +203,7 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
       }
       --i;
       left_function_value = right_function_value;
-    } else {
+    } else {  // not negative value in patch
       // use the (positive) result of the Gauss-Quadrature
       sum += area;
       left_coord = left + scaling;
@@ -214,7 +212,7 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
       is_negative_patch.push_back(false);
     }
   }
-
+  if (sum == 0) return 0;
   // compute CDF
   double tmp_sum;
   unsigned int i = 0;
