@@ -120,10 +120,7 @@ void OperationDensityConditional::doConditional(base::DataVector& alpha, base::G
     // update corresponding coefficient
     malpha[mseqNr] += alpha[seqNr] * zeta[seqNr];
   }
-  if (theta != 0)
-    malpha.mult(1. / theta);
-  else
-    malpha.setAll(0);
+  if (theta != 0) malpha.mult(1. / theta);
 }
 }  // namespace datadriven
 }  // namespace sgpp
