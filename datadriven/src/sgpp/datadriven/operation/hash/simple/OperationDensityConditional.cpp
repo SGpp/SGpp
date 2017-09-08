@@ -3,11 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/operation/hash/simple/OperationDensityConditional.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
-
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityConditional.hpp>
 #include <sgpp/globaldef.hpp>
+
 #include <algorithm>
 
 namespace sgpp {
@@ -122,6 +122,8 @@ void OperationDensityConditional::doConditional(base::DataVector& alpha, base::G
   }
   if (theta != 0)
     malpha.mult(1. / theta);
+  else
+    malpha.setAll(0);
 }
 }  // namespace datadriven
 }  // namespace sgpp
