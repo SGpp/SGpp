@@ -208,9 +208,9 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
       // check if refinement should be performed
       if (refMonitor == "periodic") {
         // check periodic monitor
-		//std::cout << offline->isRefineable() << (totalInstances > 0) << (totalInstances % refPeriod == 0) << (refCnt < offline->getConfig().numRefinements_) << std::endl;
-        if (offline->isRefineable() && (totalInstances > 0) && (totalInstances % refPeriod == 0) &&
-            (refCnt < offline->getConfig().numRefinements_)) {
+		    std::cout << offline->isRefineable() << (totalInstances > 0) << (totalInstances % refPeriod == 0) << (refCnt < offline->getConfig().numRefinements_) << std::endl;
+        if (offline->isRefineable() && (totalInstances > 0) && (totalInstances % refPeriod == 0) ){//&&
+            //(refCnt < offline->getConfig().numRefinements_)) {
           doRefine = true;
         }
       } else if (refMonitor == "convergence") {
@@ -262,8 +262,16 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
     processedPoints = 0;
   }  // end while
 
-  std::cout << "#Training finished"
-            << "\n";
+  std::cout << "#Training finished" << std::endl;
+
+  std::cout << "Normalizing the densityFunctions using Quadrature";
+
+  for (auto& densityFunction : densityFunctions) {
+    densityFunction.first->normalizeQuadrature();
+  }
+
+  std::cout << "Complete!" << std::endl;
+
 }
 
 void LearnerSGDEOnOff::train(Dataset& dataset, bool doCv,
@@ -364,7 +372,7 @@ void LearnerSGDEOnOff::predict(DataMatrix& data, DataVector& result) const {
 // now select the appropriate class
 #pragma omp parallel for
   for (auto point = 0u; point < data.getNrows(); point++) {
-    auto bestClass = 0.0;
+    auto bestClass = -30.0;
     auto maxDensity = std::numeric_limits<double>::max() * (-1);
     for (auto classNum = 0u; classNum < numClasses; classNum++) {
       auto density = perClassDensities[classNum][point];
@@ -373,7 +381,7 @@ void LearnerSGDEOnOff::predict(DataMatrix& data, DataVector& result) const {
         bestClass = densityFunctions[classNum].second;
       }
     }
-    if (bestClass == 0) {
+    if (bestClass == -30.0) {
       std::cerr << "LearnerSGDEOnOff: Warning: no best class found!\n";
     }
     result[point] = bestClass;
@@ -535,7 +543,7 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
   MultiGridRefinementFunctor* func = nullptr;
 
   // Zero-crossing-based refinement
-  ZeroCrossingRefinementFunctor funcZrcr{grids, alphas, offline->getConfig().ref_noPoints_,
+  ZeroCrossingRefinementFunctor funcZrcr{grids, alphas, /*offline->getConfig().ref_noPoints_*/ 2,
                                          levelPenalize, preCompute};
 
   // Data-based refinement. Needs a problem dependent coeffA. The values
@@ -617,7 +625,11 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
       sizeBeforeRefine = grid.getSize();
       // simple refinement based on surpluses
       SurplusRefinementFunctor srf(alphaWeight, offline->getConfig().ref_noPoints_);
-      gridGen.refine(srf);
+      if(offline->interactions.size() == 0){
+        gridGen.refine(srf);
+      }else{
+        gridGen.refineInter(srf, offline->interactions);
+      }
       sizeAfterRefine = grid.getSize();
     } else if ((refType == "data") || (refType == "zero")) {
       if (preCompute) {
@@ -628,7 +640,11 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
       func->setGridIndex(idx);
       // perform refinement (zero-crossings-based / data-based)
       sizeBeforeRefine = grid.getSize();
-      gridGen.refine(*func);
+      if(offline->interactions.size() == 0){
+        gridGen.refine(*func);
+      }else{
+        gridGen.refineInter(*func, offline->interactions);
+      }
       sizeAfterRefine = grid.getSize();
     }
 

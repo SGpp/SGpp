@@ -118,8 +118,8 @@ std::vector<std::vector<size_t>> getConvs(size_t res) {
  */
 
 int main() {
-  for(size_t res = 32; res<=32; res+=2){
-    std::string filename = std::to_string(res) + "x" + std::to_string(res) + "_NN_Inter_Mod_lvl3_Chol.out";
+  for(size_t res = 4; res<=4; res+=2){
+    std::string filename = std::to_string(res) + "x" + std::to_string(res) + "_Lin_NN_Inter_lvl3_Chol.out";
     std::cout << "Setting up " << filename << std::endl;
 	/**
 	* The grid configuration.
@@ -128,8 +128,8 @@ int main() {
 	sgpp::base::RegularGridConfiguration gridConfig;
 	gridConfig.dim_ = res*res;
 	gridConfig.level_ = 3;
-	//gridConfig.type_ = sgpp::base::GridType::Linear;
-	gridConfig.type_ = sgpp::base::GridType::ModLinear;
+	gridConfig.type_ = sgpp::base::GridType::Linear;
+	//gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
 	/**
 	* Configure regularization.
@@ -184,7 +184,7 @@ int main() {
 	* Specify number of refinement steps and the max number
 	* of grid points to refine each step.
 	*/
-	adaptConfig.numRefinements_ = 2;
+	adaptConfig.numRefinements_ = 0;
 	adaptConfig.noPoints_ = 7;
 	adaptConfig.threshold_ = 0.0;  // only required for surplus refinement
 
@@ -202,6 +202,7 @@ int main() {
 	offline->buildMatrix();
 	std::cout << "Matrix build.\nBegin decomposition..." << std::endl;
 	offline->decomposeMatrix();
+	//offline->printMatrix();
     offline->store(filename);
   }
 }

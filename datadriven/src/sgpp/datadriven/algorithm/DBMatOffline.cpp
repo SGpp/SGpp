@@ -124,7 +124,7 @@ void DBMatOffline::InitializeGrid() {
   else{
     grid->getGenerator().regularInter(config.grid_level_, interactions, 0.0);
   }
-  std::cout << grid->getSize() << std::endl;
+  std::cout << "Initialized Grid has " << grid->getSize() << "Gridpoints." << std::endl;
 }
 
 void DBMatOffline::buildMatrix() {
@@ -149,6 +149,7 @@ void DBMatOffline::buildMatrix() {
   std::unique_ptr<OperationMatrix> op(
       op_factory::createOperationLTwoDotExplicit(&lhsMatrix, *grid));
   isConstructed = true;
+  //lhsMatrix.toFile("8x8_Lin_ConstructedMat.txt");
 }
 
 void DBMatOffline::store(const std::string& fileName) {

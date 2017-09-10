@@ -36,12 +36,12 @@ int main() {
   /**
    * Get the training, test and validation data
    */
-  std::string filename = "../../datasets/artificialDatasets/TrianglesCircles/tricircle_0.25-0.75_16x16_800000images.train";
+  std::string filename = "../../datasets/artificialDatasets/TrianglesCircles/tricircle_0.25-0.75_4x4_100000images.train";
   // load training samples
   std::cout << "# loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset trainDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
 
-  filename = "../../datasets/artificialDatasets/TrianglesCircles/tricircle_0.25-0.75_16x16.test";
+  filename = "../../datasets/artificialDatasets/TrianglesCircles/tricircle_0.25-0.75_4x4.test";
   // load test samples
   std::cout << "# loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset testDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
@@ -148,7 +148,7 @@ int main() {
    * Specify number of refinement steps and the max number
    * of grid points to refine each step.
    */
-  adaptConfig.numRefinements_ = 0;
+  adaptConfig.numRefinements_ = 10;
   adaptConfig.noPoints_ = 5;
   adaptConfig.threshold_ = 0.0;  // only required for surplus refinement
 
@@ -165,7 +165,7 @@ int main() {
   dconf.icholParameters.sweepsDecompose = 2;
   dconf.icholParameters.sweepsRefine = 2;
 
-  std::string matrixfile = "mats/16x16_NN_Inter_lvl3_Chol.out";
+  std::string matrixfile = "mats/4x4_Lin_NN_Inter_lvl3_Chol.out";
 
   /**
    * Create the learner.
@@ -200,7 +200,7 @@ int main() {
 
   // specify batch size
   // (set to 1 for processing only a single data point each iteration)
-  size_t batchSize = 80000;
+  size_t batchSize = 40000;
   // specify max number of passes over traininig data set
   size_t maxDataPasses = 1;
 
@@ -218,19 +218,25 @@ int main() {
 
   std::cout << "Start prediction..." << std::endl;
 
-  DataVector predictTest;
+  sgpp::base::DataVector predictTest(xTest.size());
   learner.predict(xTest, predictTest);
   
-  std::cout << "Build confusion matrix..." << std::endl;
+  std::cout << "Build confusion matrix \n real\\pred" << std::endl;
 
-  size_t confusion [10][10] = {0};
+  size_t confusion [classNum][classNum];
+
+  for(size_t real = 0; real < classNum; real++){
+		for(size_t pred = 0; pred < classNum; pred++){
+		  confusion[pred][real] = 0;
+		}
+  }
 
   for(size_t i = 0; i < testDataset.getNumberInstances(); i++){
 	  confusion[(size_t)predictTest.get(i)][(size_t)yTest.get(i)]++;
   }
 
-  for(size_t real = 0; real < 10; real++){
-		for(size_t pred = 0; pred < 10; pred++){
+  for(size_t real = 0; real < classNum; real++){
+		for(size_t pred = 0; pred < classNum; pred++){
 		  std::cout << confusion[pred][real] << "\t";
 		}
 	  std::cout << std::endl;

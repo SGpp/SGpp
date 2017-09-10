@@ -1,4 +1,3 @@
-import scipy.io
 import numpy as np
 import cv2
 from random import randint
@@ -7,15 +6,15 @@ from math import sqrt
 #Settings
 
 #Number of Images per Class
-num_train = 800000
-num_test = 200
+num_train = 1
+num_test = 10000
 
 #Number of real output Images per Class
 out_train = 20
 
 #Size of the image
-h = w = 16
-t = 2
+h = w = 4
+t = 4
 
 #output filename
 base = 'tricircle_0.25-0.75_%ix%i'%(h,w)
