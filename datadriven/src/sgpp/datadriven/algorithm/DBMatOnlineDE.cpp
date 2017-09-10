@@ -65,6 +65,8 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
     // Bt * 1
     B->multTranspose(y, b);
 
+    //std::cout << b.toString() << std::endl;
+
     // Perform permutation because of decomposition (LU)
     if (offlineObject.getConfig().decomp_type_ == DBMatDecompostionType::LU) {
 #ifdef USE_GSL
@@ -128,6 +130,8 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
     solveSLE(b, do_cv);
 
     functionComputed = true;
+
+    //std::cout << "Alpha: \n" << alpha.toString() << std::endl;
   }
 }
 
@@ -240,6 +244,13 @@ double DBMatOnlineDE::normalize(size_t samples) {
     sum += this->eval(p);
   }
   return this->normFactor = static_cast<double>(samples) / sum;
+}
+
+double DBMatOnlineDE::normalizeQuadrature(){
+  this->normFactor = 1.;
+  double quadrature = sgpp::op_factory::createOperationQuadrature(offlineObject.getGrid())->doQuadrature(alpha);
+
+  return this->normFactor /= quadrature;
 }
 
 }  // namespace datadriven

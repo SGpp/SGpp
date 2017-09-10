@@ -131,6 +131,8 @@ class DBMatOffline {
    * @param inter Interaction terms used for geometrically aware grids
    */
   void setInter(std::vector<std::vector <size_t>> interactions);
+  
+  std::vector<std::vector <size_t>> interactions; //vector of interactions (if size() == 0: a regular SG is created)
 
  protected:
   DBMatOffline();
@@ -146,7 +148,6 @@ class DBMatOffline {
   std::unique_ptr<Grid> grid;
 
 
-  std::vector<std::vector <size_t>> interactions; //vector of interactions (if size() == 0: a regular SG is created)
 
 
   /**
