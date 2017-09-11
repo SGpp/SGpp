@@ -18,7 +18,7 @@ namespace sgpp {
             RECOMPUTE_CHOLESKY_DECOMPOSITION
         };
         struct AssignTaskResult {
-            unsigned long workerID;
+            int workerID;
             unsigned long taskSize;
         };
 
@@ -41,7 +41,7 @@ namespace sgpp {
 
             void setLearnerInstance(LearnerSGDEOnOffParallel *instance);
         protected:
-            LearnerSGDEOnOffParallel *learnerInstance;
+            LearnerSGDEOnOffParallel *learnerInstance{};
         };
 
     }

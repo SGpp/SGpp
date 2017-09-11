@@ -19,7 +19,7 @@ namespace sgpp {
             void assignTaskVariableTaskSize(TaskType taskType, AssignTaskResult &result) override;
 
         protected:
-            size_t lastWorkerID;
+            int lastWorkerID;
             size_t batchSize;
 
             size_t numOutstandingRequestsCurrentRefinement;

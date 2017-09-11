@@ -3,9 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-//TODO: Delete this Definition after Refactoring
-#define USE_GSL
-
 #ifdef USE_GSL
 
 #pragma once
@@ -87,10 +84,11 @@ namespace sgpp {
                                      * training process or not
                                      * @param nextCvStep Determines when next cross-validation has to be triggered
                                      */
-            void train(size_t batchSize, size_t maxDataPasses, std::string refinementFunctorType,
-                       std::string refMonitor, size_t refPeriod, double accDeclineThreshold,
-                       size_t accDeclineBufferSize, size_t minRefInterval, bool enableCv,
-                       size_t nextCvStep);
+            void trainParallel(size_t batchSize, size_t maxDataPasses,
+                               std::string refinementFunctorType,
+                               std::string refMonitor, size_t refPeriod, double accDeclineThreshold,
+                               size_t accDeclineBufferSize, size_t minRefInterval, bool enableCv,
+                               size_t nextCvStep);
 
             /**
              * Trains the learner with the given data batch
@@ -192,12 +190,6 @@ namespace sgpp {
              */
             static bool isVersionConsistent(size_t version);
 
-            /**
-                 * Output a grid point hash and all its level-index vectors
-                 * @param pPoint The grid point to print
-                 */
-            void printPoint(base::HashGridStorage::point_type *pPoint);
-
             MPITaskScheduler &getScheduler();
 
             std::unique_ptr<DBMatOffline> & getOffline();
@@ -209,6 +201,14 @@ namespace sgpp {
             Dataset *getValidationData();
 
             LearnerSGDEOnOffParallelHandler &getRefinementHandler();
+
+            /**
+                 * Asks the scheduler where to assign the next batch to and sends the MPI request.
+                 * @param batchOffset Starting offset of the new batch
+                 * @param doCrossValidation Whether the client should do cross-validation
+                 * @return The size of the batch assigned by the scheduler
+                 */
+            size_t assignBatchToWorker(size_t batchOffset, bool doCrossValidation);
 
         protected:
 
@@ -241,14 +241,6 @@ namespace sgpp {
             void splitBatchIntoClasses(const Dataset &dataset, size_t dim,
                                        const std::vector<std::pair<DataMatrix *, double>> &trainDataClasses,
                                        std::map<double, int> &classIndices) const;
-
-            /**
-             * Asks the scheduler where to assign the next batch to and sends the MPI request.
-             * @param batchOffset Starting offset of the new batch
-             * @param doCrossValidation Whether the client should do cross-validation
-             * @return The size of the batch assigned by the scheduler
-             */
-            size_t assignBatchToWorker(size_t batchOffset, bool doCrossValidation);
 
             /**
              * Wait for all grids to reach a consistent state before continuing

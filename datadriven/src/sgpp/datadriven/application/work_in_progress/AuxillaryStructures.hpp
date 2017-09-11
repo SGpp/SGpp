@@ -12,8 +12,8 @@ namespace sgpp {
         typedef ClassDensityConntainer ClassDensityContainer;
 
         struct LevelIndexPair {
-            unsigned long level;
-            unsigned long index;
+            sgpp::base::HashGridPoint::level_type level;
+            sgpp::base::HashGridPoint::index_type index;
         };
 
         typedef std::vector<LevelIndexPair> LevelIndexVector;

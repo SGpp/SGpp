@@ -13,6 +13,7 @@ namespace sgpp {
             this->lastWorkerID = 0;
             numOutstandingRequestsCurrentRefinement = 0;
             numOutstandingRequestsLastRefinement = 0;
+            learnerInstance = nullptr;
         }
 
         void RoundRobinScheduler::assignTaskVariableTaskSize(TaskType taskType, AssignTaskResult &result) {
@@ -35,9 +36,9 @@ namespace sgpp {
             return numOutstandingRequestsLastRefinement == 0;
         }
 
-        void RoundRobinScheduler::onMergeRequestIncoming(unsigned long batchOffset, unsigned long batchSize,
-                                                         size_t remoteGridVersion, size_t localGridVersion) {
-            //TODO: Ugly constant
+    void RoundRobinScheduler::onMergeRequestIncoming(unsigned long /*batchOffset*/,
+                                                     unsigned long /*batchSize*/,
+                                                     size_t remoteGridVersion, size_t localGridVersion) {
             if (remoteGridVersion == localGridVersion) {
                 numOutstandingRequestsCurrentRefinement--;
             } else if (remoteGridVersion + 1 == localGridVersion) {

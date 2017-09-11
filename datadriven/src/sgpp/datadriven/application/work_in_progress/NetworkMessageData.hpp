@@ -23,8 +23,6 @@ namespace sgpp {
 
         enum MPI_COMMAND_ID {
             NULL_COMMAND,
-            START_SYNCHRONIZE_PACKETS,
-            END_SYNCHRONIZE_PACKETS,
             UPDATE_GRID,
             MERGE_GRID,
             ASSIGN_BATCH,
