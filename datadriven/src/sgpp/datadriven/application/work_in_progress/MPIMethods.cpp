@@ -755,7 +755,7 @@ void MPIMethods::processIncomingMPICommands(PendingMPIRequest &pendingMPIRequest
       break;
     case ASSIGN_BATCH:runBatch(mpiPacket);
       break;
-    case UPDATE_SYSTEM_MATRIX_DECOMPOSITION: {
+    case COMPUTE_UPDATE_SYSTEM_MATRIX_DECOMPOSITION: {
       auto *message = static_cast<AssignSystemMatrixUpdateNetworkMessage *>(networkMessagePointer);
       learnerInstance->computeNewCholeskyDecomposition(message->classIndex,
                                                        message->gridversion);
@@ -819,7 +819,7 @@ void MPIMethods::runBatch(MPI_Packet *mpiPacket) {
 
 void MPIMethods::assignSystemMatrixUpdate(const int workerID, size_t classIndex) {
   auto *mpiPacket = new MPI_Packet;
-  mpiPacket->commandID = UPDATE_SYSTEM_MATRIX_DECOMPOSITION;
+  mpiPacket->commandID = COMPUTE_UPDATE_SYSTEM_MATRIX_DECOMPOSITION;
 
   auto *message =
       static_cast<AssignSystemMatrixUpdateNetworkMessage *>(
