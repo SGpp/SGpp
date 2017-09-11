@@ -556,10 +556,10 @@ LearnerSGDEOnOffParallel::assignBatchToWorker(size_t batchOffset, bool doCrossVa
   return assignTaskResult.taskSize;
 }
 
-void LearnerSGDEOnOffParallel::mergeAlphaValues(unsigned long classIndex,
-                                                unsigned long remoteGridVersion,
-                                                DataVector dataVector, unsigned long batchOffset,
-                                                unsigned long batchSize,
+void LearnerSGDEOnOffParallel::mergeAlphaValues(size_t classIndex,
+                                                size_t remoteGridVersion,
+                                                DataVector dataVector, size_t batchOffset,
+                                                size_t batchSize,
                                                 bool isLastPacketInSeries) {
   MPIMethods::waitForGridConsistent(classIndex);
 
@@ -665,7 +665,7 @@ size_t LearnerSGDEOnOffParallel::getLocalGridVersion(size_t classIndex) {
 
 bool LearnerSGDEOnOffParallel::checkAllGridsConsistent() {
   return std::all_of(localGridVersions.begin(), localGridVersions.end(),
-                     [](unsigned long version) { return isVersionConsistent(version); });
+                     [](size_t version) { return isVersionConsistent(version); });
 }
 
 bool LearnerSGDEOnOffParallel::checkGridStateConsistent(size_t classIndex) {

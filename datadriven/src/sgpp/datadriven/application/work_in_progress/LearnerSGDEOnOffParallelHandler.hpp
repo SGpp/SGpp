@@ -36,14 +36,14 @@ class LearnerSGDEOnOffParallelHandler {
   std::vector<RefinementResult> vectorRefinementResults;
   LearnerSGDEOnOffParallel *learnerInstance;
 
-  unsigned long
+  size_t
   handleDataAndZeroBasedRefinement(bool preCompute,
                                    MultiGridRefinementFunctor *func,
-                                   unsigned long idx,
+                                   size_t idx,
                                    base::Grid &grid,
                                    base::GridGenerator &gridGen) const;
 
-  unsigned long
+  size_t
   handleSurplusBasedRefinement(DBMatOnlineDE *densEst,
                                Grid &grid,
                                base::GridGenerator &gridGen) const;
@@ -60,7 +60,7 @@ class LearnerSGDEOnOffParallelHandler {
       * @param refinementResult The grid changes from the refinement cycle
       * @param densEst A pointer to the online object specfic to this class
       */
-  void updateClassVariablesAfterRefinement(unsigned long classIndex,
+  void updateClassVariablesAfterRefinement(size_t classIndex,
                                            RefinementResult *refinementResult,
                                            DBMatOnlineDE *densEst);
 
@@ -69,7 +69,7 @@ class LearnerSGDEOnOffParallelHandler {
        * @param classIndex The class to search refinement results for
        * @return A reference to the stored refinement results
        */
-  RefinementResult &getRefinementResult(unsigned long classIndex);
+  RefinementResult &getRefinementResult(size_t classIndex);
 
 /**
     * Check whether all grids are consistent and the scheduler is currently allowing refinement.
@@ -77,10 +77,10 @@ class LearnerSGDEOnOffParallelHandler {
     */
   bool checkReadyForRefinement() const;
 
-  bool checkRefinementNecessary(const std::string &refMonitor, unsigned long refPeriod,
-                                unsigned long totalInstances,
+  bool checkRefinementNecessary(const std::string &refMonitor, size_t refPeriod,
+                                size_t totalInstances,
                                 double currentValidError, double currentTrainError,
-                                unsigned long numberOfCompletedRefinements,
+                                size_t numberOfCompletedRefinements,
                                 ConvergenceMonitor &monitor);
 
   /**
@@ -97,7 +97,7 @@ class LearnerSGDEOnOffParallelHandler {
                             const ClassDensityConntainer &onlineObjects,
                             bool preCompute,
                             MultiGridRefinementFunctor *refinementFunctor,
-                            unsigned long classIndex);
+                            size_t classIndex);
 };
 }  // namespace datadriven
 }  // namespace sgpp

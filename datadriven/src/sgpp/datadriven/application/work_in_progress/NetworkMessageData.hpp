@@ -13,7 +13,7 @@
 #define MPI_TAG_STANDARD_COMMAND 41
 
 #define REFINENEMT_RESULT_PAYLOAD_SIZE (MPI_PACKET_MAX_PAYLOAD_SIZE\
-                                   - 3 * sizeof(unsigned long)\
+                                   - 3 * sizeof(size_t)\
                                    - sizeof(RefinementResultsUpdateType))
 
 #include <mpi.h>
@@ -44,44 +44,44 @@ enum RefinementResultsUpdateType {
 };
 
 struct RefinementResultNetworkMessage {
-  unsigned long gridversion;
-  unsigned long classIndex;
-  unsigned long listLength;
+  size_t gridversion;
+  size_t classIndex;
+  size_t listLength;
   RefinementResultsUpdateType updateType;
 
   unsigned char payload[REFINENEMT_RESULT_PAYLOAD_SIZE];
 };
 
 struct RefinementResultCholeskyNetworkMessage {
-  unsigned long matrixWidth;
-  unsigned long matrixHeight;
-  unsigned long offset;
+  size_t matrixWidth;
+  size_t matrixHeight;
+  size_t offset;
 
-  unsigned char payload[REFINENEMT_RESULT_PAYLOAD_SIZE - 3 * sizeof(unsigned long)];
+  unsigned char payload[REFINENEMT_RESULT_PAYLOAD_SIZE - 3 * sizeof(size_t)];
 };
 
 struct MergeGridNetworkMessage {
-  unsigned long gridversion;
-  unsigned long classIndex;
-  unsigned long payloadOffset;
-  unsigned long payloadLength;
-  unsigned long batchSize;
-  unsigned long batchOffset;
-  unsigned long alphaTotalSize;
+  size_t gridversion;
+  size_t classIndex;
+  size_t payloadOffset;
+  size_t payloadLength;
+  size_t batchSize;
+  size_t batchOffset;
+  size_t alphaTotalSize;
 
   unsigned char payload[(MPI_PACKET_MAX_PAYLOAD_SIZE
-      - 7 * sizeof(unsigned long))];
+      - 7 * sizeof(size_t))];
 };
 
 struct AssignBatchNetworkMessage {
-  unsigned long batchOffset;
-  unsigned long batchSize;
+  size_t batchOffset;
+  size_t batchSize;
   bool doCrossValidation;
 };
 
 struct AssignSystemMatrixUpdateNetworkMessage {
-  unsigned long classIndex;
-  unsigned long gridversion;
+  size_t classIndex;
+  size_t gridversion;
 };
 
 static_assert(sizeof(size_t) <= sizeof(unsigned long), "size_t larger than unsigned long");

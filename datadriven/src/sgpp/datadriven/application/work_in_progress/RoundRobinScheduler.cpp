@@ -37,8 +37,8 @@ bool RoundRobinScheduler::isReadyForRefinement() {
   return numOutstandingRequestsLastRefinement == 0;
 }
 
-void RoundRobinScheduler::onMergeRequestIncoming(unsigned long /*batchOffset*/,
-                                                 unsigned long /*batchSize*/,
+void RoundRobinScheduler::onMergeRequestIncoming(size_t /*batchOffset*/,
+                                                 size_t /*batchSize*/,
                                                  size_t remoteGridVersion,
                                                  size_t localGridVersion) {
   if (remoteGridVersion == localGridVersion) {
