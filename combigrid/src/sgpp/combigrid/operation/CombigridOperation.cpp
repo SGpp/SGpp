@@ -292,6 +292,8 @@ std::shared_ptr<CombigridOperation> CombigridOperation::createExpClenshawCurtisQ
       std::make_shared<StandardLevelManager>(), func);
 }
 
+// ToDo (rehmemk) Choose basistype SLE here! instead of first linear and changing to SLE in
+// AbstractFullGridinearEvaluator.hpp
 std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformBsplineInterpolation(
     size_t numDimensions, MultiFunction func) {
   return std::make_shared<CombigridOperation>(

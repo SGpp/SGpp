@@ -31,36 +31,24 @@ using sgpp::combigrid::FunctionLookupTable;
 using sgpp::combigrid::CombigridEvaluator;
 using sgpp::combigrid::WeightedRatioLevelManager;
 
+double f_1D(DataVector v) { return 4.0 * v[0] * v[0]; }
+
 double f_2D(DataVector v) { return 4.0 * v[0] * v[0] * (v[1] - v[1] * v[1]); }
 
 typedef sgpp::combigrid::AveragingLevelManager StandardLevelManager;
 
-void testInterpolationWithBsplines() {
-  size_t numDimensions = 1;
-  sgpp::combigrid::LinearInterpolationEvaluator eval;
-  auto evaluator = std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>>(
-      numDimensions, sgpp::combigrid::CombiEvaluators::linearInterpolation());
-
-  auto pointhierarchy = std::vector<std::shared_ptr<AbstractPointHierarchy>>(
-      numDimensions, sgpp::combigrid::CombiHierarchies::expUniform());
-
-  auto levelmanager = std::make_shared<StandardLevelManager>();
-
-  std::vector<double> points;
-  points.push_back(0.0);
-  points.push_back(0.5);
-  points.push_back(1.0);
-
-  eval.setGridPoints(points);
-}
-
 int main() {
-  size_t numDimensions = 2;
-  MultiFunction wrapper(f_2D);
+  //  size_t numDimensions = 2;
+  size_t numDimensions = 1;
+  //  MultiFunction wrapper(f_2D);
+  MultiFunction wrapper(f_1D);
   auto operation = CombigridOperation::createExpUniformBsplineInterpolation(numDimensions, wrapper);
 
-  size_t maxLevelSum = 2;
-  double result = operation->evaluate(maxLevelSum, DataVector(std::vector<double>{0.5, 0.7}));
+  size_t maxLevelSum = 3;
+  //  double result = operation->evaluate(maxLevelSum, DataVector(std::vector<double>{0.5, 0.5}));
+  double result = operation->evaluate(maxLevelSum, DataVector(std::vector<double>{0.5}));
+  result = operation->evaluate(maxLevelSum, DataVector(std::vector<double>{0.25}));
+  result = operation->evaluate(maxLevelSum, DataVector(std::vector<double>{0.75}));
 
   std::cout << result << "\n";
   //
