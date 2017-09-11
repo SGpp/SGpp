@@ -519,7 +519,8 @@ LearnerSGDEOnOffParallel::workBatch(Dataset dataset, size_t batchOffset, bool do
 void LearnerSGDEOnOffParallel::waitForAllGridsConsistent() {
   size_t classIndex = 0;
   while (classIndex < localGridVersions.size()) {
-    if (!checkGridStateConsistent(classIndex)) {
+    if (!checkGridStateConsistent(classIndex)
+        || getLocalGridVersion(classIndex) != getLocalGridVersion(0)) {
       std::cout << "Attempted to train from an inconsistent grid "
                 << classIndex << " version " << getLocalGridVersion(classIndex) << std::endl;
       MPIMethods::waitForGridConsistent(classIndex);
