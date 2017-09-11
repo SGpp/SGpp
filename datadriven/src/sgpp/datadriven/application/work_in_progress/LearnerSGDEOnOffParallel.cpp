@@ -317,7 +317,7 @@ LearnerSGDEOnOffParallel::computeNewCholeskyDecomposition(size_t classIndex, siz
   // The first check is to ensure that all segments of an update have been received
   // (intermediate segments set grid version to TEMPORARILY_INCONSISTENT)
   RefinementResult &refinementResult = refinementHandler.getRefinementResult(classIndex);
-  while (getLocalGridVersion(classIndex) == GRID_TEMPORARILY_INCONSISTENT || (
+  while (getLocalGridVersion(classIndex) != GRID_RECEIVED_ADDED_POINTS || (
       refinementResult.deletedGridPointsIndexes.empty() &&
           refinementResult.addedGridPoints.empty())) {
     D(std::cout << "Refinement results have not arrived yet (grid version "
