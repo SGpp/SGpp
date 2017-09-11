@@ -1,6 +1,7 @@
-//
-// Created by Vincent_Bode on 29.06.2017.
-//
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef SGPP_NETWORKMESSAGEDATA_H
 #define SGPP_NETWORKMESSAGEDATA_H
@@ -19,80 +20,78 @@
 #include <functional>
 
 namespace sgpp {
-    namespace datadriven {
+namespace datadriven {
 
-        enum MPI_COMMAND_ID {
-            NULL_COMMAND,
-            UPDATE_GRID,
-            MERGE_GRID,
-            ASSIGN_BATCH,
-            UPDATE_SYSTEM_MATRIX_DECOMPOSITION,
-            SHUTDOWN,
-            WORKER_SHUTDOWN_SUCCESS
-        };
+enum MPI_COMMAND_ID {
+  NULL_COMMAND,
+  UPDATE_GRID,
+  MERGE_GRID,
+  ASSIGN_BATCH,
+  UPDATE_SYSTEM_MATRIX_DECOMPOSITION,
+  SHUTDOWN,
+  WORKER_SHUTDOWN_SUCCESS
+};
 
-        struct MPI_Packet {
-            MPI_COMMAND_ID commandID;
-            unsigned char payload[MPI_PACKET_MAX_PAYLOAD_SIZE];
-        };
+struct MPI_Packet {
+  MPI_COMMAND_ID commandID;
+  unsigned char payload[MPI_PACKET_MAX_PAYLOAD_SIZE];
+};
 
-        enum RefinementResultsUpdateType {
-            ADDED_GRID_POINTS_LIST,
-            DELETED_GRID_POINTS_LIST,
-            CHOLESKY_DECOMPOSITION
-        };
+enum RefinementResultsUpdateType {
+  ADDED_GRID_POINTS_LIST,
+  DELETED_GRID_POINTS_LIST,
+  CHOLESKY_DECOMPOSITION
+};
 
-        struct RefinementResultNetworkMessage {
-            unsigned long gridversion;
-            unsigned long classIndex;
-            unsigned long listLength;
-            RefinementResultsUpdateType updateType;
+struct RefinementResultNetworkMessage {
+  unsigned long gridversion;
+  unsigned long classIndex;
+  unsigned long listLength;
+  RefinementResultsUpdateType updateType;
 
-            unsigned char payload[REFINENEMT_RESULT_PAYLOAD_SIZE];
-        };
+  unsigned char payload[REFINENEMT_RESULT_PAYLOAD_SIZE];
+};
 
-        struct RefinementResultCholeskyNetworkMessage {
-            unsigned long matrixWidth;
-            unsigned long matrixHeight;
-            unsigned long offset;
+struct RefinementResultCholeskyNetworkMessage {
+  unsigned long matrixWidth;
+  unsigned long matrixHeight;
+  unsigned long offset;
 
-            unsigned char payload[REFINENEMT_RESULT_PAYLOAD_SIZE - 3 * sizeof(unsigned long)];
-        };
+  unsigned char payload[REFINENEMT_RESULT_PAYLOAD_SIZE - 3 * sizeof(unsigned long)];
+};
 
-        struct MergeGridNetworkMessage {
-            unsigned long gridversion;
-            unsigned long classIndex;
-            unsigned long payloadOffset;
-            unsigned long payloadLength;
-            unsigned long batchSize;
-            unsigned long batchOffset;
-            unsigned long alphaTotalSize;
+struct MergeGridNetworkMessage {
+  unsigned long gridversion;
+  unsigned long classIndex;
+  unsigned long payloadOffset;
+  unsigned long payloadLength;
+  unsigned long batchSize;
+  unsigned long batchOffset;
+  unsigned long alphaTotalSize;
 
-            unsigned char payload[(MPI_PACKET_MAX_PAYLOAD_SIZE
-                                   - 7 * sizeof(unsigned long))];
-        };
+  unsigned char payload[(MPI_PACKET_MAX_PAYLOAD_SIZE
+      - 7 * sizeof(unsigned long))];
+};
 
-        struct AssignBatchNetworkMessage {
-            unsigned long batchOffset;
-            unsigned long batchSize;
-            bool doCrossValidation;
-        };
+struct AssignBatchNetworkMessage {
+  unsigned long batchOffset;
+  unsigned long batchSize;
+  bool doCrossValidation;
+};
 
-        struct AssignSystemMatrixUpdateNetworkMessage {
-            unsigned long classIndex;
-            unsigned long gridversion;
-        };
+struct AssignSystemMatrixUpdateNetworkMessage {
+  unsigned long classIndex;
+  unsigned long gridversion;
+};
 
-        static_assert(sizeof(size_t) <= sizeof(unsigned long), "size_t larger than unsigned long");
-        static_assert(sizeof(MergeGridNetworkMessage) <= MPI_PACKET_MAX_PAYLOAD_SIZE,
-                      "Merge Grid Network Message too long.");
-        static_assert(sizeof(RefinementResultNetworkMessage) <= MPI_PACKET_MAX_PAYLOAD_SIZE,
-                      "Refinement result Network Message too long.");
-        static_assert(sizeof(RefinementResultCholeskyNetworkMessage) <= MPI_PACKET_MAX_PAYLOAD_SIZE,
-                      "Refinement result Cholesky Network Message too long.");
+static_assert(sizeof(size_t) <= sizeof(unsigned long), "size_t larger than unsigned long");
+static_assert(sizeof(MergeGridNetworkMessage) <= MPI_PACKET_MAX_PAYLOAD_SIZE,
+              "Merge Grid Network Message too long.");
+static_assert(sizeof(RefinementResultNetworkMessage) <= MPI_PACKET_MAX_PAYLOAD_SIZE,
+              "Refinement result Network Message too long.");
+static_assert(sizeof(RefinementResultCholeskyNetworkMessage) <= MPI_PACKET_MAX_PAYLOAD_SIZE,
+              "Refinement result Cholesky Network Message too long.");
+}  // namespace datadriven
+}  // namespace sgpp
 
-
-    }
-}
-
-#endif //SGPP_NETWORKMESSAGEDATA_H
+#endif  // SGPP_NETWORKMESSAGEDATA_H
