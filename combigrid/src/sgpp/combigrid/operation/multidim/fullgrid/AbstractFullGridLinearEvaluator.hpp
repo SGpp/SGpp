@@ -242,14 +242,9 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
 
         // ToDo (rehmemk) Add evaluated B-Spline values to GridPoints in method setGridPoints in
         // LinearInterpolationEvaluator.
-
-        if (evaluatorPrototypes[d]->getBasisCoefficientComputationType() ==
-            BasisCoefficientsComputationType::FUNCTION_VALUES) {
-          eval->setGridPoints(this->pointHierarchies[d]->getPoints(l, orderingConfiguration[d]));
-        } else if (evaluatorPrototypes[d]->getBasisCoefficientComputationType() ==
-                   BasisCoefficientsComputationType::SLE) {
-          // setGridPoints Bspline!
-        }
+        BasisCoefficientsComputationType new_basistype = BasisCoefficientsComputationType::SLE;
+        eval->setBasisCoefficientComputationType(new_basistype);
+        eval->setGridPoints(this->pointHierarchies[d]->getPoints(l, orderingConfiguration[d]));
 
         // ToDo (rehmemk) Add SLE solving to setFunctionValuesAtGridPoints in
         // LinearInterpolationEvaluator.cpp and call it here so that as 'FunctionValues' the
