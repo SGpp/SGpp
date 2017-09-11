@@ -148,11 +148,11 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
    * @param batchSize The size of the batch this vector was trained from
    * @param isLastPacketInSeries Whether this merge is the last merge in several for the same class and batch
    */
-  void mergeAlphaValues(unsigned long classIndex,
-                        unsigned long remoteGridVersion,
+  void mergeAlphaValues(size_t classIndex,
+                        size_t remoteGridVersion,
                         DataVector dataVector,
-                        unsigned long batchOffset,
-                        unsigned long batchSize,
+                        size_t batchOffset,
+                        size_t batchSize,
                         bool isLastPacketInSeries);
 
   /**

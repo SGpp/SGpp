@@ -19,7 +19,7 @@ enum TaskType {
 };
 struct AssignTaskResult {
   int workerID;
-  unsigned long taskSize;
+  size_t taskSize;
 };
 
 class MPITaskScheduler {
@@ -34,8 +34,8 @@ class MPITaskScheduler {
   virtual void onRefinementStarted() = 0;
 
   virtual void
-  onMergeRequestIncoming(unsigned long batchOffset,
-                         unsigned long batchSize,
+  onMergeRequestIncoming(size_t batchOffset,
+                         size_t batchSize,
                          size_t remoteGridVersion,
                          size_t localGridVersion) = 0;
 

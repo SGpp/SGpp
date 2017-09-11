@@ -26,7 +26,7 @@ class RoundRobinScheduler : public MPITaskScheduler {
   size_t numOutstandingRequestsLastRefinement;
   bool isReadyForRefinement() override;
 
-  void onMergeRequestIncoming(unsigned long batchOffset, unsigned long batchSize,
+  void onMergeRequestIncoming(size_t batchOffset, size_t batchSize,
                               size_t remoteGridVersion, size_t localGridVersion) override;
 
   void onRefinementStarted() override;

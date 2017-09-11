@@ -389,7 +389,7 @@ MPIMethods::fillBufferWithLevelIndexData(void *buffer, const void *bufferEnd,
   auto *bufferPointer = static_cast<LevelIndexPair *>(buffer);
   while (iterator != listEnd && bufferPointer < bufferEnd) {
     LevelIndexVector levelIndexVector = *iterator;
-    if (bufferPointer + 2 * levelIndexVector.size() * sizeof(unsigned long) >= bufferEnd) {
+    if (bufferPointer + 2 * levelIndexVector.size() * sizeof(size_t) >= bufferEnd) {
       break;
     }
     for (auto &levelIndexPair : levelIndexVector) {
@@ -597,7 +597,7 @@ MPIMethods::findPendingMPIRequest(unsigned int completedRequestIndex) {
 }
 
 void MPIMethods::receiveGridComponentsUpdate(RefinementResultNetworkMessage *networkMessage) {
-  unsigned long classIndex = networkMessage->classIndex;
+  size_t classIndex = networkMessage->classIndex;
   RefinementResult &refinementResult = learnerInstance->getRefinementHandler().getRefinementResult(
       classIndex);
 

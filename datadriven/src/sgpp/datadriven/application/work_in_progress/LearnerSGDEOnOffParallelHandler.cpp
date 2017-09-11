@@ -26,7 +26,7 @@ void LearnerSGDEOnOffParallelHandler::doRefinementForClass(
     const ClassDensityConntainer &onlineObjects,
     bool preCompute,
     MultiGridRefinementFunctor *refinementFunctor,
-    unsigned long classIndex) {
+    size_t classIndex) {
   // perform refinement/coarsening for grid which corresponds to current
   // index
   std::cout << "Refinement and coarsening for class: " << classIndex
@@ -34,13 +34,13 @@ void LearnerSGDEOnOffParallelHandler::doRefinementForClass(
   auto densEst = onlineObjects[classIndex].first.get();
   Grid &grid = densEst->getOfflineObject().getGrid();
 
-  unsigned long oldGridSize = grid.getSize();
+  size_t oldGridSize = grid.getSize();
   D(std::cout << "Size before adaptivity: " << oldGridSize
               << std::endl;)
 
   base::GridGenerator &gridGen = grid.getGenerator();
 
-  unsigned long numberOfNewPoints = 0;
+  size_t numberOfNewPoints = 0;
 
   if (refType == "surplus") {
     numberOfNewPoints = handleSurplusBasedRefinement(densEst, grid, gridGen);
@@ -50,7 +50,7 @@ void LearnerSGDEOnOffParallelHandler::doRefinementForClass(
                                                          gridGen);
   }
 
-  unsigned long newGridSize = grid.getSize();
+  size_t newGridSize = grid.getSize();
   std::cout << "grid size after adaptivity: " << newGridSize
             << " (previously " << oldGridSize
             << "), " << numberOfNewPoints << " new points on grid"
@@ -70,12 +70,12 @@ void LearnerSGDEOnOffParallelHandler::doRefinementForClass(
   D(std::cout << "Clearing old deleted grid points" << std::endl;)
   refinementResult->deletedGridPointsIndexes.clear();
 
-  unsigned long numDimensions = learnerInstance->getDimensionality();
+  size_t numDimensions = learnerInstance->getDimensionality();
   // Collect new grid points into the refinement result for shipping
-  for (unsigned long i = 0; i < numberOfNewPoints; i++) {
+  for (size_t i = 0; i < numberOfNewPoints; i++) {
     std::vector<LevelIndexPair> levelIndexVector(numDimensions);
     base::HashGridPoint &gridPoint = grid.getStorage()[oldGridSize + i];
-    for (unsigned long currentDimension = 0;
+    for (size_t currentDimension = 0;
          currentDimension < numDimensions; currentDimension += 1) {
       uint32_t pointLevel;
       uint32_t pointIndex;
@@ -98,7 +98,7 @@ void LearnerSGDEOnOffParallelHandler::doRefinementForClass(
 }
 
 void LearnerSGDEOnOffParallelHandler::updateClassVariablesAfterRefinement(
-    unsigned long classIndex,
+    size_t classIndex,
     RefinementResult *refinementResult,
     DBMatOnlineDE *densEst) {
   base::Grid &grid = densEst->getOfflineObject().getGrid();
@@ -109,21 +109,21 @@ void LearnerSGDEOnOffParallelHandler::updateClassVariablesAfterRefinement(
     D(std::cout << "Old grid " << classIndex << " size is " << grid.getSize() << std::endl;)
 
 
-    unsigned long numDimensions = learnerInstance->getDimensionality();
+    size_t numDimensions = learnerInstance->getDimensionality();
 
     // Delete the grid points removed on master thread
     grid.getStorage().deletePoints(refinementResult->deletedGridPointsIndexes);
 
-    unsigned long sizeBeforeAdditions = grid.getSize();
+    size_t sizeBeforeAdditions = grid.getSize();
     D(std::cout << "Grid size after deleting is " << sizeBeforeAdditions << std::endl;)
 
     // Add grid points added on master thread
     for (std::vector<LevelIndexPair> &levelIndexVector : refinementResult->addedGridPoints) {
-      D(unsigned long sizeBeforePoint = grid.getSize();)
+      D(size_t sizeBeforePoint = grid.getSize();)
       auto *gridPoint = new sgpp::base::HashGridPoint(numDimensions);
       // TODO(bodevt): What happens when other points are changed (ie Leaf boolean etc)
 
-      for (unsigned long currentDimension = 0;
+      for (size_t currentDimension = 0;
            currentDimension < numDimensions; currentDimension++) {
         gridPoint->set(currentDimension,
                        levelIndexVector[currentDimension].level,
@@ -131,7 +131,7 @@ void LearnerSGDEOnOffParallelHandler::updateClassVariablesAfterRefinement(
       }
       grid.getStorage().insert(*gridPoint);
       D(
-          unsigned long
+          size_t
               sizeAfterPoint = grid.getSize();
           if (sizeAfterPoint - sizeBeforePoint != 1) {
             std::cout << "Inserted grid point but size change incorrect (old "
@@ -148,7 +148,7 @@ void LearnerSGDEOnOffParallelHandler::updateClassVariablesAfterRefinement(
     // TODO(bodevt): This might be unnecessary
     grid.getStorage().recalcLeafProperty();
 
-    unsigned long sizeAfterAdditions = grid.getSize();
+    size_t sizeAfterAdditions = grid.getSize();
     D(std::cout << "New grid " << classIndex << " size is " << sizeAfterAdditions << std::endl;)
     if (sizeAfterAdditions - sizeBeforeAdditions != refinementResult->addedGridPoints.size()) {
       std::cout << "Grid growth not correlated to refinement results (grid delta "
@@ -158,7 +158,7 @@ void LearnerSGDEOnOffParallelHandler::updateClassVariablesAfterRefinement(
     }
   } else {
     // apply grid changes to the Cholesky factorization
-    unsigned long currentGridVersion = learnerInstance->getLocalGridVersion(classIndex);
+    size_t currentGridVersion = learnerInstance->getLocalGridVersion(classIndex);
     if (!learnerInstance->checkGridStateConsistent(classIndex)) {
       std::cout << "Attempting to increment grid version on non consistent grid "
                 << classIndex
@@ -186,7 +186,7 @@ void LearnerSGDEOnOffParallelHandler::updateClassVariablesAfterRefinement(
   }
 
   // update alpha vector
-  D(unsigned long oldSize = densEst->getAlpha().size();)
+  D(size_t oldSize = densEst->getAlpha().size();)
   densEst->updateAlpha(&(refinementResult->deletedGridPointsIndexes),
                        refinementResult->addedGridPoints.size());
   D(std::cout << "Updated alpha vector " << classIndex << " (old size " << oldSize
@@ -196,11 +196,11 @@ void LearnerSGDEOnOffParallelHandler::updateClassVariablesAfterRefinement(
 
 bool LearnerSGDEOnOffParallelHandler::checkRefinementNecessary(
     const std::string &refMonitor,
-    unsigned long refPeriod,
-    unsigned long totalInstances,
+    size_t refPeriod,
+    size_t totalInstances,
     double currentValidError,
     double currentTrainError,
-    unsigned long numberOfCompletedRefinements,
+    size_t numberOfCompletedRefinements,
     ConvergenceMonitor &monitor) {
   auto &offline = learnerInstance->getOffline();
   // access DBMatOnlineDE-objects of all classes in order
@@ -238,10 +238,10 @@ bool LearnerSGDEOnOffParallelHandler::checkRefinementNecessary(
   return false;
 }
 
-unsigned long
+size_t
 LearnerSGDEOnOffParallelHandler::handleDataAndZeroBasedRefinement(bool preCompute,
                                                                   MultiGridRefinementFunctor *func,
-                                                                  unsigned long idx,
+                                                                  size_t idx,
                                                                   base::Grid &grid,
                                                                   base::GridGenerator &gridGen) const {
   if (preCompute) {
@@ -251,13 +251,13 @@ LearnerSGDEOnOffParallelHandler::handleDataAndZeroBasedRefinement(bool preComput
   }
   func->setGridIndex(idx);
   // perform refinement (zero-crossings-based / data-based)
-  unsigned long gridSizeBeforeRefine = grid.getSize();
+  size_t gridSizeBeforeRefine = grid.getSize();
   gridGen.refine(*func);
-  unsigned long gridSizeAfterRefine = grid.getSize();
+  size_t gridSizeAfterRefine = grid.getSize();
   return gridSizeAfterRefine - gridSizeBeforeRefine;
 }
 
-unsigned long LearnerSGDEOnOffParallelHandler::handleSurplusBasedRefinement(
+size_t LearnerSGDEOnOffParallelHandler::handleSurplusBasedRefinement(
     DBMatOnlineDE *densEst,
     base::Grid &grid,
     base::GridGenerator &gridGen) const {
@@ -270,7 +270,7 @@ unsigned long LearnerSGDEOnOffParallelHandler::handleSurplusBasedRefinement(
   alphaWork = &(densEst->getAlpha());
   DataVector alphaWeight(alphaWork->getSize());
   // determine surpluses
-  for (unsigned long k = 0; k < gridStorage.getSize(); k++) {
+  for (size_t k = 0; k < gridStorage.getSize(); k++) {
     // sets values of p to the coordinates of the given GridPoint gp
     gridStorage.getPoint(k).getStandardCoordinates(p);
     // multiply k-th alpha with the evaluated function at grind-point
@@ -306,17 +306,17 @@ unsigned long LearnerSGDEOnOffParallelHandler::handleSurplusBasedRefinement(
   }*/
 
   // perform refinement (surplus based)
-  unsigned long sizeBeforeRefine = grid.getSize();
+  size_t sizeBeforeRefine = grid.getSize();
   // simple refinement based on surpluses
   sgpp::base::SurplusRefinementFunctor srf(
       alphaWeight,
       learnerInstance->getOffline()->getConfig().ref_noPoints_);
   gridGen.refine(srf);
-  unsigned long sizeAfterRefine = grid.getSize();
+  size_t sizeAfterRefine = grid.getSize();
   return sizeAfterRefine - sizeBeforeRefine;
 }
 
-RefinementResult &LearnerSGDEOnOffParallelHandler::getRefinementResult(unsigned long classIndex) {
+RefinementResult &LearnerSGDEOnOffParallelHandler::getRefinementResult(size_t classIndex) {
   return vectorRefinementResults[classIndex];
 }
 
