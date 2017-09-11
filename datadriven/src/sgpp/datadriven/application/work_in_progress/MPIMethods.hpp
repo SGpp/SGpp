@@ -11,6 +11,7 @@
 #include <sgpp/datadriven/application/work_in_progress/PendingMPIRequest.hpp>
 
 #include <vector>
+#include <list>
 
 #define GRID_TEMPORARILY_INCONSISTENT 5
 #define GRID_RECEIVED_DELETED_INDEXES 6
@@ -134,7 +135,7 @@ class MPIMethods {
 
   static size_t calculateTotalPacketSize(size_t containedPacketSize);
 };
-}
-}
+}  // namespace datadriven
+}  // namespace sgpp
 
 #endif  // SGPP_MPIMETHODS_H

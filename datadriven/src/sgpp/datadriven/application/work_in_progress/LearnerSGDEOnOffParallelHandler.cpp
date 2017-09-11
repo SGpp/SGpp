@@ -12,6 +12,9 @@
 #include <sgpp/datadriven/application/work_in_progress/MPIMethods.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 
+#include <vector>
+#include <string>
+
 namespace sgpp {
 namespace datadriven {
 bool LearnerSGDEOnOffParallelHandler::checkReadyForRefinement() const {
@@ -239,11 +242,12 @@ bool LearnerSGDEOnOffParallelHandler::checkRefinementNecessary(
 }
 
 size_t
-LearnerSGDEOnOffParallelHandler::handleDataAndZeroBasedRefinement(bool preCompute,
-                                                                  MultiGridRefinementFunctor *func,
-                                                                  size_t idx,
-                                                                  base::Grid &grid,
-                                                                  base::GridGenerator &gridGen) const {
+LearnerSGDEOnOffParallelHandler::handleDataAndZeroBasedRefinement(
+    bool preCompute,
+    MultiGridRefinementFunctor *func,
+    size_t idx,
+    base::Grid &grid,
+    base::GridGenerator &gridGen) const {
   if (preCompute) {
     // precompute the evals (needs to be done once per step, before
     // any refinement is done

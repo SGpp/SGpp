@@ -20,12 +20,13 @@
 #include <sgpp/datadriven/application/work_in_progress/MPITaskScheduler.hpp>
 #include <sgpp/datadriven/application/work_in_progress/LearnerSGDEOnOffParallel.hpp>
 
+#include <mpi.h>
+
 #include <list>
 #include <map>
 #include <string>
 #include <utility>
 #include <vector>
-#include <mpi.h>
 
 
 namespace sgpp {

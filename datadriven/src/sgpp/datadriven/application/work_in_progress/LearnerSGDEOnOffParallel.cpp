@@ -23,6 +23,11 @@
 
 #include <thread>
 #include <climits>
+#include <string>
+#include <map>
+#include <vector>
+#include <utility>
+#include <list>
 
 using sgpp::base::Grid;
 using sgpp::base::GridStorage;
