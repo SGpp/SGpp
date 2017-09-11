@@ -615,7 +615,7 @@ void MPIMethods::receiveGridComponentsUpdate(RefinementResultNetworkMessage *net
       !learnerInstance->isVersionConsistent(networkMessage->gridversion)) {
     D(std::cout << "Received first message in multi segment grid update of type "
                 << networkMessage->updateType << std::endl;)
-    if (!isMaster() && networkMessage->updateType != CHOLESKY_DECOMPOSITION
+    while (!isMaster() && networkMessage->updateType != CHOLESKY_DECOMPOSITION
         && (!refinementResult.addedGridPoints.empty() ||
             !refinementResult.deletedGridPointsIndexes.empty())) {
       std::cout
@@ -624,7 +624,7 @@ void MPIMethods::receiveGridComponentsUpdate(RefinementResultNetworkMessage *net
           << refinementResult.addedGridPoints.size() << " additions, "
           << refinementResult.deletedGridPointsIndexes.size() << " deletions)."
           << std::endl;
-      exit(-1);
+      waitForIncomingMessageType(ASSIGN_BATCH);
     }
   }
   switch (networkMessage->updateType) {
