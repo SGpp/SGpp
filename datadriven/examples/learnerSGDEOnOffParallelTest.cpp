@@ -15,7 +15,9 @@
 #include <sgpp/datadriven/application/work_in_progress/RoundRobinScheduler.hpp>
 #include <sgpp/datadriven/application/work_in_progress/MPIMethods.hpp>
 #include <omp.h>
-//#include <valgrind/callgrind.h>
+// #include <valgrind/callgrind.h>
+
+#include <string>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -50,7 +52,8 @@ int main(int argc, char *argv[]) {
 
   if (argc != 5) {
     std::cout << "Usage:" << std::endl
-              << "learnerSGDEOnOffParallelTest <trainDataFile> <testDataFile> <batchSize> <refPeriod>"
+              << "learnerSGDEOnOffParallelTest <trainDataFile> "
+              << "<testDataFile> <batchSize> <refPeriod>"
               << std::endl;
     return -1;
   }
@@ -221,7 +224,7 @@ int main(int argc, char *argv[]) {
   bool enableCv = false;
   // set cv configuration if cv enabled
   // cv steps are now measured in data points instead of batches
-  // TODO: What needs to be done about CV?
+  // TODO(bodevt): What needs to be done about CV?
   size_t nextCvStep = 50000;
   double cvLambdaStart = 1e-1;
   double cvLambdaEnd = 1e-10;
@@ -307,7 +310,8 @@ int main(int argc, char *argv[]) {
   ///
 }
 
-sgpp::datadriven::Dataset loadDataset(const std::string &filename) {// load test samples
+sgpp::datadriven::Dataset loadDataset(const std::string &filename) {
+  // load test samples
   std::cout << "# loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset dataset = sgpp::datadriven::ARFFTools::readARFF(filename);
 

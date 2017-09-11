@@ -84,7 +84,6 @@ struct AssignSystemMatrixUpdateNetworkMessage {
   size_t gridversion;
 };
 
-static_assert(sizeof(size_t) <= sizeof(unsigned long), "size_t larger than unsigned long");
 static_assert(sizeof(MergeGridNetworkMessage) <= MPI_PACKET_MAX_PAYLOAD_SIZE,
               "Merge Grid Network Message too long.");
 static_assert(sizeof(RefinementResultNetworkMessage) <= MPI_PACKET_MAX_PAYLOAD_SIZE,

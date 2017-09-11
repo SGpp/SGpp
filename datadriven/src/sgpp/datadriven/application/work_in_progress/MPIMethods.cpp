@@ -12,6 +12,7 @@
 
 #include <thread>
 #include <climits>
+#include <list>
 
 namespace sgpp {
 namespace datadriven {
@@ -509,7 +510,7 @@ unsigned int MPIMethods::executeMPIWaitAny() {
   D(
       auto end = std::chrono::high_resolution_clock::now();
 
-      long deltaMilliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(
+      auto deltaMilliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(
           end - begin).count();
       if (deltaMilliseconds > 100) {
         std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(
