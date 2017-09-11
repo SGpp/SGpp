@@ -1,14 +1,14 @@
-//
-// Created by Vincent Bode on 08.08.2017.
-//
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/application/work_in_progress/MPITaskScheduler.hpp>
 
 namespace sgpp {
-    namespace datadriven {
-
-        void MPITaskScheduler::setLearnerInstance(LearnerSGDEOnOffParallel *instance) {
-            learnerInstance = instance;
-        }
-    }
+namespace datadriven {
+void MPITaskScheduler::setLearnerInstance(LearnerSGDEOnOffParallel *instance) {
+  learnerInstance = instance;
+}
+}
 }
