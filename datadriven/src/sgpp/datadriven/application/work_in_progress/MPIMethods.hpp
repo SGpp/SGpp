@@ -13,6 +13,16 @@
 #define GRID_RECEIVED_DELETED_INDEXES 6
 #define GRID_RECEIVED_ADDED_POINTS 7
 
+#define CHECK_SIZE_T_TO_INT(x) if((x) > INT_MAX)\
+    {\
+        throw sgpp::base::algorithm_exception("size_t to integer cast error");\
+    }
+
+#define CHECK_INT_TO_UINT(x) if((x) < 0)\
+    {\
+        throw sgpp::base::algorithm_exception("size_t to integer cast error");\
+    }
+
 namespace sgpp {
     namespace datadriven {
         struct MessageTrackRequest {
@@ -44,7 +54,7 @@ namespace sgpp {
 
             static void assignBatch(int workerID, size_t batchOffset, size_t batchSize, bool doCrossValidation);
 
-            static int getWorldSize();
+        static unsigned int getWorldSize();
 
             static void waitForAnyMPIRequestsToComplete();
 
@@ -72,10 +82,12 @@ namespace sgpp {
             static void
             sendCholeskyDecomposition(const size_t &classIndex, DataMatrix &newCholeskyDecomposition, int mpiTarget);
 
-            static void assignSystemMatrixUpdate(const int workerID, size_t classIndex);
+        static void assignSystemMatrixUpdate(int workerID, size_t classIndex);
 
-            static void waitForIncomingMessageType(MPI_COMMAND_ID commandId, size_t numOccurrences = 1,
-                                                   std::function<bool(PendingMPIRequest &)> predicate = [](
+        static void waitForIncomingMessageType(MPI_COMMAND_ID commandId,
+                                               unsigned int numOccurrences = 1,
+                                               std::function<bool(
+                                                       PendingMPIRequest &)> predicate = [](
                                                            PendingMPIRequest &request) { return true; });
 
             static void waitForGridConsistent(size_t classIndex);
@@ -87,7 +99,7 @@ namespace sgpp {
             //Pending MPI Requests
             static std::list<PendingMPIRequest> pendingMPIRequests;
             static MPIRequestPool mpiRequestStorage;
-            static int mpiWorldSize;
+        static unsigned int mpiWorldSize;
             static LearnerSGDEOnOffParallel *learnerInstance;
 
 
@@ -96,7 +108,8 @@ namespace sgpp {
 //                                                     std::list::iterator &iterator);
 
             static PendingMPIRequest &
-            sendISend(int destinationRank, MPI_Packet *mpiPacket, size_t packetSize = sizeof(MPI_Packet),
+            sendISend(int destinationRank, MPI_Packet *mpiPacket,
+                      size_t packetSize = sizeof(MPI_Packet),
                       bool highPriority = false);
 
             static void runBatch(MPI_Packet *pPacket);
@@ -111,9 +124,9 @@ namespace sgpp {
                     const std::list<sgpp::datadriven::PendingMPIRequest>::iterator &pendingMPIRequestIterator);
 
             static std::list<sgpp::datadriven::PendingMPIRequest>::iterator findPendingMPIRequest(
-                    int completedRequestIndex);
+                    unsigned int completedRequestIndex);
 
-            static int executeMPIWaitAny();
+        static unsigned int executeMPIWaitAny();
 
             static void handleIncomingRequestFromCallback(PendingMPIRequest &request);
 

@@ -3,9 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-//TODO: Remove defininition
-#define USE_GSL
-
 #ifdef USE_GSL
 
 #include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
@@ -250,8 +247,9 @@ int main(int argc, char *argv[]) {
 //    CALLGRIND_START_INSTRUMENTATION;
 
     stopwatch.start();
-    learner.train(batchSize, maxDataPasses, refType, refMonitor, refPeriod, accDeclineThreshold,
-                  accDeclineBufferSize, minRefInterval, enableCv, nextCvStep);
+    learner.trainParallel(batchSize, maxDataPasses, refType, refMonitor, refPeriod,
+                          accDeclineThreshold,
+                          accDeclineBufferSize, minRefInterval, enableCv, nextCvStep);
     double deltaTime = stopwatch.stop();
 
 //    CALLGRIND_STOP_INSTRUMENTATION;
