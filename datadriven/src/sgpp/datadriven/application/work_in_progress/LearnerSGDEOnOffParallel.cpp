@@ -331,7 +331,9 @@ LearnerSGDEOnOffParallel::computeNewCholeskyDecomposition(size_t classIndex, siz
     D(std::cout << "Updates have arrived. Attempting to resume." << std::endl;)
   }
 
-  std::cout << "Computing cholesky modification for class " << classIndex << std::endl;
+  std::cout << "Computing cholesky modification for class " << classIndex
+            << "(+" << refinementResult.addedGridPoints.size()
+            << ", -" << refinementResult.deletedGridPointsIndexes.size() << ")" << std::endl;
 
   DBMatOnlineDE *densEst = getDensityFunctions()[classIndex].first.get();
   auto &dbMatOfflineChol = dynamic_cast<DBMatOfflineChol &>(densEst->getOfflineObject());
