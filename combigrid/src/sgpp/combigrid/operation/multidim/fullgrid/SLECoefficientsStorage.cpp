@@ -49,6 +49,8 @@ void SLECoefficientsStorage::computeCoefficients(MultiIndex const& level,
   // ToDo (rehmemk) This is the SLE for Bspline interpolation only. Create a flag or something to
   // distinguish Bspline and potential other basis functions that might be used
 
+  std::cout << "solving system (Output from SLECoefficientStorage.cpp)" << std::endl;
+
   size_t numGridPoints = functionValues.size();
   base::DataMatrix A(numGridPoints, numGridPoints);
   A.setAll(0.0);
