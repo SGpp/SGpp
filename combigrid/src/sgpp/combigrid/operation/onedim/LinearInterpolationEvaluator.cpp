@@ -63,26 +63,36 @@ void LinearInterpolationEvaluator::computeBasisValues() {
     // returns evaluation of corresponding B-Spline in evaluationPoint
   } else if (basistype == BasisCoefficientsComputationType::SLE) {
     // ToDo (rehmemk) Compute B-Spline evaluations at Grid Points.
-    std::cout << "current level: " << level << "  evaluation Point: " << evaluationPoint
-              << " grid: [";
-    for (size_t i = 0; i < numPoints; ++i) {
-      std::cout << xValues[i] << " ";
-    }
-    std::cout << "]" << std::endl;
+    //    std::cout << "current level: " << level << "  evaluation Point: " << evaluationPoint
+    //              << " grid: [";
+
+    //    for (size_t i = 0; i < numPoints; ++i) {
+    //      std::cout << xValues[i] << " ";
+    //    }
+    //    std::cout << "]" << std::endl;
     // ToDo Bspline degree should be chooseable somewhere outside when setting BasisCoeffCompType to
     // SLE
     size_t degree = 3;
 
-    std::unique_ptr<base::SBsplineBase> bsplineBasis;
-    bsplineBasis = std::unique_ptr<base::SBsplineBase>(new sgpp::base::SBsplineBase(degree));
+    std::unique_ptr<base::BsplineBasis<int, int>> bsplineBasis;
+    //    bsplineBasis = std::unique_ptr<base::SBsplineBase>(new sgpp::base::SBsplineBase(degree));
 
-    std::cout << "basis values: ";
-    for (unsigned int i = 0; i < numPoints; i++) {
-      // x/h - i // level, index, point
-      basisValues[i] = bsplineBasis->eval((unsigned int)level, i + 1, evaluationPoint);
-      std::cout << bsplineBasis->eval((unsigned int)level, i + 1, evaluationPoint) << ",";
+    //    std::cout << "basis values: ";
+    // hInv = 2^level
+    const double hInv = static_cast<double>(1 << (level + 1));
+    for (int i = 0; i < (int)numPoints; i++) {
+      // cardinal B-Spline:  b(x/h - k)  with x the evaluation point, h the gridwidth and k the
+      // index of the B-Spline.
+      // the index of the B-Spline that has its midpoint in 0 is -2, the one that has it in h has
+      // index -1, 2h has 0, 3h has 1 and so on...
+
+      // Choosing the index like this sets the first Bspline the point h
+      double index = i - 1;
+      basisValues[i] = bsplineBasis->uniformBSpline(evaluationPoint * hInv - index, degree);
+      //      std::cout << bsplineBasis->uniformBSpline(evaluationPoint * hInv - index, degree) <<
+      //      ", ";
     }
-    std::cout << "\n\n";
+    //    std::cout << "\n\n";
   }
 }
 
@@ -97,9 +107,9 @@ void LinearInterpolationEvaluator::setFunctionValuesAtGridPoints(
   basisCoefficients = functionValues;
 }
 
-std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector> >
+std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>
 LinearInterpolationEvaluator::cloneLinear() {
-  return std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector> >(
+  return std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>(
       new LinearInterpolationEvaluator(*this));
 }
 
