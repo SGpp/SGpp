@@ -17,16 +17,17 @@ namespace base {
 
 class QuadRule1D {
  public:
-  QuadRule1D();
+  QuadRule1D(size_t maxSupportedLevel);
   virtual ~QuadRule1D();
 
-  size_t getMaxSupportedLevel() const;
+  virtual size_t getMaxSupportedLevel() const = 0;
 
   void getLevelPointsAndWeights(size_t level, base::DataVector& coordinates,
                                 base::DataVector& weights);
 
  protected:
-  const size_t maxSupportedLevel = 50;
+  size_t maxSupportedLevel;
+
   std::vector<DataVector*> coordinates;
   std::vector<DataVector*> weights;
 };

@@ -1,7 +1,6 @@
 from pysgpp.extensions.datadriven.uq.analysis.KnowledgeTypes import KnowledgeTypes
 from pysgpp.extensions.datadriven.uq.uq_setting.UQSettingAdapter import UQSettingAdapter
 from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
-from pysgpp import DataMatrix, DataVector
 
 from ASGCStatistics import ASGCStatistics
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import copyGrid
@@ -93,10 +92,10 @@ class ASGCUQManager(object):
             for sample in self.uqSetting.getSamplesStats().values():
                 if sample.getActiveUnit() not in dataContainer:
                     ps.append(sample)
-            assert dataContainer.getSize() == self.uqSetting.getSize() - len(ps)
+#             print dataContainer.getSizeTrain(), " = ", self.uqSetting.getSize(), "-", len(ps)
+#             assert dataContainer.getSizeTrain() == self.uqSetting.getSize() - len(ps)
 
         resultsDict = self.uqSetting.getTimeDependentResults(self.__timeStepsOfInterest, self._qoi, ps)
-
         # prepare the results as dictionary
         dataContainerDict = self.__prepareDataContainer(resultsDict, 'train')
         # set the new dataContainerDict container
@@ -110,8 +109,7 @@ class ASGCUQManager(object):
                 else:
                     if newDataContainer.getSize() > 0:
                         self.dataContainer[dtype][t] = \
-                            DataContainer.merge([self.dataContainer[dtype][t],
-                                                newDataContainer])
+                            self.dataContainer[dtype][t].combine(newDataContainer)
 
         # if there is a test setting given, combine the train and the
         # test dataContainerDict container.
@@ -140,8 +138,9 @@ class ASGCUQManager(object):
     def learnDataWithoutTest(self, *args, **kws):
         # learn data
         if self.verbose:
-            print "learning (i=%i, gs=%i)" % (self.sampler.getCurrentIterationNumber(),
-                                              self.sampler.getGrid().getSize())
+            print "learning (i=%i, gs=%i, type=%s)" % (self.sampler.getCurrentIterationNumber(),
+                                                       self.sampler.getGrid().getSize(),
+                                                       self.sampler.getGrid().getTypeAsString())
         self.learner.grid = self.sampler.getGrid()
         for dtype, values in self.dataContainer.items():
             knowledge = {}
@@ -151,6 +150,7 @@ class ASGCUQManager(object):
             for t, dataContainer in values.items():
                 if self.verbose:
                     print "t = %g, " % t,
+                sys.stdout.flush()
                 if dataContainer is not None:
                     # learn data, if there is any available
                     self.learner.dataContainer = dataContainer
@@ -158,7 +158,7 @@ class ASGCUQManager(object):
 
                     # update the knowledge
                     self.knowledge.update(copyGrid(self.learner.grid),
-                                          DataVector(self.learner.alpha),
+                                          self.learner.alpha,
                                           self._qoi,
                                           t,
                                           dtype,
@@ -166,7 +166,9 @@ class ASGCUQManager(object):
 
                     # update results
                     self.stats.updateResults(dtype, t, self.learner)
-            print
+
+            if self.verbose:
+                print
 
     def learnDataWithTest(self, dataset=None, *args, **kws):
         if self.verbose:
@@ -177,10 +179,11 @@ class ASGCUQManager(object):
         for dtype, values in self.dataContainer.items():
             knowledge = {}
             # do the learning
-            for t, dataContainer in values.items():
+            for t in np.sort(values.keys()):
+                dataContainer = values[t]
                 if self.verbose:
                     print "t = %g, " % t,
-
+                sys.stdout.flush()
                 if dataContainer is not None:
                     # learn data, if there is any available
                     self.learner.dataContainer = dataContainer
@@ -188,7 +191,7 @@ class ASGCUQManager(object):
 
                     # update the knowledge
                     self.knowledge.update(copyGrid(self.learner.grid),
-                                          DataVector(self.learner.alpha),
+                                          self.learner.alpha,
                                           self._qoi,
                                           t,
                                           dtype,
@@ -197,7 +200,8 @@ class ASGCUQManager(object):
                     # update results
                     self.stats.updateResults(dtype, t, self.learner)
 
-            print
+            if self.verbose:
+                print
 
 
     def recomputeStats(self):
@@ -245,7 +249,9 @@ class ASGCUQManager(object):
 
                         # update stats -> copy
                         self.stats.updateResults(dtype, t, self.learner)
-            print
+
+            if self.verbose:
+                print
         
 
     def getParameters(self):

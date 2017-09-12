@@ -39,9 +39,4 @@ from Normal import Normal
 from Uniform import Uniform
 from MultivariateNormal import MultivariateNormal
 
-from SGDEdist import SGDEdist
-from LibAGFDist import LibAGFDist
-from DTreesDist import DTreesDist
-from GaussianKDEDist import GaussianKDEDist
-
-import optimization
+# import optimization

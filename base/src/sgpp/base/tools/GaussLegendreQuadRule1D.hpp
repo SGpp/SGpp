@@ -25,6 +25,9 @@ class GaussLegendreQuadRule1D : public QuadRule1D {
   // delete the copy constructor
   GaussLegendreQuadRule1D(const GaussLegendreQuadRule1D& that) = delete;
 
+  // get the maximum level that is supported by the quadrature rule
+  size_t getMaxSupportedLevel() const override;
+
   /**
    * the coordinates are normalized to [0, 1].
    *
@@ -88,6 +91,57 @@ class GaussLegendreQuadRule1D : public QuadRule1D {
   inline void setGaussLegendreValuesForDegree47();
   inline void setGaussLegendreValuesForDegree48();
   inline void setGaussLegendreValuesForDegree49();
+  inline void setGaussLegendreValuesForDegree50();
+  inline void setGaussLegendreValuesForDegree51();
+  inline void setGaussLegendreValuesForDegree52();
+  inline void setGaussLegendreValuesForDegree53();
+  inline void setGaussLegendreValuesForDegree54();
+  inline void setGaussLegendreValuesForDegree55();
+  inline void setGaussLegendreValuesForDegree56();
+  inline void setGaussLegendreValuesForDegree57();
+  inline void setGaussLegendreValuesForDegree58();
+  inline void setGaussLegendreValuesForDegree59();
+  inline void setGaussLegendreValuesForDegree60();
+  inline void setGaussLegendreValuesForDegree61();
+  inline void setGaussLegendreValuesForDegree62();
+  inline void setGaussLegendreValuesForDegree63();
+  inline void setGaussLegendreValuesForDegree64();
+  inline void setGaussLegendreValuesForDegree65();
+  inline void setGaussLegendreValuesForDegree66();
+  inline void setGaussLegendreValuesForDegree67();
+  inline void setGaussLegendreValuesForDegree68();
+  inline void setGaussLegendreValuesForDegree69();
+  inline void setGaussLegendreValuesForDegree70();
+  inline void setGaussLegendreValuesForDegree71();
+  inline void setGaussLegendreValuesForDegree72();
+  inline void setGaussLegendreValuesForDegree73();
+  inline void setGaussLegendreValuesForDegree74();
+  inline void setGaussLegendreValuesForDegree75();
+  inline void setGaussLegendreValuesForDegree76();
+  inline void setGaussLegendreValuesForDegree77();
+  inline void setGaussLegendreValuesForDegree78();
+  inline void setGaussLegendreValuesForDegree79();
+  inline void setGaussLegendreValuesForDegree80();
+  inline void setGaussLegendreValuesForDegree81();
+  inline void setGaussLegendreValuesForDegree82();
+  inline void setGaussLegendreValuesForDegree83();
+  inline void setGaussLegendreValuesForDegree84();
+  inline void setGaussLegendreValuesForDegree85();
+  inline void setGaussLegendreValuesForDegree86();
+  inline void setGaussLegendreValuesForDegree87();
+  inline void setGaussLegendreValuesForDegree88();
+  inline void setGaussLegendreValuesForDegree89();
+  inline void setGaussLegendreValuesForDegree90();
+  inline void setGaussLegendreValuesForDegree91();
+  inline void setGaussLegendreValuesForDegree92();
+  inline void setGaussLegendreValuesForDegree93();
+  inline void setGaussLegendreValuesForDegree94();
+  inline void setGaussLegendreValuesForDegree95();
+  inline void setGaussLegendreValuesForDegree96();
+  inline void setGaussLegendreValuesForDegree97();
+  inline void setGaussLegendreValuesForDegree98();
+  inline void setGaussLegendreValuesForDegree99();
+  inline void setGaussLegendreValuesForDegree100();
 };
 
 }  // namespace base

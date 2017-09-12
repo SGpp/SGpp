@@ -10,27 +10,27 @@ namespace sgpp {
 namespace combigrid {
 
 PsiHermiteInterpolationEvaluator::PsiHermiteInterpolationEvaluator()
-    : evaluationPoint(0.0), basisCoefficients(), xValues() {}
+    : evaluationPoint(0.0), basisValues(), xValues() {}
 
 PsiHermiteInterpolationEvaluator::~PsiHermiteInterpolationEvaluator() {}
 
 PsiHermiteInterpolationEvaluator::PsiHermiteInterpolationEvaluator(
     const PsiHermiteInterpolationEvaluator& other)
     : evaluationPoint(other.evaluationPoint),
-      basisCoefficients(other.basisCoefficients),
+      basisValues(other.basisValues),
       xValues(other.xValues) {}
 
-void PsiHermiteInterpolationEvaluator::computeBasisCoefficients() {
+void PsiHermiteInterpolationEvaluator::computeBasisValues() {
   size_t numPoints = xValues.size();
 
-  basisCoefficients = std::vector<FloatScalarVector>(numPoints, FloatScalarVector(0.0));
+  basisValues = std::vector<FloatScalarVector>(numPoints, FloatScalarVector(0.0));
 
   if (numPoints == 0) {
     return;
   }
 
   if(evaluationPoint== 0 && xValues[0]==0){
-    basisCoefficients[0] = FloatScalarVector(evalUniform(evaluationPoint  ));
+    basisValues[0] = FloatScalarVector(evalUniform(evaluationPoint  ));
 
     return;
   }
@@ -38,7 +38,7 @@ void PsiHermiteInterpolationEvaluator::computeBasisCoefficients() {
 
   if (evaluationPoint <= xValues[0]) {
     if (std::abs(xValues[0]) >= 1e-14) {
-      basisCoefficients[0] = FloatScalarVector(evalUniform((evaluationPoint/ xValues[0]) -1 ));
+      basisValues[0] = FloatScalarVector(evalUniform((evaluationPoint/ xValues[0]) -1 ));
     }
     return;
   }
@@ -51,8 +51,8 @@ void PsiHermiteInterpolationEvaluator::computeBasisCoefficients() {
 
       // translate to uniformpoint
       double weight = (evaluationPoint - x0) / (x1 - x0);
-      basisCoefficients[i - 1] = FloatScalarVector(evalUniform(weight));
-      basisCoefficients[i] = FloatScalarVector(evalUniform(weight - 1));
+      basisValues[i - 1] = FloatScalarVector(evalUniform(weight));
+      basisValues[i] = FloatScalarVector(evalUniform(weight - 1));
 
       return;
     }
@@ -61,14 +61,14 @@ void PsiHermiteInterpolationEvaluator::computeBasisCoefficients() {
   // if we did not return in the loop, then evaluationPoint > all xValues...
   if (std::abs(xValues[numPoints - 1] - 1.0) > 1e-14) {
     double weight =(evaluationPoint - xValues[numPoints - 1]) / (1.0- xValues[numPoints - 1]);
-    basisCoefficients[numPoints - 1] =
+    basisValues[numPoints - 1] =
         FloatScalarVector(evalUniform(weight));
   }
 }
 
 void PsiHermiteInterpolationEvaluator::setGridPoints(const std::vector<double>& newXValues) {
   xValues = newXValues;
-  computeBasisCoefficients();
+  computeBasisValues();
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector> >
@@ -83,7 +83,13 @@ bool PsiHermiteInterpolationEvaluator::needsParameter() { return true; }
 
 void PsiHermiteInterpolationEvaluator::setParameter(const FloatScalarVector& param) {
   evaluationPoint = param.value();
-  computeBasisCoefficients();
+  computeBasisValues();
+}
+
+void PsiHermiteInterpolationEvaluator::setFunctionValuesAtGridPoints(
+  std::vector<double>& functionValues) {
+// ToDo (rehmemk) Compute coefficients via SLE
+basisCoefficients = functionValues;
 }
 
 double PsiHermiteInterpolationEvaluator::evalUniform(double x) {

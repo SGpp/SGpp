@@ -81,3 +81,8 @@ datadriven/tests/uq/
 # ignoring Windows build directories
 build/
 dist/
+
+GPATH
+GRTAGS
+GSYMS
+GTAGS

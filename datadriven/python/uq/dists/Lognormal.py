@@ -99,7 +99,7 @@ class Lognormal(Dist):
         serializationString = '"module" : "' + \
                               self.__module__ + '",\n'
 
-        for attrName in dir(self):
+        for attrName in ["_Lognormal__mu", "_Lognormal__sigma", "_Lognormal__a", "_Lognormal__b"]:
             attrValue = self.__getattribute__(attrName)
             serializationString += ju.parseAttribute(attrValue, attrName)
 

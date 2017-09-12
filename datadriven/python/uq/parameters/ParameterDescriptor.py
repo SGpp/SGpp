@@ -1,5 +1,4 @@
-from pysgpp.extensions.datadriven.uq.dists import (Dist, Uniform, Normal, TNormal, SGDEdist,
-                          Lognormal, Beta, MultivariateNormal)
+from pysgpp.extensions.datadriven.uq.dists import (Dist, Uniform, Normal, TNormal, Lognormal, Beta, MultivariateNormal)
 from pysgpp.extensions.datadriven.uq.transformation import (LinearTransformation,
                                                             RosenblattTransformation)
 
@@ -7,6 +6,7 @@ from DeterministicParameter import DeterministicParameter
 from UncertainParameter import UncertainParameter
 from pysgpp.extensions.datadriven.uq.transformation.JointTransformation import JointTransformation
 from pysgpp.extensions.datadriven.uq.dists.DataDist import DataDist
+from pysgpp.extensions.datadriven.uq.sampler.Sample import DistributionType
 
 
 class ParameterDescriptor(object):
@@ -113,6 +113,10 @@ class UncertainParameterDesciptor(ParameterDescriptor):
             raise AttributeError('the distribution of "%s" is not specified yet but it is needed to know to apply the Rosenblatt transformation' % self.__name)
         return self
 
+    def withTransformation(self, trans):
+        self.__trans = trans
+        return self
+
     def andGetResult(self):
         if self._dist is None:
             raise Exception("No distribution specified for parameter '%s'" % self._name)
@@ -131,11 +135,6 @@ class UncertainParameterDesciptor(ParameterDescriptor):
         # check if there are enough identifiers given
         if self._dist.getDim() > 1 and self._dist.getDim() != len(self._name):
             raise AttributeError("not enough names provided; given %i (%s), expected %i" % (len(self._name), ", ".join(self._name), self._dist.getDim()))
-
-        # check if there is and SGDE involved that need this
-        # transformation
-        if isinstance(self._dist, SGDEdist):
-            self._dist.transformation = self.__trans
 
         return UncertainParameter(self._name, self._dist,
                                   self.__trans, self._value)

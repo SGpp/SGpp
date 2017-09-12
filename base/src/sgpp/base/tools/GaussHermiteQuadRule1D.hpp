@@ -20,6 +20,9 @@ class GaussHermiteQuadRule1D : public QuadRule1D {
   // delete the copy constructor
   GaussHermiteQuadRule1D(const GaussHermiteQuadRule1D& that) = delete;
 
+  // get the maximum level that is supported by the quadrature rule
+  size_t getMaxSupportedLevel() const override;
+
   /**
    * load gauss quadrature points for standard normal weight function. The points
    * and the weights are generated with numpy.polynomial.hermite.hermgauss,

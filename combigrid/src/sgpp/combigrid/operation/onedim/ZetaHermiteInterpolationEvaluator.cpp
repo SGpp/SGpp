@@ -10,20 +10,20 @@ namespace sgpp {
 namespace combigrid {
 
 ZetaHermiteInterpolationEvaluator::ZetaHermiteInterpolationEvaluator()
-    : evaluationPoint(0.0), basisCoefficients(), xValues() {}
+    : evaluationPoint(0.0), basisValues(), xValues() {}
 
 ZetaHermiteInterpolationEvaluator::~ZetaHermiteInterpolationEvaluator() {}
 
 ZetaHermiteInterpolationEvaluator::ZetaHermiteInterpolationEvaluator(
     const ZetaHermiteInterpolationEvaluator& other)
     : evaluationPoint(other.evaluationPoint),
-      basisCoefficients(other.basisCoefficients),
+      basisValues(other.basisValues),
       xValues(other.xValues) {}
 
-void ZetaHermiteInterpolationEvaluator::computeBasisCoefficients() {
+void ZetaHermiteInterpolationEvaluator::computeBasisValues() {
   size_t numPoints = xValues.size();
 
-  basisCoefficients = std::vector<FloatScalarVector>(numPoints, FloatScalarVector(0.0));
+  basisValues = std::vector<FloatScalarVector>(numPoints, FloatScalarVector(0.0));
 
   if (numPoints == 0) {
     return;
@@ -32,7 +32,7 @@ void ZetaHermiteInterpolationEvaluator::computeBasisCoefficients() {
 
   // without this evaluation always zero on this point
   /*if(evaluationPoint== 0 && xValues[0]==0){
-    basisCoefficients[0] = FloatScalarVector(evalUniform(evaluationPoint  ));
+    basisValues[0] = FloatScalarVector(evalUniform(evaluationPoint  ));
 
     return;
   }
@@ -40,7 +40,7 @@ void ZetaHermiteInterpolationEvaluator::computeBasisCoefficients() {
 
   if (evaluationPoint <= xValues[0]) {
     if (std::abs(xValues[0]) > 1e-14) {
-      basisCoefficients[0] = FloatScalarVector(evalUniform((evaluationPoint/ xValues[0]) -1 )*xValues[0]);
+      basisValues[0] = FloatScalarVector(evalUniform((evaluationPoint/ xValues[0]) -1 )*xValues[0]);
     }
     return;
   }
@@ -53,8 +53,8 @@ void ZetaHermiteInterpolationEvaluator::computeBasisCoefficients() {
 
       // translate to uniformpoint
       double weight = (evaluationPoint - x0) / (x1 - x0);
-      basisCoefficients[i - 1] = FloatScalarVector(evalUniform(weight)*(x1 - x0));
-      basisCoefficients[i] = FloatScalarVector(evalUniform(weight - 1)*(x1 - x0));
+      basisValues[i - 1] = FloatScalarVector(evalUniform(weight)*(x1 - x0));
+      basisValues[i] = FloatScalarVector(evalUniform(weight - 1)*(x1 - x0));
 
       return;
     }
@@ -63,7 +63,7 @@ void ZetaHermiteInterpolationEvaluator::computeBasisCoefficients() {
   // if we did not return in the loop, then evaluationPoint > all xValues...
   if (std::abs(xValues[numPoints - 1] - 1.0) > 1e-14) {
     double weight =(evaluationPoint - xValues[numPoints - 1]) / (1.0- xValues[numPoints - 1]);
-    basisCoefficients[numPoints - 1] =
+    basisValues[numPoints - 1] =
         FloatScalarVector(evalUniform(weight)*(1.0- xValues[numPoints - 1]));
   }
 
@@ -71,7 +71,7 @@ void ZetaHermiteInterpolationEvaluator::computeBasisCoefficients() {
 
 void ZetaHermiteInterpolationEvaluator::setGridPoints(const std::vector<double>& newXValues) {
   xValues = newXValues;
-  computeBasisCoefficients();
+  computeBasisValues();
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector> >
@@ -86,7 +86,13 @@ bool ZetaHermiteInterpolationEvaluator::needsParameter() { return true; }
 
 void ZetaHermiteInterpolationEvaluator::setParameter(const FloatScalarVector& param) {
   evaluationPoint = param.value();
-  computeBasisCoefficients();
+  computeBasisValues();
+}
+
+void ZetaHermiteInterpolationEvaluator::setFunctionValuesAtGridPoints(
+  std::vector<double>& functionValues) {
+// ToDo (rehmemk) Compute coefficients via SLE
+basisCoefficients = functionValues;
 }
 
 double ZetaHermiteInterpolationEvaluator::evalUniform(double x) {

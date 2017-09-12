@@ -62,7 +62,7 @@ def computeBFQuad(grid, U, admissibleSet, n=100):
                     s[d], _ = quad(f, xlow, xhigh, epsabs=1e-8)
                     # ----------------------------------------------------
             A.set(i, j, float(np.prod(s)))
-            if gs.seq(gpi) == j:
+            if gs.getSequenceNumber(gpi) == j:
                 b[i] = A.get(i, j)
     return A, b
 
@@ -212,7 +212,7 @@ def computeBF(grid, U, admissibleSet):
                     # define transformation function
                     T = LinearTransformation(lb, ub)
                     for k in xrange(ngs.size()):
-                        x = ngs.getPoint(k).getStandardCoordinate(0)
+                        x = ngs.getCoordinate(ngs.getPoint(k), 0)
                         x = T.unitToProbabilistic(x)
                         nodalValues[k] = basis.eval(lid, iid, x) * \
                             basis.eval(ljd, ijd, x)
@@ -243,7 +243,7 @@ def computeBF(grid, U, admissibleSet):
                     # compute the integral of it
                     # ----------------------------------------------------
             A.set(i, j, float(np.prod(s)))
-            if gs.seq(gpi) == j:
+            if gs.getSequenceNumber(gpi) == j:
                 b[i] = A.get(i, j)
     return A, b
 
@@ -261,10 +261,10 @@ def computePiecewiseConstantBF(grid, U, admissibleSet):
     b = DataVector(admissibleSet.getSize())
 #     s = np.ndarray(gs.getDimension(), dtype='float')
     for k, gpi in enumerate(admissibleSet.values()):
-        i = gs.seq(gpi)
-        gpi.getStandardCoordinates(p)
+        i = gs.getSequenceNumber(gpi)
+        gs.getCoordinates(gpi, p)
         for j in xrange(gs.size()):
-            gs.getPoint(j).getStandardCoordinates(q)
+            gs.getCoordinates(gs.getPoint(j), q)
 #             for d in xrange(gs.getDimension()):
 #                 # get level index
 #                 xlow = max(p[0], q[0])
@@ -299,7 +299,7 @@ def computeExpectationValueEstimation(grid, U, admissibleSet):
     # run over all rows
     p = DataVector(gs.getDimension())
     for i, gpi in enumerate(admissibleSet.values()):
-        gpi.getStandardCoordinates(p)
+        gs.getCoordinates(gpi, p)
         for d in xrange(gs.getDimension()):
             # get level index
             lid, iid = gpi.getLevel(d), gpi.getIndex(d)

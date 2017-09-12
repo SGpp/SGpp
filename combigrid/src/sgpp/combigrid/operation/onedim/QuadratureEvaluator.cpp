@@ -9,7 +9,9 @@
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
 
+#include <cmath>
 #include <iomanip>
+#include <iostream>
 #include <vector>
 
 namespace sgpp {
@@ -45,9 +47,8 @@ double QuadratureEvaluator::getWeight(std::vector<double>& points, size_t point)
   p.point = point;
   size_t numGaussPoints = (p.degree() + 2) / 2 + numAdditionalPoints;
 
-  return GaussLegendreQuadrature(numGaussPoints).evaluate([&p, this](double x) {
-    return p.evaluate(x) * this->weight_function(x);
-  });
+  return GaussLegendreQuadrature(numGaussPoints)
+      .evaluate([&p, this](double x) { return p.evaluate(x) * this->weight_function(x); });
 }
 
 /**
@@ -83,7 +84,7 @@ void QuadratureEvaluator::setGridPoints(std::vector<double> const& newXValues) {
 
     // multiply the weights with the weight function
     for (size_t i = 0; i < weights.size(); ++i) {
-      weights[i].scalarMult(weight_function(xValues[i]));
+      // weights[i].scalarMult(weight_function(xValues[i]));
       sum += weights[i].getValue();
     }
 
@@ -92,11 +93,26 @@ void QuadratureEvaluator::setGridPoints(std::vector<double> const& newXValues) {
     for (size_t i = 0; i < weights.size(); ++i) {
       weights[i].scalarMult(sumInv);
     }
-  } else {
+  }
+  /*else {
     for (size_t i = 0; i < weights.size(); ++i) {
       weights[i].scalarMult(weight_function(xValues[i]));
     }
+  }*/
+}
+
+double QuadratureEvaluator::getAbsoluteWeightSum() const {
+  double abssum = 0.0;
+  // double sum = 0.0;
+
+  for (size_t i = 0; i < weights.size(); ++i) {
+    // sum += weights[i].value();
+    abssum += fabs(weights[i].value());
   }
+
+  // std::cout << "sum: " << sum << "\n";
+
+  return abssum;
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector> > QuadratureEvaluator::cloneLinear() {
@@ -126,6 +142,10 @@ QuadratureEvaluator::QuadratureEvaluator(QuadratureEvaluator const& other)
       numAdditionalPoints(other.numAdditionalPoints) {}
 
 void QuadratureEvaluator::setParameter(const FloatScalarVector& param) { return; }
+
+void QuadratureEvaluator::setFunctionValuesAtGridPoints(std::vector<double>& functionValues) {
+  basisCoefficients = functionValues;
+}
 
 } /* namespace combigrid */
 } /* namespace sgpp*/

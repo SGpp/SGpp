@@ -14,11 +14,9 @@
 #include <sgpp/combigrid/utils/Utils.hpp>
 
 double f(sgpp::base::DataVector const &x) {
-  double prod = 1.0;
-  for (size_t i = 0; i < x.getSize(); ++i) {
-    prod *= exp(-x[i]);
-  }
-  return 1.0;
+  
+  return x[0];
+  
 }
 
 // We have to wrap f in a sgpp::combigrid::MultiFunction object.
@@ -37,20 +35,20 @@ int main() {
 
   std::vector<double> alpha(gridpoints.size(), 0.0);
 */
-  size_t d = 2;
+  size_t d = 1;
 std::shared_ptr<sgpp::combigrid::CombigridOperation> operation =
-      sgpp::combigrid::CombigridOperation::createExpUniformBoundaryPsiLinearInterpolation(d,1, func);
+      sgpp::combigrid::CombigridOperation::createExpUniformBoundaryPsiLinearInterpolation(d,0, func);
 
 
 sgpp::base::DataVector evaluationPoint(d);
 
-  evaluationPoint[0] = 0.5;
-  evaluationPoint[1] = 0.2;
+  evaluationPoint[0] = 0.4;
+
  
 
 
 
-    double result = operation->evaluate(0, evaluationPoint);
+    double result = operation->evaluate(1, evaluationPoint);
 
  
   std::cout << "Interpolation result: " << result << ", function value: " << func(evaluationPoint)

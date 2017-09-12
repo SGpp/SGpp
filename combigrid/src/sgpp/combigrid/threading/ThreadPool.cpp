@@ -64,6 +64,8 @@ void ThreadPool::start() {
               nextTask = tasks.front();
               tasks.pop_front();
               break;
+            } else if (!useIdleCallback) {
+              return;
             }
             CGLOG("leave outer guard(this->poolMutex)");
           }

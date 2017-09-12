@@ -23,6 +23,8 @@ class AveragingLevelManager : public LevelManager {
   explicit AveragingLevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator);
   AveragingLevelManager();
 
+  virtual std::shared_ptr<LevelManager> clone();
+
   virtual ~AveragingLevelManager();
 };
 

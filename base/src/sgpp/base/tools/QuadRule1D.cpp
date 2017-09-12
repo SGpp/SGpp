@@ -9,7 +9,10 @@
 namespace sgpp {
 namespace base {
 
-QuadRule1D::QuadRule1D() : coordinates(maxSupportedLevel), weights(maxSupportedLevel) {}
+QuadRule1D::QuadRule1D(size_t maxSupportedLevel)
+    : maxSupportedLevel(maxSupportedLevel),
+      coordinates(maxSupportedLevel),
+      weights(maxSupportedLevel) {}
 
 QuadRule1D::~QuadRule1D() {
   for (size_t i = 0; i < coordinates.size(); i++) {
@@ -34,8 +37,5 @@ void QuadRule1D::getLevelPointsAndWeights(size_t level, DataVector& pcoordinates
   pcoordinates = *coordinates[level - 1];
   pweights = *weights[level - 1];
 }
-
-size_t QuadRule1D::getMaxSupportedLevel() const { return maxSupportedLevel; }
-
 }  // namespace base
 }  // namespace sgpp
