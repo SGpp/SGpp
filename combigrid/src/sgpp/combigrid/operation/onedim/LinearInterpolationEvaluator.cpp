@@ -62,7 +62,6 @@ void LinearInterpolationEvaluator::computeBasisValues() {
 
     // returns evaluation of corresponding B-Spline in evaluationPoint
   } else if (basistype == BasisCoefficientsComputationType::SLE) {
-    // ToDo (rehmemk) Compute B-Spline evaluations at Grid Points.
     //    std::cout << "current level: " << level << "  evaluation Point: " << evaluationPoint
     //              << " grid: [";
 
@@ -70,8 +69,9 @@ void LinearInterpolationEvaluator::computeBasisValues() {
     //      std::cout << xValues[i] << " ";
     //    }
     //    std::cout << "]" << std::endl;
-    // ToDo Bspline degree should be chooseable somewhere outside when setting BasisCoeffCompType to
-    // SLE
+
+    // ToDo (rehmemk) Bspline degree should be chooseable somewhere outside when setting
+    // BasisCoeffCompType to SLE
     size_t degree = 3;
 
     std::unique_ptr<base::BsplineBasis<int, int>> bsplineBasis;
@@ -103,7 +103,6 @@ void LinearInterpolationEvaluator::setGridPoints(const std::vector<double>& newX
 
 void LinearInterpolationEvaluator::setFunctionValuesAtGridPoints(
     std::vector<double>& functionValues) {
-  // ToDo (rehmemk) Compute coefficients via SLE
   basisCoefficients = functionValues;
 }
 

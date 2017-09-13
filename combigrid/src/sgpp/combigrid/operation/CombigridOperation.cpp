@@ -292,16 +292,19 @@ std::shared_ptr<CombigridOperation> CombigridOperation::createExpClenshawCurtisQ
       std::make_shared<StandardLevelManager>(), func);
 }
 
-// ToDo (rehmemk) Choose basistype SLE here! instead of first linear and changing to SLE in
-// AbstractFullGridinearEvaluator.hpp
 std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformBsplineInterpolation(
     size_t numDimensions, MultiFunction func) {
-  return std::make_shared<CombigridOperation>(
-      std::vector<std::shared_ptr<AbstractPointHierarchy>>(numDimensions,
-                                                           CombiHierarchies::expUniform()),
-      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>>(
-          numDimensions, CombiEvaluators::linearInterpolation()),
-      std::make_shared<StandardLevelManager>(), func);
+  auto evaluators = std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>>(
+      numDimensions, CombiEvaluators::linearInterpolation());
+  BasisCoefficientsComputationType new_basistype = BasisCoefficientsComputationType::SLE;
+  for (size_t i = 0; i < numDimensions; i++) {
+    evaluators[i]->setBasisCoefficientComputationType(new_basistype);
+  }
+
+  return std::make_shared<CombigridOperation>(std::vector<std::shared_ptr<AbstractPointHierarchy>>(
+                                                  numDimensions, CombiHierarchies::expUniform()),
+                                              evaluators, std::make_shared<StandardLevelManager>(),
+                                              func);
 }
 
 } /* namespace combigrid */
