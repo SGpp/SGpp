@@ -10,20 +10,5 @@
 #include <vector>
 
 namespace sgpp {
-namespace combigrid {
-
-AbstractBasisCoefficientsStorage::AbstractBasisCoefficientsStorage() {}
-
-AbstractBasisCoefficientsStorage::~AbstractBasisCoefficientsStorage() {}
-
-std::shared_ptr<std::vector<double>> AbstractBasisCoefficientsStorage::getCoefficients(
-    MultiIndex const& level, std::shared_ptr<AbstractCombigridStorage>& storage,
-    MultiIndex& multiBounds, std::vector<bool>& orderingConfiguration) {
-  if (coefficients.find(level) == coefficients.end()) {
-    computeCoefficients(level, storage, multiBounds, orderingConfiguration);
-  }
-  return coefficients[level];
-}
-
-} /* namespace combigrid */
+namespace combigrid {} /* namespace combigrid */
 } /* namespace sgpp */

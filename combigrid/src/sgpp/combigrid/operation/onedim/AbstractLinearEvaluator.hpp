@@ -25,6 +25,9 @@ enum class BasisCoefficientsComputationType { FUNCTION_VALUES, SLE };
  */
 template <typename V>
 class AbstractLinearEvaluator : public AbstractEvaluator<V> {
+ protected:
+  BasisCoefficientsComputationType basistype = BasisCoefficientsComputationType::FUNCTION_VALUES;
+
  public:
   virtual ~AbstractLinearEvaluator() {}
 
@@ -42,7 +45,10 @@ class AbstractLinearEvaluator : public AbstractEvaluator<V> {
   virtual std::vector<V> getBasisValues() = 0;
   virtual std::vector<double> getBasisCoefficients() = 0;
   virtual BasisCoefficientsComputationType getBasisCoefficientComputationType() {
-    return BasisCoefficientsComputationType::FUNCTION_VALUES;
+    return basistype;
+  }
+  virtual void setBasisCoefficientComputationType(BasisCoefficientsComputationType &new_basistype) {
+    basistype = new_basistype;
   }
 
   virtual void setFunctionValuesAtGridPoints(std::vector<double> &functionValues) = 0;

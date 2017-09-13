@@ -32,8 +32,8 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
   std::vector<V> partialProducts;
 
   /**
-   * For each dimension, this contains a vector of weights which are used as coefficients for
-   * linearly combining the function values at different grid points.
+   * For each dimension, this contains a vector of the evaluations of the basis functions at the
+   * grid points.
    */
   std::vector<std::vector<V>> basisValues;
   MultiIndex multiBounds;
@@ -48,7 +48,7 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
   bool updateBasisValues;
 
   // storage for coefficients of linear combination
-  std::shared_ptr<AbstractBasisCoefficientsStorage> coefficientsStorage;
+  std::shared_ptr<AbstractBasisCoefficientsStorage<V>> coefficientsStorage;
 
   // store ordering configuration of one-dimensional evaluators
   std::vector<bool> orderingConfiguration;
@@ -94,12 +94,13 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
       auto &currentEvaluator = evaluatorPrototypes[d];
       if (currentEvaluator->getBasisCoefficientComputationType() ==
           BasisCoefficientsComputationType::SLE) {
-        coefficientsStorage = std::make_shared<SLECoefficientsStorage>();
+        coefficientsStorage = std::make_shared<SLECoefficientsStorage<V>>();
+      } else if (currentEvaluator->getBasisCoefficientComputationType() ==
+                 BasisCoefficientsComputationType::FUNCTION_VALUES) {
+        coefficientsStorage = std::make_shared<FunctionValuesCoefficientsStorage<V>>();
       }
       d++;
     }
-
-    coefficientsStorage = std::make_shared<FunctionValuesCoefficientsStorage>();
   }
 
   /**
@@ -112,8 +113,20 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
     size_t lastDim = numDimensions - 1;
 
     // evaluate the basis functions of the subspace specified by the level variable
-    // at the current evaluation points
+    // at the current evaluation points. (This calls setGridPoints)
     computeBasisValues(level);
+
+    // prepare coefficients
+    std::shared_ptr<std::vector<double>> coefficients = coefficientsStorage->getCoefficients(
+        level, this->storage, multiBounds, orderingConfiguration, basisValues);
+
+    //    for (size_t i = 0; i < coefficients->size(); i++) {
+    //      std::cout << (*coefficients)[i] << " ";
+    //    }
+    //    std::cout << "\n";
+    // ToDo(rehmemk) call setFunctionValues to set Basis Coefficients alpha?
+    // (coefficient SLE is created and solved above in getCoefficients)
+    //          eval->setFunctionValuesAtGridPoints(coefficients);
 
     // for efficient computation, the products over the first i evaluator coefficients are stored
     // for all i up to n-1.
@@ -128,10 +141,6 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
     }
 
     CGLOG("FullGridTensorEvaluator::eval(): create storage iterator");
-
-    // prepare coefficients
-    std::shared_ptr<std::vector<double>> coefficients = coefficientsStorage->getCoefficients(
-        level, this->storage, multiBounds, orderingConfiguration);
 
     // start iteration
     MultiIndexIterator it(multiBounds);
@@ -240,20 +249,12 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
         auto eval = evaluatorPrototypes[d]->cloneLinear();
         eval->setLevel(l);
 
-        // ToDo (rehmemk) Add evaluated B-Spline values to GridPoints in method setGridPoints in
-        // LinearInterpolationEvaluator.
+        BasisCoefficientsComputationType prototype_basistype =
+            evaluatorPrototypes[d]->getBasisCoefficientComputationType();
+        eval->setBasisCoefficientComputationType(prototype_basistype);
 
-        if (evaluatorPrototypes[d]->getBasisCoefficientComputationType() ==
-            BasisCoefficientsComputationType::FUNCTION_VALUES) {
-          eval->setGridPoints(this->pointHierarchies[d]->getPoints(l, orderingConfiguration[d]));
-        } else if (evaluatorPrototypes[d]->getBasisCoefficientComputationType() ==
-                   BasisCoefficientsComputationType::SLE) {
-          // setGridPoints Bspline!
-        }
-
-        // ToDo (rehmemk) Add SLE solving to setFunctionValuesAtGridPoints in
-        // LinearInterpolationEvaluator.cpp and call it here so that as 'FunctionValues' the
-        // coefficients alpha can be used
+        // setGridPoints sets the values of the basis functions evaluated at  the grid points
+        eval->setGridPoints(this->pointHierarchies[d]->getPoints(l, orderingConfiguration[d]));
 
         this->pointHierarchies[d]->getPoints(l, orderingConfiguration[d]);
         if (needsParam) {
