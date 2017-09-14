@@ -317,6 +317,12 @@ class LevelManager {
   size_t numGridPoints() { return combiEval->getAllGridPoints().size(); }
 
   /**
+   * @return the maximum number of grid points that have to be evaluated for a regular grid with
+   * maximum multi-index L1 norm of q. For nested grids, this estimate should be exact.
+   */
+  size_t maxNumPointsForRegular(size_t q) { return combiEval->maxNumPointsForRegular(q); }
+
+  /**
    * Calls addLevel() on the underlying CombigridEvaluator.
    */
   void addLevel(MultiIndex const &level) { combiEval->addLevel(level); }

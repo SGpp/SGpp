@@ -111,6 +111,36 @@ std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::expUniformBoundary() {
       std::make_shared<ExponentialLevelorderPointOrdering>());
 }
 
+std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::linearUniform(size_t growthFactor) {
+  return std::make_shared<NonNestedPointHierarchy>(
+      std::make_shared<UniformPointDistribution>(),
+      std::make_shared<IdentityPointOrdering>(std::make_shared<LinearGrowthStrategy>(growthFactor),
+                                              true));
+}
+
+std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::linearClenshawCurtis(
+    size_t growthFactor) {
+  return std::make_shared<NonNestedPointHierarchy>(
+      std::make_shared<ClenshawCurtisDistribution>(),
+      std::make_shared<IdentityPointOrdering>(std::make_shared<LinearGrowthStrategy>(growthFactor),
+                                              true));
+}
+
+std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::linearChebyshev(size_t growthFactor) {
+  return std::make_shared<NonNestedPointHierarchy>(
+      std::make_shared<ChebyshevDistribution>(),
+      std::make_shared<IdentityPointOrdering>(std::make_shared<LinearGrowthStrategy>(growthFactor),
+                                              true));
+}
+
+std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::linearUniformBoundary(
+    size_t growthFactor) {
+  return std::make_shared<NonNestedPointHierarchy>(
+      std::make_shared<UniformBoundaryPointDistribution>(),
+      std::make_shared<IdentityPointOrdering>(std::make_shared<LinearGrowthStrategy>(growthFactor),
+                                              true));
+}
+
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>
 CombiEvaluators::polynomialInterpolation() {
   return std::make_shared<PolynomialInterpolationEvaluator>();
