@@ -21108,7 +21108,7 @@ void GaussHermiteQuadRule1D::getLevelPointsAndWeightsNormalized(size_t level,
                                                                 double stdd) {
   getLevelPointsAndWeights(level, pcoordinates, pweights);
 
-  // scale coordiantes
+  // scale coordinates
   for (size_t i = 0; i < level; i++) {
     pcoordinates[i] = (pcoordinates[i] + mean) * stdd;
   }
