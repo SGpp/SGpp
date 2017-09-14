@@ -5,18 +5,15 @@
 
 #pragma once
 
-#include <iostream>
-#include <memory>
 #include <sgpp/combigrid/common/MultiIndexIterator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluator.hpp>
-#include <sgpp/combigrid/operation/multidim/fullgrid/FunctionValuesCoefficientsStorage.hpp>
-#include <sgpp/combigrid/operation/multidim/fullgrid/SLECoefficientsStorage.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/threading/PtrGuard.hpp>
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
+
 #include <vector>
 
 namespace sgpp {
@@ -32,11 +29,10 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
   std::vector<V> partialProducts;
 
   /**
-   * For each dimension, this contains a vector of the evaluations of the basis functions at the
-   * grid points.
+   * For each dimension, this contains a vector of weights which are used as coefficients for
+   * linearly combining the function values at different grid points.
    */
   std::vector<std::vector<V>> basisValues;
-  MultiIndex multiBounds;
 
   // one per dimension
   std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> evaluatorPrototypes;
@@ -44,14 +40,6 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
   std::vector<std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>>> evaluators;
   // parameters (empty when doing quadrature)
   std::vector<V> parameters;
-  // recompute basis values flag
-  bool updateBasisValues;
-
-  // storage for coefficients of linear combination
-  std::shared_ptr<AbstractBasisCoefficientsStorage<V>> coefficientsStorage;
-
-  // store ordering configuration of one-dimensional evaluators
-  std::vector<bool> orderingConfiguration;
 
  public:
   /**
@@ -70,38 +58,13 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
       : AbstractFullGridEvaluator<V>(storage, pointHierarchies),
         partialProducts(evaluatorPrototypes.size()),
         basisValues(evaluatorPrototypes.size()),
-        multiBounds(evaluatorPrototypes.size()),
         evaluatorPrototypes(evaluatorPrototypes),
         evaluators(evaluatorPrototypes.size()),
-        parameters(evaluatorPrototypes.size()),
-        updateBasisValues(false),
-        orderingConfiguration(evaluatorPrototypes.size()) {
+        parameters(evaluatorPrototypes.size()) {
     // TODO(holzmudd): check for dimension equality
-
-    // init orderingConfiguration
-    for (size_t d = 0; d < evaluators.size(); ++d) {
-      orderingConfiguration[d] = evaluatorPrototypes[d]->needsOrderedPoints();
-    }
-
-    initializeCoefficientStorage();
   }
 
   virtual ~AbstractFullGridLinearEvaluator() {}
-
-  void initializeCoefficientStorage() {
-    size_t d = 0;
-    while (d < evaluatorPrototypes.size()) {
-      auto &currentEvaluator = evaluatorPrototypes[d];
-      if (currentEvaluator->getBasisCoefficientComputationType() ==
-          BasisCoefficientsComputationType::SLE) {
-        coefficientsStorage = std::make_shared<SLECoefficientsStorage<V>>();
-      } else if (currentEvaluator->getBasisCoefficientComputationType() ==
-                 BasisCoefficientsComputationType::FUNCTION_VALUES) {
-        coefficientsStorage = std::make_shared<FunctionValuesCoefficientsStorage<V>>();
-      }
-      d++;
-    }
-  }
 
   /**
    * Evaluates the function given through the storage for a certain level-multi-index (see class
@@ -111,22 +74,43 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
     CGLOG("FullGridTensorEvaluator::eval(): start");
     size_t numDimensions = evaluators.size();
     size_t lastDim = numDimensions - 1;
+    MultiIndex multiBounds(numDimensions);
+    std::vector<bool> orderingConfiguration(numDimensions);
 
-    // evaluate the basis functions of the subspace specified by the level variable
-    // at the current evaluation points. (This calls setGridPoints)
-    computeBasisValues(level);
+    size_t paramIndex = 0;
 
-    // prepare coefficients
-    std::shared_ptr<std::vector<double>> coefficients = coefficientsStorage->getCoefficients(
-        level, this->storage, multiBounds, orderingConfiguration, basisValues);
+    // the basis coefficients for this level are stored
+    // the bounds for traversal are initialized given the number of points in each direction
+    // if not already stored, the evaluators for the given level are cloned and their parameter, if
+    // needed, is set
+    // the ordering configuration is created - it stores a boolean for each dimension expressing
+    // whether the corresponding evaluator needs sorted (ascending) points
 
-    //    for (size_t i = 0; i < coefficients->size(); i++) {
-    //      std::cout << (*coefficients)[i] << " ";
-    //    }
-    //    std::cout << "\n";
-    // ToDo(rehmemk) call setFunctionValues to set Basis Coefficients alpha?
-    // (coefficient SLE is created and solved above in getCoefficients)
-    //          eval->setFunctionValuesAtGridPoints(coefficients);
+    // init evaluators and basis values, init multiBounds and orderingConfiguration
+    for (size_t d = 0; d < numDimensions; ++d) {
+      size_t currentLevel = level[d];
+      auto &currentEvaluators = evaluators[d];
+
+      bool needsParam = evaluatorPrototypes[d]->needsParameter();
+      bool needsOrdered = evaluatorPrototypes[d]->needsOrderedPoints();
+
+      for (size_t l = currentEvaluators.size(); l <= currentLevel; ++l) {
+        auto eval = evaluatorPrototypes[d]->cloneLinear();
+        eval->setGridPoints(this->pointHierarchies[d]->getPoints(l, needsOrdered));
+        eval->setLevel(l);
+        if (needsParam) {
+          eval->setParameter(parameters[paramIndex]);
+        }
+        currentEvaluators.push_back(eval);
+      }
+      basisValues[d] = currentEvaluators[currentLevel]->getBasisValues();
+      multiBounds[d] = this->pointHierarchies[d]->getNumPoints(currentLevel);
+      orderingConfiguration[d] = needsOrdered;
+
+      if (needsParam) {
+        ++paramIndex;
+      }
+    }
 
     // for efficient computation, the products over the first i evaluator coefficients are stored
     // for all i up to n-1.
@@ -146,20 +130,21 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
     MultiIndexIterator it(multiBounds);
     auto funcIter = this->storage->getGuidedIterator(level, it, orderingConfiguration);
     V sum = V::zero();
+
+    CGLOG("FullGridTensorEvaluator::eval(): start loop");
+
     if (!funcIter->isValid()) {  // should not happen
       return sum;
     }
 
-    CGLOG("FullGridTensorEvaluator::eval(): start loop");
-    size_t i = 0;
     while (true) {
       CGLOG("FullGridTensorEvaluator::eval(): in loop");
       // get function value and partial product and multiply them together with the last basis
       // coefficient, then add the resulting value to the total sum
-      double coefficient = (*coefficients)[i++];
+      double value = funcIter->value();
       V vec = partialProducts[lastDim];
       vec.componentwiseMult(basisValues[lastDim][it.indexAt(lastDim)]);
-      vec.scalarMult(coefficient);
+      vec.scalarMult(value);
       sum.add(vec);
 
       // increment iterator
@@ -195,7 +180,6 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
     size_t numDimensions = evaluatorPrototypes.size();
 
     parameters = params;
-    updateBasisValues = true;
 
     size_t paramIndex = 0;
 
@@ -208,7 +192,7 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
         if (paramIndex >= params.size()) {
           throw std::runtime_error(
               "AbstractFullGridLinearEvaluator::setParameters(): parameter dimensionality is too "
-              "low ");
+              "low.");
         }
         // prototype->setParameter(params[paramIndex]); <- this is useless, see above
         for (auto &eval : evaluators[d]) {
@@ -226,51 +210,6 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
           "AbstractFullGridLinearEvaluator::setParameters(): parameter dimensionality is too "
           "high.");
     } */
-  }
-
-  void computeBasisValues(MultiIndex const &level) {
-    size_t numDimensions = evaluators.size();
-
-    size_t paramIndex = 0;
-    // the basis coefficients for this level are stored
-    // the bounds for traversal are initialized given the number of points in each direction
-    // if not already stored, the evaluators for the given level are cloned and their parameter, if
-    // needed, is set
-    // the ordering configuration is created - it stores a boolean for each dimension expressing
-    // whether the corresponding evaluator needs sorted (ascending) points
-
-    // init evaluators and basis values, init multiBounds and orderingConfiguration
-    for (size_t d = 0; d < numDimensions; ++d) {
-      size_t currentLevel = level[d];
-      auto &currentEvaluators = evaluators[d];
-
-      bool needsParam = evaluatorPrototypes[d]->needsParameter();
-      for (size_t l = currentEvaluators.size(); l <= currentLevel; ++l) {
-        auto eval = evaluatorPrototypes[d]->cloneLinear();
-        eval->setLevel(l);
-
-        BasisCoefficientsComputationType prototype_basistype =
-            evaluatorPrototypes[d]->getBasisCoefficientComputationType();
-        eval->setBasisCoefficientComputationType(prototype_basistype);
-
-        // setGridPoints sets the values of the basis functions evaluated at  the grid points
-        eval->setGridPoints(this->pointHierarchies[d]->getPoints(l, orderingConfiguration[d]));
-
-        this->pointHierarchies[d]->getPoints(l, orderingConfiguration[d]);
-        if (needsParam) {
-          eval->setParameter(parameters[paramIndex]);
-        }
-        currentEvaluators.push_back(eval);
-      }
-      basisValues[d] = currentEvaluators[currentLevel]->getBasisValues();
-      multiBounds[d] = this->pointHierarchies[d]->getNumPoints(currentLevel);
-
-      if (needsParam) {
-        ++paramIndex;
-      }
-    }
-
-    updateBasisValues = false;
   }
 };
 

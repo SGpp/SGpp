@@ -109,6 +109,21 @@ std::shared_ptr<AbstractMultiStorageIterator<double>> CombigridTreeStorage::getG
   return impl->storage->get(reducedLevel)->getGuidedIterator(iterator, policy);
 }
 
+std::shared_ptr<TreeStorage<double>> CombigridTreeStorage::getStorage(const MultiIndex &level) {
+  // set level to zero for all nested hierarchies
+  MultiIndex reducedLevel = level;
+  size_t numDimensions = impl->pointHierarchies.size();
+  IterationPolicy policy;
+
+  for (size_t d = 0; d < numDimensions; ++d) {
+    if (impl->pointHierarchies[d]->isNested() && impl->exploitNesting) {
+      reducedLevel[d] = 0;
+    }
+  }
+
+  return impl->storage->get(reducedLevel);
+}
+
 size_t CombigridTreeStorage::getNumEntries() {
   size_t result = 0;
 
