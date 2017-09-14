@@ -39,6 +39,25 @@ class CombiHierarchies {
   static std::shared_ptr<AbstractPointHierarchy> expChebyshev();
   static std::shared_ptr<AbstractPointHierarchy> expUniformBoundary();
 
+  /**
+   * Not efficient because it is not nested.
+   */
+  static std::shared_ptr<AbstractPointHierarchy> linearUniform(size_t growthFactor = 2);
+
+  /**
+   * Not efficient because it is not nested.
+   */
+  static std::shared_ptr<AbstractPointHierarchy> linearClenshawCurtis(size_t growthFactor = 2);
+  /**
+   * Not efficient because it is not nested.
+   */
+  static std::shared_ptr<AbstractPointHierarchy> linearChebyshev(size_t growthFactor = 2);
+
+  /**
+   * Not efficient because it is not nested.
+   */
+  static std::shared_ptr<AbstractPointHierarchy> linearUniformBoundary(size_t growthFactor = 2);
+
   typedef std::vector<std::shared_ptr<AbstractPointHierarchy>> Collection;
 };
 
