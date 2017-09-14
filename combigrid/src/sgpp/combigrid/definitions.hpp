@@ -14,7 +14,7 @@
 #include <vector>
 
 // defines for turning logging capabilities on or off
-#define CT_DEBUG
+// #define CT_DEBUG
 
 #ifndef CT_DEBUG
 #define CGLOG(str)
