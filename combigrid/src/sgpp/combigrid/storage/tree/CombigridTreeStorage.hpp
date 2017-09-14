@@ -57,6 +57,8 @@ class CombigridTreeStorage : public AbstractCombigridStorage {
       MultiIndex const &level, MultiIndexIterator &iterator,
       std::vector<bool> orderingConfiguration);
 
+  std::shared_ptr<TreeStorage<double>> getStorage(const MultiIndex &level);
+
   /**
    * Returns the number of entries (all level-index pairs) in the storage, which indicates the
    * number of function evaluations that have been done. Currently, this is an O(n) method.

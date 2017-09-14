@@ -156,7 +156,7 @@ class AbstractFullGridEvaluator {
       grids1D.push_back(base::DataVector(pointHierarchies[d]->getPoints(level[d], sorted)));
     }
 
-    return std::make_shared<TensorGrid>(grids1D);
+    return std::make_shared<TensorGrid>(grids1D, level);
   }
 
   /**
