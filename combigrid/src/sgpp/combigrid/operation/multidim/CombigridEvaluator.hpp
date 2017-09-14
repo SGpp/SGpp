@@ -190,6 +190,15 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
    */
   size_t maxNewPoints(MultiIndex const &level) { return multiEval->maxNewPoints(level); }
 
+  size_t maxNumPointsForRegular(size_t q) {
+    auto it = std::make_shared<BoundedSumMultiIndexIterator>(numDimensions, q);
+    size_t sum = 0;
+    for (; it->isValid(); it->moveToNext()) {
+      sum += maxNewPoints(it->value());
+    }
+    return sum;
+  }
+
   /**
    * @return the total number of grid points in a given level.
    */
