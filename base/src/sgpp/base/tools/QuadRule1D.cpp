@@ -31,6 +31,8 @@ void QuadRule1D::getLevelPointsAndWeights(size_t level, DataVector& pcoordinates
   }
 
   size_t start_ix = (level - 1) * level;
+  pcoordinates.resize(level);
+  pweights.resize(level);
   for (size_t i = 0; i < level; i++) {
     pcoordinates[i] = coordinatesWeights[start_ix + 2 * i];
     pweights[i] = coordinatesWeights[start_ix + 2 * i + 1];
