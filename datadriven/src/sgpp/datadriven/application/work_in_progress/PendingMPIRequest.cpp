@@ -16,7 +16,7 @@ PendingMPIRequest::~PendingMPIRequest() {
   mpiRequestPool.deleteMPIRequestHandle(mpiRequestIndex);
 }
 
-MPI_Request *PendingMPIRequest::getMPIRequestHandle() {
+MPI_Request *PendingMPIRequest::getMPIRequestFromHandle() {
   return mpiRequestPool.getMPIRequestHandle(mpiRequestIndex);
 }
 

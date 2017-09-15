@@ -58,7 +58,7 @@ LearnerSGDEOnOffParallel::LearnerSGDEOnOffParallel(
   mpiTaskScheduler.setLearnerInstance(this);
   workerActive = true;
 
-  refinementHandler = LearnerSGDEOnOffParallelHandler(this, numClassesInit);
+  refinementHandler = LearnerSGDEOnOffParallelRefinementHandler(this, numClassesInit);
 
   MPIMethods::initMPI(this);
 }
@@ -318,12 +318,12 @@ LearnerSGDEOnOffParallel::computeNewCholeskyDecomposition(size_t classIndex, siz
   // (intermediate segments set grid version to TEMPORARILY_INCONSISTENT)
   RefinementResult &refinementResult = refinementHandler.getRefinementResult(classIndex);
   while (getLocalGridVersion(classIndex) != GRID_RECEIVED_ADDED_POINTS || (
-      refinementResult.deletedGridPointsIndexes.empty() &&
+      refinementResult.deletedGridPointsIndices.empty() &&
           refinementResult.addedGridPoints.empty())) {
     D(std::cout << "Refinement results have not arrived yet (grid version "
                 << getLocalGridVersion(classIndex)
                 << ", additions " << refinementResult.addedGridPoints.size() << ", deletions "
-                << refinementResult.deletedGridPointsIndexes.size() << "). Waiting..."
+                << refinementResult.deletedGridPointsIndices.size() << "). Waiting..."
                 << std::endl;)
     // Do not use waitForConsistent here, we want GRID_ADDITIONS or GRID_DELETIONS, not consistency
 
@@ -333,18 +333,18 @@ LearnerSGDEOnOffParallel::computeNewCholeskyDecomposition(size_t classIndex, siz
 
   std::cout << "Computing cholesky modification for class " << classIndex
             << "(+" << refinementResult.addedGridPoints.size()
-            << ", -" << refinementResult.deletedGridPointsIndexes.size() << ")" << std::endl;
+            << ", -" << refinementResult.deletedGridPointsIndices.size() << ")" << std::endl;
 
   DBMatOnlineDE *densEst = getDensityFunctions()[classIndex].first.get();
   auto &dbMatOfflineChol = dynamic_cast<DBMatOfflineChol &>(densEst->getOfflineObject());
   dbMatOfflineChol.choleskyModification(refinementResult.addedGridPoints.size(),
-                                        refinementResult.deletedGridPointsIndexes,
+                                        refinementResult.deletedGridPointsIndices,
                                         densEst->getBestLambda());
 
   setLocalGridVersion(classIndex, gridVersion);
   D(std::cout << "Send cholesky update to master for class " << classIndex << std::endl;)
   DataMatrix &newDecomposition = dbMatOfflineChol.getDecomposedMatrix();
-  MPIMethods::sendCholeskyDecomposition(classIndex, newDecomposition, 0);
+  MPIMethods::sendSystemMatrixDecomposition(classIndex, newDecomposition, 0);
 }
 
 void
@@ -446,13 +446,13 @@ LearnerSGDEOnOffParallel::train(
           classIndex);
       std::cout << "Calling compute density function class " << classIndex << " (refinement +"
                 << classRefinementResult.addedGridPoints.size() << ", -"
-                << classRefinementResult.deletedGridPointsIndexes.size() << ")" << std::endl;
+                << classRefinementResult.deletedGridPointsIndices.size() << ")" << std::endl;
       densityFunctions[classIndex].first->computeDensityFunction(
           *p.first, true, doCrossValidation,
-          &classRefinementResult.deletedGridPointsIndexes,
+          &classRefinementResult.deletedGridPointsIndices,
           classRefinementResult.addedGridPoints.size());
       D(std::cout << "Clearing the refinement results class " << classIndex << std::endl;)
-      classRefinementResult.deletedGridPointsIndexes.clear();
+      classRefinementResult.deletedGridPointsIndices.clear();
       classRefinementResult.addedGridPoints.clear();
 
       if (usePrior) {
@@ -580,7 +580,7 @@ void LearnerSGDEOnOffParallel::mergeAlphaValues(size_t classIndex,
   if (!isVersionConsistent(remoteGridVersion)) {
     std::cout << "Received merge request with inconsistent grid " << classIndex << " version "
               << remoteGridVersion << std::endl;
-    exit(-1);
+    throw algorithm_exception("Received a merge request to an inconsistent grid");
   }
 
   size_t localGridVersion = getLocalGridVersion(classIndex);
@@ -596,7 +596,7 @@ void LearnerSGDEOnOffParallel::mergeAlphaValues(size_t classIndex,
                 << std::endl;)
     if (remoteGridVersion + 1 == localGridVersion) {
       RefinementResult &refinementResult = refinementHandler.getRefinementResult(classIndex);
-      std::list<size_t> &deletedPoints = refinementResult.deletedGridPointsIndexes;
+      std::list<size_t> &deletedPoints = refinementResult.deletedGridPointsIndices;
       std::list<LevelIndexVector> &addedPoints = refinementResult.addedGridPoints;
 
       D(std::cout << "Attempting to automatically compensate for outdated grid." << std::endl
@@ -632,13 +632,13 @@ void LearnerSGDEOnOffParallel::mergeAlphaValues(size_t classIndex,
                   << "This is probably because the master is training from batches. "
                   << std::endl
                   << "Cannot compensate, will now fail." << std::endl;
-        exit(-1);
+        throw sgpp::base::algorithm_exception("Missing refinement data for alpha update.");
       }
     } else {
       std::cout << "Merge request " << batchOffset << ", size " << batchSize
                 << ", older than one refinement cycle. Increase the refinement period."
                 << std::endl;
-      exit(-1);
+      throw sgpp::base::algorithm_exception("Merge request older than one refinement cycle.");
     }
   }
 
@@ -648,7 +648,7 @@ void LearnerSGDEOnOffParallel::mergeAlphaValues(size_t classIndex,
               << ", remote "
               << dataVector.size() << "), local version is " << localGridVersions[classIndex]
               << std::endl;
-    exit(-1);
+    throw sgpp::base::algorithm_exception("Merge request with incorrect size received.");
   }
 
   if (usePrior) {
@@ -713,7 +713,7 @@ Dataset *LearnerSGDEOnOffParallel::getValidationData() {
   return validationData;
 }
 
-LearnerSGDEOnOffParallelHandler &LearnerSGDEOnOffParallel::getRefinementHandler() {
+LearnerSGDEOnOffParallelRefinementHandler &LearnerSGDEOnOffParallel::getRefinementHandler() {
   return refinementHandler;
 }
 }  // namespace datadriven

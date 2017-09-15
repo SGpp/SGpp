@@ -64,13 +64,13 @@ void MPIMethods::initMPI(LearnerSGDEOnOffParallel *learnerInstance) {
 
       D(std::cout << "Restarting irecv request." << std::endl;)
       MPI_Irecv(request.buffer, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE,
-                MPI_TAG_STANDARD_COMMAND, MPI_COMM_WORLD, request.getMPIRequestHandle());
+                MPI_TAG_STANDARD_COMMAND, MPI_COMM_WORLD, request.getMPIRequestFromHandle());
     };
 
     MPI_Irecv(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE,
               MPI_TAG_STANDARD_COMMAND,
               MPI_COMM_WORLD,
-              unicastInputRequest.getMPIRequestHandle());
+              unicastInputRequest.getMPIRequestFromHandle());
 
     std::cout << "Started listening for unicasts from any sources" << std::endl;
   }
@@ -86,13 +86,13 @@ void MPIMethods::initMPI(LearnerSGDEOnOffParallel *learnerInstance) {
       D(std::cout << "Restarting irecv request." << std::endl;)
       MPI_Irecv(request.buffer, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE,
                 MPI_TAG_HIGH_PRIORITY_NO_BLOCK, MPI_COMM_WORLD,
-                request.getMPIRequestHandle());
+                request.getMPIRequestFromHandle());
     };
 
     MPI_Irecv(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE,
               MPI_TAG_HIGH_PRIORITY_NO_BLOCK,
               MPI_COMM_WORLD,
-              unicastInputRequest.getMPIRequestHandle());
+              unicastInputRequest.getMPIRequestFromHandle());
 
     std::cout << "Started listening for high priority unicasts from any sources" << std::endl;
   }
@@ -106,11 +106,11 @@ void MPIMethods::initMPI(LearnerSGDEOnOffParallel *learnerInstance) {
 
       D(std::cout << "Restarting ibcast request." << std::endl;)
       MPI_Ibcast(request.buffer, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
-                 MPI_COMM_WORLD, request.getMPIRequestHandle());
+                 MPI_COMM_WORLD, request.getMPIRequestFromHandle());
     };
     MPI_Ibcast(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
                MPI_COMM_WORLD,
-               broadcastInputRequest.getMPIRequestHandle());
+               broadcastInputRequest.getMPIRequestFromHandle());
 
     std::cout << "Started listening for broadcasts from task master" << std::endl;
   }
@@ -122,19 +122,19 @@ void MPIMethods::handleIncomingRequestFromCallback(PendingMPIRequest &request) {
   processIncomingMPICommands(request);
 
   D(std::cout << "Zeroing MPI Request" << std::endl;)
-//            std::memset(request.getMPIRequestHandle(), 0, sizeof(MPI_Request));
+//            std::memset(request.getMPIRequestFromHandle(), 0, sizeof(MPI_Request));
 
   D(std::cout << "Zeroing Buffer" << std::endl;)
   std::memset(request.buffer, 0, sizeof(MPI_Packet));
 }
 
 void
-MPIMethods::sendRefinementUpdates(size_t &classIndex, std::list<size_t> &deletedGridPointsIndexes,
+MPIMethods::sendRefinementUpdates(size_t &classIndex, std::list<size_t> &deletedGridPointsIndices,
                                   std::list<LevelIndexVector> &addedGridPoints) {
   // Deleted grid points
   {
-    std::list<size_t>::const_iterator iterator = deletedGridPointsIndexes.begin();
-    std::list<size_t>::const_iterator listEnd = deletedGridPointsIndexes.end();
+    std::list<size_t>::const_iterator iterator = deletedGridPointsIndices.begin();
+    std::list<size_t>::const_iterator listEnd = deletedGridPointsIndices.end();
     while (iterator != listEnd) {
       auto *mpiPacket = new MPI_Packet;
       mpiPacket->commandID = UPDATE_GRID;
@@ -198,16 +198,16 @@ MPIMethods::sendRefinementUpdates(size_t &classIndex, std::list<size_t> &deleted
   }
 //            // Cholesky Decomposition
 //            {
-//                sendCholeskyDecomposition(classIndex, newCholeskyDecomposition, MPI_ANY_SOURCE);
+//                sendSystemMatrixDecomposition(classIndex, newCholeskyDecomposition, MPI_ANY_SOURCE);
 //            }
 }
 
 // USE MPI_ANY_SOURCE to send a broadcast from master
-void MPIMethods::sendCholeskyDecomposition(const size_t &classIndex,
-                                           DataMatrix &newCholeskyDecomposition,
-                                           int mpiTarget) {
-  auto iterator = newCholeskyDecomposition.begin();
-  auto listEnd = newCholeskyDecomposition.end();
+void MPIMethods::sendSystemMatrixDecomposition(const size_t &classIndex,
+                                               DataMatrix &newSystemMatrixDecomposition,
+                                               int mpiTarget) {
+  auto iterator = newSystemMatrixDecomposition.begin();
+  auto listEnd = newSystemMatrixDecomposition.end();
 
   size_t offset = 0;
   while (iterator != listEnd) {
@@ -221,11 +221,11 @@ void MPIMethods::sendCholeskyDecomposition(const size_t &classIndex,
     networkMessage->updateType = CHOLESKY_DECOMPOSITION;
 
     auto *choleskyNetworkMessage =
-        static_cast<RefinementResultCholeskyNetworkMessage *>(
+        static_cast<RefinementResultSystemMatrixNetworkMessage *>(
             static_cast<void *>(networkMessage->payload));
 
-    choleskyNetworkMessage->matrixWidth = newCholeskyDecomposition.getNcols();
-    choleskyNetworkMessage->matrixHeight = newCholeskyDecomposition.getNrows();
+    choleskyNetworkMessage->matrixWidth = newSystemMatrixDecomposition.getNcols();
+    choleskyNetworkMessage->matrixHeight = newSystemMatrixDecomposition.getNrows();
     choleskyNetworkMessage->offset = offset;
 
     size_t numPointInBuffer = fillBufferWithData(choleskyNetworkMessage->payload,
@@ -235,8 +235,6 @@ void MPIMethods::sendCholeskyDecomposition(const size_t &classIndex,
 
     offset += numPointInBuffer;
 
-    // TODO(bodevt): There is a bug here, the grid version is sent non null once for each deleted,
-    // added, and cholesky
     networkMessage->gridversion = (iterator == listEnd) ? learnerInstance->getLocalGridVersion(
         classIndex) : GRID_TEMPORARILY_INCONSISTENT;
 
@@ -277,7 +275,7 @@ PendingMPIRequest &MPIMethods::sendIBcast(MPI_Packet *mpiPacket) {
   PendingMPIRequest &pendingMPIRequest = createPendingMPIRequest(mpiPacket, false);
 
   MPI_Ibcast(mpiPacket, sizeof(MPI_Packet), MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
-             MPI_COMM_WORLD, pendingMPIRequest.getMPIRequestHandle());
+             MPI_COMM_WORLD, pendingMPIRequest.getMPIRequestFromHandle());
 
   D(std::cout << "Ibcast request stored at " << &pendingMPIRequest << std::endl;)
   return pendingMPIRequest;
@@ -292,7 +290,7 @@ MPIMethods::sendISend(const int destinationRank, MPI_Packet *mpiPacket, size_t p
   // Point to the request in vector instead of stack
   MPI_Isend(mpiPacket, static_cast<int >(packetSize), MPI_UNSIGNED_CHAR, destinationRank,
             highPriority ? MPI_TAG_HIGH_PRIORITY_NO_BLOCK : MPI_TAG_STANDARD_COMMAND,
-            MPI_COMM_WORLD, pendingMPIRequest.getMPIRequestHandle());
+            MPI_COMM_WORLD, pendingMPIRequest.getMPIRequestFromHandle());
 
   D(std::cout << "Isend request stored at " << &pendingMPIRequest << std::endl;)
   return pendingMPIRequest;
@@ -437,11 +435,11 @@ void MPIMethods::processCompletedMPIRequests() {
     int operationCompleted;
 
     D(std::cout << "Testing request " << &*pendingMPIRequestIterator << std::endl;)
-    if (MPI_Test(pendingMPIRequestIterator->getMPIRequestHandle(), &operationCompleted,
+    if (MPI_Test(pendingMPIRequestIterator->getMPIRequestFromHandle(), &operationCompleted,
                  &mpiStatus) !=
         MPI_SUCCESS) {
       std::cout << "Error MPI Test reported" << std::endl;
-      exit(-1);
+      throw sgpp::base::algorithm_exception("MPI Test returned error.");
     }
     D(std::cout << "Pending request has status " << operationCompleted
                 << " MPI_ERROR: " << mpiStatus.MPI_ERROR
@@ -594,7 +592,7 @@ MPIMethods::findPendingMPIRequest(unsigned int completedRequestIndex) {
     iterator++;
   }
   std::cout << "Pending MPI Request not found: " << completedRequestIndex << std::endl;
-  exit(-1);
+  throw sgpp::base::algorithm_exception("Could not find PendingMPIRequest for Pool Index.");
 }
 
 void MPIMethods::receiveGridComponentsUpdate(RefinementResultNetworkMessage *networkMessage) {
@@ -617,12 +615,12 @@ void MPIMethods::receiveGridComponentsUpdate(RefinementResultNetworkMessage *net
                 << networkMessage->updateType << std::endl;)
     while (!isMaster() && networkMessage->updateType != CHOLESKY_DECOMPOSITION
         && (!refinementResult.addedGridPoints.empty() ||
-            !refinementResult.deletedGridPointsIndexes.empty())) {
+            !refinementResult.deletedGridPointsIndices.empty())) {
       std::cout
           << "Received first message in multi segment grid update,"
           << " however refinement results have not been cleared ("
           << refinementResult.addedGridPoints.size() << " additions, "
-          << refinementResult.deletedGridPointsIndexes.size() << " deletions)."
+          << refinementResult.deletedGridPointsIndices.size() << " deletions)."
           << std::endl;
       waitForIncomingMessageType(ASSIGN_BATCH);
     }
@@ -631,7 +629,7 @@ void MPIMethods::receiveGridComponentsUpdate(RefinementResultNetworkMessage *net
     case DELETED_GRID_POINTS_LIST: {
       auto *bufferIterator = static_cast<size_t *>(static_cast<void *>(networkMessage->payload));
       while (bufferIterator < bufferEnd && processedPoints < listLength) {
-        refinementResult.deletedGridPointsIndexes.push_back(*bufferIterator);
+        refinementResult.deletedGridPointsIndices.push_back(*bufferIterator);
         bufferIterator++;
         processedPoints++;
       }
@@ -658,7 +656,7 @@ void MPIMethods::receiveGridComponentsUpdate(RefinementResultNetworkMessage *net
     }
     case CHOLESKY_DECOMPOSITION: {
       auto *choleskyNetworkMessage =
-          static_cast<RefinementResultCholeskyNetworkMessage *>(
+          static_cast<RefinementResultSystemMatrixNetworkMessage *>(
               static_cast<void *>(networkMessage->payload));
       DataMatrix &choleskyDecomposition =
           learnerInstance->getDensityFunctions()[classIndex]
@@ -682,7 +680,7 @@ void MPIMethods::receiveGridComponentsUpdate(RefinementResultNetworkMessage *net
             << "Update with non-null offset arrived "
             << "but grid version not set to inconsistent (version is "
             << learnerInstance->getLocalGridVersion(classIndex) << std::endl;
-        exit(-1);
+        throw sgpp::base::algorithm_exception("Secondary update received on consistent grid.");
       }
 
       auto *bufferIterator =
@@ -704,20 +702,20 @@ void MPIMethods::receiveGridComponentsUpdate(RefinementResultNetworkMessage *net
 
         D(std::cout << "Received cholesky decomposition for class " << classIndex
                     << ", will now broadcast decomposition" << std::endl;)
-        sendCholeskyDecomposition(classIndex, choleskyDecomposition, MPI_ANY_SOURCE);
+        sendSystemMatrixDecomposition(classIndex, choleskyDecomposition, MPI_ANY_SOURCE);
       }
       break;
     }
     default: {
       std::cout << "Received an update request with unknown id " << networkMessage->updateType
                 << std::endl;
-      exit(-1);
+      throw sgpp::base::algorithm_exception("Update request with unknown ID received.");
     }
   }
   D(std::cout << "Updated refinement result or cholesky decomposition " << classIndex << " ("
               << refinementResult.addedGridPoints.size()
               << " additions, "
-              << refinementResult.deletedGridPointsIndexes.size() <<
+              << refinementResult.deletedGridPointsIndices.size() <<
               " deletions)" << std::endl;)
 
   // If this is not the last message in a series (gridversion inconsistent),
@@ -769,9 +767,9 @@ void MPIMethods::processIncomingMPICommands(PendingMPIRequest &pendingMPIRequest
     case WORKER_SHUTDOWN_SUCCESS:std::cout << "Worker has acknowledged shutdown" << std::endl;
       break;
     case NULL_COMMAND:std::cout << "Error: Incoming command has undefined command id" << std::endl;
-      exit(-1);
+      throw sgpp::base::algorithm_exception("MPI_Packet with NULL command received.");
     default:std::cout << "Error: MPI unknown command id: " << mpiPacket->commandID << std::endl;
-      exit(-1);
+      throw sgpp::base::algorithm_exception("MPI_Packet with unknown command received.");
   }
 }
 
@@ -781,7 +779,7 @@ void MPIMethods::finalizeMPI() {
   for (PendingMPIRequest &pendingMPIRequest : pendingMPIRequests) {
     std::cout << "Cancelling pending mpi request " << requestNum << " at " << &pendingMPIRequest
               << std::endl;
-    MPI_Request *mpiRequestHandle = pendingMPIRequest.getMPIRequestHandle();
+    MPI_Request *mpiRequestHandle = pendingMPIRequest.getMPIRequestFromHandle();
     MPI_Cancel(mpiRequestHandle);
     MPI_Wait(mpiRequestHandle, MPI_STATUS_IGNORE);
     delete pendingMPIRequest.buffer;
@@ -809,8 +807,9 @@ size_t MPIMethods::calculateTotalPacketSize(size_t containedPacketSize) {
   return offsetof(MPI_Packet, MPI_Packet::payload) + containedPacketSize;
 }
 
-void MPIMethods::runBatch(MPI_Packet *mpiPacket) {
-  auto *message = static_cast<AssignBatchNetworkMessage *>(static_cast<void *>(mpiPacket->payload));
+void MPIMethods::runBatch(MPI_Packet *assignBatchMessage) {
+  auto *message =
+      static_cast<AssignBatchNetworkMessage *>(static_cast<void *>(assignBatchMessage->payload));
   D(std::cout << "runbatch dim " << learnerInstance->getDimensionality() << std::endl;)
   D(std::cout << "creating dataset" << std::endl;)
   Dataset dataset{message->batchSize, learnerInstance->getDimensionality()};

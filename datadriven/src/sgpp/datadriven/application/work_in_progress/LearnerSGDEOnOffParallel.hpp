@@ -20,7 +20,7 @@
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/application/work_in_progress/MPITaskScheduler.hpp>
 #include <sgpp/datadriven/application/work_in_progress/AuxiliaryStructures.hpp>
-#include <sgpp/datadriven/application/work_in_progress/LearnerSGDEOnOffParallelHandler.hpp>
+#include <sgpp/datadriven/application/work_in_progress/LearnerSGDEOnOffParallelRefinementHandler.hpp>
 
 #include <mpi.h>
 
@@ -59,28 +59,28 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
                            double beta, double lambda, MPITaskScheduler &mpiTaskScheduler);
 
   /**
-                           * Trains the learner with the given dataset.
-                           *
-                           * @param batchSize Size of subset of data points used for each training step
-                           * @param maxDataPasses The number of passes over the whole training data
-                           * @param refinementFunctorType The refinement indicator (surplus, zero-crossings or
-                           * data-based)
-                           * @param refMonitor The refinement strategy (periodic or convergence-based)
-                           * @param refPeriod The refinement interval (if periodic refinement is chosen)
-                           * @param accDeclineThreshold The convergence threshold
-                           *        (if convergence-based refinement is chosen)
-                           * @param accDeclineBufferSize The number of accuracy measurements which are
-                           * used to check
-                           *        convergence (if convergence-based refinement is chosen)
-                           * @param minRefInterval The minimum number of data points (or data batches)
-                           * which have to be
-                           *        processed before next refinement can be scheduled (if
-                           * convergence-based refinement
-                           *        is chosen)
-                           * @param enableCv Specifies whether to perform cross-validation during
-                           * training process or not
-                           * @param nextCvStep Determines when next cross-validation has to be triggered
-                           */
+   * Trains the learner with the given dataset.
+   *
+   * @param batchSize Size of subset of data points used for each training step
+   * @param maxDataPasses The number of passes over the whole training data
+   * @param refinementFunctorType The refinement indicator (surplus, zero-crossings or
+   * data-based)
+   * @param refMonitor The refinement strategy (periodic or convergence-based)
+   * @param refPeriod The refinement interval (if periodic refinement is chosen)
+   * @param accDeclineThreshold The convergence threshold
+   *        (if convergence-based refinement is chosen)
+   * @param accDeclineBufferSize The number of accuracy measurements which are
+   * used to check
+   *        convergence (if convergence-based refinement is chosen)
+   * @param minRefInterval The minimum number of data points (or data batches)
+   * which have to be
+   *        processed before next refinement can be scheduled (if
+   * convergence-based refinement
+   *        is chosen)
+   * @param enableCv Specifies whether to perform cross-validation during
+   * training process or not
+   * @param nextCvStep Determines when next cross-validation has to be triggered
+   */
   void trainParallel(size_t batchSize, size_t maxDataPasses,
                      std::string refinementFunctorType,
                      std::string refMonitor, size_t refPeriod, double accDeclineThreshold,
@@ -190,42 +190,89 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
    */
   static bool isVersionConsistent(size_t version);
 
+  /**
+   * Gets a reference to the currently installed MPI Scheduler.
+   * The scheduler assigns tasks of variable or static size to workers.
+   * @return A reference to the installed MPI Task Scheduler
+   */
   MPITaskScheduler &getScheduler();
 
+  /**
+   * Gets the DBMatOffline object
+   * @return The DBMatOffline object
+   */
   std::unique_ptr<DBMatOffline> &getOffline();
 
+  /**
+   * Check whether all grids are not in a temporarily inconsistent state.
+   * @return Whether all grids are consistent
+   */
   bool checkAllGridsConsistent();
 
+  /**
+   * Returns a reference to the currently used training data set
+   * @return A reference to the training data set
+   */
   Dataset &getTrainData();
 
+  /**
+   * Returns a reference to the currently used test data set
+   * @return A reference to the test data set
+   */
   Dataset *getValidationData();
 
-  LearnerSGDEOnOffParallelHandler &getRefinementHandler();
+  /**
+   * Returns a reference to the refinement handler, that contains logic to handle the master's refinement cycles
+   * @return A reference to the refinement handler
+   */
+  LearnerSGDEOnOffParallelRefinementHandler &getRefinementHandler();
 
   /**
-       * Asks the scheduler where to assign the next batch to and sends the MPI request.
-       * @param batchOffset Starting offset of the new batch
-       * @param doCrossValidation Whether the client should do cross-validation
-       * @return The size of the batch assigned by the scheduler
-       */
+   * Asks the scheduler where to assign the next batch to and sends the MPI request.
+   * @param batchOffset Starting offset of the new batch
+   * @param doCrossValidation Whether the client should do cross-validation
+   * @return The size of the batch assigned by the scheduler
+   */
   size_t assignBatchToWorker(size_t batchOffset, bool doCrossValidation);
 
  protected:
+  /**
+   * Vector that holds the grid version for every class
+   */
   std::vector<size_t> localGridVersions;
-  bool workerActive;
-  MPITaskScheduler &mpiTaskScheduler;
-  LearnerSGDEOnOffParallelHandler refinementHandler;
 
   /**
-   *
-   * @param dim
-   * @param trainDataClasses
-   * @param classIndices
+   * Boolean used to detect when a shutdown of a worker has been requested
+   */
+  bool workerActive;
+
+  /**
+   * Reference to the currently installed MPI Task Scheduler
+   */
+  MPITaskScheduler &mpiTaskScheduler;
+
+  /**
+   * Instance of the currently installed refinement handler
+   */
+  LearnerSGDEOnOffParallelRefinementHandler refinementHandler;
+
+  /**
+   * Allocates memory for every class to hold training data before learning
+   * @param dim The dimensionality of the current problem
+   * @param trainDataClasses Storage that will be allocated that holds space for data and label
+   * @param classIndices A map of each classes label to its index
    */
   void allocateClassMatrices(size_t dim,
                              std::vector<std::pair<base::DataMatrix *, double>> &trainDataClasses,
                              std::map<double, int> &classIndices) const;
 
+  /**
+   * Do an entire refinement cycle for all classes.
+   * @param refinementFunctorType String constant specifying the functor to use in refinement
+   * @param refinementMonitorType String constant specifying the monitor to use in refinement
+   * @param onlineObjects Reference to the online objects for density estimation
+   * @param monitor The setup of the convergence monitor for refinement
+   */
   void doRefinementForAll(const std::string &refinementFunctorType,
                           const std::string &refinementMonitorType,
                           const ClassDensityContainer &onlineObjects,
