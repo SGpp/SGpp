@@ -17,13 +17,13 @@
 
 namespace sgpp {
 namespace datadriven {
-bool LearnerSGDEOnOffParallelHandler::checkReadyForRefinement() const {
+bool LearnerSGDEOnOffParallelRefinementHandler::checkReadyForRefinement() const {
   // All local grids in a consistent state and have OK from scheduler
   return learnerInstance->getScheduler().isReadyForRefinement()
       && learnerInstance->checkAllGridsConsistent();
 }
 
-void LearnerSGDEOnOffParallelHandler::doRefinementForClass(
+void LearnerSGDEOnOffParallelRefinementHandler::doRefinementForClass(
     const std::string &refType,
     RefinementResult *refinementResult,
     const ClassDensityConntainer &onlineObjects,
@@ -63,7 +63,7 @@ void LearnerSGDEOnOffParallelHandler::doRefinementForClass(
     std::cout << "Reported grid sizes do not match up (refined " << numberOfNewPoints
               << ", old "
               << oldGridSize << ", new " << newGridSize << ")" << std::endl;
-    exit(-1);
+    throw sgpp::base::algorithm_exception("Reported grid delta not valid.");
   }
 
   D(std::cout << "Preparing refinement result update" << std::endl;)
@@ -71,7 +71,7 @@ void LearnerSGDEOnOffParallelHandler::doRefinementForClass(
   refinementResult->addedGridPoints.clear();
 
   D(std::cout << "Clearing old deleted grid points" << std::endl;)
-  refinementResult->deletedGridPointsIndexes.clear();
+  refinementResult->deletedGridPointsIndices.clear();
 
   size_t numDimensions = learnerInstance->getDimensionality();
   // Collect new grid points into the refinement result for shipping
@@ -100,7 +100,7 @@ void LearnerSGDEOnOffParallelHandler::doRefinementForClass(
   updateClassVariablesAfterRefinement(classIndex, refinementResult, densEst);
 }
 
-void LearnerSGDEOnOffParallelHandler::updateClassVariablesAfterRefinement(
+void LearnerSGDEOnOffParallelRefinementHandler::updateClassVariablesAfterRefinement(
     size_t classIndex,
     RefinementResult *refinementResult,
     DBMatOnlineDE *densEst) {
@@ -115,7 +115,7 @@ void LearnerSGDEOnOffParallelHandler::updateClassVariablesAfterRefinement(
     size_t numDimensions = learnerInstance->getDimensionality();
 
     // Delete the grid points removed on master thread
-    grid.getStorage().deletePoints(refinementResult->deletedGridPointsIndexes);
+    grid.getStorage().deletePoints(refinementResult->deletedGridPointsIndices);
 
     size_t sizeBeforeAdditions = grid.getSize();
     D(std::cout << "Grid size after deleting is " << sizeBeforeAdditions << std::endl;)
@@ -143,7 +143,7 @@ void LearnerSGDEOnOffParallelHandler::updateClassVariablesAfterRefinement(
                       << gridPoint->getHash()
                       << std::endl;
             printPoint(gridPoint);
-            exit(-1);
+            throw sgpp::base::algorithm_exception("Inserted grid point did not cause grid delta.");
           }
       )
     }
@@ -157,7 +157,7 @@ void LearnerSGDEOnOffParallelHandler::updateClassVariablesAfterRefinement(
       std::cout << "Grid growth not correlated to refinement results (grid delta "
                 << sizeAfterAdditions - sizeBeforeAdditions << ", additions "
                 << refinementResult->addedGridPoints.size() << ")" << std::endl;
-      exit(-1);
+      throw sgpp::base::algorithm_exception("Grid growth from refinement not correct.");
     }
   } else {
     // apply grid changes to the Cholesky factorization
@@ -166,13 +166,13 @@ void LearnerSGDEOnOffParallelHandler::updateClassVariablesAfterRefinement(
       std::cout << "Attempting to increment grid version on non consistent grid "
                 << classIndex
                 << " version " << currentGridVersion << std::endl;
-      exit(-1);
+      throw sgpp::base::algorithm_exception("Setting of grid version failed due to inconsistent.");
     }
 
     learnerInstance->setLocalGridVersion(classIndex, currentGridVersion + 1);
 
     // Send class update in preparation for cholesky
-    MPIMethods::sendRefinementUpdates(classIndex, refinementResult->deletedGridPointsIndexes,
+    MPIMethods::sendRefinementUpdates(classIndex, refinementResult->deletedGridPointsIndices,
                                       refinementResult->addedGridPoints);
 
     if (learnerInstance->getOffline()->isRefineable()) {
@@ -190,14 +190,14 @@ void LearnerSGDEOnOffParallelHandler::updateClassVariablesAfterRefinement(
 
   // update alpha vector
   D(size_t oldSize = densEst->getAlpha().size();)
-  densEst->updateAlpha(&(refinementResult->deletedGridPointsIndexes),
+  densEst->updateAlpha(&(refinementResult->deletedGridPointsIndices),
                        refinementResult->addedGridPoints.size());
   D(std::cout << "Updated alpha vector " << classIndex << " (old size " << oldSize
               << ", new size " <<
               densEst->getAlpha().size() << ")" << std::endl;)
 }
 
-bool LearnerSGDEOnOffParallelHandler::checkRefinementNecessary(
+bool LearnerSGDEOnOffParallelRefinementHandler::checkRefinementNecessary(
     const std::string &refMonitor,
     size_t refPeriod,
     size_t totalInstances,
@@ -242,7 +242,7 @@ bool LearnerSGDEOnOffParallelHandler::checkRefinementNecessary(
 }
 
 size_t
-LearnerSGDEOnOffParallelHandler::handleDataAndZeroBasedRefinement(
+LearnerSGDEOnOffParallelRefinementHandler::handleDataAndZeroBasedRefinement(
     bool preCompute,
     MultiGridRefinementFunctor *func,
     size_t idx,
@@ -261,7 +261,7 @@ LearnerSGDEOnOffParallelHandler::handleDataAndZeroBasedRefinement(
   return gridSizeAfterRefine - gridSizeBeforeRefine;
 }
 
-size_t LearnerSGDEOnOffParallelHandler::handleSurplusBasedRefinement(
+size_t LearnerSGDEOnOffParallelRefinementHandler::handleSurplusBasedRefinement(
     DBMatOnlineDE *densEst,
     base::Grid &grid,
     base::GridGenerator &gridGen) const {
@@ -320,11 +320,11 @@ size_t LearnerSGDEOnOffParallelHandler::handleSurplusBasedRefinement(
   return sizeAfterRefine - sizeBeforeRefine;
 }
 
-RefinementResult &LearnerSGDEOnOffParallelHandler::getRefinementResult(size_t classIndex) {
+RefinementResult &LearnerSGDEOnOffParallelRefinementHandler::getRefinementResult(size_t classIndex) {
   return vectorRefinementResults[classIndex];
 }
 
-LearnerSGDEOnOffParallelHandler::LearnerSGDEOnOffParallelHandler(
+LearnerSGDEOnOffParallelRefinementHandler::LearnerSGDEOnOffParallelRefinementHandler(
     LearnerSGDEOnOffParallel *learnerInstance,
     size_t numClasses) {
   this->learnerInstance = learnerInstance;

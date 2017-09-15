@@ -32,11 +32,20 @@
 namespace sgpp {
 namespace datadriven {
 
-class LearnerSGDEOnOffParallelHandler {
+class LearnerSGDEOnOffParallelRefinementHandler {
  protected:
   std::vector<RefinementResult> vectorRefinementResults;
   LearnerSGDEOnOffParallel *learnerInstance;
 
+  /**
+   * Logic that handles data-based and zero-crossing refinement functors
+   * @param preCompute Whether to precompute evaluations in the functor
+   * @param func Pointer to the refinement functor itself
+   * @param idx Class index
+   * @param grid The grid for the current class
+   * @param gridGen The grid's generator for the current grid
+   * @return The number of added grid points
+   */
   size_t
   handleDataAndZeroBasedRefinement(bool preCompute,
                                    MultiGridRefinementFunctor *func,
@@ -44,40 +53,63 @@ class LearnerSGDEOnOffParallelHandler {
                                    base::Grid &grid,
                                    base::GridGenerator &gridGen) const;
 
+  /**
+   * Logic that handles surplus based refinement functors
+   * @param densEst Online objects for use in density estimation for the current class
+   * @param grid The current classes grid
+   * @param gridGen The current grid's grid generator
+   * @return The number of added grid points
+   */
   size_t
   handleSurplusBasedRefinement(DBMatOnlineDE *densEst,
                                Grid &grid,
                                base::GridGenerator &gridGen) const;
 
  public:
-  LearnerSGDEOnOffParallelHandler(LearnerSGDEOnOffParallel *learnerInstance,
+  /**
+   * Creates the refinement handler for a specific learner instance
+   * @param learnerInstance The instance of the learner to handle refinement for
+   * @param numClasses The number of classes for the current problem
+   */
+  LearnerSGDEOnOffParallelRefinementHandler(LearnerSGDEOnOffParallel *learnerInstance,
                                   size_t numClasses);
 
   /**
-      * After refinement completes locally or refinement results have been received over MPI, this method uses the results to adjust the grid and alpha vector.
-      * If this is run on the master, the grid changes will be exported over MPI.
-      * If the system matrix is refineable, a system matrix update will be assigned to workers over MPI.
-      * @param classIndex The index of the class being updated
-      * @param refinementResult The grid changes from the refinement cycle
-      * @param densEst A pointer to the online object specfic to this class
-      */
+    * After refinement completes locally or refinement results have been received over MPI, this method uses the results to adjust the grid and alpha vector.
+    * If this is run on the master, the grid changes will be exported over MPI.
+    * If the system matrix is refineable, a system matrix update will be assigned to workers over MPI.
+    * @param classIndex The index of the class being updated
+    * @param refinementResult The grid changes from the refinement cycle
+    * @param densEst A pointer to the online object specfic to this class
+    */
   void updateClassVariablesAfterRefinement(size_t classIndex,
                                            RefinementResult *refinementResult,
                                            DBMatOnlineDE *densEst);
 
   /**
-       * Fetches the currently stored refinement results for a specific class
-       * @param classIndex The class to search refinement results for
-       * @return A reference to the stored refinement results
-       */
+   * Fetches the currently stored refinement results for a specific class
+   * @param classIndex The class to search refinement results for
+   * @return A reference to the stored refinement results
+   */
   RefinementResult &getRefinementResult(size_t classIndex);
 
-/**
+  /**
     * Check whether all grids are consistent and the scheduler is currently allowing refinement.
     * @return Whether refinement is currently possible
     */
   bool checkReadyForRefinement() const;
 
+  /**
+   * Check whether refinement is currently necessary according to the guidelines set by the user
+   * @param refMonitor String constant specifying the monitor to use for refinement
+   * @param refPeriod The minimum period in which refinement cycles are allowed
+   * @param totalInstances The number of batches that have already completed
+   * @param currentValidError The current validation error
+   * @param currentTrainError The current training error
+   * @param numberOfCompletedRefinements The number of refinement cycles already completed
+   * @param monitor The convergence monitor, if any
+   * @return Whether a refinement cycle should be started
+   */
   bool checkRefinementNecessary(const std::string &refMonitor, size_t refPeriod,
                                 size_t totalInstances,
                                 double currentValidError, double currentTrainError,
@@ -85,14 +117,14 @@ class LearnerSGDEOnOffParallelHandler {
                                 ConvergenceMonitor &monitor);
 
   /**
-           * Handles refinement for a specific class.
-           * @param refType
-           * @param refinementResult
-           * @param onlineObjects
-           * @param preCompute
-           * @param refinementFunctor
-           * @param classIndex
-           */
+   * Handles refinement for a specific class.
+   * @param refType String constant specifying the type of refinement functor
+   * @param refinementResult The RefinementResult used to store changes for the grid
+   * @param onlineObjects The density estimation online objects
+   * @param preCompute Whether to precompute the functor's evaluation step
+   * @param refinementFunctor The refinement functor to use
+   * @param classIndex The index of the current class for which refinement is taking place
+   */
   void doRefinementForClass(const std::string &refType,
                             RefinementResult *refinementResult,
                             const ClassDensityConntainer &onlineObjects,
