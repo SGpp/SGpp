@@ -124,12 +124,6 @@ void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPas
   // print initial grid size
   printGridSizeStatistics("#Initial grid size of grid ", onlineObjects);
 
-  // auxiliary variable for accuracy (error) measurement
-  // TODO(bodevt): Evil
-//            double acc = getAccuracy();
-//
-//            avgErrors.append(1.0 - acc);
-
   // main loop which performs the training process
   while (completedDataPasses < maxDataPasses) {
     std::cout << "Start of data pass " << completedDataPasses << std::endl;
@@ -189,13 +183,6 @@ void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPas
         D(std::cout << "No refinement necessary" << std::endl;)
       }
 
-      // TODO(bodevt): Evil
-//                    // save current error
-//                    if ((processedPoints / batchSize) % 10 == 0) {
-//                        acc = getAccuracy();
-//                        std::cout << "Saving current error " << acc << std::endl;
-//                        avgErrors.append(1.0 - acc);
-//                    }
       D(
           auto end = std::chrono::high_resolution_clock::now();
           std::cout << "Processing batch in "
@@ -218,8 +205,6 @@ void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPas
 
   std::cout << "#Training finished (This is MASTER)" << std::endl;
 
-  // TODO(bodevt): This is also evil
-//            error = 1.0 - getAccuracy();
 }
 
 size_t LearnerSGDEOnOffParallel::getDimensionality() {
@@ -652,7 +637,6 @@ void LearnerSGDEOnOffParallel::mergeAlphaValues(size_t classIndex,
   }
 
   if (usePrior) {
-    // TODO(bodevt): Not implemented
     throw algorithm_exception("Use prior not implemented");
   } else {
     D(std::cout << "Setting prior [" << classLabels[classIndex] << "] to -1" << std::endl;)
