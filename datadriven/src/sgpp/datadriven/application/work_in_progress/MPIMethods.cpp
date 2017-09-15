@@ -477,13 +477,6 @@ void MPIMethods::processCompletedMPIRequest(
 
     pendingMPIRequests.erase(pendingMPIRequestIterator);
     D(std::cout << "Deleted pending mpi request" << std::endl;)
-  } else {
-//                        std::cout << "Zeroing MPI Request" << std::endl;
-//                        std::memset(pendingMPIRequestIterator->request, 0, sizeof(MPI_Request));
-//
-//                        // TODO(bodevt): This is done after the request has been re-launched
-//                        std::cout << "Zeroing Buffer" << std::endl;
-//                        std::memset(pendingMPIRequestIterator->buffer, 0, sizeof(MPI_Packet));
   }
 }
 

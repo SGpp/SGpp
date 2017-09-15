@@ -124,7 +124,6 @@ void LearnerSGDEOnOffParallelRefinementHandler::updateClassVariablesAfterRefinem
     for (std::vector<LevelIndexPair> &levelIndexVector : refinementResult->addedGridPoints) {
       D(size_t sizeBeforePoint = grid.getSize();)
       auto *gridPoint = new sgpp::base::HashGridPoint(numDimensions);
-      // TODO(bodevt): What happens when other points are changed (ie Leaf boolean etc)
 
       for (size_t currentDimension = 0;
            currentDimension < numDimensions; currentDimension++) {
@@ -148,7 +147,6 @@ void LearnerSGDEOnOffParallelRefinementHandler::updateClassVariablesAfterRefinem
       )
     }
 
-    // TODO(bodevt): This might be unnecessary
     grid.getStorage().recalcLeafProperty();
 
     size_t sizeAfterAdditions = grid.getSize();
