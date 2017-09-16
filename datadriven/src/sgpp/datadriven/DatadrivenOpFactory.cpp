@@ -142,6 +142,7 @@ datadriven::OperationDensityMarginalize* createOperationDensityMarginalize(base:
   else if (grid.getType() == base::GridType::LinearBoundary ||
            grid.getType() == base::GridType::ModLinear ||
            grid.getType() == base::GridType::Poly ||
+           grid.getType() == base::GridType::ModPoly ||
            grid.getType() == base::GridType::PolyBoundary ||
            grid.getType() == base::GridType::PolyClenshawCurtis ||
            grid.getType() == base::GridType::PolyClenshawCurtisBoundary ||
@@ -161,6 +162,7 @@ datadriven::OperationDensityMargTo1D* createOperationDensityMargTo1D(base::Grid&
       grid.getType() == base::GridType::LinearBoundary ||
       grid.getType() == base::GridType::ModLinear ||
       grid.getType() == base::GridType::Poly ||
+      grid.getType() == base::GridType::ModPoly ||
       grid.getType() == base::GridType::PolyBoundary ||
       grid.getType() == base::GridType::PolyClenshawCurtis ||
       grid.getType() == base::GridType::PolyClenshawCurtisBoundary ||

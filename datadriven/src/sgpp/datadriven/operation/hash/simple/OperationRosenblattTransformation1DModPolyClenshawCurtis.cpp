@@ -47,7 +47,7 @@ double OperationRosenblattTransformation1DModPolyClenshawCurtis::doTransformatio
   std::multimap<double, double>::iterator it1;
 
   base::GridStorage* gs = &this->grid->getStorage();
-  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*grid));
+  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEvalNaive(*grid));
   base::DataVector coord(1);
   base::DataVector gauss_coordinates;
   base::DataVector weights;
