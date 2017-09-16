@@ -46,7 +46,7 @@ void OperationInverseRosenblattTransformation1DModPolyClenshawCurtis::init(
   patch_functions.clear();
   coord_cdf.clear();
   sum = 0;
-  opEval = std::unique_ptr<base::OperationEval>(op_factory::createOperationEval(*grid));
+  opEval = std::unique_ptr<base::OperationEval>(op_factory::createOperationEvalNaive(*grid));
 
   base::DataVector coord(1);
   std::multimap<double, double>::iterator it1;
