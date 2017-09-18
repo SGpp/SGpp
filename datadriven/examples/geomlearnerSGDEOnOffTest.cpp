@@ -36,12 +36,14 @@ int main() {
   /**
    * Get the training, test and validation data
    */
-  std::string filename = "../../datasets/artificialDatasets/TrianglesCircles/tricircle_0.25-0.75_4x4_100000images.train";
+  //std::string filename = "../../datasets/artificialDatasets/TrianglesCircles/tricircle_0.00-1.00_8x8_1000000images.train";
+  std::string filename = "../../datasets/mnist/mnist_[2, 5, 7]_28x28.train.arff";
   // load training samples
   std::cout << "# loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset trainDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
 
-  filename = "../../datasets/artificialDatasets/TrianglesCircles/tricircle_0.25-0.75_4x4.test";
+  //filename = "../../datasets/artificialDatasets/TrianglesCircles/tricircle_0.00-1.00_8x8.test";
+  filename = "../../datasets/mnist/mnist_[2, 5, 7]_28x28.t10k.arff";
   // load test samples
   std::cout << "# loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset testDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
@@ -57,10 +59,11 @@ int main() {
   /**
    * Specify the number of classes and the corresponding class labels.
    */
-  size_t classNum = 2;
+  size_t classNum = 3;
   sgpp::base::DataVector classLabels(classNum);
-  classLabels[0] = 0;
-  classLabels[1] = 1;
+  classLabels[0] = 2;
+  classLabels[1] = 5;
+  classLabels[2] = 7;
   /*
   classLabels[2] = 2;
   classLabels[3] = 3;
@@ -78,8 +81,8 @@ int main() {
   sgpp::base::RegularGridConfiguration gridConfig;
   gridConfig.dim_ = trainDataset.getDimension();
   gridConfig.level_ = 3;
-  gridConfig.type_ = sgpp::base::GridType::Linear;
-  //gridConfig.type_ = sgpp::base::GridType::ModLinear;
+  //gridConfig.type_ = sgpp::base::GridType::Linear;
+  gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
   /**
    * Configure regularization.
@@ -165,7 +168,7 @@ int main() {
   dconf.icholParameters.sweepsDecompose = 2;
   dconf.icholParameters.sweepsRefine = 2;
 
-  std::string matrixfile = "mats/4x4_Lin_NN_Inter_lvl3_Chol.out";
+  std::string matrixfile = "mats/28x28_ModLin_NN_Inter_lvl3_Chol.out";
 
   /**
    * Create the learner.
@@ -200,7 +203,7 @@ int main() {
 
   // specify batch size
   // (set to 1 for processing only a single data point each iteration)
-  size_t batchSize = 40000;
+  size_t batchSize = 17644;
   // specify max number of passes over traininig data set
   size_t maxDataPasses = 1;
 
@@ -223,21 +226,22 @@ int main() {
   
   std::cout << "Build confusion matrix \n real\\pred" << std::endl;
 
-  size_t confusion [classNum][classNum];
+  classNum = 10;
+  size_t *confusion = new size_t [classNum*classNum];
 
   for(size_t real = 0; real < classNum; real++){
 		for(size_t pred = 0; pred < classNum; pred++){
-		  confusion[pred][real] = 0;
+		  confusion[pred + real*classNum] = 0;
 		}
   }
 
   for(size_t i = 0; i < testDataset.getNumberInstances(); i++){
-	  confusion[(size_t)predictTest.get(i)][(size_t)yTest.get(i)]++;
+	  confusion[(size_t)predictTest.get(i)+classNum*(size_t)yTest.get(i)]++;
   }
 
   for(size_t real = 0; real < classNum; real++){
 		for(size_t pred = 0; pred < classNum; pred++){
-		  std::cout << confusion[pred][real] << "\t";
+		  std::cout << confusion[pred+real*classNum] << "\t";
 		}
 	  std::cout << std::endl;
   }
@@ -247,7 +251,10 @@ int main() {
    */
   double acc = learner.getAccuracy();
   std::cout << "# accuracy (test data): " << acc << std::endl;
-
+/*
+  double trainerr = learner.getError(trainDataset);
+  std::cout << "Train error: " << trainerr << std::endl;
+*/
   // store results (classified data, grids, density functions)
   // learner.storeResults();
 }

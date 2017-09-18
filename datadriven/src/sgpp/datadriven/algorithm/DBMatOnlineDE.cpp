@@ -7,6 +7,7 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinear.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalInterModLinear.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
@@ -57,15 +58,20 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
     totalPoints++;
     DataVector b(lhsMatrix.getNcols());
     b.setAll(0);
-
+/*
     std::unique_ptr<sgpp::base::OperationMultipleEval> B(
         sgpp::op_factory::createOperationMultipleEval(offlineObject.getGrid(), m));
+*/  
+    std::unique_ptr<sgpp::base::OperationMultipleEval> B( (offlineObject.interactions.size()== 0)?
+        sgpp::op_factory::createOperationMultipleEval(offlineObject.getGrid(), m): 
+        sgpp::op_factory::createOperationMultipleEvalInter(offlineObject.getGrid(), m, offlineObject.interactions));
+
+
     DataVector y(numberOfPoints);
     y.setAll(1.0);
     // Bt * 1
     B->multTranspose(y, b);
 
-    //std::cout << b.toString() << std::endl;
 
     // Perform permutation because of decomposition (LU)
     if (offlineObject.getConfig().decomp_type_ == DBMatDecompostionType::LU) {
@@ -127,6 +133,7 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
       // 1 / M * Bt * 1
       b.mult(1. / static_cast<double>(numberOfPoints));
     }
+    //std::cout << "Beta: " << b.toString() << std::endl;
     solveSLE(b, do_cv);
 
     functionComputed = true;
@@ -171,7 +178,7 @@ double DBMatOnlineDE::eval(const DataVector& p, bool force) {
     std::unique_ptr<sgpp::base::OperationEval> opEval(
         sgpp::op_factory::createOperationEval(offlineObject.getGrid()));
     res = opEval->eval(alpha, p);
-    return res * normFactor;
+    return (res+normOffset) * normFactor;
   } else {
     throw algorithm_exception("Density function not computed, yet!");
   }
@@ -179,8 +186,10 @@ double DBMatOnlineDE::eval(const DataVector& p, bool force) {
 
 void DBMatOnlineDE::eval(DataMatrix& values, DataVector& results, bool force) {
   if (functionComputed || force == true) {
-    std::unique_ptr<base::OperationMultipleEval> opEval(
-        sgpp::op_factory::createOperationMultipleEval(offlineObject.getGrid(), values));
+
+    std::unique_ptr<sgpp::base::OperationMultipleEval> opEval( (offlineObject.interactions.size()== 0)?
+        sgpp::op_factory::createOperationMultipleEval(offlineObject.getGrid(), values): 
+        sgpp::op_factory::createOperationMultipleEvalInter(offlineObject.getGrid(), values, offlineObject.interactions));
     opEval->eval(alpha, results);
     results.mult(normFactor);
   } else {
@@ -236,18 +245,27 @@ double DBMatOnlineDE::getBeta() { return beta; }
 
 double DBMatOnlineDE::normalize(size_t samples) {
   this->normFactor = 1.;
+  this->normOffset = 0.;
   double sum = 0.;
+  double min = 100.;
   DataVector p(this->oDim);
   srand(static_cast<unsigned int>(time(nullptr)));
   for (size_t i = 0; i < samples; i++) {
     for (size_t j = 0; j < this->oDim; j++) p[j] = (static_cast<double>(rand()) / RAND_MAX);
-    sum += this->eval(p);
+    double tmp = this->eval(p);
+    min = std::min(tmp, min);
+    sum += tmp;
+    //sum += this->eval(p);
   }
-  return this->normFactor = static_cast<double>(samples) / sum;
+  std::cout << "minimal value: " << min << std::endl;
+  this->normOffset = -min;
+  return this->normFactor = static_cast<double>(samples) / (sum + static_cast<double>(samples)*(-min));
 }
+
 
 double DBMatOnlineDE::normalizeQuadrature(){
   this->normFactor = 1.;
+  this->normOffset = 0.;
   double quadrature = sgpp::op_factory::createOperationQuadrature(offlineObject.getGrid())->doQuadrature(alpha);
 
   return this->normFactor /= quadrature;

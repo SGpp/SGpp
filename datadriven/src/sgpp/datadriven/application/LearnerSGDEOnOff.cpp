@@ -167,6 +167,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
 
   // main loop which performs the training process
   while (cntDataPasses < maxDataPasses) {
+    std::cout << "###########################################################" << std::endl;
     std::cout << "#batch-size: " << batchSize << "\n";
     std::cout << "#batches to process: " << numBatch << "\n";
     // data point counter - determines offset when selecting next batch
@@ -208,9 +209,9 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
       // check if refinement should be performed
       if (refMonitor == "periodic") {
         // check periodic monitor
-		    std::cout << offline->isRefineable() << (totalInstances > 0) << (totalInstances % refPeriod == 0) << (refCnt < offline->getConfig().numRefinements_) << std::endl;
-        if (offline->isRefineable() && (totalInstances > 0) && (totalInstances % refPeriod == 0) ){//&&
-            //(refCnt < offline->getConfig().numRefinements_)) {
+        //std::cout << offline->isRefineable() << (totalInstances > 0) << (totalInstances % refPeriod == 0) << (refCnt < offline->getConfig().numRefinements_) << std::endl;
+        if (offline->isRefineable() && (totalInstances > 0) && (totalInstances % refPeriod == 0)&&
+            (refCnt < 0/*offline->getConfig().numRefinements_*/)) {
           doRefine = true;
         }
       } else if (refMonitor == "convergence") {
@@ -246,31 +247,32 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         }
       }
 
-      // save current error
-      if (totalInstances % 10 == 0) {
-        //acc = getAccuracy();
-        acc = 0;
-        avgErrors.append(1.0 - acc);
-      }
 
       auto end = std::chrono::high_resolution_clock::now();
       std::cout << "Processing batch in "
                 << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
                 << "ms" << std::endl;
+      std::cout << "###########################################################" << std::endl;
+
+      // save current error
+      if (totalInstances % 10 == 0) {
+        acc = getAccuracy();
+        //acc = 0;
+        avgErrors.append(1.0 - acc);
+        std::cout << "\t#Test Acc: "<< acc << "\n\t#Train Err: " << 0/*getError(trainData)*/ << std::endl;
+      }
     }
     cntDataPasses++;
     processedPoints = 0;
   }  // end while
 
-  std::cout << "#Training finished" << std::endl;
-
+  std::cout << "#Training finished" << std::endl;/*
   std::cout << "Normalizing the densityFunctions using Quadrature";
 
   for (auto& densityFunction : densityFunctions) {
-    densityFunction.first->normalizeQuadrature();
+    std::cout << "NormFactor of class" << densityFunction.second << ": " << densityFunction.first->normalizeQuadrature() << std::endl;
   }
-
-  std::cout << "Complete!" << std::endl;
+  std::cout << "Complete!" << std::endl;*/
 
 }
 
@@ -313,6 +315,7 @@ void LearnerSGDEOnOff::train(std::vector<std::pair<DataMatrix*, double>>& trainD
     numberOfDataPoints += trainDataClasses[i].first->getSize();
   }
   for (size_t i = 0; i < trainDataClasses.size(); i++) {
+    std::cout << "Computing Density Function of class " << i << std::endl;
     auto& p = trainDataClasses[i];
 
     if ((*p.first).getNrows() > 0) {
@@ -338,6 +341,11 @@ void LearnerSGDEOnOff::train(std::vector<std::pair<DataMatrix*, double>>& trainD
 }
 
 double LearnerSGDEOnOff::getAccuracy() const {
+  /*
+  for (auto& densityFunction : densityFunctions) {
+    densityFunction.first->normalizeQuadrature();
+  }
+  */
   DataVector computedLabels{testData.getNumberInstances()};
   predict(testData.getData(), computedLabels);
   size_t correct = 0;
@@ -543,7 +551,7 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
   MultiGridRefinementFunctor* func = nullptr;
 
   // Zero-crossing-based refinement
-  ZeroCrossingRefinementFunctor funcZrcr{grids, alphas, /*offline->getConfig().ref_noPoints_*/ 2,
+  ZeroCrossingRefinementFunctor funcZrcr{grids, alphas, /*offline->getConfig().ref_noPoints_*/ 1,
                                          levelPenalize, preCompute};
 
   // Data-based refinement. Needs a problem dependent coeffA. The values

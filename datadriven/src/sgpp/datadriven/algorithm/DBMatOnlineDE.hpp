@@ -145,6 +145,7 @@ class DBMatOnlineDE : public DBMatOnline {
   double lambda;
   bool cvLogscale;
   double normFactor;
+  double normOffset;
   size_t oDim;
 };
 

@@ -6,18 +6,19 @@ from math import sqrt
 #Settings
 
 #Number of Images per Class
-num_train = 1
-num_test = 10000
+num_train = 1000000
+num_test = 1000
 
 #Number of real output Images per Class
 out_train = 20
 
 #Size of the image
-h = w = 4
+h = w = 8
 t = 4
-
+#datarange
+interval = [0, 1]
 #output filename
-base = 'tricircle_0.25-0.75_%ix%i'%(h,w)
+base = 'tricircle_%1.2f-%1.2f_%ix%i'%(interval[0], interval[1],h,w)
 end = '.arff'
 
 train = base + '_%iimages.train'%num_train
@@ -45,12 +46,12 @@ for i in range(num_test+num_train):
 
 
 	#generate random circle
-	radius = randint(3,t*min(h,w)/3)
+	radius = randint(t*2,t*min(h,w)/3)
 	x = randint(1+radius, t*h-1-radius)
 	y = randint(1+radius, t*h-1-radius)
 
 	#draw circle
-	cv2.circle(circle, (x,y), radius, 255, 2)
+	cv2.circle(circle, (x,y), radius, 255, 2*t)
 
 
 	#random triangle
@@ -63,9 +64,17 @@ for i in range(num_test+num_train):
 	cordt = [(int(c[0]), int(c[1])) for c in cordt]
 
 	#draw triangle
-	cv2.line(triangle, cordt[0], cordt[1], 255, 2)
-	cv2.line(triangle, cordt[1], cordt[2], 255, 2)
-	cv2.line(triangle, cordt[2], cordt[0], 255, 2)
+	cv2.line(triangle, cordt[0], cordt[1], 255, 2*t)
+	cv2.line(triangle, cordt[1], cordt[2], 255, 2*t)
+	cv2.line(triangle, cordt[2], cordt[0], 255, 2*t)
+
+	#add random noise
+	noise = np.zeros((h*t,w*t), dtype=np.uint8)
+	cv2.randn(noise, 0, 20)
+	circle = cv2.add(noise, circle)
+
+	cv2.randn(noise, 0, 20)
+	triangle = cv2.add(noise, triangle)
 
 	#scale image to w*h
 	circle = cv2.resize(circle, (h,w), interpolation=cv2.INTER_AREA)
@@ -74,6 +83,7 @@ for i in range(num_test+num_train):
 	if i < num_test:
 		cv2.imwrite('test_img/cir%i.png'%i, circle)
 		cv2.imwrite('test_img/tri%i.png'%i, triangle)
+		cv2.imwrite('test_img/noise%i.png'%i, noise)
 	elif i < num_test + out_train:
 		cv2.imwrite('train_img/cir%i.png'%i, circle)
 		cv2.imwrite('train_img/tri%i.png'%i, triangle)
@@ -83,8 +93,8 @@ for i in range(num_test+num_train):
 
 	for j,img in enumerate(images):
 		img = img/255.
-		img *= 0.5
-		img += 0.25
+		img *= interval[1] - interval[0]
+		img += interval[0]
 		fname = (train,test)[i<num_test]
 		with open (fname, 'a') as f:
 			for val in img.reshape(w*h):
