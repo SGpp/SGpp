@@ -60,8 +60,8 @@ DBMatOffline::DBMatOffline(const DBMatOffline& rhs)
       lhsMatrix(rhs.lhsMatrix),
       isConstructed(rhs.isConstructed),
       isDecomposed(rhs.isDecomposed),
-      grid(nullptr) {
-  interactions = std::vector<std::vector<size_t>>();
+      grid(nullptr),
+      interactions(rhs.interactions) {
 
   if (rhs.grid != nullptr) {
     grid = std::unique_ptr<Grid>{rhs.grid->clone()};
@@ -77,6 +77,7 @@ DBMatOffline& sgpp::datadriven::DBMatOffline::operator=(const DBMatOffline& rhs)
   lhsMatrix = rhs.lhsMatrix;
   isConstructed = rhs.isConstructed;
   isDecomposed = rhs.isDecomposed;
+  interactions = rhs.interactions;
 
   if (rhs.grid != nullptr) {
     grid = std::unique_ptr<Grid>{rhs.grid->clone()};
@@ -149,7 +150,7 @@ void DBMatOffline::buildMatrix() {
   std::unique_ptr<OperationMatrix> op(
       op_factory::createOperationLTwoDotExplicit(&lhsMatrix, *grid));
   isConstructed = true;
-  //lhsMatrix.toFile("8x8_Lin_ConstructedMat.txt");
+  lhsMatrix.toFile("4x4_Lin_lvl2_ConstructedMat.txt");
 }
 
 void DBMatOffline::store(const std::string& fileName) {
@@ -249,9 +250,12 @@ void sgpp::datadriven::DBMatOffline::parseInter(const std::string& fileName,
     }
     interactions.push_back(tmp);
   }
+
+  std::cout << interactions.size() << std::endl;
 }
 
 void sgpp::datadriven::DBMatOffline::setInter(std::vector<std::vector <size_t>> inter){
+  std::cout << "Something set inter!" << std::endl;
   interactions = inter;
 }
 
