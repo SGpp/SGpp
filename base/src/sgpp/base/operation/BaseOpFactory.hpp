@@ -112,6 +112,17 @@ base::OperationEval* createOperationEval(base::Grid& grid);
 base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
     base::DataMatrix& dataset);
 /**
+ * Similar to createOperationMultipleEval, but makes use of interaction terms during evaluation
+ * 
+ * @param grid Grid which is to be used
+ * @param dataset The dataset (DataMatrix, one datapoint per row) that is to be evaluated for
+ * the sparse grid function
+ * @param interactions A list of Interaction the SG is reduced to
+ * @return Pointer to the new OperationMultipleEval object for the Grid grid
+ */
+base::OperationMultipleEval* createOperationMultipleEvalInter(base::Grid& grid,
+                                                         base::DataMatrix& dataset, std::vector<std::vector<size_t>> interactions);
+/**
  * Factory method, returning an OperationEval for the grid at hand.
  * In contrast to OperationEval, implementations of OperationEval
  * returned by this function should
