@@ -40,6 +40,7 @@ def getgradkfunc(func, k):
 
 def estimatel2Error(n, dim, gridOpEval, targetFunc):
     sum = 0
+
     for _ in range(n):
         point = pysgpp.DataVector(dim)
         for d in range(dim):
@@ -51,7 +52,38 @@ def estimatel2Error(n, dim, gridOpEval, targetFunc):
     return sum
 
 
-## todo wrong because eval(0) is by definition 0?
+
+def estimatel2ErrorGradients(n,dim,gridOpEval,targetFunc):
+
+    """
+
+    Returns:
+        List: the l2 error in the gradients as a list in powerset order
+    """
+    mixed_directions = list(powerset([i for i in range(dim)]))
+
+    mixed_grad = []
+    opEval_mixgrad = []
+
+    # do the derivatives for operation, function and save resulting functions in the 2 arrays
+    for i in range(1, len(mixed_directions)):
+
+        mixed_grad_temp = targetFunc
+        opEval_mixgrad_temp = gridOpEval
+        for j in mixed_directions[i]:
+            mixed_grad_temp = getgradkfunc(mixed_grad_temp, j)
+            opEval_mixgrad_temp = getgradkfunc(opEval_mixgrad_temp, j)
+        mixed_grad.append(pysgpp.multiFunc(mixed_grad_temp))
+        opEval_mixgrad.append(opEval_mixgrad_temp)
+
+
+    errors = []
+    for i in range(len(mixed_grad)):
+        errors.append(estimatel2Error(n,dim,opEval_mixgrad[i],mixed_grad[i]))
+
+    return errors
+
+
 def calc_error_on_gridpts(gridpoints, gridOpEval, targetFunc):
     error = 0
 
@@ -78,14 +110,28 @@ def calc_error_gradient(gridpoints, gridOpEval, targetFunc, dim):
 
 
 def calc_error_mixed_gradient(gridpoints, gridOpEval, targetFunc, dim):
-    mixgrad = targetFunc
-    opEval_mixgrad = gridOpEval
-    for d in range(dim):
-        mixgrad = getgradkfunc(mixgrad, d)
-        opEval_mixgrad = getgradkfunc(opEval_mixgrad, d)
-    # print("-------------------------------------------------------------")
-    error = calc_error_on_gridpts(gridpoints, opEval_mixgrad, mixgrad)
-    return error
+    mixed_directions = list(powerset([i for i in range(dim)]))
+
+    mixed_grad = []
+    opEval_mixgrad=[]
+
+    for i in range(1, len(mixed_directions)):
+
+        mixed_grad_temp = targetFunc
+        opEval_mixgrad_temp=gridOpEval
+        for j in mixed_directions[i]:
+            mixed_grad_temp = getgradkfunc(mixed_grad_temp, j)
+            opEval_mixgrad_temp=getgradkfunc(opEval_mixgrad_temp,j)
+        mixed_grad.append(pysgpp.multiFunc(mixed_grad_temp))
+        opEval_mixgrad.append(opEval_mixgrad_temp)
+
+
+
+    errors=[]
+    for i in range(len(mixed_grad)):
+        errors.append(calc_error_on_gridpts(gridpoints,opEval_mixgrad[i],mixed_grad[i]))
+
+    return errors
 
 
 def displace(x, i, h):
@@ -114,12 +160,12 @@ returns the k-th gradient with finite differences method
 
 
 def grad_xk(x, k, function):
-    h = 1e-06
+    h = 1e-05
 
-    if x[k] == 0:
+    if x[k] <= h:
         gy = (function(displace(x, k, h)) - function(x)) / (h)
 
-    elif x[k] == 1:
+    elif x[k] >= 1-h:
 
         gy = (function(x) - function(displace(x, k, -h))) / (h)
     else:
@@ -274,7 +320,6 @@ class CombiCombigridHermite:
             self.mixed_grad.append(pysgpp.multiFunc(mixed_grad_temp))
 
         for i in range(len(self.mixed_grad)):
-            print(self.mixed_directions[i])
             self.operationzeta_psi.append(
                 pysgpp.CombigridOperation.createExpUniformBoundaryZetaInterpolation(self.d,
                                                                                     self.mixed_directions[
@@ -556,7 +601,7 @@ class CombiFullGridLinear:
                 pysgpp.CombigridOperation.createExpUniformBoundaryPsiLinearInterpolation(self.d,
                                                                                          i,
                                                                                          self.func))
-        # lazy redefine to fullgrid
+        # lazy redefine of fullgrid
         for i in range(dim):
             self.operation_psi[i] = self.operation_psi[i].getFullGridEvaluator()
 
@@ -565,7 +610,7 @@ class CombiFullGridLinear:
                 pysgpp.CombigridOperation.createExpUniformBoundaryZetaLinearInterpolation(
                     self.d, i, self.grad[i]))
 
-        # lazy redefine to fullgrid
+        # lazy redefine of fullgrid
         for i in range(dim):
             self.operation_zeta[i]=self.operation_zeta[i].getFullGridEvaluator()
 
@@ -693,6 +738,8 @@ def plot_1d_grid(X, Y, text=" ", gridpoints=None):
 
 def plot2DGrid(n_samples, level, operation, title=""):
     # x=0 defined 0 in combigrid
+
+
     epsilon = 10 ** -12
     X = np.linspace(0, 1, n_samples)
     Y = np.linspace(0, 1, n_samples)
@@ -704,6 +751,10 @@ def plot2DGrid(n_samples, level, operation, title=""):
         for j in range(n_samples):
             z[i, j] = operation.evaluate(
                 level, pysgpp.DataVector([X[i, j], Y[i, j]]))
+
+            # if the derivative should be plotted
+            #z[i,j]=getgradkfunc(operationwrapper(operation,level),0)(pysgpp.DataVector([X[i, j],
+                #                                                                        Y[i, j]]))
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
@@ -1032,6 +1083,9 @@ def example_combicombigrid_2D_hermite(l, func_standard):
     plot2DContour(n_samples, level, operation)
 
     error = estimatel2Error(10000, 2, operation_wrap, func_standard)
+
+
+
     grad_error = calc_error_gradient(operation.getLevelManager().getAllGridPoints(), operation_wrap,
                                      func_standard, d)
     mixgrad_error = calc_error_mixed_gradient(operation.getLevelManager().getAllGridPoints(),
@@ -1046,10 +1100,10 @@ def example_combicombigrid_2D_hermite(l, func_standard):
 
 def example_linearfullgrid(l, func_standard):
     d = 2
-    level = l
+    level = 2
     n_samples = 50
 
-    operation = CombiFullGridHermite(func_standard,2)
+    operation = CombiCombigridHermite(func_standard,2)
 
     operation_wrap = operationwrapper(operation, level)
 
@@ -1058,16 +1112,19 @@ def example_linearfullgrid(l, func_standard):
     plot2DContour(n_samples, level, operation)
 
     error = estimatel2Error(10000, 2, operation_wrap, func_standard)
-    grad_error = calc_error_gradient(operation.getLevelManager().getAllGridPoints(),operation_wrap,
-                                  func_standard, d)
+    errorl2_gradients=estimatel2ErrorGradients(10000, 2, operation_wrap, func_standard)
 
+
+    erroron_gripoint=calc_error_on_gridpts(operation.getLevelManager().getAllGridPoints(),
+                                           operation_wrap,func_standard)
     mixgrad_error = calc_error_mixed_gradient(operation.getLevelManager().getAllGridPoints(),
                                              operation_wrap,
                                               func_standard, d)
 
     print("estimtaded l2 error for linearfullgrid: " + str(error))
-    print("1st gradient errors:" + str(grad_error))
+    print("error on gridpts: " + str(erroron_gripoint))
     print("mixed gradient error:" + str(mixgrad_error))
+    print("l2 errors from gradients: "+ str(errorl2_gradients))
 
 
 def example_plot_error(func_standard, dim,maxlevel=5):
@@ -1084,7 +1141,7 @@ def example_plot_error(func_standard, dim,maxlevel=5):
     # operation4= HierachGridBSpline(dim,3,func_standard)
 
 
-    
+
 
     nr_gridpoints, errors = calc_error_ilevels(operation, func_standard, dim, maxlevel)
     X = np.zeros((len(errors), operation_count))
@@ -1139,7 +1196,7 @@ def testf(x):
     return x[0] * x[1]
 
 
-# example_1D_realfunction()
+#example_1D_realfunction()
 #example_1D_psi(2)
 #example_1D_linear(2)
 # example_1D_zeta(2)
@@ -1153,7 +1210,7 @@ func_wrap = getfuncwrapper(func)
 
 func_standard = pysgpp.multiFunc(func_wrap)
 
-#example_2D_comparison_function(func_standard,"")
+example_2D_comparison_function(func_standard,"")
 # example_2D_psi()
 #example_2D_linear(2,func_standard)
 #example_combicombigrid_2D_linear(2, func_standard)  # with "contourplot"
@@ -1161,8 +1218,8 @@ func_standard = pysgpp.multiFunc(func_wrap)
 
 #example_combicombigrid_2D_hermite(3, func_standard)
 
-example_plot_error(func_standard, dim,maxlevel=7)
+#example_plot_error(func_standard, dim,maxlevel=5)
 
 
-#example_linearfullgrid(2,func_standard)
+example_linearfullgrid(2,func_standard)
 plt.show()
