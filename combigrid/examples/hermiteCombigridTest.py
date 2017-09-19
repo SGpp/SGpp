@@ -52,9 +52,7 @@ def estimatel2Error(n, dim, gridOpEval, targetFunc):
     return sum
 
 
-
-def estimatel2ErrorGradients(n,dim,gridOpEval,targetFunc):
-
+def estimatel2ErrorGradients(n, dim, gridOpEval, targetFunc):
     """
 
     Returns:
@@ -76,10 +74,9 @@ def estimatel2ErrorGradients(n,dim,gridOpEval,targetFunc):
         mixed_grad.append(pysgpp.multiFunc(mixed_grad_temp))
         opEval_mixgrad.append(opEval_mixgrad_temp)
 
-
     errors = []
     for i in range(len(mixed_grad)):
-        errors.append(estimatel2Error(n,dim,opEval_mixgrad[i],mixed_grad[i]))
+        errors.append(estimatel2Error(n, dim, opEval_mixgrad[i], mixed_grad[i]))
 
     return errors
 
@@ -113,23 +110,21 @@ def calc_error_mixed_gradient(gridpoints, gridOpEval, targetFunc, dim):
     mixed_directions = list(powerset([i for i in range(dim)]))
 
     mixed_grad = []
-    opEval_mixgrad=[]
+    opEval_mixgrad = []
 
     for i in range(1, len(mixed_directions)):
 
         mixed_grad_temp = targetFunc
-        opEval_mixgrad_temp=gridOpEval
+        opEval_mixgrad_temp = gridOpEval
         for j in mixed_directions[i]:
             mixed_grad_temp = getgradkfunc(mixed_grad_temp, j)
-            opEval_mixgrad_temp=getgradkfunc(opEval_mixgrad_temp,j)
+            opEval_mixgrad_temp = getgradkfunc(opEval_mixgrad_temp, j)
         mixed_grad.append(pysgpp.multiFunc(mixed_grad_temp))
         opEval_mixgrad.append(opEval_mixgrad_temp)
 
-
-
-    errors=[]
+    errors = []
     for i in range(len(mixed_grad)):
-        errors.append(calc_error_on_gridpts(gridpoints,opEval_mixgrad[i],mixed_grad[i]))
+        errors.append(calc_error_on_gridpts(gridpoints, opEval_mixgrad[i], mixed_grad[i]))
 
     return errors
 
@@ -160,12 +155,12 @@ returns the k-th gradient with finite differences method
 
 
 def grad_xk(x, k, function):
-    h = 1e-05
+    h = 1e-06
 
     if x[k] <= h:
         gy = (function(displace(x, k, h)) - function(x)) / (h)
 
-    elif x[k] >= 1-h:
+    elif x[k] >= 1 - h:
 
         gy = (function(x) - function(displace(x, k, -h))) / (h)
     else:
@@ -251,7 +246,6 @@ class CombiCombigrid1d_hermite:
         return self.operation_psi.getLevelManager()
 
 
-
 class CombiCombigrid2dHermite_without_mixed:
     def __init__(self, function):
         self.func = pysgpp.multiFunc(function)
@@ -287,9 +281,6 @@ class CombiCombigridHermite:
         self.d = dim
         self.func = pysgpp.multiFunc(function)
         self.grad = []
-        ##derivatives
-        for i in range(self.d):
-            self.grad.append(pysgpp.multiFunc(getgradkfunc(self.func, i)))
 
         self.mixed_grad = []
         for i in range(self.d):
@@ -300,17 +291,9 @@ class CombiCombigridHermite:
             pysgpp.CombigridOperation.createExpUniformBoundaryPsiHermiteInterpolation(
                 self.d, self.func)
 
-        self.operation_zeta_psi = []
-        for i in range(self.d):
-            self.operation_zeta_psi.append(
-                pysgpp.CombigridOperation.createExpUniformBoundaryPsiHermiteInterpolation(self.d,
-                                                                                          i,
-                                                                                          self.grad[
-                                                                                              i]))
+        # create all combinations for mixed gradients
         self.mixed_directions = list(powerset([i for i in range(self.d)]))
-
         self.mixed_grad = []
-
         self.operationzeta_psi = []
         for i in range(1, len(self.mixed_directions)):
 
@@ -444,7 +427,6 @@ class CombiCombigrid2dLinear:
         return self.operation_linear.getLevelManager()
 
 
-
 class CombiCombigridLinear:
     def __init__(self, function, dim):
         self.func = pysgpp.multiFunc(function)
@@ -482,16 +464,39 @@ class CombiCombigridLinear:
     def getLevelManager(self):
         return self.operation_linear.getLevelManager()
 
+
 ################FullGrids########################################################
-class CombiFullGridHermite:
+class FullGrid:
+    def eval_full(self, level, x, fullgrid_operation):
+        scalars = []
+        for i in range(len(x)):
+            scalars.append(pysgpp.FloatScalarVector(x[i]))
+
+        scalars = pysgpp.FloatScalarVectorVector(scalars)
+        fullgrid_operation.setParameters(scalars)
+
+        return fullgrid_operation.eval([level for i in range(self.d)]).getValue()
+
+    class LevelManager:
+        def __init__(self, operation, level, d):
+            self.operation = operation
+            self.level = level
+            self.d = d
+
+        # returns points with fullgrid
+        def numGridPoints(self):
+            return self.operation.numPoints([self.level for i in range(self.d)])
+
+        def getAllGridPoints(self):
+            return self.operation.getGridPoints([self.level for i in range(self.d)])
+
+
+class CombiFullGridHermite(FullGrid):
     def __init__(self, function, dim):
         self.d = dim
         self.func = pysgpp.multiFunc(function)
         self.grad = []
-        self.level=0
-        ##derivatives
-        for i in range(self.d):
-            self.grad.append(pysgpp.multiFunc(getgradkfunc(self.func, i)))
+        self.level = 0
 
         self.mixed_grad = []
         for i in range(self.d):
@@ -503,18 +508,9 @@ class CombiFullGridHermite:
                 self.d, self.func)
         self.operation_psi = self.operation_psi.getFullGridEvaluator()
 
-        self.operation_zeta_psi = []
-        for i in range(self.d):
-            self.operation_zeta_psi.append(
-                pysgpp.CombigridOperation.createExpUniformBoundaryPsiHermiteInterpolation(
-                    self.d,
-                    i,
-                    self.grad[
-                        i]))
+        # create all combinations for the mixed gradients
         self.mixed_directions = list(powerset([i for i in range(self.d)]))
-
         self.mixed_grad = []
-
         self.operationzeta_psi = []
         for i in range(1, len(self.mixed_directions)):
 
@@ -524,65 +520,39 @@ class CombiFullGridHermite:
             self.mixed_grad.append(pysgpp.multiFunc(mixed_grad_temp))
 
         for i in range(len(self.mixed_grad)):
-
             self.operationzeta_psi.append(
                 pysgpp.CombigridOperation.createExpUniformBoundaryZetaInterpolation(self.d,
                                                                                     self.mixed_directions[
                                                                                         i + 1],
                                                                                     self.mixed_grad[
                                                                                         i]))
-        #lazy full conversion to full grid operations
+        # lazy full conversion to full grid operations
 
         for i in range(len(self.operationzeta_psi)):
-            self.operationzeta_psi[i]=self.operationzeta_psi[i].getFullGridEvaluator()
+            self.operationzeta_psi[i] = self.operationzeta_psi[i].getFullGridEvaluator()
 
     def evaluate(self, level, x):
         sum = 0
-        self.level=level
+        self.level = level
 
-        sum += self.eval_full(level,x,self.operation_psi)
+        sum += self.eval_full(level, x, self.operation_psi)
         # for op in self.operation_zeta_psi:
         #    sum += op.evaluate(level, x)
 
 
         for op in self.operationzeta_psi:
-            sum += self.eval_full(level,x,op)
+            sum += self.eval_full(level, x, op)
         return sum
 
-
-    def eval_full(self, level, x, fullgrid_operation):
-        scalars = []
-        for i in range(len(x)):
-
-            scalars.append(pysgpp.FloatScalarVector(x[i]))
-
-        scalars=pysgpp.FloatScalarVectorVector(scalars)
-        fullgrid_operation.setParameters(scalars)
-
-        return fullgrid_operation.eval([level for i in range(self.d)]).getValue()
-
     def getLevelManager(self):
-        return self.LevelManager(self.operation_psi,self.level,self.d)
-
-    class LevelManager:
-        def __init__(self,operation,level,d):
-            self.operation=operation
-            self.level=level
-            self.d=d
+        return self.LevelManager(self.operation_psi, self.level, self.d)
 
 
-        #returns points with fullgrid
-        def numGridPoints(self):
-            return self.operation.numPoints([self.level for i in range(self.d)])
-        def getAllGridPoints(self):
-            return  self.operation.getGridPoints([self.level for i in range(self.d)])
-
-
-class CombiFullGridLinear:
+class CombiFullGridLinear(FullGrid):
     def __init__(self, function, dim):
         self.func = pysgpp.multiFunc(function)
         self.grad = []
-        self.level=0
+        self.level = 0
         for i in range(dim):
             self.grad.append(pysgpp.multiFunc(getgradkfunc(self.func, i)))
 
@@ -590,9 +560,7 @@ class CombiFullGridLinear:
         self.operation_linear = pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(
             self.d, self.func)
 
-        self.operation_linear=self.operation_linear.getFullGridEvaluator()
-
-
+        self.operation_linear = self.operation_linear.getFullGridEvaluator()
 
         self.operation_psi = []
         self.operation_zeta = []
@@ -612,48 +580,24 @@ class CombiFullGridLinear:
 
         # lazy redefine of fullgrid
         for i in range(dim):
-            self.operation_zeta[i]=self.operation_zeta[i].getFullGridEvaluator()
+            self.operation_zeta[i] = self.operation_zeta[i].getFullGridEvaluator()
 
     def evaluate(self, level, x):
         sum = 0
-        self.level=level
+        self.level = level
 
         for operation in self.operation_psi:
-            sum += self.eval_full(level,x,operation)
+            sum += self.eval_full(level, x, operation)
         for operation in self.operation_zeta:
-            sum += self.eval_full(level,x,operation)
-        sum -= self.eval_full(level,x,self.operation_linear) * (self.d - 1)
+            sum += self.eval_full(level, x, operation)
+        sum -= self.eval_full(level, x, self.operation_linear) * (self.d - 1)
         return sum
 
-    def eval_full(self, level, x, fullgrid_operation):
-        scalars = []
-        for i in range(len(x)):
-
-            scalars.append(pysgpp.FloatScalarVector(x[i]))
-
-        scalars=pysgpp.FloatScalarVectorVector(scalars)
-        fullgrid_operation.setParameters(scalars)
-
-        return fullgrid_operation.eval([level for i in range(self.d)]).getValue()
-
     def getLevelManager(self):
-        return self.LevelManager(self.operation_linear,self.level,self.d)
-
-    class LevelManager:
-        def __init__(self,operation,level,d):
-            self.operation=operation
-            self.level=level
-            self.d=d
+        return self.LevelManager(self.operation_linear, self.level, self.d)
 
 
-        #returns points with fullgrid
-        def numGridPoints(self):
-            return self.operation.numPoints([self.level for i in range(self.d)])
-        def getAllGridPoints(self):
-            return  self.operation.getGridPoints([self.level for i in range(self.d)])
-
-
-class LinearFullgrid:
+class LinearFullgrid(FullGrid):
     def __init__(self, function, dim):
         self.func = pysgpp.multiFunc(function)
         self.grad = []
@@ -667,37 +611,13 @@ class LinearFullgrid:
 
         self.operation_linear = self.operation_linear.getFullGridEvaluator()
 
-    def eval_full(self, level, x, fullgrid_operation):
-        scalars = []
-        for i in range(len(x)):
-            scalars.append(pysgpp.FloatScalarVector(x[i]))
-
-        scalars = pysgpp.FloatScalarVectorVector(scalars)
-        fullgrid_operation.setParameters(scalars)
-
-        return fullgrid_operation.eval([level for i in range(self.d)]).getValue()
-
     def evaluate(self, level, x):
         sum = 0
         self.level = level
-        return self.eval_full(level,x,self.operation_linear)
+        return self.eval_full(level, x, self.operation_linear)
 
     def getLevelManager(self):
         return self.LevelManager(self.operation_linear, self.level, self.d)
-
-    class LevelManager:
-        def __init__(self, operation, level, d):
-            self.operation = operation
-            self.level = level
-            self.d = d
-
-        # returns points with fullgrid
-        def numGridPoints(self):
-            return self.operation.numPoints([self.level for i in range(self.d)])
-
-        def getAllGridPoints(self):
-            return self.operation.getGridPoints([self.level for i in range(self.d)])
-
 
 
 #######################################################################################################
@@ -736,7 +656,7 @@ def plot_1d_grid(X, Y, text=" ", gridpoints=None):
     return ax
 
 
-def plot2DGrid(n_samples, level, operation, title=""):
+def plot2DGrid_operation(n_samples, level, operation, title=""):
     # x=0 defined 0 in combigrid
 
 
@@ -753,8 +673,8 @@ def plot2DGrid(n_samples, level, operation, title=""):
                 level, pysgpp.DataVector([X[i, j], Y[i, j]]))
 
             # if the derivative should be plotted
-            #z[i,j]=getgradkfunc(operationwrapper(operation,level),0)(pysgpp.DataVector([X[i, j],
-                #                                                                        Y[i, j]]))
+            # z[i,j]=getgradkfunc(operationwrapper(operation,level),0)(pysgpp.DataVector([X[i, j],
+            #                                                                        Y[i, j]]))
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
@@ -795,23 +715,19 @@ def plot2DGrid_with_tangents(n_samples, level, operation, title=""):
     x0, x1, y = calc_gradient_tangent_gridpoint(operation.getLevelManager().getAllGridPoints(),
                                                 operation_wrap, 2)
 
-
-
-    x0=[]
-    x1=[]
-    y=[]
-    gridpoints=operation.getLevelManager().getAllGridPoints()
+    x0 = []
+    x1 = []
+    y = []
+    gridpoints = operation.getLevelManager().getAllGridPoints()
     print(len(gridpoints))
     for i in range(len(gridpoints)):
-
         x0.append(gridpoints[i][0])
         x1.append(gridpoints[i][1])
         y.append(operation_wrap(gridpoints[i]))
 
+    ax.scatter(x0, x1, y, c="black")
 
-    ax.scatter(x0,x1,y, c="black")
-
-    #for i in range(len(x0)):
+    # for i in range(len(x0)):
     #    ax.plot(x0[i], x1[i], y[i], c="gray")
 
     fig.suptitle(title)
@@ -833,11 +749,30 @@ def plot2D_comparison_function(n_samples, func, title=""):
     ax = fig.add_subplot(111, projection='3d')
     ax.plot_surface(X, Y, z, cmap=plt.get_cmap("jet"))
 
-    ax.set_xlabel('$x_1$', fontsize=12,labelpad=10)
-    ax.set_ylabel('$x_2$', fontsize=12,labelpad=10)
-
+    ax.set_xlabel('$x_1$', fontsize=12, labelpad=10)
+    ax.set_ylabel('$x_2$', fontsize=12, labelpad=10)
 
     fig.suptitle(title)
+
+
+def scatterplot2D_error(n_samples, func, title=None):
+    X = []
+    Y = []
+    Z = []
+
+    for _ in range(n_samples):
+        point = pysgpp.DataVector(2)
+        for d in range(2):
+            point[d] = random.random()
+        # print(gridOpEval(point)-targetFunc.evalUndisplaced(point))
+        X.append(point[0])
+        Y.append(point[1])
+        Z.append(func(point))
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    ax.scatter(X, Y, Z, "scattertest")
 
 
 def plot2DContour(n_samples, level, operation):
@@ -914,7 +849,6 @@ def example_1D_psi(l):
     X, _, = generate1DGrid(500)
     Y, gridpoints = calculate_grid_y_values(X, operation, level)
     plot_1d_grid(X, Y, "$\psi$", gridpoints)
-
 
 
 def example_1D_linear(l):
@@ -1007,20 +941,19 @@ def example_2D_psi():
         d, func_combiwrap)
 
     operation_wrap = operationwrapper(operation, level)
-    plot2DGrid(n_samples, level, operation, func_combiwrap)
+    plot2DGrid_operation(n_samples, level, operation, func_combiwrap)
 
     error = estimatel2Error(10000, 2, operation_wrap, func_standard)
     # calculate error
     print("the estimtaded l2 error for psigrid: " + str(error))
 
 
-def example_2D_comparison_function(func_standard,title):
+def example_2D_comparison_function(func_standard, title):
     d = 2
 
     n_samples = 100
 
     plot2D_comparison_function(n_samples, func_standard, title)
-
 
 
 def example_combicombigrid_2D_linear(l, func_standard):
@@ -1074,8 +1007,8 @@ def example_combicombigrid_2D_hermite(l, func_standard):
     level = l
     n_samples = 50
 
-    operation = CombiCombigridHermite(func_standard, 2)
-    #operation = HierachGridBSpline(2, 3, func_standard)
+    operation = CombiFullGridHermite(func_standard, 2)
+    # operation = HierachGridBSpline(2, 3, func_standard)
     operation_wrap = operationwrapper(operation, level)
 
     # operation.operation_zeta for mixed
@@ -1083,8 +1016,6 @@ def example_combicombigrid_2D_hermite(l, func_standard):
     plot2DContour(n_samples, level, operation)
 
     error = estimatel2Error(10000, 2, operation_wrap, func_standard)
-
-
 
     grad_error = calc_error_gradient(operation.getLevelManager().getAllGridPoints(), operation_wrap,
                                      func_standard, d)
@@ -1097,37 +1028,62 @@ def example_combicombigrid_2D_hermite(l, func_standard):
     print("mixed gradient error:" + str(mixgrad_error))
 
 
+def geterrorfunc(func1, func2):
+    def errorfunc(x):
+        return abs(func1(x) - func2(x))
 
-def example_linearfullgrid(l, func_standard):
+    return errorfunc
+
+
+def example_comparisons_fullgrid(l, func_standard):
     d = 2
-    level = 2
+    level = 3
     n_samples = 50
 
-    operation = CombiCombigridHermite(func_standard,2)
+    operation_list=[]
 
-    operation_wrap = operationwrapper(operation, level)
+    operation_list.append(CombiCombigridLinear(func_standard, 2))
+    operation_list.append(CombiCombigridHermite(func_standard, 2))
+    operation_list.append(pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(
+        2, func_standard))
+    text=["Combilinear","combiHermite","linear"]
 
-    # operation.operation_zeta for mixed
-    plot2DGrid(n_samples, level, operation, "combicombi_hermite")
-    plot2DContour(n_samples, level, operation)
-
-    error = estimatel2Error(10000, 2, operation_wrap, func_standard)
-    errorl2_gradients=estimatel2ErrorGradients(10000, 2, operation_wrap, func_standard)
-
-
-    erroron_gripoint=calc_error_on_gridpts(operation.getLevelManager().getAllGridPoints(),
-                                           operation_wrap,func_standard)
-    mixgrad_error = calc_error_mixed_gradient(operation.getLevelManager().getAllGridPoints(),
-                                             operation_wrap,
-                                              func_standard, d)
-
-    print("estimtaded l2 error for linearfullgrid: " + str(error))
-    print("error on gridpts: " + str(erroron_gripoint))
-    print("mixed gradient error:" + str(mixgrad_error))
-    print("l2 errors from gradients: "+ str(errorl2_gradients))
+    i=0
+    for operation in operation_list:
 
 
-def example_plot_error(func_standard, dim,maxlevel=5):
+        operation_wrap = operationwrapper(operation, level)
+
+
+        # operation.operation_zeta for mixed
+        plot2D_comparison_function(n_samples, geterrorfunc(operation_wrap, func_standard),
+                                   text[i])
+
+
+        plot2DContour(n_samples, level, operation)
+
+
+        error = estimatel2Error(10000, 2, operation_wrap, func_standard)
+        errorl2_gradients = estimatel2ErrorGradients(10000, 2, operation_wrap, func_standard)
+
+        erroron_gripoint = calc_error_on_gridpts(operation.getLevelManager().getAllGridPoints(),
+                                                 operation_wrap, func_standard)
+        mixgrad_error = calc_error_mixed_gradient(operation.getLevelManager().getAllGridPoints(),
+                                                  operation_wrap,
+                                                  func_standard, d)
+
+        print("estimtaded l2 error for "+text[i]+": " + str(error))
+        print("error on gridpts: " + str(erroron_gripoint))
+        print("mixed gradient error:" + str(mixgrad_error))
+        print("l2 errors from gradients: " + str(errorl2_gradients))
+
+        print("-----------------------------------------------------------------")
+        i=i+1
+
+
+
+
+def example_plot_error(func_standard, dim, maxlevel=5):
     operation_count = 7
     operation = CombiCombigridLinear(func_standard, dim)
     operation2 = CombiCombigridHermite(func_standard, dim)
@@ -1135,9 +1091,9 @@ def example_plot_error(func_standard, dim,maxlevel=5):
         dim, func_standard)
 
     operation4 = CombiCombigrid2dHermite_without_mixed(func_standard)
-    operation5=CombiFullGridHermite(func_standard, dim)
-    operation6=CombiFullGridLinear(func_standard, dim)
-    operation7=LinearFullgrid(func_standard,dim)
+    operation5 = CombiFullGridHermite(func_standard, dim)
+    operation6 = CombiFullGridLinear(func_standard, dim)
+    operation7 = LinearFullgrid(func_standard, dim)
     # operation4= HierachGridBSpline(dim,3,func_standard)
 
 
@@ -1189,16 +1145,77 @@ def example_plot_error(func_standard, dim,maxlevel=5):
 
     plot_log_error(Y, X, ["Gitter (de Baar und Harding)", "Gitter (Hermite)",
                           "lineares Gitter", "Gitter (Hermite) ohne gemischte Abl.",
-                          "HermiteFullgrid","CombiLinearFullgrid","linearFullgrid"])
+                          "HermiteFullgrid", "CombiLinearFullgrid", "linearFullgrid"])
+
+
+def example_multidim(func_standard, dim, maxlevel=5):
+    operation_count = 3
+    operation = CombiCombigridLinear(func_standard, dim)
+    operation2 = CombiCombigridHermite(func_standard, dim)
+    operation3 = pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(
+        dim, func_standard)
+
+    operation4 = CombiFullGridHermite(func_standard, dim)
+    operation5 = CombiFullGridLinear(func_standard, dim)
+    operation6 = LinearFullgrid(func_standard, dim)
+    # operation4= HierachGridBSpline(dim,3,func_standard)
+
+
+
+
+    nr_gridpoints, errors = calc_error_ilevels(operation, func_standard, dim, maxlevel)
+    X = np.zeros((len(errors), operation_count))
+    Y = np.zeros((len(errors), operation_count), dtype=np.float64)
+
+    X[:, 0] = nr_gridpoints
+    Y[:, 0] = errors
+
+    nr_gridpoints, errors = calc_error_ilevels(operation2, func_standard, dim, maxlevel)
+
+    X[:, 1] = nr_gridpoints
+    Y[:, 1] = errors
+
+    nr_gridpoints, errors = calc_error_ilevels(operation3, func_standard, dim, maxlevel)
+
+    X[:, 2] = nr_gridpoints
+    Y[:, 2] = errors
+
+
+
+ #   nr_gridpoints, errors = calc_error_ilevels(operation4, func_standard, dim, maxlevel)
+#
+ #   X[:, 3] = nr_gridpoints
+#    Y[:, 3] = errors
+
+ #   nr_gridpoints, errors = calc_error_ilevels(operation5, func_standard, dim, maxlevel)
+#
+  #  X[:, 4] = nr_gridpoints
+ #   Y[:, 4] = errors
+
+#    nr_gridpoints, errors = calc_error_ilevels(operation6, func_standard, dim, maxlevel)
+
+    #X[:, 5] = nr_gridpoints
+   # Y[:, 5] = errors
+
+    # nr_gridpoints, errors = calc_error_ilevels(operation4, func_standard, dim, maxlevel)
+
+    # X[:, 3] = nr_gridpoints
+    # Y[:, 3] = errors
+
+
+
+    plot_log_error(Y, X, ["Gitter (de Baar und Harding)", "Gitter (Hermite)",
+                          "lineares Gitter", "HermiteFullgrid", "CombiLinearFullgrid", "linearFullgrid"])
+
 
 
 def testf(x):
     return x[0] * x[1]
 
 
-#example_1D_realfunction()
-#example_1D_psi(2)
-#example_1D_linear(2)
+# example_1D_realfunction()
+# example_1D_psi(2)
+# example_1D_linear(2)
 # example_1D_zeta(2)
 # example_combicombigrid_1D(2)
 
@@ -1210,16 +1227,30 @@ func_wrap = getfuncwrapper(func)
 
 func_standard = pysgpp.multiFunc(func_wrap)
 
-example_2D_comparison_function(func_standard,"")
+#example_2D_comparison_function(func_standard, "")
 # example_2D_psi()
-#example_2D_linear(2,func_standard)
-#example_combicombigrid_2D_linear(2, func_standard)  # with "contourplot"
+# example_2D_linear(2,func_standard)
+# example_combicombigrid_2D_linear(2, func_standard)  # with "contourplot"
 # print()
 
-#example_combicombigrid_2D_hermite(3, func_standard)
+# example_combicombigrid_2D_hermite(3, func_standard)
 
-#example_plot_error(func_standard, dim,maxlevel=5)
+# example_plot_error(func_standard, dim,maxlevel=7)
+
+example_comparisons_fullgrid(2,func_standard)
 
 
-example_linearfullgrid(2,func_standard)
+""""
+
+dim = 4
+
+func = pysgpp.OptRosenbrockObjective(dim)
+func_wrap = getfuncwrapper(func)
+
+func_standard = pysgpp.multiFunc(func_wrap)
+
+
+example_multidim(func_standard,dim,maxlevel=5)
+
 plt.show()
+"""
