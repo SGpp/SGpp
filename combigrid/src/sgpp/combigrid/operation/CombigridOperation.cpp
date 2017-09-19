@@ -94,6 +94,14 @@ void CombigridOperation::setParameters(const base::DataVector& param) {
   impl->combiEval->clear();
 }
 
+
+
+std::shared_ptr<AbstractFullGridEvaluator<FloatScalarVector>>  CombigridOperation::getFullGridEvaluator(){
+return impl->fullGridEval;
+
+}
+
+
 double CombigridOperation::getResult() { return impl->combiEval->getValue().value(); }
 
 double CombigridOperation::evaluate(size_t q, base::DataVector const& param) {

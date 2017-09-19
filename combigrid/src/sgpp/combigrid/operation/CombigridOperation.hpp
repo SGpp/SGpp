@@ -105,6 +105,19 @@ class CombigridOperation {
    */
   size_t getUpperPointBound() const;
 
+
+  /**
+  *
+  * get the Evaluator for fullgrid e.g for comparisons
+  *
+  */
+
+  std::shared_ptr<AbstractFullGridEvaluator<FloatScalarVector>>  getFullGridEvaluator();
+     
+  
+
+
+
   static std::shared_ptr<CombigridOperation> createExpClenshawCurtisPolynomialInterpolation(
       size_t numDimensions, MultiFunction func);
   static std::shared_ptr<CombigridOperation> createExpChebyshevPolynomialInterpolation(
