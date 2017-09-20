@@ -118,8 +118,9 @@ std::vector<std::vector<size_t>> getConvs(size_t res) {
  */
 
 int main() {
+  size_t lvl = 3;
   for(size_t res = 28; res<=28; res+=2){
-    std::string filename = "mats/" + std::to_string(res) + "x" + std::to_string(res) + "_ModLin_NN_Inter_lvl2_Chol.out";
+    std::string filename = "mats/" + std::to_string(res) + "x" + std::to_string(res) + "_ModLin_NN_Inter_lvl"+std::to_string(lvl)+"_Chol.out";
     std::cout << "Setting up " << filename << std::endl;
 	/**
 	* The grid configuration.
@@ -127,7 +128,7 @@ int main() {
 	std::cout << "# create grid config" << std::endl;
 	sgpp::base::RegularGridConfiguration gridConfig;
 	gridConfig.dim_ = res*res;
-	gridConfig.level_ = 2;
+	gridConfig.level_ = lvl;
 	//gridConfig.type_ = sgpp::base::GridType::Linear;
 	gridConfig.type_ = sgpp::base::GridType::ModLinear;
 

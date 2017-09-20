@@ -59,7 +59,7 @@ int main() {
   /**
    * Specify the number of classes and the corresponding class labels.
    */
-  size_t classNum = 3;
+  size_t classNum = 10;
   sgpp::base::DataVector classLabels(classNum);
   classLabels[0] = 2;
   classLabels[1] = 5;
@@ -76,6 +76,9 @@ int main() {
   */
   /**
    * The grid configuration.
+   * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+   * These Setting get overwritten if a matrixfile is provided
+   * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
    */
   std::cout << "# create grid config" << std::endl;
   sgpp::base::RegularGridConfiguration gridConfig;
