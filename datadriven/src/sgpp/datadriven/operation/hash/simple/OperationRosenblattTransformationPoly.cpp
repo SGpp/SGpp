@@ -194,6 +194,7 @@ double OperationRosenblattTransformationPoly::doTransformation1D(base::Grid* gri
                                                                  double coord1d) {
   std::unique_ptr<OperationTransformation1D> opRosenblatt(
       op_factory::createOperationRosenblattTransformation1D(*grid1d));
+  // std::cout << "1d trafo:" << alpha1d->toString() << std::endl;
   return opRosenblatt->doTransformation1D(alpha1d, coord1d);
 }  // end of compute_1D_cdf()
 }  // namespace datadriven
