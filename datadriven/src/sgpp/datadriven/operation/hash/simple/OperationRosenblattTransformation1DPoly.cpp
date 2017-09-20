@@ -213,6 +213,7 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
     }
   }
   if (sum == 0) return 0;
+
   // compute CDF
   double tmp_sum;
   unsigned int i = 0;

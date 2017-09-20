@@ -258,7 +258,7 @@ double OperationInverseRosenblattTransformation1DPoly::doTransformation1D(base::
   };
 
   optimization::WrapperScalarFunction f(1, optFunc);
-  optimization::optimizer::NelderMead nelderMead(f);
+  optimization::optimizer::NelderMead nelderMead(f, 2000);
   nelderMead.optimize();
   return nelderMead.getOptimalPoint()[0];
 }
