@@ -163,9 +163,9 @@ void testEqualityRosenblattInverseRosenblattDD(
       // assert that x_vars and x_vars_transformed contain the same samples
       double inversionError =
           std::abs(u_sample[idim] - u_sample_transformed[idim]) / u_sample[idim];
-      std::cout << "u_sample[idim]:" << u_sample[idim] << std::endl;
-      std::cout << "x_sample[idim]:" << x_sample[idim] << std::endl;
-      std::cout << "u_sample_transformed[idim]:" << u_sample_transformed[idim] << std::endl;
+      // std::cout << "u_sample[idim]:" << u_sample[idim] << std::endl;
+      // std::cout << "x_sample[idim]:" << x_sample[idim] << std::endl;
+      // std::cout << "u_sample_transformed[idim]:" << u_sample_transformed[idim] << std::endl;
       BOOST_CHECK_SMALL(inversionError, tolerance);
     }
   }
@@ -292,18 +292,18 @@ BOOST_AUTO_TEST_CASE(testRosenblattModPoly1D) {
   delete grid;
 }
 
-BOOST_AUTO_TEST_CASE(testRosenblattModPolyDD) {
-  DataVector alpha(20);
-  std::uint32_t numSamples = 1000;
-  for (std::uint32_t dim = 2; dim < 4; dim++) {
-    Grid* grid = Grid::createModPolyGrid(dim, 3);
-    for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
-      hierarchize(grid, ilevel, alpha, &parabola);
-      testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
-    }
-    delete grid;
-  }
-}
+// BOOST_AUTO_TEST_CASE(testRosenblattModPolyDD) {
+//   DataVector alpha(20);
+//   std::uint32_t numSamples = 1000;
+//   for (std::uint32_t dim = 2; dim < 4; dim++) {
+//     Grid* grid = Grid::createModPolyGrid(dim, 3);
+//     for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+//       hierarchize(grid, ilevel, alpha, &parabola);
+//       testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
+//     }
+//     delete grid;
+//   }
+// }
 
 BOOST_AUTO_TEST_CASE(testRosenblattPolyClenshawCurtis1D) {
   Grid* grid = Grid::createPolyClenshawCurtisGrid(1, 3);
@@ -364,18 +364,18 @@ BOOST_AUTO_TEST_CASE(testRosenblattModPolyClenshawCurtis1D) {
   delete grid;
 }
 
-BOOST_AUTO_TEST_CASE(testRosenblattModPolyClenshawCurtisDD) {
-  DataVector alpha(20);
-  std::uint32_t numSamples = 1000;
-  for (std::uint32_t dim = 2; dim < 4; dim++) {
-    Grid* grid = Grid::createModPolyClenshawCurtisGrid(dim, 3);
-    for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
-      hierarchize(grid, ilevel, alpha, &parabola);
-      testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
-    }
-    delete grid;
-  }
-}
+// BOOST_AUTO_TEST_CASE(testRosenblattModPolyClenshawCurtisDD) {
+//   DataVector alpha(20);
+//   std::uint32_t numSamples = 1000;
+//   for (std::uint32_t dim = 2; dim < 4; dim++) {
+//     Grid* grid = Grid::createModPolyClenshawCurtisGrid(dim, 3);
+//     for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+//       hierarchize(grid, ilevel, alpha, &parabola);
+//       testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
+//     }
+//     delete grid;
+//   }
+// }
 
 BOOST_AUTO_TEST_CASE(testRosenblattKDE1D) {
   std::uint32_t i = 1;

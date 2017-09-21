@@ -205,9 +205,17 @@ datadriven::OperationDensityRejectionSampling* createOperationDensityRejectionSa
 datadriven::OperationDensityConditional* createOperationDensityConditional(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear)
     return new datadriven::OperationDensityConditionalLinear(&grid);
-  else if (grid.getType() == base::GridType::Poly ||
+  else if (grid.getType() == base::GridType::LinearBoundary ||
+           grid.getType() == base::GridType::Poly ||
+           grid.getType() == base::GridType::ModPoly ||
            grid.getType() == base::GridType::PolyBoundary ||
-           grid.getType() == base::GridType::LinearBoundary)
+           grid.getType() == base::GridType::PolyClenshawCurtis ||
+           grid.getType() == base::GridType::PolyClenshawCurtisBoundary ||
+           grid.getType() == base::GridType::ModPolyClenshawCurtis ||
+           grid.getType() == base::GridType::Bspline ||
+           grid.getType() == base::GridType::BsplineBoundary ||
+           grid.getType() == base::GridType::BsplineClenshawCurtis ||
+           grid.getType() == base::GridType::ModBsplineClenshawCurtis)
     return new datadriven::OperationDensityConditional(&grid);
   else
     throw base::factory_exception(
