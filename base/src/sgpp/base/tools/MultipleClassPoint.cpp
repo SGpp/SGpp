@@ -28,7 +28,7 @@ MultipleClassPoint::MultipleClassPoint(base::HashGridPoint& gp,
         std::tuple<double, size_t, bool> c1 { eval, t,
                     grids.at(t)->getStorage().isContaining(gp) };
         insertDensitySorted(&c1);
-        classById.push_back(&c1);
+        classById.push_back(c1);
     }
 }
 
@@ -37,7 +37,7 @@ size_t MultipleClassPoint::getDominateClass() const {
 }
 
 double MultipleClassPoint::getDensity(size_t classId) const {
-    return std::get<0>(*classById.at(classId));
+    return std::get<0>(classById.at(classId));
 }
 
 void MultipleClassPoint::addNeighbor(size_t neighbor, size_t dim, bool isLeft) {
@@ -82,7 +82,7 @@ void MultipleClassPoint::resortClasses() {
 }
 
 bool MultipleClassPoint::isClassSet(size_t classId) const {
-    return std::get<2>(*(classById.at(classId)));
+    return std::get<2>(classById.at(classId));
 }
 
 std::vector<std::tuple<double, size_t, bool>> MultipleClassPoint::getTopClasses(
