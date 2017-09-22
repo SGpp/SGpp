@@ -88,7 +88,7 @@ int main() {
       std::cout << "# create grid config" << std::endl;
       sgpp::base::RegularGridConfiguration gridConfig;
       gridConfig.dim_ = trainDataset.getDimension();
-      gridConfig.level_ = 8;
+      gridConfig.level_ = 3;
       gridConfig.type_ = sgpp::base::GridType::Linear;
       // gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
@@ -247,6 +247,7 @@ int main() {
     avgErrorsFolds.mult(1.0 / static_cast<double>(totalFolds));
 
     // write error evaluation to csv-file
+    /*
     std::ofstream output;
     output.open("SGDEOnOff_avg_classification_error_" + std::to_string(numSets + 1) + ".csv");
     if (output.fail()) {
@@ -256,7 +257,7 @@ int main() {
         output << avgErrorsFolds.get(i) << ";" << std::endl;
       }
       output.close();
-    }
+    }*/
   }
   auto end = std::chrono::high_resolution_clock::now();
   std::cout << "whole learnerSGDEOnOff test took "

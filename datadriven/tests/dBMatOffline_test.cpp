@@ -4,6 +4,9 @@
  * sgpp.sparsegrids.org
  *
  * test_DBMatOffline.cpp
+ *
+ * Created on: Apr 8, 2017
+ *      Author: Michael Lettrich
  */
 
 #ifdef USE_GSL

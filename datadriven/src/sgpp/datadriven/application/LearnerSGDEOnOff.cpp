@@ -339,8 +339,8 @@ double LearnerSGDEOnOff::getAccuracy() const {
       correctLabel2++;
     }
   }
-  std::cout << "correct label (-1): " << correctLabel1 << "\n";
-  std::cout << "correct label (1): " << correctLabel2 << "\n";
+  // std::cout << "correct label (-1): " << correctLabel1 << "\n";
+  // std::cout << "correct label (1): " << correctLabel2 << "\n";
 
   double acc = static_cast<double>(correct) / static_cast<double>(computedLabels.getSize());
   return acc;
