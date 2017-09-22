@@ -26,10 +26,9 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    * Performs refinement/coarsening on the offline and/or online objects
    * Returns points, which could not be coarsened
    *
-   * @param deletedPoints list of indices of last coarsened points
    * @param newPoints amount of refined points
+   * @param deletedPoints list of indices of last coarsened points
    * @param lambda the regularization parameter
-   * @return vector of indices whose points couldn't be coarsened
    */
   std::vector<size_t> adapt(size_t newPoints, std::list<size_t> deletedPoints, double lambda);
 

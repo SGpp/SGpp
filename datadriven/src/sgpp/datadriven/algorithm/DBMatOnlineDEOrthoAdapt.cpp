@@ -9,6 +9,7 @@
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_vector.h>
+#endif /* USE_GSL */
 
 #include <sgpp/datadriven/algorithm/DBMatDMSOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
@@ -94,6 +95,7 @@ void DBMatOnlineDEOrthoAdapt::solveSLE(DataVector& b, bool do_cv) {
 
 void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refine,
                                                      std::vector<size_t> coarsenIndices) {
+#ifdef USE_GSL
   sgpp::datadriven::DBMatOfflineOrthoAdapt* offlinePtr =
       static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&this->offlineObject);
 
@@ -341,6 +343,7 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
   // determine, if any refined information now is contained in matrix b_adapt
   this->b_is_refined = this->b_adapt_matrix_.getNcols() > dima;
   return;
+#endif /* USE_GSL */
 }
 
 /**
@@ -442,4 +445,3 @@ void DBMatOnlineDEOrthoAdapt::compute_L2_gridvectors(size_t newPoints, double ne
 }
 }  // namespace datadriven
 }  // namespace sgpp
-#endif /* USE_GSL */

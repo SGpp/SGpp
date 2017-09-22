@@ -9,6 +9,7 @@
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_vector.h>
+#endif /* USE_GSL */
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSOrthoAdapt.hpp>
@@ -21,6 +22,7 @@ namespace datadriven {
 void DBMatDMSOrthoAdapt::solve(sgpp::base::DataMatrix& T_inv, sgpp::base::DataMatrix& Q,
                                sgpp::base::DataMatrix& B, sgpp::base::DataVector& b,
                                sgpp::base::DataVector& alpha) {
+#ifdef USE_GSL
   // assert dimensions
   bool prior_refined = (B.getNcols() > 1);  // if B.getNcols <= 1, then no refining yet
 
@@ -83,7 +85,9 @@ void DBMatDMSOrthoAdapt::solve(sgpp::base::DataMatrix& T_inv, sgpp::base::DataMa
   // }
   // std::cout << std::endl;
   gsl_vector_free(interim2);
+#else
+  throw sgpp::base::algorithm_exception("USE_GSL not set");
+#endif /* USE_GSL */
 }
 }  // namespace datadriven
 }  // namespace sgpp
-#endif /* USE_GSL */
