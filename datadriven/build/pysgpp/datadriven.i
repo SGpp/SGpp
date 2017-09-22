@@ -47,9 +47,9 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSEigen.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineEigen.hpp"
-%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp"
 %ignore sgpp::datadriven::DBMatOfflineLU::DBMatOfflineLU(DBMatOfflineLU &&);
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineLU.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDEEigen.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDELU.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp"
