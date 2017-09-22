@@ -31,6 +31,7 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSChol.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSDenseIChol.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSOrthoAdapt.hpp"
 %ignore *::operator=;
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOffline.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineGE.hpp"
@@ -46,10 +47,12 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSEigen.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineEigen.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp"
 %ignore sgpp::datadriven::DBMatOfflineLU::DBMatOfflineLU(DBMatOfflineLU &&);
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineLU.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDEEigen.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDELU.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp"
 #endif /* USE_GSL */
 
 #ifdef __AVX__
