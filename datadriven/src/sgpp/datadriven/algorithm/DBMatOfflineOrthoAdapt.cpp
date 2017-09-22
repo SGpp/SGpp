@@ -4,6 +4,11 @@
 // sgpp.sparsegrids.org
 
 #ifdef USE_GSL
+#include <gsl/gsl_linalg.h>
+#include <gsl/gsl_math.h>
+#include <gsl/gsl_matrix.h>
+#include <gsl/gsl_vector.h>
+
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
 
 #include <sgpp/base/exception/algorithm_exception.hpp>

@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#pragma once
+
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 
 #include <string>
@@ -12,6 +14,7 @@
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_vector.h>
+#endif /* USE_GSL */
 
 namespace sgpp {
 namespace datadriven {
@@ -51,6 +54,7 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    */
   void decomposeMatrix();
 
+#ifdef USE_GSL
   /**
    * Decomposes the lhsMatrix into lhs = Q * T * Q^t and stores the orthogonal
    * matrix Q into the member q_ortho_matrix_. The information to reconstruct T
@@ -70,6 +74,7 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    * @param subdiag sub- and superdiagonal entries of T (symmetric)
    */
   void invert_symmetric_tridiag(gsl_vector* diag, gsl_vector* subdiag);
+#endif /* USE_GSL */
 
   /**
    * Serializes the DBMatOfflineOrthoAdapt object
@@ -99,4 +104,3 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
 };
 }  // namespace datadriven
 }  // namespace sgpp
-#endif /* USE_GSL */

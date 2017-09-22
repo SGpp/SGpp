@@ -3,7 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifdef USE_GSL
+#pragma once
+
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 
@@ -102,4 +103,4 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
 };
 }  // namespace datadriven
 }  // namespace sgpp
-#endif /* USE_GSL */
+

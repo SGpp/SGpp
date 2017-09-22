@@ -12,7 +12,6 @@
 
 #include <sgpp/datadriven/algorithm/DBMatDMSOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
-#include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
