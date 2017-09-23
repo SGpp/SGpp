@@ -53,8 +53,8 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    * matrix Q into the member q_ortho_matrix_. The information to reconstruct T
    * is written into diag and subdiag
    *
-   * @param diag diagonal entries of T
-   * @param sub- and superdiagonal entries of T (symmetric)
+   * @param diag Diagonal entries of T
+   * @param subdiag Sub- and superdiagonal entries of T (symmetric)
    */
   void hessenberg_decomposition(sgpp::base::DataVector& diag, sgpp::base::DataVector& subdiag);
 
@@ -63,8 +63,8 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    * its diagonal and subdiagonal vectors. When finished, diag and subdiag no
    * longer hold their initial values.
    *
-   * @param diag diagonal entries of T
-   * @param subdiag sub- and superdiagonal entries of T (symmetric)
+   * @param diag Diagonal entries of T
+   * @param subdiag Sub- and superdiagonal entries of T (symmetric)
    */
   void invert_symmetric_tridiag(sgpp::base::DataVector& diag, sgpp::base::DataVector& subdiag);
 
@@ -80,9 +80,9 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
   void store(const std::string& fileName);
 
   // getter and setter
-  size_t& getDimA() { return this->dim_a; };
+  size_t& getDimA() { return this->dim_a; }
 
-  double getLambda() { return this->lambda; };
+  double getLambda() { return this->lambda; }
 
   sgpp::base::DataMatrix& getQ() { return this->q_ortho_matrix_; }
 

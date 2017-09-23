@@ -107,7 +107,8 @@ class HashCoarsening {
     // DEBUG : print list of removable candidates
     // std::cout << "list of removable candidates:\n";
     // for (size_t i = 0; i < remove_num; i++) {
-    //   std::cout << "Index: " << removePoints[i].first << " with surplus " << removePoints[i].second
+    //   std::cout << "Index: " << removePoints[i].first << " with surplus " <<
+    //   removePoints[i].second
     //             << std::endl;
     // }
     // std::cout << std::endl;

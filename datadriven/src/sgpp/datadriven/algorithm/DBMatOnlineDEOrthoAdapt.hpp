@@ -8,6 +8,9 @@
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 
+#include <list>
+#include <vector>
+
 namespace sgpp {
 namespace datadriven {
 
@@ -36,22 +39,22 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    * Returns the additive component of the sherman-morrison-formula, which
    * yields all the information about the refined points
    */
-  sgpp::base::DataMatrix& getB() { return this->b_adapt_matrix_; };
+  sgpp::base::DataMatrix& getB() { return this->b_adapt_matrix_; }
 
   /**
    * Adds new DataVector to list of refined points
    * For testing purposes only
    *
-   * @param the DataVector to add
+   * @param x The DataVector to add
    */
-  void add_new_refine_point(sgpp::base::DataVector& x) { this->refined_points_.push_back(x); };
+  void add_new_refine_point(sgpp::base::DataVector& x) { this->refined_points_.push_back(x); }
 
   /**
    * Gets pointer to the container of refined points, only for testing purposes
    */
   std::vector<sgpp::base::DataVector>* getRefinedPointsPointer() {
     return &(this->refined_points_);
-  };
+  }
 
   /**
    * Rank-one updates/downdates the system matrix, based on the Sherman-Morrison-formula
@@ -102,4 +105,3 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
 };
 }  // namespace datadriven
 }  // namespace sgpp
-
