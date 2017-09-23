@@ -9,7 +9,6 @@
  *      Author: Michael Lettrich
  */
 
-#ifdef USE_GSL
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
@@ -235,4 +234,3 @@ BOOST_AUTO_TEST_CASE(testReadWriteLU) {
 
 BOOST_AUTO_TEST_SUITE_END()
 
-#endif /*USE_GSL*/

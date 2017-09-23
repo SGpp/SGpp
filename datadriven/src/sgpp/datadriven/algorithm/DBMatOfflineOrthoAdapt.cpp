@@ -8,11 +8,9 @@
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_vector.h>
+#endif /* USE_GSL */
 
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
-
-#include <sgpp/base/exception/algorithm_exception.hpp>
-
 #include <string>
 
 namespace sgpp {
@@ -38,7 +36,7 @@ DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const std::string& fileName)
   this->lhsMatrix = sgpp::base::DataMatrix(dim_a, dim_a);
   this->q_ortho_matrix_ = sgpp::base::DataMatrix(dim_a, dim_a);
   this->t_tridiag_inv_matrix_ = sgpp::base::DataMatrix(dim_a, dim_a);
-
+#ifdef USE_GSL
   gsl_matrix_view lhs_view =
       gsl_matrix_view_array(this->lhsMatrix.getPointer(), this->dim_a, this->dim_a);
   gsl_matrix_view q_view =
@@ -65,6 +63,9 @@ DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const std::string& fileName)
 
   this->isConstructed = true;
   this->isDecomposed = true;
+#else
+  throw sgpp::base::algorithm_exception("USE_GSL has to be set");
+#endif /* USE_GSL */
 }
 
 DBMatOffline* DBMatOfflineOrthoAdapt::clone() { return new DBMatOfflineOrthoAdapt{*this}; }
@@ -80,50 +81,60 @@ void DBMatOfflineOrthoAdapt::buildMatrix() {
 }
 
 void DBMatOfflineOrthoAdapt::decomposeMatrix() {
+#ifdef USE_GSL
   // allocating subdiagonal and diagonal vectors of T
-  gsl_vector* gsl_diag = gsl_vector_alloc(dim_a);
-  gsl_vector* gsl_subdiag = gsl_vector_alloc(this->dim_a - 1);
+  sgpp::base::DataVector diag(dim_a);
+  sgpp::base::DataVector subdiag(this->dim_a - 1);
 
   // decomposing: lhs = Q * T * Q^t
-  this->hessenberg_decomposition(gsl_diag, gsl_subdiag);
+  this->hessenberg_decomposition(diag, subdiag);
 
   // adding configuration parameter lambda to diag before inverting T
   for (size_t i = 0; i < this->dim_a; i++) {
-    gsl_diag->data[i] += this->lambda;
+    diag.set(i, diag.get(i) + this->lambda);
   }
 
   // inverting T+lambda*I, by solving L*R*x_i = e_i, for every i-th column x_i of T_inv
-  this->invert_symmetric_tridiag(gsl_diag, gsl_subdiag);
+  this->invert_symmetric_tridiag(diag, subdiag);
 
   // decomposed matrix: (lhs+lambda*I) = Q * T^{-1} * Q^t
   this->isDecomposed = true;
-
-  gsl_vector_free(gsl_diag);
-  gsl_vector_free(gsl_subdiag);
+#endif /* USE_GSL */
 }
 
-void DBMatOfflineOrthoAdapt::hessenberg_decomposition(gsl_vector* diag, gsl_vector* subdiag) {
+void DBMatOfflineOrthoAdapt::hessenberg_decomposition(sgpp::base::DataVector& diag,
+                                                      sgpp::base::DataVector& subdiag) {
+#ifdef USE_GSL
   gsl_vector* tau = gsl_vector_alloc(dim_a - 1);
   gsl_matrix_view gsl_lhs = gsl_matrix_view_array(this->lhsMatrix.getPointer(), dim_a, dim_a);
   gsl_matrix_view gsl_q = gsl_matrix_view_array(this->q_ortho_matrix_.getPointer(), dim_a, dim_a);
+  gsl_vector_view gsl_diag = gsl_vector_view_array(diag.getPointer(), dim_a);
+  gsl_vector_view gsl_subdiag = gsl_vector_view_array(subdiag.getPointer(), dim_a - 1);
 
   // does the decomposition
   gsl_linalg_symmtd_decomp(&gsl_lhs.matrix, tau);
 
   // unpacks information out of matrix to explicitly create Q, and T
-  gsl_linalg_symmtd_unpack(&gsl_lhs.matrix, tau, &gsl_q.matrix, diag, subdiag);
+  gsl_linalg_symmtd_unpack(&gsl_lhs.matrix, tau, &gsl_q.matrix, &gsl_diag.vector,
+                           &gsl_subdiag.vector);
 
   gsl_vector_free(tau);
+#endif /* USE_GSL */
 }
 
-void DBMatOfflineOrthoAdapt::invert_symmetric_tridiag(gsl_vector* diag, gsl_vector* subdiag) {
-  gsl_vector* e = gsl_vector_calloc(diag->size);  // calloc sets all values to zero
-  gsl_vector* x = gsl_vector_alloc(diag->size);   // target of solving
+void DBMatOfflineOrthoAdapt::invert_symmetric_tridiag(sgpp::base::DataVector& diag,
+                                                      sgpp::base::DataVector& subdiag) {
+#ifdef USE_GSL
+  gsl_vector* e = gsl_vector_calloc(diag.getSize());  // calloc sets all values to zero
+  gsl_vector* x = gsl_vector_alloc(diag.getSize());   // target of solving
+
+  gsl_vector_view gsl_diag = gsl_vector_view_array(diag.getPointer(), dim_a);
+  gsl_vector_view gsl_subdiag = gsl_vector_view_array(subdiag.getPointer(), dim_a - 1);
 
   // loops columns of T_inv
   for (size_t k = 0; k < this->t_tridiag_inv_matrix_.getNcols(); k++) {
     e->data[k] = 1;
-    gsl_linalg_solve_symm_tridiag(diag, subdiag, e, x);
+    gsl_linalg_solve_symm_tridiag(&gsl_diag.vector, &gsl_subdiag.vector, e, x);
     for (size_t i = 0; i < this->t_tridiag_inv_matrix_.getNrows(); i++) {
       this->t_tridiag_inv_matrix_.set(k, i, x->data[i]);
     }
@@ -132,9 +143,11 @@ void DBMatOfflineOrthoAdapt::invert_symmetric_tridiag(gsl_vector* diag, gsl_vect
 
   gsl_vector_free(e);
   gsl_vector_free(x);
+#endif /* USE_GSL */
 }
 
 void DBMatOfflineOrthoAdapt::store(const std::string& fileName) {
+#ifdef USE_GSL
   DBMatOffline::store(fileName);
 
   FILE* outCFile = fopen(fileName.c_str(), "ab");
@@ -153,7 +166,7 @@ void DBMatOfflineOrthoAdapt::store(const std::string& fileName) {
   gsl_matrix_fwrite(outCFile, &t_inv_view.matrix);
 
   fclose(outCFile);
+#endif /* USE_GSL */
 }
 }  // namespace datadriven
 }  // namespace sgpp
-#endif /* USE_GSL */
