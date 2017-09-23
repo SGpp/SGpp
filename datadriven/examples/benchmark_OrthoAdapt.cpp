@@ -9,6 +9,7 @@
 
 #include <chrono>
 #include <iostream>
+#include <vector>
 
 int main() {
   std::cout << "ortho_adapt algorithm benchmarks: \n";
@@ -51,7 +52,7 @@ int main() {
   for (size_t i = 0; i < number_points_to_refine; i++) {
     sgpp::base::DataVector vec(refine_size);
     for (size_t j = 0; j < refine_size; j++) {
-      double value = ((double)rand() / (RAND_MAX));  // values in [0, 1]
+      double value = (static_cast<double>(rand()) / (RAND_MAX));  // values in [0, 1]
       vec.set(j, value);
     }
     online.add_new_refine_point(vec);
