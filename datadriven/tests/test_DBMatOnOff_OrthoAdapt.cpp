@@ -8,7 +8,6 @@
 #ifdef USE_GSL
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_linalg.h>
-#endif /* USE_GSL */
 
 #include <boost/test/unit_test.hpp>
 
@@ -30,7 +29,6 @@
 BOOST_AUTO_TEST_SUITE(OrthoAdapt_tests)
 
 BOOST_AUTO_TEST_CASE(offline_object) {
-#ifdef USE_GSL
   sgpp::datadriven::DBMatDensityConfiguration config;
   config.grid_dim_ = 2;
   config.grid_level_ = 3;
@@ -98,7 +96,6 @@ BOOST_AUTO_TEST_CASE(offline_object) {
       }
     }
   }
-#endif /* USE_GSL */
 }
 
 BOOST_AUTO_TEST_CASE(solver_test) {
@@ -148,7 +145,6 @@ BOOST_AUTO_TEST_CASE(solver_test) {
  * in a different order. Values of solved alpha always are checked in between
  */
 BOOST_AUTO_TEST_CASE(online_object) {
-#ifdef USE_GSL
   sgpp::datadriven::DBMatDensityConfiguration config;
   config.grid_dim_ = 1;
   config.grid_level_ = 2;
@@ -412,7 +408,8 @@ BOOST_AUTO_TEST_CASE(online_object) {
   for (size_t i = 0; i < alpha_half_refined.getSize(); i++) {
     BOOST_CHECK_SMALL(alpha_half_refined.get(i) - gsl_alpha_view.vector.data[i], 1e-10);
   }
-#endif /* USE_GSL */
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+
+#endif /* USE_GSL */
