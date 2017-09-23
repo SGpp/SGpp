@@ -5,16 +5,10 @@
 
 #pragma once
 
+#include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 
 #include <string>
-
-#ifdef USE_GSL
-#include <gsl/gsl_linalg.h>
-#include <gsl/gsl_math.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_vector.h>
-#endif /* USE_GSL */
 
 namespace sgpp {
 namespace datadriven {
@@ -54,7 +48,6 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    */
   void decomposeMatrix();
 
-#ifdef USE_GSL
   /**
    * Decomposes the lhsMatrix into lhs = Q * T * Q^t and stores the orthogonal
    * matrix Q into the member q_ortho_matrix_. The information to reconstruct T
@@ -63,7 +56,7 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    * @param diag diagonal entries of T
    * @param sub- and superdiagonal entries of T (symmetric)
    */
-  void hessenberg_decomposition(gsl_vector* diag, gsl_vector* subdiag);
+  void hessenberg_decomposition(sgpp::base::DataVector& diag, sgpp::base::DataVector& subdiag);
 
   /**
    * Inverts a symmetric tridiagonal matrix T, which is given in the form of
@@ -73,8 +66,7 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    * @param diag diagonal entries of T
    * @param subdiag sub- and superdiagonal entries of T (symmetric)
    */
-  void invert_symmetric_tridiag(gsl_vector* diag, gsl_vector* subdiag);
-#endif /* USE_GSL */
+  void invert_symmetric_tridiag(sgpp::base::DataVector& diag, sgpp::base::DataVector& subdiag);
 
   /**
    * Serializes the DBMatOfflineOrthoAdapt object

@@ -4,8 +4,11 @@
 // sgpp.sparsegrids.org
 
 #define BOOST_TEST_DYN_LINK
+
 #ifdef USE_GSL
 #include <gsl/gsl_blas.h>
+#include <gsl/gsl_linalg.h>
+#endif /* USE_GSL */
 
 #include <boost/test/unit_test.hpp>
 
@@ -27,6 +30,7 @@
 BOOST_AUTO_TEST_SUITE(OrthoAdapt_tests)
 
 BOOST_AUTO_TEST_CASE(offline_object) {
+#ifdef USE_GSL
   sgpp::datadriven::DBMatDensityConfiguration config;
   config.grid_dim_ = 2;
   config.grid_level_ = 3;
@@ -42,10 +46,10 @@ BOOST_AUTO_TEST_CASE(offline_object) {
   std::cout << "Testing hessenberg_decomposition...\n";
 
   // allocating sub-, super- and diagonal vectors of T
-  gsl_vector* gsl_diag = gsl_vector_alloc(n);
-  gsl_vector* gsl_subdiag = gsl_vector_alloc(n - 1);
+  sgpp::base::DataVector diag(n);
+  sgpp::base::DataVector subdiag(n - 1);
 
-  off_object.hessenberg_decomposition(gsl_diag, gsl_subdiag);
+  off_object.hessenberg_decomposition(diag, subdiag);
 
   gsl_matrix_view q_view = gsl_matrix_view_array(off_object.getQ().getPointer(), n, n);
   gsl_matrix* test_matrix = gsl_matrix_alloc(n, n);
@@ -66,19 +70,16 @@ BOOST_AUTO_TEST_CASE(offline_object) {
   sgpp::base::DataMatrix T(n, n, 0.0);
   for (size_t i = 0; i < n; i++) {
     // adding lambda to diagonal
-    gsl_vector_set(gsl_diag, i, gsl_vector_get(gsl_diag, i) + config.lambda_);
-    T.set(i, i, gsl_vector_get(gsl_diag, i));
+    diag.set(i, diag.get(i) + config.lambda_);
+    T.set(i, i, diag.get(i));
   }
   for (size_t i = 0; i < n - 1; i++) {
-    T.set(i + 1, i, gsl_vector_get(gsl_subdiag, i));
-    T.set(i, i + 1, gsl_vector_get(gsl_subdiag, i));
+    T.set(i + 1, i, subdiag.get(i));
+    T.set(i, i + 1, subdiag.get(i));
   }
 
   std::cout << "Testing invert_symmetric_tridiag...\n";
-  off_object.invert_symmetric_tridiag(gsl_diag, gsl_subdiag);
-
-  gsl_vector_free(gsl_diag);
-  gsl_vector_free(gsl_subdiag);
+  off_object.invert_symmetric_tridiag(diag, subdiag);
 
   gsl_matrix_view T_view = gsl_matrix_view_array(T.getPointer(), n, n);
   gsl_matrix_view T_inv_view = gsl_matrix_view_array(off_object.getTinv().getPointer(), n, n);
@@ -97,6 +98,7 @@ BOOST_AUTO_TEST_CASE(offline_object) {
       }
     }
   }
+#endif /* USE_GSL */
 }
 
 BOOST_AUTO_TEST_CASE(solver_test) {
@@ -146,6 +148,7 @@ BOOST_AUTO_TEST_CASE(solver_test) {
  * in a different order. Values of solved alpha always are checked in between
  */
 BOOST_AUTO_TEST_CASE(online_object) {
+#ifdef USE_GSL
   sgpp::datadriven::DBMatDensityConfiguration config;
   config.grid_dim_ = 1;
   config.grid_level_ = 2;
@@ -409,7 +412,7 @@ BOOST_AUTO_TEST_CASE(online_object) {
   for (size_t i = 0; i < alpha_half_refined.getSize(); i++) {
     BOOST_CHECK_SMALL(alpha_half_refined.get(i) - gsl_alpha_view.vector.data[i], 1e-10);
   }
+#endif /* USE_GSL */
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-#endif /* USE_GSL */
