@@ -119,6 +119,11 @@ void BSplineInterpolationEvaluator::computeBasisValues() {
    *
    */
 
+  //  for (size_t i = 0; i < xValues.size(); i++) {
+  //    std::cout << xValues[i] << " ";
+  //  }
+  //  std::cout << "\n";
+
   // ToDo(rehmemk) Diese Spezialfälle behandeln
   if (xValues.size() == 1) {
     basisValues.resize(1);

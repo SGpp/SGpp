@@ -82,6 +82,9 @@ datadriven/tests/uq/
 build/
 dist/
 
+# ignoring custom.py file
+custom.py
+
 GPATH
 GRTAGS
 GSYMS

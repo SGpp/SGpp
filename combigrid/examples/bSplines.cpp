@@ -25,12 +25,11 @@
 #include <vector>
 
 // Marsden: f(x) = 1 => coefficients(at least interior ones) are all 1
-double f1D(sgpp::base::DataVector const &v) { return 1; }
-double f2D(sgpp::base::DataVector const &v) { return v[0] * v[1]; }
+double f(sgpp::base::DataVector const &v) { return v[1]; }
 
 int main() {
-  size_t d = 1;
-  sgpp::combigrid::MultiFunction func(f1D);
+  size_t d = 2;
+  sgpp::combigrid::MultiFunction func(f);
 
   sgpp::combigrid::CombiHierarchies::Collection grids(
       d, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
@@ -80,14 +79,18 @@ int main() {
     auto it2 = funcStorage->getGuidedIterator(grid->getLevel(), it, std::vector<bool>(d, true));
 
     for (size_t index1 = 0; it2->isValid(); ++index1, it2->moveToNext()) {
-      // Customize this computation for your algorithm
       double functionValue = it2->value();
-
       functionValues[index1] = functionValue;
+
       sgpp::combigrid::MultiIndexIterator innerIter(grid->numPoints());
       std::vector<std::vector<double> > basisValues;
 
       auto gridPoint = grid->getGridPoint(it.getMultiIndex());
+      std::cout << "grid point: ";
+      for (size_t i = 0; i < gridPoint.size(); i++) {
+        std::cout << gridPoint[i] << " ";
+      }
+      std::cout << "\n";
       for (size_t dim = 0; dim < d; ++dim) {
         evalCopy[dim]->setParameter(sgpp::combigrid::FloatScalarVector(gridPoint[dim]));
         auto basisValues1D = evalCopy[dim]->getBasisValues();
@@ -97,6 +100,14 @@ int main() {
         }
         basisValues.push_back(basisValues1D_vec);  // basis values at grid points
       }
+      std::cout << "basis values: ";
+      for (size_t ixi = 0; ixi < basisValues.size(); ixi++) {
+        for (size_t ix = 0; ix < basisValues[ixi].size(); ix++) {
+          std::cout << basisValues[ixi][ix] << " ";
+        }
+        std::cout << ", ";
+      }
+      std::cout << "\n";
 
       for (size_t index2 = 0; innerIter.isValid(); ++index2, innerIter.moveToNext()) {
         double splineValue = 1.0;
@@ -108,12 +119,22 @@ int main() {
       }
     }
 
-    //    std::cout << A.toString() << std::endl;
-
     sgpp::optimization::FullSLE sle(A);
     sgpp::optimization::sle_solver::Armadillo solver;
     sgpp::optimization::Printer::getInstance().setVerbosity(-1);
     bool solved = solver.solve(sle, functionValues, coefficients_sle);
+
+    std::cout << A.toString() << std::endl;
+    std::cout << "fct: ";
+    for (size_t i = 0; i < functionValues.size(); i++) {
+      std::cout << functionValues[i] << " ";
+    }
+    std::cout << "\ncoeff: ";
+
+    for (size_t i = 0; i < coefficients_sle.size(); i++) {
+      std::cout << coefficients_sle[i] << " ";
+    }
+    std::cout << "\n";
 
     if (!solved) {
       exit(-1);
@@ -123,13 +144,8 @@ int main() {
 
     it.reset();
 
-    //    std::cout << A.size() << std::endl;
-    //    for (size_t i = 0; i < coefficients_sle.size(); i++) {
-    //      std::cout << coefficients_sle[i] << " ";
-    //    }
-    //    std::cout << "\n";
-
     // Ergebnis herausschreiben
+
     for (size_t vecIndex = 0; it.isValid(); ++vecIndex, it.moveToNext()) {
       coefficientTree->set(it.getMultiIndex(), coefficients_sle[vecIndex]);
     }
@@ -152,11 +168,11 @@ int main() {
 
   sgpp::base::DataVector parameter(d);
   parameter.set(0, 0.5);
-  parameter.set(1, 0.5);
-  parameter.set(2, 0.9);
+  //  parameter.set(1, 0.5);
+  //  parameter.set(2, 0.9);
 
-  size_t levels = 3;
-  double result = operation->evaluate(levels, parameter);
+  size_t maxlevel = 2;
+  double result = operation->evaluate(maxlevel, parameter);
 
   std::cout << "Target function value: " << func(parameter) << "\n";
   std::cout << "Numerical result: " << result << "\n";
