@@ -109,15 +109,17 @@ class funcGradientCollectionSymbolic:
     # return a function that substitutes all symbols with the x value and evaluates
     def getFunction(self):
         symbolic_variables = self.symbolic_variables
+        expr = self.expr
+        function= lambdify(symbolic_variables, expr, "numpy")
 
         def func(x):
-            sub_pairs = []
-            expr = self.expr
-            for i in range(len(x)):
-                sub_pairs.append((symbolic_variables[i], x[i]))
 
-            pair_dict = dict(sub_pairs)
-            return expr.evalf(subs=pair_dict)
+            x_list=[]
+            for i in range(len (x)):
+                x_list.append(x[i])
+
+            return function(*x_list)
+
 
         return func
 
@@ -126,14 +128,15 @@ class funcGradientCollectionSymbolic:
     def getGradient(self, grad_index_list):
         symbolic_variables = self.symbolic_variables
         grad_symbolic = self.getGradientSymbolic(grad_index_list)
-
+        gradient = lambdify(symbolic_variables, grad_symbolic, "numpy")
         def grad(x):
-            sub_pairs = []
-            for i in range(len(x)):
-                sub_pairs.append((symbolic_variables[i], x[i]))
-            print(sub_pairs)
-            pair_dict = dict(sub_pairs)
-            return grad_symbolic.evalf(subs=pair_dict)
+
+          x_list=[]
+          for i in range(len(x)):
+              x_list.append(x[i])
+
+          return gradient(*x_list)
+
 
         return grad
 
