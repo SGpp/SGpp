@@ -70,7 +70,6 @@ void LinearInterpolationEvaluator::computeBasisValues() {
     //    }
     //    std::cout << "]" << std::endl;
 
-    // ToDo (rehmemk) Bspline degree should be chooseable somewhere outside when setting
     // BasisCoeffCompType to SLE
     size_t degree = 3;
 

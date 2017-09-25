@@ -18,6 +18,7 @@
 #include <sgpp/combigrid/utils/DataVectorHashing.hpp>
 
 #include <cmath>
+#include <iostream>
 #include <limits>
 #include <memory>
 #include <queue>
@@ -118,7 +119,6 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
         }
       }
     }
-
     CGLOG("addLevel(): eval level");
     V value = multiEval->eval(level);
 
