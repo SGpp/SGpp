@@ -69,10 +69,12 @@ class CombiEvaluators {
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> polynomialInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> linearInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cubicSplineInterpolation();
+  static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> BSplineInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> quadrature();
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiPolynomialInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiLinearInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiCubicSplineInterpolation();
+  static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiBSplineInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiQuadrature();
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiQuadrature(
       SingleFunction func, bool normalizeWeights);
