@@ -10,10 +10,10 @@ class interpolation_function():
   def __init__(self, d, f):
     self.f = f
     self.d = d
-    self.grid = pysgpp.Grid.createLinearGrid(d)
+    self.grid = pysgpp.Grid.createModPolyClenshawCurtisGrid(d, 3)
     self.gridStorage = self.grid.getStorage()
     self.hierarch = pysgpp.createOperationHierarchisation(self.grid)
-    self.opeval = pysgpp.createOperationEval(self.grid)
+    self.opeval = pysgpp.createOperationEvalNaive(self.grid)
     self.alpha = pysgpp.DataVector(self.gridStorage.getSize())
 
   def create_interpolation(self, grid_lvl):
@@ -82,24 +82,33 @@ def eval_inverse_rosenblatt1d(sg_pdf, xs):
     ys.append(op.doTransformation1D(sg_pdf.alpha, x))
   return ys
 
-def test(grid_points):
+def test():
+  alpha = [-7.25846502857492037464e+00, 3.43376778340746291462e+00, 3.43376778340746291462e+00, 6.70610097194139598287e+00, -2.06986834045588530273e+00, -2.06986834045588841136e+00, 6.70610097194139598287e+00]
   ys = [0, 0.151638, 0.615553, 2.39577, 3.23902, 2.39577, 0.615553, 0.230832, 0]
-  plt.plot(grid_points, ys)
+  print(len(alpha))
+  # plt.plot(grid_points, ys)
 
 xs = np.arange(0, 1.01, 0.1)
+# xs = [0, 0.25, 0.5, 0.75, 0.888787, 1.0]
 l_max = 3
-d = 2
-interpolation = interpolation_function(d, const_0)
+d = 1
+interpolation = interpolation_function(d, parabola)
 interpolation.create_interpolation(l_max)
 
-# grid_points = np.arange(0, 1.01, 2**-l_max)
-# ys = [interpolation(x) for x in xs]
+alpha = [-7.25846502857492037464e+00, 3.43376778340746291462e+00, 3.43376778340746291462e+00, 6.70610097194139598287e+00, -2.06986834045588530273e+00, -2.06986834045588841136e+00, 6.70610097194139598287e+00]
+print(len(alpha))
+for i in range(0, 2**l_max - 1):
+  interpolation.alpha[i] = alpha[i]
 
+# test()
+# grid_points = np.arange(0, 1.01, 2**-l_max)
+ys = [interpolation(x) for x in xs]
 # plotSG2d(interpolation.grid, interpolation.alpha)
 # ys = eval_rosenblatt1d(interpolation, xs)
+# print(ys)
 # ys = eval_inverse_rosenblatt1d(interpolation, xs)
-eval_rosenblattdd(interpolation, xs)
-# plt.plot(xs, ys)
+# eval_rosenblattdd(interpolation, xs)
+plt.plot(xs, ys)
 # plt.scatter(grid_points, np.zeros_like(grid_points))
 # plt.pcolormesh(X, Y, Z)
-# plt.show()
+plt.show()

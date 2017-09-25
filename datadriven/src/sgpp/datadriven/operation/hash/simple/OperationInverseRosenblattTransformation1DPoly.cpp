@@ -96,12 +96,14 @@ void OperationInverseRosenblattTransformation1DPoly::init(base::DataVector* alph
 
       // we look for the next grid point with pdf(x) >= 0
       size_t j;
-      for (j = i; j < ordered_grid_points.size(); j++) {
+      for (j = i; j < ordered_grid_points.size() - 1; j++) {
         right_coord = ordered_grid_points[j];
         coord[0] = right_coord;
         right_function_value = opEval->eval(*alpha1d, coord);
         if (right_function_value >= 0 && right_function_value != left_function_value) break;
       }
+      if (j == ordered_grid_points.size() - 1)
+        right_function_value = 0;
       // get last function value and coordinate with pdf(x) >= 0
       // perform montonic cubic interpolation based on:
       // https://en.wikipedia.org/wiki/Monotone_cubic_interpolation
@@ -122,9 +124,10 @@ void OperationInverseRosenblattTransformation1DPoly::init(base::DataVector* alph
         function_values[2] = opEval->eval(*alpha1d, coord);
       } else {
         // if j is the last grid point choose the next one with the same step size
-        // and set it's function value to one
+        // and set it's function value to zero
+        // and set it's function value to the last value
         coord[0] = 1 + ordered_grid_points[j] - ordered_grid_points[j - 1];
-        function_values[2] = 1.0;
+        function_values[2] = right_function_value;
       }
       secants[1] = (function_values[2] - function_values[1]) / (coord[0] - ordered_grid_points[j]);
       tangents[2] = secants[1];
@@ -258,7 +261,7 @@ double OperationInverseRosenblattTransformation1DPoly::doTransformation1D(base::
   };
   optimization::Printer::getInstance().disableStatusPrinting();
   optimization::WrapperScalarFunction f(1, optFunc);
-  optimization::optimizer::NelderMead nelderMead(f, 2000);
+  optimization::optimizer::NelderMead nelderMead(f);
   nelderMead.optimize();
   return nelderMead.getOptimalPoint()[0];
 }
