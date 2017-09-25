@@ -1,12 +1,22 @@
 import pysgpp
-
+import FunctionClasses as fctClass
 import matplotlib.pyplot as plt
 import numpy as np
 import random
-from pprint import pprint as pp
+import sympy as sp
+
 from itertools import chain, combinations
-import scipy.misc as spmisc
-from mpl_toolkits.mplot3d import Axes3D
+
+
+
+class funcGradientCollection:
+    def __init__(self):
+        print("test")
+
+
+    def getGradient(self,gradIndex):
+        print("test")
+
 
 
 def powerset(iterable):
@@ -326,22 +336,86 @@ class CombiCombigridHermite:
         return self.operation_psi.getLevelManager()
 
 
-class HierachGridBSpline:
-    ##create a bsplineGrid with calculated hierarchized coefficients
+class BaseLinearFullgrid():
+    def __init__(self, dim, func,full=False):
+        self.dim = dim
+        self.func = function_eval_undisplaced(func)
+        self.level = -1
+        self.full=full
 
-    def __init__(self, dim, degree, func):
+    def linearGrid(self, level):
+        grid = pysgpp.Grid.createLinearBoundaryGrid(self.dim)
+        self.gridStorage = grid.getStorage()
+
+        if (self.full == False):
+            grid.getGenerator().regular(level)
+        else:
+            grid.getGenerator().full(level)
+        alpha = pysgpp.DataVector(self.gridStorage.getSize())
+        alpha.setAll(0.0)
+        for i in range(self.gridStorage.getSize()):
+            gp = self.gridStorage.getPoint(i)
+            coordinates = pysgpp.DataVector(self.dim)
+            gp.getStandardCoordinates(coordinates)
+            alpha[i] = self.func.evalUndisplaced(coordinates)
+
+        pysgpp.createOperationHierarchisation(grid).doHierarchisation(alpha)
+
+        self.alpha = alpha
+        return grid
+
+    def evaluate(self, level, x):
+        if self.level != level :
+            self.level = level
+            self.grid  = self.linearGrid(self.level)
+            self.opEvalLinear = pysgpp.createOperationEvalNaive(self.grid)
+
+        return self.opEvalLinear.eval(self.alpha, x)
+
+    def gridOperationEval(self, opEval, alpha):
+        def eval(x):
+            return opEval.eval(alpha, x)
+
+        return eval
+
+    def getLevelManager(self):
+        return self.LevelManager(self.gridStorage)
+
+    class LevelManager:
+        def __init__(self, gridstorage):
+            self.gridStorage = gridstorage
+
+        def numGridPoints(self):
+            return self.gridStorage.getSize()
+
+    class function_eval_undisplaced:
+        def __init__(self, function):
+            self.function = function
+
+        def evalUndisplaced(self, x):
+            return self.function(x)
+
+
+class HierachGridBSpline:
+    # create a bsplineGrid with calculated hierarchized coefficients
+
+    def __init__(self, dim, degree, func,full=False):
         self.dim = dim
         self.degree = degree
         self.func = function_eval_undisplaced(func)
         self.level = -1
+        self.full=full
 
-    def bsplineGrid(self, level):
+    def createBsplineGrid(self, level):
 
-        grid = pysgpp.Grid.createBsplineGrid(self.dim, self.degree)
+        grid = pysgpp.Grid.createBsplineBoundaryGrid(self.dim, self.degree)
         self.gridStorage = grid.getStorage()
         print "dimensionality:         {}".format(self.gridStorage.getDimension())
 
-        grid.getGenerator().regular(level)
+        if(self.full==False):
+            grid.getGenerator().regular(level)
+        else:
+            grid.getGenerator().full(level)
 
         functionValues = pysgpp.DataVector(self.gridStorage.getSize())
         functionValues.setAll(0.0)
@@ -371,9 +445,9 @@ class HierachGridBSpline:
         return eval
 
     def evaluate(self, level, x):
-        if self.level != level + 1:
-            self.level = level + 1
-            self.grid, self.coeffs = self.bsplineGrid(self.level)
+        if self.level != level:
+            self.level = level
+            self.grid, self.coeffs = self.createBsplineGrid(self.level)
             self.opEvalBspline = pysgpp.createOperationEvalNaive(self.grid)
 
         return self.opEvalBspline.eval(self.coeffs, x)
@@ -811,24 +885,28 @@ def plot2DContour(n_samples, level, operation):
 def calc_error_ilevels(operation, targetfunc, dim, maxlevel):
     nr_gridpoints = []
     errors = []
-    for l in range(maxlevel):
+    for l in range(1,maxlevel):
         operation_wrap = operationwrapper(operation, l)
-        gridpterror = estimatel2Error(15000, dim, operation_wrap, targetfunc)
+        gridpterror = estimatel2Error(10000, dim, operation_wrap, targetfunc)
         errors.append(gridpterror)
         nr_gridpoints.append(operation.getLevelManager().numGridPoints())
     return nr_gridpoints, errors
 
 
-def plot_log_error(errors, gridpoints, text):
+def plot_log_error(errors, gridpoints, text, x_axis_type="nr_gridpoints"):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     for i in range(errors.shape[1]):
         ax.plot(gridpoints[:, i], errors[:, i], marker='o', label=text[i])
 
     plt.legend()
-    ax.set_xlabel("Anzahl Gitterpunkte")
+    if (x_axis_type == "nr_gridpoints"):
+        ax.set_xlabel("Anzahl Gitterpunkte")
+    else:
+        ax.set_xlabel("Level")
     ax.set_ylabel("$L^2-Fehler$")
-    ax.set_xscale("log")
+    if (x_axis_type == "nr_gridpoints"):
+        ax.set_xscale("log")
     ax.set_yscale("log")
 
 
@@ -1040,28 +1118,23 @@ def example_comparisons_fullgrid(l, func_standard):
     level = 3
     n_samples = 50
 
-    operation_list=[]
+    operation_list = []
 
     operation_list.append(CombiCombigridLinear(func_standard, 2))
     operation_list.append(CombiCombigridHermite(func_standard, 2))
     operation_list.append(pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(
         2, func_standard))
-    text=["Combilinear","combiHermite","linear"]
+    text = ["Combilinear", "combiHermite", "linear"]
 
-    i=0
+    i = 0
     for operation in operation_list:
-
-
         operation_wrap = operationwrapper(operation, level)
-
 
         # operation.operation_zeta for mixed
         plot2D_comparison_function(n_samples, geterrorfunc(operation_wrap, func_standard),
                                    text[i])
 
-
         plot2DContour(n_samples, level, operation)
-
 
         error = estimatel2Error(10000, 2, operation_wrap, func_standard)
         errorl2_gradients = estimatel2ErrorGradients(10000, 2, operation_wrap, func_standard)
@@ -1072,80 +1145,79 @@ def example_comparisons_fullgrid(l, func_standard):
                                                   operation_wrap,
                                                   func_standard, d)
 
-        print("estimtaded l2 error for "+text[i]+": " + str(error))
+        print("estimtaded l2 error for " + text[i] + ": " + str(error))
         print("error on gridpts: " + str(erroron_gripoint))
         print("mixed gradient error:" + str(mixgrad_error))
         print("l2 errors from gradients: " + str(errorl2_gradients))
 
         print("-----------------------------------------------------------------")
-        i=i+1
+        i = i + 1
 
 
+def example_plot_error(func_standard, dim, maxlevel=5, x_axis_type="nr_gridpoints"):
+    """
 
+      Args:
+          func_standard:
+          dim:
+          maxlevel:
+          x_axis_type: either "nr_gridpoints" for the number of gridpoints or "level" to compare
+          each operation by level
+      """
 
-def example_plot_error(func_standard, dim, maxlevel=5):
-    operation_count = 7
-    operation = CombiCombigridLinear(func_standard, dim)
-    operation2 = CombiCombigridHermite(func_standard, dim)
-    operation3 = pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(
-        dim, func_standard)
-
-    operation4 = CombiCombigrid2dHermite_without_mixed(func_standard)
-    operation5 = CombiFullGridHermite(func_standard, dim)
-    operation6 = CombiFullGridLinear(func_standard, dim)
-    operation7 = LinearFullgrid(func_standard, dim)
     # operation4= HierachGridBSpline(dim,3,func_standard)
 
 
 
 
-    nr_gridpoints, errors = calc_error_ilevels(operation, func_standard, dim, maxlevel)
-    X = np.zeros((len(errors), operation_count))
-    Y = np.zeros((len(errors), operation_count), dtype=np.float64)
+    operations = []
 
-    X[:, 0] = nr_gridpoints
-    Y[:, 0] = errors
+    operations.append(CombiCombigridLinear(func_standard, dim))
+    operations.append(CombiCombigridHermite(func_standard, dim))
+    operations.append(pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(
+        dim, func_standard))
+    operations.append(CombiCombigrid2dHermite_without_mixed(func_standard))
+    operations.append((BaseLinearFullgrid(dim,func_standard,True)))
 
-    nr_gridpoints, errors = calc_error_ilevels(operation2, func_standard, dim, maxlevel)
-
-    X[:, 1] = nr_gridpoints
-    Y[:, 1] = errors
-
-    nr_gridpoints, errors = calc_error_ilevels(operation3, func_standard, dim, maxlevel)
-
-    X[:, 2] = nr_gridpoints
-    Y[:, 2] = errors
-
-    nr_gridpoints, errors = calc_error_ilevels(operation4, func_standard, dim, maxlevel)
-
-    X[:, 3] = nr_gridpoints
-    Y[:, 3] = errors
-
-    nr_gridpoints, errors = calc_error_ilevels(operation5, func_standard, dim, maxlevel)
-
-    X[:, 4] = nr_gridpoints
-    Y[:, 4] = errors
-
-    nr_gridpoints, errors = calc_error_ilevels(operation6, func_standard, dim, maxlevel)
-
-    X[:, 5] = nr_gridpoints
-    Y[:, 5] = errors
-
-    nr_gridpoints, errors = calc_error_ilevels(operation7, func_standard, dim, maxlevel)
-
-    X[:, 6] = nr_gridpoints
-    Y[:, 6] = errors
-
-    # nr_gridpoints, errors = calc_error_ilevels(operation4, func_standard, dim, maxlevel)
-
-    # X[:, 3] = nr_gridpoints
-    # Y[:, 3] = errors
+    #operations.append(LinearFullgrid(func_standard, dim))
+    operations.append(CombiFullGridHermite(func_standard, dim))
+    #operations.append(CombiFullGridLinear(func_standard, dim))
+    operations.append(HierachGridBSpline(dim,3,func_standard,True))
+    operations.append(HierachGridBSpline(dim, 3, func_standard, False))
 
 
 
-    plot_log_error(Y, X, ["Gitter (de Baar und Harding)", "Gitter (Hermite)",
-                          "lineares Gitter", "Gitter (Hermite) ohne gemischte Abl.",
-                          "HermiteFullgrid", "CombiLinearFullgrid", "linearFullgrid"])
+    labels = []
+    labels.append("Gitter (de Baar und Harding)")
+    labels.append("Gitter (Hermite)")
+    labels.append("lineares Gitter")
+    labels.append("Gitter (Hermite) ohne gemischte Abl.")
+
+    labels.append("BaseLinearFullgrid")
+    #labels.append("linearFullgrid")
+    labels.append("HermiteFullgrid")
+    #labels.append("CombiLinearFullgrid")
+    labels.append("BSpline-Grid-Full")
+    labels.append("BSpline-Grid")
+
+
+    X = np.zeros((maxlevel-1, len(operations)))
+    Y = np.zeros((maxlevel-1, len(operations)), dtype=np.float64)
+
+    for i in range(len(operations)):
+        nr_gridpoints, errors = calc_error_ilevels(operations[i], func_standard, dim, maxlevel)
+
+        if (x_axis_type == "level"):
+            x_values = [j for j in range(1,maxlevel)]
+
+        else:
+            x_values = nr_gridpoints
+        print(i, nr_gridpoints)
+
+        X[:, i] = x_values
+        Y[:, i] = errors
+
+    plot_log_error(Y, X, labels, x_axis_type)
 
 
 def example_multidim(func_standard, dim, maxlevel=5):
@@ -1180,22 +1252,20 @@ def example_multidim(func_standard, dim, maxlevel=5):
     X[:, 2] = nr_gridpoints
     Y[:, 2] = errors
 
+    #   nr_gridpoints, errors = calc_error_ilevels(operation4, func_standard, dim, maxlevel)
+    #
+    #   X[:, 3] = nr_gridpoints
+    #    Y[:, 3] = errors
 
+    #   nr_gridpoints, errors = calc_error_ilevels(operation5, func_standard, dim, maxlevel)
+    #
+    #  X[:, 4] = nr_gridpoints
+    #   Y[:, 4] = errors
 
- #   nr_gridpoints, errors = calc_error_ilevels(operation4, func_standard, dim, maxlevel)
-#
- #   X[:, 3] = nr_gridpoints
-#    Y[:, 3] = errors
+    #    nr_gridpoints, errors = calc_error_ilevels(operation6, func_standard, dim, maxlevel)
 
- #   nr_gridpoints, errors = calc_error_ilevels(operation5, func_standard, dim, maxlevel)
-#
-  #  X[:, 4] = nr_gridpoints
- #   Y[:, 4] = errors
-
-#    nr_gridpoints, errors = calc_error_ilevels(operation6, func_standard, dim, maxlevel)
-
-    #X[:, 5] = nr_gridpoints
-   # Y[:, 5] = errors
+    # X[:, 5] = nr_gridpoints
+    # Y[:, 5] = errors
 
     # nr_gridpoints, errors = calc_error_ilevels(operation4, func_standard, dim, maxlevel)
 
@@ -1205,8 +1275,8 @@ def example_multidim(func_standard, dim, maxlevel=5):
 
 
     plot_log_error(Y, X, ["Gitter (de Baar und Harding)", "Gitter (Hermite)",
-                          "lineares Gitter", "HermiteFullgrid", "CombiLinearFullgrid", "linearFullgrid"])
-
+                          "lineares Gitter", "HermiteFullgrid", "CombiLinearFullgrid",
+                          "linearFullgrid"])
 
 
 def testf(x):
@@ -1227,7 +1297,7 @@ func_wrap = getfuncwrapper(func)
 
 func_standard = pysgpp.multiFunc(func_wrap)
 
-#example_2D_comparison_function(func_standard, "")
+# example_2D_comparison_function(func_standard, "")
 # example_2D_psi()
 # example_2D_linear(2,func_standard)
 # example_combicombigrid_2D_linear(2, func_standard)  # with "contourplot"
@@ -1235,10 +1305,24 @@ func_standard = pysgpp.multiFunc(func_wrap)
 
 # example_combicombigrid_2D_hermite(3, func_standard)
 
-# example_plot_error(func_standard, dim,maxlevel=7)
+#example_plot_error(func_standard, dim, maxlevel=6, x_axis_type="level")
 
-example_comparisons_fullgrid(2,func_standard)
+# example_comparisons_fullgrid(2,func_standard)
 
+
+def get_symbolictest():
+
+    x0, x1, x2 = sp.symbols("x0 x1 x2")
+    return x0*x1**2*sp.sin(x0)
+
+
+
+
+test=fctClass.funcGradientCollectionSymbolic(get_symbolictest(),2)
+
+print(test.getFunction()([0.25,25]))
+
+print(f2D([0.25,0.5]))
 
 """"
 
@@ -1252,5 +1336,6 @@ func_standard = pysgpp.multiFunc(func_wrap)
 
 example_multidim(func_standard,dim,maxlevel=5)
 
-plt.show()
+
 """
+plt.show()
