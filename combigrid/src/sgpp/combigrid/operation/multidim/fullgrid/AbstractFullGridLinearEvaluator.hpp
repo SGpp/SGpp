@@ -144,6 +144,8 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
       // get function value and partial product and multiply them together with the last basis
       // coefficient, then add the resulting value to the total sum
       double value = funcIter->value();
+      std::cout << "a " << funcIter->getMultiIndex()[0] << " " << funcIter->getMultiIndex()[1]
+                << " " << value << std::endl;
       V vec = partialProducts[lastDim];
       vec.componentwiseMult(basisValues[lastDim][it.indexAt(lastDim)]);
       vec.scalarMult(value);

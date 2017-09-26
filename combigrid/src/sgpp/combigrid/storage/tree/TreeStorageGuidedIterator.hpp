@@ -40,7 +40,7 @@ class TreeStorageGuidedIterator : public AbstractMultiStorageIterator<T> {
 
   /**
    * Helper function that returns the index-th child of the given node. If this child does not
-   * exist, it is created (along with nodes for previous childs that also do not exist).
+   * exist, it is created (along with nodes for previous children that also do not exist).
    * @param depth Depth of the node in the tree (starting from 0)
    * @param node Node to get the child from
    * @param index Index of the child to get.

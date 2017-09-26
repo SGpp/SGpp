@@ -9,6 +9,7 @@
 #include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
 #include <sgpp/combigrid/threading/PtrGuard.hpp>
 
+#include <iostream>
 #include <mutex>
 #include <string>
 #include <vector>

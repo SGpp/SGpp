@@ -25,7 +25,7 @@
 #include <vector>
 
 // Marsden: f(x) = 1 => coefficients(at least interior ones) are all 1
-double f(sgpp::base::DataVector const &v) { return v[1]; }
+double f(sgpp::base::DataVector const &v) { return 1; }
 
 int main() {
   size_t d = 2;
@@ -79,18 +79,19 @@ int main() {
     auto it2 = funcStorage->getGuidedIterator(grid->getLevel(), it, std::vector<bool>(d, true));
 
     for (size_t index1 = 0; it2->isValid(); ++index1, it2->moveToNext()) {
-      double functionValue = it2->value();
+      auto gridPoint = grid->getGridPoint(it2->getMultiIndex());
+      //      double functionValue = it2->value(); // hierarchical order
+      double functionValue = f(gridPoint);  // sorted order
       functionValues[index1] = functionValue;
 
-      sgpp::combigrid::MultiIndexIterator innerIter(grid->numPoints());
-      std::vector<std::vector<double> > basisValues;
+      //      std::cout << gridPoint[0] << " " << functionValue << std::endl;
+      //      std::cout << "grid point: ";
+      //      for (size_t i = 0; i < gridPoint.size(); i++) {
+      //        std::cout << gridPoint[i] << " ";
+      //      }
+      //      std::cout << "\n";
 
-      auto gridPoint = grid->getGridPoint(it.getMultiIndex());
-      std::cout << "grid point: ";
-      for (size_t i = 0; i < gridPoint.size(); i++) {
-        std::cout << gridPoint[i] << " ";
-      }
-      std::cout << "\n";
+      std::vector<std::vector<double> > basisValues;
       for (size_t dim = 0; dim < d; ++dim) {
         evalCopy[dim]->setParameter(sgpp::combigrid::FloatScalarVector(gridPoint[dim]));
         auto basisValues1D = evalCopy[dim]->getBasisValues();
@@ -100,15 +101,16 @@ int main() {
         }
         basisValues.push_back(basisValues1D_vec);  // basis values at grid points
       }
-      std::cout << "basis values: ";
-      for (size_t ixi = 0; ixi < basisValues.size(); ixi++) {
-        for (size_t ix = 0; ix < basisValues[ixi].size(); ix++) {
-          std::cout << basisValues[ixi][ix] << " ";
-        }
-        std::cout << ", ";
-      }
-      std::cout << "\n";
+      //      std::cout << "basis values: ";
+      //      for (size_t ixi = 0; ixi < basisValues.size(); ixi++) {
+      //        for (size_t ix = 0; ix < basisValues[ixi].size(); ix++) {
+      //          std::cout << basisValues[ixi][ix] << " ";
+      //        }
+      //        std::cout << ", ";
+      //      }
+      //      std::cout << "\n";
 
+      sgpp::combigrid::MultiIndexIterator innerIter(grid->numPoints());
       for (size_t index2 = 0; innerIter.isValid(); ++index2, innerIter.moveToNext()) {
         double splineValue = 1.0;
         auto innerIndex = innerIter.getMultiIndex();
@@ -124,30 +126,33 @@ int main() {
     sgpp::optimization::Printer::getInstance().setVerbosity(-1);
     bool solved = solver.solve(sle, functionValues, coefficients_sle);
 
-    std::cout << A.toString() << std::endl;
-    std::cout << "fct: ";
-    for (size_t i = 0; i < functionValues.size(); i++) {
-      std::cout << functionValues[i] << " ";
-    }
-    std::cout << "\ncoeff: ";
-
-    for (size_t i = 0; i < coefficients_sle.size(); i++) {
-      std::cout << coefficients_sle[i] << " ";
-    }
-    std::cout << "\n";
+    //    std::cout << A.toString() << std::endl;
+    //    std::cout << "fct: ";
+    //    for (size_t i = 0; i < functionValues.size(); i++) {
+    //      std::cout << functionValues[i] << " ";
+    //    }
+    //    std::cout << "\ncoeff: ";
+    //
+    //    for (size_t i = 0; i < coefficients_sle.size(); i++) {
+    //      std::cout << coefficients_sle[i] << " ";
+    //    }
+    //    std::cout << "\n";
 
     if (!solved) {
       exit(-1);
     }
 
-    // ToDo (rehmemk) Linearkomb coefficients_sle und basisValues bilden
-
-    it.reset();
+    // ToDo (rehmemk) coefficients_sle in der richtigen Reihenfolge in coefficientTree schreiben!
+    // Entweder hier Index anpassen, oder LGS so aufstellen, dass es passend rauskommt
 
     // Ergebnis herausschreiben
-
+    it.reset();
+    std::cout << "\n";
     for (size_t vecIndex = 0; it.isValid(); ++vecIndex, it.moveToNext()) {
       coefficientTree->set(it.getMultiIndex(), coefficients_sle[vecIndex]);
+
+      std::cout << "b " << it.getMultiIndex()[0] << " " << it.getMultiIndex()[1] << " "
+                << coefficients_sle[vecIndex] << std::endl;
     }
 
     return coefficientTree;
