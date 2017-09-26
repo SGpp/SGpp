@@ -73,7 +73,8 @@ void OperationInverseRosenblattTransformation1DModPolyClenshawCurtis::init(
   std::sort(ordered_grid_points.begin(), ordered_grid_points.end());
 
   double left_coord = 0.0;
-  double left_function_value = 0.0;
+  coord[0] = 0.0;
+  double left_function_value = opEval->eval(*alpha1d, coord);
   for (size_t i = 1; i < ordered_grid_points.size(); i++) {
     coord[0] = ordered_grid_points[i];
     double eval_res = opEval->eval(*alpha1d, coord);
