@@ -66,7 +66,7 @@ void BSplineInterpolationEvaluator::setGridPoints(std::vector<double> const& x) 
 double BSplineInterpolationEvaluator::nonUniformBSpline(double x, size_t deg, size_t k) {
   // create a vector xi that holds the gridpoints and continues to the left and right by mirroring
   // at 0 and 1
-  std::vector<double> xi(degree + 1, 0);
+  std::vector<double> xi(xValues.size() + degree + 1, 0);
   // this offset is only correct for odd degrees
   size_t offset = (degree + 1) / 2;
   xi.insert(xi.begin() + offset, xValues.begin(), xValues.end());
