@@ -102,9 +102,9 @@ for i in range(0, 2**l_max - 1):
 
 # test()
 # grid_points = np.arange(0, 1.01, 2**-l_max)
-ys = [interpolation(x) for x in xs]
+# ys = [interpolation(x) for x in xs]
 # plotSG2d(interpolation.grid, interpolation.alpha)
-# ys = eval_rosenblatt1d(interpolation, xs)
+ys = eval_rosenblatt1d(interpolation, xs)
 # print(ys)
 # ys = eval_inverse_rosenblatt1d(interpolation, xs)
 # eval_rosenblattdd(interpolation, xs)

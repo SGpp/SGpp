@@ -76,7 +76,8 @@ double OperationRosenblattTransformation1DModPoly::doTransformation1D(base::Data
   coord_cdf.insert(std::pair<double, double>(0.0, 0.0));
   coord_cdf.insert(std::pair<double, double>(1.0, 1.0));
   double left_coord = 0.0;
-  double left_function_value = 0.0;
+  coord[0] = 0.0;
+  double left_function_value = opEval->eval(*alpha1d, coord);
   for (size_t i = 1; i < ordered_grid_points.size(); i++) {
     coord[0] = ordered_grid_points[i];
     double eval_res = opEval->eval(*alpha1d, coord);

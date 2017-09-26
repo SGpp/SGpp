@@ -76,9 +76,9 @@ double OperationRosenblattTransformation1DModPolyClenshawCurtis::doTransformatio
   coord_cdf.insert(std::pair<double, double>(0.0, 0.0));
   coord_cdf.insert(std::pair<double, double>(1.0, 1.0));
   std::sort(ordered_grid_points.begin(), ordered_grid_points.end());
-
   double left_coord = 0.0;
-  double left_function_value = 0.0;
+  coord[0] = 0.0;
+  double left_function_value = opEval->eval(*alpha1d, coord);
   for (size_t i = 1; i < ordered_grid_points.size(); i++) {
     coord[0] = ordered_grid_points[i];
     double eval_res = opEval->eval(*alpha1d, coord);
@@ -96,8 +96,8 @@ double OperationRosenblattTransformation1DModPolyClenshawCurtis::doTransformatio
       negative_value_encountered = negative_value_encountered || (value < 0);
     }
     area = gaussQuadSum * scaling;
-    std::cout << "from " << left_coord << " to " << left+scaling << std::endl;
-    std::cout << "area:" << area << std::endl;
+    // std::cout << "from " << left_coord << " to " << left+scaling << std::endl;
+    // std::cout << "area:" << area << std::endl;
 
     if (negative_value_encountered || eval_res < 0) {
       // make sure that the cdf is monotonically increasing
@@ -111,14 +111,14 @@ double OperationRosenblattTransformation1DModPolyClenshawCurtis::doTransformatio
         right_coord = ordered_grid_points[j];
         coord[0] = right_coord;
         right_function_value = opEval->eval(*alpha1d, coord);
-        std::cout << "j:" << j << std::endl;
-        std::cout << "val:" << right_function_value << std::endl;
+        // std::cout << "j:" << j << std::endl;
+        // std::cout << "val:" << right_function_value << std::endl;
         if (right_function_value >= 0 && right_function_value != left_function_value) break;
       }
       if (j == ordered_grid_points.size() - 1)
         right_function_value = 0;
-      std::cout << "Found j: " << j << std::endl;
-      std::cout << right_coord << ";" << right_function_value << std::endl;
+      // std::cout << "Found j: " << j << std::endl;
+      // std::cout << right_coord << ";" << right_function_value << std::endl;
       // get last function value and coordinate with pdf(x) >= 0
       // perform montonic cubic interpolation based on:
       // https://en.wikipedia.org/wiki/Monotone_cubic_interpolation
@@ -181,10 +181,10 @@ double OperationRosenblattTransformation1DModPolyClenshawCurtis::doTransformatio
 
       for (; i <= j; i++) {
         coord[0] = ordered_grid_points[i];
-        std::cout << "interpolating i:" << i << std::endl;
+        // std::cout << "interpolating i:" << i << std::endl;
         // kann eig entfernt werden
         eval_res = interpolation(coord[0]);
-        std::cout << "For x=" << coord[0] << "interp: " << eval_res << std::endl;
+        // std::cout << "For x=" << coord[0] << "interp: " << eval_res << std::endl;
         double gaussQuadSum = 0.;
         double left = left_coord;
         double scaling = coord[0] - left;
@@ -195,12 +195,12 @@ double OperationRosenblattTransformation1DModPolyClenshawCurtis::doTransformatio
 
         area = gaussQuadSum * scaling;
         sum += area;
-        std::cout << "from " << left_coord << " to " << ordered_grid_points[i] << std::endl;
-        std::cout << "area:" << area << std::endl;
+        // std::cout << "from " << left_coord << " to " << ordered_grid_points[i] << std::endl;
+        // std::cout << "area:" << area << std::endl;
         patch_areas.push_back(area);
         is_negative_patch.push_back(true);
         patch_functions.push_back(interpolation);
-        std::cout << "set patch_function for:" << i - 1 << std::endl;
+        // std::cout << "set patch_function for:" << i - 1 << std::endl;
         left_coord = ordered_grid_points[i];
       }
       --i;
@@ -214,10 +214,12 @@ double OperationRosenblattTransformation1DModPolyClenshawCurtis::doTransformatio
       is_negative_patch.push_back(false);
     }
   }
-  std::cout << "sum: " << sum << std::endl;
+  // std::cout << "sum: " << sum << std::endl;
 
-  // if (sum == 0)
-    // return 0;
+  if (sum == 0) {
+    std::cerr << "warning: integral of the pdf is 0" << std::endl;
+    return 0;
+  }
   // compute CDF
   double tmp_sum;
   unsigned int i = 0;
@@ -233,12 +235,10 @@ double OperationRosenblattTransformation1DModPolyClenshawCurtis::doTransformatio
 
   /***************** STEP 2. Sampling  ********************/
 
-  std::cout << "Areas: " << std::endl;
-  for (size_t i = 0; i < patch_areas.size(); i++) {
-    std::cout << patch_areas[i] << std::endl;
-  }
-  if (sum == 0)
-    return 0;
+  // std::cout << "Areas: " << std::endl;
+  // for (size_t i = 0; i < patch_areas.size(); i++) {
+    // std::cout << patch_areas[i] << std::endl;
+  // }
   // std::cout << "Size areas: " << patch_areas.size() << std::endl;
   // std::cout << "Size cdf: " << coord_cdf.size() << std::endl;
   // std::cout << "coord cdf: " << std::endl;
