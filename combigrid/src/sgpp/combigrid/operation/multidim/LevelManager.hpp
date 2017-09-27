@@ -152,13 +152,6 @@ class LevelManager {
   virtual void updatePriority(MultiIndex const &level, std::shared_ptr<LevelInfo> levelInfo);
 
   /**
-   * @param q: Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as
-   * in most papers).
-   * If you have a norm w with levels starting from 1, simply use q = w - dim().
-   */
-  std::vector<MultiIndex> getRegularLevels(size_t q);
-
-  /**
    * @return a set of level multi-indices. The levels are enumerated with increasing 1-norm until
    * the total number of necessary function evaluations would exceed the given limit maxNumPoints.
    * For example, this might return the levels (0, 0), (1, 0), (0, 1), (2, 0), (1, 1) and omit the
@@ -250,6 +243,13 @@ class LevelManager {
    * this CombigridEvaluator.
    */
   std::shared_ptr<TreeStorage<uint8_t>> getLevelStructure() const;
+
+  /**
+   * @param q: Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as
+   * in most papers).
+   * If you have a norm w with levels starting from 1, simply use q = w - dim().
+   */
+  std::vector<MultiIndex> getRegularLevels(size_t q);
 
   /**
    * @return the serialized version of getLevelStructure()

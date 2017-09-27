@@ -14,6 +14,12 @@ import pysgpp
 import math
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from pysgpp.extensions.datadriven.uq.plot.colors import initialize_plotting_style, \
+    load_color, load_font_properties, savefig
+from matplotlib.patches import Rectangle
+import numpy as np
+from pysgpp.extensions.datadriven.uq.plot.plot3d import plotSG3d
+from itertools import product
 
 ## The first thing we need is a function to evaluate. This function will be evaluated on the domain
 ## \f$[0, 1]^d\f$. This particular function can be used with any number of dimensions.
@@ -25,8 +31,11 @@ def f(x):
         product *= math.exp(-x[i])
     return product
 
+def g(x):
+    return np.prod([4 * xi * (1 - xi) for xi in x.array()])
+
 ## We have to wrap f in a pysgpp.MultiFunction object.
-func = pysgpp.multiFunc(f)
+func = pysgpp.multiFunc(g)
 
 ## Let's use a 3D-function.
 d = 3
@@ -311,6 +320,101 @@ def example6():
     print("Numerical result: " + str(result))
 
 
+# # @section py_combigrid_example_7 Example 7: Polynomial interpolation on nested Clenshaw Curtis grids
+# #
+# # The next example uses interpolation.
+def example7():
+    # This time, we use Clenshaw-Curtis points with exponentially growing number of points per level.
+    # This is helpful for CC points to make them nested. Nested means that the set of grid points at
+    # one level is a subset of the set of grid points at the next level. Nesting can drastically
+    # reduce the number of needed function evaluations. Using these grid points, we will do
+    # polynomial interpolation at a single point.
+    operation = pysgpp.CombigridOperation.createExpUniformLinearInterpolation(2, func)
+
+    # # The level manager provides more options for combigrid evaluation, so let's get it:
+    levelManager = operation.getLevelManager()
+
+    # # We can add regular levels like before:
+    maxLevel = 2
+    levelManager.addRegularLevels(maxLevel)
+
+    # We can also fetch the used grid points and plot the grid:
+    grid = levelManager.getGridPointMatrix()
+    gridList = [[grid.get(r, c) for c in range(grid.getNcols())] for r in range(grid.getNrows())]
+
+
+    def g(x, y):
+        evaluationPoint = pysgpp.DataVector([x, y])
+        result = operation.evaluate(maxLevel, evaluationPoint)
+        return result
+
+    fig, ax, _ = plotSG3d(g=g, contour_xy=False)
+    ax.scatter(gridList[0], gridList[1], np.zeros(len(gridList[0])),
+               color=load_color(0),
+               marker='o', s=20)
+#     ax.set_axis_off()
+    ax.set_xlabel(r"$x$")
+    ax.set_ylabel(r"$y$")
+    ax.set_xticks([0, 0.5, 1])
+    ax.set_yticks([0, 0.5, 1])
+    ax.set_zticks([0, 0.5, 1])
+    ax.xaxis.labelpad = 13
+    ax.yaxis.labelpad = 13
+    ax.set_title(r"$f(x,y) = 16 x(1-x)y(1-y)$",
+                 fontproperties=load_font_properties())
+    savefig(fig, "/home/franzefn/Desktop/Mario/normal_parabola", mpl3d=True)
+
+    fig = plt.figure()
+    plt.plot(gridList[0], gridList[1], " ",
+             color=load_color(0),
+             marker='o', markersize=10)
+    plt.axis('off')
+    currentAxis = plt.gca()
+    currentAxis.add_patch(Rectangle((0, 0), 1, 1, fill=None, alpha=1, linewidth=2))
+    plt.xlim(0, 1)
+    plt.ylim(0, 1)
+    plt.title(r"Sparse Grid $\ell=%i$" % maxLevel,
+              fontproperties=load_font_properties())
+    savefig(fig, "/home/franzefn/Desktop/Mario/sparse_grid", mpl3d=True)
+
+    # # We can also fetch the used grid points and plot the grid:
+    levels = levelManager.getRegularLevels(maxLevel)
+
+    fig, axarr = plt.subplots(maxLevel + 1, maxLevel + 1,
+                              sharex=True, sharey=True, squeeze=True)
+    
+    for level in product(range(maxLevel + 1), repeat=2):
+        ax = axarr[level[0], level[1]]
+        ax.axis('off')
+        
+    for level in levels:
+        ax = axarr[level[0], level[1]]
+        h = 2**(-level[0] - 1)
+        n = 2 ** (level[0] + 1) - 1
+        xs = np.linspace(h, 1 - h, n)
+
+        h = 2 ** (-level[1] - 1)
+        n = 2 ** (level[1] + 1) - 1
+        ys = np.linspace(h, 1 - h, n)
+
+        xv, yv = np.meshgrid(xs, ys, sparse=False, indexing='xy')
+
+        for i in xrange(len(xs)):
+            for j in xrange(len(ys)):
+                ax.plot(xv[j, i], yv[j, i], color=load_color(0),
+                        marker="o", markersize=10)
+        ax.set_title(r"$(%i, %i)$" % (level[0] + 1, level[1] + 1),
+                     fontproperties=load_font_properties())
+        ax.add_patch(Rectangle((0, 0), 1, 1, fill=None, alpha=1, linewidth=1))
+
+#     plt.xlim(0, 1)
+#     plt.ylim(0, 1)
+    fig.set_size_inches(8, 8, forward=True)
+    savefig(fig, "/home/franzefn/Desktop/Mario/tableau_ct_l%i" % maxLevel,
+            mpl3d=True)
+
+
+
 # Call the examples
 
 # print("Example 1:")
@@ -319,8 +423,8 @@ def example6():
 # print("\nExample 2:")
 # example2()
 
-print("\nExample 3:")
-example3()
+# print("\nExample 3:")
+# example3()
 
 # print("\nExample 4:")
 # example4()
@@ -330,3 +434,6 @@ example3()
 #
 # print("\nExample 6:")
 # example6()
+
+print("\nExample 7:")
+example7()
