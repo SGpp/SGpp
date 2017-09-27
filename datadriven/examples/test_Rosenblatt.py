@@ -88,14 +88,14 @@ def test():
   print(len(alpha))
   # plt.plot(grid_points, ys)
 
-xs = np.arange(0, 1.01, 0.1)
-# xs = [0, 0.25, 0.5, 0.75, 0.888787, 1.0]
+xs = np.arange(0, 1.01, 0.01)
+# xs = [0, 0.00221301, 0.25, 0.5, 0.75, 0.888787, 1.0]
 l_max = 3
 d = 1
 interpolation = interpolation_function(d, parabola)
 interpolation.create_interpolation(l_max)
 
-alpha = [-7.25846502857492037464e+00, 3.43376778340746291462e+00, 3.43376778340746291462e+00, 6.70610097194139598287e+00, -2.06986834045588530273e+00, -2.06986834045588841136e+00, 6.70610097194139598287e+00]
+alpha = [1.97129579854422742891e+00, -6.86581347746972214807e-01, -6.86581347746972214807e-01, -9.42860151361599396758e-01, 2.91018042368639928696e-01, 2.91018042368640372786e-01, -9.42860151361599396758e-01]
 print(len(alpha))
 for i in range(0, 2**l_max - 1):
   interpolation.alpha[i] = alpha[i]
@@ -105,7 +105,7 @@ for i in range(0, 2**l_max - 1):
 # ys = [interpolation(x) for x in xs]
 # plotSG2d(interpolation.grid, interpolation.alpha)
 ys = eval_rosenblatt1d(interpolation, xs)
-# print(ys)
+print(ys)
 # ys = eval_inverse_rosenblatt1d(interpolation, xs)
 # eval_rosenblattdd(interpolation, xs)
 plt.plot(xs, ys)
