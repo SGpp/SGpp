@@ -110,6 +110,16 @@ double testFunctionAtan(DataVector const &x) {
          4 * std::pow(x[1], 2);  // + exp(x[0] * x[1] - 1);
 }
 
+double testFunction8(DataVector const &coordinates) {
+  double ans = 0.0;
+
+  for (size_t i = 0; i < coordinates.getSize(); ++i) {
+    ans += coordinates[i];
+  }
+
+  return ans;
+}
+
 /*
  void printCTResults(size_t d, size_t q) {
  const size_t samples = 10;
@@ -170,13 +180,36 @@ void printCTResults(size_t d, size_t q, std::shared_ptr<CombigridMultiOperation>
             << std::sqrt(integrator.average(domain, samples)) << std::endl;
 }
 
-BOOST_AUTO_TEST_CASE(testInterpolation) {
+BOOST_AUTO_TEST_SUITE(testInterpolation)
+
+BOOST_AUTO_TEST_CASE(testLinearInterpolation) {
   std::cout << "-------------------------------------------" << std::endl;
   std::cout << "Linear Interpolation" << std::endl;
   auto func = MultiFunction(testFunction3);
   for (size_t d = 2; d <= 5; ++d) {
+    auto ctInterpolator = CombigridMultiOperation::createExpUniformLinearInterpolation(d, func);
+    std::cout << "- - - - - - - - - - - - - - " << std::endl;
+    for (size_t w = 2; w <= 8; ++w) {
+      Stopwatch stopwatch;
+      printCTResults(d, w, ctInterpolator, func);
+      // stopwatch.log();
+    }
+  }
+
+  auto quadrature = CombigridMultiOperation::createLinearLejaQuadrature(
+      3, MultiFunction([](sgpp::base::DataVector const &x) { return 1.0; }));
+  std::vector<DataVector> input(1, DataVector(0));
+  auto result = quadrature->evaluate(3, input);
+  std::cout << "Quadrature result: " << result[0] << "\n";
+}
+
+BOOST_AUTO_TEST_CASE(testExpChebyshevPolynomialInterpolation) {
+  std::cout << "-------------------------------------------" << std::endl;
+  std::cout << "Chebyshev Polynomial Interpolation" << std::endl;
+  auto func = MultiFunction(testFunction3);
+  for (size_t d = 2; d <= 5; ++d) {
     auto ctInterpolator =
-        CombigridMultiOperation::createLinearL2LejaPolynomialInterpolation(d, func);
+        CombigridMultiOperation::createExpChebyshevPolynomialInterpolation(d, func);
     std::cout << "- - - - - - - - - - - - - - " << std::endl;
     for (size_t w = 2; w <= 8; ++w) {
       Stopwatch stopwatch;
@@ -195,7 +228,7 @@ BOOST_AUTO_TEST_CASE(testInterpolation) {
 BOOST_AUTO_TEST_CASE(testPolynomialInterpolation) {
   std::cout << "-------------------------------------------" << std::endl;
   std::cout << "Polynomial Interpolation" << std::endl;
-  auto func = MultiFunction(testFunction3);
+  auto func = MultiFunction(testFunction8);
   for (size_t d = 2; d <= 5; ++d) {
     std::cout << "- - - - - - - - - - - - - - " << std::endl;
     auto ctInterpolator =
@@ -212,7 +245,7 @@ BOOST_AUTO_TEST_CASE(testPolynomialInterpolation) {
   std::cout << "Quadrature result: " << result[0] << "\n";
 }
 
-BOOST_AUTO_TEST_CASE(testLejaPolynomialInterpolation) {
+BOOST_AUTO_TEST_CASE(testLinearL2LejaPolynomialInterpolation) {
   std::cout << "-------------------------------------------" << std::endl;
   std::cout << "Leja Polynomial Interpolation" << std::endl;
   auto func = MultiFunction(testFunction3);
@@ -231,3 +264,5 @@ BOOST_AUTO_TEST_CASE(testLejaPolynomialInterpolation) {
   auto result = quadrature->evaluate(3, input);
   std::cout << "Quadrature result: " << result[0] << "\n";
 }
+
+BOOST_AUTO_TEST_SUITE_END()
