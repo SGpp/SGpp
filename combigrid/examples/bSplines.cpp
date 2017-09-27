@@ -32,7 +32,7 @@ int main() {
   sgpp::combigrid::MultiFunction func(f);
 
   sgpp::combigrid::CombiHierarchies::Collection grids(
-      d, sgpp::combigrid::CombiHierarchies::linearL2Leja(2));
+      d, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
   sgpp::combigrid::CombiEvaluators::Collection evaluators(
       d, sgpp::combigrid::CombiEvaluators::BSplineInterpolation());
   std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
@@ -174,7 +174,7 @@ int main() {
   parameter.set(1, 0.81);
   //  parameter.set(2, 0.9);
 
-  size_t maxlevel = 4;
+  size_t maxlevel = 8;
   double result = operation->evaluate(maxlevel, parameter);
 
   std::cout << "Target function value: " << func(parameter) << "\n";
