@@ -186,7 +186,13 @@ double OperationInverseRosenblattTransformationModPolyClenshawCurtis::doTransfor
     base::Grid* grid1d, base::DataVector* alpha1d, double coord1d) {
   std::unique_ptr<OperationTransformation1D> opInverseRosenblatt(
       op_factory::createOperationInverseRosenblattTransformation1D(*grid1d));
-  return opInverseRosenblatt->doTransformation1D(alpha1d, coord1d);
+  double y = opInverseRosenblatt->doTransformation1D(alpha1d, coord1d);
+  if (y == 0) {
+    std::cout << "InverseRosenblatt y=0" << std::endl;
+    std::cout << alpha1d->toString() << std::endl;
+    std::cout << "coord1d:" << coord1d << std::endl;
+  }
+  return y;
 }  // end of compute_1D_cdf()
 }  // namespace datadriven
 }  // namespace sgpp

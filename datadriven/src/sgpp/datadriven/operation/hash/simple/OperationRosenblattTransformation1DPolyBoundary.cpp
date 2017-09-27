@@ -68,17 +68,13 @@ double OperationRosenblattTransformation1DPolyBoundary::doTransformation1D(
     // inserting dummy points into coord_cdf to make it have the right size
     coord_cdf.insert(std::pair<double, double>(coord[0], 0.0));
   }
-  ordered_grid_points.push_back(0.0);
-  ordered_grid_points.push_back(1.0);
   std::sort(ordered_grid_points.begin(), ordered_grid_points.end());
 
   std::vector<std::function<double(double)>> patch_functions;
 
-  coord_cdf.insert(std::pair<double, double>(0.0, 0.0));
-  coord_cdf.insert(std::pair<double, double>(1.0, 1.0));
-
   double left_coord = 0.0;
-  double left_function_value = 0.0;
+  coord[0] = 0.0;
+  double left_function_value = std::max(0.0, opEval->eval(*alpha1d, coord));
   for (size_t i = 1; i < ordered_grid_points.size(); i++) {
     coord[0] = ordered_grid_points[i];
     double eval_res = opEval->eval(*alpha1d, coord);
@@ -232,13 +228,13 @@ double OperationRosenblattTransformation1DPolyBoundary::doTransformation1D(
 
   // std::cout << "Areas: " << std::endl;
   // for (size_t i = 0; i < patch_areas.size(); i++) {
-  // std::cout << patch_areas[i] << std::endl;
+    // std::cout << patch_areas[i] << std::endl;
   // }
   // std::cout << "Size areas: " << patch_areas.size() << std::endl;
   // std::cout << "Size cdf: " << coord_cdf.size() << std::endl;
   // std::cout << "coord cdf: " << std::endl;
   // for (it1 = coord_cdf.begin(); it1 != coord_cdf.end(); ++it1) {
-  // std::cout << it1->first << ":" << it1->second << std::endl;
+    // std::cout << it1->first << ":" << it1->second << std::endl;
   // }
 
   // find cdf interval

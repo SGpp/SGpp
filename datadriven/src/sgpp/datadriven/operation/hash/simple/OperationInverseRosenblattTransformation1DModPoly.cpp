@@ -73,7 +73,7 @@ void OperationInverseRosenblattTransformation1DModPoly::init(base::DataVector* a
 
   double left_coord = 0.0;
   coord[0] = 0.0;
-  double left_function_value = opEval->eval(*alpha1d, coord);
+  double left_function_value = std::max(0.0, opEval->eval(*alpha1d, coord));
   for (size_t i = 1; i < ordered_grid_points.size(); i++) {
     coord[0] = ordered_grid_points[i];
     double eval_res = opEval->eval(*alpha1d, coord);
