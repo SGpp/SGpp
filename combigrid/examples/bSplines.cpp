@@ -32,9 +32,9 @@ int main() {
   sgpp::combigrid::MultiFunction func(f);
 
   sgpp::combigrid::CombiHierarchies::Collection grids(
-      d, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+      d, sgpp::combigrid::CombiHierarchies::expClenshawCurtis());
   sgpp::combigrid::CombiEvaluators::Collection evaluators(
-      d, sgpp::combigrid::CombiEvaluators::BSplineInterpolation());
+      d, sgpp::combigrid::CombiEvaluators::polynomialInterpolation());
   std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
       new sgpp::combigrid::WeightedRatioLevelManager());  // TODO(rehmemk): choose one
 
@@ -170,11 +170,11 @@ int main() {
       grids, evaluators, levelManager, gf, exploitNesting);
 
   sgpp::base::DataVector parameter(d);
-  parameter.set(0, 0.27);
-  parameter.set(1, 0.81);
+  parameter.set(0, 0.25);
+  parameter.set(1, 0.5);
   //  parameter.set(2, 0.9);
 
-  size_t maxlevel = 8;
+  size_t maxlevel = 6;
   double result = operation->evaluate(maxlevel, parameter);
 
   std::cout << "Target function value: " << func(parameter) << "\n";
