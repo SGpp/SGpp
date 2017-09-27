@@ -167,6 +167,8 @@ void testEqualityRosenblattInverseRosenblattDD(
       // std::cout << "x_sample[idim]:" << x_sample[idim] << std::endl;
       // std::cout << "u_sample_transformed[idim]:" << u_sample_transformed[idim] << std::endl;
       BOOST_CHECK_SMALL(inversionError, tolerance);
+      // assert that no negative values appear
+      BOOST_CHECK(x_sample[idim] >= 0);
     }
   }
 }
