@@ -48,10 +48,10 @@ int main() {
   size_t d = 1;
   //  std::vector<double> GridPoints = { 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875};
 
-  //  sgpp::combigrid::CombiHierarchies::Collection grids(
-  //      d, sgpp::combigrid::CombiHierarchies::expChebyshev());
   sgpp::combigrid::CombiHierarchies::Collection grids(
-      d, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+      d, sgpp::combigrid::CombiHierarchies::expChebyshev());
+  //  sgpp::combigrid::CombiHierarchies::Collection grids(
+  //      d, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
 
   //  sgpp::combigrid::FloatScalarVector EvalPoint(0.5);
   sgpp::combigrid::FloatArrayVector EvalPoints;
@@ -78,7 +78,7 @@ int main() {
   for (size_t dim = 0; dim < d; ++dim) {
     evalCopy[dim] = evaluators[dim]->cloneLinear();
     bool needsSorted = true;
-    size_t level = 1;
+    size_t level = 2;
     auto GridPoints = grids[dim]->getPoints(level, needsSorted);
     evalCopy[dim]->setGridPoints(GridPoints);
     evalCopy[dim]->setParameter(EvalPoints);

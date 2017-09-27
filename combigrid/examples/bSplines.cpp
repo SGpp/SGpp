@@ -25,14 +25,14 @@
 #include <vector>
 
 // Marsden: f(x) = 1 => coefficients(at least interior ones) are all 1
-double f(sgpp::base::DataVector const &v) { return 1; }
+double f(sgpp::base::DataVector const &v) { return v[0] + v[1]; }
 
 int main() {
   size_t d = 2;
   sgpp::combigrid::MultiFunction func(f);
 
   sgpp::combigrid::CombiHierarchies::Collection grids(
-      d, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+      d, sgpp::combigrid::CombiHierarchies::linearL2Leja(2));
   sgpp::combigrid::CombiEvaluators::Collection evaluators(
       d, sgpp::combigrid::CombiEvaluators::BSplineInterpolation());
   std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
@@ -56,7 +56,7 @@ int main() {
     // We store the results (= coefficients for Bspline interpolation) for each grid point, encoded
     // by a MultiIndex, in a TreeStorage
     auto coefficientTree = std::make_shared<sgpp::combigrid::TreeStorage<double> >(d);
-
+    auto level = grid->getLevel();
     std::vector<size_t> numGridPointsVec = grid->numPoints();
     size_t numGridPoints = 1;
     for (size_t i = 0; i < numGridPointsVec.size(); i++) {
@@ -67,8 +67,8 @@ int main() {
     for (size_t dim = 0; dim < d; ++dim) {
       evalCopy[dim] = evaluators[dim]->cloneLinear();
       bool needsSorted = true;
-      auto GridPoints = grids[dim]->getPoints(grid->getLevel()[dim], needsSorted);
-      evalCopy[dim]->setGridPoints(GridPoints);
+      auto gridPoints = grids[dim]->getPoints(grid->getLevel()[dim], needsSorted);
+      evalCopy[dim]->setGridPoints(gridPoints);
     }
     sgpp::base::DataMatrix A(numGridPoints, numGridPoints);
     sgpp::base::DataVector coefficients_sle(numGridPoints);
@@ -80,9 +80,7 @@ int main() {
 
     for (size_t index1 = 0; it2->isValid(); ++index1, it2->moveToNext()) {
       auto gridPoint = grid->getGridPoint(it2->getMultiIndex());
-      //      double functionValue = it2->value(); // hierarchical order
-      double functionValue = f(gridPoint);  // sorted order
-      functionValues[index1] = functionValue;
+      functionValues[index1] = funcStorage->get(level, it2->getMultiIndex());  // sorted order
 
       //      std::cout << gridPoint[0] << " " << functionValue << std::endl;
       //      std::cout << "grid point: ";
@@ -126,17 +124,17 @@ int main() {
     sgpp::optimization::Printer::getInstance().setVerbosity(-1);
     bool solved = solver.solve(sle, functionValues, coefficients_sle);
 
-    //    std::cout << A.toString() << std::endl;
-    //    std::cout << "fct: ";
-    //    for (size_t i = 0; i < functionValues.size(); i++) {
-    //      std::cout << functionValues[i] << " ";
-    //    }
-    //    std::cout << "\ncoeff: ";
-    //
-    //    for (size_t i = 0; i < coefficients_sle.size(); i++) {
-    //      std::cout << coefficients_sle[i] << " ";
-    //    }
-    //    std::cout << "\n";
+    std::cout << A.toString() << std::endl;
+    std::cout << "fct: ";
+    for (size_t i = 0; i < functionValues.size(); i++) {
+      std::cout << functionValues[i] << " ";
+    }
+    std::cout << "\ncoeff: ";
+
+    for (size_t i = 0; i < coefficients_sle.size(); i++) {
+      std::cout << coefficients_sle[i] << " ";
+    }
+    std::cout << "\n";
 
     if (!solved) {
       exit(-1);
@@ -152,7 +150,7 @@ int main() {
       coefficientTree->set(it.getMultiIndex(), coefficients_sle[vecIndex]);
 
       std::cout << "b " << it.getMultiIndex()[0] << " " << it.getMultiIndex()[1] << " "
-                << coefficients_sle[vecIndex] << std::endl;
+                << coefficientTree->get(it.getMultiIndex()) << std::endl;
     }
 
     return coefficientTree;
@@ -172,13 +170,14 @@ int main() {
       grids, evaluators, levelManager, gf, exploitNesting);
 
   sgpp::base::DataVector parameter(d);
-  parameter.set(0, 0.5);
-  //  parameter.set(1, 0.5);
+  parameter.set(0, 0.27);
+  parameter.set(1, 0.81);
   //  parameter.set(2, 0.9);
 
-  size_t maxlevel = 2;
+  size_t maxlevel = 4;
   double result = operation->evaluate(maxlevel, parameter);
 
   std::cout << "Target function value: " << func(parameter) << "\n";
   std::cout << "Numerical result: " << result << "\n";
+  std::cout << fabs(func(parameter) - result) << std::endl;
 }
