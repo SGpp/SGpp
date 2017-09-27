@@ -69,6 +69,7 @@ class CombigridTreeStorage : public AbstractCombigridStorage {
   virtual void deserialize(std::string const &str);
 
   virtual void set(MultiIndex const &level, MultiIndex const &index, double value);
+  double get(MultiIndex const &level, MultiIndex const &index) override;
   virtual void setMutex(std::shared_ptr<std::mutex> mutexPtr);
 };
 }  // namespace combigrid

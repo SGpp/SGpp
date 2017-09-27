@@ -65,6 +65,8 @@ class AbstractCombigridStorage {
    */
   virtual void set(MultiIndex const &level, MultiIndex const &index, double value) = 0;
 
+  virtual double get(MultiIndex const &level, MultiIndex const &index) = 0;
+
   /**
    * Sets a mutex that is locked for critical operations. If the mutex is nullptr, nothing is
    * locked.

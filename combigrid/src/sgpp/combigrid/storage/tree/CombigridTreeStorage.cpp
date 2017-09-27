@@ -185,6 +185,17 @@ void CombigridTreeStorage::set(const MultiIndex &level, const MultiIndex &index,
   impl->storage->get(reducedLevel)->set(index, value);
 }
 
+double CombigridTreeStorage::get(MultiIndex const &level, MultiIndex const &index) {
+  MultiIndex reducedLevel = level;
+  size_t numDimensions = impl->pointHierarchies.size();
+  for (size_t d = 0; d < numDimensions; ++d) {
+    if (impl->pointHierarchies[d]->isNested() && impl->exploitNesting) {
+      reducedLevel[d] = 0;
+    }
+  }
+  return impl->storage->get(reducedLevel)->get(index);
+}
+
 void CombigridTreeStorage::setMutex(std::shared_ptr<std::mutex> mutexPtr) {
   impl->mutexPtr = mutexPtr;
 }
