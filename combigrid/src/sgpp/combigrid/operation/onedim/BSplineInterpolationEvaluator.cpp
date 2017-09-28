@@ -67,7 +67,7 @@ double BSplineInterpolationEvaluator::nonUniformBSpline(double x, size_t deg, si
   // create a vector xi that holds the gridpoints and continues to the left and right by mirroring
   // at 0 and 1
   std::vector<double> xi(xValues.size() + degree + 1, 0);
-  // this offset is only correct for odd degrees
+  // ToDo(rehmemk) this offset is only correct for odd degrees
   size_t offset = (degree + 1) / 2;
   xi.insert(xi.begin() + offset, xValues.begin(), xValues.end());
   for (size_t i = 0; i < offset; i++) {
@@ -76,11 +76,6 @@ double BSplineInterpolationEvaluator::nonUniformBSpline(double x, size_t deg, si
         xValues[xValues.size() - 1] +
         (xValues[xValues.size() - 1] - xValues[xValues.size() - i - 2]);
   }
-
-  //  for (size_t i = 0; i < xi.size(); i++) {
-  //    std::cout << xi[i] << " ";
-  //  }
-  //  std::cout << "\n";
 
   if (deg == 0) {
     // characteristic function of [xi[k], xi[k+1])
@@ -97,19 +92,8 @@ double BSplineInterpolationEvaluator::nonUniformBSpline(double x, size_t deg, si
 }
 
 void BSplineInterpolationEvaluator::computeBasisValues() {
-  /*mögliche Belegungen von xValues:
-   *
-   * 0.5
-   * 0 0.5 1
-   * 0 0.25 0.5 0.75 1
-   * 0 0.125 0.25 0.375 0.5 0.625 0.75 0.875 1
-   * ...
-   *
-   * Im Inneren: nonuniform B-Splines
-   * Heuristiken (Andere Ansätze möglich[Mehrfachpunkte, andere Hilfspunkte außen]):
+  /*
    * Am Rand: Spiegle Gitterweiten nach außen
-   * Nur ein Punkt: Setze Giterweite auf 1
-   * Ab zwei Punkten -> Randfall
    *
    * nonuniform B-Spline vom Grad n:
    * Knotenfolge xi_k,.,xi_{k+n+1}
@@ -118,37 +102,14 @@ void BSplineInterpolationEvaluator::computeBasisValues() {
    *
    *
    */
-
-  //  for (size_t i = 0; i < xValues.size(); i++) {
-  //    std::cout << xValues[i] << " ";
-  //  }
-  //  std::cout << "\n";
-
-  // ToDo(rehmemk) Diese Spezialfälle behandeln
   if (xValues.size() == 1) {
     basisValues.resize(1);
-    basisValues[0] = 1;
+    basisValues[0] = 1.0;
     return;
   }
   basisValues.resize(xValues.size(), sgpp::combigrid::FloatScalarVector(0));
-  //  if (xValues.size() < degree + 1) {
-  //    for (size_t i = 0; i < xValues.size(); i++) {
-  //      basisValues[i] = 1;
-  //    }
-  //    return;
-  //  }
 
-  // ToDo (rehmemk) Randfälle !
   for (size_t i = 0; i < xValues.size(); i++) {
-    //    std::vector<double> xi(degree + 2);
-    //    for (size_t k = 0; k < degree + 2; k++) {
-    //      xi[k] = xValues[i + k - (degree + 1) / 2];
-    //    }
-    //    std::cout << i << ": ";
-    //    for (size_t l = 0; l < xi.size(); l++) {
-    //      std::cout << xi[l] << " ";
-    //    }
-    //    std::cout << "\n";
     basisValues[i] = nonUniformBSpline(evaluationPoint, degree, i);
   }
 }
