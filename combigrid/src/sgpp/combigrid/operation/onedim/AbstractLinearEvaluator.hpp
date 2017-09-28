@@ -14,8 +14,6 @@
 namespace sgpp {
 namespace combigrid {
 
-enum class BasisCoefficientsComputationType { FUNCTION_VALUES, SLE };
-
 /**
  * See also AbstractEvaluator.
  * Linear means that the evaluator is linear in the function it interpolates, not necessarily (in
@@ -26,8 +24,6 @@ enum class BasisCoefficientsComputationType { FUNCTION_VALUES, SLE };
 template <typename V>
 class AbstractLinearEvaluator : public AbstractEvaluator<V> {
  protected:
-  BasisCoefficientsComputationType basistype = BasisCoefficientsComputationType::FUNCTION_VALUES;
-
  public:
   virtual ~AbstractLinearEvaluator() {}
 
@@ -44,12 +40,6 @@ class AbstractLinearEvaluator : public AbstractEvaluator<V> {
    */
   virtual std::vector<V> getBasisValues() = 0;
   virtual std::vector<double> getBasisCoefficients() = 0;
-  virtual BasisCoefficientsComputationType getBasisCoefficientComputationType() {
-    return basistype;
-  }
-  virtual void setBasisCoefficientComputationType(BasisCoefficientsComputationType &new_basistype) {
-    basistype = new_basistype;
-  }
 
   virtual void setFunctionValuesAtGridPoints(std::vector<double> &functionValues) = 0;
   virtual void setGridPoints(std::vector<double> const &xValues) = 0;
