@@ -49,9 +49,7 @@ int main() {
   //  std::vector<double> GridPoints = { 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875};
 
   sgpp::combigrid::CombiHierarchies::Collection grids(
-      d, sgpp::combigrid::CombiHierarchies::expChebyshev());
-  //  sgpp::combigrid::CombiHierarchies::Collection grids(
-  //      d, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+      d, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
 
   //  sgpp::combigrid::FloatScalarVector EvalPoint(0.5);
   sgpp::combigrid::FloatArrayVector EvalPoints;
@@ -60,7 +58,7 @@ int main() {
   //  EvalPoint[2].value() = 0.75;
 
   // uniform grid
-  double gridwidth = 0.01;
+  double gridwidth = 0.001;
   for (size_t i = 0; i < 1 / gridwidth + 1; i++) {
     EvalPoints[i] = (double)i * gridwidth;
   }
@@ -69,10 +67,12 @@ int main() {
   remove(plotstr.c_str());
   std::ofstream plotfile;
   plotfile.open(plotstr.c_str(), std::ios::app);
-  plotfile << "# Bsplines \n";
+  plotfile << "#Basis functions  \n";
 
+  //  sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
+  //      d, sgpp::combigrid::CombiEvaluators::multiBSplineInterpolation());
   sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
-      d, sgpp::combigrid::CombiEvaluators::multiBSplineInterpolation());
+      d, sgpp::combigrid::CombiEvaluators::multiLinearInterpolation());
 
   sgpp::combigrid::CombiEvaluators::MultiCollection evalCopy(d);
   for (size_t dim = 0; dim < d; ++dim) {
@@ -80,6 +80,10 @@ int main() {
     bool needsSorted = true;
     size_t level = 2;
     auto GridPoints = grids[dim]->getPoints(level, needsSorted);
+    for (size_t i = 0; i < GridPoints.size(); i++) {
+      std::cout << GridPoints[i] << " ";
+    }
+    std::cout << "\n";
     evalCopy[dim]->setGridPoints(GridPoints);
     evalCopy[dim]->setParameter(EvalPoints);
     std::vector<FloatArrayVector> basisValues1D = evalCopy[dim]->getBasisValues();
@@ -88,7 +92,6 @@ int main() {
       plotfile << EvalPoints[i].value() << ", ";
       for (size_t j = 0; j < GridPoints.size() - 1; j++) {
         plotfile << basisValues1D[j][i].value() << ", ";
-        //      std::cout << basisValues1D[i].value() << " ";
       }
       plotfile << basisValues1D[GridPoints.size() - 1][i].value() << "\n";
     }

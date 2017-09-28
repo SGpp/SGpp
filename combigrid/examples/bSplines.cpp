@@ -25,16 +25,16 @@
 #include <vector>
 
 // Marsden: f(x) = 1 => coefficients(at least interior ones) are all 1
-double f(sgpp::base::DataVector const &v) { return v[0] + v[1]; }
+double f(sgpp::base::DataVector const &v) { return sin(v[0] + v[1]); }
 
 int main() {
   size_t d = 2;
   sgpp::combigrid::MultiFunction func(f);
 
   sgpp::combigrid::CombiHierarchies::Collection grids(
-      d, sgpp::combigrid::CombiHierarchies::expClenshawCurtis());
+      d, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
   sgpp::combigrid::CombiEvaluators::Collection evaluators(
-      d, sgpp::combigrid::CombiEvaluators::polynomialInterpolation());
+      d, sgpp::combigrid::CombiEvaluators::BSplineInterpolation());
   std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
       new sgpp::combigrid::WeightedRatioLevelManager());  // TODO(rehmemk): choose one
 
@@ -66,7 +66,8 @@ int main() {
     sgpp::combigrid::CombiEvaluators::Collection evalCopy(d);
     for (size_t dim = 0; dim < d; ++dim) {
       evalCopy[dim] = evaluators[dim]->cloneLinear();
-      bool needsSorted = true;
+      // !!! True for Bsplines, False for Polynomials !!!
+      bool needsSorted = evalCopy[dim]->needsOrderedPoints();
       auto gridPoints = grids[dim]->getPoints(grid->getLevel()[dim], needsSorted);
       evalCopy[dim]->setGridPoints(gridPoints);
     }
@@ -124,17 +125,17 @@ int main() {
     sgpp::optimization::Printer::getInstance().setVerbosity(-1);
     bool solved = solver.solve(sle, functionValues, coefficients_sle);
 
-    std::cout << A.toString() << std::endl;
-    std::cout << "fct: ";
-    for (size_t i = 0; i < functionValues.size(); i++) {
-      std::cout << functionValues[i] << " ";
-    }
-    std::cout << "\ncoeff: ";
-
-    for (size_t i = 0; i < coefficients_sle.size(); i++) {
-      std::cout << coefficients_sle[i] << " ";
-    }
-    std::cout << "\n";
+    //    std::cout << A.toString() << std::endl;
+    //    std::cout << "fct: ";
+    //    for (size_t i = 0; i < functionValues.size(); i++) {
+    //      std::cout << functionValues[i] << " ";
+    //    }
+    //    std::cout << "\ncoeff: ";
+    //
+    //    for (size_t i = 0; i < coefficients_sle.size(); i++) {
+    //      std::cout << coefficients_sle[i] << " ";
+    //    }
+    //    std::cout << "\n";
 
     if (!solved) {
       exit(-1);
@@ -145,12 +146,12 @@ int main() {
 
     // Ergebnis herausschreiben
     it.reset();
-    std::cout << "\n";
+    //    std::cout << "\n";
     for (size_t vecIndex = 0; it.isValid(); ++vecIndex, it.moveToNext()) {
       coefficientTree->set(it.getMultiIndex(), coefficients_sle[vecIndex]);
 
-      std::cout << "b " << it.getMultiIndex()[0] << " " << it.getMultiIndex()[1] << " "
-                << coefficientTree->get(it.getMultiIndex()) << std::endl;
+      //      std::cout << "b " << it.getMultiIndex()[0] << " " << it.getMultiIndex()[1] << " "
+      //                << coefficientTree->get(it.getMultiIndex()) << std::endl;
     }
 
     return coefficientTree;
@@ -170,14 +171,14 @@ int main() {
       grids, evaluators, levelManager, gf, exploitNesting);
 
   sgpp::base::DataVector parameter(d);
-  parameter.set(0, 0.25);
-  parameter.set(1, 0.5);
+  parameter.set(0, 0.33);
+  parameter.set(1, 0.71);
   //  parameter.set(2, 0.9);
 
-  size_t maxlevel = 6;
+  size_t maxlevel = 4;
   double result = operation->evaluate(maxlevel, parameter);
 
   std::cout << "Target function value: " << func(parameter) << "\n";
   std::cout << "Numerical result: " << result << "\n";
-  std::cout << fabs(func(parameter) - result) << std::endl;
+  std::cout << "Error: " << fabs(func(parameter) - result) << std::endl;
 }
