@@ -69,16 +69,16 @@ int main() {
   plotfile.open(plotstr.c_str(), std::ios::app);
   plotfile << "#Basis functions  \n";
 
-  //  sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
-  //      d, sgpp::combigrid::CombiEvaluators::multiBSplineInterpolation());
   sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
-      d, sgpp::combigrid::CombiEvaluators::multiLinearInterpolation());
+      d, sgpp::combigrid::CombiEvaluators::multiBSplineInterpolation());
+  //  sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
+  //      d, sgpp::combigrid::CombiEvaluators::multiLinearInterpolation());
 
   sgpp::combigrid::CombiEvaluators::MultiCollection evalCopy(d);
   for (size_t dim = 0; dim < d; ++dim) {
     evalCopy[dim] = evaluators[dim]->cloneLinear();
     bool needsSorted = true;
-    size_t level = 2;
+    size_t level = 3;
     auto GridPoints = grids[dim]->getPoints(level, needsSorted);
     for (size_t i = 0; i < GridPoints.size(); i++) {
       std::cout << GridPoints[i] << " ";
