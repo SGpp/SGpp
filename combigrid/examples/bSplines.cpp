@@ -26,14 +26,14 @@
 
 double f(sgpp::base::DataVector const &v) { return sin(v[0] + v[1] * exp(v[0])); }
 
-int main() {
+double interpolate(size_t maxlevel) {
   size_t d = 2;
   sgpp::combigrid::MultiFunction func(f);
 
   sgpp::combigrid::CombiHierarchies::Collection grids(
       d, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
   sgpp::combigrid::CombiEvaluators::Collection evaluators(
-      d, sgpp::combigrid::CombiEvaluators::polynomialInterpolation());
+      d, sgpp::combigrid::CombiEvaluators::BSplineInterpolation());
   std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
       new sgpp::combigrid::WeightedRatioLevelManager());  // TODO(rehmemk): choose one
 
@@ -174,10 +174,21 @@ int main() {
   parameter.set(1, 0.71);
   //  parameter.set(2, 0.9);
 
-  size_t maxlevel = 6;
+  //  size_t maxlevel = 9;
   double result = operation->evaluate(maxlevel, parameter);
 
-  std::cout << "Target function value: " << func(parameter) << "\n";
-  std::cout << "Numerical result: " << result << "\n";
-  std::cout << "Error: " << fabs(func(parameter) - result) << std::endl;
+  //  std::cout << "Target function value: " << func(parameter) << "\n";
+  //  std::cout << "Numerical result: " << result << "\n";
+  //  std::cout << "Error: " << fabs(func(parameter) - result) << std::endl;
+  return fabs(func(parameter) - result);
+}
+
+int main() {
+  size_t maxLevel = 9;
+  std::vector<double> err(maxLevel + 1, 0);
+  for (size_t l = 0; l < maxLevel + 1; l++) {
+    err[l] = interpolate(l);
+    std::cout << l << " " << err[l] << std::endl;
+  }
+  return 0;
 }
