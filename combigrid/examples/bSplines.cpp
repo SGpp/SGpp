@@ -24,8 +24,7 @@
 #include <iostream>
 #include <vector>
 
-// Marsden: f(x) = 1 => coefficients(at least interior ones) are all 1
-double f(sgpp::base::DataVector const &v) { return sin(v[0] + v[1]); }
+double f(sgpp::base::DataVector const &v) { return sin(v[0] + v[1] * exp(v[0])); }
 
 int main() {
   size_t d = 2;
@@ -34,7 +33,7 @@ int main() {
   sgpp::combigrid::CombiHierarchies::Collection grids(
       d, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
   sgpp::combigrid::CombiEvaluators::Collection evaluators(
-      d, sgpp::combigrid::CombiEvaluators::BSplineInterpolation());
+      d, sgpp::combigrid::CombiEvaluators::polynomialInterpolation());
   std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
       new sgpp::combigrid::WeightedRatioLevelManager());  // TODO(rehmemk): choose one
 
@@ -175,7 +174,7 @@ int main() {
   parameter.set(1, 0.71);
   //  parameter.set(2, 0.9);
 
-  size_t maxlevel = 4;
+  size_t maxlevel = 6;
   double result = operation->evaluate(maxlevel, parameter);
 
   std::cout << "Target function value: " << func(parameter) << "\n";

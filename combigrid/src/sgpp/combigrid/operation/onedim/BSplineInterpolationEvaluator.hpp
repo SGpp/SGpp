@@ -33,6 +33,8 @@ class BSplineInterpolationEvaluator : public AbstractLinearEvaluator<FloatScalar
 
  private:
   double nonUniformBSpline(double x, size_t p, size_t k);
+  double nonUniformNAKBSpline(double x, size_t p, size_t k);
+  double LagrangePolynomial(double x, size_t k);
   void computeBasisValues();
 
   double evaluationPoint;
