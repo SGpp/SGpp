@@ -10,9 +10,12 @@ class interpolation_function():
   def __init__(self, d, f):
     self.f = f
     self.d = d
-    self.grid = pysgpp.Grid.createModPolyClenshawCurtisGrid(d, 3)
+    self.grid = pysgpp.Grid.createBsplineGrid(d, 3)
     self.gridStorage = self.grid.getStorage()
-    self.hierarch = pysgpp.createOperationHierarchisation(self.grid)
+    try :
+      self.hierarch = pysgpp.createOperationHierarchisation(self.grid)
+    except :
+      self.hierarch = pysgpp.createOperationMultipleHierarchisation(self.grid)
     self.opeval = pysgpp.createOperationEvalNaive(self.grid)
     self.alpha = pysgpp.DataVector(self.gridStorage.getSize())
 
@@ -95,10 +98,10 @@ d = 1
 interpolation = interpolation_function(d, parabola)
 interpolation.create_interpolation(l_max)
 
-alpha = [1.97129579854422742891e+00, -6.86581347746972214807e-01, -6.86581347746972214807e-01, -9.42860151361599396758e-01, 2.91018042368639928696e-01, 2.91018042368640372786e-01, -9.42860151361599396758e-01]
-print(len(alpha))
-for i in range(0, 2**l_max - 1):
-  interpolation.alpha[i] = alpha[i]
+# alpha = [1.97129579854422742891e+00, -6.86581347746972214807e-01, -6.86581347746972214807e-01, -9.42860151361599396758e-01, 2.91018042368639928696e-01, 2.91018042368640372786e-01, -9.42860151361599396758e-01]
+# print(len(alpha))
+# for i in range(0, 2**l_max - 1):
+  # interpolation.alpha[i] = alpha[i]
 
 # test()
 # grid_points = np.arange(0, 1.01, 2**-l_max)

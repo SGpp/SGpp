@@ -47,6 +47,7 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPolyClenshawCurtis.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DModPolyClenshawCurtis.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPolyClenshawCurtisBoundary.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DBspline.hpp>
 
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationPoly.hpp>
@@ -258,6 +259,8 @@ datadriven::OperationTransformation1D* createOperationRosenblattTransformation1D
     return new datadriven::OperationRosenblattTransformation1DModPolyClenshawCurtis(&grid);
   else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary)
     return new datadriven::OperationRosenblattTransformation1DPolyClenshawCurtisBoundary(&grid);
+  else if (grid.getType() == base::GridType::Bspline)
+    return new datadriven::OperationRosenblattTransformation1DBspline(&grid);
   else
     throw base::factory_exception(
         "OperationRosenblattTransformation1D is not implemented for this grid type.");
