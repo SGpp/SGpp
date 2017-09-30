@@ -172,8 +172,6 @@ void OperationInverseRosenblattTransformation1DModPolyClenshawCurtis::init(
 
       for (; i <= j; i++) {
         coord[0] = ordered_grid_points[i];
-        // kann eig entfernt werden
-        eval_res = interpolation(coord[0]);
         double gaussQuadSum = 0.;
         double left = left_coord;
         double scaling = coord[0] - left;

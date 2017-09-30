@@ -188,8 +188,6 @@ double OperationRosenblattTransformation1DModPoly::doTransformation1D(base::Data
       for (; i <= j; i++) {
         coord[0] = ordered_grid_points[i];
         // std::cout << "interpolating i:" << i << std::endl;
-        // kann eig entfernt werden
-        eval_res = interpolation(coord[0]);
         // std::cout << "For x=" << coord[0] << " interp: " << eval_res << std::endl;
         double gaussQuadSum = 0.;
         double left = left_coord;
