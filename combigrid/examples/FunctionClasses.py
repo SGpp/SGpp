@@ -1,6 +1,18 @@
-from sympy import *
+import sympy as sp
 import pysgpp
 import numpy as np
+
+
+
+from itertools import chain, combinations
+
+
+def powerset(iterable):
+    "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
+    s = list(iterable)
+    return chain.from_iterable(combinations(s, r) for r in range(len(s) + 1))
+
+
 
 
 def displace(x, i, h):
@@ -81,7 +93,7 @@ class funcGradientCollection:
 # TODO maybe get the list of used symbols as alternative
 
 class funcGradientCollectionSymbolic:
-    def __init__(self, expr, dim, symbolicDiff=false):
+    def __init__(self, expr, dim):
         self.dim = dim
         self.expr = expr
 
@@ -91,7 +103,7 @@ class funcGradientCollectionSymbolic:
     def init_symbolic_variables(self):
         symbolic_variables = []
         for i in range(self.dim):
-            symbolic_variables.append(Symbol('x' + str(i)))
+            symbolic_variables.append(sp.Symbol('x' + str(i)))
 
         return symbolic_variables
 
@@ -102,7 +114,7 @@ class funcGradientCollectionSymbolic:
         for x in grad_index_list:
             symbolic_variables.append(self.symbolic_variables[x])
 
-        return diff(self.expr, *symbolic_variables)
+        return sp.diff(self.expr, *symbolic_variables)
 
     def getFunctionSymbolic(self):
         return self.expr
@@ -110,7 +122,7 @@ class funcGradientCollectionSymbolic:
     def getFunction(self):
         symbolic_variables = self.symbolic_variables
         expr = self.expr
-        function= lambdify(symbolic_variables, expr, "numpy")
+        function= sp.lambdify(symbolic_variables, expr, "numpy")
 
         def func(x):
 
@@ -128,7 +140,7 @@ class funcGradientCollectionSymbolic:
     def getGradient(self, grad_index_list):
         symbolic_variables = self.symbolic_variables
         grad_symbolic = self.getGradientSymbolic(grad_index_list)
-        gradient = lambdify(symbolic_variables, grad_symbolic, "numpy")
+        gradient = sp.lambdify(symbolic_variables, grad_symbolic, "numpy")
         def grad(x):
 
           x_list=[]
@@ -143,6 +155,55 @@ class funcGradientCollectionSymbolic:
 
 def f(x):
     return x[0] ** 3 * x[1]
+
+def BraninSymbolic():
+    x0, x1, x2 = sp.symbols("x0 x1 x2")
+
+    x1_tmp = 15.0 * x0 - 5.0;
+
+    x2_tmp = 15.0 * x1
+
+    tmp = x2_tmp - 5.1 * x1_tmp * x1_tmp / (4.0 * sp.pi * sp.pi) + 5.0 * x1_tmp / sp.pi - 6.0;
+
+    return tmp * tmp + 10.0 * (1.0 - 1.0 / (8.0 * sp.pi)) * sp.cos(x1_tmp) + 10.0;
+
+def testfSymbolic_2d():
+    x0, x1, x2 = sp.symbols("x0 x1 x2")
+
+    x0_temp=5.0*x0
+    x1_temp=5.0*x1
+    return x0**2*sp.cos(x1_temp)**2*x1+(x0**2+sp.cos(x1_temp))**2
+
+def testfSymbolic_4d():
+    x0, x1, x2,x3 = sp.symbols("x0 x1 x2 x3")
+
+    x0_temp=5.0*x0
+    x1_temp=5.0*x1
+    x2_temp=4.0*x2
+    x3_temp=3.0*x3
+    return x0**2*sp.cos(x1_temp)**2*x1*x3_temp**4+(x0**2+sp.cos(x1_temp))**2*x2_temp
+
+def testfSymbolic2_4d():
+    x0, x1, x2,x3 = sp.symbols("x0 x1 x2 x3")
+    x0_temp = 5.0 * x0
+    x1_temp = 5.0 * x1
+    x2_temp = 4.0 * x2
+    x3_temp = 3.0 * x3
+
+    return x0_temp**2*sp.cos(0.5-x1_temp)*x2_temp**3*sp.exp(x3_temp)
+
+
+def test2DSymbolic():
+    x0, x1, x2 = sp.symbols("x0 x1 x2")
+    return sp.cos(x1*2)*sp.sin(0.5-x0*4)**2
+
+def get_symbolictest():
+    x0, x1, x2 = sp.symbols("x0 x1 x2")
+    return (x0 * x1 + 1) ** 2 * sp.sin(x0)
+
+def easySymbolic():
+    x0, x1, x2 = sp.symbols("x0 x1 x2")
+    return x0 * x1*sp.sin(x0)*sp.sin(x1)
 
 
 #x0, x1, x2 = symbols("x0 x1 x2")
