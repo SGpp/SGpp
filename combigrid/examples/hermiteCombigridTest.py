@@ -510,6 +510,7 @@ def example_error_picewise(l, func_container, show=True):
 def example_plot_error(func_collection, dim, maxlevel=5, x_axis_type="nr_gridpoints", title="",
                        show=True,
                        filename=None):
+
     """
 
       Args:
@@ -567,26 +568,24 @@ def example_plot_error(func_collection, dim, maxlevel=5, x_axis_type="nr_gridpoi
             x_values = nr_gridpoints
         print(i, nr_gridpoints)
 
-    if(filename is not ""):
         X[:, i] = x_values
         Y[:, i] = errors
-        sl.save_namelist(labels,"labels.txt",filename)
-        sl.save_array(X, "X_values.data", filename)
-        sl.save_array(Y, "Y_values.data", filename)
 
-    else:
-        print("no filename")
+        if (filename is not ""):
 
+            sl.save_namelist(labels, "labels.txt", filename)
+            sl.save_array(X, "X_values.data", filename)
+            sl.save_array(Y, "Y_values.data", filename)
 
-
-
-def loadandplot(X_name,Y_name,dirname,labelname,title,x_axis_type="nr_gridpoints", show=True,
-                       filename=None):
+        else:
+            print("no filename")
 
 
-    X=sl.load_array(X_name,dirname)
+def loadandplot(X_name, Y_name, dirname, labelname, title, x_axis_type="nr_gridpoints", show=True,
+                filename=None):
+    X = sl.load_array(X_name, dirname)
     Y = sl.load_array(Y_name, dirname)
-    labels=sl.load_list(labelname,dirname)
+    labels = sl.load_list(labelname, dirname)
 
     plot_log_error(Y, X, labels, x_axis_type, title=title, filename=filename, show=show)
 
@@ -594,6 +593,8 @@ def loadandplot(X_name,Y_name,dirname,labelname,title,x_axis_type="nr_gridpoints
 def example_plot_error_gradients(func_collection, dim, grad_index_list, maxlevel=5,
                                  x_axis_type="nr_gridpoints",
                                  title="", filename=None, show=True):
+
+
     """
 
       Args:
@@ -618,10 +619,10 @@ def example_plot_error_gradients(func_collection, dim, grad_index_list, maxlevel
     operations.append(gC.CombiCombigrid2dHermite_without_mixed(func_collection, dim))
     # operations.append((BaseLinearFullgrid(dim, func_collection, True)))
 
-    #operations.append(gC.LinearFullgrid(func_collection, dim))
-    #operations.append(gC.CombiFullGridHermite(func_collection, dim))
+    # operations.append(gC.LinearFullgrid(func_collection, dim))
+    # operations.append(gC.CombiFullGridHermite(func_collection, dim))
     # operations.append(CombiFullGridLinear(func_collection, dim))
-    #operations.append(gC.CombiFullGridHermite_withoutmixed(func_collection, dim))
+    # operations.append(gC.CombiFullGridHermite_withoutmixed(func_collection, dim))
     # operations.append(HierachGridBSpline(dim, 3, func_collection, True))
     operations.append(gC.HierachGridBSpline(dim, 3, func_collection, False))
 
@@ -656,16 +657,50 @@ def example_plot_error_gradients(func_collection, dim, grad_index_list, maxlevel
         X[:, i] = x_values
         Y[:, i] = errors
 
-    if (filename is not ""):
-        X[:, i] = x_values
-        Y[:, i] = errors
-        sl.save_namelist(labels, "labels.txt", filename)
-        sl.save_array(X, "X_values.data", filename)
-        sl.save_array(Y, "Y_values.data", filename)
+        if (filename is not ""):
 
-    else:
-        print("no filename")
-    #plot_log_error(Y, X, labels, x_axis_type, title=title, filename=filename, show=show)
+            sl.save_namelist(labels, "labels.txt", filename)
+            sl.save_array(X, "X_values.data", filename)
+            sl.save_array(Y, "Y_values.data", filename)
+
+        else:
+            print("no filename")
+            # plot_log_error(Y, X, labels, x_axis_type, title=title, filename=filename, show=show)
+
+
+def example_calcl2error(func_container, name, level, dim, fct=True, grad_index=[]):
+    filename = name
+    if (fct):
+        example_plot_error(func_container, dim, maxlevel=level, x_axis_type="level",
+                           title=filename, filename=filename,
+                           show=False)
+
+    for i in grad_index:
+        filename = name
+
+        for j in i:
+            filename += "x" + str(j)
+        example_plot_error_gradients(func_container, dim, i, maxlevel=level, x_axis_type="level",
+                                     title=filename, filename=filename,
+                                     show=False)
+
+
+def plot_l2error(name, fct=True, grad_index=[]):
+    filename = name
+    if (fct):
+        loadandplot("X_values.data", "Y_values.data", filename, "labels.txt", title=filename,
+                    x_axis_type="nr_gridpoints"
+                    , show=True)
+
+    for i in grad_index:
+        filename = name
+
+        for j in i:
+            filename += "x" + str(j)
+
+        loadandplot("X_values.data", "Y_values.data", filename, "labels.txt", title=filename,
+                    x_axis_type="nr_gridpoints"
+                    , show=True)
 
 
 def testf(x):
@@ -693,30 +728,18 @@ func_standard = pysgpp.multiFunc(func_wrap)
 
 testclass = fctClass.funcGradientCollection(func_standard, 2)
 
-func_container = fctClass.funcGradientCollectionSymbolic(fctClass.test2DSymbolic(), 2)
+func_container = fctClass.funcGradientCollectionSymbolic(fctClass.BraninSymbolic(), 2)
 
 # example_2D_comparison_function(func_container.getFunction(), "", show=False)
 
-#example_combicombigrid_2D_hermite(3, func_container)
-#example_plot_error(func_container, dim, maxlevel=6, x_axis_type="nr_gridpoints",
-#                  filename="symbolic2d",show=False)
+# example_combicombigrid_2D_hermite(3, func_container)
 
 
-#loadandplot("X_values.data","Y_values.data","symbolic2d","labels.txt","l2error",
-# x_axis_type="nr_gridpoints"
-#                  ,show=True)
+example_calcl2error(func_container, "Branin", 10, 2, grad_index=[[0], [1], [0, 1]],
+                    fct=True)
+#plot_l2error("Branin2d",grad_index=[[0],[1],[0,1]],fct=True)
 
-#example_plot_error_gradients(func_container, dim,[0], maxlevel=6, x_axis_type="nr_gridpoints",
-#                           title="x0_grad",filename="symbolic2d_x0grad",show=False)
 
-#loadandplot("X_values.data","Y_values.data","symbolic2d_x0grad","labels.txt","l2error",
-# x_axis_type="nr_gridpoints"
-#                  ,show=True)
-
-# example_plot_error_gradients(func_container, dim,[1], maxlevel=6, x_axis_type="level",
-#                            title="x1_grad")
-# example_plot_error_gradients(func_container, dim,[0,1], maxlevel=6, x_axis_type="level",
-#                           title="x0_x1_grad")
 
 
 # example_error_picewise(3, func_container)
@@ -725,20 +748,9 @@ dim = 4
 
 func_container = fctClass.funcGradientCollectionSymbolic(fctClass.testfSymbolic2_4d(), dim)
 
+# example_calcl2error(func_container, "test4d", level=2,grad_index=[[0, 1], [1]],fct=True)
+
 # func = pysgpp.OptRosenbrockObjective(dim)
 # func_wrap = getfuncwrapper(func)
 
 # func_standard = pysgpp.multiFunc(func_wrap)
-
-
-example_plot_error(func_container, dim, maxlevel=3, x_axis_type="level", filename="l2error",
-                   show=False)
-example_plot_error_gradients(func_container, dim, [0], maxlevel=8, x_axis_type="level",
-                             title="x0_grad", filename="l2errorx0",
-                             show=False)
-example_plot_error_gradients(func_container, dim, [0, 3], maxlevel=8, x_axis_type="level",
-                            title="x0x3_grad", filename="l2errorx0x3",
-                            show=False)
-example_plot_error_gradients(func_container, dim, [0, 1, 2, 3], maxlevel=8, x_axis_type="level",
-                             title="x0x1x2x3_grad", filename="l2errorx0x1x2x3",
-                             show=False)
