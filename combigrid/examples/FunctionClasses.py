@@ -205,6 +205,39 @@ def easySymbolic():
     x0, x1, x2 = sp.symbols("x0 x1 x2")
     return x0 * x1*sp.sin(x0)*sp.sin(x1)
 
+def testfuncione():
+    x0, x1, x2 = sp.symbols("x0 x1 x2")
+
+    erg=x1
+
+    for i in range(5):
+        erg+=x0
+    return erg
+
+
+def RosenbrockSymbolic(d):
+
+  result = 0.0;
+
+  x=[]
+
+  for i in range (d):
+    x.append(sp.symbols("x"+str(i)))
+
+
+  xt = 15.0 * x[0] - 5.0;
+
+  for t in range(1,d):
+    xtm1 = xt;
+    xt = 15.0 * x[t] - 5.0;
+
+    tmp1 = xt - xtm1 * xtm1;
+    tmp2 = 1.0 - xtm1;
+    result += 100.0 * tmp1 * tmp1 + tmp2 * tmp2;
+
+
+  return result;
+
 
 #x0, x1, x2 = symbols("x0 x1 x2")
 #expr = x0 ** 3 * x1
