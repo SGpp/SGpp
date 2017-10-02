@@ -17,14 +17,14 @@
 #include <sgpp/optimization/sle/solver/Armadillo.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
+#include <sgpp/quadrature/sampling/NaiveSampleGenerator.hpp>
 
 #include <cmath>
-
 #include <iomanip>
 #include <iostream>
 #include <vector>
 
-double f(sgpp::base::DataVector const &v) { return sin(v[0] + v[1] * exp(v[0])); }
+double f(sgpp::base::DataVector const &v) { return sin(v[0] + v[1]); }
 
 double interpolate(size_t maxlevel) {
   size_t d = 2;
@@ -34,22 +34,16 @@ double interpolate(size_t maxlevel) {
       d, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
   sgpp::combigrid::CombiEvaluators::Collection evaluators(
       d, sgpp::combigrid::CombiEvaluators::BSplineInterpolation());
+  // So far only WeightedRatioLevelManager has been used
   std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
-      new sgpp::combigrid::WeightedRatioLevelManager());  // TODO(rehmemk): choose one
+      new sgpp::combigrid::WeightedRatioLevelManager());
 
   // stores the values of the objective function
   auto funcStorage = std::make_shared<sgpp::combigrid::CombigridTreeStorage>(grids, func);
 
-  // sgpp::combigrid::MultiFunction dummyFunc([](sgpp::base::DataVector const &v) { return 0.0; });
-
-  // auto bSplineCoefficientsStorage =
-  //     std::make_shared<sgpp::combigrid::CombigridTreeStorage>(grids, false, dummyFunc);
-
   /**
    * In some applications, you might not want to have a callback function that is called at single
-   * points, but on a full grid. One of these applications is solving PDEs. This example provides a
-   * simple framework where a PDE solver can be included. It is also suited for other tasks.
-   * The core part is a function that computes grid values on a full grid.
+   * points, but on a full grid. This is done here (compare gettingStarted.cpp example 6)
    */
   sgpp::combigrid::GridFunction gf([&](std::shared_ptr<sgpp::combigrid::TensorGrid> grid) {
     // We store the results (= coefficients for Bspline interpolation) for each grid point, encoded
@@ -65,7 +59,7 @@ double interpolate(size_t maxlevel) {
     sgpp::combigrid::CombiEvaluators::Collection evalCopy(d);
     for (size_t dim = 0; dim < d; ++dim) {
       evalCopy[dim] = evaluators[dim]->cloneLinear();
-      // !!! True for Bsplines, False for Polynomials !!!
+      // needsSorted is  True for Bsplines, False for Polynomials
       bool needsSorted = evalCopy[dim]->needsOrderedPoints();
       auto gridPoints = grids[dim]->getPoints(grid->getLevel()[dim], needsSorted);
       evalCopy[dim]->setGridPoints(gridPoints);
@@ -82,13 +76,6 @@ double interpolate(size_t maxlevel) {
       auto gridPoint = grid->getGridPoint(it2->getMultiIndex());
       functionValues[index1] = funcStorage->get(level, it2->getMultiIndex());  // sorted order
 
-      //      std::cout << gridPoint[0] << " " << functionValue << std::endl;
-      //      std::cout << "grid point: ";
-      //      for (size_t i = 0; i < gridPoint.size(); i++) {
-      //        std::cout << gridPoint[i] << " ";
-      //      }
-      //      std::cout << "\n";
-
       std::vector<std::vector<double> > basisValues;
       for (size_t dim = 0; dim < d; ++dim) {
         evalCopy[dim]->setParameter(sgpp::combigrid::FloatScalarVector(gridPoint[dim]));
@@ -99,14 +86,6 @@ double interpolate(size_t maxlevel) {
         }
         basisValues.push_back(basisValues1D_vec);  // basis values at grid points
       }
-      //      std::cout << "basis values: ";
-      //      for (size_t ixi = 0; ixi < basisValues.size(); ixi++) {
-      //        for (size_t ix = 0; ix < basisValues[ixi].size(); ix++) {
-      //          std::cout << basisValues[ixi][ix] << " ";
-      //        }
-      //        std::cout << ", ";
-      //      }
-      //      std::cout << "\n";
 
       sgpp::combigrid::MultiIndexIterator innerIter(grid->numPoints());
       for (size_t index2 = 0; innerIter.isValid(); ++index2, innerIter.moveToNext()) {
@@ -169,22 +148,37 @@ double interpolate(size_t maxlevel) {
   auto operation = std::make_shared<sgpp::combigrid::CombigridOperation>(
       grids, evaluators, levelManager, gf, exploitNesting);
 
-  sgpp::base::DataVector parameter(d);
-  parameter.set(0, 0.33);
-  parameter.set(1, 0.71);
+  //  sgpp::base::DataVector parameter(d);
+  //  parameter.set(0, 0.33);
+  //  parameter.set(1, 0.71);
   //  parameter.set(2, 0.9);
 
   //  size_t maxlevel = 9;
-  double result = operation->evaluate(maxlevel, parameter);
+  //  double result = operation->evaluate(maxlevel, parameter);
 
   //  std::cout << "Target function value: " << func(parameter) << "\n";
   //  std::cout << "Numerical result: " << result << "\n";
   //  std::cout << "Error: " << fabs(func(parameter) - result) << std::endl;
-  return fabs(func(parameter) - result);
+  //  return fabs(func(parameter) - result);
+
+  // ToDo(rehmemk) DAS HIER IST NEU. DAVOR WURDE EINFACH IN EINEM EINZIGEN PUNKT AUSGEWERTET!
+  double diff = 0;
+  double max_err = 0;
+  // generator generates num_points random points in [0,1]^dim
+  size_t num_points = 10;
+  sgpp::quadrature::NaiveSampleGenerator generator(d);
+  sgpp::base::DataVector p(d, 0);
+
+  for (size_t i = 0; i < num_points; i++) {
+    generator.getSample(p);
+    diff = fabs(operation->evaluate(maxlevel, p) - f(p));
+    max_err = (diff > max_err) ? diff : max_err;
+  }
+  return max_err;
 }
 
 int main() {
-  size_t maxLevel = 9;
+  size_t maxLevel = 8;
   std::vector<double> err(maxLevel + 1, 0);
   for (size_t l = 0; l < maxLevel + 1; l++) {
     err[l] = interpolate(l);
