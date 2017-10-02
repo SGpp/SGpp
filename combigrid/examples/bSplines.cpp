@@ -119,17 +119,9 @@ double interpolate(size_t maxlevel) {
       exit(-1);
     }
 
-    // ToDo (rehmemk) coefficients_sle in der richtigen Reihenfolge in coefficientTree schreiben!
-    // Entweder hier Index anpassen, oder LGS so aufstellen, dass es passend rauskommt
-
-    // Ergebnis herausschreiben
     it.reset();
-    //    std::cout << "\n";
     for (size_t vecIndex = 0; it.isValid(); ++vecIndex, it.moveToNext()) {
       coefficientTree->set(it.getMultiIndex(), coefficients_sle[vecIndex]);
-
-      //      std::cout << "b " << it.getMultiIndex()[0] << " " << it.getMultiIndex()[1] << " "
-      //                << coefficientTree->get(it.getMultiIndex()) << std::endl;
     }
 
     return coefficientTree;
@@ -138,7 +130,7 @@ double interpolate(size_t maxlevel) {
   /**
    * We have to specify if the function always produces the same value for the same grid points.
    * This can make the storage smaller if the grid points are nested. In this implementation, this
-   * is true. However, it would be false in the PDE case, so we set it to false here.
+   * is false.
    */
   bool exploitNesting = false;
 
@@ -148,20 +140,6 @@ double interpolate(size_t maxlevel) {
   auto operation = std::make_shared<sgpp::combigrid::CombigridOperation>(
       grids, evaluators, levelManager, gf, exploitNesting);
 
-  //  sgpp::base::DataVector parameter(d);
-  //  parameter.set(0, 0.33);
-  //  parameter.set(1, 0.71);
-  //  parameter.set(2, 0.9);
-
-  //  size_t maxlevel = 9;
-  //  double result = operation->evaluate(maxlevel, parameter);
-
-  //  std::cout << "Target function value: " << func(parameter) << "\n";
-  //  std::cout << "Numerical result: " << result << "\n";
-  //  std::cout << "Error: " << fabs(func(parameter) - result) << std::endl;
-  //  return fabs(func(parameter) - result);
-
-  // ToDo(rehmemk) DAS HIER IST NEU. DAVOR WURDE EINFACH IN EINEM EINZIGEN PUNKT AUSGEWERTET!
   double diff = 0;
   double max_err = 0;
   // generator generates num_points random points in [0,1]^dim
@@ -178,7 +156,7 @@ double interpolate(size_t maxlevel) {
 }
 
 int main() {
-  size_t maxLevel = 8;
+  size_t maxLevel = 10;
   std::vector<double> err(maxLevel + 1, 0);
   for (size_t l = 0; l < maxLevel + 1; l++) {
     err[l] = interpolate(l);
