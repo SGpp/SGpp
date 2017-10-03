@@ -20,50 +20,12 @@
 #include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
 
-#include <sgpp/parallel/tools/MPI/GlobalMPIComm.hpp>
-#include <sgpp/parallel/tools/MPI/MPICommunicator.hpp>
-
 #include <ctime>
+#include "MPIMethods.hpp"
 
 namespace sgpp {
     namespace datadriven {
 
-        static const int MPI_PACKET_MAX_PAYLOAD_SIZE = 512;
-
-        struct RefinementResult {
-            size_t numAddedGridPoints;
-            std::list<size_t> deletedGridPointsIndexes;
-        };
-
-        struct DataBatch {
-            // pointer to the next batch (data points + class labels) to be processed
-            sgpp::base::DataMatrix *dataPoints;
-            sgpp::base::DataVector *classLabels;
-        };
-
-        struct PendingMPIRequest {
-            MPI_Request request;
-            MPI_Packet *buffer;
-            std::function<void(void *)> callback;
-            bool disposeAfterCallback;
-        };
-
-        struct MPI_Packet {
-            MPI_COMMAND_ID commandID;
-            unsigned char payload[MPI_PACKET_MAX_PAYLOAD_SIZE];
-        };
-
-        enum MPI_COMMAND_ID {
-            UPDATE_GRID,
-            MERGE_GRID,
-            ASSIGN_BATCH
-        };
-
-        enum MPI_COMMAND_TAG {
-
-        };
-
-        const int MPI_MASTER_RANK = 0;
 
 
         LearnerSGDEOnOffParallel::LearnerSGDEOnOffParallel(
@@ -140,7 +102,7 @@ namespace sgpp {
                                                  cvSaveLogscale);
                 }
             }
-            initMPI();
+            MPIMethods::initMPI();
             initDone = true;
         }
 
@@ -190,7 +152,7 @@ namespace sgpp {
 
             std::vector<std::pair<DBMatOnlineDE *, double> > *onlineObjects;
 
-            size_t dim = trainData.getNcols();
+            size_t dim = getDimensionality();
             // determine number of batches to process
             size_t numBatch = trainData.getNrows() / batchSize;
 
@@ -235,7 +197,7 @@ namespace sgpp {
                     onlineObjects = getDestFunctions();
 
                     // Refinement only occurs on the Master Node
-                    if (isMaster()) {
+                    if (MPIMethods::isMaster()) {
 
                         // check if refinement should be performed
                         if (checkRefinementNecessary(refMonitor, refPeriod, numProcessedDataPoints, currentValidError,
@@ -250,10 +212,10 @@ namespace sgpp {
                             numberOfCompletedRefinements += 1;
 
                             //TODO If not master, the grid needs to be adjusted here
-                            if (isMaster()) {
+                            if (MPIMethods::isMaster()) {
                                 //TODO Send and Receive Delta
                                 //TODO Adjust Grid
-                                sendGridComponentsUpdate(vectorRefinementResults);
+                                MPIMethods::sendGridComponentsUpdate(vectorRefinementResults);
                             }
                         }
 
@@ -272,7 +234,7 @@ namespace sgpp {
                 }
 
                 // Synchronize end of Data Pass
-                synchronizeEndOfDataPass();
+                MPIMethods::synchronizeEndOfDataPass();
 
                 completedDataPasses++;
                 processedPoints = 0;
@@ -284,10 +246,6 @@ namespace sgpp {
 
             // delete offline;
             delete vectorRefinementResults;
-        }
-
-        bool LearnerSGDEOnOffParallel::isMaster() const {
-            return sgpp::parallel::myGlobalMPIComm->getMyRank() == MPI_MASTER_RANK;
         }
 
         void LearnerSGDEOnOffParallel::printGridSizeStatistics(
@@ -367,7 +325,7 @@ namespace sgpp {
                                                             const std::pair<DBMatOnlineDE *, double> *onlineObjects,
                                                             bool preCompute,
                                                             MultiGridRefinementFunctor *refinementFunctor,
-                                                            size_t classIndex) const {
+                                                            size_t classIndex) {
             // perform refinement/coarsening for grid which corresponds to current
             // index
             std::cout << "Refinement and coarsening for class: " << classIndex
@@ -379,6 +337,7 @@ namespace sgpp {
 
             base::GridGenerator &gridGen = grid->getGenerator();
 
+            size_t oldGridSize = grid->getSize();
             size_t numberOfNewPoints = 0;
 
             if (refType == "surplus") {
@@ -392,7 +351,13 @@ namespace sgpp {
             std::cout << "grid size after adaptivity: " << grid->getSize()
                       << std::endl;
 
-            refinementResult->numAddedGridPoints = numberOfNewPoints;
+
+            //Collect new grid points into the refinement result for shipping
+            for (int i = 0; i < numberOfNewPoints; i++) {
+                sgpp::base::DataVector dataVector;
+                grid->getStorage()[oldGridSize + i].getStandardCoordinates(dataVector);
+                refinementResult->addedGridPoints.push_back(dataVector);
+            }
 
             updateVariablesAfterRefinement(refinementResult, classIndex, densEst);
         }
@@ -400,17 +365,34 @@ namespace sgpp {
         void LearnerSGDEOnOffParallel::updateVariablesAfterRefinement(
                 RefinementResult *refinementResult,
                 size_t classIndex,
-                DBMatOnlineDE *densEst) const {
+                DBMatOnlineDE *densEst) {
+
+            base::Grid *grid = densEst->getOffline()->getGridPointer();
+
+            if (!MPIMethods::isMaster()) {
+                //TODO: Modify the actual grid
+                //Delete the grid points removed on master thread
+                grid->getStorage().deletePoints(refinementResult->deletedGridPointsIndexes);
+
+                //Add grid points added on master thread
+                for (sgpp::base::DataVector dataVector : refinementResult->addedGridPoints) {
+                    sgpp::base::GridPoint gridPoint;
+                    //TODO: What happens when other points are changed (ie Leaf boolean etc)
+                    gridPoint.;
+
+                    grid->getStorage().insert(gridPoint);
+                }
+            }
 
             // apply grid changes to the Cholesky factorization
             densEst->getOffline()->choleskyModification(
-                    refinementResult->numAddedGridPoints,
+                    refinementResult->addedGridPoints.size(),
                     refinementResult->deletedGridPointsIndexes,
                     densEst->getBestLambda());
             // update alpha vector
             densEst->updateAlpha(
                     &refinementResult->deletedGridPointsIndexes,
-                    refinementResult->numAddedGridPoints);
+                    refinementResult->addedGridPoints.size());
         }
 
         void LearnerSGDEOnOffParallel::assembleNextBatchData(size_t batchSize,
@@ -625,9 +607,9 @@ namespace sgpp {
                     // update density function for current class
                     (*destFunctions)[i].first->computeDensityFunction(
                             *p.first, true, doCrossValidation, &(*vectorRefinementResults)[i].deletedGridPointsIndexes,
-                            (*vectorRefinementResults)[i].numAddedGridPoints);
+                            (*vectorRefinementResults)[i].addedGridPoints.size());
                     (*vectorRefinementResults)[i].deletedGridPointsIndexes.clear();
-                    (*vectorRefinementResults)[i].numAddedGridPoints = 0;
+                    (*vectorRefinementResults)[i].addedGridPoints.clear();
 
                     if (usePrior) {
                         this->prior[p.second] =
@@ -845,186 +827,9 @@ namespace sgpp {
             return destFunctions;
         }
 
-        static const int MPI_MAX_PROCESSOR_NAME_LENGTH = 256;
-
-        void LearnerSGDEOnOffParallel::initMPI() {
-            MPI_Init(NULL, NULL);
-
-            // Get World Size
-            MPI_Comm_size(MPI_COMM_WORLD, &mpiWorldSize);
-
-            //Get Rank
-            int world_rank;
-            MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
-
-            //Get Processor Name
-            char mpiProcessorName[MPI_MAX_PROCESSOR_NAME_LENGTH];
-            int nameLength;
-            MPI_Get_processor_name(mpiProcessorName, &nameLength);
-
-            printf("Processor %s (rank %i) has joined MPI pool of size %i\n", mpiProcessorName, world_rank,
-                   mpiWorldSize);
-
-            //Setup receiving messages from master/workers
-            {
-                PendingMPIRequest unicastInputRequest;
-                MPI_Packet *mpiPacket = new MPI_Packet;
-                unicastInputRequest.buffer = mpiPacket;
-                unicastInputRequest.disposeAfterCallback = false;
-                unicastInputRequest.callback = [](PendingMPIRequest request) {
-                    processIncomingMPICommands(request.buffer);
-                    MPI_Irecv(request.buffer, MPI_PACKET_MAX_PAYLOAD_SIZE, MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE,
-                              MPI_ANY_TAG, MPI_COMM_WORLD, &(request.request));
-                };
-
-                MPI_Irecv(mpiPacket, MPI_PACKET_MAX_PAYLOAD_SIZE, MPI_UNSIGNED_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG,
-                          MPI_COMM_WORLD,
-                          &(unicastInputRequest.request));
-
-                pendingMPIRequests.push_back(unicastInputRequest);
-                printf("Started listening for unicasts from any sources\n");
-            }
-            if (!isMaster()) {
-                PendingMPIRequest broadcastInputRequest;
-                MPI_Packet *mpiPacket = new MPI_Packet;
-                broadcastInputRequest.buffer = mpiPacket;
-                broadcastInputRequest.disposeAfterCallback = false;
-                broadcastInputRequest.callback = [](PendingMPIRequest request) {
-                    processIncomingMPICommands(request.buffer);
-                    MPI_Ibcast(request.buffer, MPI_PACKET_MAX_PAYLOAD_SIZE, MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
-                               MPI_COMM_WORLD, &(request.request));
-                };
-                MPI_Ibcast(mpiPacket, MPI_PACKET_MAX_PAYLOAD_SIZE, MPI_UNSIGNED_CHAR, MPI_MASTER_RANK, MPI_COMM_WORLD,
-                           &(broadcastInputRequest.request));
-                pendingMPIRequests.push_back(broadcastInputRequest);
-
-                printf("Started listening for broadcasts from task master\n");
-            }
-
+        size_t LearnerSGDEOnOffParallel::getDimensionality() {
+            return trainData.getNcols();
         }
-
-        void LearnerSGDEOnOffParallel::synchronizeEndOfDataPass() {
-            sgpp::parallel::myGlobalMPIComm->Barrier();
-        }
-
-        struct RefinementResultNetworkMessage {
-            int classIndex;
-            int numAddedGridPoints;
-            int numDeletedPoints;
-            int deletedGridpoints[(MPI_PACKET_MAX_PAYLOAD_SIZE - 3) / sizeof(int)];
-        };
-
-        void LearnerSGDEOnOffParallel::sendGridComponentsUpdate(std::vector<RefinementResult> *refinementResults) {
-            //TODO Cannot IProbe a Broadcast Message
-            sendCommandIDToWorkers(UPDATE_GRID);
-
-            for (size_t classIndex = 0; classIndex < refinementResults->size(); classIndex++) {
-                RefinementResult refinementResult = (*refinementResults)[classIndex];
-
-                //Variables to copy block
-                size_t numDeletedPoints = 0;
-                std::list<size_t>::iterator iterator = refinementResult.deletedGridPointsIndexes.begin();
-
-                for (int deletedPointsIndex = 0; deletedPointsIndex <
-                                                 refinementResult.deletedGridPointsIndexes.size(); deletedPointsIndex += numDeletedPoints) {
-                    MPI_Packet *mpiPacket = new MPI_Packet;
-                    RefinementResultNetworkMessage *networkMessage = (RefinementResultNetworkMessage *) mpiPacket->payload;
-
-                    //First size_t is the class index
-                    //Second is the number of added grid points
-                    //Third is current number of deletedPoints
-                    //More are deleted grid point indices
-                    networkMessage->classIndex = classIndex;
-
-                    //The number of added grid points should only be sent the first time
-                    networkMessage->numAddedGridPoints =
-                            deletedPointsIndex > 0 ? 0 : refinementResult.deletedGridPointsIndexes;
-
-                    numDeletedPoints = std::min(refinementResult.deletedGridPointsIndexes.size() - deletedPointsIndex,
-                                                MPI_PACKET_MAX_PAYLOAD_SIZE);
-
-                    //Copy data from list into network buffer
-                    for (int bufferIndex = 0; bufferIndex < numDeletedPoints; bufferIndex++) {
-                        networkMessage->deletedGridpoints[bufferIndex] = *iterator;
-                        iterator++;
-                    }
-
-                    //TODO More MPI Packets
-
-                    printf("Sending update for class %zu with %i additions and %zu deletions", classIndex,
-                           networkMessage->numAddedGridPoints, numDeletedPoints);
-                    PendingMPIRequest pendingMPIRequest;
-                    pendingMPIRequest.buffer = mpiPacket;
-                    pendingMPIRequests.push_back(pendingMPIRequest);
-
-                    //Send the smallest packet possible
-                    MPI_Ibcast(&networkMessage, numDeletedPoints + 3, MPI_UNSIGNED_CHAR, MPI_MASTER_RANK,
-                               MPI_COMM_WORLD, &(pendingMPIRequest.request));
-                }
-            }
-        }
-
-        void LearnerSGDEOnOffParallel::processCompletedMPIRequests() {
-            MPI_Status mpiStatus;
-            int operationCompleted;
-
-            for (std::vector<PendingMPIRequest>::const_iterator pendingMPIRequestIterator = pendingMPIRequests.begin();
-                 pendingMPIRequestIterator != pendingMPIRequests.end();
-                 pendingMPIRequestIterator++) {
-                MPI_Test(&(pendingMPIRequestIterator->request), &operationCompleted, &mpiStatus);
-                if (operationCompleted) {
-                    //Execute the callback
-                    pendingMPIRequestIterator->callback(pendingMPIRequestIterator->buffer);
-
-                    if (pendingMPIRequestIterator->disposeAfterCallback) {
-                        //TODO Deleting a void pointer here
-                        delete[] pendingMPIRequestIterator->buffer;
-                        pendingMPIRequests.erase(pendingMPIRequestIterator);
-                    }
-                }
-            }
-        }
-
-        void LearnerSGDEOnOffParallel::waitForMPIRequestsToComplete() {
-            for (PendingMPIRequest &pendingMPIRequest : pendingMPIRequests) {
-                MPI_Wait(&(pendingMPIRequest.request), MPI_STATUS_IGNORE);
-            }
-
-            processCompletedMPIRequests();
-        }
-
-        void LearnerSGDEOnOffParallel::receiveGridComponentsUpdate(RefinementResultNetworkMessage *networkMessage) {
-            //TODO
-            std::list<size_t> deletedGridPointsIndexes;
-
-            for (int deletedGridPoint : networkMessage->deletedGridpoints) {
-                deletedGridPointsIndexes.push_back((size_t) deletedGridPoint);
-            }
-
-            RefinementResult refinementResult;
-            refinementResult.numAddedGridPoints = networkMessage->numAddedGridPoints;
-            refinementResult.deletedGridPointsIndexes = deletedGridPointsIndexes;
-            updateVariablesAfterRefinement(&refinementResult, networkMessage->classIndex,
-                                           (*getDestFunctions())[networkMessage->classIndex].first);
-        }
-
-
-        void LearnerSGDEOnOffParallel::processIncomingMPICommands(MPI_Packet *mpiPacket) {
-            switch (mpiPacket->commandID) {
-                case UPDATE_GRID:
-                    receiveGridComponentsUpdate((RefinementResultNetworkMessage *) (mpiPacket->payload));
-                    break;
-                case MERGE_GRID:
-
-                    break;
-                case ASSIGN_BATCH:
-                    break;
-                default:
-                    printf("Error: MPI unknown command id: %i", mpiPacket->commandID);
-                    break;
-            }
-        }
-
 
 
     }  // namespace datadriven
