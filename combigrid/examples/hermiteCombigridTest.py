@@ -671,7 +671,7 @@ def example_plot_error_gradients(func_collection, dim, grad_index_list, maxlevel
 def example_calcl2error(func_container, name, level, dim, fct=True, grad_index=[]):
     filename = name
     if (fct):
-        example_plot_error(func_container, dim, maxlevel=level, x_axis_type="level",
+        example_plot_error(func_container, dim, maxlevel=level, x_axis_type="nr_gridpoints",
                            title=filename, filename=filename,
                            show=False)
 
@@ -680,7 +680,8 @@ def example_calcl2error(func_container, name, level, dim, fct=True, grad_index=[
 
         for j in i:
             filename += "x" + str(j)
-        example_plot_error_gradients(func_container, dim, i, maxlevel=level, x_axis_type="level",
+        example_plot_error_gradients(func_container, dim, i, maxlevel=level,
+                                     x_axis_type="nr_gridpoints",
                                      title=filename, filename=filename,
                                      show=False)
 
@@ -689,7 +690,7 @@ def plot_l2error(name, fct=True, grad_index=[]):
     filename = name
     if (fct):
         loadandplot("X_values.data", "Y_values.data", filename, "labels.txt", title=filename,
-                    x_axis_type="nr_gridpoints"
+                    x_axis_type="level"
                     , show=True)
 
     for i in grad_index:
@@ -699,7 +700,7 @@ def plot_l2error(name, fct=True, grad_index=[]):
             filename += "x" + str(j)
 
         loadandplot("X_values.data", "Y_values.data", filename, "labels.txt", title=filename,
-                    x_axis_type="nr_gridpoints"
+                    x_axis_type="level"
                     , show=True)
 
 
@@ -728,26 +729,28 @@ func_standard = pysgpp.multiFunc(func_wrap)
 
 testclass = fctClass.funcGradientCollection(func_standard, 2)
 
-func_container = fctClass.funcGradientCollectionSymbolic(fctClass.BraninSymbolic(), 2)
+func_container = fctClass.funcGradientCollectionSymbolic(fctClass.easySymbolic(), 2)
 
-# example_2D_comparison_function(func_container.getFunction(), "", show=False)
+example_2D_comparison_function(func_container.getFunction(), "", show=False)
 
 # example_combicombigrid_2D_hermite(3, func_container)
 
 
-example_calcl2error(func_container, "Branin", 10, 2, grad_index=[[0], [1], [0, 1]],
-                    fct=True)
+#example_calcl2error(func_container, "Branin", 10, 2, grad_index=[[0], [1], [0, 1]],
+ #                   fct=True)
 #plot_l2error("Branin2d",grad_index=[[0],[1],[0,1]],fct=True)
 
 
 
 
-# example_error_picewise(3, func_container)
+example_error_picewise(2, func_container)
 
 dim = 4
 
 func_container = fctClass.funcGradientCollectionSymbolic(fctClass.testfSymbolic2_4d(), dim)
 
+
+#plot_l2error("Values/test4d",grad_index=[[1],[1],[0,1]],fct=True)
 # example_calcl2error(func_container, "test4d", level=2,grad_index=[[0, 1], [1]],fct=True)
 
 # func = pysgpp.OptRosenbrockObjective(dim)
