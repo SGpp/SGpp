@@ -39,9 +39,17 @@ namespace sgpp {
  * If Cholesky decomposition is chosen, refinement/coarsening can be applied.
  */
 
-        struct RefinementResult;
-        struct DataBatch;
-        struct PendingMPIRequest;
+        struct RefinementResult {
+            unsigned int gridversion;
+            std::list<sgpp::base::DataVector> addedGridPoints;
+            std::list<size_t> deletedGridPointsIndexes;
+        };
+
+        struct DataBatch {
+            // pointer to the next batch (data points + class labels) to be processed
+            sgpp::base::DataMatrix *dataPoints;
+            sgpp::base::DataVector *classLabels;
+        };
 
         class LearnerSGDEOnOffParallel : public DBMatOnline {
         public:
@@ -240,6 +248,13 @@ namespace sgpp {
             // A vector to store error evaluations
             base::DataVector avgErrors;
 
+
+            size_t getDimensionality();
+
+
+            void updateVariablesAfterRefinement(RefinementResult *refinementResult, size_t classIndex,
+                                                DBMatOnlineDE *densEst);
+
         protected:
             // The training data
             base::DataMatrix &trainData;
@@ -285,9 +300,6 @@ namespace sgpp {
             base::DataMatrix *cvSaveTest;
             base::DataMatrix *cvSaveTestRes;
 
-            //Pending MPI Requests
-            std::vector<PendingMPIRequest> pendingMPIRequests;
-            int mpiWorldSize;
 
             //Batches assigned by master
             std::vector<DataBatch> assignedBatches;
@@ -322,37 +334,16 @@ namespace sgpp {
                                   const std::vector<std::pair<base::DataMatrix *, double>> &trainDataClasses,
                                   std::map<double, int> &classIndices) const;
 
-            void initMPI();
-
-            void synchronizeEndOfDataPass();
-
-            bool isMaster() const;
-
-            void sendGridComponentsUpdate(std::vector<RefinementResult> *refinementResults);
-
-
-            void waitForMPIRequestsToComplete();
-
-            void processCompletedMPIRequests();
-
-            void sendCommandIDToWorkers(sgpp::datadriven::MPI_COMMAND_ID commandID) const;
-
-            void processIncomingMPICommands(sgpp::datadriven::MPI_Packet *mpiPacket);
-
-            void receiveGridComponentsUpdate(sgpp::datadriven::RefinementResultNetworkMessage *networkMessage);
-
-            void updateVariablesAfterRefinement(RefinementResult *refinementResult, size_t classIndex,
-                                                DBMatOnlineDE *densEst) const;
-
             void doRefinementForClass(const std::string &refType, RefinementResult *refinementResult,
                                       const std::pair<DBMatOnlineDE *, double> *onlineObjects, bool preCompute,
-                                      MultiGridRefinementFunctor *refinementFunctor, size_t classIndex) const;
+                                      MultiGridRefinementFunctor *refinementFunctor, size_t classIndex);
 
             void doRefinementForAll(const std::string &refinementFunctorType,
                                     const std::string &refinementMonitorType,
                                     std::vector<RefinementResult> *vectorRefinementResults,
                                     const std::vector<std::pair<DBMatOnlineDE *, double>> *onlineObjects,
                                     std::shared_ptr<ConvergenceMonitor> &monitor);
+
         };
     }   //namespace datadriven
 }  // namespace sgpp

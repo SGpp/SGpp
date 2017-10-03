@@ -6,6 +6,7 @@
 #ifndef GLOBALMPICOMM_HPP
 #define GLOBALMPICOMM_HPP
 
+#define USE_MPI=1
 // MPI Support
 #ifdef USE_MPI
 #include <sgpp/globaldef.hpp>
