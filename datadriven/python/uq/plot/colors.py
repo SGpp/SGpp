@@ -37,6 +37,8 @@ def load_custom_pgf_preamble(dtype="standard", macros="thesis"):
 
     if macros == "thesis":
         cmd_filename = r"/home/oliver/adaptive-kernel-density-estimators/scientific-thesis-template-template/macros/math_commands.tex"
+    elif macros == "l2-leja":
+        cmd_filename = r"/home/franzefn/Promotion/Paper/Awesome-CT-Leja-Papers-of-Dabian-Holzelin/l2-leja/paper/commands.tex"
     else:
         cmd_filename = r"/home/franzefn/Promotion/Paper/repos/SGA16/paper/commands.tex"
 
