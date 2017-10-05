@@ -19,7 +19,7 @@
 namespace sgpp {
 namespace datadriven {
 
-enum class DBMatDecompostionType { LU, Eigen, Chol, DenseIchol };
+enum class DBMatDecompostionType { LU, Eigen, Chol, DenseIchol, OrthoAdapt };
 
 struct DBMatOfflineIcholParameters {
   size_t sweepsDecompose = 4;

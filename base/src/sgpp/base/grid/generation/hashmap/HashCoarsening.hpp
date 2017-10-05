@@ -15,11 +15,10 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <vector>
-#include <list>
 #include <cmath>
+#include <list>
 #include <utility>
-
+#include <vector>
 
 namespace sgpp {
 namespace base {
@@ -44,11 +43,14 @@ class HashCoarsening {
    *
    * @param storage hashmap that stores the grid points
    * @param functor a function used to determine if refinement is needed
-   * @param alpha pointer to the gridpoints' coefficients removed points must also be considered in this vector
+   * @param alpha pointer to the gridpoints' coefficients removed points must also be considered in
+   * this vector
    * @param numFirstPoints number of grid points that are regarded to be coarsened
+   * @param minIndexConsidered indices of coarsen point candidates must be higher than this
+   * parameter to be allowed to get coarsened
    */
-  void free_coarsen_NFirstOnly(GridStorage& storage, CoarseningFunctor& functor,
-                               DataVector& alpha, size_t numFirstPoints) {
+  void free_coarsen_NFirstOnly(GridStorage& storage, CoarseningFunctor& functor, DataVector& alpha,
+                               size_t numFirstPoints, size_t minIndexConsidered = 0) {
     // check if the grid has any points
     if (storage.getSize() == 0) {
       throw generation_exception("storage empty");
@@ -77,7 +79,8 @@ class HashCoarsening {
     size_t max_idx = 0;
 
     // assure that only the first numFirstPoints are checked for coarsening
-    for (size_t z = 0; z < numFirstPoints; z++) {
+    // also assure, that indices bigger than minIndexConsidered are not checked
+    for (size_t z = minIndexConsidered; z < numFirstPoints; z++) {
       GridPoint& point = storage.getPoint(z);
 
       if (point.isLeaf() && point.isInnerPoint()) {
@@ -102,10 +105,11 @@ class HashCoarsening {
     }
 
     // DEBUG : print list of removable candidates
-    // for (size_t i = 0; i < remove_num; i++)
-    // {
-    //   std::cout << "Index: " << removePoints[i].first <<
-    //   " with surplus " << removePoints[i].second << std::endl;
+    // std::cout << "list of removable candidates:\n";
+    // for (size_t i = 0; i < remove_num; i++) {
+    //   std::cout << "Index: " << removePoints[i].first << " with surplus " <<
+    //   removePoints[i].second
+    //             << std::endl;
     // }
     // std::cout << std::endl;
 
@@ -117,20 +121,19 @@ class HashCoarsening {
     // vector to save remaining points
     std::vector<size_t> remainingIndex;
 
-    // vector to stored the points that match all condition for deleting
+    // vector to store the points that match all condition for deleting
     this->deletePoints.clear();
 
     for (size_t i = 0; i < remove_num; i++) {
-      if (removePoints[i].second < initValue &&
-          removePoints[i].second <= threshold) {
+      if (removePoints[i].second < initValue && removePoints[i].second <= threshold) {
         this->deletePoints.push_back(removePoints[i].first);
       }
     }
 
     // DEBUG : print list points to delete
-    // for(std::list<size_t>::iterator iter = deletePoints.begin();
-    // iter != deletePoints.end(); iter++)
-    // {
+    // std::cout << "list of points to delete:\n";
+    // for (std::list<size_t>::iterator iter = deletePoints.begin(); iter != deletePoints.end();
+    //      iter++) {
     //   std::cout << "Index: " << *iter << std::endl;
     // }
 
@@ -162,10 +165,10 @@ class HashCoarsening {
    *
    * @param storage hashmap that stores the grid points
    * @param functor a function used to determine if refinement is needed
-   * @param alpha pointer to the gridpoints' coefficients removed points must also be considered in this vector
+   * @param alpha pointer to the gridpoints' coefficients removed points must also be considered in
+   * this vector
    */
-  void free_coarsen(GridStorage& storage, CoarseningFunctor& functor,
-                    DataVector& alpha) {
+  void free_coarsen(GridStorage& storage, CoarseningFunctor& functor, DataVector& alpha) {
     free_coarsen_NFirstOnly(storage, functor, alpha, storage.getSize());
   }
 
@@ -184,9 +187,7 @@ class HashCoarsening {
     GridPoint point;
     GridStorage::grid_map_iterator end_iter = storage.end();
 
-    for (GridStorage::grid_map_iterator iter = storage.begin();
-         iter != end_iter;
-         iter++) {
+    for (GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter; iter++) {
       point = *(iter->first);
 
       if (point.isLeaf()) {
@@ -197,9 +198,7 @@ class HashCoarsening {
     return counter;
   }
 
-  std::list<size_t> getDeletedPoints() {
-    return this->deletePoints;
-  }
+  std::list<size_t> getDeletedPoints() { return this->deletePoints; }
 
  private:
   std::list<size_t> deletePoints;
