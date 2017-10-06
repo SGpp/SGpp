@@ -6,7 +6,7 @@
 #ifndef SGPP_AUXILIARYSTRUCTURES_HPP
 #define SGPP_AUXILIARYSTRUCTURES_HPP
 
-#include <sgpp_datadriven.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <vector>
 #include <list>

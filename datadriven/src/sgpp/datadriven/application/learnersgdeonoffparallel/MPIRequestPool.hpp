@@ -6,7 +6,9 @@
 #ifndef SGPP_MPIREQUESTPOOL_HPP
 #define SGPP_MPIREQUESTPOOL_HPP
 
-#include <sgpp/datadriven/application/work_in_progress/NetworkMessageData.hpp>
+#include <sgpp/globaldef.hpp>
+
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/NetworkMessageData.hpp>
 #include <vector>
 #include <set>
 

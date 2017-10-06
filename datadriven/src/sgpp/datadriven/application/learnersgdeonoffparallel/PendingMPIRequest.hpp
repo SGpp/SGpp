@@ -6,7 +6,9 @@
 #ifndef SGPP_PENDINGMPIREQUEST_HPP
 #define SGPP_PENDINGMPIREQUEST_HPP
 
-#include <sgpp/datadriven/application/work_in_progress/MPIRequestPool.hpp>
+#include <sgpp/globaldef.hpp>
+
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIRequestPool.hpp>
 
 namespace sgpp {
 namespace datadriven {

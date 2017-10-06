@@ -15,6 +15,7 @@
 #define REFINENEMT_RESULT_PAYLOAD_SIZE (MPI_PACKET_MAX_PAYLOAD_SIZE\
                                    - 3 * sizeof(size_t)\
                                    - sizeof(RefinementResultsUpdateType))
+#include <sgpp/globaldef.hpp>
 
 #include <mpi.h>
 #include <functional>

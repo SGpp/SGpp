@@ -6,6 +6,8 @@
 #ifndef SGPP_MPITASKSCHEDULER_HPP
 #define SGPP_MPITASKSCHEDULER_HPP
 
+#include <sgpp/globaldef.hpp>
+
 #include <cstdlib>
 
 namespace sgpp {

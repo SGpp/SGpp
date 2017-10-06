@@ -4,10 +4,10 @@
 
 #include <boost/test/unit_test_suite.hpp>
 #include <boost/test/test_tools.hpp>
-#include <sgpp/datadriven/application/work_in_progress/LearnerSGDEOnOffParallel.hpp>
-#include <sgpp/datadriven/application/work_in_progress/RoundRobinScheduler.hpp>
-#include <sgpp/datadriven/application/work_in_progress/MPIMethods.hpp>
-#include <sgpp/datadriven/application/work_in_progress/NetworkMessageData.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/RoundRobinScheduler.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/NetworkMessageData.hpp>
 
 #define BOOST_TEST_DYN_LINK
 #define SCHEDULER_BATCH_SIZE 1337

@@ -18,7 +18,7 @@
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
-#include <sgpp/datadriven/application/work_in_progress/MPIMethods.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 
 #include <thread>
@@ -58,7 +58,7 @@ LearnerSGDEOnOffParallel::LearnerSGDEOnOffParallel(
   mpiTaskScheduler.setLearnerInstance(this);
   workerActive = true;
 
-  refinementHandler = LearnerSGDEOnOffParallelRefinementHandler(this, numClassesInit);
+  refinementHandler = RefinementHandler(this, numClassesInit);
 
   MPIMethods::initMPI(this);
 }
@@ -697,7 +697,7 @@ Dataset *LearnerSGDEOnOffParallel::getValidationData() {
   return validationData;
 }
 
-LearnerSGDEOnOffParallelRefinementHandler &LearnerSGDEOnOffParallel::getRefinementHandler() {
+RefinementHandler &LearnerSGDEOnOffParallel::getRefinementHandler() {
   return refinementHandler;
 }
 }  // namespace datadriven

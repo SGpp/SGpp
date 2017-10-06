@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/application/work_in_progress/MPIMethods.hpp>
-#include <sgpp/datadriven/application/work_in_progress/RoundRobinScheduler.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/RoundRobinScheduler.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 
 namespace sgpp {
