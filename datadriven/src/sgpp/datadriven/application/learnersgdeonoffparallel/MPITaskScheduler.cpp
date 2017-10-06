@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/application/work_in_progress/MPITaskScheduler.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/MPITaskScheduler.hpp>
 
 namespace sgpp {
 namespace datadriven {

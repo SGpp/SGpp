@@ -6,9 +6,11 @@
 #ifndef SGPP_MPIMETHODS_H
 #define SGPP_MPIMETHODS_H
 
-#include <sgpp/datadriven/application/work_in_progress/LearnerSGDEOnOffParallel.hpp>
-#include <sgpp/datadriven/application/work_in_progress/NetworkMessageData.hpp>
-#include <sgpp/datadriven/application/work_in_progress/PendingMPIRequest.hpp>
+#include <sgpp/globaldef.hpp>
+
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/NetworkMessageData.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/PendingMPIRequest.hpp>
 
 #include <vector>
 #include <list>

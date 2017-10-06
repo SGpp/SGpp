@@ -11,9 +11,9 @@
 #endif /* USE_GSL */
 
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
-#include <sgpp/datadriven/application/work_in_progress/LearnerSGDEOnOffParallel.hpp>
-#include <sgpp/datadriven/application/work_in_progress/RoundRobinScheduler.hpp>
-#include <sgpp/datadriven/application/work_in_progress/MPIMethods.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/RoundRobinScheduler.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp>
 #include <omp.h>
 // #include <valgrind/callgrind.h>
 

@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/application/work_in_progress/PendingMPIRequest.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/PendingMPIRequest.hpp>
 
 namespace sgpp {
 namespace datadriven {

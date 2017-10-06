@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_LEARNERSGDEONOFFPARALLELHANDLER_H
-#define SGPP_LEARNERSGDEONOFFPARALLELHANDLER_H
+#ifndef SGPP_LEARNERSGDEONOFFPARALLELHANDLER_HPP
+#define SGPP_LEARNERSGDEONOFFPARALLELHANDLER_HPP
 
 #include <sgpp/globaldef.hpp>
 
@@ -17,8 +17,9 @@
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
-#include <sgpp/datadriven/application/work_in_progress/MPITaskScheduler.hpp>
-#include <sgpp/datadriven/application/work_in_progress/LearnerSGDEOnOffParallel.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/AuxiliaryStructures.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/MPITaskScheduler.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp>
 
 #include <mpi.h>
 
@@ -32,7 +33,7 @@
 namespace sgpp {
 namespace datadriven {
 
-class LearnerSGDEOnOffParallelRefinementHandler {
+class RefinementHandler {
  protected:
   std::vector<RefinementResult> vectorRefinementResults;
   LearnerSGDEOnOffParallel *learnerInstance;
@@ -71,7 +72,7 @@ class LearnerSGDEOnOffParallelRefinementHandler {
    * @param learnerInstance The instance of the learner to handle refinement for
    * @param numClasses The number of classes for the current problem
    */
-  LearnerSGDEOnOffParallelRefinementHandler(LearnerSGDEOnOffParallel *learnerInstance,
+  RefinementHandler(LearnerSGDEOnOffParallel *learnerInstance,
                                   size_t numClasses);
 
   /**
@@ -135,4 +136,4 @@ class LearnerSGDEOnOffParallelRefinementHandler {
 }  // namespace datadriven
 }  // namespace sgpp
 
-#endif  // SGPP_LEARNERSGDEONOFFPARALLELHANDLER_H
+#endif  // SGPP_LEARNERSGDEONOFFPARALLELHANDLER_HPP

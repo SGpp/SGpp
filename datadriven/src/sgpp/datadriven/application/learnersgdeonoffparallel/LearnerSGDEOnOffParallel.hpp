@@ -18,9 +18,9 @@
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
-#include <sgpp/datadriven/application/work_in_progress/MPITaskScheduler.hpp>
-#include <sgpp/datadriven/application/work_in_progress/AuxiliaryStructures.hpp>
-#include <sgpp/datadriven/application/work_in_progress/LearnerSGDEOnOffParallelRefinementHandler.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/MPITaskScheduler.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/AuxiliaryStructures.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/RefinementHandler.hpp>
 
 #include <mpi.h>
 
@@ -225,7 +225,7 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
    * Returns a reference to the refinement handler, that contains logic to handle the master's refinement cycles
    * @return A reference to the refinement handler
    */
-  LearnerSGDEOnOffParallelRefinementHandler &getRefinementHandler();
+  RefinementHandler &getRefinementHandler();
 
   /**
    * Asks the scheduler where to assign the next batch to and sends the MPI request.
@@ -254,7 +254,7 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
   /**
    * Instance of the currently installed refinement handler
    */
-  LearnerSGDEOnOffParallelRefinementHandler refinementHandler;
+  RefinementHandler refinementHandler;
 
   /**
    * Allocates memory for every class to hold training data before learning

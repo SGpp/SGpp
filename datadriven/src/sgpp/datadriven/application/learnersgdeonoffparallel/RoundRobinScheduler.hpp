@@ -6,7 +6,9 @@
 #ifndef SGPP_ROUNDROBINSCHEDULER_H
 #define SGPP_ROUNDROBINSCHEDULER_H
 
-#include <sgpp/datadriven/application/work_in_progress/MPITaskScheduler.hpp>
+#include <sgpp/globaldef.hpp>
+
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/MPITaskScheduler.hpp>
 
 namespace sgpp {
 namespace datadriven {

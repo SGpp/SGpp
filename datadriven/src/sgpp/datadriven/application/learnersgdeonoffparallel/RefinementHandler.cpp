@@ -9,7 +9,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
-#include <sgpp/datadriven/application/work_in_progress/MPIMethods.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 
 #include <vector>
@@ -17,13 +17,13 @@
 
 namespace sgpp {
 namespace datadriven {
-bool LearnerSGDEOnOffParallelRefinementHandler::checkReadyForRefinement() const {
+bool RefinementHandler::checkReadyForRefinement() const {
   // All local grids in a consistent state and have OK from scheduler
   return learnerInstance->getScheduler().isReadyForRefinement()
       && learnerInstance->checkAllGridsConsistent();
 }
 
-void LearnerSGDEOnOffParallelRefinementHandler::doRefinementForClass(
+void RefinementHandler::doRefinementForClass(
     const std::string &refType,
     RefinementResult *refinementResult,
     const ClassDensityConntainer &onlineObjects,
@@ -100,7 +100,7 @@ void LearnerSGDEOnOffParallelRefinementHandler::doRefinementForClass(
   updateClassVariablesAfterRefinement(classIndex, refinementResult, densEst);
 }
 
-void LearnerSGDEOnOffParallelRefinementHandler::updateClassVariablesAfterRefinement(
+void RefinementHandler::updateClassVariablesAfterRefinement(
     size_t classIndex,
     RefinementResult *refinementResult,
     DBMatOnlineDE *densEst) {
@@ -195,7 +195,7 @@ void LearnerSGDEOnOffParallelRefinementHandler::updateClassVariablesAfterRefinem
               densEst->getAlpha().size() << ")" << std::endl;)
 }
 
-bool LearnerSGDEOnOffParallelRefinementHandler::checkRefinementNecessary(
+bool RefinementHandler::checkRefinementNecessary(
     const std::string &refMonitor,
     size_t refPeriod,
     size_t totalInstances,
@@ -240,7 +240,7 @@ bool LearnerSGDEOnOffParallelRefinementHandler::checkRefinementNecessary(
 }
 
 size_t
-LearnerSGDEOnOffParallelRefinementHandler::handleDataAndZeroBasedRefinement(
+RefinementHandler::handleDataAndZeroBasedRefinement(
     bool preCompute,
     MultiGridRefinementFunctor *func,
     size_t idx,
@@ -259,7 +259,7 @@ LearnerSGDEOnOffParallelRefinementHandler::handleDataAndZeroBasedRefinement(
   return gridSizeAfterRefine - gridSizeBeforeRefine;
 }
 
-size_t LearnerSGDEOnOffParallelRefinementHandler::handleSurplusBasedRefinement(
+size_t RefinementHandler::handleSurplusBasedRefinement(
     DBMatOnlineDE *densEst,
     base::Grid &grid,
     base::GridGenerator &gridGen) const {
@@ -318,11 +318,11 @@ size_t LearnerSGDEOnOffParallelRefinementHandler::handleSurplusBasedRefinement(
   return sizeAfterRefine - sizeBeforeRefine;
 }
 
-RefinementResult &LearnerSGDEOnOffParallelRefinementHandler::getRefinementResult(size_t classIndex) {
+RefinementResult &RefinementHandler::getRefinementResult(size_t classIndex) {
   return vectorRefinementResults[classIndex];
 }
 
-LearnerSGDEOnOffParallelRefinementHandler::LearnerSGDEOnOffParallelRefinementHandler(
+RefinementHandler::RefinementHandler(
     LearnerSGDEOnOffParallel *learnerInstance,
     size_t numClasses) {
   this->learnerInstance = learnerInstance;
