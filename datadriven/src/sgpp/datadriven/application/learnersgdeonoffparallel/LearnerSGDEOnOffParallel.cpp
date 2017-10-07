@@ -437,7 +437,6 @@ LearnerSGDEOnOffParallel::train(
       classRefinementResult.addedGridPoints.clear();
 
       if (usePrior) {
-        // TODO(bodevt): This probably doesn't work
         double newPrior = ((this->prior[p.second] * static_cast<double>(processedPoints)) +
             static_cast<double>(p.first->getSize())) /
             (static_cast<double>(numberOfDataPoints) +
