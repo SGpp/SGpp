@@ -38,7 +38,7 @@ MultiStart::MultiStart(const MultiStart& other)
     : UnconstrainedOptimizer(other),
       defaultOptimizer(NelderMead(*f)) {
   other.optimizer->clone(optimizer);
-  initialize(populationSize);
+  initialize(other.populationSize);
 }
 
 MultiStart::~MultiStart() {}
