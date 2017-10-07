@@ -19,7 +19,7 @@ namespace optimization {
 namespace optimizer {
 
 CMAES::CMAES(const ScalarFunction& f, size_t maxFcnEvalCount)
-    : UnconstrainedOptimizer(f, maxFcnEvalCount) {}
+    : UnconstrainedOptimizer(f, nullptr, nullptr, maxFcnEvalCount) {}
 
 CMAES::CMAES(const CMAES& other)
     : UnconstrainedOptimizer(other) {

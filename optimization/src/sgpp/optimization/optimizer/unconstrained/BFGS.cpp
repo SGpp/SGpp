@@ -15,12 +15,11 @@ namespace optimizer {
 BFGS::BFGS(const ScalarFunction& f, const ScalarFunctionGradient& fGradient, size_t maxItCount,
            double tolerance, double stepSizeIncreaseFactor, double stepSizeDecreaseFactor,
            double lineSearchAccuracy)
-    : UnconstrainedOptimizer(f, maxItCount),
+    : UnconstrainedOptimizer(f, &fGradient, nullptr, maxItCount),
       theta(tolerance),
       rhoAlphaPlus(stepSizeIncreaseFactor),
       rhoAlphaMinus(stepSizeDecreaseFactor),
       rhoLs(lineSearchAccuracy) {
-  fGradient.clone(this->fGradient);
 }
 
 BFGS::BFGS(const BFGS& other)
@@ -29,7 +28,6 @@ BFGS::BFGS(const BFGS& other)
       rhoAlphaPlus(other.rhoAlphaPlus),
       rhoAlphaMinus(other.rhoAlphaMinus),
       rhoLs(other.rhoLs) {
-  other.fGradient->clone(fGradient);
 }
 
 BFGS::~BFGS() {}
@@ -205,8 +203,6 @@ void BFGS::optimize() {
   fOpt = fx;
   Printer::getInstance().printStatusEnd();
 }
-
-ScalarFunctionGradient& BFGS::getObjectiveGradient() const { return *fGradient; }
 
 double BFGS::getTolerance() const { return theta; }
 

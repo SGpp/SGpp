@@ -20,7 +20,7 @@ namespace optimization {
 namespace optimizer {
 
 MultiStart::MultiStart(const ScalarFunction& f, size_t maxFcnEvalCount, size_t populationSize)
-    : UnconstrainedOptimizer(f, maxFcnEvalCount),
+    : UnconstrainedOptimizer(f, nullptr, nullptr, maxFcnEvalCount),
       defaultOptimizer(NelderMead(f)) {
   defaultOptimizer.clone(optimizer);
   initialize(populationSize);
@@ -28,7 +28,7 @@ MultiStart::MultiStart(const ScalarFunction& f, size_t maxFcnEvalCount, size_t p
 
 MultiStart::MultiStart(const UnconstrainedOptimizer& optimizer, size_t maxFcnEvalCount,
                        size_t populationSize)
-    : UnconstrainedOptimizer(optimizer.getObjectiveFunction(), maxFcnEvalCount),
+    : UnconstrainedOptimizer(optimizer.getObjectiveFunction(), nullptr, nullptr, maxFcnEvalCount),
       defaultOptimizer(NelderMead(*f)) {
   optimizer.clone(this->optimizer);
   initialize(populationSize);
