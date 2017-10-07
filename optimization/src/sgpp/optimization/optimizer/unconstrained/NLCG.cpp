@@ -18,13 +18,12 @@ namespace optimizer {
 NLCG::NLCG(const ScalarFunction& f, const ScalarFunctionGradient& fGradient,
            size_t maxItCount, double beta,
            double gamma, double tolerance, double epsilon, double restartThreshold)
-    : UnconstrainedOptimizer(f, maxItCount),
+    : UnconstrainedOptimizer(f, &fGradient, nullptr, maxItCount),
       beta(beta),
       gamma(gamma),
       tol(tolerance),
       eps(epsilon),
       alpha(restartThreshold) {
-  fGradient.clone(this->fGradient);
 }
 
 NLCG::NLCG(const NLCG& other)
@@ -34,7 +33,6 @@ NLCG::NLCG(const NLCG& other)
       tol(other.tol),
       eps(other.eps),
       alpha(other.alpha) {
-  other.fGradient->clone(fGradient);
 }
 
 NLCG::~NLCG() {}
@@ -134,8 +132,6 @@ void NLCG::optimize() {
   fOpt = fx;
   Printer::getInstance().printStatusEnd();
 }
-
-ScalarFunctionGradient& NLCG::getObjectiveGradient() const { return *fGradient; }
 
 double NLCG::getBeta() const { return beta; }
 

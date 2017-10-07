@@ -19,7 +19,7 @@ AdaptiveNewton::AdaptiveNewton(const ScalarFunction& f, const ScalarFunctionHess
                                size_t maxItCount, double tolerance, double stepSizeIncreaseFactor,
                                double stepSizeDecreaseFactor, double dampingIncreaseFactor,
                                double dampingDecreaseFactor, double lineSearchAccuracy)
-    : UnconstrainedOptimizer(f, maxItCount),
+    : UnconstrainedOptimizer(f, nullptr, &fHessian, maxItCount),
       theta(tolerance),
       rhoAlphaPlus(stepSizeIncreaseFactor),
       rhoAlphaMinus(stepSizeDecreaseFactor),
@@ -28,7 +28,6 @@ AdaptiveNewton::AdaptiveNewton(const ScalarFunction& f, const ScalarFunctionHess
       rhoLs(lineSearchAccuracy),
       defaultSleSolver(sle_solver::GaussianElimination()),
       sleSolver(defaultSleSolver) {
-  fHessian.clone(this->fHessian);
 }
 
 AdaptiveNewton::AdaptiveNewton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian,
@@ -36,7 +35,7 @@ AdaptiveNewton::AdaptiveNewton(const ScalarFunction& f, const ScalarFunctionHess
                                double stepSizeDecreaseFactor, double dampingIncreaseFactor,
                                double dampingDecreaseFactor, double lineSearchAccuracy,
                                const sle_solver::SLESolver& sleSolver)
-    : UnconstrainedOptimizer(f, maxItCount),
+    : UnconstrainedOptimizer(f, nullptr, &fHessian, maxItCount),
       theta(tolerance),
       rhoAlphaPlus(stepSizeIncreaseFactor),
       rhoAlphaMinus(stepSizeDecreaseFactor),
@@ -45,7 +44,6 @@ AdaptiveNewton::AdaptiveNewton(const ScalarFunction& f, const ScalarFunctionHess
       rhoLs(lineSearchAccuracy),
       defaultSleSolver(sle_solver::GaussianElimination()),
       sleSolver(sleSolver) {
-  fHessian.clone(this->fHessian);
 }
 
 AdaptiveNewton::AdaptiveNewton(const AdaptiveNewton& other)
@@ -58,7 +56,6 @@ AdaptiveNewton::AdaptiveNewton(const AdaptiveNewton& other)
       rhoLs(other.rhoLs),
       defaultSleSolver(sle_solver::GaussianElimination()),
       sleSolver(other.sleSolver) {
-  other.fHessian->clone(fHessian);
 }
 
 AdaptiveNewton::~AdaptiveNewton() {}
@@ -249,8 +246,6 @@ void AdaptiveNewton::optimize() {
   fOpt = fx;
   Printer::getInstance().printStatusEnd();
 }
-
-ScalarFunctionHessian& AdaptiveNewton::getObjectiveHessian() const { return *fHessian; }
 
 double AdaptiveNewton::getTolerance() const { return theta; }
 

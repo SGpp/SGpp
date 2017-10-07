@@ -3,10 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/optimization/optimizer/unconstrained/GradientDescent.hpp>
-
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/optimization/optimizer/unconstrained/GradientDescent.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/LineSearchArmijo.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 
@@ -17,12 +16,11 @@ namespace optimizer {
 GradientDescent::GradientDescent(const ScalarFunction& f, const ScalarFunctionGradient& fGradient,
                                  size_t maxItCount, double beta, double gamma, double tolerance,
                                  double epsilon)
-    : UnconstrainedOptimizer(f, maxItCount),
+    : UnconstrainedOptimizer(f, &fGradient, nullptr, maxItCount),
       beta(beta),
       gamma(gamma),
       tol(tolerance),
       eps(epsilon) {
-  fGradient.clone(this->fGradient);
 }
 GradientDescent::GradientDescent(const GradientDescent& other)
     : UnconstrainedOptimizer(other),
@@ -30,7 +28,6 @@ GradientDescent::GradientDescent(const GradientDescent& other)
       gamma(other.gamma),
       tol(other.tol),
       eps(other.eps) {
-  other.fGradient->clone(fGradient);
 }
 
 GradientDescent::~GradientDescent() {}
@@ -96,8 +93,6 @@ void GradientDescent::optimize() {
   fOpt = fx;
   Printer::getInstance().printStatusEnd();
 }
-
-ScalarFunctionGradient& GradientDescent::getObjectiveGradient() const { return *fGradient; }
 
 double GradientDescent::getBeta() const { return beta; }
 
