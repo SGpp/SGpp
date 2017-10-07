@@ -714,7 +714,6 @@ void MPIMethods::receiveGridComponentsUpdate(RefinementResultNetworkMessage *net
 
   // If this is not the last message in a series (gridversion inconsistent),
   // then don't update variables yet
-  // TODO(bodevt): What if only deleted points?
   if (networkMessage->gridversion == GRID_RECEIVED_ADDED_POINTS && !isMaster()) {
     D(std::cout << "Updating class " << classIndex
                 << " variables as grid is now consistent with version "
