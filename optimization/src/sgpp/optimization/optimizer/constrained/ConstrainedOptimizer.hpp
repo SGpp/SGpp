@@ -71,9 +71,21 @@ class ConstrainedOptimizer : public UnconstrainedOptimizer {
   VectorFunction& getInequalityConstraintFunction() const { return *g; }
 
   /**
+   * @param g  inequality constraint function
+   */
+  void setInequalityConstraintFunction(const VectorFunction& g) {
+    g.clone(this->g);
+  }
+
+  /**
    * @return equality constraint function
    */
   VectorFunction& getEqualityConstraintFunction() const { return *h; }
+
+  /**
+   * @param h  equality constraint function
+   */
+  void setEqualityConstraintFunction(const VectorFunction& h) { h.clone(this->h); }
 
  protected:
   /// inequality constraint function
