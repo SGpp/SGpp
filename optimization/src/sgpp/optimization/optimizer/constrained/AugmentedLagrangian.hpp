@@ -9,8 +9,6 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/optimizer/constrained/ConstrainedOptimizer.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
-#include <sgpp/optimization/function/vector/VectorFunctionGradient.hpp>
 
 #include <vector>
 
@@ -59,6 +57,7 @@ class AugmentedLagrangian : public ConstrainedOptimizer {
                       double constraintTolerance = DEFAULT_CONSTRAINT_TOLERANCE,
                       double penaltyStartValue = DEFAULT_PENALTY_START_VALUE,
                       double penaltyIncreaseFactor = DEFAULT_PENALTY_INCREASE_FACTOR);
+
   /**
    * Copy constructor.
    *
@@ -83,21 +82,6 @@ class AugmentedLagrangian : public ConstrainedOptimizer {
    * @return feasible point in \f$[0, 1]^d\f$
    */
   base::DataVector findFeasiblePoint() const;
-
-  /**
-   * @return objective function gradient
-   */
-  ScalarFunctionGradient& getObjectiveGradient() const;
-
-  /**
-   * @return inequality constraint function gradient
-   */
-  VectorFunctionGradient& getInequalityConstraintGradient() const;
-
-  /**
-   * @return equality constraint function gradient
-   */
-  VectorFunctionGradient& getEqualityConstraintGradient() const;
 
   /**
    * @return point tolerance
@@ -158,12 +142,6 @@ class AugmentedLagrangian : public ConstrainedOptimizer {
   void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
  protected:
-  /// objective function gradient
-  std::unique_ptr<ScalarFunctionGradient> fGradient;
-  /// inequality constraint function gradient
-  std::unique_ptr<VectorFunctionGradient> gGradient;
-  /// equality constraint function gradient
-  std::unique_ptr<VectorFunctionGradient> hGradient;
   /// point tolerance
   double theta;
   /// constraint tolerance

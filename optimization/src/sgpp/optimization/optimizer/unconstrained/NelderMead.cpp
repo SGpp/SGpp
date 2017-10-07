@@ -18,7 +18,7 @@ namespace optimizer {
 
 NelderMead::NelderMead(const ScalarFunction& f, size_t maxFcnEvalCount, double alpha, double beta,
                        double gamma, double delta)
-    : UnconstrainedOptimizer(f, maxFcnEvalCount),
+    : UnconstrainedOptimizer(f, nullptr, nullptr, maxFcnEvalCount),
       alpha(alpha),
       beta(beta),
       gamma(gamma),

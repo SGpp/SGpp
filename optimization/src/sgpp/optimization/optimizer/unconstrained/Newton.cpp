@@ -22,7 +22,7 @@ namespace optimizer {
 Newton::Newton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian, size_t max_it_count,
                double beta, double gamma, double tolerance, double epsilon, double alpha1,
                double alpha2, double p)
-    : UnconstrainedOptimizer(f, max_it_count),
+    : UnconstrainedOptimizer(f, nullptr, &fHessian, max_it_count),
       beta(beta),
       gamma(gamma),
       tol(tolerance),
@@ -32,13 +32,12 @@ Newton::Newton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian, s
       p(p),
       defaultSleSolver(sle_solver::GaussianElimination()),
       sleSolver(defaultSleSolver) {
-  fHessian.clone(this->fHessian);
 }
 
 Newton::Newton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian, size_t max_it_count,
                double beta, double gamma, double tolerance, double epsilon, double alpha1,
                double alpha2, double p, const sle_solver::SLESolver& sleSolver)
-    : UnconstrainedOptimizer(f, max_it_count),
+    : UnconstrainedOptimizer(f, nullptr, &fHessian, max_it_count),
       beta(beta),
       gamma(gamma),
       tol(tolerance),
@@ -48,7 +47,6 @@ Newton::Newton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian, s
       p(p),
       defaultSleSolver(sle_solver::GaussianElimination()),
       sleSolver(sleSolver) {
-  fHessian.clone(this->fHessian);
 }
 
 Newton::Newton(const Newton& other)
@@ -62,7 +60,6 @@ Newton::Newton(const Newton& other)
       p(other.p),
       defaultSleSolver(sle_solver::GaussianElimination()),
       sleSolver(other.sleSolver) {
-  other.fHessian->clone(fHessian);
 }
 
 Newton::~Newton() {}
@@ -163,8 +160,6 @@ void Newton::optimize() {
   fOpt = fx;
   Printer::getInstance().printStatusEnd();
 }
-
-ScalarFunctionHessian& Newton::getObjectiveHessian() const { return *fHessian; }
 
 double Newton::getBeta() const { return beta; }
 

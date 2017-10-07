@@ -16,12 +16,11 @@ AdaptiveGradientDescent::AdaptiveGradientDescent(
     const ScalarFunction& f, const ScalarFunctionGradient& fGradient,
     size_t maxItCount, double tolerance,
     double stepSizeIncreaseFactor, double stepSizeDecreaseFactor, double lineSearchAccuracy)
-    : UnconstrainedOptimizer(f, maxItCount),
+    : UnconstrainedOptimizer(f, &fGradient, nullptr, maxItCount),
       theta(tolerance),
       rhoAlphaPlus(stepSizeIncreaseFactor),
       rhoAlphaMinus(stepSizeDecreaseFactor),
       rhoLs(lineSearchAccuracy) {
-  fGradient.clone(this->fGradient);
 }
 
 AdaptiveGradientDescent::AdaptiveGradientDescent(const AdaptiveGradientDescent& other) :
@@ -30,7 +29,6 @@ AdaptiveGradientDescent::AdaptiveGradientDescent(const AdaptiveGradientDescent& 
     rhoAlphaPlus(other.rhoAlphaPlus),
     rhoAlphaMinus(other.rhoAlphaMinus),
     rhoLs(other.rhoLs) {
-  other.fGradient->clone(fGradient);
 }
 
 AdaptiveGradientDescent::~AdaptiveGradientDescent() {}
@@ -151,8 +149,6 @@ void AdaptiveGradientDescent::optimize() {
   fOpt = fx;
   Printer::getInstance().printStatusEnd();
 }
-
-ScalarFunctionGradient& AdaptiveGradientDescent::getObjectiveGradient() const { return *fGradient; }
 
 double AdaptiveGradientDescent::getTolerance() const { return theta; }
 

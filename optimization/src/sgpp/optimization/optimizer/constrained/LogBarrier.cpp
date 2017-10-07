@@ -9,6 +9,7 @@
 #include <sgpp/optimization/optimizer/constrained/LogBarrier.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
 #include <sgpp/optimization/function/vector/EmptyVectorFunction.hpp>
+#include <sgpp/optimization/function/vector/EmptyVectorFunctionGradient.hpp>
 
 #include <vector>
 
@@ -128,14 +129,15 @@ LogBarrier::LogBarrier(const ScalarFunction& f,
                        const VectorFunctionGradient& gGradient,
                        size_t maxItCount, double tolerance,
                        double barrierStartValue, double barrierDecreaseFactor)
-    : ConstrainedOptimizer(f, g, EmptyVectorFunction::getInstance(), maxItCount),
+    : ConstrainedOptimizer(f, &fGradient, g, &gGradient,
+                           EmptyVectorFunction::getInstance(),
+                           &EmptyVectorFunctionGradient::getInstance(),
+                           maxItCount),
       theta(tolerance),
       mu0(barrierStartValue),
       rhoMuMinus(barrierDecreaseFactor),
       xHistInner(0, 0),
       kHistInner() {
-  fGradient.clone(this->fGradient);
-  gGradient.clone(this->gGradient);
 }
 
 LogBarrier::LogBarrier(const LogBarrier& other)
@@ -145,8 +147,6 @@ LogBarrier::LogBarrier(const LogBarrier& other)
       rhoMuMinus(other.rhoMuMinus),
       xHistInner(other.xHistInner),
       kHistInner(other.kHistInner) {
-  other.fGradient->clone(fGradient);
-  other.gGradient->clone(gGradient);
 }
 
 LogBarrier::~LogBarrier() {}
@@ -240,10 +240,6 @@ void LogBarrier::optimize() {
   fOpt = fx;
   Printer::getInstance().printStatusEnd();
 }
-
-ScalarFunctionGradient& LogBarrier::getObjectiveGradient() const { return *fGradient; }
-
-VectorFunctionGradient& LogBarrier::getInequalityConstraintGradient() const { return *gGradient; }
 
 double LogBarrier::getTolerance() const { return theta; }
 

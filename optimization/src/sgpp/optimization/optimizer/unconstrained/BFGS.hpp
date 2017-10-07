@@ -9,7 +9,6 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
 
 namespace sgpp {
 namespace optimization {
@@ -63,11 +62,6 @@ class BFGS : public UnconstrainedOptimizer {
   void optimize() override;
 
   /**
-   * @return objective function gradient
-   */
-  ScalarFunctionGradient& getObjectiveGradient() const;
-
-  /**
    * @return tolerance
    */
   double getTolerance() const;
@@ -113,8 +107,6 @@ class BFGS : public UnconstrainedOptimizer {
   void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
  protected:
-  /// objective function gradient
-  std::unique_ptr<ScalarFunctionGradient> fGradient;
   /// tolerance
   double theta;
   /// step size increase factor
