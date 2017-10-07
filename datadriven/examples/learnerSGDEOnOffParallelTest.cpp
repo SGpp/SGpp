@@ -10,10 +10,13 @@
 
 #endif /* USE_GSL */
 
+#include <sgpp/base/tools/SGppStopwatch.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/RoundRobinScheduler.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp>
+
 #include <omp.h>
 // #include <valgrind/callgrind.h>
 
