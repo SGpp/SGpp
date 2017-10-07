@@ -28,7 +28,10 @@ MultiStart::MultiStart(const ScalarFunction& f, size_t maxFcnEvalCount, size_t p
 
 MultiStart::MultiStart(const UnconstrainedOptimizer& optimizer, size_t maxFcnEvalCount,
                        size_t populationSize)
-    : UnconstrainedOptimizer(optimizer.getObjectiveFunction(), nullptr, nullptr, maxFcnEvalCount),
+    : UnconstrainedOptimizer(optimizer.getObjectiveFunction(),
+                             optimizer.getObjectiveGradient(),
+                             optimizer.getObjectiveHessian(),
+                             maxFcnEvalCount),
       defaultOptimizer(NelderMead(*f)) {
   optimizer.clone(this->optimizer);
   initialize(populationSize);
@@ -52,6 +55,16 @@ void MultiStart::initialize(size_t populationSize) {
 void MultiStart::setObjectiveFunction(const ScalarFunction& f) {
   UnconstrainedOptimizer::setObjectiveFunction(f);
   optimizer->setObjectiveFunction(f);
+}
+
+void MultiStart::setObjectiveGradient(const ScalarFunctionGradient* fGradient) {
+  UnconstrainedOptimizer::setObjectiveGradient(fGradient);
+  optimizer->setObjectiveGradient(fGradient);
+}
+
+void MultiStart::setObjectiveHessian(const ScalarFunctionHessian* fHessian) {
+  UnconstrainedOptimizer::setObjectiveHessian(fHessian);
+  optimizer->setObjectiveHessian(fHessian);
 }
 
 void MultiStart::optimize() {
