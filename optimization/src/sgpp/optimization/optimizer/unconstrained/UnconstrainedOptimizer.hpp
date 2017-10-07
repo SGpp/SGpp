@@ -73,6 +73,11 @@ class UnconstrainedOptimizer {
   ScalarFunction& getObjectiveFunction() const { return *f; }
 
   /**
+   * @param f  objective function
+   */
+  void setObjectiveFunction(const ScalarFunction& f) { f.clone(this->f); }
+
+  /**
    * @return  maximal number of iterations or function evaluations
    */
   size_t getN() const { return N; }
