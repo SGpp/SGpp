@@ -841,5 +841,12 @@ void MPIMethods::waitForGridConsistent(size_t classIndex) {
     waitForIncomingMessageType(UPDATE_GRID);
   }
 }
+
+bool MPIMethods::hasPendingOutgoingRequests() const {
+  return std::any_of(pendingMPIRequests.begin(),
+                     pendingMPIRequests.end(),
+                     [](PendingMPIRequest &request) { return !request.inbound; });
+}
+
 }  // namespace datadriven
 }  // namespace sgpp

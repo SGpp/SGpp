@@ -74,18 +74,14 @@ void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPas
                                              size_t accDeclineBufferSize, size_t minRefInterval,
                                              bool enableCv, size_t nextCvStep) {
   if (!MPIMethods::isMaster()) {
-    // TODO(bodevt): Avoid queue size check
-    while (workerActive || MPIMethods::getQueueSize() > 2) {
+    while (workerActive || MPIMethods::hasPendingOutgoingRequests()) {
       D(std::cout << "Client looping" << std::endl;)
       MPIMethods::waitForAnyMPIRequestsToComplete();
     }
     std::cout << "Worker shutdown." << std::endl;
     MPIMethods::sendCommandNoArgs(MPI_MASTER_RANK, WORKER_SHUTDOWN_SUCCESS);
-    // TODO(bodevt): Avoid queue size check
-    while (MPIMethods::getQueueSize() > 2) {
-      // TODO(bodevt): Avoid queue size check
-      std::cout << "Waiting for " << MPIMethods::getQueueSize() - 2
-                << " operations to complete"
+    while (MPIMethods::hasPendingOutgoingRequests()) {
+      std::cout << "Waiting for all outgoing requests to complete"
                 << std::endl;
       MPIMethods::waitForAnyMPIRequestsToComplete();
     }
