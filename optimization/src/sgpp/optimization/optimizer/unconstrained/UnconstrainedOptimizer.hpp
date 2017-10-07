@@ -122,7 +122,7 @@ class UnconstrainedOptimizer {
    * @param f  objective Hessian
    */
   virtual void setObjectiveHessian(const ScalarFunctionHessian* fHessian) {
-    if (fGradient != nullptr) {
+    if (fHessian != nullptr) {
       fHessian->clone(this->fHessian);
     } else {
       this->fHessian = nullptr;
