@@ -1,0 +1,35 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
+#include <sgpp/globaldef.hpp>
+
+#include <sgpp/optimization/fuzzy/QuasiGaussianFuzzyNumber.hpp>
+
+#include <algorithm>
+#include <cmath>
+
+namespace sgpp {
+namespace optimization {
+
+QuasiGaussianFuzzyNumber::QuasiGaussianFuzzyNumber(double mean, double stdev, double cutoff) :
+  FuzzyIntervalViaMembershipFunction(mean - cutoff * stdev, mean + cutoff * stdev, mean, mean),
+  mean(mean), stdev(stdev), cutoff(cutoff) {
+}
+
+QuasiGaussianFuzzyNumber::~QuasiGaussianFuzzyNumber() {
+}
+
+double QuasiGaussianFuzzyNumber::evaluateMembershipFunction(double x) const {
+  if ((x < supportLowerBound) || (x > supportUpperBound)) {
+    return 0.0;
+  } else {
+    const double u = std::abs(x - mean) / stdev;
+
+    return std::exp(-u * u / 2.0);
+  }
+}
+
+}  // namespace optimization
+}  // namespace sgpp
