@@ -200,7 +200,6 @@ void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPas
   shutdown();
 
   std::cout << "#Training finished (This is MASTER)" << std::endl;
-
 }
 
 size_t LearnerSGDEOnOffParallel::getDimensionality() {

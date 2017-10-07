@@ -85,6 +85,7 @@ class MPITaskScheduler {
    * @param instance The learner instance.
    */
   void setLearnerInstance(LearnerSGDEOnOffParallel *instance);
+
  protected:
   /**
    * The learner instance used to interrogate system state if necessary.

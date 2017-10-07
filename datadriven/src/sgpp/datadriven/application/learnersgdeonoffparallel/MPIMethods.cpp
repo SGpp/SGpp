@@ -197,10 +197,6 @@ MPIMethods::sendRefinementUpdates(size_t &classIndex, std::list<size_t> &deleted
       sendIBcast(mpiPacket);
     }
   }
-//            // Cholesky Decomposition
-//            {
-//                sendSystemMatrixDecomposition(classIndex, newCholeskyDecomposition, MPI_ANY_SOURCE);
-//            }
 }
 
 // USE MPI_ANY_SOURCE to send a broadcast from master
@@ -841,7 +837,7 @@ void MPIMethods::waitForGridConsistent(size_t classIndex) {
   }
 }
 
-bool MPIMethods::hasPendingOutgoingRequests() const {
+bool MPIMethods::hasPendingOutgoingRequests() {
   return std::any_of(pendingMPIRequests.begin(),
                      pendingMPIRequests.end(),
                      [](PendingMPIRequest &request) { return !request.inbound; });

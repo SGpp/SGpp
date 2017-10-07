@@ -244,7 +244,12 @@ class MPIMethods {
    */
   static void waitForGridConsistent(size_t classIndex);
 
-  static bool hasPendingOutgoingRequests() const;
+  /**
+   * Check whether there are any outgoing open MPI requests that have not completed yet
+   * @return Whether such a request exists
+   */
+  static bool hasPendingOutgoingRequests();
+
  protected:
   /**
    * Structure to track any pending tracking requests that need to be checked on every incoming
