@@ -49,6 +49,11 @@ void MultiStart::initialize(size_t populationSize) {
                              : std::min(10 * f->getNumberOfParameters(), static_cast<size_t>(100));
 }
 
+void MultiStart::setObjectiveFunction(const ScalarFunction& f) {
+  UnconstrainedOptimizer::setObjectiveFunction(f);
+  optimizer->setObjectiveFunction(f);
+}
+
 void MultiStart::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (multi-start)...");
 

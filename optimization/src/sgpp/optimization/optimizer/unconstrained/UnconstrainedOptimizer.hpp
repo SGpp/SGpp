@@ -95,7 +95,7 @@ class UnconstrainedOptimizer {
   /**
    * @param f  objective function
    */
-  void setObjectiveFunction(const ScalarFunction& f) { f.clone(this->f); }
+  virtual void setObjectiveFunction(const ScalarFunction& f) { f.clone(this->f); }
 
   /**
    * @return objective gradient
@@ -105,7 +105,7 @@ class UnconstrainedOptimizer {
   /**
    * @param f  objective gradient
    */
-  void setObjectiveGradient(const ScalarFunctionGradient* fGradient) {
+  virtual void setObjectiveGradient(const ScalarFunctionGradient* fGradient) {
     if (fGradient != nullptr) {
       fGradient->clone(this->fGradient);
     } else {
@@ -121,7 +121,7 @@ class UnconstrainedOptimizer {
   /**
    * @param f  objective Hessian
    */
-  void setObjectiveHessian(const ScalarFunctionHessian* fHessian) {
+  virtual void setObjectiveHessian(const ScalarFunctionHessian* fHessian) {
     if (fGradient != nullptr) {
       fHessian->clone(this->fHessian);
     } else {
