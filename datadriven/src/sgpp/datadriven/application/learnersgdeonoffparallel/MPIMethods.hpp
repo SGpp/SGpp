@@ -244,6 +244,7 @@ class MPIMethods {
    */
   static void waitForGridConsistent(size_t classIndex);
 
+  static bool hasPendingOutgoingRequests() const;
  protected:
   /**
    * Structure to track any pending tracking requests that need to be checked on every incoming
