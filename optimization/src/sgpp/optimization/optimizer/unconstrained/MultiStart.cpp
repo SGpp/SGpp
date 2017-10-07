@@ -195,9 +195,12 @@ void MultiStart::optimize() {
         Printer::getInstance().getMutex().unlock();
       }
 
-      xHist.appendRow(xCurrentOpt);
-      fHist.append(fCurrentOpt);
-      kHist.push_back(curOptimizerPtr->getHistoryOfOptimalPoints().getNrows());
+#pragma omp critical
+      {
+        xHist.appendRow(xCurrentOpt);
+        fHist.append(fCurrentOpt);
+        kHist.push_back(curOptimizerPtr->getHistoryOfOptimalPoints().getNrows());
+      }
     }
   }
 
