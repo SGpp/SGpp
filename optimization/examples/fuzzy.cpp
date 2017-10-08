@@ -7,40 +7,52 @@
 #include <sgpp_optimization.hpp>
 
 #include <iostream>
+#include <string>
 #include <vector>
 
-class ObjectiveFunction : public sgpp::optimization::ScalarFunction {
+using sgpp::optimization::ScalarFunction;
+using sgpp::optimization::InterpolantScalarFunction;
+using sgpp::optimization::InterpolantScalarFunctionGradient;
+using sgpp::optimization::InterpolantScalarFunctionHessian;
+
+class BilinearFunction : public sgpp::optimization::ScalarFunction {
  public:
-  ObjectiveFunction() : ScalarFunction(2) {}
-  ~ObjectiveFunction() override {}
+  BilinearFunction() : ScalarFunction(2) {}
+  ~BilinearFunction() override {}
 
   inline double eval(const sgpp::base::DataVector& x) override {
     return (8.0 * x[0]) * (8.0 * x[1]) / 10.0;
   }
 
   void clone(std::unique_ptr<ScalarFunction>& clone) const override {
-    clone = std::unique_ptr<ScalarFunction>(new ObjectiveFunction());
+    clone = std::unique_ptr<ScalarFunction>(new BilinearFunction());
   }
 };
 
-int main() {
-  std::cout << "Hello Fuzzy World!\n";
-  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
-
-
-
-  ObjectiveFunction f;
-
-  const size_t d = 2;
+bool createInterpolants(
+    ScalarFunction& f,
+    std::unique_ptr<sgpp::base::Grid>& gridBSpline,
+    std::unique_ptr<InterpolantScalarFunction>& fInterpBSpline,
+    std::unique_ptr<InterpolantScalarFunctionGradient>& fInterpBSplineGradient,
+    std::unique_ptr<InterpolantScalarFunctionHessian>& fInterpBSplineHessian,
+    std::unique_ptr<sgpp::base::Grid>& gridLinear,
+    std::unique_ptr<InterpolantScalarFunction>& fInterpLinear) {
   const size_t p = 3;
   const size_t b = 1;
-  const size_t n = 3;
+  const size_t n = 5;
 
-  sgpp::base::BsplineBoundaryGrid grid(d, p, b);
-  grid.getGenerator().regular(n);
+  const size_t d = f.getNumberOfParameters();
 
-  const size_t N = grid.getSize();
-  sgpp::base::GridStorage& gridStorage = grid.getStorage();
+  std::cout << "Constructing the sparse grids...\n";
+
+  gridBSpline.reset(new sgpp::base::BsplineBoundaryGrid(d, p, b));
+  gridBSpline->getGenerator().regular(n);
+
+  gridLinear.reset(new sgpp::base::BsplineBoundaryGrid(d, 1, b));
+  gridLinear->getGenerator().regular(n);
+
+  const size_t N = gridBSpline->getSize();
+  sgpp::base::GridStorage& gridStorage = gridBSpline->getStorage();
 
   sgpp::base::DataVector functionValues(N);
   sgpp::base::DataVector x(d);
@@ -50,63 +62,116 @@ int main() {
     functionValues[k] = f.eval(x);
   }
 
-  sgpp::base::DataVector surpluses(N);
-  sgpp::optimization::HierarchisationSLE hierSLE(grid);
-  sgpp::optimization::sle_solver::Auto sleSolver;
+  std::cout << "Hierarchizing (B-spline coefficients)...\n";
 
-  if (!sleSolver.solve(hierSLE, functionValues, surpluses)) {
-    std::cout << "Solving failed, exiting.\n";
+  {
+    sgpp::base::DataVector surpluses(N);
+    sgpp::optimization::HierarchisationSLE hierSLE(*gridBSpline);
+    sgpp::optimization::sle_solver::Auto sleSolver;
+
+    if (!sleSolver.solve(hierSLE, functionValues, surpluses)) {
+      std::cout << "Solving failed, exiting.\n";
+      return false;
+    }
+
+    fInterpBSpline.reset(new InterpolantScalarFunction(*gridBSpline, surpluses));
+    fInterpBSplineGradient.reset(new InterpolantScalarFunctionGradient(*gridBSpline, surpluses));
+    fInterpBSplineHessian.reset(new InterpolantScalarFunctionHessian(*gridBSpline, surpluses));
+  }
+
+  std::cout << "Hierarchizing (linear coefficients)...\n";
+
+  {
+    sgpp::base::DataVector surpluses(N);
+    sgpp::optimization::HierarchisationSLE hierSLE(*gridLinear);
+    sgpp::optimization::sle_solver::Auto sleSolver;
+
+    if (!sleSolver.solve(hierSLE, functionValues, surpluses)) {
+      std::cout << "Solving failed, exiting.\n";
+      return false;
+    }
+
+    fInterpLinear.reset(new InterpolantScalarFunction(*gridLinear, surpluses));
+  }
+
+  return true;
+}
+
+void applyExtensionPrinciple(
+    std::string label,
+    sgpp::optimization::optimizer::UnconstrainedOptimizer& optimizer,
+    const std::vector<const sgpp::optimization::FuzzyInterval*>& xFuzzy,
+    const std::unique_ptr<sgpp::optimization::FuzzyInterval>& yFuzzyExact,
+    std::unique_ptr<sgpp::optimization::FuzzyInterval>& yFuzzy) {
+  const size_t numberOfAlphaSegments = 100;
+  sgpp::optimization::FuzzyExtensionPrinciple extensionPrinciple(
+      optimizer, numberOfAlphaSegments);
+
+  std::cout << "\n=== " << label << " ===\n";
+  extensionPrinciple.apply(xFuzzy, yFuzzy);
+
+  std::cout << "L1 norm:   " << yFuzzy->approximateL1Norm() << "\n";
+  std::cout << "L2 norm:   " << yFuzzy->approximateL2Norm() << "\n";
+  std::cout << "Linf norm: " << yFuzzy->approximateLinfNorm() << "\n";
+
+  if (yFuzzyExact.get() != nullptr) {
+    std::cout << "L1 error:   " <<
+        yFuzzyExact->approximateL1Error(*yFuzzy) << "\n";
+    std::cout << "L2 error:   " <<
+        yFuzzyExact->approximateL2Error(*yFuzzy) << "\n";
+    std::cout << "Linf error: " <<
+        yFuzzyExact->approximateLinfError(*yFuzzy) << "\n";
+    std::cout << "Relative L1 error:   " <<
+        yFuzzyExact->approximateRelativeL1Error(*yFuzzy) << "\n";
+    std::cout << "Relative L2 error:   " <<
+        yFuzzyExact->approximateRelativeL2Error(*yFuzzy) << "\n";
+    std::cout << "Relative Linf error: " <<
+        yFuzzyExact->approximateRelativeLinfError(*yFuzzy) << "\n";
+  }
+
+  /*sgpp::optimization::InterpolatedFuzzyInterval& yInterpolated =
+      *dynamic_cast<sgpp::optimization::InterpolatedFuzzyInterval*>(yFuzzy.get());
+  std::cout << "xDataApprox = " << yInterpolated.getXData().toString() << ";\n";
+  std::cout << "alphaDataApprox = " << yInterpolated.getAlphaData().toString() << ";\n";*/
+}
+
+int main() {
+  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+
+  // BilinearFunction f;
+  sgpp::optimization::test_problems::BraninObjective f;
+
+  std::unique_ptr<sgpp::base::Grid> gridBSpline;
+  std::unique_ptr<InterpolantScalarFunction> fInterpBSpline;
+  std::unique_ptr<InterpolantScalarFunctionGradient> fInterpBSplineGradient;
+  std::unique_ptr<InterpolantScalarFunctionHessian> fInterpBSplineHessian;
+  std::unique_ptr<sgpp::base::Grid> gridLinear;
+  std::unique_ptr<InterpolantScalarFunction> fInterpLinear;
+
+  if (!createInterpolants(
+      f, gridBSpline, fInterpBSpline, fInterpBSplineGradient, fInterpBSplineHessian,
+      gridLinear, fInterpLinear)) {
     return 1;
   }
 
-  sgpp::optimization::InterpolantScalarFunction ft(grid, surpluses);
-  sgpp::optimization::InterpolantScalarFunctionGradient ftGradient(grid, surpluses);
-
-
-
-  const size_t numberOfAlphaSegments = 10;
   sgpp::optimization::TriangularFuzzyInterval x0Fuzzy(0.25, 0.375, 0.125, 0.25);
   sgpp::optimization::QuasiGaussianFuzzyNumber x1Fuzzy(0.5, 0.125, 3.0);
   std::vector<const sgpp::optimization::FuzzyInterval*> xFuzzy{&x0Fuzzy, &x1Fuzzy};
 
+  sgpp::optimization::optimizer::MultiStart optimizerExact(f, 10000);
+  std::unique_ptr<sgpp::optimization::FuzzyInterval> yFuzzyExact;
+  applyExtensionPrinciple("EXACT", optimizerExact, xFuzzy, nullptr, yFuzzyExact);
 
+  sgpp::optimization::optimizer::MultiStart optimizerLinear(*fInterpLinear, 10000);
+  std::unique_ptr<sgpp::optimization::FuzzyInterval> yFuzzyLinear;
+  applyExtensionPrinciple("LINEAR", optimizerLinear, xFuzzy, yFuzzyExact, yFuzzyLinear);
 
-  {
-    sgpp::optimization::FuzzyExtensionPrinciple extensionPrinciple(
-        f, numberOfAlphaSegments);
-    std::unique_ptr<sgpp::optimization::FuzzyInterval> yFuzzy;
-    extensionPrinciple.apply(xFuzzy, yFuzzy);
-
-    sgpp::optimization::InterpolatedFuzzyInterval& yInterpolated =
-        *dynamic_cast<sgpp::optimization::InterpolatedFuzzyInterval*>(yFuzzy.get());
-    const sgpp::base::DataVector& xData = yInterpolated.getXData();
-    const sgpp::base::DataVector& alphaData = yInterpolated.getAlphaData();
-
-    std::cout << "xData = " << xData.toString() << ";\n";
-    std::cout << "alphaData = " << alphaData.toString() << ";\n";
-  }
-
-
-
-  {
-    sgpp::optimization::optimizer::AdaptiveGradientDescent localOptimizer(ft, ftGradient);
-    sgpp::optimization::optimizer::MultiStart multiStartOptimizer(localOptimizer);
-
-    sgpp::optimization::FuzzyExtensionPrinciple extensionPrinciple(
-        multiStartOptimizer, numberOfAlphaSegments);
-    std::unique_ptr<sgpp::optimization::FuzzyInterval> yFuzzy;
-    extensionPrinciple.apply(xFuzzy, yFuzzy);
-
-    sgpp::optimization::InterpolatedFuzzyInterval& yInterpolated =
-        *dynamic_cast<sgpp::optimization::InterpolatedFuzzyInterval*>(yFuzzy.get());
-    const sgpp::base::DataVector& xData = yInterpolated.getXData();
-    const sgpp::base::DataVector& alphaData = yInterpolated.getAlphaData();
-
-    std::cout << "xDataApprox = " << xData.toString() << ";\n";
-    std::cout << "alphaDataApprox = " << alphaData.toString() << ";\n";
-  }
-
-
+  sgpp::optimization::optimizer::MultiStart optimizerBSpline(*fInterpBSpline, 10000);
+  // sgpp::optimization::optimizer::AdaptiveNewton localOptimizer(
+  //     *fInterpBSpline, *fInterpBSplineHessian);
+  // sgpp::optimization::optimizer::MultiStart optimizerBSpline(localOptimizer);
+  std::unique_ptr<sgpp::optimization::FuzzyInterval> yFuzzyBSpline;
+  applyExtensionPrinciple("B-SPLINE", optimizerBSpline, xFuzzy, yFuzzyExact, yFuzzyBSpline);
 
   return 0;
 }
