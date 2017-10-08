@@ -62,22 +62,30 @@ InterpolatedFuzzyInterval::InterpolatedFuzzyInterval(
 InterpolatedFuzzyInterval::~InterpolatedFuzzyInterval() {}
 
 double InterpolatedFuzzyInterval::evaluateMembershipFunction(double x) const {
-  const size_t n = xData.getSize();
-
-  if ((x <= xData[0]) || (x >= xData[n - 1])) {
+  if ((x <= supportLowerBound) || (x >= supportUpperBound)) {
     return 0.0;
   }
 
-  // TODO(valentjn): improve with binary search
-  for (size_t i = 0; i < n - 1; i++) {
-    if ((xData[i] <= x) && (x <= xData[i + 1])) {
-      const double t = (x - xData[i]) / (xData[i + 1] - xData[i]);
+  size_t i = 0;
+  size_t j = xData.getSize() - 1;
 
-      return (1.0 - t) * alphaData[i] + t * alphaData[i + 1];
+  while (j - i > 1) {
+    const size_t iCenter = (i + j) / 2;
+
+    if (x < xData[iCenter]) {
+      j = iCenter;
+    } else {
+      i = iCenter;
     }
   }
 
-  return 0.0;
+  if (j == i + 1) {
+    const double t = (x - xData[i]) / (xData[i + 1] - xData[i]);
+
+    return (1.0 - t) * alphaData[i] + t * alphaData[i + 1];
+  } else {
+    return alphaData[i];
+  }
 }
 
 const base::DataVector& InterpolatedFuzzyInterval::getXData() const {
