@@ -31,10 +31,13 @@ TriangularFuzzyInterval::~TriangularFuzzyInterval() {
 
 double TriangularFuzzyInterval::evaluateMembershipFunction(double x) const {
   if (x < leftMean) {
+    // x is on the left (monotonically increasing) branch
     return std::max(1.0 - (leftMean - x) / leftSpread, 0.0);
   } else if (x > rightMean) {
+    // x is on the right (monotonically dereasing) branch
     return std::max(1.0 - (x - rightMean) / rightSpread, 0.0);
   } else {
+    // x is on the plateau
     return 1.0;
   }
 }
