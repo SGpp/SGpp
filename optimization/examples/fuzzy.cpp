@@ -144,6 +144,7 @@ void applyExtensionPrinciple(
 
 int main() {
   sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+  sgpp::optimization::RandomNumberGenerator::getInstance().setSeed(1);
 
   // objective function
   // BilinearFunction f;
