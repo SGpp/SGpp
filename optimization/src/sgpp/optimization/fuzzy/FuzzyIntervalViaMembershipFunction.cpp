@@ -24,12 +24,14 @@ FuzzyIntervalViaMembershipFunction::~FuzzyIntervalViaMembershipFunction() {
 
 double FuzzyIntervalViaMembershipFunction::evaluateConfidenceIntervalLowerBound(
     double alpha) const {
+  // confidence interval for alpha = 0 or 1 is known
   if (alpha == 0.0) {
     return supportLowerBound;
   } else if (alpha == 1.0) {
     return plateauLowerBound;
   }
 
+  // do a binary search in x space
   const double tol = 1e-6;
   double xLower = supportLowerBound;
   double xUpper = plateauLowerBound;
@@ -39,23 +41,30 @@ double FuzzyIntervalViaMembershipFunction::evaluateConfidenceIntervalLowerBound(
     const double alphaCenter = evaluateMembershipFunction(xCenter);
 
     if (alpha <= alphaCenter) {
+      // alpha is left of alpha value corresponding to the center of the search interval
+      // ==> search "lower" x half
       xUpper = xCenter;
     } else {
+      // alpha is right of alpha value corresponding to the center of the search interval
+      // ==> search "higher" x half
       xLower = xCenter;
     }
   }
 
+  // return center of last search interval
   return (xLower + xUpper) / 2.0;
 }
 
 double FuzzyIntervalViaMembershipFunction::evaluateConfidenceIntervalUpperBound(
     double alpha) const {
+  // confidence interval for alpha = 0 or 1 is known
   if (alpha == 0.0) {
     return supportUpperBound;
   } else if (alpha == 1.0) {
     return plateauUpperBound;
   }
 
+  // do a binary search in x space
   const double tol = 1e-6;
   double xLower = plateauUpperBound;
   double xUpper = supportUpperBound;
@@ -65,12 +74,17 @@ double FuzzyIntervalViaMembershipFunction::evaluateConfidenceIntervalUpperBound(
     const double alphaCenter = evaluateMembershipFunction(xCenter);
 
     if (alpha <= alphaCenter) {
+      // alpha is left of alpha value corresponding to the center of the search interval
+      // ==> search "higher" x half
       xLower = xCenter;
     } else {
+      // alpha is right of alpha value corresponding to the center of the search interval
+      // ==> search "lower" x half
       xUpper = xCenter;
     }
   }
 
+  // return center of last search interval
   return (xLower + xUpper) / 2.0;
 }
 

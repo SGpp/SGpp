@@ -23,8 +23,11 @@ QuasiGaussianFuzzyNumber::~QuasiGaussianFuzzyNumber() {
 
 double QuasiGaussianFuzzyNumber::evaluateMembershipFunction(double x) const {
   if ((x < supportLowerBound) || (x > supportUpperBound)) {
+    // x is not in support
     return 0.0;
   } else {
+    // x is in support (not in cutoff area)
+    // ==> calculate and return Gauss density
     const double u = std::abs(x - mean) / stdev;
 
     return std::exp(-u * u / 2.0);

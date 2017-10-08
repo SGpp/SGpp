@@ -38,10 +38,12 @@ class ScaledScalarFunction : public ScalarFunction {
   ~ScaledScalarFunction() override {}
 
   inline double eval(const base::DataVector& x) override {
+    // scale x from restricted domain
     for (size_t t = 0; t < d; t++) {
       xScaled[t] = lowerBounds[t] + x[t] * (upperBounds[t] - lowerBounds[t]);
     }
 
+    // multiply with valueFactor
     return valueFactor * fOrig->eval(xScaled);
   }
 
@@ -86,13 +88,16 @@ class ScaledScalarFunctionGradient : public ScalarFunctionGradient {
   ~ScaledScalarFunctionGradient() override {}
 
   inline double eval(const base::DataVector& x, base::DataVector& gradient) override {
+    // scale x from restricted domain
     for (size_t t = 0; t < d; t++) {
       xScaled[t] = lowerBounds[t] + x[t] * (upperBounds[t] - lowerBounds[t]);
     }
 
+    // multiply with valueFactor
     const double y = valueFactor * fGradientOrig->eval(xScaled, gradient);
 
     for (size_t t = 0; t < d; t++) {
+      // scale gradient
       gradient[t] *= valueFactor * (upperBounds[t] - lowerBounds[t]);
     }
 
@@ -142,16 +147,20 @@ class ScaledScalarFunctionHessian : public ScalarFunctionHessian {
   inline double eval(const base::DataVector& x,
                      base::DataVector& gradient,
                      base::DataMatrix& hessian) override {
+    // scale x from restricted domain
     for (size_t t = 0; t < d; t++) {
       xScaled[t] = lowerBounds[t] + x[t] * (upperBounds[t] - lowerBounds[t]);
     }
 
+    // multiply with valueFactor
     const double y = valueFactor * fHessianOrig->eval(xScaled, gradient, hessian);
 
     for (size_t t = 0; t < d; t++) {
+      // scale gradient
       gradient[t] *= valueFactor * (upperBounds[t] - lowerBounds[t]);
 
       for (size_t t2 = 0; t2 < d; t2++) {
+        // scale Hessian
         hessian(t, t2) *=
             valueFactor * (upperBounds[t] - lowerBounds[t]) *
             valueFactor * (upperBounds[t2] - lowerBounds[t2]);
@@ -226,44 +235,58 @@ void FuzzyExtensionPrinciple::apply(const std::vector<const FuzzyInterval*>& x,
   std::unique_ptr<ScaledScalarFunctionGradient> fGradientScaled;
   std::unique_ptr<ScaledScalarFunctionHessian> fHessianScaled;
 
+  // create scaled gradient function if gradient is given
   if (fGradient.get() != nullptr) {
     fGradientScaled.reset(new ScaledScalarFunctionGradient(*fGradient));
   }
 
+  // create scaled Hessian function if Hessian is given
   if (fHessian.get() != nullptr) {
     fHessianScaled.reset(new ScaledScalarFunctionHessian(*fHessian));
   }
 
+  // write restricted optimization domain directly to member of fScaled
   base::DataVector& lowerBounds(fScaled.getLowerBounds());
   base::DataVector& upperBounds(fScaled.getUpperBounds());
 
+  // result data
   base::DataVector xData(2 * m + 2);
   base::DataVector alphaData(2 * m + 2);
 
+  // save last optimal min/max value and corresponding argmin/argmax point
+  // to make sure that the optimum for a smaller alpha (hence for a larger optimization domain)
+  // is not worse that for a larger alpha
   double lastOptimalValueMin = std::numeric_limits<double>::infinity();
   double lastOptimalValueMax = -std::numeric_limits<double>::infinity();
   base::DataVector lastOptimalPointMin(d);
   base::DataVector lastOptimalPointMax(d);
 
+  // iterate through alphas from 1 to 0
   for (size_t j = m + 1; j-- > 0;) {
     const double alpha = static_cast<double>(j) / static_cast<double>(m);
 
+    // determine input parameter confidence interval,
+    // directly changing the optimization domain in fScaled
     for (size_t t = 0; t < d; t++) {
       lowerBounds[t] = x[t]->evaluateConfidenceIntervalLowerBound(alpha);
       upperBounds[t] = x[t]->evaluateConfidenceIntervalUpperBound(alpha);
     }
 
+    // set optimization domain in fGradientScaled if available
     if (fGradientScaled.get() != nullptr) {
       fGradientScaled->getLowerBounds() = lowerBounds;
       fGradientScaled->getUpperBounds() = upperBounds;
     }
 
+    // set optimization domain in fHessianScaled if available
     if (fHessianScaled.get() != nullptr) {
       fHessianScaled->getLowerBounds() = lowerBounds;
       fHessianScaled->getUpperBounds() = upperBounds;
     }
 
+    // compute minimum (lower bound of output confidence interval)
     {
+      // value factor of 1 means minimization
       fScaled.setValueFactor(1.0);
       optimizer->setObjectiveFunction(fScaled);
 
@@ -278,11 +301,14 @@ void FuzzyExtensionPrinciple::apply(const std::vector<const FuzzyInterval*>& x,
       }
 
       if (j < m) {
+        // set starting point of optimizer to optimal point of the larger alpha
+        // (optimizer is allowed to ignore the starting point though)
         optimizer->setStartingPoint(lastOptimalPointMin);
       }
 
       optimizer->optimize();
 
+      // check if optimal value is indeed smaller than the last minimum
       if (optimizer->getOptimalValue() < lastOptimalValueMin) {
         xData[j] = optimizer->getOptimalValue();
         lastOptimalValueMin = optimizer->getOptimalValue();
@@ -294,7 +320,9 @@ void FuzzyExtensionPrinciple::apply(const std::vector<const FuzzyInterval*>& x,
       alphaData[j] = alpha;
     }
 
+    // compute maximum (upper bound of output confidence interval)
     {
+      // value factor of -1 means maximization
       fScaled.setValueFactor(-1.0);
       optimizer->setObjectiveFunction(fScaled);
 
@@ -309,11 +337,15 @@ void FuzzyExtensionPrinciple::apply(const std::vector<const FuzzyInterval*>& x,
       }
 
       if (j < m) {
+        // set starting point of optimizer to optimal point of the larger alpha
+        // (optimizer is allowed to ignore the starting point though)
         optimizer->setStartingPoint(lastOptimalPointMax);
       }
 
       optimizer->optimize();
 
+      // check if optimal value is indeed larger than the last maximum
+      // (don't forget the minus because the value factor is not incorporated in getOptimalValue)
       if (-optimizer->getOptimalValue() > lastOptimalValueMax) {
         xData[2*m+1-j] = -optimizer->getOptimalValue();
         lastOptimalValueMax = -optimizer->getOptimalValue();
@@ -326,6 +358,7 @@ void FuzzyExtensionPrinciple::apply(const std::vector<const FuzzyInterval*>& x,
     }
   }
 
+  // interpolate between alpha data points
   y.reset(new InterpolatedFuzzyInterval(xData, alphaData));
 }
 
