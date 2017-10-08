@@ -8,6 +8,7 @@
 #include <sgpp/optimization/fuzzy/FuzzyExtensionPrinciple.hpp>
 #include <sgpp/optimization/fuzzy/InterpolatedFuzzyInterval.hpp>
 
+#include <limits>
 #include <vector>
 
 namespace sgpp {
@@ -239,7 +240,12 @@ void FuzzyExtensionPrinciple::apply(const std::vector<const FuzzyInterval*>& x,
   base::DataVector xData(2 * m + 2);
   base::DataVector alphaData(2 * m + 2);
 
-  for (size_t j = 0; j <= m; j++) {
+  double lastOptimalValueMin = std::numeric_limits<double>::infinity();
+  double lastOptimalValueMax = -std::numeric_limits<double>::infinity();
+  base::DataVector lastOptimalPointMin(d);
+  base::DataVector lastOptimalPointMax(d);
+
+  for (size_t j = m + 1; j-- > 0;) {
     const double alpha = static_cast<double>(j) / static_cast<double>(m);
 
     for (size_t t = 0; t < d; t++) {
@@ -271,9 +277,20 @@ void FuzzyExtensionPrinciple::apply(const std::vector<const FuzzyInterval*>& x,
         optimizer->setObjectiveHessian(fHessianScaled.get());
       }
 
+      if (j < m) {
+        optimizer->setStartingPoint(lastOptimalPointMin);
+      }
+
       optimizer->optimize();
 
-      xData[j] = optimizer->getOptimalValue();
+      if (optimizer->getOptimalValue() < lastOptimalValueMin) {
+        xData[j] = optimizer->getOptimalValue();
+        lastOptimalValueMin = optimizer->getOptimalValue();
+        lastOptimalPointMin = optimizer->getOptimalPoint();
+      } else {
+        xData[j] = lastOptimalValueMin;
+      }
+
       alphaData[j] = alpha;
     }
 
@@ -291,9 +308,20 @@ void FuzzyExtensionPrinciple::apply(const std::vector<const FuzzyInterval*>& x,
         optimizer->setObjectiveHessian(fHessianScaled.get());
       }
 
+      if (j < m) {
+        optimizer->setStartingPoint(lastOptimalPointMax);
+      }
+
       optimizer->optimize();
 
-      xData[2*m+1-j] = -optimizer->getOptimalValue();
+      if (-optimizer->getOptimalValue() > lastOptimalValueMax) {
+        xData[2*m+1-j] = -optimizer->getOptimalValue();
+        lastOptimalValueMax = -optimizer->getOptimalValue();
+        lastOptimalPointMax = optimizer->getOptimalPoint();
+      } else {
+        xData[2*m+1-j] = lastOptimalValueMax;
+      }
+
       alphaData[2*m+1-j] = alpha;
     }
   }
