@@ -170,17 +170,17 @@ int main() {
   std::vector<const sgpp::optimization::FuzzyInterval*> xFuzzy{&x0Fuzzy, &x1Fuzzy};
 
   // extension principle with exact objective function
-  sgpp::optimization::optimizer::MultiStart optimizerExact(f, 10000);
+  sgpp::optimization::optimizer::MultiStart optimizerExact(f, 10000, 100);
   std::unique_ptr<sgpp::optimization::FuzzyInterval> yFuzzyExact;
   applyExtensionPrinciple("EXACT", optimizerExact, xFuzzy, nullptr, yFuzzyExact);
 
   // extension principle with piecewise linear sparse grid interpolant
-  sgpp::optimization::optimizer::MultiStart optimizerLinear(*fInterpLinear, 10000);
+  sgpp::optimization::optimizer::MultiStart optimizerLinear(*fInterpLinear, 10000, 100);
   std::unique_ptr<sgpp::optimization::FuzzyInterval> yFuzzyLinear;
   applyExtensionPrinciple("LINEAR", optimizerLinear, xFuzzy, yFuzzyExact, yFuzzyLinear);
 
   // extension principle with B-spline sparse grid interpolant
-  sgpp::optimization::optimizer::MultiStart optimizerBSpline(*fInterpBSpline, 10000);
+  sgpp::optimization::optimizer::MultiStart optimizerBSpline(*fInterpBSpline, 10000, 100);
   // sgpp::optimization::optimizer::AdaptiveNewton localOptimizer(
   //     *fInterpBSpline, *fInterpBSplineHessian);
   // sgpp::optimization::optimizer::MultiStart optimizerBSpline(localOptimizer);
