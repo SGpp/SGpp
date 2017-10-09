@@ -5,7 +5,7 @@
 
 %include "std_string.i"
 
-%newobject sgpp::base::Grid::createGrid(RegularGridConfiguratio gridConfig);
+%newobject sgpp::base::Grid::createGrid(RegularGridConfiguration gridConfig);
 %newobject sgpp::base::Grid::createLinearGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearStretchedGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearBoundaryGrid(size_t dim);
