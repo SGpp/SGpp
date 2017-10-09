@@ -41,6 +41,17 @@ const bool UMFPACK_ENABLED;
 #endif
 %}
 
+// needed to use RandomNumberGenerator::setSeed(SeedType)
+%typemap(in) sgpp::optimization::RandomNumberGenerator::SeedType {
+  // convert Python integer to SeedType
+  $1 = PyInt_AsLong($input);
+}
+
+%typemap(typecheck, precedence=SWIG_TYPECHECK_INTEGER) sgpp::optimization::RandomNumberGenerator::SeedType {
+  // check if valid Python integer
+  $1 = PyInt_Check($input) ? 1 : 0;
+}
+
 // necessary tools
 %rename(OptRNG)         sgpp::optimization::RandomNumberGenerator;
 %include "optimization/src/sgpp/optimization/tools/RandomNumberGenerator.hpp"
