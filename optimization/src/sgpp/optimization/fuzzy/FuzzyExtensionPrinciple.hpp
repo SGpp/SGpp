@@ -34,7 +34,7 @@ class FuzzyExtensionPrinciple {
 
   FuzzyExtensionPrinciple(const FuzzyExtensionPrinciple& other);
 
-  void apply(const std::vector<const FuzzyInterval*>& x, std::unique_ptr<FuzzyInterval>& y) const;
+  FuzzyInterval* apply(const std::vector<const FuzzyInterval*>& x) const;
 
   size_t getNumberOfAlphaSegments() const;
   void setNumberOfAlphaSegments(size_t numberOfAlphaSegments);
