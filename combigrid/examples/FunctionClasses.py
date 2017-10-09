@@ -238,6 +238,9 @@ def RosenbrockSymbolic(d):
 
   return result;
 
+def f1D_test(x):
+    return 1
+
 
 #x0, x1, x2 = symbols("x0 x1 x2")
 #expr = x0 ** 3 * x1

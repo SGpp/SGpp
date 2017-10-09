@@ -100,9 +100,7 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
     if (containsLevel(level)) {
       return true;
     }
-
     upperPointBound += maxNewPoints(level);
-
     CGLOG("addLevel(): add previous levels");
     // ensure that preceding indices are already computed
     for (size_t d = 0; d < numDimensions; ++d) {
@@ -113,7 +111,6 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
         // should not affect performance because nothing is computed if the storage
         // already contains a value
         bool success = addLevel(l);
-
         if (!success) {
           return false;
         }
@@ -124,7 +121,6 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
 
     CGLOG("addLevel(): evaluate partial differences");
     partialDifferences[0]->set(level, value);
-
     for (size_t d = 0; d < numDimensions; ++d) {
       if (level[d] == 0) {
         partialDifferences[d + 1]->set(level, value);
@@ -135,7 +131,6 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
         partialDifferences[d + 1]->set(level, value);
       }
     }
-
     double norm = value.norm();
 
     if (std::isnan(norm) || std::isinf(norm)) {

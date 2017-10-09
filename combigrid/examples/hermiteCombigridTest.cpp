@@ -39,7 +39,7 @@ int main() {
 
   
 std::shared_ptr<sgpp::combigrid::CombigridOperation> operation =
-      sgpp::combigrid::CombigridOperation::createExpUniformBsplineInterpolation(
+      sgpp::combigrid::CombigridOperation::createExpUniformnakBsplineInterpolation(
         d, func);
 
 

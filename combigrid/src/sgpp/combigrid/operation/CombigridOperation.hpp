@@ -185,7 +185,8 @@ class CombigridOperation {
       static std::shared_ptr<CombigridOperation> createExpUniformBoundaryZetaHermiteInterpolation(
         size_t numDimensions, MultiFunction func);
   
-  static std::shared_ptr<CombigridOperation> createExpUniformBsplineInterpolation(
+
+  static std::shared_ptr<CombigridOperation> createExpUniformnakBsplineInterpolation(
       size_t numDimensions, MultiFunction func);
 };
 } /* namespace combigrid */

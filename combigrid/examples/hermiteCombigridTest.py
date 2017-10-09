@@ -154,7 +154,8 @@ def calc_gradient_tangent_gridpoint(gridpoints, operation, dim):
 
 # parabola between [0,1]
 def f1D(x):
-    return -4 * ((x[0] - 0.5) ** 2) + 1
+    #return -4 * ((x[0] - 0.5) ** 2) + 1
+    return np.sin(x[0]*5)
 
 
 def f1D_grad(x):
@@ -256,7 +257,7 @@ def example_1D_psi(l):
     d = 1
     level = l
     n_samples = 500
-    operation = pysgpp.CombigridOperation.createExpUniformBoundaryPsiHermiteInterpolation(
+    operation = pysgpp.CombigridOperation.createExpUniformnakBsplineInterpolation(
         d, func)
     X, _, = generate1DGrid(500)
     Y, gridpoints = calculate_grid_y_values(X, operation, level)
@@ -379,14 +380,14 @@ def example_combicombigrid_2D_linear(l, func_standard):
         func_standard: function that is already in multifunc standard format
     """
     d = 2
-    level = l
+    level = 0
     n_samples = 50
 
-    operation = pysgpp.CombigridOperation.createExpUniformBsplineInterpolation(
+    operation = pysgpp.CombigridOperation.createExpUniformnakBsplineInterpolation(
       d, func_standard)
     operation_wrap = operationwrapper(operation, level)
 
-    p.plot2DGrid_with_tangents(n_samples, level, operation, "de Baar & Harding")
+    p.plot2DGrid_operation(n_samples, level, operation, "de Baar & Harding")
     p.plot2DContour(n_samples, level, operation)
 
     # derivatives
@@ -709,8 +710,9 @@ def testf(x):
     return x[0] * x[1]
 
 
-# example_1D_realfunction()
-# example_1D_psi(2)
+#example_1D_realfunction()
+#example_1D_psi(1)
+plt.show()
 # example_1D_linear(2)
 # example_1D_zeta(2)
 # example_combicombigrid_1D(2)
@@ -725,14 +727,14 @@ func_standard = pysgpp.multiFunc(func_wrap)
 
 # example_2D_psi()
 # example_2D_linear(2,func_standard)
-example_combicombigrid_2D_linear(2, func_standard)  # with "contourplot"
+#example_combicombigrid_2D_linear(2, func_standard)  # with "contourplot"
 # print()
 
 testclass = fctClass.funcGradientCollection(func_standard, 2)
 
 func_container = fctClass.funcGradientCollectionSymbolic(fctClass.easySymbolic(), 2)
 
-example_2D_comparison_function(func_container.getFunction(), "", show=False)
+#example_2D_comparison_function(func_container.getFunction(), "", show=False)
 
 #example_combicombigrid_2D_hermite(3, func_container)
 
