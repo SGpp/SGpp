@@ -382,7 +382,8 @@ def example_combicombigrid_2D_linear(l, func_standard):
     level = l
     n_samples = 50
 
-    operation = gC.CombiCombigridLinear(func_standard, 2)
+    operation = pysgpp.CombigridOperation.createExpUniformBsplineInterpolation(
+      d, func_standard)
     operation_wrap = operationwrapper(operation, level)
 
     p.plot2DGrid_with_tangents(n_samples, level, operation, "de Baar & Harding")
@@ -612,11 +613,11 @@ def example_plot_error_gradients(func_collection, dim, grad_index_list, maxlevel
 
     operations = []
 
-    operations.append(gC.CombiCombigridLinear(func_collection, dim))
-    operations.append(gC.CombiCombigridHermite(func_collection, dim))
-    operations.append(pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(
-        dim, func_standard))
-    operations.append(gC.CombiCombigrid2dHermite_without_mixed(func_collection, dim))
+    #operations.append(gC.CombiCombigridLinear(func_collection, dim))
+    #operations.append(gC.CombiCombigridHermite(func_collection, dim))
+    #operations.append(pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(
+    #    dim, func_standard))
+    #operations.append(gC.CombiCombigrid2dHermite_without_mixed(func_collection, dim))
     # operations.append((BaseLinearFullgrid(dim, func_collection, True)))
 
     # operations.append(gC.LinearFullgrid(func_collection, dim))
@@ -628,10 +629,10 @@ def example_plot_error_gradients(func_collection, dim, grad_index_list, maxlevel
 
     func_standard = func_collection.getFunction()
     labels = []
-    labels.append("Gitter (de Baar und Harding)")
-    labels.append("Gitter (Hermite)")
-    labels.append("lineares Gitter")
-    labels.append("Gitter (Hermite) ohne gemischte Abl.")
+    #labels.append("Gitter (de Baar und Harding)")
+    #labels.append("Gitter (Hermite)")
+    #labels.append("lineares Gitter")
+    #labels.append("Gitter (Hermite) ohne gemischte Abl.")
 
     # labels.append("BaseLinearFullgrid")
     # labels.append("linearFullgrid")
@@ -724,7 +725,7 @@ func_standard = pysgpp.multiFunc(func_wrap)
 
 # example_2D_psi()
 # example_2D_linear(2,func_standard)
-# example_combicombigrid_2D_linear(2, func_standard)  # with "contourplot"
+example_combicombigrid_2D_linear(2, func_standard)  # with "contourplot"
 # print()
 
 testclass = fctClass.funcGradientCollection(func_standard, 2)
@@ -733,17 +734,17 @@ func_container = fctClass.funcGradientCollectionSymbolic(fctClass.easySymbolic()
 
 example_2D_comparison_function(func_container.getFunction(), "", show=False)
 
-# example_combicombigrid_2D_hermite(3, func_container)
+#example_combicombigrid_2D_hermite(3, func_container)
 
 
-#example_calcl2error(func_container, "Branin", 10, 2, grad_index=[[0], [1], [0, 1]],
- #                   fct=True)
+#example_calcl2error(func_container, "Values/Test/Branin", 10, 2, grad_index=[[0], [1], [0, 1]],
+#                  fct=False)
 #plot_l2error("Branin2d",grad_index=[[0],[1],[0,1]],fct=True)
 
 
 
 
-example_error_picewise(2, func_container)
+#example_error_picewise(2, func_container)
 
 dim = 4
 

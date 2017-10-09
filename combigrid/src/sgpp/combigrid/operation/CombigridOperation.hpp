@@ -25,6 +25,11 @@
 #include <memory>
 #include <vector>
 
+#include <cmath>
+#include <iomanip>
+#include <iostream>
+#include <vector>
+
 namespace sgpp {
 namespace combigrid {
 

@@ -7,7 +7,7 @@ import ModuleHelper
 
 Import("*")
 
-moduleDependencies = ["sgppoptimization", "sgppbase"]
+moduleDependencies = ["sgppoptimization", "sgppbase", "sgppquadrature"]
 module = ModuleHelper.Module(moduleDependencies)
 
 module.scanSource()

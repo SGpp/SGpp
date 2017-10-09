@@ -35,9 +35,12 @@ int main() {
 
   std::vector<double> alpha(gridpoints.size(), 0.0);
 */
-  size_t d = 1;
+  size_t d = 2;
+
+  
 std::shared_ptr<sgpp::combigrid::CombigridOperation> operation =
-      sgpp::combigrid::CombigridOperation::createExpUniformBoundaryPsiLinearInterpolation(d,0, func);
+      sgpp::combigrid::CombigridOperation::createExpUniformBsplineInterpolation(
+        d, func);
 
 
 sgpp::base::DataVector evaluationPoint(d);

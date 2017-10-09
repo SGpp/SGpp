@@ -18,6 +18,7 @@
 #include <sgpp/combigrid/utils/DataVectorHashing.hpp>
 
 #include <cmath>
+#include <iostream>
 #include <limits>
 #include <memory>
 #include <queue>
@@ -118,7 +119,6 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
         }
       }
     }
-
     CGLOG("addLevel(): eval level");
     V value = multiEval->eval(level);
 
@@ -189,6 +189,15 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
    * new function evaluations (grid points) that have to be performed when adding this level.
    */
   size_t maxNewPoints(MultiIndex const &level) { return multiEval->maxNewPoints(level); }
+
+  size_t maxNumPointsForRegular(size_t q) {
+    auto it = std::make_shared<BoundedSumMultiIndexIterator>(numDimensions, q);
+    size_t sum = 0;
+    for (; it->isValid(); it->moveToNext()) {
+      sum += maxNewPoints(it->value());
+    }
+    return sum;
+  }
 
   /**
    * @return the total number of grid points in a given level.

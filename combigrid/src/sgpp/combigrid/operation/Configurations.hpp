@@ -39,6 +39,25 @@ class CombiHierarchies {
   static std::shared_ptr<AbstractPointHierarchy> expChebyshev();
   static std::shared_ptr<AbstractPointHierarchy> expUniformBoundary();
 
+  /**
+   * Not efficient because it is not nested.
+   */
+  static std::shared_ptr<AbstractPointHierarchy> linearUniform(size_t growthFactor = 2);
+
+  /**
+   * Not efficient because it is not nested.
+   */
+  static std::shared_ptr<AbstractPointHierarchy> linearClenshawCurtis(size_t growthFactor = 2);
+  /**
+   * Not efficient because it is not nested.
+   */
+  static std::shared_ptr<AbstractPointHierarchy> linearChebyshev(size_t growthFactor = 2);
+
+  /**
+   * Not efficient because it is not nested.
+   */
+  static std::shared_ptr<AbstractPointHierarchy> linearUniformBoundary(size_t growthFactor = 2);
+
   typedef std::vector<std::shared_ptr<AbstractPointHierarchy>> Collection;
 };
 
@@ -50,6 +69,7 @@ class CombiEvaluators {
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> polynomialInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> linearInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cubicSplineInterpolation();
+  static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> BSplineInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> quadrature();
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> psiHermiteInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> zetaHermiteInterpolation();
@@ -57,6 +77,7 @@ class CombiEvaluators {
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiPolynomialInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiLinearInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiCubicSplineInterpolation();
+  static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiBSplineInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiQuadrature();
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiQuadrature(
       SingleFunction func, bool normalizeWeights);
