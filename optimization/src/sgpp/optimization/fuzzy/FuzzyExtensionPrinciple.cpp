@@ -228,8 +228,7 @@ FuzzyExtensionPrinciple::FuzzyExtensionPrinciple(const FuzzyExtensionPrinciple& 
   }
 }
 
-void FuzzyExtensionPrinciple::apply(const std::vector<const FuzzyInterval*>& x,
-                                    std::unique_ptr<FuzzyInterval>& y) const {
+FuzzyInterval* FuzzyExtensionPrinciple::apply(const std::vector<const FuzzyInterval*>& x) const {
   const size_t d = f->getNumberOfParameters();
   ScaledScalarFunction fScaled(*f);
   std::unique_ptr<ScaledScalarFunctionGradient> fGradientScaled;
@@ -359,7 +358,7 @@ void FuzzyExtensionPrinciple::apply(const std::vector<const FuzzyInterval*>& x,
   }
 
   // interpolate between alpha data points
-  y.reset(new InterpolatedFuzzyInterval(xData, alphaData));
+  return new InterpolatedFuzzyInterval(xData, alphaData);
 }
 
 size_t FuzzyExtensionPrinciple::getNumberOfAlphaSegments() const {

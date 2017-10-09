@@ -113,7 +113,7 @@ void applyExtensionPrinciple(
 
   // apply extension principle
   std::cout << "\n=== " << label << " ===\n";
-  extensionPrinciple.apply(xFuzzy, yFuzzy);
+  yFuzzy.reset(extensionPrinciple.apply(xFuzzy));
 
   // output norms
   std::cout << "L1 norm:   " << yFuzzy->approximateL1Norm() << "\n";
