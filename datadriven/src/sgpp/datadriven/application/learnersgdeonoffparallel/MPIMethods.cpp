@@ -14,6 +14,7 @@
 #include <climits>
 #include <cstring>
 #include <list>
+#include <numeric>
 
 namespace sgpp {
 namespace datadriven {

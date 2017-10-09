@@ -250,6 +250,18 @@ class MPIMethods {
    */
   static bool hasPendingOutgoingRequests();
 
+  /**
+    * Send an MPI packet to a target destination asynchronously.
+    * @param destinationRank The MPI rank of the destination.
+    * @param mpiPacket The MPI packet to send.
+    * @param packetSize The size of the MPI packet to send, defaults to the entire packet.
+    * @param highPriority Whether to send the packet on the high priority no_wait channel.
+    * @return The pending MPI request to track completion.
+    */
+  static PendingMPIRequest &
+  sendISend(int destinationRank, MPI_Packet *mpiPacket,
+            size_t packetSize = sizeof(MPI_Packet),
+            bool highPriority = false);
  protected:
   /**
    * Structure to track any pending tracking requests that need to be checked on every incoming
@@ -277,19 +289,6 @@ class MPIMethods {
    * The instance of the learner for which MPI communications are currently being handled.
    */
   static LearnerSGDEOnOffParallel *learnerInstance;
-
-  /**
-   * Send an MPI packet to a target destination asynchronously.
-   * @param destinationRank The MPI rank of the destination.
-   * @param mpiPacket The MPI packet to send.
-   * @param packetSize The size of the MPI packet to send, defaults to the entire packet.
-   * @param highPriority Whether to send the packet on the high priority no_wait channel.
-   * @return The pending MPI request to track completion.
-   */
-  static PendingMPIRequest &
-  sendISend(int destinationRank, MPI_Packet *mpiPacket,
-            size_t packetSize = sizeof(MPI_Packet),
-            bool highPriority = false);
 
   /**
    * Learn from a batch based on the instructions in the specified packet.

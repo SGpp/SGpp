@@ -94,7 +94,6 @@ void RefinementHandler::doRefinementForClass(
 
     refinementResult->addedGridPoints.push_back(levelIndexVector);
 
-    D(printPoint(gridPoint))
   }
 
   updateClassVariablesAfterRefinement(classIndex, refinementResult, densEst);
@@ -141,7 +140,6 @@ void RefinementHandler::updateClassVariablesAfterRefinement(
                       << ", new " << sizeAfterPoint << "), point "
                       << gridPoint->getHash()
                       << std::endl;
-            printPoint(gridPoint);
             throw sgpp::base::algorithm_exception("Inserted grid point did not cause grid delta.");
           }
       )
