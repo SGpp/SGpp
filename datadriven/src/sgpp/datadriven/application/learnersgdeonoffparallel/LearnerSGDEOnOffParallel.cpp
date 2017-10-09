@@ -28,6 +28,7 @@
 #include <vector>
 #include <utility>
 #include <list>
+#include <numeric>
 
 using sgpp::base::Grid;
 using sgpp::base::GridStorage;
