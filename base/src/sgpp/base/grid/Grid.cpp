@@ -69,30 +69,34 @@ Grid* Grid::createLinearStretchedBoundaryGrid(size_t dim) {
   return new LinearStretchedBoundaryGrid(dim);
 }
 
-Grid* Grid::createLinearClenshawCurtisGrid(size_t dim) { return new LinearClenshawCurtisGrid(dim); }
+Grid* Grid::createLinearClenshawCurtisGrid(size_t dim, level_t boundaryLevel) {
+  return new LinearClenshawCurtisGrid(dim, boundaryLevel);
+}
 
 Grid* Grid::createModLinearGrid(size_t dim) { return new ModLinearGrid(dim); }
 
 Grid* Grid::createPolyGrid(size_t dim, size_t degree) { return new PolyGrid(dim, degree); }
 
-Grid* Grid::createPolyBoundaryGrid(size_t dim, size_t degree) {
-  return new PolyBoundaryGrid(dim, degree);
+Grid* Grid::createPolyBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel) {
+  return new PolyBoundaryGrid(dim, degree, boundaryLevel);
 }
 
 Grid* Grid::createWaveletGrid(size_t dim) { return new WaveletGrid(dim); }
 
-Grid* Grid::createWaveletBoundaryGrid(size_t dim) { return new WaveletBoundaryGrid(dim); }
+Grid* Grid::createWaveletBoundaryGrid(size_t dim, level_t boundaryLevel) {
+  return new WaveletBoundaryGrid(dim, boundaryLevel);
+}
 
 Grid* Grid::createModWaveletGrid(size_t dim) { return new ModWaveletGrid(dim); }
 
 Grid* Grid::createBsplineGrid(size_t dim, size_t degree) { return new BsplineGrid(dim, degree); }
 
-Grid* Grid::createBsplineBoundaryGrid(size_t dim, size_t degree) {
-  return new BsplineBoundaryGrid(dim, degree);
+Grid* Grid::createBsplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel) {
+  return new BsplineBoundaryGrid(dim, degree, boundaryLevel);
 }
 
-Grid* Grid::createBsplineClenshawCurtisGrid(size_t dim, size_t degree) {
-  return new BsplineClenshawCurtisGrid(dim, degree);
+Grid* Grid::createBsplineClenshawCurtisGrid(size_t dim, size_t degree, level_t boundaryLevel) {
+  return new BsplineClenshawCurtisGrid(dim, degree, boundaryLevel);
 }
 
 Grid* Grid::createModBsplineGrid(size_t dim, size_t degree) {
