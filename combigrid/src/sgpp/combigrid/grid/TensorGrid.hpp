@@ -46,6 +46,8 @@ class TensorGrid {
   std::vector<base::DataVector> const &get1DGrids() { return onedimGrids; }
 
   MultiIndex getLevel() const { return level; }
+
+  size_t getDimension() const { return onedimGrids.size(); }
 };
 
 } /* namespace combigrid */

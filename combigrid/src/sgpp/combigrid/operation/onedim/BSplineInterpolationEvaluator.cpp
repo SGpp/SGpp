@@ -149,9 +149,9 @@ void BSplineInterpolationEvaluator::computeBasisValues() {
     basisValues[0] = 1.0;
     return;
   }
-  // 9 weil das der Menge an Gitterpunkten eines UniformBoundaryGrid Level 3 entspricht.
-  // Todo (rehmemk) Überlegen, wie sich das mit den anderen Gittertypen verhält und nak für kleine
-  // Level entsprechend anpassen. Lagrange Polynome!
+  // Lagrange polynomials for less than 9 points because 9 is the number of gridpoints of a uniform
+  // boundary grid of level 3 and this is the first level with enough gridpoints for nak B-Spliens
+  // (this is a very heuristic motivation but it seems to work fine)
   else if (xValues.size() < 9) {
     for (size_t i = 0; i < xValues.size(); i++) {
       basisValues[i] = LagrangePolynomial(evaluationPoint, i);

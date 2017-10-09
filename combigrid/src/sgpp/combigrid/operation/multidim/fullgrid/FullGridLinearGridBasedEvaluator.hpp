@@ -100,10 +100,8 @@ class FullGridLinearGridBasedEvaluator : public AbstractFullGridLinearEvaluator<
   virtual V eval(MultiIndex const &level) {
     if (!precomputedLevels->containsIndex(level)) {
       addResults(level, gridFunction(this->getTensorGrid(level)));
-
       precomputedLevels->set(level, 1);
     }
-
     // call the base eval
     return this->AbstractFullGridLinearEvaluator<V>::eval(level);
   }
