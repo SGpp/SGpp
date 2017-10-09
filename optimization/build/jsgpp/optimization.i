@@ -461,3 +461,4 @@ const bool UMFPACK_ENABLED;
 %template(OptFileIOReadMatrix)       sgpp::optimization::file_io::readMatrix<double>;
 %template(OptFileIOWriteVector)      sgpp::optimization::file_io::writeVector<double>;
 %template(OptFileIOReadVector)       sgpp::optimization::file_io::readVector<double>;
+%template(OptFuzzyIntervalVector)    std::vector<const sgpp::optimization::FuzzyInterval*>;
