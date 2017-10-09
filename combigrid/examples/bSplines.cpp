@@ -24,9 +24,14 @@
 #include <iostream>
 #include <vector>
 
-double f(sgpp::base::DataVector const &v) {
-  //  return v[0] * v[0] * v[0] + v[0] * v[0] * v[1] + v[0] * v[1] * v[1] + v[1] * v[1] * v[1];
-  return sin(v[0] + v[1]);
+// double f(sgpp::base::DataVector const &v) {
+//  //  return v[0] * v[0] * v[0] + v[0] * v[0] * v[1] + v[0] * v[1] * v[1] + v[1] * v[1] * v[1];
+//  return sin(1. / (1. + v[0] * v[0])) * v[1];
+//}
+
+double f(sgpp::base::DataVector const &x) {
+  return std::atan(50 * (x[0] - .35)) + M_PI / 2 + 4 * std::pow(x[1], 3) +
+         std::exp(x[0] * x[1] - 1);
 }
 
 double interpolate(size_t maxlevel) {
@@ -35,8 +40,10 @@ double interpolate(size_t maxlevel) {
 
   auto operation = sgpp::combigrid::CombigridOperation::createExpUniformnakBsplineInterpolation(
       numDimensions, func);
-  //  auto operation = sgpp::combigrid::CombigridOperation::createExpUniformPolynomialInterpolation(
-  //      numDimensions, func);
+
+  //  auto operation =
+  //      sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
+  //          numDimensions, func);
 
   double diff = 0;
   double max_err = 0;
@@ -50,6 +57,9 @@ double interpolate(size_t maxlevel) {
     diff = fabs(operation->evaluate(maxlevel, p) - f(p));
     max_err = (diff > max_err) ? diff : max_err;
   }
+
+  std::cout << "# grid points: " << operation->numGridPoints() << " ";
+
   return max_err;
 }
 
