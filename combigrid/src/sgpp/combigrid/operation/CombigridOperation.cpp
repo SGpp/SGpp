@@ -298,7 +298,8 @@ std::shared_ptr<CombigridOperation> CombigridOperation::createExpClenshawCurtisQ
 
 std::shared_ptr<CombigridOperation> auxiliaryBsplineFunction(size_t numDimensions,
                                                              MultiFunction func, size_t hierarchy,
-                                                             size_t growthFactor) {
+                                                             size_t growthFactor,
+                                                             size_t degree = 3) {
   sgpp::combigrid::CombiHierarchies::Collection grids;
   if (hierarchy == 1) {
     grids.resize(numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
@@ -312,7 +313,7 @@ std::shared_ptr<CombigridOperation> auxiliaryBsplineFunction(size_t numDimension
     grids.resize(numDimensions, sgpp::combigrid::CombiHierarchies::linearL2Leja(growthFactor));
   }
   sgpp::combigrid::CombiEvaluators::Collection evaluators(
-      numDimensions, sgpp::combigrid::CombiEvaluators::BSplineInterpolation());
+      numDimensions, sgpp::combigrid::CombiEvaluators::BSplineInterpolation(degree));
   // So far only WeightedRatioLevelManager has been used
   std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
       new sgpp::combigrid::WeightedRatioLevelManager());
@@ -381,6 +382,19 @@ std::shared_ptr<CombigridOperation> auxiliaryBsplineFunction(size_t numDimension
     sgpp::optimization::Printer::getInstance().setVerbosity(-1);
     bool solved = solver.solve(sle, functionValues, coefficients_sle);
 
+    //    std::cout << A.toString() << std::endl;
+    //    std::cout << "fct: ";
+    //    for (size_t i = 0; i < functionValues.size(); i++) {
+    //      std::cout << functionValues[i] << " ";
+    //    }
+    //    std::cout << "\ncoeff: ";
+    //    for (size_t i = 0; i < coefficients_sle.size(); i++) {
+    //      std::cout << coefficients_sle[i] << " ";
+    //    }
+    //    std::cout << "\n";
+    //    std::cout << "-------------------------------------------------------------------" <<
+    //    std::endl;
+
     if (!solved) {
       exit(-1);
     }
@@ -403,32 +417,34 @@ std::shared_ptr<CombigridOperation> auxiliaryBsplineFunction(size_t numDimension
                                                                exploitNesting);
 }
 
-std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformBsplineInterpolation(
-    size_t numDimensions, MultiFunction func) {
+std::shared_ptr<CombigridOperation>
+CombigridOperation::createExpUniformBoundaryBsplineInterpolation(size_t numDimensions,
+                                                                 MultiFunction func,
+                                                                 size_t degree = 3) {
   size_t dummygrowthfactor = 0;
-  return auxiliaryBsplineFunction(numDimensions, func, 1, dummygrowthfactor);
+  return auxiliaryBsplineFunction(numDimensions, func, 1, dummygrowthfactor, degree);
 }
 
 std::shared_ptr<CombigridOperation> CombigridOperation::createExpClenshawCurtisBsplineInterpolation(
-    size_t numDimensions, MultiFunction func) {
+    size_t numDimensions, MultiFunction func, size_t degree = 3) {
   size_t dummygrowthfactor = 0;
-  return auxiliaryBsplineFunction(numDimensions, func, 2, dummygrowthfactor);
+  return auxiliaryBsplineFunction(numDimensions, func, 2, dummygrowthfactor, degree);
 }
 
 std::shared_ptr<CombigridOperation> CombigridOperation::createExpChebyshevBsplineInterpolation(
-    size_t numDimensions, MultiFunction func) {
+    size_t numDimensions, MultiFunction func, size_t degree = 3) {
   size_t dummygrowthfactor = 0;
-  return auxiliaryBsplineFunction(numDimensions, func, 3, dummygrowthfactor);
+  return auxiliaryBsplineFunction(numDimensions, func, 3, dummygrowthfactor, degree);
 }
 
 std::shared_ptr<CombigridOperation> CombigridOperation::createLinearLejaBsplineInterpolation(
-    size_t numDimensions, MultiFunction func, size_t growthFactor) {
-  return auxiliaryBsplineFunction(numDimensions, func, 4, growthFactor);
+    size_t numDimensions, MultiFunction func, size_t degree = 3, size_t growthFactor = 2) {
+  return auxiliaryBsplineFunction(numDimensions, func, 4, degree, growthFactor);
 }
 
 std::shared_ptr<CombigridOperation> CombigridOperation::createLinearL2LejaBsplineInterpolation(
-    size_t numDimensions, MultiFunction func, size_t growthFactor) {
-  return auxiliaryBsplineFunction(numDimensions, func, 5, growthFactor);
+    size_t numDimensions, MultiFunction func, size_t degree = 3, size_t growthFactor = 2) {
+  return auxiliaryBsplineFunction(numDimensions, func, 5, degree, growthFactor);
 }
 
 } /* namespace combigrid */

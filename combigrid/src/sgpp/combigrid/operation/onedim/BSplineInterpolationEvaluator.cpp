@@ -97,14 +97,26 @@ void BSplineInterpolationEvaluator::createKnots(std::vector<double>& xi) {
   // ToDo(rehmemk) this offset is only correct for odd degrees
   size_t offset = (degree + 1) / 2;
   xi.resize(2 * offset, 0);
+  //  for (size_t i = 0; i < xi.size(); i++) {
+  //    std::cout << xi[i] << " ";
+  //  }
+  //  std::cout << "\n";
 
   xi.insert(xi.begin() + offset, xValues.begin(), xValues.end());
+  //  for (size_t i = 0; i < xi.size(); i++) {
+  //    std::cout << xi[i] << " ";
+  //  }
+  //  std::cout << "\n";
   for (size_t i = 0; i < offset; i++) {
     xi[offset - i - 1] = -xValues[i + 1] + 2 * xValues[0];
     xi[xValues.size() + offset + i] =
         xValues[xValues.size() - 1] +
         (xValues[xValues.size() - 1] - xValues[xValues.size() - i - 2]);
   }
+  //  for (size_t i = 0; i < xi.size(); i++) {
+  //    std::cout << xi[i] << " ";
+  //  }
+  //  std::cout << "\n";
 }
 
 /**
@@ -115,6 +127,14 @@ void BSplineInterpolationEvaluator::createKnots(std::vector<double>& xi) {
 void BSplineInterpolationEvaluator::createNakKnots(std::vector<double>& xi) {
   // create a vector xi that holds the gridpoints and continues to the left and right by mirroring
   // at 0 and 1
+  if (degree == 1) {
+    createKnots(xi);
+    //    std::cout << "The not a knot concept is not applicable for B-Splines of degree 1! "
+    //                 "Regular knots will be used for this calculation."
+    //              << std::endl;
+    return;
+  }
+
   // ToDo(rehmemk) this offset is only correct for odd degrees
   size_t offset = (degree + 1) / 2;
   xi.resize(2 * offset + 2, 0);
@@ -150,8 +170,11 @@ void BSplineInterpolationEvaluator::computeBasisValues() {
     return;
   }
   // Lagrange polynomials for less than 9 points because 9 is the number of gridpoints of a uniform
-  // boundary grid of level 3 and this is the first level with enough gridpoints for nak B-Spliens
-  // (this is a very heuristic motivation but it seems to work fine)
+  // boundary grid of level 3 and this is the first level with enough gridpoints for nak B-Splines
+  // (this is a very heuristic motivation but it works so far. Feel free to implement something
+  // better)
+  // Should work for degree 5 as well. For degree 7 and higher level 3 with nak is too small to
+  // provide enough knots even for one single spline
   else if (xValues.size() < 9) {
     for (size_t i = 0; i < xValues.size(); i++) {
       basisValues[i] = LagrangePolynomial(evaluationPoint, i);
@@ -159,10 +182,18 @@ void BSplineInterpolationEvaluator::computeBasisValues() {
     return;
   }
   std::vector<double> xi;
-  createNakKnots(xi);
+  // Choose between nak (not a knot) knots or regular knots
+  createKnots(xi);
+  //  createNakKnots(xi);
   for (size_t i = 0; i < xValues.size(); i++) {
     basisValues[i] = nonUniformBSpline(evaluationPoint, degree, i, xi);
+    //    std::cout << xValues[i] << " ";
   }
+  //  std::cout << "\n";
+  //  for (size_t i = 0; i < xi.size(); i++) {
+  //    std::cout << xi[i] << " ";
+  //  }
+  //  std::cout << "\n";
 }
 
 void BSplineInterpolationEvaluator::setFunctionValuesAtGridPoints(
