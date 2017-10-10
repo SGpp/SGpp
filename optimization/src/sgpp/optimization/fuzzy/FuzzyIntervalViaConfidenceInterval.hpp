@@ -15,6 +15,7 @@ namespace optimization {
 
 class FuzzyIntervalViaConfidenceInterval : public FuzzyInterval {
  public:
+  FuzzyIntervalViaConfidenceInterval(double supportLowerBound, double supportUpperBound);
   ~FuzzyIntervalViaConfidenceInterval() override;
 
   double evaluateMembershipFunction(double x) const override;

@@ -15,7 +15,7 @@ class FuzzyInterval {
  public:
   const size_t DEFAULT_NUMBER_OF_INTEGRAL_SAMPLES = 10000;
 
-  FuzzyInterval();
+  FuzzyInterval(double supportLowerBound, double supportUpperBound);
   virtual ~FuzzyInterval();
 
   virtual double evaluateMembershipFunction(double x) const = 0;
@@ -32,10 +32,15 @@ class FuzzyInterval {
   double approximateRelativeL2Error(const FuzzyInterval& other) const;
   double approximateRelativeLinfError(const FuzzyInterval& other) const;
 
+  double getSupportLowerBound() const;
+  double getSupportUpperBound() const;
+
   size_t getNumberOfIntegralSamples() const;
   void setNumberOfIntegralSamples(size_t numberOfIntegralSamples);
 
  protected:
+  double supportLowerBound;
+  double supportUpperBound;
   size_t numberOfIntegralSamples;
 };
 
