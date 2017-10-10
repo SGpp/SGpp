@@ -35,25 +35,28 @@ int main() {
 
   std::vector<double> alpha(gridpoints.size(), 0.0);
 */
-  size_t d = 2;
+  size_t d = 1;
 
   
 std::shared_ptr<sgpp::combigrid::CombigridOperation> operation =
-      sgpp::combigrid::CombigridOperation::createExpUniformnakBsplineInterpolation(
+      sgpp::combigrid::CombigridOperation::createExpUniformBoundaryLinearInterpolation(
         d, func);
 
 
 sgpp::base::DataVector evaluationPoint(d);
 
-  evaluationPoint[0] = 0.4;
+  evaluationPoint[0] = 0.0;
+  double result = operation->evaluate(1, evaluationPoint);
+  std::cout << "Interpolation result: " << result << ", function value: " << func(evaluationPoint)
+            << "\n";
 
- 
+  evaluationPoint[0] = 0.5;
+   result = operation->evaluate(1, evaluationPoint);
+  std::cout << "Interpolation result: " << result << ", function value: " << func(evaluationPoint)
+            << "\n";
 
-
-
-    double result = operation->evaluate(1, evaluationPoint);
-
- 
+  evaluationPoint[0] = 1;
+  result = operation->evaluate(1, evaluationPoint);
   std::cout << "Interpolation result: " << result << ", function value: " << func(evaluationPoint)
             << "\n";
 /*

@@ -158,9 +158,9 @@ CombiEvaluators::cubicSplineInterpolation() {
   return std::make_shared<CubicSplineInterpolationEvaluator>();
 }
 
-std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>
-CombiEvaluators::BSplineInterpolation() {
-  return std::make_shared<BSplineInterpolationEvaluator>();
+std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::BSplineInterpolation(
+    size_t degree) {
+  return std::make_shared<BSplineInterpolationEvaluator>(degree);
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::quadrature() {
@@ -190,8 +190,9 @@ CombiEvaluators::multiCubicSplineInterpolation() {
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>
-CombiEvaluators::multiBSplineInterpolation() {
-  return std::make_shared<ArrayEvaluator<BSplineInterpolationEvaluator>>(true);
+CombiEvaluators::multiBSplineInterpolation(size_t degree) {
+  return std::make_shared<ArrayEvaluator<BSplineInterpolationEvaluator>>(
+      true, BSplineInterpolationEvaluator(degree));
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> CombiEvaluators::multiQuadrature() {

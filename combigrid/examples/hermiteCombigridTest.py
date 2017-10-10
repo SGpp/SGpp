@@ -542,8 +542,8 @@ def example_plot_error(func_collection, dim, maxlevel=5, x_axis_type="nr_gridpoi
     # operations.append(CombiFullGridLinear(func_collection, dim))
     # operations.append(HierachGridBSpline(dim, 3, func_collection, True))
     operations.append(gC.HierachGridBSpline(dim, 3, func_collection, False))
-    operations.append(pysgpp.CombigridOperation.createExpUniformnakBsplineInterpolation(dim,
-                                                                                        func_standard))
+    operations.append(pysgpp.CombigridOperation.createExpUniformBoundaryBsplineInterpolation(
+        dim, func_standard, 3))
 
     func_standard = func_collection.getFunction()
     labels = []
@@ -630,8 +630,8 @@ def example_plot_error_gradients(func_collection, dim, grad_index_list, maxlevel
     # operations.append(gC.CombiFullGridHermite_withoutmixed(func_collection, dim))
     # operations.append(HierachGridBSpline(dim, 3, func_collection, True))
     operations.append(gC.HierachGridBSpline(dim, 3, func_collection, False))
-    operations.append(pysgpp.CombigridOperation.createExpUniformnakBsplineInterpolation(dim,
-                                                                                        func_standard))
+    operations.append(pysgpp.CombigridOperation.createExpUniformBoundaryBsplineInterpolation(
+          dim,func_standard,3))
 
     func_standard = func_collection.getFunction()
     labels = []
@@ -739,7 +739,7 @@ func_standard = pysgpp.multiFunc(func_wrap)
 
 testclass = fctClass.funcGradientCollection(func_standard, 2)
 
-func_container = fctClass.funcGradientCollectionSymbolic(fctClass.easySymbolic(), 2)
+func_container = fctClass.funcGradientCollectionSymbolic(fctClass.BraninSymbolic(), 2)
 
 #example_2D_comparison_function(func_container.getFunction(), "", show=False)
 
