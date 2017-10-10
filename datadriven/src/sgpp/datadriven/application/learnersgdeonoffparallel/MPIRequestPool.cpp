@@ -3,9 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIRequestPool.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp>
 #include <cstring>
-#include "MPIRequestPool.hpp"
-#include "LearnerSGDEOnOffParallel.hpp"
 
 namespace sgpp {
 namespace datadriven {

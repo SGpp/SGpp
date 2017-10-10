@@ -35,6 +35,31 @@ class RoundRobinScheduler : public MPITaskScheduler {
  */
   void assignTaskVariableTaskSize(TaskType taskType, AssignTaskResult &result) override;
 
+  /**
+ * Check whether the master can start to refine. This can only happen if all requests from one
+ * cycle ago have successfully completed.
+ * @return Whether to start refining.
+ */
+  bool isReadyForRefinement() override;
+
+  /**
+   * Update the number of outstanding requests when a request is completed by a worker.
+   * The difference in grid versions is used to determine whether to update the current number
+   * of outstanding requests or the previous number of outstanding requests.
+   * @param batchOffset Not used.
+   * @param batchSize Not used.
+   * @param remoteGridVersion The grid version that was used to train the batch.
+   * @param localGridVersion The current grid version on the master.
+   */
+  void onMergeRequestIncoming(size_t batchOffset, size_t batchSize,
+                              size_t remoteGridVersion, size_t localGridVersion) override;
+
+  /**
+   * Move the number of current outstanding requests into the number of previous outstanding
+   * requests.
+   */
+  void onRefinementStarted() override;
+
  protected:
   /**
    * Keeps track of the last worker that had work assigned to it. The next assignment will
@@ -56,30 +81,6 @@ class RoundRobinScheduler : public MPITaskScheduler {
    * cycle.
    */
   size_t numOutstandingRequestsLastRefinement;
-  /**
-   * Check whether the master can start to refine. This can only happen if all requests from one
-   * cycle ago have successfully completed.
-   * @return Whether to start refining.
-   */
-  bool isReadyForRefinement() override;
-
-  /**
-   * Update the number of outstanding requests when a request is completed by a worker.
-   * The difference in grid versions is used to determine whether to update the current number
-   * of outstanding requests or the previous number of outstanding requests.
-   * @param batchOffset Not used.
-   * @param batchSize Not used.
-   * @param remoteGridVersion The grid version that was used to train the batch.
-   * @param localGridVersion The current grid version on the master.
-   */
-  void onMergeRequestIncoming(size_t batchOffset, size_t batchSize,
-                              size_t remoteGridVersion, size_t localGridVersion) override;
-
-  /**
-   * Move the number of current outstanding requests into the number of previous outstanding
-   * requests.
-   */
-  void onRefinementStarted() override;
 };
 }  // namespace datadriven
 }  // namespace sgpp

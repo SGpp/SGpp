@@ -93,7 +93,6 @@ void RefinementHandler::doRefinementForClass(
     }
 
     refinementResult->addedGridPoints.push_back(levelIndexVector);
-
   }
 
   updateClassVariablesAfterRefinement(classIndex, refinementResult, densEst);
