@@ -14,6 +14,7 @@
 namespace sgpp {
 namespace optimization {
 
+namespace {
 class ScaledScalarFunction : public ScalarFunction {
  public:
   explicit ScaledScalarFunction(const ScalarFunction& fOrig) :
@@ -186,6 +187,7 @@ class ScaledScalarFunctionHessian : public ScalarFunctionHessian {
   double valueFactor;
   base::DataVector xScaled;
 };
+}
 
 FuzzyExtensionPrinciple::FuzzyExtensionPrinciple(
     const ScalarFunction& f,
