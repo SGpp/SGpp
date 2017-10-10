@@ -155,7 +155,7 @@ def calc_gradient_tangent_gridpoint(gridpoints, operation, dim):
 # parabola between [0,1]
 def f1D(x):
     #return -4 * ((x[0] - 0.5) ** 2) + 1
-    return np.sin(x[0]*5)
+    return x[0]
 
 
 def f1D_grad(x):
@@ -267,7 +267,7 @@ def example_1D_psi(l):
 def example_1D_linear(l):
     func = pysgpp.multiFunc(f1D)
     d = 1
-    level = l
+    level = 1
     n_samples = 500
     operation = pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(
         d, func)
@@ -542,6 +542,8 @@ def example_plot_error(func_collection, dim, maxlevel=5, x_axis_type="nr_gridpoi
     # operations.append(CombiFullGridLinear(func_collection, dim))
     # operations.append(HierachGridBSpline(dim, 3, func_collection, True))
     operations.append(gC.HierachGridBSpline(dim, 3, func_collection, False))
+    operations.append(pysgpp.CombigridOperation.createExpUniformnakBsplineInterpolation(dim,
+                                                                                        func_standard))
 
     func_standard = func_collection.getFunction()
     labels = []
@@ -555,6 +557,7 @@ def example_plot_error(func_collection, dim, maxlevel=5, x_axis_type="nr_gridpoi
     # labels.append("HermiteFullgrid")
     # labels.append("CombiLinearFullgrid")
     # labels.append("BSpline-Grid-Full")
+    labels.append("Base_BSpline-Grid(Grad 3)")
     labels.append("BSpline-Grid(Grad 3)")
 
     X = np.zeros((maxlevel - 1, len(operations)))
@@ -614,11 +617,11 @@ def example_plot_error_gradients(func_collection, dim, grad_index_list, maxlevel
 
     operations = []
 
-    #operations.append(gC.CombiCombigridLinear(func_collection, dim))
-    #operations.append(gC.CombiCombigridHermite(func_collection, dim))
-    #operations.append(pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(
-    #    dim, func_standard))
-    #operations.append(gC.CombiCombigrid2dHermite_without_mixed(func_collection, dim))
+    operations.append(gC.CombiCombigridLinear(func_collection, dim))
+    operations.append(gC.CombiCombigridHermite(func_collection, dim))
+    operations.append(pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(
+        dim, func_standard))
+    operations.append(gC.CombiCombigrid2dHermite_without_mixed(func_collection, dim))
     # operations.append((BaseLinearFullgrid(dim, func_collection, True)))
 
     # operations.append(gC.LinearFullgrid(func_collection, dim))
@@ -627,19 +630,22 @@ def example_plot_error_gradients(func_collection, dim, grad_index_list, maxlevel
     # operations.append(gC.CombiFullGridHermite_withoutmixed(func_collection, dim))
     # operations.append(HierachGridBSpline(dim, 3, func_collection, True))
     operations.append(gC.HierachGridBSpline(dim, 3, func_collection, False))
+    operations.append(pysgpp.CombigridOperation.createExpUniformnakBsplineInterpolation(dim,
+                                                                                        func_standard))
 
     func_standard = func_collection.getFunction()
     labels = []
-    #labels.append("Gitter (de Baar und Harding)")
-    #labels.append("Gitter (Hermite)")
-    #labels.append("lineares Gitter")
-    #labels.append("Gitter (Hermite) ohne gemischte Abl.")
+    labels.append("Gitter (de Baar und Harding)")
+    labels.append("Gitter (Hermite)")
+    labels.append("lineares Gitter")
+    labels.append("Gitter (Hermite) ohne gemischte Abl.")
 
     # labels.append("BaseLinearFullgrid")
     # labels.append("linearFullgrid")
     # labels.append("HermiteFullgrid")
     # labels.append("CombiLinearFullgrid")
     # labels.append("BSpline-Grid-Full")
+    labels.append("Base_BSpline-Grid(Grad 3)")
     labels.append("BSpline-Grid(Grad 3)")
 
     X = np.zeros((maxlevel - 1, len(operations)))
@@ -688,11 +694,11 @@ def example_calcl2error(func_container, name, level, dim, fct=True, grad_index=[
                                      show=False)
 
 
-def plot_l2error(name, fct=True, grad_index=[]):
+def plot_l2error(name, fct=True, grad_index=[],x_axis_type="nr_gridpoints"):
     filename = name
     if (fct):
         loadandplot("X_values.data", "Y_values.data", filename, "labels.txt", title=filename,
-                    x_axis_type="level"
+                    x_axis_type=x_axis_type
                     , show=True)
 
     for i in grad_index:
@@ -702,7 +708,7 @@ def plot_l2error(name, fct=True, grad_index=[]):
             filename += "x" + str(j)
 
         loadandplot("X_values.data", "Y_values.data", filename, "labels.txt", title=filename,
-                    x_axis_type="level"
+                    x_axis_type=x_axis_type
                     , show=True)
 
 
@@ -712,11 +718,12 @@ def testf(x):
 
 #example_1D_realfunction()
 #example_1D_psi(1)
-plt.show()
-# example_1D_linear(2)
+
+#example_1D_linear(1)
+
 # example_1D_zeta(2)
 # example_combicombigrid_1D(2)
-
+plt.show()
 
 dim = 2
 
@@ -738,10 +745,9 @@ func_container = fctClass.funcGradientCollectionSymbolic(fctClass.easySymbolic()
 
 #example_combicombigrid_2D_hermite(3, func_container)
 
-
-#example_calcl2error(func_container, "Values/Test/Branin", 10, 2, grad_index=[[0], [1], [0, 1]],
-#                  fct=False)
-#plot_l2error("Branin2d",grad_index=[[0],[1],[0,1]],fct=True)
+#example_calcl2error(func_container, "Values/Test/Branin", 7, 2, grad_index=[[0], [1], [0, 1]],
+#                  fct=True)
+plot_l2error("Values/Test/Branin",grad_index=[[0],[1],[0,1]],fct=True)
 
 
 
