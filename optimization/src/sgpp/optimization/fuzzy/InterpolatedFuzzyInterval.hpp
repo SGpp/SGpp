@@ -16,10 +16,10 @@ namespace optimization {
 
 class InterpolatedFuzzyInterval : public FuzzyIntervalViaMembershipFunction {
  public:
-  static double getPlateauLowerBound(const base::DataVector& xData,
-                                     const base::DataVector& alphaData);
-  static double getPlateauUpperBound(const base::DataVector& xData,
-                                     const base::DataVector& alphaData);
+  static double getCoreLowerBound(const base::DataVector& xData,
+                                  const base::DataVector& alphaData);
+  static double getCoreUpperBound(const base::DataVector& xData,
+                                  const base::DataVector& alphaData);
 
   InterpolatedFuzzyInterval(const base::DataVector& xData, const base::DataVector& alphaData);
   ~InterpolatedFuzzyInterval() override;

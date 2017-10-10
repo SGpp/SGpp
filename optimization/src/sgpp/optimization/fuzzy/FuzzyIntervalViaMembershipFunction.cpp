@@ -12,11 +12,11 @@ namespace optimization {
 
 FuzzyIntervalViaMembershipFunction::FuzzyIntervalViaMembershipFunction(
     double supportLowerBound, double supportUpperBound,
-    double plateauLowerBound, double plateauUpperBound) :
+    double coreLowerBound, double coreUpperBound) :
       supportLowerBound(supportLowerBound),
       supportUpperBound(supportUpperBound),
-      plateauLowerBound(plateauLowerBound),
-      plateauUpperBound(plateauUpperBound) {
+      coreLowerBound(coreLowerBound),
+      coreUpperBound(coreUpperBound) {
 }
 
 FuzzyIntervalViaMembershipFunction::~FuzzyIntervalViaMembershipFunction() {
@@ -28,13 +28,13 @@ double FuzzyIntervalViaMembershipFunction::evaluateConfidenceIntervalLowerBound(
   if (alpha == 0.0) {
     return supportLowerBound;
   } else if (alpha == 1.0) {
-    return plateauLowerBound;
+    return coreLowerBound;
   }
 
   // do a binary search in x space
   const double tol = 1e-6;
   double xLower = supportLowerBound;
-  double xUpper = plateauLowerBound;
+  double xUpper = coreLowerBound;
 
   while (xUpper - xLower > tol) {
     const double xCenter = (xLower + xUpper) / 2.0;
@@ -61,12 +61,12 @@ double FuzzyIntervalViaMembershipFunction::evaluateConfidenceIntervalUpperBound(
   if (alpha == 0.0) {
     return supportUpperBound;
   } else if (alpha == 1.0) {
-    return plateauUpperBound;
+    return coreUpperBound;
   }
 
   // do a binary search in x space
   const double tol = 1e-6;
-  double xLower = plateauUpperBound;
+  double xLower = coreUpperBound;
   double xUpper = supportUpperBound;
 
   while (xUpper - xLower > tol) {

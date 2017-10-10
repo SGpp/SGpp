@@ -37,7 +37,7 @@ double TriangularFuzzyInterval::evaluateMembershipFunction(double x) const {
     // x is on the right (monotonically dereasing) branch
     return std::max(1.0 - (x - rightMean) / rightSpread, 0.0);
   } else {
-    // x is on the plateau
+    // x is in the core
     return 1.0;
   }
 }
