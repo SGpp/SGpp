@@ -13,7 +13,7 @@
 namespace sgpp {
 namespace optimization {
 
-double InterpolatedFuzzyInterval::getPlateauLowerBound(
+double InterpolatedFuzzyInterval::getCoreLowerBound(
     const base::DataVector& xData,
     const base::DataVector& alphaData) {
   const size_t n = xData.getSize();
@@ -36,7 +36,7 @@ double InterpolatedFuzzyInterval::getPlateauLowerBound(
   return std::numeric_limits<double>::quiet_NaN();
 }
 
-double InterpolatedFuzzyInterval::getPlateauUpperBound(
+double InterpolatedFuzzyInterval::getCoreUpperBound(
     const base::DataVector& xData,
     const base::DataVector& alphaData) {
   const size_t n = xData.getSize();
@@ -65,8 +65,8 @@ InterpolatedFuzzyInterval::InterpolatedFuzzyInterval(
   FuzzyIntervalViaMembershipFunction(
       xData[0],
       xData[xData.getSize() - 1],
-      InterpolatedFuzzyInterval::getPlateauLowerBound(xData, alphaData),
-      InterpolatedFuzzyInterval::getPlateauUpperBound(xData, alphaData)),
+      InterpolatedFuzzyInterval::getCoreLowerBound(xData, alphaData),
+      InterpolatedFuzzyInterval::getCoreUpperBound(xData, alphaData)),
   xData(xData),
   alphaData(alphaData) {
 }

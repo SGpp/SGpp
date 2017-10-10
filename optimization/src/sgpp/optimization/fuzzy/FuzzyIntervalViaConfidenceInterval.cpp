@@ -22,17 +22,17 @@ double FuzzyIntervalViaConfidenceInterval::evaluateMembershipFunction(double x) 
     return 0.0;
   }
 
-  const double plateauLowerBound = evaluateConfidenceIntervalLowerBound(1.0);
-  const double plateauUpperBound = evaluateConfidenceIntervalUpperBound(1.0);
+  const double coreLowerBound = evaluateConfidenceIntervalLowerBound(1.0);
+  const double coreUpperBound = evaluateConfidenceIntervalUpperBound(1.0);
 
-  // determine if x is on the plateau of the fuzzy interval
-  if ((x >= plateauLowerBound) && (x <= plateauUpperBound)) {
+  // determine if x is in the core of the fuzzy interval
+  if ((x >= coreLowerBound) && (x <= coreUpperBound)) {
     return 1.0;
   }
 
   // now we know that x must either be on the left (monotonically increasing) branch
   // or on the right (monotonically decreasing) branch
-  const bool isOnLeftBranch = (x < plateauLowerBound);
+  const bool isOnLeftBranch = (x < coreLowerBound);
 
   // do a binary search in alpha space
   const double tol = 1e-6;

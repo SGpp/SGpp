@@ -17,7 +17,7 @@ class FuzzyIntervalViaMembershipFunction : public FuzzyInterval {
  public:
   FuzzyIntervalViaMembershipFunction(
       double supportLowerBound, double supportUpperBound,
-      double plateauLowerBound, double plateauUpperBound);
+      double coreLowerBound, double coreUpperBound);
   ~FuzzyIntervalViaMembershipFunction() override;
 
   double evaluateConfidenceIntervalLowerBound(double alpha) const override;
@@ -26,8 +26,8 @@ class FuzzyIntervalViaMembershipFunction : public FuzzyInterval {
  protected:
   double supportLowerBound;
   double supportUpperBound;
-  double plateauLowerBound;
-  double plateauUpperBound;
+  double coreLowerBound;
+  double coreUpperBound;
 };
 
 }  // namespace optimization
