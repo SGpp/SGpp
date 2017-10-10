@@ -46,6 +46,8 @@ using sgpp::combigrid::WeightedRatioLevelManager;
 
 int main() {
   size_t d = 1;
+  size_t degree = 5;
+  size_t level = 3;
   //  std::vector<double> GridPoints = { 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875};
 
   sgpp::combigrid::CombiHierarchies::Collection grids(
@@ -70,7 +72,7 @@ int main() {
   plotfile << "#Basis functions  \n";
 
   sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
-      d, sgpp::combigrid::CombiEvaluators::multiBSplineInterpolation());
+      d, sgpp::combigrid::CombiEvaluators::multiBSplineInterpolation(degree));
   //  sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
   //      d, sgpp::combigrid::CombiEvaluators::multiLinearInterpolation());
 
@@ -78,7 +80,7 @@ int main() {
   for (size_t dim = 0; dim < d; ++dim) {
     evalCopy[dim] = evaluators[dim]->cloneLinear();
     bool needsSorted = true;
-    size_t level = 3;
+
     auto GridPoints = grids[dim]->getPoints(level, needsSorted);
     for (size_t i = 0; i < GridPoints.size(); i++) {
       std::cout << GridPoints[i] << " ";
