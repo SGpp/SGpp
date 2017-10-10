@@ -39,6 +39,11 @@ struct AssignTaskResult {
 class MPITaskScheduler {
  public:
   /**
+   * Default destructor to override if necessary
+   */
+  virtual ~MPITaskScheduler() = default;
+
+  /**
    * Request for a task of specific type to be assigned. The MPI Task Scheduler will decide on the
    * task size.
    * @param taskType The type of the task to be assigned.

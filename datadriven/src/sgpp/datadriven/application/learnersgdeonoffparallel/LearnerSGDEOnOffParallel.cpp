@@ -198,7 +198,7 @@ void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPas
     processedPoints = 0;
   }  // end while
 
-  shutdown();
+  shutdownMPINodes();
 
   std::cout << "#Training finished (This is MASTER)" << std::endl;
 }
@@ -455,7 +455,7 @@ LearnerSGDEOnOffParallel::train(
   trained = true;
 }
 
-void LearnerSGDEOnOffParallel::shutdown() {
+void LearnerSGDEOnOffParallel::shutdownMPINodes() {
   if (MPIMethods::isMaster()) {
     std::cout << "Broadcasting shutdown" << std::endl;
     MPIMethods::bcastCommandNoArgs(SHUTDOWN);

@@ -122,7 +122,7 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
    * If this is run on master, it issues shutdown requests to all workers and waits for them to return.
    * If this is run on a worker, it sets the shutdown flag.
    */
-  void shutdown();
+  void shutdownMPINodes();
 
   /**
    * Copies the data from the training set into the data batch

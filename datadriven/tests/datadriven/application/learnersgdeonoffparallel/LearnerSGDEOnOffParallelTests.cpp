@@ -18,7 +18,20 @@
 
 BOOST_AUTO_TEST_SUITE(MPIMethods_Test)
 
-using namespace sgpp::datadriven;
+using sgpp::datadriven::LearnerSGDEOnOffParallel;
+using sgpp::datadriven::MPIMethods;
+using sgpp::datadriven::MPI_Packet;
+using sgpp::datadriven::MPIRequestPool;
+using sgpp::datadriven::RoundRobinScheduler;
+using sgpp::datadriven::AssignTaskResult;
+using sgpp::datadriven::MERGE_GRID;
+using sgpp::datadriven::UPDATE_GRID;
+using sgpp::datadriven::TRAIN_FROM_BATCH;
+using sgpp::datadriven::MergeGridNetworkMessage;
+using sgpp::datadriven::RefinementResult;
+using sgpp::datadriven::LevelIndexVector;
+using sgpp::datadriven::LevelIndexPair;
+using sgpp::datadriven::DataMatrix;
 
 sgpp::datadriven::LearnerSGDEOnOffParallel *learnerInstance;
 sgpp::datadriven::RoundRobinScheduler *scheduler;
@@ -62,7 +75,6 @@ void createInstance() {
                                                                      0.0, 0.01,
                                                                      *scheduler);
 
-    size_t nextCvStep = 50000;
     double cvLambdaStart = 1e-1;
     double cvLambdaEnd = 1e-10;
     int cvLambdaSteps = 10;
@@ -87,7 +99,7 @@ void sendMergeGridPacket(size_t batchSize,
                          size_t alphaTotalSize,
                          size_t payloadOffset,
                          size_t payloadLength) {
-  MPI_Packet *mpiPacket = new MPI_Packet;
+  auto *mpiPacket = new MPI_Packet;
   mpiPacket->commandID = MERGE_GRID;
 
   auto *message = static_cast<MergeGridNetworkMessage *>(static_cast<void *>(mpiPacket->payload));
@@ -101,6 +113,33 @@ void sendMergeGridPacket(size_t batchSize,
   message->payloadLength = payloadLength;
 
   MPIMethods::sendISend(0, mpiPacket);
+}
+
+BOOST_AUTO_TEST_CASE(RoundRobinSchedulerTest) {
+  createInstance();
+
+  BOOST_CHECK(scheduler->isReadyForRefinement());
+
+  AssignTaskResult result{};
+  scheduler->assignTaskVariableTaskSize(TRAIN_FROM_BATCH, result);
+
+  BOOST_CHECK(result.workerID == 1);
+  BOOST_CHECK(result.taskSize == SCHEDULER_BATCH_SIZE);
+
+  BOOST_CHECK(scheduler->isReadyForRefinement());
+  scheduler->onRefinementStarted();
+
+  BOOST_CHECK(!scheduler->isReadyForRefinement());
+  BOOST_CHECK_THROW(scheduler->onRefinementStarted(), sgpp::base::algorithm_exception);
+
+  BOOST_CHECK_THROW(scheduler->onMergeRequestIncoming(0, SCHEDULER_BATCH_SIZE, 10, 12),
+                    sgpp::base::algorithm_exception);
+
+  // Once for each class
+  scheduler->onMergeRequestIncoming(0, SCHEDULER_BATCH_SIZE, 10, 11);
+  BOOST_CHECK(!scheduler->isReadyForRefinement());
+  scheduler->onMergeRequestIncoming(0, SCHEDULER_BATCH_SIZE, 10, 11);
+  BOOST_CHECK(scheduler->isReadyForRefinement());
 }
 
 BOOST_AUTO_TEST_CASE(AssignBatchTest) {
@@ -128,9 +167,49 @@ BOOST_AUTO_TEST_CASE(AssignBatchTest) {
 BOOST_AUTO_TEST_CASE(SendRefinementResultsTest) {
   createInstance();
 
+  size_t classIndex = 0;
+
   RefinementResult &refinementResult = learnerInstance->getRefinementHandler()
-      .getRefinementResult(0);
-  // TODO(bodevt): Resume here
+      .getRefinementResult(classIndex);
+
+  // Test deleted grid points
+  refinementResult.deletedGridPointsIndices.emplace_back(1);
+  refinementResult.deletedGridPointsIndices.emplace_back(3);
+  refinementResult.deletedGridPointsIndices.emplace_back(5);
+
+  MPIMethods::sendRefinementUpdates(classIndex,
+                                    refinementResult.deletedGridPointsIndices,
+                                    refinementResult.addedGridPoints);
+  BOOST_CHECK(MPIMethods::hasPendingOutgoingRequests());
+  MPIMethods::waitForAnyMPIRequestsToComplete();
+
+  refinementResult.deletedGridPointsIndices.clear();
+
+  // Test added grid points
+  LevelIndexVector levelIndexVector{};
+  LevelIndexPair levelIndexPair{3, 3};
+  levelIndexVector.emplace_back(levelIndexPair);
+  refinementResult.addedGridPoints.emplace_back(levelIndexVector);
+
+  MPIMethods::sendRefinementUpdates(classIndex,
+                                    refinementResult.deletedGridPointsIndices,
+                                    refinementResult.addedGridPoints);
+  BOOST_CHECK(MPIMethods::hasPendingOutgoingRequests());
+  MPIMethods::waitForAnyMPIRequestsToComplete();
+}
+
+BOOST_AUTO_TEST_CASE(SendSystemMatrixDecompositionTest) {
+  size_t classIndex = 0;
+  DataMatrix systemMatrix(2, 2, -1.0);
+
+  MPIMethods::sendSystemMatrixDecomposition(classIndex, systemMatrix, 0);
+  BOOST_CHECK(MPIMethods::hasPendingOutgoingRequests());
+  MPIMethods::waitForIncomingMessageType(UPDATE_GRID);
+
+  DataMatrix &installedMatrix = learnerInstance->getDensityFunctions()[classIndex]
+      .first->getOfflineObject().getDecomposedMatrix();
+  BOOST_CHECK(installedMatrix.size() == systemMatrix.size());
+  BOOST_CHECK(installedMatrix[0] == systemMatrix[0]);
 }
 
 BOOST_AUTO_TEST_CASE(MergeAlphaValuesTest) {
@@ -160,13 +239,15 @@ BOOST_AUTO_TEST_CASE(MergeAlphaValuesTest) {
   LevelIndexVector levelIndexVector{};
   LevelIndexPair levelIndexPair{3, 3};
   levelIndexVector.emplace_back(levelIndexPair);
-  learnerInstance->getRefinementHandler().
-      getRefinementResult(0).addedGridPoints.emplace_back(levelIndexVector);
+  RefinementResult &refinementResult = learnerInstance->getRefinementHandler().
+      getRefinementResult(0);
+  refinementResult.addedGridPoints.clear();
+  refinementResult.deletedGridPointsIndices.clear();
+  refinementResult.addedGridPoints.emplace_back(levelIndexVector);
   sendMergeGridPacket(1, 50, 10, 0, 30, 0, 3);
 
   MPIMethods::waitForIncomingMessageType(MERGE_GRID);
-  learnerInstance->getRefinementHandler().
-      getRefinementResult(0).addedGridPoints.clear();
+  refinementResult.addedGridPoints.clear();
 
   // Test for correct message version -2 should end in error
   learnerInstance->setLocalGridVersion(0, 12);
@@ -179,7 +260,41 @@ BOOST_AUTO_TEST_CASE(MergeAlphaValuesTest) {
   MPIMethods::processCompletedMPIRequests();
 }
 
+BOOST_AUTO_TEST_CASE(MPIRequestPool_Test) {
+  sgpp::datadriven::MPIRequestPool requestPool;
+
+  BOOST_CHECK(requestPool.size() == 0);
+  requestPool.createMPIRequestHandle();
+  BOOST_CHECK(requestPool.size() == 1);
+  requestPool.createMPIRequestHandle();
+  BOOST_CHECK(requestPool.size() == 2);
+
+  requestPool.deleteMPIRequestHandle(1);
+  BOOST_CHECK(requestPool.size() == 1);
+
+  requestPool.createMPIRequestHandle();
+  requestPool.createMPIRequestHandle();
+  BOOST_CHECK(requestPool.size() == 3);
+
+  // This should create blank space in the storage but not modify the pool size
+  requestPool.deleteMPIRequestHandle(0);
+  BOOST_CHECK(requestPool.size() == 3);
+
+  // This should refill blank space in the storage but not modify the pool size
+  requestPool.createMPIRequestHandle();
+  BOOST_CHECK(requestPool.size() == 3);
+
+  // This should create blank space in the storage but not modify the pool size
+  requestPool.deleteMPIRequestHandle(1);
+  BOOST_CHECK(requestPool.size() == 3);
+
+  // This should cause the entire pool to shrink
+  requestPool.deleteMPIRequestHandle(2);
+  BOOST_CHECK(requestPool.size() == 1);
+
+  // The current implementation cannot shrink back to size 0
+  requestPool.deleteMPIRequestHandle(0);
+  BOOST_CHECK(requestPool.size() <= 1);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
-
-
-

@@ -750,7 +750,7 @@ void MPIMethods::processIncomingMPICommands(PendingMPIRequest &pendingMPIRequest
       break;
     }
     case SHUTDOWN:std::cout << "Worker shutdown requested" << std::endl;
-      learnerInstance->shutdown();
+      learnerInstance->shutdownMPINodes();
       std::cout << "Marking pending mpi request for dispose" << std::endl;
       pendingMPIRequest.disposeAfterCallback = true;
       break;

@@ -262,6 +262,7 @@ class MPIMethods {
   sendISend(int destinationRank, MPI_Packet *mpiPacket,
             size_t packetSize = sizeof(MPI_Packet),
             bool highPriority = false);
+
  protected:
   /**
    * Structure to track any pending tracking requests that need to be checked on every incoming
