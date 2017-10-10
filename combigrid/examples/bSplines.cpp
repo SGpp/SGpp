@@ -38,7 +38,7 @@ double interpolate(size_t maxlevel) {
   size_t numDimensions = 2;
   sgpp::combigrid::MultiFunction func(f);
 
-  auto operation = sgpp::combigrid::CombigridOperation::createExpUniformnakBsplineInterpolation(
+  auto operation = sgpp::combigrid::CombigridOperation::createExpUniformBsplineInterpolation(
       numDimensions, func);
 
   //  auto operation =
