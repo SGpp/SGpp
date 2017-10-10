@@ -33,6 +33,8 @@
 
 #include <sgpp/optimization/fuzzy/FuzzyExtensionPrinciple.hpp>
 #include <sgpp/optimization/fuzzy/FuzzyExtensionPrincipleViaOptimization.hpp>
+#include <sgpp/optimization/fuzzy/FuzzyExtensionPrincipleViaTransformation.hpp>
+#include <sgpp/optimization/fuzzy/FuzzyExtensionPrincipleViaVertexMethod.hpp>
 #include <sgpp/optimization/fuzzy/FuzzyInterval.hpp>
 #include <sgpp/optimization/fuzzy/FuzzyIntervalViaConfidenceInterval.hpp>
 #include <sgpp/optimization/fuzzy/FuzzyIntervalViaMembershipFunction.hpp>

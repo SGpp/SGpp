@@ -23,7 +23,7 @@ class FuzzyExtensionPrinciple {
 
   virtual ~FuzzyExtensionPrinciple();
 
-  virtual FuzzyInterval* apply(const std::vector<const FuzzyInterval*>& x) const = 0;
+  virtual FuzzyInterval* apply(const std::vector<const FuzzyInterval*>& xFuzzy) const = 0;
 
  protected:
   std::unique_ptr<ScalarFunction> f;
