@@ -114,14 +114,17 @@ void applyExtensionPrinciple(
   // apply extension principle
   std::cout << "\n=== " << label << " ===\n";
   yFuzzy.reset(extensionPrinciple.apply(xFuzzy));
+}
 
+void showErrors(const std::unique_ptr<sgpp::optimization::FuzzyInterval>& yFuzzy,
+                const sgpp::optimization::FuzzyInterval* yFuzzyExact = nullptr) {
   // output norms
   std::cout << "L1 norm:   " << yFuzzy->approximateL1Norm() << "\n";
   std::cout << "L2 norm:   " << yFuzzy->approximateL2Norm() << "\n";
   std::cout << "Linf norm: " << yFuzzy->approximateLinfNorm() << "\n";
 
   // output errors if reference solution is given
-  if (yFuzzyExact.get() != nullptr) {
+  if (yFuzzyExact != nullptr) {
     std::cout << "L1 error:   " <<
         yFuzzyExact->approximateL1Error(*yFuzzy) << "\n";
     std::cout << "L2 error:   " <<
@@ -135,11 +138,6 @@ void applyExtensionPrinciple(
     std::cout << "Relative Linf error: " <<
         yFuzzyExact->approximateRelativeLinfError(*yFuzzy) << "\n";
   }
-
-  /*sgpp::optimization::InterpolatedFuzzyInterval& yInterpolated =
-      *dynamic_cast<sgpp::optimization::InterpolatedFuzzyInterval*>(yFuzzy.get());
-  std::cout << "xDataApprox = " << yInterpolated.getXData().toString() << ";\n";
-  std::cout << "alphaDataApprox = " << yInterpolated.getAlphaData().toString() << ";\n";*/
 }
 
 int main() {
@@ -165,28 +163,43 @@ int main() {
     return 1;
   }
 
+  // accuracy of the extension principle
+  const size_t numberOfAlphaSegments = 100;
+
   // input fuzzy intervals
   sgpp::optimization::TriangularFuzzyInterval x0Fuzzy(0.25, 0.375, 0.125, 0.25);
   sgpp::optimization::QuasiGaussianFuzzyNumber x1Fuzzy(0.5, 0.125, 3.0);
   std::vector<const sgpp::optimization::FuzzyInterval*> xFuzzy{&x0Fuzzy, &x1Fuzzy};
 
   // extension principle with exact objective function
+  std::cout << "\n=== EXACT ===\n";
   sgpp::optimization::optimizer::MultiStart optimizerExact(f, 10000, 100);
-  std::unique_ptr<sgpp::optimization::FuzzyInterval> yFuzzyExact;
-  applyExtensionPrinciple("EXACT", optimizerExact, xFuzzy, nullptr, yFuzzyExact);
+  sgpp::optimization::FuzzyExtensionPrincipleViaOptimization extensionPrincipleExact(
+      optimizerExact, numberOfAlphaSegments);
+  std::unique_ptr<sgpp::optimization::FuzzyInterval> yFuzzyExact(
+      extensionPrincipleExact.apply(xFuzzy));
+  showErrors(yFuzzyExact);
 
   // extension principle with piecewise linear sparse grid interpolant
+  std::cout << "\n=== LINEAR ===\n";
   sgpp::optimization::optimizer::MultiStart optimizerLinear(*fInterpLinear, 10000, 100);
-  std::unique_ptr<sgpp::optimization::FuzzyInterval> yFuzzyLinear;
-  applyExtensionPrinciple("LINEAR", optimizerLinear, xFuzzy, yFuzzyExact, yFuzzyLinear);
+  sgpp::optimization::FuzzyExtensionPrincipleViaOptimization extensionPrincipleLinear(
+      optimizerLinear, numberOfAlphaSegments);
+  std::unique_ptr<sgpp::optimization::FuzzyInterval> yFuzzyLinear(
+      extensionPrincipleLinear.apply(xFuzzy));
+  showErrors(yFuzzyLinear, yFuzzyExact.get());
 
   // extension principle with B-spline sparse grid interpolant
+  std::cout << "\n=== B-SPLINE ===\n";
   sgpp::optimization::optimizer::MultiStart optimizerBSpline(*fInterpBSpline, 10000, 100);
   // sgpp::optimization::optimizer::AdaptiveNewton localOptimizer(
   //     *fInterpBSpline, *fInterpBSplineHessian);
   // sgpp::optimization::optimizer::MultiStart optimizerBSpline(localOptimizer);
-  std::unique_ptr<sgpp::optimization::FuzzyInterval> yFuzzyBSpline;
-  applyExtensionPrinciple("B-SPLINE", optimizerBSpline, xFuzzy, yFuzzyExact, yFuzzyBSpline);
+  sgpp::optimization::FuzzyExtensionPrincipleViaOptimization extensionPrincipleBSpline(
+      optimizerBSpline, numberOfAlphaSegments);
+  std::unique_ptr<sgpp::optimization::FuzzyInterval> yFuzzyBSpline(
+      extensionPrincipleBSpline.apply(xFuzzy));
+  showErrors(yFuzzyBSpline, yFuzzyExact.get());
 
   return 0;
 }

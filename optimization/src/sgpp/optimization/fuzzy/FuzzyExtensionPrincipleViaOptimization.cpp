@@ -234,7 +234,7 @@ FuzzyExtensionPrincipleViaOptimization::FuzzyExtensionPrincipleViaOptimization(
 FuzzyExtensionPrincipleViaOptimization::~FuzzyExtensionPrincipleViaOptimization() {}
 
 FuzzyInterval* FuzzyExtensionPrincipleViaOptimization::apply(
-    const std::vector<const FuzzyInterval*>& x) const {
+    const std::vector<const FuzzyInterval*>& xFuzzy) const {
   const size_t d = f->getNumberOfParameters();
   ScaledScalarFunction fScaled(*f);
   std::unique_ptr<ScaledScalarFunctionGradient> fGradientScaled;
@@ -273,8 +273,8 @@ FuzzyInterval* FuzzyExtensionPrincipleViaOptimization::apply(
     // determine input parameter confidence interval,
     // directly changing the optimization domain in fScaled
     for (size_t t = 0; t < d; t++) {
-      lowerBounds[t] = x[t]->evaluateConfidenceIntervalLowerBound(alpha);
-      upperBounds[t] = x[t]->evaluateConfidenceIntervalUpperBound(alpha);
+      lowerBounds[t] = xFuzzy[t]->evaluateConfidenceIntervalLowerBound(alpha);
+      upperBounds[t] = xFuzzy[t]->evaluateConfidenceIntervalUpperBound(alpha);
     }
 
     // set optimization domain in fGradientScaled if available

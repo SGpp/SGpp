@@ -35,7 +35,7 @@ class FuzzyExtensionPrincipleViaOptimization : public FuzzyExtensionPrinciple {
 
   ~FuzzyExtensionPrincipleViaOptimization() override;
 
-  FuzzyInterval* apply(const std::vector<const FuzzyInterval*>& x) const;
+  FuzzyInterval* apply(const std::vector<const FuzzyInterval*>& xFuzzy) const override;
 
   size_t getNumberOfAlphaSegments() const;
   void setNumberOfAlphaSegments(size_t numberOfAlphaSegments);
