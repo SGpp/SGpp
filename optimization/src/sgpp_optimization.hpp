@@ -32,6 +32,7 @@
 #include <sgpp/optimization/function/vector/WrapperVectorFunctionHessian.hpp>
 
 #include <sgpp/optimization/fuzzy/FuzzyExtensionPrinciple.hpp>
+#include <sgpp/optimization/fuzzy/FuzzyExtensionPrincipleViaOptimization.hpp>
 #include <sgpp/optimization/fuzzy/FuzzyInterval.hpp>
 #include <sgpp/optimization/fuzzy/FuzzyIntervalViaConfidenceInterval.hpp>
 #include <sgpp/optimization/fuzzy/FuzzyIntervalViaMembershipFunction.hpp>

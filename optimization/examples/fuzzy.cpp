@@ -108,7 +108,7 @@ void applyExtensionPrinciple(
     const std::unique_ptr<sgpp::optimization::FuzzyInterval>& yFuzzyExact,
     std::unique_ptr<sgpp::optimization::FuzzyInterval>& yFuzzy) {
   const size_t numberOfAlphaSegments = 100;
-  sgpp::optimization::FuzzyExtensionPrinciple extensionPrinciple(
+  sgpp::optimization::FuzzyExtensionPrincipleViaOptimization extensionPrinciple(
       optimizer, numberOfAlphaSegments);
 
   // apply extension principle

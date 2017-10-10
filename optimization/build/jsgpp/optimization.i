@@ -107,13 +107,14 @@ const bool UMFPACK_ENABLED;
 %rename(OptLogBarrier)              sgpp::optimization::optimizer::LogBarrier;
 %rename(OptSquaredPenalty)          sgpp::optimization::optimizer::SquaredPenalty;
 
-%rename(OptFuzzyInterval)                       sgpp::optimization::FuzzyInterval;
-%rename(OptFuzzyExtensionPrinciple)             sgpp::optimization::FuzzyExtensionPrinciple;
-%rename(OptFuzzyIntervalViaConfidenceInterval)  sgpp::optimization::FuzzyIntervalViaConfidenceInterval;
-%rename(OptFuzzyIntervalViaMembershipFunction)  sgpp::optimization::FuzzyIntervalViaMembershipFunction;
-%rename(OptInterpolatedFuzzyInterval)           sgpp::optimization::InterpolatedFuzzyInterval;
-%rename(OptQuasiGaussianFuzzyNumber)            sgpp::optimization::QuasiGaussianFuzzyNumber;
-%rename(OptTriangularFuzzyInterval)             sgpp::optimization::TriangularFuzzyInterval;
+%rename(OptFuzzyInterval)                           sgpp::optimization::FuzzyInterval;
+%rename(OptFuzzyExtensionPrinciple)                 sgpp::optimization::FuzzyExtensionPrinciple;
+%rename(OptFuzzyExtensionPrincipleViaOptimization)  sgpp::optimization::FuzzyExtensionPrincipleViaOptimization;
+%rename(OptFuzzyIntervalViaConfidenceInterval)      sgpp::optimization::FuzzyIntervalViaConfidenceInterval;
+%rename(OptFuzzyIntervalViaMembershipFunction)      sgpp::optimization::FuzzyIntervalViaMembershipFunction;
+%rename(OptInterpolatedFuzzyInterval)               sgpp::optimization::InterpolatedFuzzyInterval;
+%rename(OptQuasiGaussianFuzzyNumber)                sgpp::optimization::QuasiGaussianFuzzyNumber;
+%rename(OptTriangularFuzzyInterval)                 sgpp::optimization::TriangularFuzzyInterval;
 
 %rename(OptTestScalarFunction)  sgpp::optimization::test_problems::TestScalarFunction;
 %rename(OptTestVectorFunction)  sgpp::optimization::test_problems::TestVectorFunction;
@@ -398,6 +399,7 @@ const bool UMFPACK_ENABLED;
 
 %include "optimization/src/sgpp/optimization/fuzzy/FuzzyInterval.hpp"
 %include "optimization/src/sgpp/optimization/fuzzy/FuzzyExtensionPrinciple.hpp"
+%include "optimization/src/sgpp/optimization/fuzzy/FuzzyExtensionPrincipleViaOptimization.hpp"
 %include "optimization/src/sgpp/optimization/fuzzy/FuzzyIntervalViaConfidenceInterval.hpp"
 %include "optimization/src/sgpp/optimization/fuzzy/FuzzyIntervalViaMembershipFunction.hpp"
 %include "optimization/src/sgpp/optimization/fuzzy/InterpolatedFuzzyInterval.hpp"
