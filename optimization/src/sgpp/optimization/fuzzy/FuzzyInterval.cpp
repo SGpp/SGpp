@@ -13,7 +13,9 @@
 namespace sgpp {
 namespace optimization {
 
-FuzzyInterval::FuzzyInterval() :
+FuzzyInterval::FuzzyInterval(double supportLowerBound, double supportUpperBound) :
+    supportLowerBound(supportLowerBound),
+    supportUpperBound(supportUpperBound),
     numberOfIntegralSamples(DEFAULT_NUMBER_OF_INTEGRAL_SAMPLES) {
 }
 
@@ -177,6 +179,14 @@ double FuzzyInterval::approximateRelativeLinfError(const FuzzyInterval& other) c
   }
 
   return std::max(normDifferenceLB, normDifferenceUB) / normAbsolute;
+}
+
+double FuzzyInterval::getSupportLowerBound() const {
+  return supportLowerBound;
+}
+
+double FuzzyInterval::getSupportUpperBound() const {
+  return supportUpperBound;
 }
 
 size_t FuzzyInterval::getNumberOfIntegralSamples() const {

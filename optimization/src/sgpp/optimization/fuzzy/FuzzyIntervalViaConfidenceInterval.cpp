@@ -10,13 +10,15 @@
 namespace sgpp {
 namespace optimization {
 
+FuzzyIntervalViaConfidenceInterval::FuzzyIntervalViaConfidenceInterval(
+    double supportLowerBound, double supportUpperBound) :
+        FuzzyInterval(supportLowerBound, supportUpperBound) {
+}
+
 FuzzyIntervalViaConfidenceInterval::~FuzzyIntervalViaConfidenceInterval() {
 }
 
 double FuzzyIntervalViaConfidenceInterval::evaluateMembershipFunction(double x) const {
-  const double supportLowerBound = evaluateConfidenceIntervalLowerBound(0.0);
-  const double supportUpperBound = evaluateConfidenceIntervalUpperBound(0.0);
-
   // determine if x is in the support of the fuzzy interval
   if ((x <= supportLowerBound) || (x >= supportUpperBound)) {
     return 0.0;

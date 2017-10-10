@@ -23,9 +23,10 @@ class FuzzyIntervalViaMembershipFunction : public FuzzyInterval {
   double evaluateConfidenceIntervalLowerBound(double alpha) const override;
   double evaluateConfidenceIntervalUpperBound(double alpha) const override;
 
+  double getCoreLowerBound() const;
+  double getCoreUpperBound() const;
+
  protected:
-  double supportLowerBound;
-  double supportUpperBound;
   double coreLowerBound;
   double coreUpperBound;
 };

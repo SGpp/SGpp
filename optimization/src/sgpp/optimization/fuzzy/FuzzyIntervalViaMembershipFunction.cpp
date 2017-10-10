@@ -13,10 +13,9 @@ namespace optimization {
 FuzzyIntervalViaMembershipFunction::FuzzyIntervalViaMembershipFunction(
     double supportLowerBound, double supportUpperBound,
     double coreLowerBound, double coreUpperBound) :
-      supportLowerBound(supportLowerBound),
-      supportUpperBound(supportUpperBound),
-      coreLowerBound(coreLowerBound),
-      coreUpperBound(coreUpperBound) {
+        FuzzyInterval(supportLowerBound, supportUpperBound),
+        coreLowerBound(coreLowerBound),
+        coreUpperBound(coreUpperBound) {
 }
 
 FuzzyIntervalViaMembershipFunction::~FuzzyIntervalViaMembershipFunction() {
@@ -86,6 +85,14 @@ double FuzzyIntervalViaMembershipFunction::evaluateConfidenceIntervalUpperBound(
 
   // return center of last search interval
   return (xLower + xUpper) / 2.0;
+}
+
+double FuzzyIntervalViaMembershipFunction::getCoreLowerBound() const {
+  return coreLowerBound;
+}
+
+double FuzzyIntervalViaMembershipFunction::getCoreUpperBound() const {
+  return coreUpperBound;
 }
 
 }  // namespace optimization

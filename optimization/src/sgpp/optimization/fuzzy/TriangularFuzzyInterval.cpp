@@ -23,7 +23,9 @@ TriangularFuzzyInterval::TriangularFuzzyInterval(
 
 TriangularFuzzyInterval::TriangularFuzzyInterval(
     double leftMean, double rightMean, double leftSpread, double rightSpread) :
-  leftMean(leftMean), rightMean(rightMean), leftSpread(leftSpread), rightSpread(rightSpread) {
+        FuzzyInterval(leftMean - leftSpread, rightMean + rightSpread),
+        leftMean(leftMean), rightMean(rightMean),
+        leftSpread(leftSpread), rightSpread(rightSpread) {
 }
 
 TriangularFuzzyInterval::~TriangularFuzzyInterval() {
