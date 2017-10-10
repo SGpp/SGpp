@@ -23,26 +23,29 @@
 #include <iostream>
 #include <vector>
 
-// double f(sgpp::base::DataVector const &v) {
-//  //  return v[0] * v[0] * v[0] + v[0] * v[0] * v[1] + v[0] * v[1] * v[1] + v[1] * v[1] * v[1];
-//  return sin(1. / (1. + v[0] * v[0])) * v[1];
-//}
-
-double f(sgpp::base::DataVector const &x) {
-  return std::atan(50 * (x[0] - .35)) + M_PI / 2 + 4 * std::pow(x[1], 3) +
-         std::exp(x[0] * x[1] - 1);
+double f(sgpp::base::DataVector const &v) {
+  return v[0] * v[0] * v[0];
+  //    return sin(1. / (1. + v[0] * v[0])) * v[1];
+  //  return v[0];
+  //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
+  //         std::exp(v[0] * v[1] - 1);
 }
 
 double interpolate(size_t maxlevel) {
-  size_t numDimensions = 2;
+  size_t numDimensions = 1;
+  size_t degree = 3;
   sgpp::combigrid::MultiFunction func(f);
-
-  auto operation = sgpp::combigrid::CombigridOperation::createExpUniformBsplineInterpolation(
-      numDimensions, func);
+  auto operation =
+      sgpp::combigrid::CombigridOperation::createExpUniformBoundaryBsplineInterpolation(
+          numDimensions, func, degree);
 
   //  auto operation =
   //      sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
   //          numDimensions, func);
+
+  //  auto operation =
+  //  sgpp::combigrid::CombigridOperation::createExpUniformBoundaryLinearInterpolation(
+  //      numDimensions, func);
 
   double diff = 0;
   double max_err = 0;
@@ -65,11 +68,12 @@ double interpolate(size_t maxlevel) {
 int main() {
   sgpp::base::SGppStopwatch watch;
   watch.start();
-  size_t maxLevel = 8;
+  size_t minLevel = 3;
+  size_t maxLevel = 3;
   std::vector<double> err(maxLevel + 1, 0);
-  for (size_t l = 0; l < maxLevel + 1; l++) {
+  for (size_t l = minLevel; l < maxLevel + 1; l++) {
     err[l] = interpolate(l);
-    std::cout << l << " " << err[l] << std::endl;
+    std::cout << "level: " << l << " " << err[l] << std::endl;
   }
   std::cout << " Total Runtime: " << watch.stop() << " s" << std::endl;
   return 0;
