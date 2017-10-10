@@ -71,7 +71,7 @@ def createInterpolants(f):
 
 def applyExtensionPrinciple(label, optimizer, xFuzzy, yFuzzyExact):
   numberOfAlphaSegments = 100
-  extensionPrinciple = pysgpp.OptFuzzyExtensionPrinciple(
+  extensionPrinciple = pysgpp.OptFuzzyExtensionPrincipleViaOptimization(
     optimizer, numberOfAlphaSegments)
   
   # apply extension principle
