@@ -70,25 +70,27 @@ double OperationRosenblattTransformation1DBspline::doTransformation1D(base::Data
   }
   ordered_grid_points.push_back(0.0);
   ordered_grid_points.push_back(1.0);
-
-  std::vector<std::function<double(double)>> patch_functions;
-  coord_cdf.insert(std::pair<double, double>(0.0, 0.0));
-  coord_cdf.insert(std::pair<double, double>(1.0, 1.0));
   std::sort(ordered_grid_points.begin(), ordered_grid_points.end());
 
+  coord_cdf.insert(std::pair<double, double>(0.0, 0.0));
+  coord_cdf.insert(std::pair<double, double>(1.0, 1.0));
+
+  std::vector<std::function<double(double)>> patch_functions;
   double left_coord = 0.0;
-  double left_function_value = 0.0;
+  coord[0] = 0.0;
+  double left_function_value = opEval->eval(*alpha1d, coord);
+  bool negative_start = left_function_value < 0;
   left_function_value = std::max(0.0, left_function_value);
   for (size_t i = 1; i < ordered_grid_points.size(); i++) {
     coord[0] = ordered_grid_points[i];
     double eval_res = opEval->eval(*alpha1d, coord);
-    // std::cout << "l_function_value:" << left_function_value << std::endl;
-    // std::cout << "pdf(" << coord[0] << ")=" << eval_res << std::endl;
 
     double gaussQuadSum = 0.;
     double left = left_coord;
     double scaling = coord[0] - left;
-    bool negative_value_encountered = false;
+    // this will always be initialized to false except if we are in the first patch
+    // and the first value equals 0
+    bool negative_value_encountered = (i == 1 && negative_start);
     for (size_t c = 0; c < quadOrder; c++) {
       coord[0] = left + scaling * gauss_coordinates[c];
       double value = opEval->eval(*alpha1d, coord);
