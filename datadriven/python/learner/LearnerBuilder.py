@@ -643,7 +643,7 @@ class LearnerBuilder(object):
         def __getattr__(self, attr):
             # if method called is not a object method of this Descriptor, most probably it's a method of
             # LearnerBuilder so we try to call the method from our builder
-            if self.__specification.getCOperator() == None: #use laplace operator default
+            if self.__specification.getCOperator() == None: #use identity operator default
                 self.__specification.setCOperator(createOperationIdentity(self.__builder.getLearner().grid))
                 self.__specification.setCOperatorType('identity')
             self.__builder.getLearner().setSpecification(self.__specification)
