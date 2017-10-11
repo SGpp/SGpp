@@ -554,11 +554,15 @@ class Grid {
    */
   static Grid* createPeriodicGrid(size_t dim);
 
-  static Grid* createNaturalBsplineBoundaryGrid(size_t dim, size_t degree);
-  static Grid* createNotAKnotBsplineBoundaryGrid(size_t dim, size_t degree);
+  static Grid* createNaturalBsplineBoundaryGrid(size_t dim, size_t degree,
+                                                level_t boundaryLevel = 1);
+  static Grid* createNotAKnotBsplineBoundaryGrid(size_t dim, size_t degree,
+                                                 level_t boundaryLevel = 1);
   static Grid* createModNotAKnotBsplineGrid(size_t dim, size_t degree);
-  static Grid* createLagrangeSplineBoundaryGrid(size_t dim, size_t degree);
-  static Grid* createLagrangeNotAKnotSplineBoundaryGrid(size_t dim, size_t degree);
+  static Grid* createLagrangeSplineBoundaryGrid(size_t dim, size_t degree,
+                                                level_t boundaryLevel = 1);
+  static Grid* createLagrangeNotAKnotSplineBoundaryGrid(size_t dim, size_t degree,
+                                                        level_t boundaryLevel = 1);
   static Grid* createModLagrangeNotAKnotSplineGrid(size_t dim, size_t degree);
 
   /**
