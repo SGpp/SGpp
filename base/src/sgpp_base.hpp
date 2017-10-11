@@ -33,7 +33,11 @@
 #include <sgpp/base/operation/hash/common/basis/LinearStretchedBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NaturalBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineBasisDeriv1.hpp>
+#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineBasisDeriv2.hpp>
 #include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineModifiedBasisDeriv1.hpp>
+#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineModifiedBasisDeriv2.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>

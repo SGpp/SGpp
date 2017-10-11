@@ -25,7 +25,11 @@
 #include <sgpp/base/operation/hash/common/basis/LagrangeSplineBasisDeriv2.hpp>
 #include <sgpp/base/operation/hash/common/basis/NaturalBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineBasisDeriv1.hpp>
+#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineBasisDeriv2.hpp>
 #include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineModifiedBasisDeriv1.hpp>
+#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineModifiedBasisDeriv2.hpp>
 #include <sgpp/base/operation/hash/common/basis/WaveletBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/WaveletModifiedBasis.hpp>

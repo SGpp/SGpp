@@ -30,6 +30,10 @@ double basisEvalDx(sgpp::base::SBasis& basis, sgpp::base::level_t l,
       dynamic_cast<sgpp::base::SLagrangeNotAKnotSplineModifiedBase*>(&basis);
   sgpp::base::SLagrangeSplineBase* lagrangeSplineBasis =
       dynamic_cast<sgpp::base::SLagrangeSplineBase*>(&basis);
+  sgpp::base::SNotAKnotBsplineBase* notAKnotBsplineBasis =
+      dynamic_cast<sgpp::base::SNotAKnotBsplineBase*>(&basis);
+  sgpp::base::SNotAKnotBsplineModifiedBase* notAKnotBsplineModifiedBasis =
+      dynamic_cast<sgpp::base::SNotAKnotBsplineModifiedBase*>(&basis);
   sgpp::base::SWaveletBase* waveletBasis =
       dynamic_cast<sgpp::base::SWaveletBase*>(&basis);
   sgpp::base::SWaveletBoundaryBase* waveletBoundaryBasis =
@@ -62,6 +66,14 @@ double basisEvalDx(sgpp::base::SBasis& basis, sgpp::base::level_t l,
   } else if (lagrangeSplineBasis != nullptr) {
     sgpp::base::SLagrangeSplineBaseDeriv1
     basisDeriv1(lagrangeSplineBasis->getDegree());
+    return basisDeriv1.eval(l, i, x);
+  } else if (notAKnotBsplineBasis != nullptr) {
+    sgpp::base::SNotAKnotBsplineBaseDeriv1
+    basisDeriv1(notAKnotBsplineBasis->getDegree());
+    return basisDeriv1.eval(l, i, x);
+  } else if (notAKnotBsplineModifiedBasis != nullptr) {
+    sgpp::base::SNotAKnotBsplineModifiedBaseDeriv1
+    basisDeriv1(notAKnotBsplineModifiedBasis->getDegree());
     return basisDeriv1.eval(l, i, x);
   } else if (waveletBasis != nullptr) {
     return waveletBasis->evalDx(l, i, x);
@@ -97,6 +109,10 @@ double basisEvalDxDx(sgpp::base::SBasis& basis, sgpp::base::level_t l,
       dynamic_cast<sgpp::base::SLagrangeNotAKnotSplineModifiedBase*>(&basis);
   sgpp::base::SLagrangeSplineBase* lagrangeSplineBasis =
       dynamic_cast<sgpp::base::SLagrangeSplineBase*>(&basis);
+  sgpp::base::SNotAKnotBsplineBase* notAKnotBsplineBasis =
+      dynamic_cast<sgpp::base::SNotAKnotBsplineBase*>(&basis);
+  sgpp::base::SNotAKnotBsplineModifiedBase* notAKnotBsplineModifiedBasis =
+      dynamic_cast<sgpp::base::SNotAKnotBsplineModifiedBase*>(&basis);
   sgpp::base::SWaveletBase* waveletBasis =
       dynamic_cast<sgpp::base::SWaveletBase*>(&basis);
   sgpp::base::SWaveletBoundaryBase* waveletBoundaryBasis =
@@ -129,6 +145,14 @@ double basisEvalDxDx(sgpp::base::SBasis& basis, sgpp::base::level_t l,
   } else if (lagrangeSplineBasis != nullptr) {
     sgpp::base::SLagrangeSplineBaseDeriv2
     basisDeriv2(lagrangeSplineBasis->getDegree());
+    return basisDeriv2.eval(l, i, x);
+  } else if (notAKnotBsplineBasis != nullptr) {
+    sgpp::base::SNotAKnotBsplineBaseDeriv2
+    basisDeriv2(notAKnotBsplineBasis->getDegree());
+    return basisDeriv2.eval(l, i, x);
+  } else if (notAKnotBsplineModifiedBasis != nullptr) {
+    sgpp::base::SNotAKnotBsplineModifiedBaseDeriv2
+    basisDeriv2(notAKnotBsplineModifiedBasis->getDegree());
     return basisDeriv2.eval(l, i, x);
   } else if (waveletBasis != nullptr) {
     return waveletBasis->evalDxDx(l, i, x);

@@ -446,6 +446,22 @@ BOOST_AUTO_TEST_CASE(TestLagrangeSplineBasis) {
   }
 }
 
+BOOST_AUTO_TEST_CASE(TestNotAKnotBsplineBasis) {
+  // Test not-a-knot B-spline basis.
+  for (size_t p = 1; p <= 7; p++) {
+    sgpp::base::SNotAKnotBsplineBase basis(p);
+    derivativesTest(basis, basis.getDegree() - 1);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(TestNotAKnotBsplineModifiedBasis) {
+  // Test modified Lagrange not-a-knot spline basis.
+  for (size_t p = 1; p <= 7; p++) {
+    sgpp::base::SNotAKnotBsplineModifiedBase basis(p);
+    derivativesTest(basis, basis.getDegree() - 1);
+  }
+}
+
 BOOST_AUTO_TEST_CASE(TestWaveletBasis) {
   // Test Wavelet Noboundary basis.
   sgpp::base::SWaveletBase basis;
