@@ -9,6 +9,7 @@
 
 #ifdef USE_DAKOTA
 #include <BasisPolynomial.hpp>
+#endif
 
 namespace sgpp {
 namespace combigrid {
@@ -20,10 +21,10 @@ class LegendreBasis1D : public AbstractInfiniteFunctionBasis1D {
 
   double evaluate(size_t basisIndex, double xValue) override;
 
+#ifdef USE_DAKOTA
   Pecos::BasisPolynomial basisPoly;
+#endif
 };
 
 } /* namespace combigrid */
 } /* namespace sgpp */
-
-#endif

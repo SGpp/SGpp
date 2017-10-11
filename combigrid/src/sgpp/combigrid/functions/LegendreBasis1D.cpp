@@ -16,7 +16,8 @@ LegendreBasis1D::LegendreBasis1D() : basisPoly(Pecos::LEGENDRE_ORTHOG) {}
 LegendreBasis1D::~LegendreBasis1D() {}
 
 double LegendreBasis1D::evaluate(size_t basisIndex, double xValue) {
-  basisPoly.type1_value(xValue, basisIndex);
+  double invNorm = 1. / std::sqrt(basisPoly.norm_squared(basisIndex));
+  return invNorm * basisPoly.type1_value(xValue, basisIndex);
 }
 
 } /* namespace combigrid */
