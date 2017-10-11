@@ -147,12 +147,13 @@ class AbstractFullGridEvaluator {
   /**
    * @return Returns the grid in the current level as a pointer to a TensorGrid object
    */
-  virtual std::shared_ptr<TensorGrid> getTensorGrid(MultiIndex const &level) {
+  virtual std::shared_ptr<TensorGrid> getTensorGrid(MultiIndex const &level,
+                                                    std::vector<bool> orderingConfiguration) {
     size_t numDimensions = pointHierarchies.size();
     std::vector<base::DataVector> grids1D;
 
     for (size_t d = 0; d < numDimensions; ++d) {
-      bool sorted = false;  // TODO(holzmudd): What if the client wants sorted points?
+      bool sorted = orderingConfiguration[d];
       grids1D.push_back(base::DataVector(pointHierarchies[d]->getPoints(level[d], sorted)));
     }
 

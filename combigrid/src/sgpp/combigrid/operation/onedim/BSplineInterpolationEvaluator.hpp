@@ -35,7 +35,8 @@ class BSplineInterpolationEvaluator : public AbstractLinearEvaluator<FloatScalar
  private:
   double nonUniformBSpline(double x, size_t p, size_t k, std::vector<double> const &xi);
   void createKnots(std::vector<double> &xi);
-  void createNakKnots(std::vector<double> &xi);
+  void createdeg3NakKnots(std::vector<double> &xi);
+  void createdeg5NakKnots(std::vector<double> &xi);
   double LagrangePolynomial(double x, size_t k);
   void computeBasisValues();
 
