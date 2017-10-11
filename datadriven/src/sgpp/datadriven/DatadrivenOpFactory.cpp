@@ -31,6 +31,7 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DPolyClenshawCurtis.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DModPolyClenshawCurtis.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DPolyClenshawCurtisBoundary.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DBspline.hpp>
 
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationPoly.hpp>
@@ -305,6 +306,8 @@ datadriven::OperationTransformation1D* createOperationInverseRosenblattTransform
   else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary)
     return
       new datadriven::OperationInverseRosenblattTransformation1DPolyClenshawCurtisBoundary(&grid);
+  else if (grid.getType() == base::GridType::Bspline)
+    return new datadriven::OperationInverseRosenblattTransformation1DBspline(&grid);
   else
     throw base::factory_exception(
         "OperationInverseRosenblattTransformation1D is not implemented for this grid type.");

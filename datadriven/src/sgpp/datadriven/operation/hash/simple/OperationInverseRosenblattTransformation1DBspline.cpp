@@ -6,12 +6,15 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
-#include <sgpp/base/grid/type/ModPolyGrid.hpp>
-#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/grid/type/BsplineGrid.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/base/tools/HermiteBasis.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DModPoly.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DBspline.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DBspline.hpp>
+#include <sgpp_datadriven.hpp>
+#include <sgpp_optimization.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <algorithm>
@@ -28,38 +31,30 @@ namespace datadriven {
 /**
  * WARNING: the grid must be a 1D grid!
  */
-OperationRosenblattTransformation1DModPoly::OperationRosenblattTransformation1DModPoly(
+OperationInverseRosenblattTransformation1DBspline::OperationInverseRosenblattTransformation1DBspline(
     base::Grid* grid)
-    : grid(grid) {}
+    : sum(0.0), quadOrder(0), grid(grid) {}
 
-OperationRosenblattTransformation1DModPoly::~OperationRosenblattTransformation1DModPoly() {}
+OperationInverseRosenblattTransformation1DBspline::~OperationInverseRosenblattTransformation1DBspline() {}
 
-double OperationRosenblattTransformation1DModPoly::doTransformation1D(base::DataVector* alpha1d,
-                                                                      double coord1d) {
-  if (coord1d == 0.0) return 0.0;
-  /***************** STEP 1. Compute CDF  ********************/
+void OperationInverseRosenblattTransformation1DBspline::init(base::DataVector* alpha1d) {
+  patch_areas.clear();
+  is_negative_patch.clear();
+  ordered_grid_points.clear();
+  patch_functions.clear();
+  coord_cdf.clear();
+  sum = 0;
+  opEval = std::unique_ptr<base::OperationEval>(op_factory::createOperationEvalNaive(*grid));
 
-  // compute PDF, sort by coordinates
-  std::multimap<double, double> coord_cdf;
-  std::vector<double> ordered_grid_points;
-  std::vector<bool> is_negative_patch;
-  std::multimap<double, double>::iterator it1;
-
-  base::GridStorage* gs = &this->grid->getStorage();
-  // operation used to evaluate the pdf
-  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*grid));
   base::DataVector coord(1);
-  base::DataVector gauss_coordinates;
-  base::DataVector weights;
-  base::GaussLegendreQuadRule1D gauss;
-  std::vector<double> patch_areas;
-  size_t p = dynamic_cast<sgpp::base::ModPolyGrid*>(grid)->getDegree();
-  const size_t quadOrder = (p + 1) / 2;
-  gauss.getLevelPointsAndWeightsNormalized(quadOrder, gauss_coordinates, weights);
-
+  std::multimap<double, double>::iterator it1;
+  base::GridStorage* gs = &this->grid->getStorage();
+  double area = 0.0;
   double right_coord, right_function_value;
-  // std::cout << "size:" << gs->getSize() << std::endl;
-  double sum = 0.0, area = 0.0;
+  size_t p = dynamic_cast<sgpp::base::BsplineGrid*>(grid)->getDegree();
+  quadOrder = (p + 1) / 2;
+
+  gauss.getLevelPointsAndWeightsNormalized(quadOrder, gauss_coordinates, weights);
 
   // need an ordered list of the grid points
   for (size_t i = 0; i < gs->getSize(); i++) {
@@ -75,7 +70,6 @@ double OperationRosenblattTransformation1DModPoly::doTransformation1D(base::Data
   coord_cdf.insert(std::pair<double, double>(0.0, 0.0));
   coord_cdf.insert(std::pair<double, double>(1.0, 1.0));
 
-  std::vector<std::function<double(double)>> patch_functions;
   double left_coord = 0.0;
   coord[0] = 0.0;
   double left_function_value = opEval->eval(*alpha1d, coord);
@@ -84,8 +78,6 @@ double OperationRosenblattTransformation1DModPoly::doTransformation1D(base::Data
   for (size_t i = 1; i < ordered_grid_points.size(); i++) {
     coord[0] = ordered_grid_points[i];
     double eval_res = opEval->eval(*alpha1d, coord);
-    // std::cout << "l_function_value:" << left_function_value << std::endl;
-    // std::cout << "pdf(" << coord[0] << ")=" << eval_res << std::endl;
 
     double gaussQuadSum = 0.;
     double left = left_coord;
@@ -100,8 +92,6 @@ double OperationRosenblattTransformation1DModPoly::doTransformation1D(base::Data
       negative_value_encountered = negative_value_encountered || (value < 0);
     }
     area = gaussQuadSum * scaling;
-    // std::cout << "from " << left_coord << " to " << left+scaling << std::endl;
-    // std::cout << "area:" << area << std::endl;
 
     if (negative_value_encountered || eval_res < 0) {
       // make sure that the cdf is monotonically increasing
@@ -112,7 +102,6 @@ double OperationRosenblattTransformation1DModPoly::doTransformation1D(base::Data
       // we look for the next grid point with pdf(x) >= 0
       size_t j;
       for (j = i; j < ordered_grid_points.size() - 1; j++) {
-        // std::cout << "j:" << j << std::endl;
         right_coord = ordered_grid_points[j];
         coord[0] = right_coord;
         right_function_value = opEval->eval(*alpha1d, coord);
@@ -120,8 +109,6 @@ double OperationRosenblattTransformation1DModPoly::doTransformation1D(base::Data
       }
       if (j == ordered_grid_points.size() - 1)
         right_function_value = 0;
-      // std::cout << "Found j: " << j << std::endl;
-      // std::cout << right_coord << ";" << right_function_value << std::endl;
       // get last function value and coordinate with pdf(x) >= 0
       // perform montonic cubic interpolation based on:
       // https://en.wikipedia.org/wiki/Monotone_cubic_interpolation
@@ -141,7 +128,8 @@ double OperationRosenblattTransformation1DModPoly::doTransformation1D(base::Data
         coord[0] = ordered_grid_points[j + 1];
         function_values[2] = opEval->eval(*alpha1d, coord);
       } else {
-        // if j is the last grid point then choose the next one with the same step size
+        // if j is the last grid point choose the next one with the same step size
+        // and set it's function value to zero
         // and set it's function value to the last value
         coord[0] = 1 + ordered_grid_points[j] - ordered_grid_points[j - 1];
         function_values[2] = right_function_value;
@@ -169,10 +157,6 @@ double OperationRosenblattTransformation1DModPoly::doTransformation1D(base::Data
         }
       }
       // interpolation that can be evaluated between left_coord and right_coord
-      // std::cout << "Interpolation with: " << std::endl;
-      // std::cout << "left (x,y) = " << left_coord << ":" << left_function_value << std::endl;
-      // std::cout << "right (x,y) = " << right_coord << ":" << right_function_value << std::endl;
-      // std::cout << "secants = " << secants[0] << ":" << secants[1] << std::endl;
 
       std::function<double(double)> interpolation = [right_coord, left_coord, left_function_value,
                                                      right_function_value,
@@ -184,12 +168,9 @@ double OperationRosenblattTransformation1DModPoly::doTransformation1D(base::Data
                +right_function_value * base::HermiteBasis::h_0_1(t) +
                +h * tangents[1] * base::HermiteBasis::h_1_1(t);
       };
-      // std::cout << "interp from: " << left_coord << "to: " << right_coord << std::endl;
 
       for (; i <= j; i++) {
         coord[0] = ordered_grid_points[i];
-        // std::cout << "interpolating i:" << i << std::endl;
-        // std::cout << "For x=" << coord[0] << " interp: " << eval_res << std::endl;
         double gaussQuadSum = 0.;
         double left = left_coord;
         double scaling = coord[0] - left;
@@ -200,12 +181,9 @@ double OperationRosenblattTransformation1DModPoly::doTransformation1D(base::Data
 
         area = gaussQuadSum * scaling;
         sum += area;
-        // std::cout << "from " << left_coord << " to " << ordered_grid_points[i] << std::endl;
-        // std::cout << "area:" << area << std::endl;
         patch_areas.push_back(area);
         is_negative_patch.push_back(true);
         patch_functions.push_back(interpolation);
-        // std::cout << "set patch_function for:" << i - 1 << std::endl;
         left_coord = ordered_grid_points[i];
       }
       --i;
@@ -220,8 +198,6 @@ double OperationRosenblattTransformation1DModPoly::doTransformation1D(base::Data
     }
   }
 
-  if (sum == 0) return 0;
-
   // compute CDF
   double tmp_sum;
   unsigned int i = 0;
@@ -232,23 +208,14 @@ double OperationRosenblattTransformation1DModPoly::doTransformation1D(base::Data
     ++i;
     it1->second = tmp_sum / sum;
   }
+}
 
-  /***************** STEP 1. Done  ********************/
-
-  /***************** STEP 2. Sampling  ********************/
-
-  // std::cout << "Areas: " << std::endl;
-  // for (size_t i = 0; i < patch_areas.size(); i++) {
-    // std::cout << patch_areas[i] << std::endl;
-  // }
-  // std::cout << "Size areas: " << patch_areas.size() << std::endl;
-  // std::cout << "Size cdf: " << coord_cdf.size() << std::endl;
-  // std::cout << "coord cdf: " << std::endl;
-  // for (it1 = coord_cdf.begin(); it1 != coord_cdf.end(); ++it1) {
-    // std::cout << it1->first << ":" << it1->second << std::endl;
-  // }
-
-  // find cdf interval
+double OperationInverseRosenblattTransformation1DBspline::sample(base::DataVector* alpha1d,
+                                                              double coord1d) {
+  if (coord1d == 0.0) return 0.0;
+  if (sum == 0) return 0;
+  base::DataVector coord(1);
+  std::multimap<double, double>::iterator it1;
   size_t patch_nr = 0;
   int negative_patch_counter = 0;
   for (it1 = coord_cdf.begin(); it1 != coord_cdf.end(); ++it1) {
@@ -264,29 +231,42 @@ double OperationRosenblattTransformation1DModPoly::doTransformation1D(base::Data
   }
   --patch_nr;
   --negative_patch_counter;
-
+  // std::cout << "negative_patch_counter: " << negative_patch_counter << std::endl;
   // std::cout << "patch_nr: " << patch_nr << std::endl;
-  // std::cout << "patch_func size: " << patch_functions.size() << std::endl;
+  // std::cout << "PAs size: " << patch_areas.size() << std::endl;
+  // std::cout << "PFs size : " << patch_functions.size() << std::endl;
   --it1;
   double gaussQuadSum = 0.;
   double left = it1->first;
   double scaling = coord1d - left;
   if (is_negative_patch[patch_nr]) {
-    // std::cout << "is negative" << std::endl;
     for (size_t c = 0; c < quadOrder; c++) {
       coord[0] = left + scaling * gauss_coordinates[c];
       gaussQuadSum += weights[c] * patch_functions[negative_patch_counter](coord[0]);
     }
   } else {
-    // std::cout << "is not negative" << std::endl;
     for (size_t c = 0; c < quadOrder; c++) {
       coord[0] = left + scaling * gauss_coordinates[c];
       gaussQuadSum += weights[c] * opEval->eval(*alpha1d, coord);
     }
   }
-
-  /***************** STEP 2. Done  ********************/
   return it1->second + (gaussQuadSum * scaling) / sum;
-}  // end of compute_1D_cdf()
+}
+
+double OperationInverseRosenblattTransformation1DBspline::doTransformation1D(base::DataVector* alpha1d,
+                                                                          double coord1d) {
+  init(alpha1d);
+  // std::cout << "PFs size after exit: " << patch_functions.size() << std::endl;
+  std::function<double(const base::DataVector&)> optFunc =
+      [this, coord1d, alpha1d](const base::DataVector& x) -> double {
+    double F_x = sample(alpha1d, x[0]);
+    return (F_x - coord1d) * (F_x - coord1d);
+  };
+  optimization::Printer::getInstance().disableStatusPrinting();
+  optimization::WrapperScalarFunction f(1, optFunc);
+  optimization::optimizer::NelderMead nelderMead(f);
+  nelderMead.optimize();
+  return nelderMead.getOptimalPoint()[0];
+}
 }  // namespace datadriven
 }  // namespace sgpp

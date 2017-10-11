@@ -16,6 +16,7 @@
 #include <sgpp/datadriven/application/KernelDensityEstimator.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/optimization/operation/OptimizationOpFactory.hpp>
 
 #include <vector>
 #include <random>
@@ -63,6 +64,13 @@ void hierarchize(Grid* grid, std::uint32_t level, DataVector& alpha,
     gs.getPoint(i).getStandardCoordinates(coords);
     alpha[i] = func(coords);
   }
+  if (grid->getType() == sgpp::base::GridType::Bspline ||
+      grid->getType() == sgpp::base::GridType::ModBspline ||
+      grid->getType() == sgpp::base::GridType::BsplineBoundary ||
+      grid->getType() == sgpp::base::GridType::BsplineClenshawCurtis ||
+      grid->getType() == sgpp::base::GridType::ModBsplineClenshawCurtis)
+    sgpp::op_factory::createOperationMultipleHierarchisation(*grid)->doHierarchisation(alpha);
+  else
   sgpp::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
 }
 
@@ -377,6 +385,17 @@ BOOST_AUTO_TEST_CASE(testRosenblattModPolyClenshawCurtisDD) {
     }
     delete grid;
   }
+}
+
+BOOST_AUTO_TEST_CASE(testRosenblattBspline1D) {
+  Grid* grid = Grid::createBsplineGrid(1, 3);
+  DataVector alpha(20);
+  std::uint32_t numSamples = 1000;
+  for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+    hierarchize(grid, ilevel, alpha, &parabola);
+    testEqualityRosenblattInverseRosenblatt1D(*grid, alpha, numSamples);
+  }
+  delete grid;
 }
 
 BOOST_AUTO_TEST_CASE(testRosenblattKDE1D) {
