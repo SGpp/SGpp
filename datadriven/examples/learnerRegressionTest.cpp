@@ -128,7 +128,15 @@ std::vector<sgpp::datadriven::RegularizationConfiguration> getConfigs() {
     regularizationConfig.lambda_ = lambda;
     regularizationConfig.exponentBase_ = 0.25;
     result.push_back(regularizationConfig);
-
+    {
+    // Laplace
+    const auto regularizationType = sgpp::datadriven::RegularizationType::Laplace;
+    auto regularizationConfig = sgpp::datadriven::RegularizationConfiguration();
+    regularizationConfig.regType_ = regularizationType;
+    regularizationConfig.lambda_ = lambda;
+    regularizationConfig.exponentBase_ = 0.25;
+    result.push_back(regularizationConfig);
+    }
     // Diagonal
     for (const auto exponentBase : exponentBases) {
       const auto regularizationType = sgpp::datadriven::RegularizationType::Diagonal;
