@@ -161,6 +161,8 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
         (grid.getType() == GridType::LagrangeNotAKnotSplineBoundary) ||
         (grid.getType() == GridType::ModLagrangeNotAKnotSpline) ||
         (grid.getType() == GridType::LagrangeSplineBoundary) ||
+        (grid.getType() == GridType::NotAKnotBsplineBoundary) ||
+        (grid.getType() == GridType::ModNotAKnotBspline) ||
         (grid.getType() == GridType::Wavelet) ||
         (grid.getType() == GridType::WaveletBoundary) ||
         (grid.getType() == GridType::ModWavelet);

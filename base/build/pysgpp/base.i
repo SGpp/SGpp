@@ -158,7 +158,11 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearStretchedBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/NaturalBsplineBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/NotAKnotBsplineBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/NotAKnotBsplineBasisDeriv1.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/NotAKnotBsplineBasisDeriv2.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/NotAKnotBsplineModifiedBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/NotAKnotBsplineModifiedBasisDeriv1.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/NotAKnotBsplineModifiedBasisDeriv2.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/PolyBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp"
@@ -209,7 +213,11 @@ namespace std {
 %template(SLagrangeNotAKnotSplineBaseDeriv2) sgpp::base::LagrangeNotAKnotSplineBasisDeriv2<unsigned int, unsigned int>;
 %template(SNaturalBsplineBase) sgpp::base::NaturalBsplineBasis<unsigned int, unsigned int>;
 %template(SNotAKnotBsplineBase) sgpp::base::NotAKnotBsplineBasis<unsigned int, unsigned int>;
+%template(SNotAKnotBsplineBaseDeriv1) sgpp::base::NotAKnotBsplineBasisDeriv1<unsigned int, unsigned int>;
+%template(SNotAKnotBsplineBaseDeriv2) sgpp::base::NotAKnotBsplineBasisDeriv2<unsigned int, unsigned int>;
 %template(SNotAKnotBsplineModifiedBase) sgpp::base::NotAKnotBsplineModifiedBasis<unsigned int, unsigned int>;
+%template(SNotAKnotBsplineModifiedBaseDeriv1) sgpp::base::NotAKnotBsplineModifiedBasisDeriv1<unsigned int, unsigned int>;
+%template(SNotAKnotBsplineModifiedBaseDeriv2) sgpp::base::NotAKnotBsplineModifiedBasisDeriv2<unsigned int, unsigned int>;
 %template(SPrewaveletBase) sgpp::base::PrewaveletBasis<unsigned int, unsigned int>;
 
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
