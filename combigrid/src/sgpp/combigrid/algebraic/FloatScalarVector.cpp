@@ -3,8 +3,22 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <iostream>
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 
 namespace sgpp {
-namespace combigrid {} /* namespace combigrid */
+namespace combigrid {
+std::ostream &operator<<(std::ostream &stream, FloatScalarVector v) {
+  stream << v.getValue();
+  return stream;
+}
+
+std::istream &operator>>(std::istream &stream, FloatScalarVector &v) {
+  double val = 0.0;
+  stream >> val;
+  v = FloatScalarVector(val);
+  return stream;
+}
+
+} /* namespace combigrid */
 } /* namespace sgpp*/
