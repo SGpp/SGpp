@@ -1,17 +1,3 @@
-Chessboard Data Set
-===================
-From:
-Alexander Heinecke (Alexander.Heinecke@mytum.de)
-
-Description:
-A d-dimensional dataset, with uniformly distributed points (random) in
-[0,1]^d. This points have two classes that are arranged like a chessboard.
-
-Files:
-create_dataset.py
-  Creates datasets as whitespace separated list
-create_scripts.py
-  Creates script for converter.py to convert files into arff-format
-
-The data files are not included but have to be created manually, as
-they take too much storage space.
+version https://git-lfs.github.com/spec/v1
+oid sha256:8de13366f50c51dc701efc81986ebd42af42faea81450e620f17a24f1bac60f2
+size 518

@@ -3,6 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+/**
+ * \page example_example_learnerSGDE_java Learner SGDE
+ * This tutorial demostrates the sparse grid density estimation 
+ */
+
 // import all packages
 import sgpp.*;
 
@@ -10,19 +15,20 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-/**
- * Simple Java SG++ example for the SGDE learner
- */
 public class example_learnerSGDE {
 
     public static DataMatrix readARFF(String fileNameDefined) {
-        // -File class needed to turn stringName to actual file
+        /**
+		* -File class needed to turn stringName to actual file
+		*/
         File file = new File(fileNameDefined);
         DataMatrix ans = new DataMatrix(0, 0);
         try{
-            // -read from filePooped with Scanner class
+            /**
+			* -read from filePooped with Scanner class
+			*/
             Scanner inputStream = new Scanner(file);
-            // hashNext() loops line-by-line
+            
             for (int i = 0; i < 18; i++) {
                 inputStream.next();
             }
@@ -34,15 +40,23 @@ public class example_learnerSGDE {
                     ans.set(0, i, Double.parseDouble(data[i]));
                 }
             }
+			
+			/**
+			* hashNext() loops line-by-line
+			*/
             while(inputStream.hasNext()){
-                //read single line, put in string
+                /**
+				* read single line, put in string
+				*/
                 String[] data = inputStream.next().split(",");
                 long row = ans.appendRow();
                 for (int i = 0; i < data.length; i++) {
                     ans.set(row, i, Double.parseDouble(data[i]));
                 }
             }
-            // after loop, close scanner
+            /**
+			* after loop, close scanner
+			*/
             inputStream.close();
         }catch (FileNotFoundException e){
             e.printStackTrace();
@@ -65,20 +79,26 @@ public class example_learnerSGDE {
     System.out.println("# loading file: " + filename);
     DataMatrix samples = readARFF(filename);
 
-    // configure grid
+    /**
+	* Configure grid
+	*/
     System.out.println("# create grid config");
     RegularGridConfiguration gridConfig = new RegularGridConfiguration();
     gridConfig.setDim_(samples.getNcols());
     gridConfig.setLevel_(4);
     gridConfig.setType_(GridType.Linear);
 
-    // configure adaptive refinement
+    /** 
+	* Configure adaptive refinement
+	*/
     System.out.println("# create adaptive refinement config");
     AdpativityConfiguration adaptConfig = new AdpativityConfiguration();
     adaptConfig.setNoPoints_(5);
     adaptConfig.setNumRefinements_(0);
 
-    // configure solver
+    /** 
+	* Configure solver
+	*/
     System.out.println("# create solver config");
     SLESolverConfiguration solverConfig = new SLESolverConfiguration();
     solverConfig.setType_(SLESolverType.CG);
@@ -86,12 +106,16 @@ public class example_learnerSGDE {
     solverConfig.setEps_(1e-10);
     solverConfig.setThreshold_(1e-10);
 
-    // configure regularization
+    /** 
+	* Configure regularization
+	*/
     System.out.println("# create regularization config");
     RegularizationConfiguration regularizationConfig = new RegularizationConfiguration();
     regularizationConfig.setRegType_(RegularizationType.Laplace);
 
-    // configure learner
+    /**
+	* Configure learner
+	*/
     System.out.println("# create learner config");
     LearnerSGDEConfiguration learnerConfig = new LearnerSGDEConfiguration();
     learnerConfig.setDoCrossValidation_(false);
@@ -104,13 +128,22 @@ public class example_learnerSGDE {
     learnerConfig.setSeed_(1234567);
     learnerConfig.setSilent_(false);
 
+	/**
+	* Initialize and run learner
+	*/
     System.out.println("# creating the learner");
     LearnerSGDE learner = new LearnerSGDE(gridConfig, adaptConfig, solverConfig, regularizationConfig, learnerConfig);
     learner.initialize(samples);
 
+	/**
+	* For comparison, run the sparse grid kernel-based learner
+	*/
     GaussianKDE kde = new GaussianKDE(samples);
     DataVector x = new DataVector(3);
 
+	/**
+	* View resulting pdf in the middle of the domain
+	*/
     for (int i = 0; i < x.getSize(); i++) {
         x.set(i, 0.5);
     }

@@ -64,7 +64,14 @@ struct RegularGridConfiguration {
       size_t dim_;
       /// number of levels
       int level_;
+      /// max. polynomial degree for poly basis
+      size_t maxDegree_;
+      /// level of boundary grid
+      size_t boundaryLevel_;
+      /// subgrid selection value t
+      double t_ = 0.0;
     };
+
 
 struct AdpativityConfiguration {
       /// number of refinements
@@ -204,4 +211,4 @@ public:
         };
         return 1;
     };
-};	
+};

@@ -7,8 +7,7 @@ import ModuleHelper
 
 Import("*")
 
-moduleDependencies = []
-
+moduleDependencies = ["sgppbase"]
 module = ModuleHelper.Module(moduleDependencies)
 
 module.scanSource()
