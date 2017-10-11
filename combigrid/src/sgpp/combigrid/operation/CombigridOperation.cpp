@@ -339,7 +339,7 @@ std::shared_ptr<CombigridOperation> auxiliaryBsplineFunction(size_t numDimension
       evalCopy[dim] = evaluators[dim]->cloneLinear();
       // needsSorted is  True for Bsplines, False for Polynomials
       bool needsSorted = evalCopy[dim]->needsOrderedPoints();
-      auto gridPoints = grids[dim]->getPoints(grid->getLevel()[dim], needsSorted);
+      auto gridPoints = grids[dim]->getPoints(level[dim], needsSorted);
       evalCopy[dim]->setGridPoints(gridPoints);
     }
     sgpp::base::DataMatrix A(numGridPoints, numGridPoints);
@@ -348,12 +348,17 @@ std::shared_ptr<CombigridOperation> auxiliaryBsplineFunction(size_t numDimension
 
     // Creates an iterator that yields all multi-indices of grid points in the grid.
     sgpp::combigrid::MultiIndexIterator it(grid->numPoints());
-    auto it2 = funcStorage->getGuidedIterator(grid->getLevel(), it,
-                                              std::vector<bool>(numDimensions, true));
+    auto funcIter =
+        funcStorage->getGuidedIterator(level, it, std::vector<bool>(numDimensions, true));
 
-    for (size_t index1 = 0; it2->isValid(); ++index1, it2->moveToNext()) {
-      auto gridPoint = grid->getGridPoint(it2->getMultiIndex());
-      functionValues[index1] = funcStorage->get(level, it2->getMultiIndex());  // sorted order
+    for (size_t ixEvalPoints = 0; funcIter->isValid(); ++ixEvalPoints, funcIter->moveToNext()) {
+      auto gridPoint = grid->getGridPoint(funcIter->getMultiIndex());
+      //      std::cout << it.getMultiIndex()[0] << " = " << funcIter->getMultiIndex()[0] << " -> "
+      //                << funcIter->value() << " = "
+      //                << funcStorage->getStorage(level)->get(funcIter->getMultiIndex()) <<
+      //                std::endl;
+      functionValues[ixEvalPoints] =
+          funcIter->value();  // get(level, it2->getMultiIndex());  // sorted order
 
       std::vector<std::vector<double>> basisValues;
       for (size_t dim = 0; dim < numDimensions; ++dim) {
@@ -367,13 +372,14 @@ std::shared_ptr<CombigridOperation> auxiliaryBsplineFunction(size_t numDimension
       }
 
       sgpp::combigrid::MultiIndexIterator innerIter(grid->numPoints());
-      for (size_t index2 = 0; innerIter.isValid(); ++index2, innerIter.moveToNext()) {
+      for (size_t ixBasisFunctions = 0; innerIter.isValid();
+           ++ixBasisFunctions, innerIter.moveToNext()) {
         double splineValue = 1.0;
         auto innerIndex = innerIter.getMultiIndex();
         for (size_t dim = 0; dim < numDimensions; ++dim) {
           splineValue *= basisValues[dim][innerIndex[dim]];
         }
-        A.set(index1, index2, splineValue);
+        A.set(ixEvalPoints, ixBasisFunctions, splineValue);
       }
     }
 
@@ -382,19 +388,18 @@ std::shared_ptr<CombigridOperation> auxiliaryBsplineFunction(size_t numDimension
     sgpp::optimization::Printer::getInstance().setVerbosity(-1);
     bool solved = solver.solve(sle, functionValues, coefficients_sle);
 
-    //    std::cout << A.toString() << std::endl;
-    //    std::cout << "fct: ";
-    //    for (size_t i = 0; i < functionValues.size(); i++) {
-    //      std::cout << functionValues[i] << " ";
-    //    }
-    //    std::cout << "\ncoeff: ";
-    //    for (size_t i = 0; i < coefficients_sle.size(); i++) {
-    //      std::cout << coefficients_sle[i] << " ";
-    //    }
-    //    std::cout << "\n";
-    //    std::cout << "-------------------------------------------------------------------" <<
-    //    std::endl;
-
+    /*std::cout << A.toString() << std::endl;
+    std::cout << "fct: ";
+    for (size_t i = 0; i < functionValues.size(); i++) {
+      std::cout << functionValues[i] << " ";
+    }
+    std::cout << "\ncoeff: ";
+    for (size_t i = 0; i < coefficients_sle.size(); i++) {
+      std::cout << coefficients_sle[i] << " ";
+    }
+    std::cout << "\n";
+    std::cout << "-------------------------------------------------------------------" << std::endl;
+    */
     if (!solved) {
       exit(-1);
     }

@@ -4,8 +4,11 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/operation/onedim/InterpolationCoefficientEvaluator.hpp>
+#include <sgpp/base/exception/generation_exception.hpp>
 
+#ifdef USE_EIGEN
 #include <eigen3/Eigen/Dense>
+#endif
 
 namespace sgpp {
 namespace combigrid {
@@ -23,6 +26,7 @@ InterpolationCoefficientEvaluator::InterpolationCoefficientEvaluator(
       functionBasis(other.functionBasis) {}
 
 void InterpolationCoefficientEvaluator::setGridPoints(const std::vector<double>& xValues) {
+  #ifdef USE_EIGEN
   size_t n = xValues.size();
   Eigen::MatrixXd mat(n, n);
 
@@ -38,6 +42,9 @@ void InterpolationCoefficientEvaluator::setGridPoints(const std::vector<double>&
       basisValues[j].at(MultiIndex{i}) = invertedMatrix(i, j);
     }
   }
+  #else
+  throw new sgpp::base::generation_exception("need Eigen to use the PCE transformation.");
+  #endif
 }
 
 void InterpolationCoefficientEvaluator::setFunctionValuesAtGridPoints(
