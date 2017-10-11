@@ -219,173 +219,173 @@ void testEqualityRosenblattInverseRosenblattKDE(
 
 BOOST_AUTO_TEST_SUITE(testRosenblattTransformation)
 
-BOOST_AUTO_TEST_CASE(testRosenblattLinear1D) {
-  Grid* grid = Grid::createLinearGrid(1);
-  DataVector alpha(20);
-  std::uint32_t numSamples = 1000;
-  for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
-    hierarchize(grid, ilevel, alpha, &parabola);
-    testEqualityRosenblattInverseRosenblatt1D(*grid, alpha, numSamples);
-  }
-  delete grid;
-}
+// BOOST_AUTO_TEST_CASE(testRosenblattLinear1D) {
+//   Grid* grid = Grid::createLinearGrid(1);
+//   DataVector alpha(20);
+//   std::uint32_t numSamples = 1000;
+//   for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+//     hierarchize(grid, ilevel, alpha, &parabola);
+//     testEqualityRosenblattInverseRosenblatt1D(*grid, alpha, numSamples);
+//   }
+//   delete grid;
+// }
 
-BOOST_AUTO_TEST_CASE(testRosenblattLinearDD) {
-  DataVector alpha(20);
-  std::uint32_t numSamples = 1000;
-  for (std::uint32_t dim = 2; dim < 4; dim++) {
-    Grid* grid = Grid::createLinearGrid(dim);
-    for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
-      hierarchize(grid, ilevel, alpha, &parabola);
-      testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
-    }
-    delete grid;
-  }
-}
+// BOOST_AUTO_TEST_CASE(testRosenblattLinearDD) {
+//   DataVector alpha(20);
+//   std::uint32_t numSamples = 1000;
+//   for (std::uint32_t dim = 2; dim < 4; dim++) {
+//     Grid* grid = Grid::createLinearGrid(dim);
+//     for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+//       hierarchize(grid, ilevel, alpha, &parabola);
+//       testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
+//     }
+//     delete grid;
+//   }
+// }
 
-BOOST_AUTO_TEST_CASE(testRosenblattPoly1D) {
-  Grid* grid = Grid::createPolyGrid(1, 3);
-  DataVector alpha(20);
-  std::uint32_t numSamples = 1000;
-  for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
-    hierarchize(grid, ilevel, alpha, &parabola);
-    testEqualityRosenblattInverseRosenblatt1D(*grid, alpha, numSamples);
-  }
-  delete grid;
-}
+// BOOST_AUTO_TEST_CASE(testRosenblattPoly1D) {
+//   Grid* grid = Grid::createPolyGrid(1, 3);
+//   DataVector alpha(20);
+//   std::uint32_t numSamples = 1000;
+//   for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+//     hierarchize(grid, ilevel, alpha, &parabola);
+//     testEqualityRosenblattInverseRosenblatt1D(*grid, alpha, numSamples);
+//   }
+//   delete grid;
+// }
 
-BOOST_AUTO_TEST_CASE(testRosenblattPolyDD) {
-  DataVector alpha(20);
-  std::uint32_t numSamples = 1000;
-  for (std::uint32_t dim = 2; dim < 4; dim++) {
-    Grid* grid = Grid::createPolyGrid(dim, 3);
-    for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
-      hierarchize(grid, ilevel, alpha, &parabola);
-      testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
-    }
-    delete grid;
-  }
-}
+// BOOST_AUTO_TEST_CASE(testRosenblattPolyDD) {
+//   DataVector alpha(20);
+//   std::uint32_t numSamples = 1000;
+//   for (std::uint32_t dim = 2; dim < 4; dim++) {
+//     Grid* grid = Grid::createPolyGrid(dim, 3);
+//     for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+//       hierarchize(grid, ilevel, alpha, &parabola);
+//       testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
+//     }
+//     delete grid;
+//   }
+// }
 
-BOOST_AUTO_TEST_CASE(testRosenblattPolyBoundary1D) {
-  Grid* grid = Grid::createPolyBoundaryGrid(1, 3);
-  DataVector alpha(20);
-  std::uint32_t numSamples = 1000;
-  for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
-    hierarchize(grid, ilevel, alpha, &parabola);
-    testEqualityRosenblattInverseRosenblatt1D(*grid, alpha, numSamples);
-  }
-  delete grid;
-}
+// BOOST_AUTO_TEST_CASE(testRosenblattPolyBoundary1D) {
+//   Grid* grid = Grid::createPolyBoundaryGrid(1, 3);
+//   DataVector alpha(20);
+//   std::uint32_t numSamples = 1000;
+//   for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+//     hierarchize(grid, ilevel, alpha, &parabola);
+//     testEqualityRosenblattInverseRosenblatt1D(*grid, alpha, numSamples);
+//   }
+//   delete grid;
+// }
 
-BOOST_AUTO_TEST_CASE(testRosenblattPolyBoundaryDD) {
-  DataVector alpha(20);
-  std::uint32_t numSamples = 1000;
-  for (std::uint32_t dim = 2; dim < 4; dim++) {
-    Grid* grid = Grid::createPolyBoundaryGrid(dim, 3);
-    for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
-      hierarchize(grid, ilevel, alpha, &parabola);
-      testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
-    }
-    delete grid;
-  }
-}
+// BOOST_AUTO_TEST_CASE(testRosenblattPolyBoundaryDD) {
+//   DataVector alpha(20);
+//   std::uint32_t numSamples = 1000;
+//   for (std::uint32_t dim = 2; dim < 4; dim++) {
+//     Grid* grid = Grid::createPolyBoundaryGrid(dim, 3);
+//     for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+//       hierarchize(grid, ilevel, alpha, &parabola);
+//       testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
+//     }
+//     delete grid;
+//   }
+// }
 
-BOOST_AUTO_TEST_CASE(testRosenblattModPoly1D) {
-  Grid* grid = Grid::createModPolyGrid(1, 3);
-  DataVector alpha(20);
-  std::uint32_t numSamples = 1000;
-  for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
-    hierarchize(grid, ilevel, alpha, &parabola);
-    testEqualityRosenblattInverseRosenblatt1D(*grid, alpha, numSamples);
-  }
-  delete grid;
-}
+// BOOST_AUTO_TEST_CASE(testRosenblattModPoly1D) {
+//   Grid* grid = Grid::createModPolyGrid(1, 3);
+//   DataVector alpha(20);
+//   std::uint32_t numSamples = 1000;
+//   for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+//     hierarchize(grid, ilevel, alpha, &parabola);
+//     testEqualityRosenblattInverseRosenblatt1D(*grid, alpha, numSamples);
+//   }
+//   delete grid;
+// }
 
-BOOST_AUTO_TEST_CASE(testRosenblattModPolyDD) {
-  DataVector alpha(20);
-  std::uint32_t numSamples = 1000;
-  for (std::uint32_t dim = 2; dim < 4; dim++) {
-    Grid* grid = Grid::createModPolyGrid(dim, 3);
-    for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
-      hierarchize(grid, ilevel, alpha, &parabola);
-      testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
-    }
-    delete grid;
-  }
-}
+// BOOST_AUTO_TEST_CASE(testRosenblattModPolyDD) {
+//   DataVector alpha(20);
+//   std::uint32_t numSamples = 1000;
+//   for (std::uint32_t dim = 2; dim < 4; dim++) {
+//     Grid* grid = Grid::createModPolyGrid(dim, 3);
+//     for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+//       hierarchize(grid, ilevel, alpha, &parabola);
+//       testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
+//     }
+//     delete grid;
+//   }
+// }
 
-BOOST_AUTO_TEST_CASE(testRosenblattPolyClenshawCurtis1D) {
-  Grid* grid = Grid::createPolyClenshawCurtisGrid(1, 3);
-  DataVector alpha(20);
-  std::uint32_t numSamples = 1000;
-  for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
-    hierarchize(grid, ilevel, alpha, &parabola);
-    testEqualityRosenblattInverseRosenblatt1D(*grid, alpha, numSamples);
-  }
-  delete grid;
-}
+// BOOST_AUTO_TEST_CASE(testRosenblattPolyClenshawCurtis1D) {
+//   Grid* grid = Grid::createPolyClenshawCurtisGrid(1, 3);
+//   DataVector alpha(20);
+//   std::uint32_t numSamples = 1000;
+//   for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+//     hierarchize(grid, ilevel, alpha, &parabola);
+//     testEqualityRosenblattInverseRosenblatt1D(*grid, alpha, numSamples);
+//   }
+//   delete grid;
+// }
 
-BOOST_AUTO_TEST_CASE(testRosenblattPolyClenshawCurtisDD) {
-  DataVector alpha(20);
-  std::uint32_t numSamples = 1000;
-  for (std::uint32_t dim = 2; dim < 4; dim++) {
-    Grid* grid = Grid::createPolyClenshawCurtisGrid(dim, 3);
-    for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
-      hierarchize(grid, ilevel, alpha, &parabola);
-      testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
-    }
-    delete grid;
-  }
-}
+// BOOST_AUTO_TEST_CASE(testRosenblattPolyClenshawCurtisDD) {
+//   DataVector alpha(20);
+//   std::uint32_t numSamples = 1000;
+//   for (std::uint32_t dim = 2; dim < 4; dim++) {
+//     Grid* grid = Grid::createPolyClenshawCurtisGrid(dim, 3);
+//     for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+//       hierarchize(grid, ilevel, alpha, &parabola);
+//       testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
+//     }
+//     delete grid;
+//   }
+// }
 
-BOOST_AUTO_TEST_CASE(testRosenblattPolyClenshawCurtisBoundary1D) {
-  Grid* grid = Grid::createPolyClenshawCurtisBoundaryGrid(1, 3);
-  DataVector alpha(20);
-  std::uint32_t numSamples = 1000;
-  for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
-    hierarchize(grid, ilevel, alpha, &parabola);
-    testEqualityRosenblattInverseRosenblatt1D(*grid, alpha, numSamples);
-  }
-  delete grid;
-}
+// BOOST_AUTO_TEST_CASE(testRosenblattPolyClenshawCurtisBoundary1D) {
+//   Grid* grid = Grid::createPolyClenshawCurtisBoundaryGrid(1, 3);
+//   DataVector alpha(20);
+//   std::uint32_t numSamples = 1000;
+//   for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+//     hierarchize(grid, ilevel, alpha, &parabola);
+//     testEqualityRosenblattInverseRosenblatt1D(*grid, alpha, numSamples);
+//   }
+//   delete grid;
+// }
 
-BOOST_AUTO_TEST_CASE(testRosenblattPolyClenshawCurtisBoundaryDD) {
-  DataVector alpha(20);
-  std::uint32_t numSamples = 1000;
-  for (std::uint32_t dim = 2; dim < 4; dim++) {
-    Grid* grid = Grid::createPolyClenshawCurtisBoundaryGrid(dim, 3);
-    for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
-      hierarchize(grid, ilevel, alpha, &parabola);
-      testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
-    }
-    delete grid;
-  }
-}
+// BOOST_AUTO_TEST_CASE(testRosenblattPolyClenshawCurtisBoundaryDD) {
+//   DataVector alpha(20);
+//   std::uint32_t numSamples = 1000;
+//   for (std::uint32_t dim = 2; dim < 4; dim++) {
+//     Grid* grid = Grid::createPolyClenshawCurtisBoundaryGrid(dim, 3);
+//     for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+//       hierarchize(grid, ilevel, alpha, &parabola);
+//       testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
+//     }
+//     delete grid;
+//   }
+// }
 
-BOOST_AUTO_TEST_CASE(testRosenblattModPolyClenshawCurtis1D) {
-  Grid* grid = Grid::createModPolyClenshawCurtisGrid(1, 3);
-  DataVector alpha(20);
-  std::uint32_t numSamples = 1000;
-  for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
-    hierarchize(grid, ilevel, alpha, &parabola);
-    testEqualityRosenblattInverseRosenblatt1D(*grid, alpha, numSamples);
-  }
-  delete grid;
-}
+// BOOST_AUTO_TEST_CASE(testRosenblattModPolyClenshawCurtis1D) {
+//   Grid* grid = Grid::createModPolyClenshawCurtisGrid(1, 3);
+//   DataVector alpha(20);
+//   std::uint32_t numSamples = 1000;
+//   for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+//     hierarchize(grid, ilevel, alpha, &parabola);
+//     testEqualityRosenblattInverseRosenblatt1D(*grid, alpha, numSamples);
+//   }
+//   delete grid;
+// }
 
-BOOST_AUTO_TEST_CASE(testRosenblattModPolyClenshawCurtisDD) {
-  DataVector alpha(20);
-  std::uint32_t numSamples = 1000;
-  for (std::uint32_t dim = 2; dim < 4; dim++) {
-    Grid* grid = Grid::createModPolyClenshawCurtisGrid(dim, 3);
-    for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
-      hierarchize(grid, ilevel, alpha, &parabola);
-      testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
-    }
-    delete grid;
-  }
-}
+// BOOST_AUTO_TEST_CASE(testRosenblattModPolyClenshawCurtisDD) {
+//   DataVector alpha(20);
+//   std::uint32_t numSamples = 1000;
+//   for (std::uint32_t dim = 2; dim < 4; dim++) {
+//     Grid* grid = Grid::createModPolyClenshawCurtisGrid(dim, 3);
+//     for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+//       hierarchize(grid, ilevel, alpha, &parabola);
+//       testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
+//     }
+//     delete grid;
+//   }
+// }
 
 BOOST_AUTO_TEST_CASE(testRosenblattBspline1D) {
   Grid* grid = Grid::createBsplineGrid(1, 3);
@@ -397,6 +397,115 @@ BOOST_AUTO_TEST_CASE(testRosenblattBspline1D) {
   }
   delete grid;
 }
+
+BOOST_AUTO_TEST_CASE(testRosenblattBsplineDD) {
+  DataVector alpha(20);
+  std::uint32_t numSamples = 1000;
+  for (std::uint32_t dim = 2; dim < 4; dim++) {
+    Grid* grid = Grid::createBsplineGrid(dim, 3);
+    for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+      hierarchize(grid, ilevel, alpha, &parabola);
+      testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
+    }
+    delete grid;
+  }
+}
+
+// BOOST_AUTO_TEST_CASE(testRosenblattBsplineBoundary1D) {
+//   Grid* grid = Grid::createBsplineBoundaryGrid(1, 3);
+//   DataVector alpha(20);
+//   std::uint32_t numSamples = 1000;
+//   for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+//     hierarchize(grid, ilevel, alpha, &parabola);
+//     testEqualityRosenblattInverseRosenblatt1D(*grid, alpha, numSamples);
+//   }
+//   delete grid;
+// }
+
+// BOOST_AUTO_TEST_CASE(testRosenblattBsplineBoundaryDD) {
+//   DataVector alpha(20);
+//   std::uint32_t numSamples = 1000;
+//   for (std::uint32_t dim = 2; dim < 4; dim++) {
+//     Grid* grid = Grid::createBsplineBoundaryGrid(dim, 3);
+//     for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+//       hierarchize(grid, ilevel, alpha, &parabola);
+//       testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
+//     }
+//     delete grid;
+//   }
+// }
+
+// BOOST_AUTO_TEST_CASE(testRosenblattModBspline1D) {
+//   Grid* grid = Grid::createModBsplineGrid(1, 3);
+//   DataVector alpha(20);
+//   std::uint32_t numSamples = 1000;
+//   for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+//     hierarchize(grid, ilevel, alpha, &parabola);
+//     testEqualityRosenblattInverseRosenblatt1D(*grid, alpha, numSamples);
+//   }
+//   delete grid;
+// }
+
+// BOOST_AUTO_TEST_CASE(testRosenblattModBsplineDD) {
+//   DataVector alpha(20);
+//   std::uint32_t numSamples = 1000;
+//   for (std::uint32_t dim = 2; dim < 4; dim++) {
+//     Grid* grid = Grid::createModBsplineGrid(dim, 3);
+//     for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+//       hierarchize(grid, ilevel, alpha, &parabola);
+//       testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
+//     }
+//     delete grid;
+//   }
+// }
+
+// BOOST_AUTO_TEST_CASE(testRosenblattBsplineClenshawCurtis1D) {
+//   Grid* grid = Grid::createBsplineClenshawCurtisGrid(1, 3);
+//   DataVector alpha(20);
+//   std::uint32_t numSamples = 1000;
+//   for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+//     hierarchize(grid, ilevel, alpha, &parabola);
+//     testEqualityRosenblattInverseRosenblatt1D(*grid, alpha, numSamples);
+//   }
+//   delete grid;
+// }
+
+// BOOST_AUTO_TEST_CASE(testRosenblattBsplineClenshawCurtisDD) {
+//   DataVector alpha(20);
+//   std::uint32_t numSamples = 1000;
+//   for (std::uint32_t dim = 2; dim < 4; dim++) {
+//     Grid* grid = Grid::createBsplineClenshawCurtisGrid(dim, 3);
+//     for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+//       hierarchize(grid, ilevel, alpha, &parabola);
+//       testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
+//     }
+//     delete grid;
+//   }
+// }
+
+// BOOST_AUTO_TEST_CASE(testRosenblattModBsplineClenshawCurtis1D) {
+//   Grid* grid = Grid::createModBsplineClenshawCurtisGrid(1, 3);
+//   DataVector alpha(20);
+//   std::uint32_t numSamples = 1000;
+//   for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+//     hierarchize(grid, ilevel, alpha, &parabola);
+//     testEqualityRosenblattInverseRosenblatt1D(*grid, alpha, numSamples);
+//   }
+//   delete grid;
+// }
+
+// BOOST_AUTO_TEST_CASE(testRosenblattModBsplineClenshawCurtisDD) {
+//   DataVector alpha(20);
+//   std::uint32_t numSamples = 1000;
+//   for (std::uint32_t dim = 2; dim < 4; dim++) {
+//     Grid* grid = Grid::createModBsplineClenshawCurtisGrid(dim, 3);
+//     for (std::uint32_t ilevel = 1; ilevel < 5; ilevel++) {
+//       hierarchize(grid, ilevel, alpha, &parabola);
+//       testEqualityRosenblattInverseRosenblattDD(*grid, alpha, numSamples);
+//     }
+//     delete grid;
+//   }
+// }
 
 BOOST_AUTO_TEST_CASE(testRosenblattKDE1D) {
   std::uint32_t i = 1;
