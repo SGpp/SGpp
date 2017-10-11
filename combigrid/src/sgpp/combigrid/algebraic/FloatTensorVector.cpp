@@ -6,6 +6,8 @@
 #include <sgpp/combigrid/algebraic/FloatTensorVector.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
 
+#include <cmath>
+
 namespace sgpp {
 namespace combigrid {
 
@@ -143,7 +145,7 @@ double FloatTensorVector::norm() const {
     double coeff = it->value().value();
     sum += coeff * coeff;
   }
-  return sum;
+  return sqrt(sum);
 }
 
 } /* namespace combigrid */
