@@ -23,6 +23,7 @@
 #include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/CubicSplineInterpolationEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/InterpolationCoefficientEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
@@ -194,6 +195,11 @@ std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> CombiEvaluators::mult
     SingleFunction func, bool normalizeWeights) {
   return std::make_shared<ArrayEvaluator<QuadratureEvaluator>>(
       false, QuadratureEvaluator(func, normalizeWeights));
+}
+
+std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>> CombiEvaluators::tensorInterpolation(
+    std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis) {
+  return std::make_shared<InterpolationCoefficientEvaluator>(functionBasis);
 }
 
 } /* namespace combigrid */
