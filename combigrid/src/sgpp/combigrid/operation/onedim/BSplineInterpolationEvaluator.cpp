@@ -177,14 +177,16 @@ void BSplineInterpolationEvaluator::computeBasisValues() {
   // provide enough knots even for one single spline
   else if (xValues.size() < 9) {
     for (size_t i = 0; i < xValues.size(); i++) {
+      // std::cout << xValues[i] << " ";
       basisValues[i] = LagrangePolynomial(evaluationPoint, i);
     }
+    // std::cout << std::endl;
     return;
   }
   std::vector<double> xi;
   // Choose between nak (not a knot) knots or regular knots
-  createKnots(xi);
-  //  createNakKnots(xi);
+  //  createKnots(xi);
+  createNakKnots(xi);
   for (size_t i = 0; i < xValues.size(); i++) {
     basisValues[i] = nonUniformBSpline(evaluationPoint, degree, i, xi);
     //    std::cout << xValues[i] << " ";

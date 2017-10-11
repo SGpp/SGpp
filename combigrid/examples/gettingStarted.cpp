@@ -443,7 +443,7 @@ void example7() {
   //      sgpp::combigrid::CombigridOperation::createExpUniformBoundaryLinearInterpolation(1, func);
 
   std::shared_ptr<sgpp::combigrid::CombigridOperation> operation =
-      sgpp::combigrid::CombigridOperation::createExpClenshawCurtisBsplineInterpolation(1, func);
+      sgpp::combigrid::CombigridOperation::createExpClenshawCurtisBsplineInterpolation(1, func, 3);
 
   /**
    * Now create a point where to evaluate the interpolated function:

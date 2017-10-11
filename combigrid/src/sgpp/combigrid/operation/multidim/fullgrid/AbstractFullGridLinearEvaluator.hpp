@@ -145,8 +145,7 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
       // coefficient, then add the resulting value to the total sum
       double value = funcIter->value();
       //      double value = this->storage->get(level, it.getMultiIndex());
-      //      std::cout << "a " << it.getMultiIndex()[0] << " " << it.getMultiIndex()[1] << " " <<
-      //      value
+      //      std::cout << "l i | " << level[0] << " " << it.getMultiIndex()[0] << " | " << value
       //                << std::endl;
       V vec = partialProducts[lastDim];
       vec.componentwiseMult(basisValues[lastDim][it.indexAt(lastDim)]);
