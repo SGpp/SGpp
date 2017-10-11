@@ -439,11 +439,11 @@ void example6() {
 }
 
 void example7() {
-  //  std::shared_ptr<sgpp::combigrid::CombigridOperation> operation =
-  //      sgpp::combigrid::CombigridOperation::createExpUniformBoundaryLinearInterpolation(1, func);
-
   std::shared_ptr<sgpp::combigrid::CombigridOperation> operation =
-      sgpp::combigrid::CombigridOperation::createExpClenshawCurtisBsplineInterpolation(1, func);
+      sgpp::combigrid::CombigridOperation::createExpUniformBoundaryLinearInterpolation(1, func);
+
+  //  std::shared_ptr<sgpp::combigrid::CombigridOperation> operation =
+  //      sgpp::combigrid::CombigridOperation::createExpClenshawCurtisBsplineInterpolation(1, func);
 
   /**
    * Now create a point where to evaluate the interpolated function:
