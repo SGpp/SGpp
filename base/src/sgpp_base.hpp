@@ -18,15 +18,12 @@
 #include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasisDeriv1.hpp>
 #include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasisDeriv2.hpp>
-#include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasisDeriv3.hpp>
 #include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineModifiedBasisDeriv1.hpp>
 #include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineModifiedBasisDeriv2.hpp>
-#include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineModifiedBasisDeriv3.hpp>
 #include <sgpp/base/operation/hash/common/basis/LagrangeSplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LagrangeSplineBasisDeriv1.hpp>
 #include <sgpp/base/operation/hash/common/basis/LagrangeSplineBasisDeriv2.hpp>
-#include <sgpp/base/operation/hash/common/basis/LagrangeSplineBasisDeriv3.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>

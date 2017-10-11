@@ -147,11 +147,9 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasisDeriv1.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasisDeriv2.hpp"
-%include "base/src/sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasisDeriv3.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LagrangeSplineBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LagrangeSplineBasisDeriv1.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LagrangeSplineBasisDeriv2.hpp"
-%include "base/src/sgpp/base/operation/hash/common/basis/LagrangeSplineBasisDeriv3.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp"
@@ -206,11 +204,9 @@ namespace std {
 %template(SLagrangeSplineBase) sgpp::base::LagrangeSplineBasis<unsigned int, unsigned int>;
 %template(SLagrangeSplineBaseDeriv1) sgpp::base::LagrangeSplineBasisDeriv1<unsigned int, unsigned int>;
 %template(SLagrangeSplineBaseDeriv2) sgpp::base::LagrangeSplineBasisDeriv2<unsigned int, unsigned int>;
-%template(SLagrangeSplineBaseDeriv3) sgpp::base::LagrangeSplineBasisDeriv3<unsigned int, unsigned int>;
 %template(SLagrangeNotAKnotSplineBase) sgpp::base::LagrangeNotAKnotSplineBasis<unsigned int, unsigned int>;
 %template(SLagrangeNotAKnotSplineBaseDeriv1) sgpp::base::LagrangeNotAKnotSplineBasisDeriv1<unsigned int, unsigned int>;
 %template(SLagrangeNotAKnotSplineBaseDeriv2) sgpp::base::LagrangeNotAKnotSplineBasisDeriv2<unsigned int, unsigned int>;
-%template(SLagrangeNotAKnotSplineBaseDeriv3) sgpp::base::LagrangeNotAKnotSplineBasisDeriv3<unsigned int, unsigned int>;
 %template(SNaturalBsplineBase) sgpp::base::NaturalBsplineBasis<unsigned int, unsigned int>;
 %template(SNotAKnotBsplineBase) sgpp::base::NotAKnotBsplineBasis<unsigned int, unsigned int>;
 %template(SNotAKnotBsplineModifiedBase) sgpp::base::NotAKnotBsplineModifiedBasis<unsigned int, unsigned int>;
