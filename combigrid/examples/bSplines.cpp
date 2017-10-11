@@ -24,15 +24,15 @@
 #include <vector>
 
 double f(sgpp::base::DataVector const &v) {
-  return v[0] * v[0] * v[0];
+  //  return v[0];  // * v[0] * v[0];
   //    return sin(1. / (1. + v[0] * v[0])) * v[1];
   //  return v[0];
-  //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
-  //         std::exp(v[0] * v[1] - 1);
+  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
+         std::exp(v[0] * v[1] - 1);
 }
 
 double interpolate(size_t maxlevel) {
-  size_t numDimensions = 1;
+  size_t numDimensions = 2;
   size_t degree = 3;
   sgpp::combigrid::MultiFunction func(f);
   auto operation =
@@ -68,8 +68,8 @@ double interpolate(size_t maxlevel) {
 int main() {
   sgpp::base::SGppStopwatch watch;
   watch.start();
-  size_t minLevel = 3;
-  size_t maxLevel = 3;
+  size_t minLevel = 0;
+  size_t maxLevel = 7;
   std::vector<double> err(maxLevel + 1, 0);
   for (size_t l = minLevel; l < maxLevel + 1; l++) {
     err[l] = interpolate(l);

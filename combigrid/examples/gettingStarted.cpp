@@ -35,8 +35,7 @@ double f(sgpp::base::DataVector const &x) {
   for (size_t i = 0; i < x.getSize(); ++i) {
     prod *= exp(-x[i]);
   }
-  //  return prod;
-  return x[0];
+  return prod;
 }
 
 // We have to wrap f in a sgpp::combigrid::MultiFunction object.
