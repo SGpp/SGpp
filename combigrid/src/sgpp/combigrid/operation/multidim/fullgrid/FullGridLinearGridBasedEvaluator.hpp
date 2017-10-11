@@ -41,11 +41,21 @@ class FullGridLinearGridBasedEvaluator : public AbstractFullGridLinearEvaluator<
   std::shared_ptr<TreeStorage<uint8_t>> precomputedLevels;
 
   void addResults(MultiIndex const &level, std::shared_ptr<TreeStorage<double>> results) {
-    auto it = results->getStoredDataIterator();
+    std::vector<bool> orderingConfiguration(this->evaluatorPrototypes.size());
+    for (size_t d = 0; d < this->evaluatorPrototypes.size(); ++d) {
+      orderingConfiguration[d] = this->evaluatorPrototypes[d]->needsOrderedPoints();
+    }
+    MultiIndex multiBounds(this->pointHierarchies.size());
+    for (size_t d = 0; d < multiBounds.size(); ++d) {
+      multiBounds[d] = this->pointHierarchies[d]->getNumPoints(level[d]);
+    }
+    MultiIndexIterator multiIt(multiBounds);
 
-    while (it->isValid()) {
-      this->storage->set(level, it->getMultiIndex(), it->value());
-      it->moveToNext();
+    auto storageIt = this->storage->getGuidedIterator(level, multiIt, orderingConfiguration);
+
+    while (storageIt->isValid()) {
+      storageIt->value() = results->get(multiIt.getMultiIndex());
+      storageIt->moveToNext();
     }
   }
 
@@ -72,6 +82,14 @@ class FullGridLinearGridBasedEvaluator : public AbstractFullGridLinearEvaluator<
 
   virtual ~FullGridLinearGridBasedEvaluator() {}
 
+  std::shared_ptr<TensorGrid> getTensorGrid2(MultiIndex const &level) {
+    std::vector<bool> orderingConfiguration(this->evaluatorPrototypes.size());
+    for (size_t d = 0; d < this->evaluatorPrototypes.size(); ++d) {
+      orderingConfiguration[d] = this->evaluatorPrototypes[d]->needsOrderedPoints();
+    }
+    return this->getTensorGrid(level, orderingConfiguration);
+  }
+
   /**
      * @return a vector of tasks which can be precomputed in parallel to make the (serialized)
      * execution of eval() faster. This class only returns one task in the vector.
@@ -80,7 +98,7 @@ class FullGridLinearGridBasedEvaluator : public AbstractFullGridLinearEvaluator<
      * returned tasks when all tasks for the given level are completed and the level can be added.
      */
   std::vector<ThreadPool::Task> getLevelTasks(MultiIndex const &level, ThreadPool::Task callback) {
-    auto grid = this->getTensorGrid(level);
+    auto grid = getTensorGrid2(level);
 
     std::vector<ThreadPool::Task> tasks;
 
@@ -99,7 +117,7 @@ class FullGridLinearGridBasedEvaluator : public AbstractFullGridLinearEvaluator<
 
   virtual V eval(MultiIndex const &level) {
     if (!precomputedLevels->containsIndex(level)) {
-      addResults(level, gridFunction(this->getTensorGrid(level)));
+      addResults(level, gridFunction(getTensorGrid2(level)));
       precomputedLevels->set(level, 1);
     }
     // call the base eval

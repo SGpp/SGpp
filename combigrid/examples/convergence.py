@@ -12,12 +12,13 @@ def g(x):
 # # We have to wrap f in a pysgpp.MultiFunction object.
 func = pysgpp.multiFunc(g)
 numDims = 1
-level = 5
+level = 1
 
-operation = pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(numDims, func)
+# operation = pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(numDims, func)
 # operation = pysgpp.CombigridOperation.createExpUniformLinearInterpolation(numDims, func)
 # operation = pysgpp.CombigridOperation.createExpClenshawCurtisPolynomialInterpolation(numDims, func)
 # operation = pysgpp.CombigridOperation.createLinearL2LejaPolynomialInterpolation(numDims, func, 2)
+operation = pysgpp.CombigridOperation.createExpClenshawCurtisBsplineInterpolation(numDims, func, 3)
 
 def f(x):
     x_vec = DataVector(x)
