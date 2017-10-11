@@ -4,6 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/functions/MonomialFunctionBasis1D.hpp>
+#include <sgpp/combigrid/functions/LegendreBasis1D.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
@@ -26,7 +27,7 @@ double f(sgpp::base::DataVector const &v) {
 
 int main() {
   size_t d = 2;
-  auto functionBasis = std::make_shared<sgpp::combigrid::MonomialFunctionBasis1D>();
+  auto functionBasis = std::make_shared<sgpp::combigrid::LegendreBasis1D>();
   auto func = sgpp::combigrid::MultiFunction(f);
   auto op =
       sgpp::combigrid::CombigridTensorOperation::createExpClenshawCurtisPolynomialInterpolation(
@@ -36,4 +37,7 @@ int main() {
       << sgpp::combigrid::TreeStorageSerializationStrategy<sgpp::combigrid::FloatScalarVector>(d)
              .serialize(tensorResult.getValues())
       << "\n";
+
+  std::cout << "E(u) = " << tensorResult.get(sgpp::combigrid::MultiIndex{0, 0}) << std::endl;
+  std::cout << "Var(u) = " << std::pow(tensorResult.norm(), 2) << std::endl;
 }
