@@ -52,7 +52,7 @@ class KernelMultTranspose {
   //    std::shared_ptr<base::OCLOperationConfiguration> parameters;
   json::Node &kernelConfiguration;
 
-  std::shared_ptr<base::QueueLoadBalancer> queueLoadBalancerMultTranspose;
+  std::shared_ptr<base::QueueLoadBalancerOpenMP> queueLoadBalancerMultTranspose;
 
   bool verbose;
 
@@ -67,7 +67,7 @@ class KernelMultTranspose {
   KernelMultTranspose(std::shared_ptr<base::OCLDevice> device, size_t dims,
                       std::shared_ptr<base::OCLManagerMultiPlatform> manager,
                       json::Node &kernelConfiguration,
-                      std::shared_ptr<base::QueueLoadBalancer> queueBalancerMultTranpose)
+                      std::shared_ptr<base::QueueLoadBalancerOpenMP> queueBalancerMultTranpose)
       : device(device),
         dims(dims),
         err(CL_SUCCESS),
@@ -151,22 +151,16 @@ class KernelMultTranspose {
       size_t kernelEndData = end_index_data;
 
       // set kernel arguments
-      size_t kernelStartGrid;
-      size_t kernelEndGrid;
+      size_t kernelStartGrid = 0;
+      size_t kernelEndGrid = 0;
 
       bool segmentAvailable = queueLoadBalancerMultTranspose->getNextSegment(
-          scheduleSize, totalBlockSize, kernelStartGrid, kernelEndGrid);
+          scheduleSize, kernelStartGrid, kernelEndGrid);
       if (!segmentAvailable) {
         break;
       }
 
       size_t rangeSizeUnblocked = kernelEndGrid - kernelStartGrid;
-
-      //      if (verbose) {
-      //        std::cout << "device: " << device->platformId << " kernel from: " << kernelStartGrid
-      //                  << " to: " << kernelEndGrid << " -> range: " << rangeSizeUnblocked <<
-      //                  std::endl;
-      //      }
 
       if (verbose) {
 #pragma omp critical(StreamingOCLMultiPlatformKernelMultTranspose)
@@ -184,8 +178,6 @@ class KernelMultTranspose {
       initGridResultBuffersTranspose(kernelStartGrid, kernelEndGrid);
 
       clFinish(device->commandQueue);
-      //            std::cout << "wrote to device: " << device->deviceId << ""
-      //            << std::endl;
 
       size_t rangeSizeBlocked =
           (kernelEndGrid / transGridBlockingSize) - (kernelStartGrid / transGridBlockingSize);

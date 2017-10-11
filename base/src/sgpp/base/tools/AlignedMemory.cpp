@@ -116,8 +116,20 @@ void operator delete(void* p) throw () {
   aligned_free(p);
 }
 
+#if __cplusplus >= 201402L
+void operator delete(void* p, size_t sz) throw () {
+  aligned_free(p);
+}
+#endif
+
 void operator delete[](void* p) throw () {
   aligned_free(p);
 }
+
+#if __cplusplus >= 201402L
+void operator delete[](void* p, size_t sz) throw () {
+  aligned_free(p);
+}
+#endif
 
 #endif /* __MINGW64__ */

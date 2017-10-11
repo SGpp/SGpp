@@ -41,35 +41,27 @@
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
-#include <sgpp/globaldef.hpp>
-#include <sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/LinearStretchedBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/exception/generation_exception.hpp>
+#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/LinearStretchedBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp>
+#include <sgpp/globaldef.hpp>
 
-#include <utility>
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace sgpp {
 namespace base {
 
-Grid* Grid::createLinearGridStencil(size_t dim) {
-  return new LinearGridStencil(dim);
-}
+Grid* Grid::createLinearGridStencil(size_t dim) { return new LinearGridStencil(dim); }
 
-Grid* Grid::createModLinearGridStencil(size_t dim) {
-  return new ModLinearGridStencil(dim);
-}
+Grid* Grid::createModLinearGridStencil(size_t dim) { return new ModLinearGridStencil(dim); }
 
-Grid* Grid::createLinearGrid(size_t dim) {
-  return new LinearGrid(dim);
-}
+Grid* Grid::createLinearGrid(size_t dim) { return new LinearGrid(dim); }
 
-Grid* Grid::createLinearStretchedGrid(size_t dim) {
-  return new LinearStretchedGrid(dim);
-}
+Grid* Grid::createLinearStretchedGrid(size_t dim) { return new LinearStretchedGrid(dim); }
 
 Grid* Grid::createLinearBoundaryGrid(size_t dim, level_t boundaryLevel) {
   if (boundaryLevel == 0) {
@@ -83,37 +75,23 @@ Grid* Grid::createLinearStretchedBoundaryGrid(size_t dim) {
   return new LinearStretchedBoundaryGrid(dim);
 }
 
-Grid* Grid::createLinearClenshawCurtisGrid(size_t dim) {
-  return new LinearClenshawCurtisGrid(dim);
-}
+Grid* Grid::createLinearClenshawCurtisGrid(size_t dim) { return new LinearClenshawCurtisGrid(dim); }
 
-Grid* Grid::createModLinearGrid(size_t dim) {
-  return new ModLinearGrid(dim);
-}
+Grid* Grid::createModLinearGrid(size_t dim) { return new ModLinearGrid(dim); }
 
-Grid* Grid::createPolyGrid(size_t dim, size_t degree) {
-  return new PolyGrid(dim, degree);
-}
+Grid* Grid::createPolyGrid(size_t dim, size_t degree) { return new PolyGrid(dim, degree); }
 
 Grid* Grid::createPolyBoundaryGrid(size_t dim, size_t degree) {
   return new PolyBoundaryGrid(dim, degree);
 }
 
-Grid* Grid::createWaveletGrid(size_t dim) {
-  return new WaveletGrid(dim);
-}
+Grid* Grid::createWaveletGrid(size_t dim) { return new WaveletGrid(dim); }
 
-Grid* Grid::createWaveletBoundaryGrid(size_t dim) {
-  return new WaveletBoundaryGrid(dim);
-}
+Grid* Grid::createWaveletBoundaryGrid(size_t dim) { return new WaveletBoundaryGrid(dim); }
 
-Grid* Grid::createModWaveletGrid(size_t dim) {
-  return new ModWaveletGrid(dim);
-}
+Grid* Grid::createModWaveletGrid(size_t dim) { return new ModWaveletGrid(dim); }
 
-Grid* Grid::createBsplineGrid(size_t dim, size_t degree) {
-  return new BsplineGrid(dim, degree);
-}
+Grid* Grid::createBsplineGrid(size_t dim, size_t degree) { return new BsplineGrid(dim, degree); }
 
 Grid* Grid::createBsplineBoundaryGrid(size_t dim, size_t degree) {
   return new BsplineBoundaryGrid(dim, degree);
@@ -139,25 +117,17 @@ Grid* Grid::createModFundamentalSplineGrid(size_t dim, size_t degree) {
   return new ModFundamentalSplineGrid(dim, degree);
 }
 
-Grid* Grid::createSquareRootGrid(size_t dim) {
-  return new SquareRootGrid(dim);
-}
+Grid* Grid::createSquareRootGrid(size_t dim) { return new SquareRootGrid(dim); }
 
-Grid* Grid::createPrewaveletGrid(size_t dim) {
-  return new PrewaveletGrid(dim);
-}
+Grid* Grid::createPrewaveletGrid(size_t dim) { return new PrewaveletGrid(dim); }
 
 Grid* Grid::createLinearTruncatedBoundaryGrid(size_t dim) {
   return new LinearTruncatedBoundaryGrid(dim);
 }
 
-Grid* Grid::createModPolyGrid(size_t dim, size_t degree) {
-  return new ModPolyGrid(dim, degree);
-}
+Grid* Grid::createModPolyGrid(size_t dim, size_t degree) { return new ModPolyGrid(dim, degree); }
 
-Grid* Grid::createPeriodicGrid(size_t dim) {
-  return new PeriodicGrid(dim);
-}
+Grid* Grid::createPeriodicGrid(size_t dim) { return new PeriodicGrid(dim); }
 
 Grid* Grid::createNaturalBsplineBoundaryGrid(size_t dim, size_t degree) {
   return new NaturalBsplineBoundaryGrid(dim, degree);
@@ -386,14 +356,7 @@ Grid* Grid::clone() {
     default:
       throw generation_exception("Grid::clone - grid type not known");
   }
-
-  base::HashGridStorage& newGridStorage = newGrid->getStorage();
-
-  // run through grid and add points to newGrid
-  for (size_t i = 0; i < storage.getSize(); i++) {
-    newGridStorage.insert(storage.getPoint(i));
-  }
-  newGridStorage.recalcLeafProperty();
+  newGrid->storage = this->storage;
 
   return newGrid;
 }
@@ -674,7 +637,15 @@ GridStorage& Grid::getStorage() { return storage; }
 
 BoundingBox& Grid::getBoundingBox() { return *storage.getBoundingBox(); }
 
-Stretching& Grid::getStretching() { return *storage.getStretching(); }
+Stretching& Grid::getStretching() {
+  auto* stretching = storage.getStretching();
+
+  if (stretching != nullptr) {
+    return *stretching;
+  } else {
+    throw generation_exception("Grid does not use stretching.");
+  }
+}
 
 void Grid::setBoundingBox(BoundingBox& boundingBox) { storage.setBoundingBox(boundingBox); }
 
@@ -718,9 +689,9 @@ void Grid::insertPoint(size_t dim, unsigned int levels[], unsigned int indices[]
   storage.insert(pointIndex);
 }
 
-size_t Grid::getDimension() { return storage.getDimension(); }
+size_t Grid::getDimension() const { return storage.getDimension(); }
 
-size_t Grid::getSize() { return storage.getSize(); }
+size_t Grid::getSize() const { return storage.getSize(); }
 
 std::vector<size_t> Grid::getAlgorithmicDimensions() { return storage.getAlgorithmicDimensions(); }
 

@@ -23,13 +23,13 @@
 
 #include <unordered_map>
 
-#include <memory>
-#include <vector>
-#include <string>
-#include <sstream>
 #include <exception>
 #include <list>
+#include <memory>
+#include <sstream>
+#include <string>
 #include <typeinfo>
+#include <vector>
 
 namespace sgpp {
 namespace base {
@@ -49,7 +49,8 @@ class HashGridStorage {
   typedef const HashGridPoint* index_const_pointer;
   /// unordered_map of index_pointers
   typedef std::unordered_map<point_pointer, size_t, HashGridPointPointerHashFunctor,
-                             HashGridPointPointerEqualityFunctor> grid_map;
+                             HashGridPointPointerEqualityFunctor>
+      grid_map;
   /// iterator of grid_map
   typedef grid_map::iterator grid_map_iterator;
   /// const_iterator of grid_map
@@ -111,6 +112,11 @@ class HashGridStorage {
    * Copy Constructor
    */
   explicit HashGridStorage(HashGridStorage& copyFrom);
+
+  /**
+   * Assignment operator
+   */
+  void operator=(const HashGridStorage& other);
 
   /**
    * Destructor
@@ -224,7 +230,7 @@ class HashGridStorage {
    *
    * @return
    */
-  size_t insert(point_type& index);
+  size_t insert(const point_type& index);
 
   /**
    * updates an already stored index
@@ -450,7 +456,24 @@ class HashGridStorage {
         return stretching->getCoordinate(level, index, d);
       } else {
         return boundingBox->getIntervalWidth(d) * point.getStandardCoordinate(d) +
-            boundingBox->getIntervalOffset(d);
+               boundingBox->getIntervalOffset(d);
+      }
+    }
+  }
+
+  /**
+   * Calculates corresponding unit hypercube coordinate of a given point in specific dimension,
+   * taking into account the BoundingBox and Stretching.
+   */
+  inline double getUnitCoordinate(HashGridPoint point, size_t d) const {
+    double bbox_point = getCoordinate(point, d);
+    if ((boundingBox == nullptr) && (stretching == nullptr)) {
+      return bbox_point;
+    } else {
+      if (bUseStretching) {
+        return stretching->transformPointToUnitCube(d, bbox_point);
+      } else {
+        return boundingBox->transformPointToUnitCube(d, bbox_point);
       }
     }
   }
