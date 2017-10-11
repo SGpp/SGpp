@@ -67,11 +67,26 @@ FloatTensorVector& FloatTensorVector::operator=(const FloatTensorVector& other) 
   return *this;
 }
 
-FloatScalarVector FloatTensorVector::get(MultiIndex i) { return values->get(i); }
+FloatScalarVector FloatTensorVector::get(MultiIndex i) {
+  if (d == 0) {
+    return values->get(MultiIndex{0});
+  }
+  return values->get(i);
+}
 
-FloatScalarVector& FloatTensorVector::at(MultiIndex i) { return values->get(i); }
+FloatScalarVector& FloatTensorVector::at(MultiIndex i) {
+  if (d == 0) {
+    return values->get(MultiIndex{0});
+  }
+  return values->get(i);
+}
 
-FloatScalarVector& FloatTensorVector::operator[](MultiIndex i) { return values->get(i); }
+FloatScalarVector& FloatTensorVector::operator[](MultiIndex i) {
+  if (d == 0) {
+    return values->get(MultiIndex{0});
+  }
+  return values->get(i);
+}
 
 void FloatTensorVector::add(const FloatTensorVector& other) {
   ensureDim(other.d);
