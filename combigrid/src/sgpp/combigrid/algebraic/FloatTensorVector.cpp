@@ -122,6 +122,8 @@ void FloatTensorVector::componentwiseMult(const FloatTensorVector& other) {
         newValues->set(index, scalar);
       }
     }
+    d = dnew;
+    values = newValues;
   }
 }
 
