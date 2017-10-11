@@ -35,11 +35,11 @@
 %newobject sgpp::base::Grid::createSquareRootGrid(size_t dim);
 %newobject sgpp::base::Grid::createPrewaveletGrid(size_t dim);
 %newobject sgpp::base::Grid::createPeriodicGrid(size_t dim);
-%newobject sgpp::base::Grid::createNaturalBsplineBoundaryGrid(size_t dim, size_t degree);
-%newobject sgpp::base::Grid::createNotAKnotBsplineBoundaryGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createNaturalBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
+%newobject sgpp::base::Grid::createNotAKnotBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createModNotAKnotBsplineGrid(size_t dim, size_t degree);
-%newobject sgpp::base::Grid::createLagrangeSplineBoundaryGrid(size_t dim, size_t degree);
-%newobject sgpp::base::Grid::createLagrangeNotAKnotSplineBoundaryGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createLagrangeSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
+%newobject sgpp::base::Grid::createLagrangeNotAKnotSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createModLagrangeNotAKnotSplineGrid(size_t dim, size_t degree);
 
 %newobject sgpp::base::Grid::unserialize(std::string& istr);
@@ -151,11 +151,11 @@ public:
   static Grid* createLinearGridStencil(size_t dim);
   static Grid* createModLinearGridStencil(size_t dim);
   static Grid* createPeriodicGrid(size_t dim);
-  static Grid* createNaturalBsplineBoundaryGrid(size_t dim, size_t degree);
-  static Grid* createNotAKnotBsplineBoundaryGrid(size_t dim, size_t degree);
+  static Grid* createNaturalBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
+  static Grid* createNotAKnotBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
   static Grid* createModNotAKnotBsplineGrid(size_t dim, size_t degree);
-  static Grid* createLagrangeSplineBoundaryGrid(size_t dim, size_t degree);
-  static Grid* createLagrangeNotAKnotSplineBoundaryGrid(size_t dim, size_t degree);
+  static Grid* createLagrangeSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
+  static Grid* createLagrangeNotAKnotSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
   static Grid* createModLagrangeNotAKnotSplineGrid(size_t dim, size_t degree);
 	
   static Grid* unserialize(std::string& istr);

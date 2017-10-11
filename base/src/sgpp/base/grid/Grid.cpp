@@ -129,24 +129,25 @@ Grid* Grid::createModPolyGrid(size_t dim, size_t degree) { return new ModPolyGri
 
 Grid* Grid::createPeriodicGrid(size_t dim) { return new PeriodicGrid(dim); }
 
-Grid* Grid::createNaturalBsplineBoundaryGrid(size_t dim, size_t degree) {
-  return new NaturalBsplineBoundaryGrid(dim, degree);
+Grid* Grid::createNaturalBsplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel) {
+  return new NaturalBsplineBoundaryGrid(dim, degree, boundaryLevel);
 }
 
-Grid* Grid::createNotAKnotBsplineBoundaryGrid(size_t dim, size_t degree) {
-  return new NotAKnotBsplineBoundaryGrid(dim, degree);
+Grid* Grid::createNotAKnotBsplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel) {
+  return new NotAKnotBsplineBoundaryGrid(dim, degree, boundaryLevel);
 }
 
 Grid* Grid::createModNotAKnotBsplineGrid(size_t dim, size_t degree) {
   return new ModNotAKnotBsplineGrid(dim, degree);
 }
 
-Grid* Grid::createLagrangeSplineBoundaryGrid(size_t dim, size_t degree) {
-  return new LagrangeSplineBoundaryGrid(dim, degree);
+Grid* Grid::createLagrangeSplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel) {
+  return new LagrangeSplineBoundaryGrid(dim, degree, boundaryLevel);
 }
 
-Grid* Grid::createLagrangeNotAKnotSplineBoundaryGrid(size_t dim, size_t degree) {
-  return new LagrangeNotAKnotSplineBoundaryGrid(dim, degree);
+Grid* Grid::createLagrangeNotAKnotSplineBoundaryGrid(size_t dim, size_t degree,
+                                                     level_t boundaryLevel) {
+  return new LagrangeNotAKnotSplineBoundaryGrid(dim, degree, boundaryLevel);
 }
 
 Grid* Grid::createModLagrangeNotAKnotSplineGrid(size_t dim, size_t degree) {
@@ -213,16 +214,19 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
       case GridType::ModLinearStencil:
         return Grid::createModLinearGridStencil(gridConfig.dim_);
       case GridType::NaturalBsplineBoundary:
-        return Grid::createNaturalBsplineBoundaryGrid(gridConfig.dim_, gridConfig.maxDegree_);
+        return Grid::createNaturalBsplineBoundaryGrid(
+            gridConfig.dim_, gridConfig.maxDegree_, gridConfig.boundaryLevel_);
       case GridType::NotAKnotBsplineBoundary:
-        return Grid::createNotAKnotBsplineBoundaryGrid(gridConfig.dim_, gridConfig.maxDegree_);
+        return Grid::createNotAKnotBsplineBoundaryGrid(
+            gridConfig.dim_, gridConfig.maxDegree_, gridConfig.boundaryLevel_);
       case GridType::ModNotAKnotBspline:
         return Grid::createModNotAKnotBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::LagrangeSplineBoundary:
-        return Grid::createLagrangeSplineBoundaryGrid(gridConfig.dim_, gridConfig.maxDegree_);
+        return Grid::createLagrangeSplineBoundaryGrid(
+            gridConfig.dim_, gridConfig.maxDegree_, gridConfig.boundaryLevel_);
       case GridType::LagrangeNotAKnotSplineBoundary:
-        return Grid::createLagrangeNotAKnotSplineBoundaryGrid(gridConfig.dim_,
-                                                              gridConfig.maxDegree_);
+        return Grid::createLagrangeNotAKnotSplineBoundaryGrid(
+            gridConfig.dim_, gridConfig.maxDegree_, gridConfig.boundaryLevel_);
       case GridType::ModLagrangeNotAKnotSpline:
         return Grid::createModLagrangeNotAKnotSplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
       default:
@@ -331,11 +335,15 @@ Grid* Grid::clone() {
       break;
     case GridType::NaturalBsplineBoundary:
       degree = dynamic_cast<NaturalBsplineBoundaryGrid*>(this)->getDegree();
-      newGrid = Grid::createNaturalBsplineBoundaryGrid(numDims, degree);
+      boundaryLevel =
+          dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
+      newGrid = Grid::createNaturalBsplineBoundaryGrid(numDims, degree, boundaryLevel);
       break;
     case GridType::NotAKnotBsplineBoundary:
       degree = dynamic_cast<NotAKnotBsplineBoundaryGrid*>(this)->getDegree();
-      newGrid = Grid::createNotAKnotBsplineBoundaryGrid(numDims, degree);
+      boundaryLevel =
+          dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
+      newGrid = Grid::createNotAKnotBsplineBoundaryGrid(numDims, degree, boundaryLevel);
       break;
     case GridType::ModNotAKnotBspline:
       degree = dynamic_cast<ModNotAKnotBsplineGrid*>(this)->getDegree();
@@ -343,11 +351,15 @@ Grid* Grid::clone() {
       break;
     case GridType::LagrangeSplineBoundary:
       degree = dynamic_cast<LagrangeSplineBoundaryGrid*>(this)->getDegree();
-      newGrid = Grid::createLagrangeSplineBoundaryGrid(numDims, degree);
+      boundaryLevel =
+          dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
+      newGrid = Grid::createLagrangeSplineBoundaryGrid(numDims, degree, boundaryLevel);
       break;
     case GridType::LagrangeNotAKnotSplineBoundary:
       degree = dynamic_cast<LagrangeNotAKnotSplineBoundaryGrid*>(this)->getDegree();
-      newGrid = Grid::createLagrangeNotAKnotSplineBoundaryGrid(numDims, degree);
+      boundaryLevel =
+          dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
+      newGrid = Grid::createLagrangeNotAKnotSplineBoundaryGrid(numDims, degree, boundaryLevel);
       break;
     case GridType::ModLagrangeNotAKnotSpline:
       degree = dynamic_cast<ModLagrangeNotAKnotSplineGrid*>(this)->getDegree();
