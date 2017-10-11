@@ -40,6 +40,7 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationPolyClenshawCurtis.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationModPolyClenshawCurtis.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationPolyClenshawCurtisBoundary.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationBspline.hpp>
 
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPoly.hpp>
@@ -57,6 +58,7 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationPolyClenshawCurtis.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationModPolyClenshawCurtis.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationPolyClenshawCurtisBoundary.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationBspline.hpp>
 
 #include <sgpp/datadriven/operation/hash/simple/OperationTestLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationTestLinearBoundary.hpp>
@@ -240,6 +242,8 @@ datadriven::OperationRosenblattTransformation* createOperationRosenblattTransfor
     return new datadriven::OperationRosenblattTransformationModPolyClenshawCurtis(&grid);
   else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary)
     return new datadriven::OperationRosenblattTransformationPolyClenshawCurtisBoundary(&grid);
+  else if (grid.getType() == base::GridType::Bspline)
+    return new datadriven::OperationRosenblattTransformationBspline(&grid);
   else
     throw base::factory_exception(
         "OperationRosenblattTransformation is not implemented for this grid type.");
@@ -284,6 +288,8 @@ datadriven::OperationInverseRosenblattTransformation*
   else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary)
     return
       new datadriven::OperationInverseRosenblattTransformationPolyClenshawCurtisBoundary(&grid);
+  else if (grid.getType() == base::GridType::Bspline)
+    return new datadriven::OperationInverseRosenblattTransformationBspline(&grid);
   else
     throw base::factory_exception(
         "OperationInverseRosenblattTransformation is not implemented for this grid type.");
