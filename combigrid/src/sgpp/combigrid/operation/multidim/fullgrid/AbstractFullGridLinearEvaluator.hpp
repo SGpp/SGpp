@@ -144,17 +144,12 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
       // get function value and partial product and multiply them together with the last basis
       // coefficient, then add the resulting value to the total sum
       double value = funcIter->value();
-      //      double value = this->storage->get(level, it.getMultiIndex());
-      //      std::cout << "a " << it.getMultiIndex()[0] << " " << it.getMultiIndex()[1] << " " <<
-      //      value
-      //                << std::endl;
       V vec = partialProducts[lastDim];
       vec.componentwiseMult(basisValues[lastDim][it.indexAt(lastDim)]);
       vec.scalarMult(value);
       sum.add(vec);
 
       // increment iterator
-      //      int h = it.moveToNext();
       int h = funcIter->moveToNext();
 
       CGLOG("FullGridTensorEvaluator::eval(): moveToNext() == " << h);
