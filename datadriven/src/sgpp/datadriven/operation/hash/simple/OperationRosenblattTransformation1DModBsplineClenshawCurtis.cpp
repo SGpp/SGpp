@@ -28,14 +28,15 @@ namespace datadriven {
 /**
  * WARNING: the grid must be a 1D grid!
  */
-OperationRosenblattTransformation1DModBsplineClenshawCurtis::OperationRosenblattTransformation1DModBsplineClenshawCurtis(
-    base::Grid* grid)
+OperationRosenblattTransformation1DModBsplineClenshawCurtis::
+    OperationRosenblattTransformation1DModBsplineClenshawCurtis(base::Grid* grid)
     : grid(grid) {}
 
-OperationRosenblattTransformation1DModBsplineClenshawCurtis::~OperationRosenblattTransformation1DModBsplineClenshawCurtis() {}
+OperationRosenblattTransformation1DModBsplineClenshawCurtis::
+    ~OperationRosenblattTransformation1DModBsplineClenshawCurtis() {}
 
-double OperationRosenblattTransformation1DModBsplineClenshawCurtis::doTransformation1D(base::DataVector* alpha1d,
-                                                                         double coord1d) {
+double OperationRosenblattTransformation1DModBsplineClenshawCurtis::doTransformation1D(
+    base::DataVector* alpha1d, double coord1d) {
   if (coord1d == 0.0) return 0.0;
   /***************** STEP 1. Compute CDF  ********************/
 

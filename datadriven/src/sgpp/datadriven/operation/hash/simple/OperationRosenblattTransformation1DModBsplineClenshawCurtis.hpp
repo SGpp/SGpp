@@ -13,13 +13,13 @@
 
 namespace sgpp {
 namespace datadriven {
-class OperationRosenblattTransformation1DModBspline : public OperationTransformation1D {
+class OperationRosenblattTransformation1DModBsplineClenshawCurtis : public OperationTransformation1D {
  protected:
   base::Grid* grid;
 
  public:
-  explicit OperationRosenblattTransformation1DModBspline(base::Grid* grid);
-  virtual ~OperationRosenblattTransformation1DModBspline();
+  explicit OperationRosenblattTransformation1DModBsplineClenshawCurtis(base::Grid* grid);
+  virtual ~OperationRosenblattTransformation1DModBsplineClenshawCurtis();
 
   /**
    * Rosenblatt Transformation 1D
