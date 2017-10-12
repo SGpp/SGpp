@@ -28,41 +28,17 @@ FuzzyExtensionPrincipleViaTransformation::FuzzyExtensionPrincipleViaTransformati
 
 FuzzyExtensionPrincipleViaTransformation::~FuzzyExtensionPrincipleViaTransformation() {}
 
-FuzzyInterval* FuzzyExtensionPrincipleViaTransformation::apply(
-    const std::vector<const FuzzyInterval*>& xFuzzy) {
+void FuzzyExtensionPrincipleViaTransformation::prepareApply() {
   const size_t d = f->getNumberOfParameters();
-
-  // lower and upper bounds of the interval box
-  base::DataVector lowerBounds(d);
-  base::DataVector upperBounds(d);
-
-  // temporary evaluation point
-  base::DataVector x(d);
-
-  // result data
-  base::DataVector xData(2 * m + 2);
-  base::DataVector alphaData(2 * m + 2);
-  alphaLevels.resize(m);
-  optimizationDomainsLowerBounds.resize(m + 1, base::DataVector(d));
-  optimizationDomainsUpperBounds.resize(m + 1, base::DataVector(d));
-  minimumPoints.resize(m + 1, base::DataVector(d));
-  maximumPoints.resize(m + 1, base::DataVector(d));
-
-  // transformed points
-  std::vector<std::vector<base::DataVector>> C(m + 1);
+  C.resize(m + 1);
+  gammaSize.resize(d);
+  xTmp.resize(d);
 
   for (size_t j = m + 1; j-- > 0;) {
-    const double alpha = static_cast<double>(j) / static_cast<double>(m);
-    alphaLevels[j] = alpha;
     C[j].resize(m - j + 1);
 
-    for (size_t t = 0; t < d; t++) {
-      lowerBounds[t] = xFuzzy[t]->evaluateConfidenceIntervalLowerBound(alpha);
-      upperBounds[t] = xFuzzy[t]->evaluateConfidenceIntervalUpperBound(alpha);
-    }
-
-    optimizationDomainsLowerBounds[j] = lowerBounds;
-    optimizationDomainsUpperBounds[j] = upperBounds;
+    const base::DataVector& lowerBounds = optimizationDomainsLowerBounds[j];
+    const base::DataVector& upperBounds = optimizationDomainsUpperBounds[j];
 
     for (size_t l = 0; l < m - j + 1; l++) {
       C[j][l].resize(d);
@@ -78,54 +54,46 @@ FuzzyInterval* FuzzyExtensionPrincipleViaTransformation::apply(
       }
     }
   }
+}
 
-  // iterate through alphas
-  for (size_t j = 0; j <= m; j++) {
-    // size of gamma vector per dimension
-    // (the (m+1-j)^(d-t-1)-vector containing only C[j][l][t])
-    std::vector<size_t> gammaSize(d);
-    gammaSize[d - 1] = 1;
+void FuzzyExtensionPrincipleViaTransformation::optimizeForSingleAlphaLevel(
+    size_t j, base::DataVector& minimumPoint, double& minimumValue,
+    base::DataVector& maximumPoint, double& maximumValue) {
+  const size_t d = f->getNumberOfParameters();
 
-    for (size_t t = d - 1; t-- > 0;) {
-      gammaSize[t] = gammaSize[t + 1] * (m + 1 - j);
-    }
+  // size of gamma vector per dimension
+  // (the (m+1-j)^(d-t-1)-vector containing only C[j][l][t])
+  gammaSize[d - 1] = 1;
 
-    // number of points to check (= (m+1-j)^d)
-    const size_t K = gammaSize[0] * (m + 1 - j);
-
-    // calculate minimum and maximum on all vertices of the interval box
-    double min = std::numeric_limits<double>::infinity();
-    double max = -std::numeric_limits<double>::infinity();
-
-    for (size_t k = 0; k < K; k++) {
-      for (size_t t = 0; t < d; t++) {
-        const size_t l = (k / gammaSize[t]) % (m + 1 - j);
-        x[t] = C[j][l][t];
-      }
-
-      const double fx = f->eval(x);
-
-      if (min < fx) {
-        min = fx;
-        minimumPoints[j] = x;
-      }
-
-      if (max > fx) {
-        max = fx;
-        maximumPoints[j] = x;
-      }
-    }
-
-    // save minimum and maximum in result
-    xData[j] = min;
-    alphaData[j] = alphaLevels[j];
-
-    xData[2*m+1-j] = max;
-    alphaData[2*m+1-j] = alphaLevels[j];
+  for (size_t t = d - 1; t-- > 0;) {
+    gammaSize[t] = gammaSize[t + 1] * (m + 1 - j);
   }
 
-  // interpolate between alpha data points
-  return new InterpolatedFuzzyInterval(xData, alphaData);
+  // number of points to check (= (m+1-j)^d)
+  const size_t K = gammaSize[0] * (m + 1 - j);
+
+  // calculate minimum and maximum on all vertices of the interval box
+  minimumValue = std::numeric_limits<double>::infinity();
+  maximumValue = -std::numeric_limits<double>::infinity();
+
+  for (size_t k = 0; k < K; k++) {
+    for (size_t t = 0; t < d; t++) {
+      const size_t l = (k / gammaSize[t]) % (m + 1 - j);
+      xTmp[t] = C[j][l][t];
+    }
+
+    const double fx = f->eval(xTmp);
+
+    if (fx < minimumValue) {
+      minimumValue = fx;
+      minimumPoint = xTmp;
+    }
+
+    if (fx > maximumValue) {
+      maximumValue = fx;
+      maximumPoint = xTmp;
+    }
+  }
 }
 
 }  // namespace optimization

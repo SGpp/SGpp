@@ -28,81 +28,45 @@ FuzzyExtensionPrincipleViaVertexMethod::FuzzyExtensionPrincipleViaVertexMethod(
 
 FuzzyExtensionPrincipleViaVertexMethod::~FuzzyExtensionPrincipleViaVertexMethod() {}
 
-FuzzyInterval* FuzzyExtensionPrincipleViaVertexMethod::apply(
-    const std::vector<const FuzzyInterval*>& xFuzzy) {
+void FuzzyExtensionPrincipleViaVertexMethod::prepareApply() {
   const size_t d = f->getNumberOfParameters();
-
-  // lower and upper bounds of the interval box
-  base::DataVector lowerBounds(d);
-  base::DataVector upperBounds(d);
-
-  // temporary evaluation point
-  base::DataVector x(d);
-
-  // result data
-  base::DataVector xData(2 * m + 2);
-  base::DataVector alphaData(2 * m + 2);
-  alphaLevels.resize(m);
-  optimizationDomainsLowerBounds.resize(m + 1, base::DataVector(d));
-  optimizationDomainsUpperBounds.resize(m + 1, base::DataVector(d));
-  minimumPoints.resize(m + 1, base::DataVector(d));
-  maximumPoints.resize(m + 1, base::DataVector(d));
-
-  // save powers of two
-  std::vector<size_t> powersOfTwo(d + 1);
+  xTmp.resize(d);
+  powersOfTwo.resize(d + 1);
   powersOfTwo[0] = 1;
 
   for (size_t t = 0; t < d; t++) {
     powersOfTwo[t + 1] = 2 * powersOfTwo[t];
   }
+}
 
-  // iterate through alphas
-  for (size_t j = 0; j <= m; j++) {
-    const double alpha = static_cast<double>(j) / static_cast<double>(m);
-    alphaLevels[j] = alpha;
+void FuzzyExtensionPrincipleViaVertexMethod::optimizeForSingleAlphaLevel(
+    size_t j, base::DataVector& minimumPoint, double& minimumValue,
+    base::DataVector& maximumPoint, double& maximumValue) {
+  const size_t d = f->getNumberOfParameters();
+  const base::DataVector& lowerBounds = optimizationDomainsLowerBounds[j];
+  const base::DataVector& upperBounds = optimizationDomainsUpperBounds[j];
 
-    // determine input parameter confidence interval,
-    // directly changing the optimization domain in fScaled
+  // calculate minimum and maximum on all vertices of the interval box
+  minimumValue = std::numeric_limits<double>::infinity();
+  maximumValue = -std::numeric_limits<double>::infinity();
+
+  for (size_t k = 0; k < powersOfTwo[d]; k++) {
     for (size_t t = 0; t < d; t++) {
-      lowerBounds[t] = xFuzzy[t]->evaluateConfidenceIntervalLowerBound(alpha);
-      upperBounds[t] = xFuzzy[t]->evaluateConfidenceIntervalUpperBound(alpha);
+      xTmp[t] = ((k & powersOfTwo[t]) ? lowerBounds[t] : upperBounds[t]);
     }
 
-    optimizationDomainsLowerBounds[j] = lowerBounds;
-    optimizationDomainsUpperBounds[j] = upperBounds;
+    const double fx = f->eval(xTmp);
 
-    // calculate minimum and maximum on all vertices of the interval box
-    double min = std::numeric_limits<double>::infinity();
-    double max = -std::numeric_limits<double>::infinity();
-
-    for (size_t k = 0; k < powersOfTwo[d]; k++) {
-      for (size_t t = 0; t < d; t++) {
-        x[t] = ((k & powersOfTwo[t]) ? lowerBounds[t] : upperBounds[t]);
-      }
-
-      const double fx = f->eval(x);
-
-      if (min < fx) {
-        min = fx;
-        minimumPoints[j] = x;
-      }
-
-      if (max > fx) {
-        max = fx;
-        maximumPoints[j] = x;
-      }
+    if (fx < minimumValue) {
+      minimumValue = fx;
+      minimumPoint = xTmp;
     }
 
-    // save minimum and maximum in result
-    xData[j] = min;
-    alphaData[j] = alpha;
-
-    xData[2*m+1-j] = max;
-    alphaData[2*m+1-j] = alpha;
+    if (fx > maximumValue) {
+      maximumValue = fx;
+      maximumPoint = xTmp;
+    }
   }
-
-  // interpolate between alpha data points
-  return new InterpolatedFuzzyInterval(xData, alphaData);
 }
 
 }  // namespace optimization

@@ -52,6 +52,9 @@ const bool UMFPACK_ENABLED;
 %rename(OptComponentScalarFunction)             sgpp::optimization::ComponentScalarFunction;
 %rename(OptComponentScalarFunctionGradient)     sgpp::optimization::ComponentScalarFunctionGradient;
 %rename(OptComponentScalarFunctionHessian)      sgpp::optimization::ComponentScalarFunctionHessian;
+%rename(OptScaledScalarFunction)                sgpp::optimization::ScaledScalarFunction;
+%rename(OptScaledScalarFunctionGradient)        sgpp::optimization::ScaledScalarFunctionGradient;
+%rename(OptScaledScalarFunctionHessian)         sgpp::optimization::ScaledScalarFunctionHessian;
 %rename(OptWrapperScalarFunction)               sgpp::optimization::WrapperScalarFunction;
 %rename(OptWrapperScalarFunctionGradient)       sgpp::optimization::WrapperScalarFunctionGradient;
 %rename(OptWrapperScalarFunctionHessian)        sgpp::optimization::WrapperScalarFunctionHessian;
@@ -347,6 +350,9 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/function/scalar/ComponentScalarFunction.hpp"
 %include "optimization/src/sgpp/optimization/function/scalar/ComponentScalarFunctionGradient.hpp"
 %include "optimization/src/sgpp/optimization/function/scalar/ComponentScalarFunctionHessian.hpp"
+%include "optimization/src/sgpp/optimization/function/scalar/ScaledScalarFunction.hpp"
+%include "optimization/src/sgpp/optimization/function/scalar/ScaledScalarFunctionGradient.hpp"
+%include "optimization/src/sgpp/optimization/function/scalar/ScaledScalarFunctionHessian.hpp"
 %include "optimization/src/sgpp/optimization/function/scalar/WrapperScalarFunction.hpp"
 %include "optimization/src/sgpp/optimization/function/scalar/WrapperScalarFunctionGradient.hpp"
 %include "optimization/src/sgpp/optimization/function/scalar/WrapperScalarFunctionHessian.hpp"
