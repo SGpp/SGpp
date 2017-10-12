@@ -65,8 +65,6 @@ void OperationInverseRosenblattTransformation1DBsplineClenshawCurtis::init(
     // inserting dummy points into coord_cdf to make it have the right size
     coord_cdf.insert(std::pair<double, double>(coord[0], 0.0));
   }
-  ordered_grid_points.push_back(0.0);
-  ordered_grid_points.push_back(1.0);
   std::sort(ordered_grid_points.begin(), ordered_grid_points.end());
 
   double left_coord = 0.0;
