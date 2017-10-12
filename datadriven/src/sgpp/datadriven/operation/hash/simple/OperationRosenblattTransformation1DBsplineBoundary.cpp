@@ -72,9 +72,6 @@ double OperationRosenblattTransformation1DBsplineBoundary::doTransformation1D(ba
   ordered_grid_points.push_back(1.0);
   std::sort(ordered_grid_points.begin(), ordered_grid_points.end());
 
-  coord_cdf.insert(std::pair<double, double>(0.0, 0.0));
-  coord_cdf.insert(std::pair<double, double>(1.0, 1.0));
-
   std::vector<std::function<double(double)>> patch_functions;
   double left_coord = 0.0;
   coord[0] = 0.0;

@@ -68,9 +68,6 @@ void OperationInverseRosenblattTransformation1DBsplineBoundary::init(base::DataV
   ordered_grid_points.push_back(1.0);
   std::sort(ordered_grid_points.begin(), ordered_grid_points.end());
 
-  coord_cdf.insert(std::pair<double, double>(0.0, 0.0));
-  coord_cdf.insert(std::pair<double, double>(1.0, 1.0));
-
   double left_coord = 0.0;
   coord[0] = 0.0;
   double left_function_value = opEval->eval(*alpha1d, coord);
