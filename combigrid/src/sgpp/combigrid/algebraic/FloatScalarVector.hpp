@@ -9,6 +9,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <cmath>
+#include <iostream>
 
 namespace sgpp {
 namespace combigrid {
@@ -60,6 +61,10 @@ class FloatScalarVector {
 
   static FloatScalarVector one() { return FloatScalarVector(1.0); }
 };
+
+std::ostream &operator<<(std::ostream &stream, FloatScalarVector v);
+
+std::istream &operator>>(std::istream &stream, FloatScalarVector &v);
 
 } /* namespace combigrid */
 } /* namespace sgpp*/
