@@ -25,7 +25,15 @@ class FuzzyExtensionPrincipleViaVertexMethod : public FuzzyExtensionPrincipleVia
 
   ~FuzzyExtensionPrincipleViaVertexMethod() override;
 
-  FuzzyInterval* apply(const std::vector<const FuzzyInterval*>& xFuzzy) override;
+ protected:
+  std::vector<size_t> powersOfTwo;
+  base::DataVector xTmp;
+
+  void prepareApply() override;
+
+  void optimizeForSingleAlphaLevel(
+      size_t j, base::DataVector& minimumPoint, double& minimumValue,
+      base::DataVector& maximumPoint, double& maximumValue) override;
 };
 
 }  // namespace optimization

@@ -15,6 +15,9 @@
 #include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunctionHessian.hpp>
+#include <sgpp/optimization/function/scalar/ScaledScalarFunction.hpp>
+#include <sgpp/optimization/function/scalar/ScaledScalarFunctionGradient.hpp>
+#include <sgpp/optimization/function/scalar/ScaledScalarFunctionHessian.hpp>
 #include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
 #include <sgpp/optimization/function/scalar/WrapperScalarFunctionGradient.hpp>
 #include <sgpp/optimization/function/scalar/WrapperScalarFunctionHessian.hpp>
