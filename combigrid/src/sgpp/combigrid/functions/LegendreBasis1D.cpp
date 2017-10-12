@@ -17,7 +17,7 @@ LegendreBasis1D::~LegendreBasis1D() {}
 
 double LegendreBasis1D::evaluate(size_t basisIndex, double xValue) {
   double invNorm = 1. / std::sqrt(basisPoly.norm_squared(basisIndex));
-  return invNorm * basisPoly.type1_value(xValue, basisIndex);
+  return invNorm * basisPoly.type1_value(2.0 * xValue - 1.0, basisIndex);
 }
 
 } /* namespace combigrid */
