@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/functions/MonomialFunctionBasis1D.hpp>
 #include <sgpp/combigrid/functions/LegendreBasis1D.hpp>
+#include <sgpp/combigrid/functions/MonomialFunctionBasis1D.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
@@ -20,24 +20,29 @@
 #include <iostream>
 #include <vector>
 
-double f(sgpp::base::DataVector const &v) {
-  std::cout << "v.size() = " << v.size() << "\n";
-  return v[0] * v[0] + v[1] * v[1];
-}
+double f(sgpp::base::DataVector const &v) { return v[0] * v[0] + v[1] * v[1]; }
 
 int main() {
-  size_t d = 2;
-  auto functionBasis = std::make_shared<sgpp::combigrid::LegendreBasis1D>();
-  auto func = sgpp::combigrid::MultiFunction(f);
-  auto op =
-      sgpp::combigrid::CombigridTensorOperation::createExpClenshawCurtisPolynomialInterpolation(
-          functionBasis, d, func);
-  auto tensorResult = op->evaluate(2, std::vector<sgpp::combigrid::FloatTensorVector>());
-  std::cout
-      << sgpp::combigrid::TreeStorageSerializationStrategy<sgpp::combigrid::FloatScalarVector>(d)
-             .serialize(tensorResult.getValues())
-      << "\n";
+  for (size_t q = 1; q <= 6; ++q) {
+    size_t d = 2;
 
-  std::cout << "E(u) = " << tensorResult.get(sgpp::combigrid::MultiIndex{0, 0}) << std::endl;
-  std::cout << "Var(u) = " << std::pow(tensorResult.norm(), 2) << std::endl;
+    auto functionBasis = std::make_shared<sgpp::combigrid::LegendreBasis1D>();
+    auto func = sgpp::combigrid::MultiFunction(f);
+    auto op =
+        sgpp::combigrid::CombigridTensorOperation::createExpClenshawCurtisPolynomialInterpolation(
+            functionBasis, d, func);
+
+    std::cout << "q = " << q << "\n";
+
+    sgpp::combigrid::Stopwatch stopwatch;
+    auto tensorResult = op->evaluate(q, std::vector<sgpp::combigrid::FloatTensorVector>());
+    /*std::cout
+        << sgpp::combigrid::TreeStorageSerializationStrategy<sgpp::combigrid::FloatScalarVector>(d)
+               .serialize(tensorResult.getValues())
+        << "\n";*/
+
+    stopwatch.log();
+    std::cout << "E(u) = " << tensorResult.get(sgpp::combigrid::MultiIndex{0, 0}) << std::endl;
+    std::cout << "Var(u) = " << std::pow(tensorResult.norm(), 2) << std::endl;
+  }
 }
