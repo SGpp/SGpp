@@ -296,8 +296,8 @@ datadriven::OperationTransformation1D* createOperationRosenblattTransformation1D
     return new datadriven::OperationRosenblattTransformation1DBsplineBoundary(&grid);
   else if (grid.getType() == base::GridType::BsplineClenshawCurtis)
     return new datadriven::OperationRosenblattTransformation1DBsplineClenshawCurtis(&grid);
-  // else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis)
-    // return new datadriven::OperationRosenblattTransformation1DModBsplineClenshawCurtis(&grid);
+  else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis)
+    return new datadriven::OperationRosenblattTransformation1DModBsplineClenshawCurtis(&grid);
   else
     throw base::factory_exception(
         "OperationRosenblattTransformation1D is not implemented for this grid type.");

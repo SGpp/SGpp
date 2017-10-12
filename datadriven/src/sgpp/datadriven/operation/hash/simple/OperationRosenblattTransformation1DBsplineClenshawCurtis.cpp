@@ -12,6 +12,7 @@
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/base/tools/HermiteBasis.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DBsplineClenshawCurtis.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <algorithm>
 #include <cstdlib>
@@ -19,7 +20,6 @@
 #include <functional>
 #include <iostream>
 #include <map>
-#include <sgpp/globaldef.hpp>
 #include <utility>
 #include <vector>
 
@@ -68,8 +68,6 @@ double OperationRosenblattTransformation1DBsplineClenshawCurtis::doTransformatio
     // inserting dummy points into coord_cdf to make it have the right size
     coord_cdf.insert(std::pair<double, double>(coord[0], 0.0));
   }
-  ordered_grid_points.push_back(0.0);
-  ordered_grid_points.push_back(1.0);
   std::sort(ordered_grid_points.begin(), ordered_grid_points.end());
 
   std::vector<std::function<double(double)>> patch_functions;
