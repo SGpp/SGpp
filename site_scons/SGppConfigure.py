@@ -248,6 +248,11 @@ def checkDAKOTA(config):
         if not config.CheckCXXHeader("pecos_global_defs.hpp"):
             Helper.printErrorAndExit("pecos_global_defs.hpp not found, but required for PECOS")
 
+def checkDAKOTA(config):
+    if config.env["USE_DAKOTA"]:
+        if not config.CheckCXXHeader("pecos_global_defs.hpp"):
+            Helper.printErrorAndExit("pecos_global_defs.hpp not found, but required for PECOS. Consider setting the flag 'CPPPATH'.")
+
 def checkGSL(config):
   if config.env["USE_GSL"]:
     config.env.AppendUnique(CPPPATH=[config.env["GSL_INCLUDE_PATH"]])
@@ -269,7 +274,7 @@ def checkZlib(config):
         else:
             if not config.CheckLibWithHeader("z","zlib.h", language="C++",autoadd=0):
                 Helper.printErrorAndExit("The flag USE_ZLIB was set, but the necessary header 'zlib.h' or library was not found.")
-                
+
             config.env["CPPDEFINES"]["ZLIB"] = "1"
 
 def checkBoostTests(config):
