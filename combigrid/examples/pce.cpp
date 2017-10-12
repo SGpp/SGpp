@@ -20,11 +20,13 @@
 #include <iostream>
 #include <vector>
 
-double f(sgpp::base::DataVector const &v) { return v[0] * v[0] + v[1] * v[1]; }
+double f(sgpp::base::DataVector const &v) {
+  return v[0] * v[0] + v[1] * v[1] * v[1] + v[2] * v[2] * v[2] * v[2];
+}
 
 int main() {
-  for (size_t q = 1; q <= 6; ++q) {
-    size_t d = 2;
+  for (size_t q = 1; q <= 7; ++q) {
+    size_t d = 3;
 
     auto functionBasis = std::make_shared<sgpp::combigrid::LegendreBasis1D>();
     auto func = sgpp::combigrid::MultiFunction(f);
@@ -42,7 +44,7 @@ int main() {
         << "\n";*/
 
     stopwatch.log();
-    std::cout << "E(u) = " << tensorResult.get(sgpp::combigrid::MultiIndex{0, 0}) << std::endl;
+    std::cout << "E(u) = " << tensorResult.get(sgpp::combigrid::MultiIndex{0, 0, 0}) << std::endl;
     std::cout << "Var(u) = " << std::pow(tensorResult.norm(), 2) << std::endl;
   }
 }
