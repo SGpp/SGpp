@@ -219,7 +219,12 @@ FuzzyExtensionPrincipleViaOptimization::FuzzyExtensionPrincipleViaOptimization(
     const FuzzyExtensionPrincipleViaOptimization& other) :
     FuzzyExtensionPrinciple(*other.f),
     defaultOptimizer(optimizer::MultiStart(*other.f)),
-    m(other.m) {
+    m(other.m),
+    alphaLevels(other.alphaLevels),
+    optimizationDomainsLowerBounds(other.optimizationDomainsLowerBounds),
+    optimizationDomainsUpperBounds(other.optimizationDomainsUpperBounds),
+    minimumPoints(other.minimumPoints),
+    maximumPoints(other.maximumPoints) {
   other.optimizer->clone(optimizer);
 
   if (other.fGradient.get() != nullptr) {
@@ -234,7 +239,7 @@ FuzzyExtensionPrincipleViaOptimization::FuzzyExtensionPrincipleViaOptimization(
 FuzzyExtensionPrincipleViaOptimization::~FuzzyExtensionPrincipleViaOptimization() {}
 
 FuzzyInterval* FuzzyExtensionPrincipleViaOptimization::apply(
-    const std::vector<const FuzzyInterval*>& xFuzzy) const {
+    const std::vector<const FuzzyInterval*>& xFuzzy) {
   const size_t d = f->getNumberOfParameters();
   ScaledScalarFunction fScaled(*f);
   std::unique_ptr<ScaledScalarFunctionGradient> fGradientScaled;
@@ -257,6 +262,11 @@ FuzzyInterval* FuzzyExtensionPrincipleViaOptimization::apply(
   // result data
   base::DataVector xData(2 * m + 2);
   base::DataVector alphaData(2 * m + 2);
+  alphaLevels.resize(m);
+  optimizationDomainsLowerBounds.resize(m + 1, base::DataVector(d));
+  optimizationDomainsUpperBounds.resize(m + 1, base::DataVector(d));
+  minimumPoints.resize(m + 1, base::DataVector(d));
+  maximumPoints.resize(m + 1, base::DataVector(d));
 
   // save last optimal min/max value and corresponding argmin/argmax point
   // to make sure that the optimum for a smaller alpha (hence for a larger optimization domain)
@@ -269,6 +279,7 @@ FuzzyInterval* FuzzyExtensionPrincipleViaOptimization::apply(
   // iterate through alphas from 1 to 0
   for (size_t j = m + 1; j-- > 0;) {
     const double alpha = static_cast<double>(j) / static_cast<double>(m);
+    alphaLevels[j] = alpha;
 
     // determine input parameter confidence interval,
     // directly changing the optimization domain in fScaled
@@ -276,6 +287,9 @@ FuzzyInterval* FuzzyExtensionPrincipleViaOptimization::apply(
       lowerBounds[t] = xFuzzy[t]->evaluateConfidenceIntervalLowerBound(alpha);
       upperBounds[t] = xFuzzy[t]->evaluateConfidenceIntervalUpperBound(alpha);
     }
+
+    optimizationDomainsLowerBounds[j] = lowerBounds;
+    optimizationDomainsUpperBounds[j] = upperBounds;
 
     // set optimization domain in fGradientScaled if available
     if (fGradientScaled.get() != nullptr) {
@@ -322,6 +336,7 @@ FuzzyInterval* FuzzyExtensionPrincipleViaOptimization::apply(
         xData[j] = lastOptimalValueMin;
       }
 
+      minimumPoints[j] = lastOptimalPointMin;
       alphaData[j] = alpha;
     }
 
@@ -359,6 +374,7 @@ FuzzyInterval* FuzzyExtensionPrincipleViaOptimization::apply(
         xData[2*m+1-j] = lastOptimalValueMax;
       }
 
+      maximumPoints[j] = lastOptimalPointMax;
       alphaData[2*m+1-j] = alpha;
     }
   }
@@ -374,6 +390,30 @@ size_t FuzzyExtensionPrincipleViaOptimization::getNumberOfAlphaSegments() const 
 void FuzzyExtensionPrincipleViaOptimization::setNumberOfAlphaSegments(
     size_t numberOfAlphaSegments) {
   m = numberOfAlphaSegments;
+}
+
+const base::DataVector& FuzzyExtensionPrincipleViaOptimization::getAlphaLevels() const {
+  return alphaLevels;
+}
+
+const std::vector<base::DataVector>&
+FuzzyExtensionPrincipleViaOptimization::getOptimizationDomainsLowerBounds() const {
+  return optimizationDomainsLowerBounds;
+}
+
+const std::vector<base::DataVector>&
+FuzzyExtensionPrincipleViaOptimization::getOptimizationDomainsUpperBounds() const {
+  return optimizationDomainsUpperBounds;
+}
+
+const std::vector<base::DataVector>&
+FuzzyExtensionPrincipleViaOptimization::getMinimumPoints() const {
+  return minimumPoints;
+}
+
+const std::vector<base::DataVector>&
+FuzzyExtensionPrincipleViaOptimization::getMaximumPoints() const {
+  return maximumPoints;
 }
 
 }  // namespace optimization

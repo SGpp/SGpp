@@ -18,8 +18,7 @@ namespace optimization {
 FuzzyExtensionPrincipleViaVertexMethod::FuzzyExtensionPrincipleViaVertexMethod(
     const ScalarFunction& f,
     size_t numberOfAlphaSegments) :
-      FuzzyExtensionPrinciple(f),
-      m(numberOfAlphaSegments) {
+      FuzzyExtensionPrincipleViaOptimization(f, numberOfAlphaSegments) {
 }
 
 FuzzyExtensionPrincipleViaVertexMethod::FuzzyExtensionPrincipleViaVertexMethod(
@@ -30,7 +29,7 @@ FuzzyExtensionPrincipleViaVertexMethod::FuzzyExtensionPrincipleViaVertexMethod(
 FuzzyExtensionPrincipleViaVertexMethod::~FuzzyExtensionPrincipleViaVertexMethod() {}
 
 FuzzyInterval* FuzzyExtensionPrincipleViaVertexMethod::apply(
-    const std::vector<const FuzzyInterval*>& xFuzzy) const {
+    const std::vector<const FuzzyInterval*>& xFuzzy) {
   const size_t d = f->getNumberOfParameters();
 
   // lower and upper bounds of the interval box
@@ -43,6 +42,11 @@ FuzzyInterval* FuzzyExtensionPrincipleViaVertexMethod::apply(
   // result data
   base::DataVector xData(2 * m + 2);
   base::DataVector alphaData(2 * m + 2);
+  alphaLevels.resize(m);
+  optimizationDomainsLowerBounds.resize(m + 1, base::DataVector(d));
+  optimizationDomainsUpperBounds.resize(m + 1, base::DataVector(d));
+  minimumPoints.resize(m + 1, base::DataVector(d));
+  maximumPoints.resize(m + 1, base::DataVector(d));
 
   // save powers of two
   std::vector<size_t> powersOfTwo(d + 1);
@@ -55,6 +59,7 @@ FuzzyInterval* FuzzyExtensionPrincipleViaVertexMethod::apply(
   // iterate through alphas
   for (size_t j = 0; j <= m; j++) {
     const double alpha = static_cast<double>(j) / static_cast<double>(m);
+    alphaLevels[j] = alpha;
 
     // determine input parameter confidence interval,
     // directly changing the optimization domain in fScaled
@@ -62,6 +67,9 @@ FuzzyInterval* FuzzyExtensionPrincipleViaVertexMethod::apply(
       lowerBounds[t] = xFuzzy[t]->evaluateConfidenceIntervalLowerBound(alpha);
       upperBounds[t] = xFuzzy[t]->evaluateConfidenceIntervalUpperBound(alpha);
     }
+
+    optimizationDomainsLowerBounds[j] = lowerBounds;
+    optimizationDomainsUpperBounds[j] = upperBounds;
 
     // calculate minimum and maximum on all vertices of the interval box
     double min = std::numeric_limits<double>::infinity();
@@ -73,8 +81,16 @@ FuzzyInterval* FuzzyExtensionPrincipleViaVertexMethod::apply(
       }
 
       const double fx = f->eval(x);
-      min = std::min(fx, min);
-      max = std::max(fx, max);
+
+      if (min < fx) {
+        min = fx;
+        minimumPoints[j] = x;
+      }
+
+      if (max > fx) {
+        max = fx;
+        maximumPoints[j] = x;
+      }
     }
 
     // save minimum and maximum in result
@@ -87,15 +103,6 @@ FuzzyInterval* FuzzyExtensionPrincipleViaVertexMethod::apply(
 
   // interpolate between alpha data points
   return new InterpolatedFuzzyInterval(xData, alphaData);
-}
-
-size_t FuzzyExtensionPrincipleViaVertexMethod::getNumberOfAlphaSegments() const {
-  return m;
-}
-
-void FuzzyExtensionPrincipleViaVertexMethod::setNumberOfAlphaSegments(
-    size_t numberOfAlphaSegments) {
-  m = numberOfAlphaSegments;
 }
 
 }  // namespace optimization

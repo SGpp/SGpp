@@ -8,17 +8,15 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/fuzzy/FuzzyExtensionPrinciple.hpp>
+#include <sgpp/optimization/fuzzy/FuzzyExtensionPrincipleViaOptimization.hpp>
 
 #include <vector>
 
 namespace sgpp {
 namespace optimization {
 
-class FuzzyExtensionPrincipleViaTransformation : public FuzzyExtensionPrinciple {
+class FuzzyExtensionPrincipleViaTransformation : public FuzzyExtensionPrincipleViaOptimization {
  public:
-  static const size_t DEFAULT_NUMBER_OF_ALPHA_SEGMENTS = 10;
-
   explicit FuzzyExtensionPrincipleViaTransformation(
       const ScalarFunction& f,
       size_t numberOfAlphaSegments = DEFAULT_NUMBER_OF_ALPHA_SEGMENTS);
@@ -27,13 +25,7 @@ class FuzzyExtensionPrincipleViaTransformation : public FuzzyExtensionPrinciple 
 
   ~FuzzyExtensionPrincipleViaTransformation() override;
 
-  FuzzyInterval* apply(const std::vector<const FuzzyInterval*>& xFuzzy) const override;
-
-  size_t getNumberOfAlphaSegments() const;
-  void setNumberOfAlphaSegments(size_t numberOfAlphaSegments);
-
- protected:
-  size_t m;
+  FuzzyInterval* apply(const std::vector<const FuzzyInterval*>& xFuzzy) override;
 };
 
 }  // namespace optimization

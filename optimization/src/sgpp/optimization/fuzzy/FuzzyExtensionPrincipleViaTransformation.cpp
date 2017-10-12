@@ -18,8 +18,7 @@ namespace optimization {
 FuzzyExtensionPrincipleViaTransformation::FuzzyExtensionPrincipleViaTransformation(
     const ScalarFunction& f,
     size_t numberOfAlphaSegments) :
-      FuzzyExtensionPrinciple(f),
-      m(numberOfAlphaSegments) {
+      FuzzyExtensionPrincipleViaOptimization(f, numberOfAlphaSegments) {
 }
 
 FuzzyExtensionPrincipleViaTransformation::FuzzyExtensionPrincipleViaTransformation(
@@ -30,15 +29,12 @@ FuzzyExtensionPrincipleViaTransformation::FuzzyExtensionPrincipleViaTransformati
 FuzzyExtensionPrincipleViaTransformation::~FuzzyExtensionPrincipleViaTransformation() {}
 
 FuzzyInterval* FuzzyExtensionPrincipleViaTransformation::apply(
-    const std::vector<const FuzzyInterval*>& xFuzzy) const {
+    const std::vector<const FuzzyInterval*>& xFuzzy) {
   const size_t d = f->getNumberOfParameters();
 
   // lower and upper bounds of the interval box
   base::DataVector lowerBounds(d);
   base::DataVector upperBounds(d);
-
-  // alphas
-  base::DataVector alphas(m + 1);
 
   // temporary evaluation point
   base::DataVector x(d);
@@ -46,18 +42,27 @@ FuzzyInterval* FuzzyExtensionPrincipleViaTransformation::apply(
   // result data
   base::DataVector xData(2 * m + 2);
   base::DataVector alphaData(2 * m + 2);
+  alphaLevels.resize(m);
+  optimizationDomainsLowerBounds.resize(m + 1, base::DataVector(d));
+  optimizationDomainsUpperBounds.resize(m + 1, base::DataVector(d));
+  minimumPoints.resize(m + 1, base::DataVector(d));
+  maximumPoints.resize(m + 1, base::DataVector(d));
 
   // transformed points
   std::vector<std::vector<base::DataVector>> C(m + 1);
 
   for (size_t j = m + 1; j-- > 0;) {
-    alphas[j] = static_cast<double>(j) / static_cast<double>(m);
+    const double alpha = static_cast<double>(j) / static_cast<double>(m);
+    alphaLevels[j] = alpha;
     C[j].resize(m - j + 1);
 
     for (size_t t = 0; t < d; t++) {
-      lowerBounds[t] = xFuzzy[t]->evaluateConfidenceIntervalLowerBound(alphas[j]);
-      upperBounds[t] = xFuzzy[t]->evaluateConfidenceIntervalUpperBound(alphas[j]);
+      lowerBounds[t] = xFuzzy[t]->evaluateConfidenceIntervalLowerBound(alpha);
+      upperBounds[t] = xFuzzy[t]->evaluateConfidenceIntervalUpperBound(alpha);
     }
+
+    optimizationDomainsLowerBounds[j] = lowerBounds;
+    optimizationDomainsUpperBounds[j] = upperBounds;
 
     for (size_t l = 0; l < m - j + 1; l++) {
       C[j][l].resize(d);
@@ -99,29 +104,28 @@ FuzzyInterval* FuzzyExtensionPrincipleViaTransformation::apply(
       }
 
       const double fx = f->eval(x);
-      min = std::min(fx, min);
-      max = std::max(fx, max);
+
+      if (min < fx) {
+        min = fx;
+        minimumPoints[j] = x;
+      }
+
+      if (max > fx) {
+        max = fx;
+        maximumPoints[j] = x;
+      }
     }
 
     // save minimum and maximum in result
     xData[j] = min;
-    alphaData[j] = alphas[j];
+    alphaData[j] = alphaLevels[j];
 
     xData[2*m+1-j] = max;
-    alphaData[2*m+1-j] = alphas[j];
+    alphaData[2*m+1-j] = alphaLevels[j];
   }
 
   // interpolate between alpha data points
   return new InterpolatedFuzzyInterval(xData, alphaData);
-}
-
-size_t FuzzyExtensionPrincipleViaTransformation::getNumberOfAlphaSegments() const {
-  return m;
-}
-
-void FuzzyExtensionPrincipleViaTransformation::setNumberOfAlphaSegments(
-    size_t numberOfAlphaSegments) {
-  m = numberOfAlphaSegments;
 }
 
 }  // namespace optimization

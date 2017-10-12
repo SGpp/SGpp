@@ -35,10 +35,16 @@ class FuzzyExtensionPrincipleViaOptimization : public FuzzyExtensionPrinciple {
 
   ~FuzzyExtensionPrincipleViaOptimization() override;
 
-  FuzzyInterval* apply(const std::vector<const FuzzyInterval*>& xFuzzy) const override;
+  FuzzyInterval* apply(const std::vector<const FuzzyInterval*>& xFuzzy) override;
 
   size_t getNumberOfAlphaSegments() const;
   void setNumberOfAlphaSegments(size_t numberOfAlphaSegments);
+
+  const base::DataVector& getAlphaLevels() const;
+  const std::vector<base::DataVector>& getOptimizationDomainsLowerBounds() const;
+  const std::vector<base::DataVector>& getOptimizationDomainsUpperBounds() const;
+  const std::vector<base::DataVector>& getMinimumPoints() const;
+  const std::vector<base::DataVector>& getMaximumPoints() const;
 
  protected:
   optimizer::MultiStart defaultOptimizer;
@@ -46,6 +52,11 @@ class FuzzyExtensionPrincipleViaOptimization : public FuzzyExtensionPrinciple {
   std::unique_ptr<ScalarFunctionGradient> fGradient;
   std::unique_ptr<ScalarFunctionHessian> fHessian;
   size_t m;
+  base::DataVector alphaLevels;
+  std::vector<base::DataVector> optimizationDomainsUpperBounds;
+  std::vector<base::DataVector> optimizationDomainsLowerBounds;
+  std::vector<base::DataVector> minimumPoints;
+  std::vector<base::DataVector> maximumPoints;
 };
 
 }  // namespace optimization
