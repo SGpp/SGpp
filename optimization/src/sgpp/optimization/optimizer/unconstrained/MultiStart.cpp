@@ -20,7 +20,7 @@ namespace optimization {
 namespace optimizer {
 
 MultiStart::MultiStart(const ScalarFunction& f, size_t maxFcnEvalCount, size_t populationSize)
-    : UnconstrainedOptimizer(f, maxFcnEvalCount),
+    : UnconstrainedOptimizer(f, nullptr, nullptr, maxFcnEvalCount),
       defaultOptimizer(NelderMead(f)) {
   defaultOptimizer.clone(optimizer);
   initialize(populationSize);
@@ -28,7 +28,10 @@ MultiStart::MultiStart(const ScalarFunction& f, size_t maxFcnEvalCount, size_t p
 
 MultiStart::MultiStart(const UnconstrainedOptimizer& optimizer, size_t maxFcnEvalCount,
                        size_t populationSize)
-    : UnconstrainedOptimizer(optimizer.getObjectiveFunction(), maxFcnEvalCount),
+    : UnconstrainedOptimizer(optimizer.getObjectiveFunction(),
+                             optimizer.getObjectiveGradient(),
+                             optimizer.getObjectiveHessian(),
+                             maxFcnEvalCount),
       defaultOptimizer(NelderMead(*f)) {
   optimizer.clone(this->optimizer);
   initialize(populationSize);
@@ -38,7 +41,7 @@ MultiStart::MultiStart(const MultiStart& other)
     : UnconstrainedOptimizer(other),
       defaultOptimizer(NelderMead(*f)) {
   other.optimizer->clone(optimizer);
-  initialize(populationSize);
+  initialize(other.populationSize);
 }
 
 MultiStart::~MultiStart() {}
@@ -47,6 +50,21 @@ void MultiStart::initialize(size_t populationSize) {
   this->populationSize = (populationSize > 0)
                              ? populationSize
                              : std::min(10 * f->getNumberOfParameters(), static_cast<size_t>(100));
+}
+
+void MultiStart::setObjectiveFunction(const ScalarFunction& f) {
+  UnconstrainedOptimizer::setObjectiveFunction(f);
+  optimizer->setObjectiveFunction(f);
+}
+
+void MultiStart::setObjectiveGradient(const ScalarFunctionGradient* fGradient) {
+  UnconstrainedOptimizer::setObjectiveGradient(fGradient);
+  optimizer->setObjectiveGradient(fGradient);
+}
+
+void MultiStart::setObjectiveHessian(const ScalarFunctionHessian* fHessian) {
+  UnconstrainedOptimizer::setObjectiveHessian(fHessian);
+  optimizer->setObjectiveHessian(fHessian);
 }
 
 void MultiStart::optimize() {
@@ -195,9 +213,12 @@ void MultiStart::optimize() {
         Printer::getInstance().getMutex().unlock();
       }
 
-      xHist.appendRow(xCurrentOpt);
-      fHist.append(fCurrentOpt);
-      kHist.push_back(curOptimizerPtr->getHistoryOfOptimalPoints().getNrows());
+#pragma omp critical
+      {
+        xHist.appendRow(xCurrentOpt);
+        fHist.append(fCurrentOpt);
+        kHist.push_back(curOptimizerPtr->getHistoryOfOptimalPoints().getNrows());
+      }
     }
   }
 
