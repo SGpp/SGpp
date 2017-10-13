@@ -14,15 +14,20 @@
 namespace sgpp {
 namespace combigrid {
 
-class LegendreBasis1D : public AbstractInfiniteFunctionBasis1D {
+enum class OrthogonalPolynomialBasisType { LEGENDRE, JACOBI, HERMITE };
+
+class OrthogonalBasis1D : public AbstractInfiniteFunctionBasis1D {
  public:
-  LegendreBasis1D();
-  virtual ~LegendreBasis1D();
+  OrthogonalBasis1D(OrthogonalPolynomialBasisType basisType);
+  virtual ~OrthogonalBasis1D();
 
   double evaluate(size_t basisIndex, double xValue) override;
 
+ private:
+  double normalizeInput(double xValue);
+  OrthogonalPolynomialBasisType basisType;
 #ifdef USE_DAKOTA
-  Pecos::BasisPolynomial basisPoly;
+  std::shared_ptr<Pecos::BasisPolynomial> basisPoly;
 #endif
 };
 
