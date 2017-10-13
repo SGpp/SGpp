@@ -24,7 +24,7 @@ DifferentialEvolution::DifferentialEvolution(const ScalarFunction& f, size_t max
                                              double scalingFactor, size_t idleGenerationsCount,
                                              double avgImprovementThreshold,
                                              double maxDistanceThreshold)
-    : UnconstrainedOptimizer(f, maxFcnEvalCount),
+    : UnconstrainedOptimizer(f, nullptr, nullptr, maxFcnEvalCount),
       populationSize((populationSize > 0) ? populationSize : 10 * f.getNumberOfParameters()),
       crossoverProbability(crossoverProbability),
       scalingFactor(scalingFactor),

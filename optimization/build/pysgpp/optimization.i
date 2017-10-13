@@ -41,6 +41,17 @@ const bool UMFPACK_ENABLED;
 #endif
 %}
 
+// needed to use RandomNumberGenerator::setSeed(SeedType)
+%typemap(in) sgpp::optimization::RandomNumberGenerator::SeedType {
+  // convert Python integer to SeedType
+  $1 = PyInt_AsLong($input);
+}
+
+%typemap(typecheck, precedence=SWIG_TYPECHECK_INTEGER) sgpp::optimization::RandomNumberGenerator::SeedType {
+  // check if valid Python integer
+  $1 = PyInt_Check($input) ? 1 : 0;
+}
+
 // necessary tools
 %rename(OptRNG)         sgpp::optimization::RandomNumberGenerator;
 %include "optimization/src/sgpp/optimization/tools/RandomNumberGenerator.hpp"
@@ -55,6 +66,9 @@ const bool UMFPACK_ENABLED;
 %rename(OptComponentScalarFunction)             sgpp::optimization::ComponentScalarFunction;
 %rename(OptComponentScalarFunctionGradient)     sgpp::optimization::ComponentScalarFunctionGradient;
 %rename(OptComponentScalarFunctionHessian)      sgpp::optimization::ComponentScalarFunctionHessian;
+%rename(OptScaledScalarFunction)                sgpp::optimization::ScaledScalarFunction;
+%rename(OptScaledScalarFunctionGradient)        sgpp::optimization::ScaledScalarFunctionGradient;
+%rename(OptScaledScalarFunctionHessian)         sgpp::optimization::ScaledScalarFunctionHessian;
 %rename(OptWrapperScalarFunction)               sgpp::optimization::WrapperScalarFunction;
 %rename(OptWrapperScalarFunctionGradient)       sgpp::optimization::WrapperScalarFunctionGradient;
 %rename(OptWrapperScalarFunctionHessian)        sgpp::optimization::WrapperScalarFunctionHessian;
@@ -109,6 +123,17 @@ const bool UMFPACK_ENABLED;
 %rename(OptAugmentedLagrangian)     sgpp::optimization::optimizer::AugmentedLagrangian;
 %rename(OptLogBarrier)              sgpp::optimization::optimizer::LogBarrier;
 %rename(OptSquaredPenalty)          sgpp::optimization::optimizer::SquaredPenalty;
+
+%rename(OptFuzzyInterval)                               sgpp::optimization::FuzzyInterval;
+%rename(OptFuzzyExtensionPrinciple)                     sgpp::optimization::FuzzyExtensionPrinciple;
+%rename(OptFuzzyExtensionPrincipleViaOptimization)      sgpp::optimization::FuzzyExtensionPrincipleViaOptimization;
+%rename(OptFuzzyExtensionPrincipleViaTransformation)    sgpp::optimization::FuzzyExtensionPrincipleViaTransformation;
+%rename(OptFuzzyExtensionPrincipleViaVertexMethod)      sgpp::optimization::FuzzyExtensionPrincipleViaVertexMethod;
+%rename(OptFuzzyIntervalViaConfidenceInterval)          sgpp::optimization::FuzzyIntervalViaConfidenceInterval;
+%rename(OptFuzzyIntervalViaMembershipFunction)          sgpp::optimization::FuzzyIntervalViaMembershipFunction;
+%rename(OptInterpolatedFuzzyInterval)                   sgpp::optimization::InterpolatedFuzzyInterval;
+%rename(OptQuasiGaussianFuzzyNumber)                    sgpp::optimization::QuasiGaussianFuzzyNumber;
+%rename(OptTriangularFuzzyInterval)                     sgpp::optimization::TriangularFuzzyInterval;
 
 %rename(OptTestScalarFunction)  sgpp::optimization::test_problems::TestScalarFunction;
 %rename(OptTestVectorFunction)  sgpp::optimization::test_problems::TestVectorFunction;
@@ -241,6 +266,9 @@ const bool UMFPACK_ENABLED;
 %feature("director") sgpp::optimization::VectorFunction;
 %feature("director") sgpp::optimization::VectorFunctionGradient;
 %feature("director") sgpp::optimization::VectorFunctionHessian;
+%feature("director") sgpp::optimization::FuzzyInterval;
+%feature("director") sgpp::optimization::FuzzyIntervalViaConfidenceInterval;
+%feature("director") sgpp::optimization::FuzzyIntervalViaMembershipFunction;
 %feature("director") sgpp::optimization::IterativeGridGenerator;
 %feature("director") sgpp::optimization::SLE;
 %feature("director") sgpp::optimization::sle_solver::SLESolver;
@@ -336,6 +364,9 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/function/scalar/ComponentScalarFunction.hpp"
 %include "optimization/src/sgpp/optimization/function/scalar/ComponentScalarFunctionGradient.hpp"
 %include "optimization/src/sgpp/optimization/function/scalar/ComponentScalarFunctionHessian.hpp"
+%include "optimization/src/sgpp/optimization/function/scalar/ScaledScalarFunction.hpp"
+%include "optimization/src/sgpp/optimization/function/scalar/ScaledScalarFunctionGradient.hpp"
+%include "optimization/src/sgpp/optimization/function/scalar/ScaledScalarFunctionHessian.hpp"
 %include "optimization/src/sgpp/optimization/function/scalar/WrapperScalarFunction.hpp"
 %include "optimization/src/sgpp/optimization/function/scalar/WrapperScalarFunctionGradient.hpp"
 %include "optimization/src/sgpp/optimization/function/scalar/WrapperScalarFunctionHessian.hpp"
@@ -387,6 +418,17 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/optimizer/constrained/AugmentedLagrangian.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/constrained/LogBarrier.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/constrained/SquaredPenalty.hpp"
+
+%include "optimization/src/sgpp/optimization/fuzzy/FuzzyInterval.hpp"
+%include "optimization/src/sgpp/optimization/fuzzy/FuzzyExtensionPrinciple.hpp"
+%include "optimization/src/sgpp/optimization/fuzzy/FuzzyExtensionPrincipleViaOptimization.hpp"
+%include "optimization/src/sgpp/optimization/fuzzy/FuzzyExtensionPrincipleViaTransformation.hpp"
+%include "optimization/src/sgpp/optimization/fuzzy/FuzzyExtensionPrincipleViaVertexMethod.hpp"
+%include "optimization/src/sgpp/optimization/fuzzy/FuzzyIntervalViaConfidenceInterval.hpp"
+%include "optimization/src/sgpp/optimization/fuzzy/FuzzyIntervalViaMembershipFunction.hpp"
+%include "optimization/src/sgpp/optimization/fuzzy/InterpolatedFuzzyInterval.hpp"
+%include "optimization/src/sgpp/optimization/fuzzy/QuasiGaussianFuzzyNumber.hpp"
+%include "optimization/src/sgpp/optimization/fuzzy/TriangularFuzzyInterval.hpp"
 
 %include "optimization/src/sgpp/optimization/test_problems/TestScalarFunction.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/TestVectorFunction.hpp"
@@ -444,3 +486,5 @@ const bool UMFPACK_ENABLED;
 %template(OptFileIOReadMatrix)       sgpp::optimization::file_io::readMatrix<double>;
 %template(OptFileIOWriteVector)      sgpp::optimization::file_io::writeVector<double>;
 %template(OptFileIOReadVector)       sgpp::optimization::file_io::readVector<double>;
+%template(OptFuzzyIntervalVector)    std::vector<const sgpp::optimization::FuzzyInterval*>;
+%template(OptDataVectorVector)       std::vector<sgpp::base::DataVector>;
