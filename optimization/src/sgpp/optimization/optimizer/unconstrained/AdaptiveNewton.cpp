@@ -10,6 +10,7 @@
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
 
 #include <algorithm>
+#include <vector>
 
 namespace sgpp {
 namespace optimization {
@@ -87,12 +88,14 @@ void AdaptiveNewton::optimize() {
   double lambda = 1.0;
   base::DataVector dir(d);
   bool inDomain;
+  std::vector<bool> isConstraintBinding(d, false);
 
   size_t breakIterationCounter = 0;
   const size_t BREAK_ITERATION_COUNTER_MAX = 10;
 
   const double ALPHA1 = 1e-6;
   const double ALPHA2 = 1e-6;
+  const double BINDING_TOLERANCE = 1e-6;
   const double P = 0.1;
   const bool statusPrintingEnabled = Printer::getInstance().isStatusPrintingEnabled();
 
@@ -117,6 +120,21 @@ void AdaptiveNewton::optimize() {
       b[t] = -gradFx[t];
       // add damping
       hessianFx(t, t) += lambda;
+
+      // eliminate rows and columns corresponding to binding constraints
+      if (isConstraintBinding[t]) {
+        // discard variable by setting RHS to zero
+        b[t] = 0.0;
+        // eliminate variable from linear system matrix
+        hessianFx(t, t) = 1.0;
+
+        for (size_t t2 = 0; t2 < d; t2++) {
+          if (t != t2) {
+            hessianFx(t, t2) = 0.0;
+            hessianFx(t2, t) = 0.0;
+          }
+        }
+      }
     }
 
     // solve linear system with damped Hessian as system matrix
@@ -130,26 +148,46 @@ void AdaptiveNewton::optimize() {
       Printer::getInstance().enableStatusPrinting();
     }
 
-    const double dirNorm = dir.l2Norm();
+    double dirNorm = dir.l2Norm();
 
     // acceptance criterion
-    if (lsSolved && (b.dotProduct(dir) >=
-                     std::min(ALPHA1, ALPHA2 * std::pow(dirNorm, P)) * dirNorm * dirNorm)) {
-      // normalize search direction
-      for (size_t t = 0; t < d; t++) {
-        dir[t] /= dirNorm;
+    if (!(lsSolved && (b.dotProduct(dir) >=
+                       std::min(ALPHA1, ALPHA2 * std::pow(dirNorm, P)) * dirNorm * dirNorm))) {
+      // restart method (negated normalized gradient as new search direction)
+      dir = b;
+    }
+
+    for (size_t t = 0; t < d; t++) {
+      // is constraint binding?
+      // (i.e., we are at the boundary and the search direction points outwards)
+      if (((x[t] < BINDING_TOLERANCE) && (dir[t] < 0.0)) ||
+          ((x[t] > 1.0 - BINDING_TOLERANCE) && (dir[t] > 0.0))) {
+        // discard variable by setting direction to zero
+        dir[t] = 0.0;
+
+        // was the constraint not binding in the previous iteration?
+        if (!isConstraintBinding[t]) {
+          // reset step size as it's most likely very small due to approach to the boundary
+          alpha = 1.0;
+          isConstraintBinding[t] = true;
+        }
+      } else {
+        isConstraintBinding[t] = false;
       }
-    } else {
-      // restart method
-      // (negated normalized gradient as new search direction)
-      for (size_t t = 0; t < d; t++) {
-        dir[t] = b[t] / gradFxNorm;
-      }
+    }
+
+    dirNorm = dir.l2Norm();
+
+    if (dirNorm == 0.0) {
+      break;
     }
 
     inDomain = true;
 
     for (size_t t = 0; t < d; t++) {
+      // normalize search direction
+      dir[t] /= dirNorm;
+
       // new point
       xNew[t] = x[t] + alpha * dir[t];
 
@@ -160,8 +198,12 @@ void AdaptiveNewton::optimize() {
     }
 
     // evaluate at new point
-    fxNew = (inDomain ? f->eval(xNew) : INFINITY);
-    k++;
+    if (inDomain) {
+      fxNew = f->eval(xNew);
+      k++;
+    } else {
+      fxNew = INFINITY;
+    }
 
     // inner product of gradient and search direction
     double gradFxTimesDir = gradFx.dotProduct(dir);
@@ -178,12 +220,52 @@ void AdaptiveNewton::optimize() {
         for (size_t t = 0; t < d; t++) {
           // add damping
           hessianFx(t, t) += lambda - oldLambda;
+
+          // eliminate rows and columns corresponding to binding constraints
+          if (isConstraintBinding[t]) {
+            // discard variable by setting RHS to zero
+            b[t] = 0.0;
+            // eliminate variable from linear system matrix
+            hessianFx(t, t) = 1.0;
+
+            for (size_t t2 = 0; t2 < d; t2++) {
+              if (t != t2) {
+                hessianFx(t, t2) = 0.0;
+                hessianFx(t2, t) = 0.0;
+              }
+            }
+          }
         }
 
         // solve linear system with damped Hessian as system matrix
-        Printer::getInstance().disableStatusPrinting();
+        if (statusPrintingEnabled) {
+          Printer::getInstance().disableStatusPrinting();
+        }
+
         lsSolved = sleSolver.solve(system, b, dir);
-        Printer::getInstance().enableStatusPrinting();
+
+        if (statusPrintingEnabled) {
+          Printer::getInstance().enableStatusPrinting();
+        }
+
+        for (size_t t = 0; t < d; t++) {
+          // is constraint binding?
+          // (i.e., we are at the boundary and the search direction points outwards)
+          if (((x[t] < BINDING_TOLERANCE) && (dir[t] < 0.0)) ||
+              ((x[t] > 1.0 - BINDING_TOLERANCE) && (dir[t] > 0.0))) {
+            // discard variable by setting direction to zero
+            dir[t] = 0.0;
+
+            // was the constraint not binding in the previous iteration?
+            if (!isConstraintBinding[t]) {
+              // reset step size as it's most likely very small due to approach to the boundary
+              alpha = 1.0;
+              isConstraintBinding[t] = true;
+            }
+          } else {
+            isConstraintBinding[t] = false;
+          }
+        }
 
         // recalculate inner product
         gradFxTimesDir = gradFx.dotProduct(dir);
@@ -202,8 +284,12 @@ void AdaptiveNewton::optimize() {
       }
 
       // evaluate at new point
-      fxNew = (inDomain ? f->eval(xNew) : INFINITY);
-      k++;
+      if (inDomain) {
+        fxNew = f->eval(xNew);
+        k++;
+      } else {
+        fxNew = INFINITY;
+      }
     }
 
     // after too many line search steps, alpha will be numerically zero
