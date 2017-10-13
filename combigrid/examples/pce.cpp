@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/functions/LegendreBasis1D.hpp>
 #include <sgpp/combigrid/functions/MonomialFunctionBasis1D.hpp>
+#include <sgpp/combigrid/functions/OrthogonalBasis1D.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
@@ -26,7 +26,8 @@ int main() {
   for (size_t q = 1; q <= 6; ++q) {
     size_t d = 3;
 
-    auto functionBasis = std::make_shared<sgpp::combigrid::LegendreBasis1D>();
+    auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalBasis1D>(
+        sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE);
     auto func = sgpp::combigrid::MultiFunction(f);
     auto op = sgpp::combigrid::CombigridTensorOperation::createLinearLejaPolynomialInterpolation(
         functionBasis, d, func, 2);
