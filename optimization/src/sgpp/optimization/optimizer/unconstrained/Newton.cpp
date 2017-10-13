@@ -87,6 +87,8 @@ void Newton::optimize() {
   size_t k = 0;
   const bool statusPrintingEnabled = Printer::getInstance().isStatusPrintingEnabled();
 
+  const double BINDING_TOLERANCE = 1e-6;
+
   while (k < N) {
     // calculate gradient, Hessian and gradient norm
     fx = fHessian->eval(x, gradFx, hessianFx);
@@ -97,16 +99,35 @@ void Newton::optimize() {
       fHist.append(fx);
     }
 
-    const double gradFxNorm = gradFx.l2Norm();
-
-    // exit if norm small enough
-    if (gradFxNorm < tol) {
-      break;
-    }
-
     // RHS of linear system to be solved
     for (size_t t = 0; t < d; t++) {
+      // search direction (negated gradient)
       s[t] = -gradFx[t];
+
+      // is constraint binding?
+      // (i.e., we are at the boundary and the search direction points outwards)
+      if (((x[t] < BINDING_TOLERANCE) && (s[t] < 0.0)) ||
+          ((x[t] > 1.0 - BINDING_TOLERANCE) && (s[t] > 0.0))) {
+        // discard variable by setting RHS to zero
+        s[t] = 0.0;
+        gradFx[t] = 0.0;
+        // eliminate variable from linear system matrix
+        hessianFx(t, t) = 1.0;
+
+        for (size_t t2 = 0; t2 < d; t2++) {
+          if (t != t2) {
+            hessianFx(t, t2) = 0.0;
+            hessianFx(t2, t) = 0.0;
+          }
+        }
+      }
+    }
+
+    const double sNorm = s.l2Norm();
+
+    // exit if norm small enough
+    if (sNorm < tol) {
+      break;
     }
 
     // solve linear system with Hessian as system matrix
@@ -131,11 +152,8 @@ void Newton::optimize() {
         s[t] = dk[t] / dkNorm;
       }
     } else {
-      // restart method
-      // (negated normalized gradient as new search direction)
-      for (size_t t = 0; t < d; t++) {
-        s[t] = s[t] / gradFxNorm;
-      }
+      // restart method (negated normalized gradient as new search direction)
+      s.mult(1.0 / sNorm);
     }
 
     // status printing
@@ -145,7 +163,7 @@ void Newton::optimize() {
     // line search
     if (!lineSearchArmijo(*f, beta, gamma, tol, eps, x, fx, gradFx, s, y, k)) {
       // line search failed ==> exit
-      // (either a "real" error occured or the improvement
+      // (either a "real" error occurred or the improvement
       // achieved is too small)
       break;
     }
