@@ -20,17 +20,21 @@
 #include <iostream>
 #include <vector>
 
-double f(sgpp::base::DataVector const &v) { return v[0] * v[0] + v[1] * v[1] + v[2] * v[2]; }
+double f(sgpp::base::DataVector const &v) {
+  // return v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
+  // return v[0] * v[0] + v[1] * v[1];
+  return exp(3 * v[0] * v[0] + v[1]) * atan(10 * v[2]) + sin(3 * v[1] + v[2]);
+}
 
 int main() {
-  for (size_t q = 1; q <= 6; ++q) {
+  for (size_t q = 0; q <= 8; ++q) {
     size_t d = 3;
 
     auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalBasis1D>(
         sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE);
     auto func = sgpp::combigrid::MultiFunction(f);
     auto op = sgpp::combigrid::CombigridTensorOperation::createLinearLejaPolynomialInterpolation(
-        functionBasis, d, func, 2);
+        functionBasis, d, func);
 
     std::cout << "q = " << q << "\n";
 
