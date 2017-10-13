@@ -57,8 +57,7 @@ class ScaledScalarFunctionHessian : public ScalarFunctionHessian {
       for (size_t t2 = 0; t2 < d; t2++) {
         // scale Hessian
         hessian(t, t2) *=
-            valueFactor * (upperBounds[t] - lowerBounds[t]) *
-            valueFactor * (upperBounds[t2] - lowerBounds[t2]);
+            valueFactor * (upperBounds[t] - lowerBounds[t]) * (upperBounds[t2] - lowerBounds[t2]);
       }
     }
 
