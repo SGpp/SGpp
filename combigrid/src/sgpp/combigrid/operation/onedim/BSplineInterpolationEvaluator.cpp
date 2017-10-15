@@ -97,21 +97,8 @@ void BSplineInterpolationEvaluator::createKnots(std::vector<double>& xi) {
   // ToDo(rehmemk) this offset is only correct for odd degrees
   size_t offset = (degree + 1) / 2;
   xi.resize(2 * offset, 0);
-<<<<<<< HEAD
-  //  for (size_t i = 0; i < xi.size(); i++) {
-  //    std::cout << xi[i] << " ";
-  //  }
-  //  std::cout << "\n";
-
-  xi.insert(xi.begin() + offset, xValues.begin(), xValues.end());
-  //  for (size_t i = 0; i < xi.size(); i++) {
-  //    std::cout << xi[i] << " ";
-  //  }
-  //  std::cout << "\n";
-=======
   xi.insert(xi.begin() + offset, xValues.begin(), xValues.end());
 
->>>>>>> origin/newCombigridModule
   for (size_t i = 0; i < offset; i++) {
     xi[offset - i - 1] = -xValues[i + 1] + 2 * xValues[0];
     xi[xValues.size() + offset + i] =

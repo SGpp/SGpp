@@ -7,23 +7,11 @@ from pysgpp.pysgpp_swig import DataVector
 
 
 def g(x):
-<<<<<<< HEAD
-    return x[0]  # np.sin(np.prod(x.array())) * np.prod([4 * xi * (1 - xi) for xi in x.array()])
-=======
     return np.sin(np.prod(x.array())) * np.prod([4 * xi * (1 - xi) for xi in x.array()])
->>>>>>> origin/newCombigridModule
 
 # # We have to wrap f in a pysgpp.MultiFunction object.
 func = pysgpp.multiFunc(g)
 numDims = 1
-<<<<<<< HEAD
-level = 5
-
-operation = pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(numDims, func)
-# operation = pysgpp.CombigridOperation.createExpUniformLinearInterpolation(numDims, func)
-# operation = pysgpp.CombigridOperation.createExpClenshawCurtisPolynomialInterpolation(numDims, func)
-# operation = pysgpp.CombigridOperation.createLinearL2LejaPolynomialInterpolation(numDims, func, 2)
-=======
 level = 8
 
 # operation = pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(numDims, func)
@@ -31,7 +19,6 @@ operation = pysgpp.CombigridOperation.createExpUniformLinearInterpolation(numDim
 # operation = pysgpp.CombigridOperation.createExpClenshawCurtisPolynomialInterpolation(numDims, func)
 # operation = pysgpp.CombigridOperation.createLinearL2LejaPolynomialInterpolation(numDims, func, 2)
 # operation = pysgpp.CombigridOperation.createExpClenshawCurtisBsplineInterpolation(numDims, func, 1)
->>>>>>> origin/newCombigridModule
 
 def f(x):
     x_vec = DataVector(x)

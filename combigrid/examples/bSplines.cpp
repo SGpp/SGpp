@@ -24,17 +24,6 @@
 #include <vector>
 
 double f(sgpp::base::DataVector const &v) {
-<<<<<<< HEAD
-  return v[0] * v[0] * v[0];
-  //    return sin(1. / (1. + v[0] * v[0])) * v[1];
-  //  return v[0];
-  //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
-  //         std::exp(v[0] * v[1] - 1);
-}
-
-double interpolate(size_t maxlevel) {
-  size_t numDimensions = 1;
-=======
   //  return v[0];  // * v[0] * v[0];
   //    return sin(1. / (1. + v[0] * v[0])) * v[1];
   //  return v[0];
@@ -44,7 +33,6 @@ double interpolate(size_t maxlevel) {
 
 double interpolate(size_t maxlevel) {
   size_t numDimensions = 2;
->>>>>>> origin/newCombigridModule
   size_t degree = 3;
   sgpp::combigrid::MultiFunction func(f);
   auto operation =
