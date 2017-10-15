@@ -7,6 +7,8 @@
 
 #include <iostream>
 
+#define M_SQRT2 1.41421356237309504880 
+
 #ifdef USE_DAKOTA
 #include <pecos_global_defs.hpp>
 #include <BasisPolynomial.hpp>

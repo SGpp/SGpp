@@ -68,13 +68,8 @@ double interpolate(size_t maxlevel) {
 int main() {
   sgpp::base::SGppStopwatch watch;
   watch.start();
-<<<<<<< HEAD
-  size_t minLevel = 3;
-  size_t maxLevel = 8;
-=======
   size_t minLevel = 0;
   size_t maxLevel = 7;
->>>>>>> origin/newCombigridModule
   std::vector<double> err(maxLevel + 1, 0);
   for (size_t l = minLevel; l < maxLevel + 1; l++) {
     err[l] = interpolate(l);

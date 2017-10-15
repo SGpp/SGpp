@@ -119,16 +119,6 @@ void BSplineInterpolationEvaluator::createKnots(std::vector<double>& xi) {
 void BSplineInterpolationEvaluator::createdeg3NakKnots(std::vector<double>& xi) {
   // create a vector xi that holds the gridpoints and continues to the left and right by mirroring
   // at 0 and 1
-<<<<<<< HEAD
-  if (degree == 1) {
-    createKnots(xi);
-    //    std::cout << "The not a knot concept is not applicable for B-Splines of degree 1! "
-    //                 "Regular knots will be used for this calculation."
-    //              << std::endl;
-    return;
-  }
-=======
->>>>>>> origin/newCombigridModule
 
   // ToDo(rehmemk) this offset is only correct for odd degrees
   size_t offset = (degree + 1) / 2;
@@ -196,13 +186,8 @@ void BSplineInterpolationEvaluator::computeBasisValues() {
   // Lagrange polynomials for less than 9 points because 9 is the number of gridpoints of a uniform
   // boundary grid of level 3 and this is the first level with enough gridpoints for nak B-Splines
   // (this is a very heuristic motivation but it works so far. Feel free to implement something
-<<<<<<< HEAD
-  // better)
-  // Should work for degree 5 as well. For degree 7 and higher level 3 with nak is too small to
-=======
   // better). SHould work for degree 5 as well
   // For degree 7 and higher level 3 with nak is too small to
->>>>>>> origin/newCombigridModule
   // provide enough knots even for one single spline
   else if (xValues.size() < 9) {
     for (size_t i = 0; i < xValues.size(); i++) {
@@ -212,10 +197,6 @@ void BSplineInterpolationEvaluator::computeBasisValues() {
   }
   std::vector<double> xi;
   // Choose between nak (not a knot) knots or regular knots
-<<<<<<< HEAD
-  createKnots(xi);
-  //  createNakKnots(xi);
-=======
   if (degree == 1) {
     createKnots(xi);
   } else if (degree == 3) {
@@ -225,7 +206,6 @@ void BSplineInterpolationEvaluator::computeBasisValues() {
   } else {
     throw std::invalid_argument("only B-Spline degrees 1,3 and 5 supported");
   }
->>>>>>> origin/newCombigridModule
   for (size_t i = 0; i < xValues.size(); i++) {
     basisValues[i] = nonUniformBSpline(evaluationPoint, degree, i, xi);
     //    std::cout << xValues[i] << " ";

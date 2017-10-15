@@ -22,13 +22,6 @@
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
-<<<<<<< HEAD
-
-
-
-
-=======
->>>>>>> origin/newCombigridModule
 
 #include <vector>
 

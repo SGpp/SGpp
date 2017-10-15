@@ -4,6 +4,7 @@
 // sgpp.sparsegrids.org
 
 #pragma once
+#define M_SQRT2 1.41421356237309504880 
 
 #include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
 
