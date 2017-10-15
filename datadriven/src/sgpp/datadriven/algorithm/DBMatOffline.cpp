@@ -200,5 +200,7 @@ void sgpp::datadriven::DBMatOffline::parseConfig(const std::string& fileName,
   config.decomp_type_ = static_cast<DBMatDecompostionType>(std::stoi(tokens[5]));
 }
 
+sgpp::base::DataMatrix& DBMatOffline::getLhsMatrix_ONLY_FOR_TESTING() { return this->lhsMatrix; }
+
 }  // namespace datadriven
 }  // namespace sgpp

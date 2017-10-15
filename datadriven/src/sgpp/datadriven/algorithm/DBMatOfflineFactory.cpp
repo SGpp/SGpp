@@ -16,6 +16,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineEigen.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
 #include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 
 #include <string>
@@ -35,26 +36,38 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(const DBMatDensityConfigur
 #ifdef USE_GSL
       return new DBMatOfflineEigen(config);
 #else
-      throw factory_exception("built withot GSL");
+      throw factory_exception("built without GSL");
 #endif /* USE_GSL */
       break;
+
     case (DBMatDecompostionType::LU):
 #ifdef USE_GSL
       return new DBMatOfflineLU(config);
 #else
-      throw factory_exception("built withot GSL");
+      throw factory_exception("built without GSL");
 #endif /* USE_GSL */
       break;
+
     case (DBMatDecompostionType::Chol):
 #ifdef USE_GSL
       return new DBMatOfflineChol(config);
 #else
-      throw factory_exception("built withot GSL");
+      throw factory_exception("built without GSL");
 #endif /* USE_GSL */
       break;
+
     case (DBMatDecompostionType::DenseIchol):
       return new DBMatOfflineDenseIChol(config);
       break;
+
+    case (DBMatDecompostionType::OrthoAdapt):
+#ifdef USE_GSL
+      return new DBMatOfflineOrthoAdapt(config);
+      break;
+#else
+      throw factory_exception("built without GSL");
+#endif /* USE_GSL */
+
     default:
       throw factory_exception("Trying to build offline object from unknown decomposition type");
       return nullptr;
@@ -98,6 +111,9 @@ DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
       break;
     case (DBMatDecompostionType::DenseIchol):
       return new DBMatOfflineDenseIChol(fileName);
+      break;
+    case (DBMatDecompostionType::OrthoAdapt):
+      return new DBMatOfflineOrthoAdapt(fileName);
       break;
     default:
       throw factory_exception("Trying to build offline object from unknown decomposition type");

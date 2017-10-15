@@ -83,6 +83,7 @@ DBMatDMSChol* DBMatOnlineDEChol::buildCholSolver(DBMatOffline& offlineObject, bo
       break;
     case (DBMatDecompostionType::LU):
     case (DBMatDecompostionType::Eigen):
+    case (DBMatDecompostionType::OrthoAdapt):
     default:
       throw sgpp::base::algorithm_exception{"Only Cholesky based solvers can use this Solver"};
   }

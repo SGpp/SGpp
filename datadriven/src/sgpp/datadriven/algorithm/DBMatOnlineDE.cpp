@@ -9,8 +9,10 @@
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinear.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 
 #ifdef USE_GSL
@@ -52,11 +54,26 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
   if (m.getNrows() > 0) {
     DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
 
+    // in case OrthoAdapt, the current size is not lhs size, but B size
+    bool use_B_size = false;
+    sgpp::datadriven::DBMatOnlineDEOrthoAdapt* thisOrthoAdaptPtr;
+    if (this->offlineObject.getConfig().decomp_type_ ==
+        sgpp::datadriven::DBMatDecompostionType::OrthoAdapt) {
+      thisOrthoAdaptPtr = static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt*>(&*this);
+      if (thisOrthoAdaptPtr->getB().getNcols() > 1) {
+        use_B_size = true;
+      }
+    }
+
     // Compute right hand side of the equation:
     size_t numberOfPoints = m.getNrows();
     totalPoints++;
-    DataVector b(lhsMatrix.getNcols());
+    DataVector b(use_B_size ? thisOrthoAdaptPtr->getB().getNcols() : lhsMatrix.getNcols());
     b.setAll(0);
+    if (b.getSize() != offlineObject.getGrid().getStorage().getSize()) {
+      throw sgpp::base::algorithm_exception(
+          "In DBMatOnlineDE::computeDensityFunction: b doesn't match size of system matrix");
+    }
 
     std::unique_ptr<sgpp::base::OperationMultipleEval> B(
         sgpp::op_factory::createOperationMultipleEval(offlineObject.getGrid(), m));
@@ -127,7 +144,6 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
     }
 
     solveSLE(b, do_cv);
-
     functionComputed = true;
   }
 }
