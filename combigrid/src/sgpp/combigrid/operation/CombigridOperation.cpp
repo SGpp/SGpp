@@ -312,7 +312,6 @@ std::shared_ptr<CombigridOperation> CombigridOperation::createExpClenshawCurtisQ
       std::make_shared<StandardLevelManager>(), func);
 }
 
-<<<<<<< HEAD
 std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformBoundaryPsiLinearInterpolation(
     size_t numDimensions, size_t psiDimension, MultiFunction func) {
   std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> evaluators(
@@ -460,8 +459,6 @@ std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformBoundary
  
 
 
-=======
->>>>>>> origin/newCombigridModule
 std::shared_ptr<CombigridOperation> auxiliaryBsplineFunction(size_t numDimensions,
                                                              MultiFunction func, size_t hierarchy,
                                                              size_t growthFactor,
@@ -478,13 +475,7 @@ std::shared_ptr<CombigridOperation> auxiliaryBsplineFunction(size_t numDimension
   } else if (hierarchy == 5) {
     grids.resize(numDimensions, sgpp::combigrid::CombiHierarchies::linearL2Leja(growthFactor));
   }
-<<<<<<< HEAD
-  
-
-sgpp::combigrid::CombiEvaluators::Collection evaluators(
-=======
   sgpp::combigrid::CombiEvaluators::Collection evaluators(
->>>>>>> origin/newCombigridModule
       numDimensions, sgpp::combigrid::CombiEvaluators::BSplineInterpolation(degree));
   // So far only WeightedRatioLevelManager has been used
   std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
@@ -560,21 +551,6 @@ sgpp::combigrid::CombiEvaluators::Collection evaluators(
     sgpp::optimization::Printer::getInstance().setVerbosity(-1);
     bool solved = solver.solve(sle, functionValues, coefficients_sle);
 
-<<<<<<< HEAD
-    //    std::cout << A.toString() << std::endl;
-    //    std::cout << "fct: ";
-    //    for (size_t i = 0; i < functionValues.size(); i++) {
-    //      std::cout << functionValues[i] << " ";
-    //    }
-    //    std::cout << "\ncoeff: ";
-    //    for (size_t i = 0; i < coefficients_sle.size(); i++) {
-    //      std::cout << coefficients_sle[i] << " ";
-    //    }
-    //    std::cout << "\n";
-    //    std::cout << "-------------------------------------------------------------------" <<
-    //    std::endl;
-
-=======
     /*std::cout << A.toString() << std::endl;
     std::cout << "fct: ";
     for (size_t i = 0; i < functionValues.size(); i++) {
@@ -587,7 +563,6 @@ sgpp::combigrid::CombiEvaluators::Collection evaluators(
     std::cout << "\n";
     std::cout << "-------------------------------------------------------------------" << std::endl;
     */
->>>>>>> origin/newCombigridModule
     if (!solved) {
       exit(-1);
     }

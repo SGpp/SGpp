@@ -157,7 +157,6 @@ class CombigridOperation {
                                                                           size_t growthFactor = 2);
   static std::shared_ptr<CombigridOperation> createExpClenshawCurtisQuadrature(size_t numDimensions,
                                                                                MultiFunction func);
-<<<<<<< HEAD
 
   static std::shared_ptr<CombigridOperation> createExpUniformBoundaryZetaLinearInterpolation(
       size_t numDimensions, size_t zetaDimension,MultiFunction func);
@@ -188,8 +187,6 @@ class CombigridOperation {
   
 
 
-=======
->>>>>>> origin/newCombigridModule
   static std::shared_ptr<CombigridOperation> createExpUniformBoundaryBsplineInterpolation(
       size_t numDimensions, MultiFunction func, size_t degree);
   static std::shared_ptr<CombigridOperation> createExpClenshawCurtisBsplineInterpolation(
