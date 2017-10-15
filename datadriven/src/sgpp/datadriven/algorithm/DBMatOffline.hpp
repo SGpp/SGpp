@@ -80,7 +80,7 @@ class DBMatOffline {
   virtual DBMatOffline* clone() = 0;
 
   /**
-   * Only Offline objects based on Cholesky decomposition can be refined
+   * Only Offline objects based on Cholesky decomposition, or orthogonal adaptivity can be refined
    * @return true if object can be refined, else false;
    */
   virtual bool isRefineable() = 0;
@@ -93,9 +93,15 @@ class DBMatOffline {
 
   /**
    * Get a reference to the decomposed matrix. Throws if matrix has not yet been decomposed.
+   *
    * @return decomposed matrix
    */
   DataMatrix& getDecomposedMatrix();
+
+  /**
+   * Allows access to lhs matrix, which is meant ONLY FOR TESTING
+   */
+  DataMatrix& getLhsMatrix_ONLY_FOR_TESTING();
 
   /**
    * Returns a reference to the sparse grid
