@@ -1,4 +1,4 @@
-from pysgpp.extensions.datadriven.uq.dists import (Dist, Uniform, Normal, TNormal, SGDEdist,
+from pysgpp.extensions.datadriven.uq.dists import (Dist, Uniform, Normal, TNormal,
                           Lognormal, Beta, MultivariateNormal)
 from pysgpp.extensions.datadriven.uq.transformation import (LinearTransformation,
                                                             RosenblattTransformation)
