@@ -4,7 +4,10 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/operation/onedim/InterpolationCoefficientEvaluator.hpp>
+#include <sgpp/combigrid/functions/OrthogonalBasis1D.hpp>
 #include <sgpp/base/exception/generation_exception.hpp>
+
+#include <vector>
 
 #ifdef USE_EIGEN
 #include <eigen3/Eigen/Dense>
@@ -12,6 +15,11 @@
 
 namespace sgpp {
 namespace combigrid {
+
+InterpolationCoefficientEvaluator::InterpolationCoefficientEvaluator()
+    : basisValues(1, FloatTensorVector(1)), basisCoefficients() {
+  functionBasis = std::make_shared<OrthogonalBasis1D>(OrthogonalPolynomialBasisType::LEGENDRE);
+}
 
 InterpolationCoefficientEvaluator::InterpolationCoefficientEvaluator(
     std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis)
@@ -26,7 +34,7 @@ InterpolationCoefficientEvaluator::InterpolationCoefficientEvaluator(
       functionBasis(other.functionBasis) {}
 
 void InterpolationCoefficientEvaluator::setGridPoints(const std::vector<double>& xValues) {
-  #ifdef USE_EIGEN
+#ifdef USE_EIGEN
   size_t n = xValues.size();
   Eigen::MatrixXd mat(n, n);
 
@@ -42,9 +50,9 @@ void InterpolationCoefficientEvaluator::setGridPoints(const std::vector<double>&
       basisValues[j].at(MultiIndex{i}) = invertedMatrix(i, j);
     }
   }
-  #else
+#else
   throw new sgpp::base::generation_exception("need Eigen to use the PCE transformation.");
-  #endif
+#endif
 }
 
 void InterpolationCoefficientEvaluator::setFunctionValuesAtGridPoints(

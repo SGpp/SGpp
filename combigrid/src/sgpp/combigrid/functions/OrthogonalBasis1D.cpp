@@ -4,14 +4,15 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/functions/OrthogonalBasis1D.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <iostream>
 
 #define M_SQRT2 1.41421356237309504880 
 
 #ifdef USE_DAKOTA
-#include <pecos_global_defs.hpp>
 #include <BasisPolynomial.hpp>
+#include <pecos_global_defs.hpp>
 #endif
 
 namespace sgpp {

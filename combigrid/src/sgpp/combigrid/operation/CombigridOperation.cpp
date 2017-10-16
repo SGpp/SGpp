@@ -453,19 +453,19 @@ std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformBoundary
 
 
 std::shared_ptr<CombigridOperation> auxiliaryBsplineFunction(size_t numDimensions,
-                                                             MultiFunction func, size_t hierarchy,
-                                                             size_t growthFactor,
-                                                             size_t degree = 3) {
+                                                             MultiFunction func,
+                                                             size_t hierarchytype,
+                                                             size_t growthFactor, size_t degree) {
   sgpp::combigrid::CombiHierarchies::Collection grids;
-  if (hierarchy == 1) {
+  if (hierarchytype == 1) {
     grids.resize(numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
-  } else if (hierarchy == 2) {
+  } else if (hierarchytype == 2) {
     grids.resize(numDimensions, sgpp::combigrid::CombiHierarchies::expClenshawCurtis());
-  } else if (hierarchy == 3) {
+  } else if (hierarchytype == 3) {
     grids.resize(numDimensions, sgpp::combigrid::CombiHierarchies::expChebyshev());
-  } else if (hierarchy == 4) {
+  } else if (hierarchytype == 4) {
     grids.resize(numDimensions, sgpp::combigrid::CombiHierarchies::linearLeja(growthFactor));
-  } else if (hierarchy == 5) {
+  } else if (hierarchytype == 5) {
     grids.resize(numDimensions, sgpp::combigrid::CombiHierarchies::linearL2Leja(growthFactor));
   }
   sgpp::combigrid::CombiEvaluators::Collection evaluators(
@@ -477,10 +477,9 @@ std::shared_ptr<CombigridOperation> auxiliaryBsplineFunction(size_t numDimension
   // stores the values of the objective function
   auto funcStorage = std::make_shared<sgpp::combigrid::CombigridTreeStorage>(grids, func);
 
+  // Grid Function that calculates the coefficients for the B-Spline interpolation.
+  // The coeficients for each B-Spline are saved in a TreeStorage encoded by a MultiIndex
   sgpp::combigrid::GridFunction gf([=](std::shared_ptr<sgpp::combigrid::TensorGrid> grid) {
-    // We store the results (= coefficients for Bspline interpolation) for each grid point,
-    // encoded
-    // by a MultiIndex, in a TreeStorage
     size_t numDimensions = grid->getDimension();
     auto coefficientTree = std::make_shared<sgpp::combigrid::TreeStorage<double>>(numDimensions);
     auto level = grid->getLevel();
@@ -493,7 +492,6 @@ std::shared_ptr<CombigridOperation> auxiliaryBsplineFunction(size_t numDimension
     sgpp::combigrid::CombiEvaluators::Collection evalCopy(numDimensions);
     for (size_t dim = 0; dim < numDimensions; ++dim) {
       evalCopy[dim] = evaluators[dim]->cloneLinear();
-      // needsSorted is  True for Bsplines, False for Polynomials
       bool needsSorted = evalCopy[dim]->needsOrderedPoints();
       auto gridPoints = grids[dim]->getPoints(level[dim], needsSorted);
       evalCopy[dim]->setGridPoints(gridPoints);
@@ -502,29 +500,25 @@ std::shared_ptr<CombigridOperation> auxiliaryBsplineFunction(size_t numDimension
     sgpp::base::DataVector coefficients_sle(numGridPoints);
     sgpp::base::DataVector functionValues(numGridPoints);
 
-    // Creates an iterator that yields all multi-indices of grid points in the grid.
+    // Creates an iterator that yields the multi-indices of all grid points in the grid.
     sgpp::combigrid::MultiIndexIterator it(grid->numPoints());
     auto funcIter =
         funcStorage->getGuidedIterator(level, it, std::vector<bool>(numDimensions, true));
 
     for (size_t ixEvalPoints = 0; funcIter->isValid(); ++ixEvalPoints, funcIter->moveToNext()) {
       auto gridPoint = grid->getGridPoint(funcIter->getMultiIndex());
-      //      std::cout << it.getMultiIndex()[0] << " = " << funcIter->getMultiIndex()[0] << " -> "
-      //                << funcIter->value() << " = "
-      //                << funcStorage->getStorage(level)->get(funcIter->getMultiIndex()) <<
-      //                std::endl;
-      functionValues[ixEvalPoints] =
-          funcIter->value();  // get(level, it2->getMultiIndex());  // sorted order
+      functionValues[ixEvalPoints] = funcIter->value();
 
       std::vector<std::vector<double>> basisValues;
       for (size_t dim = 0; dim < numDimensions; ++dim) {
         evalCopy[dim]->setParameter(sgpp::combigrid::FloatScalarVector(gridPoint[dim]));
         auto basisValues1D = evalCopy[dim]->getBasisValues();
+        // basis values at gridPoint
         std::vector<double> basisValues1D_vec(basisValues1D.size());
         for (size_t i = 0; i < basisValues1D.size(); i++) {
           basisValues1D_vec[i] = basisValues1D[i].value();
         }
-        basisValues.push_back(basisValues1D_vec);  // basis values at grid points
+        basisValues.push_back(basisValues1D_vec);
       }
 
       sgpp::combigrid::MultiIndexIterator innerIter(grid->numPoints());
@@ -570,8 +564,7 @@ std::shared_ptr<CombigridOperation> auxiliaryBsplineFunction(size_t numDimension
   /**
    * We have to specify if the function always produces the same value for the same grid points.
    * This can make the storage smaller if the grid points are nested. In this implementation,
-   * this
-   * is false.
+   * this is false.
    */
   bool exploitNesting = false;
   return std::make_shared<sgpp::combigrid::CombigridOperation>(grids, evaluators, levelManager, gf,
@@ -600,12 +593,12 @@ std::shared_ptr<CombigridOperation> CombigridOperation::createExpChebyshevBsplin
 
 std::shared_ptr<CombigridOperation> CombigridOperation::createLinearLejaBsplineInterpolation(
     size_t numDimensions, MultiFunction func, size_t degree = 3, size_t growthFactor = 2) {
-  return auxiliaryBsplineFunction(numDimensions, func, 4, degree, growthFactor);
+  return auxiliaryBsplineFunction(numDimensions, func, 4, growthFactor, degree);
 }
 
 std::shared_ptr<CombigridOperation> CombigridOperation::createLinearL2LejaBsplineInterpolation(
     size_t numDimensions, MultiFunction func, size_t degree = 3, size_t growthFactor = 2) {
-  return auxiliaryBsplineFunction(numDimensions, func, 5, degree, growthFactor);
+  return auxiliaryBsplineFunction(numDimensions, func, 5, growthFactor, degree);
 }
 
 } /* namespace combigrid */
