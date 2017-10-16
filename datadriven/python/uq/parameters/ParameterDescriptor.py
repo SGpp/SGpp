@@ -1,4 +1,5 @@
-from pysgpp.extensions.datadriven.uq.dists import (Dist, Uniform, Normal, TNormal, Lognormal, Beta, MultivariateNormal)
+from pysgpp.extensions.datadriven.uq.dists import (Dist, Uniform, Normal, TNormal, SGDEdist,
+                          Lognormal, Beta, MultivariateNormal)
 from pysgpp.extensions.datadriven.uq.transformation import (LinearTransformation,
                                                             RosenblattTransformation)
 
@@ -135,6 +136,11 @@ class UncertainParameterDesciptor(ParameterDescriptor):
         # check if there are enough identifiers given
         if self._dist.getDim() > 1 and self._dist.getDim() != len(self._name):
             raise AttributeError("not enough names provided; given %i (%s), expected %i" % (len(self._name), ", ".join(self._name), self._dist.getDim()))
+
+        # check if there is and SGDE involved that need this
+        # transformation
+        if isinstance(self._dist, SGDEdist):
+            self._dist.transformation = self.__trans
 
         return UncertainParameter(self._name, self._dist,
                                   self.__trans, self._value)

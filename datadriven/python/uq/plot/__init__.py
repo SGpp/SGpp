@@ -13,6 +13,7 @@ __author__ = "Fabian Franzelin, fabian.franzelin@ipvs.uni-stuttgart.de"
 
 from plot1d import (plotFunction1d,
                     plotDensity1d,
+                    plotHistogram1d,
                     plotCDF,
                     plotCDF1d,
                     plotPDF,
@@ -31,7 +32,8 @@ from plot2d import (plotSGDE2d,
                     plotSG2d,
                     plotSamples2d,
                     plotGrid2d,
-                    plotFunction2d)
+                    plotFunction2d,
+                    plotScatter2d)
 
 from plot3d import (plotFunction3d,
                     plotDensity3d,
