@@ -8,8 +8,12 @@
 #include <iostream>
 
 #ifdef USE_DAKOTA
-#include <pecos_global_defs.hpp>
 #include <BasisPolynomial.hpp>
+#include <pecos_global_defs.hpp>
+#endif
+
+#ifndef M_SQRT2
+#define M_SQRT2 1.41421356237309504880
 #endif
 
 namespace sgpp {
