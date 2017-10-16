@@ -9,6 +9,20 @@ from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend
 from argparse import ArgumentParser
 
 
+def arctanModel(x, params):
+  return np.arctan(50.0 * (x[0] - .35)) + np.pi / 2.0 + 4.0 * x[1] ** 3 + np.exp(x[0] * x[1] - 1.0);
+
+
+def buildAtanParams():
+    parameterBuilder = ParameterBuilder()
+    up = parameterBuilder.defineUncertainParameters()
+
+    up.new().isCalled("x1").withUniformDistribution(0, 1)
+    up.new().isCalled("x2").withUniformDistribution(0, 1)
+
+    return parameterBuilder.andGetResult()
+
+
 def boreholeModel(x, params):
     z = params.getJointTransformation().unitToProbabilistic(x)
 
@@ -39,13 +53,28 @@ def buildBoreholeParams():
     return parameterBuilder.andGetResult()
 
 
+def buildModel(name):
+    if name == "arctan":
+        params = buildAtanParams()
+        model = arctanModel
+    elif name == "borehole":
+        params = buildBoreholeParams()
+        model = boreholeModel
+    else:
+        raise AttributeError("model unknown")
+
+    return model, params
+
+
 def buildSparseGrid(gridType, basisType, degree=5, growthFactor=2):
     if gridType == "ClenshawCurtis" and basisType == "bspline":
         return CombigridOperation.createExpClenshawCurtisBsplineInterpolation(numDims, func, degree)
     elif gridType == "UniformBoundary" and basisType == "bspline":
          return CombigridOperation.createExpUniformBoundaryBsplineInterpolation(numDims, func, degree)
-    elif gridType == "Leja" and basisType == "bspline":
-         return CombigridOperation.createLinearLejaBsplineInterpolation(numDims, func, degree, growthFactor)
+    elif gridType == "Leja" and basisType == "poly":
+         return CombigridOperation.createExpLejaPolynomialInterpolation(numDims, func)
+    elif gridType == "L2Leja" and basisType == "poly":
+         return CombigridOperation.createExpL2LejaPolynomialInterpolation(numDims, func)
     elif gridType == "ClenshawCurtis" and basisType == "poly":
          return CombigridOperation.createExpClenshawCurtisPolynomialInterpolation(numDims, func)
     else:
@@ -55,34 +84,36 @@ def buildSparseGrid(gridType, basisType, degree=5, growthFactor=2):
 if __name__ == "__main__":
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
-    parser.add_argument('--gridType', default="ClenshawCurtis", type=str, help="define which sparse grid should be used")
+    parser.add_argument('--model', default="arctan", type=str, help="define true model")
     parser.add_argument('--degree', default=5, type=int, help="polynomial degree of B-splines")
     parser.add_argument('--maxLevel', default=3, type=int, help="level of regular sparse grid")
     parser.add_argument('--growthFactor', default=2, type=int, help="Leja growth factor")
     args = parser.parse_args()
-
-
-    params = buildBoreholeParams()
     
+    model, params = buildModel(args.model)
+
     # We have to wrap f in a pysgpp.MultiFunction object.
-    func = pysgpp.multiFunc(lambda x: boreholeModel(x, params))
+    func = pysgpp.multiFunc(lambda x: model(x, params))
     numDims = params.getStochasticDim()
 
     # compute reference values
     n = 1000
     x = np.random.rand(n, numDims)
-    y = np.array([boreholeModel(xi, params) for xi in x])
+    y = np.array([model(xi, params) for xi in x])
 
     results = {}
-    for basisType in ["bspline", "poly"]:
-        operation = buildSparseGrid(args.gridType,
+    for gridType, basisType in [("UniformBoundary", "bspline"),
+                                ("Leja", "poly"),
+                                ("L2Leja", "poly"),
+                                ("ClenshawCurtis", "poly")]:
+        operation = buildSparseGrid(gridType,
                                     basisType,
                                     args.degree,
                                     args.growthFactor)
         numGridPoints = np.array([])
         l2errors = np.array([])
         for level in xrange(0, args.maxLevel):
-            print args.gridType, basisType, level
+            print gridType, basisType, level
             def f(x):
                 x_vec = DataVector(x)
                 return operation.evaluate(level, x_vec)
@@ -91,10 +122,10 @@ if __name__ == "__main__":
             l2errors = np.append(l2errors, l2error)
             numGridPoints = np.append(numGridPoints, operation.numGridPoints())
 
-        results[basisType] = numGridPoints, l2errors
+        results[basisType, gridType] = numGridPoints, l2errors
     fig = plt.figure()
     
-    for basisType, (numGridPoints, l2errors) in results.items():
-        plt.loglog(numGridPoints, l2errors, label=basisType)
+    for (basisType, gridType), (numGridPoints, l2errors) in results.items():
+        plt.loglog(numGridPoints, l2errors, label="%s %s" % (gridType, basisType))
     insert_legend(fig, loc="right", ncol=2)
     plt.show()
