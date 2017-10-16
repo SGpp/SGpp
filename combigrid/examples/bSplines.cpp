@@ -83,7 +83,7 @@ void interpolate(size_t maxlevel, double& max_err, double& L2_err) {
     max_err = (diff > max_err) ? diff : max_err;
     L2_err += pow(diff, 2);
   }
-  L2_err /= static_cast<double>(num_points);
+  L2_err = sqrt(L2_err / static_cast<double>(num_points));
 
   std::cout << "# grid points: " << operation->numGridPoints() << " ";
 }
