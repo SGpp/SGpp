@@ -139,8 +139,8 @@ class UncertainParameterDesciptor(ParameterDescriptor):
 
         # check if there is and SGDE involved that need this
         # transformation
-        if isinstance(self._dist, SGDEdist):
-            self._dist.transformation = self.__trans
+#         if isinstance(self._dist, SGDEdist):
+#             self._dist.transformation = self.__trans
 
         return UncertainParameter(self._name, self._dist,
                                   self.__trans, self._value)
