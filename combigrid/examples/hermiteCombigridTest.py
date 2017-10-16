@@ -421,16 +421,19 @@ def example_combicombigrid_2D_linear(l, func_standard):
 
 def example_combicombigrid_2D_hermite(l, func_collection):
     d = 2
-    level = l
+    level = 3
     n_samples = 50
     func_standard = func_collection.getFunction()
-    operation = gC.CombiCombigridLinear(func_collection, 2)
+    #operation = gC.CombiCombigriddeBaarHarding(func_collection, 2)
+    operation=pysgpp.CombigridOperation.createExpUniformBoundaryBsplineZetaInterpolation(d,1 ,\
+              pysgpp.multiFunc(func_standard),3)
     # operation = HierachGridBSpline(2, 3, func_standard)
     operation_wrap = operationwrapper(operation, level)
 
     # operation.operation_zeta for mixed
-    p.plot2DGrid_operation(n_samples, level, operation, "combicombi_hermite")
-    # plot2DContour(n_samples, level, operation)
+    p.plot2DGrid_operation(n_samples, level, operation, "combicombi_hermite",show=False)
+    #p.plot2DContour(n_samples, level, operation)
+    plt.show()
 
     error = estimatel2Error(10000, 2, operation_wrap, func_standard)
 
@@ -463,7 +466,7 @@ def example_error_picewise(l, func_container, show=True):
     func_standard = func_container.getFunction()
     func_standard = pysgpp.multiFunc(func_standard)
 
-    operation_list.append(gC.CombiCombigridLinear(func_container, 2))
+    operation_list.append(gC.CombiCombigriddeBaarHarding(func_container, 2))
     operation_list.append(gC.CombiCombigridHermite(func_container, 2))
     operation_list.append(pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(
         2, func_standard))
@@ -530,7 +533,7 @@ def example_plot_error(func_collection, dim, maxlevel=5, x_axis_type="nr_gridpoi
 
     operations = []
 
-    operations.append(gC.CombiCombigridLinear(func_collection, dim))
+    operations.append(gC.CombiCombigriddeBaarHarding(func_collection, dim))
     operations.append(gC.CombiCombigridHermite(func_collection, dim))
     operations.append(pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(
         dim, func_standard))
@@ -610,14 +613,14 @@ def example_plot_error_gradients(func_collection, dim, grad_index_list, maxlevel
           each operation by level
       """
 
-    # operation4= HierachGridBSpline(dim,3,func_standard)
+
 
 
     func_standard = pysgpp.multiFunc(func_collection.getFunction())
 
     operations = []
 
-    operations.append(gC.CombiCombigridLinear(func_collection, dim))
+    operations.append(gC.CombiCombigriddeBaarHarding(func_collection, dim))
     operations.append(gC.CombiCombigridHermite(func_collection, dim))
     operations.append(pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(
         dim, func_standard))
@@ -633,7 +636,7 @@ def example_plot_error_gradients(func_collection, dim, grad_index_list, maxlevel
     operations.append(pysgpp.CombigridOperation.createExpUniformBoundaryBsplineInterpolation(
           dim,func_standard,3))
 
-    func_standard = func_collection.getFunction()
+
     labels = []
     labels.append("Gitter (de Baar und Harding)")
     labels.append("Gitter (Hermite)")
@@ -716,53 +719,68 @@ def testf(x):
     return x[0] * x[1]
 
 
-#example_1D_realfunction()
-#example_1D_psi(1)
+def examples_1d():
+    # example_1D_realfunction()
+    # example_1D_psi(1)
 
-#example_1D_linear(1)
+    # example_1D_linear(1)
 
-# example_1D_zeta(2)
-# example_combicombigrid_1D(2)
-plt.show()
+    # example_1D_zeta(2)
+    # example_combicombigrid_1D(2)
+    plt.show()
 
-dim = 2
+def examples_2d():
 
-func = pysgpp.OptBraninObjective()
-func_wrap = getfuncwrapper(func)
+    dim = 2
 
-func_standard = pysgpp.multiFunc(func_wrap)
+    func = pysgpp.OptBraninObjective()
+    func_wrap = getfuncwrapper(func)
 
-# example_2D_psi()
-# example_2D_linear(2,func_standard)
-#example_combicombigrid_2D_linear(2, func_standard)  # with "contourplot"
-# print()
+    func_standard = pysgpp.multiFunc(func_wrap)
 
-testclass = fctClass.funcGradientCollection(func_standard, 2)
+    # example_2D_psi()
+    # example_2D_linear(2,func_standard)
+    #example_combicombigrid_2D_linear(2, func_standard)  # with "contourplot"
+    # print()
 
-func_container = fctClass.funcGradientCollectionSymbolic(fctClass.BraninSymbolic(), 2)
+    testclass = fctClass.funcGradientCollection(func_standard, 2)
 
-#example_2D_comparison_function(func_container.getFunction(), "", show=False)
+    func_container = fctClass.funcGradientCollectionSymbolic(fctClass.BraninSymbolic(), 2)
 
-#example_combicombigrid_2D_hermite(3, func_container)
+    #example_2D_comparison_function(func_container.getFunction(), "", show=False)
 
-#example_calcl2error(func_container, "Values/Test/Branin", 7, 2, grad_index=[[0], [1], [0, 1]],
-#                  fct=True)
-plot_l2error("Values/Test/Branin",grad_index=[[0],[1],[0,1]],fct=True)
+    example_combicombigrid_2D_hermite(3, func_container)
 
-
-
-
-#example_error_picewise(2, func_container)
-
-dim = 4
-
-func_container = fctClass.funcGradientCollectionSymbolic(fctClass.testfSymbolic2_4d(), dim)
+    #example_calcl2error(func_container, "Values/Test/Branin", 7, 2, grad_index=[[0], [1], [0, 1]],
+    #                  fct=True)
+    #plot_l2error("Values/Test/Branin",grad_index=[[0],[1],[0,1]],fct=True)
 
 
-#plot_l2error("Values/test4d",grad_index=[[1],[1],[0,1]],fct=True)
-# example_calcl2error(func_container, "test4d", level=2,grad_index=[[0, 1], [1]],fct=True)
 
-# func = pysgpp.OptRosenbrockObjective(dim)
-# func_wrap = getfuncwrapper(func)
 
-# func_standard = pysgpp.multiFunc(func_wrap)
+    #example_error_picewise(2, func_container)
+
+
+def examples_multid():
+    dim = 4
+
+    func_container = fctClass.funcGradientCollectionSymbolic(fctClass.testfSymbolic2_4d(), dim)
+
+
+    # plot_l2error("Values/test4d",grad_index=[[1],[1],[0,1]],fct=True)
+    # example_calcl2error(func_container, "test4d", level=2,grad_index=[[0, 1], [1]],fct=True)
+
+    # func = pysgpp.OptRosenbrockObjective(dim)
+    # func_wrap = getfuncwrapper(func)
+
+    # func_standard = pysgpp.multiFunc(func_wrap)
+
+
+#examples_1d()
+
+examples_2d()
+
+#examples_multid()
+
+
+

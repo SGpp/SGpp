@@ -25,11 +25,12 @@
 #include <sgpp/combigrid/operation/onedim/CubicSplineInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/InterpolationCoefficientEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
-#include <sgpp/combigrid/operation/onedim/PsiHermiteInterpolationEvaluator.hpp>
-#include <sgpp/combigrid/operation/onedim/ZetaHermiteInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/PsiHermiteInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/ZetaHermiteInterpolationEvaluator.hpp>
 
+#include <iostream>
 namespace sgpp {
 namespace combigrid {
 
@@ -168,10 +169,12 @@ std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::qua
   return std::make_shared<QuadratureEvaluator>();
 }
 
-std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::psiHermiteInterpolation() {
+std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>
+CombiEvaluators::psiHermiteInterpolation() {
   return std::make_shared<PsiHermiteInterpolationEvaluator>();
 }
-std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::zetaHermiteInterpolation() {
+std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>
+CombiEvaluators::zetaHermiteInterpolation() {
   return std::make_shared<ZetaHermiteInterpolationEvaluator>();
 }
 
@@ -209,6 +212,26 @@ std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> CombiEvaluators::mult
 std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>> CombiEvaluators::tensorInterpolation(
     std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis) {
   return std::make_shared<InterpolationCoefficientEvaluator>(functionBasis);
+}
+
+std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::getEvaluatorByType(
+    evalType type) {
+  switch (type) {
+    case bSpline3:
+      std::cout << "bspline dim";
+      return sgpp::combigrid::CombiEvaluators::BSplineInterpolation(3);
+
+    case psi:
+    std::cout << "psi dim";
+      return sgpp::combigrid::CombiEvaluators::psiHermiteInterpolation();
+    case zeta:
+      std::cout << "zeta dim";
+      return sgpp::combigrid::CombiEvaluators::zetaHermiteInterpolation();
+    case linear:
+      return sgpp::combigrid::CombiEvaluators::linearInterpolation();
+    default:
+      throw sgpp::base::not_implemented_exception();
+  }
 }
 
 } /* namespace combigrid */

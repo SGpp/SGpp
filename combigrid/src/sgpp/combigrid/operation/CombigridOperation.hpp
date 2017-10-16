@@ -110,18 +110,13 @@ class CombigridOperation {
    */
   size_t getUpperPointBound() const;
 
-
   /**
   *
   * get the Evaluator for fullgrid e.g for comparisons
   *
   */
 
-  std::shared_ptr<AbstractFullGridEvaluator<FloatScalarVector>>  getFullGridEvaluator();
-     
-  
-
-
+  std::shared_ptr<AbstractFullGridEvaluator<FloatScalarVector>> getFullGridEvaluator();
 
   static std::shared_ptr<CombigridOperation> createExpClenshawCurtisPolynomialInterpolation(
       size_t numDimensions, MultiFunction func);
@@ -159,15 +154,15 @@ class CombigridOperation {
                                                                                MultiFunction func);
 
   static std::shared_ptr<CombigridOperation> createExpUniformBoundaryZetaLinearInterpolation(
-      size_t numDimensions, size_t zetaDimension,MultiFunction func);
+      size_t numDimensions, size_t zetaDimension, MultiFunction func);
   static std::shared_ptr<CombigridOperation> createExpUniformBoundaryZetaInterpolation(
-    size_t numDimensions, std::vector<int> zetaDimensions, MultiFunction func); 
+      size_t numDimensions, std::vector<int> zetaDimensions, MultiFunction func);
 
   static std::shared_ptr<CombigridOperation> createExpUniformBoundaryPsiInterpolation(
-    size_t numDimensions, std::vector<int> psiDimensions, MultiFunction func); 
+      size_t numDimensions, std::vector<int> psiDimensions, MultiFunction func);
 
   static std::shared_ptr<CombigridOperation> createExpUniformBoundaryPsiLinearInterpolation(
-      size_t numDimensions, size_t psiDimension,MultiFunction func);
+      size_t numDimensions, size_t psiDimension, MultiFunction func);
   static std::shared_ptr<CombigridOperation> createExpUniformPsiHermiteInterpolation(
       size_t numDimensions, MultiFunction func);
   static std::shared_ptr<CombigridOperation> createExpUniformBoundaryPsiHermiteInterpolation(
@@ -179,18 +174,23 @@ class CombigridOperation {
   static std::shared_ptr<CombigridOperation> createExpUniformBoundaryPsiHermiteInterpolation(
       size_t numDimensions, size_t zetaDimension, MultiFunction func);
   static std::shared_ptr<CombigridOperation> createExpUniformBoundaryZetaHermiteInterpolation(
-        size_t numDimensions, size_t zetaDimension, MultiFunction func);
+      size_t numDimensions, size_t zetaDimension, MultiFunction func);
   static std::shared_ptr<CombigridOperation> createExpUniformZetaHermiteInterpolation(
       size_t numDimensions, MultiFunction func);
-      static std::shared_ptr<CombigridOperation> createExpUniformBoundaryZetaHermiteInterpolation(
-        size_t numDimensions, MultiFunction func);
-  
-
+  static std::shared_ptr<CombigridOperation> createExpUniformBoundaryZetaHermiteInterpolation(
+      size_t numDimensions, MultiFunction func);
 
   static std::shared_ptr<CombigridOperation> createExpUniformBoundaryBsplineInterpolation(
       size_t numDimensions, MultiFunction func, size_t degree);
+
   static std::shared_ptr<CombigridOperation> createExpClenshawCurtisBsplineInterpolation(
       size_t numDimensions, MultiFunction func, size_t degree);
+  // special cases with psi/zeta in some dimensions
+  static std::shared_ptr<CombigridOperation> createExpUniformBoundaryBsplinePsiInterpolation(
+      size_t numDimensions, size_t psiDimension, MultiFunction func, size_t degree);
+  static std::shared_ptr<CombigridOperation> createExpUniformBoundaryBsplineZetaInterpolation(
+      size_t numDimensions, size_t zetaDimension, MultiFunction func, size_t degree);
+      
   static std::shared_ptr<CombigridOperation> createExpChebyshevBsplineInterpolation(
       size_t numDimensions, MultiFunction func, size_t degree);
   static std::shared_ptr<CombigridOperation> createLinearLejaBsplineInterpolation(

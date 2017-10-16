@@ -6,19 +6,21 @@
 #pragma once
 
 #include <sgpp/combigrid/GeneralFunction.hpp>
-#include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/algebraic/FloatArrayVector.hpp>
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/combigrid/algebraic/FloatTensorVector.hpp>
 #include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
+#include <sgpp/base/exception/not_implemented_exception.hpp>
 
 #include <memory>
 #include <vector>
 
 namespace sgpp {
 namespace combigrid {
+
+
 
 /**
  * This class provides standard configurations of point hierarchies. The methods names allude to the
@@ -68,6 +70,9 @@ class CombiHierarchies {
  */
 class CombiEvaluators {
  public:
+
+    enum evalType { bSpline3, psi, zeta, linear };
+
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> polynomialInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> linearInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cubicSplineInterpolation();
@@ -87,6 +92,9 @@ class CombiEvaluators {
       SingleFunction func, bool normalizeWeights);
   static std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>> tensorInterpolation(
       std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis);
+
+  static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> getEvaluatorByType(
+      evalType type);
 
   typedef std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> Collection;
   typedef std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> MultiCollection;
