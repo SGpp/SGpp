@@ -218,20 +218,20 @@ class HierachGridBSpline:
 
         return self.opEvalBspline.eval(self.coeffs, x)
 
-    #gets created on function call, no "refresh"
+    # gets created on function call, no "refresh"
     def getLevelManager(self):
-        return self.LevelManager(self.gridStorage,self.dim)
-
+        return self.LevelManager(self.gridStorage, self.dim)
 
     class LevelManager:
-        def __init__(self, gridstorage,dim):
+        def __init__(self, gridstorage, dim):
             self.gridStorage = gridstorage
-            self.dim=dim
+            self.dim = dim
 
         def numGridPoints(self):
             return self.gridStorage.getSize()
+
         def getAllGridPoints(self):
-            list=[]
+            list = []
             for i in xrange(self.gridStorage.getSize()):
                 gp = self.gridStorage.getPoint(i)
                 coordinates = pysgpp.DataVector(self.dim)
@@ -249,7 +249,46 @@ class function_eval_undisplaced:
         return self.function(x)
 
 
-class CombiCombigridLinear:
+class CombiCombigriddeBaarHarding:
+    def __init__(self, func_collection, dim):
+        self.func = pysgpp.multiFunc(func_collection.getFunction())
+        self.grad = []
+        for i in range(dim):
+            self.grad.append(pysgpp.multiFunc(func_collection.getGradient([i])))
+
+        self.d = dim
+        self.operation_linear = pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(
+            self.d, self.func)
+
+        self.operation_psi = []
+        self.operation_zeta = []
+        for i in range(dim):
+            self.operation_psi.append(
+                pysgpp.CombigridOperation.createExpUniformBoundaryPsiLinearInterpolation(self.d,
+                                                                                         i,
+                                                                                         self.func))
+
+        for i in range(dim):
+            self.operation_zeta.append(
+                pysgpp.CombigridOperation.createExpUniformBoundaryZetaLinearInterpolation(
+                    self.d, i, self.grad[i]))
+
+    def evaluate(self, level, x):
+        sum = 0
+
+        for operation in self.operation_psi:
+            sum += operation.evaluate(level, x)
+        for operation in self.operation_zeta:
+            sum += operation.evaluate(level, x)
+        sum -= self.operation_linear.evaluate(level, x) * (self.d - 1)
+        return sum
+
+    def getLevelManager(self):
+        return self.operation_linear.getLevelManager()
+
+
+class CombiCombigriddeBaarHardingBSpline:
+
     def __init__(self, func_collection, dim):
         self.func = pysgpp.multiFunc(func_collection.getFunction())
         self.grad = []
@@ -297,7 +336,6 @@ class FullGrid:
         scalars = pysgpp.FloatScalarVectorVector(scalars)
         fullgrid_operation.setParameters(scalars)
 
-
         return fullgrid_operation.eval([level for i in range(self.d)]).getValue()
 
     class LevelManager:
@@ -322,7 +360,6 @@ class CombiFullGridHermite(FullGrid):
         self.grad = []
         self.level = 0
         self.func_collection = func_collection
-
 
         # operations
         self.operation_psi = \
@@ -489,4 +526,3 @@ class LinearFullgrid(FullGrid):
 
     def getLevelManager(self):
         return self.LevelManager(self.operation_linear, self.level, self.d)
-

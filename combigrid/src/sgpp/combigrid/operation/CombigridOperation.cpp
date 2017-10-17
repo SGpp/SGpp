@@ -496,7 +496,7 @@ std::shared_ptr<CombigridOperation> auxiliaryBsplineFunction(size_t numDimension
     sgpp::base::DataVector coefficients_sle(numGridPoints);
     sgpp::base::DataVector functionValues(numGridPoints);
 
-    // Creates an iterator that yields the multi-indices of all grid points in the grid.
+    // Creates an iterator that yields the multi-indices of all grid points in the grid.of all grid points in the grid.
     sgpp::combigrid::MultiIndexIterator it(grid->numPoints());
     auto funcIter =
         funcStorage->getGuidedIterator(level, it, std::vector<bool>(numDimensions, true));
@@ -701,6 +701,22 @@ CombigridOperation::createExpUniformBoundaryBsplineInterpolation(size_t numDimen
   size_t dummygrowthfactor = 0;
   return auxiliaryBsplineFunction(numDimensions, func, 1, dummygrowthfactor, degree);
 }
+
+
+std::shared_ptr<CombigridOperation>
+CombigridOperation::createExpUniformBoundaryBsplineLinearInterpolation(size_t numDimensions,
+                                                                     size_t linearDimension,
+                                                                     MultiFunction func,
+                                                                     size_t degree) {
+  std::vector<sgpp::combigrid::CombiEvaluators::evalType> evalTypes(
+      numDimensions, sgpp::combigrid::CombiEvaluators::evalType::bSpline3);
+  evalTypes[linearDimension] = sgpp::combigrid::CombiEvaluators::evalType::linear;
+
+  size_t dummygrowthfactor = 0;
+  return auxiliaryBsplineFunctionMixed(numDimensions, evalTypes, func, 1, dummygrowthfactor,
+                                       degree);
+}
+
 
 std::shared_ptr<CombigridOperation>
 CombigridOperation::createExpUniformBoundaryBsplinePsiInterpolation(size_t numDimensions,

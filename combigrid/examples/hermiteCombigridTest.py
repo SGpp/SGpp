@@ -33,7 +33,7 @@ def estimatel2Error(n, dim, gridOpEval, targetFunc):
         point = pysgpp.DataVector(dim)
         for d in range(dim):
             point[d] = random.random()
-        # print(gridOpEval(point)-targetFunc.evalUndisplaced(point))
+        #print(gridOpEval(point))
         sum += (gridOpEval(point) - targetFunc(point)) ** 2
     sum = sum / n
     sum = np.sqrt(sum)
@@ -419,19 +419,19 @@ def example_combicombigrid_2D_linear(l, func_standard):
     print("mixed gradient error:" + str(mixgrad_error))
 
 
-def example_combicombigrid_2D_hermite(l, func_collection):
+def example_combicombigrid_2D(l, func_collection):
     d = 2
-    level = 3
+    level =2
     n_samples = 50
     func_standard = func_collection.getFunction()
     #operation = gC.CombiCombigriddeBaarHarding(func_collection, 2)
-    operation=pysgpp.CombigridOperation.createExpUniformBoundaryBsplineZetaInterpolation(d,1 ,\
+    operation=pysgpp.CombigridOperation.createExpUniformBoundaryBsplinePsiInterpolation(d,0,\
               pysgpp.multiFunc(func_standard),3)
     # operation = HierachGridBSpline(2, 3, func_standard)
     operation_wrap = operationwrapper(operation, level)
 
     # operation.operation_zeta for mixed
-    p.plot2DGrid_operation(n_samples, level, operation, "combicombi_hermite",show=False)
+    p.plot2DGrid_operation(n_samples, level, operation, "Psi-BSPline",show=False)
     #p.plot2DContour(n_samples, level, operation)
     plt.show()
 
@@ -655,7 +655,7 @@ def example_plot_error_gradients(func_collection, dim, grad_index_list, maxlevel
     Y = np.zeros((maxlevel - 1, len(operations)), dtype=np.float64)
 
     for i in range(len(operations)):
-        nr_gridpoints, errors = calc_error_ilevels_grad(operations[i], func_container, dim,
+        nr_gridpoints, errors = calc_error_ilevels_grad(operations[i], func_collection, dim,
                                                         maxlevel, grad_index_list)
 
         if (x_axis_type == "level"):
@@ -749,11 +749,12 @@ def examples_2d():
 
     #example_2D_comparison_function(func_container.getFunction(), "", show=False)
 
-    example_combicombigrid_2D_hermite(3, func_container)
+    #example_combicombigrid_2D(3, func_container)
 
-    #example_calcl2error(func_container, "Values/Test/Branin", 7, 2, grad_index=[[0], [1], [0, 1]],
+    #example_calcl2error(func_container, "Values/Test/Branin/BSplines", 9, 2, grad_index=[[0], [1],
+    #                                                                                   [0, 1]],
     #                  fct=True)
-    #plot_l2error("Values/Test/Branin",grad_index=[[0],[1],[0,1]],fct=True)
+    plot_l2error("Values/Test/Branin/BSplines",grad_index=[[0],[1],[0,1]],fct=True)
 
 
 
