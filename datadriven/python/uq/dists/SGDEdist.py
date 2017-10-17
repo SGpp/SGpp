@@ -197,8 +197,10 @@ class SGDEdist(EstimatedDist):
 
         return cls(grid, alpha, trainData, bounds, config)
 
+
     def getJointTransformation(self):
         return self.computeLinearTransformation(self.bounds)
+
 
     def pdf(self, x):
         # convert the parameter to the right format

@@ -152,13 +152,6 @@ class LevelManager {
   virtual void updatePriority(MultiIndex const &level, std::shared_ptr<LevelInfo> levelInfo);
 
   /**
-   * @param q: Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as
-   * in most papers).
-   * If you have a norm w with levels starting from 1, simply use q = w - dim().
-   */
-  std::vector<MultiIndex> getRegularLevels(size_t q);
-
-  /**
    * @return a set of level multi-indices. The levels are enumerated with increasing 1-norm until
    * the total number of necessary function evaluations would exceed the given limit maxNumPoints.
    * For example, this might return the levels (0, 0), (1, 0), (0, 1), (2, 0), (1, 1) and omit the
@@ -252,6 +245,13 @@ class LevelManager {
   std::shared_ptr<TreeStorage<uint8_t>> getLevelStructure() const;
 
   /**
+   * @param q: Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as
+   * in most papers).
+   * If you have a norm w with levels starting from 1, simply use q = w - dim().
+   */
+  std::vector<MultiIndex> getRegularLevels(size_t q);
+
+  /**
    * @return the serialized version of getLevelStructure()
    */
   std::string getSerializedLevelStructure() const;
@@ -315,6 +315,12 @@ class LevelManager {
    * This method is currently not optimized and can be slow!
    */
   size_t numGridPoints() { return combiEval->getAllGridPoints().size(); }
+
+  /**
+   * @return the maximum number of grid points that have to be evaluated for a regular grid with
+   * maximum multi-index L1 norm of q. For nested grids, this estimate should be exact.
+   */
+  size_t maxNumPointsForRegular(size_t q) { return combiEval->maxNumPointsForRegular(q); }
 
   /**
    * Calls addLevel() on the underlying CombigridEvaluator.

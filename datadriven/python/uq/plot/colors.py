@@ -2,6 +2,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
+import subprocess
 try:
     from matplotlib2tikz import save as tikz_save
 except:
@@ -27,6 +28,7 @@ def load_custom_pgf_preamble(dtype="standard", macros="thesis"):
                     'axes.unicode_minus': True,
                     'figure.figsize': (5, 4.5),
                     'image.cmap': load_default_color_map(dtype="string")
+#                     'axes.titlepad': 25
                     }
 
     if dtype == "springer":
@@ -116,7 +118,7 @@ def load_font_properties(size=None,
 #
 #     return colors
 
-def savefig(fig, filename, lgd=None, tikz=False, mpl3d=False):
+def savefig(fig, filename, lgd=None, tikz=False, mpl3d=False, crop=False):
     if mpl3d:
         fig.savefig("%s.png" % filename)
         fig.savefig("%s.pdf" % filename)
@@ -137,6 +139,11 @@ def savefig(fig, filename, lgd=None, tikz=False, mpl3d=False):
             tikz_save("%s.tex" % filename, fig)
 #             except:
 #                 pass
+
+    if crop:
+        subprocess.call(["pdfcrop",
+                         "%s.pdf" % filename,
+                         "%s.pdf" % filename])
 
     plt.close(fig)
 

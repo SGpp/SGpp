@@ -11,14 +11,14 @@ namespace sgpp {
 namespace combigrid {
 
 CubicSplineInterpolationEvaluator::CubicSplineInterpolationEvaluator()
-    : evaluationPoint(0.0), basisCoefficients(), xValues(), gridCoefficients() {}
+    : evaluationPoint(0.0), basisValues(), xValues(), gridCoefficients() {}
 
 CubicSplineInterpolationEvaluator::~CubicSplineInterpolationEvaluator() {}
 
 CubicSplineInterpolationEvaluator::CubicSplineInterpolationEvaluator(
     const CubicSplineInterpolationEvaluator& other)
     : evaluationPoint(other.evaluationPoint),
-      basisCoefficients(other.basisCoefficients),
+      basisValues(other.basisValues),
       xValues(other.xValues),
       gridCoefficients(other.gridCoefficients) {}
 
@@ -34,7 +34,7 @@ bool CubicSplineInterpolationEvaluator::needsParameter() { return true; }
 
 void CubicSplineInterpolationEvaluator::setParameter(const FloatScalarVector& param) {
   evaluationPoint = param.value();
-  computeBasisCoefficients();
+  computeBasisValues();
 }
 
 void CubicSplineInterpolationEvaluator::setGridPoints(std::vector<double> const& x) {
@@ -42,8 +42,8 @@ void CubicSplineInterpolationEvaluator::setGridPoints(std::vector<double> const&
 
   if (xValues.size() < 2) {
     if (xValues.size() == 1) {
-      basisCoefficients.resize(1);
-      basisCoefficients[0] = 1;
+      basisValues.resize(1);
+      basisValues[0] = 1;
     }
     return;
   }
@@ -97,14 +97,14 @@ void CubicSplineInterpolationEvaluator::setGridPoints(std::vector<double> const&
     }
   }
 
-  computeBasisCoefficients();
+  computeBasisValues();
 }
 
-void CubicSplineInterpolationEvaluator::computeBasisCoefficients() {
+void CubicSplineInterpolationEvaluator::computeBasisValues() {
   if (xValues.size() < 2) {
     if (xValues.size() == 1) {
-      basisCoefficients.resize(1);
-      basisCoefficients[0] = 1;
+      basisValues.resize(1);
+      basisValues[0] = 1;
     }
     return;
   }
@@ -120,12 +120,16 @@ void CubicSplineInterpolationEvaluator::computeBasisCoefficients() {
 
   double dx = evaluationPoint - xValues[j];
 
-  basisCoefficients.resize(gridCoefficients.size());
+  basisValues.resize(gridCoefficients.size());
   for (size_t i = 0; i < gridCoefficients.size(); ++i) {
-    basisCoefficients[i] = gridCoefficients[i][j].a + gridCoefficients[i][j].b * dx +
-                           gridCoefficients[i][j].c * dx * dx +
-                           gridCoefficients[i][j].d * dx * dx * dx;
+    basisValues[i] = gridCoefficients[i][j].a + gridCoefficients[i][j].b * dx +
+                     gridCoefficients[i][j].c * dx * dx + gridCoefficients[i][j].d * dx * dx * dx;
   }
+}
+
+void CubicSplineInterpolationEvaluator::setFunctionValuesAtGridPoints(
+    std::vector<double>& functionValues) {
+  basisCoefficients = functionValues;
 }
 
 } /* namespace combigrid */

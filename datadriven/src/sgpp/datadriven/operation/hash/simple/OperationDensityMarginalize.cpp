@@ -25,7 +25,7 @@ void OperationDensityMarginalize::doMarginalize(base::DataVector& alpha, base::G
     throw sgpp::base::operation_exception(
         "OperationDensityMarginalize is not possible for less than 2 dimensions");
 
-  mg = base::Grid::createLinearGrid(gs->getDimension() - 1);
+  mg = this->grid->createGridOfEquivalentType(gs->getDimension() - 1);
   base::GridStorage* mgs = &mg->getStorage();
 
   // run through grid g and add points to mg
@@ -57,14 +57,18 @@ void OperationDensityMarginalize::doMarginalize(base::DataVector& alpha, base::G
    */
   malpha.resize(mgs->getSize());
   malpha.setAll(0.0);
+  unsigned int mdimLevel;
+  unsigned int mdimIndex;
   size_t mseqNr;
   auto& basis = grid->getBasis();
+
   for (size_t seqNr = 0; seqNr < gs->getSize(); seqNr++) {
     sgpp::base::GridPoint& gp = gs->getPoint(seqNr);
     for (unsigned int d = 0; d < gs->getDimension(); d++) {
-      if (d == mdim)
-        continue;
-      else if (d < mdim)
+      if (d == mdim) {
+        mdimLevel = gp.getLevel(d);
+        mdimIndex = gp.getIndex(d);
+      } else if (d < mdim)
         mgp.set(d, gp.getLevel(d), gp.getIndex(d));
       else
         mgp.set(d - 1, gp.getLevel(d), gp.getIndex(d));
@@ -79,8 +83,7 @@ void OperationDensityMarginalize::doMarginalize(base::DataVector& alpha, base::G
      * The integral of one basis functions changes for if another
      * type of basis is used!
      */
-    // update corresponding coefficient
-    malpha[mseqNr] += alpha[seqNr] * basis.getIntegral(mgp.getIndex(mdim), mgp.getLevel(mdim));
+    malpha[mseqNr] += alpha[seqNr] * basis.getIntegral(mdimLevel, mdimIndex);
   }
 }
 }  // namespace datadriven

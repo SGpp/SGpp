@@ -18,7 +18,8 @@ namespace datadriven {
  * keep applying marginalize to function until it's reduced to only 1 dimension
  */
 
-class OperationRosenblattTransformationPolyClenshawCurtis : public OperationRosenblattTransformation {
+class OperationRosenblattTransformationPolyClenshawCurtis
+    : public OperationRosenblattTransformation {
  public:
   explicit OperationRosenblattTransformationPolyClenshawCurtis(base::Grid* grid) : grid(grid) {}
   virtual ~OperationRosenblattTransformationPolyClenshawCurtis() {}

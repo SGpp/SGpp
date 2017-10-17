@@ -14,14 +14,21 @@
 #include <vector>
 
 // defines for turning logging capabilities on or off
+// #define CT_DEBUG
+
+#ifndef CT_DEBUG
 #define CGLOG(str)
 #define CGLOG_SURROUND(cmd) cmd
-/*#include <iostream>
+#endif
+
+#ifdef CT_DEBUG
+#include <iostream>
 #define CGLOG(str) std::cout << str << "\n"
 #define CGLOG_SURROUND(cmd)                                                 \
   std::cout << #cmd << " before: " << __FILE__ << ", " << __LINE__ << "\n"; \
   cmd;                                                                      \
-  std::cout << #cmd << " after: " << __FILE__ << ", " << __LINE__ << "\n"*/
+  std::cout << #cmd << " after: " << __FILE__ << ", " << __LINE__ << "\n"
+#endif
 
 namespace sgpp {
 namespace combigrid {

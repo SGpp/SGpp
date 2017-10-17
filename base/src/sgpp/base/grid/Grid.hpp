@@ -441,8 +441,9 @@ class Grid {
 
   /**
    * creates an equivalent grid without copying the grid points
+   * @param numDims number of dimensions
    */
-  Grid* createGridOfEquivalentType();
+  Grid* createGridOfEquivalentType(size_t numDims);
 
   /**
    * gets a reference to the GridStorage object

@@ -34,8 +34,8 @@ class LejaPointDistribution : public AbstractPointDistribution {
 
  public:
   // TODO(holzmudd): add default constructor with constant weight function and precomputed values?
-  LejaPointDistribution(SingleFunction weightFunction =
-                            SingleFunction(constantFunction<double>(static_cast<double>(1.0))));
+  LejaPointDistribution();
+  LejaPointDistribution(SingleFunction weightFunction);
   virtual ~LejaPointDistribution();
 
   virtual double compute(size_t numPoints, size_t j);

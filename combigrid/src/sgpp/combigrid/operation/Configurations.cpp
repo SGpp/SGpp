@@ -21,7 +21,9 @@
 #include <sgpp/combigrid/grid/ordering/IdentityPointOrdering.hpp>
 
 #include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/CubicSplineInterpolationEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/InterpolationCoefficientEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
@@ -111,6 +113,36 @@ std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::expUniformBoundary() {
       std::make_shared<ExponentialLevelorderPointOrdering>());
 }
 
+std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::linearUniform(size_t growthFactor) {
+  return std::make_shared<NonNestedPointHierarchy>(
+      std::make_shared<UniformPointDistribution>(),
+      std::make_shared<IdentityPointOrdering>(std::make_shared<LinearGrowthStrategy>(growthFactor),
+                                              true));
+}
+
+std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::linearClenshawCurtis(
+    size_t growthFactor) {
+  return std::make_shared<NonNestedPointHierarchy>(
+      std::make_shared<ClenshawCurtisDistribution>(),
+      std::make_shared<IdentityPointOrdering>(std::make_shared<LinearGrowthStrategy>(growthFactor),
+                                              true));
+}
+
+std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::linearChebyshev(size_t growthFactor) {
+  return std::make_shared<NonNestedPointHierarchy>(
+      std::make_shared<ChebyshevDistribution>(),
+      std::make_shared<IdentityPointOrdering>(std::make_shared<LinearGrowthStrategy>(growthFactor),
+                                              true));
+}
+
+std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::linearUniformBoundary(
+    size_t growthFactor) {
+  return std::make_shared<NonNestedPointHierarchy>(
+      std::make_shared<UniformBoundaryPointDistribution>(),
+      std::make_shared<IdentityPointOrdering>(std::make_shared<LinearGrowthStrategy>(growthFactor),
+                                              true));
+}
+
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>
 CombiEvaluators::polynomialInterpolation() {
   return std::make_shared<PolynomialInterpolationEvaluator>();
@@ -123,6 +155,11 @@ std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::lin
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>
 CombiEvaluators::cubicSplineInterpolation() {
   return std::make_shared<CubicSplineInterpolationEvaluator>();
+}
+
+std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::BSplineInterpolation(
+    size_t degree) {
+  return std::make_shared<BSplineInterpolationEvaluator>(degree);
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::quadrature() {
@@ -144,6 +181,12 @@ CombiEvaluators::multiCubicSplineInterpolation() {
   return std::make_shared<ArrayEvaluator<CubicSplineInterpolationEvaluator>>(true);
 }
 
+std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>
+CombiEvaluators::multiBSplineInterpolation(size_t degree) {
+  return std::make_shared<ArrayEvaluator<BSplineInterpolationEvaluator>>(
+      true, BSplineInterpolationEvaluator(degree));
+}
+
 std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> CombiEvaluators::multiQuadrature() {
   return std::make_shared<ArrayEvaluator<QuadratureEvaluator>>(false);
 }
@@ -152,6 +195,11 @@ std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> CombiEvaluators::mult
     SingleFunction func, bool normalizeWeights) {
   return std::make_shared<ArrayEvaluator<QuadratureEvaluator>>(
       false, QuadratureEvaluator(func, normalizeWeights));
+}
+
+std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>> CombiEvaluators::tensorInterpolation(
+    std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis) {
+  return std::make_shared<InterpolationCoefficientEvaluator>(functionBasis);
 }
 
 } /* namespace combigrid */

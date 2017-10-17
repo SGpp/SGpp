@@ -3,28 +3,28 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/grid/type/PolyGrid.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
+#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
+#include <sgpp/base/tools/HermiteBasis.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DPoly.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPoly.hpp>
-#include <sgpp/base/exception/operation_exception.hpp>
-#include <sgpp/base/exception/algorithm_exception.hpp>
-#include <sgpp/base/operation/hash/OperationEval.hpp>
-#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
-#include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/grid/type/PolyGrid.hpp>
-#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
-#include <sgpp_optimization.hpp>
 #include <sgpp_datadriven.hpp>
-#include <sgpp/base/tools/HermiteBasis.hpp>
-
+#include <sgpp_optimization.hpp>
 #include <sgpp/globaldef.hpp>
-#include <map>
+
+#include <algorithm>
 #include <cstdlib>
 #include <fstream>
+#include <functional>
 #include <iostream>
+#include <map>
 #include <utility>
 #include <vector>
-#include <algorithm>
-#include <functional>
 
 namespace sgpp {
 namespace datadriven {
@@ -96,12 +96,14 @@ void OperationInverseRosenblattTransformation1DPoly::init(base::DataVector* alph
 
       // we look for the next grid point with pdf(x) >= 0
       size_t j;
-      for (j = i; j < ordered_grid_points.size(); j++) {
+      for (j = i; j < ordered_grid_points.size() - 1; j++) {
         right_coord = ordered_grid_points[j];
         coord[0] = right_coord;
         right_function_value = opEval->eval(*alpha1d, coord);
         if (right_function_value >= 0 && right_function_value != left_function_value) break;
       }
+      if (j == ordered_grid_points.size() - 1)
+        right_function_value = 0;
       // get last function value and coordinate with pdf(x) >= 0
       // perform montonic cubic interpolation based on:
       // https://en.wikipedia.org/wiki/Monotone_cubic_interpolation
@@ -122,9 +124,10 @@ void OperationInverseRosenblattTransformation1DPoly::init(base::DataVector* alph
         function_values[2] = opEval->eval(*alpha1d, coord);
       } else {
         // if j is the last grid point choose the next one with the same step size
-        // and set it's function value to one
+        // and set it's function value to zero
+        // and set it's function value to the last value
         coord[0] = 1 + ordered_grid_points[j] - ordered_grid_points[j - 1];
-        function_values[2] = 1.0;
+        function_values[2] = right_function_value;
       }
       secants[1] = (function_values[2] - function_values[1]) / (coord[0] - ordered_grid_points[j]);
       tangents[2] = secants[1];
@@ -163,8 +166,6 @@ void OperationInverseRosenblattTransformation1DPoly::init(base::DataVector* alph
 
       for (; i <= j; i++) {
         coord[0] = ordered_grid_points[i];
-        // kann eig entfernt werden
-        eval_res = interpolation(coord[0]);
         double gaussQuadSum = 0.;
         double left = left_coord;
         double scaling = coord[0] - left;
@@ -207,7 +208,7 @@ void OperationInverseRosenblattTransformation1DPoly::init(base::DataVector* alph
 double OperationInverseRosenblattTransformation1DPoly::sample(base::DataVector* alpha1d,
                                                               double coord1d) {
   if (coord1d == 0.0) return 0.0;
-
+  if (sum == 0) return 0;
   base::DataVector coord(1);
   std::multimap<double, double>::iterator it1;
   size_t patch_nr = 0;
@@ -251,12 +252,12 @@ double OperationInverseRosenblattTransformation1DPoly::doTransformation1D(base::
                                                                           double coord1d) {
   init(alpha1d);
   // std::cout << "PFs size after exit: " << patch_functions.size() << std::endl;
-  std::function<double(const base::DataVector&)> optFunc = [this, coord1d, alpha1d](
-      const base::DataVector& x) -> double {
+  std::function<double(const base::DataVector&)> optFunc =
+      [this, coord1d, alpha1d](const base::DataVector& x) -> double {
     double F_x = sample(alpha1d, x[0]);
     return (F_x - coord1d) * (F_x - coord1d);
   };
-
+  optimization::Printer::getInstance().disableStatusPrinting();
   optimization::WrapperScalarFunction f(1, optFunc);
   optimization::optimizer::NelderMead nelderMead(f);
   nelderMead.optimize();

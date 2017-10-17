@@ -3,26 +3,26 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationModPoly.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityConditional.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensitySampling1D.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DModPoly.hpp>
-#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
-#include <sgpp/base/exception/operation_exception.hpp>
-#include <sgpp/base/operation/hash/OperationEval.hpp>
-#include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationModPoly.hpp>
 
 #include <sgpp/globaldef.hpp>
 
-#include <map>
+#include <algorithm>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
-#include <vector>
+#include <map>
 #include <utility>
-#include <algorithm>
+#include <vector>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -32,8 +32,8 @@ namespace sgpp {
 namespace datadriven {
 
 void OperationRosenblattTransformationModPoly::doTransformation(base::DataVector* alpha,
-                                                            base::DataMatrix* points,
-                                                            base::DataMatrix* pointscdf) {
+                                                                base::DataMatrix* points,
+                                                                base::DataMatrix* pointscdf) {
   size_t num_dims = this->grid->getDimension();
 
   // 1. marginalize to all possible start dimensions
@@ -90,9 +90,9 @@ void OperationRosenblattTransformationModPoly::doTransformation(base::DataVector
 }
 
 void OperationRosenblattTransformationModPoly::doTransformation(base::DataVector* alpha,
-                                                            base::DataMatrix* points,
-                                                            base::DataMatrix* pointscdf,
-                                                            size_t dim_start) {
+                                                                base::DataMatrix* points,
+                                                                base::DataMatrix* pointscdf,
+                                                                size_t dim_start) {
   // 1. marginalize to dim_start
   base::Grid* g1d = NULL;
   base::DataVector* a1d = NULL;
@@ -189,14 +189,17 @@ void OperationRosenblattTransformationModPoly::doTransformation_in_next_dim(
 }
 
 double OperationRosenblattTransformationModPoly::doTransformation1D(base::Grid* grid1d,
-                                                                base::DataVector* alpha1d,
-                                                                double coord1d) {
-  OperationRosenblattTransformation1DModPoly* opRosenblatt
-    = static_cast<OperationRosenblattTransformation1DModPoly*>
-    (op_factory::createOperationRosenblattTransformation1D(*grid1d));
-  double y = opRosenblatt->doTransformation1D(alpha1d, coord1d);
-  delete opRosenblatt;
-  return y;
+                                                                    base::DataVector* alpha1d,
+                                                                    double coord1d) {
+  std::unique_ptr<OperationTransformation1D> opRosenblatt(
+      op_factory::createOperationRosenblattTransformation1D(*grid1d));
+  double res = opRosenblatt->doTransformation1D(alpha1d, coord1d);
+  if (std::isnan(res)) {
+    std::cout << "Alpha: " << alpha1d->toString() << std::endl;
+    std::cout << "coord1d: " << coord1d << std::endl;
+  }
+
+  return res;
 }  // end of compute_1D_cdf()
 }  // namespace datadriven
 }  // namespace sgpp
