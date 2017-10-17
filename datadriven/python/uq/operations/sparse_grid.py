@@ -58,6 +58,18 @@ linearNoBoundaryGridTypes = [GridType_Linear,
                              GridType_LinearClenshawCurtis,
                              GridType_ModLinearClenshawCurtis]
 linearGridTypes = linearNoBoundaryGridTypes + linearBoundaryGridTypes
+
+multipleEvalNaiveGridTypes = [GridType_Bspline,
+                              GridType_BsplineClenshawCurtis,
+                              GridType_BsplineBoundary,
+                              GridType_ModBsplineClenshawCurtis,
+                              GridType_ModBspline,
+                              GridType_LinearClenshawCurtis,
+                              GridType_LinearClenshawCurtisBoundary,
+                              GridType_ModLinearClenshawCurtis,
+                              GridType_PolyClenshawCurtis,
+                              GridType_PolyClenshawCurtisBoundary,
+                              GridType_ModPolyClenshawCurtis]
 #######################################################################
 
 def createGrid(grid, dim, deg=1, addTruncatedBorder=False):
@@ -545,27 +557,18 @@ def isRefineable(grid, gp):
     return False
 
 
+def loadOperationMultiEval(grid, samples, isConsistent=True):
+
+    return opEval
+
+
 def evalSGFunctionMulti(grid, alpha, samples, isConsistent=True):
     if len(samples.shape) == 1:
         raise AttributeError('the samples to be evaluated have to be a 2d numpy array')
     if samples.shape[1] != grid.getStorage().getDimension():
         raise AttributeError('the dimensionality of the samples differ from the dimensionality of the grid (%i != %i)' % (samples.shape[1], grid.getStorage().getDimension()))
 
-    multipleEvalNaiveGridTypes = [GridType_Bspline,
-                                  GridType_BsplineClenshawCurtis,
-                                  GridType_BsplineBoundary,
-                                  GridType_ModBsplineClenshawCurtis,
-                                  GridType_ModBspline,
-                                  GridType_LinearClenshawCurtis,
-                                  GridType_LinearClenshawCurtisBoundary,
-                                  GridType_ModLinearClenshawCurtis,
-                                  GridType_PolyClenshawCurtis,
-                                  GridType_PolyClenshawCurtisBoundary,
-                                  GridType_ModPolyClenshawCurtis]
-
     samples_matrix = DataMatrix(samples)
-    res_vec = DataVector(samples.shape[0])
-    alpha_vec = DataVector(alpha)
 
     if isConsistent:
         if grid.getType() in multipleEvalNaiveGridTypes:
@@ -581,11 +584,10 @@ def evalSGFunctionMulti(grid, alpha, samples, isConsistent=True):
     else:
         opEval = createOperationMultipleEvalNaive(grid, samples_matrix)
 
-    opEval.mult(alpha_vec, res_vec)
+    res_vec = DataVector(samples.shape[0])
+    alpha_vec = DataVector(alpha)
 
-    del opEval
-    del samples_matrix
-    del alpha_vec
+    opEval.mult(alpha_vec, res_vec)
 
     return res_vec.array()
 

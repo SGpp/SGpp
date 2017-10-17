@@ -12,11 +12,15 @@
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearCallbackEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
+#include <sgpp/optimization/sle/solver/Auto.hpp>
+#include <sgpp/optimization/sle/system/FullSLE.hpp>
+#include <sgpp/optimization/tools/Printer.hpp>
 
 #include <vector>
 
@@ -290,6 +294,155 @@ std::shared_ptr<CombigridOperation> CombigridOperation::createExpClenshawCurtisQ
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>>(
           numDimensions, CombiEvaluators::quadrature()),
       std::make_shared<StandardLevelManager>(), func);
+}
+
+std::shared_ptr<CombigridOperation> auxiliaryBsplineFunction(size_t numDimensions,
+                                                             MultiFunction func,
+                                                             size_t hierarchytype,
+                                                             size_t growthFactor, size_t degree) {
+  sgpp::combigrid::CombiHierarchies::Collection grids;
+  if (hierarchytype == 1) {
+    grids.resize(numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+  } else if (hierarchytype == 2) {
+    grids.resize(numDimensions, sgpp::combigrid::CombiHierarchies::expClenshawCurtis());
+  } else if (hierarchytype == 3) {
+    grids.resize(numDimensions, sgpp::combigrid::CombiHierarchies::expChebyshev());
+  } else if (hierarchytype == 4) {
+    grids.resize(numDimensions, sgpp::combigrid::CombiHierarchies::linearLeja(growthFactor));
+  } else if (hierarchytype == 5) {
+    grids.resize(numDimensions, sgpp::combigrid::CombiHierarchies::linearL2Leja(growthFactor));
+  }
+  sgpp::combigrid::CombiEvaluators::Collection evaluators(
+      numDimensions, sgpp::combigrid::CombiEvaluators::BSplineInterpolation(degree));
+  // So far only WeightedRatioLevelManager has been used
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
+      new sgpp::combigrid::WeightedRatioLevelManager());
+
+  // stores the values of the objective function
+  auto funcStorage = std::make_shared<sgpp::combigrid::CombigridTreeStorage>(grids, func);
+
+  // Grid Function that calculates the coefficients for the B-Spline interpolation.
+  // The coeficients for each B-Spline are saved in a TreeStorage encoded by a MultiIndex
+  sgpp::combigrid::GridFunction gf([=](std::shared_ptr<sgpp::combigrid::TensorGrid> grid) {
+    size_t numDimensions = grid->getDimension();
+    auto coefficientTree = std::make_shared<sgpp::combigrid::TreeStorage<double>>(numDimensions);
+    auto level = grid->getLevel();
+    std::vector<size_t> numGridPointsVec = grid->numPoints();
+    size_t numGridPoints = 1;
+    for (size_t i = 0; i < numGridPointsVec.size(); i++) {
+      numGridPoints *= numGridPointsVec[i];
+    }
+
+    sgpp::combigrid::CombiEvaluators::Collection evalCopy(numDimensions);
+    for (size_t dim = 0; dim < numDimensions; ++dim) {
+      evalCopy[dim] = evaluators[dim]->cloneLinear();
+      bool needsSorted = evalCopy[dim]->needsOrderedPoints();
+      auto gridPoints = grids[dim]->getPoints(level[dim], needsSorted);
+      evalCopy[dim]->setGridPoints(gridPoints);
+    }
+    sgpp::base::DataMatrix A(numGridPoints, numGridPoints);
+    sgpp::base::DataVector coefficients_sle(numGridPoints);
+    sgpp::base::DataVector functionValues(numGridPoints);
+
+    // Creates an iterator that yields the multi-indices of all grid points in the grid.
+    sgpp::combigrid::MultiIndexIterator it(grid->numPoints());
+    auto funcIter =
+        funcStorage->getGuidedIterator(level, it, std::vector<bool>(numDimensions, true));
+
+    for (size_t ixEvalPoints = 0; funcIter->isValid(); ++ixEvalPoints, funcIter->moveToNext()) {
+      auto gridPoint = grid->getGridPoint(funcIter->getMultiIndex());
+      functionValues[ixEvalPoints] = funcIter->value();
+
+      std::vector<std::vector<double>> basisValues;
+      for (size_t dim = 0; dim < numDimensions; ++dim) {
+        evalCopy[dim]->setParameter(sgpp::combigrid::FloatScalarVector(gridPoint[dim]));
+        auto basisValues1D = evalCopy[dim]->getBasisValues();
+        // basis values at gridPoint
+        std::vector<double> basisValues1D_vec(basisValues1D.size());
+        for (size_t i = 0; i < basisValues1D.size(); i++) {
+          basisValues1D_vec[i] = basisValues1D[i].value();
+        }
+        basisValues.push_back(basisValues1D_vec);
+      }
+
+      sgpp::combigrid::MultiIndexIterator innerIter(grid->numPoints());
+      for (size_t ixBasisFunctions = 0; innerIter.isValid();
+           ++ixBasisFunctions, innerIter.moveToNext()) {
+        double splineValue = 1.0;
+        auto innerIndex = innerIter.getMultiIndex();
+        for (size_t dim = 0; dim < numDimensions; ++dim) {
+          splineValue *= basisValues[dim][innerIndex[dim]];
+        }
+        A.set(ixEvalPoints, ixBasisFunctions, splineValue);
+      }
+    }
+
+    sgpp::optimization::FullSLE sle(A);
+    sgpp::optimization::sle_solver::Auto solver;
+    sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+    bool solved = solver.solve(sle, functionValues, coefficients_sle);
+
+    /*std::cout << A.toString() << std::endl;
+    std::cout << "fct: ";
+    for (size_t i = 0; i < functionValues.size(); i++) {
+      std::cout << functionValues[i] << " ";
+    }
+    std::cout << "\ncoeff: ";
+    for (size_t i = 0; i < coefficients_sle.size(); i++) {
+      std::cout << coefficients_sle[i] << " ";
+    }
+    std::cout << "\n";
+    std::cout << "-------------------------------------------------------------------" << std::endl;
+    */
+    if (!solved) {
+      exit(-1);
+    }
+
+    it.reset();
+    for (size_t vecIndex = 0; it.isValid(); ++vecIndex, it.moveToNext()) {
+      coefficientTree->set(it.getMultiIndex(), coefficients_sle[vecIndex]);
+    }
+    return coefficientTree;
+  });
+
+  /**
+   * We have to specify if the function always produces the same value for the same grid points.
+   * This can make the storage smaller if the grid points are nested. In this implementation,
+   * this is false.
+   */
+  bool exploitNesting = false;
+  return std::make_shared<sgpp::combigrid::CombigridOperation>(grids, evaluators, levelManager, gf,
+                                                               exploitNesting);
+}
+
+std::shared_ptr<CombigridOperation>
+CombigridOperation::createExpUniformBoundaryBsplineInterpolation(size_t numDimensions,
+                                                                 MultiFunction func,
+                                                                 size_t degree = 3) {
+  size_t dummygrowthfactor = 0;
+  return auxiliaryBsplineFunction(numDimensions, func, 1, dummygrowthfactor, degree);
+}
+
+std::shared_ptr<CombigridOperation> CombigridOperation::createExpClenshawCurtisBsplineInterpolation(
+    size_t numDimensions, MultiFunction func, size_t degree = 3) {
+  size_t dummygrowthfactor = 0;
+  return auxiliaryBsplineFunction(numDimensions, func, 2, dummygrowthfactor, degree);
+}
+
+std::shared_ptr<CombigridOperation> CombigridOperation::createExpChebyshevBsplineInterpolation(
+    size_t numDimensions, MultiFunction func, size_t degree = 3) {
+  size_t dummygrowthfactor = 0;
+  return auxiliaryBsplineFunction(numDimensions, func, 3, dummygrowthfactor, degree);
+}
+
+std::shared_ptr<CombigridOperation> CombigridOperation::createLinearLejaBsplineInterpolation(
+    size_t numDimensions, MultiFunction func, size_t degree = 3, size_t growthFactor = 2) {
+  return auxiliaryBsplineFunction(numDimensions, func, 4, growthFactor, degree);
+}
+
+std::shared_ptr<CombigridOperation> CombigridOperation::createLinearL2LejaBsplineInterpolation(
+    size_t numDimensions, MultiFunction func, size_t degree = 3, size_t growthFactor = 2) {
+  return auxiliaryBsplineFunction(numDimensions, func, 5, growthFactor, degree);
 }
 
 } /* namespace combigrid */

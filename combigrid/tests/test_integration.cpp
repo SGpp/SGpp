@@ -26,8 +26,8 @@ BOOST_AUTO_TEST_CASE(testIntegration) {
 
   eval.setGridPoints(points);
 
-  BOOST_CHECK_EQUAL(eval.getBasisCoefficients().size(), 1);
-  BOOST_CHECK_CLOSE(eval.getBasisCoefficients()[0].getValue(), 1.0, tolerance);
+  BOOST_CHECK_EQUAL(eval.getBasisValues().size(), 1);
+  BOOST_CHECK_CLOSE(eval.getBasisValues()[0].getValue(), 1.0, tolerance);
 
   // 2 Points
 
@@ -35,10 +35,10 @@ BOOST_AUTO_TEST_CASE(testIntegration) {
 
   eval.setGridPoints(points);
 
-  BOOST_CHECK_EQUAL(eval.getBasisCoefficients().size(), 2);
+  BOOST_CHECK_EQUAL(eval.getBasisValues().size(), 2);
 
-  BOOST_CHECK_CLOSE(eval.getBasisCoefficients()[0].getValue(), 0.5, tolerance);
-  BOOST_CHECK_CLOSE(eval.getBasisCoefficients()[1].getValue(), 0.5, tolerance);
+  BOOST_CHECK_CLOSE(eval.getBasisValues()[0].getValue(), 0.5, tolerance);
+  BOOST_CHECK_CLOSE(eval.getBasisValues()[1].getValue(), 0.5, tolerance);
 }
 
 void testIntegrationWithPolynom() {
@@ -59,16 +59,17 @@ void testIntegrationWithPolynom() {
   function_points.push_back(0.0);
   function_points.push_back(0.25);
   function_points.push_back(1.0);
+  eval.setFunctionValuesAtGridPoints(function_points);
 
   // check coefficients
-  BOOST_CHECK_EQUAL(eval.getBasisCoefficients().size(), 3);
-  BOOST_CHECK_CLOSE(eval.getBasisCoefficients()[0].getValue(), 1.0 / 6, tolerance);
-  BOOST_CHECK_CLOSE(eval.getBasisCoefficients()[1].getValue(), 2.0 / 3, tolerance);
-  BOOST_CHECK_CLOSE(eval.getBasisCoefficients()[2].getValue(), 1.0 / 6, tolerance);
+  BOOST_CHECK_EQUAL(eval.getBasisValues().size(), 3);
+  BOOST_CHECK_CLOSE(eval.getBasisValues()[0].getValue(), 1.0 / 6, tolerance);
+  BOOST_CHECK_CLOSE(eval.getBasisValues()[1].getValue(), 2.0 / 3, tolerance);
+  BOOST_CHECK_CLOSE(eval.getBasisValues()[2].getValue(), 1.0 / 6, tolerance);
 
   double accurate_solution = 1.0 / 3;
 
-  BOOST_CHECK_CLOSE(eval.eval(function_points).getValue(), accurate_solution, tolerance);
+  BOOST_CHECK_CLOSE(eval.eval().getValue(), accurate_solution, tolerance);
 
   // try a more complex polynomial
   // p(x) = 6 * x^5 - 5 * x^4 + 4 * x^3 - 3 * x^2 + 2 * x - 42
@@ -93,8 +94,9 @@ void testIntegrationWithPolynom() {
   function_points.push_back(-38.0);
 
   eval.setGridPoints(points);
+  eval.setFunctionValuesAtGridPoints(function_points);
 
-  BOOST_CHECK_CLOSE(eval.eval(function_points).getValue(), accurate_solution, 0.2);
+  BOOST_CHECK_CLOSE(eval.eval().getValue(), accurate_solution, 0.2);
 }
 
 BOOST_AUTO_TEST_CASE(testQuadrature) { testIntegrationWithPolynom(); }

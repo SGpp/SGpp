@@ -139,6 +139,16 @@ class CombigridOperation {
                                                                           size_t growthFactor = 2);
   static std::shared_ptr<CombigridOperation> createExpClenshawCurtisQuadrature(size_t numDimensions,
                                                                                MultiFunction func);
+  static std::shared_ptr<CombigridOperation> createExpUniformBoundaryBsplineInterpolation(
+      size_t numDimensions, MultiFunction func, size_t degree);
+  static std::shared_ptr<CombigridOperation> createExpClenshawCurtisBsplineInterpolation(
+      size_t numDimensions, MultiFunction func, size_t degree);
+  static std::shared_ptr<CombigridOperation> createExpChebyshevBsplineInterpolation(
+      size_t numDimensions, MultiFunction func, size_t degree);
+  static std::shared_ptr<CombigridOperation> createLinearLejaBsplineInterpolation(
+      size_t numDimensions, MultiFunction func, size_t degree, size_t growthFactor);
+  static std::shared_ptr<CombigridOperation> createLinearL2LejaBsplineInterpolation(
+      size_t numDimensions, MultiFunction func, size_t degree, size_t growthFactor);
 };
 } /* namespace combigrid */
 } /* namespace sgpp*/

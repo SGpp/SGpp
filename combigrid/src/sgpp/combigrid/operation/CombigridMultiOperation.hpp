@@ -109,7 +109,7 @@ class CombigridMultiOperation {
   /**
    * See the other version of evaluate() and the setParameters() overloads.
    */
-  base::DataVector evaluate(size_t q, base::DataMatrix const &params);
+  base::DataVector evaluate(size_t q, base::DataMatrix const &params=base::DataMatrix(0, 0));
 
   /**
    * @return the storage containing the computed function values at evaluation points.

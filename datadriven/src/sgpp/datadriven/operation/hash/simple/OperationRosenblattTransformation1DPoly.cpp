@@ -96,8 +96,6 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
       negative_value_encountered = negative_value_encountered || (value < 0);
     }
     area = gaussQuadSum * scaling;
-    // std::cout << "from " << left_coord << " to " << left+scaling << std::endl;
-    // std::cout << "area:" << area << std::endl;
 
     if (negative_value_encountered || eval_res < 0) {
       // make sure that the cdf is monotonically increasing
@@ -107,7 +105,7 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
 
       // we look for the next grid point with pdf(x) >= 0
       size_t j;
-      for (j = i; j < ordered_grid_points.size(); j++) {
+      for (j = i; j < ordered_grid_points.size() - 1; j++) {
         // std::cout << "j:" << j << std::endl;
         right_coord = ordered_grid_points[j];
         coord[0] = right_coord;
@@ -115,6 +113,8 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
         if (right_function_value >= 0 && right_function_value != left_function_value)
           break;
       }
+      if (j == ordered_grid_points.size() - 1)
+        right_function_value = 0;
       // std::cout << "Found j: " << j << std::endl;
       // std::cout << right_coord << ";" << right_function_value << std::endl;
       // get last function value and coordinate with pdf(x) >= 0
@@ -137,9 +137,9 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
         function_values[2] = opEval->eval(*alpha1d, coord);
       } else {
         // if j is the last grid point choose the next one with the same step size
-        // and set it's function value to one
+        // and set it's function value to the last value
         coord[0] = 1 + ordered_grid_points[j] - ordered_grid_points[j - 1];
-        function_values[2] = 1.0;
+        function_values[2] = right_function_value;
       }
       secants[1] = (function_values[2] - function_values[1]) / (coord[0] - ordered_grid_points[j]);
       tangents[2] = secants[1];
@@ -182,8 +182,6 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
       for (; i <= j; i++) {
         coord[0] = ordered_grid_points[i];
         // std::cout << "interpolating i:" << i << std::endl;
-        // kann eig entfernt werden
-        eval_res = interpolation(coord[0]);
         // std::cout << "For x=" << coord[0] << "interp: " << eval_res << std::endl;
         double gaussQuadSum = 0.;
         double left = left_coord;
@@ -205,7 +203,7 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
       }
       --i;
       left_function_value = right_function_value;
-    } else {
+    } else {  // not negative value in patch
       // use the (positive) result of the Gauss-Quadrature
       sum += area;
       left_coord = left + scaling;
@@ -214,6 +212,7 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
       is_negative_patch.push_back(false);
     }
   }
+  if (sum == 0) return 0;
 
   // compute CDF
   double tmp_sum;

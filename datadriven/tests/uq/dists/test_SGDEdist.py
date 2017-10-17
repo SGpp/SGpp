@@ -267,46 +267,47 @@ class SGDEdistTest(unittest.TestCase):
 # #         print SGDEdist.fromJson(json.loads(dist.toJson()))
 
 
-    def test1DCDFandPPF(self):
-        # prepare data
-        U = Normal(0.5, 0.1, 0, 1)
-        train_samples = U.rvs(1000).reshape(1000, 1)
+#     def test1DCDFandPPF(self):
+#         # prepare data
+#         U = Normal(0.5, 0.1, 0, 1)
+#         train_samples = U.rvs(1000).reshape(1000, 1)
+#
+#         dist = SGDEdist.byLearnerSGDEConfig(train_samples,
+#                                             config={"grid_level": 5,
+#                                                     "grid_type": "poly",
+#                                                     "refinement_numSteps": 0,
+#                                                     "refinement_numPoints": 10,
+#                                                     "regularization_type": "Laplace",
+#                                                     "crossValidation_lambda": 0.000562341,
+#                                                     "crossValidation_enable": False,
+#                                                     "crossValidation_kfold": 5,
+#                                                     "crossValidation_silent": True},
+#                                             bounds=U.getBounds())
+#
+#         fig = plt.figure()
+#         plt.hist(train_samples, bins=10, normed=True)
+#         plotDensity1d(U)
+#         plotDensity1d(dist)
+#         plt.title("original space")
+#         fig.show()
+#
+#         transformed_samples = dist.cdf(train_samples)
+#
+#         fig = plt.figure()
+#         plt.hist(transformed_samples, bins=10, normed=True)
+#         plt.title("uniform space")
+#         fig.show()
+#
+#         transformed_samples = dist.ppf(transformed_samples)
+#
+#         fig = plt.figure()
+#         plt.hist(transformed_samples, bins=10, normed=True)
+#         plotDensity1d(U)
+#         plotDensity1d(dist)
+#         plt.title("original space")
+#         fig.show()
+#         plt.show()
 
-        dist = SGDEdist.byLearnerSGDEConfig(train_samples,
-                                            config={"grid_level": 5,
-                                                    "grid_type": "poly",
-                                                    "refinement_numSteps": 0,
-                                                    "refinement_numPoints": 10,
-                                                    "regularization_type": "Laplace",
-                                                    "crossValidation_lambda": 0.000562341,
-                                                    "crossValidation_enable": False,
-                                                    "crossValidation_kfold": 5,
-                                                    "crossValidation_silent": True},
-                                            bounds=U.getBounds())
-
-        fig = plt.figure()
-        plt.hist(train_samples, bins=10, normed=True)
-        plotDensity1d(U)
-        plotDensity1d(dist)
-        plt.title("original space")
-        fig.show()
-
-        transformed_samples = dist.cdf(train_samples)
-
-        fig = plt.figure()
-        plt.hist(transformed_samples, bins=10, normed=True)
-        plt.title("uniform space")
-        fig.show()
-
-        transformed_samples = dist.ppf(transformed_samples)
-
-        fig = plt.figure()
-        plt.hist(transformed_samples, bins=10, normed=True)
-        plotDensity1d(U)
-        plotDensity1d(dist)
-        plt.title("original space")
-        fig.show()
-        plt.show()
 #
 #     def test2DPPF(self):
 #         # prepare data
@@ -356,76 +357,79 @@ class SGDEdistTest(unittest.TestCase):
 #         plt.ylim(0, 1)
 #         fig.show()
 
-#     def test2DCDFandPPF(self, plot=False):
-#         # prepare data
-#         C = np.array([[0.1, 0.08],
-#                       [0.08, 0.1]]) / 10.
-#         U = dists.MultivariateNormal([0.5, 0.5], C, 0, 1)
-#         train_samples = U.rvs(1000)
-#
-#         if plot:
-#             fig = plt.figure()
-#             plotDensity2d(U)
-#             plt.title('true density')
-#             fig.show()
-#
-#         dist = SGDEdist.byLearnerSGDEConfig(train_samples,
-#                                             config={"grid_level": 5,
-#                                                     "grid_type": "poly",
-#                                                     "refinement_numSteps": 0,
-#                                                     "refinement_numPoints": 10,
-#                                                     "regularization_type": "Laplace",
-#                                                     "crossValidation_lambda": 0.000562341,
-#                                                     "crossValidation_enable": False,
-#                                                     "crossValidation_kfold": 5,
-#                                                     "crossValidation_silent": True,
-#                                                     "sgde_makePositive": False},
-#                                             bounds=U.getBounds())
-#
-#         if plot:
-#             fig = plt.figure()
-#             plotDensity2d(dist)
-#             plt.title('estimated SGDE density')
-#             fig.show()
-#
-#         samples = dists.J([dists.Uniform(0, 1),
-#                            dists.Uniform(0, 1)]).rvs(10)
-#         print "-" * 80
-#         print samples
-#
-#         if plot:
-#             fig = plt.figure()
-#             plt.plot(samples[:, 0], samples[:, 1], "o ")
-#             plt.title('u space')
-#             plt.xlim(0, 1)
-#             plt.ylim(0, 1)
-#             fig.show()
-#
-#         transformed_samples = dist.ppf(samples, shuffle=False)
-#         print "-" * 80
-#         print transformed_samples
-#
-#         if plot:
-#             fig = plt.figure()
-#             plt.plot(transformed_samples[:, 0], transformed_samples[:, 1], "o ")
-#             plt.title('x space (transformed)')
-#             plt.xlim(0, 1)
-#             plt.ylim(0, 1)
-#             fig.show()
-#
-#         samples = dist.cdf(transformed_samples, shuffle=False)
-#         print "-" * 80
-#         print samples
-#
-#         if plot:
-#             fig = plt.figure()
-#             plt.plot(samples[:, 0], samples[:, 1], "o ")
-#             plt.title('u space (transformed)')
-#             plt.xlim(0, 1)
-#             plt.ylim(0, 1)
-#             fig.show()
-#
-#             plt.show()
+    def test2DCDFandPPF(self, plot=True):
+        # prepare data
+        C = np.array([[0.1, 0.08],
+                      [0.08, 0.1]]) / 10.
+        U = dists.MultivariateNormal([0.5, 0.5], C, 0, 1)
+        train_samples = U.rvs(1000)
+
+        if plot and False:
+            fig = plt.figure()
+            plotDensity2d(U)
+            plt.title('true density')
+            fig.show()
+
+        dist = SGDEdist.byLearnerSGDEConfig(train_samples,
+                                            config={"grid_level": 5,
+                                                    "grid_type": "linear",
+                                                    "refinement_numSteps": 0,
+                                                    "refinement_numPoints": 10,
+                                                    "regularization_type": "Laplace",
+                                                    "crossValidation_lambda": 0.000562341,
+                                                    "crossValidation_enable": False,
+                                                    "crossValidation_kfold": 5,
+                                                    "crossValidation_silent": True,
+                                                    "sgde_makePositive": False},
+                                            bounds=U.getBounds())
+
+        if plot and False:
+            fig = plt.figure()
+            plotDensity2d(dist)
+            plt.title('estimated SGDE density')
+            fig.show()
+
+        samples = dists.J([dists.Uniform(0, 1),
+                           dists.Uniform(0, 1)]).rvs(500)
+
+        if plot:
+            fig = plt.figure()
+            plt.plot(samples[:, 0], samples[:, 1], "o ")
+            plt.title('u space')
+            plt.xlim(0, 1)
+            plt.ylim(0, 1)
+            fig.show()
+        else:
+            print "-" * 80
+            print samples
+
+        transformed_samples = dist.ppf(samples, shuffle=False)
+
+        if plot:
+            fig = plt.figure()
+            plt.plot(transformed_samples[:, 0], transformed_samples[:, 1], "o ")
+            plt.title('x space (transformed)')
+            plt.xlim(0, 1)
+            plt.ylim(0, 1)
+            fig.show()
+        else:
+            print "-" * 80
+            print transformed_samples
+
+        samples = dist.cdf(transformed_samples, shuffle=False)
+
+        if plot:
+            fig = plt.figure()
+            plt.plot(samples[:, 0], samples[:, 1], "o ")
+            plt.title('u space (transformed)')
+            plt.xlim(0, 1)
+            plt.ylim(0, 1)
+            fig.show()
+
+            plt.show()
+        else:
+            print "-" * 80
+            print samples
 
 #     def test2DCovarianceMatrix(self):
 #         # prepare data

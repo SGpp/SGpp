@@ -3,24 +3,24 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/exception/operation_exception.hpp>
-#include <sgpp/base/operation/hash/OperationEval.hpp>
-#include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationPolyBoundary.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityConditional.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensitySampling1D.hpp>
-#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationPolyBoundary.hpp>
 
-#include <sgpp/globaldef.hpp>
-#include <map>
+#include <algorithm>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
-#include <vector>
+#include <map>
+#include <sgpp/globaldef.hpp>
 #include <utility>
-#include <algorithm>
+#include <vector>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -29,9 +29,8 @@
 namespace sgpp {
 namespace datadriven {
 
-void OperationInverseRosenblattTransformationPolyBoundary::doTransformation(base::DataVector* alpha,
-                                                                   base::DataMatrix* pointscdf,
-                                                                   base::DataMatrix* points) {
+void OperationInverseRosenblattTransformationPolyBoundary::doTransformation(
+    base::DataVector* alpha, base::DataMatrix* pointscdf, base::DataMatrix* points) {
   size_t dim_start = 0;
   size_t num_dims = this->grid->getDimension();
   size_t num_samples = pointscdf->getNrows();
@@ -87,10 +86,9 @@ void OperationInverseRosenblattTransformationPolyBoundary::doTransformation(base
   }
 }
 
-void OperationInverseRosenblattTransformationPolyBoundary::doTransformation(base::DataVector* alpha,
-                                                                   base::DataMatrix* pointscdf,
-                                                                   base::DataMatrix* points,
-                                                                   size_t dim_start) {
+void OperationInverseRosenblattTransformationPolyBoundary::doTransformation(
+    base::DataVector* alpha, base::DataMatrix* pointscdf, base::DataMatrix* points,
+    size_t dim_start) {
   // 1. marginalize to dim_start
   base::Grid* g1d = NULL;
   base::DataVector* a1d = NULL;
@@ -184,13 +182,10 @@ void OperationInverseRosenblattTransformationPolyBoundary::doTransformation_in_n
   return;
 }
 
-double OperationInverseRosenblattTransformationPolyBoundary::doTransformation1D(base::Grid* grid1d,
-                                                                       base::DataVector* alpha1d,
-                                                                       double coord1d) {
-  std::unique_ptr<OperationTransformation1D> opInverseRosenblatt
-    = static_cast<std::unique_ptr<OperationTransformation1D>>
-    (op_factory::createOperationInverseRosenblattTransformation1D(*grid1d));
-
+double OperationInverseRosenblattTransformationPolyBoundary::doTransformation1D(
+    base::Grid* grid1d, base::DataVector* alpha1d, double coord1d) {
+  std::unique_ptr<OperationTransformation1D> opInverseRosenblatt(
+      op_factory::createOperationInverseRosenblattTransformation1D(*grid1d));
   return opInverseRosenblatt->doTransformation1D(alpha1d, coord1d);
 }  // end of compute_1D_cdf()
 }  // namespace datadriven

@@ -194,6 +194,11 @@ double OperationRosenblattTransformationModPolyClenshawCurtis::
     (op_factory::createOperationRosenblattTransformation1D(*grid1d));
   double y = opRosenblatt->doTransformation1D(alpha1d, coord1d);
   delete opRosenblatt;
+  if (y == 0) {
+    std::cout << "Rosenblatt y=0" << std::endl;
+    std::cout << alpha1d->toString() << std::endl;
+    std::cout << "coord1d:" << coord1d << std::endl;
+  }
   return y;
 }  // end of compute_1D_cdf()
 }  // namespace datadriven

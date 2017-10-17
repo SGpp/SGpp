@@ -389,7 +389,7 @@ void example6() {
    */
   sgpp::combigrid::GridFunction gf([](std::shared_ptr<sgpp::combigrid::TensorGrid> grid) {
     // We store the results for each grid point, encoded by a MultiIndex, in a TreeStorage
-    auto result = std::make_shared<sgpp::combigrid::TreeStorage<double>>(d);
+    auto result = std::make_shared<sgpp::combigrid::TreeStorage<double> >(d);
 
     // Creates an iterator that yields all multi-indices of grid points in the grid.
     sgpp::combigrid::MultiIndexIterator it(grid->numPoints());
@@ -437,27 +437,51 @@ void example6() {
   std::cout << "Numerical result: " << result << "\n";
 }
 
-/**
- * For more information on how to access grid points, compare the results to a full grid etc. please
- * refer to the python tutorials.
- */
+void example7() {
+  //  std::shared_ptr<sgpp::combigrid::CombigridOperation> operation =
+  //      sgpp::combigrid::CombigridOperation::createExpUniformBoundaryLinearInterpolation(1, func);
+
+  std::shared_ptr<sgpp::combigrid::CombigridOperation> operation =
+      sgpp::combigrid::CombigridOperation::createExpClenshawCurtisBsplineInterpolation(1, func, 3);
+
+  /**
+   * Now create a point where to evaluate the interpolated function:
+   */
+  sgpp::base::DataVector evaluationPoint(d);
+  evaluationPoint[0] = 0.1572;
+
+  /**
+   * We can now evaluate the interpolation at this point (using 3 as a bound for the 1-norm of the
+   * level multi-index):
+   */
+  double result = operation->evaluate(1, evaluationPoint);
+
+  /**
+   * Now compare the result to the actual function value:
+   */
+  std::cout << "Interpolation result: " << result << ", function value: " << func(evaluationPoint)
+            << std::endl;
+}
 
 int main() {
-  std::cout << "Example 1: \n";
-  example1();
+  //  std::cout << "Example 1: \n";
+  //  example1();
+  //
+  //  std::cout << "\nExample 2: \n";
+  //  example2();
+  //
+  //  std::cout << "\nExample 3: \n";
+  //  example3();
+  //
+  //  std::cout << "\nExample 4: \n";
+  //  example4();
+  //
+  //  std::cout << "\nExample 5: \n";
+  //  example5();
+  //
+  //  std::cout << "\nExample 6: \n";
+  //  example6();
 
-  std::cout << "\nExample 2: \n";
-  example2();
-
-  std::cout << "\nExample 3: \n";
-  example3();
-
-  std::cout << "\nExample 4: \n";
-  example4();
-
-  std::cout << "\nExample 5: \n";
-  example5();
-
-  std::cout << "\nExample 6: \n";
-  example6();
+  std::cout << "\nExample 7: \n";
+  example7();
 }  // end of main

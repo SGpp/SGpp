@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
   sgpp::base::RegularGridConfiguration gridConfig;
   gridConfig.dim_ = dataset.getDimension();
   gridConfig.level_ = 3;
-  gridConfig.type_ = sgpp::base::GridType::Linear;
+  gridConfig.type_ = sgpp::base::GridType::PolyBoundary;
   gridConfig.maxDegree_ = 3;
   //  gridConfig.filename_ = "/tmp/sgde-grid-4391dc6e-54cd-4ca2-9510-a9c02a2889ec.grid";
 
@@ -95,7 +95,7 @@ int main(int argc, char** argv) {
   // configure learner
   std::cout << "# create learner config" << std::endl;
   sgpp::datadriven::SGDEConfiguration sgdeConfig;
-  sgdeConfig.makePositive_ = true;
+  sgdeConfig.makePositive_ = false;
   sgdeConfig.makePositive_candidateSearchAlgorithm_ =
       sgpp::datadriven::MakePositiveCandidateSearchAlgorithm::HybridFullIntersections;
   sgdeConfig.makePositive_interpolationAlgorithm_ =

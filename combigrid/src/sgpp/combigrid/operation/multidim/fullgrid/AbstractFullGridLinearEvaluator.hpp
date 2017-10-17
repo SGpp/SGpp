@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <sgpp/combigrid/algebraic/FloatArrayVector.hpp>
 #include <sgpp/combigrid/common/MultiIndexIterator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
@@ -14,6 +15,7 @@
 #include <sgpp/combigrid/threading/PtrGuard.hpp>
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
 
+#include <iostream>
 #include <vector>
 
 namespace sgpp {
@@ -103,7 +105,7 @@ class AbstractFullGridLinearEvaluator : public AbstractFullGridEvaluator<V> {
         }
         currentEvaluators.push_back(eval);
       }
-      basisValues[d] = currentEvaluators[currentLevel]->getBasisCoefficients();
+      basisValues[d] = currentEvaluators[currentLevel]->getBasisValues();
       multiBounds[d] = this->pointHierarchies[d]->getNumPoints(currentLevel);
       orderingConfiguration[d] = needsOrdered;
 

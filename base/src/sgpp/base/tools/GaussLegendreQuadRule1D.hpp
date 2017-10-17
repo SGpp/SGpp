@@ -20,7 +20,7 @@ class GaussLegendreQuadRule1D : public QuadRule1D {
    * the weights are additionally normalized to 1.
    */
   GaussLegendreQuadRule1D();
-  virtual ~GaussLegendreQuadRule1D();
+  ~GaussLegendreQuadRule1D() override;
 
   // delete the copy constructor
   GaussLegendreQuadRule1D(const GaussLegendreQuadRule1D& that) = delete;

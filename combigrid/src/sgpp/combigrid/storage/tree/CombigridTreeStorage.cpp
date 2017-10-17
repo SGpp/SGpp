@@ -9,6 +9,7 @@
 #include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
 #include <sgpp/combigrid/threading/PtrGuard.hpp>
 
+#include <iostream>
 #include <mutex>
 #include <string>
 #include <vector>
@@ -109,6 +110,21 @@ std::shared_ptr<AbstractMultiStorageIterator<double>> CombigridTreeStorage::getG
   return impl->storage->get(reducedLevel)->getGuidedIterator(iterator, policy);
 }
 
+std::shared_ptr<TreeStorage<double>> CombigridTreeStorage::getStorage(const MultiIndex &level) {
+  // set level to zero for all nested hierarchies
+  MultiIndex reducedLevel = level;
+  size_t numDimensions = impl->pointHierarchies.size();
+  IterationPolicy policy;
+
+  for (size_t d = 0; d < numDimensions; ++d) {
+    if (impl->pointHierarchies[d]->isNested() && impl->exploitNesting) {
+      reducedLevel[d] = 0;
+    }
+  }
+
+  return impl->storage->get(reducedLevel);
+}
+
 size_t CombigridTreeStorage::getNumEntries() {
   size_t result = 0;
 
@@ -167,6 +183,17 @@ void CombigridTreeStorage::set(const MultiIndex &level, const MultiIndex &index,
     }
   }
   impl->storage->get(reducedLevel)->set(index, value);
+}
+
+double CombigridTreeStorage::get(MultiIndex const &level, MultiIndex const &index) {
+  MultiIndex reducedLevel = level;
+  size_t numDimensions = impl->pointHierarchies.size();
+  for (size_t d = 0; d < numDimensions; ++d) {
+    if (impl->pointHierarchies[d]->isNested() && impl->exploitNesting) {
+      reducedLevel[d] = 0;
+    }
+  }
+  return impl->storage->get(reducedLevel)->get(index);
 }
 
 void CombigridTreeStorage::setMutex(std::shared_ptr<std::mutex> mutexPtr) {

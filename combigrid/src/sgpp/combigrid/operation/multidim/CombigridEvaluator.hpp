@@ -18,6 +18,7 @@
 #include <sgpp/combigrid/utils/DataVectorHashing.hpp>
 
 #include <cmath>
+#include <iostream>
 #include <limits>
 #include <memory>
 #include <queue>
@@ -99,26 +100,27 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
     if (containsLevel(level)) {
       return true;
     }
-
     upperPointBound += maxNewPoints(level);
-
     CGLOG("addLevel(): add previous levels");
     // ensure that preceding indices are already computed
     for (size_t d = 0; d < numDimensions; ++d) {
       if (level[d] > 0) {
         MultiIndex l = level;
         --l[d];
-        addLevel(l);  // should not affect performance because nothing is computed if the storage
-                      // already contains a value
+
+        // should not affect performance because nothing is computed if the storage
+        // already contains a value
+        bool success = addLevel(l);
+        if (!success) {
+          return false;
+        }
       }
     }
-
     CGLOG("addLevel(): eval level");
     V value = multiEval->eval(level);
 
     CGLOG("addLevel(): evaluate partial differences");
     partialDifferences[0]->set(level, value);
-
     for (size_t d = 0; d < numDimensions; ++d) {
       if (level[d] == 0) {
         partialDifferences[d + 1]->set(level, value);
@@ -129,7 +131,6 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
         partialDifferences[d + 1]->set(level, value);
       }
     }
-
     double norm = value.norm();
 
     if (std::isnan(norm) || std::isinf(norm)) {
@@ -183,6 +184,15 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
    * new function evaluations (grid points) that have to be performed when adding this level.
    */
   size_t maxNewPoints(MultiIndex const &level) { return multiEval->maxNewPoints(level); }
+
+  size_t maxNumPointsForRegular(size_t q) {
+    auto it = std::make_shared<BoundedSumMultiIndexIterator>(numDimensions, q);
+    size_t sum = 0;
+    for (; it->isValid(); it->moveToNext()) {
+      sum += maxNewPoints(it->value());
+    }
+    return sum;
+  }
 
   /**
    * @return the total number of grid points in a given level.
