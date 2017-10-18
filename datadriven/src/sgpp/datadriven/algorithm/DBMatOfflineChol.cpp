@@ -245,7 +245,7 @@ void DBMatOfflineChol::choleskyModification(size_t newPoints, std::list<size_t> 
 #endif /*USE_GSL*/
 }
 
-void updateSystemMatrixDecomposition(size_t numAddedGridPoints,
+void DBMatOfflineChol::updateSystemMatrixDecomposition(size_t numAddedGridPoints,
                                      std::list<size_t> deletedGridPointIndices,
                                      double lambda)  {
   choleskyModification(numAddedGridPoints, deletedGridPointIndices, lambda);
