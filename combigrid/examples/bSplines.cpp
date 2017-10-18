@@ -9,6 +9,7 @@
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
+#include <sgpp/combigrid/operation/onedim/BSplineQuadratureEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
@@ -67,8 +68,25 @@ void interpolate(size_t maxlevel, double& max_err, double& L2_err) {
   std::cout << "# grid points: " << operation->numGridPoints() << " ";
 }
 
+double integrate() {
+  size_t numDimensions = 1;
+  size_t degree = 3;
+  sgpp::combigrid::CombiHierarchies::Collection grids(
+      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+  sgpp::combigrid::CombiEvaluators::Collection evaluators(
+      numDimensions, sgpp::combigrid::CombiEvaluators::BSplineQuadrature(degree));
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
+      new sgpp::combigrid::WeightedRatioLevelManager());
+  sgpp::combigrid::MultiFunction dummyfunc(f);
+  auto operation = std::make_shared<sgpp::combigrid::CombigridOperation>(grids, evaluators,
+                                                                         levelManager, dummyfunc);
+  double result = operation->evaluate(numDimensions);
+  return result;
+}
+
 int main() {
-  sgpp::base::SGppStopwatch watch;
+  // Interpolation
+  /*sgpp::base::SGppStopwatch watch;
   watch.start();
   size_t minLevel = 3;
   size_t maxLevel = 3;
@@ -79,5 +97,10 @@ int main() {
     std::cout << "level: " << l << " max err " << maxErr[l] << " L2 err " << L2Err[l] << std::endl;
   }
   std::cout << " Total Runtime: " << watch.stop() << " s" << std::endl;
+*/
+
+  // Integration
+  double integrationres = integrate();
+  std::cout << integrationres << std::endl;
   return 0;
 }
