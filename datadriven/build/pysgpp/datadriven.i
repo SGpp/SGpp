@@ -79,8 +79,7 @@
 
 %include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/AuxiliaryStructures.hpp"
 %include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp"
-%ignore sgpp::datadriven::MPIMethods::waitForIncomingMessageType;
-%include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp"
+//%include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp"
 %include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/MPIRequestPool.hpp"
 %include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/MPITaskScheduler.hpp"
 %include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/NetworkMessageData.hpp"
