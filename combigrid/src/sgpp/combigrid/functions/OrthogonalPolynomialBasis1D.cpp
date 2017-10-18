@@ -18,7 +18,12 @@ namespace combigrid {
 
 OrthogonalPolynomialBasis1D::OrthogonalPolynomialBasis1D()
     : basisType(OrthogonalPolynomialBasisType::LEGENDRE) {
+#ifdef USE_DAKOTA
   basisPoly = std::make_shared<Pecos::BasisPolynomial>(Pecos::LEGENDRE_ORTHOG);
+#else
+  std::cerr << "Error in OrthogonalBasis1D::evaluate: "
+            << "SG++ was compiled without DAKOTAsupport!\n";
+#endif
 }
 
 OrthogonalPolynomialBasis1D::OrthogonalPolynomialBasis1D(OrthogonalPolynomialBasisType basisType)
