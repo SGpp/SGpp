@@ -94,7 +94,7 @@ double BSplineInterpolationEvaluator::LagrangePolynomial(double x, size_t k) {
 void BSplineInterpolationEvaluator::createKnots(std::vector<double>& xi) {
   // create a vector xi that holds the gridpoints and continues to the left and right by mirroring
   // at 0 and 1
-  // ToDo(rehmemk) this offset is only correct for odd degrees
+
   size_t offset = (degree + 1) / 2;
   xi.resize(2 * offset, 0);
   xi.insert(xi.begin() + offset, xValues.begin(), xValues.end());
@@ -116,11 +116,9 @@ void BSplineInterpolationEvaluator::createdeg3NakKnots(std::vector<double>& xi) 
   // create a vector xi that holds the gridpoints and continues to the left and right by mirroring
   // at 0 and 1
 
-  // ToDo(rehmemk) this offset is only correct for odd degrees
   size_t offset = (degree + 1) / 2;
   xi.resize(2 * offset + 2, 0);
 
-  // ToDo(rehmemk) Don't calculate xi every single time!
   xi.insert(xi.begin() + offset + 1, xValues.begin(), xValues.end());
 
   for (size_t i = 0; i < offset + 1; i++) {
@@ -143,7 +141,6 @@ void BSplineInterpolationEvaluator::createdeg5NakKnots(std::vector<double>& xi) 
   // create a vector xi that holds the gridpoints and continues to the left and right by mirroring
   // at 0 and 1
 
-  // ToDo(rehmemk) this offset is only correct for odd degrees
   size_t offset = (degree + 1) / 2;
   xi.resize(2 * (offset + 2), 0);
 
@@ -192,7 +189,8 @@ void BSplineInterpolationEvaluator::computeBasisValues() {
     return;
   }
   std::vector<double> xi;
-  // Choose between nak (not a knot) knots or regular knots
+  // ToDo(rehmemk) Only odd degrees supported so far. For even degrees the offset has to be edited
+  // in particular
   if (degree == 1) {
     createKnots(xi);
   } else if (degree == 3) {
@@ -204,13 +202,7 @@ void BSplineInterpolationEvaluator::computeBasisValues() {
   }
   for (size_t i = 0; i < xValues.size(); i++) {
     basisValues[i] = nonUniformBSpline(evaluationPoint, degree, i, xi);
-    //    std::cout << xValues[i] << " ";
   }
-  //  std::cout << "\n";
-  //  for (size_t i = 0; i < xi.size(); i++) {
-  //    std::cout << xi[i] << " ";
-  //  }
-  //  std::cout << "\n";
 }
 
 void BSplineInterpolationEvaluator::setFunctionValuesAtGridPoints(
