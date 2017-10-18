@@ -12,7 +12,8 @@
 
 namespace sgpp {
 namespace datadriven {
-// Forward declere Learner, as we use only pointer
+
+// Forward declare learner, as we use only pointer
 class LearnerSGDEOnOffParallel;
 
 /**

@@ -19,7 +19,6 @@
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/AuxiliaryStructures.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/MPITaskScheduler.hpp>
-#include <sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp>
 
 #include <mpi.h>
 
@@ -32,6 +31,10 @@
 
 namespace sgpp {
 namespace datadriven {
+
+// Forward declare learner, as we use only pointer
+class LearnerSGDEOnOffParallel;
+
 
 class RefinementHandler {
  protected:

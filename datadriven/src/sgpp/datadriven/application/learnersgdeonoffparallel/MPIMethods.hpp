@@ -8,9 +8,9 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/NetworkMessageData.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/PendingMPIRequest.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/AuxiliaryStructures.hpp>
 
 #include <vector>
 #include <list>
@@ -46,6 +46,10 @@
 
 namespace sgpp {
 namespace datadriven {
+
+// Forward declare Learner, as we use only pointer
+class LearnerSGDEOnOffParallel;
+
 
 /**
  * Structure that holds data for pending tracking requests

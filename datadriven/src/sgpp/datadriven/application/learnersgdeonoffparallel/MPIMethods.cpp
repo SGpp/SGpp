@@ -5,9 +5,9 @@
 
 #include <mpi.h>
 
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/NetworkMessageData.hpp>
-#include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 
 #include <thread>

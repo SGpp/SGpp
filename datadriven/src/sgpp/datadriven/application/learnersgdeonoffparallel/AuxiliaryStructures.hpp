@@ -7,12 +7,23 @@
 #define SGPP_AUXILIARYSTRUCTURES_HPP
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 
 #include <vector>
 #include <list>
 
 namespace sgpp {
 namespace datadriven {
+
+/**
+ * Compile time option for activating debug messages
+ */
+#ifdef DEBUG
+#define D(x) x
+#else
+#define D(x)
+#endif
+
 
 /**
  * Type definition to avoid typographical error in original learner

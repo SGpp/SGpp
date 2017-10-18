@@ -10,6 +10,8 @@
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/RefinementHandler.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 
 #include <vector>

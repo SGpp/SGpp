@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifdef USE_GSL
-
 #pragma once
 
 #include <sgpp/globaldef.hpp>
@@ -30,11 +28,6 @@
 #include <utility>
 #include <vector>
 
-#ifdef DEBUG
-#define D(x) x
-#else
-#define D(x)
-#endif
 
 namespace sgpp {
 namespace datadriven {
@@ -296,5 +289,3 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
 };
 }   // namespace datadriven
 }  // namespace sgpp
-
-#endif /* USE_GSL */
