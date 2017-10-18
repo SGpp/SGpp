@@ -318,7 +318,7 @@ LearnerSGDEOnOffParallel::computeNewSystemMatrixDecomposition(size_t classIndex,
 
   DBMatOnlineDE *densEst = getDensityFunctions()[classIndex].first.get();
   DBMatOffline &dbMatOffline = densEst->getOfflineObject();
-  dbMatOffline.updateSystemMatrixDecomposition(refinementResult.addedGridPoints.size(),
+  densEst->updateSystemMatrixDecomposition(refinementResult.addedGridPoints.size(),
                                                refinementResult.deletedGridPointsIndices,
                                                densEst->getBestLambda());
 

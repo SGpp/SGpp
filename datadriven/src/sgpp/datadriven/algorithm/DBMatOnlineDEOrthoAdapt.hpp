@@ -68,7 +68,18 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
   void sherman_morrison_adapt(size_t newPoints, bool refine,
                               std::vector<size_t> coarsen_indices = {});
 
- protected:
+
+  /**
+   * Delegates call to adapt()
+   * @param numAddedGridPoints Number of grid points inserted at the end of the grid storage
+   * @param deletedGridPointIndices Indices of grid points that were deleted
+   * @param lambda The last best lambda value
+   */
+  void updateSystemMatrixDecomposition(size_t numAddedGridPoints,
+                                       std::list<size_t> deletedGridPointIndices,
+                                       double lambda) override;
+
+protected:
   // matrix, which holds information about refined/coarsened points
   sgpp::base::DataMatrix b_adapt_matrix_;
 

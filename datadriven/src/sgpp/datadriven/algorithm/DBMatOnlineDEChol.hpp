@@ -29,10 +29,22 @@ class DBMatOnlineDEChol : public DBMatOnlineDE {
  public:
   explicit DBMatOnlineDEChol(DBMatOffline& offline, double beta = 0.);
 
- protected:
+  /**
+   * Delegates call to choleskyModification
+   * @param numAddedGridPoints Number of grid points inserted at the end of the grid storage
+   * @param deletedGridPointIndices Indices of grid points that were deleted
+   * @param lambda The last best lambda value
+   */
+  void updateSystemMatrixDecomposition(size_t numAddedGridPoints,
+                                     std::list<size_t> deletedGridPointIndices,
+                                     double lambda) override;
+
+protected:
   void solveSLE(DataVector& b, bool do_cv) override;
 
   DBMatDMSChol* buildCholSolver(DBMatOffline& offlineObject, bool doCV) const;
+
+
 };
 
 } /* namespace datadriven */
