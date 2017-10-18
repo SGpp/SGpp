@@ -3,6 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+// base class is not exported from the configuration
+%warnfilter(401) sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration;
+
 #ifdef SG_COMBIGRID
 
 %include <std_shared_ptr.i>
