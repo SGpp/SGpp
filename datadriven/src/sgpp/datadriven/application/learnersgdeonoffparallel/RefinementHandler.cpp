@@ -155,7 +155,7 @@ void RefinementHandler::updateClassVariablesAfterRefinement(
       throw sgpp::base::algorithm_exception("Grid growth from refinement not correct.");
     }
   } else {
-    // apply grid changes to the Cholesky factorization
+    // apply grid changes to the system matrix factorization
     size_t currentGridVersion = learnerInstance->getLocalGridVersion(classIndex);
     if (!learnerInstance->checkGridStateConsistent(classIndex)) {
       std::cout << "Attempting to increment grid version on non consistent grid "
@@ -166,17 +166,17 @@ void RefinementHandler::updateClassVariablesAfterRefinement(
 
     learnerInstance->setLocalGridVersion(classIndex, currentGridVersion + 1);
 
-    // Send class update in preparation for cholesky
+    // Send class update in preparation for system matrix decomposition update
     MPIMethods::sendRefinementUpdates(classIndex, refinementResult->deletedGridPointsIndices,
                                       refinementResult->addedGridPoints);
 
     if (learnerInstance->getOffline()->isRefineable()) {
       AssignTaskResult assignTaskResult{};
       learnerInstance->getScheduler().assignTaskStaticTaskSize(
-          RECOMPUTE_CHOLESKY_DECOMPOSITION,
+          RECOMPUTE_SYSTEM_MATRIX_DECOMPOSITION,
           assignTaskResult);
 
-      std::cout << "Assigning update of cholesky decomposition " << classIndex
+      std::cout << "Assigning update of system matrix decomposition " << classIndex
                 << " to worker "
                 << assignTaskResult.workerID << std::endl;
       MPIMethods::assignSystemMatrixUpdate(assignTaskResult.workerID, classIndex);

@@ -46,9 +46,9 @@ using sgpp::base::DataVector;
 * LearnerSGDEOnOffParallel learns the data using sparse grid density estimation. The
 * system matrix is precomputed and factorized using Eigen-, LU- or
 * Cholesky decomposition (offline step). Then, for each class a density
-* function
-* is computed by solving the system in every iteration (online step).
+* function is computed by solving the system in every iteration (online step).
 * If Cholesky decomposition is chosen, refinement/coarsening can be applied.
+* This learner uses MPI to parallelize the learning phase across multiple nodes.
 */
 
 class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
@@ -174,7 +174,7 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
    * @param classIndex The class for which to update the system matrix decomposition
    * @param gridVersion The new grid version to set after updating the matrix
    */
-  void computeNewCholeskyDecomposition(size_t classIndex, size_t gridVersion);
+  void computeNewSystemMatrixDecomposition(size_t classIndex, size_t gridVersion);
 
   /**
    * Check whether the grid is in a final state where learning can occur. This is not the case while receiving refinement results or updating the system matrix decomposition.

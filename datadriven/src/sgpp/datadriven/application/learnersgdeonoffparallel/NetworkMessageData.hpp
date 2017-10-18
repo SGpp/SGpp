@@ -85,9 +85,9 @@ enum RefinementResultsUpdateType {
    */
       DELETED_GRID_POINTS_LIST,
   /**
-   * Packet contains a part of an updated cholesky decomposition.
+   * Packet contains a part of an updated system matrix decomposition.
    */
-      CHOLESKY_DECOMPOSITION
+      SYSTEM_MATRIX_DECOMPOSITION
 };
 
 /**

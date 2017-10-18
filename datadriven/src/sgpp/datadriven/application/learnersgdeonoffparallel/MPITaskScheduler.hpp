@@ -20,7 +20,7 @@ class LearnerSGDEOnOffParallel;
  */
 enum TaskType {
   TRAIN_FROM_BATCH,
-  RECOMPUTE_CHOLESKY_DECOMPOSITION
+  RECOMPUTE_SYSTEM_MATRIX_DECOMPOSITION
 };
 /**
  * Used by the MPI Task Scheduler to deliver the result of assigning the requested task.
