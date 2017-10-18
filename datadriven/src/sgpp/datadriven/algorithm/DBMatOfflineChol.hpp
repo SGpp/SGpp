@@ -52,6 +52,16 @@ class DBMatOfflineChol : public DBMatOfflineGE {
   virtual void choleskyModification(size_t newPoints, std::list<size_t> deletedPoints,
                                     double lambda);
 
+  /**
+   * Delegates call to choleskyModification
+   * @param numAddedGridPoints Number of grid points inserted at the end of the grid storage
+   * @param deletedGridPointIndices Indices of grid points that were deleted
+   * @param lambda The last best lambda value
+   */
+  void updateSystemMatrixDecomposition(size_t numAddedGridPoints,
+                                               std::list<size_t> deletedGridPointIndices,
+                                               double lambda) override;
+
  protected:
   /**
    * Permutes the rows of the cholesky factor based on permutations

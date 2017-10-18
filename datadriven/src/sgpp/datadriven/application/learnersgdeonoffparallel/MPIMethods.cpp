@@ -216,18 +216,18 @@ void MPIMethods::sendSystemMatrixDecomposition(const size_t &classIndex,
         static_cast<RefinementResultNetworkMessage *>(static_cast<void *>(mpiPacket->payload));
 
     networkMessage->classIndex = classIndex;
-    networkMessage->updateType = CHOLESKY_DECOMPOSITION;
+    networkMessage->updateType = SYSTEM_MATRIX_DECOMPOSITION;
 
-    auto *choleskyNetworkMessage =
+    auto *systemMatrixNetworkMessage =
         static_cast<RefinementResultSystemMatrixNetworkMessage *>(
             static_cast<void *>(networkMessage->payload));
 
-    choleskyNetworkMessage->matrixWidth = newSystemMatrixDecomposition.getNcols();
-    choleskyNetworkMessage->matrixHeight = newSystemMatrixDecomposition.getNrows();
-    choleskyNetworkMessage->offset = offset;
+    systemMatrixNetworkMessage->matrixWidth = newSystemMatrixDecomposition.getNcols();
+    systemMatrixNetworkMessage->matrixHeight = newSystemMatrixDecomposition.getNrows();
+    systemMatrixNetworkMessage->offset = offset;
 
-    size_t numPointInBuffer = fillBufferWithData(choleskyNetworkMessage->payload,
-                                                 std::end(choleskyNetworkMessage->payload),
+    size_t numPointInBuffer = fillBufferWithData(systemMatrixNetworkMessage->payload,
+                                                 std::end(systemMatrixNetworkMessage->payload),
                                                  iterator, listEnd);
     networkMessage->listLength = numPointInBuffer;
 
@@ -237,16 +237,16 @@ void MPIMethods::sendSystemMatrixDecomposition(const size_t &classIndex,
         classIndex) : GRID_TEMPORARILY_INCONSISTENT;
 
     if (mpiTarget != MPI_ANY_SOURCE) {
-      D(std::cout << "Sending cholesky for class " << networkMessage->classIndex
-                  << " offset " << choleskyNetworkMessage->offset
+      D(std::cout << "Sending system matrix for class " << networkMessage->classIndex
+                  << " offset " << systemMatrixNetworkMessage->offset
                   << " with " << networkMessage->listLength
                   << " values" << " (grid version " << networkMessage->gridversion
                   << ", target "
                   << mpiTarget << ")" << std::endl;)
       sendISend(mpiTarget, mpiPacket, sizeof(MPI_Packet), true);
     } else {
-      D(std::cout << "Broadcasting cholesky for class " << networkMessage->classIndex
-                  << " offset " << choleskyNetworkMessage->offset
+      D(std::cout << "Broadcasting system matrix for class " << networkMessage->classIndex
+                  << " offset " << systemMatrixNetworkMessage->offset
                   << " with " << networkMessage->listLength
                   << " values" << " (grid version " << networkMessage->gridversion << ")"
                   << std::endl;)
@@ -604,7 +604,7 @@ void MPIMethods::receiveGridComponentsUpdate(RefinementResultNetworkMessage *net
       !learnerInstance->isVersionConsistent(networkMessage->gridversion)) {
     D(std::cout << "Received first message in multi segment grid update of type "
                 << networkMessage->updateType << std::endl;)
-    while (!isMaster() && networkMessage->updateType != CHOLESKY_DECOMPOSITION
+    while (!isMaster() && networkMessage->updateType != SYSTEM_MATRIX_DECOMPOSITION
         && (!refinementResult.addedGridPoints.empty() ||
             !refinementResult.deletedGridPointsIndices.empty())) {
       std::cout
@@ -645,26 +645,26 @@ void MPIMethods::receiveGridComponentsUpdate(RefinementResultNetworkMessage *net
       }
       break;
     }
-    case CHOLESKY_DECOMPOSITION: {
-      auto *choleskyNetworkMessage =
+    case SYSTEM_MATRIX_DECOMPOSITION: {
+      auto *systemMatrixNetworkMessage =
           static_cast<RefinementResultSystemMatrixNetworkMessage *>(
               static_cast<void *>(networkMessage->payload));
-      DataMatrix &choleskyDecomposition =
+      DataMatrix &systemMatrixDecomposition =
           learnerInstance->getDensityFunctions()[classIndex]
               .first->getOfflineObject().getDecomposedMatrix();
 
-      D(std::cout << "Receiving cholesky decomposition update at offset "
-                  << choleskyNetworkMessage->offset
+      D(std::cout << "Receiving system matrix decomposition update at offset "
+                  << systemMatrixNetworkMessage->offset
                   << std::endl;)
 
-      if (choleskyNetworkMessage->offset == 0) {
-        size_t oldSize = choleskyDecomposition.size();
-        choleskyDecomposition.resizeRowsCols(choleskyNetworkMessage->matrixHeight,
-                                             choleskyNetworkMessage->matrixWidth);
-        std::cout << "Adjusted size of cholesky decomposition " << classIndex << " from "
+      if (systemMatrixNetworkMessage->offset == 0) {
+        size_t oldSize = systemMatrixDecomposition.size();
+        systemMatrixDecomposition.resizeRowsCols(systemMatrixNetworkMessage->matrixHeight,
+                                             systemMatrixNetworkMessage->matrixWidth);
+        std::cout << "Adjusted size of system matrix decomposition " << classIndex << " from "
                   << oldSize
                   << " to "
-                  << choleskyDecomposition.size() << std::endl;
+                  << systemMatrixDecomposition.size() << std::endl;
       } else if (learnerInstance->getLocalGridVersion(classIndex) !=
           GRID_TEMPORARILY_INCONSISTENT) {
         std::cout
@@ -675,12 +675,12 @@ void MPIMethods::receiveGridComponentsUpdate(RefinementResultNetworkMessage *net
       }
 
       auto *bufferIterator =
-          static_cast<double *>(static_cast<void *>(choleskyNetworkMessage->payload));
+          static_cast<double *>(static_cast<void *>(systemMatrixNetworkMessage->payload));
       while (bufferIterator < bufferEnd && processedPoints < listLength) {
 //                        std::cout << "Copy from " << &*bufferIterator << " to "
-//                                  << (choleskyNetworkMessage->offset + processedPoints)
+//                                  << (systemMatrixNetworkMessage->offset + processedPoints)
 // << std::endl;
-        choleskyDecomposition[choleskyNetworkMessage->offset +
+        systemMatrixDecomposition[systemMatrixNetworkMessage->offset +
             processedPoints] = *bufferIterator;
         bufferIterator++;
         processedPoints++;
@@ -688,12 +688,12 @@ void MPIMethods::receiveGridComponentsUpdate(RefinementResultNetworkMessage *net
 
 //                    std::cout << "Copy successful" << std::endl;
       if (isMaster() &&
-          choleskyNetworkMessage->offset + processedPoints == choleskyDecomposition.size()) {
+          systemMatrixNetworkMessage->offset + processedPoints == systemMatrixDecomposition.size()) {
         learnerInstance->setLocalGridVersion(classIndex, networkMessage->gridversion);
 
-        D(std::cout << "Received cholesky decomposition for class " << classIndex
+        D(std::cout << "Received system matrix decomposition for class " << classIndex
                     << ", will now broadcast decomposition" << std::endl;)
-        sendSystemMatrixDecomposition(classIndex, choleskyDecomposition, MPI_ANY_SOURCE);
+        sendSystemMatrixDecomposition(classIndex, systemMatrixDecomposition, MPI_ANY_SOURCE);
       }
       break;
     }
@@ -703,7 +703,7 @@ void MPIMethods::receiveGridComponentsUpdate(RefinementResultNetworkMessage *net
       throw sgpp::base::algorithm_exception("Update request with unknown ID received.");
     }
   }
-  D(std::cout << "Updated refinement result or cholesky decomposition " << classIndex << " ("
+  D(std::cout << "Updated refinement result or system matrix decomposition " << classIndex << " ("
               << refinementResult.addedGridPoints.size()
               << " additions, "
               << refinementResult.deletedGridPointsIndices.size() <<
@@ -745,7 +745,7 @@ void MPIMethods::processIncomingMPICommands(PendingMPIRequest &pendingMPIRequest
       break;
     case COMPUTE_UPDATE_SYSTEM_MATRIX_DECOMPOSITION: {
       auto *message = static_cast<AssignSystemMatrixUpdateNetworkMessage *>(networkMessagePointer);
-      learnerInstance->computeNewCholeskyDecomposition(message->classIndex,
+      learnerInstance->computeNewSystemMatrixDecomposition(message->classIndex,
                                                        message->gridversion);
       break;
     }

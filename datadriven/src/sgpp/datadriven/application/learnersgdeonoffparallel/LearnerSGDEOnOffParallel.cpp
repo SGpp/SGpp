@@ -174,7 +174,7 @@ void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPas
 
         // Send the grid component update
         // Note: This was moved to updateClassVariablesAfterRefinement
-        // as it needs to run before the cholesky update
+        // as it needs to run before the system matrix update
 //        MPIMethods::sendGridComponentsUpdate(vectorRefinementResults);
       } else {
         D(std::cout << "No refinement necessary" << std::endl;)
@@ -272,7 +272,7 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(const std::string &refinementF
     monitor.nextRefCnt = monitor.minRefInterval;
   }
 
-  // Wait for all new cholesky decompositions to come back
+  // Wait for all new system matrix decompositions to come back
   CHECK_SIZE_T_TO_INT(getNumClasses())
   MPIMethods::waitForIncomingMessageType(
       UPDATE_GRID, static_cast<int >(getNumClasses()),
@@ -280,7 +280,7 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(const std::string &refinementF
         auto *refinementResultNetworkMessage =
             static_cast<RefinementResultNetworkMessage *>(
                 static_cast<void *>(request.buffer->payload));
-        // Ensure it is a cholesky packet and the last in the sequence
+        // Ensure it is a system matrix packet and the last in the sequence
         D(std::cout << "Test packet grid version "
                     << refinementResultNetworkMessage->gridversion
                     << ", update type "
@@ -289,12 +289,12 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(const std::string &refinementF
         return isVersionConsistent(
             refinementResultNetworkMessage->gridversion) &&
             refinementResultNetworkMessage->updateType ==
-                CHOLESKY_DECOMPOSITION;
+                SYSTEM_MATRIX_DECOMPOSITION;
       });
 }
 
 void
-LearnerSGDEOnOffParallel::computeNewCholeskyDecomposition(size_t classIndex, size_t gridVersion) {
+LearnerSGDEOnOffParallel::computeNewSystemMatrixDecomposition(size_t classIndex, size_t gridVersion) {
   // The first check is to ensure that all segments of an update have been received
   // (intermediate segments set grid version to TEMPORARILY_INCONSISTENT)
   RefinementResult &refinementResult = refinementHandler.getRefinementResult(classIndex);
@@ -312,19 +312,19 @@ LearnerSGDEOnOffParallel::computeNewCholeskyDecomposition(size_t classIndex, siz
     D(std::cout << "Updates have arrived. Attempting to resume." << std::endl;)
   }
 
-  std::cout << "Computing cholesky modification for class " << classIndex
+  std::cout << "Computing system matrix modification for class " << classIndex
             << "(+" << refinementResult.addedGridPoints.size()
             << ", -" << refinementResult.deletedGridPointsIndices.size() << ")" << std::endl;
 
   DBMatOnlineDE *densEst = getDensityFunctions()[classIndex].first.get();
-  auto &dbMatOfflineChol = dynamic_cast<DBMatOfflineChol &>(densEst->getOfflineObject());
-  dbMatOfflineChol.choleskyModification(refinementResult.addedGridPoints.size(),
-                                        refinementResult.deletedGridPointsIndices,
-                                        densEst->getBestLambda());
+  DBMatOffline &dbMatOffline = densEst->getOfflineObject();
+  dbMatOffline.updateSystemMatrixDecomposition(refinementResult.addedGridPoints.size(),
+                                               refinementResult.deletedGridPointsIndices,
+                                               densEst->getBestLambda());
 
   setLocalGridVersion(classIndex, gridVersion);
-  D(std::cout << "Send cholesky update to master for class " << classIndex << std::endl;)
-  DataMatrix &newDecomposition = dbMatOfflineChol.getDecomposedMatrix();
+  D(std::cout << "Send system matrix update to master for class " << classIndex << std::endl;)
+  DataMatrix &newDecomposition = dbMatOffline.getDecomposedMatrix();
   MPIMethods::sendSystemMatrixDecomposition(classIndex, newDecomposition, 0);
 }
 
