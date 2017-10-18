@@ -5,6 +5,7 @@
 
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/RoundRobinScheduler.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 
 namespace sgpp {

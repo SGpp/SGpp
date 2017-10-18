@@ -8,6 +8,7 @@
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
@@ -17,7 +18,10 @@
 #include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp>
-#include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/MPITaskScheduler.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/RefinementHandler.hpp>
+#include <sgpp/datadriven/tools/Dataset.hpp>
 
 #include <thread>
 #include <climits>
