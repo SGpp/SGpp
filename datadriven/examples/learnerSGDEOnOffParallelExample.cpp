@@ -19,7 +19,6 @@
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp>
 
 #include <omp.h>
-#endif /* USE_MPI */
 
 #include <string>
 
@@ -28,6 +27,8 @@ using sgpp::base::DataVector;
 
 sgpp::datadriven::Dataset loadDataset(const std::string &filename);
 void parseInputValue(char *inputString, size_t &outputValue);
+#endif /* USE_MPI */
+
 /**
  * \page example_learnerSGDEOnOffTest_cpp Learner SGDE OnOff
  * This example shows how to perform offline/online-classification using sparse
@@ -315,6 +316,7 @@ int main(int argc, char *argv[]) {
   ///
 }
 
+#ifdef USE_MPI
 sgpp::datadriven::Dataset loadDataset(const std::string &filename) {
   // load test samples
   std::cout << "# loading file: " << filename << std::endl;
@@ -336,4 +338,4 @@ void parseInputValue(char *inputString, size_t &outputValue) {
     throw sgpp::base::application_exception("Failed to parse parameter");
   }
 }
-
+#endif /* USE_MPI */
