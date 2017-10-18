@@ -54,7 +54,6 @@
 
 %include "OpFactory.i"
 
-#ifdef USE_MPI
 %include "datadriven/src/sgpp/datadriven/tools/TypesDatadriven.hpp"
 %include "datadriven/src/sgpp/datadriven/application/LearnerBase.hpp"
 %include "datadriven/src/sgpp/datadriven/application/DensityEstimator.hpp"
@@ -67,6 +66,8 @@
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGD.hpp"
 %include "datadriven/src/sgpp/datadriven/application/LearnerSVM.hpp"
 %include "datadriven/src/sgpp/datadriven/application/PrimalDualSVM.hpp"
+
+#ifdef USE_MPI
 %include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/AuxiliaryStructures.hpp"
 %include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp"
 //%include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp"
