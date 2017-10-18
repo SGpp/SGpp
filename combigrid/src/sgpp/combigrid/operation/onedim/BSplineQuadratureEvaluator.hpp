@@ -33,7 +33,7 @@ class BSplineQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVec
   size_t numAdditionalPoints;  // additional gauss points used for a custom weight function
   size_t degree;
 
-  double getWeight(std::vector<double> &points, size_t point);
+  double getWeight(std::vector<double> &points, size_t index);
   void calculateWeights(std::vector<double> &points, std::vector<FloatScalarVector> &weights);
 
  public:

@@ -41,7 +41,7 @@ namespace combigrid {
 /**
  * Calculates the weight for the specific point
  */
-double BSplineQuadratureEvaluator::getWeight(std::vector<double>& points, size_t point) {
+double BSplineQuadratureEvaluator::getWeight(std::vector<double>& points, size_t index) {
   size_t numGaussPoints = (degree + 1) / 2 + numAdditionalPoints;
   return GaussLegendreQuadrature(numGaussPoints).evaluate([this](double x) {
     // ToDo (rehmemk) Bspline evaluation
