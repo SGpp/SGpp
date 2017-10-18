@@ -475,8 +475,10 @@ void example8() {
   auto operation =
       sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(d, func);
 
-  auto basisFunction = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(
-      sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE);
+  sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
+  config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
+
+  auto basisFunction = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
   std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>> basisFunctions(
       d, basisFunction);
 

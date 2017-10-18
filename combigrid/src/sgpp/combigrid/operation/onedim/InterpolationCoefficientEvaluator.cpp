@@ -18,7 +18,9 @@ namespace combigrid {
 
 InterpolationCoefficientEvaluator::InterpolationCoefficientEvaluator()
     : basisValues(1, FloatTensorVector(1)), basisCoefficients() {
-  functionBasis = std::make_shared<OrthogonalPolynomialBasis1D>(OrthogonalPolynomialBasisType::LEGENDRE);
+  sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
+  config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
+  functionBasis = std::make_shared<OrthogonalPolynomialBasis1D>(config);
 }
 
 InterpolationCoefficientEvaluator::InterpolationCoefficientEvaluator(

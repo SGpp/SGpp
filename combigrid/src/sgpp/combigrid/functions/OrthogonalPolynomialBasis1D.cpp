@@ -4,9 +4,19 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
+#include <sgpp/base/tools/json/JSON.hpp>
+#include <sgpp/base/tools/json/json_exception.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/globaldef.hpp>
 
+#ifdef USE_DAKOTA
+#include <HermiteOrthogPolynomial.hpp>
+#include <JacobiOrthogPolynomial.hpp>
+#include <LegendreOrthogPolynomial.hpp>
+#endif
+
 #include <iostream>
+#include <string>
 
 #ifdef USE_DAKOTA
 #include <BasisPolynomial.hpp>
@@ -16,26 +26,83 @@
 namespace sgpp {
 namespace combigrid {
 
+// --------------------------------------------------------------------------------------------
+OrthogonalPolynomialBasis1DConfiguration::OrthogonalPolynomialBasis1DConfiguration()
+    : json::JSON() {
+  initConfig();
+}
+
+OrthogonalPolynomialBasis1DConfiguration::OrthogonalPolynomialBasis1DConfiguration(
+    const std::string& fileName)
+    : json::JSON(fileName) {
+  initConfig();
+  // initialize structs from file
+  // configure grid
+  try {
+    // type of the polynomial
+    if (this->contains("polynomial_type"))
+      polyParameters.type_ = stringToOrthogonalPolynomialType((*this)["polynomial_type"].get());
+
+    // parameters for jacobi polynomials
+    if (this->contains("jacobi_alpha")) polyParameters.alpha_ = (*this)["jacobi_alpha"].getDouble();
+    if (this->contains("jacobi_beta")) polyParameters.beta_ = (*this)["jacobi_beta"].getDouble();
+  } catch (json::json_exception& e) {
+    std::cout << e.what() << std::endl;
+  }
+}
+
+void OrthogonalPolynomialBasis1DConfiguration::initConfig() {
+  // set default config
+  polyParameters.type_ = OrthogonalPolynomialBasisType::LEGENDRE;
+
+  // parameters for jacobi polynomials
+  polyParameters.alpha_ = 5.0;
+  polyParameters.beta_ = 5.0;
+}
+
+OrthogonalPolynomialBasis1DConfiguration* OrthogonalPolynomialBasis1DConfiguration::clone() {
+  OrthogonalPolynomialBasis1DConfiguration* clone =
+      new OrthogonalPolynomialBasis1DConfiguration(*this);
+  return clone;
+}
+
+sgpp::combigrid::OrthogonalPolynomialBasisType
+OrthogonalPolynomialBasis1DConfiguration::stringToOrthogonalPolynomialType(
+    std::string& polynomialType) {
+  if (polynomialType.compare("Legendre") == 0) {
+    return sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
+  } else if (polynomialType.compare("Jacobi") == 0) {
+    return sgpp::combigrid::OrthogonalPolynomialBasisType::JACOBI;
+  } else if (polynomialType.compare("Hermite") == 0) {
+    return sgpp::combigrid::OrthogonalPolynomialBasisType::HERMITE;
+  }
+  throw sgpp::base::application_exception("polynomial type is unknown");
+}
+
+// --------------------------------------------------------------------------------------------
+
 OrthogonalPolynomialBasis1D::OrthogonalPolynomialBasis1D()
     : basisType(OrthogonalPolynomialBasisType::LEGENDRE) {
   basisPoly = std::make_shared<Pecos::BasisPolynomial>(Pecos::LEGENDRE_ORTHOG);
 }
 
-OrthogonalPolynomialBasis1D::OrthogonalPolynomialBasis1D(OrthogonalPolynomialBasisType basisType)
-    : basisType(basisType) {
+OrthogonalPolynomialBasis1D::OrthogonalPolynomialBasis1D(
+    OrthogonalPolynomialBasis1DConfiguration& config)
+    : basisType(config.polyParameters.type_) {
 #ifdef USE_DAKOTA
   switch (basisType) {
     case OrthogonalPolynomialBasisType::HERMITE:
-      basisPoly = std::make_shared<Pecos::BasisPolynomial>(Pecos::HERMITE_ORTHOG);
+      basisPoly = std::make_shared<Pecos::HermiteOrthogPolynomial>();
       break;
     case OrthogonalPolynomialBasisType::JACOBI:
-      basisPoly = std::make_shared<Pecos::BasisPolynomial>(Pecos::JACOBI_ORTHOG);
+      basisPoly = std::make_shared<Pecos::JacobiOrthogPolynomial>(config.polyParameters.alpha_,
+                                                                  config.polyParameters.beta_);
       break;
     case OrthogonalPolynomialBasisType::LEGENDRE:
-      basisPoly = std::make_shared<Pecos::BasisPolynomial>(Pecos::LEGENDRE_ORTHOG);
+      basisPoly = std::make_shared<Pecos::LegendreOrthogPolynomial>();
       break;
     default:
-      basisPoly = std::make_shared<Pecos::BasisPolynomial>(Pecos::LEGENDRE_ORTHOG);
+      basisPoly = std::make_shared<Pecos::LegendreOrthogPolynomial>();
   }
 #endif
 }
