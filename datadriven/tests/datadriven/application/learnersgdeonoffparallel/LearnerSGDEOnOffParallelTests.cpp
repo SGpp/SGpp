@@ -36,6 +36,19 @@ using sgpp::datadriven::DataMatrix;
 sgpp::datadriven::LearnerSGDEOnOffParallel *learnerInstance;
 sgpp::datadriven::RoundRobinScheduler *scheduler;
 
+/**
+ * Ensure that specific messages are not too long to be wrapped in the parent packet.
+ * These are used to prevent errors by adding variables to messages without shortening
+ * their payload.
+ */
+static_assert(sizeof(MergeGridNetworkMessage) <= MPI_PACKET_MAX_PAYLOAD_SIZE,
+              "Merge Grid Network Message too long.");
+static_assert(sizeof(RefinementResultNetworkMessage) <= MPI_PACKET_MAX_PAYLOAD_SIZE,
+              "Refinement result Network Message too long.");
+static_assert(sizeof(RefinementResultSystemMatrixNetworkMessage) <= MPI_PACKET_MAX_PAYLOAD_SIZE,
+              "Refinement result Cholesky Network Message too long.");
+
+
 void freeInstance() {
   delete learnerInstance;
   delete scheduler;
