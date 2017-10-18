@@ -392,7 +392,7 @@ std::shared_ptr<CombigridOperation> auxiliaryBsplineFunction(size_t numDimension
       std::cout << coefficients_sle[i] << " ";
     }
     std::cout << "\n";
-    std::cout << "-------------------------------------------------------------------" << std::endl;
+    std::cout << "--------" << std::endl;
     */
     if (!solved) {
       exit(-1);
@@ -402,6 +402,7 @@ std::shared_ptr<CombigridOperation> auxiliaryBsplineFunction(size_t numDimension
     for (size_t vecIndex = 0; it.isValid(); ++vecIndex, it.moveToNext()) {
       coefficientTree->set(it.getMultiIndex(), coefficients_sle[vecIndex]);
     }
+
     return coefficientTree;
   });
 
