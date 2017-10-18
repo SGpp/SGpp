@@ -492,26 +492,26 @@ void example8() {
 }
 
 int main() {
-  //  std::cout << "Example 1: \n";
-  //  example1();
-  //
-  //  std::cout << "\nExample 2: \n";
-  //  example2();
-  //
-  //  std::cout << "\nExample 3: \n";
-  //  example3();
-  //
-  //  std::cout << "\nExample 4: \n";
-  //  example4();
-  //
-  //  std::cout << "\nExample 5: \n";
-  //  example5();
-  //
-  //  std::cout << "\nExample 6: \n";
-  //  example6();
-  //
-  //  std::cout << "\nExample 7: \n";
-  //  example7();
+  std::cout << "Example 1: \n";
+  example1();
+
+  std::cout << "\nExample 2: \n";
+  example2();
+
+  std::cout << "\nExample 3: \n";
+  example3();
+
+  std::cout << "\nExample 4: \n";
+  example4();
+
+  std::cout << "\nExample 5: \n";
+  example5();
+
+  std::cout << "\nExample 6: \n";
+  example6();
+
+  std::cout << "\nExample 7: \n";
+  example7();
 
   std::cout << "\nExample 8: \n";
   example8();
