@@ -11,6 +11,7 @@
 
 # At the beginning of the program, we have to import the pysgpp library.
 from itertools import product
+from pysgpp.extensions.datadriven.uq.dists import J, Beta, Uniform
 from pysgpp.extensions.datadriven.uq.plot.colors import initialize_plotting_style, \
     load_color, load_font_properties, savefig
 from pysgpp.extensions.datadriven.uq.plot.plot3d import plotSG3d
@@ -43,7 +44,7 @@ def g(x):
 func = pysgpp.multiFunc(g)
 
 # Let's use a 3D-function.
-d = 3
+d = 2
 
 
 # @section py_combigrid_example_1 Example 1: Leja quadrature with linear growth of grid points
@@ -429,31 +430,51 @@ def example7():
 # #
 
 
-def example8():
+def example8(dist_type="uniform"):
     operation = pysgpp.CombigridOperation.createExpClenshawCurtisPolynomialInterpolation(d, func)
 
-    basisFunctions = pysgpp.OrthogonalPolynomialBasisTypeVector()
-    for i in xrange(d):
-        basisFunctions.push_back(pysgpp.OrthogonalPolynomialBasisType_LEGENDRE)
+    config = pysgpp.OrthogonalPolynomialBasis1DConfiguration()
+
+    if dist_type == "beta":
+        config.polyParameters.type_ = pysgpp.OrthogonalPolynomialBasisType_JACOBI
+        config.polyParameters.alpha_ = 5
+        config.polyParameters.alpha_ = 4
+
+        U = J([Beta(config.polyParameters.alpha_,
+                    config.polyParameters.beta_)] * d)
+    else:
+        config.polyParameters.type_ = pysgpp.OrthogonalPolynomialBasisType_LEGENDRE
+        U = J([Uniform(0, 1)] * d)
+
+    basisFunction = pysgpp.OrthogonalPolynomialBasis1D(config)
+    basisFunctions = pysgpp.OrthogonalPolynomialBasis1DVector(d, basisFunction)
 
     levelManager = pysgpp.VarianceLevelManager(
         operation.getPointHierarchies(), operation.getStorage(), basisFunctions)
 
     operation.setLevelManager(levelManager)
 
-    levelManager.addRegularLevels(0)
+    q = 3
+    levelManager.addRegularLevels(q)
     print "Total function evaluations: %i" % operation.numGridPoints()
-    levelManager.addLevelsAdaptive(200)
-    print "Total function evaluations: %i" % operation.numGridPoints()
+#     levelManager.addLevelsAdaptive(200)
+#     print "Total function evaluations: %i" % operation.numGridPoints()
 
     # compute variance of the interpolant
-    basisFunction = pysgpp.OrthogonalPolynomialBasis1D(pysgpp.OrthogonalPolynomialBasisType_LEGENDRE)
-    operation = pysgpp.CombigridTensorOperation.createExpClenshawCurtisPolynomialInterpolation(
-        basisFunction, d, func)
 
-    q = 3
-    tensorResult = operation.evaluate(q, pysgpp.FloatTensorVector())
-    print "Var(u) = %g" % tensorResult.norm() ** 2
+    pce_operation = pysgpp.CombigridTensorOperation.createExpClenshawCurtisPolynomialInterpolation(
+        basisFunction, d, func)
+    pce_operation.setStorage(operation.getStorage())
+    tensorResult = pce_operation.evaluate(q, pysgpp.FloatTensorVectorVector())
+
+    n = 10000
+    values = [g(pysgpp.DataVector(xi)) for xi in U.rvs(n)]
+
+    print "Total function evaluations: %i" % pce_operation.numGridPoints()
+    print "E(u)   = %g ~ %g" % (np.mean(values),
+                                tensorResult.get(pysgpp.IndexVector(d, 0)).getValue())
+    print "Var(u) = %g ~ %g" % (np.var(values),
+                                tensorResult.norm() ** 2)
 
 
 # Call the examples
@@ -482,4 +503,6 @@ def example8():
 
 
 print("\nExample 8:")
-example8()
+example8(dist_type="beta")
+print "-" * 80
+example8(dist_type="uniform")
