@@ -11,6 +11,7 @@
 
 # At the beginning of the program, we have to import the pysgpp library.
 from itertools import product
+from pysgpp.extensions.datadriven.uq.dists import J, Beta, Uniform
 from pysgpp.extensions.datadriven.uq.plot.colors import initialize_plotting_style, \
     load_color, load_font_properties, savefig
 from pysgpp.extensions.datadriven.uq.plot.plot3d import plotSG3d
@@ -43,7 +44,7 @@ def g(x):
 func = pysgpp.multiFunc(g)
 
 # Let's use a 3D-function.
-d = 3
+d = 2
 
 
 # @section py_combigrid_example_1 Example 1: Leja quadrature with linear growth of grid points
@@ -429,10 +430,23 @@ def example7():
 # #
 
 
-def example8():
+def example8(dist_type="uniform"):
     operation = pysgpp.CombigridOperation.createExpClenshawCurtisPolynomialInterpolation(d, func)
 
-    basisFunction = pysgpp.OrthogonalPolynomialBasis1D(pysgpp.OrthogonalPolynomialBasisType_LEGENDRE)
+    config = pysgpp.OrthogonalPolynomialBasis1DConfiguration()
+
+    if dist_type == "beta":
+        config.polyParameters.type_ = pysgpp.OrthogonalPolynomialBasisType_JACOBI
+        config.polyParameters.alpha_ = 5
+        config.polyParameters.alpha_ = 4
+
+        U = J([Beta(config.polyParameters.alpha_,
+                    config.polyParameters.beta_)] * d)
+    else:
+        config.polyParameters.type_ = pysgpp.OrthogonalPolynomialBasisType_LEGENDRE
+        U = J([Uniform(0, 1)] * d)
+
+    basisFunction = pysgpp.OrthogonalPolynomialBasis1D(config)
     basisFunctions = pysgpp.OrthogonalPolynomialBasis1DVector(d, basisFunction)
 
     levelManager = pysgpp.VarianceLevelManager(
@@ -454,7 +468,7 @@ def example8():
     tensorResult = pce_operation.evaluate(q, pysgpp.FloatTensorVectorVector())
 
     n = 10000
-    values = [g(pysgpp.DataVector(xi)) for xi in np.random.rand(n, d)]
+    values = [g(pysgpp.DataVector(xi)) for xi in U.rvs(n)]
 
     print "Total function evaluations: %i" % pce_operation.numGridPoints()
     print "E(u)   = %g ~ %g" % (np.mean(values),
@@ -489,4 +503,6 @@ def example8():
 
 
 print("\nExample 8:")
-example8()
+example8(dist_type="beta")
+print "-" * 80
+example8(dist_type="uniform")
