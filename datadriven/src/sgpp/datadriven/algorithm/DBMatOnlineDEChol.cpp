@@ -16,6 +16,7 @@
 #include <sgpp/datadriven/algorithm/DBMatDMSDenseIChol.hpp>
 
 #include <iomanip>
+#include <list>
 
 namespace sgpp {
 namespace datadriven {
@@ -93,7 +94,8 @@ void DBMatOnlineDEChol::updateSystemMatrixDecomposition(size_t numAddedGridPoint
                                                       std::list<size_t> deletedGridPointIndices,
                                                       double lambda)  {
   DBMatOffline* offlineObject = &getOfflineObject();
-  dynamic_cast<DBMatOfflineChol*>(offlineObject)->choleskyModification(numAddedGridPoints, deletedGridPointIndices, lambda);
+  dynamic_cast<DBMatOfflineChol *>(offlineObject)
+      ->choleskyModification(numAddedGridPoints, deletedGridPointIndices, lambda);
 }
 
 

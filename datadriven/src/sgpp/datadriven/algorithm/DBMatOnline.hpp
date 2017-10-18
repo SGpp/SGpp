@@ -7,6 +7,8 @@
 
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 
+#include <list>
+
 namespace sgpp {
 namespace datadriven {
 
@@ -58,8 +60,7 @@ class DBMatOnline {
                                                  std::list<size_t> deletedGridPointIndices,
                                                  double lambda);
 
-
-protected:
+ protected:
   DBMatOffline& offlineObject;
 };
 

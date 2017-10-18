@@ -30,6 +30,8 @@ using sgpp::datadriven::MERGE_GRID;
 using sgpp::datadriven::UPDATE_GRID;
 using sgpp::datadriven::TRAIN_FROM_BATCH;
 using sgpp::datadriven::MergeGridNetworkMessage;
+using sgpp::datadriven::RefinementResultNetworkMessage;
+using sgpp::datadriven::RefinementResultSystemMatrixNetworkMessage;
 using sgpp::datadriven::RefinementResult;
 using sgpp::datadriven::LevelIndexVector;
 using sgpp::datadriven::LevelIndexPair;
