@@ -1,16 +1,16 @@
-import pysgpp
-import numpy as np
-import matplotlib.pyplot as plt
-
-from pysgpp.extensions.datadriven.uq.plot.plot1d import plotFunction1d
-from pysgpp.pysgpp_swig import DataVector, CombigridOperation
+from argparse import ArgumentParser
 from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
 from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend
-from argparse import ArgumentParser
+from pysgpp.extensions.datadriven.uq.plot.plot1d import plotFunction1d
+from pysgpp.pysgpp_swig import DataVector, CombigridOperation
+import pysgpp
+
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 def arctanModel(x, params):
-  return np.arctan(50.0 * (x[0] - .35)) + np.pi / 2.0 + 4.0 * x[1] ** 3 + np.exp(x[0] * x[1] - 1.0);
+    return np.arctan(50.0 * (x[0] - .35)) + np.pi / 2.0 + 4.0 * x[1] ** 3 + np.exp(x[0] * x[1] - 1.0)
 
 
 def buildAtanParams():
@@ -70,13 +70,13 @@ def buildSparseGrid(gridType, basisType, degree=5, growthFactor=2):
     if gridType == "ClenshawCurtis" and basisType == "bspline":
         return CombigridOperation.createExpClenshawCurtisBsplineInterpolation(numDims, func, degree)
     elif gridType == "UniformBoundary" and basisType == "bspline":
-         return CombigridOperation.createExpUniformBoundaryBsplineInterpolation(numDims, func, degree)
+        return CombigridOperation.createExpUniformBoundaryBsplineInterpolation(numDims, func, degree)
     elif gridType == "Leja" and basisType == "poly":
-         return CombigridOperation.createExpLejaPolynomialInterpolation(numDims, func)
+        return CombigridOperation.createExpLejaPolynomialInterpolation(numDims, func)
     elif gridType == "L2Leja" and basisType == "poly":
-         return CombigridOperation.createExpL2LejaPolynomialInterpolation(numDims, func)
+        return CombigridOperation.createExpL2LejaPolynomialInterpolation(numDims, func)
     elif gridType == "ClenshawCurtis" and basisType == "poly":
-         return CombigridOperation.createExpClenshawCurtisPolynomialInterpolation(numDims, func)
+        return CombigridOperation.createExpClenshawCurtisPolynomialInterpolation(numDims, func)
     else:
         raise AttributeError("not supported")
 
@@ -89,7 +89,7 @@ if __name__ == "__main__":
     parser.add_argument('--maxLevel', default=3, type=int, help="level of regular sparse grid")
     parser.add_argument('--growthFactor', default=2, type=int, help="Leja growth factor")
     args = parser.parse_args()
-    
+
     model, params = buildModel(args.model)
 
     # We have to wrap f in a pysgpp.MultiFunction object.
@@ -102,10 +102,10 @@ if __name__ == "__main__":
     y = np.array([model(xi, params) for xi in x])
 
     results = {}
-    for gridType, basisType in [("UniformBoundary", "bspline"),
-                                ("Leja", "poly"),
-                                ("L2Leja", "poly"),
-                                ("ClenshawCurtis", "poly")]:
+    for gridType, _, basisType in [("UniformBoundary", "regular", "bspline"),
+                                   ("Leja", "regular", "poly"),
+                                   ("L2Leja", "regular", "poly"),
+                                   ("ClenshawCurtis", "regular", "poly")]:
         operation = buildSparseGrid(gridType,
                                     basisType,
                                     args.degree,
@@ -114,6 +114,7 @@ if __name__ == "__main__":
         l2errors = np.array([])
         for level in xrange(0, args.maxLevel):
             print gridType, basisType, level
+
             def f(x):
                 x_vec = DataVector(x)
                 return operation.evaluate(level, x_vec)
@@ -124,7 +125,7 @@ if __name__ == "__main__":
 
         results[basisType, gridType] = numGridPoints, l2errors
     fig = plt.figure()
-    
+
     for (basisType, gridType), (numGridPoints, l2errors) in results.items():
         plt.loglog(numGridPoints, l2errors, label="%s %s" % (gridType, basisType))
     insert_legend(fig, loc="right", ncol=2)
