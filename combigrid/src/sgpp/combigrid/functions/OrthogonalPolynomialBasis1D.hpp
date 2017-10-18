@@ -16,10 +16,11 @@ namespace combigrid {
 
 enum class OrthogonalPolynomialBasisType { LEGENDRE, JACOBI, HERMITE };
 
-class OrthogonalBasis1D : public AbstractInfiniteFunctionBasis1D {
+class OrthogonalPolynomialBasis1D : public AbstractInfiniteFunctionBasis1D {
  public:
-  OrthogonalBasis1D(OrthogonalPolynomialBasisType basisType);
-  virtual ~OrthogonalBasis1D();
+  OrthogonalPolynomialBasis1D();
+  explicit OrthogonalPolynomialBasis1D(OrthogonalPolynomialBasisType basisType);
+  virtual ~OrthogonalPolynomialBasis1D();
 
   double evaluate(size_t basisIndex, double xValue) override;
 

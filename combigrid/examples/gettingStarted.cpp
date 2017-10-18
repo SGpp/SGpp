@@ -14,9 +14,11 @@
 
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
+#include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
+#include <sgpp/combigrid/operation/multidim/VarianceLevelManager.hpp>
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
@@ -463,6 +465,32 @@ void example7() {
             << std::endl;
 }
 
+/**
+ * @section combigrid_example_8 Example 8: UQ setting with variance refinement
+ *
+ * This example shows how to use the variance refinement method that uses the PCE transformation for
+ * variance computation on each subspace.
+ */
+void example8() {
+  auto operation =
+      sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(d, func);
+
+  std::vector<sgpp::combigrid::OrthogonalPolynomialBasisType> basisFunctionTypes(d);
+  for (size_t i = 0; i < basisFunctionTypes.size(); i++) {
+    basisFunctionTypes[i] = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
+  }
+
+  auto levelManager = std::make_shared<sgpp::combigrid::VarianceLevelManager>(
+      operation->getPointHierarchies(), operation->getStorage(), basisFunctionTypes);
+
+  operation->setLevelManager(levelManager);
+
+  levelManager->addRegularLevels(0);
+  std::cout << "Total function evaluations: " << operation->numGridPoints() << "\n";
+  levelManager->addLevelsAdaptive(200);
+  std::cout << "Total function evaluations: " << operation->numGridPoints() << "\n";
+}
+
 int main() {
   //  std::cout << "Example 1: \n";
   //  example1();
@@ -481,7 +509,10 @@ int main() {
   //
   //  std::cout << "\nExample 6: \n";
   //  example6();
+  //
+  //  std::cout << "\nExample 7: \n";
+  //  example7();
 
-  std::cout << "\nExample 7: \n";
-  example7();
+  std::cout << "\nExample 8: \n";
+  example8();
 }  // end of main

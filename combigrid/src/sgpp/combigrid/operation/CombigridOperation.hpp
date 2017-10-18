@@ -81,6 +81,7 @@ class CombigridOperation {
   void setLevelManager(std::shared_ptr<LevelManager> levelManager);
 
   std::shared_ptr<AbstractCombigridStorage> getStorage();
+  std::vector<std::shared_ptr<AbstractPointHierarchy>> getPointHierarchies();
 
   /**
    * @return the number of function values that have been computed via this CombigridOperation
