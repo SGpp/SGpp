@@ -6,17 +6,18 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-#include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <sgpp/base/operation/hash/OperationDiagonal.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationDiagonal.hpp>
 
 #include <array>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 using sgpp::base::OperationDiagonal;
+using sgpp::base::OperationMatrix;
 
 BOOST_AUTO_TEST_SUITE(TestOperationDiagonal)
 
@@ -29,7 +30,8 @@ BOOST_AUTO_TEST_CASE(testOperationDiagonalIdentity) {
 
   double multFactor = 1.0;
   // OperationDiagonal with multFactor of 1.0 should be identical to an identity matrix!
-  auto opDiag = sgpp::op_factory::createOperationDiagonal(*grid, multFactor);
+  std::unique_ptr<OperationMatrix> opDiag(
+      sgpp::op_factory::createOperationDiagonal(*grid, multFactor));
 
   const auto size = gridStorage.getSize();
   auto testVec = sgpp::base::DataVector(size, 42.0);
@@ -49,7 +51,7 @@ BOOST_AUTO_TEST_CASE(testOperationDiagonal) {
   auto& gridStorage = grid->getStorage();
   gen.regular(2);
 
-  auto opDiag = sgpp::op_factory::createOperationDiagonal(*grid);
+  std::unique_ptr<OperationMatrix> opDiag(sgpp::op_factory::createOperationDiagonal(*grid));
 
   const auto size = gridStorage.getSize();
   auto testVec = sgpp::base::DataVector(size, 1.0);

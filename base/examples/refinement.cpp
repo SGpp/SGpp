@@ -37,6 +37,7 @@ using sgpp::base::GridGenerator;
 using sgpp::base::GridPoint;
 using sgpp::base::GridStorage;
 using sgpp::base::SurplusRefinementFunctor;
+using sgpp::base::OperationHierarchisation;
 
 /**
   * function to interpolate. This is a two-dimensional parabola. - nonsymmetric(!)
@@ -81,7 +82,9 @@ int main() {
       * Each time, we have to hierarchize the grid again, because in the previous interation,
       * new grid points have been added.
       */
-    sgpp::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
+    std::unique_ptr<OperationHierarchisation>(
+        sgpp::op_factory::createOperationHierarchisation(*grid))
+        ->doHierarchisation(alpha);
 
     /**
       * Refine a single grid point each time.

@@ -60,7 +60,9 @@ BOOST_AUTO_TEST_CASE(testQuadratureLinear) {
   // take BoundingBox into account by multiplying with determinant
   qres *= determinant;
 
-  double quadOperation = sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
+  double quadOperation =
+      std::unique_ptr<OperationQuadrature>(sgpp::op_factory::createOperationQuadrature(*grid))
+          ->doQuadrature(*alpha);
   BOOST_CHECK_CLOSE(quadOperation, qres, 0.0);
 
   delete alpha;
@@ -97,7 +99,9 @@ BOOST_AUTO_TEST_CASE(testQuadratureModLinear) {
   // take BoundingBox into account by multiplying with determinant
   qres *= determinant;
 
-  double quadOperation = sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
+  double quadOperation =
+      std::unique_ptr<OperationQuadrature>(sgpp::op_factory::createOperationQuadrature(*grid))
+          ->doQuadrature(*alpha);
   BOOST_CHECK_CLOSE(quadOperation, qres, 0.0);
 
   delete alpha;
@@ -140,7 +144,9 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBasis) {
   // take BoundingBox into account by multiplying with determinant
   quadManual *= determinant;
 
-  double quadOperation = sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
+  double quadOperation =
+      std::unique_ptr<OperationQuadrature>(sgpp::op_factory::createOperationQuadrature(*grid))
+          ->doQuadrature(*alpha);
   BOOST_CHECK_CLOSE(quadOperation, quadManual, 0.00012);
 
   delete alpha;
@@ -185,7 +191,9 @@ BOOST_AUTO_TEST_CASE(testQuadratureModPolyBasis) {
   // take BoundingBox into account by multiplying with determinant
   quadManual *= determinant;
 
-  double quadOperation = sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
+  double quadOperation =
+      std::unique_ptr<OperationQuadrature>(sgpp::op_factory::createOperationQuadrature(*grid))
+          ->doQuadrature(*alpha);
   BOOST_CHECK_CLOSE(quadOperation, quadManual, 0.00012);
 
   delete alpha;
@@ -229,7 +237,9 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
   // take BoundingBox into account by multiplying with determinant
   quadManual *= determinant;
 
-  double quadOperation = sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
+  double quadOperation =
+      std::unique_ptr<OperationQuadrature>(sgpp::op_factory::createOperationQuadrature(*grid))
+          ->doQuadrature(*alpha);
   BOOST_CHECK_CLOSE(quadOperation, quadManual, 0.0001);
 
   delete alpha;
@@ -259,7 +269,9 @@ BOOST_AUTO_TEST_CASE(testQuadratureMC) {
 
   DataVector* alpha = new DataVector(v);
 
-  double resDirect = sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
+  double resDirect =
+      std::unique_ptr<OperationQuadrature>(sgpp::op_factory::createOperationQuadrature(*grid))
+          ->doQuadrature(*alpha);
 
   // Monte Carlo quadrature
   OperationQuadratureMC* opMC = new OperationQuadratureMC(*grid, 100000);
