@@ -3,6 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#ifdef USE_MPI
 #ifdef USE_GSL
 
 #include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
@@ -18,7 +19,6 @@
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp>
 
 #include <omp.h>
-// #include <valgrind/callgrind.h>
 
 #include <string>
 
@@ -333,3 +333,5 @@ void parseInputValue(char *inputString, size_t &outputValue) {
     throw sgpp::base::application_exception("Failed to parse parameter");
   }
 }
+
+#endif /* USE_MPI */
