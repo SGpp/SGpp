@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/functions/OrthogonalBasis1D.hpp>
+#include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <iostream>
@@ -16,26 +16,33 @@
 namespace sgpp {
 namespace combigrid {
 
-OrthogonalBasis1D::OrthogonalBasis1D(OrthogonalPolynomialBasisType basisType)
+OrthogonalPolynomialBasis1D::OrthogonalPolynomialBasis1D()
+    : basisType(OrthogonalPolynomialBasisType::LEGENDRE) {
+  basisPoly = std::make_shared<Pecos::BasisPolynomial>(Pecos::LEGENDRE_ORTHOG);
+}
+
+OrthogonalPolynomialBasis1D::OrthogonalPolynomialBasis1D(OrthogonalPolynomialBasisType basisType)
     : basisType(basisType) {
 #ifdef USE_DAKOTA
   switch (basisType) {
-    case OrthogonalPolynomialBasisType::LEGENDRE:
-      basisPoly = std::make_shared<Pecos::BasisPolynomial>(Pecos::LEGENDRE_ORTHOG);
-      break;
     case OrthogonalPolynomialBasisType::HERMITE:
       basisPoly = std::make_shared<Pecos::BasisPolynomial>(Pecos::HERMITE_ORTHOG);
       break;
     case OrthogonalPolynomialBasisType::JACOBI:
       basisPoly = std::make_shared<Pecos::BasisPolynomial>(Pecos::JACOBI_ORTHOG);
       break;
+    case OrthogonalPolynomialBasisType::LEGENDRE:
+      basisPoly = std::make_shared<Pecos::BasisPolynomial>(Pecos::LEGENDRE_ORTHOG);
+      break;
+    default:
+      basisPoly = std::make_shared<Pecos::BasisPolynomial>(Pecos::LEGENDRE_ORTHOG);
   }
 #endif
 }
 
-OrthogonalBasis1D::~OrthogonalBasis1D() {}
+OrthogonalPolynomialBasis1D::~OrthogonalPolynomialBasis1D() {}
 
-double OrthogonalBasis1D::normalizeInput(double xValue) {
+double OrthogonalPolynomialBasis1D::normalizeInput(double xValue) {
   switch (basisType) {
     case OrthogonalPolynomialBasisType::LEGENDRE:
     case OrthogonalPolynomialBasisType::JACOBI:
@@ -49,11 +56,12 @@ double OrthogonalBasis1D::normalizeInput(double xValue) {
   }
 }
 
-double OrthogonalBasis1D::evaluate(size_t basisIndex, double xValue) {
+double OrthogonalPolynomialBasis1D::evaluate(size_t basisIndex, double xValue) {
 #ifdef USE_DAKOTA
-  double invNorm = 1. / std::sqrt(basisPoly->norm_squared(basisIndex));
+  double invNorm = 1. / std::sqrt(basisPoly->norm_squared(static_cast<unsigned short>(basisIndex)));
   double normalized_xValue = normalizeInput(xValue);
-  return invNorm * basisPoly->type1_value(normalized_xValue, basisIndex);
+  return invNorm *
+         basisPoly->type1_value(normalized_xValue, static_cast<unsigned short>(basisIndex));
 #else
   std::cerr << "Error in OrthogonalBasis1D::evaluate: "
             << "SG++ was compiled without DAKOTAsupport!\n";

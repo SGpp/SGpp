@@ -4,8 +4,8 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/operation/onedim/InterpolationCoefficientEvaluator.hpp>
-#include <sgpp/combigrid/functions/OrthogonalBasis1D.hpp>
 #include <sgpp/base/exception/generation_exception.hpp>
+#include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 
 #include <vector>
 
@@ -18,7 +18,7 @@ namespace combigrid {
 
 InterpolationCoefficientEvaluator::InterpolationCoefficientEvaluator()
     : basisValues(1, FloatTensorVector(1)), basisCoefficients() {
-  functionBasis = std::make_shared<OrthogonalBasis1D>(OrthogonalPolynomialBasisType::LEGENDRE);
+  functionBasis = std::make_shared<OrthogonalPolynomialBasis1D>(OrthogonalPolynomialBasisType::LEGENDRE);
 }
 
 InterpolationCoefficientEvaluator::InterpolationCoefficientEvaluator(
