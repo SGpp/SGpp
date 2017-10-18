@@ -443,5 +443,12 @@ void DBMatOnlineDEOrthoAdapt::compute_L2_gridvectors(size_t newPoints, double ne
     //### end adjusted part
   }
 }
+
+void DBMatOnlineDEOrthoAdapt::updateSystemMatrixDecomposition(size_t numAddedGridPoints,
+                                 std::list<size_t> deletedGridPointIndices,
+                                 double lambda) {
+  adapt(numAddedGridPoints, deletedGridPointIndices, lambda);
+}
+
 }  // namespace datadriven
 }  // namespace sgpp

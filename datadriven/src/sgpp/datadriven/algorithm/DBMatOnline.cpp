@@ -35,5 +35,17 @@ DBMatOffline& DBMatOnline::getOfflineObject() {
 
 const DBMatOffline& DBMatOnline::getOfflineObject() const { return offlineObject; }
 
+void DBMatOnline::updateSystemMatrixDecomposition(size_t numAddedGridPoints,
+                                     std::list<size_t> deletedGridPointIndices,
+                                     double lambda) {
+  if(!getOfflineObject().isRefineable()) {
+    throw base::not_implemented_exception("Attempted to update system matrix on decomposition "
+                                                  "that doesn't support it.");
+  }
+  throw base::application_exception("Decomposition reports refineable but does not "
+                                            "override updateSystemMatrixDecomposition()");
+}
+
+
 }  // namespace datadriven
 }  // namespace sgpp

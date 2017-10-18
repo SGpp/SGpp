@@ -89,5 +89,13 @@ DBMatDMSChol* DBMatOnlineDEChol::buildCholSolver(DBMatOffline& offlineObject, bo
   }
 }
 
+void DBMatOnlineDEChol::updateSystemMatrixDecomposition(size_t numAddedGridPoints,
+                                                      std::list<size_t> deletedGridPointIndices,
+                                                      double lambda)  {
+  DBMatOffline* offlineObject = &getOfflineObject();
+  dynamic_cast<DBMatOfflineChol*>(offlineObject)->choleskyModification(numAddedGridPoints, deletedGridPointIndices, lambda);
+}
+
+
 } /* namespace datadriven */
 } /* namespace sgpp */
