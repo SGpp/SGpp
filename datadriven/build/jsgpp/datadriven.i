@@ -54,6 +54,7 @@
 
 %include "OpFactory.i"
 
+#ifdef USE_MPI
 %include "datadriven/src/sgpp/datadriven/tools/TypesDatadriven.hpp"
 %include "datadriven/src/sgpp/datadriven/application/LearnerBase.hpp"
 %include "datadriven/src/sgpp/datadriven/application/DensityEstimator.hpp"
@@ -75,7 +76,7 @@
 %include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/PendingMPIRequest.hpp"
 %include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/RefinementHandler.hpp"
 %include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/RoundRobinScheduler.hpp"
-
+#endif
 
 %include "datadriven/src/sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp"
 %include "datadriven/src/sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp"

@@ -77,6 +77,7 @@
 %include "datadriven/src/sgpp/datadriven/application/LearnerSVM.hpp"
 %include "datadriven/src/sgpp/datadriven/application/PrimalDualSVM.hpp"
 
+#ifdef USE_MPI
 %include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/AuxiliaryStructures.hpp"
 %include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp"
 //%include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp"
@@ -86,6 +87,7 @@
 %include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/PendingMPIRequest.hpp"
 %include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/RefinementHandler.hpp"
 %include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/RoundRobinScheduler.hpp"
+#endif
 
 %include "datadriven/src/sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp"
 %include "datadriven/src/sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp"
