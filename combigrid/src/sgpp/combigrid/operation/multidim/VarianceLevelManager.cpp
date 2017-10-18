@@ -18,13 +18,12 @@ namespace combigrid {
 VarianceLevelManager::VarianceLevelManager(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
     std::shared_ptr<AbstractCombigridStorage> storage,
-    std::vector<OrthogonalPolynomialBasisType> basisFunctionsType)
+    std::vector<std::shared_ptr<OrthogonalPolynomialBasis1D>> basisFunctions)
     : LevelManager(), pointHierarchies(pointHierarchies), storage(storage) {
   std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>> evaluatorPrototypes(
-      basisFunctionsType.size());
+      basisFunctions.size());
   size_t i = 0;
-  for (auto& basisFunctionType : basisFunctionsType) {
-    auto basisFunction = std::make_shared<OrthogonalPolynomialBasis1D>(basisFunctionType);
+  for (auto& basisFunction : basisFunctions) {
     evaluatorPrototypes[i++] = CombiEvaluators::tensorInterpolation(basisFunction);
   }
   fullGridEval = std::make_shared<FullGridLinearCallbackEvaluator<FloatTensorVector>>(
