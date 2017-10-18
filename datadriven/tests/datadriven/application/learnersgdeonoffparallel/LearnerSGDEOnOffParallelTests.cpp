@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#ifdef USE_MPI
+
 #include <boost/test/unit_test_suite.hpp>
 #include <boost/test/test_tools.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp>
@@ -311,3 +313,5 @@ BOOST_AUTO_TEST_CASE(MPIRequestPool_Test) {
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+
+#endif /* USE_MPI */
