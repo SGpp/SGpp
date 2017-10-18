@@ -3,7 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifdef USE_MPI
 #ifdef USE_GSL
 
 #include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
@@ -11,6 +10,7 @@
 
 #endif /* USE_GSL */
 
+#ifdef USE_MPI
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
@@ -19,6 +19,7 @@
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp>
 
 #include <omp.h>
+#endif /* USE_MPI */
 
 #include <string>
 
@@ -47,6 +48,7 @@ void parseInputValue(char *inputString, size_t &outputValue);
  */
 
 int main(int argc, char *argv[]) {
+#ifdef USE_MPI
 #ifdef USE_GSL
 
   omp_set_num_threads(1);
@@ -309,6 +311,7 @@ int main(int argc, char *argv[]) {
 #else
   std::cout << "GSL not enabled at compile time" << std::endl;
 #endif  // USE_GSL
+#endif /* USE_MPI */
   ///
 }
 
@@ -334,4 +337,3 @@ void parseInputValue(char *inputString, size_t &outputValue) {
   }
 }
 
-#endif /* USE_MPI */
