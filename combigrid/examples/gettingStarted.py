@@ -432,28 +432,35 @@ def example7():
 def example8():
     operation = pysgpp.CombigridOperation.createExpClenshawCurtisPolynomialInterpolation(d, func)
 
-    basisFunctions = pysgpp.OrthogonalPolynomialBasisTypeVector()
-    for i in xrange(d):
-        basisFunctions.push_back(pysgpp.OrthogonalPolynomialBasisType_LEGENDRE)
+    basisFunction = pysgpp.OrthogonalPolynomialBasis1D(pysgpp.OrthogonalPolynomialBasisType_LEGENDRE)
+    basisFunctions = pysgpp.OrthogonalPolynomialBasis1DVector(d, basisFunction)
 
     levelManager = pysgpp.VarianceLevelManager(
         operation.getPointHierarchies(), operation.getStorage(), basisFunctions)
 
     operation.setLevelManager(levelManager)
 
-    levelManager.addRegularLevels(0)
+    q = 3
+    levelManager.addRegularLevels(q)
     print "Total function evaluations: %i" % operation.numGridPoints()
-    levelManager.addLevelsAdaptive(200)
-    print "Total function evaluations: %i" % operation.numGridPoints()
+#     levelManager.addLevelsAdaptive(200)
+#     print "Total function evaluations: %i" % operation.numGridPoints()
 
     # compute variance of the interpolant
-    basisFunction = pysgpp.OrthogonalPolynomialBasis1D(pysgpp.OrthogonalPolynomialBasisType_LEGENDRE)
-    operation = pysgpp.CombigridTensorOperation.createExpClenshawCurtisPolynomialInterpolation(
-        basisFunction, d, func)
 
-    q = 3
-    tensorResult = operation.evaluate(q, pysgpp.FloatTensorVector())
-    print "Var(u) = %g" % tensorResult.norm() ** 2
+    pce_operation = pysgpp.CombigridTensorOperation.createExpClenshawCurtisPolynomialInterpolation(
+        basisFunction, d, func)
+    pce_operation.setStorage(operation.getStorage())
+    tensorResult = pce_operation.evaluate(q, pysgpp.FloatTensorVectorVector())
+
+    n = 10000
+    values = [g(pysgpp.DataVector(xi)) for xi in np.random.rand(n, d)]
+
+    print "Total function evaluations: %i" % pce_operation.numGridPoints()
+    print "E(u)   = %g ~ %g" % (np.mean(values),
+                                tensorResult.get(pysgpp.IndexVector(d, 0)).getValue())
+    print "Var(u) = %g ~ %g" % (np.var(values),
+                                tensorResult.norm() ** 2)
 
 
 # Call the examples

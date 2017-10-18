@@ -391,7 +391,7 @@ void example6() {
    */
   sgpp::combigrid::GridFunction gf([](std::shared_ptr<sgpp::combigrid::TensorGrid> grid) {
     // We store the results for each grid point, encoded by a MultiIndex, in a TreeStorage
-    auto result = std::make_shared<sgpp::combigrid::TreeStorage<double> >(d);
+    auto result = std::make_shared<sgpp::combigrid::TreeStorage<double>>(d);
 
     // Creates an iterator that yields all multi-indices of grid points in the grid.
     sgpp::combigrid::MultiIndexIterator it(grid->numPoints());
@@ -475,13 +475,13 @@ void example8() {
   auto operation =
       sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(d, func);
 
-  std::vector<sgpp::combigrid::OrthogonalPolynomialBasisType> basisFunctionTypes(d);
-  for (size_t i = 0; i < basisFunctionTypes.size(); i++) {
-    basisFunctionTypes[i] = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
-  }
+  auto basisFunction = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(
+      sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE);
+  std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>> basisFunctions(
+      d, basisFunction);
 
   auto levelManager = std::make_shared<sgpp::combigrid::VarianceLevelManager>(
-      operation->getPointHierarchies(), operation->getStorage(), basisFunctionTypes);
+      operation->getPointHierarchies(), operation->getStorage(), basisFunctions);
 
   operation->setLevelManager(levelManager);
 

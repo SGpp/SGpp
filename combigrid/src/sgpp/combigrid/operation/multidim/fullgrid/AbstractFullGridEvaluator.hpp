@@ -174,6 +174,8 @@ class AbstractFullGridEvaluator {
 
     return result;
   }
+
+  void setStorage(std::shared_ptr<AbstractCombigridStorage> newStorage) { storage = newStorage; }
 };
 
 } /* namespace combigrid */

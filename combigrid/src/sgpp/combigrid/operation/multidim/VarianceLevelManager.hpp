@@ -21,7 +21,7 @@ class VarianceLevelManager : public LevelManager {
   explicit VarianceLevelManager(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::shared_ptr<AbstractCombigridStorage> storage,
-      std::vector<OrthogonalPolynomialBasisType> basisFunctionsType);
+      std::vector<std::shared_ptr<OrthogonalPolynomialBasis1D>> basisFunctions);
   virtual ~VarianceLevelManager();
 
   virtual std::shared_ptr<LevelManager> clone();
