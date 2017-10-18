@@ -6,6 +6,8 @@
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 
+#include <list>
+
 using sgpp::base::application_exception;
 
 namespace sgpp {
@@ -38,7 +40,7 @@ const DBMatOffline& DBMatOnline::getOfflineObject() const { return offlineObject
 void DBMatOnline::updateSystemMatrixDecomposition(size_t numAddedGridPoints,
                                      std::list<size_t> deletedGridPointIndices,
                                      double lambda) {
-  if(!getOfflineObject().isRefineable()) {
+  if (!getOfflineObject().isRefineable()) {
     throw base::not_implemented_exception("Attempted to update system matrix on decomposition "
                                                   "that doesn't support it.");
   }

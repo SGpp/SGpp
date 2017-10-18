@@ -79,7 +79,7 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
                                        std::list<size_t> deletedGridPointIndices,
                                        double lambda) override;
 
-protected:
+ protected:
   // matrix, which holds information about refined/coarsened points
   sgpp::base::DataMatrix b_adapt_matrix_;
 

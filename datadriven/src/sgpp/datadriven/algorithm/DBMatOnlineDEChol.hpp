@@ -15,6 +15,8 @@
 
 #include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
 
+#include <list>
+
 /**
  * Class that stores, generates and manipulates a density function during online phase in on/off
  * learning. This specialization operates on offline objects based on different Cholesky
@@ -39,11 +41,10 @@ class DBMatOnlineDEChol : public DBMatOnlineDE {
                                      std::list<size_t> deletedGridPointIndices,
                                      double lambda) override;
 
-protected:
+ protected:
   void solveSLE(DataVector& b, bool do_cv) override;
 
   DBMatDMSChol* buildCholSolver(DBMatOffline& offlineObject, bool doCV) const;
-
 
 };
 
