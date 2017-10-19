@@ -3,6 +3,8 @@ Created on Aug 6, 2014
 
 @author: franzefn
 """
+import numpy as np
+
 from LinearQuadratureStrategy import LinearQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.operations import getBoundsOfSupport, bsplineGridTypes
 from pysgpp.extensions.datadriven.uq.dists.Uniform import Uniform
@@ -27,8 +29,10 @@ class LinearGaussQuadratureStrategy(LinearQuadratureStrategy):
 
         # ----------------------------------------------------
         # use gauss-legendre-quadrature
+        bounds = self._U[d].getBounds()
         if self._U is None or (isinstance(self._U[d], Uniform) and \
-                               self._U[d].getBounds() == [0.0, 1.0]):
+                               np.abs(bounds[0]) < 1e-14 and \
+                               np.abs(bounds[1] - 1.0) < 1e-14):
             def f(p):
                 return basis.eval(lid, iid, p)
         else:

@@ -22,6 +22,7 @@
 
 #include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/BSplineQuadratureEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/CubicSplineInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/InterpolationCoefficientEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
@@ -164,6 +165,11 @@ std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::BSp
 
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::quadrature() {
   return std::make_shared<QuadratureEvaluator>();
+}
+
+std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::BSplineQuadrature(
+    size_t degree) {
+  return std::make_shared<BSplineQuadratureEvaluator>(degree);
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>
