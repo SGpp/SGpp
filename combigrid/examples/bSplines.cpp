@@ -9,6 +9,7 @@
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
+#include <sgpp/combigrid/operation/onedim/BSplineQuadratureEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
@@ -29,14 +30,14 @@
 double f(sgpp::base::DataVector const& v) {
   //  return v[0];  // * v[0] * v[0];
   //  return sin(1. / (1. + v[0] * v[0])) * v[1];
-  return v[0];
-  //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
-  //         std::exp(v[0] * v[1] - 1);
+  //  return v[0];
+  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
+         std::exp(v[0] * v[1] - 1);
 }
 
 void interpolate(size_t maxlevel, double& max_err, double& L2_err) {
-  size_t numDimensions = 1;
-  size_t degree = 3;
+  size_t numDimensions = 2;
+  size_t degree = 5;
   sgpp::combigrid::MultiFunction func(f);
   auto operation =
       sgpp::combigrid::CombigridOperation::createExpUniformBoundaryBsplineInterpolation(
@@ -67,11 +68,34 @@ void interpolate(size_t maxlevel, double& max_err, double& L2_err) {
   std::cout << "# grid points: " << operation->numGridPoints() << " ";
 }
 
+/**
+ * @param level level of the underlying 1D subspace
+ * @return vector containing the integrals of all basisfunctions
+ */
+std::vector<double> integrate(size_t level) {
+  size_t numDimensions = 1;
+  size_t degree = 3;
+  sgpp::combigrid::CombiHierarchies::Collection grids(
+      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+  bool needsOrdered = true;
+  std::vector<double> points = grids[0]->getPoints(level, needsOrdered);
+
+  auto evaluator = sgpp::combigrid::CombiEvaluators::BSplineQuadrature(degree);
+  evaluator->setGridPoints(points);
+  std::vector<sgpp::combigrid::FloatScalarVector> weights = evaluator->getBasisValues();
+  std::vector<double> integrals(weights.size());
+  for (size_t i = 0; i < weights.size(); i++) {
+    integrals[i] = weights[i].value();
+  }
+  return integrals;
+}
+
 int main() {
+  // Interpolation
   sgpp::base::SGppStopwatch watch;
   watch.start();
-  size_t minLevel = 3;
-  size_t maxLevel = 3;
+  size_t minLevel = 0;
+  size_t maxLevel = 8;
   std::vector<double> maxErr(maxLevel + 1, 0);
   std::vector<double> L2Err(maxLevel + 1, 0);
   for (size_t l = minLevel; l < maxLevel + 1; l++) {
@@ -79,5 +103,13 @@ int main() {
     std::cout << "level: " << l << " max err " << maxErr[l] << " L2 err " << L2Err[l] << std::endl;
   }
   std::cout << " Total Runtime: " << watch.stop() << " s" << std::endl;
-  return 0;
+
+  // Integration
+  //  size_t level = 3;
+  //  std::vector<double> integrals = integrate(level);
+  //  for (size_t i = 0; i < integrals.size(); i++) {
+  //    std::cout << integrals[i] << " ";
+  //  }
+  //  std::cout << "\n";
+  //  return 0;
 }
