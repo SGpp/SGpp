@@ -78,10 +78,9 @@ std::vector<double> integrate(size_t level) {
   sgpp::combigrid::CombiHierarchies::Collection grids(
       numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
   bool needsOrdered = true;
-  std::vector<double> points = grids[0]->getPoints(level, needsOrdered);
 
   auto evaluator = sgpp::combigrid::CombiEvaluators::BSplineQuadrature(degree);
-  evaluator->setGridPoints(points);
+  evaluator->setGridPoints(grids[0]->getPoints(level, needsOrdered));
   std::vector<sgpp::combigrid::FloatScalarVector> weights = evaluator->getBasisValues();
   std::vector<double> integrals(weights.size());
   for (size_t i = 0; i < weights.size(); i++) {
