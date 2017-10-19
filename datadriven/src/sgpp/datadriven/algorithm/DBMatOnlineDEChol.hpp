@@ -45,7 +45,6 @@ class DBMatOnlineDEChol : public DBMatOnlineDE {
   void solveSLE(DataVector& b, bool do_cv) override;
 
   DBMatDMSChol* buildCholSolver(DBMatOffline& offlineObject, bool doCV) const;
-
 };
 
 } /* namespace datadriven */
