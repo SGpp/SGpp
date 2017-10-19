@@ -24,11 +24,12 @@ LegendreBasis1D::~LegendreBasis1D() {}
 
 double LegendreBasis1D::evaluate(size_t basisIndex, double xValue) {
 #ifdef USE_DAKOTA
-  double invNorm = 1. / std::sqrt(basisPoly.norm_squared(basisIndex));
-  return invNorm * basisPoly.type1_value(2.0 * xValue - 1.0, basisIndex);
+  double invNorm = 1. / std::sqrt(basisPoly.norm_squared(static_cast<short unsigned>(basisIndex)));
+  return invNorm *
+         basisPoly.type1_value(2.0 * xValue - 1.0, static_cast<short unsigned>(basisIndex));
 #else
   std::cerr << "Error in LegendreBasis1D::evaluate: "
-            << "SG++ was compiled without DAKOTAsupport!\n";
+            << "SG++ was compiled without DAKOTA support!\n";
   return false;
 #endif
 }
