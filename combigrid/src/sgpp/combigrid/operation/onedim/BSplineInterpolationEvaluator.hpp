@@ -17,7 +17,7 @@ namespace combigrid {
 class BSplineInterpolationEvaluator : public AbstractLinearEvaluator<FloatScalarVector> {
  public:
   BSplineInterpolationEvaluator();
-  BSplineInterpolationEvaluator(size_t degree) { this->degree = degree; }
+  BSplineInterpolationEvaluator(size_t degree);
   virtual ~BSplineInterpolationEvaluator();
   BSplineInterpolationEvaluator(BSplineInterpolationEvaluator const &other);
 
@@ -33,11 +33,11 @@ class BSplineInterpolationEvaluator : public AbstractLinearEvaluator<FloatScalar
   void setParameter(FloatScalarVector const &param) override;
 
  private:
-  double nonUniformBSpline(double x, size_t p, size_t k, std::vector<double> const &xi);
-  void createKnots(std::vector<double> &xi);
-  void createdeg3NakKnots(std::vector<double> &xi);
-  void createdeg5NakKnots(std::vector<double> &xi);
-  double LagrangePolynomial(double x, size_t k);
+  //  double nonUniformBSpline(double x, size_t p, size_t k, std::vector<double> const &xi);
+  //  void createKnots(std::vector<double> &xi);
+  //  void createdeg3NakKnots(std::vector<double> &xi);
+  //  void createdeg5NakKnots(std::vector<double> &xi);
+  //  double LagrangePolynomial(double x, size_t k);
   void computeBasisValues();
 
   double evaluationPoint;
