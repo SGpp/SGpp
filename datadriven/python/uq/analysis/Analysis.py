@@ -6,6 +6,7 @@
 from pysgpp.extensions.datadriven.uq.dists.KDEDist import KDEDist
 from pysgpp.extensions.datadriven.uq.dists.SGDEdist import SGDEdist
 from scipy.stats.mstats_basic import moment
+from pysgpp.pysgpp_swig import BandwidthOptimizationType_SILVERMANSRULE
 """
 @file    ASGC.py
 @author  Fabian Franzelin <franzefn@ipvs.uni-stuttgart.de>
@@ -175,3 +176,21 @@ class Analysis(object):
         writeDataARFF(stats)
 
 # -----------------------------------------------------------------------------
+
+    def _estimateDensityByConfig(self, dtype, samples, config={}):
+        if dtype == "kde":
+            # compute bounds of samples
+            bounds = np.ndarray((1, 2))
+            bounds[:, 0] = np.min(samples)
+            bounds[:, 1] = np.max(samples)
+            return KDEDist(samples,
+                           bandwidthOptimizationType=BandwidthOptimizationType_SILVERMANSRULE,
+                           bounds=bounds)
+        elif dtype == "sgde":
+            # compute bounds of samples
+            bounds = np.ndarray((1, 2))
+            bounds[:, 0] = np.min(samples)
+            bounds[:, 1] = np.max(samples)
+            return SGDEdist.byLearnerSGDEConfig(samples, bounds, config=config)
+        else:
+            raise AttributeError("density estimation type %s is not known. Select one in [gaussianKDE, sgde]")

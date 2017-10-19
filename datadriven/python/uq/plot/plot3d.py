@@ -9,7 +9,6 @@ from pysgpp import DataVector, createOperationEval, createOperationEvalNaive
 from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
 
 from colors import load_default_color_map
-from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunction
 
 
 def plotDensity3d(U, n=36):
@@ -59,16 +58,6 @@ def plotGrid3d(grid, grid_points_at=0, ax=None):
            " ", c="red", marker="o", ms=15)
 
 
-def plotCombiFunction3d(operation, level, *args, **kws):
-    evaluationPoint = DataVector([0.1572, 0.6627, 0.2378])
-
-    # # We can now evaluate the interpolation at this point (using 3 as a bound for the 1-norm of the
-    # # level multi-index):
-    result = operation.evaluate(3, evaluationPoint)
-
-
-
-
 def insert_labels_3d(ax,
                      xlabel=r"$\xi_1$",
                      ylabel=r"$\xi_2$",
@@ -83,21 +72,11 @@ def insert_labels_3d(ax,
     ax.zaxis.labelpad = 12
 
 
-def plotSG3d(grid=None,
-             alpha=None,
-             n=36,
-             g=None,
+def plotSG3d(grid, alpha, n=36,
              f=lambda x: x, grid_points_at=0, z_min=np.Inf,
              isConsistent=True, show_grid=True,
              surface_plot=False,
-             xoffset=0.0, yoffset=1.0,
-             contour_xy=True):
-
-    if g is None:
-        assert grid is not None and alpha is not None
-        g = lambda x, y: evalSGFunction(grid, alpha, np.array([x, y]),
-                                        isConsistent)
-
+             xoffset=0.0, yoffset=1.0):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     x = np.linspace(0, 1, n + 1, endpoint=True)
@@ -107,7 +86,9 @@ def plotSG3d(grid=None,
     xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
     for i in xrange(len(x)):
         for j in xrange(len(y)):
-            Z[j, i] = f(g(xv[j, i], yv[j, i]))
+            Z[j, i] = f(evalSGFunction(grid, alpha,
+                                       np.array([xv[j, i], yv[j, i]]),
+                                       isConsistent=isConsistent))
 
     if surface_plot:
         cmap = load_default_color_map()
@@ -122,13 +103,12 @@ def plotSG3d(grid=None,
 
     z_min, z_max = min(np.min(Z), z_min), np.max(Z)
     ax.set_zlim(z_min, z_max)
-    if alpha is None or np.any(np.abs(alpha) > 1e-13):
-        if contour_xy:
-            cset = ax.contour(xv, yv, Z, zdir='z', offset=z_min, cmap=cm.coolwarm)
+    if np.any(np.abs(alpha) > 1e-13):
+        cset = ax.contour(xv, yv, Z, zdir='z', offset=z_min, cmap=cm.coolwarm)
         cset = ax.contour(xv, yv, Z, zdir='x', offset=xoffset, cmap=cm.coolwarm)
         cset = ax.contour(xv, yv, Z, zdir='y', offset=yoffset, cmap=cm.coolwarm)
 
-    if grid is not None and show_grid:
+    if show_grid:
         # get grid points
         gs = grid.getStorage()
         gps = np.zeros([gs.getSize(), 2])

@@ -3,7 +3,6 @@ from pysgpp import (DataVector,
                     LatinHypercubeSampleGenerator,
                     HaltonSampleGenerator,
                     StratifiedSampleGenerator)
-
 from Sample import Samples, SampleType, DistributionType
 from Sampler import Sampler
 
@@ -32,8 +31,16 @@ class MCSampler(Sampler):
         return MCSampler(params, None, LatinHypercubeSampleGenerator, nSamples)
 
     @classmethod
+    def withSobolSampleGenerator(cls, params):
+        return MCSampler(params, None, SobolSampleGenerator)
+
+    @classmethod
     def withHaltonSampleGenerator(cls, params):
         return MCSampler(params, None, HaltonSampleGenerator)
+
+    @classmethod
+    def withScrambledSobolSampleGenerator(cls, params):
+        return MCSampler(params, None, ScrambledSobolSampleGenerator)
 
     @classmethod
     def withNumpySampleGenerator(cls, params):

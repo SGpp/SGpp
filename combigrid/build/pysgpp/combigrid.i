@@ -3,12 +3,16 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+// base class is not exported from the configuration
+%warnfilter(401) sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration;
+
 #ifdef SG_COMBIGRID
 
 %include <std_shared_ptr.i>
 
 %shared_ptr(sgpp::combigrid::CombigridOperation)
 %shared_ptr(sgpp::combigrid::CombigridMultiOperation)
+%shared_ptr(sgpp::combigrid::CombigridTensorOperation)
 %shared_ptr(sgpp::combigrid::AbstractGrowthStrategy)
 %shared_ptr(sgpp::combigrid::LinearGrowthStrategy)
 %shared_ptr(sgpp::combigrid::ExponentialGrowthStrategy)
@@ -27,8 +31,10 @@
 %shared_ptr(sgpp::combigrid::NonNestedPointHierarchy)
 %shared_ptr(sgpp::combigrid::AbstractEvaluator<sgpp::combigrid::FloatScalarVector>)
 %shared_ptr(sgpp::combigrid::AbstractEvaluator<sgpp::combigrid::FloatArrayVector>)
+%shared_ptr(sgpp::combigrid::AbstractEvaluator<sgpp::combigrid::FloatTensorVector>)
 %shared_ptr(sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatScalarVector>)
 %shared_ptr(sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatArrayVector>)
+%shared_ptr(sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatTensorVector>)
 %shared_ptr(sgpp::combigrid::PolynomialInterpolationEvaluator)
 %shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::PolynomialInterpolationEvaluator>)
 %shared_ptr(sgpp::combigrid::LinearInterpolationEvaluator)
@@ -37,6 +43,10 @@
 %shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::CubicSplineInterpolationEvaluator>)
 %shared_ptr(sgpp::combigrid::QuadratureEvaluator)
 %shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::QuadratureEvaluator>)
+%shared_ptr(sgpp::combigrid::BSplineInterpolationEvaluator)
+%shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::BSplineInterpolationEvaluator>)
+%shared_ptr(sgpp::combigrid::InterpolationCoefficientEvaluator)
+%shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::InterpolationCoefficientEvaluator>)
 
 %shared_ptr(sgpp::combigrid::AbstractCombigridStorage)
 %shared_ptr(sgpp::combigrid::CombigridTreeStorage)
@@ -47,22 +57,35 @@
 
 %shared_ptr(sgpp::combigrid::AbstractFullGridEvaluator<sgpp::combigrid::FloatScalarVector>)
 %shared_ptr(sgpp::combigrid::AbstractFullGridEvaluator<sgpp::combigrid::FloatArrayVector>)
+%shared_ptr(sgpp::combigrid::AbstractFullGridEvaluator<sgpp::combigrid::FloatTensorVector>)
 %shared_ptr(sgpp::combigrid::AbstractFullGridLinearEvaluator<sgpp::combigrid::FloatScalarVector>)
 %shared_ptr(sgpp::combigrid::AbstractFullGridLinearEvaluator<sgpp::combigrid::FloatArrayVector>)
+%shared_ptr(sgpp::combigrid::AbstractFullGridLinearEvaluator<sgpp::combigrid::FloatTensorVector>)
 %shared_ptr(sgpp::combigrid::FullGridLinearCallbackEvaluator<sgpp::combigrid::FloatScalarVector>)
 %shared_ptr(sgpp::combigrid::FullGridLinearCallbackEvaluator<sgpp::combigrid::FloatArrayVector>)
+%shared_ptr(sgpp::combigrid::FullGridLinearCallbackEvaluator<sgpp::combigrid::FloatTensorVector>)
 %shared_ptr(sgpp::combigrid::FullGridLinearGridBasedEvaluator<sgpp::combigrid::FloatScalarVector>)
 %shared_ptr(sgpp::combigrid::FullGridLinearGridBasedEvaluator<sgpp::combigrid::FloatArrayVector>)
+%shared_ptr(sgpp::combigrid::FullGridLinearGridBasedEvaluator<sgpp::combigrid::FloatTensorVector>)
 %shared_ptr(sgpp::combigrid::FullGridTensorEvaluator<sgpp::combigrid::FloatScalarVector>)
 %shared_ptr(sgpp::combigrid::FullGridTensorEvaluator<sgpp::combigrid::FloatArrayVector>)
+%shared_ptr(sgpp::combigrid::FullGridTensorEvaluator<sgpp::combigrid::FloatTensorVector>)
 
 %shared_ptr(sgpp::combigrid::AbstractLevelEvaluator)
 %shared_ptr(sgpp::combigrid::CombigridEvaluator<sgpp::combigrid::FloatScalarVector>)
 %shared_ptr(sgpp::combigrid::CombigridEvaluator<sgpp::combigrid::FloatArrayVector>)
+%shared_ptr(sgpp::combigrid::CombigridEvaluator<sgpp::combigrid::FloatTensorVector>)
+%shared_ptr(sgpp::combigrid::CombigridTensorEvaluator<sgpp::combigrid::FloatTensorVector>)
+
+
+%shared_ptr(sgpp::combigrid::AbstractInfiniteFunctionBasis1D)
+%shared_ptr(sgpp::combigrid::OrthogonalPolynomialBasis1D)
+%shared_ptr(sgpp::combigrid::MonomialFunctionBasis1D)
 
 %shared_ptr(sgpp::combigrid::LevelManager)
 %shared_ptr(sgpp::combigrid::AveragingLevelManager)
 %shared_ptr(sgpp::combigrid::WeightedRatioLevelManager)
+%shared_ptr(sgpp::combigrid::VarianceLevelManager)
 %shared_ptr(sgpp::combigrid::RegularLevelManager)
 
 %shared_ptr(sgpp::combigrid::TensorGrid)
@@ -95,11 +118,21 @@ namespace combigrid {
 %include "combigrid/src/sgpp/combigrid/definitions.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/AbstractEvaluator.hpp"
+
+%include "combigrid/src/sgpp/combigrid/storage/tree/TreeStorage.hpp"
+
 %ignore sgpp::combigrid::FloatScalarVector::operator=;
 %ignore sgpp::combigrid::FloatArrayVector::operator=;
 %ignore sgpp::combigrid::FloatArrayVector::operator[];
+%ignore sgpp::combigrid::FloatTensorVector::operator=;
+%ignore sgpp::combigrid::FloatTensorVector::operator[];
+
+%ignore sgpp::combigrid::operator<<;
+%ignore sgpp::combigrid::operator>>;
+
 %include "combigrid/src/sgpp/combigrid/algebraic/FloatScalarVector.hpp"
 %include "combigrid/src/sgpp/combigrid/algebraic/FloatArrayVector.hpp"
+%include "combigrid/src/sgpp/combigrid/algebraic/FloatTensorVector.hpp"
 %include "combigrid/src/sgpp/combigrid/common/MultiIndexIterator.hpp"
 %include "combigrid/src/sgpp/combigrid/common/BoundedSumMultiIndexIterator.hpp"
 %include "combigrid/src/sgpp/combigrid/common/AbstractPermutationIterator.hpp"
@@ -108,7 +141,10 @@ namespace combigrid {
 %include "combigrid/src/sgpp/combigrid/storage/AbstractMultiStorageIterator.hpp"
 %include "combigrid/src/sgpp/combigrid/storage/AbstractCombigridStorage.hpp"
 %include "combigrid/src/sgpp/combigrid/storage/FunctionLookupTable.hpp"
-%include "combigrid/src/sgpp/combigrid/storage/tree/TreeStorage.hpp"
+
+%include "combigrid/src/sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp"
+%include "combigrid/src/sgpp/combigrid/functions/MonomialFunctionBasis1D.hpp"
+%include "combigrid/src/sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp"
 
 %include "combigrid/src/sgpp/combigrid/grid/distribution/AbstractPointDistribution.hpp"
 %include "combigrid/src/sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp"
@@ -141,12 +177,16 @@ namespace sgpp {
 namespace combigrid {
     %template(AbstractEvaluator_FloatScalarVector) AbstractEvaluator<FloatScalarVector>;
     %template(AbstractEvaluator_FloatArrayVector) AbstractEvaluator<FloatArrayVector>;
+    %template(AbstractEvaluator_FloatTensorVector) AbstractEvaluator<FloatTensorVector>;
     %template(AbstractLinearEvaluator_FloatScalarVector) AbstractLinearEvaluator<FloatScalarVector>;
     %template(AbstractLinearEvaluator_FloatArrayVector) AbstractLinearEvaluator<FloatArrayVector>;
-    %template(FloatArrayVectorMultiStorage) AbstractMultiStorage<FloatArrayVector>;
+    %template(AbstractLinearEvaluator_FloatTensorVector) AbstractLinearEvaluator<FloatTensorVector>;
     %template(FloatScalarVectorMultiStorage) AbstractMultiStorage<FloatScalarVector>;
-    %template(FloatArrayVectorMultiStorageIterator) AbstractMultiStorageIterator<FloatArrayVector>;
+    %template(FloatArrayVectorMultiStorage) AbstractMultiStorage<FloatArrayVector>;
+    %template(FloatTensorVectorMultiStorage) AbstractMultiStorage<FloatTensorVector>;
     %template(FloatScalarVectorMultiStorageIterator) AbstractMultiStorageIterator<FloatScalarVector>;
+    %template(FloatArrayVectorMultiStorageIterator) AbstractMultiStorageIterator<FloatArrayVector>;
+    %template(FloatTensorVectorMultiStorageIterator) AbstractMultiStorageIterator<FloatTensorVector>;
 
     %template(DoubleAbstractMultiStorage) AbstractMultiStorage<double>;
     %template(Uint8AbstractMultiStorage) AbstractMultiStorage<uint8_t>;
@@ -163,6 +203,9 @@ namespace combigrid {
 %include "combigrid/src/sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/CubicSplineInterpolationEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/onedim/InterpolationCoefficientEvaluator.hpp"
+
 %include "combigrid/src/sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/Configurations.hpp"
 
@@ -174,23 +217,29 @@ namespace sgpp{
 namespace combigrid {
     %template(ScalarAbstractFullGridEvaluator) AbstractFullGridEvaluator<FloatScalarVector>;
     %template(ArrayAbstractFullGridEvaluator) AbstractFullGridEvaluator<FloatArrayVector>;
+    %template(TensorAbstractFullGridEvaluator) AbstractFullGridEvaluator<FloatTensorVector>;
 
     %template(ScalarAbstractFullGridLinearEvaluator) AbstractFullGridLinearEvaluator<FloatScalarVector>;
     %template(ArrayAbstractFullGridLinearEvaluator) AbstractFullGridLinearEvaluator<FloatArrayVector>;
+    %template(TensorAbstractFullGridLinearEvaluator) AbstractFullGridLinearEvaluator<FloatTensorVector>;
 
     %template(ScalarFullGridLinearCallbackEvaluator) FullGridLinearCallbackEvaluator<FloatScalarVector>;
     %template(ArrayFullGridLinearCallbackEvaluator) FullGridLinearCallbackEvaluator<FloatArrayVector>;
+    %template(TensorFullGridLinearCallbackEvaluator) FullGridLinearCallbackEvaluator<FloatTensorVector>;
 
     %template(ScalarFullGridLinearGridBasedEvaluator) FullGridLinearGridBasedEvaluator<FloatScalarVector>;
     %template(ArrayFullGridLinearGridBasedEvaluator) FullGridLinearGridBasedEvaluator<FloatArrayVector>;
+    %template(TensorFullGridLinearGridBasedEvaluator) FullGridLinearGridBasedEvaluator<FloatTensorVector>;
 
     %template(ScalarCombigridEvaluator) CombigridEvaluator<FloatScalarVector>;
     %template(ArrayCombigridEvaluator) CombigridEvaluator<FloatArrayVector>;
+    %template(TensorCombigridEvaluator) CombigridEvaluator<FloatTensorVector>;
 
     %template(ArrayPolynomialInterpolationEvaluator) ArrayEvaluator<PolynomialInterpolationEvaluator>;
     %template(ArrayLinearInterpolationEvaluator) ArrayEvaluator<LinearInterpolationEvaluator>;
     %template(ArrayCubicSplineInterpolationEvaluator) ArrayEvaluator<CubicSplineInterpolationEvaluator>;
     %template(ArrayQuadratureEvaluator) ArrayEvaluator<QuadratureEvaluator>;
+    %template(ArrayBSplineInterpolationEvaluator) ArrayEvaluator<BSplineInterpolationEvaluator>;
 
     // %template(AbstractSerializationStrategy_uint8_t) AbstractSerializationStrategy<std::shared_ptr<TreeStorage<std::uint8_t>>>;
     // %template(AbstractSerializationStrategy_uint8_t) AbstractSerializationStrategy<std::uint8_t>;
@@ -204,10 +253,14 @@ namespace std {
 
     %template(FloatScalarAbstractLinearEvaluatorVector) vector<std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatScalarVector>>>;
     %template(FloatArrayAbstractLinearEvaluatorVector) vector<std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatArrayVector>>>;
+    %template(FloatTensorAbstractLinearEvaluatorVector) vector<std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatTensorVector>>>;
     %template(AbstractPointHierarchyVector) vector<std::shared_ptr<sgpp::combigrid::AbstractPointHierarchy>>;
+    %template(OrthogonalPolynomialBasis1DVector) std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>;
+    %template(OrthogonalPolynomialBasisTypeVector) std::vector<sgpp::combigrid::OrthogonalPolynomialBasisType>;
 
     %template(FloatScalarVectorVector) vector<sgpp::combigrid::FloatScalarVector>;
     %template(FloatArrayVectorVector) vector<sgpp::combigrid::FloatArrayVector>;
+    %template(FloatTensorVectorVector) vector<sgpp::combigrid::FloatTensorVector>;
     %template(DataVectorVector) vector<sgpp::base::DataVector>;
 
     // %template(PyTaskVector) std::vector<sgpp::combigrid::GeneralFunction1<void>>;
@@ -235,8 +288,10 @@ namespace std {
 %include "combigrid/src/sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/RegularLevelManager.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/multidim/VarianceLevelManager.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/CombigridOperation.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/CombigridMultiOperation.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/CombigridTensorOperation.hpp"
 
 %include "combigrid/src/sgpp/combigrid/threading/ThreadPool.hpp"
 %include "combigrid/src/sgpp/combigrid/threading/PtrGuard.hpp"
