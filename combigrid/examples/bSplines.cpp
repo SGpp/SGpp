@@ -92,24 +92,25 @@ std::vector<double> integrate(size_t level) {
 
 int main() {
   // Interpolation
-  sgpp::base::SGppStopwatch watch;
-  watch.start();
-  size_t minLevel = 0;
-  size_t maxLevel = 8;
-  std::vector<double> maxErr(maxLevel + 1, 0);
-  std::vector<double> L2Err(maxLevel + 1, 0);
-  for (size_t l = minLevel; l < maxLevel + 1; l++) {
-    interpolate(l, maxErr[l], L2Err[l]);
-    std::cout << "level: " << l << " max err " << maxErr[l] << " L2 err " << L2Err[l] << std::endl;
-  }
-  std::cout << " Total Runtime: " << watch.stop() << " s" << std::endl;
+  //  sgpp::base::SGppStopwatch watch;
+  //  watch.start();
+  //  size_t minLevel = 0;
+  //  size_t maxLevel = 8;
+  //  std::vector<double> maxErr(maxLevel + 1, 0);
+  //  std::vector<double> L2Err(maxLevel + 1, 0);
+  //  for (size_t l = minLevel; l < maxLevel + 1; l++) {
+  //    interpolate(l, maxErr[l], L2Err[l]);
+  //    std::cout << "level: " << l << " max err " << maxErr[l] << " L2 err " << L2Err[l] <<
+  //    std::endl;
+  //  }
+  //  std::cout << " Total Runtime: " << watch.stop() << " s" << std::endl;
 
   // Integration
-  //  size_t level = 3;
-  //  std::vector<double> integrals = integrate(level);
-  //  for (size_t i = 0; i < integrals.size(); i++) {
-  //    std::cout << integrals[i] << " ";
-  //  }
-  //  std::cout << "\n";
-  //  return 0;
+  size_t level = 3;
+  std::vector<double> integrals = integrate(level);
+  for (size_t i = 0; i < integrals.size(); i++) {
+    std::cout << integrals[i] << " ";
+  }
+  std::cout << "\n";
+  return 0;
 }
