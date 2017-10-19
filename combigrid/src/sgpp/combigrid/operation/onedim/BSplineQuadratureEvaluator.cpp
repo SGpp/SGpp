@@ -6,6 +6,8 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
+#include <sgpp/combigrid/operation/Configurations.hpp>
+#include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineQuadratureEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 
@@ -18,36 +20,45 @@ namespace sgpp {
 namespace combigrid {
 
 /**
- * Struct for a LagrangePolynom, used to eval it
- */
-// struct LagrangePolynom {
-//  std::vector<double> points;
-//  size_t point;
-//
-//  double evaluate(double x) {
-//    double result = 1.0;
-//    for (size_t i = 0; i < points.size(); ++i) {
-//      if (i != point) {
-//        // TODO(holzmudd): precalculate denominator?
-//        result *= (x - points[i]) / (points[point] - points[i]);
-//      }
-//    }
-//    return result;
-//  }
-//
-//  size_t degree() { return points.size(); }
-//};
-
-/**
  * Calculates the weight for the specific point
+ * @param points grid points of theone dimensional grid the interpolation will be performed on
+ * @param index index of the B-Spline whose integral will be calculated
  */
 double BSplineQuadratureEvaluator::getWeight(std::vector<double>& points, size_t index) {
-  size_t numGaussPoints = (degree + 1) / 2 + numAdditionalPoints;
-  return GaussLegendreQuadrature(numGaussPoints).evaluate([this](double x) {
-    // ToDo (rehmemk) Bspline evaluation
-    double BSplineeval = 1.0;
-    return BSplineeval * this->weight_function(x);
-  });
+  // performing Gauss-Legendre integration
+  size_t numGaussPoints = (degree + 1) / 2 + numAdditionalPoints + 50;
+  base::DataVector roots;
+  base::DataVector quadweights;
+  auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
+  quadRule.getLevelPointsAndWeightsNormalized(
+      std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadweights);
+  //  std::cout << "numpoints: " << numGaussPoints << " roots: " << roots.toString()  //<<
+  //  std::endl;
+  //            << " weights: " << quadweights.toString() << std::endl;
+  double sum = 0.0;
+
+  // BSplineInterpolationEvaluator -> createKnots ->nonuniformBspline
+  auto evaluator = sgpp::combigrid::CombiEvaluators::BSplineInterpolation(degree);
+  for (size_t i = 0; i < roots.getSize(); ++i) {
+    double b = 1.0;
+    double a = 0.0;
+    double width = b - a;
+    double x = a + width * roots[i];
+    FloatScalarVector param(x);
+    evaluator->setGridPoints(points);
+    evaluator->setParameter(param);
+    std::vector<FloatScalarVector> bsplineevaluation = evaluator->getBasisValues();
+    std::vector<double> bsplineevaluationdouble(bsplineevaluation.size());
+    for (size_t i = 0; i < bsplineevaluation.size(); i++) {
+      bsplineevaluationdouble[i] = bsplineevaluation[i].value();
+    }
+    // ToDo (rehmemk) alle Basisfunktionene werden ausgerechnet, aber nur eine wird genutzt,
+    // vektorisieren!
+
+    double funceval = bsplineevaluationdouble[index] * this->weight_function(x);
+    sum += quadweights[i] * funceval;
+  }
+  return sum;
 }
 
 /**
@@ -62,6 +73,11 @@ double BSplineQuadratureEvaluator::getWeight(std::vector<double>& points, size_t
 void BSplineQuadratureEvaluator::calculateWeights(std::vector<double>& points,
                                                   std::vector<FloatScalarVector>& weights) {
   // calc weight for each point
+  //  std::cout << "points: ";
+  //  for (size_t i = 0; i < points.size(); i++) {
+  //    std::cout << points[i] << " ";
+  //  }
+  //  std::cout << "\n";
   for (size_t i = 0; i < points.size(); ++i) {
     weights.push_back(FloatScalarVector(getWeight(points, i)));
   }
