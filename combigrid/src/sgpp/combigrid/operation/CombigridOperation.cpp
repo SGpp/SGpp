@@ -109,11 +109,6 @@ double CombigridOperation::evaluate(size_t q, base::DataVector const& param) {
   return getResult();
 }
 
-void CombigridOperation::setStorage(std::shared_ptr<AbstractCombigridStorage> newStorage) {
-  impl->storage = newStorage;
-  impl->fullGridEval->setStorage(newStorage);
-}
-
 std::shared_ptr<AbstractCombigridStorage> CombigridOperation::getStorage() { return impl->storage; }
 std::vector<std::shared_ptr<AbstractPointHierarchy>> CombigridOperation::getPointHierarchies() {
   return impl->pointHierarchies;
