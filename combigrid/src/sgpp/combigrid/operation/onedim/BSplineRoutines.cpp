@@ -14,6 +14,10 @@
    */
 double nonUniformBSpline(double const& x, size_t const& deg, size_t const& k,
                          std::vector<double> const& xi) {
+  // TESTING
+  //  return x * x * x;
+  //****************
+
   if (deg == 0) {
     // characteristic function of [xi[k], xi[k+1])
     return (((x >= xi[k]) && (x < xi[k + 1])) ? 1.0 : 0.0);
