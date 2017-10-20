@@ -28,16 +28,15 @@
 #include <vector>
 
 double f(sgpp::base::DataVector const& v) {
-  //  return v[0];  // * v[0] * v[0];
+  //  return v[0] * exp(v[1]);
   //  return sin(1. / (1. + v[0] * v[0])) * v[1];
-  //  return v[0];
-  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
-         std::exp(v[0] * v[1] - 1);
+  return v[0] * v[0];  // * v[0] * v[0];  // * v[0] * v[0];
+  //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
+  //         std::exp(v[0] * v[1] - 1);
 }
 
-void interpolate(size_t maxlevel, double& max_err, double& L2_err) {
-  size_t numDimensions = 2;
-  size_t degree = 5;
+void interpolate(size_t maxlevel, size_t numDimensions, size_t degree, double& max_err,
+                 double& L2_err) {
   sgpp::combigrid::MultiFunction func(f);
   auto operation =
       sgpp::combigrid::CombigridOperation::createExpUniformBoundaryBsplineInterpolation(
@@ -72,16 +71,13 @@ void interpolate(size_t maxlevel, double& max_err, double& L2_err) {
  * @param level level of the underlying 1D subspace
  * @return vector containing the integrals of all basisfunctions
  */
-std::vector<double> integrate(size_t level) {
-  size_t numDimensions = 1;
-  size_t degree = 3;
+std::vector<double> integrateBasisFunctions(size_t level, size_t numDimensions, size_t degree) {
   sgpp::combigrid::CombiHierarchies::Collection grids(
       numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
   bool needsOrdered = true;
-  std::vector<double> points = grids[0]->getPoints(level, needsOrdered);
 
   auto evaluator = sgpp::combigrid::CombiEvaluators::BSplineQuadrature(degree);
-  evaluator->setGridPoints(points);
+  evaluator->setGridPoints(grids[0]->getPoints(level, needsOrdered));
   std::vector<sgpp::combigrid::FloatScalarVector> weights = evaluator->getBasisValues();
   std::vector<double> integrals(weights.size());
   for (size_t i = 0; i < weights.size(); i++) {
@@ -90,26 +86,44 @@ std::vector<double> integrate(size_t level) {
   return integrals;
 }
 
+double integrate(size_t level, size_t numDimensions, size_t degree) {
+  sgpp::combigrid::MultiFunction func(f);
+  auto operation = sgpp::combigrid::CombigridOperation::createExpUniformBoundaryBsplineIntegration(
+      numDimensions, func, degree);
+  return operation->evaluate(level);
+}
+
 int main() {
-  // Interpolation
-  sgpp::base::SGppStopwatch watch;
-  watch.start();
-  size_t minLevel = 0;
-  size_t maxLevel = 8;
-  std::vector<double> maxErr(maxLevel + 1, 0);
-  std::vector<double> L2Err(maxLevel + 1, 0);
-  for (size_t l = minLevel; l < maxLevel + 1; l++) {
-    interpolate(l, maxErr[l], L2Err[l]);
-    std::cout << "level: " << l << " max err " << maxErr[l] << " L2 err " << L2Err[l] << std::endl;
-  }
-  std::cout << " Total Runtime: " << watch.stop() << " s" << std::endl;
+  size_t numDimensions = 1;
+  size_t degree = 3;
+  //
+  //  // Interpolation
+  //  sgpp::base::SGppStopwatch watch;
+  //  watch.start();
+  //  size_t minLevel = 3;
+  //  size_t maxLevel = 3;
+  //
+  //  std::vector<double> maxErr(maxLevel + 1, 0);
+  //  std::vector<double> L2Err(maxLevel + 1, 0);
+  //  for (size_t l = minLevel; l < maxLevel + 1; l++) {
+  //    interpolate(l, numDimensions, degree, maxErr[l], L2Err[l]);
+  //    std::cout << "level: " << l << " max err " << maxErr[l] << " L2 err " << L2Err[l] <<
+  //    std::endl;
+  //  }
+  //  //  std::cout << " Total Runtime: " << watch.stop() << " s" << std::endl;
 
   // Integration
-  //  size_t level = 3;
-  //  std::vector<double> integrals = integrate(level);
+  size_t level = 3;
+  double integral = integrate(level, numDimensions, degree);
+  std::cout << integral << std::endl;
+
+  // Integrate basis functions
+  //  size_t level = 1;
+  //  std::vector<double> integrals = integrateBasisFunctions(level, numDimensions, degree);
+  //  std::cout << "------------------------------------" << std::endl;
   //  for (size_t i = 0; i < integrals.size(); i++) {
   //    std::cout << integrals[i] << " ";
   //  }
-  //  std::cout << "\n";
-  //  return 0;
+
+  return 0;
 }

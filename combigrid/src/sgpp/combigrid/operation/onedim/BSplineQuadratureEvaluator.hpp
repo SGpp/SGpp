@@ -25,7 +25,7 @@ namespace combigrid {
  */
 class BSplineQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVector> {
   std::vector<double> xValues;
-  std::vector<FloatScalarVector> weights;
+  std::vector<FloatScalarVector> integrals;
   std::vector<double> basisCoefficients;
   sgpp::combigrid::SingleFunction weight_function;
   bool normalizeWeights;
@@ -33,8 +33,13 @@ class BSplineQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVec
   size_t numAdditionalPoints;  // additional gauss points used for a custom weight function
   size_t degree;
 
-  double getWeight(std::vector<double> &points, size_t index);
-  void calculateWeights(std::vector<double> &points, std::vector<FloatScalarVector> &weights);
+  double get1DIntegral(std::vector<double> &points, size_t index);
+  //  double get1DProdIntegral(std::vector<double> &points, size_t index_i, size_t index_j);
+
+  void calculate1DBSplineIntegrals(std::vector<double> &points,
+                                   std::vector<FloatScalarVector> &integrals);
+  //  void calculate1DProdBSplineIntegrals(std::vector<double> &points,
+  //                                       std::vector<std::vector<FloatScalarVector>> &integrals);
 
  public:
   BSplineQuadratureEvaluator();
@@ -57,7 +62,7 @@ class BSplineQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVec
   BSplineQuadratureEvaluator(BSplineQuadratureEvaluator const &other);
   virtual ~BSplineQuadratureEvaluator();
 
-  std::vector<FloatScalarVector> getBasisValues() override { return weights; }
+  std::vector<FloatScalarVector> getBasisValues() override { return integrals; }
   std::vector<double> getBasisCoefficients() override { return basisCoefficients; }
 
   void setGridPoints(std::vector<double> const &newXValues) override;
