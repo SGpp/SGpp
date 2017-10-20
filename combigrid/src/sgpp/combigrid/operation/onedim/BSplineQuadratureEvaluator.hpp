@@ -33,9 +33,13 @@ class BSplineQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVec
   size_t numAdditionalPoints;  // additional gauss points used for a custom weight function
   size_t degree;
 
-  double getIntegral(std::vector<double> &points, size_t index);
-  void calculateBSplineIntegrals(std::vector<double> &points,
-                                 std::vector<FloatScalarVector> &integrals);
+  double get1DIntegral(std::vector<double> &points, size_t index);
+  double get1DProdIntegral(std::vector<double> &points, size_t index_i, size_t index_j);
+
+  void calculate1DBSplineIntegrals(std::vector<double> &points,
+                                   std::vector<FloatScalarVector> &integrals);
+  void calculate1DProdBSplineIntegrals(std::vector<double> &points,
+                                       std::vector<std::vector<FloatScalarVector>> &integrals);
 
  public:
   BSplineQuadratureEvaluator();
