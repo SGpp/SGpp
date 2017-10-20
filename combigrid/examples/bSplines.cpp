@@ -28,9 +28,10 @@
 #include <vector>
 
 double f(sgpp::base::DataVector const& v) {
-  //  return v[0] * exp(v[1]);
+  //  return v[0] * v[1];
   //  return sin(1. / (1. + v[0] * v[0])) * v[1];
-  return v[0] * v[0];  // * v[0] * v[0];  // * v[0] * v[0];
+  return sin(v[0]);  // v[0] * v[0] * v[0] * v[0] *
+                     // v[0];
   //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
   //         std::exp(v[0] * v[1] - 1);
 }
