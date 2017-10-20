@@ -105,40 +105,50 @@ namespace combigrid {
 double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, size_t index) {
   // performing Gauss-Legendre integration
   size_t numGaussPoints = (degree + 1) / 2 + numAdditionalPoints;
+  ;
   base::DataVector roots;
   base::DataVector quadratureweights;
   auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
-  quadRule.getLevelPointsAndWeightsNormalized(
-      std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
 
   double sum = 0.0;
   std::vector<double> xi;
   createNakKnots(xValues, degree, xi);
-  //  std::cout << "xi:" << std::endl;
-  //  for (size_t i = 0; i < xi.size(); i++) {
-  //    std::cout << xi[i] << " ";
-  //  }
-  //  std::cout << "\n";
+  double bsplinevalue = 0.0;
 
-  size_t first_segment = std::max(degree, index);
-  size_t last_segment = std::min(xi.size() - degree - 1, index + degree + 1);
-  //  std::cout << first_segment << " " << last_segment << std::endl;
-  for (size_t segmentIndex = first_segment; segmentIndex < last_segment; segmentIndex++) {
-    double a = std::max(0.0, xi[segmentIndex]);
-    double b = std::min(1.0, xi[segmentIndex + 1]);
-    double width = b - a;
-    //        std::cout << segmentIndex << " " << xi[segmentIndex] << " " << xi[segmentIndex + 1] <<
-    //        " "
-    //        << a
-    //                  << " " << b << " " << width << std::endl;
-
+  if (xValues.size() == 1) {
+    numGaussPoints = 1;
+    quadRule.getLevelPointsAndWeightsNormalized(
+        std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
+    sum = 1.0 * this->weight_function(roots[0]) * quadratureweights[0];
+  } else if (xValues.size() < 9) {
+    quadRule.getLevelPointsAndWeightsNormalized(
+        std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
     for (size_t i = 0; i < roots.getSize(); ++i) {
-      double x = a + width * roots[i];
-      double bsplinevalue = nonUniformBSpline(x, degree, index, xi);
-
+      double x = roots[i];
+      bsplinevalue = LagrangePolynomial(x, xValues, index);
       double integrand = bsplinevalue * this->weight_function(x);
-      // multiply weights by length_old_interval / length_new_interval
-      sum += integrand * quadratureweights[i] * width;
+      sum += integrand * quadratureweights[i];
+    }
+  } else {
+    quadRule.getLevelPointsAndWeightsNormalized(
+        std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
+    size_t first_segment = std::max(degree, index);
+    size_t last_segment = std::min(xi.size() - degree - 1, index + degree + 1);
+    //    std::cout << first_segment << " " << last_segment << std::endl;
+    for (size_t segmentIndex = first_segment; segmentIndex < last_segment; segmentIndex++) {
+      double a = std::max(0.0, xi[segmentIndex]);
+      double b = std::min(1.0, xi[segmentIndex + 1]);
+      double width = b - a;
+      //      std::cout << segmentIndex << " " << xi[segmentIndex] << " " << xi[segmentIndex + 1] <<
+      //      " "<< a << " " << b << " " << width << std::endl;
+
+      for (size_t i = 0; i < roots.getSize(); ++i) {
+        double x = a + width * roots[i];
+        bsplinevalue = nonUniformBSpline(x, degree, index, xi);
+        double integrand = bsplinevalue * this->weight_function(x);
+        // multiply weights by length_old_interval / length_new_interval
+        sum += integrand * quadratureweights[i] * width;
+      }
     }
   }
   return sum;
