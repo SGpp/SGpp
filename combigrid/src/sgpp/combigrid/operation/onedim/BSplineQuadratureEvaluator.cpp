@@ -114,16 +114,23 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
   double sum = 0.0;
   std::vector<double> xi;
   createNakKnots(xValues, degree, xi);
+  //  std::cout << "xi:" << std::endl;
+  //  for (size_t i = 0; i < xi.size(); i++) {
+  //    std::cout << xi[i] << " ";
+  //  }
+  //  std::cout << "\n";
 
-  size_t offset = (degree + 1) / 2;
-  size_t first_segment = std::max(offset, index);
-  size_t last_segment = std::min(xi.size() - offset - 1, index + degree + 1);
+  size_t first_segment = std::max(degree, index);
+  size_t last_segment = std::min(xi.size() - degree - 1, index + degree + 1);
+  //  std::cout << first_segment << " " << last_segment << std::endl;
   for (size_t segmentIndex = first_segment; segmentIndex < last_segment; segmentIndex++) {
     double a = std::max(0.0, xi[segmentIndex]);
     double b = std::min(1.0, xi[segmentIndex + 1]);
-    //    double a = 0.0;
-    //    double b = 1.0;
     double width = b - a;
+    //        std::cout << segmentIndex << " " << xi[segmentIndex] << " " << xi[segmentIndex + 1] <<
+    //        " "
+    //        << a
+    //                  << " " << b << " " << width << std::endl;
 
     for (size_t i = 0; i < roots.getSize(); ++i) {
       double x = a + width * roots[i];
