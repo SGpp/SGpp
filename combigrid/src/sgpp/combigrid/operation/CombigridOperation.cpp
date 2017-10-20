@@ -304,22 +304,29 @@ std::shared_ptr<CombigridOperation> CombigridOperation::createExpClenshawCurtisQ
 
 std::shared_ptr<CombigridOperation> auxiliaryBsplineFunction(size_t numDimensions,
                                                              MultiFunction func,
-                                                             size_t hierarchytype,
+                                                             size_t hierarchyType,
+                                                             size_t operationType,
                                                              size_t growthFactor, size_t degree) {
   sgpp::combigrid::CombiHierarchies::Collection grids;
-  if (hierarchytype == 1) {
+  if (hierarchyType == 1) {
     grids.resize(numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
-  } else if (hierarchytype == 2) {
+  } else if (hierarchyType == 2) {
     grids.resize(numDimensions, sgpp::combigrid::CombiHierarchies::expClenshawCurtis());
-  } else if (hierarchytype == 3) {
+  } else if (hierarchyType == 3) {
     grids.resize(numDimensions, sgpp::combigrid::CombiHierarchies::expChebyshev());
-  } else if (hierarchytype == 4) {
+  } else if (hierarchyType == 4) {
     grids.resize(numDimensions, sgpp::combigrid::CombiHierarchies::linearLeja(growthFactor));
-  } else if (hierarchytype == 5) {
+  } else if (hierarchyType == 5) {
     grids.resize(numDimensions, sgpp::combigrid::CombiHierarchies::linearL2Leja(growthFactor));
   }
-  sgpp::combigrid::CombiEvaluators::Collection evaluators(
-      numDimensions, sgpp::combigrid::CombiEvaluators::BSplineInterpolation(degree));
+
+  sgpp::combigrid::CombiEvaluators::Collection evaluators;
+  if (operationType == 1) {
+    evaluators.resize(numDimensions,
+                      sgpp::combigrid::CombiEvaluators::BSplineInterpolation(degree));
+  } else if (operationType == 2) {
+    evaluators.resize(numDimensions, sgpp::combigrid::CombiEvaluators::BSplineQuadrature(degree));
+  }
   // So far only WeightedRatioLevelManager has been used
   std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
       new sgpp::combigrid::WeightedRatioLevelManager());
@@ -330,6 +337,8 @@ std::shared_ptr<CombigridOperation> auxiliaryBsplineFunction(size_t numDimension
   // Grid Function that calculates the coefficients for the B-Spline interpolation.
   // The coeficients for each B-Spline are saved in a TreeStorage encoded by a MultiIndex
   sgpp::combigrid::GridFunction gf([=](std::shared_ptr<sgpp::combigrid::TensorGrid> grid) {
+    sgpp::combigrid::CombiEvaluators::Collection interpolEvaluators(
+        numDimensions, sgpp::combigrid::CombiEvaluators::BSplineInterpolation(degree));
     size_t numDimensions = grid->getDimension();
     auto coefficientTree = std::make_shared<sgpp::combigrid::TreeStorage<double>>(numDimensions);
     auto level = grid->getLevel();
@@ -341,7 +350,7 @@ std::shared_ptr<CombigridOperation> auxiliaryBsplineFunction(size_t numDimension
 
     sgpp::combigrid::CombiEvaluators::Collection evalCopy(numDimensions);
     for (size_t dim = 0; dim < numDimensions; ++dim) {
-      evalCopy[dim] = evaluators[dim]->cloneLinear();
+      evalCopy[dim] = interpolEvaluators[dim]->cloneLinear();
       bool needsSorted = evalCopy[dim]->needsOrderedPoints();
       auto gridPoints = grids[dim]->getPoints(level[dim], needsSorted);
       evalCopy[dim]->setGridPoints(gridPoints);
@@ -427,29 +436,52 @@ CombigridOperation::createExpUniformBoundaryBsplineInterpolation(size_t numDimen
                                                                  MultiFunction func,
                                                                  size_t degree = 3) {
   size_t dummygrowthfactor = 0;
-  return auxiliaryBsplineFunction(numDimensions, func, 1, dummygrowthfactor, degree);
+  size_t gridType = 1;
+  size_t operationType = 1;
+  return auxiliaryBsplineFunction(numDimensions, func, gridType, operationType, dummygrowthfactor,
+                                  degree);
 }
 
 std::shared_ptr<CombigridOperation> CombigridOperation::createExpClenshawCurtisBsplineInterpolation(
     size_t numDimensions, MultiFunction func, size_t degree = 3) {
   size_t dummygrowthfactor = 0;
-  return auxiliaryBsplineFunction(numDimensions, func, 2, dummygrowthfactor, degree);
+  size_t gridType = 2;
+  size_t operationType = 1;
+  return auxiliaryBsplineFunction(numDimensions, func, gridType, operationType, dummygrowthfactor,
+                                  degree);
 }
 
 std::shared_ptr<CombigridOperation> CombigridOperation::createExpChebyshevBsplineInterpolation(
     size_t numDimensions, MultiFunction func, size_t degree = 3) {
   size_t dummygrowthfactor = 0;
-  return auxiliaryBsplineFunction(numDimensions, func, 3, dummygrowthfactor, degree);
+  size_t gridType = 3;
+  size_t operationType = 1;
+  return auxiliaryBsplineFunction(numDimensions, func, gridType, operationType, dummygrowthfactor,
+                                  degree);
 }
 
 std::shared_ptr<CombigridOperation> CombigridOperation::createLinearLejaBsplineInterpolation(
     size_t numDimensions, MultiFunction func, size_t degree = 3, size_t growthFactor = 2) {
-  return auxiliaryBsplineFunction(numDimensions, func, 4, growthFactor, degree);
+  size_t gridType = 4;
+  size_t operationType = 1;
+  return auxiliaryBsplineFunction(numDimensions, func, gridType, operationType, growthFactor,
+                                  degree);
 }
 
 std::shared_ptr<CombigridOperation> CombigridOperation::createLinearL2LejaBsplineInterpolation(
     size_t numDimensions, MultiFunction func, size_t degree = 3, size_t growthFactor = 2) {
-  return auxiliaryBsplineFunction(numDimensions, func, 5, growthFactor, degree);
+  size_t gridType = 5;
+  size_t operationType = 1;
+  return auxiliaryBsplineFunction(numDimensions, func, gridType, operationType, growthFactor,
+                                  degree);
+}
+std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformBoundaryBsplineIntegration(
+    size_t numDimensions, MultiFunction func, size_t degree = 3) {
+  size_t dummygrowthfactor = 0;
+  size_t gridType = 1;
+  size_t operationType = 2;
+  return auxiliaryBsplineFunction(numDimensions, func, gridType, operationType, dummygrowthfactor,
+                                  degree);
 }
 
 } /* namespace combigrid */

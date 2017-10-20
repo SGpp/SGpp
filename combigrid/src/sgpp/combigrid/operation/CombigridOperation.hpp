@@ -157,6 +157,8 @@ class CombigridOperation {
       size_t numDimensions, MultiFunction func, size_t degree, size_t growthFactor);
   static std::shared_ptr<CombigridOperation> createLinearL2LejaBsplineInterpolation(
       size_t numDimensions, MultiFunction func, size_t degree, size_t growthFactor);
+  static std::shared_ptr<CombigridOperation> createExpUniformBoundaryBsplineIntegration(
+      size_t numDimensions, MultiFunction func, size_t degree);
 };
 } /* namespace combigrid */
 } /* namespace sgpp*/
