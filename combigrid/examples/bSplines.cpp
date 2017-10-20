@@ -30,9 +30,9 @@
 double f(sgpp::base::DataVector const& v) {
   //  return v[0];  // * v[0] * v[0];
   //  return sin(1. / (1. + v[0] * v[0])) * v[1];
-  //  return v[0];
-  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
-         std::exp(v[0] * v[1] - 1);
+  return v[0] * v[0];
+  //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
+  //         std::exp(v[0] * v[1] - 1);
 }
 
 void interpolate(size_t maxlevel, double& max_err, double& L2_err) {
@@ -89,6 +89,15 @@ std::vector<double> integrate(size_t level) {
   return integrals;
 }
 
+double integrinterpolate(size_t level) {
+  size_t numDimensions = 1;
+  size_t degree = 3;
+  sgpp::combigrid::MultiFunction func(f);
+  auto operation = sgpp::combigrid::CombigridOperation::createExpUniformBoundaryBsplineIntegration(
+      numDimensions, func, degree);
+  return operation->evaluate(level);
+}
+
 int main() {
   // Interpolation
   //  sgpp::base::SGppStopwatch watch;
@@ -104,12 +113,18 @@ int main() {
   //  }
   //  std::cout << " Total Runtime: " << watch.stop() << " s" << std::endl;
 
-  // Integration
-  size_t level = 3;
-  std::vector<double> integrals = integrate(level);
-  for (size_t i = 0; i < integrals.size(); i++) {
-    std::cout << integrals[i] << " ";
-  }
-  std::cout << "\n";
+  // Integrate B-Splines
+  //  size_t level = 4;
+  //  std::vector<double> integrals = integrate(level);
+  //  for (size_t i = 0; i < integrals.size(); i++) {
+  //    std::cout << integrals[i] << " ";
+  //  }
+  //  std::cout << "\n";
+
+  // Integrate Interpolants
+  size_t level = 6;
+  double integral = integrinterpolate(level);
+  std::cout << integral << std::endl;
+
   return 0;
 }
