@@ -70,6 +70,15 @@ class AbstractLinearEvaluator : public AbstractEvaluator<V> {
 
     return sum;
   }
+
+  virtual std::vector<FloatScalarVector> getBasisValuesBSplineSpecial(){
+    std::vector<FloatScalarVector> basisValuesBSPline =
+    std::vector<FloatScalarVector>(1, FloatScalarVector(0.0));
+
+
+    return basisValuesBSPline;
+
+  }
 };
 
 } /* namespace combigrid */

@@ -34,6 +34,7 @@ class ZetaHermiteInterpolationEvaluator : public AbstractLinearEvaluator<FloatSc
   ZetaHermiteInterpolationEvaluator(ZetaHermiteInterpolationEvaluator const &other);
 
   virtual std::vector<FloatScalarVector> getBasisValues() { return basisValues; }
+  virtual std::vector<FloatScalarVector> getBasisValuesBSplineSpecial() override;
   virtual std::vector<double> getBasisCoefficients() { return basisCoefficients; }
 
   void setGridPoints(std::vector<double> const &newXValues) override;
