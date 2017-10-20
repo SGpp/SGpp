@@ -30,7 +30,7 @@
 double f(sgpp::base::DataVector const& v) {
   //  return v[0] * exp(v[1]);
   //  return sin(1. / (1. + v[0] * v[0])) * v[1];
-  return 1;  // v[0] * v[0] * v[0] * v[0] * v[0]; /*integral is 0.25*/
+  return v[0] * v[0];  // * v[0] * v[0];  // * v[0] * v[0];
   //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
   //         std::exp(v[0] * v[1] - 1);
 }
@@ -71,9 +71,7 @@ void interpolate(size_t maxlevel, size_t numDimensions, size_t degree, double& m
  * @param level level of the underlying 1D subspace
  * @return vector containing the integrals of all basisfunctions
  */
-std::vector<double> integrateBasisFunctions(size_t level) {
-  size_t numDimensions = 1;
-  size_t degree = 3;
+std::vector<double> integrateBasisFunctions(size_t level, size_t numDimensions, size_t degree) {
   sgpp::combigrid::CombiHierarchies::Collection grids(
       numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
   bool needsOrdered = true;
@@ -97,7 +95,7 @@ double integrate(size_t level, size_t numDimensions, size_t degree) {
 
 int main() {
   size_t numDimensions = 1;
-  size_t degree = 5;
+  size_t degree = 3;
   //
   //  // Interpolation
   //  sgpp::base::SGppStopwatch watch;
@@ -120,8 +118,9 @@ int main() {
   std::cout << integral << std::endl;
 
   // Integrate basis functions
-  //  size_t level = 4;
-  //  std::vector<double> integrals = integrateBasisFunctions(level);
+  //  size_t level = 1;
+  //  std::vector<double> integrals = integrateBasisFunctions(level, numDimensions, degree);
+  //  std::cout << "------------------------------------" << std::endl;
   //  for (size_t i = 0; i < integrals.size(); i++) {
   //    std::cout << integrals[i] << " ";
   //  }
