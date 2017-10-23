@@ -8,6 +8,17 @@
 
 #include <sgpp/combigrid/definitions.hpp>
 
+#include <sgpp/combigrid/operation/CombigridOperation.hpp>
+#include <sgpp/combigrid/operation/Configurations.hpp>
+#include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
+#include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
+#include <sgpp/optimization/sle/solver/Auto.hpp>
+#include <sgpp/optimization/sle/system/FullSLE.hpp>
+#include <sgpp/optimization/tools/Printer.hpp>
+
+typedef sgpp::combigrid::GeneralFunction<double, sgpp::base::DataVector const&> MultiFunction;
+
 /**
    * @param x     evaluation point
    * @param deg     B-spline degree
@@ -51,4 +62,20 @@ void createdeg5NakKnots(std::vector<double> const& xValues, size_t const& degree
 
 void createNakKnots(std::vector<double> const& xValues, size_t const& degree,
                     std::vector<double>& xi);
+
+/**
+   * @param numDimensions   number of dimensions
+   * @param func     		objective function
+   * @param degree       	B-spline degree
+   * * @return      		Operation for calculating mean(u^2) where u is the B-Spline interpolant
+ * of
+   * 						func
+   * Mean(u^2) = \int u^2(x) f(x) dx = \sum_i \alpha_i \sum_j \alpha_j \int b_i b_j dx
+   * Therefore this operation uses the special quadrature for \int b_i b_j and a custom grid
+ * function that calculated the interpolation coefficients \alpha and saves the products \alpha_i
+ * \alpha_j into a TreeStorage
+   */
+std::shared_ptr<sgpp::combigrid::CombigridOperation> BsplineMeanSquare(size_t numDimensions,
+                                                                       MultiFunction func,
+                                                                       size_t degree);
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_BSPLINEROUTINES_HPP_ */
