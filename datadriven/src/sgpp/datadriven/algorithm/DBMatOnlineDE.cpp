@@ -251,7 +251,6 @@ double DBMatOnlineDE::normalize(size_t samples) {
 
 double DBMatOnlineDE::normalizeQuadrature(){
   this->normFactor = 1.;
-  this->normOffset = 0.;
   double quadrature = sgpp::op_factory::createOperationQuadrature(offlineObject.getGrid())->doQuadrature(alpha);
 
   return this->normFactor /= quadrature;
