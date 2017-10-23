@@ -87,9 +87,7 @@ DBMatOffline& sgpp::datadriven::DBMatOffline::operator=(const DBMatOffline& rhs)
 
 DBMatOffline::DBMatOffline(const std::string& fileName)
     : config(), lhsMatrix(), isConstructed(true), isDecomposed(true), grid(nullptr) {
-  std::cout << "parsing Config..." << std::endl;
   parseConfig(fileName, config);
-  std::cout << "Parsing Interactions..." << std::endl;
   interactions = std::vector<std::vector<size_t>>();
   parseInter(fileName, interactions);
   std::cout << "Setting up Grid..." << std::endl;
@@ -150,7 +148,6 @@ void DBMatOffline::buildMatrix() {
   std::unique_ptr<OperationMatrix> op(
       op_factory::createOperationLTwoDotExplicit(&lhsMatrix, *grid));
   isConstructed = true;
-  lhsMatrix.toFile("4x4_Lin_lvl2_ConstructedMat.txt");
 }
 
 void DBMatOffline::store(const std::string& fileName) {

@@ -149,8 +149,6 @@ class AlgorithmEvaluationTransposed {
         working.leftChild(current_dim);
       }
     }
-
-    //working.resetToLevelOne(current_dim);
   }
 };
 
