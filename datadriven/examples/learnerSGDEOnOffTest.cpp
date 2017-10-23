@@ -9,6 +9,7 @@
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 
+#include <chrono>
 #include <string>
 
 using sgpp::base::DataMatrix;
@@ -33,6 +34,7 @@ using sgpp::base::DataVector;
  */
 
 int main() {
+  auto begin = std::chrono::high_resolution_clock::now();
   /**
    * Specify the number of runs to perform.
    * If only one specific example should be executed, set
@@ -99,28 +101,35 @@ int main() {
 
       /**
        * Select the desired decomposition type for the offline step.
-       * Note: Refinement/Coarsening only possible for Cholesky decomposition.
+       * Note: Refinement/Coarsening only possible for Cholesky decomposition
+       * and OrthoAdapt
        */
       sgpp::datadriven::DBMatDecompostionType dt;
       std::string decompType;
       // choose "LU decomposition"
       // dt = DBMatDecompostionType::DBMatDecompLU;
       // decompType = "LU decomposition";
+
       // choose"Eigen decomposition"
       // dt = DBMatDecompostionType::DBMatDecompEigen;
       // decompType = "Eigen decomposition";
+
       // choose "Cholesky decomposition"
-      //      dt = sgpp::datadriven::DBMatDecompostionType::Chol;
-      //      decompType = "Cholesky decomposition";
-      //      dt = sgpp::datadriven::DBMatDecompostionType::IChol;
-      //      decompType = "Incomplete Cholesky decomposition";
-      dt = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
-      decompType = "Incomplete Cholesky decomposition on Dense Matrix";
+      // dt = sgpp::datadriven::DBMatDecompostionType::Chol;
+      // decompType = "Cholesky decomposition";
+      // dt = sgpp::datadriven::DBMatDecompostionType::IChol;
+      // decompType = "Incomplete Cholesky decomposition";
+      // dt = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
+
+      // choose "orthogonal Adaptivity"
+      dt = sgpp::datadriven::DBMatDecompostionType::OrthoAdapt;
+      decompType = "orthogonal Adaptivity";
+
       std::cout << "Decomposition type: " << decompType << std::endl;
 
       /**
-       * Configure adaptive refinement (if Cholesky is chosen). As refinement
-       * monitor the periodic monitor or the convergence monitor
+       * Configure adaptive refinement (if Cholesky or OrthoAdapt is chosen).
+       * As refinement monitor the periodic monitor or the convergence monitor
        * can be chosen. Possible refinement indicators are
        * surplus refinement, data-based refinement, zero-crossings-based
        * refinement.
@@ -146,19 +155,19 @@ int main() {
       std::cout << "Refinement monitor: " << refMonitor << std::endl;
       std::string refType;
       // select surplus refinement
-      // refType = "surplus";
+      refType = "surplus";
       // select data-based refinement
       // refType = "data";
       // select zero-crossings-based refinement
-      refType = "zero";
+      // refType = "zero";
       std::cout << "Refinement type: " << refType << std::endl;
       sgpp::base::AdpativityConfiguration adaptConfig;
       /**
        * Specify number of refinement steps and the max number
        * of grid points to refine each step.
        */
-      adaptConfig.numRefinements_ = 2;
-      adaptConfig.noPoints_ = 7;
+      adaptConfig.numRefinements_ = 10;
+      adaptConfig.noPoints_ = 10;
       adaptConfig.threshold_ = 0.0;  // only required for surplus refinement
 
       // initial regularization parameter lambda
@@ -200,7 +209,7 @@ int main() {
 
       // specify batch size
       // (set to 1 for processing only a single data point each iteration)
-      size_t batchSize = 1;
+      size_t batchSize = 10;
       // specify max number of passes over traininig data set
       size_t maxDataPasses = 2;
 
@@ -238,16 +247,20 @@ int main() {
     avgErrorsFolds.mult(1.0 / static_cast<double>(totalFolds));
 
     // write error evaluation to csv-file
-    /*std::ofstream output;
-    output.open("SGDEOnOff_avg_classification_error_"+std::to_string(numSets+1)+".csv");
+    /*
+    std::ofstream output;
+    output.open("SGDEOnOff_avg_classification_error_" + std::to_string(numSets + 1) + ".csv");
     if (output.fail()) {
       std::cout << "failed to create csv file!" << std::endl;
-    }
-    else {
+    } else {
       for (size_t i = 0; i < avgErrorsFolds.getSize(); i++) {
         output << avgErrorsFolds.get(i) << ";" << std::endl;
       }
       output.close();
     }*/
   }
+  auto end = std::chrono::high_resolution_clock::now();
+  std::cout << "whole learnerSGDEOnOff test took "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms"
+            << std::endl;
 }
