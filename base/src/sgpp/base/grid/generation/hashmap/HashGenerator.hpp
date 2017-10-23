@@ -407,7 +407,6 @@ class HashGenerator {
               decodeCoords(coords, coordsBool);
               if (terms.find(coordsBool) != terms.end()) {
                 storage.insert(idx);
-
               }
             } else {
               // is leaf?

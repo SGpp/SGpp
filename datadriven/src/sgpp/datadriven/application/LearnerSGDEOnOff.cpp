@@ -161,13 +161,11 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
   }
 
   // auxiliary variable for accuracy (error) measurement
-  //double acc = getAccuracy();
-  double acc = 0.0;
+  double acc = getAccuracy();
   avgErrors.append(1.0 - acc);
 
   // main loop which performs the training process
   while (cntDataPasses < maxDataPasses) {
-    std::cout << "###########################################################" << std::endl;
     std::cout << "#batch-size: " << batchSize << "\n";
     std::cout << "#batches to process: " << numBatch << "\n";
     // data point counter - determines offset when selecting next batch
@@ -209,8 +207,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
       // check if refinement should be performed
       if (refMonitor == "periodic") {
         // check periodic monitor
-        //std::cout << offline->isRefineable() << (totalInstances > 0) << (totalInstances % refPeriod == 0) << (refCnt < offline->getConfig().numRefinements_) << std::endl;
-        if (offline->isRefineable() && (totalInstances > 0) && (totalInstances % refPeriod == 0)&&
+        if (offline->isRefineable() && (totalInstances > 0) && (totalInstances % refPeriod == 0) &&
             (refCnt < offline->getConfig().numRefinements_)) {
           doRefine = true;
         }
@@ -266,14 +263,8 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
     processedPoints = 0;
   }  // end while
 
-  std::cout << "#Training finished" << std::endl;/*
-  std::cout << "Normalizing the densityFunctions using Quadrature";
-
-  for (auto& densityFunction : densityFunctions) {
-    std::cout << "NormFactor of class" << densityFunction.second << ": " << densityFunction.first->normalizeQuadrature() << std::endl;
-  }
-  std::cout << "Complete!" << std::endl;*/
-
+  std::cout << "#Training finished"
+            << "\n";
 }
 
 void LearnerSGDEOnOff::train(Dataset& dataset, bool doCv,
@@ -315,7 +306,6 @@ void LearnerSGDEOnOff::train(std::vector<std::pair<DataMatrix*, double>>& trainD
     numberOfDataPoints += trainDataClasses[i].first->getSize();
   }
   for (size_t i = 0; i < trainDataClasses.size(); i++) {
-    std::cout << "Computing Density Function of class " << i << std::endl;
     auto& p = trainDataClasses[i];
 
     if ((*p.first).getNrows() > 0) {
@@ -341,11 +331,6 @@ void LearnerSGDEOnOff::train(std::vector<std::pair<DataMatrix*, double>>& trainD
 }
 
 double LearnerSGDEOnOff::getAccuracy() const {
-  /*
-  for (auto& densityFunction : densityFunctions) {
-    densityFunction.first->normalizeQuadrature();
-  }
-  */
   DataVector computedLabels{testData.getNumberInstances()};
   predict(testData.getData(), computedLabels);
   size_t correct = 0;
@@ -380,7 +365,7 @@ void LearnerSGDEOnOff::predict(DataMatrix& data, DataVector& result) const {
 // now select the appropriate class
 #pragma omp parallel for
   for (auto point = 0u; point < data.getNrows(); point++) {
-    auto bestClass = -30.0;
+    auto bestClass = 0.0;
     auto maxDensity = std::numeric_limits<double>::max() * (-1);
     for (auto classNum = 0u; classNum < numClasses; classNum++) {
       auto density = perClassDensities[classNum][point];
@@ -389,7 +374,7 @@ void LearnerSGDEOnOff::predict(DataMatrix& data, DataVector& result) const {
         bestClass = densityFunctions[classNum].second;
       }
     }
-    if (bestClass == -30.0) {
+    if (bestClass == 0) {
       std::cerr << "LearnerSGDEOnOff: Warning: no best class found!\n";
     }
     result[point] = bestClass;
