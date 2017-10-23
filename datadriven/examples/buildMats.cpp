@@ -118,7 +118,7 @@ std::vector<std::vector<size_t>> getConvs(size_t res) {
  */
 
 int main() {
-  size_t lvl = 3;
+  int lvl = 3;
   for(size_t res = 28; res<=28; res+=2){
     std::string filename = "mats/" + std::to_string(res) + "x" + std::to_string(res) + "_ModLin_NN_Inter_lvl"+std::to_string(lvl)+"_Chol.out";
     std::cout << "Setting up " << filename << std::endl;

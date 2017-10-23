@@ -245,7 +245,7 @@ void sgpp::datadriven::DBMatOffline::parseInter(const std::string& fileName,
 
   for(size_t i = 7; i < tokens.size(); i+= std::stoi(tokens[i])+1){
     std::vector<size_t> tmp = std::vector<size_t>();
-    for(size_t j = 1; j <= std::stoi(tokens[i]); j++){
+    for(size_t j = 1; j <= std::stoul(tokens[i]); j++){
       tmp.push_back(std::stoi(tokens[i+j]));
     }
     interactions.push_back(tmp);

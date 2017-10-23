@@ -211,7 +211,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         // check periodic monitor
         //std::cout << offline->isRefineable() << (totalInstances > 0) << (totalInstances % refPeriod == 0) << (refCnt < offline->getConfig().numRefinements_) << std::endl;
         if (offline->isRefineable() && (totalInstances > 0) && (totalInstances % refPeriod == 0)&&
-            (refCnt < 0/*offline->getConfig().numRefinements_*/)) {
+            (refCnt < offline->getConfig().numRefinements_)) {
           doRefine = true;
         }
       } else if (refMonitor == "convergence") {

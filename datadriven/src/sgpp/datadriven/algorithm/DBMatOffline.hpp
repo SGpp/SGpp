@@ -132,7 +132,6 @@ class DBMatOffline {
    */
   void setInter(std::vector<std::vector <size_t>> interactions);
   
-  std::vector<std::vector <size_t>> interactions; //vector of interactions (if size() == 0: a regular SG is created)
 
  protected:
   DBMatOffline();
@@ -148,7 +147,10 @@ class DBMatOffline {
   std::unique_ptr<Grid> grid;
 
 
-
+ public:
+  std::vector<std::vector <size_t>> interactions; //vector of interactions (if size() == 0: a regular SG is created)
+ 
+ protected:
 
   /**
    * Build the initial sparse grid
