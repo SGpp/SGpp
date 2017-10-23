@@ -28,10 +28,8 @@
 #include <vector>
 
 double f(sgpp::base::DataVector const& v) {
-  //  return v[0] * v[1];
-  //  return sin(1. / (1. + v[0] * v[0])) * v[1];
-  return sin(v[0]);  // v[0] * v[0] * v[0] * v[0] *
-                     // v[0];
+  return v[0] * sin(v[0] + v[1]) * exp(v[1] * v[2]);
+  //  return v[0] * sin(v[1]) ;
   //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
   //         std::exp(v[0] * v[1] - 1);
 }
@@ -89,34 +87,33 @@ std::vector<double> integrateBasisFunctions(size_t level, size_t numDimensions, 
 
 double integrate(size_t level, size_t numDimensions, size_t degree) {
   sgpp::combigrid::MultiFunction func(f);
-  auto operation = sgpp::combigrid::CombigridOperation::createExpUniformBoundaryBsplineIntegration(
+  auto operation = sgpp::combigrid::CombigridOperation::createExpUniformBoundaryBsplineQuadrature(
       numDimensions, func, degree);
   return operation->evaluate(level);
 }
 
 int main() {
-  size_t numDimensions = 1;
+  size_t numDimensions = 3;
   size_t degree = 3;
-  //
+
   //  // Interpolation
-  //  sgpp::base::SGppStopwatch watch;
-  //  watch.start();
-  //  size_t minLevel = 3;
-  //  size_t maxLevel = 3;
-  //
-  //  std::vector<double> maxErr(maxLevel + 1, 0);
-  //  std::vector<double> L2Err(maxLevel + 1, 0);
-  //  for (size_t l = minLevel; l < maxLevel + 1; l++) {
-  //    interpolate(l, numDimensions, degree, maxErr[l], L2Err[l]);
-  //    std::cout << "level: " << l << " max err " << maxErr[l] << " L2 err " << L2Err[l] <<
-  //    std::endl;
-  //  }
-  //  //  std::cout << " Total Runtime: " << watch.stop() << " s" << std::endl;
+  sgpp::base::SGppStopwatch watch;
+  watch.start();
+  size_t minLevel = 0;
+  size_t maxLevel = 8;
+
+  std::vector<double> maxErr(maxLevel + 1, 0);
+  std::vector<double> L2Err(maxLevel + 1, 0);
+  for (size_t l = minLevel; l < maxLevel + 1; l++) {
+    interpolate(l, numDimensions, degree, maxErr[l], L2Err[l]);
+    std::cout << "level: " << l << " max err " << maxErr[l] << " L2 err " << L2Err[l] << std::endl;
+  }
+  //  std::cout << " Total Runtime: " << watch.stop() << " s" << std::endl;
 
   // Integration
-  size_t level = 3;
-  double integral = integrate(level, numDimensions, degree);
-  std::cout << integral << std::endl;
+  //  size_t level = 3;
+  //  double integral = integrate(level, numDimensions, degree);
+  //  std::cout << integral << std::endl;
 
   // Integrate basis functions
   //  size_t level = 1;

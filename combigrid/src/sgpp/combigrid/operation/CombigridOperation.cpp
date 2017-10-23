@@ -475,7 +475,7 @@ std::shared_ptr<CombigridOperation> CombigridOperation::createLinearL2LejaBsplin
   return auxiliaryBsplineFunction(numDimensions, func, gridType, operationType, growthFactor,
                                   degree);
 }
-std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformBoundaryBsplineIntegration(
+std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformBoundaryBsplineQuadrature(
     size_t numDimensions, MultiFunction func, size_t degree = 3) {
   size_t dummygrowthfactor = 0;
   size_t gridType = 1;
