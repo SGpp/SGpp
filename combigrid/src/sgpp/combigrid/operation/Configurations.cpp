@@ -204,6 +204,12 @@ CombiEvaluators::multiBSplineInterpolation(size_t degree) {
       true, BSplineInterpolationEvaluator(degree));
 }
 
+std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> CombiEvaluators::multiBSplineQuadrature(
+    size_t degree) {
+  return std::make_shared<ArrayEvaluator<BSplineQuadratureEvaluator>>(
+      false, BSplineQuadratureEvaluator(degree));
+}
+
 std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> CombiEvaluators::multiQuadrature() {
   return std::make_shared<ArrayEvaluator<QuadratureEvaluator>>(false);
 }

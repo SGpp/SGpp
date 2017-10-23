@@ -87,13 +87,6 @@ class CombigridTensorOperation {
   std::shared_ptr<AbstractCombigridStorage> getStorage();
 
   /**
-   * stores a new storage object where function evaluations are already available
-   *
-   * @param newStorage
-   */
-  void setStorage(std::shared_ptr<AbstractCombigridStorage> newStorage);
-
-  /**
    * Via the LevelManager, more options are available than are provided directly by this class.
    */
   std::shared_ptr<LevelManager> getLevelManager();

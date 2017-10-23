@@ -97,11 +97,6 @@ void CombigridTensorOperation::setParameters(const std::vector<FloatTensorVector
 
 FloatTensorVector CombigridTensorOperation::getResult() { return impl->combiEval->getValue(); }
 
-void CombigridTensorOperation::setStorage(std::shared_ptr<AbstractCombigridStorage> newStorage) {
-  impl->storage = newStorage;
-  impl->fullGridEval->setStorage(newStorage);
-}
-
 std::shared_ptr<AbstractCombigridStorage> CombigridTensorOperation::getStorage() {
   return impl->storage;
 }

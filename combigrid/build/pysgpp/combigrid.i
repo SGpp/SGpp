@@ -87,7 +87,6 @@
 %shared_ptr(sgpp::combigrid::LevelManager)
 %shared_ptr(sgpp::combigrid::AveragingLevelManager)
 %shared_ptr(sgpp::combigrid::WeightedRatioLevelManager)
-%shared_ptr(sgpp::combigrid::VarianceLevelManager)
 %shared_ptr(sgpp::combigrid::RegularLevelManager)
 
 %shared_ptr(sgpp::combigrid::TensorGrid)
@@ -293,7 +292,6 @@ namespace std {
 %include "combigrid/src/sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/RegularLevelManager.hpp"
-%include "combigrid/src/sgpp/combigrid/operation/multidim/VarianceLevelManager.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/CombigridOperation.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/CombigridMultiOperation.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/CombigridTensorOperation.hpp"

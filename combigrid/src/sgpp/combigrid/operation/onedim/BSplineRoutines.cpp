@@ -12,19 +12,20 @@
    * @return      value of non-uniform B-spline
    *              with knots \f$\{\xi_k, ... \xi_{k+p+1}\}\f$
    */
-double nonUniformBSpline(double const& x, size_t const& deg, size_t const& k,
+double nonUniformBSpline(double const& x, size_t const& deg, size_t const& index,
                          std::vector<double> const& xi) {
   if (deg == 0) {
     // characteristic function of [xi[k], xi[k+1])
-    return (((x >= xi[k]) && (x < xi[k + 1])) ? 1.0 : 0.0);
-  } else if ((x < xi[k]) || (x >= xi[k + deg + 1])) {
+    return (((x >= xi[index]) && (x < xi[index + 1])) ? 1.0 : 0.0);
+  } else if ((x < xi[index]) || (x >= xi[index + deg + 1])) {
     // out of support
     return 0.0;
   } else {
     // Cox-de-Boor recursion
-    return (x - xi[k]) / (xi[k + deg] - xi[k]) * nonUniformBSpline(x, deg - 1, k, xi) +
-           (1.0 - (x - xi[k + 1]) / (xi[k + deg + 1] - xi[k + 1])) *
-               nonUniformBSpline(x, deg - 1, k + 1, xi);
+    return (x - xi[index]) / (xi[index + deg] - xi[index]) *
+               nonUniformBSpline(x, deg - 1, index, xi) +
+           (1.0 - (x - xi[index + 1]) / (xi[index + deg + 1] - xi[index + 1])) *
+               nonUniformBSpline(x, deg - 1, index + 1, xi);
   }
 }
 

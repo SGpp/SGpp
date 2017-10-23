@@ -115,11 +115,6 @@ double CombigridOperation::evaluate(size_t q, base::DataVector const& param) {
   return getResult();
 }
 
-void CombigridOperation::setStorage(std::shared_ptr<AbstractCombigridStorage> newStorage) {
-  impl->storage = newStorage;
-  impl->fullGridEval->setStorage(newStorage);
-}
-
 std::shared_ptr<AbstractCombigridStorage> CombigridOperation::getStorage() { return impl->storage; }
 std::vector<std::shared_ptr<AbstractPointHierarchy>> CombigridOperation::getPointHierarchies() {
   return impl->pointHierarchies;
@@ -820,7 +815,7 @@ std::shared_ptr<CombigridOperation> CombigridOperation::createLinearL2LejaBsplin
   return auxiliaryBsplineFunction(numDimensions, func, gridType, operationType, growthFactor,
                                   degree);
 }
-std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformBoundaryBsplineIntegration(
+std::shared_ptr<CombigridOperation> CombigridOperation::createExpUniformBoundaryBsplineQuadrature(
     size_t numDimensions, MultiFunction func, size_t degree = 3) {
   size_t dummygrowthfactor = 0;
   size_t gridType = 1;
