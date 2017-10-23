@@ -96,7 +96,7 @@ class MultipleClassPoint{
  private:
     int classes;
     // tuple: density, classId, points exits in class
-    std::vector<std::tuple<double, size_t, bool> *> classById;
+    std::vector<std::tuple<double, size_t, bool>> classById;
     std::vector<std::tuple<double, size_t, bool>> classByDensity;
     // sequence number and dimension of neighbors with a change in dominate classes, isLeft
     std::vector<std::tuple<size_t, size_t, bool>> neighbors;

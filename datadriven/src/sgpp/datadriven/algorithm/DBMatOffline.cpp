@@ -255,6 +255,7 @@ void sgpp::datadriven::DBMatOffline::setInter(std::vector<std::vector <size_t>> 
   std::cout << "Something set inter!" << std::endl;
   interactions = inter;
 }
+sgpp::base::DataMatrix& DBMatOffline::getLhsMatrix_ONLY_FOR_TESTING() { return this->lhsMatrix; }
 
 }  // namespace datadriven
 }  // namespace sgpp

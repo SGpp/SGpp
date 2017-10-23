@@ -12,9 +12,11 @@
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
 
 #include <sgpp/base/exception/factory_exception.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEEigen.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDELU.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -29,20 +31,27 @@ DBMatOnlineDE* DBMatOnlineDEFactory::buildDBMatOnlineDE(DBMatOffline& offline, d
 #ifdef USE_GSL
       return new DBMatOnlineDEEigen(offline, beta);
 #else
-      throw factory_exception("built withot GSL");
+      throw factory_exception("built without GSL");
 #endif /*USE_GSL*/
       break;
     case DBMatDecompostionType::LU:
 #ifdef USE_GSL
       return new DBMatOnlineDELU(offline, beta);
 #else
-      throw factory_exception("built withot GSL");
+      throw factory_exception("built without GSL");
 #endif /*USE_GSL*/
       break;
     case DBMatDecompostionType::Chol:
     case DBMatDecompostionType::DenseIchol:
       return new DBMatOnlineDEChol(offline, beta);
       break;
+    case DBMatDecompostionType::OrthoAdapt:
+#ifdef USE_GSL
+      return new DBMatOnlineDEOrthoAdapt(offline, beta);
+      break;
+#else
+      throw factory_exception("built without GSL");
+#endif
     default:
       throw factory_exception{"Unknown decomposition type."};
   }
