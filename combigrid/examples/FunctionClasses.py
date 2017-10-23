@@ -1,6 +1,7 @@
 import sympy as sp
 import pysgpp
 import numpy as np
+import FunctionClasses as fctClass
 
 
 
@@ -151,6 +152,47 @@ class funcGradientCollectionSymbolic:
 
 
         return grad
+
+
+def calc_tangent(x, k, operation):
+    grad_k = fctClass.getgradkfunc(operation, k)
+
+    m = grad_k(x)
+    b = operation(x)
+    return m, b
+
+
+# returns a number of points to draw the tangent
+def tangent_samples(x, dim, k, m, b):
+    samples = 2
+    x_samples = []
+    for d in range(dim):
+        x_samples.append(np.full(samples, x[d]))
+
+    x_samples[k] = (np.linspace(x[k] - 0.05, x[k] + 0.05, samples))
+
+    y = [(x_samples[k][i] - x[k]) * m + b for i in range(samples)]
+
+    return x_samples[0], x_samples[1], y
+
+
+def calc_gradient_tangent_gridpoint(gridpoints, operation, dim):
+    x0_all = []
+    x1_all = []
+    y_all = []
+    for p in range(len(gridpoints)):
+
+        for d in range(dim):
+            m, b = calc_tangent(gridpoints[p], d, operation)
+
+            x0, x1, y = tangent_samples(gridpoints[p], 2, d, m, b)
+            x0_all.append(x0)
+            x1_all.append(x1)
+            y_all.append(y)
+
+    return x0_all, x1_all, y_all
+
+
 
 
 def f(x):

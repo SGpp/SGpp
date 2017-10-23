@@ -279,7 +279,7 @@ class ParameterSet(object):
 
             accLevel += cnt
 
-        return ans
+        return tuple(ans)
 
     def extractActiveSubset(self, data):
         """
@@ -290,7 +290,7 @@ class ParameterSet(object):
         ans = {}
         cnt = 0
         for p, v in data.items():
-            if self.isValidUnitSample(p):
+            if len(p) == self.getDim():
                 up = self.extractActiveTuple(p)
                 ans[up] = v
             else:
@@ -388,7 +388,7 @@ class ParameterSet(object):
 
     def marginalize(self):
         """
-        NOTE: jusr returns the marginalized active subset of params
+        NOTE: just returns the marginalized active subset of params
         """
         # marginalize the distribution
         margDistList = []
@@ -415,7 +415,7 @@ class ParameterSet(object):
                         if isinstance(innertrans[idim], RosenblattTransformation):
                             margTransformations.append(RosenblattTransformation(margDist))
                         else:
-                            a, b = margDist.getBounds()[0]
+                            a, b = margDist.getBounds()
                             margTransformations.append(LinearTransformation(a, b))
 
             assert len(margDistList) == len(margTransformations) == activeParams.getDim()

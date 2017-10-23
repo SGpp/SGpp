@@ -113,43 +113,6 @@ def calc_error_mixed_gradient(gridpoints, gridOpEval_container, func_container, 
     return errors
 
 
-def calc_tangent(x, k, operation):
-    grad_k = fctClass.getgradkfunc(operation, k)
-
-    m = grad_k(x)
-    b = operation(x)
-    return m, b
-
-
-# returns a number of points to draw the tangent
-def tangent_samples(x, dim, k, m, b):
-    samples = 2
-    x_samples = []
-    for d in range(dim):
-        x_samples.append(np.full(samples, x[d]))
-
-    x_samples[k] = (np.linspace(x[k] - 0.05, x[k] + 0.05, samples))
-
-    y = [(x_samples[k][i] - x[k]) * m + b for i in range(samples)]
-
-    return x_samples[0], x_samples[1], y
-
-
-def calc_gradient_tangent_gridpoint(gridpoints, operation, dim):
-    x0_all = []
-    x1_all = []
-    y_all = []
-    for p in range(len(gridpoints)):
-
-        for d in range(dim):
-            m, b = calc_tangent(gridpoints[p], d, operation)
-
-            x0, x1, y = tangent_samples(gridpoints[p], 2, d, m, b)
-            x0_all.append(x0)
-            x1_all.append(x1)
-            y_all.append(y)
-
-    return x0_all, x1_all, y_all
 
 
 # parabola between [0,1]
@@ -164,6 +127,7 @@ def f1D_grad(x):
 
 def f2D(x):
     return 4 * x[0] * (1 - x[0]) * 4 * x[1] * (1 - x[1])
+    #return x[0]+x[1]
 
 
 def f2D_test(x):
@@ -421,32 +385,35 @@ def example_combicombigrid_2D_linear(l, func_standard):
 
 def example_combicombigrid_2D(l, func_collection):
     d = 2
-    level =2
+    level =4
     n_samples = 50
     func_standard = func_collection.getFunction()
     #operation = gC.CombiCombigriddeBaarHarding(func_collection, 2)
-    operation=pysgpp.CombigridOperation.createExpUniformBoundaryBsplinePsiInterpolation(d,0,\
-              pysgpp.multiFunc(func_standard),3)
-    # operation = HierachGridBSpline(2, 3, func_standard)
+    #operation=pysgpp.CombigridOperation.createExpUniformBoundaryBsplineZetaInterpolation(d,0,\
+    #          pysgpp.multiFunc(func_collection.getGradient([0])),1)
+    #operation=pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(d,
+    #pysgpp.multiFunc(func_standard))
+    #operation = HierachGridBSpline(2, 3, func_standard)
+    operation=gC.CombiCombigriddeBaarHardingBSpline(func_collection,2,1)
+
+    #operation = gC.CombiCombigriddeBaarHarding(func_collection, 2)
     operation_wrap = operationwrapper(operation, level)
 
     # operation.operation_zeta for mixed
-    p.plot2DGrid_operation(n_samples, level, operation, "Psi-BSPline",show=False)
+    p.plot2DGrid_with_tangents(n_samples, level, operation,func_collection)
     #p.plot2DContour(n_samples, level, operation)
     plt.show()
 
     error = estimatel2Error(10000, 2, operation_wrap, func_standard)
 
-    # grad_error = calc_error_gradient(operation.getLevelManager().getAllGridPoints(),
-    #                                 operation_wrap,
-    #                                 func_standard, d)
-    # mixgrad_error = calc_error_mixed_gradient(operation.getLevelManager().getAllGridPoints(),
-    #                                          calc_error_mixed_gradient,
-    #                                          func_standard, d)
+
+    mixgrad_error = calc_error_mixed_gradient(operation.getLevelManager().getAllGridPoints(),
+                                          fctClass.funcGradientCollection(operation_wrap,2),
+                                             func_collection, d)
     # calculate error
     print("estimtaded l2 error for combicombihermite: " + str(error))
-    # print("1st gradient errors:" + str(grad_error))
-    # print("mixed gradient error:" + str(mixgrad_error))
+
+    print("mixed gradient error:" + str(mixgrad_error))
 
 
 def geterrorfunc(func1, func2):
@@ -473,7 +440,9 @@ def example_error_picewise(l, func_container, show=True):
     operation_list.append(gC.CombiFullGridHermite(func_container, 2))
     operation_list.append(gC.CombiFullGridLinear(func_container, 2))
     # operation_list.append(BaseLinearFullgrid(2, func_container, True))
-    operation_list.append(gC.HierachGridBSpline(2, 3, func_container))
+    #operation_list.append(gC.HierachGridBSpline(2, 3, func_container))
+    operation_list.append(pysgpp.CombigridOperation.createExpUniformBoundaryBsplineInterpolation(
+        2,func_standard,3))
 
     text = ["Combilinear", "combiHermite", "linear", "CombiHermiteFull", "CombiLinearFull",
             "BSpline(3)"
@@ -482,7 +451,7 @@ def example_error_picewise(l, func_container, show=True):
     i = 0
     for operation in operation_list:
         operation_wrap = operationwrapper(operation, level)
-        operation_container = fctClass.funcGradientCollection(operation_wrap, dim)
+        operation_container = fctClass.funcGradientCollection(operation_wrap, d)
 
         # operation.operation_zeta for mixed
         # plot2D_comparison_function_random(n_samples, geterrorfunc(operation_wrap, func_standard),
@@ -534,6 +503,7 @@ def example_plot_error(func_collection, dim, maxlevel=5, x_axis_type="nr_gridpoi
     operations = []
 
     operations.append(gC.CombiCombigriddeBaarHarding(func_collection, dim))
+    operations.append(gC.CombiCombigriddeBaarHardingBSpline(func_collection, dim,1))
     operations.append(gC.CombiCombigridHermite(func_collection, dim))
     operations.append(pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(
         dim, func_standard))
@@ -551,6 +521,7 @@ def example_plot_error(func_collection, dim, maxlevel=5, x_axis_type="nr_gridpoi
     func_standard = func_collection.getFunction()
     labels = []
     labels.append("Gitter (de Baar und Harding)")
+    labels.append("Gitter (de Baar und Harding-BSplines(1))")
     labels.append("Gitter (Hermite)")
     labels.append("lineares Gitter")
     labels.append("Gitter (Hermite) ohne gemischte Abl.")
@@ -621,6 +592,7 @@ def example_plot_error_gradients(func_collection, dim, grad_index_list, maxlevel
     operations = []
 
     operations.append(gC.CombiCombigriddeBaarHarding(func_collection, dim))
+    operations.append(gC.CombiCombigriddeBaarHardingBSpline(func_collection, dim,1))
     operations.append(gC.CombiCombigridHermite(func_collection, dim))
     operations.append(pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(
         dim, func_standard))
@@ -639,6 +611,7 @@ def example_plot_error_gradients(func_collection, dim, grad_index_list, maxlevel
 
     labels = []
     labels.append("Gitter (de Baar und Harding)")
+    labels.append("Gitter (de Baar und Harding BSplines(1))")
     labels.append("Gitter (Hermite)")
     labels.append("lineares Gitter")
     labels.append("Gitter (Hermite) ohne gemischte Abl.")
@@ -752,9 +725,9 @@ def examples_2d():
     #example_combicombigrid_2D(3, func_container)
 
     #example_calcl2error(func_container, "Values/Test/Branin/BSplines", 9, 2, grad_index=[[0], [1],
-    #                                                                                   [0, 1]],
-    #                  fct=True)
-    plot_l2error("Values/Test/Branin/BSplines",grad_index=[[0],[1],[0,1]],fct=True)
+     #                                                                                 [0, 1]],
+     #                 fct=True)
+    #plot_l2error("Values/Test/Branin/BSplines",grad_index=[[0],[1],[0,1]],fct=True)
 
 
 
@@ -765,11 +738,14 @@ def examples_2d():
 def examples_multid():
     dim = 4
 
-    func_container = fctClass.funcGradientCollectionSymbolic(fctClass.testfSymbolic2_4d(), dim)
+    func_container = fctClass.funcGradientCollectionSymbolic(fctClass.RosenbrockSymbolic(4), dim)
 
 
-    # plot_l2error("Values/test4d",grad_index=[[1],[1],[0,1]],fct=True)
-    # example_calcl2error(func_container, "test4d", level=2,grad_index=[[0, 1], [1]],fct=True)
+    plot_l2error("Values/RosenbrockBSplines_Test",grad_index=[[1],[1],[0,1]],fct=True)
+    #example_calcl2error(func_container, "Values/RosenbrockBSplines_Test", 5,dim,\
+    #grad_index=[[0,
+    #
+    # 1], [1]],fct=True)
 
     # func = pysgpp.OptRosenbrockObjective(dim)
     # func_wrap = getfuncwrapper(func)
@@ -779,9 +755,9 @@ def examples_multid():
 
 #examples_1d()
 
-examples_2d()
+#examples_2d()
 
-#examples_multid()
+examples_multid()
 
 
 

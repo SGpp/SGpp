@@ -109,12 +109,17 @@ class CombigridMultiOperation {
   /**
    * See the other version of evaluate() and the setParameters() overloads.
    */
-  base::DataVector evaluate(size_t q, base::DataMatrix const &params=base::DataMatrix(0, 0));
+  base::DataVector evaluate(size_t q, base::DataMatrix const &params = base::DataMatrix(0, 0));
 
   /**
    * @return the storage containing the computed function values at evaluation points.
    */
   std::shared_ptr<AbstractCombigridStorage> getStorage();
+
+  /**
+   * @return the point hierarchies containing the grid points in each direction
+   */
+  std::vector<std::shared_ptr<AbstractPointHierarchy>> getPointHierarchies();
 
   /**
    * Via the LevelManager, more options are available than are provided directly by this class.

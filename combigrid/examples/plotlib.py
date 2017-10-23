@@ -62,7 +62,7 @@ def plot2DGrid_operation(n_samples, level, operation, title="",show=True):
         plt.show()
 
 
-def plot2DGrid_with_tangents(n_samples, level, operation, title=""):
+def plot2DGrid_with_tangents(n_samples, level, operation,target_func_collection, title=""):
     # x=0 defined 0 in combigrid
     epsilon = 10 ** -12
     X = np.linspace(0, 1, n_samples)
@@ -85,8 +85,10 @@ def plot2DGrid_with_tangents(n_samples, level, operation, title=""):
     ax.set_ylabel('$x_2$', fontsize=15)
     ax.set_zlabel('$\~{f}$', fontsize=15)
 
+
+
     ### draw tangents
-    operation_wrap = operationwrapper(operation, level)
+    operation_wrap = operationwrapper(operation,level)
     x0, x1, y = fctClass.calc_gradient_tangent_gridpoint(operation.getLevelManager(
 
     ).getAllGridPoints(),
@@ -96,16 +98,24 @@ def plot2DGrid_with_tangents(n_samples, level, operation, title=""):
     x1 = []
     y = []
     gridpoints = operation.getLevelManager().getAllGridPoints()
+
+
+    x0,x1,y=fctClass.calc_gradient_tangent_gridpoint(gridpoints,
+                                                     target_func_collection.getFunction(),2)
+
+
+    """"
     print(len(gridpoints))
     for i in range(len(gridpoints)):
         x0.append(gridpoints[i][0])
         x1.append(gridpoints[i][1])
-        y.append(operation_wrap(gridpoints[i]))
+        y.append(target_func_collection.getFunction()(gridpoints[i]))
 
-    ax.scatter(x0, x1, y, c="black")
+    #ax.scatter(x0, x1, y, c="black")
 
-    # for i in range(len(x0)):
-    #    ax.plot(x0[i], x1[i], y[i], c="gray")
+    """
+    for i in range(len(x0)):
+        ax.plot(x0[i], x1[i],y[i], c="gray")
 
     fig.suptitle(title)
 
@@ -192,7 +202,7 @@ def scatterplot2D_error(n_samples, func, title=None):
     ax.scatter(X, Y, Z, c=Z,cmap="jet")
 
 
-def plot2DContour(n_samples, level, operation):
+def plot2DContour(n_samples, level, operation, show=True):
     epsilon = 10 ** -12
     X = np.linspace(0, 1, n_samples)
     Y = np.linspace(0, 1, n_samples)
@@ -202,13 +212,14 @@ def plot2DContour(n_samples, level, operation):
     z = np.zeros((n_samples, n_samples))
     for i in range(n_samples):
         for j in range(n_samples):
-            z[i, j] = operation.evaluate(
+            z[n_samples-i-1, j] = operation.evaluate(
                 level, pysgpp.DataVector([X[i, j], Y[i, j]]))
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
 
-    ax.imshow(z, cmap="jet", interpolation='bilinear', extent=[1, 0, 1, 0])
+    ax.imshow(z, cmap="jet", interpolation='bilinear', extent=[0, 1, 0, 1])
+
     CS = ax.contour(z, extent=[0, 1, 1, 0])
     ax.clabel(CS, inline=1, fontsize=10)
 
@@ -222,8 +233,10 @@ def plot2DContour(n_samples, level, operation):
     ax.spines['bottom'].set_position(('data', 0))
     ax.spines['top'].set_position(('data', 1))
 
-    points = ax.plot(X, Y, '.', c="black", markersize=10)
+    points = ax.plot(X, Y, '.', c="white", markersize=10)
 
+    if(show==True):
+        plt.show()
 
 # gets a function and not a operation
 def plot2DContour_func(n_samples, func,operation,title=""):
@@ -236,7 +249,7 @@ def plot2DContour_func(n_samples, func,operation,title=""):
     z = np.zeros((n_samples, n_samples))
     for i in range(n_samples):
         for j in range(n_samples):
-            z[i, j] = func(pysgpp.DataVector([X[i, j], Y[i, j]]))
+            z[n_samples-i-1, j] = func(pysgpp.DataVector([X[i, j], Y[i, j]]))
 
     fig = plt.figure()
     ax = fig.add_subplot(111)

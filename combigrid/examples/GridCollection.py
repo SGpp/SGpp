@@ -278,8 +278,10 @@ class CombiCombigriddeBaarHarding:
 
         for operation in self.operation_psi:
             sum += operation.evaluate(level, x)
+
         for operation in self.operation_zeta:
             sum += operation.evaluate(level, x)
+
         sum -= self.operation_linear.evaluate(level, x) * (self.d - 1)
         return sum
 
@@ -289,41 +291,45 @@ class CombiCombigriddeBaarHarding:
 
 class CombiCombigriddeBaarHardingBSpline:
 
-    def __init__(self, func_collection, dim):
+    def __init__(self, func_collection, dim, degree):
+        self.degree=degree
         self.func = pysgpp.multiFunc(func_collection.getFunction())
         self.grad = []
         for i in range(dim):
             self.grad.append(pysgpp.multiFunc(func_collection.getGradient([i])))
 
         self.d = dim
-        self.operation_linear = pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(
-            self.d, self.func)
+        self.operation_bSpline = \
+            pysgpp.CombigridOperation.createExpUniformBoundaryBsplineInterpolation(
+            self.d, self.func,self.degree)
 
         self.operation_psi = []
         self.operation_zeta = []
         for i in range(dim):
             self.operation_psi.append(
-                pysgpp.CombigridOperation.createExpUniformBoundaryPsiLinearInterpolation(self.d,
+                pysgpp.CombigridOperation.createExpUniformBoundaryBsplinePsiInterpolation(self.d,
                                                                                          i,
-                                                                                         self.func))
+                                                                                         self.func,self.degree))
 
         for i in range(dim):
             self.operation_zeta.append(
-                pysgpp.CombigridOperation.createExpUniformBoundaryZetaLinearInterpolation(
-                    self.d, i, self.grad[i]))
+                pysgpp.CombigridOperation.createExpUniformBoundaryBsplineZetaInterpolation(
+                    self.d, i, self.grad[i],self.degree))
 
     def evaluate(self, level, x):
         sum = 0
 
         for operation in self.operation_psi:
             sum += operation.evaluate(level, x)
+
         for operation in self.operation_zeta:
             sum += operation.evaluate(level, x)
-        sum -= self.operation_linear.evaluate(level, x) * (self.d - 1)
+
+        sum -= self.operation_bSpline.evaluate(level, x) * (self.d - 1)
         return sum
 
     def getLevelManager(self):
-        return self.operation_linear.getLevelManager()
+        return self.operation_bSpline.getLevelManager()
 
 
 ################FullGrids########################################################

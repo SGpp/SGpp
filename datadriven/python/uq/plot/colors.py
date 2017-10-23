@@ -1,11 +1,14 @@
-import os
-import numpy as np
-import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
+import os
+import subprocess
+
+import matplotlib.pyplot as plt
+import numpy as np
 try:
     from matplotlib2tikz import save as tikz_save
 except:
     pass
+
 
 def load_custom_pgf_preamble(dtype="standard", macros="thesis"):
     pysgpp_uq_font = load_font()
@@ -27,6 +30,7 @@ def load_custom_pgf_preamble(dtype="standard", macros="thesis"):
                     'axes.unicode_minus': True,
                     'figure.figsize': (5, 4.5),
                     'image.cmap': load_default_color_map(dtype="string")
+                    #                     'axes.titlepad': 25
                     }
 
     if dtype == "springer":
@@ -36,8 +40,8 @@ def load_custom_pgf_preamble(dtype="standard", macros="thesis"):
         pgf_preamble["text.latex.preamble"] += [r"\usepackage[T1]{fontenc}"]
 
     if macros == "thesis":
-        cmd_filename = r"/home/oliver/adaptive-kernel-density-estimators/scientific-thesis-template-template/macros/math_commands.tex"
-    elif macros == "l2-leja":
+        cmd_filename = r"/home/franzefn/Promotion/UQ/repos/dissertation/thesis/commands.tex"
+    elif macros == "l2leja":
         cmd_filename = r"/home/franzefn/Promotion/Paper/Awesome-CT-Leja-Papers-of-Dabian-Holzelin/l2-leja/paper/commands.tex"
     else:
         cmd_filename = r"/home/franzefn/Promotion/Paper/repos/SGA16/paper/commands.tex"
@@ -71,10 +75,12 @@ def intToRGB(i):
     red = (i >> 16) & 255
     return red, green, blue
 
+
 def rgbTpInt(rgb):
     red, green, blue = rgb
     i = (red << 16) + (green << 8) + blue
     return i
+
 
 def load_default_color_map(dtype="cmap"):
     if dtype == "cmap":
@@ -82,17 +88,21 @@ def load_default_color_map(dtype="cmap"):
     else:
         return 'viridis'
 
+
 def load_color(i):
     colors = list(plt.rcParams['axes.prop_cycle'])
     return colors[i % len(colors)]["color"]
+
 
 def load_marker(i):
     markers = ["o", "v", "D", "s", "*", "d", "^", "x", "+"]
     return markers[i % len(markers)]
 
+
 def load_linestyle(i):
     linestyles = [":", "-.", "--", "-"]
     return linestyles[i % len(linestyles)]
+
 
 def load_bw_color(i, nmax=11):
     colors = np.linspace(0, 0.75, nmax, endpoint=True, dtype=str)
@@ -100,8 +110,9 @@ def load_bw_color(i, nmax=11):
 
 
 def load_font():
-    return {'family':'serif',
+    return {'family': 'serif',
             'size': 20}
+
 
 def load_font_properties(size=None,
                          family=None):
@@ -118,7 +129,8 @@ def load_font_properties(size=None,
 #
 #     return colors
 
-def savefig(fig, filename, lgd=None, tikz=False, mpl3d=False):
+
+def savefig(fig, filename, lgd=None, tikz=False, mpl3d=False, crop=False):
     if mpl3d:
         fig.savefig("%s.png" % filename)
         fig.savefig("%s.pdf" % filename)
@@ -135,10 +147,15 @@ def savefig(fig, filename, lgd=None, tikz=False, mpl3d=False):
                         bbox_extra_artists=(lgd,),
                         bbox_inches='tight')
         if tikz:
-            try:
-                tikz_save("%s.tex" % filename, fig)
-            except:
-                pass
+            #             try:
+            tikz_save("%s.tex" % filename, fig)
+#             except:
+#                 pass
+
+    if crop:
+        subprocess.call(["pdfcrop",
+                         "%s.pdf" % filename,
+                         "%s.pdf" % filename])
 
     plt.close(fig)
 

@@ -14,9 +14,11 @@
 
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
+#include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
+#include <sgpp/combigrid/operation/multidim/VarianceLevelManager.hpp>
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
@@ -389,7 +391,7 @@ void example6() {
    */
   sgpp::combigrid::GridFunction gf([](std::shared_ptr<sgpp::combigrid::TensorGrid> grid) {
     // We store the results for each grid point, encoded by a MultiIndex, in a TreeStorage
-    auto result = std::make_shared<sgpp::combigrid::TreeStorage<double> >(d);
+    auto result = std::make_shared<sgpp::combigrid::TreeStorage<double>>(d);
 
     // Creates an iterator that yields all multi-indices of grid points in the grid.
     sgpp::combigrid::MultiIndexIterator it(grid->numPoints());
@@ -463,25 +465,56 @@ void example7() {
             << std::endl;
 }
 
+/**
+ * @section combigrid_example_8 Example 8: UQ setting with variance refinement
+ *
+ * This example shows how to use the variance refinement method that uses the PCE transformation for
+ * variance computation on each subspace.
+ */
+void example8() {
+  auto operation =
+      sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(d, func);
+
+  sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
+  config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
+
+  auto basisFunction = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
+  std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>> basisFunctions(
+      d, basisFunction);
+
+  auto levelManager = std::make_shared<sgpp::combigrid::VarianceLevelManager>(
+      operation->getPointHierarchies(), operation->getStorage(), basisFunctions);
+
+  operation->setLevelManager(levelManager);
+
+  levelManager->addRegularLevels(0);
+  std::cout << "Total function evaluations: " << operation->numGridPoints() << "\n";
+  levelManager->addLevelsAdaptive(200);
+  std::cout << "Total function evaluations: " << operation->numGridPoints() << "\n";
+}
+
 int main() {
-  //  std::cout << "Example 1: \n";
-  //  example1();
-  //
-  //  std::cout << "\nExample 2: \n";
-  //  example2();
-  //
-  //  std::cout << "\nExample 3: \n";
-  //  example3();
-  //
-  //  std::cout << "\nExample 4: \n";
-  //  example4();
-  //
-  //  std::cout << "\nExample 5: \n";
-  //  example5();
-  //
-  //  std::cout << "\nExample 6: \n";
-  //  example6();
+  std::cout << "Example 1: \n";
+  example1();
+
+  std::cout << "\nExample 2: \n";
+  example2();
+
+  std::cout << "\nExample 3: \n";
+  example3();
+
+  std::cout << "\nExample 4: \n";
+  example4();
+
+  std::cout << "\nExample 5: \n";
+  example5();
+
+  std::cout << "\nExample 6: \n";
+  example6();
 
   std::cout << "\nExample 7: \n";
   example7();
+
+  std::cout << "\nExample 8: \n";
+  example8();
 }  // end of main

@@ -85,7 +85,22 @@ class CombigridOperation {
   std::shared_ptr<LevelManager> getLevelManager();
   void setLevelManager(std::shared_ptr<LevelManager> levelManager);
 
+  /**
+   * stores a new storage object where function evaluations are already available
+   *
+   * @param newStorage
+   */
+  void setStorage(std::shared_ptr<AbstractCombigridStorage> newStorage);
+
+  /**
+   * @return the storage containing the computed function values at evaluation points.
+   */
   std::shared_ptr<AbstractCombigridStorage> getStorage();
+
+  /**
+   * @return the point hierarchies containing the grid points in each direction
+   */
+  std::vector<std::shared_ptr<AbstractPointHierarchy>> getPointHierarchies();
 
   /**
    * @return the number of function values that have been computed via this CombigridOperation
@@ -201,6 +216,8 @@ class CombigridOperation {
       size_t numDimensions, MultiFunction func, size_t degree, size_t growthFactor);
   static std::shared_ptr<CombigridOperation> createLinearL2LejaBsplineInterpolation(
       size_t numDimensions, MultiFunction func, size_t degree, size_t growthFactor);
+  static std::shared_ptr<CombigridOperation> createExpUniformBoundaryBsplineIntegration(
+      size_t numDimensions, MultiFunction func, size_t degree);
 };
 } /* namespace combigrid */
 } /* namespace sgpp*/
