@@ -31,9 +31,8 @@
 namespace sgpp {
 namespace datadriven {
 
-void OperationRosenblattTransformationBsplineBoundary::doTransformation(base::DataVector* alpha,
-                                                                base::DataMatrix* points,
-                                                                base::DataMatrix* pointscdf) {
+void OperationRosenblattTransformationBsplineBoundary::doTransformation(
+    base::DataVector* alpha, base::DataMatrix* points, base::DataMatrix* pointscdf) {
   size_t num_dims = this->grid->getDimension();
 
   // 1. marginalize to all possible start dimensions
@@ -90,9 +89,9 @@ void OperationRosenblattTransformationBsplineBoundary::doTransformation(base::Da
 }
 
 void OperationRosenblattTransformationBsplineBoundary::doTransformation(base::DataVector* alpha,
-                                                                base::DataMatrix* points,
-                                                                base::DataMatrix* pointscdf,
-                                                                size_t dim_start) {
+                                                                        base::DataMatrix* points,
+                                                                        base::DataMatrix* pointscdf,
+                                                                        size_t dim_start) {
   // 1. marginalize to dim_start
   base::Grid* g1d = NULL;
   base::DataVector* a1d = NULL;
@@ -187,13 +186,16 @@ void OperationRosenblattTransformationBsplineBoundary::doTransformation_in_next_
   return;
 }
 
-double OperationRosenblattTransformationBsplineBoundary::doTransformation1D(base::Grid* grid1d,
-                                                                    base::DataVector* alpha1d,
-                                                                    double coord1d) {
+double OperationRosenblattTransformationBsplineBoundary::doTransformation1D(
+    base::Grid* grid1d, base::DataVector* alpha1d, double coord1d) {
   std::unique_ptr<OperationTransformation1D> opRosenblatt(
       op_factory::createOperationRosenblattTransformation1D(*grid1d));
-  // std::cout << "1d trafo:" << alpha1d->toString() << std::endl;
-  return opRosenblatt->doTransformation1D(alpha1d, coord1d);
+  double y = opRosenblatt->doTransformation1D(alpha1d, coord1d);
+  if (std::isnan(y)) {
+    std::cout << "1d trafo:" << alpha1d->toString() << std::endl;
+    std::cout << "coord:" << coord1d << std::endl;
+  }
+  return y;
 }  // end of compute_1D_cdf()
 }  // namespace datadriven
 }  // namespace sgpp

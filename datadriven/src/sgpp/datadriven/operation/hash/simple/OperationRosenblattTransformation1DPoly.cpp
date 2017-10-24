@@ -113,8 +113,15 @@ double OperationRosenblattTransformation1DPoly::doTransformation1D(base::DataVec
         if (right_function_value >= 0 && right_function_value != left_function_value)
           break;
       }
-      if (j == ordered_grid_points.size() - 1)
-        right_function_value = 0;
+
+      right_coord = ordered_grid_points[j];
+      if (j == ordered_grid_points.size() - 1) {
+        if (left == 0)
+          right_function_value = 1;
+        else
+          right_function_value = 0;
+      }
+
       // std::cout << "Found j: " << j << std::endl;
       // std::cout << right_coord << ";" << right_function_value << std::endl;
       // get last function value and coordinate with pdf(x) >= 0

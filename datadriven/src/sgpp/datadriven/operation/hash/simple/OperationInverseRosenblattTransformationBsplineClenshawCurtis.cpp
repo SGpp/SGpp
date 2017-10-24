@@ -58,12 +58,13 @@ void OperationInverseRosenblattTransformationBsplineClenshawCurtis::doTransforma
   }
 
 // 3. for every sample do...
-#pragma omp parallel
-  {
-#pragma omp for schedule(dynamic)
+// #pragma omp parallel
+  // {
+// #pragma omp for schedule(dynamic)
     for (size_t i = 0; i < pointscdf->getNrows(); i++) {
       // transform the point in the current dimension
       size_t idim = startindices[i];
+      std::cout << "inv line 67" << alphas1d[idim]->toString() << std::endl;
       double y = doTransformation1D(grids1d[idim], alphas1d[idim], pointscdf->get(i, idim));
       // and write it to the output
       points->set(i, idim, y);
@@ -77,9 +78,8 @@ void OperationInverseRosenblattTransformationBsplineClenshawCurtis::doTransforma
       doTransformation_start_dimX(this->grid, alpha, idim, &cdfs1d, &coords1d);
       points->setRow(i, coords1d);
     }
-  }
-
-  // cleanup
+  // }
+// cleanup
   for (size_t idim = 0; idim < num_dims; idim++) {
     delete grids1d[idim];
     delete alphas1d[idim];
@@ -96,11 +96,13 @@ void OperationInverseRosenblattTransformationBsplineClenshawCurtis::doTransforma
       op_factory::createOperationDensityMargTo1D(*this->grid));
   marg1d->margToDimX(alpha, g1d, a1d, dim_start);
 
-#pragma omp parallel
-  {
-#pragma omp for schedule(dynamic)
+// #pragma omp parallel
+  // {
+// #pragma omp for schedule(dynamic)
     for (size_t i = 0; i < pointscdf->getNrows(); i++) {
       // 2. 1D transformation on dim_start
+
+      std::cout << "inv line 107" << std::endl;
       double y = doTransformation1D(g1d, a1d, pointscdf->get(i, dim_start));
       points->set(i, dim_start, y);
       // 3. for every missing dimension do...
@@ -112,7 +114,7 @@ void OperationInverseRosenblattTransformationBsplineClenshawCurtis::doTransforma
       doTransformation_start_dimX(this->grid, alpha, dim_start, &cdfs1d, &coords1d);
       points->setRow(i, coords1d);
     }
-  }
+  // }
 
   delete g1d;
   delete a1d;
@@ -143,9 +145,10 @@ void OperationInverseRosenblattTransformationBsplineClenshawCurtis::doTransforma
   /* Step 1: do conditional in current dim */
   base::Grid* g_out = NULL;
   base::DataVector* a_out = new base::DataVector(1);
+  std::cout << "a_in:" << a_in->toString() << std::endl;
   op_factory::createOperationDensityConditional(*g_in)->doConditional(
       *a_in, g_out, *a_out, static_cast<unsigned int>(op_dim), coords1d->get(curr_dim));
-
+  std::cout << "a_out:" << a_out->toString() << std::endl;
   // move on to next dim
   curr_dim = (curr_dim + 1) % dims;
   op_dim = (op_dim + 1) % g_out->getDimension();
@@ -160,12 +163,15 @@ void OperationInverseRosenblattTransformationBsplineClenshawCurtis::doTransforma
     op_factory::createOperationDensityMargTo1D(*g_out)->margToDimX(a_out, g1d, a1d, op_dim);
 
     // Draw a sample in next dimension
+
+    std::cout << "inv line 167" << a1d->toString() << std::endl;
     x = doTransformation1D(g1d, a1d, cdfs1d->get(curr_dim));
     delete g1d;
     delete a1d;
 
   } else {
     // skip Marginalize, directly draw a sample in next dimension
+    std::cout << "inv line 175" << a_out->toString() << std::endl;
     x = doTransformation1D(g_out, a_out, cdfs1d->get(curr_dim));
   }
 
@@ -186,7 +192,13 @@ double OperationInverseRosenblattTransformationBsplineClenshawCurtis::doTransfor
     base::Grid* grid1d, base::DataVector* alpha1d, double coord1d) {
   std::unique_ptr<OperationTransformation1D> opInverseRosenblatt(
       op_factory::createOperationInverseRosenblattTransformation1D(*grid1d));
-  return opInverseRosenblatt->doTransformation1D(alpha1d, coord1d);
+  double y = opInverseRosenblatt->doTransformation1D(alpha1d, coord1d);
+  // if (y == 1) {
+  std::cout << "Inverse Alpha:" << alpha1d->toString() << std::endl;
+  std::cout << "inv coord1d:" << coord1d << std::endl;
+  std::cout << "y:" << y <<std::endl;
+  // }
+  return y;
 }  // end of compute_1D_cdf()
 
 }  // namespace datadriven

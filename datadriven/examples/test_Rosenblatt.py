@@ -10,7 +10,7 @@ class interpolation_function():
   def __init__(self, d, f):
     self.f = f
     self.d = d
-    self.grid = pysgpp.Grid.createBsplineGrid(d, 3)
+    self.grid = pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3)
     self.gridStorage = self.grid.getStorage()
     try :
       self.hierarch = pysgpp.createOperationHierarchisation(self.grid)
@@ -80,36 +80,32 @@ def eval_rosenblattdd(sg_pdf, xs):
 def eval_inverse_rosenblatt1d(sg_pdf, xs):
   op = pysgpp.createOperationInverseRosenblattTransformation1D(sg_pdf.grid)
   ys = []
+  print(op.doTransformation1D(sg_pdf.alpha, 0.999942))
   for i,x in enumerate(xs):
-    print("---------------{}---------------".format(i))
+    # print("---------------{}---------------".format(i))
     ys.append(op.doTransformation1D(sg_pdf.alpha, x))
   return ys
 
-def test():
-  alpha = [-7.25846502857492037464e+00, 3.43376778340746291462e+00, 3.43376778340746291462e+00, 6.70610097194139598287e+00, -2.06986834045588530273e+00, -2.06986834045588841136e+00, 6.70610097194139598287e+00]
-  ys = [0, 0.151638, 0.615553, 2.39577, 3.23902, 2.39577, 0.615553, 0.230832, 0]
-  print(len(alpha))
-  # plt.plot(grid_points, ys)
-
-xs = np.arange(0, 1.01, 0.01)
-# xs = [0, 0.00221301, 0.25, 0.5, 0.75, 0.888787, 1.0]
-l_max = 3
+xs = np.arange(0.990, 1.00, 0.0001)
+# xs = [-7.27272727272726515757e-01, -7.27272727272723629177e-01, 3.63636363636363135754e+00]
+l_max = 2
 d = 1
 interpolation = interpolation_function(d, parabola)
 interpolation.create_interpolation(l_max)
 
-# alpha = [1.97129579854422742891e+00, -6.86581347746972214807e-01, -6.86581347746972214807e-01, -9.42860151361599396758e-01, 2.91018042368639928696e-01, 2.91018042368640372786e-01, -9.42860151361599396758e-01]
-# print(len(alpha))
-# for i in range(0, 2**l_max - 1):
-  # interpolation.alpha[i] = alpha[i]
+
+alpha = [-3.55487191449998962689e-01, -3.55487191449998685133e-01, 1.31388359818433952952e+00, 6.82073036752554040518e-01, 6.82073036752550931894e-01]
+print(len(alpha))
+for i in range(0, 5):
+  interpolation.alpha[i] = alpha[i]
 
 # test()
 # grid_points = np.arange(0, 1.01, 2**-l_max)
 # ys = [interpolation(x) for x in xs]
 # plotSG2d(interpolation.grid, interpolation.alpha)
-# ys = eval_rosenblatt1d(interpolation, xs)
-# print(ys)
-ys = eval_inverse_rosenblatt1d(interpolation, xs)
+# ys = eval_inverse_rosenblatt1d(interpolation, xs)
+ys = eval_rosenblatt1d(interpolation, xs)
+print(ys)
 # eval_rosenblattdd(interpolation, xs)
 plt.plot(xs, ys)
 # plt.scatter(grid_points, np.zeros_like(grid_points))
