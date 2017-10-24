@@ -106,8 +106,8 @@ def buildSparseGrid(gridType, basisType, degree=5, growthFactor=2, orthogonal_ba
     if orthogonal_basis is None:
         if gridType == "ClenshawCurtis" and basisType == "bspline":
             return CombigridMultiOperation.createExpClenshawCurtisBsplineInterpolation(numDims, func, degree)
-#         elif gridType == "UniformBoundary" and basisType == "bspline":
-#             return CombigridMultiOperation.createExpUniformBoundaryBsplineInterpolation(numDims, func, degree)
+        elif gridType == "UniformBoundary" and basisType == "bspline":
+            return CombigridMultiOperation.createExpUniformBoundaryBsplineInterpolation(numDims, func, degree)
         elif gridType == "Leja" and basisType == "poly":
             return CombigridMultiOperation.createExpLejaPolynomialInterpolation(numDims, func)
         elif gridType == "L2Leja" and basisType == "poly":
@@ -223,9 +223,10 @@ if __name__ == "__main__":
     results = {}
     for gridType, levelManagerType, basisType in [
             ("ClenshawCurtis", "variance", "poly"),
-            ("UniformBoundary", "variance", "bspline"),
-        #             ("L2Leja", "variance", "poly"),
-        #             ("Leja", "variance", "poly"),
+            ("UniformBoundary", "averaging", "bspline"),
+            ("UniformBoundary", "regular", "bspline"),
+            ("L2Leja", "variance", "poly"),
+            #             ("Leja", "variance", "poly"),
             ("ClenshawCurtis", "regular", "poly")]:
 
         refinement_wrapper = RefinementWrapper(gridType,

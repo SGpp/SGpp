@@ -172,7 +172,6 @@ class ParameterSet(object):
                 return param
         return None
 
-
     def getIndependentJointDistribution(self):
         """
         Creates a multivariate distributions where the marginal distributions
@@ -192,6 +191,17 @@ class ParameterSet(object):
         Get the transformation operator
         """
         return JointTransformation.byParameters(self.__params)
+
+    def getUnivariateOrthogonalPolynomials(self):
+        ans = []
+        for param in self.values():
+            if param.isUncertain():
+                orthogPoly = param.getOrthogonalPolynomial()
+                if orthogPoly is not None:
+                    ans.append(orthogPoly)
+                else:
+                    raise AttributeError("the distributions are not part of the Wiener-Askey scheme")
+        return ans
 
     def getBounds(self):
         """
@@ -465,6 +475,7 @@ class ParameterSetIterator(object):
     """
     Iterator class
     """
+
     def __init__(self, params):
         self.__params = params
         self.__current = 0

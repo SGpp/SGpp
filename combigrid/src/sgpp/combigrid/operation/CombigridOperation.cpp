@@ -337,6 +337,7 @@ std::shared_ptr<CombigridOperation> auxiliaryBsplineFunction(size_t numDimension
   // Grid Function that calculates the coefficients for the B-Spline interpolation.
   // The coeficients for each B-Spline are saved in a TreeStorage encoded by a MultiIndex
   sgpp::combigrid::GridFunction gf([=](std::shared_ptr<sgpp::combigrid::TensorGrid> grid) {
+    // TODO: generalize this operation: this is valid for any basis, not just b-splines
     sgpp::combigrid::CombiEvaluators::Collection interpolEvaluators(
         numDimensions, sgpp::combigrid::CombiEvaluators::BSplineInterpolation(degree));
     size_t numDimensions = grid->getDimension();
