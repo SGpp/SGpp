@@ -108,8 +108,15 @@ void OperationInverseRosenblattTransformation1DModPoly::init(base::DataVector* a
         right_function_value = opEval->eval(*alpha1d, coord);
         if (right_function_value >= 0 && right_function_value != left_function_value) break;
       }
-      if (j == ordered_grid_points.size() - 1)
-        right_function_value = 0;
+
+      right_coord = ordered_grid_points[j];
+      if (j == ordered_grid_points.size() - 1) {
+        if (left == 0)
+          right_function_value = 1;
+        else
+          right_function_value = 0;
+      }
+
       // get last function value and coordinate with pdf(x) >= 0
       // perform montonic cubic interpolation based on:
       // https://en.wikipedia.org/wiki/Monotone_cubic_interpolation

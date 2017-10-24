@@ -54,7 +54,7 @@ void OperationInverseRosenblattTransformation1DBsplineClenshawCurtis::init(
   double area = 0.0;
   double right_coord, right_function_value;
   size_t p = dynamic_cast<sgpp::base::BsplineClenshawCurtisGrid*>(grid)->getDegree();
-  quadOrder = (p + 1) / 2;
+  quadOrder = (p + 1) / 2 + 2;
 
   gauss.getLevelPointsAndWeightsNormalized(quadOrder, gauss_coordinates, weights);
 
@@ -104,7 +104,14 @@ void OperationInverseRosenblattTransformation1DBsplineClenshawCurtis::init(
         right_function_value = opEval->eval(*alpha1d, coord);
         if (right_function_value >= 0 && right_function_value != left_function_value) break;
       }
-      if (j == ordered_grid_points.size() - 1) right_function_value = 0;
+      right_coord = ordered_grid_points[j];
+      if (j == ordered_grid_points.size() - 1) {
+        if (left == 0)
+          right_function_value = 1;
+        else
+          right_function_value = 0;
+      }
+
       // get last function value and coordinate with pdf(x) >= 0
       // perform montonic cubic interpolation based on:
       // https://en.wikipedia.org/wiki/Monotone_cubic_interpolation
@@ -125,7 +132,6 @@ void OperationInverseRosenblattTransformation1DBsplineClenshawCurtis::init(
         function_values[2] = opEval->eval(*alpha1d, coord);
       } else {
         // if j is the last grid point choose the next one with the same step size
-        // and set it's function value to zero
         // and set it's function value to the last value
         coord[0] = 1 + ordered_grid_points[j] - ordered_grid_points[j - 1];
         function_values[2] = right_function_value;

@@ -13,9 +13,9 @@
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DBspline.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DBspline.hpp>
+#include <sgpp/globaldef.hpp>
 #include <sgpp_datadriven.hpp>
 #include <sgpp_optimization.hpp>
-#include <sgpp/globaldef.hpp>
 
 #include <algorithm>
 #include <cstdlib>
@@ -31,11 +31,12 @@ namespace datadriven {
 /**
  * WARNING: the grid must be a 1D grid!
  */
-OperationInverseRosenblattTransformation1DBspline::OperationInverseRosenblattTransformation1DBspline(
-    base::Grid* grid)
+OperationInverseRosenblattTransformation1DBspline::
+    OperationInverseRosenblattTransformation1DBspline(base::Grid* grid)
     : sum(0.0), quadOrder(0), grid(grid) {}
 
-OperationInverseRosenblattTransformation1DBspline::~OperationInverseRosenblattTransformation1DBspline() {}
+OperationInverseRosenblattTransformation1DBspline::
+    ~OperationInverseRosenblattTransformation1DBspline() {}
 
 void OperationInverseRosenblattTransformation1DBspline::init(base::DataVector* alpha1d) {
   patch_areas.clear();
@@ -107,8 +108,15 @@ void OperationInverseRosenblattTransformation1DBspline::init(base::DataVector* a
         right_function_value = opEval->eval(*alpha1d, coord);
         if (right_function_value >= 0 && right_function_value != left_function_value) break;
       }
-      if (j == ordered_grid_points.size() - 1)
-        right_function_value = 0;
+
+      right_coord = ordered_grid_points[j];
+      if (j == ordered_grid_points.size() - 1) {
+        if (left == 0)
+          right_function_value = 1;
+        else
+          right_function_value = 0;
+      }
+
       // get last function value and coordinate with pdf(x) >= 0
       // perform montonic cubic interpolation based on:
       // https://en.wikipedia.org/wiki/Monotone_cubic_interpolation
@@ -211,7 +219,7 @@ void OperationInverseRosenblattTransformation1DBspline::init(base::DataVector* a
 }
 
 double OperationInverseRosenblattTransformation1DBspline::sample(base::DataVector* alpha1d,
-                                                              double coord1d) {
+                                                                 double coord1d) {
   if (coord1d == 0.0) return 0.0;
   if (sum == 0) return 0;
   base::DataVector coord(1);
@@ -253,8 +261,8 @@ double OperationInverseRosenblattTransformation1DBspline::sample(base::DataVecto
   return it1->second + (gaussQuadSum * scaling) / sum;
 }
 
-double OperationInverseRosenblattTransformation1DBspline::doTransformation1D(base::DataVector* alpha1d,
-                                                                          double coord1d) {
+double OperationInverseRosenblattTransformation1DBspline::doTransformation1D(
+    base::DataVector* alpha1d, double coord1d) {
   init(alpha1d);
   // std::cout << "PFs size after exit: " << patch_functions.size() << std::endl;
   std::function<double(const base::DataVector&)> optFunc =

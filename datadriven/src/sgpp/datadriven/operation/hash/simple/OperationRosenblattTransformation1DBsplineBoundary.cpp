@@ -103,13 +103,19 @@ double OperationRosenblattTransformation1DBsplineBoundary::doTransformation1D(
       // we look for the next grid point with pdf(x) >= 0
       size_t j;
       for (j = i; j < ordered_grid_points.size() - 1; j++) {
-        // std::cout << "j:" << j << std::endl;
         right_coord = ordered_grid_points[j];
         coord[0] = right_coord;
         right_function_value = opEval->eval(*alpha1d, coord);
         if (right_function_value >= 0 && right_function_value != left_function_value) break;
       }
-      if (j == ordered_grid_points.size() - 1) right_function_value = 0;
+      right_coord = ordered_grid_points[j];
+      if (j == ordered_grid_points.size() - 1) {
+        if (left == 0)
+          right_function_value = 1;
+        else
+          right_function_value = 0;
+      }
+
       // std::cout << "Found j: " << j << std::endl;
       // std::cout << right_coord << ";" << right_function_value << std::endl;
       // get last function value and coordinate with pdf(x) >= 0
@@ -132,9 +138,9 @@ double OperationRosenblattTransformation1DBsplineBoundary::doTransformation1D(
         function_values[2] = opEval->eval(*alpha1d, coord);
       } else {
         // if j is the last grid point choose the next one with the same step size
-        // and set it's function value to one
+        // and set it's function value to the last value
         coord[0] = 1 + ordered_grid_points[j] - ordered_grid_points[j - 1];
-        function_values[2] = 1.0;
+        function_values[2] = right_function_value;
       }
       secants[1] = (function_values[2] - function_values[1]) / (coord[0] - ordered_grid_points[j]);
       tangents[2] = secants[1];
@@ -175,8 +181,6 @@ double OperationRosenblattTransformation1DBsplineBoundary::doTransformation1D(
       for (; i <= j; i++) {
         coord[0] = ordered_grid_points[i];
         // std::cout << "interpolating i:" << i << std::endl;
-        // kann eig entfernt werden
-        eval_res = interpolation(coord[0]);
         // std::cout << "For x=" << coord[0] << "interp: " << eval_res << std::endl;
         double gaussQuadSum = 0.;
         double left = left_coord;
@@ -226,13 +230,13 @@ double OperationRosenblattTransformation1DBsplineBoundary::doTransformation1D(
 
   // std::cout << "Areas: " << std::endl;
   // for (size_t i = 0; i < patch_areas.size(); i++) {
-  // std::cout << patch_areas[i] << std::endl;
+    // std::cout << patch_areas[i] << std::endl;
   // }
   // std::cout << "Size areas: " << patch_areas.size() << std::endl;
   // std::cout << "Size cdf: " << coord_cdf.size() << std::endl;
   // std::cout << "coord cdf: " << std::endl;
   // for (it1 = coord_cdf.begin(); it1 != coord_cdf.end(); ++it1) {
-  // std::cout << it1->first << ":" << it1->second << std::endl;
+    // std::cout << it1->first << ":" << it1->second << std::endl;
   // }
 
   // find cdf interval
