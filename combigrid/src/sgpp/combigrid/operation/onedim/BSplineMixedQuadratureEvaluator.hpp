@@ -17,6 +17,8 @@
 namespace sgpp {
 namespace combigrid {
 
+// ToDo (rehmemk) Nach Umstrukturierung: wird dieser Evaluator noch gebraucht?
+
 /**
  * This evaluator does quadrature based on the given grid points. The quadrature weights are
  * obtained by (numerically) integrating the Lagrange polynomials on the given grid points.
