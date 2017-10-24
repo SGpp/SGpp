@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef BSplineQUADRATUREEVALUATOR_HPP_
-#define BSplineQUADRATUREEVALUATOR_HPP_
+#ifndef BSplineMIXEDQUADRATUREEVALUATOR_HPP_
+#define BSplineMIXEDQUADRATUREEVALUATOR_HPP_
 
 #include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
@@ -17,13 +17,15 @@
 namespace sgpp {
 namespace combigrid {
 
+// ToDo (rehmemk) Nach Umstrukturierung: wird dieser Evaluator noch gebraucht?
+
 /**
  * This evaluator does quadrature based on the given grid points. The quadrature weights are
  * obtained by (numerically) integrating the Lagrange polynomials on the given grid points.
  * In the constructor, a weight function may be passed whose values at the grid points are
  * multiplied with the given function values.
  */
-class BSplineQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVector> {
+class BSplineMixedQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVector> {
   std::vector<double> xValues;
   std::vector<FloatScalarVector> integrals;
   std::vector<double> basisCoefficients;
@@ -33,13 +35,14 @@ class BSplineQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVec
   size_t numAdditionalPoints;  // additional gauss points used for a custom weight function
   size_t degree;
 
-  double get1DIntegral(std::vector<double> &points, size_t index);
-  void calculate1DBSplineIntegrals(std::vector<double> &points,
-                                   std::vector<FloatScalarVector> &integrals);
+  double get1DMixedIntegral(std::vector<double> &points, size_t index_i, size_t index_j);
+
+  void calculate1DMixedBSplineIntegrals(std::vector<double> &points,
+                                        std::vector<FloatScalarVector> &integrals);
 
  public:
-  BSplineQuadratureEvaluator();
-  BSplineQuadratureEvaluator(size_t degree);
+  BSplineMixedQuadratureEvaluator();
+  BSplineMixedQuadratureEvaluator(size_t degree);
 
   /**
    * @param numAdditionalPoints Specifies how many Gauss-Legrendre points should be used in addition
@@ -53,10 +56,10 @@ class BSplineQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVec
    * to 1. This might be useful if the weight function is (or should be) a probability distribution
    * on the domain.
    */
-  BSplineQuadratureEvaluator(size_t degree, sgpp::combigrid::SingleFunction weight_function,
-                             bool normalizeWeights = true, size_t numAdditionalPoints = 10);
-  BSplineQuadratureEvaluator(BSplineQuadratureEvaluator const &other);
-  virtual ~BSplineQuadratureEvaluator();
+  BSplineMixedQuadratureEvaluator(size_t degree, sgpp::combigrid::SingleFunction weight_function,
+                                  bool normalizeWeights = true, size_t numAdditionalPoints = 10);
+  BSplineMixedQuadratureEvaluator(BSplineMixedQuadratureEvaluator const &other);
+  virtual ~BSplineMixedQuadratureEvaluator();
 
   std::vector<FloatScalarVector> getBasisValues() override { return integrals; }
   std::vector<double> getBasisCoefficients() override { return basisCoefficients; }
@@ -76,7 +79,7 @@ class BSplineQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVec
   std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cloneLinear() override;
 };
 
-#endif /* BSplineQUADRATUREEVALUATOR_HPP_ */
+#endif /* BSplineMIXEDQUADRATUREEVALUATOR_HPP_ */
 
 } /* namespace combigrid */
 } /* namespace sgpp*/
