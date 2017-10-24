@@ -32,43 +32,58 @@ double BSplineMixedQuadratureEvaluator::get1DMixedIntegral(std::vector<double>& 
                                                            size_t index_i, size_t index_j) {
   // performing Gauss-Legendre integration
   size_t numGaussPoints = (degree + 1) / 2 + numAdditionalPoints;
-  base::DataVector roots;
-  base::DataVector quadratureweights;
+  sgpp::base::DataVector roots;
+  sgpp::base::DataVector quadratureweights;
   auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
-  quadRule.getLevelPointsAndWeightsNormalized(
-      std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
 
   double sum = 0.0;
   std::vector<double> xi;
   createNakKnots(xValues, degree, xi);
+  double bsplinevalue = 0.0;
 
-  // multiply weights by length_old_interval / length_new_interval
-  for (size_t i = 0; i < quadratureweights.size(); i++) {
-    quadratureweights[i] *= 1.0 / ((double)points.size() - 1.0);
-  }
-
-  size_t offset = (degree + 1) / 2;
-  size_t first_segment = std::max(offset, index_i);
-  size_t last_segment = std::min(xi.size() - offset - 1, index_i + degree + 1);
-  for (size_t segmentIndex = first_segment; segmentIndex < last_segment; segmentIndex++) {
-    double a = std::max(0.0, xi[segmentIndex]);
-    double b = std::min(1.0, xi[segmentIndex + 1]);
-    double width = b - a;
-
+  if (xValues.size() == 1) {
+    numGaussPoints = 1;
+    quadRule.getLevelPointsAndWeightsNormalized(
+        std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
+    sum = 1.0 * this->weight_function(roots[0]) * quadratureweights[0];
+  } else if (xValues.size() < 9) {
+    quadRule.getLevelPointsAndWeightsNormalized(
+        std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
     for (size_t i = 0; i < roots.getSize(); ++i) {
-      double x = a + width * roots[i];
-      double bsplinevalue =
-          nonUniformBSpline(x, degree, index_i, xi) * nonUniformBSpline(x, degree, index_j, xi);
-
+      double x = roots[i];
+      bsplinevalue =
+          LagrangePolynomial(x, xValues, index_i) * LagrangePolynomial(x, xValues, index_j);
       double integrand = bsplinevalue * this->weight_function(x);
       sum += integrand * quadratureweights[i];
+    }
+  } else {
+    quadRule.getLevelPointsAndWeightsNormalized(
+        std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
+    // use segments of b_i. Ass bi*bj =0 outside supp(b_i) this works fine.
+    // ToDo (rehmemk) customizing first-/last_segment to bi AND bj would lead to a speed up!
+    size_t first_segment = std::max(degree, index_i);
+    size_t last_segment = std::min(xi.size() - degree - 1, index_i + degree + 1);
+    for (size_t segmentIndex = first_segment; segmentIndex < last_segment; segmentIndex++) {
+      double a = std::max(0.0, xi[segmentIndex]);
+      double b = std::min(1.0, xi[segmentIndex + 1]);
+      double width = b - a;
+
+      for (size_t i = 0; i < roots.getSize(); ++i) {
+        double x = a + width * roots[i];
+        bsplinevalue =
+            nonUniformBSpline(x, degree, index_i, xi) * nonUniformBSpline(x, degree, index_j, xi);
+        double integrand = bsplinevalue * this->weight_function(x);
+        // multiply weights by length_old_interval / length_new_interval
+        sum += integrand * quadratureweights[i] * width;
+      }
     }
   }
   return sum;
 }
 
 /**
- * This Function calculates the weights of the given points, each weight is calculated individually
+ * This Function calculates the weights of the given points, each weight is calculated
+ * individually
  * @param points The vector with the points, they dont need to have a specific order
  * @param integrals The integrals will be added to the back of this vector in the order of the
  * points in the vector with the points,
@@ -79,11 +94,16 @@ double BSplineMixedQuadratureEvaluator::get1DMixedIntegral(std::vector<double>& 
 void BSplineMixedQuadratureEvaluator::calculate1DMixedBSplineIntegrals(
     std::vector<double>& points, std::vector<FloatScalarVector>& integrals) {
   // "weights" here are the integrals!
+  std::cout << "integrals:\n";
+  size_t tempindex = 0;
   for (size_t index_i = 0; index_i < points.size(); ++index_i) {
     for (size_t index_j = 0; index_j < points.size(); ++index_j) {
       integrals.push_back(FloatScalarVector(get1DMixedIntegral(points, index_i, index_j)));
+      std::cout << integrals[tempindex] << " ";
+      tempindex++;
     }
   }
+  std::cout << "\n";
 }
 
 BSplineMixedQuadratureEvaluator::~BSplineMixedQuadratureEvaluator() {}

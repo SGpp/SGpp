@@ -25,7 +25,6 @@ namespace combigrid {
 double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, size_t index) {
   // performing Gauss-Legendre integration
   size_t numGaussPoints = (degree + 1) / 2 + numAdditionalPoints;
-  ;
   base::DataVector roots;
   base::DataVector quadratureweights;
   auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
