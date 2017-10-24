@@ -51,4 +51,5 @@ void createdeg5NakKnots(std::vector<double> const& xValues, size_t const& degree
 
 void createNakKnots(std::vector<double> const& xValues, size_t const& degree,
                     std::vector<double>& xi);
+
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_BSPLINEROUTINES_HPP_ */
