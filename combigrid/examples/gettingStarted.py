@@ -449,23 +449,16 @@ def example8(dist_type="uniform"):
     basisFunction = pysgpp.OrthogonalPolynomialBasis1D(config)
     basisFunctions = pysgpp.OrthogonalPolynomialBasis1DVector(d, basisFunction)
 
-    levelManager = pysgpp.VarianceLevelManager(
-        operation.getPointHierarchies(), operation.getStorage(), basisFunctions)
-
-    operation.setLevelManager(levelManager)
-
     q = 3
-    levelManager.addRegularLevels(q)
+    operation.getLevelManager().addRegularLevels(q)
     print "Total function evaluations: %i" % operation.numGridPoints()
 #     levelManager.addLevelsAdaptive(200)
 #     print "Total function evaluations: %i" % operation.numGridPoints()
 
     # compute variance of the interpolant
 
-    pce_operation = pysgpp.CombigridTensorOperation.createExpClenshawCurtisPolynomialInterpolation(
-        basisFunction, d, func)
-    pce_operation.setStorage(operation.getStorage())
-    tensorResult = pce_operation.evaluate(q, pysgpp.FloatTensorVectorVector())
+    pce_operation = pysgpp.CombigridTensorOperation.createOperationTensorPolynomialInterpolation(operation, basisFunction)
+    tensorResult = pce_operation.getResult()
 
     n = 10000
     values = [g(pysgpp.DataVector(xi)) for xi in U.rvs(n)]

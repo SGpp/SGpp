@@ -17,6 +17,8 @@
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
+#include <sgpp/combigrid/operation/CombigridOperation.hpp>
+#include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <cstddef>
@@ -202,6 +204,17 @@ class CombigridTensorOperation {
   static std::shared_ptr<CombigridTensorOperation> createLinearL2LejaPolynomialInterpolation(
       std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis, size_t numDimensions,
       MultiFunction func, size_t growthFactor = 2);
+
+  /**
+   *
+   * @param operation
+   * @param functionBasis
+   * @return
+   */
+  static std::shared_ptr<CombigridTensorOperation> createOperationTensorPolynomialInterpolation(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+      std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager,
+      std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis);
 };
 
 } /* namespace combigrid */
