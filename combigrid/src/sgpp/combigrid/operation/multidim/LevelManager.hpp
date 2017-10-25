@@ -267,7 +267,7 @@ class LevelManager {
    * using numThreads threads.
    */
   void addLevelsFromStructureParallel(std::shared_ptr<TreeStorage<uint8_t>> storage,
-                                      size_t numThreads);
+                                      size_t numThreads = 4);
 
   /**
    * Equivalent to deserializing serializedStructure and then calling addLevelsFromStructure().
