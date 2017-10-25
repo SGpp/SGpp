@@ -220,7 +220,6 @@ BOOST_AUTO_TEST_CASE(testLinearInterpolation) {
       // stopwatch.log();
     }
   }
-
   auto quadrature = CombigridMultiOperation::createLinearLejaQuadrature(
       3, MultiFunction([](sgpp::base::DataVector const &x) { return 1.0; }));
   std::vector<DataVector> input(1, DataVector(0));
