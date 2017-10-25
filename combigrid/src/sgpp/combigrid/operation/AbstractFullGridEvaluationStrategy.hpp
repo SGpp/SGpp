@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_EVALSTRATEGY_HPP_
-#define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_EVALSTRATEGY_HPP_
+#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ABSTRACTFULLGRIDEVALUATIONSTRATEGY_HPP_
+#define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ABSTRACTFULLGRIDEVALUATIONSTRATEGY_HPP_
 
 #include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/grid/TensorGrid.hpp>
@@ -24,6 +24,8 @@ namespace combigrid {
  * linear: uses the eval function of AbstractFullGridLinearEvaluator, i.e. evaluation in every
  *		   point individually
  * grid_based: uses a gridFunction to evaluate in all grid points at once
+ *
+ * You decide which one to use simply by calling the constructor with or without a gridFunction
 */
 enum class Strategy { linear, grid_based };
 
@@ -31,21 +33,23 @@ typedef GeneralFunction<std::shared_ptr<TreeStorage<double>>, std::shared_ptr<Te
     GridFunction;
 
 template <typename V>
-class EvalStrategy : public AbstractFullGridEvaluator<V> {
+class AbstractFullGridEvaluationStrategy : public AbstractFullGridEvaluator<V> {
  public:
-  EvalStrategy(std::shared_ptr<AbstractCombigridStorage> storage,
-               std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> evaluatorPrototypes,
-               std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies)
+  AbstractFullGridEvaluationStrategy(
+      std::shared_ptr<AbstractCombigridStorage> storage,
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> evaluatorPrototypes,
+      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies)
       : AbstractFullGridEvaluator<V>(storage, pointHierarchies),
         storage(storage),
         evaluatorPrototypes(evaluatorPrototypes),
         pointHierarchies(pointHierarchies),
         gridFunction(nullptr),
         strategy(Strategy::linear){};
-  EvalStrategy(std::shared_ptr<AbstractCombigridStorage> storage,
-               std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> evaluatorPrototypes,
-               std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-               GridFunction gridFunction)
+  AbstractFullGridEvaluationStrategy(
+      std::shared_ptr<AbstractCombigridStorage> storage,
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> evaluatorPrototypes,
+      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+      GridFunction gridFunction)
       : AbstractFullGridEvaluator<V>(storage, pointHierarchies),
         storage(storage),
         evaluatorPrototypes(evaluatorPrototypes),
@@ -54,7 +58,7 @@ class EvalStrategy : public AbstractFullGridEvaluator<V> {
         strategy(Strategy::grid_based),
         precomputedLevels(std::make_shared<TreeStorage<uint8_t>>(pointHierarchies.size())){};
 
-  ~EvalStrategy(){};
+  ~AbstractFullGridEvaluationStrategy(){};
 
   void addResults(MultiIndex const &level, std::shared_ptr<TreeStorage<double>> results) {
     std::vector<bool> orderingConfiguration(this->evaluatorPrototypes.size());
@@ -203,4 +207,4 @@ class EvalStrategy : public AbstractFullGridEvaluator<V> {
 } /* namespace combigrid */
 } /* namespace sgpp */
 
-#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_EVALSTRATEGY_HPP_ */
+#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ABSTRACTFULLGRIDEVALUATIONSTRATEGY_HPP_ */
