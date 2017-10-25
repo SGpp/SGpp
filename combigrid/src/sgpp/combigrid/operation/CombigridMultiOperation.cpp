@@ -12,13 +12,14 @@
 #include <sgpp/combigrid/grid/hierarchy/NonNestedPointHierarchy.hpp>
 #include <sgpp/combigrid/grid/ordering/ExponentialLevelorderPointOrdering.hpp>
 #include <sgpp/combigrid/grid/ordering/IdentityPointOrdering.hpp>
+#include <sgpp/combigrid/operation/AbstractFullGridEvaluationStrategy.hpp>
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
-#include <sgpp/combigrid/operation/EvalStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
-#include <sgpp/combigrid/operation/multidim/fullgrid/SummationStrategy.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
@@ -42,8 +43,8 @@ class CombigridMultiOperationImpl {
       std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage)
       : storage(storage),
         pointHierarchies(pointHierarchies),
-        summationStrategy(new SummationStrategy<FloatArrayVector>(storage, evaluatorPrototypes,
-                                                                  pointHierarchies)),
+        summationStrategy(new FullGridLinearSummationStrategy<FloatArrayVector>(
+            storage, evaluatorPrototypes, pointHierarchies)),
         combiEval(
             new CombigridEvaluator<FloatArrayVector>(pointHierarchies.size(), summationStrategy)),
         levelManager(levelManager) {
@@ -57,8 +58,8 @@ class CombigridMultiOperationImpl {
       GridFunction gridFunc)
       : storage(storage),
         pointHierarchies(pointHierarchies),
-        summationStrategy(new SummationStrategy<FloatArrayVector>(storage, evaluatorPrototypes,
-                                                                  pointHierarchies, gridFunc)),
+        summationStrategy(new FullGridLinearSummationStrategy<FloatArrayVector>(
+            storage, evaluatorPrototypes, pointHierarchies, gridFunc)),
         combiEval(
             new CombigridEvaluator<FloatArrayVector>(pointHierarchies.size(), summationStrategy)),
         levelManager(levelManager) {
@@ -67,7 +68,7 @@ class CombigridMultiOperationImpl {
 
   std::shared_ptr<AbstractCombigridStorage> storage;
   std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies;
-  std::shared_ptr<SummationStrategy<FloatArrayVector>> summationStrategy;
+  std::shared_ptr<AbstractFullGridSummationStrategy<FloatArrayVector>> summationStrategy;
   std::shared_ptr<CombigridEvaluator<FloatArrayVector>> combiEval;
   std::shared_ptr<LevelManager> levelManager;
 };
