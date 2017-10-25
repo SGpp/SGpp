@@ -475,7 +475,6 @@ class ParameterSetIterator(object):
     """
     Iterator class
     """
-
     def __init__(self, params):
         self.__params = params
         self.__current = 0
