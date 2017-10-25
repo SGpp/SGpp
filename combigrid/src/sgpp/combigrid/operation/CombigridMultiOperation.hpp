@@ -109,12 +109,17 @@ class CombigridMultiOperation {
   /**
    * See the other version of evaluate() and the setParameters() overloads.
    */
-  base::DataVector evaluate(size_t q, base::DataMatrix const &params=base::DataMatrix(0, 0));
+  base::DataVector evaluate(size_t q, base::DataMatrix const &params = base::DataMatrix(0, 0));
 
   /**
    * @return the storage containing the computed function values at evaluation points.
    */
   std::shared_ptr<AbstractCombigridStorage> getStorage();
+
+  /**
+   * @return the point hierarchies containing the grid points in each direction
+   */
+  std::vector<std::shared_ptr<AbstractPointHierarchy>> getPointHierarchies();
 
   /**
    * Via the LevelManager, more options are available than are provided directly by this class.
@@ -277,6 +282,29 @@ class CombigridMultiOperation {
    */
   static std::shared_ptr<CombigridMultiOperation> createExpUniformBoundaryLinearInterpolation(
       size_t numDimensions, MultiFunction func);
+
+  /**
+   * Returns a CombigridMultiOperation doing B-spline  interpolation
+   * on a uniform grid with boundary using an exponential growth strategy (nested points).
+   * @param numDimensions Dimensionality of the problem.
+   * @param func Function to be interpolated.
+   * @param degree degree of the B-spline basis functions
+   */
+  static std::shared_ptr<CombigridMultiOperation> createExpUniformBoundaryBsplineInterpolation(
+      size_t numDimensions, MultiFunction func, size_t degree = 3);
+
+  /**
+   * Returns a CombigridMultiOperation doing quadrature (based on B-splines)
+   * on a unifrom grid with exponential growth.
+   * Note: This method is not useful as a MultiOperation because the quadrature does not need any
+   * parameters. Use CombigridOperation instead.
+   * @param numDimensions Dimensionality of the problem.
+   * @param func Function to be integrated.
+   * @param degree B-spline degree
+   */
+  static std::shared_ptr<CombigridMultiOperation> createBSplineQuadrature(size_t numDimensions,
+                                                                          MultiFunction func,
+                                                                          size_t degree = 3);
 };
 } /* namespace combigrid */
 } /* namespace sgpp*/

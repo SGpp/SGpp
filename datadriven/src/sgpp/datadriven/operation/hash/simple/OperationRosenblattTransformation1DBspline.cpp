@@ -115,8 +115,15 @@ double OperationRosenblattTransformation1DBspline::doTransformation1D(base::Data
         if (right_function_value >= 0 && right_function_value != left_function_value)
           break;
       }
-      if (j == ordered_grid_points.size() - 1)
-        right_function_value = 0;
+
+      right_coord = ordered_grid_points[j];
+      if (j == ordered_grid_points.size() - 1) {
+        if (left == 0)
+          right_function_value = 1;
+        else
+          right_function_value = 0;
+      }
+
       // std::cout << "Found j: " << j << std::endl;
       // std::cout << right_coord << ";" << right_function_value << std::endl;
       // get last function value and coordinate with pdf(x) >= 0
@@ -184,8 +191,6 @@ double OperationRosenblattTransformation1DBspline::doTransformation1D(base::Data
       for (; i <= j; i++) {
         coord[0] = ordered_grid_points[i];
         // std::cout << "interpolating i:" << i << std::endl;
-        // kann eig entfernt werden
-        eval_res = interpolation(coord[0]);
         // std::cout << "For x=" << coord[0] << "interp: " << eval_res << std::endl;
         double gaussQuadSum = 0.;
         double left = left_coord;

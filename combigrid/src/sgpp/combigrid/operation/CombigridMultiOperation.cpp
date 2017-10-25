@@ -16,8 +16,10 @@
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearCallbackEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
@@ -38,6 +40,7 @@ class CombigridMultiOperationImpl {
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
       std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage)
       : storage(storage),
+        pointHierarchies(pointHierarchies),
         fullGridEval(new FullGridLinearCallbackEvaluator<FloatArrayVector>(
             storage, evaluatorPrototypes, pointHierarchies)),
         combiEval(new CombigridEvaluator<FloatArrayVector>(pointHierarchies.size(), fullGridEval)),
@@ -51,6 +54,7 @@ class CombigridMultiOperationImpl {
       std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage,
       GridFunction gridFunc)
       : storage(storage),
+        pointHierarchies(pointHierarchies),
         fullGridEval(new FullGridLinearGridBasedEvaluator<FloatArrayVector>(
             storage, evaluatorPrototypes, pointHierarchies, gridFunc)),
         combiEval(new CombigridEvaluator<FloatArrayVector>(pointHierarchies.size(), fullGridEval)),
@@ -59,6 +63,7 @@ class CombigridMultiOperationImpl {
   }
 
   std::shared_ptr<AbstractCombigridStorage> storage;
+  std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies;
   std::shared_ptr<AbstractFullGridEvaluator<FloatArrayVector>> fullGridEval;
   std::shared_ptr<CombigridEvaluator<FloatArrayVector>> combiEval;
   std::shared_ptr<LevelManager> levelManager;
@@ -141,6 +146,11 @@ base::DataVector CombigridMultiOperation::getResult() {
 
 std::shared_ptr<AbstractCombigridStorage> CombigridMultiOperation::getStorage() {
   return impl->storage;
+}
+
+std::vector<std::shared_ptr<AbstractPointHierarchy>>
+CombigridMultiOperation::getPointHierarchies() {
+  return impl->pointHierarchies;
 }
 
 std::shared_ptr<LevelManager> CombigridMultiOperation::getLevelManager() {
@@ -312,6 +322,28 @@ CombigridMultiOperation::createExpUniformBoundaryLinearInterpolation(size_t numD
                                                            CombiHierarchies::expUniformBoundary()),
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
           numDimensions, CombiEvaluators::multiLinearInterpolation()),
+      std::make_shared<StandardLevelManager>(), func);
+}
+
+std::shared_ptr<CombigridMultiOperation>
+CombigridMultiOperation::createExpUniformBoundaryBsplineInterpolation(size_t numDimensions,
+                                                                      MultiFunction func,
+                                                                      size_t degree) {
+  return std::make_shared<CombigridMultiOperation>(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>>(numDimensions,
+                                                           CombiHierarchies::expUniformBoundary()),
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
+          numDimensions, CombiEvaluators::multiBSplineInterpolation(degree)),
+      std::make_shared<StandardLevelManager>(), func);
+}
+
+std::shared_ptr<CombigridMultiOperation> CombigridMultiOperation::createBSplineQuadrature(
+    size_t numDimensions, MultiFunction func, size_t degree) {
+  return std::make_shared<CombigridMultiOperation>(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>>(numDimensions,
+                                                           CombiHierarchies::expUniformBoundary()),
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
+          numDimensions, CombiEvaluators::multiBSplineQuadrature(degree)),
       std::make_shared<StandardLevelManager>(), func);
 }
 

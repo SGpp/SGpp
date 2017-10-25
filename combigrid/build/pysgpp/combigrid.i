@@ -3,6 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+// base class is not exported from the configuration
+%warnfilter(401) sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration;
+
 #ifdef SG_COMBIGRID
 
 %include <std_shared_ptr.i>
@@ -74,6 +77,11 @@
 %shared_ptr(sgpp::combigrid::CombigridEvaluator<sgpp::combigrid::FloatTensorVector>)
 %shared_ptr(sgpp::combigrid::CombigridTensorEvaluator<sgpp::combigrid::FloatTensorVector>)
 
+
+%shared_ptr(sgpp::combigrid::AbstractInfiniteFunctionBasis1D)
+%shared_ptr(sgpp::combigrid::OrthogonalPolynomialBasis1D)
+%shared_ptr(sgpp::combigrid::MonomialFunctionBasis1D)
+
 %shared_ptr(sgpp::combigrid::LevelManager)
 %shared_ptr(sgpp::combigrid::AveragingLevelManager)
 %shared_ptr(sgpp::combigrid::WeightedRatioLevelManager)
@@ -135,7 +143,7 @@ namespace combigrid {
 
 %include "combigrid/src/sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp"
 %include "combigrid/src/sgpp/combigrid/functions/MonomialFunctionBasis1D.hpp"
-%include "combigrid/src/sgpp/combigrid/functions/OrthogonalBasis1D.hpp"
+%include "combigrid/src/sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp"
 
 %include "combigrid/src/sgpp/combigrid/grid/distribution/AbstractPointDistribution.hpp"
 %include "combigrid/src/sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp"
@@ -246,9 +254,12 @@ namespace std {
     %template(FloatArrayAbstractLinearEvaluatorVector) vector<std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatArrayVector>>>;
     %template(FloatTensorAbstractLinearEvaluatorVector) vector<std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatTensorVector>>>;
     %template(AbstractPointHierarchyVector) vector<std::shared_ptr<sgpp::combigrid::AbstractPointHierarchy>>;
+    %template(OrthogonalPolynomialBasis1DVector) std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>;
+    %template(OrthogonalPolynomialBasisTypeVector) std::vector<sgpp::combigrid::OrthogonalPolynomialBasisType>;
 
     %template(FloatScalarVectorVector) vector<sgpp::combigrid::FloatScalarVector>;
     %template(FloatArrayVectorVector) vector<sgpp::combigrid::FloatArrayVector>;
+    %template(FloatTensorVectorVector) vector<sgpp::combigrid::FloatTensorVector>;
     %template(DataVectorVector) vector<sgpp::base::DataVector>;
 
     // %template(PyTaskVector) std::vector<sgpp::combigrid::GeneralFunction1<void>>;

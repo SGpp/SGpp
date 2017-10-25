@@ -82,8 +82,8 @@ double OperationRosenblattTransformation1DPolyClenshawCurtis::doTransformation1D
   for (size_t i = 1; i < ordered_grid_points.size(); i++) {
     coord[0] = ordered_grid_points[i];
     double eval_res = opEval->eval(*alpha1d, coord);
-    // std::cout << "l_function_value:" << left_function_value << std::endl;
-    // std::cout << "pdf(" << coord[0] << ")=" << eval_res << std::endl;
+    std::cout << "l_function_value:" << left_function_value << std::endl;
+    std::cout << "pdf(" << coord[0] << ")=" << eval_res << std::endl;
 
     double gaussQuadSum = 0.;
     double left = left_coord;
@@ -96,8 +96,8 @@ double OperationRosenblattTransformation1DPolyClenshawCurtis::doTransformation1D
       negative_value_encountered = negative_value_encountered || (value < 0);
     }
     area = gaussQuadSum * scaling;
-    // std::cout << "from " << left_coord << " to " << left+scaling << std::endl;
-    // std::cout << "area:" << area << std::endl;
+    std::cout << "from " << left_coord << " to " << left+scaling << std::endl;
+    std::cout << "area:" << area << std::endl;
 
     if (negative_value_encountered || eval_res < 0) {
       // make sure that the cdf is monotonically increasing
@@ -114,8 +114,14 @@ double OperationRosenblattTransformation1DPolyClenshawCurtis::doTransformation1D
         right_function_value = opEval->eval(*alpha1d, coord);
         if (right_function_value >= 0 && right_function_value != left_function_value) break;
       }
-      if (j == ordered_grid_points.size() - 1)
-        right_function_value = 0;
+
+      right_coord = ordered_grid_points[j];
+      if (j == ordered_grid_points.size() - 1) {
+        if (left == 0)
+          right_function_value = 1;
+        else
+          right_function_value = 0;
+      }
       // std::cout << "Found j: " << j << std::endl;
       // std::cout << right_coord << ";" << right_function_value << std::endl;
       // get last function value and coordinate with pdf(x) >= 0
@@ -180,8 +186,8 @@ double OperationRosenblattTransformation1DPolyClenshawCurtis::doTransformation1D
 
       for (; i <= j; i++) {
         coord[0] = ordered_grid_points[i];
-        // std::cout << "interpolating i:" << i << std::endl;
-        // std::cout << "For x=" << coord[0] << "interp: " << eval_res << std::endl;
+        std::cout << "interpolating i:" << i << std::endl;
+        std::cout << "For x=" << coord[0] << "interp: " << interpolation(ordered_grid_points[i]) << std::endl;
         double gaussQuadSum = 0.;
         double left = left_coord;
         double scaling = coord[0] - left;
@@ -192,8 +198,8 @@ double OperationRosenblattTransformation1DPolyClenshawCurtis::doTransformation1D
 
         area = gaussQuadSum * scaling;
         sum += area;
-        // std::cout << "from " << left_coord << " to " << ordered_grid_points[i] << std::endl;
-        // std::cout << "area:" << area << std::endl;
+        std::cout << "from " << left_coord << " to " << ordered_grid_points[i] << std::endl;
+        std::cout << "area:" << area << std::endl;
         patch_areas.push_back(area);
         is_negative_patch.push_back(true);
         patch_functions.push_back(interpolation);
@@ -234,10 +240,10 @@ double OperationRosenblattTransformation1DPolyClenshawCurtis::doTransformation1D
   // }
   // std::cout << "Size areas: " << patch_areas.size() << std::endl;
   // std::cout << "Size cdf: " << coord_cdf.size() << std::endl;
-  // std::cout << "coord cdf: " << std::endl;
-  // for (it1 = coord_cdf.begin(); it1 != coord_cdf.end(); ++it1) {
-  // std::cout << it1->first << ":" << it1->second << std::endl;
-  // }
+  std::cout << "coord cdf: " << std::endl;
+  for (it1 = coord_cdf.begin(); it1 != coord_cdf.end(); ++it1) {
+    std::cout << it1->first << ":" << it1->second << std::endl;
+  }
 
   // find cdf interval
   size_t patch_nr = 0;

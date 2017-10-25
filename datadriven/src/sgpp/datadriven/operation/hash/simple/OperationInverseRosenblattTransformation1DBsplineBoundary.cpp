@@ -64,8 +64,6 @@ void OperationInverseRosenblattTransformation1DBsplineBoundary::init(base::DataV
     // inserting dummy points into coord_cdf to make it have the right size
     coord_cdf.insert(std::pair<double, double>(coord[0], 0.0));
   }
-  ordered_grid_points.push_back(0.0);
-  ordered_grid_points.push_back(1.0);
   std::sort(ordered_grid_points.begin(), ordered_grid_points.end());
 
   double left_coord = 0.0;
@@ -105,7 +103,14 @@ void OperationInverseRosenblattTransformation1DBsplineBoundary::init(base::DataV
         right_function_value = opEval->eval(*alpha1d, coord);
         if (right_function_value >= 0 && right_function_value != left_function_value) break;
       }
-      if (j == ordered_grid_points.size() - 1) right_function_value = 0;
+      right_coord = ordered_grid_points[j];
+      if (j == ordered_grid_points.size() - 1) {
+        if (left == 0)
+          right_function_value = 1;
+        else
+          right_function_value = 0;
+      }
+
       // get last function value and coordinate with pdf(x) >= 0
       // perform montonic cubic interpolation based on:
       // https://en.wikipedia.org/wiki/Monotone_cubic_interpolation
@@ -126,7 +131,6 @@ void OperationInverseRosenblattTransformation1DBsplineBoundary::init(base::DataV
         function_values[2] = opEval->eval(*alpha1d, coord);
       } else {
         // if j is the last grid point choose the next one with the same step size
-        // and set it's function value to zero
         // and set it's function value to the last value
         coord[0] = 1 + ordered_grid_points[j] - ordered_grid_points[j - 1];
         function_values[2] = right_function_value;

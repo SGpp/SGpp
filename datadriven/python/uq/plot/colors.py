@@ -8,6 +8,7 @@ try:
 except:
     pass
 
+
 def load_custom_pgf_preamble(dtype="standard", macros="thesis"):
     pysgpp_uq_font = load_font()
 
@@ -39,6 +40,8 @@ def load_custom_pgf_preamble(dtype="standard", macros="thesis"):
 
     if macros == "thesis":
         cmd_filename = r"/home/franzefn/Promotion/UQ/repos/dissertation/thesis/commands.tex"
+    elif macros == "l2leja":
+        cmd_filename = r"/home/franzefn/Promotion/Paper/Awesome-CT-Leja-Papers-of-Dabian-Holzelin/l2-leja/paper/commands.tex"
     else:
         cmd_filename = r"/home/franzefn/Promotion/Paper/repos/SGA16/paper/commands.tex"
 
@@ -71,10 +74,12 @@ def intToRGB(i):
     red = (i >> 16) & 255
     return red, green, blue
 
+
 def rgbTpInt(rgb):
     red, green, blue = rgb
     i = (red << 16) + (green << 8) + blue
     return i
+
 
 def load_default_color_map(dtype="cmap"):
     if dtype == "cmap":
@@ -82,17 +87,21 @@ def load_default_color_map(dtype="cmap"):
     else:
         return 'viridis'
 
+
 def load_color(i):
     colors = list(plt.rcParams['axes.prop_cycle'])
     return colors[i % len(colors)]["color"]
+
 
 def load_marker(i):
     markers = ["o", "v", "D", "s", "*", "d", "^", "x", "+"]
     return markers[i % len(markers)]
 
+
 def load_linestyle(i):
     linestyles = [":", "-.", "--", "-"]
     return linestyles[i % len(linestyles)]
+
 
 def load_bw_color(i, nmax=11):
     colors = np.linspace(0, 0.75, nmax, endpoint=True, dtype=str)
@@ -100,8 +109,9 @@ def load_bw_color(i, nmax=11):
 
 
 def load_font():
-    return {'family':'serif',
+    return {'family': 'serif',
             'size': 20}
+
 
 def load_font_properties(size=None,
                          family=None):
@@ -117,6 +127,7 @@ def load_font_properties(size=None,
 #         colors[i] = '#%06X' % np.random.randint(0, 0xFFFFFF)
 #
 #     return colors
+
 
 def savefig(fig, filename, lgd=None, tikz=False, mpl3d=False, crop=False):
     if mpl3d:
