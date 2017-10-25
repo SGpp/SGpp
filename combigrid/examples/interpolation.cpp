@@ -50,7 +50,6 @@ using sgpp::combigrid::FloatScalarVector;
 using sgpp::combigrid::ArrayEvaluator;
 using sgpp::combigrid::PolynomialInterpolationEvaluator;
 using sgpp::combigrid::CombigridTreeStorage;
-using sgpp::combigrid::FullGridLinearCallbackEvaluator;
 using sgpp::combigrid::FunctionLookupTable;
 using sgpp::combigrid::CombigridEvaluator;
 using sgpp::combigrid::WeightedRatioLevelManager;
@@ -144,13 +143,16 @@ void multistageInterpolation() {
 
   auto storage = std::make_shared<CombigridTreeStorage>(pointHierarchies, MultiFunction(dummyFunc));
 
-  auto fullGridEval = std::make_shared<FullGridLinearCallbackEvaluator<FloatArrayVector>>(
-      storage, evaluators, pointHierarchies);
+  // ToDo (rehmemk) replace example by new structure: EvalStrategy and SummationStrategy isntead of
+  // FullGridLinearCallbackEvaluator
 
-  auto combiGridEval =
-      std::make_shared<CombigridEvaluator<FloatArrayVector>>(numDimensions, fullGridEval);
+  //  auto fullGridEval = std::make_shared<FullGridLinearCallbackEvaluator<FloatArrayVector>>(
+  //      storage, evaluators, pointHierarchies);
+  //
+  //  auto combiGridEval =
+  //      std::make_shared<CombigridEvaluator<FloatArrayVector>>(numDimensions, fullGridEval);
 
-  size_t maxLevelSum = 2;
+  //  size_t maxLevelSum = 2;
 
   std::vector<FloatArrayVector> parameters(2);
   parameters[0] = FloatArrayVector(
@@ -158,11 +160,11 @@ void multistageInterpolation() {
   parameters[1] = FloatArrayVector(
       std::vector<FloatScalarVector>{FloatScalarVector(0.7), FloatScalarVector(0.27)});
 
-  fullGridEval->setParameters(parameters);
+  //  fullGridEval->setParameters(parameters);
 
   // here, the callback function inserts the grid points to gridPoints
-  auto levelManager = std::make_shared<sgpp::combigrid::AveragingLevelManager>(combiGridEval);
-  levelManager->addRegularLevels(maxLevelSum);
+  //  auto levelManager = std::make_shared<sgpp::combigrid::AveragingLevelManager>(combiGridEval);
+  //  levelManager->addRegularLevels(maxLevelSum);
 
   // ----- EVAL FUNCTION
   FunctionLookupTable funcLookup((MultiFunction(f_2D)));
@@ -178,24 +180,26 @@ void multistageInterpolation() {
       pointHierarchies,
       MultiFunction([&funcLookup](DataVector const &param) { return funcLookup(param); }));
 
-  auto realFullGridEval = std::make_shared<FullGridLinearCallbackEvaluator<FloatArrayVector>>(
-      realStorage, evaluators, pointHierarchies);
+  // ToDo (rehmemk) replace example by new structure: EvalStrategy and SummationStrategy isntead of
+  // FullGridLinearCallbackEvaluator
+  //  auto realFullGridEval = std::make_shared<FullGridLinearCallbackEvaluator<FloatArrayVector>>(
+  //      realStorage, evaluators, pointHierarchies);
 
-  auto realCombiGridEval =
-      std::make_shared<CombigridEvaluator<FloatArrayVector>>(numDimensions, realFullGridEval);
+  //  auto realCombiGridEval =
+  //      std::make_shared<CombigridEvaluator<FloatArrayVector>>(numDimensions, realFullGridEval);
 
-  realFullGridEval->setParameters(parameters);
-  auto realLevelManager =
-      std::make_shared<sgpp::combigrid::AveragingLevelManager>(realCombiGridEval);
-  realLevelManager->addRegularLevels(maxLevelSum);
+  //  realFullGridEval->setParameters(parameters);
+  //  auto realLevelManager =
+  //      std::make_shared<sgpp::combigrid::AveragingLevelManager>(realCombiGridEval);
+  //  realLevelManager->addRegularLevels(maxLevelSum);
 
-  FloatArrayVector result = realCombiGridEval->getValue();
+  //  FloatArrayVector result = realCombiGridEval->getValue();
 
-  std::cout << "Results:\n";
-
-  for (size_t i = 0; i < result.size(); ++i) {
-    std::cout << result.get(i).getValue() << "\n";
-  }
+  //  std::cout << "Results:\n";
+  //
+  //  for (size_t i = 0; i < result.size(); ++i) {
+  //    std::cout << result.get(i).getValue() << "\n";
+  //    }
 }
 
 int main() {
