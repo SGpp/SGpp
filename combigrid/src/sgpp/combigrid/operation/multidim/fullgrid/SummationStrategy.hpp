@@ -85,12 +85,16 @@ class SummationStrategy : public EvalStrategy<V> {
    * description).
    */
   V eval(MultiIndex const &level) {
-    if ((!this->precomputedLevels->containsIndex(level)) &&
-        (this->strategy == Strategy::grid_based)) {
-      this->addResults(level, this->gridFunction(this->getTensorGrid2(level)));
-      this->precomputedLevels->set(level, 1);
-    }
+    //    std::cout << "Strategy: " << (this->strategy == Strategy::grid_based) << std::endl;
+    //    std::cout << "PrecLevels: " << (!this->precomputedLevels->containsIndex(level)) <<
+    //    std::endl;
 
+    if (this->strategy == Strategy::grid_based) {
+      if (!this->precomputedLevels->containsIndex(level)) {
+        this->addResults(level, this->gridFunction(this->getTensorGrid2(level)));
+        this->precomputedLevels->set(level, 1);
+      }
+    }
     CGLOG("FullGridTensorEvaluator::eval(): start");
     size_t numDimensions = evaluators.size();
     size_t lastDim = numDimensions - 1;

@@ -37,7 +37,6 @@ using sgpp::combigrid::FloatScalarVector;
 using sgpp::combigrid::ArrayEvaluator;
 using sgpp::combigrid::PolynomialInterpolationEvaluator;
 using sgpp::combigrid::CombigridTreeStorage;
-using sgpp::combigrid::FullGridLinearCallbackEvaluator;
 using sgpp::combigrid::FunctionLookupTable;
 using sgpp::combigrid::CombigridEvaluator;
 using sgpp::combigrid::WeightedRatioLevelManager;

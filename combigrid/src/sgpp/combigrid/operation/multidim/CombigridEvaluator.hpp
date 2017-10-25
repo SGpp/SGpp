@@ -11,7 +11,6 @@
 #include <sgpp/combigrid/operation/multidim/AbstractLevelEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/AdaptiveRefinementStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluator.hpp>
-#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearCallbackEvaluator.hpp>
 #include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
 #include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
@@ -79,15 +78,19 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
     initPartialDifferences();
   }
 
+  // ToDo (rehmemk) bei Umstellung von AbstractFullGridLinearEvaluator auf Summation- und
+  // EvalStrategy das folgende einfach auskommentiert. Prüfen und gegebenenfalls wieder einführen!
+
   /**
    * For some reason, SWIG cannot convert the shared_ptr into the more abstract type, so we need
    * this 'duplicate'
    */
-  CombigridEvaluator(size_t numDimensions,
-                     std::shared_ptr<FullGridLinearCallbackEvaluator<V>> multiEval)
-      : sum(V::zero()), numDimensions(numDimensions), partialDifferences(), multiEval(multiEval) {
-    initPartialDifferences();
-  }
+  //  CombigridEvaluator(size_t numDimensions,
+  //                     std::shared_ptr<FullGridLinearCallbackEvaluator<V>> multiEval)
+  //      : sum(V::zero()), numDimensions(numDimensions), partialDifferences(), multiEval(multiEval)
+  //      {
+  //    initPartialDifferences();
+  //  }
 
   /**
    * Performs an evaluation on the given level and adds the gained information to the current
