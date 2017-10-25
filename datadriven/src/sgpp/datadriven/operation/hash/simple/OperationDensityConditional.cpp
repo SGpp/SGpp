@@ -3,11 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/operation/hash/simple/OperationDensityConditional.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
-
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityConditional.hpp>
 #include <sgpp/globaldef.hpp>
+
 #include <algorithm>
 
 namespace sgpp {
@@ -46,7 +46,7 @@ void OperationDensityConditional::doConditional(base::DataVector& alpha, base::G
     tmpint = 1;
 
     for (unsigned int d = 0; d < gs->getDimension(); d++) {
-      if (d != mdim) tmpint *= basis.getIntegral(gp.getLevel(d), gp.getLevel(d));
+      if (d != mdim) tmpint *= basis.getIntegral(gp.getLevel(d), gp.getIndex(d));
     }
 
     theta += alpha[seqNr] * zeta[seqNr] * tmpint;

@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef OPERATIONROSENBLATTTRANSFORMATION1DMODBSPLINE_HPP
-#define OPERATIONROSENBLATTTRANSFORMATION1DMODBSPLINE_HPP
+#ifndef OPERATIONROSENBLATTTRANSFORMATION1DMODBSPLINECLENSHAWCURTIS_HPP
+#define OPERATIONROSENBLATTTRANSFORMATION1DMODBSPLINECLENSHAWCURTIS_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationTransformation1D.hpp>
@@ -32,4 +32,4 @@ class OperationRosenblattTransformation1DModBsplineClenshawCurtis : public Opera
 }  // namespace datadriven
 }  // namespace sgpp
 
-#endif /* OPERATIONROSENBLATTTRANSFORMATION1DMODBSPLINE_HPP */
+#endif /* OPERATIONROSENBLATTTRANSFORMATION1DMODBSPLINECLENSHAWCURTIS_HPP */
