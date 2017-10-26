@@ -12,11 +12,11 @@
 #include <sgpp/combigrid/grid/hierarchy/NonNestedPointHierarchy.hpp>
 #include <sgpp/combigrid/grid/ordering/ExponentialLevelorderPointOrdering.hpp>
 #include <sgpp/combigrid/grid/ordering/IdentityPointOrdering.hpp>
-#include <sgpp/combigrid/operation/AbstractFullGridEvaluationStrategy.hpp>
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearSummationStrategy.hpp>
