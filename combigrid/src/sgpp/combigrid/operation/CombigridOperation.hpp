@@ -15,6 +15,7 @@
 #include <sgpp/combigrid/grid/hierarchy/NestedPointHierarchy.hpp>
 #include <sgpp/combigrid/grid/hierarchy/NonNestedPointHierarchy.hpp>
 #include <sgpp/combigrid/grid/ordering/IdentityPointOrdering.hpp>
+#include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/LevelManager.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
@@ -148,6 +149,11 @@ class CombigridOperation {
                                                                           size_t growthFactor = 2);
   static std::shared_ptr<CombigridOperation> createExpClenshawCurtisQuadrature(size_t numDimensions,
                                                                                MultiFunction func);
+
+  static std::shared_ptr<CombigridOperation> auxiliaryBsplineFunction(
+      size_t numDimensions, MultiFunction func, sgpp::combigrid::CombiHierarchies::Collection grids,
+      sgpp::combigrid::CombiEvaluators::Collection evaluators, size_t degree);
+
   static std::shared_ptr<CombigridOperation> createExpUniformBoundaryBsplineInterpolation(
       size_t numDimensions, MultiFunction func, size_t degree);
   static std::shared_ptr<CombigridOperation> createExpClenshawCurtisBsplineInterpolation(
