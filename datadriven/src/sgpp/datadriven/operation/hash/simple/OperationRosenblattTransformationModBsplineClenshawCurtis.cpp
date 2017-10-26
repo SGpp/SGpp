@@ -60,9 +60,9 @@ void OperationRosenblattTransformationModBsplineClenshawCurtis::doTransformation
   }
 
 // 3. for every sample do...
-#pragma omp parallel
-  {
-#pragma omp for schedule(dynamic)
+// #pragma omp parallel
+  // {
+// #pragma omp for schedule(dynamic)
     for (size_t i = 0; i < points->getNrows(); i++) {
       // transform the point in the current dimension
       size_t idim = startindices[i];
@@ -79,7 +79,7 @@ void OperationRosenblattTransformationModBsplineClenshawCurtis::doTransformation
       doTransformation_start_dimX(this->grid, alpha, idim, &coords1d, &cdfs1d);
       pointscdf->setRow(i, cdfs1d);
     }
-  }
+  // }
 
   // cleanup
   for (size_t idim = 0; idim < num_dims; idim++) {
@@ -98,9 +98,9 @@ void OperationRosenblattTransformationModBsplineClenshawCurtis::doTransformation
       op_factory::createOperationDensityMargTo1D(*this->grid));
   marg1d->margToDimX(alpha, g1d, a1d, dim_start);
 
-#pragma omp parallel
-  {
-#pragma omp for schedule(dynamic)
+// #pragma omp parallel
+  // {
+// #pragma omp for schedule(dynamic)
 
     for (size_t i = 0; i < points->getNrows(); i++) {
       base::DataVector coords1d(points->getNcols());
@@ -114,7 +114,7 @@ void OperationRosenblattTransformationModBsplineClenshawCurtis::doTransformation
       doTransformation_start_dimX(this->grid, alpha, dim_start, &coords1d, &cdfs1d);
       pointscdf->setRow(i, cdfs1d);
     }
-  }
+  // }
 
   delete g1d;
   delete a1d;
@@ -189,7 +189,6 @@ double OperationRosenblattTransformationModBsplineClenshawCurtis::doTransformati
     base::Grid* grid1d, base::DataVector* alpha1d, double coord1d) {
   std::unique_ptr<OperationTransformation1D> opRosenblatt(
       op_factory::createOperationRosenblattTransformation1D(*grid1d));
-  // std::cout << "1d trafo:" << alpha1d->toString() << std::endl;
   return opRosenblatt->doTransformation1D(alpha1d, coord1d);
 }  // end of compute_1D_cdf()
 }  // namespace datadriven

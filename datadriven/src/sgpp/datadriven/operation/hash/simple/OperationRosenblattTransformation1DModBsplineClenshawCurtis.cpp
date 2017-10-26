@@ -144,9 +144,9 @@ double OperationRosenblattTransformation1DModBsplineClenshawCurtis::doTransforma
         function_values[2] = opEval->eval(*alpha1d, coord);
       } else {
         // if j is the last grid point choose the next one with the same step size
-        // and set it's function value to one
+        // and set it's function value to the last value
         coord[0] = 1 + ordered_grid_points[j] - ordered_grid_points[j - 1];
-        function_values[2] = 1.0;
+        function_values[2] = right_function_value;
       }
       secants[1] = (function_values[2] - function_values[1]) / (coord[0] - ordered_grid_points[j]);
       tangents[2] = secants[1];
