@@ -16,14 +16,11 @@
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
 
 #include <iostream>
-#include <sgpp/combigrid/operation/AbstractFullGridEvaluationStrategy.hpp>
 #include <vector>
+#include "AbstractFullGridEvaluationStrategy.hpp"
 
 namespace sgpp {
 namespace combigrid {
-
-// ToDo (rehmemk) Wir benötigen eine SummationStrategy linear und eine qudratisch. Aktuell ist hier
-// noch alles linear, das eval muss weiter abstrahiert werden
 
 template <typename V>
 class AbstractFullGridSummationStrategy : public AbstractFullGridEvaluationStrategy<V> {
