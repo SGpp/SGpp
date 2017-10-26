@@ -101,7 +101,7 @@ class AbstractFullGridSummationStrategy : public AbstractFullGridEvaluationStrat
       if (prototype->needsParameter()) {
         if (paramIndex >= params.size()) {
           throw std::runtime_error(
-              "AbstractFullGridLinearEvaluator::setParameters(): parameter dimensionality is too "
+              "AbstractFullGridSummationstrategy::setParameters(): parameter dimensionality is too "
               "low.");
         }
         // prototype->setParameter(params[paramIndex]); <- this is useless, see above

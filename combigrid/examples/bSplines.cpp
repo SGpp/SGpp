@@ -38,7 +38,7 @@
 #include <vector>
 
 double f(sgpp::base::DataVector const& v) {
-  return v[0];
+  return v[1] * v[1];
   //  return v[0] * sin(v[0] + v[1]) * exp(v[1] * v[2]);
   //    return v[0] * sin(v[1]) ;
   //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
@@ -109,7 +109,8 @@ double interpolate_and_integrate(size_t level, size_t numDimensions, size_t degr
       numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
   sgpp::combigrid::CombiEvaluators::Collection evaluators(numDimensions);
   evaluators[0] = sgpp::combigrid::CombiEvaluators::BSplineInterpolation(degree);
-  evaluators[1] = sgpp::combigrid::CombiEvaluators::BSplineQuadrature(degree);
+  //  evaluators[1] = sgpp::combigrid::CombiEvaluators::BSplineQuadrature(degree);
+  evaluators[1] = sgpp::combigrid::CombiEvaluators::BSplineInterpolation(degree);
 
   auto operation = sgpp::combigrid::CombigridOperation::auxiliaryBsplineFunction(
       numDimensions, func, grids, evaluators, degree);
