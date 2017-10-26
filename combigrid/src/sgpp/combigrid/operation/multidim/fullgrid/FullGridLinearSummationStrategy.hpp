@@ -9,7 +9,6 @@
 #include <sgpp/combigrid/common/MultiIndexIterator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
-#include <sgpp/combigrid/operation/AbstractFullGridEvaluationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
@@ -19,6 +18,7 @@
 
 #include <iostream>
 #include <vector>
+#include "AbstractFullGridEvaluationStrategy.hpp"
 
 namespace sgpp {
 namespace combigrid {

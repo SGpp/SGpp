@@ -21,7 +21,8 @@
 #include <cstddef>
 #include <memory>
 #include <vector>
-#include "AbstractFullGridEvaluationStrategy.hpp"
+
+#include "multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp"
 
 namespace sgpp {
 namespace combigrid {

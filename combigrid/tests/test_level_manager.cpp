@@ -21,6 +21,7 @@
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
@@ -90,50 +91,47 @@ double testFunctionAtan(DataVector const &x);
  }
  */
 
-// ToDo (rehmemk) Test umändern, s.d. SummationStrategy und EvalStrategy getestet werden
-
 BOOST_AUTO_TEST_CASE(testLevelManagerParallel) {
-  std::cout << "test_level_manager is currently under construction and does NOT work!" << std::endl;
+  size_t numDimensions = 2;
 
-  //  size_t numDimensions = 2;
-  //
-  //  auto func = testFunction2;
-  //
-  //  size_t growthFactor = 2;  // use n = 1 + 2 * level points
-  //  std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies(
-  //      numDimensions, std::make_shared<NestedPointHierarchy>(
-  //                         std::make_shared<LejaPointDistribution>(),
-  //                         std::make_shared<IdentityPointOrdering>(
-  //                             std::make_shared<LinearGrowthStrategy>(growthFactor), false)));
-  //  // create a point hierarchy of nested points (leja points), which are already ordered in the
-  //  // nesting order
-  //
-  //  // CREATE EVALUATORS
-  //  std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> evaluators(
-  //      numDimensions, std::make_shared<PolynomialInterpolationEvaluator>());
-  //
-  //  auto storage = std::make_shared<CombigridTreeStorage>(pointHierarchies, MultiFunction(func));
-  //
-  //    auto fullGridEval = std::make_shared<FullGridLinearCallbackEvaluator<FloatScalarVector>>(
-  //        storage, evaluators, pointHierarchies);
-  //
-  //    auto combiGridEval =
-  //        std::make_shared<CombigridEvaluator<FloatScalarVector>>(numDimensions, fullGridEval);
-  //
-  //    auto levelManager = std::make_shared<AveragingLevelManager>(combiGridEval);
-  //
-  //    size_t maxLevelSum = 3;
-  //
-  //  std::vector<FloatScalarVector> parameters(2);
-  //  parameters[0] = FloatScalarVector(0.378934);
-  //  parameters[1] = FloatScalarVector(0.89340273);
-  //
-  //    fullGridEval->setParameters(parameters);
-  //    levelManager->addRegularLevelsParallel(maxLevelSum, 4);
-  //    levelManager->addLevelsAdaptiveParallel(300, 4);
-  //
-  //  // std::cout << "test_level_manager: ";
-  //  // std::cout << std::abs(combiGridEval->getValue().getValue() -
-  //  //                       func(DataVector(std::vector<double>{0.378934, 0.89340273})))
-  //  //           << "\n";
+  auto func = testFunction2;
+
+  size_t growthFactor = 2;  // use n = 1 + 2 * level points
+  std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies(
+      numDimensions, std::make_shared<NestedPointHierarchy>(
+                         std::make_shared<LejaPointDistribution>(),
+                         std::make_shared<IdentityPointOrdering>(
+                             std::make_shared<LinearGrowthStrategy>(growthFactor), false)));
+  // create a point hierarchy of nested points (leja points), which are already ordered in the
+  // nesting order
+
+  // CREATE EVALUATORS
+  std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> evaluators(
+      numDimensions, std::make_shared<PolynomialInterpolationEvaluator>());
+
+  auto storage = std::make_shared<CombigridTreeStorage>(pointHierarchies, MultiFunction(func));
+
+  auto summationStrategy =
+      std::make_shared<sgpp::combigrid::FullGridLinearSummationStrategy<FloatScalarVector>>(
+          storage, evaluators, pointHierarchies);
+
+  auto combiGridEval =
+      std::make_shared<CombigridEvaluator<FloatScalarVector>>(numDimensions, summationStrategy);
+
+  auto levelManager = std::make_shared<AveragingLevelManager>(combiGridEval);
+
+  size_t maxLevelSum = 3;
+
+  std::vector<FloatScalarVector> parameters(2);
+  parameters[0] = FloatScalarVector(0.378934);
+  parameters[1] = FloatScalarVector(0.89340273);
+
+  summationStrategy->setParameters(parameters);
+  levelManager->addRegularLevelsParallel(maxLevelSum, 4);
+  levelManager->addLevelsAdaptiveParallel(300, 4);
+
+  // std::cout << "test_level_manager: ";
+  // std::cout << std::abs(combiGridEval->getValue().getValue() -
+  //                       func(DataVector(std::vector<double>{0.378934, 0.89340273})))
+  //           << "\n";
 }
