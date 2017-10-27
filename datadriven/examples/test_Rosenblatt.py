@@ -10,7 +10,7 @@ class interpolation_function():
   def __init__(self, d, f):
     self.f = f
     self.d = d
-    self.grid = pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3)
+    self.grid = pysgpp.Grid.createPolyClenshawCurtisGrid(d, 3)
     self.gridStorage = self.grid.getStorage()
     try :
       self.hierarch = pysgpp.createOperationHierarchisation(self.grid)
@@ -86,18 +86,11 @@ def eval_inverse_rosenblatt1d(sg_pdf, xs):
     ys.append(op.doTransformation1D(sg_pdf.alpha, x))
   return ys
 
-xs = np.arange(0.990, 1.00, 0.0001)
-# xs = [-7.27272727272726515757e-01, -7.27272727272723629177e-01, 3.63636363636363135754e+00]
+xs = np.arange(0., 1.01, 0.01)
 l_max = 2
 d = 1
 interpolation = interpolation_function(d, parabola)
 interpolation.create_interpolation(l_max)
-
-
-alpha = [-3.55487191449998962689e-01, -3.55487191449998685133e-01, 1.31388359818433952952e+00, 6.82073036752554040518e-01, 6.82073036752550931894e-01]
-print(len(alpha))
-for i in range(0, 5):
-  interpolation.alpha[i] = alpha[i]
 
 # test()
 # grid_points = np.arange(0, 1.01, 2**-l_max)
