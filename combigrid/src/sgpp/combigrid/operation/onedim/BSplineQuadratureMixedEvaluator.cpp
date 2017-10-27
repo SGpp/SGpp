@@ -7,7 +7,7 @@
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
-#include <sgpp/combigrid/operation/onedim/BSplineMixedQuadratureEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/BSplineQuadratureMixedEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
 
 #include <cmath>
@@ -26,9 +26,10 @@ namespace combigrid {
  * @return integral of b_i*b_j
  *
  * w.l.o.g. integrate over support of b_i because b_i*b_j is zero outside supp(b_i)
- * [ but setting the segments depending on b_i AND b_j should speed up this calculation!]
+ * [ ToDo (rehmemk) but setting the segments depending on b_i AND b_j should speed up this
+ * calculation!]
  */
-double BSplineMixedQuadratureEvaluator::get1DMixedIntegral(std::vector<double>& points,
+double BSplineQuadratureMixedEvaluator::get1DMixedIntegral(std::vector<double>& points,
                                                            size_t index_i, size_t index_j) {
   // performing Gauss-Legendre integration
   size_t numGaussPoints = (degree + 1) / 2 + numAdditionalPoints;
@@ -59,8 +60,6 @@ double BSplineMixedQuadratureEvaluator::get1DMixedIntegral(std::vector<double>& 
   } else {
     quadRule.getLevelPointsAndWeightsNormalized(
         std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
-    // use segments of b_i. Ass bi*bj =0 outside supp(b_i) this works fine.
-    // ToDo (rehmemk) customizing first-/last_segment to bi AND bj would lead to a speed up!
     size_t first_segment = std::max(degree, index_i);
     size_t last_segment = std::min(xi.size() - degree - 1, index_i + degree + 1);
     for (size_t segmentIndex = first_segment; segmentIndex < last_segment; segmentIndex++) {
@@ -91,70 +90,71 @@ double BSplineMixedQuadratureEvaluator::get1DMixedIntegral(std::vector<double>& 
  * weights are at the same position
  * as their points
  */
-void BSplineMixedQuadratureEvaluator::calculate1DMixedBSplineIntegrals(
-    std::vector<double>& points, std::vector<FloatScalarVector>& integrals) {
-  // "weights" here are the integrals!
-  std::cout << "integrals:\n";
+void BSplineQuadratureMixedEvaluator::calculate1DMixedBSplineIntegrals(
+    std::vector<double>& points, std::vector<FloatArrayVector>& basisValues) {
   size_t tempindex = 0;
   for (size_t index_i = 0; index_i < points.size(); ++index_i) {
     for (size_t index_j = 0; index_j < points.size(); ++index_j) {
-      integrals.push_back(FloatScalarVector(get1DMixedIntegral(points, index_i, index_j)));
-      std::cout << integrals[tempindex] << " ";
+      basisValues[index_i][index_j] =
+          (FloatScalarVector(get1DMixedIntegral(points, index_i, index_j)));
       tempindex++;
     }
   }
   std::cout << "\n";
 }
 
-BSplineMixedQuadratureEvaluator::~BSplineMixedQuadratureEvaluator() {}
+BSplineQuadratureMixedEvaluator::~BSplineQuadratureMixedEvaluator() {}
 
-bool BSplineMixedQuadratureEvaluator::needsOrderedPoints() { return true; }
+bool BSplineQuadratureMixedEvaluator::needsOrderedPoints() { return true; }
 
-bool BSplineMixedQuadratureEvaluator::needsParameter() { return false; }
+bool BSplineQuadratureMixedEvaluator::needsParameter() { return false; }
 
-void BSplineMixedQuadratureEvaluator::setGridPoints(std::vector<double> const& newXValues) {
+void BSplineQuadratureMixedEvaluator::setGridPoints(std::vector<double> const& newXValues) {
   xValues = newXValues;
-  integrals.clear();
-  calculate1DMixedBSplineIntegrals(xValues, integrals);
+  basisValues.clear();
+  calculate1DMixedBSplineIntegrals(xValues, basisValues);
 
+  // is this ever used?
   if (normalizeWeights) {
     double sum = 0.0;
 
-    // multiply the weights with the weight function
-    for (size_t i = 0; i < integrals.size(); ++i) {
-      // weights[i].scalarMult(weight_function(xValues[i]));
-      sum += integrals[i].getValue();
+    // multiply the basis values with the weight function
+    for (size_t i = 0; i < basisValues.size(); ++i) {
+      for (size_t j = 0; j < basisValues[i].size(); ++j) {
+        // basisValues[i].scalarMult(weight_function(xValues[i]));
+        sum += basisValues[i][j].getValue();
+      }
     }
 
     double sumInv = 1.0 / sum;
 
-    for (size_t i = 0; i < integrals.size(); ++i) {
-      integrals[i].scalarMult(sumInv);
+    for (size_t i = 0; i < basisValues.size(); ++i) {
+      basisValues[i].scalarMult(sumInv);
     }
   }
 }
 
-std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector> >
-BSplineMixedQuadratureEvaluator::cloneLinear() {
-  return std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector> >(
-      new BSplineMixedQuadratureEvaluator(*this));
+std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector> >
+BSplineQuadratureMixedEvaluator::cloneLinear() {
+  return std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector> >(
+      new BSplineQuadratureMixedEvaluator(*this));
 }
 
-BSplineMixedQuadratureEvaluator::BSplineMixedQuadratureEvaluator()
+BSplineQuadratureMixedEvaluator::BSplineQuadratureMixedEvaluator()
     : weight_function(constantFunction<double>(1.0)),
       normalizeWeights(false),
       isCustomWeightFunction(false),
       numAdditionalPoints(0),
       degree(3) {}
 
-BSplineMixedQuadratureEvaluator::BSplineMixedQuadratureEvaluator(size_t degree)
+BSplineQuadratureMixedEvaluator::BSplineQuadratureMixedEvaluator(size_t degree)
     : weight_function(constantFunction<double>(1.0)),
       normalizeWeights(false),
       isCustomWeightFunction(false),
       numAdditionalPoints(0),
       degree(degree) {}
 
-BSplineMixedQuadratureEvaluator::BSplineMixedQuadratureEvaluator(
+BSplineQuadratureMixedEvaluator::BSplineQuadratureMixedEvaluator(
     size_t degree, sgpp::combigrid::SingleFunction weight_function, bool normalizeWeights,
     size_t numAdditionalPoints)
     : weight_function(weight_function),
@@ -163,19 +163,19 @@ BSplineMixedQuadratureEvaluator::BSplineMixedQuadratureEvaluator(
       numAdditionalPoints(numAdditionalPoints),
       degree(degree) {}
 
-BSplineMixedQuadratureEvaluator::BSplineMixedQuadratureEvaluator(
-    BSplineMixedQuadratureEvaluator const& other)
+BSplineQuadratureMixedEvaluator::BSplineQuadratureMixedEvaluator(
+    BSplineQuadratureMixedEvaluator const& other)
     : xValues(other.xValues),
-      integrals(other.integrals),
+      basisValues(other.basisValues),
       weight_function(other.weight_function),
       normalizeWeights(other.normalizeWeights),
       isCustomWeightFunction(other.isCustomWeightFunction),
       numAdditionalPoints(other.numAdditionalPoints),
       degree(other.degree) {}
 
-void BSplineMixedQuadratureEvaluator::setParameter(const FloatScalarVector& param) { return; }
+void BSplineQuadratureMixedEvaluator::setParameter(const FloatArrayVector& param) { return; }
 
-void BSplineMixedQuadratureEvaluator::setFunctionValuesAtGridPoints(
+void BSplineQuadratureMixedEvaluator::setFunctionValuesAtGridPoints(
     std::vector<double>& functionValues) {
   basisCoefficients = functionValues;
 }

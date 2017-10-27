@@ -26,7 +26,7 @@
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
-#include <sgpp/combigrid/operation/onedim/BSplineMixedQuadratureEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/BSplineQuadratureMixedEvaluator.hpp>
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
@@ -55,10 +55,6 @@ void interpolate(size_t maxlevel, size_t numDimensions, size_t degree, double& m
   //  auto operation =
   //      sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
   //          numDimensions, func);
-
-  //  auto operation =
-  //  sgpp::combigrid::CombigridOperation::createExpUniformBoundaryLinearInterpolation(
-  //      numDimensions, func);
 
   double diff = 0.0;
   // generator generates num_points random points in [0,1]^numDimensions
@@ -109,8 +105,7 @@ double interpolate_and_integrate(size_t level, size_t numDimensions, size_t degr
       numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
   sgpp::combigrid::CombiEvaluators::Collection evaluators(numDimensions);
   evaluators[0] = sgpp::combigrid::CombiEvaluators::BSplineInterpolation(degree);
-  //  evaluators[1] = sgpp::combigrid::CombiEvaluators::BSplineQuadrature(degree);
-  evaluators[1] = sgpp::combigrid::CombiEvaluators::BSplineInterpolation(degree);
+  evaluators[1] = sgpp::combigrid::CombiEvaluators::BSplineQuadrature(degree);
 
   auto operation = sgpp::combigrid::CombigridOperation::auxiliaryBsplineFunction(
       numDimensions, func, grids, evaluators, degree);
@@ -121,9 +116,25 @@ double interpolate_and_integrate(size_t level, size_t numDimensions, size_t degr
   return res;
 }
 
+// This example is not ready yet. FullGridQuadratureSummationstrategy must be finished
+// double variance(size_t level, size_t numDimensions, size_t degree) {
+//  sgpp::combigrid::MultiFunction func(f);
+//  sgpp::combigrid::CombiHierarchies::Collection grids(
+//      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+//  sgpp::combigrid::CombiEvaluators::Collection evaluators(
+//      numDimensions, sgpp::combigrid::CombiEvaluators::BSplineMixedQuadrature(degree));
+//
+//  auto operation = sgpp::combigrid::CombigridOperation::auxiliaryBsplineFunction(
+//      numDimensions, func, grids, evaluators, degree);
+//
+//  double var = operation->evaluate(level);
+//  return var;
+//}
+
 int main() {
   size_t numDimensions = 2;
   size_t degree = 3;
+  size_t level = 3;
 
   // Interpolation
   //  sgpp::base::SGppStopwatch watch;
@@ -141,12 +152,10 @@ int main() {
   //  std::cout << " Total Runtime: " << watch.stop() << " s" << std::endl;
 
   // Integration
-  //  size_t level = 3;
   //  double integral = integrate(level, numDimensions, degree);
   //  std::cout << "integral:  " << integral << std::endl;
 
   // Integrate basis functions
-  //  size_t level = 1;
   //  std::vector<double> integrals = integrateBasisFunctions(level, numDimensions, degree);
   //  std::cout << "------------------------------------" << std::endl;
   //  for (size_t i = 0; i < integrals.size(); i++) {
@@ -154,8 +163,12 @@ int main() {
   //  }
 
   //  Interpolate in one direction and integrate in the other
-  size_t level = 3;
-  double res = interpolate_and_integrate(level, numDimensions, degree);
-  std::cout << res << std::endl;
+  //  double res = interpolate_and_integrate(level, numDimensions, degree);
+  //  std::cout << res << std::endl;
+
+  // Calculate variance (integral of func^2 respectively)
+  //  double var = variance(level, numDimensions, degree);
+  //  std::cout << "variance: " << var << std::endl;
+
   return 0;
 }
