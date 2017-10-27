@@ -57,8 +57,8 @@ void OperationDensityMarginalize::doMarginalize(base::DataVector& alpha, base::G
    */
   malpha.resize(mgs->getSize());
   malpha.setAll(0.0);
-  unsigned int mdimLevel;
-  unsigned int mdimIndex;
+  unsigned int mdimLevel = 0;
+  unsigned int mdimIndex = 0;
   size_t mseqNr;
   auto& basis = grid->getBasis();
 
@@ -70,7 +70,7 @@ void OperationDensityMarginalize::doMarginalize(base::DataVector& alpha, base::G
         mdimIndex = gp.getIndex(d);
       } else if (d < mdim) {
         mgp.set(d, gp.getLevel(d), gp.getIndex(d));
-      } else{
+      } else {
         mgp.set(d - 1, gp.getLevel(d), gp.getIndex(d));
       }
     }
