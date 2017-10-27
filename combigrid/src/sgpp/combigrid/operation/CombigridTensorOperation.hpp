@@ -81,7 +81,8 @@ class CombigridTensorOperation {
    * parameter params. This is a convenience function. If you need other functionality, use
    * getLevelManager() and operate directly on the LevelManager.
    */
-  FloatTensorVector evaluate(size_t q, std::vector<FloatTensorVector> const &params);
+  FloatTensorVector evaluate(
+      size_t q, std::vector<FloatTensorVector> const &params = std::vector<FloatTensorVector>());
 
   /**
    * @return the storage containing the computed function values at evaluation points.

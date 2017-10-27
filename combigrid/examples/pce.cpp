@@ -23,34 +23,46 @@
 double f(sgpp::base::DataVector const &v) {
   // return v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
   // return v[0] * v[0] + v[1] * v[1];
+  //  double ans = 1.0;
+  //  for (size_t idim = 0; idim < v.getSize(); idim++) {
+  //    ans *= 4 * v[idim] * (1.0 - v[idim]);
+  //  }
+  //  return ans;
   return exp(3 * v[0] * v[0] + v[1]) * atan(10 * v[2]) + sin(3 * v[1] + v[2]);
 }
 
 int main() {
+  auto func = sgpp::combigrid::MultiFunction(f);
+  size_t d = 3;
+
+  sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
+  config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
+  config.polyParameters.alpha_ = 10.0;
+  config.polyParameters.beta_ = 5.0;
+
+  auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
+
   for (size_t q = 0; q <= 8; ++q) {
-    size_t d = 3;
-
-    sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
-    config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
-    config.polyParameters.alpha_ = 10.0;
-    config.polyParameters.beta_ = 5.0;
-
-    auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
-    auto func = sgpp::combigrid::MultiFunction(f);
-    auto op = sgpp::combigrid::CombigridTensorOperation::createLinearLejaPolynomialInterpolation(
-        functionBasis, d, func);
-
-    std::cout << "q = " << q << "\n";
-
+    // interpolate on adaptively refined grid
+    auto op = sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
+        d, func);
     sgpp::combigrid::Stopwatch stopwatch;
-    auto tensorResult = op->evaluate(q, std::vector<sgpp::combigrid::FloatTensorVector>());
-    /*std::cout
-        << sgpp::combigrid::TreeStorageSerializationStrategy<sgpp::combigrid::FloatScalarVector>(d)
-               .serialize(tensorResult.getValues())
-        << "\n";*/
-
+    stopwatch.start();
+    op->getLevelManager()->addRegularLevels(q);
+    op->getLevelManager()->addLevelsAdaptive(1000);
     stopwatch.log();
-    std::cout << "E(u) = " << tensorResult.get(sgpp::combigrid::MultiIndex(d, 0)) << std::endl;
-    std::cout << "Var(u) = " << std::pow(tensorResult.norm(), 2) << std::endl;
+    // compute the variance
+    stopwatch.start();
+    auto tensor_op =
+        sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
+            op->getPointHierarchies(), op->getStorage(), op->getLevelManager(), functionBasis);
+    auto tensor_result = tensor_op->getResult();
+    std::cout << "Time " << stopwatch.elapsedSeconds() / static_cast<double>(op->numGridPoints())
+              << std::endl;
+    std::cout << "---------------------------------------------------------" << std::endl;
+    std::cout << "#gp = " << op->getLevelManager()->numGridPoints() << std::endl;
+    std::cout << "E(u) = " << tensor_result.get(sgpp::combigrid::MultiIndex(d, 0)) << std::endl;
+    std::cout << "Var(u) = " << std::pow(tensor_result.norm(), 2) << std::endl;
+    std::cout << "---------------------------------------------------------" << std::endl;
   }
 }
