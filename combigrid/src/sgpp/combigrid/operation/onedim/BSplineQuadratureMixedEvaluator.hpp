@@ -7,7 +7,7 @@
 #define BSplineMIXEDQUADRATUREEVALUATOR_HPP_
 
 #include <sgpp/combigrid/GeneralFunction.hpp>
-#include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
+#include <sgpp/combigrid/algebraic/FloatArrayVector.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 
@@ -23,9 +23,9 @@ namespace combigrid {
  * In the constructor, a weight function may be passed whose values at the grid points are
  * multiplied with the given function values.
  */
-class BSplineMixedQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVector> {
+class BSplineQuadratureMixedEvaluator : public AbstractLinearEvaluator<FloatArrayVector> {
   std::vector<double> xValues;
-  std::vector<FloatScalarVector> integrals;
+  std::vector<FloatArrayVector> basisValues;
   std::vector<double> basisCoefficients;
   sgpp::combigrid::SingleFunction weight_function;
   bool normalizeWeights;
@@ -36,11 +36,11 @@ class BSplineMixedQuadratureEvaluator : public AbstractLinearEvaluator<FloatScal
   double get1DMixedIntegral(std::vector<double> &points, size_t index_i, size_t index_j);
 
   void calculate1DMixedBSplineIntegrals(std::vector<double> &points,
-                                        std::vector<FloatScalarVector> &integrals);
+                                        std::vector<FloatArrayVector> &integrals);
 
  public:
-  BSplineMixedQuadratureEvaluator();
-  BSplineMixedQuadratureEvaluator(size_t degree);
+  BSplineQuadratureMixedEvaluator();
+  BSplineQuadratureMixedEvaluator(size_t degree);
 
   /**
    * @param numAdditionalPoints Specifies how many Gauss-Legrendre points should be used in addition
@@ -54,12 +54,12 @@ class BSplineMixedQuadratureEvaluator : public AbstractLinearEvaluator<FloatScal
    * to 1. This might be useful if the weight function is (or should be) a probability distribution
    * on the domain.
    */
-  BSplineMixedQuadratureEvaluator(size_t degree, sgpp::combigrid::SingleFunction weight_function,
+  BSplineQuadratureMixedEvaluator(size_t degree, sgpp::combigrid::SingleFunction weight_function,
                                   bool normalizeWeights = true, size_t numAdditionalPoints = 10);
-  BSplineMixedQuadratureEvaluator(BSplineMixedQuadratureEvaluator const &other);
-  virtual ~BSplineMixedQuadratureEvaluator();
+  BSplineQuadratureMixedEvaluator(BSplineQuadratureMixedEvaluator const &other);
+  virtual ~BSplineQuadratureMixedEvaluator();
 
-  std::vector<FloatScalarVector> getBasisValues() override { return integrals; }
+  std::vector<FloatArrayVector> getBasisValues() override { return basisValues; }
   std::vector<double> getBasisCoefficients() override { return basisCoefficients; }
 
   void setGridPoints(std::vector<double> const &newXValues) override;
@@ -67,14 +67,14 @@ class BSplineMixedQuadratureEvaluator : public AbstractLinearEvaluator<FloatScal
 
   bool needsOrderedPoints() override;
   bool needsParameter() override;
-  void setParameter(FloatScalarVector const &param) override;
+  void setParameter(FloatArrayVector const &param) override;
 
   // The following is simply copied from QuadratureEvaluator. Applicable here?
   // can be used as a measure of stability of the quadrature algorithm. Minimum (and optimum) in
   // case of normalized weights is 1.0, i.e. all weights are non-negative.
   //  double getAbsoluteWeightSum() const;
 
-  std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cloneLinear() override;
+  std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> cloneLinear() override;
 };
 
 #endif /* BSplineMIXEDQUADRATUREEVALUATOR_HPP_ */

@@ -24,7 +24,7 @@ namespace sgpp {
 namespace combigrid {
 
 template <typename V>
-class FullGridLinearSummationStrategy : public AbstractFullGridSummationStrategy<V> {
+class FullGridQuadraticSummationStrategy : public AbstractFullGridSummationStrategy<V> {
  protected:
  public:
   /**
@@ -36,13 +36,13 @@ class FullGridLinearSummationStrategy : public AbstractFullGridSummationStrategy
    * @param pointHierarchies PointHierarchy objects for each dimension providing the points for each
    * level and information about their ordering.
    */
-  FullGridLinearSummationStrategy(
+  FullGridQuadraticSummationStrategy(
       std::shared_ptr<AbstractCombigridStorage> storage,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> evaluatorPrototypes,
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies)
       : AbstractFullGridSummationStrategy<V>(storage, evaluatorPrototypes, pointHierarchies) {}
 
-  FullGridLinearSummationStrategy(
+  FullGridQuadraticSummationStrategy(
       std::shared_ptr<AbstractCombigridStorage> storage,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> evaluatorPrototypes,
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
@@ -50,13 +50,13 @@ class FullGridLinearSummationStrategy : public AbstractFullGridSummationStrategy
       : AbstractFullGridSummationStrategy<V>(storage, evaluatorPrototypes, pointHierarchies,
                                              gridFunction) {}
 
-  ~FullGridLinearSummationStrategy() {}
+  ~FullGridQuadraticSummationStrategy() {}
 
   /**
    * Evaluates the function given through the storage for a certain level-multi-index (see class
    * description).
-   * Summation of the form \sum_i \alpha_i \ basis_i(x)
-   * This is used for interpolation and quadratures
+   * Summation of the form \sum_i \alpha_i \sum_j \alpha_j basis_ij(x)
+   * This is used for variance calculations where basis_ij = \int basis_i(x) * basis_j(x) dx
    */
   V eval(MultiIndex const &level) {
     if (this->strategy == Strategy::grid_based) {
@@ -73,14 +73,14 @@ class FullGridLinearSummationStrategy : public AbstractFullGridSummationStrategy
 
     size_t paramIndex = 0;
 
-    // the basis coefficients for this level are stored
-    // the bounds for traversal are initialized given the number of points in each direction
-    // if not already stored, the evaluators for the given level are cloned and their parameter, if
-    // needed, is set
-    // the ordering configuration is created - it stores a boolean for each dimension expressing
-    // whether the corresponding evaluator needs sorted (ascending) points
+    // *the basis coefficients for this level are stored
+    // *the bounds for traversal are initialized given the number of points in each direction
+    // *if not already stored, the evaluators for the given level are cloned and their parameter, if
+    //  needed, is set
+    // *the ordering configuration is created - it stores a boolean for each dimension expressing
+    //  whether the corresponding evaluator needs sorted (ascending) points
 
-    // init evaluators and basis values, init multiBounds and orderingConfiguration
+    // initialize evaluators and basis values, initialize multiBounds and orderingConfiguration
     for (size_t d = 0; d < numDimensions; ++d) {
       size_t currentLevel = level[d];
       auto &currentEvaluators = this->evaluators[d];
@@ -110,7 +110,8 @@ class FullGridLinearSummationStrategy : public AbstractFullGridSummationStrategy
     // for all i up to n-1.
     // This way, we only have to multiply them with the values for the changing indices at each
     // iteration step.
-    // init partial products
+
+    // initialize partial products
     this->partialProducts[0] = V::one();
     for (size_t d = 1; d < numDimensions; ++d) {
       V value = this->partialProducts[d - 1];
@@ -122,27 +123,32 @@ class FullGridLinearSummationStrategy : public AbstractFullGridSummationStrategy
 
     // start iteration
     MultiIndexIterator it(multiBounds);
-    auto funcIter = this->storage->getGuidedIterator(level, it, orderingConfiguration);
+
+    auto funcIter_j = this->storage->getGuidedIterator(level, it, orderingConfiguration);
     V sum = V::zero();
 
     CGLOG("FullGridTensorEvaluator::eval(): start loop");
 
-    if (!funcIter->isValid()) {  // should not happen
+    if (!funcIter_j->isValid()) {  // should not happen
       return sum;
     }
 
+    // ToDo (rehmemk) Finish this!s
+
+    // get partial product and multiply them together with the last basis
+    // coefficient, multiply them with the i-coefficient and add the resulting value to the inner
+    // sum. Then get the j-coefficient, multiply it by the inner sum and add this to (the outer) sum
     while (true) {
       CGLOG("FullGridTensorEvaluator::eval(): in loop");
-      // get function value and partial product and multiply them together with the last basis
-      // coefficient, then add the resulting value to the total sum
-      double value = funcIter->value();
+
+      double value_j = funcIter_j->value();
       V vec = this->partialProducts[lastDim];
       vec.componentwiseMult(this->basisValues[lastDim][it.indexAt(lastDim)]);
-      vec.scalarMult(value);
+      vec.scalarMult(value_j);
       sum.add(vec);
 
       // increment iterator
-      int h = funcIter->moveToNext();
+      int h = funcIter_j->moveToNext();
 
       CGLOG("FullGridTensorEvaluator::eval(): moveToNext() == " << h);
 
@@ -161,6 +167,14 @@ class FullGridLinearSummationStrategy : public AbstractFullGridSummationStrategy
       }
     }
 
+    it.reset();
+    auto funcIter_i = this->storage->getGuidedIterator(level, it, orderingConfiguration);
+    // Multiply sum[i] by alpha_i
+    for (size_t i = 0; i < sum.size(); i++) {
+      double value_i = funcIter_i->value();
+      sum[i] *= value_i;
+      funcIter_i->moveToNext();
+    }
     return sum;
   }
 };
