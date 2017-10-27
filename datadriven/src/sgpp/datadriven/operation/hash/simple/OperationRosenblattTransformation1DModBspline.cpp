@@ -179,8 +179,8 @@ double OperationRosenblattTransformation1DModBspline::doTransformation1D(base::D
         double t = (x - left_coord) / h;
         return left_function_value * base::HermiteBasis::h_0_0(t) +
                h * tangents[0] * base::HermiteBasis::h_1_0(t) +
-               +right_function_value * base::HermiteBasis::h_0_1(t) +
-               +h * tangents[1] * base::HermiteBasis::h_1_1(t);
+               right_function_value * base::HermiteBasis::h_0_1(t) +
+               h * tangents[1] * base::HermiteBasis::h_1_1(t);
       };
       // std::cout << "interp from: " << left_coord << "to: " << right_coord << std::endl;
 

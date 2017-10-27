@@ -68,10 +68,11 @@ void OperationDensityMarginalize::doMarginalize(base::DataVector& alpha, base::G
       if (d == mdim) {
         mdimLevel = gp.getLevel(d);
         mdimIndex = gp.getIndex(d);
-      } else if (d < mdim)
+      } else if (d < mdim) {
         mgp.set(d, gp.getLevel(d), gp.getIndex(d));
-      else
+      } else{
         mgp.set(d - 1, gp.getLevel(d), gp.getIndex(d));
+      }
     }
     if (!mgs->isContaining(mgp))
       throw sgpp::base::operation_exception(
