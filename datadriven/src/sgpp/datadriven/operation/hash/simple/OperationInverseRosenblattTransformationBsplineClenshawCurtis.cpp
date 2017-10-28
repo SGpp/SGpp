@@ -58,9 +58,9 @@ void OperationInverseRosenblattTransformationBsplineClenshawCurtis::doTransforma
   }
 
 // 3. for every sample do...
-// #pragma omp parallel
-  // {
-// #pragma omp for schedule(dynamic)
+#pragma omp parallel
+  {
+#pragma omp for schedule(dynamic)
     for (size_t i = 0; i < pointscdf->getNrows(); i++) {
       // transform the point in the current dimension
       size_t idim = startindices[i];
@@ -74,10 +74,11 @@ void OperationInverseRosenblattTransformationBsplineClenshawCurtis::doTransforma
 
       pointscdf->getRow(i, cdfs1d);
       points->getRow(i, coords1d);
+
       doTransformation_start_dimX(this->grid, alpha, idim, &cdfs1d, &coords1d);
       points->setRow(i, coords1d);
     }
-  // }
+  }
 // cleanup
   for (size_t idim = 0; idim < num_dims; idim++) {
     delete grids1d[idim];
@@ -95,9 +96,9 @@ void OperationInverseRosenblattTransformationBsplineClenshawCurtis::doTransforma
       op_factory::createOperationDensityMargTo1D(*this->grid));
   marg1d->margToDimX(alpha, g1d, a1d, dim_start);
 
-// #pragma omp parallel
-  // {
-// #pragma omp for schedule(dynamic)
+#pragma omp parallel
+  {
+#pragma omp for schedule(dynamic)
     for (size_t i = 0; i < pointscdf->getNrows(); i++) {
       // 2. 1D transformation on dim_start
 
@@ -112,7 +113,7 @@ void OperationInverseRosenblattTransformationBsplineClenshawCurtis::doTransforma
       doTransformation_start_dimX(this->grid, alpha, dim_start, &cdfs1d, &coords1d);
       points->setRow(i, coords1d);
     }
-  // }
+  }
 
   delete g1d;
   delete a1d;

@@ -10,12 +10,14 @@
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 #include <sgpp/base/tools/ClenshawCurtisTable.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
-
 #include <sgpp/globaldef.hpp>
 
+#include <algorithm>
 #include <cmath>
 #include <vector>
-#include <algorithm>
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 namespace sgpp {
 namespace base {
@@ -191,8 +193,13 @@ class BsplineClenshawCurtisBasis : public Basis<LT, IT> {
           x - static_cast<double>(i) + static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
           bsplineBasis.getDegree());
     } else {
+      double res = 0.0;
+#pragma omp critical
+      {
       constructKnots(l, i);
-      return nonUniformBSpline(x, bsplineBasis.getDegree(), 0);
+      res = nonUniformBSpline(x, bsplineBasis.getDegree(), 0);
+      }
+      return res;
     }
   }
 
@@ -209,8 +216,13 @@ class BsplineClenshawCurtisBasis : public Basis<LT, IT> {
           x - static_cast<double>(i) + static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
           bsplineBasis.getDegree());
     } else {
-      constructKnots(l, i);
-      return nonUniformBSplineDx(x, bsplineBasis.getDegree(), 0);
+      double res = 0.0;
+#pragma omp critical
+      {
+        constructKnots(l, i);
+        res = nonUniformBSplineDx(x, bsplineBasis.getDegree(), 0);
+      }
+      return res;
     }
   }
 
@@ -227,8 +239,13 @@ class BsplineClenshawCurtisBasis : public Basis<LT, IT> {
           x - static_cast<double>(i) + static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
           bsplineBasis.getDegree());
     } else {
+      double res = 0.0;
+#pragma omp critical
+      {
       constructKnots(l, i);
-      return nonUniformBSplineDxDx(x, bsplineBasis.getDegree(), 0);
+      res = nonUniformBSplineDxDx(x, bsplineBasis.getDegree(), 0);
+      }
+      return res;
     }
   }
 
@@ -246,6 +263,11 @@ class BsplineClenshawCurtisBasis : public Basis<LT, IT> {
     if (l == 0) {
       return bsplineBasis.getIntegral(0, i);
     }
+
+    double res = 0.0;
+
+#pragma omp critical
+    {
     const IT hInv = static_cast<IT>(1) << l;
     size_t degree = bsplineBasis.getDegree();
     size_t erster_abschnitt = std::max(0, -static_cast<int>(i - (degree + 1) / 2));
@@ -257,7 +279,6 @@ class BsplineClenshawCurtisBasis : public Basis<LT, IT> {
       integrationInitialized = true;
     }
     constructKnots(l, i);
-    double res = 0.0;
     for (size_t j = erster_abschnitt; j <= letzter_abschnitt; j++) {
       double left = std::max(0.0, xi[j]);
       double right = std::min(1.0, xi[j + 1]);
@@ -270,6 +291,7 @@ class BsplineClenshawCurtisBasis : public Basis<LT, IT> {
         temp_res += weights[c] * nonUniformBSpline(x, degree, 0);
       }
       res += h * temp_res;
+    }
     }
     return res;
   }
