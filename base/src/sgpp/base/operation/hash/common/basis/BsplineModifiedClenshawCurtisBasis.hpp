@@ -10,9 +10,9 @@
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 #include <sgpp/base/tools/ClenshawCurtisTable.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
-
 #include <sgpp/globaldef.hpp>
 
+#include <omp.h>
 #include <cmath>
 #include <vector>
 #include <algorithm>
@@ -46,12 +46,14 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
     } else if (degree % 2 == 0) {
       this->degree = degree - 1;
     }
+    omp_init_nest_lock(&xiLock);
   }
 
   /**
    * Destructor.
    */
   ~BsplineModifiedClenshawCurtisBasis() override {
+    omp_destroy_nest_lock(&xiLock);
   }
 
   /**
@@ -87,15 +89,18 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
     }
 
     const IT hInv = static_cast<IT>(1) << l;
-
+    double res = 0.0;
+    omp_set_nest_lock(&xiLock);
     if (i == 1) {
-      return modifiedBSpline(l, hInv, x, degree);
+      res = modifiedBSpline(l, hInv, x, degree);
     } else if (i == hInv - 1) {
-      return modifiedBSpline(l, hInv, 1.0 - x, degree);
+      res = modifiedBSpline(l, hInv, 1.0 - x, degree);
     } else {
       constructKnots(l, i, hInv);
-      return nonUniformBSpline(x, degree, 0);
+      res = nonUniformBSpline(x, degree, 0);
     }
+    omp_unset_nest_lock(&xiLock);
+    return res;
   }
 
   /**
@@ -111,15 +116,19 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
     }
 
     const IT hInv = static_cast<IT>(1) << l;
+    double res = 0.0;
 
+    omp_set_nest_lock(&xiLock);
     if (i == 1) {
-      return modifiedBSplineDx(l, hInv, x, degree);
+      res = modifiedBSplineDx(l, hInv, x, degree);
     } else if (i == hInv - 1) {
-      return -modifiedBSplineDx(l, hInv, 1.0 - x, degree);
+      res = -modifiedBSplineDx(l, hInv, 1.0 - x, degree);
     } else {
       constructKnots(l, i, hInv);
-      return nonUniformBSplineDx(x, degree, 0);
+      res = nonUniformBSplineDx(x, degree, 0);
     }
+    omp_unset_nest_lock(&xiLock);
+    return res;
   }
 
   /**
@@ -135,15 +144,19 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
     }
 
     const IT hInv = static_cast<IT>(1) << l;
+    double res = 0.0;
 
+    omp_set_nest_lock(&xiLock);
     if (i == 1) {
-      return modifiedBSplineDxDx(l, hInv, x, degree);
+      res = modifiedBSplineDxDx(l, hInv, x, degree);
     } else if (i == hInv - 1) {
-      return modifiedBSplineDxDx(l, hInv, 1.0 - x, degree);
+      res = modifiedBSplineDxDx(l, hInv, 1.0 - x, degree);
     } else {
       constructKnots(l, i, hInv);
-      return nonUniformBSplineDxDx(x, degree, 0);
+      res = nonUniformBSplineDxDx(x, degree, 0);
     }
+    omp_unset_nest_lock(&xiLock);
+    return res;
   }
 
   /**
@@ -162,17 +175,18 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
     if (l == 1) {
       return 1.0;
     }
+    double res = 0.0;
     const IT hInv = static_cast<IT>(1) << l;
     size_t erster_abschnitt = std::max(0, -static_cast<int>(i - (degree + 1) / 2));
     size_t letzter_abschnitt = std::min(degree, hInv + (degree + 1) / 2 - i - 1);
     size_t quadLevel = (degree + 1) / 2;
+    omp_set_nest_lock(&xiLock);
     if (!integrationInitialized) {
       sgpp::base::GaussLegendreQuadRule1D gauss;
       gauss.getLevelPointsAndWeightsNormalized(quadLevel, coordinates, weights);
       integrationInitialized = true;
     }
     constructKnots(l, i, hInv);
-    double res = 0.0;
     for (size_t j = erster_abschnitt; j <= letzter_abschnitt; j++) {
       // function eval changes the knots if i == 1 or i == hInv - 1; we have to reconstruct them
       if (i == 1 || i == hInv - 1) {
@@ -188,6 +202,7 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
       }
       res += h * temp_res;
     }
+    omp_unset_nest_lock(&xiLock);
     return res;
   }
 
@@ -198,6 +213,8 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
   std::vector<double> xi;
   /// reference to the Clenshaw-Curtis cache table
   ClenshawCurtisTable& clenshawCurtisTable;
+
+  omp_nest_lock_t xiLock;
 
   DataVector coordinates;
   DataVector weights;
