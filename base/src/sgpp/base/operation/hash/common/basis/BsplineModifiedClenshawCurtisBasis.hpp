@@ -12,10 +12,12 @@
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/globaldef.hpp>
 
-#include <omp.h>
 #include <cmath>
 #include <vector>
 #include <algorithm>
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 namespace sgpp {
 namespace base {
