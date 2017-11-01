@@ -22,7 +22,9 @@
 
 #include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator_1d.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineQuadratureEvaluator.hpp>
+
 #include <sgpp/combigrid/operation/onedim/CubicSplineInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/InterpolationCoefficientEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
@@ -166,6 +168,11 @@ std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::BSp
   return std::make_shared<BSplineInterpolationEvaluator>(degree);
 }
 
+std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::BSplineInterpolation1d(
+    size_t degree) {
+  return std::make_shared<BSplineInterpolationEvaluator_1d>(degree);
+}
+
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::quadrature() {
   return std::make_shared<QuadratureEvaluator>();
 }
@@ -176,8 +183,9 @@ CombiEvaluators::psiHermiteInterpolation() {
 }
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>
 CombiEvaluators::zetaHermiteInterpolation() {
-  return std::make_shared<ZetaHermiteInterpolationEvaluator>();}
-  
+  return std::make_shared<ZetaHermiteInterpolationEvaluator>();
+}
+
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::BSplineQuadrature(
     size_t degree) {
   return std::make_shared<BSplineQuadratureEvaluator>(degree);
@@ -229,14 +237,14 @@ std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::get
     evalType type) {
   switch (type) {
     case bSpline3:
-      std::cout << "bspline dim";
+
       return sgpp::combigrid::CombiEvaluators::BSplineInterpolation(3);
 
     case psi:
-    std::cout << "psi dim";
+
       return sgpp::combigrid::CombiEvaluators::psiHermiteInterpolation();
     case zeta:
-      std::cout << "zeta dim";
+
       return sgpp::combigrid::CombiEvaluators::zetaHermiteInterpolation();
     case linear:
       return sgpp::combigrid::CombiEvaluators::linearInterpolation();

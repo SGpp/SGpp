@@ -625,7 +625,6 @@ std::shared_ptr<CombigridOperation> auxiliaryBsplineFunctionMixed(
     auto coefficientTree = std::make_shared<sgpp::combigrid::TreeStorage<double>>(numDimensions);
     auto level = grid->getLevel();
 
-    
     std::vector<size_t> numGridPointsVec = grid->numPoints();
     size_t numGridPoints = 1;
     for (size_t i = 0; i < numGridPointsVec.size(); i++) {
@@ -657,20 +656,16 @@ std::shared_ptr<CombigridOperation> auxiliaryBsplineFunctionMixed(
       for (size_t dim = 0; dim < numDimensions; ++dim) {
         evalCopy[dim]->setParameter(sgpp::combigrid::FloatScalarVector(gridPoint[dim]));
 
-         
         auto basisValues1D = evalCopy[dim]->getBasisValues();
-        // faaaalsch
-        
+
         if (evalTypes[dim] == sgpp::combigrid::CombiEvaluators::evalType::zeta) {
-            
-        basisValues1D=evalCopy[dim]->getBasisValuesBSplineSpecial();
-      }
-      
+          basisValues1D = evalCopy[dim]->getBasisValuesBSplineSpecial();
+        }
+
         // basis values at gridPoint
         std::vector<double> basisValues1D_vec(basisValues1D.size());
         for (size_t i = 0; i < basisValues1D.size(); i++) {
           basisValues1D_vec[i] = basisValues1D[i].value();
-         
         }
 
         basisValues.push_back(basisValues1D_vec);
@@ -682,7 +677,11 @@ std::shared_ptr<CombigridOperation> auxiliaryBsplineFunctionMixed(
         double splineValue = 1.0;
         auto innerIndex = innerIter.getMultiIndex();
         for (size_t dim = 0; dim < numDimensions; ++dim) {
-         
+          /*if (evalTypes[dim] == sgpp::combigrid::CombiEvaluators::evalType::zeta){
+              continue;
+          }
+          */
+
           splineValue *= basisValues[dim][innerIndex[dim]];
         }
         A.set(ixEvalPoints, ixBasisFunctions, splineValue);
@@ -693,7 +692,7 @@ std::shared_ptr<CombigridOperation> auxiliaryBsplineFunctionMixed(
     sgpp::optimization::sle_solver::Auto solver;
     sgpp::optimization::Printer::getInstance().setVerbosity(-1);
     bool solved = solver.solve(sle, functionValues, coefficients_sle);
-
+/**
     std::cout << A.toString() << std::endl;
     std::cout << "fct: ";
     for (size_t i = 0; i < functionValues.size(); i++) {
@@ -705,7 +704,7 @@ std::shared_ptr<CombigridOperation> auxiliaryBsplineFunctionMixed(
     }
     std::cout << "\n";
     std::cout << "-------------------------------------------------------------------" << std::endl;
-
+*/
     if (!solved) {
       exit(-1);
     }
@@ -739,6 +738,23 @@ CombigridOperation::createExpUniformBoundaryBsplineInterpolation(size_t numDimen
   return auxiliaryBsplineFunction(numDimensions, func, gridType, operationType, dummygrowthfactor,
                                   degree);
 }
+
+std::shared_ptr<CombigridOperation>
+CombigridOperation::createExpUniformBoundaryBsplineInterpolation_1d(size_t numDimensions,
+                                                                 MultiFunction func,
+                                                                 size_t degree = 3) {
+
+
+
+    return std::make_shared<CombigridOperation>(
+            std::vector<std::shared_ptr<AbstractPointHierarchy>>(
+                numDimensions, CombiHierarchies::expUniformBoundary()),
+            std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>>(
+                numDimensions, CombiEvaluators::BSplineInterpolation1d(degree)),
+            std::make_shared<StandardLevelManager>(), func);
+
+}
+
 
 std::shared_ptr<CombigridOperation>
 CombigridOperation::createExpUniformBoundaryBsplineLinearInterpolation(size_t numDimensions,

@@ -303,13 +303,14 @@ class CombiCombigriddeBaarHardingBSpline:
             pysgpp.CombigridOperation.createExpUniformBoundaryBsplineInterpolation(
             self.d, self.func,self.degree)
 
+
+
         self.operation_psi = []
         self.operation_zeta = []
         for i in range(dim):
-            self.operation_psi.append(
+          self.operation_psi.append(
                 pysgpp.CombigridOperation.createExpUniformBoundaryBsplinePsiInterpolation(self.d,
-                                                                                         i,
-                                                                                         self.func,self.degree))
+                                                 i,  self.func,self.degree))
 
         for i in range(dim):
             self.operation_zeta.append(

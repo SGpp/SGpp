@@ -33,7 +33,7 @@ def estimatel2Error(n, dim, gridOpEval, targetFunc):
         point = pysgpp.DataVector(dim)
         for d in range(dim):
             point[d] = random.random()
-        #print(gridOpEval(point))
+        # print(gridOpEval(point))
         sum += (gridOpEval(point) - targetFunc(point)) ** 2
     sum = sum / n
     sum = np.sqrt(sum)
@@ -113,12 +113,10 @@ def calc_error_mixed_gradient(gridpoints, gridOpEval_container, func_container, 
     return errors
 
 
-
-
 # parabola between [0,1]
 def f1D(x):
-    #return -4 * ((x[0] - 0.5) ** 2) + 1
-    return x[0]
+    return -4 * ((x[0] - 0.5) ** 2) + 1
+    # return x[0]
 
 
 def f1D_grad(x):
@@ -127,7 +125,7 @@ def f1D_grad(x):
 
 def f2D(x):
     return 4 * x[0] * (1 - x[0]) * 4 * x[1] * (1 - x[1])
-    #return x[0]+x[1]
+    # return x[0]+x[1]
 
 
 def f2D_test(x):
@@ -231,10 +229,22 @@ def example_1D_psi(l):
 def example_1D_linear(l):
     func = pysgpp.multiFunc(f1D)
     d = 1
-    level = 1
+    level = l
     n_samples = 500
     operation = pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(
         d, func)
+    X, _, = generate1DGrid(500)
+    Y, gridpoints = calculate_grid_y_values(X, operation, level)
+    p.plot_1d_grid(X, Y, "$\linear$", gridpoints)
+
+
+def example_1d_bspline(l):
+    func = pysgpp.multiFunc(f1D)
+    d = 1
+    level = l
+    n_samples = 500
+    operation = pysgpp.CombigridOperation.createExpUniformBoundaryBsplineInterpolation_1d(
+        d, func, 3)
     X, _, = generate1DGrid(500)
     Y, gridpoints = calculate_grid_y_values(X, operation, level)
     p.plot_1d_grid(X, Y, "$\linear$", gridpoints)
@@ -348,7 +358,7 @@ def example_combicombigrid_2D_linear(l, func_standard):
     n_samples = 50
 
     operation = pysgpp.CombigridOperation.createExpUniformnakBsplineInterpolation(
-      d, func_standard)
+        d, func_standard)
     operation_wrap = operationwrapper(operation, level)
 
     p.plot2DGrid_operation(n_samples, level, operation, "de Baar & Harding")
@@ -385,32 +395,42 @@ def example_combicombigrid_2D_linear(l, func_standard):
 
 def example_combicombigrid_2D(l, func_collection):
     d = 2
-    level =4
+    level = 4
     n_samples = 50
     func_standard = func_collection.getFunction()
-    #operation = gC.CombiCombigriddeBaarHarding(func_collection, 2)
-    #operation=pysgpp.CombigridOperation.createExpUniformBoundaryBsplineZetaInterpolation(d,0,\
-    #          pysgpp.multiFunc(func_collection.getGradient([0])),1)
-    #operation=pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(d,
-    #pysgpp.multiFunc(func_standard))
-    #operation = HierachGridBSpline(2, 3, func_standard)
-    operation=gC.CombiCombigriddeBaarHardingBSpline(func_collection,2,1)
 
-    #operation = gC.CombiCombigriddeBaarHarding(func_collection, 2)
+    # operation=pysgpp.CombigridOperation.createExpUniformBoundaryBsplineInterpolation(d,\
+    #          pysgpp.multiFunc(func_standard),3)
+    # operation=pysgpp.CombigridOperation.createExpUniformBoundaryBsplineInterpolation_1d(d,\
+    #          pysgpp.multiFunc(func_standard),3)
+
+    # operation=pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(d,
+    # pysgpp.multiFunc(func_standard))
+    # operation = gC.HierachGridBSpline(2, 3, func_collection)
+    operation = gC.CombiCombigriddeBaarHardingBSpline(func_collection, 2, 3)
+    # operation = gC.CombiCombigriddeBaarHarding(func_collection, 2)
     operation_wrap = operationwrapper(operation, level)
+    operation_wrap_zeta = fctClass.getgradkfunc(operationwrapper(operation.operation_psi[0],
+                                                                 level), 0)
 
     # operation.operation_zeta for mixed
-    p.plot2DGrid_with_tangents(n_samples, level, operation,func_collection)
-    #p.plot2DContour(n_samples, level, operation)
+    p.plot2DGrid_with_tangents(n_samples, level, operation, func_collection)
+    # p.plot2DContour(n_samples, level, operation)
     plt.show()
+
+    def f(x):
+        return 0
 
     error = estimatel2Error(10000, 2, operation_wrap, func_standard)
 
-
+    error_on_gridpts = calc_error_on_gridpts(operation.getLevelManager().getAllGridPoints(),
+                                             operation_wrap_zeta,
+                                             f)
     mixgrad_error = calc_error_mixed_gradient(operation.getLevelManager().getAllGridPoints(),
-                                          fctClass.funcGradientCollection(operation_wrap,2),
-                                             func_collection, d)
+                                              fctClass.funcGradientCollection(operation_wrap, 2),
+                                              func_collection, d)
     # calculate error
+    print("max error on gridpoiunts" + str(error_on_gridpts))
     print("estimtaded l2 error for combicombihermite: " + str(error))
 
     print("mixed gradient error:" + str(mixgrad_error))
@@ -418,7 +438,7 @@ def example_combicombigrid_2D(l, func_collection):
 
 def geterrorfunc(func1, func2):
     def errorfunc(x):
-        return abs(func1(x) - func2(x))
+        return (func1(x) - func2(x))
 
     return errorfunc
 
@@ -440,9 +460,9 @@ def example_error_picewise(l, func_container, show=True):
     operation_list.append(gC.CombiFullGridHermite(func_container, 2))
     operation_list.append(gC.CombiFullGridLinear(func_container, 2))
     # operation_list.append(BaseLinearFullgrid(2, func_container, True))
-    #operation_list.append(gC.HierachGridBSpline(2, 3, func_container))
+    # operation_list.append(gC.HierachGridBSpline(2, 3, func_container))
     operation_list.append(pysgpp.CombigridOperation.createExpUniformBoundaryBsplineInterpolation(
-        2,func_standard,3))
+        2, func_standard, 5))
 
     text = ["Combilinear", "combiHermite", "linear", "CombiHermiteFull", "CombiLinearFull",
             "BSpline(3)"
@@ -481,10 +501,11 @@ def example_error_picewise(l, func_container, show=True):
         plt.show()
 
 
-def example_plot_error(func_collection, dim, maxlevel=5, x_axis_type="nr_gridpoints", title="",
-                       show=True,
-                       filename=None):
-
+def example_plot_error(func_collection,  dim, maxlevel=5,
+                                x_axis_type="nr_gridpoints",
+                                title="",
+                                show=True,
+                                filename=None):
     """
 
       Args:
@@ -503,7 +524,8 @@ def example_plot_error(func_collection, dim, maxlevel=5, x_axis_type="nr_gridpoi
     operations = []
 
     operations.append(gC.CombiCombigriddeBaarHarding(func_collection, dim))
-    operations.append(gC.CombiCombigriddeBaarHardingBSpline(func_collection, dim,1))
+    operations.append(gC.CombiCombigriddeBaarHardingBSpline(func_collection, dim, 3))
+    operations.append(gC.CombiCombigriddeBaarHardingBSpline(func_collection, dim, 5))
     operations.append(gC.CombiCombigridHermite(func_collection, dim))
     operations.append(pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(
         dim, func_standard))
@@ -514,14 +536,17 @@ def example_plot_error(func_collection, dim, maxlevel=5, x_axis_type="nr_gridpoi
     # operations.append(CombiFullGridHermite(func_collection, dim))
     # operations.append(CombiFullGridLinear(func_collection, dim))
     # operations.append(HierachGridBSpline(dim, 3, func_collection, True))
-    operations.append(gC.HierachGridBSpline(dim, 3, func_collection, False))
+    # operations.append(gC.HierachGridBSpline(dim, 3, func_collection, False))
     operations.append(pysgpp.CombigridOperation.createExpUniformBoundaryBsplineInterpolation(
         dim, func_standard, 3))
+    operations.append(pysgpp.CombigridOperation.createExpUniformBoundaryBsplineInterpolation(
+        dim, func_standard, 5))
 
     func_standard = func_collection.getFunction()
     labels = []
     labels.append("Gitter (de Baar und Harding)")
-    labels.append("Gitter (de Baar und Harding-BSplines(1))")
+    labels.append("Gitter (de Baar und Harding-BSplines(3))")
+    labels.append("Gitter (de Baar und Harding-BSplines(5))")
     labels.append("Gitter (Hermite)")
     labels.append("lineares Gitter")
     labels.append("Gitter (Hermite) ohne gemischte Abl.")
@@ -531,8 +556,10 @@ def example_plot_error(func_collection, dim, maxlevel=5, x_axis_type="nr_gridpoi
     # labels.append("HermiteFullgrid")
     # labels.append("CombiLinearFullgrid")
     # labels.append("BSpline-Grid-Full")
-    labels.append("Base_BSpline-Grid(Grad 3)")
+
+    # labels.append("Base_BSpline-Grid(Grad 3)")
     labels.append("BSpline-Grid(Grad 3)")
+    labels.append("BSpline-Grid(Grad 5)")
 
     X = np.zeros((maxlevel - 1, len(operations)))
     Y = np.zeros((maxlevel - 1, len(operations)), dtype=np.float64)
@@ -572,8 +599,6 @@ def loadandplot(X_name, Y_name, dirname, labelname, title, x_axis_type="nr_gridp
 def example_plot_error_gradients(func_collection, dim, grad_index_list, maxlevel=5,
                                  x_axis_type="nr_gridpoints",
                                  title="", filename=None, show=True):
-
-
     """
 
       Args:
@@ -584,15 +609,13 @@ def example_plot_error_gradients(func_collection, dim, grad_index_list, maxlevel
           each operation by level
       """
 
-
-
-
     func_standard = pysgpp.multiFunc(func_collection.getFunction())
 
     operations = []
 
     operations.append(gC.CombiCombigriddeBaarHarding(func_collection, dim))
-    operations.append(gC.CombiCombigriddeBaarHardingBSpline(func_collection, dim,1))
+    operations.append(gC.CombiCombigriddeBaarHardingBSpline(func_collection, dim, 3))
+    operations.append(gC.CombiCombigriddeBaarHardingBSpline(func_collection, dim, 5))
     operations.append(gC.CombiCombigridHermite(func_collection, dim))
     operations.append(pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(
         dim, func_standard))
@@ -604,14 +627,16 @@ def example_plot_error_gradients(func_collection, dim, grad_index_list, maxlevel
     # operations.append(CombiFullGridLinear(func_collection, dim))
     # operations.append(gC.CombiFullGridHermite_withoutmixed(func_collection, dim))
     # operations.append(HierachGridBSpline(dim, 3, func_collection, True))
-    operations.append(gC.HierachGridBSpline(dim, 3, func_collection, False))
+    # operations.append(gC.HierachGridBSpline(dim, 3, func_collection, False))
     operations.append(pysgpp.CombigridOperation.createExpUniformBoundaryBsplineInterpolation(
-          dim,func_standard,3))
-
+        dim, func_standard, 3))
+    operations.append(pysgpp.CombigridOperation.createExpUniformBoundaryBsplineInterpolation(
+        dim, func_standard, 5))
 
     labels = []
     labels.append("Gitter (de Baar und Harding)")
-    labels.append("Gitter (de Baar und Harding BSplines(1))")
+    labels.append("Gitter (de Baar und Harding) BSplines(3)")
+    labels.append("Gitter (de Baar und Harding) BSplines(5)")
     labels.append("Gitter (Hermite)")
     labels.append("lineares Gitter")
     labels.append("Gitter (Hermite) ohne gemischte Abl.")
@@ -621,8 +646,9 @@ def example_plot_error_gradients(func_collection, dim, grad_index_list, maxlevel
     # labels.append("HermiteFullgrid")
     # labels.append("CombiLinearFullgrid")
     # labels.append("BSpline-Grid-Full")
-    labels.append("Base_BSpline-Grid(Grad 3)")
+    # labels.append("Base_BSpline-Grid(Grad 3)")
     labels.append("BSpline-Grid(Grad 3)")
+    labels.append("BSpline-Grid(Grad 5)")
 
     X = np.zeros((maxlevel - 1, len(operations)))
     Y = np.zeros((maxlevel - 1, len(operations)), dtype=np.float64)
@@ -670,7 +696,7 @@ def example_calcl2error(func_container, name, level, dim, fct=True, grad_index=[
                                      show=False)
 
 
-def plot_l2error(name, fct=True, grad_index=[],x_axis_type="nr_gridpoints"):
+def plot_l2error(name, fct=True, grad_index=[], x_axis_type="nr_gridpoints"):
     filename = name
     if (fct):
         loadandplot("X_values.data", "Y_values.data", filename, "labels.txt", title=filename,
@@ -696,14 +722,15 @@ def examples_1d():
     # example_1D_realfunction()
     # example_1D_psi(1)
 
-    # example_1D_linear(1)
+    example_1D_linear(3)
+    example_1d_bspline(3)
 
     # example_1D_zeta(2)
     # example_combicombigrid_1D(2)
     plt.show()
 
-def examples_2d():
 
+def examples_2d():
     dim = 2
 
     func = pysgpp.OptBraninObjective()
@@ -713,26 +740,25 @@ def examples_2d():
 
     # example_2D_psi()
     # example_2D_linear(2,func_standard)
-    #example_combicombigrid_2D_linear(2, func_standard)  # with "contourplot"
+    # example_combicombigrid_2D_linear(2, func_standard)  # with "contourplot"
     # print()
 
     testclass = fctClass.funcGradientCollection(func_standard, 2)
 
     func_container = fctClass.funcGradientCollectionSymbolic(fctClass.BraninSymbolic(), 2)
 
-    #example_2D_comparison_function(func_container.getFunction(), "", show=False)
+    # example_2D_comparison_function(func_container.getFunction(), "", show=True)
 
     #example_combicombigrid_2D(3, func_container)
 
-    #example_calcl2error(func_container, "Values/Test/Branin/BSplines", 9, 2, grad_index=[[0], [1],
-     #                                                                                 [0, 1]],
-     #                 fct=True)
-    #plot_l2error("Values/Test/Branin/BSplines",grad_index=[[0],[1],[0,1]],fct=True)
+    example_calcl2error(func_container, "Values/Test/Branin/BSplinesnak", 14, 2, grad_index=[
+        [0], [1], [0, 1]], fct=True)
+    #plot_l2error("Values/Test/Branin/BSplinesnak",grad_index=[[0],[1],[0,1]],fct=True)
 
 
 
 
-    #example_error_picewise(2, func_container)
+    #example_error_picewise(3, func_container)
 
 
 def examples_multid():
@@ -740,12 +766,10 @@ def examples_multid():
 
     func_container = fctClass.funcGradientCollectionSymbolic(fctClass.RosenbrockSymbolic(4), dim)
 
-
-    plot_l2error("Values/RosenbrockBSplines_Test",grad_index=[[1],[1],[0,1]],fct=True)
-    #example_calcl2error(func_container, "Values/RosenbrockBSplines_Test", 5,dim,\
-    #grad_index=[[0,
-    #
-    # 1], [1]],fct=True)
+    #plot_l2error("Values/RosenbrockSymbolic_4d", grad_index=[[1], [1], [0, 1]], fct=True)
+    example_calcl2error(func_container, "Values/RosenbrockSymbolic_4d", 9,dim,\
+     grad_index=[[0,
+     1], [1]],fct=True)
 
     # func = pysgpp.OptRosenbrockObjective(dim)
     # func_wrap = getfuncwrapper(func)
@@ -753,11 +777,8 @@ def examples_multid():
     # func_standard = pysgpp.multiFunc(func_wrap)
 
 
-#examples_1d()
+# examples_1d()
 
-#examples_2d()
+examples_2d()
 
-examples_multid()
-
-
-
+# examples_multid()

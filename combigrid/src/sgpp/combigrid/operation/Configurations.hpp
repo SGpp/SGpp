@@ -78,6 +78,8 @@ class CombiEvaluators {
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cubicSplineInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> BSplineInterpolation(
       size_t degree);
+      static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> BSplineInterpolation1d(
+        size_t degree);
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> quadrature();
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> psiHermiteInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> zetaHermiteInterpolation();

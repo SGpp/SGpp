@@ -190,6 +190,8 @@ class CombigridOperation {
 
   static std::shared_ptr<CombigridOperation> createExpUniformBoundaryBsplineInterpolation(
       size_t numDimensions, MultiFunction func, size_t degree);
+  static std::shared_ptr<CombigridOperation> createExpUniformBoundaryBsplineInterpolation_1d(
+        size_t numDimensions, MultiFunction func, size_t degree);
 
   static std::shared_ptr<CombigridOperation> createExpClenshawCurtisBsplineInterpolation(
       size_t numDimensions, MultiFunction func, size_t degree);
