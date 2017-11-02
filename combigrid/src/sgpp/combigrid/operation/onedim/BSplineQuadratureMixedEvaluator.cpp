@@ -35,8 +35,8 @@ FloatArrayVector BSplineQuadratureMixedEvaluator::get1DMixedIntegral(std::vector
                                                                      size_t index_j) {
   FloatArrayVector sums;
   for (size_t index_i = 0; index_i < points.size(); index_i++) {
-    // performing Gauss-Legendre integration
-    size_t numGaussPoints = (degree + 1) / 2 + numAdditionalPoints;
+    // performing Gauss-Legendre integration with twice as many points as for the simple integrals
+    size_t numGaussPoints = 2 * ((degree + 1) / 2 + numAdditionalPoints);
     sgpp::base::DataVector roots;
     sgpp::base::DataVector quadratureweights;
     auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
