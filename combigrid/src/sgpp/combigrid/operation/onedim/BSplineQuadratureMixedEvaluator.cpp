@@ -28,56 +28,63 @@ namespace combigrid {
  * w.l.o.g. integrate over support of b_i because b_i*b_j is zero outside supp(b_i)
  * [ ToDo (rehmemk) but setting the segments depending on b_i AND b_j should speed up this
  * calculation!]
+ * ToDo (rehmemk) simply added a loop over index_i to calculate FloatArrayVectors instead of
+ * doubles. This vector-wise calculation can be optimized
  */
-double BSplineQuadratureMixedEvaluator::get1DMixedIntegral(std::vector<double>& points,
-                                                           size_t index_i, size_t index_j) {
-  // performing Gauss-Legendre integration
-  size_t numGaussPoints = (degree + 1) / 2 + numAdditionalPoints;
-  sgpp::base::DataVector roots;
-  sgpp::base::DataVector quadratureweights;
-  auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
+FloatArrayVector BSplineQuadratureMixedEvaluator::get1DMixedIntegral(std::vector<double>& points,
+                                                                     size_t index_j) {
+  FloatArrayVector sums;
+  for (size_t index_i = 0; index_i < points.size(); index_i++) {
+    // performing Gauss-Legendre integration
+    size_t numGaussPoints = (degree + 1) / 2 + numAdditionalPoints;
+    sgpp::base::DataVector roots;
+    sgpp::base::DataVector quadratureweights;
+    auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
 
-  double sum = 0.0;
-  std::vector<double> xi;
-  createNakKnots(xValues, degree, xi);
-  double bsplinevalue = 0.0;
+    double sum = 0.0;
+    std::vector<double> xi;
+    createNakKnots(xValues, degree, xi);
+    double bsplinevalue = 0.0;
 
-  if (xValues.size() == 1) {
-    numGaussPoints = 1;
-    quadRule.getLevelPointsAndWeightsNormalized(
-        std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
-    sum = 1.0 * this->weight_function(roots[0]) * quadratureweights[0];
-  } else if (xValues.size() < 9) {
-    quadRule.getLevelPointsAndWeightsNormalized(
-        std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
-    for (size_t i = 0; i < roots.getSize(); ++i) {
-      double x = roots[i];
-      bsplinevalue =
-          LagrangePolynomial(x, xValues, index_i) * LagrangePolynomial(x, xValues, index_j);
-      double integrand = bsplinevalue * this->weight_function(x);
-      sum += integrand * quadratureweights[i];
-    }
-  } else {
-    quadRule.getLevelPointsAndWeightsNormalized(
-        std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
-    size_t first_segment = std::max(degree, index_i);
-    size_t last_segment = std::min(xi.size() - degree - 1, index_i + degree + 1);
-    for (size_t segmentIndex = first_segment; segmentIndex < last_segment; segmentIndex++) {
-      double a = std::max(0.0, xi[segmentIndex]);
-      double b = std::min(1.0, xi[segmentIndex + 1]);
-      double width = b - a;
-
+    if (xValues.size() == 1) {
+      numGaussPoints = 1;
+      quadRule.getLevelPointsAndWeightsNormalized(
+          std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
+      sum = 1.0 * this->weight_function(roots[0]) * quadratureweights[0];
+    } else if (xValues.size() < 9) {
+      quadRule.getLevelPointsAndWeightsNormalized(
+          std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
       for (size_t i = 0; i < roots.getSize(); ++i) {
-        double x = a + width * roots[i];
+        double x = roots[i];
         bsplinevalue =
-            nonUniformBSpline(x, degree, index_i, xi) * nonUniformBSpline(x, degree, index_j, xi);
+            LagrangePolynomial(x, xValues, index_i) * LagrangePolynomial(x, xValues, index_j);
         double integrand = bsplinevalue * this->weight_function(x);
-        // multiply weights by length_old_interval / length_new_interval
-        sum += integrand * quadratureweights[i] * width;
+        sum += integrand * quadratureweights[i];
+      }
+    } else {
+      quadRule.getLevelPointsAndWeightsNormalized(
+          std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
+      size_t first_segment = std::max(degree, index_i);
+      size_t last_segment = std::min(xi.size() - degree - 1, index_i + degree + 1);
+      for (size_t segmentIndex = first_segment; segmentIndex < last_segment; segmentIndex++) {
+        double a = std::max(0.0, xi[segmentIndex]);
+        double b = std::min(1.0, xi[segmentIndex + 1]);
+        double width = b - a;
+
+        for (size_t i = 0; i < roots.getSize(); ++i) {
+          double x = a + width * roots[i];
+          bsplinevalue =
+              nonUniformBSpline(x, degree, index_i, xi) * nonUniformBSpline(x, degree, index_j, xi);
+          double integrand = bsplinevalue * this->weight_function(x);
+          // multiply weights by length_old_interval / length_new_interval
+          sum += integrand * quadratureweights[i] * width;
+        }
       }
     }
+    sums[index_i] = sum;
   }
-  return sum;
+
+  return sums;
 }
 
 /**
@@ -93,14 +100,10 @@ double BSplineQuadratureMixedEvaluator::get1DMixedIntegral(std::vector<double>& 
 void BSplineQuadratureMixedEvaluator::calculate1DMixedBSplineIntegrals(
     std::vector<double>& points, std::vector<FloatArrayVector>& basisValues) {
   size_t tempindex = 0;
-  for (size_t index_i = 0; index_i < points.size(); ++index_i) {
-    for (size_t index_j = 0; index_j < points.size(); ++index_j) {
-      basisValues[index_i][index_j] =
-          (FloatScalarVector(get1DMixedIntegral(points, index_i, index_j)));
-      tempindex++;
-    }
+  for (size_t index_j = 0; index_j < points.size(); ++index_j) {
+    basisValues.push_back(get1DMixedIntegral(points, index_j));
+    tempindex++;
   }
-  std::cout << "\n";
 }
 
 BSplineQuadratureMixedEvaluator::~BSplineQuadratureMixedEvaluator() {}
