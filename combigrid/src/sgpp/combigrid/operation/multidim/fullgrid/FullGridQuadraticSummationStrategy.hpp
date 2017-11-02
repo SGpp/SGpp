@@ -133,7 +133,7 @@ class FullGridQuadraticSummationStrategy : public AbstractFullGridSummationStrat
       return sum;
     }
 
-    // ToDo (rehmemk) Finish this!s
+    // ToDo (rehmemk) Finish this!
 
     // get partial product and multiply them together with the last basis
     // coefficient, multiply them with the i-coefficient and add the resulting value to the inner
@@ -172,7 +172,7 @@ class FullGridQuadraticSummationStrategy : public AbstractFullGridSummationStrat
     // Multiply sum[i] by alpha_i
     for (size_t i = 0; i < sum.size(); i++) {
       double value_i = funcIter_i->value();
-      sum[i] *= value_i;
+      sum[i].value() *= value_i;
       funcIter_i->moveToNext();
     }
     return sum;
