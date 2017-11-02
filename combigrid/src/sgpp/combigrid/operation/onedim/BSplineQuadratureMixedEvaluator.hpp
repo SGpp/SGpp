@@ -33,7 +33,7 @@ class BSplineQuadratureMixedEvaluator : public AbstractLinearEvaluator<FloatArra
   size_t numAdditionalPoints;  // additional gauss points used for a custom weight function
   size_t degree;
 
-  double get1DMixedIntegral(std::vector<double> &points, size_t index_i, size_t index_j);
+  FloatArrayVector get1DMixedIntegral(std::vector<double> &points, size_t index_j);
 
   void calculate1DMixedBSplineIntegrals(std::vector<double> &points,
                                         std::vector<FloatArrayVector> &integrals);

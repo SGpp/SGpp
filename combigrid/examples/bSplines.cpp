@@ -266,8 +266,8 @@ int main() {
   //  std::cout << " Total Runtime: " << watch.stop() << " s" << std::endl;
 
   // Integration
-  //  double integral = integrate(level, numDimensions, degree);
-  //  std::cout << "integral:  " << integral << std::endl;
+  double integral = integrate(level, numDimensions, degree);
+  std::cout << "integral:  " << integral << std::endl;
 
   // Integrate basis functions
   //  std::vector<double> integrals = integrateBasisFunctions(level, numDimensions, degree);
@@ -282,7 +282,7 @@ int main() {
 
   // Calculate variance (integral of func^2 respectively)
   double var = variance(level, numDimensions, degree);
-  std::cout << "variance: " << var << std::endl;
+  std::cout << "variance : " << var << "  (currently variance is simply integral(f^2)" << std::endl;
 
   return 0;
 }

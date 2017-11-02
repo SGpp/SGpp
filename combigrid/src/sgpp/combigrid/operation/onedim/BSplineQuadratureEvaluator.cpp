@@ -80,10 +80,10 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
  * as their points
  */
 void BSplineQuadratureEvaluator::calculate1DBSplineIntegrals(
-    std::vector<double>& points, std::vector<FloatScalarVector>& integrals) {
+    std::vector<double>& points, std::vector<FloatScalarVector>& basisValues) {
   // "weights" here are the integrals!
   for (size_t index = 0; index < points.size(); ++index) {
-    integrals.push_back(FloatScalarVector(get1DIntegral(points, index)));
+    basisValues.push_back(FloatScalarVector(get1DIntegral(points, index)));
   }
 }
 
@@ -95,22 +95,22 @@ bool BSplineQuadratureEvaluator::needsParameter() { return false; }
 
 void BSplineQuadratureEvaluator::setGridPoints(std::vector<double> const& newXValues) {
   xValues = newXValues;
-  integrals.clear();
-  calculate1DBSplineIntegrals(xValues, integrals);
+  basisValues.clear();
+  calculate1DBSplineIntegrals(xValues, basisValues);
 
   if (normalizeWeights) {
     double sum = 0.0;
 
     // multiply the weights with the weight function
-    for (size_t i = 0; i < integrals.size(); ++i) {
+    for (size_t i = 0; i < basisValues.size(); ++i) {
       // weights[i].scalarMult(weight_function(xValues[i]));
-      sum += integrals[i].getValue();
+      sum += basisValues[i].getValue();
     }
 
     double sumInv = 1.0 / sum;
 
-    for (size_t i = 0; i < integrals.size(); ++i) {
-      integrals[i].scalarMult(sumInv);
+    for (size_t i = 0; i < basisValues.size(); ++i) {
+      basisValues[i].scalarMult(sumInv);
     }
   }
 }
@@ -146,7 +146,7 @@ BSplineQuadratureEvaluator::BSplineQuadratureEvaluator(
 
 BSplineQuadratureEvaluator::BSplineQuadratureEvaluator(BSplineQuadratureEvaluator const& other)
     : xValues(other.xValues),
-      integrals(other.integrals),
+      basisValues(other.basisValues),
       weight_function(other.weight_function),
       normalizeWeights(other.normalizeWeights),
       isCustomWeightFunction(other.isCustomWeightFunction),
