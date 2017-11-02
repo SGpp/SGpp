@@ -40,7 +40,7 @@
 #include <vector>
 
 double f(sgpp::base::DataVector const& v) {
-  return 1;
+  return v[0] * v[1];
   //  return v[0] * sin(v[0] + v[1]) * exp(v[1] * v[2]);
   //    return v[0] * sin(v[1]) ;
   //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
@@ -242,11 +242,18 @@ double variance(size_t level, size_t numDimensions, size_t degree) {
 
   size_t maxLevelSum = 2;
   levelManager->addRegularLevels(maxLevelSum);
-  return 0.0;
+  sgpp::combigrid::FloatArrayVector innerSums = combiGridEval->getValue();
+
+  double var = 0.0;
+  for (size_t i = 0; i < innerSums.size(); i++) {
+    var += innerSums[i].value();
+  }
+
+  return var;
 }
 
 int main() {
-  size_t numDimensions = 1;
+  size_t numDimensions = 2;
   size_t degree = 3;
   size_t level = 3;
 
