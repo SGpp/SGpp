@@ -130,10 +130,9 @@ class FullGridQuadraticSummationStrategy : public AbstractFullGridSummationStrat
     CGLOG("FullGridTensorEvaluator::eval(): start loop");
 
     if (!funcIter_j->isValid()) {  // should not happen
+      std::cerr << "iterator in FullGridQuadraticSummationStrategy.hpp was not valid!" << std::endl;
       return sum;
     }
-
-    // ToDo (rehmemk) Finish this!
 
     // get partial product and multiply them together with the last basis
     // coefficient, multiply them with the i-coefficient and add the resulting value to the inner
