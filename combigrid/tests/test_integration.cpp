@@ -134,6 +134,7 @@ double monte_carlo_quadrature(size_t numDims, sgpp::combigrid::MultiFunction& fu
   return mysum / static_cast<double>(numPoints);
 }
 
+#ifdef USE_DAKOTA
 void testTensorOperation(std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> tensor_op,
                          size_t level, size_t numDims) {
   // compute variance of the estimator
@@ -191,5 +192,7 @@ BOOST_AUTO_TEST_CASE(testVarianceComputationWithPCETransformation_ClenshawCurtis
     testTensorOperation(tensor_op, numDims + 1, numDims);
   }
 }
+
+#endif
 
 BOOST_AUTO_TEST_SUITE_END()
