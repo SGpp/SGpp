@@ -382,7 +382,7 @@ std::shared_ptr<CombigridOperation> CombigridOperation::auxiliaryBsplineFunction
     sgpp::optimization::Printer::getInstance().setVerbosity(-1);
     bool solved = solver.solve(sle, functionValues, coefficients_sle);
 
-    /*std::cout << A.toString() << std::endl;
+    std::cout << A.toString() << std::endl;
     std::cout << "fct: ";
     for (size_t i = 0; i < functionValues.size(); i++) {
       std::cout << functionValues[i] << " ";
@@ -393,7 +393,7 @@ std::shared_ptr<CombigridOperation> CombigridOperation::auxiliaryBsplineFunction
     }
     std::cout << "\n";
     std::cout << "--------" << std::endl;
-    */
+
     if (!solved) {
       exit(-1);
     }

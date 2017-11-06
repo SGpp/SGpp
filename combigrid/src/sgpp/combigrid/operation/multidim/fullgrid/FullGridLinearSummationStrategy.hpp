@@ -70,6 +70,7 @@ class FullGridLinearSummationStrategy : public AbstractFullGridSummationStrategy
 
       bool needsParam = this->evaluatorPrototypes[d]->needsParameter();
       bool needsOrdered = this->evaluatorPrototypes[d]->needsOrderedPoints();
+      std::cout << needsOrdered << std::endl;
 
       for (size_t l = currentEvaluators.size(); l <= currentLevel; ++l) {
         auto eval = this->evaluatorPrototypes[d]->cloneLinear();
@@ -119,6 +120,7 @@ class FullGridLinearSummationStrategy : public AbstractFullGridSummationStrategy
       // get function value and partial product and multiply them together with the last basis
       // coefficient, then add the resulting value to the total sum
       double value = funcIter->value();
+      //      std::cout << std::defaultfloat << value << " ";
       V vec = this->partialProducts[lastDim];
       vec.componentwiseMult(this->basisValues[lastDim][it.indexAt(lastDim)]);
       vec.scalarMult(value);
@@ -143,7 +145,7 @@ class FullGridLinearSummationStrategy : public AbstractFullGridSummationStrategy
         }
       }
     }
-
+    //    std::cout << "\n";
     return sum;
   }
 };

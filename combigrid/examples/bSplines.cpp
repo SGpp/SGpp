@@ -60,7 +60,7 @@ void interpolate(size_t maxlevel, size_t numDimensions, size_t degree, double& m
 
   double diff = 0.0;
   // generator generates num_points random points in [0,1]^numDimensions
-  size_t num_points = 10;
+  size_t num_points = 1000;
   sgpp::quadrature::NaiveSampleGenerator generator(numDimensions);
   sgpp::base::DataVector p(numDimensions, 0);
   std::vector<sgpp::base::DataVector> params;
@@ -69,37 +69,48 @@ void interpolate(size_t maxlevel, size_t numDimensions, size_t degree, double& m
     generator.getSample(p);
     params.push_back(p);
     diff = func(p) - operation->evaluate(maxlevel, p);
-    std::cout << diff << " ";
+    //    std::cout << diff << " ";
     max_err = (fabs(diff) > max_err) ? fabs(diff) : max_err;
     L2_err += diff * diff;
   }
-  std::cout << "\n";
+  //  std::cout << "\n";
   L2_err = sqrt(L2_err / static_cast<double>(num_points));
 
   //  std::cout << "# grid points: " << operation->numGridPoints() << " ";
 
-  auto multiOperation =
-      sgpp::combigrid::CombigridMultiOperation::createExpUniformBoundaryBsplineInterpolation(
-          numDimensions, func, degree);
-
   //  auto multiOperation =
-  //      sgpp::combigrid::CombigridMultiOperation::createLinearL2LejaPolynomialInterpolation(
-  //          numDimensions, func, 2);
-
-  double MultiL2_err = 0.0;
-  auto result = multiOperation->evaluate(maxlevel, params);
-  for (size_t i = 0; i < params.size(); ++i) {
-    diff = func(params[i]) - result[i];
-    std::cout << diff << " ";
-    MultiL2_err += diff * diff;
-  }
-  std::cout << "\n \n";
-
-  MultiL2_err = sqrt(MultiL2_err / static_cast<double>(num_points));
+  //      sgpp::combigrid::CombigridMultiOperation::createExpUniformBoundaryBsplineInterpolation(
+  //          numDimensions, func, degree);
+  //
+  //  //  auto multiOperation =
+  //  //      sgpp::combigrid::CombigridMultiOperation::createLinearL2LejaPolynomialInterpolation(
+  //  //          numDimensions, func, 2);
+  //
+  //  double MultiL2_err = 0.0;
+  //  auto result = multiOperation->evaluate(maxlevel, params);
+  //  for (size_t i = 0; i < params.size(); ++i) {
+  //    diff = func(params[i]) - result[i];
+  //    //    std::cout << diff << " ";
+  //    MultiL2_err += diff * diff;
+  //  }
+  //  //  std::cout << "\n \n";
+  //
+  //  MultiL2_err = sqrt(MultiL2_err / static_cast<double>(num_points));
 
   //  std::cout << std::scientific << maxlevel << " " << L2_err << " " << MultiL2_err << std::endl;
-}
+  std::cout << std::scientific << maxlevel << " " << L2_err << std::endl;
 
+  std::string plotstr = "/home/rehmemk/SGS_Sync/Plotting/combigrid_bsplines/interpolant.dat";
+  remove(plotstr.c_str());
+  std::ofstream plotfile;
+  plotfile.open(plotstr.c_str(), std::ios::app);
+  plotfile << "#Basis functions  \n";
+  for (double k = 0; k < num_points; k++) {
+    p[0] = k / (double)num_points;
+    plotfile << p[0] << ", " << operation->evaluate(maxlevel, p) << "\n";
+  }
+  plotfile.close();
+}
 /**
  * @param level level of the underlying 1D subspace
  * @return vector containing the integrals of all basisfunctions
@@ -149,7 +160,8 @@ double interpolate_and_integrate(size_t level, size_t numDimensions, size_t degr
 //  //  std::vector<std::shared_ptr<sgpp::combigrid::AbstractPointHierarchy>> pointHierarchies(
 //  //      numDimensions);
 //  //  std::vector<
-//  // std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatArrayVector>>>
+//  //
+//  std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatArrayVector>>>
 //  //      evaluators(numDimensions);
 //  //  evaluators[0] =
 //  //      std::make_shared<ArrayEvaluator<sgpp::combigrid::BSplineQuadratureMixedEvaluator>>;
@@ -167,7 +179,8 @@ double interpolate_and_integrate(size_t level, size_t numDimensions, size_t degr
 //    sgpp::combigrid::CombiEvaluators::Collection interpolEvaluators(
 //        numDimensions, sgpp::combigrid::CombiEvaluators::BSplineInterpolation(degree));
 //    size_t numDimensions = grid->getDimension();
-//    auto coefficientTree = std::make_shared<sgpp::combigrid::TreeStorage<double>>(numDimensions);
+//    auto coefficientTree =
+//    std::make_shared<sgpp::combigrid::TreeStorage<double>>(numDimensions);
 //    auto level = grid->getLevel();
 //    std::vector<size_t> numGridPointsVec = grid->numPoints();
 //    size_t numGridPoints = 1;
@@ -251,7 +264,8 @@ double interpolate_and_integrate(size_t level, size_t numDimensions, size_t degr
 //  // Kann keine normale CombigridOperation für MixedQuadrature nehmen, da CombigridOperation als
 //  // Templateparameter FloatScalarVector benutzt. MixedQuadrature benötigt jedoch
 //  FloarArrayVector.
-//  // Ist es sinnvoll CombigridOperation zu templatisieren? Es soll ja ein einfaches Interface für
+//  // Ist es sinnvoll CombigridOperation zu templatisieren? Es soll ja ein einfaches Interface
+//  für
 //  // die Operationen bieten. Gibt es noch andere Anwendungsfälle wo eine templatisierte Version
 //  von
 //  // Nutzen wäre?
@@ -291,8 +305,8 @@ int main() {
   // Interpolation
   sgpp::base::SGppStopwatch watch;
   watch.start();
-  size_t minLevel = 0;
-  size_t maxLevel = 7;
+  size_t minLevel = 1;
+  size_t maxLevel = 1;
 
   std::vector<double> maxErr(maxLevel + 1, 0);
   std::vector<double> L2Err(maxLevel + 1, 0);
