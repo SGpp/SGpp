@@ -9,16 +9,13 @@
 #include <sgpp/combigrid/common/MultiIndexIterator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
-#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp>
-#include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/threading/PtrGuard.hpp>
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
 
 #include <iostream>
 #include <vector>
-#include "AbstractFullGridEvaluationStrategy.hpp"
 
 namespace sgpp {
 namespace combigrid {
@@ -42,14 +39,6 @@ class FullGridLinearSummationStrategy : public AbstractFullGridSummationStrategy
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies)
       : AbstractFullGridSummationStrategy<V>(storage, evaluatorPrototypes, pointHierarchies) {}
 
-  FullGridLinearSummationStrategy(
-      std::shared_ptr<AbstractCombigridStorage> storage,
-      std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> evaluatorPrototypes,
-      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-      GridFunction gridFunction)
-      : AbstractFullGridSummationStrategy<V>(storage, evaluatorPrototypes, pointHierarchies,
-                                             gridFunction) {}
-
   ~FullGridLinearSummationStrategy() {}
 
   /**
@@ -58,13 +47,7 @@ class FullGridLinearSummationStrategy : public AbstractFullGridSummationStrategy
    * Summation of the form \sum_i \alpha_i \ basis_i(x)
    * This is used for interpolation and quadratures
    */
-  V eval(MultiIndex const &level) {
-    if (this->strategy == Strategy::grid_based) {
-      if (!this->precomputedLevels->containsIndex(level)) {
-        this->addResults(level, this->gridFunction(this->getTensorGrid2(level)));
-        this->precomputedLevels->set(level, 1);
-      }
-    }
+  V eval(MultiIndex const &level) override {
     CGLOG("FullGridTensorEvaluator::eval(): start");
     size_t numDimensions = this->evaluators.size();
     size_t lastDim = numDimensions - 1;

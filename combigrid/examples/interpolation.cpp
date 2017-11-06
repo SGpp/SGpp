@@ -143,12 +143,12 @@ void multistageInterpolation() {
 
   auto storage = std::make_shared<CombigridTreeStorage>(pointHierarchies, MultiFunction(dummyFunc));
 
-  auto summationStrategy =
-      std::make_shared<sgpp::combigrid::FullGridLinearSummationStrategy<FloatArrayVector>>(
+  auto fullGridEval =
+      std::make_shared<sgpp::combigrid::FullGridCallbackEvaluator<FloatArrayVector>>(
           storage, evaluators, pointHierarchies);
 
   auto combiGridEval =
-      std::make_shared<CombigridEvaluator<FloatArrayVector>>(numDimensions, summationStrategy);
+      std::make_shared<CombigridEvaluator<FloatArrayVector>>(numDimensions, fullGridEval);
 
   size_t maxLevelSum = 2;
 
@@ -158,7 +158,7 @@ void multistageInterpolation() {
   parameters[1] = FloatArrayVector(
       std::vector<FloatScalarVector>{FloatScalarVector(0.7), FloatScalarVector(0.27)});
 
-  summationStrategy->setParameters(parameters);
+  fullGridEval->setParameters(parameters);
 
   // here, the callback function inserts the grid points to gridPoints
   auto levelManager = std::make_shared<sgpp::combigrid::AveragingLevelManager>(combiGridEval);
@@ -178,14 +178,13 @@ void multistageInterpolation() {
       pointHierarchies,
       MultiFunction([&funcLookup](DataVector const &param) { return funcLookup(param); }));
 
-  auto realSummationStrategy =
-      std::make_shared<sgpp::combigrid::FullGridLinearSummationStrategy<FloatArrayVector>>(
-          realStorage, evaluators, pointHierarchies);
-
+  auto realFullGridEval =
+      std::make_shared<sgpp::combigrid::FullGridCallbackEvaluator<FloatArrayVector>>(
+          storage, evaluators, pointHierarchies);
   auto realCombiGridEval =
-      std::make_shared<CombigridEvaluator<FloatArrayVector>>(numDimensions, realSummationStrategy);
+      std::make_shared<CombigridEvaluator<FloatArrayVector>>(numDimensions, realFullGridEval);
 
-  realSummationStrategy->setParameters(parameters);
+  realFullGridEval->setParameters(parameters);
   auto realLevelManager =
       std::make_shared<sgpp::combigrid::AveragingLevelManager>(realCombiGridEval);
   realLevelManager->addRegularLevels(maxLevelSum);
