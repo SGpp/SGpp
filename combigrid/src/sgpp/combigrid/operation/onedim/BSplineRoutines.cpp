@@ -131,6 +131,6 @@ void createNakKnots(std::vector<double> const& xValues, size_t const& degree,
   } else if (degree == 5) {
     createdeg5NakKnots(xValues, degree, xi);
   } else {
-    throw std::invalid_argument("only B-Spline degrees 1,3 and 5 supported");
+    throw std::invalid_argument("BSplineRoutines: only B-Spline degrees 1,3 and 5 supported");
   }
 }

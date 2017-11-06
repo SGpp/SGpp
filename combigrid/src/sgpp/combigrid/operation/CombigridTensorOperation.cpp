@@ -3,6 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/grid/distribution/ClenshawCurtisDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/UniformBoundaryPointDistribution.hpp>
@@ -12,19 +13,20 @@
 #include <sgpp/combigrid/grid/hierarchy/NonNestedPointHierarchy.hpp>
 #include <sgpp/combigrid/grid/ordering/ExponentialLevelorderPointOrdering.hpp>
 #include <sgpp/combigrid/grid/ordering/IdentityPointOrdering.hpp>
+#include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp>
-#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearSummationStrategy.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridCallbackEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridGridBasedEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
-#include <sgpp/combigrid/operation/CombigridOperation.hpp>
-#include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 
 #include <iostream>
 #include <vector>
@@ -40,12 +42,11 @@ class CombigridTensorOperationImpl {
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>> evaluatorPrototypes,
       std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage)
-      : storage(storage),
-        summationStrategy(new FullGridLinearSummationStrategy<FloatTensorVector>(
-            storage, evaluatorPrototypes, pointHierarchies)),
-        combiEval(
-            new CombigridEvaluator<FloatTensorVector>(pointHierarchies.size(), summationStrategy)),
-        levelManager(levelManager) {
+      : storage(storage), levelManager(levelManager) {
+    fullGridEval = std::make_shared<FullGridCallbackEvaluator<FloatTensorVector>>(
+        storage, evaluatorPrototypes, pointHierarchies, FullGridSummationStrategyType::LINEAR);
+    combiEval = std::make_shared<CombigridEvaluator<FloatTensorVector>>(pointHierarchies.size(),
+                                                                        fullGridEval);
     levelManager->setLevelEvaluator(combiEval);
   }
 
@@ -54,17 +55,17 @@ class CombigridTensorOperationImpl {
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>> evaluatorPrototypes,
       std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage,
       GridFunction gridFunc)
-      : storage(storage),
-        summationStrategy(new FullGridLinearSummationStrategy<FloatTensorVector>(
-            storage, evaluatorPrototypes, pointHierarchies, gridFunc)),
-        combiEval(
-            new CombigridEvaluator<FloatTensorVector>(pointHierarchies.size(), summationStrategy)),
-        levelManager(levelManager) {
+      : storage(storage), levelManager(levelManager) {
+    fullGridEval = std::make_shared<FullGridGridBasedEvaluator<FloatTensorVector>>(
+        storage, evaluatorPrototypes, pointHierarchies, gridFunc,
+        FullGridSummationStrategyType::LINEAR);
+    combiEval = std::make_shared<CombigridEvaluator<FloatTensorVector>>(pointHierarchies.size(),
+                                                                        fullGridEval);
     levelManager->setLevelEvaluator(combiEval);
   }
 
   std::shared_ptr<AbstractCombigridStorage> storage;
-  std::shared_ptr<AbstractFullGridSummationStrategy<FloatTensorVector>> summationStrategy;
+  std::shared_ptr<AbstractFullGridEvaluator<FloatTensorVector>> fullGridEval;
   std::shared_ptr<CombigridEvaluator<FloatTensorVector>> combiEval;
   std::shared_ptr<LevelManager> levelManager;
 };
@@ -96,7 +97,7 @@ CombigridTensorOperation::CombigridTensorOperation(
           gridFunc)) {}
 
 void CombigridTensorOperation::setParameters(const std::vector<FloatTensorVector> &params) {
-  impl->summationStrategy->setParameters(params);
+  impl->fullGridEval->setParameters(params);
   impl->combiEval->clear();
 }
 

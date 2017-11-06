@@ -58,6 +58,7 @@
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearSummationStrategy.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridQuadraticSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
@@ -78,10 +79,12 @@
 #include <sgpp/combigrid/threading/PtrGuard.hpp>
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
 
+#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridCallbackEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridGridBasedEvaluator.hpp>
 #include <sgpp/combigrid/utils/BinaryHeap.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
-#include "sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp"
-#include "sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp"
 
 #endif /* COMBIGRID_HPP_ */

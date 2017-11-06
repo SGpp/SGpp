@@ -9,7 +9,6 @@
 #include <sgpp/combigrid/common/MultiIndexIterator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
-#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/threading/PtrGuard.hpp>
@@ -17,14 +16,19 @@
 
 #include <iostream>
 #include <vector>
-#include "AbstractFullGridEvaluationStrategy.hpp"
 
 namespace sgpp {
 namespace combigrid {
 
+enum class FullGridSummationStrategyType { LINEAR, QUADRATIC };
+
 template <typename V>
-class AbstractFullGridSummationStrategy : public AbstractFullGridEvaluationStrategy<V> {
+class AbstractFullGridSummationStrategy {
  protected:
+  std::shared_ptr<AbstractCombigridStorage> storage;
+  std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> evaluatorPrototypes;
+  std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies;
+
   // partialProducts[i] stores the product of the first i basis values (corresponding to the current
   // multi-index) , i. e. partialProducts[0] = 1
   // partialProducts has Size numDimensions, since the product partialProducts[numDimensions] is
@@ -56,7 +60,9 @@ class AbstractFullGridSummationStrategy : public AbstractFullGridEvaluationStrat
       std::shared_ptr<AbstractCombigridStorage> storage,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> evaluatorPrototypes,
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies)
-      : AbstractFullGridEvaluationStrategy<V>(storage, evaluatorPrototypes, pointHierarchies),
+      : storage(storage),
+        evaluatorPrototypes(evaluatorPrototypes),
+        pointHierarchies(pointHierarchies),
         partialProducts(evaluatorPrototypes.size()),
         basisValues(evaluatorPrototypes.size()),
         evaluators(evaluatorPrototypes.size()),
@@ -64,21 +70,9 @@ class AbstractFullGridSummationStrategy : public AbstractFullGridEvaluationStrat
     // TODO(holzmudd): check for dimension equality
   }
 
-  AbstractFullGridSummationStrategy(
-      std::shared_ptr<AbstractCombigridStorage> storage,
-      std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> evaluatorPrototypes,
-      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-      GridFunction gridFunction)
-      : AbstractFullGridEvaluationStrategy<V>(storage, evaluatorPrototypes, pointHierarchies,
-                                              gridFunction),
-        partialProducts(evaluatorPrototypes.size()),
-        basisValues(evaluatorPrototypes.size()),
-        evaluators(evaluatorPrototypes.size()),
-        parameters(evaluatorPrototypes.size()) {
-    // TODO(holzmudd): check for dimension equality
-  }
+  virtual ~AbstractFullGridSummationStrategy() {}
 
-  ~AbstractFullGridSummationStrategy() {}
+  virtual V eval(MultiIndex const &level) = 0;
 
   /**
    * Sets the parameters for the evaluators. Each dimension in which the evaluator does not need a

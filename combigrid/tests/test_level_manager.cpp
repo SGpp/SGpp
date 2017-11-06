@@ -21,7 +21,7 @@
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
-#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearSummationStrategy.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridCallbackEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
@@ -111,12 +111,12 @@ BOOST_AUTO_TEST_CASE(testLevelManagerParallel) {
 
   auto storage = std::make_shared<CombigridTreeStorage>(pointHierarchies, MultiFunction(func));
 
-  auto summationStrategy =
-      std::make_shared<sgpp::combigrid::FullGridLinearSummationStrategy<FloatScalarVector>>(
+  auto fullGridEval =
+      std::make_shared<sgpp::combigrid::FullGridCallbackEvaluator<FloatScalarVector>>(
           storage, evaluators, pointHierarchies);
 
   auto combiGridEval =
-      std::make_shared<CombigridEvaluator<FloatScalarVector>>(numDimensions, summationStrategy);
+      std::make_shared<CombigridEvaluator<FloatScalarVector>>(numDimensions, fullGridEval);
 
   auto levelManager = std::make_shared<AveragingLevelManager>(combiGridEval);
 
@@ -126,12 +126,12 @@ BOOST_AUTO_TEST_CASE(testLevelManagerParallel) {
   parameters[0] = FloatScalarVector(0.378934);
   parameters[1] = FloatScalarVector(0.89340273);
 
-  summationStrategy->setParameters(parameters);
+  fullGridEval->setParameters(parameters);
   levelManager->addRegularLevelsParallel(maxLevelSum, 4);
   levelManager->addLevelsAdaptiveParallel(300, 4);
 
-  // std::cout << "test_level_manager: ";
-  // std::cout << std::abs(combiGridEval->getValue().getValue() -
-  //                       func(DataVector(std::vector<double>{0.378934, 0.89340273})))
-  //           << "\n";
+  std::cout << "test_level_manager: ";
+  std::cout << std::abs(combiGridEval->getValue().getValue() -
+                        func(DataVector(std::vector<double>{0.378934, 0.89340273})))
+            << "\n";
 }

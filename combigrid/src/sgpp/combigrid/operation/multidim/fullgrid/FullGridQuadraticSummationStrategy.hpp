@@ -9,7 +9,6 @@
 #include <sgpp/combigrid/common/MultiIndexIterator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
-#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
@@ -42,14 +41,6 @@ class FullGridQuadraticSummationStrategy : public AbstractFullGridSummationStrat
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies)
       : AbstractFullGridSummationStrategy<V>(storage, evaluatorPrototypes, pointHierarchies) {}
 
-  FullGridQuadraticSummationStrategy(
-      std::shared_ptr<AbstractCombigridStorage> storage,
-      std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> evaluatorPrototypes,
-      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-      GridFunction gridFunction)
-      : AbstractFullGridSummationStrategy<V>(storage, evaluatorPrototypes, pointHierarchies,
-                                             gridFunction) {}
-
   ~FullGridQuadraticSummationStrategy() {}
 
   /**
@@ -58,13 +49,7 @@ class FullGridQuadraticSummationStrategy : public AbstractFullGridSummationStrat
    * Summation of the form \sum_i \alpha_i \sum_j \alpha_j basis_ij(x)
    * This is used for variance calculations where basis_ij = \int basis_i(x) * basis_j(x) dx
    */
-  V eval(MultiIndex const &level) {
-    if (this->strategy == Strategy::grid_based) {
-      if (!this->precomputedLevels->containsIndex(level)) {
-        this->addResults(level, this->gridFunction(this->getTensorGrid2(level)));
-        this->precomputedLevels->set(level, 1);
-      }
-    }
+  V eval(MultiIndex const &level) override {
     CGLOG("FullGridTensorEvaluator::eval(): start");
     size_t numDimensions = this->evaluators.size();
     size_t lastDim = numDimensions - 1;
@@ -106,6 +91,18 @@ class FullGridQuadraticSummationStrategy : public AbstractFullGridSummationStrat
       }
     }
 
+    //    std::cout << "basisValues:" << std::endl;
+    //    for (size_t i = 0; i < this->basisValues.size(); i++) {
+    //      for (size_t j = 0; j < this->basisValues[i].size(); j++) {
+    //        FloatArrayVector bVline = this->basisValues[i][j];
+    //        for (size_t k = 0; k < bVline.size(); k++) {
+    //          std::cout << bVline[k] << " ";
+    //        }
+    //        std::cout << "\n";
+    //      }
+    //      std::cout << "---------------\n";
+    //    }
+
     // for efficient computation, the products over the first i evaluator coefficients are stored
     // for all i up to n-1.
     // This way, we only have to multiply them with the values for the changing indices at each
@@ -143,6 +140,13 @@ class FullGridQuadraticSummationStrategy : public AbstractFullGridSummationStrat
       double value_j = funcIter_j->value();
       V vec = this->partialProducts[lastDim];
       vec.componentwiseMult(this->basisValues[lastDim][it.indexAt(lastDim)]);
+
+      //      // DEBUGGING:
+      //      for (size_t vecindex = 0; vecindex < vec.size(); vecindex++) {
+      //        std::cout << vec[vecindex] << " ";
+      //      }
+      //      std::cout << "\n";
+
       vec.scalarMult(value_j);
       sum.add(vec);
 
@@ -169,10 +173,18 @@ class FullGridQuadraticSummationStrategy : public AbstractFullGridSummationStrat
     it.reset();
     auto funcIter_i = this->storage->getGuidedIterator(level, it, orderingConfiguration);
     // Multiply sum[i] by alpha_i
-    for (size_t i = 0; i < sum.size(); i++) {
-      double value_i = funcIter_i->value();
-      sum[i].value() *= value_i;
-      funcIter_i->moveToNext();
+    // or (size_t i = 0; i < sum.size(); i++) {
+    size_t i = 0;
+    int h = 0;
+    while (true) {
+      // TODO (rehmemk): fix it. use componentwiseMult?
+      //    	double value_i = funcIter_i->value();
+      //      vec.scalarMult(value);
+      //      sum.add(vec);
+      //      sum[i].value() *= value_i;
+      h = funcIter_i->moveToNext();
+      if (h < 0) break;
+      i++;
     }
     return sum;
   }
