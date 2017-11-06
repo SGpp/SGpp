@@ -80,4 +80,6 @@
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
 
+#include <sgpp/combigrid/pce/PolynomialChaosExpansion.hpp>
+
 #endif /* COMBIGRID_HPP_ */

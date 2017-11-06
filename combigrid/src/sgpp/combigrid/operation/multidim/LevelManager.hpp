@@ -317,6 +317,11 @@ class LevelManager {
   size_t numGridPoints() { return combiEval->getAllGridPoints().size(); }
 
   /**
+   * @return number of dimensions
+   */
+  size_t numDims() { return numDimensions; }
+
+  /**
    * @return the maximum number of grid points that have to be evaluated for a regular grid with
    * maximum multi-index L1 norm of q. For nested grids, this estimate should be exact.
    */

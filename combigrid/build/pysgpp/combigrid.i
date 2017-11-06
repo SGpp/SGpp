@@ -48,6 +48,8 @@
 %shared_ptr(sgpp::combigrid::InterpolationCoefficientEvaluator)
 %shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::InterpolationCoefficientEvaluator>)
 
+%shared_ptr(sgpp::combigrid::PolynomialChaosExpansion)
+
 %shared_ptr(sgpp::combigrid::AbstractCombigridStorage)
 %shared_ptr(sgpp::combigrid::CombigridTreeStorage)
 %shared_ptr(sgpp::combigrid::AbstractMultiStorage<double>)
@@ -162,6 +164,8 @@ namespace combigrid {
 %include "combigrid/src/sgpp/combigrid/grid/hierarchy/NestedPointHierarchy.hpp"
 %include "combigrid/src/sgpp/combigrid/grid/hierarchy/NonNestedPointHierarchy.hpp"
 %include "combigrid/src/sgpp/combigrid/grid/TensorGrid.hpp"
+
+%include "combigrid/src/sgpp/combigrid/pce/PolynomialChaosExpansion.hpp"
 
 %include "combigrid/src/sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp"
 
