@@ -48,55 +48,56 @@ double f(sgpp::base::DataVector const& v) {
 void interpolate(size_t maxlevel, size_t numDimensions, size_t degree, double& max_err,
                  double& L2_err) {
   sgpp::combigrid::MultiFunction func(f);
+  max_err = 0.0;
+  L2_err = 0.0;
   auto operation =
       sgpp::combigrid::CombigridOperation::createExpUniformBoundaryBsplineInterpolation(
           numDimensions, func, degree);
 
   //  auto operation =
-  //      sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
-  //          numDimensions, func);
+  //  sgpp::combigrid::CombigridOperation::createLinearL2LejaPolynomialInterpolation(
+  //      numDimensions, func, 2);
 
   double diff = 0.0;
   // generator generates num_points random points in [0,1]^numDimensions
-  size_t num_points = 1000;
+  size_t num_points = 10;
   sgpp::quadrature::NaiveSampleGenerator generator(numDimensions);
   sgpp::base::DataVector p(numDimensions, 0);
-
-  for (size_t i = 0; i < num_points; i++) {
-    generator.getSample(p);
-    diff = fabs(operation->evaluate(maxlevel, p) - f(p));
-    max_err = (diff > max_err) ? diff : max_err;
-  }
-  L2_err = sqrt(L2_err / static_cast<double>(num_points));
-
-  //  std::cout << "# grid points: " << operation->numGridPoints() << " ";
-
   std::vector<sgpp::base::DataVector> params;
+
   for (size_t i = 0; i < num_points; i++) {
     generator.getSample(p);
     params.push_back(p);
-    L2_err += pow(diff, 2);
+    diff = func(p) - operation->evaluate(maxlevel, p);
+    std::cout << diff << " ";
+    max_err = (fabs(diff) > max_err) ? fabs(diff) : max_err;
+    L2_err += diff * diff;
   }
-  L2_err = L2_err / (double)num_points;
+  std::cout << "\n";
+  L2_err = sqrt(L2_err / static_cast<double>(num_points));
+
+  //  std::cout << "# grid points: " << operation->numGridPoints() << " ";
 
   auto multiOperation =
       sgpp::combigrid::CombigridMultiOperation::createExpUniformBoundaryBsplineInterpolation(
           numDimensions, func, degree);
 
   //  auto multiOperation =
-  //      sgpp::combigrid::CombigridMultiOperation::createExpClenshawCurtisPolynomialInterpolation(
-  //          numDimensions, func);
+  //      sgpp::combigrid::CombigridMultiOperation::createLinearL2LejaPolynomialInterpolation(
+  //          numDimensions, func, 2);
 
   double MultiL2_err = 0.0;
   auto result = multiOperation->evaluate(maxlevel, params);
   for (size_t i = 0; i < params.size(); ++i) {
     diff = func(params[i]) - result[i];
+    std::cout << diff << " ";
     MultiL2_err += diff * diff;
   }
+  std::cout << "\n \n";
 
-  MultiL2_err = sqrt(MultiL2_err / (double)params.size());
+  MultiL2_err = sqrt(MultiL2_err / static_cast<double>(num_points));
 
-  std::cout << std::scientific << maxlevel << " " << L2_err << " " << MultiL2_err << std::endl;
+  //  std::cout << std::scientific << maxlevel << " " << L2_err << " " << MultiL2_err << std::endl;
 }
 
 /**
