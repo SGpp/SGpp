@@ -6,7 +6,7 @@
 #include <sgpp/combigrid/functions/MonomialFunctionBasis1D.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
-#include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
+#include <sgpp/combigrid/pce/PolynomialChaosExpansion.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
@@ -42,27 +42,30 @@ int main() {
 
   auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
 
-  for (size_t q = 0; q <= 8; ++q) {
+  for (size_t q = 0; q < 8; ++q) {
     // interpolate on adaptively refined grid
     auto op = sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
         d, func);
     sgpp::combigrid::Stopwatch stopwatch;
     stopwatch.start();
     op->getLevelManager()->addRegularLevels(q);
-    op->getLevelManager()->addLevelsAdaptive(1000);
+    //    op->getLevelManager()->addLevelsAdaptive(1000);
     stopwatch.log();
     // compute the variance
     stopwatch.start();
-    auto tensor_op =
-        sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
-            op->getPointHierarchies(), op->getStorage(), op->getLevelManager(), functionBasis);
-    auto tensor_result = tensor_op->getResult();
+    sgpp::combigrid::PolynomialChaosExpansion pce(op, functionBasis);
+    double mean = pce.mean();
+    double variance = pce.variance();
+    sgpp::base::DataVector sobol_indices;
+    pce.sobol_indices(sobol_indices);
     std::cout << "Time " << stopwatch.elapsedSeconds() / static_cast<double>(op->numGridPoints())
               << std::endl;
     std::cout << "---------------------------------------------------------" << std::endl;
     std::cout << "#gp = " << op->getLevelManager()->numGridPoints() << std::endl;
-    std::cout << "E(u) = " << tensor_result.get(sgpp::combigrid::MultiIndex(d, 0)) << std::endl;
-    std::cout << "Var(u) = " << std::pow(tensor_result.norm(), 2) << std::endl;
+    std::cout << "E(u) = " << mean << std::endl;
+    std::cout << "Var(u) = " << variance << std::endl;
+    std::cout << "Sobol indices = " << sobol_indices.toString() << std::endl;
+    std::cout << "Sum Sobol indices = " << sobol_indices.sum() << std::endl;
     std::cout << "---------------------------------------------------------" << std::endl;
   }
 }

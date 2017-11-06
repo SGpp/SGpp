@@ -235,7 +235,7 @@ CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
   auto tensorOperation = std::make_shared<CombigridTensorOperation>(
       pointHierarchies, evaluatorPrototypes, std::make_shared<StandardLevelManager>(), storage);
   auto levelStructure = levelManager->getLevelStructure();
-  tensorOperation->getLevelManager()->addLevelsFromStructureParallel(levelStructure);
+  tensorOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
 
   return tensorOperation;
 }
