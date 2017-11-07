@@ -18,7 +18,8 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
     : numDims(combigridOperation->numDims()),
       functionBasis(functionBasis),
       combigridOperation(combigridOperation),
-      expansionCoefficientsFlag(false) {
+      expansionCoefficientsFlag(false),
+      sobolIndicesFlag(false) {
   tensorOperation =
       sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
           combigridOperation->getPointHierarchies(), combigridOperation->getStorage(),
@@ -29,11 +30,11 @@ PolynomialChaosExpansion::~PolynomialChaosExpansion() {}
 
 double PolynomialChaosExpansion::value(sgpp::base::DataVector& x) {
   //  if (orthogPoly != nullptr) {
-  //#ifdef USE_DAKOTA
+  // #ifdef USE_DAKOTA
   //    Pecos::RealVector x_real(static_cast<int>(x.getSize()));
   //    sgpp::combigrid::sgppToDakota::convertDataVectorToRealVector(x, x_real);
   //    return static_cast<double>(orthogPoly->value(x_real));
-  //#endif
+  // #endif
   //  }
   combigridOperation->setParameters(x);
   return combigridOperation->getResult();
@@ -43,31 +44,33 @@ void PolynomialChaosExpansion::values(sgpp::base::DataMatrix& x, sgpp::base::Dat
   sgpp::base::DataVector xi(numDims);
   for (size_t i = 0; i < x.getNrows(); i++) {
     x.getRow(i, xi);
-    result[i] = value(xi);  // TODO: this is very slow; use multiEval instead
+    result[i] = value(xi);  // TODO (franzefn): this is very slow; use multiEval instead
   }
 }
 
 double PolynomialChaosExpansion::mean() {
   //  if (orthogPoly != nullptr) {
-  //#ifdef USE_DAKOTA
+  // #ifdef USE_DAKOTA
   //    return orthogPoly->mean();
-  //#endif
+  // #endif
   //  }
   if (!expansionCoefficientsFlag) {
     expansionCoefficients = tensorOperation->getResult();
+    expansionCoefficientsFlag = true;
   }
   return expansionCoefficients.get(sgpp::combigrid::MultiIndex(numDims, 0)).getValue();
 }
 
 double PolynomialChaosExpansion::variance() {
   //  if (orthogPoly != nullptr) {
-  //#ifdef USE_DAKOTA
+  // #ifdef USE_DAKOTA
   //    return orthogPoly->variance();
-  //#endif
+  // #endif
   //  }
   // PCE norm, i.e. variance (if using appropriate normalized orthogonal polynomials)
   if (!expansionCoefficientsFlag) {
     expansionCoefficients = tensorOperation->getResult();
+    expansionCoefficientsFlag = true;
   }
 
   double var = 0.0;
@@ -84,9 +87,28 @@ double PolynomialChaosExpansion::variance() {
   return var;
 }
 
-void PolynomialChaosExpansion::sobol_indices(sgpp::base::DataVector& sobol_indices) {
-  size_t num_sobol_indices = static_cast<size_t>(std::pow(2, numDims) - 1);
-  sobol_indices.resizeZero(num_sobol_indices);
+void PolynomialChaosExpansion::getComponentSobolIndices(
+    sgpp::base::DataVector& componentSobolIndices, bool normalized) {
+  if (!sobolIndicesFlag) {
+    computeComponentSobolIndices();
+    sobolIndicesFlag = true;
+  }
+  // copy sobol indices to output vector
+  componentSobolIndices.resize(sobolIndices.getSize());
+  componentSobolIndices.copyFrom(sobolIndices);
+
+  // divide all the entries by the variance to obtain the Sobol indices
+  if (normalized) {
+    double var = variance();
+    if (var > 1e-14) {
+      componentSobolIndices.mult(1. / var);
+    }
+  }
+}
+
+void PolynomialChaosExpansion::computeComponentSobolIndices() {
+  size_t numSobolIndices = static_cast<size_t>(std::pow(2, numDims) - 1);
+  sobolIndices.resizeZero(numSobolIndices);
 
   // load index vectors
   auto it = expansionCoefficients.getValues()->getStoredDataIterator();
@@ -95,7 +117,7 @@ void PolynomialChaosExpansion::sobol_indices(sgpp::base::DataVector& sobol_indic
     indexList.push_back(it->getMultiIndex());
   }
 
-  for (size_t i = 0; i < num_sobol_indices; i++) {
+  for (size_t i = 0; i < numSobolIndices; i++) {
     // loop over all the remaining basis functions
     for (std::vector<MultiIndex>::iterator it_ixlist = indexList.begin();
          it_ixlist != indexList.end();) {
@@ -126,15 +148,40 @@ void PolynomialChaosExpansion::sobol_indices(sgpp::base::DataVector& sobol_indic
         // can just contribute to one sobol index
         indexList.erase(it_ixlist);
         double coefficient = expansionCoefficients.get(multiIndex).value();
-        sobol_indices[i] += coefficient * coefficient;
+        sobolIndices[i] += coefficient * coefficient;
       } else {
         it_ixlist++;
       }
     }
   }
+}
+
+void PolynomialChaosExpansion::getTotalSobolIndices(sgpp::base::DataVector& totalSobolIndices,
+                                                    bool normalized) {
+  // compute the component sobol indices
+  if (!sobolIndicesFlag) {
+    computeComponentSobolIndices();
+    sobolIndicesFlag = true;
+  }
+
+  totalSobolIndices.resizeZero(numDims);
+  for (size_t idim = 0; idim < numDims; idim++) {
+    for (size_t iperm = 0; iperm < sobolIndices.size(); iperm++) {
+      // check if the current dimension is set in the current key of the sobol index
+      size_t isSet = ((iperm + 1) & (1 << idim)) >> idim;  // in {0, 1}
+      if (isSet == 1) {
+        totalSobolIndices[idim] += sobolIndices[iperm];
+      }
+    }
+  }
 
   // divide all the entries by the variance to obtain the Sobol indices
-  sobol_indices.mult(1. / variance());
+  if (normalized) {
+    double var = variance();
+    if (var > 1e-14) {
+      totalSobolIndices.mult(1. / variance());
+    }
+  }
 }
 
 } /* namespace combigrid */
