@@ -330,8 +330,6 @@ CombigridMultiOperation::createExpUniformBoundaryLinearInterpolation(size_t numD
       std::make_shared<StandardLevelManager>(), func);
 }
 
-// ToDo (rehmemk) This is wrong, Replace analogously to CombigridOperation::createExp....
-// by return auxiliaryBSpline(...)
 std::shared_ptr<CombigridMultiOperation>
 CombigridMultiOperation::createExpUniformBoundaryBsplineInterpolation(size_t numDimensions,
                                                                       MultiFunction func,
@@ -346,17 +344,6 @@ CombigridMultiOperation::createExpUniformBoundaryBsplineInterpolation(size_t num
   bool exploitNesting = false;
   return std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
       pointHierarchies, evaluators, levelManager, gf, exploitNesting);
-}
-
-// ToDo (rehmemk) check if this works correctly ( compare to MultiOperation Bspline Interpolation)
-std::shared_ptr<CombigridMultiOperation> CombigridMultiOperation::createBSplineQuadrature(
-    size_t numDimensions, MultiFunction func, size_t degree) {
-  return std::make_shared<CombigridMultiOperation>(
-      std::vector<std::shared_ptr<AbstractPointHierarchy>>(numDimensions,
-                                                           CombiHierarchies::expUniformBoundary()),
-      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>>(
-          numDimensions, CombiEvaluators::multiBSplineQuadrature(degree)),
-      std::make_shared<StandardLevelManager>(), func);
 }
 
 } /* namespace combigrid */

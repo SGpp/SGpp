@@ -31,18 +31,10 @@
 #include <vector>
 
 double f(sgpp::base::DataVector const& v) {
-  return v[0];
-  //    return v[0] * sin(v[1]) ;
+  return v[0] * v[0] * v[0] * v[0] + v[1] * v[1] * v[1] * v[1];
+  //  return v[0] * sin(v[0]);
   //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
   //         std::exp(v[0] * v[1] - 1);
-
-  //  double prod = 1.0;
-  //
-  //  for (size_t i = 0; i < v.getSize(); ++i) {
-  //    double x = v[i];
-  //    prod *= std::cos(-x * x / static_cast<double>((i + 1) * (i + 1)));
-  //  }
-  //  return prod;
 }
 
 void interpolate(size_t maxlevel, size_t numDimensions, size_t degree, double& max_err,
@@ -60,7 +52,7 @@ void interpolate(size_t maxlevel, size_t numDimensions, size_t degree, double& m
 
   double diff = 0.0;
   // generator generates num_points random points in [0,1]^numDimensions
-  size_t num_points = 5;
+  size_t num_points = 1000;
   sgpp::quadrature::NaiveSampleGenerator generator(numDimensions);
   sgpp::base::DataVector p(numDimensions, 0);
   std::vector<sgpp::base::DataVector> params;
@@ -95,8 +87,6 @@ void interpolate(size_t maxlevel, size_t numDimensions, size_t degree, double& m
 
   MultiL2_err = sqrt(MultiL2_err / static_cast<double>(num_points));
 
-  //  std::cout << "\n";
-  //  std::cout << std::scientific << maxlevel << " " << MultiL2_err << std::endl;
   std::cout << std::scientific << maxlevel << " " << L2_err << " " << MultiL2_err << std::endl;
 
   //  std::string plotstr = "/home/rehmemk/SGS_Sync/Plotting/combigrid_bsplines/interpolant.dat";
@@ -267,19 +257,8 @@ double interpolate_and_integrate(size_t level, size_t numDimensions, size_t degr
 //    return coefficientTree;
 //  });
 //
-//  // Kann keine normale CombigridOperation für MixedQuadrature nehmen, da CombigridOperation als
-//  // Templateparameter FloatScalarVector benutzt. MixedQuadrature benötigt jedoch
-//  FloarArrayVector.
-//  // Ist es sinnvoll CombigridOperation zu templatisieren? Es soll ja ein einfaches Interface
-//  für
-//  // die Operationen bieten. Gibt es noch andere Anwendungsfälle wo eine templatisierte Version
-//  von
-//  // Nutzen wäre?
-//  // Um die MixedQuadrature hier durchzuführen überspringe ich den Operation-Hilfsschritt und
-//  nutze
-//  // direkt addRegularLevels (setParameters in diesem Fall nicht nötig, da Quadratur)
-//
-//  // QUATSCH. Nutze MultiOperation!
+
+// Nutze MultiOperation, statt explizit addResults
 //
 //  auto summationStrategy = std::make_shared<
 //      sgpp::combigrid::FullGridQuadraticSummationStrategy<sgpp::combigrid::FloatArrayVector>>(
@@ -304,8 +283,8 @@ double interpolate_and_integrate(size_t level, size_t numDimensions, size_t degr
 //}
 
 int main() {
-  size_t numDimensions = 1;
-  size_t degree = 3;
+  size_t numDimensions = 2;
+  size_t degree = 5;
   size_t level = 3;
 
   // Interpolation

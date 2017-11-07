@@ -293,9 +293,7 @@ BOOST_AUTO_TEST_CASE(testLinearL2LejaPolynomialInterpolation) {
 
 BOOST_AUTO_TEST_CASE(testBsplinedeg3Interpolation) {
   std::cout << "-------------------------------------------" << std::endl;
-  std::cout << "B-Spline Interpolation, degree=3\n"
-               "(Levels 0,1 and 2 use Lagrange polynomials. This explains inconsistent errors)"
-            << std::endl;
+  std::cout << "B-Spline Interpolation, degree=3\n" << std::endl;
   auto func = MultiFunction(testFunction2);
   for (size_t d = 2; d <= 5; ++d) {
     std::cout << "- - - - - - - - - - - - - - " << std::endl;
@@ -305,10 +303,7 @@ BOOST_AUTO_TEST_CASE(testBsplinedeg3Interpolation) {
     for (size_t w = 2; w <= 8; ++w) {
       computeL2Error(d, w, ctInterpolator, func);
     }
-    auto ctQuadrature = CombigridMultiOperation::createBSplineQuadrature(d, func, 3);
-    for (size_t w = 2; w <= 8; ++w) {
-      computeQuadratureError(d, w, ctQuadrature, func);
-    }
+    // ToDo (rehmemk) write quadrature test for B-splines
   }
 }
 
