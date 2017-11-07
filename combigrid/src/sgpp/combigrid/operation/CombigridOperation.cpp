@@ -333,11 +333,14 @@ std::shared_ptr<CombigridOperation> CombigridOperation::auxiliaryBsplineFunction
       numGridPoints *= numGridPointsVec[i];
     }
 
+    std::vector<bool> orderingConfiguration;
+
     sgpp::combigrid::CombiEvaluators::Collection evalCopy(numDimensions);
     for (size_t dim = 0; dim < numDimensions; ++dim) {
       evalCopy[dim] = interpolEvaluators[dim]->cloneLinear();
       bool needsSorted = evalCopy[dim]->needsOrderedPoints();
       auto gridPoints = grids[dim]->getPoints(level[dim], needsSorted);
+      orderingConfiguration.push_back(needsSorted);
       evalCopy[dim]->setGridPoints(gridPoints);
     }
     sgpp::base::DataMatrix A(numGridPoints, numGridPoints);
@@ -346,8 +349,8 @@ std::shared_ptr<CombigridOperation> CombigridOperation::auxiliaryBsplineFunction
 
     // Creates an iterator that yields the multi-indices of all grid points in the grid.
     sgpp::combigrid::MultiIndexIterator it(grid->numPoints());
-    auto funcIter =
-        funcStorage->getGuidedIterator(level, it, std::vector<bool>(numDimensions, true));
+
+    auto funcIter = funcStorage->getGuidedIterator(level, it, orderingConfiguration);
 
     for (size_t ixEvalPoints = 0; funcIter->isValid(); ++ixEvalPoints, funcIter->moveToNext()) {
       auto gridPoint = grid->getGridPoint(funcIter->getMultiIndex());
@@ -382,6 +385,7 @@ std::shared_ptr<CombigridOperation> CombigridOperation::auxiliaryBsplineFunction
     sgpp::optimization::Printer::getInstance().setVerbosity(-1);
     bool solved = solver.solve(sle, functionValues, coefficients_sle);
 
+    /*
     std::cout << A.toString() << std::endl;
     std::cout << "fct: ";
     for (size_t i = 0; i < functionValues.size(); i++) {
@@ -393,6 +397,7 @@ std::shared_ptr<CombigridOperation> CombigridOperation::auxiliaryBsplineFunction
     }
     std::cout << "\n";
     std::cout << "--------" << std::endl;
+    */
 
     if (!solved) {
       exit(-1);
@@ -402,6 +407,26 @@ std::shared_ptr<CombigridOperation> CombigridOperation::auxiliaryBsplineFunction
     for (size_t vecIndex = 0; it.isValid(); ++vecIndex, it.moveToNext()) {
       coefficientTree->set(it.getMultiIndex(), coefficients_sle[vecIndex]);
     }
+    /* MultiIndex currentIndex = it.getMultiIndex();
+     std::cout << "Multi Index: ";
+     for (size_t k = 0; k < currentIndex.size(); k++) {
+       std::cout << currentIndex[k] << " ";
+     }
+     std::cout << "  Coeff: " << coefficients_sle[vecIndex] << std::endl;
+   }
+   it.reset();
+   auto someIter = funcStorage->getGuidedIterator(level, it, orderingConfiguration);
+   std::cout << "Coeff from Iter: ";
+   while (true) {
+     double value = someIter->value();
+     std::cout << value << " ";
+     int h = someIter->moveToNext();
+     if (h < 0) {
+       break;
+     }
+   }
+   std::cout << "\n";
+   */
 
     return coefficientTree;
   });

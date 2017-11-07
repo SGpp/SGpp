@@ -330,7 +330,7 @@ CombigridMultiOperation::createExpUniformBoundaryLinearInterpolation(size_t numD
 }
 
 // ToDo (rehmemk) This is wrong, Replace analogously to CombigridOperation::createExp....
-// by return auxiliary(...)
+// by return auxiliaryBSpline(...)
 std::shared_ptr<CombigridMultiOperation>
 CombigridMultiOperation::createExpUniformBoundaryBsplineInterpolation(size_t numDimensions,
                                                                       MultiFunction func,

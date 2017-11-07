@@ -31,7 +31,7 @@
 #include <vector>
 
 double f(sgpp::base::DataVector const& v) {
-  return v[0];
+  return v[0] * v[0] * v[0];
   //    return v[0] * sin(v[1]) ;
   //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
   //         std::exp(v[0] * v[1] - 1);
@@ -60,7 +60,7 @@ void interpolate(size_t maxlevel, size_t numDimensions, size_t degree, double& m
 
   double diff = 0.0;
   // generator generates num_points random points in [0,1]^numDimensions
-  size_t num_points = 1000;
+  size_t num_points = 1;
   sgpp::quadrature::NaiveSampleGenerator generator(numDimensions);
   sgpp::base::DataVector p(numDimensions, 0);
   std::vector<sgpp::base::DataVector> params;
@@ -78,14 +78,14 @@ void interpolate(size_t maxlevel, size_t numDimensions, size_t degree, double& m
 
   //  std::cout << "# grid points: " << operation->numGridPoints() << " ";
 
+  auto multiOperation =
+      sgpp::combigrid::CombigridMultiOperation::createExpUniformBoundaryBsplineInterpolation(
+          numDimensions, func, degree);
+
   //  auto multiOperation =
-  //      sgpp::combigrid::CombigridMultiOperation::createExpUniformBoundaryBsplineInterpolation(
-  //          numDimensions, func, degree);
-  //
-  //  //  auto multiOperation =
-  //  //      sgpp::combigrid::CombigridMultiOperation::createLinearL2LejaPolynomialInterpolation(
-  //  //          numDimensions, func, 2);
-  //
+  //      sgpp::combigrid::CombigridMultiOperation::createLinearL2LejaPolynomialInterpolation(
+  //          numDimensions, func, 2);
+
   //  double MultiL2_err = 0.0;
   //  auto result = multiOperation->evaluate(maxlevel, params);
   //  for (size_t i = 0; i < params.size(); ++i) {
@@ -96,20 +96,20 @@ void interpolate(size_t maxlevel, size_t numDimensions, size_t degree, double& m
   //  //  std::cout << "\n \n";
   //
   //  MultiL2_err = sqrt(MultiL2_err / static_cast<double>(num_points));
-
+  //
   //  std::cout << std::scientific << maxlevel << " " << L2_err << " " << MultiL2_err << std::endl;
-  std::cout << std::scientific << maxlevel << " " << L2_err << std::endl;
+  std::cout << std::scientific << "level " << maxlevel << " error " << L2_err << std::endl;
 
-  std::string plotstr = "/home/rehmemk/SGS_Sync/Plotting/combigrid_bsplines/interpolant.dat";
-  remove(plotstr.c_str());
-  std::ofstream plotfile;
-  plotfile.open(plotstr.c_str(), std::ios::app);
-  plotfile << "#Basis functions  \n";
-  for (double k = 0; k < num_points; k++) {
-    p[0] = k / (double)num_points;
-    plotfile << p[0] << ", " << operation->evaluate(maxlevel, p) << "\n";
-  }
-  plotfile.close();
+  //  std::string plotstr = "/home/rehmemk/SGS_Sync/Plotting/combigrid_bsplines/interpolant.dat";
+  //  remove(plotstr.c_str());
+  //  std::ofstream plotfile;
+  //  plotfile.open(plotstr.c_str(), std::ios::app);
+  //  plotfile << "#Basis functions  \n";
+  //  for (double k = 0; k < num_points; k++) {
+  //    p[0] = k / (double)num_points;
+  //    plotfile << p[0] << ", " << operation->evaluate(maxlevel, p) << "\n";
+  //  }
+  //  plotfile.close();
 }
 /**
  * @param level level of the underlying 1D subspace
@@ -305,8 +305,8 @@ int main() {
   // Interpolation
   sgpp::base::SGppStopwatch watch;
   watch.start();
-  size_t minLevel = 1;
-  size_t maxLevel = 1;
+  size_t minLevel = 0;
+  size_t maxLevel = 8;
 
   std::vector<double> maxErr(maxLevel + 1, 0);
   std::vector<double> L2Err(maxLevel + 1, 0);

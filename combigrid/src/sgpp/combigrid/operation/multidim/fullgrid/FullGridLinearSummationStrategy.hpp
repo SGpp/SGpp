@@ -69,11 +69,12 @@ class FullGridLinearSummationStrategy : public AbstractFullGridSummationStrategy
       auto &currentEvaluators = this->evaluators[d];
 
       bool needsParam = this->evaluatorPrototypes[d]->needsParameter();
+
       bool needsOrdered = this->evaluatorPrototypes[d]->needsOrderedPoints();
-      std::cout << needsOrdered << std::endl;
 
       for (size_t l = currentEvaluators.size(); l <= currentLevel; ++l) {
         auto eval = this->evaluatorPrototypes[d]->cloneLinear();
+
         eval->setGridPoints(this->pointHierarchies[d]->getPoints(l, needsOrdered));
         eval->setLevel(l);
         if (needsParam) {
@@ -81,6 +82,9 @@ class FullGridLinearSummationStrategy : public AbstractFullGridSummationStrategy
         }
         currentEvaluators.push_back(eval);
       }
+
+      // ToDo (rehmemk) solve mismatch between needsOrdered for grid points and iterator
+      //      needsOrdered = false;
       this->basisValues[d] = currentEvaluators[currentLevel]->getBasisValues();
       multiBounds[d] = this->pointHierarchies[d]->getNumPoints(currentLevel);
       orderingConfiguration[d] = needsOrdered;
@@ -106,9 +110,9 @@ class FullGridLinearSummationStrategy : public AbstractFullGridSummationStrategy
 
     // start iteration
     MultiIndexIterator it(multiBounds);
+
     auto funcIter = this->storage->getGuidedIterator(level, it, orderingConfiguration);
     V sum = V::zero();
-
     CGLOG("FullGridTensorEvaluator::eval(): start loop");
 
     if (!funcIter->isValid()) {  // should not happen

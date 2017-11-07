@@ -39,12 +39,31 @@ class FullGridGridBasedEvaluator : public AbstractFullGridEvaluationStrategy<V> 
   // We cannot use bool because that would involve vector<bool> problems...
   std::shared_ptr<TreeStorage<uint8_t>> precomputedLevels;
 
-  void addResults(MultiIndex const &level, std::shared_ptr<TreeStorage<double>> results) {
-    auto it = results->getStoredDataIterator();
+  //  void addResults(MultiIndex const &level, std::shared_ptr<TreeStorage<double>> results) {
+  //    auto it = results->getStoredDataIterator();
+  //
+  //    while (it->isValid()) {
+  //      this->storage->set(level, it->getMultiIndex(), it->value());
+  //      it->moveToNext();
+  //    }
+  //  }
 
-    while (it->isValid()) {
-      this->storage->set(level, it->getMultiIndex(), it->value());
-      it->moveToNext();
+  void addResults(MultiIndex const &level, std::shared_ptr<TreeStorage<double>> results) {
+    std::vector<bool> orderingConfiguration(this->evaluatorPrototypes.size());
+    for (size_t d = 0; d < this->evaluatorPrototypes.size(); ++d) {
+      orderingConfiguration[d] = this->evaluatorPrototypes[d]->needsOrderedPoints();
+    }
+    MultiIndex multiBounds(this->pointHierarchies.size());
+    for (size_t d = 0; d < multiBounds.size(); ++d) {
+      multiBounds[d] = this->pointHierarchies[d]->getNumPoints(level[d]);
+    }
+    MultiIndexIterator multiIt(multiBounds);
+
+    auto storageIt = this->storage->getGuidedIterator(level, multiIt, orderingConfiguration);
+
+    while (storageIt->isValid()) {
+      storageIt->value() = results->get(multiIt.getMultiIndex());
+      storageIt->moveToNext();
     }
   }
 
