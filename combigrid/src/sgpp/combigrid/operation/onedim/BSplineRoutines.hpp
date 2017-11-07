@@ -6,7 +6,16 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_BSPLINEROUTINES_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_BSPLINEROUTINES_HPP_
 
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/definitions.hpp>
+#include <sgpp/combigrid/operation/Configurations.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp>
+#include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
+#include <sgpp/optimization/sle/solver/Auto.hpp>
+#include <sgpp/optimization/sle/system/FullSLE.hpp>
+#include <sgpp/optimization/tools/Printer.hpp>
 
 /**
    * @param x     evaluation point
@@ -51,5 +60,12 @@ void createdeg5NakKnots(std::vector<double> const& xValues, size_t const& degree
 
 void createNakKnots(std::vector<double> const& xValues, size_t const& degree,
                     std::vector<double>& xi);
+
+// creates and returns a
+// Grid Function that calculates the coefficients for the B-Spline interpolation.
+// The coefficients for each B-Spline are saved in a TreeStorage encoded by a MultiIndex
+sgpp::combigrid::GridFunction BSplineCoefficientGridFunction(
+    sgpp::combigrid::MultiFunction func, sgpp::combigrid::CombiHierarchies::Collection grids,
+    size_t degree);
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_BSPLINEROUTINES_HPP_ */
