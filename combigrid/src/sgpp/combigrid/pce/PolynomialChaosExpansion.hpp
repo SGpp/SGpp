@@ -27,9 +27,14 @@ class PolynomialChaosExpansion {
 
   double mean();
   double variance();
-  void sobol_indices(sgpp::base::DataVector& sobol_indices);
+
+  void getComponentSobolIndices(sgpp::base::DataVector& componentSsobolIndices,
+                                bool normalized = true);
+  void getTotalSobolIndices(sgpp::base::DataVector& totalSobolIndices, bool normalized = true);
 
  private:
+  void computeComponentSobolIndices();
+
 #ifdef USE_DAKOTA
   std::shared_ptr<Pecos::OrthogPolyApproximation> orthogPoly;
 #endif
@@ -41,6 +46,9 @@ class PolynomialChaosExpansion {
 
   bool expansionCoefficientsFlag;
   sgpp::combigrid::FloatTensorVector expansionCoefficients;
+
+  bool sobolIndicesFlag;
+  sgpp::base::DataVector sobolIndices;
 };
 
 } /* namespace combigrid */
