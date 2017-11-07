@@ -111,17 +111,16 @@ void PolynomialChaosExpansion::computeComponentSobolIndices() {
   sobolIndices.resizeZero(numSobolIndices);
 
   // load index vectors
-  auto it = expansionCoefficients.getValues()->getStoredDataIterator();
+  auto it_coeffs = expansionCoefficients.getValues()->getStoredDataIterator();
   std::vector<MultiIndex> indexList;
-  for (; it->isValid(); it->moveToNext()) {
-    indexList.push_back(it->getMultiIndex());
+  for (; it_coeffs->isValid(); it_coeffs->moveToNext()) {
+    indexList.push_back(it_coeffs->getMultiIndex());
   }
 
   for (size_t i = 0; i < numSobolIndices; i++) {
     // loop over all the remaining basis functions
     for (std::vector<MultiIndex>::iterator it_ixlist = indexList.begin();
          it_ixlist != indexList.end();) {
-      // get multiIndex
       MultiIndex multiIndex = *it_ixlist;
 
       // check if all the current dimensions are set
