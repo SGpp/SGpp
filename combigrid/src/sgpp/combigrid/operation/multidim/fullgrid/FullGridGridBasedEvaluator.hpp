@@ -39,15 +39,6 @@ class FullGridGridBasedEvaluator : public AbstractFullGridEvaluationStrategy<V> 
   // We cannot use bool because that would involve vector<bool> problems...
   std::shared_ptr<TreeStorage<uint8_t>> precomputedLevels;
 
-  //  void addResults(MultiIndex const &level, std::shared_ptr<TreeStorage<double>> results) {
-  //    auto it = results->getStoredDataIterator();
-  //
-  //    while (it->isValid()) {
-  //      this->storage->set(level, it->getMultiIndex(), it->value());
-  //      it->moveToNext();
-  //    }
-  //  }
-
   void addResults(MultiIndex const &level, std::shared_ptr<TreeStorage<double>> results) {
     std::vector<bool> orderingConfiguration(this->evaluatorPrototypes.size());
     for (size_t d = 0; d < this->evaluatorPrototypes.size(); ++d) {
