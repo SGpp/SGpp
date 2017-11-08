@@ -3,22 +3,31 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
+import Helper
 import ModuleHelper
+import Helper
+import os
 
 Import("*")
 
 moduleDependencies = ["sgpppde", "sgppsolver", "sgppbase"]
 
 additionalDependencies = []
+additionalBoostTestDependencies = []
+        
+if env["USE_ZLIB"]:
+  additionalDependencies += ["z"]
 if env["USE_OCL"]:
-    additionalDependencies += ["OpenCL"]
+  additionalDependencies += ["OpenCL"]
+if env["USE_GSL"]:
+    additionalDependencies += ["gsl", "gslcblas"]
 
 additionalBoostTestDependencies = ["z"]
 performanceTestFlag = "COMPILE_BOOST_PERFORMANCE_TESTS"
 performanceTestRunFlag = "RUN_BOOST_PERFORMANCE_TESTS"
 
 if env[performanceTestFlag]:
-  additionalBoostTestDependencies.extend(["boost_filesystem", "boost_system"])
+    additionalBoostTestDependencies.extend(["boost_filesystem", "boost_system"])
 
 module = ModuleHelper.Module(moduleDependencies, additionalDependencies,
                              additionalBoostTestDependencies)
@@ -28,14 +37,21 @@ module.buildLibrary()
 module.generatePythonDocstrings()
 
 if env["ARCH"] == "mic":
-  module.buildExamples("examplesMIC")
+    module.buildExamples("examplesMIC")
 else:
-  module.buildExamples()
+    module.buildExamples()
 if env["USE_OCL"]:
-  module.buildExamples("examplesOCL",
-      additionalExampleDependencies=["boost_program_options",
-                                     "boost_filesystem",
-                                     "boost_system"])
+    module.buildExamples("examplesOCL",
+                         additionalExampleDependencies=["boost_program_options",
+                                                        "boost_filesystem",
+                                                        "boost_system"])
+if env["USE_MPI"] and env["USE_OCL"]:
+    module.buildExamples("examplesMPI")
+if (env["ARCH"].lower() == "avx2"):
+    module.buildExamples("examplesAVX")
+if env["USE_HPX"]:
+    module.buildExamples("examplesHPX")
+
 
 module.runPythonTests()
 module.buildBoostTests()

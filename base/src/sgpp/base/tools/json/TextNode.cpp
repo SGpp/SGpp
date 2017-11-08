@@ -7,9 +7,9 @@
 #include <sgpp/base/tools/json/json_exception.hpp>
 
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <sstream>
 
 namespace json {
 
@@ -31,61 +31,43 @@ Node& TextNode::operator=(const Node& right) {
 }
 
 void TextNode::setupInternalType() {
-  //    this->internalType = InternalIDType::ID;
-
   // try validating as bool
   if (this->value.compare("true") == 0) {
-    //        this->internalType = InternalIDType::BOOL;
     this->isBool = true;
     this->boolValue = true;
-    return;
   } else if (this->value.compare("false") == 0) {
-    //        this->internalType = InternalIDType::BOOL;
     this->isBool = true;
     this->boolValue = false;
-    return;
   }
-
-  // try validating as unsigned integer
-  try {
-    std::string::size_type size;
-    uint64_t asUnsigned = stoull(this->value, &size);
-
-    if (this->value.size() == size) {
+  {
+    std::stringstream conv_stream;
+    conv_stream << this->value;
+    uint64_t r;
+    conv_stream >> r;
+    if (!conv_stream.fail()) {
       this->isUnsigned = true;
-      this->unsignedValue = asUnsigned;
-      //            this->internalType = InternalIDType::UINT;
-      //      return;
+      this->unsignedValue = r;
     }
-  } catch (std::invalid_argument& e) {
   }
-
-  // try validating as signed integer
-  try {
-    std::string::size_type size;
-    int64_t asSigned = stoll(this->value, &size);
-
-    if (this->value.size() == size) {
+  {
+    std::stringstream conv_stream;
+    conv_stream << this->value;
+    int64_t r;
+    conv_stream >> r;
+    if (!conv_stream.fail()) {
       this->isSigned = true;
-      this->signedValue = asSigned;
-      //            this->internalType = InternalIDType::INT;
-      //      return;
+      this->signedValue = r;
     }
-  } catch (std::invalid_argument& e) {
   }
-
-  // try validating as double
-  try {
-    std::string::size_type size;
-    double asDouble = stod(this->value, &size);
-
-    if (this->value.size() == size) {
+  {
+    std::stringstream conv_stream;
+    conv_stream << this->value;
+    double r;
+    conv_stream >> r;
+    if (!conv_stream.fail()) {
       this->isDouble = true;
-      this->doubleValue = asDouble;
-      //            this->internalType = InternalIDType::DOUBLE;
-      //      return;
+      this->doubleValue = r;
     }
-  } catch (std::invalid_argument& e) {
   }
 }
 

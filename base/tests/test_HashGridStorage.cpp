@@ -195,6 +195,78 @@ BOOST_AUTO_TEST_CASE(testSeq) {
 
 BOOST_AUTO_TEST_SUITE_END()
 
+
+BOOST_AUTO_TEST_SUITE(TestHashGridStorageWithT)
+
+BOOST_AUTO_TEST_CASE(testLevelZeroWithT) {
+  HashGridStorage s(1);
+  HashGenerator g;
+
+  g.regular(s, 2, 0.0);
+
+  HashGridPoint i(1);
+
+  i.set(0, 1, 1);
+  i.getLeftLevelZero(0);
+
+  HashGridPoint::level_type l, l2 = 0;
+  HashGridPoint::index_type ind, ind2 = 0;
+
+  i.get(0, l, ind);
+  BOOST_CHECK_EQUAL(l, l2);
+  BOOST_CHECK_EQUAL(ind, ind2);
+
+  ind2 = 1;
+  i.set(0, 1, 1);
+  i.getRightLevelZero(0);
+  i.get(0, l, ind);
+  BOOST_CHECK_EQUAL(l, l2);
+  BOOST_CHECK_EQUAL(ind, ind2);
+}
+
+BOOST_AUTO_TEST_CASE(testTopWithT) {
+  HashGridStorage s(1);
+  HashGenerator g;
+
+  g.regular(s, 2, 0.0);
+
+  HashGridPoint i(1);
+
+  i.set(0, 1, 1);
+  i.getLeftChild(0);
+
+  i.getRoot(0);
+
+  HashGridPoint::level_type l, l2 = 1;
+  HashGridPoint::index_type ind, ind2 = 1;
+  i.get(0, l, ind);
+
+  BOOST_CHECK_EQUAL(l, l2);
+  BOOST_CHECK_EQUAL(ind, ind2);
+}
+
+BOOST_AUTO_TEST_CASE(testSeqWithT) {
+  HashGridStorage s(1);
+  HashGenerator g;
+
+  g.regular(s, 2, 0.0);
+
+  HashGridPoint i(1);
+
+  i.set(0, 1, 1);
+  i.getLeftChild(0);
+
+  size_t seq = s.getSequenceNumber(i);
+  BOOST_CHECK(!(s.isInvalidSequenceNumber(seq)));
+
+  i.getLeftChild(0);
+
+  seq = s.getSequenceNumber(i);
+  BOOST_CHECK(s.isInvalidSequenceNumber(seq));
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
 BOOST_AUTO_TEST_SUITE(TestHashGenerator)
 
 BOOST_AUTO_TEST_CASE(testPeriodic1D) {
