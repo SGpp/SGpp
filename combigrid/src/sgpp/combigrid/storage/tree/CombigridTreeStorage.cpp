@@ -102,8 +102,6 @@ std::shared_ptr<AbstractMultiStorageIterator<double>> CombigridTreeStorage::getG
       reducedLevel[d] = 0;
     }
 
-    // ToDo (rehmemk) if this is set true coefficients are NOT sorted in
-    // FullGridLinearSummationStrategy
     if (orderingConfiguration[d]) {
       policy.setIterator(d, impl->pointHierarchies[d]->getSortedPermutationIterator(level[d]));
     }

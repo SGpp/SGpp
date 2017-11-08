@@ -293,6 +293,9 @@ class CombigridMultiOperation {
    */
   static std::shared_ptr<CombigridMultiOperation> createExpUniformBoundaryBsplineInterpolation(
       size_t numDimensions, MultiFunction func, size_t degree = 3);
+
+  std::shared_ptr<CombigridMultiOperation> createExpUniformBoundaryBsplineQuadrature(
+      size_t numDimensions, MultiFunction func, size_t degree);
 };
 } /* namespace combigrid */
 } /* namespace sgpp*/
