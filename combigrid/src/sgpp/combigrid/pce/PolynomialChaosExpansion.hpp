@@ -9,6 +9,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
+#include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
 
@@ -20,10 +21,12 @@ class PolynomialChaosExpansion {
   PolynomialChaosExpansion(
       std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation,
       std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D> functionBasis);
-  virtual ~PolynomialChaosExpansion();
 
-  double value(sgpp::base::DataVector& x);
-  void values(sgpp::base::DataMatrix& x, sgpp::base::DataVector& result);
+  PolynomialChaosExpansion(
+      std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridOperation,
+      std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D> functionBasis);
+
+  virtual ~PolynomialChaosExpansion();
 
   double mean();
   double variance();
@@ -42,6 +45,7 @@ class PolynomialChaosExpansion {
   size_t numDims;
   std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D> functionBasis;
   std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation;
+  std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation;
   std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> tensorOperation;
 
   bool expansionCoefficientsFlag;
