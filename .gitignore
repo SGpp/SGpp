@@ -12,6 +12,7 @@
 *.os
 *.so
 *.exe
+*.dll
 *.a
 *.dylib
 *.dSYM
@@ -36,8 +37,10 @@ lib/*
 Doxyfile
 base/doc/doxygen/examples_*.doxy
 base/doc/doxygen/modules.doxy
+base/doc/doxygen/GridTypes.doxy
 base/doc/doxygen/example_*.doxy
 combigrid/doc/doxygen/example_*.doxy
+combigrid/doc/doxygen/combigrid_gettingStarted_py.doxy
 datadriven/doc/doxygen/example_*.doxy
 finance/doc/doxygen/example_*.doxy
 misc/doc/doxygen/example_*.doxy
@@ -74,3 +77,7 @@ coverage
 
 # ignoring uq tests
 datadriven/tests/uq/
+
+# ignoring Windows build directories
+build/
+dist/

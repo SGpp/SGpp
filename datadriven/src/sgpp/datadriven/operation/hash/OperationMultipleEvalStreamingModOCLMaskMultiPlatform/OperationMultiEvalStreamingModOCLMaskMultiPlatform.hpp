@@ -9,7 +9,7 @@
 
 #include <algorithm>
 #include <chrono>
-#include <mutex>
+#include <mutex>  // NOLINT(build/c++11)
 #include <vector>
 
 #include "Configuration.hpp"
@@ -18,8 +18,8 @@
 #include "sgpp/base/exception/operation_exception.hpp"
 #include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
 #include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
+#include "sgpp/base/tools/QueueLoadBalancerOpenMP.hpp"
 #include "sgpp/base/tools/SGppStopwatch.hpp"
 #include "sgpp/globaldef.hpp"
 
@@ -36,7 +36,6 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
   std::vector<T> kernelDataset;
   size_t datasetSizeUnpadded;
   size_t datasetSizePadded;
-  size_t datasetSizeBuffers;
   /// Member to store the sparse grid's levels for better vectorization
   std::vector<T> level;
   /// Member to store the sparse grid's indices for better vectorization
@@ -47,7 +46,6 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
   std::vector<T> offset;
   size_t gridSizeUnpadded;
   size_t gridSizePadded;
-  size_t gridSizeBuffers;
 
   /// Timer object to handle time measurements
   sgpp::base::SGppStopwatch myTimer;
@@ -62,8 +60,8 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
   std::vector<StreamingModOCLMaskMultiPlatform::KernelMult<T>> multKernels;
   std::vector<StreamingModOCLMaskMultiPlatform::KernelMultTranspose<T>> multTransposeKernels;
 
-  std::shared_ptr<sgpp::base::QueueLoadBalancer> queueLoadBalancerMult;
-  std::shared_ptr<sgpp::base::QueueLoadBalancer> queueLoadBalancerMultTrans;
+  std::shared_ptr<sgpp::base::QueueLoadBalancerOpenMP> queueLoadBalancerMult;
+  std::shared_ptr<sgpp::base::QueueLoadBalancerOpenMP> queueLoadBalancerMultTrans;
 
   size_t overallGridBlockingSize;
   size_t overallDataBlockingSize;
@@ -88,20 +86,18 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     // initialized in prepare
     this->gridSizeUnpadded = 0;
     this->gridSizePadded = 0;
-    this->gridSizeBuffers = 0;
 
     // initialize in pad
     this->datasetSizeUnpadded = 0;
     this->datasetSizePadded = 0;
-    this->datasetSizeBuffers = 0;
     this->padDataset(this->preparedDataset);
     this->preparedDataset.transpose();
 
     overallGridBlockingSize = calculateCommonGridPadding();
     overallDataBlockingSize = calculateCommonDatasetPadding();
 
-    queueLoadBalancerMult = std::make_shared<sgpp::base::QueueLoadBalancer>();
-    queueLoadBalancerMultTrans = std::make_shared<sgpp::base::QueueLoadBalancer>();
+    queueLoadBalancerMult = std::make_shared<sgpp::base::QueueLoadBalancerOpenMP>();
+    queueLoadBalancerMultTrans = std::make_shared<sgpp::base::QueueLoadBalancerOpenMP>();
 
     //    std::cout << "dims: " << this->dims << std::endl;
     //    std::cout << "padded instances: " << this->datasetSize << std::endl;
@@ -147,7 +143,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     size_t datasetFrom = 0;
     size_t datasetTo = this->datasetSizePadded;
 
-    queueLoadBalancerMult->initialize(datasetFrom, datasetTo);
+    queueLoadBalancerMult->initialize(datasetFrom, datasetTo, overallDataBlockingSize);
 
     std::vector<T> alphaArray(this->gridSizePadded);
 
@@ -159,7 +155,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
       alphaArray[i] = 0.0;
     }
 
-    std::vector<T> resultArray(this->datasetSizeBuffers);
+    std::vector<T> resultArray(this->datasetSizePadded);
     std::fill(resultArray.begin(), resultArray.end(), 0.0);
 
     std::chrono::time_point<std::chrono::system_clock> start, end;
@@ -181,7 +177,8 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
                                          gridTo, datasetFrom, datasetTo);
       } catch (...) {
         // store the first exception thrown for rethrow
-        std::call_once(onceFlag, [&]() { exceptionPtr = std::current_exception(); });
+        std::call_once(onceFlag,
+                       [&]() { exceptionPtr = std::current_exception(); });  // NOLINT(build/c++11)
       }
     }
 
@@ -192,6 +189,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
 
+    result.resize(this->datasetSizePadded);
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
@@ -220,7 +218,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     size_t datasetFrom = 0;
     size_t datasetTo = this->datasetSizePadded;
 
-    queueLoadBalancerMultTrans->initialize(gridFrom, gridTo);
+    queueLoadBalancerMultTrans->initialize(gridFrom, gridTo, overallGridBlockingSize);
 
     std::vector<T> sourceArray(this->datasetSizePadded);
 
@@ -232,7 +230,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
       sourceArray[i] = 0.0;
     }
 
-    std::vector<T> resultArray(this->gridSizeBuffers);
+    std::vector<T> resultArray(this->gridSizePadded);
 
     std::fill(resultArray.begin(), resultArray.end(), 0.0);
 
@@ -255,7 +253,8 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
             resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
       } catch (...) {
         // store the first exception thrown for rethrow
-        std::call_once(onceFlag, [&]() { exceptionPtr = std::current_exception(); });
+        std::call_once(onceFlag,
+                       [&]() { exceptionPtr = std::current_exception(); });  // NOLINT(build/c++11)
       }
     }
 
@@ -266,6 +265,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
 
+    result.resize(this->gridSizePadded);
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
     }
@@ -314,14 +314,12 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
 
     // excluding the additional padding for irregular schedules
     datasetSizePadded = dataset.getNrows() + padding;
-    // totol size for buffer allocation
-    datasetSizeBuffers = dataset.getNrows() + commonDatasetPadding;
 
     sgpp::base::DataVector lastRow(dataset.getNcols());
     dataset.getRow(datasetSizeUnpadded - 1, lastRow);
-    dataset.resize(datasetSizeBuffers);
+    dataset.resize(datasetSizePadded);
 
-    for (size_t i = datasetSizeUnpadded; i < datasetSizeBuffers; i++) {
+    for (size_t i = datasetSizeUnpadded; i < datasetSizePadded; i++) {
       dataset.setRow(i, lastRow);
     }
   }
@@ -350,16 +348,13 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     // size to distribute, not actual padded grid size
     this->gridSizePadded = storage.getSize() + padding;
 
-    // size for distributing schedules of different size
-    this->gridSizeBuffers = storage.getSize() + overallGridBlockingSize;
-
     sgpp::base::HashGridPoint::level_type curLevel;
     sgpp::base::HashGridPoint::index_type curIndex;
 
-    this->level = std::vector<T>(gridSizeBuffers * this->dims);
-    this->index = std::vector<T>(gridSizeBuffers * this->dims);
-    this->mask = std::vector<T>(gridSizeBuffers * this->dims);
-    this->offset = std::vector<T>(gridSizeBuffers * this->dims);
+    this->level = std::vector<T>(gridSizePadded * this->dims);
+    this->index = std::vector<T>(gridSizePadded * this->dims);
+    this->mask = std::vector<T>(gridSizePadded * this->dims);
+    this->offset = std::vector<T>(gridSizePadded * this->dims);
 
     for (size_t i = 0; i < storage.getSize(); i++) {
       for (size_t dim = 0; dim < this->dims; dim++) {
@@ -414,7 +409,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
       }
     }
 
-    for (size_t i = storage.getSize(); i < gridSizeBuffers; i++) {
+    for (size_t i = storage.getSize(); i < gridSizePadded; i++) {
       for (size_t dim = 0; dim < this->dims; dim++) {
         this->level[i * this->dims + dim] = 0;
         this->index[i * this->dims + dim] = 0;

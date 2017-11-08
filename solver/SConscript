@@ -4,7 +4,6 @@
 # sgpp.sparsegrids.org
 
 import ModuleHelper
-
 Import("*")
 
 moduleDependencies = ["sgppbase"]
@@ -14,4 +13,6 @@ module.scanSource()
 module.buildLibrary()
 module.generatePythonDocstrings()
 module.buildExamples()
+module.buildBoostTests()
+module.runBoostTests()
 module.runCpplint()

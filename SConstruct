@@ -86,7 +86,10 @@ vars.Add("COMPILER", "Set the compiler, \"gnu\" means using gcc with standard co
                      "the following values are possible: " +
                      "gnu, clang, intel, openmpi, mpich, intel.mpi; " +
                      "when using the Intel Compiler, version 11 or higher must be used", "gnu")
-vars.Add(BoolVariable("OPT", "Set compiler optimization on and off", False))
+vars.Add("CC", "Override the C compiler, can be used to select a specific compiler version, otherwise use \"COMPILER\"", None)
+vars.Add("CXX", "Override the C++ compiler, can be used to select a specific compiler version, otherwise use \"COMPILER\"", None)
+vars.Add(BoolVariable("OPT", "Set compiler optimization on and off", True))
+vars.Add(BoolVariable("RUN_ON_HAZELHEN", "Add some special options on hazelhen", False))
 vars.Add(BoolVariable("RUN_PYTHON_TESTS", "Run Python unit tests", True))
 vars.Add(BoolVariable("PYDOC", "Build Python wrapper with docstrings", False))
 vars.Add(BoolVariable("USE_PYTHON3_FOR_PYSGPP", "Use Python 3.x for pysgpp", False))
@@ -97,6 +100,9 @@ vars.Add(BoolVariable("SG_ALL", "Default value for the other SG_* variables; " +
                                 "by setting SG_DATADRIVEN=1", True))
 vars.Add(BoolVariable("SG_PYTHON", "Build with Python support (default: value of SG_ALL)", None))
 vars.Add(BoolVariable("SG_JAVA", "Build with Java support (default: value of SG_ALL)", None))
+vars.Add("SWIGFLAGS", "Set additional swig flags, they are compiler-dependent " +
+                      "(multiple flags combined with comma, e.g. -Wall,-Wextra)", "",
+                      converter=Helper.multiParamConverter)
 
 for moduleName in moduleNames:
   vars.Add(BoolVariable(moduleName, "Build the module " + moduleName +
@@ -114,17 +120,25 @@ vars.Add(BoolVariable("VERBOSE", "Enable verbose output", True))
 vars.Add(BoolVariable("USE_OCL", "Enable OpenCL support (only actually enabled if " +
                                  "also the OpenCL environment variables are set)", False))
 vars.Add(BoolVariable("USE_CUDA", "Enable CUDA support (you might need to provide an 'CUDA_TOOLKIT_PATH')", False))
+vars.Add(BoolVariable("USE_HPX", "Enable HPX support (implies USE_OCL)", False))
 vars.Add("OCL_INCLUDE_PATH", "Set path to the OpenCL header files (parent directory of CL/)")
 vars.Add("OCL_LIBRARY_PATH", "Set path to the OpenCL library")
 vars.Add("BOOST_INCLUDE_PATH", "Set path to the Boost header files", "/usr/include")
 vars.Add("BOOST_LIBRARY_PATH", "Set path to the Boost library", None)
+vars.Add("HPX_DEBUG_LIBRARY_PATH", "Sets the path to the HPX debug libraries", None)
+vars.Add("HPX_RELEASE_LIBRARY_PATH", "Sets the path to the HPX release libraries", None)
+vars.Add("HPX_SHARED_INCLUDE_PATH", "Sets the path to the HPX shared headers", None)
+vars.Add("HPX_DEBUG_INCLUDE_PATH", "Sets the path to the HPX debug headers", None)
+vars.Add("HPX_RELEASE_INCLUDE_PATH", "Sets the path to the HPX release headers", None)
+vars.Add("GSL_INCLUDE_PATH", "Set path to the GSL header files", "/usr/include")
+vars.Add("GSL_LIBRARY_PATH", "Set path to the GSL library", None)
 vars.Add(BoolVariable("COMPILE_BOOST_TESTS",
                       "Compile the test cases written using Boost Test", True))
 vars.Add(BoolVariable("COMPILE_BOOST_PERFORMANCE_TESTS",
                       "Compile the performance tests written using Boost Test. " +
                       "Currently only buildable with OpenCL enabled", False))
 vars.Add(BoolVariable("RUN_BOOST_PERFORMANCE_TESTS", "Run the test cases written using Boost Test " +
-                                         "(only if COMPILE_BOOST_PERFORMANCE_TESTS is true)", False))
+                                         "(only if COMPILE_BOOST_PERFORMANCE_TESTS is true)", True))
 vars.Add(BoolVariable("RUN_BOOST_TESTS", "Run the test cases written using Boost Test " +
                                          "(only if COMPILE_BOOST_TESTS is true)", True))
 vars.Add(BoolVariable("RUN_CPPLINT",
@@ -140,6 +154,10 @@ vars.Add(BoolVariable("USE_MATLAB", "Set if MATLAB should be used " +
                                    "(only relevant for sgpp::optimization)", False))
 vars.Add(BoolVariable("USE_UMFPACK", "Set if UMFPACK should be used " +
                                      "(only relevant for sgpp::optimization)", False))
+vars.Add(BoolVariable("USE_GSL", "Set if GNU Scientific Library should be used " +
+                                     "(only relevant for sgpp::datadriven::application::LearnerSGDEOnOff)", False))
+vars.Add(BoolVariable("USE_ZLIB", "Set if zlib should be used " +
+                                     "(relevant for sgpp::datadriven to read compressed dataset files), not available for windows", False))
 vars.Add(BoolVariable("BUILD_STATICLIB", "Set if static libraries should be built " +
                                          "instead of shared libraries", False))
 vars.Add(BoolVariable("PRINT_INSTRUCTIONS", "Print instructions for installing SG++", True))
@@ -163,9 +181,13 @@ else:
 env = Environment(variables=vars, ENV=os.environ, tools=tools)
 finalMessagePrinter.env = env
 
+# USE_HPX implies USE_OCL
+if env["USE_HPX"]:
+  env["USE_OCL"] = True
+
 # fail if unknown variables where encountered on the command line
 unknownVariables = [var for var in vars.UnknownVariables()
-                    if var not in ["CXX", "CC", "CFLAGS", "CPPDEFINES"]]
+                    if var not in ["CFLAGS", "CPPDEFINES"]]
 if len(unknownVariables) > 0:
   Helper.printErrorAndExit("The following command line variables could not be recognized:",
                            unknownVariables,
@@ -188,9 +210,11 @@ env["BOOST_LIBRARY_PATH"] = env.get("BOOST_LIBRARY_PATH", "/usr/lib/x86_64-linux
                                     if env["PLATFORM"] not in ["darwin", "win32"]
                                     else "")
 
-# don't create the Doxyfile if building Doxygen:
+# only create the Doxyfile if building Doxygen:
 if ("doxygen" in BUILD_TARGETS) and (not env.GetOption("clean")):
-  DoxygenHelper.prepareDoxygen(moduleFolders)
+  Helper.printInfo("Building Doxyfile for modules: "+
+                   ', '.join([moduleFolder for moduleFolder in moduleFolders if env["SG_" + moduleFolder.upper()]]))
+  DoxygenHelper.prepareDoxygen([moduleFolder for moduleFolder in moduleFolders if env["SG_" + moduleFolder.upper()]])
 
 if "CXX" in ARGUMENTS:
   Helper.printInfo("CXX: {}".format(ARGUMENTS["CXX"]))
@@ -212,6 +236,9 @@ if "CPPPATH" in ARGUMENTS:
   env["CPPPATH"] = ARGUMENTS["CPPPATH"].split(",")
 if "LIBPATH" in ARGUMENTS:
   env["LIBPATH"] = ARGUMENTS["LIBPATH"].split(",")
+
+if "SWIGFLAGS" in ARGUMENTS:
+    env["SWIGFLAGS"] = ARGUMENTS["SWIGFLAGS"].split(",")
 
 env.Export("moduleNames")
 env.Export("moduleFolders")
@@ -255,9 +282,7 @@ Export("JSGPP_BUILD_PATH")
 EXAMPLE_DIR = Dir(os.path.join("bin", "examples"))
 Export("EXAMPLE_DIR")
 
-# don't configure if we're cleaning:
-if (not env.GetOption("clean")) and (not env.GetOption("help")):
-  SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
+SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
 
 # fix for "command line too long" errors on MinGW
 # (from https://bitbucket.org/scons/scons/wiki/LongCmdLinesOnWin32)
@@ -346,7 +371,6 @@ def lintAction(target, source, env):
          "If so, make const or use a pointer:" in line) or \
         ("Consider using rand_r(...) instead of rand(...) for " +
          "improved thread safety." in line) or \
-        ("<chrono> is an unapproved C++11 header." in line) or \
         (line == ""):
       pass
     else:
@@ -372,7 +396,7 @@ if env["RUN_PYTHON_TESTS"] and env["SG_PYTHON"]:
   env.Append(BUILDERS={"SimpleTest" : builder})
 
 if env["COMPILE_BOOST_TESTS"]:
-  builder = Builder(action="./$SOURCE")
+  builder = Builder(action="./$SOURCE --log_level=test_suite")
   env.Append(BUILDERS={"BoostTest" : builder})
 
 # Building the modules

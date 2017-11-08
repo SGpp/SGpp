@@ -1,4 +1,17 @@
 ﻿#!/usr/bin/env python
+# Copyright (C) 2008-today The SG++ Project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
+
+# This python script installs the pysgpp package using setuptools. The
+# script creates a pysgpp lib in the site-packages of
+# python. Furthermore, it collects all the relevant python code,
+# located in each module under the path <module name>/python and
+# copies it to the site-package folder of pysgpp using the following
+# scheme: <path to site-packages>/pysgpp-<unique
+# key>/extensions/<module name>/<copy of python code of correponding
+# module>.
 
 import os
 import shutil

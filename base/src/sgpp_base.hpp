@@ -63,9 +63,11 @@
 #include <sgpp/base/grid/generation/hashmap/HashRefinementBoundariesMaxLevel.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinementInconsistent.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp>
-#include <sgpp/base/tools/OperationQuadratureMC.hpp>
 // #include <sgpp/base/grid/generation/refinement_strategy/SubspaceGSGRefinement.hpp>
 // #include <sgpp/base/grid/generation/refinement_strategy/GSGRefinement.hpp>
+#include <sgpp/base/grid/generation/refinement_strategy/ForwardSelectorRefinement.hpp>
+#include <sgpp/base/grid/generation/refinement_strategy/ImpurityRefinement.hpp>
+#include <sgpp/base/grid/generation/refinement_strategy/MultipleClassRefinement.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/SubspaceRefinement.hpp>
 // #include <sgpp/base/grid/generation/refinement_strategy/PredictiveSubspaceGSGRefinement.hpp>
@@ -79,6 +81,8 @@
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusVolumeCoarseningFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/ForwardSelectorRefinementIndicator.hpp>
+#include <sgpp/base/grid/generation/functors/ImpurityRefinementIndicator.hpp>
 /*#include <sgpp/base/grid/generation/functors/WeightedErrorRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 #include <sgpp/base/grid/generation/GeneralizedBoundaryGridGenerator.hpp>
@@ -120,6 +124,8 @@
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/base/tools/GridPrinter.hpp>
 #include <sgpp/base/tools/GridPrinterForStretching.hpp>
+#include <sgpp/base/tools/MultipleClassPoint.hpp>
+#include <sgpp/base/tools/OperationQuadratureMC.hpp>
 #include <sgpp/base/tools/QuadRule1D.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/base/tools/StdNormalDistribution.hpp>
