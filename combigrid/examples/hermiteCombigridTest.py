@@ -861,9 +861,10 @@ def examples_2d():
     testclass = fctClass.funcGradientCollection(func_standard, 2)
 
     def func2d(x):
-        return x[0] * x[1]
+        return x[0]**2 * x[1]**3
 
-    func_container = fctClass.funcGradientCollection(fctClass.BraninSymbolic(), 2)
+    func_container = fctClass.funcGradientCollection(func2d, 2)
+    #func_container = fctClass.funcGradientCollectionSymbolic(fctClass.BraninSymbolic())
 
     # example_2D_comparison_function(func_container.getFunction(), "", show=True)
 
@@ -875,10 +876,9 @@ def examples_2d():
 
 
 
-    level = 5
+    level = 4
     example_error_pointwise(level, func_container,
-                            foldername="Branin" + "_pointwise" + "_lvl" + str(
-                                level))
+                            foldername=None)
     # example_error_pointwise_gradient(level,func_container,[0],
     #                               foldername="Branin_relativex0"+"_pointwise"+"_lvl"+str(
     # level))
