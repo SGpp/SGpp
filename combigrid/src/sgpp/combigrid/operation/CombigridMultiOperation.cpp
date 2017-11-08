@@ -346,5 +346,24 @@ CombigridMultiOperation::createExpUniformBoundaryBsplineInterpolation(size_t num
       pointHierarchies, evaluators, levelManager, gf, exploitNesting);
 }
 
+std::shared_ptr<CombigridMultiOperation>
+CombigridMultiOperation::createExpUniformBoundaryBsplineQuadrature(size_t numDimensions,
+                                                                   MultiFunction func,
+                                                                   size_t degree) {
+  std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies(
+      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+  std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluators(
+      numDimensions, sgpp::combigrid::CombiEvaluators::multiBSplineQuadrature(degree));
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
+      new sgpp::combigrid::WeightedRatioLevelManager());
+  sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
+  bool exploitNesting = false;
+  return std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
+      pointHierarchies, evaluators, levelManager, gf, exploitNesting);
+}
+
+// ToDo (rehmemk) MultiOperation Bspline Quadratur
+// (Was sind Quadratur MultiOperations, Quadraturen haben keine Parameter !?)
+
 } /* namespace combigrid */
 } /* namespace sgpp*/
