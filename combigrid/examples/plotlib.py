@@ -239,7 +239,7 @@ def plot2DContour(n_samples, level, operation, show=True):
         plt.show()
 
 # gets a function and not a operation
-def plot2DContour_func(n_samples, func,operation,title=""):
+def plot_2D_imshow(n_samples, func, operation, title="", filename=None):
 
     X = np.linspace(0, 1, n_samples)
     Y = np.linspace(0, 1, n_samples)
@@ -254,15 +254,18 @@ def plot2DContour_func(n_samples, func,operation,title=""):
     fig = plt.figure()
     ax = fig.add_subplot(111)
 
-    ax.imshow(z, cmap="jet", interpolation='bilinear', extent=[0, 1, 0, 1])
-    CS = ax.contour(z, extent=[0, 1, 1, 0])
-    ax.clabel(CS, inline=1, fontsize=10)
+
+    im=ax.imshow(z, cmap="jet", interpolation='bilinear', extent=[0, 1, 0, 1])
+    #CS = ax.contour(z, extent=[0, 1, 1, 0])
+    #ax.clabel(CS, inline=1, fontsize=10)
+
 
     # grid generation
     z = operation.getLevelManager().getAllGridPoints()
     X = [z[x][0] for x in range(len(z))]
     Y = [z[y][1] for y in range(len(z))]
 
+    fig.colorbar(im,ax=ax)
     ax.spines['left'].set_position(('data', 0))
     ax.spines['right'].set_position(('data', 1))
     ax.spines['bottom'].set_position(('data', 0))
@@ -270,3 +273,7 @@ def plot2DContour_func(n_samples, func,operation,title=""):
 
     points = ax.plot(X, Y, '.', c="white", markersize=10,)
     ax.set_title(title)
+
+    if filename != None:
+        #fig.savefig(filename+'.pdf', format='pdf', dpi=900,bbox_inches='tight')
+        fig.savefig(filename + '.png', format='png', dpi=900, bbox_inches='tight')

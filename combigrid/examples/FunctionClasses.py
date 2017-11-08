@@ -283,6 +283,19 @@ def RosenbrockSymbolic(d):
 def f1D_test(x):
     return 1
 
+def Himmelblau_Symbolic():
+
+    x=[]
+    x.append(sp.symbols("x0"))
+    x.append(sp.symbols("x1"))
+
+
+    x1 = 10.0 * x[0] - 5.0;
+
+    x2 = 10.0 * x[1] - 5.0;
+
+    return (x1 * x1 + x2 - 11.0) * (x1 * x1 + x2 - 11.0) +(x1 + x2 * x2 - 7.0) * (x1 + x2 * x2 - 7.0)
+
 
 #x0, x1, x2 = symbols("x0 x1 x2")
 #expr = x0 ** 3 * x1

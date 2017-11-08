@@ -163,11 +163,12 @@ class CombigridOperation {
 
   static std::shared_ptr<CombigridOperation> createExpUniformBoundaryZetaLinearInterpolation(
       size_t numDimensions, size_t zetaDimension, MultiFunction func);
+      
+      // the Vector declares the dimensions with zeta, the others are psi 
   static std::shared_ptr<CombigridOperation> createExpUniformBoundaryZetaInterpolation(
       size_t numDimensions, std::vector<int> zetaDimensions, MultiFunction func);
 
-  static std::shared_ptr<CombigridOperation> createExpUniformBoundaryPsiInterpolation(
-      size_t numDimensions, std::vector<int> psiDimensions, MultiFunction func);
+
 
   static std::shared_ptr<CombigridOperation> createExpUniformBoundaryPsiLinearInterpolation(
       size_t numDimensions, size_t psiDimension, MultiFunction func);
