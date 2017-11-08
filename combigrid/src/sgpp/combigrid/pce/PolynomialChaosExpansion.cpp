@@ -18,35 +18,33 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
     : numDims(combigridOperation->numDims()),
       functionBasis(functionBasis),
       combigridOperation(combigridOperation),
+      combigridMultiOperation(nullptr),
       expansionCoefficientsFlag(false),
       sobolIndicesFlag(false) {
+  // create tensor operation for pce transformation
   tensorOperation =
       sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
           combigridOperation->getPointHierarchies(), combigridOperation->getStorage(),
           combigridOperation->getLevelManager(), functionBasis);
 }
 
+PolynomialChaosExpansion::PolynomialChaosExpansion(
+    std::shared_ptr<CombigridMultiOperation> combigridMultiOperation,
+    std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis)
+    : numDims(combigridMultiOperation->numDims()),
+      functionBasis(functionBasis),
+      combigridOperation(nullptr),
+      combigridMultiOperation(combigridMultiOperation),
+      expansionCoefficientsFlag(false),
+      sobolIndicesFlag(false) {
+  // create tensor operation for pce transformation
+  tensorOperation =
+      sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
+          combigridMultiOperation->getPointHierarchies(), combigridMultiOperation->getStorage(),
+          combigridMultiOperation->getLevelManager(), functionBasis);
+}
+
 PolynomialChaosExpansion::~PolynomialChaosExpansion() {}
-
-double PolynomialChaosExpansion::value(sgpp::base::DataVector& x) {
-  //  if (orthogPoly != nullptr) {
-  // #ifdef USE_DAKOTA
-  //    Pecos::RealVector x_real(static_cast<int>(x.getSize()));
-  //    sgpp::combigrid::sgppToDakota::convertDataVectorToRealVector(x, x_real);
-  //    return static_cast<double>(orthogPoly->value(x_real));
-  // #endif
-  //  }
-  combigridOperation->setParameters(x);
-  return combigridOperation->getResult();
-}
-
-void PolynomialChaosExpansion::values(sgpp::base::DataMatrix& x, sgpp::base::DataVector& result) {
-  sgpp::base::DataVector xi(numDims);
-  for (size_t i = 0; i < x.getNrows(); i++) {
-    x.getRow(i, xi);
-    result[i] = value(xi);  // TODO (franzefn): this is very slow; use multiEval instead
-  }
-}
 
 double PolynomialChaosExpansion::mean() {
   //  if (orthogPoly != nullptr) {
