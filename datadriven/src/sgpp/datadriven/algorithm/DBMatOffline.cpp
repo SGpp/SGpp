@@ -171,7 +171,6 @@ void DBMatOffline::store(const std::string& fileName) {
       inter.append("," + std::to_string(j));
     }
   }
-  std::cout << inter << std::endl;
 
   outputFile << static_cast<int>(config.grid_type_) << "," << config.grid_dim_ << ","
              << config.grid_level_ << "," << static_cast<int>(config.regularization_) << ","
@@ -252,7 +251,6 @@ void sgpp::datadriven::DBMatOffline::parseInter(const std::string& fileName,
 }
 
 void sgpp::datadriven::DBMatOffline::setInter(std::vector<std::vector <size_t>> inter){
-  std::cout << "Something set inter!" << std::endl;
   interactions = inter;
 }
 sgpp::base::DataMatrix& DBMatOffline::getLhsMatrix_ONLY_FOR_TESTING() { return this->lhsMatrix; }
