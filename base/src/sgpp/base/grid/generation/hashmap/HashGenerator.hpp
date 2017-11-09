@@ -419,7 +419,7 @@ class HashGenerator {
               decodeCoords(coords, coordsBool);
               if (terms.find(coordsBool) != terms.end()) {
                 storage.update(idx, g);
-              	first = false;
+                first = false;
               }
             }
           }
