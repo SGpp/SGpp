@@ -16,7 +16,13 @@ namespace base {
 
 /**
  * This class implements OperationMultipleEval for a grids with mod linear basis ansatzfunctions
+ * and a set of interactions that limit the subspaces that are included.
  *
+ * The evaluation iterates over all allowed subspaces and only viewes ansatzfunctions of level > 1
+ * since the level one ansatz function evaluates to 1
+ *
+ *
+ * This Operation is more efficeint than the OperationMultipleEvalModLinear.
  */
 class OperationMultipleEvalInterModLinear : public OperationMultipleEval {
  public:
@@ -25,6 +31,7 @@ class OperationMultipleEvalInterModLinear : public OperationMultipleEval {
    *
    * @param grid grid
    * @param dataset the dataset that should be evaluated
+   * @param interactions the interactionterms that limit what subspaces are included
    */
   OperationMultipleEvalInterModLinear(Grid& grid, DataMatrix& dataset, std::vector<std::vector<size_t>>& interactions)
       : OperationMultipleEval(grid, dataset), storage(grid.getStorage()) {
