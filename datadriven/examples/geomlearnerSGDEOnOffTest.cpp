@@ -16,20 +16,15 @@ using sgpp::base::DataVector;
 
 /**
  * This example shows how to perform offline/online-classification using sparse
- * grid density estimation and matrix decomposition methods. It creates an
+ * grid density estimation on a interaction based grid
+ * and matrix decomposition methods. It creates an
  * instance of LearnerSGDEOnOff and runs the function train() where the
  * main functionality is implemented.
  *
- * Currently, only binary classification with class labels -1 and 1 is possible.
- *
- * The example provides the option to execute several runs over differently
- * ordered data and perform a 5-fold cross-validation within each run.
- * Therefore,
- * already randomly ordered and partitioned data is required.
- * Average results from several runs might be more reliable in an
- * online-learning
- * scenario, because the ordering of the data points seen by the learner
- * can affect the result.
+ * This examples can generate the matrix needed for the density estimation.
+ * However the the matrix can be build and decomposed with the class "buildMats.cpp"
+ * This allows to save the matrix decomposition and use it multiple times.
+ * 
  */
 
 int main() {
@@ -111,8 +106,8 @@ int main() {
   decompType = "Cholesky decomposition";
   //      dt = sgpp::datadriven::DBMatDecompostionType::IChol;
   //      decompType = "Incomplete Cholesky decomposition";
-  //	  dt = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
-  //	  decompType = "Incomplete Cholesky decomposition on Dense Matrix";
+  //    dt = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
+  //    decompType = "Incomplete Cholesky decomposition on Dense Matrix";
   std::cout << "Decomposition type: " << decompType << std::endl;
 
   /**
@@ -233,20 +228,20 @@ int main() {
   size_t *confusion = new size_t [classNum*classNum];
 
   for(size_t real = 0; real < classNum; real++){
-		for(size_t pred = 0; pred < classNum; pred++){
-		  confusion[pred + real*classNum] = 0;
-		}
+    for(size_t pred = 0; pred < classNum; pred++){
+      confusion[pred + real*classNum] = 0;
+    }
   }
 
   for(size_t i = 0; i < testDataset.getNumberInstances(); i++){
-	  confusion[(size_t)predictTest.get(i)+classNum*(size_t)yTest.get(i)]++;
+    confusion[(size_t)predictTest.get(i)+classNum*(size_t)yTest.get(i)]++;
   }
 
   for(size_t real = 0; real < classNum; real++){
-		for(size_t pred = 0; pred < classNum; pred++){
-		  std::cout << confusion[pred+real*classNum] << "\t";
-		}
-	  std::cout << std::endl;
+    for(size_t pred = 0; pred < classNum; pred++){
+      std::cout << confusion[pred+real*classNum] << "\t";
+    }
+    std::cout << std::endl;
   }
 
   /**
