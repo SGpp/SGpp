@@ -48,14 +48,18 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
     } else if (degree % 2 == 0) {
       this->degree = degree - 1;
     }
+#ifdef _OPENMP
     omp_init_nest_lock(&xiLock);
+#endif
   }
 
   /**
    * Destructor.
    */
   ~BsplineModifiedClenshawCurtisBasis() override {
+#ifdef _OPENMP
     omp_destroy_nest_lock(&xiLock);
+#endif
   }
 
   /**
@@ -92,7 +96,9 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
 
     const IT hInv = static_cast<IT>(1) << l;
     double res = 0.0;
+#ifdef _OPENMP
     omp_set_nest_lock(&xiLock);
+#endif
     if (i == 1) {
       res = modifiedBSpline(l, hInv, x, degree);
     } else if (i == hInv - 1) {
@@ -101,7 +107,9 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
       constructKnots(l, i, hInv);
       res = nonUniformBSpline(x, degree, 0);
     }
+#ifdef _OPENMP
     omp_unset_nest_lock(&xiLock);
+#endif
     return res;
   }
 
@@ -120,7 +128,9 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
     const IT hInv = static_cast<IT>(1) << l;
     double res = 0.0;
 
+#ifdef _OPENMP
     omp_set_nest_lock(&xiLock);
+#endif
     if (i == 1) {
       res = modifiedBSplineDx(l, hInv, x, degree);
     } else if (i == hInv - 1) {
@@ -129,7 +139,9 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
       constructKnots(l, i, hInv);
       res = nonUniformBSplineDx(x, degree, 0);
     }
+#ifdef _OPENMP
     omp_unset_nest_lock(&xiLock);
+#endif
     return res;
   }
 
@@ -148,7 +160,9 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
     const IT hInv = static_cast<IT>(1) << l;
     double res = 0.0;
 
+#ifdef _OPENMP
     omp_set_nest_lock(&xiLock);
+#endif
     if (i == 1) {
       res = modifiedBSplineDxDx(l, hInv, x, degree);
     } else if (i == hInv - 1) {
@@ -157,7 +171,9 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
       constructKnots(l, i, hInv);
       res = nonUniformBSplineDxDx(x, degree, 0);
     }
+#ifdef _OPENMP
     omp_unset_nest_lock(&xiLock);
+#endif
     return res;
   }
 
@@ -182,7 +198,9 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
     size_t erster_abschnitt = std::max(0, -static_cast<int>(i - (degree + 1) / 2));
     size_t letzter_abschnitt = std::min(degree, hInv + (degree + 1) / 2 - i - 1);
     size_t quadLevel = (degree + 1) / 2;
+#ifdef _OPENMP
     omp_set_nest_lock(&xiLock);
+#endif
     if (!integrationInitialized) {
       sgpp::base::GaussLegendreQuadRule1D gauss;
       gauss.getLevelPointsAndWeightsNormalized(quadLevel, coordinates, weights);
@@ -204,7 +222,9 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
       }
       res += h * temp_res;
     }
+#ifdef _OPENMP
     omp_unset_nest_lock(&xiLock);
+#endif
     return res;
   }
 
@@ -216,8 +236,9 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
   /// reference to the Clenshaw-Curtis cache table
   ClenshawCurtisTable& clenshawCurtisTable;
 
+#ifdef _OPENMP
   omp_nest_lock_t xiLock;
-
+#endif
   DataVector coordinates;
   DataVector weights;
   bool integrationInitialized = false;
