@@ -267,7 +267,7 @@ class LevelManager {
    * using numThreads threads.
    */
   void addLevelsFromStructureParallel(std::shared_ptr<TreeStorage<uint8_t>> storage,
-                                      size_t numThreads);
+                                      size_t numThreads = 4);
 
   /**
    * Equivalent to deserializing serializedStructure and then calling addLevelsFromStructure().
@@ -315,6 +315,11 @@ class LevelManager {
    * This method is currently not optimized and can be slow!
    */
   size_t numGridPoints() { return combiEval->getAllGridPoints().size(); }
+
+  /**
+   * @return number of dimensions
+   */
+  size_t numDims() { return numDimensions; }
 
   /**
    * @return the maximum number of grid points that have to be evaluated for a regular grid with

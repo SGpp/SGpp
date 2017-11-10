@@ -81,13 +81,6 @@ class CombigridOperation {
   void setLevelManager(std::shared_ptr<LevelManager> levelManager);
 
   /**
-   * stores a new storage object where function evaluations are already available
-   *
-   * @param newStorage
-   */
-  void setStorage(std::shared_ptr<AbstractCombigridStorage> newStorage);
-
-  /**
    * @return the storage containing the computed function values at evaluation points.
    */
   std::shared_ptr<AbstractCombigridStorage> getStorage();
@@ -112,6 +105,11 @@ class CombigridOperation {
    * This method is currently not optimized and can be slow!
    */
   size_t numGridPoints();
+
+  /**
+   * @return the number of dimensions
+   */
+  size_t numDims();
 
   /**
    * @return An upper bound for the number of points (function evaluations) used for the current
@@ -164,6 +162,8 @@ class CombigridOperation {
       size_t numDimensions, MultiFunction func, size_t degree, size_t growthFactor);
   static std::shared_ptr<CombigridOperation> createLinearL2LejaBsplineInterpolation(
       size_t numDimensions, MultiFunction func, size_t degree, size_t growthFactor);
+  static std::shared_ptr<CombigridOperation> createExpUniformBoundaryBsplineQuadrature(
+      size_t numDimensions, MultiFunction func, size_t degree);
 };
 } /* namespace combigrid */
 } /* namespace sgpp*/

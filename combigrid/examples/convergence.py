@@ -8,6 +8,8 @@ import pysgpp
 
 import matplotlib.pyplot as plt
 import numpy as np
+from pysgpp.extensions.datadriven.uq.dists import Uniform
+from pysgpp.extensions.datadriven.uq.dists.Beta import Beta
 
 
 def expModel(x, params):
@@ -18,12 +20,14 @@ def arctanModel(x, params):
     return np.arctan(50.0 * (x[0] - .35)) + np.pi / 2.0 + 4.0 * x[1] ** 3 + np.exp(x[0] * x[1] - 1.0)
 
 
-def buildAtanParams():
+def buildAtanParams(dist_type):
+    dist = generateDistribution(dist_type, [0, 1])
+
     parameterBuilder = ParameterBuilder()
     up = parameterBuilder.defineUncertainParameters()
 
-    up.new().isCalled("x1").withUniformDistribution(0, 1)
-    up.new().isCalled("x2").withUniformDistribution(0, 1)
+    up.new().isCalled("x1").withDistribution(dist)
+    up.new().isCalled("x2").withDistribution(dist)
 
     return parameterBuilder.andGetResult()
 
@@ -36,7 +40,7 @@ def boreholeModel(x, params):
     return num / den
 
 
-def buildBoreholeParams():
+def buildBoreholeParams(dist_type):
     boreholeLimits = [[0.05, 0.15],
                       [100, 50000],
                       [63070, 115600],
@@ -52,21 +56,30 @@ def buildBoreholeParams():
 
     for k in range(8):
         xlim = boreholeLimits[k]
-        up.new().isCalled(boreholeParamNames[k]).withUniformDistribution(xlim[0],
-                                                                         xlim[1])
+        dist = generateDistribution(dist_type, xlim)
+        up.new().isCalled(boreholeParamNames[k]).withDistribution(dist)
 
     return parameterBuilder.andGetResult()
 
 
-def buildModel(name):
+def generateDistribution(dist_type, xlim):
+    if dist_type == "uniform":
+        return Uniform(xlim[0], xlim[1])
+    elif dist_type == "beta":
+        return Beta(5, 4, xlim[0], xlim[1] - xlim[0])
+    else:
+        raise AttributeError("dist type unknown")
+
+
+def buildModel(name, dist_type):
     if name == "arctan":
-        params = buildAtanParams()
+        params = buildAtanParams(dist_type)
         model = arctanModel
     elif name == "borehole":
-        params = buildBoreholeParams()
+        params = buildBoreholeParams(dist_type)
         model = boreholeModel
     elif name == "exp":
-        params = buildAtanParams()
+        params = buildAtanParams(dist_type)
         model = expModel
     else:
         raise AttributeError("model unknown")
@@ -74,9 +87,18 @@ def buildModel(name):
     return model, params
 
 
-def buildOrthogonalBasis():
+def buildOrthogonalPolynomial(dist_type):
     config = pysgpp.OrthogonalPolynomialBasis1DConfiguration()
-    config.polyParameters.type_ = pysgpp.OrthogonalPolynomialBasisType_LEGENDRE
+
+    if dist_type == "beta":
+        config.polyParameters.type_ = pysgpp.OrthogonalPolynomialBasisType_JACOBI
+        config.polyParameters.alpha_ = 5
+        config.polyParameters.beta_ = 4
+    elif dist_type == "uniform":
+        config.polyParameters.type_ = pysgpp.OrthogonalPolynomialBasisType_LEGENDRE
+    else:
+        raise AttributeError("dist type is unknown")
+
     return pysgpp.OrthogonalPolynomialBasis1D(config)
 
 
@@ -84,8 +106,8 @@ def buildSparseGrid(gridType, basisType, degree=5, growthFactor=2, orthogonal_ba
     if orthogonal_basis is None:
         if gridType == "ClenshawCurtis" and basisType == "bspline":
             return CombigridMultiOperation.createExpClenshawCurtisBsplineInterpolation(numDims, func, degree)
-    #     elif gridType == "UniformBoundary" and basisType == "bspline":
-    #         return CombigridMultiOperation.createExpUniformBoundaryBsplineInterpolation(numDims, func, degree)
+        elif gridType == "UniformBoundary" and basisType == "bspline":
+            return CombigridMultiOperation.createExpUniformBoundaryBsplineInterpolation(numDims, func, degree)
         elif gridType == "Leja" and basisType == "poly":
             return CombigridMultiOperation.createExpLejaPolynomialInterpolation(numDims, func)
         elif gridType == "L2Leja" and basisType == "poly":
@@ -120,7 +142,14 @@ def buildLevelManager(name):
 
 class RefinementWrapper:
 
-    def __init__(self, gridType, basisType, degree, growthFactor, levelManagerType, samples):
+    def __init__(self,
+                 gridType,
+                 basisType,
+                 degree,
+                 growthFactor,
+                 levelManagerType,
+                 distType,
+                 samples):
         self.operation = buildSparseGrid(gridType,
                                          basisType,
                                          degree,
@@ -135,7 +164,7 @@ class RefinementWrapper:
         self.levelManagerType = levelManagerType
         self.levelManager = buildLevelManager(levelManagerType)
         if levelManagerType == "variance":
-            self.orthogonal_basis = buildOrthogonalBasis()
+            self.orthogonal_basis = buildOrthogonalPolynomial(distType)
             self.tensor_operation = buildSparseGrid(gridType,
                                                     basisType,
                                                     degree,
@@ -153,8 +182,7 @@ class RefinementWrapper:
             numPoints = self.tensor_operation.getLevelManager().numGridPoints()
             self.tensor_operation.getLevelManager().addLevelsAdaptive(np.max([n - numPoints, 0]))
 
-            tensorResult = self.tensor_operation.getResult()
-
+#             tensorResult = self.tensor_operation.getResult()
 #             print "Total function evaluations: %i" % self.tensor_operation.numGridPoints()
 #             print "E(u)   = %g" % tensorResult.get(pysgpp.IndexVector(self.numDims, 0)).getValue()
 #             print "Var(u) = %g" % tensorResult.norm() ** 2
@@ -175,27 +203,30 @@ if __name__ == "__main__":
     parser.add_argument('--degree', default=5, type=int, help="polynomial degree of B-splines")
     parser.add_argument('--minLevel', default=0, type=int, help="minimum level of regular grids")
     parser.add_argument('--maxLevel', default=4, type=int, help="maximum level of regular grids")
-    parser.add_argument('--maxNumGridPoints', default=1e4, type=int, help="maximum number of grid points")
+    parser.add_argument('--maxNumGridPoints', default=200, type=int, help="maximum number of grid points")
     parser.add_argument('--growthFactor', default=2, type=int, help="Leja growth factor")
     parser.add_argument('--levelManager', default="variance", type=str, help="define level manager")
+    parser.add_argument('--dist', default="beta", type=str, help="define marginal distribution")
     args = parser.parse_args()
 
-    model, params = buildModel(args.model)
+    model, params = buildModel(args.model, args.dist)
 
     # We have to wrap f in a pysgpp.MultiFunction object.
     func = pysgpp.multiFunc(lambda x: model(x, params))
     numDims = params.getStochasticDim()
 
     # compute reference values
-    n = 1000
-    x = np.random.rand(n, numDims)
+    n = 10000
+    x = params.getIndependentJointDistribution().rvs(n)
     y = np.array([model(xi, params) for xi in x])
 
     results = {}
     for gridType, levelManagerType, basisType in [
-            ("ClenshawCurtis", "weightedRatio", "poly"),
-            ("ClenshawCurtis", "averaging", "poly"),
             ("ClenshawCurtis", "variance", "poly"),
+            ("UniformBoundary", "averaging", "bspline"),
+            ("UniformBoundary", "regular", "bspline"),
+            ("L2Leja", "variance", "poly"),
+            #             ("Leja", "variance", "poly"),
             ("ClenshawCurtis", "regular", "poly")]:
 
         refinement_wrapper = RefinementWrapper(gridType,
@@ -203,7 +234,8 @@ if __name__ == "__main__":
                                                args.degree,
                                                args.growthFactor,
                                                levelManagerType,
-                                               x)
+                                               distType=args.dist,
+                                               samples=x)
         numGridPoints = np.array([])
         l2errors = np.array([])
         adaptive = levelManagerType != "regular"
@@ -213,16 +245,19 @@ if __name__ == "__main__":
         else:
             n_sequence = range(args.minLevel, args.maxLevel + 1)
 
-        for n in n_sequence:
+        for i, n in enumerate(n_sequence):
             # refine the grid
-            print gridType, basisType, levelManagerType, n, refinement_wrapper.operation.numGridPoints()
+            n_grid_points = refinement_wrapper.operation.numGridPoints()
 
             # compute L2 error
             y_surrogate = refinement_wrapper.evaluate(n)
 
-            l2error = np.sqrt(np.mean((y - y_surrogate) ** 2))
-            l2errors = np.append(l2errors, l2error)
-            numGridPoints = np.append(numGridPoints, refinement_wrapper.operation.numGridPoints())
+            if i == 0 or numGridPoints[-1] < n_grid_points:
+                print gridType, basisType, levelManagerType, n, n_grid_points
+
+                l2error = np.sqrt(np.mean((y - y_surrogate) ** 2))
+                l2errors = np.append(l2errors, l2error)
+                numGridPoints = np.append(numGridPoints, refinement_wrapper.operation.numGridPoints())
 
         results[basisType, levelManagerType, gridType] = numGridPoints, l2errors
 
