@@ -149,9 +149,7 @@ BOOST_AUTO_TEST_CASE(testLevelManagerStats) {
 
   auto op = sgpp::combigrid::CombigridTensorOperation::createExpLejaPolynomialInterpolation(
       functionBasis, d, func);
-  //  auto levelManager = std::make_shared<sgpp::combigrid::RegularLevelManager>();
-  auto levelManager = std::make_shared<sgpp::combigrid::AveragingLevelManager>();
-  op->setLevelManager(levelManager);
+  auto levelManager = op->getLevelManager();
 
   // add regular levels
   size_t maxLevel = 8;
@@ -178,6 +176,56 @@ BOOST_AUTO_TEST_CASE(testLevelManagerStats) {
   //                << ", " << levelInfo->priority << std::endl;
   //    }
   //  }
+  // compute maximum norm per iteration
+  sgpp::base::DataVector maxNorms;
+  stats->maxNormPerIteration(maxNorms);
+  for (size_t i = 0; i < maxNorms.size(); i++) {
+    BOOST_CHECK_SMALL(std::abs(refStats[i] - maxNorms[i]), 1e-5);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(testLevelManagerStatsConversion) {
+  auto func = MultiFunction(testFunctionAtan);
+  size_t d = 2;
+
+  auto op = sgpp::combigrid::CombigridOperation::createExpLejaPolynomialInterpolation(d, func);
+
+  sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
+  config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
+  auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
+
+  // copy level structure to tensor grid
+  auto tensor_op = sgpp::combigrid::CombigridTensorOperation::createExpLejaPolynomialInterpolation(
+      functionBasis, d, func);
+
+  // add regular levels
+  size_t maxLevel = 8;
+  for (size_t level = 0; level < maxLevel; level++) {
+    op->getLevelManager()->addRegularLevels(level);
+    tensor_op->getLevelManager()->addLevelsFromStructure(
+        op->getLevelManager()->getLevelStructure());
+  }
+
+  auto stats = tensor_op->getLevelManager()->getInfoOnAddedLevels();
+
+  //  // evaluate stats
+  //  size_t i = 0;
+  //  for (auto &istats : *stats->getInfos()) {
+  //    std::cout << " - - - - - - - - - - - - " << std::endl;
+  //    std::cout << "iteration = " << ++i << std::endl;
+  //    for (auto &item : *istats) {
+  //      auto &level = item.first;
+  //      auto &levelInfo = item.second;
+  //      std::cout << level[0] << ", " << level[1] << " = " << std::setprecision(15) <<
+  //      levelInfo->norm
+  //                << ", " << levelInfo->priority << std::endl;
+  //    }
+  //  }
+
+  // reference stats
+  std::vector<double> refStats{0.0,         1.192569,    5.795147e-1, 3.154010e-1,
+                               2.375317e-1, 1.420868e-1, 7.702826e-2, 1.341710e-2};
+
   // compute maximum norm per iteration
   sgpp::base::DataVector maxNorms;
   stats->maxNormPerIteration(maxNorms);

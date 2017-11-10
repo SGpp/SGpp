@@ -35,6 +35,8 @@ class PolynomialChaosExpansion {
                                 bool normalized = true);
   void getTotalSobolIndices(sgpp::base::DataVector& totalSobolIndices, bool normalized = true);
 
+  std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> getCombigridTensorOperation();
+
  private:
   void computeComponentSobolIndices();
 
@@ -48,10 +50,8 @@ class PolynomialChaosExpansion {
   std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation;
   std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> tensorOperation;
 
-  bool expansionCoefficientsFlag;
+  size_t numGridPoints;
   sgpp::combigrid::FloatTensorVector expansionCoefficients;
-
-  bool sobolIndicesFlag;
   sgpp::base::DataVector sobolIndices;
 };
 
