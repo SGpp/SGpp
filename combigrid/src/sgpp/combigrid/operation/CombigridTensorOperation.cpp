@@ -22,6 +22,8 @@
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
+#include <sgpp/combigrid/operation/CombigridOperation.hpp>
+#include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 
 #include <iostream>
 #include <vector>
@@ -96,11 +98,6 @@ void CombigridTensorOperation::setParameters(const std::vector<FloatTensorVector
 }
 
 FloatTensorVector CombigridTensorOperation::getResult() { return impl->combiEval->getValue(); }
-
-void CombigridTensorOperation::setStorage(std::shared_ptr<AbstractCombigridStorage> newStorage) {
-  impl->storage = newStorage;
-  impl->fullGridEval->setStorage(newStorage);
-}
 
 std::shared_ptr<AbstractCombigridStorage> CombigridTensorOperation::getStorage() {
   return impl->storage;
@@ -224,6 +221,23 @@ CombigridTensorOperation::createLinearL2LejaPolynomialInterpolation(
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>>(
           numDimensions, CombiEvaluators::tensorInterpolation(functionBasis)),
       std::make_shared<StandardLevelManager>(), func);
+}
+
+std::shared_ptr<CombigridTensorOperation>
+CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
+    std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+    std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager,
+    std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis) {
+  size_t numDims = pointHierarchies.size();
+  std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>> evaluatorPrototypes(
+      numDims, sgpp::combigrid::CombiEvaluators::tensorInterpolation(functionBasis));
+
+  auto tensorOperation = std::make_shared<CombigridTensorOperation>(
+      pointHierarchies, evaluatorPrototypes, std::make_shared<StandardLevelManager>(), storage);
+  auto levelStructure = levelManager->getLevelStructure();
+  tensorOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
+
+  return tensorOperation;
 }
 
 } /* namespace combigrid */

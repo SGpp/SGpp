@@ -89,3 +89,6 @@ GPATH
 GRTAGS
 GSYMS
 GTAGS
+
+# output of profiler
+gmon.out

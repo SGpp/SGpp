@@ -1,5 +1,5 @@
 from pysgpp.extensions.datadriven.uq.dists import (Dist, Uniform, Normal, TNormal,
-                          Lognormal, Beta, MultivariateNormal)
+                                                   Lognormal, Beta, MultivariateNormal)
 from pysgpp.extensions.datadriven.uq.transformation import (LinearTransformation,
                                                             RosenblattTransformation)
 
@@ -8,6 +8,11 @@ from UncertainParameter import UncertainParameter
 from pysgpp.extensions.datadriven.uq.transformation.JointTransformation import JointTransformation
 from pysgpp.extensions.datadriven.uq.dists.DataDist import DataDist
 from pysgpp.extensions.datadriven.uq.sampler.Sample import DistributionType
+from pysgpp.pysgpp_swig import OrthogonalPolynomialBasis1DConfiguration, \
+    OrthogonalPolynomialBasisType_HERMITE, \
+    OrthogonalPolynomialBasisType_JACOBI, \
+    OrthogonalPolynomialBasisType_LEGENDRE, \
+    OrthogonalPolynomialBasis1D
 
 
 class ParameterDescriptor(object):
@@ -142,5 +147,24 @@ class UncertainParameterDesciptor(ParameterDescriptor):
 #         if isinstance(self._dist, SGDEdist):
 #             self._dist.transformation = self.__trans
 
+        # check wiener askey scheme
+        partOfWienerAskeyScheme = False
+        orthogPolyConfig = OrthogonalPolynomialBasis1DConfiguration()
+        if isinstance(self.__trans, RosenblattTransformation) or \
+                isinstance(self._dist, Uniform):
+            orthogPolyConfig.polyParameters.type_ = OrthogonalPolynomialBasisType_LEGENDRE
+            orthogPoly = OrthogonalPolynomialBasis1D(orthogPolyConfig)
+        elif isinstance(self._dist, Normal):
+            orthogPolyConfig.polyParameters.type_ = OrthogonalPolynomialBasisType_HERMITE
+            orthogPoly = OrthogonalPolynomialBasis1D(orthogPolyConfig)
+        elif isinstance(self._dist, Beta):
+            orthogPolyConfig.polyParameters.type_ = OrthogonalPolynomialBasisType_JACOBI
+            orthogPolyConfig.polyParameters.alpha_ = self._dist.alpha()
+            orthogPolyConfig.polyParameters.beta_ = self._dist.beta()
+            orthogPoly = OrthogonalPolynomialBasis1D(orthogPolyConfig)
+        else:
+            orthogPoly = None
+
         return UncertainParameter(self._name, self._dist,
-                                  self.__trans, self._value)
+                                  self.__trans, self._value,
+                                  orthogPoly)

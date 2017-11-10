@@ -18,7 +18,7 @@
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
-#include <sgpp/combigrid/operation/multidim/VarianceLevelManager.hpp>
+#include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
@@ -391,7 +391,7 @@ void example6() {
    */
   sgpp::combigrid::GridFunction gf([](std::shared_ptr<sgpp::combigrid::TensorGrid> grid) {
     // We store the results for each grid point, encoded by a MultiIndex, in a TreeStorage
-    auto result = std::make_shared<sgpp::combigrid::TreeStorage<double>>(d);
+    auto result = std::make_shared<sgpp::combigrid::TreeStorage<double> >(d);
 
     // Creates an iterator that yields all multi-indices of grid points in the grid.
     sgpp::combigrid::MultiIndexIterator it(grid->numPoints());
@@ -472,25 +472,41 @@ void example7() {
  * variance computation on each subspace.
  */
 void example8() {
-  auto operation =
-      sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(d, func);
-
   sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
   config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
 
   auto basisFunction = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
-  std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>> basisFunctions(
-      d, basisFunction);
 
-  auto levelManager = std::make_shared<sgpp::combigrid::VarianceLevelManager>(
-      operation->getPointHierarchies(), operation->getStorage(), basisFunctions);
+  auto tensor_operation =
+      sgpp::combigrid::CombigridTensorOperation::createExpClenshawCurtisPolynomialInterpolation(
+          basisFunction, d, func);
 
-  operation->setLevelManager(levelManager);
+  auto levelManager = std::make_shared<sgpp::combigrid::AveragingLevelManager>();
+  tensor_operation->setLevelManager(levelManager);
 
-  levelManager->addRegularLevels(0);
-  std::cout << "Total function evaluations: " << operation->numGridPoints() << "\n";
+  // add at least the regular levels up to 1 otherwise the refinement criteria
+  // does not converge due to the fact that the variance for the constant basis
+  // is zero.
+  levelManager->addRegularLevels(1);
+  std::cout << "Total function evaluations: " << tensor_operation->numGridPoints() << "\n";
   levelManager->addLevelsAdaptive(200);
-  std::cout << "Total function evaluations: " << operation->numGridPoints() << "\n";
+  std::cout << "Total function evaluations: " << tensor_operation->numGridPoints() << "\n";
+
+  // print the expectation value
+  auto tensorResult = tensor_operation->getResult();
+  std::cout << "result of transformation: E(u) = "
+            << tensorResult.get(sgpp::combigrid::MultiIndex(d, 0)) << std::endl;
+
+  // we use the same level structure and compute the expectation value via quadrature
+  auto quadrature_operation =
+      sgpp::combigrid::CombigridOperation::createExpClenshawCurtisQuadrature(d, func);
+
+  // copy the level information and initialize the combigrid
+  quadrature_operation->getLevelManager()->addLevelsFromStructure(
+      levelManager->getLevelStructure());
+
+  double quadratureResult = quadrature_operation->getResult();
+  std::cout << "result of quadrature    : E(u) = " << quadratureResult << std::endl;
 }
 
 int main() {

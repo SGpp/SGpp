@@ -52,7 +52,6 @@
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
-#include <sgpp/combigrid/operation/multidim/VarianceLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/LevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/RegularLevelManager.hpp>
@@ -80,5 +79,7 @@
 #include <sgpp/combigrid/utils/BinaryHeap.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
+
+#include <sgpp/combigrid/pce/PolynomialChaosExpansion.hpp>
 
 #endif /* COMBIGRID_HPP_ */
