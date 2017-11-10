@@ -24,6 +24,7 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
+#include <map>
 
 namespace sgpp {
 namespace combigrid {
@@ -54,6 +55,11 @@ class LevelManager {
    * priority.
    */
   MultiIndexQueue queue;
+
+  /**
+   * this object stores information on the levels during adaptive refinement
+   */
+  std::shared_ptr<LevelInfos> infoOnAddedLevels;
 
   /**
    * Stores level information for already visited (!= computed) levels.
@@ -175,6 +181,19 @@ class LevelManager {
    */
   void addLevels(std::vector<MultiIndex> const &levels);
 
+  /**
+   * Adds the level to the combigrid evaluator
+   * @param level level
+   */
+  bool addLevelToCombiEval(const MultiIndex &level);
+
+  /**
+   * update stats for levels that have been added in the current iteration
+   * @param levels newly added levels
+   */
+  void updateStats();
+  void addStats(const MultiIndex &level);
+
  public:
   /**
    * Constructor. The CombigridEvaluator (or another derived class of AbstractLevelEvaluator) has to
@@ -200,7 +219,7 @@ class LevelManager {
   /**
    * @param q: Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as
    * in most papers).
-   * If you have a norm w with levels starting from 1, simply use q = w - dim().
+   * If you have a norm w with levels starting from 1, simply use q = w - numDim().
    */
   void addRegularLevels(size_t q);
 
@@ -223,7 +242,7 @@ class LevelManager {
    * @param q  Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as
    * in most papers).
    * @param numThreads number of threads that should be used for computation
-   * If you have a norm w with levels starting from 1, simply use q = w - dim().
+   * If you have a norm w with levels starting from 1, simply use q = w - numDims().
    */
   void addRegularLevelsParallel(size_t q, size_t numThreads);
 
@@ -236,7 +255,7 @@ class LevelManager {
   /**
    * @return the dimensionality of the problem.
    */
-  virtual size_t dim() const;
+  virtual size_t numDims() const;
 
   /**
    * @return a TreeStorage which contains an entry at an index i iff the level i has been added to
@@ -247,7 +266,7 @@ class LevelManager {
   /**
    * @param q: Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as
    * in most papers).
-   * If you have a norm w with levels starting from 1, simply use q = w - dim().
+   * If you have a norm w with levels starting from 1, simply use q = w - numDims().
    */
   std::vector<MultiIndex> getRegularLevels(size_t q);
 
@@ -317,11 +336,6 @@ class LevelManager {
   size_t numGridPoints() { return combiEval->getAllGridPoints().size(); }
 
   /**
-   * @return number of dimensions
-   */
-  size_t numDims() { return numDimensions; }
-
-  /**
    * @return the maximum number of grid points that have to be evaluated for a regular grid with
    * maximum multi-index L1 norm of q. For nested grids, this estimate should be exact.
    */
@@ -343,6 +357,11 @@ class LevelManager {
    * in exactly one level.
    */
   size_t getUpperPointBound() const { return combiEval->getUpperPointBound(); }
+
+  /**
+   * @return the infos on the adaptive refinement steps
+   */
+  std::shared_ptr<LevelInfos> getInfoOnAddedLevels();
 };
 }  // namespace combigrid
 }  // namespace sgpp
