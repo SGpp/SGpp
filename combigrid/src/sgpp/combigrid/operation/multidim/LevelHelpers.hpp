@@ -17,6 +17,7 @@
 #include <queue>
 #include <unordered_set>
 #include <vector>
+#include <map>
 
 namespace sgpp {
 namespace combigrid {
@@ -111,7 +112,10 @@ class LevelInfo {
    */
   size_t numPoints;
 
-  // TODO(holzmudd): add priority
+  /**
+   * priority of the level used for adaptive refinement
+   */
+  double priority;
 
   /**
    * Creates a new level in its earliest stage. This means that it is not ready for computation yet.
@@ -123,7 +127,8 @@ class LevelInfo {
         handle(nullptr),
         norm(0.0),
         maxNewPoints(maxNewPoints),
-        numPoints(numPoints) {}
+        numPoints(numPoints),
+        priority(0.0) {}
 
   /**
    * Creates a new level in its latest stage, where everything has already been computed.
@@ -135,7 +140,8 @@ class LevelInfo {
         handle(nullptr),
         norm(norm),
         maxNewPoints(maxNewPoints),
-        numPoints(numPoints) {}
+        numPoints(numPoints),
+        priority(0.0) {}
 
   /**
    * Updates the priority of this level in the priority queue.
@@ -144,7 +150,54 @@ class LevelInfo {
     auto entry = *(*handle);
     entry.priority = priority;
     queue.update(*handle, entry);
+    this->priority = priority;
   }
+};
+
+/**
+ * Storage for meta information on the levels during adaptive refinement
+ */
+class LevelInfos {
+ public:
+  LevelInfos();
+  virtual ~LevelInfos();
+
+  /**
+   * increments the counter -> new refinement iteration started
+   */
+  void incrementCounter();
+
+  /**
+   * insert information on a new level that has been added during the current refinement iteration
+   * @param level MultiIndex representing the level
+   * @param levelInfo information on the level containing norm, priority, numGridPoints, etc.
+   */
+  void insert(const MultiIndex &level, std::shared_ptr<LevelInfo> levelInfo);
+
+  /**
+   * computes the maximum norm of all levels per refinement iteration.
+   * This can be used as an indicator for the error of the combigrid solution.
+   *
+   * @param maxNorms return vector; contains the maximum norm of all levels per iteration
+   */
+  void maxNormPerIteration(sgpp::base::DataVector &maxNorms);
+
+  /**
+   * @return the currently stored information
+   */
+  std::shared_ptr<std::vector<std::shared_ptr<std::map<MultiIndex, std::shared_ptr<LevelInfo>>>>>
+  getInfos();
+
+ private:
+  /**
+   * hash map that stores the level info per refinement iteration
+   */
+  std::shared_ptr<std::vector<std::shared_ptr<std::map<MultiIndex, std::shared_ptr<LevelInfo>>>>>
+      infoOnAddedLevels;
+  /**
+   * counter for adaptive refinements
+   */
+  size_t counterAdaptive;
 };
 
 } /* namespace combigrid */

@@ -88,6 +88,7 @@
 %shared_ptr(sgpp::combigrid::AveragingLevelManager)
 %shared_ptr(sgpp::combigrid::WeightedRatioLevelManager)
 %shared_ptr(sgpp::combigrid::RegularLevelManager)
+%shared_ptr(sgpp::combigrid::LevelInfos)
 
 %shared_ptr(sgpp::combigrid::TensorGrid)
 %shared_ptr(sgpp::combigrid::ThreadPool)
@@ -287,6 +288,7 @@ namespace std {
 
 %include "combigrid/src/sgpp/combigrid/numeric/KahanAdder.hpp"
 %include "combigrid/src/sgpp/combigrid/storage/AbstractCombigridStorage.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/multidim/LevelHelpers.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/LevelManager.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp"
