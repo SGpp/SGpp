@@ -132,6 +132,8 @@ size_t CombigridTensorOperation::numStoredFunctionValues() {
 
 size_t CombigridTensorOperation::numGridPoints() { return impl->levelManager->numGridPoints(); }
 
+size_t CombigridTensorOperation::numDims() { return impl->levelManager->numDims(); }
+
 size_t CombigridTensorOperation::getUpperPointBound() const {
   return impl->levelManager->getUpperPointBound();
 }

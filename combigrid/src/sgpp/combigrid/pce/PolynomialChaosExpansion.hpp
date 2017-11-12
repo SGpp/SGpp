@@ -23,7 +23,11 @@ class PolynomialChaosExpansion {
       std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D> functionBasis);
 
   PolynomialChaosExpansion(
-      std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridOperation,
+      std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation,
+      std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D> functionBasis);
+
+  PolynomialChaosExpansion(
+      std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation,
       std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D> functionBasis);
 
   virtual ~PolynomialChaosExpansion();
@@ -48,7 +52,7 @@ class PolynomialChaosExpansion {
   std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D> functionBasis;
   std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation;
   std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation;
-  std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> tensorOperation;
+  std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation;
 
   size_t numGridPoints;
   sgpp::combigrid::FloatTensorVector expansionCoefficients;
