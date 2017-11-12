@@ -15,15 +15,29 @@
 namespace sgpp {
 namespace combigrid {
 
-enum class OrthogonalPolynomialBasisType { LEGENDRE, JACOBI, HERMITE };
+enum class OrthogonalPolynomialBasisType {
+  LEGENDRE,
+  JACOBI,
+  HERMITE,
+  LOGNORMAL,
+  BOUNDED_LOGNORMAL
+};
 
 struct OrthogonalPolynomialBasis1DParameters {
   // type
   OrthogonalPolynomialBasisType type_;
 
-  // Jacobi polynomials
+  // Beta distribution -> Jacobi polynomials
   double alpha_;
   double beta_;
+
+  // Lognormal distribution -> numerically computed polynomials
+  double logmean_;
+  double logstddev_;
+
+  // for bounded variables
+  double lowerBound_;
+  double upperBound_;
 };
 
 // --------------------------------------------------------------------------
@@ -48,7 +62,6 @@ class OrthogonalPolynomialBasis1DConfiguration : public json::JSON {
 // --------------------------------------------------------------------------
 class OrthogonalPolynomialBasis1D : public AbstractInfiniteFunctionBasis1D {
  public:
-  OrthogonalPolynomialBasis1D();
   explicit OrthogonalPolynomialBasis1D(OrthogonalPolynomialBasis1DConfiguration& config);
   virtual ~OrthogonalPolynomialBasis1D();
 
@@ -56,7 +69,7 @@ class OrthogonalPolynomialBasis1D : public AbstractInfiniteFunctionBasis1D {
 
  private:
   double normalizeInput(double xValue);
-  OrthogonalPolynomialBasisType basisType;
+  OrthogonalPolynomialBasis1DConfiguration config;
 #ifdef USE_DAKOTA
   std::shared_ptr<Pecos::BasisPolynomial> basisPoly;
 #endif
