@@ -128,20 +128,20 @@ class TLognormal(Dist):
         @return: the restored UQSetting object
         """
         # restore surpluses
-        key = '_Lognormal__mu'
+        key = '_TLognormal__mu'
         if key in jsonObject:
             mu = float(jsonObject[key])
 
-        key = '_Lognormal__sigma'
+        key = '_TLognormal__sigma'
         if key in jsonObject:
             sigma = float(jsonObject[key])
 
-        key = '_Lognormal__a'
+        key = '_TLognormal__a'
         if key in jsonObject:
             a = float(jsonObject[key])
 
-        key = '_Lognormal__b'
+        key = '_TLognormal__b'
         if key in jsonObject:
             b = float(jsonObject[key])
 
-        return Lognormal(mu, sigma, a, b)
+        return TLognormal(mu, sigma, a, b)
