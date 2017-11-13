@@ -227,30 +227,14 @@ BOOST_AUTO_TEST_CASE(testVarianceComputationWithPCETransformation_Lognormal_Clen
   config.polyParameters.logmean_ = 0.0;
   config.polyParameters.logstddev_ = 1.0;
   config.polyParameters.lowerBound_ = 1e-2;
-  config.polyParameters.upperBound_ = 10.0;
+  config.polyParameters.upperBound_ = 1.0;
   auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
 
-  //  double xmin = -1.0;
-  //  double width = 2.0;
-  //  double numPatches = 10.0;
-  //
-  //  double h = width / numPatches;
-  //
-  //  for (size_t p = 0; p < 3; p++) {
-  //    double x = xmin;
-  //    std::cout << " - - -- - - - - - - - - - - - - " << std::endl << "degree = " << p <<
-  //    std::endl;
-  //    while (x < xmin + width) {
-  //      std::cout << "  f(" << x << ") = " << functionBasis->evaluate(p, x) << std::endl;
-  //      x += h;
-  //    }
-  //  }
   sgpp::combigrid::MultiFunction func(normal_parabola);
-
-  for (size_t numDims = 2; numDims <= 5; ++numDims) {
-    auto op =
-        sgpp::combigrid::CombigridTensorOperation::createExpClenshawCurtisPolynomialInterpolation(
-            functionBasis, numDims, func);
+  size_t level = 4;
+  for (size_t numDims = 1; numDims <= 5; ++numDims) {
+    auto op = sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
+        numDims, func);
     auto op_levelManager = op->getLevelManager();
     sgpp::combigrid::PolynomialChaosExpansion pce(op, functionBasis);
     auto pce_levelManager = pce.getCombigridTensorOperation()->getLevelManager();
@@ -258,21 +242,17 @@ BOOST_AUTO_TEST_CASE(testVarianceComputationWithPCETransformation_Lognormal_Clen
     // compute the reference solution
     double mean_ref = mean(numDims, func, 1e4, functionBasis);
     double var_ref = variance(numDims, func, 1e4, mean_ref, functionBasis);
+    op_levelManager->addRegularLevels(level);
+    pce_levelManager->addLevelsFromStructure(op_levelManager->getLevelStructure());
 
-    std::cout << "- - - - - -  - - - - - - - - - - - " << std::endl;
-    std::cout << "numDims = " << numDims << std::endl;
-    for (size_t level = 0; level <= 5; level++) {
-      op_levelManager->addRegularLevels(level);
-      pce_levelManager->addLevelsFromStructure(op_levelManager->getLevelStructure());
-
-      // check if they match
-      std::cout << "  level = " << level << ": mean = " << mean_ref << " ~ " << pce.mean()
-                << " (err = " << std::abs(pce.mean() - mean_ref) << "); var = " << var_ref << " ~ "
-                << pce.variance() << " (err = " << std::abs(pce.variance() - var_ref) << ")"
-                << std::endl;
-    }
-    //    BOOST_CHECK_CLOSE(pce.mean(), mean_ref, 1e-2);
-    //    BOOST_CHECK_CLOSE(pce.variance(), var_ref, 1e-2);
+    // check if they match
+    //    std::cout << "  level = " << level << ": mean = " << mean_ref << " ~ " << pce.mean()
+    //              << " (err = " << std::abs(pce.mean() - mean_ref) << "); var = " << var_ref << "
+    //              ~ "
+    //              << pce.variance() << " (err = " << std::abs(pce.variance() - var_ref) << ")"
+    //              << std::endl;
+    BOOST_CHECK_SMALL(std::abs(pce.mean() - mean_ref), 5e-3);
+    BOOST_CHECK_SMALL(std::abs(pce.variance() - var_ref), 5e-3);
   }
 }
 
