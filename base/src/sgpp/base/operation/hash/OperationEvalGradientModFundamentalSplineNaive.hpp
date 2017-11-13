@@ -16,7 +16,7 @@ namespace sgpp {
 namespace base {
 
 /**
- * Operation for evaluating modified B-spline linear combinations on Noboundary grids and
+ * Operation for evaluating modified fundamental spline linear combinations on Noboundary grids and
  * their gradients.
  */
 class OperationEvalGradientModFundamentalSplineNaive : public
