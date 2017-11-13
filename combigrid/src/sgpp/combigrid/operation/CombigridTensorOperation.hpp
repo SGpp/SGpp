@@ -135,6 +135,11 @@ class CombigridTensorOperation {
   size_t getUpperPointBound() const;
 
   /**
+   * @return the point hierarchies containing the grid points in each direction
+   */
+  std::vector<std::shared_ptr<AbstractPointHierarchy>> getPointHierarchies();
+
+  /**
    * Returns a CombigridTensorOperation doing polynomial interpolation on a Clenshaw-Curtis grid
    * with
    * an exponential growth (nested points).
@@ -221,6 +226,17 @@ class CombigridTensorOperation {
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager,
       std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis);
+
+  /**
+   *
+   * @param operation
+   * @param functionBasis
+   * @return
+   */
+  static std::shared_ptr<CombigridTensorOperation> createOperationTensorPolynomialInterpolation(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+      std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager,
+      std::vector<std::shared_ptr<AbstractInfiniteFunctionBasis1D>> &functionBases);
 };
 
 } /* namespace combigrid */

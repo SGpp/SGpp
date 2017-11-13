@@ -5,6 +5,10 @@
 
 #include <sgpp/combigrid/pce/PolynomialChaosExpansion.hpp>
 #include <sgpp/combigrid/pce/SGppToDakota.hpp>
+#include <sgpp/combigrid/operation/CombigridOperation.hpp>
+#include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
+#include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
+#include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
 #include <pecos_data_types.hpp>
 
 #include <vector>
@@ -13,46 +17,94 @@ namespace sgpp {
 namespace combigrid {
 
 PolynomialChaosExpansion::PolynomialChaosExpansion(
-    std::shared_ptr<CombigridOperation> combigridOperation,
-    std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis)
+    std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation,
+    std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D> functionBasis)
     : numDims(combigridOperation->numDims()),
-      functionBasis(functionBasis),
       combigridOperation(combigridOperation),
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
       numGridPoints(combigridOperation->numGridPoints()) {
   // create tensor operation for pce transformation
-  combigridTensorOperation =
+  this->combigridTensorOperation =
       sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
           combigridOperation->getPointHierarchies(), combigridOperation->getStorage(),
           combigridOperation->getLevelManager(), functionBasis);
 }
 
 PolynomialChaosExpansion::PolynomialChaosExpansion(
-    std::shared_ptr<CombigridMultiOperation> combigridMultiOperation,
-    std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis)
+    std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation,
+    std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D> functionBasis)
     : numDims(combigridMultiOperation->numDims()),
-      functionBasis(functionBasis),
       combigridOperation(nullptr),
       combigridMultiOperation(combigridMultiOperation),
       combigridTensorOperation(nullptr),
       numGridPoints(combigridMultiOperation->numGridPoints()) {
   // create tensor operation for pce transformation
-  combigridTensorOperation =
+  this->combigridTensorOperation =
       sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
           combigridMultiOperation->getPointHierarchies(), combigridMultiOperation->getStorage(),
           combigridMultiOperation->getLevelManager(), functionBasis);
 }
 
 PolynomialChaosExpansion::PolynomialChaosExpansion(
-    std::shared_ptr<CombigridTensorOperation> combigridTensorOperation,
-    std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis)
+    std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation,
+    std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D> functionBasis)
     : numDims(combigridTensorOperation->numDims()),
-      functionBasis(functionBasis),
       combigridOperation(nullptr),
       combigridMultiOperation(nullptr),
       combigridTensorOperation(combigridTensorOperation),
-      numGridPoints(combigridTensorOperation->numGridPoints()) {}
+      numGridPoints(combigridTensorOperation->numGridPoints()) {
+  // create tensor operation for pce transformation
+  this->combigridTensorOperation =
+      CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
+          combigridTensorOperation->getPointHierarchies(), combigridTensorOperation->getStorage(),
+          combigridTensorOperation->getLevelManager(), functionBasis);
+}
+
+PolynomialChaosExpansion::PolynomialChaosExpansion(
+    std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation,
+    std::vector<std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D>>& functionBases)
+    : numDims(combigridMultiOperation->numDims()),
+      combigridOperation(combigridOperation),
+      combigridMultiOperation(nullptr),
+      combigridTensorOperation(nullptr),
+      numGridPoints(combigridMultiOperation->numGridPoints()) {
+  // create tensor operation for pce transformation
+  this->combigridTensorOperation =
+      sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
+          combigridOperation->getPointHierarchies(), combigridOperation->getStorage(),
+          combigridOperation->getLevelManager(), functionBases);
+}
+
+PolynomialChaosExpansion::PolynomialChaosExpansion(
+    std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation,
+    std::vector<std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D>>& functionBases)
+    : numDims(combigridMultiOperation->numDims()),
+      combigridOperation(nullptr),
+      combigridMultiOperation(combigridMultiOperation),
+      combigridTensorOperation(nullptr),
+      numGridPoints(combigridMultiOperation->numGridPoints()) {
+  // create tensor operation for pce transformation
+  this->combigridTensorOperation =
+      sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
+          combigridMultiOperation->getPointHierarchies(), combigridMultiOperation->getStorage(),
+          combigridMultiOperation->getLevelManager(), functionBases);
+}
+
+PolynomialChaosExpansion::PolynomialChaosExpansion(
+    std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation,
+    std::vector<std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D>>& functionBases)
+    : numDims(combigridTensorOperation->numDims()),
+      combigridOperation(nullptr),
+      combigridMultiOperation(nullptr),
+      combigridTensorOperation(nullptr),
+      numGridPoints(combigridTensorOperation->numGridPoints()) {
+  // create tensor operation for pce transformation
+  this->combigridTensorOperation =
+      sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
+          combigridTensorOperation->getPointHierarchies(), combigridTensorOperation->getStorage(),
+          combigridTensorOperation->getLevelManager(), functionBases);
+}
 
 PolynomialChaosExpansion::~PolynomialChaosExpansion() {}
 
@@ -66,7 +118,7 @@ double PolynomialChaosExpansion::mean() {
     expansionCoefficients = combigridTensorOperation->getResult();
     numGridPoints = combigridTensorOperation->numGridPoints();
   }
-  return expansionCoefficients.get(sgpp::combigrid::MultiIndex(numDims, 0)).getValue();
+  return expansionCoefficients.get(MultiIndex(numDims, 0)).getValue();
 }
 
 double PolynomialChaosExpansion::variance() {

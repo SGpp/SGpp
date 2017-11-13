@@ -13,6 +13,8 @@
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
 
+#include <vector>
+
 namespace sgpp {
 namespace combigrid {
 
@@ -29,6 +31,21 @@ class PolynomialChaosExpansion {
   PolynomialChaosExpansion(
       std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation,
       std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D> functionBasis);
+
+  PolynomialChaosExpansion(
+      std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation,
+      std::vector<std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D>>&
+          functionBases);
+
+  PolynomialChaosExpansion(
+      std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation,
+      std::vector<std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D>>&
+          functionBases);
+
+  PolynomialChaosExpansion(
+      std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation,
+      std::vector<std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D>>&
+          functionBases);
 
   virtual ~PolynomialChaosExpansion();
 
@@ -49,7 +66,6 @@ class PolynomialChaosExpansion {
 #endif
 
   size_t numDims;
-  std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D> functionBasis;
   std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation;
   std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation;
   std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation;
