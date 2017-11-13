@@ -77,13 +77,13 @@ class TLognormal(Dist):
             return self._dist.ppf(x * self.phi_width + self.phi_lwr)
 
     def mean(self):
-        return self._dist.mean()
+        return self.__mu
 
     def var(self):
-        return self._dist.var()
+        return self.__sigma ** 2
 
     def std(self):
-        return self._dist.std()
+        return self.__sigma
 
     def rvs(self, n=1):
         samples = np.zeros(n)
