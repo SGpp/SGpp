@@ -40,6 +40,7 @@ class CombigridTensorOperationImpl {
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>> evaluatorPrototypes,
       std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage)
       : storage(storage),
+        pointHierarchies(pointHierarchies),
         fullGridEval(new FullGridLinearCallbackEvaluator<FloatTensorVector>(
             storage, evaluatorPrototypes, pointHierarchies)),
         combiEval(new CombigridEvaluator<FloatTensorVector>(pointHierarchies.size(), fullGridEval)),
@@ -53,6 +54,7 @@ class CombigridTensorOperationImpl {
       std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage,
       GridFunction gridFunc)
       : storage(storage),
+        pointHierarchies(pointHierarchies),
         fullGridEval(new FullGridLinearGridBasedEvaluator<FloatTensorVector>(
             storage, evaluatorPrototypes, pointHierarchies, gridFunc)),
         combiEval(new CombigridEvaluator<FloatTensorVector>(pointHierarchies.size(), fullGridEval)),
@@ -61,6 +63,7 @@ class CombigridTensorOperationImpl {
   }
 
   std::shared_ptr<AbstractCombigridStorage> storage;
+  std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies;
   std::shared_ptr<AbstractFullGridEvaluator<FloatTensorVector>> fullGridEval;
   std::shared_ptr<CombigridEvaluator<FloatTensorVector>> combiEval;
   std::shared_ptr<LevelManager> levelManager;
@@ -136,6 +139,11 @@ size_t CombigridTensorOperation::numDims() { return impl->levelManager->numDims(
 
 size_t CombigridTensorOperation::getUpperPointBound() const {
   return impl->levelManager->getUpperPointBound();
+}
+
+std::vector<std::shared_ptr<AbstractPointHierarchy>>
+CombigridTensorOperation::getPointHierarchies() {
+  return impl->pointHierarchies;
 }
 
 std::shared_ptr<CombigridTensorOperation>
@@ -236,6 +244,25 @@ CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
 
   auto tensorOperation = std::make_shared<CombigridTensorOperation>(
       pointHierarchies, evaluatorPrototypes, std::make_shared<StandardLevelManager>(), storage);
+  auto levelStructure = levelManager->getLevelStructure();
+  tensorOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
+
+  return tensorOperation;
+}
+
+std::shared_ptr<CombigridTensorOperation>
+CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
+    std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+    std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager,
+    std::vector<std::shared_ptr<AbstractInfiniteFunctionBasis1D>> &functionBases) {
+  // TODO (franzefn): check dimensionality
+  // create combi evaluators
+  sgpp::combigrid::CombiEvaluators::TensorCollection evaluators;
+  for (auto &functionBasis : functionBases) {
+    evaluators.push_back(sgpp::combigrid::CombiEvaluators::tensorInterpolation(functionBasis));
+  }
+  auto tensorOperation = std::make_shared<CombigridTensorOperation>(
+      pointHierarchies, evaluators, std::make_shared<StandardLevelManager>(), storage);
   auto levelStructure = levelManager->getLevelStructure();
   tensorOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
 
