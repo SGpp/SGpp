@@ -16,8 +16,7 @@ namespace sgpp {
 namespace optimization {
 
 /**
- * Hierarchisation operation for B-spline basis functions on
- * Boundary grids.
+ * Hierarchisation operation for B-spline basis functions on Boundary grids.
  */
 class OperationMultipleHierarchisationBsplineBoundary : public OperationMultipleHierarchisation {
  public:
