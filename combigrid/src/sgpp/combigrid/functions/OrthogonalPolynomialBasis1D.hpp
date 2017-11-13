@@ -10,18 +10,13 @@
 
 #ifdef USE_DAKOTA
 #include <BasisPolynomial.hpp>
+#include <RandomVariable.hpp>
 #endif
 
 namespace sgpp {
 namespace combigrid {
 
-enum class OrthogonalPolynomialBasisType {
-  LEGENDRE,
-  JACOBI,
-  HERMITE,
-  LOGNORMAL,
-  BOUNDED_LOGNORMAL
-};
+enum class OrthogonalPolynomialBasisType { LEGENDRE, JACOBI, HERMITE, BOUNDED_LOGNORMAL };
 
 struct OrthogonalPolynomialBasis1DParameters {
   // type
@@ -30,6 +25,10 @@ struct OrthogonalPolynomialBasis1DParameters {
   // Beta distribution -> Jacobi polynomials
   double alpha_;
   double beta_;
+
+  // normal distribution -> Hermite polynomials
+  double mean_;
+  double stddev_;
 
   // Lognormal distribution -> numerically computed polynomials
   double logmean_;
@@ -66,12 +65,14 @@ class OrthogonalPolynomialBasis1D : public AbstractInfiniteFunctionBasis1D {
   virtual ~OrthogonalPolynomialBasis1D();
 
   double evaluate(size_t basisIndex, double xValue) override;
+  double pdf(double xValue);
 
  private:
   double normalizeInput(double xValue);
   OrthogonalPolynomialBasis1DConfiguration config;
 #ifdef USE_DAKOTA
   std::shared_ptr<Pecos::BasisPolynomial> basisPoly;
+  std::shared_ptr<Pecos::RandomVariable> rv;
 #endif
 };
 

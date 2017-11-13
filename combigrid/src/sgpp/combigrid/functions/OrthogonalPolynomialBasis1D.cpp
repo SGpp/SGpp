@@ -16,6 +16,11 @@
 #include <JacobiOrthogPolynomial.hpp>
 #include <LegendreOrthogPolynomial.hpp>
 #include <NumericGenOrthogPolynomial.hpp>
+
+#include <NormalRandomVariable.hpp>
+#include <UniformRandomVariable.hpp>
+#include <BetaRandomVariable.hpp>
+#include <BoundedLognormalRandomVariable.hpp>
 #endif
 
 #include <iostream>
@@ -45,10 +50,15 @@ OrthogonalPolynomialBasis1DConfiguration::OrthogonalPolynomialBasis1DConfigurati
     if (this->contains("jacobi_alpha")) polyParameters.alpha_ = (*this)["jacobi_alpha"].getDouble();
     if (this->contains("jacobi_beta")) polyParameters.beta_ = (*this)["jacobi_beta"].getDouble();
 
+    // parameters for orthogonal polynomials wrt normal distribution
+    if (this->contains("normal_mean")) polyParameters.mean_ = (*this)["normal_mean"].getDouble();
+    if (this->contains("normal_stddev"))
+      polyParameters.stddev_ = (*this)["normal_stddev"].getDouble();
+
     // parameters for orthogonal polynomials wrt lognormal distribution
-    if (this->contains("lognormal_lambda"))
+    if (this->contains("lognormal_logmean"))
       polyParameters.logmean_ = (*this)["lognormal_logmean"].getDouble();
-    if (this->contains("lognormal_zeta"))
+    if (this->contains("lognormal_logstddev"))
       polyParameters.logstddev_ = (*this)["lognormal_logstddev"].getDouble();
 
     // bounds
@@ -69,8 +79,12 @@ void OrthogonalPolynomialBasis1DConfiguration::initConfig() {
   polyParameters.alpha_ = 5.0;
   polyParameters.beta_ = 5.0;
 
+  // parameters for normal distribution
+  polyParameters.mean_ = 0.0;
+  polyParameters.stddev_ = 1.0;
+
   // parameters for lognormal distribution
-  polyParameters.logmean_ = 1.0;
+  polyParameters.logmean_ = 0.0;
   polyParameters.logstddev_ = 1.0;
 
   // bounds
@@ -93,8 +107,6 @@ OrthogonalPolynomialBasis1DConfiguration::stringToOrthogonalPolynomialType(
     return sgpp::combigrid::OrthogonalPolynomialBasisType::JACOBI;
   } else if (polynomialType.compare("Hermite") == 0) {
     return sgpp::combigrid::OrthogonalPolynomialBasisType::HERMITE;
-  } else if (polynomialType.compare("Lognormal") == 0) {
-    return sgpp::combigrid::OrthogonalPolynomialBasisType::LOGNORMAL;
   } else if (polynomialType.compare("Bounded_Lognormal") == 0) {
     return sgpp::combigrid::OrthogonalPolynomialBasisType::BOUNDED_LOGNORMAL;
   }
@@ -113,22 +125,23 @@ OrthogonalPolynomialBasis1D::OrthogonalPolynomialBasis1D(
   switch (config.polyParameters.type_) {
     case OrthogonalPolynomialBasisType::HERMITE:
       basisPoly = std::make_shared<Pecos::BasisPolynomial>(Pecos::HERMITE_ORTHOG);
+      rv = std::make_shared<Pecos::NormalRandomVariable>(config.polyParameters.mean_,
+                                                         config.polyParameters.stddev_);
       break;
     case OrthogonalPolynomialBasisType::LEGENDRE:
       basisPoly = std::make_shared<Pecos::BasisPolynomial>(Pecos::LEGENDRE_ORTHOG);
+      rv = std::make_shared<Pecos::UniformRandomVariable>(config.polyParameters.lowerBound_,
+                                                          config.polyParameters.upperBound_);
       break;
     case OrthogonalPolynomialBasisType::JACOBI:
       basisPoly = std::make_shared<Pecos::BasisPolynomial>(Pecos::JACOBI_ORTHOG);
       // set parameters
       basisPoly->alpha_stat(config.polyParameters.alpha_);
       basisPoly->beta_stat(config.polyParameters.beta_);
-      break;
-    case OrthogonalPolynomialBasisType::LOGNORMAL:
-      basisPoly = std::make_shared<Pecos::BasisPolynomial>(Pecos::NUM_GEN_ORTHOG);
-      numericPoly = dynamic_cast<Pecos::NumericGenOrthogPolynomial*>(basisPoly->polynomial_rep());
-      numericPoly->lognormal_distribution(config.polyParameters.logmean_,
-                                          config.polyParameters.logstddev_);
-      numericPoly->coefficients_norms_flag(true);
+
+      rv = std::make_shared<Pecos::BetaRandomVariable>(
+          config.polyParameters.alpha_, config.polyParameters.beta_,
+          config.polyParameters.lowerBound_, config.polyParameters.upperBound_);
       break;
     case OrthogonalPolynomialBasisType::BOUNDED_LOGNORMAL:
       basisPoly = std::make_shared<Pecos::BasisPolynomial>(Pecos::NUM_GEN_ORTHOG);
@@ -137,9 +150,15 @@ OrthogonalPolynomialBasis1D::OrthogonalPolynomialBasis1D(
           config.polyParameters.logmean_, config.polyParameters.logstddev_,
           config.polyParameters.lowerBound_, config.polyParameters.upperBound_);
       numericPoly->coefficients_norms_flag(true);
+
+      rv = std::make_shared<Pecos::BoundedLognormalRandomVariable>(
+          config.polyParameters.logmean_, config.polyParameters.logstddev_,
+          config.polyParameters.lowerBound_, config.polyParameters.upperBound_);
       break;
     default:
       basisPoly = std::make_shared<Pecos::BasisPolynomial>(Pecos::LEGENDRE_ORTHOG);
+      rv = std::make_shared<Pecos::UniformRandomVariable>(config.polyParameters.lowerBound_,
+                                                          config.polyParameters.upperBound_);
   }
 #endif
 }
@@ -152,13 +171,14 @@ double OrthogonalPolynomialBasis1D::normalizeInput(double xValue) {
     case OrthogonalPolynomialBasisType::JACOBI:
       // [0, 1] -> [-1, 1]
       return 2.0 * xValue - 1.0;
-    case OrthogonalPolynomialBasisType::LOGNORMAL:
     case OrthogonalPolynomialBasisType::BOUNDED_LOGNORMAL:
-      // [0, 1] -> [lower bound, upper bound]
-      return (config.polyParameters.upperBound_ - config.polyParameters.lowerBound_) * xValue +
-             config.polyParameters.lowerBound_;
+      return xValue;
+    //      // [0, 1] -> [lower bound, upper bound]
+    //      return (config.polyParameters.upperBound_ - config.polyParameters.lowerBound_) * xValue
+    //      +
+    //             config.polyParameters.lowerBound_;
     case OrthogonalPolynomialBasisType::HERMITE:
-      // [0, 1] -> [-infty, +infty]
+      // [0, 1] -> [-1, 1] -> [-infty, +infty]
       return M_SQRT2 * (2.0 * xValue - 1.0);
     default:
       return xValue;
@@ -167,10 +187,10 @@ double OrthogonalPolynomialBasis1D::normalizeInput(double xValue) {
 
 double OrthogonalPolynomialBasis1D::evaluate(size_t basisIndex, double xValue) {
 #ifdef USE_DAKOTA
-  double invNorm = 1. / std::sqrt(basisPoly->norm_squared(static_cast<unsigned short>(basisIndex)));
+  uint16_t castedBasisIndex = static_cast<uint16_t>(basisIndex);
+  double invNorm = 1. / std::sqrt(basisPoly->norm_squared(castedBasisIndex));
   double normalized_xValue = normalizeInput(xValue);
-  return invNorm *
-         basisPoly->type1_value(normalized_xValue, static_cast<unsigned short>(basisIndex));
+  return invNorm * basisPoly->type1_value(normalized_xValue, castedBasisIndex);
 #else
   std::cerr << "Error in OrthogonalBasis1D::evaluate: "
             << "SG++ was compiled without DAKOTAsupport!\n";
@@ -178,5 +198,14 @@ double OrthogonalPolynomialBasis1D::evaluate(size_t basisIndex, double xValue) {
 #endif
 }
 
+double OrthogonalPolynomialBasis1D::pdf(double xValue) {
+#ifdef USE_DAKOTA
+  return rv->pdf(xValue);
+}
+#else
+  std::cerr << "Error in OrthogonalBasis1D::pdf: "
+            << "SG++ was compiled without DAKOTAsupport!\n";
+  return false;
+#endif
 } /* namespace combigrid */
 } /* namespace sgpp */
