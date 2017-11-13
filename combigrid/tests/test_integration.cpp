@@ -15,10 +15,6 @@
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/globaldef.hpp>
 
-#ifdef USE_DATKOTA
-#include <LognormalRandomVariable.hpp>
-#endif
-
 #include <vector>
 
 const double tolerance = 1e-12;
@@ -140,12 +136,12 @@ double monte_carlo_quadrature(size_t numDims, sgpp::combigrid::MultiFunction& fu
 }
 
 double mean(size_t numDims, sgpp::combigrid::MultiFunction& func, size_t numPoints,
-            Pecos::LognormalRandomVariable& rv) {
+            std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis) {
   sgpp::combigrid::MultiFunction mean_func([&](sgpp::base::DataVector const& param) {
     double value = func(param);
     double pdf_value = 1.0;
     for (size_t i = 0; i < param.size(); i++) {
-      pdf_value *= rv.pdf(param[i]);
+      pdf_value *= functionBasis->pdf(param[i]);
     }
     return value * pdf_value;
   });
@@ -153,12 +149,13 @@ double mean(size_t numDims, sgpp::combigrid::MultiFunction& func, size_t numPoin
 }
 
 double variance(size_t numDims, sgpp::combigrid::MultiFunction& func, size_t numPoints,
-                double mean_ref, Pecos::LognormalRandomVariable& rv) {
+                double mean_ref,
+                std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis) {
   sgpp::combigrid::MultiFunction var_func([&](sgpp::base::DataVector const& param) {
     double value = std::pow(func(param) - mean_ref, 2);
     double pdf_value = 1.0;
     for (size_t i = 0; i < param.size(); i++) {
-      pdf_value *= rv.pdf(param[i]);
+      pdf_value *= functionBasis->pdf(param[i]);
     }
     return value * pdf_value;
   });
@@ -230,11 +227,8 @@ BOOST_AUTO_TEST_CASE(testVarianceComputationWithPCETransformation_Lognormal_Clen
   config.polyParameters.logmean_ = 0.0;
   config.polyParameters.logstddev_ = 1.0;
   config.polyParameters.lowerBound_ = 1e-2;
-  config.polyParameters.upperBound_ = 1.0;
+  config.polyParameters.upperBound_ = 10.0;
   auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
-
-  Pecos::LognormalRandomVariable rv(config.polyParameters.logmean_,
-                                    config.polyParameters.logstddev_);
 
   //  double xmin = -1.0;
   //  double width = 2.0;
@@ -262,8 +256,8 @@ BOOST_AUTO_TEST_CASE(testVarianceComputationWithPCETransformation_Lognormal_Clen
     auto pce_levelManager = pce.getCombigridTensorOperation()->getLevelManager();
 
     // compute the reference solution
-    double mean_ref = mean(numDims, func, 1e4, rv);
-    double var_ref = variance(numDims, func, 1e4, mean_ref, rv);
+    double mean_ref = mean(numDims, func, 1e4, functionBasis);
+    double var_ref = variance(numDims, func, 1e4, mean_ref, functionBasis);
 
     std::cout << "- - - - - -  - - - - - - - - - - - " << std::endl;
     std::cout << "numDims = " << numDims << std::endl;

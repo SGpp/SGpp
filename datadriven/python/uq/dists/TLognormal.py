@@ -1,27 +1,31 @@
-from scipy.stats import lognorm
+from scipy.stats import lognorm, norm
 
 from Dist import Dist
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
 import numpy as np
 from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
+from scipy.integrate import quad
 
 
-class Lognormal(Dist):
+class TLognormal(Dist):
     """
-    The Log-normal distribution
+    The truncated Log-normal distribution
     """
 
     def __init__(self, mu, sigma, a, b):
-        super(Lognormal, self).__init__()
+        super(TLognormal, self).__init__()
 
         self.__mu = mu
         self.__sigma = sigma
-        self._dist = lognorm(sigma, loc=mu)
+        self._dist = norm(loc=0.0, scale=1.0)
 
         self.__a = a
         self.__b = b
-        self.__linearTrans = LinearTransformation(self._dist.cdf(self.__a),
-                                                  self._dist.cdf(self.__b))
+        self.__linearTrans = LinearTransformation(a, b)
+
+        self.phi_lwr = self._dist.cdf(self.__normalize(a))
+        self.phi_upr = self._dist.cdf(self.__normalize(b))
+        self.phi_width = self.phi_upr - self.phi_lwr
 
     @classmethod
     def by_range(cls, *args, **kws):
@@ -44,25 +48,33 @@ class Lognormal(Dist):
 
         return cls(mu, sigma, a=a, b=b, *args, **kws)
 
+    def __normalize(self, x):
+        return (np.log(x) - self.__mu) / self.__sigma
+
+    def __denormalize(self, x):
+        return np.exp(x * self.__sigma + self.__mu)
+
     def pdf(self, x):
         if self.__a <= x <= self.__b:
-            return self._dist.pdf(x)
+            return self._dist.pdf(self.__normalize(x)) / (x * self.__sigma * self.phi_width)
         else:
             return 0.0
 
     def cdf(self, x):
-        if self.__a <= x <= self.__b:
-            x_unit = self._dist.cdf(x)
-            return self.__linearTrans.probabilisticToUnit(value)
+        if x <= self.__a:
+            return 0.0
+        elif x >= self.__b:
+            return 1.0
         else:
-            raise AttributeError("logNormal: cdf - x out of range [%g, %g]" % (self.__a, self.__b))
+            return self._dist.cdf(self.__normalize(x) - self.phi_lwr) / self.phi_width
 
     def ppf(self, x):
-        if 0.0 <= x <= 1.0:
-            x_unit = self.__linearTrans.unitToProbabilistic(x)
-            return self._dist.ppf(x_unit)
+        if x <= self.__a:
+            return 1.0
+        elif x >= self.__b:
+            return 0.0
         else:
-            raise AttributeError("logNormal: ppf - x out of range [%g, %g]" % (0, 1))
+            return self._dist.ppf(x * self.phi_width + self.phi_lwr)
 
     def mean(self):
         return self._dist.mean()
