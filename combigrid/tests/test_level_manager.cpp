@@ -179,7 +179,7 @@ BOOST_AUTO_TEST_CASE(testLevelManagerStats) {
   // compute maximum norm per iteration
   sgpp::base::DataVector maxNorms;
   stats->maxNormPerIteration(maxNorms);
-  for (size_t i = 0; i < maxNorms.size(); i++) {
+  for (size_t i = 0; i < maxNorms.getSize(); i++) {
     BOOST_CHECK_SMALL(std::abs(refStats[i] - maxNorms[i]), 1e-5);
   }
 }
@@ -229,7 +229,7 @@ BOOST_AUTO_TEST_CASE(testLevelManagerStatsConversion) {
   // compute maximum norm per iteration
   sgpp::base::DataVector maxNorms;
   stats->maxNormPerIteration(maxNorms);
-  for (size_t i = 0; i < maxNorms.size(); i++) {
+  for (size_t i = 0; i < maxNorms.getSize(); i++) {
     BOOST_CHECK_SMALL(std::abs(refStats[i] - maxNorms[i]), 1e-5);
   }
 }

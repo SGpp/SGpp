@@ -59,7 +59,7 @@ void testPCEMomentsAndSobolIndices(
   // check the sobol indices
   sgpp::base::DataVector sobolIndices;
   pce.getComponentSobolIndices(sobolIndices);
-  for (size_t i = 0; i < sobolIndices.size(); i++) {
+  for (size_t i = 0; i < sobolIndices.getSize(); i++) {
     BOOST_CHECK_SMALL(std::abs(ishigami_params::sobolIndices[i] - sobolIndices[i]),
                       ishigami_params::tolerance);
   }
@@ -67,7 +67,7 @@ void testPCEMomentsAndSobolIndices(
   // check the total sobol indices
   sgpp::base::DataVector totalSobolIndices;
   pce.getTotalSobolIndices(totalSobolIndices);
-  for (size_t i = 0; i < totalSobolIndices.size(); i++) {
+  for (size_t i = 0; i < totalSobolIndices.getSize(); i++) {
     BOOST_CHECK_SMALL(std::abs(ishigami_params::totalSobolIndices[i] - totalSobolIndices[i]),
                       ishigami_params::tolerance);
   }
