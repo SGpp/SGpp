@@ -14,6 +14,7 @@
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridQuadraticSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineQuadratureEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
 #include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
@@ -31,7 +32,7 @@
 #include <vector>
 
 double f(sgpp::base::DataVector const& v) {
-  return v[0] * v[0] * v[0] * v[0] + v[1] * v[1] * v[1] * v[1];
+  return v[0] * sin(v[0] + v[1]) * exp(v[1] * v[2]);  // v[0] * sin(v[1]);
   //  return v[0] * sin(v[0]);
   //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
   //         std::exp(v[0] * v[1] - 1);
@@ -149,157 +150,44 @@ double interpolate_and_integrate(size_t level, size_t numDimensions, size_t degr
 
   return res;
 }
-//
-//// This example is not ready yet. FullGridQuadratureSummationstrategy must be finished
-// double variance(size_t level, size_t numDimensions, size_t degree) {
-//  sgpp::combigrid::MultiFunction func(f);
-//  //  std::vector<std::shared_ptr<sgpp::combigrid::AbstractPointHierarchy>> pointHierarchies(
-//  //      numDimensions);
-//  //  std::vector<
-//  //
-//  std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatArrayVector>>>
-//  //      evaluators(numDimensions);
-//  //  evaluators[0] =
-//  //      std::make_shared<ArrayEvaluator<sgpp::combigrid::BSplineQuadratureMixedEvaluator>>;
-//
-//  sgpp::combigrid::CombiHierarchies::Collection grids(
-//      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
-//  sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
-//      numDimensions, sgpp::combigrid::CombiEvaluators::BSplineMixedQuadrature(degree));
-//  auto storage = std::make_shared<sgpp::combigrid::CombigridTreeStorage>(grids, func);
-//
-//  // stores the values of the objective function
-//  auto funcStorage = std::make_shared<sgpp::combigrid::CombigridTreeStorage>(grids, func);
-//
-//  sgpp::combigrid::GridFunction gf([=](std::shared_ptr<sgpp::combigrid::TensorGrid> grid) {
-//    sgpp::combigrid::CombiEvaluators::Collection interpolEvaluators(
-//        numDimensions, sgpp::combigrid::CombiEvaluators::BSplineInterpolation(degree));
-//    size_t numDimensions = grid->getDimension();
-//    auto coefficientTree =
-//    std::make_shared<sgpp::combigrid::TreeStorage<double>>(numDimensions);
-//    auto level = grid->getLevel();
-//    std::vector<size_t> numGridPointsVec = grid->numPoints();
-//    size_t numGridPoints = 1;
-//    for (size_t i = 0; i < numGridPointsVec.size(); i++) {
-//      numGridPoints *= numGridPointsVec[i];
-//    }
-//
-//    sgpp::combigrid::CombiEvaluators::Collection evalCopy(numDimensions);
-//    for (size_t dim = 0; dim < numDimensions; ++dim) {
-//      evalCopy[dim] = interpolEvaluators[dim]->cloneLinear();
-//      bool needsSorted = evalCopy[dim]->needsOrderedPoints();
-//      auto gridPoints = grids[dim]->getPoints(level[dim], needsSorted);
-//      evalCopy[dim]->setGridPoints(gridPoints);
-//    }
-//    sgpp::base::DataMatrix A(numGridPoints, numGridPoints);
-//    sgpp::base::DataVector coefficients_sle(numGridPoints);
-//    sgpp::base::DataVector functionValues(numGridPoints);
-//
-//    // Creates an iterator that yields the multi-indices of all grid points in the grid.
-//    sgpp::combigrid::MultiIndexIterator it(grid->numPoints());
-//    auto funcIter =
-//        funcStorage->getGuidedIterator(level, it, std::vector<bool>(numDimensions, true));
-//
-//    for (size_t ixEvalPoints = 0; funcIter->isValid(); ++ixEvalPoints, funcIter->moveToNext()) {
-//      auto gridPoint = grid->getGridPoint(funcIter->getMultiIndex());
-//      functionValues[ixEvalPoints] = funcIter->value();
-//
-//      std::vector<std::vector<double>> basisValues;
-//      for (size_t dim = 0; dim < numDimensions; ++dim) {
-//        evalCopy[dim]->setParameter(sgpp::combigrid::FloatScalarVector(gridPoint[dim]));
-//        auto basisValues1D = evalCopy[dim]->getBasisValues();
-//        // basis values at gridPoint
-//        std::vector<double> basisValues1D_vec(basisValues1D.size());
-//        for (size_t i = 0; i < basisValues1D.size(); i++) {
-//          basisValues1D_vec[i] = basisValues1D[i].value();
-//        }
-//        basisValues.push_back(basisValues1D_vec);
-//      }
-//
-//      sgpp::combigrid::MultiIndexIterator innerIter(grid->numPoints());
-//      for (size_t ixBasisFunctions = 0; innerIter.isValid();
-//           ++ixBasisFunctions, innerIter.moveToNext()) {
-//        double splineValue = 1.0;
-//        auto innerIndex = innerIter.getMultiIndex();
-//        for (size_t dim = 0; dim < numDimensions; ++dim) {
-//          splineValue *= basisValues[dim][innerIndex[dim]];
-//        }
-//        A.set(ixEvalPoints, ixBasisFunctions, splineValue);
-//      }
-//    }
-//
-//    sgpp::optimization::FullSLE sle(A);
-//    sgpp::optimization::sle_solver::Auto solver;
-//    sgpp::optimization::Printer::getInstance().setVerbosity(-1);
-//    bool solved = solver.solve(sle, functionValues, coefficients_sle);
-//
-//    /*std::cout << A.toString() << std::endl;
-//    std::cout << "fct: ";
-//    for (size_t i = 0; i < functionValues.size(); i++) {
-//      std::cout << functionValues[i] << " ";
-//    }
-//    std::cout << "\ncoeff: ";
-//    for (size_t i = 0; i < coefficients_sle.size(); i++) {
-//      std::cout << coefficients_sle[i] << " ";
-//    }
-//    std::cout << "\n";
-//    std::cout << "--------" << std::endl;
-//    */
-//    if (!solved) {
-//      exit(-1);
-//    }
-//
-//    it.reset();
-//    for (size_t vecIndex = 0; it.isValid(); ++vecIndex, it.moveToNext()) {
-//      coefficientTree->set(it.getMultiIndex(), coefficients_sle[vecIndex]);
-//    }
-//
-//    return coefficientTree;
-//  });
-//
 
-// Nutze MultiOperation, statt explizit addResults
-//
-//  auto summationStrategy = std::make_shared<
-//      sgpp::combigrid::FullGridQuadraticSummationStrategy<sgpp::combigrid::FloatArrayVector>>(
-//      storage, evaluators, grids, gf);
-//  auto combiGridEval =
-//      std::make_shared<sgpp::combigrid::CombigridEvaluator<sgpp::combigrid::FloatArrayVector>>(
-//          numDimensions, summationStrategy);
-//  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
-//      new sgpp::combigrid::WeightedRatioLevelManager(combiGridEval));
-//
-//  levelManager->addRegularLevels(level);
-//  sgpp::combigrid::FloatArrayVector innerSums = combiGridEval->getValue();
-//
-//  double var = 0.0;
-//  for (size_t i = 0; i < innerSums.size(); i++) {
-//    //    std::cout << innerSums[i].value() << " ";
-//    var += innerSums[i].value();
-//  }
-//  //  std::cout << "\n";
-//
-//  return var;
-//}
+double variance(size_t level, size_t numDimensions, size_t degree) {
+  sgpp::combigrid::MultiFunction func(f);
+  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
+      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+  sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
+      numDimensions, sgpp::combigrid::CombiEvaluators::BSplineMixedQuadrature(degree));
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
+      new sgpp::combigrid::WeightedRatioLevelManager());
+  sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
+  bool exploitNesting = false;
+  sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =
+      sgpp::combigrid::FullGridSummationStrategyType::QUADRATIC;
+  auto varianceOperation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
+      pointHierarchies, evaluators, levelManager, gf, exploitNesting, summationStrategyType);
+
+  sgpp::base::DataVector var = varianceOperation->evaluate(level);
+  return var[0];
+}
 
 int main() {
-  size_t numDimensions = 2;
-  size_t degree = 5;
-  size_t level = 3;
+  size_t numDimensions = 3;
+  size_t degree = 3;
+  size_t level = 5;
 
   // Interpolation
-  sgpp::base::SGppStopwatch watch;
-  watch.start();
-  size_t minLevel = 0;
-  size_t maxLevel = 8;
-
-  std::vector<double> maxErr(maxLevel + 1, 0);
-  std::vector<double> L2Err(maxLevel + 1, 0);
-  for (size_t l = minLevel; l < maxLevel + 1; l++) {
-    interpolate(l, numDimensions, degree, maxErr[l], L2Err[l]);
-    //    std::cout << "level: " << l << " max err " << maxErr[l] << " L2 err " << L2Err[l] <<
-    //    std::endl;
-  }
+  //  sgpp::base::SGppStopwatch watch;
+  //  watch.start();
+  //  size_t minLevel = 2;
+  //  size_t maxLevel = 2;
+  //
+  //  std::vector<double> maxErr(maxLevel + 1, 0);
+  //  std::vector<double> L2Err(maxLevel + 1, 0);
+  //  for (size_t l = minLevel; l < maxLevel + 1; l++) {
+  //    interpolate(l, numDimensions, degree, maxErr[l], L2Err[l]);
+  //    //    std::cout << "level: " << l << " max err " << maxErr[l] << " L2 err " << L2Err[l] <<
+  //    //    std::endl;
+  //  }
 
   //  std::cout << " Total Runtime: " << watch.stop() << " s" << std::endl;
 
@@ -319,9 +207,8 @@ int main() {
   //  std::cout << res << std::endl;
 
   // Calculate variance (integral of func^2 respectively)
-  //  double var = variance(level, numDimensions, degree);
-  //  std::cout << "variance : " << var << "  (currently variance is simply integral(f^2)" <<
-  //  std::endl;
+  double var = variance(level, numDimensions, degree);
+  std::cout << "variance : " << var << "  (currently variance is simply integral(f^2)" << std::endl;
 
   return 0;
 }

@@ -75,6 +75,12 @@ class CombigridOperation {
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> evaluatorPrototypes,
       std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting);
 
+  CombigridOperation(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> evaluatorPrototypes,
+      std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting,
+      FullGridSummationStrategyType summationStrategyType);
+
   void setParameters(base::DataVector const &param = base::DataVector(0));  // clears automatically
 
   double getResult();

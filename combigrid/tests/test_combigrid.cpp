@@ -303,11 +303,12 @@ BOOST_AUTO_TEST_CASE(testBsplinedeg3Interpolation) {
     for (size_t w = 2; w <= 8; ++w) {
       computeL2Error(d, w, ctInterpolator, func);
     }
-    auto ctQuadrature =
-        CombigridMultiOperation::createExpUniformBoundaryBsplineQuadrature(d, func, 3);
-    for (size_t w = 2; w <= 8; ++w) {
-      computeQuadratureError(d, w, ctQuadrature, func);
-    }
+    // ToDo (rehmemk) finish B spline quadrature test
+    //    auto ctQuadrature =
+    //        CombigridMultiOperation::createExpUniformBoundaryBsplineQuadrature(d, func, 3);
+    //    for (size_t w = 2; w <= 8; ++w) {
+    //      computeQuadratureError(d, w, ctQuadrature, func);
+    //    }
   }
 }
 

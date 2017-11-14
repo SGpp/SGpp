@@ -80,6 +80,12 @@ class CombigridMultiOperation {
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
       std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting);
 
+  CombigridMultiOperation(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
+      std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting,
+      FullGridSummationStrategyType summationStrategyType);
+
   /**
    * Sets the parameters for upcoming computations and clears the data structures (removes old
    * computed data). This is only relevant for methods with parameters (e.g. interpolation, but not

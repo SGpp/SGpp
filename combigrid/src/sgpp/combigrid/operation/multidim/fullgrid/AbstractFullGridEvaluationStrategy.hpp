@@ -49,11 +49,12 @@ class AbstractFullGridEvaluationStrategy : public AbstractFullGridEvaluator<V> {
             storage, evaluatorPrototypes, pointHierarchies);
         break;
       case FullGridSummationStrategyType::QUADRATIC:
-        //        summationStrategy = std::make_shared<FullGridQuadraticSummationStrategy<V>>(
-        //            storage, evaluatorPrototypes, pointHierarchies);
-        std::cerr << "AbstractFullGridEvaluationStrategy: quadratic summation strategy is not yet"
-                     "registered. Do it here!"
-                  << std::endl;
+        summationStrategy = std::make_shared<FullGridQuadraticSummationStrategy<V>>(
+            storage, evaluatorPrototypes, pointHierarchies);
+        //        std::cerr << "AbstractFullGridEvaluationStrategy: quadratic summation strategy is
+        //        not yet"
+        //                     "registered. Do it here!"
+        //                  << std::endl;
         break;
       default:
         std::cerr << "AbstractFullGridEvaluationStrategy: summation strategy is not registered. Do "

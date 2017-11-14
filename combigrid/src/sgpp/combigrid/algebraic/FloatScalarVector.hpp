@@ -60,6 +60,14 @@ class FloatScalarVector {
   static FloatScalarVector zero() { return FloatScalarVector(0.0); }
 
   static FloatScalarVector one() { return FloatScalarVector(1.0); }
+
+  // This is an auxiliary function needed in FullGridQuadraticSummationStrategy.
+  FloatScalarVector const operator[](size_t i) const {
+    if (i != 0) {
+      std::cerr << "FloatScalarVector: operator[] is only defined for argument 0";
+    }
+    return *this;
+  }
 };
 
 std::ostream &operator<<(std::ostream &stream, FloatScalarVector v);

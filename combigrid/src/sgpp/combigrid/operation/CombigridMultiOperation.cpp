@@ -100,6 +100,17 @@ CombigridMultiOperation::CombigridMultiOperation(
               new CombigridTreeStorage(pointHierarchies, exploitNesting)),
           gridFunc)) {}
 
+CombigridMultiOperation::CombigridMultiOperation(
+    std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+    std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
+    std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting,
+    FullGridSummationStrategyType summationStrategyType)
+    : impl(new CombigridMultiOperationImpl(
+          pointHierarchies, evaluatorPrototypes, levelManager,
+          std::shared_ptr<AbstractCombigridStorage>(
+              new CombigridTreeStorage(pointHierarchies, exploitNesting)),
+          gridFunc, summationStrategyType)) {}
+
 void CombigridMultiOperation::setParameters(const std::vector<base::DataVector> &params) {
   if (params.size() == 0) {
     throw std::runtime_error("CombigridMultiOperation::setParameters(): params.size() == 0");
@@ -361,9 +372,6 @@ CombigridMultiOperation::createExpUniformBoundaryBsplineQuadrature(size_t numDim
   return std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
       pointHierarchies, evaluators, levelManager, gf, exploitNesting);
 }
-
-// ToDo (rehmemk) MultiOperation Bspline Quadratur
-// (Was sind Quadratur MultiOperations, Quadraturen haben keine Parameter !?)
 
 } /* namespace combigrid */
 } /* namespace sgpp*/
