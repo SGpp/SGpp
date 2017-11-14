@@ -32,7 +32,6 @@ struct OrthogonalPolynomialBasis1DParameters {
 
   // Lognormal distribution -> numerically computed polynomials
   double logmean_;
-  double logstddev_;
 
   // for bounded variables
   double lowerBound_;

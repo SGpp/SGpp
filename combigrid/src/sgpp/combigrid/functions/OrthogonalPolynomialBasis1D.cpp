@@ -58,8 +58,6 @@ OrthogonalPolynomialBasis1DConfiguration::OrthogonalPolynomialBasis1DConfigurati
     // parameters for orthogonal polynomials wrt lognormal distribution
     if (this->contains("lognormal_logmean"))
       polyParameters.logmean_ = (*this)["lognormal_logmean"].getDouble();
-    if (this->contains("lognormal_logstddev"))
-      polyParameters.logstddev_ = (*this)["lognormal_logstddev"].getDouble();
 
     // bounds
     if (this->contains("lower_bound"))
@@ -85,7 +83,6 @@ void OrthogonalPolynomialBasis1DConfiguration::initConfig() {
 
   // parameters for lognormal distribution
   polyParameters.logmean_ = 0.0;
-  polyParameters.logstddev_ = 1.0;
 
   // bounds
   polyParameters.lowerBound_ = -1.0;
@@ -147,12 +144,12 @@ OrthogonalPolynomialBasis1D::OrthogonalPolynomialBasis1D(
       basisPoly = std::make_shared<Pecos::BasisPolynomial>(Pecos::NUM_GEN_ORTHOG);
       numericPoly = dynamic_cast<Pecos::NumericGenOrthogPolynomial*>(basisPoly->polynomial_rep());
       numericPoly->bounded_lognormal_distribution(
-          config.polyParameters.logmean_, config.polyParameters.logstddev_,
+          config.polyParameters.logmean_, config.polyParameters.stddev_,
           config.polyParameters.lowerBound_, config.polyParameters.upperBound_);
       numericPoly->coefficients_norms_flag(true);
 
       rv = std::make_shared<Pecos::BoundedLognormalRandomVariable>(
-          config.polyParameters.logmean_, config.polyParameters.logstddev_,
+          config.polyParameters.logmean_, config.polyParameters.stddev_,
           config.polyParameters.lowerBound_, config.polyParameters.upperBound_);
       break;
     default:

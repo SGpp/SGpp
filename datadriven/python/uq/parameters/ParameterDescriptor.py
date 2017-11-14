@@ -1,3 +1,5 @@
+import numpy as np
+
 from pysgpp.extensions.datadriven.uq.dists import (Dist, Uniform, Normal, TNormal,
                                                    Lognormal, Beta, MultivariateNormal,
                                                    TLognormal)
@@ -170,8 +172,8 @@ class UncertainParameterDesciptor(ParameterDescriptor):
             orthogPoly = OrthogonalPolynomialBasis1D(orthogPolyConfig)
         elif isinstance(self._dist, TLognormal):
             orthogPolyConfig.polyParameters.type_ = OrthogonalPolynomialBasisType_BOUNDED_LOGNORMAL
-            orthogPolyConfig.polyParameters.logmean_ = self._dist.mean()
-            orthogPolyConfig.polyParameters.logssted_ = self._dist.std()
+            orthogPolyConfig.polyParameters.logmean_ = np.log(self._dist.mu)
+            orthogPolyConfig.polyParameters.stddev_ = self._dist.sigma
             orthogPolyConfig.polyParameters.lowerBound_ = self._dist.getBounds()[0]
             orthogPolyConfig.polyParameters.upperBound_ = self._dist.getBounds()[1]
             orthogPoly = OrthogonalPolynomialBasis1D(orthogPolyConfig)

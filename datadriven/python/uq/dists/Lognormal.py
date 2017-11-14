@@ -16,7 +16,7 @@ class Lognormal(Dist):
 
         self.__mu = mu
         self.__sigma = sigma
-        self._dist = lognorm(sigma, loc=mu)
+        self._dist = lognorm(sigma, scale=mu)
 
         self.__a = a
         self.__b = b
@@ -38,7 +38,7 @@ class Lognormal(Dist):
         @param sigma: standard deviation
         @param alpha: significance level
         """
-        U = lognorm(sigma, loc=mu)
+        U = lognorm(sigma, scale=mu)
         a = U.ppf(alpha / 2.)
         b = U.ppf(1. - alpha / 2.)
 
@@ -51,18 +51,22 @@ class Lognormal(Dist):
             return 0.0
 
     def cdf(self, x):
-        if self.__a <= x <= self.__b:
+        if x <= self.__a:
+            return 0.0
+        elif x >= self.__b:
+            return 1.0
+        else:
             x_unit = self._dist.cdf(x)
             return self.__linearTrans.probabilisticToUnit(value)
-        else:
-            raise AttributeError("logNormal: cdf - x out of range [%g, %g]" % (self.__a, self.__b))
 
     def ppf(self, x):
-        if 0.0 <= x <= 1.0:
+        if x <= self.__a:
+            return 1.0
+        elif x >= self.__b:
+            return 0.0
+        else:
             x_unit = self.__linearTrans.unitToProbabilistic(x)
             return self._dist.ppf(x_unit)
-        else:
-            raise AttributeError("logNormal: ppf - x out of range [%g, %g]" % (0, 1))
 
     def mean(self):
         return self._dist.mean()
@@ -86,7 +90,7 @@ class Lognormal(Dist):
         return samples
 
     def getBounds(self):
-        return [self.__a, self.__b]
+        return np.array([self.__a, self.__b])
 
     def getDim(self):
         return 1
