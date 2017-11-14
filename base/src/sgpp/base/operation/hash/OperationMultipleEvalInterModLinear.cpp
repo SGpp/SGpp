@@ -31,6 +31,7 @@ void OperationMultipleEvalInterModLinear::mult(DataVector& alpha, DataVector& re
 
     GridStorage::grid_iterator working(storage);
     LinearModifiedBasis<unsigned int, unsigned int> basis;
+    size_t dimensions = storage.getDimension();
 
     #pragma omp for
     for(size_t j = 0; j < dataset.getNrows(); j++){
@@ -48,17 +49,20 @@ void OperationMultipleEvalInterModLinear::mult(DataVector& alpha, DataVector& re
         do{
           pointComputed = (!lvlComplete) & pointComputed;
           lvlComplete = false;
-          for(size_t d = 1; d < storage.getDimension(); d++){
+          for(size_t d = 1; d < dimensions; d++){
             working.push(d,1,1);
           }
-          //use set for hashing
-          working.set(0,1,1);
 
           for(size_t i=0; i<in.size(); i++){
             level_t lvl = static_cast<level_t> (2 + level[i]);
             index_t idx = static_cast<index_t>(std::min(1+2*floor(line[in.at(i)] * double(1<<(lvl-1))),double(1<<lvl)-1.));
-            working.set(in.at(i),lvl,idx);
+            // only hash for last element
+            if(i = in.size()-1) working.set(in.at(i),lvl,idx);
+            else working.push(in.at(i),lvl,idx);
           }
+
+          // hash first dimension if there was no element in the interaction
+          if(in.size() == 0) working.set(0,1,1);
 
           size_t seq = working.seq();
 
@@ -126,6 +130,8 @@ void OperationMultipleEvalInterModLinear::multTranspose(DataVector& source, Data
 
     GridStorage::grid_iterator working(storage);
     LinearModifiedBasis<unsigned int, unsigned int> basis;
+    
+    size_t dimensions = storage.getDimension();
 
     #pragma omp for
     for(size_t j = 0; j < dataset.getNrows(); j++){
@@ -143,17 +149,20 @@ void OperationMultipleEvalInterModLinear::multTranspose(DataVector& source, Data
         do{
           pointComputed = (!lvlComplete) & pointComputed;
           lvlComplete = false;
-          for(size_t d = 1; d < storage.getDimension(); d++){
+          for(size_t d = 1; d < dimensions; d++){
             working.push(d,1,1);
           }
-          //use set for hashing
-          working.set(0,1,1);
 
           for(size_t i=0; i<in.size(); i++){
             level_t lvl = static_cast<level_t> (2 + level[i]);
             index_t idx = static_cast<index_t>(std::min(1+2*floor(line[in.at(i)] * double(1<<(lvl-1))),double(1<<lvl)-1.));
-            working.set(in.at(i),lvl,idx);
+            // only hash for last element
+            if(i = in.size()-1) working.set(in.at(i),lvl,idx);
+            else working.push(in.at(i),lvl,idx);
           }
+
+          // hash first dimension if there was no element in the interaction
+          if(in.size() == 0) working.set(0,1,1);
 
           size_t seq = working.seq();
 
