@@ -12,6 +12,11 @@
 namespace sgpp {
 namespace base {
 
+/**
+ * load gauss quadrature points for standard normal weight function. The points
+ * and the weights are generated with numpy.polynomial.hermite.hermgauss,
+ * the coordinates are scaled by sqrt(2), the weights are normalized to 1.
+ */
 class GaussHermiteQuadRule1D : public QuadRule1D {
  public:
   GaussHermiteQuadRule1D();
@@ -19,12 +24,6 @@ class GaussHermiteQuadRule1D : public QuadRule1D {
 
   // delete the copy constructor
   GaussHermiteQuadRule1D(const GaussHermiteQuadRule1D& that) = delete;
-
-  /**
-   * load gauss quadrature points for standard normal weight function. The points
-   * and the weights are generated with numpy.polynomial.hermite.hermgauss,
-   * the coordinates are scaled by sqrt(2), the weights are normalized to 1.
-   */
 
   /**
    * the coordinates are scaled by sqrt(2) and then normalized with respect
