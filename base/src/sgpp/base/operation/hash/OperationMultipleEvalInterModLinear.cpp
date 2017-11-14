@@ -57,7 +57,7 @@ void OperationMultipleEvalInterModLinear::mult(DataVector& alpha, DataVector& re
             level_t lvl = static_cast<level_t> (2 + level[i]);
             index_t idx = static_cast<index_t>(std::min(1+2*floor(line[in.at(i)] * double(1<<(lvl-1))),double(1<<lvl)-1.));
             // only hash for last element
-            if(i = in.size()-1) working.set(in.at(i),lvl,idx);
+            if(i == in.size()-1) working.set(in.at(i),lvl,idx);
             else working.push(in.at(i),lvl,idx);
           }
 
@@ -157,7 +157,7 @@ void OperationMultipleEvalInterModLinear::multTranspose(DataVector& source, Data
             level_t lvl = static_cast<level_t> (2 + level[i]);
             index_t idx = static_cast<index_t>(std::min(1+2*floor(line[in.at(i)] * double(1<<(lvl-1))),double(1<<lvl)-1.));
             // only hash for last element
-            if(i = in.size()-1) working.set(in.at(i),lvl,idx);
+            if(i == in.size()-1) working.set(in.at(i),lvl,idx);
             else working.push(in.at(i),lvl,idx);
           }
 
