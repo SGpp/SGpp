@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/combigrid/algebraic/FloatArrayVector.hpp>
 #include <sgpp/combigrid/algebraic/FloatTensorVector.hpp>
 #include <sgpp/combigrid/common/MultiIndexIterator.hpp>
@@ -27,7 +26,7 @@ class FullGridQuadraticSummationStrategy : public AbstractFullGridSummationStrat
  protected:
  private:
   /*
-   * vector product v * transpose(v2)
+   * vector product vector1 * transpose(vector2)
    */
 
   double dotMult(std::vector<double> const &vector1, std::vector<double> const &vector2) {
@@ -40,48 +39,6 @@ class FullGridQuadraticSummationStrategy : public AbstractFullGridSummationStrat
       std::cerr << "dotMult for vectors of different size is undefined. returning 0" << std::endl;
     }
     return result;
-  }
-
-  FloatScalarVector dotMult(FloatArrayVector vector1, FloatArrayVector vector2) {
-    FloatScalarVector result(0.0);
-    if (vector1.size() == vector2.size()) {
-      auto values1 = vector1.getValues();
-      auto values2 = vector2.getValues();
-      size_t index = 0;
-      for (auto &val : values1) {
-        val.componentwiseMult(values2[index]);
-        result.add(val);
-        index++;
-      }
-    } else {
-      //      std::cout << vector1.size() << " " << vector2.size() << std::endl;
-      //      for (size_t i = 0; i < vector1.size(); i++) {
-      //        std::cout << vector1[i] << " ";
-      //      }
-      //      std::cout << "\n";
-      //      for (size_t i = 0; i < vector2.size(); i++) {
-      //        std::cout << vector2[i] << " ";
-      //      }
-      //      std::cout << "\n";
-
-      std::cerr << "dotMult for FloatArrayVectors of different size is undefined. returning 0"
-                << std::endl;
-    }
-    return result;
-  }
-
-  FloatScalarVector dotMult(FloatScalarVector vector1, FloatArrayVector vector2) {
-    std::cerr << "FullGridQuadraticSummationstrategy: operation dotMut is undefined for "
-                 "FloatScalarVector."
-              << std::endl;
-    return FloatScalarVector::zero();
-  }
-
-  FloatScalarVector dotMult(FloatTensorVector vector1, FloatArrayVector vector2) {
-    std::cerr << "FullGridQuadraticSummationstrategy: operation dotMut is undefined for "
-                 "FloatScalarVector."
-              << std::endl;
-    return FloatScalarVector::zero();
   }
 
  public:
@@ -111,8 +68,6 @@ class FullGridQuadraticSummationStrategy : public AbstractFullGridSummationStrat
    * Currently it can only be used with template type V = FloatArrayVector
    */
   V eval(MultiIndex const &level) override {
-    //    std::cout << "level " << level[0] << " " << level[1] << " " << level[2] << std::endl;
-
     CGLOG("FullGridTensorEvaluator::eval(): start");
     size_t numDimensions = this->evaluators.size();
     //    size_t lastDim = numDimensions - 1;
@@ -178,8 +133,11 @@ class FullGridQuadraticSummationStrategy : public AbstractFullGridSummationStrat
         break;
       }
     }
+
+    // ToDo (rehmemk) possible speed up through using some sort of partial products like in
+    // FullGridLinearSummationStrategy
     it.reset();
-    std::vector<std::vector<double>> M;
+    std::vector<double> innerSum;
     while (it.isValid()) {
       MultiIndexIterator innerIt(multiBounds);
       MultiIndex indexI = it.getMultiIndex();
@@ -193,14 +151,8 @@ class FullGridQuadraticSummationStrategy : public AbstractFullGridSummationStrat
         lineI.push_back(entry);
         innerIt.moveToNext();
       }
-      M.push_back(lineI);
+      innerSum.push_back(dotMult(lineI, coefficients));
       it.moveToNext();
-    }
-
-    std::vector<double> innerSum;
-    for (size_t i = 0; i < coefficients.size(); i++) {
-      //      std::cout << M[i].size() << " " << coefficients.size() << std::endl;
-      innerSum.push_back(dotMult(M[i], coefficients));
     }
 
     double variance = dotMult(innerSum, coefficients);

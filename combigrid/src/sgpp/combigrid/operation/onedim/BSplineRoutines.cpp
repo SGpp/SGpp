@@ -44,6 +44,9 @@ double LagrangePolynomial(double const& x, std::vector<double> const& xValues, s
   return res;
 }
 
+// ToDo (rehmemk) Test other strategies for outer points for example placing them uniform using the
+// distance of the last point inside to the boundary
+
 /**
    * @param xi vector containing the knots with which the Bsplines are created. This is the most
  * simple case. xi = x inside [0,1] and at the left and right end the necessary amount of inner
@@ -135,6 +138,7 @@ void createNakKnots(std::vector<double> const& xValues, size_t const& degree,
   }
 }
 
+// ToDo (rehmemk) use unidirectional principle instead of global SLE solving to speed this up!
 sgpp::combigrid::GridFunction BSplineCoefficientGridFunction(
     sgpp::combigrid::MultiFunction func, sgpp::combigrid::CombiHierarchies::Collection grids,
     size_t degree) {
