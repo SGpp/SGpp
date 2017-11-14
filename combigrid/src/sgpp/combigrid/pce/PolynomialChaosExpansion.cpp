@@ -225,7 +225,7 @@ void PolynomialChaosExpansion::getTotalSobolIndices(sgpp::base::DataVector& tota
 
   totalSobolIndices.resizeZero(numDims);
   for (size_t idim = 0; idim < numDims; idim++) {
-    for (size_t iperm = 0; iperm < sobolIndices.size(); iperm++) {
+    for (size_t iperm = 0; iperm < sobolIndices.getSize(); iperm++) {
       // check if the current dimension is set in the current key of the sobol index
       size_t isSet = ((iperm + 1) & (1 << idim)) >> idim;  // in {0, 1}
       if (isSet == 1) {
