@@ -57,7 +57,7 @@ class Lognormal(Dist):
             return 1.0
         else:
             x_unit = self._dist.cdf(x)
-            return self.__linearTrans.probabilisticToUnit(value)
+            return self.__linearTrans.probabilisticToUnit(x_unit)
 
     def ppf(self, x):
         if x <= self.__a:
