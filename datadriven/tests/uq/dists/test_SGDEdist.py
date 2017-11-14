@@ -53,21 +53,21 @@ class SGDEdistTest(unittest.TestCase):
 #                                                          "sgde_makePositive_interpolationAlgorithm": "setToZero",
 #                                                          "sgde_makePositive_verbose": True,
 #                                                          "sgde_unitIntegrand": True})
-# 
+#
 #         # build parameter set
 #         dist_kde = dists.KDEDist(trainSamples,
 #                                  kernelType=KernelType_GAUSSIAN,
 #                                  bandwidthOptimizationType=BandwidthOptimizationType_SILVERMANSRULE)
-# 
-# 
+#
+#
 #         # fig = plt.figure()
 #         # plotSG2d(dist.grid, dist.alpha, show_grid_points=True)
 #         # plt.scatter(trainSamples[:, 0], trainSamples[:, 1], np.zeros(trainSamples.shape[0]))
 #         # plt.title("%.12f" % dist.vol)
-# 
+#
 #         fig, _, _ = plotDensity3d(dist_sgde)
 #         plt.title("SGDE: vol=%g" % dist_sgde.vol)
-# 
+#
 #         fig, _, _ = plotDensity3d(dist_kde)
 #         plt.title("KDE: vol=1.0")
 #         plt.show()
@@ -372,7 +372,7 @@ class SGDEdistTest(unittest.TestCase):
 
         dist = SGDEdist.byLearnerSGDEConfig(train_samples,
                                             config={"grid_level": 5,
-                                                    "grid_type": "linear",
+                                                    "grid_type": "modBspline",
                                                     "refinement_numSteps": 0,
                                                     "refinement_numPoints": 10,
                                                     "regularization_type": "Laplace",
@@ -436,11 +436,11 @@ class SGDEdistTest(unittest.TestCase):
 #         np.random.seed(1234567)
 #         C = np.array([[0.3, 0.09],
 #                       [0.09, 0.3]]) / 10.
-# 
+#
 #         U = dists.MultivariateNormal([0.5, 0.5], C, 0, 1)
 #         samples = U.rvs(2000)
 #         kde = KDEDist(samples)
-# 
+#
 #         sgde = SGDEdist.byLearnerSGDEConfig(samples,
 #                                             bounds=U.getBounds(),
 #                                             config={"grid_level": 5,
@@ -461,10 +461,10 @@ class SGDEdistTest(unittest.TestCase):
 #                                                     "sgde_makePositive_verbose": True,
 #                                                     "sgde_generateConsistentGrid": True,
 #                                                     "sgde_unitIntegrand": True})
-# 
+#
 #         sgde_x1 = sgde.marginalizeToDimX(0)
 #         sgde_x2 = sgde.marginalizeToDimX(1)
-# 
+#
 #         plt.figure()
 #         plotDensity1d(sgde_x1, label="x1")
 #         plotDensity1d(sgde_x2, label="x2")
@@ -473,31 +473,31 @@ class SGDEdistTest(unittest.TestCase):
 #                                                              sgde_x1.var(),
 #                                                              sgde_x2.var()))
 #         plt.legend()
-# 
+#
 #         jsonStr = sgde.toJson()
 #         jsonObject = json.loads(jsonStr)
 #         sgde = Dist.fromJson(jsonObject)
-# 
+#
 #         fig = plt.figure()
 #         plotDensity2d(U, addContour=True)
 #         plt.title("analytic")
-# 
+#
 #         fig = plt.figure()
 #         plotDensity2d(kde, addContour=True)
 #         plt.title("kde")
-# 
+#
 #         fig = plt.figure()
 #         plotDensity2d(sgde, addContour=True)
 #         plt.title("sgde (I(f) = %g)" % (doQuadrature(sgde.grid, sgde.alpha),))
-# 
+#
 #         # print the results
 #         print "E(x) ~ %g ~ %g" % (kde.mean(), sgde.mean())
 #         print "V(x) ~ %g ~ %g" % (kde.var(), sgde.var())
 #         print "-" * 60
-# 
+#
 #         print kde.cov()
 #         print sgde.cov()
-# 
+#
 #         self.assertTrue(np.linalg.norm(C - kde.cov()) < 1e-2, "KDE cov wrong")
 #         self.assertTrue(np.linalg.norm(np.corrcoef(samples.T) - kde.corrcoeff()) < 1e-1, "KDE corrcoef wrong")
 #         plt.show()
@@ -507,44 +507,44 @@ class SGDEdistTest(unittest.TestCase):
 #         # prepare data
 #         U = dists.Normal(1, 2, -8, 8)
 # #         U = dists.Normal(0.5, .2, 0, 1)
-# 
+#
 #         # define linear transformation
 #         trans = JointTransformation()
 #         a, b = U.getBounds()
 #         trans.add(LinearTransformation(a, b))
-# 
+#
 #         # get a sparse grid approximation
 #         grid = Grid.createPolyGrid(U.getDim(), 10)
 #         grid.getGenerator().regular(5)
 #         gs = grid.getStorage()
-# 
+#
 #         # now refine adaptively 5 times
 #         p = DataVector(gs.getDimension())
 #         nodalValues = np.ndarray(gs.getSize())
-# 
+#
 #         # set function values in alpha
 #         for i in xrange(gs.getSize()):
 #             gs.getPoint(i).getStandardCoordinates(p)
 #             nodalValues[i] = U.pdf(trans.unitToProbabilistic(p.array()))
-# 
+#
 #         # hierarchize
 #         alpha = hierarchize(grid, nodalValues)
 #         dist = SGDEdist(grid, alpha, bounds=U.getBounds())
-# 
+#
 #         fig = plt.figure()
 #         plotDensity1d(U,
 #                       alpha_value=0.1,
 #                       mean_label="$\mathbb{E}",
 #                       interval_label="$\alpha=0.1$")
 #         fig.show()
-# 
+#
 #         fig = plt.figure()
 #         plotDensity1d(dist,
 #                       alpha_value=0.1,
 #                       mean_label="$\mathbb{E}",
 #                       interval_label="$\alpha=0.1$")
 #         fig.show()
-# 
+#
 #         print "1d: mean = %g ~ %g" % (U.mean(), dist.mean())
 #         print "1d: var = %g ~ %g" % (U.var(), dist.var())
 #         plt.show()
@@ -555,45 +555,45 @@ class SGDEdistTest(unittest.TestCase):
 #                      dists.Normal(1.0, .5, -1, 3)])
 # #         U = dists.J([dists.Normal(0.5, .5, -1, 2),
 # #                      dists.Normal(0.5, .4, -1, 2)])
-# 
+#
 #         # define linear transformation
 #         trans = JointTransformation()
 #         for a, b in U.getBounds():
 #             trans.add(LinearTransformation(a, b))
-# 
+#
 #         # get a sparse grid approximation
 #         grid = Grid.createPolyGrid(U.getDim(), 10)
 #         grid.getGenerator().regular(5)
 #         gs = grid.getStorage()
-# 
+#
 #         # now refine adaptively 5 times
 #         p = DataVector(gs.getDimension())
 #         nodalValues = np.ndarray(gs.getSize())
-# 
+#
 #         # set function values in alpha
 #         for i in xrange(gs.getSize()):
 #             gs.getPoint(i).getStandardCoordinates(p)
 #             nodalValues[i] = U.pdf(trans.unitToProbabilistic(p.array()))
-# 
+#
 #         # hierarchize
 #         alpha = hierarchize(grid, nodalValues)
-# 
+#
 # #         # make positive
 # #         alpha_vec = DataVector(alpha)
 # #         createOperationMakePositive().makePositive(grid, alpha_vec)
 # #         alpha = alpha_vec.array()
-# 
+#
 #         dist = SGDEdist(grid, alpha, bounds=U.getBounds())
-# 
+#
 #         fig = plt.figure()
 #         plotDensity2d(U)
 #         fig.show()
-# 
+#
 #         fig = plt.figure()
 #         plotSG2d(dist.grid, dist.alpha, addContour=True,
 #                  show_negative=True, show_grid_points=True)
 #         fig.show()
-# 
+#
 #         print "2d: mean = %g ~ %g" % (U.mean(), dist.mean())
 #         print "2d: var = %g ~ %g" % (U.var(), dist.var())
 #         plt.show()

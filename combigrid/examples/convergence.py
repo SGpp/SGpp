@@ -203,7 +203,7 @@ if __name__ == "__main__":
     parser.add_argument('--degree', default=5, type=int, help="polynomial degree of B-splines")
     parser.add_argument('--minLevel', default=0, type=int, help="minimum level of regular grids")
     parser.add_argument('--maxLevel', default=4, type=int, help="maximum level of regular grids")
-    parser.add_argument('--maxNumGridPoints', default=1e4, type=int, help="maximum number of grid points")
+    parser.add_argument('--maxNumGridPoints', default=200, type=int, help="maximum number of grid points")
     parser.add_argument('--growthFactor', default=2, type=int, help="Leja growth factor")
     parser.add_argument('--levelManager', default="variance", type=str, help="define level manager")
     parser.add_argument('--dist', default="beta", type=str, help="define marginal distribution")

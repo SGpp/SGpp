@@ -93,7 +93,7 @@ class CombiEvaluators {
 
   typedef std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> Collection;
   typedef std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> MultiCollection;
-  typedef std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> TensorCollection;
+  typedef std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>> TensorCollection;
 };
 
 } /* namespace combigrid */
