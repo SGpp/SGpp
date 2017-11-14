@@ -225,7 +225,7 @@ BOOST_AUTO_TEST_CASE(testVarianceComputationWithPCETransformation_Lognormal_Clen
   sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
   config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::BOUNDED_LOGNORMAL;
   config.polyParameters.logmean_ = 0.0;
-  config.polyParameters.logstddev_ = 1.0;
+  config.polyParameters.stddev_ = 1.0;
   config.polyParameters.lowerBound_ = 1e-2;
   config.polyParameters.upperBound_ = 1.0;
   auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);

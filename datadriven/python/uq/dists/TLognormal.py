@@ -1,117 +1,56 @@
-from scipy.stats import lognorm, norm
-
-from Dist import Dist
-import pysgpp.extensions.datadriven.uq.jsonLib as ju
 import numpy as np
+
+from Lognormal import Lognormal
+import pysgpp.extensions.datadriven.uq.jsonLib as ju
 from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
-from scipy.integrate import quad
 
 
-class TLognormal(Dist):
+class TLognormal(Lognormal):
     """
     The truncated Log-normal distribution
     """
 
     def __init__(self, mu, sigma, a, b):
-        super(TLognormal, self).__init__()
+        super(TLognormal, self).__init__(mu, sigma, a, b)
 
-        self.__mu = mu
-        self.__sigma = sigma
-        self._dist = norm(loc=0.0, scale=1.0)
+        self.mu = mu
+        self.sigma = sigma
 
-        self.__a = a
-        self.__b = b
-        self.__linearTrans = LinearTransformation(a, b)
-
-        self.phi_lwr = self._dist.cdf(self.__normalize(a))
-        self.phi_upr = self._dist.cdf(self.__normalize(b))
+        self.phi_lwr = self._dist.cdf(a)
+        self.phi_upr = self._dist.cdf(b)
         self.phi_width = self.phi_upr - self.phi_lwr
-
-    @classmethod
-    def by_range(cls, *args, **kws):
-        """
-        Constructor given a interval
-        """
-        return cls(*args, **kws)
-
-    @classmethod
-    def by_alpha(cls, mu, sigma, alpha, *args, **kws):
-        """
-        Constructor given a confidence value
-        @param mu: expectation value
-        @param sigma: standard deviation
-        @param alpha: significance level
-        """
-        U = lognorm(sigma, loc=mu)
-        a = U.ppf(alpha / 2.)
-        b = U.ppf(1. - alpha / 2.)
-
-        return cls(mu, sigma, a=a, b=b, *args, **kws)
-
-    def __normalize(self, x):
-        return (np.log(x) - self.__mu) / self.__sigma
-
-    def __denormalize(self, x):
-        return np.exp(x * self.__sigma + self.__mu)
+        self.inv_phi_width = 1. / self.phi_width
 
     def pdf(self, x):
-        if self.__a <= x <= self.__b:
-            return self._dist.pdf(self.__normalize(x)) / (x * self.__sigma * self.phi_width)
-        else:
-            return 0.0
+        return super(TLognormal, self).pdf(x) * self.inv_phi_width
 
     def cdf(self, x):
-        if x <= self.__a:
-            return 0.0
-        elif x >= self.__b:
-            return 1.0
-        else:
-            return self._dist.cdf(self.__normalize(x) - self.phi_lwr) / self.phi_width
+        return super(TLognormal, self).cdf(x) * self.inv_phi_width
 
     def ppf(self, x):
-        if x <= self.__a:
-            return 1.0
-        elif x >= self.__b:
-            return 0.0
-        else:
-            return self._dist.ppf(x * self.phi_width + self.phi_lwr)
+        return super(TLognormal, self).cdf(x) * self.phi_width
 
     def mean(self):
-        return self.__mu
+        return super(TLognormal, self).mean() * self.inv_phi_width
 
     def var(self):
-        return self.__sigma ** 2
+        return super(TLognormal, self).var() * self.inv_phi_width ** 2
 
     def std(self):
-        return self.__sigma
-
-    def rvs(self, n=1):
-        samples = np.zeros(n)
-        i = 0
-        while i < n:
-            newSamples = self._dist.rvs(n - i)
-            # check range
-            for sample in newSamples:
-                if self.__a <= sample <= self.__b:
-                    samples[i] = sample
-                    i += 1
-        return samples
-
-    def getBounds(self):
-        return [self.__a, self.__b]
+        return np.sqrt(self.var())
 
     def getDim(self):
         return 1
 
     def __str__(self):
-        return "LogNorm(%g, %g, %g, %g)" % (self.__mu, self.__sigma,
-                                            self.__a, self.__b)
+        return "TLognormal(%g, %g, %g, %g)" % (self.__mu, self.__sigma,
+                                               self.__a, self.__b)
 
     def toJson(self):
         serializationString = '"module" : "' + \
                               self.__module__ + '",\n'
 
-        for attrName in ["_Lognormal__mu", "_Lognormal__sigma", "_Lognormal__a", "_Lognormal__b"]:
+        for attrName in ["_TLognormal__mu", "_TLognormal__sigma", "_TLognormal__a", "_TLognormal__b"]:
             attrValue = self.__getattribute__(attrName)
             serializationString += ju.parseAttribute(attrValue, attrName)
 
@@ -122,7 +61,7 @@ class TLognormal(Dist):
     @classmethod
     def fromJson(cls, jsonObject):
         """
-        Restores the Lognormal object from the json object with its
+        Restores the TLognormal object from the json object with its
         attributes.
         @param jsonObject: json object
         @return: the restored UQSetting object
