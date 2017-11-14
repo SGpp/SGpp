@@ -32,9 +32,9 @@ namespace combigrid {
  * doubles. This vector-wise calculation can be optimized
  */
 FloatArrayVector BSplineQuadratureMixedEvaluator::get1DMixedIntegral(std::vector<double>& points,
-                                                                     size_t index_j) {
+                                                                     size_t index_i) {
   FloatArrayVector sums;
-  for (size_t index_i = 0; index_i < points.size(); index_i++) {
+  for (size_t index_j = 0; index_j < points.size(); index_j++) {
     // performing Gauss-Legendre integration with twice as many points as for the simple integrals
     size_t numGaussPoints = 2 * ((degree + 1) / 2 + numAdditionalPoints);
     sgpp::base::DataVector roots;
@@ -46,6 +46,7 @@ FloatArrayVector BSplineQuadratureMixedEvaluator::get1DMixedIntegral(std::vector
     createNakKnots(xValues, degree, xi);
     double bsplinevalue = 0.0;
 
+    // constant function for single point, Lagrange polynomials for up to 9 points, B-splines else
     if (xValues.size() == 1) {
       numGaussPoints = 1;
       quadRule.getLevelPointsAndWeightsNormalized(
@@ -57,15 +58,15 @@ FloatArrayVector BSplineQuadratureMixedEvaluator::get1DMixedIntegral(std::vector
       for (size_t i = 0; i < roots.getSize(); ++i) {
         double x = roots[i];
         bsplinevalue =
-            LagrangePolynomial(x, xValues, index_i) * LagrangePolynomial(x, xValues, index_j);
+            LagrangePolynomial(x, xValues, index_j) * LagrangePolynomial(x, xValues, index_i);
         double integrand = bsplinevalue * this->weight_function(x);
         sum += integrand * quadratureweights[i];
       }
     } else {
       quadRule.getLevelPointsAndWeightsNormalized(
           std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
-      size_t first_segment = std::max(degree, index_i);
-      size_t last_segment = std::min(xi.size() - degree - 1, index_i + degree + 1);
+      size_t first_segment = std::max(degree, index_j);
+      size_t last_segment = std::min(xi.size() - degree - 1, index_j + degree + 1);
       for (size_t segmentIndex = first_segment; segmentIndex < last_segment; segmentIndex++) {
         double a = std::max(0.0, xi[segmentIndex]);
         double b = std::min(1.0, xi[segmentIndex + 1]);
@@ -74,14 +75,19 @@ FloatArrayVector BSplineQuadratureMixedEvaluator::get1DMixedIntegral(std::vector
         for (size_t i = 0; i < roots.getSize(); ++i) {
           double x = a + width * roots[i];
           bsplinevalue =
-              nonUniformBSpline(x, degree, index_i, xi) * nonUniformBSpline(x, degree, index_j, xi);
+              nonUniformBSpline(x, degree, index_j, xi) * nonUniformBSpline(x, degree, index_i, xi);
           double integrand = bsplinevalue * this->weight_function(x);
           // multiply weights by length_old_interval / length_new_interval
           sum += integrand * quadratureweights[i] * width;
         }
       }
     }
-    sums[index_i] = sum;
+    sums[index_j] = sum;
+
+    // ToDo (rehmemk)
+    // This is a temporary construction for easier debugging. It does NOT calculate anything useful
+    // use "sums[index_j] = sum"
+    //    sums[index_j] = static_cast<double>(index_j) + 0.1 * static_cast<double>(index_i);
   }
 
   return sums;
@@ -99,10 +105,8 @@ FloatArrayVector BSplineQuadratureMixedEvaluator::get1DMixedIntegral(std::vector
  */
 void BSplineQuadratureMixedEvaluator::calculate1DMixedBSplineIntegrals(
     std::vector<double>& points, std::vector<FloatArrayVector>& basisValues) {
-  size_t tempindex = 0;
-  for (size_t index_j = 0; index_j < points.size(); ++index_j) {
-    basisValues.push_back(get1DMixedIntegral(points, index_j));
-    tempindex++;
+  for (size_t index_i = 0; index_i < points.size(); ++index_i) {
+    basisValues.push_back(get1DMixedIntegral(points, index_i));
   }
 }
 

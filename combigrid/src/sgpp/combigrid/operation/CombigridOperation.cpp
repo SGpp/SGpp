@@ -94,6 +94,17 @@ CombigridOperation::CombigridOperation(
               new CombigridTreeStorage(pointHierarchies, exploitNesting)),
           gridFunc)) {}
 
+CombigridOperation::CombigridOperation(
+    std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+    std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> evaluatorPrototypes,
+    std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting,
+    FullGridSummationStrategyType summationStrategyType)
+    : impl(new CombigridOperationImpl(
+          pointHierarchies, evaluatorPrototypes, levelManager,
+          std::shared_ptr<AbstractCombigridStorage>(
+              new CombigridTreeStorage(pointHierarchies, exploitNesting)),
+          gridFunc, summationStrategyType)) {}
+
 void CombigridOperation::setParameters(const base::DataVector& param) {
   std::vector<FloatScalarVector> scalars(param.getSize());
   for (size_t i = 0; i < param.getSize(); ++i) {
@@ -307,15 +318,16 @@ std::shared_ptr<CombigridOperation> CombigridOperation::createExpClenshawCurtisQ
 }
 
 std::shared_ptr<CombigridOperation> CombigridOperation::auxiliaryBsplineFunction(
-    size_t numDimensions, MultiFunction func, sgpp::combigrid::CombiHierarchies::Collection pointHierarchies,
+    size_t numDimensions, MultiFunction func,
+    sgpp::combigrid::CombiHierarchies::Collection pointHierarchies,
     sgpp::combigrid::CombiEvaluators::Collection evaluators, size_t degree) {
   // So far only WeightedRatioLevelManager has been used
   std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
       new sgpp::combigrid::WeightedRatioLevelManager());
   sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
   bool exploitNesting = false;
-  return std::make_shared<sgpp::combigrid::CombigridOperation>(pointHierarchies, evaluators, levelManager, gf,
-                                                               exploitNesting);
+  return std::make_shared<sgpp::combigrid::CombigridOperation>(pointHierarchies, evaluators,
+                                                               levelManager, gf, exploitNesting);
 }
 
 std::shared_ptr<CombigridOperation>

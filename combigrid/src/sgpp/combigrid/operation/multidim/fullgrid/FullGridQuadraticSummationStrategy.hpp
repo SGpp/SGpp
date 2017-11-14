@@ -5,19 +5,19 @@
 
 #pragma once
 
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/combigrid/algebraic/FloatArrayVector.hpp>
+#include <sgpp/combigrid/algebraic/FloatTensorVector.hpp>
 #include <sgpp/combigrid/common/MultiIndexIterator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp>
-#include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/threading/PtrGuard.hpp>
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
 
 #include <iostream>
 #include <vector>
-#include "AbstractFullGridEvaluationStrategy.hpp"
 
 namespace sgpp {
 namespace combigrid {
@@ -25,6 +25,65 @@ namespace combigrid {
 template <typename V>
 class FullGridQuadraticSummationStrategy : public AbstractFullGridSummationStrategy<V> {
  protected:
+ private:
+  /*
+   * vector product v * transpose(v2)
+   */
+
+  double dotMult(std::vector<double> const &vector1, std::vector<double> const &vector2) {
+    double result(0.0);
+    if (vector1.size() == vector2.size()) {
+      for (size_t i = 0; i < vector1.size(); i++) {
+        result += vector1[i] * vector2[i];
+      }
+    } else {
+      std::cerr << "dotMult for vectors of different size is undefined. returning 0" << std::endl;
+    }
+    return result;
+  }
+
+  FloatScalarVector dotMult(FloatArrayVector vector1, FloatArrayVector vector2) {
+    FloatScalarVector result(0.0);
+    if (vector1.size() == vector2.size()) {
+      auto values1 = vector1.getValues();
+      auto values2 = vector2.getValues();
+      size_t index = 0;
+      for (auto &val : values1) {
+        val.componentwiseMult(values2[index]);
+        result.add(val);
+        index++;
+      }
+    } else {
+      //      std::cout << vector1.size() << " " << vector2.size() << std::endl;
+      //      for (size_t i = 0; i < vector1.size(); i++) {
+      //        std::cout << vector1[i] << " ";
+      //      }
+      //      std::cout << "\n";
+      //      for (size_t i = 0; i < vector2.size(); i++) {
+      //        std::cout << vector2[i] << " ";
+      //      }
+      //      std::cout << "\n";
+
+      std::cerr << "dotMult for FloatArrayVectors of different size is undefined. returning 0"
+                << std::endl;
+    }
+    return result;
+  }
+
+  FloatScalarVector dotMult(FloatScalarVector vector1, FloatArrayVector vector2) {
+    std::cerr << "FullGridQuadraticSummationstrategy: operation dotMut is undefined for "
+                 "FloatScalarVector."
+              << std::endl;
+    return FloatScalarVector::zero();
+  }
+
+  FloatScalarVector dotMult(FloatTensorVector vector1, FloatArrayVector vector2) {
+    std::cerr << "FullGridQuadraticSummationstrategy: operation dotMut is undefined for "
+                 "FloatScalarVector."
+              << std::endl;
+    return FloatScalarVector::zero();
+  }
+
  public:
   /**
    * Constructor.
@@ -46,35 +105,41 @@ class FullGridQuadraticSummationStrategy : public AbstractFullGridSummationStrat
   /**
    * Evaluates the function given through the storage for a certain level-multi-index (see class
    * description).
-   * Summation of the form \sum_i \alpha_i \sum_j \alpha_j basis_ij(x)
-   * This is used for variance calculations where basis_ij = \int basis_i(x) * basis_j(x) dx
+   * Summation of the form \sum_i \alpha_i \sum_j \alpha_j  basis_i(param) basis_j(param)
+   *                    <=> v^T * A * v, A_ij = < basis_i(param),basis_j(param) >, v_i = alpha_i
+   * This is used for variance calculations.
+   * Currently it can only be used with template type V = FloatArrayVector
    */
   V eval(MultiIndex const &level) override {
+    //    std::cout << "level " << level[0] << " " << level[1] << " " << level[2] << std::endl;
+
     CGLOG("FullGridTensorEvaluator::eval(): start");
     size_t numDimensions = this->evaluators.size();
-    size_t lastDim = numDimensions - 1;
+    //    size_t lastDim = numDimensions - 1;
     MultiIndex multiBounds(numDimensions);
     std::vector<bool> orderingConfiguration(numDimensions);
 
     size_t paramIndex = 0;
 
-    // *the basis coefficients for this level are stored
-    // *the bounds for traversal are initialized given the number of points in each direction
-    // *if not already stored, the evaluators for the given level are cloned and their parameter, if
-    //  needed, is set
-    // *the ordering configuration is created - it stores a boolean for each dimension expressing
-    //  whether the corresponding evaluator needs sorted (ascending) points
+    // the basis coefficients for this level are stored
+    // the bounds for traversal are initialized given the number of points in each direction
+    // if not already stored, the evaluators for the given level are cloned and their parameter, if
+    // needed, is set
+    // the ordering configuration is created - it stores a boolean for each dimension expressing
+    // whether the corresponding evaluator needs sorted (ascending) points
 
-    // initialize evaluators and basis values, initialize multiBounds and orderingConfiguration
+    // init evaluators and basis values, init multiBounds and orderingConfiguration
     for (size_t d = 0; d < numDimensions; ++d) {
       size_t currentLevel = level[d];
       auto &currentEvaluators = this->evaluators[d];
 
       bool needsParam = this->evaluatorPrototypes[d]->needsParameter();
+
       bool needsOrdered = this->evaluatorPrototypes[d]->needsOrderedPoints();
 
       for (size_t l = currentEvaluators.size(); l <= currentLevel; ++l) {
         auto eval = this->evaluatorPrototypes[d]->cloneLinear();
+
         eval->setGridPoints(this->pointHierarchies[d]->getPoints(l, needsOrdered));
         eval->setLevel(l);
         if (needsParam) {
@@ -82,6 +147,7 @@ class FullGridQuadraticSummationStrategy : public AbstractFullGridSummationStrat
         }
         currentEvaluators.push_back(eval);
       }
+
       this->basisValues[d] = currentEvaluators[currentLevel]->getBasisValues();
       multiBounds[d] = this->pointHierarchies[d]->getNumPoints(currentLevel);
       orderingConfiguration[d] = needsOrdered;
@@ -91,102 +157,56 @@ class FullGridQuadraticSummationStrategy : public AbstractFullGridSummationStrat
       }
     }
 
-    //    std::cout << "basisValues:" << std::endl;
-    //    for (size_t i = 0; i < this->basisValues.size(); i++) {
-    //      for (size_t j = 0; j < this->basisValues[i].size(); j++) {
-    //        FloatArrayVector bVline = this->basisValues[i][j];
-    //        for (size_t k = 0; k < bVline.size(); k++) {
-    //          std::cout << bVline[k] << " ";
-    //        }
-    //        std::cout << "\n";
-    //      }
-    //      std::cout << "---------------\n";
-    //    }
-
-    // for efficient computation, the products over the first i evaluator coefficients are stored
-    // for all i up to n-1.
-    // This way, we only have to multiply them with the values for the changing indices at each
-    // iteration step.
-
-    // initialize partial products
-    this->partialProducts[0] = V::one();
-    for (size_t d = 1; d < numDimensions; ++d) {
-      V value = this->partialProducts[d - 1];
-      value.componentwiseMult(this->basisValues[d - 1][0]);
-      this->partialProducts[d] = value;
-    }
-
     CGLOG("FullGridTensorEvaluator::eval(): create storage iterator");
 
     // start iteration
     MultiIndexIterator it(multiBounds);
 
-    auto funcIter_j = this->storage->getGuidedIterator(level, it, orderingConfiguration);
-    V sum = V::zero();
-
+    std::shared_ptr<AbstractMultiStorageIterator<double>> funcIter =
+        this->storage->getGuidedIterator(level, it, orderingConfiguration);
     CGLOG("FullGridTensorEvaluator::eval(): start loop");
 
-    if (!funcIter_j->isValid()) {  // should not happen
-      std::cerr << "iterator in FullGridQuadraticSummationStrategy.hpp was not valid!" << std::endl;
-      return sum;
+    if (!funcIter->isValid()) {  // should not happen
+      return V::zero();
     }
 
-    // get partial product and multiply them together with the last basis
-    // coefficient, multiply them with the i-coefficient and add the resulting value to the inner
-    // sum. Then get the j-coefficient, multiply it by the inner sum and add this to (the outer) sum
+    std::vector<double> coefficients;
     while (true) {
-      CGLOG("FullGridTensorEvaluator::eval(): in loop");
-
-      double value_j = funcIter_j->value();
-      V vec = this->partialProducts[lastDim];
-      vec.componentwiseMult(this->basisValues[lastDim][it.indexAt(lastDim)]);
-
-      //      // DEBUGGING:
-      //      for (size_t vecindex = 0; vecindex < vec.size(); vecindex++) {
-      //        std::cout << vec[vecindex] << " ";
-      //      }
-      //      std::cout << "\n";
-
-      vec.scalarMult(value_j);
-      sum.add(vec);
-
-      // increment iterator
-      int h = funcIter_j->moveToNext();
-
-      CGLOG("FullGridTensorEvaluator::eval(): moveToNext() == " << h);
-
-      // check if not only the last dimension index changed
-      if (h != 0) {
-        if (h < 0) {
-          break;  // all indices have been traversed, stop iteration and return sum
-        } else {
-          // more than the last index have changed, thus update partialProducts
-          for (size_t d = lastDim - h; d < lastDim; ++d) {
-            auto pp = this->partialProducts[d];  // TODO(holzmudd): could probably be optimized...
-            pp.componentwiseMult(this->basisValues[d][it.indexAt(d)]);
-            this->partialProducts[d + 1] = pp;
-          }
-        }
+      coefficients.push_back(funcIter->value());
+      int h = funcIter->moveToNext();
+      if (h < 0) {
+        break;
       }
     }
-
     it.reset();
-    auto funcIter_i = this->storage->getGuidedIterator(level, it, orderingConfiguration);
-    // Multiply sum[i] by alpha_i
-    // or (size_t i = 0; i < sum.size(); i++) {
-    size_t i = 0;
-    int h = 0;
-    while (true) {
-      // TODO (rehmemk): fix it. use componentwiseMult?
-      //    	double value_i = funcIter_i->value();
-      //      vec.scalarMult(value);
-      //      sum.add(vec);
-      //      sum[i].value() *= value_i;
-      h = funcIter_i->moveToNext();
-      if (h < 0) break;
-      i++;
+    std::vector<std::vector<double>> M;
+    while (it.isValid()) {
+      MultiIndexIterator innerIt(multiBounds);
+      MultiIndex indexI = it.getMultiIndex();
+      std::vector<double> lineI;
+      while (innerIt.isValid()) {
+        double entry = 1;
+        MultiIndex indexJ = innerIt.getMultiIndex();
+        for (size_t d = 0; d < numDimensions; d++) {
+          entry *= this->basisValues[d][indexI[d]][indexJ[d]].value();
+        }
+        lineI.push_back(entry);
+        innerIt.moveToNext();
+      }
+      M.push_back(lineI);
+      it.moveToNext();
     }
-    return sum;
+
+    std::vector<double> innerSum;
+    for (size_t i = 0; i < coefficients.size(); i++) {
+      //      std::cout << M[i].size() << " " << coefficients.size() << std::endl;
+      innerSum.push_back(dotMult(M[i], coefficients));
+    }
+
+    double variance = dotMult(innerSum, coefficients);
+    FloatScalarVector var(variance);
+    V result(var);
+    return result;
   }
 };
 

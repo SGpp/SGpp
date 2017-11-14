@@ -88,6 +88,13 @@ FloatScalarVector& FloatTensorVector::operator[](MultiIndex i) {
   return values->get(i);
 }
 
+FloatScalarVector FloatTensorVector::operator[](size_t i) {
+  std::cerr << "FloatTensorVector: operator[] cannot be used with a size_t parameter. Use a "
+               "MultiIndex instead. Returning zero."
+            << std::endl;
+  return FloatScalarVector::zero();
+}
+
 void FloatTensorVector::add(const FloatTensorVector& other) {
   ensureDim(other.d);
   auto it = other.values->getStoredDataIterator();

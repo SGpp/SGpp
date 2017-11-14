@@ -42,9 +42,9 @@ class FullGridLinearSummationStrategy : public AbstractFullGridSummationStrategy
   ~FullGridLinearSummationStrategy() {}
 
   /**
-   * Evaluates the function given through the storage for a certain level-multi-index (see class
+  * Evaluates the function given through the storage for a certain level-multi-index (see class
    * description).
-   * Summation of the form \sum_i \alpha_i \ basis_i(x)
+   * Summation of the form \sum_i \alpha_i basis_i(param)
    * This is used for interpolation and quadratures
    */
   V eval(MultiIndex const &level) override {
@@ -83,8 +83,6 @@ class FullGridLinearSummationStrategy : public AbstractFullGridSummationStrategy
         currentEvaluators.push_back(eval);
       }
 
-      // ToDo (rehmemk) solve mismatch between needsOrdered for grid points and iterator
-      //      needsOrdered = false;
       this->basisValues[d] = currentEvaluators[currentLevel]->getBasisValues();
       multiBounds[d] = this->pointHierarchies[d]->getNumPoints(currentLevel);
       orderingConfiguration[d] = needsOrdered;

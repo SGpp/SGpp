@@ -139,7 +139,6 @@ sgpp::combigrid::GridFunction BSplineCoefficientGridFunction(
     sgpp::combigrid::MultiFunction func, sgpp::combigrid::CombiHierarchies::Collection grids,
     size_t degree) {
   sgpp::combigrid::GridFunction gf([=](std::shared_ptr<sgpp::combigrid::TensorGrid> grid) {
-
     size_t numDimensions = grid->getDimension();
     // stores the values of the objective function
     auto funcStorage = std::make_shared<sgpp::combigrid::CombigridTreeStorage>(grids, func);
@@ -230,6 +229,7 @@ sgpp::combigrid::GridFunction BSplineCoefficientGridFunction(
 
     it.reset();
     for (size_t vecIndex = 0; it.isValid(); ++vecIndex, it.moveToNext()) {
+      //      std::cout << coefficients_sle[vecIndex] << std::endl;
       coefficientTree->set(it.getMultiIndex(), coefficients_sle[vecIndex]);
     }
 

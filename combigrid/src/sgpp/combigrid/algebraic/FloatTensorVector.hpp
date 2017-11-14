@@ -52,6 +52,11 @@ class FloatTensorVector {
    */
   FloatScalarVector &operator[](MultiIndex i);
 
+  /**
+   * This is an auxiliary function needed in FullGridQuadraticSummationStrategy.
+   */
+  FloatScalarVector operator[](size_t i);
+
   // size_t size() const { return values.size(); }
 
   void add(FloatTensorVector const &other);
