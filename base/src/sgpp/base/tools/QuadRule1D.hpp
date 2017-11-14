@@ -20,15 +20,13 @@ class QuadRule1D {
   QuadRule1D();
   virtual ~QuadRule1D();
 
+  size_t getMaxSupportedLevel() const;
+
   void getLevelPointsAndWeights(size_t level, base::DataVector& coordinates,
                                 base::DataVector& weights);
 
-  size_t getMaxSupportedLevel();
-
- protected:
-  const size_t maxSupportedLevel = 50;
-  std::vector<DataVector*> coordinates;
-  std::vector<DataVector*> weights;
+ public:
+  std::vector<double> coordinatesWeights;
 };
 
 }  // namespace base
