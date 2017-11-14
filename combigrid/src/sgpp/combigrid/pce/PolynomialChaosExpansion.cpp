@@ -9,7 +9,11 @@
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
+
+#ifdef USE_DAKOTA
 #include <pecos_data_types.hpp>
+#endif
 
 #include <vector>
 
@@ -69,6 +73,11 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
       numGridPoints(combigridMultiOperation->numGridPoints()) {
+  // make sure that the number of dimensions match
+  if (numDims != functionBases.size()) {
+    throw sgpp::base::application_exception(
+        "number of basis function do not match with the number of dimensions of the operation");
+  }
   // create tensor operation for pce transformation
   this->combigridTensorOperation =
       sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
@@ -84,6 +93,11 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
       combigridMultiOperation(combigridMultiOperation),
       combigridTensorOperation(nullptr),
       numGridPoints(combigridMultiOperation->numGridPoints()) {
+  // make sure that the number of dimensions match
+  if (numDims != functionBases.size()) {
+    throw sgpp::base::application_exception(
+        "number of basis function do not match with the number of dimensions of the operation");
+  }
   // create tensor operation for pce transformation
   this->combigridTensorOperation =
       sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
@@ -99,6 +113,11 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
       numGridPoints(combigridTensorOperation->numGridPoints()) {
+  // make sure that the number of dimensions match
+  if (numDims != functionBases.size()) {
+    throw sgpp::base::application_exception(
+        "number of basis function do not match with the number of dimensions of the operation");
+  }
   // create tensor operation for pce transformation
   this->combigridTensorOperation =
       sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
