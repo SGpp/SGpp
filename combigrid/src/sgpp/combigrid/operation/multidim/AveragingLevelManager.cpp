@@ -16,13 +16,16 @@ double AveragingLevelManager::computePriority(const MultiIndex& level) {
   }
 
   double sum = 0.0;
-
+  double n = 0.0;
   for (auto& predLevel : predecessors) {
-    auto data = levelData->get(predLevel);
-    sum += data->norm / static_cast<double>(data->maxNewPoints);
+    if (levelData->containsIndex(predLevel)) {
+      auto data = levelData->get(predLevel);
+      sum += data->norm / static_cast<double>(data->maxNewPoints);
+      n += 1;
+    }
   }
 
-  return sum / static_cast<double>(predecessors.size());
+  return sum / n;
 }
 
 AveragingLevelManager::AveragingLevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator)
