@@ -63,8 +63,8 @@ int main() {
         d, func);
     sgpp::combigrid::Stopwatch stopwatch;
     stopwatch.start();
-    op->getLevelManager()->addRegularLevels(q);
-    //    op->getLevelManager()->addLevelsAdaptive(1000);
+    op->getLevelManager()->addRegularLevels(0);
+    op->getLevelManager()->addLevelsAdaptiveParallel(1000, 4);
     stopwatch.log();
     // compute the variance
     stopwatch.start();

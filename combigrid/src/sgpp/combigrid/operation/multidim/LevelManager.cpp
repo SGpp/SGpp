@@ -279,9 +279,9 @@ void LevelManager::addStats(const MultiIndex &level) {
 }
 
 bool LevelManager::addLevelToCombiEval(const MultiIndex &level) {
-  bool wasAdded = !combiEval->containsLevel(level);
+  bool alreadyAdded = !combiEval->containsLevel(level);
   bool ans = combiEval->addLevel(level);
-  if (ans && wasAdded) {
+  if (ans && alreadyAdded) {
     addStats(level);
   }
   return ans;
@@ -395,6 +395,7 @@ void LevelManager::addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThre
   initAdaption();
 
   size_t currentPointBound = 0;
+  infoOnAddedLevels->incrementCounter();
 
   combiEval->setMutex(managerMutex);
 
