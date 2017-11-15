@@ -157,6 +157,7 @@ class FullGridQuadraticSummationStrategy : public AbstractFullGridSummationStrat
 
     // calculate transp(innerSum) * v = transp(v) * A * v
     double result_d = dotMult(innerSum, coefficients);
+    std::cout << level[0] << " " << level[1] << " " << level[2] << " | " << result_d << std::endl;
     FloatScalarVector result_fsv(result_d);
     V result(result_fsv);
     return result;
