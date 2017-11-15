@@ -18,6 +18,8 @@
 #include <iostream>
 #include <vector>
 
+#include <fstream>
+
 namespace sgpp {
 namespace combigrid {
 
@@ -62,15 +64,15 @@ class FullGridQuadraticSummationStrategy : public AbstractFullGridSummationStrat
   /**
    * Evaluates the function given through the storage for a certain level-multi-index (see class
    * description).
-   * Summation of the form \sum_i \alpha_i \sum_j \alpha_j  basis_i(param) basis_j(param)
-   *                    <=> v^T * A * v, A_ij = < basis_i(param),basis_j(param) >, v_i = alpha_i
+   * Summation of the form \sum_i coefficients_i \sum_j coefficients_j  basis_i(param)
+   * basis_j(param)
+   *             <=> v^T * A * v, A_ij = < basis_i(param),basis_j(param) >, v_i = coefficients_i
    * This is used for variance calculations.
    * Currently it can only be used with template type V = FloatArrayVector
    */
   V eval(MultiIndex const &level) override {
     CGLOG("FullGridTensorEvaluator::eval(): start");
     size_t numDimensions = this->evaluators.size();
-    //    size_t lastDim = numDimensions - 1;
     MultiIndex multiBounds(numDimensions);
     std::vector<bool> orderingConfiguration(numDimensions);
 
@@ -115,16 +117,17 @@ class FullGridQuadraticSummationStrategy : public AbstractFullGridSummationStrat
     CGLOG("FullGridTensorEvaluator::eval(): create storage iterator");
 
     // start iteration
-    MultiIndexIterator it(multiBounds);
+    MultiIndexIterator iteratorI(multiBounds);
 
     std::shared_ptr<AbstractMultiStorageIterator<double>> funcIter =
-        this->storage->getGuidedIterator(level, it, orderingConfiguration);
+        this->storage->getGuidedIterator(level, iteratorI, orderingConfiguration);
     CGLOG("FullGridTensorEvaluator::eval(): start loop");
 
     if (!funcIter->isValid()) {  // should not happen
       return V::zero();
     }
 
+    // assemble interpolation coefficients in a vector
     std::vector<double> coefficients;
     while (true) {
       coefficients.push_back(funcIter->value());
@@ -134,30 +137,28 @@ class FullGridQuadraticSummationStrategy : public AbstractFullGridSummationStrat
       }
     }
 
-    // ToDo (rehmemk) possible speed up through using some sort of partial products like in
-    // FullGridLinearSummationStrategy
-    it.reset();
+    // assemble the i-th line of matrix A and calculate innerSum[i] = transp(v) * (A)_i
+    iteratorI.reset();
     std::vector<double> innerSum;
-    while (it.isValid()) {
-      MultiIndexIterator innerIt(multiBounds);
-      MultiIndex indexI = it.getMultiIndex();
+    while (iteratorI.isValid()) {
+      MultiIndexIterator iteratorJ(multiBounds);
       std::vector<double> lineI;
-      while (innerIt.isValid()) {
+      while (iteratorJ.isValid()) {
         double entry = 1;
-        MultiIndex indexJ = innerIt.getMultiIndex();
         for (size_t d = 0; d < numDimensions; d++) {
-          entry *= this->basisValues[d][indexI[d]][indexJ[d]].value();
+          entry *= this->basisValues[d][iteratorI.indexAt(d)][iteratorJ.indexAt(d)].value();
         }
         lineI.push_back(entry);
-        innerIt.moveToNext();
+        iteratorJ.moveToNext();
       }
       innerSum.push_back(dotMult(lineI, coefficients));
-      it.moveToNext();
+      iteratorI.moveToNext();
     }
 
-    double variance = dotMult(innerSum, coefficients);
-    FloatScalarVector var(variance);
-    V result(var);
+    // calculate transp(innerSum) * v = transp(v) * A * v
+    double result_d = dotMult(innerSum, coefficients);
+    FloatScalarVector result_fsv(result_d);
+    V result(result_fsv);
     return result;
   }
 };

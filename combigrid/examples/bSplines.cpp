@@ -32,7 +32,8 @@
 #include <vector>
 
 double f(sgpp::base::DataVector const& v) {
-  return v[0] * sin(v[0] + v[1]) * exp(v[1] * v[2]);  // v[0] * sin(v[1]);
+  //  return 1;
+  return v[0] * sin(v[0] + v[1]) * exp(v[1] * v[2]);
   //  return v[0] * sin(v[0]);
   //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
   //         std::exp(v[0] * v[1] - 1);
@@ -173,7 +174,7 @@ double variance(size_t level, size_t numDimensions, size_t degree) {
 int main() {
   size_t numDimensions = 3;
   size_t degree = 3;
-  size_t level = 5;
+  size_t level = 4;
 
   // Interpolation
   //  sgpp::base::SGppStopwatch watch;
@@ -207,8 +208,10 @@ int main() {
   //  std::cout << res << std::endl;
 
   // Calculate variance (integral of func^2 respectively)
+  sgpp::base::SGppStopwatch watch;
   double var = variance(level, numDimensions, degree);
   std::cout << "variance : " << var << "  (currently variance is simply integral(f^2)" << std::endl;
+  std::cout << "Total Runtime: " << watch.stop() << " s" << std::endl;
 
   return 0;
 }
