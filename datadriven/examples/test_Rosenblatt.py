@@ -10,7 +10,7 @@ class interpolation_function():
   def __init__(self, d, f):
     self.f = f
     self.d = d
-    self.grid = pysgpp.Grid.createPolyClenshawCurtisGrid(d, 3)
+    self.grid = pysgpp.Grid.createBsplineClenshawCurtisGrid(d, 3)
     self.gridStorage = self.grid.getStorage()
     try :
       self.hierarch = pysgpp.createOperationHierarchisation(self.grid)
@@ -88,7 +88,7 @@ def eval_inverse_rosenblatt1d(sg_pdf, xs):
 
 xs = np.arange(0., 1.01, 0.01)
 l_max = 2
-d = 1
+d = 2
 interpolation = interpolation_function(d, parabola)
 interpolation.create_interpolation(l_max)
 
@@ -97,10 +97,10 @@ interpolation.create_interpolation(l_max)
 # ys = [interpolation(x) for x in xs]
 # plotSG2d(interpolation.grid, interpolation.alpha)
 # ys = eval_inverse_rosenblatt1d(interpolation, xs)
-ys = eval_rosenblatt1d(interpolation, xs)
-print(ys)
-# eval_rosenblattdd(interpolation, xs)
-plt.plot(xs, ys)
+# ys = eval_rosenblatt1d(interpolation, xs)
+# print(ys)
+eval_rosenblattdd(interpolation, xs)
+# plt.plot(xs, ys)
 # plt.scatter(grid_points, np.zeros_like(grid_points))
 # plt.pcolormesh(X, Y, Z)
-plt.show()
+# plt.show()
