@@ -52,7 +52,7 @@ void OperationInverseRosenblattTransformation1DModBsplineClenshawCurtis::init(
   std::multimap<double, double>::iterator it1;
   base::GridStorage* gs = &this->grid->getStorage();
   double area = 0.0;
-  double right_coord, right_function_value;
+  double right_coord = 0.0, right_function_value = 0.0;
   size_t p = dynamic_cast<sgpp::base::ModBsplineClenshawCurtisGrid*>(grid)->getDegree();
   quadOrder = (p + 1) / 2;
 
@@ -265,8 +265,8 @@ double OperationInverseRosenblattTransformation1DModBsplineClenshawCurtis::doTra
     base::DataVector* alpha1d, double coord1d) {
   init(alpha1d);
   // std::cout << "PFs size after exit: " << patch_functions.size() << std::endl;
-  std::function<double(const base::DataVector&)> optFunc =
-      [this, coord1d, alpha1d](const base::DataVector& x) -> double {
+  std::function<double(const base::DataVector&)> optFunc = [this, coord1d, alpha1d](
+      const base::DataVector& x) -> double {
     double F_x = sample(alpha1d, x[0]);
     return (F_x - coord1d) * (F_x - coord1d);
   };
