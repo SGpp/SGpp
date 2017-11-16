@@ -25,11 +25,12 @@
  */
 
 #include <sgpp/globaldef.hpp>
+
+#include <vector>
+
 #include "hash/OperationEvalGradient.hpp"
 #include "hash/OperationEvalHessian.hpp"
 #include "hash/OperationEvalPartialDerivative.hpp"
-
-#include <vector>
 
 namespace sgpp {
 
