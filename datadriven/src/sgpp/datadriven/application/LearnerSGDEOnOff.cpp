@@ -58,12 +58,11 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& tr
       processedPoints{0},
       avgErrors{0} {
   // initialize offline object
-  if(matrixfile.empty()){
+  if (matrixfile.empty()) {
     offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildOfflineObject(dconf)};
     offline->buildMatrix();
     offline->decomposeMatrix();
-  }
-  else{
+  } else {
     offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildFromFile(matrixfile)};
   }
 
@@ -636,11 +635,11 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
         std::cout << "Size before refine: " << sizeBeforeRefine << std::endl;
         // simple refinement based on surpluses
         SurplusRefinementFunctor srf(alphaWeight, offline->getConfig().ref_noPoints_);
-        if(offline->interactions.size() == 0){
-        gridGen.refine(srf);
-      }else{
-        gridGen.refineInter(srf, offline->interactions);
-      }
+        if (offline->interactions.size() == 0) {
+          gridGen.refine(srf);
+        } else {
+          gridGen.refineInter(srf, offline->interactions);
+        }
         sizeAfterRefine = grid.getSize();
       } else if ((refType == "data") || (refType == "zero")) {
         if (preCompute) {
@@ -651,11 +650,11 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
         func->setGridIndex(idx);
         // perform refinement (zero-crossings-based / data-based)
         sizeBeforeRefine = grid.getSize();
-        if(offline->interactions.size() == 0){
-        gridGen.refine(*func);
-      }else{
-        gridGen.refineInter(*func, offline->interactions);
-      }
+        if (offline->interactions.size() == 0) {
+          gridGen.refine(*func);
+        } else {
+          gridGen.refineInter(*func, offline->interactions);
+        }
         sizeAfterRefine = grid.getSize();
       }
 

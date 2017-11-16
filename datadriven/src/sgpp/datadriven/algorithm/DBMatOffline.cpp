@@ -117,10 +117,9 @@ void DBMatOffline::InitializeGrid() {
   }
 
   // Generate regular Grid with LEVELS Levels
-  if (interactions.size() == 0){
+  if (interactions.size() == 0) {
     grid->getGenerator().regular(config.grid_level_);
-  }
-  else{
+  } else {
     grid->getGenerator().regularInter(config.grid_level_, interactions, 0.0);
   }
   std::cout << "Initialized Grid has " << grid->getSize() << "Gridpoints." << std::endl;
@@ -165,9 +164,9 @@ void DBMatOffline::store(const std::string& fileName) {
   }
 
   std::string inter = "," + std::to_string(interactions.size());
-  for(std::vector<size_t> i : interactions){
+  for (std::vector<size_t> i : interactions) {
     inter.append("," + std::to_string(i.size()));
-    for(size_t j:i){
+    for (size_t j : i) {
       inter.append("," + std::to_string(j));
     }
   }
@@ -226,7 +225,7 @@ void sgpp::datadriven::DBMatOffline::parseConfig(const std::string& fileName,
 }
 
 void sgpp::datadriven::DBMatOffline::parseInter(const std::string& fileName,
-                                                 std::vector<std::vector<size_t>>& interactions) const {
+    std::vector<std::vector<size_t>>& interactions) const {
   std::ifstream file(fileName, std::istream::in);
   // Read configuration
   if (!file) {
@@ -239,9 +238,9 @@ void sgpp::datadriven::DBMatOffline::parseInter(const std::string& fileName,
   std::vector<std::string> tokens;
   StringTokenizer::tokenize(str, ",", tokens);
 
-  for(size_t i = 7; i < tokens.size(); i+= std::stoi(tokens[i])+1){
+  for (size_t i = 7; i < tokens.size(); i+= std::stoi(tokens[i])+1) {
     std::vector<size_t> tmp = std::vector<size_t>();
-    for(size_t j = 1; j <= std::stoul(tokens[i]); j++){
+    for (size_t j = 1; j <= std::stoul(tokens[i]); j++) {
       tmp.push_back(std::stoi(tokens[i+j]));
     }
     interactions.push_back(tmp);
@@ -250,7 +249,7 @@ void sgpp::datadriven::DBMatOffline::parseInter(const std::string& fileName,
   std::cout << interactions.size() << std::endl;
 }
 
-void sgpp::datadriven::DBMatOffline::setInter(std::vector<std::vector <size_t>> inter){
+void sgpp::datadriven::DBMatOffline::setInter(std::vector<std::vector <size_t>> inter) {
   interactions = inter;
 }
 sgpp::base::DataMatrix& DBMatOffline::getLhsMatrix_ONLY_FOR_TESTING() { return this->lhsMatrix; }

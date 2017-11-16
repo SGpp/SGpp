@@ -23,7 +23,6 @@ void HashRefinementInteraction::createGridpoint(GridStorage& storage, GridPoint&
   // Get the currently used dimensions of the grid point.
   auto coordsIndex = std::vector<bool>(storage.getDimension());
   for (size_t i = 0; i < storage.getDimension(); ++i) {
-    if((coordsIndex[i] = index.getLevel(i) != 1) != (index.getStandardCoordinate(i) != 0.5)) std::cout << "Coord and Lvl values dont match" << std::endl;
     coordsIndex[i] = index.getStandardCoordinate(i) != 0.5;
   }
 
@@ -59,7 +58,7 @@ void HashRefinementInteraction::collectRefinablePoints(GridStorage& storage,
        iter++) {
     point = *(iter->first);
 
-    //get the boolean interactions of current point
+    // get the boolean interactions of current point
     auto coordsIndex = std::vector<bool>(storage.getDimension());
     for (size_t i = 0; i < storage.getDimension(); ++i) {
       coordsIndex[i] = point.getStandardCoordinate(i) != 0.5;
@@ -73,8 +72,8 @@ void HashRefinementInteraction::collectRefinablePoints(GridStorage& storage,
     for (size_t d = 0; d < storage.getDimension(); d++) {
       auto tmpCoord = coordsIndex[d];
       coordsIndex[d] = 1;
-      //point isnt included in interactionterms
-      if(interactions.find(coordsIndex) == interactions.end()){
+      // point isnt included in interactionterms
+      if (interactions.find(coordsIndex) == interactions.end()) {
         coordsIndex[d] = tmpCoord;
         break;
       }

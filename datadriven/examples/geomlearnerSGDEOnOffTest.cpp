@@ -27,17 +27,17 @@ using sgpp::base::DataVector;
  * 
  */
 
+
+
 int main() {
   /**
    * Get the training, test and validation data
    */
-  //std::string filename = "../../datasets/artificialDatasets/TrianglesCircles/tricircle_0.00-1.00_8x8_1000000images.train";
   std::string filename = "../../datasets/mnist/mnist_[2, 5, 7]_28x28.train.arff";
   // load training samples
   std::cout << "# loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset trainDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
 
-  //filename = "../../datasets/artificialDatasets/TrianglesCircles/tricircle_0.00-1.00_8x8.test";
   filename = "../../datasets/mnist/mnist_[2, 5, 7]_28x28.t10k.arff";
   // load test samples
   std::cout << "# loading file: " << filename << std::endl;
@@ -79,7 +79,7 @@ int main() {
   sgpp::base::RegularGridConfiguration gridConfig;
   gridConfig.dim_ = trainDataset.getDimension();
   gridConfig.level_ = 3;
-  //gridConfig.type_ = sgpp::base::GridType::Linear;
+  // gridConfig.type_ = sgpp::base::GridType::Linear;
   gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
   /**
@@ -172,13 +172,13 @@ int main() {
    * Create the learner.
    */
   std::cout << "# create learner" << std::endl;
-  //Use precomputed matrix
+  // Use precomputed matrix
   sgpp::datadriven::LearnerSGDEOnOff learner(dconf, trainDataset, testDataset, nullptr,
-                                             classLabels, classNum, usePrior, beta, lambda, matrixfile);
+                                classLabels, classNum, usePrior, beta, lambda, matrixfile);
 
 
-  //Build matrix
-  //sgpp::datadriven::LearnerSGDEOnOff learner(dconf, trainDataset, testDataset, nullptr,
+  // Build matrix
+  // sgpp::datadriven::LearnerSGDEOnOff learner(dconf, trainDataset, testDataset, nullptr,
   //                                           classLabels, classNum, usePrior, beta, lambda);
   std::cout << "learner set up!" << std::endl;
 
@@ -212,7 +212,7 @@ int main() {
   learner.train(batchSize, maxDataPasses, refType, refMonitor, refPeriod, accDeclineThreshold,
                 accDeclineBufferSize, minRefInterval, enableCv, nextCvStep);
 
-  //learner.storeResults();
+  // learner.storeResults();
 
   auto xTest = testDataset.getData();
   auto yTest = testDataset.getTargets();
@@ -221,24 +221,24 @@ int main() {
 
   sgpp::base::DataVector predictTest(xTest.size());
   learner.predict(xTest, predictTest);
-  
+
   std::cout << "Build confusion matrix \n real\\pred" << std::endl;
 
   classNum = 10;
-  size_t *confusion = new size_t [classNum*classNum];
+  size_t *confusion = new size_t[classNum*classNum];
 
-  for(size_t real = 0; real < classNum; real++){
-    for(size_t pred = 0; pred < classNum; pred++){
+  for (size_t real = 0; real < classNum; real++) {
+    for (size_t pred = 0; pred < classNum; pred++) {
       confusion[pred + real*classNum] = 0;
     }
   }
 
-  for(size_t i = 0; i < testDataset.getNumberInstances(); i++){
+  for (size_t i = 0; i < testDataset.getNumberInstances(); i++) {
     confusion[(size_t)predictTest.get(i)+classNum*(size_t)yTest.get(i)]++;
   }
 
-  for(size_t real = 0; real < classNum; real++){
-    for(size_t pred = 0; pred < classNum; pred++){
+  for (size_t real = 0; real < classNum; real++) {
+    for (size_t pred = 0; pred < classNum; pred++) {
       std::cout << confusion[pred+real*classNum] << "\t";
     }
     std::cout << std::endl;
