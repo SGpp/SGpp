@@ -134,7 +134,7 @@ class DBMatOffline {
 
   /**
    * Sets interaction Term
-   * @param inter Interaction terms used for geometrically aware grids
+   * @param interactions Interaction terms used for geometrically aware grids
    */
   void setInter(std::vector<std::vector <size_t>> interactions);
 
