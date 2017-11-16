@@ -57,7 +57,7 @@ double OperationRosenblattTransformation1DPolyClenshawCurtis::doTransformation1D
   const size_t quadOrder = (p + 1) / 2;
   gauss.getLevelPointsAndWeightsNormalized(quadOrder, gauss_coordinates, weights);
 
-  double right_coord, right_function_value;
+  double right_coord = 0.0, right_function_value = 0.0;
   // std::cout << "size:" << gs->getSize() << std::endl;
   double sum = 0.0, area = 0.0;
 
@@ -241,7 +241,7 @@ double OperationRosenblattTransformation1DPolyClenshawCurtis::doTransformation1D
   // std::cout << "Size cdf: " << coord_cdf.size() << std::endl;
   // std::cout << "coord cdf: " << std::endl;
   // for (it1 = coord_cdf.begin(); it1 != coord_cdf.end(); ++it1) {
-    // std::cout << it1->first << ":" << it1->second << std::endl;
+  // std::cout << it1->first << ":" << it1->second << std::endl;
   // }
 
   // find cdf interval
