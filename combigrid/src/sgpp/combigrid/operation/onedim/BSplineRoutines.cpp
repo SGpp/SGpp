@@ -150,6 +150,7 @@ sgpp::combigrid::GridFunction BSplineCoefficientGridFunction(
     // ToDo (rehmemk) B-spline interpolation and B-spline quadrature can be mixed (one in one
     // dimension the other in another dimension and so on). Combining B-splines and other basis
     // functions hast not been tested yet.
+
     sgpp::combigrid::CombiEvaluators::Collection interpolEvaluators(
         numDimensions, sgpp::combigrid::CombiEvaluators::BSplineInterpolation(degree));
 

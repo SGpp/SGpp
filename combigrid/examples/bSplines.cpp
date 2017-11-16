@@ -33,10 +33,9 @@
 
 double f(sgpp::base::DataVector const& v) {
   //  return 1;
-  return v[0] * sin(v[0] + v[1]) * exp(v[1] * v[2]);
-  //  return v[0] * sin(v[0]);
-  //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
-  //         std::exp(v[0] * v[1] - 1);
+  //  return v[0] * sin(v[0] + v[1]) * exp(v[1] * v[2]);
+  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
+         std::exp(v[0] * v[1] - 1);
 }
 
 void interpolate(size_t maxlevel, size_t numDimensions, size_t degree, double& max_err,
@@ -159,7 +158,7 @@ double variance(size_t level, size_t numDimensions, size_t degree) {
   sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
       numDimensions, sgpp::combigrid::CombiEvaluators::BSplineMixedQuadrature(degree));
   std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
-      new sgpp::combigrid::WeightedRatioLevelManager());
+      new sgpp::combigrid::AveragingLevelManager());
   sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
   bool exploitNesting = false;
   sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =
@@ -172,9 +171,9 @@ double variance(size_t level, size_t numDimensions, size_t degree) {
 }
 
 int main() {
-  size_t numDimensions = 3;
+  size_t numDimensions = 2;
   size_t degree = 3;
-  size_t level = 4;
+  size_t level = 3;
 
   // Interpolation
   //  sgpp::base::SGppStopwatch watch;

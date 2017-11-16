@@ -24,12 +24,6 @@ namespace combigrid {
  * @param index_i index of B-spline b_i
  * @param index_j index of B-spline b_j
  * @return integral of b_i*b_j
- *
- * w.l.o.g. integrate over support of b_i because b_i*b_j is zero outside supp(b_i)
- * [ ToDo (rehmemk) but setting the segments depending on b_i AND b_j should speed up this
- * calculation!]
- * ToDo (rehmemk) simply added a loop over index_i to calculate FloatArrayVectors instead of
- * doubles. This vector-wise calculation can be optimized
  */
 FloatArrayVector BSplineQuadratureMixedEvaluator::get1DMixedIntegral(std::vector<double>& points,
                                                                      size_t index_i) {
@@ -65,8 +59,12 @@ FloatArrayVector BSplineQuadratureMixedEvaluator::get1DMixedIntegral(std::vector
     } else {
       quadRule.getLevelPointsAndWeightsNormalized(
           std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
-      size_t first_segment = std::max(degree, index_j);
-      size_t last_segment = std::min(xi.size() - degree - 1, index_j + degree + 1);
+      size_t first_segment_j = std::max(degree, index_j);
+      size_t last_segment_j = std::min(xi.size() - degree - 1, index_j + degree + 1);
+      size_t first_segment_i = std::max(degree, index_i);
+      size_t last_segment_i = std::min(xi.size() - degree - 1, index_i + degree + 1);
+      size_t first_segment = std::min(first_segment_i, first_segment_j);
+      size_t last_segment = std::max(last_segment_i, last_segment_j);
       for (size_t segmentIndex = first_segment; segmentIndex < last_segment; segmentIndex++) {
         double a = std::max(0.0, xi[segmentIndex]);
         double b = std::min(1.0, xi[segmentIndex + 1]);
@@ -83,13 +81,7 @@ FloatArrayVector BSplineQuadratureMixedEvaluator::get1DMixedIntegral(std::vector
       }
     }
     sums[index_j] = sum;
-
-    // ToDo (rehmemk)
-    // This is a temporary construction for easier debugging. It does NOT calculate anything useful
-    // use "sums[index_j] = sum"
-    //    sums[index_j] = static_cast<double>(index_j) + 0.1 * static_cast<double>(index_i);
   }
-
   return sums;
 }
 
