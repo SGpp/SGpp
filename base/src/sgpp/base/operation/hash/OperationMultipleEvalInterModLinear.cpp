@@ -104,9 +104,9 @@ void OperationMultipleEvalInterModLinear::mult(DataVector& alpha, DataVector& re
               if (level[i] == relLvl+1) {
                 level[i] = 0;
                 carry = true;
-              }
-              else
+              } else {
                 carry = false;
+              }
             }
             for (size_t i = 0; i < in.size(); i++) {
               levelsum += level[i];
@@ -124,7 +124,6 @@ void OperationMultipleEvalInterModLinear::mult(DataVector& alpha, DataVector& re
 }
 
 void OperationMultipleEvalInterModLinear::multTranspose(DataVector& source, DataVector& result) {
-
   result.setAll(0.0);
 
 
@@ -180,7 +179,7 @@ void OperationMultipleEvalInterModLinear::multTranspose(DataVector& source, Data
             index_t work_index;
             level_t work_level;
             for (size_t i = 0; i < in.size(); i++) {
-              working.get(in.at(i),work_level, work_index);
+              working.get(in.at(i), work_level, work_index);
               value *= basis.eval(work_level, work_index, line[in.at(i)]);
             }
             privateResult[seq] += value;
@@ -206,9 +205,9 @@ void OperationMultipleEvalInterModLinear::multTranspose(DataVector& source, Data
               if (level[i] == relLvl+1) {
                 level[i] = 0;
                 carry = true;
-              }
-              else
+              } else {
                 carry = false;
+              }
             }
             for (size_t i = 0; i < in.size(); i++) {
               levelsum += level[i];

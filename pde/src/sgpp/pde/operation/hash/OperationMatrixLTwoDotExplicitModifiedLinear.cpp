@@ -91,7 +91,8 @@ void OperationMatrixLTwoDotExplicitModifiedLinear::buildMatrix(sgpp::base::Grid*
             if (lik > ljk) {                            // Phi_i_k is the "smaller" ansatz function
               if (ljk -1 == static_cast<int>(ijk) || ijk == 1.) {  // "larger" function is modified
                 double ldiff = lik/ljk;
-                if (lik -1 == static_cast<int>(iik) || iik == 1.) {  // "smaller" function is modified too
+                // "smaller" function is modified too
+                if (lik -1 == static_cast<int>(iik) || iik == 1.) {
                   res *= 2/3. * (2+ 2*(2-1./ldiff)) /lik;
                 } else {  // smaller function is a inner function
                   auto phi = [] (double x) -> double{return 2-2*x;};
@@ -110,7 +111,8 @@ void OperationMatrixLTwoDotExplicitModifiedLinear::buildMatrix(sgpp::base::Grid*
             } else {                                    // Phi_j_k is the "smaller" ansatz function
               if (lik -1 == static_cast<int>(iik) || iik == 1.) {  // "larger" function is modified
                 double ldiff = ljk/lik;
-                if (ljk -1 == static_cast<int>(ijk) || ijk == 1.) {  // "smaller" function is modified too
+                // "smaller" function is modified too
+                if (ljk -1 == static_cast<int>(ijk) || ijk == 1.) {
                   res *= 2/3. * (2+ 2*(2-1./ldiff)) /ljk;
                 } else {  // smaller function is a inner function
                   auto phi = [] (double x) -> double{return 2-2*x;};
