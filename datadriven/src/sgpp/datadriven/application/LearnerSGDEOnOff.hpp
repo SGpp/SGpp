@@ -54,6 +54,7 @@ class LearnerSGDEOnOff {
    * class labels
    * @param beta The initial weighting factor
    * @param lambda The initial regularization parameter
+   * @param matrixfile path to a decomposed matrix file
    */
   LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& trainData, Dataset& testData,
                    Dataset* validationData, DataVector& classLabels, size_t classNumber,
