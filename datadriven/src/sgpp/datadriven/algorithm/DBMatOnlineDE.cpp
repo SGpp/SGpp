@@ -75,10 +75,11 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
       throw sgpp::base::algorithm_exception(
           "In DBMatOnlineDE::computeDensityFunction: b doesn't match size of system matrix");
     }
-  
-    std::unique_ptr<sgpp::base::OperationMultipleEval> B( (offlineObject.interactions.size()== 0)?
-        sgpp::op_factory::createOperationMultipleEval(offlineObject.getGrid(), m): 
-        sgpp::op_factory::createOperationMultipleEvalInter(offlineObject.getGrid(), m, offlineObject.interactions));
+
+    std::unique_ptr<sgpp::base::OperationMultipleEval> B((offlineObject.interactions.size()== 0)?
+        sgpp::op_factory::createOperationMultipleEval(offlineObject.getGrid(), m):
+        sgpp::op_factory::createOperationMultipleEvalInter(offlineObject.getGrid(),
+            m, offlineObject.interactions));
 
 
     DataVector y(numberOfPoints);
@@ -197,10 +198,11 @@ double DBMatOnlineDE::eval(const DataVector& p, bool force) {
 
 void DBMatOnlineDE::eval(DataMatrix& values, DataVector& results, bool force) {
   if (functionComputed || force == true) {
-
-    std::unique_ptr<sgpp::base::OperationMultipleEval> opEval( (offlineObject.interactions.size()== 0)?
-        sgpp::op_factory::createOperationMultipleEval(offlineObject.getGrid(), values): 
-        sgpp::op_factory::createOperationMultipleEvalInter(offlineObject.getGrid(), values, offlineObject.interactions));
+    std::unique_ptr<sgpp::base::OperationMultipleEval> opEval(
+      (offlineObject.interactions.size()== 0)?
+        sgpp::op_factory::createOperationMultipleEval(offlineObject.getGrid(), values):
+        sgpp::op_factory::createOperationMultipleEvalInter(offlineObject.getGrid(),
+        values, offlineObject.interactions));
     opEval->eval(alpha, results);
     results.mult(normFactor);
   } else {
@@ -267,9 +269,10 @@ double DBMatOnlineDE::normalize(size_t samples) {
 }
 
 
-double DBMatOnlineDE::normalizeQuadrature(){
+double DBMatOnlineDE::normalizeQuadrature() {
   this->normFactor = 1.;
-  double quadrature = sgpp::op_factory::createOperationQuadrature(offlineObject.getGrid())->doQuadrature(alpha);
+  double quadrature = sgpp::op_factory::createOperationQuadrature(offlineObject.getGrid())
+    ->doQuadrature(alpha);
 
   return this->normFactor /= quadrature;
 }

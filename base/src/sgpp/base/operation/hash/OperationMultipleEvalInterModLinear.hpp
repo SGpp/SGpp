@@ -11,6 +11,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
+
 namespace sgpp {
 namespace base {
 
@@ -33,7 +35,8 @@ class OperationMultipleEvalInterModLinear : public OperationMultipleEval {
    * @param dataset the dataset that should be evaluated
    * @param interactions the interactionterms that limit what subspaces are included
    */
-  OperationMultipleEvalInterModLinear(Grid& grid, DataMatrix& dataset, std::vector<std::vector<size_t>>& interactions)
+  OperationMultipleEvalInterModLinear(Grid& grid, DataMatrix& dataset,
+    std::vector<std::vector<size_t>>& interactions)
       : OperationMultipleEval(grid, dataset), storage(grid.getStorage()) {
         this->interactions = interactions;
       }
@@ -53,7 +56,7 @@ class OperationMultipleEvalInterModLinear : public OperationMultipleEval {
  protected:
   /// Pointer to GridStorage object
   GridStorage& storage;
-  //interactions
+  // interactions
   std::vector<std::vector<size_t>> interactions;
 };
 
