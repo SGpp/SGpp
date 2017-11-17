@@ -160,5 +160,9 @@ void BSplineQuadratureEvaluator::setFunctionValuesAtGridPoints(
   basisCoefficients = functionValues;
 }
 
+CombiEvaluatorTypes BSplineQuadratureEvaluator::getType() {
+  return CombiEvaluatorTypes::Scalar_BSplineQuadrature;
+}
+
 } /* namespace combigrid */
 } /* namespace sgpp*/

@@ -44,6 +44,7 @@ class PolynomialInterpolationEvaluator : public AbstractLinearEvaluator<FloatSca
   bool needsParameter() override;
   void setParameter(FloatScalarVector const &param) override;
 
+  CombiEvaluatorTypes getType() override;
   // TODO(holzmudd): eval could be optimized...
 };
 

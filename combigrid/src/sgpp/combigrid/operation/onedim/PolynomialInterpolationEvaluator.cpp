@@ -95,5 +95,9 @@ void PolynomialInterpolationEvaluator::setFunctionValuesAtGridPoints(
   basisCoefficients = functionValues;
 }
 
+CombiEvaluatorTypes PolynomialInterpolationEvaluator::getType() {
+  return CombiEvaluatorTypes::Scalar_PolynomialInterpolation;
+}
+
 } /* namespace combigrid */
 } /* namespace sgpp*/

@@ -75,5 +75,9 @@ void InterpolationCoefficientEvaluator::setParameter(const FloatTensorVector& pa
   // do nothing because no parameter is needed
 }
 
+CombiEvaluatorTypes InterpolationCoefficientEvaluator::getType() {
+  return CombiEvaluatorTypes::Tensor_PolynomialInterpolation;
+}
+
 } /* namespace combigrid */
 } /* namespace sgpp */

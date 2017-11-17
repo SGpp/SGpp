@@ -10,6 +10,9 @@
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
+#include <sgpp/combigrid/operation/OperationsConfiguration.hpp>
+
+#include <sgpp/base/exception/operation_exception.hpp>
 
 #include <vector>
 
@@ -110,6 +113,25 @@ class ArrayEvaluator : public AbstractLinearEvaluator<FloatArrayVector> {
   void setParameter(FloatArrayVector const &param) override {
     this->params = param;
     valuesComputed = false;
+  }
+
+  CombiEvaluatorTypes getType() override {
+    if (evaluator.getType() == CombiEvaluatorTypes::Scalar_BSplineInterpolation) {
+      return CombiEvaluatorTypes::Multi_BSplineInterpolation;
+    } else if (evaluator.getType() == CombiEvaluatorTypes::Scalar_BSplineQuadrature) {
+      return CombiEvaluatorTypes::Multi_BSplineQuadrature;
+    } else if (evaluator.getType() == CombiEvaluatorTypes::Scalar_CubicSplineInterpolation) {
+      return CombiEvaluatorTypes::Multi_CubicSplineInterpolation;
+    } else if (evaluator.getType() == CombiEvaluatorTypes::Scalar_LinearInterpolation) {
+      return CombiEvaluatorTypes::Multi_LinearInterpolation;
+    } else if (evaluator.getType() == CombiEvaluatorTypes::PolynomialInterpolation) {
+      return CombiEvaluatorTypes::Multi_PolynomialInterpolation;
+    } else if (evaluator.getType() == CombiEvaluatorTypes::PolynomialQuadrature) {
+      return CombiEvaluatorTypes::Multi_PolynomialQuadrature;
+    } else {
+      throw sgpp::base::operation_exception(
+          "ArrayEvaluator::getType: type of one-dimensional operation is not supported");
+    }
   }
 };
 
