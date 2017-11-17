@@ -293,6 +293,7 @@ class BsplineClenshawCurtisBasis : public Basis<LT, IT> {
       }
       res += h * temp_res;
     }
+    }
     return res;
   }
 
