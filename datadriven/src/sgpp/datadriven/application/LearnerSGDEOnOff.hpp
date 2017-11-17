@@ -199,7 +199,7 @@ class LearnerSGDEOnOff {
    */
   ClassDensityConntainer& getDensityFunctions();
 
- private:
+ protected:
   void refine(ConvergenceMonitor& monitor,
               std::vector<std::pair<std::list<size_t>, size_t>>& refineCoarse,
               std::string& refType);
