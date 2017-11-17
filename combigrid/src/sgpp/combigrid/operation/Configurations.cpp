@@ -147,24 +147,24 @@ std::shared_ptr<AbstractPointHierarchy> CombiHierarchies::linearUniformBoundary(
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>
-CombiEvaluators::createCombiScalarEvaluator(OperationConfiguration operationConfig) {
-  if (operationConfig.type == CombiEvaluatorTypes::Scalar_PolynomialInterpolation) {
+CombiEvaluators::createCombiScalarEvaluator(EvaluatorConfiguration evalConfig) {
+  if (evalConfig.type == CombiEvaluatorTypes::Scalar_PolynomialInterpolation) {
     return std::make_shared<PolynomialInterpolationEvaluator>();
   }
-  if (operationConfig.type == CombiEvaluatorTypes::Scalar_LinearInterpolation) {
+  if (evalConfig.type == CombiEvaluatorTypes::Scalar_LinearInterpolation) {
     return std::make_shared<LinearInterpolationEvaluator>();
   }
-  if (operationConfig.type == CombiEvaluatorTypes::Scalar_CubicSplineInterpolation) {
+  if (evalConfig.type == CombiEvaluatorTypes::Scalar_CubicSplineInterpolation) {
     return std::make_shared<CubicSplineInterpolationEvaluator>();
   }
-  if (operationConfig.type == CombiEvaluatorTypes::Scalar_BSplineInterpolation) {
-    return std::make_shared<BSplineInterpolationEvaluator>(operationConfig.degree);
+  if (evalConfig.type == CombiEvaluatorTypes::Scalar_BSplineInterpolation) {
+    return std::make_shared<BSplineInterpolationEvaluator>(evalConfig.degree);
   }
-  if (operationConfig.type == CombiEvaluatorTypes::Scalar_PolynomialQuadrature) {
+  if (evalConfig.type == CombiEvaluatorTypes::Scalar_PolynomialQuadrature) {
     return std::make_shared<PolynomialQuadratureEvaluator>();
   }
-  if (operationConfig.type == CombiEvaluatorTypes::Scalar_BSplineQuadrature) {
-    return std::make_shared<BSplineQuadratureEvaluator>(operationConfig.degree);
+  if (evalConfig.type == CombiEvaluatorTypes::Scalar_BSplineQuadrature) {
+    return std::make_shared<BSplineQuadratureEvaluator>(evalConfig.degree);
   } else {
     throw sgpp::base::factory_exception(
         "CombiEvaluators::createCombiEvaluator: type is not supported");
@@ -200,22 +200,22 @@ std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::BSp
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>
-CombiEvaluators::createCombiMultiEvaluator(OperationConfiguration operationConfig) {
-  if (operationConfig.type == CombiEvaluatorTypes::Multi_PolynomialInterpolation) {
+CombiEvaluators::createCombiMultiEvaluator(EvaluatorConfiguration evalConfig) {
+  if (evalConfig.type == CombiEvaluatorTypes::Multi_PolynomialInterpolation) {
     return std::make_shared<ArrayEvaluator<PolynomialInterpolationEvaluator>>(true);
-  } else if (operationConfig.type == CombiEvaluatorTypes::Multi_PolynomialQuadrature) {
+  } else if (evalConfig.type == CombiEvaluatorTypes::Multi_PolynomialQuadrature) {
     return std::make_shared<ArrayEvaluator<PolynomialQuadratureEvaluator>>(false);
-  } else if (operationConfig.type == CombiEvaluatorTypes::Multi_BSplineInterpolation) {
+  } else if (evalConfig.type == CombiEvaluatorTypes::Multi_BSplineInterpolation) {
     return std::make_shared<ArrayEvaluator<BSplineQuadratureEvaluator>>(
-        false, BSplineQuadratureEvaluator(operationConfig.degree));
-  } else if (operationConfig.type == CombiEvaluatorTypes::Multi_BSplineQuadrature) {
+        false, BSplineQuadratureEvaluator(evalConfig.degree));
+  } else if (evalConfig.type == CombiEvaluatorTypes::Multi_BSplineQuadrature) {
     return std::make_shared<ArrayEvaluator<BSplineQuadratureEvaluator>>(
-        false, BSplineQuadratureEvaluator(operationConfig.degree));
-  } else if (operationConfig.type == CombiEvaluatorTypes::Multi_BSplineScalarProduct) {
-    return std::make_shared<BSplineScalarProductEvaluator>(operationConfig.degree);
-  } else if (operationConfig.type == CombiEvaluatorTypes::Multi_CubicSplineInterpolation) {
+        false, BSplineQuadratureEvaluator(evalConfig.degree));
+  } else if (evalConfig.type == CombiEvaluatorTypes::Multi_BSplineScalarProduct) {
+    return std::make_shared<BSplineScalarProductEvaluator>(evalConfig.degree);
+  } else if (evalConfig.type == CombiEvaluatorTypes::Multi_CubicSplineInterpolation) {
     return std::make_shared<ArrayEvaluator<CubicSplineInterpolationEvaluator>>(true);
-  } else if (operationConfig.type == CombiEvaluatorTypes::Multi_LinearInterpolation) {
+  } else if (evalConfig.type == CombiEvaluatorTypes::Multi_LinearInterpolation) {
     return std::make_shared<ArrayEvaluator<LinearInterpolationEvaluator>>(true);
   } else {
     throw sgpp::base::factory_exception(
@@ -267,9 +267,9 @@ std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> CombiEvaluators::mult
 
 // tensor evaluators
 std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>
-CombiEvaluators::createCombiTensorEvaluator(OperationConfiguration operationConfig) {
-  if (operationConfig.type == CombiEvaluatorTypes::Tensor_PolynomialInterpolation) {
-    return std::make_shared<InterpolationCoefficientEvaluator>(operationConfig.functionBasis);
+CombiEvaluators::createCombiTensorEvaluator(EvaluatorConfiguration evalConfig) {
+  if (evalConfig.type == CombiEvaluatorTypes::Tensor_PolynomialInterpolation) {
+    return std::make_shared<InterpolationCoefficientEvaluator>(evalConfig.functionBasis);
   } else {
     throw sgpp::base::factory_exception(
         "CombiEvaluators::createCombiEvaluator: type is not supported");

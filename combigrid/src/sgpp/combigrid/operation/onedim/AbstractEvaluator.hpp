@@ -9,6 +9,7 @@
 #include <sgpp/globaldef.hpp>
 #include <memory>
 #include <vector>
+
 #include "../OperationConfiguration.hpp"
 
 namespace sgpp {

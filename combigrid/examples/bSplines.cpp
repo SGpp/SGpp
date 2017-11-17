@@ -8,7 +8,6 @@
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
-#include <sgpp/combigrid/operation/OperationConfiguration.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
@@ -17,6 +16,7 @@
 #include <sgpp/combigrid/operation/onedim/BSplineQuadratureEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
+#include <sgpp/combigrid/operation/OperationConfiguration.hpp>
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
@@ -206,10 +206,10 @@ int main() {
   sgpp::combigrid::MultiFunction func(f);
   sgpp::combigrid::CombiHierarchies::Collection grids(
       numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
-  sgpp::combigrid::OperationConfiguration operationConfig(
+  sgpp::combigrid::EvaluatorConfiguration evalConfig(
       sgpp::combigrid::CombiEvaluatorTypes::Scalar_BSplineInterpolation, degree);
   sgpp::combigrid::CombiEvaluators::Collection evaluators(numDimensions);
-  evaluators[0] = sgpp::combigrid::CombiEvaluators::createCombiScalarEvaluator(operationConfig);
+  evaluators[0] = sgpp::combigrid::CombiEvaluators::createCombiScalarEvaluator(evalConfig);
   auto operation = sgpp::combigrid::CombigridOperation::auxiliaryBsplineFunction(
       numDimensions, func, grids, evaluators, degree);
   sgpp::base::DataVector p(1, 0.3);
