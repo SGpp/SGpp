@@ -13,6 +13,7 @@
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridQuadraticSummationStrategy.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridVarianceSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
@@ -51,10 +52,6 @@ class AbstractFullGridEvaluationStrategy : public AbstractFullGridEvaluator<V> {
       case FullGridSummationStrategyType::QUADRATIC:
         summationStrategy = std::make_shared<FullGridQuadraticSummationStrategy<V>>(
             storage, evaluatorPrototypes, pointHierarchies);
-        //        std::cerr << "AbstractFullGridEvaluationStrategy: quadratic summation strategy is
-        //        not yet"
-        //                     "registered. Do it here!"
-        //                  << std::endl;
         break;
       default:
         std::cerr << "AbstractFullGridEvaluationStrategy: summation strategy is not registered. Do "

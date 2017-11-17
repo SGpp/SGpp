@@ -166,9 +166,13 @@ namespace combigrid {
 %include "combigrid/src/sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp"
 
 %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluator.hpp"
-%include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridLinearEvaluator.hpp"
-%include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearCallbackEvaluator.hpp"
-%include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearGridBasedEvaluator.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearSummationStrategy.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridCallbackEvaluator.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridGridBasedEvaluator.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearSummationStrategy.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridQuadraticSummationStrategy.hpp"
 
 %include "combigrid/src/sgpp/combigrid/threading/ThreadPool.hpp"
 
@@ -214,21 +218,26 @@ namespace combigrid {
 
 namespace sgpp{
 namespace combigrid {
+
     %template(ScalarAbstractFullGridEvaluator) AbstractFullGridEvaluator<FloatScalarVector>;
     %template(ArrayAbstractFullGridEvaluator) AbstractFullGridEvaluator<FloatArrayVector>;
     %template(TensorAbstractFullGridEvaluator) AbstractFullGridEvaluator<FloatTensorVector>;
 
-    %template(ScalarAbstractFullGridLinearEvaluator) AbstractFullGridLinearEvaluator<FloatScalarVector>;
-    %template(ArrayAbstractFullGridLinearEvaluator) AbstractFullGridLinearEvaluator<FloatArrayVector>;
-    %template(TensorAbstractFullGridLinearEvaluator) AbstractFullGridLinearEvaluator<FloatTensorVector>;
+    %template(ScalarAbstractFullGridEvaluationStrategy) AbstractFullGridEvaluationStrategy<FloatScalarVector>;
+    %template(ArrayAbstractFullGridEvaluationStrategy) AbstractFullGridEvaluationStrategy<FloatArrayVector>;
+    %template(TensorAbstractFullGridEvaluationStrategy) AbstractFullGridEvaluationStrategy<FloatTensorVector>;
 
-    %template(ScalarFullGridLinearCallbackEvaluator) FullGridLinearCallbackEvaluator<FloatScalarVector>;
-    %template(ArrayFullGridLinearCallbackEvaluator) FullGridLinearCallbackEvaluator<FloatArrayVector>;
-    %template(TensorFullGridLinearCallbackEvaluator) FullGridLinearCallbackEvaluator<FloatTensorVector>;
+    %template(ScalarAbstractFullSummationStrategy) AbstractFullGridSummationStrategy<FloatScalarVector>;
+    %template(ArrayAbstractFullSummationStrategy) AbstractFullGridSummationStrategy<FloatArrayVector>;
+    %template(TensorAbstractFullSummationStrategy) AbstractFullGridSummationStrategy<FloatTensorVector>;
 
-    %template(ScalarFullGridLinearGridBasedEvaluator) FullGridLinearGridBasedEvaluator<FloatScalarVector>;
-    %template(ArrayFullGridLinearGridBasedEvaluator) FullGridLinearGridBasedEvaluator<FloatArrayVector>;
-    %template(TensorFullGridLinearGridBasedEvaluator) FullGridLinearGridBasedEvaluator<FloatTensorVector>;
+    %template(ScalarFullGridCallbackEvaluator) FullGridCallbackEvaluator<FloatScalarVector>;
+    %template(ArrayFullGridCallbackEvaluator) FullGridCallbackEvaluator<FloatArrayVector>;
+    %template(TensorFullGridCallbackEvaluator) FullGridCallbackEvaluator<FloatTensorVector>;
+
+    %template(ScalarFullGridGridBasedEvaluator) FullGridGridBasedEvaluator<FloatScalarVector>;
+    %template(ArrayFullGridGridBasedEvaluator) FullGridGridBasedEvaluator<FloatArrayVector>;
+    %template(TensorFullGridGridBasedEvaluator) FullGridGridBasedEvaluator<FloatTensorVector>;
 
     %template(ScalarCombigridEvaluator) CombigridEvaluator<FloatScalarVector>;
     %template(ArrayCombigridEvaluator) CombigridEvaluator<FloatArrayVector>;

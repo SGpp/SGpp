@@ -6,9 +6,9 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-#include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
-#include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
+#include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
+#include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
 #include <sgpp/quadrature/sampling/LatinHypercubeSampleGenerator.hpp>
 
 #include <sgpp/combigrid/definitions.hpp>
@@ -21,7 +21,7 @@ const double tolerance = 1e-12;
 BOOST_AUTO_TEST_SUITE(testIntegration)
 
 BOOST_AUTO_TEST_CASE(testQuadrature) {
-  sgpp::combigrid::QuadratureEvaluator eval;
+  sgpp::combigrid::PolynomialQuadratureEvaluator eval;
 
   std::vector<double> points;
   std::vector<double> weights;
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(testQuadrature) {
 }
 
 BOOST_AUTO_TEST_CASE(testQuadratureWithPolynomial) {
-  sgpp::combigrid::QuadratureEvaluator eval;
+  sgpp::combigrid::PolynomialQuadratureEvaluator eval;
 
   std::vector<double> points;
   std::vector<double> weights;

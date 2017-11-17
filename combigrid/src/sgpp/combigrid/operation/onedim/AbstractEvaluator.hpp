@@ -7,10 +7,9 @@
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_ABSTRACTEVALUATOR_HPP_
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/combigrid/operation/OperationsConfiguration.hpp>
-
 #include <memory>
 #include <vector>
+#include "../OperationConfiguration.hpp"
 
 namespace sgpp {
 namespace combigrid {

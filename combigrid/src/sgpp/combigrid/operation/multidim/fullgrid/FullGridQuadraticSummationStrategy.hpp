@@ -18,8 +18,6 @@
 #include <iostream>
 #include <vector>
 
-#include <fstream>
-
 namespace sgpp {
 namespace combigrid {
 

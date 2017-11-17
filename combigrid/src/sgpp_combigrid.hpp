@@ -66,8 +66,6 @@
 #include <sgpp/combigrid/operation/onedim/InterpolationCoefficientEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
-#include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
-
 #include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
 
 #include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
@@ -86,5 +84,6 @@
 #include <sgpp/combigrid/utils/BinaryHeap.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
+#include "sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp"
 
 #endif /* COMBIGRID_HPP_ */
