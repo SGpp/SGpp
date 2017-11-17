@@ -7,8 +7,8 @@
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
-#include <sgpp/combigrid/operation/onedim/BSplineQuadratureMixedEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
+#include <sgpp/combigrid/operation/onedim/BSplineScalarProductEvaluator.hpp>
 
 #include <cmath>
 #include <iomanip>
@@ -25,7 +25,7 @@ namespace combigrid {
  * @param index_j index of B-spline b_j
  * @return integral of b_i*b_j
  */
-FloatArrayVector BSplineQuadratureMixedEvaluator::get1DMixedIntegral(std::vector<double>& points,
+FloatArrayVector BSplineScalarProductEvaluator::get1DMixedIntegral(std::vector<double>& points,
                                                                      size_t index_i) {
   FloatArrayVector sums;
   for (size_t index_j = 0; index_j < points.size(); index_j++) {
@@ -95,20 +95,20 @@ FloatArrayVector BSplineQuadratureMixedEvaluator::get1DMixedIntegral(std::vector
  * weights are at the same position
  * as their points
  */
-void BSplineQuadratureMixedEvaluator::calculate1DMixedBSplineIntegrals(
+void BSplineScalarProductEvaluator::calculate1DMixedBSplineIntegrals(
     std::vector<double>& points, std::vector<FloatArrayVector>& basisValues) {
   for (size_t index_i = 0; index_i < points.size(); ++index_i) {
     basisValues.push_back(get1DMixedIntegral(points, index_i));
   }
 }
 
-BSplineQuadratureMixedEvaluator::~BSplineQuadratureMixedEvaluator() {}
+BSplineScalarProductEvaluator::~BSplineScalarProductEvaluator() {}
 
-bool BSplineQuadratureMixedEvaluator::needsOrderedPoints() { return true; }
+bool BSplineScalarProductEvaluator::needsOrderedPoints() { return true; }
 
-bool BSplineQuadratureMixedEvaluator::needsParameter() { return false; }
+bool BSplineScalarProductEvaluator::needsParameter() { return false; }
 
-void BSplineQuadratureMixedEvaluator::setGridPoints(std::vector<double> const& newXValues) {
+void BSplineScalarProductEvaluator::setGridPoints(std::vector<double> const& newXValues) {
   xValues = newXValues;
   basisValues.clear();
   calculate1DMixedBSplineIntegrals(xValues, basisValues);
@@ -134,26 +134,26 @@ void BSplineQuadratureMixedEvaluator::setGridPoints(std::vector<double> const& n
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector> >
-BSplineQuadratureMixedEvaluator::cloneLinear() {
+BSplineScalarProductEvaluator::cloneLinear() {
   return std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector> >(
-      new BSplineQuadratureMixedEvaluator(*this));
+      new BSplineScalarProductEvaluator(*this));
 }
 
-BSplineQuadratureMixedEvaluator::BSplineQuadratureMixedEvaluator()
+BSplineScalarProductEvaluator::BSplineScalarProductEvaluator()
     : weight_function(constantFunction<double>(1.0)),
       normalizeWeights(false),
       isCustomWeightFunction(false),
       numAdditionalPoints(0),
       degree(3) {}
 
-BSplineQuadratureMixedEvaluator::BSplineQuadratureMixedEvaluator(size_t degree)
+BSplineScalarProductEvaluator::BSplineScalarProductEvaluator(size_t degree)
     : weight_function(constantFunction<double>(1.0)),
       normalizeWeights(false),
       isCustomWeightFunction(false),
       numAdditionalPoints(0),
       degree(degree) {}
 
-BSplineQuadratureMixedEvaluator::BSplineQuadratureMixedEvaluator(
+BSplineScalarProductEvaluator::BSplineScalarProductEvaluator(
     size_t degree, sgpp::combigrid::SingleFunction weight_function, bool normalizeWeights,
     size_t numAdditionalPoints)
     : weight_function(weight_function),
@@ -162,8 +162,8 @@ BSplineQuadratureMixedEvaluator::BSplineQuadratureMixedEvaluator(
       numAdditionalPoints(numAdditionalPoints),
       degree(degree) {}
 
-BSplineQuadratureMixedEvaluator::BSplineQuadratureMixedEvaluator(
-    BSplineQuadratureMixedEvaluator const& other)
+BSplineScalarProductEvaluator::BSplineScalarProductEvaluator(
+    BSplineScalarProductEvaluator const& other)
     : xValues(other.xValues),
       basisValues(other.basisValues),
       weight_function(other.weight_function),
@@ -172,14 +172,14 @@ BSplineQuadratureMixedEvaluator::BSplineQuadratureMixedEvaluator(
       numAdditionalPoints(other.numAdditionalPoints),
       degree(other.degree) {}
 
-void BSplineQuadratureMixedEvaluator::setParameter(const FloatArrayVector& param) { return; }
+void BSplineScalarProductEvaluator::setParameter(const FloatArrayVector& param) { return; }
 
-void BSplineQuadratureMixedEvaluator::setFunctionValuesAtGridPoints(
+void BSplineScalarProductEvaluator::setFunctionValuesAtGridPoints(
     std::vector<double>& functionValues) {
   basisCoefficients = functionValues;
 }
 
-CombiEvaluatorTypes BSplineQuadratureMixedEvaluator::getType() {
+CombiEvaluatorTypes BSplineScalarProductEvaluator::getType() {
   return CombiEvaluatorTypes::Multi_BSplineScalarProduct;
 }
 

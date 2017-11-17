@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
+
 namespace sgpp {
 namespace combigrid {
 
@@ -32,6 +34,20 @@ enum class CombiEvaluatorTypes {
 
   // interpolation
   Tensor_PolynomialInterpolation
+};
+
+struct OperationConfiguration {
+  CombiEvaluatorTypes type;
+  size_t degree = 3;
+  std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis;
+
+  OperationConfiguration(CombiEvaluatorTypes type) : type(type){};
+  OperationConfiguration(CombiEvaluatorTypes type, size_t degree) : type(type), degree(degree){};
+  OperationConfiguration(CombiEvaluatorTypes type, size_t degree,
+                         std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis)
+      : type(type), degree(degree), functionBasis(functionBasis){};
+
+  ~OperationConfiguration(){};
 };
 
 } /* namespace combigrid */
