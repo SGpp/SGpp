@@ -15,6 +15,7 @@
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <vector>
+
 #include "OperationConfiguration.hpp"
 
 namespace sgpp {
@@ -70,7 +71,7 @@ class CombiEvaluators {
  public:
   // scalar evaluators
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> createCombiScalarEvaluator(
-      OperationConfiguration operationConfig);
+      EvaluatorConfiguration operationConfig);
 
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> polynomialInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> linearInterpolation();
@@ -83,7 +84,7 @@ class CombiEvaluators {
 
   // array evaluators
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> createCombiMultiEvaluator(
-      OperationConfiguration operationConfig);
+      EvaluatorConfiguration operationConfig);
 
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> BSplineMixedQuadrature(
       size_t degree);
@@ -100,7 +101,7 @@ class CombiEvaluators {
 
   // tensor evaluators
   static std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>> createCombiTensorEvaluator(
-      OperationConfiguration operationConfig);
+      EvaluatorConfiguration operationConfig);
 
   static std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>> tensorInterpolation(
       std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis);

@@ -36,18 +36,18 @@ enum class CombiEvaluatorTypes {
   Tensor_PolynomialInterpolation
 };
 
-struct OperationConfiguration {
+struct EvaluatorConfiguration {
   CombiEvaluatorTypes type;
   size_t degree = 3;
   std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis;
 
-  OperationConfiguration(CombiEvaluatorTypes type) : type(type){};
-  OperationConfiguration(CombiEvaluatorTypes type, size_t degree) : type(type), degree(degree){};
-  OperationConfiguration(CombiEvaluatorTypes type, size_t degree,
+  EvaluatorConfiguration(CombiEvaluatorTypes type) : type(type){};
+  EvaluatorConfiguration(CombiEvaluatorTypes type, size_t degree) : type(type), degree(degree){};
+  EvaluatorConfiguration(CombiEvaluatorTypes type, size_t degree,
                          std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis)
       : type(type), degree(degree), functionBasis(functionBasis){};
 
-  ~OperationConfiguration(){};
+  ~EvaluatorConfiguration(){};
 };
 
 } /* namespace combigrid */
