@@ -78,7 +78,7 @@ class NotAKnotBsplineBasis: public Basis<LT, IT> {
           } else if (i == 1) {
             // l = 1, i = 1
             return 1.0 - t * t;
-          } else if (i == 2) {
+          } else {
             // l = 1, i = 2
             return 0.5 * t * t + 1.5 * t + 1.0;
           }
