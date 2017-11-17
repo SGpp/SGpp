@@ -6,26 +6,31 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/globaldef.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
-#include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
-#include <sgpp/globaldef.hpp>
+#include <sgpp_optimization.hpp>
 
-#include <random>
 #include <functional>
+#include <random>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 using sgpp::base::Grid;
+using sgpp::base::GridPoint;
 using sgpp::base::GridStorage;
 using sgpp::base::GridType;
-using sgpp::base::GridPoint;
 using sgpp::base::OperationEval;
 using sgpp::base::OperationMatrix;
 using sgpp::base::OperationMultipleEval;
 using sgpp::datadriven::DensitySystemMatrix;
+using sgpp::optimization::WrapperScalarFunction;
+using sgpp::optimization::WrapperScalarFunctionGradient;
+using sgpp::optimization::WrapperVectorFunction;
+using sgpp::optimization::WrapperVectorFunctionGradient;
 
 void randu(DataVector& rvar, std::mt19937& generator) {
   std::normal_distribution<double> distribution(0.5, 0.1);
@@ -49,6 +54,7 @@ void createSamples(DataMatrix& rvar, std::uint64_t seedValue = std::mt19937_64::
 void solve(DataMatrix& samples, sgpp::base::RegularGridConfiguration gridConfig, double lambda) {
   std::unique_ptr<Grid> grid(sgpp::base::Grid::createGrid(gridConfig));
   GridStorage* gridStorage = &grid->getStorage();
+  size_t storage_size = gridStorage->getSize();
   size_t numSamples = samples.getNrows();
   size_t dims = samples.getNcols();
   OperationMatrix* A_op = sgpp::op_factory::createOperationLTwoDotProduct(*grid);
@@ -62,62 +68,71 @@ void solve(DataMatrix& samples, sgpp::base::RegularGridConfiguration gridConfig,
   AlambC_ptr->generateb(b);
   // define function to optimize
   // ||(A+lambda*C)*alpha - b||^2
-  std::function<double(DataVector&)> residual_norm =
-    [numSamples, AlambC_ptr, b_ptr](DataVector& alpha) -> double {
+  std::function<double(const DataVector&)> residual_norm =
+      [numSamples, AlambC_ptr, b_ptr](const DataVector& alpha) -> double {
+    DataVector alpha_copy(alpha);
     DataVector resultVec(numSamples);
-    AlambC_ptr->mult(alpha, resultVec);
+    AlambC_ptr->mult(alpha_copy, resultVec);
     resultVec.sub(*b_ptr);
     return resultVec.dotProduct(resultVec);
   };
 
   // define gradient for residual_norm
-  // = 2*((A+lambda*C)*alpha - b).T * (A+lambdaC)
-  // std::function<double(DataVector&)> gradient_residual_norm =
-    // [numSamples, AlambC_ptr, b_ptr](DataVector& alpha) -> double {
-    // DataVector resultVec(numSamples);
-    // AlambC_ptr->mult(alpha, resultVec);
-    // resultVec -= *b_ptr;
-    // return resultVec.dotProduct(resultVec);
-  // }
+  // = 2*((A+lambda*C)*alpha - b).T * (A+lambda*C)
+  // A and C symmetric: = 2*(A+lambda*C) * ((A+lambda*C)*alpha - b)
+  std::function<double(const DataVector&, DataVector&)> residual_norm_grad =
+      [numSamples, AlambC_ptr, b_ptr](const DataVector& alpha, DataVector& gradient) -> double {
+    DataVector alpha_copy(alpha);
+    DataVector rightResult(numSamples);
+    AlambC_ptr->mult(alpha_copy, rightResult);
+    rightResult.sub(*b_ptr);  // = ((A+lambda*C)*alpha - b)
+    AlambC_ptr->mult(rightResult, gradient);
+    gradient.mult(2.0);                          // gradient f
+    return rightResult.dotProduct(rightResult);  // return function value f
+  };
 
   // define inequality constraint
   // for alpha: eval at all grid points >= 0
   // i.e. PSI*alpha >= 0
-  std::function<DataVector(const DataVector&)> inEqu =
-    [op_eval, numSamples, gridStorage, dims](const DataVector& alpha) -> DataVector {
-    DataVector resultVec(gridStorage->getSize());
+  std::function<void(const DataVector&, DataVector&)> in_equ =
+      [op_eval, storage_size, numSamples, gridStorage, dims](const DataVector& alpha,
+                                                             DataVector& result) -> void {
     GridPoint gp;
-    for (size_t i = 0; i < gridStorage->getSize(); i++) {
+    for (size_t i = 0; i < storage_size; i++) {
       gp = gridStorage->getPoint(i);
       DataVector coords(dims);
       gp.getStandardCoordinates(coords);
-      resultVec[i] = op_eval->eval(alpha, coords);
+      result[i] = op_eval->eval(alpha, coords);
     }
-    return resultVec;
   };
 
   // define inequality constraint gradient
   // = PSI
-  std::function<void(const DataVector&, DataVector&, DataMatrix&)> inEquGrad =
-    [op_eval, gridStorage, dims](const DataVector& alpha,
-                                             DataVector& result, DataMatrix& jacobi) -> void {
+  std::function<void(const DataVector&, DataVector&, DataMatrix&)> in_equ_grad =
+      [op_eval, storage_size, gridStorage, dims](const DataVector& alpha, DataVector& result,
+                                                 DataMatrix& jacobi) -> void {
+    DataVector* alpha_ptr = &const_cast<DataVector&>(alpha);
     GridPoint gp;
-    for (size_t i = 0; i < gridStorage->getSize(); i++) {
+    for (size_t i = 0; i < storage_size; i++) {
       gp = gridStorage->getPoint(i);
       DataVector coords(dims);
-      DataVector tmp_alpha(gridStorage->getSize());
+      DataVector tmp_alpha(storage_size);
       gp.getStandardCoordinates(coords);
-      result[i] = op_eval->eval(alpha, coords);
+      result[i] = op_eval->eval(*alpha_ptr, coords);
       // dumm gelöst
-      for (size_t j = 0; j < gridStorage->getSize(); i++) {
+      for (size_t j = 0; j < storage_size; i++) {
         tmp_alpha.setAll(0.0);
         tmp_alpha.set(j, 1.0);
-        double val = op_eval->eval(alpha, coords);
+        double val = op_eval->eval(*alpha_ptr, coords);
         jacobi.set(i, j, val);
       }
     }
   };
-
+  // wrapping functions
+  WrapperScalarFunction wrapped_res_norm(storage_size, residual_norm);
+  WrapperScalarFunctionGradient wrapped_res_norm_grad(storage_size, residual_norm_grad);
+  WrapperVectorFunction wrapped_in_equ(storage_size, storage_size, in_equ);
+  WrapperVectorFunctionGradient wrapped_in_equ_grad(storage_size, storage_size, in_equ_grad);
   // optimization
 }
 

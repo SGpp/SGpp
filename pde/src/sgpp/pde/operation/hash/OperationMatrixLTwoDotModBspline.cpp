@@ -23,7 +23,7 @@ OperationMatrixLTwoDotModBspline::OperationMatrixLTwoDotModBspline(
 OperationMatrixLTwoDotModBspline::~OperationMatrixLTwoDotModBspline() {}
 
 void OperationMatrixLTwoDotModBspline::mult(sgpp::base::DataVector& alpha,
-                                      sgpp::base::DataVector& result) {
+                                           sgpp::base::DataVector& result) {
   const size_t p = dynamic_cast<sgpp::base::ModBsplineGrid*>(grid)->getDegree();
   const size_t pp1h = (p + 1) >> 1;  // (p + 1) / 2
   const double pp1hDbl = static_cast<double>(pp1h);
