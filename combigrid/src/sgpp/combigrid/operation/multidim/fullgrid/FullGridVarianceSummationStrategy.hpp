@@ -10,9 +10,12 @@
 #include <sgpp/combigrid/common/MultiIndexIterator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
+#include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridQuadraticSummationStrategy.hpp>
+#include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/BSplineQuadratureEvaluator.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/threading/PtrGuard.hpp>
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
@@ -27,56 +30,84 @@ template <typename V>
 class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrategy<V> {
  protected:
  private:
-  std::shared_ptr<AbstractCombigridStorage> storage;
-  std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> linearEvaluatorPrototypes;
-  std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> quadraticEvaluatorPrototypes;
-  std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies;
-  std::vector<std::vector<V>> linearBasisValues;
-  std::vector<std::vector<V>> quadraticBasisValues;
+  //  std::shared_ptr<AbstractCombigridStorage> storage;
+  //  std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> scalarProductEvaluatorPrototypes;
+  //  std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies;
 
  public:
   /**
    * Constructor.
    *
-   * @param storage Storage that stores and provides the function values for each grid point.
-   * @param evaluatorPrototypes prototype objects for the evaluators that are cloned to get an
+   * @param storage Storage that stores and provides the function values for each grid
+   * point.
+   * @param evaluatorPrototypes prototype objects for the evaluators that are cloned to
+   * get an
    * evaluator for each dimension and each level.
-   * @param pointHierarchies PointHierarchy objects for each dimension providing the points for each
+   * @param pointHierarchies PointHierarchy objects for each dimension providing the
+   * points for each
    * level and information about their ordering.
    */
   FullGridVarianceSummationStrategy(
       std::shared_ptr<AbstractCombigridStorage> storage,
-      std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> linearEvaluatorPrototypes,
-      std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> quadraticEvaluatorPrototypes,
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> scalarProductEvaluatorPrototypes,
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies)
-      : storage(storage),
-        linearEvaluatorPrototypes(linearEvaluatorPrototypes),
-        quadraticEvaluatorPrototypes(quadraticEvaluatorPrototypes),
-        pointHierarchies(pointHierarchies),
-        linearBasisValues(linearEvaluatorPrototypes.size()),
-        quadraticBasisValues(quadraticEvaluatorPrototypes.size()) {}
+      : AbstractFullGridSummationStrategy<V>(storage, scalarProductEvaluatorPrototypes,
+                                             pointHierarchies) {}
 
   ~FullGridVarianceSummationStrategy() {}
 
   /**
    * SOME DESCRIPTION
+   * People want to know everything about this method including the secret Bspline
+   * techniques!
+   *
+   * Currently only V=FloatArrayVector is supported
    */
   V eval(MultiIndex const &level) override {
-    auto linearStrategy = FullGridLinearSummationStrategy<FloatScalarVector>(
-        storage, linearEvaluatorPrototypes, pointHierarchies);
-    auto quadraticStrategy = FullGridLinearSummationStrategy<FloatArrayVector>(
-        this->storage, quadraticEvaluatorPrototypes, this->pointHierarchies);
+    auto evalConfig = this->evaluatorPrototypes[0]->getConfig();
+    size_t numDimensions = level.size();
 
-    FloatScalarVector mean = linearStrategy.eval(level);
-    FloatArrayVector meanSquare = quadraticStrategy.eval(level);
+    bool bsplineBasis = true;
+    for (size_t d = 0; d < numDimensions; d++) {
+      if (evalConfig.type != CombiEvaluatorTypes::Multi_BSplineScalarProduct) {
+        bsplineBasis = false;
+        std::cerr << "FullGridVarianceSummationStrategy: this evaluator is currently "
+                     "not supported."
+                  << std::endl;
+      }
+    }
 
-    // Var = E(x^2) - E(x)^2
-    mean.componentwiseMult(mean);
-    meanSquare[0].sub(mean);
-    FloatScalarVector variance = meanSquare[0].value();
+    if (bsplineBasis) {
+      FullGridLinearSummationStrategy<V> quadraticStrategy = FullGridLinearSummationStrategy<V>(
+          this->storage, this->evaluatorPrototypes, this->pointHierarchies);
 
-    V returnVariance(variance);
-    return returnVariance;
+      size_t degree = evalConfig.degree;
+      EvaluatorConfiguration linearEvalConfig(CombiEvaluatorTypes::Scalar_BSplineQuadrature,
+                                              degree);
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>>
+          linearEvaluatorPrototypes(this->evaluatorPrototypes.size(),
+                                    CombiEvaluators::createCombiScalarEvaluator(linearEvalConfig));
+
+      FullGridLinearSummationStrategy<FloatScalarVector> linearStrategy =
+          FullGridLinearSummationStrategy<FloatScalarVector>(
+              this->storage, linearEvaluatorPrototypes, this->pointHierarchies);
+
+      FloatScalarVector mean = linearStrategy.eval(level);
+      V meanSquare = quadraticStrategy.eval(level);
+
+      // Var = E(x^2) - E(x)^2
+      mean.componentwiseMult(mean);
+      FloatScalarVector variance = meanSquare[0];
+      variance.sub(mean);
+
+      V returnVariance(variance);
+      return returnVariance;
+    }
+    V returnFailure = V::zero();
+    std::cerr << "FullGridVarianceSummationStrategy: this evaluator is currently "
+                 "not supported. Returning zero."
+              << std::endl;
+    return returnFailure;
   }
 };
 

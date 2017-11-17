@@ -132,9 +132,9 @@ void CubicSplineInterpolationEvaluator::setFunctionValuesAtGridPoints(
   basisCoefficients = functionValues;
 }
 
-CombiEvaluatorTypes CubicSplineInterpolationEvaluator::getType() {
-  return CombiEvaluatorTypes::Scalar_CubicSplineInterpolation;
-}
+// CombiEvaluatorTypes CubicSplineInterpolationEvaluator::getType() {
+//  return CombiEvaluatorTypes::Scalar_CubicSplineInterpolation;
+//}
 
 } /* namespace combigrid */
 } /* namespace sgpp */

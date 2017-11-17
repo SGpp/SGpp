@@ -151,9 +151,9 @@ void PolynomialQuadratureEvaluator::setFunctionValuesAtGridPoints(
   basisCoefficients = functionValues;
 }
 
-CombiEvaluatorTypes PolynomialQuadratureEvaluator::getType() {
-  return CombiEvaluatorTypes::Scalar_PolynomialQuadrature;
-}
+// CombiEvaluatorTypes PolynomialQuadratureEvaluator::getType() {
+//  return CombiEvaluatorTypes::Scalar_PolynomialQuadrature;
+//}
 
 } /* namespace combigrid */
 } /* namespace sgpp*/

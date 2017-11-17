@@ -6,11 +6,11 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_ABSTRACTEVALUATOR_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_ABSTRACTEVALUATOR_HPP_
 
-#include <sgpp/globaldef.hpp>
 #include <memory>
+#include <sgpp/globaldef.hpp>
 #include <vector>
 
-#include "../OperationConfiguration.hpp"
+#include <sgpp/combigrid/operation/OperationConfiguration.hpp>
 
 namespace sgpp {
 namespace combigrid {
@@ -24,8 +24,10 @@ namespace combigrid {
  */
 template <typename V>
 class AbstractEvaluator {
+ private:
  protected:
   size_t level = 0;
+  EvaluatorConfiguration evalConfig = EvaluatorConfiguration(CombiEvaluatorTypes::NO_TYPE);
 
  public:
   virtual ~AbstractEvaluator() {}
@@ -87,7 +89,9 @@ class AbstractEvaluator {
   /**
    * @return type of the operation
    */
-  virtual CombiEvaluatorTypes getType() = 0;
+  //    virtual CombiEvaluatorTypes getType() = 0;
+  virtual EvaluatorConfiguration getConfig() { return this->evalConfig; }
+  virtual void setConfig(EvaluatorConfiguration newEvalConfig) { this->evalConfig = newEvalConfig; }
 };
 
 } /* namespace combigrid */

@@ -26,7 +26,7 @@ namespace combigrid {
  * @return integral of b_i*b_j
  */
 FloatArrayVector BSplineScalarProductEvaluator::get1DMixedIntegral(std::vector<double>& points,
-                                                                     size_t index_i) {
+                                                                   size_t index_i) {
   FloatArrayVector sums;
   for (size_t index_j = 0; index_j < points.size(); index_j++) {
     // performing Gauss-Legendre integration with twice as many points as for the simple integrals
@@ -179,9 +179,9 @@ void BSplineScalarProductEvaluator::setFunctionValuesAtGridPoints(
   basisCoefficients = functionValues;
 }
 
-CombiEvaluatorTypes BSplineScalarProductEvaluator::getType() {
-  return CombiEvaluatorTypes::Multi_BSplineScalarProduct;
-}
+// CombiEvaluatorTypes BSplineScalarProductEvaluator::getType() {
+//  return CombiEvaluatorTypes::Multi_BSplineScalarProduct;
+//}
 
 } /* namespace combigrid */
 } /* namespace sgpp*/

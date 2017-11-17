@@ -53,6 +53,10 @@ class AbstractFullGridEvaluationStrategy : public AbstractFullGridEvaluator<V> {
         summationStrategy = std::make_shared<FullGridQuadraticSummationStrategy<V>>(
             storage, evaluatorPrototypes, pointHierarchies);
         break;
+      case FullGridSummationStrategyType::VARIANCE:
+        summationStrategy = std::make_shared<FullGridVarianceSummationStrategy<V>>(
+            storage, evaluatorPrototypes, pointHierarchies);
+        break;
       default:
         std::cerr << "AbstractFullGridEvaluationStrategy: summation strategy is not registered. Do "
                      "it here!"

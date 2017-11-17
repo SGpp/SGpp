@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef BSplineQUADRATUREEVALUATOR_HPP_
-#define BSplineQUADRATUREEVALUATOR_HPP_
+#pragma once
 
 #include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
@@ -75,10 +74,8 @@ class BSplineQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVec
 
   std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cloneLinear() override;
 
-  CombiEvaluatorTypes getType() override;
+  //  CombiEvaluatorTypes getType() override;
 };
-
-#endif /* BSplineQUADRATUREEVALUATOR_HPP_ */
 
 } /* namespace combigrid */
 } /* namespace sgpp*/

@@ -90,8 +90,8 @@ void BSplineInterpolationEvaluator::setFunctionValuesAtGridPoints(
   basisCoefficients = functionValues;
 }
 
-CombiEvaluatorTypes BSplineInterpolationEvaluator::getType() {
-  return CombiEvaluatorTypes::Scalar_BSplineInterpolation;
-}
+// CombiEvaluatorTypes BSplineInterpolationEvaluator::getType() {
+//  return CombiEvaluatorTypes::Scalar_BSplineInterpolation;
+//}
 } /* namespace combigrid */
 } /* namespace sgpp */

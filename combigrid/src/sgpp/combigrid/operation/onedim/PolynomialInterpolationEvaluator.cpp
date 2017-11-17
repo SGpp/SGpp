@@ -3,9 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
-#include <limits>
 #include <cmath>
+#include <limits>
+#include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <vector>
 
 namespace sgpp {
@@ -95,9 +95,9 @@ void PolynomialInterpolationEvaluator::setFunctionValuesAtGridPoints(
   basisCoefficients = functionValues;
 }
 
-CombiEvaluatorTypes PolynomialInterpolationEvaluator::getType() {
-  return CombiEvaluatorTypes::Scalar_PolynomialInterpolation;
-}
+// CombiEvaluatorTypes PolynomialInterpolationEvaluator::getType() {
+//  return CombiEvaluatorTypes::Scalar_PolynomialInterpolation;
+//}
 
 } /* namespace combigrid */
 } /* namespace sgpp*/

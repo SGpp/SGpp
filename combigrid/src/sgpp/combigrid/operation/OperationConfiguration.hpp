@@ -11,6 +11,10 @@ namespace sgpp {
 namespace combigrid {
 
 enum class CombiEvaluatorTypes {
+  // dummy for construction of evaluators without configuration. This should be removed, when
+  // everything is created via EvaluatorConfigurations
+  NO_TYPE,
+
   // interpolation
   Scalar_PolynomialInterpolation,
   Scalar_LinearInterpolation,
