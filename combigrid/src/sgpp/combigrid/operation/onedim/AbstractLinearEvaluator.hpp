@@ -52,6 +52,7 @@ class AbstractLinearEvaluator : public AbstractEvaluator<V> {
   virtual bool needsOrderedPoints() = 0;
   virtual bool needsParameter() = 0;
   virtual void setParameter(V const &param) = 0;
+  //  virtual CombiEvaluatorTypes getType() = 0;
 
   /**
    * AbstractLinearEvaluator provides a standard implementation of this method based on

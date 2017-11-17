@@ -69,7 +69,7 @@ class PolynomialQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalar
 
   std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cloneLinear() override;
 
-  CombiEvaluatorTypes getType() override;
+  //  CombiEvaluatorTypes getType() override;
 };
 
 } /* namespace combigrid */

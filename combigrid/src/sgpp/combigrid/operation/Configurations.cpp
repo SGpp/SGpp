@@ -212,7 +212,9 @@ CombiEvaluators::createCombiMultiEvaluator(EvaluatorConfiguration evalConfig) {
     return std::make_shared<ArrayEvaluator<BSplineQuadratureEvaluator>>(
         false, BSplineQuadratureEvaluator(evalConfig.degree));
   } else if (evalConfig.type == CombiEvaluatorTypes::Multi_BSplineScalarProduct) {
-    return std::make_shared<BSplineScalarProductEvaluator>(evalConfig.degree);
+    auto evaluator = std::make_shared<BSplineScalarProductEvaluator>(evalConfig.degree);
+    evaluator->setConfig(evalConfig);
+    return evaluator;
   } else if (evalConfig.type == CombiEvaluatorTypes::Multi_CubicSplineInterpolation) {
     return std::make_shared<ArrayEvaluator<CubicSplineInterpolationEvaluator>>(true);
   } else if (evalConfig.type == CombiEvaluatorTypes::Multi_LinearInterpolation) {

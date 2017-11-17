@@ -115,24 +115,24 @@ class ArrayEvaluator : public AbstractLinearEvaluator<FloatArrayVector> {
     valuesComputed = false;
   }
 
-  CombiEvaluatorTypes getType() override {
-    if (evaluator.getType() == CombiEvaluatorTypes::Scalar_BSplineInterpolation) {
-      return CombiEvaluatorTypes::Multi_BSplineInterpolation;
-    } else if (evaluator.getType() == CombiEvaluatorTypes::Scalar_BSplineQuadrature) {
-      return CombiEvaluatorTypes::Multi_BSplineQuadrature;
-    } else if (evaluator.getType() == CombiEvaluatorTypes::Scalar_CubicSplineInterpolation) {
-      return CombiEvaluatorTypes::Multi_CubicSplineInterpolation;
-    } else if (evaluator.getType() == CombiEvaluatorTypes::Scalar_LinearInterpolation) {
-      return CombiEvaluatorTypes::Multi_LinearInterpolation;
-    } else if (evaluator.getType() == CombiEvaluatorTypes::Scalar_PolynomialInterpolation) {
-      return CombiEvaluatorTypes::Multi_PolynomialInterpolation;
-    } else if (evaluator.getType() == CombiEvaluatorTypes::Scalar_PolynomialQuadrature) {
-      return CombiEvaluatorTypes::Multi_PolynomialQuadrature;
-    } else {
-      throw sgpp::base::operation_exception(
-          "ArrayEvaluator::getType: type of one-dimensional operation is not supported");
-    }
-  }
+  //  CombiEvaluatorTypes getType() override {
+  //    if (evaluator.getType() == CombiEvaluatorTypes::Scalar_BSplineInterpolation) {
+  //      return CombiEvaluatorTypes::Multi_BSplineInterpolation;
+  //    } else if (evaluator.getType() == CombiEvaluatorTypes::Scalar_BSplineQuadrature) {
+  //      return CombiEvaluatorTypes::Multi_BSplineQuadrature;
+  //    } else if (evaluator.getType() == CombiEvaluatorTypes::Scalar_CubicSplineInterpolation) {
+  //      return CombiEvaluatorTypes::Multi_CubicSplineInterpolation;
+  //    } else if (evaluator.getType() == CombiEvaluatorTypes::Scalar_LinearInterpolation) {
+  //      return CombiEvaluatorTypes::Multi_LinearInterpolation;
+  //    } else if (evaluator.getType() == CombiEvaluatorTypes::Scalar_PolynomialInterpolation) {
+  //      return CombiEvaluatorTypes::Multi_PolynomialInterpolation;
+  //    } else if (evaluator.getType() == CombiEvaluatorTypes::Scalar_PolynomialQuadrature) {
+  //      return CombiEvaluatorTypes::Multi_PolynomialQuadrature;
+  //    } else {
+  //      throw sgpp::base::operation_exception(
+  //          "ArrayEvaluator::getType: type of one-dimensional operation is not supported");
+  //    }
+  //  }
 };
 
 } /* namespace combigrid */

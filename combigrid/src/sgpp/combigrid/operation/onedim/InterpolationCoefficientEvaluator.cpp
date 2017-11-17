@@ -3,9 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/operation/onedim/InterpolationCoefficientEvaluator.hpp>
 #include <sgpp/base/exception/generation_exception.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
+#include <sgpp/combigrid/operation/onedim/InterpolationCoefficientEvaluator.hpp>
 
 #include <vector>
 
@@ -75,9 +75,9 @@ void InterpolationCoefficientEvaluator::setParameter(const FloatTensorVector& pa
   // do nothing because no parameter is needed
 }
 
-CombiEvaluatorTypes InterpolationCoefficientEvaluator::getType() {
-  return CombiEvaluatorTypes::Tensor_PolynomialInterpolation;
-}
+// CombiEvaluatorTypes InterpolationCoefficientEvaluator::getType() {
+//  return CombiEvaluatorTypes::Tensor_PolynomialInterpolation;
+//}
 
 } /* namespace combigrid */
 } /* namespace sgpp */

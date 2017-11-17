@@ -76,7 +76,9 @@ class BSplineScalarProductEvaluator : public AbstractLinearEvaluator<FloatArrayV
 
   std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> cloneLinear() override;
 
-  CombiEvaluatorTypes getType() override;
+  //  CombiEvaluatorTypes getType() override;
+  //  EvaluatorConfiguration getConfig() override { return evalConfig; }
+  //  void setConfig(EvaluatorConfiguration newEvalConfig) override { evalConfig = newEvalConfig; }
 };
 
 } /* namespace combigrid */

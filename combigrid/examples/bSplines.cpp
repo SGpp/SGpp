@@ -8,6 +8,7 @@
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
+#include <sgpp/combigrid/operation/OperationConfiguration.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
@@ -16,7 +17,6 @@
 #include <sgpp/combigrid/operation/onedim/BSplineQuadratureEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
-#include <sgpp/combigrid/operation/OperationConfiguration.hpp>
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
@@ -159,8 +159,30 @@ double integrateSquare(size_t level, size_t numDimensions, size_t degree) {
       sgpp::combigrid::CombigridMultiOperation::createExpUniformBoundaryBsplineSquareQuadrature(
           numDimensions, func, degree);
 
-  sgpp::base::DataVector var = quadratureSquareOperation->evaluate(level);
-  return var[0];
+  sgpp::base::DataVector res = quadratureSquareOperation->evaluate(level);
+  return res[0];
+}
+
+double variance(size_t level, size_t numDimensions, size_t degree) {
+  sgpp::combigrid::MultiFunction func(f);
+  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
+      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+
+  sgpp::combigrid::EvaluatorConfiguration evalConfig(
+      sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineScalarProduct, degree);
+
+  sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
+      numDimensions, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(evalConfig));
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
+      new sgpp::combigrid::AveragingLevelManager());
+  sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
+  bool exploitNesting = false;
+  sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =
+      sgpp::combigrid::FullGridSummationStrategyType::VARIANCE;
+  auto operation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
+      pointHierarchies, evaluators, levelManager, gf, exploitNesting, summationStrategyType);
+  sgpp::base::DataVector res = operation->evaluate(level);
+  return res[0];
 }
 
 int main() {
@@ -203,18 +225,9 @@ int main() {
   //  double isqu = integrateSquare(level, numDimensions, degree);
   //  std::cout << "integral f^2 : " << isqu << std::endl;
 
-  sgpp::combigrid::MultiFunction func(f);
-  sgpp::combigrid::CombiHierarchies::Collection grids(
-      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
-  sgpp::combigrid::EvaluatorConfiguration evalConfig(
-      sgpp::combigrid::CombiEvaluatorTypes::Scalar_BSplineInterpolation, degree);
-  sgpp::combigrid::CombiEvaluators::Collection evaluators(numDimensions);
-  evaluators[0] = sgpp::combigrid::CombiEvaluators::createCombiScalarEvaluator(evalConfig);
-  auto operation = sgpp::combigrid::CombigridOperation::auxiliaryBsplineFunction(
-      numDimensions, func, grids, evaluators, degree);
-  sgpp::base::DataVector p(1, 0.3);
-  double res = operation->evaluate(level, p);
-  std::cout << res << std::endl;
+  // Calculate variances on subgrids
+  double var = variance(level, numDimensions, degree);
+  std::cout << var << std::endl;
 
   return 0;
 }
