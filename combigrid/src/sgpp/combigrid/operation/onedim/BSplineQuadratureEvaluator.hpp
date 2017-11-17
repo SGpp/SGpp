@@ -74,6 +74,8 @@ class BSplineQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVec
   //  double getAbsoluteWeightSum() const;
 
   std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cloneLinear() override;
+
+  CombiEvaluatorTypes getType() override;
 };
 
 #endif /* BSplineQUADRATUREEVALUATOR_HPP_ */

@@ -75,6 +75,8 @@ class BSplineQuadratureMixedEvaluator : public AbstractLinearEvaluator<FloatArra
   //  double getAbsoluteWeightSum() const;
 
   std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> cloneLinear() override;
+
+  CombiEvaluatorTypes getType() override;
 };
 
 #endif /* BSplineMIXEDQUADRATUREEVALUATOR_HPP_ */

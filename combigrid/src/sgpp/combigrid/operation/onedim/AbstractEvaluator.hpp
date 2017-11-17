@@ -7,6 +7,7 @@
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_ABSTRACTEVALUATOR_HPP_
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/combigrid/operation/OperationsConfiguration.hpp>
 
 #include <memory>
 #include <vector>
@@ -82,6 +83,11 @@ class AbstractEvaluator {
    * be able to handle non-linear one-dimensional methods.
    */
   //  virtual V eval(std::vector<V> const &functionValues) = 0;
+
+  /**
+   * @return type of the operation
+   */
+  virtual CombiEvaluatorTypes getType() = 0;
 };
 
 } /* namespace combigrid */

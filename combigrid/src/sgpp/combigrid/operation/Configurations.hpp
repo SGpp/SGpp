@@ -13,6 +13,7 @@
 #include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
+#include <sgpp/combigrid/operation/OperationsConfiguration.hpp>
 
 #include <memory>
 #include <vector>
@@ -68,6 +69,10 @@ class CombiHierarchies {
  */
 class CombiEvaluators {
  public:
+  // scalar evaluators
+  static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> createCombiScalarEvaluator(
+      CombiEvaluatorTypes type);
+
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> polynomialInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> linearInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cubicSplineInterpolation();
@@ -76,6 +81,11 @@ class CombiEvaluators {
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> quadrature();
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> BSplineQuadrature(
       size_t degree);
+
+  // array evaluators
+  static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> createCombiMultiEvaluator(
+      CombiEvaluatorTypes type);
+
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> BSplineMixedQuadrature(
       size_t degree);
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiPolynomialInterpolation();
@@ -88,6 +98,11 @@ class CombiEvaluators {
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiQuadrature();
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiQuadrature(
       SingleFunction func, bool normalizeWeights);
+
+  // tensor evaluators
+  static std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>> createCombiTensorEvaluator(
+      CombiEvaluatorTypes type, std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis);
+
   static std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>> tensorInterpolation(
       std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis);
 

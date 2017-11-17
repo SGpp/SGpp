@@ -87,5 +87,9 @@ void LinearInterpolationEvaluator::setParameter(const FloatScalarVector& param) 
   computeBasisValues();
 }
 
+CombiEvaluatorTypes LinearInterpolationEvaluator::getType() {
+  return CombiEvaluatorTypes::Scalar_LinearInterpolation;
+}
+
 } /* namespace combigrid */
 } /* namespace sgpp*/

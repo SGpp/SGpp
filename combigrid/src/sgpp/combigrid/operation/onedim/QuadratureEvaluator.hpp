@@ -69,6 +69,8 @@ class QuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVector> {
   double getAbsoluteWeightSum() const;
 
   std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cloneLinear() override;
+
+  CombiEvaluatorTypes getType() override;
 };
 
 #endif /* QUADRATUREEVALUATOR_HPP_ */

@@ -147,5 +147,9 @@ void QuadratureEvaluator::setFunctionValuesAtGridPoints(std::vector<double>& fun
   basisCoefficients = functionValues;
 }
 
+CombiEvaluatorTypes QuadratureEvaluator::getType() {
+  return CombiEvaluatorTypes::Scalar_PolynomialQuadrature;
+}
+
 } /* namespace combigrid */
 } /* namespace sgpp*/
