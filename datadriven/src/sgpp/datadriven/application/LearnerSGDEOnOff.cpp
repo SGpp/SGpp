@@ -42,7 +42,7 @@ namespace datadriven {
 LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& trainData,
                                    Dataset& testData, Dataset* validationData,
                                    DataVector& classLabels, size_t numClassesInit, bool usePrior,
-                                   double beta, double lambda)
+                                   double beta, double lambda, std::string matrixfile)
     : trainData{trainData},
       testData{testData},
       validationData{validationData},
@@ -58,9 +58,13 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& tr
       processedPoints{0},
       avgErrors{0} {
   // initialize offline object
-  offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildOfflineObject(dconf)};
-  offline->buildMatrix();
-  offline->decomposeMatrix();
+  if (matrixfile.empty()) {
+    offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildOfflineObject(dconf)};
+    offline->buildMatrix();
+    offline->decomposeMatrix();
+  } else {
+    offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildFromFile(matrixfile)};
+  }
 
   //  DBMatOfflineChol offlineRef(dconf);
   //  offlineRef.buildMatrix();
@@ -631,7 +635,11 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
         std::cout << "Size before refine: " << sizeBeforeRefine << std::endl;
         // simple refinement based on surpluses
         SurplusRefinementFunctor srf(alphaWeight, offline->getConfig().ref_noPoints_);
-        gridGen.refine(srf);
+        if (offline->interactions.size() == 0) {
+          gridGen.refine(srf);
+        } else {
+          gridGen.refineInter(srf, offline->interactions);
+        }
         sizeAfterRefine = grid.getSize();
       } else if ((refType == "data") || (refType == "zero")) {
         if (preCompute) {
@@ -642,7 +650,11 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
         func->setGridIndex(idx);
         // perform refinement (zero-crossings-based / data-based)
         sizeBeforeRefine = grid.getSize();
-        gridGen.refine(*func);
+        if (offline->interactions.size() == 0) {
+          gridGen.refine(*func);
+        } else {
+          gridGen.refineInter(*func, offline->interactions);
+        }
         sizeAfterRefine = grid.getSize();
       }
 
