@@ -110,14 +110,17 @@ class AlgorithmEvaluationTransposed {
 
     while (true) {
       const size_t seq = working.seq();
+      bool hint;
 
       if (storage.isInvalidSequenceNumber(seq)) {
+        working.resetToLevelOne(current_dim);
         break;
       } else {
         index_t work_index;
         level_t temp;
 
         working.get(current_dim, temp, work_index);
+        hint = working.hint();
 
         const double new_value = basis.eval(work_level, work_index, point[current_dim]) * value;
 
@@ -125,6 +128,7 @@ class AlgorithmEvaluationTransposed {
           result[seq] += alpha * new_value;
         } else {
           rec(basis, point, current_dim + 1, new_value, working, source, alpha, result);
+          if (!hint) working.resetToLevelOne(current_dim+1);
         }
       }
 
@@ -145,8 +149,6 @@ class AlgorithmEvaluationTransposed {
         working.leftChild(current_dim);
       }
     }
-
-    working.resetToLevelOne(current_dim);
   }
 };
 
