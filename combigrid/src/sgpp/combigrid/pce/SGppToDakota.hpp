@@ -5,6 +5,7 @@
 
 #pragma once
 
+#ifdef USE_DAKOTA
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/combigrid/algebraic/FloatTensorVector.hpp>
@@ -20,6 +21,7 @@ void convertMultiIndexToUShortArray(MultiIndex& multiIndex, Pecos::UShortArray& 
 void convertTensorToIndexArrayAndCoefficients(sgpp::combigrid::FloatTensorVector& tensorResult,
                                               Pecos::UShort2DArray& multiIndices,
                                               Pecos::RealVector& expansionCoefficients);
+#endif
 
 } /* namespace sgppToDakota */
 } /* namespace combigrid */

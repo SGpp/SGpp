@@ -5,6 +5,7 @@
 
 #include <sgpp/combigrid/pce/SGppToDakota.hpp>
 
+#ifdef USE_DAKOTA
 namespace sgpp {
 namespace combigrid {
 namespace sgppToDakota {
@@ -46,6 +47,7 @@ void convertMultiIndexToUShortArray(MultiIndex& multiIndex, Pecos::UShortArray& 
   }
 }
 
+#endif
 } /* namespace sgppToDakota */
 } /* namespace combigrid */
 } /* namespace sgpp */
