@@ -41,8 +41,8 @@
 %shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::LinearInterpolationEvaluator>)
 %shared_ptr(sgpp::combigrid::CubicSplineInterpolationEvaluator)
 %shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::CubicSplineInterpolationEvaluator>)
-%shared_ptr(sgpp::combigrid::QuadratureEvaluator)
-%shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::QuadratureEvaluator>)
+%shared_ptr(sgpp::combigrid::PolynomialQuadratureEvaluator)
+%shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::PolynomialQuadratureEvaluator>)
 %shared_ptr(sgpp::combigrid::BSplineInterpolationEvaluator)
 %shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::BSplineInterpolationEvaluator>)
 %shared_ptr(sgpp::combigrid::InterpolationCoefficientEvaluator)
@@ -61,15 +61,19 @@
 %shared_ptr(sgpp::combigrid::AbstractFullGridLinearEvaluator<sgpp::combigrid::FloatScalarVector>)
 %shared_ptr(sgpp::combigrid::AbstractFullGridLinearEvaluator<sgpp::combigrid::FloatArrayVector>)
 %shared_ptr(sgpp::combigrid::AbstractFullGridLinearEvaluator<sgpp::combigrid::FloatTensorVector>)
-%shared_ptr(sgpp::combigrid::FullGridLinearCallbackEvaluator<sgpp::combigrid::FloatScalarVector>)
-%shared_ptr(sgpp::combigrid::FullGridLinearCallbackEvaluator<sgpp::combigrid::FloatArrayVector>)
-%shared_ptr(sgpp::combigrid::FullGridLinearCallbackEvaluator<sgpp::combigrid::FloatTensorVector>)
-%shared_ptr(sgpp::combigrid::FullGridLinearGridBasedEvaluator<sgpp::combigrid::FloatScalarVector>)
-%shared_ptr(sgpp::combigrid::FullGridLinearGridBasedEvaluator<sgpp::combigrid::FloatArrayVector>)
-%shared_ptr(sgpp::combigrid::FullGridLinearGridBasedEvaluator<sgpp::combigrid::FloatTensorVector>)
+%shared_ptr(sgpp::combigrid::FullGridCallbackEvaluator<sgpp::combigrid::FloatScalarVector>)
+%shared_ptr(sgpp::combigrid::FullGridCallbackEvaluator<sgpp::combigrid::FloatArrayVector>)
+%shared_ptr(sgpp::combigrid::FullGridCallbackEvaluator<sgpp::combigrid::FloatTensorVector>)
+%shared_ptr(sgpp::combigrid::FullGridGridBasedEvaluator<sgpp::combigrid::FloatScalarVector>)
+%shared_ptr(sgpp::combigrid::FullGridGridBasedEvaluator<sgpp::combigrid::FloatArrayVector>)
+%shared_ptr(sgpp::combigrid::FullGridGridBasedEvaluator<sgpp::combigrid::FloatTensorVector>)
 %shared_ptr(sgpp::combigrid::FullGridTensorEvaluator<sgpp::combigrid::FloatScalarVector>)
 %shared_ptr(sgpp::combigrid::FullGridTensorEvaluator<sgpp::combigrid::FloatArrayVector>)
 %shared_ptr(sgpp::combigrid::FullGridTensorEvaluator<sgpp::combigrid::FloatTensorVector>)
+
+%shared_ptr(sgpp::combigrid::AbstractFullGridEvaluationStrategy<sgpp::combigrid::FloatScalarVector>)
+%shared_ptr(sgpp::combigrid::AbstractFullGridEvaluationStrategy<sgpp::combigrid::FloatArrayVector>)
+%shared_ptr(sgpp::combigrid::AbstractFullGridEvaluationStrategy<sgpp::combigrid::FloatTensorVector>)
 
 %shared_ptr(sgpp::combigrid::AbstractLevelEvaluator)
 %shared_ptr(sgpp::combigrid::CombigridEvaluator<sgpp::combigrid::FloatScalarVector>)
@@ -121,6 +125,7 @@ namespace combigrid {
 %include "combigrid/src/sgpp/combigrid/storage/tree/TreeStorage.hpp"
 
 %ignore sgpp::combigrid::FloatScalarVector::operator=;
+%ignore sgpp::combigrid::FloatScalarVector::operator[];
 %ignore sgpp::combigrid::FloatArrayVector::operator=;
 %ignore sgpp::combigrid::FloatArrayVector::operator[];
 %ignore sgpp::combigrid::FloatTensorVector::operator=;
@@ -173,6 +178,7 @@ namespace combigrid {
 %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridGridBasedEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearSummationStrategy.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridQuadraticSummationStrategy.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/OperationConfiguration.hpp"
 
 %include "combigrid/src/sgpp/combigrid/threading/ThreadPool.hpp"
 
@@ -205,7 +211,7 @@ namespace combigrid {
 %include "combigrid/src/sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/CubicSplineInterpolationEvaluator.hpp"
-%include "combigrid/src/sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/InterpolationCoefficientEvaluator.hpp"
 
@@ -246,7 +252,7 @@ namespace combigrid {
     %template(ArrayPolynomialInterpolationEvaluator) ArrayEvaluator<PolynomialInterpolationEvaluator>;
     %template(ArrayLinearInterpolationEvaluator) ArrayEvaluator<LinearInterpolationEvaluator>;
     %template(ArrayCubicSplineInterpolationEvaluator) ArrayEvaluator<CubicSplineInterpolationEvaluator>;
-    %template(ArrayQuadratureEvaluator) ArrayEvaluator<QuadratureEvaluator>;
+    %template(ArrayQuadratureEvaluator) ArrayEvaluator<PolynomialQuadratureEvaluator>;
     %template(ArrayBSplineInterpolationEvaluator) ArrayEvaluator<BSplineInterpolationEvaluator>;
 
     // %template(AbstractSerializationStrategy_uint8_t) AbstractSerializationStrategy<std::shared_ptr<TreeStorage<std::uint8_t>>>;

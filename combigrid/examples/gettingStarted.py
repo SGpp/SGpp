@@ -472,27 +472,27 @@ def example8(dist_type="uniform"):
 
 # Call the examples
 
-# print("Example 1:")
-# example1()
-#
-# print("\nExample 2:")
-# example2()
+print("Example 1:")
+example1()
 
-# print("\nExample 3:")
-# example3()
+#print("\nExample 2:")
+#example2()
 
-# print("\nExample 4:")
-# example4()
-#
-# print("\nExample 5:")
-# example5()
-#
-# print("\nExample 6:")
-# example6()
-#
-#
-# print("\nExample 7:")
-# example7()
+print("\nExample 3:")
+example3()
+
+print("\nExample 4:")
+example4()
+
+print("\nExample 5:")
+example5()
+
+print("\nExample 6:")
+example6()
+
+
+print("\nExample 7:")
+example7()
 
 
 print("\nExample 8:")
