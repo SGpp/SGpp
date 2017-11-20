@@ -45,7 +45,7 @@ void InterpolationCoefficientEvaluator::setGridPoints(const std::vector<double>&
       mat(i, j) = functionBasis->evaluate(j, xValues[i]);
     }
   }
-  Eigen::MatrixXd invertedMatrix = mat.fullPivHouseholderQr().inverse();
+  Eigen::MatrixXd invertedMatrix = mat.colPivHouseholderQr().inverse();
   basisValues = std::vector<FloatTensorVector>(n, FloatTensorVector(1));
   for (size_t i = 0; i < n; ++i) {
     for (size_t j = 0; j < n; ++j) {

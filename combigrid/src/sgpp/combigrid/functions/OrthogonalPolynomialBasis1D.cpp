@@ -190,19 +190,20 @@ double OrthogonalPolynomialBasis1D::evaluate(size_t basisIndex, double xValue) {
   return invNorm * basisPoly->type1_value(normalized_xValue, castedBasisIndex);
 #else
   std::cerr << "Error in OrthogonalBasis1D::evaluate: "
-            << "SG++ was compiled without DAKOTAsupport!\n";
-  return false;
+            << "SG++ was compiled without DAKOTAsupport!" << std::endl;
+  return 0.0;
 #endif
 }
 
 double OrthogonalPolynomialBasis1D::pdf(double xValue) {
 #ifdef USE_DAKOTA
   return rv->pdf(xValue);
-}
+
 #else
   std::cerr << "Error in OrthogonalBasis1D::pdf: "
-            << "SG++ was compiled without DAKOTAsupport!\n";
-  return false;
+            << "SG++ was compiled without DAKOTAsupport!" << std::endl;
+  return 0.0;
 #endif
+}
 } /* namespace combigrid */
 } /* namespace sgpp */
