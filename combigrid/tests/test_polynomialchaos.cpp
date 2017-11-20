@@ -86,6 +86,5 @@ BOOST_AUTO_TEST_CASE(testPCE) {
   testPCEMomentsAndSobolIndices(op, functionBasis);
 }
 
-#endif
-
 BOOST_AUTO_TEST_SUITE_END()
+#endif

@@ -47,7 +47,8 @@ void convertMultiIndexToUShortArray(MultiIndex& multiIndex, Pecos::UShortArray& 
   }
 }
 
-#endif
 } /* namespace sgppToDakota */
 } /* namespace combigrid */
 } /* namespace sgpp */
+
+#endif
