@@ -5,7 +5,10 @@
 
 #pragma once
 
+#ifdef USE_DAKOTA
 #include <OrthogPolyApproximation.hpp>
+#endif
+
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
