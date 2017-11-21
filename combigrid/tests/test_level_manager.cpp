@@ -140,6 +140,8 @@ BOOST_AUTO_TEST_CASE(testLevelManagerParallel) {
   //           << "\n";
 }
 
+#ifdef USE_DAKOTA
+
 BOOST_AUTO_TEST_CASE(testLevelManagerStats) {
   auto func = MultiFunction(testFunctionAtan);
   size_t d = 2;
@@ -232,4 +234,6 @@ BOOST_AUTO_TEST_CASE(testLevelManagerStatsConversion) {
   for (size_t i = 0; i < maxNorms.size(); i++) {
     BOOST_CHECK_SMALL(std::abs(refStats[i] - maxNorms[i]), 1e-5);
   }
+
+#endif
 }
