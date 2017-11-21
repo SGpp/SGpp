@@ -234,6 +234,6 @@ BOOST_AUTO_TEST_CASE(testLevelManagerStatsConversion) {
   for (size_t i = 0; i < maxNorms.size(); i++) {
     BOOST_CHECK_SMALL(std::abs(refStats[i] - maxNorms[i]), 1e-5);
   }
+}
 
 #endif
-}
