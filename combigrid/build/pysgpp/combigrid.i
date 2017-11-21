@@ -313,6 +313,8 @@ namespace std {
 %include "combigrid/src/sgpp/combigrid/utils/Stopwatch.hpp"
 %include "combigrid/src/sgpp/combigrid/utils/Utils.hpp"
 
+%include "combigrid/src/sgpp/combigrid/operation/onedim/BSplineRoutines.hpp"
+
 // experimental
 
 %feature("director") sgpp::combigrid::GeneralFunctionDirector;

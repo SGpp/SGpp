@@ -11,7 +11,10 @@
 #include <sgpp/combigrid/operation/OperationConfiguration.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/RegularLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridGridBasedEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridQuadraticSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineQuadratureEvaluator.hpp>
@@ -34,7 +37,7 @@
 
 double f(sgpp::base::DataVector const& v) {
   //  return 1;
-  return v[0] * v[0];
+  return v[0] + v[1];
   //  return v[0] * sin(v[0] + v[1]) * exp(v[1] * v[2]);
   //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
   //         std::exp(v[0] * v[1] - 1);
@@ -185,10 +188,40 @@ double variance(size_t level, size_t numDimensions, size_t degree) {
   return res[0];
 }
 
+double interpolateOneLevel(sgpp::combigrid::MultiIndex level, size_t numDimensions, size_t degree) {
+  sgpp::combigrid::MultiFunction func(f);
+  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
+      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+  sgpp::combigrid::CombiEvaluators::Collection evaluators(
+      numDimensions, sgpp::combigrid::CombiEvaluators::BSplineInterpolation(degree));
+  sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
+  bool exploitNesting = false;
+  auto summationStrategyType = sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
+
+  auto storage = std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage>(
+      new sgpp::combigrid::CombigridTreeStorage(pointHierarchies, exploitNesting));
+
+  std::shared_ptr<sgpp::combigrid::AbstractFullGridEvaluator<sgpp::combigrid::FloatScalarVector>>
+      fullGridEval = std::make_shared<
+          sgpp::combigrid::FullGridGridBasedEvaluator<sgpp::combigrid::FloatScalarVector>>(
+          storage, evaluators, pointHierarchies, gf, summationStrategyType);
+
+  std::vector<sgpp::combigrid::FloatScalarVector> params;
+  params.push_back(sgpp::combigrid::FloatScalarVector(0.2));
+  params.push_back(sgpp::combigrid::FloatScalarVector(0.7));
+
+  fullGridEval->setParameters(params);
+
+  auto result = fullGridEval->eval(level);
+
+  double res = result.value();
+  return res;
+}
+
 int main() {
-  size_t numDimensions = 1;
+  size_t numDimensions = 2;
   size_t degree = 3;
-  size_t level = 4;
+  //  size_t level = 4;
 
   // Interpolation
   //  sgpp::base::SGppStopwatch watch;
@@ -226,8 +259,12 @@ int main() {
   //  std::cout << "integral f^2 : " << isqu << std::endl;
 
   // Calculate variances on subgrids
-  double var = variance(level, numDimensions, degree);
-  std::cout << var << std::endl;
+  //  double var = variance(level, numDimensions, degree);
+  //  std::cout << var << std::endl;
+
+  sgpp::combigrid::MultiIndex level = {2, 2};
+  double value = interpolateOneLevel(level, numDimensions, degree);
+  std::cout << "result: " << value << std::endl;
 
   return 0;
 }

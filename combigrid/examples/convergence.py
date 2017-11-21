@@ -265,8 +265,13 @@ if __name__ == "__main__":
     print "V(u) ~ %g" % np.var(y)
 
     fig = plt.figure()
+    ax = plt.subplot(111)
 
     for (basisType, levelManagerType, gridType), (numGridPoints, l2errors) in results.items():
         plt.loglog(numGridPoints, l2errors, label="%s %s %s" % (gridType, levelManagerType, basisType))
+
+    plt.xlabel("number of grid points")
+    plt.ylabel("L2 error")
+    plt.tight_layout()
     insert_legend(fig, loc="right", ncol=2)
     plt.show()
