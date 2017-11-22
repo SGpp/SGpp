@@ -27,7 +27,7 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
       combigridOperation(combigridOperation),
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
-      numGridPoints(combigridOperation->numGridPoints()) {
+      numGridPoints(0) {
   // create tensor operation for pce transformation
   this->combigridTensorOperation =
       sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
@@ -42,7 +42,7 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
       combigridOperation(nullptr),
       combigridMultiOperation(combigridMultiOperation),
       combigridTensorOperation(nullptr),
-      numGridPoints(combigridMultiOperation->numGridPoints()) {
+      numGridPoints(0) {
   // create tensor operation for pce transformation
   this->combigridTensorOperation =
       sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
@@ -57,7 +57,7 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
       combigridOperation(nullptr),
       combigridMultiOperation(nullptr),
       combigridTensorOperation(combigridTensorOperation),
-      numGridPoints(combigridTensorOperation->numGridPoints()) {
+      numGridPoints(0) {
   // create tensor operation for pce transformation
   this->combigridTensorOperation =
       CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
@@ -72,7 +72,7 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
       combigridOperation(combigridOperation),
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
-      numGridPoints(combigridMultiOperation->numGridPoints()) {
+      numGridPoints(0) {
   // make sure that the number of dimensions match
   if (numDims != functionBases.size()) {
     throw sgpp::base::application_exception(
@@ -92,7 +92,7 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
       combigridOperation(nullptr),
       combigridMultiOperation(combigridMultiOperation),
       combigridTensorOperation(nullptr),
-      numGridPoints(combigridMultiOperation->numGridPoints()) {
+      numGridPoints(0) {
   // make sure that the number of dimensions match
   if (numDims != functionBases.size()) {
     throw sgpp::base::application_exception(
@@ -112,7 +112,7 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
       combigridOperation(nullptr),
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
-      numGridPoints(combigridTensorOperation->numGridPoints()) {
+      numGridPoints(0) {
   // make sure that the number of dimensions match
   if (numDims != functionBases.size()) {
     throw sgpp::base::application_exception(
