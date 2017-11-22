@@ -49,6 +49,7 @@
 %shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::InterpolationCoefficientEvaluator>)
 
 %shared_ptr(sgpp::combigrid::PolynomialChaosExpansion)
+%shared_ptr(sgpp::combigrid::PolynomialStochasticCollocation)
 
 %shared_ptr(sgpp::combigrid::AbstractCombigridStorage)
 %shared_ptr(sgpp::combigrid::CombigridTreeStorage)
@@ -167,6 +168,7 @@ namespace combigrid {
 %include "combigrid/src/sgpp/combigrid/grid/TensorGrid.hpp"
 
 %include "combigrid/src/sgpp/combigrid/pce/PolynomialChaosExpansion.hpp"
+%include "combigrid/src/sgpp/combigrid/pce/PolynomialStochasticCollocation.hpp"
 
 %include "combigrid/src/sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp"
 
@@ -261,6 +263,7 @@ namespace std {
     %template(AbstractPointHierarchyVector) vector<std::shared_ptr<sgpp::combigrid::AbstractPointHierarchy>>;
     %template(OrthogonalPolynomialBasis1DVector) std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>;
     %template(AbstractInfiniteFunctionBasis1DVector) std::vector<std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D>>;
+    %template(OrthogonalPolynomialBasis1DVector) std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>;
     %template(OrthogonalPolynomialBasisTypeVector) std::vector<sgpp::combigrid::OrthogonalPolynomialBasisType>;
 
     %template(FloatScalarVectorVector) vector<sgpp::combigrid::FloatScalarVector>;

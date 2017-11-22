@@ -85,7 +85,7 @@ void OrthogonalPolynomialBasis1DConfiguration::initConfig() {
   polyParameters.logmean_ = 0.0;
 
   // bounds
-  polyParameters.lowerBound_ = -1.0;
+  polyParameters.lowerBound_ = 0.0;
   polyParameters.upperBound_ = 1.0;
 }
 
@@ -205,5 +205,12 @@ double OrthogonalPolynomialBasis1D::pdf(double xValue) {
   return 0.0;
 #endif
 }
+
+#ifdef USE_DAKOTA
+std::shared_ptr<Pecos::RandomVariable> OrthogonalPolynomialBasis1D::getRandomVariable() {
+  return rv;
+}
+#endif
+
 } /* namespace combigrid */
 } /* namespace sgpp */

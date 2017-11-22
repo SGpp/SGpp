@@ -82,5 +82,6 @@
 #include <sgpp/combigrid/utils/Utils.hpp>
 
 #include <sgpp/combigrid/pce/PolynomialChaosExpansion.hpp>
+#include <sgpp/combigrid/pce/PolynomialStochasticCollocation.hpp>
 
 #endif /* COMBIGRID_HPP_ */

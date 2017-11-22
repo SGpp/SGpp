@@ -13,7 +13,9 @@
 @version  0.1
 
 """
-from pysgpp import PolynomialChaosExpansion, AbstractInfiniteFunctionBasis1DVector
+from pysgpp import PolynomialChaosExpansion, \
+    AbstractInfiniteFunctionBasis1DVector, \
+    OrthogonalPolynomialBasis1DVector
 
 from pysgpp.extensions.datadriven.uq.dists import J
 from pysgpp.extensions.datadriven.uq.transformation import (JointTransformation,
@@ -194,7 +196,7 @@ class ParameterSet(object):
         """
         return JointTransformation.byParameters(self.__params)
 
-    def getUnivariateOrthogonalPolynomials(self):
+    def getUnivariateOrthogonalPolynomials(self, dtype="abstract"):
         basisFunctions = []
         for param in self.values():
             if param.isUncertain():
@@ -203,7 +205,11 @@ class ParameterSet(object):
                     basisFunctions.append(orthogPoly)
                 else:
                     raise AttributeError("the distributions are not part of the Wiener-Askey scheme")
-        basisFunctions_vec = AbstractInfiniteFunctionBasis1DVector()
+        if dtype == "abstract":
+            basisFunctions_vec = AbstractInfiniteFunctionBasis1DVector()
+        else:
+            basisFunctions_vec = OrthogonalPolynomialBasis1DVector()
+
         for basisFunction in basisFunctions:
             basisFunctions_vec.push_back(basisFunction)
 
@@ -481,6 +487,7 @@ class ParameterSetIterator(object):
     """
     Iterator class
     """
+
     def __init__(self, params):
         self.__params = params
         self.__current = 0
