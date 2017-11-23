@@ -66,6 +66,8 @@ class OrthogonalPolynomialBasis1D : public AbstractInfiniteFunctionBasis1D {
   double evaluate(size_t basisIndex, double xValue) override;
   double pdf(double xValue);
 
+  OrthogonalPolynomialBasis1DConfiguration getConfiguration();
+
 #ifdef USE_DAKOTA
   std::shared_ptr<Pecos::RandomVariable> getRandomVariable();
 #endif
