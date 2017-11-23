@@ -206,8 +206,8 @@ CombiEvaluators::createCombiMultiEvaluator(EvaluatorConfiguration evalConfig) {
   } else if (evalConfig.type == CombiEvaluatorTypes::Multi_PolynomialQuadrature) {
     return std::make_shared<ArrayEvaluator<PolynomialQuadratureEvaluator>>(false);
   } else if (evalConfig.type == CombiEvaluatorTypes::Multi_BSplineInterpolation) {
-    return std::make_shared<ArrayEvaluator<BSplineQuadratureEvaluator>>(
-        false, BSplineQuadratureEvaluator(evalConfig.degree));
+    return std::make_shared<ArrayEvaluator<BSplineInterpolationEvaluator>>(
+        true, BSplineInterpolationEvaluator(evalConfig.degree));
   } else if (evalConfig.type == CombiEvaluatorTypes::Multi_BSplineQuadrature) {
     return std::make_shared<ArrayEvaluator<BSplineQuadratureEvaluator>>(
         false, BSplineQuadratureEvaluator(evalConfig.degree));

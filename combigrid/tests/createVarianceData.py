@@ -111,14 +111,27 @@ if __name__ == "__main__":
             # \int_0^1 \int_0^1 B^2(x,y) dy dx
             meanSquare = dblquad(lambda x,y: BsplineInterpolation(x,y,levels)**2, 0,1,lambda x:0,lambda x:1)
             variance = meanSquare[0] - mean[0]**2
-  
+   
             print"level %i %i  |  mean %g meanSquare %g variance %g" %(levels[0],levels[1],mean[0],meanSquare[0],variance)  
             for level in levels:
                 file.write("%i " %level)
                 file.write("    ")
             file.write("%.18f\n" %variance)
+
+#     for level1 in range(args.minLevel,args.maxLevel+1): 
+#           levels = [level1, level1]  
+#           mean = dblquad(lambda x,y: BsplineInterpolation(x,y,levels), 0,1,lambda x:0,lambda x:1)
+#           meanSquare = dblquad(lambda x,y: BsplineInterpolation(x,y,levels)**2, 0,1,lambda x:0,lambda x:1)
+#           variance = meanSquare[0] - mean[0]**2
+# 
+#           print"level %i %i  |  mean %g meanSquare %g variance %g" %(levels[0],levels[1],mean[0],meanSquare[0],variance)  
+#           for level in levels:
+#               file.write("%i " %level)
+#               file.write("    ")
+#           file.write("%.18f\n" %variance)
     
     
+        
     file.close()
     
     

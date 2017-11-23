@@ -145,6 +145,15 @@ double eval(sgpp::base::DataVector const& v) {
   return ans;
 }
 }  // namespace parabola
+
+namespace debugfct {
+size_t numDims = 1;
+std::vector<double> bounds{0, 1};
+double mean = 0.5;
+double variance = 0.083333333333333333333;
+double eval(sgpp::base::DataVector const& v) { return v[0]; }
+
+}  // namespace debugfct
 // ----------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE(testBsplines)
@@ -202,7 +211,6 @@ BOOST_AUTO_TEST_CASE(testVarianceOnDiagonal) {
       << "Testing B spline variance calculation on levels of the diagonal of the subgrid scheme"
       << std::endl;
   VarianceDiagonalTestData varianceDiagonalTestData;
-  double tolerance = 1e-6;
   double varianceError;
 
   for (size_t i = 0; i < varianceDiagonalTestData.levels.size(); i++) {
@@ -211,19 +219,21 @@ BOOST_AUTO_TEST_CASE(testVarianceOnDiagonal) {
     varianceError = std::fabs(bSplineVariance - varianceDiagonalTestData.variances[i]);
     std::cout << "level: " << level[0] << " " << level[1] << "|  error:  " << varianceError
               << std::endl;
-    //    BOOST_CHECK_SMALL(varianceError, tolerance);
+    //    BOOST_CHECK_SMALL(varianceError, 1e-6);
   }
 }
 
 /*
  * This test creates a Bspline interpolant and calculates mean and variance with Monte Carlo methods
  * for two test functions for which mean and variance are known
+ *
+ * Comment: The results obtained by Monte Carlo are extremely unprecise
  */
 BOOST_AUTO_TEST_CASE(testMCVariance) {
   std::cout << "Testing Variance of B spline interpolants using Monte Carlo methods" << std::endl;
-  size_t numDimensions = ishigami::numDims;
+  size_t numDimensions = debugfct::numDims;
   size_t degree = 3;
-  sgpp::combigrid::MultiFunction func(ishigami::eval);
+  sgpp::combigrid::MultiFunction func(debugfct::eval);
 
   std::vector<std::shared_ptr<sgpp::combigrid::AbstractPointHierarchy>> pointHierarchies(
       numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
@@ -252,7 +262,7 @@ BOOST_AUTO_TEST_CASE(testMCVariance) {
     params.push_back(p);
   }
 
-  for (size_t level = 0; level < 12; level++) {
+  for (size_t level = 0; level < 11; level++) {
     std::cout << "level " << level << ": ";
     double MCL2_err = 0.0;
     double MCMean = 0.0;
@@ -262,16 +272,17 @@ BOOST_AUTO_TEST_CASE(testMCVariance) {
       diff = func(params[i]) - result[i];
       MCL2_err += diff * diff;
       MCMean += result[i];
-      MCVar += std::pow(result[i] - ishigami::mean, 2);
+      MCVar += std::pow(result[i] - debugfct::mean, 2);
     }
     MCMean /= static_cast<double>(num_MCpoints);
     MCVar /= static_cast<double>(num_MCpoints);
 
     MCL2_err = sqrt(MCL2_err / static_cast<double>(num_MCpoints));
-    double MCMean_err = fabs(MCMean - ishigami::mean);
-    double MCVar_err = fabs(MCVar - ishigami::variance);
+    double MCMean_err = fabs(MCMean - debugfct::mean);
+    double MCVar_err = fabs(MCVar - debugfct::variance);
 
-    std::cout << MCL2_err << " " << MCMean_err << " " << MCVar_err << std::endl;
+    //    std::cout << MCL2_err << " " << MCMean_err << " " << MCVar_err << std::endl;
+    std::cout << MCL2_err << " " << MCMean << " " << MCVar << std::endl;
   }
 }
 

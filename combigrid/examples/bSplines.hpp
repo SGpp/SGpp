@@ -38,6 +38,7 @@
 #include <iostream>
 #include <vector>
 
+size_t numDimensions = 2;
 double f(sgpp::base::DataVector const& v) {
   //  return 1;
   //  return v[0] * v[0] * v[0] * v[0];
@@ -246,4 +247,76 @@ double integrateOneLevel(sgpp::combigrid::MultiIndex level, size_t degree) {
 
   double res = result.value();
   return res;
+}
+
+double interpolateVarianceAdaptively(size_t maxlevel, size_t degree) {
+  // create auxiliary Operation creating a variance adaptive level structure
+  sgpp::combigrid::MultiFunction func(f);
+  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
+      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+
+  sgpp::combigrid::EvaluatorConfiguration auxiliaryEvalConfig(
+      sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineScalarProduct, degree);
+
+  sgpp::combigrid::CombiEvaluators::MultiCollection auxiliaryEvaluators(
+      numDimensions,
+      sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(auxiliaryEvalConfig));
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
+      new sgpp::combigrid::AveragingLevelManager());
+  sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
+  bool exploitNesting = false;
+  sgpp::combigrid::FullGridSummationStrategyType auxiliarySummationStrategyType =
+      sgpp::combigrid::FullGridSummationStrategyType::VARIANCE;
+  auto auxiliaryOperation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
+      pointHierarchies, auxiliaryEvaluators, levelManager, gf, exploitNesting,
+      auxiliarySummationStrategyType);
+
+  // create level structure
+  auxiliaryOperation->getLevelManager()->addRegularLevels(maxlevel);
+  auto levelStructure = auxiliaryOperation->getLevelManager()->getLevelStructure();
+
+  auto levelStructureIterator = levelStructure->getStoredDataIterator();
+  while (levelStructureIterator->isValid()) {
+    sgpp::combigrid::MultiIndex level = levelStructureIterator->getMultiIndex();
+    for (auto& l : level) {
+      std::cout << l << " ";
+    }
+    std::cout << "| ";
+    levelStructureIterator->moveToNext();
+  }
+  std::cout << "\n";
+
+  // create real interpolation Operation
+  sgpp::combigrid::EvaluatorConfiguration evalConfig(
+      sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, degree);
+  sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
+      numDimensions, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(evalConfig));
+  sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =
+      sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
+  auto Operation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
+      pointHierarchies, evaluators, levelManager, gf, exploitNesting, summationStrategyType);
+
+  Operation->getLevelManager()->addLevelsFromStructure(levelStructure);
+
+  // calculate error
+  size_t num_MCpoints = 1000;
+  sgpp::quadrature::NaiveSampleGenerator generator(numDimensions);
+  sgpp::base::DataVector p(numDimensions, 0);
+  sgpp::base::DataMatrix params(numDimensions, 0);
+  sgpp::base::DataVector funceval(num_MCpoints);
+  for (size_t i = 0; i < num_MCpoints; i++) {
+    generator.getSample(p);
+    params.appendCol(p);
+    funceval.push_back(func(p));
+  }
+  //  diff = func(p) - Operation->evaluate(maxlevel, p);
+  //  max_err = (fabs(diff) > max_err) ? fabs(diff) : max_err;
+  //  L2_err += diff * diff;
+
+  Operation->setParameters(params);
+  sgpp::base::DataVector interpoleval = Operation->getResult();
+  std::cout << params.size() << " " << interpoleval.size() << " " << funceval.size() << std::endl;
+  interpoleval.sub(funceval);
+
+  return interpoleval.l2Norm();
 }
