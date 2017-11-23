@@ -6,17 +6,14 @@
 #include "bSplines.hpp"
 
 int main() {
-  //  size_t numDimensions = 1;
+  //  size_t numDimensions = 2;
   size_t degree = 3;
-  //  size_t level = 2;
-  sgpp::combigrid::MultiIndex oneLevel = {2, 2};
+  size_t level = 5;
+  //  sgpp::combigrid::MultiIndex oneLevel = {2, 2};
 
   // Interpolation
-  //  sgpp::base::SGppStopwatch watch;
-  //  watch.start();
   //  size_t minLevel = 2;
   //  size_t maxLevel = 2;
-  //
   //  std::vector<double> maxErr(maxLevel + 1, 0);
   //  std::vector<double> L2Err(maxLevel + 1, 0);
   //  for (size_t l = minLevel; l < maxLevel + 1; l++) {
@@ -24,8 +21,6 @@ int main() {
   //    //    std::cout << "level: " << l << " max err " << maxErr[l] << " L2 err " << L2Err[l] <<
   //    //    std::endl;
   //  }
-
-  //  std::cout << " Total Runtime: " << watch.stop() << " s" << std::endl;
 
   // Integration
   //  double integral = integrate(level, numDimensions, degree);
@@ -50,15 +45,8 @@ int main() {
   //  double var = variance(level, numDimensions, degree);
   //  std::cout << var << std::endl;
 
-  //
-  //  double value = interpolateOneLevel(oneLevel, numDimensions, degree);
-  //  std::cout << "result: " << value << std::endl;
-
-  for (size_t auxLevel = 0; auxLevel < 9; auxLevel++) {
-    oneLevel = {auxLevel};
-    double value = integrateOneLevel(oneLevel, degree);
-    std::cout << auxLevel << " | integral: " << value << std::endl;
-  }
+  double res = interpolateVarianceAdaptively(level, degree);
+  std::cout << res << std::endl;
 
   return 0;
 }

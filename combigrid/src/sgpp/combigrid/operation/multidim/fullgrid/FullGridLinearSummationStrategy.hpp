@@ -69,6 +69,7 @@ class FullGridLinearSummationStrategy : public AbstractFullGridSummationStrategy
       auto &currentEvaluators = this->evaluators[d];
 
       bool needsParam = this->evaluatorPrototypes[d]->needsParameter();
+      std::cout << needsParam << std::endl;
 
       bool needsOrdered = this->evaluatorPrototypes[d]->needsOrderedPoints();
 
