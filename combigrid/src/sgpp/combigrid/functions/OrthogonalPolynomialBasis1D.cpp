@@ -206,6 +206,28 @@ double OrthogonalPolynomialBasis1D::pdf(double xValue) {
 #endif
 }
 
+double OrthogonalPolynomialBasis1D::mean() {
+#ifdef USE_DAKOTA
+  return rv->mean();
+
+#else
+  std::cerr << "Error in OrthogonalBasis1D::mean: "
+            << "SG++ was compiled without DAKOTAsupport!" << std::endl;
+  return 0.0;
+#endif
+}
+
+double OrthogonalPolynomialBasis1D::variance() {
+#ifdef USE_DAKOTA
+  return rv->variance();
+
+#else
+  std::cerr << "Error in OrthogonalBasis1D::variance: "
+            << "SG++ was compiled without DAKOTAsupport!" << std::endl;
+  return 0.0;
+#endif
+}
+
 #ifdef USE_DAKOTA
 std::shared_ptr<Pecos::RandomVariable> OrthogonalPolynomialBasis1D::getRandomVariable() {
   return rv;

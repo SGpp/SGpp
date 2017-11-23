@@ -59,9 +59,7 @@ class LinearTransformation {
     return ans;
   }
 
-  double vol(size_t i) {
-    return widths[i];
-  }
+  double vol(size_t i) { return widths[i]; }
 
  private:
   sgpp::base::DataVector widths;
@@ -142,6 +140,7 @@ class PolynomialStochasticCollocation {
   void initializeLinearTransformation();
 
   void countPolynomialTerms();
+  size_t additionalQuadraturePoints(OrthogonalPolynomialBasisType polyType);
 
   double quad(sgpp::combigrid::MultiIndex i);
   double quad(sgpp::combigrid::MultiIndex i, sgpp::combigrid::MultiIndex j);

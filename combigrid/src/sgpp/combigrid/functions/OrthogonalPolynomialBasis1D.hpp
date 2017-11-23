@@ -65,6 +65,8 @@ class OrthogonalPolynomialBasis1D : public AbstractInfiniteFunctionBasis1D {
 
   double evaluate(size_t basisIndex, double xValue) override;
   double pdf(double xValue);
+  double mean();
+  double variance();
 
   OrthogonalPolynomialBasis1DConfiguration getConfiguration();
 

@@ -307,6 +307,22 @@ void PolynomialStochasticCollocation::initializeLinearTransformation() {
 }
 #endif
 
+size_t PolynomialStochasticCollocation::additionalQuadraturePoints(
+    OrthogonalPolynomialBasisType polyType) {
+  switch (polyType) {
+    case OrthogonalPolynomialBasisType::LEGENDRE:
+      return 0;
+    case OrthogonalPolynomialBasisType::BOUNDED_LOGNORMAL:
+      return 100;
+    case OrthogonalPolynomialBasisType::JACOBI:
+      return 4;
+    case OrthogonalPolynomialBasisType::HERMITE:
+      return 10;
+    default:
+      return 0;
+  }
+}
+
 double PolynomialStochasticCollocation::quad(MultiIndex i, MultiIndex j) {
   double ans = 1.0;
   // Gauss quadrature in each dimension
@@ -319,19 +335,16 @@ double PolynomialStochasticCollocation::quad(MultiIndex i, MultiIndex j) {
   for (size_t idim = 0; idim < i.size(); idim++) {
     size_t degree_i = i[idim], degree_j = j[idim];
     auto functionBasis = functionBases[idim];
+    size_t incrementQuadraturePoints =
+        additionalQuadraturePoints(functionBasis->getConfiguration().polyParameters.type_);
     size_t numGaussPoints = (degree_i + degree_j + 3) / 2;
     double vol = trans.vol(idim);
-    //    if (functionBasis->getConfiguration().polyParameters.type_ !=
-    //        OrthogonalPolynomialBasisType::LEGENDRE) {
-    //      numGaussPoints = std::min(quadRule.getMaxSupportedLevel(), numGaussPoints);
-    //    }
 
     // do iterative 1d quadrature
     double sum_idim = 0.0;
     double sum_idim_old = 0.0;
     double err = 1e14;
     size_t iteration = 0;
-    std::cout << degree_i << ", " << degree_j << std::endl;
     while (err > 1e-13 && numGaussPoints < quadRule.getMaxSupportedLevel()) {
       quadRule.getLevelPointsAndWeightsNormalized(numGaussPoints, roots, quadratureweights);
 
@@ -345,15 +358,12 @@ double PolynomialStochasticCollocation::quad(MultiIndex i, MultiIndex j) {
       }
       if (iteration > 0) {
         err = std::abs(sum_idim_old - sum_idim);
-        if (std::abs(sum_idim) > 1e-13) {
-          err = err / std::abs(sum_idim);
-        }
-        std::cout << "  d:" << idim << " i:" << iteration << "; sum=" << sum_idim
-                  << "; err=" << (err * std::abs(sum_idim)) << "; relerr=" << err
-                  << std::endl;
       }
+      //      std::cout << "  d:" << idim << " i:" << iteration << "; #gp= " << numGaussPoints
+      //                << "; sum=" << sum_idim << "; relerr=" << (err / std::abs(sum_idim))
+      //                << "; err=" << err << std::endl;
       sum_idim_old = sum_idim;
-      numGaussPoints += 1;
+      numGaussPoints += incrementQuadraturePoints;
       iteration += 1;
     }
 
@@ -373,10 +383,11 @@ double PolynomialStochasticCollocation::quad(MultiIndex i) {
 
   for (size_t idim = 0; idim < i.size(); idim++) {
     size_t degree_i = i[idim];
-    size_t numGaussPoints = (degree_i + 2) / 2;
     double vol = trans.vol(idim);
     auto functionBasis = functionBases[idim];
-
+    size_t incrementQuadraturePoints =
+        additionalQuadraturePoints(functionBasis->getConfiguration().polyParameters.type_);
+    size_t numGaussPoints = (degree_i + 2) / 2;
     // do iterative 1d quadrature
     double sum_idim = 0.0;
     double sum_idim_old = 0.0;
@@ -390,20 +401,17 @@ double PolynomialStochasticCollocation::quad(MultiIndex i) {
         double x_unit = roots[i], w = quadratureweights[i];
         double x_prob = trans.unitToProbabilistic(x_unit, idim);
         double prob = vol * functionBasis->pdf(x_prob);
-        sum_idim += w * legendreBasis->evaluate(degree_i, x_unit);
+        sum_idim += w * legendreBasis->evaluate(degree_i, x_unit) * prob;
       }
 
       if (iteration > 0) {
         err = std::abs(sum_idim_old - sum_idim);
-        if (std::abs(sum_idim) > 1e-13) {
-          err = err / std::abs(sum_idim);
-        }
-        std::cout << "  d:" << idim << " i:" << iteration << "; sum=" << sum_idim
-                  << "; err=" << (err * std::abs(sum_idim)) << "; relerr=" << err
-                  << std::endl;
       }
+      //      std::cout << "  d:" << idim << " i:" << iteration << "; #gp= " << numGaussPoints
+      //                << "; sum=" << sum_idim << "; relerr=" << (err / std::abs(sum_idim))
+      //                << "; err=" << err << std::endl;
       sum_idim_old = sum_idim;
-      numGaussPoints += 1;
+      numGaussPoints += incrementQuadraturePoints;
       iteration += 1;
     }
 
