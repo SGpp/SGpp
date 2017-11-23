@@ -380,7 +380,7 @@ CombigridMultiOperation::createExpUniformBoundaryBsplineSquareQuadrature(size_t 
   sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
       numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
   sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
-      numDimensions, sgpp::combigrid::CombiEvaluators::BSplineMixedQuadrature(degree));
+      numDimensions, sgpp::combigrid::CombiEvaluators::BSplineScalarProduct(degree));
   std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
       new sgpp::combigrid::AveragingLevelManager());
   sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);

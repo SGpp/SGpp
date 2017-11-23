@@ -62,7 +62,6 @@ void BSplineInterpolationEvaluator::computeBasisValues() {
    */
 
   basisValues.resize(xValues.size(), sgpp::combigrid::FloatScalarVector(0));
-
   if (xValues.size() == 1) {
     basisValues[0] = 1.0;
     return;

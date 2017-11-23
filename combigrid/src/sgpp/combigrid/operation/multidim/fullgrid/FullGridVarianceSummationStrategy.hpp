@@ -78,8 +78,9 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
     }
 
     if (bsplineBasis) {
-      FullGridLinearSummationStrategy<V> quadraticStrategy = FullGridLinearSummationStrategy<V>(
-          this->storage, this->evaluatorPrototypes, this->pointHierarchies);
+      FullGridQuadraticSummationStrategy<V> quadraticStrategy =
+          FullGridQuadraticSummationStrategy<V>(this->storage, this->evaluatorPrototypes,
+                                                this->pointHierarchies);
 
       size_t degree = evalConfig.degree;
       EvaluatorConfiguration linearEvalConfig(CombiEvaluatorTypes::Scalar_BSplineQuadrature,
@@ -92,8 +93,8 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
           FullGridLinearSummationStrategy<FloatScalarVector>(
               this->storage, linearEvaluatorPrototypes, this->pointHierarchies);
 
-      FloatScalarVector mean = linearStrategy.eval(level);
       V meanSquare = quadraticStrategy.eval(level);
+      FloatScalarVector mean = linearStrategy.eval(level);
 
       // Var = E(x^2) - E(x)^2
       mean.componentwiseMult(mean);

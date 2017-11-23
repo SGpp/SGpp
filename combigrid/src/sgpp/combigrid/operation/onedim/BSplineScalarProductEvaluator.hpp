@@ -35,7 +35,7 @@ class BSplineScalarProductEvaluator : public AbstractLinearEvaluator<FloatArrayV
 
   FloatArrayVector get1DMixedIntegral(std::vector<double> &points, size_t index_j);
 
-  void calculate1DMixedBSplineIntegrals(std::vector<double> &points,
+  void calculate1DBSplineScalarProducts(std::vector<double> &points,
                                         std::vector<FloatArrayVector> &integrals);
 
  public:

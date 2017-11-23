@@ -23,7 +23,8 @@ namespace combigrid {
  * @param index index of the B-Spline whose integral will be calculated
  */
 double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, size_t index) {
-  // performing Gauss-Legendre integration
+  // performing Gauss-Legendre integration. Polynomials of degree 2*numGaussPoints-1 are integrated
+  // exact
   size_t numGaussPoints = (degree + 1) / 2 + numAdditionalPoints;
   base::DataVector roots;
   base::DataVector quadratureweights;
@@ -40,6 +41,7 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
         std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
     sum = 1.0 * this->weight_function(roots[0]) * quadratureweights[0];
   } else if (xValues.size() < 9) {
+    numGaussPoints = xValues.size();
     quadRule.getLevelPointsAndWeightsNormalized(
         std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
     for (size_t i = 0; i < roots.getSize(); ++i) {

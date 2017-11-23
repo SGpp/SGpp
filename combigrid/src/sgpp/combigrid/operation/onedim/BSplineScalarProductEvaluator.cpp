@@ -38,22 +38,24 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DMixedIntegral(std::vector<d
     double sum = 0.0;
     std::vector<double> xi;
     createNakKnots(xValues, degree, xi);
-    double bsplinevalue = 0.0;
+    double productValue = 0.0;
 
-    // constant function for single point, Lagrange polynomials for up to 9 points, B-splines else
+    // constant function for single point, Lagrange polynomials for up to 9 points, B-splines
+    // otherwise
     if (xValues.size() == 1) {
       numGaussPoints = 1;
       quadRule.getLevelPointsAndWeightsNormalized(
           std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
       sum = 1.0 * this->weight_function(roots[0]) * quadratureweights[0];
     } else if (xValues.size() < 9) {
+      numGaussPoints = 2 * xValues.size();
       quadRule.getLevelPointsAndWeightsNormalized(
           std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
       for (size_t i = 0; i < roots.getSize(); ++i) {
         double x = roots[i];
-        bsplinevalue =
+        productValue =
             LagrangePolynomial(x, xValues, index_j) * LagrangePolynomial(x, xValues, index_i);
-        double integrand = bsplinevalue * this->weight_function(x);
+        double integrand = productValue * this->weight_function(x);
         sum += integrand * quadratureweights[i];
       }
     } else {
@@ -72,9 +74,9 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DMixedIntegral(std::vector<d
 
         for (size_t i = 0; i < roots.getSize(); ++i) {
           double x = a + width * roots[i];
-          bsplinevalue =
+          productValue =
               nonUniformBSpline(x, degree, index_j, xi) * nonUniformBSpline(x, degree, index_i, xi);
-          double integrand = bsplinevalue * this->weight_function(x);
+          double integrand = productValue * this->weight_function(x);
           // multiply weights by length_old_interval / length_new_interval
           sum += integrand * quadratureweights[i] * width;
         }
@@ -95,7 +97,7 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DMixedIntegral(std::vector<d
  * weights are at the same position
  * as their points
  */
-void BSplineScalarProductEvaluator::calculate1DMixedBSplineIntegrals(
+void BSplineScalarProductEvaluator::calculate1DBSplineScalarProducts(
     std::vector<double>& points, std::vector<FloatArrayVector>& basisValues) {
   for (size_t index_i = 0; index_i < points.size(); ++index_i) {
     basisValues.push_back(get1DMixedIntegral(points, index_i));
@@ -111,7 +113,7 @@ bool BSplineScalarProductEvaluator::needsParameter() { return false; }
 void BSplineScalarProductEvaluator::setGridPoints(std::vector<double> const& newXValues) {
   xValues = newXValues;
   basisValues.clear();
-  calculate1DMixedBSplineIntegrals(xValues, basisValues);
+  calculate1DBSplineScalarProducts(xValues, basisValues);
 
   // is this ever used?
   if (normalizeWeights) {
