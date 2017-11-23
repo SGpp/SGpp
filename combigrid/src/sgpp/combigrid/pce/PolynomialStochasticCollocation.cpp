@@ -320,6 +320,7 @@ double PolynomialStochasticCollocation::quad(MultiIndex i, MultiIndex j) {
     size_t degree_i = i[idim], degree_j = j[idim];
     auto functionBasis = functionBases[idim];
     size_t numGaussPoints = (degree_i + degree_j + 3) / 2;
+    double vol = trans.vol(idim);
     //    if (functionBasis->getConfiguration().polyParameters.type_ !=
     //        OrthogonalPolynomialBasisType::LEGENDRE) {
     //      numGaussPoints = std::min(quadRule.getMaxSupportedLevel(), numGaussPoints);
@@ -338,18 +339,18 @@ double PolynomialStochasticCollocation::quad(MultiIndex i, MultiIndex j) {
       for (size_t i = 0; i < roots.getSize(); ++i) {
         double x_unit = roots[i], w = quadratureweights[i];
         double x_prob = trans.unitToProbabilistic(x_unit, idim);
+        double prob = vol * functionBasis->pdf(x_prob);
         sum_idim += w * legendreBasis->evaluate(degree_i, x_unit) *
-                    legendreBasis->evaluate(degree_j, x_unit) * functionBasis->pdf(x_prob);
+                    legendreBasis->evaluate(degree_j, x_unit) * prob;
       }
-
-      sum_idim *= trans.vol(idim);
       if (iteration > 0) {
         err = std::abs(sum_idim_old - sum_idim);
         if (std::abs(sum_idim) > 1e-13) {
           err = err / std::abs(sum_idim);
         }
-        std::cout << "  d:" << idim << "i:" << iteration << "; err=" << (err * std::abs(sum_idim))
-                  << "; relerr=" << err << std::endl;
+        std::cout << "  d:" << idim << " i:" << iteration << "; sum=" << sum_idim
+                  << "; err=" << (err * std::abs(sum_idim)) << "; relerr=" << err
+                  << std::endl;
       }
       sum_idim_old = sum_idim;
       numGaussPoints += 1;
@@ -373,6 +374,7 @@ double PolynomialStochasticCollocation::quad(MultiIndex i) {
   for (size_t idim = 0; idim < i.size(); idim++) {
     size_t degree_i = i[idim];
     size_t numGaussPoints = (degree_i + 2) / 2;
+    double vol = trans.vol(idim);
     auto functionBasis = functionBases[idim];
 
     // do iterative 1d quadrature
@@ -387,17 +389,18 @@ double PolynomialStochasticCollocation::quad(MultiIndex i) {
       for (size_t i = 0; i < roots.getSize(); ++i) {
         double x_unit = roots[i], w = quadratureweights[i];
         double x_prob = trans.unitToProbabilistic(x_unit, idim);
-        sum_idim += w * legendreBasis->evaluate(degree_i, x_unit) * functionBasis->pdf(x_prob);
+        double prob = vol * functionBasis->pdf(x_prob);
+        sum_idim += w * legendreBasis->evaluate(degree_i, x_unit);
       }
 
-      sum_idim *= trans.vol(idim);
       if (iteration > 0) {
         err = std::abs(sum_idim_old - sum_idim);
         if (std::abs(sum_idim) > 1e-13) {
           err = err / std::abs(sum_idim);
         }
-        std::cout << "  d:" << idim << "i:" << iteration << "; err=" << (err * std::abs(sum_idim))
-                  << "; relerr=" << err << std::endl;
+        std::cout << "  d:" << idim << " i:" << iteration << "; sum=" << sum_idim
+                  << "; err=" << (err * std::abs(sum_idim)) << "; relerr=" << err
+                  << std::endl;
       }
       sum_idim_old = sum_idim;
       numGaussPoints += 1;
