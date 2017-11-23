@@ -72,6 +72,21 @@ double eval(sgpp::base::DataVector const& v) {
 }
 }  // namespace parabola
 // ----------------------------------------------------------------------------------
+namespace co2Func {
+double tolerance = 1e-13;
+size_t numDims = 1;
+
+double logmean = 1e-12;
+double stddev = std::exp(-1);
+std::vector<double> bounds{3.87672392696e-13, 2.57949758311e-12};
+
+double eval(sgpp::base::DataVector const& v) {
+  double x = (v[0] - co2Func::bounds[0]) / (co2Func::bounds[1] - co2Func::bounds[0]);
+  x = 2 * M_PI * x - M_PI;
+  return std::sin(x);
+}
+}  // namespace co2Func
+// ----------------------------------------------------------------------------------
 
 #ifdef USE_DAKOTA
 
@@ -224,6 +239,31 @@ BOOST_AUTO_TEST_CASE(testStochasticCollocation_parabola) {
   op->getLevelManager()->addRegularLevels(level);
   testStochasticCollocationMoments_various_marginals(op, functionBases, parabola::mean,
                                                      parabola::variance, parabola::tolerance);
+}
+
+BOOST_AUTO_TEST_CASE(testStochasticCollocation_co2_lognormal) {
+  sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
+  config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::BOUNDED_LOGNORMAL;
+  config.polyParameters.logmean_ = co2Func::logmean;
+  config.polyParameters.stddev_ = co2Func::stddev;
+  auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
+
+  sgpp::combigrid::MultiFunction func(co2Func::eval);
+  for (size_t level = 1; level < 10; level++) {
+    auto op = sgpp::combigrid::CombigridOperation::createExpL2LejaPolynomialInterpolation(
+        co2Func::numDims, func);
+    op->getLevelManager()->addRegularLevels(level);
+
+    // compute variance of the estimator
+    sgpp::combigrid::PolynomialStochasticCollocation sc(op, functionBasis);
+
+    // check the moments
+    std::cout << "---------------------------------------------------------" << std::endl;
+    std::cout << "level = " << level << "; #gp = " << op->getLevelManager()->numGridPoints()
+              << std::endl;
+    std::cout << "  E(u)   = " << sc.mean() << std::endl;
+    std::cout << "  Var(u) = " << sc.variance() << std::endl;
+  }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

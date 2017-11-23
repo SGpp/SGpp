@@ -15,6 +15,8 @@
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
 
+#include <sgpp/base/datatypes/DataVector.hpp>
+
 #include <cmath>
 
 #include <iostream>
@@ -52,10 +54,16 @@ int main() {
 
   sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
   config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
-  config.polyParameters.alpha_ = 10.0;
-  config.polyParameters.beta_ = 5.0;
-
+  config.polyParameters.lowerBound_ = 0.0;
+  config.polyParameters.upperBound_ = 1.0;
   auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
+  sgpp::base::DataVector bounds(2 * d);
+  bounds[0] = 0.0;
+  bounds[1] = 1.0;
+  bounds[2] = 0.0;
+  bounds[3] = 1.0;
+  bounds[4] = 0.0;
+  bounds[5] = 1.0;
 
   auto op =
       sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(d, func);

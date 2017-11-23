@@ -423,11 +423,12 @@ def example7():
     savefig(fig, "/home/franzefn/Desktop/Mario/tableau_ct_l%i" % maxLevel,
             mpl3d=True)
 
-# # @section combigrid_example_8 Example 8: UQ setting with variance refinement
-# #
-# # This example shows how to use the variance refinement method that uses the PCE transformation for
- # variance computation on each subspace.
-# #
+# @section combigrid_example_8 Example 8: UQ setting with variance refinement
+#
+# This example shows how to use the variance refinement method that
+# uses the PCE transformation for
+# variance computation on each subspace.
+#
 
 
 def example8(dist_type="uniform"):
