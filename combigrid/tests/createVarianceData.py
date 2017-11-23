@@ -19,7 +19,7 @@ def arctanModel(x):
     return np.arctan(50.0 * (x[0] - .35)) + np.pi / 2.0 + 4.0 * x[1] ** 3 + np.exp(x[0] * x[1] - 1.0)
     #return np.arctan(50.0 * (x[0] - .35))
     #return x[0] * x[1]*x[1]
-    #return x[0] * np.sin(x[1])
+    #return x[0] * x[1]
 
 
 def buildAtanParams(dist_type):
@@ -105,21 +105,18 @@ if __name__ == "__main__":
     
     for level1 in range(args.minLevel,args.maxLevel+1): 
         for level2 in range(args.minLevel,args.maxLevel+1 - level1):
-    #level1 = 2
-    #level2 = 0
             levels = [level1, level2]  
-    # \int_0^1 \int_0^1 B(x,y) dy dx
+            # \int_0^1 \int_0^1 B(x,y) dy dx
             mean = dblquad(lambda x,y: BsplineInterpolation(x,y,levels), 0,1,lambda x:0,lambda x:1)
-    # \int_0^1 \int_0^1 B^2(x,y) dy dx
+            # \int_0^1 \int_0^1 B^2(x,y) dy dx
             meanSquare = dblquad(lambda x,y: BsplineInterpolation(x,y,levels)**2, 0,1,lambda x:0,lambda x:1)
             variance = meanSquare[0] - mean[0]**2
-      
-            print"level %i %i  |  mean %g meanSquare %g variance %g" %(level1,level2,mean[1],meanSquare[1],variance)  
+  
+            print"level %i %i  |  mean %g meanSquare %g variance %g" %(levels[0],levels[1],mean[0],meanSquare[0],variance)  
             for level in levels:
                 file.write("%i " %level)
                 file.write("    ")
-            file.write("%f\n" %variance)
-    #------
+            file.write("%.18f\n" %variance)
     
     
     file.close()

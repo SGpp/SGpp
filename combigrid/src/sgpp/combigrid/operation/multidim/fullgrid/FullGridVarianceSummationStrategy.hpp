@@ -101,6 +101,9 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
       FloatScalarVector variance = meanSquare[0];
       variance.sub(mean);
 
+      //      std::cout << "mean " << mean.value() << " meanSquare " << meanSquare[0].value()
+      //                << " variance " << variance.value() << std::endl;
+
       V returnVariance(variance);
       return returnVariance;
     }
