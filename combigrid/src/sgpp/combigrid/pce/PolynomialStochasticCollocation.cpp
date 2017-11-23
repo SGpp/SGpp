@@ -330,6 +330,7 @@ double PolynomialStochasticCollocation::quad(MultiIndex i, MultiIndex j) {
     double sum_idim_old = 0.0;
     double err = 1e14;
     size_t iteration = 0;
+    std::cout << degree_i << ", " << degree_j << std::endl;
     while (err > 1e-13 && numGaussPoints < quadRule.getMaxSupportedLevel()) {
       quadRule.getLevelPointsAndWeightsNormalized(numGaussPoints, roots, quadratureweights);
 
@@ -341,11 +342,14 @@ double PolynomialStochasticCollocation::quad(MultiIndex i, MultiIndex j) {
                     legendreBasis->evaluate(degree_j, x_unit) * functionBasis->pdf(x_prob);
       }
 
+      sum_idim *= trans.vol(idim);
       if (iteration > 0) {
         err = std::abs(sum_idim_old - sum_idim);
         if (std::abs(sum_idim) > 1e-13) {
           err = err / std::abs(sum_idim);
         }
+        std::cout << "  d:" << idim << "i:" << iteration << "; err=" << (err * std::abs(sum_idim))
+                  << "; relerr=" << err << std::endl;
       }
       sum_idim_old = sum_idim;
       numGaussPoints += 1;
@@ -354,7 +358,7 @@ double PolynomialStochasticCollocation::quad(MultiIndex i, MultiIndex j) {
 
     ans *= sum_idim;
   }
-  return trans.vol() * ans;
+  return ans;
 }
 
 double PolynomialStochasticCollocation::quad(MultiIndex i) {
@@ -386,11 +390,14 @@ double PolynomialStochasticCollocation::quad(MultiIndex i) {
         sum_idim += w * legendreBasis->evaluate(degree_i, x_unit) * functionBasis->pdf(x_prob);
       }
 
+      sum_idim *= trans.vol(idim);
       if (iteration > 0) {
         err = std::abs(sum_idim_old - sum_idim);
         if (std::abs(sum_idim) > 1e-13) {
           err = err / std::abs(sum_idim);
         }
+        std::cout << "  d:" << idim << "i:" << iteration << "; err=" << (err * std::abs(sum_idim))
+                  << "; relerr=" << err << std::endl;
       }
       sum_idim_old = sum_idim;
       numGaussPoints += 1;

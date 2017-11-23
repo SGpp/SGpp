@@ -59,6 +59,10 @@ class LinearTransformation {
     return ans;
   }
 
+  double vol(size_t i) {
+    return widths[i];
+  }
+
  private:
   sgpp::base::DataVector widths;
   sgpp::base::DataVector xlower;
