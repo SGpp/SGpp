@@ -27,7 +27,8 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
       combigridOperation(combigridOperation),
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
-      numGridPoints(0) {
+      numGridPoints(0),
+      computedSobolIndicesFlag(false) {
   // create tensor operation for pce transformation
   this->combigridTensorOperation =
       sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
@@ -42,7 +43,8 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
       combigridOperation(nullptr),
       combigridMultiOperation(combigridMultiOperation),
       combigridTensorOperation(nullptr),
-      numGridPoints(0) {
+      numGridPoints(0),
+      computedSobolIndicesFlag(false) {
   // create tensor operation for pce transformation
   this->combigridTensorOperation =
       sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
@@ -57,7 +59,8 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
       combigridOperation(nullptr),
       combigridMultiOperation(nullptr),
       combigridTensorOperation(combigridTensorOperation),
-      numGridPoints(0) {
+      numGridPoints(0),
+      computedSobolIndicesFlag(false) {
   // create tensor operation for pce transformation
   this->combigridTensorOperation =
       CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
@@ -68,11 +71,12 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
 PolynomialChaosExpansion::PolynomialChaosExpansion(
     std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation,
     std::vector<std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D>>& functionBases)
-    : numDims(combigridMultiOperation->numDims()),
+    : numDims(combigridOperation->numDims()),
       combigridOperation(combigridOperation),
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
-      numGridPoints(0) {
+      numGridPoints(0),
+      computedSobolIndicesFlag(false) {
   // make sure that the number of dimensions match
   if (numDims != functionBases.size()) {
     throw sgpp::base::application_exception(
@@ -92,7 +96,8 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
       combigridOperation(nullptr),
       combigridMultiOperation(combigridMultiOperation),
       combigridTensorOperation(nullptr),
-      numGridPoints(0) {
+      numGridPoints(0),
+      computedSobolIndicesFlag(false) {
   // make sure that the number of dimensions match
   if (numDims != functionBases.size()) {
     throw sgpp::base::application_exception(
@@ -112,7 +117,8 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
       combigridOperation(nullptr),
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
-      numGridPoints(0) {
+      numGridPoints(0),
+      computedSobolIndicesFlag(false) {
   // make sure that the number of dimensions match
   if (numDims != functionBases.size()) {
     throw sgpp::base::application_exception(
@@ -127,16 +133,24 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
 
 PolynomialChaosExpansion::~PolynomialChaosExpansion() {}
 
+bool PolynomialChaosExpansion::updateStatus() {
+  if (numGridPoints < combigridTensorOperation->numGridPoints()) {
+    expansionCoefficients = combigridTensorOperation->getResult();
+    numGridPoints = combigridTensorOperation->numGridPoints();
+    computedSobolIndicesFlag = false;
+    return true;
+  } else {
+    return false;
+  }
+}
+
 double PolynomialChaosExpansion::mean() {
   //  if (orthogPoly != nullptr) {
   // #ifdef USE_DAKOTA
   //    return orthogPoly->mean();
   // #endif
   //  }
-  if (numGridPoints < combigridTensorOperation->numGridPoints()) {
-    expansionCoefficients = combigridTensorOperation->getResult();
-    numGridPoints = combigridTensorOperation->numGridPoints();
-  }
+  updateStatus();
   return expansionCoefficients.get(MultiIndex(numDims, 0)).getValue();
 }
 
@@ -147,11 +161,7 @@ double PolynomialChaosExpansion::variance() {
   // #endif
   //  }
   // PCE norm, i.e. variance (if using appropriate normalized orthogonal polynomials)
-  if (numGridPoints < combigridTensorOperation->numGridPoints()) {
-    expansionCoefficients = combigridTensorOperation->getResult();
-    numGridPoints = combigridTensorOperation->numGridPoints();
-  }
-
+  updateStatus();
   double var = 0.0;
   auto it = expansionCoefficients.getValues()->getStoredDataIterator();
   if (!it->isValid()) {
@@ -166,26 +176,12 @@ double PolynomialChaosExpansion::variance() {
   return var;
 }
 
-void PolynomialChaosExpansion::getComponentSobolIndices(
-    sgpp::base::DataVector& componentSobolIndices, bool normalized) {
-  if (numGridPoints < combigridTensorOperation->numGridPoints()) {
-    computeComponentSobolIndices();
-    numGridPoints = combigridTensorOperation->numGridPoints();
-  }
-  // copy sobol indices to output vector
-  componentSobolIndices.resize(sobolIndices.getSize());
-  componentSobolIndices.copyFrom(sobolIndices);
-
-  // divide all the entries by the variance to obtain the Sobol indices
-  if (normalized) {
-    double var = variance();
-    if (var > 1e-14) {
-      componentSobolIndices.mult(1. / var);
-    }
-  }
-}
-
 void PolynomialChaosExpansion::computeComponentSobolIndices() {
+  // compute the component sobol indices
+  if (computedSobolIndicesFlag) {
+    return;
+  }
+
   size_t numSobolIndices = static_cast<size_t>(std::pow(2, numDims) - 1);
   sobolIndices.resizeZero(numSobolIndices);
 
@@ -232,16 +228,32 @@ void PolynomialChaosExpansion::computeComponentSobolIndices() {
       }
     }
   }
+
+  // update the computed flag
+  computedSobolIndicesFlag = true;
+}
+
+void PolynomialChaosExpansion::getComponentSobolIndices(
+    sgpp::base::DataVector& componentSobolIndices, bool normalized) {
+  updateStatus();
+  computeComponentSobolIndices();
+  // copy sobol indices to output vector
+  componentSobolIndices.resize(sobolIndices.getSize());
+  componentSobolIndices.copyFrom(sobolIndices);
+
+  // divide all the entries by the variance to obtain the Sobol indices
+  if (normalized) {
+    double var = variance();
+    if (var > 1e-14) {
+      componentSobolIndices.mult(1. / var);
+    }
+  }
 }
 
 void PolynomialChaosExpansion::getTotalSobolIndices(sgpp::base::DataVector& totalSobolIndices,
                                                     bool normalized) {
-  // compute the component sobol indices
-  if (numGridPoints < combigridTensorOperation->numGridPoints()) {
-    computeComponentSobolIndices();
-    numGridPoints = combigridTensorOperation->numGridPoints();
-  }
-
+  updateStatus();
+  computeComponentSobolIndices();
   totalSobolIndices.resizeZero(numDims);
   for (size_t idim = 0; idim < numDims; idim++) {
     for (size_t iperm = 0; iperm < sobolIndices.getSize(); iperm++) {

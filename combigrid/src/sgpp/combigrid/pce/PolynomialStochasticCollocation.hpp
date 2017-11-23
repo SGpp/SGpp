@@ -13,6 +13,7 @@
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 
+#include <map>
 #include <vector>
 
 namespace sgpp {
@@ -141,6 +142,8 @@ class PolynomialStochasticCollocation {
   double quad(sgpp::combigrid::MultiIndex i);
   double quad(sgpp::combigrid::MultiIndex i, sgpp::combigrid::MultiIndex j);
 
+  void joinMultiIndices(MultiIndex& ix, MultiIndex& jx, MultiIndex& kx);
+
   size_t numDims;
   std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation;
   std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation;
@@ -152,6 +155,9 @@ class PolynomialStochasticCollocation {
   LinearTransformation trans;
   size_t numGridPoints;
   sgpp::combigrid::FloatTensorVector expansionCoefficients;
+
+  // lookup table for inner products
+  std::map<MultiIndex, double> innerProducts;
 };
 
 } /* namespace combigrid */

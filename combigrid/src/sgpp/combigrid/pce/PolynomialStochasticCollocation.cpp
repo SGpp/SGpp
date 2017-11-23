@@ -318,8 +318,12 @@ double PolynomialStochasticCollocation::quad(MultiIndex i, MultiIndex j) {
 
   for (size_t idim = 0; idim < i.size(); idim++) {
     size_t degree_i = i[idim], degree_j = j[idim];
-    size_t numGaussPoints = (degree_i + degree_j + 3) / 2;
     auto functionBasis = functionBases[idim];
+    size_t numGaussPoints = (degree_i + degree_j + 3) / 2;
+    //    if (functionBasis->getConfiguration().polyParameters.type_ !=
+    //        OrthogonalPolynomialBasisType::LEGENDRE) {
+    //      numGaussPoints = std::min(quadRule.getMaxSupportedLevel(), numGaussPoints);
+    //    }
 
     // do iterative 1d quadrature
     double sum_idim = 0.0;
@@ -446,18 +450,27 @@ double PolynomialStochasticCollocation::variance() {
   auto it_i = multiIndices_i->getStoredDataIterator();
   size_t i = 0;
   while (it_i->isValid() && i < numGridPoints) {
-    auto ix = it_i->getMultiIndex();
+    MultiIndex ix = it_i->getMultiIndex();
 
     auto it_j = multiIndices_j->getStoredDataIterator();
     size_t j = 0;
     while (it_j->isValid() && j < numGridPoints) {
       if (j >= i) {
-        auto jx = it_j->getMultiIndex();
+        MultiIndex jx = it_j->getMultiIndex();
 
         // compute the inner product and store it
-        double inner_product = quad(ix, jx);
-        M.set(i, j, inner_product);
-        M.set(j, i, inner_product);
+        MultiIndex kx;
+        joinMultiIndices(ix, jx, kx);
+        double innerProduct = 0.0;
+        if (innerProducts.find(kx) != innerProducts.end()) {
+          innerProduct = innerProducts[kx];
+        } else {
+          innerProduct = quad(ix, jx);
+          innerProducts[kx] = innerProduct;
+        }
+
+        M.set(i, j, innerProduct);
+        M.set(j, i, innerProduct);
 
         // store the coefficient in the correct order
         if (i == 0) {
@@ -491,6 +504,12 @@ double PolynomialStochasticCollocation::variance() {
 std::shared_ptr<sgpp::combigrid::CombigridTensorOperation>
 PolynomialStochasticCollocation::getCombigridTensorOperation() {
   return combigridTensorOperation;
+}
+
+void PolynomialStochasticCollocation::joinMultiIndices(MultiIndex& ix, MultiIndex& jx,
+                                                       MultiIndex& kx) {
+  kx.insert(kx.end(), ix.begin(), ix.end());
+  kx.insert(kx.end(), jx.begin(), jx.end());
 }
 
 } /* namespace combigrid */

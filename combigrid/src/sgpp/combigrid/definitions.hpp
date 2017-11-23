@@ -52,9 +52,10 @@ std::function<Out(In)> constantFunction(Out fixedValue = Out()) {
  * also has to be specified.
  */
 template <typename Out>
-std::function<Out(MultiIndex const &)> multiIndexToDefaultValue(Out fixedValue = Out()) {
-  return constantFunction<MultiIndex const &, Out>(fixedValue);
+std::function<Out(MultiIndex const&)> multiIndexToDefaultValue(Out fixedValue = Out()) {
+  return constantFunction<MultiIndex const&, Out>(fixedValue);
 }
+
 }  // namespace combigrid
 }  // namespace sgpp
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_DEFINITIONS_HPP_ */

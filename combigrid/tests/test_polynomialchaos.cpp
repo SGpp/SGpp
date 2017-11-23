@@ -77,9 +77,8 @@ double eval(sgpp::base::DataVector const& v) {
 
 BOOST_AUTO_TEST_SUITE(testPolynomialChaosExpansion)
 
-void testPCEMomentsAndSobolIndices(
-    std::shared_ptr<sgpp::combigrid::CombigridOperation> op,
-    std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis) {
+void testPCEIshigami(std::shared_ptr<sgpp::combigrid::CombigridOperation> op,
+                     std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis) {
   // compute variance of the estimator
   sgpp::combigrid::PolynomialChaosExpansion pce(op, functionBasis);
 
@@ -113,7 +112,45 @@ BOOST_AUTO_TEST_CASE(testPCE) {
   auto op = sgpp::combigrid::CombigridOperation::createExpL2LejaPolynomialInterpolation(
       ishigami::numDims, func);
   op->getLevelManager()->addRegularLevels(level);
-  testPCEMomentsAndSobolIndices(op, functionBasis);
+  testPCEIshigami(op, functionBasis);
+}
+
+void testPCEParbola(
+    std::shared_ptr<sgpp::combigrid::CombigridOperation> op,
+    std::vector<std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D>>& functionBases) {
+  // compute variance of the estimator
+  sgpp::combigrid::PolynomialChaosExpansion pce(op, functionBases);
+
+  // check the moments
+  BOOST_CHECK_SMALL(std::abs(parabola::mean - pce.mean()), parabola::tolerance);
+  BOOST_CHECK_SMALL(std::abs(parabola::variance - pce.variance()), parabola::tolerance);
+}
+
+BOOST_AUTO_TEST_CASE(testPCE_parabola) {
+  sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
+  config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::JACOBI;
+  config.polyParameters.lowerBound_ = parabola::bounds[0];
+  config.polyParameters.upperBound_ = parabola::bounds[1];
+  config.polyParameters.alpha_ = parabola::alpha1;
+  config.polyParameters.beta_ = parabola::beta1;
+  auto functionBasis1 = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
+
+  config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::JACOBI;
+  config.polyParameters.lowerBound_ = parabola::bounds[0];
+  config.polyParameters.upperBound_ = parabola::bounds[1];
+  config.polyParameters.alpha_ = parabola::alpha2;
+  config.polyParameters.beta_ = parabola::beta2;
+  auto functionBasis2 = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
+
+  std::vector<std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D>> functionBases{
+      functionBasis1, functionBasis2};
+
+  sgpp::combigrid::MultiFunction func(parabola::eval);
+  size_t level = 2;
+  auto op = sgpp::combigrid::CombigridOperation::createExpL2LejaPolynomialInterpolation(
+      parabola::numDims, func);
+  op->getLevelManager()->addRegularLevels(level);
+  testPCEParbola(op, functionBases);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -149,7 +186,7 @@ BOOST_AUTO_TEST_CASE(testStochasticCollocation_ishigami) {
                                                 ishigami::variance, ishigami::tolerance);
 }
 
-void testStochasticCollocationMoments(
+void testStochasticCollocationMoments_various_marginals(
     std::shared_ptr<sgpp::combigrid::CombigridOperation> op,
     std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases,
     double mean, double variance, double tol) {
@@ -185,8 +222,8 @@ BOOST_AUTO_TEST_CASE(testStochasticCollocation_parabola) {
   auto op = sgpp::combigrid::CombigridOperation::createExpL2LejaPolynomialInterpolation(
       parabola::numDims, func);
   op->getLevelManager()->addRegularLevels(level);
-  testStochasticCollocationMoments(op, functionBases, parabola::mean, parabola::variance,
-                                   parabola::tolerance);
+  testStochasticCollocationMoments_various_marginals(op, functionBases, parabola::mean,
+                                                     parabola::variance, parabola::tolerance);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

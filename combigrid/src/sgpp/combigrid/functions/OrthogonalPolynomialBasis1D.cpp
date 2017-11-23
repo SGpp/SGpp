@@ -212,5 +212,9 @@ std::shared_ptr<Pecos::RandomVariable> OrthogonalPolynomialBasis1D::getRandomVar
 }
 #endif
 
+OrthogonalPolynomialBasis1DConfiguration OrthogonalPolynomialBasis1D::getConfiguration() {
+  return config;
+}
+
 } /* namespace combigrid */
 } /* namespace sgpp */

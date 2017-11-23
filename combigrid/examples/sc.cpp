@@ -6,7 +6,7 @@
 #include <sgpp/combigrid/functions/MonomialFunctionBasis1D.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
-#include <sgpp/combigrid/pce/PolynomialChaosExpansion.hpp>
+#include <sgpp/combigrid/pce/PolynomialStochasticCollocation.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
@@ -57,33 +57,34 @@ int main() {
 
   auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
 
+  auto op =
+      sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(d, func);
+  auto op_levelManager = op->getLevelManager();
+  sgpp::combigrid::PolynomialStochasticCollocation sc(op, functionBasis);
+  auto tensor_levelManager = sc.getCombigridTensorOperation()->getLevelManager();
   for (size_t q = 0; q < 8; ++q) {
-    // interpolate on adaptively refined grid
-    auto op = sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
-        d, func);
     sgpp::combigrid::Stopwatch stopwatch;
+    std::cout << "---------------------------------------------------------" << std::endl;
+    std::cout << "add regular levels " << q << " to interpolation operation" << std::endl;
     stopwatch.start();
-    op->getLevelManager()->addRegularLevels(q);
-    //    op->getLevelManager()->addLevelsAdaptiveParallel(1000, 4);
+    op_levelManager->addRegularLevels(q);
     stopwatch.log();
-    // compute the variance
+    std::cout << "---------------------------------------------------------" << std::endl;
+    std::cout << "add regular levels " << q << " to tensor operation" << std::endl;
     stopwatch.start();
-    sgpp::combigrid::PolynomialChaosExpansion pce(op, functionBasis);
-    double mean = pce.mean();
-    double variance = pce.variance();
-    sgpp::base::DataVector sobol_indices;
-    sgpp::base::DataVector total_sobol_indices;
-    pce.getComponentSobolIndices(sobol_indices);
-    pce.getTotalSobolIndices(total_sobol_indices);
-    std::cout << "Time: " << stopwatch.elapsedSeconds() / static_cast<double>(op->numGridPoints())
-              << std::endl;
+    tensor_levelManager->addRegularLevels(q);
+    stopwatch.log();
+    std::cout << "#gp = " << op_levelManager->numGridPoints() << std::endl;
+    // compute the variance
     std::cout << "---------------------------------------------------------" << std::endl;
-    std::cout << "#gp = " << op->getLevelManager()->numGridPoints() << std::endl;
-    std::cout << "E(u) = " << mean << std::endl;
-    std::cout << "Var(u) = " << variance << std::endl;
-    std::cout << "Sobol indices = " << sobol_indices.toString() << std::endl;
-    std::cout << "Sum Sobol indices = " << sobol_indices.sum() << std::endl;
-    std::cout << "Total Sobol indices = " << total_sobol_indices.toString() << std::endl;
+    std::cout << "compute mean and variance of stochastic collocation" << std::endl;
+    stopwatch.start();
+    double mean = sc.mean();
+    double variance = sc.variance();
+    stopwatch.log();
     std::cout << "---------------------------------------------------------" << std::endl;
+    std::cout << "#gp = " << op_levelManager->numGridPoints() << std::endl;
+    std::cout << "|mu - E(u)|        = " << std::abs(3.5 - mean) << std::endl;
+    std::cout << "|sigma^2 - Var(u)| = " << std::abs(f_variance() - variance) << std::endl;
   }
 }
