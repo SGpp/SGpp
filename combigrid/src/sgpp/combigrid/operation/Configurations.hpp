@@ -86,7 +86,7 @@ class CombiEvaluators {
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> createCombiMultiEvaluator(
       EvaluatorConfiguration operationConfig);
 
-  static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> BSplineMixedQuadrature(
+  static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> BSplineScalarProduct(
       size_t degree);
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiPolynomialInterpolation();
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiLinearInterpolation();

@@ -11,9 +11,6 @@
 #include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
 #include <sgpp/quadrature/sampling/LatinHypercubeSampleGenerator.hpp>
 
-#include <sgpp/combigrid/definitions.hpp>
-#include <sgpp/globaldef.hpp>
-
 #include <vector>
 
 const double tolerance = 1e-12;

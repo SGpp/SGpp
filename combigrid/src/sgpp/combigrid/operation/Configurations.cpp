@@ -225,7 +225,7 @@ CombiEvaluators::createCombiMultiEvaluator(EvaluatorConfiguration evalConfig) {
   }
 }
 
-std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> CombiEvaluators::BSplineMixedQuadrature(
+std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> CombiEvaluators::BSplineScalarProduct(
     size_t degree) {
   return std::make_shared<BSplineScalarProductEvaluator>(degree);
 }
