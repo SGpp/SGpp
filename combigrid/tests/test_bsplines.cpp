@@ -227,7 +227,8 @@ BOOST_AUTO_TEST_CASE(testVarianceOnDiagonal) {
  * This test creates a Bspline interpolant and calculates mean and variance with Monte Carlo methods
  * for two test functions for which mean and variance are known
  *
- * Comment: The results obtained by Monte Carlo are extremely unprecise
+ * Comment: The results obtained by Monte Carlo are extremely unprecise even for simple functions as
+ * f(x)=x
  */
 BOOST_AUTO_TEST_CASE(testMCVariance) {
   std::cout << "Testing Variance of B spline interpolants using Monte Carlo methods" << std::endl;
