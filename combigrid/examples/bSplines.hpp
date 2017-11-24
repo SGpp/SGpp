@@ -40,10 +40,9 @@
 
 size_t numDimensions = 2;
 double f(sgpp::base::DataVector const& v) {
-  //  return 1;
-  //  return v[0] * v[0] * v[0] * v[0];
-  return std::atan(50 * (v[0] - .35));
+  return v[0] * v[1];
   //  return v[0] * sin(v[0] + v[1]) * exp(v[1] * v[2]);
+  //  return std::atan(50 * (v[0] - .35));
   //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
   //         std::exp(v[0] * v[1] - 1);
 }
@@ -249,7 +248,7 @@ double integrateOneLevel(sgpp::combigrid::MultiIndex level, size_t degree) {
   return res;
 }
 
-double interpolateVarianceAdaptively(size_t maxlevel, size_t degree) {
+double interpolateVarianceAdaptively(size_t numlevels, size_t degree) {
   // create auxiliary Operation creating a variance adaptive level structure
   sgpp::combigrid::MultiFunction func(f);
   sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
@@ -272,7 +271,7 @@ double interpolateVarianceAdaptively(size_t maxlevel, size_t degree) {
       auxiliarySummationStrategyType);
 
   // create level structure
-  auxiliaryOperation->getLevelManager()->addRegularLevels(maxlevel);
+  auxiliaryOperation->getLevelManager()->addLevelsAdaptiveByNumLevels(numlevels);
   auto levelStructure = auxiliaryOperation->getLevelManager()->getLevelStructure();
 
   auto levelStructureIterator = levelStructure->getStoredDataIterator();
@@ -296,14 +295,12 @@ double interpolateVarianceAdaptively(size_t maxlevel, size_t degree) {
   auto Operation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
       pointHierarchies, evaluators, levelManager, gf, exploitNesting, summationStrategyType);
 
-  Operation->getLevelManager()->addLevelsFromStructure(levelStructure);
-
   // calculate error
   size_t num_MCpoints = 1000;
   sgpp::quadrature::NaiveSampleGenerator generator(numDimensions);
   sgpp::base::DataVector p(numDimensions, 0);
   sgpp::base::DataMatrix params(numDimensions, 0);
-  sgpp::base::DataVector funceval(num_MCpoints);
+  sgpp::base::DataVector funceval;
   for (size_t i = 0; i < num_MCpoints; i++) {
     generator.getSample(p);
     params.appendCol(p);
@@ -314,9 +311,10 @@ double interpolateVarianceAdaptively(size_t maxlevel, size_t degree) {
   //  L2_err += diff * diff;
 
   Operation->setParameters(params);
+  Operation->getLevelManager()->addLevelsFromStructure(levelStructure);
   sgpp::base::DataVector interpoleval = Operation->getResult();
-  std::cout << params.size() << " " << interpoleval.size() << " " << funceval.size() << std::endl;
+  // std::cout << params.size() <<  " " << interpoleval.size() << " " << funceval.size() <<
+  // std::endl;
   interpoleval.sub(funceval);
-
   return interpoleval.l2Norm();
 }
