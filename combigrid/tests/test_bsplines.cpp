@@ -24,6 +24,7 @@ using sgpp::combigrid::MultiIndex;
 
 //--------------------- Preparations for testVarianceOneLevel---------------------------------------
 double atanModel(sgpp::base::DataVector const& v) {
+  //  return v[0] * v[0] * v[0] * v[1] * v[1] * v[1] * v[1];
   //  return std::atan(50 * (v[0] - .35));
   return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
          std::exp(v[0] * v[1] - 1);
@@ -58,8 +59,7 @@ struct VarianceDiagonalTestData {
   std::vector<MultiIndex> levels{MultiIndex{0, 0}, MultiIndex{1, 1}, MultiIndex{2, 2},
                                  MultiIndex{3, 3}, MultiIndex{4, 4}, MultiIndex{5, 5},
                                  MultiIndex{6, 6}, MultiIndex{7, 7}};
-  std::vector<double> variances{-3.55271e-15, 2.81679, 4.01926, 3.3308,
-                                3.45828,      3.45281, 3.4531,  3.4531};
+  double variance = 3.453102449971636290;
 };
 
 double BSplineVariance(sgpp::combigrid::MultiIndex level) {
@@ -216,7 +216,7 @@ BOOST_AUTO_TEST_CASE(testVarianceOnDiagonal) {
   for (size_t i = 0; i < varianceDiagonalTestData.levels.size(); i++) {
     MultiIndex level = varianceDiagonalTestData.levels[i];
     double bSplineVariance = BSplineVariance(level);
-    varianceError = std::fabs(bSplineVariance - varianceDiagonalTestData.variances[i]);
+    varianceError = std::fabs(bSplineVariance - varianceDiagonalTestData.variance);
     std::cout << "level: " << level[0] << " " << level[1] << "|  error:  " << varianceError
               << std::endl;
     //    BOOST_CHECK_SMALL(varianceError, 1e-6);
@@ -282,7 +282,7 @@ BOOST_AUTO_TEST_CASE(testMCVariance) {
     double MCVar_err = fabs(MCVar - debugfct::variance);
 
     //    std::cout << MCL2_err << " " << MCMean_err << " " << MCVar_err << std::endl;
-    std::cout << MCL2_err << " " << MCMean << " " << MCVar << std::endl;
+    std::cout << MCL2_err << " " << MCMean_err << " " << MCVar_err << std::endl;
   }
 }
 

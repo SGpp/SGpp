@@ -18,7 +18,7 @@ from numpy import square
 def arctanModel(x):
     return np.arctan(50.0 * (x[0] - .35)) + np.pi / 2.0 + 4.0 * x[1] ** 3 + np.exp(x[0] * x[1] - 1.0)
     #return np.arctan(50.0 * (x[0] - .35))
-    #return x[0] * x[1]*x[1]
+    #return x[0]*x[0]*x[0]*x[1]*x[1]*x[1]*x[1]
     #return x[0] * x[1]
 
 
@@ -56,7 +56,7 @@ if __name__ == "__main__":
     parser.add_argument('--model', default="arctan", type=str, help="define true model")
     parser.add_argument('--degree', default=3, type=int, help="polynomial degree of B-splines")
     parser.add_argument('--minLevel', default=0, type=int, help="minimum level of regular grids")
-    parser.add_argument('--maxLevel', default=7, type=int, help="maximum level of regular grids")
+    parser.add_argument('--maxLevel', default=8, type=int, help="maximum level of regular grids")
     parser.add_argument('--dist', default="beta", type=str, help="define marginal distribution")
     args = parser.parse_args()
 
@@ -103,32 +103,32 @@ if __name__ == "__main__":
     # file.write("#Level    Variance\n")  
     #===========================================================================
     
-    for level1 in range(args.minLevel,args.maxLevel+1): 
-        for level2 in range(args.minLevel,args.maxLevel+1 - level1):
-            levels = [level1, level2]  
-            # \int_0^1 \int_0^1 B(x,y) dy dx
-            mean = dblquad(lambda x,y: BsplineInterpolation(x,y,levels), 0,1,lambda x:0,lambda x:1)
-            # \int_0^1 \int_0^1 B^2(x,y) dy dx
-            meanSquare = dblquad(lambda x,y: BsplineInterpolation(x,y,levels)**2, 0,1,lambda x:0,lambda x:1)
-            variance = meanSquare[0] - mean[0]**2
-   
-            print"level %i %i  |  mean %g meanSquare %g variance %g" %(levels[0],levels[1],mean[0],meanSquare[0],variance)  
-            for level in levels:
-                file.write("%i " %level)
-                file.write("    ")
-            file.write("%.18f\n" %variance)
-
 #     for level1 in range(args.minLevel,args.maxLevel+1): 
-#           levels = [level1, level1]  
-#           mean = dblquad(lambda x,y: BsplineInterpolation(x,y,levels), 0,1,lambda x:0,lambda x:1)
-#           meanSquare = dblquad(lambda x,y: BsplineInterpolation(x,y,levels)**2, 0,1,lambda x:0,lambda x:1)
-#           variance = meanSquare[0] - mean[0]**2
-# 
-#           print"level %i %i  |  mean %g meanSquare %g variance %g" %(levels[0],levels[1],mean[0],meanSquare[0],variance)  
-#           for level in levels:
-#               file.write("%i " %level)
-#               file.write("    ")
-#           file.write("%.18f\n" %variance)
+#         for level2 in range(args.minLevel,args.maxLevel+1 - level1):
+#             levels = [level1, level2]  
+#             # \int_0^1 \int_0^1 B(x,y) dy dx
+#             mean = dblquad(lambda x,y: BsplineInterpolation(x,y,levels), 0,1,lambda x:0,lambda x:1)
+#             # \int_0^1 \int_0^1 B^2(x,y) dy dx
+#             meanSquare = dblquad(lambda x,y: BsplineInterpolation(x,y,levels)**2, 0,1,lambda x:0,lambda x:1)
+#             variance = meanSquare[0] - mean[0]**2
+#    
+#             print"level %i %i  |  mean %g meanSquare %g variance %g" %(levels[0],levels[1],mean[0],meanSquare[0],variance)  
+#             for level in levels:
+#                 file.write("%i " %level)
+#                 file.write("    ")
+#             file.write("%.18f\n" %variance)
+
+    for level1 in range(args.minLevel,args.maxLevel+1): 
+          levels = [level1, level1]  
+          mean = dblquad(lambda x,y: BsplineInterpolation(x,y,levels), 0,1,lambda x:0,lambda x:1)
+          meanSquare = dblquad(lambda x,y: BsplineInterpolation(x,y,levels)**2, 0,1,lambda x:0,lambda x:1)
+          variance = meanSquare[0] - mean[0]**2
+ 
+          print"level %i %i  |  mean %.10g meanSquare %.10g variance %.10g" %(levels[0],levels[1],mean[0],meanSquare[0],variance)  
+          for level in levels:
+              file.write("%i " %level)
+              file.write("    ")
+          file.write("%.18f\n" %variance)
     
     
         
