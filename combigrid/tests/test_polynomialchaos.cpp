@@ -257,13 +257,12 @@ BOOST_AUTO_TEST_CASE(testStochasticCollocation_co2_lognormal) {
   sgpp::combigrid::PolynomialStochasticCollocation sc(op, functionBasis);
   auto tensor_levelManager = sc.getCombigridTensorOperation()->getLevelManager();
 
-  size_t level = 7;
-  op_levelManager->addRegularLevels(level);
+  op_levelManager->addRegularLevels(2);
   tensor_levelManager->addLevelsFromStructure(op_levelManager->getLevelStructure());
 
   // check the moments
-  BOOST_CHECK_SMALL(std::abs(co2Func::mean - sc.mean()), co2Func::tolerance);
-  BOOST_CHECK_SMALL(std::abs(co2Func::variance - sc.variance()), co2Func::tolerance);
+  BOOST_CHECK_SMALL(std::abs(co2Func::mean - sc.mean()), 1e-1);
+  BOOST_CHECK_SMALL(std::abs(co2Func::variance - sc.variance()), 1e-1);
 
   auto op2 = sgpp::combigrid::CombigridOperation::createExpL2LejaPolynomialInterpolation(
       co2Func::numDims, func);
@@ -273,7 +272,7 @@ BOOST_AUTO_TEST_CASE(testStochasticCollocation_co2_lognormal) {
   sc.updateOperation(op2);
   tensor_levelManager = sc.getCombigridTensorOperation()->getLevelManager();
 
-  op2_levelManager->addRegularLevels(level);
+  op2_levelManager->addRegularLevels(7);
   tensor_levelManager->addLevelsFromStructure(op2_levelManager->getLevelStructure());
 
   // check the moments
