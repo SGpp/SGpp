@@ -23,6 +23,7 @@
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/WaveletBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/WaveletModifiedBasis.hpp>
@@ -127,6 +128,11 @@ class HierarchisationSLE : public CloneableSLE {
       modWaveletBasis =
           std::unique_ptr<base::SWaveletModifiedBase>(new base::SWaveletModifiedBase());
       basisType = WAVELET_MODIFIED;
+    } else if (grid.getType() == base::GridType::NotAKnotBsplineBoundary) {
+      notAKnotBsplineBoundaryBasis = std::unique_ptr<base::SNotAKnotBsplineBoundaryBase>(
+          new base::SNotAKnotBsplineBoundaryBase(3));
+      //              dynamic_cast<base::NotAKnotBsplineBoundaryGrid&>(grid).getDegree()));
+      basisType = NOTAKNOT_BSPLINEBOUNDARY;
     } else {
       throw std::invalid_argument("Grid type not supported.");
     }
@@ -204,6 +210,8 @@ class HierarchisationSLE : public CloneableSLE {
   std::unique_ptr<base::SWaveletBoundaryBase> waveletBoundaryBasis;
   /// modified wavelet basis
   std::unique_ptr<base::SWaveletModifiedBase> modWaveletBasis;
+  /// not-a-knot B-spline Boundary basis
+  std::unique_ptr<base::SNotAKnotBsplineBoundaryBase> notAKnotBsplineBoundaryBasis;
 
   /// type of grid/basis functions
   enum {
@@ -221,7 +229,8 @@ class HierarchisationSLE : public CloneableSLE {
     LINEAR_MODIFIED,
     WAVELET,
     WAVELET_BOUNDARY,
-    WAVELET_MODIFIED
+    WAVELET_MODIFIED,
+    NOTAKNOT_BSPLINEBOUNDARY
   } basisType;
 
   /**
@@ -259,6 +268,8 @@ class HierarchisationSLE : public CloneableSLE {
       return evalWaveletBoundaryFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == WAVELET_MODIFIED) {
       return evalWaveletModifiedFunctionAtGridPoint(basisI, pointJ);
+    } else if (basisType == NOTAKNOT_BSPLINEBOUNDARY) {
+      return evalNotAKnotBsplineBoundaryFunctionAtGridPoint(basisI, pointJ);
     } else {
       return 0.0;
     }
@@ -619,6 +630,31 @@ class HierarchisationSLE : public CloneableSLE {
     for (size_t t = 0; t < gridStorage.getDimension(); t++) {
       const double result1d = modWaveletBasis->eval(gpBasis.getLevel(t), gpBasis.getIndex(t),
                                                     gridStorage.getUnitCoordinate(gpPoint, t));
+
+      if (result1d == 0.0) {
+        return 0.0;
+      }
+
+      result *= result1d;
+    }
+
+    return result;
+  }
+
+  /**
+       * @param basisI    basis function index
+       * @param pointJ    grid point index
+       * @return          value of the basisI-th not-a-knot B-spline basis function
+       *                  at the pointJ-th grid point
+       */
+  inline double evalNotAKnotBsplineBoundaryFunctionAtGridPoint(size_t basisI, size_t pointJ) {
+    const base::GridPoint& gpBasis = gridStorage[basisI];
+    const base::GridPoint& gpPoint = gridStorage[pointJ];
+    double result = 1.0;
+
+    for (size_t t = 0; t < gridStorage.getDimension(); t++) {
+      const double result1d = notAKnotBsplineBoundaryBasis->eval(
+          gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getUnitCoordinate(gpPoint, t));
 
       if (result1d == 0.0) {
         return 0.0;

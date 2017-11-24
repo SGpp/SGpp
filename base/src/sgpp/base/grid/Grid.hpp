@@ -49,7 +49,8 @@ enum class GridType {
   ModFundamentalSpline,      // 22
   ModBsplineClenshawCurtis,  // 23
   LinearStencil,             // 24
-  ModLinearStencil           // 25
+  ModLinearStencil,          // 25
+  NotAKnotBsplineBoundary    // 26
 };
 
 /**
@@ -547,6 +548,15 @@ class Grid {
    * @return grid
    */
   static Grid* createPeriodicGrid(size_t dim);
+
+  /**
+    * creates a not a knot B-Spline boundary grid
+    *
+    * @param dim the grid's dimension
+    * @param degree the B-spline degree
+    * @return grid
+    */
+  static Grid* createNotAKnotBsplineBoundaryGrid(size_t dim, size_t degree);
 
   /**
    * reads a grid out of a string

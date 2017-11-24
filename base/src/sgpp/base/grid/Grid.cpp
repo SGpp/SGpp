@@ -23,6 +23,7 @@
 #include <sgpp/base/grid/type/ModLinearGridStencil.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
+#include <sgpp/base/grid/type/NotAKnotBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PeriodicGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
@@ -123,6 +124,10 @@ Grid* Grid::createModPolyGrid(size_t dim, size_t degree) { return new ModPolyGri
 
 Grid* Grid::createPeriodicGrid(size_t dim) { return new PeriodicGrid(dim); }
 
+Grid* Grid::createNotAKnotBsplineBoundaryGrid(size_t dim, size_t degree) {
+  return new NotAKnotBsplineBoundaryGrid(dim, degree);
+}
+
 Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
   if (gridConfig.filename_.length() > 0) {
     std::ifstream ifs(gridConfig.filename_);
@@ -182,6 +187,8 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
         return Grid::createLinearStretchedGrid(gridConfig.dim_);
       case GridType::ModLinearStencil:
         return Grid::createModLinearGridStencil(gridConfig.dim_);
+      case GridType::NotAKnotBsplineBoundary:
+        return Grid::createNotAKnotBsplineBoundaryGrid(gridConfig.dim_, gridConfig.maxDegree_);
       default:
         throw generation_exception("Grid::createGrid - grid type not known");
     }
@@ -286,6 +293,11 @@ Grid* Grid::clone() {
     case GridType::ModLinearStencil:
       newGrid = Grid::createModLinearGridStencil(numDims);
       break;
+    case GridType::NotAKnotBsplineBoundary:
+      degree = dynamic_cast<NotAKnotBsplineBoundaryGrid*>(this)->getDegree();
+      newGrid = Grid::createNotAKnotBsplineBoundaryGrid(numDims, degree);
+      break;
+
     default:
       throw generation_exception("Grid::clone - grid type not known");
   }
