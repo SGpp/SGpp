@@ -27,7 +27,6 @@ class CSVTools {
    * Reads an CSV file.
    *
    * @param filename filename of the file to be read
-   * @param skipFirstLine skip first line in case of a header line
    * @return CSV as Dataset
    */
   static Dataset readCSV(const std::string& filename, bool skipFirstLine=false);
