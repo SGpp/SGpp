@@ -16,7 +16,13 @@
 namespace sgpp {
 namespace combigrid {
 
-enum class OrthogonalPolynomialBasisType { LEGENDRE, JACOBI, HERMITE, BOUNDED_LOGNORMAL };
+enum class OrthogonalPolynomialBasisType {
+  LEGENDRE,
+  JACOBI,
+  HERMITE,
+  BOUNDED_NORMAL,
+  BOUNDED_LOGNORMAL
+};
 
 struct OrthogonalPolynomialBasis1DParameters {
   // type

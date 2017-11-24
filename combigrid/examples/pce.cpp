@@ -33,7 +33,7 @@ double f(sgpp::base::DataVector const &v) {
   // Ishigami function in (-pi, pi)
   double a = 7.0, b = 0.1;
   sgpp::base::DataVector x(v);
-  sgpp::base::DataVector pi(v.size());
+  sgpp::base::DataVector pi(v.getSize());
   pi.setAll(M_PI);
   x.mult(2 * M_PI);
   x.sub(pi);

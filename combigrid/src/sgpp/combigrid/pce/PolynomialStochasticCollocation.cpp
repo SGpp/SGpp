@@ -10,6 +10,8 @@
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
+#include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
+
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 
@@ -317,10 +319,11 @@ size_t PolynomialStochasticCollocation::additionalQuadraturePoints(
     case OrthogonalPolynomialBasisType::LEGENDRE:
       return 0;
     case OrthogonalPolynomialBasisType::BOUNDED_LOGNORMAL:
-      return 100;
+      return 15;
     case OrthogonalPolynomialBasisType::JACOBI:
       return 4;
     case OrthogonalPolynomialBasisType::HERMITE:
+    case OrthogonalPolynomialBasisType::BOUNDED_NORMAL:
       return 10;
     default:
       return 0;
@@ -342,7 +345,6 @@ double PolynomialStochasticCollocation::quad(MultiIndex i, MultiIndex j) {
     size_t incrementQuadraturePoints =
         additionalQuadraturePoints(functionBasis->getConfiguration().polyParameters.type_);
     size_t numGaussPoints = (degree_i + degree_j + 3) / 2;
-    double vol = trans.vol(idim);
 
     // do iterative 1d quadrature
     double sum_idim = 0.0;
@@ -356,16 +358,18 @@ double PolynomialStochasticCollocation::quad(MultiIndex i, MultiIndex j) {
       for (size_t i = 0; i < roots.getSize(); ++i) {
         double x_unit = roots[i], w = quadratureweights[i];
         double x_prob = trans.unitToProbabilistic(x_unit, idim);
-        double prob = vol * functionBasis->pdf(x_prob);
         sum_idim += w * legendreBasis->evaluate(degree_i, x_unit) *
-                    legendreBasis->evaluate(degree_j, x_unit) * prob;
+                    legendreBasis->evaluate(degree_j, x_unit) * functionBasis->pdf(x_prob);
       }
+
+      sum_idim *= trans.vol(idim);
       if (iteration > 0) {
         err = std::abs(sum_idim_old - sum_idim);
+        //        if (std::abs(sum_idim) > 1e-14) {
+        //          err /= std::abs(sum_idim);
+        //        }
       }
-      //      std::cout << "  d:" << idim << " i:" << iteration << "; #gp= " << numGaussPoints
-      //                << "; sum=" << sum_idim << "; relerr=" << (err / std::abs(sum_idim))
-      //                << "; err=" << err << std::endl;
+
       sum_idim_old = sum_idim;
       numGaussPoints += incrementQuadraturePoints;
       iteration += 1;
@@ -387,14 +391,13 @@ double PolynomialStochasticCollocation::quad(MultiIndex i) {
     base::DataVector roots;
     base::DataVector quadratureweights;
     size_t degree_i = i[idim];
-    double vol = trans.vol(idim);
     auto functionBasis = functionBases[idim];
     size_t incrementQuadraturePoints =
         additionalQuadraturePoints(functionBasis->getConfiguration().polyParameters.type_);
     size_t numGaussPoints = (degree_i + 2) / 2;
+
     // do iterative 1d quadrature
-    double sum_idim = 0.0;
-    double sum_idim_old = 0.0;
+    double sum_idim = 0.0, sum_idim_old = 0.0;
     double err = 1e14;
     size_t iteration = 0;
     while (err > 1e-13 && numGaussPoints < quadRule.getMaxSupportedLevel()) {
@@ -404,21 +407,21 @@ double PolynomialStochasticCollocation::quad(MultiIndex i) {
       for (size_t i = 0; i < roots.getSize(); ++i) {
         double x_unit = roots[i], w = quadratureweights[i];
         double x_prob = trans.unitToProbabilistic(x_unit, idim);
-        double prob = vol * functionBasis->pdf(x_prob);
-        sum_idim += w * legendreBasis->evaluate(degree_i, x_unit) * prob;
+        sum_idim += w * legendreBasis->evaluate(degree_i, x_unit) * functionBasis->pdf(x_prob);
       }
+
+      sum_idim *= trans.vol();
 
       if (iteration > 0) {
         err = std::abs(sum_idim_old - sum_idim);
+        //        if (std::abs(sum_idim) > 1e-14) {
+        //          err /= std::abs(sum_idim);
+        //        }
       }
-      //      std::cout << "  d:" << idim << " i:" << iteration << "; #gp= " << numGaussPoints
-      //                << "; sum=" << sum_idim << "; relerr=" << (err / std::abs(sum_idim))
-      //                << "; err=" << err << std::endl;
       sum_idim_old = sum_idim;
       numGaussPoints += incrementQuadraturePoints;
       iteration += 1;
     }
-
     ans *= sum_idim;
   }
   return ans;
@@ -526,6 +529,25 @@ double PolynomialStochasticCollocation::variance() {
 std::shared_ptr<sgpp::combigrid::CombigridTensorOperation>
 PolynomialStochasticCollocation::getCombigridTensorOperation() {
   return combigridTensorOperation;
+}
+
+void PolynomialStochasticCollocation::updateOperation(
+    std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation) {
+  initializeTensorOperation(combigridOperation->getPointHierarchies(),
+                            combigridOperation->getStorage(),
+                            combigridOperation->getLevelManager());
+}
+void PolynomialStochasticCollocation::updateOperation(
+    std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridOperation) {
+  initializeTensorOperation(combigridOperation->getPointHierarchies(),
+                            combigridOperation->getStorage(),
+                            combigridOperation->getLevelManager());
+}
+void PolynomialStochasticCollocation::updateOperation(
+    std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridOperation) {
+  initializeTensorOperation(combigridOperation->getPointHierarchies(),
+                            combigridOperation->getStorage(),
+                            combigridOperation->getLevelManager());
 }
 
 void PolynomialStochasticCollocation::joinMultiIndices(MultiIndex& ix, MultiIndex& jx,

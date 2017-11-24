@@ -8,8 +8,7 @@ import pysgpp
 
 import matplotlib.pyplot as plt
 import numpy as np
-from pysgpp.extensions.datadriven.uq.dists import Uniform
-from pysgpp.extensions.datadriven.uq.dists.Beta import Beta
+from pysgpp.extensions.datadriven.uq.dists import Uniform, Beta, TLognormal
 
 
 def expModel(x, params):
@@ -62,13 +61,29 @@ def buildBoreholeParams(dist_type):
     return parameterBuilder.andGetResult()
 
 
-def generateDistribution(dist_type, xlim):
+def sin2Model(x, params):
+    return np.sin(x ** 2)
+
+
+def buildSin2Params(dist_type):
+    dist = generateDistribution(dist_type, alpha=0.01)
+
+    parameterBuilder = ParameterBuilder()
+    up = parameterBuilder.defineUncertainParameters()
+    up.new().isCalled("x1").withDistribution(dist)
+
+    return parameterBuilder.andGetResult()
+
+
+def generateDistribution(dist_type, xlim=None, alpha=None):
     if dist_type == "uniform":
         return Uniform(xlim[0], xlim[1])
     elif dist_type == "beta":
         return Beta(5, 4, xlim[0], xlim[1] - xlim[0])
+    elif dist_type == "lognormal":
+        return TLognormal.by_alpha(1e-12, np.exp(-1), alpha=alpha)
     else:
-        raise AttributeError("dist type unknown")
+        raise AttributeError("dist type '%s' unknown" % dist_type)
 
 
 def buildModel(name, dist_type):
@@ -81,25 +96,13 @@ def buildModel(name, dist_type):
     elif name == "exp":
         params = buildAtanParams(dist_type)
         model = expModel
+    elif name == "sin2":
+        params = buildSin2Params(dist_type)
+        model = sin2Model
     else:
         raise AttributeError("model unknown")
 
     return model, params
-
-
-def buildOrthogonalPolynomial(dist_type):
-    config = pysgpp.OrthogonalPolynomialBasis1DConfiguration()
-
-    if dist_type == "beta":
-        config.polyParameters.type_ = pysgpp.OrthogonalPolynomialBasisType_JACOBI
-        config.polyParameters.alpha_ = 5
-        config.polyParameters.beta_ = 4
-    elif dist_type == "uniform":
-        config.polyParameters.type_ = pysgpp.OrthogonalPolynomialBasisType_LEGENDRE
-    else:
-        raise AttributeError("dist type is unknown")
-
-    return pysgpp.OrthogonalPolynomialBasis1D(config)
 
 
 def buildSparseGrid(gridType, basisType, degree=5, growthFactor=2, orthogonal_basis=None):
@@ -149,7 +152,8 @@ class RefinementWrapper:
                  growthFactor,
                  levelManagerType,
                  distType,
-                 samples):
+                 samples,
+                 params):
         self.operation = buildSparseGrid(gridType,
                                          basisType,
                                          degree,
@@ -164,12 +168,13 @@ class RefinementWrapper:
         self.levelManagerType = levelManagerType
         self.levelManager = buildLevelManager(levelManagerType)
         if levelManagerType == "variance":
-            self.orthogonal_basis = buildOrthogonalPolynomial(distType)
+            self.orthogonal_basis = params.getUnivariateOrthogonalPolynomials(dtype="orthogonal")[0]
             self.tensor_operation = buildSparseGrid(gridType,
                                                     basisType,
                                                     degree,
                                                     growthFactor,
-                                                    self.orthogonal_basis)
+                                                    orthogonal_basis=self.orthogonal_basis)
+            print self.tensor_operation.getLevelManager()
             self.tensor_operation.getLevelManager().addRegularLevels(1)
             self.tensor_operation.setLevelManager(self.levelManager)
         else:
@@ -235,7 +240,8 @@ if __name__ == "__main__":
                                                args.growthFactor,
                                                levelManagerType,
                                                distType=args.dist,
-                                               samples=x)
+                                               samples=x,
+                                               params=params)
         numGridPoints = np.array([])
         l2errors = np.array([])
         adaptive = levelManagerType != "regular"

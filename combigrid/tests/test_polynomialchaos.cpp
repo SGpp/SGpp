@@ -73,18 +73,16 @@ double eval(sgpp::base::DataVector const& v) {
 }  // namespace parabola
 // ----------------------------------------------------------------------------------
 namespace co2Func {
-double tolerance = 1e-13;
+double tolerance = 1e-12;
 size_t numDims = 1;
 
-double logmean = 1e-12;
+double logmean = std::log(1e-12);
 double stddev = std::exp(-1);
+double mean = 0.894066628227;
+double variance = 0.0102415510639;
 std::vector<double> bounds{3.87672392696e-13, 2.57949758311e-12};
 
-double eval(sgpp::base::DataVector const& v) {
-  double x = (v[0] - co2Func::bounds[0]) / (co2Func::bounds[1] - co2Func::bounds[0]);
-  x = 2 * M_PI * x - M_PI;
-  return std::sin(x);
-}
+double eval(sgpp::base::DataVector const& v) { return std::sin(v[0] * v[0]) + std::cos(2 * v[0]); }
 }  // namespace co2Func
 // ----------------------------------------------------------------------------------
 
@@ -104,14 +102,14 @@ void testPCEIshigami(std::shared_ptr<sgpp::combigrid::CombigridOperation> op,
   // check the sobol indices
   sgpp::base::DataVector sobolIndices;
   pce.getComponentSobolIndices(sobolIndices);
-  for (size_t i = 0; i < sobolIndices.size(); i++) {
+  for (size_t i = 0; i < sobolIndices.getSize(); i++) {
     BOOST_CHECK_SMALL(std::abs(ishigami::sobolIndices[i] - sobolIndices[i]), ishigami::tolerance);
   }
 
   // check the total sobol indices
   sgpp::base::DataVector totalSobolIndices;
   pce.getTotalSobolIndices(totalSobolIndices);
-  for (size_t i = 0; i < totalSobolIndices.size(); i++) {
+  for (size_t i = 0; i < totalSobolIndices.getSize(); i++) {
     BOOST_CHECK_SMALL(std::abs(ishigami::totalSobolIndices[i] - totalSobolIndices[i]),
                       ishigami::tolerance);
   }
@@ -246,24 +244,41 @@ BOOST_AUTO_TEST_CASE(testStochasticCollocation_co2_lognormal) {
   config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::BOUNDED_LOGNORMAL;
   config.polyParameters.logmean_ = co2Func::logmean;
   config.polyParameters.stddev_ = co2Func::stddev;
+  config.polyParameters.lowerBound_ = co2Func::bounds[0];
+  config.polyParameters.upperBound_ = co2Func::bounds[1];
   auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
-
   sgpp::combigrid::MultiFunction func(co2Func::eval);
-  for (size_t level = 1; level < 10; level++) {
-    auto op = sgpp::combigrid::CombigridOperation::createExpL2LejaPolynomialInterpolation(
-        co2Func::numDims, func);
-    op->getLevelManager()->addRegularLevels(level);
 
-    // compute variance of the estimator
-    sgpp::combigrid::PolynomialStochasticCollocation sc(op, functionBasis);
+  auto op = sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
+      co2Func::numDims, func);
+  auto op_levelManager = op->getLevelManager();
 
-    // check the moments
-    std::cout << "---------------------------------------------------------" << std::endl;
-    std::cout << "level = " << level << "; #gp = " << op->getLevelManager()->numGridPoints()
-              << std::endl;
-    std::cout << "  E(u)   = " << sc.mean() << std::endl;
-    std::cout << "  Var(u) = " << sc.variance() << std::endl;
-  }
+  // compute variance of the estimator
+  sgpp::combigrid::PolynomialStochasticCollocation sc(op, functionBasis);
+  auto tensor_levelManager = sc.getCombigridTensorOperation()->getLevelManager();
+
+  size_t level = 7;
+  op_levelManager->addRegularLevels(level);
+  tensor_levelManager->addLevelsFromStructure(op_levelManager->getLevelStructure());
+
+  // check the moments
+  BOOST_CHECK_SMALL(std::abs(co2Func::mean - sc.mean()), co2Func::tolerance);
+  BOOST_CHECK_SMALL(std::abs(co2Func::variance - sc.variance()), co2Func::tolerance);
+
+  auto op2 = sgpp::combigrid::CombigridOperation::createExpL2LejaPolynomialInterpolation(
+      co2Func::numDims, func);
+  auto op2_levelManager = op2->getLevelManager();
+
+  // compute variance of the estimator
+  sc.updateOperation(op2);
+  tensor_levelManager = sc.getCombigridTensorOperation()->getLevelManager();
+
+  op2_levelManager->addRegularLevels(level);
+  tensor_levelManager->addLevelsFromStructure(op2_levelManager->getLevelStructure());
+
+  // check the moments
+  BOOST_CHECK_SMALL(std::abs(co2Func::mean - sc.mean()), co2Func::tolerance);
+  BOOST_CHECK_SMALL(std::abs(co2Func::variance - sc.variance()), co2Func::tolerance);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
