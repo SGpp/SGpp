@@ -6,6 +6,7 @@
 #pragma once
 
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
+#include <sgpp/combigrid/common/GridConversion.hpp>
 #include <sgpp/combigrid/integration/MCIntegrator.hpp>
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
@@ -38,9 +39,9 @@
 #include <iostream>
 #include <vector>
 
-size_t numDimensions = 2;
+size_t numDimensions = 1;
 double f(sgpp::base::DataVector const& v) {
-  return v[0] * v[1] * v[1];
+  return v[0];
   //  return v[0] * sin(v[0] + v[1]) * exp(v[1] * v[2]);
   //  return std::atan(50 * (v[0] - .35));
   //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
@@ -317,4 +318,56 @@ double interpolateVarianceAdaptively(size_t numlevels, size_t degree) {
   // std::endl;
   interpoleval.sub(funceval);
   return interpoleval.l2Norm();
+}
+
+void BSplineGridConversion(size_t degree, size_t level) {
+  // create interpolation Operation
+  sgpp::combigrid::MultiFunction func(f);
+  sgpp::combigrid::EvaluatorConfiguration evalConfig(
+      sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, degree);
+  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
+      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+  sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
+      numDimensions, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(evalConfig));
+  sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =
+      sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
+  bool exploitNesting = false;
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
+      new sgpp::combigrid::AveragingLevelManager());
+  sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
+  auto Operation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
+      pointHierarchies, evaluators, levelManager, gf, exploitNesting, summationStrategyType);
+
+  // evaluate somewhere and thereby create the level structure
+  sgpp::base::DataMatrix params(numDimensions, 1, 0.5);
+  sgpp::base::DataVector result = Operation->evaluate(level, params);
+
+  auto levelStructure = Operation->getLevelManager()->getLevelStructure();
+
+  std::unique_ptr<sgpp::base::Grid> grid;
+  grid.reset(sgpp::base::Grid::createNotAKnotBsplineBoundaryGrid(numDimensions, degree));
+  sgpp::base::GridStorage& gridStorage = grid->getStorage();
+
+  std::cout << gridStorage.getSize() << std::endl;
+  auto funcStorage = Operation->getStorage();
+  sgpp::base::DataVector functionValues;
+  convertCombigridToHierarchicalSparseGrid(levelStructure, gridStorage, funcStorage,
+                                           functionValues);
+  std::cout << gridStorage.getSize() << std::endl;
+  std::cout << functionValues.getSize() << std::endl;
+
+  std::cout << "Function values: " << std::endl;
+  for (auto& f : functionValues) {
+    std::cout << f << std::endl;
+  }
+
+  std::cout << " coordinates" << std::endl;
+  for (auto& s : gridStorage) {
+    sgpp::base::DataVector coordinates;
+    s.first->getStandardCoordinates(coordinates);
+    for (size_t i = 0; i < numDimensions; i++) {
+      std::cout << coordinates[i] << " ";
+    }
+    std::cout << "\n";
+  }
 }

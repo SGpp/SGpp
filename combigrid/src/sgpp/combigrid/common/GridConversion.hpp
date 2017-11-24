@@ -6,6 +6,7 @@
 #pragma once
 
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
+#include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
 
 namespace sgpp {
@@ -32,8 +33,10 @@ std::shared_ptr<TreeStorage<uint8_t>> convertHierarchicalSparseGridToCombigrid(
  * @param levelStructure level structure of anisotropic full grids of combination technique
  * @param storage hash map of sparse grid points
  */
-void convertCombigridToHierarchicalSparseGrid(std::shared_ptr<TreeStorage<uint8_t>> levelStructure,
-                                              base::HashGridStorage& storage);
+void convertCombigridToHierarchicalSparseGrid(
+    std::shared_ptr<TreeStorage<uint8_t>> levelStructure, base::HashGridStorage& storage,
+    std::shared_ptr<AbstractCombigridStorage> const& funcStorage,
+    sgpp::base::DataVector& functionValues);
 
 /**
  * Creates a level structure from all levels that occur in the HashGridStorage.

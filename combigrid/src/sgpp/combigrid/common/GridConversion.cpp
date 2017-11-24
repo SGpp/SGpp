@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/common/GridConversion.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
+#include <sgpp/combigrid/common/GridConversion.hpp>
 
 namespace sgpp {
 namespace combigrid {
@@ -20,14 +20,25 @@ std::shared_ptr<TreeStorage<uint8_t>> convertHierarchicalSparseGridToCombigrid(
   }
 }
 
-void convertCombigridToHierarchicalSparseGrid(std::shared_ptr<TreeStorage<uint8_t>> levelStructure,
-                                              base::HashGridStorage& storage) {
+void convertCombigridToHierarchicalSparseGrid(
+    std::shared_ptr<TreeStorage<uint8_t>> levelStructure, base::HashGridStorage& storage,
+    std::shared_ptr<AbstractCombigridStorage> const& funcStorage,
+    sgpp::base::DataVector& functionValues) {
   size_t d = levelStructure->getNumDimensions();
+
+  functionValues.clear();
 
   auto it = levelStructure->getStoredDataIterator();
   base::HashGridPoint::level_type sglevel;
   base::HashGridPoint::index_type sgindex;
   base::HashGridPoint point(d);
+
+  std::vector<bool> orderingConfiguration;
+  for (size_t dim = 0; dim < d; ++dim) {
+    // ToDo (rehmemk) This must be generalized for arbitrary needsSorted!
+    bool needsSorted = true;
+    orderingConfiguration.push_back(needsSorted);
+  }
 
   while (it->isValid()) {
     MultiIndex currentLevel = it->getMultiIndex();
@@ -40,6 +51,8 @@ void convertCombigridToHierarchicalSparseGrid(std::shared_ptr<TreeStorage<uint8_
     }
     MultiIndexIterator indexIt(multiBounds);
 
+    auto funcIter = funcStorage->getGuidedIterator(currentLevel, indexIt, orderingConfiguration);
+
     while (indexIt.isValid()) {
       MultiIndex index = indexIt.getMultiIndex();
       for (size_t i = 0; i < d; ++i) {
@@ -47,7 +60,7 @@ void convertCombigridToHierarchicalSparseGrid(std::shared_ptr<TreeStorage<uint8_
         sgindex = static_cast<base::HashGridPoint::index_type>(2 * index[i] + 1);
         point.push(i, sglevel, sgindex);
       }
-
+      functionValues.push_back(funcIter->value());
       storage.insert(point);
       indexIt.moveToNext();
     }
