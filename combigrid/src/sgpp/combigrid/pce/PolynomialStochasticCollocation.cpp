@@ -299,6 +299,8 @@ void PolynomialStochasticCollocation::initializeTensorOperation(
   combigridTensorOperation =
       sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
           pointHierarchies, storage, levelManager, legendreBasis);
+
+  numGridPoints = 0;
 }
 
 #ifdef USE_DAKOTA
