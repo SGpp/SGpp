@@ -16,6 +16,10 @@
 #include <algorithm>
 #include <vector>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 namespace sgpp {
 namespace combigrid {
 
@@ -328,11 +332,11 @@ double PolynomialStochasticCollocation::quad(MultiIndex i, MultiIndex j) {
   // Gauss quadrature in each dimension
 
   // performing Gauss-Legendre integration
-  base::DataVector roots;
-  base::DataVector quadratureweights;
   auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
 
   for (size_t idim = 0; idim < i.size(); idim++) {
+    base::DataVector roots;
+    base::DataVector quadratureweights;
     size_t degree_i = i[idim], degree_j = j[idim];
     auto functionBasis = functionBases[idim];
     size_t incrementQuadraturePoints =
@@ -377,11 +381,11 @@ double PolynomialStochasticCollocation::quad(MultiIndex i) {
   // Gauss quadrature in each dimension
 
   // performing Gauss-Legendre integration
-  base::DataVector roots;
-  base::DataVector quadratureweights;
   auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
 
   for (size_t idim = 0; idim < i.size(); idim++) {
+    base::DataVector roots;
+    base::DataVector quadratureweights;
     size_t degree_i = i[idim];
     double vol = trans.vol(idim);
     auto functionBasis = functionBases[idim];
