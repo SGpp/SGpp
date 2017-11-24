@@ -49,7 +49,7 @@ class LinearTransformation {
     }
   }
 
-  double unitToProbabilistic(double x, size_t idim) { return widths[idim] * x - xlower[idim]; }
+  double unitToProbabilistic(double x, size_t idim) { return widths[idim] * x + xlower[idim]; }
 
   double vol() {
     double ans = 1.0;
@@ -60,6 +60,9 @@ class LinearTransformation {
   }
 
   double vol(size_t i) { return widths[i]; }
+
+  double getLowerBound(size_t i) { return xlower[i]; }
+  double getUpperBound(size_t i) { return xlower[i] + widths[i]; }
 
  private:
   sgpp::base::DataVector widths;
@@ -130,6 +133,11 @@ class PolynomialStochasticCollocation {
   double variance();
 
   std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> getCombigridTensorOperation();
+  void updateOperation(std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation);
+  void updateOperation(
+      std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridOperation);
+  void updateOperation(
+      std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridOperation);
 
  private:
   void initializeTensorOperation(
