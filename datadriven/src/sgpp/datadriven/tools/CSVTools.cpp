@@ -26,8 +26,8 @@ Dataset CSVTools::readCSV(const std::string& filename, bool skipFirstLine) {
 
   readCSVSize(filename, numberInstances, dimension);
   if (skipFirstLine && !myfile.eof()){
-	  numberInstances--;
-	  std::getline(myfile, line);
+    numberInstances--;
+    std::getline(myfile, line);
   }
   Dataset dataset(numberInstances, dimension);
   
@@ -51,7 +51,7 @@ void CSVTools::readCSVSize(const std::string& filename,
                              size_t& numberInstances, size_t& dimension) {
   std::string line;
   std::ifstream myfile(filename.c_str());
-  dimension = -1;
+  dimension = 0;
   numberInstances = 0;
 
   if (!myfile.is_open()) {
@@ -61,15 +61,18 @@ void CSVTools::readCSVSize(const std::string& filename,
 
   while (!myfile.eof()) {
     std::getline(myfile, line);
-	if (line.empty())
-		continue;
-	if (dimension == -1)
-		dimension = std::count(line.begin(), line.end(), ',');
-	else if (dimension != std::count(line.begin(), line.end(), ',')) {
-		std::string msg = "columns missing in line " + numberInstances + " in file " + filename;
-		throw sgpp::base::file_exception(msg.c_str());
-	}
-	numberInstances++;
+  if (line.empty())
+    continue;
+  if (dimension == 0)
+    dimension = std::count(line.begin(), line.end(), ',');
+  else if (dimension != std::count(line.begin(), line.end(), ',')) {
+    std::string msg = "Columns missing in line ";
+    msg.append(std::to_string(numberInstances));
+    msg.append(" in file ");
+    msg.append(filename);
+    throw sgpp::base::file_exception(msg.c_str());
+  }
+  numberInstances++;
   }
   myfile.close();
 }

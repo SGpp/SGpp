@@ -24,6 +24,7 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DensitySystemMatrix.hpp"
 %include "datadriven/src/sgpp/datadriven/tools/Dataset.hpp"
+%include "datadriven/src/sgpp/datadriven/tools/CSVTools.hpp"
 %include "datadriven/src/sgpp/datadriven/application/RegularizationConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/ConvergenceMonitor.hpp"
 
