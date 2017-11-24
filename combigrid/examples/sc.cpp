@@ -74,24 +74,18 @@ int main() {
     sgpp::combigrid::Stopwatch stopwatch;
     std::cout << "---------------------------------------------------------" << std::endl;
     std::cout << "add regular levels " << q << " to interpolation operation" << std::endl;
-    stopwatch.start();
     op_levelManager->addRegularLevels(q);
-    stopwatch.log();
     std::cout << "---------------------------------------------------------" << std::endl;
     std::cout << "add regular levels " << q << " to tensor operation" << std::endl;
-    stopwatch.start();
     tensor_levelManager->addRegularLevels(q);
-    stopwatch.log();
-    std::cout << "#gp = " << op_levelManager->numGridPoints() << std::endl;
     // compute the variance
     std::cout << "---------------------------------------------------------" << std::endl;
     std::cout << "compute mean and variance of stochastic collocation" << std::endl;
+    std::cout << "#gp = " << op_levelManager->numGridPoints() << std::endl;
     stopwatch.start();
     double mean = sc.mean();
     double variance = sc.variance();
     stopwatch.log();
-    std::cout << "---------------------------------------------------------" << std::endl;
-    std::cout << "#gp = " << op_levelManager->numGridPoints() << std::endl;
     std::cout << "|mu - E(u)|        = " << std::abs(3.5 - mean) << std::endl;
     std::cout << "|sigma^2 - Var(u)| = " << std::abs(f_variance() - variance) << std::endl;
   }
