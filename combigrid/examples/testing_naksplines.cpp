@@ -77,34 +77,34 @@ int main() {
   double max_err = 0;
   sgpp::quadrature::NaiveSampleGenerator generator(dim);
   sgpp::base::DataVector p(dim);
-  std::string plotstr_val = "/home/rehmemk/SGS_Sync/Plotting/nakBsplines/interpol_values.dat";
-  std::ofstream plotfile_val;
-  remove(plotstr_val.c_str());
-  plotfile_val.open(plotstr_val.c_str(), std::ios::app);
-  plotfile_val << "#Point     u       f       |u-f|\n";
+  //  std::string plotstr_val = "/home/rehmemk/SGS_Sync/Plotting/nakBsplines/interpol_values.dat";
+  //  std::ofstream plotfile_val;
+  //  remove(plotstr_val.c_str());
+  //  plotfile_val.open(plotstr_val.c_str(), std::ios::app);
+  //  plotfile_val << "#Point     u       f       |u-f|\n";
   for (size_t i = 0; i < numMCpoints; i++) {
     generator.getSample(p);
     diff = fabs(u.eval(p) - f(p, dim));
     max_err = (diff > max_err) ? diff : max_err;
     for (size_t j = 0; j < dim; j++) {
-      plotfile_val << p[j] << ",  ";
+      //      plotfile_val << p[j] << ",  ";
     }
-    plotfile_val << u.eval(p) << ",  " << f(p, dim) << ",  " << diff << "\n";
+    //    plotfile_val << u.eval(p) << ",  " << f(p, dim) << ",  " << diff << "\n";
   }
-  plotfile_val.close();
+  //  plotfile_val.close();
   std::cout << "max error: " << max_err << std::endl;
 
   // Plot basis
-  std::string plotstr = "/home/rehmemk/SGS_Sync/Plotting/nakBsplines/base_eval.dat";
-  remove(plotstr.c_str());
-  std::ofstream plotfile;
-  plotfile.open(plotstr.c_str(), std::ios::app);
-
-  sgpp::base::SNotAKnotBsplineBoundaryBase myBasis(3);
-  for (double p = 0; p < 1; p = p + 0.005) {
-    plotfile << p << "   " << myBasis.eval(3, 7, p) << "\n";
-  }
-  plotfile.close();
+  //  std::string plotstr = "/home/rehmemk/SGS_Sync/Plotting/nakBsplines/base_eval.dat";
+  //  remove(plotstr.c_str());
+  //  std::ofstream plotfile;
+  //  plotfile.open(plotstr.c_str(), std::ios::app);
+  //
+  //  sgpp::base::SNotAKnotBsplineBoundaryBase myBasis(3);
+  //  for (double p = 0; p < 1; p = p + 0.005) {
+  //    plotfile << p << "   " << myBasis.eval(3, 7, p) << "\n";
+  //  }
+  //  plotfile.close();
 
   return 0;
 }

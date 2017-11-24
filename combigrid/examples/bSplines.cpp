@@ -8,7 +8,7 @@
 int main() {
   //  size_t numDimensions = 2;
   size_t degree = 3;
-  size_t level = 15;
+  size_t level = 2;
   //  sgpp::combigrid::MultiIndex oneLevel = {2, 2};
 
   // Interpolation
@@ -45,8 +45,9 @@ int main() {
   //  double var = variance(level, numDimensions, degree);
   //  std::cout << var << std::endl;
 
-  double res = interpolateVarianceAdaptively(level, degree);
-  std::cout << res << std::endl;
+  //  double res = interpolateVarianceAdaptively(level, degree);
+  //  std::cout << res << std::endl;
 
+  BSplineGridConversion(degree, level);
   return 0;
 }
