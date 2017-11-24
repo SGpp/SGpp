@@ -40,7 +40,7 @@
 
 size_t numDimensions = 2;
 double f(sgpp::base::DataVector const& v) {
-  return v[0] * v[1];
+  return v[0] * v[1] * v[1];
   //  return v[0] * sin(v[0] + v[1]) * exp(v[1] * v[2]);
   //  return std::atan(50 * (v[0] - .35));
   //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
