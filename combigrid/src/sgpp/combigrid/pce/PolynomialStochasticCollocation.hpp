@@ -13,7 +13,7 @@
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 
-#include <unordered_map>
+#include <map>
 #include <vector>
 
 namespace sgpp {
@@ -168,7 +168,7 @@ class PolynomialStochasticCollocation {
   sgpp::combigrid::FloatTensorVector expansionCoefficients;
 
   // lookup table for inner products
-  std::unordered_map<MultiIndex, double> innerProducts;
+  std::map<MultiIndex, double> innerProducts;
 };
 
 } /* namespace combigrid */
