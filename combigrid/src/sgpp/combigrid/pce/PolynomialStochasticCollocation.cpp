@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <cmath>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -366,9 +367,9 @@ double PolynomialStochasticCollocation::quad(MultiIndex i, MultiIndex j) {
 
       sum_idim *= trans.vol(idim);
       if (iteration > 0) {
-        err = std::abs(sum_idim_old - sum_idim);
-        //        if (std::abs(sum_idim) > 1e-14) {
-        //          err /= std::abs(sum_idim);
+        err = std::fabs(sum_idim_old - sum_idim);
+        //        if (std::fabs(sum_idim) > 1e-14) {
+        //          err /= std::fabs(sum_idim);
         //        }
       }
 
@@ -415,9 +416,9 @@ double PolynomialStochasticCollocation::quad(MultiIndex i) {
       sum_idim *= trans.vol();
 
       if (iteration > 0) {
-        err = std::abs(sum_idim_old - sum_idim);
-        //        if (std::abs(sum_idim) > 1e-14) {
-        //          err /= std::abs(sum_idim);
+        err = std::fabs(sum_idim_old - sum_idim);
+        //        if (std::fabs(sum_idim) > 1e-14) {
+        //          err /= std::fabs(sum_idim);
         //        }
       }
       sum_idim_old = sum_idim;
