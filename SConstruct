@@ -547,7 +547,12 @@ for module in moduleFolders:
 #########################################################################
 
 finalMessagePrinter.sgppBuildPath = BUILD_DIR.abspath
-finalMessagePrinter.pysgppPackagePath = PYSGPP_PACKAGE_PATH.abspath
+
+if env["USE_PYTHON3_FOR_PYSGPP"]:
+  finalMessagePrinter.pysgppPackagePath = (
+      PYSGPP_PACKAGE_PATH.abspath + ":" + PYSGPP_BUILD_PATH.abspath)
+else:
+  finalMessagePrinter.pysgppPackagePath = PYSGPP_PACKAGE_PATH.abspath
 
 if env.GetOption("help"):
   finalMessagePrinter.disable()
