@@ -68,7 +68,7 @@ int main() {
   auto op =
       sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(d, func);
   auto op_levelManager = op->getLevelManager();
-  sgpp::combigrid::PolynomialStochasticCollocation sc(op, functionBasis);
+  sgpp::combigrid::PolynomialStochasticCollocation sc(op, functionBasis, bounds);
   auto tensor_levelManager = sc.getCombigridTensorOperation()->getLevelManager();
   for (size_t q = 0; q < 8; ++q) {
     sgpp::combigrid::Stopwatch stopwatch;
