@@ -4,6 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
+
 #include <limits>
 #include <cmath>
 #include <vector>
@@ -67,7 +68,7 @@ void PolynomialInterpolationEvaluator::computeBasisValues() {
     double diff = evaluationPoint - xValues[i];
 
     // very near to a interpolation value, must not divide by zero
-    if (std::abs(diff) < minDeviation) {
+    if (std::fabs(diff) < minDeviation) {
       for (size_t j = 0; j < numPoints; ++j) {
         basisValues[j] = (i == j) ? 1.0 : 0.0;
       }

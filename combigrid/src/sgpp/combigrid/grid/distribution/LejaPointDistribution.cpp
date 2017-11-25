@@ -40,7 +40,7 @@ void LejaPointDistribution::calc_leja_points(std::vector<double>& sortedPoints,
     std::function<double(double)> leja_func = [sortedPoints, weight_func](double x) {
       double prod = 1;
       for (size_t i = 0; i < sortedPoints.size(); ++i) {
-        prod *= std::abs(x - sortedPoints.at(i));
+        prod *= std::fabs(x - sortedPoints.at(i));
       }
       return -prod * weight_func(x);
     };
@@ -57,7 +57,7 @@ void LejaPointDistribution::calc_leja_points(std::vector<double>& sortedPoints,
       double y_val = 0.0;
 
       // optimize the remainder polynomial if the current patch is wide enough
-      if (std::abs(x_lower - x_upper) > 1e-10) {
+      if (std::fabs(x_lower - x_upper) > 1e-10) {
         auto myLejaFunc = SingleFunction(leja_func);
         auto result = MixedOptimizer(myLejaFunc)
                           .minimize(OptimizationGuess::initial(x_lower, x_upper, myLejaFunc));
