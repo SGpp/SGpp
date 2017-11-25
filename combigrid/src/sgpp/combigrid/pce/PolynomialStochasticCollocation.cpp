@@ -489,8 +489,9 @@ double PolynomialStochasticCollocation::variance() {
         MultiIndex kx;
         joinMultiIndices(ix, jx, kx);
         double innerProduct = 0.0;
-        if (innerProducts.find(kx) != innerProducts.end()) {
-          innerProduct = innerProducts[kx];
+        auto it_value = innerProducts.find(kx);
+        if (it_value != innerProducts.end()) {
+          innerProduct = it_value->second;
         } else {
           innerProduct = quad(ix, jx);
           innerProducts[kx] = innerProduct;
