@@ -228,6 +228,7 @@ if __name__ == "__main__":
     results = {}
     for gridType, levelManagerType, basisType in [
             ("ClenshawCurtis", "variance", "poly"),
+            ("ClenshawCurtis", "averaging", "poly"),
             ("UniformBoundary", "averaging", "bspline"),
             ("UniformBoundary", "regular", "bspline"),
             ("L2Leja", "variance", "poly"),
