@@ -95,6 +95,11 @@ void createdeg3NakKnots(std::vector<double> const& xValues, size_t const& degree
 
   xi.erase(xi.begin() + offset + 2);
   xi.erase(xi.end() - offset - 3);
+  //  std::cout << "Routines Xi:" << std::endl;
+  //  for (auto& x : xi) {
+  //    std::cout << x << " ";
+  //  }
+  //  std::cout << "\n";
 }
 
 /**

@@ -54,6 +54,7 @@ class FullGridGridBasedEvaluator : public AbstractFullGridEvaluationStrategy<V> 
 
     while (storageIt->isValid()) {
       storageIt->value() = results->get(multiIt.getMultiIndex());
+      //      std::cout << "FullGridGrid " << storageIt->value() << std::endl;
       storageIt->moveToNext();
     }
   }

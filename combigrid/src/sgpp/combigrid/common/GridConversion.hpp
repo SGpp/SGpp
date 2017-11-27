@@ -36,7 +36,7 @@ std::shared_ptr<TreeStorage<uint8_t>> convertHierarchicalSparseGridToCombigrid(
 void convertCombigridToHierarchicalSparseGrid(
     std::shared_ptr<TreeStorage<uint8_t>> levelStructure, base::HashGridStorage& storage,
     std::shared_ptr<AbstractCombigridStorage> const& funcStorage,
-    sgpp::base::DataVector& functionValues);
+    sgpp::base::DataVector& functionValues, std::vector<bool> orderingConfiguration);
 
 /**
  * Creates a level structure from all levels that occur in the HashGridStorage.

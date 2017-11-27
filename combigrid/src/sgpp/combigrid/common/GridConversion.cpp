@@ -23,7 +23,7 @@ std::shared_ptr<TreeStorage<uint8_t>> convertHierarchicalSparseGridToCombigrid(
 void convertCombigridToHierarchicalSparseGrid(
     std::shared_ptr<TreeStorage<uint8_t>> levelStructure, base::HashGridStorage& storage,
     std::shared_ptr<AbstractCombigridStorage> const& funcStorage,
-    sgpp::base::DataVector& functionValues) {
+    sgpp::base::DataVector& functionValues, std::vector<bool> orderingConfiguration) {
   size_t d = levelStructure->getNumDimensions();
 
   functionValues.clear();
@@ -32,13 +32,6 @@ void convertCombigridToHierarchicalSparseGrid(
   base::HashGridPoint::level_type sglevel;
   base::HashGridPoint::index_type sgindex;
   base::HashGridPoint point(d);
-
-  std::vector<bool> orderingConfiguration;
-  for (size_t dim = 0; dim < d; ++dim) {
-    // ToDo (rehmemk) This must be generalized for arbitrary needsSorted!
-    bool needsSorted = true;
-    orderingConfiguration.push_back(needsSorted);
-  }
 
   while (it->isValid()) {
     MultiIndex currentLevel = it->getMultiIndex();
