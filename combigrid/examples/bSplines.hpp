@@ -41,7 +41,8 @@
 
 size_t numDimensions = 1;
 double f(sgpp::base::DataVector const& v) {
-  return v[0];
+  std::cout << v[0] << " " << v[0] * v[0] << std::endl;
+  return v[0] * v[0];
   //  return v[0] * sin(v[0] + v[1]) * exp(v[1] * v[2]);
   //  return std::atan(50 * (v[0] - .35));
   //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
@@ -249,11 +250,22 @@ double integrateOneLevel(sgpp::combigrid::MultiIndex level, size_t degree) {
   return res;
 }
 
-double interpolateVarianceAdaptively(size_t numlevels, size_t degree) {
+void printLevelstructure(std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> levelstructure) {
+  auto it = levelstructure->getStoredDataIterator();
+  while (it->isValid()) {
+    sgpp::combigrid::MultiIndex index = it->getMultiIndex();
+    for (auto& i : index) {
+      std::cout << i << " ";
+    }
+    std::cout << "\n";
+    it->moveToNext();
+  }
+}
+
+std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> createVarianceLevelStructure(
+    size_t numlevels, size_t degree, sgpp::combigrid::CombiHierarchies::Collection pointHierarchies,
+    sgpp::combigrid::GridFunction gf, bool exploitNesting) {
   // create auxiliary Operation creating a variance adaptive level structure
-  sgpp::combigrid::MultiFunction func(f);
-  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
-      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
 
   sgpp::combigrid::EvaluatorConfiguration auxiliaryEvalConfig(
       sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineScalarProduct, degree);
@@ -263,8 +275,7 @@ double interpolateVarianceAdaptively(size_t numlevels, size_t degree) {
       sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(auxiliaryEvalConfig));
   std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
       new sgpp::combigrid::AveragingLevelManager());
-  sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
-  bool exploitNesting = false;
+
   sgpp::combigrid::FullGridSummationStrategyType auxiliarySummationStrategyType =
       sgpp::combigrid::FullGridSummationStrategyType::VARIANCE;
   auto auxiliaryOperation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
@@ -274,27 +285,34 @@ double interpolateVarianceAdaptively(size_t numlevels, size_t degree) {
   // create level structure
   auxiliaryOperation->getLevelManager()->addLevelsAdaptiveByNumLevels(numlevels);
   auto levelStructure = auxiliaryOperation->getLevelManager()->getLevelStructure();
+  return levelStructure;
+}
 
-  auto levelStructureIterator = levelStructure->getStoredDataIterator();
-  while (levelStructureIterator->isValid()) {
-    sgpp::combigrid::MultiIndex level = levelStructureIterator->getMultiIndex();
-    for (auto& l : level) {
-      std::cout << l << " ";
-    }
-    std::cout << "| ";
-    levelStructureIterator->moveToNext();
-  }
-  std::cout << "\n";
+double interpolateVarianceAdaptively(size_t numlevels, size_t degree) {
+  sgpp::combigrid::MultiFunction func(f);
+  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
+      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+  bool exploitNesting = false;
+  sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
 
-  // create real interpolation Operation
+  auto levelStructure =
+      createVarianceLevelStructure(numlevels, degree, pointHierarchies, gf, exploitNesting);
+  printLevelstructure(levelStructure);
+
+  // create interpolation Operation
   sgpp::combigrid::EvaluatorConfiguration evalConfig(
       sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, degree);
   sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
       numDimensions, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(evalConfig));
   sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =
       sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
+  // ToDo (rehmemk) is this really dummy or used somewhere? Should not be used because
+  // levelStructure is already given
+  std::shared_ptr<sgpp::combigrid::LevelManager> dummylevelManager(
+      new sgpp::combigrid::AveragingLevelManager());
+
   auto Operation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
-      pointHierarchies, evaluators, levelManager, gf, exploitNesting, summationStrategyType);
+      pointHierarchies, evaluators, dummylevelManager, gf, exploitNesting, summationStrategyType);
 
   // calculate error
   size_t num_MCpoints = 1000;
@@ -333,41 +351,84 @@ void BSplineGridConversion(size_t degree, size_t level) {
       sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
   bool exploitNesting = false;
   std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
-      new sgpp::combigrid::AveragingLevelManager());
+      new sgpp::combigrid::RegularLevelManager());
   sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
   auto Operation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
       pointHierarchies, evaluators, levelManager, gf, exploitNesting, summationStrategyType);
 
   // evaluate somewhere and thereby create the level structure
-  sgpp::base::DataMatrix params(numDimensions, 1, 0.5);
+  sgpp::base::DataMatrix params(numDimensions, 1, 0.777);
+  params.appendCol(sgpp::base::DataVector{1, 0.8});
   sgpp::base::DataVector result = Operation->evaluate(level, params);
 
+  //  for (auto& r : result) {
+  //    std::cout << r << " ";
+  //  }
+  //  std::cout << "\n";
+
   auto levelStructure = Operation->getLevelManager()->getLevelStructure();
-
-  std::unique_ptr<sgpp::base::Grid> grid;
-  grid.reset(sgpp::base::Grid::createNotAKnotBsplineBoundaryGrid(numDimensions, degree));
-  sgpp::base::GridStorage& gridStorage = grid->getStorage();
-
-  std::cout << gridStorage.getSize() << std::endl;
   auto funcStorage = Operation->getStorage();
-  sgpp::base::DataVector functionValues;
-  convertCombigridToHierarchicalSparseGrid(levelStructure, gridStorage, funcStorage,
-                                           functionValues);
-  std::cout << gridStorage.getSize() << std::endl;
-  std::cout << functionValues.getSize() << std::endl;
-
-  std::cout << "Function values: " << std::endl;
-  for (auto& f : functionValues) {
-    std::cout << f << std::endl;
+  pointHierarchies = Operation->getPointHierarchies();
+  std::vector<bool> orderingConfiguration;
+  for (size_t d = 0; d < numDimensions; ++d) {
+    bool needsSorted = evaluators[d]->needsOrderedPoints();
+    orderingConfiguration.push_back(needsSorted);
   }
 
-  std::cout << " coordinates" << std::endl;
-  for (auto& s : gridStorage) {
-    sgpp::base::DataVector coordinates;
-    s.first->getStandardCoordinates(coordinates);
-    for (size_t i = 0; i < numDimensions; i++) {
-      std::cout << coordinates[i] << " ";
+  //  std::cout << "level structure " << std::endl;
+  //  printLevelstructure(levelStructure);
+
+  auto levelIterator = levelStructure->getStoredDataIterator();
+  while (levelIterator->isValid()) {
+    sgpp::combigrid::MultiIndex currentLevel = levelIterator->getMultiIndex();
+    std::cout << "Level ";
+    for (size_t d = 0; d < numDimensions; ++d) {
+      std::cout << currentLevel[d] << " ";
     }
     std::cout << "\n";
+
+    sgpp::combigrid::MultiIndex multiBounds(numDimensions);
+
+    for (size_t d = 0; d < numDimensions; ++d) {
+      multiBounds[d] = pointHierarchies[d]->getNumPoints(currentLevel[d]);
+      std::cout << "multiBounds in dim " << d << ": " << multiBounds[d] << std::endl;
+
+      sgpp::combigrid::MultiIndexIterator innerIter(multiBounds);
+      auto funcIter =
+          funcStorage->getGuidedIterator(currentLevel, innerIter, orderingConfiguration);
+      while (funcIter->isValid()) {
+        std::cout << funcIter->value() << " ";
+        funcIter->moveToNext();
+      }
+      std::cout << "\n";
+    }
+    levelIterator->moveToNext();
   }
+
+  //  std::unique_ptr<sgpp::base::Grid> grid;
+  //  grid.reset(sgpp::base::Grid::createNotAKnotBsplineBoundaryGrid(numDimensions, degree));
+  //  sgpp::base::GridStorage& gridStorage = grid->getStorage();
+  //
+  //  sgpp::base::DataVector functionValues;
+  //
+  //  convertCombigridToHierarchicalSparseGrid(levelStructure, gridStorage, funcStorage,
+  //  functionValues,
+  //                                           orderingConfiguration);
+  //
+  //  //  std::cout << "Function values: " << std::endl;
+  //  for (auto& f : functionValues) {
+  //    //    std::cout << f << " ";
+  //  }
+  //  //  std::cout << "\n";
+  //
+  //  //  std::cout << "Coordinates" << std::endl;
+  //  for (auto& s : gridStorage) {
+  //    sgpp::base::DataVector coordinates;
+  //    s.first->getStandardCoordinates(coordinates);
+  //    for (size_t i = 0; i < numDimensions; i++) {
+  //      //      std::cout << coordinates[i] << " ";
+  //    }
+  //    //    std::cout<<"\n";
+  //  }
+  //  //  std::cout << "\n";
 }
