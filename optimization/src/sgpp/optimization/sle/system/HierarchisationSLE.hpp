@@ -38,6 +38,7 @@
 #include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
+#include <sgpp/base/grid/type/FundamentalSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LagrangeNotAKnotSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LagrangeSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
@@ -108,6 +109,11 @@ class HierarchisationSLE : public CloneableSLE {
       fundamentalSplineBasis =
           std::unique_ptr<base::SFundamentalSplineBase>(new base::SFundamentalSplineBase(
               dynamic_cast<base::FundamentalSplineGrid&>(grid).getDegree()));
+      basisType = FUNDAMENTAL_SPLINE;
+    } else if (grid.getType() == base::GridType::FundamentalSplineBoundary) {
+      fundamentalSplineBasis =
+          std::unique_ptr<base::SFundamentalSplineBase>(new base::SFundamentalSplineBase(
+              dynamic_cast<base::FundamentalSplineBoundaryGrid&>(grid).getDegree()));
       basisType = FUNDAMENTAL_SPLINE;
     } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
       modFundamentalSplineBasis = std::unique_ptr<base::SFundamentalSplineModifiedBase>(

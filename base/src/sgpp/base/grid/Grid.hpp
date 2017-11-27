@@ -56,6 +56,7 @@ enum class GridType {
   LagrangeSplineBoundary,           // 29
   LagrangeNotAKnotSplineBoundary,   // 30
   ModLagrangeNotAKnotSpline,        // 31
+  FundamentalSplineBoundary,        // 32
 };
 
 /**
@@ -288,6 +289,22 @@ class Grid {
    * @return grid
    */
   static Grid* createFundamentalSplineGrid(size_t dim, size_t degree);
+
+  /**
+   * creates a fundamental spline grid
+   *
+   * @param dim the grid's dimension
+   * @param degree the B-spline degree
+   * @param boundaryLevel on which level the boundary grid points and
+   *                      basis functions should be added;
+   *                      the default is 1, which results in a grid with
+   *                      the same resolution on the boundary as on the
+   *                      main axis
+   *
+   * @return grid
+   */
+   static Grid* createFundamentalSplineBoundaryGrid(
+       size_t dim, size_t degree, level_t boundaryLevel = 1);
 
   /**
    * creates a mod-fundamental spline grid

@@ -27,6 +27,7 @@
 %newobject sgpp::base::Grid::createModBsplineGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createModBsplineClenshawCurtisGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createFundamentalSplineGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createFundamentalSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createModFundamentalSlineGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createLinearTruncatedBoundaryGrid(size_t dim);
 %newobject sgpp::base::Grid::createSquareRootGrid(size_t dim);
@@ -109,6 +110,7 @@ enum class GridType {
   LagrangeSplineBoundary,           // 29
   LagrangeNotAKnotSplineBoundary,   // 30
   ModLagrangeNotAKnotSpline,        // 31
+  FundamentalSplineBoundary,        // 32
 };
 
 class Grid
@@ -134,6 +136,7 @@ public:
   static Grid* createModBsplineGrid(size_t dim, size_t degree);
   static Grid* createModBsplineClenshawCurtisGrid(size_t dim, size_t degree);
   static Grid* createFundamentalSplineGrid(size_t dim, size_t degree);
+  static Grid* createFundamentalSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
   static Grid* createModFundamentalSplineGrid(size_t dim, size_t degree);
   static Grid* createSquareRootGrid(size_t dim);
   static Grid* createLinearTruncatedBoundaryGrid(size_t dim);

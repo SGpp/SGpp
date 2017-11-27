@@ -3,36 +3,38 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERFUNDAMENTALSPLINE_HPP
-#define SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERFUNDAMENTALSPLINE_HPP
+#ifndef SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERFUNDAMENTALSPLINEBOUNDARY_HPP
+#define SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERFUNDAMENTALSPLINEBOUNDARY_HPP
 
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisation.hpp>
-#include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
+#include <sgpp/base/grid/type/FundamentalSplineBoundaryGrid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/operation/hash/OperationHierarchisationFundamentalSpline.hpp>
+#include <sgpp/base/operation/hash/OperationHierarchisationFundamentalSplineBoundary.hpp>
 
 namespace sgpp {
 namespace optimization {
 
 /**
  * Hierarchisation operation for fundamental spline basis functions on
- * Noboundary grids.
+ * Boundary grids.
  */
-class OperationMultipleHierarchisationFundamentalSpline : public OperationMultipleHierarchisation {
+class OperationMultipleHierarchisationFundamentalSplineBoundary :
+    public OperationMultipleHierarchisation {
  public:
   /**
    * Constructor.
    *
    * @param grid      grid
    */
-  explicit OperationMultipleHierarchisationFundamentalSpline(base::FundamentalSplineGrid& grid);
+  explicit OperationMultipleHierarchisationFundamentalSplineBoundary(
+      base::FundamentalSplineBoundaryGrid& grid);
 
   /**
    * Destructor.
    */
-  ~OperationMultipleHierarchisationFundamentalSpline() override;
+  ~OperationMultipleHierarchisationFundamentalSplineBoundary() override;
 
   /**
    * @param[in,out] nodeValues before: vector of function values at
@@ -66,11 +68,11 @@ class OperationMultipleHierarchisationFundamentalSpline : public OperationMultip
 
  protected:
   /// storage of the sparse grid
-  base::FundamentalSplineGrid& grid;
+  base::FundamentalSplineBoundaryGrid& grid;
   /// hierarchization operation
-  base::OperationHierarchisationFundamentalSpline op;
+  base::OperationHierarchisationFundamentalSplineBoundary op;
 };
 }  // namespace optimization
 }  // namespace sgpp
 
-#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERFUNDAMENTALSPLINE_HPP */
+#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERFUNDAMENTALSPLINEBOUNDARY_HPP */

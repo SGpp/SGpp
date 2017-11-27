@@ -23,6 +23,7 @@
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
+#include <sgpp/base/grid/type/FundamentalSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/WaveletGrid.hpp>
 #include <sgpp/base/grid/type/WaveletBoundaryGrid.hpp>
@@ -135,6 +136,10 @@ Grid* Grid::createFundamentalSplineGrid(size_t dim, size_t degree) {
   return new FundamentalSplineGrid(dim, degree);
 }
 
+Grid* Grid::createFundamentalSplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel) {
+  return new FundamentalSplineBoundaryGrid(dim, degree, boundaryLevel);
+}
+
 Grid* Grid::createModFundamentalSplineGrid(size_t dim, size_t degree) {
   return new ModFundamentalSplineGrid(dim, degree);
 }
@@ -234,6 +239,9 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
         return Grid::createWaveletBoundaryGrid(gridConfig.dim_);
       case GridType::FundamentalSpline:
         return Grid::createFundamentalSplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      case GridType::FundamentalSplineBoundary:
+        return Grid::createFundamentalSplineBoundaryGrid(gridConfig.dim_, gridConfig.maxDegree_,
+                                                         gridConfig.boundaryLevel_);
       case GridType::ModFundamentalSpline:
         return Grid::createModFundamentalSplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::ModBsplineClenshawCurtis:
@@ -344,6 +352,10 @@ Grid* Grid::clone() {
     case GridType::FundamentalSpline:
       degree = dynamic_cast<FundamentalSplineGrid*>(this)->getDegree();
       newGrid = Grid::createFundamentalSplineGrid(numDims, degree);
+      break;
+    case GridType::FundamentalSplineBoundary:
+      degree = dynamic_cast<FundamentalSplineBoundaryGrid*>(this)->getDegree();
+      newGrid = Grid::createFundamentalSplineBoundaryGrid(numDims, degree);
       break;
     case GridType::ModFundamentalSpline:
       degree = dynamic_cast<ModFundamentalSplineGrid*>(this)->getDegree();
@@ -471,6 +483,8 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
     tMap->insert(std::pair<std::string, Grid::Factory>("modBspline", ModBsplineGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("fundamentalSpline",
                                                        FundamentalSplineGrid::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>("fundamentalSplineBoundary",
+                                                       FundamentalSplineBoundaryGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("modFundamentalSpline",
                                                        ModFundamentalSplineGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("modBsplineClenshawCurtis",
@@ -514,6 +528,8 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
     tMap->insert(std::make_pair("bsplineClenshawCurtis", BsplineClenshawCurtisGrid::unserialize));
     tMap->insert(std::make_pair("modBspline", ModBsplineGrid::unserialize));
     tMap->insert(std::make_pair("fundamentalSpline", FundamentalSplineGrid::unserialize));
+    tMap->insert(std::make_pair("fundamentalSplineBoundary",
+                                FundamentalSplineBoundaryGrid::unserialize));
     tMap->insert(std::make_pair("modFundamentalSpline", ModFundamentalSplineGrid::unserialize));
     tMap->insert(
         std::make_pair("modBsplineClenshawCurtis", ModBsplineClenshawCurtisGrid::unserialize));
@@ -583,6 +599,8 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
         std::pair<sgpp::base::GridType, std::string>(GridType::ModBspline, "modBspline"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::FundamentalSpline,
                                                                     "fundamentalSpline"));
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
+        GridType::FundamentalSplineBoundary, "fundamentalSplineBoundary"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::ModFundamentalSpline,
                                                                     "modFundamentalSpline"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
@@ -627,6 +645,8 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
     verboseMap->insert(std::make_pair(GridType::BsplineClenshawCurtis, "bsplineClenshawCurtis"));
     verboseMap->insert(std::make_pair(GridType::ModBspline, "modBspline"));
     verboseMap->insert(std::make_pair(GridType::FundamentalSpline, "fundamentalSpline"));
+    verboseMap->insert(
+        std::make_pair(GridType::FundamentalSplineBoundary, "fundamentalSplineBoundary"));
     verboseMap->insert(std::make_pair(GridType::ModFundamentalSpline, "modFundamentalSpline"));
     verboseMap->insert(
         std::make_pair(GridType::ModBsplineClenshawCurtis, "modBsplineClenshawCurtis"));

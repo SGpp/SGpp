@@ -10,6 +10,7 @@
 #include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
+#include <sgpp/base/grid/type/FundamentalSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/LagrangeNotAKnotSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LagrangeSplineBoundaryGrid.hpp>
@@ -26,6 +27,7 @@
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
 
 #include <sgpp/base/operation/hash/OperationHierarchisationFundamentalSpline.hpp>
+#include <sgpp/base/operation/hash/OperationHierarchisationFundamentalSplineBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationLinear.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationLinearBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationLinearStretched.hpp>
@@ -184,6 +186,9 @@ base::OperationHierarchisation* createOperationHierarchisation(base::Grid& grid)
   } else if (grid.getType() == base::GridType::FundamentalSpline) {
     return new base::OperationHierarchisationFundamentalSpline(
         dynamic_cast<base::FundamentalSplineGrid*>(&grid));
+  } else if (grid.getType() == base::GridType::FundamentalSplineBoundary) {
+    return new base::OperationHierarchisationFundamentalSplineBoundary(
+        dynamic_cast<base::FundamentalSplineBoundaryGrid*>(&grid));
   } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
     return new base::OperationHierarchisationModFundamentalSpline(
         dynamic_cast<base::ModFundamentalSplineGrid*>(&grid));
@@ -340,6 +345,9 @@ base::OperationEval* createOperationEvalNaive(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::FundamentalSpline) {
     return new base::OperationEvalFundamentalSplineNaive(
         grid.getStorage(), dynamic_cast<base::FundamentalSplineGrid&>(grid).getDegree());
+  } else if (grid.getType() == base::GridType::FundamentalSplineBoundary) {
+    return new base::OperationEvalFundamentalSplineNaive(
+        grid.getStorage(), dynamic_cast<base::FundamentalSplineBoundaryGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
     return new base::OperationEvalModFundamentalSplineNaive(
         grid.getStorage(), dynamic_cast<base::ModFundamentalSplineGrid&>(grid).getDegree());
@@ -403,6 +411,9 @@ base::OperationEvalGradient* createOperationEvalGradientNaive(base::Grid& grid) 
   } else if (grid.getType() == base::GridType::FundamentalSpline) {
     return new base::OperationEvalGradientFundamentalSplineNaive(
         grid.getStorage(), dynamic_cast<base::FundamentalSplineGrid&>(grid).getDegree());
+  } else if (grid.getType() == base::GridType::FundamentalSplineBoundary) {
+    return new base::OperationEvalGradientFundamentalSplineNaive(
+        grid.getStorage(), dynamic_cast<base::FundamentalSplineBoundaryGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
     return new base::OperationEvalGradientModFundamentalSplineNaive(
         grid.getStorage(), dynamic_cast<base::ModFundamentalSplineGrid&>(grid).getDegree());
@@ -447,6 +458,9 @@ base::OperationEvalHessian* createOperationEvalHessianNaive(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::FundamentalSpline) {
     return new base::OperationEvalHessianFundamentalSplineNaive(
         grid.getStorage(), dynamic_cast<base::FundamentalSplineGrid&>(grid).getDegree());
+  } else if (grid.getType() == base::GridType::FundamentalSplineBoundary) {
+    return new base::OperationEvalHessianFundamentalSplineNaive(
+        grid.getStorage(), dynamic_cast<base::FundamentalSplineBoundaryGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
     return new base::OperationEvalHessianModFundamentalSplineNaive(
         grid.getStorage(), dynamic_cast<base::ModFundamentalSplineGrid&>(grid).getDegree());
@@ -492,6 +506,9 @@ base::OperationEvalPartialDerivative* createOperationEvalPartialDerivativeNaive(
   } else if (grid.getType() == base::GridType::FundamentalSpline) {
     return new base::OperationEvalPartialDerivativeFundamentalSplineNaive(
         grid.getStorage(), dynamic_cast<base::FundamentalSplineGrid&>(grid).getDegree());
+  } else if (grid.getType() == base::GridType::FundamentalSplineBoundary) {
+    return new base::OperationEvalPartialDerivativeFundamentalSplineNaive(
+        grid.getStorage(), dynamic_cast<base::FundamentalSplineBoundaryGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
     return new base::OperationEvalPartialDerivativeModFundamentalSplineNaive(
         grid.getStorage(), dynamic_cast<base::ModFundamentalSplineGrid&>(grid).getDegree());
