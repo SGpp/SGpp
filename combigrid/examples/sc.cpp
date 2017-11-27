@@ -70,13 +70,14 @@ int main() {
   auto op_levelManager = op->getLevelManager();
   sgpp::combigrid::PolynomialStochasticCollocation sc(op, functionBasis, bounds);
   auto tensor_levelManager = sc.getCombigridTensorOperation()->getLevelManager();
+
+  sgpp::combigrid::Stopwatch stopwatch;
   for (size_t q = 0; q < 8; ++q) {
-    sgpp::combigrid::Stopwatch stopwatch;
-    std::cout << "---------------------------------------------------------" << std::endl;
-    std::cout << "add regular levels " << q << " to interpolation operation" << std::endl;
+    //    std::cout << "---------------------------------------------------------" << std::endl;
+    //    std::cout << "add regular levels " << q << " to interpolation operation" << std::endl;
     op_levelManager->addRegularLevels(q);
-    std::cout << "---------------------------------------------------------" << std::endl;
-    std::cout << "add regular levels " << q << " to tensor operation" << std::endl;
+    //    std::cout << "---------------------------------------------------------" << std::endl;
+    //    std::cout << "add regular levels " << q << " to tensor operation" << std::endl;
     tensor_levelManager->addRegularLevels(q);
     // compute the variance
     std::cout << "---------------------------------------------------------" << std::endl;

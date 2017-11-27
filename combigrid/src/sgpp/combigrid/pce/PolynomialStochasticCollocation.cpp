@@ -36,7 +36,11 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridTensorOperation(nullptr),
       functionBases(0),
       trans(bounds),
-      numGridPoints(0) {
+      numGridPoints(0),
+      computedMeanFlag(false),
+      ev(0.0),
+      computedVarianceFlag(false),
+      var(0.0) {
   // create vector of function bases
   for (size_t idim = 0; idim < numDims; idim++) {
     functionBases.push_back(functionBasis);
@@ -57,7 +61,11 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridTensorOperation(nullptr),
       functionBases(0),
       trans(bounds),
-      numGridPoints(0) {
+      numGridPoints(0),
+      computedMeanFlag(false),
+      ev(0.0),
+      computedVarianceFlag(false),
+      var(0.0) {
   // create vector of function bases
   for (size_t idim = 0; idim < numDims; idim++) {
     functionBases.push_back(functionBasis);
@@ -79,7 +87,11 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridTensorOperation(combigridTensorOperation),
       functionBases(0),
       trans(bounds),
-      numGridPoints(0) {
+      numGridPoints(0),
+      computedMeanFlag(false),
+      ev(0.0),
+      computedVarianceFlag(false),
+      var(0.0) {
   // create vector of function bases
   for (size_t idim = 0; idim < numDims; idim++) {
     functionBases.push_back(functionBasis);
@@ -100,7 +112,11 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridTensorOperation(nullptr),
       functionBases(functionBases),
       trans(bounds),
-      numGridPoints(0) {
+      numGridPoints(0),
+      computedMeanFlag(false),
+      ev(0.0),
+      computedVarianceFlag(false),
+      var(0.0) {
   // make sure that the number of dimensions match
   if (numDims != functionBases.size()) {
     throw sgpp::base::application_exception(
@@ -123,7 +139,11 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridTensorOperation(nullptr),
       functionBases(functionBases),
       trans(bounds),
-      numGridPoints(0) {
+      numGridPoints(0),
+      computedMeanFlag(false),
+      ev(0.0),
+      computedVarianceFlag(false),
+      var(0.0) {
   // make sure that the number of dimensions match
   if (numDims != functionBases.size()) {
     throw sgpp::base::application_exception(
@@ -145,7 +165,11 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridTensorOperation(nullptr),
       functionBases(functionBases),
       trans(bounds),
-      numGridPoints(0) {
+      numGridPoints(0),
+      computedMeanFlag(false),
+      ev(0.0),
+      computedVarianceFlag(false),
+      var(0.0) {
   // make sure that the number of dimensions match
   if (numDims != functionBases.size()) {
     throw sgpp::base::application_exception(
@@ -166,7 +190,11 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
       functionBases(0),
-      numGridPoints(0) {
+      numGridPoints(0),
+      computedMeanFlag(false),
+      ev(0.0),
+      computedVarianceFlag(false),
+      var(0.0) {
   // create vector of function bases
   for (size_t idim = 0; idim < numDims; idim++) {
     functionBases.push_back(functionBasis);
@@ -186,7 +214,11 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridMultiOperation(combigridMultiOperation),
       combigridTensorOperation(nullptr),
       functionBases(0),
-      numGridPoints(0) {
+      numGridPoints(0),
+      computedMeanFlag(false),
+      ev(0.0),
+      computedVarianceFlag(false),
+      var(0.0) {
   // create vector of function bases
   for (size_t idim = 0; idim < numDims; idim++) {
     functionBases.push_back(functionBasis);
@@ -206,7 +238,11 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridMultiOperation(nullptr),
       combigridTensorOperation(combigridTensorOperation),
       functionBases(0),
-      numGridPoints(0) {
+      numGridPoints(0),
+      computedMeanFlag(false),
+      ev(0.0),
+      computedVarianceFlag(false),
+      var(0.0) {
   // create vector of function bases
   for (size_t idim = 0; idim < numDims; idim++) {
     functionBases.push_back(functionBasis);
@@ -226,7 +262,11 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
       functionBases(functionBases),
-      numGridPoints(0) {
+      numGridPoints(0),
+      computedMeanFlag(false),
+      ev(0.0),
+      computedVarianceFlag(false),
+      var(0.0) {
   // make sure that the number of dimensions match
   if (numDims != functionBases.size()) {
     throw sgpp::base::application_exception(
@@ -247,7 +287,11 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridMultiOperation(combigridMultiOperation),
       combigridTensorOperation(nullptr),
       functionBases(functionBases),
-      numGridPoints(0) {
+      numGridPoints(0),
+      computedMeanFlag(false),
+      ev(0.0),
+      computedVarianceFlag(false),
+      var(0.0) {
   // make sure that the number of dimensions match
   if (numDims != functionBases.size()) {
     throw sgpp::base::application_exception(
@@ -268,7 +312,11 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
       functionBases(functionBases),
-      numGridPoints(0) {
+      numGridPoints(0),
+      computedMeanFlag(false),
+      ev(0.0),
+      computedVarianceFlag(false),
+      var(0.0) {
   // make sure that the number of dimensions match
   if (numDims != functionBases.size()) {
     throw sgpp::base::application_exception(
@@ -315,6 +363,18 @@ void PolynomialStochasticCollocation::initializeLinearTransformation() {
   trans.initialize(bounds);
 }
 #endif
+
+bool PolynomialStochasticCollocation::updateStatus() {
+  if (numGridPoints < combigridTensorOperation->numGridPoints()) {
+    expansionCoefficients = combigridTensorOperation->getResult();
+    numGridPoints = combigridTensorOperation->numGridPoints();
+    computedMeanFlag = false;
+    computedVarianceFlag = false;
+    return true;
+  } else {
+    return false;
+  }
+}
 
 size_t PolynomialStochasticCollocation::additionalQuadraturePoints(
     OrthogonalPolynomialBasisType polyType) {
@@ -413,7 +473,7 @@ double PolynomialStochasticCollocation::quad(MultiIndex i) {
         sum_idim += w * legendreBasis->evaluate(degree_i, x_unit) * functionBasis->pdf(x_prob);
       }
 
-      sum_idim *= trans.vol();
+      sum_idim *= trans.vol(idim);
 
       if (iteration > 0) {
         err = std::fabs(sum_idim_old - sum_idim);
@@ -430,12 +490,7 @@ double PolynomialStochasticCollocation::quad(MultiIndex i) {
   return ans;
 }
 
-double PolynomialStochasticCollocation::mean() {
-  if (numGridPoints < combigridTensorOperation->numGridPoints()) {
-    expansionCoefficients = combigridTensorOperation->getResult();
-    numGridPoints = combigridTensorOperation->numGridPoints();
-  }
-
+double PolynomialStochasticCollocation::computeMean() {
   // compute mass matrix and corresponding coefficient vector
   auto multiIndices_i = expansionCoefficients.getValues();
   auto it_i = multiIndices_i->getStoredDataIterator();
@@ -445,7 +500,17 @@ double PolynomialStochasticCollocation::mean() {
   size_t i = 0;
   while (it_i->isValid() && i < numGridPoints) {
     auto ix = it_i->getMultiIndex();
-    m[i] = quad(ix);
+
+    double value = 0.0;
+    auto it_value = innerProducts.find(ix);
+    if (it_value != innerProducts.end()) {
+      value = it_value->second;
+    } else {
+      value = quad(ix);
+      innerProducts[ix] = value;
+    }
+    m[i] = value;
+
     coeffs[i] = it_i->value().value();
     it_i->moveToNext();
     i += 1;
@@ -460,12 +525,16 @@ double PolynomialStochasticCollocation::mean() {
   return ans;
 }
 
-double PolynomialStochasticCollocation::variance() {
-  if (numGridPoints < combigridTensorOperation->numGridPoints()) {
-    expansionCoefficients = combigridTensorOperation->getResult();
-    numGridPoints = combigridTensorOperation->numGridPoints();
+double PolynomialStochasticCollocation::mean() {
+  updateStatus();
+  if (!computedMeanFlag) {
+    ev = computeMean();
+    computedMeanFlag = true;
   }
+  return ev;
+}
 
+double PolynomialStochasticCollocation::computeVariance() {
   // prepare the mean
   double ev = mean();
 
@@ -528,6 +597,15 @@ double PolynomialStochasticCollocation::variance() {
   }
 
   return ans;
+}
+
+double PolynomialStochasticCollocation::variance() {
+  updateStatus();
+  if (!computedVarianceFlag) {
+    var = computeVariance();
+    computedVarianceFlag = true;
+  }
+  return var;
 }
 
 std::shared_ptr<sgpp::combigrid::CombigridTensorOperation>

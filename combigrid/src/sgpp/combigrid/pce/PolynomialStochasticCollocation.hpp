@@ -147,6 +147,10 @@ class PolynomialStochasticCollocation {
 
   void initializeLinearTransformation();
 
+  bool updateStatus();
+  double computeMean();
+  double computeVariance();
+
   void countPolynomialTerms();
   size_t additionalQuadraturePoints(OrthogonalPolynomialBasisType polyType);
 
@@ -155,17 +159,28 @@ class PolynomialStochasticCollocation {
 
   void joinMultiIndices(MultiIndex& ix, MultiIndex& jx, MultiIndex& kx);
 
+  // number of dimensions
   size_t numDims;
+
+  // store the operations for combigrid evaluation
   std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation;
   std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation;
   std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation;
 
+  // global polynomial basis
   std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> legendreBasis;
+  // orthogonal basis for pdf values
   std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>> functionBases;
 
   LinearTransformation trans;
   size_t numGridPoints;
   sgpp::combigrid::FloatTensorVector expansionCoefficients;
+
+  // mean and variance storage
+  bool computedMeanFlag;
+  double ev;
+  bool computedVarianceFlag;
+  double var;
 
   // lookup table for inner products
   std::map<MultiIndex, double> innerProducts;
