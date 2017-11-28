@@ -114,21 +114,21 @@ BOOST_AUTO_TEST_CASE(testHierarchisationModLinearWithBoundary) {
   }
 }
 
-BOOST_AUTO_TEST_CASE(testHierarchisationTruncatedBoundary) {
+BOOST_AUTO_TEST_CASE(testHierarchisationLinearTruncatedBoundary) {
   int level = 5;
 
   for (int dim = 1; dim < 4; dim++) {
     std::unique_ptr<Grid> grid(Grid::createLinearBoundaryGrid(dim));
-    testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-12, true);
+    testHierarchisationDehierarchisation(*grid, level, &parabolaBoundary, 1e-12, true);
   }
 }
 
-BOOST_AUTO_TEST_CASE(testHierarchisationBoundary) {
+BOOST_AUTO_TEST_CASE(testHierarchisationLinearBoundary) {
   int level = 5;
 
   for (int dim = 1; dim < 4; dim++) {
     std::unique_ptr<Grid> grid(Grid::createLinearBoundaryGrid(dim, 0));
-    testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-12);
+    testHierarchisationDehierarchisation(*grid, level, &parabolaBoundary, 1e-12);
   }
 }
 
@@ -182,7 +182,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationPolyTruncatedBoundary) {
   for (int dim = 1; dim < 4; dim++) {
     for (int i = 0; i < 4; i++) {
       std::unique_ptr<Grid> grid(Grid::createPolyBoundaryGrid(dim, degree[i]));
-      testHierarchisationDehierarchisation(*grid, level, &parabola, 0.0, true);
+      testHierarchisationDehierarchisation(*grid, level, &parabolaBoundary, 1e-12, true);
     }
   }
 }
