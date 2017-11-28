@@ -60,12 +60,16 @@
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridQuadraticSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
-#include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
+#include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/BSplineScalarProductEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/CubicSplineInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/InterpolationCoefficientEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/PolynomialScalarProductEvaluator.hpp>
+
 #include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
 
 #include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
@@ -84,6 +88,5 @@
 #include <sgpp/combigrid/utils/BinaryHeap.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
-#include "sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp"
 
 #endif /* COMBIGRID_HPP_ */

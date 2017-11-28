@@ -6,9 +6,10 @@
 #pragma once
 
 #include <sgpp/combigrid/GeneralFunction.hpp>
-#include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
+#include <sgpp/combigrid/algebraic/FloatArrayVector.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
 
 #include <functional>
 #include <vector>
@@ -17,46 +18,35 @@ namespace sgpp {
 namespace combigrid {
 
 /**
- * Struct for a LagrangePolynom, used to eval it
- */
-struct LagrangePolynom {
-  std::vector<double> points;
-  size_t point;
-
-  double evaluate(double x) {
-    double result = 1.0;
-    for (size_t i = 0; i < points.size(); ++i) {
-      if (i != point) {
-        // TODO(holzmudd): precalculate denominator?
-        result *= (x - points[i]) / (points[point] - points[i]);
-      }
-    }
-    return result;
-  }
-
-  size_t degree() { return points.size(); }
-};
-
-/**
- * This evaluator does quadrature based on the given grid points. The quadrature weights are
+ * This evaluator calculates the scalar products \int b_i b_j. This is done via quadrature based on
+ * the given grid points. The quadrature weights are
  * obtained by (numerically) integrating the Lagrange polynomials on the given grid points.
  * In the constructor, a weight function may be passed whose values at the grid points are
  * multiplied with the given function values.
  */
-class PolynomialQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVector> {
+class PolynomialScalarProductEvaluator : public AbstractLinearEvaluator<FloatArrayVector> {
   std::vector<double> xValues;
-  std::vector<FloatScalarVector> weights;
+  std::vector<FloatArrayVector> basisValues;
   std::vector<double> basisCoefficients;
   sgpp::combigrid::SingleFunction weight_function;
   bool normalizeWeights;
   bool isCustomWeightFunction;
   size_t numAdditionalPoints;  // additional gauss points used for a custom weight function
 
-  double getWeight(std::vector<double> &points, size_t point);
-  void calculateWeights(std::vector<double> &points, std::vector<FloatScalarVector> &weights);
+  // lookup table for inner products
+  std::map<size_t, double> scalarProductsMap;
+  size_t generateKey(size_t idegree, size_t jdegree);
+
+  FloatArrayVector quad(LagrangePolynom &p_i, LagrangePolynom &p_j);
+  FloatArrayVector get1DMixedIntegral(std::vector<double> &points, size_t index_j);
+
+  void calculate1DPolynomialScalarProducts(std::vector<double> &points,
+                                           std::vector<FloatArrayVector> &integrals);
 
  public:
-  PolynomialQuadratureEvaluator();
+  PolynomialScalarProductEvaluator();
+  PolynomialScalarProductEvaluator();
+
   /**
    * @param numAdditionalPoints Specifies how many Gauss-Legrendre points should be used in addition
    * to the default when integrating the Lagrange polynomials for computing the quadrature weights.
@@ -69,12 +59,12 @@ class PolynomialQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalar
    * to 1. This might be useful if the weight function is (or should be) a probability distribution
    * on the domain.
    */
-  PolynomialQuadratureEvaluator(sgpp::combigrid::SingleFunction weight_function,
-                                bool normalizeWeights = true, size_t numAdditionalPoints = 10);
-  PolynomialQuadratureEvaluator(PolynomialQuadratureEvaluator const &other);
-  virtual ~PolynomialQuadratureEvaluator();
+  PolynomialScalarProductEvaluator(sgpp::combigrid::SingleFunction weight_function,
+                                   bool normalizeWeights = true, size_t numAdditionalPoints = 10);
+  PolynomialScalarProductEvaluator(PolynomialScalarProductEvaluator const &other);
+  virtual ~PolynomialScalarProductEvaluator();
 
-  std::vector<FloatScalarVector> getBasisValues() override { return weights; }
+  std::vector<FloatArrayVector> getBasisValues() override { return basisValues; }
   std::vector<double> getBasisCoefficients() override { return basisCoefficients; }
 
   void setGridPoints(std::vector<double> const &newXValues) override;
@@ -82,15 +72,18 @@ class PolynomialQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalar
 
   bool needsOrderedPoints() override;
   bool needsParameter() override;
-  void setParameter(FloatScalarVector const &param) override;
+  void setParameter(FloatArrayVector const &param) override;
 
+  // The following is simply copied from QuadratureEvaluator. Applicable here?
   // can be used as a measure of stability of the quadrature algorithm. Minimum (and optimum) in
   // case of normalized weights is 1.0, i.e. all weights are non-negative.
-  double getAbsoluteWeightSum() const;
+  //  double getAbsoluteWeightSum() const;
 
-  std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cloneLinear() override;
+  std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> cloneLinear() override;
 
   //  CombiEvaluatorTypes getType() override;
+  //  EvaluatorConfiguration getConfig() override { return evalConfig; }
+  //  void setConfig(EvaluatorConfiguration newEvalConfig) override { evalConfig = newEvalConfig; }
 };
 
 } /* namespace combigrid */
