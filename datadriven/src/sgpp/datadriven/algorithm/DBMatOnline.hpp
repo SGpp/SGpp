@@ -7,6 +7,8 @@
 
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 
+#include <list>
+
 namespace sgpp {
 namespace datadriven {
 
@@ -47,6 +49,16 @@ class DBMatOnline {
   DBMatOffline& getOfflineObject();
 
   const DBMatOffline& getOfflineObject() const;
+
+  /**
+   * Update the system matrix decomposition after the grid has been modified.
+   * @param numAddedGridPoints Number of grid points inserted at the end of the grid storage
+   * @param deletedGridPointIndices Indices of grid points that were deleted
+   * @param lambda The last best lambda value
+   */
+  virtual void updateSystemMatrixDecomposition(size_t numAddedGridPoints,
+                                                 std::list<size_t> deletedGridPointIndices,
+                                                 double lambda);
 
  protected:
   DBMatOffline& offlineObject;

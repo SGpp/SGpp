@@ -16,6 +16,7 @@
 #include <sgpp/datadriven/algorithm/DBMatDMSDenseIChol.hpp>
 
 #include <iomanip>
+#include <list>
 
 namespace sgpp {
 namespace datadriven {
@@ -88,6 +89,15 @@ DBMatDMSChol* DBMatOnlineDEChol::buildCholSolver(DBMatOffline& offlineObject, bo
       throw sgpp::base::algorithm_exception{"Only Cholesky based solvers can use this Solver"};
   }
 }
+
+void DBMatOnlineDEChol::updateSystemMatrixDecomposition(size_t numAddedGridPoints,
+                                                      std::list<size_t> deletedGridPointIndices,
+                                                      double lambda)  {
+  DBMatOffline* offlineObject = &getOfflineObject();
+  dynamic_cast<DBMatOfflineChol *>(offlineObject)
+      ->choleskyModification(numAddedGridPoints, deletedGridPointIndices, lambda);
+}
+
 
 } /* namespace datadriven */
 } /* namespace sgpp */
