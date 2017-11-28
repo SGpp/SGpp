@@ -37,14 +37,13 @@ class PolynomialScalarProductEvaluator : public AbstractLinearEvaluator<FloatArr
   std::map<size_t, double> scalarProductsMap;
   size_t generateKey(size_t idegree, size_t jdegree);
 
-  FloatArrayVector quad(LagrangePolynom &p_i, LagrangePolynom &p_j);
+  double quad(LagrangePolynom &p_i, LagrangePolynom &p_j);
   FloatArrayVector get1DMixedIntegral(std::vector<double> &points, size_t index_j);
 
   void calculate1DPolynomialScalarProducts(std::vector<double> &points,
                                            std::vector<FloatArrayVector> &integrals);
 
  public:
-  PolynomialScalarProductEvaluator();
   PolynomialScalarProductEvaluator();
 
   /**

@@ -19,8 +19,8 @@
 namespace sgpp {
 namespace combigrid {
 
-FloatArrayVector PolynomialScalarProductEvaluator::quad(LagrangePolynom& p_i,
-                                                        LagrangePolynom& p_j) {
+double PolynomialScalarProductEvaluator::quad(LagrangePolynom& p_i,
+                                              LagrangePolynom& p_j) {
   size_t degree_i = p_i.points.size();
   size_t degree_j = p_j.points.size();
   size_t numGaussPoints = (degree_i + degree_j + 3) / 2;
@@ -66,7 +66,7 @@ FloatArrayVector PolynomialScalarProductEvaluator::get1DMixedIntegral(std::vecto
 
   LagrangePolynom p_i;
   p_i.points = points;
-  p_i.point = points[degree_i];
+  p_i.point = degree_i;
 
   LagrangePolynom p_j;
   p_j.points = points;
@@ -74,13 +74,15 @@ FloatArrayVector PolynomialScalarProductEvaluator::get1DMixedIntegral(std::vecto
   for (size_t degree_j = 0; degree_j < points.size(); degree_j++) {
     size_t key = generateKey(degree_i, degree_j);
 
+    double value = 0.0;
     auto it_value = scalarProductsMap.find(key);
     if (it_value != scalarProductsMap.end()) {
-      scalarProducts[degree_j] = it_value->second;
+      value = it_value->second;
     } else {
-      p_j.point = points[degree_j];
-      scalarProducts[degree_j] = quad(p_i, p_j);
+      p_j.point = degree_j;
+      value = quad(p_i, p_j);
     }
+    scalarProducts.at(degree_j) = value;
   }
 
   return scalarProducts;
@@ -139,12 +141,6 @@ PolynomialScalarProductEvaluator::cloneLinear() {
   return std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector> >(
       new PolynomialScalarProductEvaluator(*this));
 }
-
-PolynomialScalarProductEvaluator::PolynomialScalarProductEvaluator()
-    : weight_function(constantFunction<double>(1.0)),
-      normalizeWeights(false),
-      isCustomWeightFunction(false),
-      numAdditionalPoints(0) {}
 
 PolynomialScalarProductEvaluator::PolynomialScalarProductEvaluator()
     : weight_function(constantFunction<double>(1.0)),
