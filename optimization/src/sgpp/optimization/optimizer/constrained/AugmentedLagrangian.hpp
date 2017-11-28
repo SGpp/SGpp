@@ -29,8 +29,6 @@ class AugmentedLagrangian : public ConstrainedOptimizer {
   static constexpr double DEFAULT_PENALTY_START_VALUE = 1.0;
   /// default penalty increase factor
   static constexpr double DEFAULT_PENALTY_INCREASE_FACTOR = 1.0;
-  /// default maximal number of converged iterations
-  static const size_t DEFAULT_CONVERGED_ITERATIONS_NEEDED = 10;
 
   /**
    * Constructor.
@@ -45,7 +43,6 @@ class AugmentedLagrangian : public ConstrainedOptimizer {
    *                                  function evaluations
    * @param xTolerance                point tolerance
    * @param constraintTolerance       constraint tolerance
-   * @param convergedIterationsNeeded maximal number of converged iterations
    * @param penaltyStartValue         penalty start value
    * @param penaltyIncreaseFactor     penalty increase factor
    */
@@ -58,7 +55,6 @@ class AugmentedLagrangian : public ConstrainedOptimizer {
                       size_t maxItCount = DEFAULT_N,
                       double xTolerance = DEFAULT_X_TOLERANCE,
                       double constraintTolerance = DEFAULT_CONSTRAINT_TOLERANCE,
-                      size_t convergedIterationsNeeded = DEFAULT_CONVERGED_ITERATIONS_NEEDED,
                       double penaltyStartValue = DEFAULT_PENALTY_START_VALUE,
                       double penaltyIncreaseFactor = DEFAULT_PENALTY_INCREASE_FACTOR);
 
@@ -108,16 +104,6 @@ class AugmentedLagrangian : public ConstrainedOptimizer {
   void setConstraintTolerance(double constraintTolerance);
 
   /**
-   * @return maximal number of converged iterations
-   */
-  size_t getConvergedIterationsNeeded() const;
-
-  /**
-   * @param convergedIterationsNeeded maximal number of converged iterations
-   */
-  void setConvergedIterationsNeeded(size_t convergedIterationsNeeded);
-
-  /**
    * @return penalty start value
    */
   double getPenaltyStartValue() const;
@@ -160,8 +146,6 @@ class AugmentedLagrangian : public ConstrainedOptimizer {
   double theta;
   /// constraint tolerance
   double epsilon;
-  /// maximal number of converged iterations
-  size_t convergedIterationsNeeded;
   /// penalty start value
   double mu0;
   /// penalty increase factor
