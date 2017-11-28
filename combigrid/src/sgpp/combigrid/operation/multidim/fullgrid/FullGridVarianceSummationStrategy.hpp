@@ -64,55 +64,51 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
    * Currently only V=FloatArrayVector is supported
    */
   V eval(MultiIndex const &level) override {
-    auto evalConfig = this->evaluatorPrototypes[0]->getConfig();
     size_t numDimensions = level.size();
 
-    bool bsplineBasis = true;
+    std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>>
+        linearEvaluatorPrototypes;
+
+    EvaluatorConfiguration linearEvalConfig;
+
     for (size_t d = 0; d < numDimensions; d++) {
-      if (evalConfig.type != CombiEvaluatorTypes::Multi_BSplineScalarProduct) {
-        bsplineBasis = false;
+      auto evalConfig = this->evaluatorPrototypes[d]->getConfig();
+      auto basisType = evalConfig.type;
+      if (basisType == CombiEvaluatorTypes::Multi_BSplineScalarProduct) {
+        linearEvalConfig.degree = evalConfig.degree;
+        linearEvalConfig.type = CombiEvaluatorTypes::Scalar_BSplineQuadrature;
+      } else if (basisType == CombiEvaluatorTypes::Multi_PolynomialScalarProduct) {
+        linearEvalConfig.type = CombiEvaluatorTypes::Scalar_PolynomialQuadrature;
+      } else {
         std::cerr << "FullGridVarianceSummationStrategy: this evaluator is currently "
                      "not supported."
                   << std::endl;
       }
+      linearEvaluatorPrototypes.push_back(
+          CombiEvaluators::createCombiScalarEvaluator(linearEvalConfig));
     }
 
-    if (bsplineBasis) {
-      FullGridQuadraticSummationStrategy<V> quadraticStrategy =
-          FullGridQuadraticSummationStrategy<V>(this->storage, this->evaluatorPrototypes,
-                                                this->pointHierarchies);
+    FullGridLinearSummationStrategy<FloatScalarVector> linearStrategy =
+        FullGridLinearSummationStrategy<FloatScalarVector>(this->storage, linearEvaluatorPrototypes,
+                                                           this->pointHierarchies);
 
-      size_t degree = evalConfig.degree;
-      EvaluatorConfiguration linearEvalConfig(CombiEvaluatorTypes::Scalar_BSplineQuadrature,
-                                              degree);
-      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>>
-          linearEvaluatorPrototypes(this->evaluatorPrototypes.size(),
-                                    CombiEvaluators::createCombiScalarEvaluator(linearEvalConfig));
+    FullGridQuadraticSummationStrategy<V> quadraticStrategy = FullGridQuadraticSummationStrategy<V>(
+        this->storage, this->evaluatorPrototypes, this->pointHierarchies);
 
-      FullGridLinearSummationStrategy<FloatScalarVector> linearStrategy =
-          FullGridLinearSummationStrategy<FloatScalarVector>(
-              this->storage, linearEvaluatorPrototypes, this->pointHierarchies);
+    V meanSquare = quadraticStrategy.eval(level);
+    FloatScalarVector mean = linearStrategy.eval(level);
+    std::cout.precision(10);
+    //      std::cout << "mean " << mean.value() << " meanSquare " << meanSquare[0].value();
 
-      V meanSquare = quadraticStrategy.eval(level);
-      FloatScalarVector mean = linearStrategy.eval(level);
-      std::cout.precision(10);
-      //      std::cout << "mean " << mean.value() << " meanSquare " << meanSquare[0].value();
+    // Var = E(x^2) - E(x)^2
+    mean.componentwiseMult(mean);
+    FloatScalarVector variance = meanSquare[0];
+    variance.sub(mean);
 
-      // Var = E(x^2) - E(x)^2
-      mean.componentwiseMult(mean);
-      FloatScalarVector variance = meanSquare[0];
-      variance.sub(mean);
+    //      std::cout << " variance " << variance.value() << std::endl;
 
-      //      std::cout << " variance " << variance.value() << std::endl;
-
-      V returnVariance(variance);
-      return returnVariance;
-    }
-    V returnFailure = V::zero();
-    std::cerr << "FullGridVarianceSummationStrategy: this evaluator is currently "
-                 "not supported. Returning zero."
-              << std::endl;
-    return returnFailure;
+    V returnVariance(variance);
+    return returnVariance;
   }
 };
 

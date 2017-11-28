@@ -39,7 +39,7 @@
 #include <iostream>
 #include <vector>
 
-size_t numDimensions = 1;
+size_t numDimensions = 2;
 double f(sgpp::base::DataVector const& v) {
   return v[0];
   //  return v[0] * sin(v[0] + v[1]) * exp(v[1] * v[2]);
@@ -357,7 +357,7 @@ void BSplineGridConversion(size_t degree, size_t maxLevel) {
 
   // evaluate somewhere and thereby create the level structure
   sgpp::base::DataMatrix params(numDimensions, 1, 0.777);
-  params.appendCol(sgpp::base::DataVector{1, 0.8});
+  params.appendCol(sgpp::base::DataVector{numDimensions, 0.8});
   sgpp::base::DataVector result = Operation->evaluate(maxLevel, params);
 
   //  for (auto& r : result) {
@@ -395,46 +395,34 @@ void BSplineGridConversion(size_t degree, size_t maxLevel) {
         std::cout << p << " ";
       }
       std::cout << "\n";
-
-      multiBounds[d] = pointHierarchies[d]->getNumPoints(level[d]);
-      //      std::cout << "multiBounds: " << multiBounds[d] << std::endl;
-
-      sgpp::combigrid::MultiIndexIterator it(multiBounds);
-      auto coeffIter = coeffStorage->getGuidedIterator(level, it, orderingConfiguration);
-      std::cout << "coefficients: ";
-      while (coeffIter->isValid()) {
-        std::cout << coeffIter->value() << " ";
-        coeffIter->moveToNext();
-      }
-      std::cout << "\n";
     }
     levelIterator->moveToNext();
   }
 
-  //  std::unique_ptr<sgpp::base::Grid> grid;
-  //  grid.reset(sgpp::base::Grid::createNotAKnotBsplineBoundaryGrid(numDimensions, degree));
-  //  sgpp::base::GridStorage& gridStorage = grid->getStorage();
-  //
-  //  sgpp::base::DataVector functionValues;
-  //
-  //  convertCombigridToHierarchicalSparseGrid(levelStructure, gridStorage, funcStorage,
-  //  functionValues,
-  //                                           orderingConfiguration);
-  //
-  //  //  std::cout << "Function values: " << std::endl;
-  //  for (auto& f : functionValues) {
-  //    //    std::cout << f << " ";
+  std::unique_ptr<sgpp::base::Grid> grid;
+  grid.reset(sgpp::base::Grid::createNotAKnotBsplineBoundaryGrid(numDimensions, degree));
+  sgpp::base::GridStorage& gridStorage = grid->getStorage();
+
+  //  grid->getGenerator().regular(3);
+  //  std::cout << "grid storage: " << std::endl;
+  //  for (size_t i = 0; i < gridStorage.getSize(); i++) {
+  //    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
+  //    std::cout << gp.getLevel(0) << " " << gp.getIndex(0) << ": " << gp.getStandardCoordinate(0)
+  //              << std::endl;
   //  }
-  //  //  std::cout << "\n";
-  //
-  //  //  std::cout << "Coordinates" << std::endl;
-  //  for (auto& s : gridStorage) {
-  //    sgpp::base::DataVector coordinates;
-  //    s.first->getStandardCoordinates(coordinates);
-  //    for (size_t i = 0; i < numDimensions; i++) {
-  //      //      std::cout << coordinates[i] << " ";
-  //    }
-  //    //    std::cout<<"\n";
-  //  }
-  //  //  std::cout << "\n";
+
+  // ToDo (rehmemk) Erstelle Dünngitter Interpolanten. Funktionswerte im ersten Schritt einfach aus
+  // Funktionsauswertung, dann in Verbesserung aus Combi Interpolant Auswertung in Gitterpunkten.
+
+  convertBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
+
+  std::cout << "SG Coordinates" << std::endl;
+  for (auto& s : gridStorage) {
+    sgpp::base::DataVector coordinates;
+    s.first->getStandardCoordinates(coordinates);
+    for (size_t i = 0; i < numDimensions; i++) {
+      std::cout << coordinates[i] << " ";
+    }
+    std::cout << "\n";
+  }
 }
