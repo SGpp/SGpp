@@ -75,30 +75,34 @@ Grid* Grid::createLinearStretchedBoundaryGrid(size_t dim) {
   return new LinearStretchedBoundaryGrid(dim);
 }
 
-Grid* Grid::createLinearClenshawCurtisGrid(size_t dim) { return new LinearClenshawCurtisGrid(dim); }
+Grid* Grid::createLinearClenshawCurtisGrid(size_t dim, level_t boundaryLevel) {
+  return new LinearClenshawCurtisGrid(dim, boundaryLevel);
+}
 
 Grid* Grid::createModLinearGrid(size_t dim) { return new ModLinearGrid(dim); }
 
 Grid* Grid::createPolyGrid(size_t dim, size_t degree) { return new PolyGrid(dim, degree); }
 
-Grid* Grid::createPolyBoundaryGrid(size_t dim, size_t degree) {
-  return new PolyBoundaryGrid(dim, degree);
+Grid* Grid::createPolyBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel) {
+  return new PolyBoundaryGrid(dim, degree, boundaryLevel);
 }
 
 Grid* Grid::createWaveletGrid(size_t dim) { return new WaveletGrid(dim); }
 
-Grid* Grid::createWaveletBoundaryGrid(size_t dim) { return new WaveletBoundaryGrid(dim); }
+Grid* Grid::createWaveletBoundaryGrid(size_t dim, level_t boundaryLevel) {
+  return new WaveletBoundaryGrid(dim, boundaryLevel);
+}
 
 Grid* Grid::createModWaveletGrid(size_t dim) { return new ModWaveletGrid(dim); }
 
 Grid* Grid::createBsplineGrid(size_t dim, size_t degree) { return new BsplineGrid(dim, degree); }
 
-Grid* Grid::createBsplineBoundaryGrid(size_t dim, size_t degree) {
-  return new BsplineBoundaryGrid(dim, degree);
+Grid* Grid::createBsplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel) {
+  return new BsplineBoundaryGrid(dim, degree, boundaryLevel);
 }
 
-Grid* Grid::createBsplineClenshawCurtisGrid(size_t dim, size_t degree) {
-  return new BsplineClenshawCurtisGrid(dim, degree);
+Grid* Grid::createBsplineClenshawCurtisGrid(size_t dim, size_t degree, level_t boundaryLevel) {
+  return new BsplineClenshawCurtisGrid(dim, degree, boundaryLevel);
 }
 
 Grid* Grid::createModBsplineGrid(size_t dim, size_t degree) {
@@ -178,7 +182,8 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
       case GridType::Poly:
         return Grid::createPolyGrid(gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::PolyBoundary:
-        return Grid::createPolyBoundaryGrid(gridConfig.dim_, gridConfig.maxDegree_);
+        return Grid::createPolyBoundaryGrid(gridConfig.dim_, gridConfig.maxDegree_,
+                                            gridConfig.boundaryLevel_);
       case GridType::ModPoly:
         return Grid::createModPolyGrid(gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::ModWavelet:
@@ -192,17 +197,19 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
       case GridType::Periodic:
         return Grid::createPeriodicGrid(gridConfig.dim_);
       case GridType::LinearClenshawCurtis:
-        return Grid::createLinearClenshawCurtisGrid(gridConfig.dim_);
+        return Grid::createLinearClenshawCurtisGrid(gridConfig.dim_, gridConfig.boundaryLevel_);
       case GridType::Bspline:
         return Grid::createBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::BsplineBoundary:
-        return Grid::createBsplineBoundaryGrid(gridConfig.dim_, gridConfig.maxDegree_);
+        return Grid::createBsplineBoundaryGrid(gridConfig.dim_, gridConfig.maxDegree_,
+                                               gridConfig.boundaryLevel_);
       case GridType::BsplineClenshawCurtis:
-        return Grid::createBsplineClenshawCurtisGrid(gridConfig.dim_, gridConfig.maxDegree_);
+        return Grid::createBsplineClenshawCurtisGrid(gridConfig.dim_, gridConfig.maxDegree_,
+                                                     gridConfig.boundaryLevel_);
       case GridType::Wavelet:
         return Grid::createWaveletGrid(gridConfig.dim_);
       case GridType::WaveletBoundary:
-        return Grid::createWaveletBoundaryGrid(gridConfig.dim_);
+        return Grid::createWaveletBoundaryGrid(gridConfig.dim_, gridConfig.boundaryLevel_);
       case GridType::FundamentalSpline:
         return Grid::createFundamentalSplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::ModFundamentalSpline:
@@ -295,7 +302,9 @@ Grid* Grid::clone() {
       newGrid = Grid::createPeriodicGrid(numDims);
       break;
     case GridType::LinearClenshawCurtis:
-      newGrid = Grid::createLinearClenshawCurtisGrid(numDims);
+      boundaryLevel =
+          dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
+      newGrid = Grid::createLinearClenshawCurtisGrid(numDims, boundaryLevel);
       break;
     case GridType::Bspline:
       degree = dynamic_cast<BsplineGrid*>(this)->getDegree();
@@ -303,17 +312,23 @@ Grid* Grid::clone() {
       break;
     case GridType::BsplineBoundary:
       degree = dynamic_cast<BsplineBoundaryGrid*>(this)->getDegree();
-      newGrid = Grid::createBsplineBoundaryGrid(numDims, degree);
+      boundaryLevel =
+          dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
+      newGrid = Grid::createBsplineBoundaryGrid(numDims, degree, boundaryLevel);
       break;
     case GridType::BsplineClenshawCurtis:
       degree = dynamic_cast<BsplineClenshawCurtisGrid*>(this)->getDegree();
-      newGrid = Grid::createBsplineClenshawCurtisGrid(numDims, degree);
+      boundaryLevel =
+          dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
+      newGrid = Grid::createBsplineClenshawCurtisGrid(numDims, degree, boundaryLevel);
       break;
     case GridType::Wavelet:
       newGrid = Grid::createWaveletGrid(numDims);
       break;
     case GridType::WaveletBoundary:
-      newGrid = Grid::createWaveletBoundaryGrid(numDims);
+      boundaryLevel =
+          dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
+      newGrid = Grid::createWaveletBoundaryGrid(numDims, boundaryLevel);
       break;
     case GridType::FundamentalSpline:
       degree = dynamic_cast<FundamentalSplineGrid*>(this)->getDegree();

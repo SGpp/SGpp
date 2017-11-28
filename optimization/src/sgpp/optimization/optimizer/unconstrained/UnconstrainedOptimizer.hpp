@@ -11,6 +11,8 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunctionHessian.hpp>
 
 #include <cstddef>
 #include <cmath>
@@ -32,13 +34,27 @@ class UnconstrainedOptimizer {
    * The starting point is set to
    * \f$(0.5, \dotsc, 0.5)^{\mathrm{T}}\f$.
    *
-   * @param f     function to optimize
-   * @param N     maximal number of iterations or function evaluations
-   *              (depending on the implementation)
+   * @param f           function to optimize
+   * @param fGradient   gradient of f (nullptr to omit)
+   * @param fHessian    Hessian of f (nullptr to omit)
+   * @param N           maximal number of iterations or function evaluations
+   *                    (depending on the implementation)
    */
-  explicit UnconstrainedOptimizer(const ScalarFunction& f, size_t N = DEFAULT_N)
+  explicit UnconstrainedOptimizer(
+      const ScalarFunction& f,
+      const ScalarFunctionGradient* fGradient,
+      const ScalarFunctionHessian* fHessian,
+      size_t N = DEFAULT_N)
       : N(N), x0(f.getNumberOfParameters(), 0.5), xOpt(0), fOpt(NAN), xHist(0, 0), fHist(0) {
     f.clone(this->f);
+
+    if (fGradient != nullptr) {
+      fGradient->clone(this->fGradient);
+    }
+
+    if (fHessian != nullptr) {
+      fHessian->clone(this->fHessian);
+    }
   }
 
   /**
@@ -47,7 +63,11 @@ class UnconstrainedOptimizer {
    * @param other optimizer to be copied
    */
   UnconstrainedOptimizer(const UnconstrainedOptimizer& other)
-      : UnconstrainedOptimizer(*other.f, other.N) {
+      : UnconstrainedOptimizer(
+          *other.f,
+          other.fGradient.get(),
+          other.fHessian.get(),
+          other.N) {
     x0 = other.x0;
     xOpt = other.xOpt;
     fOpt = other.fOpt;
@@ -71,6 +91,43 @@ class UnconstrainedOptimizer {
    * @return objective function
    */
   ScalarFunction& getObjectiveFunction() const { return *f; }
+
+  /**
+   * @param f  objective function
+   */
+  virtual void setObjectiveFunction(const ScalarFunction& f) { f.clone(this->f); }
+
+  /**
+   * @return objective gradient
+   */
+  ScalarFunctionGradient* getObjectiveGradient() const { return fGradient.get(); }
+
+  /**
+   * @param f  objective gradient
+   */
+  virtual void setObjectiveGradient(const ScalarFunctionGradient* fGradient) {
+    if (fGradient != nullptr) {
+      fGradient->clone(this->fGradient);
+    } else {
+      this->fGradient = nullptr;
+    }
+  }
+
+  /**
+   * @return objective Hessian
+   */
+  ScalarFunctionHessian* getObjectiveHessian() const { return fHessian.get(); }
+
+  /**
+   * @param f  objective Hessian
+   */
+  virtual void setObjectiveHessian(const ScalarFunctionHessian* fHessian) {
+    if (fHessian != nullptr) {
+      fHessian->clone(this->fHessian);
+    } else {
+      this->fHessian = nullptr;
+    }
+  }
 
   /**
    * @return  maximal number of iterations or function evaluations
@@ -130,6 +187,10 @@ class UnconstrainedOptimizer {
  protected:
   /// objective function
   std::unique_ptr<ScalarFunction> f;
+  /// objective function gradient
+  std::unique_ptr<ScalarFunctionGradient> fGradient;
+  /// objective function Hessian
+  std::unique_ptr<ScalarFunctionHessian> fHessian;
   /// maximal number of iterations or function evaluations
   size_t N;
   /// starting point

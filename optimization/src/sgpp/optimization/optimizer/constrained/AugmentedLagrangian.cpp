@@ -371,16 +371,13 @@ AugmentedLagrangian::AugmentedLagrangian(const ScalarFunction& f,
                                          size_t maxItCount, double xTolerance,
                                          double constraintTolerance, double penaltyStartValue,
                                          double penaltyIncreaseFactor)
-    : ConstrainedOptimizer(f, g, h, maxItCount),
+    : ConstrainedOptimizer(f, &fGradient, g, &gGradient, h, &hGradient, maxItCount),
       theta(xTolerance),
       epsilon(constraintTolerance),
       mu0(penaltyStartValue),
       rhoMuPlus(penaltyIncreaseFactor),
       xHistInner(0, 0),
       kHistInner() {
-  fGradient.clone(this->fGradient);
-  gGradient.clone(this->gGradient);
-  hGradient.clone(this->hGradient);
 }
 
 AugmentedLagrangian::AugmentedLagrangian(const AugmentedLagrangian& other)
@@ -391,9 +388,6 @@ AugmentedLagrangian::AugmentedLagrangian(const AugmentedLagrangian& other)
       rhoMuPlus(other.rhoMuPlus),
       xHistInner(other.xHistInner),
       kHistInner(other.kHistInner) {
-  other.fGradient->clone(fGradient);
-  other.gGradient->clone(gGradient);
-  other.hGradient->clone(hGradient);
 }
 
 AugmentedLagrangian::~AugmentedLagrangian() {}
@@ -546,16 +540,6 @@ base::DataVector AugmentedLagrangian::findFeasiblePoint() const {
   }
 
   return x;
-}
-
-ScalarFunctionGradient& AugmentedLagrangian::getObjectiveGradient() const { return *fGradient; }
-
-VectorFunctionGradient& AugmentedLagrangian::getInequalityConstraintGradient() const {
-  return *gGradient;
-}
-
-VectorFunctionGradient& AugmentedLagrangian::getEqualityConstraintGradient() const {
-  return *hGradient;
 }
 
 double AugmentedLagrangian::getXTolerance() const { return theta; }

@@ -78,6 +78,11 @@ class LeastSquaresOptimizer {
   VectorFunction& getPhiFunction() const { return *phi; }
 
   /**
+   * @param phi  phi
+   */
+  void setPhiFunction(const VectorFunction& phi) { phi.clone(this->phi); }
+
+  /**
    * @return  maximal number of iterations or function evaluations
    */
   size_t getN() const { return N; }
