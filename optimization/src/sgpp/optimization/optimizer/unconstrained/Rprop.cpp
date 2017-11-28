@@ -15,12 +15,11 @@ namespace optimizer {
 Rprop::Rprop(const ScalarFunction& f, const ScalarFunctionGradient& fGradient, size_t maxItCount,
              double tolerance, double initialStepSize, double stepSizeIncreaseFactor,
              double stepSizeDecreaseFactor)
-    : UnconstrainedOptimizer(f, maxItCount),
+    : UnconstrainedOptimizer(f, &fGradient, nullptr, maxItCount),
       theta(tolerance),
       initialAlpha(initialStepSize),
       rhoAlphaPlus(stepSizeIncreaseFactor),
       rhoAlphaMinus(stepSizeDecreaseFactor) {
-  fGradient.clone(this->fGradient);
 }
 
 Rprop::Rprop(const Rprop& other)
@@ -29,7 +28,6 @@ Rprop::Rprop(const Rprop& other)
       initialAlpha(other.initialAlpha),
       rhoAlphaPlus(other.rhoAlphaPlus),
       rhoAlphaMinus(other.rhoAlphaMinus) {
-  other.fGradient->clone(fGradient);
 }
 
 Rprop::~Rprop() {}
@@ -134,8 +132,6 @@ void Rprop::optimize() {
   fOpt = f->eval(x);
   Printer::getInstance().printStatusEnd();
 }
-
-ScalarFunctionGradient& Rprop::getObjectiveGradient() const { return *fGradient; }
 
 double Rprop::getTolerance() const { return theta; }
 

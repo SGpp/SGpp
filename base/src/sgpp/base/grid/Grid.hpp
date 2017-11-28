@@ -234,9 +234,14 @@ class Grid {
    * </tr></table>
    *
    * @param dim the grid's dimension
+   * @param boundaryLevel on which level the boundary grid points and
+   *                      basis functions should be added;
+   *                      the default is 1, which results in a grid with
+   *                      the same resolution on the boundary as on the
+   *                      main axis
    * @return grid
    */
-  static Grid* createLinearClenshawCurtisGrid(size_t dim);
+  static Grid* createLinearClenshawCurtisGrid(size_t dim, level_t boundaryLevel = 1);
 
   /**
    * creates a modified linear grid
@@ -287,9 +292,14 @@ class Grid {
    *
    * @param dim the grid's dimension
    * @param degree the polynom's max. degree
+   * @param boundaryLevel on which level the boundary grid points and
+   *                      basis functions should be added;
+   *                      the default is 1, which results in a grid with
+   *                      the same resolution on the boundary as on the
+   *                      main axis
    * @return grid
    */
-  static Grid* createPolyBoundaryGrid(size_t dim, size_t degree);
+  static Grid* createPolyBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel = 1);
 
   /**
    * creates a modified polynomial grid
@@ -339,8 +349,14 @@ class Grid {
    * </tr></table>
    *
    * @param dim the grid's dimension
+   * @param boundaryLevel on which level the boundary grid points and
+   *                      basis functions should be added;
+   *                      the default is 1, which results in a grid with
+   *                      the same resolution on the boundary as on the
+   *                      main axis
+   * @return grid
    */
-  static Grid* createWaveletBoundaryGrid(size_t dim);
+  static Grid* createWaveletBoundaryGrid(size_t dim, level_t boundaryLevel = 1);
 
   /**
    * creates a modified wavelet grid
@@ -391,9 +407,14 @@ class Grid {
    *
    * @param dim the grid's dimension
    * @param degree the B-spline degree
+   * @param boundaryLevel on which level the boundary grid points and
+   *                      basis functions should be added;
+   *                      the default is 1, which results in a grid with
+   *                      the same resolution on the boundary as on the
+   *                      main axis
    * @return grid
    */
-  static Grid* createBsplineBoundaryGrid(size_t dim, size_t degree);
+  static Grid* createBsplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel = 1);
 
   /**
    * creates a B-spline Clenshaw-Curtis grid
@@ -409,9 +430,15 @@ class Grid {
    *
    * @param dim the grid's dimension
    * @param degree the B-spline degree
+   * @param boundaryLevel on which level the boundary grid points and
+   *                      basis functions should be added;
+   *                      the default is 1, which results in a grid with
+   *                      the same resolution on the boundary as on the
+   *                      main axis
    * @return grid
    */
-  static Grid* createBsplineClenshawCurtisGrid(size_t dim, size_t degree);
+  static Grid* createBsplineClenshawCurtisGrid(size_t dim, size_t degree,
+                                               level_t boundaryLevel = 1);
 
   /**
    * creates a modified B-spline grid

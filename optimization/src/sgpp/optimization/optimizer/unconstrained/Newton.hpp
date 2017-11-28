@@ -9,7 +9,6 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunctionHessian.hpp>
 #include <sgpp/optimization/sle/solver/GaussianElimination.hpp>
 #include <sgpp/optimization/sle/solver/SLESolver.hpp>
 
@@ -104,11 +103,6 @@ class Newton : public UnconstrainedOptimizer {
   void optimize() override;
 
   /**
-   * @return objective function Hessian
-   */
-  ScalarFunctionHessian& getObjectiveHessian() const;
-
-  /**
    * @return              beta (parameter for Armijo's rule)
    */
   double getBeta() const;
@@ -184,8 +178,6 @@ class Newton : public UnconstrainedOptimizer {
   void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
  protected:
-  /// objective function Hessian
-  std::unique_ptr<ScalarFunctionHessian> fHessian;
   /// beta (parameter for Armijo's rule)
   double beta;
   /// gamma (parameter for Armijo's rule)

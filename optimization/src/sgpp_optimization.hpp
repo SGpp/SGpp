@@ -15,6 +15,9 @@
 #include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunctionHessian.hpp>
+#include <sgpp/optimization/function/scalar/ScaledScalarFunction.hpp>
+#include <sgpp/optimization/function/scalar/ScaledScalarFunctionGradient.hpp>
+#include <sgpp/optimization/function/scalar/ScaledScalarFunctionHessian.hpp>
 #include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
 #include <sgpp/optimization/function/scalar/WrapperScalarFunctionGradient.hpp>
 #include <sgpp/optimization/function/scalar/WrapperScalarFunctionHessian.hpp>
@@ -30,6 +33,17 @@
 #include <sgpp/optimization/function/vector/WrapperVectorFunction.hpp>
 #include <sgpp/optimization/function/vector/WrapperVectorFunctionGradient.hpp>
 #include <sgpp/optimization/function/vector/WrapperVectorFunctionHessian.hpp>
+
+#include <sgpp/optimization/fuzzy/FuzzyExtensionPrinciple.hpp>
+#include <sgpp/optimization/fuzzy/FuzzyExtensionPrincipleViaOptimization.hpp>
+#include <sgpp/optimization/fuzzy/FuzzyExtensionPrincipleViaTransformation.hpp>
+#include <sgpp/optimization/fuzzy/FuzzyExtensionPrincipleViaVertexMethod.hpp>
+#include <sgpp/optimization/fuzzy/FuzzyInterval.hpp>
+#include <sgpp/optimization/fuzzy/FuzzyIntervalViaConfidenceInterval.hpp>
+#include <sgpp/optimization/fuzzy/FuzzyIntervalViaMembershipFunction.hpp>
+#include <sgpp/optimization/fuzzy/InterpolatedFuzzyInterval.hpp>
+#include <sgpp/optimization/fuzzy/QuasiGaussianFuzzyNumber.hpp>
+#include <sgpp/optimization/fuzzy/TriangularFuzzyInterval.hpp>
 
 #include <sgpp/optimization/gridgen/HashRefinementMultiple.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
