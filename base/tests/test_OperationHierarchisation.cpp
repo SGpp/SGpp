@@ -152,6 +152,28 @@ BOOST_AUTO_TEST_CASE(testHierarchisationFundamentalSpline) {
   }
 }
 
+BOOST_AUTO_TEST_CASE(testHierarchisationFundamentalSplineTruncatedBoundary) {
+  int level = 5;
+
+  for (int dim = 1; dim < 4; dim++) {
+    for (int degree = 1; degree < 6; degree += 2) {
+      std::unique_ptr<Grid> grid(Grid::createFundamentalSplineBoundaryGrid(dim, degree));
+      testHierarchisationDehierarchisation(*grid, level, &parabolaBoundary, 1e-9, true);
+    }
+  }
+}
+
+BOOST_AUTO_TEST_CASE(testHierarchisationFundamentalSplineBoundary) {
+  int level = 5;
+
+  for (int dim = 1; dim < 4; dim++) {
+    for (int degree = 1; degree < 6; degree += 2) {
+      std::unique_ptr<Grid> grid(Grid::createFundamentalSplineBoundaryGrid(dim, degree, 0));
+      testHierarchisationDehierarchisation(*grid, level, &parabolaBoundary, 1e-9, true);
+    }
+  }
+}
+
 BOOST_AUTO_TEST_CASE(testHierarchisationModFundamentalSpline) {
   int level = 5;
 

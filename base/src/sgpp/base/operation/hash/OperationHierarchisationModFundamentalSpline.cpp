@@ -26,7 +26,7 @@ void OperationHierarchisationModFundamentalSpline::doHierarchisation(
   DataVector& node_values) {
   HierarchisationModFundamentalSpline func(grid);
   BreadthFirstSearch<HierarchisationModFundamentalSpline>
-  bfs(func, grid->getStorage());
+  bfs(func, grid->getStorage(), false);
   bfs.execute(node_values, node_values);
 }
 
@@ -34,7 +34,7 @@ void OperationHierarchisationModFundamentalSpline::doDehierarchisation(
   DataVector& alpha) {
   DehierarchisationModFundamentalSpline func(grid);
   BreadthFirstSearch<DehierarchisationModFundamentalSpline>
-  bfs(func, grid->getStorage());
+  bfs(func, grid->getStorage(), false);
   DataVector alphaCopy(alpha);
   bfs.execute(alphaCopy, alpha);
 }
@@ -43,7 +43,7 @@ void OperationHierarchisationModFundamentalSpline::doHierarchisation(
   DataMatrix& node_values) {
   HierarchisationModFundamentalSpline func(grid);
   BreadthFirstSearch<HierarchisationModFundamentalSpline>
-  bfs(func, grid->getStorage());
+  bfs(func, grid->getStorage(), false);
   bfs.execute(node_values, node_values);
 }
 
@@ -51,7 +51,7 @@ void OperationHierarchisationModFundamentalSpline::doDehierarchisation(
   DataMatrix& alpha) {
   DehierarchisationModFundamentalSpline func(grid);
   BreadthFirstSearch<DehierarchisationModFundamentalSpline>
-  bfs(func, grid->getStorage());
+  bfs(func, grid->getStorage(), false);
   DataMatrix alphaCopy(alpha);
   bfs.execute(alphaCopy, alpha);
 }

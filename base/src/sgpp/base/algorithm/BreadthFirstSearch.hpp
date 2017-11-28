@@ -41,22 +41,26 @@ class BreadthFirstSearch {
    * Constructor.
    * Uses the default constructor for the functor.
    *
-   * @param storage   storage of the grid
+   * @param storage           storage of the grid
+   * @param startAtCorners    whether to start the BFS at the corners instead at the midpoint
    */
-  explicit BreadthFirstSearch(GridStorage& storage) :
+  explicit BreadthFirstSearch(GridStorage& storage, bool startAtCorners) :
     functor(),
-    storage(storage) {
+    storage(storage),
+    startAtCorners(startAtCorners) {
   }
 
   /**
    * Constructor.
    *
-   * @param functor   functor to apply in the BFS
-   * @param storage   storage of the grid
+   * @param functor           functor to apply in the BFS
+   * @param storage           storage of the grid
+   * @param startAtCorners    whether to start the BFS at the corners instead at the midpoint
    */
-  BreadthFirstSearch(FUNC& functor, GridStorage& storage) :
+  BreadthFirstSearch(FUNC& functor, GridStorage& storage, bool startAtCorners) :
     functor(functor),
-    storage(storage) {
+    storage(storage),
+    startAtCorners(startAtCorners) {
   }
 
   /**
@@ -79,40 +83,110 @@ class BreadthFirstSearch {
     std::vector<bool> visited(n, false);
     grid_iterator iterator(storage);
     std::queue<size_t> queue;
-    size_t index = iterator.seq();
-    queue.push(index);
-    visited[index] = true;
+    size_t index;
+    level_t l;
+    index_t i;
 
-    while (!queue.empty()) {
-      index = queue.front();
-      queue.pop();
+    for (size_t q = 0; q < 2; q++) {
+      if (startAtCorners && (q == 0)) {
+        // insert all corners of [0, 1]^d into queue
+        iterator.resetToLevelZero();
 
-      const GridPoint& point = storage[index];
-      iterator.set(point);
-      functor(source, result, iterator);
+        std::vector<size_t> powersOfTwo(d + 1);
+        powersOfTwo[0] = 1;
 
-      for (size_t t = 0; t < d; t++) {
-        {
-          iterator.leftChild(t);
+        for (size_t t = 0; t < d; t++) {
+          powersOfTwo[t + 1] = 2 * powersOfTwo[t];
+        }
+
+        // iterate through the 2^d corners
+        for (size_t k = 0; k < powersOfTwo[d]; k++) {
+          for (size_t t = 0; t < d; t++) {
+            iterator.set(t, 0, static_cast<index_t>((k & powersOfTwo[t]) != 0));
+          }
+
+          // add the corner to the queue if present in the grid
           index = iterator.seq();
 
-          if ((index < n) && (!visited[index])) {
+          if (index < n) {
             queue.push(index);
             visited[index] = true;
           }
         }
+      } else {
+        // insert midpoint (0.5, ..., 0.5) into queue
+        index = iterator.seq();
+        queue.push(index);
+        visited[index] = true;
+      }
 
-        {
-          iterator.stepRight(t);
-          index = iterator.seq();
+      // work through queue until empty
+      while (!queue.empty()) {
+        index = queue.front();
+        queue.pop();
 
-          if ((index < n) && (!visited[index])) {
-            queue.push(index);
-            visited[index] = true;
-          }
+        if (index >= n) {
+          continue;
         }
 
-        iterator.up(t);
+        const GridPoint& point = storage[index];
+        iterator.set(point);
+        functor(source, result, iterator);
+
+        for (size_t t = 0; t < d; t++) {
+          iterator.get(t, l, i);
+
+          if (l == 0) {
+            // boundary point
+            iterator.set(t, 1, 1);
+            index = iterator.seq();
+
+            if ((index < n) && (!visited[index])) {
+              queue.push(index);
+              visited[index] = true;
+            }
+          } else {
+            // interior point
+            {
+              iterator.leftChild(t);
+              index = iterator.seq();
+
+              if ((index < n) && (!visited[index])) {
+                queue.push(index);
+                visited[index] = true;
+              }
+            }
+
+            {
+              iterator.stepRight(t);
+              index = iterator.seq();
+
+              if ((index < n) && (!visited[index])) {
+                queue.push(index);
+                visited[index] = true;
+              }
+            }
+          }
+
+          iterator.set(t, l, i);
+        }
+      }
+
+      // repeat once iff we started at corners, but did not reach the midpoint
+      if (q == 0) {
+        if (startAtCorners) {
+          for (size_t t = 0; t < d; t++) {
+            iterator.resetToLevelOne(t);
+          }
+
+          index = iterator.seq();
+
+          if ((index < n) || visited[index]) {
+            break;
+          }
+        } else {
+          break;
+        }
       }
     }
   }
@@ -122,6 +196,8 @@ class BreadthFirstSearch {
   FUNC functor;
   /// storage of the grid
   GridStorage& storage;
+  /// whether to start the BFS at the corners instead at the midpoint
+  bool startAtCorners;
 };
 
 }  // namespace base
