@@ -119,7 +119,8 @@ class CombigridMultiOperation {
   base::DataVector evaluate(size_t q, base::DataMatrix const &params = base::DataMatrix(0, 0));
 
   /**
-   * @return the storage containing the computed function values at evaluation points.
+   * @return the storage containing the computed coefficients.
+   * For the basic operations these are the function values at evaluation points.
    */
   std::shared_ptr<AbstractCombigridStorage> getStorage();
 
