@@ -20,13 +20,9 @@ std::shared_ptr<TreeStorage<uint8_t>> convertHierarchicalSparseGridToCombigrid(
   }
 }
 
-void convertCombigridToHierarchicalSparseGrid(
-    std::shared_ptr<TreeStorage<uint8_t>> levelStructure, base::HashGridStorage& storage,
-    std::shared_ptr<AbstractCombigridStorage> const& funcStorage,
-    sgpp::base::DataVector& functionValues, std::vector<bool> orderingConfiguration) {
+void convertCombigridToHierarchicalSparseGrid(std::shared_ptr<TreeStorage<uint8_t>> levelStructure,
+                                              base::HashGridStorage& storage) {
   size_t d = levelStructure->getNumDimensions();
-
-  functionValues.clear();
 
   auto it = levelStructure->getStoredDataIterator();
   base::HashGridPoint::level_type sglevel;
@@ -35,16 +31,17 @@ void convertCombigridToHierarchicalSparseGrid(
 
   while (it->isValid()) {
     MultiIndex currentLevel = it->getMultiIndex();
+    std::cout << it->getMultiIndex()[0] << " ";
 
     // now iterate over index
     MultiIndex multiBounds(d);
     for (size_t i = 0; i < d; ++i) {
       // there are 2^l elements in the level, subtract 1 because the bound is inclusive
       multiBounds[i] = 1 << currentLevel[i];
+      std::cout << multiBounds[i] << " ";
     }
+    std::cout << "\n";
     MultiIndexIterator indexIt(multiBounds);
-
-    auto funcIter = funcStorage->getGuidedIterator(currentLevel, indexIt, orderingConfiguration);
 
     while (indexIt.isValid()) {
       MultiIndex index = indexIt.getMultiIndex();
@@ -53,7 +50,7 @@ void convertCombigridToHierarchicalSparseGrid(
         sgindex = static_cast<base::HashGridPoint::index_type>(2 * index[i] + 1);
         point.push(i, sglevel, sgindex);
       }
-      functionValues.push_back(funcIter->value());
+
       storage.insert(point);
       indexIt.moveToNext();
     }
@@ -62,6 +59,70 @@ void convertCombigridToHierarchicalSparseGrid(
   }
 
   storage.recalcLeafProperty();
+}
+
+// in combigrid a boundary grid of level 0 contains 0 .5,  a SG++ boundary grid of level 0 contains
+// 0 and 1. From level 1 onwards they are identical. Therefore a combigrid boudnary grid of level 0
+// cannot be converted into a SG++ boundary grid!
+void convertBoundaryCombigridToHierarchicalSparseGrid(
+    std::shared_ptr<TreeStorage<uint8_t>> levelStructure, base::HashGridStorage& storage) {
+  size_t d = levelStructure->getNumDimensions();
+
+  auto it = levelStructure->getStoredDataIterator();
+  base::HashGridPoint::level_type sglevel;
+  base::HashGridPoint::index_type sgindex;
+  base::HashGridPoint point(d);
+
+  // check if all level 1 grids exist, otherwise the grid cannot be transformed (at least not
+  // without much more special cases)
+  size_t numLevelOneLevels = 0;
+  while (it->isValid()) {
+    MultiIndex currentLevel = it->getMultiIndex();
+    size_t levelsum = std::accumulate(currentLevel.begin(), currentLevel.end(), 0);
+    if (levelsum == 1) {
+      numLevelOneLevels++;
+    }
+  }
+  if (numLevelOneLevels != d) {
+    std::cerr << "GridConversion: The subgrid of level 1 must exist in every dimension."
+              << std::endl;
+  }
+
+  it.reset();
+  while (it->isValid()) {
+    MultiIndex currentLevel = it->getMultiIndex();
+
+    std::cout << it->getMultiIndex()[0] << " ";
+
+    // now iterate over index
+    MultiIndex multiBounds(d);
+    for (size_t i = 0; i < d; ++i) {
+      // there are 2^l elements in the level, subtract 1 because the bound is inclusive
+      multiBounds[i] = 1 << currentLevel[i];
+      std::cout << multiBounds[i] << " ";
+    }
+    std::cout << "\n";
+    MultiIndexIterator indexIt(multiBounds);
+
+    while (indexIt.isValid()) {
+      MultiIndex index = indexIt.getMultiIndex();
+      for (size_t i = 0; i < d; ++i) {
+        // if level == 0 oder 1 Spezial Level und Index
+        sglevel = static_cast<base::HashGridPoint::level_type>(currentLevel[i]);
+        sgindex = static_cast<base::HashGridPoint::index_type>(2 * index[i] + 1);
+        point.push(i, sglevel, sgindex);
+      }
+
+      storage.insert(point);
+      indexIt.moveToNext();
+    }
+
+    it->moveToNext();
+  }
+
+  storage.recalcLeafProperty();
+
+  // Funktionswerte berechnen via Interpolant aus Operation, Punkte aus HashGridStorage
 }
 
 std::shared_ptr<TreeStorage<uint8_t>> allStorageLevels(base::HashGridStorage& storage) {

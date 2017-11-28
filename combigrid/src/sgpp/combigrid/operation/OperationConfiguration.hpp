@@ -35,6 +35,7 @@ enum class CombiEvaluatorTypes {
 
   // scalar product
   Multi_BSplineScalarProduct,
+  Multi_PolynomialScalarProduct,
 
   // interpolation
   Tensor_PolynomialInterpolation
@@ -45,6 +46,8 @@ struct EvaluatorConfiguration {
   size_t degree = 3;
   std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis;
 
+  EvaluatorConfiguration()
+      : type(CombiEvaluatorTypes::NO_TYPE), degree(0), functionBasis(nullptr){};
   EvaluatorConfiguration(CombiEvaluatorTypes type) : type(type){};
   EvaluatorConfiguration(CombiEvaluatorTypes type, size_t degree) : type(type), degree(degree){};
   EvaluatorConfiguration(CombiEvaluatorTypes type, size_t degree,
