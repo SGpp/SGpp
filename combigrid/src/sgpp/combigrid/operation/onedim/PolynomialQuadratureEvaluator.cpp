@@ -3,39 +3,19 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <cmath>
-#include <iomanip>
-#include <iostream>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
+
 #include <vector>
+#include <cmath>
+#include <iomanip>
+#include <iostream>
 
 namespace sgpp {
 namespace combigrid {
-
-/**
- * Struct for a LagrangePolynom, used to eval it
- */
-struct LagrangePolynom {
-  std::vector<double> points;
-  size_t point;
-
-  double evaluate(double x) {
-    double result = 1.0;
-    for (size_t i = 0; i < points.size(); ++i) {
-      if (i != point) {
-        // TODO(holzmudd): precalculate denominator?
-        result *= (x - points[i]) / (points[point] - points[i]);
-      }
-    }
-    return result;
-  }
-
-  size_t degree() { return points.size(); }
-};
 
 /**
  * Calculates the weight for the specific point
@@ -46,9 +26,8 @@ double PolynomialQuadratureEvaluator::getWeight(std::vector<double>& points, siz
   p.point = point;
   size_t numGaussPoints = (p.degree() + 2) / 2 + numAdditionalPoints;
 
-  return GaussLegendreQuadrature(numGaussPoints).evaluate([&p, this](double x) {
-    return p.evaluate(x) * this->weight_function(x);
-  });
+  return GaussLegendreQuadrature(numGaussPoints)
+      .evaluate([&p, this](double x) { return p.evaluate(x) * this->weight_function(x); });
 }
 
 /**

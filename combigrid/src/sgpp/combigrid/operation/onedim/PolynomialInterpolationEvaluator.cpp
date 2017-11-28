@@ -3,9 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
+
 #include <cmath>
 #include <limits>
-#include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <vector>
 
 namespace sgpp {
