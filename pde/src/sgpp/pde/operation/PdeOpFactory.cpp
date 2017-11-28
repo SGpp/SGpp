@@ -24,6 +24,7 @@
 #include <sgpp/pde/operation/hash/OperationLTwoDotProductLinearStretchedBoundary.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitPeriodic.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotPeriodic.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModifiedLinear.hpp>
 
 #include <sgpp/pde/operation/hash/OperationLaplaceEnhancedLinear.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceEnhancedLinearBoundary.hpp>
@@ -93,6 +94,8 @@ base::OperationMatrix* createOperationLTwoDotExplicit(base::Grid& grid) {
     return new pde::OperationMatrixLTwoDotExplicitLinearBoundary(&grid);
   } else if (grid.getType() == base::GridType::Periodic) {
     return new pde::OperationMatrixLTwoDotExplicitPeriodic(&grid);
+  } else if (grid.getType() == base::GridType::ModLinear) {
+    return new pde::OperationMatrixLTwoDotExplicitModifiedLinear(&grid);
   } else {
     throw base::factory_exception(
         "OperationLTwoDotExplicit is not implemented for this grid type.");
@@ -107,6 +110,8 @@ base::OperationMatrix* createOperationLTwoDotExplicit(
     return new pde::OperationMatrixLTwoDotExplicitLinearBoundary(m, &grid);
   } else if (grid.getType() == base::GridType::Periodic) {
     return new pde::OperationMatrixLTwoDotExplicitPeriodic(m, &grid);
+  } else if (grid.getType() == base::GridType::ModLinear) {
+    return new pde::OperationMatrixLTwoDotExplicitModifiedLinear(m, &grid);
   } else {
     throw base::factory_exception(
         "OperationLTwoDotExplicit is not implemented for this grid type.");

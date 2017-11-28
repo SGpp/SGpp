@@ -30,6 +30,19 @@ class HashRefinementInteraction : public HashRefinement {
   explicit HashRefinementInteraction(std::unordered_set<std::vector<bool>> interactions);
   void createGridpoint(GridStorage& storage, GridPoint& index) override;
 
+  /**
+  * Examines the grid points and stores the indices those that can be refined
+  * and have maximal indicator values.
+  *
+  * @param storage hashmap that stores the grid points
+  * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
+  * @param collection container that contains elements to refine (empty initially)
+  */
+  void collectRefinablePoints(
+    GridStorage& storage,
+    RefinementFunctor& functor,
+    AbstractRefinement::refinement_container_type& collection) override;
+
  private:
   std::unordered_set<std::vector<bool>> interactions;
 };
