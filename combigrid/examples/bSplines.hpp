@@ -41,8 +41,7 @@
 
 size_t numDimensions = 1;
 double f(sgpp::base::DataVector const& v) {
-  std::cout << v[0] << " " << v[0] * v[0] << std::endl;
-  return v[0] * v[0];
+  return v[0];
   //  return v[0] * sin(v[0] + v[1]) * exp(v[1] * v[2]);
   //  return std::atan(50 * (v[0] - .35));
   //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
@@ -338,7 +337,7 @@ double interpolateVarianceAdaptively(size_t numlevels, size_t degree) {
   return interpoleval.l2Norm();
 }
 
-void BSplineGridConversion(size_t degree, size_t level) {
+void BSplineGridConversion(size_t degree, size_t maxLevel) {
   // create interpolation Operation
   sgpp::combigrid::MultiFunction func(f);
   sgpp::combigrid::EvaluatorConfiguration evalConfig(
@@ -359,7 +358,7 @@ void BSplineGridConversion(size_t degree, size_t level) {
   // evaluate somewhere and thereby create the level structure
   sgpp::base::DataMatrix params(numDimensions, 1, 0.777);
   params.appendCol(sgpp::base::DataVector{1, 0.8});
-  sgpp::base::DataVector result = Operation->evaluate(level, params);
+  sgpp::base::DataVector result = Operation->evaluate(maxLevel, params);
 
   //  for (auto& r : result) {
   //    std::cout << r << " ";
@@ -367,7 +366,7 @@ void BSplineGridConversion(size_t degree, size_t level) {
   //  std::cout << "\n";
 
   auto levelStructure = Operation->getLevelManager()->getLevelStructure();
-  auto funcStorage = Operation->getStorage();
+  auto coeffStorage = Operation->getStorage();
   pointHierarchies = Operation->getPointHierarchies();
   std::vector<bool> orderingConfiguration;
   for (size_t d = 0; d < numDimensions; ++d) {
@@ -380,25 +379,32 @@ void BSplineGridConversion(size_t degree, size_t level) {
 
   auto levelIterator = levelStructure->getStoredDataIterator();
   while (levelIterator->isValid()) {
-    sgpp::combigrid::MultiIndex currentLevel = levelIterator->getMultiIndex();
+    sgpp::combigrid::MultiIndex level = levelIterator->getMultiIndex();
     std::cout << "Level ";
     for (size_t d = 0; d < numDimensions; ++d) {
-      std::cout << currentLevel[d] << " ";
+      std::cout << level[d] << " ";
     }
     std::cout << "\n";
 
     sgpp::combigrid::MultiIndex multiBounds(numDimensions);
 
     for (size_t d = 0; d < numDimensions; ++d) {
-      multiBounds[d] = pointHierarchies[d]->getNumPoints(currentLevel[d]);
-      std::cout << "multiBounds in dim " << d << ": " << multiBounds[d] << std::endl;
+      auto gridpoints = pointHierarchies[d]->getPoints(level[d], orderingConfiguration[d]);
+      std::cout << "point hierarchies: ";
+      for (auto& p : gridpoints) {
+        std::cout << p << " ";
+      }
+      std::cout << "\n";
 
-      sgpp::combigrid::MultiIndexIterator innerIter(multiBounds);
-      auto funcIter =
-          funcStorage->getGuidedIterator(currentLevel, innerIter, orderingConfiguration);
-      while (funcIter->isValid()) {
-        std::cout << funcIter->value() << " ";
-        funcIter->moveToNext();
+      multiBounds[d] = pointHierarchies[d]->getNumPoints(level[d]);
+      //      std::cout << "multiBounds: " << multiBounds[d] << std::endl;
+
+      sgpp::combigrid::MultiIndexIterator it(multiBounds);
+      auto coeffIter = coeffStorage->getGuidedIterator(level, it, orderingConfiguration);
+      std::cout << "coefficients: ";
+      while (coeffIter->isValid()) {
+        std::cout << coeffIter->value() << " ";
+        coeffIter->moveToNext();
       }
       std::cout << "\n";
     }
