@@ -399,10 +399,10 @@ double PolynomialStochasticCollocation::quad(MultiIndex i, MultiIndex j) {
 
   // performing Gauss-Legendre integration
   auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
+  base::DataVector roots;
+  base::DataVector quadratureweights;
 
   for (size_t idim = 0; idim < i.size(); idim++) {
-    base::DataVector roots;
-    base::DataVector quadratureweights;
     size_t degree_i = i[idim], degree_j = j[idim];
     auto functionBasis = functionBases[idim];
     size_t incrementQuadraturePoints =
