@@ -8,8 +8,8 @@
 #include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
-#include <sgpp/combigrid/operation/onedim/PolynomialScalarProductEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/PolynomialScalarProductEvaluator.hpp>
 
 #include <cmath>
 #include <iomanip>
@@ -19,8 +19,7 @@
 namespace sgpp {
 namespace combigrid {
 
-double PolynomialScalarProductEvaluator::quad(LagrangePolynom& p_i,
-                                              LagrangePolynom& p_j) {
+double PolynomialScalarProductEvaluator::quad(LagrangePolynom& p_i, LagrangePolynom& p_j) {
   size_t degree_i = p_i.points.size();
   size_t degree_j = p_j.points.size();
   size_t numGaussPoints = (degree_i + degree_j + 3) / 2;
@@ -188,10 +187,6 @@ size_t PolynomialScalarProductEvaluator::generateKey(size_t idegree, size_t jdeg
   return (smaller_degree + larger_degree) * (smaller_degree + larger_degree + 1) / 2 +
          larger_degree;
 }
-
-// CombiEvaluatorTypes PolynomialScalarProductEvaluator::getType() {
-//  return CombiEvaluatorTypes::Multi_BSplineScalarProduct;
-//}
 
 } /* namespace combigrid */
 } /* namespace sgpp*/

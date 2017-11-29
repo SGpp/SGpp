@@ -32,8 +32,6 @@ class BSplineInterpolationEvaluator : public AbstractLinearEvaluator<FloatScalar
   bool needsParameter() override;
   void setParameter(FloatScalarVector const &param) override;
 
-  //  CombiEvaluatorTypes getType() override;
-
  private:
   void computeBasisValues();
 

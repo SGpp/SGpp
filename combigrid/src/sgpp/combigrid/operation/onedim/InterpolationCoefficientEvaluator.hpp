@@ -37,8 +37,6 @@ class InterpolationCoefficientEvaluator : public AbstractLinearEvaluator<FloatTe
   bool needsOrderedPoints() override;
   bool needsParameter() override;
   void setParameter(FloatTensorVector const &param) override;
-
-  //  CombiEvaluatorTypes getType() override;
 };
 
 } /* namespace combigrid */

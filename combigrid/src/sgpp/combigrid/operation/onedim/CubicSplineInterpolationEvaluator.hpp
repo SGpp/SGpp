@@ -30,8 +30,6 @@ class CubicSplineInterpolationEvaluator : public AbstractLinearEvaluator<FloatSc
   bool needsParameter() override;
   void setParameter(FloatScalarVector const &param) override;
 
-  //  CombiEvaluatorTypes getType() override;
-
  private:
   void computeBasisValues();
 
