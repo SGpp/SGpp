@@ -41,8 +41,6 @@ class LinearInterpolationEvaluator : public AbstractLinearEvaluator<FloatScalarV
   bool needsOrderedPoints() override;
   bool needsParameter() override;
   void setParameter(FloatScalarVector const &param) override;
-
-  //  CombiEvaluatorTypes getType() override;
 };
 
 } /* namespace combigrid */

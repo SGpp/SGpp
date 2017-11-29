@@ -9,10 +9,10 @@
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
 
-#include <vector>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
@@ -26,8 +26,9 @@ double PolynomialQuadratureEvaluator::getWeight(std::vector<double>& points, siz
   p.point = point;
   size_t numGaussPoints = (p.degree() + 2) / 2 + numAdditionalPoints;
 
-  return GaussLegendreQuadrature(numGaussPoints)
-      .evaluate([&p, this](double x) { return p.evaluate(x) * this->weight_function(x); });
+  return GaussLegendreQuadrature(numGaussPoints).evaluate([&p, this](double x) {
+    return p.evaluate(x) * this->weight_function(x);
+  });
 }
 
 /**
@@ -129,10 +130,6 @@ void PolynomialQuadratureEvaluator::setFunctionValuesAtGridPoints(
     std::vector<double>& functionValues) {
   basisCoefficients = functionValues;
 }
-
-// CombiEvaluatorTypes PolynomialQuadratureEvaluator::getType() {
-//  return CombiEvaluatorTypes::Scalar_PolynomialQuadrature;
-//}
 
 } /* namespace combigrid */
 } /* namespace sgpp*/

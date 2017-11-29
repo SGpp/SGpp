@@ -181,9 +181,5 @@ void BSplineScalarProductEvaluator::setFunctionValuesAtGridPoints(
   basisCoefficients = functionValues;
 }
 
-// CombiEvaluatorTypes BSplineScalarProductEvaluator::getType() {
-//  return CombiEvaluatorTypes::Multi_BSplineScalarProduct;
-//}
-
 } /* namespace combigrid */
 } /* namespace sgpp*/
