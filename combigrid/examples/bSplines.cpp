@@ -8,7 +8,7 @@
 int main() {
   //  size_t numDimensions = 2;
   size_t degree = 3;
-  size_t maxLevel = 3;
+  size_t maxLevel = 8;
   //  sgpp::combigrid::MultiIndex oneLevel = {2, 2};
 
   // Interpolation

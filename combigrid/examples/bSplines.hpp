@@ -31,6 +31,7 @@
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
+#include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/quadrature/sampling/NaiveSampleGenerator.hpp>
 
@@ -41,11 +42,11 @@
 
 size_t numDimensions = 2;
 double f(sgpp::base::DataVector const& v) {
-  return v[0];
+  //  return v[0] * v[0] * v[0] + v[1] * v[1] * v[1];
   //  return v[0] * sin(v[0] + v[1]) * exp(v[1] * v[2]);
   //  return std::atan(50 * (v[0] - .35));
-  //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
-  //         std::exp(v[0] * v[1] - 1);
+  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
+         std::exp(v[0] * v[1] - 1);
 }
 
 void interpolate(size_t maxlevel, size_t numDimensions, size_t degree, double& max_err,
@@ -380,27 +381,28 @@ void BSplineGridConversion(size_t degree, size_t maxLevel) {
   auto levelIterator = levelStructure->getStoredDataIterator();
   while (levelIterator->isValid()) {
     sgpp::combigrid::MultiIndex level = levelIterator->getMultiIndex();
-    std::cout << "Level ";
-    for (size_t d = 0; d < numDimensions; ++d) {
-      std::cout << level[d] << " ";
-    }
-    std::cout << "\n";
+    //    std::cout << "Level ";
+    //    for (size_t d = 0; d < numDimensions; ++d) {
+    //      std::cout << level[d] << " ";
+    //    }
+    //    std::cout << "\n";
 
     sgpp::combigrid::MultiIndex multiBounds(numDimensions);
 
     for (size_t d = 0; d < numDimensions; ++d) {
       auto gridpoints = pointHierarchies[d]->getPoints(level[d], orderingConfiguration[d]);
-      std::cout << "point hierarchies: ";
-      for (auto& p : gridpoints) {
-        std::cout << p << " ";
-      }
-      std::cout << "\n";
+      //      std::cout << "point hierarchies: ";
+      //      for (auto& p : gridpoints) {
+      //        std::cout << p << " ";
+      //      }
+      //      std::cout << "\n";
     }
     levelIterator->moveToNext();
   }
 
   std::unique_ptr<sgpp::base::Grid> grid;
   grid.reset(sgpp::base::Grid::createNotAKnotBsplineBoundaryGrid(numDimensions, degree));
+
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
 
   //  grid->getGenerator().regular(3);
@@ -411,18 +413,62 @@ void BSplineGridConversion(size_t degree, size_t maxLevel) {
   //              << std::endl;
   //  }
 
-  // ToDo (rehmemk) Erstelle Dünngitter Interpolanten. Funktionswerte im ersten Schritt einfach aus
-  // Funktionsauswertung, dann in Verbesserung aus Combi Interpolant Auswertung in Gitterpunkten.
+  convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
+  std::cout << "size Combi " << Operation->getLevelManager()->numGridPoints() << std::endl;
+  std::cout << "size SG " << gridStorage.getSize() << std::endl;
 
-  convertBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
-
-  std::cout << "SG Coordinates" << std::endl;
+  std::string plotstr = "/home/rehmemk/SGS_Sync/Plotting/combigrid_bsplines/convertedGrid.dat";
+  remove(plotstr.c_str());
+  std::ofstream plotfile;
+  plotfile.open(plotstr.c_str(), std::ios::app);
+  plotfile << "#grid points" << std::endl;
+  //  std::cout << "SG Coordinates" << std::endl;
   for (auto& s : gridStorage) {
     sgpp::base::DataVector coordinates;
-    s.first->getStandardCoordinates(coordinates);
-    for (size_t i = 0; i < numDimensions; i++) {
-      std::cout << coordinates[i] << " ";
+    gridStorage.getCoordinates(*s.first, coordinates);
+    for (size_t i = 0; i < numDimensions - 1; i++) {
+      //      std::cout << coordinates[i] << " ";
+      plotfile << coordinates[i] << ", ";
     }
-    std::cout << "\n";
+    //    std::cout << coordinates[numDimensions - 1] << " ";
+    plotfile << coordinates[numDimensions - 1];
+    //    std::cout << "\n";
+    plotfile << "\n";
   }
+  plotfile.close();
+
+  // interpolate on sparse grid
+  sgpp::base::DataMatrix interpolParams(numDimensions, 0);
+  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
+  sgpp::optimization::sle_solver::Auto sleSolver;
+  sgpp::base::DataVector alpha(grid->getSize());
+  sgpp::base::DataVector f_values(gridStorage.getSize(), 0.0);
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
+    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
+    sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
+    for (size_t j = 0; j < gridStorage.getDimension(); j++) {
+      p[j] = gp.getStandardCoordinate(j);
+    }
+    interpolParams.appendCol(p);
+  }
+
+  // obtain function values from combigrid surrogate
+  Operation->setParameters(interpolParams);
+  Operation->getLevelManager()->addLevelsFromStructure(levelStructure);
+  f_values = Operation->getResult();
+  if (!sleSolver.solve(hierSLE, f_values, alpha)) {
+    std::cout << "Solving failed!" << std::endl;
+  }
+  sgpp::optimization::InterpolantScalarFunction u(*grid, alpha);
+  double diff = 0;
+  double max_err = 0;
+  size_t numMCpoints = 10000;
+  sgpp::quadrature::NaiveSampleGenerator generator(numDimensions);
+  sgpp::base::DataVector p(numDimensions);
+  for (size_t i = 0; i < numMCpoints; i++) {
+    generator.getSample(p);
+    diff = fabs(u.eval(p) - f(p));
+    max_err = (diff > max_err) ? diff : max_err;
+  }
+  std::cout << "error: " << max_err << std::endl;
 }
