@@ -43,7 +43,7 @@ void convertCombigridToHierarchicalSparseGrid(std::shared_ptr<TreeStorage<uint8_
  * @param levelStructure level structure of anisotropic full grids of combination technique
  * @param storage hash map of sparse grid points
  */
-void convertBoundaryCombigridToHierarchicalSparseGrid(
+void convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(
     std::shared_ptr<TreeStorage<uint8_t>> levelStructure, base::HashGridStorage& storage);
 
 /**
