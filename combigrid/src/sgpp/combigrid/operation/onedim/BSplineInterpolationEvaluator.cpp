@@ -65,7 +65,8 @@ void BSplineInterpolationEvaluator::computeBasisValues() {
   if (xValues.size() == 1) {
     basisValues[0] = 1.0;
     return;
-  } else if (xValues.size() < 9) {
+  } else if ((degree == 3 && (xValues.size() < 5)) || ((degree == 5) && (xValues.size() < 9))) {
+    // ToDo (rehmemk) fix this comment when decision is made when to use Lagrange polynomials
     // Lagrange polynomials for less than 9 points because 9 is the number of gridpoints of a
     // uniform
     // boundary grid of level 3 and this is the first level with enough gridpoints for nak B-Splines

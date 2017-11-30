@@ -40,12 +40,10 @@
 
 size_t numDimensions = 2;
 double f(sgpp::base::DataVector const& v) {
-  return v[0] * sin(v[1]);
   //  return v[0] * v[0] * v[0] + v[1] * v[1] * v[1];
-  //  return v[0] * sin(v[0] + v[1]) * exp(v[1] * v[2]);
   //  return std::atan(50 * (v[0] - .35));
-  //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
-  //         std::exp(v[0] * v[1] - 1);
+  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
+         std::exp(v[0] * v[1] - 1);
 }
 void printLevelstructure(
     std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelstructure) {
@@ -230,8 +228,9 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   grid.reset(sgpp::base::Grid::createNotAKnotBsplineBoundaryGrid(numDimensions, degree));
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
+  //  grid->getGenerator().regular(3);
 
-  //  printLevelstructure(levelStructure);
+  printLevelstructure(levelStructure);
   printSGGridToFile(gridStorage);
 
   // interpolate on SG
@@ -275,7 +274,7 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
 
 int main() {
   size_t degree = 3;
-  size_t numlevels = 2;
+  size_t numlevels = 30;
   //  for (maxLevel = 0; maxLevel < 30; maxLevel++) {
   //    std::cout << "added Levels: " << maxLevel << " ";
   BSplineGridConversion(degree, numlevels);

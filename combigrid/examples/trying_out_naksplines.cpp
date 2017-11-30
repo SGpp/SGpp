@@ -28,7 +28,7 @@ double f(sgpp::base::DataVector p, size_t dim) {
       fvalue = pow(p[0], 3);
       break;
     case 2:
-      fvalue = pow(p[0], 3) * pow(p[1], 3);
+      fvalue = p[0] * p[0] * p[0] + p[1] * p[1] * p[1];
       break;
     case 3:
       fvalue = 64 * p[0] * (1 - p[0]) * p[1] * (1 - p[1]) * p[2] * (1 - p[2]);
@@ -42,10 +42,10 @@ double f(sgpp::base::DataVector p, size_t dim) {
 }
 
 int main() {
-  size_t dim = 1;
+  size_t dim = 2;
   size_t deg = 3;
   size_t level = 3;
-  size_t numMCpoints = 1000;
+  size_t numMCpoints = 10000;
 
   std::unique_ptr<sgpp::base::Grid> grid;
   grid.reset(sgpp::base::Grid::createNotAKnotBsplineBoundaryGrid(dim, deg));
@@ -95,16 +95,16 @@ int main() {
   std::cout << "max error: " << max_err << std::endl;
 
   // Plot basis
-  //  std::string plotstr = "/home/rehmemk/SGS_Sync/Plotting/nakBsplines/base_eval.dat";
-  //  remove(plotstr.c_str());
-  //  std::ofstream plotfile;
-  //  plotfile.open(plotstr.c_str(), std::ios::app);
-  //
-  //  sgpp::base::SNotAKnotBsplineBoundaryBase myBasis(3);
-  //  for (double p = 0; p < 1; p = p + 0.005) {
-  //    plotfile << p << "   " << myBasis.eval(3, 7, p) << "\n";
-  //  }
-  //  plotfile.close();
+  std::string plotstr = "/home/rehmemk/SGS_Sync/Plotting/nakBsplines/base_eval.dat";
+  remove(plotstr.c_str());
+  std::ofstream plotfile;
+  plotfile.open(plotstr.c_str(), std::ios::app);
+
+  sgpp::base::SNotAKnotBsplineBoundaryBase myBasis(3);
+  for (double p = 0; p < 1; p = p + 0.005) {
+    plotfile << p << ",   " << myBasis.eval(3, 3, p) << "\n";
+  }
+  plotfile.close();
 
   return 0;
 }
