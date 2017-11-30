@@ -303,8 +303,8 @@ class Grid {
    *
    * @return grid
    */
-   static Grid* createFundamentalSplineBoundaryGrid(
-       size_t dim, size_t degree, level_t boundaryLevel = 1);
+  static Grid* createFundamentalSplineBoundaryGrid(
+      size_t dim, size_t degree, level_t boundaryLevel = 1);
 
   /**
    * creates a mod-fundamental spline grid
