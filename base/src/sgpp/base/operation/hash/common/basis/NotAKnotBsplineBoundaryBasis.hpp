@@ -3,9 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef NOTAKNOT_BSPLINE_BOUNDARY_BASE_HPP
-#define NOTAKNOT_BSPLINE_BOUNDARY_BASE_HPP
-
+#pragma once
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -18,9 +16,7 @@ namespace sgpp {
 namespace base {
 
 /**
- * Not-a-knot B-spline boundary basis.
- * Formerly called Not a Knot B-spline basis, but this name had to be used for the non boundary nak
- * B-Spline basis
+ * Not-a-knot B-spline basis.
  */
 template <class LT, class IT>
 class NotAKnotBsplineBoundaryBasis : public Basis<LT, IT> {
@@ -66,10 +62,12 @@ class NotAKnotBsplineBoundaryBasis : public Basis<LT, IT> {
         if (l == 0) {
           if (i == 0) {
             // l = 0, i = 0
-            return 1.0 - x;
+            //            return 1.0 - x;
+            return x;
           } else {
             // l = 0, i = 1
-            return x;
+            //            return x;
+            return x * x - 2 * x + 1;
           }
         } else if (l == 1) {
           if (i == 0) {
@@ -77,8 +75,9 @@ class NotAKnotBsplineBoundaryBasis : public Basis<LT, IT> {
             return 0.5 * t * t - 1.5 * t + 1.0;
           } else if (i == 1) {
             // l = 1, i = 1
-            return 1.0 - t * t;
-          } else if (i == 2) {
+            //            return 1.0 - t * t;
+            return 1;
+          } else {
             // l = 1, i = 2
             return 0.5 * t * t + 1.5 * t + 1.0;
           }
@@ -755,5 +754,3 @@ typedef NotAKnotBsplineBoundaryBasis<unsigned int, unsigned int> SNotAKnotBsplin
 
 }  // namespace base
 }  // namespace sgpp
-
-#endif /* NOTAKNOT_BSPLINE_BOUNDARY_BASE_HPP */

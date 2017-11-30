@@ -23,7 +23,6 @@
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/WaveletBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/WaveletModifiedBasis.hpp>
@@ -41,6 +40,8 @@
 #include <cstring>
 #include <memory>
 #include <stdexcept>
+
+#include "../../../../../../base/src/sgpp/base/operation/hash/common/basis/NotAKnotBsplineBoundaryBasis.hpp"
 
 namespace sgpp {
 namespace optimization {
