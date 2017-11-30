@@ -28,6 +28,7 @@
 
 #include <sgpp/base/operation/hash/OperationHierarchisationFundamentalSpline.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationFundamentalSplineBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationHierarchisationLagrangeNotAKnotSplineBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationLinear.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationLinearBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationLinearStretched.hpp>
@@ -192,6 +193,14 @@ base::OperationHierarchisation* createOperationHierarchisation(base::Grid& grid)
   } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
     return new base::OperationHierarchisationModFundamentalSpline(
         dynamic_cast<base::ModFundamentalSplineGrid*>(&grid));
+  } else if (grid.getType() == base::GridType::LagrangeNotAKnotSplineBoundary) {
+    if (dynamic_cast<base::LagrangeNotAKnotSplineBoundaryGrid*>(&grid)->getDegree() != 3) {
+      throw base::factory_exception(
+          "OperationHierarchisationLagrangeNotAKnotSplineBoundary is "
+          "not implemented for this degree.");
+    }
+
+    return new base::OperationHierarchisationLagrangeNotAKnotSplineBoundary(grid.getStorage());
   } else {
     throw base::factory_exception(
         "createOperationHierarchisation is not implemented for this grid type.");

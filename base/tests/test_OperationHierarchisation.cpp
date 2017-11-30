@@ -23,9 +23,12 @@ using sgpp::base::OperationHierarchisation;
 using sgpp::base::Stretching;
 using sgpp::base::Stretching1D;
 
-void testHierarchisationDehierarchisation(sgpp::base::Grid& grid, size_t level,
-                                          double (*func)(DataVector&), double tolerance = 0.0,
-                                          bool naiveOp = false) {
+void testHierarchisationDehierarchisation(sgpp::base::Grid& grid,
+                                          size_t level,
+                                          double (*func)(DataVector&),
+                                          double tolerance = 0.0,
+                                          bool naiveOp = false,
+                                          bool checkDehierarchisation = true) {
   grid.getGenerator().regular(level);
   GridStorage& gridStore = grid.getStorage();
   size_t dim = gridStore.getDimension();
@@ -57,11 +60,13 @@ void testHierarchisationDehierarchisation(sgpp::base::Grid& grid, size_t level,
     BOOST_CHECK_CLOSE(eval, node_values[n], tolerance);
   }
 
-  DataVector node_values_back = DataVector(alpha);
-  hierarchisation->doDehierarchisation(node_values_back);
+  if (checkDehierarchisation) {
+    DataVector node_values_back = DataVector(alpha);
+    hierarchisation->doDehierarchisation(node_values_back);
 
-  for (size_t n = 0; n < gridStore.getSize(); n++) {
-    BOOST_CHECK_CLOSE(node_values_back[n], node_values[n], tolerance);
+    for (size_t n = 0; n < gridStore.getSize(); n++) {
+      BOOST_CHECK_CLOSE(node_values_back[n], node_values[n], tolerance);
+    }
   }
 }
 
@@ -191,6 +196,16 @@ BOOST_AUTO_TEST_CASE(testHierarchisationFundamentalSplineBoundary) {
       std::unique_ptr<Grid> grid(Grid::createFundamentalSplineBoundaryGrid(dim, degree, 0));
       testHierarchisationDehierarchisation(*grid, level, &sineBoundary, 1e-9, true);
     }
+  }
+}
+
+BOOST_AUTO_TEST_CASE(testHierarchisationLagrangeNotAKnotSplineTruncatedBoundary) {
+  int level = 5;
+  const size_t degree = 3;
+
+  for (int dim = 1; dim < 4; dim++) {
+    std::unique_ptr<Grid> grid(Grid::createLagrangeNotAKnotSplineBoundaryGrid(dim, degree));
+    testHierarchisationDehierarchisation(*grid, level, &sineBoundary, 1e-9, true, false);
   }
 }
 
