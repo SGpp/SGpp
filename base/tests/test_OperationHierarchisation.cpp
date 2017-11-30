@@ -79,7 +79,27 @@ double parabolaBoundary(DataVector& input) {
   double result = 1.;
 
   for (size_t i = 0; i < input.getSize(); i++) {
-    result *= 0.25 * (input[i] - 0.7) * (input[i] - 0.7) + 2;
+    result *= 0.25 * (input[i] - 0.7) * (input[i] - 0.7) + 2.;
+  }
+
+  return result;
+}
+
+double sine(DataVector& input) {
+  double result = 1.;
+
+  for (size_t i = 0; i < input.getSize(); i++) {
+    result *= std::sin(M_PI * input[i]);
+  }
+
+  return result;
+}
+
+double sineBoundary(DataVector& input) {
+  double result = 1.;
+
+  for (size_t i = 0; i < input.getSize(); i++) {
+    result *= std::sin(input[i] - 0.7) + 2.;
   }
 
   return result;
@@ -147,7 +167,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationFundamentalSpline) {
   for (int dim = 1; dim < 4; dim++) {
     for (int degree = 1; degree < 6; degree += 2) {
       std::unique_ptr<Grid> grid(Grid::createFundamentalSplineGrid(dim, degree));
-      testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-9, true);
+      testHierarchisationDehierarchisation(*grid, level, &sine, 1e-9, true);
     }
   }
 }
@@ -158,7 +178,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationFundamentalSplineTruncatedBoundary) {
   for (int dim = 1; dim < 4; dim++) {
     for (int degree = 1; degree < 6; degree += 2) {
       std::unique_ptr<Grid> grid(Grid::createFundamentalSplineBoundaryGrid(dim, degree));
-      testHierarchisationDehierarchisation(*grid, level, &parabolaBoundary, 1e-9, true);
+      testHierarchisationDehierarchisation(*grid, level, &sineBoundary, 1e-9, true);
     }
   }
 }
@@ -169,7 +189,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationFundamentalSplineBoundary) {
   for (int dim = 1; dim < 4; dim++) {
     for (int degree = 1; degree < 6; degree += 2) {
       std::unique_ptr<Grid> grid(Grid::createFundamentalSplineBoundaryGrid(dim, degree, 0));
-      testHierarchisationDehierarchisation(*grid, level, &parabolaBoundary, 1e-9, true);
+      testHierarchisationDehierarchisation(*grid, level, &sineBoundary, 1e-9, true);
     }
   }
 }
@@ -180,7 +200,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationModFundamentalSpline) {
   for (int dim = 1; dim < 4; dim++) {
     for (int degree = 1; degree < 6; degree += 2) {
       std::unique_ptr<Grid> grid(Grid::createModFundamentalSplineGrid(dim, degree));
-      testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-9, true);
+      testHierarchisationDehierarchisation(*grid, level, &sine, 1e-9, true);
     }
   }
 }
