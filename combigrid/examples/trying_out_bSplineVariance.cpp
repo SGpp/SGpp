@@ -228,7 +228,6 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   grid.reset(sgpp::base::Grid::createNotAKnotBsplineBoundaryGrid(numDimensions, degree));
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
-  //  grid->getGenerator().regular(3);
 
   printLevelstructure(levelStructure);
   printSGGridToFile(gridStorage);
