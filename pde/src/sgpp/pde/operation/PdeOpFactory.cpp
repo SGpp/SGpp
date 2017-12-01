@@ -26,6 +26,7 @@
 #include <sgpp/pde/operation/hash/OperationLaplaceBsplineBoundary.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceBsplineClenshawCurtis.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceModBsplineClenshawCurtis.hpp>
+#include <sgpp/pde/operation/hash/OperationLaplaceExplicitLinear.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceExplicitBspline.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceExplicitModBspline.hpp>
 
@@ -131,7 +132,9 @@ base::OperationMatrix* createOperationLaplace(
 }
 
 base::OperationMatrix* createOperationLaplaceExplicit(base::Grid& grid) {
-  if (grid.getType() == base::GridType::Bspline) {
+  if (grid.getType() == base::GridType::Linear) {
+    return new pde::OperationLaplaceExplicitLinear(&grid.getStorage());
+  } else if (grid.getType() == base::GridType::Bspline) {
     return new pde::OperationLaplaceExplicitBspline(&grid);
   } else if (grid.getType() == base::GridType::ModBspline) {
     return new pde::OperationLaplaceExplicitModBspline(&grid);
@@ -142,7 +145,9 @@ base::OperationMatrix* createOperationLaplaceExplicit(base::Grid& grid) {
 }
 
 base::OperationMatrix* createOperationLaplaceExplicit(base::DataMatrix* m, base::Grid& grid) {
-  if (grid.getType() == base::GridType::Bspline) {
+  if (grid.getType() == base::GridType::Linear) {
+    return new pde::OperationLaplaceExplicitLinear(m, &grid.getStorage());
+  } else if (grid.getType() == base::GridType::Bspline) {
     return new pde::OperationLaplaceExplicitBspline(m, &grid);
   } else if (grid.getType() == base::GridType::ModBspline) {
     return new pde::OperationLaplaceExplicitModBspline(m, &grid);
