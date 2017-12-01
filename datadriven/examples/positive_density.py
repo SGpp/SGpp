@@ -4,32 +4,40 @@ Created on Sep 4, 2017
 @author: franzefn
 '''
 from argparse import ArgumentParser
-from pysgpp import GridType_Poly, GridType_PolyBoundary, GridType_Linear, GridType_LinearBoundary, \
-    GridType_LinearL0Boundary, GridType_Bspline, GridType_BsplineClenshawCurtis, \
-    GridType_BsplineBoundary, GridType_ModBsplineClenshawCurtis, GridType_ModBspline, \
-    GridType_LinearClenshawCurtis, GridType_LinearClenshawCurtisBoundary, \
-    GridType_ModLinearClenshawCurtis, GridType_PolyClenshawCurtis, \
-    GridType_PolyClenshawCurtisBoundary, GridType_ModPolyClenshawCurtis
-from pysgpp.extensions.datadriven.uq.dists import J, Normal
-from pysgpp.extensions.datadriven.uq.dists.SGDEdist import SGDEdist
-from pysgpp.extensions.datadriven.uq.operations.sparse_grid import dehierarchize, createGrid
-from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend
-from pysgpp.extensions.datadriven.uq.plot.plot1d import plotDensity1d, plotSG1d
-from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d, plotSG2d
-from pysgpp.pysgpp_swig import Grid, RegularGridConfiguration, \
-    DataMatrix, DensitySystemMatrix, DataVector, \
-    createOperationLaplace, createOperationLTwoDotProduct, \
-    createOperationMakePositive, createOperationMultipleEvalNaive, \
-    createOperationMultipleEval, \
-    MakePositiveCandidateSearchAlgorithm_Intersections, \
-    MakePositiveInterpolationAlgorithm_InterpolateBoundaries1d
-
-from cvxopt.base import matrix
-import cvxopt
-import quadprog
 
 import matplotlib.pylab as plt
 import numpy as np
+
+import cvxopt
+import quadprog
+from cvxopt.base import matrix
+from pysgpp import (GridType_Bspline, GridType_BsplineBoundary,
+                    GridType_BsplineClenshawCurtis, GridType_Linear,
+                    GridType_LinearBoundary, GridType_LinearClenshawCurtis,
+                    GridType_LinearClenshawCurtisBoundary,
+                    GridType_LinearL0Boundary, GridType_ModBspline,
+                    GridType_ModBsplineClenshawCurtis,
+                    GridType_ModLinearClenshawCurtis,
+                    GridType_ModPolyClenshawCurtis, GridType_Poly,
+                    GridType_PolyBoundary, GridType_PolyClenshawCurtis,
+                    GridType_PolyClenshawCurtisBoundary)
+from pysgpp.extensions.datadriven.uq.dists import J, Normal
+from pysgpp.extensions.datadriven.uq.dists.SGDEdist import SGDEdist
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import (createGrid,
+                                                                    dehierarchize)
+from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend
+from pysgpp.extensions.datadriven.uq.plot.plot1d import plotDensity1d, plotSG1d
+from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d, plotSG2d
+from pysgpp.pysgpp_swig import (DataMatrix, DataVector, DensitySystemMatrix,
+                                Grid,
+                                MakePositiveCandidateSearchAlgorithm_Intersections,
+                                MakePositiveInterpolationAlgorithm_InterpolateBoundaries1d,
+                                RegularGridConfiguration,
+                                createOperationLaplace,
+                                createOperationLTwoDotProduct,
+                                createOperationMakePositive,
+                                createOperationMultipleEval,
+                                createOperationMultipleEvalNaive)
 
 multipleEvalNaiveGridTypes = [GridType_Bspline,
                               GridType_BsplineClenshawCurtis,
@@ -1148,6 +1156,7 @@ def solve(trainSamples, gridType, level, lmbd, solver="cvxopt"):
     gridStorage = grid.getStorage()
     grid.getGenerator().regular(level)
     print("gridStorage:", gridStorage.getSize())
+    print("numDims:", numDims)
     print("trainSamples.shape[0]:", trainSamples.shape[0])
 
     # ------------------------------------------------------------
@@ -1172,22 +1181,18 @@ def solve(trainSamples, gridType, level, lmbd, solver="cvxopt"):
     # prepare matrices for quadratic programming
     M = A + lmbd * C
     P = np.dot(M.T, M)
+    ew, v = np.linalg.eig(C)
+    print(C)
+    print "Eigenvalues:", ew
+    if (any(ew <= 0.0)):
+        print("Negative Eigenvalue found !!!")
     q = np.dot(b, M).reshape((b.shape[0],))
     G = computeInterpolationMatrix(grid)
-    print(G)
     h = np.zeros((grid.getSize(),)).T
     # alpha = [18.903209  ,  -9.10141713,  -9.01883182,   0.10914204, -1.17484387,  -0.27891415,   0.15920611,  -9.38665655, -9.00823174,  -0.03247397,  -2.24949755,  -1.57653802, -0.09309876,   5.13592933,   4.54897953,   4.66893825,   4.31965063]
     alpha = 17*[-20.]
     alpha = np.array(alpha)
     # alpha = np.array(17*[1.2])
-    tmp = np.dot(G, alpha)
-    print "tmp", tmp
-    tmp = 0.5*np.dot(alpha.T, np.dot(P, alpha)) - np.dot(alpha.T, q)
-    print "tmp", tmp
-    tmp = np.dot((np.dot(alpha.T, M.T) - b.T), np.dot(M, alpha) - b)
-    print "tmp", tmp
-    tmp = np.dot(np.dot(M, alpha) - b, np.dot(M, alpha) - b)
-    print "tmp", tmp
 
     # solve
     if solver == "quadprog":
@@ -1222,12 +1227,11 @@ if __name__ == "__main__":
         U = Normal(mean, var, 0, 1)
         trainSamples = np.array([U.rvs(1000)]).T
         testSamples = np.array([U.rvs(1000)]).T
-    else:
-        U = J([Normal(mean, var, 0, 1),
-               Normal(mean, var, 0, 1)])
+    else :
+        U = J([Normal(mean, var, 0, 1) for _ in range(args.numDims)])
         trainSamples = U.rvs(1000)
         testSamples = U.rvs(1000)
-    trainSamples = np.array(getSamples())
+    # trainSamples = np.array(getSamples())
     # ------------------------------------------------------------
     # solve the optimization problem
     print "SGDE...",
