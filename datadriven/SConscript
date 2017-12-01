@@ -31,7 +31,7 @@ moduleDependencies = ["sgppoptimization", "sgpppde", "sgppsolver", "sgppbase"]
 additionalDependencies = []
 additionalBoostTestDependencies = []
 
-checkForLibrary("CGAL",   "USE_CGAL",   "CGAL/Simple_cartesian.h", None)
+checkForLibrary("CGAL",   "USE_CGAL",   "CGAL/basic.h", None)
 
 if env["USE_OCL"]:
   additionalDependencies += ["OpenCL"]

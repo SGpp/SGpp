@@ -34,6 +34,7 @@ from pysgpp.pysgpp_swig import (DataMatrix, DataVector, DensitySystemMatrix,
                                 MakePositiveInterpolationAlgorithm_InterpolateBoundaries1d,
                                 RegularGridConfiguration,
                                 createOperationLaplace,
+                                createOperationLaplaceExplicit,
                                 createOperationLTwoDotProduct,
                                 createOperationMakePositive,
                                 createOperationMultipleEval,
@@ -1097,7 +1098,12 @@ def computeInterpolationMatrix(grid):
 
 def computeRegularizationMatrix(grid):
     C = createOperationLaplace(grid)
-    return C, loadMatrixFromOperation(grid.getSize(), C)
+    m = DataMatrix(grid.getStorage().getSize(), grid.getStorage().getSize())
+    C_test = createOperationLaplaceExplicit(m, grid)
+    C_matrix = loadMatrixFromOperation(grid.getSize(), C)
+    m.sub(DataMatrix(C_matrix))
+    print(m)
+    return C, C_matrix
 
 
 def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None):
