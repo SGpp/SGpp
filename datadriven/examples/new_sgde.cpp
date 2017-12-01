@@ -16,6 +16,7 @@
 
 #include <functional>
 #include <random>
+#include <CGAL/Simple_cartesian.h>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;

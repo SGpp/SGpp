@@ -15,7 +15,7 @@ namespace sgpp {
 namespace pde {
 
 /**
- * Implementation for Bspline functions of Laplace Operation, linear grids without boundaries
+ * Implementation for Bspline functions of Laplace Operation, bspline grids without boundaries
  */
 class OperationLaplaceBspline : public sgpp::base::OperationMatrix {
  public:
