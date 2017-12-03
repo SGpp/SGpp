@@ -40,7 +40,7 @@ class CombiCombigrid2dHermite_without_mixed:
         self.operation_zeta = []
         for i in range(self.d):
             self.operation_zeta.append(
-                pysgpp.CombigridOperation.createExpUniformBoundaryPsiHermiteInterpolation(
+                pysgpp.CombigridOperation.createExpUniformBoundaryZetaHermiteInterpolation(
                     self.d, i, self.grad[i]))
 
     def evaluate(self, level, x):
@@ -290,9 +290,8 @@ class CombiCombigriddeBaarHarding:
 
 
 class CombiCombigriddeBaarHardingBSpline:
-
     def __init__(self, func_collection, dim, degree):
-        self.degree=degree
+        self.degree = degree
         self.func = pysgpp.multiFunc(func_collection.getFunction())
         self.grad = []
         for i in range(dim):
@@ -301,21 +300,19 @@ class CombiCombigriddeBaarHardingBSpline:
         self.d = dim
         self.operation_bSpline = \
             pysgpp.CombigridOperation.createExpUniformBoundaryBsplineInterpolation(
-            self.d, self.func,self.degree)
-
-
+                self.d, self.func, self.degree)
 
         self.operation_psi = []
         self.operation_zeta = []
         for i in range(dim):
-          self.operation_psi.append(
-                pysgpp.CombigridOperation.createExpUniformBoundaryBsplinePsiInterpolation(self.d,
-                                                 i,  self.func,self.degree))
+            self.operation_psi.append(
+                pysgpp.CombigridOperation.createExpUniformBoundaryBsplinePsiInterpolation(
+                    self.d, i, self.func, self.degree))
 
         for i in range(dim):
             self.operation_zeta.append(
                 pysgpp.CombigridOperation.createExpUniformBoundaryBsplineZetaInterpolation(
-                    self.d, i, self.grad[i],self.degree))
+                    self.d, i, self.grad[i], self.degree))
 
     def evaluate(self, level, x):
         sum = 0

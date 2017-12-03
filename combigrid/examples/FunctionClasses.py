@@ -3,8 +3,6 @@ import pysgpp
 import numpy as np
 import FunctionClasses as fctClass
 
-
-
 from itertools import chain, combinations
 
 
@@ -12,8 +10,6 @@ def powerset(iterable):
     "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
     s = list(iterable)
     return chain.from_iterable(combinations(s, r) for r in range(len(s) + 1))
-
-
 
 
 def displace(x, i, h):
@@ -71,8 +67,6 @@ def getgradkfunc(func, k):
     return gradk
 
 
-
-
 class funcGradientCollection:
     def __init__(self, func, dim):
         self.func = func
@@ -119,20 +113,19 @@ class funcGradientCollectionSymbolic:
 
     def getFunctionSymbolic(self):
         return self.expr
+
     # return a function that substitutes all symbols with the x value and evaluates
     def getFunction(self):
         symbolic_variables = self.symbolic_variables
         expr = self.expr
-        function= sp.lambdify(symbolic_variables, expr, "numpy")
+        function = sp.lambdify(symbolic_variables, expr, "numpy")
 
         def func(x):
-
-            x_list=[]
-            for i in range(len (x)):
+            x_list = []
+            for i in range(len(x)):
                 x_list.append(x[i])
 
             return function(*x_list)
-
 
         return func
 
@@ -142,14 +135,13 @@ class funcGradientCollectionSymbolic:
         symbolic_variables = self.symbolic_variables
         grad_symbolic = self.getGradientSymbolic(grad_index_list)
         gradient = sp.lambdify(symbolic_variables, grad_symbolic, "numpy")
+
         def grad(x):
+            x_list = []
+            for i in range(len(x)):
+                x_list.append(x[i])
 
-          x_list=[]
-          for i in range(len(x)):
-              x_list.append(x[i])
-
-          return gradient(*x_list)
-
+            return gradient(*x_list)
 
         return grad
 
@@ -193,10 +185,9 @@ def calc_gradient_tangent_gridpoint(gridpoints, operation, dim):
     return x0_all, x1_all, y_all
 
 
-
-
 def f(x):
     return x[0] ** 3 * x[1]
+
 
 def BraninSymbolic():
     x0, x1, x2 = sp.symbols("x0 x1 x2")
@@ -209,101 +200,210 @@ def BraninSymbolic():
 
     return tmp * tmp + 10.0 * (1.0 - 1.0 / (8.0 * sp.pi)) * sp.cos(x1_tmp) + 10.0;
 
+
 def testfSymbolic_2d():
     x0, x1, x2 = sp.symbols("x0 x1 x2")
 
-    x0_temp=5.0*x0
-    x1_temp=5.0*x1
-    return x0**2*sp.cos(x1_temp)**2*x1+(x0**2+sp.cos(x1_temp))**2
+    x0_temp = 5.0 * x0
+    x1_temp = 5.0 * x1
+    return x0 ** 2 * sp.cos(x1_temp) ** 2 * x1 + (x0 ** 2 + sp.cos(x1_temp)) ** 2
+
 
 def testfSymbolic_4d():
-    x0, x1, x2,x3 = sp.symbols("x0 x1 x2 x3")
+    x0, x1, x2, x3 = sp.symbols("x0 x1 x2 x3")
 
-    x0_temp=5.0*x0
-    x1_temp=5.0*x1
-    x2_temp=4.0*x2
-    x3_temp=3.0*x3
-    return x0**2*sp.cos(x1_temp)**2*x1*x3_temp**4+(x0**2+sp.cos(x1_temp))**2*x2_temp
+    x0_temp = 5.0 * x0
+    x1_temp = 5.0 * x1
+    x2_temp = 4.0 * x2
+    x3_temp = 3.0 * x3
+    return x0 ** 2 * sp.cos(x1_temp) ** 2 * x1 * x3_temp ** 4 + (x0 ** 2 + sp.cos(
+        x1_temp)) ** 2 * x2_temp
+
 
 def testfSymbolic2_4d():
-    x0, x1, x2,x3 = sp.symbols("x0 x1 x2 x3")
+    x0, x1, x2, x3 = sp.symbols("x0 x1 x2 x3")
     x0_temp = 5.0 * x0
     x1_temp = 5.0 * x1
     x2_temp = 4.0 * x2
     x3_temp = 3.0 * x3
 
-    return x0_temp**2*sp.cos(0.5-x1_temp)*x2_temp**3*sp.exp(x3_temp)
+    return x0_temp ** 2 * sp.cos(0.5 - x1_temp) * x2_temp ** 3 * sp.exp(x3_temp)
 
 
 def test2DSymbolic():
     x0, x1, x2 = sp.symbols("x0 x1 x2")
-    return sp.cos(x1*2)*sp.sin(0.5-x0*4)**2
+    return sp.cos(x1 * 2) * sp.sin(0.5 - x0 * 4) ** 2
+
 
 def get_symbolictest():
     x0, x1, x2 = sp.symbols("x0 x1 x2")
     return (x0 * x1 + 1) ** 2 * sp.sin(x0)
 
+
 def easySymbolic():
     x0, x1, x2 = sp.symbols("x0 x1 x2")
-    return x0 * x1*sp.sin(x0)*sp.sin(x1)
+    return x0 * x1 * sp.sin(x0) * sp.sin(x1)
+
 
 def testfuncione():
     x0, x1, x2 = sp.symbols("x0 x1 x2")
 
-    erg=x1
+    erg = x1
 
     for i in range(5):
-        erg+=x0
+        erg += x0
     return erg
 
 
 def RosenbrockSymbolic(d):
+    result = 0.0;
 
-  result = 0.0;
+    x = []
 
-  x=[]
+    for i in range(d):
+        x.append(sp.symbols("x" + str(i)))
 
-  for i in range (d):
-    x.append(sp.symbols("x"+str(i)))
+    xt = 15.0 * x[0] - 5.0
+
+    for t in range(d):
+        xtm1 = xt
+        xt = 15.0 * x[t] - 5.0
+
+        tmp1 = xt - xtm1 * xtm1
+        tmp2 = 1.0 - xtm1
+        result += 100.0 * tmp1 * tmp1 + tmp2 * tmp2
+
+    return sp.ln(result);
 
 
-  xt = 15.0 * x[0] - 5.0;
+def AckleySymbolic(d):
+    result = 0.0
+    x = []
+    for i in range(d):
+        x.append(sp.symbols("x" + str(i)))
 
-  for t in range(1,d):
-    xtm1 = xt;
-    xt = 15.0 * x[t] - 5.0;
+    arg1 = 0.0
 
-    tmp1 = xt - xtm1 * xtm1;
-    tmp2 = 1.0 - xtm1;
-    result += 100.0 * tmp1 * tmp1 + tmp2 * tmp2;
+    arg2 = 0.0
+
+    for t in range(d):
+        xt = 10.0 * x[t] - 1.0
+        arg1 += xt * xt
+        arg2 += sp.cos(2.0 * sp.pi * xt)
+
+    result = 20.0 * (1.0 - sp.exp(-0.2 * sp.sqrt(arg1 / float(d))))
+    result += np.e - sp.exp(arg2 / float(d))
+
+    return result
 
 
-  return result;
+def SinKuppelSymbolic(d):
+    result = 1.0
+    x = []
+    for i in range(d):
+        x.append(sp.symbols("x" + str(i)))
+    for i in range(d):
+        result = result * sp.sin(sp.pi * x[i])
+
+    return result
+
+
+def Eggholder():
+    x = []
+    for i in range(2):
+        x.append(sp.symbols("x" + str(i)))
+
+    x1 = 1024.0 * x[0] - 512.0
+    x2 = 1024.0 * x[1] - 512.0
+
+    return -(x2 + 47.0) * sp.sin(sp.sqrt(sp.Abs(x1 / 2.0 + x2 + 47.0))) - x1 * sp.sin(
+        sp.sqrt(sp.Abs(x1 - (x2 + 47.0))))
+
+
+def SchwefelSymbolic(d):
+    result = 0.0
+
+    x = []
+    for i in range(d):
+        x.append(sp.symbols("x" + str(i)))
+
+    for t in range(d):
+        xt = 1000.0 * x[t] - 500.0
+        result = result - xt * sp.sin(sp.sqrt(sp.Abs(xt)))
+    return result
+
+
+def GriewankSymbolic(d):
+    result = 1.0;
+
+    x = []
+    for i in range(d):
+        x.append(sp.symbols("x" + str(i)))
+
+    tmp = 1.0;
+
+    for t in range(d):
+        xt = 1200.0 * x[t] - 600.0;
+        result += xt * xt / 4000.0;
+    tmp *= sp.cos(xt / sp.sqrt(float(t + 1)));
+
+    result -= tmp;
+    return result;
+
+
+def EasonSymbolic(d):
+    sum = 0.0;
+    x = []
+    for i in range(d):
+        x.append(sp.symbols("x" + str(i)))
+
+    product = 1.0;
+
+    for t in range(d):
+        xt = 2.0 * sp.pi * (2.0 * x[t] - 1.0);
+        diff = xt - sp.pi;
+        sum += diff * diff;
+        product *= -sp.cos(xt);
+
+    return - sp.exp(-sum) * product;
+
+
+def RastriginSymbolic(d):
+    result = 10.0 * float(d)
+    x = []
+    for i in range(d):
+        x.append(sp.symbols("x" + str(i)))
+
+    for t in range(d):
+        xt = 10.0 * x[t] - 2.0
+        result += xt * xt - 10.0 * sp.cos(2 * sp.pi * xt)
+
+    return result
+
 
 def f1D_test(x):
     return 1
 
-def Himmelblau_Symbolic():
 
-    x=[]
+def Himmelblau_Symbolic():
+    x = []
     x.append(sp.symbols("x0"))
     x.append(sp.symbols("x1"))
-
 
     x1 = 10.0 * x[0] - 5.0;
 
     x2 = 10.0 * x[1] - 5.0;
 
-    return (x1 * x1 + x2 - 11.0) * (x1 * x1 + x2 - 11.0) +(x1 + x2 * x2 - 7.0) * (x1 + x2 * x2 - 7.0)
+    return (x1 * x1 + x2 - 11.0) * (x1 * x1 + x2 - 11.0) + (x1 + x2 * x2 - 7.0) * (
+        x1 + x2 * x2 - 7.0)
 
+# x0, x1, x2 = symbols("x0 x1 x2")
+# expr = x0 ** 3 * x1
 
-#x0, x1, x2 = symbols("x0 x1 x2")
-#expr = x0 ** 3 * x1
+# test = funcGradientCollectionSymbolic(expr, 2)
 
-#test = funcGradientCollectionSymbolic(expr, 2)
+# test2 = funcGradientCollection(f, 2)
 
-#test2 = funcGradientCollection(f, 2)
-
-#print test2.getGradient([0, 1])([1, 1])
-#print(test.getGradientSymbolic([0, 0, 1]))
-#print(test.getGradient([0, 1])([1, 1]))
+# print test2.getGradient([0, 1])([1, 1])
+# print(test.getGradientSymbolic([0, 0, 1]))
+# print(test.getGradient([0, 1])([1, 1]))

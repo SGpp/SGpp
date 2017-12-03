@@ -402,8 +402,8 @@ def example_combicombigrid_2D_linear(l, func_standard):
 
 def example_combicombigrid_2D(l, func_collection):
     d = 2
-    level = 4
-    n_samples = 50
+    level = 2
+    n_samples = 25
 
     func_standard = func_collection.getFunction()
 
@@ -411,23 +411,24 @@ def example_combicombigrid_2D(l, func_collection):
     #        pysgpp.multiFunc(func_standard),5)
 
 
-    # operation=pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(d,
-    # pysgpp.multiFunc(func_standard))
+    #operation=pysgpp.CombigridOperation.createExpUniformBoundaryLinearInterpolation(d,
+    #pysgpp.multiFunc(func_standard))
     # operation = gC.CombiFullGridHermite_withoutmixed(func_collection,2)
-    operation = gC.CombiCombigriddeBaarHardingBSpline(func_collection, 2, 5)
-    # operation = gC.CombiCombigriddeBaarHarding(func_collection, 2)
-    operation_wrap = operationwrapper(operation, level)
-    operation_wrap_zeta = fctClass.getgradkfunc(operationwrapper(operation.operation_psi[1],
-                                                                 level), 0)
+    #operation = gC.CombiCombigriddeBaarHardingBSpline(func_collection, 2, 5)
 
-    operation_wrap_base = fctClass.getgradkfunc(operationwrapper(operation.operation_linear,
-                                                                 level), 0)
+    operation = gC.CombiCombigriddeBaarHarding(func_collection, 2)
+    operation_wrap = operationwrapper(operation, level)
+    #operation_wrap_zeta = fctClass.getgradkfunc(operationwrapper(operation.operation_psi[1],
+    #                                                             level), 0)
+
+    #operation_wrap_base = fctClass.getgradkfunc(operationwrapper(operation.operation_linear,
+    #                                                             level), 0)
 
     # operation.operation_zeta for mixed
-    p.plot2DGrid_with_tangents(n_samples, level, operation, func_collection)
+    p.plot2DGrid_operation(n_samples, level, operation, "Sin-Kuppel")
 
-    # p.plot2DContour(n_samples, level, operation)
-    # plt.show()
+    #p.plot2DContour(n_samples, level, operation)
+    plt.show()
 
 
 
@@ -437,8 +438,8 @@ def example_combicombigrid_2D(l, func_collection):
     error = estimatel2Error(10000, 2, operation_wrap, func_standard)
 
     error_on_gridpts = calc_error_on_gridpts(operation.getLevelManager().getAllGridPoints(),
-                                             operation_wrap_zeta,
-                                             operation_wrap_base)
+                                            operation_wrap,
+                                             func_standard)
     mixgrad_error = calc_error_mixed_gradient(operation.getLevelManager().getAllGridPoints(),
                                               fctClass.funcGradientCollection(operation_wrap, 2),
                                               func_collection, d)
@@ -511,7 +512,7 @@ def example_error_pointwise(l, func_container, show=True, foldername=None):
 
         p.plot_2D_imshow(n_samples, geterrorfunc(operation_wrap, func_standard),
                          operation, title=text[i], filename=filename)
-
+        """"
         error = estimatel2Error(10000, 2, operation_wrap, func_standard)
         errorl2_gradients = estimatel2ErrorGradients(10000, 2, operation_container, func_container)
 
@@ -527,8 +528,9 @@ def example_error_pointwise(l, func_container, show=True, foldername=None):
         print("l2 errors from gradients: " + str(errorl2_gradients))
 
         print("-----------------------------------------------------------------")
-
+        """
         i = i + 1
+
     if (show == True):
         plt.show()
 
@@ -731,9 +733,10 @@ def example_plot_error_gradients(func_collection, dim, grad_index_list, maxlevel
     operations.append(gC.CombiCombigriddeBaarHarding(func_collection, dim))
     operations.append(gC.CombiCombigriddeBaarHardingBSpline(func_collection, dim, 3))
     operations.append(gC.CombiCombigriddeBaarHardingBSpline(func_collection, dim, 5))
+    operations.append(gC.CombiCombigrid2dHermite_without_mixed(func_collection, dim))
     operations.append(gC.CombiCombigridHermite(func_collection, dim))
 
-    operations.append(gC.CombiCombigrid2dHermite_without_mixed(func_collection, dim))
+
     # operations.append((BaseLinearFullgrid(dim, func_collection, True)))
 
     # operations.append(gC.LinearFullgrid(func_collection, dim))
@@ -752,18 +755,18 @@ def example_plot_error_gradients(func_collection, dim, grad_index_list, maxlevel
     labels.append("Gitter (de Baar und Harding)")
     labels.append("Gitter (de Baar und Harding) BSplines(3)")
     labels.append("Gitter (de Baar und Harding) BSplines(5)")
-    labels.append("Gitter (Hermite)")
+    labels.append("Hermite-Gitter ohne gemischte Abl.")
 
-    labels.append("Gitter (Hermite) ohne gemischte Abl.")
 
+    labels.append("Hermite-Gitter")
     # labels.append("BaseLinearFullgrid")
     # labels.append("linearFullgrid")
     # labels.append("HermiteFullgrid")
     # labels.append("CombiLinearFullgrid")
     # labels.append("BSpline-Grid-Full")
     # labels.append("Base_BSpline-Grid(Grad 3)")
-    labels.append("BSpline-Grid(Grad 3)")
-    labels.append("BSpline-Grid(Grad 5)")
+    labels.append("BSpline-Gitter(Grad 3)")
+    labels.append("BSpline-Gitter(Grad 5)")
 
     X = np.zeros((maxlevel - 1, len(operations)))
     Y = np.zeros((maxlevel - 1, len(operations)), dtype=np.float64)
@@ -816,7 +819,7 @@ def plot_l2error(name, fct=True, grad_index=[], x_axis_type="nr_gridpoints"):
     if (fct):
         loadandplot("X_values.data", "Y_values.data", filename, "labels.txt", title=filename,
                     x_axis_type=x_axis_type
-                    , show=True)
+                    , show=False,filename=filename)
 
     for i in grad_index:
         filename = name
@@ -826,7 +829,7 @@ def plot_l2error(name, fct=True, grad_index=[], x_axis_type="nr_gridpoints"):
 
         loadandplot("X_values.data", "Y_values.data", filename, "labels.txt", title=filename,
                     x_axis_type=x_axis_type
-                    , show=True)
+                    , show=False,filename=filename)
 
 
 def testf(x):
@@ -863,36 +866,39 @@ def examples_2d():
     def func2d(x):
         return x[0]**2 * x[1]**3
 
-    func_container = fctClass.funcGradientCollection(func2d, 2)
-    #func_container = fctClass.funcGradientCollectionSymbolic(fctClass.BraninSymbolic())
+    #func_container = fctClass.funcGradientCollection(func2d, 2)
+    func_container = fctClass.funcGradientCollectionSymbolic(fctClass.AckleySymbolic(2),2)
 
-    # example_2D_comparison_function(func_container.getFunction(), "", show=True)
+    #example_2D_comparison_function(func_container.getFunction(), "", show=True)
 
-    # example_combicombigrid_2D(3, func_container)
+    #example_combicombigrid_2D(3, func_container)
 
-    # example_calcl2error(func_container, "Values/Test/Himmelblau/BSplinesnak", 8, 2, grad_index=[
-    #    [0], [1], [0, 1]], fct=True)
-    # plot_l2error("Values/Test/Himmelblau/BSplinesnak",grad_index=[[0],[1],[0,1]],fct=True)
+
+    example_calcl2error(func_container, "Values/Test/Ackley_2D/BSplinesnak", 17, dim=2,
+                        grad_index=[[0], [1], [0, 1]], fct=True)
+    #plot_l2error("Values/Branin/BSplinesnak",grad_index=[[0],[1],[0,1]],fct=True)
 
 
 
     level = 4
-    example_error_pointwise(level, func_container,
-                            foldername=None)
-    # example_error_pointwise_gradient(level,func_container,[0],
-    #                               foldername="Branin_relativex0"+"_pointwise"+"_lvl"+str(
+
+    #example_error_pointwise(level, func_container,
+    #                       foldername="Himmelblau"+"_pointwise"+"_lvl"+str(
     # level))
+    #example_error_pointwise_gradient(level,func_container,[0],
+    #                               foldername="Himmelblaux0"+"_pointwise"+"_lvl"+str(
+     #level))
 
 
 def examples_multid():
     dim = 4
 
+
     func_container = fctClass.funcGradientCollectionSymbolic(fctClass.RosenbrockSymbolic(4), dim)
 
-    # plot_l2error("Values/RosenbrockSymbolic_4d", grad_index=[[0], [1], [0, 1]], fct=True)
-    # example_calcl2error(func_container, "Values/RosenbrockSymbolic_4d", 9,dim,\
-    # grad_index=[[0,
-    # 1], [1]],fct=True)
+    # plot_l2error("Values/RosenbrockSymbolic_4d", grad_index=[[0], [1]], fct=True)
+    # example_calcl2error(func_container, "Values/Test/RosenbrockSymbolic_4D", 11,dim,\
+    # grad_index=[[0], [1]],fct=True)
 
     # func = pysgpp.OptRosenbrockObjective(dim)
     # func_wrap = getfuncwrapper(func)
