@@ -225,12 +225,12 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
 
   // convert level structure to SG
   std::unique_ptr<sgpp::base::Grid> grid;
-  grid.reset(sgpp::base::Grid::createNotAKnotBsplineBoundaryGrid(numDimensions, degree));
+  grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDimensions, degree));
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
 
-  printLevelstructure(levelStructure);
-  printSGGridToFile(gridStorage);
+  //  printLevelstructure(levelStructure);
+  //  printSGGridToFile(gridStorage);
 
   // interpolate on SG
   sgpp::base::DataMatrix interpolParams(numDimensions, 0);
@@ -256,8 +256,8 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   }
   sgpp::optimization::InterpolantScalarFunction u(*grid, alpha);
 
-  std::cout << "num CG points: " << Operation->getLevelManager()->numGridPoints();
-  std::cout << ", num SG points " << gridStorage.getSize() << std::endl;
+  //  std::cout << "num CG points: " << Operation->getLevelManager()->numGridPoints();
+  //  std::cout << ", num SG points " << gridStorage.getSize() << std::endl;
 
   // error calculations
   double CGL2Err, CGMaxErr, SGL2Err, SGMaxErr, CompL2Err, CompMaxErr = 0;
@@ -272,11 +272,11 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
 }
 
 int main() {
-  size_t degree = 3;
-  size_t numlevels = 30;
-  //  for (maxLevel = 0; maxLevel < 30; maxLevel++) {
-  //    std::cout << "added Levels: " << maxLevel << " ";
-  BSplineGridConversion(degree, numlevels);
-  //  }
+  size_t degree = 5;
+  size_t numLevels = 20;
+  for (size_t maxLevel = 0; maxLevel < numLevels; maxLevel++) {
+    //    std::cout << "added Levels: " << maxLevel << " ";
+    BSplineGridConversion(degree, maxLevel);
+  }
   return 0;
 }

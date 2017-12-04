@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/exception/data_exception.hpp>
-#include <sgpp/base/grid/type/NotAKnotBsplineBoundaryCombigridGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotnakBsplineBoundaryCombigrid.hpp>
@@ -25,7 +25,7 @@ OperationMatrixLTwoDotnakBsplineBoundaryCombigrid::
 void OperationMatrixLTwoDotnakBsplineBoundaryCombigrid::mult(sgpp::base::DataVector& alpha,
                                                              sgpp::base::DataVector& result) {
   const size_t p =
-      dynamic_cast<sgpp::base::NotAKnotBsplineBoundaryCombigridGrid*>(grid)->getDegree();
+      dynamic_cast<sgpp::base::NakBsplineBoundaryCombigridGrid*>(grid)->getDegree();
   const size_t pp1h = (p + 1) >> 1;  // (p + 1) / 2
   const double pp1hDbl = static_cast<double>(pp1h);
   const size_t quadOrder = p + 1;
