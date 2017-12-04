@@ -30,12 +30,12 @@ namespace base {
  */
 
 template <class LT, class IT>
-class nakBsplineBoundaryCombigridBasis : public Basis<LT, IT> {
+class NakBsplineBoundaryCombigridBasis : public Basis<LT, IT> {
  public:
   /**
    * Default constructor.
    */
-  nakBsplineBoundaryCombigridBasis() : bsplineBasis(BsplineBasis<LT, IT>()) {}
+  NakBsplineBoundaryCombigridBasis() : bsplineBasis(BsplineBasis<LT, IT>()) {}
 
   /**
    * Constructor.
@@ -43,7 +43,7 @@ class nakBsplineBoundaryCombigridBasis : public Basis<LT, IT> {
    * @param degree    B-spline degree, must be odd
    *                  (if it's even, degree - 1 is used)
    */
-  explicit nakBsplineBoundaryCombigridBasis(size_t degree)
+  explicit NakBsplineBoundaryCombigridBasis(size_t degree)
       : bsplineBasis(BsplineBasis<LT, IT>(degree)) {
     if (getDegree() > 7) {
       throw std::runtime_error("Unsupported B-spline degree.");
@@ -53,7 +53,7 @@ class nakBsplineBoundaryCombigridBasis : public Basis<LT, IT> {
   /**
    * Destructor.
    */
-  ~nakBsplineBoundaryCombigridBasis() override {}
+  ~NakBsplineBoundaryCombigridBasis() override {}
 
   /**
    * @param l     level of basis function
@@ -244,189 +244,184 @@ class nakBsplineBoundaryCombigridBasis : public Basis<LT, IT> {
           }
         } else if (l == 2) {
           if (i == 1) {
-            // l = 2, i = 1 : cubic polynomial 0 in 0,0.5,0.75 and 1 in 0.25
+            // l = 2, i = 1 : cubic polynomial, 0 in 0,0.5,0.75 and 1 in 0.25
             return 32 * x * (x - 0.5) * (x - 0.75);
           } else if (i == 3) {
-            // l = 2, i = 3 : quartic polynomial 0 in 0,0.25,0.5,1 and 1 in 0.75
+            // l = 2, i = 3 : quartic polynomial, 0 in 0,0.25,0.5,1 and 1 in 0.75
             return x * x * x * x;  // x * (x - 0.25) * (x - 0.5) * (x - 1) * (-128.0 / 3.0);
           }
+        } else if ((i > 3) && (i < hInv - 3)) {
+          // l >= 4, 3 < i < 2^l - 3
+          return bsplineBasis.eval(l, i, x);
         } else {
-          std::cout << "This should not hapen!" << std::endl;
-        }
-      /* else if ((i > 3) && (i < hInv - 3)) {
-}
-// l >= 4, 3 < i < 2^l - 3
-return bsplineBasis.eval(l, i, x);
-} else {
-if (i > hInv / 2) {
-i = hInv - i;
-t *= -1.0;
-}
+          if (i > hInv / 2) {
+            i = hInv - i;
+            t *= -1.0;
+          }
 
-if ((l == 3) && (i == 3)) {
-// l = 3, i = 3
-if ((t < -3.0) || (t > 5.0)) {
-return 0.0;
-} else if (t < 0.0) {
-t += 3.0;
-double result = 107.0 / 30240.0;
-result = -17.0 / 756.0 + result * t;
-result = 1.0 / 378.0 + result * t;
-result = 37.0 / 378.0 + result * t;
-result = 109.0 / 756.0 + result * t;
-result = 253.0 / 3780.0 + result * t;
-return result;
-} else if (t < 1.0) {
-double result = -397.0 / 30240.0;
-result = 185.0 / 6048.0 + result * t;
-result = 155.0 / 3024.0 + result * t;
-result = -415.0 / 3024.0 + result * t;
-result = -1165.0 / 6048.0 + result * t;
-result = 2965.0 / 6048.0 + result * t;
-return result;
-} else if (t < 2.0) {
-t -= 1.0;
-double result = 233.0 / 30240.0;
-result = -53.0 / 1512.0 + result * t;
-result = 8.0 / 189.0 + result * t;
-result = 13.0 / 189.0 + result * t;
-result = -97.0 / 378.0 + result * t;
-result = 433.0 / 1890.0 + result * t;
-return result;
-} else {
-t -= 2.0;
-double result = -1.0 / 4320.0;
-result = 1.0 / 288.0 + result * t;
-result = -1.0 / 48.0 + result * t;
-result = 1.0 / 16.0 + result * t;
-result = -3.0 / 32.0 + result * t;
-result = 9.0 / 160.0 + result * t;
-return result;
-}
-} else if (i == 1) {
-// l >= 3, i = 1
-if ((t < -1.0) || (t > 3.0)) {
-return 0.0;
-} else if (t < 2.0) {
-t += 1.0;
-double result = 1.0 / 504.0;
-result = -1.0 / 42.0 + result * t;
-result = 2.0 / 21.0 + result * t;
-result = -2.0 / 21.0 + result * t;
-result = -5.0 / 21.0 + result * t;
-result = 47.0 / 105.0 + result * t;
-return result;
-} else {
-t -= 2.0;
-double result = -1.0 / 840.0;
-result = 1.0 / 168.0 + result * t;
-result = -1.0 / 84.0 + result * t;
-result = 1.0 / 84.0 + result * t;
-result = -1.0 / 168.0 + result * t;
-result = 1.0 / 840.0 + result * t;
-return result;
-}
-} else if (i == 3) {
-// l >= 4, i = 3
-if ((t < -3.0) || (t > 3.0)) {
-return 0.0;
-} else if (t < 0.0) {
-t += 3.0;
-double result = 1.0 / 252.0;
-result = -1.0 / 42.0 + result * t;
-result *= t;
-result = 2.0 / 21.0 + result * t;
-result = 1.0 / 7.0 + result * t;
-result = 1.0 / 15.0 + result * t;
-return result;
-} else if (t < 1.0) {
-double result = -23.0 / 1260.0;
-result = 1.0 / 28.0 + result * t;
-result = 1.0 / 14.0 + result * t;
-result = -5.0 / 42.0 + result * t;
-result = -1.0 / 4.0 + result * t;
-result = 163.0 / 420.0 + result * t;
-return result;
-} else if (t < 2.0) {
-t -= 1.0;
-double result = 19.0 / 1260.0;
-result = -1.0 / 18.0 + result * t;
-result = 2.0 / 63.0 + result * t;
-result = 8.0 / 63.0 + result * t;
-result = -2.0 / 9.0 + result * t;
-result = 34.0 / 315.0 + result * t;
-return result;
-} else {
-t -= 2.0;
-double result = -1.0 / 252.0;
-result = 5.0 / 252.0 + result * t;
-result = -5.0 / 126.0 + result * t;
-result = 5.0 / 126.0 + result * t;
-result = -5.0 / 252.0 + result * t;
-result = 1.0 / 252.0 + result * t;
-return result;
-}
-} else {
-// l >= 4, i = 5
-if ((t < -5.0) || (t > 3.0)) {
-return 0.0;
-} else if (t < -2.0) {
-t += 5.0;
-double result = 1.0 / 2520.0;
-result *= t;
-result *= t;
-result *= t;
-result *= t;
-result *= t;
-return result;
-} else if (t < -1.0) {
-t += 2.0;
-double result = -11.0 / 504.0;
-result = 1.0 / 168.0 + result * t;
-result = 1.0 / 28.0 + result * t;
-result = 3.0 / 28.0 + result * t;
-result = 9.0 / 56.0 + result * t;
-result = 27.0 / 280.0 + result * t;
-return result;
-} else if (t < 0.0) {
-t += 1.0;
-double result = 31.0 / 504.0;
-result = -13.0 / 126.0 + result * t;
-result = -10.0 / 63.0 + result * t;
-result = 2.0 / 63.0 + result * t;
-result = 25.0 / 63.0 + result * t;
-result = 121.0 / 315.0 + result * t;
-return result;
-} else if (t < 1.0) {
-double result = -181.0 / 2520.0;
-result = 103.0 / 504.0 + result * t;
-result = 11.0 / 252.0 + result * t;
-result = -113.0 / 252.0 + result * t;
-result = -61.0 / 504.0 + result * t;
-result = 1543.0 / 2520.0 + result * t;
-return result;
-} else if (t < 2.0) {
-t -= 1.0;
-double result = 11.0 / 280.0;
-result = -13.0 / 84.0 + result * t;
-result = 1.0 / 7.0 + result * t;
-result = 4.0 / 21.0 + result * t;
-result = -3.0 / 7.0 + result * t;
-result = 23.0 / 105.0 + result * t;
-return result;
-} else {
-t -= 2.0;
-double result = -1.0 / 120.0;
-result = 1.0 / 24.0 + result * t;
-result = -1.0 / 12.0 + result * t;
-result = 1.0 / 12.0 + result * t;
-result = -1.0 / 24.0 + result * t;
-result = 1.0 / 120.0 + result * t;
-return result;
-}
-}
-}
-*/
+          if ((l == 3) && (i == 3)) {
+            // l = 3, i = 3
+            if ((t < -3.0) || (t > 5.0)) {
+              return 0.0;
+            } else if (t < 0.0) {
+              t += 3.0;
+              double result = 107.0 / 30240.0;
+              result = -17.0 / 756.0 + result * t;
+              result = 1.0 / 378.0 + result * t;
+              result = 37.0 / 378.0 + result * t;
+              result = 109.0 / 756.0 + result * t;
+              result = 253.0 / 3780.0 + result * t;
+              return result;
+            } else if (t < 1.0) {
+              double result = -397.0 / 30240.0;
+              result = 185.0 / 6048.0 + result * t;
+              result = 155.0 / 3024.0 + result * t;
+              result = -415.0 / 3024.0 + result * t;
+              result = -1165.0 / 6048.0 + result * t;
+              result = 2965.0 / 6048.0 + result * t;
+              return result;
+            } else if (t < 2.0) {
+              t -= 1.0;
+              double result = 233.0 / 30240.0;
+              result = -53.0 / 1512.0 + result * t;
+              result = 8.0 / 189.0 + result * t;
+              result = 13.0 / 189.0 + result * t;
+              result = -97.0 / 378.0 + result * t;
+              result = 433.0 / 1890.0 + result * t;
+              return result;
+            } else {
+              t -= 2.0;
+              double result = -1.0 / 4320.0;
+              result = 1.0 / 288.0 + result * t;
+              result = -1.0 / 48.0 + result * t;
+              result = 1.0 / 16.0 + result * t;
+              result = -3.0 / 32.0 + result * t;
+              result = 9.0 / 160.0 + result * t;
+              return result;
+            }
+          } else if (i == 1) {
+            // l >= 3, i = 1
+            if ((t < -1.0) || (t > 3.0)) {
+              return 0.0;
+            } else if (t < 2.0) {
+              t += 1.0;
+              double result = 1.0 / 504.0;
+              result = -1.0 / 42.0 + result * t;
+              result = 2.0 / 21.0 + result * t;
+              result = -2.0 / 21.0 + result * t;
+              result = -5.0 / 21.0 + result * t;
+              result = 47.0 / 105.0 + result * t;
+              return result;
+            } else {
+              t -= 2.0;
+              double result = -1.0 / 840.0;
+              result = 1.0 / 168.0 + result * t;
+              result = -1.0 / 84.0 + result * t;
+              result = 1.0 / 84.0 + result * t;
+              result = -1.0 / 168.0 + result * t;
+              result = 1.0 / 840.0 + result * t;
+              return result;
+            }
+          } else if (i == 3) {
+            // l >= 4, i = 3
+            if ((t < -3.0) || (t > 3.0)) {
+              return 0.0;
+            } else if (t < 0.0) {
+              t += 3.0;
+              double result = 1.0 / 252.0;
+              result = -1.0 / 42.0 + result * t;
+              result *= t;
+              result = 2.0 / 21.0 + result * t;
+              result = 1.0 / 7.0 + result * t;
+              result = 1.0 / 15.0 + result * t;
+              return result;
+            } else if (t < 1.0) {
+              double result = -23.0 / 1260.0;
+              result = 1.0 / 28.0 + result * t;
+              result = 1.0 / 14.0 + result * t;
+              result = -5.0 / 42.0 + result * t;
+              result = -1.0 / 4.0 + result * t;
+              result = 163.0 / 420.0 + result * t;
+              return result;
+            } else if (t < 2.0) {
+              t -= 1.0;
+              double result = 19.0 / 1260.0;
+              result = -1.0 / 18.0 + result * t;
+              result = 2.0 / 63.0 + result * t;
+              result = 8.0 / 63.0 + result * t;
+              result = -2.0 / 9.0 + result * t;
+              result = 34.0 / 315.0 + result * t;
+              return result;
+            } else {
+              t -= 2.0;
+              double result = -1.0 / 252.0;
+              result = 5.0 / 252.0 + result * t;
+              result = -5.0 / 126.0 + result * t;
+              result = 5.0 / 126.0 + result * t;
+              result = -5.0 / 252.0 + result * t;
+              result = 1.0 / 252.0 + result * t;
+              return result;
+            }
+          } else {
+            // l >= 4, i = 5
+            if ((t < -5.0) || (t > 3.0)) {
+              return 0.0;
+            } else if (t < -2.0) {
+              t += 5.0;
+              double result = 1.0 / 2520.0;
+              result *= t;
+              result *= t;
+              result *= t;
+              result *= t;
+              result *= t;
+              return result;
+            } else if (t < -1.0) {
+              t += 2.0;
+              double result = -11.0 / 504.0;
+              result = 1.0 / 168.0 + result * t;
+              result = 1.0 / 28.0 + result * t;
+              result = 3.0 / 28.0 + result * t;
+              result = 9.0 / 56.0 + result * t;
+              result = 27.0 / 280.0 + result * t;
+              return result;
+            } else if (t < 0.0) {
+              t += 1.0;
+              double result = 31.0 / 504.0;
+              result = -13.0 / 126.0 + result * t;
+              result = -10.0 / 63.0 + result * t;
+              result = 2.0 / 63.0 + result * t;
+              result = 25.0 / 63.0 + result * t;
+              result = 121.0 / 315.0 + result * t;
+              return result;
+            } else if (t < 1.0) {
+              double result = -181.0 / 2520.0;
+              result = 103.0 / 504.0 + result * t;
+              result = 11.0 / 252.0 + result * t;
+              result = -113.0 / 252.0 + result * t;
+              result = -61.0 / 504.0 + result * t;
+              result = 1543.0 / 2520.0 + result * t;
+              return result;
+            } else if (t < 2.0) {
+              t -= 1.0;
+              double result = 11.0 / 280.0;
+              result = -13.0 / 84.0 + result * t;
+              result = 1.0 / 7.0 + result * t;
+              result = 4.0 / 21.0 + result * t;
+              result = -3.0 / 7.0 + result * t;
+              result = 23.0 / 105.0 + result * t;
+              return result;
+            } else {
+              t -= 2.0;
+              double result = -1.0 / 120.0;
+              result = 1.0 / 24.0 + result * t;
+              result = -1.0 / 12.0 + result * t;
+              result = 1.0 / 12.0 + result * t;
+              result = -1.0 / 24.0 + result * t;
+              result = 1.0 / 120.0 + result * t;
+              return result;
+            }
+          }
+        }
 
       default:
         return 0.0;
@@ -444,8 +439,8 @@ return result;
 };
 
 // default type-def (unsigned int for level and index)
-typedef nakBsplineBoundaryCombigridBasis<unsigned int, unsigned int>
-    SNotAKnotBsplineBoundaryCombigridBase;
+typedef NakBsplineBoundaryCombigridBasis<unsigned int, unsigned int>
+    SNakBsplineBoundaryCombigridBase;
 
 }  // namespace base
 }  // namespace sgpp
