@@ -30,6 +30,7 @@
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/PolynomialScalarProductEvaluator.hpp>
 
 namespace sgpp {
 namespace combigrid {
@@ -213,6 +214,10 @@ CombiEvaluators::createCombiMultiEvaluator(EvaluatorConfiguration evalConfig) {
         false, BSplineQuadratureEvaluator(evalConfig.degree));
   } else if (evalConfig.type == CombiEvaluatorTypes::Multi_BSplineScalarProduct) {
     auto evaluator = std::make_shared<BSplineScalarProductEvaluator>(evalConfig.degree);
+    evaluator->setConfig(evalConfig);
+    return evaluator;
+  } else if (evalConfig.type == CombiEvaluatorTypes::Multi_PolynomialScalarProduct) {
+    auto evaluator = std::make_shared<PolynomialScalarProductEvaluator>();
     evaluator->setConfig(evalConfig);
     return evaluator;
   } else if (evalConfig.type == CombiEvaluatorTypes::Multi_CubicSplineInterpolation) {

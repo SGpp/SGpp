@@ -5,8 +5,6 @@
 
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
-#include <fstream>
-#include <iostream>
 
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
@@ -16,9 +14,15 @@
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridGridBasedEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridCallbackEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/quadrature/sampling/NaiveSampleGenerator.hpp>
+
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
 
 using sgpp::combigrid::MultiIndex;
 
@@ -155,6 +159,66 @@ double eval(sgpp::base::DataVector const& v) { return v[0]; }
 
 }  // namespace debugfct
 // ----------------------------------------------------------------------------------
+
+double polynomialVariance(sgpp::combigrid::MultiIndex& level) {
+  size_t numDimensions = 2;
+  sgpp::combigrid::MultiFunction func(atanModel);
+  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
+      numDimensions, sgpp::combigrid::CombiHierarchies::expClenshawCurtis());
+
+  sgpp::combigrid::EvaluatorConfiguration evalConfig(
+      sgpp::combigrid::CombiEvaluatorTypes::Multi_PolynomialScalarProduct);
+
+  sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
+      numDimensions, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(evalConfig));
+
+  bool exploitNesting = true;
+  auto summationStrategyType = sgpp::combigrid::FullGridSummationStrategyType::VARIANCE;
+
+  std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> storage =
+      std::make_shared<sgpp::combigrid::CombigridTreeStorage>(pointHierarchies, exploitNesting,
+                                                              func);
+
+  std::shared_ptr<sgpp::combigrid::AbstractFullGridEvaluator<sgpp::combigrid::FloatArrayVector>>
+      fullGridEval = std::make_shared<
+          sgpp::combigrid::FullGridCallbackEvaluator<sgpp::combigrid::FloatArrayVector>>(
+          storage, evaluators, pointHierarchies, summationStrategyType);
+
+  auto result = fullGridEval->eval(level);
+  double res = result[0].value();
+  return res;
+}
+
+BOOST_AUTO_TEST_SUITE(testPolynomialVariance)
+
+BOOST_AUTO_TEST_CASE(testVarianceOfPolynomialsOnDiagonal) {
+  VarianceDiagonalTestData varianceDiagonalTestData;
+  std::vector<double> tolerances{1e1, 1e0, 1e0, 1e0, 1e-1, 1e-2, 1e-3, 1e-5};
+
+  for (size_t i = 0; i < varianceDiagonalTestData.levels.size(); i++) {
+    MultiIndex level = varianceDiagonalTestData.levels[i];
+    double polyVariance = polynomialVariance(level);
+    double varianceError = std::fabs(polyVariance - varianceDiagonalTestData.variance);
+    BOOST_CHECK_SMALL(varianceError, tolerances[i]);
+  }
+}
+
+// TODO(franzefn): create reference data with python (see createVarianceData.py for bsplines)
+// BOOST_AUTO_TEST_CASE(testVarianceOfPolynomialsOnLevel) {
+//  VarianceTestData varianceTestData;
+//  double tolerance = 2e-8;
+//  double varianceError;
+//  for (size_t i = 0; i < varianceTestData.levels.size(); i++) {
+//    MultiIndex level = varianceTestData.levels[i];
+//    double polyVariance = polynomialVariance(level);
+//    varianceError = std::fabs(polyVariance - varianceTestData.variances[i]);
+//    std::cout << "level: " << level[0] << " " << level[1] << "|  error:  " << varianceError
+//              << std::endl;
+//    //    BOOST_CHECK_SMALL(varianceError, tolerance);
+//  }
+//}
+
+BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_AUTO_TEST_SUITE(testBsplines)
 

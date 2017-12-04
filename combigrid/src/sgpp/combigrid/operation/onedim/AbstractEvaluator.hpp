@@ -27,7 +27,7 @@ class AbstractEvaluator {
  private:
  protected:
   size_t level = 0;
-  EvaluatorConfiguration evalConfig = EvaluatorConfiguration(CombiEvaluatorTypes::NO_TYPE);
+  EvaluatorConfiguration evalConfig;
 
  public:
   virtual ~AbstractEvaluator() {}
