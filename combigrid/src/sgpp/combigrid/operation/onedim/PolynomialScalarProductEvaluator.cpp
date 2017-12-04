@@ -39,8 +39,8 @@ double PolynomialScalarProductEvaluator::quad(LagrangePolynom& p_i, LagrangePoly
     scalarProduct_ij = 0.0;
     for (size_t i = 0; i < roots.getSize(); ++i) {
       double x_unit = roots[i], w = quadratureweights[i];
-      double y_i = p_i.evaluate(x_unit);
-      double y_j = p_i.evaluate(x_unit);
+      //      double y_i = p_i.evaluate(x_unit);
+      //      double y_j = p_i.evaluate(x_unit);
       scalarProduct_ij += w * p_i.evaluate(x_unit) * p_j.evaluate(x_unit) * weight_function(x_unit);
     }
 

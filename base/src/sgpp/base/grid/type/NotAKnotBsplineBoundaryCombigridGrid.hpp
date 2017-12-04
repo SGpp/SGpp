@@ -9,7 +9,7 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 #include <sgpp/globaldef.hpp>
-#include "sgpp/base/operation/hash/common/basis/NotAKnotBsplineBoundaryBasis.hpp"
+#include "../../operation/hash/common/basis/nakBsplineBoundaryCombigridBasis.hpp"
 
 namespace sgpp {
 namespace base {
@@ -17,14 +17,14 @@ namespace base {
 /**
  * Grid with B-spline basis functions with not-a-knot boundary conditions
  */
-class NotAKnotBsplineBoundaryGrid : public Grid {
+class NotAKnotBsplineBoundaryCombigridGrid : public Grid {
  protected:
   /**
    * This constructor creates a new GridStorage out of the stream.
    *
    * @param istr inputstream that contains the grid information
    */
-  explicit NotAKnotBsplineBoundaryGrid(std::istream& istr);
+  explicit NotAKnotBsplineBoundaryCombigridGrid(std::istream& istr);
 
  public:
   /**
@@ -37,12 +37,12 @@ class NotAKnotBsplineBoundaryGrid : public Grid {
    *                      1 means same level,
    *                      2 means one level coarser, etc.
    */
-  NotAKnotBsplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel = 0);
+  NotAKnotBsplineBoundaryCombigridGrid(size_t dim, size_t degree, level_t boundaryLevel = 0);
 
   /**
    * Destructor.
    */
-  ~NotAKnotBsplineBoundaryGrid() override;
+  ~NotAKnotBsplineBoundaryCombigridGrid() override;
 
   /**
    * @return string that identifies the grid type uniquely
@@ -87,7 +87,7 @@ class NotAKnotBsplineBoundaryGrid : public Grid {
   /// B-spline degree
   size_t degree;
   /// B-spline basis
-  std::unique_ptr<SNotAKnotBsplineBoundaryBase> basis_;
+  std::unique_ptr<SNotAKnotBsplineBoundaryCombigridBase> basis_;
   /// 1 + how much levels the boundary is coarser than the main axes
   level_t boundaryLevel;
 };
