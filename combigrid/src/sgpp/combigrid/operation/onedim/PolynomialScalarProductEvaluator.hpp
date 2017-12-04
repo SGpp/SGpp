@@ -13,6 +13,7 @@
 
 #include <functional>
 #include <vector>
+#include <map>
 
 namespace sgpp {
 namespace combigrid {

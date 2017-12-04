@@ -20,8 +20,8 @@ namespace sgpp {
 namespace combigrid {
 
 double PolynomialScalarProductEvaluator::quad(LagrangePolynom& p_i, LagrangePolynom& p_j) {
-  size_t degree_i = p_i.points.size();
-  size_t degree_j = p_j.points.size();
+  size_t degree_i = p_i.points.size() - 1;
+  size_t degree_j = p_j.points.size() - 1;
   size_t numGaussPoints = (degree_i + degree_j + 3) / 2;
 
   // performing Gauss-Legendre integration
@@ -39,6 +39,8 @@ double PolynomialScalarProductEvaluator::quad(LagrangePolynom& p_i, LagrangePoly
     scalarProduct_ij = 0.0;
     for (size_t i = 0; i < roots.getSize(); ++i) {
       double x_unit = roots[i], w = quadratureweights[i];
+      double y_i = p_i.evaluate(x_unit);
+      double y_j = p_i.evaluate(x_unit);
       scalarProduct_ij += w * p_i.evaluate(x_unit) * p_j.evaluate(x_unit) * weight_function(x_unit);
     }
 
@@ -60,28 +62,30 @@ double PolynomialScalarProductEvaluator::quad(LagrangePolynom& p_i, LagrangePoly
  * @return integral of b_i*b_j
  */
 FloatArrayVector PolynomialScalarProductEvaluator::get1DMixedIntegral(std::vector<double>& points,
-                                                                      size_t degree_i) {
+                                                                      size_t index_i) {
   FloatArrayVector scalarProducts;
 
   LagrangePolynom p_i;
   p_i.points = points;
-  p_i.point = degree_i;
+  p_i.point = index_i;
 
   LagrangePolynom p_j;
   p_j.points = points;
 
-  for (size_t degree_j = 0; degree_j < points.size(); degree_j++) {
-    size_t key = generateKey(degree_i, degree_j);
-
+  for (size_t index_j = 0; index_j < points.size(); index_j++) {
+    p_j.point = index_j;
     double value = 0.0;
+
+    size_t key = generateKey(index_i, index_j);
     auto it_value = scalarProductsMap.find(key);
     if (it_value != scalarProductsMap.end()) {
       value = it_value->second;
     } else {
-      p_j.point = degree_j;
       value = quad(p_i, p_j);
+      scalarProductsMap[key] = value;
     }
-    scalarProducts.at(degree_j) = value;
+
+    scalarProducts.at(index_j) = value;
   }
 
   return scalarProducts;

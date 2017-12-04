@@ -46,13 +46,17 @@ struct EvaluatorConfiguration {
   size_t degree = 3;
   std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis;
 
-  EvaluatorConfiguration()
-      : type(CombiEvaluatorTypes::NO_TYPE), degree(0), functionBasis(nullptr){};
-  EvaluatorConfiguration(CombiEvaluatorTypes type) : type(type){};
-  EvaluatorConfiguration(CombiEvaluatorTypes type, size_t degree) : type(type), degree(degree){};
   EvaluatorConfiguration(CombiEvaluatorTypes type, size_t degree,
                          std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis)
       : type(type), degree(degree), functionBasis(functionBasis){};
+
+  EvaluatorConfiguration() : EvaluatorConfiguration(CombiEvaluatorTypes::NO_TYPE, 0, nullptr){};
+  EvaluatorConfiguration(CombiEvaluatorTypes type) : EvaluatorConfiguration(type, 0, nullptr){};
+  EvaluatorConfiguration(CombiEvaluatorTypes type, size_t degree)
+      : EvaluatorConfiguration(type, degree, nullptr){};
+  EvaluatorConfiguration(CombiEvaluatorTypes type,
+                         std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis)
+      : EvaluatorConfiguration(type, 0, functionBasis){};
 
   ~EvaluatorConfiguration(){};
 };
