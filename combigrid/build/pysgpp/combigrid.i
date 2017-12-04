@@ -47,6 +47,11 @@
 %shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::BSplineInterpolationEvaluator>)
 %shared_ptr(sgpp::combigrid::InterpolationCoefficientEvaluator)
 %shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::InterpolationCoefficientEvaluator>)
+%shared_ptr(sgpp::combigrid::PolynomialScalarProductEvaluator)
+%shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::PolynomialScalarProductEvaluator>)
+%shared_ptr(sgpp::combigrid::BSplineScalarProductEvaluator)
+%shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::BSplineScalarProductEvaluator>)
+
 
 %shared_ptr(sgpp::combigrid::PolynomialChaosExpansion)
 %shared_ptr(sgpp::combigrid::PolynomialStochasticCollocation)
@@ -180,11 +185,11 @@ namespace combigrid {
 %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp"
-%include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearSummationStrategy.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridCallbackEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridGridBasedEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearSummationStrategy.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridQuadraticSummationStrategy.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridVarianceSummationStrategy.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/OperationConfiguration.hpp"
 
 %include "combigrid/src/sgpp/combigrid/threading/ThreadPool.hpp"
@@ -221,6 +226,8 @@ namespace combigrid {
 %include "combigrid/src/sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/InterpolationCoefficientEvaluator.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/onedim/BSplineScalarProductEvaluator.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/onedim/PolynomialScalarProductEvaluator.hpp"
 
 %include "combigrid/src/sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/Configurations.hpp"
