@@ -55,7 +55,7 @@ class FloatScalarVector {
 
   void scalarMult(double const &factor) { val *= factor; }
 
-  double norm() const { return std::abs(val); }
+  double norm() const { return std::fabs(val); }
 
   static FloatScalarVector zero() { return FloatScalarVector(0.0); }
 

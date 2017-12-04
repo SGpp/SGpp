@@ -88,7 +88,7 @@ class ArrayEvaluator : public AbstractLinearEvaluator<FloatArrayVector> {
     return basisValues;
   }
 
-  std::vector<double> getBasisCoefficients() override { return basisCoefficients; }
+  std::vector<double> getBasisCoefficients() override { return evaluator.getBasisCoefficients(); }
 
   void setGridPoints(std::vector<double> const &xValues) override {
     this->xValues = xValues;
@@ -98,7 +98,7 @@ class ArrayEvaluator : public AbstractLinearEvaluator<FloatArrayVector> {
   }
 
   void setFunctionValuesAtGridPoints(std::vector<double> &functionValues) override {
-    basisCoefficients = functionValues;
+    evaluator.setFunctionValuesAtGridPoints(functionValues);
   }
 
   std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> cloneLinear() override {

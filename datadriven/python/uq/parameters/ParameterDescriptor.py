@@ -1,5 +1,8 @@
+import numpy as np
+
 from pysgpp.extensions.datadriven.uq.dists import (Dist, Uniform, Normal, TNormal,
-                                                   Lognormal, Beta, MultivariateNormal)
+                                                   Lognormal, Beta, MultivariateNormal,
+                                                   TLognormal)
 from pysgpp.extensions.datadriven.uq.transformation import (LinearTransformation,
                                                             RosenblattTransformation)
 
@@ -12,6 +15,7 @@ from pysgpp.pysgpp_swig import OrthogonalPolynomialBasis1DConfiguration, \
     OrthogonalPolynomialBasisType_HERMITE, \
     OrthogonalPolynomialBasisType_JACOBI, \
     OrthogonalPolynomialBasisType_LEGENDRE, \
+    OrthogonalPolynomialBasisType_BOUNDED_LOGNORMAL, \
     OrthogonalPolynomialBasis1D
 
 
@@ -77,6 +81,10 @@ class UncertainParameterDesciptor(ParameterDescriptor):
 
     def withNormalDistribution(self, mu, sigma, alpha):
         self._dist = Normal.by_alpha(mu, sigma, alpha)
+        return self
+
+    def withTLognormalDistribution(self, mu, sigma, alpha):
+        self._dist = TLognormal.by_alpha(mu, sigma, alpha)
         return self
 
     def withLognormalDistribution(self, mu, sigma, alpha):
@@ -161,6 +169,13 @@ class UncertainParameterDesciptor(ParameterDescriptor):
             orthogPolyConfig.polyParameters.type_ = OrthogonalPolynomialBasisType_JACOBI
             orthogPolyConfig.polyParameters.alpha_ = self._dist.alpha()
             orthogPolyConfig.polyParameters.beta_ = self._dist.beta()
+            orthogPoly = OrthogonalPolynomialBasis1D(orthogPolyConfig)
+        elif isinstance(self._dist, TLognormal):
+            orthogPolyConfig.polyParameters.type_ = OrthogonalPolynomialBasisType_BOUNDED_LOGNORMAL
+            orthogPolyConfig.polyParameters.logmean_ = np.log(self._dist.mu)
+            orthogPolyConfig.polyParameters.stddev_ = self._dist.sigma
+            orthogPolyConfig.polyParameters.lowerBound_ = self._dist.getBounds()[0]
+            orthogPolyConfig.polyParameters.upperBound_ = self._dist.getBounds()[1]
             orthogPoly = OrthogonalPolynomialBasis1D(orthogPolyConfig)
         else:
             orthogPoly = None

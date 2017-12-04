@@ -221,6 +221,8 @@ class Dist(object):
             return dists.Normal.fromJson(jsonObject)
         elif 'uq.dists.Lognormal' in jsonObject['module']:
             return dists.Lognormal.fromJson(jsonObject)
+        elif 'uq.dists.TLognormal' in jsonObject['module']:
+            return dists.TLognormal.fromJson(jsonObject)
         elif 'uq.dists.Beta' in jsonObject['module']:
             return dists.Beta.fromJson(jsonObject)
         elif 'uq.dists.MultivariateNormal' in jsonObject['module']:

@@ -135,7 +135,6 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
       }
     }
     double norm = value.norm();
-
     if (std::isnan(norm) || std::isinf(norm)) {
       return false;
     } else {
@@ -252,7 +251,7 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
   /**
    * @return the dimensionality of the problem.
    */
-  size_t dim() const { return numDimensions; }
+  size_t numDims() const { return numDimensions; }
 
   /**
    * @return the numerical approximation value computed by the combination technique. No computation

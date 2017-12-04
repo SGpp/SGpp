@@ -203,6 +203,8 @@ size_t CombigridMultiOperation::numStoredFunctionValues() { return impl->storage
 
 size_t CombigridMultiOperation::numGridPoints() { return impl->levelManager->numGridPoints(); }
 
+size_t CombigridMultiOperation::numDims() { return impl->levelManager->numDims(); }
+
 size_t CombigridMultiOperation::getUpperPointBound() const {
   return impl->levelManager->getUpperPointBound();
 }

@@ -3,10 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <iostream>
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
+
+#include <iostream>
 #include <vector>
+#include <cmath>
 
 namespace sgpp {
 namespace combigrid {
@@ -33,7 +35,7 @@ void LinearInterpolationEvaluator::computeBasisValues() {
 
   // returns linear interpolation between function values in evaluationPoint
   if (evaluationPoint <= xValues[0]) {
-    if (std::abs(xValues[0]) > 1e-14) {
+    if (std::fabs(xValues[0]) > 1e-14) {
       basisValues[0] = FloatScalarVector(evaluationPoint / xValues[0]);
     } else {
       basisValues[0] = 1.0;
@@ -56,7 +58,7 @@ void LinearInterpolationEvaluator::computeBasisValues() {
   }
 
   // if we did not return in the loop, then evaluationPoint > all xValues...
-  if (std::abs(xValues[numPoints - 1] - 1.0) > 1e-14) {
+  if (std::fabs(xValues[numPoints - 1] - 1.0) > 1e-14) {
     basisValues[numPoints - 1] =
         FloatScalarVector((evaluationPoint - 1.0) / (xValues[numPoints - 1] - 1.0));
   }

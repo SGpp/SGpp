@@ -46,7 +46,7 @@ class AbstractLevelEvaluator {
   virtual size_t maxNumPointsForRegular(size_t q) = 0;
   virtual size_t numPoints(MultiIndex const &level) = 0;
   virtual double getDifferenceNorm(MultiIndex const &level) = 0;
-  virtual size_t dim() const = 0;
+  virtual size_t numDims() const = 0;
   virtual void clear() = 0;
   virtual std::shared_ptr<TreeStorage<uint8_t>> getLevelStructure() = 0;
   virtual std::vector<base::DataVector> getAllGridPoints() = 0;
