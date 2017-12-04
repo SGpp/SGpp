@@ -6,7 +6,7 @@
 #include <sgpp/combigrid/functions/MonomialFunctionBasis1D.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
-#include <sgpp/combigrid/pce/PolynomialChaosExpansion.hpp>
+#include <sgpp/combigrid/pce/PolynomialStochasticCollocation.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
@@ -14,6 +14,8 @@
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
+
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <cmath>
 
@@ -52,38 +54,40 @@ int main() {
 
   sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
   config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
-  config.polyParameters.alpha_ = 10.0;
-  config.polyParameters.beta_ = 5.0;
-
+  config.polyParameters.lowerBound_ = 0.0;
+  config.polyParameters.upperBound_ = 1.0;
   auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
+  sgpp::base::DataVector bounds(2 * d);
+  bounds[0] = 0.0;
+  bounds[1] = 1.0;
+  bounds[2] = 0.0;
+  bounds[3] = 1.0;
+  bounds[4] = 0.0;
+  bounds[5] = 1.0;
 
+  auto op =
+      sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(d, func);
+  auto op_levelManager = op->getLevelManager();
+  sgpp::combigrid::PolynomialStochasticCollocation sc(op, functionBasis, bounds);
+  auto tensor_levelManager = sc.getCombigridTensorOperation()->getLevelManager();
+
+  sgpp::combigrid::Stopwatch stopwatch;
   for (size_t q = 0; q < 8; ++q) {
-    // interpolate on adaptively refined grid
-    auto op = sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
-        d, func);
-    sgpp::combigrid::Stopwatch stopwatch;
-    stopwatch.start();
-    op->getLevelManager()->addRegularLevels(q);
-    //    op->getLevelManager()->addLevelsAdaptiveParallel(1000, 4);
-    stopwatch.log();
+    //    std::cout << "---------------------------------------------------------" << std::endl;
+    //    std::cout << "add regular levels " << q << " to interpolation operation" << std::endl;
+    op_levelManager->addRegularLevels(q);
+    //    std::cout << "---------------------------------------------------------" << std::endl;
+    //    std::cout << "add regular levels " << q << " to tensor operation" << std::endl;
+    tensor_levelManager->addRegularLevels(q);
     // compute the variance
+    std::cout << "---------------------------------------------------------" << std::endl;
+    std::cout << "compute mean and variance of stochastic collocation" << std::endl;
+    std::cout << "#gp = " << op_levelManager->numGridPoints() << std::endl;
     stopwatch.start();
-    sgpp::combigrid::PolynomialChaosExpansion pce(op, functionBasis);
-    double mean = pce.mean();
-    double variance = pce.variance();
-    sgpp::base::DataVector sobol_indices;
-    sgpp::base::DataVector total_sobol_indices;
-    pce.getComponentSobolIndices(sobol_indices);
-    pce.getTotalSobolIndices(total_sobol_indices);
-    std::cout << "Time: " << stopwatch.elapsedSeconds() / static_cast<double>(op->numGridPoints())
-              << std::endl;
-    std::cout << "---------------------------------------------------------" << std::endl;
-    std::cout << "#gp = " << op->getLevelManager()->numGridPoints() << std::endl;
-    std::cout << "E(u) = " << mean << std::endl;
-    std::cout << "Var(u) = " << variance << std::endl;
-    std::cout << "Sobol indices = " << sobol_indices.toString() << std::endl;
-    std::cout << "Sum Sobol indices = " << sobol_indices.sum() << std::endl;
-    std::cout << "Total Sobol indices = " << total_sobol_indices.toString() << std::endl;
-    std::cout << "---------------------------------------------------------" << std::endl;
+    double mean = sc.mean();
+    double variance = sc.variance();
+    stopwatch.log();
+    std::cout << "|mu - E(u)|        = " << std::abs(3.5 - mean) << std::endl;
+    std::cout << "|sigma^2 - Var(u)| = " << std::abs(f_variance() - variance) << std::endl;
   }
 }

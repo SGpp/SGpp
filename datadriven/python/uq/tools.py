@@ -54,11 +54,13 @@ def createGrid(dim, level, borderType, isFull=False):
 
 
 def natural_sort(accLevel):
-    convert = lambda text:\
+    def convert(text): return \
         int(text) if text.isdigit()else text.lower()
-    alphanum_key = lambda key:\
+
+    def alphanum_key(key): return \
         [convert(c) for c in re.split('([0-9]+)', key)]
     return sorted(accLevel, key=alphanum_key)
+
 
 def unique(accLevel):
     seen = set()
@@ -133,6 +135,7 @@ def writeDataARFF(data, merge=False):
     if merge == True:
         fout.close()
     return
+
 
 def check(n, dim, nmax=50000):
     if dim > log(nmax) / log(n):

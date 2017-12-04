@@ -124,11 +124,21 @@ class CombigridTensorOperation {
   size_t numGridPoints();
 
   /**
+   * @return the number of dimensions
+   */
+  size_t numDims();
+
+  /**
    * @return An upper bound for the number of points (function evaluations) used for the current
    * computation. This bound is exact if nesting is used or if otherwise each grid point only occurs
    * in exactly one level.
    */
   size_t getUpperPointBound() const;
+
+  /**
+   * @return the point hierarchies containing the grid points in each direction
+   */
+  std::vector<std::shared_ptr<AbstractPointHierarchy>> getPointHierarchies();
 
   /**
    * Returns a CombigridTensorOperation doing polynomial interpolation on a Clenshaw-Curtis grid
@@ -217,6 +227,17 @@ class CombigridTensorOperation {
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager,
       std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis);
+
+  /**
+   *
+   * @param operation
+   * @param functionBasis
+   * @return
+   */
+  static std::shared_ptr<CombigridTensorOperation> createOperationTensorPolynomialInterpolation(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+      std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager,
+      std::vector<std::shared_ptr<AbstractInfiniteFunctionBasis1D>> &functionBases);
 };
 
 } /* namespace combigrid */

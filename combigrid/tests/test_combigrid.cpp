@@ -22,6 +22,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <random>
 
 using sgpp::base::DataVector;
 using sgpp::combigrid::AbstractMultiStorage;

@@ -19,13 +19,16 @@
 #include <sgpp/combigrid/integration/MCIntegrator.hpp>
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
+#include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
+#include <sgpp/combigrid/operation/multidim/RegularLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridCallbackEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
+#include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
@@ -37,6 +40,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <iomanip>
 
 using sgpp::base::DataVector;
 using sgpp::combigrid::AbstractMultiStorage;
@@ -130,8 +134,106 @@ BOOST_AUTO_TEST_CASE(testLevelManagerParallel) {
   levelManager->addRegularLevelsParallel(maxLevelSum, 4);
   levelManager->addLevelsAdaptiveParallel(300, 4);
 
-  std::cout << "test_level_manager: ";
-  std::cout << std::abs(combiGridEval->getValue().getValue() -
-                        func(DataVector(std::vector<double>{0.378934, 0.89340273})))
-            << "\n";
+  // std::cout << "test_level_manager: ";
+  // std::cout << std::abs(combiGridEval->getValue().getValue() -
+  //                       func(DataVector(std::vector<double>{0.378934, 0.89340273})))
+  //           << "\n";
 }
+
+#ifdef USE_DAKOTA
+
+BOOST_AUTO_TEST_CASE(testLevelManagerStats) {
+  auto func = MultiFunction(testFunctionAtan);
+  size_t d = 2;
+  sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
+  config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
+  auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
+
+  auto op = sgpp::combigrid::CombigridTensorOperation::createExpLejaPolynomialInterpolation(
+      functionBasis, d, func);
+  auto levelManager = op->getLevelManager();
+
+  // add regular levels
+  size_t maxLevel = 8;
+  for (size_t level = 0; level < maxLevel; level++) {
+    levelManager->addRegularLevels(level);
+  }
+
+  // reference stats
+  std::vector<double> refStats{0.0,         1.192569,    5.795147e-1, 3.154010e-1,
+                               2.375317e-1, 1.420868e-1, 7.702826e-2, 1.341710e-2};
+
+  auto stats = levelManager->getInfoOnAddedLevels();
+
+  // evaluate stats
+  //  size_t i = 0;
+  //  for (auto &istats : *stats->getInfos()) {
+  //    std::cout << " - - - - - - - - - - - - " << std::endl;
+  //    std::cout << "iteration = " << ++i << std::endl;
+  //    for (auto &item : *istats) {
+  //      auto &level = item.first;
+  //      auto &levelInfo = item.second;
+  //      std::cout << level[0] << ", " << level[1] << " = " << std::setprecision(15) <<
+  //      levelInfo->norm
+  //                << ", " << levelInfo->priority << std::endl;
+  //    }
+  //  }
+  // compute maximum norm per iteration
+  sgpp::base::DataVector maxNorms;
+  stats->maxNormPerIteration(maxNorms);
+  for (size_t i = 0; i < maxNorms.getSize(); i++) {
+    BOOST_CHECK_SMALL(std::abs(refStats[i] - maxNorms[i]), 1e-5);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(testLevelManagerStatsConversion) {
+  auto func = MultiFunction(testFunctionAtan);
+  size_t d = 2;
+
+  auto op = sgpp::combigrid::CombigridOperation::createExpLejaPolynomialInterpolation(d, func);
+
+  sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
+  config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
+  auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
+
+  // copy level structure to tensor grid
+  auto tensor_op = sgpp::combigrid::CombigridTensorOperation::createExpLejaPolynomialInterpolation(
+      functionBasis, d, func);
+
+  // add regular levels
+  size_t maxLevel = 8;
+  for (size_t level = 0; level < maxLevel; level++) {
+    op->getLevelManager()->addRegularLevels(level);
+    tensor_op->getLevelManager()->addLevelsFromStructure(
+        op->getLevelManager()->getLevelStructure());
+  }
+
+  auto stats = tensor_op->getLevelManager()->getInfoOnAddedLevels();
+
+  //  // evaluate stats
+  //  size_t i = 0;
+  //  for (auto &istats : *stats->getInfos()) {
+  //    std::cout << " - - - - - - - - - - - - " << std::endl;
+  //    std::cout << "iteration = " << ++i << std::endl;
+  //    for (auto &item : *istats) {
+  //      auto &level = item.first;
+  //      auto &levelInfo = item.second;
+  //      std::cout << level[0] << ", " << level[1] << " = " << std::setprecision(15) <<
+  //      levelInfo->norm
+  //                << ", " << levelInfo->priority << std::endl;
+  //    }
+  //  }
+
+  // reference stats
+  std::vector<double> refStats{0.0,         1.192569,    5.795147e-1, 3.154010e-1,
+                               2.375317e-1, 1.420868e-1, 7.702826e-2, 1.341710e-2};
+
+  // compute maximum norm per iteration
+  sgpp::base::DataVector maxNorms;
+  stats->maxNormPerIteration(maxNorms);
+  for (size_t i = 0; i < maxNorms.getSize(); i++) {
+    BOOST_CHECK_SMALL(std::abs(refStats[i] - maxNorms[i]), 1e-5);
+  }
+}
+
+#endif
