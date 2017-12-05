@@ -14,6 +14,7 @@
 #include <iomanip>
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 namespace sgpp {
 namespace combigrid {
@@ -128,14 +129,20 @@ BSplineQuadratureEvaluator::BSplineQuadratureEvaluator()
       normalizeWeights(false),
       isCustomWeightFunction(false),
       numAdditionalPoints(0),
-      degree(3) {}
+      degree(3) {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_BSplineQuadrature;
+  evalConfig.degree = 3;
+}
 
 BSplineQuadratureEvaluator::BSplineQuadratureEvaluator(size_t degree)
     : weight_function(constantFunction<double>(1.0)),
       normalizeWeights(false),
       isCustomWeightFunction(false),
       numAdditionalPoints(0),
-      degree(degree) {}
+      degree(degree) {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_BSplineQuadrature;
+  evalConfig.degree = degree;
+}
 
 BSplineQuadratureEvaluator::BSplineQuadratureEvaluator(
     size_t degree, sgpp::combigrid::SingleFunction weight_function, bool normalizeWeights,
@@ -144,7 +151,10 @@ BSplineQuadratureEvaluator::BSplineQuadratureEvaluator(
       normalizeWeights(normalizeWeights),
       isCustomWeightFunction(true),
       numAdditionalPoints(numAdditionalPoints),
-      degree(degree) {}
+      degree(degree) {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_BSplineQuadrature;
+  evalConfig.degree = degree;
+}
 
 BSplineQuadratureEvaluator::BSplineQuadratureEvaluator(BSplineQuadratureEvaluator const& other)
     : xValues(other.xValues),
@@ -153,7 +163,10 @@ BSplineQuadratureEvaluator::BSplineQuadratureEvaluator(BSplineQuadratureEvaluato
       normalizeWeights(other.normalizeWeights),
       isCustomWeightFunction(other.isCustomWeightFunction),
       numAdditionalPoints(other.numAdditionalPoints),
-      degree(other.degree) {}
+      degree(other.degree) {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_BSplineQuadrature;
+  evalConfig.degree = other.degree;
+}
 
 void BSplineQuadratureEvaluator::setParameter(const FloatScalarVector& param) { return; }
 

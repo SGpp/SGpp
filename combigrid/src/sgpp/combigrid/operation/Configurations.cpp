@@ -236,6 +236,11 @@ std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> CombiEvaluators::BSpl
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>
+CombiEvaluators::polynomialScalarProduct() {
+  return std::make_shared<PolynomialScalarProductEvaluator>();
+}
+
+std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>
 CombiEvaluators::multiPolynomialInterpolation() {
   return std::make_shared<ArrayEvaluator<PolynomialInterpolationEvaluator>>(true);
 }

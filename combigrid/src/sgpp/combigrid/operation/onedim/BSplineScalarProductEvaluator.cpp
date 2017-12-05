@@ -146,14 +146,20 @@ BSplineScalarProductEvaluator::BSplineScalarProductEvaluator()
       normalizeWeights(false),
       isCustomWeightFunction(false),
       numAdditionalPoints(0),
-      degree(3) {}
+      degree(3) {
+  evalConfig.type = CombiEvaluatorTypes::Multi_BSplineScalarProduct;
+  evalConfig.degree = 3;
+}
 
 BSplineScalarProductEvaluator::BSplineScalarProductEvaluator(size_t degree)
     : weight_function(constantFunction<double>(1.0)),
       normalizeWeights(false),
       isCustomWeightFunction(false),
       numAdditionalPoints(0),
-      degree(degree) {}
+      degree(degree) {
+  evalConfig.type = CombiEvaluatorTypes::Multi_BSplineScalarProduct;
+  evalConfig.degree = degree;
+}
 
 BSplineScalarProductEvaluator::BSplineScalarProductEvaluator(
     size_t degree, sgpp::combigrid::SingleFunction weight_function, bool normalizeWeights,
@@ -162,7 +168,10 @@ BSplineScalarProductEvaluator::BSplineScalarProductEvaluator(
       normalizeWeights(normalizeWeights),
       isCustomWeightFunction(true),
       numAdditionalPoints(numAdditionalPoints),
-      degree(degree) {}
+      degree(degree) {
+  evalConfig.type = CombiEvaluatorTypes::Multi_BSplineScalarProduct;
+  evalConfig.degree = degree;
+}
 
 BSplineScalarProductEvaluator::BSplineScalarProductEvaluator(
     BSplineScalarProductEvaluator const& other)
@@ -172,7 +181,10 @@ BSplineScalarProductEvaluator::BSplineScalarProductEvaluator(
       normalizeWeights(other.normalizeWeights),
       isCustomWeightFunction(other.isCustomWeightFunction),
       numAdditionalPoints(other.numAdditionalPoints),
-      degree(other.degree) {}
+      degree(other.degree) {
+  evalConfig.type = CombiEvaluatorTypes::Multi_BSplineScalarProduct;
+  evalConfig.degree = other.degree;
+}
 
 void BSplineScalarProductEvaluator::setParameter(const FloatArrayVector& param) { return; }
 

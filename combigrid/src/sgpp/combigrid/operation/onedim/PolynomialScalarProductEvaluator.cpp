@@ -19,6 +19,37 @@
 namespace sgpp {
 namespace combigrid {
 
+PolynomialScalarProductEvaluator::PolynomialScalarProductEvaluator()
+    : weight_function(constantFunction<double>(1.0)),
+      normalizeWeights(false),
+      isCustomWeightFunction(false),
+      numAdditionalPoints(0) {
+  evalConfig.type = CombiEvaluatorTypes::Multi_PolynomialScalarProduct;
+}
+
+PolynomialScalarProductEvaluator::PolynomialScalarProductEvaluator(
+    sgpp::combigrid::SingleFunction weight_function, bool normalizeWeights,
+    size_t numAdditionalPoints)
+    : weight_function(weight_function),
+      normalizeWeights(normalizeWeights),
+      isCustomWeightFunction(true),
+      numAdditionalPoints(numAdditionalPoints) {
+  evalConfig.type = CombiEvaluatorTypes::Multi_PolynomialScalarProduct;
+}
+
+PolynomialScalarProductEvaluator::PolynomialScalarProductEvaluator(
+    PolynomialScalarProductEvaluator const& other)
+    : xValues(other.xValues),
+      basisValues(other.basisValues),
+      weight_function(other.weight_function),
+      normalizeWeights(other.normalizeWeights),
+      isCustomWeightFunction(other.isCustomWeightFunction),
+      numAdditionalPoints(other.numAdditionalPoints) {
+  evalConfig.type = CombiEvaluatorTypes::Multi_PolynomialScalarProduct;
+}
+
+PolynomialScalarProductEvaluator::~PolynomialScalarProductEvaluator() {}
+
 double PolynomialScalarProductEvaluator::quad(LagrangePolynom& p_i, LagrangePolynom& p_j) {
   size_t degree_i = p_i.points.size() - 1;
   size_t degree_j = p_j.points.size() - 1;
@@ -108,8 +139,6 @@ void PolynomialScalarProductEvaluator::calculate1DPolynomialScalarProducts(
   }
 }
 
-PolynomialScalarProductEvaluator::~PolynomialScalarProductEvaluator() {}
-
 bool PolynomialScalarProductEvaluator::needsOrderedPoints() { return false; }
 
 bool PolynomialScalarProductEvaluator::needsParameter() { return false; }
@@ -144,29 +173,6 @@ PolynomialScalarProductEvaluator::cloneLinear() {
   return std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector> >(
       new PolynomialScalarProductEvaluator(*this));
 }
-
-PolynomialScalarProductEvaluator::PolynomialScalarProductEvaluator()
-    : weight_function(constantFunction<double>(1.0)),
-      normalizeWeights(false),
-      isCustomWeightFunction(false),
-      numAdditionalPoints(0) {}
-
-PolynomialScalarProductEvaluator::PolynomialScalarProductEvaluator(
-    sgpp::combigrid::SingleFunction weight_function, bool normalizeWeights,
-    size_t numAdditionalPoints)
-    : weight_function(weight_function),
-      normalizeWeights(normalizeWeights),
-      isCustomWeightFunction(true),
-      numAdditionalPoints(numAdditionalPoints) {}
-
-PolynomialScalarProductEvaluator::PolynomialScalarProductEvaluator(
-    PolynomialScalarProductEvaluator const& other)
-    : xValues(other.xValues),
-      basisValues(other.basisValues),
-      weight_function(other.weight_function),
-      normalizeWeights(other.normalizeWeights),
-      isCustomWeightFunction(other.isCustomWeightFunction),
-      numAdditionalPoints(other.numAdditionalPoints) {}
 
 void PolynomialScalarProductEvaluator::setParameter(const FloatArrayVector& param) { return; }
 
