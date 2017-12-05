@@ -31,6 +31,7 @@
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotNakBsplineBoundaryCombigrid.hpp>
 #include <sgpp/quadrature/sampling/NaiveSampleGenerator.hpp>
 
 #include <cmath>
@@ -103,13 +104,13 @@ void calculateCGerror(
   L2Err = 0;
   size_t numMCpoints = 10000;
   sgpp::quadrature::NaiveSampleGenerator generator(numDimensions);
-  sgpp::base::DataMatrix params(numDimensions, 0);
+  sgpp::base::DataMatrix params(numDimensions, numMCpoints);
   sgpp::base::DataVector p(numDimensions);
-  sgpp::base::DataVector Feval;
+  sgpp::base::DataVector Feval(numMCpoints, 0.0);
   for (size_t i = 0; i < numMCpoints; i++) {
     generator.getSample(p);
-    params.appendCol(p);
-    Feval.append(f(p));
+    params.setColumn(i, p);
+    Feval.set(i, f(p));
   }
   Operation->setParameters(params);
   Operation->getLevelManager()->addLevelsFromStructure(levelStructure);
@@ -148,13 +149,13 @@ void calculateCGSGDifference(
   L2Err = 0;
   size_t numMCpoints = 10000;
   sgpp::quadrature::NaiveSampleGenerator generator(numDimensions);
-  sgpp::base::DataMatrix params(numDimensions, 0);
+  sgpp::base::DataMatrix params(numDimensions, numMCpoints);
   sgpp::base::DataVector p(numDimensions);
-  sgpp::base::DataVector SGeval;
+  sgpp::base::DataVector SGeval(numMCpoints, 0.0);
   for (size_t i = 0; i < numMCpoints; i++) {
     generator.getSample(p);
-    params.appendCol(p);
-    SGeval.append(u.eval(p));
+    params.setColumn(i, p);
+    SGeval.set(i, u.eval(p));
   }
   Operation->setParameters(params);
   Operation->getLevelManager()->addLevelsFromStructure(levelStructure);
@@ -224,23 +225,24 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   }
 
   // convert level structure to SG
-  std::unique_ptr<sgpp::base::Grid> grid;
+  std::shared_ptr<sgpp::base::Grid> grid;
   grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDimensions, degree));
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
 
+  //  print options
   //  printLevelstructure(levelStructure);
   //  printSGGridToFile(gridStorage);
 
   // interpolate on SG
-  sgpp::base::DataMatrix interpolParams(numDimensions, 0);
+  sgpp::base::DataMatrix interpolParams(numDimensions, gridStorage.getSize());
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
     sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
     sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
     for (size_t j = 0; j < gridStorage.getDimension(); j++) {
       p[j] = gp.getStandardCoordinate(j);
     }
-    interpolParams.appendCol(p);
+    interpolParams.setColumn(i, p);
   }
 
   // obtain function values from combigrid surrogate
@@ -265,17 +267,35 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   calculateSGerror(SGMaxErr, SGL2Err, u);
   calculateCGSGDifference(CompMaxErr, CompL2Err, Operation, levelStructure, u);
 
-  std::cout << "\n";
-  std::cout << "CG L2:   " << CGL2Err << "   CG max:   " << CGMaxErr << std::endl;
-  std::cout << "SG L2:   " << SGL2Err << "   SG max:   " << SGMaxErr << std::endl;
-  std::cout << "Comp L2: " << CompL2Err << " Comp max: " << CompMaxErr << std::endl;
+  //  std::cout << "\n";
+  //  std::cout << "CG L2:   " << CGL2Err << "   CG max:   " << CGMaxErr << std::endl;
+  //  std::cout << "SG L2:   " << SGL2Err << "   SG max:   " << SGMaxErr << std::endl;
+  //  std::cout << "Comp L2: " << CompL2Err << " Comp max: " << CompMaxErr << std::endl;
+  //  std::cout << "L2 error: " << CGL2Err << " max error: " << CGMaxErr << std::endl;
+
+  sgpp::base::DataVector dummyparams;
+  auto quadOperation =
+      sgpp::combigrid::CombigridOperation::createExpUniformBoundaryBsplineQuadrature(numDimensions,
+                                                                                     func, degree);
+  quadOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
+  double mean = quadOperation->getResult();
+
+  // ToDo (rehmemk) Konvertierung von shared_ptr zu pointer Unsinn?!
+  sgpp::base::Grid* gridptr = grid.get();
+  sgpp::pde::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(gridptr);
+  sgpp::base::DataVector product(alpha.size(), 0);
+  massMatrix.mult(alpha, product);
+  double meanSquare = product.dotProduct(alpha);
+  double variance = meanSquare - mean * mean;
+  std::cout << "mean: " << mean << " meanSquare : " << meanSquare << " Variance: " << variance
+            << std::endl;
 }
 
 int main() {
-  size_t degree = 5;
-  size_t numLevels = 20;
+  size_t degree = 3;
+  size_t numLevels = 21;
   for (size_t maxLevel = 0; maxLevel < numLevels; maxLevel++) {
-    //    std::cout << "added Levels: " << maxLevel << " ";
+    std::cout << "added Levels: " << maxLevel << " ";
     BSplineGridConversion(degree, maxLevel);
   }
   return 0;
