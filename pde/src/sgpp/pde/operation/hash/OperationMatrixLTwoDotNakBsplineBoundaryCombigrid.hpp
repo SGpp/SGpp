@@ -17,19 +17,19 @@ namespace pde {
  * Implements the standard L 2 scalar product on periodic grids
  *
  */
-class OperationMatrixLTwoDotnakBsplineBoundaryCombigrid : public sgpp::base::OperationMatrix {
+class OperationMatrixLTwoDotNakBsplineBoundaryCombigrid : public sgpp::base::OperationMatrix {
  public:
   /**
    * Constructor
    *
    * @param gridStorage pointer to the GridStorage of the grid
    */
-  explicit OperationMatrixLTwoDotnakBsplineBoundaryCombigrid(sgpp::base::Grid* grid);
+  explicit OperationMatrixLTwoDotNakBsplineBoundaryCombigrid(sgpp::base::Grid* grid);
 
   /**
    * Destructor
    */
-  virtual ~OperationMatrixLTwoDotnakBsplineBoundaryCombigrid();
+  virtual ~OperationMatrixLTwoDotNakBsplineBoundaryCombigrid();
 
   /**
   * Implementation of standard matrix multiplication
