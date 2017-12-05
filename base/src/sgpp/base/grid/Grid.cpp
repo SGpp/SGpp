@@ -23,7 +23,7 @@
 #include <sgpp/base/grid/type/ModLinearGridStencil.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
-#include <sgpp/base/grid/type/NotAKnotBsplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/grid/type/PeriodicGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
@@ -124,8 +124,8 @@ Grid* Grid::createModPolyGrid(size_t dim, size_t degree) { return new ModPolyGri
 
 Grid* Grid::createPeriodicGrid(size_t dim) { return new PeriodicGrid(dim); }
 
-Grid* Grid::createNotAKnotBsplineBoundaryGrid(size_t dim, size_t degree) {
-  return new NotAKnotBsplineBoundaryGrid(dim, degree);
+Grid* Grid::createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree) {
+  return new NakBsplineBoundaryCombigridGrid(dim, degree);
 }
 
 Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
@@ -187,8 +187,8 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
         return Grid::createLinearStretchedGrid(gridConfig.dim_);
       case GridType::ModLinearStencil:
         return Grid::createModLinearGridStencil(gridConfig.dim_);
-      case GridType::NotAKnotBsplineBoundary:
-        return Grid::createNotAKnotBsplineBoundaryGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      case GridType::NakBsplineBoundaryCombigrid:
+        return Grid::createNakBsplineBoundaryCombigridGrid(gridConfig.dim_, gridConfig.maxDegree_);
       default:
         throw generation_exception("Grid::createGrid - grid type not known");
     }
@@ -293,9 +293,9 @@ Grid* Grid::clone() {
     case GridType::ModLinearStencil:
       newGrid = Grid::createModLinearGridStencil(numDims);
       break;
-    case GridType::NotAKnotBsplineBoundary:
-      degree = dynamic_cast<NotAKnotBsplineBoundaryGrid*>(this)->getDegree();
-      newGrid = Grid::createNotAKnotBsplineBoundaryGrid(numDims, degree);
+    case GridType::NakBsplineBoundaryCombigrid:
+      degree = dynamic_cast<NakBsplineBoundaryCombigridGrid*>(this)->getDegree();
+      newGrid = Grid::createNakBsplineBoundaryCombigridGrid(numDims, degree);
       break;
 
     default:

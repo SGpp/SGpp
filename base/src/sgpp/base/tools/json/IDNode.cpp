@@ -7,10 +7,10 @@
 #include <sgpp/base/tools/json/json_exception.hpp>
 
 #include <fstream>
-#include <string>
 #include <sstream>
-#include <vector>
 #include <stdexcept>
+#include <string>
+#include <vector>
 
 namespace json {
 
