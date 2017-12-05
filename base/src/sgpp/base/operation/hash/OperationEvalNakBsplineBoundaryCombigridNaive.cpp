@@ -3,13 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/operation/hash/OperationEvalNotAKnotBsplineBoundaryCombigridNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalNakBsplineBoundaryCombigridNaive.hpp>
 #include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace base {
 
-double OperationEvalNotAKnotBsplineBoundaryCombigridNaive::eval(const DataVector& alpha,
+double OperationEvalNakBsplineBoundaryCombigridNaive::eval(const DataVector& alpha,
                                                        const DataVector& point) {
   const size_t n = storage.getSize();
   const size_t d = storage.getDimension();
@@ -39,7 +39,7 @@ double OperationEvalNotAKnotBsplineBoundaryCombigridNaive::eval(const DataVector
   return result;
 }
 
-void OperationEvalNotAKnotBsplineBoundaryCombigridNaive::eval(const DataMatrix& alpha,
+void OperationEvalNakBsplineBoundaryCombigridNaive::eval(const DataMatrix& alpha,
                                                      const DataVector& point, DataVector& value) {
   const size_t n = storage.getSize();
   const size_t d = storage.getDimension();

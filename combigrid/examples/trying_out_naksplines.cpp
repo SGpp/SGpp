@@ -7,10 +7,10 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
-#include <sgpp/base/grid/type/NotAKnotBsplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
-#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineBoundaryBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryCombigridBasis.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/quadrature/sampling/NaiveSampleGenerator.hpp>
 
@@ -25,7 +25,7 @@ double f(sgpp::base::DataVector p, size_t dim) {
   double fvalue = 0.0;
   switch (dim) {
     case 1:
-      fvalue = pow(p[0], 3);
+      fvalue = pow(p[0], 5);
       break;
     case 2:
       fvalue = p[0] * p[0] * p[0] + p[1] * p[1] * p[1];
@@ -42,13 +42,13 @@ double f(sgpp::base::DataVector p, size_t dim) {
 }
 
 int main() {
-  size_t dim = 2;
-  size_t deg = 3;
+  size_t dim = 1;
+  size_t deg = 5;
   size_t level = 3;
   size_t numMCpoints = 10000;
 
   std::unique_ptr<sgpp::base::Grid> grid;
-  grid.reset(sgpp::base::Grid::createNotAKnotBsplineBoundaryGrid(dim, deg));
+  grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(dim, deg));
   grid->getGenerator().regular(level);
   sgpp::base::DataVector alpha(grid->getSize());
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
@@ -100,9 +100,9 @@ int main() {
   std::ofstream plotfile;
   plotfile.open(plotstr.c_str(), std::ios::app);
 
-  sgpp::base::SNotAKnotBsplineBoundaryBase myBasis(3);
+  sgpp::base::SNakBsplineBoundaryCombigridBase myBasis(deg);
   for (double p = 0; p < 1; p = p + 0.005) {
-    plotfile << p << ",   " << myBasis.eval(3, 3, p) << "\n";
+    plotfile << p << ",   " << myBasis.eval(0, 0, p) << ", " << myBasis.eval(0, 1, p) << "\n";
   }
   plotfile.close();
 

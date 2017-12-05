@@ -8,8 +8,8 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
 
 #include <fstream>
