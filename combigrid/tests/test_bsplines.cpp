@@ -17,6 +17,8 @@
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridCallbackEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
 #include <sgpp/combigrid/utils/AnalyticModels.hpp>
+#include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
+
 #include <sgpp/globaldef.hpp>
 #include <sgpp/quadrature/sampling/NaiveSampleGenerator.hpp>
 
@@ -57,7 +59,7 @@ double BSplineVariance(sgpp::combigrid::MultiIndex level) {
   return res;
 }
 
-double polynomialVariance(sgpp::combigrid::MultiIndex& level) {
+double polynomialVarianceQuadrature(sgpp::combigrid::MultiIndex& level) {
   sgpp::combigrid::Atan atanModel;
   size_t numDimensions = atanModel.numDims;
   sgpp::combigrid::MultiFunction func(atanModel.eval);
@@ -77,31 +79,70 @@ double polynomialVariance(sgpp::combigrid::MultiIndex& level) {
       std::make_shared<sgpp::combigrid::CombigridTreeStorage>(pointHierarchies, exploitNesting,
                                                               func);
 
-  std::shared_ptr<sgpp::combigrid::AbstractFullGridEvaluator<sgpp::combigrid::FloatArrayVector>>
-      fullGridEval = std::make_shared<
-          sgpp::combigrid::FullGridCallbackEvaluator<sgpp::combigrid::FloatArrayVector>>(
-          storage, evaluators, pointHierarchies, summationStrategyType);
+  auto fullGridEval = std::make_shared<
+      sgpp::combigrid::FullGridCallbackEvaluator<sgpp::combigrid::FloatArrayVector>>(
+      storage, evaluators, pointHierarchies, summationStrategyType);
 
   auto result = fullGridEval->eval(level);
   double res = result[0].value();
   return res;
 }
 
+double polynomialVariancePCE(sgpp::combigrid::MultiIndex& level) {
+  sgpp::combigrid::Atan atanModel;
+  size_t numDimensions = atanModel.numDims;
+  sgpp::combigrid::MultiFunction func(atanModel.eval);
+  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
+      numDimensions, sgpp::combigrid::CombiHierarchies::expClenshawCurtis());
+
+  sgpp::combigrid::EvaluatorConfiguration evalConfig(
+      sgpp::combigrid::CombiEvaluatorTypes::Tensor_PolynomialInterpolation);
+  sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
+  config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
+  evalConfig.functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
+
+  sgpp::combigrid::CombiEvaluators::TensorCollection evaluators(
+      numDimensions, sgpp::combigrid::CombiEvaluators::createCombiTensorEvaluator(evalConfig));
+
+  auto summationStrategyType = sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
+
+  auto storage =
+      std::make_shared<sgpp::combigrid::CombigridTreeStorage>(pointHierarchies, true, func);
+
+  auto fullGridEval = std::make_shared<
+      sgpp::combigrid::FullGridCallbackEvaluator<sgpp::combigrid::FloatTensorVector>>(
+      storage, evaluators, pointHierarchies, summationStrategyType);
+
+  return std::pow(fullGridEval->eval(level).norm(), 2.0);
+}
+
 BOOST_AUTO_TEST_SUITE(testPolynomialVariance)
 
 BOOST_AUTO_TEST_CASE(testVarianceOfPolynomialsOnDiagonal) {
   sgpp::combigrid::Atan atanModel;
-  std::vector<double> tolerances{1e1, 1e0, 1e0, 1e0, 1e-1, 1e-2, 1e-3, 1e-5};
+  std::vector<double> tolerancesQuad{1e1, 1e0, 1e0, 1e0, 1e-1, 1e-2, 1e-3, 1e-5};
+  std::vector<double> tolerancesPCE{1e1, 1e0, 1e0, 1e0, 1e-1, 1e-2, 1e-3, 1e-5};
 
-  for (size_t i = 0; i < 8; i++) {
-    sgpp::combigrid::MultiIndex level{atanModel.numDims, i};
-    double polyVariance = polynomialVariance(level);
+  sgpp::combigrid::MultiIndex level(atanModel.numDims);
+  for (size_t i = 0; i < 7; i++) {
+    sgpp::combigrid::MultiIndex level(atanModel.numDims, i);
+    double polyVariance = polynomialVarianceQuadrature(level);
     double varianceError = std::fabs(polyVariance - atanModel.variance);
-    BOOST_CHECK_SMALL(varianceError, tolerances[i]);
+    BOOST_CHECK_SMALL(varianceError, tolerancesQuad[i]);
+
+#ifdef USE_DAKOTA
+    // -----------------------------------------------------------------------
+    // use the PCE approach
+    polyVariance = polynomialVariancePCE(level);
+    varianceError = std::fabs(polyVariance - atanModel.variance);
+    //    std::cout << "level: |" << level[0] << " " << level[1] << "| error:  " << varianceError
+    //              << std::endl;
+    BOOST_CHECK_SMALL(varianceError, tolerancesPCE[i]);
   }
+#endif
 }
 
-BOOST_AUTO_TEST_CASE(testVarianceOfPolynomialOnLevel) {
+BOOST_AUTO_TEST_CASE(testVarianceOfPolynomialsOnLevel) {
   // This data was created by SGpp/combigrid/tests/createVarianceDataPolynomial.py
   // It represents the variance calculated for each level with levelsum <= 7 for the function
   // arctan(50.0 * (x[0] - .35)) + pi / 2.0 + 4.0 * x[1] ** 3 + exp(x[0] * x[1] - 1.0)
@@ -138,15 +179,27 @@ BOOST_AUTO_TEST_CASE(testVarianceOfPolynomialOnLevel) {
   };
 
   AtanModelVarianceTestDataPolynomials varianceTestData;
-  double tolerance = 5e-13;
   for (size_t i = 0; i < varianceTestData.levels.size(); i++) {
     sgpp::combigrid::MultiIndex level = varianceTestData.levels[i];
-    double polyVariance = polynomialVariance(level);
+
+    // -----------------------------------------------------------------------
+    // use the quadrature approach
+    double polyVariance = polynomialVarianceQuadrature(level);
     double varianceError = std::fabs(polyVariance - varianceTestData.variances[i]);
     //    std::cout << "level: |" << level[0] << " " << level[1] << "|  error:  " << varianceError
     //              << std::endl;
-    BOOST_CHECK_SMALL(varianceError, tolerance);
+    BOOST_CHECK_SMALL(varianceError, 5e-13);
+
+#ifdef USE_DAKOTA
+    // -----------------------------------------------------------------------
+    // use the PCE approach
+    polyVariance = polynomialVariancePCE(level);
+    varianceError = std::fabs(polyVariance - varianceTestData.variances[i]);
+    //    std::cout << "level: |" << level[0] << " " << level[1] << "|  value: " << polyVariance
+    //              << " (err=" << varianceError << ")" << std::endl;
+    BOOST_CHECK_SMALL(varianceError, 1e-14);
   }
+#endif
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -243,7 +296,7 @@ BOOST_AUTO_TEST_CASE(testVarianceOnDiagonal) {
       << std::endl;
   sgpp::combigrid::Atan atanModel;
   for (size_t i = 0; i < 8; i++) {
-    sgpp::combigrid::MultiIndex level{atanModel.numDims, i};
+    sgpp::combigrid::MultiIndex level(atanModel.numDims, i);
     double bSplineVariance = BSplineVariance(level);
     double varianceError = std::fabs(bSplineVariance - atanModel.variance);
     std::cout << "level: " << level[0] << " " << level[1] << "|  error:  " << varianceError

@@ -111,6 +111,17 @@ CombigridMultiOperation::CombigridMultiOperation(
               new CombigridTreeStorage(pointHierarchies, exploitNesting)),
           gridFunc, summationStrategyType)) {}
 
+CombigridMultiOperation::CombigridMultiOperation(
+    std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+    std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
+    std::shared_ptr<LevelManager> levelManager, MultiFunction func, bool exploitNesting,
+    FullGridSummationStrategyType summationStrategyType)
+    : impl(new CombigridMultiOperationImpl(
+          pointHierarchies, evaluatorPrototypes, levelManager,
+          std::shared_ptr<AbstractCombigridStorage>(
+              new CombigridTreeStorage(pointHierarchies, exploitNesting, func)),
+          summationStrategyType)) {}
+
 void CombigridMultiOperation::setParameters(const std::vector<base::DataVector> &params) {
   if (params.size() == 0) {
     throw std::runtime_error("CombigridMultiOperation::setParameters(): params.size() == 0");

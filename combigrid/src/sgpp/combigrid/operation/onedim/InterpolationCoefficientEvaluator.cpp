@@ -18,6 +18,7 @@ namespace combigrid {
 
 InterpolationCoefficientEvaluator::InterpolationCoefficientEvaluator()
     : basisValues(1, FloatTensorVector(1)), basisCoefficients() {
+  evalConfig.type = CombiEvaluatorTypes::Tensor_PolynomialInterpolation;
   sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
   config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
   functionBasis = std::make_shared<OrthogonalPolynomialBasis1D>(config);
@@ -25,15 +26,23 @@ InterpolationCoefficientEvaluator::InterpolationCoefficientEvaluator()
 
 InterpolationCoefficientEvaluator::InterpolationCoefficientEvaluator(
     std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis)
-    : basisValues(1, FloatTensorVector(1)), basisCoefficients(), functionBasis(functionBasis) {}
-
-InterpolationCoefficientEvaluator::~InterpolationCoefficientEvaluator() {}
+    : basisValues(1, FloatTensorVector(1)), basisCoefficients(), functionBasis(functionBasis) {
+  evalConfig.type = CombiEvaluatorTypes::Tensor_PolynomialInterpolation;
+  if (functionBasis == nullptr) {
+    throw sgpp::base::generation_exception(
+        "InterpolationCoefficientEvaluator: the basis function is not defined");
+  }
+}
 
 InterpolationCoefficientEvaluator::InterpolationCoefficientEvaluator(
     const InterpolationCoefficientEvaluator& other)
     : basisValues(other.basisValues),
       basisCoefficients(other.basisCoefficients),
-      functionBasis(other.functionBasis) {}
+      functionBasis(other.functionBasis) {
+  evalConfig.type = CombiEvaluatorTypes::Tensor_PolynomialInterpolation;
+}
+
+InterpolationCoefficientEvaluator::~InterpolationCoefficientEvaluator() {}
 
 void InterpolationCoefficientEvaluator::setGridPoints(const std::vector<double>& xValues) {
 #ifdef USE_EIGEN
