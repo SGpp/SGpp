@@ -98,7 +98,7 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
     V meanSquare = quadraticStrategy.eval(level);
     FloatScalarVector mean = linearStrategy.eval(level);
     std::cout.precision(10);
-    //      std::cout << "mean " << mean.value() << " meanSquare " << meanSquare[0].value();
+    //    std::cout << "mean " << mean.value() << " meanSquare " << meanSquare[0].value() << " ";
 
     // Var = E(x^2) - E(x)^2
     mean.componentwiseMult(mean);
