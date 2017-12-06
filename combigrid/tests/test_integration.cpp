@@ -9,8 +9,9 @@
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
-#include <sgpp/quadrature/sampling/LatinHypercubeSampleGenerator.hpp>
 #include <sgpp/combigrid/pce/PolynomialChaosExpansion.hpp>
+#include <sgpp/combigrid/utils/AnalyticModels.hpp>
+#include <sgpp/quadrature/sampling/LatinHypercubeSampleGenerator.hpp>
 
 #include <vector>
 
@@ -103,21 +104,6 @@ BOOST_AUTO_TEST_CASE(testQuadratureWithPolynomial) {
   BOOST_CHECK_CLOSE(eval.eval().getValue(), accurate_solution, 0.2);
 }
 
-double normal_parabola(sgpp::base::DataVector const& x) {
-  double ans = 1.0;
-  for (size_t idim = 0; idim < x.getSize(); idim++) {
-    ans *= 4 * x[idim] * (1.0 - x[idim]);
-  }
-  return ans;
-}
-
-double normal_parabola_mean_uniform(size_t numDims) { return std::pow(2. / 3., numDims); }
-
-double normal_parabola_variance_uniform(size_t numDims) {
-  double mean = normal_parabola_mean_uniform(numDims);
-  return std::pow(16. / 30., numDims) - std::pow(mean, 2);
-}
-
 double monte_carlo_quadrature(size_t numDims, sgpp::combigrid::MultiFunction& func,
                               size_t numPoints = 10000) {
   sgpp::quadrature::LatinHypercubeSampleGenerator generator(numDims, numPoints);
@@ -165,11 +151,11 @@ void testTensorOperation(std::shared_ptr<sgpp::combigrid::CombigridTensorOperati
   // compute variance of the estimator
   auto tensor_result = tensor_op->evaluate(level);
   double mean = tensor_result.get(sgpp::combigrid::MultiIndex(numDims, 0)).getValue();
-  double var = std::pow(tensor_result.norm(), 2);
+  double var = tensor_result.norm();
 
   // compute the reference solution
-  double mean_ref = normal_parabola_mean_uniform(numDims);
-  double var_ref = normal_parabola_variance_uniform(numDims);
+  double mean_ref = sgpp::combigrid::Parabola_uniform::mean(numDims);
+  double var_ref = sgpp::combigrid::Parabola_uniform::variance(numDims);
 
   // check if they match
   BOOST_CHECK_CLOSE(mean, mean_ref, 1e-10);
@@ -181,7 +167,7 @@ BOOST_AUTO_TEST_CASE(testVarianceComputationWithPCETransformation_expLeja) {
   config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
   auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
 
-  sgpp::combigrid::MultiFunction func(normal_parabola);
+  sgpp::combigrid::MultiFunction func(sgpp::combigrid::Parabola_uniform::eval);
   for (size_t numDims = 2; numDims <= 5; ++numDims) {
     auto tensor_op =
         sgpp::combigrid::CombigridTensorOperation::createExpLejaPolynomialInterpolation(
@@ -195,7 +181,7 @@ BOOST_AUTO_TEST_CASE(testVarianceComputationWithPCETransformation_expL2Leja) {
   config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
   auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
 
-  sgpp::combigrid::MultiFunction func(normal_parabola);
+  sgpp::combigrid::MultiFunction func(sgpp::combigrid::Parabola_uniform::eval);
   for (size_t numDims = 2; numDims <= 5; ++numDims) {
     auto tensor_op =
         sgpp::combigrid::CombigridTensorOperation::createExpL2LejaPolynomialInterpolation(
@@ -209,7 +195,7 @@ BOOST_AUTO_TEST_CASE(testVarianceComputationWithPCETransformation_ClenshawCurtis
   config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
   auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
 
-  sgpp::combigrid::MultiFunction func(normal_parabola);
+  sgpp::combigrid::MultiFunction func(sgpp::combigrid::Parabola_uniform::eval);
   for (size_t numDims = 2; numDims <= 5; ++numDims) {
     auto tensor_op =
         sgpp::combigrid::CombigridTensorOperation::createExpClenshawCurtisPolynomialInterpolation(
@@ -227,7 +213,7 @@ BOOST_AUTO_TEST_CASE(testVarianceComputationWithPCETransformation_Lognormal_Clen
   config.polyParameters.upperBound_ = 1.0;
   auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
 
-  sgpp::combigrid::MultiFunction func(normal_parabola);
+  sgpp::combigrid::MultiFunction func(sgpp::combigrid::Parabola_uniform::eval);
   size_t level = 4;
   for (size_t numDims = 1; numDims <= 5; ++numDims) {
     auto op = sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
