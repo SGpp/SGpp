@@ -270,21 +270,20 @@ void LevelManager::addStats(const MultiIndex &level) {
     levelInfo =
         std::make_shared<LevelInfo>(combiEval->getDifferenceNorm(level),
                                     combiEval->maxNewPoints(level), combiEval->numPoints(level));
+    levelInfo->priority = computePriority(level);
   } else {
     levelInfo = levelData->get(level);
   }
-
-  // store the result
   infoOnAddedLevels->insert(level, levelInfo);
 }
 
 bool LevelManager::addLevelToCombiEval(const MultiIndex &level) {
-  bool alreadyAdded = !combiEval->containsLevel(level);
-  bool ans = combiEval->addLevel(level);
-  if (ans && alreadyAdded) {
+  bool isOldSubspace = combiEval->containsLevel(level);
+  bool isValid = combiEval->addLevel(level);
+  if (!isOldSubspace) {
     addStats(level);
   }
-  return ans;
+  return isValid;
 }
 
 void LevelManager::addLevels(const std::vector<MultiIndex> &levels) {

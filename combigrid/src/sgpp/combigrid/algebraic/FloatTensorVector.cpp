@@ -169,7 +169,7 @@ double FloatTensorVector::norm() const {
     double coeff = it->value().value();
     sum += coeff * coeff;
   }
-  return sqrt(sum);
+  return sum;
 }
 
 } /* namespace combigrid */

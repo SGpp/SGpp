@@ -49,10 +49,7 @@ void LevelInfos::maxNormPerIteration(sgpp::base::DataVector &maxNorms) {
   }
 }
 
-std::shared_ptr<std::vector<std::shared_ptr<std::map<MultiIndex, std::shared_ptr<LevelInfo>>>>>
-LevelInfos::getInfos() {
-  return infoOnAddedLevels;
-}
+std::shared_ptr<RefinementInfosPerStep> LevelInfos::getInfos() { return infoOnAddedLevels; }
 
 } /* namespace combigrid */
 } /* namespace sgpp*/

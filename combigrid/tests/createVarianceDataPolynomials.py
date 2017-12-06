@@ -66,6 +66,14 @@ if __name__ == "__main__":
     func = pysgpp.multiFunc(lambda x: model(x))
     numDims = 2  # params.getStochasticDim()
 
+    # compute reference values
+    mean = dblquad(lambda x, y: model([x, y]), 0, 1, lambda x: 0, lambda x: 1,
+                   epsabs=1e-14)
+    meanSquare = dblquad(lambda x, y: model([x, y]) ** 2, 0, 1, lambda x: 0, lambda x: 1,
+                         epsabs=1e-14)
+    print "double mean = %.15f" % mean[0]
+    print "double variance = %.15f" % (meanSquare[0] - mean[0] ** 2)
+
     grids = pysgpp.AbstractPointHierarchyVector()
     evaluators = pysgpp.FloatScalarAbstractLinearEvaluatorVector()
     for d in range(0, numDims):
