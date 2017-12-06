@@ -157,19 +157,12 @@ void FloatTensorVector::scalarMult(const double& factor) {
 }
 
 double FloatTensorVector::norm() const {
-  // PCE norm, i.e. variance (if using appropriate orthogonal polynomials)
   double sum = 0.0;
-  auto it = values->getStoredDataIterator();
-  if (!it->isValid()) {
-    return 0.0;
-  }
-  it->moveToNext();  // ignore first entry (belonging to mean)
-
-  for (; it->isValid(); it->moveToNext()) {
+  for (auto it = values->getStoredDataIterator(); it->isValid(); it->moveToNext()) {
     double coeff = it->value().value();
     sum += coeff * coeff;
   }
-  return sqrt(sum);
+  return std::sqrt(sum);
 }
 
 } /* namespace combigrid */

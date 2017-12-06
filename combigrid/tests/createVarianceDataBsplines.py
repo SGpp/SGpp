@@ -16,8 +16,11 @@ from numpy import square
 
 
 def arctanModel(x):
-#     return np.arctan(50.0 * (x[0] - .35)) + np.pi / 2.0 + 4.0 * x[1] ** 3 + np.exp(x[0] * x[1] - 1.0)
-    return 1;
+    return np.arctan(50.0 * (x[0] - .35)) + np.pi / 2.0 + 4.0 * x[1] ** 3 + np.exp(x[0] * x[1] - 1.0)
+    # return np.arctan(50.0 * (x[0] - .35))
+    # return x[0]*x[0]*x[0]*x[1]*x[1]*x[1]*x[1]
+    # return x[0] * x[1]
+
 
 def buildAtanParams(dist_type):
     dist = generateDistribution(dist_type, [0, 1])
@@ -29,6 +32,7 @@ def buildAtanParams(dist_type):
     up.new().isCalled("x2").withDistribution(dist)
 
     return parameterBuilder.andGetResult()
+
 
 def generateDistribution(dist_type, xlim):
     if dist_type == "uniform":
@@ -62,33 +66,32 @@ if __name__ == "__main__":
 
     
     func = pysgpp.multiFunc(lambda x: model(x))
-    numDims = 1#params.getStochasticDim()
+    numDims = 2#params.getStochasticDim()
 
     grids = pysgpp.AbstractPointHierarchyVector()
     evaluators = pysgpp.FloatScalarAbstractLinearEvaluatorVector()
-    for d in range(0,numDims):
+    for d in range(0, numDims):
         grids.push_back(pysgpp.CombiHierarchies.expUniformBoundary())
         evaluators.push_back(pysgpp.CombiEvaluators.BSplineInterpolation(args.degree))
-    
-    gf =pysgpp.BSplineCoefficientGridFunction(func, grids, args.degree)
+
+    gf = pysgpp.BSplineCoefficientGridFunction(func, grids, args.degree)
     exploitNesting = False
-    storage = pysgpp.CombigridTreeStorage(grids,exploitNesting)
+    storage = pysgpp.CombigridTreeStorage(grids, exploitNesting)
     fullGridEval = pysgpp.ScalarFullGridGridBasedEvaluator(storage, evaluators, grids, gf)
-   
-    def BsplineInterpolation(x,y, levels):
+
+    def BsplineInterpolation(x, y, levels):
         params = pysgpp.FloatScalarVectorVector()
         params.push_back(pysgpp.FloatScalarVector(x))
         params.push_back(pysgpp.FloatScalarVector(y))
         fullGridEval.setParameters(params)
         result = fullGridEval.eval(levels)
         return result.getValue()
-    
-        
-    try:    
+
+    try:
         os.remove("BSplineVarianceData.dat")
     except OSError:
-        pass  
-        
+        pass
+
     file = open('BSplineVarianceData.dat', 'w')
     #===========================================================================
     # file.write( "# Variance of B spline interpolation of the arctan model on different subgrids indicated by their level\n"
@@ -98,7 +101,7 @@ if __name__ == "__main__":
     #             "# created by combigrid/tests/createVarianceData.py\n\n"
     #             %args.maxLevel
     #             )
-    # file.write("#Level    Variance\n")  
+    # file.write("#Level    Variance\n")
     #===========================================================================
     
     for level1 in range(args.minLevel,args.maxLevel+1): 
@@ -131,13 +134,3 @@ if __name__ == "__main__":
 #     
 #         
     file.close()
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    

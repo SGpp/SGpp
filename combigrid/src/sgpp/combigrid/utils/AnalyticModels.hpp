@@ -68,6 +68,33 @@ struct Parabola {
   }
 };
 // ----------------------------------------------------------------------------------
+struct Parabola_uniform {
+  static double mean(size_t numDims) { return std::pow(2. / 3., numDims); }
+
+  static double variance(size_t numDims) {
+    return std::pow(16. / 30., numDims) - std::pow(mean(numDims), 2);
+  }
+
+  static void bounds(size_t numDims, std::vector<double>& bounds) {
+    bounds.resize(2 * numDims);
+    for (size_t i = 0; i < bounds.size(); i++) {
+      if (i % 2 == 0) {
+        bounds[i] = 0.0;
+      } else {
+        bounds[i] = 1.0;
+      }
+    }
+  }
+
+  static double eval(sgpp::base::DataVector const& x) {
+    double ans = 1.0;
+    for (size_t idim = 0; idim < x.getSize(); idim++) {
+      ans *= 4 * x[idim] * (1.0 - x[idim]);
+    }
+    return ans;
+  }
+};
+// ----------------------------------------------------------------------------------
 struct CO2 {
   double tolerance = 1e-12;
   size_t numDims = 1;
@@ -86,13 +113,12 @@ struct CO2 {
 struct Atan {
   size_t numDims = 2;
 
-  double variance = 3.453102449971636290;
+  double mean = 3.514491266446378;
+  double variance = 3.453103593931560;
 
   static double eval(sgpp::base::DataVector const& v) {
-    //  return v[0] * v[0] * v[0] * v[1] * v[1] * v[1] * v[1];
-    //  return std::atan(50 * (v[0] - .35));
-    return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
-           std::exp(v[0] * v[1] - 1);
+    return std::atan(50.0 * (v[0] - 0.35)) + M_PI / 2.0 + 4.0 * std::pow(v[1], 3.0) +
+           std::exp(v[0] * v[1] - 1.0);
   }
 };
 

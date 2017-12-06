@@ -160,8 +160,14 @@ BOOST_AUTO_TEST_CASE(testLevelManagerStats) {
   }
 
   // reference stats
-  std::vector<double> refStats{0.0,         1.192569,    5.795147e-1, 3.154010e-1,
-                               2.375317e-1, 1.420868e-1, 7.702826e-2, 1.341710e-2};
+  std::vector<double> refStats{0.0,
+                               1.42222222222222,
+                               0.335837315225859,
+                               0.0994778161015262,
+                               0.0564213343735511,
+                               0.0201886745236562,
+                               0.00593335414944899,
+                               0.000180018734872348};
 
   auto stats = levelManager->getInfoOnAddedLevels();
 
@@ -178,6 +184,7 @@ BOOST_AUTO_TEST_CASE(testLevelManagerStats) {
   //                << ", " << levelInfo->priority << std::endl;
   //    }
   //  }
+
   // compute maximum norm per iteration
   sgpp::base::DataVector maxNorms;
   stats->maxNormPerIteration(maxNorms);
@@ -208,11 +215,9 @@ BOOST_AUTO_TEST_CASE(testLevelManagerStatsConversion) {
         op->getLevelManager()->getLevelStructure());
   }
 
-  auto stats = tensor_op->getLevelManager()->getInfoOnAddedLevels();
-
-  //  // evaluate stats
+  // evaluate stats
   //  size_t i = 0;
-  //  for (auto &istats : *stats->getInfos()) {
+  //  for (auto &istats : *op->getLevelManager()->getInfoOnAddedLevels()->getInfos()) {
   //    std::cout << " - - - - - - - - - - - - " << std::endl;
   //    std::cout << "iteration = " << ++i << std::endl;
   //    for (auto &item : *istats) {
@@ -225,12 +230,18 @@ BOOST_AUTO_TEST_CASE(testLevelManagerStatsConversion) {
   //  }
 
   // reference stats
-  std::vector<double> refStats{0.0,         1.192569,    5.795147e-1, 3.154010e-1,
-                               2.375317e-1, 1.420868e-1, 7.702826e-2, 1.341710e-2};
+  std::vector<double> refStats{0.0,
+                               1.42222222222222,
+                               0.335837315225859,
+                               0.0994778161015262,
+                               0.0564213343735511,
+                               0.0201886745236562,
+                               0.00593335414944899,
+                               0.000180018734872348};
 
-  // compute maximum norm per iteration
+  // check if the stats of the converted operation are correct
   sgpp::base::DataVector maxNorms;
-  stats->maxNormPerIteration(maxNorms);
+  tensor_op->getLevelManager()->getInfoOnAddedLevels()->maxNormPerIteration(maxNorms);
   for (size_t i = 0; i < maxNorms.getSize(); i++) {
     BOOST_CHECK_SMALL(std::abs(refStats[i] - maxNorms[i]), 1e-5);
   }

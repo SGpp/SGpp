@@ -13,10 +13,16 @@ namespace sgpp {
 namespace combigrid {
 
 BSplineInterpolationEvaluator::BSplineInterpolationEvaluator()
-    : evaluationPoint(0.0), basisValues(), xValues(), degree(3) {}
+    : evaluationPoint(0.0), basisValues(), xValues(), degree(3) {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_BSplineInterpolation;
+  evalConfig.degree = 3;
+}
 
 BSplineInterpolationEvaluator::BSplineInterpolationEvaluator(size_t degree)
-    : evaluationPoint(0.0), basisValues(), xValues(), degree(degree) {}
+    : evaluationPoint(0.0), basisValues(), xValues(), degree(degree) {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_BSplineInterpolation;
+  evalConfig.degree = degree;
+}
 
 BSplineInterpolationEvaluator::~BSplineInterpolationEvaluator() {}
 
@@ -25,7 +31,10 @@ BSplineInterpolationEvaluator::BSplineInterpolationEvaluator(
     : evaluationPoint(other.evaluationPoint),
       basisValues(other.basisValues),
       xValues(other.xValues),
-      degree(other.degree) {}
+      degree(other.degree) {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_BSplineInterpolation;
+  evalConfig.degree = other.degree;
+}
 
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>
 BSplineInterpolationEvaluator::cloneLinear() {

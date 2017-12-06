@@ -157,6 +157,10 @@ class LevelInfo {
 /**
  * Storage for meta information on the levels during adaptive refinement
  */
+
+typedef std::vector<std::shared_ptr<std::map<MultiIndex, std::shared_ptr<LevelInfo>>>>
+    RefinementInfosPerStep;
+
 class LevelInfos {
  public:
   LevelInfos();
@@ -185,15 +189,13 @@ class LevelInfos {
   /**
    * @return the currently stored information
    */
-  std::shared_ptr<std::vector<std::shared_ptr<std::map<MultiIndex, std::shared_ptr<LevelInfo>>>>>
-  getInfos();
+  std::shared_ptr<RefinementInfosPerStep> getInfos();
 
  private:
   /**
    * hash map that stores the level info per refinement iteration
    */
-  std::shared_ptr<std::vector<std::shared_ptr<std::map<MultiIndex, std::shared_ptr<LevelInfo>>>>>
-      infoOnAddedLevels;
+  std::shared_ptr<RefinementInfosPerStep> infoOnAddedLevels;
   /**
    * counter for adaptive refinements
    */
