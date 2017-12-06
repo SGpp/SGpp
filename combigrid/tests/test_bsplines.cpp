@@ -296,7 +296,7 @@ BOOST_AUTO_TEST_CASE(testVarianceOnDiagonal) {
       << "Testing B spline variance calculation on levels of the diagonal of the subgrid scheme"
       << std::endl;
   sgpp::combigrid::Atan atanModel;
-  for (size_t i = 0; i < 8; i++) {
+  for (size_t i = 0; i < 7; i++) {
     sgpp::combigrid::MultiIndex level(atanModel.numDims, i);
     double bSplineVariance = BSplineVariance(level);
     double varianceError = std::fabs(bSplineVariance - atanModel.variance);
