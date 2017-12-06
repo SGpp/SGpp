@@ -61,6 +61,7 @@
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridQuadraticSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridVarianceSummationStrategy.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridTensorNormSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>

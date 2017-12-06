@@ -41,12 +41,11 @@ class CombigridTensorOperationImpl {
   CombigridTensorOperationImpl(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>> evaluatorPrototypes,
-      std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage)
-      : storage(storage),
-        pointHierarchies(pointHierarchies),
-        levelManager(levelManager) {
+      std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage,
+      FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR)
+      : storage(storage), pointHierarchies(pointHierarchies), levelManager(levelManager) {
     fullGridEval = std::make_shared<FullGridCallbackEvaluator<FloatTensorVector>>(
-        storage, evaluatorPrototypes, pointHierarchies, FullGridSummationStrategyType::LINEAR);
+        storage, evaluatorPrototypes, pointHierarchies, summationStrategyType);
     combiEval = std::make_shared<CombigridEvaluator<FloatTensorVector>>(pointHierarchies.size(),
                                                                         fullGridEval);
     levelManager->setLevelEvaluator(combiEval);
@@ -56,13 +55,11 @@ class CombigridTensorOperationImpl {
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>> evaluatorPrototypes,
       std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage,
-      GridFunction gridFunc)
-      : storage(storage),
-        pointHierarchies(pointHierarchies),
-        levelManager(levelManager) {
+      GridFunction gridFunc,
+      FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR)
+      : storage(storage), pointHierarchies(pointHierarchies), levelManager(levelManager) {
     fullGridEval = std::make_shared<FullGridGridBasedEvaluator<FloatTensorVector>>(
-        storage, evaluatorPrototypes, pointHierarchies, gridFunc,
-        FullGridSummationStrategyType::LINEAR);
+        storage, evaluatorPrototypes, pointHierarchies, gridFunc, summationStrategyType);
     combiEval = std::make_shared<CombigridEvaluator<FloatTensorVector>>(pointHierarchies.size(),
                                                                         fullGridEval);
     levelManager->setLevelEvaluator(combiEval);
@@ -100,6 +97,28 @@ CombigridTensorOperation::CombigridTensorOperation(
           std::shared_ptr<AbstractCombigridStorage>(
               new CombigridTreeStorage(pointHierarchies, exploitNesting)),
           gridFunc)) {}
+
+CombigridTensorOperation::CombigridTensorOperation(
+    std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+    std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>> evaluatorPrototypes,
+    std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting,
+    FullGridSummationStrategyType summationStrategyType)
+    : impl(new CombigridTensorOperationImpl(
+          pointHierarchies, evaluatorPrototypes, levelManager,
+          std::shared_ptr<AbstractCombigridStorage>(
+              new CombigridTreeStorage(pointHierarchies, exploitNesting)),
+          gridFunc, summationStrategyType)) {}
+
+CombigridTensorOperation::CombigridTensorOperation(
+    std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+    std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>> evaluatorPrototypes,
+    std::shared_ptr<LevelManager> levelManager, MultiFunction func, bool exploitNesting,
+    FullGridSummationStrategyType summationStrategyType)
+    : impl(new CombigridTensorOperationImpl(
+          pointHierarchies, evaluatorPrototypes, levelManager,
+          std::shared_ptr<AbstractCombigridStorage>(
+              new CombigridTreeStorage(pointHierarchies, exploitNesting, func)),
+          summationStrategyType)) {}
 
 void CombigridTensorOperation::setParameters(const std::vector<FloatTensorVector> &params) {
   impl->fullGridEval->setParameters(params);

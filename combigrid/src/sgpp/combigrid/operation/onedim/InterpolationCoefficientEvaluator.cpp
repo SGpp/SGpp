@@ -28,6 +28,7 @@ InterpolationCoefficientEvaluator::InterpolationCoefficientEvaluator(
     std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis)
     : basisValues(1, FloatTensorVector(1)), basisCoefficients(), functionBasis(functionBasis) {
   evalConfig.type = CombiEvaluatorTypes::Tensor_PolynomialInterpolation;
+  evalConfig.functionBasis = functionBasis;
   if (functionBasis == nullptr) {
     throw sgpp::base::generation_exception(
         "InterpolationCoefficientEvaluator: the basis function is not defined");
@@ -40,6 +41,7 @@ InterpolationCoefficientEvaluator::InterpolationCoefficientEvaluator(
       basisCoefficients(other.basisCoefficients),
       functionBasis(other.functionBasis) {
   evalConfig.type = CombiEvaluatorTypes::Tensor_PolynomialInterpolation;
+  evalConfig.functionBasis = other.functionBasis;
 }
 
 InterpolationCoefficientEvaluator::~InterpolationCoefficientEvaluator() {}

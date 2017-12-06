@@ -31,8 +31,8 @@ BOOST_AUTO_TEST_CASE(testVarianceBasedRefinement) {
   sgpp::combigrid::MultiFunction func(atanModel.eval);
 
   size_t regularLevel = 1;
-  size_t numAdaptivePoints = 20;
 
+  // -----------------------------------------------------------------------------------
   // use tensor based refinement
   sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
   config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
@@ -45,18 +45,17 @@ BOOST_AUTO_TEST_CASE(testVarianceBasedRefinement) {
   sgpp::combigrid::CombiHierarchies::Collection tensor_grids(
       atanModel.numDims, sgpp::combigrid::CombiHierarchies::expLeja());
   auto tensor_op = std::make_shared<sgpp::combigrid::CombigridTensorOperation>(
-      tensor_grids, tensor_evaluators, tensor_op_lm, func);
-
-  //  auto tensor_op =
-  //      sgpp::combigrid::CombigridTensorOperation::createExpClenshawCurtisPolynomialInterpolation(
-  //          functionBasis, atanModel.numDims, func);
-  //  auto tensor_op_lm = std::make_shared<sgpp::combigrid::AveragingLevelManager>();
-  //  tensor_op->setLevelManager(tensor_op_lm);
+      tensor_grids, tensor_evaluators, tensor_op_lm, func, true,
+      sgpp::combigrid::FullGridSummationStrategyType::TENSORNORM);
 
   //  std::cout << "------------------------------------------------------" << std::endl;
   //  std::cout << "Tensor" << std::endl;
   tensor_op_lm->addRegularLevels(regularLevel);
-  tensor_op_lm->addLevelsAdaptive(numAdaptivePoints);
+  tensor_op_lm->addLevelsAdaptive(50);
+  tensor_op_lm->addLevelsAdaptive(100);
+  tensor_op_lm->addLevelsAdaptive(150);
+
+  // -----------------------------------------------------------------------------------
   // use quadrature based refinement
   sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
       atanModel.numDims, sgpp::combigrid::CombiEvaluators::polynomialScalarProduct());
@@ -71,12 +70,14 @@ BOOST_AUTO_TEST_CASE(testVarianceBasedRefinement) {
   //  std::cout << "------------------------------------------------------" << std::endl;
   //  std::cout << "Quadrature" << std::endl;
   variance_op_lm->addRegularLevels(regularLevel);
-  variance_op_lm->addLevelsAdaptive(numAdaptivePoints);
+  variance_op_lm->addLevelsAdaptive(50);
+  variance_op_lm->addLevelsAdaptive(100);
+  variance_op_lm->addLevelsAdaptive(150);
 
   // check if both approaches lead to the same result
   //  std::cout << "num grid points: " << tensor_op->numGridPoints() << " = "
   //            << variance_op_lm->numGridPoints() << std::endl;
-  //  BOOST_CHECK_EQUAL(tensor_op->numGridPoints(), variance_op_lm->numGridPoints());
+  BOOST_CHECK_EQUAL(tensor_op->numGridPoints(), variance_op_lm->numGridPoints());
 
   // check the whole level structure
   auto tensor_infos = tensor_op_lm->getInfoOnAddedLevels()->getInfos();
@@ -85,7 +86,7 @@ BOOST_AUTO_TEST_CASE(testVarianceBasedRefinement) {
   //  std::cout << "num refinement steps: " << tensor_infos->size() << " = " <<
   //  quadrature_infos->size()
   //            << std::endl;
-  //  BOOST_CHECK_EQUAL(tensor_infos->size(), quadrature_infos->size());
+  BOOST_CHECK_EQUAL(tensor_infos->size(), quadrature_infos->size());
 
   for (size_t i = 0; i < tensor_infos->size(); i++) {
     auto tensor_info_map = (*tensor_infos)[i];
@@ -93,20 +94,24 @@ BOOST_AUTO_TEST_CASE(testVarianceBasedRefinement) {
 
     //    std::cout << "#i=" << i << ": num new subspaces: " << tensor_info_map->size() << " = "
     //              << quadrature_info_map->size() << std::endl;
-    // BOOST_CHECK_EQUAL(tensor_info_map->size(), quadrature_info_map->size());
+    BOOST_CHECK_EQUAL(tensor_info_map->size(), quadrature_info_map->size());
 
     for (auto tensor_info_iterator : *tensor_info_map) {
       auto level = tensor_info_iterator.first;
 
       //      std::cout << "  (" << level[0] << ", " << level[1] << ") -> "
       //                << (quadrature_info_map->find(level) != quadrature_info_map->end());
-      //      BOOST_CHECK(quadrature_info_map->find(level) != quadrature_info_map->end());
+      BOOST_CHECK(quadrature_info_map->find(level) != quadrature_info_map->end());
       auto tensor_level_info = tensor_info_iterator.second;
       auto quadrature_level_info = quadrature_info_map->find(level)->second;
 
       // check if the same difference norms where computed
-      //      std::cout << "; norms: " << tensor_level_info->priority << " = "
-      //                << quadrature_level_info->priority << std::endl;
+      //      std::cout << "; priority: " << tensor_level_info->priority << " = "
+      //                << quadrature_level_info->priority << "; norms: " << tensor_level_info->norm
+      //                << " = " << quadrature_level_info->norm << std::endl;
+      BOOST_CHECK_SMALL(std::abs(tensor_level_info->priority - quadrature_level_info->priority),
+                        1e-13);
+      BOOST_CHECK_SMALL(std::abs(tensor_level_info->norm - quadrature_level_info->norm), 1e-13);
     }
   }
 }

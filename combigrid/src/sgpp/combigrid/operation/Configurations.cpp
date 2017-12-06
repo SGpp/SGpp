@@ -168,7 +168,7 @@ CombiEvaluators::createCombiScalarEvaluator(EvaluatorConfiguration evalConfig) {
     return std::make_shared<BSplineQuadratureEvaluator>(evalConfig.degree);
   } else {
     throw sgpp::base::factory_exception(
-        "CombiEvaluators::createCombiEvaluator: type is not supported");
+        "CombiEvaluators::createCombiScalarEvaluator: type is not supported");
   }
 }
 
@@ -226,7 +226,7 @@ CombiEvaluators::createCombiMultiEvaluator(EvaluatorConfiguration evalConfig) {
     return std::make_shared<ArrayEvaluator<LinearInterpolationEvaluator>>(true);
   } else {
     throw sgpp::base::factory_exception(
-        "CombiEvaluators::createCombiEvaluator: type is not supported");
+        "CombiEvaluators::createCombiMultiEvaluator: type is not supported");
   }
 }
 
@@ -284,7 +284,7 @@ CombiEvaluators::createCombiTensorEvaluator(EvaluatorConfiguration evalConfig) {
     return std::make_shared<InterpolationCoefficientEvaluator>(evalConfig.functionBasis);
   } else {
     throw sgpp::base::factory_exception(
-        "CombiEvaluators::createCombiEvaluator: type is not supported");
+        "CombiEvaluators::createCombiTensorEvaluator: type is not supported");
   }
 }
 
