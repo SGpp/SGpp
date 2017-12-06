@@ -25,6 +25,9 @@ namespace combigrid {
  * @param index_j index of B-spline b_j
  * @return integral of b_i*b_j
  */
+
+// ToDo (rehmemk) Make more efficient by testing for overlap of basis functions using their indices.
+// Comapre OperationMatrixLTwoDotBspline
 FloatArrayVector BSplineScalarProductEvaluator::get1DMixedIntegral(std::vector<double>& points,
                                                                    size_t index_i) {
   FloatArrayVector sums;
@@ -47,7 +50,7 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DMixedIntegral(std::vector<d
       quadRule.getLevelPointsAndWeightsNormalized(
           std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
       sum = 1.0 * this->weight_function(roots[0]) * quadratureweights[0];
-    } else if (xValues.size() < 9) {
+    } else if ((degree == 3 && (xValues.size() < 5)) || ((degree == 5) && (xValues.size() < 9))) {
       numGaussPoints = 2 * xValues.size();
       quadRule.getLevelPointsAndWeightsNormalized(
           std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);

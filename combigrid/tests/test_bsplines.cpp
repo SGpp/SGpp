@@ -13,8 +13,8 @@
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
-#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridGridBasedEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridCallbackEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridGridBasedEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
 #include <sgpp/combigrid/utils/AnalyticModels.hpp>
 #include <sgpp/globaldef.hpp>
@@ -122,9 +122,6 @@ BOOST_AUTO_TEST_SUITE(testBsplines)
 /*
  * This test calculates the variance for the test function atanModel (see above) and compares it to
  * precalculated data.
- *
- * ToDo (rehmemk) why is there an offset of 1e-7 between python data and quadrature data. Shouldn't
- * it be much smaller?
  */
 
 BOOST_AUTO_TEST_CASE(testVarianceOnLevel) {
@@ -155,15 +152,15 @@ BOOST_AUTO_TEST_CASE(testVarianceOnLevel) {
         sgpp::combigrid::MultiIndex{6, 1}, sgpp::combigrid::MultiIndex{7, 0}};
 
     std::vector<double> variances{
-        -0.000000000000003553, 1.701156850402689713, 1.437021035230856114, 1.437020728026304539,
+        -0.000000000000003553, 1.701156850402689713, 1.437022054119371006, 1.437020728026304539,
         1.437020668119384226,  1.437020666114214862, 1.437020666048240969, 1.437020666045345507,
-        1.080108355131402575,  2.816790782428100215, 2.549883454168121233, 2.549880760493220322,
-        2.549880271385291053,  2.549880259715539665, 2.549880259378866754, 2.545726212447136483,
-        4.286103665868155943,  4.019262025441856068, 4.019259816800595075, 4.019259376311369536,
-        4.019259366026524560,  1.858681146494113534, 3.597641299962191397, 3.330803514248586339,
+        1.080108355131402575,  2.816790782428100215, 2.549893635809379333, 2.549880760493220322,
+        2.549880271385291053,  2.549880259715539665, 2.549880259378866754, 2.427023144889512096,
+        4.167777616534886320,  3.900939092268689734, 3.900927051314765137, 3.900926602175466940,
+        3.900926591786072706,  1.858681146494113534, 3.597641299962191397, 3.330812831246484862,
         3.330801307994530447,  3.330800874338359918, 1.985491657343512628, 3.725129287185531268,
-        3.458287364652921525,  3.458285162235060994, 1.979975007603208326, 3.719658912837516596,
-        3.452816643095617977,  1.980262657807472237, 3.719940998350237393, 1.980269030387413309};
+        3.458296945247319343,  3.458285162235060994, 1.979975007603208326, 3.719658912837516596,
+        3.452826245565596253,  1.980262657807472237, 3.719940998350237393, 1.980269030387413309};
   };
 
   AtanModelVarianceTestDataBsplines varianceTestData;
@@ -172,8 +169,8 @@ BOOST_AUTO_TEST_CASE(testVarianceOnLevel) {
     sgpp::combigrid::MultiIndex level = varianceTestData.levels[i];
     double bSplineVariance = BSplineVariance(level);
     double varianceError = std::fabs(bSplineVariance - varianceTestData.variances[i]);
-    //    std::cout << "level: " << level[0] << " " << level[1] << "|  error:  " << varianceError
-    //              << std::endl;
+    std::cout << "level: " << level[0] << " " << level[1] << "|  error:  " << varianceError
+              << std::endl;
     BOOST_CHECK_SMALL(varianceError, tolerance);
   }
 }
@@ -195,6 +192,8 @@ BOOST_AUTO_TEST_CASE(testVarianceDEBUG) {
     double bSplineVariance = BSplineVariance(level);
     varianceError.push_back(std::fabs(bSplineVariance - variance));
     levels.push_back(level);
+    //    std::cout << level1 << " " << level2 << " | " << bSplineVariance << " " << variance
+    //              << std::endl;
   }
   for (size_t i = 0; i < levels.size(); i++) {
     std::cout << levels[i][0] << " " << levels[i][1] << "|  error:  " << varianceError[i]

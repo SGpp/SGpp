@@ -40,7 +40,7 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
     quadRule.getLevelPointsAndWeightsNormalized(
         std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
     sum = 1.0 * this->weight_function(roots[0]) * quadratureweights[0];
-  } else if (xValues.size() < 9) {
+  } else if ((degree == 3 && (xValues.size() < 5)) || ((degree == 5) && (xValues.size() < 9))) {
     numGaussPoints = xValues.size();
     quadRule.getLevelPointsAndWeightsNormalized(
         std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);

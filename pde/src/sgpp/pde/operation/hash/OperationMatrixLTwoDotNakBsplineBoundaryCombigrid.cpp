@@ -3,12 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <algorithm>
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotNakBsplineBoundaryCombigrid.hpp>
-#include <algorithm>
 
 namespace sgpp {
 namespace pde {
@@ -24,10 +24,11 @@ OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::
 void OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::mult(sgpp::base::DataVector& alpha,
                                                              sgpp::base::DataVector& result) {
   const size_t p = dynamic_cast<sgpp::base::NakBsplineBoundaryCombigridGrid*>(grid)->getDegree();
-  const size_t pp1h = (p + 1) >> 1;  // (p + 1) / 2
+  const size_t pp1h = (p + 1) >> 1;  //  =|_p/2_|
   const double pp1hDbl = static_cast<double>(pp1h);
   const size_t quadOrder = p + 1;
-  base::SBasis& basis = const_cast<base::SBasis&>(grid->getBasis());
+  //  base::SBasis& basis = const_cast<base::SBasis&>(grid->getBasis());
+  sgpp::base::SNakBsplineBoundaryCombigridBase basis(p);
   base::GridStorage& storage = grid->getStorage();
   base::DataVector coordinates;
   base::DataVector weights;
@@ -44,9 +45,7 @@ void OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::mult(sgpp::base::DataVec
   size_t gridSize = storage.getSize();
   size_t gridDim = storage.getDimension();
 
-  for (size_t i = 0; i < gridSize; i++) {
-    result[i] = 0;
-  }
+  result.setAll(0.0);
 
   for (size_t i = 0; i < gridSize; i++) {
     for (size_t j = i; j < gridSize; j++) {
@@ -57,38 +56,74 @@ void OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::mult(sgpp::base::DataVec
         const base::level_t ljk = storage[j].getLevel(k);
         const base::index_t iik = storage[i].getIndex(k);
         const base::index_t ijk = storage[j].getIndex(k);
-        const sgpp::base::index_t hInvik = 1 << lik;
+        const sgpp::base::index_t hInvik = 1 << lik;  // = 2^lik
         const sgpp::base::index_t hInvjk = 1 << ljk;
         const double hik = 1.0 / static_cast<double>(hInvik);
         const double hjk = 1.0 / static_cast<double>(hInvjk);
+        double offseti_left = (static_cast<double>(iik) - pp1hDbl) * hik;
+        double offseti_right = (static_cast<double>(iik) + pp1hDbl) * hik;
+        double offsetj_left = (static_cast<double>(ijk) - pp1hDbl) * hjk;
+        double offsetj_right = (static_cast<double>(ijk) + pp1hDbl) * hjk;
 
-        if (std::max((static_cast<double>(iik) - pp1hDbl) * hik,
-                     (static_cast<double>(ijk) - pp1hDbl) * hjk) >=
-            std::min((static_cast<double>(iik) + pp1hDbl) * hik,
-                     (static_cast<double>(ijk) + pp1hDbl) * hjk)) {
+        //        std::cout << k << "| (" << lik << " " << iik << ") (" << ljk << " " << ijk << ") "
+        //                  << std::endl;
+
+        // ToDo (rehmemk) degree 5
+        //        if (p == 3) {
+        if (iik == 3) offseti_left -= hik;
+        if (iik == hInvik - 3) offseti_right += hik;
+        if (ijk == 3) offsetj_left -= hjk;
+        if (ijk == hInvjk - 3) offsetj_right += hjk;
+
+        if (std::max(offseti_left, offsetj_left) >= std::min(offseti_right, offsetj_right)) {
           // Ansatz functions do not not overlap:
           temp_ij = 0.0;
+
           break;
         } else {
           double temp_res = 0.0;
 
           // Use formula for different overlapping ansatz functions:
-          double offset;
-          double scaling;
-          size_t start;
-          size_t stop;
+          double offset, scaling;
+          size_t start, stop;
 
           if (lik >= ljk) {
-            offset = (static_cast<double>(iik) - pp1hDbl) * hik;
+            offset = offseti_left;
             scaling = hik;
             start = ((iik > pp1h) ? 0 : (pp1h - iik));
             stop = std::min(p, hInvik + pp1h - iik - 1);
+            if (iik == 3) stop += 1;
+            if (iik == hInvik - 3) stop += 1;
+            if (lik == 2) {
+              start = 1;
+              stop = 4;
+              offset = -0.25;
+              scaling = 0.25;
+            }
           } else {
-            offset = (static_cast<double>(ijk) - pp1hDbl) * hjk;
+            offset = offsetj_left;
             scaling = hjk;
             start = ((ijk > pp1h) ? 0 : (pp1h - ijk));
             stop = std::min(p, hInvjk + pp1h - ijk - 1);
+            if (ijk == 3) stop += 1;
+            if (ijk == hInvjk - 3) stop += 1;
+            if (ljk == 2) {
+              start = 1;
+              stop = 4;
+              offset = -0.25;
+              scaling = 0.25;
+            }
           }
+          //          if ((lik == 1) && (iik == 1) && (ljk == 3) && ijk == 5) {
+          //            std::cout << "i " << lik << " " << iik << " " << offseti_left << " " <<
+          //            offseti_right
+          //                      << std::endl;
+          //            std::cout << "j " << ljk << " " << ijk << " " << offsetj_left << " " <<
+          //            offsetj_right
+          //                      << std::endl;
+          //            std::cout << start << " " << stop << " " << offset << " " << scaling <<
+          //            std::endl;
+          //          }
 
           for (size_t n = start; n <= stop; n++) {
             for (size_t c = 0; c < quadOrder; c++) {
@@ -100,9 +135,16 @@ void OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::mult(sgpp::base::DataVec
         }
       }
       result[i] += temp_ij * alpha[j];
-      if (i != j) result[j] += temp_ij * alpha[i];
+      if (i != j) {
+        result[j] += temp_ij * alpha[i];
+      }
     }
   }
+  //    else {
+  //      std::cerr << "OperationMatrixLTwoDotNakBsplineBoundaryCombigrid: "
+  //                   "currently only B spline degree 3 is supported"
+  //                << std::endl;
+  //    }
 }
 }  // namespace pde
 }  // namespace sgpp
