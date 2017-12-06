@@ -7,26 +7,26 @@
 #include <boost/test/unit_test.hpp>
 
 #include <sgpp/combigrid/definitions.hpp>
+#include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
-#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridGridBasedEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridCallbackEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridGridBasedEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
 #include <sgpp/combigrid/utils/AnalyticModels.hpp>
-#include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/quadrature/sampling/NaiveSampleGenerator.hpp>
 
+#include <cmath>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
-#include <cmath>
 
 double BSplineVariance(sgpp::combigrid::MultiIndex level) {
   sgpp::combigrid::Atan atanModel;
@@ -140,8 +140,8 @@ BOOST_AUTO_TEST_CASE(testVarianceOfPolynomialsOnDiagonal) {
     //    std::cout << "level: |" << level[0] << " " << level[1] << "| error:  " << varianceError
     //              << std::endl;
     BOOST_CHECK_SMALL(varianceError, tolerancesPCE[i]);
-  }
 #endif
+  }
 }
 
 BOOST_AUTO_TEST_CASE(testVarianceOfPolynomialsOnLevel) {
@@ -200,8 +200,8 @@ BOOST_AUTO_TEST_CASE(testVarianceOfPolynomialsOnLevel) {
     //    std::cout << "level: |" << level[0] << " " << level[1] << "|  value: " << polyVariance
     //              << " (err=" << varianceError << ")" << std::endl;
     BOOST_CHECK_SMALL(varianceError, 1e-14);
-  }
 #endif
+  }
 }
 
 BOOST_AUTO_TEST_SUITE_END()
