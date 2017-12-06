@@ -146,20 +146,21 @@ double variance(size_t numDims, sgpp::combigrid::MultiFunction& func, size_t num
 }
 
 #ifdef USE_DAKOTA
-void testTensorOperation(std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> tensor_op,
-                         size_t level, size_t numDims) {
+void testTensorOperation(
+    std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> tensor_op,
+    std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis, size_t level,
+    size_t numDims) {
   // compute variance of the estimator
-  auto tensor_result = tensor_op->evaluate(level);
-  double mean = tensor_result.get(sgpp::combigrid::MultiIndex(numDims, 0)).getValue();
-  double var = tensor_result.norm();
+  tensor_op->getLevelManager()->addRegularLevels(level);
+  sgpp::combigrid::PolynomialChaosExpansion pce(tensor_op, functionBasis);
 
   // compute the reference solution
   double mean_ref = sgpp::combigrid::Parabola_uniform::mean(numDims);
   double var_ref = sgpp::combigrid::Parabola_uniform::variance(numDims);
 
   // check if they match
-  BOOST_CHECK_CLOSE(mean, mean_ref, 1e-10);
-  BOOST_CHECK_CLOSE(var, var_ref, 1e-10);
+  BOOST_CHECK_CLOSE(pce.mean(), mean_ref, 1e-10);
+  BOOST_CHECK_CLOSE(pce.variance(), var_ref, 1e-10);
 }
 
 BOOST_AUTO_TEST_CASE(testVarianceComputationWithPCETransformation_expLeja) {
@@ -172,7 +173,7 @@ BOOST_AUTO_TEST_CASE(testVarianceComputationWithPCETransformation_expLeja) {
     auto tensor_op =
         sgpp::combigrid::CombigridTensorOperation::createExpLejaPolynomialInterpolation(
             functionBasis, numDims, func);
-    testTensorOperation(tensor_op, numDims + 1, numDims);
+    testTensorOperation(tensor_op, functionBasis, numDims + 1, numDims);
   }
 }
 
@@ -186,7 +187,7 @@ BOOST_AUTO_TEST_CASE(testVarianceComputationWithPCETransformation_expL2Leja) {
     auto tensor_op =
         sgpp::combigrid::CombigridTensorOperation::createExpL2LejaPolynomialInterpolation(
             functionBasis, numDims, func);
-    testTensorOperation(tensor_op, numDims + 1, numDims);
+    testTensorOperation(tensor_op, functionBasis, numDims + 1, numDims);
   }
 }
 
@@ -200,7 +201,7 @@ BOOST_AUTO_TEST_CASE(testVarianceComputationWithPCETransformation_ClenshawCurtis
     auto tensor_op =
         sgpp::combigrid::CombigridTensorOperation::createExpClenshawCurtisPolynomialInterpolation(
             functionBasis, numDims, func);
-    testTensorOperation(tensor_op, numDims + 1, numDims);
+    testTensorOperation(tensor_op, functionBasis, numDims + 1, numDims);
   }
 }
 

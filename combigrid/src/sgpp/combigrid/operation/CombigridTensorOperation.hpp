@@ -65,6 +65,18 @@ class CombigridTensorOperation {
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>> evaluatorPrototypes,
       std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting);
 
+  CombigridTensorOperation(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>> evaluatorPrototypes,
+      std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting,
+      FullGridSummationStrategyType summationStrategyType);
+
+  CombigridTensorOperation(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>> evaluatorPrototypes,
+      std::shared_ptr<LevelManager> levelManager, MultiFunction func, bool exploitNesting,
+      FullGridSummationStrategyType summationStrategyType);
+
   /**
    * Sets the parameters for upcoming computations and clears the data structures (removes old
    * computed data). This is only relevant for methods with parameters.

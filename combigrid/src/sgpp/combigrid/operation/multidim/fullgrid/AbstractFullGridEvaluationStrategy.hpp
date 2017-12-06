@@ -14,6 +14,7 @@
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridQuadraticSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridVarianceSummationStrategy.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridTensorNormSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
@@ -55,6 +56,10 @@ class AbstractFullGridEvaluationStrategy : public AbstractFullGridEvaluator<V> {
         break;
       case FullGridSummationStrategyType::VARIANCE:
         summationStrategy = std::make_shared<FullGridVarianceSummationStrategy<V>>(
+            storage, evaluatorPrototypes, pointHierarchies);
+        break;
+      case FullGridSummationStrategyType::TENSORNORM:
+        summationStrategy = std::make_shared<FullGridTensorNormSummationStrategy<V>>(
             storage, evaluatorPrototypes, pointHierarchies);
         break;
       default:
