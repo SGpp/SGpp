@@ -14,7 +14,9 @@ namespace sgpp {
 namespace combigrid {
 
 LinearInterpolationEvaluator::LinearInterpolationEvaluator()
-    : evaluationPoint(0.0), basisValues(), xValues() {}
+    : evaluationPoint(0.0), basisValues(), xValues() {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_LinearInterpolation;
+}
 
 LinearInterpolationEvaluator::~LinearInterpolationEvaluator() {}
 
@@ -22,7 +24,9 @@ LinearInterpolationEvaluator::LinearInterpolationEvaluator(
     const LinearInterpolationEvaluator& other)
     : evaluationPoint(other.evaluationPoint),
       basisValues(other.basisValues),
-      xValues(other.xValues) {}
+      xValues(other.xValues) {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_LinearInterpolation;
+}
 
 void LinearInterpolationEvaluator::computeBasisValues() {
   size_t numPoints = xValues.size();

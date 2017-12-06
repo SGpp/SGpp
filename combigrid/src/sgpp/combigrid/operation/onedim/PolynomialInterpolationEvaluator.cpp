@@ -17,10 +17,14 @@ PolynomialInterpolationEvaluator::PolynomialInterpolationEvaluator(
     : evaluationPoint(other.evaluationPoint),
       basisValues(other.basisValues),
       wValues(other.wValues),
-      xValues(other.xValues) {}
+      xValues(other.xValues) {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_PolynomialInterpolation;
+}
 
 PolynomialInterpolationEvaluator::PolynomialInterpolationEvaluator()
-    : evaluationPoint(0.0), basisValues(), wValues(), xValues() {}
+    : evaluationPoint(0.0), basisValues(), wValues(), xValues() {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_PolynomialInterpolation;
+}
 
 PolynomialInterpolationEvaluator::~PolynomialInterpolationEvaluator() {}
 

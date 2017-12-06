@@ -17,6 +17,37 @@
 namespace sgpp {
 namespace combigrid {
 
+PolynomialQuadratureEvaluator::PolynomialQuadratureEvaluator()
+    : weight_function(constantFunction<double>(1.0)),
+      normalizeWeights(false),
+      isCustomWeightFunction(false),
+      numAdditionalPoints(0) {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_PolynomialQuadrature;
+}
+
+PolynomialQuadratureEvaluator::PolynomialQuadratureEvaluator(
+    sgpp::combigrid::SingleFunction weight_function, bool normalizeWeights,
+    size_t numAdditionalPoints)
+    : weight_function(weight_function),
+      normalizeWeights(normalizeWeights),
+      isCustomWeightFunction(true),
+      numAdditionalPoints(0) {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_PolynomialQuadrature;
+}
+
+PolynomialQuadratureEvaluator::PolynomialQuadratureEvaluator(
+    PolynomialQuadratureEvaluator const& other)
+    : xValues(other.xValues),
+      weights(other.weights),
+      weight_function(other.weight_function),
+      normalizeWeights(other.normalizeWeights),
+      isCustomWeightFunction(other.isCustomWeightFunction),
+      numAdditionalPoints(other.numAdditionalPoints) {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_PolynomialQuadrature;
+}
+
+PolynomialQuadratureEvaluator::~PolynomialQuadratureEvaluator() {}
+
 /**
  * Calculates the weight for the specific point
  */
@@ -26,9 +57,8 @@ double PolynomialQuadratureEvaluator::getWeight(std::vector<double>& points, siz
   p.point = point;
   size_t numGaussPoints = (p.degree() + 2) / 2 + numAdditionalPoints;
 
-  return GaussLegendreQuadrature(numGaussPoints).evaluate([&p, this](double x) {
-    return p.evaluate(x) * this->weight_function(x);
-  });
+  return GaussLegendreQuadrature(numGaussPoints)
+      .evaluate([&p, this](double x) { return p.evaluate(x) * this->weight_function(x); });
 }
 
 /**
@@ -47,8 +77,6 @@ void PolynomialQuadratureEvaluator::calculateWeights(std::vector<double>& points
     weights.push_back(FloatScalarVector(getWeight(points, i)));
   }
 }
-
-PolynomialQuadratureEvaluator::~PolynomialQuadratureEvaluator() {}
 
 bool PolynomialQuadratureEvaluator::needsOrderedPoints() { return false; }
 
@@ -100,29 +128,6 @@ PolynomialQuadratureEvaluator::cloneLinear() {
   return std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector> >(
       new PolynomialQuadratureEvaluator(*this));
 }
-
-PolynomialQuadratureEvaluator::PolynomialQuadratureEvaluator()
-    : weight_function(constantFunction<double>(1.0)),
-      normalizeWeights(false),
-      isCustomWeightFunction(false),
-      numAdditionalPoints(0) {}
-
-PolynomialQuadratureEvaluator::PolynomialQuadratureEvaluator(
-    sgpp::combigrid::SingleFunction weight_function, bool normalizeWeights,
-    size_t numAdditionalPoints)
-    : weight_function(weight_function),
-      normalizeWeights(normalizeWeights),
-      isCustomWeightFunction(true),
-      numAdditionalPoints(numAdditionalPoints) {}
-
-PolynomialQuadratureEvaluator::PolynomialQuadratureEvaluator(
-    PolynomialQuadratureEvaluator const& other)
-    : xValues(other.xValues),
-      weights(other.weights),
-      weight_function(other.weight_function),
-      normalizeWeights(other.normalizeWeights),
-      isCustomWeightFunction(other.isCustomWeightFunction),
-      numAdditionalPoints(other.numAdditionalPoints) {}
 
 void PolynomialQuadratureEvaluator::setParameter(const FloatScalarVector& param) { return; }
 
