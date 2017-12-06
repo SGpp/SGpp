@@ -103,6 +103,14 @@ CombigridMultiOperation::CombigridMultiOperation(
 CombigridMultiOperation::CombigridMultiOperation(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
     std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
+    std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage,
+    FullGridSummationStrategyType summationStrategyType)
+    : impl(new CombigridMultiOperationImpl(pointHierarchies, evaluatorPrototypes, levelManager,
+                                           storage, summationStrategyType)) {}
+
+CombigridMultiOperation::CombigridMultiOperation(
+    std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+    std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
     std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting,
     FullGridSummationStrategyType summationStrategyType)
     : impl(new CombigridMultiOperationImpl(
