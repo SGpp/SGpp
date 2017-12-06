@@ -77,6 +77,12 @@ class CombigridTensorOperation {
       std::shared_ptr<LevelManager> levelManager, MultiFunction func, bool exploitNesting,
       FullGridSummationStrategyType summationStrategyType);
 
+  CombigridTensorOperation(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>> evaluatorPrototypes,
+      std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage,
+      FullGridSummationStrategyType summationStrategyType);
+
   /**
    * Sets the parameters for upcoming computations and clears the data structures (removes old
    * computed data). This is only relevant for methods with parameters.
@@ -238,7 +244,8 @@ class CombigridTensorOperation {
   static std::shared_ptr<CombigridTensorOperation> createOperationTensorPolynomialInterpolation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager,
-      std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis);
+      std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis,
+      FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR);
 
   /**
    *
@@ -249,7 +256,8 @@ class CombigridTensorOperation {
   static std::shared_ptr<CombigridTensorOperation> createOperationTensorPolynomialInterpolation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager,
-      std::vector<std::shared_ptr<AbstractInfiniteFunctionBasis1D>> &functionBases);
+      std::vector<std::shared_ptr<AbstractInfiniteFunctionBasis1D>> &functionBases,
+      FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR);
 };
 
 } /* namespace combigrid */
