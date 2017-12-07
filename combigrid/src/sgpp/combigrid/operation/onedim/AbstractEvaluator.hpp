@@ -73,8 +73,6 @@ class AbstractEvaluator {
 
   /**
    * Evaluates the numerical method on the already set grid points.
-   * @param functionValues function values at the grid points, the order must match the one of the
-   * grid points.
    */
   virtual V eval() = 0;
 

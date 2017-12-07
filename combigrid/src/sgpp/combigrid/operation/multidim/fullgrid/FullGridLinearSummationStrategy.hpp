@@ -42,9 +42,9 @@ class FullGridLinearSummationStrategy : public AbstractFullGridSummationStrategy
   ~FullGridLinearSummationStrategy() {}
 
   /**
-  * Evaluates the function given through the storage for a certain level-multi-index (see class
+   * Evaluates the function given through the storage for a certain level-multi-index (see class
    * description).
-   * Summation of the form \sum_i \alpha_i basis_i(param)
+   * Summation of the form \f$\sum_i \alpha_i basis_i(param) \f$
    * This is used for interpolation and quadratures
    */
   V eval(MultiIndex const &level) override {

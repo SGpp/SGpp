@@ -19,8 +19,8 @@ namespace sgpp {
 namespace combigrid {
 
 /**
- * This evaluator calculates the scalar products \int b_i b_j. This is done via quadrature based on
- * the given grid points. The quadrature weights are
+ * This evaluator calculates the scalar products \f$\int b_i b_j\f$. This is done via quadrature
+ * based on the given grid points. The quadrature weights are
  * obtained by (numerically) integrating the Lagrange polynomials on the given grid points.
  * In the constructor, a weight function may be passed whose values at the grid points are
  * multiplied with the given function values.
@@ -36,11 +36,44 @@ class PolynomialScalarProductEvaluator : public AbstractLinearEvaluator<FloatArr
 
   // lookup table for inner products
   std::map<size_t, double> scalarProductsMap;
-  size_t generateKey(size_t idegree, size_t jdegree);
 
+  /**
+   * Generate an unique key for two basis functions for reusing the scalar product
+   *
+   * @param i index of polynomial
+   * @param j index of polynomial
+   * @return unique key for hash map
+   */
+  size_t generateKey(size_t i, size_t j);
+
+  /**
+   * Performs Gauss-Legendre quadrature for the product of the given polynomials and the
+   * weight function
+   *
+   * @param p_i Lagrange polynomial for point i
+   * @param p_j Lagrange polynomial for point j
+   * @return \f$\int p_i(x) p_j(x) f(x) dx
+   */
   double quad(LagrangePolynom &p_i, LagrangePolynom &p_j);
-  FloatArrayVector get1DMixedIntegral(std::vector<double> &points, size_t index_j);
 
+  /**
+   * Calculates the weight for the specific point
+   * @param points grid points of the one dimensional grid the interpolation will be performed on
+   * @param index_i index of polynomial
+   * @return integral of b_i*b_j
+   */
+  FloatArrayVector get1DMixedIntegral(std::vector<double> &points, size_t index_i);
+
+  /**
+   * This Function calculates the weights of the given points, each weight is calculated
+   * individually
+   * @param points The vector with the points, they don't need to have a specific order
+   * @param integrals The integrals will be added to the back of this vector in the order of the
+   * points in the vector with the points,
+   * it is recommended to clear the weight vector before calling this function to ensure that the
+   * weights are at the same position
+   * as their points
+   */
   void calculate1DPolynomialScalarProducts(std::vector<double> &points,
                                            std::vector<FloatArrayVector> &integrals);
 

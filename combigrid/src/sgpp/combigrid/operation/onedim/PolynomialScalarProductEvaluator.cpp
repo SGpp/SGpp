@@ -70,8 +70,6 @@ double PolynomialScalarProductEvaluator::quad(LagrangePolynom& p_i, LagrangePoly
     scalarProduct_ij = 0.0;
     for (size_t i = 0; i < roots.getSize(); ++i) {
       double x_unit = roots[i], w = quadratureweights[i];
-      //      double y_i = p_i.evaluate(x_unit);
-      //      double y_j = p_i.evaluate(x_unit);
       scalarProduct_ij += w * p_i.evaluate(x_unit) * p_j.evaluate(x_unit) * weight_function(x_unit);
     }
 
@@ -86,12 +84,6 @@ double PolynomialScalarProductEvaluator::quad(LagrangePolynom& p_i, LagrangePoly
   return scalarProduct_ij;
 }
 
-/**
- * Calculates the weight for the specific point
- * @param points grid points of the one dimensional grid the interpolation will be performed on
- * @param degree_i degree of polynomial
- * @return integral of b_i*b_j
- */
 FloatArrayVector PolynomialScalarProductEvaluator::get1DMixedIntegral(std::vector<double>& points,
                                                                       size_t index_i) {
   FloatArrayVector scalarProducts;
@@ -122,20 +114,10 @@ FloatArrayVector PolynomialScalarProductEvaluator::get1DMixedIntegral(std::vecto
   return scalarProducts;
 }
 
-/**
- * This Function calculates the weights of the given points, each weight is calculated
- * individually
- * @param points The vector with the points, they dont need to have a specific order
- * @param integrals The integrals will be added to the back of this vector in the order of the
- * points in the vector with the points,
- * it is recommended to clear the weight vector before calling this function to ensure that the
- * weights are at the same position
- * as their points
- */
 void PolynomialScalarProductEvaluator::calculate1DPolynomialScalarProducts(
-    std::vector<double>& points, std::vector<FloatArrayVector>& basisValues) {
+    std::vector<double>& points, std::vector<FloatArrayVector>& integrals) {
   for (size_t index_i = 0; index_i < points.size(); ++index_i) {
-    basisValues.push_back(get1DMixedIntegral(points, index_i));
+    integrals.push_back(get1DMixedIntegral(points, index_i));
   }
 }
 
@@ -181,21 +163,21 @@ void PolynomialScalarProductEvaluator::setFunctionValuesAtGridPoints(
   basisCoefficients = functionValues;
 }
 
-size_t PolynomialScalarProductEvaluator::generateKey(size_t idegree, size_t jdegree) {
+size_t PolynomialScalarProductEvaluator::generateKey(size_t i, size_t j) {
   // sort for commuativity
-  size_t smaller_degree = 0;
-  size_t larger_degree = 0;
-  if (idegree < jdegree) {
-    smaller_degree = idegree;
-    larger_degree = jdegree;
+  size_t smaller_index = 0;
+  size_t larger_index = 0;
+  if (i < j) {
+    smaller_index = i;
+    larger_index = j;
   } else {
-    smaller_degree = jdegree;
-    larger_degree = idegree;
+    smaller_index = j;
+    larger_index = i;
   }
 
   // cantor pairing function
-  return (smaller_degree + larger_degree) * (smaller_degree + larger_degree + 1) / 2 +
-         larger_degree;
+  return (smaller_index + larger_index) * (smaller_index + larger_index + 1) / 2 +
+         larger_index;
 }
 
 } /* namespace combigrid */

@@ -34,6 +34,8 @@ class FullGridCallbackEvaluator : public AbstractFullGridEvaluationStrategy<V> {
    * evaluator for each dimension and each level.
    * @param pointHierarchies PointHierarchy objects for each dimension providing the points for each
    * level and information about their ordering.
+   * @param summationStrategyType strategy to gather the results of the univariate evaluators on
+   * each anisotropic full grid
    */
   FullGridCallbackEvaluator(
       std::shared_ptr<AbstractCombigridStorage> storage,
