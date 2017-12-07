@@ -256,7 +256,7 @@ BOOST_AUTO_TEST_CASE(testVarianceOnLevel) {
   };
 
   AtanModelVarianceTestDataBsplines varianceTestData;
-  double tolerance = 2e-8;
+  //  double tolerance = 2e-8;
   for (size_t i = 0; i < varianceTestData.levels.size(); i++) {
     sgpp::combigrid::MultiIndex level = varianceTestData.levels[i];
     double bSplineVariance = BSplineVariance(level);
