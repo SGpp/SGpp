@@ -6,6 +6,5 @@
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridVarianceSummationStrategy.hpp>
 
 namespace sgpp {
-namespace combigrid {}
-/* namespace combigrid */
+namespace combigrid {} /* namespace combigrid */
 } /* namespace sgpp */

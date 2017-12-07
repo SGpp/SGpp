@@ -7,10 +7,11 @@
 #include <sgpp/combigrid/optimization/MixedOptimizer.hpp>
 
 #include <algorithm>
-#include <cmath>
 #include <functional>
 #include <iostream>
 #include <vector>
+
+#include <cmath>
 
 namespace sgpp {
 namespace combigrid {

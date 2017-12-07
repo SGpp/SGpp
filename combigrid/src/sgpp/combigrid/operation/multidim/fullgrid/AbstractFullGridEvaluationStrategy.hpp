@@ -23,13 +23,14 @@
 
 namespace sgpp {
 namespace combigrid {
+
 /**
- * currently two evaluation strategies are suppoted:
- * linear: uses the eval function of AbstractFullGridLinearEvaluator, i.e. evaluation in every
- *		   point individually
- * grid_based: uses a gridFunction to evaluate in all grid points at once
- *
- * You decide which one to use simply by calling the constructor with or without a gridFunction
+* currently two evaluation strategies are suppoted:
+* linear: uses the eval function of AbstractFullGridLinearEvaluator, i.e. evaluation in every
+*		   point individually
+* grid_based: uses a gridFunction to evaluate in all grid points at once
+*
+* You decide which one to use simply by calling the constructor with or without a gridFunction
 */
 typedef GeneralFunction<std::shared_ptr<TreeStorage<double>>, std::shared_ptr<TensorGrid>>
     GridFunction;
@@ -68,7 +69,7 @@ class AbstractFullGridEvaluationStrategy : public AbstractFullGridEvaluator<V> {
     }
   }
 
-  virtual ~AbstractFullGridEvaluationStrategy(){}
+  virtual ~AbstractFullGridEvaluationStrategy() {}
 
   /**
    * Sets the parameters for the evaluators. Each dimension in which the evaluator does not need a

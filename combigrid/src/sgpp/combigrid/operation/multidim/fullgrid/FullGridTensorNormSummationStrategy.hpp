@@ -30,12 +30,6 @@ namespace combigrid {
 
 template <typename V>
 class FullGridTensorNormSummationStrategy : public AbstractFullGridSummationStrategy<V> {
- protected:
- private:
-  //  std::shared_ptr<AbstractCombigridStorage> storage;
-  //  std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> scalarProductEvaluatorPrototypes;
-  //  std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies;
-
  public:
   /**
    * Constructor.
