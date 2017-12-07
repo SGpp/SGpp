@@ -3,14 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_ABSTRACTEVALUATOR_HPP_
-#define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_ABSTRACTEVALUATOR_HPP_
+#pragma once
+
+#include <sgpp/globaldef.hpp>
+#include <sgpp/combigrid/operation/OperationConfiguration.hpp>
 
 #include <memory>
-#include <sgpp/globaldef.hpp>
 #include <vector>
-
-#include <sgpp/combigrid/operation/OperationConfiguration.hpp>
 
 namespace sgpp {
 namespace combigrid {
@@ -24,8 +23,8 @@ namespace combigrid {
  */
 template <typename V>
 class AbstractEvaluator {
- private:
- protected:
+
+protected:
   size_t level = 0;
   EvaluatorConfiguration evalConfig;
 
@@ -94,5 +93,3 @@ class AbstractEvaluator {
 
 } /* namespace combigrid */
 } /* namespace sgpp*/
-
-#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_ABSTRACTEVALUATOR_HPP_ */

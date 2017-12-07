@@ -176,8 +176,7 @@ size_t PolynomialScalarProductEvaluator::generateKey(size_t i, size_t j) {
   }
 
   // cantor pairing function
-  return (smaller_index + larger_index) * (smaller_index + larger_index + 1) / 2 +
-         larger_index;
+  return (smaller_index + larger_index) * (smaller_index + larger_index + 1) / 2 + larger_index;
 }
 
 } /* namespace combigrid */

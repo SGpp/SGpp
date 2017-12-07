@@ -52,7 +52,7 @@ class PolynomialScalarProductEvaluator : public AbstractLinearEvaluator<FloatArr
    *
    * @param p_i Lagrange polynomial for point i
    * @param p_j Lagrange polynomial for point j
-   * @return \f$\int p_i(x) p_j(x) f(x) dx
+   * @return \f$\int p_i(x) p_j(x) f(x) dx\f$
    */
   double quad(LagrangePolynom &p_i, LagrangePolynom &p_j);
 
@@ -60,7 +60,7 @@ class PolynomialScalarProductEvaluator : public AbstractLinearEvaluator<FloatArr
    * Calculates the weight for the specific point
    * @param points grid points of the one dimensional grid the interpolation will be performed on
    * @param index_i index of polynomial
-   * @return integral of b_i*b_j
+   * @return integral of \f$b_i*b_j\f$
    */
   FloatArrayVector get1DMixedIntegral(std::vector<double> &points, size_t index_i);
 

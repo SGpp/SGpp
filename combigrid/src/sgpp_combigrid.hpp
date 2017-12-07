@@ -85,7 +85,6 @@
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
 
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp>
-#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridCallbackEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridGridBasedEvaluator.hpp>
 #include <sgpp/combigrid/utils/BinaryHeap.hpp>

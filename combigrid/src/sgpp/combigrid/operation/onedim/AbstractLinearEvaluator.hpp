@@ -23,7 +23,6 @@ namespace combigrid {
  */
 template <typename V>
 class AbstractLinearEvaluator : public AbstractEvaluator<V> {
- protected:
  public:
   virtual ~AbstractLinearEvaluator() {}
 

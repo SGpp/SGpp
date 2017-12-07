@@ -13,6 +13,8 @@
 #include <RandomVariable.hpp>
 #endif
 
+#include <string>
+
 namespace sgpp {
 namespace combigrid {
 

@@ -25,9 +25,9 @@ class FloatTensorVector {
  public:
   explicit FloatTensorVector(std::shared_ptr<TreeStorage<FloatScalarVector>> const &values);
 
-  FloatTensorVector(size_t d = 0);
+  explicit FloatTensorVector(size_t d = 0);
 
-  FloatTensorVector(FloatScalarVector scalar);
+  explicit FloatTensorVector(FloatScalarVector scalar);
 
   FloatTensorVector(FloatTensorVector const &other);
 

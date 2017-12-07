@@ -8,8 +8,8 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <cmath>
 #include <iostream>
+#include <cmath>
 
 namespace sgpp {
 namespace combigrid {
