@@ -23,9 +23,9 @@ class LinearTransformation {
  public:
   LinearTransformation() {}
 
-  LinearTransformation(sgpp::base::DataVector& bounds) { initialize(bounds); }
+  explicit LinearTransformation(sgpp::base::DataVector& bounds) { initialize(bounds); }
 
-  virtual ~LinearTransformation(){};
+  virtual ~LinearTransformation(){}
 
   void initialize(sgpp::base::DataVector& bounds) {
     if (bounds.getSize() % 2 != 0) {

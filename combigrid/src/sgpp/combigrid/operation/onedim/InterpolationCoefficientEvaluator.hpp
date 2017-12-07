@@ -10,6 +10,8 @@
 #include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 
+#include <vector>
+
 namespace sgpp {
 namespace combigrid {
 
@@ -24,7 +26,7 @@ class InterpolationCoefficientEvaluator : public AbstractLinearEvaluator<FloatTe
 
  public:
   InterpolationCoefficientEvaluator();
-  InterpolationCoefficientEvaluator(std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis);
+  explicit InterpolationCoefficientEvaluator(std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis);
   virtual ~InterpolationCoefficientEvaluator();
   InterpolationCoefficientEvaluator(InterpolationCoefficientEvaluator const &other);
 

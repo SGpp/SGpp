@@ -5,8 +5,6 @@
 
 #pragma once
 
-#include <memory>
-#include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/algebraic/FloatArrayVector.hpp>
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
@@ -14,9 +12,10 @@
 #include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
-#include <vector>
+#include <sgpp/combigrid/operation/OperationConfiguration.hpp>
 
-#include "OperationConfiguration.hpp"
+#include <vector>
+#include <memory>
 
 namespace sgpp {
 namespace combigrid {

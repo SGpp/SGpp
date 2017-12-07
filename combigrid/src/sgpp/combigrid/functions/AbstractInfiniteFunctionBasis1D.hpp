@@ -12,7 +12,7 @@ namespace combigrid {
 
 class AbstractInfiniteFunctionBasis1D {
  public:
-  AbstractInfiniteFunctionBasis1D(){};
+  AbstractInfiniteFunctionBasis1D();
   virtual ~AbstractInfiniteFunctionBasis1D();
 
   virtual double evaluate(size_t basisIndex, double xValue) = 0;
