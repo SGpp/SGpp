@@ -71,6 +71,8 @@ void createKnots(std::vector<double> const& xValues, size_t const& degree,
   }
 }
 
+// ToDo (rehmemk) line 92 xValeus[i+1] and line 95 xValues[xValuessize()-i-2] can be invalid!
+// Probably wrong in createdeg5Knotstoo
 /**
    * @param xi vector containing the knots with which the Bsplines are created. For dealing with
    * the boundaries at 0 and 1 not a knot knots are used. In the case of degree 3 this means that
@@ -78,6 +80,12 @@ void createKnots(std::vector<double> const& xValues, size_t const& degree,
    */
 void createdeg3NakKnots(std::vector<double> const& xValues, size_t const& degree,
                         std::vector<double>& xi) {
+  // On levels 0 and 1 only Lagrange polynomials and not nak B splines are used. no need for extra
+  // points
+  if (xValues.size() < 5) {
+    xi = xValues;
+    return;
+  }
   // create a vector xi that holds the gridpoints and continues to the left and right by mirroring
   // at 0 and 1
 
@@ -87,10 +95,10 @@ void createdeg3NakKnots(std::vector<double> const& xValues, size_t const& degree
   xi.insert(xi.begin() + offset + 1, xValues.begin(), xValues.end());
 
   for (size_t i = 0; i < offset + 1; i++) {
-    xi[offset - i] = -xValues[i + 1] + 2 * xValues[0];
+    xi[offset - i] = -xValues.at(i + 1) + 2 * xValues[0];
     xi[xValues.size() + offset + i + 1] =
         xValues[xValues.size() - 1] +
-        (xValues[xValues.size() - 1] - xValues[xValues.size() - i - 2]);
+        (xValues[xValues.size() - 1] - xValues.at(xValues.size() - i - 2));
   }
 
   xi.erase(xi.begin() + offset + 2);
@@ -109,6 +117,12 @@ void createdeg3NakKnots(std::vector<double> const& xValues, size_t const& degree
    */
 void createdeg5NakKnots(std::vector<double> const& xValues, size_t const& degree,
                         std::vector<double>& xi) {
+  // On levels 0,1 and 2 only Lagrange polynomials and not nak B splines are used. no need for extra
+  // points
+  if (xValues.size() < 9) {
+    xi = xValues;
+    return;
+  }
   // create a vector xi that holds the gridpoints and continues to the left and right by mirroring
   // at 0 and 1
 

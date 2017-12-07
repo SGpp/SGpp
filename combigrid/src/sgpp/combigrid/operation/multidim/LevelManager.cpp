@@ -6,10 +6,10 @@
 #include "LevelManager.hpp"
 
 #include <iostream>
-#include <string>
-#include <vector>
-#include <utility>
 #include <map>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
@@ -270,7 +270,6 @@ void LevelManager::addStats(const MultiIndex &level) {
     levelInfo =
         std::make_shared<LevelInfo>(combiEval->getDifferenceNorm(level),
                                     combiEval->maxNewPoints(level), combiEval->numPoints(level));
-    levelInfo->priority = computePriority(level);
   } else {
     levelInfo = levelData->get(level);
   }

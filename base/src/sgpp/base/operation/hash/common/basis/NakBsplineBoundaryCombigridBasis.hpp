@@ -130,6 +130,7 @@ class NakBsplineBoundaryCombigridBasis : public Basis<LT, IT> {
               result = 1.0 / 5.0 + result * t;
               return result;
             }
+
           } else if (l == 2) {
             // l = 2, i = 2
             if ((t < -2.0) || (t > 2.0)) {
