@@ -139,13 +139,6 @@ void OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::mult(sgpp::base::DataVec
           }
         }
 
-        //      else {
-        //        std::cerr << "OperationMatrixLTwoDotNakBsplineBoundaryCombigrid: currently only
-        //        degree 3 "
-        //                     "and 5 supported."
-        //                  << std::endl;
-        //      }
-
         //          if ((lik == 1) && (iik == 1) && (ljk == 3) && ijk == 5) {
         //            std::cout << "i " << lik << " " << iik << " " << offseti_left << " " <<
         //            offseti_right
