@@ -40,9 +40,25 @@
 #include <vector>
 
 size_t numDimensions = 2;
+double atanMean = 3.514491254152333;
+double atanMeanSquare = 15.804752405653030;
+double atanVariance = 3.453103630139788;
+
+double xcubeMean = 0.25;
+double xcubeMeanSquare = 0.142857142857143;
+double xcubeVariance = 0.080357142857143;
+
+double xcube2Mean = 0.500000000000164;
+double xcube2MeanSquare = 0.410714285751263;
+double xcube2Variance = 0.160714285751100;
+
+double sinexpMean = 0.672377634914871;
+double sinexpMeanSquare = 0.644728986265339;
+double sinexpVariance = 0.192637302331624;
+
 double f(sgpp::base::DataVector const& v) {
   //  return v[0] * v[0] * v[0] + v[1] * v[1] * v[1];
-  //  return std::atan(50 * (v[0] - .35));
+  //  return std::sin(v[0]) * std::exp(v[1] * v[1]);
   return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
          std::exp(v[0] * v[1] - 1);
 }
@@ -260,6 +276,7 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
 
   //  std::cout << "num CG points: " << Operation->getLevelManager()->numGridPoints();
   //  std::cout << ", num SG points " << gridStorage.getSize() << std::endl;
+  //  std::cout << "num grid points: " << gridStorage.getSize() << " ";
 
   // error calculations
   double CGL2Err, CGMaxErr, SGL2Err, SGMaxErr, CompL2Err, CompMaxErr = 0;
@@ -271,7 +288,7 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   //  std::cout << "CG L2:   " << CGL2Err << "   CG max:   " << CGMaxErr << std::endl;
   //  std::cout << "SG L2:   " << SGL2Err << "   SG max:   " << SGMaxErr << std::endl;
   //  std::cout << "Comp L2: " << CompL2Err << " Comp max: " << CompMaxErr << std::endl;
-  //  std::cout << "L2 error: " << CGL2Err << " max error: " << CGMaxErr << std::endl;
+  //  std::cout << "L2 error: " << CGL2Err << " ";
 
   sgpp::base::DataVector dummyparams;
   auto quadOperation =
@@ -280,22 +297,42 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   quadOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
   double mean = quadOperation->getResult();
 
-  // ToDo (rehmemk) Konvertierung von shared_ptr zu pointer Unsinn?!
   sgpp::base::Grid* gridptr = grid.get();
   sgpp::pde::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(gridptr);
   sgpp::base::DataVector product(alpha.size(), 0);
   massMatrix.mult(alpha, product);
   double meanSquare = product.dotProduct(alpha);
   double variance = meanSquare - mean * mean;
-  std::cout << "mean: " << mean << " meanSquare : " << meanSquare << " Variance: " << variance
-            << std::endl;
+  std::cout << " mean error: " << fabs(mean - atanMean) << " ";
+  std::cout << " meanSquare error : " << fabs(meanSquare - atanMeanSquare) << " ";
+  std::cout << " variance error: " << fabs(variance - atanVariance) << std::endl;
+
+  //  std::cout << "mean:        " << mean << std::endl;
+  //  std::cout << "mean square: " << meanSquare << std::endl;
+  //  std::cout << "variance :   " << variance << std::endl;
+  // MATRIX DEBUGGING:
+
+  //  //  for (size_t i = 0; i < alpha.getSize(); i++) {
+  //  //    for (size_t j = 0; j < alpha.getSize(); j++) {
+  //  sgpp::base::DataVector ivec(alpha.getSize(), 0.0);
+  //  sgpp::base::DataVector jvec(alpha.getSize(), 0.0);
+  //  //      ivec[i] = 1;
+  //  //      jvec[j] = 1;
+  //  ivec[0] = 1;
+  //  jvec[0] = 1;
+  //  massMatrix.mult(ivec, product);
+  //  std::cout << std::fixed << product.dotProduct(jvec) << " ";
+  //  //}
+  //  std::cout << "\n";
+  //  //  }
 }
 
 int main() {
   size_t degree = 3;
-  size_t numLevels = 21;
+  size_t numLevels = 20;
   for (size_t maxLevel = 0; maxLevel < numLevels; maxLevel++) {
-    std::cout << "added Levels: " << maxLevel << " ";
+    std::cout << maxLevel << ", ";
+    //  size_t maxLevel = 0;
     BSplineGridConversion(degree, maxLevel);
   }
   return 0;

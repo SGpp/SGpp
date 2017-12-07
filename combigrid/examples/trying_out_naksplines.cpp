@@ -43,7 +43,7 @@ double f(sgpp::base::DataVector p, size_t dim) {
 
 int main() {
   size_t dim = 1;
-  size_t deg = 5;
+  size_t deg = 3;
   size_t level = 3;
   size_t numMCpoints = 10000;
 
@@ -102,7 +102,7 @@ int main() {
 
   sgpp::base::SNakBsplineBoundaryCombigridBase myBasis(deg);
   for (double p = 0; p < 1; p = p + 0.005) {
-    plotfile << p << ",   " << myBasis.eval(0, 0, p) << ", " << myBasis.eval(0, 1, p) << "\n";
+    plotfile << p << ",   " << myBasis.eval(2, 1, p) << ", " << myBasis.eval(2, 3, p) << "\n";
   }
   plotfile.close();
 
