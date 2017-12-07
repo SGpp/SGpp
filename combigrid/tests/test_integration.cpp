@@ -134,7 +134,7 @@ double mean(size_t numDims, sgpp::combigrid::MultiFunction& func, size_t numPoin
 double variance(size_t numDims, sgpp::combigrid::MultiFunction& func, size_t numPoints,
                 double mean_ref,
                 std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis) {
-  sgpp::combigrid::MultiFunction var_func([func, functionBasis](sgpp::base::DataVector const& param) {
+  sgpp::combigrid::MultiFunction var_func([func, functionBasis, mean_ref](sgpp::base::DataVector const& param) {
     double value = std::pow(func(param) - mean_ref, 2);
     double pdf_value = 1.0;
     for (size_t i = 0; i < param.getSize(); i++) {
