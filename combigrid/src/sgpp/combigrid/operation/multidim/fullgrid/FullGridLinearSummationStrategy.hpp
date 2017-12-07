@@ -22,7 +22,6 @@ namespace combigrid {
 
 template <typename V>
 class FullGridLinearSummationStrategy : public AbstractFullGridSummationStrategy<V> {
- protected:
  public:
   /**
    * Constructor.

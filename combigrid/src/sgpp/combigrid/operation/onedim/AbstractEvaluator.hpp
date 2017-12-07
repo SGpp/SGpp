@@ -15,16 +15,15 @@ namespace sgpp {
 namespace combigrid {
 
 /**
- * Abstract base class for one-dimensional numerical evaluation methods. Currently, only its derived
- * class AbstractLinearEvaluator is used.
- *
- * The template parameter is used for switching between single-evaluation and multi-evaluation, see
- * FloatArrayVector.
- */
+*Abstract base class for one-dimensional numerical evaluation methods. Currently, only its derived
+*class AbstractLinearEvaluator is used.
+*
+*The template parameter is used for switching between single-evaluation and multi-evaluation, see
+*FloatArrayVector.
+*/
 template <typename V>
 class AbstractEvaluator {
-
-protected:
+ protected:
   size_t level = 0;
   EvaluatorConfiguration evalConfig;
 

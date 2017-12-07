@@ -3,8 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <iostream>
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
+
+#include <iostream>
 
 namespace sgpp {
 namespace combigrid {

@@ -48,17 +48,18 @@ struct EvaluatorConfiguration {
 
   EvaluatorConfiguration(CombiEvaluatorTypes type, size_t degree,
                          std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis)
-      : type(type), degree(degree), functionBasis(functionBasis){}
+      : type(type), degree(degree), functionBasis(functionBasis) {}
 
-  EvaluatorConfiguration() : EvaluatorConfiguration(CombiEvaluatorTypes::NO_TYPE, 0, nullptr){}
-  explicit EvaluatorConfiguration(CombiEvaluatorTypes type) : EvaluatorConfiguration(type, 0, nullptr){}
+  EvaluatorConfiguration() : EvaluatorConfiguration(CombiEvaluatorTypes::NO_TYPE, 0, nullptr) {}
+  explicit EvaluatorConfiguration(CombiEvaluatorTypes type)
+      : EvaluatorConfiguration(type, 0, nullptr) {}
   EvaluatorConfiguration(CombiEvaluatorTypes type, size_t degree)
-      : EvaluatorConfiguration(type, degree, nullptr){}
+      : EvaluatorConfiguration(type, degree, nullptr) {}
   EvaluatorConfiguration(CombiEvaluatorTypes type,
                          std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis)
-      : EvaluatorConfiguration(type, 0, functionBasis){}
+      : EvaluatorConfiguration(type, 0, functionBasis) {}
 
-  ~EvaluatorConfiguration(){}
+  ~EvaluatorConfiguration() {}
 };
 
 } /* namespace combigrid */

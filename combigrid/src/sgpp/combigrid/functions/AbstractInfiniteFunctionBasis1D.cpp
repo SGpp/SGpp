@@ -8,7 +8,7 @@
 namespace sgpp {
 namespace combigrid {
 
-sgpp::combigrid::AbstractInfiniteFunctionBasis1D::AbstractInfiniteFunctionBasis1D(){}
+sgpp::combigrid::AbstractInfiniteFunctionBasis1D::AbstractInfiniteFunctionBasis1D() {}
 
 sgpp::combigrid::AbstractInfiniteFunctionBasis1D::~AbstractInfiniteFunctionBasis1D() {}
 

@@ -23,7 +23,6 @@ namespace combigrid {
 
 template <typename V>
 class FullGridQuadraticSummationStrategy : public AbstractFullGridSummationStrategy<V> {
- protected:
  private:
   /*
    * vector product vector1 * transpose(vector2)
