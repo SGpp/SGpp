@@ -285,9 +285,6 @@ std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> createVarianceLevelStruct
   // First step is to guarantee the existence of level (1,..,1). Otherwise a conversion to an SG
   // grid wouldn't be possible
   Operation->getLevelManager()->addRegularLevels(numDimensions);
-  // ToDo(rehmemk) the number of levels added is now a little mysterious because the user does not
-  // know how many levels are added to gguarantee (1,..,1) before the number of levels he chose to
-  // be added is added
   Operation->getLevelManager()->addLevelsAdaptiveByNumLevels(numlevels);
   auto levelStructure = Operation->getLevelManager()->getLevelStructure();
   return levelStructure;

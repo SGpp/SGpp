@@ -269,6 +269,7 @@ BOOST_AUTO_TEST_CASE(testVarianceOnLevel) {
 
 // This is only used for Debug purposes.
 // The variance data is read from a file to make it easily replacable
+/*
 BOOST_AUTO_TEST_CASE(testVarianceDEBUG) {
   std::cout << "Testing B spline variance calculation  subgridwise on single levels from file"
             << std::endl;
@@ -291,7 +292,7 @@ BOOST_AUTO_TEST_CASE(testVarianceDEBUG) {
   }
   varianceFile.close();
 }
-
+*/
 BOOST_AUTO_TEST_CASE(testVarianceOnDiagonal) {
   std::cout
       << "Testing B spline variance calculation on levels of the diagonal of the subgrid scheme"
