@@ -12,6 +12,9 @@
    * @return      value of non-uniform B-spline
    *              with knots \f$\{\xi_k, ... \xi_{k+p+1}\}\f$
    */
+
+// ToDo(rehmemk) cachegrind says this routine is the bottleneck! Write one specifically for uniform
+// grid widths like NakBsplineBoundaryCombigridBasis
 double nonUniformBSpline(double const& x, size_t const& deg, size_t const& index,
                          std::vector<double> const& xi) {
   if (deg == 0) {
@@ -71,8 +74,6 @@ void createKnots(std::vector<double> const& xValues, size_t const& degree,
   }
 }
 
-// ToDo (rehmemk) line 92 xValeus[i+1] and line 95 xValues[xValuessize()-i-2] can be invalid!
-// Probably wrong in createdeg5Knotstoo
 /**
    * @param xi vector containing the knots with which the Bsplines are created. For dealing with
    * the boundaries at 0 and 1 not a knot knots are used. In the case of degree 3 this means that

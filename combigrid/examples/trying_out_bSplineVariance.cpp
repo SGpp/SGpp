@@ -39,10 +39,9 @@
 #include <iostream>
 #include <vector>
 
-size_t numDimensions = 2;
-double atanMean = 3.514491254152333;
-double atanMeanSquare = 15.804752405653030;
-double atanVariance = 3.453103630139788;
+double atanMean = 3.514491266445763;
+double atanMeanSquare = 15.804752455860012;
+double atanVariance = 3.453103593936470;
 
 double xcubeMean = 0.25;
 double xcubeMeanSquare = 0.142857142857143;
@@ -56,7 +55,13 @@ double sinexpMean = 0.672377634914871;
 double sinexpMeanSquare = 0.644728986265339;
 double sinexpVariance = 0.192637302331624;
 
+double xquintMean = 1.0 / 6.0;
+double xquintMeanSquare = 1.0 / 11.0;
+double xquintVariance = 1.0 / 11.0 - 1.0 / 36.0;
+
+size_t numDimensions = 2;
 double f(sgpp::base::DataVector const& v) {
+  //  return v[0] * v[0] * v[0] * v[0] * v[0];
   //  return v[0] * v[0] * v[0] + v[1] * v[1] * v[1];
   //  return std::sin(v[0]) * std::exp(v[1] * v[1]);
   return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
@@ -204,11 +209,11 @@ std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> createVarianceLevelStruct
   // create level structure
   // First step is to guarantee the existence of level (1,..,1). Otherwise a conversion to an SG
   // grid wouldn't be possible
-  Operation->getLevelManager()->addRegularLevels(numDimensions);
+  Operation->getLevelManager()->addRegularLevels(numDimensions + numlevels);
   // ToDo(rehmemk) the number of levels added is now a little mysterious because the user does not
   // know how many levels are added to guarantee (1,..,1) before the number of levels he chose to
   // be added is added
-  Operation->getLevelManager()->addLevelsAdaptiveByNumLevels(numlevels);
+  //  Operation->getLevelManager()->addLevelsAdaptiveByNumLevels(numlevels);
   auto levelStructure = Operation->getLevelManager()->getLevelStructure();
   return levelStructure;
 }
@@ -276,7 +281,7 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
 
   //  std::cout << "num CG points: " << Operation->getLevelManager()->numGridPoints();
   //  std::cout << ", num SG points " << gridStorage.getSize() << std::endl;
-  //  std::cout << "num grid points: " << gridStorage.getSize() << " ";
+  std::cout << gridStorage.getSize() << " ";
 
   // error calculations
   double CGL2Err, CGMaxErr, SGL2Err, SGMaxErr, CompL2Err, CompMaxErr = 0;
@@ -303,13 +308,10 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   massMatrix.mult(alpha, product);
   double meanSquare = product.dotProduct(alpha);
   double variance = meanSquare - mean * mean;
-  std::cout << " mean error: " << fabs(mean - atanMean) << " ";
-  std::cout << " meanSquare error : " << fabs(meanSquare - atanMeanSquare) << " ";
-  std::cout << " variance error: " << fabs(variance - atanVariance) << std::endl;
+  //  std::cout << " mean error: " << fabs(mean - atanMean) << " ";
+  //  std::cout << " meanSquare error : " << fabs(meanSquare - atanMeanSquare) << " ";
+  std::cout << fabs(variance - atanVariance) << std::endl;
 
-  //  std::cout << "mean:        " << mean << std::endl;
-  //  std::cout << "mean square: " << meanSquare << std::endl;
-  //  std::cout << "variance :   " << variance << std::endl;
   // MATRIX DEBUGGING:
 
   //  //  for (size_t i = 0; i < alpha.getSize(); i++) {
@@ -328,10 +330,10 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
 }
 
 int main() {
-  size_t degree = 3;
-  size_t numLevels = 20;
+  size_t degree = 5;
+  size_t numLevels = 8;
   for (size_t maxLevel = 0; maxLevel < numLevels; maxLevel++) {
-    std::cout << maxLevel << ", ";
+    //    std::cout << maxLevel << ", ";
     //  size_t maxLevel = 0;
     BSplineGridConversion(degree, maxLevel);
   }
