@@ -1,6 +1,6 @@
 {
 	"dataSource": {
-		"filePath": "/home/michael/Projects/HiWi/SGpp/datasets/bupa_liver/liver-disorders_normalized.arff.gz"
+		"filePath": "D:\SGpp\datasets\bupa_liver\liver-disorders_normalized.arff"
 	},
 	"scorer": {
 		"testing": {
@@ -23,7 +23,7 @@
 			"noPoints": 3
 		},
 		"regularizationConfig": {
-			"lambda": 10e-1
+			"lambda": 10e-3
 		}
 	}
 }

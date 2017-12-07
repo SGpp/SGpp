@@ -62,5 +62,14 @@ void FitterConfigurationLeastSquares::readParams(const DataMiningConfigParser& p
   parser.getFitterSolverFinalConfig(solverFinalConfig, solverFinalConfig);
   parser.getFitterRegularizationConfig(regularizationConfig, regularizationConfig);
 }
+
+void FitterConfigurationLeastSquares::setHyperParameters(size_t level, size_t numRefinements, size_t noPoints, double threshold, double lambda){
+  gridConfig.level_ = level;
+  adaptivityConfig.numRefinements_ = numRefinements;
+  adaptivityConfig.noPoints_ = noPoints;
+  adaptivityConfig.threshold_ =  threshold;
+  regularizationConfig.lambda_ = lambda;
+}
+
 } /* namespace datadriven */
 } /* namespace sgpp */
