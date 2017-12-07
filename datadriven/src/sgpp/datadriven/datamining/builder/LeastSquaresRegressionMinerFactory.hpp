@@ -40,6 +40,7 @@ class LeastSquaresRegressionMinerFactory : public MinerFactory {
    * @param path Path to a configuration file that defines the structure of the miner object.
    */
   virtual SparseGridMiner* buildMiner(const std::string& path) const;
+  virtual void optimizeHyperparameters(const std::string& path);
 
  private:
   /**

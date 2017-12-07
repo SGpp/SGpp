@@ -46,9 +46,10 @@ int main(int argc, char **argv) {
   /**
    * The miner object is constructed by the factory from a supplied configuration file.
    */
-  auto miner = std::unique_ptr<SparseGridMiner>(factory.buildMiner(path));
+  //auto miner = std::unique_ptr<SparseGridMiner>(factory.buildMiner(path));
+  factory.optimizeHyperparameters(path);
   /**
    * Once we have a configured miner object, we can start the learning process.
    */
-  miner->learn();
+  //miner->learn();
 }
