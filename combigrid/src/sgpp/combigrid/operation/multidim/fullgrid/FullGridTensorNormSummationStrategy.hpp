@@ -42,9 +42,8 @@ class FullGridTensorNormSummationStrategy : public AbstractFullGridSummationStra
    *
    * @param storage Storage that stores and provides the function values for each grid
    * point.
-   * @param evaluatorPrototypes prototype objects for the evaluators that are cloned to
-   * get an
-   * evaluator for each dimension and each level.
+   * @param scalarProductEvaluatorPrototypes prototype objects for the evaluators that are cloned to
+   * get an evaluator for each dimension and each level.
    * @param pointHierarchies PointHierarchy objects for each dimension providing the
    * points for each
    * level and information about their ordering.

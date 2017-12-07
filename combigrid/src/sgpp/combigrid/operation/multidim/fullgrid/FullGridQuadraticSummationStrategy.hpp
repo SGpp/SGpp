@@ -62,10 +62,9 @@ class FullGridQuadraticSummationStrategy : public AbstractFullGridSummationStrat
   /**
    * Evaluates the function given through the storage for a certain level-multi-index (see class
    * description).
-   * Summation of the form \sum_i coefficients_i \sum_j coefficients_j  basis_i(param)
-   * basis_j(param)
-   *             <=> v^T * A * v, A_ij = < basis_i(param),basis_j(param) >, v_i = coefficients_i
-   * This is used for variance calculations.
+   * Summation of the form \f$\sum_i coefficients_i \sum_j coefficients_j  basis_i(param)
+   * basis_j(param) \Leftrightarrow v^T * A * v, A_ij = < basis_i(param),basis_j(param) >, v_i =
+   * coefficients_i \f$. This is used for variance calculations.
    * Currently it can only be used with template type V = FloatArrayVector
    */
   V eval(MultiIndex const &level) override {

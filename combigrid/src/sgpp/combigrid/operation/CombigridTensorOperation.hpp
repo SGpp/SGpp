@@ -162,6 +162,7 @@ class CombigridTensorOperation {
    * Returns a CombigridTensorOperation doing polynomial interpolation on a Clenshaw-Curtis grid
    * with
    * an exponential growth (nested points).
+   * @param functionBasis global basis to which the result should be transformed
    * @param numDimensions Dimensionality of the problem.
    * @param func Function to be interpolated.
    */
@@ -172,6 +173,7 @@ class CombigridTensorOperation {
   /**
    * Returns a CombigridTensorOperation doing polynomial interpolation on a Chebyshev grid with
    * an exponential growth (nested points).
+   * @param functionBasis global basis to which the result should be transformed
    * @param numDimensions Dimensionality of the problem.
    * @param func Function to be interpolated.
    */
@@ -181,8 +183,8 @@ class CombigridTensorOperation {
 
   /**
    * Returns a CombigridTensorOperation doing polynomial interpolation on a Clenshaw-Curtis grid
-   * with
-   * a linear growth (not nested points).
+   * with a linear growth (not nested points).
+   * @param functionBasis global basis to which the result should be transformed
    * @param numDimensions Dimensionality of the problem.
    * @param func Function to be interpolated.
    */
@@ -194,6 +196,7 @@ class CombigridTensorOperation {
   /**
    * Returns a CombigridTensorOperation doing polynomial interpolation on a Leja grid with
    * an exponential growth (nested points).
+   * @param functionBasis global basis to which the result should be transformed
    * @param numDimensions Dimensionality of the problem.
    * @param func Function to be interpolated.
    */
@@ -204,6 +207,7 @@ class CombigridTensorOperation {
   /**
    * Returns a CombigridTensorOperation doing polynomial interpolation on a L2Leja grid with
    * an exponential growth (nested points).
+   * @param functionBasis global basis to which the result should be transformed
    * @param numDimensions Dimensionality of the problem.
    * @param func Function to be interpolated.
    */
@@ -214,6 +218,7 @@ class CombigridTensorOperation {
   /**
    * Returns a CombigridTensorOperation doing polynomial interpolation on a Leja grid with
    * linear growth (nested points).
+   * @param functionBasis global basis to which the result should be transformed
    * @param numDimensions Dimensionality of the problem.
    * @param func Function to be interpolated.
    * @param growthFactor Parameter for the linear growth strategy. For level l, 1 + growthFactor * l
@@ -226,6 +231,7 @@ class CombigridTensorOperation {
   /**
    * Returns a CombigridTensorOperation doing polynomial interpolation on a L2Leja grid with
    * linear growth (nested points).
+   * @param functionBasis global basis to which the result should be transformed
    * @param numDimensions Dimensionality of the problem.
    * @param func Function to be interpolated.
    * @param growthFactor Parameter for the linear growth strategy. For level l, 1 + growthFactor * l
@@ -236,10 +242,14 @@ class CombigridTensorOperation {
       MultiFunction func, size_t growthFactor = 2);
 
   /**
+   * Transforms the basic structures of an arbitrary operation to a tensor operation
    *
-   * @param operation
-   * @param functionBasis
-   * @return
+   * @param pointHierarchies univariate grids
+   * @param storage function value storage
+   * @param levelManager provides level structures that are copied to the new tensor operation
+   * @param functionBasis global basis function to which the result should be transformed
+   * @param summationStrategyType strategy to gather the results of the univariate evaluators on
+   * @return tensor operation with the same grid as given by the parameters
    */
   static std::shared_ptr<CombigridTensorOperation> createOperationTensorPolynomialInterpolation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
@@ -248,10 +258,14 @@ class CombigridTensorOperation {
       FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR);
 
   /**
+   * Transforms the basic structures of an arbitrary operation to a tensor operation
    *
-   * @param operation
-   * @param functionBasis
-   * @return
+   * @param pointHierarchies univariate grids
+   * @param storage function value storage
+   * @param levelManager provides level structures that are copied to the new tensor operation
+   * @param functionBases vector of global basis functions to which the result should be transformed
+   * @param summationStrategyType strategy to gather the results of the univariate evaluators on
+   * @return tensor operation with the same grid as given by the parameters
    */
   static std::shared_ptr<CombigridTensorOperation> createOperationTensorPolynomialInterpolation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,

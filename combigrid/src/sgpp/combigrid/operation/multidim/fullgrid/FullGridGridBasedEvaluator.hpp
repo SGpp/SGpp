@@ -68,6 +68,9 @@ class FullGridGridBasedEvaluator : public AbstractFullGridEvaluationStrategy<V> 
    * @param pointHierarchies PointHierarchy objects for each dimension providing the points for
    * each level and information about their ordering.
    * @param gridFunction callback function that is called with a grid as parameters and should
+   * @param summationStrategyType strategy to gather the results of the univariate evaluators on
+   * each anisotropic full grid
+   *
    * return a TreeStorage that contains the values at these grid points
    */
   FullGridGridBasedEvaluator(

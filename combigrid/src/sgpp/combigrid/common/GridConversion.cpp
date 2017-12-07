@@ -6,6 +6,8 @@
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
 #include <sgpp/combigrid/common/GridConversion.hpp>
 
+#include <numeric>
+
 namespace sgpp {
 namespace combigrid {
 

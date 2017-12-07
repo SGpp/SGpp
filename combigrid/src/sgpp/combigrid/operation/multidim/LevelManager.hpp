@@ -188,10 +188,14 @@ class LevelManager {
   bool addLevelToCombiEval(const MultiIndex &level);
 
   /**
-   * update stats for levels that have been added in the current iteration
-   * @param levels newly added levels
+   * update statistics on added levels
    */
   void updateStats();
+
+  /**
+   * update stats for levels that have been added in the current iteration
+   * @param level level to be added to the stats
+   */
   void addStats(const MultiIndex &level);
 
  public:
