@@ -25,6 +25,12 @@ OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::
 void OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::mult(sgpp::base::DataVector& alpha,
                                                              sgpp::base::DataVector& result) {
   const size_t p = dynamic_cast<sgpp::base::NakBsplineBoundaryCombigridGrid*>(grid)->getDegree();
+  if ((p != 1) && (p != 3) && (p != 5)) {
+    std::cerr << "OperationMatrixLTwoDotNakBsplineBoundary: only B spline degrees 1, 3 and 5 are "
+                 "supported."
+              << std::endl;
+  }
+
   const size_t pp1h = (p + 1) >> 1;  //  =|_p/2_|
   const double pp1hDbl = static_cast<double>(pp1h);
   const size_t quadOrder = p + 1;
@@ -85,13 +91,11 @@ void OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::mult(sgpp::base::DataVec
         }
 
         if (std::max(offseti_left, offsetj_left) >= std::min(offseti_right, offsetj_right)) {
-          // Ansatz functions do not not overlap:
+          // B spline supports do not not overlap:
           temp_ij = 0.0;
 
           break;
         } else {
-          // Use formula for different overlapping ansatz functions:
-
           if (lik >= ljk) {
             offset = offseti_left;
             scaling = hik;
@@ -139,17 +143,6 @@ void OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::mult(sgpp::base::DataVec
             }
           }
         }
-
-        //          if ((lik == 1) && (iik == 1) && (ljk == 3) && ijk == 5) {
-        //            std::cout << "i " << lik << " " << iik << " " << offseti_left << " " <<
-        //            offseti_right
-        //                      << std::endl;
-        //            std::cout << "j " << ljk << " " << ijk << " " << offsetj_left << " " <<
-        //            offsetj_right
-        //                      << std::endl;
-        //            std::cout << start << " " << stop << " " << offset << " " << scaling <<
-        //            std::endl;
-        //          }
 
         for (size_t n = start; n <= stop; n++) {
           for (size_t c = 0; c < quadOrder; c++) {

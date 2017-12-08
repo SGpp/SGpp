@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include <sgpp/globaldef.hpp>
 #include <sgpp/combigrid/operation/OperationConfiguration.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <memory>
 #include <vector>
@@ -64,10 +64,11 @@ class AbstractEvaluator {
   virtual void setParameter(V const &param) = 0;
 
   /**
-   * sets the function values and can be used to compute the coefficients of the linear combination
-   * @param functionValues
+   * set the basis coefficients for the linear combination. In case of linear or polynomial
+   interpolation these basis coefficients are function evaluations
+   @param newBasisCoefficients the new coefficients
    */
-  virtual void setFunctionValuesAtGridPoints(std::vector<double> &functionValues) = 0;
+  virtual void setBasisCoefficientsAtGridPoints(std::vector<double> &newBasisCoefficients) = 0;
 
   /**
    * Evaluates the numerical method on the already set grid points.

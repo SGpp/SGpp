@@ -131,7 +131,7 @@ void CubicSplineInterpolationEvaluator::computeBasisValues() {
   }
 }
 
-void CubicSplineInterpolationEvaluator::setFunctionValuesAtGridPoints(
+void CubicSplineInterpolationEvaluator::setBasisCoefficientsAtGridPoints(
     std::vector<double>& functionValues) {
   basisCoefficients = functionValues;
 }

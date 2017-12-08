@@ -14,7 +14,8 @@ namespace sgpp {
 namespace pde {
 
 /**
- * Implements the standard L 2 scalar product on periodic grids
+ * Implements the standard L 2 scalar product for B splines on an uniform boundary grid created by
+ * conversion from an expUniformBoundaryGrid from the combigrid module
  *
  */
 class OperationMatrixLTwoDotNakBsplineBoundaryCombigrid : public sgpp::base::OperationMatrix {
@@ -22,7 +23,7 @@ class OperationMatrixLTwoDotNakBsplineBoundaryCombigrid : public sgpp::base::Ope
   /**
    * Constructor
    *
-   * @param gridStorage pointer to the GridStorage of the grid
+   * @param gridpointer to the grid
    */
   explicit OperationMatrixLTwoDotNakBsplineBoundaryCombigrid(sgpp::base::Grid* grid);
 

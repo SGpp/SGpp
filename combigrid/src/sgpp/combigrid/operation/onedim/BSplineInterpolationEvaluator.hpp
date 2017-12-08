@@ -13,6 +13,10 @@
 
 namespace sgpp {
 namespace combigrid {
+/**
+ * This evaluator calculates the B spline evaluations b_i(evaluatioinPoint) for B splines b_i of
+ * degree 'degree' and saves these in basisValues
+ */
 
 class BSplineInterpolationEvaluator : public AbstractLinearEvaluator<FloatScalarVector> {
  public:
@@ -26,7 +30,10 @@ class BSplineInterpolationEvaluator : public AbstractLinearEvaluator<FloatScalar
 
   void setDegree(size_t const &deg);
   void setGridPoints(std::vector<double> const &newXValues) override;
-  void setFunctionValuesAtGridPoints(std::vector<double> &functionValues) override;
+  /**
+   *
+   */
+  void setBasisCoefficientsAtGridPoints(std::vector<double> &newBasisCoefficients) override;
   std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cloneLinear() override;
   bool needsOrderedPoints() override;
   bool needsParameter() override;

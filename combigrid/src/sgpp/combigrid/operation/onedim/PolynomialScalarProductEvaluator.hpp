@@ -101,7 +101,7 @@ class PolynomialScalarProductEvaluator : public AbstractLinearEvaluator<FloatArr
   std::vector<double> getBasisCoefficients() override { return basisCoefficients; }
 
   void setGridPoints(std::vector<double> const &newXValues) override;
-  void setFunctionValuesAtGridPoints(std::vector<double> &functionValues) override;
+  void setBasisCoefficientsAtGridPoints(std::vector<double> &functionValues) override;
 
   bool needsOrderedPoints() override;
   bool needsParameter() override;

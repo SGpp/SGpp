@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(testQuadratureWithPolynomial) {
   function_points.push_back(0.0);
   function_points.push_back(0.25);
   function_points.push_back(1.0);
-  eval.setFunctionValuesAtGridPoints(function_points);
+  eval.setBasisCoefficientsAtGridPoints(function_points);
 
   // check coefficients
   BOOST_CHECK_EQUAL(eval.getBasisValues().size(), 3);
@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE(testQuadratureWithPolynomial) {
   function_points.push_back(-38.0);
 
   eval.setGridPoints(points);
-  eval.setFunctionValuesAtGridPoints(function_points);
+  eval.setBasisCoefficientsAtGridPoints(function_points);
 
   BOOST_CHECK_CLOSE(eval.eval().getValue(), accurate_solution, 0.2);
 }

@@ -73,7 +73,7 @@ void LinearInterpolationEvaluator::setGridPoints(const std::vector<double>& newX
   computeBasisValues();
 }
 
-void LinearInterpolationEvaluator::setFunctionValuesAtGridPoints(
+void LinearInterpolationEvaluator::setBasisCoefficientsAtGridPoints(
     std::vector<double>& functionValues) {
   basisCoefficients = functionValues;
 }

@@ -40,7 +40,7 @@ class AbstractLinearEvaluator : public AbstractEvaluator<V> {
   virtual std::vector<V> getBasisValues() = 0;
   virtual std::vector<double> getBasisCoefficients() = 0;
 
-  virtual void setFunctionValuesAtGridPoints(std::vector<double> &functionValues) = 0;
+  virtual void setBasisCoefficientsAtGridPoints(std::vector<double> &newBasisCoefficients) = 0;
   virtual void setGridPoints(std::vector<double> const &xValues) = 0;
 
   /**

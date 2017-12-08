@@ -24,7 +24,7 @@ class CubicSplineInterpolationEvaluator : public AbstractLinearEvaluator<FloatSc
   std::vector<double> getBasisCoefficients() override { return basisCoefficients; }
 
   void setGridPoints(std::vector<double> const &newXValues) override;
-  void setFunctionValuesAtGridPoints(std::vector<double> &functionValues) override;
+  void setBasisCoefficientsAtGridPoints(std::vector<double> &functionValues) override;
   std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cloneLinear() override;
   bool needsOrderedPoints() override;
   bool needsParameter() override;
