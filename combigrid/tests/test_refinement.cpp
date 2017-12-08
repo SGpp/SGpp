@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(testVarianceBasedRefinement) {
       atanModel.numDims, sgpp::combigrid::CombiHierarchies::expLeja());
   auto tensor_op = std::make_shared<sgpp::combigrid::CombigridTensorOperation>(
       tensor_grids, tensor_evaluators, tensor_op_lm, func, true,
-      sgpp::combigrid::FullGridSummationStrategyType::TENSORNORM);
+      sgpp::combigrid::FullGridSummationStrategyType::TENSORVARIANCE);
 
   //  std::cout << "------------------------------------------------------" << std::endl;
   //  std::cout << "Tensor" << std::endl;

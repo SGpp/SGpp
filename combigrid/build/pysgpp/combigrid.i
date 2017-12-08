@@ -189,6 +189,7 @@ namespace combigrid {
 %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridGridBasedEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearSummationStrategy.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridQuadraticSummationStrategy.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridTensorVarianceSummationStrategy.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridVarianceSummationStrategy.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/OperationConfiguration.hpp"
 

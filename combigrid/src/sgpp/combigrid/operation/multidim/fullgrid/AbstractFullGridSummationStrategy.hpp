@@ -20,7 +20,7 @@
 namespace sgpp {
 namespace combigrid {
 
-enum class FullGridSummationStrategyType { LINEAR, QUADRATIC, VARIANCE, TENSORNORM };
+enum class FullGridSummationStrategyType { LINEAR, QUADRATIC, VARIANCE, TENSORVARIANCE };
 
 template <typename V>
 class AbstractFullGridSummationStrategy {

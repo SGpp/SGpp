@@ -29,7 +29,7 @@ namespace sgpp {
 namespace combigrid {
 
 template <typename V>
-class FullGridTensorNormSummationStrategy : public AbstractFullGridSummationStrategy<V> {
+class FullGridTensorVarianceSummationStrategy : public AbstractFullGridSummationStrategy<V> {
  public:
   /**
    * Constructor.
@@ -42,14 +42,14 @@ class FullGridTensorNormSummationStrategy : public AbstractFullGridSummationStra
    * points for each
    * level and information about their ordering.
    */
-  FullGridTensorNormSummationStrategy(
+  FullGridTensorVarianceSummationStrategy(
       std::shared_ptr<AbstractCombigridStorage> storage,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> scalarProductEvaluatorPrototypes,
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies)
       : AbstractFullGridSummationStrategy<V>(storage, scalarProductEvaluatorPrototypes,
                                              pointHierarchies) {}
 
-  ~FullGridTensorNormSummationStrategy() {}
+  ~FullGridTensorVarianceSummationStrategy() {}
 
   V eval(MultiIndex const &level) override {
     size_t numDimensions = level.size();
