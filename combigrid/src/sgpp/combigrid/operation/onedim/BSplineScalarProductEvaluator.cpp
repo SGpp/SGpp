@@ -10,6 +10,7 @@
 #include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineScalarProductEvaluator.hpp>
 
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>

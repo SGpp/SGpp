@@ -17,6 +17,8 @@
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 
+#include <vector>
+
 /**
    * @param x     evaluation point
    * @param deg     B-spline degree

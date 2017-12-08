@@ -26,7 +26,8 @@ class InterpolationCoefficientEvaluator : public AbstractLinearEvaluator<FloatTe
 
  public:
   InterpolationCoefficientEvaluator();
-  explicit InterpolationCoefficientEvaluator(std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis);
+  explicit InterpolationCoefficientEvaluator(
+      std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis);
   virtual ~InterpolationCoefficientEvaluator();
   InterpolationCoefficientEvaluator(InterpolationCoefficientEvaluator const &other);
 

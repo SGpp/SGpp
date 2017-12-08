@@ -4,6 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
+
 /**
    * @param x     evaluation point
    * @param deg     B-spline degree

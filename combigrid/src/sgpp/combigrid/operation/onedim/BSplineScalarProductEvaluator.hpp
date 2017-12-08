@@ -40,7 +40,7 @@ class BSplineScalarProductEvaluator : public AbstractLinearEvaluator<FloatArrayV
 
  public:
   BSplineScalarProductEvaluator();
-  BSplineScalarProductEvaluator(size_t degree);
+  explicit BSplineScalarProductEvaluator(size_t degree);
 
   /**
    * @param numAdditionalPoints Specifies how many Gauss-Legrendre points should be used in addition
