@@ -68,7 +68,7 @@ void InterpolationCoefficientEvaluator::setGridPoints(const std::vector<double>&
 #endif
 }
 
-void InterpolationCoefficientEvaluator::setFunctionValuesAtGridPoints(
+void InterpolationCoefficientEvaluator::setBasisCoefficientsAtGridPoints(
     std::vector<double>& functionValues) {
   basisCoefficients = functionValues;
 }

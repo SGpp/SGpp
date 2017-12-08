@@ -59,17 +59,8 @@ void BSplineInterpolationEvaluator::setGridPoints(std::vector<double> const& x) 
 }
 
 void BSplineInterpolationEvaluator::computeBasisValues() {
-  /*
-   * Am Rand: Spiegle Gitterweiten nach außen
-   *
-   * nonuniform B-Spline vom Grad n:
-   * Knotenfolge xi_k,.,xi_{k+n+1}
-   * b^n_{k,xi} = gamma b^{n-1}_{k,xi} + (1-gamma) b^{n-1}_{k+1,xi}
-   * gamma(x) = (x-xi_k)/(xi_{k+n}-xi_k)
-   *
-   *
-   */
-
+  // constant function for single point, Lagrange polynomials while not enough knots for not a
+  // knot B-splines, nak B-splines otherwise
   basisValues.resize(xValues.size(), sgpp::combigrid::FloatScalarVector(0));
   if (xValues.size() == 1) {
     basisValues[0] = 1.0;
@@ -87,9 +78,9 @@ void BSplineInterpolationEvaluator::computeBasisValues() {
   }
 }
 
-void BSplineInterpolationEvaluator::setFunctionValuesAtGridPoints(
-    std::vector<double>& functionValues) {
-  basisCoefficients = functionValues;
+void BSplineInterpolationEvaluator::setBasisCoefficientsAtGridPoints(
+    std::vector<double>& newBasisCoefficients) {
+  basisCoefficients = newBasisCoefficients;
 }
 
 } /* namespace combigrid */

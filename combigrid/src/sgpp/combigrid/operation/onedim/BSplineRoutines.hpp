@@ -20,51 +20,76 @@
 #include <vector>
 
 /**
+ * evaluates a Bspline given by its degree, index and the knot sequence it is defined on in x
    * @param x     evaluation point
    * @param deg     B-spline degree
-   * @param k     index of B-spline in the knot sequence
+   * @param index     index of B-spline in the knot sequence
    * @param xi    vector containing the B-Splines knots
    * @return      value of non-uniform B-spline
-   *              with knots \f$\{\xi_k, ... \xi_{k+p+1}\}\f$
    */
 double nonUniformBSpline(double const& x, size_t const& deg, size_t const& k,
                          std::vector<double> const& xi);
 
 /**
+ * evaluates the Lagrange polynomial given by its index and the knot sequence it is defined on in x
    * @param x     evaluation point
+   * @param xValues
    * @param k     index in the knot sequence
-   * @return      value of Lagrange Polynomial
+   * @return      value of Lagrange polynomial
    */
 double LagrangePolynomial(double const& x, std::vector<double> const& xValues, size_t const& k);
 
 /**
-   * @param xi vector containing the knots with which the Bsplines are created. This is the most
- * simple case. xi = x inside [0,1] and at the left and right end the necessary amount of inner
- * points are mirrored to the outside
+ * Creates the knot sequence xi needed for the evaluation of B-splines from the evaluation points
+ * xValues for B splines of degree 1 by adding the necessary point outisde [0,1] by mirroring at 0
+ * and 1.
+ * @param xValues grid points inside [0,1]
+ * @param xi returns the vector containing the knots with which the Bsplines are created.
    */
-void createKnots(std::vector<double> const& xValues, size_t const& degree, std::vector<double>& xi);
+void createdeg1Knots(std::vector<double> const& xValues, size_t const& degree,
+                     std::vector<double>& xi);
 
 /**
-   * @param xi vector containing the knots with which the Bsplines are created. For dealing with
-   * the boundaries at 0 and 1 not a knot knots are used. In the case of degree 3 this means that
-   * the knot directly to the right/left of 0/1 are removed.
+ * Creates the knot sequence xi needed for the evaluation of B-splines from the evaluation points
+ * xValues for B splines of degree 1 by adding the necessary point outisde [0,1] by mirroring at 0
+ * and 1. For dealing with the boundaries at 0 and 1 not a knot knots are used. In the case of
+ * degree 3 this means that the knot directly to the right/left of 0/1 are removed.
+ * @param xValues grid points inside [0,1]
+ * @param xi returns the vector containing the knots with which the Bsplines are created.
    */
 void createdeg3NakKnots(std::vector<double> const& xValues, size_t const& degree,
                         std::vector<double>& xi);
 
 /**
-   * @param xi vector containing the knots with which the Bsplines are created. For dealing with
-   * the boundaries at 0 and 1 not a knot knots are used. In the case of degree 5 this means that
-   * the two knots directly to the right/left of 0/1 are removed.
+ * Creates the knot sequence xi needed for the evaluation of B-splines from the evaluation points
+ * xValues for B splines of degree 1 by adding the necessary point outisde [0,1] by mirroring at 0
+ * and 1. For dealing with the boundaries at 0 and 1 not a knot knots are used. In the case of
+ * degree 3 this means that the two knots directly to the right/left of 0/1 are removed.
+ * @param xValues grid points inside [0,1]
+ * @param xi returns the vector containing the knots with which the Bsplines are created.
    */
 void createdeg5NakKnots(std::vector<double> const& xValues, size_t const& degree,
                         std::vector<double>& xi);
-
+/**
+ * interface for creating the knot sequence xi needed for the evaluation of B-splines from the
+ * evaluation points
+ * xValues for B splines of degrees i n{1,3,5}
+ * @param xValues grid points inside [0,1]
+ * @param degree degree of the B spline basis functions
+ * @param xi returns the vector containing the knots with which the Bsplines are created.
+   */
 void createNakKnots(std::vector<double> const& xValues, size_t const& degree,
                     std::vector<double>& xi);
 
-// creates and returns a
-// Grid Function that calculates the coefficients for the B-Spline interpolation.
+/**
+ * Creates the GridFunction that calculates the coefficients of the B-spline interpolation.
+ * The coefficients for each B-Spline are saved in a TreeStorage encoded by a MultiIndex
+ * The Grid Functions coefficients are used as well for quadrature.
+ *
+ * @param func the objective function that shall be interpolated
+ * @param grids vector of one dimensional grids
+ * @param degree degree of the B spline basis functions
+ */
 // The coefficients for each B-Spline are saved in a TreeStorage encoded by a MultiIndex
 sgpp::combigrid::GridFunction BSplineCoefficientGridFunction(
     sgpp::combigrid::MultiFunction func, sgpp::combigrid::CombiHierarchies::Collection grids,
