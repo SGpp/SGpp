@@ -31,10 +31,9 @@
 #include <string>
 #include <vector>
 
-double BSplineVariance(sgpp::combigrid::MultiIndex level) {
+double BSplineVariance(sgpp::combigrid::MultiIndex level, size_t degree) {
   sgpp::combigrid::Atan atanModel;
   size_t numDimensions = atanModel.numDims;
-  size_t degree = 3;
   sgpp::combigrid::MultiFunction func(atanModel.eval);
   sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
       numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
@@ -374,9 +373,11 @@ BOOST_AUTO_TEST_CASE(testCorrespondingDegreeScalarProducts) {
  * to precalculated data.
  *
  */
-// ToDo (rehmemk) degree 5
-BOOST_AUTO_TEST_CASE(testVarianceOnLevel) {
-  std::cout << "Testing B spline variance calculation  subgridwise on single levels." << std::endl;
+
+BOOST_AUTO_TEST_CASE(testVarianceOnLeveldeg3) {
+  std::cout << "Testing B spline variance calculation  subgridwise on single levels for B splines "
+               "of degree 3."
+            << std::endl;
 
   // This data was created by SGpp/combigrid/tests/createVarianceDataBsplines.py
   // It represents the variance calculated for each level with levelsum <= 7 for the function
@@ -417,7 +418,8 @@ BOOST_AUTO_TEST_CASE(testVarianceOnLevel) {
   double tolerance = 2e-8;
   for (size_t i = 0; i < varianceTestData.levels.size(); i++) {
     sgpp::combigrid::MultiIndex level = varianceTestData.levels[i];
-    double bSplineVariance = BSplineVariance(level);
+    size_t degree = 3;
+    double bSplineVariance = BSplineVariance(level, degree);
     double varianceError = std::fabs(bSplineVariance - varianceTestData.variances[i]);
     //    std::cout << "level: " << level[0] << " " << level[1] << "|  error:  " << varianceError
     //              << std::endl;
@@ -425,15 +427,44 @@ BOOST_AUTO_TEST_CASE(testVarianceOnLevel) {
   }
 }
 
-BOOST_AUTO_TEST_CASE(testVarianceOnDiagonal) {
-  std::cout
-      << "Testing B spline variance calculation on levels of the diagonal of the subgrid scheme."
-      << std::endl;
+// ToDo (rehmemk) create data for this test and create deg 5 version of Diagonal test
+// BOOST_AUTO_TEST_CASE(testVarianceOnLeveldeg5) {
+//  std::cout << "Testing B spline variance calculation  subgridwise on single levels for B splines
+//  "
+//               "of degree 5."
+//            << std::endl;
+//
+//  // This data was created by SGpp/combigrid/tests/createVarianceDataBsplines.py
+//  // It represents the variance calculated for each level with levelsum <= 7 for the function
+//  // arctan(50.0 * (x[0] - .35)) + pi / 2.0 + 4.0 * x[1] ** 3 + exp(x[0] * x[1] - 1.0)
+//  struct AtanModelVarianceTestDataBsplines {
+//    std::vector<sgpp::combigrid::MultiIndex> levels{};
+//    std::vector<double> variances{};
+//  };
+//
+//  AtanModelVarianceTestDataBsplines varianceTestData;
+//  //  double tolerance = 2e-8;
+//  for (size_t i = 0; i < varianceTestData.levels.size(); i++) {
+//    sgpp::combigrid::MultiIndex level = varianceTestData.levels[i];
+//    size_t degree = 5;
+//    double bSplineVariance = BSplineVariance(level, degree);
+//    double varianceError = std::fabs(bSplineVariance - varianceTestData.variances[i]);
+//    std::cout << "level: " << level[0] << " " << level[1] << "|  error:  " << varianceError
+//              << std::endl;
+//    //    BOOST_CHECK_SMALL(varianceError, tolerance);
+//  }
+//}
+
+BOOST_AUTO_TEST_CASE(testVarianceOnDiagonaldeg3) {
+  std::cout << "Testing B spline variance calculation on levels of the diagonal of the subgrid "
+               "scheme for degree 3."
+            << std::endl;
   sgpp::combigrid::Atan atanModel;
   std::vector<double> tolerance = {4, 1, 0.5, 0.2, 0.006, 0.0003, 8e-06};
+  size_t degree = 3;
   for (size_t i = 0; i < 7; i++) {
     sgpp::combigrid::MultiIndex level(atanModel.numDims, i);
-    double bSplineVariance = BSplineVariance(level);
+    double bSplineVariance = BSplineVariance(level, degree);
     double varianceError = std::fabs(bSplineVariance - atanModel.variance);
     //    std::cout << "level: " << level[0] << " " << level[1] << "|  error:  " << varianceError
     //              << std::endl;

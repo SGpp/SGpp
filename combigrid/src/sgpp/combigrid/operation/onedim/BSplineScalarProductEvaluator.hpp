@@ -26,8 +26,8 @@ namespace sgpp {
 namespace combigrid {
 
 /**
- * This evaluator calculates the scalar products \int b_i b_j for B splines b_i and b_j. This is
- * done via quadrature based on the given grid points. The quadrature weights are
+ * This evaluator calculates the scalar products int b_i(x) b_j(x) dx for B splines b_i and b_j.
+ * This is done via quadrature based on the given grid points. The quadrature weights are
  * obtained by (numerically) integrating the Lagrange polynomials on the given grid points.
  * In the constructor, a weight function may be passed whose values at the grid points are
  * multiplied with the given function values.
@@ -43,7 +43,7 @@ class BSplineScalarProductEvaluator : public AbstractLinearEvaluator<FloatArrayV
   size_t degree;
 
   /**
-   * Calculates the one dimensional integrals \int b_i(x) b_j(x) dx  for all j
+   * Calculates the one dimensional integrals int b_i(x) b_j(x) dx  for all j
    * @param points grid points of the one dimensional grid
    * @param index_i index of B-spline b_i
    * @return integral of b_i*b_j
@@ -51,7 +51,7 @@ class BSplineScalarProductEvaluator : public AbstractLinearEvaluator<FloatArrayV
   FloatArrayVector get1DMixedIntegral(std::vector<double> &points, size_t index_i);
 
   /**
-   * This Function calculates all integrals \int b_i(x) b_j(x) dx
+   * This Function calculates all integrals int b_i(x) b_j(x) dx
    * @param points grid points of the one dimensional grid
    * @param integrals The integrals will be added to the back of this vector in the order of the
    * points in the vector with the points,
@@ -66,6 +66,7 @@ class BSplineScalarProductEvaluator : public AbstractLinearEvaluator<FloatArrayV
   explicit BSplineScalarProductEvaluator(size_t degree);
 
   /**
+   * @param degree degree of the B spline basis
    * @param numAdditionalPoints Specifies how many Gauss-Legrendre points should be used in addition
    * to the default when integrating the Lagrange polynomials for computing the quadrature weights.
    * This number should be higher if the weight function is hard to integrate.

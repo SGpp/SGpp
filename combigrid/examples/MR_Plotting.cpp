@@ -15,13 +15,14 @@
 #include <sgpp/combigrid/utils/Utils.hpp>
 #include <sgpp_combigrid.hpp>
 
+#include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
+#include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
+
 #include <cmath>
 #include <iostream>
 #include <memory>
+#include <string>
 #include <vector>
-
-#include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
-#include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
 
 using sgpp::base::DataVector;
 using sgpp::combigrid::MultiFunction;
@@ -61,7 +62,7 @@ int main() {
   // uniform grid
   double gridwidth = 0.001;
   for (size_t i = 0; i < 1 / gridwidth + 1; i++) {
-    EvalPoints[i] = (double)i * gridwidth;
+    EvalPoints[i] = static_cast<double>(i) * gridwidth;
   }
 
   std::string plotstr = "/home/rehmemk/SGS_Sync/Plotting/combigrid_bsplines/bsplines.dat";
