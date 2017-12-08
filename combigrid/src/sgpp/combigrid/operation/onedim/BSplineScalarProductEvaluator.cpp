@@ -3,28 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
-#include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
-#include <sgpp/combigrid/operation/Configurations.hpp>
-#include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineScalarProductEvaluator.hpp>
-
-#include <cmath>
-#include <iomanip>
-#include <iostream>
-#include <vector>
 
 namespace sgpp {
 namespace combigrid {
-
-/**
- * Calculates the weight for the specific point
- * @param points grid points of the one dimensional grid the interpolation will be performed on
- * @param index_i index of B-spline b_i
- * @param index_j index of B-spline b_j
- * @return integral of b_i*b_j
- */
 
 // ToDo (rehmemk) Make more efficient by testing for overlap of basis functions using their indices.
 // Comapre OperationMatrixLTwoDotBspline
@@ -43,8 +25,8 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DMixedIntegral(std::vector<d
     createNakKnots(xValues, degree, xi);
     double productValue = 0.0;
 
-    // constant function for single point, Lagrange polynomials for up to 9 points, B-splines
-    // otherwise
+    // constant function for single point, Lagrange polynomials while not enough knots for not a
+    // knot B-splines, nak B-splines otherwise
     if (xValues.size() == 1) {
       numGaussPoints = 1;
       quadRule.getLevelPointsAndWeightsNormalized(
@@ -90,16 +72,6 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DMixedIntegral(std::vector<d
   return sums;
 }
 
-/**
- * This Function calculates the weights of the given points, each weight is calculated
- * individually
- * @param points The vector with the points, they dont need to have a specific order
- * @param integrals The integrals will be added to the back of this vector in the order of the
- * points in the vector with the points,
- * it is recommended to clear the weight vector before calling this function to ensure that the
- * weights are at the same position
- * as their points
- */
 void BSplineScalarProductEvaluator::calculate1DBSplineScalarProducts(
     std::vector<double>& points, std::vector<FloatArrayVector>& basisValues) {
   for (size_t index_i = 0; index_i < points.size(); ++index_i) {
@@ -146,9 +118,9 @@ BSplineScalarProductEvaluator::cloneLinear() {
 
 BSplineScalarProductEvaluator::BSplineScalarProductEvaluator()
     : weight_function(constantFunction<double>(1.0)),
+      numAdditionalPoints(0),
       normalizeWeights(false),
       isCustomWeightFunction(false),
-      numAdditionalPoints(0),
       degree(3) {
   evalConfig.type = CombiEvaluatorTypes::Multi_BSplineScalarProduct;
   evalConfig.degree = 3;
@@ -156,21 +128,21 @@ BSplineScalarProductEvaluator::BSplineScalarProductEvaluator()
 
 BSplineScalarProductEvaluator::BSplineScalarProductEvaluator(size_t degree)
     : weight_function(constantFunction<double>(1.0)),
+      numAdditionalPoints(0),
       normalizeWeights(false),
       isCustomWeightFunction(false),
-      numAdditionalPoints(0),
       degree(degree) {
   evalConfig.type = CombiEvaluatorTypes::Multi_BSplineScalarProduct;
   evalConfig.degree = degree;
 }
 
 BSplineScalarProductEvaluator::BSplineScalarProductEvaluator(
-    size_t degree, sgpp::combigrid::SingleFunction weight_function, bool normalizeWeights,
-    size_t numAdditionalPoints)
+    size_t degree, sgpp::combigrid::SingleFunction weight_function, size_t numAdditionalPoints,
+    bool normalizeWeights)
     : weight_function(weight_function),
+      numAdditionalPoints(numAdditionalPoints),
       normalizeWeights(normalizeWeights),
       isCustomWeightFunction(true),
-      numAdditionalPoints(numAdditionalPoints),
       degree(degree) {
   evalConfig.type = CombiEvaluatorTypes::Multi_BSplineScalarProduct;
   evalConfig.degree = degree;
@@ -181,9 +153,9 @@ BSplineScalarProductEvaluator::BSplineScalarProductEvaluator(
     : xValues(other.xValues),
       basisValues(other.basisValues),
       weight_function(other.weight_function),
+      numAdditionalPoints(other.numAdditionalPoints),
       normalizeWeights(other.normalizeWeights),
       isCustomWeightFunction(other.isCustomWeightFunction),
-      numAdditionalPoints(other.numAdditionalPoints),
       degree(other.degree) {
   evalConfig.type = CombiEvaluatorTypes::Multi_BSplineScalarProduct;
   evalConfig.degree = other.degree;
@@ -191,7 +163,7 @@ BSplineScalarProductEvaluator::BSplineScalarProductEvaluator(
 
 void BSplineScalarProductEvaluator::setParameter(const FloatArrayVector& param) { return; }
 
-void BSplineScalarProductEvaluator::setFunctionValuesAtGridPoints(
+void BSplineScalarProductEvaluator::setBasisCoefficientsAtGridPoints(
     std::vector<double>& functionValues) {
   basisCoefficients = functionValues;
 }

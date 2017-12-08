@@ -95,7 +95,7 @@ void PolynomialInterpolationEvaluator::setParameter(const FloatScalarVector &par
   computeBasisValues();
 }
 
-void PolynomialInterpolationEvaluator::setFunctionValuesAtGridPoints(
+void PolynomialInterpolationEvaluator::setBasisCoefficientsAtGridPoints(
     std::vector<double> &functionValues) {
   basisCoefficients = functionValues;
 }

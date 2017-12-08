@@ -17,7 +17,8 @@ namespace sgpp {
 namespace combigrid {
 
 /**
- * This evaluator does quadrature based on the given grid points. The quadrature weights are
+ * This evaluator calculates the integrals \int b_i for B splines b_i. This is
+ * done via quadrature based on the given grid points. The quadrature weights are
  * obtained by (numerically) integrating the Lagrange polynomials on the given grid points.
  * In the constructor, a weight function may be passed whose values at the grid points are
  * multiplied with the given function values.
@@ -27,20 +28,34 @@ class BSplineQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVec
   std::vector<FloatScalarVector> basisValues;
   std::vector<double> basisCoefficients;
   sgpp::combigrid::SingleFunction weight_function;
+  size_t numAdditionalPoints;  // additional gauss points used for a custom weight function
   bool normalizeWeights;
   bool isCustomWeightFunction;
-  size_t numAdditionalPoints;  // additional gauss points used for a custom weight function
   size_t degree;
 
+  /**
+   * Calculates the integral of the B spline corresponding to the point with the given index
+   * @param points grid points of the one dimensional grid
+   * @param index index of the B-Spline whose integral will be calculated
+   */
   double get1DIntegral(std::vector<double> &points, size_t index);
+
+  /**
+   * This function calculates the integral of the B spline basis given by their points
+   * @param points The vector with the points
+   * @param basisValues The integrals will be added to the back of this vector in the order of the
+   * points in the vector with the points. It is recommended to clear the basisValues vector before
+   * calling this function to ensure that the basisValues are at the same position as their points
+   */
   void calculate1DBSplineIntegrals(std::vector<double> &points,
                                    std::vector<FloatScalarVector> &integrals);
 
  public:
   BSplineQuadratureEvaluator();
-  BSplineQuadratureEvaluator(size_t degree);
+  explicit BSplineQuadratureEvaluator(size_t degree);
 
   /**
+   * @param degree degree of the B splien basis
    * @param numAdditionalPoints Specifies how many Gauss-Legrendre points should be used in addition
    * to the default when integrating the Lagrange polynomials for computing the quadrature weights.
    * This number should be higher if the weight function is hard to integrate.
@@ -53,7 +68,7 @@ class BSplineQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVec
    * on the domain.
    */
   BSplineQuadratureEvaluator(size_t degree, sgpp::combigrid::SingleFunction weight_function,
-                             bool normalizeWeights = true, size_t numAdditionalPoints = 10);
+                             size_t numAdditionalPoints, bool normalizeWeights = true);
   BSplineQuadratureEvaluator(BSplineQuadratureEvaluator const &other);
   virtual ~BSplineQuadratureEvaluator();
 
@@ -61,16 +76,11 @@ class BSplineQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVec
   std::vector<double> getBasisCoefficients() override { return basisCoefficients; }
 
   void setGridPoints(std::vector<double> const &newXValues) override;
-  void setFunctionValuesAtGridPoints(std::vector<double> &functionValues) override;
+  void setBasisCoefficientsAtGridPoints(std::vector<double> &functionValues) override;
 
   bool needsOrderedPoints() override;
   bool needsParameter() override;
   void setParameter(FloatScalarVector const &param) override;
-
-  // The following is simply copied from QuadratureEvaluator. Applicable here?
-  // can be used as a measure of stability of the quadrature algorithm. Minimum (and optimum) in
-  // case of normalized weights is 1.0, i.e. all weights are non-negative.
-  //  double getAbsoluteWeightSum() const;
 
   std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cloneLinear() override;
 };

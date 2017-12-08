@@ -87,12 +87,43 @@ if __name__ == "__main__":
         result = fullGridEval.eval(levels)
         return result.getValue()
 
-    try:
-        os.remove("BSplineVarianceData.dat")
-    except OSError:
-        pass
 
-    file = open('BSplineVarianceData.dat', 'w')
+    # generate c++ code for levels and variances
+    variances = {}
+    for level1 in range(args.minLevel,args.maxLevel+1): 
+        for level2 in range(args.minLevel,args.maxLevel+1 - level1):
+            levels = [level1, level2] 
+            mean = dblquad(lambda x, y: BsplineInterpolation(x,y,levels), 0, 1, lambda x: 0, lambda x: 1,
+                               epsabs=1e-14)
+            meanSquare = dblquad(lambda x, y: BsplineInterpolation(x,y,levels)**2, 0, 1, lambda x: 0, lambda x: 1,
+                                     epsabs=1e-14)
+
+            print "errs=%g, %g" % (mean[1], meanSquare[1])
+            variance = meanSquare[0] - mean[0]**2
+
+            variances[level1, level2] = variance
+
+        levels_str = "std::vector<sgpp::combigrid::MultiIndex> levels{"
+        variances_str = "std::vector<double> variances{"
+        for (level1, level2), variance in variances.items():
+            levels_str += "sgpp::combigrid::MultiIndex{%i, %i}, " % (level1, level2)
+            variances_str += "%.15f, " % variance
+
+        levels_str = levels_str[:-2] + "};"
+        variances_str = variances_str[:-2] + "};"
+
+    print """struct AtanModelVarianceTestDataBsplines {
+  %s
+  %s
+};
+""" % (levels_str, variances_str)
+
+#     try:
+#         os.remove("BSplineVarianceData.dat")
+#     except OSError:
+#         pass
+# 
+#     file = open('BSplineVarianceData.dat', 'w')
     #===========================================================================
     # file.write( "# Variance of B spline interpolation of the arctan model on different subgrids indicated by their level\n"
     #             "# with parameters created by " + args.dist + " distribution for maxLevel %i\n"
@@ -104,20 +135,20 @@ if __name__ == "__main__":
     # file.write("#Level    Variance\n")
     #===========================================================================
     
-    for level1 in range(args.minLevel,args.maxLevel+1): 
-        for level2 in range(args.minLevel,args.maxLevel+1 - level1):
-            levels = [level1, level2]  
-            # \int_0^1 \int_0^1 B(x,y) dy dx
-            mean = dblquad(lambda x,y: BsplineInterpolation(x,y,levels), 0,1,lambda x:0,lambda x:1)
-            # \int_0^1 \int_0^1 B^2(x,y) dy dx
-            meanSquare = dblquad(lambda x,y: BsplineInterpolation(x,y,levels)**2, 0,1,lambda x:0,lambda x:1)
-            variance = meanSquare[0] - mean[0]**2
-     
-            print"level %i %i  |  mean %g meanSquare %g variance %g" %(levels[0],levels[1],mean[0],meanSquare[0],variance)  
-            for level in levels:
-                file.write("%i " %level)
-                file.write("    ")
-            file.write("%.18f\n" %variance)
+#     for level1 in range(args.minLevel,args.maxLevel+1): 
+#         for level2 in range(args.minLevel,args.maxLevel+1 - level1):
+#             levels = [level1, level2]  
+#             # \int_0^1 \int_0^1 B(x,y) dy dx
+#             mean = dblquad(lambda x,y: BsplineInterpolation(x,y,levels), 0,1,lambda x:0,lambda x:1)
+#             # \int_0^1 \int_0^1 B^2(x,y) dy dx
+#             meanSquare = dblquad(lambda x,y: BsplineInterpolation(x,y,levels)**2, 0,1,lambda x:0,lambda x:1)
+#             variance = meanSquare[0] - mean[0]**2
+#      
+#             print"level %i %i  |  mean %g meanSquare %g variance %g" %(levels[0],levels[1],mean[0],meanSquare[0],variance)  
+#             for level in levels:
+#                 file.write("%i " %level)
+#                 file.write("    ")
+#             file.write("%.18f\n" %variance)
 
 #     for level1 in range(args.minLevel,args.maxLevel+1): 
 #           levels = [level1, level1]  
@@ -133,4 +164,5 @@ if __name__ == "__main__":
 #     
 #     
 #         
-    file.close()
+#     file.close()
+
