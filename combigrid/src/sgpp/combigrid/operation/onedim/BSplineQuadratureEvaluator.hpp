@@ -17,7 +17,7 @@ namespace sgpp {
 namespace combigrid {
 
 /**
- * This evaluator calculates the integrals \int b_i for B splines b_i. This is
+ * This evaluator calculates the integrals int b_i(x) dx for B splines b_i. This is
  * done via quadrature based on the given grid points. The quadrature weights are
  * obtained by (numerically) integrating the Lagrange polynomials on the given grid points.
  * In the constructor, a weight function may be passed whose values at the grid points are
@@ -48,7 +48,7 @@ class BSplineQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVec
    * calling this function to ensure that the basisValues are at the same position as their points
    */
   void calculate1DBSplineIntegrals(std::vector<double> &points,
-                                   std::vector<FloatScalarVector> &integrals);
+                                   std::vector<FloatScalarVector> &basisValues);
 
  public:
   BSplineQuadratureEvaluator();

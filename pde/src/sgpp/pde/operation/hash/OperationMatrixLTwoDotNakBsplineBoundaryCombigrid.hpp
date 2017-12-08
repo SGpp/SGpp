@@ -23,7 +23,7 @@ class OperationMatrixLTwoDotNakBsplineBoundaryCombigrid : public sgpp::base::Ope
   /**
    * Constructor
    *
-   * @param gridpointer to the grid
+   * @param grid sparse grid created by converting a expUniformBoundaryGrid to a sgpp::base::Grid
    */
   explicit OperationMatrixLTwoDotNakBsplineBoundaryCombigrid(sgpp::base::Grid* grid);
 

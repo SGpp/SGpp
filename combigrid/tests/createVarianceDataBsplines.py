@@ -55,7 +55,7 @@ if __name__ == "__main__":
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
     parser.add_argument('--model', default="arctan", type=str, help="define true model")
-    parser.add_argument('--degree', default=3, type=int, help="polynomial degree of B-splines")
+    parser.add_argument('--degree', default=5, type=int, help="polynomial degree of B-splines")
     parser.add_argument('--minLevel', default=0, type=int, help="minimum level of regular grids")
     parser.add_argument('--maxLevel', default=7, type=int, help="maximum level of regular grids")
     parser.add_argument('--dist', default="beta", type=str, help="define marginal distribution")

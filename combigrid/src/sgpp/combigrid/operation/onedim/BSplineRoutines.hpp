@@ -27,7 +27,7 @@
    * @param xi    vector containing the B-Splines knots
    * @return      value of non-uniform B-spline
    */
-double nonUniformBSpline(double const& x, size_t const& deg, size_t const& k,
+double nonUniformBSpline(double const& x, size_t const& deg, size_t const& index,
                          std::vector<double> const& xi);
 
 /**
@@ -44,6 +44,7 @@ double LagrangePolynomial(double const& x, std::vector<double> const& xValues, s
  * xValues for B splines of degree 1 by adding the necessary point outisde [0,1] by mirroring at 0
  * and 1.
  * @param xValues grid points inside [0,1]
+ * @param degree degree of the B spline basis
  * @param xi returns the vector containing the knots with which the Bsplines are created.
    */
 void createdeg1Knots(std::vector<double> const& xValues, size_t const& degree,
@@ -55,6 +56,7 @@ void createdeg1Knots(std::vector<double> const& xValues, size_t const& degree,
  * and 1. For dealing with the boundaries at 0 and 1 not a knot knots are used. In the case of
  * degree 3 this means that the knot directly to the right/left of 0/1 are removed.
  * @param xValues grid points inside [0,1]
+ * @param degree degree of the B spline basis
  * @param xi returns the vector containing the knots with which the Bsplines are created.
    */
 void createdeg3NakKnots(std::vector<double> const& xValues, size_t const& degree,
@@ -66,6 +68,7 @@ void createdeg3NakKnots(std::vector<double> const& xValues, size_t const& degree
  * and 1. For dealing with the boundaries at 0 and 1 not a knot knots are used. In the case of
  * degree 3 this means that the two knots directly to the right/left of 0/1 are removed.
  * @param xValues grid points inside [0,1]
+ * @param degree degree of the B spline basis
  * @param xi returns the vector containing the knots with which the Bsplines are created.
    */
 void createdeg5NakKnots(std::vector<double> const& xValues, size_t const& degree,
