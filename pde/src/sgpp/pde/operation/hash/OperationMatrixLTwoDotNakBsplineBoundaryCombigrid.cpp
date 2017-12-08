@@ -3,12 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <algorithm>
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotNakBsplineBoundaryCombigrid.hpp>
+
+#include <algorithm>
 
 namespace sgpp {
 namespace pde {
@@ -24,6 +25,12 @@ OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::
 void OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::mult(sgpp::base::DataVector& alpha,
                                                              sgpp::base::DataVector& result) {
   const size_t p = dynamic_cast<sgpp::base::NakBsplineBoundaryCombigridGrid*>(grid)->getDegree();
+  if ((p != 1) && (p != 3) && (p != 5)) {
+    std::cerr << "OperationMatrixLTwoDotNakBsplineBoundary: only B spline degrees 1, 3 and 5 are "
+                 "supported."
+              << std::endl;
+  }
+
   const size_t pp1h = (p + 1) >> 1;  //  =|_p/2_|
   const double pp1hDbl = static_cast<double>(pp1h);
   const size_t quadOrder = p + 1;
@@ -68,83 +75,90 @@ void OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::mult(sgpp::base::DataVec
         //        std::cout << k << "| (" << lik << " " << iik << ") (" << ljk << " " << ijk << ") "
         //                  << std::endl;
 
-        // ToDo (rehmemk) degree 5
-        //        if (p == 3) {
-        if (iik == 3) offseti_left -= hik;
-        if (iik == hInvik - 3) offseti_right += hik;
-        if (ijk == 3) offsetj_left -= hjk;
-        if (ijk == hInvjk - 3) offsetj_right += hjk;
+        double temp_res = 0.0;
+        double offset = 0.0, scaling = 0.0;
+        size_t start = 0, stop = 0;
+        if (p == 3) {
+          if (iik == 3) offseti_left -= hik;
+          if (iik == hInvik - 3) offseti_right += hik;
+          if (ijk == 3) offsetj_left -= hjk;
+          if (ijk == hInvjk - 3) offsetj_right += hjk;
+        } else if (p == 5) {
+          if ((iik == 3) || (iik == 5)) offseti_left -= 2 * hik;
+          if ((iik == hInvik - 3) || (iik == hInvik - 5)) offseti_right += 2 * hik;
+          if ((ijk == 3) || (ijk == 5)) offsetj_left -= 2 * hjk;
+          if ((ijk == hInvjk - 3) || (ijk == hInvjk - 5)) offsetj_right += 2 * hjk;
+        }
 
         if (std::max(offseti_left, offsetj_left) >= std::min(offseti_right, offsetj_right)) {
-          // Ansatz functions do not not overlap:
+          // B spline supports do not not overlap:
           temp_ij = 0.0;
 
           break;
         } else {
-          double temp_res = 0.0;
-
-          // Use formula for different overlapping ansatz functions:
-          double offset, scaling;
-          size_t start, stop;
-
           if (lik >= ljk) {
             offset = offseti_left;
             scaling = hik;
             start = ((iik > pp1h) ? 0 : (pp1h - iik));
             stop = std::min(p, hInvik + pp1h - iik - 1);
-            if (iik == 3) stop += 1;
-            if (iik == hInvik - 3) stop += 1;
+            if (p == 3) {
+              if ((iik == 3) || (iik == hInvik - 3)) stop += 1;
+            } else if (p == 5) {
+              if ((iik == 3) || (iik == 5) || (iik == hInvik - 3) || (iik == hInvik - 5)) stop += 2;
+            }
             if (lik == 2) {
               start = 1;
               stop = 4;
               offset = -0.25;
               scaling = 0.25;
             }
+            if ((p == 5) && (lik == 3)) {
+              start = 1;
+              stop = 8;
+              offset = -0.125;
+              scaling = 0.125;
+            }
           } else {
+            // if lik <= ljk
             offset = offsetj_left;
             scaling = hjk;
             start = ((ijk > pp1h) ? 0 : (pp1h - ijk));
             stop = std::min(p, hInvjk + pp1h - ijk - 1);
-            if (ijk == 3) stop += 1;
-            if (ijk == hInvjk - 3) stop += 1;
+            if (p == 3) {
+              if ((ijk == 3) || (ijk == hInvjk - 3)) stop += 1;
+            } else if (p == 5) {
+              if ((ijk == 3) || (ijk == 5) || (ijk == hInvjk - 3) || (ijk == hInvjk - 5)) stop += 2;
+            }
             if (ljk == 2) {
               start = 1;
               stop = 4;
               offset = -0.25;
               scaling = 0.25;
             }
-          }
-          //          if ((lik == 1) && (iik == 1) && (ljk == 3) && ijk == 5) {
-          //            std::cout << "i " << lik << " " << iik << " " << offseti_left << " " <<
-          //            offseti_right
-          //                      << std::endl;
-          //            std::cout << "j " << ljk << " " << ijk << " " << offsetj_left << " " <<
-          //            offsetj_right
-          //                      << std::endl;
-          //            std::cout << start << " " << stop << " " << offset << " " << scaling <<
-          //            std::endl;
-          //          }
-
-          for (size_t n = start; n <= stop; n++) {
-            for (size_t c = 0; c < quadOrder; c++) {
-              const double x = offset + scaling * (coordinates[c] + static_cast<double>(n));
-              temp_res += weights[c] * basis.eval(lik, iik, x) * basis.eval(ljk, ijk, x);
+            if ((p == 5) && (ljk == 3)) {
+              start = 1;
+              stop = 8;
+              offset = -0.125;
+              scaling = 0.125;
             }
           }
-          temp_ij *= scaling * temp_res;
         }
+
+        for (size_t n = start; n <= stop; n++) {
+          for (size_t c = 0; c < quadOrder; c++) {
+            const double x = offset + scaling * (coordinates[c] + static_cast<double>(n));
+            temp_res += weights[c] * basis.eval(lik, iik, x) * basis.eval(ljk, ijk, x);
+          }
+        }
+        temp_ij *= scaling * temp_res;
       }
+
       result[i] += temp_ij * alpha[j];
       if (i != j) {
         result[j] += temp_ij * alpha[i];
       }
     }
   }
-  //    else {
-  //      std::cerr << "OperationMatrixLTwoDotNakBsplineBoundaryCombigrid: "
-  //                   "currently only B spline degree 3 is supported"
-  //                << std::endl;
-  //    }
 }
 }  // namespace pde
 }  // namespace sgpp

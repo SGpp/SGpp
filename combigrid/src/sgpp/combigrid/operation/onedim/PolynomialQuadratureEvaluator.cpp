@@ -131,7 +131,7 @@ PolynomialQuadratureEvaluator::cloneLinear() {
 
 void PolynomialQuadratureEvaluator::setParameter(const FloatScalarVector& param) { return; }
 
-void PolynomialQuadratureEvaluator::setFunctionValuesAtGridPoints(
+void PolynomialQuadratureEvaluator::setBasisCoefficientsAtGridPoints(
     std::vector<double>& functionValues) {
   basisCoefficients = functionValues;
 }

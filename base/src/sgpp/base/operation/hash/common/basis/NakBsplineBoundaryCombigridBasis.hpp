@@ -251,8 +251,8 @@ class NakBsplineBoundaryCombigridBasis : public Basis<LT, IT> {
             // l = 2, i = 3 : quartic polynomial, 0 in 0,0.25,0.5,1 and 1 in 0.75
             return x * x * x * x;  // x * (x - 0.25) * (x - 0.5) * (x - 1) * (-128.0 / 3.0);
           }
-        } else if ((i > 3) && (i < hInv - 3)) {
-          // l >= 4, 3 < i < 2^l - 3
+        } else if ((i > 5) && (i < hInv - 5)) {
+          // l >= 4, 5 < i < 2^l - 5
           return bsplineBasis.eval(l, i, x);
         } else {
           if (i > hInv / 2) {

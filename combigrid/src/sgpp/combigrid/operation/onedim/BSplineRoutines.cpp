@@ -4,14 +4,9 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
-/**
-   * @param x     evaluation point
-   * @param deg     B-spline degree
-   * @param k     index of B-spline in the knot sequence
-   * @param xi    vector containing the B-Splines knots
-   * @return      value of non-uniform B-spline
-   *              with knots \f$\{\xi_k, ... \xi_{k+p+1}\}\f$
-   */
+
+// ToDo(rehmemk) cachegrind says this routine is the bottleneck! Write one specifically for uniform
+// grid widths like NakBsplineBoundaryCombigridBasis
 double nonUniformBSpline(double const& x, size_t const& deg, size_t const& index,
                          std::vector<double> const& xi) {
   if (deg == 0) {
@@ -29,11 +24,6 @@ double nonUniformBSpline(double const& x, size_t const& deg, size_t const& index
   }
 }
 
-/**
-   * @param x     evaluation point
-   * @param k     index in the knot sequence
-   * @return      value of Lagrange Polynomial
-   */
 double LagrangePolynomial(double const& x, std::vector<double> const& xValues, size_t const& k) {
   double res = 1.0;
   for (size_t m = 0; m < xValues.size(); m++) {
@@ -47,15 +37,8 @@ double LagrangePolynomial(double const& x, std::vector<double> const& xValues, s
 // ToDo (rehmemk) Test other strategies for outer points for example placing them uniform using the
 // distance of the last point inside to the boundary
 
-/**
-   * @param xi vector containing the knots with which the Bsplines are created. This is the most
- * simple case. xi = x inside [0,1] and at the left and right end the necessary amount of inner
- * points are mirrored to the outside
-   */
-void createKnots(std::vector<double> const& xValues, size_t const& degree,
-                 std::vector<double>& xi) {
-  // create a vector xi that holds the gridpoints and continues to the left and right by mirroring
-  // at 0 and 1
+void createdeg1Knots(std::vector<double> const& xValues, std::vector<double>& xi) {
+  size_t degree = 1;
 
   // this offset works only for odd degrees. if even degrees shall be supported it must be
   // generalized
@@ -71,15 +54,8 @@ void createKnots(std::vector<double> const& xValues, size_t const& degree,
   }
 }
 
-// ToDo (rehmemk) line 92 xValeus[i+1] and line 95 xValues[xValuessize()-i-2] can be invalid!
-// Probably wrong in createdeg5Knotstoo
-/**
-   * @param xi vector containing the knots with which the Bsplines are created. For dealing with
-   * the boundaries at 0 and 1 not a knot knots are used. In the case of degree 3 this means that
-   * the knot directly to the right/left of 0/1 are removed.
-   */
-void createdeg3NakKnots(std::vector<double> const& xValues, size_t const& degree,
-                        std::vector<double>& xi) {
+void createdeg3NakKnots(std::vector<double> const& xValues, std::vector<double>& xi) {
+  size_t degree = 3;
   // On levels 0 and 1 only Lagrange polynomials and not nak B splines are used. no need for extra
   // points
   if (xValues.size() < 5) {
@@ -103,20 +79,10 @@ void createdeg3NakKnots(std::vector<double> const& xValues, size_t const& degree
 
   xi.erase(xi.begin() + offset + 2);
   xi.erase(xi.end() - offset - 3);
-  //  std::cout << "Routines Xi:" << std::endl;
-  //  for (auto& x : xi) {
-  //    std::cout << x << " ";
-  //  }
-  //  std::cout << "\n";
 }
 
-/**
-   * @param xi vector containing the knots with which the Bsplines are created. For dealing with
-   * the boundaries at 0 and 1 not a knot knots are used. In the case of degree 5 this means that
-   * the two knots directly to the right/left of 0/1 are removed.
-   */
-void createdeg5NakKnots(std::vector<double> const& xValues, size_t const& degree,
-                        std::vector<double>& xi) {
+void createdeg5NakKnots(std::vector<double> const& xValues, std::vector<double>& xi) {
+  size_t degree = 5;
   // On levels 0,1 and 2 only Lagrange polynomials and not nak B splines are used. no need for extra
   // points
   if (xValues.size() < 9) {
@@ -147,17 +113,18 @@ void createdeg5NakKnots(std::vector<double> const& xValues, size_t const& degree
 void createNakKnots(std::vector<double> const& xValues, size_t const& degree,
                     std::vector<double>& xi) {
   if (degree == 1) {
-    createKnots(xValues, degree, xi);
+    createdeg1Knots(xValues, xi);
   } else if (degree == 3) {
-    createdeg3NakKnots(xValues, degree, xi);
+    createdeg3NakKnots(xValues, xi);
   } else if (degree == 5) {
-    createdeg5NakKnots(xValues, degree, xi);
+    createdeg5NakKnots(xValues, xi);
   } else {
     throw std::invalid_argument("BSplineRoutines: only B-Spline degrees 1,3 and 5 supported");
   }
 }
 
 // ToDo (rehmemk) use unidirectional principle instead of global SLE solving to speed this up!
+
 sgpp::combigrid::GridFunction BSplineCoefficientGridFunction(
     sgpp::combigrid::MultiFunction func, sgpp::combigrid::CombiHierarchies::Collection grids,
     size_t degree) {
@@ -253,7 +220,6 @@ sgpp::combigrid::GridFunction BSplineCoefficientGridFunction(
 
     it.reset();
     for (size_t vecIndex = 0; it.isValid(); ++vecIndex, it.moveToNext()) {
-      //      std::cout << coefficients_sle[vecIndex] << std::endl;
       coefficientTree->set(it.getMultiIndex(), coefficients_sle[vecIndex]);
     }
 

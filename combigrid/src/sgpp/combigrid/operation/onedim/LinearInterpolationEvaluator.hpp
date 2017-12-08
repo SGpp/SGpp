@@ -36,7 +36,7 @@ class LinearInterpolationEvaluator : public AbstractLinearEvaluator<FloatScalarV
   virtual std::vector<double> getBasisCoefficients() { return basisCoefficients; }
 
   void setGridPoints(std::vector<double> const &newXValues) override;
-  void setFunctionValuesAtGridPoints(std::vector<double> &functionValues) override;
+  void setBasisCoefficientsAtGridPoints(std::vector<double> &functionValues) override;
   std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cloneLinear() override;
   bool needsOrderedPoints() override;
   bool needsParameter() override;

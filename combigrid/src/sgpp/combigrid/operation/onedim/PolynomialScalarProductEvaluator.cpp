@@ -158,7 +158,7 @@ PolynomialScalarProductEvaluator::cloneLinear() {
 
 void PolynomialScalarProductEvaluator::setParameter(const FloatArrayVector& param) { return; }
 
-void PolynomialScalarProductEvaluator::setFunctionValuesAtGridPoints(
+void PolynomialScalarProductEvaluator::setBasisCoefficientsAtGridPoints(
     std::vector<double>& functionValues) {
   basisCoefficients = functionValues;
 }
