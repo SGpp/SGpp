@@ -4,7 +4,6 @@
 // sgpp.sparsegrids.org
 
 #define BOOST_TEST_DYN_LINK
-#define VERBOSETESTS 1
 #include <boost/test/unit_test.hpp>
 
 #include <sgpp/combigrid/definitions.hpp>
@@ -245,8 +244,9 @@ double L2BsplineInterpolationError(size_t numDimensions, size_t degree,
 }
 
 BOOST_AUTO_TEST_CASE(testCorrespondingDegreeInterpolation) {
-  std::cout << "Testing interpolation of x^d+y^d for B splines of degree d on level d, d in {1,3,5}"
-            << std::endl;
+  std::cout
+      << "Testing interpolation of x^d+y^d for B splines of degree d on level d, d in {1,3,5}."
+      << std::endl;
   size_t numDimensions = 2;
   size_t degree = 1;
   sgpp::combigrid::MultiFunction func1(x1);
@@ -262,11 +262,9 @@ BOOST_AUTO_TEST_CASE(testCorrespondingDegreeInterpolation) {
   double L2error5 = L2BsplineInterpolationError(numDimensions, degree, func5, level);
   double tolerance = 1e-15;
 
-#if VERBOSETESTS == 1
-  std::cout << "d = 1: " << L2error1 << std::endl;
-  std::cout << "d = 3: " << L2error3 << std::endl;
-  std::cout << "d = 5: " << L2error5 << "\n" << std::endl;
-#endif
+  //  std::cout << "d = 1: " << L2error1 << std::endl;
+  //  std::cout << "d = 3: " << L2error3 << std::endl;
+  //  std::cout << "d = 5: " << L2error5 << "\n" << std::endl;
 
   BOOST_CHECK_SMALL(L2error1, tolerance);
   BOOST_CHECK_SMALL(L2error3, tolerance);
@@ -282,7 +280,7 @@ double BsplineQuadratureError(size_t numDimensions, size_t degree,
   return fabs(integral - 2.0 / (static_cast<double>(degree) + 1));
 }
 BOOST_AUTO_TEST_CASE(testCorrespondingDegreeQuadrature) {
-  std::cout << "Testing integration of x^d+y^d for B splines of degree d on level d, d in {1,3,5}"
+  std::cout << "Testing integration of x^d+y^d for B splines of degree d on level d, d in {1,3,5}."
             << std::endl;
   size_t numDimensions = 2;
   size_t degree = 1;
@@ -299,11 +297,9 @@ BOOST_AUTO_TEST_CASE(testCorrespondingDegreeQuadrature) {
   double Quaderror5 = BsplineQuadratureError(numDimensions, degree, func5, level);
   double tolerance = 1e-15;
 
-#if VERBOSETESTS == 1
-  std::cout << "d = 1: " << Quaderror1 << std::endl;
-  std::cout << "d = 3: " << Quaderror3 << std::endl;
-  std::cout << "d = 5: " << Quaderror5 << "\n" << std::endl;
-#endif
+  //  std::cout << "d = 1: " << Quaderror1 << std::endl;
+  //  std::cout << "d = 3: " << Quaderror3 << std::endl;
+  //  std::cout << "d = 5: " << Quaderror5 << "\n" << std::endl;
 
   BOOST_CHECK_SMALL(Quaderror1, tolerance);
   BOOST_CHECK_SMALL(Quaderror3, tolerance);
@@ -345,7 +341,7 @@ double BsplineQuadratureSquare(size_t numDimensions, size_t degree,
 BOOST_AUTO_TEST_CASE(testCorrespondingDegreeScalarProducts) {
   std::cout
       << "Testing integration of (x^d+y^d)^2 for B splines of degree d on level d, d in {1,3,5}.\n"
-      << " This verifies the scalar product routine." << std::endl;
+      << "This verifies the scalar product routine." << std::endl;
   size_t numDimensions = 2;
   size_t degree = 1;
   sgpp::combigrid::MultiFunction func1(x1);
@@ -359,16 +355,14 @@ BOOST_AUTO_TEST_CASE(testCorrespondingDegreeScalarProducts) {
   double QuadSquareError3 = fabs(QuadSquare3 - 23.0 / 56.0);
   degree = 5;
   sgpp::combigrid::MultiFunction func5(x5);
-  level = 3;
+  level = 5;
   double QuadSquare5 = BsplineQuadratureSquare(numDimensions, degree, func5, level);
   double QuadSquareError5 = fabs(QuadSquare5 - 47.0 / 198.0);
   double tolerance = 1e-15;
 
-#if VERBOSETESTS == 1
-  std::cout << "d = 1: " << QuadSquareError1 << std::endl;
-  std::cout << "d = 3: " << QuadSquareError3 << std::endl;
-  std::cout << "d = 5: " << QuadSquareError5 << "\n" << std::endl;
-#endif
+  //  std::cout << "d = 1: " << QuadSquareError1 << std::endl;
+  //  std::cout << "d = 3: " << QuadSquareError3 << std::endl;
+  //  std::cout << "d = 5: " << QuadSquareError5 << "\n" << std::endl;
 
   BOOST_CHECK_SMALL(QuadSquareError1, tolerance);
   BOOST_CHECK_SMALL(QuadSquareError3, tolerance);
@@ -379,99 +373,71 @@ BOOST_AUTO_TEST_CASE(testCorrespondingDegreeScalarProducts) {
  * This test calculates the variance for the test function atanModel (see above) and compares it
  * to precalculated data.
  *
- * ToDo (rehmemk) why is there an offset of 1e-7 between python data and quadrature data.
- * Shouldn't it be much smaller?
  */
-
+// ToDo (rehmemk) degree 5
 BOOST_AUTO_TEST_CASE(testVarianceOnLevel) {
-  std::cout << "Testing B spline variance calculation  subgridwise on single levels" << std::endl;
+  std::cout << "Testing B spline variance calculation  subgridwise on single levels." << std::endl;
 
   // This data was created by SGpp/combigrid/tests/createVarianceDataBsplines.py
   // It represents the variance calculated for each level with levelsum <= 7 for the function
   // arctan(50.0 * (x[0] - .35)) + pi / 2.0 + 4.0 * x[1] ** 3 + exp(x[0] * x[1] - 1.0)
   struct AtanModelVarianceTestDataBsplines {
     std::vector<sgpp::combigrid::MultiIndex> levels{
-        sgpp::combigrid::MultiIndex{0, 0}, sgpp::combigrid::MultiIndex{0, 1},
-        sgpp::combigrid::MultiIndex{0, 2}, sgpp::combigrid::MultiIndex{0, 3},
-        sgpp::combigrid::MultiIndex{0, 4}, sgpp::combigrid::MultiIndex{0, 5},
-        sgpp::combigrid::MultiIndex{0, 6}, sgpp::combigrid::MultiIndex{0, 7},
-        sgpp::combigrid::MultiIndex{1, 0}, sgpp::combigrid::MultiIndex{1, 1},
-        sgpp::combigrid::MultiIndex{1, 2}, sgpp::combigrid::MultiIndex{1, 3},
-        sgpp::combigrid::MultiIndex{1, 4}, sgpp::combigrid::MultiIndex{1, 5},
-        sgpp::combigrid::MultiIndex{1, 6}, sgpp::combigrid::MultiIndex{2, 0},
-        sgpp::combigrid::MultiIndex{2, 1}, sgpp::combigrid::MultiIndex{2, 2},
-        sgpp::combigrid::MultiIndex{2, 3}, sgpp::combigrid::MultiIndex{2, 4},
-        sgpp::combigrid::MultiIndex{2, 5}, sgpp::combigrid::MultiIndex{3, 0},
-        sgpp::combigrid::MultiIndex{3, 1}, sgpp::combigrid::MultiIndex{3, 2},
-        sgpp::combigrid::MultiIndex{3, 3}, sgpp::combigrid::MultiIndex{3, 4},
-        sgpp::combigrid::MultiIndex{4, 0}, sgpp::combigrid::MultiIndex{4, 1},
-        sgpp::combigrid::MultiIndex{4, 2}, sgpp::combigrid::MultiIndex{4, 3},
-        sgpp::combigrid::MultiIndex{5, 0}, sgpp::combigrid::MultiIndex{5, 1},
-        sgpp::combigrid::MultiIndex{5, 2}, sgpp::combigrid::MultiIndex{6, 0},
-        sgpp::combigrid::MultiIndex{6, 1}, sgpp::combigrid::MultiIndex{7, 0}};
-
+        sgpp::combigrid::MultiIndex{1, 3}, sgpp::combigrid::MultiIndex{3, 0},
+        sgpp::combigrid::MultiIndex{0, 7}, sgpp::combigrid::MultiIndex{1, 6},
+        sgpp::combigrid::MultiIndex{5, 1}, sgpp::combigrid::MultiIndex{2, 5},
+        sgpp::combigrid::MultiIndex{0, 3}, sgpp::combigrid::MultiIndex{4, 0},
+        sgpp::combigrid::MultiIndex{1, 2}, sgpp::combigrid::MultiIndex{3, 3},
+        sgpp::combigrid::MultiIndex{2, 0}, sgpp::combigrid::MultiIndex{1, 5},
+        sgpp::combigrid::MultiIndex{5, 0}, sgpp::combigrid::MultiIndex{2, 2},
+        sgpp::combigrid::MultiIndex{4, 1}, sgpp::combigrid::MultiIndex{1, 1},
+        sgpp::combigrid::MultiIndex{3, 2}, sgpp::combigrid::MultiIndex{0, 0},
+        sgpp::combigrid::MultiIndex{0, 4}, sgpp::combigrid::MultiIndex{6, 0},
+        sgpp::combigrid::MultiIndex{1, 4}, sgpp::combigrid::MultiIndex{2, 3},
+        sgpp::combigrid::MultiIndex{2, 1}, sgpp::combigrid::MultiIndex{4, 2},
+        sgpp::combigrid::MultiIndex{1, 0}, sgpp::combigrid::MultiIndex{0, 1},
+        sgpp::combigrid::MultiIndex{7, 0}, sgpp::combigrid::MultiIndex{5, 2},
+        sgpp::combigrid::MultiIndex{6, 1}, sgpp::combigrid::MultiIndex{3, 1},
+        sgpp::combigrid::MultiIndex{0, 2}, sgpp::combigrid::MultiIndex{0, 6},
+        sgpp::combigrid::MultiIndex{4, 3}, sgpp::combigrid::MultiIndex{0, 5},
+        sgpp::combigrid::MultiIndex{3, 4}, sgpp::combigrid::MultiIndex{2, 4}};
     std::vector<double> variances{
-        -0.000000000000003553, 1.701156850402689713, 1.437021035230856114, 1.437020728026304539,
-        1.437020668119384226,  1.437020666114214862, 1.437020666048240969, 1.437020666045345507,
-        1.080108355131402575,  2.816790782428100215, 2.549883454168121233, 2.549880760493220322,
-        2.549880271385291053,  2.549880259715539665, 2.549880259378866754, 2.545726212447136483,
-        4.286103665868155943,  4.019262025441856068, 4.019259816800595075, 4.019259376311369536,
-        4.019259366026524560,  1.858681146494113534, 3.597641299962191397, 3.330803514248586339,
-        3.330801307994530447,  3.330800874338359918, 1.985491657343512628, 3.725129287185531268,
-        3.458287364652921525,  3.458285162235060994, 1.979975007603208326, 3.719658912837516596,
-        3.452816643095617977,  1.980262657807472237, 3.719940998350237393, 1.980269030387413309};
+        2.549880760493220, 1.858681146494114,  1.437020666045346, 2.549880259378867,
+        3.719658912837517, 3.900926591786073,  1.437020728026305, 1.985491657343513,
+        2.549893635809379, 3.330801307994530,  2.427023144889512, 2.549880259715540,
+        1.979975007603208, 3.900939092268690,  3.725129287185531, 2.816790782428100,
+        3.330812831246485, -0.000000000000004, 1.437020668119384, 1.980262657807472,
+        2.549880271385291, 3.900927051314765,  4.167777616534886, 3.458296945247319,
+        1.080108355131403, 1.701156850402690,  1.980269030387413, 3.452826245565596,
+        3.719940998350237, 3.597641299962191,  1.437022054119371, 1.437020666048241,
+        3.458285162235061, 1.437020666114215,  3.330800874338360, 3.900926602175467};
   };
 
   AtanModelVarianceTestDataBsplines varianceTestData;
-  //  double tolerance = 2e-8;
+  double tolerance = 2e-8;
   for (size_t i = 0; i < varianceTestData.levels.size(); i++) {
     sgpp::combigrid::MultiIndex level = varianceTestData.levels[i];
     double bSplineVariance = BSplineVariance(level);
     double varianceError = std::fabs(bSplineVariance - varianceTestData.variances[i]);
-    std::cout << "level: " << level[0] << " " << level[1] << "|  error:  " << varianceError
-              << std::endl;
-    //    BOOST_CHECK_SMALL(varianceError, tolerance);
+    //    std::cout << "level: " << level[0] << " " << level[1] << "|  error:  " << varianceError
+    //              << std::endl;
+    BOOST_CHECK_SMALL(varianceError, tolerance);
   }
 }
 
-// This is only used for Debug purposes.
-// The variance data is read from a file to make it easily replacable
-/*
-BOOST_AUTO_TEST_CASE(testVarianceDEBUG) {
-  std::cout << "Testing B spline variance calculation  subgridwise on single levels from file"
-            << std::endl;
-  std::ifstream varianceFile("combigrid/tests/BSplineVarianceData.dat");
-  std::string line;
-  size_t level1;
-  size_t level2;
-  double variance;
-  std::vector<double> varianceError;
-  std::vector<sgpp::combigrid::MultiIndex> levels;
-  while (varianceFile >> level1 >> level2 >> variance) {
-    sgpp::combigrid::MultiIndex level{level1, level2};
-    double bSplineVariance = BSplineVariance(level);
-    varianceError.push_back(std::fabs(bSplineVariance - variance));
-    levels.push_back(level);
-  }
-  for (size_t i = 0; i < levels.size(); i++) {
-    std::cout << levels[i][0] << " " << levels[i][1] << "|  error:  " << varianceError[i]
-              << std::endl;
-  }
-  varianceFile.close();
-}
-*/
 BOOST_AUTO_TEST_CASE(testVarianceOnDiagonal) {
   std::cout
-      << "Testing B spline variance calculation on levels of the diagonal of the subgrid scheme"
+      << "Testing B spline variance calculation on levels of the diagonal of the subgrid scheme."
       << std::endl;
   sgpp::combigrid::Atan atanModel;
+  std::vector<double> tolerance = {4, 1, 0.5, 0.2, 0.006, 0.0003, 8e-06};
   for (size_t i = 0; i < 7; i++) {
     sgpp::combigrid::MultiIndex level(atanModel.numDims, i);
     double bSplineVariance = BSplineVariance(level);
     double varianceError = std::fabs(bSplineVariance - atanModel.variance);
-    std::cout << "level: " << level[0] << " " << level[1] << "|  error:  " << varianceError
-              << std::endl;
-    //    BOOST_CHECK_SMALL(varianceError, 1e-6);
+    //    std::cout << "level: " << level[0] << " " << level[1] << "|  error:  " << varianceError
+    //              << std::endl;
+    BOOST_CHECK_SMALL(varianceError, tolerance[i]);
   }
 }
 
