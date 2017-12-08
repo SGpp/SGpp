@@ -17,7 +17,7 @@ namespace combigrid {
 class BSplineInterpolationEvaluator : public AbstractLinearEvaluator<FloatScalarVector> {
  public:
   BSplineInterpolationEvaluator();
-  BSplineInterpolationEvaluator(size_t degree);
+  explicit BSplineInterpolationEvaluator(size_t degree);
   virtual ~BSplineInterpolationEvaluator();
   BSplineInterpolationEvaluator(BSplineInterpolationEvaluator const &other);
 

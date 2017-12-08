@@ -37,6 +37,7 @@
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <string>
 #include <vector>
 
 double atanMean = 3.514491266445763;

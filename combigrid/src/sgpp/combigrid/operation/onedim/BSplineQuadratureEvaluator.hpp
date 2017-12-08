@@ -38,7 +38,7 @@ class BSplineQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVec
 
  public:
   BSplineQuadratureEvaluator();
-  BSplineQuadratureEvaluator(size_t degree);
+  explicit BSplineQuadratureEvaluator(size_t degree);
 
   /**
    * @param numAdditionalPoints Specifies how many Gauss-Legrendre points should be used in addition
