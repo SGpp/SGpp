@@ -45,6 +45,7 @@ void OperationLaplaceExplicitLinear::buildMatrix(sgpp::base::GridStorage* storag
   size_t ncols = m_->getNcols();
   base::DataVector alpha(ncols);
   base::DataVector beta(ncols);
+  // FIXME: inefficient
   for (size_t i = 0; i < ncols; i++) {
     alpha.setAll(0.0);
     alpha.set(i, 1.0);

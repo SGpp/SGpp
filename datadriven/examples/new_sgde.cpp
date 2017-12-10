@@ -16,11 +16,27 @@
 
 #include <functional>
 #include <random>
+#include <vector>
 #ifdef USE_CGAL
 #include <CGAL/basic.h>
 #include <CGAL/QP_models.h>
 #include <CGAL/QP_functions.h>
+#include <CGAL/MP_Float.h>
 #endif
+typedef CGAL::MP_Float ET;
+
+typedef CGAL::Quadratic_program_from_iterators
+<std::vector<double*>,                                                // for A
+ double*,                                                 // for b
+ CGAL::Const_oneset_iterator<CGAL::Comparison_result>, // for r
+ bool*,                                                // for fl
+ int*,                                                 // for l
+ bool*,                                                // for fu
+ int*,                                                 // for u
+ double**,                                                // for D
+ double*>                                                 // for c
+Program;
+
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -250,6 +266,50 @@ void solve(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridConfig
   std::cout << "res norm cmp:" << residual_norm(cmp_alpha) << std::endl;
 }
 
+void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridConfig, double lambda) {
+  std::unique_ptr<Grid> grid(sgpp::base::Grid::createGrid(gridConfig));
+  GridStorage* gridStorage = &(grid->getStorage());
+  grid->getGenerator().regular(gridConfig.level_);
+  size_t storage_size = gridStorage->getSize();
+  std::cout << "storage size:" << storage_size << std::endl;
+  size_t numSamples = samples.getNrows();
+  size_t dims = samples.getNcols();
+  DataMatrix M(storage_size, storage_size);
+  DataMatrix P(storage_size, storage_size);
+  DataMatrix C(storage_size, storage_size);
+  OperationMatrix* A_op = sgpp::op_factory::createOperationLTwoDotExplicit(&M, *grid);
+  OperationMultipleEval* B_op = sgpp::op_factory::createOperationMultipleEval(*grid, samples);
+  OperationMatrix* C_op = sgpp::op_factory::createOperationLaplaceExplicit(&C, *grid);
+  DataVector b(storage_size);
+  DataVector q(storage_size);
+  DensitySystemMatrix AlambC(A_op, B_op, C_op, lambda, numSamples);
+  OperationEval* op_eval = sgpp::op_factory::createOperationEval(*grid);
+  AlambC.generateb(b);
+
+  // setting up matrices for CGAL
+  C.mult(lambda);
+  M.add(C);
+
+  M.mult(b, q);
+
+  // P = M*M.T
+  // M dot product of M.T (M is symmetric)
+
+  std::vector<double*> P_it;
+  for (size_t i = 0; i < M.getNcols(); i++) {
+    DataVector col(storage_size);
+    DataVector tmp(storage_size);
+    M.getColumn(i, col);
+    M.mult(col, tmp);
+    P.setColumn(i, tmp);
+    P_it.push_back(P.getColumn(i).getPointer());
+  }
+
+
+  // define the quadratic Programm
+    Program qp(storage_size, storage_size);
+}
+
 int main(int argc, char** argv) {
   size_t d = 2;
   int level = 3;
@@ -283,7 +343,8 @@ int main(int argc, char** argv) {
   // std::shared_ptr<Grid> grid(&learnerSGDE.getGrid());
   // DataVector alpha(learnerSGDE.getSurpluses());
   std::cout << trainSamples.getNrows() << std::endl;
-  solve(trainSamples, gridConfig, lambda);
+  // solve(trainSamples, gridConfig, lambda);
+  solve_cgal(trainSamples, gridConfig, lambda);
   // std::cout << trainSamples.toString() << std::endl;
   return 0;
 }
