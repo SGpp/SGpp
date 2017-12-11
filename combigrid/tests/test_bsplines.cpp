@@ -357,7 +357,7 @@ BOOST_AUTO_TEST_CASE(testCorrespondingDegreeScalarProducts) {
   level = 5;
   double QuadSquare5 = BsplineQuadratureSquare(numDimensions, degree, func5, level);
   double QuadSquareError5 = fabs(QuadSquare5 - 47.0 / 198.0);
-  double tolerance = 1e-15;
+  double tolerance = 1e-14;
 
   //  std::cout << "d = 1: " << QuadSquareError1 << std::endl;
   //  std::cout << "d = 3: " << QuadSquareError3 << std::endl;
