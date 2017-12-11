@@ -292,7 +292,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefine2d) {
   gridPoints.set(17, 3, 3);
   gridPoints.set(18, 0, 2);
   gridPoints.set(18, 1, 2);
-  gridPoints.set(18, 2, 3);;
+  gridPoints.set(18, 2, 3);
   gridPoints.set(18, 3, 1);
   gridPoints.set(19, 0, 2);
   gridPoints.set(19, 1, 3);
