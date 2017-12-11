@@ -3,13 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/exception/data_exception.hpp>
-#include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
-#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
-#include <sgpp/globaldef.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotNakBsplineBoundaryCombigrid.hpp>
-
-#include <algorithm>
 
 namespace sgpp {
 namespace pde {

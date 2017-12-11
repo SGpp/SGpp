@@ -44,6 +44,7 @@ double LagrangePolynomial(double const& x, std::vector<double> const& xValues, s
  * xValues for B splines of degree 1 by adding the necessary point outisde [0,1] by mirroring at 0
  * and 1.
  * @param xValues grid points inside [0,1]
+ * @param degree degree of the B spline basis
  * @param xi returns the vector containing the knots with which the Bsplines are created.
  */
 void createdeg1Knots(std::vector<double> const& xValues, std::vector<double>& xi);

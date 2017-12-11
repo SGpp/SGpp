@@ -5,8 +5,6 @@
 
 #include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
 
-// ToDo(rehmemk) cachegrind says this routine is the bottleneck! Write one specifically for uniform
-// grid widths like NakBsplineBoundaryCombigridBasis
 double nonUniformBSpline(double const& x, size_t const& deg, size_t const& index,
                          std::vector<double> const& xi) {
   if (deg == 0) {
