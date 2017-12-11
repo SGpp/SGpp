@@ -6,6 +6,7 @@
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/tools/GaussHermiteQuadRule1D.hpp>
 
+#include <vector>
 #include <sstream>
 #include <string>
 
