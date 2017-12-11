@@ -10,7 +10,7 @@ namespace combigrid {
 
 // ToDo (rehmemk) Make more efficient by testing for overlap of basis functions using their indices.
 // Comapre OperationMatrixLTwoDotBspline
-FloatArrayVector BSplineScalarProductEvaluator::get1DMixedIntegral(std::vector<double>& points,
+FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(std::vector<double>& points,
                                                                    size_t index_i) {
   FloatArrayVector sums;
   for (size_t index_j = 0; index_j < points.size(); index_j++) {
@@ -75,7 +75,7 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DMixedIntegral(std::vector<d
 void BSplineScalarProductEvaluator::calculate1DBSplineScalarProducts(
     std::vector<double>& points, std::vector<FloatArrayVector>& basisValues) {
   for (size_t index_i = 0; index_i < points.size(); ++index_i) {
-    basisValues.push_back(get1DMixedIntegral(points, index_i));
+    basisValues.push_back(get1DL2ScalarProduct(points, index_i));
   }
 }
 
