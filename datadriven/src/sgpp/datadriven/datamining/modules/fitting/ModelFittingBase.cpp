@@ -36,7 +36,7 @@ using sgpp::solver::BiCGStab;
 using sgpp::solver::SLESolverConfiguration;
 
 ModelFittingBase::ModelFittingBase()
-    : config{nullptr}, grid{nullptr}, alpha{}, dataset{nullptr}, solver{nullptr} {}
+    : verboseSolver{true}, config{nullptr}, grid{nullptr}, alpha{}, dataset{nullptr}, solver{nullptr} {}
 
 const Grid& ModelFittingBase::getGrid() const {
   if (grid != nullptr) {
@@ -48,7 +48,7 @@ const Grid& ModelFittingBase::getGrid() const {
 
 const DataVector& ModelFittingBase::getSurpluses() const { return alpha; }
 
-const FitterConfiguration& ModelFittingBase::getFitterConfiguration() const { return *config; }
+FitterConfiguration* ModelFittingBase::getFitterConfiguration()  { return config.get(); }
 
 Grid* ModelFittingBase::buildGrid(const RegularGridConfiguration& gridConfig) const {
   // load grid

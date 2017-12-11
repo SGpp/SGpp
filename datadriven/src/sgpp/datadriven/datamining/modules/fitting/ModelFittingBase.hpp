@@ -136,7 +136,12 @@ class ModelFittingBase {
    * Get the configuration of the fitter object.
    * @return configuration of the fitter object
    */
-  const FitterConfiguration& getFitterConfiguration() const;
+  FitterConfiguration* getFitterConfiguration();
+  
+  /**
+   * Whether the Solver produces output or not.
+   */
+  bool verboseSolver;
 
  protected:
   /**

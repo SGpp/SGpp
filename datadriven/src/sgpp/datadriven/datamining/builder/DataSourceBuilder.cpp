@@ -15,6 +15,7 @@
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/CSVFileSampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceFileTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp>
@@ -71,6 +72,8 @@ DataSource* DataSourceBuilder::assemble() const {
 
   if (config.fileType == DataSourceFileType::ARFF) {
     sampleProvider = new ArffFileSampleProvider;
+  } else if (config.fileType == DataSourceFileType::CSV) {
+    sampleProvider = new CSVFileSampleProvider;
   } else {
     data_exception("Unknown file type");
   }
