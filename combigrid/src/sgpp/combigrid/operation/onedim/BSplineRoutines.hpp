@@ -47,8 +47,8 @@ double LagrangePolynomial(double const& x, std::vector<double> const& xValues, s
  * @param degree degree of the B spline basis
  * @param xi returns the vector containing the knots with which the Bsplines are created.
    */
-void createdeg1Knots(std::vector<double> const& xValues, size_t const& degree,
-                     std::vector<double>& xi);
+// void createdeg1Knots(std::vector<double> const& xValues, size_t const& degree,
+//                     std::vector<double>& xi);
 
 /**
  * Creates the knot sequence xi needed for the evaluation of B-splines from the evaluation points

@@ -101,6 +101,25 @@ void printLevelstructurePoints(
   }
 }
 
+void printLevelstructureToFile(
+    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelstructure) {
+  std::string plotstr = "/home/rehmemk/SGS_Sync/Plotting/combigrid_bsplines/LevelStructure.dat";
+  remove(plotstr.c_str());
+  std::ofstream plotfile;
+  plotfile.open(plotstr.c_str(), std::ios::app);
+  auto it = levelstructure->getStoredDataIterator();
+  while (it->isValid()) {
+    sgpp::combigrid::MultiIndex index = it->getMultiIndex();
+    for (size_t d = 0; d < numDimensions - 1; d++) {
+      plotfile << index[d] << ", ";
+    }
+    plotfile << index[numDimensions - 1];
+    plotfile << "\n";
+    it->moveToNext();
+  }
+  plotfile.close();
+}
+
 void printSGGridToFile(sgpp::base::GridStorage const& gridStorage) {
   std::string plotstr = "/home/rehmemk/SGS_Sync/Plotting/combigrid_bsplines/convertedGrid.dat";
   remove(plotstr.c_str());
@@ -214,7 +233,11 @@ std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> createVarianceLevelStruct
   // ToDo(rehmemk) the number of levels added is now a little mysterious because the user does not
   // know how many levels are added to guarantee (1,..,1) before the number of levels he chose to
   // be added is added
-  Operation->getLevelManager()->addLevelsAdaptiveByNumLevels(numlevels);
+  //  Operation->getLevelManager()->addLevelsAdaptiveByNumLevels(numlevels);
+  //  size_t numThreads = 4;
+  //  Operation->getLevelManager()->addRegularLevelsByNumPointsParallel(numlevels, numThreads);
+  size_t numPoints = numlevels;
+  Operation->getLevelManager()->addLevelsAdaptive(numPoints);
   auto levelStructure = Operation->getLevelManager()->getLevelStructure();
   return levelStructure;
 }
@@ -255,6 +278,7 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   //  print options
   //  printLevelstructure(levelStructure);
   //  printSGGridToFile(gridStorage);
+  printLevelstructureToFile(levelStructure);
 
   // interpolate on SG
   sgpp::base::DataMatrix interpolParams(numDimensions, gridStorage.getSize());
@@ -312,31 +336,18 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   //  std::cout << " mean error: " << fabs(mean - atanMean) << " ";
   //  std::cout << " meanSquare error : " << fabs(meanSquare - atanMeanSquare) << " ";
   std::cout << fabs(variance - atanVariance) << std::endl;
-
-  // MATRIX DEBUGGING:
-
-  //  //  for (size_t i = 0; i < alpha.getSize(); i++) {
-  //  //    for (size_t j = 0; j < alpha.getSize(); j++) {
-  //  sgpp::base::DataVector ivec(alpha.getSize(), 0.0);
-  //  sgpp::base::DataVector jvec(alpha.getSize(), 0.0);
-  //  //      ivec[i] = 1;
-  //  //      jvec[j] = 1;
-  //  ivec[0] = 1;
-  //  jvec[0] = 1;
-  //  massMatrix.mult(ivec, product);
-  //  std::cout << std::fixed << product.dotProduct(jvec) << " ";
-  //  //}
-  //  std::cout << "\n";
-  //  //  }
 }
 
 int main() {
+  sgpp::combigrid::Stopwatch watch;
+  watch.start();
   size_t degree = 5;
-  size_t numLevels = 8;
-  for (size_t maxLevel = 0; maxLevel < numLevels; maxLevel++) {
-    //    std::cout << maxLevel << ", ";
-    //  size_t maxLevel = 0;
-    BSplineGridConversion(degree, maxLevel);
-  }
+  //  size_t numLevels = 20;
+  //  for (size_t maxLevel = 0; maxLevel < numLevels; maxLevel++) {
+  size_t maxLevel = 2000;
+  //  std::cout << maxLevel << ", ";
+  BSplineGridConversion(degree, maxLevel);
+  //  }
+  std::cout << "run time " << watch.elapsedSeconds() << std::endl;
   return 0;
 }
