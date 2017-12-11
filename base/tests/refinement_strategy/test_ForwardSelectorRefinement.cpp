@@ -356,17 +356,6 @@ BOOST_AUTO_TEST_CASE(testFreeRefine2d) {
       BOOST_CHECK(gridStorage.isContaining(*point));
   }
   delete point;
-/*
-  size_t i = 0;
-  GridStorage::grid_map_iterator end_iter = gridStorage.end();
-  for (GridStorage::grid_map_iterator iter = gridStorage.begin();
-       iter != end_iter; iter++) {
-    DataVector gpCoord(2);
-    gridStorage.getCoordinates(*(iter->first), gpCoord);
-    BOOST_CHECK_CLOSE(gpCoord.get(0), gridPoints.get(i, 0), 1e-10);
-    BOOST_CHECK_CLOSE(gpCoord.get(1), gridPoints.get(i, 1), 1e-10);
-    i++;
-  }*/
 }
 
 BOOST_AUTO_TEST_SUITE_END()
