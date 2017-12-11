@@ -55,11 +55,9 @@ void createdeg1Knots(std::vector<double> const& xValues, std::vector<double>& xi
  * and 1. For dealing with the boundaries at 0 and 1 not a knot knots are used. In the case of
  * degree 3 this means that the knot directly to the right/left of 0/1 are removed.
  * @param xValues grid points inside [0,1]
- * @param degree degree of the B spline basis
  * @param xi returns the vector containing the knots with which the Bsplines are created.
    */
-void createdeg3NakKnots(std::vector<double> const& xValues, size_t const& degree,
-                        std::vector<double>& xi);
+void createdeg3NakKnots(std::vector<double> const& xValues, std::vector<double>& xi);
 
 /**
  * Creates the knot sequence xi needed for the evaluation of B-splines from the evaluation points
@@ -67,11 +65,9 @@ void createdeg3NakKnots(std::vector<double> const& xValues, size_t const& degree
  * and 1. For dealing with the boundaries at 0 and 1 not a knot knots are used. In the case of
  * degree 3 this means that the two knots directly to the right/left of 0/1 are removed.
  * @param xValues grid points inside [0,1]
- * @param degree degree of the B spline basis
  * @param xi returns the vector containing the knots with which the Bsplines are created.
    */
-void createdeg5NakKnots(std::vector<double> const& xValues, size_t const& degree,
-                        std::vector<double>& xi);
+void createdeg5NakKnots(std::vector<double> const& xValues, std::vector<double>& xi);
 /**
  * interface for creating the knot sequence xi needed for the evaluation of B-splines from the
  * evaluation points
