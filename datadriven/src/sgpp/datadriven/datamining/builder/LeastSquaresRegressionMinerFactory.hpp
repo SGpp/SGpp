@@ -17,6 +17,7 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/HPOScorer.hpp>
 
 #include <string>
 
@@ -71,6 +72,15 @@ class LeastSquaresRegressionMinerFactory : public MinerFactory {
    * configuration file.
    */
   virtual Scorer* createScorer(const DataMiningConfigParser& parser) const;
+  
+  /**
+   * Build an instance of a #sgpp::datadriven::HPOScorer object as specified in the configuration
+   * file.
+   * @param parser parser object that provides methods to query the configuration file.
+   * @return Fully configured instance of a #sgpp::datadriven::HPOScorer object as specified in the
+   * configuration file.
+   */
+  virtual HPOScorer* createHPOScorer(const DataMiningConfigParser& parser) const;
 };
 
 } /* namespace datadriven */

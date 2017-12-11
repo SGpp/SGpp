@@ -68,7 +68,7 @@ class FitterConfiguration {
    * @return deep copy of this object. New object is owned by caller.
    */
   virtual FitterConfiguration* clone() const = 0;
-
+  
   /**
    * Get initial conditions for the grid before adaptive refinement.
    * @return immutable RegularGridConfiguration
@@ -106,7 +106,7 @@ class FitterConfiguration {
    * @return immutable OperationMultipleEvalConfiguration
    */
   const datadriven::OperationMultipleEvalConfiguration& getMultipleEvalConfig() const;
-
+  
   /**
    * Get or set initial conditions for the grid before adaptive refinement.
    * @return RegularGridConfiguration
@@ -155,6 +155,12 @@ class FitterConfiguration {
    * @param parser: the parser object to read from
    */
   virtual void readParams(const DataMiningConfigParser& parser) = 0;
+  
+  void setRegularizationConfig(datadriven::RegularizationConfiguration bregularizationConfig);
+  void setRefinementConfig(base::AdpativityConfiguration badaptivityConfig);
+  void setGridConfig(base::RegularGridConfiguration bgridConfig);
+
+
 
  protected:
   /**

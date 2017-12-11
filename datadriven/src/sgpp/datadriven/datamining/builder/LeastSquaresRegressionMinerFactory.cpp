@@ -17,6 +17,7 @@
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/SplittingScorerFactory.hpp>
+#include <sgpp/datadriven/datamining/builder/HPOScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
@@ -36,7 +37,7 @@ namespace datadriven {
 SparseGridMiner* LeastSquaresRegressionMinerFactory::buildMiner(const std::string& path) const {
   DataMiningConfigParser parser(path);
 
-  return new SparseGridMiner(createDataSource(parser), createFitter(parser), createScorer(parser));
+  return new SparseGridMiner(createDataSource(parser), createFitter(parser), createScorer(parser), createHPOScorer(parser));
 }
 
 void LeastSquaresRegressionMinerFactory::optimizeHyperparameters(const std::string& path){
@@ -83,12 +84,12 @@ void LeastSquaresRegressionMinerFactory::optimizeHyperparameters(const std::stri
     }
   }
 double minScore = 1.0;
-   for(int i=1;i<=4;i++){
-    for(int k=0;k<=4;k++){
-      for(int m=1;m<=5;m++){
-        for(int p=1;p<=5;p++){
-          for(int r=1;r<=8;r++){
-            if(scores[i][k][m][p][r]<minScore){
+   for (int i=1;i<=4;i++){
+    for (int k=0;k<=4;k++){
+      for (int m=1;m<=5;m++){
+        for (int p=1;p<=5;p++){
+          for (int r=1;r<=8;r++){
+            if (scores[i][k][m][p][r]<minScore){
               minScore = scores[i][k][m][p][r];
               std::cout<< "Score: " <<minScore <<" par: "<<i<<k<<m<<p<<r<< std::endl;
             }
@@ -176,6 +177,12 @@ Scorer* LeastSquaresRegressionMinerFactory::createScorer(
     factory = std::make_unique<SplittingScorerFactory>();
   }
   return factory->buildScorer(parser);
+}
+
+HPOScorer* LeastSquaresRegressionMinerFactory::createHPOScorer(
+    const DataMiningConfigParser& parser) const {
+  HPOScorerFactory factory;
+  return static_cast<HPOScorer*>(factory.buildScorer(parser));  
 }
 
 } /* namespace datadriven */

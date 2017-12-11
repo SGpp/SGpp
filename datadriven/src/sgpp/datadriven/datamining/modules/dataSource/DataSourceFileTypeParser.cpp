@@ -29,6 +29,8 @@ DataSourceFileType DataSourceFileTypeParser::parse(const std::string& input) {
     return DataSourceFileType::ARFF;
   } else if (inputLower == "none") {
     return DataSourceFileType::NONE;
+  } else if (inputLower == "csv") {
+    return DataSourceFileType::CSV;
   } else {
     const std::string errorMsg =
         "Failed to convert string \"" + input + "\" to any known DataSourceFileType";
@@ -42,7 +44,8 @@ const std::string& sgpp::datadriven::DataSourceFileTypeParser::toString(DataSour
 
 const DataSourceFileTypeParser::FileTypeMap_t DataSourceFileTypeParser::fileTypeMap = []() {
   return DataSourceFileTypeParser::FileTypeMap_t{std::make_pair(DataSourceFileType::NONE, "None"),
-                                                 std::make_pair(DataSourceFileType::ARFF, "ARFF")};
+                                                 std::make_pair(DataSourceFileType::ARFF, "ARFF"),
+                                                 std::make_pair(DataSourceFileType::CSV, "CSV")};
 }();
 
 } /* namespace datadriven */

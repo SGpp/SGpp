@@ -127,7 +127,7 @@ void ModelFittingLeastSquares::assembleSystemAndSolve(const SLESolverConfigurati
   systemMatrix->generateb(dataset->getTargets(), b);
 
   reconfigureSolver(*solver, solverConfig);
-  solver->solve(*systemMatrix, alpha, b, true, true, DEFAULT_RES_THRESHOLD);
+  solver->solve(*systemMatrix, alpha, b, true, verboseSolver, DEFAULT_RES_THRESHOLD);
 }
 
 }  // namespace datadriven

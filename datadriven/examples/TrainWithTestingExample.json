@@ -1,12 +1,12 @@
 {
 	"dataSource": {
-		"filePath": "D:\SGpp\datasets\bupa_liver\liver-disorders_normalized.arff"
+		"filePath": "C:/Users/Eric/Documents/friedman1_10d_150000.arff"
 	},
 	"scorer": {
 		"testing": {
 			"testingPortion": 0.75,
 			"shuffling": "random",
-			"randomSeed": 42,
+			"randomSeed": 43,
 			"metric": "MSE"
 		}
 	},
@@ -14,16 +14,16 @@
 		"type": "regressionLeastSquares",
 		"gridConfig": {
 			"gridType": "modlinear",
-			"level": 2
+			"level": 3
 		},
 	"adaptivityConfig": {
 			"numRefinements": 3,
-			"threshold": 0.001,
+			"threshold": 0.002,
 			"maxLevelType": false,
 			"noPoints": 3
 		},
 		"regularizationConfig": {
-			"lambda": 10e-3
+			"lambda": 10e-4
 		}
 	}
 }
