@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryCombigridBasis.hpp>
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/combigrid/common/GridConversion.hpp>
 #include <sgpp/combigrid/integration/MCIntegrator.hpp>
@@ -338,4 +339,39 @@ double interpolateVarianceAdaptively(size_t numlevels, size_t degree) {
   // std::endl;
   interpoleval.sub(funceval);
   return interpoleval.l2Norm();
+}
+
+void BsplineTimeComparison() {
+  // deg = 5, level = 27:
+  // SNak:  1.30 s
+  // Combi: 1.36s
+  // Kein nennenswerter Vorteil SNak erkennbar
+  size_t degree = 5;
+  std::vector<double> SNakeval;
+  std::vector<double> Combieval;
+  sgpp::base::SNakBsplineBoundaryCombigridBase basis(degree);
+  unsigned int level = 27;
+  sgpp::combigrid::Stopwatch watch;
+  watch.start();
+  double x = 0.714;
+  for (unsigned int i = 1; i <= std::pow(2, level) - 1; i++) {
+    SNakeval.push_back(basis.eval(level, i, x));
+  }
+  std::cout << watch.elapsedSeconds() << " " << std::endl;
+
+  std::vector<double> xValues;
+  for (double i = 1; i <= std::pow(2, level) - 1; i = i + 2) {
+    xValues.push_back(i / std::pow(2, level));
+  }
+  watch.start();
+  std::vector<double> xi;
+  createNakKnots(xValues, degree, xi);
+  for (unsigned int i = 1; i <= std::pow(2, level) - 1; i++) {
+    Combieval.push_back(nonUniformBSpline(x, degree, i, xi));
+  }
+  std::cout << watch.elapsedSeconds() << " " << std::endl;
+
+  //  for (size_t i = 0; i < Combieval.size(); i++) {
+  //    std::cout << fabs(SNakeval[i] - Combieval[i]) << std::endl;
+  //  }
 }

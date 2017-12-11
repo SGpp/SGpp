@@ -73,6 +73,7 @@ void BSplineInterpolationEvaluator::computeBasisValues() {
   }
   std::vector<double> xi;
   createNakKnots(xValues, degree, xi);
+
   for (size_t i = 0; i < xValues.size(); i++) {
     basisValues[i] = nonUniformBSpline(evaluationPoint, degree, i, xi);
   }

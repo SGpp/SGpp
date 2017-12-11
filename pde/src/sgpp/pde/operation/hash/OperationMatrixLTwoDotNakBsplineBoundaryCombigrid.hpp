@@ -5,10 +5,14 @@
 
 #pragma once
 
+#include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
-
+#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/globaldef.hpp>
+
+#include <algorithm>
 
 namespace sgpp {
 namespace pde {

@@ -47,5 +47,7 @@ int main() {
   //  double res = interpolateVarianceAdaptively(level, degree);
   //  std::cout << res << std::endl;
 
+  BsplineTimeComparison();
+
   return 0;
 }

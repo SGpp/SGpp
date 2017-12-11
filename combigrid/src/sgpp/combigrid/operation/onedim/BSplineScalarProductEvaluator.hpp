@@ -48,7 +48,7 @@ class BSplineScalarProductEvaluator : public AbstractLinearEvaluator<FloatArrayV
    * @param index_i index of B-spline b_i
    * @return integral of b_i*b_j
    */
-  FloatArrayVector get1DMixedIntegral(std::vector<double> &points, size_t index_i);
+  FloatArrayVector get1DL2ScalarProduct(std::vector<double> &points, size_t index_i);
 
   /**
    * This Function calculates all integrals int b_i(x) b_j(x) dx
