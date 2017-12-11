@@ -8,8 +8,8 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 
-#include <vector>
 #include <cmath>
+#include <vector>
 
 namespace sgpp {
 
@@ -113,8 +113,8 @@ struct CO2 {
 struct Atan {
   size_t numDims = 2;
 
-  double mean = 3.514491266446378;
-  double variance = 3.453103593931560;
+  double mean = 3.514491266446367;
+  double variance = 3.453103593932221;
 
   static double eval(sgpp::base::DataVector const& v) {
     return std::atan(50.0 * (v[0] - 0.35)) + M_PI / 2.0 + 4.0 * std::pow(v[1], 3.0) +

@@ -65,7 +65,6 @@ void createdeg3NakKnots(std::vector<double> const& xValues, std::vector<double>&
  * and 1. For dealing with the boundaries at 0 and 1 not a knot knots are used. In the case of
  * degree 3 this means that the two knots directly to the right/left of 0/1 are removed.
  * @param xValues grid points inside [0,1]
- * @param degree degree of the B spline basis
  * @param xi returns the vector containing the knots with which the Bsplines are created.
    */
 void createdeg5NakKnots(std::vector<double> const& xValues, std::vector<double>& xi);

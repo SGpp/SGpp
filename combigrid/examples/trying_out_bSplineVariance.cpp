@@ -40,9 +40,9 @@
 #include <string>
 #include <vector>
 
-double atanMean = 3.514491266445763;
-double atanMeanSquare = 15.804752455860012;
-double atanVariance = 3.453103593936470;
+double atanMean = 3.514491266446367;
+double atanMeanSquare = 15.804752455859360;
+double atanVariance = 3.453103593932221;
 
 double xcubeMean = 0.25;
 double xcubeMeanSquare = 0.142857142857143;
