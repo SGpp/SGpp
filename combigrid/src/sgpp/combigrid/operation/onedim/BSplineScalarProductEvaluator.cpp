@@ -8,10 +8,8 @@
 namespace sgpp {
 namespace combigrid {
 
-// ToDo (rehmemk) Make more efficient by testing for overlap of basis functions using their indices.
-// Comapre OperationMatrixLTwoDotBspline
-FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(std::vector<double>& points,
-                                                                   size_t index_i) {
+FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(
+    std::vector<double> const& points, size_t const& index_i) {
   FloatArrayVector sums;
   for (size_t index_j = 0; index_j < points.size(); index_j++) {
     // performing Gauss-Legendre integration with twice as many points as for the simple integrals
@@ -44,26 +42,29 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(std::vector
         sum += integrand * quadratureweights[i];
       }
     } else {
-      quadRule.getLevelPointsAndWeightsNormalized(
-          std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
-      size_t first_segment_j = std::max(degree, index_j);
-      size_t last_segment_j = std::min(xi.size() - degree - 1, index_j + degree + 1);
-      size_t first_segment_i = std::max(degree, index_i);
-      size_t last_segment_i = std::min(xi.size() - degree - 1, index_i + degree + 1);
-      size_t first_segment = std::min(first_segment_i, first_segment_j);
-      size_t last_segment = std::max(last_segment_i, last_segment_j);
-      for (size_t segmentIndex = first_segment; segmentIndex < last_segment; segmentIndex++) {
-        double a = std::max(0.0, xi[segmentIndex]);
-        double b = std::min(1.0, xi[segmentIndex + 1]);
-        double width = b - a;
+      // only if supports of B-splines overlap the scalar product must be calculated
+      if (abs(static_cast<int>(index_i) - static_cast<int>(index_j)) <= degree) {
+        quadRule.getLevelPointsAndWeightsNormalized(
+            std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
+        size_t first_segment_j = std::max(degree, index_j);
+        size_t last_segment_j = std::min(xi.size() - degree - 1, index_j + degree + 1);
+        size_t first_segment_i = std::max(degree, index_i);
+        size_t last_segment_i = std::min(xi.size() - degree - 1, index_i + degree + 1);
+        size_t first_segment = std::min(first_segment_i, first_segment_j);
+        size_t last_segment = std::max(last_segment_i, last_segment_j);
+        for (size_t segmentIndex = first_segment; segmentIndex < last_segment; segmentIndex++) {
+          double a = std::max(0.0, xi[segmentIndex]);
+          double b = std::min(1.0, xi[segmentIndex + 1]);
+          double width = b - a;
 
-        for (size_t i = 0; i < roots.getSize(); ++i) {
-          double x = a + width * roots[i];
-          productValue =
-              nonUniformBSpline(x, degree, index_j, xi) * nonUniformBSpline(x, degree, index_i, xi);
-          double integrand = productValue * this->weight_function(x);
-          // multiply weights by length_old_interval / length_new_interval
-          sum += integrand * quadratureweights[i] * width;
+          for (size_t i = 0; i < roots.getSize(); ++i) {
+            double x = a + width * roots[i];
+            productValue = nonUniformBSpline(x, degree, index_j, xi) *
+                           nonUniformBSpline(x, degree, index_i, xi);
+            double integrand = productValue * this->weight_function(x);
+            // multiply weights by length_old_interval / length_new_interval
+            sum += integrand * quadratureweights[i] * width;
+          }
         }
       }
     }
@@ -74,9 +75,12 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(std::vector
 
 void BSplineScalarProductEvaluator::calculate1DBSplineScalarProducts(
     std::vector<double>& points, std::vector<FloatArrayVector>& basisValues) {
+  //#ifdef _OPENMP
+  //#pragma omp parallel for
   for (size_t index_i = 0; index_i < points.size(); ++index_i) {
     basisValues.push_back(get1DL2ScalarProduct(points, index_i));
   }
+  //#endif /*_OPENMP*/
 }
 
 BSplineScalarProductEvaluator::~BSplineScalarProductEvaluator() {}
