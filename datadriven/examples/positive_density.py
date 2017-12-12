@@ -1188,12 +1188,13 @@ def solve(trainSamples, gridType, level, lmbd, solver="cvxopt"):
     M = A + lmbd * C
     P = np.dot(M.T, M)
     ew, v = np.linalg.eig(C)
-    print(C)
+    # print(C)
     print "Eigenvalues:", ew
     if (any(ew <= 0.0)):
         print("Negative Eigenvalue found !!!")
     q = np.dot(b, M).reshape((b.shape[0],))
     G = computeInterpolationMatrix(grid)
+    print(G)
     h = np.zeros((grid.getSize(),)).T
     # alpha = [18.903209  ,  -9.10141713,  -9.01883182,   0.10914204, -1.17484387,  -0.27891415,   0.15920611,  -9.38665655, -9.00823174,  -0.03247397,  -2.24949755,  -1.57653802, -0.09309876,   5.13592933,   4.54897953,   4.66893825,   4.31965063]
     alpha = 17*[-20.]

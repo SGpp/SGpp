@@ -26,7 +26,7 @@
 typedef CGAL::MP_Float ET;
 
 typedef CGAL::Quadratic_program_from_iterators
-<std::vector<double*>,                                                // for A
+ double**,                                           //for A
  double*,                                                 // for b
  CGAL::Const_oneset_iterator<CGAL::Comparison_result>, // for r
  bool*,                                                // for fl
@@ -294,20 +294,49 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
 
   // P = M*M.T
   // M dot product of M.T (M is symmetric)
-
-  std::vector<double*> P_it;
+  double** P_it = new double*[storage_size];
   for (size_t i = 0; i < M.getNcols(); i++) {
     DataVector col(storage_size);
     DataVector tmp(storage_size);
     M.getColumn(i, col);
     M.mult(col, tmp);
     P.setColumn(i, tmp);
-    P_it.push_back(P.getColumn(i).getPointer());
+    P_it[i] = tmp.getPointer();
   }
 
+  // Interpolation Matrix (grid point values when multiplied with alpha-vec)
+  DataMatrix gridPoints(storage_size, dims);
+  for (size_t i = 0; i < storage_size; i++) {
+    gp = gridStorage->getPoint(i);
+    DataVector coords(dims);
+    gp.getStandardCoordinates(coords);
+    gridPoints.setRow(i, coords);
+  }
 
+  OperationMultipleEval* G_op = sgpp::op_factory::createOperationMultipleEval(*grid, gridPoints);
+  double** G_it = new double*[storage_size];
+  for (size_t i = 0; i < storage_size; i++) {
+    DataVector result(storage_size);
+    DataVector alpha(storage_size, 0.0);
+    alpha.set(i, 1.0);
+    G_op->mult(alpha, result);
+    G_it[i] = result.getPointer();
+  }
+  // constraint relation (i.e. greater than zero)
+  CGAL::Const_oneset_iterator<CGAL::Comparison_result> r(CGAL::GREATER);
+
+  // lower upper bounds unused:
+  bool* bounded = new bool[storage_size];
+  for (size_t i = 0; i < storage_size; i++) {
+    bounded[i] = false;
+  }
+  DataVector bounds(storage_size, 0.0);
   // define the quadratic Programm
-    Program qp(storage_size, storage_size);
+  Program qp(storage_size, storage_size,  // size of problem
+             G_it, b.getPointer(), r,     // constraints
+             bounded, bounds->getPointer(), bounded, bounds->getPointer()  // bounds
+             P_it, q  // optimization goal
+             );
 }
 
 int main(int argc, char** argv) {
