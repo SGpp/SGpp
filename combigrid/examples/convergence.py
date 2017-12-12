@@ -1,3 +1,12 @@
+#!/usr/bin/python
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
+
+## \page example_convergence_py convergence.py
+## simple code that provides convergence plots for various analytic models
+
 from argparse import ArgumentParser
 from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
 from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend

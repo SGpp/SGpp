@@ -1,3 +1,12 @@
+#!/usr/bin/python
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
+
+## \page example_plot_2d_sparse_grids_py plot_2d_sparse_grids.py
+## plots anisotropic full grids that form part of the combination technique
+
 from argparse import ArgumentParser
 import numpy as np
 import matplotlib.pyplot as plt
