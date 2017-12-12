@@ -99,8 +99,7 @@ bool Armadillo::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) con
   // print ratio of nonzero entries
   {
     char str[10];
-    double nnzRatio =
-        static_cast<double>(nnz) / (static_cast<double>(n) * static_cast<double>(n));
+    double nnzRatio = static_cast<double>(nnz) / (static_cast<double>(n) * static_cast<double>(n));
     snprintf(str, sizeof(str), "%.1f%%", nnzRatio * 100.0);
     Printer::getInstance().printStatusUpdate("nnz ratio: " + std::string(str));
     Printer::getInstance().printStatusNewLine();
