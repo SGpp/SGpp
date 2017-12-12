@@ -74,6 +74,8 @@ void BSplineInterpolationEvaluator::computeBasisValues() {
   std::vector<double> xi;
   createNakKnots(xValues, degree, xi);
 
+  // ToDo (rehmemk) slows down on laptop, test on neon if this is useful
+  //#pragma omp parallel for
   for (size_t i = 0; i < xValues.size(); i++) {
     basisValues[i] = nonUniformBSpline(evaluationPoint, degree, i, xi);
   }
