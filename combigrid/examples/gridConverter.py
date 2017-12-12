@@ -4,7 +4,7 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-## \page combigrid_gridConverter_py gridConverter.py
+## \page example_gridConverter_py gridConverter.py
 ##
 ## This tutorial
 ## contains examples on how to convert sparse grids with a

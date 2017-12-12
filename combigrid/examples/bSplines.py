@@ -1,3 +1,12 @@
+#!/usr/bin/python
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
+
+## \page example_bSplines_py bSplines.py
+## plots anisotropic full grids that form part of the combination technique
+
 from argparse import ArgumentParser
 from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
 from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend
@@ -18,7 +27,7 @@ from numpy import square
 #===============================================================================
 # For basis functions (1,1) (0,0) (0,1) (2,1) (2,3) in this order (the shift between level 0 and 1 is due to the combigrid conversion
 #
-# 1                  0.6666666666666666  0.5                0.275                0.275    
+# 1                  0.6666666666666666  0.5                0.275                0.275
 # 0.6666666666666666 0.5333333333333333  0.25               0.2504166666666666   0.11041666666666665
 # 0.5                0.25                0.3333333333333333 0.0675               0.2075
 # 0.275              0.2504166666666666  0.0675             0.13857142857142857  0.016857142857142862
@@ -43,7 +52,7 @@ B41=[];B43=[];B45=[];B47=[];B49=[];B411=[];B413=[];B415=[]
 B51=[];B53=[];B55=[];B57=[];B59=[];B511=[];B513=[];B515=[];B517=[];B519=[];B521=[];B523=[];B525=[];B527=[];B529=[];B531=[]
 X = np.linspace(0,1,250)
 for i in range(0,len(X)):
-    B00.append(basis.eval(0,0,X[i]));    B01.append(basis.eval(0,1,X[i])); 
+    B00.append(basis.eval(0,0,X[i]));    B01.append(basis.eval(0,1,X[i]));
     B11.append(basis.eval(1,1,X[i]))
     B21.append(basis.eval(2,1,X[i]));    B23.append(basis.eval(2,3,X[i]))
     B31.append(basis.eval(3,1,X[i]));    B33.append(basis.eval(3,3,X[i]));    B35.append(basis.eval(3,5,X[i]));    B37.append(basis.eval(3,7,X[i]))
