@@ -75,12 +75,17 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(
 
 void BSplineScalarProductEvaluator::calculate1DBSplineScalarProducts(
     std::vector<double>& points, std::vector<FloatArrayVector>& basisValues) {
-  //#ifdef _OPENMP
-  //#pragma omp parallel for
+#ifdef _OPENMP
+  basisValues.resize(points.size());
+#pragma omp parallel for
+  for (size_t index_i = 0; index_i < points.size(); ++index_i) {
+    basisValues[index_i] = get1DL2ScalarProduct(points, index_i);
+  }
+#else
   for (size_t index_i = 0; index_i < points.size(); ++index_i) {
     basisValues.push_back(get1DL2ScalarProduct(points, index_i));
   }
-  //#endif /*_OPENMP*/
+#endif /*_OPENMP*/
 }
 
 BSplineScalarProductEvaluator::~BSplineScalarProductEvaluator() {}

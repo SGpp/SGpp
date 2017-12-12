@@ -49,6 +49,7 @@ void OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::mult(sgpp::base::DataVec
   result.setAll(0.0);
 
   for (size_t i = 0; i < gridSize; i++) {
+#pragma omp parallel for
     for (size_t j = i; j < gridSize; j++) {
       double temp_ij = 1;
 

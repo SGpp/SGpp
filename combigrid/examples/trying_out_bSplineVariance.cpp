@@ -27,6 +27,7 @@
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
+#include <sgpp/optimization/sle/solver/Armadillo.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
@@ -202,6 +203,7 @@ void calculateCGSGDifference(
   Operation->getLevelManager()->addLevelsFromStructure(levelStructure);
   sgpp::base::DataVector CGeval = Operation->getResult();
   CGeval.sub(SGeval);
+
   for (size_t i = 0; i < CGeval.size(); i++) {
     maxErr = (fabs(CGeval[i]) > maxErr) ? fabs(CGeval[i]) : maxErr;
     L2Err += fabs(CGeval[i] * CGeval[i]);
@@ -243,8 +245,9 @@ std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> createVarianceLevelStruct
 }
 
 void BSplineGridConversion(size_t degree, size_t numlevels) {
-  sgpp::combigrid::Stopwatch watch;
-  watch.start();
+  sgpp::combigrid::Stopwatch watch_individual;
+  sgpp::combigrid::Stopwatch watch_total;
+  watch_individual.start();
   // create interpolation operation
   sgpp::combigrid::MultiFunction func(f);
   sgpp::combigrid::EvaluatorConfiguration evalConfig(
@@ -262,13 +265,13 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   auto Operation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
       pointHierarchies, evaluators, dummyLevelManager, gf, exploitNesting, summationStrategyType);
 
-  //  std::cout << "interpol operation " << watch.elapsedSeconds() << std::endl;
-
   // create variance adaptive level structure
   auto levelStructure =
       createVarianceLevelStructure(numlevels, degree, pointHierarchies, gf, exploitNesting);
 
-  std::cout << "level structure " << watch.elapsedSeconds() << std::endl;
+  std::cout << "level structure " << watch_individual.elapsedSeconds() << " total "
+            << watch_total.elapsedSeconds() << std::endl;
+  watch_individual.start();
 
   std::vector<bool> orderingConfiguration;
   for (size_t d = 0; d < numDimensions; ++d) {
@@ -280,8 +283,6 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDimensions, degree));
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
-
-  //  std::cout << "convert " << watch.elapsedSeconds() << std::endl;
 
   //  print options
   //  printLevelstructure(levelStructure);
@@ -303,6 +304,9 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   Operation->setParameters(interpolParams);
   Operation->getLevelManager()->addLevelsFromStructure(levelStructure);
   sgpp::base::DataVector f_values = Operation->getResult();
+  std::cout << "interpol CG " << watch_individual.elapsedSeconds() << " total "
+            << watch_total.elapsedSeconds() << std::endl;
+  watch_individual.start();
 
   sgpp::optimization::HierarchisationSLE hierSLE(*grid);
   sgpp::optimization::sle_solver::Auto sleSolver;
@@ -312,19 +316,22 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   }
   sgpp::optimization::InterpolantScalarFunction u(*grid, alpha);
 
-  //  std::cout << "interpol SG " << watch.elapsedSeconds() << std::endl;
+  std::cout << "interpol SG " << watch_individual.elapsedSeconds() << " total "
+            << watch_total.elapsedSeconds() << std::endl;
+  watch_individual.start();
 
   //  std::cout << "num CG points: " << Operation->getLevelManager()->numGridPoints();
   //  std::cout << ", num SG points " << gridStorage.getSize() << std::endl;
-  std::cout << gridStorage.getSize() << " ";
+  //  std::cout << gridStorage.getSize() << " ";
 
   // error calculations
-  double CGL2Err, CGMaxErr, SGL2Err, SGMaxErr, CompL2Err, CompMaxErr = 0;
-  calculateCGerror(CGMaxErr, CGL2Err, Operation, levelStructure);
-  calculateSGerror(SGMaxErr, SGL2Err, u);
-  calculateCGSGDifference(CompMaxErr, CompL2Err, Operation, levelStructure, u);
-
-  //  std::cout << "errors " << watch.elapsedSeconds() << std::endl;
+  //  double CGL2Err, CGMaxErr, SGL2Err, SGMaxErr, CompL2Err, CompMaxErr = 0;
+  //  calculateCGerror(CGMaxErr, CGL2Err, Operation, levelStructure);
+  //  calculateSGerror(SGMaxErr, SGL2Err, u);
+  //  calculateCGSGDifference(CompMaxErr, CompL2Err, Operation, levelStructure, u);
+  //  std::cout << "errors " << watch_individual.elapsedSeconds() << " total "
+  //            << watch_total.elapsedSeconds() << std::endl;
+  //  watch_individual.start();
 
   //  std::cout << "\n";
   //  std::cout << "CG L2:   " << CGL2Err << "   CG max:   " << CGMaxErr << std::endl;
@@ -338,18 +345,21 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
                                                                                      func, degree);
   quadOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
   double mean = quadOperation->getResult();
+  std::cout << "quadrature " << watch_individual.elapsedSeconds() << " total "
+            << watch_total.elapsedSeconds() << std::endl;
 
   sgpp::base::Grid* gridptr = grid.get();
   sgpp::pde::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(gridptr);
+  watch_individual.start();
   sgpp::base::DataVector product(alpha.size(), 0);
   massMatrix.mult(alpha, product);
   double meanSquare = product.dotProduct(alpha);
+  std::cout << "matrix mult " << watch_individual.elapsedSeconds() << " total "
+            << watch_total.elapsedSeconds() << std::endl;
   double variance = meanSquare - mean * mean;
   //  std::cout << " mean error: " << fabs(mean - atanMean) << " ";
   //  std::cout << " meanSquare error : " << fabs(meanSquare - atanMeanSquare) << " ";
   std::cout << fabs(variance - atanVariance) << std::endl;
-
-  //  std::cout << "variance " << watch.elapsedSeconds() << std::endl;
 }
 
 int main() {
@@ -358,7 +368,7 @@ int main() {
   size_t degree = 5;
   //  size_t numLevels = 20;
   //  for (size_t maxLevel = 0; maxLevel < numLevels; maxLevel++) {
-  size_t maxLevel = 2000;
+  size_t maxLevel = 10000;
   //  std::cout << maxLevel << ", ";
   BSplineGridConversion(degree, maxLevel);
   //  }
