@@ -126,14 +126,15 @@ void createNakKnots(std::vector<double> const& xValues, size_t const& degree,
 sgpp::combigrid::GridFunction BSplineCoefficientGridFunction(
     sgpp::combigrid::MultiFunction func, sgpp::combigrid::CombiHierarchies::Collection grids,
     size_t degree) {
-  sgpp::combigrid::GridFunction gf([=](std::shared_ptr<sgpp::combigrid::TensorGrid> grid) {
+  sgpp::combigrid::GridFunction gf([func, grids,
+                                    degree](std::shared_ptr<sgpp::combigrid::TensorGrid> grid) {
     size_t numDimensions = grid->getDimension();
     // stores the values of the objective function
     auto funcStorage = std::make_shared<sgpp::combigrid::CombigridTreeStorage>(grids, func);
 
     // ToDo (rehmemk) B-spline interpolation and B-spline quadrature can be mixed (one in one
     // dimension the other in another dimension and so on). Combining B-splines and other basis
-    // functions hast not been tested yet.
+    // functions has not been tested yet.
 
     sgpp::combigrid::CombiEvaluators::Collection interpolEvaluators(
         numDimensions, sgpp::combigrid::CombiEvaluators::BSplineInterpolation(degree));

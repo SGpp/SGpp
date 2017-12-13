@@ -236,8 +236,6 @@ std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> createVarianceLevelStruct
   // know how many levels are added to guarantee (1,..,1) before the number of levels he chose to
   // be added is added
   //  Operation->getLevelManager()->addLevelsAdaptiveByNumLevels(numlevels);
-  //  size_t numThreads = 4;
-  //  Operation->getLevelManager()->addRegularLevelsByNumPointsParallel(numlevels, numThreads);
   size_t numPoints = numlevels;
   Operation->getLevelManager()->addLevelsAdaptive(numPoints);
   auto levelStructure = Operation->getLevelManager()->getLevelStructure();
@@ -245,9 +243,9 @@ std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> createVarianceLevelStruct
 }
 
 void BSplineGridConversion(size_t degree, size_t numlevels) {
-  sgpp::combigrid::Stopwatch watch_individual;
-  sgpp::combigrid::Stopwatch watch_total;
-  watch_individual.start();
+  //  sgpp::combigrid::Stopwatch watch_individual;
+  //  sgpp::combigrid::Stopwatch watch_total;
+  //  watch_individual.start();
   // create interpolation operation
   sgpp::combigrid::MultiFunction func(f);
   sgpp::combigrid::EvaluatorConfiguration evalConfig(
@@ -269,9 +267,9 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   auto levelStructure =
       createVarianceLevelStructure(numlevels, degree, pointHierarchies, gf, exploitNesting);
 
-  std::cout << "level structure " << watch_individual.elapsedSeconds() << " total "
-            << watch_total.elapsedSeconds() << std::endl;
-  watch_individual.start();
+  //  std::cout << "level structure " << watch_individual.elapsedSeconds() << " total "
+  //            << watch_total.elapsedSeconds() << std::endl;
+  //  watch_individual.start();
 
   std::vector<bool> orderingConfiguration;
   for (size_t d = 0; d < numDimensions; ++d) {
@@ -287,7 +285,7 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   //  print options
   //  printLevelstructure(levelStructure);
   //  printSGGridToFile(gridStorage);
-  printLevelstructureToFile(levelStructure);
+  //  printLevelstructureToFile(levelStructure);
 
   // interpolate on SG
   sgpp::base::DataMatrix interpolParams(numDimensions, gridStorage.getSize());
@@ -304,9 +302,9 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   Operation->setParameters(interpolParams);
   Operation->getLevelManager()->addLevelsFromStructure(levelStructure);
   sgpp::base::DataVector f_values = Operation->getResult();
-  std::cout << "interpol CG " << watch_individual.elapsedSeconds() << " total "
-            << watch_total.elapsedSeconds() << std::endl;
-  watch_individual.start();
+  //  std::cout << "interpol CG " << watch_individual.elapsedSeconds() << " total "
+  //            << watch_total.elapsedSeconds() << std::endl;
+  //  watch_individual.start();
 
   sgpp::optimization::HierarchisationSLE hierSLE(*grid);
   sgpp::optimization::sle_solver::Auto sleSolver;
@@ -316,9 +314,9 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   }
   sgpp::optimization::InterpolantScalarFunction u(*grid, alpha);
 
-  std::cout << "interpol SG " << watch_individual.elapsedSeconds() << " total "
-            << watch_total.elapsedSeconds() << std::endl;
-  watch_individual.start();
+  //  std::cout << "interpol SG " << watch_individual.elapsedSeconds() << " total "
+  //            << watch_total.elapsedSeconds() << std::endl;
+  //  watch_individual.start();
 
   //  std::cout << "num CG points: " << Operation->getLevelManager()->numGridPoints();
   //  std::cout << ", num SG points " << gridStorage.getSize() << std::endl;
@@ -337,7 +335,7 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   //  std::cout << "CG L2:   " << CGL2Err << "   CG max:   " << CGMaxErr << std::endl;
   //  std::cout << "SG L2:   " << SGL2Err << "   SG max:   " << SGMaxErr << std::endl;
   //  std::cout << "Comp L2: " << CompL2Err << " Comp max: " << CompMaxErr << std::endl;
-  //  std::cout << "L2 error: " << CGL2Err << " ";
+  //  std::cout << CGL2Err << " ";
 
   sgpp::base::DataVector dummyparams;
   auto quadOperation =
@@ -345,33 +343,33 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
                                                                                      func, degree);
   quadOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
   double mean = quadOperation->getResult();
-  std::cout << "quadrature " << watch_individual.elapsedSeconds() << " total "
-            << watch_total.elapsedSeconds() << std::endl;
+  //  std::cout << "quadrature " << watch_individual.elapsedSeconds() << " total "
+  //            << watch_total.elapsedSeconds() << std::endl;
+  //  watch_individual.start();
 
   sgpp::base::Grid* gridptr = grid.get();
   sgpp::pde::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(gridptr);
-  watch_individual.start();
   sgpp::base::DataVector product(alpha.size(), 0);
   massMatrix.mult(alpha, product);
+  //  std::cout << "matrix mult " << watch_individual.elapsedSeconds() << " total "
+  //            << watch_total.elapsedSeconds() << std::endl;
   double meanSquare = product.dotProduct(alpha);
-  std::cout << "matrix mult " << watch_individual.elapsedSeconds() << " total "
-            << watch_total.elapsedSeconds() << std::endl;
   double variance = meanSquare - mean * mean;
   //  std::cout << " mean error: " << fabs(mean - atanMean) << " ";
   //  std::cout << " meanSquare error : " << fabs(meanSquare - atanMeanSquare) << " ";
-  std::cout << fabs(variance - atanVariance) << std::endl;
+  std::cout << " variance error" << fabs(variance - atanVariance) << std::endl;
 }
 
 int main() {
+  size_t degree = 5;
+  size_t numLevels = 8;
+  //  for (size_t maxLevel = 0; maxLevel < numLevels; maxLevel ++) {
   sgpp::combigrid::Stopwatch watch;
   watch.start();
-  size_t degree = 5;
-  //  size_t numLevels = 20;
-  //  for (size_t maxLevel = 0; maxLevel < numLevels; maxLevel++) {
-  size_t maxLevel = 10000;
+  size_t maxLevel = 20000;
   //  std::cout << maxLevel << ", ";
   BSplineGridConversion(degree, maxLevel);
-  //  }
   std::cout << "run time " << watch.elapsedSeconds() << std::endl;
+  //  }
   return 0;
 }
