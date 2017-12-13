@@ -1117,6 +1117,7 @@ def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None):
     if 'optimal' not in sol['status']:
         return None
     print sol
+    print "P", P
     print "G", G
     alpha = np.array(sol['x']).reshape((P.shape[1],))
     print np.dot(G, alpha)
