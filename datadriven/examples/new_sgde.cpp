@@ -21,9 +21,10 @@
 #include <CGAL/basic.h>
 #include <CGAL/QP_models.h>
 #include <CGAL/QP_functions.h>
+#include <CGAL/QP_solution.h>
 #include <CGAL/MP_Float.h>
 typedef CGAL::MP_Float ET;
-
+typedef CGAL::Quadratic_program_solution<ET> Solution;
 typedef CGAL::Quadratic_program_from_iterators<
  double**,                                           //for A
  double*,                                                 // for b
@@ -300,9 +301,14 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
     M.getColumn(i, col);
     M.mult(col, tmp);
     P.setColumn(i, tmp);
-    P_it[i] = tmp.getPointer();
+    P_it[i] = new double[storage_size];
+    for (size_t j = 0; j < storage_size; j++) {
+      P_it[i][j] = tmp.get(j);
+      std::cout << P_it[i][j] << " ";
+    }
+    std::cout << std::endl;
   }
-
+  std::cout << "---------------" << std::endl;
   // Interpolation Matrix (grid point values when multiplied with alpha-vec)
   DataMatrix gridPoints(storage_size, dims);
   GridPoint gp;
@@ -316,12 +322,26 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
   OperationMultipleEval* G_op = sgpp::op_factory::createOperationMultipleEval(*grid, gridPoints);
   double** G_it = new double*[storage_size];
   for (size_t i = 0; i < storage_size; i++) {
+    G_it[i] = new double[storage_size];
+  }
+  // G_it[i] should contain the i-th COLUMN of G
+  for (size_t i = 0; i < storage_size; i++) {
     DataVector result(storage_size);
     DataVector alpha(storage_size, 0.0);
     alpha.set(i, 1.0);
     G_op->mult(alpha, result);
-    G_it[i] = result.getPointer();
+    for (size_t j = 0; j < storage_size; j++) {
+      G_it[i][j] = result.get(j);
+    }
   }
+
+  for (size_t i = 0; i < storage_size; i++) {
+    for (size_t j = 0; j < storage_size; j++) {
+      std::cout << G_it[j][i] << " ";
+    }
+    std::cout << std::endl;
+  }
+  std::cout << q.toString() << std::endl;
   // constraint relation (i.e. greater than zero)
   CGAL::Const_oneset_iterator<CGAL::Comparison_result> r(CGAL::LARGER);
 
@@ -337,6 +357,16 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
              bounded, bounds.getPointer(), bounded, bounds.getPointer(),  // bounds
              P_it, q.getPointer()  // optimization goal
              );
+  Solution s = CGAL::solve_quadratic_program(qp, ET());
+  Solution::Variable_value_iterator it = s.variable_values_begin();
+  DataVector best_alpha(storage_size);
+  for (size_t i = 0; i < storage_size; i++) {
+    best_alpha.set(i, to_double(*it));
+    it++;
+  }
+  std::cout << "best alpha:" << best_alpha.toString() << std::endl;
+  std::cout << "objective function:" << to_double(s.objective_value()) << std::endl;
+  // std::cout << s << std::endl;
 }
 
 int main(int argc, char** argv) {
