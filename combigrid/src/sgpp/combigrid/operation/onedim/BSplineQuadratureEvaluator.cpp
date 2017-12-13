@@ -73,11 +73,10 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
 
 void BSplineQuadratureEvaluator::calculate1DBSplineIntegrals(
     std::vector<double>& points, std::vector<FloatScalarVector>& basisValues) {
-  // ToDo (rehmemk) slows down on laptop, test on neon if this is useful
-  //  basisValues.resize(points.size());
-  //#pragma omp parallel for
+  basisValues.resize(points.size());
+#pragma omp parallel for
   for (size_t index = 0; index < points.size(); ++index) {
-    basisValues.push_back(FloatScalarVector(get1DIntegral(points, index)));
+    basisValues[index] = FloatScalarVector(get1DIntegral(points, index));
   }
 }
 

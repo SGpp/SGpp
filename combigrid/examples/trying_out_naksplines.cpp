@@ -95,16 +95,16 @@ int main() {
   std::cout << "max error: " << max_err << std::endl;
 
   // Plot basis
-  std::string plotstr = "/home/rehmemk/SGS_Sync/Plotting/nakBsplines/base_eval.dat";
-  remove(plotstr.c_str());
-  std::ofstream plotfile;
-  plotfile.open(plotstr.c_str(), std::ios::app);
-
-  sgpp::base::SNakBsplineBoundaryCombigridBase myBasis(deg);
-  for (double p = 0; p < 1; p = p + 0.005) {
-    plotfile << p << ",   " << myBasis.eval(2, 1, p) << ", " << myBasis.eval(2, 3, p) << "\n";
-  }
-  plotfile.close();
+  //  std::string plotstr = "/home/rehmemk/SGS_Sync/Plotting/nakBsplines/base_eval.dat";
+  //  remove(plotstr.c_str());
+  //  std::ofstream plotfile;
+  //  plotfile.open(plotstr.c_str(), std::ios::app);
+  //
+  //  sgpp::base::SNakBsplineBoundaryCombigridBase myBasis(deg);
+  //  for (double p = 0; p < 1; p = p + 0.005) {
+  //    plotfile << p << ",   " << myBasis.eval(2, 1, p) << ", " << myBasis.eval(2, 3, p) << "\n";
+  //  }
+  //  plotfile.close();
 
   return 0;
 }
