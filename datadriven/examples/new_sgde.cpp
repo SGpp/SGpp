@@ -22,21 +22,20 @@
 #include <CGAL/QP_models.h>
 #include <CGAL/QP_functions.h>
 #include <CGAL/MP_Float.h>
-#endif
 typedef CGAL::MP_Float ET;
 
-typedef CGAL::Quadratic_program_from_iterators
+typedef CGAL::Quadratic_program_from_iterators<
  double**,                                           //for A
  double*,                                                 // for b
  CGAL::Const_oneset_iterator<CGAL::Comparison_result>, // for r
  bool*,                                                // for fl
- int*,                                                 // for l
+ double*,                                                 // for l
  bool*,                                                // for fu
- int*,                                                 // for u
+ double*,                                                 // for u
  double**,                                                // for D
  double*>                                                 // for c
 Program;
-
+#endif
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -306,6 +305,7 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
 
   // Interpolation Matrix (grid point values when multiplied with alpha-vec)
   DataMatrix gridPoints(storage_size, dims);
+  GridPoint gp;
   for (size_t i = 0; i < storage_size; i++) {
     gp = gridStorage->getPoint(i);
     DataVector coords(dims);
@@ -323,7 +323,7 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
     G_it[i] = result.getPointer();
   }
   // constraint relation (i.e. greater than zero)
-  CGAL::Const_oneset_iterator<CGAL::Comparison_result> r(CGAL::GREATER);
+  CGAL::Const_oneset_iterator<CGAL::Comparison_result> r(CGAL::LARGER);
 
   // lower upper bounds unused:
   bool* bounded = new bool[storage_size];
@@ -334,8 +334,8 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
   // define the quadratic Programm
   Program qp(storage_size, storage_size,  // size of problem
              G_it, b.getPointer(), r,     // constraints
-             bounded, bounds->getPointer(), bounded, bounds->getPointer()  // bounds
-             P_it, q  // optimization goal
+             bounded, bounds.getPointer(), bounded, bounds.getPointer(),  // bounds
+             P_it, q.getPointer()  // optimization goal
              );
 }
 
