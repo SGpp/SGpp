@@ -511,16 +511,16 @@ double PolynomialStochasticCollocation::computeVariance() {
         MultiIndex jx = it_j->getMultiIndex();
 
         // compute the inner product and store it
-        //        MultiIndex kx;
-        //        joinMultiIndices(ix, jx, kx);
+        MultiIndex kx;
+        joinMultiIndices(ix, jx, kx);
         double innerProduct = 0.0;
-        //        auto it_value = innerProducts.find(kx);
-        //        if (it_value != innerProducts.end()) {
-        //          innerProduct = it_value->second;
-        //        } else {
-        innerProduct = quad(ix, jx);
-        //          innerProducts[kx] = innerProduct;
-        //        }
+        auto it_value = innerProducts.find(kx);
+        if (it_value != innerProducts.end()) {
+          innerProduct = it_value->second;
+        } else {
+          innerProduct = quad(ix, jx);
+          innerProducts[kx] = innerProduct;
+        }
 
         M.set(i, j, innerProduct);
         M.set(j, i, innerProduct);
