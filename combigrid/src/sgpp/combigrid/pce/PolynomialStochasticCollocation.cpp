@@ -395,97 +395,52 @@ size_t PolynomialStochasticCollocation::additionalQuadraturePoints(
 
 double PolynomialStochasticCollocation::quad(MultiIndex i, MultiIndex j) {
   double ans = 1.0;
-  // Gauss quadrature in each dimension
 
   // performing Gauss-Legendre integration
-  auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
-  base::DataVector roots;
-  base::DataVector quadratureweights;
+  GaussLegendreQuadrature gaussLegendreQuadrature;
 
+  // Gauss quadrature in each dimension
   for (size_t idim = 0; idim < i.size(); idim++) {
-    size_t degree_i = i[idim], degree_j = j[idim];
+    size_t degree_i = i[idim];
+    size_t degree_j = j[idim];
     auto functionBasis = functionBases[idim];
     size_t incrementQuadraturePoints =
         additionalQuadraturePoints(functionBasis->getConfiguration().polyParameters.type_);
     size_t numGaussPoints = (degree_i + degree_j + 3) / 2;
 
-    // do iterative 1d quadrature
-    double sum_idim = 0.0;
-    double sum_idim_old = 0.0;
-    double err = 1e14;
-    size_t iteration = 0;
-    while (err > 1e-13 && numGaussPoints < quadRule.getMaxSupportedLevel()) {
-      quadRule.getLevelPointsAndWeightsNormalized(numGaussPoints, roots, quadratureweights);
+    auto func = [&functionBasis, &degree_i, &degree_j, &idim, this](double x_unit, double x_prob) {
+      return this->legendreBasis->evaluate(degree_i, x_unit) *
+             this->legendreBasis->evaluate(degree_j, x_unit) * functionBasis->pdf(x_prob);
+    };
 
-      sum_idim = 0.0;
-      for (size_t i = 0; i < roots.getSize(); ++i) {
-        double x_unit = roots[i], w = quadratureweights[i];
-        double x_prob = trans.unitToProbabilistic(x_unit, idim);
-        sum_idim += w * legendreBasis->evaluate(degree_i, x_unit) *
-                    legendreBasis->evaluate(degree_j, x_unit) * functionBasis->pdf(x_prob);
-      }
-
-      sum_idim *= trans.vol(idim);
-      if (iteration > 0) {
-        err = std::fabs(sum_idim_old - sum_idim);
-        //        if (std::fabs(sum_idim) > 1e-14) {
-        //          err /= std::fabs(sum_idim);
-        //        }
-      }
-
-      sum_idim_old = sum_idim;
-      numGaussPoints += incrementQuadraturePoints;
-      iteration += 1;
-    }
-
-    ans *= sum_idim;
+    gaussLegendreQuadrature.initialize(numGaussPoints);
+    ans *= gaussLegendreQuadrature.evaluate_iteratively(
+        func, trans.getLowerBound(idim), trans.getUpperBound(idim), incrementQuadraturePoints);
   }
   return ans;
 }
 
 double PolynomialStochasticCollocation::quad(MultiIndex i) {
   double ans = 1.0;
-  // Gauss quadrature in each dimension
 
   // performing Gauss-Legendre integration
-  auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
+  GaussLegendreQuadrature gaussLegendreQuadrature;
 
+  // Gauss quadrature in each dimension
   for (size_t idim = 0; idim < i.size(); idim++) {
-    base::DataVector roots;
-    base::DataVector quadratureweights;
     size_t degree_i = i[idim];
     auto functionBasis = functionBases[idim];
     size_t incrementQuadraturePoints =
         additionalQuadraturePoints(functionBasis->getConfiguration().polyParameters.type_);
     size_t numGaussPoints = (degree_i + 2) / 2;
 
-    // do iterative 1d quadrature
-    double sum_idim = 0.0, sum_idim_old = 0.0;
-    double err = 1e14;
-    size_t iteration = 0;
-    while (err > 1e-13 && numGaussPoints < quadRule.getMaxSupportedLevel()) {
-      quadRule.getLevelPointsAndWeightsNormalized(numGaussPoints, roots, quadratureweights);
+    auto func = [&functionBasis, &degree_i, &idim, this](double x_unit, double x_prob) {
+      return this->legendreBasis->evaluate(degree_i, x_unit) * functionBasis->pdf(x_prob);
+    };
 
-      sum_idim = 0.0;
-      for (size_t i = 0; i < roots.getSize(); ++i) {
-        double x_unit = roots[i], w = quadratureweights[i];
-        double x_prob = trans.unitToProbabilistic(x_unit, idim);
-        sum_idim += w * legendreBasis->evaluate(degree_i, x_unit) * functionBasis->pdf(x_prob);
-      }
-
-      sum_idim *= trans.vol(idim);
-
-      if (iteration > 0) {
-        err = std::fabs(sum_idim_old - sum_idim);
-        //        if (std::fabs(sum_idim) > 1e-14) {
-        //          err /= std::fabs(sum_idim);
-        //        }
-      }
-      sum_idim_old = sum_idim;
-      numGaussPoints += incrementQuadraturePoints;
-      iteration += 1;
-    }
-    ans *= sum_idim;
+    gaussLegendreQuadrature.initialize(numGaussPoints);
+    ans *= gaussLegendreQuadrature.evaluate_iteratively(
+        func, trans.getLowerBound(idim), trans.getUpperBound(idim), incrementQuadraturePoints);
   }
   return ans;
 }
@@ -556,16 +511,16 @@ double PolynomialStochasticCollocation::computeVariance() {
         MultiIndex jx = it_j->getMultiIndex();
 
         // compute the inner product and store it
-        MultiIndex kx;
-        joinMultiIndices(ix, jx, kx);
+        //        MultiIndex kx;
+        //        joinMultiIndices(ix, jx, kx);
         double innerProduct = 0.0;
-        auto it_value = innerProducts.find(kx);
-        if (it_value != innerProducts.end()) {
-          innerProduct = it_value->second;
-        } else {
-          innerProduct = quad(ix, jx);
-          innerProducts[kx] = innerProduct;
-        }
+        //        auto it_value = innerProducts.find(kx);
+        //        if (it_value != innerProducts.end()) {
+        //          innerProduct = it_value->second;
+        //        } else {
+        innerProduct = quad(ix, jx);
+        //          innerProducts[kx] = innerProduct;
+        //        }
 
         M.set(i, j, innerProduct);
         M.set(j, i, innerProduct);
