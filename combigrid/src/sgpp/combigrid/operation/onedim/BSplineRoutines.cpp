@@ -6,6 +6,9 @@
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
 
+#include <vector>
+#include <algorithm>
+
 constexpr size_t log2(size_t n) { return ((n < 2) ? 1 : 1 + log2(n / 2)); }
 
 // ToDo (rehmemk) has not been tested so far. Degree 5 still needs the level 0,1,2 changes
@@ -521,7 +524,7 @@ sgpp::combigrid::GridFunction BSplineCoefficientGridFunction(
     sgpp::combigrid::CombiEvaluators::Collection interpolEvaluators(
         numDimensions, sgpp::combigrid::CombiEvaluators::BSplineInterpolation(degree));
 
-    auto coefficientTree = std::make_shared<sgpp::combigrid::TreeStorage<double>>(numDimensions);
+    auto coefficientTree = std::make_shared<sgpp::combigrid::TreeStorage<double> >(numDimensions);
     auto level = grid->getLevel();
     std::vector<size_t> numGridPointsVec = grid->numPoints();
     size_t numGridPoints = 1;
@@ -552,7 +555,7 @@ sgpp::combigrid::GridFunction BSplineCoefficientGridFunction(
       auto gridPoint = grid->getGridPoint(funcIter->getMultiIndex());
       functionValues[ixEvalPoints] = funcIter->value();
 
-      std::vector<std::vector<double>> basisValues;
+      std::vector<std::vector<double> > basisValues;
       for (size_t dim = 0; dim < numDimensions; ++dim) {
         evalCopy[dim]->setParameter(sgpp::combigrid::FloatScalarVector(gridPoint[dim]));
         auto basisValues1D = evalCopy[dim]->getBasisValues();

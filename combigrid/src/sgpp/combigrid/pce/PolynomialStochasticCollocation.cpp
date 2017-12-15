@@ -35,7 +35,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
       functionBases(0),
-      trans(bounds),
+      bounds(bounds),
       numGridPoints(0),
       computedMeanFlag(false),
       ev(0.0),
@@ -60,7 +60,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridMultiOperation(combigridMultiOperation),
       combigridTensorOperation(nullptr),
       functionBases(0),
-      trans(bounds),
+      bounds(bounds),
       numGridPoints(0),
       computedMeanFlag(false),
       ev(0.0),
@@ -71,7 +71,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     functionBases.push_back(functionBasis);
   }
 
-  // create tensor operation for basis transformation
+  // create tensor operation for basis boundsformation
   initializeTensorOperation(combigridMultiOperation->getPointHierarchies(),
                             combigridMultiOperation->getStorage(),
                             combigridMultiOperation->getLevelManager());
@@ -86,7 +86,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridMultiOperation(nullptr),
       combigridTensorOperation(combigridTensorOperation),
       functionBases(0),
-      trans(bounds),
+      bounds(bounds),
       numGridPoints(0),
       computedMeanFlag(false),
       ev(0.0),
@@ -111,7 +111,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
       functionBases(functionBases),
-      trans(bounds),
+      bounds(bounds),
       numGridPoints(0),
       computedMeanFlag(false),
       ev(0.0),
@@ -123,7 +123,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
         "number of basis function do not match with the number of dimensions of the operation");
   }
 
-  // create tensor operation for basis transformation
+  // create tensor operation for basis boundsformation
   initializeTensorOperation(combigridOperation->getPointHierarchies(),
                             combigridOperation->getStorage(),
                             combigridOperation->getLevelManager());
@@ -138,7 +138,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridMultiOperation(combigridMultiOperation),
       combigridTensorOperation(nullptr),
       functionBases(functionBases),
-      trans(bounds),
+      bounds(bounds),
       numGridPoints(0),
       computedMeanFlag(false),
       ev(0.0),
@@ -164,7 +164,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
       functionBases(functionBases),
-      trans(bounds),
+      bounds(bounds),
       numGridPoints(0),
       computedMeanFlag(false),
       ev(0.0),
@@ -199,8 +199,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
   for (size_t idim = 0; idim < numDims; idim++) {
     functionBases.push_back(functionBasis);
   }
-
-  initializeLinearTransformation();
+  initializeBounds();
   initializeTensorOperation(combigridOperation->getPointHierarchies(),
                             combigridOperation->getStorage(),
                             combigridOperation->getLevelManager());
@@ -223,8 +222,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
   for (size_t idim = 0; idim < numDims; idim++) {
     functionBases.push_back(functionBasis);
   }
-
-  initializeLinearTransformation();
+  initializeBounds();
   initializeTensorOperation(combigridMultiOperation->getPointHierarchies(),
                             combigridMultiOperation->getStorage(),
                             combigridMultiOperation->getLevelManager());
@@ -247,8 +245,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
   for (size_t idim = 0; idim < numDims; idim++) {
     functionBases.push_back(functionBasis);
   }
-
-  initializeLinearTransformation();
+  initializeBounds();
   initializeTensorOperation(combigridTensorOperation->getPointHierarchies(),
                             combigridTensorOperation->getStorage(),
                             combigridTensorOperation->getLevelManager());
@@ -272,8 +269,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     throw sgpp::base::application_exception(
         "number of basis function do not match with the number of dimensions of the operation");
   }
-
-  initializeLinearTransformation();
+  initializeBounds();
   initializeTensorOperation(combigridOperation->getPointHierarchies(),
                             combigridOperation->getStorage(),
                             combigridOperation->getLevelManager());
@@ -297,8 +293,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     throw sgpp::base::application_exception(
         "number of basis function do not match with the number of dimensions of the operation");
   }
-
-  initializeLinearTransformation();
+  initializeBounds();
   initializeTensorOperation(combigridMultiOperation->getPointHierarchies(),
                             combigridMultiOperation->getStorage(),
                             combigridMultiOperation->getLevelManager());
@@ -322,8 +317,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     throw sgpp::base::application_exception(
         "number of basis function do not match with the number of dimensions of the operation");
   }
-
-  initializeLinearTransformation();
+  initializeBounds();
   initializeTensorOperation(combigridTensorOperation->getPointHierarchies(),
                             combigridTensorOperation->getStorage(),
                             combigridTensorOperation->getLevelManager());
@@ -353,14 +347,13 @@ void PolynomialStochasticCollocation::initializeTensorOperation(
 }
 
 #ifdef USE_DAKOTA
-void PolynomialStochasticCollocation::initializeLinearTransformation() {
-  sgpp::base::DataVector bounds(2 * numDims);
+void PolynomialStochasticCollocation::initializeBounds() {
+  bounds.resize(2 * numDims);
   for (size_t idim = 0; idim < numDims; idim++) {
     Pecos::RealRealPair bounds_idim = functionBases[idim]->getRandomVariable()->bounds();
     bounds[2 * idim] = bounds_idim.first;
     bounds[2 * idim + 1] = bounds_idim.second;
   }
-  trans.initialize(bounds);
 }
 #endif
 
@@ -414,8 +407,8 @@ double PolynomialStochasticCollocation::quad(MultiIndex i, MultiIndex j) {
     };
 
     gaussLegendreQuadrature.initialize(numGaussPoints);
-    ans *= gaussLegendreQuadrature.evaluate_iteratively(
-        func, trans.getLowerBound(idim), trans.getUpperBound(idim), incrementQuadraturePoints);
+    double a = bounds[2 * idim], b = bounds[2 * idim + 1];
+    ans *= gaussLegendreQuadrature.evaluate_iteratively(func, a, b, incrementQuadraturePoints);
   }
   return ans;
 }
@@ -439,8 +432,8 @@ double PolynomialStochasticCollocation::quad(MultiIndex i) {
     };
 
     gaussLegendreQuadrature.initialize(numGaussPoints);
-    ans *= gaussLegendreQuadrature.evaluate_iteratively(
-        func, trans.getLowerBound(idim), trans.getUpperBound(idim), incrementQuadraturePoints);
+    double a = bounds[2 * idim], b = bounds[2 * idim + 1];
+    ans *= gaussLegendreQuadrature.evaluate_iteratively(func, a, b, incrementQuadraturePoints);
   }
   return ans;
 }
