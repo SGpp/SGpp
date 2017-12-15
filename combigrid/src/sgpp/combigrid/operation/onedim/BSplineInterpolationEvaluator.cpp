@@ -80,10 +80,10 @@ void BSplineInterpolationEvaluator::computeBasisValues() {
   for (size_t i = 0; i < xValues.size(); i++) {
     basisValues[i] = nonUniformBSpline(evaluationPoint, degree, i, xi);
   }
-  //#pragma omp parallel for
-  //  for (size_t i = 0; i < xValues.size(); i++) {
-  //    basisValues[i] = expUniformNaKBspline(evaluationPoint, degree, i, xValues);
-  //  }
+  // #pragma omp parallel for
+  //   for (size_t i = 0; i < xValues.size(); i++) {
+  //     basisValues[i] = expUniformNaKBspline(evaluationPoint, degree, i, xValues);
+  //   }
 }
 
 void BSplineInterpolationEvaluator::setBasisCoefficientsAtGridPoints(

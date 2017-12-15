@@ -19,56 +19,6 @@
 namespace sgpp {
 namespace combigrid {
 
-class LinearTransformation {
- public:
-  LinearTransformation() {}
-
-  explicit LinearTransformation(sgpp::base::DataVector& bounds) { initialize(bounds); }
-
-  virtual ~LinearTransformation() {}
-
-  void initialize(sgpp::base::DataVector& bounds) {
-    if (bounds.getSize() % 2 != 0) {
-      throw sgpp::base::algorithm_exception(
-          "LinearTransformation::initialize: bounds have not the correct size");
-    }
-    size_t numDims = bounds.getSize() >> 1;
-    widths.resize(numDims);
-    xlower.resize(numDims);
-
-    for (size_t i = 0; i < numDims; i++) {
-      widths[i] = bounds[2 * i + 1] - bounds[2 * i];
-      xlower[i] = bounds[2 * i];
-    }
-  }
-
-  void unitToProbabilistic(sgpp::base::DataVector& x) {
-    // linear transformation
-    for (size_t i = 0; i < x.getSize(); i++) {
-      x[i] = unitToProbabilistic(x[i], i);
-    }
-  }
-
-  double unitToProbabilistic(double x, size_t idim) { return widths[idim] * x + xlower[idim]; }
-
-  double vol() {
-    double ans = 1.0;
-    for (size_t i = 0; i < widths.getSize(); i++) {
-      ans *= widths[i];
-    }
-    return ans;
-  }
-
-  double vol(size_t i) { return widths[i]; }
-
-  double getLowerBound(size_t i) { return xlower[i]; }
-  double getUpperBound(size_t i) { return xlower[i] + widths[i]; }
-
- private:
-  sgpp::base::DataVector widths;
-  sgpp::base::DataVector xlower;
-};
-
 class PolynomialStochasticCollocation {
  public:
   PolynomialStochasticCollocation(
@@ -145,7 +95,7 @@ class PolynomialStochasticCollocation {
       std::shared_ptr<AbstractCombigridStorage> storage,
       std::shared_ptr<LevelManager> levelManager);
 
-  void initializeLinearTransformation();
+  void initializeBounds();
 
   bool updateStatus();
   double computeMean();
@@ -172,7 +122,7 @@ class PolynomialStochasticCollocation {
   // orthogonal basis for pdf values
   std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>> functionBases;
 
-  LinearTransformation trans;
+  sgpp::base::DataVector bounds;
   size_t numGridPoints;
   sgpp::combigrid::FloatTensorVector expansionCoefficients;
 
