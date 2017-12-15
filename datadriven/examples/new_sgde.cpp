@@ -267,6 +267,7 @@ void solve(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridConfig
 }
 
 void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridConfig, double lambda) {
+  // CGAL documentation: https://doc.cgal.org/latest/QP_solver/index.html
   std::unique_ptr<Grid> grid(sgpp::base::Grid::createGrid(gridConfig));
   GridStorage* gridStorage = &(grid->getStorage());
   grid->getGenerator().regular(gridConfig.level_);
@@ -275,7 +276,6 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
   size_t numSamples = samples.getNrows();
   size_t dims = samples.getNcols();
   DataMatrix M(storage_size, storage_size);
-  DataMatrix P(storage_size, storage_size);
   DataMatrix C(storage_size, storage_size);
   OperationMatrix* A_op = sgpp::op_factory::createOperationLTwoDotExplicit(&M, *grid);
   OperationMultipleEval* B_op = sgpp::op_factory::createOperationMultipleEval(*grid, samples);
@@ -286,30 +286,31 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
   OperationEval* op_eval = sgpp::op_factory::createOperationEval(*grid);
   AlambC.generateb(b);
 
-  // setting up matrices for CGAL
+  // setting up System matrix: M + lambda*C
   C.mult(lambda);
   M.add(C);
 
+  // Skalaraproduct term of quadratic program: q.T x
   M.mult(b, q);
 
-  // P = M*M.T
-  // M dot product of M.T (M is symmetric)
+  // Quadratic program matrix P = M*M.T (M is symmetric)
   double** P_it = new double*[storage_size];
   for (size_t i = 0; i < M.getNcols(); i++) {
     DataVector col(storage_size);
     DataVector tmp(storage_size);
     M.getColumn(i, col);
     M.mult(col, tmp);
-    P.setColumn(i, tmp);
     P_it[i] = new double[storage_size];
-    for (size_t j = 0; j < storage_size; j++) {
+    for (size_t j = i; j < storage_size; j++) {
       P_it[i][j] = tmp.get(j);
+      P_it[j][i] = tmp.get(j);
       std::cout << P_it[i][j] << " ";
     }
     std::cout << std::endl;
   }
   std::cout << "---------------" << std::endl;
-  // Interpolation Matrix (grid point values when multiplied with alpha-vec)
+
+  // getting all grid points for interpolation matrix
   DataMatrix gridPoints(storage_size, dims);
   GridPoint gp;
   for (size_t i = 0; i < storage_size; i++) {
@@ -319,6 +320,7 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
     gridPoints.setRow(i, coords);
   }
 
+  // interpolation matrix (grid point values when multiplied with alpha-vec)
   OperationMultipleEval* G_op = sgpp::op_factory::createOperationMultipleEval(*grid, gridPoints);
   double** G_it = new double*[storage_size];
   for (size_t i = 0; i < storage_size; i++) {
@@ -343,7 +345,7 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
   }
   std::cout << q.toString() << std::endl;
   // constraint relation (i.e. greater than zero)
-  CGAL::Const_oneset_iterator<CGAL::Comparison_result> r(CGAL::LARGER);
+  CGAL::Const_oneset_iterator<CGAL::Comparison_result> r(CGAL::SMALLER);
 
   // lower upper bounds unused:
   bool* bounded = new bool[storage_size];
@@ -364,9 +366,9 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
     best_alpha.set(i, to_double(*it));
     it++;
   }
+  std::cout << "---------------------------" << std::endl;
   std::cout << "best alpha:" << best_alpha.toString() << std::endl;
   std::cout << "objective function:" << to_double(s.objective_value()) << std::endl;
-  // std::cout << s << std::endl;
 }
 
 int main(int argc, char** argv) {
@@ -374,36 +376,17 @@ int main(int argc, char** argv) {
   int level = 3;
   GridType gridType = sgpp::base::GridType::Linear;
   double lambda = 0.0;
-
   sgpp::base::RegularGridConfiguration gridConfig;
-  // sgpp::base::AdpativityConfiguration adaptivityConfig;
-  // sgpp::solver::SLESolverConfiguration solverConfig;
-  // sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-  // sgpp::datadriven::CrossvalidationForRegularizationConfiguration crossvalidationConfig;
-  // sgpp::datadriven::SGDEConfiguration sgdeConfig;
   gridConfig.dim_ = d;
   gridConfig.level_ = level;
   gridConfig.type_ = gridType;
   gridConfig.maxDegree_ = 5;
-  // adaptivityConfig.numRefinements_ = 0;
-  // adaptivityConfig.noPoints_ = 15;
-  // solverConfig.threshold_ = 1e-15;
-  // solverConfig.verbose_ = false;
-  // regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Laplace;
-  // crossvalidationConfig.enable_ = false;
-  // sgdeConfig.makePositive_ = false;
-
-  // sgpp::datadriven::LearnerSGDE learnerSGDE(gridConfig, adaptivityConfig, solverConfig,
-  //                                           regularizationConfig, crossvalidationConfig,
-  //                                           sgdeConfig);
   DataMatrix trainSamples(1000, 2);
   createSamples(trainSamples, 1234567);
-  // learnerSGDE.initialize(trainSamples);
-  // std::shared_ptr<Grid> grid(&learnerSGDE.getGrid());
-  // DataVector alpha(learnerSGDE.getSurpluses());
   std::cout << trainSamples.getNrows() << std::endl;
   // solve(trainSamples, gridConfig, lambda);
+#ifdef USE_CGAL
   solve_cgal(trainSamples, gridConfig, lambda);
-  // std::cout << trainSamples.toString() << std::endl;
+#endif
   return 0;
 }
