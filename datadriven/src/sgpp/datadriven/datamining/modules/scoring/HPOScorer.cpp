@@ -18,38 +18,49 @@ namespace datadriven {
 using base::DataVector;
 
 HPOScorer::HPOScorer(Metric* metric, ShufflingFunctor* shuffling, int64_t seed,
-                                 double trainPortion)
-    : Scorer{metric, shuffling, seed}, trainPortion{trainPortion} {}
+    double trainPortion, const DataMiningConfigParser& parser, FitterFactory* fitterFactory)
+    : Scorer{metric, shuffling, seed}, trainPortion{trainPortion}, parser{&parser}, fitterFactory{fitterFactory} {}
 
-Scorer* HPOScorer::clone() const { return new HPOScorer{*this}; }
+    //EDIT: deactivate clone because of unique_ptrs
+Scorer* HPOScorer::clone() const { //return new HPOScorer{*this}; 
+}
 
 // TODO(lettrich) :recycle
-double HPOScorer::calculateScore(ModelFittingBase& model, Dataset& dataset,
+double HPOScorer::calculateScore(ModelFittingBase& modelOLD, Dataset& dataset,
                                        double* stdDeviation) {
   // perform randomization of indices
   std::vector<size_t> randomizedIndices(dataset.getNumberInstances());
   randomizeIndices(dataset, randomizedIndices);
 
   // calculate size of testing and training portions
-  //size_t trainSize = std::lround(static_cast<double>(dataset.getNumberInstances()) * trainPortion);
-  size_t testSize = 2000; // dataset.getNumberInstances() - trainSize;
+  size_t trainSize = std::lround(static_cast<double>(dataset.getNumberInstances()) * trainPortion);
+  size_t testSize =  dataset.getNumberInstances() - trainSize;
   size_t dim = dataset.getDimension();
 
   //std::cout<< "Test 1" << std::endl;
 
-  Dataset dummyDataset{dataset.getNumberInstances(), dim};
+  //Dataset dummyDataset{dataset.getNumberInstances(), dim};
   
   // create test and train datasets.
   Dataset testDataset{testSize, dim};
-  Dataset trainDataset{1000, dim};
-  splitSet(dataset, dummyDataset, testDataset, randomizedIndices);
-  splitSet(dataset, dummyDataset, trainDataset, randomizedIndices, 2000);
+  Dataset trainDataset{trainSize, dim};
+  splitSet(dataset, trainDataset, testDataset, randomizedIndices);
+  //splitSet(dataset, dummyDataset, trainDataset, randomizedIndices, 2000);
   
   //new code
-  bool resetVerbose = model.verboseSolver;
-  model.verboseSolver = false;
+  std::cout<< "Test 1" << std::endl;
+
+  FitterConfiguration* fitterConfig1;
+  fitterConfig1 = fitterFactory->buildConfig(); //*parser
+  ModelFittingBase* model = fitterFactory->buildFitter(fitterConfig1);
+  
+  std::cout<< "Test 2" << std::endl;
+
+  
+  bool resetVerbose = model->verboseSolver;
+  model->verboseSolver = false;
   //int64_t seed = shuffling->getSeed();
-  auto fitterconfig = model.getFitterConfiguration();
+  auto fitterconfig = model->getFitterConfiguration();
   auto gridConfig = fitterconfig->getGridConfig();
   auto adaptivityConfig = fitterconfig->getRefinementConfig();
   auto regularizationConfig = fitterconfig->getRegularizationConfig();
@@ -82,12 +93,12 @@ double HPOScorer::calculateScore(ModelFittingBase& model, Dataset& dataset,
           fitterconfig->setRegularizationConfig( regularizationConfig);
           fitterconfig->setGridConfig( gridConfig);
           fitterconfig->setRefinementConfig( adaptivityConfig);
-          model.fit(trainDataset);
-          scores[i][k][0][p][r] = test(model, testDataset);
+          model->fit(trainDataset);
+          scores[i][k][0][p][r] = test(*model, testDataset);
           std::cout<< "Score: " <<scores[i][k][0][p][r] <<" par: "<<i<<k<<0<<p<<r<< std::endl;
           for (int m=1;m<=5;m++){
-            if(model.refine()){
-              scores[i][k][m][p][r] = test(model, testDataset);
+            if(model->refine()){
+              scores[i][k][m][p][r] = test(*model, testDataset);
               std::cout<< "Score: " <<scores[i][k][m][p][r] <<" par: "<<i<<k<<m<<p<<r<< std::endl;
             }else{
               scores[i][k][m][p][r] = 1;
@@ -129,7 +140,7 @@ double HPOScorer::calculateScore(ModelFittingBase& model, Dataset& dataset,
   }
   myfile.close();
   
-  double minScore = 1.0;
+  double minScore = 1000.0;
    for (int i=1;i<=4;i++){
     for (int k=1;k<=5;k++){
       for (int m=0;m<=3;m++){
@@ -181,7 +192,7 @@ double HPOScorer::calculateScore(ModelFittingBase& model, Dataset& dataset,
   
   
 
-  model.verboseSolver = resetVerbose;
+  model->verboseSolver = resetVerbose;
 
   if (stdDeviation) {
     *stdDeviation = 0;

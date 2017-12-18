@@ -1,6 +1,6 @@
 {
 	"dataSource": {
-		"filePath": "C:/Users/Eric/Documents/friedman1_10d_150000.arff"
+		"filePath": "C:/Users/Eric/Documents/Test3.csv"
 	},
 	"scorer": {
 		"testing": {

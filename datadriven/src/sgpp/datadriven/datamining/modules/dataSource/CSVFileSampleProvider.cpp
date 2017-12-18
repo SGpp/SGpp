@@ -5,8 +5,8 @@
  *
  * CSVFileSampleProvider.cpp
  *
- *  Created on: Feb 8, 2016
- *      Author: perun, Michael Lettrich
+ *  Created on: Dec 18, 2017
+ *      Author: Eric Koepke, perun, Michael Lettrich
  */
 
 #include <sgpp/datadriven/datamining/modules/dataSource/CSVFileSampleProvider.hpp>
@@ -48,6 +48,7 @@ size_t CSVFileSampleProvider::getNumSamples() const {
 
 void CSVFileSampleProvider::readFile(const std::string& fileName) {
   try {
+    //call readCSV with skipfirstline set to true
     dataset = CSVTools::readCSV(fileName, true);
   } catch (...) {
     // TODO(lettrich): catching all exceptions is bad design. Replace call to CSVTools with
@@ -79,7 +80,7 @@ void CSVFileSampleProvider::readString(const std::string& input) {
  // } catch (...) {
     // TODO(lettrich): catching all exceptions is bad design. Replace call to CSVTools with
     // exception safe implementation.
-    throw base::data_exception{"Failed to parse CSV data."};
+    throw base::data_exception{"Failed to parse CSV data. Reading from string is not currently implemented."};
  // }
 }
 

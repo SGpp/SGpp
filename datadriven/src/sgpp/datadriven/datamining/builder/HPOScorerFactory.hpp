@@ -15,6 +15,8 @@
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
+#include <sgpp/datadriven/datamining/builder/FitterFactory.hpp>
+
 
 namespace sgpp {
 namespace datadriven {
@@ -35,6 +37,7 @@ class HPOScorerFactory : public ScorerFactory {
    * data from the config file.
    * @return Fully configured instance of a  #sgpp::datadriven::HPOScorer object.
    */
+  Scorer* buildHPOScorer(const DataMiningConfigParser& parser, FitterFactory* fitterFactory) const;
   Scorer* buildScorer(const DataMiningConfigParser& parser) const override;
 };
 
