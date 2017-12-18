@@ -2,6 +2,8 @@
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
+// Created on: 18.12.2017
+// Author: Eric Koepke
 
 #ifndef CSVTOOLS_HPP
 #define CSVTOOLS_HPP
@@ -27,6 +29,7 @@ class CSVTools {
    * Reads an CSV file.
    *
    * @param filename filename of the file to be read
+   * @param skipFirstLine whether to skip the first line while parsing
    * @return CSV as Dataset
    */
   static Dataset readCSV(const std::string& filename, bool skipFirstLine=false);

@@ -5,8 +5,8 @@
  *
  * CSVFileSampleProvider.hpp
  *
- *  Created on: Feb 8, 2016
- *      Author: perun, Michael Lettrich
+ *  Created on: Dec 18, 2017
+ *      Author: Eric Koepke, perun, Michael Lettrich
  */
 
 #pragma once
@@ -23,8 +23,8 @@ namespace datadriven {
 
 /**
  * CSVFileSampleProvider allows reading data in CSV format into a #sgpp::datadriven::Dataset
- * object. Data can currently be either be a string formatted in CSV or a file containing CSV
- * data.
+ * object. Data can currently only be a file containing CSV data with the first line containing
+ * column titles (is skipped).
  *
  */
 class CSVFileSampleProvider : public FileSampleProvider {
@@ -57,8 +57,7 @@ class CSVFileSampleProvider : public FileSampleProvider {
   void readFile(const std::string& filePath) override;
 
   /**
-   * Parse contents of a string containing information in CSV format, parse it and store its
-   * contents inside this class. Throws if string can not be parsed.
+   * Currently not implemented.
    * @param input string containing information in CSV file format
    */
   void readString(const std::string& input) override;

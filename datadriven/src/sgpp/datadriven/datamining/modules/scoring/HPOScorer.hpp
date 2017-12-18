@@ -13,6 +13,8 @@
 #pragma once
 
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
+#include <sgpp/datadriven/datamining/builder/FitterFactory.hpp>
+
 
 namespace sgpp {
 namespace datadriven {
@@ -35,8 +37,9 @@ class HPOScorer : public Scorer {
    * @param trainPortion value between 0 and 1 to specify the ratio between testing set and
    * training set.
    */
-  HPOScorer(Metric* metric, ShufflingFunctor* shuffling, int64_t seed = -1,
-                  double trainPortion = 0.8);
+  HPOScorer(Metric* metric, ShufflingFunctor* shuffling, int64_t seed,
+            double trainPortion, const DataMiningConfigParser& parser,
+            FitterFactory* fitterFactory);
 
   Scorer* clone() const override;
 
@@ -57,6 +60,8 @@ class HPOScorer : public Scorer {
    * training set.
    */
   double trainPortion;
+  const DataMiningConfigParser* parser;
+  std::unique_ptr<FitterFactory> fitterFactory;
 };
 
 } /* namespace datadriven */

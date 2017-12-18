@@ -25,6 +25,8 @@
 #include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/RandomShufflingFunctor.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/SplittingScorer.hpp>
+#include <sgpp/datadriven/datamining/builder/LeastSquaresRegressionFitterFactory.hpp>
+
 
 
 //#include <math.h>
@@ -181,8 +183,8 @@ Scorer* LeastSquaresRegressionMinerFactory::createScorer(
 
 HPOScorer* LeastSquaresRegressionMinerFactory::createHPOScorer(
     const DataMiningConfigParser& parser) const {
-  HPOScorerFactory factory;
-  return static_cast<HPOScorer*>(factory.buildScorer(parser));  
+  HPOScorerFactory scorerFactory;
+  return static_cast<HPOScorer*>(scorerFactory.buildHPOScorer(parser, new LeastSquaresRegressionFitterFactory()));  
 }
 
 } /* namespace datadriven */
