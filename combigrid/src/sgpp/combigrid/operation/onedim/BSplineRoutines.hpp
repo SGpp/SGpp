@@ -29,7 +29,7 @@
 *@param points		points of the 1D grid
 *@return        value of non-uniform B-spline in x
 */
-double expUniformNaKBspline(double const& x, size_t const& degree, size_t i,
+double expUniformNakBspline(double const& x, size_t const& degree, size_t i,
                             std::vector<double> const& points);
 
 /**
@@ -59,7 +59,7 @@ double LagrangePolynomial(double const& x, std::vector<double> const& xValues, s
  * @param xValues grid points inside [0,1]
  * @param xi returns the vector containing the knots with which the Bsplines are created.
  */
-void createdeg1Knots(std::vector<double> const& xValues, std::vector<double>& xi);
+std::vector<double> createdeg1Knots(std::vector<double> const& xValues);
 
 /**
  * Creates the knot sequence xi needed for the evaluation of B-splines from the evaluation points
@@ -69,7 +69,7 @@ void createdeg1Knots(std::vector<double> const& xValues, std::vector<double>& xi
  * @param xValues grid points inside [0,1]
  * @param xi returns the vector containing the knots with which the Bsplines are created.
    */
-void createdeg3NakKnots(std::vector<double> const& xValues, std::vector<double>& xi);
+std::vector<double> createdeg3NakKnots(std::vector<double> const& xValues);
 
 /**
  * Creates the knot sequence xi needed for the evaluation of B-splines from the evaluation points
@@ -79,7 +79,7 @@ void createdeg3NakKnots(std::vector<double> const& xValues, std::vector<double>&
  * @param xValues grid points inside [0,1]
  * @param xi returns the vector containing the knots with which the Bsplines are created.
    */
-void createdeg5NakKnots(std::vector<double> const& xValues, std::vector<double>& xi);
+std::vector<double> createdeg5NakKnots(std::vector<double> const& xValues);
 /**
  * interface for creating the knot sequence xi needed for the evaluation of B-splines from the
  * evaluation points
@@ -88,8 +88,7 @@ void createdeg5NakKnots(std::vector<double> const& xValues, std::vector<double>&
  * @param degree degree of the B spline basis functions
  * @param xi returns the vector containing the knots with which the Bsplines are created.
    */
-void createNakKnots(std::vector<double> const& xValues, size_t const& degree,
-                    std::vector<double>& xi);
+std::vector<double> createNakKnots(std::vector<double> const& xValues, size_t const& degree);
 
 /**
  * Creates the GridFunction that calculates the coefficients of the B-spline interpolation.
