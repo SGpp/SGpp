@@ -97,18 +97,7 @@ FloatArrayVector PolynomialScalarProductEvaluator::get1DMixedIntegral(std::vecto
 
   for (size_t index_j = 0; index_j < points.size(); index_j++) {
     p_j.point = index_j;
-    double value = 0.0;
-
-    size_t key = generateKey(index_i, index_j);
-    auto it_value = scalarProductsMap.find(key);
-    if (it_value != scalarProductsMap.end()) {
-      value = it_value->second;
-    } else {
-      value = quad(p_i, p_j);
-      scalarProductsMap[key] = value;
-    }
-
-    scalarProducts.at(index_j) = value;
+    scalarProducts.at(index_j) = quad(p_i, p_j);
   }
 
   return scalarProducts;
@@ -116,9 +105,10 @@ FloatArrayVector PolynomialScalarProductEvaluator::get1DMixedIntegral(std::vecto
 
 void PolynomialScalarProductEvaluator::calculate1DPolynomialScalarProducts(
     std::vector<double>& points, std::vector<FloatArrayVector>& integrals) {
+  basisValues.resize(points.size());
 #pragma omp parallel for schedule(static)
   for (size_t index_i = 0; index_i < points.size(); ++index_i) {
-    integrals.push_back(get1DMixedIntegral(points, index_i));
+    integrals[index_i] = get1DMixedIntegral(points, index_i);
   }
 }
 
@@ -153,8 +143,8 @@ void PolynomialScalarProductEvaluator::setGridPoints(std::vector<double> const& 
 
 std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector> >
 PolynomialScalarProductEvaluator::cloneLinear() {
-  return std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector> >(
-      new PolynomialScalarProductEvaluator(*this));
+  std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> ans = std::make_shared<PolynomialScalarProductEvaluator>(*this);
+  return ans;
 }
 
 void PolynomialScalarProductEvaluator::setParameter(const FloatArrayVector& param) { return; }
