@@ -35,7 +35,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
       functionBases(0),
-      trans(bounds),
+      bounds(bounds),
       numGridPoints(0),
       computedMeanFlag(false),
       ev(0.0),
@@ -60,7 +60,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridMultiOperation(combigridMultiOperation),
       combigridTensorOperation(nullptr),
       functionBases(0),
-      trans(bounds),
+      bounds(bounds),
       numGridPoints(0),
       computedMeanFlag(false),
       ev(0.0),
@@ -71,7 +71,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     functionBases.push_back(functionBasis);
   }
 
-  // create tensor operation for basis transformation
+  // create tensor operation for basis boundsformation
   initializeTensorOperation(combigridMultiOperation->getPointHierarchies(),
                             combigridMultiOperation->getStorage(),
                             combigridMultiOperation->getLevelManager());
@@ -86,7 +86,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridMultiOperation(nullptr),
       combigridTensorOperation(combigridTensorOperation),
       functionBases(0),
-      trans(bounds),
+      bounds(bounds),
       numGridPoints(0),
       computedMeanFlag(false),
       ev(0.0),
@@ -111,7 +111,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
       functionBases(functionBases),
-      trans(bounds),
+      bounds(bounds),
       numGridPoints(0),
       computedMeanFlag(false),
       ev(0.0),
@@ -123,7 +123,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
         "number of basis function do not match with the number of dimensions of the operation");
   }
 
-  // create tensor operation for basis transformation
+  // create tensor operation for basis boundsformation
   initializeTensorOperation(combigridOperation->getPointHierarchies(),
                             combigridOperation->getStorage(),
                             combigridOperation->getLevelManager());
@@ -138,7 +138,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridMultiOperation(combigridMultiOperation),
       combigridTensorOperation(nullptr),
       functionBases(functionBases),
-      trans(bounds),
+      bounds(bounds),
       numGridPoints(0),
       computedMeanFlag(false),
       ev(0.0),
@@ -164,7 +164,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
       functionBases(functionBases),
-      trans(bounds),
+      bounds(bounds),
       numGridPoints(0),
       computedMeanFlag(false),
       ev(0.0),
@@ -199,8 +199,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
   for (size_t idim = 0; idim < numDims; idim++) {
     functionBases.push_back(functionBasis);
   }
-
-  initializeLinearTransformation();
+  initializeBounds();
   initializeTensorOperation(combigridOperation->getPointHierarchies(),
                             combigridOperation->getStorage(),
                             combigridOperation->getLevelManager());
@@ -223,8 +222,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
   for (size_t idim = 0; idim < numDims; idim++) {
     functionBases.push_back(functionBasis);
   }
-
-  initializeLinearTransformation();
+  initializeBounds();
   initializeTensorOperation(combigridMultiOperation->getPointHierarchies(),
                             combigridMultiOperation->getStorage(),
                             combigridMultiOperation->getLevelManager());
@@ -247,8 +245,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
   for (size_t idim = 0; idim < numDims; idim++) {
     functionBases.push_back(functionBasis);
   }
-
-  initializeLinearTransformation();
+  initializeBounds();
   initializeTensorOperation(combigridTensorOperation->getPointHierarchies(),
                             combigridTensorOperation->getStorage(),
                             combigridTensorOperation->getLevelManager());
@@ -272,8 +269,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     throw sgpp::base::application_exception(
         "number of basis function do not match with the number of dimensions of the operation");
   }
-
-  initializeLinearTransformation();
+  initializeBounds();
   initializeTensorOperation(combigridOperation->getPointHierarchies(),
                             combigridOperation->getStorage(),
                             combigridOperation->getLevelManager());
@@ -297,8 +293,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     throw sgpp::base::application_exception(
         "number of basis function do not match with the number of dimensions of the operation");
   }
-
-  initializeLinearTransformation();
+  initializeBounds();
   initializeTensorOperation(combigridMultiOperation->getPointHierarchies(),
                             combigridMultiOperation->getStorage(),
                             combigridMultiOperation->getLevelManager());
@@ -322,8 +317,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     throw sgpp::base::application_exception(
         "number of basis function do not match with the number of dimensions of the operation");
   }
-
-  initializeLinearTransformation();
+  initializeBounds();
   initializeTensorOperation(combigridTensorOperation->getPointHierarchies(),
                             combigridTensorOperation->getStorage(),
                             combigridTensorOperation->getLevelManager());
@@ -353,14 +347,13 @@ void PolynomialStochasticCollocation::initializeTensorOperation(
 }
 
 #ifdef USE_DAKOTA
-void PolynomialStochasticCollocation::initializeLinearTransformation() {
-  sgpp::base::DataVector bounds(2 * numDims);
+void PolynomialStochasticCollocation::initializeBounds() {
+  bounds.resize(2 * numDims);
   for (size_t idim = 0; idim < numDims; idim++) {
     Pecos::RealRealPair bounds_idim = functionBases[idim]->getRandomVariable()->bounds();
     bounds[2 * idim] = bounds_idim.first;
     bounds[2 * idim + 1] = bounds_idim.second;
   }
-  trans.initialize(bounds);
 }
 #endif
 
@@ -395,97 +388,52 @@ size_t PolynomialStochasticCollocation::additionalQuadraturePoints(
 
 double PolynomialStochasticCollocation::quad(MultiIndex i, MultiIndex j) {
   double ans = 1.0;
-  // Gauss quadrature in each dimension
 
   // performing Gauss-Legendre integration
-  auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
-  base::DataVector roots;
-  base::DataVector quadratureweights;
+  GaussLegendreQuadrature gaussLegendreQuadrature;
 
+  // Gauss quadrature in each dimension
   for (size_t idim = 0; idim < i.size(); idim++) {
-    size_t degree_i = i[idim], degree_j = j[idim];
+    size_t degree_i = i[idim];
+    size_t degree_j = j[idim];
     auto functionBasis = functionBases[idim];
     size_t incrementQuadraturePoints =
         additionalQuadraturePoints(functionBasis->getConfiguration().polyParameters.type_);
     size_t numGaussPoints = (degree_i + degree_j + 3) / 2;
 
-    // do iterative 1d quadrature
-    double sum_idim = 0.0;
-    double sum_idim_old = 0.0;
-    double err = 1e14;
-    size_t iteration = 0;
-    while (err > 1e-13 && numGaussPoints < quadRule.getMaxSupportedLevel()) {
-      quadRule.getLevelPointsAndWeightsNormalized(numGaussPoints, roots, quadratureweights);
+    auto func = [&functionBasis, &degree_i, &degree_j, &idim, this](double x_unit, double x_prob) {
+      return this->legendreBasis->evaluate(degree_i, x_unit) *
+             this->legendreBasis->evaluate(degree_j, x_unit) * functionBasis->pdf(x_prob);
+    };
 
-      sum_idim = 0.0;
-      for (size_t i = 0; i < roots.getSize(); ++i) {
-        double x_unit = roots[i], w = quadratureweights[i];
-        double x_prob = trans.unitToProbabilistic(x_unit, idim);
-        sum_idim += w * legendreBasis->evaluate(degree_i, x_unit) *
-                    legendreBasis->evaluate(degree_j, x_unit) * functionBasis->pdf(x_prob);
-      }
-
-      sum_idim *= trans.vol(idim);
-      if (iteration > 0) {
-        err = std::fabs(sum_idim_old - sum_idim);
-        //        if (std::fabs(sum_idim) > 1e-14) {
-        //          err /= std::fabs(sum_idim);
-        //        }
-      }
-
-      sum_idim_old = sum_idim;
-      numGaussPoints += incrementQuadraturePoints;
-      iteration += 1;
-    }
-
-    ans *= sum_idim;
+    gaussLegendreQuadrature.initialize(numGaussPoints);
+    double a = bounds[2 * idim], b = bounds[2 * idim + 1];
+    ans *= gaussLegendreQuadrature.evaluate_iteratively(func, a, b, incrementQuadraturePoints);
   }
   return ans;
 }
 
 double PolynomialStochasticCollocation::quad(MultiIndex i) {
   double ans = 1.0;
-  // Gauss quadrature in each dimension
 
   // performing Gauss-Legendre integration
-  auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
+  GaussLegendreQuadrature gaussLegendreQuadrature;
 
+  // Gauss quadrature in each dimension
   for (size_t idim = 0; idim < i.size(); idim++) {
-    base::DataVector roots;
-    base::DataVector quadratureweights;
     size_t degree_i = i[idim];
     auto functionBasis = functionBases[idim];
     size_t incrementQuadraturePoints =
         additionalQuadraturePoints(functionBasis->getConfiguration().polyParameters.type_);
     size_t numGaussPoints = (degree_i + 2) / 2;
 
-    // do iterative 1d quadrature
-    double sum_idim = 0.0, sum_idim_old = 0.0;
-    double err = 1e14;
-    size_t iteration = 0;
-    while (err > 1e-13 && numGaussPoints < quadRule.getMaxSupportedLevel()) {
-      quadRule.getLevelPointsAndWeightsNormalized(numGaussPoints, roots, quadratureweights);
+    auto func = [&functionBasis, &degree_i, &idim, this](double x_unit, double x_prob) {
+      return this->legendreBasis->evaluate(degree_i, x_unit) * functionBasis->pdf(x_prob);
+    };
 
-      sum_idim = 0.0;
-      for (size_t i = 0; i < roots.getSize(); ++i) {
-        double x_unit = roots[i], w = quadratureweights[i];
-        double x_prob = trans.unitToProbabilistic(x_unit, idim);
-        sum_idim += w * legendreBasis->evaluate(degree_i, x_unit) * functionBasis->pdf(x_prob);
-      }
-
-      sum_idim *= trans.vol(idim);
-
-      if (iteration > 0) {
-        err = std::fabs(sum_idim_old - sum_idim);
-        //        if (std::fabs(sum_idim) > 1e-14) {
-        //          err /= std::fabs(sum_idim);
-        //        }
-      }
-      sum_idim_old = sum_idim;
-      numGaussPoints += incrementQuadraturePoints;
-      iteration += 1;
-    }
-    ans *= sum_idim;
+    gaussLegendreQuadrature.initialize(numGaussPoints);
+    double a = bounds[2 * idim], b = bounds[2 * idim + 1];
+    ans *= gaussLegendreQuadrature.evaluate_iteratively(func, a, b, incrementQuadraturePoints);
   }
   return ans;
 }

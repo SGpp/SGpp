@@ -116,6 +116,7 @@ FloatArrayVector PolynomialScalarProductEvaluator::get1DMixedIntegral(std::vecto
 
 void PolynomialScalarProductEvaluator::calculate1DPolynomialScalarProducts(
     std::vector<double>& points, std::vector<FloatArrayVector>& integrals) {
+#pragma omp parallel for schedule(static)
   for (size_t index_i = 0; index_i < points.size(); ++index_i) {
     integrals.push_back(get1DMixedIntegral(points, index_i));
   }

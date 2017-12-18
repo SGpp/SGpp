@@ -5,6 +5,10 @@
 
 #include <sgpp/combigrid/operation/onedim/BSplineScalarProductEvaluator.hpp>
 
+#include <vector>
+#include <algorithm>
+#include <cmath>
+
 namespace sgpp {
 namespace combigrid {
 
@@ -43,7 +47,8 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(
       }
     } else {
       // only if supports of B-splines overlap the scalar product must be calculated
-      if (abs(static_cast<int>(index_i) - static_cast<int>(index_j)) <= degree) {
+      if (std::abs(static_cast<int>(index_i) - static_cast<int>(index_j)) <=
+          static_cast<int>(degree)) {
         quadRule.getLevelPointsAndWeightsNormalized(
             std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
         size_t first_segment_j = std::max(degree, index_j);
