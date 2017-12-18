@@ -70,8 +70,8 @@ int main() {
     stopwatch.start();
     sgpp::combigrid::PolynomialChaosExpansion pce(op, functionBasis);
 
-    pce.getCombigridTensorOperation()->getLevelManager()->addLevelsAdaptiveByNumLevels(1);
-    pce.getCombigridTensorOperation()->getLevelManager()->addLevelsAdaptiveByNumLevels(5);
+    pce.getCombigridTensorOperation()->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
+    pce.getCombigridTensorOperation()->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
     //    pce.getCombigridTensorOperation()->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
 
     stopwatch.log();

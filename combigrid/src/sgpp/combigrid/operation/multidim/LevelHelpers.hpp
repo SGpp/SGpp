@@ -18,6 +18,7 @@
 #include <unordered_set>
 #include <vector>
 #include <map>
+#include <list>
 
 namespace sgpp {
 namespace combigrid {
@@ -158,8 +159,7 @@ class LevelInfo {
  * Storage for meta information on the levels during adaptive refinement
  */
 
-typedef std::vector<std::shared_ptr<std::map<MultiIndex, std::shared_ptr<LevelInfo>>>>
-    RefinementInfosPerStep;
+typedef std::vector<std::map<MultiIndex, LevelInfo>> RefinementInfosPerStep;
 
 class LevelInfos {
  public:
@@ -176,8 +176,7 @@ class LevelInfos {
    * @param level MultiIndex representing the level
    * @param levelInfo information on the level containing norm, priority, numGridPoints, etc.
    */
-  void insert(const MultiIndex &level, std::shared_ptr<LevelInfo> levelInfo);
-
+  void insert(const MultiIndex &level, LevelInfo &levelInfo);
   /**
    * computes the maximum norm of all levels per refinement iteration.
    * This can be used as an indicator for the error of the combigrid solution.
