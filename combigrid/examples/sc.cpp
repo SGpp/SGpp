@@ -72,7 +72,7 @@ int main() {
   auto tensor_levelManager = sc.getCombigridTensorOperation()->getLevelManager();
 
   sgpp::combigrid::Stopwatch stopwatch;
-  for (size_t q = 0; q < 8; ++q) {
+  for (size_t q = 0; q < 7; ++q) {
     //    std::cout << "---------------------------------------------------------" << std::endl;
     //    std::cout << "add regular levels " << q << " to interpolation operation" << std::endl;
     op_levelManager->addRegularLevels(q);
