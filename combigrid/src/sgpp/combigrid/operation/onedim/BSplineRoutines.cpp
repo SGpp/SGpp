@@ -31,10 +31,8 @@ double expUniformNaKBspline(double const& x, size_t const& degree, size_t i,
       if (l == 0) {
         if (i == 0) {
           // l = 0, i = 0
-          std::cout << "one" << std::endl;
           return 1;
         }
-        // 1 - x * x
 
       } else if (l == 1) {
         // Lagrange polynomials
@@ -191,23 +189,37 @@ double expUniformNaKBspline(double const& x, size_t const& degree, size_t i,
       if (l == 0) {
         if (i == 0) {
           // l = 0, i = 0
-          return 1 - x * x;  // 1 - x * x;
-        } else {
-          // l = 0, i = 1
-          return x;
-        }
-      } else if (l == 1) {
-        if (i == 1) {
-          // l = 1, i = 1
           return 1;
         }
+
+      } else if (l == 1) {
+        // Lagrange polynomials
+        if (i == 0) {
+          // l = 1, i = 0
+          return 2 * x * x - 3 * x + 1;
+        } else if (i == 1) {
+          // l = 1, i = 1
+          return 4 * x - 4 * x * x;
+        } else {
+          // l = 1, i = 2
+          return 2 * x * x - x;
+        }
       } else if (l == 2) {
-        if (i == 1) {
-          // l = 2, i = 1 : cubic polynomial, 0 in 0,0.5,0.75 and 1 in 0.25
-          return 32 * x * (x - 0.5) * (x - 0.75);
+        if (i == 0) {
+          // l = 2, i = 0
+          return 1.0 / 3.0 * (x - 1) * (2 * x - 1) * (4 * x - 3) * (4 * x - 1);
+        } else if (i == 1) {
+          // l = 2, i = 1
+          return 1;
+        } else if (i == 2) {
+          // l = 2, i = 2
+          return 1;
         } else if (i == 3) {
-          // l = 2, i = 3 : quartic polynomial, 0 in 0,0.25,0.5,1 and 1 in 0.75
-          return x * x * x * x;  // x * (x - 0.25) * (x - 0.5) * (x - 1) * (-128.0 / 3.0);
+          // l = 2, i = 3
+          return 1;
+        } else if (i == 4) {
+          // l = 2, i = 4
+          return 1;
         }
       } else if ((i > 5) && (i < hInv - 5)) {
         // l >= 4, 5 < i < 2^l - 5
