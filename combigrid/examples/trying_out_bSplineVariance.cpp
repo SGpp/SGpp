@@ -365,14 +365,14 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
 }
 
 int main() {
-  size_t degree = 3;
+  size_t degree = 5;
   //  size_t numLevels = 8;
   //  for (size_t maxLevel = 0; maxLevel < numLevels; maxLevel ++) {
   sgpp::combigrid::Stopwatch watch;
   watch.start();
-  size_t maxLevel = 10000;
+  size_t numAddaptivePoints = 5000;
   //  std::cout << maxLevel << ", ";
-  BSplineGridConversion(degree, maxLevel);
+  BSplineGridConversion(degree, numAddaptivePoints);
   std::cout << "run time " << watch.elapsedSeconds() << std::endl;
   //  }
   return 0;

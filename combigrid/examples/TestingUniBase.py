@@ -23,35 +23,39 @@ from pysgpp.extensions.datadriven.uq.dists import Uniform
 from pysgpp.extensions.datadriven.uq.dists.Beta import Beta
 from numpy import square
 
-x = 0.337
-degree = 3
-level = 1
-index = 2
+degree = 5
+level = 4
 
-points=[1]*((2**level)+1)
-for i in range(0,(2**level)+1):
-    points[i] = (i*1.0)/(2**level)
-
-evalpoints = np.linspace(0,1,200)
-
-evNew=[0]*len(evalpoints)
-ev=[0]*len(evalpoints)
-
-xi = pysgpp.DoubleVector()
-pysgpp.createdeg3NakKnots(points, xi)
-for i in range(0,len(evalpoints)):
-    evNew[i] = pysgpp.expUniformNaKBspline(evalpoints[i], degree, index, points)
-    ev[i]  = pysgpp.LagrangePolynomial(evalpoints[i],points,index)
-    #ev[i] = pysgpp.nonUniformBSpline(evalpoints[i],degree,index,xi)
+for index in range(0,2**level+1):
+#for index in range(2,2+1):
+    points=[1]*((2**level)+1)
+    for i in range(0,(2**level)+1):
+        points[i] = (i*1.0)/(2**level)
     
-print(points)
-print(min([x1 - x2 for (x1, x2) in zip(evNew, ev)]))
+    evalpoints = np.linspace(0,1,40)
     
+    evNew=[0]*len(evalpoints)
+    ev=[0]*len(evalpoints)
+    
+    #xi = pysgpp.createdeg3NakKnots(points)
+    xi = pysgpp.createdeg5NakKnots(points)
+    for i in range(0,len(evalpoints)):
+        evNew[i] = pysgpp.expUniformNakBspline(evalpoints[i], degree, index, points)
+        #ev[i]  = pysgpp.LagrangePolynomial(evalpoints[i],points,index)
+        ev[i] = pysgpp.nonUniformBSpline(evalpoints[i],degree,index,xi)
+        
+    # print(points)
+    
+    diff = max([abs(x1 - x2) for (x1, x2) in zip(evNew, ev)])
+    print("index: %i diff %.15f " %(index,diff))
+        
 fig, ax = plt.subplots()
+plt.plot(evalpoints,ev,label='Old',marker='>')
 plt.plot(evalpoints,evNew,label='New',marker='*')
-plt.plot(evalpoints,ev,label='Old')
 legend = ax.legend(loc='upper left')
+plt.xticks(points)
 for label in legend.get_texts():
     label.set_fontsize('x-small')
 plt.show()
+
 

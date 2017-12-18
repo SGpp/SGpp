@@ -5,12 +5,85 @@
 
 #include <sgpp/combigrid/operation/onedim/BSplineScalarProductEvaluator.hpp>
 
-#include <vector>
 #include <algorithm>
 #include <cmath>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
+
+// FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(
+//    std::vector<double> const& points, size_t const& index_i) {
+//  FloatArrayVector sums;
+//  for (size_t index_j = 0; index_j < points.size(); index_j++) {
+//    // performing Gauss-Legendre integration with twice as many points as for the simple integrals
+//    size_t numGaussPoints = 2 * ((degree + 1) / 2 + numAdditionalPoints);
+//    sgpp::base::DataVector roots;
+//    sgpp::base::DataVector quadratureweights;
+//    auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
+//
+//    double sum = 0.0;
+//    std::vector<double> xi;
+//    createNakKnots(xValues, degree, xi);
+//    double productValue = 0.0;
+//
+//    // constant function for single point, Lagrange polynomials while not enough knots for not a
+//    // knot B-splines, nak B-splines otherwise
+//    if (xValues.size() == 1) {
+//      numGaussPoints = 1;
+//      quadRule.getLevelPointsAndWeightsNormalized(
+//          std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
+//      sum = 1.0 * this->weight_function(roots[0]) * quadratureweights[0];
+//    } else if ((degree == 3 && (xValues.size() < 5)) || ((degree == 5) && (xValues.size() < 9))) {
+//      numGaussPoints = 2 * xValues.size();
+//      quadRule.getLevelPointsAndWeightsNormalized(
+//          std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
+//      for (size_t i = 0; i < roots.getSize(); ++i) {
+//        double x = roots[i];
+//        productValue =
+//            LagrangePolynomial(x, xValues, index_j) * LagrangePolynomial(x, xValues, index_i);
+//        double integrand = productValue * this->weight_function(x);
+//        sum += integrand * quadratureweights[i];
+//      }
+//    } else {
+//      // only if supports of B-splines overlap the scalar product must be calculated
+//      if (std::abs(static_cast<int>(index_i) - static_cast<int>(index_j)) <=
+//          static_cast<int>(degree)) {
+//        quadRule.getLevelPointsAndWeightsNormalized(
+//            std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
+//        size_t first_segment_j = std::max(degree, index_j);
+//        size_t last_segment_j = std::min(xi.size() - degree - 1, index_j + degree + 1);
+//        size_t first_segment_i = std::max(degree, index_i);
+//        size_t last_segment_i = std::min(xi.size() - degree - 1, index_i + degree + 1);
+//        size_t first_segment = std::min(first_segment_i, first_segment_j);
+//        size_t last_segment = std::max(last_segment_i, last_segment_j);
+//        for (size_t segmentIndex = first_segment; segmentIndex < last_segment; segmentIndex++) {
+//          double a = std::max(0.0, xi[segmentIndex]);
+//          double b = std::min(1.0, xi[segmentIndex + 1]);
+//          double width = b - a;
+//
+//          for (size_t i = 0; i < roots.getSize(); ++i) {
+//            double x = a + width * roots[i];
+//
+//            // ToDO(rehmemk) this is only for speed test purposes. If it works write this whole
+//            // routine
+//            // with expUuniformNakBspline
+//            productValue = expUniformNakBspline(x, degree, index_i, xValues) *
+//                           expUniformNakBspline(x, degree, index_j, xValues);
+//
+//            productValue = nonUniformBSpline(x, degree, index_j, xi) *
+//                           nonUniformBSpline(x, degree, index_i, xi);
+//            double integrand = productValue * this->weight_function(x);
+//            // multiply weights by length_old_interval / length_new_interval
+//            sum += integrand * quadratureweights[i] * width;
+//          }
+//        }
+//      }
+//    }
+//    sums[index_j] = sum;
+//  }
+//  return sums;
+//}
 
 FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(
     std::vector<double> const& points, size_t const& index_i) {
@@ -23,8 +96,6 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(
     auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
 
     double sum = 0.0;
-    std::vector<double> xi;
-    createNakKnots(xValues, degree, xi);
     double productValue = 0.0;
 
     // constant function for single point, Lagrange polynomials while not enough knots for not a
@@ -52,11 +123,12 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(
         quadRule.getLevelPointsAndWeightsNormalized(
             std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
         size_t first_segment_j = std::max(degree, index_j);
-        size_t last_segment_j = std::min(xi.size() - degree - 1, index_j + degree + 1);
+        size_t last_segment_j = std::min(xValues.size(), index_j + degree + 1);
         size_t first_segment_i = std::max(degree, index_i);
-        size_t last_segment_i = std::min(xi.size() - degree - 1, index_i + degree + 1);
+        size_t last_segment_i = std::min(xValues.size(), index_i + degree + 1);
         size_t first_segment = std::min(first_segment_i, first_segment_j);
         size_t last_segment = std::max(last_segment_i, last_segment_j);
+        std::vector<double> xi = createNakKnots(xValues, degree);
         for (size_t segmentIndex = first_segment; segmentIndex < last_segment; segmentIndex++) {
           double a = std::max(0.0, xi[segmentIndex]);
           double b = std::min(1.0, xi[segmentIndex + 1]);
@@ -66,13 +138,12 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(
             double x = a + width * roots[i];
 
             // ToDO(rehmemk) this is only for speed test purposes. If it works write this whole
-            // routine
-            // with expUuniformNakBspline
-            productValue = expUniformNaKBspline(x, degree, index_i, xValues) *
-                           expUniformNaKBspline(x, degree, index_j, xValues);
+            // routine with expUuniformNakBspline
+            productValue = expUniformNakBspline(x, degree, index_i, xValues) *
+                           expUniformNakBspline(x, degree, index_j, xValues);
 
-            productValue = nonUniformBSpline(x, degree, index_j, xi) *
-                           nonUniformBSpline(x, degree, index_i, xi);
+            //            productValue = nonUniformBSpline(x, degree, index_j, xi) *
+            //                           nonUniformBSpline(x, degree, index_i, xi);
             double integrand = productValue * this->weight_function(x);
             // multiply weights by length_old_interval / length_new_interval
             sum += integrand * quadratureweights[i] * width;

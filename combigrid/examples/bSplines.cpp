@@ -6,9 +6,9 @@
 #include "bSplines.hpp"
 
 int main() {
-  //  size_t numDimensions = 2;
-  //  size_t degree = 3;
-  //  size_t maxLevel = 5;
+  size_t numDimensions = 2;
+  size_t degree = 3;
+  size_t level = 3;
   //  sgpp::combigrid::MultiIndex oneLevel = {2, 2};
 
   // Interpolation
@@ -21,7 +21,7 @@ int main() {
   //    //    std::cout << "level: " << l << " max err " << maxErr[l] << " L2 err " << L2Err[l] <<
   //    //    std::endl;
 
-  // Integration
+  //  Integration
   //  double integral = integrate(level, numDimensions, degree);
   //  std::cout << "integral:  " << integral << std::endl;
 
@@ -36,9 +36,9 @@ int main() {
   //  double res = interpolate_and_integrate(level, numDimensions, degree);
   //  std::cout << res << std::endl;
 
-  // Calculate integral of func^2
-  //  double isqu = integrateSquare(level, numDimensions, degree);
-  //  std::cout << "integral f^2 : " << isqu << std::endl;
+  //   Calculate integral of func^2
+  double isqu = integrateSquare(level, numDimensions, degree);
+  std::cout << "integral f^2 : " << isqu << std::endl;
 
   // Calculate variances on subgrids
   //  double var = variance(level, numDimensions, degree);
@@ -47,7 +47,7 @@ int main() {
   //  double res = interpolateVarianceAdaptively(level, degree);
   //  std::cout << res << std::endl;
 
-  BsplineTimeComparison();
+  //  BsplineTimeComparison();
 
   return 0;
 }
