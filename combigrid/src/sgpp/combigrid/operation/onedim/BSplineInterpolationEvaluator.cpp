@@ -62,7 +62,7 @@ void BSplineInterpolationEvaluator::computeBasisValues() {
   // constant function for single point, Lagrange polynomials while not enough knots for not a
   // knot B-splines, nak B-splines otherwise
   basisValues.resize(xValues.size(), sgpp::combigrid::FloatScalarVector(0));
-
+/*
   if (xValues.size() == 1) {
     basisValues[0] = 1.0;
     return;
@@ -79,11 +79,11 @@ void BSplineInterpolationEvaluator::computeBasisValues() {
 #pragma omp parallel for schedule(static)
   for (size_t i = 0; i < xValues.size(); i++) {
     basisValues[i] = nonUniformBSpline(evaluationPoint, degree, i, xi);
+  }*/
+#pragma omp parallel for
+  for (size_t i = 0; i < xValues.size(); i++) {
+    basisValues[i] = expUniformNaKBspline(evaluationPoint, degree, i, xValues);
   }
-  //#pragma omp parallel for
-  //  for (size_t i = 0; i < xValues.size(); i++) {
-  //    basisValues[i] = expUniformNaKBspline(evaluationPoint, degree, i, xValues);
-  //  }
 }
 
 void BSplineInterpolationEvaluator::setBasisCoefficientsAtGridPoints(

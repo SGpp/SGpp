@@ -59,6 +59,13 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(
 
           for (size_t i = 0; i < roots.getSize(); ++i) {
             double x = a + width * roots[i];
+
+            // ToDO(rehmemk) this is only for speed test purposes. If it works write this whole
+            // routine
+            // with expUuniformNakBspline
+            productValue = expUniformNaKBspline(x, degree, index_i, xValues) *
+                           expUniformNaKBspline(x, degree, index_j, xValues);
+
             productValue = nonUniformBSpline(x, degree, index_j, xi) *
                            nonUniformBSpline(x, degree, index_i, xi);
             double integrand = productValue * this->weight_function(x);
