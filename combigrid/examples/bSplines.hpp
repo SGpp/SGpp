@@ -41,10 +41,9 @@
 #include <iostream>
 #include <vector>
 
-size_t numDimensions = 2;
+size_t numDimensions = 1;
 double f(sgpp::base::DataVector const& v) {
-  return v[0] * sin(v[1]);
-  //  return v[0] * v[0] * v[0] + v[1] * v[1] * v[1];
+  return 1;
   //  return v[0] * sin(v[0] + v[1]) * exp(v[1] * v[2]);
   //  return std::atan(50 * (v[0] - .35));
   //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
@@ -364,8 +363,7 @@ void BsplineTimeComparison() {
     xValues.push_back(i / std::pow(2, level));
   }
   watch.start();
-  std::vector<double> xi;
-  createNakKnots(xValues, degree, xi);
+  std::vector<double> xi = createNakKnots(xValues, degree);
   for (unsigned int i = 1; i <= std::pow(2, level) - 1; i++) {
     Combieval.push_back(nonUniformBSpline(x, degree, i, xi));
   }

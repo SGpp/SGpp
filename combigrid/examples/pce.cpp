@@ -6,10 +6,10 @@
 #include <sgpp/combigrid/functions/MonomialFunctionBasis1D.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
-#include <sgpp/combigrid/pce/PolynomialChaosExpansion.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
+#include <sgpp/combigrid/pce/PolynomialChaosExpansion.hpp>
 #include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
@@ -70,8 +70,8 @@ int main() {
     stopwatch.start();
     sgpp::combigrid::PolynomialChaosExpansion pce(op, functionBasis);
 
-    pce.getCombigridTensorOperation()->getLevelManager()->addLevelsAdaptiveByNumLevels(1);
-    pce.getCombigridTensorOperation()->getLevelManager()->addLevelsAdaptiveByNumLevels(5);
+    pce.getCombigridTensorOperation()->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
+    pce.getCombigridTensorOperation()->getLevelManager()->addLevelsAdaptiveByNumLevels(100);
     //    pce.getCombigridTensorOperation()->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
 
     stopwatch.log();

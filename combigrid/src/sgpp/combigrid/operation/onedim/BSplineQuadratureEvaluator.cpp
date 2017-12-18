@@ -28,8 +28,7 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
   auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
 
   double sum = 0.0;
-  std::vector<double> xi;
-  createNakKnots(xValues, degree, xi);
+  std::vector<double> xi = createNakKnots(xValues, degree);
   double bsplinevalue = 0.0;
 
   // constant function for single point, Lagrange polynomials while not enough knots for not a
@@ -59,12 +58,15 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
       double b = std::min(1.0, xi[segmentIndex + 1]);
       double width = b - a;
 
+      // ToDo(rehmemk) Use GaussLegendreQuadrature.cpp's evaluate_iteratively if weight function !=
+      // 1
       for (size_t i = 0; i < roots.getSize(); ++i) {
         double x = a + width * roots[i];
-        // ToDO(rehmemk) this is only for speed test purposes. If it works write this whole routine
+        // ToDO(rehmemk) this is only for speed test purposes. If it works write this whole
+        // routine
         // with expUuniformNakBspline
         //        bsplinevalue = nonUniformBSpline(x, degree, index, xi);
-        bsplinevalue = expUniformNaKBspline(x, degree, index, xValues);
+        bsplinevalue = expUniformNakBspline(x, degree, index, xValues);
         double integrand = bsplinevalue * this->weight_function(x);
         // multiply weights by length_old_interval / length_new_interval
         sum += integrand * quadratureweights[i] * width;

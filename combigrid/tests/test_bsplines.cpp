@@ -259,7 +259,7 @@ BOOST_AUTO_TEST_CASE(testCorrespondingDegreeInterpolation) {
   sgpp::combigrid::MultiFunction func5(x5);
   level = 5;
   double L2error5 = L2BsplineInterpolationError(numDimensions, degree, func5, level);
-  double tolerance = 1e-15;
+  double tolerance = 3e-14;
 
   //  std::cout << "d = 1: " << L2error1 << std::endl;
   //  std::cout << "d = 3: " << L2error3 << std::endl;
@@ -294,7 +294,7 @@ BOOST_AUTO_TEST_CASE(testCorrespondingDegreeQuadrature) {
   sgpp::combigrid::MultiFunction func5(x5);
   level = 5;
   double Quaderror5 = BsplineQuadratureError(numDimensions, degree, func5, level);
-  double tolerance = 1e-15;
+  double tolerance = 1e-14;
 
   //  std::cout << "d = 1: " << Quaderror1 << std::endl;
   //  std::cout << "d = 3: " << Quaderror3 << std::endl;

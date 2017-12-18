@@ -6,14 +6,15 @@
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
 
-#include <vector>
 #include <algorithm>
+#include <vector>
 
 constexpr size_t log2(size_t n) { return ((n < 2) ? 1 : 1 + log2(n / 2)); }
 
 // ToDo (rehmemk) has not been tested so far. Degree 5 still needs the level 0,1,2 changes
-double expUniformNaKBspline(double const& x, size_t const& degree, size_t i,
+double expUniformNakBspline(double const& x, size_t const& degree, size_t i,
                             std::vector<double> const& points) {
+  // derive level from number of gridpoints
   size_t l = 0;
   if (points.size() > 1) {
     l = log2(points.size() - 2);
@@ -23,6 +24,9 @@ double expUniformNaKBspline(double const& x, size_t const& degree, size_t i,
 
   switch (degree) {
     case 1:
+      if (l == 0) {
+        return 1.0;
+      }
       return std::max(1.0 - std::abs(t), 0.0);
 
     // degree 3: polynomials on Level 0 and 1, nak Bsplines from Level 3 on
@@ -31,20 +35,20 @@ double expUniformNaKBspline(double const& x, size_t const& degree, size_t i,
       if (l == 0) {
         if (i == 0) {
           // l = 0, i = 0
-          return 1;
+          return 1.0;
         }
 
       } else if (l == 1) {
         // Lagrange polynomials
         if (i == 0) {
           // l = 1, i = 0
-          return 2 * x * x - 3 * x + 1;
+          return (2 * x - 3) * x + 1;
         } else if (i == 1) {
           // l = 1, i = 1
-          return 4 * x - 4 * x * x;
+          return 4 * x * (1 - x);
         } else {
           // l = 1, i = 2
-          return 2 * x * x - x;
+          return (2 * x - 1) * x;
         }
       } else if ((i > 3) && (i < hInv - 3)) {
         // l >= 4, 3 < i < 2^l - 3
@@ -183,26 +187,26 @@ double expUniformNaKBspline(double const& x, size_t const& degree, size_t i,
         }
       }
     }
-    // degree 5: Levels 0,1 and 2 polynomials, nak Bsplines from Level 3 on
+    // degree 5: Levels 0,1 and 2 polynomials, nak B splines from Level 3 on
     case 5: {
-      sgpp::base::BsplineBasis<size_t, size_t> bsplineBasis(3);
+      sgpp::base::BsplineBasis<size_t, size_t> bsplineBasis(5);
       if (l == 0) {
         if (i == 0) {
           // l = 0, i = 0
-          return 1;
+          return 1.0;
         }
 
       } else if (l == 1) {
         // Lagrange polynomials
         if (i == 0) {
           // l = 1, i = 0
-          return 2 * x * x - 3 * x + 1;
+          return (2 * x - 3) * x + 1;
         } else if (i == 1) {
           // l = 1, i = 1
-          return 4 * x - 4 * x * x;
+          return 4 * x * (1 - x);
         } else {
           // l = 1, i = 2
-          return 2 * x * x - x;
+          return (2 * x - 1) * x;
         }
       } else if (l == 2) {
         if (i == 0) {
@@ -210,16 +214,16 @@ double expUniformNaKBspline(double const& x, size_t const& degree, size_t i,
           return 1.0 / 3.0 * (x - 1) * (2 * x - 1) * (4 * x - 3) * (4 * x - 1);
         } else if (i == 1) {
           // l = 2, i = 1
-          return 1;
+          return -16.0 / 3.0 * x * (2 * x - 1) * (4 * x - 3) * (x - 1);
         } else if (i == 2) {
           // l = 2, i = 2
-          return 1;
+          return 4 * x * (4 * x - 1) * (4 * x - 3) * (x - 1);
         } else if (i == 3) {
           // l = 2, i = 3
-          return 1;
+          return -16.0 / 3.0 * (x - 1) * x * (2 * x - 1) * (4 * x - 1);
         } else if (i == 4) {
           // l = 2, i = 4
-          return 1;
+          return 1.0 / 3.0 * x * (4 * x - 1) * (2 * x - 1) * (4 * x - 3);
         }
       } else if ((i > 5) && (i < hInv - 5)) {
         // l >= 4, 5 < i < 2^l - 5
@@ -270,7 +274,62 @@ double expUniformNaKBspline(double const& x, size_t const& degree, size_t i,
             result = 9.0 / 160.0 + result * t;
             return result;
           }
-        } else if (i == 1) {
+        } else if ((l == 3) && (i == 4)) {
+          // l=3, i=4
+          if ((t < -4.0) || (t > 4.0)) {
+            return 0.0;
+          } else if (t < -1.0) {
+            t += 4.0;
+            double result = -1.3888888888888889e-03;
+            result = 4.6296296296296294e-03 + result * t;
+            result = 9.2592592592592587e-03 + result * t;
+            result = 9.2592592592592587e-03 + result * t;
+            result = 4.6296296296296294e-03 + result * t;
+            result = 9.2592592592592596e-04 + result * t;
+            return result;
+          } else if (t < 0.0) {
+            t += 1.0;
+            double result = 1.2500000000000001e-02;
+            result = -1.6203703703703703e-02 + result * t;
+            result = -6.0185185185185182e-02 + result * t;
+            result = -3.2407407407407406e-02 + result * t;
+            result = 2.4768518518518517e-01 + result * t;
+            result = 3.8564814814814813e-01 + result * t;
+            return result;
+          } else if (t < 1.0) {
+            double result = -1.2500000000000001e-02;
+            result = 4.6296296296296294e-02 + result * t;
+            result *= t;
+            result = -1.8518518518518517e-01 + result * t;
+            result *= t;
+            result = 5.3703703703703709e-01 + result * t;
+            return result;
+          } else {
+            t -= 1.0;
+            double result = 1.3888888888888889e-03;
+            result = -1.6203703703703703e-02 + result * t;
+            result = 6.0185185185185182e-02 + result * t;
+            result = -3.2407407407407406e-02 + result * t;
+            result = -2.4768518518518517e-01 + result * t;
+            result = 3.8564814814814813e-01 + result * t;
+            return result;
+          }
+        } else if (i == 0) {
+          // l>=3, i=0
+          if ((t < 0.0) || (t > 3.0)) {
+            return 0.0;
+          } else {
+            double result = -3.9682539682539683e-04;
+            result = 5.9523809523809521e-03 + result * t;
+            result = -3.5714285714285712e-02 + result * t;
+            result = 1.0714285714285714e-01 + result * t;
+            result = -1.6071428571428573e-01 + result * t;
+            result = 9.6428571428571433e-02 + result * t;
+            return result;
+          }
+        }
+
+        else if (i == 1) {
           // l >= 3, i = 1
           if ((t < -1.0) || (t > 3.0)) {
             return 0.0;
@@ -291,6 +350,38 @@ double expUniformNaKBspline(double const& x, size_t const& degree, size_t i,
             result = 1.0 / 84.0 + result * t;
             result = -1.0 / 168.0 + result * t;
             result = 1.0 / 840.0 + result * t;
+            return result;
+          }
+        } else if (i == 2) {
+          // l>=3, i=2
+          if ((t < -2.0) || (t > 3.0)) {
+            return 0.0;
+          } else if (t < 1.0) {
+            t += 2.0;
+            double result = -3.9682539682539680e-03;
+            result = 3.5714285714285712e-02 + result * t;
+            result = -7.1428571428571425e-02 + result * t;
+            result = -1.1904761904761904e-01 + result * t;
+            result = 2.5000000000000000e-01 + result * t;
+            result = 3.8809523809523810e-01 + result * t;
+            return result;
+          } else if (t < 2.0) {
+            t -= 1.0;
+            double result = 7.1428571428571426e-03;
+            result = -2.3809523809523808e-02 + result * t;
+            result *= t;
+            result = 9.5238095238095233e-02 + result * t;
+            result = -1.4285714285714285e-01 + result * t;
+            result = 6.6666666666666666e-02 + result * t;
+            return result;
+          } else {
+            t -= 2.0;
+            double result = -2.3809523809523812e-03;
+            result = 1.1904761904761904e-02 + result * t;
+            result = -2.3809523809523808e-02 + result * t;
+            result = 2.3809523809523808e-02 + result * t;
+            result = -1.1904761904761904e-02 + result * t;
+            result = 2.3809523809523812e-03 + result * t;
             return result;
           }
         } else if (i == 3) {
@@ -331,6 +422,55 @@ double expUniformNaKBspline(double const& x, size_t const& degree, size_t i,
             result = 5.0 / 126.0 + result * t;
             result = -5.0 / 252.0 + result * t;
             result = 1.0 / 252.0 + result * t;
+            return result;
+          }
+        } else if (i == 4) {
+          // l>=4 i=4
+          if ((t < -4.0) || (t > 3.0)) {
+            return 0.0;
+          } else if (t < -1.0) {
+            t += 4.0;
+            double result = -1.9841269841269840e-03;
+            result = 5.9523809523809521e-03 + result * t;
+            result = 1.1904761904761904e-02 + result * t;
+            result = 1.1904761904761904e-02 + result * t;
+            result = 5.9523809523809521e-03 + result * t;
+            result = 1.1904761904761906e-03 + result * t;
+            return result;
+          } else if (t < 0.0) {
+            t += 1.0;
+            double result = 2.5793650793650792e-02;
+            result = -2.3809523809523808e-02 + result * t;
+            result = -9.5238095238095233e-02 + result * t;
+            result = -9.5238095238095233e-02 + result * t;
+            result = 2.3809523809523808e-01 + result * t;
+            result = 4.4761904761904764e-01 + result * t;
+            return result;
+          } else if (t < 1.0) {
+            double result = -4.0873015873015874e-02;
+            result = 1.0515873015873016e-01 + result * t;
+            result = 6.7460317460317457e-02 + result * t;
+            result = -2.6587301587301587e-01 + result * t;
+            result = -2.0436507936507936e-01 + result * t;
+            result = 4.9722222222222223e-01 + result * t;
+            return result;
+          } else if (t < 2.0) {
+            t -= 1.0;
+            double result = 2.5793650793650792e-02;
+            result = -9.9206349206349201e-02 + result * t;
+            result = 7.9365079365079361e-02 + result * t;
+            result = 1.5873015873015872e-01 + result * t;
+            result = -3.1746031746031744e-01 + result * t;
+            result = 1.5873015873015872e-01 + result * t;
+            return result;
+          } else {
+            t -= 2.0;
+            double result = -5.9523809523809521e-03;
+            result = 2.9761904761904760e-02 + result * t;
+            result = -5.9523809523809521e-02 + result * t;
+            result = 5.9523809523809521e-02 + result * t;
+            result = -2.9761904761904760e-02 + result * t;
+            result = 5.9523809523809521e-03 + result * t;
             return result;
           }
         } else {
@@ -431,13 +571,13 @@ double LagrangePolynomial(double const& x, std::vector<double> const& xValues, s
 // the
 // distance of the last point inside to the boundary
 
-void createdeg1Knots(std::vector<double> const& xValues, std::vector<double>& xi) {
+std::vector<double> createdeg1Knots(std::vector<double> const& xValues) {
   size_t degree = 1;
 
   // this offset works only for odd degrees. if even degrees shall be supported it must be
   // generalized
   size_t offset = (degree + 1) / 2;
-  xi.resize(2 * offset, 0);
+  std::vector<double> xi(2 * offset, 0);
   xi.insert(xi.begin() + offset, xValues.begin(), xValues.end());
 
   for (size_t i = 0; i < offset; i++) {
@@ -446,21 +586,21 @@ void createdeg1Knots(std::vector<double> const& xValues, std::vector<double>& xi
         xValues[xValues.size() - 1] +
         (xValues[xValues.size() - 1] - xValues[xValues.size() - i - 2]);
   }
+  return xi;
 }
 
-void createdeg3NakKnots(std::vector<double> const& xValues, std::vector<double>& xi) {
+std::vector<double> createdeg3NakKnots(std::vector<double> const& xValues) {
   size_t degree = 3;
   // On levels 0 and 1 only Lagrange polynomials and not nak B splines are used. no need for extra
   // points
   if (xValues.size() < 5) {
-    xi = xValues;
-    return;
+    return xValues;
   }
   // create a vector xi that holds the gridpoints and continues to the left and right by mirroring
   // at 0 and 1
 
   size_t offset = (degree + 1) / 2;
-  xi.resize(2 * offset + 2, 0);
+  std::vector<double> xi(2 * offset + 2, 0);
 
   xi.insert(xi.begin() + offset + 1, xValues.begin(), xValues.end());
 
@@ -473,22 +613,22 @@ void createdeg3NakKnots(std::vector<double> const& xValues, std::vector<double>&
 
   xi.erase(xi.begin() + offset + 2);
   xi.erase(xi.end() - offset - 3);
+  return xi;
 }
 
-void createdeg5NakKnots(std::vector<double> const& xValues, std::vector<double>& xi) {
+std::vector<double> createdeg5NakKnots(std::vector<double> const& xValues) {
   size_t degree = 5;
   // On levels 0,1 and 2 only Lagrange polynomials and not nak B splines are used. no need for
   // extra
   // points
   if (xValues.size() < 9) {
-    xi = xValues;
-    return;
+    return xValues;
   }
   // create a vector xi that holds the gridpoints and continues to the left and right by mirroring
   // at 0 and 1
 
   size_t offset = (degree + 1) / 2;
-  xi.resize(2 * (offset + 2), 0);
+  std::vector<double> xi(2 * (offset + 2), 0);
 
   xi.insert(xi.begin() + offset + 2, xValues.begin(), xValues.end());
 
@@ -503,16 +643,16 @@ void createdeg5NakKnots(std::vector<double> const& xValues, std::vector<double>&
   xi.erase(xi.begin() + offset + 3);
   xi.erase(xi.end() - offset - 4);
   xi.erase(xi.end() - offset - 4);
+  return xi;
 }
 
-void createNakKnots(std::vector<double> const& xValues, size_t const& degree,
-                    std::vector<double>& xi) {
+std::vector<double> createNakKnots(std::vector<double> const& xValues, size_t const& degree) {
   if (degree == 1) {
-    createdeg1Knots(xValues, xi);
+    return createdeg1Knots(xValues);
   } else if (degree == 3) {
-    createdeg3NakKnots(xValues, xi);
+    return createdeg3NakKnots(xValues);
   } else if (degree == 5) {
-    createdeg5NakKnots(xValues, xi);
+    return createdeg5NakKnots(xValues);
   } else {
     throw std::invalid_argument("BSplineRoutines: only B-Spline degrees 1,3 and 5 supported");
   }
