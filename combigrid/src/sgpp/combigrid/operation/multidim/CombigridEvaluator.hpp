@@ -61,8 +61,7 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
   void initPartialDifferences() {
     partialDifferences.clear();
     for (size_t d = 0; d <= numDimensions; ++d) {
-      partialDifferences.push_back(
-          std::shared_ptr<AbstractMultiStorage<V>>(new TreeStorage<V>(numDimensions)));
+      partialDifferences.push_back(std::make_shared<TreeStorage<V>>(numDimensions));
     }
   }
 
@@ -273,7 +272,8 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
    * this CombigridEvaluator.
    */
   std::shared_ptr<TreeStorage<uint8_t>> getLevelStructure() {
-    std::shared_ptr<TreeStorage<uint8_t>> storage(new TreeStorage<uint8_t>(numDimensions));
+    std::shared_ptr<TreeStorage<uint8_t>> storage =
+        std::make_shared<TreeStorage<uint8_t>>(numDimensions);
 
     auto it = partialDifferences[numDimensions]->getStoredDataIterator();
 

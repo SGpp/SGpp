@@ -15,18 +15,16 @@ namespace sgpp {
 namespace combigrid {
 
 LevelManager::LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator)
-    : queue(),
-      numDimensions(levelEvaluator->numDims()),
-      combiEval(levelEvaluator),
-      managerMutex(new std::mutex()) {
+    : queue(), numDimensions(levelEvaluator->numDims()), combiEval(levelEvaluator) {
+  managerMutex = std::make_shared<std::mutex>();
   infoOnAddedLevels = std::make_shared<LevelInfos>();
   levelData = std::make_shared<TreeStorage<std::shared_ptr<LevelInfo>>>(numDimensions);
 }
 
 LevelManager::~LevelManager() {}
 
-LevelManager::LevelManager()
-    : queue(), numDimensions(0), combiEval(nullptr), managerMutex(new std::mutex()) {
+LevelManager::LevelManager() : queue(), numDimensions(0), combiEval(nullptr) {
+  managerMutex = std::make_shared<std::mutex>();
   infoOnAddedLevels = std::make_shared<LevelInfos>();
   levelData = std::make_shared<TreeStorage<std::shared_ptr<LevelInfo>>>(numDimensions);
 }

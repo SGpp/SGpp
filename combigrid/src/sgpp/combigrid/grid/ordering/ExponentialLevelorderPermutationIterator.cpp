@@ -55,8 +55,9 @@ size_t ExponentialLevelorderPermutationIterator::value() {
 void ExponentialLevelorderPermutationIterator::moveToNext() { ++currentIndex; }
 
 std::shared_ptr<AbstractPermutationIterator> ExponentialLevelorderPermutationIterator::clone() {
-  return std::shared_ptr<AbstractPermutationIterator>(
-      new ExponentialLevelorderPermutationIterator(level, numPoints, currentIndex));
+  std::shared_ptr<AbstractPermutationIterator> ans =
+      std::make_shared<ExponentialLevelorderPermutationIterator>(level, numPoints, currentIndex);
+  return ans;
 }
 
 } /* namespace combigrid */
