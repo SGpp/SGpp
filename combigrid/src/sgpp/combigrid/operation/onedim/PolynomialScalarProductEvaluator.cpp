@@ -15,6 +15,7 @@
 #include <iomanip>
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 namespace sgpp {
 namespace combigrid {
@@ -23,7 +24,9 @@ PolynomialScalarProductEvaluator::PolynomialScalarProductEvaluator()
     : weight_function(constantFunction<double>(1.0)),
       normalizeWeights(false),
       isCustomWeightFunction(false),
-      numAdditionalPoints(0) {
+      numAdditionalPoints(0),
+      xlower(0.0),
+      xupper(1.0) {
   evalConfig.type = CombiEvaluatorTypes::Multi_PolynomialScalarProduct;
 }
 
@@ -33,7 +36,9 @@ PolynomialScalarProductEvaluator::PolynomialScalarProductEvaluator(
     : weight_function(weight_function),
       normalizeWeights(normalizeWeights),
       isCustomWeightFunction(true),
-      numAdditionalPoints(numAdditionalPoints) {
+      numAdditionalPoints(numAdditionalPoints),
+      xlower(0.0),
+      xupper(1.0) {
   evalConfig.type = CombiEvaluatorTypes::Multi_PolynomialScalarProduct;
 }
 
@@ -44,44 +49,80 @@ PolynomialScalarProductEvaluator::PolynomialScalarProductEvaluator(
       weight_function(other.weight_function),
       normalizeWeights(other.normalizeWeights),
       isCustomWeightFunction(other.isCustomWeightFunction),
-      numAdditionalPoints(other.numAdditionalPoints) {
+      numAdditionalPoints(other.numAdditionalPoints),
+      xlower(other.xlower),
+      xupper(other.xupper) {
+  evalConfig.type = CombiEvaluatorTypes::Multi_PolynomialScalarProduct;
+}
+
+PolynomialScalarProductEvaluator::PolynomialScalarProductEvaluator(
+    std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> orthogBasis)
+    : weight_function([orthogBasis](double x) { return orthogBasis->pdf(x); }),
+      normalizeWeights(false),
+      isCustomWeightFunction(true),
+      numAdditionalPoints(0),
+      xlower(0.0),
+      xupper(1.0) {
+  initializeBounds(orthogBasis);
   evalConfig.type = CombiEvaluatorTypes::Multi_PolynomialScalarProduct;
 }
 
 PolynomialScalarProductEvaluator::~PolynomialScalarProductEvaluator() {}
 
+void PolynomialScalarProductEvaluator::initializeBounds(
+    std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> orthogBasis) {
+#ifdef USE_DAKOTA
+  Pecos::RealRealPair bounds = orthogBasis->getRandomVariable()->bounds();
+  xlower = bounds.first;
+  xupper = bounds.second;
+#endif
+}
+
 double PolynomialScalarProductEvaluator::quad(LagrangePolynom& p_i, LagrangePolynom& p_j) {
   size_t degree_i = p_i.points.size() - 1;
   size_t degree_j = p_j.points.size() - 1;
-  size_t numGaussPoints = (degree_i + degree_j + 3) / 2;
+  size_t numGaussPoints = std::max(static_cast<size_t>(1), (degree_i + degree_j + 3) / 2);
 
   // performing Gauss-Legendre integration
-  auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
-  base::DataVector roots;
-  base::DataVector quadratureweights;
+  GaussLegendreQuadrature gaussLegendreQuadrature;
 
-  // do iterative 1d quadrature
-  double scalarProduct_ij = 0.0, scalarProduct_ij_old = 0.0;
-  double err = 1e14;
-  size_t iteration = 0;
-  while (err > 1e-13 && numGaussPoints < quadRule.getMaxSupportedLevel()) {
-    quadRule.getLevelPointsAndWeightsNormalized(numGaussPoints, roots, quadratureweights);
+  auto func = [&p_i, &p_j, this](double x_unit, double x_prob) {
+    return p_i.evaluate(x_unit) * p_j.evaluate(x_unit) * weight_function(x_prob);
+  };
 
-    scalarProduct_ij = 0.0;
-    for (size_t i = 0; i < roots.getSize(); ++i) {
-      double x_unit = roots[i], w = quadratureweights[i];
-      scalarProduct_ij += w * p_i.evaluate(x_unit) * p_j.evaluate(x_unit) * weight_function(x_unit);
-    }
+  gaussLegendreQuadrature.initialize(numGaussPoints);
+  return gaussLegendreQuadrature.evaluate_iteratively(func, xlower, xupper,
+                                                      1 + numAdditionalPoints);
 
-    if (iteration > 0) {
-      err = std::fabs(scalarProduct_ij_old - scalarProduct_ij);
-    }
-    scalarProduct_ij_old = scalarProduct_ij;
-    numGaussPoints += 1 + numAdditionalPoints;
-    iteration += 1;
-  }
-
-  return scalarProduct_ij;
+  //  // performing Gauss-Legendre integration
+  //  auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
+  //  base::DataVector roots;
+  //  base::DataVector quadratureweights;
+  //
+  //  // do iterative 1d quadrature
+  //  double scalarProduct_ij = 0.0, scalarProduct_ij_old = 0.0;
+  //  double err = 1e14;
+  //  size_t iteration = 0;
+  //  while (err > 1e-13 && numGaussPoints < quadRule.getMaxSupportedLevel()) {
+  //    quadRule.getLevelPointsAndWeightsNormalized(numGaussPoints, roots, quadratureweights);
+  //
+  //    scalarProduct_ij = 0.0;
+  //    for (size_t i = 0; i < roots.getSize(); ++i) {
+  //      double x_unit = roots[i], w = quadratureweights[i];
+  //      double x_prob = (xupper - xlower) * x_unit + xlower;
+  //      scalarProduct_ij += w * p_i.evaluate(x_unit) * p_j.evaluate(x_unit) *
+  //      weight_function(x_prob);
+  //    }
+  //
+  //    if (iteration > 0) {
+  //      err = std::fabs(scalarProduct_ij_old - scalarProduct_ij);
+  //    }
+  //    scalarProduct_ij_old = scalarProduct_ij;
+  //    numGaussPoints += 1 + numAdditionalPoints;
+  //    iteration += 1;
+  //  }
+  //
+  //  return scalarProduct_ij;
 }
 
 FloatArrayVector PolynomialScalarProductEvaluator::get1DMixedIntegral(std::vector<double>& points,
@@ -141,10 +182,9 @@ void PolynomialScalarProductEvaluator::setGridPoints(std::vector<double> const& 
   }
 }
 
-std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector> >
+std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>
 PolynomialScalarProductEvaluator::cloneLinear() {
-  std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> ans = std::make_shared<PolynomialScalarProductEvaluator>(*this);
-  return ans;
+  return std::make_shared<PolynomialScalarProductEvaluator>(*this);
 }
 
 void PolynomialScalarProductEvaluator::setParameter(const FloatArrayVector& param) { return; }

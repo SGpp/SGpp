@@ -24,58 +24,32 @@ class PolynomialStochasticCollocation {
   PolynomialStochasticCollocation(
       std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation,
       std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis,
-      sgpp::base::DataVector& bounds);
+      sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
 
   PolynomialStochasticCollocation(
       std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation,
       std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis,
-      sgpp::base::DataVector& bounds);
+      sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
 
   PolynomialStochasticCollocation(
       std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation,
       std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis,
-      sgpp::base::DataVector& bounds);
+      sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
 
   PolynomialStochasticCollocation(
       std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation,
       std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases,
-      sgpp::base::DataVector& bounds);
+      sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
 
   PolynomialStochasticCollocation(
       std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation,
       std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases,
-      sgpp::base::DataVector& bounds);
+      sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
 
   PolynomialStochasticCollocation(
       std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation,
       std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases,
-      sgpp::base::DataVector& bounds);
-
-#ifdef USE_DAKOTA
-  PolynomialStochasticCollocation(
-      std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation,
-      std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis);
-
-  PolynomialStochasticCollocation(
-      std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation,
-      std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis);
-
-  PolynomialStochasticCollocation(
-      std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation,
-      std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis);
-
-  PolynomialStochasticCollocation(
-      std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation,
-      std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases);
-
-  PolynomialStochasticCollocation(
-      std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation,
-      std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases);
-
-  PolynomialStochasticCollocation(
-      std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation,
-      std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases);
-#endif
+      sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
 
   virtual ~PolynomialStochasticCollocation();
 

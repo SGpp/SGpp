@@ -29,7 +29,7 @@ namespace combigrid {
 PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation,
     std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis,
-    sgpp::base::DataVector& bounds)
+    sgpp::base::DataVector const& bounds)
     : numDims(combigridOperation->numDims()),
       combigridOperation(combigridOperation),
       combigridMultiOperation(nullptr),
@@ -46,6 +46,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     functionBases.push_back(functionBasis);
   }
 
+  initializeBounds();
   initializeTensorOperation(combigridOperation->getPointHierarchies(),
                             combigridOperation->getStorage(),
                             combigridOperation->getLevelManager());
@@ -54,7 +55,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
 PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation,
     std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis,
-    sgpp::base::DataVector& bounds)
+    sgpp::base::DataVector const& bounds)
     : numDims(combigridMultiOperation->numDims()),
       combigridOperation(nullptr),
       combigridMultiOperation(combigridMultiOperation),
@@ -71,7 +72,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     functionBases.push_back(functionBasis);
   }
 
-  // create tensor operation for basis boundsformation
+  initializeBounds();
   initializeTensorOperation(combigridMultiOperation->getPointHierarchies(),
                             combigridMultiOperation->getStorage(),
                             combigridMultiOperation->getLevelManager());
@@ -80,7 +81,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
 PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation,
     std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis,
-    sgpp::base::DataVector& bounds)
+    sgpp::base::DataVector const& bounds)
     : numDims(combigridTensorOperation->numDims()),
       combigridOperation(nullptr),
       combigridMultiOperation(nullptr),
@@ -97,154 +98,6 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     functionBases.push_back(functionBasis);
   }
 
-  initializeTensorOperation(combigridTensorOperation->getPointHierarchies(),
-                            combigridTensorOperation->getStorage(),
-                            combigridTensorOperation->getLevelManager());
-}
-
-PolynomialStochasticCollocation::PolynomialStochasticCollocation(
-    std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation,
-    std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases,
-    sgpp::base::DataVector& bounds)
-    : numDims(combigridMultiOperation->numDims()),
-      combigridOperation(combigridOperation),
-      combigridMultiOperation(nullptr),
-      combigridTensorOperation(nullptr),
-      functionBases(functionBases),
-      bounds(bounds),
-      numGridPoints(0),
-      computedMeanFlag(false),
-      ev(0.0),
-      computedVarianceFlag(false),
-      var(0.0) {
-  // make sure that the number of dimensions match
-  if (numDims != functionBases.size()) {
-    throw sgpp::base::application_exception(
-        "number of basis function do not match with the number of dimensions of the operation");
-  }
-
-  // create tensor operation for basis boundsformation
-  initializeTensorOperation(combigridOperation->getPointHierarchies(),
-                            combigridOperation->getStorage(),
-                            combigridOperation->getLevelManager());
-}
-
-PolynomialStochasticCollocation::PolynomialStochasticCollocation(
-    std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation,
-    std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases,
-    sgpp::base::DataVector& bounds)
-    : numDims(combigridMultiOperation->numDims()),
-      combigridOperation(nullptr),
-      combigridMultiOperation(combigridMultiOperation),
-      combigridTensorOperation(nullptr),
-      functionBases(functionBases),
-      bounds(bounds),
-      numGridPoints(0),
-      computedMeanFlag(false),
-      ev(0.0),
-      computedVarianceFlag(false),
-      var(0.0) {
-  // make sure that the number of dimensions match
-  if (numDims != functionBases.size()) {
-    throw sgpp::base::application_exception(
-        "number of basis function do not match with the number of dimensions of the operation");
-  }
-
-  initializeTensorOperation(combigridMultiOperation->getPointHierarchies(),
-                            combigridMultiOperation->getStorage(),
-                            combigridMultiOperation->getLevelManager());
-}
-
-PolynomialStochasticCollocation::PolynomialStochasticCollocation(
-    std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation,
-    std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases,
-    sgpp::base::DataVector& bounds)
-    : numDims(combigridTensorOperation->numDims()),
-      combigridOperation(nullptr),
-      combigridMultiOperation(nullptr),
-      combigridTensorOperation(nullptr),
-      functionBases(functionBases),
-      bounds(bounds),
-      numGridPoints(0),
-      computedMeanFlag(false),
-      ev(0.0),
-      computedVarianceFlag(false),
-      var(0.0) {
-  // make sure that the number of dimensions match
-  if (numDims != functionBases.size()) {
-    throw sgpp::base::application_exception(
-        "number of basis function do not match with the number of dimensions of the operation");
-  }
-
-  initializeTensorOperation(combigridTensorOperation->getPointHierarchies(),
-                            combigridTensorOperation->getStorage(),
-                            combigridTensorOperation->getLevelManager());
-}
-
-#ifdef USE_DAKOTA
-PolynomialStochasticCollocation::PolynomialStochasticCollocation(
-    std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation,
-    std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis)
-    : numDims(combigridOperation->numDims()),
-      combigridOperation(combigridOperation),
-      combigridMultiOperation(nullptr),
-      combigridTensorOperation(nullptr),
-      functionBases(0),
-      numGridPoints(0),
-      computedMeanFlag(false),
-      ev(0.0),
-      computedVarianceFlag(false),
-      var(0.0) {
-  // create vector of function bases
-  for (size_t idim = 0; idim < numDims; idim++) {
-    functionBases.push_back(functionBasis);
-  }
-  initializeBounds();
-  initializeTensorOperation(combigridOperation->getPointHierarchies(),
-                            combigridOperation->getStorage(),
-                            combigridOperation->getLevelManager());
-}
-
-PolynomialStochasticCollocation::PolynomialStochasticCollocation(
-    std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation,
-    std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis)
-    : numDims(combigridMultiOperation->numDims()),
-      combigridOperation(nullptr),
-      combigridMultiOperation(combigridMultiOperation),
-      combigridTensorOperation(nullptr),
-      functionBases(0),
-      numGridPoints(0),
-      computedMeanFlag(false),
-      ev(0.0),
-      computedVarianceFlag(false),
-      var(0.0) {
-  // create vector of function bases
-  for (size_t idim = 0; idim < numDims; idim++) {
-    functionBases.push_back(functionBasis);
-  }
-  initializeBounds();
-  initializeTensorOperation(combigridMultiOperation->getPointHierarchies(),
-                            combigridMultiOperation->getStorage(),
-                            combigridMultiOperation->getLevelManager());
-}
-
-PolynomialStochasticCollocation::PolynomialStochasticCollocation(
-    std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation,
-    std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis)
-    : numDims(combigridTensorOperation->numDims()),
-      combigridOperation(nullptr),
-      combigridMultiOperation(nullptr),
-      combigridTensorOperation(combigridTensorOperation),
-      functionBases(0),
-      numGridPoints(0),
-      computedMeanFlag(false),
-      ev(0.0),
-      computedVarianceFlag(false),
-      var(0.0) {
-  // create vector of function bases
-  for (size_t idim = 0; idim < numDims; idim++) {
-    functionBases.push_back(functionBasis);
-  }
   initializeBounds();
   initializeTensorOperation(combigridTensorOperation->getPointHierarchies(),
                             combigridTensorOperation->getStorage(),
@@ -253,12 +106,14 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
 
 PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation,
-    std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases)
+    std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases,
+    sgpp::base::DataVector const& bounds)
     : numDims(combigridOperation->numDims()),
       combigridOperation(combigridOperation),
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
       functionBases(functionBases),
+      bounds(bounds),
       numGridPoints(0),
       computedMeanFlag(false),
       ev(0.0),
@@ -269,6 +124,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     throw sgpp::base::application_exception(
         "number of basis function do not match with the number of dimensions of the operation");
   }
+
   initializeBounds();
   initializeTensorOperation(combigridOperation->getPointHierarchies(),
                             combigridOperation->getStorage(),
@@ -277,12 +133,14 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
 
 PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation,
-    std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases)
+    std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases,
+    sgpp::base::DataVector const& bounds)
     : numDims(combigridMultiOperation->numDims()),
       combigridOperation(nullptr),
       combigridMultiOperation(combigridMultiOperation),
       combigridTensorOperation(nullptr),
       functionBases(functionBases),
+      bounds(bounds),
       numGridPoints(0),
       computedMeanFlag(false),
       ev(0.0),
@@ -293,6 +151,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     throw sgpp::base::application_exception(
         "number of basis function do not match with the number of dimensions of the operation");
   }
+
   initializeBounds();
   initializeTensorOperation(combigridMultiOperation->getPointHierarchies(),
                             combigridMultiOperation->getStorage(),
@@ -301,12 +160,14 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
 
 PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation,
-    std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases)
+    std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases,
+    sgpp::base::DataVector const& bounds)
     : numDims(combigridTensorOperation->numDims()),
       combigridOperation(nullptr),
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
       functionBases(functionBases),
+      bounds(bounds),
       numGridPoints(0),
       computedMeanFlag(false),
       ev(0.0),
@@ -317,13 +178,12 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     throw sgpp::base::application_exception(
         "number of basis function do not match with the number of dimensions of the operation");
   }
+
   initializeBounds();
   initializeTensorOperation(combigridTensorOperation->getPointHierarchies(),
                             combigridTensorOperation->getStorage(),
                             combigridTensorOperation->getLevelManager());
 }
-
-#endif
 
 PolynomialStochasticCollocation::~PolynomialStochasticCollocation() {}
 
@@ -346,16 +206,27 @@ void PolynomialStochasticCollocation::initializeTensorOperation(
   numGridPoints = 0;
 }
 
-#ifdef USE_DAKOTA
 void PolynomialStochasticCollocation::initializeBounds() {
-  bounds.resize(2 * numDims);
-  for (size_t idim = 0; idim < numDims; idim++) {
-    Pecos::RealRealPair bounds_idim = functionBases[idim]->getRandomVariable()->bounds();
-    bounds[2 * idim] = bounds_idim.first;
-    bounds[2 * idim + 1] = bounds_idim.second;
+  if (bounds.size() == 0) {
+    bounds.resize(2 * numDims);
+    for (size_t idim = 0; idim < numDims; idim++) {
+#ifdef USE_DAKOTA
+      Pecos::RealRealPair bounds_idim = functionBases[idim]->getRandomVariable()->bounds();
+      bounds[2 * idim] = bounds_idim.first;
+      bounds[2 * idim + 1] = bounds_idim.second;
+#else
+      bounds[2 * idim] = 0.0;
+      bounds[2 * idim + 1] = 1.0;
+#endif
+    }
+  } else {
+    if (bounds.size() != 2 * numDims) {
+      throw sgpp::base::application_exception(
+          "PolynomialStochasticCollocation::initializeBounds - not enough arguments for bounds "
+          "specified");
+    }
   }
 }
-#endif
 
 bool PolynomialStochasticCollocation::updateStatus() {
   if (numGridPoints < combigridTensorOperation->numGridPoints()) {
