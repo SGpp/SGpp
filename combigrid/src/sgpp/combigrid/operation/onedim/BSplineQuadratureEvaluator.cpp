@@ -61,7 +61,10 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
 
       for (size_t i = 0; i < roots.getSize(); ++i) {
         double x = a + width * roots[i];
-        bsplinevalue = nonUniformBSpline(x, degree, index, xi);
+        // ToDO(rehmemk) this is only for speed test purposes. If it works write this whole routine
+        // with expUuniformNakBspline
+        //        bsplinevalue = nonUniformBSpline(x, degree, index, xi);
+        bsplinevalue = expUniformNaKBspline(x, degree, index, xValues);
         double integrand = bsplinevalue * this->weight_function(x);
         // multiply weights by length_old_interval / length_new_interval
         sum += integrand * quadratureweights[i] * width;
