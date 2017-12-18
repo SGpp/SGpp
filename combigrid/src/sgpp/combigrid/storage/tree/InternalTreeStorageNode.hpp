@@ -41,9 +41,10 @@ class InternalTreeStorageNode : public AbstractTreeStorageNode<T> {
   InternalTreeStorageNode(TreeStorageContext<T> &context, size_t remainingDimensions)
       : children(), context(context) {
     if (remainingDimensions > 1) {
-      children.emplace_back(new InternalTreeStorageNode<T>(context, remainingDimensions - 1));
+      children.emplace_back(
+          std::make_unique<InternalTreeStorageNode<T>>(context, remainingDimensions - 1));
     } else {
-      children.emplace_back(new LowestTreeStorageNode<T>(context));
+      children.emplace_back(std::make_unique<LowestTreeStorageNode<T>>(context));
     }
   }
 
@@ -63,9 +64,10 @@ class InternalTreeStorageNode : public AbstractTreeStorageNode<T> {
 
     while (currentIndex >= children.size()) {
       if (remainingDimensions >= 2) {
-        children.emplace_back(new InternalTreeStorageNode<T>(context, remainingDimensions - 1));
+        children.emplace_back(
+            std::make_unique<InternalTreeStorageNode<T>>(context, remainingDimensions - 1));
       } else {
-        children.emplace_back(new LowestTreeStorageNode<T>(context));
+        children.emplace_back(std::make_unique<LowestTreeStorageNode<T>>(context));
       }
     }
     return children[currentIndex]->get(index, depth + 1);
@@ -82,9 +84,10 @@ class InternalTreeStorageNode : public AbstractTreeStorageNode<T> {
 
     while (currentIndex >= children.size()) {
       if (remainingDimensions >= 2) {
-        children.emplace_back(new InternalTreeStorageNode<T>(context, remainingDimensions - 1));
+        children.emplace_back(
+            std::make_unique<InternalTreeStorageNode<T>>(context, remainingDimensions - 1));
       } else {
-        children.emplace_back(new LowestTreeStorageNode<T>(context));
+        children.emplace_back(std::make_unique<LowestTreeStorageNode<T>>(context));
       }
     }
 

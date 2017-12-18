@@ -77,58 +77,59 @@ class CombigridMultiOperationImpl {
 CombigridMultiOperation::CombigridMultiOperation(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
     std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
-    std::shared_ptr<LevelManager> levelManager, MultiFunction func)
-    : impl(new CombigridMultiOperationImpl(pointHierarchies, evaluatorPrototypes, levelManager,
-                                           std::shared_ptr<AbstractCombigridStorage>(
-                                               new CombigridTreeStorage(pointHierarchies, func)))) {
+    std::shared_ptr<LevelManager> levelManager, MultiFunction func) {
+  impl = std::make_shared<CombigridMultiOperationImpl>(
+      pointHierarchies, evaluatorPrototypes, levelManager,
+      std::make_shared<CombigridTreeStorage>(pointHierarchies, func));
 }
 
 CombigridMultiOperation::CombigridMultiOperation(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
     std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
-    std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage)
-    : impl(new CombigridMultiOperationImpl(pointHierarchies, evaluatorPrototypes, levelManager,
-                                           storage)) {}
+    std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage) {
+  impl = std::make_shared<CombigridMultiOperationImpl>(pointHierarchies, evaluatorPrototypes,
+                                                       levelManager, storage);
+}
 
 CombigridMultiOperation::CombigridMultiOperation(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
     std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
-    std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting)
-    : impl(new CombigridMultiOperationImpl(
-          pointHierarchies, evaluatorPrototypes, levelManager,
-          std::shared_ptr<AbstractCombigridStorage>(
-              new CombigridTreeStorage(pointHierarchies, exploitNesting)),
-          gridFunc)) {}
+    std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting) {
+  impl = std::make_shared<CombigridMultiOperationImpl>(
+      pointHierarchies, evaluatorPrototypes, levelManager,
+      std::make_shared<CombigridTreeStorage>(pointHierarchies, exploitNesting), gridFunc);
+}
 
 CombigridMultiOperation::CombigridMultiOperation(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
     std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
     std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage,
-    FullGridSummationStrategyType summationStrategyType)
-    : impl(new CombigridMultiOperationImpl(pointHierarchies, evaluatorPrototypes, levelManager,
-                                           storage, summationStrategyType)) {}
+    FullGridSummationStrategyType summationStrategyType) {
+  impl = std::make_shared<CombigridMultiOperationImpl>(
+      pointHierarchies, evaluatorPrototypes, levelManager, storage, summationStrategyType);
+}
 
 CombigridMultiOperation::CombigridMultiOperation(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
     std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
     std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting,
-    FullGridSummationStrategyType summationStrategyType)
-    : impl(new CombigridMultiOperationImpl(
-          pointHierarchies, evaluatorPrototypes, levelManager,
-          std::shared_ptr<AbstractCombigridStorage>(
-              new CombigridTreeStorage(pointHierarchies, exploitNesting)),
-          gridFunc, summationStrategyType)) {}
+    FullGridSummationStrategyType summationStrategyType) {
+  impl = std::make_shared<CombigridMultiOperationImpl>(
+      pointHierarchies, evaluatorPrototypes, levelManager,
+      std::make_shared<CombigridTreeStorage>(pointHierarchies, exploitNesting), gridFunc,
+      summationStrategyType);
+}
 
 CombigridMultiOperation::CombigridMultiOperation(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
     std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
     std::shared_ptr<LevelManager> levelManager, MultiFunction func, bool exploitNesting,
-    FullGridSummationStrategyType summationStrategyType)
-    : impl(new CombigridMultiOperationImpl(
-          pointHierarchies, evaluatorPrototypes, levelManager,
-          std::shared_ptr<AbstractCombigridStorage>(
-              new CombigridTreeStorage(pointHierarchies, exploitNesting, func)),
-          summationStrategyType)) {}
+    FullGridSummationStrategyType summationStrategyType) {
+  impl = std::make_shared<CombigridMultiOperationImpl>(
+      pointHierarchies, evaluatorPrototypes, levelManager,
+      std::make_shared<CombigridTreeStorage>(pointHierarchies, exploitNesting, func),
+      summationStrategyType);
+}
 
 void CombigridMultiOperation::setParameters(const std::vector<base::DataVector> &params) {
   if (params.size() == 0) {
@@ -370,8 +371,8 @@ CombigridMultiOperation::createExpUniformBoundaryBsplineInterpolation(size_t num
       numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
   std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluators(
       numDimensions, sgpp::combigrid::CombiEvaluators::multiBSplineInterpolation(degree));
-  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
-      new sgpp::combigrid::WeightedRatioLevelManager());
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager =
+      std::make_shared<sgpp::combigrid::WeightedRatioLevelManager>();
   sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
   bool exploitNesting = false;
   return std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
@@ -386,8 +387,8 @@ CombigridMultiOperation::createExpUniformBoundaryBsplineQuadrature(size_t numDim
       numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
   std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluators(
       numDimensions, sgpp::combigrid::CombiEvaluators::multiBSplineQuadrature(degree));
-  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
-      new sgpp::combigrid::WeightedRatioLevelManager());
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager =
+      std::make_shared<sgpp::combigrid::WeightedRatioLevelManager>();
   sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
   bool exploitNesting = false;
   return std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
@@ -402,8 +403,8 @@ CombigridMultiOperation::createExpUniformBoundaryBsplineSquareQuadrature(size_t 
       numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
   sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
       numDimensions, sgpp::combigrid::CombiEvaluators::BSplineScalarProduct(degree));
-  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
-      new sgpp::combigrid::AveragingLevelManager());
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager =
+      std::make_shared<sgpp::combigrid::AveragingLevelManager>();
   sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
   bool exploitNesting = false;
   sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =

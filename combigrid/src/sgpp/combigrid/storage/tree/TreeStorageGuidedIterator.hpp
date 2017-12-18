@@ -56,13 +56,13 @@ class TreeStorageGuidedIterator : public AbstractMultiStorageIterator<T> {
           CGLOG("TreeStorageGuidedIterator::getChild(): create internal tree storage node at depth "
                 << depth);
           node->children.emplace_back(
-              new InternalTreeStorageNode<T>(node->context, remainingDimensions - 1));
+              std::make_unique<InternalTreeStorageNode<T>>(node->context, remainingDimensions - 1));
         }
       } else {
         while (index >= node->children.size()) {
           CGLOG("TreeStorageGuidedIterator::getChild(): create lowest tree storage node at depth "
                 << depth);
-          node->children.emplace_back(new LowestTreeStorageNode<T>(node->context));
+          node->children.emplace_back(std::make_unique<LowestTreeStorageNode<T>>(node->context));
         }
       }
     }

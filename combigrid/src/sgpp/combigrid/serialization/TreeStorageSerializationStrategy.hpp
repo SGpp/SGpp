@@ -31,7 +31,9 @@ class TreeStorageSerializationStrategy
   size_t numDimensions;
 
   static std::shared_ptr<AbstractSerializationStrategy<T>> getDefaultStrategy() {
-    return std::shared_ptr<AbstractSerializationStrategy<T>>(new DefaultSerializationStrategy<T>());
+    std::shared_ptr<AbstractSerializationStrategy<T>> ans =
+        std::make_shared<DefaultSerializationStrategy<T>>();
+    return ans;
   }
 
  public:
@@ -72,7 +74,7 @@ class TreeStorageSerializationStrategy
   }
 
   virtual std::shared_ptr<TreeStorage<T>> deserialize(std::string const &input) {
-    std::shared_ptr<TreeStorage<T>> storage(new TreeStorage<T>(numDimensions));
+    auto storage = std::make_shared<TreeStorage<T>>(numDimensions);
 
     DefaultSerializationStrategy<size_t> indexStrategy;
 

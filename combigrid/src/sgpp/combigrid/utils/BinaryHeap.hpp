@@ -123,7 +123,7 @@ class BinaryHeap {
   }
 
   Handle push(T elem) {
-    data.push_back(HeapElementPointer(new HeapElement(elem, data.size())));
+    data.push_back(std::make_shared<HeapElement>(elem, data.size()));
     return Handle(shift_up(data.size() - 1));
   }
 

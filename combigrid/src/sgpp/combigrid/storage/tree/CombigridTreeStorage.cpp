@@ -24,11 +24,11 @@ class CombigridTreeStorageImpl {
       MultiFunction p_func, bool exploitNesting)
       : func(p_func),
         pointHierarchies(p_pointHierarchies),
-        storage(new TreeStorage<std::shared_ptr<TreeStorage<double>>>(
-            p_pointHierarchies.size(),
-            [](MultiIndex const &level) { return std::shared_ptr<TreeStorage<double>>(nullptr); })),
         mutexPtr(nullptr),
         exploitNesting(exploitNesting) {
+    storage = std::make_shared<TreeStorage<std::shared_ptr<TreeStorage<double>>>>(
+        p_pointHierarchies.size(),
+        [](MultiIndex const &level) { return std::shared_ptr<TreeStorage<double>>(nullptr); });
     setFunctions();
   }
 
@@ -54,10 +54,10 @@ class CombigridTreeStorageImpl {
     auto outerLambda = [innerLambda, this](MultiIndex const &level) {
       // capture level by copy because the reference might not be valid anymore at the time the
       // lambda is called
-      return std::shared_ptr<TreeStorage<double>>(new TreeStorage<double>(
+      return std::make_shared<TreeStorage<double>>(
           pointHierarchies.size(), [innerLambda, level, this](MultiIndex const &index) -> double {
             return innerLambda(index, level);
-          }));
+          });
     };
 
     storage->setFunc(outerLambda);
@@ -79,13 +79,15 @@ class CombigridTreeStorageImpl {
 
 CombigridTreeStorage::CombigridTreeStorage(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> const &p_pointHierarchies,
-    MultiFunction p_func)
-    : impl(new CombigridTreeStorageImpl(p_pointHierarchies, p_func, true)) {}
+    MultiFunction p_func) {
+  impl = std::make_unique<CombigridTreeStorageImpl>(p_pointHierarchies, p_func, true);
+}
 
 CombigridTreeStorage::CombigridTreeStorage(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> const &p_pointHierarchies,
-    bool exploitNesting, MultiFunction p_func)
-    : impl(new CombigridTreeStorageImpl(p_pointHierarchies, p_func, exploitNesting)) {}
+    bool exploitNesting, MultiFunction p_func) {
+  impl = std::make_unique<CombigridTreeStorageImpl>(p_pointHierarchies, p_func, exploitNesting);
+}
 
 CombigridTreeStorage::~CombigridTreeStorage() {}
 
@@ -145,12 +147,12 @@ size_t CombigridTreeStorage::getNumEntries() {
 }
 
 std::string CombigridTreeStorage::serialize() {
-  std::shared_ptr<AbstractSerializationStrategy<double>> floatSerializationStrategy(
-      new FloatSerializationStrategy<double>());
+  std::shared_ptr<AbstractSerializationStrategy<double>> floatSerializationStrategy =
+      std::make_shared<FloatSerializationStrategy<double>>();
 
   std::shared_ptr<AbstractSerializationStrategy<std::shared_ptr<TreeStorage<double>>>>
-  innerSerializationStrategy(new TreeStorageSerializationStrategy<double>(
-      impl->pointHierarchies.size(), floatSerializationStrategy));
+      innerSerializationStrategy = std::make_shared<TreeStorageSerializationStrategy<double>>(
+          impl->pointHierarchies.size(), floatSerializationStrategy);
 
   TreeStorageSerializationStrategy<std::shared_ptr<TreeStorage<double>>> outerSerializationStrategy(
       impl->pointHierarchies.size(), innerSerializationStrategy);
@@ -159,12 +161,12 @@ std::string CombigridTreeStorage::serialize() {
 }
 
 void CombigridTreeStorage::deserialize(const std::string &str) {
-  std::shared_ptr<AbstractSerializationStrategy<double>> floatSerializationStrategy(
-      new FloatSerializationStrategy<double>());
+  std::shared_ptr<AbstractSerializationStrategy<double>> floatSerializationStrategy =
+      std::make_shared<FloatSerializationStrategy<double>>();
 
   std::shared_ptr<AbstractSerializationStrategy<std::shared_ptr<TreeStorage<double>>>>
-  innerSerializationStrategy(new TreeStorageSerializationStrategy<double>(
-      impl->pointHierarchies.size(), floatSerializationStrategy));
+      innerSerializationStrategy = std::make_shared<TreeStorageSerializationStrategy<double>>(
+          impl->pointHierarchies.size(), floatSerializationStrategy);
 
   TreeStorageSerializationStrategy<std::shared_ptr<TreeStorage<double>>> outerSerializationStrategy(
       impl->pointHierarchies.size(), innerSerializationStrategy);
