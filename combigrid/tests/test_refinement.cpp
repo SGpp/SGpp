@@ -94,24 +94,24 @@ BOOST_AUTO_TEST_CASE(testVarianceBasedRefinement) {
 
     //    std::cout << "#i=" << i << ": num new subspaces: " << tensor_info_map->size() << " = "
     //              << quadrature_info_map->size() << std::endl;
-    BOOST_CHECK_EQUAL(tensor_info_map->size(), quadrature_info_map->size());
+    BOOST_CHECK_EQUAL(tensor_info_map.size(), quadrature_info_map.size());
 
-    for (auto tensor_info_iterator : *tensor_info_map) {
+    for (auto tensor_info_iterator : tensor_info_map) {
       auto level = tensor_info_iterator.first;
 
       //      std::cout << "  (" << level[0] << ", " << level[1] << ") -> "
       //                << (quadrature_info_map->find(level) != quadrature_info_map->end());
-      BOOST_CHECK(quadrature_info_map->find(level) != quadrature_info_map->end());
+      BOOST_CHECK(quadrature_info_map.find(level) != quadrature_info_map.end());
       auto tensor_level_info = tensor_info_iterator.second;
-      auto quadrature_level_info = quadrature_info_map->find(level)->second;
+      auto quadrature_level_info = quadrature_info_map.find(level)->second;
 
       // check if the same difference norms where computed
       //      std::cout << "; priority: " << tensor_level_info->priority << " = "
       //                << quadrature_level_info->priority << "; norms: " << tensor_level_info->norm
       //                << " = " << quadrature_level_info->norm << std::endl;
-      BOOST_CHECK_SMALL(std::abs(tensor_level_info->priority - quadrature_level_info->priority),
+      BOOST_CHECK_SMALL(std::abs(tensor_level_info.priority - quadrature_level_info.priority),
                         1e-13);
-      BOOST_CHECK_SMALL(std::abs(tensor_level_info->norm - quadrature_level_info->norm), 1e-13);
+      BOOST_CHECK_SMALL(std::abs(tensor_level_info.norm - quadrature_level_info.norm), 1e-13);
     }
   }
 }

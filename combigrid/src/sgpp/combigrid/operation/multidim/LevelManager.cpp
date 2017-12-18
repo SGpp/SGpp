@@ -263,14 +263,8 @@ void LevelManager::precomputeLevelsParallel(const std::vector<MultiIndex> &level
 
 void LevelManager::addStats(const MultiIndex &level) {
   // load level info. If not existing, load it
-  std::shared_ptr<LevelInfo> levelInfo;
-  if (!levelData->containsIndex(level)) {
-    levelInfo =
-        std::make_shared<LevelInfo>(combiEval->getDifferenceNorm(level),
-                                    combiEval->maxNewPoints(level), combiEval->numPoints(level));
-  } else {
-    levelInfo = levelData->get(level);
-  }
+  LevelInfo levelInfo(combiEval->getDifferenceNorm(level), combiEval->maxNewPoints(level),
+                      combiEval->numPoints(level));
   infoOnAddedLevels->insert(level, levelInfo);
 }
 
