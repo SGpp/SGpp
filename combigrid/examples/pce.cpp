@@ -57,7 +57,7 @@ int main() {
 
   auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
 
-  for (size_t q = 0; q < 8; ++q) {
+  for (size_t q = 5; q < 6; ++q) {
     // interpolate on adaptively refined grid
     auto op = sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
         d, func);
@@ -69,6 +69,15 @@ int main() {
     // compute the variance
     stopwatch.start();
     sgpp::combigrid::PolynomialChaosExpansion pce(op, functionBasis);
+
+    pce.getCombigridTensorOperation()->getLevelManager()->addLevelsAdaptiveByNumLevels(1);
+    pce.getCombigridTensorOperation()->getLevelManager()->addLevelsAdaptiveByNumLevels(5);
+    //    pce.getCombigridTensorOperation()->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
+
+    stopwatch.log();
+    // compute the variance
+    stopwatch.start();
+
     double mean = pce.mean();
     double variance = pce.variance();
     sgpp::base::DataVector sobol_indices;
