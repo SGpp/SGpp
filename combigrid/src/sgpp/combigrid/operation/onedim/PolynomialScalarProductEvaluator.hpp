@@ -10,6 +10,7 @@
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
+#include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 
 #include <functional>
 #include <vector>
@@ -33,6 +34,9 @@ class PolynomialScalarProductEvaluator : public AbstractLinearEvaluator<FloatArr
   bool normalizeWeights;
   bool isCustomWeightFunction;
   size_t numAdditionalPoints;  // additional gauss points used for a custom weight function
+
+  double xlower;
+  double xupper;
 
   // lookup table for inner products
   std::map<size_t, double> scalarProductsMap;
@@ -94,6 +98,9 @@ class PolynomialScalarProductEvaluator : public AbstractLinearEvaluator<FloatArr
    */
   PolynomialScalarProductEvaluator(sgpp::combigrid::SingleFunction weight_function,
                                    bool normalizeWeights = true, size_t numAdditionalPoints = 10);
+  PolynomialScalarProductEvaluator(
+      std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> orthogBasis);
+
   PolynomialScalarProductEvaluator(PolynomialScalarProductEvaluator const &other);
   virtual ~PolynomialScalarProductEvaluator();
 
@@ -106,6 +113,8 @@ class PolynomialScalarProductEvaluator : public AbstractLinearEvaluator<FloatArr
   bool needsOrderedPoints() override;
   bool needsParameter() override;
   void setParameter(FloatArrayVector const &param) override;
+
+  void initializeBounds(std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> orthogBasis);
 
   // The following is simply copied from QuadratureEvaluator. Applicable here?
   // can be used as a measure of stability of the quadrature algorithm. Minimum (and optimum) in

@@ -8,6 +8,7 @@
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/pce/PolynomialStochasticCollocation.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
+#include <sgpp/combigrid/operation/onedim/PolynomialScalarProductEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
 #include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
@@ -57,18 +58,25 @@ int main() {
   config.polyParameters.lowerBound_ = 0.0;
   config.polyParameters.upperBound_ = 1.0;
   auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
-  sgpp::base::DataVector bounds(2 * d);
-  bounds[0] = 0.0;
-  bounds[1] = 1.0;
-  bounds[2] = 0.0;
-  bounds[3] = 1.0;
-  bounds[4] = 0.0;
-  bounds[5] = 1.0;
+
+  //  sgpp::combigrid::CombiHierarchies::Collection grids{
+  //      d, sgpp::combigrid::CombiHierarchies::expClenshawCurtis()};
+  //
+  //  sgpp::combigrid::CombiEvaluators::MultiCollection evaluators{
+  //      d, std::make_shared<sgpp::combigrid::PolynomialScalarProductEvaluator>(functionBasis)};
+  //
+  //  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager =
+  //      std::make_shared<sgpp::combigrid::AveragingLevelManager>();
+  //
+  //  auto op = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
+  //      grids, evaluators, levelManager, func, false,
+  //      sgpp::combigrid::FullGridSummationStrategyType::VARIANCE);
 
   auto op =
       sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(d, func);
+
   auto op_levelManager = op->getLevelManager();
-  sgpp::combigrid::PolynomialStochasticCollocation sc(op, functionBasis, bounds);
+  sgpp::combigrid::PolynomialStochasticCollocation sc(op, functionBasis);
   auto tensor_levelManager = sc.getCombigridTensorOperation()->getLevelManager();
 
   sgpp::combigrid::Stopwatch stopwatch;
@@ -79,6 +87,7 @@ int main() {
     //    std::cout << "---------------------------------------------------------" << std::endl;
     //    std::cout << "add regular levels " << q << " to tensor operation" << std::endl;
     tensor_levelManager->addRegularLevels(q);
+    //    tensor_levelManager->addLevelsAdaptive(100);
     // compute the variance
     std::cout << "---------------------------------------------------------" << std::endl;
     std::cout << "compute mean and variance of stochastic collocation" << std::endl;
