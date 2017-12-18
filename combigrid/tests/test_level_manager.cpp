@@ -160,14 +160,9 @@ BOOST_AUTO_TEST_CASE(testLevelManagerStats) {
   }
 
   // reference stats
-  std::vector<double> refStats{0.0,
-                               1.42222222222222,
-                               0.335837315225859,
-                               0.0994778161015262,
-                               0.0564213343735511,
-                               0.0201886745236562,
-                               0.00593335414944899,
-                               0.000180018734872348};
+  std::vector<double> refStats{4.00904112129312,   1.23827837473378, 0.771152084553602,
+                               0.321442518162072,  0.2398746901928,  0.143988691577309,
+                               0.0775274779950517, 0.013446805563535};
 
   auto stats = levelManager->getInfoOnAddedLevels();
 
@@ -230,14 +225,9 @@ BOOST_AUTO_TEST_CASE(testLevelManagerStatsConversion) {
   //  }
 
   // reference stats
-  std::vector<double> refStats{0.0,
-                               1.42222222222222,
-                               0.335837315225859,
-                               0.0994778161015262,
-                               0.0564213343735511,
-                               0.0201886745236562,
-                               0.00593335414944899,
-                               0.000180018734872348};
+  std::vector<double> refStats{4.00904112129312,   1.23827837473378, 0.771152084553602,
+                               0.321442518162072,  0.2398746901928,  0.143988691577309,
+                               0.0775274779950517, 0.013446805563535};
 
   // check if the stats of the converted operation are correct
   sgpp::base::DataVector maxNorms;
