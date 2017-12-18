@@ -5,6 +5,8 @@
 
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotNakBsplineBoundaryCombigrid.hpp>
 
+#include <algorithm>
+
 namespace sgpp {
 namespace pde {
 
