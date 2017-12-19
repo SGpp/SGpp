@@ -50,9 +50,7 @@ void OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::mult(sgpp::base::DataVec
 
   result.setAll(0.0);
 
-// use either schedule static or set #pragma omp atomic before the two result[j/i] =
-// tempij*alpha[i/j] lines
-#pragma omp parallel for schedule(static)
+#pragma omp parallel for schedule(dynamic)
   for (size_t i = 0; i < gridSize; i++) {
     for (size_t j = i; j < gridSize; j++) {
       double temp_ij = 1;
@@ -152,10 +150,10 @@ void OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::mult(sgpp::base::DataVec
         temp_ij *= scaling * temp_res;
       }
 
-      //#pragma omp atomic
+#pragma omp atomic
       result[i] += temp_ij * alpha[j];
       if (i != j) {
-        //#pragma omp atomic
+#pragma omp atomic
         result[j] += temp_ij * alpha[i];
       }
     }
