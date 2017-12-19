@@ -17,18 +17,34 @@ namespace sgpp {
 namespace combigrid {
 
 /**
- * Struct for a LagrangePolynom, used to eval it
+ * Class for a LagrangePolynom, used to eval it
  */
-struct LagrangePolynom {
+class LagrangePolynom {
+ private:
   std::vector<double> points;
   size_t point;
+  std::vector<double> denominator;
+  bool computeDenominator = true;
+
+ public:
+  void initialize(size_t newPoint, std::vector<double> &newPoints) {
+    points = newPoints;
+    point = newPoint;
+    denominator.resize(points.size());
+    for (size_t i = 0; i < points.size(); ++i) {
+      if (i != point) {
+        denominator[i] = 1. / (points[point] - points[i]);
+      } else {
+        denominator[i] = 0.0;
+      }
+    }
+  }
 
   double evaluate(double x) {
     double result = 1.0;
     for (size_t i = 0; i < points.size(); ++i) {
       if (i != point) {
-        // TODO(holzmudd): precalculate denominator?
-        result *= (x - points[i]) / (points[point] - points[i]);
+        result *= (x - points[i]) * denominator[i];
       }
     }
     return result;

@@ -29,7 +29,7 @@ int main() {
   config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
   auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
 
-  for (size_t q = 5; q < 6; ++q) {
+  for (size_t q = 6; q < 7; ++q) {
     // interpolate on adaptively refined grid
     auto op = sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
         ishigamiModel.numDims, func);

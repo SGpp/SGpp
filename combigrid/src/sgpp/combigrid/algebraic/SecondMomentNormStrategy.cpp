@@ -40,7 +40,7 @@ double SecondMomentNormStrategy::quad(MultiIndex i, MultiIndex j) {
              functionBasis->pdf(x_prob);
     };
 
-    ans *= GaussLegendreQuadrature::evaluate_parallel(
+    ans *= GaussLegendreQuadrature::evaluate_iteratively(
         func, functionBasis->lowerBound(), functionBasis->upperBound(), numGaussPoints,
         functionBasis->numAdditionalQuadraturePoints());
   }

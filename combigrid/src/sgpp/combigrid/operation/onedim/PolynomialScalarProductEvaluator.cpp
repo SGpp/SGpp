@@ -79,20 +79,17 @@ void PolynomialScalarProductEvaluator::initializeBounds(
 }
 
 double PolynomialScalarProductEvaluator::quad(LagrangePolynom& p_i, LagrangePolynom& p_j) {
-  size_t degree_i = p_i.points.size() - 1;
-  size_t degree_j = p_j.points.size() - 1;
+  size_t degree_i = p_i.degree() - 1;
+  size_t degree_j = p_j.degree() - 1;
   size_t numGaussPoints = std::max(static_cast<size_t>(1), (degree_i + degree_j + 3) / 2);
 
   // performing Gauss-Legendre integration
-  GaussLegendreQuadrature gaussLegendreQuadrature;
-
   auto func = [&p_i, &p_j, this](double x_unit, double x_prob) {
     return p_i.evaluate(x_unit) * p_j.evaluate(x_unit) * weight_function(x_prob);
   };
 
-  gaussLegendreQuadrature.initialize(numGaussPoints);
-  return gaussLegendreQuadrature.evaluate_iteratively(func, xlower, xupper,
-                                                      1 + numAdditionalPoints);
+  return GaussLegendreQuadrature::evaluate_iteratively(func, xlower, xupper, numGaussPoints,
+                                                       1 + numAdditionalPoints);
 }
 
 FloatArrayVector PolynomialScalarProductEvaluator::get1DMixedIntegral(std::vector<double>& points,
@@ -100,14 +97,11 @@ FloatArrayVector PolynomialScalarProductEvaluator::get1DMixedIntegral(std::vecto
   FloatArrayVector scalarProducts;
 
   LagrangePolynom p_i;
-  p_i.points = points;
-  p_i.point = index_i;
+  p_i.initialize(index_i, points);
 
   LagrangePolynom p_j;
-  p_j.points = points;
-
   for (size_t index_j = 0; index_j < points.size(); index_j++) {
-    p_j.point = index_j;
+    p_j.initialize(index_j, points);
     scalarProducts.at(index_j) = quad(p_i, p_j);
   }
 

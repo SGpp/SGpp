@@ -26,9 +26,6 @@ FirstMomentNormStrategy::~FirstMomentNormStrategy() {}
 double FirstMomentNormStrategy::quad(MultiIndex i) {
   double ans = 1.0;
 
-  // performing Gauss-Legendre integration
-  GaussLegendreQuadrature gaussLegendreQuadrature;
-
   // Gauss quadrature in each dimension
   for (size_t idim = 0; idim < i.size(); idim++) {
     size_t degree_i = i[idim];
@@ -40,9 +37,9 @@ double FirstMomentNormStrategy::quad(MultiIndex i) {
       return functionBasis->evaluate(degree_i, x_unit) * functionBasis->pdf(x_prob);
     };
 
-    gaussLegendreQuadrature.initialize(numGaussPoints);
-    ans *= gaussLegendreQuadrature.evaluate_iteratively(
-        func, functionBasis->lowerBound(), functionBasis->upperBound(), incrementQuadraturePoints);
+    ans *= GaussLegendreQuadrature::evaluate_iteratively(func, functionBasis->lowerBound(),
+                                                         functionBasis->upperBound(),
+                                                         numGaussPoints, incrementQuadraturePoints);
   }
   return ans;
 }
