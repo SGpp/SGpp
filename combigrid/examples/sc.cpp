@@ -15,49 +15,34 @@
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
-
+#include <sgpp/combigrid/utils/AnalyticModels.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <cmath>
-
 #include <iostream>
 #include <vector>
 
-double f(sgpp::base::DataVector const &v) {
-  // return v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
-  // return v[0] * v[0] + v[1] * v[1];
-  //  double ans = 1.0;
-  //  for (size_t idim = 0; idim < v.getSize(); idim++) {
-  //    ans *= 4 * v[idim] * (1.0 - v[idim]);
-  //  }
-  //  return ans;
-  //  return exp(3 * v[0] * v[0] + v[1]) * atan(10 * v[2]) + sin(3 * v[1] + v[2]);
-
-  // Ishigami function in (-pi, pi)
-  double a = 7.0, b = 0.1;
-  sgpp::base::DataVector x(v);
-  sgpp::base::DataVector pi(v.getSize());
-  pi.setAll(M_PI);
-  x.mult(2 * M_PI);
-  x.sub(pi);
-  return std::sin(x[0]) + a * std::sin(x[1]) * std::sin(x[1]) +
-         b * x[2] * x[2] * x[2] * x[2] * std::sin(x[0]);
-}
-
-double f_variance(double a = 7., double b = 0.1) {
-  double pi_4 = M_PI * M_PI * M_PI * M_PI;
-  return a * a / 8. + b * pi_4 / 5 + b * b * pi_4 * pi_4 / 18. + 0.5;
-}
-
 int main() {
-  auto func = sgpp::combigrid::MultiFunction(f);
-  size_t d = 3;
-
+  sgpp::combigrid::AtanBeta model;
   sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
-  config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
-  config.polyParameters.lowerBound_ = 0.0;
-  config.polyParameters.upperBound_ = 1.0;
-  auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
+  config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::JACOBI;
+  config.polyParameters.lowerBound_ = model.bounds[0];
+  config.polyParameters.upperBound_ = model.bounds[1];
+  config.polyParameters.alpha_ = model.alpha1;
+  config.polyParameters.beta_ = model.beta1;
+  auto functionBasis1 = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
+
+  config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::JACOBI;
+  config.polyParameters.lowerBound_ = model.bounds[0];
+  config.polyParameters.upperBound_ = model.bounds[1];
+  config.polyParameters.alpha_ = model.alpha2;
+  config.polyParameters.beta_ = model.beta2;
+  auto functionBasis2 = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
+
+  std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>> functionBases{
+      functionBasis1, functionBasis2};
+
+  sgpp::combigrid::MultiFunction func(model.eval);
 
   //  sgpp::combigrid::CombiHierarchies::Collection grids{
   //      d, sgpp::combigrid::CombiHierarchies::expClenshawCurtis()};
@@ -72,15 +57,15 @@ int main() {
   //      grids, evaluators, levelManager, func, false,
   //      sgpp::combigrid::FullGridSummationStrategyType::VARIANCE);
 
-  auto op =
-      sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(d, func);
+  auto op = sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
+      model.numDims, func);
 
   auto op_levelManager = op->getLevelManager();
-  sgpp::combigrid::PolynomialStochasticCollocation sc(op, functionBasis);
+  sgpp::combigrid::PolynomialStochasticCollocation sc(op, functionBases);
   auto tensor_levelManager = sc.getCombigridTensorOperation()->getLevelManager();
 
   sgpp::combigrid::Stopwatch stopwatch;
-  for (size_t q = 0; q < 7; ++q) {
+  for (size_t q = 0; q < 6; ++q) {
     //    std::cout << "---------------------------------------------------------" << std::endl;
     //    std::cout << "add regular levels " << q << " to interpolation operation" << std::endl;
     //    op_levelManager->addRegularLevels(q);
@@ -96,7 +81,7 @@ int main() {
     double mean = sc.mean();
     double variance = sc.variance();
     stopwatch.log();
-    std::cout << "|mu - E(u)|        = " << std::abs(3.5 - mean) << std::endl;
-    std::cout << "|sigma^2 - Var(u)| = " << std::abs(f_variance() - variance) << std::endl;
+    std::cout << "|mu - E(u)|        = " << std::abs(model.mean - mean) << std::endl;
+    std::cout << "|sigma^2 - Var(u)| = " << std::abs(model.variance - variance) << std::endl;
   }
 }

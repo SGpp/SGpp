@@ -210,14 +210,8 @@ void PolynomialStochasticCollocation::initializeBounds() {
   if (bounds.size() == 0) {
     bounds.resize(2 * numDims);
     for (size_t idim = 0; idim < numDims; idim++) {
-#ifdef USE_DAKOTA
-      Pecos::RealRealPair bounds_idim = functionBases[idim]->getRandomVariable()->bounds();
-      bounds[2 * idim] = bounds_idim.first;
-      bounds[2 * idim + 1] = bounds_idim.second;
-#else
-      bounds[2 * idim] = 0.0;
-      bounds[2 * idim + 1] = 1.0;
-#endif
+      bounds[2 * idim] = functionBases[idim]->lowerBound();
+      bounds[2 * idim + 1] = functionBases[idim]->upperBound();
     }
   } else {
     if (bounds.size() != 2 * numDims) {
@@ -240,23 +234,6 @@ bool PolynomialStochasticCollocation::updateStatus() {
   }
 }
 
-size_t PolynomialStochasticCollocation::additionalQuadraturePoints(
-    OrthogonalPolynomialBasisType polyType) {
-  switch (polyType) {
-    case OrthogonalPolynomialBasisType::LEGENDRE:
-      return 0;
-    case OrthogonalPolynomialBasisType::BOUNDED_LOGNORMAL:
-      return 15;
-    case OrthogonalPolynomialBasisType::JACOBI:
-      return 4;
-    case OrthogonalPolynomialBasisType::HERMITE:
-    case OrthogonalPolynomialBasisType::BOUNDED_NORMAL:
-      return 10;
-    default:
-      return 0;
-  }
-}
-
 double PolynomialStochasticCollocation::quad(MultiIndex i, MultiIndex j) {
   double ans = 1.0;
 
@@ -268,8 +245,7 @@ double PolynomialStochasticCollocation::quad(MultiIndex i, MultiIndex j) {
     size_t degree_i = i[idim];
     size_t degree_j = j[idim];
     auto functionBasis = functionBases[idim];
-    size_t incrementQuadraturePoints =
-        additionalQuadraturePoints(functionBasis->getConfiguration().polyParameters.type_);
+    size_t incrementQuadraturePoints = functionBasis->numAdditionalQuadraturePoints();
     size_t numGaussPoints = (degree_i + degree_j + 3) / 2;
 
     auto func = [&functionBasis, &degree_i, &degree_j, &idim, this](double x_unit, double x_prob) {
@@ -277,9 +253,9 @@ double PolynomialStochasticCollocation::quad(MultiIndex i, MultiIndex j) {
              this->legendreBasis->evaluate(degree_j, x_unit) * functionBasis->pdf(x_prob);
     };
 
-    gaussLegendreQuadrature.initialize(numGaussPoints);
     double a = bounds[2 * idim], b = bounds[2 * idim + 1];
-    ans *= gaussLegendreQuadrature.evaluate_iteratively(func, a, b, incrementQuadraturePoints);
+    ans *= GaussLegendreQuadrature::evaluate_iteratively(func, a, b, numGaussPoints,
+                                                         incrementQuadraturePoints);
   }
   return ans;
 }
@@ -294,17 +270,16 @@ double PolynomialStochasticCollocation::quad(MultiIndex i) {
   for (size_t idim = 0; idim < i.size(); idim++) {
     size_t degree_i = i[idim];
     auto functionBasis = functionBases[idim];
-    size_t incrementQuadraturePoints =
-        additionalQuadraturePoints(functionBasis->getConfiguration().polyParameters.type_);
+    size_t incrementQuadraturePoints = functionBasis->numAdditionalQuadraturePoints();
     size_t numGaussPoints = (degree_i + 2) / 2;
 
     auto func = [&functionBasis, &degree_i, &idim, this](double x_unit, double x_prob) {
       return this->legendreBasis->evaluate(degree_i, x_unit) * functionBasis->pdf(x_prob);
     };
 
-    gaussLegendreQuadrature.initialize(numGaussPoints);
     double a = bounds[2 * idim], b = bounds[2 * idim + 1];
-    ans *= gaussLegendreQuadrature.evaluate_iteratively(func, a, b, incrementQuadraturePoints);
+    ans *= GaussLegendreQuadrature::evaluate_iteratively(func, a, b, numGaussPoints,
+                                                         incrementQuadraturePoints);
   }
   return ans;
 }

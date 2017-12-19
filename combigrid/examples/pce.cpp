@@ -14,53 +14,25 @@
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
+#include <sgpp/combigrid/utils/AnalyticModels.hpp>
 
 #include <cmath>
 
 #include <iostream>
 #include <vector>
 
-double f(sgpp::base::DataVector const &v) {
-  // return v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
-  // return v[0] * v[0] + v[1] * v[1];
-  //  double ans = 1.0;
-  //  for (size_t idim = 0; idim < v.getSize(); idim++) {
-  //    ans *= 4 * v[idim] * (1.0 - v[idim]);
-  //  }
-  //  return ans;
-  //  return exp(3 * v[0] * v[0] + v[1]) * atan(10 * v[2]) + sin(3 * v[1] + v[2]);
-
-  // Ishigami function in (-pi, pi)
-  double a = 7.0, b = 0.1;
-  sgpp::base::DataVector x(v);
-  sgpp::base::DataVector pi(v.getSize());
-  pi.setAll(M_PI);
-  x.mult(2 * M_PI);
-  x.sub(pi);
-  return std::sin(x[0]) + a * std::sin(x[1]) * std::sin(x[1]) +
-         b * x[2] * x[2] * x[2] * x[2] * std::sin(x[0]);
-}
-
-double f_variance(double a = 7., double b = 0.1) {
-  double pi_4 = M_PI * M_PI * M_PI * M_PI;
-  return a * a / 8. + b * pi_4 / 5 + b * b * pi_4 * pi_4 / 18. + 0.5;
-}
-
 int main() {
-  auto func = sgpp::combigrid::MultiFunction(f);
-  size_t d = 3;
+  sgpp::combigrid::Ishigami ishigamiModel;
+  sgpp::combigrid::MultiFunction func(ishigamiModel.eval);
 
   sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
   config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
-  config.polyParameters.alpha_ = 10.0;
-  config.polyParameters.beta_ = 5.0;
-
   auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
 
   for (size_t q = 5; q < 6; ++q) {
     // interpolate on adaptively refined grid
     auto op = sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
-        d, func);
+        ishigamiModel.numDims, func);
     sgpp::combigrid::Stopwatch stopwatch;
     stopwatch.start();
     op->getLevelManager()->addRegularLevels(q);

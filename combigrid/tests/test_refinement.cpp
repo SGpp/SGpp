@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_SUITE(testRefinement)
 
 BOOST_AUTO_TEST_CASE(testVarianceBasedRefinement) {
   // use the ishigami function as model function
-  sgpp::combigrid::Atan atanModel;
+  sgpp::combigrid::AtanUniform atanModel;
   sgpp::combigrid::MultiFunction func(atanModel.eval);
 
   size_t regularLevel = 1;

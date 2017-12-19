@@ -76,11 +76,16 @@ class OrthogonalPolynomialBasis1D : public AbstractInfiniteFunctionBasis1D {
   double mean();
   double variance();
 
+  double lowerBound();
+  double upperBound();
+
   OrthogonalPolynomialBasis1DConfiguration getConfiguration();
 
 #ifdef USE_DAKOTA
   std::shared_ptr<Pecos::RandomVariable> getRandomVariable();
 #endif
+
+  size_t numAdditionalQuadraturePoints();
 
  private:
   double normalizeInput(double xValue);
