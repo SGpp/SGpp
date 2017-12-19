@@ -63,7 +63,7 @@ double xquintVariance = 1.0 / 11.0 - 1.0 / 36.0;
 
 size_t numDimensions = 2;
 double f(sgpp::base::DataVector const& v) {
-  //  return v[0] * v[0] * v[0] * v[0] * v[0];
+  //  return v[0]* v[0] * v[0] * v[0] * v[0];
   //  return v[0] * v[0] * v[0] + v[1] * v[1] * v[1];
   //  return std::sin(v[0]) * std::exp(v[1] * v[1]);
   return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
@@ -370,7 +370,7 @@ int main() {
   //  for (size_t maxLevel = 0; maxLevel < numLevels; maxLevel ++) {
   sgpp::combigrid::Stopwatch watch;
   watch.start();
-  size_t numAddaptivePoints = 5000;
+  size_t numAddaptivePoints = 10000;
   //  std::cout << maxLevel << ", ";
   BSplineGridConversion(degree, numAddaptivePoints);
   std::cout << "run time " << watch.elapsedSeconds() << std::endl;

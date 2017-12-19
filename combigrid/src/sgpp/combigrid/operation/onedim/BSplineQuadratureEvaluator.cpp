@@ -52,20 +52,18 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
     quadRule.getLevelPointsAndWeightsNormalized(
         std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
     size_t first_segment = std::max(degree, index);
-    size_t last_segment = std::min(xi.size() - degree - 1, index + degree + 1);
+    size_t last_segment = std::min(xValues.size(), index + degree + 1);
     for (size_t segmentIndex = first_segment; segmentIndex < last_segment; segmentIndex++) {
       double a = std::max(0.0, xi[segmentIndex]);
       double b = std::min(1.0, xi[segmentIndex + 1]);
       double width = b - a;
 
-      // ToDo(rehmemk) Use GaussLegendreQuadrature.cpp's evaluate_iteratively if weight function !=
-      // 1
+      // ToDo(rehmemk) Use GaussLegendreQuadrature.cpp's evaluate_iteratively if
+      // weight function != 1
       for (size_t i = 0; i < roots.getSize(); ++i) {
         double x = a + width * roots[i];
-        // ToDO(rehmemk) this is only for speed test purposes. If it works write this whole
-        // routine
-        // with expUuniformNakBspline
-        //        bsplinevalue = nonUniformBSpline(x, degree, index, xi);
+        // ToDO(rehmemk) Rewrite this whole  routine , don't use createKnots and use the
+        // Lagrange polynomials inside expUuniformNakBspline
         bsplinevalue = expUniformNakBspline(x, degree, index, xValues);
         double integrand = bsplinevalue * this->weight_function(x);
         // multiply weights by length_old_interval / length_new_interval
