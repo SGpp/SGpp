@@ -53,8 +53,7 @@ PolynomialQuadratureEvaluator::~PolynomialQuadratureEvaluator() {}
  */
 double PolynomialQuadratureEvaluator::getWeight(std::vector<double>& points, size_t point) {
   LagrangePolynom p;
-  p.points = points;
-  p.point = point;
+  p.initialize(point, points);
   size_t numGaussPoints = (p.degree() + 2) / 2 + numAdditionalPoints;
 
   return GaussLegendreQuadrature(numGaussPoints)

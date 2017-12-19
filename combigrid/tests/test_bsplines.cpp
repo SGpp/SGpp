@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE(testVarianceOfPolynomialsOnLevel) {
     varianceError = std::fabs(polyVariance - varianceTestData.variances[i]);
     //    std::cout << "level: |" << level[0] << " " << level[1] << "|  value: " << polyVariance
     //              << " (err=" << varianceError << ")" << std::endl;
-    BOOST_CHECK_SMALL(varianceError, 1e-14);
+    BOOST_CHECK_SMALL(varianceError, 5e-14);
 #endif
   }
 }
