@@ -8,6 +8,8 @@
 #include <sgpp/combigrid/operation/onedim/InterpolationCoefficientEvaluator.hpp>
 
 #include <vector>
+#include <algorithm>
+#include <iostream>
 
 #ifdef USE_EIGEN
 #include <eigen3/Eigen/Dense>
@@ -51,18 +53,32 @@ void InterpolationCoefficientEvaluator::setGridPoints(const std::vector<double>&
   size_t n = xValues.size();
   Eigen::MatrixXd mat(n, n);
 
+  // compute the interpolation matrix
   for (size_t i = 0; i < n; ++i) {
     for (size_t j = 0; j < n; ++j) {
       mat(i, j) = functionBasis->evaluate(j, xValues[i]);
     }
   }
-  Eigen::MatrixXd invertedMatrix = mat.fullPivHouseholderQr().inverse();
-  basisValues = std::vector<FloatTensorVector>(n, FloatTensorVector(1));
+
+  // use Christoffel preconditioner: scale length of each row entry to 1 to reduce
+  // the condition number of the interpolation matrix
+  Eigen::VectorXd invMaxNorms = mat.rowwise().norm();
   for (size_t i = 0; i < n; ++i) {
-    for (size_t j = 0; j < n; ++j) {
-      basisValues[j].at(MultiIndex{i}) = invertedMatrix(i, j);
+    invMaxNorms(i) = 1. / invMaxNorms(i);
+  }
+  mat = mat.array().colwise() * invMaxNorms.array();
+
+  // invert the preconditioned matrix
+  Eigen::MatrixXd invertedScaledMat = mat.fullPivHouseholderQr().inverse();
+
+  // undo the preconditioning to the inverse
+  basisValues = std::vector<FloatTensorVector>(n, FloatTensorVector(1));
+  for (size_t j = 0; j < n; ++j) {
+    for (size_t i = 0; i < n; ++i) {
+      basisValues[j].at(MultiIndex{i}) = invertedScaledMat(i, j) * invMaxNorms(j);
     }
   }
+
 #else
   throw new sgpp::base::generation_exception("need Eigen to use the PCE transformation.");
 #endif

@@ -32,7 +32,7 @@
 #include <vector>
 
 double BSplineVariance(sgpp::combigrid::MultiIndex level, size_t degree) {
-  sgpp::combigrid::Atan atanModel;
+  sgpp::combigrid::AtanUniform atanModel;
   size_t numDimensions = atanModel.numDims;
   sgpp::combigrid::MultiFunction func(atanModel.eval);
   sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
@@ -62,7 +62,7 @@ double BSplineVariance(sgpp::combigrid::MultiIndex level, size_t degree) {
 }
 
 double polynomialVarianceQuadrature(sgpp::combigrid::MultiIndex& level) {
-  sgpp::combigrid::Atan atanModel;
+  sgpp::combigrid::AtanUniform atanModel;
   size_t numDimensions = atanModel.numDims;
   sgpp::combigrid::MultiFunction func(atanModel.eval);
   sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
@@ -91,7 +91,7 @@ double polynomialVarianceQuadrature(sgpp::combigrid::MultiIndex& level) {
 }
 
 double polynomialVariancePCE(sgpp::combigrid::MultiIndex& level) {
-  sgpp::combigrid::Atan atanModel;
+  sgpp::combigrid::AtanUniform atanModel;
   size_t numDimensions = atanModel.numDims;
   sgpp::combigrid::MultiFunction func(atanModel.eval);
   sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
@@ -126,7 +126,7 @@ double polynomialVariancePCE(sgpp::combigrid::MultiIndex& level) {
 BOOST_AUTO_TEST_SUITE(testPolynomialVariance)
 
 BOOST_AUTO_TEST_CASE(testVarianceOfPolynomialsOnDiagonal) {
-  sgpp::combigrid::Atan atanModel;
+  sgpp::combigrid::AtanUniform atanModel;
   std::vector<double> tolerancesQuad{1e1, 1e0, 1e0, 1e0, 1e-1, 1e-2, 1e-3, 1e-5};
   std::vector<double> tolerancesPCE{1e1, 1e0, 1e0, 1e0, 1e-1, 1e-2, 1e-3, 1e-5};
 
@@ -489,7 +489,7 @@ BOOST_AUTO_TEST_CASE(testVarianceOnDiagonaldeg3) {
   std::cout << "Testing B spline variance calculation on levels of the diagonal of the subgrid "
                "scheme for degree 3."
             << std::endl;
-  sgpp::combigrid::Atan atanModel;
+  sgpp::combigrid::AtanUniform atanModel;
   std::vector<double> tolerance = {4, 1, 0.5, 0.2, 0.006, 0.0003, 8e-06};
   size_t degree = 3;
   for (size_t i = 0; i < 7; i++) {
@@ -506,7 +506,7 @@ BOOST_AUTO_TEST_CASE(testVarianceOnDiagonaldeg5) {
   std::cout << "Testing B spline variance calculation on levels of the diagonal of the subgrid "
                "scheme for degree 5."
             << std::endl;
-  sgpp::combigrid::Atan atanModel;
+  sgpp::combigrid::AtanUniform atanModel;
   std::vector<double> tolerance = {4, 1, 0.6, 0.25, 0.022, 5e-05, 2e-05};
   size_t degree = 5;
   for (size_t i = 0; i < 7; i++) {

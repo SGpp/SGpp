@@ -93,36 +93,6 @@ double PolynomialScalarProductEvaluator::quad(LagrangePolynom& p_i, LagrangePoly
   gaussLegendreQuadrature.initialize(numGaussPoints);
   return gaussLegendreQuadrature.evaluate_iteratively(func, xlower, xupper,
                                                       1 + numAdditionalPoints);
-
-  //  // performing Gauss-Legendre integration
-  //  auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
-  //  base::DataVector roots;
-  //  base::DataVector quadratureweights;
-  //
-  //  // do iterative 1d quadrature
-  //  double scalarProduct_ij = 0.0, scalarProduct_ij_old = 0.0;
-  //  double err = 1e14;
-  //  size_t iteration = 0;
-  //  while (err > 1e-13 && numGaussPoints < quadRule.getMaxSupportedLevel()) {
-  //    quadRule.getLevelPointsAndWeightsNormalized(numGaussPoints, roots, quadratureweights);
-  //
-  //    scalarProduct_ij = 0.0;
-  //    for (size_t i = 0; i < roots.getSize(); ++i) {
-  //      double x_unit = roots[i], w = quadratureweights[i];
-  //      double x_prob = (xupper - xlower) * x_unit + xlower;
-  //      scalarProduct_ij += w * p_i.evaluate(x_unit) * p_j.evaluate(x_unit) *
-  //      weight_function(x_prob);
-  //    }
-  //
-  //    if (iteration > 0) {
-  //      err = std::fabs(scalarProduct_ij_old - scalarProduct_ij);
-  //    }
-  //    scalarProduct_ij_old = scalarProduct_ij;
-  //    numGaussPoints += 1 + numAdditionalPoints;
-  //    iteration += 1;
-  //  }
-  //
-  //  return scalarProduct_ij;
 }
 
 FloatArrayVector PolynomialScalarProductEvaluator::get1DMixedIntegral(std::vector<double>& points,

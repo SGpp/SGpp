@@ -239,6 +239,40 @@ std::shared_ptr<Pecos::RandomVariable> OrthogonalPolynomialBasis1D::getRandomVar
 }
 #endif
 
+size_t OrthogonalPolynomialBasis1D::numAdditionalQuadraturePoints() {
+  switch (config.polyParameters.type_) {
+    case OrthogonalPolynomialBasisType::LEGENDRE:
+      return 0;
+    case OrthogonalPolynomialBasisType::BOUNDED_LOGNORMAL:
+      return 15;
+    case OrthogonalPolynomialBasisType::JACOBI:
+      return 4;
+    case OrthogonalPolynomialBasisType::HERMITE:
+    case OrthogonalPolynomialBasisType::BOUNDED_NORMAL:
+      return 10;
+    default:
+      return 0;
+  }
+}
+
+double OrthogonalPolynomialBasis1D::lowerBound() {
+#ifdef USE_DAKOTA
+  Pecos::RealRealPair bounds_idim = rv->bounds();
+  return bounds_idim.first;
+#else
+  return 0.0;
+#endif
+}
+
+double OrthogonalPolynomialBasis1D::upperBound() {
+#ifdef USE_DAKOTA
+  Pecos::RealRealPair bounds_idim = rv->bounds();
+  return bounds_idim.second;
+#else
+  return 1.0;
+#endif
+}
+
 OrthogonalPolynomialBasis1DConfiguration OrthogonalPolynomialBasis1D::getConfiguration() {
   return config;
 }

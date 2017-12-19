@@ -110,7 +110,7 @@ struct CO2 {
   }
 };
 // ----------------------------------------------------------------------------------
-struct Atan {
+struct AtanUniform {
   size_t numDims = 2;
 
   double mean = 3.514491266446367;
@@ -121,6 +121,27 @@ struct Atan {
            std::exp(v[0] * v[1] - 1.0);
   }
 };
+// ----------------------------------------------------------------------------------
+struct AtanBeta {
+  size_t numDims = 2;
+
+  double alpha1 = 5.0;
+  double beta1 = 4.0;
+
+  double alpha2 = 3.0;
+  double beta2 = 2.0;
+
+  std::vector<double> bounds{0, 1};
+
+  double mean = 0.0;
+  double variance = 0.0;
+
+  static double eval(sgpp::base::DataVector const& v) {
+    return std::atan(50.0 * (v[0] - 0.35)) + M_PI / 2.0 + 4.0 * std::pow(v[1], 3.0) +
+           std::exp(v[0] * v[1] - 1.0);
+  }
+};
+// ----------------------------------------------------------------------------------
 
 struct Debugfct {
   size_t numDims = 1;
