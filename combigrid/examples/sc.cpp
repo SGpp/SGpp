@@ -83,7 +83,7 @@ int main() {
   for (size_t q = 0; q < 7; ++q) {
     //    std::cout << "---------------------------------------------------------" << std::endl;
     //    std::cout << "add regular levels " << q << " to interpolation operation" << std::endl;
-    op_levelManager->addRegularLevels(q);
+    //    op_levelManager->addRegularLevels(q);
     //    std::cout << "---------------------------------------------------------" << std::endl;
     //    std::cout << "add regular levels " << q << " to tensor operation" << std::endl;
     tensor_levelManager->addRegularLevels(q);
@@ -91,7 +91,7 @@ int main() {
     // compute the variance
     std::cout << "---------------------------------------------------------" << std::endl;
     std::cout << "compute mean and variance of stochastic collocation" << std::endl;
-    std::cout << "#gp = " << op_levelManager->numGridPoints() << std::endl;
+    std::cout << "#gp = " << tensor_levelManager->numGridPoints() << std::endl;
     stopwatch.start();
     double mean = sc.mean();
     double variance = sc.variance();
