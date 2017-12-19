@@ -115,7 +115,12 @@ double polynomialVariancePCE(sgpp::combigrid::MultiIndex& level) {
       sgpp::combigrid::FullGridCallbackEvaluator<sgpp::combigrid::FloatTensorVector>>(
       storage, evaluators, pointHierarchies, summationStrategyType);
 
-  return fullGridEval->eval(level).norm();
+  // compute the variance
+  auto tensor = fullGridEval->eval(level);
+  double mean = tensor.get(sgpp::combigrid::MultiIndex(numDimensions, 0)).value();
+  double variance = std::pow(tensor.norm(), 2) - std::pow(mean, 2);
+
+  return variance;
 }
 
 BOOST_AUTO_TEST_SUITE(testPolynomialVariance)
