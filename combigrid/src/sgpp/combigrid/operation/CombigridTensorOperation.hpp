@@ -12,6 +12,7 @@
 #include <sgpp/combigrid/algebraic/FloatTensorVector.hpp>
 #include <sgpp/combigrid/algebraic/NormStrategy.hpp>
 #include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
+#include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
 #include <sgpp/combigrid/operation/multidim/LevelManager.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
@@ -260,6 +261,22 @@ class CombigridTensorOperation {
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager,
       std::vector<std::shared_ptr<AbstractInfiniteFunctionBasis1D>> &functionBases,
+      FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR);
+
+  /**
+   * Transforms the basic structures of an arbitrary operation to a tensor operation
+   *
+   * @param pointHierarchies univariate grids
+   * @param storage function value storage
+   * @param levelManager provides level structures that are copied to the new tensor operation
+   * @param functionBases vector of global basis functions to which the result should be transformed
+   * @param summationStrategyType strategy to gather the results of the univariate evaluators on
+   * @return tensor operation with the same grid as given by the parameters
+   */
+  static std::shared_ptr<CombigridTensorOperation> createOperationTensorPolynomialInterpolation(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+      std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager,
+      std::vector<std::shared_ptr<OrthogonalPolynomialBasis1D>> &functionBases,
       FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR);
 };
 

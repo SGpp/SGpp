@@ -85,8 +85,8 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
         partialDifferences(),
         multiEval(multiEval),
         normStrategy(normStrategy) {
-    if (normStrategy == nullptr) {
-      normStrategy = std::make_shared<NormStrategy<V>>();
+    if (this->normStrategy == nullptr) {
+      this->normStrategy = std::make_shared<NormStrategy<V>>();
     }
     initPartialDifferences();
   }

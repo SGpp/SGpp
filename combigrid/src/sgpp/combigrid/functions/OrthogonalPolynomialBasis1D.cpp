@@ -242,16 +242,16 @@ std::shared_ptr<Pecos::RandomVariable> OrthogonalPolynomialBasis1D::getRandomVar
 size_t OrthogonalPolynomialBasis1D::numAdditionalQuadraturePoints() {
   switch (config.polyParameters.type_) {
     case OrthogonalPolynomialBasisType::LEGENDRE:
-      return 0;
+      return 5;
     case OrthogonalPolynomialBasisType::BOUNDED_LOGNORMAL:
       return 15;
     case OrthogonalPolynomialBasisType::JACOBI:
-      return 4;
+      return 5;
     case OrthogonalPolynomialBasisType::HERMITE:
     case OrthogonalPolynomialBasisType::BOUNDED_NORMAL:
       return 10;
     default:
-      return 0;
+      return 5;
   }
 }
 
