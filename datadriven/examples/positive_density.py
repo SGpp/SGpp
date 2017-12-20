@@ -1269,7 +1269,7 @@ if __name__ == "__main__":
                         solver=args.solver)
     print("alpha:", alpha)
     nodalValues = dehierarchize(grid, alpha)
-    print nodalValues
+    # print nodalValues
     print "is positive? %s (min=%f)" % ("Yes" if np.all(nodalValues >= 0) else "Nope",
                                         np.min(nodalValues))
     if args.makePositive:
