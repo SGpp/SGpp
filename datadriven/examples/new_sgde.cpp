@@ -117,7 +117,6 @@ void solve(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridConfig
       [storage_size, AlambC_ptr, b_ptr, shift_vec](const DataVector& alpha) -> double {
     DataVector resultVec(storage_size);
     DataVector alpha_cpy(alpha);
-    DataVector* alpha_ptr = &const_cast<DataVector&>(alpha);
     alpha_cpy.mult(40.0);
     alpha_cpy.sub(*shift_vec);
     // std::cout << "res alpha:" << alpha_cpy.toString() << std::endl;
@@ -137,7 +136,6 @@ void solve(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridConfig
     // std::cout << "res norm grad" << std::endl;
     // std::cout << "res grad alpha:" << alpha.toString() << std::endl;
     DataVector alpha_cpy(alpha);
-    DataVector* alpha_ptr = &const_cast<DataVector&>(alpha);
     DataVector rightResult(storage_size);
     alpha_cpy.mult(40.0);
     alpha_cpy.sub(*shift_vec);
@@ -160,7 +158,6 @@ void solve(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridConfig
     // std::cout << "in equ" << std::endl;
     // std::cout << "alpha:" << alpha.toString() << std::endl;
     DataVector alpha_cpy(alpha);
-    DataVector* alpha_ptr = &const_cast<DataVector&>(alpha);
     alpha_cpy.mult(40.0);
     alpha_cpy.sub(*shift_vec);
     GridPoint gp;
@@ -198,7 +195,6 @@ void solve(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridConfig
           const DataVector& alpha, DataVector& result, DataMatrix& gradient) -> void {
     // std::cout << "in equ grad" << std::endl;
     // std::cout << "alpha:" << alpha.toString() << std::endl;
-    DataVector* alpha_ptr = &const_cast<DataVector&>(alpha);
     DataVector alpha_cpy(alpha);
     alpha_cpy.mult(40.0);
     alpha_cpy.sub(*shift_vec);
@@ -283,7 +279,6 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
   DataVector b(storage_size);
   DataVector q(storage_size);
   DensitySystemMatrix AlambC(A_op, B_op, C_op, lambda, numSamples);
-  OperationEval* op_eval = sgpp::op_factory::createOperationEval(*grid);
   AlambC.generateb(b);
 
   // setting up System matrix: M + lambda*C
@@ -295,19 +290,28 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
 
   // Quadratic program matrix P = M*M.T (M is symmetric)
   double** P_it = new double*[storage_size];
-  for (size_t i = 0; i < M.getNcols(); i++) {
+  for (size_t i = 0; i < storage_size; i++) {
+    P_it[i] = new double[storage_size];
+  }
+  // multiplication
+  for (size_t i = 0; i < storage_size; i++) {
     DataVector col(storage_size);
     DataVector tmp(storage_size);
     M.getColumn(i, col);
     M.mult(col, tmp);
     P_it[i] = new double[storage_size];
-    for (size_t j = i; j < storage_size; j++) {
+    for (size_t j = 0; j <= i; j++) {
       P_it[i][j] = tmp.get(j);
       P_it[j][i] = tmp.get(j);
-      std::cout << P_it[i][j] << " ";
+    }
+  }
+  for (size_t i = 0; i < storage_size; i++) {
+    for (size_t j = 0; j < storage_size; j++) {
+      std::cout << P_it[j][i] << " ";
     }
     std::cout << std::endl;
   }
+
   std::cout << "---------------" << std::endl;
 
   // getting all grid points for interpolation matrix
@@ -354,7 +358,7 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
   }
   DataVector bounds(storage_size, 0.0);
   // define the quadratic Programm
-  Program qp(storage_size, storage_size,  // size of problem
+  Program qp(static_cast<int>(storage_size),static_cast<int>(storage_size),  // size of problem
              G_it, b.getPointer(), r,     // constraints
              bounded, bounds.getPointer(), bounded, bounds.getPointer(),  // bounds
              P_it, q.getPointer()  // optimization goal
@@ -366,6 +370,7 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
     best_alpha.set(i, to_double(*it));
     it++;
   }
+  best_alpha.mult(-1);
   std::cout << "---------------------------" << std::endl;
   std::cout << "best alpha:" << best_alpha.toString() << std::endl;
   std::cout << "objective function:" << to_double(s.objective_value()) << std::endl;
