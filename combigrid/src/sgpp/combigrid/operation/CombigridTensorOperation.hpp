@@ -10,6 +10,7 @@
 #include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/combigrid/algebraic/FloatTensorVector.hpp>
+#include <sgpp/combigrid/algebraic/NormStrategy.hpp>
 #include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
 #include <sgpp/combigrid/operation/multidim/LevelManager.hpp>
@@ -18,6 +19,7 @@
 #include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
+
 #include <sgpp/globaldef.hpp>
 
 #include <cstddef>
@@ -43,7 +45,9 @@ class CombigridTensorOperation {
   CombigridTensorOperation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>> evaluatorPrototypes,
-      std::shared_ptr<LevelManager> levelManager, MultiFunction func);
+      std::shared_ptr<LevelManager> levelManager, MultiFunction func, bool exploitNesting = true,
+      FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR,
+      std::shared_ptr<NormStrategy<FloatTensorVector>> normStrategy = nullptr);
 
   /**
    * Constructs a CombigridTensorOperation with the given hierarchies, evaluators, level manager and
@@ -52,8 +56,9 @@ class CombigridTensorOperation {
   CombigridTensorOperation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>> evaluatorPrototypes,
-      std::shared_ptr<LevelManager> levelManager,
-      std::shared_ptr<AbstractCombigridStorage> storage);
+      std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage,
+      FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR,
+      std::shared_ptr<NormStrategy<FloatTensorVector>> normStrategy = nullptr);
 
   /**
    * Constructs a CombigridTensorOperation with the given hierarchies, evaluators, level manager
@@ -63,25 +68,9 @@ class CombigridTensorOperation {
   CombigridTensorOperation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>> evaluatorPrototypes,
-      std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting);
-
-  CombigridTensorOperation(
-      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>> evaluatorPrototypes,
       std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting,
-      FullGridSummationStrategyType summationStrategyType);
-
-  CombigridTensorOperation(
-      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>> evaluatorPrototypes,
-      std::shared_ptr<LevelManager> levelManager, MultiFunction func, bool exploitNesting,
-      FullGridSummationStrategyType summationStrategyType);
-
-  CombigridTensorOperation(
-      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>> evaluatorPrototypes,
-      std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage,
-      FullGridSummationStrategyType summationStrategyType);
+      FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR,
+      std::shared_ptr<NormStrategy<FloatTensorVector>> normStrategy = nullptr);
 
   /**
    * Sets the parameters for upcoming computations and clears the data structures (removes old

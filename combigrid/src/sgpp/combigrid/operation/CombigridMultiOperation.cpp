@@ -43,12 +43,13 @@ class CombigridMultiOperationImpl {
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
       std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage,
-      FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR)
+      FullGridSummationStrategyType summationStrategyType,
+      std::shared_ptr<NormStrategy<FloatArrayVector>> normStrategy)
       : storage(storage), pointHierarchies(pointHierarchies), levelManager(levelManager) {
     fullGridEval = std::make_shared<FullGridCallbackEvaluator<FloatArrayVector>>(
         storage, evaluatorPrototypes, pointHierarchies, summationStrategyType);
     combiEval = std::make_shared<CombigridEvaluator<FloatArrayVector>>(pointHierarchies.size(),
-                                                                       fullGridEval);
+                                                                       fullGridEval, normStrategy);
 
     levelManager->setLevelEvaluator(combiEval);
   }
@@ -57,13 +58,13 @@ class CombigridMultiOperationImpl {
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
       std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage,
-      GridFunction gridFunc,
-      FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR)
+      GridFunction gridFunc, FullGridSummationStrategyType summationStrategyType,
+      std::shared_ptr<NormStrategy<FloatArrayVector>> normStrategy)
       : storage(storage), pointHierarchies(pointHierarchies), levelManager(levelManager) {
     fullGridEval = std::make_shared<FullGridGridBasedEvaluator<FloatArrayVector>>(
         storage, evaluatorPrototypes, pointHierarchies, gridFunc, summationStrategyType);
     combiEval = std::make_shared<CombigridEvaluator<FloatArrayVector>>(pointHierarchies.size(),
-                                                                       fullGridEval);
+                                                                       fullGridEval, normStrategy);
     levelManager->setLevelEvaluator(combiEval);
   }
 
@@ -77,58 +78,36 @@ class CombigridMultiOperationImpl {
 CombigridMultiOperation::CombigridMultiOperation(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
     std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
-    std::shared_ptr<LevelManager> levelManager, MultiFunction func) {
+    std::shared_ptr<LevelManager> levelManager, MultiFunction func, bool exploitNesting,
+    FullGridSummationStrategyType summationStrategyType,
+    std::shared_ptr<NormStrategy<FloatArrayVector>> normStrategy) {
   impl = std::make_shared<CombigridMultiOperationImpl>(
       pointHierarchies, evaluatorPrototypes, levelManager,
-      std::make_shared<CombigridTreeStorage>(pointHierarchies, func));
-}
-
-CombigridMultiOperation::CombigridMultiOperation(
-    std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-    std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
-    std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage) {
-  impl = std::make_shared<CombigridMultiOperationImpl>(pointHierarchies, evaluatorPrototypes,
-                                                       levelManager, storage);
-}
-
-CombigridMultiOperation::CombigridMultiOperation(
-    std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-    std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
-    std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting) {
-  impl = std::make_shared<CombigridMultiOperationImpl>(
-      pointHierarchies, evaluatorPrototypes, levelManager,
-      std::make_shared<CombigridTreeStorage>(pointHierarchies, exploitNesting), gridFunc);
+      std::make_shared<CombigridTreeStorage>(pointHierarchies, exploitNesting, func),
+      summationStrategyType, normStrategy);
 }
 
 CombigridMultiOperation::CombigridMultiOperation(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
     std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
     std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage,
-    FullGridSummationStrategyType summationStrategyType) {
-  impl = std::make_shared<CombigridMultiOperationImpl>(
-      pointHierarchies, evaluatorPrototypes, levelManager, storage, summationStrategyType);
+    FullGridSummationStrategyType summationStrategyType,
+    std::shared_ptr<NormStrategy<FloatArrayVector>> normStrategy) {
+  impl = std::make_shared<CombigridMultiOperationImpl>(pointHierarchies, evaluatorPrototypes,
+                                                       levelManager, storage, summationStrategyType,
+                                                       normStrategy);
 }
 
 CombigridMultiOperation::CombigridMultiOperation(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
     std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
     std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting,
-    FullGridSummationStrategyType summationStrategyType) {
+    FullGridSummationStrategyType summationStrategyType,
+    std::shared_ptr<NormStrategy<FloatArrayVector>> normStrategy) {
   impl = std::make_shared<CombigridMultiOperationImpl>(
       pointHierarchies, evaluatorPrototypes, levelManager,
       std::make_shared<CombigridTreeStorage>(pointHierarchies, exploitNesting), gridFunc,
-      summationStrategyType);
-}
-
-CombigridMultiOperation::CombigridMultiOperation(
-    std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-    std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluatorPrototypes,
-    std::shared_ptr<LevelManager> levelManager, MultiFunction func, bool exploitNesting,
-    FullGridSummationStrategyType summationStrategyType) {
-  impl = std::make_shared<CombigridMultiOperationImpl>(
-      pointHierarchies, evaluatorPrototypes, levelManager,
-      std::make_shared<CombigridTreeStorage>(pointHierarchies, exploitNesting, func),
-      summationStrategyType);
+      summationStrategyType, normStrategy);
 }
 
 void CombigridMultiOperation::setParameters(const std::vector<base::DataVector> &params) {
