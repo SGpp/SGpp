@@ -14,6 +14,10 @@
 #include <sgpp/combigrid/algebraic/FloatArrayVector.hpp>
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/combigrid/algebraic/FloatTensorVector.hpp>
+#include <sgpp/combigrid/algebraic/NormStrategy.hpp>
+#include <sgpp/combigrid/algebraic/FirstMomentNormStrategy.hpp>
+#include <sgpp/combigrid/algebraic/SecondMomentNormStrategy.hpp>
+#include <sgpp/combigrid/algebraic/VarianceNormStrategy.hpp>
 
 #include <sgpp/combigrid/common/AbstractPermutationIterator.hpp>
 #include <sgpp/combigrid/common/BoundedSumMultiIndexIterator.hpp>
