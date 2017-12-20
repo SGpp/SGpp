@@ -5,6 +5,7 @@
 
 #include <sgpp/combigrid/algebraic/VarianceNormStrategy.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
+#include <sgpp/combigrid/GeneralFunction.hpp>
 
 #include <vector>
 
@@ -13,15 +14,33 @@ namespace combigrid {
 
 VarianceNormStrategy::VarianceNormStrategy(
     std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> basisFunction, size_t numDims,
-    bool isOrthogonal)
-    : firstMoment(basisFunction, numDims, isOrthogonal),
-      secondMoment(basisFunction, numDims, isOrthogonal) {}
+    sgpp::combigrid::SingleFunction weightFunction, bool isOrthogonal,
+    sgpp::base::DataVector const& bounds)
+    : firstMoment(basisFunction, numDims, weightFunction, isOrthogonal, bounds),
+      secondMoment(basisFunction, numDims, weightFunction, isOrthogonal, bounds) {}
+
+VarianceNormStrategy::VarianceNormStrategy(
+    std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> basisFunction,
+    std::vector<sgpp::combigrid::SingleFunction>& weightFunctions, bool isOrthogonal,
+    sgpp::base::DataVector const& bounds)
+    : firstMoment(basisFunction, weightFunctions, isOrthogonal, bounds),
+      secondMoment(basisFunction, weightFunctions, isOrthogonal, bounds) {}
+
 VarianceNormStrategy::VarianceNormStrategy(
     std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& basisFunctions,
-    bool isOrthogonal)
-    : firstMoment(basisFunctions, isOrthogonal), secondMoment(basisFunctions, isOrthogonal) {}
+    std::vector<sgpp::combigrid::SingleFunction>& weightFunctions, bool isOrthogonal,
+    sgpp::base::DataVector const& bounds)
+    : firstMoment(basisFunctions, weightFunctions, isOrthogonal, bounds),
+      secondMoment(basisFunctions, weightFunctions, isOrthogonal, bounds) {}
 
 VarianceNormStrategy::~VarianceNormStrategy() {}
+
+double VarianceNormStrategy::norm(FloatTensorVector& vector) {
+  double second = secondMoment.norm(vector);
+  double first = firstMoment.norm(vector);
+
+  return second - first * first;
+}
 
 } /* namespace combigrid */
 } /* namespace sgpp */

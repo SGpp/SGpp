@@ -12,6 +12,9 @@
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
 
+#include <sgpp/combigrid/algebraic/FirstMomentNormStrategy.hpp>
+#include <sgpp/combigrid/algebraic/VarianceNormStrategy.hpp>
+
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 
@@ -35,6 +38,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
       functionBases(0),
+      weightFunctions(0),
       bounds(bounds),
       numGridPoints(0),
       computedMeanFlag(false),
@@ -47,6 +51,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
   }
 
   initializeBounds();
+  initializeWeightFunctions();
   initializeTensorOperation(combigridOperation->getPointHierarchies(),
                             combigridOperation->getStorage(),
                             combigridOperation->getLevelManager());
@@ -61,6 +66,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridMultiOperation(combigridMultiOperation),
       combigridTensorOperation(nullptr),
       functionBases(0),
+      weightFunctions(0),
       bounds(bounds),
       numGridPoints(0),
       computedMeanFlag(false),
@@ -73,6 +79,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
   }
 
   initializeBounds();
+  initializeWeightFunctions();
   initializeTensorOperation(combigridMultiOperation->getPointHierarchies(),
                             combigridMultiOperation->getStorage(),
                             combigridMultiOperation->getLevelManager());
@@ -87,6 +94,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridMultiOperation(nullptr),
       combigridTensorOperation(combigridTensorOperation),
       functionBases(0),
+      weightFunctions(0),
       bounds(bounds),
       numGridPoints(0),
       computedMeanFlag(false),
@@ -99,6 +107,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
   }
 
   initializeBounds();
+  initializeWeightFunctions();
   initializeTensorOperation(combigridTensorOperation->getPointHierarchies(),
                             combigridTensorOperation->getStorage(),
                             combigridTensorOperation->getLevelManager());
@@ -113,6 +122,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
       functionBases(functionBases),
+      weightFunctions(0),
       bounds(bounds),
       numGridPoints(0),
       computedMeanFlag(false),
@@ -126,6 +136,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
   }
 
   initializeBounds();
+  initializeWeightFunctions();
   initializeTensorOperation(combigridOperation->getPointHierarchies(),
                             combigridOperation->getStorage(),
                             combigridOperation->getLevelManager());
@@ -140,6 +151,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridMultiOperation(combigridMultiOperation),
       combigridTensorOperation(nullptr),
       functionBases(functionBases),
+      weightFunctions(0),
       bounds(bounds),
       numGridPoints(0),
       computedMeanFlag(false),
@@ -153,6 +165,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
   }
 
   initializeBounds();
+  initializeWeightFunctions();
   initializeTensorOperation(combigridMultiOperation->getPointHierarchies(),
                             combigridMultiOperation->getStorage(),
                             combigridMultiOperation->getLevelManager());
@@ -167,6 +180,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
       functionBases(functionBases),
+      weightFunctions(0),
       bounds(bounds),
       numGridPoints(0),
       computedMeanFlag(false),
@@ -180,6 +194,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
   }
 
   initializeBounds();
+  initializeWeightFunctions();
   initializeTensorOperation(combigridTensorOperation->getPointHierarchies(),
                             combigridTensorOperation->getStorage(),
                             combigridTensorOperation->getLevelManager());
@@ -222,6 +237,15 @@ void PolynomialStochasticCollocation::initializeBounds() {
   }
 }
 
+void PolynomialStochasticCollocation::initializeWeightFunctions() {
+  for (size_t idim = 0; idim < numDims; idim++) {
+    auto functionBasis = functionBases[idim];
+    SingleFunction weightFunction(
+        [functionBasis](double x_prob) { return functionBasis->pdf(x_prob); });
+    weightFunctions.push_back(weightFunction);
+  }
+}
+
 bool PolynomialStochasticCollocation::updateStatus() {
   if (numGridPoints < combigridTensorOperation->numGridPoints()) {
     expansionCoefficients = combigridTensorOperation->getResult();
@@ -234,89 +258,9 @@ bool PolynomialStochasticCollocation::updateStatus() {
   }
 }
 
-double PolynomialStochasticCollocation::quad(MultiIndex i, MultiIndex j) {
-  double ans = 1.0;
-
-  // performing Gauss-Legendre integration
-  GaussLegendreQuadrature gaussLegendreQuadrature;
-
-  // Gauss quadrature in each dimension
-  for (size_t idim = 0; idim < i.size(); idim++) {
-    size_t degree_i = i[idim];
-    size_t degree_j = j[idim];
-    auto functionBasis = functionBases[idim];
-    size_t incrementQuadraturePoints = functionBasis->numAdditionalQuadraturePoints();
-    size_t numGaussPoints = (degree_i + degree_j + 3) / 2;
-
-    auto func = [&functionBasis, &degree_i, &degree_j, &idim, this](double x_unit, double x_prob) {
-      return this->legendreBasis->evaluate(degree_i, x_unit) *
-             this->legendreBasis->evaluate(degree_j, x_unit) * functionBasis->pdf(x_prob);
-    };
-
-    double a = bounds[2 * idim], b = bounds[2 * idim + 1];
-    ans *= GaussLegendreQuadrature::evaluate_iteratively(func, a, b, numGaussPoints,
-                                                         incrementQuadraturePoints);
-  }
-  return ans;
-}
-
-double PolynomialStochasticCollocation::quad(MultiIndex i) {
-  double ans = 1.0;
-
-  // performing Gauss-Legendre integration
-  GaussLegendreQuadrature gaussLegendreQuadrature;
-
-  // Gauss quadrature in each dimension
-  for (size_t idim = 0; idim < i.size(); idim++) {
-    size_t degree_i = i[idim];
-    auto functionBasis = functionBases[idim];
-    size_t incrementQuadraturePoints = functionBasis->numAdditionalQuadraturePoints();
-    size_t numGaussPoints = (degree_i + 2) / 2;
-
-    auto func = [&functionBasis, &degree_i, &idim, this](double x_unit, double x_prob) {
-      return this->legendreBasis->evaluate(degree_i, x_unit) * functionBasis->pdf(x_prob);
-    };
-
-    double a = bounds[2 * idim], b = bounds[2 * idim + 1];
-    ans *= GaussLegendreQuadrature::evaluate_iteratively(func, a, b, numGaussPoints,
-                                                         incrementQuadraturePoints);
-  }
-  return ans;
-}
-
 double PolynomialStochasticCollocation::computeMean() {
-  // compute mass matrix and corresponding coefficient vector
-  auto multiIndices_i = expansionCoefficients.getValues();
-  auto it_i = multiIndices_i->getStoredDataIterator();
-  sgpp::base::DataVector m(numGridPoints);
-  sgpp::base::DataVector coeffs(numGridPoints);
-
-  size_t i = 0;
-  while (it_i->isValid() && i < numGridPoints) {
-    auto ix = it_i->getMultiIndex();
-
-    double value = 0.0;
-    auto it_value = innerProducts.find(ix);
-    if (it_value != innerProducts.end()) {
-      value = it_value->second;
-    } else {
-      value = quad(ix);
-      innerProducts[ix] = value;
-    }
-    m[i] = value;
-
-    coeffs[i] = it_i->value().value();
-    it_i->moveToNext();
-    i += 1;
-  }
-
-  // compute mean: m^T coeffs
-  double ans = 0.0;
-  for (size_t i = 0; i < m.getSize(); i++) {
-    ans += m[i] * coeffs[i];
-  }
-
-  return ans;
+  return FirstMomentNormStrategy(legendreBasis, weightFunctions, false, bounds)
+      .norm(expansionCoefficients);
 }
 
 double PolynomialStochasticCollocation::mean() {
@@ -329,68 +273,8 @@ double PolynomialStochasticCollocation::mean() {
 }
 
 double PolynomialStochasticCollocation::computeVariance() {
-  // prepare the mean
-  double ev = mean();
-
-  // compute mass matrix and corresponding coefficient vector
-  auto multiIndices_i = expansionCoefficients.getValues();
-  auto multiIndices_j = expansionCoefficients.getValues();
-  sgpp::base::DataMatrix M(numGridPoints, numGridPoints);
-  sgpp::base::DataVector coeffs(numGridPoints);
-
-  auto it_i = multiIndices_i->getStoredDataIterator();
-  size_t i = 0;
-  while (it_i->isValid() && i < numGridPoints) {
-    MultiIndex ix = it_i->getMultiIndex();
-
-    auto it_j = multiIndices_j->getStoredDataIterator();
-    size_t j = 0;
-    while (it_j->isValid() && j < numGridPoints) {
-      if (j >= i) {
-        MultiIndex jx = it_j->getMultiIndex();
-
-        // compute the inner product and store it
-        MultiIndex kx;
-        joinMultiIndices(ix, jx, kx);
-        double innerProduct = 0.0;
-        auto it_value = innerProducts.find(kx);
-        if (it_value != innerProducts.end()) {
-          innerProduct = it_value->second;
-        } else {
-          innerProduct = quad(ix, jx);
-          innerProducts[kx] = innerProduct;
-        }
-
-        M.set(i, j, innerProduct);
-        M.set(j, i, innerProduct);
-
-        // store the coefficient in the correct order
-        if (i == 0) {
-          coeffs[j] = it_j->value().value();
-          if (jx == MultiIndex(numDims, 0)) {
-            coeffs[j] -= ev;
-          }
-        }
-      }
-
-      it_j->moveToNext();
-      j += 1;
-    }
-
-    it_i->moveToNext();
-    i += 1;
-  }
-
-  // compute variance: coeffs^T M coeffs
-  sgpp::base::DataVector result(coeffs.getSize());
-  M.mult(coeffs, result);
-
-  double ans = 0.0;
-  for (size_t i = 0; i < M.getNrows(); i++) {
-    ans += coeffs[i] * result[i];
-  }
-
-  return ans;
+  return VarianceNormStrategy(legendreBasis, weightFunctions, false, bounds)
+      .norm(expansionCoefficients);
 }
 
 double PolynomialStochasticCollocation::variance() {
@@ -424,12 +308,6 @@ void PolynomialStochasticCollocation::updateOperation(
   initializeTensorOperation(combigridOperation->getPointHierarchies(),
                             combigridOperation->getStorage(),
                             combigridOperation->getLevelManager());
-}
-
-void PolynomialStochasticCollocation::joinMultiIndices(MultiIndex& ix, MultiIndex& jx,
-                                                       MultiIndex& kx) {
-  kx.insert(kx.end(), ix.begin(), ix.end());
-  kx.insert(kx.end(), jx.begin(), jx.end());
 }
 
 } /* namespace combigrid */

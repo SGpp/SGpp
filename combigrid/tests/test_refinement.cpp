@@ -15,6 +15,9 @@
 #include <sgpp/combigrid/utils/AnalyticModels.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
+#include <sgpp/combigrid/algebraic/FirstMomentNormStrategy.hpp>
+#include <sgpp/combigrid/algebraic/VarianceNormStrategy.hpp>
+#include <sgpp/combigrid/GeneralFunction.hpp>
 
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/globaldef.hpp>
@@ -26,9 +29,9 @@
 BOOST_AUTO_TEST_SUITE(testRefinement)
 
 BOOST_AUTO_TEST_CASE(testVarianceBasedRefinement) {
-  // use the ishigami function as model function
-  sgpp::combigrid::AtanUniform atanModel;
-  sgpp::combigrid::MultiFunction func(atanModel.eval);
+  // use the atan function as model function
+  sgpp::combigrid::AtanUniform model;
+  sgpp::combigrid::MultiFunction func(model.eval);
 
   size_t regularLevel = 1;
 
@@ -39,11 +42,11 @@ BOOST_AUTO_TEST_CASE(testVarianceBasedRefinement) {
   auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
 
   sgpp::combigrid::CombiEvaluators::TensorCollection tensor_evaluators(
-      atanModel.numDims, sgpp::combigrid::CombiEvaluators::tensorInterpolation(functionBasis));
+      model.numDims, sgpp::combigrid::CombiEvaluators::tensorInterpolation(functionBasis));
   auto tensor_op_lm = std::make_shared<sgpp::combigrid::AveragingLevelManager>();
 
   sgpp::combigrid::CombiHierarchies::Collection tensor_grids(
-      atanModel.numDims, sgpp::combigrid::CombiHierarchies::expLeja());
+      model.numDims, sgpp::combigrid::CombiHierarchies::expLeja());
   auto tensor_op = std::make_shared<sgpp::combigrid::CombigridTensorOperation>(
       tensor_grids, tensor_evaluators, tensor_op_lm, func, true,
       sgpp::combigrid::FullGridSummationStrategyType::TENSORVARIANCE);
@@ -58,10 +61,10 @@ BOOST_AUTO_TEST_CASE(testVarianceBasedRefinement) {
   // -----------------------------------------------------------------------------------
   // use quadrature based refinement
   sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
-      atanModel.numDims, sgpp::combigrid::CombiEvaluators::polynomialScalarProduct());
+      model.numDims, sgpp::combigrid::CombiEvaluators::polynomialScalarProduct());
   auto variance_op_lm = std::make_shared<sgpp::combigrid::AveragingLevelManager>();
 
-  sgpp::combigrid::CombiHierarchies::Collection grids(atanModel.numDims,
+  sgpp::combigrid::CombiHierarchies::Collection grids(model.numDims,
                                                       sgpp::combigrid::CombiHierarchies::expLeja());
   auto variance_op = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
       grids, evaluators, variance_op_lm, func, true,

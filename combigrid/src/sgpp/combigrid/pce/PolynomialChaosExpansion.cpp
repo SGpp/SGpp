@@ -22,7 +22,7 @@ namespace combigrid {
 
 PolynomialChaosExpansion::PolynomialChaosExpansion(
     std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation,
-    std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D> functionBasis)
+    std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis)
     : numDims(combigridOperation->numDims()),
       combigridOperation(combigridOperation),
       combigridMultiOperation(nullptr),
@@ -38,7 +38,7 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
 
 PolynomialChaosExpansion::PolynomialChaosExpansion(
     std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation,
-    std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D> functionBasis)
+    std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis)
     : numDims(combigridMultiOperation->numDims()),
       combigridOperation(nullptr),
       combigridMultiOperation(combigridMultiOperation),
@@ -54,7 +54,7 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
 
 PolynomialChaosExpansion::PolynomialChaosExpansion(
     std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation,
-    std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D> functionBasis)
+    std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis)
     : numDims(combigridTensorOperation->numDims()),
       combigridOperation(nullptr),
       combigridMultiOperation(nullptr),
@@ -70,7 +70,7 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
 
 PolynomialChaosExpansion::PolynomialChaosExpansion(
     std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation,
-    std::vector<std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D>>& functionBases)
+    std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases)
     : numDims(combigridOperation->numDims()),
       combigridOperation(combigridOperation),
       combigridMultiOperation(nullptr),
@@ -91,7 +91,7 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
 
 PolynomialChaosExpansion::PolynomialChaosExpansion(
     std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation,
-    std::vector<std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D>>& functionBases)
+    std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases)
     : numDims(combigridMultiOperation->numDims()),
       combigridOperation(nullptr),
       combigridMultiOperation(combigridMultiOperation),
@@ -112,7 +112,7 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
 
 PolynomialChaosExpansion::PolynomialChaosExpansion(
     std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation,
-    std::vector<std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D>>& functionBases)
+    std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases)
     : numDims(combigridTensorOperation->numDims()),
       combigridOperation(nullptr),
       combigridMultiOperation(nullptr),

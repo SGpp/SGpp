@@ -13,7 +13,6 @@
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 
-#include <map>
 #include <vector>
 
 namespace sgpp {
@@ -70,6 +69,7 @@ class PolynomialStochasticCollocation {
       std::shared_ptr<LevelManager> levelManager);
 
   void initializeBounds();
+  void initializeWeightFunctions();
 
   bool updateStatus();
   double computeMean();
@@ -80,8 +80,6 @@ class PolynomialStochasticCollocation {
 
   double quad(sgpp::combigrid::MultiIndex i);
   double quad(sgpp::combigrid::MultiIndex i, sgpp::combigrid::MultiIndex j);
-
-  void joinMultiIndices(MultiIndex& ix, MultiIndex& jx, MultiIndex& kx);
 
   // number of dimensions
   size_t numDims;
@@ -95,6 +93,7 @@ class PolynomialStochasticCollocation {
   std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> legendreBasis;
   // orthogonal basis for pdf values
   std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>> functionBases;
+  std::vector<sgpp::combigrid::SingleFunction> weightFunctions;
 
   sgpp::base::DataVector bounds;
   size_t numGridPoints;
@@ -105,9 +104,6 @@ class PolynomialStochasticCollocation {
   double ev;
   bool computedVarianceFlag;
   double var;
-
-  // lookup table for inner products
-  std::map<MultiIndex, double> innerProducts;
 };
 
 } /* namespace combigrid */
