@@ -108,7 +108,7 @@
 %shared_ptr(sgpp::combigrid::TensorGrid)
 %shared_ptr(sgpp::combigrid::ThreadPool)
 
-%shared_ptr(std::mutex)
+%shared_ptr(std::recursive_mutex)
 
 
 // %shared_ptr(sgpp::combigrid::AbstractLinearEvaluator<FloatScalarVector>)

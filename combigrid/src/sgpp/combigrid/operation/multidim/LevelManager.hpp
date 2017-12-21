@@ -81,7 +81,7 @@ class LevelManager {
    * Mutex that is shared with all involved objects for evaluation parts that require mutual
    * exclusion.
    */
-  std::shared_ptr<std::mutex> managerMutex;
+  std::shared_ptr<std::recursive_mutex> managerMutex;
 
   /**
    * By implementing this method in a derived class, the adaption can be customized.
