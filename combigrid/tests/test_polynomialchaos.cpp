@@ -9,11 +9,14 @@
 #include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
-#include <sgpp/quadrature/sampling/LatinHypercubeSampleGenerator.hpp>
 #include <sgpp/combigrid/pce/PolynomialChaosExpansion.hpp>
 #include <sgpp/combigrid/pce/PolynomialStochasticCollocation.hpp>
 #include <sgpp/combigrid/utils/AnalyticModels.hpp>
+#include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/definitions.hpp>
+
+#include <sgpp/quadrature/sampling/LatinHypercubeSampleGenerator.hpp>
+
 #include <sgpp/globaldef.hpp>
 
 #include <vector>
@@ -67,7 +70,7 @@ BOOST_AUTO_TEST_CASE(testPCE) {
 
 void testPCEParbola(
     std::shared_ptr<sgpp::combigrid::CombigridOperation> op,
-    std::vector<std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D>>& functionBases) {
+    std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases) {
   // compute variance of the estimator
   sgpp::combigrid::PolynomialChaosExpansion pce(op, functionBases);
 
@@ -95,7 +98,7 @@ BOOST_AUTO_TEST_CASE(testPCE_parabola) {
   config.polyParameters.beta_ = parabolaModel.beta2;
   auto functionBasis2 = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
 
-  std::vector<std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D>> functionBases{
+  std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>> functionBases{
       functionBasis1, functionBasis2};
 
   sgpp::combigrid::MultiFunction func(parabolaModel.eval);
@@ -221,6 +224,74 @@ BOOST_AUTO_TEST_CASE(testStochasticCollocation_co2_lognormal) {
   // check the moments
   BOOST_CHECK_SMALL(std::abs(co2Model.mean - sc.mean()), co2Model.tolerance);
   BOOST_CHECK_SMALL(std::abs(co2Model.variance - sc.variance()), co2Model.tolerance);
+}
+
+BOOST_AUTO_TEST_CASE(testMoments) {
+  // use the atan function as model function
+  sgpp::combigrid::AtanBeta model;
+
+  // -----------------------------------------------------------------------------------
+  // initialize basis functions
+  sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
+  config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::JACOBI;
+  config.polyParameters.lowerBound_ = model.bounds[0];
+  config.polyParameters.upperBound_ = model.bounds[1];
+  config.polyParameters.alpha_ = model.alpha1;
+  config.polyParameters.beta_ = model.beta1;
+  auto functionBasis1 = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
+
+  config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::JACOBI;
+  config.polyParameters.lowerBound_ = model.bounds[0];
+  config.polyParameters.upperBound_ = model.bounds[1];
+  config.polyParameters.alpha_ = model.alpha2;
+  config.polyParameters.beta_ = model.beta2;
+  auto functionBasis2 = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
+
+  std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>> orthogFunctionBases{
+      functionBasis1, functionBasis2};
+
+  sgpp::combigrid::MultiFunction func(model.eval);
+
+  // -----------------------------------------------------------------------------------
+  // non-orthogonal basis function for basis transformation
+  config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
+  config.polyParameters.lowerBound_ = 0.0;
+  config.polyParameters.upperBound_ = 1.0;
+  auto legendreBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
+
+  // -----------------------------------------------------------------------------------
+  // use tensor based refinement
+  sgpp::combigrid::CombiEvaluators::TensorCollection tensor_evaluators(
+      model.numDims, sgpp::combigrid::CombiEvaluators::tensorInterpolation(legendreBasis));
+  auto tensor_op_lm = std::make_shared<sgpp::combigrid::AveragingLevelManager>();
+
+  sgpp::combigrid::CombiHierarchies::Collection tensor_grids(
+      model.numDims, sgpp::combigrid::CombiHierarchies::expLeja());
+  auto tensor_op = std::make_shared<sgpp::combigrid::CombigridTensorOperation>(
+      tensor_grids, tensor_evaluators, tensor_op_lm, func, true);
+
+  tensor_op_lm->addRegularLevels(5);
+
+  sgpp::combigrid::PolynomialStochasticCollocation sc(tensor_op, orthogFunctionBases);
+  // -----------------------------------------------------------------------------------
+  // use tensor based refinement
+  sgpp::combigrid::CombiEvaluators::TensorCollection tensor_evaluators_pce(
+      model.numDims, sgpp::combigrid::CombiEvaluators::tensorInterpolation(legendreBasis));
+  auto tensor_op_lm_pce = std::make_shared<sgpp::combigrid::AveragingLevelManager>();
+
+  sgpp::combigrid::CombiHierarchies::Collection tensor_grids_pce(
+      model.numDims, sgpp::combigrid::CombiHierarchies::expLeja());
+  auto tensor_op_pce = std::make_shared<sgpp::combigrid::CombigridTensorOperation>(
+      tensor_grids_pce, tensor_evaluators_pce, tensor_op_lm_pce, func, true);
+
+  tensor_op_lm_pce->addLevelsFromStructure(tensor_op_lm->getLevelStructure());
+
+  sgpp::combigrid::PolynomialChaosExpansion pce(tensor_op_pce, orthogFunctionBases);
+
+  // -----------------------------------------------------------------------------------
+  // check if the results are equal
+  BOOST_CHECK_SMALL(std::abs(pce.mean() - sc.mean()), 1e-13);
+  BOOST_CHECK_SMALL(std::abs(pce.variance() - sc.variance()), 1e-13);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -52,6 +52,10 @@
 %shared_ptr(sgpp::combigrid::BSplineScalarProductEvaluator)
 %shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::BSplineScalarProductEvaluator>)
 
+%shared_ptr(sgpp::combigrid::NormStrategy)
+%shared_ptr(sgpp::combigrid::FirstMomentNormStrategy)
+%shared_ptr(sgpp::combigrid::SecondMomentNormStrategy)
+%shared_ptr(sgpp::combigrid::VarianceNormStrategy)
 
 %shared_ptr(sgpp::combigrid::PolynomialChaosExpansion)
 %shared_ptr(sgpp::combigrid::PolynomialStochasticCollocation)
@@ -146,6 +150,11 @@ namespace combigrid {
 %include "combigrid/src/sgpp/combigrid/algebraic/FloatScalarVector.hpp"
 %include "combigrid/src/sgpp/combigrid/algebraic/FloatArrayVector.hpp"
 %include "combigrid/src/sgpp/combigrid/algebraic/FloatTensorVector.hpp"
+%include "combigrid/src/sgpp/combigrid/algebraic/NormStrategy.hpp"
+%include "combigrid/src/sgpp/combigrid/algebraic/FirstMomentNormStrategy.hpp"
+%include "combigrid/src/sgpp/combigrid/algebraic/SecondMomentNormStrategy.hpp"
+%include "combigrid/src/sgpp/combigrid/algebraic/VarianceNormStrategy.hpp"
+
 %include "combigrid/src/sgpp/combigrid/common/MultiIndexIterator.hpp"
 %include "combigrid/src/sgpp/combigrid/common/BoundedSumMultiIndexIterator.hpp"
 %include "combigrid/src/sgpp/combigrid/common/AbstractPermutationIterator.hpp"
