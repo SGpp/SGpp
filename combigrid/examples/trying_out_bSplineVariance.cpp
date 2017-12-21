@@ -29,6 +29,7 @@
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/optimization/sle/solver/Armadillo.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
+#include <sgpp/optimization/sle/solver/UMFPACK.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
@@ -214,7 +215,7 @@ void calculateCGSGDifference(
 std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> createVarianceLevelStructure(
     size_t const& numlevels, size_t const& degree,
     sgpp::combigrid::CombiHierarchies::Collection const& pointHierarchies,
-    sgpp::combigrid::GridFunction gf, bool exploitNesting) {
+    sgpp::combigrid::GridFunction gf, bool exploitNesting, size_t numthreads) {
   sgpp::combigrid::EvaluatorConfiguration EvalConfig(
       sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineScalarProduct, degree);
   sgpp::combigrid::CombiEvaluators::MultiCollection Evaluators(
@@ -231,13 +232,15 @@ std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> createVarianceLevelStruct
   // create level structure
   // First step is to guarantee the existence of level (1,..,1). Otherwise a conversion to an SG
   // grid wouldn't be possible
-  Operation->getLevelManager()->addRegularLevels(numDimensions);
+  Operation->getLevelManager()->addRegularLevelsParallel(numDimensions, numthreads);
+  //  Operation->getLevelManager()->addRegularLevels(numDimensions);
   // ToDo(rehmemk) the number of levels added is now a little mysterious because the user does not
   // know how many levels are added to guarantee (1,..,1) before the number of levels he chose to
   // be added is added
   //  Operation->getLevelManager()->addLevelsAdaptiveByNumLevels(numlevels);
   size_t numPoints = numlevels;
-  Operation->getLevelManager()->addLevelsAdaptive(numPoints);
+  Operation->getLevelManager()->addLevelsAdaptiveParallel(numPoints, numthreads);
+  //  Operation->getLevelManager()->addLevelsAdaptive(numPoints);
   auto levelStructure = Operation->getLevelManager()->getLevelStructure();
   return levelStructure;
 }
@@ -264,17 +267,18 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
       pointHierarchies, evaluators, dummyLevelManager, gf, exploitNesting, summationStrategyType);
 
   // create variance adaptive level structure
-  auto levelStructure =
-      createVarianceLevelStructure(numlevels, degree, pointHierarchies, gf, exploitNesting);
+  size_t numthreads = 4;
+  auto levelStructure = createVarianceLevelStructure(numlevels, degree, pointHierarchies, gf,
+                                                     exploitNesting, numthreads);
 
   std::cout << "level structure " << watch_individual.elapsedSeconds() << " total "
             << watch_total.elapsedSeconds() << std::endl;
   watch_individual.start();
 
-  std::vector<bool> orderingConfiguration;
-  for (size_t d = 0; d < numDimensions; ++d) {
-    orderingConfiguration.push_back(evaluators[d]->needsOrderedPoints());
-  }
+  //  std::vector<bool> orderingConfiguration;
+  //  for (size_t d = 0; d < numDimensions; ++d) {
+  //    orderingConfiguration.push_back(evaluators[d]->needsOrderedPoints());
+  //  }
 
   // convert level structure to SG
   std::shared_ptr<sgpp::base::Grid> grid;
@@ -308,7 +312,7 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   watch_individual.start();
 
   sgpp::optimization::HierarchisationSLE hierSLE(*grid);
-  sgpp::optimization::sle_solver::Auto sleSolver;
+  sgpp::optimization::sle_solver::UMFPACK sleSolver;
   sgpp::base::DataVector alpha(grid->getSize());
   if (!sleSolver.solve(hierSLE, f_values, alpha)) {
     std::cout << "Solving failed!" << std::endl;
@@ -323,7 +327,7 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   //  std::cout << ", num SG points " << gridStorage.getSize() << std::endl;
   //  std::cout << gridStorage.getSize() << " ";
 
-  // error calculations
+  //  error calculations
   //  double CGL2Err, CGMaxErr, SGL2Err, SGMaxErr, CompL2Err, CompMaxErr = 0;
   //  calculateCGerror(CGMaxErr, CGL2Err, Operation, levelStructure);
   //  calculateSGerror(SGMaxErr, SGL2Err, u);
@@ -342,7 +346,7 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   auto quadOperation =
       sgpp::combigrid::CombigridOperation::createExpUniformBoundaryBsplineQuadrature(numDimensions,
                                                                                      func, degree);
-  quadOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
+  quadOperation->getLevelManager()->addLevelsFromStructureParallel(levelStructure, numthreads);
   double mean = quadOperation->getResult();
 
   std::cout << "quadrature " << watch_individual.elapsedSeconds() << " total "
@@ -370,7 +374,7 @@ int main() {
   //  for (size_t maxLevel = 0; maxLevel < numLevels; maxLevel ++) {
   sgpp::combigrid::Stopwatch watch;
   watch.start();
-  size_t numAddaptivePoints = 10000;
+  size_t numAddaptivePoints = 20000;
   //  std::cout << maxLevel << ", ";
   BSplineGridConversion(degree, numAddaptivePoints);
   std::cout << "run time " << watch.elapsedSeconds() << std::endl;

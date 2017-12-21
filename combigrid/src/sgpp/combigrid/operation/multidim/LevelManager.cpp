@@ -16,7 +16,7 @@ namespace combigrid {
 
 LevelManager::LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator)
     : queue(), numDimensions(levelEvaluator->numDims()), combiEval(levelEvaluator) {
-  managerMutex = std::make_shared<std::mutex>();
+  managerMutex = std::make_shared<std::recursive_mutex>();
   infoOnAddedLevels = std::make_shared<LevelInfos>();
   levelData = std::make_shared<TreeStorage<std::shared_ptr<LevelInfo>>>(numDimensions);
 }
@@ -24,7 +24,7 @@ LevelManager::LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluato
 LevelManager::~LevelManager() {}
 
 LevelManager::LevelManager() : queue(), numDimensions(0), combiEval(nullptr) {
-  managerMutex = std::make_shared<std::mutex>();
+  managerMutex = std::make_shared<std::recursive_mutex>();
   infoOnAddedLevels = std::make_shared<LevelInfos>();
   levelData = std::make_shared<TreeStorage<std::shared_ptr<LevelInfo>>>(numDimensions);
 }
@@ -392,7 +392,7 @@ void LevelManager::addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThre
   auto threadPool = std::make_shared<ThreadPool>(
       numThreads,
       ThreadPool::IdleCallback([&currentPointBound, maxNumPoints, this](ThreadPool &tp) {
-        CGLOG_SURROUND(std::lock_guard<std::mutex> guard(*managerMutex));
+        CGLOG_SURROUND(std::lock_guard<std::recursive_mutex> guard(*managerMutex));
         if (queue.empty()) {
           std::cout << "Error: queue is empty\n";
           CGLOG("leave guard(*managerMutex)");

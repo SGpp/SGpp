@@ -24,13 +24,13 @@ using sgpp::combigrid::ThreadPool;
 
 int counter = 0;
 std::vector<int> data;
-std::mutex dataMutex;
+std::recursive_mutex dataMutex;
 
 void idleCallback(ThreadPool &tp) {
   if (counter < 100) {
     int local_counter = counter;
     tp.addTask(ThreadPool::Task([local_counter]() {
-      std::lock_guard<std::mutex> guard(dataMutex);
+      std::lock_guard<std::recursive_mutex> guard(dataMutex);
       data.push_back(local_counter);
     }));
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(testThreading) {
 
   for (int i = 0; i < 100; ++i) {
     tp->addTask(ThreadPool::Task([i]() {
-      std::lock_guard<std::mutex> guard(dataMutex);
+      std::lock_guard<std::recursive_mutex> guard(dataMutex);
       data.push_back(i);
     }));
   }
