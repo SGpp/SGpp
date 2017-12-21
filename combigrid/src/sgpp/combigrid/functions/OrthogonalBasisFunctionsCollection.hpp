@@ -15,7 +15,7 @@ namespace combigrid {
 class OrthogonalBasisFunctionsCollection {
  public:
   OrthogonalBasisFunctionsCollection();
-  OrthogonalBasisFunctionsCollection(size_t n);
+  explicit OrthogonalBasisFunctionsCollection(size_t n);
   OrthogonalBasisFunctionsCollection(size_t n,
               std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> basisFunction);
   OrthogonalBasisFunctionsCollection(const OrthogonalBasisFunctionsCollection& other);

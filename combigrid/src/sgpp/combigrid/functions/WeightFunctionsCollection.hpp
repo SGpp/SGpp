@@ -15,7 +15,7 @@ namespace combigrid {
 class WeightFunctionsCollection {
  public:
   WeightFunctionsCollection();
-  WeightFunctionsCollection(size_t n);
+  explicit WeightFunctionsCollection(size_t n);
   WeightFunctionsCollection(size_t n, sgpp::combigrid::SingleFunction weightFunction);
   WeightFunctionsCollection(const WeightFunctionsCollection& other);
 
