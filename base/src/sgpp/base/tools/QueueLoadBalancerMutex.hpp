@@ -20,7 +20,7 @@ class QueueLoadBalancerMutex {
   size_t blockSize;
   size_t range;
   size_t currentStart;
-  std::mutex nextSegmentMutex;
+  std::recursive_mutex nextSegmentMutex;
 
  public:
   // end is assumed to be padded for blocksize! might return segements that end
@@ -52,7 +52,7 @@ class QueueLoadBalancerMutex {
       throw base::operation_exception("QueueLoadBalancer: end not divisible by block size");
     }
 
-    std::lock_guard<std::mutex> lock(nextSegmentMutex);
+    std::lock_guard<std::recursive_mutex> lock(nextSegmentMutex);
 
     bool segmentAvailable = true;
     if (currentStart == end) {
@@ -72,7 +72,7 @@ class QueueLoadBalancerMutex {
 
   // is thread-safe
   void reset() {
-    std::lock_guard<std::mutex> lock(nextSegmentMutex);
+    std::lock_guard<std::recursive_mutex> lock(nextSegmentMutex);
     currentStart = start;
   }
 };

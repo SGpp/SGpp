@@ -29,6 +29,7 @@
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/optimization/sle/solver/Armadillo.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
+#include <sgpp/optimization/sle/solver/UMFPACK.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
@@ -228,16 +229,19 @@ std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> createVarianceLevelStruct
       pointHierarchies, Evaluators, levelManager, gf, exploitNesting,
       auxiliarySummationStrategyType);
 
+  size_t numthreads = 4;
   // create level structure
   // First step is to guarantee the existence of level (1,..,1). Otherwise a conversion to an SG
   // grid wouldn't be possible
-  Operation->getLevelManager()->addRegularLevels(numDimensions);
+  Operation->getLevelManager()->addRegularLevelsParallel(numDimensions, numthreads);
+  //  Operation->getLevelManager()->addRegularLevels(numDimensions);
   // ToDo(rehmemk) the number of levels added is now a little mysterious because the user does not
   // know how many levels are added to guarantee (1,..,1) before the number of levels he chose to
   // be added is added
   //  Operation->getLevelManager()->addLevelsAdaptiveByNumLevels(numlevels);
   size_t numPoints = numlevels;
-  Operation->getLevelManager()->addLevelsAdaptive(numPoints);
+  Operation->getLevelManager()->addLevelsAdaptiveParallel(numPoints, numthreads);
+  //  Operation->getLevelManager()->addLevelsAdaptive(numPoints);
   auto levelStructure = Operation->getLevelManager()->getLevelStructure();
   return levelStructure;
 }
@@ -270,98 +274,100 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   std::cout << "level structure " << watch_individual.elapsedSeconds() << " total "
             << watch_total.elapsedSeconds() << std::endl;
   watch_individual.start();
+  /*
+    //  std::vector<bool> orderingConfiguration;
+    //  for (size_t d = 0; d < numDimensions; ++d) {
+    //    orderingConfiguration.push_back(evaluators[d]->needsOrderedPoints());
+    //  }
 
-  std::vector<bool> orderingConfiguration;
-  for (size_t d = 0; d < numDimensions; ++d) {
-    orderingConfiguration.push_back(evaluators[d]->needsOrderedPoints());
-  }
+    // convert level structure to SG
+    std::shared_ptr<sgpp::base::Grid> grid;
+    grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDimensions, degree));
+    sgpp::base::GridStorage& gridStorage = grid->getStorage();
+    convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
 
-  // convert level structure to SG
-  std::shared_ptr<sgpp::base::Grid> grid;
-  grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDimensions, degree));
-  sgpp::base::GridStorage& gridStorage = grid->getStorage();
-  convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
+    //  print options
+    //  printLevelstructure(levelStructure);
+    //  printSGGridToFile(gridStorage);
+    //  printLevelstructureToFile(levelStructure);
 
-  //  print options
-  //  printLevelstructure(levelStructure);
-  //  printSGGridToFile(gridStorage);
-  //  printLevelstructureToFile(levelStructure);
-
-  // interpolate on SG
-  sgpp::base::DataMatrix interpolParams(numDimensions, gridStorage.getSize());
-  for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
-    sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
-    for (size_t j = 0; j < gridStorage.getDimension(); j++) {
-      p[j] = gp.getStandardCoordinate(j);
+    // interpolate on SG
+    sgpp::base::DataMatrix interpolParams(numDimensions, gridStorage.getSize());
+    for (size_t i = 0; i < gridStorage.getSize(); i++) {
+      sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
+      sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
+      for (size_t j = 0; j < gridStorage.getDimension(); j++) {
+        p[j] = gp.getStandardCoordinate(j);
+      }
+      interpolParams.setColumn(i, p);
     }
-    interpolParams.setColumn(i, p);
-  }
 
-  // obtain function values from combigrid surrogate
-  Operation->setParameters(interpolParams);
-  Operation->getLevelManager()->addLevelsFromStructure(levelStructure);
-  sgpp::base::DataVector f_values = Operation->getResult();
+    // obtain function values from combigrid surrogate
+    Operation->setParameters(interpolParams);
+    Operation->getLevelManager()->addLevelsFromStructure(levelStructure);
+    sgpp::base::DataVector f_values = Operation->getResult();
 
-  std::cout << "interpol CG " << watch_individual.elapsedSeconds() << " total "
-            << watch_total.elapsedSeconds() << std::endl;
-  watch_individual.start();
+    std::cout << "interpol CG " << watch_individual.elapsedSeconds() << " total "
+              << watch_total.elapsedSeconds() << std::endl;
+    watch_individual.start();
 
-  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
-  sgpp::optimization::sle_solver::Auto sleSolver;
-  sgpp::base::DataVector alpha(grid->getSize());
-  if (!sleSolver.solve(hierSLE, f_values, alpha)) {
-    std::cout << "Solving failed!" << std::endl;
-  }
-  sgpp::optimization::InterpolantScalarFunction u(*grid, alpha);
+    sgpp::optimization::HierarchisationSLE hierSLE(*grid);
+    sgpp::optimization::sle_solver::UMFPACK sleSolver;
+    sgpp::base::DataVector alpha(grid->getSize());
+    if (!sleSolver.solve(hierSLE, f_values, alpha)) {
+      std::cout << "Solving failed!" << std::endl;
+    }
+    sgpp::optimization::InterpolantScalarFunction u(*grid, alpha);
 
-  std::cout << "interpol SG " << watch_individual.elapsedSeconds() << " total "
-            << watch_total.elapsedSeconds() << std::endl;
-  watch_individual.start();
+    std::cout << "interpol SG " << watch_individual.elapsedSeconds() << " total "
+              << watch_total.elapsedSeconds() << std::endl;
+    watch_individual.start();
 
-  //  std::cout << "num CG points: " << Operation->getLevelManager()->numGridPoints();
-  //  std::cout << ", num SG points " << gridStorage.getSize() << std::endl;
-  //  std::cout << gridStorage.getSize() << " ";
+    //  std::cout << "num CG points: " << Operation->getLevelManager()->numGridPoints();
+    //  std::cout << ", num SG points " << gridStorage.getSize() << std::endl;
+    //  std::cout << gridStorage.getSize() << " ";
 
-  // error calculations
-  //  double CGL2Err, CGMaxErr, SGL2Err, SGMaxErr, CompL2Err, CompMaxErr = 0;
-  //  calculateCGerror(CGMaxErr, CGL2Err, Operation, levelStructure);
-  //  calculateSGerror(SGMaxErr, SGL2Err, u);
-  //  calculateCGSGDifference(CompMaxErr, CompL2Err, Operation, levelStructure, u);
-  //  std::cout << "errors " << watch_individual.elapsedSeconds() << " total "
-  //            << watch_total.elapsedSeconds() << std::endl;
-  //  watch_individual.start();
+    //  error calculations
+    //  double CGL2Err, CGMaxErr, SGL2Err, SGMaxErr, CompL2Err, CompMaxErr = 0;
+    //  calculateCGerror(CGMaxErr, CGL2Err, Operation, levelStructure);
+    //  calculateSGerror(SGMaxErr, SGL2Err, u);
+    //  calculateCGSGDifference(CompMaxErr, CompL2Err, Operation, levelStructure, u);
+    //  std::cout << "errors " << watch_individual.elapsedSeconds() << " total "
+    //            << watch_total.elapsedSeconds() << std::endl;
+    //  watch_individual.start();
 
-  //  std::cout << "\n";
-  //  std::cout << "CG L2:   " << CGL2Err << "   CG max:   " << CGMaxErr << std::endl;
-  //  std::cout << "SG L2:   " << SGL2Err << "   SG max:   " << SGMaxErr << std::endl;
-  //  std::cout << "Comp L2: " << CompL2Err << " Comp max: " << CompMaxErr << std::endl;
-  //  std::cout << CGL2Err << " ";
+    //  std::cout << "\n";
+    //  std::cout << "CG L2:   " << CGL2Err << "   CG max:   " << CGMaxErr << std::endl;
+    //  std::cout << "SG L2:   " << SGL2Err << "   SG max:   " << SGMaxErr << std::endl;
+    //  std::cout << "Comp L2: " << CompL2Err << " Comp max: " << CompMaxErr << std::endl;
+    //  std::cout << CGL2Err << " ";
 
-  sgpp::base::DataVector dummyparams;
-  auto quadOperation =
-      sgpp::combigrid::CombigridOperation::createExpUniformBoundaryBsplineQuadrature(numDimensions,
-                                                                                     func, degree);
-  quadOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
-  double mean = quadOperation->getResult();
+    sgpp::base::DataVector dummyparams;
+    auto quadOperation =
+        sgpp::combigrid::CombigridOperation::createExpUniformBoundaryBsplineQuadrature(numDimensions,
+                                                                                       func,
+    degree);
+    quadOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
+    double mean = quadOperation->getResult();
 
-  std::cout << "quadrature " << watch_individual.elapsedSeconds() << " total "
-            << watch_total.elapsedSeconds() << std::endl;
-  watch_individual.start();
+    std::cout << "quadrature " << watch_individual.elapsedSeconds() << " total "
+              << watch_total.elapsedSeconds() << std::endl;
+    watch_individual.start();
 
-  sgpp::base::Grid* gridptr = grid.get();
-  sgpp::pde::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(gridptr);
-  sgpp::base::DataVector product(alpha.size(), 0);
-  massMatrix.mult(alpha, product);
+    sgpp::base::Grid* gridptr = grid.get();
+    sgpp::pde::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(gridptr);
+    sgpp::base::DataVector product(alpha.size(), 0);
+    massMatrix.mult(alpha, product);
 
-  std::cout << "matrix mult " << watch_individual.elapsedSeconds() << " total "
-            << watch_total.elapsedSeconds() << std::endl;
+    std::cout << "matrix mult " << watch_individual.elapsedSeconds() << " total "
+              << watch_total.elapsedSeconds() << std::endl;
 
-  double meanSquare = product.dotProduct(alpha);
-  double variance = meanSquare - mean * mean;
-  //  std::cout << " mean error: " << fabs(mean - atanMean) << " ";
-  //  std::cout << " meanSquare error : " << fabs(meanSquare - atanMeanSquare) << " ";
-  std::cout << "variance error " << fabs(variance - atanVariance) << std::endl;
+    double meanSquare = product.dotProduct(alpha);
+    double variance = meanSquare - mean * mean;
+    //  std::cout << " mean error: " << fabs(mean - atanMean) << " ";
+    //  std::cout << " meanSquare error : " << fabs(meanSquare - atanMeanSquare) << " ";
+    std::cout << "variance error " << fabs(variance - atanVariance) << std::endl;
+    */
 }
 
 int main() {
