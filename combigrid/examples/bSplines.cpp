@@ -7,9 +7,12 @@
 
 int main() {
   size_t numDimensions = 2;
-  size_t degree = 3;
-  size_t level = 3;
+  size_t degree = 5;
+  size_t level = 12;
   //  sgpp::combigrid::MultiIndex oneLevel = {2, 2};
+
+  sgpp::combigrid::Stopwatch watch;
+  watch.start();
 
   // Interpolation
   //  size_t minLevel = 2;
@@ -22,8 +25,8 @@ int main() {
   //    //    std::endl;
 
   //  Integration
-  //  double integral = integrate(level, numDimensions, degree);
-  //  std::cout << "integral:  " << integral << std::endl;
+  double integral = integrate(level, numDimensions, degree);
+  std::cout << "integral:  " << integral << std::endl;
 
   // Integrate basis functions
   //  std::vector<double> integrals = integrateBasisFunctions(level, numDimensions, degree);
@@ -37,8 +40,8 @@ int main() {
   //  std::cout << res << std::endl;
 
   //   Calculate integral of func^2
-  double isqu = integrateSquare(level, numDimensions, degree);
-  std::cout << "integral f^2 : " << isqu << std::endl;
+  //  double isqu = integrateSquare(level, numDimensions, degree);
+  //  std::cout << "integral f^2 : " << isqu << std::endl;
 
   // Calculate variances on subgrids
   //  double var = variance(level, numDimensions, degree);
@@ -48,6 +51,7 @@ int main() {
   //  std::cout << res << std::endl;
 
   //  BsplineTimeComparison();
+  std::cout << "run time " << watch.elapsedSeconds() << std::endl;
 
   return 0;
 }

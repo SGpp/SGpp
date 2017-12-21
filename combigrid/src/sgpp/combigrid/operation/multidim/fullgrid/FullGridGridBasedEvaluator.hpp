@@ -17,6 +17,7 @@
 #include <sgpp/combigrid/threading/PtrGuard.hpp>
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
 
+#include <iostream>
 #include <vector>
 
 namespace sgpp {

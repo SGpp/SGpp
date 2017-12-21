@@ -732,7 +732,21 @@ sgpp::combigrid::GridFunction BSplineCoefficientGridFunction(
     }
 
     sgpp::optimization::FullSLE sle(A);
-    sgpp::optimization::sle_solver::Auto solver;
+
+    //    sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+    //    bool solved = 0;
+    //    sgpp::combigrid::Stopwatch watch;
+    //    watch.start();
+    //    if (numGridPoints < 500) {
+    //      sgpp::optimization::sle_solver::Armadillo solver;
+    //      solved = solver.solve(sle, functionValues, coefficients_sle);
+    //    } else {
+    //      sgpp::optimization::sle_solver::UMFPACK solver;
+    //      solved = solver.solve(sle, functionValues, coefficients_sle);
+    //    }
+    //    std::cout << numGridPoints << " " << watch.elapsedSeconds() << std::endl;
+
+    sgpp::optimization::sle_solver::UMFPACK solver;
     sgpp::optimization::Printer::getInstance().setVerbosity(-1);
     bool solved = solver.solve(sle, functionValues, coefficients_sle);
 

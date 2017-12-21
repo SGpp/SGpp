@@ -73,7 +73,7 @@ class CombigridTreeStorageImpl {
   std::function<double(base::DataVector const &)> func;
   std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies;
   std::shared_ptr<TreeStorage<std::shared_ptr<TreeStorage<double>>>> storage;
-  std::shared_ptr<std::mutex> mutexPtr;
+  std::shared_ptr<std::recursive_mutex> mutexPtr;
   bool exploitNesting;
 };
 
@@ -198,7 +198,7 @@ double CombigridTreeStorage::get(MultiIndex const &level, MultiIndex const &inde
   return impl->storage->get(reducedLevel)->get(index);
 }
 
-void CombigridTreeStorage::setMutex(std::shared_ptr<std::mutex> mutexPtr) {
+void CombigridTreeStorage::setMutex(std::shared_ptr<std::recursive_mutex> mutexPtr) {
   impl->mutexPtr = mutexPtr;
 }
 
