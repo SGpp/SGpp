@@ -179,7 +179,9 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
    * Sets the mutex that is locked (if not nullptr) whenever problematic operations on data are
    * executed.
    */
-  virtual void setMutex(std::shared_ptr<std::recursive_mutex> mutexPtr) { multiEval->setMutex(mutexPtr); }
+  virtual void setMutex(std::shared_ptr<std::recursive_mutex> mutexPtr) {
+    multiEval->setMutex(mutexPtr);
+  }
 
   /**
    * Returns the storage with the Delta-values.

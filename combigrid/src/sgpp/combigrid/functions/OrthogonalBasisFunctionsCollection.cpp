@@ -13,13 +13,15 @@ namespace combigrid {
 
 OrthogonalBasisFunctionsCollection::OrthogonalBasisFunctionsCollection() {}
 
-OrthogonalBasisFunctionsCollection::OrthogonalBasisFunctionsCollection(size_t n) : basisFunctions(n) {}
+OrthogonalBasisFunctionsCollection::OrthogonalBasisFunctionsCollection(size_t n)
+    : basisFunctions(n) {}
 
 OrthogonalBasisFunctionsCollection::OrthogonalBasisFunctionsCollection(
     size_t n, std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> basisFunction)
     : basisFunctions(n, basisFunction) {}
 
-OrthogonalBasisFunctionsCollection::OrthogonalBasisFunctionsCollection(const OrthogonalBasisFunctionsCollection& other) {
+OrthogonalBasisFunctionsCollection::OrthogonalBasisFunctionsCollection(
+    const OrthogonalBasisFunctionsCollection& other) {
   basisFunctions.clear();
   for (auto& weightFunction : other.basisFunctions) {
     basisFunctions.push_back(weightFunction);
@@ -33,11 +35,13 @@ void OrthogonalBasisFunctionsCollection::push_back(
   basisFunctions.push_back(basisFunction);
 }
 
-std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> OrthogonalBasisFunctionsCollection::get(size_t i) {
+std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>
+OrthogonalBasisFunctionsCollection::get(size_t i) {
   return basisFunctions[i];
 }
 
-std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> OrthogonalBasisFunctionsCollection::operator[](size_t i) {
+std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> OrthogonalBasisFunctionsCollection::
+operator[](size_t i) {
   return basisFunctions[i];
 }
 

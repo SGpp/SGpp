@@ -60,7 +60,6 @@ double LagrangePolynomial(double const& x, std::vector<double> const& xValues, s
  * xValues for B splines of degree 1 by adding the necessary point outisde [0,1] by mirroring at 0
  * and 1.
  * @param xValues grid points inside [0,1]
- * @param xi returns the vector containing the knots with which the Bsplines are created.
  */
 std::vector<double> createdeg1Knots(std::vector<double> const& xValues);
 
@@ -70,7 +69,6 @@ std::vector<double> createdeg1Knots(std::vector<double> const& xValues);
  * and 1. For dealing with the boundaries at 0 and 1 not a knot knots are used. In the case of
  * degree 3 this means that the knot directly to the right/left of 0/1 are removed.
  * @param xValues grid points inside [0,1]
- * @param xi returns the vector containing the knots with which the Bsplines are created.
    */
 std::vector<double> createdeg3NakKnots(std::vector<double> const& xValues);
 
@@ -80,7 +78,6 @@ std::vector<double> createdeg3NakKnots(std::vector<double> const& xValues);
  * and 1. For dealing with the boundaries at 0 and 1 not a knot knots are used. In the case of
  * degree 3 this means that the two knots directly to the right/left of 0/1 are removed.
  * @param xValues grid points inside [0,1]
- * @param xi returns the vector containing the knots with which the Bsplines are created.
    */
 std::vector<double> createdeg5NakKnots(std::vector<double> const& xValues);
 /**
@@ -89,7 +86,6 @@ std::vector<double> createdeg5NakKnots(std::vector<double> const& xValues);
  * xValues for B splines of degrees i n{1,3,5}
  * @param xValues grid points inside [0,1]
  * @param degree degree of the B spline basis functions
- * @param xi returns the vector containing the knots with which the Bsplines are created.
    */
 std::vector<double> createNakKnots(std::vector<double> const& xValues, size_t const& degree);
 

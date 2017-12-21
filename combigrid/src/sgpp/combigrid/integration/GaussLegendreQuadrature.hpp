@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <cmath>
 #include <vector>
-//#include <future>
+// #include <future>
 #include <iostream>
 
 #ifdef _OPENMP
@@ -56,11 +56,11 @@ class GaussLegendreQuadrature {
   //                                  double tol = 1e-14, size_t numThreads = 0) {
   //    if (incrementQuadraturePoints > 1) {
   //      if (numThreads == 0) {
-  //#ifdef _OPENMP
+  // #ifdef _OPENMP
   //        numThreads = std::max(1, omp_get_max_threads());
-  //#else
+  // #else
   //        numThreads = 1;
-  //#endif
+  // #endif
   //      }
   //      if (numThreads > 1) {
   //        double segmentWidth = (b - a) / static_cast<double>(numThreads);

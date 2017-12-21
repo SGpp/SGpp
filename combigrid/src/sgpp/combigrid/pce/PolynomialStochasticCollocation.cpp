@@ -115,7 +115,8 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
 
 PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation,
-    sgpp::combigrid::OrthogonalBasisFunctionsCollection& tensorBasis, sgpp::base::DataVector const& bounds)
+    sgpp::combigrid::OrthogonalBasisFunctionsCollection& tensorBasis,
+    sgpp::base::DataVector const& bounds)
     : numDims(combigridOperation->numDims()),
       combigridOperation(combigridOperation),
       combigridMultiOperation(nullptr),
@@ -143,7 +144,8 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
 
 PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation,
-    sgpp::combigrid::OrthogonalBasisFunctionsCollection& tensorBasis, sgpp::base::DataVector const& bounds)
+    sgpp::combigrid::OrthogonalBasisFunctionsCollection& tensorBasis,
+    sgpp::base::DataVector const& bounds)
     : numDims(combigridMultiOperation->numDims()),
       combigridOperation(nullptr),
       combigridMultiOperation(combigridMultiOperation),
@@ -171,7 +173,8 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
 
 PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation,
-    sgpp::combigrid::OrthogonalBasisFunctionsCollection& tensorBasis, sgpp::base::DataVector const& bounds)
+    sgpp::combigrid::OrthogonalBasisFunctionsCollection& tensorBasis,
+    sgpp::base::DataVector const& bounds)
     : numDims(combigridTensorOperation->numDims()),
       combigridOperation(nullptr),
       combigridMultiOperation(nullptr),
