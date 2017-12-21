@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <cmath>
 #include <vector>
-#include <future>
+//#include <future>
 #include <iostream>
 
 #ifdef _OPENMP
@@ -49,37 +49,39 @@ class GaussLegendreQuadrature {
     return width * sum;
   }
 
-  template <typename Func>
-  static double evaluate_parallel(Func const &func, double a = 0.0, double b = 1.0,
-                                  size_t numGaussPoints = 1, size_t incrementQuadraturePoints = 1,
-                                  double tol = 1e-14, size_t numThreads = 0) {
-    if (incrementQuadraturePoints > 1) {
-      if (numThreads == 0) {
-#ifdef _OPENMP
-        numThreads = std::max(1, omp_get_max_threads());
-#else
-        numThreads = 1;
-#endif
-      }
-      if (numThreads > 1) {
-        double segmentWidth = (b - a) / static_cast<double>(numThreads);
-
-        std::vector<std::future<double>> futures;
-        for (double xlower = a; xlower < b; xlower += segmentWidth) {
-          futures.push_back(std::async(std::launch::async, evaluate_iteratively<Func>, func, xlower,
-                                       xlower + segmentWidth, numGaussPoints,
-                                       incrementQuadraturePoints, tol));
-        }
-        double sum = 0.0;
-        for (auto &handle : futures) {
-          sum += handle.get();
-        }
-        return sum;
-      }
-    }
-
-    return evaluate_iteratively(func, a, b, numGaussPoints, incrementQuadraturePoints, tol);
-  }
+  //  template <typename Func>
+  //  static double evaluate_parallel(Func const &func, double a = 0.0, double b = 1.0,
+  //                                  size_t numGaussPoints = 1, size_t incrementQuadraturePoints =
+  //                                  1,
+  //                                  double tol = 1e-14, size_t numThreads = 0) {
+  //    if (incrementQuadraturePoints > 1) {
+  //      if (numThreads == 0) {
+  //#ifdef _OPENMP
+  //        numThreads = std::max(1, omp_get_max_threads());
+  //#else
+  //        numThreads = 1;
+  //#endif
+  //      }
+  //      if (numThreads > 1) {
+  //        double segmentWidth = (b - a) / static_cast<double>(numThreads);
+  //
+  //        std::vector<std::future<double>> futures;
+  //        for (double xlower = a; xlower < b; xlower += segmentWidth) {
+  //          futures.push_back(std::async(std::launch::async, evaluate_iteratively<Func>, func,
+  //          xlower,
+  //                                       xlower + segmentWidth, numGaussPoints,
+  //                                       incrementQuadraturePoints, tol));
+  //        }
+  //        double sum = 0.0;
+  //        for (auto &handle : futures) {
+  //          sum += handle.get();
+  //        }
+  //        return sum;
+  //      }
+  //    }
+  //
+  //    return evaluate_iteratively(func, a, b, numGaussPoints, incrementQuadraturePoints, tol);
+  //  }
 
   template <typename Func>
   static double evaluate_iteratively(Func const &func, double a = 0.0, double b = 1.0,
@@ -93,6 +95,7 @@ class GaussLegendreQuadrature {
     // performing Gauss-Legendre integration
     double err = 1e14;
     size_t iteration = 0;
+    numGaussPoints = std::max(static_cast<size_t>(10), numGaussPoints);
     base::DataVector roots(numGaussPoints);
     base::DataVector weights(numGaussPoints);
     while (err > tol && numGaussPoints < quadRule.getMaxSupportedLevel()) {

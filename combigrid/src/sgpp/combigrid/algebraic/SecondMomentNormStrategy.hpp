@@ -8,6 +8,12 @@
 #include <sgpp/combigrid/algebraic/NormStrategy.hpp>
 #include <sgpp/combigrid/algebraic/FloatTensorVector.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
+#include <sgpp/combigrid/GeneralFunction.hpp>
+
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
+
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
@@ -16,31 +22,38 @@ class SecondMomentNormStrategy : public NormStrategy<FloatTensorVector> {
  public:
   SecondMomentNormStrategy(
       std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> basisFunction, size_t numDims,
-      bool isOrthogonal);
+      sgpp::combigrid::SingleFunction weightFunction, bool isOrthogonal,
+      sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
+  SecondMomentNormStrategy(
+      std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> basisFunction,
+      std::vector<sgpp::combigrid::SingleFunction>& weightFunctions, bool isOrthogonal,
+      sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
   SecondMomentNormStrategy(
       std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& basisFunctions,
-      bool isOrthogonal);
+      std::vector<sgpp::combigrid::SingleFunction>& weightFunctions, bool isOrthogonal,
+      sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
+
   virtual ~SecondMomentNormStrategy();
 
-  double norm(FloatTensorVector& vector) {
-    if (isOrthogonal) {
-      double sum = 0.0;
-      for (auto it = vector.getValues()->getStoredDataIterator(); it->isValid(); it->moveToNext()) {
-        double coeff = it->value().value();
-        sum += coeff * coeff;
-      }
-      return sum;
-    } else {
-      return computeSecondMoment(vector);
-    }
-  }
+  /**
+   * computes the second moment of the given tensor vector
+   *
+   * @param vector tensor
+   * @return second moment
+   */
+  double norm(FloatTensorVector& vector) override;
 
  private:
   bool isOrthogonal;
+  sgpp::base::DataVector bounds;
+
   std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>> basisFunctions;
+  std::vector<SingleFunction> weightFunctions;
 
   double quad(sgpp::combigrid::MultiIndex i, sgpp::combigrid::MultiIndex j);
   double computeSecondMoment(sgpp::combigrid::FloatTensorVector& vector);
+
+  void initializeBounds();
 };
 
 } /* namespace combigrid */

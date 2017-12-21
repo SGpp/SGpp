@@ -11,10 +11,15 @@ namespace combigrid {
 template <typename V>
 class NormStrategy {
  public:
-  NormStrategy(){};
-  virtual ~NormStrategy(){};
+  NormStrategy() {}
+  virtual ~NormStrategy() {}
 
-  double norm(V vector) { return vector.norm(); }
+  /**
+   * Computes the standard norm according to the template type V
+   * @param vector algebraic object
+   * @return standard norm of the parameter
+   */
+  virtual double norm(V& vector) { return vector.norm(); }
 };
 
 } /* namespace combigrid */

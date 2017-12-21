@@ -6,9 +6,11 @@
 #include <sgpp/combigrid/algebraic/SecondMomentNormStrategy.hpp>
 #include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
+#include <sgpp/combigrid/GeneralFunction.hpp>
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
 
 #include <vector>
 
@@ -17,12 +19,37 @@ namespace combigrid {
 
 SecondMomentNormStrategy::SecondMomentNormStrategy(
     std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> basisFunction, size_t numDims,
-    bool isOrthogonal)
-    : isOrthogonal(isOrthogonal), basisFunctions(numDims, basisFunction) {}
+    sgpp::combigrid::SingleFunction weightFunction, bool isOrthogonal,
+    sgpp::base::DataVector const& bounds)
+    : isOrthogonal(isOrthogonal),
+      bounds(bounds),
+      basisFunctions(numDims, basisFunction),
+      weightFunctions(numDims, weightFunction) {
+  initializeBounds();
+}
+
+SecondMomentNormStrategy::SecondMomentNormStrategy(
+    std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> basisFunction,
+    std::vector<sgpp::combigrid::SingleFunction>& weightFunctions, bool isOrthogonal,
+    sgpp::base::DataVector const& bounds)
+    : isOrthogonal(isOrthogonal),
+      bounds(bounds),
+      basisFunctions(weightFunctions.size(), basisFunction),
+      weightFunctions(weightFunctions) {
+  initializeBounds();
+}
+
 SecondMomentNormStrategy::SecondMomentNormStrategy(
     std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& basisFunctions,
-    bool isOrthogonal)
-    : isOrthogonal(isOrthogonal), basisFunctions(basisFunctions) {}
+    std::vector<sgpp::combigrid::SingleFunction>& weightFunctions, bool isOrthogonal,
+    sgpp::base::DataVector const& bounds)
+    : isOrthogonal(isOrthogonal),
+      bounds(bounds),
+      basisFunctions(basisFunctions),
+      weightFunctions(weightFunctions) {
+  initializeBounds();
+}
+
 SecondMomentNormStrategy::~SecondMomentNormStrategy() {}
 
 double SecondMomentNormStrategy::quad(MultiIndex i, MultiIndex j) {
@@ -33,16 +60,18 @@ double SecondMomentNormStrategy::quad(MultiIndex i, MultiIndex j) {
     size_t degree_i = i[idim];
     size_t degree_j = j[idim];
     auto functionBasis = basisFunctions[idim];
+    auto weightFunction = weightFunctions[idim];
     size_t numGaussPoints = (degree_i + degree_j + 3) / 2;
 
-    auto func = [functionBasis, &degree_i, &degree_j](double x_unit, double x_prob) {
+    auto func = [functionBasis, &degree_i, &degree_j, &weightFunction](double x_unit,
+                                                                       double x_prob) {
       return functionBasis->evaluate(degree_i, x_unit) * functionBasis->evaluate(degree_j, x_unit) *
-             functionBasis->pdf(x_prob);
+             weightFunction(x_prob);
     };
 
+    double a = bounds[2 * idim], b = bounds[2 * idim + 1];
     ans *= GaussLegendreQuadrature::evaluate_iteratively(
-        func, functionBasis->lowerBound(), functionBasis->upperBound(), numGaussPoints,
-        functionBasis->numAdditionalQuadraturePoints());
+        func, a, b, numGaussPoints, functionBasis->numAdditionalQuadraturePoints(), 1e-14);
   }
   return ans;
 }
@@ -51,9 +80,18 @@ double SecondMomentNormStrategy::computeSecondMoment(FloatTensorVector& vector) 
   // compute mass matrix and corresponding coefficient vector
   auto multiIndices_i = vector.getValues();
   auto multiIndices_j = vector.getValues();
-  sgpp::base::DataMatrix M(0, 0);
-  sgpp::base::DataVector coeffs;
 
+  // count the number of tensor terms and compute coefficient vector
+  auto it_counter = multiIndices_i->getStoredDataIterator();
+  size_t numGridPoints = 0;
+  sgpp::base::DataVector coeffs;
+  while (it_counter->isValid()) {
+    coeffs.push_back(it_counter->value().value());
+    numGridPoints++;
+    it_counter->moveToNext();
+  }
+
+  sgpp::base::DataMatrix M(numGridPoints, numGridPoints);
   auto it_i = multiIndices_i->getStoredDataIterator();
   size_t i = 0;
   while (it_i->isValid()) {
@@ -61,7 +99,6 @@ double SecondMomentNormStrategy::computeSecondMoment(FloatTensorVector& vector) 
 
     auto it_j = multiIndices_j->getStoredDataIterator();
     size_t j = 0;
-    sgpp::base::DataVector row;
     while (it_j->isValid()) {
       double innerProduct = 0.0;
       // exploit symmetry
@@ -70,30 +107,60 @@ double SecondMomentNormStrategy::computeSecondMoment(FloatTensorVector& vector) 
 
         // compute the inner product and store it
         innerProduct = quad(ix, jx);
-      } else {
-        innerProduct = M.get(j, i);
+
+        // store the result
+        M.set(i, j, innerProduct);
+        M.set(j, i, innerProduct);
       }
-      row.push_back(innerProduct);
 
       it_j->moveToNext();
       j += 1;
     }
-    M.appendRow(row);
 
     it_i->moveToNext();
     i += 1;
   }
 
   // compute second moment: coeffs^T M coeffs
-  sgpp::base::DataVector result(coeffs.getSize());
+  sgpp::base::DataVector result(numGridPoints);
   M.mult(coeffs, result);
 
   double ans = 0.0;
-  for (size_t i = 0; i < M.getNrows(); i++) {
+  for (size_t i = 0; i < numGridPoints; i++) {
     ans += coeffs[i] * result[i];
   }
 
   return ans;
+}
+
+double SecondMomentNormStrategy::norm(FloatTensorVector& vector) {
+  if (isOrthogonal) {
+    double sum = 0.0;
+    for (auto it = vector.getValues()->getStoredDataIterator(); it->isValid(); it->moveToNext()) {
+      double coeff = it->value().value();
+      sum += coeff * coeff;
+    }
+    return sum;
+  } else {
+    return computeSecondMoment(vector);
+  }
+}
+
+void SecondMomentNormStrategy::initializeBounds() {
+  size_t numDims = basisFunctions.size();
+  if (bounds.size() == 0) {
+    bounds.resize(2 * numDims);
+    for (size_t idim = 0; idim < numDims; idim++) {
+      bounds[2 * idim] = basisFunctions[idim]->lowerBound();
+      bounds[2 * idim + 1] = basisFunctions[idim]->upperBound();
+    }
+  } else {
+    if (bounds.size() != 2 * numDims) {
+      throw sgpp::base::application_exception(
+          "SecondMomentNormStrategy::initializeBounds - not enough arguments for bounds "
+          "specified");
+    }
+  }
 }
 
 } /* namespace combigrid */

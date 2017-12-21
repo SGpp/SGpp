@@ -6,6 +6,10 @@
 #include <sgpp/combigrid/algebraic/FirstMomentNormStrategy.hpp>
 #include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
+#include <sgpp/combigrid/GeneralFunction.hpp>
+
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
 
 #include <vector>
 
@@ -14,12 +18,36 @@ namespace combigrid {
 
 FirstMomentNormStrategy::FirstMomentNormStrategy(
     std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> basisFunction, size_t numDims,
-    bool isOrthogonal)
-    : isOrthogonal(isOrthogonal), basisFunctions(numDims, basisFunction) {}
+    sgpp::combigrid::SingleFunction weightFunction, bool isOrthogonal,
+    sgpp::base::DataVector const& bounds)
+    : isOrthogonal(isOrthogonal),
+      bounds(bounds),
+      basisFunctions(numDims, basisFunction),
+      weightFunctions(numDims, weightFunction) {
+  initializeBounds();
+}
+
+FirstMomentNormStrategy::FirstMomentNormStrategy(
+    std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> basisFunction,
+    std::vector<sgpp::combigrid::SingleFunction>& weightFunctions, bool isOrthogonal,
+    sgpp::base::DataVector const& bounds)
+    : isOrthogonal(isOrthogonal),
+      bounds(bounds),
+      basisFunctions(weightFunctions.size(), basisFunction),
+      weightFunctions(weightFunctions) {
+  initializeBounds();
+}
+
 FirstMomentNormStrategy::FirstMomentNormStrategy(
     std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& basisFunctions,
-    bool isOrthogonal)
-    : isOrthogonal(isOrthogonal), basisFunctions(basisFunctions) {}
+    std::vector<sgpp::combigrid::SingleFunction>& weightFunctions, bool isOrthogonal,
+    sgpp::base::DataVector const& bounds)
+    : isOrthogonal(isOrthogonal),
+      bounds(bounds),
+      basisFunctions(basisFunctions),
+      weightFunctions(weightFunctions) {
+  initializeBounds();
+}
 
 FirstMomentNormStrategy::~FirstMomentNormStrategy() {}
 
@@ -30,16 +58,17 @@ double FirstMomentNormStrategy::quad(MultiIndex i) {
   for (size_t idim = 0; idim < i.size(); idim++) {
     size_t degree_i = i[idim];
     auto functionBasis = basisFunctions[idim];
+    auto weightFunction = weightFunctions[idim];
     size_t incrementQuadraturePoints = functionBasis->numAdditionalQuadraturePoints();
     size_t numGaussPoints = (degree_i + 2) / 2;
 
-    auto func = [&functionBasis, &degree_i, &idim, this](double x_unit, double x_prob) {
-      return functionBasis->evaluate(degree_i, x_unit) * functionBasis->pdf(x_prob);
+    auto func = [&functionBasis, &degree_i, &idim, &weightFunction](double x_unit, double x_prob) {
+      return functionBasis->evaluate(degree_i, x_unit) * weightFunction(x_prob);
     };
 
-    ans *= GaussLegendreQuadrature::evaluate_iteratively(func, functionBasis->lowerBound(),
-                                                         functionBasis->upperBound(),
-                                                         numGaussPoints, incrementQuadraturePoints);
+    double a = bounds[2 * idim], b = bounds[2 * idim + 1];
+    ans *= GaussLegendreQuadrature::evaluate_iteratively(func, a, b, numGaussPoints,
+                                                         incrementQuadraturePoints, 1e-14);
   }
   return ans;
 }
@@ -67,6 +96,33 @@ double FirstMomentNormStrategy::computeMean(FloatTensorVector& vector) {
   }
 
   return ans;
+}
+
+double FirstMomentNormStrategy::norm(FloatTensorVector& vector) {
+  if (isOrthogonal) {
+    auto values = vector.getValues();
+    MultiIndex ix(values->getNumDimensions(), 0);
+    return values->get(ix).value();
+  } else {
+    return computeMean(vector);
+  }
+}
+
+void FirstMomentNormStrategy::initializeBounds() {
+  size_t numDims = basisFunctions.size();
+  if (bounds.size() == 0) {
+    bounds.resize(2 * numDims);
+    for (size_t idim = 0; idim < numDims; idim++) {
+      bounds[2 * idim] = basisFunctions[idim]->lowerBound();
+      bounds[2 * idim + 1] = basisFunctions[idim]->upperBound();
+    }
+  } else {
+    if (bounds.size() != 2 * numDims) {
+      throw sgpp::base::application_exception(
+          "FirstMomentNormStrategy::initializeBounds - not enough arguments for bounds "
+          "specified");
+    }
+  }
 }
 
 } /* namespace combigrid */

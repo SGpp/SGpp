@@ -8,6 +8,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
+#include <sgpp/combigrid/algebraic/NormStrategy.hpp>
 #include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/UniformBoundaryPointDistribution.hpp>
 #include <sgpp/combigrid/grid/growth/LinearGrowthStrategy.hpp>
@@ -62,24 +63,23 @@ class CombigridOperation {
   CombigridOperation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> evaluatorPrototypes,
-      std::shared_ptr<LevelManager> levelManager, MultiFunction func);
+      std::shared_ptr<LevelManager> levelManager, MultiFunction func, bool exploitNesting = true,
+      FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR,
+      std::shared_ptr<NormStrategy<FloatScalarVector>> normStrategy = nullptr);
 
   CombigridOperation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> evaluatorPrototypes,
-      std::shared_ptr<LevelManager> levelManager,
-      std::shared_ptr<AbstractCombigridStorage> storage);
+      std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage,
+      FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR,
+      std::shared_ptr<NormStrategy<FloatScalarVector>> normStrategy = nullptr);
 
   CombigridOperation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> evaluatorPrototypes,
-      std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting);
-
-  CombigridOperation(
-      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> evaluatorPrototypes,
-      std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting,
-      FullGridSummationStrategyType summationStrategyType);
+      std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting = true,
+      FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR,
+      std::shared_ptr<NormStrategy<FloatScalarVector>> normStrategy = nullptr);
 
   void setParameters(base::DataVector const &param = base::DataVector(0));  // clears automatically
 

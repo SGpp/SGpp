@@ -15,6 +15,7 @@
 #include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
 #include <sgpp/combigrid/utils/DataVectorHashing.hpp>
+#include <sgpp/combigrid/algebraic/NormStrategy.hpp>
 
 #include <cmath>
 #include <iostream>
@@ -54,6 +55,11 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
   std::shared_ptr<AbstractFullGridEvaluator<V>> multiEval;
 
   /**
+   * strategy that computes the norm of the full grid evaluation results
+   */
+  std::shared_ptr<NormStrategy<V>> normStrategy;
+
+  /**
    * Upper bound for the number of points (function evaluations) used.
    */
   size_t upperPointBound = 0;
@@ -72,8 +78,16 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
    * @param multiEval Evaluation method for full grids whose results are then combined into a single
    * value.
    */
-  CombigridEvaluator(size_t numDimensions, std::shared_ptr<AbstractFullGridEvaluator<V>> multiEval)
-      : sum(V::zero()), numDimensions(numDimensions), partialDifferences(), multiEval(multiEval) {
+  CombigridEvaluator(size_t numDimensions, std::shared_ptr<AbstractFullGridEvaluator<V>> multiEval,
+                     std::shared_ptr<NormStrategy<V>> normStrategy = nullptr)
+      : sum(V::zero()),
+        numDimensions(numDimensions),
+        partialDifferences(),
+        multiEval(multiEval),
+        normStrategy(normStrategy) {
+    if (this->normStrategy == nullptr) {
+      this->normStrategy = std::make_shared<NormStrategy<V>>();
+    }
     initPartialDifferences();
   }
 
@@ -133,7 +147,7 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
         partialDifferences[d + 1]->set(level, value);
       }
     }
-    double norm = value.norm();
+    double norm = normStrategy->norm(value);
     if (std::isnan(norm) || std::isinf(norm)) {
       return false;
     } else {
@@ -244,7 +258,7 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
    * absolute value) for the given level.
    */
   double getDifferenceNorm(MultiIndex const &level) {
-    return partialDifferences[numDimensions]->get(level).norm();
+    return normStrategy->norm(partialDifferences[numDimensions]->get(level));
   }
 
   /**
