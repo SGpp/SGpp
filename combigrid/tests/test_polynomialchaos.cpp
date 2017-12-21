@@ -68,11 +68,10 @@ BOOST_AUTO_TEST_CASE(testPCE) {
   testPCEIshigami(op, functionBasis);
 }
 
-void testPCEParbola(
-    std::shared_ptr<sgpp::combigrid::CombigridOperation> op,
-    std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases) {
+void testPCEParbola(std::shared_ptr<sgpp::combigrid::CombigridOperation> op,
+                    sgpp::combigrid::OrthogonalBasisFunctionsCollection& basisFunctions) {
   // compute variance of the estimator
-  sgpp::combigrid::PolynomialChaosExpansion pce(op, functionBases);
+  sgpp::combigrid::PolynomialChaosExpansion pce(op, basisFunctions);
 
   // check the moments
   sgpp::combigrid::Parabola parabolaModel;
@@ -98,8 +97,9 @@ BOOST_AUTO_TEST_CASE(testPCE_parabola) {
   config.polyParameters.beta_ = parabolaModel.beta2;
   auto functionBasis2 = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
 
-  std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>> functionBases{
-      functionBasis1, functionBasis2};
+  sgpp::combigrid::OrthogonalBasisFunctionsCollection functionBases;
+  functionBases.push_back(functionBasis1);
+  functionBases.push_back(functionBasis2);
 
   sgpp::combigrid::MultiFunction func(parabolaModel.eval);
   size_t level = 2;
@@ -145,10 +145,10 @@ BOOST_AUTO_TEST_CASE(testStochasticCollocation_ishigami) {
 
 void testStochasticCollocationMoments_various_marginals(
     std::shared_ptr<sgpp::combigrid::CombigridOperation> op,
-    std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases,
-    double mean, double variance, double tol) {
+    sgpp::combigrid::OrthogonalBasisFunctionsCollection& basisFunctions, double mean,
+    double variance, double tol) {
   // compute variance of the estimator
-  sgpp::combigrid::PolynomialStochasticCollocation sc(op, functionBases);
+  sgpp::combigrid::PolynomialStochasticCollocation sc(op, basisFunctions);
 
   // check the moments
   BOOST_CHECK_SMALL(std::abs(mean - sc.mean()), tol);
@@ -172,8 +172,9 @@ BOOST_AUTO_TEST_CASE(testStochasticCollocation_parabola) {
   config.polyParameters.beta_ = parabolaModel.beta2;
   auto functionBasis2 = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
 
-  std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>> functionBases{
-      functionBasis1, functionBasis2};
+  sgpp::combigrid::OrthogonalBasisFunctionsCollection functionBases;
+  functionBases.push_back(functionBasis1);
+  functionBases.push_back(functionBasis2);
 
   sgpp::combigrid::MultiFunction func(parabolaModel.eval);
   size_t level = 2;
@@ -247,8 +248,9 @@ BOOST_AUTO_TEST_CASE(testMoments) {
   config.polyParameters.beta_ = model.beta2;
   auto functionBasis2 = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
 
-  std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>> orthogFunctionBases{
-      functionBasis1, functionBasis2};
+  sgpp::combigrid::OrthogonalBasisFunctionsCollection orthogFunctionBases;
+  orthogFunctionBases.push_back(functionBasis1);
+  orthogFunctionBases.push_back(functionBasis2);
 
   sgpp::combigrid::MultiFunction func(model.eval);
 

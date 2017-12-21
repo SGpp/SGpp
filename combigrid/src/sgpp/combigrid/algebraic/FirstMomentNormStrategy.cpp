@@ -6,10 +6,12 @@
 #include <sgpp/combigrid/algebraic/FirstMomentNormStrategy.hpp>
 #include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
+#include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
 #include <sgpp/combigrid/GeneralFunction.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
 
 #include <vector>
 
@@ -29,7 +31,7 @@ FirstMomentNormStrategy::FirstMomentNormStrategy(
 
 FirstMomentNormStrategy::FirstMomentNormStrategy(
     std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> basisFunction,
-    std::vector<sgpp::combigrid::SingleFunction>& weightFunctions, bool isOrthogonal,
+    sgpp::combigrid::WeightFunctionsCollection& weightFunctions, bool isOrthogonal,
     sgpp::base::DataVector const& bounds)
     : isOrthogonal(isOrthogonal),
       bounds(bounds),
@@ -39,8 +41,8 @@ FirstMomentNormStrategy::FirstMomentNormStrategy(
 }
 
 FirstMomentNormStrategy::FirstMomentNormStrategy(
-    std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& basisFunctions,
-    std::vector<sgpp::combigrid::SingleFunction>& weightFunctions, bool isOrthogonal,
+    sgpp::combigrid::OrthogonalBasisFunctionsCollection& basisFunctions,
+    sgpp::combigrid::WeightFunctionsCollection& weightFunctions, bool isOrthogonal,
     sgpp::base::DataVector const& bounds)
     : isOrthogonal(isOrthogonal),
       bounds(bounds),

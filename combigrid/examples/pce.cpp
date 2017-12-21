@@ -41,7 +41,6 @@ int main() {
     // compute the variance
     stopwatch.start();
     sgpp::combigrid::PolynomialChaosExpansion pce(op, functionBasis);
-
     pce.getCombigridTensorOperation()->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
     pce.getCombigridTensorOperation()->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
     //    pce.getCombigridTensorOperation()->getLevelManager()->addLevelsAdaptiveByNumLevels(10);

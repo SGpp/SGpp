@@ -77,6 +77,7 @@ class CombigridEvaluator : public AbstractLevelEvaluator {
    * @param numDimensions Dimensionality of the problem.
    * @param multiEval Evaluation method for full grids whose results are then combined into a single
    * value.
+   * @param normStrategy defines how the norm of differences is computed.
    */
   CombigridEvaluator(size_t numDimensions, std::shared_ptr<AbstractFullGridEvaluator<V>> multiEval,
                      std::shared_ptr<NormStrategy<V>> normStrategy = nullptr)

@@ -6,11 +6,13 @@
 #include <sgpp/combigrid/algebraic/SecondMomentNormStrategy.hpp>
 #include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
+#include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
 #include <sgpp/combigrid/GeneralFunction.hpp>
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
 
 #include <vector>
 
@@ -30,7 +32,7 @@ SecondMomentNormStrategy::SecondMomentNormStrategy(
 
 SecondMomentNormStrategy::SecondMomentNormStrategy(
     std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> basisFunction,
-    std::vector<sgpp::combigrid::SingleFunction>& weightFunctions, bool isOrthogonal,
+    sgpp::combigrid::WeightFunctionsCollection& weightFunctions, bool isOrthogonal,
     sgpp::base::DataVector const& bounds)
     : isOrthogonal(isOrthogonal),
       bounds(bounds),
@@ -40,8 +42,8 @@ SecondMomentNormStrategy::SecondMomentNormStrategy(
 }
 
 SecondMomentNormStrategy::SecondMomentNormStrategy(
-    std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& basisFunctions,
-    std::vector<sgpp::combigrid::SingleFunction>& weightFunctions, bool isOrthogonal,
+    sgpp::combigrid::OrthogonalBasisFunctionsCollection& basisFunctions,
+    sgpp::combigrid::WeightFunctionsCollection& weightFunctions, bool isOrthogonal,
     sgpp::base::DataVector const& bounds)
     : isOrthogonal(isOrthogonal),
       bounds(bounds),
@@ -59,19 +61,19 @@ double SecondMomentNormStrategy::quad(MultiIndex i, MultiIndex j) {
   for (size_t idim = 0; idim < i.size(); idim++) {
     size_t degree_i = i[idim];
     size_t degree_j = j[idim];
-    auto functionBasis = basisFunctions[idim];
+    auto basisFunction = basisFunctions[idim];
     auto weightFunction = weightFunctions[idim];
     size_t numGaussPoints = (degree_i + degree_j + 3) / 2;
 
-    auto func = [functionBasis, &degree_i, &degree_j, &weightFunction](double x_unit,
+    auto func = [basisFunction, &degree_i, &degree_j, &weightFunction](double x_unit,
                                                                        double x_prob) {
-      return functionBasis->evaluate(degree_i, x_unit) * functionBasis->evaluate(degree_j, x_unit) *
+      return basisFunction->evaluate(degree_i, x_unit) * basisFunction->evaluate(degree_j, x_unit) *
              weightFunction(x_prob);
     };
 
     double a = bounds[2 * idim], b = bounds[2 * idim + 1];
     ans *= GaussLegendreQuadrature::evaluate_iteratively(
-        func, a, b, numGaussPoints, functionBasis->numAdditionalQuadraturePoints(), 1e-14);
+        func, a, b, numGaussPoints, basisFunction->numAdditionalQuadraturePoints(), 1e-14);
   }
   return ans;
 }
