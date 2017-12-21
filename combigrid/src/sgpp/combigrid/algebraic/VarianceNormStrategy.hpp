@@ -10,7 +10,9 @@
 #include <sgpp/combigrid/algebraic/SecondMomentNormStrategy.hpp>
 #include <sgpp/combigrid/algebraic/VarianceNormStrategy.hpp>
 #include <sgpp/combigrid/algebraic/FloatTensorVector.hpp>
+#include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
+#include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
 #include <sgpp/combigrid/GeneralFunction.hpp>
 
 #include <vector>
@@ -24,14 +26,17 @@ class VarianceNormStrategy : public NormStrategy<FloatTensorVector> {
                        size_t numDims, sgpp::combigrid::SingleFunction weightFunction,
                        bool isOrthogonal,
                        sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
+
   VarianceNormStrategy(std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> basisFunction,
-                       std::vector<sgpp::combigrid::SingleFunction>& weightFunctions,
+                       sgpp::combigrid::WeightFunctionsCollection& weightFunctions,
                        bool isOrthogonal,
                        sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
-  VarianceNormStrategy(
-      std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& basisFunctions,
-      std::vector<sgpp::combigrid::SingleFunction>& weightFunctions, bool isOrthogonal,
-      sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
+
+  VarianceNormStrategy(sgpp::combigrid::OrthogonalBasisFunctionsCollection& basisFunctions,
+                       sgpp::combigrid::WeightFunctionsCollection& weightFunctions,
+                       bool isOrthogonal,
+                       sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
+
   virtual ~VarianceNormStrategy();
 
   /**

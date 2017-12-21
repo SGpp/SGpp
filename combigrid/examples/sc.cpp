@@ -17,6 +17,7 @@
 #include <sgpp/combigrid/utils/Utils.hpp>
 #include <sgpp/combigrid/utils/AnalyticModels.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
 
 #include <cmath>
 #include <iostream>
@@ -39,8 +40,9 @@ int main() {
   config.polyParameters.beta_ = model.beta2;
   auto functionBasis2 = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
 
-  std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>> functionBases{
-      functionBasis1, functionBasis2};
+  sgpp::combigrid::OrthogonalBasisFunctionsCollection basisFunctions;
+  basisFunctions.push_back(functionBasis1);
+  basisFunctions.push_back(functionBasis2);
 
   sgpp::combigrid::MultiFunction func(model.eval);
 
@@ -61,7 +63,7 @@ int main() {
       model.numDims, func);
 
   auto op_levelManager = op->getLevelManager();
-  sgpp::combigrid::PolynomialStochasticCollocation sc(op, functionBases);
+  sgpp::combigrid::PolynomialStochasticCollocation sc(op, basisFunctions);
   auto tensor_levelManager = sc.getCombigridTensorOperation()->getLevelManager();
 
   sgpp::combigrid::Stopwatch stopwatch;

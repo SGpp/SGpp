@@ -95,7 +95,7 @@ class GaussLegendreQuadrature {
     // performing Gauss-Legendre integration
     double err = 1e14;
     size_t iteration = 0;
-    numGaussPoints = std::max(static_cast<size_t>(10), numGaussPoints);
+    //    numGaussPoints = std::max(static_cast<size_t>(10), numGaussPoints);
     base::DataVector roots(numGaussPoints);
     base::DataVector weights(numGaussPoints);
     while (err > tol && numGaussPoints < quadRule.getMaxSupportedLevel()) {

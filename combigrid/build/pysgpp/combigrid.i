@@ -52,7 +52,9 @@
 %shared_ptr(sgpp::combigrid::BSplineScalarProductEvaluator)
 %shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::BSplineScalarProductEvaluator>)
 
-%shared_ptr(sgpp::combigrid::NormStrategy)
+%shared_ptr(sgpp::combigrid::NormStrategy<sgpp::combigrid::FloatScalarVector>)
+%shared_ptr(sgpp::combigrid::NormStrategy<sgpp::combigrid::FloatArrayVector>)
+%shared_ptr(sgpp::combigrid::NormStrategy<sgpp::combigrid::FloatTensorVector>)
 %shared_ptr(sgpp::combigrid::FirstMomentNormStrategy)
 %shared_ptr(sgpp::combigrid::SecondMomentNormStrategy)
 %shared_ptr(sgpp::combigrid::VarianceNormStrategy)
@@ -92,7 +94,6 @@
 %shared_ptr(sgpp::combigrid::CombigridEvaluator<sgpp::combigrid::FloatArrayVector>)
 %shared_ptr(sgpp::combigrid::CombigridEvaluator<sgpp::combigrid::FloatTensorVector>)
 %shared_ptr(sgpp::combigrid::CombigridTensorEvaluator<sgpp::combigrid::FloatTensorVector>)
-
 
 %shared_ptr(sgpp::combigrid::AbstractInfiniteFunctionBasis1D)
 %shared_ptr(sgpp::combigrid::OrthogonalPolynomialBasis1D)
@@ -150,7 +151,17 @@ namespace combigrid {
 %include "combigrid/src/sgpp/combigrid/algebraic/FloatScalarVector.hpp"
 %include "combigrid/src/sgpp/combigrid/algebraic/FloatArrayVector.hpp"
 %include "combigrid/src/sgpp/combigrid/algebraic/FloatTensorVector.hpp"
+
 %include "combigrid/src/sgpp/combigrid/algebraic/NormStrategy.hpp"
+
+namespace sgpp {
+  namespace combigrid {
+    %template(NormStrategyFloatScalarVector) NormStrategy<FloatScalarVector>;
+    %template(NormStrategyFloatArrayVector) NormStrategy<FloatArrayVector>;
+    %template(NormStrategyFloatTensorVector) NormStrategy<FloatTensorVector>;
+  }
+}
+
 %include "combigrid/src/sgpp/combigrid/algebraic/FirstMomentNormStrategy.hpp"
 %include "combigrid/src/sgpp/combigrid/algebraic/SecondMomentNormStrategy.hpp"
 %include "combigrid/src/sgpp/combigrid/algebraic/VarianceNormStrategy.hpp"
@@ -164,9 +175,19 @@ namespace combigrid {
 %include "combigrid/src/sgpp/combigrid/storage/AbstractCombigridStorage.hpp"
 %include "combigrid/src/sgpp/combigrid/storage/FunctionLookupTable.hpp"
 
+
 %include "combigrid/src/sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp"
 %include "combigrid/src/sgpp/combigrid/functions/MonomialFunctionBasis1D.hpp"
 %include "combigrid/src/sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp"
+
+
+%ignore sgpp::combigrid::OrthogonalBasisFunctionsCollection::operator=;
+%ignore sgpp::combigrid::OrthogonalBasisFunctionsCollection::operator[];
+%ignore sgpp::combigrid::WeightFunctionsCollection::operator=;
+%ignore sgpp::combigrid::WeightFunctionsCollection::operator[];
+
+%include "combigrid/src/sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp"
+%include "combigrid/src/sgpp/combigrid/functions/WeightFunctionsCollection.hpp"
 
 %include "combigrid/src/sgpp/combigrid/grid/distribution/AbstractPointDistribution.hpp"
 %include "combigrid/src/sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp"
@@ -283,7 +304,6 @@ namespace combigrid {
     // %template(AbstractSerializationStrategy_uint8_t) AbstractSerializationStrategy<std::uint8_t>;
     // %template(DefaultSerializationStrategy_uint8_t) DefaultSerializationStrategy<std::uint8_t>;
     // %template(LevelStructureSerializationStrategy) TreeStorageSerializationStrategy<std::uint8_t>;
-
 }
 }
 
@@ -293,9 +313,9 @@ namespace std {
     %template(FloatArrayAbstractLinearEvaluatorVector) vector<std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatArrayVector>>>;
     %template(FloatTensorAbstractLinearEvaluatorVector) vector<std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatTensorVector>>>;
     %template(AbstractPointHierarchyVector) vector<std::shared_ptr<sgpp::combigrid::AbstractPointHierarchy>>;
+    %template(OrthogonalPolynomialBasisTypeVector) std::vector<sgpp::combigrid::OrthogonalPolynomialBasisType>;
     %template(AbstractInfiniteFunctionBasis1DVector) std::vector<std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D>>;
     %template(OrthogonalPolynomialBasis1DVector) std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>;
-    %template(OrthogonalPolynomialBasisTypeVector) std::vector<sgpp::combigrid::OrthogonalPolynomialBasisType>;
 
     %template(FloatScalarVectorVector) vector<sgpp::combigrid::FloatScalarVector>;
     %template(FloatArrayVectorVector) vector<sgpp::combigrid::FloatArrayVector>;

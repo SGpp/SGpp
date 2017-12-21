@@ -15,7 +15,9 @@
 """
 from pysgpp import PolynomialChaosExpansion, \
     AbstractInfiniteFunctionBasis1DVector, \
-    OrthogonalPolynomialBasis1DVector
+    OrthogonalBasisFunctionsCollection, \
+    WeightFunctionsCollection, \
+    singleFunc
 
 from pysgpp.extensions.datadriven.uq.dists import J
 from pysgpp.extensions.datadriven.uq.transformation import (JointTransformation,
@@ -196,24 +198,28 @@ class ParameterSet(object):
         """
         return JointTransformation.byParameters(self.__params)
 
-    def getUnivariateOrthogonalPolynomials(self, dtype="abstract"):
-        basisFunctions = []
+    def getOrthogonalPolynomialBasisFunctions(self):
+        tensorBasis = OrthogonalBasisFunctionsCollection()
+
         for param in self.values():
             if param.isUncertain():
                 orthogPoly = param.getOrthogonalPolynomial()
                 if orthogPoly is not None:
-                    basisFunctions.append(orthogPoly)
+                    tensorBasis.push_back(orthogPoly)
                 else:
                     raise AttributeError("the distributions are not part of the Wiener-Askey scheme")
-        if dtype == "abstract":
-            basisFunctions_vec = AbstractInfiniteFunctionBasis1DVector()
-        else:
-            basisFunctions_vec = OrthogonalPolynomialBasis1DVector()
 
-        for basisFunction in basisFunctions:
-            basisFunctions_vec.push_back(basisFunction)
+        return tensorBasis
 
-        return basisFunctions_vec
+    def getWeightFunctions(self):
+        weightFunctions = WeightFunctionsCollection()
+
+        for param in self.values():
+            if param.isUncertain():
+                func = singleFunc(param.getDistribution().pdf)
+                weightFunctions.push_back(func)
+
+        return weightFunctions
 
     def getBounds(self):
         """

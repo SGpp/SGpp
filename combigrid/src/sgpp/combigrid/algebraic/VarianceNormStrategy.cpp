@@ -4,7 +4,11 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/algebraic/VarianceNormStrategy.hpp>
+#include <sgpp/combigrid/algebraic/FirstMomentNormStrategy.hpp>
+#include <sgpp/combigrid/algebraic/SecondMomentNormStrategy.hpp>
+#include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
+#include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
 #include <sgpp/combigrid/GeneralFunction.hpp>
 
 #include <vector>
@@ -21,14 +25,14 @@ VarianceNormStrategy::VarianceNormStrategy(
 
 VarianceNormStrategy::VarianceNormStrategy(
     std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> basisFunction,
-    std::vector<sgpp::combigrid::SingleFunction>& weightFunctions, bool isOrthogonal,
+    sgpp::combigrid::WeightFunctionsCollection& weightFunctions, bool isOrthogonal,
     sgpp::base::DataVector const& bounds)
     : firstMoment(basisFunction, weightFunctions, isOrthogonal, bounds),
       secondMoment(basisFunction, weightFunctions, isOrthogonal, bounds) {}
 
 VarianceNormStrategy::VarianceNormStrategy(
-    std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& basisFunctions,
-    std::vector<sgpp::combigrid::SingleFunction>& weightFunctions, bool isOrthogonal,
+    sgpp::combigrid::OrthogonalBasisFunctionsCollection& basisFunctions,
+    sgpp::combigrid::WeightFunctionsCollection& weightFunctions, bool isOrthogonal,
     sgpp::base::DataVector const& bounds)
     : firstMoment(basisFunctions, weightFunctions, isOrthogonal, bounds),
       secondMoment(basisFunctions, weightFunctions, isOrthogonal, bounds) {}

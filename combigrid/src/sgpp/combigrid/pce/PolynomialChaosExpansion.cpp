@@ -10,6 +10,7 @@
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
 
 #ifdef USE_DAKOTA
 #include <pecos_data_types.hpp>
@@ -70,7 +71,7 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
 
 PolynomialChaosExpansion::PolynomialChaosExpansion(
     std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation,
-    std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases)
+    sgpp::combigrid::OrthogonalBasisFunctionsCollection& tensorBasis)
     : numDims(combigridOperation->numDims()),
       combigridOperation(combigridOperation),
       combigridMultiOperation(nullptr),
@@ -78,7 +79,7 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
       numGridPoints(0),
       computedSobolIndicesFlag(false) {
   // make sure that the number of dimensions match
-  if (numDims != functionBases.size()) {
+  if (numDims != tensorBasis.size()) {
     throw sgpp::base::application_exception(
         "number of basis function do not match with the number of dimensions of the operation");
   }
@@ -86,12 +87,12 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
   this->combigridTensorOperation =
       sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
           combigridOperation->getPointHierarchies(), combigridOperation->getStorage(),
-          combigridOperation->getLevelManager(), functionBases);
+          combigridOperation->getLevelManager(), tensorBasis.getBasisFunctions());
 }
 
 PolynomialChaosExpansion::PolynomialChaosExpansion(
     std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation,
-    std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases)
+    sgpp::combigrid::OrthogonalBasisFunctionsCollection& tensorBasis)
     : numDims(combigridMultiOperation->numDims()),
       combigridOperation(nullptr),
       combigridMultiOperation(combigridMultiOperation),
@@ -99,7 +100,7 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
       numGridPoints(0),
       computedSobolIndicesFlag(false) {
   // make sure that the number of dimensions match
-  if (numDims != functionBases.size()) {
+  if (numDims != tensorBasis.size()) {
     throw sgpp::base::application_exception(
         "number of basis function do not match with the number of dimensions of the operation");
   }
@@ -107,12 +108,12 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
   this->combigridTensorOperation =
       sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
           combigridMultiOperation->getPointHierarchies(), combigridMultiOperation->getStorage(),
-          combigridMultiOperation->getLevelManager(), functionBases);
+          combigridMultiOperation->getLevelManager(), tensorBasis.getBasisFunctions());
 }
 
 PolynomialChaosExpansion::PolynomialChaosExpansion(
     std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation,
-    std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases)
+    sgpp::combigrid::OrthogonalBasisFunctionsCollection& tensorBasis)
     : numDims(combigridTensorOperation->numDims()),
       combigridOperation(nullptr),
       combigridMultiOperation(nullptr),
@@ -120,7 +121,7 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
       numGridPoints(0),
       computedSobolIndicesFlag(false) {
   // make sure that the number of dimensions match
-  if (numDims != functionBases.size()) {
+  if (numDims != tensorBasis.size()) {
     throw sgpp::base::application_exception(
         "number of basis function do not match with the number of dimensions of the operation");
   }
@@ -128,7 +129,7 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
   this->combigridTensorOperation =
       sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
           combigridTensorOperation->getPointHierarchies(), combigridTensorOperation->getStorage(),
-          combigridTensorOperation->getLevelManager(), functionBases);
+          combigridTensorOperation->getLevelManager(), tensorBasis.getBasisFunctions());
 }
 
 PolynomialChaosExpansion::~PolynomialChaosExpansion() {}

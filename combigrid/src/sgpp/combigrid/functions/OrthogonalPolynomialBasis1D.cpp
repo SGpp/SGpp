@@ -4,6 +4,8 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
+#include <sgpp/combigrid/GeneralFunction.hpp>
+
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
@@ -238,6 +240,10 @@ std::shared_ptr<Pecos::RandomVariable> OrthogonalPolynomialBasis1D::getRandomVar
   return rv;
 }
 #endif
+
+sgpp::combigrid::SingleFunction OrthogonalPolynomialBasis1D::getWeightFunction() {
+  return SingleFunction([this](double x_prob) { return this->pdf(x_prob); });
+}
 
 size_t OrthogonalPolynomialBasis1D::numAdditionalQuadraturePoints() {
   switch (config.polyParameters.type_) {

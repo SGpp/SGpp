@@ -37,7 +37,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridOperation(combigridOperation),
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
-      functionBases(0),
+      tensorBasis(0),
       weightFunctions(0),
       bounds(bounds),
       numGridPoints(0),
@@ -47,7 +47,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       var(0.0) {
   // create vector of function bases
   for (size_t idim = 0; idim < numDims; idim++) {
-    functionBases.push_back(functionBasis);
+    tensorBasis.push_back(functionBasis);
   }
 
   initializeBounds();
@@ -65,7 +65,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridOperation(nullptr),
       combigridMultiOperation(combigridMultiOperation),
       combigridTensorOperation(nullptr),
-      functionBases(0),
+      tensorBasis(0),
       weightFunctions(0),
       bounds(bounds),
       numGridPoints(0),
@@ -75,7 +75,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       var(0.0) {
   // create vector of function bases
   for (size_t idim = 0; idim < numDims; idim++) {
-    functionBases.push_back(functionBasis);
+    tensorBasis.push_back(functionBasis);
   }
 
   initializeBounds();
@@ -93,7 +93,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       combigridOperation(nullptr),
       combigridMultiOperation(nullptr),
       combigridTensorOperation(combigridTensorOperation),
-      functionBases(0),
+      tensorBasis(0),
       weightFunctions(0),
       bounds(bounds),
       numGridPoints(0),
@@ -103,7 +103,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       var(0.0) {
   // create vector of function bases
   for (size_t idim = 0; idim < numDims; idim++) {
-    functionBases.push_back(functionBasis);
+    tensorBasis.push_back(functionBasis);
   }
 
   initializeBounds();
@@ -115,13 +115,12 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
 
 PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation,
-    std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases,
-    sgpp::base::DataVector const& bounds)
+    sgpp::combigrid::OrthogonalBasisFunctionsCollection& tensorBasis, sgpp::base::DataVector const& bounds)
     : numDims(combigridOperation->numDims()),
       combigridOperation(combigridOperation),
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
-      functionBases(functionBases),
+      tensorBasis(tensorBasis),
       weightFunctions(0),
       bounds(bounds),
       numGridPoints(0),
@@ -130,7 +129,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       computedVarianceFlag(false),
       var(0.0) {
   // make sure that the number of dimensions match
-  if (numDims != functionBases.size()) {
+  if (numDims != tensorBasis.size()) {
     throw sgpp::base::application_exception(
         "number of basis function do not match with the number of dimensions of the operation");
   }
@@ -144,13 +143,12 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
 
 PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation,
-    std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases,
-    sgpp::base::DataVector const& bounds)
+    sgpp::combigrid::OrthogonalBasisFunctionsCollection& tensorBasis, sgpp::base::DataVector const& bounds)
     : numDims(combigridMultiOperation->numDims()),
       combigridOperation(nullptr),
       combigridMultiOperation(combigridMultiOperation),
       combigridTensorOperation(nullptr),
-      functionBases(functionBases),
+      tensorBasis(tensorBasis),
       weightFunctions(0),
       bounds(bounds),
       numGridPoints(0),
@@ -159,7 +157,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       computedVarianceFlag(false),
       var(0.0) {
   // make sure that the number of dimensions match
-  if (numDims != functionBases.size()) {
+  if (numDims != tensorBasis.size()) {
     throw sgpp::base::application_exception(
         "number of basis function do not match with the number of dimensions of the operation");
   }
@@ -173,13 +171,12 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
 
 PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation,
-    std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases,
-    sgpp::base::DataVector const& bounds)
+    sgpp::combigrid::OrthogonalBasisFunctionsCollection& tensorBasis, sgpp::base::DataVector const& bounds)
     : numDims(combigridTensorOperation->numDims()),
       combigridOperation(nullptr),
       combigridMultiOperation(nullptr),
       combigridTensorOperation(nullptr),
-      functionBases(functionBases),
+      tensorBasis(tensorBasis),
       weightFunctions(0),
       bounds(bounds),
       numGridPoints(0),
@@ -188,7 +185,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
       computedVarianceFlag(false),
       var(0.0) {
   // make sure that the number of dimensions match
-  if (numDims != functionBases.size()) {
+  if (numDims != tensorBasis.size()) {
     throw sgpp::base::application_exception(
         "number of basis function do not match with the number of dimensions of the operation");
   }
@@ -225,8 +222,8 @@ void PolynomialStochasticCollocation::initializeBounds() {
   if (bounds.size() == 0) {
     bounds.resize(2 * numDims);
     for (size_t idim = 0; idim < numDims; idim++) {
-      bounds[2 * idim] = functionBases[idim]->lowerBound();
-      bounds[2 * idim + 1] = functionBases[idim]->upperBound();
+      bounds[2 * idim] = tensorBasis[idim]->lowerBound();
+      bounds[2 * idim + 1] = tensorBasis[idim]->upperBound();
     }
   } else {
     if (bounds.size() != 2 * numDims) {
@@ -238,11 +235,9 @@ void PolynomialStochasticCollocation::initializeBounds() {
 }
 
 void PolynomialStochasticCollocation::initializeWeightFunctions() {
+  weightFunctions.clear();
   for (size_t idim = 0; idim < numDims; idim++) {
-    auto functionBasis = functionBases[idim];
-    SingleFunction weightFunction(
-        [functionBasis](double x_prob) { return functionBasis->pdf(x_prob); });
-    weightFunctions.push_back(weightFunction);
+    weightFunctions.push_back(tensorBasis[idim]->getWeightFunction());
   }
 }
 

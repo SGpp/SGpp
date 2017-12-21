@@ -8,10 +8,12 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
+#include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
 
 #include <vector>
 
@@ -37,17 +39,17 @@ class PolynomialStochasticCollocation {
 
   PolynomialStochasticCollocation(
       std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation,
-      std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases,
+      sgpp::combigrid::OrthogonalBasisFunctionsCollection& tensorBasis,
       sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
 
   PolynomialStochasticCollocation(
       std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation,
-      std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases,
+      sgpp::combigrid::OrthogonalBasisFunctionsCollection& tensorBasis,
       sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
 
   PolynomialStochasticCollocation(
       std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation,
-      std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>>& functionBases,
+      sgpp::combigrid::OrthogonalBasisFunctionsCollection& tensorBasis,
       sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
 
   virtual ~PolynomialStochasticCollocation();
@@ -92,8 +94,8 @@ class PolynomialStochasticCollocation {
   // global polynomial basis
   std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> legendreBasis;
   // orthogonal basis for pdf values
-  std::vector<std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D>> functionBases;
-  std::vector<sgpp::combigrid::SingleFunction> weightFunctions;
+  sgpp::combigrid::OrthogonalBasisFunctionsCollection tensorBasis;
+  sgpp::combigrid::WeightFunctionsCollection weightFunctions;
 
   sgpp::base::DataVector bounds;
   size_t numGridPoints;

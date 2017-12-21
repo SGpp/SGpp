@@ -6,6 +6,8 @@
 #pragma once
 
 #include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
+#include <sgpp/combigrid/GeneralFunction.hpp>
+
 #include <sgpp/base/tools/json/JSON.hpp>
 
 #ifdef USE_DAKOTA
@@ -85,6 +87,7 @@ class OrthogonalPolynomialBasis1D : public AbstractInfiniteFunctionBasis1D {
   std::shared_ptr<Pecos::RandomVariable> getRandomVariable();
 #endif
 
+  sgpp::combigrid::SingleFunction getWeightFunction();
   size_t numAdditionalQuadraturePoints();
 
  private:
