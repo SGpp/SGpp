@@ -91,6 +91,7 @@ void checkPositive(Grid& grid, const DataVector& alpha) {
   }
 }
 
+#ifdef USE_CGAL
 void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridConfig, double lambda) {
   // CGAL documentation: https://doc.cgal.org/latest/QP_solver/index.html
   std::unique_ptr<Grid> grid(sgpp::base::Grid::createGrid(gridConfig));
@@ -205,12 +206,12 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
   std::cout << "best alpha:" << best_alpha.toString() << std::endl;
   std::cout << "objective function:" << to_double(s.objective_value()) << std::endl;
 }
+#endif
 
 int main(int argc, char** argv) {
   size_t d = 2;
   int level = 3;
   GridType gridType = sgpp::base::GridType::Linear;
-  double lambda = 0.0;
   sgpp::base::RegularGridConfiguration gridConfig;
   gridConfig.dim_ = d;
   gridConfig.level_ = level;
@@ -221,6 +222,7 @@ int main(int argc, char** argv) {
   std::cout << trainSamples.getNrows() << std::endl;
   // solve(trainSamples, gridConfig, lambda);
 #ifdef USE_CGAL
+  double lambda = 0.0;
   solve_cgal(trainSamples, gridConfig, lambda);
 #endif
   return 0;
