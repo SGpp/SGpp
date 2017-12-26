@@ -1107,6 +1107,7 @@ def computeRegularizationMatrix(grid):
 
 
 def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None):
+    # G = -G
     P = .5 * (P + P.T)  # make sure P is symmetric
     args = [matrix(P), matrix(q)]
     if G is not None:
@@ -1121,9 +1122,6 @@ def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None):
     print "G", G
     alpha = np.array(sol['x']).reshape((P.shape[1],))
     print np.dot(G, alpha)
-    print alpha
-    print "A", A
-    print "h", h
     print "q", q
     return np.array(sol['x']).reshape((P.shape[1],))
 
