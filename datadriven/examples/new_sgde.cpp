@@ -48,13 +48,20 @@ using sgpp::base::OperationEval;
 using sgpp::base::OperationMatrix;
 using sgpp::base::OperationMultipleEval;
 using sgpp::datadriven::DensitySystemMatrix;
-using sgpp::optimization::WrapperScalarFunction;
-using sgpp::optimization::WrapperScalarFunctionGradient;
-using sgpp::optimization::WrapperVectorFunction;
-using sgpp::optimization::WrapperVectorFunctionGradient;
-using sgpp::optimization::optimizer::AugmentedLagrangian;
-using sgpp::optimization::optimizer::LogBarrier;
-using sgpp::optimization::optimizer::SquaredPenalty;
+
+void calc_residual(Grid& grid, DataMatrix& samples, double lambda,
+                   DataVector& alpha, DataVector& result) {
+  size_t numSamples = samples.getNrows();
+  size_t storage_size = grid.getStorage().getSize();
+  OperationMatrix* A_op = sgpp::op_factory::createOperationLTwoDotProduct(grid);
+  OperationMultipleEval* B_op = sgpp::op_factory::createOperationMultipleEval(grid, samples);
+  OperationMatrix* C_op = sgpp::op_factory::createOperationLaplace(grid);
+  DensitySystemMatrix AlambC(A_op, B_op, C_op, lambda, numSamples);
+  DataVector b(storage_size);
+  AlambC.generateb(b);
+  AlambC.mult(alpha, result);
+  result.sub(b);
+}
 
 void randu(DataVector& rvar, std::mt19937& generator) {
   std::normal_distribution<double> distribution(0.5, 0.1);
@@ -73,6 +80,7 @@ void createSamples(DataMatrix& rvar, std::uint64_t seedValue = std::mt19937_64::
     randu(sample, generator);
     rvar.setRow(i, sample);
   }
+
 }
 
 void checkPositive(Grid& grid, const DataVector& alpha) {
@@ -85,9 +93,9 @@ void checkPositive(Grid& grid, const DataVector& alpha) {
   for (size_t i = 0; i < storage_size; i++) {
     gp = gridStorage->getPoint(i);
     gp.getStandardCoordinates(coords);
-    // if (op_eval->eval(alpha, coords) < 0) {
-    std::cout << "f(" << coords.toString() << ")=" << op_eval->eval(alpha, coords) << std::endl;
-    // }
+    if (op_eval->eval(alpha, coords) < 0) {
+      std::cout << "f(" << coords.toString() << ")=" << op_eval->eval(alpha, coords) << std::endl;
+    }
   }
 }
 
@@ -106,6 +114,7 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
   // loading M matrix
   OperationMatrix* A_op = sgpp::op_factory::createOperationLTwoDotExplicit(&M, *grid);
   OperationMultipleEval* B_op = sgpp::op_factory::createOperationMultipleEval(*grid, samples);
+  // loading C matrix
   OperationMatrix* C_op = sgpp::op_factory::createOperationLaplaceExplicit(&C, *grid);
   DataVector b(storage_size);
   DataVector q(storage_size);
@@ -116,8 +125,10 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
   C.mult(lambda);
   M.add(C);
 
-  // Skalaraproduct term of quadratic program: q.T x
+  // Skalarproduct term of quadratic program: q.T x
+  // where q.T = M.T b.T
   M.mult(b, q);
+  q.mult(-1);
 
   // Quadratic program matrix P = M*M.T (M is symmetric)
   double** P_it = new double*[storage_size];
@@ -136,6 +147,7 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
       P_it[j][i] = tmp.get(j);
     }
   }
+
   // ---printing
   for (size_t i = 0; i < storage_size; i++) {
     for (size_t j = 0; j < storage_size; j++) {
@@ -173,6 +185,7 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
     }
   }
 
+  // ---printing
   for (size_t i = 0; i < storage_size; i++) {
     for (size_t j = 0; j < storage_size; j++) {
       std::cout << G_it[j][i] << " ";
@@ -180,10 +193,12 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
     std::cout << std::endl;
   }
   std::cout << q.toString() << std::endl;
+  // ---printing
+
   // constraint relation (i.e. greater than zero)
   CGAL::Const_oneset_iterator<CGAL::Comparison_result> r(CGAL::LARGER);
 
-  // lower upper bounds unused:
+  // lower and upper bounds for alpha are unused:
   bool* bounded = new bool[storage_size];
   for (size_t i = 0; i < storage_size; i++) {
     bounded[i] = false;
@@ -191,7 +206,7 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
   DataVector bounds(storage_size, 0.0);
   // define the quadratic Programm
   Program qp(static_cast<int>(storage_size),static_cast<int>(storage_size),  // size of problem
-             G_it, b.getPointer(), r,     // constraints
+             G_it, bounds.getPointer(), r,     // constraints
              bounded, bounds.getPointer(), bounded, bounds.getPointer(),  // bounds
              P_it, q.getPointer()  // optimization goal
              );
@@ -202,9 +217,39 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
     best_alpha.set(i, to_double(*it));
     it++;
   }
+
+  std::cout << "is infeasible:" << s.is_infeasible() << std::endl;
   std::cout << "---------------------------" << std::endl;
   std::cout << "best alpha:" << best_alpha.toString() << std::endl;
   std::cout << "objective function:" << to_double(s.objective_value()) << std::endl;
+  DataVector residual(storage_size);
+  calc_residual(*grid, samples, lambda, best_alpha, residual);
+  std::cout << "residual:" << residual.l2Norm() << std::endl;
+  double al[17] = {18.90769281,  -9.09911171,  -9.0176581 ,   0.10785147,
+                   -1.18044529,  -0.28708884,   0.15533845,  -9.38380473,
+                   -9.00915268,  -0.02802101,  -2.24950203,  -1.58041974,
+                   -0.09580067,   5.12791209,   4.54942521,   4.66378412,   4.32550775};
+  DataVector cmp_alpha(al, 17);
+  calc_residual(*grid, samples, lambda, cmp_alpha, residual);
+  std::cout << "compare residual:" << residual.l2Norm() << std::endl;
+
+  //feasibility checking
+  std::cout << "Non positive best_alpha:" << std::endl;
+  checkPositive(*grid, best_alpha);
+  std::cout << "Non positive cmp_alpha:" << std::endl;
+  checkPositive(*grid, cmp_alpha);
+  // free up
+  for (size_t i = 0; i < storage_size; i++) {
+    delete P_it[i];
+    delete G_it[i];
+  }
+  delete P_it;
+  delete G_it;
+  delete bounded;
+  // delete A_op;
+  // delete B_op;
+  // delete C_op;
+  // delete G_op;
 }
 #endif
 
@@ -219,7 +264,6 @@ int main(int argc, char** argv) {
   gridConfig.maxDegree_ = 5;
   DataMatrix trainSamples(1000, 2);
   createSamples(trainSamples, 1234567);
-  std::cout << trainSamples.getNrows() << std::endl;
   // solve(trainSamples, gridConfig, lambda);
 #ifdef USE_CGAL
   double lambda = 0.0;

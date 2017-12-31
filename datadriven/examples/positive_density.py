@@ -1107,7 +1107,7 @@ def computeRegularizationMatrix(grid):
 
 
 def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None):
-    # G = -G
+    # G = G.T
     P = .5 * (P + P.T)  # make sure P is symmetric
     args = [matrix(P), matrix(q)]
     if G is not None:
@@ -1120,6 +1120,7 @@ def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None):
     print sol
     print "P", P
     print "G", G
+    print "G", matrix(G)
     alpha = np.array(sol['x']).reshape((P.shape[1],))
     print np.dot(G, alpha)
     print "q", q
@@ -1195,16 +1196,16 @@ def solve(trainSamples, gridType, level, lmbd, solver="cvxopt"):
     G = computeInterpolationMatrix(grid)
     print(G)
     h = np.zeros((grid.getSize(),)).T
-    # alpha = [18.903209  ,  -9.10141713,  -9.01883182,   0.10914204, -1.17484387,  -0.27891415,   0.15920611,  -9.38665655, -9.00823174,  -0.03247397,  -2.24949755,  -1.57653802, -0.09309876,   5.13592933,   4.54897953,   4.66893825,   4.31965063]
-    alpha = 17*[-20.]
-    alpha = np.array(alpha)
-    # alpha = np.array(17*[1.2])
-
+    alpha = [18.903209  ,  -9.10141713,  -9.01883182,   0.10914204, -1.17484387,  -0.27891415,   0.15920611,  -9.38665655, -9.00823174,  -0.03247397,  -2.24949755,  -1.57653802, -0.09309876,   5.13592933,   4.54897953,   4.66893825,   4.31965063]
     # solve
     if solver == "quadprog":
         x = quadprog_solve_qp(P, q, G, h)
     else:
         x = cvxopt_solve_qp(P, q, G, h)
+    print("residual")
+    print(np.dot(M, -x) - b)
+    print(np.dot(G, -x))
+    print(x)
 
     # ------------------------------------------------------------
     return grid, -x
