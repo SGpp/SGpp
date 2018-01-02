@@ -245,6 +245,7 @@ namespace combigrid {
     %template(DoubleTreeStorage) TreeStorage<double>;
     %template(Uint8TreeStorage) TreeStorage<uint8_t>;
     %template(PyGridFunction) GeneralFunction<std::shared_ptr<TreeStorage<double>>, std::shared_ptr<TensorGrid>>;
+    
 }
 }
 
@@ -269,6 +270,7 @@ namespace combigrid {
 
 namespace sgpp{
 namespace combigrid {
+
 
     %template(ScalarAbstractFullGridEvaluator) AbstractFullGridEvaluator<FloatScalarVector>;
     %template(ArrayAbstractFullGridEvaluator) AbstractFullGridEvaluator<FloatArrayVector>;

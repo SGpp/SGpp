@@ -10,8 +10,13 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 #include <sgpp/combigrid/GeneralFunction.hpp>
+#include <sgpp/combigrid/common/GridConversion.hpp>
 #include <sgpp/combigrid/definitions.hpp>
+#include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
+#include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
+#include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
+#include <sgpp/combigrid/operation/multidim/LevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp>
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
@@ -19,7 +24,9 @@
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/solver/UMFPACK.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
+#include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotNakBsplineBoundaryCombigrid.hpp>
 
 #include <vector>
 
@@ -102,5 +109,31 @@ std::vector<double> createNakKnots(std::vector<double> const& xValues, size_t co
 sgpp::combigrid::GridFunction BSplineCoefficientGridFunction(
     sgpp::combigrid::MultiFunction func, sgpp::combigrid::CombiHierarchies::Collection grids,
     size_t degree);
+
+/**
+ * Creates a level structure according to an averagign level manager using variance calculations on
+ * each level as norm. This is a very specific case created for the CO2 example. It can (should?) be
+ * generalized
+ *
+ * @param numPoints     maximum number of points the resulting level structure contains
+ * @param degree        B spline degree
+ * @param numDimensions number of dimensions
+ * @param func		    the objective function
+ *
+ */
+std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineVarianceOperation(
+    size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func);
+
+/**
+ * prints a level structure as list MultiIndices
+ *
+ * @param levelstructure the level structure
+ */
+void printLevelStructure(
+    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelstructure);
+
+std::vector<double> calculateBsplineMeanAndVariance(
+    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
+    size_t numDimensions, size_t degree, sgpp::combigrid::MultiFunction func);
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_BSPLINEROUTINES_HPP_ */

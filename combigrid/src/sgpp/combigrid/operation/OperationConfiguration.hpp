@@ -7,6 +7,7 @@
 
 #include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
 
+#include <iostream>
 #include <memory>
 
 namespace sgpp {
