@@ -5,6 +5,8 @@
 
 #pragma once
 
+//#include <sgpp/combigrid/operation/multidim/LevelHelpers.hpp>
+
 #include <algorithm>
 #include <functional>
 #include <iostream>
@@ -151,8 +153,16 @@ class BinaryHeap {
 
   // for debug only
   void print() {
-    for (auto it = data.begin(); it != data.end(); ++it)
-      std::cout << "[" << (*it)->elem << ", " << (*it)->idx << "]" << std::endl;
+    for (auto it = data.begin(); it != data.end(); ++it) {
+      size_t currentID = (*it)->idx;
+      auto currentEntry = (*it)->elem;
+      std::cout << currentID << " ( ";
+      for (auto& l : currentEntry.level) {
+        std::cout << l << " ";
+      }
+      std::cout << " ) ";
+      std::cout << currentEntry.priority << std::endl;
+    }
     std::cout << std::endl;
   }
 };

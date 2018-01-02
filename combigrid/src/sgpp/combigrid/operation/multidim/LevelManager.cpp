@@ -366,6 +366,9 @@ void LevelManager::addLevelsAdaptive(size_t maxNumPoints) {
 
   infoOnAddedLevels->incrementCounter();
   while (!queue.empty()) {
+    // print current queue
+    //    queue.print();
+
     QueueEntry entry = queue.top();
     queue.pop();
 
@@ -398,6 +401,9 @@ void LevelManager::addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThre
           CGLOG("leave guard(*managerMutex)");
           return;
         }
+
+        // print current queue
+        //        queue.print();
 
         QueueEntry entry = queue.top();
         queue.pop();
