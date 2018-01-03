@@ -62,33 +62,33 @@ double xquintMean = 1.0 / 6.0;
 double xquintMeanSquare = 1.0 / 11.0;
 double xquintVariance = 1.0 / 11.0 - 1.0 / 36.0;
 
-double genzVariance = 0.382923024983;
+double genz2DVariance = 0.382923024983;
 
 size_t numDimensions = 2;
 double f(sgpp::base::DataVector const& v) {
   //  return v[0] * v[0] * v[0] * v[0];
   //  return v[0] * v[0] * v[0] + v[1] * v[1] * v[1];
   //  return std::sin(v[0]) * std::exp(v[1] * v[1]);
-  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
-         std::exp(v[0] * v[1] - 1);
+  //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
+  //         std::exp(v[0] * v[1] - 1);
 
   // not continuous 2D
   //  if ((v[0] > 0.7) && (v[0] < 0.8) && (v[1] > 0.2) && (v[1] < 0.3)) {
   //    return 0;
   //  } else {
-  //    return 1;
+  //  return 1;
   //  }
 
   // definition gap along x=0.3
   //  return sin(2 * M_PI * v[1]) / (v[0] - 0.3);
 
   // Genz Function from CO2
-  //  double w = 0;
-  //  double mysum = 2 * M_PI * w;
-  //  for (size_t k = 0; k < numDimensions; k++) {
-  //    mysum += 4.5 * (static_cast<double>(k) + 0.5) / numDimensions * v[k];
-  //  }
-  //  return mysum;
+  double w = 0;
+  double mysum = 2 * M_PI * w;
+  for (size_t k = 0; k < numDimensions; k++) {
+    mysum += 4.5 * (static_cast<double>(k) + 0.5) / numDimensions * v[k];
+  }
+  return cos(mysum);
 }
 void printLevelstructure(
     std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelstructure) {
@@ -288,15 +288,11 @@ void createVarianceLevelStructure(
 }
 
 void BSplineGridConversion(size_t degree, size_t numlevels) {
-  sgpp::combigrid::Stopwatch watch_individual;
-  sgpp::combigrid::Stopwatch watch_total;
-  watch_individual.start();
+  //  sgpp::combigrid::Stopwatch watch_individual;
+  //  sgpp::combigrid::Stopwatch watch_total;
+  //  watch_individual.start();
 
-  // ToDo (rehmemk) creating the level structure already includes calculation of all coefficients.
-  // Use these coefficients in the following instead of recalculating them. Replace dependency on
-  // the objective function by the coefficients
-
-  // create interpolation operation
+  // set operation configurations
   sgpp::combigrid::MultiFunction func(f);
   sgpp::combigrid::EvaluatorConfiguration evalConfig(
       sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, degree);
@@ -310,8 +306,6 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   std::shared_ptr<sgpp::combigrid::LevelManager> dummyLevelManager(
       new sgpp::combigrid::RegularLevelManager());
   sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
-  auto Operation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
-      pointHierarchies, evaluators, dummyLevelManager, gf, exploitNesting, summationStrategyType);
 
   // create variance adaptive level structure
   size_t numthreads = 4;
@@ -319,12 +313,13 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage;
   createVarianceLevelStructure(numlevels, degree, pointHierarchies, gf, exploitNesting, numthreads,
                                levelStructure, coefficientStorage);
-  //  auto levelStructure = createRegularLevelStructure(numlevels, degree, pointHierarchies, gf,
-  //                                                    exploitNesting, numthreads);
 
-  std::cout << "level structure " << watch_individual.elapsedSeconds() << " total "
-            << watch_total.elapsedSeconds() << std::endl;
-  watch_individual.start();
+  auto interpolationOperation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
+      pointHierarchies, evaluators, dummyLevelManager, coefficientStorage, summationStrategyType);
+
+  //  std::cout << "level structure " << watch_individual.elapsedSeconds() << " total "
+  //            << watch_total.elapsedSeconds() << std::endl;
+  //  watch_individual.start();
 
   // convert level structure to SG
   std::shared_ptr<sgpp::base::Grid> grid;
@@ -348,13 +343,13 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   }
 
   // obtain function values from combigrid surrogate
-  Operation->setParameters(interpolParams);
-  Operation->getLevelManager()->addLevelsFromStructure(levelStructure);
-  sgpp::base::DataVector f_values = Operation->getResult();
+  interpolationOperation->setParameters(interpolParams);
+  interpolationOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
+  sgpp::base::DataVector f_values = interpolationOperation->getResult();
 
-  std::cout << "interpol CG " << watch_individual.elapsedSeconds() << " total "
-            << watch_total.elapsedSeconds() << std::endl;
-  watch_individual.start();
+  //  std::cout << "interpol CG " << watch_individual.elapsedSeconds() << " total "
+  //            << watch_total.elapsedSeconds() << std::endl;
+  //  watch_individual.start();
 
   sgpp::optimization::HierarchisationSLE hierSLE(*grid);
   sgpp::optimization::sle_solver::UMFPACK sleSolver;
@@ -363,74 +358,77 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
     std::cout << "Solving failed!" << std::endl;
   }
 
-  std::cout << "interpol SG " << watch_individual.elapsedSeconds() << " total "
-            << watch_total.elapsedSeconds() << std::endl;
-  watch_individual.start();
+  //  std::cout << "interpol SG " << watch_individual.elapsedSeconds() << " total "
+  //            << watch_total.elapsedSeconds() << std::endl;
+  //  watch_individual.start();
 
   //  std::cout << "num CG points: " << Operation->getLevelManager()->numGridPoints()<<", ";
-  std::cout << "num SG points " << gridStorage.getSize() << std::endl;
-  //  std::cout << gridStorage.getSize() << " ";
+  //  std::cout << "num SG points " << gridStorage.getSize() << std::endl;
+  std::cout << gridStorage.getSize() << ", ";
 
   //  error calculations
-  //  sgpp::optimization::InterpolantScalarFunction u(*grid, alpha);
-  //  double CGL2Err, CGMaxErr, SGL2Err, SGMaxErr, CompL2Err, CompMaxErr = 0;
+  sgpp::optimization::InterpolantScalarFunction u(*grid, alpha);
+  //  double CGL2Err, CGMaxErr, CompL2Err, CompMaxErr = 0.0;
+  double SGL2Err, SGMaxErr = 0.0;
   //  calculateCGerror(CGMaxErr, CGL2Err, Operation, levelStructure);
-  //  calculateSGerror(SGMaxErr, SGL2Err, u);
+  calculateSGerror(SGMaxErr, SGL2Err, u);
   //  calculateCGSGDifference(CompMaxErr, CompL2Err, Operation, levelStructure, u);
   //  std::cout << "errors " << watch_individual.elapsedSeconds() << " total "
   //            << watch_total.elapsedSeconds() << std::endl;
   //  watch_individual.start();
 
   //  std::cout << "\n";
-  //  std::cout << "CG L2:   " << CGL2Err << "   CG max:   " << CGMaxErr << std::endl;
-  //  std::cout << "SG L2:   " << SGL2Err << "   SG max:   " << SGMaxErr << std::endl;
-  //  std::cout << "Comp L2: " << CompL2Err << " Comp max: " << CompMaxErr << std::endl;
+  //  std::cout  << "   CG max:   " << CGMaxErr<< "CG L2:   " << CGL2Err << std::endl;
+  std::cout << "SG max:   " << SGMaxErr << "  SG L2:   " << SGL2Err << std::endl;
+  //  std::cout  << " Comp max: " << CompMaxErr << "Comp L2: " << CompL2Err<< std::endl;
   //  std::cout << CGL2Err << " ";
 
-  auto quadOperation =
-      sgpp::combigrid::CombigridOperation::createExpUniformBoundaryBsplineQuadrature(numDimensions,
-                                                                                     func, degree);
+  sgpp::combigrid::CombiEvaluators::Collection quadEvaluators(
+      numDimensions, sgpp::combigrid::CombiEvaluators::BSplineQuadrature(degree));
+  auto quadOperation = std::make_shared<sgpp::combigrid::CombigridOperation>(
+      pointHierarchies, quadEvaluators, dummyLevelManager, coefficientStorage,
+      summationStrategyType);
+
   quadOperation->getLevelManager()->addLevelsFromStructureParallel(levelStructure, numthreads);
   double mean = quadOperation->getResult();
 
-  std::cout << "quadrature " << watch_individual.elapsedSeconds() << " total "
-            << watch_total.elapsedSeconds() << std::endl;
-  watch_individual.start();
+  //  std::cout << "quadrature " << watch_individual.elapsedSeconds() << " total "
+  //            << watch_total.elapsedSeconds() << std::endl;
+  //  watch_individual.start();
 
   sgpp::base::Grid* gridptr = grid.get();
   sgpp::pde::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(gridptr);
   sgpp::base::DataVector product(alpha.size(), 0);
   massMatrix.mult(alpha, product);
 
-  std::cout << "matrix mult " << watch_individual.elapsedSeconds() << " total "
-            << watch_total.elapsedSeconds() << std::endl;
+  //  std::cout << "matrix mult " << watch_individual.elapsedSeconds() << " total "
+  //            << watch_total.elapsedSeconds() << std::endl;
 
   double meanSquare = product.dotProduct(alpha);
   double variance = meanSquare - mean * mean;
   //  std::cout << " mean error: " << fabs(mean - atanMean) << " ";
   //  std::cout << " meanSquare error : " << fabs(meanSquare - atanMeanSquare) << " ";
-  std::cout << mean << " " << variance << std::endl;
-  std::cout << "variance error " << fabs(variance - atanVariance) << std::endl;
+  //  std::cout << mean << " " << variance << std::endl;
+  std::cout << "variance error " << fabs(variance - genz2DVariance) << std::endl;
 
-  std::vector<double> meanVar =
-      calculateBsplineMeanAndVariance(levelStructure, numDimensions, degree, func);
-  std::cout << mean << " " << meanVar[0] << " " << variance << " " << meanVar[1] << std::endl;
+  //  std::vector<double> meanVar =
+  //      calculateBsplineMeanAndVariance(levelStructure, numDimensions, degree, func);
+  //  std::cout << mean << " " << meanVar[0] << " " << variance << " " << meanVar[1] << std::endl;
 }
 
 int main() {
-  size_t degree = 3;
+  size_t degree = 5;
   // dim 2 level 11 has 15361 grid points
-  size_t numAddaptivePoints = 5000;
+  size_t numAddaptivePoints = 600;
 
-  //  size_t numLevels = 8;
-  //  for (size_t maxLevel = 0; maxLevel < numLevels; maxLevel ++) {
   sgpp::combigrid::Stopwatch watch;
   watch.start();
-
-  //  std::cout << maxLevel << ", ";
-  BSplineGridConversion(degree, numAddaptivePoints);
+  for (numAddaptivePoints = 100; numAddaptivePoints < 1600;
+       numAddaptivePoints = numAddaptivePoints + 100) {
+    std::cout << numAddaptivePoints << ", ";
+    BSplineGridConversion(degree, numAddaptivePoints);
+  }
   std::cout << "run time " << watch.elapsedSeconds() << std::endl;
-  //  }
 
   return 0;
 }

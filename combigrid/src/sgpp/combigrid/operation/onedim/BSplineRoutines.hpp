@@ -124,6 +124,8 @@ sgpp::combigrid::GridFunction BSplineCoefficientGridFunction(
 std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineVarianceOperation(
     size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func);
 
+std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineLinearOperation(
+    size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func);
 /**
  * prints a level structure as list MultiIndices
  *
