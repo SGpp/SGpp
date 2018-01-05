@@ -20,6 +20,7 @@
 #include <sgpp/datadriven/datamining/builder/HPOScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquaresFista.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/datadriven/tools/CSVTools.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
@@ -166,7 +167,7 @@ ModelFittingBase* LeastSquaresRegressionMinerFactory::createFitter(
     const DataMiningConfigParser& parser) const {
   FitterConfigurationLeastSquares config{};
   config.readParams(parser);
-  return new ModelFittingLeastSquares(config);
+  return new ModelFittingLeastSquaresFista(config); //fista
 }
 
 Scorer* LeastSquaresRegressionMinerFactory::createScorer(
