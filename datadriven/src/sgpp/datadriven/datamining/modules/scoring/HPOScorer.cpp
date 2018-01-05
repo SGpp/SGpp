@@ -69,7 +69,8 @@ double HPOScorer::calculateScore(ModelFittingBase& modelOLD, Dataset& dataset,
   //base::AdpativityConfiguration adaptivityConfig;
   //base::RegularGridConfiguration gridConfig;
 
-  double scores[5][6][5+1][6][9]; //adaptivityConfig.numRefinements_
+  //double scores[5][6][5+1][6][9]; //adaptivityConfig.numRefinements_
+  double nscores[4096];
   
   //auto matrix = sgpp::base::DataMatrix(11,0);
   //matrix.appendCol(sgpp::base::DataVector(std::vector<double>({0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1})));
@@ -79,7 +80,7 @@ double HPOScorer::calculateScore(ModelFittingBase& modelOLD, Dataset& dataset,
   
   //std::cout<< "Test 2" << std::endl;
 
-
+/*
 
   for (int i=1; i <= 4; i++){
     for (int k=1; k <= 5; k++){
@@ -108,9 +109,44 @@ double HPOScorer::calculateScore(ModelFittingBase& modelOLD, Dataset& dataset,
       }
     }
   }
+  */
+  for (int i = 0; i <= 511; i++){
+    gridConfig.level_ = (i&3)+1;
+    adaptivityConfig.noPoints_ = ((i>>2)&3)+1;
+    adaptivityConfig.threshold_ =  0.0005*(((i>>4)&3)+1);
+    regularizationConfig.lambda_ = pow(10,-(((i>>6)&7)+1)/2.0);
+    fitterconfig->setRegularizationConfig( regularizationConfig);
+    fitterconfig->setGridConfig( gridConfig);
+    fitterconfig->setRefinementConfig( adaptivityConfig);
+    model->fit(trainDataset);
+    nscores[i<<3] = test(*model, testDataset);
+    std::cout<< "Score: " << nscores[i<<3] <<" par: "<<(i<<3)<< std::endl;
+    for (int m=1;m<=7;m++){
+      model->refine();
+      nscores[(i<<3)+m] = test(*model, testDataset);
+      std::cout<< "Score: " <<nscores[(i<<3)+m] <<" par: "<<((i<<3)+m)<< std::endl;
+    }
+  }
   
   std::cout<< "###################################" << std::endl;
   
+  std::ofstream myfile("C:/Users/Eric/Documents/HPOut.csv");
+  if(myfile.is_open()){
+    myfile<<"refine3,level2,nopoints2,threshold2,lambda3"<<std::endl;
+    for (int i = 0; i<=4095; i++){
+      for (int k = 0; k <= 11; k++){
+        myfile<<(((i>>k)&1)*2-1)<<",";
+      }
+      myfile<<nscores[i]<<","<<i<<std::endl;
+      //if(i>=4092){
+      //  break;
+      //}
+    }
+  }
+  myfile.close();
+  std::cout<< "Write to file finished." << std::endl;
+  
+  /*
   std::ofstream myfile("C:/Users/Eric/Documents/HPOut.csv");
   if(myfile.is_open()){
     myfile<<"threshold,noPoints,min,mean,max"<<std::endl;
@@ -164,6 +200,7 @@ double HPOScorer::calculateScore(ModelFittingBase& modelOLD, Dataset& dataset,
   fitterconfig->setRegularizationConfig( regularizationConfig);
   fitterconfig->setGridConfig( gridConfig);
   fitterconfig->setRefinementConfig( adaptivityConfig);
+  */
   
    /* for(int i=0;i<5;i++){
     config.setRefinements(i);
@@ -197,6 +234,8 @@ double HPOScorer::calculateScore(ModelFittingBase& modelOLD, Dataset& dataset,
   if (stdDeviation) {
     *stdDeviation = 0;
   }
+  
+  double minScore = 1000.0;
 
   return minScore;
 }
