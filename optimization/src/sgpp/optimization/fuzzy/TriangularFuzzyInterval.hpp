@@ -19,6 +19,7 @@ class TriangularFuzzyInterval : public FuzzyInterval {
   TriangularFuzzyInterval(double mean, double leftSpread, double rightSpread);
   TriangularFuzzyInterval(double leftMean, double rightMean,
                           double leftSpread, double rightSpread);
+  TriangularFuzzyInterval(const TriangularFuzzyInterval& other);
 
   ~TriangularFuzzyInterval() override;
 

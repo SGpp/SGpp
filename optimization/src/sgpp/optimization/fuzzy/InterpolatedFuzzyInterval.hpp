@@ -22,6 +22,7 @@ class InterpolatedFuzzyInterval : public FuzzyIntervalViaMembershipFunction {
                                   const base::DataVector& alphaData);
 
   InterpolatedFuzzyInterval(const base::DataVector& xData, const base::DataVector& alphaData);
+  InterpolatedFuzzyInterval(const InterpolatedFuzzyInterval& other);
   ~InterpolatedFuzzyInterval() override;
 
   double evaluateMembershipFunction(double x) const override;

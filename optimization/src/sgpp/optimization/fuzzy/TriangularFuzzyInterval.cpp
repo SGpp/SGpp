@@ -28,6 +28,10 @@ TriangularFuzzyInterval::TriangularFuzzyInterval(
         leftSpread(leftSpread), rightSpread(rightSpread) {
 }
 
+TriangularFuzzyInterval::TriangularFuzzyInterval(const TriangularFuzzyInterval& other) :
+  TriangularFuzzyInterval(other.leftMean, other.rightMean, other.leftSpread, other.rightSpread) {
+}
+
 TriangularFuzzyInterval::~TriangularFuzzyInterval() {
 }
 

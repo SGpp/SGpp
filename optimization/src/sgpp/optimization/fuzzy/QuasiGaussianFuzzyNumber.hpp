@@ -16,6 +16,7 @@ namespace optimization {
 class QuasiGaussianFuzzyNumber : public FuzzyIntervalViaMembershipFunction {
  public:
   QuasiGaussianFuzzyNumber(double mean, double stdev, double cutoff);
+  QuasiGaussianFuzzyNumber(const QuasiGaussianFuzzyNumber& other);
   ~QuasiGaussianFuzzyNumber() override;
 
   double evaluateMembershipFunction(double x) const override;

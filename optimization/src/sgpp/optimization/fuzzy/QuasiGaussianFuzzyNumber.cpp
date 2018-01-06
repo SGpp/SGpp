@@ -18,6 +18,10 @@ QuasiGaussianFuzzyNumber::QuasiGaussianFuzzyNumber(double mean, double stdev, do
   mean(mean), stdev(stdev), cutoff(cutoff) {
 }
 
+QuasiGaussianFuzzyNumber::QuasiGaussianFuzzyNumber(const QuasiGaussianFuzzyNumber& other) :
+  QuasiGaussianFuzzyNumber(other.mean, other.stdev, other.cutoff) {
+}
+
 QuasiGaussianFuzzyNumber::~QuasiGaussianFuzzyNumber() {
 }
 
