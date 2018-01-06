@@ -21,6 +21,10 @@ class QuasiGaussianFuzzyNumber : public FuzzyIntervalViaMembershipFunction {
 
   double evaluateMembershipFunction(double x) const override;
 
+  double getMean() const;
+  double getStdev() const;
+  double getCutoff() const;
+
  protected:
   double mean;
   double stdev;

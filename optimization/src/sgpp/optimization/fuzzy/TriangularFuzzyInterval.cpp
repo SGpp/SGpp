@@ -56,5 +56,21 @@ double TriangularFuzzyInterval::evaluateConfidenceIntervalUpperBound(double alph
   return rightMean + (1.0 - alpha) * rightSpread;
 }
 
+double TriangularFuzzyInterval::getLeftMean() const {
+  return leftMean;
+}
+
+double TriangularFuzzyInterval::getRightMean() const {
+  return rightMean;
+}
+
+double TriangularFuzzyInterval::getLeftSpread() const {
+  return leftSpread;
+}
+
+double TriangularFuzzyInterval::getRightSpread() const {
+  return rightSpread;
+}
+
 }  // namespace optimization
 }  // namespace sgpp

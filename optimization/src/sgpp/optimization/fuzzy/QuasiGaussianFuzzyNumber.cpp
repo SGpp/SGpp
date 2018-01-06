@@ -38,5 +38,17 @@ double QuasiGaussianFuzzyNumber::evaluateMembershipFunction(double x) const {
   }
 }
 
+double QuasiGaussianFuzzyNumber::getMean() const {
+  return mean;
+}
+
+double QuasiGaussianFuzzyNumber::getStdev() const {
+  return stdev;
+}
+
+double QuasiGaussianFuzzyNumber::getCutoff() const {
+  return cutoff;
+}
+
 }  // namespace optimization
 }  // namespace sgpp

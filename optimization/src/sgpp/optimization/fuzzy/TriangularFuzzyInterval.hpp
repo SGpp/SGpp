@@ -28,6 +28,11 @@ class TriangularFuzzyInterval : public FuzzyInterval {
   double evaluateConfidenceIntervalLowerBound(double alpha) const override;
   double evaluateConfidenceIntervalUpperBound(double alpha) const override;
 
+  double getLeftMean() const;
+  double getRightMean() const;
+  double getLeftSpread() const;
+  double getRightSpread() const;
+
  protected:
   double leftMean;
   double rightMean;
