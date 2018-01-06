@@ -59,6 +59,10 @@ double InterpolatedFuzzyInterval::getCoreUpperBound(
   return std::numeric_limits<double>::quiet_NaN();
 }
 
+InterpolatedFuzzyInterval* InterpolatedFuzzyInterval::tryDowncast(FuzzyInterval& fuzzyInterval) {
+  return dynamic_cast<InterpolatedFuzzyInterval*>(&fuzzyInterval);
+}
+
 InterpolatedFuzzyInterval::InterpolatedFuzzyInterval(
     const base::DataVector& xData,
     const base::DataVector& alphaData) :
