@@ -20,6 +20,7 @@ class InterpolatedFuzzyInterval : public FuzzyIntervalViaMembershipFunction {
                                   const base::DataVector& alphaData);
   static double getCoreUpperBound(const base::DataVector& xData,
                                   const base::DataVector& alphaData);
+  static InterpolatedFuzzyInterval* tryDowncast(FuzzyInterval& fuzzyInterval);
 
   InterpolatedFuzzyInterval(const base::DataVector& xData, const base::DataVector& alphaData);
   InterpolatedFuzzyInterval(const InterpolatedFuzzyInterval& other);
