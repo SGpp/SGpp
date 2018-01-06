@@ -74,7 +74,7 @@ class NotAKnotBsplineBasisDeriv2: public Basis<LT, IT> {
           } else if (i == 1) {
             // l = 1, i = 1
             return -2.0 * innerDeriv;
-          } else if (i == 2) {
+          } else {
             // l = 1, i = 2
             return innerDeriv;
           }
