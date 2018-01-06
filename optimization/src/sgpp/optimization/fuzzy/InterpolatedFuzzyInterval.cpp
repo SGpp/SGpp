@@ -71,6 +71,10 @@ InterpolatedFuzzyInterval::InterpolatedFuzzyInterval(
   alphaData(alphaData) {
 }
 
+InterpolatedFuzzyInterval::InterpolatedFuzzyInterval(const InterpolatedFuzzyInterval& other) :
+  InterpolatedFuzzyInterval(other.xData, other.alphaData) {
+}
+
 InterpolatedFuzzyInterval::~InterpolatedFuzzyInterval() {}
 
 double InterpolatedFuzzyInterval::evaluateMembershipFunction(double x) const {
