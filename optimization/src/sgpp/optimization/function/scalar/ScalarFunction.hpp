@@ -8,6 +8,7 @@
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 
 #include <cstddef>
 #include <memory>
@@ -41,6 +42,25 @@ class ScalarFunction {
    * @return      \f$f(\vec{x})\f$
    */
   virtual double eval(const base::DataVector& x) = 0;
+
+  /**
+   * Convenience method for calculating \f$f(\vec{x})\f$ for multiple \f$\vec{x}\f$.
+   *
+   * @param      x      matrix \f$\vec{x} \in [0, 1]^{N \times d}\f$
+   *                    of evaluation points (row-wise)
+   * @param[out] value  \f$(f(\vec{x}_k))_k\f$
+   *                    where \f$\vec{x}_k\f$ is the \f$k\f$-th row of \f$x\f$
+   */
+  virtual void eval(const base::DataMatrix& x, base::DataVector& value) {
+    const size_t N = x.getNrows();
+    base::DataVector xk(d);
+    value.resize(N);
+
+    for (size_t k = 0; k < N; k++) {
+      x.getRow(k, xk);
+      value[k] = eval(xk);
+    }
+  }
 
   /**
    * @return dimension \f$d\f$ of the domain
