@@ -102,7 +102,10 @@ def setupPython(target, source, env):
   # pysgpp_swig module
   fd = open(os.path.join(PYSGPP_BUILD_PATH.abspath, "__init__.py"), "w")
   fd.write("from pysgpp_swig import *%s" % os.linesep)
-  fd.write("import extensions%s" % os.linesep)
+  fd.write("import sys%s" % os.linesep)
+  fd.write("# disable extensions in Python 3.x as relative%s" % os.linesep)
+  fd.write("# imports need to be converted first%s" % os.linesep)
+  fd.write("if sys.version_info.major < 3: import extensions%s" % os.linesep)
   fd.close()
 
   # create__init__.py file which makes the lib folder a python package
