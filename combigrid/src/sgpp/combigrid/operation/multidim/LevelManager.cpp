@@ -14,20 +14,24 @@
 namespace sgpp {
 namespace combigrid {
 
-LevelManager::LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator)
-    : queue(), numDimensions(levelEvaluator->numDims()), combiEval(levelEvaluator) {
+LevelManager::LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator,
+                           bool collectStats)
+    : queue(),
+      numDimensions(levelEvaluator->numDims()),
+      combiEval(levelEvaluator),
+      collectStats(collectStats) {
+  managerMutex = std::make_shared<std::recursive_mutex>();
+  infoOnAddedLevels = std::make_shared<LevelInfos>();
+  levelData = std::make_shared<TreeStorage<std::shared_ptr<LevelInfo>>>(numDimensions);
+}
+
+LevelManager::LevelManager() : queue(), numDimensions(0), combiEval(nullptr), collectStats(false) {
   managerMutex = std::make_shared<std::recursive_mutex>();
   infoOnAddedLevels = std::make_shared<LevelInfos>();
   levelData = std::make_shared<TreeStorage<std::shared_ptr<LevelInfo>>>(numDimensions);
 }
 
 LevelManager::~LevelManager() {}
-
-LevelManager::LevelManager() : queue(), numDimensions(0), combiEval(nullptr) {
-  managerMutex = std::make_shared<std::recursive_mutex>();
-  infoOnAddedLevels = std::make_shared<LevelInfos>();
-  levelData = std::make_shared<TreeStorage<std::shared_ptr<LevelInfo>>>(numDimensions);
-}
 
 void LevelManager::setLevelEvaluator(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator) {
   combiEval = levelEvaluator;
@@ -271,7 +275,7 @@ void LevelManager::addStats(const MultiIndex &level) {
 bool LevelManager::addLevelToCombiEval(const MultiIndex &level) {
   bool isOldSubspace = combiEval->containsLevel(level);
   bool isValid = combiEval->addLevel(level);
-  if (!isOldSubspace) {
+  if (collectStats && !isOldSubspace) {
     addStats(level);
   }
   return isValid;
@@ -448,6 +452,10 @@ void LevelManager::addLevelsAdaptiveByNumLevels(size_t numLevels) {
     afterComputation(entry.level);   // the actual computation is done here
   }
 }
+
+void LevelManager::enableStatsCollection() { collectStats = true; }
+
+void LevelManager::disableStatsCollection() { collectStats = false; }
 
 std::shared_ptr<LevelInfos> LevelManager::getInfoOnAddedLevels() { return infoOnAddedLevels; }
 

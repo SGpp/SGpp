@@ -84,6 +84,11 @@ class LevelManager {
   std::shared_ptr<std::recursive_mutex> managerMutex;
 
   /**
+   * Defines if statistics on the refinement process are collected or not.
+   */
+  bool collectStats;
+
+  /**
    * By implementing this method in a derived class, the adaption can be customized.
    * It should yield a priority for the given level. Levels with higher priority value are added
    * earlier.
@@ -202,8 +207,12 @@ class LevelManager {
   /**
    * Constructor. The CombigridEvaluator (or another derived class of AbstractLevelEvaluator) has to
    * be passed.
+   * @param levelEvaluator combigrid evaluator
+   * @param collectStats sets if the collection of statistics should be enabled or not during
+   * refinement
    */
-  explicit LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator);
+  explicit LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator,
+                        bool collectStats = true);
 
   /**
    * Default constructor. If this is used, setLevelEvaluator() has to be called before adding any
@@ -363,6 +372,21 @@ class LevelManager {
   size_t getUpperPointBound() const { return combiEval->getUpperPointBound(); }
 
   /**
+   * Enables the collection of information on subspaces during refinement
+   */
+  void enableStatsCollection();
+
+  /**
+   * Disables the collection of information on subspaces during refinement
+   */
+  void disableStatsCollection();
+
+  /**
+   * Returns information on all the subspaces that is sorted with respect to the iterations when
+   * they have been added to the combigrid during refinement.
+   *
+   * NOTE: collectStats needs to be set in order to obtain useful information.
+   *
    * @return the infos on the adaptive refinement steps
    */
   std::shared_ptr<LevelInfos> getInfoOnAddedLevels();
