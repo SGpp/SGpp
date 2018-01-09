@@ -13,12 +13,12 @@
 #include <sgpp/combigrid/utils/BinaryHeap.hpp>
 
 #include <functional>
+#include <list>
+#include <map>
 #include <memory>
 #include <queue>
 #include <unordered_set>
 #include <vector>
-#include <map>
-#include <list>
 
 namespace sgpp {
 namespace combigrid {
@@ -49,17 +49,17 @@ class QueueComparator {
   }
 };
 
-// typedef std::priority_queue<QueueEntry, std::vector<QueueEntry>, QueueComparator>
-// MultiIndexQueue;
-/*typedef boost::heap::binomial_heap<QueueEntry, boost::heap::compare<QueueComparator>>
-    MultiIndexQueue;*/
-
 /**
  * use custom binary heap class because std::priority_queue does not provide methods to change an
  * element's priority.
  * We could use boost, but that would introduce an additional dependency
  */
 typedef sgpp::combigrid::BinaryHeap<QueueEntry, QueueComparator> MultiIndexQueue;
+// typedef boost::heap::binomial_heap<QueueEntry, boost::heap::compare<QueueComparator>>
+//    MultiIndexQueue;
+
+// typedef std::priority_queue<QueueEntry, std::vector<QueueEntry>, QueueComparator>
+// MultiIndexQueue;
 
 /**
  * Started: the computation of function values has been started

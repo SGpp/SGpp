@@ -5,6 +5,8 @@
 
 #include "LevelManager.hpp"
 
+#include <sgpp/combigrid/threading/PtrGuard.hpp>
+
 #include <iostream>
 #include <map>
 #include <string>
@@ -123,6 +125,9 @@ void LevelManager::addToQueue(const MultiIndex &level, std::shared_ptr<LevelInfo
 void LevelManager::beforeComputation(const MultiIndex &level) {
   auto levelInfo = levelData->get(level);
   levelInfo->computationStage = ComputationStage::STARTED;
+  /*
+   * Invalidate the handle since the element has been popped from the queue.
+   */
   levelInfo->handle = nullptr;
 
   auto successors = getSuccessors(level);
@@ -169,6 +174,8 @@ void LevelManager::predecessorsCompleted(const MultiIndex &level) {
         succInfo->numNotCompletedPredecessors == 0) {
       predecessorsCompleted(succLevel);
     } else if (succInfo->handle != nullptr) {
+      // If handle is nullptr, this means that the element has already been started and thus removed
+      // from the queue.
       updatePriority(succLevel, succInfo);
     }
   }
@@ -395,7 +402,7 @@ void LevelManager::addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThre
   auto threadPool = std::make_shared<ThreadPool>(
       numThreads,
       ThreadPool::IdleCallback([&currentPointBound, maxNumPoints, this](ThreadPool &tp) {
-        CGLOG_SURROUND(std::lock_guard<std::recursive_mutex> guard(*managerMutex));
+        CGLOG_SURROUND(PtrGuard guard(managerMutex));
         if (queue.empty()) {
           std::cout << "Error: queue is empty\n";
           CGLOG("leave guard(*managerMutex)");
@@ -406,7 +413,6 @@ void LevelManager::addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThre
         //        queue.print();
 
         QueueEntry entry = queue.top();
-        queue.pop();
 
         currentPointBound += entry.maxNewPoints;
 
@@ -417,12 +423,20 @@ void LevelManager::addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThre
         }
 
         CGLOG("before beforeComputation()");
+        /*
+         * Must be placed after the triggerTermination() in the if clause since after the pop()
+         * operation, the corresponding handle in the LevelInfo must be set to nullptr in order to
+         * avoid accessing a handle to a popped element. Invalidating the handle is done by
+         * beforeComputation().
+         */
+        queue.pop();  // TODO
 
         beforeComputation(entry.level);
         CGLOG("before getLevelTasks()");
         auto tasks = combiEval->getLevelTasks(entry.level, ThreadPool::Task([this, entry]() {
                                                 // the mutex will be locked when this callback is
                                                 // called
+                                                // PtrGuard guard(this->managerMutex);
                                                 afterComputation(entry.level);
                                               }));
         CGLOG("before addTasks()");

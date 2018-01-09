@@ -776,7 +776,8 @@ sgpp::combigrid::GridFunction BSplineCoefficientGridFunction(
 }
 
 std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineVarianceOperation(
-    size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func) {
+    size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func,
+    std::shared_ptr<sgpp::combigrid::LevelManager> levelManager) {
   sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
       numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
   sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
@@ -787,8 +788,8 @@ std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineVarianceO
   sgpp::combigrid::CombiEvaluators::MultiCollection Evaluators(
       numDimensions, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(EvalConfig));
 
-  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
-      new sgpp::combigrid::AveragingLevelManager());
+  //  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
+  //      new sgpp::combigrid::AveragingLevelManager());
   sgpp::combigrid::FullGridSummationStrategyType auxiliarySummationStrategyType =
       sgpp::combigrid::FullGridSummationStrategyType::VARIANCE;
 
@@ -800,7 +801,9 @@ std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineVarianceO
 }
 
 std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineLinearOperation(
-    size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func) {
+    size_t degree, size_t numDimensions,
+    //    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage) {
+    sgpp::combigrid::MultiFunction func) {
   sgpp::combigrid::EvaluatorConfiguration evalConfig(
       sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, degree);
   sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
@@ -809,13 +812,16 @@ std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineLinearOpe
       numDimensions, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(evalConfig));
   sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =
       sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
-  bool exploitNesting = false;
   std::shared_ptr<sgpp::combigrid::LevelManager> dummyLevelManager(
       new sgpp::combigrid::AveragingLevelManager());
+  bool exploitNesting = false;
   sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
-  auto Operation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
+  auto interpolationOperation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
       pointHierarchies, evaluators, dummyLevelManager, gf, exploitNesting, summationStrategyType);
-  return Operation;
+  //  auto interpolationOperation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
+  //      pointHierarchies, evaluators, dummyLevelManager, coefficientStorage,
+  //      summationStrategyType);
+  return interpolationOperation;
 }
 void printLevelStructure(
     std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelstructure) {
@@ -830,14 +836,158 @@ void printLevelStructure(
   }
 }
 
+void printSGGridToFile(std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
+                       size_t numDimensions, size_t degree) {
+  std::string plotstr = "/home/rehmemk/SGS_Sync/Plotting/combigrid_bsplines/convertedGrid.dat";
+  remove(plotstr.c_str());
+  std::ofstream plotfile;
+  plotfile.open(plotstr.c_str(), std::ios::app);
+  plotfile << "#grid points" << std::endl;
+  // convert level structure to SG
+  std::shared_ptr<sgpp::base::Grid> grid;
+  grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDimensions, degree));
+  sgpp::base::GridStorage& gridStorage = grid->getStorage();
+  convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
+  for (size_t q = 0; q < gridStorage.getSize(); q++) {
+    auto point = gridStorage.getPoint(q);
+    for (size_t d = 0; d < gridStorage.getDimension() - 1; d++) {
+      plotfile << point.getStandardCoordinate(d) << ", ";
+    }
+    plotfile << point.getStandardCoordinate(gridStorage.getDimension() - 1);
+    plotfile << "\n";
+  }
+  plotfile.close();
+}
+
+// ToDo (rehmemk) If this is used in the final python scripts replace func by coefficientStorage
 std::vector<double> calculateBsplineMeanAndVariance(
     std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
-    size_t numDimensions, size_t degree, sgpp::combigrid::MultiFunction func) {
+    size_t numDimensions, size_t degree,
+    //    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage) {
+    sgpp::combigrid::MultiFunction func) {
   size_t numthreads = 4;
 
   // ToDo (rehmemk) creating the level structure already includes calculation of all coefficients.
-  // Use these coefficients in the following instead of recalculating them. Replace dependency on
-  // the objective function by the coefficients
+  // Use these coefficients in the following instead of recalculating them. just like in
+  // trying_out_bSplineVariance
+
+  // create CT interpolation operation
+  sgpp::combigrid::EvaluatorConfiguration evalConfig(
+      sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, degree);
+  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
+      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+  sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
+      numDimensions, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(evalConfig));
+  sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =
+      sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
+  bool exploitNesting = false;
+  std::shared_ptr<sgpp::combigrid::LevelManager> dummyLevelManager(
+      new sgpp::combigrid::AveragingLevelManager());
+
+  sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
+  auto interpolationOperation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
+      pointHierarchies, evaluators, dummyLevelManager, gf, exploitNesting, summationStrategyType);
+
+  //  auto interpolationOperation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
+  //      pointHierarchies, evaluators, dummyLevelManager, coefficientStorage,
+  //      summationStrategyType);
+
+  // convert level structure to SG
+  std::shared_ptr<sgpp::base::Grid> grid;
+  grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDimensions, degree));
+  sgpp::base::GridStorage& gridStorage = grid->getStorage();
+  convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
+
+  //  print options
+  //  printLevelStructure(levelStructure);
+
+  // interpolate on SG
+  sgpp::base::DataMatrix interpolParams(numDimensions, gridStorage.getSize());
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
+    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
+    sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
+    for (size_t j = 0; j < gridStorage.getDimension(); j++) {
+      p[j] = gp.getStandardCoordinate(j);
+    }
+    interpolParams.setColumn(i, p);
+  }
+
+  // obtain function values from combigrid surrogate
+  interpolationOperation->setParameters(interpolParams);
+  interpolationOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
+  sgpp::base::DataVector f_values = interpolationOperation->getResult();
+
+  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
+  sgpp::optimization::sle_solver::UMFPACK sleSolver;
+  sgpp::base::DataVector alpha(grid->getSize());
+  if (!sleSolver.solve(hierSLE, f_values, alpha)) {
+    std::cout << "Solving failed!" << std::endl;
+  }
+
+  //  std::cout << "alpha: ";
+  //  for (size_t i = 0; i < alpha.size(); i++) {
+  //    std::cout << alpha[i] << ", ";
+  //  }
+  //  std::cout << "\n";
+
+  //-----------error calculation ---------------------------------
+  //  sgpp::optimization::InterpolantScalarFunction u(*grid, alpha);
+  //  double diff = 0;
+  //  double maxErr = 0;
+  //  double L2Err = 0;
+  //  size_t numMCpoints = 10000;
+  //  sgpp::quadrature::NaiveSampleGenerator generator(numDimensions);
+  //  sgpp::base::DataVector p(numDimensions);
+  //  for (size_t i = 0; i < numMCpoints; i++) {
+  //    generator.getSample(p);
+  //    double functionevaluation = 1;  // f(p)
+  //    diff = fabs(u.eval(p) - functionevaluation);
+  //    maxErr = (diff > maxErr) ? diff : maxErr;
+  //    L2Err += diff * diff;
+  //  }
+  //  L2Err = sqrt(L2Err / static_cast<double>(numMCpoints));
+  //  std::cout << "max err: " << maxErr << " , L2 err: " << L2Err << std::endl;
+  //  p = sgpp::base::DataVector(2, 0.4);
+  //  std::cout << "u(0.4,0.4) = " << u.eval(p) << std::endl;
+  //  std::cout << "|1 - u(0.4,0.4)| = " << fabs(1 - u.eval(p)) << std::endl;
+  //----------------------------------------------------------------
+
+  double numGridPoints = static_cast<double>(gridStorage.getSize());
+
+  // calculate mean value via quadrature
+  //  sgpp::combigrid::CombiEvaluators::Collection quadEvaluators(
+  //      numDimensions, sgpp::combigrid::CombiEvaluators::BSplineQuadrature(degree));
+  //  auto quadOperation = std::make_shared<sgpp::combigrid::CombigridOperation>(
+  //      pointHierarchies, quadEvaluators, dummyLevelManager, coefficientStorage,
+  //      summationStrategyType);
+
+  auto quadOperation =
+      sgpp::combigrid::CombigridOperation::createExpUniformBoundaryBsplineQuadrature(numDimensions,
+                                                                                     func, degree);
+
+  quadOperation->getLevelManager()->addLevelsFromStructureParallel(levelStructure, numthreads);
+  double mean = quadOperation->getResult();
+
+  // calculate variance via massMatrix on the SG
+  sgpp::base::Grid* gridptr = grid.get();
+  sgpp::pde::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(gridptr);
+  sgpp::base::DataVector product(alpha.size(), 0);
+  massMatrix.mult(alpha, product);
+  double meanSquare = product.dotProduct(alpha);
+
+  double variance = meanSquare - mean * mean;
+
+  return std::vector<double>{mean, variance, numGridPoints};
+}
+
+std::vector<double> evaluateBsplineInterpolant(
+    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
+    size_t numDimensions, size_t degree, sgpp::combigrid::MultiFunction func,
+    sgpp::base::DataMatrix params) {
+  // ToDo (rehmemk) creating the level structure already includes calculation of all coefficients.
+  // Use these coefficients in the following instead of recalculating them. just like in
+  // trying_out_bSplineVariance
 
   // create CT interpolation operation
   sgpp::combigrid::EvaluatorConfiguration evalConfig(
@@ -852,6 +1002,7 @@ std::vector<double> calculateBsplineMeanAndVariance(
   std::shared_ptr<sgpp::combigrid::LevelManager> dummyLevelManager(
       new sgpp::combigrid::AveragingLevelManager());
   sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
+
   auto Operation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
       pointHierarchies, evaluators, dummyLevelManager, gf, exploitNesting, summationStrategyType);
 
@@ -887,23 +1038,13 @@ std::vector<double> calculateBsplineMeanAndVariance(
     std::cout << "Solving failed!" << std::endl;
   }
 
-  double numGridPoints = static_cast<double>(gridStorage.getSize());
-
-  // calculate mean value via quadrature
-  auto quadOperation =
-      sgpp::combigrid::CombigridOperation::createExpUniformBoundaryBsplineQuadrature(numDimensions,
-                                                                                     func, degree);
-  quadOperation->getLevelManager()->addLevelsFromStructureParallel(levelStructure, numthreads);
-  double mean = quadOperation->getResult();
-
-  // calculate variance via massMatrix on the SG
-  sgpp::base::Grid* gridptr = grid.get();
-  sgpp::pde::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(gridptr);
-  sgpp::base::DataVector product(alpha.size(), 0);
-  massMatrix.mult(alpha, product);
-  double meanSquare = product.dotProduct(alpha);
-
-  double variance = meanSquare - mean * mean;
-
-  return std::vector<double>{mean, variance, numGridPoints};
+  sgpp::optimization::InterpolantScalarFunction u(*grid, alpha);
+  sgpp::base::DataVector p(numDimensions);
+  //  std::cout << "cols: " << params.getNcols() << " rows: " << params.getNrows() << std::endl;
+  std::vector<double> evaluations(params.getNcols(), 0.0);
+  for (size_t i = 0; i < params.getNcols(); i++) {
+    params.getColumn(i, p);
+    evaluations[i] = u.eval(p);
+  }
+  return evaluations;
 }

@@ -276,7 +276,7 @@ void createVarianceLevelStructure(
   // create level structure
   // First step is to guarantee the existence of level (1,..,1). Otherwise a conversion to an SG
   // grid wouldn't be possible
-  Operation->getLevelManager()->addRegularLevels(1);
+  Operation->getLevelManager()->addRegularLevels(numDimensions);
   //  Operation->getLevelManager()->addRegularLevelsParallel(1, numthreads);
   //  Operation->getLevelManager()->addLevelsAdaptiveByNumLevels(numlevels);
   size_t numPoints = numlevels;
@@ -314,9 +314,6 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   createVarianceLevelStructure(numlevels, degree, pointHierarchies, gf, exploitNesting, numthreads,
                                levelStructure, coefficientStorage);
 
-  auto interpolationOperation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
-      pointHierarchies, evaluators, dummyLevelManager, coefficientStorage, summationStrategyType);
-
   //  std::cout << "level structure " << watch_individual.elapsedSeconds() << " total "
   //            << watch_total.elapsedSeconds() << std::endl;
   //  watch_individual.start();
@@ -343,6 +340,8 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   }
 
   // obtain function values from combigrid surrogate
+  auto interpolationOperation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
+      pointHierarchies, evaluators, dummyLevelManager, coefficientStorage, summationStrategyType);
   interpolationOperation->setParameters(interpolParams);
   interpolationOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
   sgpp::base::DataVector f_values = interpolationOperation->getResult();
@@ -362,7 +361,8 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   //            << watch_total.elapsedSeconds() << std::endl;
   //  watch_individual.start();
 
-  //  std::cout << "num CG points: " << Operation->getLevelManager()->numGridPoints()<<", ";
+  //  std::cout << "num CG points: " << interpolationOperation->getLevelManager()->numGridPoints()
+  //            << ", ";
   //  std::cout << "num SG points " << gridStorage.getSize() << std::endl;
   std::cout << gridStorage.getSize() << ", ";
 
@@ -383,12 +383,12 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   //  std::cout  << " Comp max: " << CompMaxErr << "Comp L2: " << CompL2Err<< std::endl;
   //  std::cout << CGL2Err << " ";
 
+  // calculate mean via quadrature operation
   sgpp::combigrid::CombiEvaluators::Collection quadEvaluators(
       numDimensions, sgpp::combigrid::CombiEvaluators::BSplineQuadrature(degree));
   auto quadOperation = std::make_shared<sgpp::combigrid::CombigridOperation>(
       pointHierarchies, quadEvaluators, dummyLevelManager, coefficientStorage,
       summationStrategyType);
-
   quadOperation->getLevelManager()->addLevelsFromStructureParallel(levelStructure, numthreads);
   double mean = quadOperation->getResult();
 
@@ -404,12 +404,11 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   //  std::cout << "matrix mult " << watch_individual.elapsedSeconds() << " total "
   //            << watch_total.elapsedSeconds() << std::endl;
 
-  double meanSquare = product.dotProduct(alpha);
-  double variance = meanSquare - mean * mean;
+  //  double meanSquare = product.dotProduct(alpha);
+  //  double variance = meanSquare - mean * mean;
   //  std::cout << " mean error: " << fabs(mean - atanMean) << " ";
   //  std::cout << " meanSquare error : " << fabs(meanSquare - atanMeanSquare) << " ";
-  //  std::cout << mean << " " << variance << std::endl;
-  std::cout << "variance error " << fabs(variance - genz2DVariance) << std::endl;
+  //  std::cout << " variance error " << fabs(variance - genz2DVariance) << std::endl;
 
   //  std::vector<double> meanVar =
   //      calculateBsplineMeanAndVariance(levelStructure, numDimensions, degree, func);
@@ -419,7 +418,7 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
 int main() {
   size_t degree = 5;
   // dim 2 level 11 has 15361 grid points
-  size_t numAddaptivePoints = 600;
+  size_t numAddaptivePoints = 400;
 
   sgpp::combigrid::Stopwatch watch;
   watch.start();

@@ -20,6 +20,7 @@
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp>
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
+#include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/optimization/sle/solver/Armadillo.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/solver/UMFPACK.hpp>
@@ -27,6 +28,7 @@
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotNakBsplineBoundaryCombigrid.hpp>
+#include <sgpp/quadrature/sampling/NaiveSampleGenerator.hpp>
 
 #include <vector>
 
@@ -121,11 +123,15 @@ sgpp::combigrid::GridFunction BSplineCoefficientGridFunction(
  * @param func		    the objective function
  *
  */
+
 std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineVarianceOperation(
-    size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func);
+    size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func,
+    std::shared_ptr<sgpp::combigrid::LevelManager> levelManager);
 
 std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineLinearOperation(
-    size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func);
+    size_t degree, size_t numDimensions,
+    //    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage) {
+    sgpp::combigrid::MultiFunction func);
 /**
  * prints a level structure as list MultiIndices
  *
@@ -134,8 +140,18 @@ std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineLinearOpe
 void printLevelStructure(
     std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelstructure);
 
+void printSGGridToFile(std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
+                       size_t numDimensions, size_t degree);
+
 std::vector<double> calculateBsplineMeanAndVariance(
     std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
-    size_t numDimensions, size_t degree, sgpp::combigrid::MultiFunction func);
+    size_t numDimensions, size_t degree,
+    //    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage) {
+    sgpp::combigrid::MultiFunction func);
+
+std::vector<double> evaluateBsplineInterpolant(
+    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
+    size_t numDimensions, size_t degree, sgpp::combigrid::MultiFunction func,
+    sgpp::base::DataMatrix params);
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_BSPLINEROUTINES_HPP_ */
