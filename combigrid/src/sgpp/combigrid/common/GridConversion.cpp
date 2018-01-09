@@ -78,17 +78,18 @@ void convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(
   // check if all level 1 grids exist, otherwise the grid cannot be transformed (at least not
   // without much more special cases)
   bool containsLevelOne = false;
+  MultiIndex levelOne(d, 1);
   while (it->isValid()) {
     MultiIndex currentLevel = it->getMultiIndex();
-    size_t levelsum = std::accumulate(currentLevel.begin(), currentLevel.end(), 0);
-    if (levelsum == d) {
+    if (currentLevel == levelOne) {
       containsLevelOne = true;
     }
     it->moveToNext();
   }
   if (!containsLevelOne) {
-    std::cerr << "GridConversion: The subgrid of level 1 in every dimension (1,...,1) must exist."
-              << std::endl;
+    std::cerr
+        << "GridConversion Warning: The subgrid of level 1 in every dimension (1,...,1) must exist."
+        << std::endl;
   }
 
   it = levelStructure->getStoredDataIterator();

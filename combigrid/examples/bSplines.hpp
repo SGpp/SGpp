@@ -308,8 +308,6 @@ double interpolateVarianceAdaptively(size_t numlevels, size_t degree) {
       numDimensions, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(evalConfig));
   sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =
       sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
-  // ToDo (rehmemk) is this really dummy or used somewhere? Should not be used because
-  // levelStructure is already given
   std::shared_ptr<sgpp::combigrid::LevelManager> dummylevelManager(
       new sgpp::combigrid::AveragingLevelManager());
 
