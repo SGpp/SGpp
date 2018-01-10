@@ -75,22 +75,24 @@ void convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(
   base::HashGridPoint::index_type sgindex(0);
   base::HashGridPoint point(d);
 
-  // check if all level 1 grids exist, otherwise the grid cannot be transformed (at least not
-  // without much more special cases)
-  bool containsLevelOne = false;
-  MultiIndex levelOne(d, 1);
-  while (it->isValid()) {
-    MultiIndex currentLevel = it->getMultiIndex();
-    if (currentLevel == levelOne) {
-      containsLevelOne = true;
-    }
-    it->moveToNext();
-  }
-  if (!containsLevelOne) {
-    std::cerr
-        << "GridConversion Warning: The subgrid of level 1 in every dimension (1,...,1) must exist."
-        << std::endl;
-  }
+  // this checks if level (1,...,1) exists. due to the different point generation on level 0 and 1
+  // in the combigrid module and classical SG++ the combigrid grid has no exactly matching SG++ grid
+  // (?)
+  //  bool containsLevelOne = false;
+  //  MultiIndex levelOne(d, 1);
+  //  while (it->isValid()) {
+  //    MultiIndex currentLevel = it->getMultiIndex();
+  //    if (currentLevel == levelOne) {
+  //      containsLevelOne = true;
+  //    }
+  //    it->moveToNext();
+  //  }
+  //  if (!containsLevelOne) {
+  //    std::cerr
+  //        << "GridConversion Warning: The subgrid of level 1 in every dimension (1,...,1) must
+  //        exist."
+  //        << std::endl;
+  //  }
 
   it = levelStructure->getStoredDataIterator();
   while (it->isValid()) {

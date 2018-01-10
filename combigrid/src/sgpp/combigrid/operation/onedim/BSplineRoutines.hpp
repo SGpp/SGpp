@@ -124,14 +124,17 @@ sgpp::combigrid::GridFunction BSplineCoefficientGridFunction(
  *
  */
 
-std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineVarianceOperation(
+std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineVarianceRefinementOperation(
     size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func,
     std::shared_ptr<sgpp::combigrid::LevelManager> levelManager);
 
-std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineLinearOperation(
+std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineLinearRefinementOperation(
+    size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func,
+    std::shared_ptr<sgpp::combigrid::LevelManager> levelManager);
+
+std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineLinearCoefficientOperation(
     size_t degree, size_t numDimensions,
-    //    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage) {
-    sgpp::combigrid::MultiFunction func);
+    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage);
 /**
  * prints a level structure as list MultiIndices
  *
@@ -146,12 +149,11 @@ void printSGGridToFile(std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> co
 std::vector<double> calculateBsplineMeanAndVariance(
     std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
     size_t numDimensions, size_t degree,
-    //    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage) {
-    sgpp::combigrid::MultiFunction func);
+    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage);
 
 std::vector<double> evaluateBsplineInterpolant(
     std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
-    size_t numDimensions, size_t degree, sgpp::combigrid::MultiFunction func,
-    sgpp::base::DataMatrix params);
+    size_t numDimensions, size_t degree, sgpp::base::DataMatrix params,
+    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage);
 
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_BSPLINEROUTINES_HPP_ */
