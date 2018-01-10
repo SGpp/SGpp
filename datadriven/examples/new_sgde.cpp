@@ -11,7 +11,6 @@
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
-#include <sgpp/solver/TypesSolver.hpp>
 #include <sgpp_optimization.hpp>
 
 #include <functional>
@@ -100,11 +99,16 @@ void checkPositive(Grid& grid, const DataVector& alpha) {
 }
 
 #ifdef USE_CGAL
-void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridConfig, double lambda) {
+/**
+ * solve new sparse grid density estimation using CGAL
+ * @param grid
+ * @param samples sample data
+ * @param lambda for calculating the system matrix
+ * @param result the best alpha vector found by the optimizer
+ */
+void solve_cgal(Grid& grid, DataMatrix& samples, double lambda, DataVector& result) {
   // CGAL documentation: https://doc.cgal.org/latest/QP_solver/index.html
-  std::unique_ptr<Grid> grid(sgpp::base::Grid::createGrid(gridConfig));
-  GridStorage* gridStorage = &(grid->getStorage());
-  grid->getGenerator().regular(gridConfig.level_);
+  GridStorage* gridStorage = &(grid.getStorage());
   size_t storage_size = gridStorage->getSize();
   std::cout << "storage size:" << storage_size << std::endl;
   size_t numSamples = samples.getNrows();
@@ -112,10 +116,10 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
   DataMatrix M(storage_size, storage_size);
   DataMatrix C(storage_size, storage_size);
   // loading M matrix
-  OperationMatrix* A_op = sgpp::op_factory::createOperationLTwoDotExplicit(&M, *grid);
-  OperationMultipleEval* B_op = sgpp::op_factory::createOperationMultipleEval(*grid, samples);
+  OperationMatrix* A_op = sgpp::op_factory::createOperationLTwoDotExplicit(&M, grid);
+  OperationMultipleEval* B_op = sgpp::op_factory::createOperationMultipleEval(grid, samples);
   // loading C matrix
-  OperationMatrix* C_op = sgpp::op_factory::createOperationLaplaceExplicit(&C, *grid);
+  OperationMatrix* C_op = sgpp::op_factory::createOperationLaplaceExplicit(&C, grid);
   DataVector b(storage_size);
   DataVector q(storage_size);
   DensitySystemMatrix AlambC(A_op, B_op, C_op, lambda, numSamples);
@@ -169,19 +173,19 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
   }
 
   // interpolation matrix (grid point values when multiplied with alpha-vec)
-  OperationMultipleEval* G_op = sgpp::op_factory::createOperationMultipleEval(*grid, gridPoints);
+  OperationMultipleEval* G_op = sgpp::op_factory::createOperationMultipleEval(grid, gridPoints);
   double** G_it = new double*[storage_size];
   for (size_t i = 0; i < storage_size; i++) {
     G_it[i] = new double[storage_size];
   }
   // G_it[i] should contain the i-th COLUMN of G
   for (size_t i = 0; i < storage_size; i++) {
-    DataVector result(storage_size);
+    DataVector tmp_result(storage_size);
     DataVector alpha(storage_size, 0.0);
     alpha.set(i, 1.0);
-    G_op->mult(alpha, result);
+    G_op->mult(alpha, tmp_result);
     for (size_t j = 0; j < storage_size; j++) {
-      G_it[i][j] = result.get(j);
+      G_it[i][j] = tmp_result.get(j);
     }
   }
 
@@ -212,32 +216,11 @@ void solve_cgal(DataMatrix& samples, sgpp::base::RegularGridConfiguration& gridC
              );
   Solution s = CGAL::solve_quadratic_program(qp, ET());
   Solution::Variable_value_iterator it = s.variable_values_begin();
-  DataVector best_alpha(storage_size);
   for (size_t i = 0; i < storage_size; i++) {
-    best_alpha.set(i, to_double(*it));
+    result.set(i, to_double(*it));
     it++;
   }
-
-  std::cout << "is infeasible:" << s.is_infeasible() << std::endl;
-  std::cout << "---------------------------" << std::endl;
-  std::cout << "best alpha:" << best_alpha.toString() << std::endl;
   std::cout << "objective function:" << to_double(s.objective_value()) << std::endl;
-  DataVector residual(storage_size);
-  calc_residual(*grid, samples, lambda, best_alpha, residual);
-  std::cout << "residual:" << residual.l2Norm() << std::endl;
-  double al[17] = {18.90769281,  -9.09911171,  -9.0176581 ,   0.10785147,
-                   -1.18044529,  -0.28708884,   0.15533845,  -9.38380473,
-                   -9.00915268,  -0.02802101,  -2.24950203,  -1.58041974,
-                   -0.09580067,   5.12791209,   4.54942521,   4.66378412,   4.32550775};
-  DataVector cmp_alpha(al, 17);
-  calc_residual(*grid, samples, lambda, cmp_alpha, residual);
-  std::cout << "compare residual:" << residual.l2Norm() << std::endl;
-
-  //feasibility checking
-  std::cout << "Non positive best_alpha:" << std::endl;
-  checkPositive(*grid, best_alpha);
-  std::cout << "Non positive cmp_alpha:" << std::endl;
-  checkPositive(*grid, cmp_alpha);
   // free up
   for (size_t i = 0; i < storage_size; i++) {
     delete P_it[i];
@@ -264,10 +247,30 @@ int main(int argc, char** argv) {
   gridConfig.maxDegree_ = 5;
   DataMatrix trainSamples(1000, 2);
   createSamples(trainSamples, 1234567);
-  // solve(trainSamples, gridConfig, lambda);
+  std::unique_ptr<Grid> grid(sgpp::base::Grid::createGrid(gridConfig));
+  grid->getGenerator().regular(gridConfig.level_);
+  size_t storage_size = grid->getStorage().getSize();
+  DataVector result(storage_size);
+
 #ifdef USE_CGAL
   double lambda = 0.0;
-  solve_cgal(trainSamples, gridConfig, lambda);
+  solve_cgal(*grid, trainSamples, lambda, result);
+  std::cout << "Best alpha:" << result.toString() << std::endl;
+  DataVector residual(storage_size);
+  calc_residual(*grid, trainSamples, lambda, result, residual);
+  std::cout << "residual:" << residual.l2Norm() << std::endl;
+  double al[17] = {18.90769281,  -9.09911171,  -9.0176581 ,   0.10785147,
+                   -1.18044529,  -0.28708884,   0.15533845,  -9.38380473,
+                   -9.00915268,  -0.02802101,  -2.24950203,  -1.58041974,
+                   -0.09580067,   5.12791209,   4.54942521,   4.66378412,   4.32550775};
+  DataVector cmp_alpha(al, 17);
+  calc_residual(*grid, trainSamples, lambda, cmp_alpha, residual);
+  std::cout << "compare residual:" << residual.l2Norm() << std::endl;
+  //feasibility checking
+  std::cout << "Non positive best_alpha:" << std::endl;
+  checkPositive(*grid, result);
+  std::cout << "Non positive cmp_alpha:" << std::endl;
+  checkPositive(*grid, cmp_alpha);
 #endif
   return 0;
 }
