@@ -151,5 +151,30 @@ struct Debugfct {
   static double eval(sgpp::base::DataVector const& v) { return v[0]; }
 };
 // ----------------------------------------------------------------------------------
+struct Genz {
+  static void bounds(size_t numDims, std::vector<double>& bounds) {
+    bounds.resize(2 * numDims);
+    for (size_t i = 0; i < bounds.size(); i++) {
+      if (i % 2 == 0) {
+        bounds[i] = 0.0;
+      } else {
+        bounds[i] = 1.0;
+      }
+    }
+  }
+
+  static constexpr double w = 0.0;
+
+  static double eval(sgpp::base::DataVector const& x) {
+    double ans = 2.0 * M_PI * w;
+    size_t numDims = x.size();
+    for (size_t k = 0; k < numDims; k++) {
+      ans += 4.5 * (k + 0.5) / static_cast<double>(numDims) * x[k];
+    }
+    return std::cos(ans);
+  }
+};
+// ----------------------------------------------------------------------------------
+
 }  // namespace combigrid
 }  // namespace sgpp
