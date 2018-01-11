@@ -25,11 +25,6 @@ CombigridSurrogateModel::CombigridSurrogateModel(
     throw sgpp::base::application_exception(
         "CombigridSurrogateModel: no operation is set in surrogate model config");
   }
-  if (numDims != config.basisFunctions.size()) {
-    throw sgpp::base::application_exception(
-        "CombigridSurrogateModel: number of basis function do not match with the number of "
-        "dimensions of the operation");
-  }
 }
 
 CombigridSurrogateModel::~CombigridSurrogateModel() {}
