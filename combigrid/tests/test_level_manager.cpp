@@ -32,6 +32,8 @@
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
+#include <sgpp/combigrid/utils/AnalyticModels.hpp>
+
 #include <sgpp/globaldef.hpp>
 
 #include <cmath>
@@ -138,6 +140,25 @@ BOOST_AUTO_TEST_CASE(testLevelManagerParallel) {
   // std::cout << std::abs(combiGridEval->getValue().getValue() -
   //                       func(DataVector(std::vector<double>{0.378934, 0.89340273})))
   //           << "\n";
+}
+
+BOOST_AUTO_TEST_CASE(testLevelManagerAdaptive) {
+  size_t numDims = 6;
+  sgpp::combigrid::Genz model;
+  sgpp::combigrid::MultiFunction func(model.eval);
+  auto op = sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
+      numDims, func);
+
+  auto levelManager = std::make_shared<AveragingLevelManager>();
+  op->setLevelManager(levelManager);
+  levelManager->disableStatsCollection();
+  size_t i = 0;
+  size_t maxIterations = 30;
+  while (i < maxIterations) {
+    levelManager->addLevelsAdaptiveByNumLevels(10);
+    BOOST_CHECK_EQUAL(op->getUpperPointBound(), op->numGridPoints());
+    i++;
+  }
 }
 
 #ifdef USE_DAKOTA
