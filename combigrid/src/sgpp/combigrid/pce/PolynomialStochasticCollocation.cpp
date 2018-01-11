@@ -42,7 +42,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
   // create vector of function bases
   if (config.basisFunctions.size() == 0) {
     for (size_t idim = 0; idim < numDims; idim++) {
-      config.basisFunctions.push_back(config.basisFunction);
+      this->config.basisFunctions.push_back(config.basisFunction);
     }
   } else if (numDims != config.basisFunctions.size()) {
     throw sgpp::base::application_exception(
