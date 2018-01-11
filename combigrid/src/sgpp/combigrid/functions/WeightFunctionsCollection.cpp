@@ -11,7 +11,7 @@
 namespace sgpp {
 namespace combigrid {
 
-WeightFunctionsCollection::WeightFunctionsCollection() {}
+WeightFunctionsCollection::WeightFunctionsCollection() : weightFunctions(0) {}
 
 WeightFunctionsCollection::WeightFunctionsCollection(size_t n) : weightFunctions(n) {}
 
