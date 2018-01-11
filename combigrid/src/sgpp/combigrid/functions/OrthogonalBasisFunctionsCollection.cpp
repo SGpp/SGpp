@@ -11,7 +11,7 @@
 namespace sgpp {
 namespace combigrid {
 
-OrthogonalBasisFunctionsCollection::OrthogonalBasisFunctionsCollection() {}
+OrthogonalBasisFunctionsCollection::OrthogonalBasisFunctionsCollection() : basisFunctions(0) {}
 
 OrthogonalBasisFunctionsCollection::OrthogonalBasisFunctionsCollection(size_t n)
     : basisFunctions(n) {}
