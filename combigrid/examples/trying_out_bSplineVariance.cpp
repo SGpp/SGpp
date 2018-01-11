@@ -64,7 +64,7 @@ double xquintVariance = 1.0 / 11.0 - 1.0 / 36.0;
 
 double genz2DVariance = 0.382923024983;
 
-size_t numDimensions = 2;
+size_t numDimensions = 1;
 double f(sgpp::base::DataVector const& v) {
   //  return v[0] * v[0] * v[0] * v[0];
   //  return v[0] * v[0] * v[0] + v[1] * v[1] * v[1];
@@ -72,23 +72,30 @@ double f(sgpp::base::DataVector const& v) {
   //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
   //         std::exp(v[0] * v[1] - 1);
 
-  // not continuous 2D
-  //  if ((v[0] > 0.7) && (v[0] < 0.8) && (v[1] > 0.2) && (v[1] < 0.3)) {
-  //    return 0;
-  //  } else {
-  //  return 1;
-  //  }
+  // discontinous 1D
+  if (v[0] < 0.3337) {
+    return std::exp(v[0]);
+  } else {
+    return std::exp(v[0] + 1);
+  }
+
+  // discontinuous 2D
+  //    if ((v[0] > 0.7) && (v[0] < 0.8) && (v[1] > 0.2) && (v[1] < 0.3)) {
+  //      return 0;
+  //    } else {
+  //    return 1;
+  //    }
 
   // definition gap along x=0.3
   //  return sin(2 * M_PI * v[1]) / (v[0] - 0.3);
 
   // Genz Function from CO2
-  double w = 0;
-  double mysum = 2 * M_PI * w;
-  for (size_t k = 0; k < numDimensions; k++) {
-    mysum += 4.5 * (static_cast<double>(k) + 0.5) / numDimensions * v[k];
-  }
-  return cos(mysum);
+  //  double w = 0;
+  //  double mysum = 2 * M_PI * w;
+  //  for (size_t k = 0; k < numDimensions; k++) {
+  //    mysum += 4.5 * (static_cast<double>(k) + 0.5) / numDimensions * v[k];
+  //  }
+  //  return cos(mysum);
 }
 void printLevelstructure(
     std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelstructure) {
@@ -232,10 +239,12 @@ void calculateCGSGDifference(
   L2Err = sqrt(L2Err / static_cast<double>(numMCpoints));
 }
 
-std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> createRegularLevelStructure(
+void createRegularLevelStructure(
     size_t const& numlevels, size_t const& degree,
     sgpp::combigrid::CombiHierarchies::Collection const& pointHierarchies,
-    sgpp::combigrid::GridFunction gf, bool exploitNesting, size_t numthreads) {
+    sgpp::combigrid::GridFunction gf, bool exploitNesting, size_t numthreads,
+    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>>& levelStructure,
+    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage>& coefficientStorage) {
   sgpp::combigrid::EvaluatorConfiguration EvalConfig(
       sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineScalarProduct, degree);
   sgpp::combigrid::CombiEvaluators::MultiCollection Evaluators(
@@ -250,8 +259,8 @@ std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> createRegularLevelStructu
       auxiliarySummationStrategyType);
 
   Operation->getLevelManager()->addRegularLevelsParallel(numlevels, numthreads);
-  auto levelStructure = Operation->getLevelManager()->getLevelStructure();
-  return levelStructure;
+  levelStructure = Operation->getLevelManager()->getLevelStructure();
+  coefficientStorage = Operation->getStorage();
 }
 
 void createVarianceLevelStructure(
@@ -276,7 +285,7 @@ void createVarianceLevelStructure(
   // create level structure
   // First step is to guarantee the existence of level (1,..,1). Otherwise a conversion to an SG
   // grid wouldn't be possible
-  Operation->getLevelManager()->addRegularLevels(numDimensions);
+  Operation->getLevelManager()->addRegularLevels(1);
   //  Operation->getLevelManager()->addRegularLevelsParallel(1, numthreads);
   //  Operation->getLevelManager()->addLevelsAdaptiveByNumLevels(numlevels);
   size_t numPoints = numlevels;
@@ -313,6 +322,10 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage;
   createVarianceLevelStructure(numlevels, degree, pointHierarchies, gf, exploitNesting, numthreads,
                                levelStructure, coefficientStorage);
+
+  //  createRegularLevelStructure(numlevels, degree, pointHierarchies, gf, exploitNesting,
+  //  numthreads,
+  //                              levelStructure, coefficientStorage);
 
   //  std::cout << "level structure " << watch_individual.elapsedSeconds() << " total "
   //            << watch_total.elapsedSeconds() << std::endl;
@@ -404,30 +417,35 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   //  std::cout << "matrix mult " << watch_individual.elapsedSeconds() << " total "
   //            << watch_total.elapsedSeconds() << std::endl;
 
-  //  double meanSquare = product.dotProduct(alpha);
-  //  double variance = meanSquare - mean * mean;
+  double meanSquare = product.dotProduct(alpha);
+  double variance = meanSquare - mean * mean;
   //  std::cout << " mean error: " << fabs(mean - atanMean) << " ";
   //  std::cout << " meanSquare error : " << fabs(meanSquare - atanMeanSquare) << " ";
   //  std::cout << " variance error " << fabs(variance - genz2DVariance) << std::endl;
 
   //  std::vector<double> meanVar =
-  //      calculateBsplineMeanAndVariance(levelStructure, numDimensions, degree, func);
+  //      calculateBsplineMeanAndVariance(levelStructure, numDimensions, degree,
+  //      coefficientStorage);
   //  std::cout << mean << " " << meanVar[0] << " " << variance << " " << meanVar[1] << std::endl;
 }
 
 int main() {
   size_t degree = 5;
   // dim 2 level 11 has 15361 grid points
-  size_t numAddaptivePoints = 400;
+  size_t numAddaptivePoints = 0;
 
   sgpp::combigrid::Stopwatch watch;
   watch.start();
-  for (numAddaptivePoints = 100; numAddaptivePoints < 1600;
+  for (numAddaptivePoints = 100; numAddaptivePoints < 5000;
        numAddaptivePoints = numAddaptivePoints + 100) {
     std::cout << numAddaptivePoints << ", ";
     BSplineGridConversion(degree, numAddaptivePoints);
   }
   std::cout << "run time " << watch.elapsedSeconds() << std::endl;
+
+  //  for (size_t regularLevel = 1; regularLevel < 9; regularLevel++) {
+  //    BSplineGridConversion(degree, regularLevel);
+  //  }
 
   return 0;
 }
