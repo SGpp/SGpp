@@ -17,24 +17,24 @@
 #include <random>
 #include <vector>
 #ifdef USE_CGAL
-#include <CGAL/basic.h>
-#include <CGAL/QP_models.h>
-#include <CGAL/QP_functions.h>
-#include <CGAL/QP_solution.h>
 #include <CGAL/MP_Float.h>
+#include <CGAL/QP_functions.h>
+#include <CGAL/QP_models.h>
+#include <CGAL/QP_solution.h>
+#include <CGAL/basic.h>
 typedef CGAL::MP_Float ET;
 typedef CGAL::Quadratic_program_solution<ET> Solution;
 typedef CGAL::Quadratic_program_from_iterators<
- double**,                                           //for A
- double*,                                                 // for b
- CGAL::Const_oneset_iterator<CGAL::Comparison_result>, // for r
- bool*,                                                // for fl
- double*,                                                 // for l
- bool*,                                                // for fu
- double*,                                                 // for u
- double**,                                                // for D
- double*>                                                 // for c
-Program;
+    double**,                                              // for A
+    double*,                                               // for b
+    CGAL::Const_oneset_iterator<CGAL::Comparison_result>,  // for r
+    bool*,                                                 // for fl
+    double*,                                               // for l
+    bool*,                                                 // for fu
+    double*,                                               // for u
+    double**,                                              // for D
+    double*>                                               // for c
+    Program;
 #endif
 
 using sgpp::base::DataMatrix;
@@ -48,8 +48,8 @@ using sgpp::base::OperationMatrix;
 using sgpp::base::OperationMultipleEval;
 using sgpp::datadriven::DensitySystemMatrix;
 
-void calc_residual(Grid& grid, DataMatrix& samples, double lambda,
-                   DataVector& alpha, DataVector& result) {
+void calc_residual(Grid& grid, DataMatrix& samples, double lambda, DataVector& alpha,
+                   DataVector& result) {
   size_t numSamples = samples.getNrows();
   size_t storage_size = grid.getStorage().getSize();
   OperationMatrix* A_op = sgpp::op_factory::createOperationLTwoDotProduct(grid);
@@ -79,7 +79,6 @@ void createSamples(DataMatrix& rvar, std::uint64_t seedValue = std::mt19937_64::
     randu(sample, generator);
     rvar.setRow(i, sample);
   }
-
 }
 
 void checkPositive(Grid& grid, const DataVector& alpha) {
@@ -209,11 +208,11 @@ void solve_cgal(Grid& grid, DataMatrix& samples, double lambda, DataVector& resu
   }
   DataVector bounds(storage_size, 0.0);
   // define the quadratic Programm
-  Program qp(static_cast<int>(storage_size),static_cast<int>(storage_size),  // size of problem
-             G_it, bounds.getPointer(), r,     // constraints
-             bounded, bounds.getPointer(), bounded, bounds.getPointer(),  // bounds
-             P_it, q.getPointer()  // optimization goal
-             );
+  Program qp(static_cast<int>(storage_size), static_cast<int>(storage_size),  // size of problem
+             G_it, bounds.getPointer(), r,                                    // constraints
+             bounded, bounds.getPointer(), bounded, bounds.getPointer(),      // bounds
+             P_it, q.getPointer()                                             // optimization goal
+  );
   Solution s = CGAL::solve_quadratic_program(qp, ET());
   Solution::Variable_value_iterator it = s.variable_values_begin();
   for (size_t i = 0; i < storage_size; i++) {
@@ -245,7 +244,7 @@ int main(int argc, char** argv) {
   gridConfig.level_ = level;
   gridConfig.type_ = gridType;
   gridConfig.maxDegree_ = 5;
-  DataMatrix trainSamples(1000, 2);
+  DataMatrix trainSamples(1000, d);
   createSamples(trainSamples, 1234567);
   std::unique_ptr<Grid> grid(sgpp::base::Grid::createGrid(gridConfig));
   grid->getGenerator().regular(gridConfig.level_);
@@ -259,18 +258,17 @@ int main(int argc, char** argv) {
   DataVector residual(storage_size);
   calc_residual(*grid, trainSamples, lambda, result, residual);
   std::cout << "residual:" << residual.l2Norm() << std::endl;
-  double al[17] = {18.90769281,  -9.09911171,  -9.0176581 ,   0.10785147,
-                   -1.18044529,  -0.28708884,   0.15533845,  -9.38380473,
-                   -9.00915268,  -0.02802101,  -2.24950203,  -1.58041974,
-                   -0.09580067,   5.12791209,   4.54942521,   4.66378412,   4.32550775};
+  double al[17] = {18.90769281, -9.09911171, -9.0176581,  0.10785147,  -1.18044529, -0.28708884,
+                   0.15533845,  -9.38380473, -9.00915268, -0.02802101, -2.24950203, -1.58041974,
+                   -0.09580067, 5.12791209,  4.54942521,  4.66378412,  4.32550775};
   DataVector cmp_alpha(al, 17);
-  calc_residual(*grid, trainSamples, lambda, cmp_alpha, residual);
+  // calc_residual(*grid, trainSamples, lambda, cmp_alpha, residual);
   std::cout << "compare residual:" << residual.l2Norm() << std::endl;
-  //feasibility checking
+  // feasibility checking
   std::cout << "Non positive best_alpha:" << std::endl;
-  checkPositive(*grid, result);
+  // checkPositive(*grid, result);
   std::cout << "Non positive cmp_alpha:" << std::endl;
-  checkPositive(*grid, cmp_alpha);
+  // checkPositive(*grid, cmp_alpha);
 #endif
   return 0;
 }
