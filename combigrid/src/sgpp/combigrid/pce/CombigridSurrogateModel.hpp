@@ -22,7 +22,8 @@ enum class CombigridSurrogateModelsType {
   BSPLINE_STOCHASTIC_COLLOCATION
 };
 
-struct CombigridSurrogateModelConfiguration {
+class CombigridSurrogateModelConfiguration {
+ public:
   // type
   CombigridSurrogateModelsType type;
 
@@ -40,6 +41,14 @@ struct CombigridSurrogateModelConfiguration {
 
   // basis coefficients for Bspline interpolation...
   sgpp::base::DataVector coefficients;
+
+  // helper functions for python/java interface
+  void setCombigridOperation(
+      std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation);
+  void setCombigridMultiOperation(
+      std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation);
+  void setCombigridTensorOperation(
+      std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation);
 };
 
 // --------------------------------------------------------------------------
