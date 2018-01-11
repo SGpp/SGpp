@@ -153,10 +153,10 @@ BOOST_AUTO_TEST_CASE(testLevelManagerAdaptive) {
   op->setLevelManager(levelManager);
   levelManager->disableStatsCollection();
   size_t i = 0;
-  size_t maxIterations = 36;
+  size_t maxIterations = 30;
   while (i < maxIterations) {
     levelManager->addLevelsAdaptiveByNumLevels(10);
-    std::cout << i << " " << op->getUpperPointBound() << " = " << op->numGridPoints() << std::endl;
+    BOOST_CHECK_EQUAL(op->getUpperPointBound(), op->numGridPoints());
     i++;
   }
 }
