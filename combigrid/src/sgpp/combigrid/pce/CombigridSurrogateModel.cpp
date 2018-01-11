@@ -10,23 +10,6 @@
 namespace sgpp {
 namespace combigrid {
 
-void CombigridSurrogateModelConfiguration::setCombigridOperation(
-    std::shared_ptr<sgpp::combigrid::CombigridOperation> pcombigridOperation) {
-  combigridOperation = pcombigridOperation;
-}
-
-void CombigridSurrogateModelConfiguration::setCombigridMultiOperation(
-    std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> pcombigridMultiOperation) {
-  combigridMultiOperation = pcombigridMultiOperation;
-}
-
-void CombigridSurrogateModelConfiguration::setCombigridTensorOperation(
-    std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> pcombigridTensorOperation) {
-  combigridTensorOperation = pcombigridTensorOperation;
-}
-
-// ---------------------------------------------------------------------------------
-
 CombigridSurrogateModel::CombigridSurrogateModel(
     sgpp::combigrid::CombigridSurrogateModelConfiguration& config)
     : config(config) {
