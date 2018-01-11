@@ -9,8 +9,8 @@
 #include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
-#include <sgpp/combigrid/pce/PolynomialChaosExpansion.hpp>
-#include <sgpp/combigrid/pce/PolynomialStochasticCollocation.hpp>
+#include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
+#include <sgpp/combigrid/pce/CombigridSurrogateModelFactory.hpp>
 #include <sgpp/combigrid/utils/AnalyticModels.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/definitions.hpp>
@@ -26,20 +26,24 @@
 BOOST_AUTO_TEST_SUITE(testPolynomialChaosExpansion)
 
 void testPCEIshigami(std::shared_ptr<sgpp::combigrid::CombigridOperation> op,
-                     std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis) {
-  // compute variance of the estimator
-  sgpp::combigrid::PolynomialChaosExpansion pce(op, functionBasis);
+                     std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> basisFunction) {
+  // initialize the surrogate model
+  sgpp::combigrid::CombigridSurrogateModelConfiguration config;
+  config.type = sgpp::combigrid::CombigridSurrogateModelsType::POLYNOMIAL_CHAOS_EXPANSION;
+  config.combigridOperation = op;
+  config.basisFunction = basisFunction;
+  auto pce = sgpp::combigrid::createCombigridSurrogateModel(config);
 
   // ishigami model
   sgpp::combigrid::Ishigami ishigamiModel;
 
   // check the moments
-  BOOST_CHECK_SMALL(std::abs(ishigamiModel.mean - pce.mean()), ishigamiModel.tolerance);
-  BOOST_CHECK_SMALL(std::abs(ishigamiModel.variance - pce.variance()), ishigamiModel.tolerance);
+  BOOST_CHECK_SMALL(std::abs(ishigamiModel.mean - pce->mean()), ishigamiModel.tolerance);
+  BOOST_CHECK_SMALL(std::abs(ishigamiModel.variance - pce->variance()), ishigamiModel.tolerance);
 
   // check the sobol indices
   sgpp::base::DataVector sobolIndices;
-  pce.getComponentSobolIndices(sobolIndices);
+  pce->getComponentSobolIndices(sobolIndices);
   for (size_t i = 0; i < sobolIndices.getSize(); i++) {
     BOOST_CHECK_SMALL(std::abs(ishigamiModel.sobolIndices[i] - sobolIndices[i]),
                       ishigamiModel.tolerance);
@@ -47,7 +51,7 @@ void testPCEIshigami(std::shared_ptr<sgpp::combigrid::CombigridOperation> op,
 
   // check the total sobol indices
   sgpp::base::DataVector totalSobolIndices;
-  pce.getTotalSobolIndices(totalSobolIndices);
+  pce->getTotalSobolIndices(totalSobolIndices);
   for (size_t i = 0; i < totalSobolIndices.getSize(); i++) {
     BOOST_CHECK_SMALL(std::abs(ishigamiModel.totalSobolIndices[i] - totalSobolIndices[i]),
                       ishigamiModel.tolerance);
@@ -70,13 +74,17 @@ BOOST_AUTO_TEST_CASE(testPCE) {
 
 void testPCEParbola(std::shared_ptr<sgpp::combigrid::CombigridOperation> op,
                     sgpp::combigrid::OrthogonalBasisFunctionsCollection& basisFunctions) {
-  // compute variance of the estimator
-  sgpp::combigrid::PolynomialChaosExpansion pce(op, basisFunctions);
+  // initialize the surrogate model
+  sgpp::combigrid::CombigridSurrogateModelConfiguration config;
+  config.type = sgpp::combigrid::CombigridSurrogateModelsType::POLYNOMIAL_CHAOS_EXPANSION;
+  config.combigridOperation = op;
+  config.basisFunctions = basisFunctions;
+  auto pce = sgpp::combigrid::createCombigridSurrogateModel(config);
 
   // check the moments
   sgpp::combigrid::Parabola parabolaModel;
-  BOOST_CHECK_SMALL(std::abs(parabolaModel.mean - pce.mean()), parabolaModel.tolerance);
-  BOOST_CHECK_SMALL(std::abs(parabolaModel.variance - pce.variance()), parabolaModel.tolerance);
+  BOOST_CHECK_SMALL(std::abs(parabolaModel.mean - pce->mean()), parabolaModel.tolerance);
+  BOOST_CHECK_SMALL(std::abs(parabolaModel.variance - pce->variance()), parabolaModel.tolerance);
 }
 
 BOOST_AUTO_TEST_CASE(testPCE_parabola) {
@@ -116,14 +124,18 @@ BOOST_AUTO_TEST_SUITE(testPolynomialStochasticCollocation)
 
 void testStochasticCollocationMoments_id_marginals(
     std::shared_ptr<sgpp::combigrid::CombigridOperation> op,
-    std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis, double mean,
+    std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> basisFunction, double mean,
     double variance, double tol) {
-  // compute variance of the estimator
-  sgpp::combigrid::PolynomialStochasticCollocation sc(op, functionBasis);
+  // initialize the surrogate model
+  sgpp::combigrid::CombigridSurrogateModelConfiguration config;
+  config.type = sgpp::combigrid::CombigridSurrogateModelsType::POLYNOMIAL_STOCHASTIC_COLLOCATION;
+  config.combigridOperation = op;
+  config.basisFunction = basisFunction;
+  auto sc = sgpp::combigrid::createCombigridSurrogateModel(config);
 
   // check the moments
-  BOOST_CHECK_SMALL(std::abs(mean - sc.mean()), tol);
-  BOOST_CHECK_SMALL(std::abs(variance - sc.variance()), tol);
+  BOOST_CHECK_SMALL(std::abs(mean - sc->mean()), tol);
+  BOOST_CHECK_SMALL(std::abs(variance - sc->variance()), tol);
 }
 
 BOOST_AUTO_TEST_CASE(testStochasticCollocation_ishigami) {
@@ -147,12 +159,16 @@ void testStochasticCollocationMoments_various_marginals(
     std::shared_ptr<sgpp::combigrid::CombigridOperation> op,
     sgpp::combigrid::OrthogonalBasisFunctionsCollection& basisFunctions, double mean,
     double variance, double tol) {
-  // compute variance of the estimator
-  sgpp::combigrid::PolynomialStochasticCollocation sc(op, basisFunctions);
+  // initialize the surrogate model
+  sgpp::combigrid::CombigridSurrogateModelConfiguration config;
+  config.type = sgpp::combigrid::CombigridSurrogateModelsType::POLYNOMIAL_STOCHASTIC_COLLOCATION;
+  config.combigridOperation = op;
+  config.basisFunctions = basisFunctions;
+  auto sc = sgpp::combigrid::createCombigridSurrogateModel(config);
 
   // check the moments
-  BOOST_CHECK_SMALL(std::abs(mean - sc.mean()), tol);
-  BOOST_CHECK_SMALL(std::abs(variance - sc.variance()), tol);
+  BOOST_CHECK_SMALL(std::abs(mean - sc->mean()), tol);
+  BOOST_CHECK_SMALL(std::abs(variance - sc->variance()), tol);
 }
 
 BOOST_AUTO_TEST_CASE(testStochasticCollocation_parabola) {
@@ -193,38 +209,43 @@ BOOST_AUTO_TEST_CASE(testStochasticCollocation_co2_lognormal) {
   config.polyParameters.stddev_ = co2Model.stddev;
   config.polyParameters.lowerBound_ = co2Model.bounds[0];
   config.polyParameters.upperBound_ = co2Model.bounds[1];
-  auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
+  auto basisFunction = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
   sgpp::combigrid::MultiFunction func(co2Model.eval);
 
   auto op = sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
       co2Model.numDims, func);
   auto op_levelManager = op->getLevelManager();
 
-  // compute variance of the estimator
-  sgpp::combigrid::PolynomialStochasticCollocation sc(op, functionBasis);
-  auto tensor_levelManager = sc.getCombigridTensorOperation()->getLevelManager();
+  // initialize the surrogate model
+  sgpp::combigrid::CombigridSurrogateModelConfiguration surrogate_config;
+  surrogate_config.type =
+      sgpp::combigrid::CombigridSurrogateModelsType::POLYNOMIAL_STOCHASTIC_COLLOCATION;
+  surrogate_config.combigridOperation = op;
+  surrogate_config.basisFunction = basisFunction;
+  auto sc = sgpp::combigrid::createCombigridSurrogateModel(surrogate_config);
+  auto tensor_levelManager = sc->getConfig().combigridTensorOperation->getLevelManager();
 
   op_levelManager->addRegularLevels(2);
   tensor_levelManager->addLevelsFromStructure(op_levelManager->getLevelStructure());
 
   // check the moments
-  BOOST_CHECK_SMALL(std::abs(co2Model.mean - sc.mean()), 1e-1);
-  BOOST_CHECK_SMALL(std::abs(co2Model.variance - sc.variance()), 1e-1);
+  BOOST_CHECK_SMALL(std::abs(co2Model.mean - sc->mean()), 1e-1);
+  BOOST_CHECK_SMALL(std::abs(co2Model.variance - sc->variance()), 1e-1);
 
   auto op2 = sgpp::combigrid::CombigridOperation::createExpL2LejaPolynomialInterpolation(
       co2Model.numDims, func);
   auto op2_levelManager = op2->getLevelManager();
 
   // compute variance of the estimator
-  sc.updateOperation(op2);
-  tensor_levelManager = sc.getCombigridTensorOperation()->getLevelManager();
+  sc->updateOperation(op2);
+  tensor_levelManager = sc->getConfig().combigridTensorOperation->getLevelManager();
 
   op2_levelManager->addRegularLevels(7);
   tensor_levelManager->addLevelsFromStructure(op2_levelManager->getLevelStructure());
 
   // check the moments
-  BOOST_CHECK_SMALL(std::abs(co2Model.mean - sc.mean()), co2Model.tolerance);
-  BOOST_CHECK_SMALL(std::abs(co2Model.variance - sc.variance()), co2Model.tolerance);
+  BOOST_CHECK_SMALL(std::abs(co2Model.mean - sc->mean()), co2Model.tolerance);
+  BOOST_CHECK_SMALL(std::abs(co2Model.variance - sc->variance()), co2Model.tolerance);
 }
 
 BOOST_AUTO_TEST_CASE(testMoments) {
@@ -274,7 +295,12 @@ BOOST_AUTO_TEST_CASE(testMoments) {
 
   tensor_op_lm->addRegularLevels(5);
 
-  sgpp::combigrid::PolynomialStochasticCollocation sc(tensor_op, orthogFunctionBases);
+  // initialize the surrogate model
+  sgpp::combigrid::CombigridSurrogateModelConfiguration sc_config;
+  sc_config.type = sgpp::combigrid::CombigridSurrogateModelsType::POLYNOMIAL_STOCHASTIC_COLLOCATION;
+  sc_config.combigridTensorOperation = tensor_op;
+  sc_config.basisFunctions = orthogFunctionBases;
+  auto sc = sgpp::combigrid::createCombigridSurrogateModel(sc_config);
   // -----------------------------------------------------------------------------------
   // use tensor based refinement
   sgpp::combigrid::CombiEvaluators::TensorCollection tensor_evaluators_pce(
@@ -288,12 +314,17 @@ BOOST_AUTO_TEST_CASE(testMoments) {
 
   tensor_op_lm_pce->addLevelsFromStructure(tensor_op_lm->getLevelStructure());
 
-  sgpp::combigrid::PolynomialChaosExpansion pce(tensor_op_pce, orthogFunctionBases);
+  // initialize the surrogate model
+  sgpp::combigrid::CombigridSurrogateModelConfiguration pce_config;
+  pce_config.type = sgpp::combigrid::CombigridSurrogateModelsType::POLYNOMIAL_CHAOS_EXPANSION;
+  pce_config.combigridTensorOperation = tensor_op_pce;
+  pce_config.basisFunctions = orthogFunctionBases;
+  auto pce = sgpp::combigrid::createCombigridSurrogateModel(pce_config);
 
   // -----------------------------------------------------------------------------------
   // check if the results are equal
-  BOOST_CHECK_SMALL(std::abs(pce.mean() - sc.mean()), 1e-13);
-  BOOST_CHECK_SMALL(std::abs(pce.variance() - sc.variance()), 1e-13);
+  BOOST_CHECK_SMALL(std::abs(pce->mean() - sc->mean()), 1e-13);
+  BOOST_CHECK_SMALL(std::abs(pce->variance() - sc->variance()), 1e-13);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -28,6 +28,7 @@
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/algebraic/NormStrategy.hpp>
+#include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
 
 #include <sgpp/base/exception/generation_exception.hpp>
 
@@ -272,7 +273,7 @@ std::shared_ptr<CombigridTensorOperation>
 CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
     std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager,
-    std::vector<std::shared_ptr<AbstractInfiniteFunctionBasis1D>> &functionBases,
+    OrthogonalBasisFunctionsCollection &functionBases,
     FullGridSummationStrategyType summationStrategyType) {
   // check if dimensionalities match
   if (functionBases.size() != pointHierarchies.size()) {
@@ -283,36 +284,8 @@ CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
 
   // create combi evaluators
   sgpp::combigrid::CombiEvaluators::TensorCollection evaluators;
-  for (auto &functionBasis : functionBases) {
-    evaluators.push_back(sgpp::combigrid::CombiEvaluators::tensorInterpolation(functionBasis));
-  }
-
-  auto tensorOperation = std::make_shared<CombigridTensorOperation>(
-      pointHierarchies, evaluators, std::make_shared<StandardLevelManager>(), storage,
-      summationStrategyType);
-  auto levelStructure = levelManager->getLevelStructure();
-  tensorOperation->getLevelManager()->addLevelsFromStructureParallel(levelStructure);
-
-  return tensorOperation;
-}
-
-std::shared_ptr<CombigridTensorOperation>
-CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
-    std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-    std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager,
-    std::vector<std::shared_ptr<OrthogonalPolynomialBasis1D>> &functionBases,
-    FullGridSummationStrategyType summationStrategyType) {
-  // check if dimensionalities match
-  if (functionBases.size() != pointHierarchies.size()) {
-    throw sgpp::base::generation_exception(
-        "CombigridTensorOperation::createOperationTensorPolynomialInterpolation - the "
-        "dimensionalities of the basis functions and the point hierarchies do not match");
-  }
-
-  // create combi evaluators
-  sgpp::combigrid::CombiEvaluators::TensorCollection evaluators;
-  for (auto &functionBasis : functionBases) {
-    evaluators.push_back(sgpp::combigrid::CombiEvaluators::tensorInterpolation(functionBasis));
+  for (size_t i = 0; i < functionBases.size(); i++) {
+    evaluators.push_back(sgpp::combigrid::CombiEvaluators::tensorInterpolation(functionBases[i]));
   }
 
   auto tensorOperation = std::make_shared<CombigridTensorOperation>(

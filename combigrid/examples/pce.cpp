@@ -6,7 +6,8 @@
 #include <sgpp/combigrid/functions/MonomialFunctionBasis1D.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
-#include <sgpp/combigrid/pce/PolynomialChaosExpansion.hpp>
+#include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
+#include <sgpp/combigrid/pce/CombigridSurrogateModelFactory.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
@@ -27,7 +28,7 @@ int main() {
 
   sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
   config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
-  auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
+  auto basisFunction = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
 
   for (size_t q = 6; q < 7; ++q) {
     // interpolate on adaptively refined grid
@@ -40,21 +41,28 @@ int main() {
     stopwatch.log();
     // compute the variance
     stopwatch.start();
-    sgpp::combigrid::PolynomialChaosExpansion pce(op, functionBasis);
-    pce.getCombigridTensorOperation()->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
-    pce.getCombigridTensorOperation()->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
+
+    // initialize the surrogate model
+    sgpp::combigrid::CombigridSurrogateModelConfiguration config;
+    config.type = sgpp::combigrid::CombigridSurrogateModelsType::POLYNOMIAL_CHAOS_EXPANSION;
+    config.combigridOperation = op;
+    config.basisFunction = basisFunction;
+    auto pce = sgpp::combigrid::createCombigridSurrogateModel(config);
+
+    pce->getConfig().combigridTensorOperation->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
+    pce->getConfig().combigridTensorOperation->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
     //    pce.getCombigridTensorOperation()->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
 
     stopwatch.log();
     // compute the variance
     stopwatch.start();
 
-    double mean = pce.mean();
-    double variance = pce.variance();
+    double mean = pce->mean();
+    double variance = pce->variance();
     sgpp::base::DataVector sobol_indices;
     sgpp::base::DataVector total_sobol_indices;
-    pce.getComponentSobolIndices(sobol_indices);
-    pce.getTotalSobolIndices(total_sobol_indices);
+    pce->getComponentSobolIndices(sobol_indices);
+    pce->getTotalSobolIndices(total_sobol_indices);
     std::cout << "Time: " << stopwatch.elapsedSeconds() / static_cast<double>(op->numGridPoints())
               << std::endl;
     std::cout << "---------------------------------------------------------" << std::endl;

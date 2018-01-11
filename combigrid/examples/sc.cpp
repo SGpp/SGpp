@@ -6,7 +6,8 @@
 #include <sgpp/combigrid/functions/MonomialFunctionBasis1D.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
-#include <sgpp/combigrid/pce/PolynomialStochasticCollocation.hpp>
+#include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
+#include <sgpp/combigrid/pce/CombigridSurrogateModelFactory.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialScalarProductEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
@@ -63,8 +64,14 @@ int main() {
       model.numDims, func);
 
   auto op_levelManager = op->getLevelManager();
-  sgpp::combigrid::PolynomialStochasticCollocation sc(op, basisFunctions);
-  auto tensor_levelManager = sc.getCombigridTensorOperation()->getLevelManager();
+
+  // initialize the surrogate model
+  sgpp::combigrid::CombigridSurrogateModelConfiguration sc_config;
+  sc_config.type = sgpp::combigrid::CombigridSurrogateModelsType::POLYNOMIAL_STOCHASTIC_COLLOCATION;
+  sc_config.combigridOperation = op;
+  sc_config.basisFunctions = basisFunctions;
+  auto sc = sgpp::combigrid::createCombigridSurrogateModel(sc_config);
+  auto tensor_levelManager = sc->getConfig().combigridTensorOperation->getLevelManager();
 
   sgpp::combigrid::Stopwatch stopwatch;
   for (size_t q = 0; q < 6; ++q) {
@@ -80,8 +87,8 @@ int main() {
     std::cout << "compute mean and variance of stochastic collocation" << std::endl;
     std::cout << "#gp = " << tensor_levelManager->numGridPoints() << std::endl;
     stopwatch.start();
-    double mean = sc.mean();
-    double variance = sc.variance();
+    double mean = sc->mean();
+    double variance = sc->variance();
     stopwatch.log();
     std::cout << "|mu - E(u)|        = " << std::abs(model.mean - mean) << std::endl;
     std::cout << "|sigma^2 - Var(u)| = " << std::abs(model.variance - variance) << std::endl;
