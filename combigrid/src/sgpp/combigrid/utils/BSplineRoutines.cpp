@@ -857,6 +857,22 @@ void printLevelStructure(
   }
 }
 
+sgpp::base::DataMatrix convertLevelStructure(
+    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelstructure, size_t numDims) {
+  sgpp::base::DataMatrix levelstructureMatrix(0, numDims);
+  auto it = levelstructure->getStoredDataIterator();
+  while (it->isValid()) {
+    sgpp::combigrid::MultiIndex index = it->getMultiIndex();
+    sgpp::base::DataVector row;
+    for (auto& i : index) {
+      row.push_back(i);
+    }
+    levelstructureMatrix.appendRow(row);
+    it->moveToNext();
+  }
+  return levelstructureMatrix;
+}
+
 void printSGGridToFile(std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
                        size_t numDimensions, size_t degree) {
   std::string plotstr = "/home/rehmemk/SGS_Sync/Plotting/combigrid_bsplines/convertedGrid.dat";
@@ -977,18 +993,8 @@ std::vector<double> evaluateBsplineInterpolant(
     size_t numDimensions, size_t degree, sgpp::base::DataMatrix params,
     std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage) {
   // create CT interpolation operation
-  sgpp::combigrid::EvaluatorConfiguration evalConfig(
-      sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, degree);
-  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
-      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
-  sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
-      numDimensions, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(evalConfig));
-  sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =
-      sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
-  std::shared_ptr<sgpp::combigrid::LevelManager> dummyLevelManager(
-      new sgpp::combigrid::AveragingLevelManager());
-  auto interpolationOperation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
-      pointHierarchies, evaluators, dummyLevelManager, coefficientStorage, summationStrategyType);
+  auto interpolationOperation =
+      createBsplineLinearCoefficientOperation(degree, numDimensions, coefficientStorage);
 
   // convert level structure to SG
   std::shared_ptr<sgpp::base::Grid> grid;

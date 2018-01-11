@@ -143,6 +143,9 @@ std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineLinearCoe
 void printLevelStructure(
     std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelstructure);
 
+sgpp::base::DataMatrix convertLevelStructure(
+    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelstructure, size_t numDims);
+
 void printSGGridToFile(std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
                        size_t numDimensions, size_t degree);
 
