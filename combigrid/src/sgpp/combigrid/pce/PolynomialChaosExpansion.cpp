@@ -28,7 +28,7 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
   // create vector of function bases
   if (config.basisFunctions.size() == 0) {
     for (size_t idim = 0; idim < numDims; idim++) {
-      config.basisFunctions.push_back(config.basisFunction);
+      this->config.basisFunctions.push_back(config.basisFunction);
     }
   } else if (numDims != config.basisFunctions.size()) {
     throw sgpp::base::application_exception(
@@ -63,7 +63,7 @@ void PolynomialChaosExpansion::initializeTensorOperation(
   // create tensor operation for pce transformation
   this->config.combigridTensorOperation =
       sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
-          pointHierarchies, storage, levelManager, config.basisFunctions);
+          pointHierarchies, storage, levelManager, this->config.basisFunctions);
 
   numGridPoints = 0;
 }
