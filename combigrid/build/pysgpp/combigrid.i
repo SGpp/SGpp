@@ -59,6 +59,7 @@
 %shared_ptr(sgpp::combigrid::SecondMomentNormStrategy)
 %shared_ptr(sgpp::combigrid::VarianceNormStrategy)
 
+%shared_ptr(sgpp::combigrid::CombigridSurrogateModel)
 %shared_ptr(sgpp::combigrid::PolynomialChaosExpansion)
 %shared_ptr(sgpp::combigrid::PolynomialStochasticCollocation)
 
@@ -207,8 +208,10 @@ namespace sgpp {
 %include "combigrid/src/sgpp/combigrid/grid/hierarchy/NonNestedPointHierarchy.hpp"
 %include "combigrid/src/sgpp/combigrid/grid/TensorGrid.hpp"
 
+%include "combigrid/src/sgpp/combigrid/pce/CombigridSurrogateModel.hpp"
 %include "combigrid/src/sgpp/combigrid/pce/PolynomialChaosExpansion.hpp"
 %include "combigrid/src/sgpp/combigrid/pce/PolynomialStochasticCollocation.hpp"
+%include "combigrid/src/sgpp/combigrid/pce/CombigridSurrogateModelFactory.hpp"
 
 %include "combigrid/src/sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp"
 

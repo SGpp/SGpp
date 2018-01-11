@@ -8,6 +8,8 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
+
+#include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
 #include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
@@ -20,49 +22,25 @@
 namespace sgpp {
 namespace combigrid {
 
-class PolynomialStochasticCollocation {
+class PolynomialStochasticCollocation : public CombigridSurrogateModel {
  public:
-  PolynomialStochasticCollocation(
-      std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation,
-      std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis,
-      sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
-
-  PolynomialStochasticCollocation(
-      std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation,
-      std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis,
-      sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
-
-  PolynomialStochasticCollocation(
-      std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation,
-      std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis,
-      sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
-
-  PolynomialStochasticCollocation(
-      std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation,
-      sgpp::combigrid::OrthogonalBasisFunctionsCollection& tensorBasis,
-      sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
-
-  PolynomialStochasticCollocation(
-      std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation,
-      sgpp::combigrid::OrthogonalBasisFunctionsCollection& tensorBasis,
-      sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
-
-  PolynomialStochasticCollocation(
-      std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation,
-      sgpp::combigrid::OrthogonalBasisFunctionsCollection& tensorBasis,
-      sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
-
+  PolynomialStochasticCollocation(sgpp::combigrid::CombigridSurrogateModelConfiguration& config);
   virtual ~PolynomialStochasticCollocation();
 
-  double mean();
-  double variance();
+  double mean() override;
+  double variance() override;
 
-  std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> getCombigridTensorOperation();
-  void updateOperation(std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation);
+  void getComponentSobolIndices(sgpp::base::DataVector& componentSsobolIndices,
+                                bool normalized = true) override;
+  void getTotalSobolIndices(sgpp::base::DataVector& totalSobolIndices,
+                            bool normalized = true) override;
+
   void updateOperation(
-      std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridOperation);
+      std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation) override;
   void updateOperation(
-      std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridOperation);
+      std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridOperation) override;
+  void updateOperation(
+      std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridOperation) override;
 
  private:
   void initializeTensorOperation(
@@ -83,21 +61,11 @@ class PolynomialStochasticCollocation {
   double quad(sgpp::combigrid::MultiIndex i);
   double quad(sgpp::combigrid::MultiIndex i, sgpp::combigrid::MultiIndex j);
 
-  // number of dimensions
-  size_t numDims;
-
-  // store the operations for combigrid evaluation
-  std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation;
-  std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation;
-  std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation;
-
   // global polynomial basis
   std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> legendreBasis;
   // orthogonal basis for pdf values
-  sgpp::combigrid::OrthogonalBasisFunctionsCollection tensorBasis;
   sgpp::combigrid::WeightFunctionsCollection weightFunctions;
 
-  sgpp::base::DataVector bounds;
   size_t numGridPoints;
   sgpp::combigrid::FloatTensorVector expansionCoefficients;
 

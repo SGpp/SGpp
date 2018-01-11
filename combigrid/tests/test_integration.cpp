@@ -9,7 +9,8 @@
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
-#include <sgpp/combigrid/pce/PolynomialChaosExpansion.hpp>
+#include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
+#include <sgpp/combigrid/pce/CombigridSurrogateModelFactory.hpp>
 #include <sgpp/combigrid/utils/AnalyticModels.hpp>
 #include <sgpp/quadrature/sampling/LatinHypercubeSampleGenerator.hpp>
 
@@ -150,19 +151,25 @@ double variance(size_t numDims, sgpp::combigrid::MultiFunction& func, size_t num
 #ifdef USE_DAKOTA
 void testTensorOperation(
     std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> tensor_op,
-    std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> functionBasis, size_t level,
+    std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> basisFunction, size_t level,
     size_t numDims) {
   // compute variance of the estimator
   tensor_op->getLevelManager()->addRegularLevels(level);
-  sgpp::combigrid::PolynomialChaosExpansion pce(tensor_op, functionBasis);
+
+  // initialize the surrogate model
+  sgpp::combigrid::CombigridSurrogateModelConfiguration config;
+  config.type = sgpp::combigrid::CombigridSurrogateModelsType::POLYNOMIAL_CHAOS_EXPANSION;
+  config.combigridTensorOperation = tensor_op;
+  config.basisFunction = basisFunction;
+  auto pce = sgpp::combigrid::createCombigridSurrogateModel(config);
 
   // compute the reference solution
   double mean_ref = sgpp::combigrid::Parabola_uniform::mean(numDims);
   double var_ref = sgpp::combigrid::Parabola_uniform::variance(numDims);
 
   // check if they match
-  BOOST_CHECK_CLOSE(pce.mean(), mean_ref, 1e-10);
-  BOOST_CHECK_CLOSE(pce.variance(), var_ref, 1e-10);
+  BOOST_CHECK_CLOSE(pce->mean(), mean_ref, 1e-10);
+  BOOST_CHECK_CLOSE(pce->variance(), var_ref, 1e-10);
 }
 
 BOOST_AUTO_TEST_CASE(testVarianceComputationWithPCETransformation_expLeja) {
@@ -216,14 +223,22 @@ BOOST_AUTO_TEST_CASE(testVarianceComputationWithPCETransformation_Lognormal_Clen
   config.polyParameters.upperBound_ = 1.0;
   auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
 
+  sgpp::combigrid::CombigridSurrogateModelConfiguration pce_config;
+  pce_config.type = sgpp::combigrid::CombigridSurrogateModelsType::POLYNOMIAL_CHAOS_EXPANSION;
+  pce_config.basisFunction = functionBasis;
+
   sgpp::combigrid::MultiFunction func(sgpp::combigrid::Parabola_uniform::eval);
   size_t level = 4;
   for (size_t numDims = 1; numDims <= 5; ++numDims) {
     auto op = sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
         numDims, func);
     auto op_levelManager = op->getLevelManager();
-    sgpp::combigrid::PolynomialChaosExpansion pce(op, functionBasis);
-    auto pce_levelManager = pce.getCombigridTensorOperation()->getLevelManager();
+
+    // initialize the surrogate model
+    pce_config.combigridOperation = op;
+    auto pce = sgpp::combigrid::createCombigridSurrogateModel(pce_config);
+
+    auto pce_levelManager = pce->getConfig().combigridTensorOperation->getLevelManager();
 
     // compute the reference solution
     double mean_ref = mean(numDims, func, 1e4, functionBasis);
@@ -237,8 +252,8 @@ BOOST_AUTO_TEST_CASE(testVarianceComputationWithPCETransformation_Lognormal_Clen
     //              ~ "
     //              << pce.variance() << " (err = " << std::abs(pce.variance() - var_ref) << ")"
     //              << std::endl;
-    BOOST_CHECK_SMALL(std::abs(pce.mean() - mean_ref), 5e-3);
-    BOOST_CHECK_SMALL(std::abs(pce.variance() - var_ref), 5e-3);
+    BOOST_CHECK_SMALL(std::abs(pce->mean() - mean_ref), 5e-3);
+    BOOST_CHECK_SMALL(std::abs(pce->variance() - var_ref), 5e-3);
   }
 }
 
