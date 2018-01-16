@@ -4,8 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
-#include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
-
+#include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <iostream>
 #include <vector>
 

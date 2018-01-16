@@ -9,15 +9,15 @@
 #include <OrthogPolyApproximation.hpp>
 #endif
 
-#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
-#include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
-#include <sgpp/combigrid/operation/CombigridOperation.hpp>
-#include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
-#include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
-#include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
+#include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
+#include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
+#include <sgpp/combigrid/operation/CombigridOperation.hpp>
+#include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
+#include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
 
 #include <vector>
 
@@ -43,6 +43,7 @@ class PolynomialChaosExpansion : public CombigridSurrogateModel {
       std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridOperation) override;
   void updateOperation(
       std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridOperation) override;
+  void updateConfig(sgpp::combigrid::CombigridSurrogateModelConfiguration config) override;
 
  private:
   void initializeTensorOperation(

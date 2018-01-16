@@ -22,7 +22,6 @@
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridQuadraticSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineQuadratureEvaluator.hpp>
-#include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineScalarProductEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
@@ -40,6 +39,7 @@
 #include <iomanip>
 #include <iostream>
 #include <vector>
+#include "../src/sgpp/combigrid/utils/BSplineRoutines.hpp"
 
 size_t numDimensions = 2;
 double f(sgpp::base::DataVector const& v) {

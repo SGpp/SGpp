@@ -8,8 +8,7 @@
 #include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineQuadratureEvaluator.hpp>
-#include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
-
+#include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <algorithm>
 #include <cmath>
 #include <iomanip>

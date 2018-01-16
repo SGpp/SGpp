@@ -3,13 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/pce/PolynomialChaosExpansion.hpp>
-#include <sgpp/combigrid/pce/SGppToDakota.hpp>
-#include <sgpp/combigrid/operation/CombigridOperation.hpp>
-#include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
-#include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
 #include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
+#include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
+#include <sgpp/combigrid/operation/CombigridOperation.hpp>
+#include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
+#include <sgpp/combigrid/pce/PolynomialChaosExpansion.hpp>
+#include <sgpp/combigrid/pce/SGppToDakota.hpp>
 
 #include <sgpp/base/exception/application_exception.hpp>
 
@@ -237,6 +237,11 @@ void PolynomialChaosExpansion::updateOperation(
                               combigridOperation->getStorage(),
                               combigridOperation->getLevelManager());
   }
+}
+
+void PolynomialChaosExpansion::updateConfig(
+    sgpp::combigrid::CombigridSurrogateModelConfiguration config) {
+  std::cout << "implement me" << std::endl;
 }
 
 } /* namespace combigrid */

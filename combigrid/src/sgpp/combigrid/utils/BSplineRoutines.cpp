@@ -3,10 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp>
-#include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
-
 #include <algorithm>
+#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp>
+#include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <vector>
 
 constexpr size_t log2(size_t n) { return ((n < 2) ? 1 : 1 + log2(n / 2)); }
@@ -844,6 +843,37 @@ std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineLinearCoe
   return interpolationOperation;
 }
 
+std::shared_ptr<sgpp::combigrid::CombigridOperation>
+createexpUniformBsplineQuadratureCoefficientOperation(
+    size_t degree, size_t numDimensions,
+    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage) {
+  sgpp::combigrid::CombiEvaluators::Collection quadEvaluators(
+      numDimensions, sgpp::combigrid::CombiEvaluators::BSplineQuadrature(degree));
+  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
+      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+  std::shared_ptr<sgpp::combigrid::LevelManager> dummyLevelManager(
+      new sgpp::combigrid::AveragingLevelManager());
+  sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =
+      sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
+  auto quadOperation = std::make_shared<sgpp::combigrid::CombigridOperation>(
+      pointHierarchies, quadEvaluators, dummyLevelManager, coefficientStorage,
+      summationStrategyType);
+  return quadOperation;
+}
+
+std::shared_ptr<sgpp::combigrid::CombigridOperation> createBsplineQuadratureCoefficientOperation(
+    size_t degree, size_t numDimensions,
+    std::shared_ptr<sgpp::combigrid::LevelManager> levelManager,
+    sgpp::combigrid::CombiHierarchies::Collection pointHierarchies,
+    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage) {
+  sgpp::combigrid::CombiEvaluators::Collection quadEvaluators(
+      numDimensions, sgpp::combigrid::CombiEvaluators::BSplineQuadrature(degree));
+  sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =
+      sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
+  auto quadOperation = std::make_shared<sgpp::combigrid::CombigridOperation>(
+      pointHierarchies, quadEvaluators, levelManager, coefficientStorage, summationStrategyType);
+  return quadOperation;
+}
 void printLevelStructure(
     std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelstructure) {
   auto it = levelstructure->getStoredDataIterator();
@@ -857,7 +887,7 @@ void printLevelStructure(
   }
 }
 
-sgpp::base::DataMatrix convertLevelStructure(
+sgpp::base::DataMatrix convertLevelStructureToMatrix(
     std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelstructure, size_t numDims) {
   sgpp::base::DataMatrix levelstructureMatrix(0, numDims);
   auto it = levelstructure->getStoredDataIterator();
@@ -865,12 +895,31 @@ sgpp::base::DataMatrix convertLevelStructure(
     sgpp::combigrid::MultiIndex index = it->getMultiIndex();
     sgpp::base::DataVector row;
     for (auto& i : index) {
-      row.push_back(i);
+      row.push_back(static_cast<double>(i));
     }
     levelstructureMatrix.appendRow(row);
     it->moveToNext();
   }
   return levelstructureMatrix;
+}
+
+sgpp::base::DataMatrix convertLevelStructureToGridPoints(
+    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
+    size_t numDimensions, size_t degree) {
+  sgpp::base::DataMatrix gridpointMatrix(0, numDimensions);
+  std::shared_ptr<sgpp::base::Grid> grid;
+  grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDimensions, degree));
+  sgpp::base::GridStorage& gridStorage = grid->getStorage();
+  convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
+  for (size_t q = 0; q < gridStorage.getSize(); q++) {
+    auto point = gridStorage.getPoint(q);
+    sgpp::base::DataVector row;
+    for (size_t d = 0; d < gridStorage.getDimension(); d++) {
+      row.push_back(point.getStandardCoordinate(d));
+    }
+    gridpointMatrix.appendRow(row);
+  }
+  return gridpointMatrix;
 }
 
 void printSGGridToFile(std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
@@ -901,7 +950,7 @@ std::vector<double> calculateBsplineMeanAndVariance(
     std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
     size_t numDimensions, size_t degree,
     std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage) {
-  size_t numthreads = 4;
+  //  size_t numthreads = 4;
 
   // create CT interpolation operation
   auto interpolationOperation =
@@ -962,18 +1011,8 @@ std::vector<double> calculateBsplineMeanAndVariance(
   double numGridPoints = static_cast<double>(gridStorage.getSize());
 
   // calculate mean value via quadrature
-  sgpp::combigrid::CombiEvaluators::Collection quadEvaluators(
-      numDimensions, sgpp::combigrid::CombiEvaluators::BSplineQuadrature(degree));
-  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
-      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
-  std::shared_ptr<sgpp::combigrid::LevelManager> dummyLevelManager(
-      new sgpp::combigrid::AveragingLevelManager());
-  sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =
-      sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
-  auto quadOperation = std::make_shared<sgpp::combigrid::CombigridOperation>(
-      pointHierarchies, quadEvaluators, dummyLevelManager, coefficientStorage,
-      summationStrategyType);
-  quadOperation->getLevelManager()->addLevelsFromStructureParallel(levelStructure, numthreads);
+  auto quadOperation = createexpUniformBsplineQuadratureCoefficientOperation(degree, numDimensions,
+                                                                             coefficientStorage);
   double mean = quadOperation->getResult();
 
   // calculate variance via massMatrix on the SG

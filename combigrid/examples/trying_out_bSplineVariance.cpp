@@ -19,11 +19,11 @@
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridQuadraticSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineQuadratureEvaluator.hpp>
-#include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineScalarProductEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
+#include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
@@ -296,7 +296,7 @@ void createVarianceLevelStructure(
   coefficientStorage = Operation->getStorage();
 }
 
-void BSplineGridConversion(size_t degree, size_t numlevels) {
+void BSplineGridConversion(size_t degree, size_t numPoints) {
   //  sgpp::combigrid::Stopwatch watch_individual;
   //  sgpp::combigrid::Stopwatch watch_total;
   //  watch_individual.start();
@@ -320,7 +320,7 @@ void BSplineGridConversion(size_t degree, size_t numlevels) {
   size_t numthreads = 4;
   std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> levelStructure;
   std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage;
-  createVarianceLevelStructure(numlevels, degree, pointHierarchies, gf, exploitNesting, numthreads,
+  createVarianceLevelStructure(numPoints, degree, pointHierarchies, gf, exploitNesting, numthreads,
                                levelStructure, coefficientStorage);
 
   //  createRegularLevelStructure(numlevels, degree, pointHierarchies, gf, exploitNesting,
