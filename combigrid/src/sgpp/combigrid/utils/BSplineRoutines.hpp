@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_BSPLINEROUTINES_HPP_
-#define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_BSPLINEROUTINES_HPP_
+#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_UTILS_BSPLINEROUTINES_HPP_
+#define COMBIGRID_SRC_SGPP_COMBIGRID_UTILS_BSPLINEROUTINES_HPP_
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -135,6 +135,17 @@ std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineLinearRef
 std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineLinearCoefficientOperation(
     size_t degree, size_t numDimensions,
     std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage);
+
+std::shared_ptr<sgpp::combigrid::CombigridOperation>
+createexpUniformBsplineQuadratureCoefficientOperation(
+    size_t degree, size_t numDimensions,
+    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage);
+
+std::shared_ptr<sgpp::combigrid::CombigridOperation> createBsplineQuadratureCoefficientOperation(
+    size_t degree, size_t numDimensions,
+    std::shared_ptr<sgpp::combigrid::LevelManager> levelManager,
+    sgpp::combigrid::CombiHierarchies::Collection pointHierarchies,
+    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage);
 /**
  * prints a level structure as list MultiIndices
  *
@@ -143,8 +154,12 @@ std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineLinearCoe
 void printLevelStructure(
     std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelstructure);
 
-sgpp::base::DataMatrix convertLevelStructure(
+sgpp::base::DataMatrix convertLevelStructureToMatrix(
     std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelstructure, size_t numDims);
+
+sgpp::base::DataMatrix convertLevelStructureToGridPoints(
+    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
+    size_t numDimensions, size_t degree);
 
 void printSGGridToFile(std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
                        size_t numDimensions, size_t degree);
@@ -159,4 +174,4 @@ std::vector<double> evaluateBsplineInterpolant(
     size_t numDimensions, size_t degree, sgpp::base::DataMatrix params,
     std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage);
 
-#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_BSPLINEROUTINES_HPP_ */
+#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_UTILS_BSPLINEROUTINES_HPP_ */

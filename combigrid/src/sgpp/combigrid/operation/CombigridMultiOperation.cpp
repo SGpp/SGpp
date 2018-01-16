@@ -23,11 +23,11 @@
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridGridBasedEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
-#include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
+#include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 
 #include <iostream>
 #include <vector>
@@ -161,6 +161,10 @@ base::DataVector CombigridMultiOperation::getResult() {
 
 std::shared_ptr<AbstractCombigridStorage> CombigridMultiOperation::getStorage() {
   return impl->storage;
+}
+
+void CombigridMultiOperation::setStorage(std::shared_ptr<AbstractCombigridStorage> storage) {
+  impl->storage = storage;
 }
 
 std::vector<std::shared_ptr<AbstractPointHierarchy>>

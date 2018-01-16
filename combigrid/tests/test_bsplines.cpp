@@ -16,7 +16,7 @@
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridCallbackEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridGridBasedEvaluator.hpp>
-#include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
+#include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <sgpp/combigrid/utils/AnalyticModels.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>

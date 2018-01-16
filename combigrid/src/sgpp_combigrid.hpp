@@ -69,7 +69,6 @@
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridVarianceSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridTensorVarianceSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
-#include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineScalarProductEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/CubicSplineInterpolationEvaluator.hpp>
@@ -101,5 +100,6 @@
 #include <sgpp/combigrid/pce/CombigridSurrogateModelFactory.hpp>
 #include <sgpp/combigrid/pce/PolynomialChaosExpansion.hpp>
 #include <sgpp/combigrid/pce/PolynomialStochasticCollocation.hpp>
+#include "sgpp/combigrid/utils/BSplineRoutines.hpp"
 
 #endif /* COMBIGRID_HPP_ */
