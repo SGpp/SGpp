@@ -79,17 +79,28 @@ void BsplineStochasticCollocation::initializeOperations(
   numGridPoints = 0;
 }
 
+// ToDo (rehmemk) tried to use addLEvelsFromStructureParallel here, does not work (segmentation
+// fault (core dumped))
 void BsplineStochasticCollocation::updateConfig(
-    sgpp::combigrid::CombigridSurrogateModelConfiguration config) {
-  auto levelStructure = config.levelManager->getLevelStructure();
-  // update interpolation
-  this->config.combigridMultiOperation->setStorage(config.coefficientStorage);
-  this->config.combigridMultiOperation->getLevelManager()->addLevelsFromStructureParallel(
-      levelStructure, numthreads);
-  // update quadrature
-  this->config.combigridOperation->setStorage(config.coefficientStorage);
-  this->config.combigridOperation->getLevelManager()->addLevelsFromStructureParallel(levelStructure,
-                                                                                     numthreads);
+    sgpp::combigrid::CombigridSurrogateModelConfiguration newConfig) {
+  this->config.coefficientStorage = newConfig.coefficientStorage;
+  this->config.levelManager = newConfig.levelManager;
+  initializeOperations(newConfig.pointHierarchies, newConfig.coefficientStorage, newConfig.levelManager);
+
+  std::cout << "initialized new operations" << std::endl;
+
+  std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> levelStructure =
+      newConfig.levelManager->getLevelStructure();
+
+  this->config.combigridMultiOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
+  this->config.combigridOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
+
+  std::cout << "added levels from structure" << std::endl;
+
+  std::vector<double> res =
+      calculateBsplineMeanAndVariance(newConfig.levelManager->getLevelStructure(), newConfig.numDims,
+                                      newConfig.degree, newConfig.coefficientStorage);
+  std::cout << "var = " << res[1] << std::endl;
 }
 
 void BsplineStochasticCollocation::initializeWeightFunctions() {
@@ -126,48 +137,57 @@ double BsplineStochasticCollocation::mean() {
 }
 
 double BsplineStochasticCollocation::computeVariance() {
-  std::shared_ptr<sgpp::base::Grid> grid;
-  grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDims, config.degree));
-  sgpp::base::GridStorage& gridStorage = grid->getStorage();
-  auto levelStructure =
-      this->config.combigridMultiOperation->getLevelManager()->getLevelStructure();
-  convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
+  auto levelStructure = this->config.levelManager->getLevelStructure();
+  std::cout << "a" << std::endl;
+  std::vector<double> res = calculateBsplineMeanAndVariance(
+      levelStructure, config.numDims, config.degree, config.coefficientStorage);
+  std::cout << "b" << std::endl;
+  return res[1];
 
-  // interpolate on SG
-  sgpp::base::DataMatrix interpolParams(numDims, gridStorage.getSize());
-  for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
-    sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
-    for (size_t j = 0; j < gridStorage.getDimension(); j++) {
-      p[j] = gp.getStandardCoordinate(j);
-    }
-    interpolParams.setColumn(i, p);
-  }
-
-  // obtain function values from combigrid surrogate
-  this->config.combigridMultiOperation->setParameters(interpolParams);
+  //  std::shared_ptr<sgpp::base::Grid> grid;
+  //  grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDims, config.degree));
+  //  sgpp::base::GridStorage& gridStorage = grid->getStorage();
+  //  auto levelStructure =
+  //      this->config.combigridMultiOperation->getLevelManager()->getLevelStructure();
+  //  convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
+  //
+  //  // interpolate on SG
+  //  sgpp::base::DataMatrix interpolParams(numDims, gridStorage.getSize());
+  //  for (size_t i = 0; i < gridStorage.getSize(); i++) {
+  //    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
+  //    sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
+  //    for (size_t j = 0; j < gridStorage.getDimension(); j++) {
+  //      p[j] = gp.getStandardCoordinate(j);
+  //    }
+  //    interpolParams.setColumn(i, p);
+  //  }
+  //
+  //  // obtain function values from combigrid surrogate
+  //  this->config.combigridMultiOperation->setParameters(interpolParams);
+  //  //
   //  this->config.combigridMultiOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
-  sgpp::base::DataVector f_values = this->config.combigridMultiOperation->getResult();
-
-  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
-  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
-  sgpp::optimization::sle_solver::UMFPACK sleSolver;
-  sgpp::base::DataVector alpha(grid->getSize());
-  if (!sleSolver.solve(hierSLE, f_values, alpha)) {
-    std::cout << "Solving failed!" << std::endl;
-  }
-
-  sgpp::base::Grid* gridptr = grid.get();
-  sgpp::pde::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(gridptr);
-  sgpp::base::DataVector product(alpha.size(), 0);
-  massMatrix.mult(alpha, product);
-  double meanSquare = product.dotProduct(alpha);
-
-  if (!computedMeanFlag) {
-    computeMean();
-  }
-  double variance = meanSquare - ev * ev;
-  return variance;
+  //  sgpp::base::DataVector f_values = this->config.combigridMultiOperation->getResult();
+  //
+  //  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+  //  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
+  //  sgpp::optimization::sle_solver::UMFPACK sleSolver;
+  //  sgpp::base::DataVector alpha(grid->getSize());
+  //  std::cout << "a" << std::endl;
+  //  if (!sleSolver.solve(hierSLE, f_values, alpha)) {
+  //    std::cout << "Solving failed!" << std::endl;
+  //  }
+  //  std::cout << "b" << std::endl;
+  //
+  //  sgpp::base::Grid* gridptr = grid.get();
+  //  sgpp::pde::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(gridptr);
+  //  sgpp::base::DataVector product(alpha.size(), 0);
+  //  massMatrix.mult(alpha, product);
+  //  double meanSquare = product.dotProduct(alpha);
+  //  if (!computedMeanFlag) {
+  //    computeMean();
+  //  }
+  //  double variance = meanSquare - ev * ev;
+  //  return variance;
 }
 
 double BsplineStochasticCollocation::variance() {
@@ -177,6 +197,10 @@ double BsplineStochasticCollocation::variance() {
     computedVarianceFlag = true;
   }
   return var;
+}
+
+void BsplineStochasticCollocation::initializeBounds() {
+  // implement this!
 }
 
 // DEBRECATED
@@ -191,17 +215,16 @@ void BsplineStochasticCollocation::getTotalSobolIndices(sgpp::base::DataVector& 
 
 void BsplineStochasticCollocation::updateOperation(
     std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation) {
-  std::cout << "debrecated" << std::endl;
+  std::cout << "BsplineStochasticCollocation::updateOperation debrecated" << std::endl;
 }
 void BsplineStochasticCollocation::updateOperation(
     std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridOperation) {
-  std::cout << "debrecated" << std::endl;
+  std::cout << "BsplineStochasticCollocation::updateOperation (Multi) debrecated" << std::endl;
 }
 void BsplineStochasticCollocation::updateOperation(
     std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridOperation) {
-  std::cout << "debrecated" << std::endl;
+  std::cout << "BsplineStochasticCollocation::updateOperation (Tensor) debrecated" << std::endl;
 }
-void BsplineStochasticCollocation::initializeBounds() { std::cout << "debrecated" << std::endl; }
 
 } /* namespace combigrid */
 } /* namespace sgpp */

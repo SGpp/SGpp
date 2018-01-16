@@ -945,7 +945,6 @@ void printSGGridToFile(std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> co
   plotfile.close();
 }
 
-// ToDo (rehmemk) If this is used in the final python scripts replace func by coefficientStorage
 std::vector<double> calculateBsplineMeanAndVariance(
     std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
     size_t numDimensions, size_t degree,
@@ -1013,6 +1012,7 @@ std::vector<double> calculateBsplineMeanAndVariance(
   // calculate mean value via quadrature
   auto quadOperation = createexpUniformBsplineQuadratureCoefficientOperation(degree, numDimensions,
                                                                              coefficientStorage);
+  quadOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
   double mean = quadOperation->getResult();
 
   // calculate variance via massMatrix on the SG
