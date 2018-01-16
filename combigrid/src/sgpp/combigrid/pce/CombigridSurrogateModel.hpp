@@ -36,6 +36,7 @@ class CombigridSurrogateModelConfiguration {
   std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies;
   std::shared_ptr<AbstractCombigridStorage> storage;
   std::shared_ptr<LevelManager> levelManager;
+  //  std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> levelStructure;
 
   // basis function for tensor operation
   std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> basisFunction;

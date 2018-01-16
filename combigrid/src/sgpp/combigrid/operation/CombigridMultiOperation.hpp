@@ -125,9 +125,10 @@ class CombigridMultiOperation {
   std::shared_ptr<AbstractCombigridStorage> getStorage();
 
   /**
+   * DOES NOT WORK
    *  @param storage the storage containing the coefficients precalculated by some other operation
    */
-  void setStorage(std::shared_ptr<AbstractCombigridStorage> storage);
+  //  void setStorage(std::shared_ptr<AbstractCombigridStorage> storage);
 
   /**
    * @return the point hierarchies containing the grid points in each direction

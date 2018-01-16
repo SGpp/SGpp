@@ -69,21 +69,21 @@ double f(sgpp::base::DataVector const& v) {
   //  return v[0] * v[0] * v[0] * v[0];
   //  return v[0] * v[0] * v[0] + v[1] * v[1] * v[1];
   //  return std::sin(v[0]) * std::exp(v[1] * v[1]);
-  //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
-  //         std::exp(v[0] * v[1] - 1);
+  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
+         std::exp(v[0] * v[1] - 1);
 
   // discontinous 1D
-  if (v[0] < 0.3337) {
-    return std::exp(v[0]);
-  } else {
-    return std::exp(v[0] + 1);
-  }
+  //  if (v[0] < 0.3337) {
+  //    return std::exp(v[0]);
+  //  } else {
+  //    return std::exp(v[0] + 1);
+  //  }
 
   // discontinuous 2D
   //    if ((v[0] > 0.7) && (v[0] < 0.8) && (v[1] > 0.2) && (v[1] < 0.3)) {
   //      return 0;
   //    } else {
-  //    return 1;
+  //  return 1;
   //    }
 
   // definition gap along x=0.3
@@ -423,25 +423,25 @@ void BSplineGridConversion(size_t degree, size_t numPoints) {
   //  std::cout << " meanSquare error : " << fabs(meanSquare - atanMeanSquare) << " ";
   //  std::cout << " variance error " << fabs(variance - genz2DVariance) << std::endl;
 
-  //  std::vector<double> meanVar =
-  //      calculateBsplineMeanAndVariance(levelStructure, numDimensions, degree,
-  //      coefficientStorage);
-  //  std::cout << mean << " " << meanVar[0] << " " << variance << " " << meanVar[1] << std::endl;
+  std::vector<double> meanVar =
+      calculateBsplineMeanAndVariance(levelStructure, numDimensions, degree, coefficientStorage);
+  std::cout << "mean: " << mean << " " << meanVar[0] << " variance: " << variance << " "
+            << meanVar[1] << std::endl;
 }
 
 int main() {
   size_t degree = 5;
   // dim 2 level 11 has 15361 grid points
-  size_t numAddaptivePoints = 0;
+  size_t numAddaptivePoints = 100;
 
-  sgpp::combigrid::Stopwatch watch;
-  watch.start();
-  for (numAddaptivePoints = 100; numAddaptivePoints < 5000;
-       numAddaptivePoints = numAddaptivePoints + 100) {
-    std::cout << numAddaptivePoints << ", ";
-    BSplineGridConversion(degree, numAddaptivePoints);
-  }
-  std::cout << "run time " << watch.elapsedSeconds() << std::endl;
+  //  sgpp::combigrid::Stopwatch watch;
+  //  watch.start();
+  //  for (numAddaptivePoints = 100; numAddaptivePoints < 5000;
+  //       numAddaptivePoints = numAddaptivePoints + 100) {
+  //    std::cout << numAddaptivePoints << ", ";
+  BSplineGridConversion(degree, numAddaptivePoints);
+  //  }
+  //  std::cout << "run time " << watch.elapsedSeconds() << std::endl;
 
   //  for (size_t regularLevel = 1; regularLevel < 9; regularLevel++) {
   //    BSplineGridConversion(degree, regularLevel);
