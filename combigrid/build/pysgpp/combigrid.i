@@ -62,6 +62,7 @@
 %shared_ptr(sgpp::combigrid::CombigridSurrogateModel)
 %shared_ptr(sgpp::combigrid::PolynomialChaosExpansion)
 %shared_ptr(sgpp::combigrid::PolynomialStochasticCollocation)
+%shared_ptr(sgpp::combigrid::BsplineStochasticCollocation)
 
 %shared_ptr(sgpp::combigrid::AbstractCombigridStorage)
 %shared_ptr(sgpp::combigrid::CombigridTreeStorage)
@@ -211,6 +212,7 @@ namespace sgpp {
 %include "combigrid/src/sgpp/combigrid/pce/CombigridSurrogateModel.hpp"
 %include "combigrid/src/sgpp/combigrid/pce/PolynomialChaosExpansion.hpp"
 %include "combigrid/src/sgpp/combigrid/pce/PolynomialStochasticCollocation.hpp"
+%include "combigrid/src/sgpp/combigrid/pce/BsplineStochasticCollocation.hpp"
 %include "combigrid/src/sgpp/combigrid/pce/CombigridSurrogateModelFactory.hpp"
 
 %include "combigrid/src/sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp"
@@ -364,7 +366,7 @@ namespace std {
 %include "combigrid/src/sgpp/combigrid/utils/Stopwatch.hpp"
 %include "combigrid/src/sgpp/combigrid/utils/Utils.hpp"
 
-%include "combigrid/src/sgpp/combigrid/operation/onedim/BSplineRoutines.hpp"
+%include "combigrid/src/sgpp/combigrid/utils/BSplineRoutines.hpp"
 
 // experimental
 
