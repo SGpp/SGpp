@@ -1075,3 +1075,33 @@ std::vector<double> evaluateBsplineInterpolant(
   }
   return evaluations;
 }
+
+sgpp::base::DataVector createInterpolantOnConvertedExpUnifromBoundaryCombigird(
+    std::shared_ptr<sgpp::base::Grid>& grid, sgpp::base::GridStorage& gridStorage,
+    std::shared_ptr<sgpp::combigrid::CombigridMultiOperation>& combigridInterpolationOperation,
+    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure) {
+  sgpp::base::DataMatrix interpolParams(gridStorage.getDimension(), gridStorage.getSize());
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
+    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
+    sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
+    for (size_t j = 0; j < gridStorage.getDimension(); j++) {
+      p[j] = gp.getStandardCoordinate(j);
+    }
+    interpolParams.setColumn(i, p);
+  }
+
+  // obtain function values from combigrid surrogate
+  combigridInterpolationOperation->setParameters(interpolParams);
+  //
+  combigridInterpolationOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
+  sgpp::base::DataVector f_values = combigridInterpolationOperation->getResult();
+
+  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
+  sgpp::optimization::sle_solver::UMFPACK sleSolver;
+  sgpp::base::DataVector alpha(grid->getSize());
+  if (!sleSolver.solve(hierSLE, f_values, alpha)) {
+    std::cout << "Solving failed!" << std::endl;
+  }
+  return alpha;
+}
