@@ -174,4 +174,9 @@ std::vector<double> evaluateBsplineInterpolant(
     size_t numDimensions, size_t degree, sgpp::base::DataMatrix params,
     std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage);
 
+sgpp::base::DataVector createInterpolantOnConvertedExpUnifromBoundaryCombigird(
+    std::shared_ptr<sgpp::base::Grid>& grid, sgpp::base::GridStorage& gridStorage,
+    std::shared_ptr<sgpp::combigrid::CombigridMultiOperation>& combigridInterpolationOperation,
+    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure);
+
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_UTILS_BSPLINEROUTINES_HPP_ */
