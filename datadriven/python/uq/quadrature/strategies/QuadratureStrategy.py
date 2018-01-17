@@ -30,7 +30,7 @@ class QuadratureStrategy(object):
             # compute error statistics
             err = np.abs(s[0] - s[1])
             if s[0] > 1e-14:
-                err /= s[0]
+                err /= np.abs(s[0])
 
             if deg < self._n:
                 s[0] = s[1]
