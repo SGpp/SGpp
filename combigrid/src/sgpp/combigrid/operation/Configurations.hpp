@@ -11,11 +11,11 @@
 #include <sgpp/combigrid/algebraic/FloatTensorVector.hpp>
 #include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
-#include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/operation/OperationConfiguration.hpp>
+#include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 
-#include <vector>
 #include <memory>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
@@ -80,6 +80,9 @@ class CombiEvaluators {
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> quadrature();
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> BSplineQuadrature(
       size_t degree);
+  static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> BSplineQuadrature(
+      size_t degree, sgpp::combigrid::SingleFunction weight_function, size_t numAdditionalPoints,
+      bool normalizeWeights);
 
   // array evaluators
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> createCombiMultiEvaluator(

@@ -200,6 +200,13 @@ std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::BSp
   return std::make_shared<BSplineQuadratureEvaluator>(degree);
 }
 
+std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::BSplineQuadrature(
+    size_t degree, sgpp::combigrid::SingleFunction weight_function, size_t numAdditionalPoints,
+    bool normalizeWeights) {
+  return std::make_shared<BSplineQuadratureEvaluator>(degree, weight_function, numAdditionalPoints,
+                                                      normalizeWeights);
+}
+
 std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>
 CombiEvaluators::createCombiMultiEvaluator(EvaluatorConfiguration evalConfig) {
   if (evalConfig.type == CombiEvaluatorTypes::Multi_PolynomialInterpolation) {
