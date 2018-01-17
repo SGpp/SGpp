@@ -32,7 +32,7 @@ class CSVTools {
    * @param skipFirstLine whether to skip the first line while parsing
    * @return CSV as Dataset
    */
-  static Dataset readCSV(const std::string& filename, bool skipFirstLine=false);
+  static Dataset readCSV(const std::string& filename, bool skipFirstLine = false);
 
   /**
    * Reads the size of an CSV file.
