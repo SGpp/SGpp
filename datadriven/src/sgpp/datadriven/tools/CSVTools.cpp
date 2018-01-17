@@ -27,12 +27,11 @@ Dataset CSVTools::readCSV(const std::string& filename, bool skipFirstLine) {
   size_t instanceNo = 0;
 
   readCSVSize(filename, numberInstances, dimension);
-  if (skipFirstLine && !myfile.eof()){
+  if (skipFirstLine && !myfile.eof()) {
     numberInstances--;
     std::getline(myfile, line);
   }
   Dataset dataset(numberInstances, dimension);
-  
 
   while (!myfile.eof()) {
     std::getline(myfile, line);
@@ -65,9 +64,9 @@ void CSVTools::readCSVSize(const std::string& filename,
     std::getline(myfile, line);
   if (line.empty())
     continue;
-  if (dimension == 0)
+  if (dimension == 0) {
     dimension = std::count(line.begin(), line.end(), ',');
-  else if (dimension != std::count(line.begin(), line.end(), ',')) {
+  } else if (dimension - std::count(line.begin(), line.end(), ',') != 0) {
     std::string msg = "Columns missing in line ";
     msg.append(std::to_string(numberInstances));
     msg.append(" in file ");
