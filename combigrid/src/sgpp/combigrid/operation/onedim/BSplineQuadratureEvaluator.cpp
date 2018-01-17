@@ -3,16 +3,16 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <algorithm>
+#include <cmath>
+#include <iomanip>
+#include <iostream>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineQuadratureEvaluator.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
-#include <algorithm>
-#include <cmath>
-#include <iomanip>
-#include <iostream>
 #include <vector>
 
 namespace sgpp {
@@ -74,11 +74,35 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
 }
 
 void BSplineQuadratureEvaluator::calculate1DBSplineIntegrals(
-    std::vector<double>& points, std::vector<FloatScalarVector>& basisValues) {
+    std::vector<double>& points, std::vector<FloatScalarVector>& basisValues,
+    size_t incrementQuadraturePoints = 1, double tol = 1e-14) {
+  // ToDo(rehmemk) somehow tell this routine the weight fucntion is equal to one if this is the case
+  // so the iterative stuff can be skipped
+  bool constantWeightfunction = false;
   basisValues.resize(points.size());
-  // #pragma omp parallel for schedule(static)
+  double err = 1e14;
+  std::vector<FloatScalarVector> newBasisValues(points.size());
+
+  // iteratively increases the numAdditionalPoints until the product of B spline and weight function
+  // is exactly inctegrated
+  // the numAdditionalPoints of the last index is used as an initial guess for the
+  // numAdditionalPoints of the next index. This is serial and must be changed for parallelization
+  size_t lastNumAdditionalPoints = 0;
   for (size_t index = 0; index < points.size(); ++index) {
+    numAdditionalPoints = lastNumAdditionalPoints;
     basisValues[index] = FloatScalarVector(get1DIntegral(points, index));
+    //    if (!constantWeightfunction) {
+    //      while (err > tol) {
+    //        lastNumAdditionalPoints = numAdditionalPoints;
+    //        numAdditionalPoints += incrementQuadraturePoints;
+    //        // recalculate and check for error < tol
+    //        newBasisValues[index] = FloatScalarVector(get1DIntegral(points, index));
+    //        err = std::fabs(newBasisValues[index].getValue() - basisValues[index].getValue());
+    //        basisValues[index] = newBasisValues[index];
+    //
+    //        std::cout << numAdditionalPoints << " " << err << std::endl;
+    //      }
+    //    }
   }
 }
 

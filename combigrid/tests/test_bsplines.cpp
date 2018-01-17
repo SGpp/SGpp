@@ -13,11 +13,12 @@
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
+#include <sgpp/combigrid/operation/multidim/RegularLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridCallbackEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridGridBasedEvaluator.hpp>
-#include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <sgpp/combigrid/utils/AnalyticModels.hpp>
+#include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotNakBsplineBoundaryCombigrid.hpp>
@@ -517,6 +518,40 @@ BOOST_AUTO_TEST_CASE(testVarianceOnDiagonaldeg5) {
     //              << std::endl;
     BOOST_CHECK_SMALL(varianceError, tolerance[i]);
   }
+}
+
+double x31D(sgpp::base::DataVector const& v) { return std::pow(v[0], 3) + std::pow(v[1], 3); }
+double wx4(double v) { return cos(v); }
+
+BOOST_AUTO_TEST_CASE(testQuadratureWithWeightFunction) {
+  std::cout << "Integrate objective function x^3+y^3 and weight function cos x with B splines of "
+               "degree 3 on level 5 in 2D "
+            << std::endl;
+  size_t numDimensions = 2;
+  size_t degree = 3;
+  sgpp::combigrid::MultiFunction func(x31D);
+  sgpp::combigrid::SingleFunction weightfunction(wx4);
+  size_t level = 7;
+  size_t numAdditionalPoints = 0;
+  bool normalizeWeights = false;
+
+  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
+      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+  sgpp::combigrid::CombiEvaluators::Collection evaluators(
+      numDimensions, sgpp::combigrid::CombiEvaluators::BSplineQuadrature(
+                         degree, weightfunction, numAdditionalPoints, normalizeWeights));
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
+      new sgpp::combigrid::RegularLevelManager());
+  sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
+  auto operation = std::make_shared<sgpp::combigrid::CombigridOperation>(
+      pointHierarchies, evaluators, levelManager, gf, false);
+
+  double integral = operation->evaluate(level);
+  // int int (x^3+y^3)*(cos x*cos y)dxdy
+  double exactSolution = 0.289025354482001;  // 1D: 0.1717381583560983;
+  double error = fabs(integral - exactSolution);
+  //  std::cout << "error: " << error << std::endl;
+  BOOST_CHECK_SMALL(error, 1e-10);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

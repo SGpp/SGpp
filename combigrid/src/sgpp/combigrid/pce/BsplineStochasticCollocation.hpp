@@ -48,9 +48,6 @@ class BsplineStochasticCollocation : public CombigridSurrogateModel {
                             std::shared_ptr<AbstractCombigridStorage> storage,
                             std::shared_ptr<LevelManager> levelManager);
 
-  void initializeBounds();
-  void initializeWeightFunctions();
-
   bool updateStatus();
   double computeMean();
   double computeVariance();
