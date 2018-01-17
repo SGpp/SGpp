@@ -3,25 +3,25 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/pce/PolynomialStochasticCollocation.hpp>
-#include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
-#include <sgpp/combigrid/pce/SGppToDakota.hpp>
-#include <sgpp/combigrid/operation/CombigridOperation.hpp>
-#include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
-#include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
+#include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
+#include <sgpp/combigrid/operation/CombigridOperation.hpp>
+#include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
+#include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
+#include <sgpp/combigrid/pce/PolynomialStochasticCollocation.hpp>
+#include <sgpp/combigrid/pce/SGppToDakota.hpp>
 
 #include <sgpp/combigrid/algebraic/FirstMomentNormStrategy.hpp>
 #include <sgpp/combigrid/algebraic/VarianceNormStrategy.hpp>
 
-#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 
 #include <algorithm>
-#include <vector>
 #include <cmath>
+#include <vector>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -193,6 +193,10 @@ void PolynomialStochasticCollocation::updateOperation(
                               combigridOperation->getStorage(),
                               combigridOperation->getLevelManager());
   }
+}
+void PolynomialStochasticCollocation::updateConfig(
+    sgpp::combigrid::CombigridSurrogateModelConfiguration config) {
+  std::cout << "implement me" << std::endl;
 }
 
 } /* namespace combigrid */

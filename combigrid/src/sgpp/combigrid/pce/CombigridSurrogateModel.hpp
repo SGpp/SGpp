@@ -5,13 +5,13 @@
 
 #pragma once
 
-#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <sgpp/combigrid/operation/CombigridOperation.hpp>
-#include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
-#include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
-#include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
+#include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
+#include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
+#include <sgpp/combigrid/operation/CombigridOperation.hpp>
+#include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 
 namespace sgpp {
 namespace combigrid {
@@ -32,6 +32,12 @@ class CombigridSurrogateModelConfiguration {
   std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation;
   std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation;
 
+  // structure
+  std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies;
+  std::shared_ptr<AbstractCombigridStorage> storage;
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager;
+  std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> levelStructure;
+
   // basis function for tensor operation
   std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> basisFunction;
   sgpp::combigrid::OrthogonalBasisFunctionsCollection basisFunctions;
@@ -39,8 +45,13 @@ class CombigridSurrogateModelConfiguration {
   // bounds for stochastic collocation
   sgpp::base::DataVector bounds;
 
-  // basis coefficients for Bspline interpolation...
-  sgpp::base::DataVector coefficients;
+  // Bspline degree
+  size_t degree;
+
+  //  Bspline coefficients
+  std::shared_ptr<AbstractCombigridStorage> coefficientStorage;
+
+  size_t numDims;
 };
 
 // --------------------------------------------------------------------------
@@ -63,6 +74,8 @@ class CombigridSurrogateModel {
       std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridOperation) = 0;
   virtual void updateOperation(
       std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridOperation) = 0;
+
+  virtual void updateConfig(sgpp::combigrid::CombigridSurrogateModelConfiguration config) = 0;
 
   sgpp::combigrid::CombigridSurrogateModelConfiguration& getConfig();
 

@@ -7,9 +7,9 @@
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
-#include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialScalarProductEvaluator.hpp>
+#include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 
 #include <cmath>
 #include <iomanip>
