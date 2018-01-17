@@ -5,15 +5,11 @@
 
 #pragma once
 
-#ifdef USE_DAKOTA
-#include <OrthogPolyApproximation.hpp>
-#endif
-
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
 
-#include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
-#include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
+#include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
@@ -24,10 +20,10 @@
 namespace sgpp {
 namespace combigrid {
 
-class PolynomialChaosExpansion : public CombigridSurrogateModel {
+class BsplineStochasticCollocation : public CombigridSurrogateModel {
  public:
-  PolynomialChaosExpansion(sgpp::combigrid::CombigridSurrogateModelConfiguration& config);
-  virtual ~PolynomialChaosExpansion();
+  BsplineStochasticCollocation(sgpp::combigrid::CombigridSurrogateModelConfiguration& config);
+  virtual ~BsplineStochasticCollocation();
 
   double mean() override;
   double variance() override;
@@ -37,31 +33,48 @@ class PolynomialChaosExpansion : public CombigridSurrogateModel {
   void getTotalSobolIndices(sgpp::base::DataVector& totalSobolIndices,
                             bool normalized = true) override;
 
+  // debrecated, delete
   void updateOperation(
       std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation) override;
   void updateOperation(
       std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridOperation) override;
   void updateOperation(
       std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridOperation) override;
+
   void updateConfig(sgpp::combigrid::CombigridSurrogateModelConfiguration config) override;
 
  private:
-  void initializeTensorOperation(
-      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-      std::shared_ptr<AbstractCombigridStorage> storage,
-      std::shared_ptr<LevelManager> levelManager);
+  void initializeOperations(std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+                            std::shared_ptr<AbstractCombigridStorage> storage,
+                            std::shared_ptr<LevelManager> levelManager);
+
+  void initializeBounds();
+  void initializeWeightFunctions();
 
   bool updateStatus();
-  void computeComponentSobolIndices();
+  double computeMean();
+  double computeVariance();
 
-#ifdef USE_DAKOTA
-  std::shared_ptr<Pecos::OrthogPolyApproximation> orthogPoly;
-#endif
+  void countPolynomialTerms();
+  size_t additionalQuadraturePoints(OrthogonalPolynomialBasisType polyType);
+
+  double quad(sgpp::combigrid::MultiIndex i);
+  double quad(sgpp::combigrid::MultiIndex i, sgpp::combigrid::MultiIndex j);
+
+  // orthogonal basis for pdf values
+  sgpp::combigrid::WeightFunctionsCollection weightFunctions;
 
   size_t numGridPoints;
-  sgpp::combigrid::FloatTensorVector expansionCoefficients;
-  bool computedSobolIndicesFlag;
-  sgpp::base::DataVector sobolIndices;
+
+  // mean and variance storage
+  bool computedMeanFlag;
+  double ev;
+  bool computedVarianceFlag;
+  double var;
+  // basis coefficients for Bspline interpolation
+  std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage;
+  //  ToDo(rehmemk)
+  size_t numthreads = 4;
 };
 
 } /* namespace combigrid */

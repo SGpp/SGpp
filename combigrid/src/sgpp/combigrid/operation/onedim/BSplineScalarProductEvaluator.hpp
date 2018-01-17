@@ -13,14 +13,13 @@
 #include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
-#include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
-
 #include <algorithm>
 #include <cmath>
 #include <functional>
 #include <iomanip>
 #include <iostream>
 #include <vector>
+#include "../../utils/BSplineRoutines.hpp"
 
 namespace sgpp {
 namespace combigrid {

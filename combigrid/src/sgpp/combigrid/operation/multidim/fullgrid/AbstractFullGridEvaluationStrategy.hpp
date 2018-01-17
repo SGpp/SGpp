@@ -44,7 +44,8 @@ class AbstractFullGridEvaluationStrategy : public AbstractFullGridEvaluator<V> {
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       FullGridSummationStrategyType summationStrategyType)
       : AbstractFullGridEvaluator<V>(storage, pointHierarchies),
-        evaluatorPrototypes(evaluatorPrototypes) {
+        evaluatorPrototypes(evaluatorPrototypes),
+        summationStrategyType(summationStrategyType) {
     switch (summationStrategyType) {
       case FullGridSummationStrategyType::LINEAR:
         summationStrategy = std::make_shared<FullGridLinearSummationStrategy<V>>(
@@ -79,8 +80,15 @@ class AbstractFullGridEvaluationStrategy : public AbstractFullGridEvaluator<V> {
    */
   void setParameters(std::vector<V> const &params) { summationStrategy->setParameters(params); }
 
+  std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> getEvaluatorPrototypes() {
+    return evaluatorPrototypes;
+  }
+
+  FullGridSummationStrategyType getSummationStrategyType() { return summationStrategyType; }
+
  protected:
   std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> evaluatorPrototypes;
+  FullGridSummationStrategyType summationStrategyType;
   std::shared_ptr<AbstractFullGridSummationStrategy<V>> summationStrategy;
 };
 

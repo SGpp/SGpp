@@ -20,7 +20,7 @@ def load_custom_pgf_preamble(dtype="standard", macros="thesis"):
                                             r"\usepackage{amssymb}",
                                             r"\usepackage{tikz}",
                                             r"\usepackage{pgfplots}",
-                                            r'\usepackage[scientific-notation=true]{siunitx}'
+                                            # r'\usepackage[scientific-notation=true]{siunitx}'
                                             ],
                     'axes.labelsize': pysgpp_uq_font["size"],
                     'font.size': pysgpp_uq_font["size"],
