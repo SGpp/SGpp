@@ -520,8 +520,8 @@ BOOST_AUTO_TEST_CASE(testVarianceOnDiagonaldeg5) {
   }
 }
 
-double x31D(sgpp::base::DataVector const& v) { return std::pow(v[0], 3) + std::pow(v[1], 3); }
-double wx4(double v) { return cos(v); }
+double x32D(sgpp::base::DataVector const& v) { return std::pow(v[0], 3) + std::pow(v[1], 3); }
+double wcos(double v) { return cos(v); }
 
 BOOST_AUTO_TEST_CASE(testQuadratureWithWeightFunction) {
   std::cout << "Integrate objective function x^3+y^3 and weight function cos x with B splines of "
@@ -529,9 +529,9 @@ BOOST_AUTO_TEST_CASE(testQuadratureWithWeightFunction) {
             << std::endl;
   size_t numDimensions = 2;
   size_t degree = 3;
-  sgpp::combigrid::MultiFunction func(x31D);
-  sgpp::combigrid::SingleFunction weightfunction(wx4);
-  size_t level = 7;
+  sgpp::combigrid::MultiFunction func(x32D);
+  sgpp::combigrid::SingleFunction weightfunction(wcos);
+  size_t level = 4;
   size_t numAdditionalPoints = 0;
   bool normalizeWeights = false;
 
@@ -551,7 +551,7 @@ BOOST_AUTO_TEST_CASE(testQuadratureWithWeightFunction) {
   double exactSolution = 0.289025354482001;  // 1D: 0.1717381583560983;
   double error = fabs(integral - exactSolution);
   //  std::cout << "error: " << error << std::endl;
-  BOOST_CHECK_SMALL(error, 1e-10);
+  BOOST_CHECK_SMALL(error, 5e-16);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -10,6 +10,8 @@
 #include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
+#include <sgpp/combigrid/GeneralFunction.hpp>
+#include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <algorithm>
@@ -29,7 +31,10 @@ class OperationMatrixLTwoDotNakBsplineBoundaryCombigrid : public sgpp::base::Ope
    *
    * @param grid sparse grid created by converting a expUniformBoundaryGrid to a sgpp::base::Grid
    */
-  explicit OperationMatrixLTwoDotNakBsplineBoundaryCombigrid(sgpp::base::Grid* grid);
+  explicit OperationMatrixLTwoDotNakBsplineBoundaryCombigrid(
+      sgpp::base::Grid* grid,
+      sgpp::combigrid::SingleFunction weight_function =
+          sgpp::combigrid::SingleFunction(sgpp::combigrid::constantFunction<double>(1.0)));
 
   /**
    * Destructor
@@ -46,6 +51,7 @@ class OperationMatrixLTwoDotNakBsplineBoundaryCombigrid : public sgpp::base::Ope
 
  protected:
   sgpp::base::Grid* grid;
+  sgpp::combigrid::SingleFunction weight_function;
 };
 }  // namespace pde
 }  // namespace sgpp
