@@ -81,7 +81,8 @@ void BsplineStochasticCollocation::initializeOperations(
   sgpp::combigrid::CombiEvaluators::Collection quadEvaluators(0);
   for (size_t d = 0; d < this->config.numDims; d++) {
     quadEvaluators.push_back(sgpp::combigrid::CombiEvaluators::BSplineQuadrature(
-        this->config.degree, weightFunctions[d], numAdditionalPoints, normalizeWeights));
+        config.degree, weightFunctions[d], numAdditionalPoints, config.bounds[2 * d],
+        config.bounds[2 * d + 1], normalizeWeights));
   }
   this->config.combigridOperation = std::make_shared<sgpp::combigrid::CombigridOperation>(
       pointHierarchies, quadEvaluators, levelManager, coefficientStorage, summationStrategyType);
@@ -107,7 +108,8 @@ void BsplineStochasticCollocation::updateConfig(
   sgpp::combigrid::CombiEvaluators::Collection quadEvaluators(0);
   for (size_t d = 0; d < newConfig.numDims; d++) {
     quadEvaluators.push_back(sgpp::combigrid::CombiEvaluators::BSplineQuadrature(
-        newConfig.degree, weightFunctions[d], numAdditionalPoints, normalizeWeights));
+        newConfig.degree, weightFunctions[d], numAdditionalPoints, newConfig.bounds[2 * d],
+        newConfig.bounds[2 * d + 1], normalizeWeights));
   }
   this->config.combigridOperation = std::make_shared<sgpp::combigrid::CombigridOperation>(
       config.pointHierarchies, quadEvaluators, config.levelManager, newConfig.coefficientStorage,
@@ -154,7 +156,8 @@ double BsplineStochasticCollocation::computeVariance() {
       grid, gridStorage, this->config.combigridMultiOperation, levelStructure);
 
   sgpp::base::Grid* gridptr = grid.get();
-  sgpp::pde::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(gridptr, weightFunctions);
+  sgpp::pde::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(gridptr, weightFunctions,
+                                                                          config.bounds);
   sgpp::base::DataVector product(alpha.size(), 0);
   massMatrix.mult(alpha, product);
   double meanSquare = product.dotProduct(alpha);

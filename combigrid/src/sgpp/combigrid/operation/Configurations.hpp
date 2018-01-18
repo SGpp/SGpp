@@ -78,11 +78,15 @@ class CombiEvaluators {
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> BSplineInterpolation(
       size_t degree);
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> quadrature();
+
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> BSplineQuadrature(
       size_t degree);
   static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> BSplineQuadrature(
       size_t degree, sgpp::combigrid::SingleFunction weight_function, size_t numAdditionalPoints,
       bool normalizeWeights);
+  static std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> BSplineQuadrature(
+      size_t degree, sgpp::combigrid::SingleFunction weight_function, size_t numAdditionalPoints,
+      double a, double b, bool normalizeWeights);
 
   // array evaluators
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> createCombiMultiEvaluator(

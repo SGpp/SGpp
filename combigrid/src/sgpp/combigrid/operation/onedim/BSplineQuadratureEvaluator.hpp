@@ -28,10 +28,12 @@ class BSplineQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVec
   std::vector<FloatScalarVector> basisValues;
   std::vector<double> basisCoefficients;
   sgpp::combigrid::SingleFunction weight_function;
-  size_t numAdditionalPoints;  // additional gauss points used for a custom weight function
+  size_t numAdditionalPoints;
   bool normalizeWeights;
   bool isCustomWeightFunction;
   size_t degree;
+  double a;
+  double b;
 
   /**
    * Calculates the integral of the B spline corresponding to the point with the given index
@@ -70,6 +72,11 @@ class BSplineQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVec
    */
   BSplineQuadratureEvaluator(size_t degree, sgpp::combigrid::SingleFunction weight_function,
                              size_t numAdditionalPoints, bool normalizeWeights = true);
+
+  BSplineQuadratureEvaluator(size_t degree, sgpp::combigrid::SingleFunction weight_function,
+                             size_t numAdditionalPoints, double a, double b,
+                             bool normalizeWeights = true);
+
   BSplineQuadratureEvaluator(BSplineQuadratureEvaluator const &other);
   virtual ~BSplineQuadratureEvaluator();
 

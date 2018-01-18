@@ -30,41 +30,41 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
   std::vector<double> xi = createNakKnots(xValues, degree);
   double bsplinevalue = 0.0;
 
-  // constant function for single point, Lagrange polynomials while not enough knots for not a
-  // knot B-splines, nak B-splines otherwise
-  if (xValues.size() == 1) {
-    numGaussPoints = 1;
-    quadRule.getLevelPointsAndWeightsNormalized(
-        std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
-    sum = 1.0 * this->weight_function(roots[0]) * quadratureweights[0];
-  } else if ((degree == 3 && (xValues.size() < 5)) || ((degree == 5) && (xValues.size() < 9))) {
+  double transWidth = b - a;
+
+  // on low levels where Lagrange polynomials instead of Bsplines are used the number of Gauss
+  // points are not degree dependent and there is only on segment: the whole [0,1] interval
+  if ((xValues.size() == 1) || (degree == 3 && (xValues.size() < 5)) ||
+      ((degree == 5) && (xValues.size() < 9))) {
     numGaussPoints = xValues.size();
     quadRule.getLevelPointsAndWeightsNormalized(
         std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
     for (size_t i = 0; i < roots.getSize(); ++i) {
       double x = roots[i];
+      double transX = a + transWidth * x;
+
       bsplinevalue = LagrangePolynomial(x, xValues, index);
-      double integrand = bsplinevalue * this->weight_function(x);
+      double integrand = bsplinevalue * this->weight_function(transX);
       sum += integrand * quadratureweights[i];
     }
   } else {
-    quadRule.getLevelPointsAndWeightsNormalized(
-        std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
     size_t first_segment = std::max(degree, index);
     size_t last_segment = std::min(xValues.size(), index + degree + 1);
+    quadRule.getLevelPointsAndWeightsNormalized(
+        std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
     for (size_t segmentIndex = first_segment; segmentIndex < last_segment; segmentIndex++) {
-      double a = std::max(0.0, xi[segmentIndex]);
-      double b = std::min(1.0, xi[segmentIndex + 1]);
-      double width = b - a;
+      double l = std::max(0.0, xi[segmentIndex]);
+      double r = std::min(1.0, xi[segmentIndex + 1]);
+      double width = r - l;
 
-      // ToDo(rehmemk) Use GaussLegendreQuadrature.cpp's evaluate_iteratively if
-      // weight function != 1
       for (size_t i = 0; i < roots.getSize(); ++i) {
-        double x = a + width * roots[i];
-        // ToDO(rehmemk) Rewrite this whole  routine , don't use createKnots and use the
-        // Lagrange polynomials inside expUuniformNakBspline
+        // transform roots[i], the quadrature points to the segment on which the Bspline is
+        // evaluated and from there to the interval[a,b] on which the weight function is defined
+        double x = l + width * roots[i];
+        double transX = a + transWidth * x;
+
         bsplinevalue = expUniformNakBspline(x, degree, index, xValues);
-        double integrand = bsplinevalue * this->weight_function(x);
+        double integrand = bsplinevalue * this->weight_function(transX);
         // multiply weights by length_old_interval / length_new_interval
         sum += integrand * quadratureweights[i] * width;
       }
@@ -76,14 +76,15 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
 void BSplineQuadratureEvaluator::calculate1DBSplineIntegrals(
     std::vector<double>& points, std::vector<FloatScalarVector>& basisValues,
     size_t incrementQuadraturePoints = 1, double tol = 1e-14) {
-  // ToDo(rehmemk) somehow tell this routine the weight function is equal to one if this is the case
+  // ToDo(rehmemk) somehow tell this routine the weight function is equal to one if this is the
+  // case
   // so the iterative stuff can be skipped
   bool constantWeightfunction = false;
   basisValues.resize(points.size());
   std::vector<FloatScalarVector> newBasisValues(points.size());
 
-  // iteratively increases the numAdditionalPoints until the product of B spline and weight function
-  // is exactly inctegrated
+  // iteratively increases the numAdditionalPoints until the product of B spline and weight
+  // function is exactly inctegrated
   // the numAdditionalPoints of the last index is used as an initial guess for the
   // numAdditionalPoints of the next index. This is serial and must be changed for parallelization
   size_t lastNumAdditionalPoints = 0;
@@ -145,7 +146,9 @@ BSplineQuadratureEvaluator::BSplineQuadratureEvaluator()
       numAdditionalPoints(0),
       normalizeWeights(false),
       isCustomWeightFunction(false),
-      degree(3) {
+      degree(3),
+      a(0),
+      b(1) {
   evalConfig.type = CombiEvaluatorTypes::Scalar_BSplineQuadrature;
   evalConfig.degree = 3;
 }
@@ -155,7 +158,9 @@ BSplineQuadratureEvaluator::BSplineQuadratureEvaluator(size_t degree)
       numAdditionalPoints(0),
       normalizeWeights(false),
       isCustomWeightFunction(false),
-      degree(degree) {
+      degree(degree),
+      a(0),
+      b(1) {
   evalConfig.type = CombiEvaluatorTypes::Scalar_BSplineQuadrature;
   evalConfig.degree = degree;
 }
@@ -167,7 +172,23 @@ BSplineQuadratureEvaluator::BSplineQuadratureEvaluator(
       numAdditionalPoints(numAdditionalPoints),
       normalizeWeights(normalizeWeights),
       isCustomWeightFunction(true),
-      degree(degree) {
+      degree(degree),
+      a(0),
+      b(1) {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_BSplineQuadrature;
+  evalConfig.degree = degree;
+}
+
+BSplineQuadratureEvaluator::BSplineQuadratureEvaluator(
+    size_t degree, sgpp::combigrid::SingleFunction weight_function, size_t numAdditionalPoints,
+    double a, double b, bool normalizeWeights)
+    : weight_function(weight_function),
+      numAdditionalPoints(numAdditionalPoints),
+      normalizeWeights(normalizeWeights),
+      isCustomWeightFunction(true),
+      degree(degree),
+      a(a),
+      b(b) {
   evalConfig.type = CombiEvaluatorTypes::Scalar_BSplineQuadrature;
   evalConfig.degree = degree;
 }
@@ -179,7 +200,9 @@ BSplineQuadratureEvaluator::BSplineQuadratureEvaluator(BSplineQuadratureEvaluato
       numAdditionalPoints(other.numAdditionalPoints),
       normalizeWeights(other.normalizeWeights),
       isCustomWeightFunction(other.isCustomWeightFunction),
-      degree(other.degree) {
+      degree(other.degree),
+      a(other.a),
+      b(other.b) {
   evalConfig.type = CombiEvaluatorTypes::Scalar_BSplineQuadrature;
   evalConfig.degree = other.degree;
 }
