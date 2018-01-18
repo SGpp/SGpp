@@ -5,6 +5,7 @@
 
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/combigrid/common/GridConversion.hpp>
+#include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
 #include <sgpp/combigrid/integration/MCIntegrator.hpp>
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
@@ -306,6 +307,11 @@ void BSplineGridConversion(size_t degree, size_t numPoints) {
   sgpp::combigrid::MultiFunction func(f);
 
   sgpp::combigrid::SingleFunction weightfunction(wcos);
+  sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection(0);
+  for (size_t d = 0; d < numDimensions; d++) {
+    weightFunctionsCollection.push_back(weightfunction);
+  }
+
   sgpp::combigrid::EvaluatorConfiguration evalConfig(
       sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, degree);
   sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
@@ -402,9 +408,13 @@ void BSplineGridConversion(size_t degree, size_t numPoints) {
   // calculate mean via quadrature operation
   size_t numAdditionalPoints = 0;
   bool normalizeWeights = false;
-  sgpp::combigrid::CombiEvaluators::Collection quadEvaluators(
-      numDimensions, sgpp::combigrid::CombiEvaluators::BSplineQuadrature(
-                         degree, weightfunction, numAdditionalPoints, normalizeWeights));
+
+  sgpp::combigrid::CombiEvaluators::Collection quadEvaluators(0);
+  for (size_t d = 0; d < numDimensions; d++) {
+    quadEvaluators.push_back(sgpp::combigrid::CombiEvaluators::BSplineQuadrature(
+        degree, weightFunctionsCollection[d], numAdditionalPoints, normalizeWeights));
+  }
+
   auto quadOperation = std::make_shared<sgpp::combigrid::CombigridOperation>(
       pointHierarchies, quadEvaluators, dummyLevelManager, coefficientStorage,
       summationStrategyType);
@@ -416,7 +426,8 @@ void BSplineGridConversion(size_t degree, size_t numPoints) {
   //  watch_individual.start();
 
   sgpp::base::Grid* gridptr = grid.get();
-  sgpp::pde::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(gridptr, weightfunction);
+  sgpp::pde::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(
+      gridptr, weightFunctionsCollection);
   sgpp::base::DataVector product(alpha.size(), 0);
   massMatrix.mult(alpha, product);
 
