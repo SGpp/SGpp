@@ -5,6 +5,7 @@
 
 #include <sgpp/combigrid/grid/distribution/L2LejaPointDistribution.hpp>
 #include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
 
 namespace sgpp {
 namespace combigrid {
@@ -20,24 +21,32 @@ void sgpp::combigrid::L2LejaPointDistribution::addPoint(double point) {
 }
 
 void L2LejaPointDistribution::computeNextPoint() {
-  auto evaluationFunc = [this](double x) {
-    double prod = weightFunction(x);
+  auto evaluationFunc = [this](double x_unit, double x_trans) {
+    double prod = weightFunction(x_trans);
 
     for (size_t i = 0; i < points.size(); ++i) {
-      prod *= (x - points[i]);
+      prod *= (x_trans - points[i]);
     }
 
     return prod * prod;
   };
 
-  size_t numQuadPoints = points.size() + 1 + numAdditionalPoints;
+  size_t degree = points.size();
+  size_t numQuadPoints = degree + 1;  // (degree + 1) / 2;
   GaussLegendreQuadrature quad(numQuadPoints);
 
   double maxIntegral = -1.0;
   size_t argmaxIndex = 0;
 
   for (size_t i = 0; i < sortedPoints.size() - 1; ++i) {
-    double integral = quad.evaluate(evaluationFunc, sortedPoints[i], sortedPoints[i + 1]);
+    double integral = 0.0;
+    if (numAdditionalPoints == 0) {
+      integral = quad.evaluate(evaluationFunc, sortedPoints[i], sortedPoints[i + 1]);
+    } else {
+      integral = GaussLegendreQuadrature::evaluate_iteratively(evaluationFunc, sortedPoints[i],
+                                                               sortedPoints[i + 1], numQuadPoints,
+                                                               numAdditionalPoints, 1e-14, true);
+    }
 
     if (integral > maxIntegral) {
       maxIntegral = integral;
@@ -45,11 +54,15 @@ void L2LejaPointDistribution::computeNextPoint() {
     }
   }
 
-  auto funcTimesX = [evaluationFunc](double x) { return x * evaluationFunc(x); };
+  auto funcTimesX = [evaluationFunc](double x_unit, double x_prob) {
+    return x_unit * evaluationFunc(x_unit, x_prob);
+  };
 
   double secondIntegral =
       quad.evaluate(funcTimesX, sortedPoints[argmaxIndex], sortedPoints[argmaxIndex + 1]);
 
+  //  std::cout << points.size() << ": " << secondIntegral << " / " << maxIntegral << " -> "
+  //            << secondIntegral / maxIntegral << std::endl;
   addPoint(secondIntegral / maxIntegral);
 }
 

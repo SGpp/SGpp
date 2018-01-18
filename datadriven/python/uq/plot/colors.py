@@ -100,7 +100,7 @@ def load_marker(i):
 
 
 def load_linestyle(i):
-    linestyles = [":", "-.", "--", "-"]
+    linestyles = ["-", ":", "-.", "--", "-"]
     return linestyles[i % len(linestyles)]
 
 

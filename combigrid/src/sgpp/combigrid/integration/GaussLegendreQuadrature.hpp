@@ -44,7 +44,8 @@ class GaussLegendreQuadrature {
     double width = b - a;
     double sum = 0.0;
     for (size_t i = 0; i < roots.getSize(); ++i) {
-      sum += weights[i] * func(a + width * roots[i]);
+      double x_unit = roots[i], x_prob = a + width * roots[i];
+      sum += weights[i] * func(x_unit, x_prob);
     }
     return width * sum;
   }
@@ -86,7 +87,8 @@ class GaussLegendreQuadrature {
   template <typename Func>
   static double evaluate_iteratively(Func const &func, double a = 0.0, double b = 1.0,
                                      size_t numGaussPoints = 1,
-                                     size_t incrementQuadraturePoints = 1, double tol = 1e-14) {
+                                     size_t incrementQuadraturePoints = 1, double tol = 1e-14,
+                                     bool relTolerance = false) {
     double sum = 0.0, sum_old = 0.0;
     double width = b - a;
 
@@ -111,6 +113,9 @@ class GaussLegendreQuadrature {
 
       if (iteration > 0) {
         err = std::fabs(sum_old - sum);
+        if (relTolerance) {
+          err /= sum;
+        }
       }
       sum_old = sum;
       numGaussPoints += incrementQuadraturePoints;
