@@ -148,8 +148,14 @@ def stringToTupleOfFloats(s):
     @param s: string
     @return: tuple represented by s
     """
-    return tuple([float(i) for i in s.strip('()').split(',')
-                  if i.strip() != ''])
+    ans = []
+    for i in s.strip("()").split(","):
+        if i.strip() != "":
+            if i == "null":
+                ans.append(None)
+            else:
+                ans.append(float(i))
+    return ans
 
 
 def stringToList(s, f=float):
