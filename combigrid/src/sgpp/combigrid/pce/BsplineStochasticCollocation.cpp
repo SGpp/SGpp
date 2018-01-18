@@ -35,19 +35,16 @@ BsplineStochasticCollocation::BsplineStochasticCollocation(
       var(0.0),
       coefficientStorage(config.coefficientStorage) {
   // create vector of function bases
-  //  if (config.basisFunctions.size() == 0) {
-  //    for (size_t idim = 0; idim < numDims; idim++) {
-  //      this->config.basisFunctions.push_back(config.basisFunction);
-  //    }
-  //  } else if (numDims != config.basisFunctions.size()) {
-  //    throw sgpp::base::application_exception(
-  //        "BsplineStochasticCollocation: number of basis function do not match with the number of
-  //        "
-  //        "dimensions of the operation");
-  //  }
+  if (config.basisFunctions.size() == 0) {
+    for (size_t idim = 0; idim < numDims; idim++) {
+      this->config.basisFunctions.push_back(config.basisFunction);
+    }
+  } else if (numDims != config.basisFunctions.size()) {
+    throw sgpp::base::application_exception(
+        "BsplineStochasticCollocation: number of basis function do not match with the number of "
+        "dimensions of the operation");
+  }
 
-  initializeBounds();
-  initializeWeightFunctions();
   initializeOperations(config.pointHierarchies, coefficientStorage, config.levelManager);
 }
 
@@ -79,8 +76,7 @@ void BsplineStochasticCollocation::initializeOperations(
   numGridPoints = 0;
 }
 
-// ToDo (rehmemk) tried to use addLevelsFromStructureParallel here, does not work (segmentation
-// fault (core dumped))
+// ToDo (rehmemk) tried to use addLevelsFromStructureParallel here, does not work
 void BsplineStochasticCollocation::updateConfig(
     sgpp::combigrid::CombigridSurrogateModelConfiguration newConfig) {
   this->config.coefficientStorage = newConfig.coefficientStorage;
@@ -93,13 +89,6 @@ void BsplineStochasticCollocation::updateConfig(
       newConfig.degree, newConfig.numDims, newConfig.coefficientStorage);
   this->config.combigridOperation->getLevelManager()->addLevelsFromStructure(
       newConfig.levelStructure);
-}
-
-void BsplineStochasticCollocation::initializeWeightFunctions() {
-  //  weightFunctions.clear();
-  //  for (size_t idim = 0; idim < numDims; idim++) {
-  //    weightFunctions.push_back(config.basisFunctions[idim]->getWeightFunction());
-  //  }
 }
 
 bool BsplineStochasticCollocation::updateStatus() {
@@ -158,10 +147,6 @@ double BsplineStochasticCollocation::variance() {
     computedVarianceFlag = true;
   }
   return var;
-}
-
-void BsplineStochasticCollocation::initializeBounds() {
-  // implement this!
 }
 
 // DEBRECATED
