@@ -60,13 +60,8 @@ class Lognormal(Dist):
             return self.__linearTrans.probabilisticToUnit(x_unit)
 
     def ppf(self, x):
-        if x <= self.__a:
-            return 1.0
-        elif x >= self.__b:
-            return 0.0
-        else:
-            x_prob = self.__linearTrans.unitToProbabilistic(x)
-            return self._dist.ppf(x_prob)
+        x_prob = self.__linearTrans.unitToProbabilistic(x)
+        return self._dist.ppf(x_prob)
 
     def mean(self):
         return self.__mu
