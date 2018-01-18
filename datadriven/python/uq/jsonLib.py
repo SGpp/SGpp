@@ -154,7 +154,7 @@ def stringToTupleOfFloats(s):
             if i == "null":
                 ans.append(None)
             elif "[" in i:
-                ans.append(np.array(stringToList(i, f)))
+                ans.append(np.array(stringToList(i)))
             else:
                 ans.append(float(i))
     return ans
