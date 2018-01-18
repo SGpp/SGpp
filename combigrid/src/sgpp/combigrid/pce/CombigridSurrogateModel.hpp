@@ -46,9 +46,6 @@ class CombigridSurrogateModelConfiguration {
   // bounds for stochastic collocation
   sgpp::base::DataVector bounds;
 
-  // weight functions
-  sgpp::combigrid::WeightFunctionsCollection weightFunctions;
-
   // Bspline degree
   size_t degree;
 
@@ -56,6 +53,9 @@ class CombigridSurrogateModelConfiguration {
   std::shared_ptr<AbstractCombigridStorage> coefficientStorage;
 
   size_t numDims;
+
+  // weight functions
+  sgpp::combigrid::WeightFunctionsCollection weightFunctions;
 };
 
 // --------------------------------------------------------------------------
