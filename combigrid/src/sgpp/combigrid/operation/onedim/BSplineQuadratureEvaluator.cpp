@@ -76,7 +76,7 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
 void BSplineQuadratureEvaluator::calculate1DBSplineIntegrals(
     std::vector<double>& points, std::vector<FloatScalarVector>& basisValues,
     size_t incrementQuadraturePoints = 1, double tol = 1e-14) {
-  // ToDo(rehmemk) somehow tell this routine the weight fucntion is equal to one if this is the case
+  // ToDo(rehmemk) somehow tell this routine the weight function is equal to one if this is the case
   // so the iterative stuff can be skipped
   bool constantWeightfunction = false;
   basisValues.resize(points.size());

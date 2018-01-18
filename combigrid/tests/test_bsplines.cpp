@@ -531,15 +531,21 @@ BOOST_AUTO_TEST_CASE(testQuadratureWithWeightFunction) {
   size_t degree = 3;
   sgpp::combigrid::MultiFunction func(x32D);
   sgpp::combigrid::SingleFunction weightfunction(wcos);
+  sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection(0);
+  for (size_t d = 0; d < numDimensions; d++) {
+    weightFunctionsCollection.push_back(weightfunction);
+  }
   size_t level = 4;
   size_t numAdditionalPoints = 0;
   bool normalizeWeights = false;
 
   sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
       numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
-  sgpp::combigrid::CombiEvaluators::Collection evaluators(
-      numDimensions, sgpp::combigrid::CombiEvaluators::BSplineQuadrature(
-                         degree, weightfunction, numAdditionalPoints, normalizeWeights));
+  sgpp::combigrid::CombiEvaluators::Collection evaluators(0);
+  for (size_t d = 0; d < numDimensions; d++) {
+    evaluators.push_back(sgpp::combigrid::CombiEvaluators::BSplineQuadrature(
+        degree, weightFunctionsCollection[d], numAdditionalPoints, normalizeWeights));
+  }
   std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
       new sgpp::combigrid::RegularLevelManager());
   sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);

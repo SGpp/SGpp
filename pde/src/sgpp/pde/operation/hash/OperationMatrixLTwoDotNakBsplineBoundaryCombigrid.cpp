@@ -11,9 +11,20 @@ namespace sgpp {
 namespace pde {
 
 OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::
+    OperationMatrixLTwoDotNakBsplineBoundaryCombigrid(sgpp::base::Grid* grid)
+    : grid(grid) {
+  // initilaize collection
+  sgpp::combigrid::SingleFunction constant_weight_function =
+      sgpp::combigrid::SingleFunction(sgpp::combigrid::constantFunction<double>(1.0));
+  weightFunctionsCollection =
+      sgpp::combigrid::WeightFunctionsCollection(grid->getDimension(), constant_weight_function);
+}
+
+OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::
     OperationMatrixLTwoDotNakBsplineBoundaryCombigrid(
-        sgpp::base::Grid* grid, sgpp::combigrid::SingleFunction weight_function)
-    : grid(grid), weight_function(weight_function) {}
+        sgpp::base::Grid* grid,
+        sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection)
+    : grid(grid), weightFunctionsCollection(weightFunctionsCollection) {}
 
 OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::
     ~OperationMatrixLTwoDotNakBsplineBoundaryCombigrid() {}
@@ -144,8 +155,8 @@ void OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::mult(sgpp::base::DataVec
         for (size_t n = start; n <= stop; n++) {
           for (size_t c = 0; c < quadOrder; c++) {
             const double x = offset + scaling * (coordinates[c] + static_cast<double>(n));
-            temp_res +=
-                weights[c] * basis.eval(lik, iik, x) * basis.eval(ljk, ijk, x) * weight_function(x);
+            temp_res += weights[c] * basis.eval(lik, iik, x) * basis.eval(ljk, ijk, x) *
+                        weightFunctionsCollection[k](x);
           }
         }
         temp_ij *= scaling * temp_res;
