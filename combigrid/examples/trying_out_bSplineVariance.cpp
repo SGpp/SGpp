@@ -64,13 +64,13 @@ double xquintVariance = 1.0 / 11.0 - 1.0 / 36.0;
 
 double genz2DVariance = 0.382923024983;
 
-size_t numDimensions = 1;
+size_t numDimensions = 2;
 double f(sgpp::base::DataVector const& v) {
-  //  return v[0] * v[0] * v[0] * v[0];
-  //  return v[0] * v[0] * v[0] + v[1] * v[1] * v[1];
+  //  return v[0] * v[0] * v[0];
+  return v[0] * v[0] * v[0] + v[1] * v[1] * v[1];
   //  return std::sin(v[0]) * std::exp(v[1] * v[1]);
-  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
-         std::exp(v[0] * v[1] - 1);
+  //  return std::atan(50 * (v[0] - .35)) + M_PI / 2 + 4 * std::pow(v[1], 3) +
+  //         std::exp(v[0] * v[1] - 1);
 
   // discontinous 1D
   //  if (v[0] < 0.3337) {
@@ -296,6 +296,7 @@ void createVarianceLevelStructure(
   coefficientStorage = Operation->getStorage();
 }
 
+double wcos(double v) { return cos(v); }
 void BSplineGridConversion(size_t degree, size_t numPoints) {
   //  sgpp::combigrid::Stopwatch watch_individual;
   //  sgpp::combigrid::Stopwatch watch_total;
@@ -303,6 +304,8 @@ void BSplineGridConversion(size_t degree, size_t numPoints) {
 
   // set operation configurations
   sgpp::combigrid::MultiFunction func(f);
+
+  sgpp::combigrid::SingleFunction weightfunction(wcos);
   sgpp::combigrid::EvaluatorConfiguration evalConfig(
       sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, degree);
   sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
@@ -397,8 +400,11 @@ void BSplineGridConversion(size_t degree, size_t numPoints) {
   //  std::cout << CGL2Err << " ";
 
   // calculate mean via quadrature operation
+  size_t numAdditionalPoints = 0;
+  bool normalizeWeights = false;
   sgpp::combigrid::CombiEvaluators::Collection quadEvaluators(
-      numDimensions, sgpp::combigrid::CombiEvaluators::BSplineQuadrature(degree));
+      numDimensions, sgpp::combigrid::CombiEvaluators::BSplineQuadrature(
+                         degree, weightfunction, numAdditionalPoints, normalizeWeights));
   auto quadOperation = std::make_shared<sgpp::combigrid::CombigridOperation>(
       pointHierarchies, quadEvaluators, dummyLevelManager, coefficientStorage,
       summationStrategyType);
@@ -410,7 +416,7 @@ void BSplineGridConversion(size_t degree, size_t numPoints) {
   //  watch_individual.start();
 
   sgpp::base::Grid* gridptr = grid.get();
-  sgpp::pde::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(gridptr);
+  sgpp::pde::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(gridptr, weightfunction);
   sgpp::base::DataVector product(alpha.size(), 0);
   massMatrix.mult(alpha, product);
 
@@ -423,10 +429,7 @@ void BSplineGridConversion(size_t degree, size_t numPoints) {
   //  std::cout << " meanSquare error : " << fabs(meanSquare - atanMeanSquare) << " ";
   //  std::cout << " variance error " << fabs(variance - genz2DVariance) << std::endl;
 
-  std::vector<double> meanVar =
-      calculateBsplineMeanAndVariance(levelStructure, numDimensions, degree, coefficientStorage);
-  std::cout << "mean: " << mean << " " << meanVar[0] << " variance: " << variance << " "
-            << meanVar[1] << std::endl;
+  std::cout << "mean: " << mean << " variance: " << variance << " " << std::endl;
 }
 
 int main() {

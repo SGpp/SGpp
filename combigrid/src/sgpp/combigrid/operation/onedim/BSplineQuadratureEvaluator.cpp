@@ -80,7 +80,6 @@ void BSplineQuadratureEvaluator::calculate1DBSplineIntegrals(
   // so the iterative stuff can be skipped
   bool constantWeightfunction = false;
   basisValues.resize(points.size());
-  double err = 1e14;
   std::vector<FloatScalarVector> newBasisValues(points.size());
 
   // iteratively increases the numAdditionalPoints until the product of B spline and weight function
@@ -89,20 +88,21 @@ void BSplineQuadratureEvaluator::calculate1DBSplineIntegrals(
   // numAdditionalPoints of the next index. This is serial and must be changed for parallelization
   size_t lastNumAdditionalPoints = 0;
   for (size_t index = 0; index < points.size(); ++index) {
+    double err = 1e14;
     numAdditionalPoints = lastNumAdditionalPoints;
     basisValues[index] = FloatScalarVector(get1DIntegral(points, index));
-    //    if (!constantWeightfunction) {
-    //      while (err > tol) {
-    //        lastNumAdditionalPoints = numAdditionalPoints;
-    //        numAdditionalPoints += incrementQuadraturePoints;
-    //        // recalculate and check for error < tol
-    //        newBasisValues[index] = FloatScalarVector(get1DIntegral(points, index));
-    //        err = std::fabs(newBasisValues[index].getValue() - basisValues[index].getValue());
-    //        basisValues[index] = newBasisValues[index];
-    //
-    //        std::cout << numAdditionalPoints << " " << err << std::endl;
-    //      }
-    //    }
+    if (!constantWeightfunction) {
+      while (err > tol) {
+        lastNumAdditionalPoints = numAdditionalPoints;
+        numAdditionalPoints += incrementQuadraturePoints;
+        // recalculate and check for error < tol
+        newBasisValues[index] = FloatScalarVector(get1DIntegral(points, index));
+        err = std::fabs(newBasisValues[index].getValue() - basisValues[index].getValue());
+        basisValues[index] = newBasisValues[index];
+
+        //        std::cout << numAdditionalPoints << " " << err << std::endl;
+      }
+    }
   }
 }
 
