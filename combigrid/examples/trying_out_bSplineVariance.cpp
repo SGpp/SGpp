@@ -298,6 +298,7 @@ void createVarianceLevelStructure(
 }
 
 double wcos(double v) { return cos(v); }
+double wexp(double v) { return exp(v); }
 void BSplineGridConversion(size_t degree, size_t numPoints) {
   //  sgpp::combigrid::Stopwatch watch_individual;
   //  sgpp::combigrid::Stopwatch watch_total;
@@ -306,11 +307,14 @@ void BSplineGridConversion(size_t degree, size_t numPoints) {
   // set operation configurations
   sgpp::combigrid::MultiFunction func(f);
 
-  sgpp::combigrid::SingleFunction weightfunction(wcos);
+  sgpp::combigrid::SingleFunction wCos(wcos);
+  sgpp::combigrid::SingleFunction wExp(wexp);
   sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection(0);
   for (size_t d = 0; d < numDimensions; d++) {
-    weightFunctionsCollection.push_back(weightfunction);
+    weightFunctionsCollection.push_back(wCos);
   }
+  //  weightFunctionsCollection.push_back(wCos);
+  //  weightFunctionsCollection.push_back(wExp);
 
   sgpp::combigrid::EvaluatorConfiguration evalConfig(
       sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, degree);

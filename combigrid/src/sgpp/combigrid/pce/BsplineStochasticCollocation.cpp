@@ -24,10 +24,12 @@
 namespace sgpp {
 namespace combigrid {
 
+// ToDo(rehmemk) implement bounds for non-unitcube domains
+
 BsplineStochasticCollocation::BsplineStochasticCollocation(
     sgpp::combigrid::CombigridSurrogateModelConfiguration& config)
     : CombigridSurrogateModel(config),
-      weightFunctions(0),
+      weightFunctions(config.weightFunctions),
       numGridPoints(0),
       computedMeanFlag(false),
       ev(0.0),
@@ -35,15 +37,16 @@ BsplineStochasticCollocation::BsplineStochasticCollocation(
       var(0.0),
       coefficientStorage(config.coefficientStorage) {
   // create vector of function bases
-  if (config.basisFunctions.size() == 0) {
-    for (size_t idim = 0; idim < numDims; idim++) {
-      this->config.basisFunctions.push_back(config.basisFunction);
-    }
-  } else if (numDims != config.basisFunctions.size()) {
-    throw sgpp::base::application_exception(
-        "BsplineStochasticCollocation: number of basis function do not match with the number of "
-        "dimensions of the operation");
-  }
+  //  if (config.basisFunctions.size() == 0) {
+  //    for (size_t idim = 0; idim < numDims; idim++) {
+  //      this->config.basisFunctions.push_back(config.basisFunction);
+  //    }
+  //  } else if (numDims != config.basisFunctions.size()) {
+  //    throw sgpp::base::application_exception(
+  //        "BsplineStochasticCollocation: number of basis function do not match with the number of
+  //        "
+  //        "dimensions of the operation");
+  //  }
 
   initializeOperations(config.pointHierarchies, coefficientStorage, config.levelManager);
 }
@@ -69,9 +72,19 @@ void BsplineStochasticCollocation::initializeOperations(
 
   this->config.combigridMultiOperation = interpolationOperation;
 
-  this->config.combigridOperation = createBsplineQuadratureCoefficientOperation(
-      this->config.degree, this->config.numDims, levelManager, pointHierarchies,
-      coefficientStorage);
+  //  this->config.combigridOperation = createBsplineQuadratureCoefficientOperation(
+  //      this->config.degree, this->config.numDims, levelManager, pointHierarchies,
+  //      coefficientStorage);
+
+  size_t numAdditionalPoints = 0;
+  bool normalizeWeights = false;
+  sgpp::combigrid::CombiEvaluators::Collection quadEvaluators(0);
+  for (size_t d = 0; d < this->config.numDims; d++) {
+    quadEvaluators.push_back(sgpp::combigrid::CombiEvaluators::BSplineQuadrature(
+        this->config.degree, weightFunctions[d], numAdditionalPoints, normalizeWeights));
+  }
+  this->config.combigridOperation = std::make_shared<sgpp::combigrid::CombigridOperation>(
+      pointHierarchies, quadEvaluators, levelManager, coefficientStorage, summationStrategyType);
 
   numGridPoints = 0;
 }
@@ -85,8 +98,20 @@ void BsplineStochasticCollocation::updateConfig(
   this->config.combigridMultiOperation = createBsplineLinearCoefficientOperation(
       newConfig.degree, newConfig.numDims, newConfig.coefficientStorage);
 
-  this->config.combigridOperation = createexpUniformBsplineQuadratureCoefficientOperation(
-      newConfig.degree, newConfig.numDims, newConfig.coefficientStorage);
+  //  this->config.combigridOperation = createexpUniformBsplineQuadratureCoefficientOperation(
+  //      newConfig.degree, newConfig.numDims, newConfig.coefficientStorage);
+  size_t numAdditionalPoints = 0;
+  bool normalizeWeights = false;
+  sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =
+      sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
+  sgpp::combigrid::CombiEvaluators::Collection quadEvaluators(0);
+  for (size_t d = 0; d < newConfig.numDims; d++) {
+    quadEvaluators.push_back(sgpp::combigrid::CombiEvaluators::BSplineQuadrature(
+        newConfig.degree, weightFunctions[d], numAdditionalPoints, normalizeWeights));
+  }
+  this->config.combigridOperation = std::make_shared<sgpp::combigrid::CombigridOperation>(
+      config.pointHierarchies, quadEvaluators, config.levelManager, newConfig.coefficientStorage,
+      summationStrategyType);
   this->config.combigridOperation->getLevelManager()->addLevelsFromStructure(
       newConfig.levelStructure);
 }
@@ -129,12 +154,12 @@ double BsplineStochasticCollocation::computeVariance() {
       grid, gridStorage, this->config.combigridMultiOperation, levelStructure);
 
   sgpp::base::Grid* gridptr = grid.get();
-  sgpp::pde::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(gridptr);
+  sgpp::pde::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(gridptr, weightFunctions);
   sgpp::base::DataVector product(alpha.size(), 0);
   massMatrix.mult(alpha, product);
   double meanSquare = product.dotProduct(alpha);
   if (!computedMeanFlag) {
-    computeMean();
+    mean();
   }
   double variance = meanSquare - ev * ev;
   return variance;
