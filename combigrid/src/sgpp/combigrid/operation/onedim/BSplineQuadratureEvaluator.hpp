@@ -48,7 +48,8 @@ class BSplineQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVec
    * calling this function to ensure that the basisValues are at the same position as their points
    */
   void calculate1DBSplineIntegrals(std::vector<double> &points,
-                                   std::vector<FloatScalarVector> &basisValues);
+                                   std::vector<FloatScalarVector> &basisValues,
+                                   size_t incrementQuadraturePoints, double tol);
 
  public:
   BSplineQuadratureEvaluator();

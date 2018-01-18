@@ -9,6 +9,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
+#include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
@@ -44,6 +45,9 @@ class CombigridSurrogateModelConfiguration {
 
   // bounds for stochastic collocation
   sgpp::base::DataVector bounds;
+
+  // weight functions
+  sgpp::combigrid::WeightFunctionsCollection weightFunctions;
 
   // Bspline degree
   size_t degree;
