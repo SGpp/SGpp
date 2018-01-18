@@ -153,11 +153,9 @@ def stringToTupleOfFloats(s):
         if i.strip() != "":
             if i == "null":
                 ans.append(None)
-            elif "[" in i:
-                ans.append(np.array(stringToList(i)))
             else:
                 ans.append(float(i))
-    return ans
+    return tuple(ans)
 
 
 def stringToList(s, f=float):
