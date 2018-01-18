@@ -3,9 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <iostream>
 #include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
-#include <iostream>
 #include <vector>
 
 namespace sgpp {
@@ -58,27 +58,8 @@ void BSplineInterpolationEvaluator::setGridPoints(std::vector<double> const& x) 
 }
 
 void BSplineInterpolationEvaluator::computeBasisValues() {
-  // constant function for single point, Lagrange polynomials while not enough knots for not a
-  // knot B-splines, nak B-splines otherwise
   basisValues.resize(xValues.size(), sgpp::combigrid::FloatScalarVector(0));
-  /*
-    if (xValues.size() == 1) {
-      basisValues[0] = 1.0;
-      return;
-    } else if ((degree == 3 && (xValues.size() < 5)) || ((degree == 5) && (xValues.size() < 9))) {
-      for (size_t i = 0; i < xValues.size(); i++) {
-        basisValues[i] = LagrangePolynomial(evaluationPoint, xValues, i);
-      }
-      return;
-    }
-    std::vector<double> xi =   createNakKnots(xValues, degree);
-
   // ToDo (rehmemk) slows down on laptop, test on neon if this is useful
-  #pragma omp parallel for schedule(static)
-    for (size_t i = 0; i < xValues.size(); i++) {
-      basisValues[i] = nonUniformBSpline(evaluationPoint, degree, i, xi);
-    }
-    */
   // #pragma omp parallel for
   for (size_t i = 0; i < xValues.size(); i++) {
     basisValues[i] = expUniformNakBspline(evaluationPoint, degree, i, xValues);

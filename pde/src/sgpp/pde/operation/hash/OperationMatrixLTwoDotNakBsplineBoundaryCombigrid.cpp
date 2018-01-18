@@ -18,13 +18,25 @@ OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::
       sgpp::combigrid::SingleFunction(sgpp::combigrid::constantFunction<double>(1.0));
   weightFunctionsCollection =
       sgpp::combigrid::WeightFunctionsCollection(grid->getDimension(), constant_weight_function);
+  // dummy bounds. in evaluation [0,1] is used
+  bounds = sgpp::base::DataVector(std::vector<double>(1, 0));
 }
 
 OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::
     OperationMatrixLTwoDotNakBsplineBoundaryCombigrid(
         sgpp::base::Grid* grid,
         sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection)
-    : grid(grid), weightFunctionsCollection(weightFunctionsCollection) {}
+    : grid(grid), weightFunctionsCollection(weightFunctionsCollection) {
+  // dummy bounds. in evaluation [0,1] is used
+  bounds = sgpp::base::DataVector(std::vector<double>(1, 0));
+}
+
+OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::
+    OperationMatrixLTwoDotNakBsplineBoundaryCombigrid(
+        sgpp::base::Grid* grid,
+        sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection,
+        sgpp::base::DataVector bounds)
+    : grid(grid), weightFunctionsCollection(weightFunctionsCollection), bounds(bounds) {}
 
 OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::
     ~OperationMatrixLTwoDotNakBsplineBoundaryCombigrid() {}
@@ -154,9 +166,15 @@ void OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::mult(sgpp::base::DataVec
 
         for (size_t n = start; n <= stop; n++) {
           for (size_t c = 0; c < quadOrder; c++) {
+            // transform  the quadrature points to the segment on which the Bspline is
+            // evaluated and from there to the interval[a,b] on which the weight function is defined
             const double x = offset + scaling * (coordinates[c] + static_cast<double>(n));
+            double transX = x;
+            if (bounds.size() > 1) {
+              transX = bounds[2 * k] + (bounds[2 * k + 1] - bounds[2 * k]) * x;
+            }
             temp_res += weights[c] * basis.eval(lik, iik, x) * basis.eval(ljk, ijk, x) *
-                        weightFunctionsCollection[k](x);
+                        weightFunctionsCollection[k](transX);
           }
         }
         temp_ij *= scaling * temp_res;

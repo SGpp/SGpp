@@ -37,6 +37,10 @@ class OperationMatrixLTwoDotNakBsplineBoundaryCombigrid : public sgpp::base::Ope
   explicit OperationMatrixLTwoDotNakBsplineBoundaryCombigrid(
       sgpp::base::Grid* grid, sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection);
 
+  explicit OperationMatrixLTwoDotNakBsplineBoundaryCombigrid(
+      sgpp::base::Grid* grid, sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection,
+      sgpp::base::DataVector bounds);
+
   /**
    * Destructor
    */
@@ -53,6 +57,7 @@ class OperationMatrixLTwoDotNakBsplineBoundaryCombigrid : public sgpp::base::Ope
  protected:
   sgpp::base::Grid* grid;
   sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection;
+  sgpp::base::DataVector bounds;
 };
 }  // namespace pde
 }  // namespace sgpp
