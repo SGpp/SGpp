@@ -32,6 +32,8 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
 
   double transWidth = b - a;
 
+  //  std::cout << a << " " << b << " " << transWidth << std::endl;
+
   // on low levels where Lagrange polynomials instead of Bsplines are used the number of Gauss
   // points are not degree dependent and there is only on segment: the whole [0,1] interval
   if ((xValues.size() == 1) || (degree == 3 && (xValues.size() < 5)) ||
