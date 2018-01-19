@@ -132,6 +132,11 @@ bool BsplineStochasticCollocation::updateStatus() {
 
 double BsplineStochasticCollocation::computeMean() {
   double mean = this->config.combigridOperation->getResult();
+  double width = 1.0;
+  for (size_t d = 0; d < numDims; d++) {
+    width *= (config.bounds[2 * d + 1] - config.bounds[2 * d]);
+  }
+  mean *= width;
   return mean;
 }
 
@@ -161,6 +166,12 @@ double BsplineStochasticCollocation::computeVariance() {
   sgpp::base::DataVector product(alpha.size(), 0);
   massMatrix.mult(alpha, product);
   double meanSquare = product.dotProduct(alpha);
+  double width = 1.0;
+  for (size_t d = 0; d < numDims; d++) {
+    width *= (config.bounds[2 * d + 1] - config.bounds[2 * d]);
+  }
+  meanSquare *= width;
+
   if (!computedMeanFlag) {
     mean();
   }
