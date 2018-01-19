@@ -13,6 +13,11 @@ namespace optimization {
 
 class FuzzyInterval {
  public:
+  enum class NormMode {
+    ViaMembershipFunction,
+    ViaConfidenceInterval,
+  };
+
   const size_t DEFAULT_NUMBER_OF_INTEGRAL_SAMPLES = 10000;
 
   FuzzyInterval(double supportLowerBound, double supportUpperBound);
@@ -22,15 +27,21 @@ class FuzzyInterval {
   virtual double evaluateConfidenceIntervalLowerBound(double alpha) const = 0;
   virtual double evaluateConfidenceIntervalUpperBound(double alpha) const = 0;
 
-  double approximateL1Norm() const;
-  double approximateL2Norm() const;
-  double approximateLinfNorm() const;
-  double approximateL1Error(const FuzzyInterval& other) const;
-  double approximateL2Error(const FuzzyInterval& other) const;
-  double approximateLinfError(const FuzzyInterval& other) const;
-  double approximateRelativeL1Error(const FuzzyInterval& other) const;
-  double approximateRelativeL2Error(const FuzzyInterval& other) const;
-  double approximateRelativeLinfError(const FuzzyInterval& other) const;
+  double approximateL1Norm(NormMode normMode = NormMode::ViaMembershipFunction) const;
+  double approximateL2Norm(NormMode normMode = NormMode::ViaMembershipFunction) const;
+  double approximateLinfNorm(NormMode normMode = NormMode::ViaMembershipFunction) const;
+  double approximateL1Error(const FuzzyInterval& other,
+                            NormMode normMode = NormMode::ViaMembershipFunction) const;
+  double approximateL2Error(const FuzzyInterval& other,
+                            NormMode normMode = NormMode::ViaMembershipFunction) const;
+  double approximateLinfError(const FuzzyInterval& other,
+                              NormMode normMode = NormMode::ViaMembershipFunction) const;
+  double approximateRelativeL1Error(const FuzzyInterval& other,
+                                    NormMode normMode = NormMode::ViaMembershipFunction) const;
+  double approximateRelativeL2Error(const FuzzyInterval& other,
+                                    NormMode normMode = NormMode::ViaMembershipFunction) const;
+  double approximateRelativeLinfError(const FuzzyInterval& other,
+                                      NormMode normMode = NormMode::ViaMembershipFunction) const;
 
   double getSupportLowerBound() const;
   double getSupportUpperBound() const;
