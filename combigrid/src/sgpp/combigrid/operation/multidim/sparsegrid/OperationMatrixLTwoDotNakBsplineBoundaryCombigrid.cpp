@@ -3,12 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotNakBsplineBoundaryCombigrid.hpp>
+#include <sgpp/combigrid/operation/multidim/sparsegrid/OperationMatrixLTwoDotNakBsplineBoundaryCombigrid.hpp>
 
 #include <algorithm>
+#include <vector>
 
 namespace sgpp {
-namespace pde {
+namespace combigrid {
 
 OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::
     OperationMatrixLTwoDotNakBsplineBoundaryCombigrid(sgpp::base::Grid* grid)
@@ -189,5 +190,5 @@ void OperationMatrixLTwoDotNakBsplineBoundaryCombigrid::mult(sgpp::base::DataVec
     }
   }
 }
-}  // namespace pde
+}  // namespace combigrid
 }  // namespace sgpp

@@ -226,6 +226,7 @@ namespace sgpp {
 %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridQuadraticSummationStrategy.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridTensorVarianceSummationStrategy.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/FullGridVarianceSummationStrategy.hpp"
+
 %include "combigrid/src/sgpp/combigrid/operation/OperationConfiguration.hpp"
 
 %include "combigrid/src/sgpp/combigrid/threading/ThreadPool.hpp"

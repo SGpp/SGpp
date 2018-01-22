@@ -23,7 +23,7 @@
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
-#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotNakBsplineBoundaryCombigrid.hpp>
+#include <sgpp/combigrid/operation/multidim/sparsegrid/OperationMatrixLTwoDotNakBsplineBoundaryCombigrid.hpp>
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/quadrature/sampling/NaiveSampleGenerator.hpp>
@@ -313,9 +313,6 @@ BOOST_AUTO_TEST_CASE(testCorrespondingDegreeQuadrature) {
   BOOST_CHECK_SMALL(Quaderror5, tolerance);
 }
 
-// Does this test belong here? (OperationMatrixLTwoDotNakBsplineBoundaryCombigrid is defined in pde
-// module but only used for combigrids)
-
 double BsplineQuadratureSquare(size_t numDimensions, size_t degree,
                                sgpp::combigrid::MultiFunction func, size_t level) {
   std::shared_ptr<sgpp::base::Grid> grid;
@@ -339,7 +336,7 @@ double BsplineQuadratureSquare(size_t numDimensions, size_t degree,
     std::cout << "Solving failed!" << std::endl;
   }
   sgpp::base::Grid* gridptr = grid.get();
-  sgpp::pde::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(gridptr);
+  sgpp::combigrid::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(gridptr);
   sgpp::base::DataVector product(alpha.size(), 0);
   massMatrix.mult(alpha, product);
   double integralSquare = product.dotProduct(alpha);
