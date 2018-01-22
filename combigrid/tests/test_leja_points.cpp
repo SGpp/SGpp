@@ -9,6 +9,7 @@
 #include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/L2LejaPointDistribution.hpp>
+#include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
 
 #include <cmath>
 #include <vector>
@@ -98,5 +99,14 @@ BOOST_AUTO_TEST_CASE(testLejaSinusWithNormalDistribution) {
 
 BOOST_AUTO_TEST_CASE(testL2LejaPoints) {
   sgpp::combigrid::L2LejaPointDistribution l2leja;
-  std::cout << l2leja.compute(300, 300) << std::endl;
+  std::vector<double> points;
+  std::vector<double> weights;
+
+  sgpp::combigrid::PolynomialQuadratureEvaluator quad;
+  for (size_t i = 0; i < 300; i++) {
+    double x = l2leja.compute(i, i);
+    points.push_back(x);
+    quad.setGridPoints(points);
+    std::cout << i << ": " << x << " -> " << quad.getAbsoluteWeightSum() << std::endl;
+  }
 }
