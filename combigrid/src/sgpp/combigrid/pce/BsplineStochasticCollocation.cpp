@@ -161,7 +161,7 @@ double BsplineStochasticCollocation::computeVariance() {
       grid, gridStorage, this->config.combigridMultiOperation, levelStructure);
 
   sgpp::base::Grid* gridptr = grid.get();
-  sgpp::pde::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(gridptr, weightFunctions,
+  sgpp::combigrid::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(gridptr, weightFunctions,
                                                                           config.bounds);
   sgpp::base::DataVector product(alpha.size(), 0);
   massMatrix.mult(alpha, product);
