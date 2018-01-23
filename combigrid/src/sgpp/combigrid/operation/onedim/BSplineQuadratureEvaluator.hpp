@@ -89,6 +89,14 @@ class BSplineQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVec
   bool needsOrderedPoints() override;
   bool needsParameter() override;
   void setParameter(FloatScalarVector const &param) override;
+  void setWeightFunction(sgpp::combigrid::SingleFunction weight_function) {
+    this->weight_function = weight_function;
+    this->isCustomWeightFunction = true;
+  }
+  void setBounds(double a, double b) {
+    this->a = a;
+    this->b = b;
+  }
 
   std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cloneLinear() override;
 };
