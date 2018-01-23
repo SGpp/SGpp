@@ -264,7 +264,25 @@ void createRegularLevelStructure(
   coefficientStorage = Operation->getStorage();
 }
 
+// create level structure
+// First step is to guarantee the existence of level (1,..,1). Otherwise a conversion to an SG
+// grid wouldn't be possible
 void createVarianceLevelStructure(
+    std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> Operation, size_t numlevels,
+    size_t numthreads, std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>>& levelStructure,
+    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage>& coefficientStorage) {
+  Operation->getLevelManager()->addRegularLevels(1);
+  size_t numPoints = numlevels;
+  //  Operation->getLevelManager()->addLevelsAdaptiveParallel(numPoints, numthreads);
+
+  std::cout << "adding levels" << std::endl;
+
+  Operation->getLevelManager()->addLevelsAdaptive(numPoints);
+  levelStructure = Operation->getLevelManager()->getLevelStructure();
+  coefficientStorage = Operation->getStorage();
+}
+
+void getVarianceLevelStructure(
     size_t numlevels, size_t degree,
     sgpp::combigrid::CombiHierarchies::Collection const& pointHierarchies,
     sgpp::combigrid::GridFunction gf, bool exploitNesting, size_t numthreads,
@@ -283,18 +301,38 @@ void createVarianceLevelStructure(
       pointHierarchies, Evaluators, levelManager, gf, exploitNesting,
       auxiliarySummationStrategyType);
 
-  // create level structure
-  // First step is to guarantee the existence of level (1,..,1). Otherwise a conversion to an SG
-  // grid wouldn't be possible
-  Operation->getLevelManager()->addRegularLevels(1);
-  //  Operation->getLevelManager()->addRegularLevelsParallel(1, numthreads);
-  //  Operation->getLevelManager()->addLevelsAdaptiveByNumLevels(numlevels);
-  size_t numPoints = numlevels;
-  Operation->getLevelManager()->addLevelsAdaptiveParallel(numPoints, numthreads);
-  //  Operation->getLevelManager()->addLevelsAdaptive(numPoints);
-  levelStructure = Operation->getLevelManager()->getLevelStructure();
+  createVarianceLevelStructure(Operation, numlevels, numthreads, levelStructure,
+                               coefficientStorage);
+}
 
-  coefficientStorage = Operation->getStorage();
+void getWeightedVarianceLevelStructure(
+    size_t numlevels, size_t degree,
+    sgpp::combigrid::CombiHierarchies::Collection const& pointHierarchies,
+    sgpp::combigrid::GridFunction gf, bool exploitNesting, size_t numthreads,
+    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>>& levelStructure,
+    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage>& coefficientStorage,
+    sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection,
+    sgpp::base::DataVector bounds) {
+  sgpp::combigrid::EvaluatorConfiguration EvalConfig(
+      sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineScalarProduct, degree);
+  sgpp::combigrid::CombiEvaluators::MultiCollection Evaluators(
+      numDimensions, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(EvalConfig));
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
+      new sgpp::combigrid::AveragingLevelManager());
+  sgpp::combigrid::FullGridSummationStrategyType auxiliarySummationStrategyType =
+      sgpp::combigrid::FullGridSummationStrategyType::VARIANCE;
+
+  for (size_t d = 0; d < numDimensions; d++) {
+    Evaluators[d]->setWeightFunction(weightFunctionsCollection[d]);
+    Evaluators[d]->setBounds(bounds[2 * d], bounds[2 * d + 1]);
+  }
+
+  auto Operation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
+      pointHierarchies, Evaluators, levelManager, gf, exploitNesting,
+      auxiliarySummationStrategyType);
+
+  createVarianceLevelStructure(Operation, numlevels, numthreads, levelStructure,
+                               coefficientStorage);
 }
 
 double wcos(double v) { return cos(v); }
@@ -310,11 +348,14 @@ void BSplineGridConversion(size_t degree, size_t numPoints) {
   sgpp::combigrid::SingleFunction wCos(wcos);
   sgpp::combigrid::SingleFunction wExp(wexp);
   sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection(0);
+  std::vector<double> boundsVec;
   for (size_t d = 0; d < numDimensions; d++) {
     weightFunctionsCollection.push_back(wCos);
+    //  weightFunctionsCollection.push_back(wExp);
+    boundsVec.push_back(0);
+    boundsVec.push_back(1);
   }
-  //  weightFunctionsCollection.push_back(wCos);
-  //  weightFunctionsCollection.push_back(wExp);
+  sgpp::base::DataVector bounds(boundsVec);
 
   sgpp::combigrid::EvaluatorConfiguration evalConfig(
       sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, degree);
@@ -333,8 +374,11 @@ void BSplineGridConversion(size_t degree, size_t numPoints) {
   size_t numthreads = 4;
   std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> levelStructure;
   std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage;
-  createVarianceLevelStructure(numPoints, degree, pointHierarchies, gf, exploitNesting, numthreads,
-                               levelStructure, coefficientStorage);
+  //  getVarianceLevelStructure(numPoints, degree, pointHierarchies, gf, exploitNesting, numthreads,
+  //                            levelStructure, coefficientStorage);
+  getWeightedVarianceLevelStructure(numPoints, degree, pointHierarchies, gf, exploitNesting,
+                                    numthreads, levelStructure, coefficientStorage,
+                                    weightFunctionsCollection, bounds);
 
   //  createRegularLevelStructure(numlevels, degree, pointHierarchies, gf, exploitNesting,
   //  numthreads,

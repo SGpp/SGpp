@@ -583,95 +583,12 @@ void createRegularLevelStructure(
   Operation->getLevelManager()->addRegularLevels(numLevels);
   coefficientStorage = Operation->getStorage();
   newLevelStructure = Operation->getLevelManager()->getLevelStructure();
-
-  //-------------------------- only for debugging ---------------------------------------
-  //  sgpp::combigrid::CO2 co2Model;
-  //  sgpp::combigrid::MultiFunction func(co2Model.eval);
-  //  double maxErr = 0;
-  //  double L2Err = 0;
-  //  size_t numMCpoints = 10000;
-  //  sgpp::quadrature::NaiveSampleGenerator generator(numDimensions);
-  //  sgpp::base::DataMatrix params(numDimensions, numMCpoints);
-  //  sgpp::base::DataVector p(numDimensions);
-  //  sgpp::base::DataVector Feval(numMCpoints, 0.0);
-  //  for (size_t i = 0; i < numMCpoints; i++) {
-  //    generator.getSample(p);
-  //    params.setColumn(i, p);
-  //    Feval.set(i, func(p));
-  //  }
-  //  Operation->setParameters(params);
-  //  Operation->getLevelManager()->addLevelsFromStructure(newLevelStructure);
-  //  sgpp::base::DataVector CGeval = Operation->getResult();
-  //  CGeval.sub(Feval);
-  //  for (size_t i = 0; i < CGeval.size(); i++) {
-  //    maxErr = (fabs(CGeval[i]) > maxErr) ? fabs(CGeval[i]) : maxErr;
-  //    L2Err += fabs(CGeval[i] * CGeval[i]);
-  //  }
-  //  L2Err = sqrt(L2Err / static_cast<double>(numMCpoints));
-  //  std::cout << "errors: " << maxErr << " " << L2Err << std::endl;
-  //----------------------------------------------------------------------------------------------
-}
-double whalfcos(double v) { return cos(2 * v); }
-BOOST_AUTO_TEST_CASE(testQuadratureWithWeightFunctionAndBounds) {
-  std::cout << "Integrate objective function x^3+y^3 and weight function cos(x/2) defined on "
-               "[0,2]^2 with B splines of degree 5 on level 5 in 2D "
-            << std::endl;
-  size_t numDims = 2;
-  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
-      numDims, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
-  std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> storage;
-  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
-      new sgpp::combigrid::AveragingLevelManager());
-  sgpp::combigrid::SingleFunction weightfunction(whalfcos);
-  sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection(0);
-  for (size_t d = 0; d < numDims; d++) {
-    weightFunctionsCollection.push_back(weightfunction);
-  }
-
-  sgpp::combigrid::CombigridSurrogateModelConfiguration config;
-  config.type = sgpp::combigrid::CombigridSurrogateModelsType::BSPLINE_STOCHASTIC_COLLOCATION;
-  config.pointHierarchies = pointHierarchies;
-  config.storage = storage;
-  config.levelManager = levelManager;
-  config.degree = 5;
-  config.coefficientStorage = storage;
-  config.numDims = numDims;
-  config.weightFunctions = weightFunctionsCollection;
-
-  config.bounds = sgpp::base::DataVector(std::vector<double>({0.0, 0.5, 0.0, 0.5}));
-  // this is only a dummy operation
-  config.combigridMultiOperation = createBsplineLinearCoefficientOperation(
-      config.degree, config.numDims, config.coefficientStorage);
-  sgpp::combigrid::BsplineStochasticCollocation BSC(config);
-
-  std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> levelStructure;
-  std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> newCoefficientStorage;
-  std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> newLevelStructure;
-  size_t numLevels = 5;
-  sgpp::combigrid::MultiFunction func(x32D);
-  sgpp::combigrid::GridFunction gf =
-      BSplineCoefficientGridFunction(func, pointHierarchies, config.degree);
-
-  createRegularLevelStructure(numLevels, config.degree, pointHierarchies, gf, false,
-                              newLevelStructure, newCoefficientStorage, numDims);
-
-  //  update config
-  config.levelStructure = newLevelStructure;
-  config.coefficientStorage = newCoefficientStorage;
-  BSC.updateConfig(config);
-
-  double realEv = 0.289025354482001;
-  double realVar = 0.128573574062360;
-
-  double var = BSC.variance();
-  double ev = BSC.mean();
-  std::cout << fabs(ev - realEv) << " " << fabs(var - realVar) << std::endl;
-  //  BOOST_CHECK_SMALL(fabs(ev - realEv), 5e-15);
-  //  BOOST_CHECK_SMALL(fabs(var - realVar), 1e-11);
 }
 
 BOOST_AUTO_TEST_CASE(testBsplineStochasticCollocation_co2_lognormal) {
-  std::cout << "testBsplineStochasticCollocation_co2_lognormal: Description goes here" << std::endl;
+  std::cout << "Integrate objective function co2model and lognormal weight function  with B "
+               "splines of degree 5 on level 4 in 1D "
+            << std::endl;
 
   // create CO2 function and pdf weight functions
   sgpp::combigrid::CO2 co2Model;
@@ -718,13 +635,11 @@ BOOST_AUTO_TEST_CASE(testBsplineStochasticCollocation_co2_lognormal) {
   // create level Structure and interpolate
   std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> newLevelStructure;
   std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> newCoefficientStorage;
-  size_t numLevels = 7;
+  size_t numLevels = 4;
   sgpp::combigrid::GridFunction gf =
       BSplineCoefficientGridFunction(func, pointHierarchies, bsc_config.degree);
   createRegularLevelStructure(numLevels, bsc_config.degree, pointHierarchies, gf, false,
                               newLevelStructure, newCoefficientStorage, numDims);
-
-  std::cout << "bounds: " << co2Model.bounds[0] << " " << co2Model.bounds[1] << std::endl;
 
   //  update config
   bsc_config.levelStructure = newLevelStructure;
@@ -734,8 +649,8 @@ BOOST_AUTO_TEST_CASE(testBsplineStochasticCollocation_co2_lognormal) {
   // check the moments
   std::cout << std::abs(co2Model.mean - bsc.mean()) << std::endl;
   std::cout << std::abs(co2Model.variance - bsc.variance()) << std::endl;
-  //  BOOST_CHECK_SMALL(std::abs(co2Model.mean - bsc->mean()), 1e-1);
-  //  BOOST_CHECK_SMALL(std::abs(co2Model.variance - bsc->variance()), 1e-1);
+  //  BOOST_CHECK_SMALL(std::abs(co2Model.mean - bsc.mean()), 1e-8);
+  //  BOOST_CHECK_SMALL(std::abs(co2Model.variance - bsc.variance()), 1e-4);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

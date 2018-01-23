@@ -9,6 +9,7 @@
 #include <sgpp/combigrid/algebraic/FloatTensorVector.hpp>
 #include <sgpp/combigrid/common/MultiIndexIterator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
+#include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp>
@@ -51,11 +52,8 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
   ~FullGridVarianceSummationStrategy() {}
 
   /**
-   * SOME DESCRIPTION
-   * People want to know everything about this method including the secret Bspline
-   * techniques!
-   *
-   * Currently only V=FloatArrayVector is supported
+   * Calculates the variance by calculating the mean via B spline Quadrature and the mean of f^2 via
+   * B spline scalar products
    */
   V eval(MultiIndex const &level) override {
     size_t numDimensions = level.size();
@@ -82,6 +80,22 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
           CombiEvaluators::createCombiScalarEvaluator(linearEvalConfig));
     }
 
+    // if a custom weight function shall be used it and its bounds are extracted from the  scalar
+    // product evaluators
+    double width = 1.0;
+    for (size_t d = 0; d < numDimensions; d++) {
+      if (this->evaluatorPrototypes[d]->hasCustomWeightFunction()) {
+        sgpp::combigrid::SingleFunction weight_function;
+        double a;
+        double b;
+        this->evaluatorPrototypes[d]->getWeightFunction(weight_function);
+        this->evaluatorPrototypes[d]->getBounds(a, b);
+        linearEvaluatorPrototypes[d]->setWeightFunction(weight_function);
+        linearEvaluatorPrototypes[d]->setBounds(a, b);
+        width *= b - a;
+      }
+    }
+
     FullGridLinearSummationStrategy<FloatScalarVector> linearStrategy =
         FullGridLinearSummationStrategy<FloatScalarVector>(this->storage, linearEvaluatorPrototypes,
                                                            this->pointHierarchies);
@@ -89,17 +103,14 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
     FullGridQuadraticSummationStrategy<V> quadraticStrategy = FullGridQuadraticSummationStrategy<V>(
         this->storage, this->evaluatorPrototypes, this->pointHierarchies);
 
+    // Var = E(x^2) - E(x)^2
     V meanSquare = quadraticStrategy.eval(level);
     FloatScalarVector mean = linearStrategy.eval(level);
-    //    std::cout.precision(10);
-    //    std::cout << "mean " << mean.value() << " meanSquare " << meanSquare[0].value() << " ";
-
-    // Var = E(x^2) - E(x)^2
+    mean.scalarMult(width);
     mean.componentwiseMult(mean);
     FloatScalarVector variance = meanSquare[0];
+    variance.scalarMult(width);
     variance.sub(mean);
-
-    //      std::cout << " variance " << variance.value() << std::endl;
 
     V returnVariance(variance);
     return returnVariance;
