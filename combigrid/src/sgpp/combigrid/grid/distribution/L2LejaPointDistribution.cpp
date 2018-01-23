@@ -7,6 +7,9 @@
 #include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 
+#include <algorithm>
+#include <limits>
+
 namespace sgpp {
 namespace combigrid {
 
@@ -22,7 +25,7 @@ void sgpp::combigrid::L2LejaPointDistribution::addPoint(double point) {
 
 void L2LejaPointDistribution::computeNextPoint() {
   auto evaluationFunc = [this](double x_unit, double x_trans) {
-    double prod = weightFunction(x_trans);
+    long double prod = weightFunction(x_trans);
 
     for (size_t i = 0; i < points.size(); ++i) {
       prod *= (x_trans - points[i]);
@@ -31,22 +34,14 @@ void L2LejaPointDistribution::computeNextPoint() {
     return prod * prod;
   };
 
-  size_t degree = points.size();
-  size_t numQuadPoints = degree + 1;  // (degree + 1) / 2;
+  size_t numQuadPoints = points.size() + 1 + numAdditionalPoints;
   GaussLegendreQuadrature quad(numQuadPoints);
 
-  double maxIntegral = -1.0;
+  long double maxIntegral = -1.0;
   size_t argmaxIndex = 0;
 
   for (size_t i = 0; i < sortedPoints.size() - 1; ++i) {
-    double integral = 0.0;
-    if (numAdditionalPoints == 0) {
-      integral = quad.evaluate(evaluationFunc, sortedPoints[i], sortedPoints[i + 1]);
-    } else {
-      integral = GaussLegendreQuadrature::evaluate_iteratively(evaluationFunc, sortedPoints[i],
-                                                               sortedPoints[i + 1], numQuadPoints,
-                                                               numAdditionalPoints, 1e-14, true);
-    }
+    long double integral = quad.evaluate_long(evaluationFunc, sortedPoints[i], sortedPoints[i + 1]);
 
     if (integral > maxIntegral) {
       maxIntegral = integral;
@@ -54,16 +49,21 @@ void L2LejaPointDistribution::computeNextPoint() {
     }
   }
 
-  auto funcTimesX = [evaluationFunc](double x_unit, double x_prob) {
-    return x_unit * evaluationFunc(x_unit, x_prob);
+  if (maxIntegral < std::numeric_limits<long double>::min()) {
+    throw sgpp::base::algorithm_exception(
+        "L2LejaPointDistribution::compute - maximum number of L2-Leja points reached");
+  }
+
+  auto funcTimesX = [evaluationFunc](double x_unit, double x_trans) {
+    return x_trans * evaluationFunc(x_unit, x_trans);
   };
 
-  double secondIntegral =
-      quad.evaluate(funcTimesX, sortedPoints[argmaxIndex], sortedPoints[argmaxIndex + 1]);
+  long double secondIntegral =
+      quad.evaluate_long(funcTimesX, sortedPoints[argmaxIndex], sortedPoints[argmaxIndex + 1]);
 
-  //  std::cout << points.size() << ": " << secondIntegral << " / " << maxIntegral << " -> "
-  //            << secondIntegral / maxIntegral << std::endl;
-  addPoint(secondIntegral / maxIntegral);
+  double x = static_cast<double>(secondIntegral / maxIntegral);
+
+  addPoint(x);
 }
 
 L2LejaPointDistribution::L2LejaPointDistribution()

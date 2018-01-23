@@ -18,6 +18,7 @@
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridGridBasedEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridQuadraticSummationStrategy.hpp>
+#include <sgpp/combigrid/operation/multidim/sparsegrid/OperationMatrixLTwoDotNakBsplineBoundaryCombigrid.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineQuadratureEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineScalarProductEvaluator.hpp>
@@ -34,7 +35,6 @@
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
-#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotNakBsplineBoundaryCombigrid.hpp>
 #include <sgpp/quadrature/sampling/NaiveSampleGenerator.hpp>
 
 #include <cmath>
@@ -430,7 +430,7 @@ void BSplineGridConversion(size_t degree, size_t numPoints) {
   //  watch_individual.start();
 
   sgpp::base::Grid* gridptr = grid.get();
-  sgpp::pde::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(
+  sgpp::combigrid::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(
       gridptr, weightFunctionsCollection);
   sgpp::base::DataVector product(alpha.size(), 0);
   massMatrix.mult(alpha, product);

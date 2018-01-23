@@ -78,6 +78,8 @@
 #include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialScalarProductEvaluator.hpp>
 
+#include <sgpp/combigrid/operation/multidim/sparsegrid/OperationMatrixLTwoDotNakBsplineBoundaryCombigrid.hpp>
+
 #include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
 
 #include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>

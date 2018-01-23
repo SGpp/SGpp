@@ -18,7 +18,7 @@
 #include <algorithm>
 
 namespace sgpp {
-namespace pde {
+namespace combigrid {
 
 /**
  * Implements the standard L 2 scalar product for B splines on an uniform boundary grid created by
@@ -59,5 +59,5 @@ class OperationMatrixLTwoDotNakBsplineBoundaryCombigrid : public sgpp::base::Ope
   sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection;
   sgpp::base::DataVector bounds;
 };
-}  // namespace pde
+}  // namespace combigrid
 }  // namespace sgpp
