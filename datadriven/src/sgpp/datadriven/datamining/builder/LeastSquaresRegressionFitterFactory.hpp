@@ -27,7 +27,7 @@ class LeastSquaresRegressionFitterFactory : public FitterFactory {
   /**
    * Default constructor
    */
-  LeastSquaresRegressionFitterFactory() = default;
+  LeastSquaresRegressionFitterFactory();
 
   /**
    * Assemble a #sgpp::datadriven::ModelFittingBase object based on the configuration
@@ -38,6 +38,9 @@ class LeastSquaresRegressionFitterFactory : public FitterFactory {
   ModelFittingBase* buildFitter(FitterConfiguration* config) const override;
   
   FitterConfiguration* buildConfig() const override;
+  
+ protected:
+  std::list<ConfigurationBit> configBits;
 };
 
 } /* namespace datadriven */
