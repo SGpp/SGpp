@@ -774,9 +774,38 @@ sgpp::combigrid::GridFunction BSplineCoefficientGridFunction(
   return gf;
 }
 
+// levelManager must be an AveragingLevelManager. Otherwise this makes no sense
 std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineVarianceRefinementOperation(
     size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func,
     std::shared_ptr<sgpp::combigrid::LevelManager> levelManager) {
+  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
+      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+  sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
+
+  sgpp::combigrid::EvaluatorConfiguration EvalConfig(
+      sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineScalarProduct, degree);
+
+  sgpp::combigrid::CombiEvaluators::MultiCollection Evaluators(
+      numDimensions, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(EvalConfig));
+
+  //  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
+  //      new sgpp::combigrid::AveragingLevelManager());
+  sgpp::combigrid::FullGridSummationStrategyType auxiliarySummationStrategyType =
+      sgpp::combigrid::FullGridSummationStrategyType::VARIANCE;
+
+  bool exploitNesting = false;
+  auto Operation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
+      pointHierarchies, Evaluators, levelManager, gf, exploitNesting,
+      auxiliarySummationStrategyType);
+  return Operation;
+}
+
+std::shared_ptr<sgpp::combigrid::CombigridMultiOperation>
+createBsplineVarianceRefinementOperationWithWeightsAndBounds(
+    size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func,
+    std::shared_ptr<sgpp::combigrid::LevelManager> levelManager,
+    sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection,
+    sgpp::base::DataVector bounds) {
   sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
       numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
   sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);

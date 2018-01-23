@@ -9,6 +9,7 @@
 #include <sgpp/combigrid/algebraic/FloatTensorVector.hpp>
 #include <sgpp/combigrid/common/MultiIndexIterator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
+#include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp>
@@ -46,16 +47,44 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
       std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> scalarProductEvaluatorPrototypes,
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies)
       : AbstractFullGridSummationStrategy<V>(storage, scalarProductEvaluatorPrototypes,
-                                             pointHierarchies) {}
+                                             pointHierarchies) {
+    //    for (size_t d = 0; d < numDims; d++) {
+    //      weightFunctionsCollection.push_back(weight_function(constantFunction<double>(1.0)));
+    //      bounds.push_back(0.0);
+    //      bounds.push_back(1.0);
+    //    }
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param storage Storage that stores and provides the function values for each grid
+   * point.
+   * @param scalarProductEvaluatorPrototypes prototype objects for the evaluators that are cloned to
+   * get an
+   * evaluator for each dimension and each level.
+   * @param pointHierarchies PointHierarchy objects for each dimension providing the
+   * points for eachlevel and information about their ordering.
+   * @param weightFunctionsCollection the probability density functions
+   * @param bounds thebounding box of the weightFunctionsCollection
+   */
+  FullGridVarianceSummationStrategy(
+      std::shared_ptr<AbstractCombigridStorage> storage,
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> scalarProductEvaluatorPrototypes,
+      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+      sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection,
+      sgpp::base::DataVector bounds)
+      : AbstractFullGridSummationStrategy<V>(storage, scalarProductEvaluatorPrototypes,
+                                             pointHierarchies) {
+    this->weightFunctionsCollection = weightFunctionsCollection;
+    this->bounds = bounds;
+  }
 
   ~FullGridVarianceSummationStrategy() {}
 
   /**
-   * SOME DESCRIPTION
-   * People want to know everything about this method including the secret Bspline
-   * techniques!
-   *
-   * Currently only V=FloatArrayVector is supported
+   * Calculates the variance by calculating the mean via B spline Quadrature and the mean of f^2 via
+   * B spline scalar products
    */
   V eval(MultiIndex const &level) override {
     size_t numDimensions = level.size();
@@ -104,6 +133,10 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
     V returnVariance(variance);
     return returnVariance;
   }
+
+ private:
+  sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection;
+  sgpp::base::DataVector bounds;
 };
 
 } /* namespace combigrid */
