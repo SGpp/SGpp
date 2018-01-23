@@ -5,6 +5,11 @@
 
 #pragma once
 
+#include <algorithm>
+#include <cmath>
+#include <functional>
+#include <iomanip>
+#include <iostream>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/combigrid/GeneralFunction.hpp>
@@ -13,11 +18,6 @@
 #include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
-#include <algorithm>
-#include <cmath>
-#include <functional>
-#include <iomanip>
-#include <iostream>
 #include <vector>
 #include "../../utils/BSplineRoutines.hpp"
 
@@ -40,6 +40,8 @@ class BSplineScalarProductEvaluator : public AbstractLinearEvaluator<FloatArrayV
   bool normalizeWeights;
   bool isCustomWeightFunction;
   size_t degree;
+  double a;
+  double b;
 
   /**
    * Calculates the one dimensional integrals int b_i(x) b_j(x) dx  for all j
@@ -54,11 +56,15 @@ class BSplineScalarProductEvaluator : public AbstractLinearEvaluator<FloatArrayV
    * @param points grid points of the one dimensional grid
    * @param integrals The integrals will be added to the back of this vector in the order of the
    * points in the vector with the points,
+   * @params incrementQuadraturePoints increment for numAdditionalPoints in the iterative quadrature
+   * routine for custom weight function
+   * @param tol tolerance for the iterative quadrature routine for custom weight function
    * it is recommended to clear the weight vector before calling this function to ensure that the
    * weights are at the same position as their points
    */
   void calculate1DBSplineScalarProducts(std::vector<double> &points,
-                                        std::vector<FloatArrayVector> &integrals);
+                                        std::vector<FloatArrayVector> &basisValues,
+                                        size_t incrementQuadraturePoints = 1, double tol = 1e-14);
 
  public:
   BSplineScalarProductEvaluator();
@@ -91,6 +97,23 @@ class BSplineScalarProductEvaluator : public AbstractLinearEvaluator<FloatArrayV
   bool needsOrderedPoints() override;
   bool needsParameter() override;
   void setParameter(FloatArrayVector const &param) override;
+
+  bool hasCustomWeightFunction() override { return this->isCustomWeightFunction; }
+  void setWeightFunction(sgpp::combigrid::SingleFunction weight_function) override {
+    this->weight_function = weight_function;
+    this->isCustomWeightFunction = true;
+  }
+  void getWeightFunction(sgpp::combigrid::SingleFunction &weight_function) override {
+    weight_function = this->weight_function;
+  }
+  void setBounds(double a, double b) override {
+    this->a = a;
+    this->b = b;
+  }
+  void getBounds(double &a, double &b) override {
+    a = this->a;
+    b = this->b;
+  }
 
   std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> cloneLinear() override;
 };
