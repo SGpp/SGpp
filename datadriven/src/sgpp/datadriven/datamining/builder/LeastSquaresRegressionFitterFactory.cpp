@@ -18,7 +18,23 @@
 
 namespace sgpp {
 namespace datadriven {
+
+LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory()
+  :configBits(){
+  for(int i=0;i<12;i++){
+    configBits.append(new ConfigurationBit());
+  }
+}
+
 ModelFittingBase* LeastSquaresRegressionFitterFactory::buildFitter(FitterConfiguration* config) const {
+  // build ConfigurationBits (constructor)
+  
+  // fix ConfigurationBits according to constraints
+  
+  // build config
+  
+  // return model and ConfigurationBits in vector/matrix
+  
   return new ModelFittingLeastSquares(*static_cast<FitterConfigurationLeastSquares*>(config));
 }
 FitterConfiguration* LeastSquaresRegressionFitterFactory::buildConfig() const {
