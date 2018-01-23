@@ -43,6 +43,8 @@ def load_custom_pgf_preamble(dtype="standard", macros="thesis"):
         cmd_filename = r"/home/franzefn/Promotion/UQ/repos/dissertation/thesis/commands.tex"
     elif macros == "l2leja":
         cmd_filename = r"/home/franzefn/Promotion/Paper/Awesome-CT-Leja-Papers-of-Dabian-Holzelin/l2-leja/paper/commands.tex"
+    elif macros == "l2leja_david":
+        cmd_filename = r".../Awesome-CT-Leja-Papers-of-Dabian-Holzelin/l2-leja/paper/commands.tex"
     else:
         cmd_filename = r"/home/franzefn/Promotion/Paper/repos/SGA16/paper/commands.tex"
 

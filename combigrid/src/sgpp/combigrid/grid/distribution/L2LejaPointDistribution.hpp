@@ -25,6 +25,7 @@ class L2LejaPointDistribution : public AbstractPointDistribution {
   void addPoint(double point);
 
   void computeNextPoint();
+  void computeNextPointLogSumExp();
 
  public:
   L2LejaPointDistribution();
