@@ -47,38 +47,7 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
       std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> scalarProductEvaluatorPrototypes,
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies)
       : AbstractFullGridSummationStrategy<V>(storage, scalarProductEvaluatorPrototypes,
-                                             pointHierarchies) {
-    //    for (size_t d = 0; d < numDims; d++) {
-    //      weightFunctionsCollection.push_back(weight_function(constantFunction<double>(1.0)));
-    //      bounds.push_back(0.0);
-    //      bounds.push_back(1.0);
-    //    }
-  }
-
-  /**
-   * Constructor.
-   *
-   * @param storage Storage that stores and provides the function values for each grid
-   * point.
-   * @param scalarProductEvaluatorPrototypes prototype objects for the evaluators that are cloned to
-   * get an
-   * evaluator for each dimension and each level.
-   * @param pointHierarchies PointHierarchy objects for each dimension providing the
-   * points for eachlevel and information about their ordering.
-   * @param weightFunctionsCollection the probability density functions
-   * @param bounds thebounding box of the weightFunctionsCollection
-   */
-  FullGridVarianceSummationStrategy(
-      std::shared_ptr<AbstractCombigridStorage> storage,
-      std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> scalarProductEvaluatorPrototypes,
-      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-      sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection,
-      sgpp::base::DataVector bounds)
-      : AbstractFullGridSummationStrategy<V>(storage, scalarProductEvaluatorPrototypes,
-                                             pointHierarchies) {
-    this->weightFunctionsCollection = weightFunctionsCollection;
-    this->bounds = bounds;
-  }
+                                             pointHierarchies) {}
 
   ~FullGridVarianceSummationStrategy() {}
 
@@ -111,6 +80,22 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
           CombiEvaluators::createCombiScalarEvaluator(linearEvalConfig));
     }
 
+    // if a custom weight function shall be used it and its bounds are extracted from the  scalar
+    // product evaluators
+    double width = 1.0;
+    for (size_t d = 0; d < numDimensions; d++) {
+      if (this->evaluatorPrototypes[d]->hasCustomWeightFunction()) {
+        sgpp::combigrid::SingleFunction weight_function;
+        double a;
+        double b;
+        this->evaluatorPrototypes[d]->getWeightFunction(weight_function);
+        this->evaluatorPrototypes[d]->getBounds(a, b);
+        linearEvaluatorPrototypes[d]->setWeightFunction(weight_function);
+        linearEvaluatorPrototypes[d]->setBounds(a, b);
+        width *= b - a;
+      }
+    }
+
     FullGridLinearSummationStrategy<FloatScalarVector> linearStrategy =
         FullGridLinearSummationStrategy<FloatScalarVector>(this->storage, linearEvaluatorPrototypes,
                                                            this->pointHierarchies);
@@ -118,25 +103,18 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
     FullGridQuadraticSummationStrategy<V> quadraticStrategy = FullGridQuadraticSummationStrategy<V>(
         this->storage, this->evaluatorPrototypes, this->pointHierarchies);
 
+    // Var = E(x^2) - E(x)^2
     V meanSquare = quadraticStrategy.eval(level);
     FloatScalarVector mean = linearStrategy.eval(level);
-    //    std::cout.precision(10);
-    //    std::cout << "mean " << mean.value() << " meanSquare " << meanSquare[0].value() << " ";
-
-    // Var = E(x^2) - E(x)^2
+    mean.scalarMult(width);
     mean.componentwiseMult(mean);
     FloatScalarVector variance = meanSquare[0];
+    variance.scalarMult(width);
     variance.sub(mean);
-
-    //      std::cout << " variance " << variance.value() << std::endl;
 
     V returnVariance(variance);
     return returnVariance;
   }
-
- private:
-  sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection;
-  sgpp::base::DataVector bounds;
 };
 
 } /* namespace combigrid */

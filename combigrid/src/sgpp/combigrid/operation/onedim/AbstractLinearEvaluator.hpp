@@ -6,6 +6,7 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_ABSTRACTLINEAREVALUATOR_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_ABSTRACTLINEAREVALUATOR_HPP_
 
+#include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractEvaluator.hpp>
 
@@ -40,8 +41,8 @@ class AbstractLinearEvaluator : public AbstractEvaluator<V> {
   virtual std::vector<V> getBasisValues() = 0;
   virtual std::vector<double> getBasisCoefficients() = 0;
 
-  virtual void setBasisCoefficientsAtGridPoints(std::vector<double> &newBasisCoefficients) = 0;
-  virtual void setGridPoints(std::vector<double> const &xValues) = 0;
+  virtual void setBasisCoefficientsAtGridPoints(std::vector<double>& newBasisCoefficients) = 0;
+  virtual void setGridPoints(std::vector<double> const& xValues) = 0;
 
   /**
    * Clones this object and returns it as a shared pointer to AbstractLinearEvaluator<V>.
@@ -50,8 +51,13 @@ class AbstractLinearEvaluator : public AbstractEvaluator<V> {
   virtual std::shared_ptr<AbstractEvaluator<V>> clone() { return cloneLinear(); }
   virtual bool needsOrderedPoints() = 0;
   virtual bool needsParameter() = 0;
-  virtual void setParameter(V const &param) = 0;
-  //  virtual CombiEvaluatorTypes getType() = 0;
+  virtual void setParameter(V const& param) = 0;
+
+  virtual bool hasCustomWeightFunction() { return false; };
+  virtual void setWeightFunction(sgpp::combigrid::SingleFunction weight_function){};
+  virtual void getWeightFunction(sgpp::combigrid::SingleFunction& weight_function){};
+  virtual void setBounds(double a, double b){};
+  virtual void getBounds(double& a, double& b){};
 
   /**
    * AbstractLinearEvaluator provides a standard implementation of this method based on

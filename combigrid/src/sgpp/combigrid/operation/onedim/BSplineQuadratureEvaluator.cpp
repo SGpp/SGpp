@@ -77,7 +77,7 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
 
 void BSplineQuadratureEvaluator::calculate1DBSplineIntegrals(
     std::vector<double>& points, std::vector<FloatScalarVector>& basisValues,
-    size_t incrementQuadraturePoints = 1, double tol = 1e-14) {
+    size_t incrementQuadraturePoints, double tol) {
   basisValues.resize(points.size());
   std::vector<FloatScalarVector> newBasisValues(points.size());
 
