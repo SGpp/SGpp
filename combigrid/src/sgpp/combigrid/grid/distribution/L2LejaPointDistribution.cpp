@@ -66,6 +66,85 @@ void L2LejaPointDistribution::computeNextPoint() {
   addPoint(x);
 }
 
+void L2LejaPointDistribution::computeNextPointLogSumExp() {
+  size_t numQuadPoints = points.size() + 1 + numAdditionalPoints;
+  auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
+  sgpp::base::DataVector roots, weights;
+  quadRule.getLevelPointsAndWeightsNormalized(numQuadPoints, roots, weights);
+  GaussLegendreQuadrature quad(numQuadPoints);
+
+  // ----------------------------------------------------------------
+  // evaluate denominator
+  double maxLogIntegral = -std::numeric_limits<double>::max();
+  size_t argmaxIndex = 0;
+
+  sgpp::base::DataVector psi(numQuadPoints);
+  for (size_t i = 0; i < sortedPoints.size() - 1; ++i) {
+    // --------------------------------------------------------------
+    // do quadrature
+    double a = sortedPoints[i], b = sortedPoints[i + 1];
+    double width = b - a;
+    double logIntegral = 0.0;
+    double max_psi = -std::numeric_limits<double>::max();
+    for (size_t i = 0; i < roots.getSize(); ++i) {
+      double x_trans = a + width * roots[i];
+
+      psi[i] = std::log(weights[i]) + std::log(weightFunction(x_trans) * width);
+      for (size_t j = 0; j < points.size(); ++j) {
+        double diff = x_trans - points[j];
+        psi[i] += std::log(diff * diff);
+      }
+
+      if (max_psi < psi[i]) {
+        max_psi = psi[i];
+      }
+    }
+
+    double inner_sum = 0.0;
+    for (size_t j = 0; j < psi.size(); ++j) {
+      inner_sum += std::exp(psi[j] - max_psi);
+    }
+
+    logIntegral = max_psi + std::log(inner_sum);
+    // --------------------------------------------------------------
+    if (maxLogIntegral < logIntegral) {
+      maxLogIntegral = logIntegral;
+      argmaxIndex = i;
+    }
+  }
+
+  // ----------------------------------------------------------------
+  // compute nominator
+  double a = sortedPoints[argmaxIndex], b = sortedPoints[argmaxIndex + 1];
+  double width = b - a;
+  double max_psi = -std::numeric_limits<double>::max();
+  for (size_t i = 0; i < roots.getSize(); ++i) {
+    double x_trans = a + width * roots[i];
+    psi[i] = std::log(weights[i]) + std::log(weightFunction(x_trans) * width) + std::log(x_trans);
+
+    for (size_t j = 0; j < points.size(); ++j) {
+      double diff = x_trans - points[j];
+      psi[i] += std::log(diff * diff);
+    }
+
+    if (max_psi < psi[i]) {
+      max_psi = psi[i];
+    }
+  }
+
+  double inner_sum = 0.0;
+  for (size_t j = 0; j < psi.size(); ++j) {
+    inner_sum += std::exp(psi[j] - max_psi);
+  }
+  double secondLogIntegral = max_psi + std::log(inner_sum);
+
+  // --------------------------------------------------------------
+  // compute next L2 Leja point
+  double x = std::exp(secondLogIntegral - maxLogIntegral);
+
+  addPoint(x);
+}
+
 L2LejaPointDistribution::L2LejaPointDistribution()
     : points{0.5},
       sortedPoints{0.0, 0.5, 1.0},
@@ -83,7 +162,8 @@ L2LejaPointDistribution::~L2LejaPointDistribution() {}
 
 double L2LejaPointDistribution::compute(size_t numPoints, size_t j) {
   while (points.size() <= j) {
-    computeNextPoint();
+    computeNextPointLogSumExp();
+    //    computeNextPoint();
   }
   return points[j];
 }
