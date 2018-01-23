@@ -24,9 +24,9 @@ namespace base {
 class DataVector : public std::vector<double> {
  public:
   /**
-   * Create a empty DataVector.
+   * Create an empty DataVector.
    */
-  DataVector() = default;
+  DataVector();
 
   /**
    * Copy constructor.
