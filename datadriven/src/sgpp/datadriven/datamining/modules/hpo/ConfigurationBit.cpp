@@ -47,7 +47,10 @@ void addConstraint(ConfigurationRestriction* constraint){
   constraints.append(constraint);
 }
 
-
+void reset(){
+  value = 0;
+  bVisited = false;
+}
 
 
 }  // namespace datadriven

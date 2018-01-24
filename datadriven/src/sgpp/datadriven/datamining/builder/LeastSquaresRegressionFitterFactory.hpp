@@ -35,7 +35,7 @@ class LeastSquaresRegressionFitterFactory : public FitterFactory {
    * data from the config file.
    * @return Fully configured instance of a  #sgpp::datadriven::ModelFittingBase object.
    */
-  ModelFittingBase* buildFitter(FitterConfiguration* config) const override;
+  ModelFittingBase* buildFitter(int configID) const override;
   
   FitterConfiguration* buildConfig() const override;
   

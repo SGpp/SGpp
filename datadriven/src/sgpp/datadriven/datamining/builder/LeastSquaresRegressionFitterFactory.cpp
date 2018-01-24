@@ -21,16 +21,21 @@ namespace datadriven {
 
 LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory()
   :configBits(){
+  // build ConfigurationBits (constructor)
   for(int i=0;i<12;i++){
     configBits.append(new ConfigurationBit());
   }
 }
 
-ModelFittingBase* LeastSquaresRegressionFitterFactory::buildFitter(FitterConfiguration* config) const {
-  // build ConfigurationBits (constructor)
-  
+ModelFittingBase* LeastSquaresRegressionFitterFactory::buildFitter(int configID) const {
   // fix ConfigurationBits according to constraints
-  
+  for(auto &bit : configBits){
+    bit.reset();
+  }
+  for(auto &bit : configBits){
+    bit.evaluate(&configID);
+  }
+
   // build config
   
   // return model and ConfigurationBits in vector/matrix

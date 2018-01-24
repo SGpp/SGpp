@@ -36,6 +36,8 @@ class ConfigurationBit {
   void addConstraint(ConfigurationRestriction* constraint);
   
   int evaluate(int* input);
+  
+  void reset();
   // void mult(base::DataVector& alpha, base::DataVector& result);
   // void multTranspose(base::DataVector& source, base::DataVector& result);
 
