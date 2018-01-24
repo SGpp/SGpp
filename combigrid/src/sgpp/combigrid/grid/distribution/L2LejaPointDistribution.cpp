@@ -75,7 +75,7 @@ void L2LejaPointDistribution::computeNextPoint() {
   double a = sortedPoints[argmaxIndex], b = sortedPoints[argmaxIndex + 1];
   double width = b - a;
   double max_psi = -std::numeric_limits<double>::max();
-  for (size_t i = 0; i < psi.size(); ++i) {
+  for (size_t i = 0; i < roots.getSize(); ++i) {
     double x_trans = a + width * roots[i];
     psi[i] = std::log(weights[i]) + std::log(weightFunction(x_trans) * width) + std::log(x_trans);
 
