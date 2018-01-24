@@ -189,10 +189,11 @@ def insert_legend(fig, loc="right", ncol=3, has_axis=True, shift=0.0):
         raise AttributeError("loc '%s' not known" % loc)
 
     try:
+
         plt.setp(lgd.get_title(),
                  multialignment='left')
         for txt in lgd.get_texts():
-            txt.set_ha('left')  # ha is alias for horizontalalignment
+            txt.set_ha('left')  # ha is alias for "horizontal alignment"
     except:
         pass
 

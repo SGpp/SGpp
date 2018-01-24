@@ -17,6 +17,9 @@
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
 
+#include <sgpp/combigrid/algebraic/FirstMomentNormStrategy.hpp>
+#include <sgpp/combigrid/algebraic/VarianceNormStrategy.hpp>
+
 #include <vector>
 
 namespace sgpp {
@@ -51,16 +54,11 @@ class PolynomialStochasticCollocation : public CombigridSurrogateModel {
 
   void initializeBounds();
   void initializeWeightFunctions();
+  void initializeNormStrategies();
 
   bool updateStatus();
   double computeMean();
   double computeVariance();
-
-  void countPolynomialTerms();
-  size_t additionalQuadraturePoints(OrthogonalPolynomialBasisType polyType);
-
-  double quad(sgpp::combigrid::MultiIndex i);
-  double quad(sgpp::combigrid::MultiIndex i, sgpp::combigrid::MultiIndex j);
 
   // global polynomial basis
   std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> legendreBasis;
@@ -73,8 +71,11 @@ class PolynomialStochasticCollocation : public CombigridSurrogateModel {
   // mean and variance storage
   bool computedMeanFlag;
   double ev;
+  std::unique_ptr<sgpp::combigrid::FirstMomentNormStrategy> firstMomentNormstrategy;
+
   bool computedVarianceFlag;
   double var;
+  std::unique_ptr<sgpp::combigrid::VarianceNormStrategy> varianceNormStrategy;
 };
 
 } /* namespace combigrid */

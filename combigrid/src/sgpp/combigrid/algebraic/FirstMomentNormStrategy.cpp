@@ -14,6 +14,7 @@
 #include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
 
 #include <vector>
+#include <map>
 
 namespace sgpp {
 namespace combigrid {
@@ -59,42 +60,47 @@ double FirstMomentNormStrategy::quad(MultiIndex i) {
   // Gauss quadrature in each dimension
   for (size_t idim = 0; idim < i.size(); idim++) {
     size_t degree_i = i[idim];
-    auto functionBasis = basisFunctions[idim];
+    auto basisFunction = basisFunctions[idim];
     auto weightFunction = weightFunctions[idim];
-    size_t incrementQuadraturePoints = functionBasis->numAdditionalQuadraturePoints();
+    size_t incrementQuadraturePoints = basisFunction->numAdditionalQuadraturePoints();
     size_t numGaussPoints = (degree_i + 2) / 2;
 
-    auto func = [&functionBasis, &degree_i, &idim, &weightFunction](double x_unit, double x_prob) {
-      return functionBasis->evaluate(degree_i, x_unit) * weightFunction(x_prob);
+    auto func = [&basisFunction, &degree_i, &idim, &weightFunction](double x_unit, double x_prob) {
+      return basisFunction->evaluate(degree_i, x_unit) * weightFunction(x_prob);
     };
 
     double a = bounds[2 * idim], b = bounds[2 * idim + 1];
-    ans *= GaussLegendreQuadrature::evaluate_iteratively(func, a, b, numGaussPoints,
-                                                         incrementQuadraturePoints, 1e-14);
+    if (incrementQuadraturePoints == 0) {
+      ans *= GaussLegendreQuadrature(numGaussPoints).evaluate(func, a, b);
+    } else {
+      ans *= GaussLegendreQuadrature::evaluate_iteratively(func, a, b, numGaussPoints,
+                                                           incrementQuadraturePoints, 1e-14);
+    }
   }
   return ans;
 }
 
 double FirstMomentNormStrategy::computeMean(FloatTensorVector& vector) {
-  // compute mass matrix and corresponding coefficient vector
-  auto multiIndices_i = vector.getValues();
-  auto it_i = multiIndices_i->getStoredDataIterator();
-  sgpp::base::DataVector m;
-  sgpp::base::DataVector coeffs;
+  auto it_i = vector.getValues()->getStoredDataIterator();
 
+  double ans = 0.0;
   while (it_i->isValid()) {
     auto ix = it_i->getMultiIndex();
 
-    double value = quad(ix);
-    m.push_back(value);
-    coeffs.push_back(it_i->value().value());
-    it_i->moveToNext();
-  }
+    double coeff = it_i->value().value();
 
-  // compute mean: m^T coeffs
-  double ans = 0.0;
-  for (size_t i = 0; i < m.getSize(); i++) {
-    ans += m[i] * coeffs[i];
+    double quadValue = 0.0;
+    auto it = lookupTable.find(ix);
+    if (it != lookupTable.end()) {
+      quadValue = it->second;
+    } else {
+      quadValue = quad(ix);
+      lookupTable[ix] = quadValue;
+    }
+
+    ans += quadValue * coeff;
+
+    it_i->moveToNext();
   }
 
   return ans;
