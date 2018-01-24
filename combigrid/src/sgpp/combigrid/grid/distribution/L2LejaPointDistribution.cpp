@@ -24,49 +24,6 @@ void sgpp::combigrid::L2LejaPointDistribution::addPoint(double point) {
 }
 
 void L2LejaPointDistribution::computeNextPoint() {
-  auto evaluationFunc = [this](double x_unit, double x_trans) {
-    long double prod = weightFunction(x_trans);
-
-    for (size_t i = 0; i < points.size(); ++i) {
-      prod *= (x_trans - points[i]);
-    }
-
-    return prod * prod;
-  };
-
-  size_t numQuadPoints = points.size() + 1 + numAdditionalPoints;
-  GaussLegendreQuadrature quad(numQuadPoints);
-
-  long double maxIntegral = -1.0;
-  size_t argmaxIndex = 0;
-
-  for (size_t i = 0; i < sortedPoints.size() - 1; ++i) {
-    long double integral = quad.evaluate_long(evaluationFunc, sortedPoints[i], sortedPoints[i + 1]);
-
-    if (integral > maxIntegral) {
-      maxIntegral = integral;
-      argmaxIndex = i;
-    }
-  }
-
-  if (maxIntegral < std::numeric_limits<long double>::min()) {
-    throw sgpp::base::algorithm_exception(
-        "L2LejaPointDistribution::compute - maximum number of L2-Leja points reached");
-  }
-
-  auto funcTimesX = [evaluationFunc](double x_unit, double x_trans) {
-    return x_trans * evaluationFunc(x_unit, x_trans);
-  };
-
-  long double secondIntegral =
-      quad.evaluate_long(funcTimesX, sortedPoints[argmaxIndex], sortedPoints[argmaxIndex + 1]);
-
-  double x = static_cast<double>(secondIntegral / maxIntegral);
-
-  addPoint(x);
-}
-
-void L2LejaPointDistribution::computeNextPointLogSumExp() {
   size_t numQuadPoints = points.size() + 1 + numAdditionalPoints;
   auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
   sgpp::base::DataVector roots, weights;
@@ -118,7 +75,7 @@ void L2LejaPointDistribution::computeNextPointLogSumExp() {
   double a = sortedPoints[argmaxIndex], b = sortedPoints[argmaxIndex + 1];
   double width = b - a;
   double max_psi = -std::numeric_limits<double>::max();
-  for (size_t i = 0; i < roots.getSize(); ++i) {
+  for (size_t i = 0; i < psi.size(); ++i) {
     double x_trans = a + width * roots[i];
     psi[i] = std::log(weights[i]) + std::log(weightFunction(x_trans) * width) + std::log(x_trans);
 
@@ -162,8 +119,7 @@ L2LejaPointDistribution::~L2LejaPointDistribution() {}
 
 double L2LejaPointDistribution::compute(size_t numPoints, size_t j) {
   while (points.size() <= j) {
-    computeNextPointLogSumExp();
-    //    computeNextPoint();
+    computeNextPoint();
   }
   return points[j];
 }

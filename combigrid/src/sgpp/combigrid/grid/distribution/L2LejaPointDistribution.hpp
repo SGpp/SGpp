@@ -24,8 +24,13 @@ class L2LejaPointDistribution : public AbstractPointDistribution {
 
   void addPoint(double point);
 
+  /**
+   * This method computes the next L2-Leja point given the current sequence. This method uses
+   * the log-sum-exp trick to compute the relevant integrals. The reason is that the integrals
+   * become very small such that they do not fit anoymore into a double. This tricks avoids this
+   * underflow issue.
+   */
   void computeNextPoint();
-  void computeNextPointLogSumExp();
 
  public:
   L2LejaPointDistribution();
