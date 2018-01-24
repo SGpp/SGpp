@@ -3,33 +3,33 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/algorithm/AlgorithmMultipleEvaluation.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/ConfigurationBit.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
 #include <sgpp/globaldef.hpp>
+#include <list>
 
 namespace sgpp {
 namespace datadriven {
 
 
-int evaluate(int* input){
+int ConfigurationBit::evaluate(int* input){
   if(bVisited){
     return value;
   }
   bVisited = true;
   //for each constraint
-  for(const auto &constraint : constraints){
+  for(auto &constraint : constraints){
     if(constraint.getConfigBits().size() == 0){
       value = constraint.getBias();
       return value;
     }
   }
-  for(const auto &constraint : constraints){
+  for(auto &constraint : constraints){
     int tmp = constraint.getBias();
-    for(const auto &bit : constraint.getConfigBits()){
-      tmp = tmp * bit.evaluate();
+    for(auto &bit : constraint.getConfigBits()){
+      tmp = tmp * bit.evaluate(input);
     }
     if(tmp != 0){
       value = tmp;
@@ -43,11 +43,11 @@ int evaluate(int* input){
 }
 
 
-void addConstraint(ConfigurationRestriction* constraint){
-  constraints.append(constraint);
+void ConfigurationBit::addConstraint(ConfigurationRestriction* constraint){
+  constraints.push_back(*constraint);
 }
 
-void reset(){
+void ConfigurationBit::reset(){
   value = 0;
   bVisited = false;
 }
