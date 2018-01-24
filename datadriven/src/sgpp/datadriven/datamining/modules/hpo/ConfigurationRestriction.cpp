@@ -9,6 +9,7 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
 #include <sgpp/globaldef.hpp>
+#include <list>
 
 namespace sgpp {
 namespace datadriven {
@@ -19,7 +20,7 @@ int ConfigurationRestriction::getBias(){
   return bias;
 }
 
-std::list<ConfigurationBit> ConfigurationRestriction::getConfigBits(){
+std::list<ConfigurationBit> ConfigurationRestriction::getConfigBits(){ // std::list<ConfigurationBit>
   return parameters;
 }
 

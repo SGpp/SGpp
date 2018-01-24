@@ -9,7 +9,7 @@
 #include <sgpp/datadriven/datamining/modules/hpo/ConfigurationRestriction.hpp>
 
 #include <sgpp/globaldef.hpp>
-
+#include <list>
 
 namespace sgpp {
 namespace datadriven {
@@ -26,7 +26,7 @@ class ConfigurationBit {
    * @param dataset the dataset that should be evaluated
    */
   ConfigurationBit()
-      : constraints(), value(0), visited(false) {}
+      : constraints(), value(0), bVisited(false) {}
 
   /**
    * Destructor

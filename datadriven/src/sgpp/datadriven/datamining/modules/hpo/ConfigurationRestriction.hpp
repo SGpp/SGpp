@@ -6,15 +6,17 @@
 #ifndef ConfigurationRestriction_HPP
 #define ConfigurationRestriction_HPP
 
-#include <sgpp/datadriven/datamining/modules/hpo/ConfigurationBit.hpp>
+// #include <sgpp/datadriven/datamining/modules/hpo/ConfigurationBit.hpp>
+
 
 // EDIT: cyclic dependency
 
 #include <sgpp/globaldef.hpp>
-
+#include <list>
 
 namespace sgpp {
 namespace datadriven {
+class ConfigurationBit;
 
 /**
  * This class implements OperationB for a base::Grids with linear basis ansatzfunctions without boundaries
@@ -40,6 +42,7 @@ class ConfigurationRestriction {
 
   // double getDuration();
   int getBias();
+
   std::list<ConfigurationBit> getConfigBits();
 
  protected:

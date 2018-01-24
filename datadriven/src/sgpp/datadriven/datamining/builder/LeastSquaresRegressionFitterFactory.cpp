@@ -23,16 +23,16 @@ LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory()
   :configBits(){
   // build ConfigurationBits (constructor)
   for(int i=0;i<12;i++){
-    configBits.append(new ConfigurationBit());
+    configBits.push_back(*(new ConfigurationBit()));
   }
 }
 
 ModelFittingBase* LeastSquaresRegressionFitterFactory::buildFitter(int configID) const {
   // fix ConfigurationBits according to constraints
-  for(auto &bit : configBits){
+  for(auto bit : configBits){
     bit.reset();
   }
-  for(auto &bit : configBits){
+  for(auto bit : configBits){
     bit.evaluate(&configID);
   }
 
@@ -40,7 +40,7 @@ ModelFittingBase* LeastSquaresRegressionFitterFactory::buildFitter(int configID)
   
   // return model and ConfigurationBits in vector/matrix
   
-  return new ModelFittingLeastSquares(*static_cast<FitterConfigurationLeastSquares*>(config));
+  return new ModelFittingLeastSquares(*static_cast<FitterConfigurationLeastSquares*>(buildConfig()));
 }
 FitterConfiguration* LeastSquaresRegressionFitterFactory::buildConfig() const {
   FitterConfigurationLeastSquares* config = new FitterConfigurationLeastSquares();

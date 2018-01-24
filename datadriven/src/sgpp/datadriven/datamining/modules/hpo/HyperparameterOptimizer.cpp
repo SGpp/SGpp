@@ -10,7 +10,7 @@
  *     Author: Eric Koepke
  */
 
-#include <sgpp/datadriven/datamining/base/HyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/datadriven/tools/CSVTools.hpp>
 
