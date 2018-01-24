@@ -63,6 +63,7 @@ double SecondMomentNormStrategy::quad(MultiIndex i, MultiIndex j) {
     size_t degree_j = j[idim];
     auto basisFunction = basisFunctions[idim];
     auto weightFunction = weightFunctions[idim];
+    size_t incrementQuadraturePoints = basisFunction->numAdditionalQuadraturePoints();
     size_t numGaussPoints = (degree_i + degree_j + 3) / 2;
 
     auto func = [basisFunction, &degree_i, &degree_j, &weightFunction](double x_unit,
@@ -72,47 +73,67 @@ double SecondMomentNormStrategy::quad(MultiIndex i, MultiIndex j) {
     };
 
     double a = bounds[2 * idim], b = bounds[2 * idim + 1];
-    ans *= GaussLegendreQuadrature::evaluate_iteratively(
-        func, a, b, numGaussPoints, basisFunction->numAdditionalQuadraturePoints(), 1e-14);
+    if (incrementQuadraturePoints == 0) {
+      ans *= GaussLegendreQuadrature(numGaussPoints).evaluate(func, a, b);
+    } else {
+      ans *= GaussLegendreQuadrature::evaluate_iteratively(func, a, b, numGaussPoints,
+                                                           incrementQuadraturePoints, 1e-14);
+    }
   }
   return ans;
 }
 
 double SecondMomentNormStrategy::computeSecondMoment(FloatTensorVector& vector) {
+  // update the missing entries in the lookup table
   // compute mass matrix and corresponding coefficient vector
   auto multiIndices_i = vector.getValues();
   auto multiIndices_j = vector.getValues();
 
   // count the number of tensor terms and compute coefficient vector
   auto it_counter = multiIndices_i->getStoredDataIterator();
-  size_t numGridPoints = 0;
+
   sgpp::base::DataVector coeffs;
+  size_t numGridPoints = 0;
   while (it_counter->isValid()) {
     coeffs.push_back(it_counter->value().value());
     numGridPoints++;
     it_counter->moveToNext();
   }
 
-  sgpp::base::DataMatrix M(numGridPoints, numGridPoints);
   auto it_i = multiIndices_i->getStoredDataIterator();
   size_t i = 0;
+  size_t numDims = multiIndices_i->getNumDimensions();
+  MultiIndex kx(2 * numDims);
+
+  sgpp::base::DataMatrix M(numGridPoints, numGridPoints);
+  sgpp::base::DataVector result(numGridPoints);
   while (it_i->isValid()) {
     MultiIndex ix = it_i->getMultiIndex();
 
     auto it_j = multiIndices_j->getStoredDataIterator();
     size_t j = 0;
     while (it_j->isValid()) {
-      double innerProduct = 0.0;
       // exploit symmetry
       if (j >= i) {
         MultiIndex jx = it_j->getMultiIndex();
 
-        // compute the inner product and store it
-        innerProduct = quad(ix, jx);
+        joinMultiIndices(ix, jx, kx);
+        double innerProduct = 0.0;
+        auto it = innerProducts.find(kx);
+        if (it != innerProducts.end()) {
+          innerProduct = it->second;
+        } else {
+          innerProduct = quad(ix, jx);
+          innerProducts[kx] = innerProduct;
+        }
 
-        // store the result
-        M.set(i, j, innerProduct);
-        M.set(j, i, innerProduct);
+        // compute the matrix vector product
+        //        M.set(i, j, innerProduct);
+        //        M.set(j, i, innerProduct);
+        result[i] += innerProduct * coeffs[j];
+        if (j > i) {
+          result[j] += innerProduct * coeffs[i];
+        }
       }
 
       it_j->moveToNext();
@@ -123,10 +144,10 @@ double SecondMomentNormStrategy::computeSecondMoment(FloatTensorVector& vector) 
     i += 1;
   }
 
-  // compute second moment: coeffs^T M coeffs
-  sgpp::base::DataVector result(numGridPoints);
-  M.mult(coeffs, result);
+  // compute the matrix vector product
+  //  M.mult(coeffs, result);
 
+  // compute the vector vector product
   double ans = 0.0;
   for (size_t i = 0; i < numGridPoints; i++) {
     ans += coeffs[i] * result[i];
@@ -161,6 +182,18 @@ void SecondMomentNormStrategy::initializeBounds() {
       throw sgpp::base::application_exception(
           "SecondMomentNormStrategy::initializeBounds - not enough arguments for bounds "
           "specified");
+    }
+  }
+}
+
+void SecondMomentNormStrategy::joinMultiIndices(MultiIndex& ix, MultiIndex& jx, MultiIndex& kx) {
+  for (size_t i = 0; i < ix.size(); i++) {
+    if (ix[i] < jx[i]) {
+      kx[2 * i] = ix[i];
+      kx[2 * i + 1] = jx[i];
+    } else {
+      kx[2 * i] = jx[i];
+      kx[2 * i + 1] = ix[i];
     }
   }
 }

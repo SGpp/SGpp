@@ -69,6 +69,8 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     throw sgpp::base::application_exception(
         "PolynomialStochasticCollocation: no operation is set in surrogate model config");
   }
+
+  initializeNormStrategies();
 }
 
 PolynomialStochasticCollocation::~PolynomialStochasticCollocation() {}
@@ -115,6 +117,13 @@ void PolynomialStochasticCollocation::initializeWeightFunctions() {
   }
 }
 
+void PolynomialStochasticCollocation::initializeNormStrategies() {
+  firstMomentNormstrategy.reset(
+      new FirstMomentNormStrategy(legendreBasis, weightFunctions, false, config.bounds));
+  varianceNormStrategy.reset(
+      new VarianceNormStrategy(legendreBasis, weightFunctions, false, config.bounds));
+}
+
 bool PolynomialStochasticCollocation::updateStatus() {
   if (numGridPoints < config.combigridTensorOperation->numGridPoints()) {
     expansionCoefficients = config.combigridTensorOperation->getResult();
@@ -128,8 +137,7 @@ bool PolynomialStochasticCollocation::updateStatus() {
 }
 
 double PolynomialStochasticCollocation::computeMean() {
-  return FirstMomentNormStrategy(legendreBasis, weightFunctions, false, config.bounds)
-      .norm(expansionCoefficients);
+  return firstMomentNormstrategy->norm(expansionCoefficients);
 }
 
 double PolynomialStochasticCollocation::mean() {
@@ -142,8 +150,7 @@ double PolynomialStochasticCollocation::mean() {
 }
 
 double PolynomialStochasticCollocation::computeVariance() {
-  return VarianceNormStrategy(legendreBasis, weightFunctions, false, config.bounds)
-      .norm(expansionCoefficients);
+  return varianceNormStrategy->norm(expansionCoefficients);
 }
 
 double PolynomialStochasticCollocation::variance() {

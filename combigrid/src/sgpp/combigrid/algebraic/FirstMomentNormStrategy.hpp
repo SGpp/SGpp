@@ -16,6 +16,7 @@
 #include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
 
 #include <vector>
+#include <map>
 
 namespace sgpp {
 namespace combigrid {
@@ -53,6 +54,8 @@ class FirstMomentNormStrategy : public NormStrategy<FloatTensorVector> {
 
   sgpp::combigrid::OrthogonalBasisFunctionsCollection basisFunctions;
   sgpp::combigrid::WeightFunctionsCollection weightFunctions;
+
+  std::map<MultiIndex, double> lookupTable;
 
   double quad(MultiIndex i);
   double computeMean(FloatTensorVector& vector);

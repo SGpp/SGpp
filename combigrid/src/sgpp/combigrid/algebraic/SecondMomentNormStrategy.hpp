@@ -16,6 +16,7 @@
 #include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
 
 #include <vector>
+#include <map>
 
 namespace sgpp {
 namespace combigrid {
@@ -50,6 +51,7 @@ class SecondMomentNormStrategy : public NormStrategy<FloatTensorVector> {
  private:
   bool isOrthogonal;
   sgpp::base::DataVector bounds;
+  std::map<MultiIndex, double> innerProducts;
 
   sgpp::combigrid::OrthogonalBasisFunctionsCollection basisFunctions;
   sgpp::combigrid::WeightFunctionsCollection weightFunctions;
@@ -58,6 +60,8 @@ class SecondMomentNormStrategy : public NormStrategy<FloatTensorVector> {
   double computeSecondMoment(sgpp::combigrid::FloatTensorVector& vector);
 
   void initializeBounds();
+
+  void joinMultiIndices(MultiIndex& ix, MultiIndex& jx, MultiIndex& kx);
 };
 
 } /* namespace combigrid */
