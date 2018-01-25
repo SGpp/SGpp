@@ -5,7 +5,7 @@
  *      Author: Eric
  */
 
-#include "HyperParameter.h"
+#include "HyperParameter.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -17,6 +17,13 @@ HyperParameter::HyperParameter() {
 
 HyperParameter::~HyperParameter() {
 	// TODO Auto-generated destructor stub
+}
+
+std::list<ConfigurationBit> HyperParameter::makeConfigBits(int nBits){
+	for(int i=0;i<nBits;i++){
+		bits.push_back(*(new ConfigurationBit()));
+	}
+	return bits;
 }
 
 } /* namespace datadriven */

@@ -32,6 +32,7 @@ ModelFittingBase* LeastSquaresRegressionFitterFactory::buildFitter(int configID)
   for(auto bit : configBits){
     bit.reset();
   }
+  // remove, do this through parameters
   for(auto bit : configBits){
     bit.evaluate(&configID);
   }
