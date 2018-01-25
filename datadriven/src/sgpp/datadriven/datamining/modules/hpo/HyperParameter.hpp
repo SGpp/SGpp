@@ -8,6 +8,8 @@
 #ifndef DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_MODULES_HPO_HYPERPARAMETER_H_
 #define DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_MODULES_HPO_HYPERPARAMETER_H_
 
+#include <list>
+
 namespace sgpp {
 namespace datadriven {
 
@@ -15,6 +17,11 @@ class HyperParameter {
 public:
 	HyperParameter();
 	virtual ~HyperParameter();
+	std::list<ConfigurationBit> makeConfigBits(int nBits);
+
+
+protected:
+	std::list<ConfigurationBit> bits;
 };
 
 } /* namespace datadriven */
