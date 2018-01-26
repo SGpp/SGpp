@@ -27,7 +27,8 @@ namespace datadriven {
 
 DBMatOnlineDEOrthoAdapt::DBMatOnlineDEOrthoAdapt(DBMatOffline& offline, double beta)
     : sgpp::datadriven::DBMatOnlineDE(offline, beta) {
-  if (offline.getConfig().decomp_type_ != sgpp::datadriven::DBMatDecompostionType::OrthoAdapt) {
+  if (offline.getDecompositionConfig().type_ !=
+      sgpp::datadriven::DBMatDecompostionType::OrthoAdapt) {
     throw sgpp::base::algorithm_exception(
         "In DBMatOnlineDEOrthoAdapt::DBMatOnlineDEOrthoAdapt: offline object has wrong "
         "decomposition type: DecompositionType::OrthoAdapt needed!");

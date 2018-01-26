@@ -66,27 +66,27 @@ void createInstance() {
     gridConfig.type_ = sgpp::base::GridType::Linear;
 
     sgpp::datadriven::RegularizationConfiguration regularizationConfig{};
-    regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Identity;
+    regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
+    regularizationConfig.lambda_ = 0.01
 
-    sgpp::datadriven::DBMatDecompostionType
-        dt = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
+    sgpp::datadriven::DecompositionConfiguration decompositionConfig;
+    decompositionConfig.type_ = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
 
     sgpp::base::AdpativityConfiguration adaptConfig;
     adaptConfig.numRefinements_ = 2;
     adaptConfig.noPoints_ = 7;
     adaptConfig.threshold_ = 0.0;  // only required for surplus refinement
 
-    sgpp::datadriven::DBMatDensityConfiguration dbMatDensityConf(gridConfig,
-                                                                 adaptConfig,
-                                                                 regularizationConfig.regType_,
-                                                                 0.01, dt);
     sgpp::datadriven::Dataset trainData(TEST_DATASET_SIZE, TEST_DIMENSION);
     sgpp::datadriven::Dataset testData(TEST_DATASET_SIZE, TEST_DIMENSION);
     sgpp::base::DataVector classLabels(2);
     classLabels[0] = -1;
     classLabels[1] = 1;
     scheduler = new RoundRobinScheduler(SCHEDULER_BATCH_SIZE);
-    learnerInstance = new sgpp::datadriven::LearnerSGDEOnOffParallel(dbMatDensityConf,
+    learnerInstance = new sgpp::datadriven::LearnerSGDEOnOffParallel(gridConfig,
+                                                                     adaptConfig,
+                                                                     regularizationConfig,
+                                                                     decompositionConfig,
                                                                      trainData, testData, nullptr,
                                                                      classLabels, 2, false,
                                                                      0.0, 0.01,

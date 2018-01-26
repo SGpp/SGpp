@@ -15,7 +15,7 @@
 #include <sgpp/base/grid/LevelIndexTypes.hpp>
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
@@ -307,12 +307,12 @@ bool DataMiningConfigParser::getFitterRegularizationConfig(
 
     // parse  regularization type
     if (regularizationConfig->contains("regularizationType")) {
-      config.regType_ =
+      config.type_ =
           RegularizationTypeParser::parse((*regularizationConfig)["regularizationType"].get());
     } else {
       std::cout << "# Did not find regularizationConfig[regularizationType]. Setting default value "
-                << RegularizationTypeParser::toString(defaults.regType_) << "." << std::endl;
-      config.regType_ = defaults.regType_;
+                << RegularizationTypeParser::toString(defaults.type_) << "." << std::endl;
+      config.type_ = defaults.type_;
     }
 
     config.lambda_ =

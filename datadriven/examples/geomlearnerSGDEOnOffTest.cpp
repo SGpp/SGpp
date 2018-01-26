@@ -5,8 +5,9 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
+#include <sgpp/datadriven/configuration/DecompositionConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 
 #include <string>
@@ -87,8 +88,9 @@ int main() {
    */
   std::cout << "# create regularization config" << std::endl;
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-  regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Identity;
-
+  regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
+  // initial regularization parameter lambda
+  regularizationConfig.lambda_ = 0.01;
   /**
    * Select the desired decomposition type for the offline step.
    * Note: Refinement/Coarsening only possible for Cholesky decomposition.
@@ -109,6 +111,10 @@ int main() {
   //    dt = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
   //    decompType = "Incomplete Cholesky decomposition on Dense Matrix";
   std::cout << "Decomposition type: " << decompType << std::endl;
+  sgpp::datadriven::DecompositionConfiguration decompositionConfig;
+  decompositionConfig.type_ = dt;
+  decompositionConfig.iCholSweepsDecompose_ = 2;
+  decompositionConfig.iCholSweepsRefine_ = 2;
 
   /**
    * Configure adaptive refinement (if Cholesky is chosen). As refinement
@@ -153,18 +159,11 @@ int main() {
   adaptConfig.noPoints_ = 5;
   adaptConfig.threshold_ = 0.0;  // only required for surplus refinement
 
-  // initial regularization parameter lambda
-  double lambda = 0.01;
   // initial weighting factor
   double beta = 0.0;
-  // configuration
-  sgpp::datadriven::DBMatDensityConfiguration dconf(gridConfig, adaptConfig,
-                                                    regularizationConfig.regType_, lambda, dt);
   // specify if prior should be used to predict class labels
   bool usePrior = false;
 
-  dconf.icholParameters.sweepsDecompose = 2;
-  dconf.icholParameters.sweepsRefine = 2;
 
   std::string matrixfile = "mats/28x28_ModLin_NN_Inter_lvl3_Chol.out";
 
@@ -173,13 +172,16 @@ int main() {
    */
   std::cout << "# create learner" << std::endl;
   // Use precomputed matrix
-  sgpp::datadriven::LearnerSGDEOnOff learner(dconf, trainDataset, testDataset, nullptr,
-                                classLabels, classNum, usePrior, beta, lambda, matrixfile);
+  sgpp::datadriven::LearnerSGDEOnOff learner(gridConfig, adaptConfig, regularizationConfig,
+                                             decompositionConfig, trainDataset, testDataset,
+                                             nullptr, classLabels, classNum, usePrior, beta,
+                                             matrixfile);
 
 
   // Build matrix
-  // sgpp::datadriven::LearnerSGDEOnOff learner(dconf, trainDataset, testDataset, nullptr,
-  //                                           classLabels, classNum, usePrior, beta, lambda);
+  // sgpp::datadriven::LearnerSGDEOnOff learner(gridConfig, adaptConfig, regularizationConfig,
+  //    decompositionConfig, trainDataset, testDataset, nullptr,
+  //                                           classLabels, classNum, usePrior, beta);
   std::cout << "learner set up!" << std::endl;
 
   /**

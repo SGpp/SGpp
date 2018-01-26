@@ -46,13 +46,16 @@ namespace datadriven {
 static const int MINIMUM_CONSISTENT_GRID_VERSION = 10;
 
 LearnerSGDEOnOffParallel::LearnerSGDEOnOffParallel(
-    sgpp::datadriven::DBMatDensityConfiguration &dconf,
+    sgpp::base::RegularGridConfiguration &gridConfig,
+    sgpp::base::AdpativityConfiguration &adaptivityConfig,
+    sgpp::datadriven::RegularizationConfiguration &regularizationConfig,
+    sgpp::datadriven::DecompositionConfiguration &decompositionConfig,
     Dataset &trainData, Dataset &testData,
     Dataset *validationData,
     sgpp::base::DataVector &classLabels, size_t numClassesInit,
     bool usePrior, double beta, double lambda,
     MPITaskScheduler &mpiTaskScheduler)
-    : LearnerSGDEOnOff(dconf, trainData, testData, validationData, classLabels, numClassesInit,
+    : LearnerSGDEOnOff(gridConfig, adaptivityConfig, regularizationConfig, decompositionConfig, trainData, testData, validationData, classLabels, numClassesInit,
                        usePrior,
                        beta, lambda), mpiTaskScheduler(mpiTaskScheduler),
       refinementHandler(nullptr, 0) {
@@ -240,7 +243,7 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(const std::string &refinementF
   MultiGridRefinementFunctor *func = nullptr;
 
   // Zero-crossing-based refinement
-  ZeroCrossingRefinementFunctor funcZrcr{grids, alphas, offline->getConfig().ref_noPoints_,
+  ZeroCrossingRefinementFunctor funcZrcr{grids, alphas, offline->getAdaptivityConfig().noPoints_,
                                          levelPenalize, preCompute};
 
   // Data-based refinement. Needs a problem dependent coeffA. The values
@@ -254,7 +257,7 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(const std::string &refinementF
   DataMatrix *trainDataRef = &(trainData.getData());
   DataVector *trainLabelsRef = &(trainData.getTargets());
   DataBasedRefinementFunctor funcData = DataBasedRefinementFunctor{
-      grids, alphas, trainDataRef, trainLabelsRef, offline->getConfig().ref_noPoints_,
+      grids, alphas, trainDataRef, trainLabelsRef, offline->getAdaptivityConfig().noPoints_,
       levelPenalize, coeffA};
 
   if (refinementFunctorType == "zero") {
