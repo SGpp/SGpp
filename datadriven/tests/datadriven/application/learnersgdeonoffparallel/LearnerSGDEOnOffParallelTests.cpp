@@ -67,7 +67,7 @@ void createInstance() {
 
     sgpp::datadriven::RegularizationConfiguration regularizationConfig{};
     regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
-    regularizationConfig.lambda_ = 0.01
+    regularizationConfig.lambda_ = 0.01;
 
     sgpp::datadriven::DecompositionConfiguration decompositionConfig;
     decompositionConfig.type_ = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
