@@ -66,20 +66,21 @@ void DBMatOnlineDEChol::solveSLE(DataVector& b, bool do_cv) {
   //  myAlpha.abs();
   //  myAlpha.sqr();
   //  auto res = sqrt(myAlpha.sum());
-  //  std::cout << "solving with " << offlineObject.getConfig().icholParameters.sweepsSolver
+  //  std::cout << "solving with " << offlineObject.getDecompositionConfig().icholSweepsSolver_
   //            << " sweeps results in error: " << std::scientific << std::setprecision(10) << res
   //            << "\n";
 }
 
 DBMatDMSChol* DBMatOnlineDEChol::buildCholSolver(DBMatOffline& offlineObject, bool doCV) const {
   // const cast is OK here, since we access the config read only.
-  switch (offlineObject.getConfig().decomp_type_) {
+  switch (offlineObject.getDecompositionConfig().type_) {
     case (DBMatDecompostionType::Chol):
       return new DBMatDMSChol();
       break;
     case (DBMatDecompostionType::DenseIchol):
-      return new DBMatDMSDenseIChol(offlineObject.getConfig().icholParameters,
-                                    offlineObject.getGrid(), offlineObject.getConfig().lambda_,
+      return new DBMatDMSDenseIChol(offlineObject.getDecompositionConfig(),
+                                    offlineObject.getGrid(),
+                                    offlineObject.getRegularizationConfig().lambda_,
                                     doCV);
       break;
     case (DBMatDecompostionType::LU):

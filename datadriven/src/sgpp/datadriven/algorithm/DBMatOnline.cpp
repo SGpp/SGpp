@@ -16,12 +16,12 @@ namespace datadriven {
 DBMatOnline::DBMatOnline(DBMatOffline& o) : offlineObject{o} {}
 
 void DBMatOnline::setLambda(double lambda) {
-  switch (offlineObject.getConfig().decomp_type_) {
+  switch (offlineObject.getDecompositionConfig().type_) {
     case DBMatDecompostionType::Eigen:
     case DBMatDecompostionType::Chol:
     case DBMatDecompostionType::DenseIchol:
     case DBMatDecompostionType::OrthoAdapt:
-      offlineObject.getConfig().lambda_ = lambda;
+      offlineObject.getRegularizationConfig().lambda_ = lambda;
       break;
     case DBMatDecompostionType::LU:
     default:

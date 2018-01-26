@@ -45,18 +45,28 @@ using sgpp::base::algorithm_exception;
 using sgpp::base::data_exception;
 using sgpp::base::OperationMatrix;
 
-DBMatOffline::DBMatOffline(const DBMatDensityConfiguration& oc)
-    : config(oc), lhsMatrix(), isConstructed(false), isDecomposed(false), grid(nullptr) {
+DBMatOffline::DBMatOffline(
+    const sgpp::base::RegularGridConfiguration& gridConfig,
+    const sgpp::base::AdpativityConfiguration& adaptivityConfig,
+    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+    const sgpp::datadriven::DecompositionConfiguration& decompositionConfig)
+    : gridConfig(gridConfig), adaptivityConfig(adaptivityConfig),
+    regularizationConfig(regularizationConfig), decompositionConfig(decompositionConfig),
+    lhsMatrix(), isConstructed(false), isDecomposed(false), grid(nullptr) {
   interactions = std::vector<std::vector<size_t>>();
 }
 
 DBMatOffline::DBMatOffline()
-    : config(), lhsMatrix(), isConstructed(false), isDecomposed(false), grid(nullptr) {
+    : gridConfig(), adaptivityConfig(), regularizationConfig(), decompositionConfig(),
+    lhsMatrix(), isConstructed(false), isDecomposed(false), grid(nullptr) {
   interactions = std::vector<std::vector<size_t>>();
 }
 
 DBMatOffline::DBMatOffline(const DBMatOffline& rhs)
-    : config(rhs.config),
+    : gridConfig(rhs.gridConfig),
+      adaptivityConfig(rhs.adaptivityConfig),
+      regularizationConfig(rhs.regularizationConfig),
+      decompositionConfig(rhs.decompositionConfig),
       lhsMatrix(rhs.lhsMatrix),
       isConstructed(rhs.isConstructed),
       isDecomposed(rhs.isDecomposed),
@@ -73,7 +83,10 @@ DBMatOffline& sgpp::datadriven::DBMatOffline::operator=(const DBMatOffline& rhs)
     return *this;
   }
 
-  config = rhs.config;
+  gridConfig = rhs.gridConfig;
+  adaptivityConfig = rhs.adaptivityConfig;
+  regularizationConfig = rhs.regularizationConfig;
+  decompositionConfig = rhs.decompositionConfig;
   lhsMatrix = rhs.lhsMatrix;
   isConstructed = rhs.isConstructed;
   isDecomposed = rhs.isDecomposed;
@@ -86,8 +99,9 @@ DBMatOffline& sgpp::datadriven::DBMatOffline::operator=(const DBMatOffline& rhs)
 }
 
 DBMatOffline::DBMatOffline(const std::string& fileName)
-    : config(), lhsMatrix(), isConstructed(true), isDecomposed(true), grid(nullptr) {
-  parseConfig(fileName, config);
+    : gridConfig(), adaptivityConfig(), regularizationConfig(), decompositionConfig(),
+    lhsMatrix(), isConstructed(true), isDecomposed(true), grid(nullptr) {
+  parseConfig(fileName, gridConfig, adaptivityConfig, regularizationConfig, decompositionConfig);
   interactions = std::vector<std::vector<size_t>>();
   parseInter(fileName, interactions);
   std::cout << "Setting up Grid..." << std::endl;
@@ -95,7 +109,18 @@ DBMatOffline::DBMatOffline(const std::string& fileName)
   std::cout << "Grid set up! Start reading Matrix" << std::endl;
 }
 
-DBMatDensityConfiguration& DBMatOffline::getConfig() { return config; }
+sgpp::base::RegularGridConfiguration& DBMatOffline::getGridConfig() {
+    return gridConfig;
+}
+sgpp::base::AdpativityConfiguration& DBMatOffline::getAdaptivityConfig() {
+    return adaptivityConfig;
+}
+sgpp::datadriven::RegularizationConfiguration& DBMatOffline::getRegularizationConfig() {
+    return regularizationConfig;
+}
+sgpp::datadriven::DecompositionConfiguration& DBMatOffline::getDecompositionConfig() {
+    return decompositionConfig;
+}
 
 DataMatrix& DBMatOffline::getDecomposedMatrix() {
   if (isDecomposed) {
@@ -108,19 +133,19 @@ DataMatrix& DBMatOffline::getDecomposedMatrix() {
 Grid& DBMatOffline::getGrid() { return *grid; }
 
 void DBMatOffline::InitializeGrid() {
-  if (config.grid_type_ == GridType::ModLinear) {
-    grid = std::unique_ptr<Grid>{Grid::createModLinearGrid(config.grid_dim_)};
-  } else if (config.grid_type_ == GridType::Linear) {
-    grid = std::unique_ptr<Grid>{Grid::createLinearGrid(config.grid_dim_)};
+  if (gridConfig.type_ == GridType::ModLinear) {
+    grid = std::unique_ptr<Grid>{Grid::createModLinearGrid(gridConfig.dim_)};
+  } else if (gridConfig.type_ == GridType::Linear) {
+    grid = std::unique_ptr<Grid>{Grid::createLinearGrid(gridConfig.dim_)};
   } else {
     throw algorithm_exception("LearnerBase::InitializeGrid: An unsupported grid type was chosen!");
   }
 
   // Generate regular Grid with LEVELS Levels
   if (interactions.size() == 0) {
-    grid->getGenerator().regular(config.grid_level_);
+    grid->getGenerator().regular(gridConfig.level_);
   } else {
-    grid->getGenerator().regularInter(config.grid_level_, interactions, 0.0);
+    grid->getGenerator().regularInter(gridConfig.level_, interactions, 0.0);
   }
   std::cout << "Initialized Grid has " << grid->getSize() << "Gridpoints." << std::endl;
 }
@@ -171,10 +196,10 @@ void DBMatOffline::store(const std::string& fileName) {
     }
   }
 
-  outputFile << static_cast<int>(config.grid_type_) << "," << config.grid_dim_ << ","
-             << config.grid_level_ << "," << static_cast<int>(config.regularization_) << ","
-             << std::setprecision(12) << config.lambda_ << ","
-             << static_cast<int>(config.decomp_type_) << inter << "\n";
+  outputFile << static_cast<int>(gridConfig.type_) << "," << gridConfig.dim_ << ","
+             << gridConfig.level_ << "," << static_cast<int>(regularizationConfig.type_) << ","
+             << std::setprecision(12) << regularizationConfig.lambda_ << ","
+             << static_cast<int>(decompositionConfig.type_) << inter << "\n";
   outputFile.close();
 
   // write matrix
@@ -202,8 +227,12 @@ void DBMatOffline::printMatrix() {
   }
 }
 
-void sgpp::datadriven::DBMatOffline::parseConfig(const std::string& fileName,
-                                                 DBMatDensityConfiguration& config) const {
+void sgpp::datadriven::DBMatOffline::parseConfig(
+    const std::string& fileName,
+    sgpp::base::RegularGridConfiguration& gridConfig,
+    sgpp::base::AdpativityConfiguration& adaptivityConfig,
+    sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+    sgpp::datadriven::DecompositionConfiguration& decompositionConfig) const {
   std::ifstream file(fileName, std::istream::in);
   // Read configuration
   if (!file) {
@@ -216,12 +245,12 @@ void sgpp::datadriven::DBMatOffline::parseConfig(const std::string& fileName,
   std::vector<std::string> tokens;
   StringTokenizer::tokenize(str, ",", tokens);
 
-  config.grid_type_ = static_cast<GridType>(std::stoi(tokens[0]));
-  config.grid_dim_ = std::stoi(tokens[1]);
-  config.grid_level_ = std::stoi(tokens[2]);
-  config.regularization_ = static_cast<RegularizationType>(std::stoi(tokens[3]));
-  config.lambda_ = std::stof(tokens[4]);
-  config.decomp_type_ = static_cast<DBMatDecompostionType>(std::stoi(tokens[5]));
+  gridConfig.type_ = static_cast<GridType>(std::stoi(tokens[0]));
+  gridConfig.dim_ = std::stoi(tokens[1]);
+  gridConfig.level_ = std::stoi(tokens[2]);
+  regularizationConfig.type_ = static_cast<RegularizationType>(std::stoi(tokens[3]));
+  regularizationConfig.lambda_ = std::stof(tokens[4]);
+  decompositionConfig.type_ = static_cast<DBMatDecompostionType>(std::stoi(tokens[5]));
 }
 
 void sgpp::datadriven::DBMatOffline::parseInter(const std::string& fileName,
