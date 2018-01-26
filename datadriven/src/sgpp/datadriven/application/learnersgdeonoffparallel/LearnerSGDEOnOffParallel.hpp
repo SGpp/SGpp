@@ -52,8 +52,7 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
                            sgpp::datadriven::DecompositionConfiguration &decompositionConfig,
                            Dataset &trainData, Dataset &testData,
                            Dataset *validationData, DataVector &classLabels, size_t numClassesInit,
-                           bool usePrior,
-                           double beta, MPITaskScheduler &mpiTaskScheduler);
+                           bool usePrior, double beta, MPITaskScheduler &mpiTaskScheduler);
 
   /**
    * Trains the learner with the given dataset.
@@ -106,6 +105,7 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
 
   /**
    * Returns the dimensionality of the learner as determined from its training set
+   *
    * @return The data dimensionality
    */
   size_t getDimensionality();
@@ -116,20 +116,24 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
   virtual ~LearnerSGDEOnOffParallel();
 
   /**
-   * If this is run on master, it issues shutdown requests to all workers and waits for them to return.
+   * If this is run on master, it issues shutdown requests to all workers and waits
+   * for them to return.
    * If this is run on a worker, it sets the shutdown flag.
    */
   void shutdownMPINodes();
 
   /**
    * Copies the data from the training set into the data batch
+   *
    * @param dataBatch Batch of data to fill, with set dimensionality and size
    * @param batchOffset The offset in the training data from which to start copying
    */
   void assembleNextBatchData(Dataset *dataBatch, size_t *batchOffset) const;
 
   /**
-   * Train from a batch. Will wait until all grids are consistent, fill the dataset, learn from the dataset and send the new alpha vector to the master
+   * Train from a batch. Will wait until all grids are consistent, fill the dataset,
+   * learn from the dataset and send the new alpha vector to the master
+   *
    * @param dataset An empty dataset with size and dimension set.
    * @param batchOffset The offset from the start of the training set to assemble the batch from.
    * @param doCrossValidation Whether to cross validate results.
@@ -138,12 +142,14 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
 
   /**
    * Merge alpha values received from a remote process into the local alpha vector.
+   *
    * @param classIndex The class to which the alpha vector belongs
    * @param remoteGridVersion The remote grid version this alpha vector was trained on
    * @param dataVector The alpha vector itself
    * @param batchOffset The offset from the start of the training set this vector was trained from
    * @param batchSize The size of the batch this vector was trained from
-   * @param isLastPacketInSeries Whether this merge is the last merge in several for the same class and batch
+   * @param isLastPacketInSeries Whether this merge is the last merge in several
+   * for the same class and batch
    */
   void mergeAlphaValues(size_t classIndex,
                         size_t remoteGridVersion,
@@ -154,6 +160,7 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
 
   /**
    * Returns the internally stored current version of the grid
+   *
    * @param classIndex The class of the grid to search for
    * @return The current version of the grid
    */
@@ -161,27 +168,36 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
 
   /**
    * Set the grid version
+   *
    * @param classIndex The class of the grid to search for
    * @param gridVersion The new version of the grid
    */
   void setLocalGridVersion(size_t classIndex, size_t gridVersion);
 
   /**
-   * Update the system matrix decomposition after a refinement step. This will wait for the receiving of refinement results to complete. After computation, the system matrix is sent back to the master
+   * Update the system matrix decomposition after a refinement step.
+   * This will wait for the receiving of refinement results to complete.
+   * After computation, the system matrix is sent back to the master
+   *
    * @param classIndex The class for which to update the system matrix decomposition
    * @param gridVersion The new grid version to set after updating the matrix
    */
   void computeNewSystemMatrixDecomposition(size_t classIndex, size_t gridVersion);
 
   /**
-   * Check whether the grid is in a final state where learning can occur. This is not the case while receiving refinement results or updating the system matrix decomposition.
+   * Check whether the grid is in a final state where learning can occur.
+   * This is not the case while receiving refinement results or updating
+   * the system matrix decomposition.
+   *
    * @param classIndex The class for which to check consistency.
    * @return Whether the grid is currently in a consistent state
    */
   bool checkGridStateConsistent(size_t classIndex);
 
   /**
-   * Check whether a specific grid version is consistent, i.e. whether it is higher than MINIMUM_CONSISTENT_GRID_VERSION
+   * Check whether a specific grid version is consistent, i.e. whether it is
+   * higher than MINIMUM_CONSISTENT_GRID_VERSION
+   *
    * @param version The version of the grid to check against
    * @return Whether the version indicates consistency.
    */
@@ -190,42 +206,50 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
   /**
    * Gets a reference to the currently installed MPI Scheduler.
    * The scheduler assigns tasks of variable or static size to workers.
+   *
    * @return A reference to the installed MPI Task Scheduler
    */
   MPITaskScheduler &getScheduler();
 
   /**
    * Gets the DBMatOffline object
+   *
    * @return The DBMatOffline object
    */
   std::unique_ptr<DBMatOffline> &getOffline();
 
   /**
    * Check whether all grids are not in a temporarily inconsistent state.
+   *
    * @return Whether all grids are consistent
    */
   bool checkAllGridsConsistent();
 
   /**
    * Returns a reference to the currently used training data set
+   *
    * @return A reference to the training data set
    */
   Dataset &getTrainData();
 
   /**
    * Returns a reference to the currently used test data set
+   *
    * @return A reference to the test data set
    */
   Dataset *getValidationData();
 
   /**
-   * Returns a reference to the refinement handler, that contains logic to handle the master's refinement cycles
+   * Returns a reference to the refinement handler, that contains logic to handle
+   * the master's refinement cycles
+   *
    * @return A reference to the refinement handler
    */
   RefinementHandler &getRefinementHandler();
 
   /**
    * Asks the scheduler where to assign the next batch to and sends the MPI request.
+   *
    * @param batchOffset Starting offset of the new batch
    * @param doCrossValidation Whether the client should do cross-validation
    * @return The size of the batch assigned by the scheduler
@@ -255,6 +279,7 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
 
   /**
    * Allocates memory for every class to hold training data before learning
+   *
    * @param dim The dimensionality of the current problem
    * @param trainDataClasses Storage that will be allocated that holds space for data and label
    * @param classIndices A map of each classes label to its index
@@ -265,6 +290,7 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
 
   /**
    * Do an entire refinement cycle for all classes.
+   *
    * @param refinementFunctorType String constant specifying the functor to use in refinement
    * @param refinementMonitorType String constant specifying the monitor to use in refinement
    * @param onlineObjects Reference to the online objects for density estimation
@@ -277,6 +303,7 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
 
   /**
    * Shows grid size statistics along with a message
+   *
    * @param messageString The message to display alongside the statistics
    * @param onlineObjects The current density estimation objects
    */
