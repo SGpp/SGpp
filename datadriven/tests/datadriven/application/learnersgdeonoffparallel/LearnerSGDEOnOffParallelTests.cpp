@@ -89,8 +89,7 @@ void createInstance() {
                                                                      decompositionConfig,
                                                                      trainData, testData, nullptr,
                                                                      classLabels, 2, false,
-                                                                     0.0, 0.01,
-                                                                     *scheduler);
+                                                                     0.0, *scheduler);
 
     double cvLambdaStart = 1e-1;
     double cvLambdaEnd = 1e-10;
