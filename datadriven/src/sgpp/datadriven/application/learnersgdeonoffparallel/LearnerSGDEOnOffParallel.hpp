@@ -46,10 +46,14 @@ using sgpp::base::DataVector;
 
 class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
  public:
-  LearnerSGDEOnOffParallel(DBMatDensityConfiguration &dconf, Dataset &trainData, Dataset &testData,
+  LearnerSGDEOnOffParallel(sgpp::base::RegularGridConfiguration &gridConfig,
+                           sgpp::base::AdpativityConfiguration &adaptivityConfig,
+                           sgpp::datadriven::RegularizationConfiguration &regularizationConfig,
+                           sgpp::datadriven::DecompositionConfiguration &decompositionConfig,
+                           Dataset &trainData, Dataset &testData,
                            Dataset *validationData, DataVector &classLabels, size_t numClassesInit,
                            bool usePrior,
-                           double beta, double lambda, MPITaskScheduler &mpiTaskScheduler);
+                           double beta, MPITaskScheduler &mpiTaskScheduler);
 
   /**
    * Trains the learner with the given dataset.

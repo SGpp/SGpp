@@ -210,7 +210,7 @@ bool RefinementHandler::checkRefinementNecessary(
   if (refMonitor == "periodic") {
     // check periodic monitor
     if (offline->isRefineable() && (totalInstances > 0) && (totalInstances % refPeriod == 0) &&
-        (numberOfCompletedRefinements < offline->getConfig().numRefinements_)) {
+        (numberOfCompletedRefinements < offline->getAdaptivityConfig().numRefinements_)) {
       return true;
     }
   } else if (refMonitor == "convergence") {
@@ -220,7 +220,7 @@ bool RefinementHandler::checkRefinementNecessary(
           "No validation data for checking convergence provided!");
     }
     if (offline->isRefineable() &&
-        (numberOfCompletedRefinements < offline->getConfig().numRefinements_)) {
+        (numberOfCompletedRefinements < offline->getAdaptivityConfig().numRefinements_)) {
       currentValidError = learnerInstance->getError(*learnerInstance->getValidationData());
       currentTrainError = learnerInstance->getError(
           learnerInstance->getTrainData());  // if train dataset is large
@@ -311,7 +311,7 @@ size_t RefinementHandler::handleSurplusBasedRefinement(
   // simple refinement based on surpluses
   sgpp::base::SurplusRefinementFunctor srf(
       alphaWeight,
-      learnerInstance->getOffline()->getConfig().ref_noPoints_);
+      learnerInstance->getOffline()->getAdaptivityConfig().noPoints_);
   gridGen.refine(srf);
   size_t sizeAfterRefine = grid.getSize();
   return sizeAfterRefine - sizeBeforeRefine;

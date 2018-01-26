@@ -10,7 +10,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/application/RegressionLearner.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/solver/SLESolver.hpp>
 #include <sgpp/solver/TypesSolver.hpp>

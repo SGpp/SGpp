@@ -8,7 +8,7 @@
 
 #include <sgpp/datadriven/application/LearnerBase.hpp>
 #include <sgpp/datadriven/application/Learner.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 
 #include <sgpp/globaldef.hpp>
 
