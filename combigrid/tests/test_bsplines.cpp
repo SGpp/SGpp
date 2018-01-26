@@ -17,13 +17,13 @@
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridCallbackEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridGridBasedEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/sparsegrid/OperationMatrixLTwoDotNakBsplineBoundaryCombigrid.hpp>
 #include <sgpp/combigrid/pce/BsplineStochasticCollocation.hpp>
 #include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
 #include <sgpp/combigrid/utils/AnalyticModels.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
-#include <sgpp/combigrid/operation/multidim/sparsegrid/OperationMatrixLTwoDotNakBsplineBoundaryCombigrid.hpp>
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/quadrature/sampling/NaiveSampleGenerator.hpp>
@@ -557,6 +557,39 @@ BOOST_AUTO_TEST_CASE(testQuadratureWithWeightFunction) {
   double error = fabs(integral - exactSolution);
   //  std::cout << "error: " << error << std::endl;
   BOOST_CHECK_SMALL(error, 5e-16);
+}
+
+BOOST_AUTO_TEST_CASE(testScalarProductsWithWeightFunctionAndBounds) {
+  std::cout << "DESCRIBE TEST! " << std::endl;
+  size_t numDimensions = 2;
+  size_t degree = 3;
+  sgpp::combigrid::MultiFunction func(x32D);
+  sgpp::combigrid::SingleFunction weightfunction(wcos);
+  sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection(0);
+  for (size_t d = 0; d < numDimensions; d++) {
+    weightFunctionsCollection.push_back(weightfunction);
+  }
+  size_t level = 4;
+  size_t numAdditionalPoints = 0;
+  bool normalizeWeights = false;
+
+  // first quadrature => numAdditionalPoints?
+
+  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
+      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+  sgpp::combigrid::CombiEvaluators::Collection evaluators(0);
+  for (size_t d = 0; d < numDimensions; d++) {
+    evaluators.push_back(sgpp::combigrid::CombiEvaluators::BSplineScalarProduct(
+        degree, weightFunctionsCollection[d], numAdditionalPoints, bounds[2 * d], bounds[2 * d + 1],
+        normalizeWeights));
+  }
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
+      new sgpp::combigrid::AveragingLevelManager());
+  sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
+  auto operation = std::make_shared<sgpp::combigrid::CombigridOperation>(
+      pointHierarchies, evaluators, levelManager, gf, false);
+
+  // caluclate meanSquare and check
 }
 
 // auxiliary function. Creates a regular level structure and calculated the Bspline interpolation

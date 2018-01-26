@@ -81,8 +81,8 @@ class J(Dist):
 
     def var(self):
         a = np.array([d.var() for d in self.__dists])
-        b = np.array([d.mean() for d in self.__dists])
-        return np.prod(a + b ** 2) - np.prod(b ** 2)
+        b1 = np.array([d.mean() for d in self.__dists])
+        return np.prod(a + b1 ** 2) - np.prod(b1 ** 2)
 
     def std(self):
         return np.sqrt(self.var())

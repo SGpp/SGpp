@@ -198,11 +198,11 @@ class UQSetting(object):
                 raise TypeError('The pre-processor has changed since',
                                 'the last run')
             try:
-                a, b = len(val), len(q)
+                a, b1 = len(val), len(q)
             except TypeError:
-                a, b = 0, 0
+                a, b1 = 0, 0
 
-            if a != b:
+            if a != b1:
                 raise TypeError('The pre-processor has changed since',
                                 'the last run')
 
