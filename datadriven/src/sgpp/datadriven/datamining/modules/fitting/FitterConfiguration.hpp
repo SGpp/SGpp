@@ -6,7 +6,8 @@
 #pragma once
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DecompositionConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
@@ -82,6 +83,12 @@ class FitterConfiguration {
   const base::AdpativityConfiguration& getRefinementConfig() const;
 
   /**
+   * Get how the density based matrix decomposition should behave.
+   * @return immutable DecompositionConfiguration
+   */
+  const datadriven::DecompositionConfiguration& getDecompositionConfig() const;
+
+  /**
    * Get configuration for the linear system solver which should be used while building
    * adaptive grids
    * @return immutable SLESolverConfiguration
@@ -118,6 +125,12 @@ class FitterConfiguration {
    * @return AdpativityConfiguration
    */
   base::AdpativityConfiguration& getRefinementConfig();
+
+  /**
+   * Get or set how the density based matrix decomposition should behave.
+   * @return DecompositionConfiguration
+   */
+  datadriven::DecompositionConfiguration& getDecompositionConfig();
 
   /**
    * Get or set configuration for the linear system solver which should be used while building
@@ -166,6 +179,11 @@ class FitterConfiguration {
    * Configure how the adaptivity algorithms for the grid should behave.
    */
   base::AdpativityConfiguration adaptivityConfig;
+
+  /**
+   * Configure how the density based matrix decomposition should behave.
+   */
+  datadriven::DecompositionConfiguration decompositionConfig;
 
   /**
    * Configuration for the linear system solver which should be used while building adaptive grids

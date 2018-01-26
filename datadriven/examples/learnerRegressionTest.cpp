@@ -12,7 +12,7 @@
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/datadriven/application/RegressionLearner.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 
 #include <string>
@@ -56,7 +56,7 @@ sgpp::datadriven::RegressionLearner getLearner(
 std::string showRegularizationConfiguration(
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig) {
   std::ostringstream ss;
-  const auto regType = regularizationConfig.regType_;
+  const auto regType = regularizationConfig.type_;
   if (regType == sgpp::datadriven::RegularizationType::Diagonal) {
      ss << "type: DiagonalMatrix\t";
   } else if (regType == sgpp::datadriven::RegularizationType::Identity) {
@@ -124,7 +124,7 @@ std::vector<sgpp::datadriven::RegularizationConfiguration> getConfigs() {
     // Identity
     const auto regularizationType = sgpp::datadriven::RegularizationType::Identity;
     auto regularizationConfig = sgpp::datadriven::RegularizationConfiguration();
-    regularizationConfig.regType_ = regularizationType;
+    regularizationConfig.type_ = regularizationType;
     regularizationConfig.lambda_ = lambda;
     regularizationConfig.exponentBase_ = 0.25;
     result.push_back(regularizationConfig);
@@ -133,7 +133,7 @@ std::vector<sgpp::datadriven::RegularizationConfiguration> getConfigs() {
     for (const auto exponentBase : exponentBases) {
       const auto regularizationType = sgpp::datadriven::RegularizationType::Diagonal;
       auto regularizationConfig = sgpp::datadriven::RegularizationConfiguration();
-      regularizationConfig.regType_ = regularizationType;
+      regularizationConfig.type_ = regularizationType;
       regularizationConfig.lambda_ = lambda;
       regularizationConfig.exponentBase_ = exponentBase;
       result.push_back(regularizationConfig);

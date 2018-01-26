@@ -16,7 +16,7 @@
 #include "sgpp/datadriven/DatadrivenOpFactory.hpp"
 #include "sgpp/datadriven/application/GaussianKDE.hpp"
 #include "sgpp/datadriven/application/LearnerSGDE.hpp"
-#include "sgpp/datadriven/application/RegularizationConfiguration.hpp"
+#include "sgpp/datadriven/configuration/RegularizationConfiguration.hpp"
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 #include "sgpp/globaldef.hpp"
 
@@ -99,7 +99,7 @@ int main(int argc, char** argv) {
    */
   std::cout << "# create regularization config" << std::endl;
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-  regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Laplace;
+  regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Laplace;
 
   /**
    * Configure the learner by specifying: \n
