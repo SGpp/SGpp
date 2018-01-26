@@ -443,8 +443,8 @@ class ParameterSet(object):
                         if isinstance(innertrans[idim], RosenblattTransformation):
                             margTransformations.append(RosenblattTransformation(margDist))
                         else:
-                            a, b = margDist.getBounds()
-                            margTransformations.append(LinearTransformation(a, b))
+                            a, b1 = margDist.getBounds()
+                            margTransformations.append(LinearTransformation(a, b1))
 
             assert len(margDistList) == len(margTransformations) == activeParams.getDim()
 

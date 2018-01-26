@@ -7,19 +7,19 @@ import numpy as np
 
 class CorrBeta(Dist):
 
-    def __init__(self, p, q, a, b):
+    def __init__(self, p, q, a, b1):
         super(CorrBeta, self).__init__()
         self._e1, self._e2, self._e3 = 4.0929e-11, 3.6555, 2
         self._p, self._q = p, q
-        self._a, self._b = a, b
+        self._a, self._b = a, b1
 
     def __getBetaDistribution(self, c):
         # left border
         a = c - self._e3 / 2.
         # width of beta distribution
-        b = self._e3
+        b1 = self._e3
 
-        return beta(self._p, self._q, a, b)
+        return beta(self._p, self._q, a, b1)
 
     def pdf(self, x):
         phi, e = x
@@ -76,6 +76,6 @@ class CorrBeta(Dist):
 
         key = '_CorrBeta_b'
         if key in jsonObject:
-            b = float(jsonObject[key])
+            b1 = float(jsonObject[key])
 
-        return CorrBeta(a, b)
+        return CorrBeta(a, b1)

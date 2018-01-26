@@ -10,14 +10,14 @@ class TLognormal(Lognormal):
     The truncated Log-normal distribution
     """
 
-    def __init__(self, mu, sigma, a, b):
-        super(TLognormal, self).__init__(mu, sigma, a, b)
+    def __init__(self, mu, sigma, a, b1):
+        super(TLognormal, self).__init__(mu, sigma, a, b1)
 
         self.mu = mu
         self.sigma = sigma
 
         self.phi_lwr = self._dist.cdf(a)
-        self.phi_upr = self._dist.cdf(b)
+        self.phi_upr = self._dist.cdf(b1)
         self.phi_width = self.phi_upr - self.phi_lwr
         self.inv_phi_width = 1. / self.phi_width
 
@@ -81,6 +81,6 @@ class TLognormal(Lognormal):
 
         key = '_TLognormal__b'
         if key in jsonObject:
-            b = float(jsonObject[key])
+            b1 = float(jsonObject[key])
 
-        return TLognormal(mu, sigma, a, b)
+        return TLognormal(mu, sigma, a, b1)
