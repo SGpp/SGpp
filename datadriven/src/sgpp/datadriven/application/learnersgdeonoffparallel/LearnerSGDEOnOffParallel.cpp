@@ -53,12 +53,12 @@ LearnerSGDEOnOffParallel::LearnerSGDEOnOffParallel(
     Dataset &trainData, Dataset &testData,
     Dataset *validationData,
     sgpp::base::DataVector &classLabels, size_t numClassesInit,
-    bool usePrior, double beta, double lambda,
+    bool usePrior, double beta,
     MPITaskScheduler &mpiTaskScheduler)
-    : LearnerSGDEOnOff(gridConfig, adaptivityConfig, regularizationConfig, decompositionConfig, trainData, testData, validationData, classLabels, numClassesInit,
-                       usePrior,
-                       beta, lambda), mpiTaskScheduler(mpiTaskScheduler),
-      refinementHandler(nullptr, 0) {
+    : LearnerSGDEOnOff(gridConfig, adaptivityConfig, regularizationConfig, decompositionConfig,
+                       trainData, testData, validationData, classLabels, numClassesInit,
+                       usePrior, beta), mpiTaskScheduler(mpiTaskScheduler),
+                       refinementHandler(nullptr, 0) {
   localGridVersions.insert(localGridVersions.begin(), numClasses,
                            MINIMUM_CONSISTENT_GRID_VERSION);
   mpiTaskScheduler.setLearnerInstance(this);
