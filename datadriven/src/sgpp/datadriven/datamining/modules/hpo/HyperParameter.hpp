@@ -17,7 +17,7 @@ class HyperParameter {
 public:
 	HyperParameter();
 	virtual ~HyperParameter();
-	std::list<ConfigurationBit> makeConfigBits(int nBits);
+	void makeConfigBits(int nBits, std::list<ConfigurationBit> allbits);
 
 
 protected:
