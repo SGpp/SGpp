@@ -19,11 +19,12 @@ HyperParameter::~HyperParameter() {
 	// TODO Auto-generated destructor stub
 }
 
-std::list<ConfigurationBit> HyperParameter::makeConfigBits(int nBits){
+void HyperParameter::makeConfigBits(int nBits, std::list<ConfigurationBit> allbits){
 	for(int i=0;i<nBits;i++){
-		bits.push_back(*(new ConfigurationBit()));
+		ConfigurationBit* n = new ConfigurationBit();
+		bits.push_back(*n);
+		allbits.push_back(*n);
 	}
-	return bits;
 }
 
 } /* namespace datadriven */

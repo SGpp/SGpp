@@ -17,7 +17,7 @@ class DiscreteParameter: public sgpp::datadriven::HyperParameter {
 public:
 	DiscreteParameter(int min, int max):min(min),max(max){}
 	virtual ~DiscreteParameter();
-	std::list<ConfigurationBit> makeConfigBits();
+	void makeConfigBits(std::list<ConfigurationBit> allbits);
 	int getValue(int* configID);
 
 protected:

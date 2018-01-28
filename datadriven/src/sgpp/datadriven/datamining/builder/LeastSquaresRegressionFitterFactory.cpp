@@ -22,9 +22,23 @@ namespace datadriven {
 LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory()
   :configBits(){
   // build ConfigurationBits (constructor)
-  for(int i=0;i<12;i++){
-    configBits.push_back(*(new ConfigurationBit()));
-  }
+  // for(int i=0;i<12;i++){
+  //  configBits.push_back(*(new ConfigurationBit()));
+  // }
+  std::map<std::string,ContinuousParameter> conpar;
+  std::map<std::string,DiscreteParameter> dispar;
+  conpar["lambda"] = (new ContinuousParameter(0.5, 3));
+  conpar["lambda"].makeConfigBits(4, configBits);
+
+  conpar["threshold"] = new ContinuousParameter(0.0005, 0.002);
+  conpar["threshold"].makeConfigBits(3, configBits);
+
+  dispar["noPoints"] = new DiscreteParameter(1,4);
+  dispar["noPoints"].makeConfigBits(configBits);
+
+  dispar["level"] = new DiscreteParameter(1,4);
+  dispar["level"].makeConfigBits(configBits);
+
 }
 
 ModelFittingBase* LeastSquaresRegressionFitterFactory::buildFitter(int configID) const {

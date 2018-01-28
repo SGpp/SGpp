@@ -13,18 +13,18 @@ namespace datadriven {
 
 
 
-std::list<ConfigurationBit> DiscreteParameter::makeConfigBits(){
+void DiscreteParameter::makeConfigBits(std::list<ConfigurationBit> allbits){
 	int i = 1;
 	int c = 2;
 	while(c <= max-min+1){
 		i++;
 		c=c*2;
 	}
-	return HyperParameter::makeConfigBits(i);
+	return HyperParameter::makeConfigBits(i, allbits);
 }
 
 int DiscreteParameter::getValue(int* configID){
-	if(2**bits.size() < max-min+1){
+	if(2**bits.size() <= max-min+1){
 		double v = 0;
 		double m = 1;
 	  for(auto bit : bits){
@@ -32,12 +32,17 @@ int DiscreteParameter::getValue(int* configID){
 	    m = m * 2;
 	  }
 	  return lround(min+((max-min)*(1+v/(m-1.0))/2));
-	}else if(2**bits.size() > max-min+1){
-		int c = 2**(bits.size()-1);
+	}else{ // if(2**bits.size() > max-min+1)
+		// EDIT: try different ways here later, like above and with max lenght c
+		/* int c = 2**(bits.size()-1);
 		int k = 0;
 		while(k+c/2+max-min+1 <= 2**bits.size()){
 			c = c/2;
 			k = k + c;
+		} */
+		int c = 1;
+		while(c < 2**bits.size()-(max-min+1)){
+			c = c*2;
 		}
 		// k = k - c;
 		int v = min;
