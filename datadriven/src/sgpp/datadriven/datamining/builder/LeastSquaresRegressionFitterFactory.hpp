@@ -29,7 +29,7 @@ class LeastSquaresRegressionFitterFactory : public FitterFactory {
   /**
    * Default constructor
    */
-  LeastSquaresRegressionFitterFactory();
+  LeastSquaresRegressionFitterFactory(DataMiningConfigParser parser);
 
   /**
    * Assemble a #sgpp::datadriven::ModelFittingBase object based on the configuration
@@ -37,12 +37,20 @@ class LeastSquaresRegressionFitterFactory : public FitterFactory {
    * data from the config file.
    * @return Fully configured instance of a  #sgpp::datadriven::ModelFittingBase object.
    */
-  ModelFittingBase* buildFitter(int configID) const override;
+  ModelFittingBase* buildFitter(int configID, int row, DataMatrix paritymatrix) override;
   
   FitterConfiguration* buildConfig() const override;
   
+  int buildParity() override;
+
+  void addConstraint(int idx, int bias) override;
+
  protected:
   std::list<ConfigurationBit> configBits;
+  FitterConfigurationLeastSquares baseConfig;
+  std::map<std::string,ContinuousParameter> conpar;
+  std::map<std::string,DiscreteParameter> dispar;
+  std::vector<std::list<ConfigurationBit*> > parityrow;
 };
 
 } /* namespace datadriven */

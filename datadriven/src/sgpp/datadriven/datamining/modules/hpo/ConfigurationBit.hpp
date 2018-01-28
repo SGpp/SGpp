@@ -37,6 +37,8 @@ class ConfigurationBit {
   
   int evaluate(int* input);
   
+  int fixFreeBits(std::vector<ConfigurationBit*> freeBits);
+
   void reset();
   // void mult(base::DataVector& alpha, base::DataVector& result);
   // void multTranspose(base::DataVector& source, base::DataVector& result);

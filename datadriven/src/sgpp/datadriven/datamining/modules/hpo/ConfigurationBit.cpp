@@ -29,7 +29,7 @@ int ConfigurationBit::evaluate(int* input){
   for(auto &constraint : constraints){
     int tmp = constraint.getBias();
     for(auto &bit : constraint.getConfigBits()){
-      tmp = tmp * bit.evaluate(input);
+      tmp = tmp * bit->evaluate(input);
     }
     if(tmp != 0){
       value = tmp;
@@ -42,6 +42,33 @@ int ConfigurationBit::evaluate(int* input){
   return value;
 }
 
+int ConfigurationBit::fixFreeBits(std::vector<ConfigurationBit*> freeBits){
+  if(bVisited){
+    return value;
+  }
+  bVisited = true;
+  //for each constraint
+  for(auto &constraint : constraints){
+    if(constraint.getConfigBits().size() == 0){
+      value = constraint.getBias();
+      return value;
+    }
+  }
+  for(auto &constraint : constraints){
+    int tmp = constraint.getBias();
+    for(auto &bit : constraint.getConfigBits()){
+      tmp = tmp * bit->fixFreeBits(freeBits);
+    }
+    if(tmp != 0){
+      value = tmp;
+      return value;
+    }
+  }
+  // pull free bit
+  value = 1;
+  freeBits.push_back(this);
+  return value;
+}
 
 void ConfigurationBit::addConstraint(ConfigurationRestriction* constraint){
   constraints.push_back(*constraint);

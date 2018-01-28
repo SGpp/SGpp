@@ -29,8 +29,7 @@ class ConfigurationRestriction {
    * @param base::Grid base::Grid
    * @param dataset the dataset that should be evaluated
    */
-  ConfigurationRestriction(std::list<int> parameters, int bias)
-      : parameters(parameters), bias(bias) {}
+  ConfigurationRestriction(std::list<ConfigurationBit*> parameters, int bias);
 
   /**
    * Destructor
@@ -43,11 +42,11 @@ class ConfigurationRestriction {
   // double getDuration();
   int getBias();
 
-  std::list<ConfigurationBit> getConfigBits();
+  std::list<ConfigurationBit*> getConfigBits();
 
  protected:
   /// reference to the base::Grid's base::GridStorage object
-  std::list<ConfigurationBit> parameters;
+  std::list<ConfigurationBit*> parameters;
   int bias;
   // bool visited;
 };
