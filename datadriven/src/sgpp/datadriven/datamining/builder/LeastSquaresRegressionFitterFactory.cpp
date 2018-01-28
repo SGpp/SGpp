@@ -19,14 +19,15 @@
 namespace sgpp {
 namespace datadriven {
 
-LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory()
-  :configBits(){
+LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory(DataMiningConfigParser parser)
+  :configBits(), baseConfig(), parityrow(){
   // build ConfigurationBits (constructor)
   // for(int i=0;i<12;i++){
   //  configBits.push_back(*(new ConfigurationBit()));
   // }
-  std::map<std::string,ContinuousParameter> conpar;
-  std::map<std::string,DiscreteParameter> dispar;
+	baseConfig.readParams(parser);
+
+
   conpar["lambda"] = (new ContinuousParameter(0.5, 3));
   conpar["lambda"].makeConfigBits(4, configBits);
 
@@ -39,28 +40,79 @@ LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory()
   dispar["level"] = new DiscreteParameter(1,4);
   dispar["level"].makeConfigBits(configBits);
 
+
 }
 
-ModelFittingBase* LeastSquaresRegressionFitterFactory::buildFitter(int configID) const {
+int LeastSquaresRegressionFitterFactory::buildParity(){
+	std::vector<ConfigurationBit*> freeBits{};
+	for(auto bit : configBits){
+	    bit.reset();
+	  }
+	for(auto bit : configBits){
+		bit.fixFreeBits(freeBits);
+	}
+	int ncols = freeBits.size();
+	parityrow.reserve((ncols*ncols+5)*ncols/6 +1);
+	int cnt = ncols;
+	int cnt2 =(ncols +1)*ncols/2;
+	for(int i = 0; i < ncols; i++){
+		parityrow[i] = *new std::list<ConfigurationBit*>();
+		parityrow[i].push_back(freeBits[i]);
+		for(int k = i+1; k < ncols; k++){
+			parityrow[cnt] = *new std::list<ConfigurationBit*>();
+			parityrow[cnt].push_back(freeBits[i]);
+			parityrow[cnt].push_back(freeBits[k]);
+	        cnt++;
+	        for(int m = k+1; m < ncols; m++){
+				parityrow[cnt2] = *new std::list<ConfigurationBit*>();
+				parityrow[cnt2].push_back(freeBits[i]);
+				parityrow[cnt2].push_back(freeBits[k]);
+				parityrow[cnt2].push_back(freeBits[m]);
+				cnt2++;
+			}
+		}
+	}
+	return ncols;
+}
+
+void LeastSquaresRegressionFitterFactory::addConstraint(int idx, int bias){
+	new ConfigurationRestriction(parityrow[idx], bias);
+}
+
+ModelFittingBase* LeastSquaresRegressionFitterFactory::buildFitter(int configID, int row, DataMatrix paritymatrix)  {
   // fix ConfigurationBits according to constraints
   for(auto bit : configBits){
     bit.reset();
   }
   // remove, do this through parameters
-  for(auto bit : configBits){
-    bit.evaluate(&configID);
-  }
+  // for(auto bit : configBits){
+  //  bit.evaluate(&configID);
+  // }
 
   // build config
-  
+  FitterConfigurationLeastSquares* config = new FitterConfigurationLeastSquares(baseConfig);
+  config->setHyperParameters(dispar["level"].getValue(&configID),5,dispar["noPoints"].getValue(&configID),
+		  conpar["threshold"].getValue(&configID),conpar["lambda"].getValue(&configID));
+
   // return model and ConfigurationBits in vector/matrix
-  
-  return new ModelFittingLeastSquares(*static_cast<FitterConfigurationLeastSquares*>(buildConfig()));
+  if(configID != 0){
+	  std::cout<<"Error: configID not fully used."<<std::endl;
+  }
+  for(int i=0;i<parityrow.size();i++){
+	  int tmp = 1;
+	  for(auto bit : parityrow[i]){
+		  tmp = tmp * bit->evaluate(&configID);
+	  }
+	  paritymatrix.set(row, i, tmp);
+  }
+
+  return new ModelFittingLeastSquares(*config);
 }
 FitterConfiguration* LeastSquaresRegressionFitterFactory::buildConfig() const {
-  FitterConfigurationLeastSquares* config = new FitterConfigurationLeastSquares();
-  DataMiningConfigParser parser("TrainWithTestingExample.json");
-  config->readParams(parser);
+  FitterConfigurationLeastSquares* config = new FitterConfigurationLeastSquares(baseConfig);
+  // DataMiningConfigParser parser("TrainWithTestingExample.json");
+  // config->readParams(parser);
+
   return config;
 }
 } /* namespace datadriven */

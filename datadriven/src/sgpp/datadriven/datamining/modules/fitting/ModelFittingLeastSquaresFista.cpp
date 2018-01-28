@@ -193,7 +193,7 @@ void ModelFittingLeastSquaresFista::assembleSystemAndSolve(const SLESolverConfig
   
   for(int p = 0; p < paritymatrix.getNrows(); p++){
     int cnt = ncols;
-    int cnt2 =(ncols +1)*ncols/2; //edit
+    int cnt2 =(ncols +1)*ncols/2;
     for(int i = 0; i < ncols-1; i++){
       for(int k = i+1; k < ncols; k++){
         double first = paritymatrix.get(p, i) * paritymatrix.get(p, k);

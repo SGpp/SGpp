@@ -41,9 +41,14 @@ class FitterFactory {
    * data from the config file.
    * @return Fully configured instance of a  #sgpp::datadriven::ModelFittingBase object.
    */
-  virtual ModelFittingBase* buildFitter(FitterConfiguration* config) const = 0;
   
   virtual FitterConfiguration* buildConfig() const = 0;
+
+  virtual ModelFittingBase* buildFitter(int configID, int row, DataMatrix paritymatrix);
+
+  virtual int buildParity();
+
+  virtual void addConstraint(int idx, int bias);
 
 };
 } /* namespace datadriven */

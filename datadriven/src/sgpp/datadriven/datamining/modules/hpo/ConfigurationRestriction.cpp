@@ -14,13 +14,18 @@
 namespace sgpp {
 namespace datadriven {
 
-
+ConfigurationRestriction::ConfigurationRestriction(std::list<ConfigurationBit*> parameters, int bias)
+      : parameters(parameters), bias(bias) {
+	for(auto bit : parameters){
+		bit->addConstraint(this);
+	}
+}
 
 int ConfigurationRestriction::getBias(){
   return bias;
 }
 
-std::list<ConfigurationBit> ConfigurationRestriction::getConfigBits(){ // std::list<ConfigurationBit>
+std::list<ConfigurationBit*> ConfigurationRestriction::getConfigBits(){ // std::list<ConfigurationBit>
   return parameters;
 }
 
