@@ -24,8 +24,6 @@
 namespace sgpp {
 namespace combigrid {
 
-// ToDo(rehmemk) implement bounds for non-unitcube domains
-
 BsplineStochasticCollocation::BsplineStochasticCollocation(
     sgpp::combigrid::CombigridSurrogateModelConfiguration& config)
     : CombigridSurrogateModel(config),
@@ -36,25 +34,13 @@ BsplineStochasticCollocation::BsplineStochasticCollocation(
       computedVarianceFlag(false),
       var(0.0),
       coefficientStorage(config.coefficientStorage) {
-  // create vector of function bases
-  //  if (config.basisFunctions.size() == 0) {
-  //    for (size_t idim = 0; idim < numDims; idim++) {
-  //      this->config.basisFunctions.push_back(config.basisFunction);
-  //    }
-  //  } else if (numDims != config.basisFunctions.size()) {
-  //    throw sgpp::base::application_exception(
-  //        "BsplineStochasticCollocation: number of basis function do not match with the number of
-  //        "
-  //        "dimensions of the operation");
-  //  }
-
   initializeOperations(config.pointHierarchies, coefficientStorage, config.levelManager);
 }
 
 BsplineStochasticCollocation::~BsplineStochasticCollocation() {}
 
-// --------------------------------------------------------------------------------------
-
+// combigridMultiOperation is the interpolation
+// combigridOperation is the quadrature
 void BsplineStochasticCollocation::initializeOperations(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
     std::shared_ptr<AbstractCombigridStorage> coefficientStorage,
@@ -72,10 +58,6 @@ void BsplineStochasticCollocation::initializeOperations(
 
   this->config.combigridMultiOperation = interpolationOperation;
 
-  //  this->config.combigridOperation = createBsplineQuadratureCoefficientOperation(
-  //      this->config.degree, this->config.numDims, levelManager, pointHierarchies,
-  //      coefficientStorage);
-
   size_t numAdditionalPoints = 0;
   bool normalizeWeights = false;
   sgpp::combigrid::CombiEvaluators::Collection quadEvaluators(0);
@@ -84,17 +66,20 @@ void BsplineStochasticCollocation::initializeOperations(
         config.degree, weightFunctions[d], numAdditionalPoints, config.bounds[2 * d],
         config.bounds[2 * d + 1], normalizeWeights));
   }
-  this->config.combigridOperation = std::make_shared<sgpp::combigrid::CombigridOperation>(
+  auto quadratureOperation = std::make_shared<sgpp::combigrid::CombigridOperation>(
       pointHierarchies, quadEvaluators, levelManager, coefficientStorage, summationStrategyType);
+  this->config.combigridOperation = quadratureOperation;
 
   numGridPoints = 0;
 }
 
 // ToDo (rehmemk) tried to use addLevelsFromStructureParallel here, does not work
+
 void BsplineStochasticCollocation::updateConfig(
     sgpp::combigrid::CombigridSurrogateModelConfiguration newConfig) {
   this->config.coefficientStorage = newConfig.coefficientStorage;
   this->config.levelStructure = newConfig.levelStructure;
+  this->config.levelManager = newConfig.levelManager;
 
   this->config.combigridMultiOperation = createBsplineLinearCoefficientOperation(
       newConfig.degree, newConfig.numDims, newConfig.coefficientStorage);
@@ -116,6 +101,8 @@ void BsplineStochasticCollocation::updateConfig(
       summationStrategyType);
   this->config.combigridOperation->getLevelManager()->addLevelsFromStructure(
       newConfig.levelStructure);
+  computedMeanFlag = false;
+  computedVarianceFlag = false;
 }
 
 bool BsplineStochasticCollocation::updateStatus() {
@@ -161,8 +148,8 @@ double BsplineStochasticCollocation::computeVariance() {
       grid, gridStorage, this->config.combigridMultiOperation, levelStructure);
 
   sgpp::base::Grid* gridptr = grid.get();
-  sgpp::combigrid::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(gridptr, weightFunctions,
-                                                                          config.bounds);
+  sgpp::combigrid::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(
+      gridptr, weightFunctions, config.bounds);
   sgpp::base::DataVector product(alpha.size(), 0);
   massMatrix.mult(alpha, product);
   double meanSquare = product.dotProduct(alpha);

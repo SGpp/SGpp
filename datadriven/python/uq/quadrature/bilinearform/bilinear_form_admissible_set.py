@@ -27,7 +27,7 @@ def computeBFQuad(grid, U, admissibleSet, n=100):
     gs = grid.getStorage()
     basis = getBasis(grid)
     A = DataMatrix(admissibleSet.getSize(), gs.size())
-    b = DataVector(admissibleSet.getSize())
+    b1 = DataVector(admissibleSet.getSize())
     s = np.ndarray(gs.getDimension(), dtype='float')
     # run over all rows
     for i, gpi in enumerate(admissibleSet.values()):
@@ -63,8 +63,8 @@ def computeBFQuad(grid, U, admissibleSet, n=100):
                     # ----------------------------------------------------
             A.set(i, j, float(np.prod(s)))
             if gs.getSequenceNumber(gpi) == j:
-                b[i] = A.get(i, j)
-    return A, b
+                b1[i] = A.get(i, j)
+    return A, b1
 
 
 def computeBFGridPoint(basis, U, gpi, gps):
@@ -139,7 +139,7 @@ def computeBF(grid, U, admissibleSet):
     nodalValues = DataVector(ngs.size())
 
     A = DataMatrix(admissibleSet.getSize(), gs.size())
-    b = DataVector(admissibleSet.getSize())
+    b1 = DataVector(admissibleSet.getSize())
     s = np.ndarray(gs.getDimension(), dtype='float')
 
 #     # pre compute basis evaluations
@@ -244,8 +244,8 @@ def computeBF(grid, U, admissibleSet):
                     # ----------------------------------------------------
             A.set(i, j, float(np.prod(s)))
             if gs.getSequenceNumber(gpi) == j:
-                b[i] = A.get(i, j)
-    return A, b
+                b1[i] = A.get(i, j)
+    return A, b1
 
 
 def computePiecewiseConstantBF(grid, U, admissibleSet):
@@ -258,7 +258,7 @@ def computePiecewiseConstantBF(grid, U, admissibleSet):
     q = DataVector(gs.getDimension())
 
     B = DataMatrix(admissibleSet.getSize(), gs.size())
-    b = DataVector(admissibleSet.getSize())
+    b1 = DataVector(admissibleSet.getSize())
 #     s = np.ndarray(gs.getDimension(), dtype='float')
     for k, gpi in enumerate(admissibleSet.values()):
         i = gs.getSequenceNumber(gpi)
@@ -274,14 +274,14 @@ def computePiecewiseConstantBF(grid, U, admissibleSet):
             y = float(A.get(i, j) * U.pdf(p))
             B.set(k, j, y)
             if i == j:
-                b[k] = y
-    return B, b
+                b1[k] = y
+    return B, b1
 
 
 def computeExpectationValueEstimation(grid, U, admissibleSet):
     """
     Compute
-    (b)_i = \int phi_i dU(x)
+    (b1)_i = \int phi_i dU(x)
     on measure U, which is in this case supposed to be a lebesgue measure.
     @param grid: Grid, sparse grid
     @param U: list of distributions, Lebeasgue measure
@@ -293,7 +293,7 @@ def computeExpectationValueEstimation(grid, U, admissibleSet):
     # interpolate phi_i phi_j on sparse grid with piecewise polynomial SG
     # the product of two piecewise linear functions is a piecewise
     # polynomial one of degree 2.
-    b = DataVector(admissibleSet.getSize())
+    b1 = DataVector(admissibleSet.getSize())
     s = np.ndarray(gs.getDimension(), dtype='float')
 
     # run over all rows
@@ -312,5 +312,5 @@ def computeExpectationValueEstimation(grid, U, admissibleSet):
                 return basis.eval(lid, iid, x) * U[d].pdf(x)
             s[d], _ = quad(f, xlow, xhigh, epsabs=1e-8)
             # ----------------------------------------------------
-        b[i] = float(np.prod(s))
-    return b
+        b1[i] = float(np.prod(s))
+    return b1

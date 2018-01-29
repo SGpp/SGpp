@@ -17,13 +17,14 @@
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridCallbackEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridGridBasedEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/sparsegrid/OperationMatrixLTwoDotNakBsplineBoundaryCombigrid.hpp>
+#include <sgpp/combigrid/operation/onedim/BSplineScalarProductEvaluator.hpp>
 #include <sgpp/combigrid/pce/BsplineStochasticCollocation.hpp>
 #include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
 #include <sgpp/combigrid/utils/AnalyticModels.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
-#include <sgpp/combigrid/operation/multidim/sparsegrid/OperationMatrixLTwoDotNakBsplineBoundaryCombigrid.hpp>
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/quadrature/sampling/NaiveSampleGenerator.hpp>
@@ -559,6 +560,74 @@ BOOST_AUTO_TEST_CASE(testQuadratureWithWeightFunction) {
   BOOST_CHECK_SMALL(error, 5e-16);
 }
 
+double BSplineVarianceWithWeightsAndBounds(
+    sgpp::combigrid::MultiIndex level, size_t degree, sgpp::combigrid::MultiFunction func,
+    sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection,
+    sgpp::base::DataVector bounds) {
+  size_t numDimensions = level.size();
+  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
+      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+
+  size_t numAdditionalPoints = 0;
+  bool normalizeWeights = false;
+
+  std::vector<
+      std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatArrayVector>>>
+      evaluators(0);
+  for (size_t d = 0; d < numDimensions; d++) {
+    evaluators.push_back(std::make_shared<sgpp::combigrid::BSplineScalarProductEvaluator>(
+        degree, weightFunctionsCollection[d], numAdditionalPoints, bounds[2 * d], bounds[2 * d + 1],
+        normalizeWeights));
+  }
+
+  sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
+  bool exploitNesting = false;
+  auto summationStrategyType = sgpp::combigrid::FullGridSummationStrategyType::VARIANCE;
+
+  auto storage = std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage>(
+      new sgpp::combigrid::CombigridTreeStorage(pointHierarchies, exploitNesting));
+
+  std::shared_ptr<sgpp::combigrid::AbstractFullGridEvaluator<sgpp::combigrid::FloatArrayVector>>
+      fullGridEval = std::make_shared<
+          sgpp::combigrid::FullGridGridBasedEvaluator<sgpp::combigrid::FloatArrayVector>>(
+          storage, evaluators, pointHierarchies, gf, summationStrategyType);
+
+  auto result = fullGridEval->eval(level);
+  double res = result[0].value();
+  return res;
+}
+
+double oFunc(sgpp::base::DataVector const& v) { return std::pow(v[0], 3) + std::pow(v[1], 3); }
+double wFct(double x) { return sin(x); }
+
+BOOST_AUTO_TEST_CASE(testScalarProductsWithWeightFunctionAndBounds) {
+  // test on one level, for refinement
+  std::cout << "calculating mean and variance for f(x,y) = x^3+y^3 with weight function w(x) = "
+               "sin(x) on [0,2]^2 with B-splines of degree 3 "
+            << std::endl;
+  size_t numDimensions = 2;
+  size_t degree = 3;
+  sgpp::combigrid::MultiFunction func(oFunc);
+  sgpp::combigrid::SingleFunction weightfunction(wFct);
+  sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection(0);
+  sgpp::base::DataVector bounds;
+  for (size_t d = 0; d < numDimensions; d++) {
+    weightFunctionsCollection.push_back(weightfunction);
+    bounds.push_back(0);
+    bounds.push_back(2);
+  }
+
+  sgpp::combigrid::MultiIndex level{4, 4};
+  double variance =
+      BSplineVarianceWithWeightsAndBounds(level, degree, func, weightFunctionsCollection, bounds);
+  //  std::cout << "variance: " << variance << std::endl;
+  double realVariance = -0.575444693187592;
+
+  double varianceError = std::fabs(variance - realVariance);
+  //  std::cout << varianceError << std::endl;
+  BOOST_CHECK_SMALL(varianceError, 1e13);
+}
+
 // auxiliary function. Creates a regular level structure and calculated the Bspline interpolation
 // coefficients for this structure
 void createRegularLevelStructure(
@@ -651,6 +720,19 @@ BOOST_AUTO_TEST_CASE(testBsplineStochasticCollocation_co2_lognormal) {
   std::cout << std::abs(co2Model.variance - bsc.variance()) << std::endl;
   //  BOOST_CHECK_SMALL(std::abs(co2Model.mean - bsc.mean()), 1e-8);
   //  BOOST_CHECK_SMALL(std::abs(co2Model.variance - bsc.variance()), 1e-4);
+
+  //  numLevels = 8;
+  //  createRegularLevelStructure(numLevels, bsc_config.degree, pointHierarchies, gf, false,
+  //                              newLevelStructure, newCoefficientStorage, numDims);
+  //
+  //  //  update config
+  //  bsc_config.levelStructure = newLevelStructure;
+  //  bsc_config.coefficientStorage = newCoefficientStorage;
+  //  bsc.updateConfig(bsc_config);
+  //
+  //  // check the moments
+  //  std::cout << std::abs(co2Model.mean - bsc.mean()) << std::endl;
+  //  std::cout << std::abs(co2Model.variance - bsc.variance()) << std::endl;
 }
 
 BOOST_AUTO_TEST_SUITE_END()

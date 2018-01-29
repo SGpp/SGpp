@@ -365,7 +365,7 @@ def generateBBTMatrix(factory, training, verbose=False):
     from pysgpp import DataVector
     storage = factory.getStorage()
        
-    b = factory.createOperationB()
+    b1 = factory.createOperationB()
     
     alpha = DataVector(storage.getSize())
     temp = DataVector(training.getSize())
@@ -383,8 +383,8 @@ def generateBBTMatrix(factory, training, verbose=False):
         erg.setAll(0.0)
         alpha.setAll(0.0)
         alpha[i] = 1.0
-        b.multTranspose(alpha, training, temp)
-        b.mult(temp, training, erg)
+        b1.multTranspose(alpha, training, temp)
+        b1.mult(temp, training, erg)
         
         #Sets the column in m
         for j in xrange(storage.getSize()):
@@ -403,7 +403,7 @@ def generateBTMatrix(factory, training, verbose=False):
     from pysgpp import DataVector
     storage = factory.getStorage()
        
-    b = factory.createOperationB()
+    b1 = factory.createOperationB()
     
     alpha = DataVector(storage.getSize())
     temp = DataVector(training.getSize())
@@ -418,7 +418,7 @@ def generateBTMatrix(factory, training, verbose=False):
         temp.setAll(0.0)
         alpha.setAll(0.0)
         alpha[i] = 1.0
-        b.multTranspose(alpha, training, temp)
+        b1.multTranspose(alpha, training, temp)
         
         #Sets the column in m
         for j in xrange(training.getSize()):
@@ -437,7 +437,7 @@ def generateBTMatrixPython(factory, training, verbose=False):
     from pysgpp import DataVector
     storage = factory.getStorage()
        
-    b = factory.createOperationB()
+    b1 = factory.createOperationB()
     
     alpha = DataVector(storage.getSize())
     temp = DataVector(training.getSize())
@@ -450,7 +450,7 @@ def generateBTMatrixPython(factory, training, verbose=False):
         temp.setAll(0.0)
         alpha.setAll(0.0)
         alpha[i] = 1.0
-        b.multTranspose(alpha, training, temp)
+        b1.multTranspose(alpha, training, temp)
         
         #Sets the column in m       
         m.setColumn(i, temp)
@@ -465,7 +465,7 @@ def generateBTMatrixPython(factory, training, verbose=False):
 def generateBBTMatrixPython(factory, training, verbose=False):
     storage = factory.getStorage()
        
-    b = factory.createOperationB()
+    b1 = factory.createOperationB()
     
     alpha = DataVector(storage.getSize())
     erg = DataVector(alpha.getSize())
@@ -479,8 +479,8 @@ def generateBBTMatrixPython(factory, training, verbose=False):
         erg.setAll(0.0)
         alpha.setAll(0.0)
         alpha[i] = 1.0
-        b.multTranspose(alpha, training, temp)
-        b.mult(temp, training, erg)
+        b1.multTranspose(alpha, training, temp)
+        b1.mult(temp, training, erg)
         #Sets the column in m
         m.setColumn(i, erg)
         

@@ -86,17 +86,17 @@ def exec_mode(mode):
     for attrib in modes[mode]['required_options']:
         # OR
         if type(attrib) is list:
-            b = False
+            b1 = False
             for attrib2 in attrib:
                 # hack for level 0
                 if attrib2 == "level":
                     option = getattr(options, attrib2, None)
                     if option >= 0:
-                        b = True
+                        b1 = True
                 else:
                     if getattr(options, attrib2, None):
-                        b = True
-            a = a and b
+                        b1 = True
+            a = a and b1
         else:
             if not getattr(options, attrib, None):
                 a = False
@@ -463,9 +463,9 @@ def run(grid, training, classes):
         alpha.setAll(0.0)
 
         m = Matrix(grid, training, options.regparam, options.CMode, options.Hk)
-        b = m.generateb(classes)
+        b1 = m.generateb(classes)
 
-        res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, False, options.verbose, max_threshold=options.max_r)
+        res = cg_new(b1, alpha, options.imax, options.r, m.ApplyMatrix, False, options.verbose, max_threshold=options.max_r)
         print "Conjugate Gradient output:"
         print res
 
@@ -552,11 +552,11 @@ def doTest():
     while True: #loop exit condition on the end of the loop
         print "Adaptive Step:", (options.adapt_start + adaptStep)
         m = Matrix(grid, training, options.regparam, options.CMode, options.Hk)
-        b = m.generateb(y)
+        b1 = m.generateb(y)
 
         alpha = DataVector(grid.getSize())
         alpha.setAll(0.0)
-        res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, False, options.verbose, max_threshold=options.max_r)
+        res = cg_new(b1, alpha, options.imax, options.r, m.ApplyMatrix, False, options.verbose, max_threshold=options.max_r)
         print "Conjugate Gradient output:"
         print res
 
@@ -785,9 +785,9 @@ def performFold(dvec,cvec):
             training,classes = assembleTrainingVector(dvec,cvec,foldSetNumber)
 
             m = Matrix(grid, training, options.regparam, options.CMode, options.Hk)
-            b = m.generateb(classes)
+            b1 = m.generateb(classes)
 
-            res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, options.reuse, options.verbose, max_threshold=options.max_r)
+            res = cg_new(b1, alpha, options.imax, options.r, m.ApplyMatrix, options.reuse, options.verbose, max_threshold=options.max_r)
             print res
 
             tr = testVectorFast(grid, alpha, training, classes)
@@ -871,8 +871,8 @@ def performFoldNew(dvec,cvec,ifold):
         alpha = DataVector(grid.getSize())
         alpha.setAll(0.0)
         m = Matrix(grid, data_tr, options.regparam, options.CMode, options.Hk)
-        b = m.generateb(class_tr)
-        res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix,
+        b1 = m.generateb(class_tr)
+        res = cg_new(b1, alpha, options.imax, options.r, m.ApplyMatrix,
                      options.reuse, options.verbose, max_threshold=options.max_r)
         if options.verbose: print res
 
@@ -883,8 +883,8 @@ def performFoldNew(dvec,cvec,ifold):
         # compute accuracy on test set
         # Therefore construct and solve CG again for whole training data and evaluate on test data
         m = Matrix(grid, training, options.regparam, options.CMode, options.Hk)
-        b = m.generateb(classes)
-        res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix,
+        b1 = m.generateb(classes)
+        res = cg_new(b1, alpha, options.imax, options.r, m.ApplyMatrix,
                      True, options.verbose, max_threshold=options.max_r)
         te = testVectorFast(grid, alpha, dvec[ifold], cvec[ifold])
 
@@ -945,9 +945,9 @@ def performFoldRegression(dvec,cvec):
             training,classes = assembleTrainingVector(dvec,cvec,foldSetNumber)
 
             m = Matrix(grid, training, options.regparam, options.CMode, options.Hk)
-            b = m.generateb(classes)
+            b1 = m.generateb(classes)
 
-            res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, options.reuse, options.verbose, max_threshold=options.max_r)
+            res = cg_new(b1, alpha, options.imax, options.r, m.ApplyMatrix, options.reuse, options.verbose, max_threshold=options.max_r)
             print res
 
             # calculate squared error per basis function
@@ -1217,7 +1217,7 @@ if __name__=='__main__':
     parser.add_option("-R", "--resolution", action="store", type="int",default=50, metavar="RESOLUTION", dest="res", help="Specifies the resolution of the gnuplotfile")
     parser.add_option("-s", "--stats", action="store", type="string", dest="stats", help="In this file the statistics from the test are stored")
     parser.add_option("-p", "--polynom", action="store", type="int", default=0, dest="polynom", help="Sets the maximum degree for high order basis functions. Set to 2 or larger to activate. Works only with 'identity' and 'fold'-modes.")
-    parser.add_option("-b", "--border", action="store_true", default=False, dest="border", help="Enables special border base functions")
+    parser.add_option("-b1", "--border", action="store_true", default=False, dest="border", help="Enables special border base functions")
     parser.add_option("--boundary", action="store", type="int", default=False, dest="boundary", help="Use basis functions on boundary (trapezoid boundary==1, boundary==2)")
     parser.add_option("--trapezoid-boundary", action="store_true", default=False, dest="trapezoidboundary", help="Enables boundary functions that have a point on the boundary for every inner point (Trapezoid)")
     parser.add_option("--complete-boundary", action="store_true", default=False, dest="completeboundary", help="Enables boundary functions that have more points on the boundary than inner points")

@@ -80,7 +80,7 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
           CombiEvaluators::createCombiScalarEvaluator(linearEvalConfig));
     }
 
-    // if a custom weight function shall be used it and its bounds are extracted from the  scalar
+    // if a custom weight function shall be used it and its bounds are extracted from the scalar
     // product evaluators
     double width = 1.0;
     for (size_t d = 0; d < numDimensions; d++) {
@@ -103,10 +103,13 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
     FullGridQuadraticSummationStrategy<V> quadraticStrategy = FullGridQuadraticSummationStrategy<V>(
         this->storage, this->evaluatorPrototypes, this->pointHierarchies);
 
+    // ToDo (rehmemk) first quadrature => numAdditionalPoints for scalar products?
+
     // Var = E(x^2) - E(x)^2
-    V meanSquare = quadraticStrategy.eval(level);
     FloatScalarVector mean = linearStrategy.eval(level);
+    V meanSquare = quadraticStrategy.eval(level);
     mean.scalarMult(width);
+
     mean.componentwiseMult(mean);
     FloatScalarVector variance = meanSquare[0];
     variance.scalarMult(width);

@@ -6,8 +6,8 @@ def findSetBits(x):
     ans = []
     bx = bin(x)[2:]
     n = len(bx)
-    for i, b in enumerate(bx[::-1]):
-        if b == '1':
+    for i, b1 in enumerate(bx[::-1]):
+        if b1 == '1':
             ans.append(i)
     return tuple(ans)
 
