@@ -8,6 +8,8 @@
 #ifndef DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_MODULES_HPO_HYPERPARAMETER_H_
 #define DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_MODULES_HPO_HYPERPARAMETER_H_
 
+#include <sgpp/datadriven/datamining/modules/hpo/ConfigurationBit.hpp>
+
 #include <list>
 
 namespace sgpp {
@@ -17,11 +19,11 @@ class HyperParameter {
 public:
 	HyperParameter();
 	virtual ~HyperParameter();
-	void makeConfigBits(int nBits, std::list<ConfigurationBit> allbits);
+	void makeConfigBits(int nBits, std::list<std::unique_ptr<ConfigurationBit>>& allbits);
 
 
 protected:
-	std::list<ConfigurationBit> bits;
+	std::list<ConfigurationBit*> bits;
 };
 
 } /* namespace datadriven */

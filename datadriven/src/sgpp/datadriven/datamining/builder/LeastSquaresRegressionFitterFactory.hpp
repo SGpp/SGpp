@@ -15,7 +15,12 @@
 #include <sgpp/datadriven/datamining/builder/FitterFactory.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/ConfigurationBit.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/ContinuousParameter.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/DiscreteParameter.hpp>
+
+
 
 
 namespace sgpp {
@@ -29,7 +34,7 @@ class LeastSquaresRegressionFitterFactory : public FitterFactory {
   /**
    * Default constructor
    */
-  LeastSquaresRegressionFitterFactory(DataMiningConfigParser parser);
+  LeastSquaresRegressionFitterFactory(DataMiningConfigParser& parser);
 
   /**
    * Assemble a #sgpp::datadriven::ModelFittingBase object based on the configuration
@@ -37,7 +42,7 @@ class LeastSquaresRegressionFitterFactory : public FitterFactory {
    * data from the config file.
    * @return Fully configured instance of a  #sgpp::datadriven::ModelFittingBase object.
    */
-  ModelFittingBase* buildFitter(int configID, int row, DataMatrix paritymatrix) override;
+  ModelFittingBase* buildFitter(int configID, int row, DataMatrix &paritymatrix) override;
   
   FitterConfiguration* buildConfig() const override;
   
@@ -46,10 +51,10 @@ class LeastSquaresRegressionFitterFactory : public FitterFactory {
   void addConstraint(int idx, int bias) override;
 
  protected:
-  std::list<ConfigurationBit> configBits;
+  std::list<std::unique_ptr<ConfigurationBit>> configBits;
   FitterConfigurationLeastSquares baseConfig;
-  std::map<std::string,ContinuousParameter> conpar;
-  std::map<std::string,DiscreteParameter> dispar;
+  std::map<std::string,ContinuousParameter*> conpar;
+  std::map<std::string,DiscreteParameter*> dispar;
   std::vector<std::list<ConfigurationBit*> > parityrow;
 };
 

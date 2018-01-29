@@ -16,7 +16,7 @@ namespace datadriven {
 class ContinuousParameter: public sgpp::datadriven::HyperParameter {
 public:
 	ContinuousParameter(double min, double max):min(min),max(max){}
-	virtual ~ContinuousParameter();
+	// ~ContinuousParameter();
 	double getValue(int* configID);
 
 

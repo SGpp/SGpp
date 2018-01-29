@@ -38,8 +38,7 @@ class HPOScorer : public Scorer {
    * training set.
    */
   HPOScorer(Metric* metric, ShufflingFunctor* shuffling, int64_t seed,
-            double trainPortion, const DataMiningConfigParser& parser,
-            FitterFactory* fitterFactory);
+            double trainPortion);
 
   Scorer* clone() const override;
 
@@ -60,8 +59,7 @@ class HPOScorer : public Scorer {
    * training set.
    */
   double trainPortion;
-  const DataMiningConfigParser* parser;
-  std::unique_ptr<FitterFactory> fitterFactory;
+
 };
 
 } /* namespace datadriven */

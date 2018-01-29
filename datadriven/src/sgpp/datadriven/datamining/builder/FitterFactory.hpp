@@ -44,7 +44,7 @@ class FitterFactory {
   
   virtual FitterConfiguration* buildConfig() const = 0;
 
-  virtual ModelFittingBase* buildFitter(int configID, int row, DataMatrix paritymatrix);
+  virtual ModelFittingBase* buildFitter(int configID, int row, DataMatrix &paritymatrix);
 
   virtual int buildParity();
 

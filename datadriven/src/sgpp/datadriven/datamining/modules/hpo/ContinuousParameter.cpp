@@ -17,8 +17,8 @@ namespace datadriven {
 double ContinuousParameter::getValue(int* configID){
 	double v = 0;
 	double m = 1;
-  for(auto bit : bits){
-    v = v + m* bit.evaluate(configID);
+  for(auto &bit : bits){
+    v = v + m* bit->evaluate(configID);
     m = m * 2;
   }
   return min+((max-min)*(1+v/(m-1.0))/2);

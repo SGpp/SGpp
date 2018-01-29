@@ -16,14 +16,13 @@
 
 namespace sgpp {
 namespace datadriven {
-Scorer* HPOScorerFactory::buildHPOScorer(const DataMiningConfigParser& parser, FitterFactory* fitterFactory) const {
-  TestingConfiguration config;
-  parser.getScorerTestingConfig(config, config);
-  auto metric = buildMetric(config.metric);
-  auto shuffling = buildShuffling(config.shuffling);
-  return new HPOScorer(metric, shuffling, config.randomSeed, config.testingPortion, parser, fitterFactory);
-}
+
 Scorer* HPOScorerFactory::buildScorer(const DataMiningConfigParser& parser) const {
+	  TestingConfiguration config;
+	  parser.getScorerTestingConfig(config, config);
+	  auto metric = buildMetric(config.metric);
+	  auto shuffling = buildShuffling(config.shuffling);
+	  return new HPOScorer(metric, shuffling, config.randomSeed, config.testingPortion);
 }
 } /* namespace datadriven */
 } /* namespace sgpp */
