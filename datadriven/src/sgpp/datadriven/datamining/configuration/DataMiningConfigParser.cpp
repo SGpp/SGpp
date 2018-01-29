@@ -87,6 +87,8 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
     config.numBatches =
         parseUInt(*dataSourceConfig, "numBatches", defaults.numBatches, "dataSource");
     config.batchSize = parseUInt(*dataSourceConfig, "batchSize", defaults.batchSize, "dataSource");
+    config.transformation =
+        parseString(*dataSourceConfig, "transformation", defaults.transformation, "dataSource");
 
     // parse file type
     if (dataSourceConfig->contains("fileType")) {

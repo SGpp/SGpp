@@ -47,6 +47,10 @@ struct DataSourceConfig {
    * size of a batch - if 0, take all available samples.
    */
   size_t batchSize = 0;
+  /*
+   * Should the data be transformed by Rosenblatt transformation?
+   */
+  std::string transformation = "";
 };
 
 } /* namespace datadriven */
