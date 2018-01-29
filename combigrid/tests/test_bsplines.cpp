@@ -521,7 +521,7 @@ BOOST_AUTO_TEST_CASE(testVarianceOnDiagonaldeg5) {
 }
 
 double x32D(sgpp::base::DataVector const& v) { return std::pow(v[0], 3) + std::pow(v[1], 3); }
-double wcos(double v) { return cos(v); }
+double wcos(double v) { return std::pow(v, 3); }
 
 BOOST_AUTO_TEST_CASE(testQuadratureWithWeightFunction) {
   std::cout << "Integrate objective function x^3+y^3 and weight function cos x with B splines of "
@@ -600,7 +600,7 @@ double BSplineVarianceWithWeightsAndBounds(
 double oFunc(sgpp::base::DataVector const& v) { return std::pow(v[0], 3) + std::pow(v[1], 3); }
 double wFct(double x) { return sin(x); }
 
-BOOST_AUTO_TEST_CASE(testScalarProductsWithWeightFunctionAndBounds) {
+BOOST_AUTO_TEST_CASE(testScalarProductsWithWeightFunctionAndBoundsOnLevel) {
   // test on one level, for refinement
   std::cout << "calculating mean and variance for f(x,y) = x^3+y^3 with weight function w(x) = "
                "sin(x) on [0,2]^2 with B-splines of degree 3 "
@@ -617,12 +617,11 @@ BOOST_AUTO_TEST_CASE(testScalarProductsWithWeightFunctionAndBounds) {
     bounds.push_back(2);
   }
 
+  // ToDo (rehmemk) more levels like in the tests above
   sgpp::combigrid::MultiIndex level{4, 4};
   double variance =
       BSplineVarianceWithWeightsAndBounds(level, degree, func, weightFunctionsCollection, bounds);
-  //  std::cout << "variance: " << variance << std::endl;
   double realVariance = -0.575444693187592;
-
   double varianceError = std::fabs(variance - realVariance);
   //  std::cout << varianceError << std::endl;
   BOOST_CHECK_SMALL(varianceError, 1e13);

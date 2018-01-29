@@ -112,6 +112,11 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
 
     mean.componentwiseMult(mean);
     FloatScalarVector variance = meanSquare[0];
+
+    double exactMeanSquare = 1.226117849896473;
+    std::cout << "(" << level[0] << " " << level[1] << ")  meanSquare : " << meanSquare[0]
+              << " error: " << std::fabs(exactMeanSquare - meanSquare[0].value()) << std::endl;
+
     variance.scalarMult(width);
     variance.sub(mean);
 
