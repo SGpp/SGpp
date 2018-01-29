@@ -255,10 +255,10 @@ class VarianceOptRanking(Ranking):
         return np.dot(w, A)
 
     def compute_mean_uwi(self, gs, gpswi, w, basis):
-        b1, _ = self._estimationStrategy.computeSystemMatrixForMeanList(gs,
+        b, _ = self._estimationStrategy.computeSystemMatrixForMeanList(gs,
                                                                        gpswi, basis,
                                                                        self.W, self.D)
-        return np.dot(w, b1)
+        return np.dot(w, b)
 
     def compute_mean_phii(self, gs, gpi, basisi):
         mean_phii, _ = self._estimationStrategy.computeSystemMatrixForMeanList(gs, [gpi], basisi,
@@ -536,7 +536,7 @@ class VarianceBFRanking(Ranking):
         basis = getBasis(grid)
         A = self._strategy.computeBilinearFormByList(basis, gpsi, gpsj)
         # compute the expectation value term for the new points
-        b1 = self._strategy.computeBilinearFormIdentity(basis, gpsi)
+        b = self._strategy.computeBilinearFormIdentity(basis, gpsi)
 
         # estimate missing coefficients
         w = np.ndarray(admissibleSet.getSize())
@@ -545,7 +545,7 @@ class VarianceBFRanking(Ranking):
             # w[i] = estimateConvergence(grid, gp, v)
 
         # update the ranking
-        values = self.__computeRanking(v, w, A, b1)
+        values = self.__computeRanking(v, w, A, b)
         self._ranking = {}
         for i, gpi in enumerate(admissibleSet.values()):
             self._ranking[gpi.getHash()] = values[i]
@@ -564,7 +564,7 @@ class VarianceBFRanking(Ranking):
 #         fig.show()
 #         plt.show()
 
-    def __computeRanking(self, v, w, A, b1):
+    def __computeRanking(self, v, w, A, b):
         """
         Compute ranking for variance estimation
 
@@ -573,11 +573,11 @@ class VarianceBFRanking(Ranking):
         @param v: coefficients of known grid points
         @param w: estimated coefficients of unknown grid points
         @param A: stiffness matrix
-        @param b1: squared expectation value contribution
+        @param b: squared expectation value contribution
         @return: numpy array, contains the ranking for the given samples
         """
         # update the ranking
-        return np.abs(w * (2 * A.dot(v) + w * b1))
+        return np.abs(w * (2 * A.dot(v) + w * b))
         return w.array()
 
     def rank(self, grid, gp, alphas, params, *args, **kws):

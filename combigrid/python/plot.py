@@ -11,9 +11,9 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 
-def plot2D(f, n=100, a=0.0, b1=1.0, 
+def plot2D(f, n=100, a=0.0, b=1.0, 
            plot=True, filename=None, logx=False, logy=False):
-    x = np.linspace(a, b1, n)    
+    x = np.linspace(a, b, n)    
     y = []
     for i in x:
         y.append(f(i))
@@ -33,9 +33,9 @@ def plot2D(f, n=100, a=0.0, b1=1.0,
         plt.savefig(filename + '.pdf', format='pdf', dpi=900)
         plt.close("all")
     
-def plotIntegerFunc2D(f, a=0, b1=10, show='bo', 
+def plotIntegerFunc2D(f, a=0, b=10, show='bo', 
                       plot=True, filename=None, logx=False, logy=False):
-    x = [i+a for i in range(a, b1)]
+    x = [i+a for i in range(a, b)]
     y = [f(i) for i in x]
     pylab.plot(x, y, show)
     
@@ -54,10 +54,10 @@ def plotIntegerFunc2D(f, a=0, b1=10, show='bo',
         plt.savefig(filename + '.pdf', format='pdf', dpi=900)
         plt.close("all")
     
-def plotMultipleIntegerFunc2D(fs, names, shows, title, a=0, b1=10,
+def plotMultipleIntegerFunc2D(fs, names, shows, title, a=0, b=10,
                               plot=True, filename=None, logx=False, logy=False):
     for i in range(len(fs)):
-        x = [j+a for j in range(a, b1)]
+        x = [j+a for j in range(a, b)]
         y = [fs[i](j) for j in x]
         if not logx and not logy:
             pylab.plot(x, y, shows[i], label=names[i])
@@ -77,11 +77,11 @@ def plotMultipleIntegerFunc2D(fs, names, shows, title, a=0, b1=10,
         plt.close("all")
         
     
-def plot3D(f, n=20, xName = 'x', yName = 'y', zName = 'z', a=0.0, b1=1.0, 
+def plot3D(f, n=20, xName = 'x', yName = 'y', zName = 'z', a=0.0, b=1.0, 
            plot=True, filename=None, multiEval=False):
     x = []
     for i in range(n):
-        x.extend(np.linspace(a, b1, n))
+        x.extend(np.linspace(a, b, n))
     y = []
     for i in range(n):
         for j in range(n):

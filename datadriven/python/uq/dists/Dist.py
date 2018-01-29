@@ -182,11 +182,11 @@ class Dist(object):
             testSamplesProb = np.array(testSamplesUnit)
 
             # scale them linearily to the right range
-            for i, (a, b1) in enumerate(dist.getBounds()):
-                testSamplesUnit[:, i] = (b1 - a) * testSamplesUnit[:, i] + a
+            for i, (a, b) in enumerate(dist.getBounds()):
+                testSamplesUnit[:, i] = (b - a) * testSamplesUnit[:, i] + a
 
-            for i, (a, b1) in enumerate(self.getBounds()):
-                testSamplesProb[:, i] = (b1 - a) * testSamplesProb[:, i] + a
+            for i, (a, b) in enumerate(self.getBounds()):
+                testSamplesProb[:, i] = (b - a) * testSamplesProb[:, i] + a
 
             # change the sample type
             dtype = SampleType.ACTIVEUNIT

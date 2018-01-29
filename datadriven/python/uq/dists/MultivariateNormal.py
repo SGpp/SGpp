@@ -25,18 +25,18 @@ class MultivariateNormal(Dist):
     Represents a multivariate normal distribution
     """
 
-    def __init__(self, mu, cov, a, b1):
+    def __init__(self, mu, cov, a, b):
         """
         Constructor
         @param mu: mean of 1d gaussians
         @param cov: covariance matrix
         @param a: lower boundary
-        @param b1: upper boundary
+        @param b: upper boundary
         """
         super(MultivariateNormal, self).__init__()
         self.__mu = mu
         self.__cov = cov
-        self.__a, self.__b = a, b1
+        self.__a, self.__b = a, b
         self.__dim = len(mu)
 
         # standard multivariate normal
@@ -122,6 +122,6 @@ class MultivariateNormal(Dist):
 
         key = '_MultivariateNormal__b'
         if key in jsonObject:
-            b1 = jsonObject[key]
+            b = jsonObject[key]
 
-        return MultivariateNormal(mu, cov, a, b1)
+        return MultivariateNormal(mu, cov, a, b)

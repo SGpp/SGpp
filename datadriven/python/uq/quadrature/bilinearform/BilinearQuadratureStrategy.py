@@ -56,8 +56,8 @@ class BilinearQuadratureStrategy(HashQuadrature):
         err = 0.
         # run over all rows
         for i, gpi in enumerate(gpsi):
-            b1, erri = self.computeBilinearFormByRow(gs, gpi, basisi, gpsj, basisj)
-            A[i, :] = b1
+            b, erri = self.computeBilinearFormByRow(gs, gpi, basisi, gpsj, basisj)
+            A[i, :] = b
             err += erri
         return A, err
 
@@ -72,7 +72,7 @@ class BilinearQuadratureStrategy(HashQuadrature):
         @param basisj: SG++ Basis for grid indices j
         @return DataVector
         """
-        b1 = np.ones(len(gpsj))
+        b = np.ones(len(gpsj))
         err = 0.
         # run over all items
         for j, gpj in enumerate(gpsj):
@@ -80,10 +80,10 @@ class BilinearQuadratureStrategy(HashQuadrature):
             value, erri = self.getBilinearFormEntry(gs, gpi, basisi, gpj, basisj)
 
             # collect results
-            b1[j] = value
+            b[j] = value
             err += erri
 
-        return b1, err
+        return b, err
 
 
     def getBilinearFormEntry(self, gs, gpi, basisi, gpj, basisj):

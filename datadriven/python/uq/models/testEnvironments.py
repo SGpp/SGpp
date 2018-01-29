@@ -176,12 +176,12 @@ class ProbabilisticSpaceSGpp(object):
     def __init__(self, numDims):
         self.numDims = numDims
 
-    def uniform(self, a=0, b1=1):
+    def uniform(self, a=0, b=1):
         # set distributions of the input parameters
         builder = ParameterBuilder()
         up = builder.defineUncertainParameters()
         for idim in xrange(self.numDims):
-            up.new().isCalled("x%i" % idim).withUniformDistribution(a, b1)
+            up.new().isCalled("x%i" % idim).withUniformDistribution(a, b)
         return up.andGetResult()
 
     def normal(self, mu=0, sigma=1, alpha=0.001):
@@ -192,7 +192,7 @@ class ProbabilisticSpaceSGpp(object):
             up.new().isCalled("x%i" % idim).withNormalDistribution(mu, sigma, 0.001)
         return builder.andGetResult()
 
-    def multivariate_normal(self, mu=0, cov=None, a=0, b1=1):
+    def multivariate_normal(self, mu=0, cov=None, a=0, b=1):
             # set distributions of the input parameters
         mu = np.array([mu] * numDims)
         if cov is None:

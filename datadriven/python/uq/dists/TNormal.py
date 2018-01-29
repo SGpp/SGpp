@@ -29,22 +29,22 @@ class TNormal(Dist):
     See: http://en.wikipedia.org/wiki/Truncated_normal_distribution
     """
 
-    def __init__(self, mu, sigma, a, b1):
+    def __init__(self, mu, sigma, a, b):
         """
         Constructor
         @param mu: expectation value
         @param sigma: standard deviation
         @param a: lower boundary
-        @param b1: upper boundary
+        @param b: upper boundary
         """
         super(TNormal, self).__init__()
         self.__mu = float(mu)
         self.__sigma = float(sigma)
-        self.__a, self.__b = a, b1
+        self.__a, self.__b = a, b
 
         # truncated standard normal
-        a, b1 = self.__trans(a), self.__trans(b1)
-        self._dist = truncnorm(a, b1)
+        a, b = self.__trans(a), self.__trans(b)
+        self._dist = truncnorm(a, b)
 
     @classmethod
     def by_range(cls, *args, **kws):
@@ -63,9 +63,9 @@ class TNormal(Dist):
         """
         U = norm(loc=mu, scale=sigma)
         a = U.ppf(alpha / 2.)
-        b1 = U.ppf(1 - alpha / 2.)
+        b = U.ppf(1 - alpha / 2.)
 
-        return cls(mu, sigma, a, b1)
+        return cls(mu, sigma, a, b)
 
     def __trans(self, x):
         return (x - self.__mu) / self.__sigma

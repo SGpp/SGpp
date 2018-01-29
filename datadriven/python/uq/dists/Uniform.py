@@ -27,21 +27,21 @@ class Uniform(Dist):
     Represents a uniform distribution
     """
 
-    def __init__(self, a, b1):
+    def __init__(self, a, b):
         """
         Constructor
         @param a: lower interval threshold
-        @param b1: upper interval threshold
+        @param b: upper interval threshold
         """
         super(Uniform, self).__init__()
         self.__a = float(a)
-        self.__b = float(b1)
+        self.__b = float(b)
 
-        if a >= b1:
+        if a >= b:
             raise AttributeError('lower bound of the interval is larger then \
                                   the higher one')
 
-        self._dist = uniform(loc=a, scale=b1-a)
+        self._dist = uniform(loc=a, scale=b-a)
 
     def pdf(self, x):
         return self._dist.pdf(x)
@@ -102,6 +102,6 @@ class Uniform(Dist):
 
         key = '_Uniform__b'
         if key in jsonObject:
-            b1 = jsonObject[key]
+            b = jsonObject[key]
 
-        return Uniform(a, b1)
+        return Uniform(a, b)

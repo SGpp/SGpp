@@ -51,12 +51,12 @@ class TrilinearQuadratureStrategy(HashQuadrature):
             # run over all columns
             for j, gpj in enumerate(gpsj):
                 # run over all gpks
-                b1, erri = self.computeTrilinearFormByRow(gs,
+                b, erri = self.computeTrilinearFormByRow(gs,
                                                          gpsk, basisk,
                                                          gpi, basisi,
                                                          gpj, basisj)
                 # get the overall contribution in the current dimension
-                A[i, j] = alphak.dot(b1)
+                A[i, j] = alphak.dot(b)
 
                 # error statistics
                 err += erri
@@ -79,17 +79,17 @@ class TrilinearQuadratureStrategy(HashQuadrature):
         @param basisj: SG++ Basis for grid indices j
         @return numpy array
         """
-        b1 = np.ndarray(len(gpsk))
+        b = np.ndarray(len(gpsk))
         err = 0.
         # run over all entries
         for k, gpk in enumerate(gpsk):
             # compute trilinear form for one entry
-            b1[k], erri = self.getTrilinearFormEntry(gs,
+            b[k], erri = self.getTrilinearFormEntry(gs,
                                                     gpk, basisk,
                                                     gpi, basisi,
                                                     gpj, basisj)
             err += erri
-        return b1, err
+        return b, err
 
     def getTrilinearFormEntry(self,
                               gs,

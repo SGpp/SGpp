@@ -11,7 +11,7 @@ class Lognormal(Dist):
     The Log-normal distribution
     """
 
-    def __init__(self, mu, sigma, a, b1):
+    def __init__(self, mu, sigma, a, b):
         super(Lognormal, self).__init__()
 
         self.__mu = mu
@@ -19,7 +19,7 @@ class Lognormal(Dist):
         self._dist = lognorm(sigma, scale=mu)
 
         self.__a = a
-        self.__b = b1
+        self.__b = b
         self.__linearTrans = LinearTransformation(self._dist.cdf(self.__a),
                                                   self._dist.cdf(self.__b))
 
@@ -40,9 +40,9 @@ class Lognormal(Dist):
         """
         U = lognorm(sigma, scale=mu)
         a = U.ppf(alpha / 2.)
-        b1 = U.ppf(1. - alpha / 2.)
+        b = U.ppf(1. - alpha / 2.)
 
-        return cls(mu, sigma, a=a, b1=b1, *args, **kws)
+        return cls(mu, sigma, a=a, b=b, *args, **kws)
 
     def pdf(self, x):
         if self.__a <= x <= self.__b:
@@ -129,6 +129,6 @@ class Lognormal(Dist):
 
         key = '_Lognormal__b'
         if key in jsonObject:
-            b1 = float(jsonObject[key])
+            b = float(jsonObject[key])
 
-        return Lognormal(mu, sigma, a, b1)
+        return Lognormal(mu, sigma, a, b)
