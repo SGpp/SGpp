@@ -50,7 +50,7 @@ class LinearQuadratureStrategy(HashQuadrature):
         @param basis: SG++ basis for grid indices gpsi
         @return: numpy array
         """
-        b = np.ones(len(gps))
+        b1 = np.ones(len(gps))
         err = 0.
         # run over all items
         for i, gpi in enumerate(gps):
@@ -58,9 +58,9 @@ class LinearQuadratureStrategy(HashQuadrature):
             value, erri = self.getLinearFormEntry(gs, gpi, basis)
 
             # collect results
-            b[i] = value
+            b1[i] = value
             err += erri
-        return b, err
+        return b1, err
 
     def getLinearFormEntry(self, gs, gp, basis):
         """

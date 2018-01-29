@@ -693,8 +693,8 @@ def evalHierToTop(basis, grid, coeffs, gp, d):
     while gpa is not None:
         ix = gs.getSequenceNumber(gpa)
         accLevel, i, p = gpa.getLevel(d), gpa.getIndex(d), gs.getCoordinate(gp, d)
-        b = basis.eval(accLevel, i, p)
-        ans += coeffs[ix] * b
+        b1 = basis.eval(accLevel, i, p)
+        ans += coeffs[ix] * b1
         gpa = parent(grid, gpa, d)
     return ans
 
@@ -944,17 +944,17 @@ def addConst(grid, alpha, c, y):
 #             a *= sign
 #
 #             # add constant part
-#             b = v[ipar] - a * xpar
+#             b1 = v[ipar] - a * xpar
 #
 #             # force extrapolation with half the difference between
 #             # father and grand father for the child
 #             xgp = xpar + (xpar - xgrandpar) / 2.
 #
 #             # do the linear extrapolation
-#             y = a * xgp + b
+#             y = a * xgp + b1
 #
 # #             import matplotlib.pyplot as plt
-# #             plt.plot([xpar, xgp], [a * xi + b for xi in [xpar, xgp]])
+# #             plt.plot([xpar, xgp], [a * xi + b1 for xi in [xpar, xgp]])
 # #             plt.plot([xgrandpar, xpar], [sign * 2 * a * xi + v[ipar]
 # #                                          - sign * 2 * a * xpar
 # #                                          for xi in [xgrandpar, xpar]])

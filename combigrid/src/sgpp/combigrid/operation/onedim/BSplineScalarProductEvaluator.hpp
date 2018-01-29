@@ -84,7 +84,8 @@ class BSplineScalarProductEvaluator : public AbstractLinearEvaluator<FloatArrayV
    * on the domain.
    */
   BSplineScalarProductEvaluator(size_t degree, sgpp::combigrid::SingleFunction weight_function,
-                                size_t numAdditionalPoints, bool normalizeWeights = true);
+                                size_t numAdditionalPoints, double a = 0, double b = 1,
+                                bool normalizeWeights = true);
   BSplineScalarProductEvaluator(BSplineScalarProductEvaluator const &other);
   virtual ~BSplineScalarProductEvaluator();
 

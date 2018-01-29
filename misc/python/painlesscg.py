@@ -48,17 +48,17 @@ def sd(y, alpha, grid, x, imax, epsilon, l):
     B = OpB(grid)
     C = OpLaplace(grid)
 
-    b = DataVector(len(alpha))
-    B.multB(y, x, b)
+    b1 = DataVector(len(alpha))
+    B.multB(y, x, b1)
 
     epsilon2 = epsilon*epsilon
 
     i = 1
 
-    # r0 = b - Ax
+    # r0 = b1 - Ax
     temp = DataVector(len(alpha))
     ApplyA(B, C, alpha, temp, x, l)
-    r = DataVector(b)
+    r = DataVector(b1)
     r.sub(temp)
 
     d = r.dotProduct(r)
@@ -74,7 +74,7 @@ def sd(y, alpha, grid, x, imax, epsilon, l):
 
         if i % 100 == 0:
             ApplyA(B, C, alpha, temp, x, l)
-            r.copyFrom(b)
+            r.copyFrom(b1)
             r.sub(temp)
         else:
             # r = r - aq
@@ -93,8 +93,8 @@ def cg(y, alpha, grid, x, imax, epsilon, l, verbose=True):
     B = OpB(grid)
     C = OpLaplace(grid)
 
-    b = DataVector(len(alpha))
-    B.multB(y, x, b)
+    b1 = DataVector(len(alpha))
+    B.multB(y, x, b1)
 
     epsilon2 = epsilon*epsilon
 
@@ -104,7 +104,7 @@ def cg(y, alpha, grid, x, imax, epsilon, l, verbose=True):
 
     ApplyA(B, C, alpha, temp, x, l)
 
-    r = DataVector(b)
+    r = DataVector(b1)
     r.sub(temp)
 
     d = DataVector(r)
@@ -126,9 +126,9 @@ def cg(y, alpha, grid, x, imax, epsilon, l, verbose=True):
         alpha.axpy(a, d)
 
         if i % 50 == 0:
-	    # r = b - A*x
+	    # r = b1 - A*x
             ApplyA(B, C, alpha, temp, x, l)
-            r.copyFrom(b)
+            r.copyFrom(b1)
             r.sub(temp)
         else:
             # r = r - a*q
@@ -153,7 +153,7 @@ def cg(y, alpha, grid, x, imax, epsilon, l, verbose=True):
         print delta_new
 
 
-def BiCGStab(b, alpha, imax, epsilon, ApplyMatrix, verbose=True):
+def BiCGStab(b1, alpha, imax, epsilon, ApplyMatrix, verbose=True):
     # nach http://www.iue.tuwien.ac.at/phd/heinreichsberger/node70.html
     # http://www.numerik.math.tu-graz.ac.at/kurse/lgs/SIMNET6.pdf
 
@@ -167,7 +167,7 @@ def BiCGStab(b, alpha, imax, epsilon, ApplyMatrix, verbose=True):
     # Calculate r0
     r = DataVector(len(alpha))
     ApplyMatrix(alpha, r)
-    r.sub(b)
+    r.sub(b1)
 
     delta_0 = r.dotProduct(r)*epsilon2
     delta = 0.0
@@ -232,9 +232,9 @@ def BiCGStab(b, alpha, imax, epsilon, ApplyMatrix, verbose=True):
 
 
 #-------------------------------------------------------------------------------
-## Conjugated Gradient method for sparse grids, solving A.alpha=b.
+## Conjugated Gradient method for sparse grids, solving A.alpha=b1.
 # The resulting vector is stored in alpha.
-# @param b RHS of equation
+# @param b1 RHS of equation
 # @param alpha vector of unknowns
 # @param imax max. number of iterations (abort, if reached)
 # @param epsilon accuracy requirements (reduce initial norm of residuum |delta_0|
@@ -244,13 +244,13 @@ def BiCGStab(b, alpha, imax, epsilon, ApplyMatrix, verbose=True):
 # @param verbose verbose output (default False)
 # @param max_threshold maximal threshold
 # @return tuple (number of iterations, final norm of residuum)
-def cg_new(b, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True, max_threshold=None):
+def cg_new(b1, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True, max_threshold=None):
     if verbose:
         print "Starting Conjugated Gradients"
 
 #    Apply B to y
-#    b = DataVector(len(alpha))
-#    B.multB(y, x, b)
+#    b1 = DataVector(len(alpha))
+#    B.multB(y, x, b1)
 
     epsilon2 = epsilon*epsilon
 
@@ -263,14 +263,14 @@ def cg_new(b, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True, ma
     if reuse:
         q.setAll(0)
         ApplyMatrix(q, temp)
-        r = DataVector(b)
+        r = DataVector(b1)
         r.sub(temp)
         delta_0 = r.dotProduct(r)*epsilon2
     else:
         alpha.setAll(0)
 
     ApplyMatrix(alpha, temp)
-    r = DataVector(b)
+    r = DataVector(b1)
     r.sub(temp)
 
     # delta
@@ -296,9 +296,9 @@ def cg_new(b, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True, ma
         alpha.axpy(a, d)
 
         if i % 50 == 0:
-        # r = b - A*x
+        # r = b1 - A*x
             ApplyMatrix(alpha, temp)
-            r.copyFrom(b)
+            r.copyFrom(b1)
             r.sub(temp)
         else:
             # r = r - a*q
