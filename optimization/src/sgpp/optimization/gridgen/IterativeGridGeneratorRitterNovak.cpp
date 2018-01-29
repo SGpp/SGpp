@@ -19,6 +19,7 @@
 namespace sgpp {
 namespace optimization {
 
+namespace {
 /**
  * Fast and approximative version of std::pow.
  * Source: http://martin.ankerl.com/2012/01/25/optimized-approximative-pow-in-c-and-cpp/
@@ -38,6 +39,7 @@ inline double fastPow(double a, double b) {
 
   return u.d;
 }
+}  // namespace
 
 IterativeGridGeneratorRitterNovak::IterativeGridGeneratorRitterNovak(
     ScalarFunction& f, base::Grid& grid, size_t N, double adaptivity, base::level_t initialLevel,
