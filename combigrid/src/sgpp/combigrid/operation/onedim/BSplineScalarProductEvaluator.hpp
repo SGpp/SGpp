@@ -83,9 +83,9 @@ class BSplineScalarProductEvaluator : public AbstractLinearEvaluator<FloatArrayV
    * to 1. This might be useful if the weight function is (or should be) a probability distribution
    * on the domain.
    */
-  BSplineScalarProductEvaluator::BSplineScalarProductEvaluator(
-      size_t degree, sgpp::combigrid::SingleFunction weight_function, size_t numAdditionalPoints,
-      double a = 0, double b = 1, bool normalizeWeights = true);
+  BSplineScalarProductEvaluator(size_t degree, sgpp::combigrid::SingleFunction weight_function,
+                                size_t numAdditionalPoints, double a = 0, double b = 1,
+                                bool normalizeWeights = true);
   BSplineScalarProductEvaluator(BSplineScalarProductEvaluator const &other);
   virtual ~BSplineScalarProductEvaluator();
 
