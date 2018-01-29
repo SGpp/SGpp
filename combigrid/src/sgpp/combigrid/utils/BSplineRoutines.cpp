@@ -802,13 +802,13 @@ std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineVarianceR
 
 std::shared_ptr<sgpp::combigrid::CombigridMultiOperation>
 createBsplineVarianceRefinementOperationWithWeightsAndBounds(
-    size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func,
+    size_t degree, sgpp::combigrid::MultiFunction func,
     std::shared_ptr<sgpp::combigrid::LevelManager> levelManager,
     sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection,
     sgpp::base::DataVector bounds) {
+  size_t numDimensions = weightFunctionsCollection.size();
   sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
       numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
-  sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
 
   sgpp::combigrid::EvaluatorConfiguration EvalConfig(
       sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineScalarProduct, degree);
@@ -816,15 +816,21 @@ createBsplineVarianceRefinementOperationWithWeightsAndBounds(
   sgpp::combigrid::CombiEvaluators::MultiCollection Evaluators(
       numDimensions, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(EvalConfig));
 
-  //  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
-  //      new sgpp::combigrid::AveragingLevelManager());
   sgpp::combigrid::FullGridSummationStrategyType auxiliarySummationStrategyType =
       sgpp::combigrid::FullGridSummationStrategyType::VARIANCE;
 
+  for (size_t d = 0; d < numDimensions; d++) {
+    Evaluators[d]->setWeightFunction(weightFunctionsCollection[d]);
+    Evaluators[d]->setBounds(bounds[2 * d], bounds[2 * d + 1]);
+  }
+
   bool exploitNesting = false;
+  sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
+
   auto Operation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
       pointHierarchies, Evaluators, levelManager, gf, exploitNesting,
       auxiliarySummationStrategyType);
+
   return Operation;
 }
 
