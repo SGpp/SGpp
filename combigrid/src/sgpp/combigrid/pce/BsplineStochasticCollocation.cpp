@@ -83,6 +83,8 @@ void BsplineStochasticCollocation::updateConfig(
 
   this->config.combigridMultiOperation = createBsplineLinearCoefficientOperation(
       newConfig.degree, newConfig.numDims, newConfig.coefficientStorage);
+  this->config.combigridMultiOperation->getLevelManager()->addLevelsFromStructure(
+      newConfig.levelStructure);
 
   //  this->config.combigridOperation = createexpUniformBsplineQuadratureCoefficientOperation(
   //      newConfig.degree, newConfig.numDims, newConfig.coefficientStorage);
@@ -101,6 +103,7 @@ void BsplineStochasticCollocation::updateConfig(
       summationStrategyType);
   this->config.combigridOperation->getLevelManager()->addLevelsFromStructure(
       newConfig.levelStructure);
+
   computedMeanFlag = false;
   computedVarianceFlag = false;
 }
@@ -143,6 +146,8 @@ double BsplineStochasticCollocation::computeVariance() {
   auto levelStructure = this->config.levelStructure;
   convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
 
+  std::cout << "gridStorage size: " << gridStorage.getSize() << std::endl;
+
   // interpolate on SG
   sgpp::base::DataVector alpha = createInterpolantOnConvertedExpUnifromBoundaryCombigird(
       grid, gridStorage, this->config.combigridMultiOperation, levelStructure);
@@ -150,7 +155,7 @@ double BsplineStochasticCollocation::computeVariance() {
   sgpp::base::Grid* gridptr = grid.get();
   sgpp::combigrid::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(
       gridptr, weightFunctions, config.bounds);
-  sgpp::base::DataVector product(alpha.size(), 0);
+  sgpp::base::DataVector product(alpha.size());
   massMatrix.mult(alpha, product);
   double meanSquare = product.dotProduct(alpha);
   double width = 1.0;
@@ -158,6 +163,9 @@ double BsplineStochasticCollocation::computeVariance() {
     width *= (config.bounds[2 * d + 1] - config.bounds[2 * d]);
   }
   meanSquare *= width;
+  double exactMeanSquare = 1.226117849896473;
+  std::cout << "meanSquare: " << meanSquare << " error: " << std::fabs(exactMeanSquare - meanSquare)
+            << std::endl;
 
   if (!computedMeanFlag) {
     mean();
