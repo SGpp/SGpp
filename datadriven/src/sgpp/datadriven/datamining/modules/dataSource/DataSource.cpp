@@ -12,7 +12,9 @@
 #include "DataSource.hpp"
 
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceIterator.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataTransformation.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/RosenblattTransformation.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/globaldef.hpp>
 
@@ -37,12 +39,21 @@ DataSourceIterator DataSource::end() { return DataSourceIterator(*this, config.n
 
 Dataset* DataSource::getNextSamples() {
   // only one iteration: we want all samples
+  Dataset* dataset = nullptr;
   if (config.numBatches == 1 && config.batchSize == 0) {
     currentIteration++;
-    return sampleProvider->getAllSamples();
+    dataset = sampleProvider->getAllSamples();
   } else {
     currentIteration++;
-    return sampleProvider->getNextSamples(config.batchSize);
+    dataset = sampleProvider->getNextSamples(config.batchSize);
+  }
+  // Transform dataset if wanted
+  if (config.transformation == "rosenblatt") {
+    std::cout << "Perform Rosenblatt-Transformation on dataset." << std::endl;
+    RosenblattTransformation rosenblattTr(dataset, 1000);
+    return rosenblattTr.doInverseTransformation();
+  } else {
+    return dataset;
   }
 }
 
