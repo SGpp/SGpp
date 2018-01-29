@@ -143,10 +143,10 @@ class Regressor(Learner):
         else:
             alpha = DataVector(size)
             alpha.setAll(0.0)
-        b1 = DataVector(size)
-        self.linearSystem.generateb(set.getValues(), b1)
+        b = DataVector(size)
+        self.linearSystem.generateb(set.getValues(), b)
         # calculates alphas
-        self.solver.solve(self.linearSystem, alpha, b1, self.solver.getReuse(),
+        self.solver.solve(self.linearSystem, alpha, b, self.solver.getReuse(),
                           False, self.solver.getThreshold())
 
         return alpha

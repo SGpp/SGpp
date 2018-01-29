@@ -521,7 +521,7 @@ BOOST_AUTO_TEST_CASE(testVarianceOnDiagonaldeg5) {
 }
 
 double x32D(sgpp::base::DataVector const& v) { return std::pow(v[0], 3) + std::pow(v[1], 3); }
-double wcos(double v) { return std::pow(v, 3); }
+double wcos(double v) { return cos(v); }
 
 BOOST_AUTO_TEST_CASE(testQuadratureWithWeightFunction) {
   std::cout << "Integrate objective function x^3+y^3 and weight function cos x with B splines of "
@@ -719,19 +719,6 @@ BOOST_AUTO_TEST_CASE(testBsplineStochasticCollocation_co2_lognormal) {
   std::cout << std::abs(co2Model.variance - bsc.variance()) << std::endl;
   //  BOOST_CHECK_SMALL(std::abs(co2Model.mean - bsc.mean()), 1e-8);
   //  BOOST_CHECK_SMALL(std::abs(co2Model.variance - bsc.variance()), 1e-4);
-
-  //  numLevels = 8;
-  //  createRegularLevelStructure(numLevels, bsc_config.degree, pointHierarchies, gf, false,
-  //                              newLevelStructure, newCoefficientStorage, numDims);
-  //
-  //  //  update config
-  //  bsc_config.levelStructure = newLevelStructure;
-  //  bsc_config.coefficientStorage = newCoefficientStorage;
-  //  bsc.updateConfig(bsc_config);
-  //
-  //  // check the moments
-  //  std::cout << std::abs(co2Model.mean - bsc.mean()) << std::endl;
-  //  std::cout << std::abs(co2Model.variance - bsc.variance()) << std::endl;
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -25,7 +25,7 @@ class LinearTransformation(Transformation):
 
     def unitToProbabilistic(self, x):
         """
-        Performs a linear transformation of x in [0, 1] to [a, b1]
+        Performs a linear transformation of x in [0, 1] to [a, b]
         @param x: float value
         @return: transformed value
         """
@@ -38,7 +38,7 @@ class LinearTransformation(Transformation):
 
     def probabilisticToUnit(self, x):
         """
-        Performs a linear transformation of x in [a, b1] to [0, 1]
+        Performs a linear transformation of x in [a, b] to [0, 1]
         @param x: float value
         @return: transformed value
         """
@@ -86,6 +86,6 @@ class LinearTransformation(Transformation):
 
         key = '_LinearTransformation__b'
         if key in jsonObject:
-            b1 = float(jsonObject[key])
+            b = float(jsonObject[key])
 
-        return LinearTransformation(a, b1)
+        return LinearTransformation(a, b)

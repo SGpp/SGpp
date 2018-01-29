@@ -30,18 +30,18 @@ class Normal(Dist):
     See: http://en.wikipedia.org/wiki/Truncated_normal_distribution
     """
 
-    def __init__(self, mu, sigma, a, b1):
+    def __init__(self, mu, sigma, a, b):
         """
         Constructor
         @param mu: expectation value
         @param sigma: standard deviation
         @param a: lower boundary
-        @param b1: upper boundary
+        @param b: upper boundary
         """
         super(Normal, self).__init__()
         self.__mu = float(mu)
         self.__sigma = float(sigma)
-        self.__a, self.__b = a, b1
+        self.__a, self.__b = a, b
 
         # standard normal
         self._dist = norm(loc=mu, scale=sigma)
@@ -66,9 +66,9 @@ class Normal(Dist):
         """
         U = norm(loc=mu, scale=sigma)
         a = U.ppf(alpha / 2.)
-        b1 = U.ppf(1 - alpha / 2.)
+        b = U.ppf(1 - alpha / 2.)
 
-        return cls(mu, sigma, a, b1)
+        return cls(mu, sigma, a, b)
 
     def pdf(self, x):
         if self.__a <= x <= self.__b:
@@ -155,6 +155,6 @@ class Normal(Dist):
 
         key = '_Normal__b'
         if key in jsonObject:
-            b1 = jsonObject[key]
+            b = jsonObject[key]
 
-        return Normal(mu, sigma, a, b1)
+        return Normal(mu, sigma, a, b)

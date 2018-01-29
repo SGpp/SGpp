@@ -71,12 +71,12 @@ class UncertainParameterDesciptor(ParameterDescriptor):
         self._dist = None
         self.__trans = None
 
-    def withUniformDistribution(self, a, b1):
-        self._dist = Uniform(a, b1)
+    def withUniformDistribution(self, a, b):
+        self._dist = Uniform(a, b)
         return self
 
-    def withTNormalDistribution(self, mu, sigma, a, b1):
-        self._dist = TNormal(mu, sigma, a, b1)
+    def withTNormalDistribution(self, mu, sigma, a, b):
+        self._dist = TNormal(mu, sigma, a, b)
         return self
 
     def withNormalDistribution(self, mu, sigma, alpha):
@@ -95,8 +95,8 @@ class UncertainParameterDesciptor(ParameterDescriptor):
         self._dist = Beta(p, q, accLevel, width)
         return self
 
-    def withMultivariateNormalDistribution(self, mu, cov, a, b1):
-        self._dist = MultivariateNormal(mu, cov, a, b1)
+    def withMultivariateNormalDistribution(self, mu, cov, a, b):
+        self._dist = MultivariateNormal(mu, cov, a, b)
         return self
 
     def withSampleDistribution(self, samples):
@@ -112,8 +112,8 @@ class UncertainParameterDesciptor(ParameterDescriptor):
 
     def withLinearTransformation(self):
         if self._dist is not None:
-            a, b1 = self._dist.getBounds()
-            self.__trans = LinearTransformation(a, b1)
+            a, b = self._dist.getBounds()
+            self.__trans = LinearTransformation(a, b)
         else:
             raise AttributeError('the distribution of "%s" is not specified \
                                   yet but it is needed to know to apply the \
@@ -143,8 +143,8 @@ class UncertainParameterDesciptor(ParameterDescriptor):
             else:
                 self.__trans = JointTransformation()
                 for i in xrange(self._dist.getDim()):
-                    a, b1 = bounds[i]
-                    self.__trans.add(LinearTransformation(a, b1))
+                    a, b = bounds[i]
+                    self.__trans.add(LinearTransformation(a, b))
 
         # check if there are enough identifiers given
         if self._dist.getDim() > 1 and self._dist.getDim() != len(self._name):

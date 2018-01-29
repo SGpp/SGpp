@@ -13,13 +13,13 @@ class QuadratureStrategy(object):
         self._n = n
         self._gaussPoints = [None] * n
 
-    def quad(self, f, a, b1, deg=None, tol=1e-12):
+    def quad(self, f, a, b, deg=None, tol=1e-12):
         # compute the piecewise continuous parts separately
         if deg is None:
             deg = 5
 
         s = [0, 0]
-        width = b1 - a
+        width = b - a
         vol = width / 2.
         err = 1.
         while (err < 1e-17 or err > tol) and deg - 1 < self._n:

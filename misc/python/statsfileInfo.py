@@ -58,10 +58,10 @@ for i in range(len(txt)):
         data.append(map(lambda x: float(x), txt[i].split(", ")))
 
 # sort data by lambda
-def sortFun(a,b1):
-    if a[options.x1-1] < b1[options.x1-1]:
+def sortFun(a,b):
+    if a[options.x1-1] < b[options.x1-1]:
         return -1
-    elif a[options.x1-1] == b1[options.x1-1]:
+    elif a[options.x1-1] == b[options.x1-1]:
         return 0
     else:
         return 1

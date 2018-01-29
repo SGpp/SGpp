@@ -10,13 +10,13 @@ import plot as p
 from pysgpp import *
 import random
 
-def integral(dim, f, a=0.0, b1=1.0, points=10000):
+def integral(dim, f, a=0.0, b=1.0, points=10000):
     sum = 0.0
     
     for i in range(points):
         vec = DataVector(dim)
         for j in range(dim):
-	    vec[j] = random.random()*(b1-a)+a
+	    vec[j] = random.random()*(b-a)+a
 	sum += f(vec)
     
     return sum/points
@@ -39,15 +39,15 @@ def createConvPlotFunc(approx, orig, dim):
     
     return lambda x : integral(dim, createConvergenceFunc(lambda y : approx(x, inputwrapper(y)), orig))
 
-def plotConvergence(approx, orig, a=0, b1=10):
-    plot.plotIntegerFunc2D(createConvPlotFunc(approx, orig), a, b1)
+def plotConvergence(approx, orig, a=0, b=10):
+    plot.plotIntegerFunc2D(createConvPlotFunc(approx, orig), a, b)
     
-def plotConvergenceMulti(approxs, orig, names, shows, title, dim, a=0, b1=10, 
+def plotConvergenceMulti(approxs, orig, names, shows, title, dim, a=0, b=10, 
                          logx=False, logy=False, plot=True, filename=None):
     fs = []
     for f in approxs:
         fs.append(createConvPlotFunc(f, orig, dim))
-    p.plotMultipleIntegerFunc2D(fs, names, shows, title=title, logx=logx, logy=logy, a=a, b1=b1, plot=plot, filename=filename)
+    p.plotMultipleIntegerFunc2D(fs, names, shows, title=title, logx=logx, logy=logy, a=a, b=b, plot=plot, filename=filename)
 
 def norm(x):
     # TODO does not work :( (return 1.0 / (Segmentation fault)
@@ -94,7 +94,7 @@ def makePlots(dim, f, title="", filename="test"):
         filename = "test"
     filename += "_exp"
 
-    #plotConvergenceMulti(approx, f, names, shows, title=title+" exp", plot=False, filename=filename, b1=10, dim=dim, logy=True)
+    #plotConvergenceMulti(approx, f, names, shows, title=title+" exp", plot=False, filename=filename, b=10, dim=dim, logy=True)
     
     #linearApprox
     approx = []
@@ -120,7 +120,7 @@ def makePlots(dim, f, title="", filename="test"):
     filename = filename[0:len(filename)-4]
     filename += "_lin"
 
-    plotConvergenceMulti(approx, f, names, shows, title=title+" lin", plot=False, filename=filename, b1=30, dim=dim, logy=True)
+    plotConvergenceMulti(approx, f, names, shows, title=title+" lin", plot=False, filename=filename, b=30, dim=dim, logy=True)
 
 def test():
     f = lambda x : 0

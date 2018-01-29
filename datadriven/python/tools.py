@@ -43,8 +43,8 @@ def gzOpen(filename, mode="r"):
     # gzip-file
     if re.match(".*\.gz$", filename):
         # mode set for binary data?
-        if not mode[-1] == "b1":
-            mode += "b1"
+        if not mode[-1] == "b":
+            mode += "b"
         fd = gzip.open(filename, mode)
     # non gzip-file
     else:
@@ -996,14 +996,14 @@ CModes = {
     
 ## base function types
 base_types = {
-#    "linear" : {"base" : SLinearBase, "b1" : SGridOperationB, "t" : test_dataset_linear, "laplace" : SGridOperationLaplace},
-#    "modlinear" : {"base" : SLinearModifiedBase, "b1" : SGridModOperationB, "t" : test_dataset_modlin},
+#    "linear" : {"base" : SLinearBase, "b" : SGridOperationB, "t" : test_dataset_linear, "laplace" : SGridOperationLaplace},
+#    "modlinear" : {"base" : SLinearModifiedBase, "b" : SGridModOperationB, "t" : test_dataset_modlin},
 #    "poly" : {"base" : "SPolyBase", },
               }
 
 
 ## Class Matrix that incorporates settings and actions for applying
-# the matrix C and computing the RHS b1.
+# the matrix C and computing the RHS b.
 class Matrix:
     def __init__(self, grid, x, l, mode, Hk, base = None):
         self.grid = grid
@@ -1060,9 +1060,9 @@ class Matrix:
             self.C = createOperationRegularizationDiagonal(grid, OperationRegularizationDiagonal.H0HKLAPLACE, Hk)
     
     def generateb(self, y):
-        b1 = DataVector(self.grid.getSize())
-        self.B.multTranspose(y, b1)
-        return b1
+        b = DataVector(self.grid.getSize())
+        self.B.multTranspose(y, b)
+        return b
     
     def ApplyMatrix(self, alpha, result):
         M = self.x.getNrows();
