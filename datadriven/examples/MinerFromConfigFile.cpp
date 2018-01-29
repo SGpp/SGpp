@@ -12,6 +12,8 @@
 
 #include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
 #include <sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
+
 
 #include <cstdlib>
 #include <iostream>
@@ -46,11 +48,11 @@ int main(int argc, char **argv) {
   /**
    * The miner object is constructed by the factory from a supplied configuration file.
    */
-  auto miner = std::unique_ptr<SparseGridMiner>(factory.buildMiner(path));
+  auto hpo = std::unique_ptr<sgpp::datadriven::HyperparameterOptimizer>(factory.buildHPO(path));
   //factory.optimizeHyperparameters(path);
   /**
    * Once we have a configured miner object, we can start the learning process.
    */
-  miner->optimizeHyperparameters();
-  miner->learn();
+  hpo->optimizeHyperparameters();
+  //miner->learn();
 }

@@ -18,6 +18,8 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/HPOScorer.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
+
 
 #include <string>
 
@@ -42,6 +44,8 @@ class LeastSquaresRegressionMinerFactory : public MinerFactory {
    */
   virtual SparseGridMiner* buildMiner(const std::string& path) const;
   virtual void optimizeHyperparameters(const std::string& path);
+  HyperparameterOptimizer* buildHPO(const std::string& path) const ;
+
 
  private:
   /**

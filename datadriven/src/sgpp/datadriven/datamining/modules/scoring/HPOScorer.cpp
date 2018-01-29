@@ -18,15 +18,15 @@ namespace datadriven {
 using base::DataVector;
 
 HPOScorer::HPOScorer(Metric* metric, ShufflingFunctor* shuffling, int64_t seed,
-    double trainPortion, const DataMiningConfigParser& parser, FitterFactory* fitterFactory)
-    : Scorer{metric, shuffling, seed}, trainPortion{trainPortion}, parser{&parser}, fitterFactory{fitterFactory} {}
+    double trainPortion)
+    : Scorer{metric, shuffling, seed}, trainPortion{trainPortion} {}
 
-    //EDIT: deactivate clone because of unique_ptrs
-Scorer* HPOScorer::clone() const { //return new HPOScorer{*this}; 
+
+Scorer* HPOScorer::clone() const { return new HPOScorer{*this};
 }
 
 // TODO(lettrich) :recycle
-double HPOScorer::calculateScore(ModelFittingBase& modelOLD, Dataset& dataset,
+double HPOScorer::calculateScore(ModelFittingBase& model, Dataset& dataset,
                                        double* stdDeviation) {
   // perform randomization of indices
   std::vector<size_t> randomizedIndices(dataset.getNumberInstances());
@@ -47,30 +47,30 @@ double HPOScorer::calculateScore(ModelFittingBase& modelOLD, Dataset& dataset,
   splitSet(dataset, trainDataset, testDataset, randomizedIndices);
   //splitSet(dataset, dummyDataset, trainDataset, randomizedIndices, 2000);
   
-  //new code
-  std::cout<< "Test 1" << std::endl;
+  // new code
+  // std::cout<< "Test 1" << std::endl;
 
-  FitterConfiguration* fitterConfig1;
-  fitterConfig1 = fitterFactory->buildConfig(); //*parser
-  ModelFittingBase* model = fitterFactory->buildFitter(fitterConfig1);
+  // FitterConfiguration* fitterConfig1;
+  // fitterConfig1 = fitterFactory->buildConfig(); //*parser
+  // ModelFittingBase* model = fitterFactory->buildFitter(fitterConfig1);
   
-  std::cout<< "Test 2" << std::endl;
+  // std::cout<< "Test 2" << std::endl;
 
   
-  bool resetVerbose = model->verboseSolver;
-  model->verboseSolver = false;
-  //int64_t seed = shuffling->getSeed();
-  auto fitterconfig = model->getFitterConfiguration();
-  auto gridConfig = fitterconfig->getGridConfig();
-  auto adaptivityConfig = fitterconfig->getRefinementConfig();
-  auto regularizationConfig = fitterconfig->getRegularizationConfig();
+  bool resetVerbose = model.verboseSolver;
+  model.verboseSolver = false;
+  // int64_t seed = shuffling->getSeed();
+  // auto fitterconfig = model->getFitterConfiguration();
+  // auto gridConfig = fitterconfig->getGridConfig();
+  // auto adaptivityConfig = fitterconfig->getRefinementConfig();
+  // auto regularizationConfig = fitterconfig->getRegularizationConfig();
   
   //datadriven::RegularizationConfiguration regularizationConfig;
   //base::AdpativityConfiguration adaptivityConfig;
   //base::RegularGridConfiguration gridConfig;
 
-  //double scores[5][6][5+1][6][9]; //adaptivityConfig.numRefinements_
-  double nscores[4096];
+  // double scores[5][6][5+1][6][9]; //adaptivityConfig.numRefinements_
+  // double nscores[4096];
   
   //auto matrix = sgpp::base::DataMatrix(11,0);
   //matrix.appendCol(sgpp::base::DataVector(std::vector<double>({0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1})));
@@ -110,6 +110,8 @@ double HPOScorer::calculateScore(ModelFittingBase& modelOLD, Dataset& dataset,
     }
   }
   */
+
+  /*
   for (int i = 0; i <= 511; i++){
     gridConfig.level_ = (i&3)+1;
     adaptivityConfig.noPoints_ = ((i>>2)&3)+1;
@@ -145,7 +147,9 @@ double HPOScorer::calculateScore(ModelFittingBase& modelOLD, Dataset& dataset,
   }
   myfile.close();
   std::cout<< "Write to file finished." << std::endl;
-  
+  */
+
+
   /*
   std::ofstream myfile("C:/Users/Eric/Documents/HPOut.csv");
   if(myfile.is_open()){
@@ -228,16 +232,25 @@ double HPOScorer::calculateScore(ModelFittingBase& modelOLD, Dataset& dataset,
   
   
   
+  model.fit(trainDataset);
+  double score = test(model, testDataset);
+  double best = score+1;
+  while(score<best){
+	  best = score;
+	  model.refine();
+	  score = test(model, testDataset);
+	  //std::cout<<"RefinedScore :"<<score<<std::endl;
+  }
 
-  model->verboseSolver = resetVerbose;
+  model.verboseSolver = resetVerbose;
 
   if (stdDeviation) {
     *stdDeviation = 0;
   }
   
-  double minScore = 1000.0;
+  // double minScore = 1000.0;
 
-  return minScore;
+  return best;
 }
 
 

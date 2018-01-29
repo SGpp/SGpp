@@ -10,6 +10,7 @@
 
 #include <sgpp/globaldef.hpp>
 #include <list>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -37,7 +38,7 @@ class ConfigurationBit {
   
   int evaluate(int* input);
   
-  int fixFreeBits(std::vector<ConfigurationBit*> freeBits);
+  int fixFreeBits(std::vector<ConfigurationBit*> &freeBits);
 
   void reset();
   // void mult(base::DataVector& alpha, base::DataVector& result);
@@ -47,7 +48,7 @@ class ConfigurationBit {
 
  protected:
   /// reference to the base::Grid's base::GridStorage object
-  std::list<ConfigurationRestriction> constraints;
+  std::list<ConfigurationRestriction*> constraints;
   int value;
   bool bVisited;
 };

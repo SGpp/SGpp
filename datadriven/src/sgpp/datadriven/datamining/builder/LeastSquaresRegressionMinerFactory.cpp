@@ -27,6 +27,8 @@
 #include <sgpp/datadriven/datamining/modules/scoring/RandomShufflingFunctor.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/SplittingScorer.hpp>
 #include <sgpp/datadriven/datamining/builder/LeastSquaresRegressionFitterFactory.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
+
 
 
 
@@ -41,6 +43,12 @@ SparseGridMiner* LeastSquaresRegressionMinerFactory::buildMiner(const std::strin
   DataMiningConfigParser parser(path);
 
   return new SparseGridMiner(createDataSource(parser), createFitter(parser), createScorer(parser), createHPOScorer(parser));
+}
+
+HyperparameterOptimizer* LeastSquaresRegressionMinerFactory::buildHPO(const std::string& path) const {
+	DataMiningConfigParser parser(path);
+	  return new HyperparameterOptimizer(createDataSource(parser), new LeastSquaresRegressionFitterFactory(parser), createScorer(parser), createHPOScorer(parser));
+
 }
 
 void LeastSquaresRegressionMinerFactory::optimizeHyperparameters(const std::string& path){
@@ -167,7 +175,7 @@ ModelFittingBase* LeastSquaresRegressionMinerFactory::createFitter(
     const DataMiningConfigParser& parser) const {
   FitterConfigurationLeastSquares config{};
   config.readParams(parser);
-  return new ModelFittingLeastSquaresFista(config); //fista
+  return new ModelFittingLeastSquares(config); //fista
 }
 
 Scorer* LeastSquaresRegressionMinerFactory::createScorer(
@@ -185,7 +193,7 @@ Scorer* LeastSquaresRegressionMinerFactory::createScorer(
 HPOScorer* LeastSquaresRegressionMinerFactory::createHPOScorer(
     const DataMiningConfigParser& parser) const {
   HPOScorerFactory scorerFactory;
-  return static_cast<HPOScorer*>(scorerFactory.buildHPOScorer(parser, new LeastSquaresRegressionFitterFactory()));  
+  return static_cast<HPOScorer*>(scorerFactory.buildScorer(parser));
 }
 
 } /* namespace datadriven */
