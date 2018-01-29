@@ -16,6 +16,7 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(
     std::vector<double> const& points, size_t const& index_i) {
   FloatArrayVector sums;
   double transWidth = b - a;
+
   for (size_t index_j = 0; index_j < points.size(); index_j++) {
     // performing Gauss-Legendre integration with twice as many points as for the simple integrals
     size_t numGaussPoints = 2 * ((degree + 1) / 2 + numAdditionalPoints);
@@ -61,12 +62,12 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(
         size_t last_segment = std::max(last_segment_i, last_segment_j);
         std::vector<double> xi = createNakKnots(xValues, degree);
         for (size_t segmentIndex = first_segment; segmentIndex < last_segment; segmentIndex++) {
-          double a = std::max(0.0, xi[segmentIndex]);
-          double b = std::min(1.0, xi[segmentIndex + 1]);
-          double width = b - a;
+          double l = std::max(0.0, xi[segmentIndex]);
+          double r = std::min(1.0, xi[segmentIndex + 1]);
+          double width = r - l;
 
           for (size_t i = 0; i < roots.getSize(); ++i) {
-            double x = a + width * roots[i];
+            double x = l + width * roots[i];
             double transX = a + transWidth * x;
             // ToDO(rehmemk) Rewrite this whole  routine , don't use createKnots and use the
             // Lagrange polynomials inside expUuniformNakBspline
