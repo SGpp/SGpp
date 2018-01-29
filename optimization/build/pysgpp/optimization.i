@@ -85,11 +85,12 @@ const bool UMFPACK_ENABLED;
 %rename(OptWrapperVectorFunctionGradient)       sgpp::optimization::WrapperVectorFunctionGradient;
 %rename(OptWrapperVectorFunctionHessian)        sgpp::optimization::WrapperVectorFunctionHessian;
 
-%rename(OptHashRefinementMultiple)              sgpp::optimization::HashRefinementMultiple;
-%rename(OptIterativeGridGenerator)              sgpp::optimization::IterativeGridGenerator;
-%rename(OptIterativeGridGeneratorLinearSurplus) sgpp::optimization::IterativeGridGeneratorLinearSurplus;
-%rename(OptIterativeGridGeneratorRitterNovak)   sgpp::optimization::IterativeGridGeneratorRitterNovak;
-%rename(OptIterativeGridGeneratorSOO)           sgpp::optimization::IterativeGridGeneratorSOO;
+%rename(OptHashRefinementMultiple)                  sgpp::optimization::HashRefinementMultiple;
+%rename(OptIterativeGridGenerator)                  sgpp::optimization::IterativeGridGenerator;
+%rename(OptIterativeGridGeneratorFuzzyRitterNovak)  sgpp::optimization::IterativeGridGeneratorFuzzyRitterNovak;
+%rename(OptIterativeGridGeneratorLinearSurplus)     sgpp::optimization::IterativeGridGeneratorLinearSurplus;
+%rename(OptIterativeGridGeneratorRitterNovak)       sgpp::optimization::IterativeGridGeneratorRitterNovak;
+%rename(OptIterativeGridGeneratorSOO)               sgpp::optimization::IterativeGridGeneratorSOO;
 
 %rename(OptSLE)                     sgpp::optimization::SLE;
 %rename(OptFullSLE)                 sgpp::optimization::FullSLE;
@@ -376,10 +377,13 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/function/vector/EmptyVectorFunction.hpp"
 %include "optimization/src/sgpp/optimization/function/vector/EmptyVectorFunctionGradient.hpp"
 
+%include "optimization/src/sgpp/optimization/fuzzy/FuzzyInterval.hpp"
+
 %include "optimization/src/sgpp/optimization/gridgen/HashRefinementMultiple.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGenerator.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorLinearSurplus.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp"
+%include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorFuzzyRitterNovak.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorSOO.hpp"
 
 %include "optimization/src/sgpp/optimization/operation/hash/OperationMultipleHierarchisation.hpp"
@@ -419,7 +423,6 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/optimizer/constrained/LogBarrier.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/constrained/SquaredPenalty.hpp"
 
-%include "optimization/src/sgpp/optimization/fuzzy/FuzzyInterval.hpp"
 %include "optimization/src/sgpp/optimization/fuzzy/FuzzyExtensionPrinciple.hpp"
 %include "optimization/src/sgpp/optimization/fuzzy/FuzzyExtensionPrincipleViaOptimization.hpp"
 %include "optimization/src/sgpp/optimization/fuzzy/FuzzyExtensionPrincipleViaTransformation.hpp"
