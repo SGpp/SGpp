@@ -48,10 +48,10 @@ Dataset* DataSource::getNextSamples() {
     dataset = sampleProvider->getNextSamples(config.batchSize);
   }
   // Transform dataset if wanted
-  if (config.transformation == "rosenblatt") {
-    std::cout << "Perform Rosenblatt-Transformation on dataset." << std::endl;
-    RosenblattTransformation rosenblattTr(dataset, 1000);
-    return rosenblattTr.doInverseTransformation();
+  if (!(config.dataTransformation == DataTransformationType::NONE)) {
+    // DataTransformation dataTr = new DataTransformation();
+    DataTransformation* dataTr = new DataTransformation();
+    return dataTr->initialize(config.dataTransformation, dataset).doTransformation();
   } else {
     return dataset;
   }

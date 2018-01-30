@@ -21,6 +21,7 @@
 #include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceFileTypeParser.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerShufflingTypeParser.hpp>
@@ -87,8 +88,6 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
     config.numBatches =
         parseUInt(*dataSourceConfig, "numBatches", defaults.numBatches, "dataSource");
     config.batchSize = parseUInt(*dataSourceConfig, "batchSize", defaults.batchSize, "dataSource");
-    config.transformation =
-        parseString(*dataSourceConfig, "transformation", defaults.transformation, "dataSource");
 
     // parse file type
     if (dataSourceConfig->contains("fileType")) {
@@ -98,6 +97,16 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
                 << DataSourceFileTypeParser::toString(defaults.fileType) << "." << std::endl;
       config.fileType = defaults.fileType;
     }
+
+    // parse transformation type
+    if (dataSourceConfig->contains("dataTransformation")) {
+      config.dataTransformation =
+          DataTransformationTypeParser::parse((*dataSourceConfig)["dataTransformation"].get());
+    } else {
+      config.dataTransformation = defaults.dataTransformation;
+    }
+    std::cout << "# Data transformation detected:"
+              << DataTransformationTypeParser::toString(config.dataTransformation) << std::endl;
 
   } else {
     std::cout << "# Could not find specification  of dataSource. Falling Back to default values."

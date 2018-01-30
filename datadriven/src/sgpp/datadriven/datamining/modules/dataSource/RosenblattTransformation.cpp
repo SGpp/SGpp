@@ -64,7 +64,7 @@ Dataset* RosenblattTransformation::doTransformation() {
 
 Dataset* RosenblattTransformation::doInverseTransformation() {
   std::unique_ptr<sgpp::datadriven::OperationInverseRosenblattTransformation> opInvRos(
-      sgpp::op_factory::createOperationRosenblattTransformation(*grid));
+      sgpp::op_factory::createOperationInverseRosenblattTransformation(*grid));
 
   opInvRos->doTransformation(alpha, &datasetTransformed->getData(), &dataset->getData());
   return dataset;
@@ -82,11 +82,9 @@ sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
   gridConfig.level_ = static_cast<int>(level);
   gridConfig.type_ = sgpp::base::GridType::Linear;
 
-
   // configure adaptive refinement
   sgpp::base::AdpativityConfiguration adaptConfig;
   adaptConfig.numRefinements_ = 0;
-  adaptConfig.noPoints_ = 10;
 
   // configure solver
   sgpp::solver::SLESolverConfiguration solverConfig;
@@ -104,15 +102,6 @@ sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
   sgpp::datadriven::CrossvalidationForRegularizationConfiguration
     crossvalidationConfig;
   crossvalidationConfig.enable_ = false;
-  crossvalidationConfig.kfold_ = 3;
-  crossvalidationConfig.lambda_ = 3.16228e-06;
-  crossvalidationConfig.lambdaStart_ = lambda;
-  crossvalidationConfig.lambdaEnd_ = lambda;
-  crossvalidationConfig.lambdaSteps_ = 3;
-  crossvalidationConfig.logScale_ = true;
-  crossvalidationConfig.shuffle_ = true;
-  crossvalidationConfig.seed_ = 1234567;
-  crossvalidationConfig.silent_ = true;
 
   sgpp::datadriven::LearnerSGDE learner(gridConfig,
                                         adaptConfig,

@@ -22,6 +22,11 @@ namespace datadriven {
 enum class DataSourceFileType { NONE, ARFF, CSV };
 
 /**
+ * Supported transformation types for #sgpp::datadriven::DataTransformation
+ */
+enum class DataTransformationType { NONE, ROSENBLATT };
+
+/**
  * Configuration structure used for all kinds of SampleProviders including default values.
  */
 struct DataSourceConfig {
@@ -48,9 +53,9 @@ struct DataSourceConfig {
    */
   size_t batchSize = 0;
   /*
-   * Should the data be transformed by Rosenblatt transformation?
+   * Should the data be transformed? (e.g. by Rosenblatt transformation)
    */
-  std::string transformation = "";
+  DataTransformationType dataTransformation = DataTransformationType::NONE;
 };
 
 } /* namespace datadriven */

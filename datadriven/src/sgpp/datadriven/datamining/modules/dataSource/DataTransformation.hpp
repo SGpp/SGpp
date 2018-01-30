@@ -12,6 +12,7 @@
 #pragma once
 
 #include <sgpp/datadriven/tools/Dataset.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -24,8 +25,10 @@ namespace datadriven {
 class DataTransformation {
  public:
   DataTransformation();
-  virtual Dataset* doTransformation(Dataset* dataset);
-  virtual Dataset* doInverseTransformation(Dataset* dataset);
+  DataTransformation initialize(DataTransformationType dataTransformationType,
+                                Dataset* dataset);
+  virtual Dataset* doTransformation();
+  virtual Dataset* doInverseTransformation();
   virtual ~DataTransformation();
 };
 } /* namespace datadriven */
