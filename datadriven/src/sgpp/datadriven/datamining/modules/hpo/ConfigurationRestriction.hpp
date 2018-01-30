@@ -29,7 +29,7 @@ class ConfigurationRestriction {
    * @param base::Grid base::Grid
    * @param dataset the dataset that should be evaluated
    */
-  ConfigurationRestriction(std::list<ConfigurationBit*> parameters, int bias);
+  ConfigurationRestriction(std::list<ConfigurationBit*> &parameters, int bias);
 
   /**
    * Destructor

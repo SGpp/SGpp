@@ -23,7 +23,7 @@ int ConfigurationBit::evaluate(int* input){
   bVisited = true;
   //for each constraint
   for(auto &constraint : constraints){
-    if(constraint->getConfigBits().size() == 0){
+    if(constraint->getConfigBits().size() == 1){
       value = constraint->getBias();
       return value;
     }
@@ -31,7 +31,9 @@ int ConfigurationBit::evaluate(int* input){
   for(auto &constraint : constraints){
     int tmp = constraint->getBias();
     for(auto &bit : constraint->getConfigBits()){
-      tmp = tmp * bit->evaluate(input);
+    	if(this!=bit){
+    		tmp = tmp * bit->evaluate(input);
+    	}
     }
     if(tmp != 0){
       value = tmp;
@@ -53,16 +55,20 @@ int ConfigurationBit::fixFreeBits(std::vector<ConfigurationBit*> &freeBits){
   bVisited = true;
   //for each constraint
   for(auto &constraint : constraints){
-    if(constraint->getConfigBits().size() == 0){
+    if(constraint->getConfigBits().size() == 1){
       value = constraint->getBias();
+      std::cout<<"Constraint Single Bias: "<<value<<std::endl;
       return value;
     }
   }
-  for(auto constraint : constraints){
+  for(auto &constraint : constraints){
     int tmp = constraint->getBias();
     std::cout<<"Constraint Bias: "<<tmp<<std::endl;
     for(auto &bit : constraint->getConfigBits()){
-      tmp = tmp * bit->fixFreeBits(freeBits);
+    	if(this!=bit){
+    		tmp = tmp * bit->fixFreeBits(freeBits);
+    		std::cout<<"temp: "<<tmp<<std::endl;
+    	}
     }
     if(tmp != 0){
         std::cout<<"Constraint Resolved!"<<std::endl;

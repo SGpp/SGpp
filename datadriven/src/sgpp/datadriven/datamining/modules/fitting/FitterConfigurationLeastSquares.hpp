@@ -29,7 +29,7 @@ class FitterConfigurationLeastSquares : public FitterConfiguration {
 
   void setupDefaults() override;
   
-  void setHyperParameters(size_t level, size_t numRefinements, size_t noPoints, double threshold, double lambda);
+  void setHyperParameters(size_t level, base::GridType basisFunction, size_t noPoints, double threshold, double lambda);
 
   /**
    * First setup default values, then read new input values from configuration file.
