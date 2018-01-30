@@ -38,16 +38,16 @@ void HyperparameterOptimizer::optimizeHyperparameters(){
   
   // get configured models for n samples (call fitterfactory)
   int nBits = fitterFactory->buildParity();
-  int n = 50;
+  int n = 100;
   
   //build matrix
-  // EDIT: add bias term?
+  // EDIT: add bias term? already in there!!!
   DataMatrix paritymatrix(n, (nBits*nBits+5)*nBits/6 +1);
 
   //make random inputs
   int seed = 42;
   std::mt19937 generator = std::mt19937(seed);
-  std::uniform_int_distribution<int> distribution(0,std::pow(2,nBits));
+  std::uniform_int_distribution<int> distribution(0,std::pow(2,nBits)-1);
   std::cout<<"MaxConfigs: "<<std::pow(2,nBits)<<std::endl;
   std::vector<int> configIDs(n);
   for(int i=0;i<n;i++){
@@ -75,10 +75,18 @@ void HyperparameterOptimizer::optimizeHyperparameters(){
 
   // run samples (parallel)
   DataVector scores(n);
+  DataVector logscores(n);
   double stdDeviation;
+  double best = 1000;
   for(int i=0;i<n;i++){
 	  scores[i] = hpoScorer->calculateScore(*(fitters[i]), *dataset, &stdDeviation);
-	  std::cout<<"Score "<<i<<":"<<scores[i]<<std::endl;
+	  logscores[i] = log(scores[i]);
+	  std::cout<<"Score "<<i<<":"<<scores[i];
+	  if(scores[i]<best){
+		  best = scores[i];
+		  std::cout<<" best!";
+	  }
+	  std::cout<<std::endl;
   }
 
   std::cout<<"Run mark 3"<<std::endl;
@@ -87,27 +95,30 @@ void HyperparameterOptimizer::optimizeHyperparameters(){
 
 
   // run solver
-  solver::LassoFunction g{10}; //EDIT: lambda
+  solver::LassoFunction g{2}; //EDIT: lambda
   solver::Fista<solver::LassoFunction> fista{g};
   DataVector alpha = DataVector{paritymatrix.getNcols()};
   OperationMultipleEvalMatrix opMultEval{*new base::LinearGrid(0), paritymatrix}; //EDIT: grid löschen
-  fista.solve(opMultEval, alpha, scores, 100, DEFAULT_RES_THRESHOLD);
+  fista.solve(opMultEval, alpha, logscores, 100, DEFAULT_RES_THRESHOLD);
 
-  std::vector<int> idx(alpha.size());
+  std::vector<int> idx(alpha.size()-1);
   for(int i=0; i<idx.size(); i++){
 	  idx[i] = i;
-	  std::cout<<"Alpha: "<<i<<":"<<alpha[i]<<std::endl;
+	  std::cout<<"Alpha: "<<i<<":"<<alpha[i]<<std::endl; //bias term invisible
   }
 
    // sort indices based on comparing values in alpha
    sort(idx.begin(), idx.end(),
          [&alpha](int i1, int i2) {return fabs(alpha[i1]) > fabs(alpha[i2]);});
 
-   int shrink = 1; //EDIT: parameter
-
-   for(int i = 0; i < shrink; i++){
-	   fitterFactory->addConstraint(idx[i], lround(alpha[idx[i]]/fabs(alpha[idx[i]]))); //(alpha[idx[i]]>0)-(alpha[idx[i]]<0)
-	   std::cout<<"Constraint number:"<<idx[i]<<","<<lround(alpha[idx[i]]/fabs(alpha[idx[i]]))<<","<<alpha[idx[i]]<<std::endl;
+   int shrink = 4; //EDIT: parameter
+   int freebits = nBits;
+   int i = 0;
+   //for(int i = 0; i < shrink; i++){
+   while(freebits > nBits-shrink){
+	   freebits = fitterFactory->addConstraint(idx[i], -lround(alpha[idx[i]]/fabs(alpha[idx[i]]))); //(alpha[idx[i]]>0)-(alpha[idx[i]]<0)
+	   std::cout<<"Constraint number:"<<idx[i]<<","<<-lround(alpha[idx[i]]/fabs(alpha[idx[i]]))<<","<<alpha[idx[i]]<<std::endl;
+	   i++;
    }
 
    std::cout<<"Run mark 4"<<std::endl;
@@ -116,7 +127,7 @@ void HyperparameterOptimizer::optimizeHyperparameters(){
 
 
     nBits = fitterFactory->buildParity();
-      n = 64;
+      n = 100;
 
      //build matrix
      // EDIT: add bias term?
@@ -125,7 +136,7 @@ void HyperparameterOptimizer::optimizeHyperparameters(){
      //make random inputs
      //int seed = 42;
      //std::mt19937 generator = std::mt19937(seed);
-     std::uniform_int_distribution<int> distribution2(0,std::pow(2,nBits));
+     std::uniform_int_distribution<int> distribution2(0,std::pow(2,nBits)-1);
      std::cout<<"MaxConfigs: "<<std::pow(2,nBits)<<std::endl;
      //std::vector<int> configIDs2(n);
      for(int i=0;i<n;i++){
@@ -156,8 +167,14 @@ void HyperparameterOptimizer::optimizeHyperparameters(){
      //double stdDeviation;
      for(int i=0;i<n;i++){
    	  scores[i] = hpoScorer->calculateScore(*(fitters[i]), *dataset, &stdDeviation);
-   	  std::cout<<"Score "<<i<<":"<<scores[i]<<std::endl;
+	  std::cout<<"Score "<<i<<":"<<scores[i];
+	  if(scores[i]<best){
+		  best = scores[i];
+		  std::cout<<" best!";
+	  }
+	  std::cout<<std::endl;
      }
+     std::cout<<"Run mark 3"<<std::endl;
 
 
 

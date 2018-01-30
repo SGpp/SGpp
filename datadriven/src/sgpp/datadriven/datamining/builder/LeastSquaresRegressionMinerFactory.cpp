@@ -86,7 +86,7 @@ void LeastSquaresRegressionMinerFactory::optimizeHyperparameters(const std::stri
         for (int p=1; p <= 5; p++){
           for (int r=1;r <= 8; r++){
             shuffling->setSeed(testconfig.randomSeed);
-            config.setHyperParameters(i, k, m, 0.0005*p, pow(10,-r/2.0));
+          //  config.setHyperParameters(i, k, m, 0.0005*p, pow(10,-r/2.0));  //EDIT: errored
             model = (new ModelFittingLeastSquares(config));
             scores[i][k][m][p][r] = sc->calculateScore(*model, dataset, &stdDeviation);
           }

@@ -14,7 +14,7 @@
 namespace sgpp {
 namespace datadriven {
 
-ConfigurationRestriction::ConfigurationRestriction(std::list<ConfigurationBit*> parameters, int bias)
+ConfigurationRestriction::ConfigurationRestriction(std::list<ConfigurationBit*> &parameters, int bias)
       : parameters(parameters), bias(bias) {
 }
 

@@ -30,7 +30,7 @@ LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory(DataMin
 	//EDIT: new hier ohne pointer?
 	std::cout<<"nConfigBits: "<<configBits.size()<<std::endl;
 
-  conpar["lambda"] = (new ContinuousParameter{0.5, 3});
+  conpar["lambda"] = (new ContinuousParameter{-2, 1});
   conpar["lambda"]->makeConfigBits(4, configBits);
 	std::cout<<"nConfigBits: "<<configBits.size()<<std::endl;
 
@@ -46,6 +46,8 @@ LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory(DataMin
   dispar["level"]->makeConfigBits(configBits);
 	std::cout<<"nConfigBits: "<<configBits.size()<<std::endl;
 
+	dispar["basisFunction"] = (new DiscreteParameter{0,1});
+	dispar["basisFunction"]->makeConfigBits(configBits);
 
 }
 
@@ -76,12 +78,18 @@ int LeastSquaresRegressionFitterFactory::buildParity(){
 		//	parityrow[cnt] = *new std::list<ConfigurationBit*>();
 			parityrow[cnt].push_back(freeBits[i]);
 			parityrow[cnt].push_back(freeBits[k]);
+			if(cnt==77){
+				  std::cout<<"Constraint 297: "<<i<<","<<k<<std::endl;
+			}
 	        cnt++;
 	        for(int m = k+1; m < ncols; m++){
 		//		parityrow[cnt2] = *new std::list<ConfigurationBit*>();
 				parityrow[cnt2].push_back(freeBits[i]);
 				parityrow[cnt2].push_back(freeBits[k]);
 				parityrow[cnt2].push_back(freeBits[m]);
+				if(cnt2==297){
+					  std::cout<<"Constraint 297: "<<i<<","<<k<<","<<m<<std::endl;
+				}
 				cnt2++;
 			}
 		}
@@ -90,11 +98,20 @@ int LeastSquaresRegressionFitterFactory::buildParity(){
 	return ncols;
 }
 
-void LeastSquaresRegressionFitterFactory::addConstraint(int idx, int bias){
+int LeastSquaresRegressionFitterFactory::addConstraint(int idx, int bias){
 	ConfigurationRestriction* hey = new ConfigurationRestriction(parityrow[idx], bias); //EDIT: store and delete
 	for(auto &bit : parityrow[idx]){
 		bit->addConstraint(hey);
+		std::cout<<"Adding bit from constraint:"<<idx<<std::endl;
 	}
+	std::vector<ConfigurationBit*> freeBits{};
+		for(auto& bit : configBits){ //reference to prevent unique pointer copying
+		    bit->reset();
+		  }
+		for(auto& bit : configBits){
+			bit->fixFreeBits(freeBits);
+		}
+		return freeBits.size();
 }
 
 ModelFittingBase* LeastSquaresRegressionFitterFactory::buildFitter(int configID, int row, DataMatrix &paritymatrix)  {
@@ -109,8 +126,15 @@ ModelFittingBase* LeastSquaresRegressionFitterFactory::buildFitter(int configID,
 
   // build config
   FitterConfigurationLeastSquares* config = new FitterConfigurationLeastSquares(baseConfig);
-  config->setHyperParameters(dispar["level"]->getValue(&configID),5,dispar["noPoints"]->getValue(&configID),
-		  conpar["threshold"]->getValue(&configID),conpar["lambda"]->getValue(&configID));
+  //EDIT: make lambda exponential
+  base::GridType basisFunction[] = {base::GridType::Linear,base::GridType::ModLinear};//{base::GridType::Linear, base::GridType::ModLinear};
+  config->setHyperParameters(
+		  dispar["level"]->getValue(&configID),
+		  basisFunction[dispar["basisFunction"]->getValue(&configID)],
+		  dispar["noPoints"]->getValue(&configID),
+		  conpar["threshold"]->getValue(&configID),
+		  pow(10,conpar["lambda"]->getValue(&configID))
+		  );
  /* std::cout<<"Error: configID not fully used:"<<configID<<std::endl;
 
   dispar["level"]->getValue(&configID);

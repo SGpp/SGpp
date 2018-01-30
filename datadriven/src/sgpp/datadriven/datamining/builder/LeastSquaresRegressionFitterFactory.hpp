@@ -48,7 +48,7 @@ class LeastSquaresRegressionFitterFactory : public FitterFactory {
   
   int buildParity() override;
 
-  void addConstraint(int idx, int bias) override;
+  int addConstraint(int idx, int bias) override;
 
  protected:
   std::list<std::unique_ptr<ConfigurationBit>> configBits;

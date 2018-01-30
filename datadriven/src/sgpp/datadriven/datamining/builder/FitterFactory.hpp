@@ -48,7 +48,7 @@ class FitterFactory {
 
   virtual int buildParity();
 
-  virtual void addConstraint(int idx, int bias);
+  virtual int addConstraint(int idx, int bias);
 
 };
 } /* namespace datadriven */
