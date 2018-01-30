@@ -54,14 +54,14 @@ class RosenblattTransformation : public DataTransformation {
   sgpp::base::DataVector* alpha;
 
   /**
-     * Pointer to #sgpp::datadriven::Dataset
-     */
-    Dataset* dataset;
+   * Pointer to #sgpp::datadriven::Dataset
+   */
+  Dataset* dataset;
 
   /**
-     * Pointer to #sgpp::datadriven::Dataset
-     */
-    Dataset* datasetTransformed;
+   * Pointer to #sgpp::datadriven::Dataset
+   */
+  Dataset* datasetTransformed;
 
   /**
    * Number of samples for calculation of pdf / alpha, default: 1000
