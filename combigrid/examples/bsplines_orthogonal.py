@@ -9,7 +9,8 @@
 
 from argparse import ArgumentParser
 from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
-from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend
+from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend,\
+    load_font_properties
 from pysgpp.extensions.datadriven.uq.plot.plot1d import plotFunction1d
 from pysgpp.pysgpp_swig import DataVector, CombigridOperation,\
     CombigridMultiOperation, CombigridTensorOperation
@@ -24,8 +25,8 @@ from pysgpp.extensions.datadriven.uq.dists.Beta import Beta
 from numpy import square
 
 
-def f(x):
-    return np.exp(-x) * np.cos(4 * x * (1 - x))
+def u(x):
+    return np.log(np.exp(-x) * np.cos(4 * x * (1 - x)))
 
 
 def mean():
@@ -48,51 +49,67 @@ class Basis(object):
 
 class BSplineBasis(Basis):
 
-    def __init__(self, level_index_set, degree):
-        self.basis = pysgpp.SNakBsplineBoundaryCombigridBase(degree)
-        self.level_index_set = level_index_set
-        self.n = len(level_index_set)
+    def __init__(self, grid_points, degree):
+        self.dtype = "bsplines"
 
-    def evaluate(self, level, index, x):
-        if level == 1 and index == 1:
-            return self.basis.eval(0, 0, x)
-        elif level == 0 and index == 0:
-            return self.basis.eval(1, 1, x)
-        else:
-            return self.basis.eval(level, index, x)
+        self.degree = degree
+        self.evaluator = pysgpp.BSplineInterpolationEvaluator(self.degree)
+        self.quadrature = pysgpp.BSplineQuadratureEvaluator(self.degree)
+        self.scalarProduct = pysgpp.BSplineScalarProductEvaluator(self.degree)
+        self.grid_points = grid_points
+
+        grid_points_double_vector = pysgpp.DoubleVector(grid_points.T[0])
+        nak_points_vector = pysgpp.DoubleVector()
+        nak_points = []
+        for xi in pysgpp.createNakKnots(grid_points_double_vector, self.degree):
+            nak_points_vector.push_back(xi)
+            nak_points.append(xi)
+
+        self.nak_points = np.array(nak_points)
+        self.evaluator.setGridPoints(grid_points_double_vector)
+        self.quadrature.setGridPoints(grid_points_double_vector)
+        self.scalarProduct.setGridPoints(grid_points_double_vector)
 
     def V(self, xs):
-        V = np.ndarray((len(xs), self.n))
+        V = np.ndarray((len(xs), self.size()))
         for i, x in enumerate(xs):
-            for j, (lj, ij) in enumerate(level_index_set):
-                V[i, j] = basis.evaluate(lj, ij, x[0])
+            self.evaluator.setParameter(pysgpp.FloatScalarVector(x[0]))
+            ans = self.evaluator.getBasisValues()  # FloatScalarVectorVector
+            for j in xrange(ans.size()):
+                V[i, j] = ans[j].getValue()
         return V
 
     def G(self):
-        G = np.ndarray((self.n, self.n))
-        for i, (li, ii) in enumerate(self.level_index_set):
-            for j, (lj, ij) in enumerate(self.level_index_set):
-                if i <= j:
-                    G[i, j] = G[j, i] = quad(lambda x: basis.evaluate(li, ii, x) * basis.evaluate(lj, ij, x), 0, 1)[0]
+        G = np.ndarray((self.size(), self.size()))
+        ans = self.scalarProduct.getBasisValues()
+
+        for i in xrange(ans.size()):
+            result = ans[i].getValues()  # FloatScalarVectorVector
+            for j in xrange(result.size()):
+                G[i, j] = result[j].getValue()
         return G
 
     def size(self):
-        return self.n
+        return self.grid_points.shape[0]
 
 
 class PolynomialBasis(object):
 
-    def __init__(self, maxDegree):
+    def __init__(self, maxDegree, dtype="jacobi"):
         config = pysgpp.OrthogonalPolynomialBasis1DConfiguration()
-#         config.polyParameters.type_ = pysgpp.OrthogonalPolynomialBasisType_LEGENDRE
-#         self.basis = pysgpp.OrthogonalPolynomialBasis1D(config)
 
-        config.polyParameters.type_ = pysgpp.OrthogonalPolynomialBasisType_JACOBI
-        config.polyParameters.alpha_ = 3
-        config.polyParameters.beta_ = 5
+        if dtype == "legendre":
+            config.polyParameters.type_ = pysgpp.OrthogonalPolynomialBasisType_LEGENDRE
+        elif dtype == "jacobi":
+            config.polyParameters.type_ = pysgpp.OrthogonalPolynomialBasisType_JACOBI
+            config.polyParameters.alpha_ = 3
+            config.polyParameters.beta_ = 5
+        else:
+            self.basis = pysgpp.OrthogonalPolynomialBasis1D(config)
+
         self.basis = pysgpp.OrthogonalPolynomialBasis1D(config)
+        self.dtype = dtype
 
-#         self.basis = pysgpp.MonomialFunctionBasis1D()
         self.maxDegree = maxDegree + 1
 
     def evaluate(self, deg, x):
@@ -108,9 +125,8 @@ class PolynomialBasis(object):
     def G(self):
         G = np.ndarray((self.maxDegree, self.maxDegree))
         for i in xrange(self.maxDegree):
-            for j in xrange(self.maxDegree):
-                if i <= j:
-                    G[i, j] = G[j, i] = quad(lambda x: basis.evaluate(i, x) * basis.evaluate(j, x), 0, 1)[0]
+            for j in xrange(i, self.maxDegree):
+                G[i, j] = G[j, i] = quad(lambda x: basis.evaluate(i, x) * basis.evaluate(j, x), 0, 1)[0]
         return G
 
     def size(self):
@@ -119,77 +135,91 @@ class PolynomialBasis(object):
 
 class LinearCombination(Basis):
 
-    def __init__(self, coeffs, basis, R=None):
+    def __init__(self, coeffs, basis, C=None):
         self.coeffs = coeffs
         self.basis = basis
         self.n = self.coeffs.shape[0]
 
-        self.R = R
-        if self.R is None:
-            self.R = np.identity(self.n)
+        self.C = C
+        if self.C is None:
+            self.C = np.identity(self.n)
 
     def __call__(self, xs):
         # compute Vandermonde matrix
         V = basis.V(xs)
 
         # apply rotation matrix
-        Vr = self.R.dot(V.T).T
+        Vr = np.dot(V, self.C.T)
 
         return Vr.dot(self.coeffs)
 
 
 # -------------------------------------------------------------------------
 degree = 3
-level = 3
+level = 5
 
-level_index_set = [(0, 0), (0, 1), (1, 1)]
-for li in xrange(2, level + 1):
-    level_index_set += [(li, ii) for ii in xrange(1, 2 ** li, 2)]
+n = 2**level + 1
+grid_points = np.array([np.linspace(0, 1, n, endpoint=True)]).T
 
-n = len(level_index_set)
+for basis in [BSplineBasis(grid_points, degree)]:
+    #               PolynomialBasis(5, "jacobi"),
+    #               PolynomialBasis(5, "monomial"),
+    #               PolynomialBasis(5, "legendre")]:
 
-# basis = PolynomialBasis(5)
-basis = BSplineBasis(level_index_set, degree)
+    # interpolation matrix and right hand side
+    V = basis.V(grid_points)
+    rhs = np.array([u(grid_points[i][0]) for i in xrange(n)])
+    coeffs = np.linalg.solve(V, rhs)
 
-# interpolation matrix and right hand side
-n = basis.size()
+    print "|u - V w| = %g" % np.linalg.norm(rhs - V.dot(coeffs))
 
-h = 1. / (n + 1)
-grid_points = np.array([np.linspace(h, 1 - h, n, endpoint=True)]).T
-rhs = np.array([f(grid_points[i]) for i in xrange(n)])
+    surrogate = LinearCombination(coeffs, basis)
 
-V = basis.V(grid_points)
-coeffs = np.linalg.solve(V, rhs)
+    # compute the scalar products
+    G = basis.G()
+    L = np.linalg.cholesky(G)
+    C = np.linalg.inv(L)
 
-surrogate = LinearCombination(coeffs, basis)
+    print "cond(G) =", np.linalg.cond(G)
+    print "|C - ((L^T)^-1)^T| =", np.linalg.norm(C - np.linalg.inv(L.T).T)
+    print "|G - LL^T| = %g" % np.linalg.norm(G - L.dot(L.T))
+    print "|I - C G C^T| = %g" % np.linalg.norm(np.identity(basis.size()) - np.dot(C, np.dot(G, C.T)))
 
-# compute the scalar products
-G = basis.G()
-L = np.linalg.cholesky(G)
-R = np.linalg.inv(L)
+    Vr = np.dot(V, C.T)
+    ocoeffs = np.linalg.solve(Vr, rhs)
 
-print "|G - LL^T| = %g" % np.linalg.norm(G - L.dot(L.T))
-print "|I - R G R.T| = %g" % np.linalg.norm(np.identity(n) - R.dot(G.dot(R.T)))
+    print "|u - V C^T w| = %g" % np.linalg.norm(rhs - Vr.dot(ocoeffs))
 
-Vr = R.dot(V.T).T
-ocoeffs = np.linalg.solve(Vr, rhs)
+    orthogonal_surrogate = LinearCombination(ocoeffs, basis, C=C)
 
-print "|f - (R V^T)^T x| = %g" % np.linalg.norm(rhs - Vr.dot(ocoeffs))
+    xs = np.array([np.linspace(0, 1, 250)]).T
+    u_sg = surrogate(xs)
+    u_ortho = orthogonal_surrogate(xs)
+    print "|u_sg - u_orth| =", np.sqrt(np.mean((u_sg - u_ortho) ** 2))
 
-orthogonal_surrogate = LinearCombination(ocoeffs, basis, R=R)
+    if basis.dtype == "bsplines":
+        result = basis.quadrature.getBasisValues()
+        mean_ct = 0.0
+        for i in xrange(result.size()):
+            mean_ct += coeffs[i] * result[i].getValue()
 
-print ocoeffs
+        var_ct = np.sum(ocoeffs ** 2) - mean_ct ** 2
+    else:
+        mean_ct = ocoeffs[0][0]
+        var_ct = np.sum(ocoeffs[1:] ** 2)
 
-print "mean =", mean(), ocoeffs[0][0], surrogate.mean()
-print "var =", var(), np.sum(ocoeffs[1:] ** 2), surrogate.variance()
+    print "-" * 80
+    print "mean =", mean_ct, surrogate.mean()
+    print "var  =", var_ct, surrogate.variance()
 
-xs = np.array([np.linspace(0, 1, 250)]).T
+    fig = plt.figure()
+    plt.plot(xs, [u(xi) for xi in xs], label="u")
+    plt.plot(xs, u_sg, label="surrogate")
+    plt.plot(xs, u_ortho, label="orthogonal")
+    plt.scatter(basis.grid_points, np.zeros(grid_points.shape))
+    plt.vlines(basis.grid_points, np.zeros(grid_points.shape), rhs)
+    plt.title(basis.dtype,
+              fontproperties=load_font_properties())
+    plt.legend()
 
-fig = plt.figure()
-plt.plot(xs, [f(xi) for xi in xs], label="f")
-plt.plot(xs, surrogate(xs), label="surrogate")
-plt.plot(xs, orthogonal_surrogate(xs), label="orthogonal")
-plt.scatter(grid_points, np.zeros(grid_points.shape))
-plt.vlines(grid_points, np.zeros(grid_points.shape), rhs)
-plt.legend()
-plt.show()
+    plt.show()

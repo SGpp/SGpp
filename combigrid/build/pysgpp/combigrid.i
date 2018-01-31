@@ -43,6 +43,8 @@
 %shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::CubicSplineInterpolationEvaluator>)
 %shared_ptr(sgpp::combigrid::PolynomialQuadratureEvaluator)
 %shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::PolynomialQuadratureEvaluator>)
+%shared_ptr(sgpp::combigrid::BSplineQuadratureEvaluator)
+%shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::BSplineQuadratureEvaluator>)
 %shared_ptr(sgpp::combigrid::BSplineInterpolationEvaluator)
 %shared_ptr(sgpp::combigrid::ArrayEvaluator<sgpp::combigrid::BSplineInterpolationEvaluator>)
 %shared_ptr(sgpp::combigrid::InterpolationCoefficientEvaluator)
@@ -262,6 +264,7 @@ namespace combigrid {
 %include "combigrid/src/sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/CubicSplineInterpolationEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/onedim/BSplineQuadratureEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/InterpolationCoefficientEvaluator.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/onedim/BSplineScalarProductEvaluator.hpp"
@@ -305,7 +308,8 @@ namespace combigrid {
     %template(ArrayPolynomialInterpolationEvaluator) ArrayEvaluator<PolynomialInterpolationEvaluator>;
     %template(ArrayLinearInterpolationEvaluator) ArrayEvaluator<LinearInterpolationEvaluator>;
     %template(ArrayCubicSplineInterpolationEvaluator) ArrayEvaluator<CubicSplineInterpolationEvaluator>;
-    %template(ArrayQuadratureEvaluator) ArrayEvaluator<PolynomialQuadratureEvaluator>;
+    %template(ArrayPolynomialQuadratureEvaluator) ArrayEvaluator<PolynomialQuadratureEvaluator>;
+    %template(ArrayBSplineQuadratureEvaluator) ArrayEvaluator<BSplineQuadratureEvaluator>;
     %template(ArrayBSplineInterpolationEvaluator) ArrayEvaluator<BSplineInterpolationEvaluator>;
 
     // %template(AbstractSerializationStrategy_uint8_t) AbstractSerializationStrategy<std::shared_ptr<TreeStorage<std::uint8_t>>>;
