@@ -50,6 +50,9 @@ class FitterFactory {
 
   virtual int addConstraint(int idx, int bias);
 
+  virtual void printConfig(int configID);
+
+
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -16,7 +16,7 @@
 #include <sgpp/solver/sle/fista/RidgeFunction.hpp>
 #include <sgpp/solver/sle/fista/LassoFunction.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/OperationMultipleEvalMatrix.hpp>
-#include <sgpp/base/Grid/type/LinearGrid.hpp>
+#include <sgpp/base/grid/type/LinearGrid.hpp>
 
 
 #include <iostream>

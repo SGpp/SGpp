@@ -50,6 +50,9 @@ class LeastSquaresRegressionFitterFactory : public FitterFactory {
 
   int addConstraint(int idx, int bias) override;
 
+  void printConfig(int configID) override;
+
+
  protected:
   std::list<std::unique_ptr<ConfigurationBit>> configBits;
   FitterConfigurationLeastSquares baseConfig;

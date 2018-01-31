@@ -6,7 +6,6 @@
 #ifndef OperationMultipleEvalMatrix_HPP
 #define OperationMultipleEvalMatrix_HPP
 
-#include <sgpp/base/Grid/GridStorage.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -27,7 +26,7 @@ class OperationMultipleEvalMatrix : public base::OperationMultipleEval {
    * @param dataset the dataset that should be evaluated
    */
   OperationMultipleEvalMatrix(base::Grid& grid, base::DataMatrix& dataset)
-      : OperationMultipleEval(grid, dataset), storage(grid.getStorage()) {}
+      : OperationMultipleEval(grid, dataset) {}
 
   /**
    * Destructor
@@ -41,7 +40,6 @@ class OperationMultipleEvalMatrix : public base::OperationMultipleEval {
 
  protected:
   /// reference to the base::Grid's base::GridStorage object
-  base::GridStorage& storage;
 };
 
 }  // namespace datadriven
