@@ -39,7 +39,7 @@ DataSourceIterator DataSource::end() { return DataSourceIterator(*this, config.n
 
 Dataset* DataSource::getNextSamples() {
   // only one iteration: we want all samples
-  Dataset* dataset = nullptr;
+  Dataset* dataset;
   if (config.numBatches == 1 && config.batchSize == 0) {
     currentIteration++;
     dataset = sampleProvider->getAllSamples();
@@ -49,7 +49,6 @@ Dataset* DataSource::getNextSamples() {
   }
   // Transform dataset if wanted
   if (!(config.dataTransformation == DataTransformationType::NONE)) {
-    // DataTransformation dataTr = new DataTransformation();
     DataTransformation* dataTr = new DataTransformation();
     return dataTr->initialize(config.dataTransformation, dataset).doTransformation();
   } else {
