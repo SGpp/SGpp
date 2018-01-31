@@ -103,6 +103,9 @@ void BSplineScalarProductEvaluator::calculate1DBSplineScalarProducts(
     double err = 1e14;
     numAdditionalPoints = lastNumAdditionalPoints;
     basisValues[index_i] = get1DL2ScalarProduct(points, index_i);
+
+    // ToDo (rehmemk) in MR_testingBSC example this is false?!
+    //    std::cout << isCustomWeightFunction << std::endl;
     if (isCustomWeightFunction) {
       while (err > tol) {
         lastNumAdditionalPoints = numAdditionalPoints;

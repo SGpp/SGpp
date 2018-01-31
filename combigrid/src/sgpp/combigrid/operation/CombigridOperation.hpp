@@ -105,10 +105,16 @@ class CombigridOperation {
   std::vector<std::shared_ptr<AbstractPointHierarchy>> getPointHierarchies();
 
   /**
+   * @return the evaluator prototypes in each direction
+   */
+  std::shared_ptr<AbstractFullGridEvaluator<FloatScalarVector>> getFullGridEval();
+
+  /**
    * @return the number of function values that have been computed via this CombigridOperation
    * during its lifetime. For a nested grid, this number matches numGridPoints() if only one
    * computation is performed, i.e. no previous data has been cleared via evaluate() or
-   * setParameters(). Its computation is not optimized, but currently faster than numGridPoints().
+   * setParameters(). Its computation is not optimized, but currently faster than
+   * numGridPoints().
    */
   size_t numStoredFunctionValues();
 

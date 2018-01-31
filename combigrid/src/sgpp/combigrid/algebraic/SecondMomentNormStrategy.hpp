@@ -21,24 +21,24 @@
 namespace sgpp {
 namespace combigrid {
 
-class SecondMomentNormStrategy : public NormStrategy<FloatTensorVector> {
+class VarianceBsplineStrategy : public NormStrategy<FloatTensorVector> {
  public:
-  SecondMomentNormStrategy(
+  VarianceBsplineStrategy(
       std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> basisFunction, size_t numDims,
       sgpp::combigrid::SingleFunction weightFunction, bool isOrthogonal,
       sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
 
-  SecondMomentNormStrategy(
+  VarianceBsplineStrategy(
       std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> basisFunction,
       sgpp::combigrid::WeightFunctionsCollection& weightFunctions, bool isOrthogonal,
       sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
 
-  SecondMomentNormStrategy(sgpp::combigrid::OrthogonalBasisFunctionsCollection& basisFunctions,
+  VarianceBsplineStrategy(sgpp::combigrid::OrthogonalBasisFunctionsCollection& basisFunctions,
                            sgpp::combigrid::WeightFunctionsCollection& weightFunctions,
                            bool isOrthogonal,
                            sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
 
-  virtual ~SecondMomentNormStrategy();
+  virtual ~VarianceBsplineStrategy();
 
   /**
    * computes the second moment of the given tensor vector

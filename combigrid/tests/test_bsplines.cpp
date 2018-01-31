@@ -17,7 +17,7 @@
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridCallbackEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridGridBasedEvaluator.hpp>
-#include <sgpp/combigrid/operation/multidim/sparsegrid/OperationMatrixLTwoDotNakBsplineBoundaryCombigrid.hpp>
+#include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductHashMapNakBsplineBoundaryCombigrid.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineScalarProductEvaluator.hpp>
 #include <sgpp/combigrid/pce/BsplineStochasticCollocation.hpp>
 #include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
@@ -333,17 +333,18 @@ double BsplineQuadratureSquare(size_t numDimensions, size_t degree,
     f_values[i] = func(p);
   }
 
+  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
   if (!sleSolver.solve(hierSLE, f_values, alpha)) {
     std::cout << "Solving failed!" << std::endl;
   }
   sgpp::base::Grid* gridptr = grid.get();
-  sgpp::combigrid::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(gridptr);
+  sgpp::combigrid::LTwoScalarProductHashMapNakBsplineBoundaryCombigrid massMatrix(gridptr);
   sgpp::base::DataVector product(alpha.size(), 0);
   massMatrix.mult(alpha, product);
   double integralSquare = product.dotProduct(alpha);
   return integralSquare;
 }
-BOOST_AUTO_TEST_CASE(testCorrespondingDegreeScalarProducts) {
+BOOST_AUTO_TEST_CASE(testCorrespondingDegreeOperationMatrixScalarProducts) {
   std::cout
       << "Testing integration of (x^d+y^d)^2 for B splines of degree d on level d, d in {1,3,5}.\n"
       << "This verifies the scalar product routine." << std::endl;
@@ -373,6 +374,56 @@ BOOST_AUTO_TEST_CASE(testCorrespondingDegreeScalarProducts) {
   BOOST_CHECK_SMALL(QuadSquareError3, tolerance);
   BOOST_CHECK_SMALL(QuadSquareError5, tolerance);
 }
+
+// ToDo (rehmemk) this works fine. Add Description and BOOST_CHECK_SMALL and finish this test
+// double omscFunc(sgpp::base::DataVector const& v) { return std::pow(v[0], 5) + std::pow(v[1], 5);
+// }
+// double omscWeight(double x) { return sin(x); }
+// BOOST_AUTO_TEST_CASE(testOperationMatrixScalarProductsWithWeightsAndBounds) {
+//  std::cout << "Description comes here" << std::endl;
+//  size_t numDims = 2;
+//  size_t degree = 3;
+//  size_t level = 8;
+//  sgpp::combigrid::MultiFunction func(omscFunc);
+//  sgpp::combigrid::SingleFunction weightfunction(omscWeight);
+//  sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection(0);
+//  for (size_t d = 0; d < numDims; d++) {
+//    weightFunctionsCollection.push_back(weightfunction);
+//  }
+//  sgpp::base::DataVector bounds(std::vector<double>{0, 1, 0, 1});
+//
+//  for (level = 1; level < 9; level++) {
+//    std::shared_ptr<sgpp::base::Grid> grid;
+//    grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDims, degree));
+//    grid->getGenerator().regular(level);
+//    sgpp::optimization::HierarchisationSLE hierSLE(*grid);
+//    sgpp::optimization::sle_solver::Auto sleSolver;
+//    sgpp::base::DataVector alpha(grid->getSize());
+//    sgpp::base::GridStorage& gridStorage = grid->getStorage();
+//    sgpp::base::DataVector f_values(gridStorage.getSize(), 0.0);
+//    for (size_t i = 0; i < gridStorage.getSize(); i++) {
+//      sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
+//      sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
+//      for (size_t j = 0; j < gridStorage.getDimension(); j++) {
+//        p[j] = gp.getStandardCoordinate(j);
+//      }
+//      f_values[i] = func(p);
+//    }
+//
+//    sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+//    if (!sleSolver.solve(hierSLE, f_values, alpha)) {
+//      std::cout << "Solving failed!" << std::endl;
+//    }
+//    sgpp::base::Grid* gridptr = grid.get();
+//    sgpp::combigrid::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(
+//        gridptr, weightFunctionsCollection, bounds);
+//    sgpp::base::DataVector product(alpha.size(), 0);
+//    massMatrix.mult(alpha, product);
+//    double integralSquare = product.dotProduct(alpha);
+//    //  std::cout << integralSquare << std::endl;
+//    std::cout << level << " " << fabs(integralSquare - 0.097430515213498) << std::endl;
+//  }
+//}
 
 /*
  * This test calculates the variance for the test function atanModel (see above) and compares it
@@ -621,6 +672,7 @@ BOOST_AUTO_TEST_CASE(testScalarProductsWithWeightFunctionAndBoundsOnLevel) {
   sgpp::combigrid::MultiIndex level{4, 4};
   double variance =
       BSplineVarianceWithWeightsAndBounds(level, degree, func, weightFunctionsCollection, bounds);
+
   double realVariance = -0.575444693187592;
   double varianceError = std::fabs(variance - realVariance);
   //  std::cout << varianceError << std::endl;
@@ -655,7 +707,7 @@ void createRegularLevelStructure(
 
 BOOST_AUTO_TEST_CASE(testBsplineStochasticCollocation_co2_lognormal) {
   std::cout << "Integrate objective function co2model and lognormal weight function  with B "
-               "splines of degree 5 on level 4 in 1D "
+               "splines of degree 5 on level 5 in 1D "
             << std::endl;
 
   // create CO2 function and pdf weight functions
@@ -703,7 +755,7 @@ BOOST_AUTO_TEST_CASE(testBsplineStochasticCollocation_co2_lognormal) {
   // create level Structure and interpolate
   std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> newLevelStructure;
   std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> newCoefficientStorage;
-  size_t numLevels = 4;
+  size_t numLevels = 5;
   sgpp::combigrid::GridFunction gf =
       BSplineCoefficientGridFunction(func, pointHierarchies, bsc_config.degree);
   createRegularLevelStructure(numLevels, bsc_config.degree, pointHierarchies, gf, false,
@@ -715,10 +767,11 @@ BOOST_AUTO_TEST_CASE(testBsplineStochasticCollocation_co2_lognormal) {
   bsc.updateConfig(bsc_config);
 
   // check the moments
-  std::cout << std::abs(co2Model.mean - bsc.mean()) << std::endl;
-  std::cout << std::abs(co2Model.variance - bsc.variance()) << std::endl;
-  //  BOOST_CHECK_SMALL(std::abs(co2Model.mean - bsc.mean()), 1e-8);
-  //  BOOST_CHECK_SMALL(std::abs(co2Model.variance - bsc.variance()), 1e-4);
+  //  std::cout << std::abs(co2Model.mean - bsc.mean()) << std::endl;
+  //  std::cout << std::abs(co2Model.variance - bsc.variance()) << std::endl;
+  BOOST_CHECK_SMALL(std::abs(co2Model.mean - bsc.mean()), 1e-8);
+  // ToDo (rehmemk) this tolerance is too large / why is the variance so bad?
+  BOOST_CHECK_SMALL(std::abs(co2Model.variance - bsc.variance()), 0.05);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
