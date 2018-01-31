@@ -32,7 +32,7 @@
 double u(double x) { return std::log(std::exp(-x) * std::cos(4. * x * (1. - x))); }
 
 int main() {
-  size_t q = 5;
+  size_t q = 2;
   size_t n = static_cast<size_t>(std::pow(2, q)) + 1;
   double h = 1. / static_cast<double>(n - 1);
 
@@ -71,10 +71,11 @@ int main() {
 
   // solve interpolation problem -> multiply the rhs with the basisValues of the tensor
   sgpp::base::DataVector ocoeffs(n);
+  size_t offset = 4;
   for (size_t i = 0; i < basisValues.size(); i++) {
     // vector vector multiplication
     for (size_t j = 0; j < rhs.size(); j++) {
-      ocoeffs[i] += basisValues[j].get(sgpp::combigrid::MultiIndex{i}).getValue() * rhs[j];
+      ocoeffs[i] += basisValues[j].get(sgpp::combigrid::MultiIndex{offset + i}).getValue() * rhs[j];
     }
   }
 
@@ -89,7 +90,9 @@ int main() {
   }
 
   double variance = 0.0;
-  for (size_t i = 0; i < quadResult.size(); i++) {
+  std::cout << " ----------------------------------" << std::endl;
+  for (size_t i = 0; i < ocoeffs.size(); i++) {
+    std::cout << i << ": (" << (n + i - 1) << ") -> " << ocoeffs[i] << std::endl;
     variance += ocoeffs[i] * ocoeffs[i];
   }
   variance -= mean * mean;

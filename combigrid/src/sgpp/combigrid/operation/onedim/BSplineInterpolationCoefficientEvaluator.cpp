@@ -13,6 +13,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <functional>
 
 #ifdef USE_EIGEN
 #include <eigen3/Eigen/Dense>
@@ -35,6 +36,15 @@ void BSplineInterpolationCoefficientEvaluator::setGridPoints(const std::vector<d
 #ifdef USE_EIGEN
   size_t n = xValues.size();
 
+  //  std::cout << "----------------------------------" << std::endl;
+  //  std::cout << "x" << std::endl;
+  //  std::cout << "[";
+  //  for (size_t j = 0; j < n - 1; j++) {
+  //    std::cout << xValues[j] << ", ";
+  //  }
+  //  std::cout << xValues[xValues.size() - 1] << "]" << std::endl;
+  //  std::cout << "----------------------------------" << std::endl;
+
   // compute the Gramian matrix
   BSplineScalarProductEvaluator scalarProductEval;
   scalarProductEval.setGridPoints(xValues);
@@ -48,6 +58,19 @@ void BSplineInterpolationCoefficientEvaluator::setGridPoints(const std::vector<d
     }
   }
 
+  //  std::cout << "----------------------------------" << std::endl;
+  //  std::cout << "G" << std::endl;
+  //  std::cout << "[";
+  //  for (size_t i = 0; i < n; i++) {
+  //    std::cout << "[";
+  //    for (size_t j = 0; j < n; j++) {
+  //      std::cout << std::setw(15) << std::setprecision(10) << G(i, j) << ", ";
+  //    }
+  //    std::cout << "]" << std::endl << " ";
+  //  }
+  //  std::cout << "]" << std::endl;
+  //  std::cout << "----------------------------------" << std::endl;
+
   // compute the Cholesky decomposition
   Eigen::MatrixXd L(G.llt().matrixL());
 
@@ -57,10 +80,11 @@ void BSplineInterpolationCoefficientEvaluator::setGridPoints(const std::vector<d
 
   //  std::cout << "----------------------------------" << std::endl;
   //  std::cout << "C" << std::endl;
+  //  std::cout << "[";
   //  for (size_t i = 0; i < n; i++) {
   //    std::cout << "[";
   //    for (size_t j = 0; j < n; j++) {
-  //      std::cout << C(i, j) << ", ";
+  //      std::cout << std::setw(15) << std::setprecision(10) << C(i, j) << ", ";
   //    }
   //    std::cout << "]" << std::endl << " ";
   //  }
@@ -96,11 +120,26 @@ void BSplineInterpolationCoefficientEvaluator::setGridPoints(const std::vector<d
   Eigen::MatrixXd invertedScaledMat = mat.fullPivHouseholderQr().inverse();
 
   // undo the preconditioning to the inverse
-  basisValues = std::vector<FloatTensorVector>(n, FloatTensorVector(2));
-  size_t l = getGridLevelForExpUniformBoundaryGrid(xValues.size());
+  basisValues = std::vector<FloatTensorVector>(n, FloatTensorVector(1));
+  size_t l = getGridLevelForExpUniformBoundaryGrid(n);
+  std::cout << "-------------------------------------------" << std::endl;
+  std::cout << n << " -> " << l << std::endl;
+  size_t offset = 0;
+  if (l == 0) {
+    offset = 0;
+  } else if (l == 1) {
+    offset = 1;
+  } else if (l == 2) {
+    offset = 4;
+  } else {
+    offset = 4 + static_cast<size_t>(std::pow(2, l - 1));
+  }
+
   for (size_t j = 0; j < n; ++j) {
     for (size_t i = 0; i < n; ++i) {
-      basisValues[j].at(MultiIndex{l, i}) = invertedScaledMat(i, j) * invMaxNorms(j);
+      std::cout << "(" << (offset + i) << ") -> " << (invertedScaledMat(i, j) * invMaxNorms(j))
+                << std::endl;
+      basisValues[j].at(MultiIndex{offset + i}) = invertedScaledMat(i, j) * invMaxNorms(j);
     }
   }
 
@@ -119,7 +158,7 @@ BSplineInterpolationCoefficientEvaluator::cloneLinear() {
   return std::make_shared<BSplineInterpolationCoefficientEvaluator>(*this);
 }
 
-bool BSplineInterpolationCoefficientEvaluator::needsOrderedPoints() { return false; }
+bool BSplineInterpolationCoefficientEvaluator::needsOrderedPoints() { return true; }
 
 bool BSplineInterpolationCoefficientEvaluator::needsParameter() { return false; }
 

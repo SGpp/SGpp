@@ -122,10 +122,16 @@ void FloatTensorVector::sub(const FloatTensorVector& other) {
 void FloatTensorVector::componentwiseMult(const FloatTensorVector& other) {
   // compute tensor product
   if (d == 0 && other.d == 0) {
+    //    std::cout << "1: AAAARRRRRRRRRRRRRRRRRRRRRRRRRG" << std::endl;
+    //    std::cout << d << ", " << other.d << std::endl;
     values->get(MultiIndex{0}).componentwiseMult(other.values->get(MultiIndex{0}));
   } else if (other.d == 0) {
+    //    std::cout << "2: AAAARRRRRRRRRRRRRRRRRRRRRRRRRG" << std::endl;
+    //    std::cout << d << ", " << other.d << std::endl;
     scalarMult(other.values->get(MultiIndex{0}).value());
   } else if (d == 0) {
+    //    std::cout << "3: AAAARRRRRRRRRRRRRRRRRRRRRRRRRG" << std::endl;
+    //    std::cout << d << ", " << other.d << std::endl;
     double scalar = values->get(MultiIndex{0}).value();
     *this = other;
     scalarMult(scalar);

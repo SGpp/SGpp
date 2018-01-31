@@ -199,6 +199,8 @@ for basis in [BSplineBasis(grid_points, degree)]:
     u_ortho = orthogonal_surrogate(xs)
     print "|u_sg - u_orth| =", np.sqrt(np.mean((u_sg - u_ortho) ** 2))
 
+    print ocoeffs
+
     if basis.dtype == "bsplines":
         result = basis.quadrature.getBasisValues()
         mean_ct = 0.0
