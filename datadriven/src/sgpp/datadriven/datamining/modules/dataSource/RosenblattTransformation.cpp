@@ -25,7 +25,7 @@ RosenblattTransformation::RosenblattTransformation(Dataset* dataset, size_t numS
   : grid(nullptr),
     alpha(nullptr),
     dataset(dataset),
-    datasetTransformed(nullptr),
+    datasetTransformed(new Dataset{dataset->getNumberInstances(), dataset->getDimension()}),
     numSamples(numSamples) {
   // Sample #numSamples random samples from dataset
   DataMatrix samples(numSamples, dataset->getDimension());
