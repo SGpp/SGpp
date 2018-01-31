@@ -3,15 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-//#include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/pce/BsplineStochasticCollocation.hpp>
 #include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
-
-#include <sgpp/base/exception/application_exception.hpp>
 
 #include <algorithm>
 #include <cmath>
@@ -33,7 +31,8 @@ BsplineStochasticCollocation::BsplineStochasticCollocation(
       ev(0.0),
       computedVarianceFlag(false),
       var(0.0),
-      coefficientStorage(config.coefficientStorage) {
+      coefficientStorage(config.coefficientStorage),
+      scalarProducts() {
   initializeOperations(config.pointHierarchies, coefficientStorage, config.levelManager);
 }
 
@@ -70,6 +69,9 @@ void BsplineStochasticCollocation::initializeOperations(
       pointHierarchies, quadEvaluators, levelManager, coefficientStorage, summationStrategyType);
   this->config.combigridOperation = quadratureOperation;
 
+  scalarProducts.setWeightFunction(weightFunctions);
+  scalarProducts.setBounds(config.bounds);
+
   numGridPoints = 0;
 }
 
@@ -86,8 +88,6 @@ void BsplineStochasticCollocation::updateConfig(
   this->config.combigridMultiOperation->getLevelManager()->addLevelsFromStructure(
       newConfig.levelStructure);
 
-  //  this->config.combigridOperation = createexpUniformBsplineQuadratureCoefficientOperation(
-  //      newConfig.degree, newConfig.numDims, newConfig.coefficientStorage);
   size_t numAdditionalPoints = 0;
   bool normalizeWeights = false;
   sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =
@@ -140,36 +140,39 @@ double BsplineStochasticCollocation::mean() {
 }
 
 double BsplineStochasticCollocation::computeVariance() {
+  if (!computedMeanFlag) {
+    mean();
+  }
+
   std::shared_ptr<sgpp::base::Grid> grid;
   grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDims, config.degree));
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   auto levelStructure = this->config.levelStructure;
   convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
 
-  std::cout << "gridStorage size: " << gridStorage.getSize() << std::endl;
+  //  std::cout << "gridStorage size: " << gridStorage.getSize() << std::endl;
 
   // interpolate on SG
   sgpp::base::DataVector alpha = createInterpolantOnConvertedExpUnifromBoundaryCombigird(
       grid, gridStorage, this->config.combigridMultiOperation, levelStructure);
 
   sgpp::base::Grid* gridptr = grid.get();
-  sgpp::combigrid::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(
-      gridptr, weightFunctions, config.bounds);
   sgpp::base::DataVector product(alpha.size());
-  massMatrix.mult(alpha, product);
+
+  scalarProducts.updateGrid(gridptr);
+  scalarProducts.mult(alpha, product);
+
   double meanSquare = product.dotProduct(alpha);
   double width = 1.0;
   for (size_t d = 0; d < numDims; d++) {
     width *= (config.bounds[2 * d + 1] - config.bounds[2 * d]);
   }
   meanSquare *= width;
-  double exactMeanSquare = 1.226117849896473;
-  std::cout << "meanSquare: " << meanSquare << " error: " << std::fabs(exactMeanSquare - meanSquare)
-            << std::endl;
+  double exactMeanSquare = 0.097430515213498;
+  //  std::cout << "meanSquare: " << meanSquare << " error: " << std::fabs(exactMeanSquare -
+  //  meanSquare)
+  //            << std::endl;
 
-  if (!computedMeanFlag) {
-    mean();
-  }
   double variance = meanSquare - ev * ev;
   return variance;
 }
