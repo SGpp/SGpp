@@ -134,6 +134,11 @@ std::vector<std::shared_ptr<AbstractPointHierarchy>> CombigridOperation::getPoin
   return impl->pointHierarchies;
 }
 
+std::shared_ptr<AbstractFullGridEvaluator<FloatScalarVector>>
+CombigridOperation::getFullGridEval() {
+  return impl->fullGridEval;
+}
+
 std::shared_ptr<LevelManager> CombigridOperation::getLevelManager() { return impl->levelManager; }
 
 void CombigridOperation::setLevelManager(std::shared_ptr<LevelManager> levelManager) {
