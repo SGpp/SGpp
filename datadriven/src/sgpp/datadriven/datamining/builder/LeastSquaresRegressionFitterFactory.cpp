@@ -114,6 +114,21 @@ int LeastSquaresRegressionFitterFactory::addConstraint(int idx, int bias){
 		return freeBits.size();
 }
 
+//check old runs in new space: set free bits, evaluate, then check constraints
+
+void LeastSquaresRegressionFitterFactory::printConfig(int configID){
+	  for(auto& bit : configBits){
+	    bit->reset();
+	  }
+	  std::string basisFunction[] = {"Linear","ModLinear"};
+	  std::cout<<"Level: "<<dispar["level"]->getValue(&configID)
+			   <<", Basis: "<<basisFunction[dispar["basisFunction"]->getValue(&configID)]
+			   <<", noPoints: "<< dispar["noPoints"]->getValue(&configID)
+			   <<", Threshold: "<<conpar["threshold"]->getValue(&configID)
+			   <<", Lambda: "<<conpar["lambda"]->getValue(&configID)<<", "<<pow(10,conpar["lambda"]->getValue(&configID))
+			   <<std::endl;
+}
+
 ModelFittingBase* LeastSquaresRegressionFitterFactory::buildFitter(int configID, int row, DataMatrix &paritymatrix)  {
   // fix ConfigurationBits according to constraints
   for(auto& bit : configBits){
@@ -127,7 +142,7 @@ ModelFittingBase* LeastSquaresRegressionFitterFactory::buildFitter(int configID,
   // build config
   FitterConfigurationLeastSquares* config = new FitterConfigurationLeastSquares(baseConfig);
   //EDIT: make lambda exponential
-  base::GridType basisFunction[] = {base::GridType::Linear,base::GridType::ModLinear};//{base::GridType::Linear, base::GridType::ModLinear};
+  base::GridType basisFunction[] = {base::GridType::Linear,base::GridType::ModLinear};
   config->setHyperParameters(
 		  dispar["level"]->getValue(&configID),
 		  basisFunction[dispar["basisFunction"]->getValue(&configID)],

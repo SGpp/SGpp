@@ -91,6 +91,28 @@ void ConfigurationBit::reset(){
   bVisited = false;
 }
 
+bool ConfigurationBit::checkConstraints(){
+	int dummy = 0;
+	 for(auto &constraint : constraints){
+	    int tmp = constraint->getBias();
+	    // std::cout<<"Constraint Bias: "<<tmp<<std::endl;
+	    for(auto &bit : constraint->getConfigBits()){
+	    	if(this!=bit){
+	    		tmp = tmp * bit->evaluate(&dummy);
+	    		// std::cout<<"temp: "<<tmp<<std::endl;
+	    	}
+	    }
+	    if(tmp == 0){
+	        std::cout<<"Error: Unset Bit on Constraint Evaluation"<<std::endl;
+	    }
+	    if(value != tmp){
+	    	return false;
+	    }
+
+	  }
+return true;
+}
+
 
 }  // namespace datadriven
 }  // namespace sgpp

@@ -40,6 +40,8 @@ class ConfigurationBit {
   
   int fixFreeBits(std::vector<ConfigurationBit*> &freeBits);
 
+  bool checkConstraints();
+
   void reset();
   // void mult(base::DataVector& alpha, base::DataVector& result);
   // void multTranspose(base::DataVector& source, base::DataVector& result);

@@ -1,10 +1,10 @@
 {
 	"dataSource": {
-		"filePath": "C:/Users/Eric/Documents/ozoneprepared.csv"
+		"filePath": "C:/Users/Eric/Documents/friedman1_10d_150000.arff"
 	},
 	"scorer": {
 		"testing": {
-			"testingPortion": 0.8,
+			"testingPortion": 0.1,
 			"shuffling": "random",
 			"randomSeed": 43,
 			"metric": "MSE"
@@ -17,7 +17,7 @@
 			"level": 2
 		},
 	"adaptivityConfig": {
-			"numRefinements": 0,
+			"numRefinements": 4,
 			"threshold": 0.001,
 			"maxLevelType": false,
 			"noPoints": 1
