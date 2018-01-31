@@ -114,6 +114,8 @@ class CombiEvaluators {
   static std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>> tensorInterpolation(
       std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis);
 
+  static std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>> tensorBSplineInterpolation();
+
   typedef std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>> Collection;
   typedef std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> MultiCollection;
   typedef std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>> TensorCollection;

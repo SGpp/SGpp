@@ -156,7 +156,7 @@ class LinearCombination(Basis):
 
 # -------------------------------------------------------------------------
 degree = 3
-level = 5
+level = 1
 
 n = 2**level + 1
 grid_points = np.array([np.linspace(0, 1, n, endpoint=True)]).T
@@ -170,6 +170,8 @@ for basis in [BSplineBasis(grid_points, degree)]:
     V = basis.V(grid_points)
     rhs = np.array([u(grid_points[i][0]) for i in xrange(n)])
     coeffs = np.linalg.solve(V, rhs)
+
+    print coeffs
 
     print "|u - V w| = %g" % np.linalg.norm(rhs - V.dot(coeffs))
 
@@ -212,14 +214,14 @@ for basis in [BSplineBasis(grid_points, degree)]:
     print "mean =", mean_ct, surrogate.mean()
     print "var  =", var_ct, surrogate.variance()
 
-    fig = plt.figure()
-    plt.plot(xs, [u(xi) for xi in xs], label="u")
-    plt.plot(xs, u_sg, label="surrogate")
-    plt.plot(xs, u_ortho, label="orthogonal")
-    plt.scatter(basis.grid_points, np.zeros(grid_points.shape))
-    plt.vlines(basis.grid_points, np.zeros(grid_points.shape), rhs)
-    plt.title(basis.dtype,
-              fontproperties=load_font_properties())
-    plt.legend()
-
-    plt.show()
+#     fig = plt.figure()
+#     plt.plot(xs, [u(xi) for xi in xs], label="u")
+#     plt.plot(xs, u_sg, label="surrogate")
+#     plt.plot(xs, u_ortho, label="orthogonal")
+#     plt.scatter(basis.grid_points, np.zeros(grid_points.shape))
+#     plt.vlines(basis.grid_points, np.zeros(grid_points.shape), rhs)
+#     plt.title(basis.dtype,
+#               fontproperties=load_font_properties())
+#     plt.legend()
+#
+#     plt.show()

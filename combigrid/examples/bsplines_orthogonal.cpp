@@ -9,11 +9,11 @@
 #include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
 #include <sgpp/combigrid/pce/CombigridSurrogateModelFactory.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
-#include <sgpp/combigrid/operation/onedim/BsplineInterpolationCoefficientEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineQuadratureEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
+#include <sgpp/combigrid/operation/onedim/BSplineInterpolationCoefficientEvaluator.hpp>
 #include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
@@ -29,12 +29,9 @@
 #include <iostream>
 #include <vector>
 
-double f(double x) { return std::log(std::exp(-x) * std::cos(4. * x * (1. - x))); }
+double u(double x) { return std::log(std::exp(-x) * std::cos(4. * x * (1. - x))); }
 
 int main() {
-  sgpp::combigrid::Ishigami model;
-  sgpp::combigrid::MultiFunction func(model.eval);
-
   size_t q = 5;
   size_t n = static_cast<size_t>(std::pow(2, q)) + 1;
   double h = 1. / static_cast<double>(n - 1);
@@ -43,7 +40,7 @@ int main() {
   std::vector<double> gridPoints(n);
   for (size_t i = 0; i < n; i++) {
     gridPoints[i] = static_cast<double>(i) * h;
-    rhs[i] = f(gridPoints[i]);
+    rhs[i] = u(gridPoints[i]);
   }
 
   // compute interpolation matrix
@@ -68,7 +65,7 @@ int main() {
   solver.solve(sle, rhs, coeffs);
 
   // compute Tensor for orthogonal Bspline basis
-  sgpp::combigrid::BsplineInterpolationCoefficientEvaluator eval;
+  sgpp::combigrid::BSplineInterpolationCoefficientEvaluator eval;
   eval.setGridPoints(gridPoints);
   std::vector<sgpp::combigrid::FloatTensorVector> basisValues = eval.getBasisValues();
 

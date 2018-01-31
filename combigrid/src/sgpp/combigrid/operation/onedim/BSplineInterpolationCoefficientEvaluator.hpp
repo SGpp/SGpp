@@ -15,7 +15,7 @@
 namespace sgpp {
 namespace combigrid {
 
-class BsplineInterpolationCoefficientEvaluator : public AbstractLinearEvaluator<FloatTensorVector> {
+class BSplineInterpolationCoefficientEvaluator : public AbstractLinearEvaluator<FloatTensorVector> {
   std::vector<FloatTensorVector> basisValues;
   std::vector<double> basisCoefficients;
 
@@ -24,9 +24,9 @@ class BsplineInterpolationCoefficientEvaluator : public AbstractLinearEvaluator<
   void computeBasisValues();
 
  public:
-  BsplineInterpolationCoefficientEvaluator();
-  virtual ~BsplineInterpolationCoefficientEvaluator();
-  BsplineInterpolationCoefficientEvaluator(BsplineInterpolationCoefficientEvaluator const &other);
+  BSplineInterpolationCoefficientEvaluator();
+  virtual ~BSplineInterpolationCoefficientEvaluator();
+  BSplineInterpolationCoefficientEvaluator(BSplineInterpolationCoefficientEvaluator const &other);
 
   std::vector<FloatTensorVector> getBasisValues() override { return basisValues; }
   std::vector<double> getBasisCoefficients() override { return basisCoefficients; }

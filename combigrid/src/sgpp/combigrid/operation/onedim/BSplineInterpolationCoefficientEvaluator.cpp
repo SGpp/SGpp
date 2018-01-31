@@ -3,9 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/operation/onedim/BsplineInterpolationCoefficientEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineScalarProductEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/BSplineInterpolationCoefficientEvaluator.hpp>
+#include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 
 #include <sgpp/base/exception/generation_exception.hpp>
 
@@ -21,16 +22,16 @@
 namespace sgpp {
 namespace combigrid {
 
-BsplineInterpolationCoefficientEvaluator::BsplineInterpolationCoefficientEvaluator()
+BSplineInterpolationCoefficientEvaluator::BSplineInterpolationCoefficientEvaluator()
     : basisValues(1, FloatTensorVector(1)), basisCoefficients() {}
 
-BsplineInterpolationCoefficientEvaluator::BsplineInterpolationCoefficientEvaluator(
-    const BsplineInterpolationCoefficientEvaluator& other)
+BSplineInterpolationCoefficientEvaluator::BSplineInterpolationCoefficientEvaluator(
+    const BSplineInterpolationCoefficientEvaluator& other)
     : basisValues(other.basisValues), basisCoefficients(other.basisCoefficients) {}
 
-BsplineInterpolationCoefficientEvaluator::~BsplineInterpolationCoefficientEvaluator() {}
+BSplineInterpolationCoefficientEvaluator::~BSplineInterpolationCoefficientEvaluator() {}
 
-void BsplineInterpolationCoefficientEvaluator::setGridPoints(const std::vector<double>& xValues) {
+void BSplineInterpolationCoefficientEvaluator::setGridPoints(const std::vector<double>& xValues) {
 #ifdef USE_EIGEN
   size_t n = xValues.size();
 
@@ -95,10 +96,11 @@ void BsplineInterpolationCoefficientEvaluator::setGridPoints(const std::vector<d
   Eigen::MatrixXd invertedScaledMat = mat.fullPivHouseholderQr().inverse();
 
   // undo the preconditioning to the inverse
-  basisValues = std::vector<FloatTensorVector>(n, FloatTensorVector(1));
+  basisValues = std::vector<FloatTensorVector>(n, FloatTensorVector(2));
+  size_t l = getGridLevelForExpUniformBoundaryGrid(xValues.size());
   for (size_t j = 0; j < n; ++j) {
     for (size_t i = 0; i < n; ++i) {
-      basisValues[j].at(MultiIndex{i}) = invertedScaledMat(i, j) * invMaxNorms(j);
+      basisValues[j].at(MultiIndex{l, i}) = invertedScaledMat(i, j) * invMaxNorms(j);
     }
   }
 
@@ -107,21 +109,21 @@ void BsplineInterpolationCoefficientEvaluator::setGridPoints(const std::vector<d
 #endif
 }
 
-void BsplineInterpolationCoefficientEvaluator::setBasisCoefficientsAtGridPoints(
+void BSplineInterpolationCoefficientEvaluator::setBasisCoefficientsAtGridPoints(
     std::vector<double>& functionValues) {
   basisCoefficients = functionValues;
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector> >
-BsplineInterpolationCoefficientEvaluator::cloneLinear() {
-  return std::make_shared<BsplineInterpolationCoefficientEvaluator>(*this);
+BSplineInterpolationCoefficientEvaluator::cloneLinear() {
+  return std::make_shared<BSplineInterpolationCoefficientEvaluator>(*this);
 }
 
-bool BsplineInterpolationCoefficientEvaluator::needsOrderedPoints() { return false; }
+bool BSplineInterpolationCoefficientEvaluator::needsOrderedPoints() { return false; }
 
-bool BsplineInterpolationCoefficientEvaluator::needsParameter() { return false; }
+bool BSplineInterpolationCoefficientEvaluator::needsParameter() { return false; }
 
-void BsplineInterpolationCoefficientEvaluator::setParameter(const FloatTensorVector& param) {
+void BSplineInterpolationCoefficientEvaluator::setParameter(const FloatTensorVector& param) {
   // do nothing because no parameter is needed
 }
 
