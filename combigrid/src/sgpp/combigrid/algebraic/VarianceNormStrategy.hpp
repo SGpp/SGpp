@@ -49,7 +49,7 @@ class VarianceNormStrategy : public NormStrategy<FloatTensorVector> {
 
  private:
   FirstMomentNormStrategy firstMoment;
-  VarianceBsplineStrategy secondMoment;
+  SecondMomentNormStrategy secondMoment;
 };
 
 } /* namespace combigrid */

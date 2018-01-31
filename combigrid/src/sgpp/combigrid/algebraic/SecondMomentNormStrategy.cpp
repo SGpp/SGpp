@@ -19,7 +19,7 @@
 namespace sgpp {
 namespace combigrid {
 
-VarianceBsplineStrategy::VarianceBsplineStrategy(
+SecondMomentNormStrategy::SecondMomentNormStrategy(
     std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> basisFunction, size_t numDims,
     sgpp::combigrid::SingleFunction weightFunction, bool isOrthogonal,
     sgpp::base::DataVector const& bounds)
@@ -30,7 +30,7 @@ VarianceBsplineStrategy::VarianceBsplineStrategy(
   initializeBounds();
 }
 
-VarianceBsplineStrategy::VarianceBsplineStrategy(
+SecondMomentNormStrategy::SecondMomentNormStrategy(
     std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> basisFunction,
     sgpp::combigrid::WeightFunctionsCollection& weightFunctions, bool isOrthogonal,
     sgpp::base::DataVector const& bounds)
@@ -41,7 +41,7 @@ VarianceBsplineStrategy::VarianceBsplineStrategy(
   initializeBounds();
 }
 
-VarianceBsplineStrategy::VarianceBsplineStrategy(
+SecondMomentNormStrategy::SecondMomentNormStrategy(
     sgpp::combigrid::OrthogonalBasisFunctionsCollection& basisFunctions,
     sgpp::combigrid::WeightFunctionsCollection& weightFunctions, bool isOrthogonal,
     sgpp::base::DataVector const& bounds)
@@ -52,9 +52,9 @@ VarianceBsplineStrategy::VarianceBsplineStrategy(
   initializeBounds();
 }
 
-VarianceBsplineStrategy::~VarianceBsplineStrategy() {}
+SecondMomentNormStrategy::~SecondMomentNormStrategy() {}
 
-double VarianceBsplineStrategy::quad(MultiIndex i, MultiIndex j) {
+double SecondMomentNormStrategy::quad(MultiIndex i, MultiIndex j) {
   double ans = 1.0;
 
   // Gauss quadrature in each dimension
@@ -83,7 +83,7 @@ double VarianceBsplineStrategy::quad(MultiIndex i, MultiIndex j) {
   return ans;
 }
 
-double VarianceBsplineStrategy::computeSecondMoment(FloatTensorVector& vector) {
+double SecondMomentNormStrategy::computeSecondMoment(FloatTensorVector& vector) {
   // update the missing entries in the lookup table
   // compute mass matrix and corresponding coefficient vector
   auto multiIndices_i = vector.getValues();
@@ -156,7 +156,7 @@ double VarianceBsplineStrategy::computeSecondMoment(FloatTensorVector& vector) {
   return ans;
 }
 
-double VarianceBsplineStrategy::norm(FloatTensorVector& vector) {
+double SecondMomentNormStrategy::norm(FloatTensorVector& vector) {
   if (isOrthogonal) {
     double sum = 0.0;
     for (auto it = vector.getValues()->getStoredDataIterator(); it->isValid(); it->moveToNext()) {
@@ -169,7 +169,7 @@ double VarianceBsplineStrategy::norm(FloatTensorVector& vector) {
   }
 }
 
-void VarianceBsplineStrategy::initializeBounds() {
+void SecondMomentNormStrategy::initializeBounds() {
   size_t numDims = basisFunctions.size();
   if (bounds.size() == 0) {
     bounds.resize(2 * numDims);
@@ -186,7 +186,7 @@ void VarianceBsplineStrategy::initializeBounds() {
   }
 }
 
-void VarianceBsplineStrategy::joinMultiIndices(MultiIndex& ix, MultiIndex& jx, MultiIndex& kx) {
+void SecondMomentNormStrategy::joinMultiIndices(MultiIndex& ix, MultiIndex& jx, MultiIndex& kx) {
   for (size_t i = 0; i < ix.size(); i++) {
     if (ix[i] < jx[i]) {
       kx[2 * i] = ix[i];
