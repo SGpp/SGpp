@@ -334,8 +334,8 @@ std::shared_ptr<CombigridOperation> CombigridOperation::auxiliaryBsplineFunction
     sgpp::combigrid::CombiHierarchies::Collection pointHierarchies,
     sgpp::combigrid::CombiEvaluators::Collection evaluators, size_t degree) {
   // So far only WeightedRatioLevelManager has been used
-  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
-      new sgpp::combigrid::WeightedRatioLevelManager());
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager =
+      std::make_shared<sgpp::combigrid::AveragingLevelManager>();
   sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
   bool exploitNesting = false;
   return std::make_shared<sgpp::combigrid::CombigridOperation>(pointHierarchies, evaluators,

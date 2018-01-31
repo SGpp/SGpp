@@ -292,7 +292,28 @@ CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
       pointHierarchies, evaluators, std::make_shared<StandardLevelManager>(), storage,
       summationStrategyType);
   auto levelStructure = levelManager->getLevelStructure();
-  tensorOperation->getLevelManager()->addLevelsFromStructureParallel(levelStructure);
+  tensorOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
+
+  return tensorOperation;
+}
+
+std::shared_ptr<CombigridTensorOperation>
+CombigridTensorOperation::createOperationTensorBSplineInterpolation(
+    std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+    std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager,
+    FullGridSummationStrategyType summationStrategyType) {
+  // create combi evaluators
+  size_t numDims = pointHierarchies.size();
+  sgpp::combigrid::CombiEvaluators::TensorCollection evaluators;
+  for (size_t i = 0; i < numDims; i++) {
+    evaluators.push_back(sgpp::combigrid::CombiEvaluators::tensorBSplineInterpolation());
+  }
+
+  auto tensorOperation = std::make_shared<CombigridTensorOperation>(
+      pointHierarchies, evaluators, std::make_shared<StandardLevelManager>(), storage,
+      summationStrategyType);
+  auto levelStructure = levelManager->getLevelStructure();
+  tensorOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
 
   return tensorOperation;
 }
