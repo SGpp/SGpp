@@ -277,6 +277,9 @@ class CombigridTensorOperation {
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager,
       FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR);
+
+  static std::shared_ptr<CombigridTensorOperation> createExpUniformBoundaryBSplineInterpolation(
+      size_t numDimensions, MultiFunction func, size_t degree);
 };
 
 } /* namespace combigrid */

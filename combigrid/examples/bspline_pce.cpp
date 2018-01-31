@@ -27,10 +27,10 @@ double u(sgpp::base::DataVector x) {
 }
 
 int main() {
-  sgpp::combigrid::Ishigami model;
-  sgpp::combigrid::MultiFunction func(u);
+  sgpp::combigrid::Parabola_uniform model;
+  sgpp::combigrid::MultiFunction func(model.eval);
 
-  size_t numDims = 1;
+  size_t numDims = 2;
   size_t q = 1;
   size_t degree = 3;
 
@@ -46,23 +46,30 @@ int main() {
   double mean = quad_op->getResult();
 
   auto tensor_op =
-      sgpp::combigrid::CombigridTensorOperation::createOperationTensorBSplineInterpolation(
-          op->getPointHierarchies(), op->getStorage(), op->getLevelManager());
+      sgpp::combigrid::CombigridTensorOperation::createExpUniformBoundaryBSplineInterpolation(
+          numDims, func, degree);
+  tensor_op->getLevelManager()->addLevelsFromStructure(op->getLevelManager()->getLevelStructure());
 
   sgpp::combigrid::FloatTensorVector tensor_result = tensor_op->getResult();
 
+  size_t numTerms = 0;
   double variance = 0.0;
+  std::cout << " ----------------------------------" << std::endl;
   for (auto it = tensor_result.getValues()->getStoredDataIterator(); it->isValid();
        it->moveToNext()) {
-    double coeff = it->value().value();
-    variance += coeff * coeff;
+    double ocoeff = it->value().value();
+    variance += ocoeff * ocoeff;
+    numTerms += 1;
+    auto ix = it->getMultiIndex();
+    std::cout << numTerms << ": (" << ix[0] << ", " << ix[1] << ") -> " << ocoeff << std::endl;
   }
 
   variance -= mean * mean;
 
   std::cout << "---------------------------------------------------------" << std::endl;
-  std::cout << "#gp = " << tensor_op->getLevelManager()->numGridPoints() << std::endl;
-  std::cout << "E(u) = " << mean << std::endl;
-  std::cout << "Var(u) = " << variance << std::endl;
+  std::cout << "#gp    = " << tensor_op->getLevelManager()->numGridPoints() << std::endl;
+  std::cout << "#terms = " << numTerms << std::endl;
+  std::cout << "E(u)   = " << model.mean(numDims) << " ~ " << mean << std::endl;
+  std::cout << "Var(u) = " << model.variance(numDims) << " ~ " << variance << std::endl;
   std::cout << "---------------------------------------------------------" << std::endl;
 }

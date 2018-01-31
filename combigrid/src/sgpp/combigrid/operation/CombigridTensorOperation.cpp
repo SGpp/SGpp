@@ -318,5 +318,17 @@ CombigridTensorOperation::createOperationTensorBSplineInterpolation(
   return tensorOperation;
 }
 
+std::shared_ptr<CombigridTensorOperation>
+CombigridTensorOperation::createExpUniformBoundaryBSplineInterpolation(size_t numDimensions,
+                                                                       MultiFunction func,
+                                                                       size_t degree) {
+  return std::make_shared<CombigridTensorOperation>(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>>(numDimensions,
+                                                           CombiHierarchies::expUniformBoundary()),
+      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>>(
+          numDimensions, CombiEvaluators::tensorBSplineInterpolation()),
+      std::make_shared<StandardLevelManager>(), func);
+}
+
 } /* namespace combigrid */
 } /* namespace sgpp*/
