@@ -263,6 +263,20 @@ class CombigridTensorOperation {
       std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager,
       OrthogonalBasisFunctionsCollection &functionBases,
       FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR);
+
+  /**
+   * Transforms the basic structures of an arbitrary operation to a tensor operation
+   *
+   * @param pointHierarchies univariate grids
+   * @param storage function value storage
+   * @param levelManager provides level structures that are copied to the new tensor operation
+   * @param summationStrategyType strategy to gather the results of the univariate evaluators on
+   * @return tensor operation with the same grid as given by the parameters
+   */
+  static std::shared_ptr<CombigridTensorOperation> createOperationTensorBSplineInterpolation(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+      std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager,
+      FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR);
 };
 
 } /* namespace combigrid */

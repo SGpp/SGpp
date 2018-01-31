@@ -25,6 +25,7 @@
 #include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineQuadratureEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineScalarProductEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/BSplineInterpolationCoefficientEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/CubicSplineInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/InterpolationCoefficientEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
@@ -305,6 +306,11 @@ CombiEvaluators::createCombiTensorEvaluator(EvaluatorConfiguration evalConfig) {
 std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>> CombiEvaluators::tensorInterpolation(
     std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis) {
   return std::make_shared<InterpolationCoefficientEvaluator>(functionBasis);
+}
+
+std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>
+CombiEvaluators::tensorBSplineInterpolation() {
+  return std::make_shared<BSplineInterpolationCoefficientEvaluator>();
 }
 
 } /* namespace combigrid */

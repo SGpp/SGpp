@@ -98,6 +98,13 @@ std::vector<double> createdeg5NakKnots(std::vector<double> const& xValues);
 std::vector<double> createNakKnots(std::vector<double> const& xValues, size_t const& degree);
 
 /**
+ * Get corresponding grid level from number of grid points
+ * @param numGridPoints number of grid points
+ * @return level of grid
+ */
+size_t getGridLevelForExpUniformBoundaryGrid(size_t numGridPoints);
+
+/**
  * Creates the GridFunction that calculates the coefficients of the B-spline interpolation.
  * The coefficients for each B-Spline are saved in a TreeStorage encoded by a MultiIndex
  * The Grid Functions coefficients are used as well for quadrature.
@@ -122,7 +129,6 @@ sgpp::combigrid::GridFunction BSplineCoefficientGridFunction(
  * @param func		    the objective function
  *
  */
-
 std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineVarianceRefinementOperation(
     size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func,
     std::shared_ptr<sgpp::combigrid::LevelManager> levelManager);

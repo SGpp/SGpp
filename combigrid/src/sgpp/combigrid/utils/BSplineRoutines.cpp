@@ -3,13 +3,22 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <algorithm>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductHashMapNakBsplineBoundaryCombigrid.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
+
 #include <vector>
+#include <algorithm>
 
 constexpr size_t log2(size_t n) { return ((n < 2) ? 1 : 1 + log2(n / 2)); }
+
+size_t getGridLevelForExpUniformBoundaryGrid(size_t numGridPoints) {
+  if (numGridPoints > 1) {
+    return log2(numGridPoints - 2);
+  } else {
+    return 0;
+  }
+}
 
 double expUniformNakBspline(double const& x, size_t const& degree, size_t i,
                             std::vector<double> const& points) {
