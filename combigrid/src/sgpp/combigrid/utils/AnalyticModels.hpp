@@ -169,7 +169,7 @@ struct Genz {
     double ans = 2.0 * M_PI * w;
     size_t numDims = x.size();
     for (size_t k = 0; k < numDims; k++) {
-      ans += 4.5 * (k + 0.5) / static_cast<double>(numDims) * x[k];
+      ans += 4.5 * (static_cast<double>(k) + 0.5) / static_cast<double>(numDims) * x[k];
     }
     return std::cos(ans);
   }
