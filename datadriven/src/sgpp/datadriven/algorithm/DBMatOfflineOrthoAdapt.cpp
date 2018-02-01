@@ -20,8 +20,8 @@ DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(
     const sgpp::base::RegularGridConfiguration& gridConfig,
     const sgpp::base::AdpativityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    const sgpp::datadriven::DecompositionConfiguration& decompositionConfig)
-    : DBMatOffline(gridConfig, adaptivityConfig, regularizationConfig, decompositionConfig) {
+    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig)
+    : DBMatOffline(gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig) {
   this->lambda = regularizationConfig.lambda_;
 
   this->q_ortho_matrix_ = sgpp::base::DataMatrix(1, 1);

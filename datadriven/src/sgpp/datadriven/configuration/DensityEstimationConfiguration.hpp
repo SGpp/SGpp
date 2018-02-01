@@ -4,7 +4,7 @@
  * use, please see the copyright notice provided with SG++ or at
  * sgpp.sparsegrids.org
  *
- * DecompositionConfiguration.hpp
+ * DensityEstimationConfiguration.hpp
  *
  *  Created on: Jan 02, 2018
  *      Author: Kilian Röhner
@@ -22,10 +22,13 @@
 namespace sgpp {
 namespace datadriven {
 
-enum class DBMatDecompostionType { LU, Eigen, Chol, DenseIchol, OrthoAdapt };
+enum class DensityEstimationType { CG, Decomposition };
 
-struct DecompositionConfiguration {
-  DBMatDecompostionType type_;  // Type of matrix decomposition
+enum class MatrixDecompositionType { LU, Eigen, Chol, DenseIchol, OrthoAdapt };
+
+struct DensityEstimationConfiguration {
+  DensityEstimationType type_;  // Type of density estimation
+  MatrixDecompositionType decomposition_;  // Type of matrix decomposition
 
   // Incomplete Cholesky Decomposition parameters
   size_t iCholSweepsDecompose_ = 4;

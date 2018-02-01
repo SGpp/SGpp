@@ -17,6 +17,7 @@
 
 #include <iomanip>
 #include <list>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -66,37 +67,40 @@ void DBMatOnlineDEChol::solveSLE(DataVector& b, bool do_cv) {
   //  myAlpha.abs();
   //  myAlpha.sqr();
   //  auto res = sqrt(myAlpha.sum());
-  //  std::cout << "solving with " << offlineObject.getDecompositionConfig().icholSweepsSolver_
+  //  std::cout << "solving with " << offlineObject.getDensityEstimationConfig().icholSweepsSolver_
   //            << " sweeps results in error: " << std::scientific << std::setprecision(10) << res
   //            << "\n";
 }
 
 DBMatDMSChol* DBMatOnlineDEChol::buildCholSolver(DBMatOffline& offlineObject, bool doCV) const {
   // const cast is OK here, since we access the config read only.
-  switch (offlineObject.getDecompositionConfig().type_) {
-    case (DBMatDecompostionType::Chol):
+  switch (offlineObject.getDensityEstimationConfig().decomposition_) {
+    case (MatrixDecompositionType::Chol):
       return new DBMatDMSChol();
       break;
-    case (DBMatDecompostionType::DenseIchol):
-      return new DBMatDMSDenseIChol(offlineObject.getDecompositionConfig(),
+    case (MatrixDecompositionType::DenseIchol):
+      return new DBMatDMSDenseIChol(offlineObject.getDensityEstimationConfig(),
                                     offlineObject.getGrid(),
                                     offlineObject.getRegularizationConfig().lambda_,
                                     doCV);
       break;
-    case (DBMatDecompostionType::LU):
-    case (DBMatDecompostionType::Eigen):
-    case (DBMatDecompostionType::OrthoAdapt):
+    case (MatrixDecompositionType::LU):
+    case (MatrixDecompositionType::Eigen):
+    case (MatrixDecompositionType::OrthoAdapt):
     default:
       throw sgpp::base::algorithm_exception{"Only Cholesky based solvers can use this Solver"};
   }
 }
 
-void DBMatOnlineDEChol::updateSystemMatrixDecomposition(size_t numAddedGridPoints,
-                                                      std::list<size_t> deletedGridPointIndices,
-                                                      double lambda)  {
+std::vector<size_t> DBMatOnlineDEChol::updateSystemMatrixDecomposition(
+    size_t numAddedGridPoints,
+    std::list<size_t> deletedGridPointIndices,
+    double lambda)  {
   DBMatOffline* offlineObject = &getOfflineObject();
   dynamic_cast<DBMatOfflineChol *>(offlineObject)
       ->choleskyModification(numAddedGridPoints, deletedGridPointIndices, lambda);
+      std::vector<size_t> return_vector = {};
+      return return_vector;
 }
 
 

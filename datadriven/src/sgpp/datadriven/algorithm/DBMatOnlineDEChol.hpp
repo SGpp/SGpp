@@ -16,6 +16,7 @@
 #include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
 
 #include <list>
+#include <vector>
 
 /**
  * Class that stores, generates and manipulates a density function during online phase in on/off
@@ -36,10 +37,12 @@ class DBMatOnlineDEChol : public DBMatOnlineDE {
    * @param numAddedGridPoints Number of grid points inserted at the end of the grid storage
    * @param deletedGridPointIndices Indices of grid points that were deleted
    * @param lambda The last best lambda value
+   * @return list of grid points, that cannot be coarsened
    */
-  void updateSystemMatrixDecomposition(size_t numAddedGridPoints,
-                                     std::list<size_t> deletedGridPointIndices,
-                                     double lambda) override;
+  std::vector<size_t> updateSystemMatrixDecomposition(
+      size_t numAddedGridPoints,
+      std::list<size_t> deletedGridPointIndices,
+      double lambda) override;
 
  protected:
   void solveSLE(DataVector& b, bool do_cv) override;

@@ -111,7 +111,7 @@ int main(int argc, char** argv) {
    * - whether parts of the output shall be kept off.
    */
   std::cout << "# create learner config" << std::endl;
-  sgpp::datadriven::CrossvalidationForRegularizationConfiguration crossvalidationConfig;
+  sgpp::datadriven::CrossvalidationConfiguration crossvalidationConfig;
   crossvalidationConfig.enable_ = false;
   crossvalidationConfig.kfold_ = 3;
   crossvalidationConfig.lambda_ = 3.16228e-06;

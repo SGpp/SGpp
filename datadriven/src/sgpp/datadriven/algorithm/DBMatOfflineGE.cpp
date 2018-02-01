@@ -37,8 +37,8 @@ DBMatOfflineGE::DBMatOfflineGE(
     const sgpp::base::RegularGridConfiguration& gridConfig,
     const sgpp::base::AdpativityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    const sgpp::datadriven::DecompositionConfiguration& decompositionConfig)
-    : DBMatOffline(gridConfig, adaptivityConfig, regularizationConfig, decompositionConfig) {}
+    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig)
+    : DBMatOffline(gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig) {}
 
 sgpp::datadriven::DBMatOfflineGE::DBMatOfflineGE(const std::string& fileName)
     : DBMatOffline{fileName} {

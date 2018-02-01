@@ -15,7 +15,7 @@
 #ifdef USE_GSL
 #include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
-#include <sgpp/datadriven/configuration/DecompositionConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 
 #include <chrono>
@@ -39,17 +39,17 @@ int main() {
   regularizationConfig.lambda_ = 0;
   regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
 
-  sgpp::datadriven::DecompositionConfiguration decompositionConfig;
-  decompositionConfig.iCholSweepsDecompose_ = 2;
-  decompositionConfig.type_ = sgpp::datadriven::DBMatDecompostionType::Chol;
+  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+  densityEstimationConfig.iCholSweepsDecompose_ = 2;
+  densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::Chol;
 
   auto decompType = "Incomplete Cholesky decomposition on Dense Matrix";
   std::cout << "Decomposition type: " << decompType << std::endl;
 
   sgpp::datadriven::DBMatOfflineDenseIChol offline(gridConfig, adaptConfig,
-                                                   regularizationConfig, decompositionConfig);
+                                                   regularizationConfig, densityEstimationConfig);
   // sgpp::datadriven::DBMatOfflineChol offline(gridConfig, adaptConfig,
-  //           regularizationConfig, decompositionConfig);
+  //           regularizationConfig, densityEstimationConfig);
 
   offline.buildMatrix();
 

@@ -6,7 +6,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
-#include <sgpp/datadriven/configuration/DecompositionConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 
@@ -108,32 +108,32 @@ int main() {
        * Note: Refinement/Coarsening only possible for Cholesky decomposition
        * and OrthoAdapt
        */
-      sgpp::datadriven::DBMatDecompostionType dt;
+      sgpp::datadriven::MatrixDecompositionType dt;
       std::string decompType;
       // choose "LU decomposition"
-      // dt = DBMatDecompostionType::DBMatDecompLU;
+      // dt = MatrixDecompositionType::DBMatDecompLU;
       // decompType = "LU decomposition";
 
       // choose"Eigen decomposition"
-      // dt = DBMatDecompostionType::DBMatDecompEigen;
+      // dt = MatrixDecompositionType::DBMatDecompEigen;
       // decompType = "Eigen decomposition";
 
       // choose "Cholesky decomposition"
-      // dt = sgpp::datadriven::DBMatDecompostionType::Chol;
+      // dt = sgpp::datadriven::MatrixDecompositionType::Chol;
       // decompType = "Cholesky decomposition";
-      // dt = sgpp::datadriven::DBMatDecompostionType::IChol;
+      // dt = sgpp::datadriven::MatrixDecompositionType::IChol;
       // decompType = "Incomplete Cholesky decomposition";
-      // dt = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
+      // dt = sgpp::datadriven::MatrixDecompositionType::DenseIchol;
 
       // choose "orthogonal Adaptivity"
-      dt = sgpp::datadriven::DBMatDecompostionType::OrthoAdapt;
+      dt = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
       decompType = "orthogonal Adaptivity";
-      sgpp::datadriven::DecompositionConfiguration decompositionConfig;
-      decompositionConfig.type_ = dt;
+      sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+      densityEstimationConfig.decomposition_ = dt;
 
       // those two are only relevant, when we use iChol decomposition type
-      decompositionConfig.iCholSweepsDecompose_ = 2;
-      decompositionConfig.iCholSweepsRefine_ = 2;
+      densityEstimationConfig.iCholSweepsDecompose_ = 2;
+      densityEstimationConfig.iCholSweepsRefine_ = 2;
 
       std::cout << "Decomposition type: " << decompType << std::endl;
 
@@ -190,7 +190,7 @@ int main() {
        */
       std::cout << "# create learner" << std::endl;
       sgpp::datadriven::LearnerSGDEOnOff learner(gridConfig, adaptConfig, regularizationConfig,
-                                                 decompositionConfig, trainDataset, testDataset,
+                                                 densityEstimationConfig, trainDataset, testDataset,
                                                  nullptr, classLabels, classNum, usePrior, beta);
 
       /**
