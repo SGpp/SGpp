@@ -25,10 +25,10 @@ namespace datadriven {
 class DataTransformation {
  public:
   DataTransformation();
-  DataTransformation initialize(DataTransformationType dataTransformationType,
+  DataTransformation* initialize(DataTransformationType dataTransformationType,
                                 Dataset* dataset);
-  virtual Dataset* doTransformation();
-  virtual Dataset* doInverseTransformation();
+  virtual Dataset* doTransformation(Dataset* dataset);
+  virtual Dataset* doInverseTransformation(Dataset* dataset);
   virtual ~DataTransformation();
 };
 } /* namespace datadriven */

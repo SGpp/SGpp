@@ -50,7 +50,7 @@ Dataset* DataSource::getNextSamples() {
   // Transform dataset if wanted
   if (!(config.dataTransformation == DataTransformationType::NONE)) {
     DataTransformation* dataTr = new DataTransformation();
-    return dataTr->initialize(config.dataTransformation, dataset).doTransformation();
+    return dataTr->initialize(config.dataTransformation, dataset)->doTransformation(dataset);
   } else {
     return dataset;
   }
