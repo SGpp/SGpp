@@ -57,8 +57,8 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
     // in case OrthoAdapt, the current size is not lhs size, but B size
     bool use_B_size = false;
     sgpp::datadriven::DBMatOnlineDEOrthoAdapt* thisOrthoAdaptPtr;
-    if (this->offlineObject.getDecompositionConfig().type_ ==
-        sgpp::datadriven::DBMatDecompostionType::OrthoAdapt) {
+    if (this->offlineObject.getDensityEstimationConfig().decomposition_ ==
+        sgpp::datadriven::MatrixDecompositionType::OrthoAdapt) {
       thisOrthoAdaptPtr = static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt*>(&*this);
       if (thisOrthoAdaptPtr->getB().getNcols() > 1) {
         use_B_size = true;
@@ -87,7 +87,7 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
     B->multTranspose(y, b);
 
     // Perform permutation because of decomposition (LU)
-    if (offlineObject.getDecompositionConfig().type_ == DBMatDecompostionType::LU) {
+    if (offlineObject.getDensityEstimationConfig().decomposition_ == MatrixDecompositionType::LU) {
 #ifdef USE_GSL
       static_cast<DBMatOfflineLU&>(offlineObject).permuteVector(b);
 #else

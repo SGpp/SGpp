@@ -47,7 +47,7 @@ class LearnerSGDEOnOff {
    * @param gridConfig The configuration of the grid
    * @param adaptivityConfig The configuration of the grid adaptivity
    * @param regularizationConfig The configuration of the grid regularization
-   * @param decompositionConfig The configuration of the matrix decomposition
+   * @param densityEstimationConfig The configuration of the matrix decomposition
    * @param trainData The (mandatory) training dataset
    * @param testData The (mandatory) test dataset
    * @param validationData The (optional) validation dataset
@@ -61,7 +61,7 @@ class LearnerSGDEOnOff {
   LearnerSGDEOnOff(sgpp::base::RegularGridConfiguration& gridConfig,
                    sgpp::base::AdpativityConfiguration& adaptivityConfig,
                    sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-                   sgpp::datadriven::DecompositionConfiguration& decompositionConfig,
+                   sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
                    Dataset& trainData, Dataset& testData,
                    Dataset* validationData, DataVector& classLabels, size_t classNumber,
                    bool usePrior, double beta, std::string matrixfile = "");

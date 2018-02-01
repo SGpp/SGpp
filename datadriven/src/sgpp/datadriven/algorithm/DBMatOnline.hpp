@@ -8,6 +8,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 
 #include <list>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -55,8 +56,9 @@ class DBMatOnline {
    * @param numAddedGridPoints Number of grid points inserted at the end of the grid storage
    * @param deletedGridPointIndices Indices of grid points that were deleted
    * @param lambda The last best lambda value
+   * @return list of grid points, that cannot be coarsened
    */
-  virtual void updateSystemMatrixDecomposition(size_t numAddedGridPoints,
+  virtual std::vector<size_t> updateSystemMatrixDecomposition(size_t numAddedGridPoints,
                                                  std::list<size_t> deletedGridPointIndices,
                                                  double lambda);
 

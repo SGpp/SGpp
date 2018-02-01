@@ -35,7 +35,7 @@ void FitterConfigurationLeastSquares::setupDefaults() {
   adaptivityConfig.threshold_ = 0.0,
 
   // configure solver
-      solverRefineConfig.type_ = sgpp::solver::SLESolverType::CG;
+  solverRefineConfig.type_ = sgpp::solver::SLESolverType::CG;
   solverRefineConfig.maxIterations_ = 100;
   solverRefineConfig.eps_ = 1e-10;
   solverRefineConfig.threshold_ = 1e-10;

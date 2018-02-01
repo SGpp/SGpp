@@ -28,14 +28,14 @@ namespace DBMatOfflineFactory {
  * @param gridConfig The configuration of the grid
  * @param adaptivityConfig The configuration of the grid adaptivity
  * @param regularizationConfig The configuration of the grid regularization
- * @param decompositionConfig The configuration of the matrix decomposition
+ * @param densityEstimationConfig The configuration of the matrix decomposition
  * @return new instance of DBMatOffline implementor owned by caller.
  */
 DBMatOffline* buildOfflineObject(
     const sgpp::base::RegularGridConfiguration& gridConfig,
     const sgpp::base::AdpativityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    const sgpp::datadriven::DecompositionConfiguration& decompositionConfig);
+    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
 
 /**
  * Read a serialized DBMatOffline object and construct a new object with the information.

@@ -22,13 +22,13 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    * @param gridConfig The configuration of the grid
    * @param adaptivityConfig The configuration of the grid adaptivity
    * @param regularizationConfig The configuration of the grid regularization
-   * @param decompositionConfig The configuration of the matrix decomposition
+   * @param densityEstimationConfig The configuration of the matrix decomposition
    */
   explicit DBMatOfflineOrthoAdapt(
       const sgpp::base::RegularGridConfiguration& gridConfig,
       const sgpp::base::AdpativityConfiguration& adaptivityConfig,
       const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-      const sgpp::datadriven::DecompositionConfiguration& decompositionConfig);
+      const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
 
   /**
    * Constructor
