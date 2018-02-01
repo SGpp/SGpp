@@ -21,7 +21,7 @@ DataTransformationType DataTransformationTypeParser::parse(const std::string& in
   auto inputLower = input;
   std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
 
-  if (inputLower == "rosenblatt") {
+  if (inputLower.compare("rosenblatt") == 0) {
     return DataTransformationType::ROSENBLATT;
   } else {
     return DataTransformationType::NONE;

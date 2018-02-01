@@ -39,8 +39,8 @@ class RosenblattTransformation : public DataTransformation {
    */
   RosenblattTransformation(Dataset* dataset, size_t numSamples);
 
-  Dataset* doTransformation();
-  Dataset* doInverseTransformation();
+  Dataset* doTransformation(Dataset* dataset);
+  Dataset* doInverseTransformation(Dataset* dataset);
 
  private:
   /**
@@ -56,12 +56,12 @@ class RosenblattTransformation : public DataTransformation {
   /**
    * Pointer to #sgpp::datadriven::Dataset
    */
-  Dataset* dataset;
+  Dataset* datasetTransformed;
 
   /**
    * Pointer to #sgpp::datadriven::Dataset
    */
-  Dataset* datasetTransformed;
+  Dataset* datasetInvTransformed;
 
   /**
    * Number of samples for calculation of pdf / alpha, default: 1000
