@@ -24,11 +24,16 @@ namespace sgpp {
 namespace combigrid {
 
 BSplineInterpolationCoefficientEvaluator::BSplineInterpolationCoefficientEvaluator()
-    : basisValues(1, FloatTensorVector(1)), basisCoefficients() {}
+    : basisValues(1, FloatTensorVector(1)), basisCoefficients(), degree(3) {}
+
+BSplineInterpolationCoefficientEvaluator::BSplineInterpolationCoefficientEvaluator(size_t degree)
+    : basisValues(1, FloatTensorVector(1)), basisCoefficients(), degree(degree) {}
 
 BSplineInterpolationCoefficientEvaluator::BSplineInterpolationCoefficientEvaluator(
     const BSplineInterpolationCoefficientEvaluator& other)
-    : basisValues(other.basisValues), basisCoefficients(other.basisCoefficients) {}
+    : basisValues(other.basisValues),
+      basisCoefficients(other.basisCoefficients),
+      degree(other.degree) {}
 
 BSplineInterpolationCoefficientEvaluator::~BSplineInterpolationCoefficientEvaluator() {}
 
@@ -46,7 +51,7 @@ void BSplineInterpolationCoefficientEvaluator::setGridPoints(const std::vector<d
   //  std::cout << "----------------------------------" << std::endl;
 
   // compute the Gramian matrix
-  BSplineScalarProductEvaluator scalarProductEval;
+  BSplineScalarProductEvaluator scalarProductEval(degree);
   scalarProductEval.setGridPoints(xValues);
   std::vector<FloatArrayVector> values = scalarProductEval.getBasisValues();
 
@@ -93,7 +98,7 @@ void BSplineInterpolationCoefficientEvaluator::setGridPoints(const std::vector<d
 
   Eigen::MatrixXd mat(n, n);
 
-  BSplineInterpolationEvaluator evaluator;
+  BSplineInterpolationEvaluator evaluator(degree);
   evaluator.setGridPoints(xValues);
 
   // compute the interpolation matrix
@@ -108,38 +113,38 @@ void BSplineInterpolationCoefficientEvaluator::setGridPoints(const std::vector<d
   // compute the interpolation matrix for the orthogonal bspline basis
   mat = mat * C.transpose();
 
-  // use Christoffel preconditioner: scale length of each row entry to 1 to reduce
-  // the condition number of the interpolation matrix
-  Eigen::VectorXd invMaxNorms = mat.rowwise().norm();
-  for (size_t i = 0; i < n; ++i) {
-    invMaxNorms(i) = 1. / invMaxNorms(i);
+  std::cout << "----------------------------------" << std::endl;
+  std::cout << "M" << std::endl;
+  std::cout << "[";
+  for (size_t i = 0; i < n; i++) {
+    std::cout << "[";
+    for (size_t j = 0; j < n; j++) {
+      std::cout << std::setw(15) << std::setprecision(10) << mat(i, j) << ", ";
+    }
+    std::cout << "]" << std::endl << " ";
   }
-  mat = mat.array().colwise() * invMaxNorms.array();
+  std::cout << "]" << std::endl;
+  std::cout << "----------------------------------" << std::endl;
 
-  // invert the preconditioned matrix
-  Eigen::MatrixXd invertedScaledMat = mat.fullPivHouseholderQr().inverse();
+  //  // use Christoffel preconditioner: scale length of each row entry to 1 to reduce
+  //  // the condition number of the interpolation matrix
+  //  Eigen::VectorXd invMaxNorms = mat.rowwise().norm();
+  //  for (size_t i = 0; i < n; ++i) {
+  //    invMaxNorms(i) = 1. / invMaxNorms(i);
+  //  }
+  //  mat = mat.array().colwise() * invMaxNorms.array();
+  //
+  //  // invert the preconditioned matrix
+  //  Eigen::MatrixXd invertedScaledMat = mat.fullPivHouseholderQr().inverse();
 
   // undo the preconditioning to the inverse
+  size_t level = getGridLevelForExpUniformBoundaryGrid(n);
+  size_t offset = getUniqueIndex(level, 0);
   basisValues = std::vector<FloatTensorVector>(n, FloatTensorVector(1));
-  size_t l = getGridLevelForExpUniformBoundaryGrid(n);
-  std::cout << "-------------------------------------------" << std::endl;
-  std::cout << n << " -> " << l << std::endl;
-  size_t offset = 0;
-  if (l == 0) {
-    offset = 0;
-  } else if (l == 1) {
-    offset = 1;
-  } else if (l == 2) {
-    offset = 4;
-  } else {
-    offset = 4 + static_cast<size_t>(std::pow(2, l - 1));
-  }
-
   for (size_t j = 0; j < n; ++j) {
     for (size_t i = 0; i < n; ++i) {
-      std::cout << "(" << (offset + i) << ") -> " << (invertedScaledMat(i, j) * invMaxNorms(j))
-                << std::endl;
-      basisValues[j].at(MultiIndex{offset + i}) = invertedScaledMat(i, j) * invMaxNorms(j);
+      std::cout << "(" << (offset + i) << ") -> " << mat(i, j) << std::endl;
+      basisValues[j].at(MultiIndex{offset + i}) = mat(i, j);
     }
   }
 

@@ -19,6 +19,7 @@
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
 #include <sgpp/combigrid/utils/AnalyticModels.hpp>
+#include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 
 #include <sgpp/optimization/sle/solver/UMFPACK.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
@@ -26,13 +27,17 @@
 
 #include <cmath>
 
+#include <iomanip>
 #include <iostream>
 #include <vector>
 
-double u(double x) { return std::log(std::exp(-x) * std::cos(4. * x * (1. - x))); }
+double u(double x) {
+  return 4. * x * (1. - x);
+  //  return std::log(std::exp(-x) * std::cos(4. * x * (1. - x)));
+}
 
 int main() {
-  size_t q = 2;
+  size_t q = 3;
   size_t n = static_cast<size_t>(std::pow(2, q)) + 1;
   double h = 1. / static_cast<double>(n - 1);
 
@@ -64,20 +69,54 @@ int main() {
   sgpp::optimization::Printer::getInstance().setVerbosity(-1);
   solver.solve(sle, rhs, coeffs);
 
+  std::cout << "----------------------------------" << std::endl;
+  std::cout << "coeffs" << std::endl;
+  std::cout << "[";
+  for (size_t i = 0; i < n - 1; i++) {
+    std::cout << std::setw(15) << std::setprecision(10) << coeffs[i] << ", ";
+  }
+  std::cout << coeffs[coeffs.size() - 1] << "]" << std::endl;
+
   // compute Tensor for orthogonal Bspline basis
   sgpp::combigrid::BSplineInterpolationCoefficientEvaluator eval;
   eval.setGridPoints(gridPoints);
   std::vector<sgpp::combigrid::FloatTensorVector> basisValues = eval.getBasisValues();
 
   // solve interpolation problem -> multiply the rhs with the basisValues of the tensor
-  sgpp::base::DataVector ocoeffs(n);
-  size_t offset = 4;
+  size_t offset = getUniqueIndex(q, 0);
+  sgpp::base::DataMatrix V_ocoeffs(n, n);
   for (size_t i = 0; i < basisValues.size(); i++) {
     // vector vector multiplication
     for (size_t j = 0; j < rhs.size(); j++) {
-      ocoeffs[i] += basisValues[j].get(sgpp::combigrid::MultiIndex{offset + i}).getValue() * rhs[j];
+      double value = basisValues[j].get(sgpp::combigrid::MultiIndex{offset + i}).getValue();
+      V_ocoeffs.set(i, j, value);
     }
   }
+
+  std::cout << "----------------------------------" << std::endl;
+  std::cout << "V" << std::endl;
+  std::cout << "[";
+  for (size_t i = 0; i < n; i++) {
+    std::cout << "[";
+    for (size_t j = 0; j < n; j++) {
+      std::cout << std::setw(15) << std::setprecision(10) << V_ocoeffs(i, j) << ", ";
+    }
+    std::cout << "]" << std::endl << " ";
+  }
+  std::cout << "]" << std::endl;
+  std::cout << "----------------------------------" << std::endl;
+  std::cout << "rhs" << std::endl;
+  std::cout << "[";
+  for (size_t i = 0; i < n - 1; i++) {
+    std::cout << std::setw(15) << std::setprecision(10) << rhs[i] << ", ";
+  }
+  std::cout << rhs[rhs.size() - 1] << "]" << std::endl;
+  std::cout << "----------------------------------" << std::endl;
+
+  // compute coeffs for standard bspline basis
+  sgpp::base::DataVector ocoeffs(n);
+  sgpp::optimization::FullSLE sle_ocoeffs(V_ocoeffs);
+  solver.solve(sle_ocoeffs, rhs, ocoeffs);
 
   // compute the mean
   sgpp::combigrid::BSplineQuadratureEvaluator quadEval;
@@ -92,7 +131,7 @@ int main() {
   double variance = 0.0;
   std::cout << " ----------------------------------" << std::endl;
   for (size_t i = 0; i < ocoeffs.size(); i++) {
-    std::cout << i << ": (" << (n + i - 1) << ") -> " << ocoeffs[i] << std::endl;
+    std::cout << i << ": (" << (offset + i) << ") -> " << ocoeffs[i] << std::endl;
     variance += ocoeffs[i] * ocoeffs[i];
   }
   variance -= mean * mean;

@@ -29,6 +29,7 @@
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/algebraic/NormStrategy.hpp>
 #include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
+#include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 
 #include <sgpp/base/exception/generation_exception.hpp>
 
@@ -322,12 +323,18 @@ std::shared_ptr<CombigridTensorOperation>
 CombigridTensorOperation::createExpUniformBoundaryBSplineInterpolation(size_t numDimensions,
                                                                        MultiFunction func,
                                                                        size_t degree) {
-  return std::make_shared<CombigridTensorOperation>(
-      std::vector<std::shared_ptr<AbstractPointHierarchy>>(numDimensions,
-                                                           CombiHierarchies::expUniformBoundary()),
-      std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>>(
-          numDimensions, CombiEvaluators::tensorBSplineInterpolation()),
-      std::make_shared<StandardLevelManager>(), func);
+  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
+      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+  sgpp::combigrid::CombiEvaluators::TensorCollection evaluators(
+      numDimensions, sgpp::combigrid::CombiEvaluators::tensorBSplineInterpolation(degree));
+
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager =
+      std::make_shared<sgpp::combigrid::AveragingLevelManager>();
+  sgpp::combigrid::GridFunction gf =
+      BSplineTensorCoefficientGridFunction(func, pointHierarchies, degree);
+  bool exploitNesting = false;
+  return std::make_shared<sgpp::combigrid::CombigridTensorOperation>(
+      pointHierarchies, evaluators, levelManager, gf, exploitNesting);
 }
 
 } /* namespace combigrid */
