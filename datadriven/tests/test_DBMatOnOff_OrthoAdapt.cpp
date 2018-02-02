@@ -18,7 +18,7 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
-#include <sgpp/datadriven/configuration/DecompositionConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/globaldef.hpp>
 
@@ -40,13 +40,13 @@ BOOST_AUTO_TEST_CASE(offline_object) {
   regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
   regularizationConfig.lambda_ = 0.0001;
 
-  sgpp::datadriven::DecompositionConfiguration decompositionConfig;
-  decompositionConfig.type_ = sgpp::datadriven::DBMatDecompostionType::OrthoAdapt;
+  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+  densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
 
   sgpp::datadriven::DBMatOfflineOrthoAdapt off_object(gridConfig,
                                                       adaptivityConfig,
                                                       regularizationConfig,
-                                                      decompositionConfig);
+                                                      densityEstimationConfig);
   off_object.buildMatrix();
 
   size_t n = off_object.getDimA();
@@ -166,14 +166,14 @@ BOOST_AUTO_TEST_CASE(online_object) {
   regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
   regularizationConfig.lambda_ = 0.0001;
 
-  sgpp::datadriven::DecompositionConfiguration decompositionConfig;
-  decompositionConfig.type_ = sgpp::datadriven::DBMatDecompostionType::OrthoAdapt;
+  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+  densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
 
   // creating offline objects
   sgpp::datadriven::DBMatOfflineOrthoAdapt offline_base(gridConfig,
                                                         adaptivityConfig,
                                                         regularizationConfig,
-                                                        decompositionConfig);
+                                                        densityEstimationConfig);
   offline_base.buildMatrix();  // creating lhs matrix
   sgpp::base::DataMatrix lhs(offline_base.getLhsMatrix_ONLY_FOR_TESTING());
   sgpp::base::DataMatrix lhs_copy_small(offline_base.getLhsMatrix_ONLY_FOR_TESTING());
@@ -190,7 +190,7 @@ BOOST_AUTO_TEST_CASE(online_object) {
   sgpp::datadriven::DBMatOfflineOrthoAdapt offline_source(gridConfig,
                                                           adaptivityConfig,
                                                           regularizationConfig,
-                                                          decompositionConfig);
+                                                          densityEstimationConfig);
   offline_source.buildMatrix();
 
   // calculate sizes of old and new matrices
