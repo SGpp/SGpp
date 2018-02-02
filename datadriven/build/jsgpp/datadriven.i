@@ -90,6 +90,7 @@
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/CSVFileSampleProvider.hpp"
 %ignore  sgpp::datadriven::FileSampleDecorator::operator=(FileSampleDecorator&&);
 %rename(__assign__) sgpp::datadriven::FileSampleDecorator::operator =;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/FileSampleDecorator.hpp"
@@ -102,6 +103,9 @@
 %ignore sgpp::datadriven::DataSource::begin;
 %ignore sgpp::datadriven::DataSource::end;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformation.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformationTypeParser.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/RosenblattTransformation.hpp"
 %ignore  sgpp::datadriven::FitterConfiguration::operator=(FitterConfiguration&&);
 %rename(__assign__) sgpp::datadriven::FitterConfiguration::operator =;
 %rename (getConstGridConfig) sgpp::datadriven::FitterConfiguration::getGridConfig() const;
