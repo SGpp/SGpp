@@ -8,6 +8,7 @@
 #include "DiscreteParameter.hpp"
 
 #include <math.h>
+#include <cmath>
 
 namespace sgpp {
 namespace datadriven {

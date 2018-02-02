@@ -44,13 +44,13 @@ class FitterFactory {
   
   virtual FitterConfiguration* buildConfig() const = 0;
 
-  virtual ModelFittingBase* buildFitter(int configID, int row, DataMatrix &paritymatrix);
+  virtual ModelFittingBase* buildFitter(int configID, int row, DataMatrix &paritymatrix) = 0;
 
-  virtual int buildParity();
+  virtual int buildParity() = 0;
 
-  virtual int addConstraint(int idx, int bias);
+  virtual int addConstraint(int idx, int bias) = 0;
 
-  virtual void printConfig(int configID);
+  virtual void printConfig(int configID) = 0;
 
 
 };
