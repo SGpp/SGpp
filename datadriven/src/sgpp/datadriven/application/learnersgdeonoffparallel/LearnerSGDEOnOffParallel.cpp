@@ -49,13 +49,13 @@ LearnerSGDEOnOffParallel::LearnerSGDEOnOffParallel(
     sgpp::base::RegularGridConfiguration &gridConfig,
     sgpp::base::AdpativityConfiguration &adaptivityConfig,
     sgpp::datadriven::RegularizationConfiguration &regularizationConfig,
-    sgpp::datadriven::DecompositionConfiguration &decompositionConfig,
+    sgpp::datadriven::DensityEstimationConfiguration &densityEstimationConfig,
     Dataset &trainData, Dataset &testData,
     Dataset *validationData,
     sgpp::base::DataVector &classLabels, size_t numClassesInit,
     bool usePrior, double beta,
     MPITaskScheduler &mpiTaskScheduler)
-    : LearnerSGDEOnOff(gridConfig, adaptivityConfig, regularizationConfig, decompositionConfig,
+    : LearnerSGDEOnOff(gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig,
                        trainData, testData, validationData, classLabels, numClassesInit,
                        usePrior, beta), mpiTaskScheduler(mpiTaskScheduler),
                        refinementHandler(nullptr, 0) {

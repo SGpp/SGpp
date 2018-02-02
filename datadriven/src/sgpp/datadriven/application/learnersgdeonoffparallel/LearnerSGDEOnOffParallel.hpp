@@ -49,7 +49,7 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
   LearnerSGDEOnOffParallel(sgpp::base::RegularGridConfiguration &gridConfig,
                            sgpp::base::AdpativityConfiguration &adaptivityConfig,
                            sgpp::datadriven::RegularizationConfiguration &regularizationConfig,
-                           sgpp::datadriven::DecompositionConfiguration &decompositionConfig,
+                           sgpp::datadriven::DensityEstimationConfiguration &densityEstimationConfig,
                            Dataset &trainData, Dataset &testData,
                            Dataset *validationData, DataVector &classLabels, size_t numClassesInit,
                            bool usePrior, double beta, MPITaskScheduler &mpiTaskScheduler);

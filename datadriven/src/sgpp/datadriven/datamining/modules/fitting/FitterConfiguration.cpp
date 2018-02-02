@@ -18,8 +18,14 @@ const base::AdpativityConfiguration& FitterConfiguration::getRefinementConfig() 
   return adaptivityConfig;
 }
 
-const datadriven::DecompositionConfiguration& FitterConfiguration::getDecompositionConfig() const {
-  return decompositionConfig;
+const datadriven::CrossvalidationConfiguration&
+FitterConfiguration::getCrossvalidationConfig() const {
+  return crossvalidationConfig;
+}
+
+const datadriven::DensityEstimationConfiguration&
+FitterConfiguration::getDensityEstimationConfig() const {
+  return densityEstimationConfig;
 }
 
 const solver::SLESolverConfiguration& FitterConfiguration::getSolverRefineConfig() const {
@@ -50,9 +56,14 @@ base::AdpativityConfiguration& FitterConfiguration::getRefinementConfig() {
       static_cast<const FitterConfiguration&>(*this).getRefinementConfig());
 }
 
-datadriven::DecompositionConfiguration& FitterConfiguration::getDecompositionConfig() {
-  return const_cast<datadriven::DecompositionConfiguration&>(
-      static_cast<const FitterConfiguration&>(*this).getDecompositionConfig());
+datadriven::CrossvalidationConfiguration& FitterConfiguration::getCrossvalidationConfig() {
+  return const_cast<datadriven::CrossvalidationConfiguration&>(
+      static_cast<const FitterConfiguration&>(*this).getCrossvalidationConfig());
+}
+
+datadriven::DensityEstimationConfiguration& FitterConfiguration::getDensityEstimationConfig() {
+  return const_cast<datadriven::DensityEstimationConfiguration&>(
+      static_cast<const FitterConfiguration&>(*this).getDensityEstimationConfig());
 }
 
 solver::SLESolverConfiguration& FitterConfiguration::getSolverRefineConfig() {

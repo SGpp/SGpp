@@ -31,7 +31,7 @@ class DBMatOfflineChol : public DBMatOfflineGE {
       const sgpp::base::RegularGridConfiguration& gridConfig,
       const sgpp::base::AdpativityConfiguration& adaptivityConfig,
       const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-      const sgpp::datadriven::DecompositionConfiguration& decompositionConfig);
+      const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
 
   explicit DBMatOfflineChol(const std::string& fileName);
 

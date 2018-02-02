@@ -170,7 +170,7 @@ int main() {
        * Configure cross-validation.
        */
       std::cout << "# create cross-validation config" << std::endl;
-      sgpp::datadriven::CrossvalidationForRegularizationConfiguration crossvalidationConfig;
+      sgpp::datadriven::CrossvalidationConfiguration crossvalidationConfig;
       crossvalidationConfig.lambda_ = 0.01;
       crossvalidationConfig.enable_ = false;  // set 'true' to perform cv
 

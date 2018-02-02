@@ -22,9 +22,9 @@ using sgpp::base::Grid;
 using sgpp::base::OperationMatrix;
 
 DBMatDMSDenseIChol::DBMatDMSDenseIChol(
-    const sgpp::datadriven::DecompositionConfiguration& decompositionConfig, Grid& grid,
+    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig, Grid& grid,
     double lambda, bool doCV)
-    : DBMatDMSChol{}, decompositionConfig{decompositionConfig}, proxyMatrix{} {
+    : DBMatDMSChol{}, densityEstimationConfig{densityEstimationConfig}, proxyMatrix{} {
   // initialize proxy matrix if we do cv
   if (doCV) {
     auto size = grid.getStorage().getSize();
@@ -41,7 +41,7 @@ void DBMatDMSDenseIChol::choleskyUpdateLambda(sgpp::base::DataMatrix& decompMatr
                                               double lambdaUpdate) const {
   updateProxyMatrixLambda(lambdaUpdate);
   DBMatOfflineDenseIChol::ichol(proxyMatrix, decompMatrix,
-                                decompositionConfig.iCholSweepsUpdateLambda_);
+                                densityEstimationConfig.iCholSweepsUpdateLambda_);
 }
 
 void DBMatDMSDenseIChol::choleskyBackwardSolve(const sgpp::base::DataMatrix& decompMatrix,
@@ -54,7 +54,7 @@ void DBMatDMSDenseIChol::choleskyBackwardSolve(const sgpp::base::DataMatrix& dec
 
 #pragma omp parallel
   {
-    for (auto sweep = 0u; sweep < decompositionConfig.iCholSweepsSolver_; sweep++) {
+    for (auto sweep = 0u; sweep < densityEstimationConfig.iCholSweepsSolver_; sweep++) {
       tmpVec.setAll(0.0);
 #pragma omp for schedule(guided) nowait
       for (auto i = 0u; i < size; i++) {
@@ -81,7 +81,7 @@ void DBMatDMSDenseIChol::choleskyForwardSolve(const sgpp::base::DataMatrix& deco
 
 #pragma omp parallel
   {
-    for (auto sweep = 0u; sweep < decompositionConfig.iCholSweepsSolver_; sweep++) {
+    for (auto sweep = 0u; sweep < densityEstimationConfig.iCholSweepsSolver_; sweep++) {
 #pragma omp for schedule(guided) nowait
       for (auto i = 0u; i < size; i++) {
         auto tmp = 0.0;

@@ -6,7 +6,7 @@
 #pragma once
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/datadriven/configuration/DecompositionConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 
 #include <list>
@@ -37,12 +37,13 @@ class DBMatOffline {
    * @param gridConfig The configuration of the grid
    * @param adaptivityConfig The configuration of the grid adaptivity
    * @param regularizationConfig The configuration of the grid regularization
-   * @param decompositionConfig The configuration of the matrix decomposition
+   * @param densityEstimationConfig The configuration of the matrix decomposition
    */
-  explicit DBMatOffline(const sgpp::base::RegularGridConfiguration& gridConfig,
-                        const sgpp::base::AdpativityConfiguration& adaptivityConfig,
-                        const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-                        const sgpp::datadriven::DecompositionConfiguration& decompositionConfig);
+  explicit DBMatOffline(
+      const sgpp::base::RegularGridConfiguration& gridConfig,
+      const sgpp::base::AdpativityConfiguration& adaptivityConfig,
+      const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+      const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
 
   /**
    * Constructor
@@ -114,7 +115,7 @@ class DBMatOffline {
    * Get a reference to the matrix decomposition configuration object
    * @return Matrix decomposition configuration object
    */
-  sgpp::datadriven::DecompositionConfiguration& getDecompositionConfig();
+  sgpp::datadriven::DensityEstimationConfiguration& getDensityEstimationConfig();
 
   /**
    * Get a reference to the decomposed matrix. Throws if matrix has not yet been decomposed.
@@ -177,7 +178,7 @@ class DBMatOffline {
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
 
   // config of the matrix decomposition
-  sgpp::datadriven::DecompositionConfiguration decompositionConfig;
+  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
   DataMatrix lhsMatrix;              // stores the (decomposed) matrix
   bool isConstructed;                // If the matrix was built
   bool isDecomposed;                 // If the matrix was decomposed
@@ -205,14 +206,14 @@ class DBMatOffline {
    * @param gridConfig The configuration of the grid of the file to populate
    * @param adaptivityConfig The configuration of the grid adaptivity of the file to populate
    * @param regularizationConfig The configuration of the grid regularization of the file to populate
-   * @param decompositionConfig The configuration of the matrix decomposition of the file to populate
+   * @param densityEstimationConfig The configuration of the matrix decomposition of the file to populate
 
    */
   void parseConfig(const std::string& fileName,
                    sgpp::base::RegularGridConfiguration& gridConfig,
                    sgpp::base::AdpativityConfiguration& adaptivityConfig,
                    sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-                   sgpp::datadriven::DecompositionConfiguration& decompositionConfig) const;
+                   sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) const;
 
 
   /**
