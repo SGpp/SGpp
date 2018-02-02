@@ -173,7 +173,8 @@ BOOST_AUTO_TEST_CASE(testLevelManagerStats) {
   auto op = sgpp::combigrid::CombigridTensorOperation::createExpLejaPolynomialInterpolation(
       functionBasis, d, func);
   auto levelManager = op->getLevelManager();
-
+  levelManager->enableStatsCollection();
+  
   // add regular levels
   size_t maxLevel = 8;
   for (size_t level = 0; level < maxLevel; level++) {
@@ -186,20 +187,19 @@ BOOST_AUTO_TEST_CASE(testLevelManagerStats) {
                                0.0775274779950517, 0.013446805563535};
 
   auto stats = levelManager->getInfoOnAddedLevels();
-
+  
   // evaluate stats
-  //  size_t i = 0;
-  //  for (auto &istats : *stats->getInfos()) {
-  //    std::cout << " - - - - - - - - - - - - " << std::endl;
-  //    std::cout << "iteration = " << ++i << std::endl;
-  //    for (auto &item : *istats) {
-  //      auto &level = item.first;
-  //      auto &levelInfo = item.second;
-  //      std::cout << level[0] << ", " << level[1] << " = " << std::setprecision(15) <<
-  //      levelInfo->norm
-  //                << ", " << levelInfo->priority << std::endl;
-  //    }
-  //  }
+  // size_t i = 0;
+  // for (auto &istats : *stats->getInfos()) {
+  //   std::cout << " - - - - - - - - - - - - " << std::endl;
+  //   std::cout << "iteration = " << ++i << std::endl;
+  //   for (auto &item : istats) {
+  //     auto &level = item.first;
+  //     auto &levelInfo = item.second;
+  //     std::cout << level[0] << ", " << level[1] << " = " << std::setprecision(15) << levelInfo.norm
+  //               << ", " << levelInfo.priority << std::endl;
+  //   }
+  // }
 
   // compute maximum norm per iteration
   sgpp::base::DataVector maxNorms;
@@ -214,7 +214,8 @@ BOOST_AUTO_TEST_CASE(testLevelManagerStatsConversion) {
   size_t d = 2;
 
   auto op = sgpp::combigrid::CombigridOperation::createExpLejaPolynomialInterpolation(d, func);
-
+  op->getLevelManager()->enableStatsCollection();
+  
   sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
   config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
   auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
@@ -222,6 +223,7 @@ BOOST_AUTO_TEST_CASE(testLevelManagerStatsConversion) {
   // copy level structure to tensor grid
   auto tensor_op = sgpp::combigrid::CombigridTensorOperation::createExpLejaPolynomialInterpolation(
       functionBasis, d, func);
+  tensor_op->getLevelManager()->enableStatsCollection();
 
   // add regular levels
   size_t maxLevel = 8;
