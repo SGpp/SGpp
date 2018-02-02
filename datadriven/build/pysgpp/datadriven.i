@@ -100,19 +100,19 @@
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/CSVFileSampleProvider.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/FileSampleDecorator.hpp"
 #ifdef ZLIB
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp"
 #endif /* ZLIB */
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformation.hpp"
+%ignore sgpp::datadriven::DataTransformation::DataTransformation(DataTransformation &&);
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformationTypeParser.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/RosenblattTransformation.hpp"
 
 %ignore sgpp::datadriven::DataSource::begin;
 %ignore sgpp::datadriven::DataSource::end;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformation.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformationTypeParser.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/RosenblattTransformation.hpp"
 
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp"

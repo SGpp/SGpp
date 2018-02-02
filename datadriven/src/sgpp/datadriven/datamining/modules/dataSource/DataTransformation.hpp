@@ -11,6 +11,9 @@
 
 #pragma once
 
+#ifndef DATATRANSFORMATION
+#define DATATRANSFORMATION
+
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
 
@@ -33,3 +36,4 @@ class DataTransformation {
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
+#endif /* DATATRANSFORMATION */
