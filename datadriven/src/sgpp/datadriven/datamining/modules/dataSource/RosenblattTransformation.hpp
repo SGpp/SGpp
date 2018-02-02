@@ -14,7 +14,7 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformation.hpp>
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
-#include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
+// #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
@@ -28,7 +28,7 @@ using sgpp::base::Grid;
 using sgpp::base::GridStorage;
 using sgpp::base::DataVector;
 using sgpp::base::DataMatrix;
-using sgpp::optimization::RandomNumberGenerator;
+// using sgpp::optimization::RandomNumberGenerator;
 
 namespace datadriven {
 
@@ -41,6 +41,9 @@ class RosenblattTransformation : public DataTransformation {
 
   Dataset* doTransformation(Dataset* dataset);
   Dataset* doInverseTransformation(Dataset* dataset);
+
+  sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
+                                                    double lambda);
 
  private:
   /**

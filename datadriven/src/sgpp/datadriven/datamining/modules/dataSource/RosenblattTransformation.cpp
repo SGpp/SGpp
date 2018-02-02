@@ -14,13 +14,6 @@
 namespace sgpp {
 namespace datadriven {
 
-
-/**
- * Helper to create learner
- */
-sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
-                                                double lambda);
-
 RosenblattTransformation::RosenblattTransformation(Dataset* dataset, size_t numSamples)
   : grid(nullptr),
     alpha(nullptr),
@@ -30,13 +23,13 @@ RosenblattTransformation::RosenblattTransformation(Dataset* dataset, size_t numS
   // Sample #numSamples random samples from dataset
   DataMatrix samples(numSamples, dataset->getDimension());
   DataVector currSample(dataset->getDimension());
-  DataVector randVector(numSamples);
+  // DataVector randVector(numSamples);
 
-  RandomNumberGenerator randNumGen();
-  randNumGen().getUniformRV(randVector, 0, static_cast<double>(dataset->getNumberInstances())-1);
-
+  // RandomNumberGenerator randNumGen();
+  // randNumGen().getUniformRV(randVector, 0, static_cast<double>(dataset->getNumberInstances())-1);
+  // below: randVector[i]
   for (unsigned int i = 0; i < numSamples; i++) {
-    dataset->getData().getRow(static_cast<size_t>(randVector[i]), currSample);
+    dataset->getData().getRow(static_cast<size_t>(i), currSample);
     samples.setRow(i, currSample);
   }
 
@@ -79,7 +72,7 @@ Dataset* RosenblattTransformation::doInverseTransformation(Dataset* dataset) {
  * Helper function
  * It configures and creates a SGDE learner with meaningful parameters
  */
-sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
+sgpp::datadriven::LearnerSGDE RosenblattTransformation::createSGDELearner(size_t dim, size_t level,
                                                 double lambda) {
   sgpp::base::RegularGridConfiguration gridConfig;
   gridConfig.dim_ = dim;
