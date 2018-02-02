@@ -41,7 +41,8 @@ enum class CombiEvaluatorTypes {
   Multi_PolynomialScalarProduct,
 
   // interpolation
-  Tensor_PolynomialInterpolation
+  Tensor_PolynomialInterpolation,
+  Tensor_BSplineInterpolation
 };
 
 struct EvaluatorConfiguration {

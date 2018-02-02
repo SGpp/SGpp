@@ -309,8 +309,8 @@ std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>> CombiEvaluators::ten
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>
-CombiEvaluators::tensorBSplineInterpolation() {
-  return std::make_shared<BSplineInterpolationCoefficientEvaluator>();
+CombiEvaluators::tensorBSplineInterpolation(size_t degree) {
+  return std::make_shared<BSplineInterpolationCoefficientEvaluator>(degree);
 }
 
 } /* namespace combigrid */

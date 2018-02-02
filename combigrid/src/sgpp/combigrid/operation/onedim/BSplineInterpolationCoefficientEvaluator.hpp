@@ -21,10 +21,14 @@ class BSplineInterpolationCoefficientEvaluator : public AbstractLinearEvaluator<
 
   std::vector<double> xValues;
 
+  size_t degree;
+
   void computeBasisValues();
 
  public:
   BSplineInterpolationCoefficientEvaluator();
+  explicit BSplineInterpolationCoefficientEvaluator(size_t degree);
+
   virtual ~BSplineInterpolationCoefficientEvaluator();
   BSplineInterpolationCoefficientEvaluator(BSplineInterpolationCoefficientEvaluator const &other);
 

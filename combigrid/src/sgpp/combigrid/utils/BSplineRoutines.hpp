@@ -105,6 +105,15 @@ std::vector<double> createNakKnots(std::vector<double> const& xValues, size_t co
 size_t getGridLevelForExpUniformBoundaryGrid(size_t numGridPoints);
 
 /**
+ * unique index for level index pair
+ *
+ * @param level
+ * @param index
+ * @return
+ */
+size_t getUniqueIndex(size_t level, size_t index);
+
+/**
  * Creates the GridFunction that calculates the coefficients of the B-spline interpolation.
  * The coefficients for each B-Spline are saved in a TreeStorage encoded by a MultiIndex
  * The Grid Functions coefficients are used as well for quadrature.
@@ -115,6 +124,20 @@ size_t getGridLevelForExpUniformBoundaryGrid(size_t numGridPoints);
  */
 // The coefficients for each B-Spline are saved in a TreeStorage encoded by a MultiIndex
 sgpp::combigrid::GridFunction BSplineCoefficientGridFunction(
+    sgpp::combigrid::MultiFunction func, sgpp::combigrid::CombiHierarchies::Collection grids,
+    size_t degree);
+
+/**
+ * Creates the GridFunction that calculates the coefficients of the B-spline interpolation.
+ * The coefficients for each B-Spline are saved in a TreeStorage encoded by a MultiIndex
+ * The Grid Functions coefficients are used as well for quadrature.
+ *
+ * @param func the objective function that shall be interpolated
+ * @param grids vector of one dimensional grids
+ * @param degree degree of the B spline basis functions
+ */
+// The coefficients for each B-Spline are saved in a TreeStorage encoded by a MultiIndex
+sgpp::combigrid::GridFunction BSplineTensorCoefficientGridFunction(
     sgpp::combigrid::MultiFunction func, sgpp::combigrid::CombiHierarchies::Collection grids,
     size_t degree);
 

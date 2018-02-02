@@ -6,9 +6,14 @@
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductHashMapNakBsplineBoundaryCombigrid.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
+#include <sgpp/combigrid/algebraic/FloatTensorVector.hpp>
 
+#include <sgpp/base/exception/application_exception.hpp>
+
+#include <iomanip>
 #include <vector>
 #include <algorithm>
+#include <string>
 
 constexpr size_t log2(size_t n) { return ((n < 2) ? 1 : 1 + log2(n / 2)); }
 
@@ -18,6 +23,20 @@ size_t getGridLevelForExpUniformBoundaryGrid(size_t numGridPoints) {
   } else {
     return 0;
   }
+}
+
+size_t getUniqueIndex(size_t level, size_t index) {
+  size_t offset = 0;
+  if (level == 0) {
+    offset = 0;
+  } else if (level == 1) {
+    offset = 1;
+  } else if (level == 2) {
+    offset = 4;
+  } else {
+    offset = 4 + static_cast<size_t>(std::pow(2, level - 1));
+  }
+  return offset + index;
 }
 
 double expUniformNakBspline(double const& x, size_t const& degree, size_t i,
@@ -769,6 +788,139 @@ sgpp::combigrid::GridFunction BSplineCoefficientGridFunction(
     std::cout << "\n";
     std::cout << "--------" << std::endl;
     */
+
+    if (!solved) {
+      exit(-1);
+    }
+
+    it.reset();
+    for (size_t vecIndex = 0; it.isValid(); ++vecIndex, it.moveToNext()) {
+      coefficientTree->set(it.getMultiIndex(), coefficients_sle[vecIndex]);
+    }
+
+    return coefficientTree;
+  });
+  return gf;
+}
+
+sgpp::combigrid::GridFunction BSplineTensorCoefficientGridFunction(
+    sgpp::combigrid::MultiFunction func, sgpp::combigrid::CombiHierarchies::Collection grids,
+    size_t degree) {
+  sgpp::combigrid::GridFunction gf([func, grids,
+                                    degree](std::shared_ptr<sgpp::combigrid::TensorGrid> grid) {
+    size_t numDimensions = grid->getDimension();
+    // stores the values of the objective function
+    auto funcStorage = std::make_shared<sgpp::combigrid::CombigridTreeStorage>(grids, func);
+
+    // ToDo (rehmemk) B-spline interpolation and B-spline quadrature can be mixed (one in one
+    // dimension the other in another dimension and so on). Combining B-splines and other basis
+    // functions has not been tested yet.
+
+    std::cout << "-----------------------------------------------" << std::endl;
+    sgpp::combigrid::CombiEvaluators::TensorCollection interpolEvaluators(
+        numDimensions, sgpp::combigrid::CombiEvaluators::tensorBSplineInterpolation());
+
+    auto coefficientTree = std::make_shared<sgpp::combigrid::TreeStorage<double>>(numDimensions);
+    auto level = grid->getLevel();
+    std::vector<size_t> numGridPointsVec = grid->numPoints();
+    size_t numGridPoints = 1;
+    for (size_t i = 0; i < numGridPointsVec.size(); i++) {
+      numGridPoints *= numGridPointsVec[i];
+    }
+
+    std::vector<bool> orderingConfiguration;
+
+    sgpp::combigrid::CombiEvaluators::TensorCollection evalCopy(numDimensions);
+    for (size_t dim = 0; dim < numDimensions; ++dim) {
+      evalCopy[dim] = interpolEvaluators[dim]->cloneLinear();
+      bool needsSorted = evalCopy[dim]->needsOrderedPoints();
+      auto gridPoints = grids[dim]->getPoints(level[dim], needsSorted);
+      orderingConfiguration.push_back(needsSorted);
+      evalCopy[dim]->setGridPoints(gridPoints);
+    }
+    sgpp::base::DataMatrix A(numGridPoints, numGridPoints);
+    A.setAll(0.0);
+    sgpp::base::DataVector coefficients_sle(numGridPoints);
+    sgpp::base::DataVector functionValues(numGridPoints);
+
+    // Creates an iterator that yields the multi-indices of all grid points in the grid.
+    sgpp::combigrid::MultiIndexIterator it(grid->numPoints());
+
+    auto funcIter = funcStorage->getGuidedIterator(level, it, orderingConfiguration);
+
+    // assemble interpolation matrix from tensors and rhs
+    for (size_t ixEvalPoints = 0; funcIter->isValid(); ++ixEvalPoints, funcIter->moveToNext()) {
+      // assemble row ixEvalPoints of interpolation matrix
+      // load function values
+      functionValues[ixEvalPoints] = funcIter->value();
+
+      // load basis evaluations per dimension from tensor
+      sgpp::combigrid::MultiIndex ix = funcIter->getMultiIndex();
+      sgpp::combigrid::MultiIndexIterator innerIter(grid->numPoints());
+      for (size_t ixBasisFunctions = 0; innerIter.isValid();
+           ++ixBasisFunctions, innerIter.moveToNext()) {
+        double splineValue = 1.0;
+        auto innerIndex = innerIter.getMultiIndex();
+        for (size_t idim = 0; idim < numDimensions; ++idim) {
+          auto iy = sgpp::combigrid::MultiIndex{getUniqueIndex(level[idim], innerIndex[idim])};
+          splineValue *= evalCopy[idim]->getBasisValues()[ix[idim]].get(iy).getValue();
+        }
+        A.set(ixBasisFunctions, ixEvalPoints, splineValue);
+      }
+    }
+
+    std::cout << "----------------------------------" << std::endl;
+    std::cout << "A" << std::endl;
+    std::cout << "[";
+    for (size_t i = 0; i < A.getNrows(); i++) {
+      std::cout << "[";
+      for (size_t j = 0; j < A.getNcols(); j++) {
+        std::cout << std::setw(15) << std::setprecision(10) << A(i, j) << ", ";
+      }
+      std::cout << "]" << std::endl << " ";
+    }
+    std::cout << "]" << std::endl;
+    std::cout << "----------------------------------" << std::endl;
+    std::cout << "fct" << std::endl;
+    std::cout << "[";
+    for (size_t i = 0; i < functionValues.size() - 1; i++) {
+      std::cout << std::setw(15) << std::setprecision(10) << functionValues[i] << ", ";
+    }
+    std::cout << functionValues[functionValues.size() - 1] << "]" << std::endl;
+    std::cout << "----------------------------------" << std::endl;
+
+    sgpp::optimization::FullSLE sle(A);
+
+    //    sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+    //    bool solved = 0;
+    //    sgpp::combigrid::Stopwatch watch;
+    //    watch.start();
+    //    if (numGridPoints < 500) {
+    //      sgpp::optimization::sle_solver::Armadillo solver;
+    //      solved = solver.solve(sle, functionValues, coefficients_sle);
+    //    } else {
+    //      sgpp::optimization::sle_solver::UMFPACK solver;
+    //      solved = solver.solve(sle, functionValues, coefficients_sle);
+    //    }
+    //    std::cout << numGridPoints << " " << watch.elapsedSeconds() << std::endl;
+
+    sgpp::optimization::sle_solver::UMFPACK solver;
+    sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+    bool solved = solver.solve(sle, functionValues, coefficients_sle);
+
+    if (!solved) {
+      throw sgpp::base::application_exception(
+          "BSplineRoutines::BSplineTensorCoefficientGridFunction - interpolation matrix is "
+          "singular.");
+    }
+
+    std::cout << "coeff: " << std::endl;
+    std::cout << "[";
+    for (size_t i = 0; i < coefficients_sle.size() - 1; i++) {
+      std::cout << std::setw(15) << std::setprecision(10) << coefficients_sle[i] << ", ";
+    }
+    std::cout << coefficients_sle[coefficients_sle.size() - 1] << "]" << std::endl;
+    std::cout << "----------------------------------" << std::endl;
 
     if (!solved) {
       exit(-1);

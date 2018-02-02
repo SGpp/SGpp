@@ -23,7 +23,8 @@
 #include <vector>
 
 double u(sgpp::base::DataVector x) {
-  return std::log(std::exp(-x[0]) * std::cos(4. * x[0] * (1. - x[0])));
+  return 4. * x[0] * (1. - x[0]);
+  //  return std::log(std::exp(-x[0]) * std::cos(4. * x[0] * (1. - x[0])));
 }
 
 int main() {
