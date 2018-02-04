@@ -20,7 +20,7 @@ public:
 	HyperParameter();
 	virtual ~HyperParameter();
 	void makeConfigBits(int nBits, std::list<std::unique_ptr<ConfigurationBit>>& allbits);
-
+	virtual void setHarmonica() = 0;
 
 protected:
 	std::list<ConfigurationBit*> bits;

@@ -11,7 +11,6 @@
  */
 
 #include <sgpp/datadriven/datamining/builder/HPOScorerFactory.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/HPOScorer.hpp>
 
 namespace sgpp {

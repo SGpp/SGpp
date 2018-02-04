@@ -26,7 +26,7 @@
 #include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/RandomShufflingFunctor.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/SplittingScorer.hpp>
-#include <sgpp/datadriven/datamining/builder/LeastSquaresRegressionFitterFactory.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/LeastSquaresRegressionFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
 
 
