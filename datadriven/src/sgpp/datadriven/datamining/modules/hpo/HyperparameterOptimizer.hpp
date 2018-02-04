@@ -16,7 +16,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/HPOScorer.hpp>
-#include <sgpp/datadriven/datamining/builder/FitterFactory.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/FitterFactory.hpp>
 
 
 #include <memory>

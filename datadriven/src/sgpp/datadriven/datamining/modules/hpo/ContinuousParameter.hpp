@@ -17,12 +17,15 @@ class ContinuousParameter: public sgpp::datadriven::HyperParameter {
 public:
 	ContinuousParameter(double min, double max):min(min),max(max){}
 	// ~ContinuousParameter();
-	double getValue(int* configID);
+	double getValue();
+	void setHarmonica() override;
+	void setBO(double interval);
 
 
 protected:
 	double min;
 	double max;
+	double value;
 };
 
 } /* namespace datadriven */

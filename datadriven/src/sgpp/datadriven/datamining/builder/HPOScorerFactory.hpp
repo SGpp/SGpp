@@ -15,7 +15,6 @@
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
-#include <sgpp/datadriven/datamining/builder/FitterFactory.hpp>
 
 
 namespace sgpp {

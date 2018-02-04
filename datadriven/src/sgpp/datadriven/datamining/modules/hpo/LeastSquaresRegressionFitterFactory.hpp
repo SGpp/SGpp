@@ -4,36 +4,37 @@
  * use, please see the copyright notice provided with SG++ or at
  * sgpp.sparsegrids.org
  *
- * FitterFactory.hpp
+ * LeastSquaresRegressionFitterFactory.hpp
  *
- * Created on: Dec 17, 2017
- *     Author: Eric Koepke
+ *  Created on:	17.12.2017
+ *      Author: Eric Koepke
  */
 
 #pragma once
 
+#include <sgpp/datadriven/datamining/modules/hpo/FitterFactory.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/ConfigurationBit.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/ContinuousParameter.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/DiscreteParameter.hpp>
+
+
 
 
 namespace sgpp {
 namespace datadriven {
 
 /**
- * Abstract factory to build all kinds of fitters/models based on a given configuration.
+ * Concrete factory to build an instance of #sgpp::datadriven::ModelFittingBase
  */
-class FitterFactory {
+class LeastSquaresRegressionFitterFactory : public FitterFactory {
  public:
   /**
    * Default constructor
    */
-  FitterFactory() = default;
-
-  /**
-   * Virtual destructor
-   */
-  virtual ~FitterFactory() = default;
+  LeastSquaresRegressionFitterFactory(DataMiningConfigParser& parser);
 
   /**
    * Assemble a #sgpp::datadriven::ModelFittingBase object based on the configuration
@@ -41,18 +42,15 @@ class FitterFactory {
    * data from the config file.
    * @return Fully configured instance of a  #sgpp::datadriven::ModelFittingBase object.
    */
-  
-  virtual FitterConfiguration* buildConfig() const = 0;
+  ModelFittingBase* buildFitter() override;
 
-  virtual ModelFittingBase* buildFitter(int configID, int row, DataMatrix &paritymatrix) = 0;
+  void printConfig(int configID) override;
 
-  virtual int buildParity() = 0;
 
-  virtual int addConstraint(int idx, int bias) = 0;
-
-  virtual void printConfig(int configID) = 0;
-
+protected:
+  FitterConfigurationLeastSquares baseConfig;
 
 };
+
 } /* namespace datadriven */
 } /* namespace sgpp */

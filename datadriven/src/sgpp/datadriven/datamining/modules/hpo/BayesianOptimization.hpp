@@ -21,9 +21,11 @@ public:
 	double mean(base::DataVector knew);
 	double var(base::DataVector knew, double kself);
 	void updateGP(base::DataVector knew, base::DataVector y);
-	double kernel(base::DataVector x1, base::DataVector x2);
+	double acquisitionEI(base::DataVector knew, double kself, double bestsofar);
+	// double expkernel(base::DataVector x1, base::DataVector x2);
 protected:
 	base::DataMatrix kernelmatrix;
+	base::DataMatrix kernelinv;
 	base::DataVector transformedOutput;
 };
 

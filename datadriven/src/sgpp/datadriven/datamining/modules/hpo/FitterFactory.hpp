@@ -4,37 +4,39 @@
  * use, please see the copyright notice provided with SG++ or at
  * sgpp.sparsegrids.org
  *
- * LeastSquaresRegressionFitterFactory.hpp
+ * FitterFactory.hpp
  *
- *  Created on:	17.12.2017
- *      Author: Eric Koepke
+ * Created on: Dec 17, 2017
+ *     Author: Eric Koepke
  */
 
 #pragma once
 
-#include <sgpp/datadriven/datamining/builder/FitterFactory.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/ConfigurationBit.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/ContinuousParameter.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/DiscreteParameter.hpp>
-
-
 
 
 namespace sgpp {
 namespace datadriven {
 
 /**
- * Concrete factory to build an instance of #sgpp::datadriven::ModelFittingBase
+ * Abstract factory to build all kinds of fitters/models based on a given configuration.
  */
-class LeastSquaresRegressionFitterFactory : public FitterFactory {
+class FitterFactory {
  public:
   /**
    * Default constructor
    */
-  LeastSquaresRegressionFitterFactory(DataMiningConfigParser& parser);
+  FitterFactory() = default;
+
+  /**
+   * Virtual destructor
+   */
+  virtual ~FitterFactory() = default;
 
   /**
    * Assemble a #sgpp::datadriven::ModelFittingBase object based on the configuration
@@ -42,24 +44,28 @@ class LeastSquaresRegressionFitterFactory : public FitterFactory {
    * data from the config file.
    * @return Fully configured instance of a  #sgpp::datadriven::ModelFittingBase object.
    */
-  ModelFittingBase* buildFitter(int configID, int row, DataMatrix &paritymatrix) override;
-  
-  FitterConfiguration* buildConfig() const override;
-  
-  int buildParity() override;
 
-  int addConstraint(int idx, int bias) override;
+  virtual ModelFittingBase* buildFitter() = 0;
 
-  void printConfig(int configID) override;
+  int buildParity();
 
+  int addConstraint(int idx, int bias);
 
- protected:
+  virtual void printConfig(int configID) = 0;
+
+  void setHarmonica(int configID, int row, DataMatrix &paritymatrix);
+
+  void getBOspace(int* nCont, std::vector<int>& nOptions); //EDIT: add categorical parameters
+
+  void setBO(base::DataVector& cont, std::vector<int>& disc);
+
+protected:
   std::list<std::unique_ptr<ConfigurationBit>> configBits;
-  FitterConfigurationLeastSquares baseConfig;
   std::map<std::string,ContinuousParameter*> conpar;
   std::map<std::string,DiscreteParameter*> dispar;
   std::vector<std::list<ConfigurationBit*> > parityrow;
-};
 
+
+  };
 } /* namespace datadriven */
 } /* namespace sgpp */

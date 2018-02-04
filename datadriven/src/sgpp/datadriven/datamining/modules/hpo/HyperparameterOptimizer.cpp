@@ -68,7 +68,8 @@ void HyperparameterOptimizer::optimizeHyperparameters(){
 
   std::vector<ModelFittingBase*> fitters(n);
   for(int i=0;i<n;i++){
-	  fitters[i] = fitterFactory->buildFitter(configIDs[i], i, paritymatrix);
+    fitterFactory->setHarmonica(configIDs[i], i, paritymatrix);
+	  fitters[i] = fitterFactory->buildFitter();
   }
   
   std::cout<<"Run mark 2.5"<<std::endl;
@@ -98,7 +99,7 @@ void HyperparameterOptimizer::optimizeHyperparameters(){
   solver::LassoFunction g{2}; //EDIT: lambda
   solver::Fista<solver::LassoFunction> fista{g};
   DataVector alpha = DataVector{paritymatrix.getNcols()};
-  OperationMultipleEvalMatrix opMultEval{*new base::LinearGrid(0), paritymatrix}; //EDIT: grid löschen
+  OperationMultipleEvalMatrix opMultEval{*new base::LinearGrid(0), paritymatrix}; //EDIT: grid lï¿½schen
   fista.solve(opMultEval, alpha, logscores, 100, DEFAULT_RES_THRESHOLD);
 
   std::vector<int> idx(alpha.size()-1);
@@ -156,9 +157,10 @@ void HyperparameterOptimizer::optimizeHyperparameters(){
      std::cout<<"Run mark 2"<<std::endl;
 
      //std::vector<ModelFittingBase*> fitters(n);
-     for(int i=0;i<n;i++){
-   	  fitters[i] = fitterFactory->buildFitter(configIDs[i], i, paritymatrix);
-     }
+  for(int i=0;i<n;i++){
+    fitterFactory->setHarmonica(configIDs[i], i, paritymatrix);
+    fitters[i] = fitterFactory->buildFitter();
+  }
 
      std::cout<<"Run mark 2.5"<<std::endl;
 
