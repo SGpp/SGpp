@@ -53,6 +53,7 @@ int main(int argc, char **argv) {
   /**
    * Once we have a configured miner object, we can start the learning process.
    */
-  hpo->optimizeHyperparameters();
+  // hpo->optimizeHyperparameters();
+  hpo->runBO();
   //miner->learn();
 }

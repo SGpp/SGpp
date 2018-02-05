@@ -78,6 +78,8 @@ class HyperparameterOptimizer {
    */
   void optimizeHyperparameters();
 
+  void runBO();
+
  private:
   /**
    * DataSource provides samples that will be used by fitter to generalize data and scorer to

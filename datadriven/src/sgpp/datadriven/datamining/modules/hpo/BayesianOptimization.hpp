@@ -17,7 +17,7 @@ namespace datadriven {
 
 class BayesianOptimization {
 public:
-	BayesianOptimization();
+	BayesianOptimization(double firstvalue);
 	double mean(base::DataVector knew);
 	double var(base::DataVector knew, double kself);
 	void updateGP(base::DataVector knew, base::DataVector y);

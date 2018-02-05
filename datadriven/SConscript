@@ -10,7 +10,7 @@ import os
 
 Import("*")
 
-moduleDependencies = ["sgpppde", "sgppsolver", "sgppbase"]
+moduleDependencies = ["sgpppde", "sgppsolver", "sgppbase", "sgppoptimization"]
 
 additionalDependencies = []
 additionalBoostTestDependencies = []

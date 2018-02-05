@@ -51,7 +51,7 @@ class FitterFactory {
 
   int addConstraint(int idx, int bias);
 
-  virtual void printConfig(int configID) = 0;
+  virtual void printConfig() = 0;
 
   void setHarmonica(int configID, int row, DataMatrix &paritymatrix);
 
