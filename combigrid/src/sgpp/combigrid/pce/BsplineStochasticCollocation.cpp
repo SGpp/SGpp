@@ -38,8 +38,8 @@ BsplineStochasticCollocation::BsplineStochasticCollocation(
 
 BsplineStochasticCollocation::~BsplineStochasticCollocation() {}
 
-// combigridMultiOperation is the interpolation
-// combigridOperation is the quadrature
+// combigridMultiOperation is a BSplineInterpolation
+// combigridOperation is a BSplineQuadrature
 void BsplineStochasticCollocation::initializeOperations(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
     std::shared_ptr<AbstractCombigridStorage> coefficientStorage,
@@ -168,7 +168,7 @@ double BsplineStochasticCollocation::computeVariance() {
     width *= (config.bounds[2 * d + 1] - config.bounds[2 * d]);
   }
   meanSquare *= width;
-  double exactMeanSquare = 0.097430515213498;
+  //  double exactMeanSquare = 0.097430515213498;
   //  std::cout << "meanSquare: " << meanSquare << " error: " << std::fabs(exactMeanSquare -
   //  meanSquare)
   //            << std::endl;
