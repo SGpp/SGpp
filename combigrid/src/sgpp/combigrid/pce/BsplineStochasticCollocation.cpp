@@ -159,8 +159,14 @@ double BsplineStochasticCollocation::computeVariance() {
   sgpp::base::Grid* gridptr = grid.get();
   sgpp::base::DataVector product(alpha.size());
 
-  scalarProducts.updateGrid(gridptr);
-  scalarProducts.mult(alpha, product);
+  //  scalarProducts.updateGrid(gridptr);
+  //  scalarProducts.setWeightFunction(weightFunctions);
+  //  scalarProducts.setBounds(config.bounds);
+  //  scalarProducts.mult(alpha, product);
+
+  LTwoScalarProductHashMapNakBsplineBoundaryCombigrid SCIni(gridptr, weightFunctions,
+                                                            config.bounds);
+  SCIni.mult(alpha, product);
 
   double meanSquare = product.dotProduct(alpha);
   double width = 1.0;
@@ -168,10 +174,6 @@ double BsplineStochasticCollocation::computeVariance() {
     width *= (config.bounds[2 * d + 1] - config.bounds[2 * d]);
   }
   meanSquare *= width;
-  //  double exactMeanSquare = 0.097430515213498;
-  //  std::cout << "meanSquare: " << meanSquare << " error: " << std::fabs(exactMeanSquare -
-  //  meanSquare)
-  //            << std::endl;
 
   double variance = meanSquare - ev * ev;
   return variance;

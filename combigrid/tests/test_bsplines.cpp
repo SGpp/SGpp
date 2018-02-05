@@ -707,7 +707,7 @@ void createRegularLevelStructure(
 
 BOOST_AUTO_TEST_CASE(testBsplineStochasticCollocation_co2_lognormal) {
   std::cout << "Integrate objective function co2model and lognormal weight function  with B "
-               "splines of degree 5 on level 5 in 1D "
+               "splines of degree 5 on level 4 in 1D "
             << std::endl;
 
   // create CO2 function and pdf weight functions
@@ -740,6 +740,9 @@ BOOST_AUTO_TEST_CASE(testBsplineStochasticCollocation_co2_lognormal) {
   bsc_config.pointHierarchies = pointHierarchies;
   bsc_config.storage = storage;
   bsc_config.levelManager = levelManager;
+  // ToDo (rehmemk) this does not work for degree < 5. Then the iterative calculation of the scalar
+  // products with increasing quadrature order does not meet the precision threshold of 1e-14 and
+  // when quadrature order >500 is about to be used GaussLegendreQuadRule1D throws an error.
   bsc_config.degree = 5;
   bsc_config.coefficientStorage = storage;
   bsc_config.numDims = numDims;
@@ -755,7 +758,7 @@ BOOST_AUTO_TEST_CASE(testBsplineStochasticCollocation_co2_lognormal) {
   // create level Structure and interpolate
   std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> newLevelStructure;
   std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> newCoefficientStorage;
-  size_t numLevels = 5;
+  size_t numLevels = 4;
   sgpp::combigrid::GridFunction gf =
       BSplineCoefficientGridFunction(func, pointHierarchies, bsc_config.degree);
   createRegularLevelStructure(numLevels, bsc_config.degree, pointHierarchies, gf, false,
@@ -767,11 +770,10 @@ BOOST_AUTO_TEST_CASE(testBsplineStochasticCollocation_co2_lognormal) {
   bsc.updateConfig(bsc_config);
 
   // check the moments
-  std::cout << std::abs(co2Model.mean - bsc.mean()) << std::endl;
-  std::cout << std::abs(co2Model.variance - bsc.variance()) << std::endl;
-  //  BOOST_CHECK_SMALL(std::abs(co2Model.mean - bsc.mean()), 1e-8);
-  // ToDo (rehmemk) this tolerance is too large / why is the variance so bad?
-  //  BOOST_CHECK_SMALL(std::abs(co2Model.variance - bsc.variance()), 0.05);
+  //  std::cout << std::abs(co2Model.mean - bsc.mean()) << std::endl;
+  //  std::cout << std::abs(co2Model.variance - bsc.variance()) << std::endl;
+  BOOST_CHECK_SMALL(std::abs(co2Model.mean - bsc.mean()), 1e-8);
+  BOOST_CHECK_SMALL(std::abs(co2Model.variance - bsc.variance()), 1e-9);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
