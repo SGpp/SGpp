@@ -68,7 +68,10 @@ class LTwoScalarProductHashMapNakBsplineBoundaryCombigrid {
 
   void setBounds(sgpp::base::DataVector bounds) { this->bounds = bounds; };
 
-  void updateGrid(sgpp::base::Grid* grid);
+  void updateGrid(sgpp::base::Grid* grid) {
+    this->grid = grid;
+    degree = dynamic_cast<sgpp::base::NakBsplineBoundaryCombigridGrid*>(grid)->getDegree();
+  };
 
   /**
    * Creates hash key from the two level-index pairs of two 1D Bsplines

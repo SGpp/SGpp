@@ -69,10 +69,6 @@ LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::
 LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::
     ~LTwoScalarProductHashMapNakBsplineBoundaryCombigrid() {}
 
-void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::updateGrid(sgpp::base::Grid* grid) {
-  this->grid = grid;
-}
-
 void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::hashLevelIndex(base::level_t li,
                                                                          base::index_t ii,
                                                                          base::level_t lj,
@@ -244,9 +240,6 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
           auto it = innerProducts.find(hashMI);
 
           if (it != innerProducts.end()) {
-            //            std::cout << hashMI[0] << " " << hashMI[1] << " " << hashMI[2] << " " <<
-            //            hashMI[3]
-            //                      << " " << hashMI[4] << std::endl;
             temp_res = it->second;
           } else {
             temp_res = calculateScalarProduct(lid, iid, ljd, ijd, quadOrder, d, offseti_left,
@@ -254,25 +247,25 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
                                               hInvjk, hik, hjk, pp1h);
             numAdditionalPoints = lastNumAdditionalPoints;
             size_t incrementQuadraturePoints = 3;  // this might be variable
-                                                   //            if (isCustomWeightFunction) {
-                                                   //              double tol = 1e-14;
-                                                   //              double err = 1e14;
-                                                   //
-                                                   //              while (err > tol) {
-            //                lastNumAdditionalPoints = numAdditionalPoints;
-            //                numAdditionalPoints += incrementQuadraturePoints;
-            //                quadOrder = degree + 1 + numAdditionalPoints;
-            //
-            //                double finer_temp_res = calculateScalarProduct(
-            //                    lid, iid, ljd, ijd, quadOrder, d, offseti_left, offseti_right,
-            //                    offsetj_left,
-            //                    offsetj_right, hInvik, hInvjk, hik, hjk, pp1h);
-            //                err = fabs(temp_res - finer_temp_res);
-            //                temp_res = finer_temp_res;
-            //
-            //                std::cout << numAdditionalPoints << " " << err << std::endl;
-            //              }
-            //            }
+            if (isCustomWeightFunction) {
+              double tol = 1e-14;
+              double err = 1e14;
+
+              while (err > tol) {
+                lastNumAdditionalPoints = numAdditionalPoints;
+                numAdditionalPoints += incrementQuadraturePoints;
+                quadOrder = degree + 1 + numAdditionalPoints;
+                if (quadOrder > 495) {
+                  break;
+                }
+
+                double finer_temp_res = calculateScalarProduct(
+                    lid, iid, ljd, ijd, quadOrder, d, offseti_left, offseti_right, offsetj_left,
+                    offsetj_right, hInvik, hInvjk, hik, hjk, pp1h);
+                err = fabs(temp_res - finer_temp_res);
+                temp_res = finer_temp_res;
+              }
+            }
 
             innerProducts[hashMI] = temp_res;
           }
@@ -288,6 +281,7 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
       }
     }
   }
+  //  std::cout << "LTwoScalarProduct numAddP: " << numAdditionalPoints << std::endl;
 }
 }  // namespace combigrid
 }  // namespace sgpp
