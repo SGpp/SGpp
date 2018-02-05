@@ -9,12 +9,13 @@
 #include <sgpp/datadriven/datamining/modules/hpo/BayesianOptimization.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
 #include <iostream>
+#include <sgpp/optimization/sle/solver/Armadillo.hpp>
 
 namespace sgpp {
 namespace datadriven {
 
 BayesianOptimization::BayesianOptimization(double firstvalue)
-:kernelmatrix(1,1,1), kernelinv(1,1,1), transformedOutput(1){
+:kernelmatrix(1,1,1), kernelinv(1,1,1), transformedOutput(1), screwedvar(false){
 	transformedOutput[0]=firstvalue;
 }
 
@@ -25,19 +26,20 @@ double BayesianOptimization::mean(base::DataVector knew){
 double BayesianOptimization::var(base::DataVector knew, double kself){
 	base::DataVector tmp(knew.size());
 	kernelinv.mult(knew, tmp);
-  if(knew.dotProduct(tmp)<0){
-    return 1;
-  }
-  if(knew.dotProduct(tmp) > 1){
-     // std::cout << "Error: wrong variance: "<<knew.dotProduct(tmp) <<", knew:"
-     //          <<knew.toString()<<", temp: "<<tmp.toString()<<std::endl;
+  if(knew.dotProduct(tmp) > 1 || knew.dotProduct(tmp)<0){
+      //std::cout << "Error: wrong variance: "<<knew.dotProduct(tmp) <<", knew:"
+      //         <<knew.toString()<<", temp: "<<tmp.toString()<<std::endl;
+    screwedvar = true;
     return 0;
   }
 	return kself - knew.dotProduct(tmp);
 }
 
 double BayesianOptimization::acquisitionEI(base::DataVector knew, double kself, double bestsofar){
-    return (mean(knew) - (bestsofar-5))/var(knew, kself);
+    if(var(knew,kself)==0){
+      return 0;
+    }
+    return (mean(knew) - (bestsofar-5))/var(knew, kself); //-5
 }
 
 void BayesianOptimization::updateGP(base::DataVector knew, base::DataVector y){
@@ -52,11 +54,21 @@ void BayesianOptimization::updateGP(base::DataVector knew, base::DataVector y){
     for(size_t i=0; i<idx+1;i++){
         identity.set(i,i,1);
     }
-   std::cout << "vor inv solve" << std::endl;
-    solver.solve(sle, identity, kernelinv);
-   std::cout << "nach inv solve" << std::endl;
+  // std::cout << "vor inv solve" << std::endl;
+    bool okay = solver.solve(sle, identity, kernelinv);
+  std::cout << "Solver okay: " << okay << std::endl;
+  std::cout << "Var Screwed: " << screwedvar << std::endl;
+  screwedvar = false;
 
-  // std::cout << kernelmatrix.toString() << std::endl;
+  if(!okay){
+    std::cout << knew.toString() << std::endl;
+
+
+
+   std::cout << kernelmatrix.toString() << std::endl;
+  }
+  // std::cout  << std::endl;
+
   // std::cout << kernelinv.toString() << std::endl;
 	kernelinv.mult(y, transformedOutput);
 }
