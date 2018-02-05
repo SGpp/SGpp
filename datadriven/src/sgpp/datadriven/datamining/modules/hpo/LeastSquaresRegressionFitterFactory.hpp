@@ -44,7 +44,7 @@ class LeastSquaresRegressionFitterFactory : public FitterFactory {
    */
   ModelFittingBase* buildFitter() override;
 
-  void printConfig(int configID) override;
+  void printConfig() override;
 
 
 protected:

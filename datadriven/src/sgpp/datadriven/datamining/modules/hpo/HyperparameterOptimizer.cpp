@@ -22,6 +22,10 @@
 #include <iostream>
 #include <random>
 #include <cmath>
+#include <sgpp/optimization/optimizer/unconstrained/MultiStart.hpp>
+#include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/BayesianOptimization.hpp>
+#include <sgpp/optimization/tools/Printer.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -183,6 +187,133 @@ void HyperparameterOptimizer::optimizeHyperparameters(){
 
 
   //double score = hpoScorer->calculateScore(*fitter, *dataset, &stdDeviation);
+}
+
+void HyperparameterOptimizer::runBO() {
+  optimization::Printer::getInstance().disableStatusPrinting();
+
+  std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
+  std::vector<base::DataVector> contPoints{};
+  std::vector<std::vector<int>> discPoints{};
+  base::DataVector results{};
+  double bestsofar = 1000;
+
+  int nCont;
+  std::vector<int> nOptions{};
+  fitterFactory->getBOspace(&nCont, nOptions);
+  int total = 1;
+  for(int max: nOptions){
+    total = total*max;
+  }
+
+  std::cout << "Total:" << total << std::endl;
+
+
+
+  base::DataVector cont(nCont, 0);
+  std::vector<int> discrete(nOptions.size(), 0);
+  fitterFactory->setBO(cont, discrete);
+  double stdDeviation;
+  bestsofar = hpoScorer->calculateScore(*(fitterFactory->buildFitter()), *dataset, &stdDeviation)-300;
+  BayesianOptimization BO(bestsofar);
+
+  results.push_back(bestsofar);
+  contPoints.push_back(cont);
+  discPoints.push_back(discrete);
+
+  for(int q=0; q<100; q++) {
+
+
+    std::vector<int> disc(nOptions.size(), 0);
+
+    double min = 10000;
+    std::unique_ptr<base::DataVector> mincon;
+    std::unique_ptr<std::vector<int>> mindisc;
+    for (int i = 0; i < total; i++) {
+      int k = i;
+      int p = 0;
+      for (int max: nOptions) {
+        disc[p] = k % max;
+        k = k / max;
+        p++;
+      }
+      std::vector<double> squaresum(discPoints.size(), 0);
+      for (int i = 0; i < discPoints.size(); i++) {
+        for (int k = 0; k < disc.size(); k++) {
+          squaresum[i] += std::pow(static_cast<double>(disc[k] - discPoints[i][k]) / (nOptions[k] - 1), 2);
+        }
+      }
+      std::function<double(const base::DataVector &)> func =
+              [&squaresum, &contPoints, &BO, &bestsofar](const base::DataVector &inp) {
+                  base::DataVector kernels(squaresum.size());
+                  for (int i = 0; i < squaresum.size(); i++) {
+                    base::DataVector tmp(inp);
+                    tmp.sub(contPoints[i]);
+                    kernels[i] = exp((0-squaresum[i] - std::pow(tmp.l2Norm(), 2)) / 2);
+                    // std::cout << "Kernel value: "<<exp((-squaresum[i] - std::pow(tmp.l2Norm(), 2)) / 2) <<std::endl;
+                  }
+                  return BO.acquisitionEI(kernels, 1, bestsofar);  //EDIT: ascend or descent?
+                  //return BO.var(kernels, 1);
+              };
+      std::cout << "Test Point " << i <<std::endl;
+      /* bool pronty = true;
+      for (int k = 0; k < disc.size(); k++) {
+        if(disc[k]!=discPoints[0][k]){
+          pronty = false;
+        }
+      }
+      if(pronty){
+        std::cout << "Variance of point 0:" << func(contPoints[0]) << std::endl;
+        base::DataVector kernels(squaresum.size());
+        for (int i = 0; i < squaresum.size(); i++) {
+          base::DataVector tmp(contPoints[0]);
+          tmp.sub(contPoints[i]);
+          kernels[i] = exp((0 - squaresum[i] - std::pow(tmp.l2Norm(), 2)) / 2);
+          std::cout << "Kernel value: "<<exp((-squaresum[i] - std::pow(tmp.l2Norm(), 2)) / 2) <<std::endl;
+        }
+        } */
+      optimization::WrapperScalarFunction wrapper(nCont, func);
+      optimization::optimizer::MultiStart optimizer(wrapper);
+      optimizer.optimize();
+      if (optimizer.getOptimalValue() < min) {
+        min = optimizer.getOptimalValue();
+        mincon = std::make_unique<base::DataVector>(optimizer.getOptimalPoint());
+        mindisc = std::make_unique<std::vector<int>>(disc);
+      }
+      // std::cout<<optimizer.getOptimalPoint()[0]<<","<<optimizer.getOptimalPoint()[1]<<":"<<optimizer.getOptimalValue()<<std::endl;
+    }
+    fitterFactory->setBO(*mincon, *mindisc);
+    double result = hpoScorer->calculateScore(*(fitterFactory->buildFitter()), *dataset, &stdDeviation)-300;
+    fitterFactory->printConfig();
+    std::cout << "Acquistion: " << min << std::endl;
+    std::cout << "Result: " << result+300 << std::endl;
+
+    if(result<bestsofar){
+      bestsofar = result;
+    }
+
+    results.push_back(result);
+    contPoints.push_back(*mincon);
+    discPoints.push_back(*mindisc);
+
+    std::vector<double> squaresum(discPoints.size(), 0);
+    for (int i = 0; i < discPoints.size(); i++) {
+      for (int k = 0; k < nOptions.size(); k++) {
+        squaresum[i] += std::pow(static_cast<double>((*mindisc)[k] - discPoints[i][k]) / (nOptions[k] - 1), 2);
+      }
+    }
+    base::DataVector kernels(squaresum.size());
+    for (int i = 0; i < squaresum.size(); i++) {
+      base::DataVector tmp(*mincon);
+      tmp.sub(contPoints[i]);
+      kernels[i] = exp((-squaresum[i] - std::pow(tmp.l2Norm(), 2)) / 2);
+    }
+    BO.updateGP(kernels, results);  //EDIT: ascend or descent?
+
+  }
+  std::cout << "Best: " << bestsofar+300 << std::endl;
+
+
 }
 
 } /* namespace datadriven */

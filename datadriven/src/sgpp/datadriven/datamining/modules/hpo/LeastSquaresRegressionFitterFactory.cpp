@@ -20,7 +20,7 @@ namespace sgpp {
 namespace datadriven {
 
 LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory(DataMiningConfigParser& parser)
-  :configBits(), baseConfig(), parityrow(){
+  :baseConfig(){
   // build ConfigurationBits (constructor)
   // for(int i=0;i<12;i++){
   //  configBits.push_back(*(new ConfigurationBit()));
@@ -89,7 +89,8 @@ ModelFittingBase* LeastSquaresRegressionFitterFactory::buildFitter()  {
   return new ModelFittingLeastSquares(*config);
 }
 
-void LeastSquaresRegressionFitterFactory::printConfig(int configID){
+void LeastSquaresRegressionFitterFactory::printConfig(){
+	/*
 	for(auto& bit : configBits){
 		bit->reset();
 	}
@@ -100,6 +101,7 @@ void LeastSquaresRegressionFitterFactory::printConfig(int configID){
   for(auto pair: conpar){
     pair.second->setHarmonica();
   }
+	 */
 	std::string basisFunction[] = {"Linear","ModLinear"};
 	std::cout<<"Level: "<<dispar["level"]->getValue()
 					 <<", Basis: "<<basisFunction[dispar["basisFunction"]->getValue()]
