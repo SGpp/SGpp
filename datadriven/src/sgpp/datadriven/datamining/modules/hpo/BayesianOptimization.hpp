@@ -27,6 +27,7 @@ protected:
 	base::DataMatrix kernelmatrix;
 	base::DataMatrix kernelinv;
 	base::DataVector transformedOutput;
+	bool screwedvar;
 };
 
 } /* namespace datadriven */

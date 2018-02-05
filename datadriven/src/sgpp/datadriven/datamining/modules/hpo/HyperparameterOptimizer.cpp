@@ -226,7 +226,7 @@ void HyperparameterOptimizer::runBO() {
 
     std::vector<int> disc(nOptions.size(), 0);
 
-    double min = 10000;
+    double min = 1.0/0; // inf
     std::unique_ptr<base::DataVector> mincon;
     std::unique_ptr<std::vector<int>> mindisc;
     for (int i = 0; i < total; i++) {
@@ -250,12 +250,15 @@ void HyperparameterOptimizer::runBO() {
                     base::DataVector tmp(inp);
                     tmp.sub(contPoints[i]);
                     kernels[i] = exp((0-squaresum[i] - std::pow(tmp.l2Norm(), 2)) / 2);
+                    if(kernels[i]==1){
+                      return 1.0/0;
+                    }
                     // std::cout << "Kernel value: "<<exp((-squaresum[i] - std::pow(tmp.l2Norm(), 2)) / 2) <<std::endl;
                   }
                   return BO.acquisitionEI(kernels, 1, bestsofar);  //EDIT: ascend or descent?
                   //return BO.var(kernels, 1);
               };
-      std::cout << "Test Point " << i <<std::endl;
+      // std::cout << "Test Point " << i <<std::endl;
       /* bool pronty = true;
       for (int k = 0; k < disc.size(); k++) {
         if(disc[k]!=discPoints[0][k]){
