@@ -62,7 +62,7 @@ void BsplineStochasticCollocation::initializeOperations(
   size_t numAdditionalPoints = 0;
   bool normalizeWeights = false;
   sgpp::combigrid::CombiEvaluators::Collection quadEvaluators(0);
-  for (size_t d = 0; d < this->config.numDims; d++) {
+  for (size_t d = 0; d < numDims; d++) {
     quadEvaluators.push_back(sgpp::combigrid::CombiEvaluators::BSplineQuadrature(
         config.degree, weightFunctions[d], numAdditionalPoints, config.bounds[2 * d],
         config.bounds[2 * d + 1], normalizeWeights));
@@ -85,26 +85,24 @@ void BsplineStochasticCollocation::updateConfig(
   this->config.levelStructure = newConfig.levelStructure;
   this->config.levelManager = newConfig.levelManager;
 
-  this->config.combigridMultiOperation = createBsplineLinearCoefficientOperation(
-      newConfig.degree, newConfig.numDims, newConfig.coefficientStorage);
-  this->config.combigridMultiOperation->getLevelManager()->addLevelsFromStructure(
-      newConfig.levelStructure);
+  combigridMultiOperation = createBsplineLinearCoefficientOperation(newConfig.degree, numDims,
+                                                                    newConfig.coefficientStorage);
+  combigridMultiOperation->getLevelManager()->addLevelsFromStructure(newConfig.levelStructure);
 
   size_t numAdditionalPoints = 0;
   bool normalizeWeights = false;
   sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =
       sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
   sgpp::combigrid::CombiEvaluators::Collection quadEvaluators(0);
-  for (size_t d = 0; d < newConfig.numDims; d++) {
+  for (size_t d = 0; d < numDims; d++) {
     quadEvaluators.push_back(sgpp::combigrid::CombiEvaluators::BSplineQuadrature(
         newConfig.degree, weightFunctions[d], numAdditionalPoints, newConfig.bounds[2 * d],
         newConfig.bounds[2 * d + 1], normalizeWeights));
   }
-  this->config.combigridOperation = std::make_shared<sgpp::combigrid::CombigridOperation>(
+  combigridOperation = std::make_shared<sgpp::combigrid::CombigridOperation>(
       config.pointHierarchies, quadEvaluators, config.levelManager, newConfig.coefficientStorage,
       summationStrategyType);
-  this->config.combigridOperation->getLevelManager()->addLevelsFromStructure(
-      newConfig.levelStructure);
+  combigridOperation->getLevelManager()->addLevelsFromStructure(newConfig.levelStructure);
 
   computedMeanFlag = false;
   computedVarianceFlag = false;
