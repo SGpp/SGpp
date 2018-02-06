@@ -34,8 +34,7 @@ BsplineStochasticCollocation::BsplineStochasticCollocation(
       computedVarianceFlag(false),
       var(0.0),
       coefficientStorage(config.coefficientStorage),
-      scalarProducts(),
-      numDims(weightFunctions.size()) {
+      scalarProducts() {
   initializeOperations(config.pointHierarchies, coefficientStorage, config.levelManager);
 }
 
@@ -47,6 +46,7 @@ void BsplineStochasticCollocation::initializeOperations(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
     std::shared_ptr<AbstractCombigridStorage> coefficientStorage,
     std::shared_ptr<LevelManager> levelManager) {
+  numDims = weightFunctions.size();
   // initialize interpolation operation
   sgpp::combigrid::EvaluatorConfiguration evalConfig(
       sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, this->config.degree);
