@@ -156,7 +156,7 @@ class LinearCombination(Basis):
 
 # -------------------------------------------------------------------------
 degree = 3
-level = 1
+level = 5
 
 n = 2**level + 1
 grid_points = np.array([np.linspace(0, 1, n, endpoint=True)]).T
@@ -170,8 +170,6 @@ for basis in [BSplineBasis(grid_points, degree)]:
     V = basis.V(grid_points)
     rhs = np.array([u(grid_points[i][0]) for i in xrange(n)])
     coeffs = np.linalg.solve(V, rhs)
-
-    print coeffs
 
     print "|u - V w| = %g" % np.linalg.norm(rhs - V.dot(coeffs))
 
@@ -198,8 +196,6 @@ for basis in [BSplineBasis(grid_points, degree)]:
     u_sg = surrogate(xs)
     u_ortho = orthogonal_surrogate(xs)
     print "|u_sg - u_orth| =", np.sqrt(np.mean((u_sg - u_ortho) ** 2))
-
-    print ocoeffs
 
     if basis.dtype == "bsplines":
         result = basis.quadrature.getBasisValues()
