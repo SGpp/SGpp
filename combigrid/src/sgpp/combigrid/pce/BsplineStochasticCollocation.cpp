@@ -28,7 +28,7 @@ BsplineStochasticCollocation::BsplineStochasticCollocation(
     sgpp::combigrid::CombigridSurrogateModelConfiguration& config)
     : CombigridSurrogateModel(config),
       weightFunctions(config.weightFunctions),
-      numGridPoints(0),
+      currentNumGridPoints(0),
       computedMeanFlag(false),
       ev(0.0),
       computedVarianceFlag(false),
@@ -74,7 +74,7 @@ void BsplineStochasticCollocation::initializeOperations(
   scalarProducts.setWeightFunction(weightFunctions);
   scalarProducts.setBounds(config.bounds);
 
-  numGridPoints = 0;
+  currentNumGridPoints = 0;
 }
 
 // ToDo (rehmemk) tried to use addLevelsFromStructureParallel here, does not work
@@ -109,9 +109,9 @@ void BsplineStochasticCollocation::updateConfig(
 }
 
 bool BsplineStochasticCollocation::updateStatus() {
-  if (numGridPoints < combigridMultiOperation->numGridPoints()) {
+  if (currentNumGridPoints < combigridMultiOperation->numGridPoints()) {
     coefficientStorage = combigridMultiOperation->getStorage();
-    numGridPoints = combigridMultiOperation->numGridPoints();
+    currentNumGridPoints = combigridMultiOperation->numGridPoints();
     computedMeanFlag = false;
     computedVarianceFlag = false;
     return true;
@@ -193,6 +193,12 @@ void BsplineStochasticCollocation::getTotalSobolIndices(sgpp::base::DataVector& 
                                                         bool normalized) {
   throw sgpp::base::application_exception(
       "PolynomialStochasticCollocation::getTotalSobolIndices - not implemented.");
+}
+
+size_t BsplineStochasticCollocation::numGridPoints() { return currentNumGridPoints; }
+
+std::shared_ptr<LevelInfos> BsplineStochasticCollocation::getInfoOnAddedLevels() {
+  return combigridOperation->getLevelManager()->getInfoOnAddedLevels();
 }
 
 } /* namespace combigrid */

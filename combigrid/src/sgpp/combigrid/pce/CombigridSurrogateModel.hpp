@@ -70,6 +70,9 @@ class CombigridSurrogateModel {
 
   virtual void updateConfig(sgpp::combigrid::CombigridSurrogateModelConfiguration config) = 0;
 
+  virtual size_t numGridPoints() = 0;
+  virtual std::shared_ptr<LevelInfos> getInfoOnAddedLevels() = 0;
+
   sgpp::combigrid::CombigridSurrogateModelConfiguration& getConfig();
 
  protected:

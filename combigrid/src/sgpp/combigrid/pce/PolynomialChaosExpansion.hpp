@@ -39,6 +39,9 @@ class PolynomialChaosExpansion : public CombigridSurrogateModel {
 
   void updateConfig(sgpp::combigrid::CombigridSurrogateModelConfiguration config) override;
 
+  size_t numGridPoints() override;
+  std::shared_ptr<LevelInfos> getInfoOnAddedLevels() override;
+
  private:
   void initializeTensorOperation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
@@ -55,7 +58,7 @@ class PolynomialChaosExpansion : public CombigridSurrogateModel {
   // tensor operation
   std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation;
 
-  size_t numGridPoints;
+  size_t currentNumGridPoints;
   sgpp::combigrid::FloatTensorVector expansionCoefficients;
   bool computedSobolIndicesFlag;
   sgpp::base::DataVector sobolIndices;

@@ -37,7 +37,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     sgpp::combigrid::CombigridSurrogateModelConfiguration& config)
     : CombigridSurrogateModel(config),
       weightFunctions(0),
-      numGridPoints(0),
+      currentNumGridPoints(0),
       computedMeanFlag(false),
       ev(0.0),
       computedVarianceFlag(false),
@@ -77,7 +77,7 @@ void PolynomialStochasticCollocation::initializeTensorOperation(
       sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
           pointHierarchies, storage, levelManager, legendreBasis);
 
-  numGridPoints = 0;
+  currentNumGridPoints = 0;
 }
 
 void PolynomialStochasticCollocation::initializeBounds() {
@@ -111,9 +111,9 @@ void PolynomialStochasticCollocation::initializeNormStrategies() {
 }
 
 bool PolynomialStochasticCollocation::updateStatus() {
-  if (numGridPoints < combigridTensorOperation->numGridPoints()) {
+  if (currentNumGridPoints < combigridTensorOperation->numGridPoints()) {
     expansionCoefficients = combigridTensorOperation->getResult();
-    numGridPoints = combigridTensorOperation->numGridPoints();
+    currentNumGridPoints = combigridTensorOperation->numGridPoints();
     computedMeanFlag = false;
     computedVarianceFlag = false;
     return true;
@@ -174,6 +174,12 @@ void PolynomialStochasticCollocation::updateConfig(
   if (config.levelStructure != nullptr) {
     combigridTensorOperation->getLevelManager()->addLevelsFromStructure(config.levelStructure);
   }
+}
+
+size_t PolynomialStochasticCollocation::numGridPoints() { return currentNumGridPoints; }
+
+std::shared_ptr<LevelInfos> PolynomialStochasticCollocation::getInfoOnAddedLevels() {
+  return combigridTensorOperation->getLevelManager()->getInfoOnAddedLevels();
 }
 
 } /* namespace combigrid */

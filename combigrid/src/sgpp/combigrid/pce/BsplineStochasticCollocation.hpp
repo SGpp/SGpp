@@ -36,6 +36,9 @@ class BsplineStochasticCollocation : public CombigridSurrogateModel {
 
   void updateConfig(sgpp::combigrid::CombigridSurrogateModelConfiguration config) override;
 
+  size_t numGridPoints() override;
+  std::shared_ptr<LevelInfos> getInfoOnAddedLevels() override;
+
  private:
   void initializeOperations(std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
                             std::shared_ptr<AbstractCombigridStorage> storage,
@@ -54,7 +57,7 @@ class BsplineStochasticCollocation : public CombigridSurrogateModel {
   // orthogonal basis for pdf values
   sgpp::combigrid::WeightFunctionsCollection weightFunctions;
 
-  size_t numGridPoints;
+  size_t currentNumGridPoints;
 
   // mean and variance storage
   bool computedMeanFlag;
