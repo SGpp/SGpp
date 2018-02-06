@@ -46,11 +46,11 @@ PolynomialChaosExpansion::~PolynomialChaosExpansion() {}
 
 void PolynomialChaosExpansion::initializeTensorOperation(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-    std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager) {
+    std::shared_ptr<AbstractCombigridStorage> storage) {
   // create tensor operation for pce transformation
   combigridTensorOperation =
       sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
-          pointHierarchies, storage, levelManager, config.basisFunctions);
+          pointHierarchies, storage, config.basisFunctions);
 
   currentNumGridPoints = 0;
 }
@@ -200,13 +200,14 @@ void PolynomialChaosExpansion::updateConfig(
     sgpp::combigrid::CombigridSurrogateModelConfiguration config) {
   // update the tensor operation
   if (config.pointHierarchies.size() == numDims && config.storage != nullptr) {
-    if (config.levelManager == nullptr) {
-      config.levelManager = std::make_shared<AveragingLevelManager>();
-    }
-    initializeTensorOperation(config.pointHierarchies, config.storage, config.levelManager);
+    initializeTensorOperation(config.pointHierarchies, config.storage);
   }
 
-  if (config.levelStructure != nullptr) {
+  if (config.levelManager != nullptr) {
+    combigridTensorOperation->setLevelManager(config.levelManager);
+  }
+
+  if (config.levelStructure != nullptr && combigridTensorOperation != nullptr) {
     combigridTensorOperation->getLevelManager()->addLevelsFromStructure(config.levelStructure);
   }
 }

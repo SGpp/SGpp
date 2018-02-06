@@ -65,7 +65,7 @@ PolynomialStochasticCollocation::~PolynomialStochasticCollocation() {}
 
 void PolynomialStochasticCollocation::initializeTensorOperation(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-    std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager) {
+    std::shared_ptr<AbstractCombigridStorage> storage) {
   // create tensor operation for pce transformation
   sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
   config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
@@ -75,7 +75,7 @@ void PolynomialStochasticCollocation::initializeTensorOperation(
 
   this->combigridTensorOperation =
       sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
-          pointHierarchies, storage, levelManager, legendreBasis);
+          pointHierarchies, storage, legendreBasis);
 
   currentNumGridPoints = 0;
 }
@@ -163,15 +163,15 @@ void PolynomialStochasticCollocation::getTotalSobolIndices(
 void PolynomialStochasticCollocation::updateConfig(
     sgpp::combigrid::CombigridSurrogateModelConfiguration config) {
   // initialize tensor operation
-  if (config.pointHierarchies.size() == numDims && config.storage != nullptr &&
-      config.levelManager != nullptr) {
-    if (config.levelManager == nullptr) {
-      config.levelManager = std::make_shared<AveragingLevelManager>();
-    }
-    initializeTensorOperation(config.pointHierarchies, config.storage, config.levelManager);
+  if (config.pointHierarchies.size() == numDims && config.storage != nullptr) {
+    initializeTensorOperation(config.pointHierarchies, config.storage);
   }
 
-  if (config.levelStructure != nullptr) {
+  if (config.levelManager != nullptr) {
+    combigridTensorOperation->setLevelManager(config.levelManager);
+  }
+
+  if (config.levelStructure != nullptr && combigridTensorOperation != nullptr) {
     combigridTensorOperation->getLevelManager()->addLevelsFromStructure(config.levelStructure);
   }
 }

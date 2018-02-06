@@ -45,8 +45,7 @@ class PolynomialChaosExpansion : public CombigridSurrogateModel {
  private:
   void initializeTensorOperation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-      std::shared_ptr<AbstractCombigridStorage> storage,
-      std::shared_ptr<LevelManager> levelManager);
+      std::shared_ptr<AbstractCombigridStorage> storage);
 
   bool updateStatus();
   void computeComponentSobolIndices();
