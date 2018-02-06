@@ -237,7 +237,8 @@ BOOST_AUTO_TEST_CASE(testStochasticCollocation_co2_lognormal) {
   auto op2_levelManager = op2->getLevelManager();
 
   // compute variance of the estimator
-  sc->updateOperation(op2);
+  surrogate_config.combigridOperation = op2;
+  sc->updateConfig(surrogate_config);
   tensor_levelManager = sc->getConfig().combigridTensorOperation->getLevelManager();
 
   op2_levelManager->addRegularLevels(7);
