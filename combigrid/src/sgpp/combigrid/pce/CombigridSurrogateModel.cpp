@@ -10,20 +10,41 @@
 namespace sgpp {
 namespace combigrid {
 
+void CombigridSurrogateModelConfiguration::loadFromCombigridOperation(
+    std::shared_ptr<CombigridOperation> op) {
+  storage = op->getStorage();
+  pointHierarchies = op->getPointHierarchies();
+}
+
+void CombigridSurrogateModelConfiguration::loadFromCombigridOperation(
+    std::shared_ptr<CombigridMultiOperation> op) {
+  storage = op->getStorage();
+  pointHierarchies = op->getPointHierarchies();
+}
+
+void CombigridSurrogateModelConfiguration::loadFromCombigridOperation(
+    std::shared_ptr<CombigridTensorOperation> op) {
+  storage = op->getStorage();
+  pointHierarchies = op->getPointHierarchies();
+}
+
 CombigridSurrogateModel::CombigridSurrogateModel(
     sgpp::combigrid::CombigridSurrogateModelConfiguration& config)
-    : config(config) {
+    : config(config), numDims(0) {
   // initialize number of dimensions
-  if (config.combigridOperation != nullptr) {
-    // make sure that the number of dimensions match
-    numDims = config.combigridOperation->numDims();
-  } else if (config.combigridMultiOperation != nullptr) {
-    numDims = config.combigridMultiOperation->numDims();
-  } else if (config.combigridTensorOperation != nullptr) {
-    numDims = config.combigridTensorOperation->numDims();
+  if (config.pointHierarchies.size() > 0) {
+    numDims = config.pointHierarchies.size();
   } else {
     throw sgpp::base::application_exception(
-        "CombigridSurrogateModel: no operation is set in surrogate model config");
+        "CombigridSurrogateModel: number of dimensions is unknown. Setting the point hierarchies "
+        "is required.");
+  }
+
+  if ((config.basisFunctions.size() > 0 && config.basisFunctions.size() != numDims) ||
+      (config.weightFunctions.size() > 0 && config.weightFunctions.size() != numDims) ||
+      (config.bounds.size() > 0 && static_cast<size_t>(config.bounds.size() / 2) == numDims)) {
+    throw sgpp::base::application_exception(
+        "CombigridSurrogateModel: number of dimensions do not match.");
   }
 }
 

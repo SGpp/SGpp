@@ -8,6 +8,9 @@
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
+
+#include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
+
 #include <sgpp/combigrid/pce/PolynomialChaosExpansion.hpp>
 #include <sgpp/combigrid/pce/SGppToDakota.hpp>
 
@@ -45,17 +48,17 @@ void PolynomialChaosExpansion::initializeTensorOperation(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
     std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager) {
   // create tensor operation for pce transformation
-  this->config.combigridTensorOperation =
+  combigridTensorOperation =
       sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
-          pointHierarchies, storage, levelManager, this->config.basisFunctions);
+          pointHierarchies, storage, levelManager, config.basisFunctions);
 
   numGridPoints = 0;
 }
 
 bool PolynomialChaosExpansion::updateStatus() {
-  if (numGridPoints < config.combigridTensorOperation->numGridPoints()) {
-    expansionCoefficients = config.combigridTensorOperation->getResult();
-    numGridPoints = config.combigridTensorOperation->numGridPoints();
+  if (numGridPoints < combigridTensorOperation->numGridPoints()) {
+    expansionCoefficients = combigridTensorOperation->getResult();
+    numGridPoints = combigridTensorOperation->numGridPoints();
     computedSobolIndicesFlag = false;
     return true;
   } else {
@@ -195,30 +198,16 @@ void PolynomialChaosExpansion::getTotalSobolIndices(sgpp::base::DataVector& tota
 
 void PolynomialChaosExpansion::updateConfig(
     sgpp::combigrid::CombigridSurrogateModelConfiguration config) {
-  // initialize tensor operation
-  if (config.combigridOperation != nullptr) {
-    initializeTensorOperation(config.combigridOperation->getPointHierarchies(),
-                              config.combigridOperation->getStorage(),
-                              config.combigridOperation->getLevelManager());
-  } else if (config.combigridMultiOperation != nullptr) {
-    initializeTensorOperation(config.combigridMultiOperation->getPointHierarchies(),
-                              config.combigridMultiOperation->getStorage(),
-                              config.combigridMultiOperation->getLevelManager());
-  } else if (config.combigridTensorOperation != nullptr) {
-    initializeTensorOperation(config.combigridTensorOperation->getPointHierarchies(),
-                              config.combigridTensorOperation->getStorage(),
-                              config.combigridTensorOperation->getLevelManager());
-  } else if (config.pointHierarchies.size() == numDims && config.storage != nullptr &&
-             config.levelManager != nullptr) {
+  // update the tensor operation
+  if (config.pointHierarchies.size() == numDims && config.storage != nullptr) {
+    if (config.levelManager == nullptr) {
+      config.levelManager = std::make_shared<AveragingLevelManager>();
+    }
     initializeTensorOperation(config.pointHierarchies, config.storage, config.levelManager);
-  } else {
-    throw sgpp::base::application_exception(
-        "PolynomialChaosExpansion: no operation is set in surrogate model config");
   }
 
   if (config.levelStructure != nullptr) {
-    config.combigridTensorOperation->getLevelManager()->addLevelsFromStructure(
-        config.levelStructure);
+    combigridTensorOperation->getLevelManager()->addLevelsFromStructure(config.levelStructure);
   }
 }
 
