@@ -71,13 +71,6 @@ class CombigridSurrogateModel {
   virtual void getTotalSobolIndices(sgpp::base::DataVector& totalSobolIndices,
                                     bool normalized = true) = 0;
 
-  virtual void updateOperation(
-      std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation) = 0;
-  virtual void updateOperation(
-      std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridOperation) = 0;
-  virtual void updateOperation(
-      std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridOperation) = 0;
-
   virtual void updateConfig(sgpp::combigrid::CombigridSurrogateModelConfiguration config) = 0;
 
   sgpp::combigrid::CombigridSurrogateModelConfiguration& getConfig();

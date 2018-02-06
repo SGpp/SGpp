@@ -52,24 +52,7 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
 
   initializeBounds();
   initializeWeightFunctions();
-
-  if (config.combigridOperation != nullptr) {
-    initializeTensorOperation(config.combigridOperation->getPointHierarchies(),
-                              config.combigridOperation->getStorage(),
-                              config.combigridOperation->getLevelManager());
-  } else if (config.combigridMultiOperation != nullptr) {
-    initializeTensorOperation(config.combigridMultiOperation->getPointHierarchies(),
-                              config.combigridMultiOperation->getStorage(),
-                              config.combigridMultiOperation->getLevelManager());
-  } else if (config.combigridTensorOperation != nullptr) {
-    initializeTensorOperation(config.combigridTensorOperation->getPointHierarchies(),
-                              config.combigridTensorOperation->getStorage(),
-                              config.combigridTensorOperation->getLevelManager());
-  } else {
-    throw sgpp::base::application_exception(
-        "PolynomialStochasticCollocation: no operation is set in surrogate model config");
-  }
-
+  updateConfig(config);
   initializeNormStrategies();
 }
 
@@ -174,36 +157,32 @@ void PolynomialStochasticCollocation::getTotalSobolIndices(
       "PolynomialStochasticCollocation::getTotalSobolIndices - not implemented.");
 }
 
-void PolynomialStochasticCollocation::updateOperation(
-    std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation) {
-  if (combigridOperation != nullptr) {
-    this->config.combigridOperation = combigridOperation;
-    initializeTensorOperation(combigridOperation->getPointHierarchies(),
-                              combigridOperation->getStorage(),
-                              combigridOperation->getLevelManager());
-  }
-}
-void PolynomialStochasticCollocation::updateOperation(
-    std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridOperation) {
-  if (combigridOperation != nullptr) {
-    this->config.combigridMultiOperation = combigridOperation;
-    initializeTensorOperation(combigridOperation->getPointHierarchies(),
-                              combigridOperation->getStorage(),
-                              combigridOperation->getLevelManager());
-  }
-}
-void PolynomialStochasticCollocation::updateOperation(
-    std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridOperation) {
-  if (combigridOperation != nullptr) {
-    this->config.combigridTensorOperation = combigridOperation;
-    initializeTensorOperation(combigridOperation->getPointHierarchies(),
-                              combigridOperation->getStorage(),
-                              combigridOperation->getLevelManager());
-  }
-}
 void PolynomialStochasticCollocation::updateConfig(
     sgpp::combigrid::CombigridSurrogateModelConfiguration config) {
-  std::cout << "implement me" << std::endl;
+  if (config.combigridOperation != nullptr) {
+    initializeTensorOperation(config.combigridOperation->getPointHierarchies(),
+                              config.combigridOperation->getStorage(),
+                              config.combigridOperation->getLevelManager());
+  } else if (config.combigridMultiOperation != nullptr) {
+    initializeTensorOperation(config.combigridMultiOperation->getPointHierarchies(),
+                              config.combigridMultiOperation->getStorage(),
+                              config.combigridMultiOperation->getLevelManager());
+  } else if (config.combigridTensorOperation != nullptr) {
+    initializeTensorOperation(config.combigridTensorOperation->getPointHierarchies(),
+                              config.combigridTensorOperation->getStorage(),
+                              config.combigridTensorOperation->getLevelManager());
+  } else if (config.pointHierarchies.size() == numDims && config.storage != nullptr &&
+             config.levelManager != nullptr) {
+    initializeTensorOperation(config.pointHierarchies, config.storage, config.levelManager);
+  } else {
+    throw sgpp::base::application_exception(
+        "PolynomialStochasticCollocation: no operation is set in surrogate model config");
+  }
+
+  if (config.levelStructure != nullptr) {
+    config.combigridTensorOperation->getLevelManager()->addLevelsFromStructure(
+        config.levelStructure);
+  }
 }
 
 } /* namespace combigrid */
