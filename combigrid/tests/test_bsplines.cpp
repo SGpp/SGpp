@@ -622,9 +622,8 @@ double BSplineVarianceWithWeightsAndBounds(
   size_t numAdditionalPoints = 0;
   bool normalizeWeights = false;
 
-  std::vector<
-      std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatArrayVector>>>
-      evaluators(0);
+  std::vector<std::shared_ptr<
+      sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatArrayVector>>> evaluators(0);
   for (size_t d = 0; d < numDimensions; d++) {
     evaluators.push_back(std::make_shared<sgpp::combigrid::BSplineScalarProductEvaluator>(
         degree, weightFunctionsCollection[d], numAdditionalPoints, bounds[2 * d], bounds[2 * d + 1],
@@ -745,13 +744,12 @@ BOOST_AUTO_TEST_CASE(testBsplineStochasticCollocation_co2_lognormal) {
   // when quadrature order >500 is about to be used GaussLegendreQuadRule1D throws an error.
   bsc_config.degree = 5;
   bsc_config.coefficientStorage = storage;
-  bsc_config.numDims = numDims;
   bsc_config.weightFunctions = weightFunctionsCollection;
   bsc_config.bounds =
       sgpp::base::DataVector(std::vector<double>({co2Model.bounds[0], co2Model.bounds[1]}));
   // this is only a dummy operation
   bsc_config.combigridMultiOperation = createBsplineLinearCoefficientOperation(
-      bsc_config.degree, bsc_config.numDims, bsc_config.coefficientStorage);
+      bsc_config.degree, co2Model.numDims, bsc_config.coefficientStorage);
 
   sgpp::combigrid::BsplineStochasticCollocation bsc(bsc_config);
 

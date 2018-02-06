@@ -66,6 +66,10 @@ class BsplineStochasticCollocation : public CombigridSurrogateModel {
   //  ToDo(rehmemk)
   size_t numthreads = 4;
   LTwoScalarProductHashMapNakBsplineBoundaryCombigrid scalarProducts;
+
+  // operation
+  std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation;
+  std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation;
 };
 
 } /* namespace combigrid */
