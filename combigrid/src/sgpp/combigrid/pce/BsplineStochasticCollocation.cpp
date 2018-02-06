@@ -2,14 +2,14 @@
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
-
-#include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/pce/BsplineStochasticCollocation.hpp>
 #include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
+
+#include <sgpp/base/exception/application_exception.hpp>
 
 #include <algorithm>
 #include <cmath>
@@ -191,24 +191,13 @@ double BsplineStochasticCollocation::variance() {
 // DEBRECATED
 void BsplineStochasticCollocation::getComponentSobolIndices(
     sgpp::base::DataVector& componentSsobolIndices, bool normalized) {
-  std::cout << "debrecated" << std::endl;
+  throw sgpp::base::application_exception(
+      "BsplineStochasticCollocation::getComponentSobolIndices - not implemented.");
 }
 void BsplineStochasticCollocation::getTotalSobolIndices(sgpp::base::DataVector& totalSobolIndices,
                                                         bool normalized) {
-  std::cout << "debrecated" << std::endl;
-}
-
-void BsplineStochasticCollocation::updateOperation(
-    std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation) {
-  std::cout << "BsplineStochasticCollocation::updateOperation debrecated" << std::endl;
-}
-void BsplineStochasticCollocation::updateOperation(
-    std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridOperation) {
-  std::cout << "BsplineStochasticCollocation::updateOperation (Multi) debrecated" << std::endl;
-}
-void BsplineStochasticCollocation::updateOperation(
-    std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridOperation) {
-  std::cout << "BsplineStochasticCollocation::updateOperation (Tensor) debrecated" << std::endl;
+  throw sgpp::base::application_exception(
+      "PolynomialStochasticCollocation::getTotalSobolIndices - not implemented.");
 }
 
 } /* namespace combigrid */
