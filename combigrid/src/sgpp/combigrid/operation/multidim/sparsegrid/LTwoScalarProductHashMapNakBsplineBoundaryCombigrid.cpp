@@ -197,7 +197,7 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
 
   MultiIndex hashMI(5);
 
-#pragma omp parallel for schedule(dynamic)
+  //#pragma omp parallel for schedule(dynamic)
   for (size_t i = 0; i < gridSize; i++) {
     for (size_t j = i; j < gridSize; j++) {
       double temp_ij = 1;
@@ -271,17 +271,17 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
                 temp_res = finer_temp_res;
               }
             }
-
+            // if OMP is used it must be synchronized for this
             innerProducts[hashMI] = temp_res;
           }
           temp_ij *= temp_res;
         }
       }
 
-#pragma omp atomic
+      //#pragma omp atomic
       result[i] += temp_ij * alpha[j];
       if (i != j) {
-#pragma omp atomic
+        //#pragma omp atomic
         result[j] += temp_ij * alpha[i];
       }
     }
