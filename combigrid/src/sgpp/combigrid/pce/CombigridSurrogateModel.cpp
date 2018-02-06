@@ -42,7 +42,7 @@ CombigridSurrogateModel::CombigridSurrogateModel(
 
   if ((config.basisFunctions.size() > 0 && config.basisFunctions.size() != numDims) ||
       (config.weightFunctions.size() > 0 && config.weightFunctions.size() != numDims) ||
-      (config.bounds.size() > 0 && static_cast<size_t>(config.bounds.size() / 2) == numDims)) {
+      (config.bounds.size() > 0 && static_cast<size_t>(config.bounds.size() / 2) != numDims)) {
     throw sgpp::base::application_exception(
         "CombigridSurrogateModel: number of dimensions do not match.");
   }
