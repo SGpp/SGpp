@@ -622,9 +622,8 @@ double BSplineVarianceWithWeightsAndBounds(
   size_t numAdditionalPoints = 0;
   bool normalizeWeights = false;
 
-  std::vector<
-      std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatArrayVector>>>
-      evaluators(0);
+  std::vector<std::shared_ptr<
+      sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatArrayVector>>> evaluators(0);
   for (size_t d = 0; d < numDimensions; d++) {
     evaluators.push_back(std::make_shared<sgpp::combigrid::BSplineScalarProductEvaluator>(
         degree, weightFunctionsCollection[d], numAdditionalPoints, bounds[2 * d], bounds[2 * d + 1],

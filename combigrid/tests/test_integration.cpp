@@ -159,7 +159,7 @@ void testTensorOperation(
   // initialize the surrogate model
   sgpp::combigrid::CombigridSurrogateModelConfiguration config;
   config.type = sgpp::combigrid::CombigridSurrogateModelsType::POLYNOMIAL_CHAOS_EXPANSION;
-  config.combigridTensorOperation = tensor_op;
+  config.loadFromCombigridOperation(tensor_op);
   config.basisFunction = basisFunction;
   auto pce = sgpp::combigrid::createCombigridSurrogateModel(config);
 
@@ -229,22 +229,25 @@ BOOST_AUTO_TEST_CASE(testVarianceComputationWithPCETransformation_Lognormal_Clen
 
   sgpp::combigrid::MultiFunction func(sgpp::combigrid::Parabola_uniform::eval);
   size_t level = 4;
+
+  sgpp::combigrid::CombigridSurrogateModelConfiguration pce_update_config;
   for (size_t numDims = 1; numDims <= 5; ++numDims) {
     auto op = sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
         numDims, func);
     auto op_levelManager = op->getLevelManager();
 
     // initialize the surrogate model
-    pce_config.combigridOperation = op;
+    pce_config.loadFromCombigridOperation(op);
     auto pce = sgpp::combigrid::createCombigridSurrogateModel(pce_config);
-
-    auto pce_levelManager = pce->getConfig().combigridTensorOperation->getLevelManager();
 
     // compute the reference solution
     double mean_ref = mean(numDims, func, 1e4, functionBasis);
     double var_ref = variance(numDims, func, 1e4, mean_ref, functionBasis);
     op_levelManager->addRegularLevels(level);
-    pce_levelManager->addLevelsFromStructure(op_levelManager->getLevelStructure());
+
+    // update pce
+    pce_update_config.levelStructure = op_levelManager->getLevelStructure();
+    pce->updateConfig(pce_update_config);
 
     // check if they match
     //    std::cout << "  level = " << level << ": mean = " << mean_ref << " ~ " << pce.mean()
