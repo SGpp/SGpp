@@ -100,6 +100,9 @@ void BSplineQuadratureEvaluator::calculate1DBSplineIntegrals(
         basisValues[index] = newBasisValues[index];
 
         //        std::cout << numAdditionalPoints << " " << err << std::endl;
+        if (numAdditionalPoints > 490) {
+          break;
+        }
       }
     }
   }

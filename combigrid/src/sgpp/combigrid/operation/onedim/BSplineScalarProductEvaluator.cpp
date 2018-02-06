@@ -117,6 +117,10 @@ void BSplineScalarProductEvaluator::calculate1DBSplineScalarProducts(
         basisValues[index_i] = newBasisValues[index_i];
 
         //        std::cout << numAdditionalPoints << " " << err << std::endl;
+
+        if (numAdditionalPoints > 490) {
+          break;
+        }
       }
     }
   }

@@ -48,7 +48,6 @@ class CombigridSurrogateModelConfiguration {
 
   // Bspline degree
   size_t degree;
-
   //  Bspline coefficients
   std::shared_ptr<AbstractCombigridStorage> coefficientStorage;
 

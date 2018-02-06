@@ -11,6 +11,8 @@
 #include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 
+#include <sgpp/combigrid/utils/Stopwatch.hpp>
+
 #include <algorithm>
 #include <cmath>
 #include <vector>
@@ -143,7 +145,6 @@ double BsplineStochasticCollocation::computeVariance() {
   if (!computedMeanFlag) {
     mean();
   }
-
   std::shared_ptr<sgpp::base::Grid> grid;
   grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDims, config.degree));
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
@@ -159,14 +160,10 @@ double BsplineStochasticCollocation::computeVariance() {
   sgpp::base::Grid* gridptr = grid.get();
   sgpp::base::DataVector product(alpha.size());
 
-  //  scalarProducts.updateGrid(gridptr);
-  //  scalarProducts.setWeightFunction(weightFunctions);
-  //  scalarProducts.setBounds(config.bounds);
-  //  scalarProducts.mult(alpha, product);
-
-  LTwoScalarProductHashMapNakBsplineBoundaryCombigrid SCIni(gridptr, weightFunctions,
-                                                            config.bounds);
-  SCIni.mult(alpha, product);
+  scalarProducts.updateGrid(gridptr);
+  scalarProducts.setWeightFunction(weightFunctions);
+  scalarProducts.setBounds(config.bounds);
+  scalarProducts.mult(alpha, product);
 
   double meanSquare = product.dotProduct(alpha);
   double width = 1.0;
@@ -176,6 +173,7 @@ double BsplineStochasticCollocation::computeVariance() {
   meanSquare *= width;
 
   double variance = meanSquare - ev * ev;
+
   return variance;
 }
 
