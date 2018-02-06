@@ -29,6 +29,7 @@ class LTwoScalarProductHashMapNakBsplineBoundaryCombigrid {
     grid = nullptr;
     numAdditionalPoints = 0;
     isCustomWeightFunction = false;
+    incrementQuadraturePoints = 1;
   };
   /**
    * Constructor
@@ -46,7 +47,8 @@ class LTwoScalarProductHashMapNakBsplineBoundaryCombigrid {
 
   LTwoScalarProductHashMapNakBsplineBoundaryCombigrid(
       sgpp::base::Grid* grid, sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection,
-      sgpp::base::DataVector bounds, size_t numAdditionalPoints);
+      sgpp::base::DataVector bounds, size_t numAdditionalPoints,
+      size_t incrementQuadraturePoints = 5);
 
   /**
    * Destructor
@@ -98,6 +100,8 @@ class LTwoScalarProductHashMapNakBsplineBoundaryCombigrid {
   // if a custom weightFunctionsCollection is used the standard quadrature order p+1 might not
   // suffice. It can be increased with numAdditionalPoints
   size_t numAdditionalPoints;
+  // the increase of numAdditionalPoints in every step
+  size_t incrementQuadraturePoints;
   // HashMap containing the scalar products of the 1D B spline basis functions. Access via combined
   // MultiIndex of the level-index pair of the two splines
   std::map<MultiIndex, double> innerProducts;

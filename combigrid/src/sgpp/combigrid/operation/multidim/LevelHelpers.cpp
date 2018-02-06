@@ -5,11 +5,11 @@
 
 #include "LevelHelpers.hpp"
 
-#include <vector>
-#include <map>
-#include <utility>
 #include <algorithm>
 #include <cmath>
+#include <map>
+#include <utility>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {

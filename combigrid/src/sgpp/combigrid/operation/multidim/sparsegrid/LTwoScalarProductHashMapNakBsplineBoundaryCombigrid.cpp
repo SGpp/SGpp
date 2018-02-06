@@ -24,6 +24,7 @@ LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::
   // dummy bounds. in evaluation [0,1] is used
   bounds = sgpp::base::DataVector(std::vector<double>(1, 0));
   numAdditionalPoints = 0;
+  incrementQuadraturePoints = 1;
   degree = dynamic_cast<sgpp::base::NakBsplineBoundaryCombigridGrid*>(grid)->getDegree();
 }
 
@@ -37,6 +38,7 @@ LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::
   // dummy bounds. in evaluation [0,1] is used
   bounds = sgpp::base::DataVector(std::vector<double>(1, 0));
   numAdditionalPoints = 0;
+  incrementQuadraturePoints = 1;
   degree = dynamic_cast<sgpp::base::NakBsplineBoundaryCombigridGrid*>(grid)->getDegree();
 }
 
@@ -49,7 +51,8 @@ LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::
       weightFunctionsCollection(weightFunctionsCollection),
       isCustomWeightFunction(true),
       bounds(bounds),
-      numAdditionalPoints(0) {
+      numAdditionalPoints(0),
+      incrementQuadraturePoints(1) {
   degree = dynamic_cast<sgpp::base::NakBsplineBoundaryCombigridGrid*>(grid)->getDegree();
 }
 
@@ -57,12 +60,13 @@ LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::
     LTwoScalarProductHashMapNakBsplineBoundaryCombigrid(
         sgpp::base::Grid* grid,
         sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection,
-        sgpp::base::DataVector bounds, size_t numAdditionalPoints)
+        sgpp::base::DataVector bounds, size_t numAdditionalPoints, size_t incrementQuadraturePoints)
     : grid(grid),
       weightFunctionsCollection(weightFunctionsCollection),
       isCustomWeightFunction(true),
       bounds(bounds),
-      numAdditionalPoints(numAdditionalPoints) {
+      numAdditionalPoints(numAdditionalPoints),
+      incrementQuadraturePoints(incrementQuadraturePoints) {
   degree = dynamic_cast<sgpp::base::NakBsplineBoundaryCombigridGrid*>(grid)->getDegree();
 }
 
@@ -193,7 +197,7 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
 
   MultiIndex hashMI(5);
 
-  //#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
   for (size_t i = 0; i < gridSize; i++) {
     for (size_t j = i; j < gridSize; j++) {
       double temp_ij = 1;
@@ -246,7 +250,6 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
                                               offseti_right, offsetj_left, offsetj_right, hInvik,
                                               hInvjk, hik, hjk, pp1h);
             numAdditionalPoints = lastNumAdditionalPoints;
-            size_t incrementQuadraturePoints = 3;  // this might be variable
             if (isCustomWeightFunction) {
               double tol = 1e-14;
               double err = 1e14;
@@ -255,7 +258,9 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
                 lastNumAdditionalPoints = numAdditionalPoints;
                 numAdditionalPoints += incrementQuadraturePoints;
                 quadOrder = degree + 1 + numAdditionalPoints;
-                if (quadOrder > 495) {
+                // This leads to problems with the simple OMP parallelisation if the abort criterion
+                // is too close to 500
+                if (quadOrder > 480) {
                   break;
                 }
 
@@ -273,10 +278,10 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
         }
       }
 
-      //#pragma omp atomic
+#pragma omp atomic
       result[i] += temp_ij * alpha[j];
       if (i != j) {
-        //#pragma omp atomic
+#pragma omp atomic
         result[j] += temp_ij * alpha[i];
       }
     }
