@@ -34,7 +34,8 @@ BsplineStochasticCollocation::BsplineStochasticCollocation(
       computedVarianceFlag(false),
       var(0.0),
       coefficientStorage(config.coefficientStorage),
-      scalarProducts() {
+      scalarProducts(),
+      numDims(weightFunctions.size()) {
   initializeOperations(config.pointHierarchies, coefficientStorage, config.levelManager);
 }
 
@@ -50,8 +51,7 @@ void BsplineStochasticCollocation::initializeOperations(
   sgpp::combigrid::EvaluatorConfiguration evalConfig(
       sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, this->config.degree);
   sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
-      this->config.numDims,
-      sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(evalConfig));
+      numDims, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(evalConfig));
   sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =
       sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
   auto interpolationOperation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
@@ -85,9 +85,10 @@ void BsplineStochasticCollocation::updateConfig(
   this->config.levelStructure = newConfig.levelStructure;
   this->config.levelManager = newConfig.levelManager;
 
-  combigridMultiOperation = createBsplineLinearCoefficientOperation(
+  this->config.combigridMultiOperation = createBsplineLinearCoefficientOperation(
       newConfig.degree, newConfig.numDims, newConfig.coefficientStorage);
-  combigridMultiOperation->getLevelManager()->addLevelsFromStructure(newConfig.levelStructure);
+  this->config.combigridMultiOperation->getLevelManager()->addLevelsFromStructure(
+      newConfig.levelStructure);
 
   size_t numAdditionalPoints = 0;
   bool normalizeWeights = false;
@@ -99,10 +100,11 @@ void BsplineStochasticCollocation::updateConfig(
         newConfig.degree, weightFunctions[d], numAdditionalPoints, newConfig.bounds[2 * d],
         newConfig.bounds[2 * d + 1], normalizeWeights));
   }
-  combigridOperation = std::make_shared<sgpp::combigrid::CombigridOperation>(
+  this->config.combigridOperation = std::make_shared<sgpp::combigrid::CombigridOperation>(
       config.pointHierarchies, quadEvaluators, config.levelManager, newConfig.coefficientStorage,
       summationStrategyType);
-  combigridOperation->getLevelManager()->addLevelsFromStructure(newConfig.levelStructure);
+  this->config.combigridOperation->getLevelManager()->addLevelsFromStructure(
+      newConfig.levelStructure);
 
   computedMeanFlag = false;
   computedVarianceFlag = false;

@@ -46,8 +46,6 @@ class CombigridSurrogateModelConfiguration {
   //  Bspline coefficients
   std::shared_ptr<AbstractCombigridStorage> coefficientStorage;
 
-  size_t numDims;
-
   // weight functions
   sgpp::combigrid::WeightFunctionsCollection weightFunctions;
 

@@ -3,18 +3,18 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/combigrid/algebraic/FloatTensorVector.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp>
 //#include
 //<sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductHashMapNakBsplineBoundaryCombigrid.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
-#include <sgpp/combigrid/algebraic/FloatTensorVector.hpp>
 
 #include <sgpp/base/exception/application_exception.hpp>
 
-#include <iomanip>
-#include <vector>
 #include <algorithm>
+#include <iomanip>
 #include <string>
+#include <vector>
 
 constexpr size_t log2(size_t n) { return ((n < 2) ? 1 : 1 + log2(n / 2)); }
 
@@ -772,7 +772,7 @@ sgpp::combigrid::GridFunction BSplineCoefficientGridFunction(
     //    }
     //    std::cout << numGridPoints << " " << watch.elapsedSeconds() << std::endl;
 
-    sgpp::optimization::sle_solver::UMFPACK solver;
+    sgpp::optimization::sle_solver::Auto solver;
     sgpp::optimization::Printer::getInstance().setVerbosity(-1);
     bool solved = solver.solve(sle, functionValues, coefficients_sle);
 
