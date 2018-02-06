@@ -6,16 +6,16 @@
 #include <sgpp/combigrid/functions/MonomialFunctionBasis1D.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
-#include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
-#include <sgpp/combigrid/pce/CombigridSurrogateModelFactory.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
+#include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
+#include <sgpp/combigrid/pce/CombigridSurrogateModelFactory.hpp>
 #include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
+#include <sgpp/combigrid/utils/AnalyticModels.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
-#include <sgpp/combigrid/utils/AnalyticModels.hpp>
 
 #include <cmath>
 
@@ -32,12 +32,15 @@ int main() {
 
   for (size_t q = 6; q < 7; ++q) {
     // interpolate on adaptively refined grid
-    auto op = sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
-        ishigamiModel.numDims, func);
+    auto tensor_op =
+        sgpp::combigrid::CombigridTensorOperation::createExpClenshawCurtisPolynomialInterpolation(
+            basisFunction, ishigamiModel.numDims, func);
     sgpp::combigrid::Stopwatch stopwatch;
     stopwatch.start();
-    op->getLevelManager()->addRegularLevels(q);
-    //    op->getLevelManager()->addLevelsAdaptiveParallel(1000, 4);
+    tensor_op->getLevelManager()->addRegularLevels(q);
+    tensor_op->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
+    tensor_op->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
+    //    pce.getCombigridTensorOperation()->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
     stopwatch.log();
     // compute the variance
     stopwatch.start();
@@ -45,13 +48,9 @@ int main() {
     // initialize the surrogate model
     sgpp::combigrid::CombigridSurrogateModelConfiguration config;
     config.type = sgpp::combigrid::CombigridSurrogateModelsType::POLYNOMIAL_CHAOS_EXPANSION;
-    config.combigridOperation = op;
+    config.loadFromCombigridOperation(tensor_op);
     config.basisFunction = basisFunction;
     auto pce = sgpp::combigrid::createCombigridSurrogateModel(config);
-
-    pce->getConfig().combigridTensorOperation->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
-    pce->getConfig().combigridTensorOperation->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
-    //    pce.getCombigridTensorOperation()->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
 
     stopwatch.log();
     // compute the variance
@@ -63,10 +62,11 @@ int main() {
     sgpp::base::DataVector total_sobol_indices;
     pce->getComponentSobolIndices(sobol_indices);
     pce->getTotalSobolIndices(total_sobol_indices);
-    std::cout << "Time: " << stopwatch.elapsedSeconds() / static_cast<double>(op->numGridPoints())
+    std::cout << "Time: "
+              << stopwatch.elapsedSeconds() / static_cast<double>(tensor_op->numGridPoints())
               << std::endl;
     std::cout << "---------------------------------------------------------" << std::endl;
-    std::cout << "#gp = " << op->getLevelManager()->numGridPoints() << std::endl;
+    std::cout << "#gp = " << tensor_op->getLevelManager()->numGridPoints() << std::endl;
     std::cout << "E(u) = " << mean << std::endl;
     std::cout << "Var(u) = " << variance << std::endl;
     std::cout << "Sobol indices = " << sobol_indices.toString() << std::endl;

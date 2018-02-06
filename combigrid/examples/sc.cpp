@@ -3,22 +3,22 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/combigrid/functions/MonomialFunctionBasis1D.hpp>
+#include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
-#include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
-#include <sgpp/combigrid/pce/CombigridSurrogateModelFactory.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
-#include <sgpp/combigrid/operation/onedim/PolynomialScalarProductEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
+#include <sgpp/combigrid/operation/onedim/PolynomialScalarProductEvaluator.hpp>
+#include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
+#include <sgpp/combigrid/pce/CombigridSurrogateModelFactory.hpp>
 #include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
+#include <sgpp/combigrid/utils/AnalyticModels.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
-#include <sgpp/combigrid/utils/AnalyticModels.hpp>
-#include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
 
 #include <cmath>
 #include <iostream>
@@ -47,39 +47,32 @@ int main() {
 
   sgpp::combigrid::MultiFunction func(model.eval);
 
-  //  sgpp::combigrid::CombiHierarchies::Collection grids{
-  //      d, sgpp::combigrid::CombiHierarchies::expClenshawCurtis()};
-  //
-  //  sgpp::combigrid::CombiEvaluators::MultiCollection evaluators{
-  //      d, std::make_shared<sgpp::combigrid::PolynomialScalarProductEvaluator>(functionBasis)};
-  //
-  //  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager =
-  //      std::make_shared<sgpp::combigrid::AveragingLevelManager>();
-  //
-  //  auto op = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
-  //      grids, evaluators, levelManager, func, false,
-  //      sgpp::combigrid::FullGridSummationStrategyType::VARIANCE);
+  sgpp::combigrid::CombiHierarchies::Collection grids{
+      model.numDims, sgpp::combigrid::CombiHierarchies::expClenshawCurtis()};
 
-  auto op = sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
-      model.numDims, func);
+  sgpp::combigrid::CombiEvaluators::TensorCollection evaluators;
+  evaluators.push_back(sgpp::combigrid::CombiEvaluators::tensorInterpolation(functionBasis1));
+  evaluators.push_back(sgpp::combigrid::CombiEvaluators::tensorInterpolation(functionBasis2));
 
-  auto op_levelManager = op->getLevelManager();
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager =
+      std::make_shared<sgpp::combigrid::AveragingLevelManager>();
+
+  auto tensor_op = std::make_shared<sgpp::combigrid::CombigridTensorOperation>(
+      grids, evaluators, levelManager, func, false);
+
+  auto tensor_levelManager = tensor_op->getLevelManager();
 
   // initialize the surrogate model
   sgpp::combigrid::CombigridSurrogateModelConfiguration sc_config;
   sc_config.type = sgpp::combigrid::CombigridSurrogateModelsType::POLYNOMIAL_STOCHASTIC_COLLOCATION;
-  sc_config.combigridOperation = op;
+  sc_config.loadFromCombigridOperation(tensor_op);
   sc_config.basisFunctions = basisFunctions;
   auto sc = sgpp::combigrid::createCombigridSurrogateModel(sc_config);
-  auto tensor_levelManager = sc->getConfig().combigridTensorOperation->getLevelManager();
+
+  sgpp::combigrid::CombigridSurrogateModelConfiguration update_config;
 
   sgpp::combigrid::Stopwatch stopwatch;
   for (size_t q = 0; q < 6; ++q) {
-    //    std::cout << "---------------------------------------------------------" << std::endl;
-    //    std::cout << "add regular levels " << q << " to interpolation operation" << std::endl;
-    //    op_levelManager->addRegularLevels(q);
-    //    std::cout << "---------------------------------------------------------" << std::endl;
-    //    std::cout << "add regular levels " << q << " to tensor operation" << std::endl;
     tensor_levelManager->addRegularLevels(q);
     //    tensor_levelManager->addLevelsAdaptive(100);
     // compute the variance
@@ -87,6 +80,8 @@ int main() {
     std::cout << "compute mean and variance of stochastic collocation" << std::endl;
     std::cout << "#gp = " << tensor_levelManager->numGridPoints() << std::endl;
     stopwatch.start();
+    update_config.levelStructure = tensor_levelManager->getLevelStructure();
+    sc->updateConfig(update_config);
     double mean = sc->mean();
     double variance = sc->variance();
     stopwatch.log();
