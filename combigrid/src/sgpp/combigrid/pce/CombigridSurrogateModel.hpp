@@ -28,11 +28,6 @@ class CombigridSurrogateModelConfiguration {
   // type
   CombigridSurrogateModelsType type;
 
-  // operation
-  std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation;
-  std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation;
-  std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation;
-
   // structure
   std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies;
   std::shared_ptr<AbstractCombigridStorage> storage;
@@ -55,6 +50,10 @@ class CombigridSurrogateModelConfiguration {
 
   // weight functions
   sgpp::combigrid::WeightFunctionsCollection weightFunctions;
+
+  void loadFromCombigridOperation(std::shared_ptr<CombigridOperation> op);
+  void loadFromCombigridOperation(std::shared_ptr<CombigridMultiOperation> op);
+  void loadFromCombigridOperation(std::shared_ptr<CombigridTensorOperation> op);
 };
 
 // --------------------------------------------------------------------------

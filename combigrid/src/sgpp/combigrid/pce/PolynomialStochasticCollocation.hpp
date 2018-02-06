@@ -56,6 +56,10 @@ class PolynomialStochasticCollocation : public CombigridSurrogateModel {
 
   // global polynomial basis
   std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> legendreBasis;
+
+  // tensor operation
+  std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation;
+
   // orthogonal basis for pdf values
   sgpp::combigrid::WeightFunctionsCollection weightFunctions;
 

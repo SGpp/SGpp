@@ -52,6 +52,9 @@ class PolynomialChaosExpansion : public CombigridSurrogateModel {
   std::shared_ptr<Pecos::OrthogPolyApproximation> orthogPoly;
 #endif
 
+  // tensor operation
+  std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation;
+
   size_t numGridPoints;
   sgpp::combigrid::FloatTensorVector expansionCoefficients;
   bool computedSobolIndicesFlag;
