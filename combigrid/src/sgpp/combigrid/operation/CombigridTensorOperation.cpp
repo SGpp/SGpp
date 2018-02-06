@@ -254,7 +254,7 @@ CombigridTensorOperation::createLinearL2LejaPolynomialInterpolation(
 std::shared_ptr<CombigridTensorOperation>
 CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-    std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager,
+    std::shared_ptr<AbstractCombigridStorage> storage,
     std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis,
     FullGridSummationStrategyType summationStrategyType) {
   size_t numDims = pointHierarchies.size();
@@ -264,8 +264,6 @@ CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
   auto tensorOperation = std::make_shared<CombigridTensorOperation>(
       pointHierarchies, evaluatorPrototypes, std::make_shared<StandardLevelManager>(), storage,
       summationStrategyType);
-  auto levelStructure = levelManager->getLevelStructure();
-  tensorOperation->getLevelManager()->addLevelsFromStructureParallel(levelStructure);
 
   return tensorOperation;
 }
@@ -273,7 +271,7 @@ CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
 std::shared_ptr<CombigridTensorOperation>
 CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-    std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager,
+    std::shared_ptr<AbstractCombigridStorage> storage,
     OrthogonalBasisFunctionsCollection &functionBases,
     FullGridSummationStrategyType summationStrategyType) {
   // check if dimensionalities match
@@ -292,8 +290,6 @@ CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
   auto tensorOperation = std::make_shared<CombigridTensorOperation>(
       pointHierarchies, evaluators, std::make_shared<StandardLevelManager>(), storage,
       summationStrategyType);
-  auto levelStructure = levelManager->getLevelStructure();
-  tensorOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
 
   return tensorOperation;
 }

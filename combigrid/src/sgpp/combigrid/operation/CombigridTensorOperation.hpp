@@ -244,7 +244,7 @@ class CombigridTensorOperation {
    */
   static std::shared_ptr<CombigridTensorOperation> createOperationTensorPolynomialInterpolation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-      std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager,
+      std::shared_ptr<AbstractCombigridStorage> storage,
       std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis,
       FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR);
 
@@ -260,7 +260,7 @@ class CombigridTensorOperation {
    */
   static std::shared_ptr<CombigridTensorOperation> createOperationTensorPolynomialInterpolation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-      std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager,
+      std::shared_ptr<AbstractCombigridStorage> storage,
       OrthogonalBasisFunctionsCollection &functionBases,
       FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR);
 

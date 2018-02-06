@@ -14,18 +14,21 @@ void CombigridSurrogateModelConfiguration::loadFromCombigridOperation(
     std::shared_ptr<CombigridOperation> op) {
   storage = op->getStorage();
   pointHierarchies = op->getPointHierarchies();
+  levelStructure = op->getLevelManager()->getLevelStructure();
 }
 
 void CombigridSurrogateModelConfiguration::loadFromCombigridOperation(
     std::shared_ptr<CombigridMultiOperation> op) {
   storage = op->getStorage();
   pointHierarchies = op->getPointHierarchies();
+  levelStructure = op->getLevelManager()->getLevelStructure();
 }
 
 void CombigridSurrogateModelConfiguration::loadFromCombigridOperation(
     std::shared_ptr<CombigridTensorOperation> op) {
   storage = op->getStorage();
   pointHierarchies = op->getPointHierarchies();
+  levelStructure = op->getLevelManager()->getLevelStructure();
 }
 
 CombigridSurrogateModel::CombigridSurrogateModel(

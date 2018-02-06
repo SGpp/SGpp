@@ -211,12 +211,6 @@ namespace sgpp {
 %include "combigrid/src/sgpp/combigrid/grid/hierarchy/NonNestedPointHierarchy.hpp"
 %include "combigrid/src/sgpp/combigrid/grid/TensorGrid.hpp"
 
-%include "combigrid/src/sgpp/combigrid/pce/CombigridSurrogateModel.hpp"
-%include "combigrid/src/sgpp/combigrid/pce/PolynomialChaosExpansion.hpp"
-%include "combigrid/src/sgpp/combigrid/pce/PolynomialStochasticCollocation.hpp"
-%include "combigrid/src/sgpp/combigrid/pce/BsplineStochasticCollocation.hpp"
-%include "combigrid/src/sgpp/combigrid/pce/CombigridSurrogateModelFactory.hpp"
-
 %include "combigrid/src/sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp"
 
 %include "combigrid/src/sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluator.hpp"
@@ -363,6 +357,12 @@ namespace std {
 %include "combigrid/src/sgpp/combigrid/operation/CombigridOperation.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/CombigridMultiOperation.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/CombigridTensorOperation.hpp"
+
+%include "combigrid/src/sgpp/combigrid/pce/CombigridSurrogateModel.hpp"
+%include "combigrid/src/sgpp/combigrid/pce/PolynomialChaosExpansion.hpp"
+%include "combigrid/src/sgpp/combigrid/pce/PolynomialStochasticCollocation.hpp"
+%include "combigrid/src/sgpp/combigrid/pce/BsplineStochasticCollocation.hpp"
+%include "combigrid/src/sgpp/combigrid/pce/CombigridSurrogateModelFactory.hpp"
 
 %include "combigrid/src/sgpp/combigrid/threading/ThreadPool.hpp"
 %include "combigrid/src/sgpp/combigrid/threading/PtrGuard.hpp"
