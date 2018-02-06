@@ -38,12 +38,6 @@ class PolynomialStochasticCollocation : public CombigridSurrogateModel {
   void getTotalSobolIndices(sgpp::base::DataVector& totalSobolIndices,
                             bool normalized = true) override;
 
-  void updateOperation(
-      std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation) override;
-  void updateOperation(
-      std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridOperation) override;
-  void updateOperation(
-      std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridOperation) override;
   void updateConfig(sgpp::combigrid::CombigridSurrogateModelConfiguration config) override;
 
  private:

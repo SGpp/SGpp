@@ -145,6 +145,7 @@ double BsplineStochasticCollocation::computeVariance() {
   if (!computedMeanFlag) {
     mean();
   }
+
   std::shared_ptr<sgpp::base::Grid> grid;
   grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDims, config.degree));
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
@@ -173,7 +174,6 @@ double BsplineStochasticCollocation::computeVariance() {
   meanSquare *= width;
 
   double variance = meanSquare - ev * ev;
-
   return variance;
 }
 
@@ -186,27 +186,15 @@ double BsplineStochasticCollocation::variance() {
   return var;
 }
 
-// DEBRECATED
 void BsplineStochasticCollocation::getComponentSobolIndices(
     sgpp::base::DataVector& componentSsobolIndices, bool normalized) {
-  std::cout << "debrecated" << std::endl;
+  throw sgpp::base::application_exception(
+      "BsplineStochasticCollocation::getComponentSobolIndices - not implemented.");
 }
 void BsplineStochasticCollocation::getTotalSobolIndices(sgpp::base::DataVector& totalSobolIndices,
                                                         bool normalized) {
-  std::cout << "debrecated" << std::endl;
-}
-
-void BsplineStochasticCollocation::updateOperation(
-    std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation) {
-  std::cout << "BsplineStochasticCollocation::updateOperation debrecated" << std::endl;
-}
-void BsplineStochasticCollocation::updateOperation(
-    std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridOperation) {
-  std::cout << "BsplineStochasticCollocation::updateOperation (Multi) debrecated" << std::endl;
-}
-void BsplineStochasticCollocation::updateOperation(
-    std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridOperation) {
-  std::cout << "BsplineStochasticCollocation::updateOperation (Tensor) debrecated" << std::endl;
+  throw sgpp::base::application_exception(
+      "PolynomialStochasticCollocation::getTotalSobolIndices - not implemented.");
 }
 
 } /* namespace combigrid */
