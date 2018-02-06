@@ -34,7 +34,8 @@ BsplineStochasticCollocation::BsplineStochasticCollocation(
       computedVarianceFlag(false),
       var(0.0),
       coefficientStorage(config.coefficientStorage),
-      scalarProducts() {
+      scalarProducts(),
+      numDims(weightFunctions.size()) {
   initializeOperations(config.pointHierarchies, coefficientStorage, config.levelManager);
 }
 
@@ -50,8 +51,7 @@ void BsplineStochasticCollocation::initializeOperations(
   sgpp::combigrid::EvaluatorConfiguration evalConfig(
       sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, this->config.degree);
   sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
-      this->config.numDims,
-      sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(evalConfig));
+      numDims, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(evalConfig));
   sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =
       sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
   auto interpolationOperation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
@@ -62,7 +62,7 @@ void BsplineStochasticCollocation::initializeOperations(
   size_t numAdditionalPoints = 0;
   bool normalizeWeights = false;
   sgpp::combigrid::CombiEvaluators::Collection quadEvaluators(0);
-  for (size_t d = 0; d < this->config.numDims; d++) {
+  for (size_t d = 0; d < numDims; d++) {
     quadEvaluators.push_back(sgpp::combigrid::CombiEvaluators::BSplineQuadrature(
         config.degree, weightFunctions[d], numAdditionalPoints, config.bounds[2 * d],
         config.bounds[2 * d + 1], normalizeWeights));
@@ -86,7 +86,7 @@ void BsplineStochasticCollocation::updateConfig(
   this->config.levelManager = newConfig.levelManager;
 
   this->config.combigridMultiOperation = createBsplineLinearCoefficientOperation(
-      newConfig.degree, newConfig.numDims, newConfig.coefficientStorage);
+      newConfig.degree, numDims, newConfig.coefficientStorage);
   this->config.combigridMultiOperation->getLevelManager()->addLevelsFromStructure(
       newConfig.levelStructure);
 
@@ -95,7 +95,7 @@ void BsplineStochasticCollocation::updateConfig(
   sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =
       sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
   sgpp::combigrid::CombiEvaluators::Collection quadEvaluators(0);
-  for (size_t d = 0; d < newConfig.numDims; d++) {
+  for (size_t d = 0; d < numDims; d++) {
     quadEvaluators.push_back(sgpp::combigrid::CombiEvaluators::BSplineQuadrature(
         newConfig.degree, weightFunctions[d], numAdditionalPoints, newConfig.bounds[2 * d],
         newConfig.bounds[2 * d + 1], normalizeWeights));
