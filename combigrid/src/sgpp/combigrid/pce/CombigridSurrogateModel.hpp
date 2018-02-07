@@ -25,6 +25,9 @@ enum class CombigridSurrogateModelsType {
 
 class CombigridSurrogateModelConfiguration {
  public:
+  CombigridSurrogateModelConfiguration();
+  virtual ~CombigridSurrogateModelConfiguration();
+
   // type
   CombigridSurrogateModelsType type;
 
@@ -48,6 +51,8 @@ class CombigridSurrogateModelConfiguration {
 
   // weight functions
   sgpp::combigrid::WeightFunctionsCollection weightFunctions;
+
+  bool enableLevelManagerStatsCollection;
 
   void loadFromCombigridOperation(std::shared_ptr<CombigridOperation> op);
   void loadFromCombigridOperation(std::shared_ptr<CombigridMultiOperation> op);
