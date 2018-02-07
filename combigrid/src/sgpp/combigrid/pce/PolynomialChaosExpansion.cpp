@@ -203,12 +203,22 @@ void PolynomialChaosExpansion::updateConfig(
     initializeTensorOperation(config.pointHierarchies, config.storage);
   }
 
+  if (combigridTensorOperation == nullptr) {
+    throw sgpp::base::application_exception(
+        "PolynomialChaosExpansion:updateConfig - tensor operation is null -> something is "
+        "seriously wrong");
+  }
+
   if (config.levelManager != nullptr) {
     combigridTensorOperation->setLevelManager(config.levelManager);
   }
 
-  if (config.levelStructure != nullptr && combigridTensorOperation != nullptr) {
+  if (config.levelStructure != nullptr) {
     combigridTensorOperation->getLevelManager()->addLevelsFromStructure(config.levelStructure);
+  }
+
+  if (config.enableLevelManagerStatsCollection) {
+    combigridTensorOperation->getLevelManager()->enableStatsCollection();
   }
 }
 

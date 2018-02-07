@@ -10,6 +10,22 @@
 namespace sgpp {
 namespace combigrid {
 
+CombigridSurrogateModelConfiguration::CombigridSurrogateModelConfiguration()
+    : type(CombigridSurrogateModelsType::POLYNOMIAL_CHAOS_EXPANSION),
+      pointHierarchies(0),
+      storage(nullptr),
+      levelManager(nullptr),
+      levelStructure(nullptr),
+      basisFunction(nullptr),
+      basisFunctions(0),
+      bounds(0),
+      degree(3),
+      coefficientStorage(nullptr),
+      weightFunctions(0),
+      enableLevelManagerStatsCollection(false) {}
+
+CombigridSurrogateModelConfiguration::~CombigridSurrogateModelConfiguration() {}
+
 void CombigridSurrogateModelConfiguration::loadFromCombigridOperation(
     std::shared_ptr<CombigridOperation> op) {
   storage = op->getStorage();

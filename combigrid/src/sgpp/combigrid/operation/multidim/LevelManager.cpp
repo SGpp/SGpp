@@ -335,27 +335,31 @@ std::string LevelManager::getSerializedLevelStructure() const {
 }
 
 void LevelManager::addLevelsFromStructure(std::shared_ptr<TreeStorage<uint8_t>> storage) {
-  auto it = storage->getStoredDataIterator();
-  // update stats vector
-  infoOnAddedLevels->incrementCounter();
-  while (it->isValid()) {
-    addLevelToCombiEval(it->getMultiIndex());
-    it->moveToNext();
+  if (storage != nullptr) {
+    auto it = storage->getStoredDataIterator();
+    // update stats vector
+    infoOnAddedLevels->incrementCounter();
+    while (it->isValid()) {
+      addLevelToCombiEval(it->getMultiIndex());
+      it->moveToNext();
+    }
   }
 }
 
 void LevelManager::addLevelsFromStructureParallel(std::shared_ptr<TreeStorage<uint8_t>> storage,
                                                   size_t numThreads) {
-  auto it = storage->getStoredDataIterator();
+  if (storage != nullptr) {
+    auto it = storage->getStoredDataIterator();
 
-  std::vector<MultiIndex> levels;
-  while (it->isValid()) {
-    levels.push_back(it->getMultiIndex());
-    it->moveToNext();
+    std::vector<MultiIndex> levels;
+    while (it->isValid()) {
+      levels.push_back(it->getMultiIndex());
+      it->moveToNext();
+    }
+    precomputeLevelsParallel(levels, numThreads);
+    infoOnAddedLevels->incrementCounter();
+    addLevels(levels);
   }
-  precomputeLevelsParallel(levels, numThreads);
-  infoOnAddedLevels->incrementCounter();
-  addLevels(levels);
 }
 
 void LevelManager::addLevelsFromSerializedStructure(std::string serializedStructure) {
