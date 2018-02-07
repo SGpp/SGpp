@@ -1,6 +1,6 @@
 {
 	"dataSource": {
-		"filePath": "/home/polarbart/ozoneprepared.csv"
+		"filePath": "C:/Users/Eric/Documents/ozoneprepared.csv"
 	},
 	"scorer": {
 		"testing": {

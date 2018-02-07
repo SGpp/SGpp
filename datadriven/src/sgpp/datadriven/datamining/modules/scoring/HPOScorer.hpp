@@ -51,6 +51,8 @@ class HPOScorer : public Scorer {
    */
   double calculateScore(ModelFittingBase& model, Dataset& dataset,
                         double* stdDeviation = nullptr) override;
+
+  Dataset* prepareTestData(Dataset& dataset);
  
  private:
   /**
@@ -58,6 +60,7 @@ class HPOScorer : public Scorer {
    * training set.
    */
   double trainPortion;
+  std::unique_ptr<Dataset> testDataset;
 
 };
 

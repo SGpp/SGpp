@@ -19,33 +19,40 @@ using base::DataVector;
 
 HPOScorer::HPOScorer(Metric* metric, ShufflingFunctor* shuffling, int64_t seed,
     double trainPortion)
-    : Scorer{metric, shuffling, seed}, trainPortion{trainPortion} {}
+    : Scorer{metric, shuffling, seed}, trainPortion{trainPortion}, testDataset{} {}
 
+// EDIT: disabled because of unique_ptr copying
+Scorer* HPOScorer::clone() const {
+	// return new HPOScorer{*this};
+}
 
-Scorer* HPOScorer::clone() const { return new HPOScorer{*this};
+Dataset* HPOScorer::prepareTestData(Dataset& dataset){
+	  // perform randomization of indices
+	  std::vector<size_t> randomizedIndices(dataset.getNumberInstances());
+	  randomizeIndices(dataset, randomizedIndices);
+
+	  // calculate size of testing and training portions
+	  size_t trainSize = std::lround(static_cast<double>(dataset.getNumberInstances()) * trainPortion);
+	  size_t testSize =  dataset.getNumberInstances() - trainSize;
+	  size_t dim = dataset.getDimension();
+
+	  //std::cout<< "Test 1" << std::endl;
+
+	  //Dataset dummyDataset{dataset.getNumberInstances(), dim};
+
+	  // create test and train datasets.
+	  //Dataset testDataset{testSize, dim};
+	  testDataset = std::make_unique<Dataset>(testSize, dim);
+	  Dataset* trainDataset = new Dataset{trainSize, dim};
+	  splitSet(dataset, *trainDataset, *testDataset, randomizedIndices);
+	  return trainDataset;
+	  //splitSet(dataset, dummyDataset, trainDataset, randomizedIndices, 2000);
 }
 
 // TODO(lettrich) :recycle
-double HPOScorer::calculateScore(ModelFittingBase& model, Dataset& dataset,
+double HPOScorer::calculateScore(ModelFittingBase& model, Dataset& trainDataset,
                                        double* stdDeviation) {
-  // perform randomization of indices
-  std::vector<size_t> randomizedIndices(dataset.getNumberInstances());
-  randomizeIndices(dataset, randomizedIndices);
 
-  // calculate size of testing and training portions
-  size_t trainSize = std::lround(static_cast<double>(dataset.getNumberInstances()) * trainPortion);
-  size_t testSize =  dataset.getNumberInstances() - trainSize;
-  size_t dim = dataset.getDimension();
-
-  //std::cout<< "Test 1" << std::endl;
-
-  //Dataset dummyDataset{dataset.getNumberInstances(), dim};
-  
-  // create test and train datasets.
-  Dataset testDataset{testSize, dim};
-  Dataset trainDataset{trainSize, dim};
-  splitSet(dataset, trainDataset, testDataset, randomizedIndices);
-  //splitSet(dataset, dummyDataset, trainDataset, randomizedIndices, 2000);
   
   // new code
   // std::cout<< "Test 1" << std::endl;
@@ -233,12 +240,12 @@ double HPOScorer::calculateScore(ModelFittingBase& model, Dataset& dataset,
   
   
   model.fit(trainDataset);
-  double score = test(model, testDataset);
+  double score = test(model, *testDataset);
   double best = score+1;
   while(score<best){
 	  best = score;
 	  model.refine();
-	  score = test(model, testDataset);
+	  score = test(model, *testDataset);
 	  //std::cout<<"RefinedScore :"<<score<<std::endl;
   }
 

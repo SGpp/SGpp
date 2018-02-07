@@ -36,6 +36,7 @@ HyperparameterOptimizer::HyperparameterOptimizer(DataSource* dataSource, FitterF
 void HyperparameterOptimizer::optimizeHyperparameters(){
   // prepare data and scorer
   std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
+  std::unique_ptr<Dataset> trainData = std::unique_ptr<Dataset>(hpoScorer->prepareTestData(*dataset));
 
   std::cout<<"Run mark 1"<<std::endl;
 
@@ -84,7 +85,7 @@ void HyperparameterOptimizer::optimizeHyperparameters(){
   double stdDeviation;
   double best = 1000;
   for(int i=0;i<n;i++){
-	  scores[i] = hpoScorer->calculateScore(*(fitters[i]), *dataset, &stdDeviation);
+	  scores[i] = hpoScorer->calculateScore(*(fitters[i]), *trainData, &stdDeviation);
 	  logscores[i] = log(scores[i]);
 	  std::cout<<"Score "<<i<<":"<<scores[i];
 	  if(scores[i]<best){
@@ -172,7 +173,7 @@ void HyperparameterOptimizer::optimizeHyperparameters(){
      //DataVector scores(n);
      //double stdDeviation;
      for(int i=0;i<n;i++){
-   	  scores[i] = hpoScorer->calculateScore(*(fitters[i]), *dataset, &stdDeviation);
+   	  scores[i] = hpoScorer->calculateScore(*(fitters[i]), *trainData, &stdDeviation);
 	  std::cout<<"Score "<<i<<":"<<scores[i];
 	  if(scores[i]<best){
 		  best = scores[i];
@@ -193,6 +194,8 @@ void HyperparameterOptimizer::runBO() {
   optimization::Printer::getInstance().disableStatusPrinting();
 
   std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
+  std::unique_ptr<Dataset> trainData = std::unique_ptr<Dataset>(hpoScorer->prepareTestData(*dataset));
+
   std::vector<base::DataVector> contPoints{};
   std::vector<std::vector<int>> discPoints{};
   base::DataVector results{};
@@ -214,7 +217,7 @@ void HyperparameterOptimizer::runBO() {
   std::vector<int> discrete(nOptions.size(), 0);
   fitterFactory->setBO(cont, discrete);
   double stdDeviation;
-  bestsofar = hpoScorer->calculateScore(*(fitterFactory->buildFitter()), *dataset, &stdDeviation)-300;
+  bestsofar = -1/(1+hpoScorer->calculateScore(*(fitterFactory->buildFitter()), *trainData, &stdDeviation)); //-300
   BayesianOptimization BO(bestsofar);
 
   results.push_back(bestsofar);
@@ -249,7 +252,7 @@ void HyperparameterOptimizer::runBO() {
                   for (int i = 0; i < squaresum.size(); i++) {
                     base::DataVector tmp(inp);
                     tmp.sub(contPoints[i]);
-                    kernels[i] = exp((0-squaresum[i] - std::pow(tmp.l2Norm(), 2)) / 2);
+                    kernels[i] = exp((0-squaresum[i] - std::pow(tmp.l2Norm(), 2)) / 2); // divided by 2
                     if(kernels[i]==1){
                       return 1.0/0;
                     }
@@ -258,7 +261,7 @@ void HyperparameterOptimizer::runBO() {
                   return BO.acquisitionEI(kernels, 1, bestsofar);  //EDIT: ascend or descent?
                   //return BO.var(kernels, 1);
               };
-      // std::cout << "Test Point " << i <<std::endl;
+       std::cout << "Test Point " << i <<", min: "<<min<<std::endl;
       /* bool pronty = true;
       for (int k = 0; k < disc.size(); k++) {
         if(disc[k]!=discPoints[0][k]){
@@ -286,10 +289,10 @@ void HyperparameterOptimizer::runBO() {
       // std::cout<<optimizer.getOptimalPoint()[0]<<","<<optimizer.getOptimalPoint()[1]<<":"<<optimizer.getOptimalValue()<<std::endl;
     }
     fitterFactory->setBO(*mincon, *mindisc);
-    double result = hpoScorer->calculateScore(*(fitterFactory->buildFitter()), *dataset, &stdDeviation)-300;
+    double result = -1/(1+hpoScorer->calculateScore(*(fitterFactory->buildFitter()), *trainData, &stdDeviation)); //-300
     fitterFactory->printConfig();
     std::cout << "Acquistion: " << min << std::endl;
-    std::cout << "Result: " << result+300 << std::endl;
+    std::cout << "Result: " << -1/result-1 << std::endl; //result
 
     if(result<bestsofar){
       bestsofar = result;
@@ -309,12 +312,12 @@ void HyperparameterOptimizer::runBO() {
     for (int i = 0; i < squaresum.size(); i++) {
       base::DataVector tmp(*mincon);
       tmp.sub(contPoints[i]);
-      kernels[i] = exp((-squaresum[i] - std::pow(tmp.l2Norm(), 2)) / 2);
+      kernels[i] = exp((-squaresum[i] - std::pow(tmp.l2Norm(), 2)) * 2); //devided by 2
     }
     BO.updateGP(kernels, results);  //EDIT: ascend or descent?
 
   }
-  std::cout << "Best: " << bestsofar+300 << std::endl;
+  std::cout << "Best: " << -1/bestsofar-1 << std::endl; //+300
 
 
 }
