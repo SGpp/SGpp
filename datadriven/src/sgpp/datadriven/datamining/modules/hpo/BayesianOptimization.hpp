@@ -10,6 +10,8 @@
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/optimization/sle/system/FullSLE.hpp>
+
 
 
 namespace sgpp {
@@ -21,13 +23,17 @@ public:
 	double mean(base::DataVector knew);
 	double var(base::DataVector knew, double kself);
 	void updateGP(base::DataVector knew, base::DataVector y);
+	double acquisitionPI(base::DataVector knew, double kself, double bestsofar);
 	double acquisitionEI(base::DataVector knew, double kself, double bestsofar);
+
 	// double expkernel(base::DataVector x1, base::DataVector x2);
 protected:
 	base::DataMatrix kernelmatrix;
 	base::DataMatrix kernelinv;
 	base::DataVector transformedOutput;
+	base::DataVector testknew;
 	bool screwedvar;
+	std::unique_ptr<optimization::FullSLE> sle;
 };
 
 } /* namespace datadriven */

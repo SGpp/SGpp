@@ -79,7 +79,7 @@ void Printer::printStatusBegin(const std::string& msg) {
 void Printer::printStatusUpdate(const std::string& msg) {
   ScopedLock lock(mutex);
 
-  if (!statusPrintingEnabled || (statusLevel > verbose)) {
+  if (!statusPrintingEnabled || (statusLevel > verbose)) { //EDIT: verbose
     // status printing disabled or verbose level too low
     return;
   }
