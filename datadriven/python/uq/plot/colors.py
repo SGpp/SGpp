@@ -1,6 +1,7 @@
 from matplotlib.font_manager import FontProperties
 import os
 import subprocess
+import pwd
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -8,6 +9,10 @@ try:
     from matplotlib2tikz import save as tikz_save
 except:
     pass
+
+
+def get_username():
+    return pwd.getpwuid(os.getuid())[0]
 
 
 def load_custom_pgf_preamble(dtype="standard", macros="thesis"):
@@ -39,14 +44,24 @@ def load_custom_pgf_preamble(dtype="standard", macros="thesis"):
     else:
         pgf_preamble["text.latex.preamble"] += [r"\usepackage[T1]{fontenc}"]
 
-    if macros == "thesis":
-        cmd_filename = r"/home/franzefn/Promotion/UQ/repos/dissertation/thesis/commands.tex"
-    elif macros == "l2leja":
-        cmd_filename = r"/home/franzefn/Promotion/Paper/Awesome-CT-Leja-Papers-of-Dabian-Holzelin/l2-leja/paper/commands.tex"
-    elif macros == "l2leja_david":
-        cmd_filename = r".../Awesome-CT-Leja-Papers-of-Dabian-Holzelin/l2-leja/paper/commands.tex"
+    if get_username() == "franzefn":
+        if macros == "thesis":
+            cmd_filename = r"/home/franzefn/Promotion/UQ/repos/dissertation/thesis/commands.tex"
+        elif macros == "l2leja":
+            cmd_filename = r"/home/franzefn/Promotion/Paper/Awesome-CT-Leja-Papers-of-Dabian-Holzelin/l2-leja/paper/commands.tex"
+        elif macros == "l2leja_david":
+            cmd_filename = r".../Awesome-CT-Leja-Papers-of-Dabian-Holzelin/l2-leja/paper/commands.tex"
+        else:
+            cmd_filename = r"/home/franzefn/Promotion/Paper/repos/SGA16/paper/commands.tex"
+    elif get_username() == "holzmudd":
+        if macros == "l2leja":
+            cmd_filename = r".../Awesome-CT-Leja-Papers-of-Dabian-Holzelin/l2-leja/paper/commands.tex"
+        else:
+            cmd_filename = "plots/commands.tex"
+    elif get_username() == "rehmemk":
+        cmd_filename = "plots/commands.tex"
     else:
-        cmd_filename = r"/home/franzefn/Promotion/Paper/repos/SGA16/paper/commands.tex"
+        cmd_filename = "plots/commands.tex"
 
     if os.path.exists(cmd_filename):
         fd = open(cmd_filename, "r")
