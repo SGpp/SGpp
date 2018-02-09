@@ -103,6 +103,7 @@ class PolynomialQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalar
   // can be used as a measure of stability of the quadrature algorithm. Minimum (and optimum) in
   // case of normalized weights is 1.0, i.e. all weights are non-negative.
   double getAbsoluteWeightSum() const;
+  double getRelativeConditionNumber() const;
 
   std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cloneLinear() override;
 };

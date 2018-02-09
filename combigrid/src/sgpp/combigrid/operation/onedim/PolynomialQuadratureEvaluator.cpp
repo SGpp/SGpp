@@ -124,6 +124,18 @@ double PolynomialQuadratureEvaluator::getAbsoluteWeightSum() const {
   return abssum;
 }
 
+double PolynomialQuadratureEvaluator::getRelativeConditionNumber() const {
+  double abssum = 0.0;
+  double sum = 0.0;
+
+  for (size_t i = 0; i < weights.size(); ++i) {
+    abssum += fabs(weights[i].value());
+    sum += weights[i].value();
+  }
+
+  return abssum / sum;
+}
+
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector> >
 PolynomialQuadratureEvaluator::cloneLinear() {
   return std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector> >(

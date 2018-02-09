@@ -38,6 +38,10 @@ class L2LejaPointDistribution : public AbstractPointDistribution {
   virtual ~L2LejaPointDistribution();
 
   virtual double compute(size_t numPoints, size_t j);
+
+ private:
+  void evaluate_denominator(size_t& argmaxIndex, double& logIntegral, double tol = 1e-14);
+  void evaluate_numerator(size_t argmaxIndex, double& logIntegral, double tol = 1e-14);
 };
 
 } /* namespace combigrid */
