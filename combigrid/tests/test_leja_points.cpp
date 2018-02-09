@@ -10,6 +10,8 @@
 #include <sgpp/combigrid/grid/distribution/LejaPointDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/L2LejaPointDistribution.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
+#include <sgpp/combigrid/utils/AnalyticModels.hpp>
+#include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 
 #include <cmath>
 #include <vector>
@@ -124,5 +126,50 @@ BOOST_AUTO_TEST_CASE(testL2LejaPoints) {
 
     BOOST_CHECK_CLOSE(x, points_all[i], 1e-3);
     BOOST_CHECK(quad.getAbsoluteWeightSum() < 1.1);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(testWeightedL2LejaPoints) {
+  sgpp::combigrid::CO2 co2Model;
+  sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
+  config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::BOUNDED_LOGNORMAL;
+  config.polyParameters.logmean_ = co2Model.logmean;
+  config.polyParameters.stddev_ = co2Model.stddev;
+  config.polyParameters.lowerBound_ = co2Model.bounds[0];
+  config.polyParameters.upperBound_ = co2Model.bounds[1];
+  auto basisFunction = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
+
+  auto func = [basisFunction, &co2Model](double x_unit) {
+    double x_prob = (co2Model.bounds[1] - co2Model.bounds[0]) * x_unit + co2Model.bounds[0];
+    return basisFunction->pdf(x_prob);
+  };
+
+  sgpp::combigrid::SingleFunction weightFunction(func);
+  sgpp::combigrid::L2LejaPointDistribution l2leja(weightFunction);
+  sgpp::combigrid::PolynomialQuadratureEvaluator quad;
+
+  std::vector<double> points_all{
+      0.308723,    0.677028,  0.101446,   0.916106,  0.470405,    0.0274901,  0.981783,  0.199154,
+      0.798541,    0.566859,  0.00617981, 0.99608,   0.381582,    0.146763,   0.860146,  0.0600752,
+      0.736673,    0.953056,  0.253828,   0.617714,  0.00131865,  0.426464,   0.889892,  0.0800088,
+      0.999166,    0.51922,   0.172939,   0.827948,  0.0162007,   0.968396,   0.34278,   0.706966,
+      0.0430044,   0.935459,  0.22816,    0.64524,   0.123125,    0.989896,   0.494621,  0.769765,
+      0.0105465,   0.282442,  0.875482,   0.403843,  0.000271479, 0.975404,   0.59115,   0.0699475,
+      0.84305,     0.159872,  0.999822,   0.542737,  0.0349612,   0.753389,   0.325882,  0.94432,
+      0.213659,    0.448352,  0.904206,   0.0912584, 0.661743,    0.00347681, 0.993176,  0.362353,
+      0.812321,    0.0510128, 0.9611,     0.267645,  0.720919,    0.133934,   0.0213068, 0.925701,
+      0.604162,    0.986099,  0.1862,     0.506768,  0.78435,     0.111688,   0.415073,  0.997838,
+      0.00825609,  0.691735,  0.29556,    0.867974,  0.0311674,   0.554938,   0.897395,  0.240426,
+      5.80238e-05, 0.972005,  0.631906,   0.0854532, 0.459364,    0.835485,   0.352627,  0.994696,
+      0.0554528,   0.94869,   0.153321,   0.745215};
+
+  std::vector<double> points_seq;
+  for (size_t i = 0; i < points_all.size(); i++) {
+    double x = l2leja.compute(i, i);
+    points_seq.push_back(x);
+    quad.setGridPoints(points_seq);
+
+    BOOST_CHECK_CLOSE(x, points_all[i], 1e-3);
+    BOOST_CHECK(quad.getAbsoluteWeightSum() < 1.4);
   }
 }
