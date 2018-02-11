@@ -25,8 +25,12 @@ public:
 	void updateGP(base::DataVector knew, base::DataVector y);
 	double acquisitionPI(base::DataVector knew, double kself, double bestsofar);
 	double acquisitionEI(base::DataVector knew, double kself, double bestsofar);
+  void CholeskyDecomposition();
+  void solveCholeskySystem(base::DataVector& x);
 
-	// double expkernel(base::DataVector x1, base::DataVector x2);
+
+
+    // double expkernel(base::DataVector x1, base::DataVector x2);
 protected:
 	base::DataMatrix kernelmatrix;
 	base::DataMatrix kernelinv;
@@ -34,6 +38,9 @@ protected:
 	base::DataVector testknew;
 	bool screwedvar;
 	std::unique_ptr<optimization::FullSLE> sle;
+	double maxofmax;
+  base::DataMatrix gleft;
+  // base::DataMatrix gright;
 };
 
 } /* namespace datadriven */

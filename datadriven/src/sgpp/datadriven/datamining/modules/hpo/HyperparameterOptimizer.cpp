@@ -191,6 +191,8 @@ void HyperparameterOptimizer::optimizeHyperparameters(){
 }
 
 void HyperparameterOptimizer::runBO() {
+  double kernelwidth = 1.5;
+
   optimization::Printer::getInstance().disableStatusPrinting();
 
   std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
@@ -236,23 +238,23 @@ void HyperparameterOptimizer::runBO() {
       int k = i;
       int p = 0;
       for (int max: nOptions) {
-        disc[p] = k % max;
+        disc[p] = k % max; //TEST: does this work?
         k = k / max;
         p++;
       }
       std::vector<double> squaresum(discPoints.size(), 0);
       for (int i = 0; i < discPoints.size(); i++) {
-        for (int k = 0; k < disc.size(); k++) {
+        for (int k = 0; k < nOptions.size(); k++) {
           squaresum[i] += std::pow(static_cast<double>(disc[k] - discPoints[i][k]) / (nOptions[k] - 1), 2);
         }
       }
       std::function<double(const base::DataVector &)> func =
-              [&squaresum, &contPoints, &BO, &bestsofar](const base::DataVector &inp) {
+              [&squaresum, &contPoints, &BO, &bestsofar, &kernelwidth](const base::DataVector &inp) {
                   base::DataVector kernels(squaresum.size());
                   for (int i = 0; i < squaresum.size(); i++) {
                     base::DataVector tmp(inp);
                     tmp.sub(contPoints[i]);
-                    kernels[i] = exp((0-squaresum[i] - std::pow(tmp.l2Norm(), 2)) / 2); // divided by 2
+                    kernels[i] = exp((0-squaresum[i] - std::pow(tmp.l2Norm(), 2)) / 2 * kernelwidth); // divided by 2
                     if(kernels[i]==1){
                       return 1.0/0;
                     }
@@ -261,7 +263,7 @@ void HyperparameterOptimizer::runBO() {
                   return BO.acquisitionEI(kernels, 1, bestsofar);  //EDIT: ascend or descent?
                   //return BO.var(kernels, 1);
               };
-       std::cout << "Test Point " << i <<", min: "<<min<<std::endl;
+      // std::cout << "Test Point " << i <<", min: "<<min<<std::endl;
       /* bool pronty = true;
       for (int k = 0; k < disc.size(); k++) {
         if(disc[k]!=discPoints[0][k]){
@@ -312,8 +314,9 @@ void HyperparameterOptimizer::runBO() {
     for (int i = 0; i < squaresum.size(); i++) {
       base::DataVector tmp(*mincon);
       tmp.sub(contPoints[i]);
-      kernels[i] = exp((-squaresum[i] - std::pow(tmp.l2Norm(), 2)) * 2); //devided by 2
+      kernels[i] = exp((-squaresum[i] - std::pow(tmp.l2Norm(), 2)) / 2 * kernelwidth); //devided by 2
     }
+    kernels[kernels.size()-1]=1.0001; //EDIT: noise added
     BO.updateGP(kernels, results);  //EDIT: ascend or descent?
 
   }

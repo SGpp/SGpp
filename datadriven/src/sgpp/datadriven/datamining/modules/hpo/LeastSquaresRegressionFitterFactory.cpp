@@ -29,11 +29,11 @@ LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory(DataMin
 
 	//EDIT: new hier ohne pointer?
 	std::cout<<"nConfigBits: "<<configBits.size()<<std::endl;
-
+/*
   conpar["lambda"] = (new ContinuousParameter{-2, 1});
   conpar["lambda"]->makeConfigBits(4, configBits);
 	std::cout<<"nConfigBits: "<<configBits.size()<<std::endl;
-
+*/
   conpar["threshold"] = (new ContinuousParameter{0.0005, 0.002});
   conpar["threshold"]->makeConfigBits(3, configBits);
 	std::cout<<"nConfigBits: "<<configBits.size()<<std::endl;
@@ -48,6 +48,16 @@ LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory(DataMin
 
 	dispar["basisFunction"] = (new DiscreteParameter{0,1});
 	dispar["basisFunction"]->makeConfigBits(configBits);
+
+	conpar["lambda"] = (new ContinuousParameter{-2, 0});
+	conpar["lambda"]->makeConfigBits(4, configBits);
+	std::cout<<"nConfigBits: "<<configBits.size()<<std::endl;
+/*
+	conpar["threshold"] = (new ContinuousParameter{-5, -2});
+	conpar["threshold"]->makeConfigBits(3, configBits);
+	std::cout<<"nConfigBits: "<<configBits.size()<<std::endl;
+
+*/
 
 }
 
@@ -67,7 +77,8 @@ ModelFittingBase* LeastSquaresRegressionFitterFactory::buildFitter()  {
 		  dispar["level"]->getValue(),
 		  basisFunction[dispar["basisFunction"]->getValue()],
 		  dispar["noPoints"]->getValue(),
-		  conpar["threshold"]->getValue(),
+		  //pow(10,conpar["threshold"]->getValue()),
+      conpar["threshold"]->getValue(),
 		  pow(10,conpar["lambda"]->getValue())
 		  );
  /* std::cout<<"Error: configID not fully used:"<<configID<<std::endl;
@@ -103,10 +114,10 @@ void LeastSquaresRegressionFitterFactory::printConfig(){
   }
 	 */
 	std::string basisFunction[] = {"Linear","ModLinear"};
-	std::cout<<"Level: "<<dispar["level"]->getValue()
+	std::cout<<"Level: "<< dispar["level"]->getValue()
 					 <<", Basis: "<<basisFunction[dispar["basisFunction"]->getValue()]
 					 <<", noPoints: "<< dispar["noPoints"]->getValue()
-					 <<", Threshold: "<<conpar["threshold"]->getValue()
+					 <<", Threshold: "<<conpar["threshold"]->getValue()<<", "<<pow(10,conpar["threshold"]->getValue())
 					 <<", Lambda: "<<conpar["lambda"]->getValue()<<", "<<pow(10,conpar["lambda"]->getValue())
 					 <<std::endl;
 }
