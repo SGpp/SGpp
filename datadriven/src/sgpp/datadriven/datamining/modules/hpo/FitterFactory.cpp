@@ -95,9 +95,7 @@ void FitterFactory::setHarmonica(int configID, int row, DataMatrix &paritymatrix
   //  bit.evaluate(&configID);
 	// }
 
-	if(configID != 0){
-	  std::cout<<"Error: configID not fully used:"<<configID<<std::endl;
-  }
+
   for(int i=0;i<parityrow.size();i++){
 	  int tmp = 1;
 	  for(auto& bit : parityrow[i]){
@@ -105,6 +103,10 @@ void FitterFactory::setHarmonica(int configID, int row, DataMatrix &paritymatrix
 	  }
 	  //std::cout<<"Bitinparity:"<<tmp<<std::endl;
 	  paritymatrix.set(row, i, tmp);
+  }
+
+  if(configID != 0){
+    std::cout<<"Error: configID not fully used:"<<configID<<std::endl;
   }
 
   for(auto pair: dispar){
