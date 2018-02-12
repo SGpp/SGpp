@@ -159,19 +159,23 @@ double BsplineStochasticCollocation::computeVariance() {
   sgpp::base::Grid* gridptr = grid.get();
   sgpp::base::DataVector product(alpha.size());
 
-  scalarProducts.updateGrid(gridptr);
-  scalarProducts.setWeightFunction(weightFunctions);
-  scalarProducts.setBounds(config.bounds);
-  scalarProducts.mult(alpha, product);
-
-  double meanSquare = product.dotProduct(alpha);
   double width = 1.0;
   for (size_t d = 0; d < numDims; d++) {
     width *= (config.bounds[2 * d + 1] - config.bounds[2 * d]);
   }
+  scalarProducts.updateGrid(gridptr);
+  scalarProducts.setWeightFunction(weightFunctions);
+  scalarProducts.setBounds(config.bounds);
+  scalarProducts.mult(alpha, product);
+  double meanSquare = product.dotProduct(alpha);
   meanSquare *= width;
-
   double variance = meanSquare - ev * ev;
+
+  //  alpha[0] -= ev;
+  //  scalarProducts.mult(alpha, product);
+  //  double variance = product.dotProduct(alpha);
+  //  variance *= width;
+
   return variance;
 }
 

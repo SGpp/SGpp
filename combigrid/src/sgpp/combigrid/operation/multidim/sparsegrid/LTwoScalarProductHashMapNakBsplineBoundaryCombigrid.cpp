@@ -193,7 +193,8 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
   result.setAll(0.0);
 
   // ToDo (rehmemk) This parallelization is slower than serial execution. The criticals below are
-  // way too big, find out what really causes parallelization problems
+  // way too big, find out what really causes parallelization problems. While the complete
+  // calculateScalarProduct routine is marked critical this is not parallel at all
   //#pragma omp parallel for schedule(static)
   for (size_t i = 0; i < gridSize; i++) {
     MultiIndex hashMI(5);
@@ -251,33 +252,36 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
               temp_res = calculateScalarProduct(lid, iid, ljd, ijd, coordinates, weights, basis, d,
                                                 offseti_left, offseti_right, offsetj_left,
                                                 offsetj_right, hInvik, hInvjk, hik, hjk, pp1h);
-              numAdditionalPoints = lastNumAdditionalPoints;
+            }
+            numAdditionalPoints = lastNumAdditionalPoints;
 
-              if (isCustomWeightFunction) {
-                double tol = 1e-14;
-                double err = 1e14;
+            if (isCustomWeightFunction) {
+              double tol = 1e-14;
+              double err = 1e14;
 
-                while (err > tol) {
-                  lastNumAdditionalPoints = numAdditionalPoints;
-                  numAdditionalPoints += incrementQuadraturePoints;
-                  quadOrder = degree + 1 + numAdditionalPoints;
-                  // This leads to problems with the simple OMP parallelisation if the abort
-                  // criterion is too close to 500
-                  if (quadOrder > 480) {
-                    break;
-                  }
+              while (err > tol) {
+                lastNumAdditionalPoints = numAdditionalPoints;
+                numAdditionalPoints += incrementQuadraturePoints;
+                quadOrder = degree + 1 + numAdditionalPoints;
+                // This leads to problems with the simple OMP parallelisation if the abort
+                // criterion is too close to 500
+                if (quadOrder > 480) {
+                  break;
+                }
+                double finer_temp_res = 1e+14;
+#pragma omp critical
+                {
                   gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
-                  double finer_temp_res = calculateScalarProduct(
+                  finer_temp_res = calculateScalarProduct(
                       lid, iid, ljd, ijd, coordinates, weights, basis, d, offseti_left,
                       offseti_right, offsetj_left, offsetj_right, hInvik, hInvjk, hik, hjk, pp1h);
-
-                  err = fabs(temp_res - finer_temp_res);
-                  temp_res = finer_temp_res;
                 }
+                err = fabs(temp_res - finer_temp_res);
+                temp_res = finer_temp_res;
               }
-              // must this be synchronized for OMP?
-              innerProducts[hashMI] = temp_res;
             }
+            // must this be synchronized for OMP?
+            innerProducts[hashMI] = temp_res;
           }
 #pragma omp atomic
           temp_ij *= temp_res;
