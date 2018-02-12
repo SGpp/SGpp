@@ -94,12 +94,13 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::hashLevelIndex(base::l
   hashMI[4] = d;
 }
 double LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::calculateScalarProduct(
-    base::level_t lid, base::index_t iid, base::level_t ljd, base::index_t ijd, size_t quadOrder,
-    size_t d, double offseti_left, double offseti_right, double offsetj_left, double offsetj_right,
-    sgpp::base::index_t hInvik, sgpp::base::index_t hInvjk, double hik, double hjk, size_t pp1h) {
+    base::level_t lid, base::index_t iid, base::level_t ljd, base::index_t ijd,
+    base::DataVector coordinates, base::DataVector weights,
+    sgpp::base::SNakBsplineBoundaryCombigridBase basis, size_t d, double offseti_left,
+    double offseti_right, double offsetj_left, double offsetj_right, sgpp::base::index_t hInvik,
+    sgpp::base::index_t hInvjk, double hik, double hjk, size_t pp1h) {
   double temp_res = 0.0, scaling = 0.0, offset = 0.0;
   size_t start = 0, stop = 0;
-  base::DataVector coordinates, weights;
 
   if (lid >= ljd) {
     offset = offseti_left;
@@ -148,14 +149,7 @@ double LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::calculateScalarProdu
     }
   }
 
-  sgpp::base::SNakBsplineBoundaryCombigridBase basis(degree);
-// ToDo (rehmemk) this seems to be the only critical part. Parallelize it and test it with a larger
-// problem on neon
-#pragma omp critical
-  {
-    base::GaussLegendreQuadRule1D gauss;
-    gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
-  }
+  //  sgpp::base::SNakBsplineBoundaryCombigridBase basis(degree);
 
   for (size_t n = start; n <= stop; n++) {
     for (size_t c = 0; c < coordinates.size(); c++) {
@@ -181,27 +175,29 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
               << std::endl;
   }
 
+  sgpp::base::SNakBsplineBoundaryCombigridBase basis(degree);
   base::GridStorage& storage = grid->getStorage();
-
-  size_t lastNumAdditionalPoints = 0;
-  size_t quadOrder = degree + 1 + numAdditionalPoints;
-
   size_t nrows = storage.getSize();
   size_t ncols = storage.getSize();
-
+  size_t gridSize = storage.getSize();
+  size_t gridDim = storage.getDimension();
   if (alpha.getSize() != ncols || result.getSize() != nrows) {
     throw sgpp::base::data_exception("Dimensions do not match!");
   }
 
-  size_t gridSize = storage.getSize();
-  size_t gridDim = storage.getDimension();
+  size_t lastNumAdditionalPoints = 0;
+  size_t quadOrder = degree + 1 + numAdditionalPoints;
+  base::DataVector coordinates, weights;
+  base::GaussLegendreQuadRule1D gauss;
 
   result.setAll(0.0);
 
-#pragma omp parallel for schedule(static)
+  // ToDo (rehmemk) This parallelization is slower than serial execution. The criticals below are
+  // way too big, find out what really causes parallelization problems
+  //#pragma omp parallel for schedule(static)
   for (size_t i = 0; i < gridSize; i++) {
-    //    std::cout << "OMP uses " << omp_get_num_threads() << " thread(s)" << std::endl;
     MultiIndex hashMI(5);
+    //    std::cout << "OMP uses " << omp_get_num_threads() << " thread(s)" << std::endl;
     for (size_t j = i; j < gridSize; j++) {
       double temp_ij = 1;
 
@@ -242,43 +238,48 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
           // else calculate 1D integral int bi bj f dx
           double temp_res = 0.0;
 
+          std::map<MultiIndex, double>::iterator it;
           hashLevelIndex(lid, iid, ljd, ijd, d, hashMI);
-
-          auto it = innerProducts.find(hashMI);
-
+#pragma omp critical
+          { it = innerProducts.find(hashMI); }
           if (it != innerProducts.end()) {
             temp_res = it->second;
           } else {
-            temp_res = calculateScalarProduct(lid, iid, ljd, ijd, quadOrder, d, offseti_left,
-                                              offseti_right, offsetj_left, offsetj_right, hInvik,
-                                              hInvjk, hik, hjk, pp1h);
-            numAdditionalPoints = lastNumAdditionalPoints;
+#pragma omp critical
+            {
+              gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
+              temp_res = calculateScalarProduct(lid, iid, ljd, ijd, coordinates, weights, basis, d,
+                                                offseti_left, offseti_right, offsetj_left,
+                                                offsetj_right, hInvik, hInvjk, hik, hjk, pp1h);
+              numAdditionalPoints = lastNumAdditionalPoints;
 
-            if (isCustomWeightFunction) {
-              double tol = 1e-14;
-              double err = 1e14;
+              if (isCustomWeightFunction) {
+                double tol = 1e-14;
+                double err = 1e14;
 
-              while (err > tol) {
-                lastNumAdditionalPoints = numAdditionalPoints;
-                numAdditionalPoints += incrementQuadraturePoints;
-                quadOrder = degree + 1 + numAdditionalPoints;
-                // This leads to problems with the simple OMP parallelisation if the abort
-                // criterion
-                // is too close to 500
-                if (quadOrder > 480) {
-                  break;
+                while (err > tol) {
+                  lastNumAdditionalPoints = numAdditionalPoints;
+                  numAdditionalPoints += incrementQuadraturePoints;
+                  quadOrder = degree + 1 + numAdditionalPoints;
+                  // This leads to problems with the simple OMP parallelisation if the abort
+                  // criterion is too close to 500
+                  if (quadOrder > 480) {
+                    break;
+                  }
+                  gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
+                  double finer_temp_res = calculateScalarProduct(
+                      lid, iid, ljd, ijd, coordinates, weights, basis, d, offseti_left,
+                      offseti_right, offsetj_left, offsetj_right, hInvik, hInvjk, hik, hjk, pp1h);
+
+                  err = fabs(temp_res - finer_temp_res);
+                  temp_res = finer_temp_res;
                 }
-                double finer_temp_res = calculateScalarProduct(
-                    lid, iid, ljd, ijd, quadOrder, d, offseti_left, offseti_right, offsetj_left,
-                    offsetj_right, hInvik, hInvjk, hik, hjk, pp1h);
-
-                err = fabs(temp_res - finer_temp_res);
-                temp_res = finer_temp_res;
               }
+              // must this be synchronized for OMP?
+              innerProducts[hashMI] = temp_res;
             }
-            // must this be synchronized for OMP?
-            innerProducts[hashMI] = temp_res;
           }
+#pragma omp atomic
           temp_ij *= temp_res;
         }
       }

@@ -46,7 +46,7 @@ class NakBsplineBoundaryCombigridBasis : public Basis<LT, IT> {
   explicit NakBsplineBoundaryCombigridBasis(size_t degree)
       : bsplineBasis(BsplineBasis<LT, IT>(degree)) {
     if (getDegree() > 7) {
-      throw std::runtime_error("Unsupported B-spline degree.");
+      throw std::runtime_error("NakBsplineBoundaryCombigridBasis: Unsupported B-spline degree.");
     }
   }
 

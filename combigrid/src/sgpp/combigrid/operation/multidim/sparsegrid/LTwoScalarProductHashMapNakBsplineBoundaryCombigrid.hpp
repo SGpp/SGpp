@@ -86,10 +86,12 @@ class LTwoScalarProductHashMapNakBsplineBoundaryCombigrid {
    * (li,ii) and (lj,ij)
    */
   double calculateScalarProduct(base::level_t lid, base::index_t iid, base::level_t ljd,
-                                base::index_t ijd, size_t quadOrder, size_t d, double offseti_left,
-                                double offseti_right, double offsetj_left, double offsetj_right,
-                                sgpp::base::index_t hInvik, sgpp::base::index_t hInvjk, double hik,
-                                double hjk, size_t pp1h);
+                                base::index_t ijd, base::DataVector coordinates,
+                                base::DataVector weights,
+                                sgpp::base::SNakBsplineBoundaryCombigridBase basis, size_t d,
+                                double offseti_left, double offseti_right, double offsetj_left,
+                                double offsetj_right, sgpp::base::index_t hInvik,
+                                sgpp::base::index_t hInvjk, double hik, double hjk, size_t pp1h);
 
  protected:
   sgpp::base::Grid* grid;
