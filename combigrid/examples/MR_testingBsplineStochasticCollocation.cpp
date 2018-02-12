@@ -98,8 +98,7 @@ int main() {
       BSplineCoefficientGridFunction(func, pointHierarchies, config.degree);
 
   //  std::vector<size_t> loopPoints{10, 100, 1000, 10000};
-  std::vector<size_t> loopPoints{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-  //  std::vector<size_t> loopPoints = {1, 2, 3, 4, 5};
+  std::vector<size_t> loopPoints{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
   for (auto& np : loopPoints) {
     sgpp::combigrid::Stopwatch watch;
     watch.start();
