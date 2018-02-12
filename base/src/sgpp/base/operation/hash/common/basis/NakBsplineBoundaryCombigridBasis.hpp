@@ -11,13 +11,14 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <iostream>
 
 namespace sgpp {
 namespace base {
 
 /**
- * Not-a-knot B-spline basis. This basis is designed to represent Bspline boundary interpolants from
- * the combigrid module.
+ * Hierarchical Not-a-knot B-spline basis. This basis is designed to represent Bspline boundary
+ * interpolants from the combigrid module.
  * Therefore it has the following unusual choice of basis functions:
  * linear and quadratic terms on level 0
  * constant term on level 1
@@ -26,7 +27,7 @@ namespace base {
  * suitabe for any application that cannot guarantee the existence of level 1 in every dimension
  *
  * A combigrid interpolant which shall be interpolated with this class needs level (1,...,1)
- * otherwise the boundary points cannot match, therefore the above criterion is met.
+ * otherwise the boundary points cannot match
  */
 
 template <class LT, class IT>
@@ -69,7 +70,7 @@ class NakBsplineBoundaryCombigridBasis : public Basis<LT, IT> {
       case 1:
         return std::max(1.0 - std::abs(t), 0.0);
 
-      // degree 3: polynomials on Level 0 and 1, nak Bsplines from Level 3 on
+      // degree 3: global polynomials in x on Level 0 and 1, nak Bsplines from Level 3 on
       case 3:
         if (l == 0) {
           if (i == 0) {
@@ -77,19 +78,18 @@ class NakBsplineBoundaryCombigridBasis : public Basis<LT, IT> {
             return 1 - x * x;
           } else {
             // l = 0, i = 1
-            //            return x * x - 2 * x + 1;
             return x;
           }
         } else if (l == 1) {
           if (i == 0) {
-            // l = 0, i = 0
-            return 0.5 * t * t - 1.5 * t + 1.0;
+            // l = 1, i = 0
+            return 0.5 * x * x - 1.5 * x + 1.0;
           } else if (i == 1) {
             // l = 1, i = 1
             return 1;
           } else {
             // l = 1, i = 2
-            return 0.5 * t * t + 1.5 * t + 1.0;
+            return 0.5 * x * x + 1.5 * x + 1.0;
           }
         } else if ((i > 3) && (i < hInv - 3)) {
           // l >= 4, 3 < i < 2^l - 3
@@ -233,7 +233,7 @@ class NakBsplineBoundaryCombigridBasis : public Basis<LT, IT> {
         if (l == 0) {
           if (i == 0) {
             // l = 0, i = 0
-            return 1 - x * x;  // 1 - x * x;
+            return 1 - x * x;
           } else {
             // l = 0, i = 1
             return x;

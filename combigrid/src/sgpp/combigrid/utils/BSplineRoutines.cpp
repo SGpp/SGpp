@@ -40,6 +40,15 @@ size_t getUniqueIndex(size_t level, size_t index) {
   return offset + index;
 }
 
+/**
+ * Nodal Not-a-Knot B spline basis
+ * always constant on level 0
+ * degree 1 : hats from level 1 onwards
+ * degree 3 : polynomials on level 1, Not-a-Knot B-splines from level 2 onwards
+ * degree 5 : polynomials on level 1,2, Not-a-KNot B-Splines from level 3 onwards
+ *
+ * the level is determined by the length of the points vector containing the grid points
+ */
 double expUniformNakBspline(double const& x, size_t const& degree, size_t i,
                             std::vector<double> const& points) {
   // derive level from number of gridpoints
@@ -57,7 +66,7 @@ double expUniformNakBspline(double const& x, size_t const& degree, size_t i,
       }
       return std::max(1.0 - std::abs(t), 0.0);
 
-    // degree 3: polynomials on Level 0 and 1, nak Bsplines from Level 3 on
+    // degree 3: polynomials on Level 0 and 1, nak Bsplines from Level 2 on
     case 3: {
       sgpp::base::BsplineBasis<size_t, size_t> bsplineBasis(3);
       if (l == 0) {
