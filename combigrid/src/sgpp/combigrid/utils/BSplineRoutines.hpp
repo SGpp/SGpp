@@ -156,6 +156,10 @@ std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineVarianceR
     size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func,
     std::shared_ptr<sgpp::combigrid::LevelManager> levelManager);
 
+std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineLinearInterpolationOperation(
+    size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func,
+    std::shared_ptr<sgpp::combigrid::LevelManager> levelManager);
+
 std::shared_ptr<sgpp::combigrid::CombigridMultiOperation>
 createBsplineVarianceRefinementOperationWithWeightsAndBounds(
     size_t degree, sgpp::combigrid::MultiFunction func,

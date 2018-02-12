@@ -4,7 +4,9 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductHashMapNakBsplineBoundaryCombigrid.hpp>
+#include <sgpp/combigrid/threading/ThreadPool.hpp>
 
+#include <omp.h>
 #include <algorithm>
 #include <map>
 #include <vector>
@@ -95,16 +97,9 @@ double LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::calculateScalarProdu
     base::level_t lid, base::index_t iid, base::level_t ljd, base::index_t ijd, size_t quadOrder,
     size_t d, double offseti_left, double offseti_right, double offsetj_left, double offsetj_right,
     sgpp::base::index_t hInvik, sgpp::base::index_t hInvjk, double hik, double hjk, size_t pp1h) {
-  sgpp::base::SNakBsplineBoundaryCombigridBase basis(degree);
-
-  base::DataVector coordinates;
-  base::DataVector weights;
-  base::GaussLegendreQuadRule1D gauss;
-  gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
-
-  double temp_res = 0.0;
+  double temp_res = 0.0, scaling = 0.0, offset = 0.0;
   size_t start = 0, stop = 0;
-  double scaling = 0.0, offset = 0.0;
+  base::DataVector coordinates, weights;
 
   if (lid >= ljd) {
     offset = offseti_left;
@@ -153,8 +148,17 @@ double LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::calculateScalarProdu
     }
   }
 
+  sgpp::base::SNakBsplineBoundaryCombigridBase basis(degree);
+// ToDo (rehmemk) this seems to be the only critical part. Parallelize it and test it with a larger
+// problem on neon
+#pragma omp critical
+  {
+    base::GaussLegendreQuadRule1D gauss;
+    gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
+  }
+
   for (size_t n = start; n <= stop; n++) {
-    for (size_t c = 0; c < quadOrder; c++) {
+    for (size_t c = 0; c < coordinates.size(); c++) {
       // transform  the quadrature points to the segment on which the Bspline is
       // evaluated and from there to the interval[a,b] on which the weight function is defined
       const double x = offset + scaling * (coordinates[c] + static_cast<double>(n));
@@ -166,7 +170,6 @@ double LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::calculateScalarProdu
                   weightFunctionsCollection[d](transX);
     }
   }
-
   return temp_res * scaling;
 }
 
@@ -195,10 +198,10 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
 
   result.setAll(0.0);
 
-  MultiIndex hashMI(5);
-
-  //#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(static)
   for (size_t i = 0; i < gridSize; i++) {
+    //    std::cout << "OMP uses " << omp_get_num_threads() << " thread(s)" << std::endl;
+    MultiIndex hashMI(5);
     for (size_t j = i; j < gridSize; j++) {
       double temp_ij = 1;
 
@@ -250,6 +253,7 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
                                               offseti_right, offsetj_left, offsetj_right, hInvik,
                                               hInvjk, hik, hjk, pp1h);
             numAdditionalPoints = lastNumAdditionalPoints;
+
             if (isCustomWeightFunction) {
               double tol = 1e-14;
               double err = 1e14;
@@ -258,20 +262,21 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
                 lastNumAdditionalPoints = numAdditionalPoints;
                 numAdditionalPoints += incrementQuadraturePoints;
                 quadOrder = degree + 1 + numAdditionalPoints;
-                // This leads to problems with the simple OMP parallelisation if the abort criterion
+                // This leads to problems with the simple OMP parallelisation if the abort
+                // criterion
                 // is too close to 500
                 if (quadOrder > 480) {
                   break;
                 }
-
                 double finer_temp_res = calculateScalarProduct(
                     lid, iid, ljd, ijd, quadOrder, d, offseti_left, offseti_right, offsetj_left,
                     offsetj_right, hInvik, hInvjk, hik, hjk, pp1h);
+
                 err = fabs(temp_res - finer_temp_res);
                 temp_res = finer_temp_res;
               }
             }
-            // if OMP is used it must be synchronized for this
+            // must this be synchronized for OMP?
             innerProducts[hashMI] = temp_res;
           }
           temp_ij *= temp_res;
