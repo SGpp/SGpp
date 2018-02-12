@@ -672,6 +672,9 @@ std::vector<double> createdeg5NakKnots(std::vector<double> const& xValues) {
   return xi;
 }
 
+// creates the not a knot knots xi from the 1D grid points xValues.
+// xi then is used for the BsplineQuadrature and Bspline ScalarProduct to identify the supports of
+// the nakBsplines
 std::vector<double> createNakKnots(std::vector<double> const& xValues, size_t const& degree) {
   if (degree == 1) {
     return createdeg1Knots(xValues);
@@ -957,10 +960,36 @@ std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineVarianceR
       sgpp::combigrid::FullGridSummationStrategyType::VARIANCE;
 
   bool exploitNesting = false;
-  auto Operation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
+  auto operation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
       pointHierarchies, Evaluators, levelManager, gf, exploitNesting,
       auxiliarySummationStrategyType);
-  return Operation;
+  return operation;
+}
+
+// levelManager must be an AveragingLevelManager. Otherwise this makes no sense
+std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineLinearInterpolationOperation(
+    size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func,
+    std::shared_ptr<sgpp::combigrid::LevelManager> levelManager) {
+  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
+      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+  sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
+
+  sgpp::combigrid::EvaluatorConfiguration EvalConfig(
+      sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, degree);
+
+  sgpp::combigrid::CombiEvaluators::MultiCollection Evaluators(
+      numDimensions, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(EvalConfig));
+
+  //  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
+  //      new sgpp::combigrid::AveragingLevelManager());
+  sgpp::combigrid::FullGridSummationStrategyType auxiliarySummationStrategyType =
+      sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
+
+  bool exploitNesting = false;
+  auto operation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
+      pointHierarchies, Evaluators, levelManager, gf, exploitNesting,
+      auxiliarySummationStrategyType);
+  return operation;
 }
 
 std::shared_ptr<sgpp::combigrid::CombigridMultiOperation>

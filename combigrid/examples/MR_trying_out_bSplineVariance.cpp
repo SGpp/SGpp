@@ -336,7 +336,6 @@ void getWeightedVarianceLevelStructure(
 }
 
 double wcos(double v) { return cos(v); }
-double wexp(double v) { return exp(v); }
 void BSplineGridConversion(size_t degree, size_t numPoints) {
   //  sgpp::combigrid::Stopwatch watch_individual;
   //  sgpp::combigrid::Stopwatch watch_total;
@@ -346,12 +345,10 @@ void BSplineGridConversion(size_t degree, size_t numPoints) {
   sgpp::combigrid::MultiFunction func(f);
 
   sgpp::combigrid::SingleFunction wCos(wcos);
-  sgpp::combigrid::SingleFunction wExp(wexp);
   sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection(0);
   std::vector<double> boundsVec;
   for (size_t d = 0; d < numDimensions; d++) {
     weightFunctionsCollection.push_back(wCos);
-    //  weightFunctionsCollection.push_back(wExp);
     boundsVec.push_back(0);
     boundsVec.push_back(1);
   }
