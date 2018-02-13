@@ -237,7 +237,6 @@ class CombigridTensorOperation {
    *
    * @param pointHierarchies univariate grids
    * @param storage function value storage
-   * @param levelManager provides level structures that are copied to the new tensor operation
    * @param functionBasis global basis function to which the result should be transformed
    * @param summationStrategyType strategy to gather the results of the univariate evaluators on
    * @return tensor operation with the same grid as given by the parameters
@@ -253,7 +252,6 @@ class CombigridTensorOperation {
    *
    * @param pointHierarchies univariate grids
    * @param storage function value storage
-   * @param levelManager provides level structures that are copied to the new tensor operation
    * @param functionBases vector of global basis functions to which the result should be transformed
    * @param summationStrategyType strategy to gather the results of the univariate evaluators on
    * @return tensor operation with the same grid as given by the parameters

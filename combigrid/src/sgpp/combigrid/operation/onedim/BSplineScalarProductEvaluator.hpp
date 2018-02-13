@@ -54,9 +54,9 @@ class BSplineScalarProductEvaluator : public AbstractLinearEvaluator<FloatArrayV
   /**
    * This Function calculates all integrals int b_i(x) b_j(x) dx
    * @param points grid points of the one dimensional grid
-   * @param integrals The integrals will be added to the back of this vector in the order of the
+   * @param basisValues The integrals will be added to the back of this vector in the order of the
    * points in the vector with the points,
-   * @params incrementQuadraturePoints increment for numAdditionalPoints in the iterative quadrature
+   * @param incrementQuadraturePoints increment for numAdditionalPoints in the iterative quadrature
    * routine for custom weight function
    * @param tol tolerance for the iterative quadrature routine for custom weight function
    * it is recommended to clear the weight vector before calling this function to ensure that the
@@ -72,13 +72,15 @@ class BSplineScalarProductEvaluator : public AbstractLinearEvaluator<FloatArrayV
 
   /**
    * @param degree degree of the B spline basis
-   * @param numAdditionalPoints Specifies how many Gauss-Legrendre points should be used in addition
-   * to the default when integrating the Lagrange polynomials for computing the quadrature weights.
-   * This number should be higher if the weight function is hard to integrate.
    * @param weight_function optional weight function w that can be included in the quadrature
    * weights. The Quadrature evaluator then approximates the integral of f*w instead of the integral
    * of f. This provides more precision by calling w more often than f, which might be useful if w
    * can be evaluated much faster than f.
+   * @param numAdditionalPoints Specifies how many Gauss-Legrendre points should be used in addition
+   * to the default when integrating the Lagrange polynomials for computing the quadrature weights.
+   * This number should be higher if the weight function is hard to integrate.
+   * @param a lower bound of bounding box
+   * @param b upper bound of bounding box
    * @param normalizeWeights If this is set to true, the weights are normalized so that they sum up
    * to 1. This might be useful if the weight function is (or should be) a probability distribution
    * on the domain.

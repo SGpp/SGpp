@@ -142,14 +142,14 @@ sgpp::combigrid::GridFunction BSplineTensorCoefficientGridFunction(
     size_t degree);
 
 /**
- * Creates a level structure according to an averagign level manager using variance calculations on
+ * Creates a level structure according to an averaging level manager using variance calculations on
  * each level as norm. This is a very specific case created for the CO2 example. It can (should?) be
  * generalized
  *
- * @param numPoints     maximum number of points the resulting level structure contains
  * @param degree        B spline degree
  * @param numDimensions number of dimensions
- * @param func		    the objective function
+ * @param func		      the objective function
+ * @param levelManager  level manager
  *
  */
 std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineVarianceRefinementOperation(

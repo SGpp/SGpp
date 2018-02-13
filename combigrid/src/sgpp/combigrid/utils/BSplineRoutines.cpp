@@ -948,10 +948,10 @@ sgpp::combigrid::GridFunction BSplineTensorCoefficientGridFunction(
   return gf;
 }
 
-// levelManager must be an AveragingLevelManager. Otherwise this makes no sense
 std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineVarianceRefinementOperation(
     size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func,
     std::shared_ptr<sgpp::combigrid::LevelManager> levelManager) {
+  // levelManager must be an AveragingLevelManager. Otherwise this makes no sense
   sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
       numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
   sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
