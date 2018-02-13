@@ -622,9 +622,8 @@ double BSplineVarianceWithWeightsAndBounds(
   size_t numAdditionalPoints = 0;
   bool normalizeWeights = false;
 
-  std::vector<
-      std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatArrayVector>>>
-      evaluators(0);
+  std::vector<std::shared_ptr<
+      sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatArrayVector>>> evaluators(0);
   for (size_t d = 0; d < numDimensions; d++) {
     evaluators.push_back(std::make_shared<sgpp::combigrid::BSplineScalarProductEvaluator>(
         degree, weightFunctionsCollection[d], numAdditionalPoints, bounds[2 * d], bounds[2 * d + 1],
@@ -705,6 +704,8 @@ void createRegularLevelStructure(
   newLevelStructure = Operation->getLevelManager()->getLevelStructure();
 }
 
+#ifdef USE_DAKOTA
+
 BOOST_AUTO_TEST_CASE(testBsplineStochasticCollocation_co2_lognormal) {
   std::cout << "Integrate objective function co2model and lognormal weight function  with B "
                "splines of degree 5 on level 4 in 1D "
@@ -771,5 +772,7 @@ BOOST_AUTO_TEST_CASE(testBsplineStochasticCollocation_co2_lognormal) {
   BOOST_CHECK_SMALL(std::abs(co2Model.mean - bsc.mean()), 1e-8);
   BOOST_CHECK_SMALL(std::abs(co2Model.variance - bsc.variance()), 1e-9);
 }
+
+#endif
 
 BOOST_AUTO_TEST_SUITE_END()
