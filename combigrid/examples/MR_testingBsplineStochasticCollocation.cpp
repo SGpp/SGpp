@@ -98,7 +98,7 @@ int main() {
       BSplineCoefficientGridFunction(func, pointHierarchies, config.degree);
 
   //  std::vector<size_t> loopPoints{10, 100, 1000, 10000};
-  std::vector<size_t> loopPoints{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  std::vector<size_t> loopPoints{8, 9, 10};
   for (auto& np : loopPoints) {
     sgpp::combigrid::Stopwatch watch;
     watch.start();
@@ -112,17 +112,19 @@ int main() {
     config.coefficientStorage = coefficientStorage;
     BSC.updateConfig(config);
 
-    // x^5+y^5  sin(x) [0,2]^2
-    double realEv = 0.906028496608227;
-    double realVar = -0.124808147959942;
+    // x^5+y^5  with weight function sin(x) on [0,2]^2
+    double realEv = 0.906028496608237;
+    double realVar = 0.700571273115382;
 
-    // x^5+y^5 sin(x) [0,1]^2
+    // x^5+y^5 with weight function sin(x) on  [0,1]^2
     //    double realEv = 0.114999004731632;
-    //    double realVar = 0.084205744124232;
+    //    double realVar = 0.073775657714228;
+
     sgpp::combigrid::Stopwatch variance_watch;
     variance_watch.start();
     double var = BSC.variance();
-    std::cout << np << " " << variance_watch.elapsedSeconds() << "s  of ";
+    std::cout << levelManager->numGridPoints() << " " << variance_watch.elapsedSeconds()
+              << "s  of ";
     double ev = BSC.mean();
     std::cout << watch.elapsedSeconds() << "s | ";
     //    std::cout << "mean: " << ev << " variance: " << var << std::endl;

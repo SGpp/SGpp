@@ -7,7 +7,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include <sgpp/combigrid/definitions.hpp>
-#include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
+#include <sgpp/combigrid/functions/ProbabilityDensityFunction1D.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
@@ -622,8 +622,9 @@ double BSplineVarianceWithWeightsAndBounds(
   size_t numAdditionalPoints = 0;
   bool normalizeWeights = false;
 
-  std::vector<std::shared_ptr<
-      sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatArrayVector>>> evaluators(0);
+  std::vector<
+      std::shared_ptr<sgpp::combigrid::AbstractLinearEvaluator<sgpp::combigrid::FloatArrayVector>>>
+      evaluators(0);
   for (size_t d = 0; d < numDimensions; d++) {
     evaluators.push_back(std::make_shared<sgpp::combigrid::BSplineScalarProductEvaluator>(
         degree, weightFunctionsCollection[d], numAdditionalPoints, bounds[2 * d], bounds[2 * d + 1],
@@ -713,16 +714,17 @@ BOOST_AUTO_TEST_CASE(testBsplineStochasticCollocation_co2_lognormal) {
 
   // create CO2 function and pdf weight functions
   sgpp::combigrid::CO2 co2Model;
-  sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration ortho_config;
-  ortho_config.polyParameters.type_ =
-      sgpp::combigrid::OrthogonalPolynomialBasisType::BOUNDED_LOGNORMAL;
-  ortho_config.polyParameters.logmean_ = co2Model.logmean;
-  ortho_config.polyParameters.stddev_ = co2Model.stddev;
-  ortho_config.polyParameters.lowerBound_ = co2Model.bounds[0];
-  ortho_config.polyParameters.upperBound_ = co2Model.bounds[1];
-  auto basisFunction = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(ortho_config);
+  sgpp::combigrid::ProbabilityDensityFunction1DConfiguration pdf_config;
+  pdf_config.pdfParameters.type_ =
+      sgpp::combigrid::ProbabilityDensityFunctionType::BOUNDED_LOGNORMAL;
+  pdf_config.pdfParameters.logmean_ = co2Model.logmean;
+  pdf_config.pdfParameters.stddev_ = co2Model.stddev;
+  pdf_config.pdfParameters.lowerBound_ = co2Model.bounds[0];
+  pdf_config.pdfParameters.upperBound_ = co2Model.bounds[1];
+  auto probabilityDensityFunction =
+      std::make_shared<sgpp::combigrid::ProbabilityDensityFunction1D>(pdf_config);
   sgpp::combigrid::MultiFunction func(co2Model.eval);
-  sgpp::combigrid::SingleFunction weight_function = basisFunction->getWeightFunction();
+  sgpp::combigrid::SingleFunction weight_function = probabilityDensityFunction->getWeightFunction();
 
   // initialize the Bspline surrogate model
   size_t numDims = co2Model.numDims;

@@ -235,8 +235,8 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
           temp_ij = 0.0;
           break;
         } else {
-          // if (level-Index) is already in hash map use it
-          // else calculate 1D integral int bi bj f dx
+          // if (level-Index) is already in the hash map use it
+          // else calculate 1D integral int bi bj f dx and save it in the hash map
           double temp_res = 0.0;
 
           std::map<MultiIndex, double>::iterator it;
@@ -296,6 +296,7 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
       }
     }
   }
+  // std::cout << "map size: " << innerProducts.size() << std::endl;
   //  std::cout << "LTwoScalarProduct numAddP: " << numAdditionalPoints << std::endl;
 }
 }  // namespace combigrid
