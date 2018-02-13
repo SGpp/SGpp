@@ -46,6 +46,10 @@ class BSplineQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVec
    * This function calculates the integral of the B spline basis given by their points
    * @param points The vector with the points
    * @param basisValues The integrals will be added to the back of this vector in the order of the
+   * @param incrementQuadraturePoints increment for numAdditionalPoints in the iterative
+   * quadrature
+   * routine for custom weight function
+   * @param tol tolerance for the iterative quadrature routine for custom weight function
    * points in the vector with the points. It is recommended to clear the basisValues vector before
    * calling this function to ensure that the basisValues are at the same position as their points
    */
