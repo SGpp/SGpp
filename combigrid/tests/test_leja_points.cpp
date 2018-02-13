@@ -129,6 +129,8 @@ BOOST_AUTO_TEST_CASE(testL2LejaPoints) {
   }
 }
 
+#ifdef USE_DAKOTA
+
 BOOST_AUTO_TEST_CASE(testWeightedL2LejaPoints) {
   sgpp::combigrid::CO2 co2Model;
   sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
@@ -173,3 +175,5 @@ BOOST_AUTO_TEST_CASE(testWeightedL2LejaPoints) {
     BOOST_CHECK(quad.getAbsoluteWeightSum() < 1.4);
   }
 }
+
+#endif
