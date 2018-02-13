@@ -5,8 +5,6 @@
 
 #pragma once
 
-//#include <sgpp/combigrid/operation/multidim/LevelHelpers.hpp>
-
 #include <algorithm>
 #include <functional>
 #include <iostream>

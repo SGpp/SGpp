@@ -26,7 +26,7 @@ namespace combigrid {
 
 class PolynomialChaosExpansion : public CombigridSurrogateModel {
  public:
-  PolynomialChaosExpansion(sgpp::combigrid::CombigridSurrogateModelConfiguration& config);
+  explicit PolynomialChaosExpansion(sgpp::combigrid::CombigridSurrogateModelConfiguration& config);
   virtual ~PolynomialChaosExpansion();
 
   double mean() override;

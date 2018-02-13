@@ -14,6 +14,8 @@
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 
+#include <vector>
+
 namespace sgpp {
 namespace combigrid {
 
