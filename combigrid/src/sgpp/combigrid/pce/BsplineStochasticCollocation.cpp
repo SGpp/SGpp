@@ -150,8 +150,6 @@ double BsplineStochasticCollocation::computeVariance() {
   auto levelStructure = this->config.levelStructure;
   convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
 
-  //  std::cout << "gridStorage size: " << gridStorage.getSize() << std::endl;
-
   // interpolate on SG
   sgpp::base::DataVector alpha = createInterpolantOnConvertedExpUnifromBoundaryCombigird(
       grid, gridStorage, combigridMultiOperation, levelStructure);
@@ -166,15 +164,25 @@ double BsplineStochasticCollocation::computeVariance() {
   scalarProducts.updateGrid(gridptr);
   scalarProducts.setWeightFunction(weightFunctions);
   scalarProducts.setBounds(config.bounds);
-  scalarProducts.mult(alpha, product);
-  double meanSquare = product.dotProduct(alpha);
-  meanSquare *= width;
-  double variance = meanSquare - ev * ev;
 
-  //  alpha[0] -= ev;
-  //  scalarProducts.mult(alpha, product);
-  //  double variance = product.dotProduct(alpha);
-  //  variance *= width;
+  double variance = 0;
+  if (config.degree == 1) {
+    // calculate V(u) = E(u^2) - E(u)^2
+    // this works for all B spline degrees
+    scalarProducts.mult(alpha, product);
+    double meanSquare = product.dotProduct(alpha);
+    meanSquare *= width;
+    variance = meanSquare - ev * ev;
+  } else {
+    // calculate V(u) = E((u-E(u))^2)
+    // this is done by subtracting E(u) from the coefficient of the constant function
+    // it does not work for B spline degree 1 because there is no constant function in the basis
+    // (We could add a constant basis function on level 0 ()
+    alpha[0] -= ev;
+    scalarProducts.mult(alpha, product);
+    variance = product.dotProduct(alpha);
+    variance *= width;
+  }
 
   return variance;
 }
