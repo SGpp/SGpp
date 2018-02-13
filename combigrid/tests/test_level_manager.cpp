@@ -174,7 +174,7 @@ BOOST_AUTO_TEST_CASE(testLevelManagerStats) {
       functionBasis, d, func);
   auto levelManager = op->getLevelManager();
   levelManager->enableStatsCollection();
-  
+
   // add regular levels
   size_t maxLevel = 8;
   for (size_t level = 0; level < maxLevel; level++) {
@@ -187,7 +187,7 @@ BOOST_AUTO_TEST_CASE(testLevelManagerStats) {
                                0.0775274779950517, 0.013446805563535};
 
   auto stats = levelManager->getInfoOnAddedLevels();
-  
+
   // evaluate stats
   // size_t i = 0;
   // for (auto &istats : *stats->getInfos()) {
@@ -196,7 +196,8 @@ BOOST_AUTO_TEST_CASE(testLevelManagerStats) {
   //   for (auto &item : istats) {
   //     auto &level = item.first;
   //     auto &levelInfo = item.second;
-  //     std::cout << level[0] << ", " << level[1] << " = " << std::setprecision(15) << levelInfo.norm
+  //     std::cout << level[0] << ", " << level[1] << " = " << std::setprecision(15) <<
+  //     levelInfo.norm
   //               << ", " << levelInfo.priority << std::endl;
   //   }
   // }
@@ -215,7 +216,7 @@ BOOST_AUTO_TEST_CASE(testLevelManagerStatsConversion) {
 
   auto op = sgpp::combigrid::CombigridOperation::createExpLejaPolynomialInterpolation(d, func);
   op->getLevelManager()->enableStatsCollection();
-  
+
   sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
   config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
   auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);

@@ -27,7 +27,8 @@ namespace combigrid {
 
 class PolynomialStochasticCollocation : public CombigridSurrogateModel {
  public:
-  PolynomialStochasticCollocation(sgpp::combigrid::CombigridSurrogateModelConfiguration& config);
+  explicit PolynomialStochasticCollocation(
+      sgpp::combigrid::CombigridSurrogateModelConfiguration& config);
   virtual ~PolynomialStochasticCollocation();
 
   double mean() override;
