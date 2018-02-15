@@ -72,7 +72,7 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
       }
     }
   }
-  return sum;
+  return (b - a) * sum;
 }
 
 void BSplineQuadratureEvaluator::calculate1DBSplineIntegrals(
