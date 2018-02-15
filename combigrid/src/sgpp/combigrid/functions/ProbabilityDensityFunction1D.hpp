@@ -7,8 +7,6 @@
 
 #include <sgpp/combigrid/GeneralFunction.hpp>
 
-#include <sgpp/base/tools/json/JSON.hpp>
-
 #ifdef USE_DAKOTA
 #include <BasisPolynomial.hpp>
 #include <RandomVariable.hpp>
@@ -50,16 +48,17 @@ struct ProbabilityDensityFunctionParameters {
 // --------------------------------------------------------------------------
 class ProbabilityDensityFunction1D;
 
-class ProbabilityDensityFunction1DConfiguration : public json::JSON {
+class ProbabilityDensityFunction1DConfiguration {
   friend class ProbabilityDensityFunction1D;
 
  public:
   ProbabilityDensityFunction1DConfiguration();
-  explicit ProbabilityDensityFunction1DConfiguration(const std::string& fileName);
 
-  ProbabilityDensityFunction1DConfiguration* clone() override;
+  //  ProbabilityDensityFunction1DConfiguration* clone();
 
   void initConfig();
+
+  void setPdfParameters(ProbabilityDensityFunctionParameters newParameters);
 
   sgpp::combigrid::ProbabilityDensityFunctionParameters pdfParameters;
 };
@@ -70,6 +69,7 @@ class ProbabilityDensityFunction1D {
   explicit ProbabilityDensityFunction1D(ProbabilityDensityFunction1DConfiguration& config);
   virtual ~ProbabilityDensityFunction1D();
 
+  double normalizeInput(double xValue);
   double pdf(double xValue);
   double mean();
   double variance();

@@ -124,6 +124,11 @@ bool BsplineStochasticCollocation::updateStatus() {
 
 double BsplineStochasticCollocation::computeMean() {
   double mean = combigridOperation->getResult();
+  //  double width = 1.0;
+  //  for (size_t d = 0; d < numDims; d++) {
+  //    width *= (config.bounds[2 * d + 1] - config.bounds[2 * d]);
+  //  }
+  //  mean *= width;
   return mean;
 }
 

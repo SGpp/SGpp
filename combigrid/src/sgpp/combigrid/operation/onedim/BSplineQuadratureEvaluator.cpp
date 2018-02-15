@@ -43,7 +43,7 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
         std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
     for (size_t i = 0; i < roots.getSize(); ++i) {
       double x = roots[i];
-      double transX = a + transWidth * x;
+      double transX = x;  // a + transWidth * x;
 
       bsplinevalue = LagrangePolynomial(x, xValues, index);
       double integrand = bsplinevalue * this->weight_function(transX);
@@ -63,7 +63,7 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
         // transform roots[i], the quadrature points to the segment on which the Bspline is
         // evaluated and from there to the interval[a,b] on which the weight function is defined
         double x = l + width * roots[i];
-        double transX = a + transWidth * x;
+        double transX = x;  // a + transWidth * x;
 
         bsplinevalue = expUniformNakBspline(x, degree, index, xValues);
         double integrand = bsplinevalue * this->weight_function(transX);
