@@ -81,7 +81,7 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(
         }
       }
     }
-    sums[index_j] = sum;
+    sums[index_j] = (b - a) * sum;
   }
   return sums;
 }

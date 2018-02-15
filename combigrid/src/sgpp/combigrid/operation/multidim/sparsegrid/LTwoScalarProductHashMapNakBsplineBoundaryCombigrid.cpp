@@ -23,8 +23,11 @@ LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::
   weightFunctionsCollection =
       sgpp::combigrid::WeightFunctionsCollection(grid->getDimension(), constant_weight_function);
   isCustomWeightFunction = false;
-  // dummy bounds. in evaluation [0,1] is used
-  bounds = sgpp::base::DataVector(std::vector<double>(1, 0));
+  bounds = sgpp::base::DataVector(0);
+  for (size_t d = 0; d < grid->getDimension(); d++) {
+    bounds.push_back(0);
+    bounds.push_back(1);
+  }
   numAdditionalPoints = 0;
   incrementQuadraturePoints = 1;
   degree = dynamic_cast<sgpp::base::NakBsplineBoundaryCombigridGrid*>(grid)->getDegree();
@@ -37,8 +40,11 @@ LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::
     : grid(grid),
       weightFunctionsCollection(weightFunctionsCollection),
       isCustomWeightFunction(true) {
-  // dummy bounds. in evaluation [0,1] is used
-  bounds = sgpp::base::DataVector(std::vector<double>(1, 0));
+  bounds = sgpp::base::DataVector(0);
+  for (size_t d = 0; d < grid->getDimension(); d++) {
+    bounds.push_back(0);
+    bounds.push_back(1);
+  }
   numAdditionalPoints = 0;
   incrementQuadraturePoints = 1;
   degree = dynamic_cast<sgpp::base::NakBsplineBoundaryCombigridGrid*>(grid)->getDegree();
@@ -157,9 +163,7 @@ double LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::calculateScalarProdu
       // evaluated and from there to the interval[a,b] on which the weight function is defined
       const double x = offset + scaling * (coordinates[c] + static_cast<double>(n));
       double transX = x;
-      if (bounds.size() > 1) {
-        transX = bounds[2 * d] + (bounds[2 * d + 1] - bounds[2 * d]) * x;
-      }
+      transX = bounds[2 * d] + (bounds[2 * d + 1] - bounds[2 * d]) * x;
       temp_res += weights[c] * basis.eval(lid, iid, x) * basis.eval(ljd, ijd, x) *
                   weightFunctionsCollection[d](transX);
     }
@@ -283,8 +287,9 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
             // must this be synchronized for OMP?
             innerProducts[hashMI] = temp_res;
           }
+          double width = bounds[2 * d + 1] - bounds[2 * d];
 #pragma omp atomic
-          temp_ij *= temp_res;
+          temp_ij *= temp_res * width;
         }
       }
 
