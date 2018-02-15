@@ -62,7 +62,7 @@ void createRegularLevelStructure(
 }
 
 double f(sgpp::base::DataVector const& v) { return (std::pow(v[0], 5) + std::pow(v[1], 5)); }
-double wcos(double x) { return sin(x); }
+double wcos(double x) { return sin(2 * x); }  // <= sin(x) on [0,2]^2
 
 int main() {
   size_t numDims = 2;
