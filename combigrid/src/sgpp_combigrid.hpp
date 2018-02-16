@@ -27,6 +27,7 @@
 #include <sgpp/combigrid/functions/MonomialFunctionBasis1D.hpp>
 #include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
+#include <sgpp/combigrid/functions/ProbabilityDensityFunction1D.hpp>
 #include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
 
 #include <sgpp/combigrid/grid/TensorGrid.hpp>

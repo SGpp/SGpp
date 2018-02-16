@@ -100,9 +100,8 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::hashLevelIndex(base::l
   hashMI[4] = d;
 }
 
-// ToDo (rehmemk) start is mostly 0 => unnecessary extra calculations
-// The routine works but I am not sure if all special cases are handled absolutely correctly. Take
-// some time and check this idex jungle
+// ToDo (rehmemk)The routine works but I am not sure if all special cases are handled absolutely
+// correctly. Take some time and check this idex jungle
 double LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::calculateScalarProduct(
     base::level_t lid, base::index_t iid, base::level_t ljd, base::index_t ijd,
     base::DataVector coordinates, base::DataVector weights,
@@ -121,7 +120,7 @@ double LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::calculateScalarProdu
       if ((iid == 3) || (iid == hInvik - 3)) stop += 1;
     } else if (degree == 5) {
       //      if ((iid == 3) || (iid == 5) || (iid == hInvik - 3) || (iid == hInvik - 5)) stop += 2;
-      if ((iid == 3) || (iid == 5) || (iid == hInvik - 5)) stop += 2;
+      if ((iid == 5) || (iid == hInvik - 5)) stop += 2;
     }
     if (lid == 2) {
       start = 1;
@@ -145,7 +144,7 @@ double LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::calculateScalarProdu
       if ((ijd == 3) || (ijd == hInvjk - 3)) stop += 1;
     } else if (degree == 5) {
       //      if ((ijd == 3) || (ijd == 5) || (ijd == hInvjk - 3) || (ijd == hInvjk - 5)) stop += 2;
-      if ((ijd == 3) || (ijd == 5) || (ijd == hInvjk - 5)) stop += 2;
+      if ((ijd == 5) || (ijd == hInvjk - 5)) stop += 2;
     }
     if (ljd == 2) {
       start = 1;

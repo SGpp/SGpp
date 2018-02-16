@@ -101,6 +101,7 @@
 
 %shared_ptr(sgpp::combigrid::AbstractInfiniteFunctionBasis1D)
 %shared_ptr(sgpp::combigrid::OrthogonalPolynomialBasis1D)
+%shared_ptr(sgpp::combigrid::ProbabilityDensityFunction1D)
 %shared_ptr(sgpp::combigrid::MonomialFunctionBasis1D)
 
 %shared_ptr(sgpp::combigrid::LevelManager)
@@ -183,6 +184,7 @@ namespace sgpp {
 %include "combigrid/src/sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp"
 %include "combigrid/src/sgpp/combigrid/functions/MonomialFunctionBasis1D.hpp"
 %include "combigrid/src/sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp"
+%include "combigrid/src/sgpp/combigrid/functions/ProbabilityDensityFunction1D.hpp"
 
 
 %ignore sgpp::combigrid::OrthogonalBasisFunctionsCollection::operator=;
