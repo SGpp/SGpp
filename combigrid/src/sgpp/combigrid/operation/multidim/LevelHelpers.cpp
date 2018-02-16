@@ -9,6 +9,7 @@
 #include <map>
 #include <utility>
 #include <algorithm>
+#include <cmath>
 
 namespace sgpp {
 namespace combigrid {
@@ -38,7 +39,10 @@ void LevelInfos::maxNormPerIteration(sgpp::base::DataVector &maxNorms) {
     double localMax = 0.0;
     for (auto &item : *istats) {
       auto &levelInfo = item.second;
-      localMax = std::max(localMax, std::abs(levelInfo->norm));
+      auto absNorm = std::fabs(levelInfo->norm);
+      if (localMax < absNorm) {
+        localMax = absNorm;
+      }
     }
     maxNorms[i] = localMax;
     ++i;

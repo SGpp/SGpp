@@ -16,7 +16,13 @@
 namespace sgpp {
 namespace combigrid {
 
-enum class OrthogonalPolynomialBasisType { LEGENDRE, JACOBI, HERMITE, BOUNDED_LOGNORMAL };
+enum class OrthogonalPolynomialBasisType {
+  LEGENDRE,
+  JACOBI,
+  HERMITE,
+  BOUNDED_NORMAL,
+  BOUNDED_LOGNORMAL
+};
 
 struct OrthogonalPolynomialBasis1DParameters {
   // type
@@ -65,6 +71,14 @@ class OrthogonalPolynomialBasis1D : public AbstractInfiniteFunctionBasis1D {
 
   double evaluate(size_t basisIndex, double xValue) override;
   double pdf(double xValue);
+  double mean();
+  double variance();
+
+  OrthogonalPolynomialBasis1DConfiguration getConfiguration();
+
+#ifdef USE_DAKOTA
+  std::shared_ptr<Pecos::RandomVariable> getRandomVariable();
+#endif
 
  private:
   double normalizeInput(double xValue);

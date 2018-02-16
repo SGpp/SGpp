@@ -5,7 +5,10 @@
 
 #pragma once
 
+#ifdef USE_DAKOTA
 #include <OrthogPolyApproximation.hpp>
+#endif
+
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
@@ -59,6 +62,7 @@ class PolynomialChaosExpansion {
   std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> getCombigridTensorOperation();
 
  private:
+  bool updateStatus();
   void computeComponentSobolIndices();
 
 #ifdef USE_DAKOTA
@@ -72,6 +76,7 @@ class PolynomialChaosExpansion {
 
   size_t numGridPoints;
   sgpp::combigrid::FloatTensorVector expansionCoefficients;
+  bool computedSobolIndicesFlag;
   sgpp::base::DataVector sobolIndices;
 };
 

@@ -25,6 +25,8 @@ class GaussLegendreQuadrature {
    */
   explicit GaussLegendreQuadrature(size_t numPoints);
 
+  void initialize(size_t numPoints);
+
   template <typename Func>
   double evaluate(Func const &func, double a = 0.0, double b = 1.0) {
     double width = b - a;
