@@ -68,6 +68,9 @@ class CombigridSurrogateModel {
   CombigridSurrogateModel(sgpp::combigrid::CombigridSurrogateModelConfiguration& config);
   virtual ~CombigridSurrogateModel();
 
+  virtual double eval(sgpp::base::DataVector& x) = 0;
+  virtual void eval(sgpp::base::DataMatrix& xs, sgpp::base::DataVector& res) = 0;
+
   virtual double mean() = 0;
   virtual double variance() = 0;
   virtual void getComponentSobolIndices(sgpp::base::DataVector& componentSsobolIndices,

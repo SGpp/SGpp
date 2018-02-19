@@ -29,6 +29,9 @@ class PolynomialChaosExpansion : public CombigridSurrogateModel {
   explicit PolynomialChaosExpansion(sgpp::combigrid::CombigridSurrogateModelConfiguration& config);
   virtual ~PolynomialChaosExpansion();
 
+  double eval(sgpp::base::DataVector& x) override;
+  void eval(sgpp::base::DataMatrix& xs, sgpp::base::DataVector& res) override;
+
   double mean() override;
   double variance() override;
 
