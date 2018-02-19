@@ -100,8 +100,6 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::hashLevelIndex(base::l
   hashMI[4] = d;
 }
 
-// ToDo (rehmemk)The routine works but I am not sure if all special cases are handled absolutely
-// correctly. Take some time and check this idex jungle
 double LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::calculateScalarProduct(
     base::level_t lid, base::index_t iid, base::level_t ljd, base::index_t ijd,
     base::DataVector coordinates, base::DataVector weights,
