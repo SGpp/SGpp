@@ -23,8 +23,11 @@ LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::
   weightFunctionsCollection =
       sgpp::combigrid::WeightFunctionsCollection(grid->getDimension(), constant_weight_function);
   isCustomWeightFunction = false;
-  // dummy bounds. in evaluation [0,1] is used
-  bounds = sgpp::base::DataVector(std::vector<double>(1, 0));
+  bounds = sgpp::base::DataVector(0);
+  for (size_t d = 0; d < grid->getDimension(); d++) {
+    bounds.push_back(0);
+    bounds.push_back(1);
+  }
   numAdditionalPoints = 0;
   incrementQuadraturePoints = 1;
   degree = dynamic_cast<sgpp::base::NakBsplineBoundaryCombigridGrid*>(grid)->getDegree();
@@ -37,8 +40,11 @@ LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::
     : grid(grid),
       weightFunctionsCollection(weightFunctionsCollection),
       isCustomWeightFunction(true) {
-  // dummy bounds. in evaluation [0,1] is used
-  bounds = sgpp::base::DataVector(std::vector<double>(1, 0));
+  bounds = sgpp::base::DataVector(0);
+  for (size_t d = 0; d < grid->getDimension(); d++) {
+    bounds.push_back(0);
+    bounds.push_back(1);
+  }
   numAdditionalPoints = 0;
   incrementQuadraturePoints = 1;
   degree = dynamic_cast<sgpp::base::NakBsplineBoundaryCombigridGrid*>(grid)->getDegree();
@@ -93,12 +99,15 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::hashLevelIndex(base::l
   }
   hashMI[4] = d;
 }
+
+// ToDo (rehmemk)The routine works but I am not sure if all special cases are handled absolutely
+// correctly. Take some time and check this idex jungle
 double LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::calculateScalarProduct(
     base::level_t lid, base::index_t iid, base::level_t ljd, base::index_t ijd,
     base::DataVector coordinates, base::DataVector weights,
     sgpp::base::SNakBsplineBoundaryCombigridBase basis, size_t d, double offseti_left,
-    double offseti_right, double offsetj_left, double offsetj_right, sgpp::base::index_t hInvik,
-    sgpp::base::index_t hInvjk, double hik, double hjk, size_t pp1h) {
+    double offsetj_left, sgpp::base::index_t hInvik, sgpp::base::index_t hInvjk, double hik,
+    double hjk, size_t pp1h) {
   double temp_res = 0.0, scaling = 0.0, offset = 0.0;
   size_t start = 0, stop = 0;
 
@@ -110,7 +119,8 @@ double LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::calculateScalarProdu
     if (degree == 3) {
       if ((iid == 3) || (iid == hInvik - 3)) stop += 1;
     } else if (degree == 5) {
-      if ((iid == 3) || (iid == 5) || (iid == hInvik - 3) || (iid == hInvik - 5)) stop += 2;
+      //      if ((iid == 3) || (iid == 5) || (iid == hInvik - 3) || (iid == hInvik - 5)) stop += 2;
+      if ((iid == 5) || (iid == hInvik - 5)) stop += 2;
     }
     if (lid == 2) {
       start = 1;
@@ -125,7 +135,7 @@ double LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::calculateScalarProdu
       scaling = 0.125;
     }
   } else {
-    // if lid <= ljd
+    // if lid < ljd
     offset = offsetj_left;
     scaling = hjk;
     start = ((ijd > pp1h) ? 0 : (pp1h - ijd));
@@ -133,7 +143,8 @@ double LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::calculateScalarProdu
     if (degree == 3) {
       if ((ijd == 3) || (ijd == hInvjk - 3)) stop += 1;
     } else if (degree == 5) {
-      if ((ijd == 3) || (ijd == 5) || (ijd == hInvjk - 3) || (ijd == hInvjk - 5)) stop += 2;
+      //      if ((ijd == 3) || (ijd == 5) || (ijd == hInvjk - 3) || (ijd == hInvjk - 5)) stop += 2;
+      if ((ijd == 5) || (ijd == hInvjk - 5)) stop += 2;
     }
     if (ljd == 2) {
       start = 1;
@@ -149,17 +160,16 @@ double LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::calculateScalarProdu
     }
   }
 
-  //  sgpp::base::SNakBsplineBoundaryCombigridBase basis(degree);
-
   for (size_t n = start; n <= stop; n++) {
     for (size_t c = 0; c < coordinates.size(); c++) {
       // transform  the quadrature points to the segment on which the Bspline is
       // evaluated and from there to the interval[a,b] on which the weight function is defined
       const double x = offset + scaling * (coordinates[c] + static_cast<double>(n));
-      double transX = x;
-      if (bounds.size() > 1) {
-        transX = bounds[2 * d] + (bounds[2 * d + 1] - bounds[2 * d]) * x;
-      }
+
+      //      std::cout << lid << " " << iid << " " << ljd << " " << ijd << " | " << offset << " "
+      //                << scaling << " " << coordinates[c] << " " << n << " " << x << std::endl;
+
+      double transX = x;  // bounds[2 * d] + (bounds[2 * d + 1] - bounds[2 * d]) * x;
       temp_res += weights[c] * basis.eval(lid, iid, x) * basis.eval(ljd, ijd, x) *
                   weightFunctionsCollection[d](transX);
     }
@@ -208,7 +218,9 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
         const base::index_t iid = storage[i].getIndex(d);
         const base::index_t ijd = storage[j].getIndex(d);
 
-        const size_t pp1h = (degree + 1) >> 1;  //  =|_p/2_|
+        // setting the segments of the support according to the degree, level and index of the nak
+        // B-splines
+        const size_t pp1h = (degree + 1) >> 1;  //  =|_(p+1)/2_|
         const double pp1hDbl = static_cast<double>(pp1h);
         const sgpp::base::index_t hInvik = 1 << lid;  // = 2^lid
         const sgpp::base::index_t hInvjk = 1 << ljd;
@@ -225,10 +237,15 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
           if (ijd == 3) offsetj_left -= hjk;
           if (ijd == hInvjk - 3) offsetj_right += hjk;
         } else if (degree == 5) {
-          if ((iid == 3) || (iid == 5)) offseti_left -= 2 * hik;
+          //          if ((iid == 3) || (iid == 5)) offseti_left -= 2 * hik;
+          //          if ((iid == hInvik - 3) || (iid == hInvik - 5)) offseti_right += 2 * hik;
+          //          if ((ijd == 3) || (ijd == 5)) offsetj_left -= 2 * hjk;
+          //          if ((ijd == hInvjk - 3) || (ijd == hInvjk - 5)) offsetj_right += 2 * hjk;
+          if (iid == 5) offseti_left -= 2 * hik;
           if ((iid == hInvik - 3) || (iid == hInvik - 5)) offseti_right += 2 * hik;
-          if ((ijd == 3) || (ijd == 5)) offsetj_left -= 2 * hjk;
+          if (ijd == 5) offsetj_left -= 2 * hjk;
           if ((ijd == hInvjk - 3) || (ijd == hInvjk - 5)) offsetj_right += 2 * hjk;
+          //          std::cout << "hInvjk: " << hInvjk << std::endl;
         }
         if (std::max(offseti_left, offsetj_left) >= std::min(offseti_right, offsetj_right)) {
           // B spline supports do not not overlap:
@@ -250,8 +267,8 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
             {
               gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
               temp_res = calculateScalarProduct(lid, iid, ljd, ijd, coordinates, weights, basis, d,
-                                                offseti_left, offseti_right, offsetj_left,
-                                                offsetj_right, hInvik, hInvjk, hik, hjk, pp1h);
+                                                offseti_left, offsetj_left, hInvik, hInvjk, hik,
+                                                hjk, pp1h);
             }
             numAdditionalPoints = lastNumAdditionalPoints;
 
@@ -272,9 +289,9 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
 #pragma omp critical
                 {
                   gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
-                  finer_temp_res = calculateScalarProduct(
-                      lid, iid, ljd, ijd, coordinates, weights, basis, d, offseti_left,
-                      offseti_right, offsetj_left, offsetj_right, hInvik, hInvjk, hik, hjk, pp1h);
+                  finer_temp_res = calculateScalarProduct(lid, iid, ljd, ijd, coordinates, weights,
+                                                          basis, d, offseti_left, offsetj_left,
+                                                          hInvik, hInvjk, hik, hjk, pp1h);
                 }
                 err = fabs(temp_res - finer_temp_res);
                 temp_res = finer_temp_res;
@@ -283,8 +300,9 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
             // must this be synchronized for OMP?
             innerProducts[hashMI] = temp_res;
           }
+          double width = bounds[2 * d + 1] - bounds[2 * d];
 #pragma omp atomic
-          temp_ij *= temp_res;
+          temp_ij *= temp_res * width;
         }
       }
 
