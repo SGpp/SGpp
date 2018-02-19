@@ -66,23 +66,50 @@ bool PolynomialChaosExpansion::updateStatus() {
   }
 }
 
+double PolynomialChaosExpansion::eval(sgpp::base::DataVector& x) {
+  double ans = 0.0;
+  for (auto it = expansionCoefficients.getValues()->getStoredDataIterator(); it->isValid();
+       it->moveToNext()) {
+    MultiIndex ix = it->getMultiIndex();
+    double coeff = it->value().value();
+
+    // evaluate tensor product
+    double poly = 1.0;
+    for (size_t k = 0; k < ix.size(); k++) {
+      poly *= config.basisFunctions[k]->evaluate(ix[k], x[k]);
+    }
+    ans += coeff * poly;
+  }
+  return ans;
+}
+
+void PolynomialChaosExpansion::eval(sgpp::base::DataMatrix& xs, sgpp::base::DataVector& res) {
+  size_t numSamples = xs.getNrows();
+  res.resize(numSamples);
+  res.setAll(0.0);
+  for (auto it = expansionCoefficients.getValues()->getStoredDataIterator(); it->isValid();
+       it->moveToNext()) {
+    MultiIndex ix = it->getMultiIndex();
+    double coeff = it->value().value();
+
+    for (size_t i = 0; i < numSamples; i++) {
+      // evaluate tensor product
+      double poly = 1.0;
+      for (size_t k = 0; k < ix.size(); k++) {
+        poly *= config.basisFunctions[k]->evaluate(ix[k], xs.get(i, k));
+      }
+
+      res[i] += coeff * poly;
+    }
+  }
+}
+
 double PolynomialChaosExpansion::mean() {
-  //  if (orthogPoly != nullptr) {
-  // #ifdef USE_DAKOTA
-  //    return orthogPoly->mean();
-  // #endif
-  //  }
   updateStatus();
   return expansionCoefficients.get(MultiIndex(numDims, 0)).getValue();
 }
 
 double PolynomialChaosExpansion::variance() {
-  //  if (orthogPoly != nullptr) {
-  // #ifdef USE_DAKOTA
-  //    return orthogPoly->variance();
-  // #endif
-  //  }
-  // PCE norm, i.e. variance (if using appropriate normalized orthogonal polynomials)
   updateStatus();
   double var = 0.0;
   auto it = expansionCoefficients.getValues()->getStoredDataIterator();

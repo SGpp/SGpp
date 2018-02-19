@@ -120,6 +120,14 @@ bool BsplineStochasticCollocation::updateStatus() {
   }
 }
 
+double BsplineStochasticCollocation::eval(sgpp::base::DataVector& x) {
+  throw sgpp::base::application_exception("BsplineStochasticCollocation::eval - not implemented.");
+}
+
+void BsplineStochasticCollocation::eval(sgpp::base::DataMatrix& xs, sgpp::base::DataVector& res) {
+  throw sgpp::base::application_exception("BsplineStochasticCollocation::eval - not implemented.");
+}
+
 double BsplineStochasticCollocation::computeMean() {
   double mean = combigridOperation->getResult();
   double width = 1.0;
