@@ -34,7 +34,7 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(
       quadRule.getLevelPointsAndWeightsNormalized(
           std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
       double x = roots[0];
-      double transX = a + transWidth * x;
+      double transX = x;  // a + transWidth * x;
       sum = 1.0 * this->weight_function(transX) * quadratureweights[0];
     } else if ((degree == 3 && (xValues.size() < 5)) || ((degree == 5) && (xValues.size() < 9))) {
       numGaussPoints = 2 * xValues.size();
@@ -42,7 +42,7 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(
           std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
       for (size_t i = 0; i < roots.getSize(); ++i) {
         double x = roots[i];
-        double transX = a + transWidth * x;
+        double transX = x;  // a + transWidth * x;
         productValue =
             LagrangePolynomial(x, xValues, index_j) * LagrangePolynomial(x, xValues, index_i);
         double integrand = productValue * this->weight_function(transX);
@@ -68,7 +68,7 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(
 
           for (size_t i = 0; i < roots.getSize(); ++i) {
             double x = l + width * roots[i];
-            double transX = a + transWidth * x;
+            double transX = x;  // a + transWidth * x;
             // ToDO(rehmemk) Rewrite this whole  routine , don't use createKnots and use the
             // Lagrange polynomials inside expUuniformNakBspline
             productValue = expUniformNakBspline(x, degree, index_i, xValues) *
@@ -81,7 +81,7 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(
         }
       }
     }
-    sums[index_j] = sum;
+    sums[index_j] = (b - a) * sum;
   }
   return sums;
 }

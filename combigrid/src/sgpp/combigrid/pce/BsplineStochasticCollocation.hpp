@@ -57,7 +57,7 @@ class BsplineStochasticCollocation : public CombigridSurrogateModel {
   double quad(sgpp::combigrid::MultiIndex i);
   double quad(sgpp::combigrid::MultiIndex i, sgpp::combigrid::MultiIndex j);
 
-  // orthogonal basis for pdf values
+  // pdf values
   sgpp::combigrid::WeightFunctionsCollection weightFunctions;
 
   size_t currentNumGridPoints;

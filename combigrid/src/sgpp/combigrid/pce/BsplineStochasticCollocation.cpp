@@ -4,6 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/combigrid/functions/ProbabilityDensityFunction1D.hpp>
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
@@ -94,6 +95,7 @@ void BsplineStochasticCollocation::updateConfig(
   sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =
       sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
   sgpp::combigrid::CombiEvaluators::Collection quadEvaluators(0);
+
   for (size_t d = 0; d < numDims; d++) {
     quadEvaluators.push_back(sgpp::combigrid::CombiEvaluators::BSplineQuadrature(
         newConfig.degree, weightFunctions[d], numAdditionalPoints, newConfig.bounds[2 * d],
@@ -130,11 +132,11 @@ void BsplineStochasticCollocation::eval(sgpp::base::DataMatrix& xs, sgpp::base::
 
 double BsplineStochasticCollocation::computeMean() {
   double mean = combigridOperation->getResult();
-  double width = 1.0;
-  for (size_t d = 0; d < numDims; d++) {
-    width *= (config.bounds[2 * d + 1] - config.bounds[2 * d]);
-  }
-  mean *= width;
+  //  double width = 1.0;
+  //  for (size_t d = 0; d < numDims; d++) {
+  //    width *= (config.bounds[2 * d + 1] - config.bounds[2 * d]);
+  //  }
+  //  mean *= width;
   return mean;
 }
 
@@ -165,10 +167,11 @@ double BsplineStochasticCollocation::computeVariance() {
   sgpp::base::Grid* gridptr = grid.get();
   sgpp::base::DataVector product(alpha.size());
 
-  double width = 1.0;
-  for (size_t d = 0; d < numDims; d++) {
-    width *= (config.bounds[2 * d + 1] - config.bounds[2 * d]);
-  }
+  //  double width = 1.0;
+  //  for (size_t d = 0; d < numDims; d++) {
+  //    width *= (config.bounds[2 * d + 1] - config.bounds[2 * d]);
+  //  }
+
   scalarProducts.updateGrid(gridptr);
   scalarProducts.setWeightFunction(weightFunctions);
   scalarProducts.setBounds(config.bounds);
@@ -179,7 +182,7 @@ double BsplineStochasticCollocation::computeVariance() {
     // this works for all B spline degrees
     scalarProducts.mult(alpha, product);
     double meanSquare = product.dotProduct(alpha);
-    meanSquare *= width;
+    //    meanSquare *= width;
     variance = meanSquare - ev * ev;
   } else {
     // calculate V(u) = E((u-E(u))^2)
@@ -189,7 +192,7 @@ double BsplineStochasticCollocation::computeVariance() {
     alpha[0] -= ev;
     scalarProducts.mult(alpha, product);
     variance = product.dotProduct(alpha);
-    variance *= width;
+    //    variance *= width;
   }
 
   return variance;

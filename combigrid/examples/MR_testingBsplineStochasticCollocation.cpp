@@ -62,7 +62,7 @@ void createRegularLevelStructure(
 }
 
 double f(sgpp::base::DataVector const& v) { return (std::pow(v[0], 5) + std::pow(v[1], 5)); }
-double wcos(double x) { return sin(x); }
+double wcos(double x) { return sin(2 * x); }  // <= sin(x) on [0,2]^2
 
 int main() {
   size_t numDims = 2;
@@ -75,7 +75,10 @@ int main() {
       new sgpp::combigrid::RegularLevelManager());
   sgpp::combigrid::SingleFunction weightfunction(wcos);
   sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection(0);
+  sgpp::base::DataVector bounds(0);
   for (size_t d = 0; d < numDims; d++) {
+    bounds.push_back(0);
+    bounds.push_back(2);
     weightFunctionsCollection.push_back(weightfunction);
   }
 
@@ -88,7 +91,7 @@ int main() {
   config.coefficientStorage = storage;
   config.weightFunctions = weightFunctionsCollection;
 
-  config.bounds = sgpp::base::DataVector(std::vector<double>({0.0, 2.0, 0.0, 2.0}));
+  config.bounds = bounds;
   sgpp::combigrid::BsplineStochasticCollocation BSC(config);
 
   std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> levelStructure;
@@ -98,7 +101,7 @@ int main() {
       BSplineCoefficientGridFunction(func, pointHierarchies, config.degree);
 
   //  std::vector<size_t> loopPoints{10, 100, 1000, 10000};
-  std::vector<size_t> loopPoints{8, 9, 10};
+  std::vector<size_t> loopPoints{6, 7, 8};
   for (auto& np : loopPoints) {
     sgpp::combigrid::Stopwatch watch;
     watch.start();

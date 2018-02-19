@@ -7,8 +7,6 @@
 #include <sgpp/combigrid/functions/ProbabilityDensityFunction1D.hpp>
 
 #include <sgpp/base/exception/application_exception.hpp>
-#include <sgpp/base/tools/json/JSON.hpp>
-#include <sgpp/base/tools/json/json_exception.hpp>
 #include <sgpp/globaldef.hpp>
 
 #ifdef USE_DAKOTA
@@ -28,48 +26,17 @@ namespace sgpp {
 namespace combigrid {
 
 // --------------------------------------------------------------------------------------------
-ProbabilityDensityFunction1DConfiguration::ProbabilityDensityFunction1DConfiguration()
-    : json::JSON() {
+ProbabilityDensityFunction1DConfiguration::ProbabilityDensityFunction1DConfiguration() {
   initConfig();
-}
-
-ProbabilityDensityFunction1DConfiguration::ProbabilityDensityFunction1DConfiguration(
-    const std::string& fileName)
-    : json::JSON(fileName) {
-  initConfig();
-  // initialize structs from file
-  // configure grid
-  try {
-    // parameters for jacobi polynomials
-    if (this->contains("jacobi_alpha")) pdfParameters.alpha_ = (*this)["jacobi_alpha"].getDouble();
-    if (this->contains("jacobi_beta")) pdfParameters.beta_ = (*this)["jacobi_beta"].getDouble();
-
-    // normal distribution
-    if (this->contains("normal_mean")) pdfParameters.mean_ = (*this)["normal_mean"].getDouble();
-    if (this->contains("normal_stddev"))
-      pdfParameters.stddev_ = (*this)["normal_stddev"].getDouble();
-
-    // lognormal distribution
-    if (this->contains("lognormal_logmean"))
-      pdfParameters.logmean_ = (*this)["lognormal_logmean"].getDouble();
-
-    // bounds
-    if (this->contains("lower_bound"))
-      pdfParameters.lowerBound_ = (*this)["lower_bound"].getDouble();
-    if (this->contains("upper_bound"))
-      pdfParameters.upperBound_ = (*this)["upper_bound"].getDouble();
-  } catch (json::json_exception& e) {
-    std::cout << e.what() << std::endl;
-  }
 }
 
 void ProbabilityDensityFunction1DConfiguration::initConfig() {
   // set default config
-  pdfParameters.type_ = ProbabilityDensityFunctionType::BOUNDED_NORMAL;
+  pdfParameters.type_ = ProbabilityDensityFunctionType::BETA;
 
   // parameters for Beta distribution
-  pdfParameters.alpha_ = 5.0;
-  pdfParameters.beta_ = 5.0;
+  pdfParameters.alpha_ = 3.0;
+  pdfParameters.beta_ = 7.0;
 
   // parameters for normal distribution
   pdfParameters.mean_ = 0.0;
@@ -83,13 +50,41 @@ void ProbabilityDensityFunction1DConfiguration::initConfig() {
   pdfParameters.upperBound_ = 1.0;
 }
 
-ProbabilityDensityFunction1DConfiguration* ProbabilityDensityFunction1DConfiguration::clone() {
-  ProbabilityDensityFunction1DConfiguration* clone =
-      new ProbabilityDensityFunction1DConfiguration(*this);
-  return clone;
+void ProbabilityDensityFunction1DConfiguration::setPdfParameters(
+    ProbabilityDensityFunctionParameters newParameters) {
+  pdfParameters = newParameters;
 }
 
+//  ProbabilityDensityFunction1DConfiguration* ProbabilityDensityFunction1DConfiguration::clone() {
+//  ProbabilityDensityFunction1DConfiguration* clone =
+//      new ProbabilityDensityFunction1DConfiguration(*this);
+//  return clone;
+//}
+
 // --------------------------------------------------------------------------------------------
+
+/**
+ * @param xValue 	x value in the support of the probability density function
+ * @return 			x value transformed to [0,1]
+ */
+double ProbabilityDensityFunction1D::normalizeInput(double xValue) {
+  switch (config.pdfParameters.type_) {
+    // UNIFORM, BETA, BOUNDED_NORMAL, NOUNDED_LOGNORMAL, NORMAL require xValue to be in [0,1]
+    case ProbabilityDensityFunctionType::UNIFORM:
+    case ProbabilityDensityFunctionType::BETA:
+    case ProbabilityDensityFunctionType::BOUNDED_NORMAL:
+    case ProbabilityDensityFunctionType::BOUNDED_LOGNORMAL:
+    case ProbabilityDensityFunctionType::NORMAL:
+    default:
+      double a = config.pdfParameters.lowerBound_;
+      double b = config.pdfParameters.upperBound_;
+      if (a == b) {
+        std::cerr << "ProbabilityDensityFunction1D: lower and upper bound cannot be identical!"
+                  << std::endl;
+      }
+      return a + (b - a) * xValue;
+  }
+}
 
 ProbabilityDensityFunction1D::ProbabilityDensityFunction1D(
     ProbabilityDensityFunction1DConfiguration& config)
@@ -116,6 +111,7 @@ ProbabilityDensityFunction1D::ProbabilityDensityFunction1D(
           config.pdfParameters.mean_, config.pdfParameters.stddev_,
           config.pdfParameters.lowerBound_, config.pdfParameters.upperBound_);
       break;
+    case ProbabilityDensityFunctionType::UNIFORM:
     default:
       rv = std::make_shared<Pecos::UniformRandomVariable>(config.pdfParameters.lowerBound_,
                                                           config.pdfParameters.upperBound_);
@@ -127,7 +123,8 @@ ProbabilityDensityFunction1D::~ProbabilityDensityFunction1D() {}
 
 double ProbabilityDensityFunction1D::pdf(double xValue) {
 #ifdef USE_DAKOTA
-  return rv->pdf(xValue);
+  double normalized_xValue = normalizeInput(xValue);
+  return rv->pdf(normalized_xValue);
 #else
   std::cerr << "Error in ProbabilityDensityFunction1D::pdf: "
             << "SG++ was compiled without DAKOTAsupport!" << std::endl;
