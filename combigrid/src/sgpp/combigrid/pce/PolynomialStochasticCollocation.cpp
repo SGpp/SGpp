@@ -122,6 +122,45 @@ bool PolynomialStochasticCollocation::updateStatus() {
   }
 }
 
+double PolynomialStochasticCollocation::eval(sgpp::base::DataVector& x) {
+  double ans = 0.0;
+  for (auto it = expansionCoefficients.getValues()->getStoredDataIterator(); it->isValid();
+       it->moveToNext()) {
+    MultiIndex ix = it->getMultiIndex();
+    double coeff = it->value().value();
+
+    // evaluate tensor product
+    double poly = 1.0;
+    for (size_t k = 0; k < ix.size(); k++) {
+      poly *= config.basisFunctions[k]->evaluate(ix[k], x[k]);
+    }
+    ans += coeff * poly;
+  }
+  return ans;
+}
+
+void PolynomialStochasticCollocation::eval(sgpp::base::DataMatrix& xs,
+                                           sgpp::base::DataVector& res) {
+  size_t numSamples = xs.getNrows();
+  res.resize(numSamples);
+  res.setAll(0.0);
+  for (auto it = expansionCoefficients.getValues()->getStoredDataIterator(); it->isValid();
+       it->moveToNext()) {
+    MultiIndex ix = it->getMultiIndex();
+    double coeff = it->value().value();
+
+    for (size_t i = 0; i < numSamples; i++) {
+      // evaluate tensor product
+      double poly = 1.0;
+      for (size_t k = 0; k < ix.size(); k++) {
+        poly *= config.basisFunctions[k]->evaluate(ix[k], xs.get(i, k));
+      }
+
+      res[i] += coeff * poly;
+    }
+  }
+}
+
 double PolynomialStochasticCollocation::computeMean() {
   return firstMomentNormstrategy->norm(expansionCoefficients);
 }

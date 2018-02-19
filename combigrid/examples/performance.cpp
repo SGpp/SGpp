@@ -22,22 +22,22 @@ double f(sgpp::base::DataVector const &x) { return x[0]; }
 auto func = sgpp::combigrid::MultiFunction(f);
 
 int main() {
-  size_t dim = 4;
-  auto op = sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
-      dim, func);
-  sgpp::base::DataVector parameter(std::vector<double>{0.1, 0.2, 0.3, 0.4});
+  size_t dim = 6;
+  auto op =
+      sgpp::combigrid::CombigridOperation::createLinearL2LejaPolynomialInterpolation(dim, func);
+  sgpp::base::DataVector parameter(std::vector<double>{0.1, 0.2, 0.3, 0.4, 0.5, 0.6});
 
   {
     sgpp::combigrid::Stopwatch sw;
-    op->evaluate(8, parameter);
+    op->evaluate(10, parameter);
     sw.log();
     std::cout << "Number of grid points: " << op->numGridPoints() << "\n";
   }
 
   {
     sgpp::combigrid::Stopwatch sw;
-    for (size_t i = 0; i < 1000; ++i) {
-      op->evaluate(8, parameter);
+    for (size_t i = 0; i < 10; ++i) {
+      op->evaluate(10, parameter);
     }
     sw.log();
     std::cout << "Number of grid points: " << op->numGridPoints() << "\n";

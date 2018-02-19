@@ -161,6 +161,8 @@ class UncertainParameterDesciptor(ParameterDescriptor):
         if isinstance(self.__trans, RosenblattTransformation) or \
                 isinstance(self._dist, Uniform):
             orthogPolyConfig.polyParameters.type_ = OrthogonalPolynomialBasisType_LEGENDRE
+            orthogPolyConfig.polyParameters.lowerBound_ = self._dist.getBounds()[0]
+            orthogPolyConfig.polyParameters.upperBound_ = self._dist.getBounds()[1]
             orthogPoly = OrthogonalPolynomialBasis1D(orthogPolyConfig)
         elif isinstance(self._dist, Normal):
             orthogPolyConfig.polyParameters.type_ = OrthogonalPolynomialBasisType_HERMITE
