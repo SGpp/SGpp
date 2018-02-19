@@ -64,6 +64,8 @@ class ProbabilityDensityFunction1DConfiguration {
 };
 
 // --------------------------------------------------------------------------
+
+// Wrapper for probability density functions from DAKOTA
 class ProbabilityDensityFunction1D {
  public:
   explicit ProbabilityDensityFunction1D(ProbabilityDensityFunction1DConfiguration& config);

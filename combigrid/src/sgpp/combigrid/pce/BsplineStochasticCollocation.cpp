@@ -97,6 +97,7 @@ void BsplineStochasticCollocation::updateConfig(
   sgpp::combigrid::CombiEvaluators::Collection quadEvaluators(0);
 
   for (size_t d = 0; d < numDims; d++) {
+    //    std::cout << "BSC: d: " << d << " wF(0.5): " << weightFunctions[d](0.5) << std::endl;
     quadEvaluators.push_back(sgpp::combigrid::CombiEvaluators::BSplineQuadrature(
         newConfig.degree, weightFunctions[d], numAdditionalPoints, newConfig.bounds[2 * d],
         newConfig.bounds[2 * d + 1], normalizeWeights));

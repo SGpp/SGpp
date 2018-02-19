@@ -18,6 +18,7 @@
 from Dist import Dist
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
 import scipy.stats as stats
+import pysgpp
 
 
 class Beta(Dist):
@@ -36,11 +37,12 @@ class Beta(Dist):
         super(Beta, self).__init__()
         self.__p = p
         self.__q = q
-        self._dist = stats.beta(p, q, accLevel, width)
+        self._dist = stats.beta(p, q, accLevel, width)  
+
 
         self.__l = accLevel
         self.__width = width
-
+        
     def pdf(self, x):
         return self._dist.pdf(x)
 

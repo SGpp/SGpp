@@ -30,10 +30,6 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
   std::vector<double> xi = createNakKnots(xValues, degree);
   double bsplinevalue = 0.0;
 
-  double transWidth = b - a;
-
-  //  std::cout << a << " " << b << " " << transWidth << std::endl;
-
   // on low levels where Lagrange polynomials instead of Bsplines are used the number of Gauss
   // points are not degree dependent and there is only on segment: the whole [0,1] interval
   if ((xValues.size() == 1) || (degree == 3 && (xValues.size() < 5)) ||
@@ -43,9 +39,16 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
         std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
     for (size_t i = 0; i < roots.getSize(); ++i) {
       double x = roots[i];
-      double transX = x;  // a + transWidth * x;
+      double transX = x;  // a + (b-a) * x;
 
       bsplinevalue = LagrangePolynomial(x, xValues, index);
+
+      //      std::cout << "BsplineQuadratureOperation trying to evaluate weight function in " <<
+      //      transX
+      //                << std::endl;
+      //      std::cout << this->weight_function(transX) << std::endl;
+      //      std::cout << "BsplineQuadratureOperation Success" << std::endl;
+
       double integrand = bsplinevalue * this->weight_function(transX);
       sum += integrand * quadratureweights[i];
     }
@@ -63,7 +66,7 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
         // transform roots[i], the quadrature points to the segment on which the Bspline is
         // evaluated and from there to the interval[a,b] on which the weight function is defined
         double x = l + width * roots[i];
-        double transX = x;  // a + transWidth * x;
+        double transX = x;  // a + (b-a) * x;
 
         bsplinevalue = expUniformNakBspline(x, degree, index, xValues);
         double integrand = bsplinevalue * this->weight_function(transX);
@@ -80,6 +83,8 @@ void BSplineQuadratureEvaluator::calculate1DBSplineIntegrals(
     size_t incrementQuadraturePoints, double tol) {
   basisValues.resize(points.size());
   std::vector<FloatScalarVector> newBasisValues(points.size());
+
+  //  std::cout << "BsplineQuadrature calculate1dBsplineIntegrals is called" << std::endl;
 
   // iteratively increases the numAdditionalPoints until the product of B spline and weight
   // function is exactly inctegrated
