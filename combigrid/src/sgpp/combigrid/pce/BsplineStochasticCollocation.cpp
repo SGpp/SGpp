@@ -84,7 +84,7 @@ void BsplineStochasticCollocation::updateConfig(
     sgpp::combigrid::CombigridSurrogateModelConfiguration newConfig) {
   this->config.coefficientStorage = newConfig.coefficientStorage;
   this->config.levelStructure = newConfig.levelStructure;
-  this->config.levelManager = newConfig.levelManager;
+  //  this->config.levelManager = newConfig.levelManager;
 
   combigridMultiOperation = createBsplineLinearCoefficientOperation(newConfig.degree, numDims,
                                                                     newConfig.coefficientStorage);
@@ -97,7 +97,6 @@ void BsplineStochasticCollocation::updateConfig(
   sgpp::combigrid::CombiEvaluators::Collection quadEvaluators(0);
 
   for (size_t d = 0; d < numDims; d++) {
-    //    std::cout << "BSC: d: " << d << " wF(0.5): " << weightFunctions[d](0.5) << std::endl;
     quadEvaluators.push_back(sgpp::combigrid::CombiEvaluators::BSplineQuadrature(
         newConfig.degree, weightFunctions[d], numAdditionalPoints, newConfig.bounds[2 * d],
         newConfig.bounds[2 * d + 1], normalizeWeights));
@@ -123,21 +122,23 @@ bool BsplineStochasticCollocation::updateStatus() {
   }
 }
 
-double BsplineStochasticCollocation::eval(sgpp::base::DataVector& x) {
-  throw sgpp::base::application_exception("BsplineStochasticCollocation::eval - not implemented.");
+// ToDo(rehmemk) write a test for these evals
+void BsplineStochasticCollocation::eval(sgpp::base::DataMatrix& xs, sgpp::base::DataVector& res) {
+  combigridMultiOperation->setParameters(xs);
+  combigridMultiOperation->getLevelManager()->addLevelsFromStructure(config.levelStructure);
+  res = combigridMultiOperation->getResult();
 }
 
-void BsplineStochasticCollocation::eval(sgpp::base::DataMatrix& xs, sgpp::base::DataVector& res) {
-  throw sgpp::base::application_exception("BsplineStochasticCollocation::eval - not implemented.");
+double BsplineStochasticCollocation::eval(sgpp::base::DataVector& x) {
+  sgpp::base::DataMatrix xs;
+  xs.appendRow(x);
+  sgpp::base::DataVector res;
+  this->eval(xs, res);
+  return res[0];
 }
 
 double BsplineStochasticCollocation::computeMean() {
   double mean = combigridOperation->getResult();
-  //  double width = 1.0;
-  //  for (size_t d = 0; d < numDims; d++) {
-  //    width *= (config.bounds[2 * d + 1] - config.bounds[2 * d]);
-  //  }
-  //  mean *= width;
   return mean;
 }
 
@@ -168,32 +169,26 @@ double BsplineStochasticCollocation::computeVariance() {
   sgpp::base::Grid* gridptr = grid.get();
   sgpp::base::DataVector product(alpha.size());
 
-  //  double width = 1.0;
-  //  for (size_t d = 0; d < numDims; d++) {
-  //    width *= (config.bounds[2 * d + 1] - config.bounds[2 * d]);
-  //  }
-
   scalarProducts.updateGrid(gridptr);
-  scalarProducts.setWeightFunction(weightFunctions);
-  scalarProducts.setBounds(config.bounds);
+  // scalarProducts.setWeightFunction(weightFunctions);
+  // scalarProducts.setBounds(config.bounds);
 
   double variance = 0;
   if (config.degree == 1) {
     // calculate V(u) = E(u^2) - E(u)^2
-    // this works for all B spline degrees
+    // this works for all B spline degrees but may be instable
     scalarProducts.mult(alpha, product);
     double meanSquare = product.dotProduct(alpha);
-    //    meanSquare *= width;
     variance = meanSquare - ev * ev;
   } else {
     // calculate V(u) = E((u-E(u))^2)
     // this is done by subtracting E(u) from the coefficient of the constant function
     // it does not work for B spline degree 1 because there is no constant function in the basis
-    // (We could add a constant basis function on level 0 ()
+    // (We could add a constant basis function on level 0)
     alpha[0] -= ev;
     scalarProducts.mult(alpha, product);
+
     variance = product.dotProduct(alpha);
-    //    variance *= width;
   }
 
   return variance;
