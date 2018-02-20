@@ -279,6 +279,21 @@ BOOST_AUTO_TEST_CASE(testCorrespondingDegreeInterpolation) {
   BOOST_CHECK_SMALL(L2error5, tolerance);
 }
 
+// BOOST_AUTO_TEST_CASE(testBSCInterpolation) {
+//  std::cout << "Description" << std::endl;
+//  size_t numDimensions = 2;
+//  sgpp::combigrid::MultiFunction func5(x5);
+//  sgpp::combigrid::CombigridSurrogateModelConfiguration config;
+//  config.type = sgpp::combigrid::CombigridSurrogateModelsType::BSPLINE_STOCHASTIC_COLLOCATION;
+//  config.pointHierarchies = ? ? ? ;
+//  config.levelManager = ? ? ? ;
+//  config.degree = 3;
+//  config.coefficientStorage = ? ? ? ;
+//  sgpp::combigrid::BsplineStochasticCollocation bsc(config);
+//
+//  // evaluate and get max error on points
+//}
+
 double BsplineQuadratureError(size_t numDimensions, size_t degree,
                               sgpp::combigrid::MultiFunction func, size_t level) {
   auto operation = sgpp::combigrid::CombigridOperation::createExpUniformBoundaryBsplineQuadrature(

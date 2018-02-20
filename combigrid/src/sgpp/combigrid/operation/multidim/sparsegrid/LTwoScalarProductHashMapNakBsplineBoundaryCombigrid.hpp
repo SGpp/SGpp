@@ -78,8 +78,8 @@ class LTwoScalarProductHashMapNakBsplineBoundaryCombigrid {
   /**
    * Creates hash key from the two level-index pairs of two 1D Bsplines
    */
-  void hashLevelIndex(base::level_t li, base::index_t ii, base::level_t lj, base::index_t ij,
-                      size_t d, MultiIndex& hashMI);
+  MultiIndex hashLevelIndex(base::level_t li, base::index_t ii, base::level_t lj, base::index_t ij,
+                            size_t d);
 
   /**
    * subroutine to calculate the scalar product of the B splines i and j with level index pairs
