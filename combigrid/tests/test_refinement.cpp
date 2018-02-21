@@ -55,8 +55,8 @@ BOOST_AUTO_TEST_CASE(testVarianceBasedRefinement) {
   //  std::cout << "Tensor" << std::endl;
   tensor_op_lm->addRegularLevels(regularLevel);
   tensor_op_lm->addLevelsAdaptive(50);
-  tensor_op_lm->addLevelsAdaptive(100);
-  tensor_op_lm->addLevelsAdaptive(150);
+  //  tensor_op_lm->addLevelsAdaptive(100);
+  //  tensor_op_lm->addLevelsAdaptive(150);
 
   // -----------------------------------------------------------------------------------
   // use quadrature based refinement

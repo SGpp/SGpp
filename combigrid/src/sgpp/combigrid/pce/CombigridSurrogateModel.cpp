@@ -18,6 +18,7 @@ CombigridSurrogateModelConfiguration::CombigridSurrogateModelConfiguration()
       levelStructure(nullptr),
       basisFunction(nullptr),
       basisFunctions(0),
+      tensorOperation(nullptr),
       bounds(0),
       degree(3),
       coefficientStorage(nullptr),
@@ -27,24 +28,31 @@ CombigridSurrogateModelConfiguration::CombigridSurrogateModelConfiguration()
 CombigridSurrogateModelConfiguration::~CombigridSurrogateModelConfiguration() {}
 
 void CombigridSurrogateModelConfiguration::loadFromCombigridOperation(
-    std::shared_ptr<CombigridOperation> op) {
+    std::shared_ptr<CombigridOperation> op, bool loadLevelStructure) {
   storage = op->getStorage();
   pointHierarchies = op->getPointHierarchies();
-  levelStructure = op->getLevelManager()->getLevelStructure();
+  if (loadLevelStructure) {
+    levelStructure = op->getLevelManager()->getLevelStructure();
+  }
 }
 
 void CombigridSurrogateModelConfiguration::loadFromCombigridOperation(
-    std::shared_ptr<CombigridMultiOperation> op) {
+    std::shared_ptr<CombigridMultiOperation> op, bool loadLevelStructure) {
   storage = op->getStorage();
   pointHierarchies = op->getPointHierarchies();
-  levelStructure = op->getLevelManager()->getLevelStructure();
+  if (loadLevelStructure) {
+    levelStructure = op->getLevelManager()->getLevelStructure();
+  }
 }
 
 void CombigridSurrogateModelConfiguration::loadFromCombigridOperation(
-    std::shared_ptr<CombigridTensorOperation> op) {
+    std::shared_ptr<CombigridTensorOperation> op, bool loadLevelStructure) {
   storage = op->getStorage();
   pointHierarchies = op->getPointHierarchies();
-  levelStructure = op->getLevelManager()->getLevelStructure();
+  tensorOperation = op;
+  if (loadLevelStructure) {
+    levelStructure = op->getLevelManager()->getLevelStructure();
+  }
 }
 
 CombigridSurrogateModel::CombigridSurrogateModel(

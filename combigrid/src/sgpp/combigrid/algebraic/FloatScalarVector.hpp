@@ -6,6 +6,8 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_ALGEBRAIC_FLOATSCALARVECTOR_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_ALGEBRAIC_FLOATSCALARVECTOR_HPP_
 
+#include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
+
 #include <sgpp/globaldef.hpp>
 
 #include <iostream>
@@ -28,6 +30,14 @@ class FloatScalarVector {
   FloatScalarVector() : val(double()) {}
 
   explicit FloatScalarVector(double const &value) : val(value) {}
+
+  explicit FloatScalarVector(std::shared_ptr<TreeStorage<FloatScalarVector>> storage)
+      : val(double()) {
+    auto it = storage->getStoredDataIterator();
+    if (it->isValid()) {
+      val = it->value().value();
+    }
+  }
 
   FloatScalarVector(FloatScalarVector const &other) : val(other.val) {}
 

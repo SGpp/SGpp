@@ -43,6 +43,10 @@ class CombigridSurrogateModelConfiguration {
   // basis function for tensor operation
   std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> basisFunction;
   sgpp::combigrid::OrthogonalBasisFunctionsCollection basisFunctions;
+  std::shared_ptr<sgpp::combigrid::FloatTensorVector> expansionCoefficients;
+
+  // extract knowledge directly from operation
+  std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> tensorOperation;
 
   // bounds for stochastic collocation
   sgpp::base::DataVector bounds;
@@ -56,12 +60,16 @@ class CombigridSurrogateModelConfiguration {
   // WeightFunctionsCollection from that. Just like basisFunction above
   // weight functions
   sgpp::combigrid::WeightFunctionsCollection weightFunctions;
+  std::shared_ptr<sgpp::combigrid::SingleFunction> weightFunction;
 
   bool enableLevelManagerStatsCollection;
 
-  void loadFromCombigridOperation(std::shared_ptr<CombigridOperation> op);
-  void loadFromCombigridOperation(std::shared_ptr<CombigridMultiOperation> op);
-  void loadFromCombigridOperation(std::shared_ptr<CombigridTensorOperation> op);
+  void loadFromCombigridOperation(std::shared_ptr<CombigridOperation> op,
+                                  bool loadLevelStructure = true);
+  void loadFromCombigridOperation(std::shared_ptr<CombigridMultiOperation> op,
+                                  bool loadLevelStructure = true);
+  void loadFromCombigridOperation(std::shared_ptr<CombigridTensorOperation> op,
+                                  bool loadLevelStructure = true);
 };
 
 // --------------------------------------------------------------------------

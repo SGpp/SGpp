@@ -48,15 +48,10 @@ class PolynomialStochasticCollocation : public CombigridSurrogateModel {
   std::shared_ptr<LevelInfos> getInfoOnAddedLevels() override;
 
  private:
-  void initializeTensorOperation(
-      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-      std::shared_ptr<AbstractCombigridStorage> storage);
-
   void initializeBounds();
   void initializeWeightFunctions();
   void initializeNormStrategies();
 
-  bool updateStatus();
   double computeMean();
   double computeVariance();
 
@@ -66,10 +61,7 @@ class PolynomialStochasticCollocation : public CombigridSurrogateModel {
   // tensor operation
   std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation;
 
-  // orthogonal basis for pdf values
-  sgpp::combigrid::WeightFunctionsCollection weightFunctions;
-
-  size_t currentNumGridPoints;
+  // expansion coefficients
   sgpp::combigrid::FloatTensorVector expansionCoefficients;
 
   // mean and variance storage

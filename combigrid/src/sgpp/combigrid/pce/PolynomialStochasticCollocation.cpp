@@ -36,26 +36,36 @@ namespace combigrid {
 PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     sgpp::combigrid::CombigridSurrogateModelConfiguration& config)
     : CombigridSurrogateModel(config),
-      weightFunctions(0),
-      currentNumGridPoints(0),
       computedMeanFlag(false),
       ev(0.0),
       computedVarianceFlag(false),
       var(0.0) {
   // create vector of function bases
-  if (config.basisFunctions.size() == 0) {
-    for (size_t idim = 0; idim < numDims; idim++) {
-      this->config.basisFunctions.push_back(config.basisFunction);
+  if (config.weightFunctions.size() == 0) {
+    if (!config.weightFunction) {
+      throw sgpp::base::application_exception(
+          "PolynomialStochasticCollocation: no weight function available");
     }
-  } else if (numDims != config.basisFunctions.size()) {
+    sgpp::combigrid::SingleFunction weightFunction = *config.weightFunction.get();
+    for (size_t idim = 0; idim < numDims; idim++) {
+      this->config.weightFunctions.push_back(weightFunction);
+    }
+  } else if (numDims != config.weightFunctions.size()) {
     throw sgpp::base::application_exception(
-        "PolynomialStochasticCollocation: number of basis function do not match with the number of "
-        "dimensions of the operation");
+        "PolynomialStochasticCollocation: number of weight functions do not match with the number "
+        "of dimensions of the operation");
   }
 
-  initializeBounds();
-  initializeWeightFunctions();
+  // initialize legendre basis
+  sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration basisConfig;
+  basisConfig.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
+  basisConfig.polyParameters.lowerBound_ = 0.0;
+  basisConfig.polyParameters.upperBound_ = 1.0;
+  legendreBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(basisConfig);
+
   updateConfig(config);
+
+  initializeBounds();
   initializeNormStrategies();
 }
 
@@ -63,29 +73,12 @@ PolynomialStochasticCollocation::~PolynomialStochasticCollocation() {}
 
 // --------------------------------------------------------------------------------------
 
-void PolynomialStochasticCollocation::initializeTensorOperation(
-    std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-    std::shared_ptr<AbstractCombigridStorage> storage) {
-  // create tensor operation for pce transformation
-  sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
-  config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
-  config.polyParameters.lowerBound_ = 0.0;
-  config.polyParameters.upperBound_ = 1.0;
-  legendreBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
-
-  this->combigridTensorOperation =
-      sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
-          pointHierarchies, storage, legendreBasis);
-
-  currentNumGridPoints = 0;
-}
-
 void PolynomialStochasticCollocation::initializeBounds() {
   if (config.bounds.size() == 0) {
     config.bounds.resize(2 * numDims);
     for (size_t idim = 0; idim < numDims; idim++) {
-      config.bounds[2 * idim] = config.basisFunctions[idim]->lowerBound();
-      config.bounds[2 * idim + 1] = config.basisFunctions[idim]->upperBound();
+      config.bounds[2 * idim] = 0.0;
+      config.bounds[2 * idim + 1] = 1.0;
     }
   } else {
     if (config.bounds.size() != 2 * numDims) {
@@ -96,30 +89,11 @@ void PolynomialStochasticCollocation::initializeBounds() {
   }
 }
 
-void PolynomialStochasticCollocation::initializeWeightFunctions() {
-  weightFunctions.clear();
-  for (size_t idim = 0; idim < numDims; idim++) {
-    weightFunctions.push_back(config.basisFunctions[idim]->getWeightFunction());
-  }
-}
-
 void PolynomialStochasticCollocation::initializeNormStrategies() {
   firstMomentNormstrategy.reset(
-      new FirstMomentNormStrategy(legendreBasis, weightFunctions, false, config.bounds));
+      new FirstMomentNormStrategy(legendreBasis, config.weightFunctions, false, config.bounds));
   varianceNormStrategy.reset(
-      new VarianceNormStrategy(legendreBasis, weightFunctions, false, config.bounds));
-}
-
-bool PolynomialStochasticCollocation::updateStatus() {
-  if (currentNumGridPoints < combigridTensorOperation->numGridPoints()) {
-    expansionCoefficients = combigridTensorOperation->getResult();
-    currentNumGridPoints = combigridTensorOperation->numGridPoints();
-    computedMeanFlag = false;
-    computedVarianceFlag = false;
-    return true;
-  } else {
-    return false;
-  }
+      new VarianceNormStrategy(legendreBasis, config.weightFunctions, false, config.bounds));
 }
 
 double PolynomialStochasticCollocation::eval(sgpp::base::DataVector& x) {
@@ -166,7 +140,6 @@ double PolynomialStochasticCollocation::computeMean() {
 }
 
 double PolynomialStochasticCollocation::mean() {
-  updateStatus();
   if (!computedMeanFlag) {
     ev = computeMean();
     computedMeanFlag = true;
@@ -179,7 +152,6 @@ double PolynomialStochasticCollocation::computeVariance() {
 }
 
 double PolynomialStochasticCollocation::variance() {
-  updateStatus();
   if (!computedVarianceFlag) {
     var = computeVariance();
     computedVarianceFlag = true;
@@ -201,21 +173,41 @@ void PolynomialStochasticCollocation::getTotalSobolIndices(
 
 void PolynomialStochasticCollocation::updateConfig(
     sgpp::combigrid::CombigridSurrogateModelConfiguration config) {
-  // initialize tensor operation
-  if (config.pointHierarchies.size() == numDims && config.storage != nullptr) {
-    initializeTensorOperation(config.pointHierarchies, config.storage);
+  // update the tensor operation
+  if (config.pointHierarchies.size() == numDims && config.storage) {
+    combigridTensorOperation =
+        sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
+            config.pointHierarchies, config.storage, legendreBasis);
   }
 
-  if (config.levelManager != nullptr) {
+  if (!combigridTensorOperation) {
+    throw sgpp::base::application_exception(
+        "PolynomialStochasticCollocation:updateConfig - tensor operation is null -> something is "
+        "seriously wrong");
+  }
+
+  if (config.levelManager) {
     combigridTensorOperation->setLevelManager(config.levelManager);
   }
 
-  if (config.levelStructure != nullptr && combigridTensorOperation != nullptr) {
+  if (config.levelStructure) {
     combigridTensorOperation->getLevelManager()->addLevelsFromStructure(config.levelStructure);
+
+    // update status
+    computedMeanFlag = false;
+    computedVarianceFlag = false;
   }
+
+  if (config.enableLevelManagerStatsCollection) {
+    combigridTensorOperation->getLevelManager()->enableStatsCollection();
+  }
+
+  expansionCoefficients = combigridTensorOperation->getResult();
 }
 
-size_t PolynomialStochasticCollocation::numGridPoints() { return currentNumGridPoints; }
+size_t PolynomialStochasticCollocation::numGridPoints() {
+  return combigridTensorOperation->numGridPoints();
+}
 
 std::shared_ptr<LevelInfos> PolynomialStochasticCollocation::getInfoOnAddedLevels() {
   return combigridTensorOperation->getLevelManager()->getInfoOnAddedLevels();
