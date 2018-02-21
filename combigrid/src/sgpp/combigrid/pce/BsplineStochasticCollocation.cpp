@@ -138,7 +138,6 @@ bool BsplineStochasticCollocation::updateStatus() {
   }
 }
 
-// ToDo(rehmemk) write a test for these evals
 void BsplineStochasticCollocation::eval(sgpp::base::DataMatrix& xs, sgpp::base::DataVector& res) {
   combigridMultiOperation->setParameters(xs);
   combigridMultiOperation->getLevelManager()->addLevelsFromStructure(config.levelStructure);
