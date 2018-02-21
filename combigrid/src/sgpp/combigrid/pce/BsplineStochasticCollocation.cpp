@@ -47,7 +47,12 @@ void BsplineStochasticCollocation::initializeOperations(
     std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
     std::shared_ptr<AbstractCombigridStorage> coefficientStorage,
     std::shared_ptr<LevelManager> levelManager) {
+  customWeightFunction = true;
   numDims = weightFunctions.size();
+  if (numDims == 0) {
+    numDims = config.numDimensions;
+    customWeightFunction = false;
+  }
   // initialize interpolation operation
   sgpp::combigrid::EvaluatorConfiguration evalConfig(
       sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, this->config.degree);
@@ -63,17 +68,23 @@ void BsplineStochasticCollocation::initializeOperations(
   size_t numAdditionalPoints = 0;
   bool normalizeWeights = false;
   sgpp::combigrid::CombiEvaluators::Collection quadEvaluators(0);
-  for (size_t d = 0; d < numDims; d++) {
-    quadEvaluators.push_back(sgpp::combigrid::CombiEvaluators::BSplineQuadrature(
-        config.degree, weightFunctions[d], numAdditionalPoints, config.bounds[2 * d],
-        config.bounds[2 * d + 1], normalizeWeights));
+  if (customWeightFunction) {
+    for (size_t d = 0; d < numDims; d++) {
+      quadEvaluators.push_back(sgpp::combigrid::CombiEvaluators::BSplineQuadrature(
+          config.degree, weightFunctions[d], numAdditionalPoints, config.bounds[2 * d],
+          config.bounds[2 * d + 1], normalizeWeights));
+    }
+
+    scalarProducts.setWeightFunction(weightFunctions);
+    scalarProducts.setBounds(config.bounds);
+  } else {
+    for (size_t d = 0; d < numDims; d++) {
+      quadEvaluators.push_back(sgpp::combigrid::CombiEvaluators::BSplineQuadrature(config.degree));
+    }
   }
   auto quadratureOperation = std::make_shared<sgpp::combigrid::CombigridOperation>(
       pointHierarchies, quadEvaluators, levelManager, coefficientStorage, summationStrategyType);
   combigridOperation = quadratureOperation;
-
-  scalarProducts.setWeightFunction(weightFunctions);
-  scalarProducts.setBounds(config.bounds);
 
   currentNumGridPoints = 0;
 }
@@ -84,7 +95,6 @@ void BsplineStochasticCollocation::updateConfig(
     sgpp::combigrid::CombigridSurrogateModelConfiguration newConfig) {
   this->config.coefficientStorage = newConfig.coefficientStorage;
   this->config.levelStructure = newConfig.levelStructure;
-  //  this->config.levelManager = newConfig.levelManager;
 
   combigridMultiOperation = createBsplineLinearCoefficientOperation(newConfig.degree, numDims,
                                                                     newConfig.coefficientStorage);
@@ -96,10 +106,16 @@ void BsplineStochasticCollocation::updateConfig(
       sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
   sgpp::combigrid::CombiEvaluators::Collection quadEvaluators(0);
 
-  for (size_t d = 0; d < numDims; d++) {
-    quadEvaluators.push_back(sgpp::combigrid::CombiEvaluators::BSplineQuadrature(
-        newConfig.degree, weightFunctions[d], numAdditionalPoints, newConfig.bounds[2 * d],
-        newConfig.bounds[2 * d + 1], normalizeWeights));
+  if (customWeightFunction) {
+    for (size_t d = 0; d < numDims; d++) {
+      quadEvaluators.push_back(sgpp::combigrid::CombiEvaluators::BSplineQuadrature(
+          config.degree, weightFunctions[d], numAdditionalPoints, config.bounds[2 * d],
+          config.bounds[2 * d + 1], normalizeWeights));
+    }
+  } else {
+    for (size_t d = 0; d < numDims; d++) {
+      quadEvaluators.push_back(sgpp::combigrid::CombiEvaluators::BSplineQuadrature(config.degree));
+    }
   }
   combigridOperation = std::make_shared<sgpp::combigrid::CombigridOperation>(
       config.pointHierarchies, quadEvaluators, config.levelManager, newConfig.coefficientStorage,
@@ -130,8 +146,8 @@ void BsplineStochasticCollocation::eval(sgpp::base::DataMatrix& xs, sgpp::base::
 }
 
 double BsplineStochasticCollocation::eval(sgpp::base::DataVector& x) {
-  sgpp::base::DataMatrix xs;
-  xs.appendRow(x);
+  sgpp::base::DataMatrix xs(x.size(), 0);
+  xs.appendCol(x);
   sgpp::base::DataVector res;
   this->eval(xs, res);
   return res[0];

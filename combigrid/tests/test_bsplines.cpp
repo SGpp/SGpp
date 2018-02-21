@@ -219,6 +219,32 @@ BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_AUTO_TEST_SUITE(testBsplines)
 
+// auxiliary function. Creates a regular level structure and calculated the Bspline interpolation
+// coefficients for this structure
+void createRegularLevelStructure(
+    size_t numLevels, size_t degree,
+    sgpp::combigrid::CombiHierarchies::Collection const& pointHierarchies,
+    sgpp::combigrid::GridFunction gf, bool exploitNesting,
+    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>>& newLevelStructure,
+    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage>& coefficientStorage,
+    size_t numDimensions) {
+  sgpp::combigrid::EvaluatorConfiguration EvalConfig(
+      sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, degree);
+  sgpp::combigrid::CombiEvaluators::MultiCollection Evaluators(
+      numDimensions, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(EvalConfig));
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
+      new sgpp::combigrid::RegularLevelManager());
+  sgpp::combigrid::FullGridSummationStrategyType auxiliarySummationStrategyType =
+      sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
+
+  auto Operation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
+      pointHierarchies, Evaluators, levelManager, gf, exploitNesting,
+      auxiliarySummationStrategyType);
+  Operation->getLevelManager()->addRegularLevels(numLevels);
+  coefficientStorage = Operation->getStorage();
+  newLevelStructure = Operation->getLevelManager()->getLevelStructure();
+}
+
 double x1(sgpp::base::DataVector const& v) { return v[0] + v[1]; }
 double x3(sgpp::base::DataVector const& v) { return std::pow(v[0], 3) + std::pow(v[1], 3); }
 double x5(sgpp::base::DataVector const& v) { return std::pow(v[0], 5) + std::pow(v[1], 5); }
@@ -279,20 +305,69 @@ BOOST_AUTO_TEST_CASE(testCorrespondingDegreeInterpolation) {
   BOOST_CHECK_SMALL(L2error5, tolerance);
 }
 
-// BOOST_AUTO_TEST_CASE(testBSCInterpolation) {
-//  std::cout << "Description" << std::endl;
-//  size_t numDimensions = 2;
-//  sgpp::combigrid::MultiFunction func5(x5);
-//  sgpp::combigrid::CombigridSurrogateModelConfiguration config;
-//  config.type = sgpp::combigrid::CombigridSurrogateModelsType::BSPLINE_STOCHASTIC_COLLOCATION;
-//  config.pointHierarchies = ? ? ? ;
-//  config.levelManager = ? ? ? ;
-//  config.degree = 3;
-//  config.coefficientStorage = ? ? ? ;
-//  sgpp::combigrid::BsplineStochasticCollocation bsc(config);
-//
-//  // evaluate and get max error on points
-//}
+BOOST_AUTO_TEST_CASE(testBSCInterpolation) {
+  std::cout << "Description" << std::endl;
+
+  size_t numDimensions = 2;
+  sgpp::combigrid::MultiFunction func(x1);
+  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
+      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+  std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> storage;
+  //  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
+  //      new sgpp::combigrid::AveragingLevelManager());
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager =
+      std::make_shared<sgpp::combigrid::AveragingLevelManager>();
+  sgpp::combigrid::CombigridSurrogateModelConfiguration bsc_config;
+  bsc_config.type = sgpp::combigrid::CombigridSurrogateModelsType::BSPLINE_STOCHASTIC_COLLOCATION;
+  bsc_config.pointHierarchies = pointHierarchies;
+  bsc_config.levelManager = levelManager;
+
+  bsc_config.degree = 5;
+  bsc_config.numDimensions = numDimensions;
+  bsc_config.coefficientStorage = storage;
+
+  sgpp::combigrid::BsplineStochasticCollocation bsc(bsc_config);
+
+  // create level Structure and interpolate
+  std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> newLevelStructure;
+  std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> newCoefficientStorage;
+  size_t numLevels = 5;
+  sgpp::combigrid::GridFunction gf =
+      BSplineCoefficientGridFunction(func, pointHierarchies, bsc_config.degree);
+  createRegularLevelStructure(numLevels, bsc_config.degree, pointHierarchies, gf, false,
+                              newLevelStructure, newCoefficientStorage, numDimensions);
+
+  //  update config
+  bsc_config.levelStructure = newLevelStructure;
+  bsc_config.coefficientStorage = newCoefficientStorage;
+
+  bsc.updateConfig(bsc_config);
+
+  // 0.1  0.2  0.3
+  // 0.4  0.5  0.6
+  sgpp::base::DataMatrix pointsT(2, 3);
+  pointsT.set(0, 0, 0.1);
+  pointsT.set(0, 1, 0.2);
+  pointsT.set(0, 2, 0.3);
+  pointsT.set(1, 0, 0.4);
+  pointsT.set(1, 1, 0.5);
+  pointsT.set(1, 2, 0.6);
+  sgpp::base::DataVector res(3);
+  bsc.eval(pointsT, res);
+
+  //  std::cout << res[0] << " " << res[1] << " " << res[2] << std::endl;
+  double tolerance = 1e-13;
+  BOOST_CHECK_SMALL(res[0] - 0.5, tolerance);
+  BOOST_CHECK_SMALL(res[1] - 0.7, tolerance);
+  BOOST_CHECK_SMALL(res[2] - 0.9, tolerance);
+
+  sgpp::base::DataVector point;
+  point.append(0.337);
+  point.append(0.9919);
+  double res1 = bsc.eval(point);
+  //  std::cout << res1 << std::endl;
+  BOOST_CHECK_SMALL(res1 - 1.3289, tolerance);
+}
 
 double BsplineQuadratureError(size_t numDimensions, size_t degree,
                               sgpp::combigrid::MultiFunction func, size_t level) {
@@ -694,32 +769,6 @@ BOOST_AUTO_TEST_CASE(testScalarProductsWithWeightFunctionAndBoundsOnLevel) {
   BOOST_CHECK_SMALL(varianceError, 1e13);
 }
 
-// auxiliary function. Creates a regular level structure and calculated the Bspline interpolation
-// coefficients for this structure
-void createRegularLevelStructure(
-    size_t numLevels, size_t degree,
-    sgpp::combigrid::CombiHierarchies::Collection const& pointHierarchies,
-    sgpp::combigrid::GridFunction gf, bool exploitNesting,
-    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>>& newLevelStructure,
-    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage>& coefficientStorage,
-    size_t numDimensions) {
-  sgpp::combigrid::EvaluatorConfiguration EvalConfig(
-      sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, degree);
-  sgpp::combigrid::CombiEvaluators::MultiCollection Evaluators(
-      numDimensions, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(EvalConfig));
-  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
-      new sgpp::combigrid::RegularLevelManager());
-  sgpp::combigrid::FullGridSummationStrategyType auxiliarySummationStrategyType =
-      sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
-
-  auto Operation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
-      pointHierarchies, Evaluators, levelManager, gf, exploitNesting,
-      auxiliarySummationStrategyType);
-  Operation->getLevelManager()->addRegularLevels(numLevels);
-  coefficientStorage = Operation->getStorage();
-  newLevelStructure = Operation->getLevelManager()->getLevelStructure();
-}
-
 #ifdef USE_DAKOTA
 
 BOOST_AUTO_TEST_CASE(testBsplineStochasticCollocation_co2_lognormal) {
@@ -756,7 +805,6 @@ BOOST_AUTO_TEST_CASE(testBsplineStochasticCollocation_co2_lognormal) {
   sgpp::combigrid::CombigridSurrogateModelConfiguration bsc_config;
   bsc_config.type = sgpp::combigrid::CombigridSurrogateModelsType::BSPLINE_STOCHASTIC_COLLOCATION;
   bsc_config.pointHierarchies = pointHierarchies;
-  bsc_config.storage = storage;
   bsc_config.levelManager = levelManager;
   // ToDo (rehmemk) this does not work for degree < 5. Then the iterative calculation of the scalar
   // products with increasing quadrature order does not meet the precision threshold of 1e-14 and

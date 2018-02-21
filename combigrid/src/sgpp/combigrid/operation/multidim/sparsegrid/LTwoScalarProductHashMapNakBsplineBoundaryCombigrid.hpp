@@ -73,6 +73,17 @@ class LTwoScalarProductHashMapNakBsplineBoundaryCombigrid {
   void updateGrid(sgpp::base::Grid* grid) {
     this->grid = grid;
     degree = dynamic_cast<sgpp::base::NakBsplineBoundaryCombigridGrid*>(grid)->getDegree();
+    if (!isCustomWeightFunction) {
+      sgpp::combigrid::SingleFunction constant_weight_function =
+          sgpp::combigrid::SingleFunction(sgpp::combigrid::constantFunction<double>(1.0));
+      weightFunctionsCollection = sgpp::combigrid::WeightFunctionsCollection(
+          grid->getDimension(), constant_weight_function);
+      bounds = sgpp::base::DataVector(0);
+      for (size_t d = 0; d < grid->getDimension(); d++) {
+        bounds.push_back(0);
+        bounds.push_back(1);
+      }
+    }
   };
 
   /**
