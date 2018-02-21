@@ -59,6 +59,7 @@ class BsplineStochasticCollocation : public CombigridSurrogateModel {
 
   // pdf values
   sgpp::combigrid::WeightFunctionsCollection weightFunctions;
+  bool customWeightFunction;
 
   size_t currentNumGridPoints;
 
