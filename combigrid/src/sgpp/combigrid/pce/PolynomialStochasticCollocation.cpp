@@ -106,7 +106,7 @@ double PolynomialStochasticCollocation::eval(sgpp::base::DataVector& x) {
     // evaluate tensor product
     double poly = 1.0;
     for (size_t k = 0; k < ix.size(); k++) {
-      poly *= config.basisFunctions[k]->evaluate(ix[k], x[k]);
+      poly *= legendreBasis->evaluate(ix[k], x[k]);
     }
     ans += coeff * poly;
   }
@@ -127,7 +127,7 @@ void PolynomialStochasticCollocation::eval(sgpp::base::DataMatrix& xs,
       // evaluate tensor product
       double poly = 1.0;
       for (size_t k = 0; k < ix.size(); k++) {
-        poly *= config.basisFunctions[k]->evaluate(ix[k], xs.get(i, k));
+        poly *= legendreBasis->evaluate(ix[k], xs.get(i, k));
       }
 
       res[i] += coeff * poly;
