@@ -7,6 +7,8 @@
 #define COMBIGRID_SRC_SGPP_COMBIGRID_ALGEBRAIC_FLOATARRAYVECTOR_HPP_
 
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
+#include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
+
 #include <sgpp/globaldef.hpp>
 
 #include <cmath>
@@ -50,6 +52,12 @@ class FloatArrayVector {
   explicit FloatArrayVector(std::vector<FloatScalarVector> const &values) : values(values) {}
 
   explicit FloatArrayVector(FloatScalarVector value) : values(1, value) {}
+
+  explicit FloatArrayVector(std::shared_ptr<TreeStorage<FloatScalarVector>> storage) : values(0) {
+    for (auto it = storage->getStoredDataIterator(); it->isValid(); it->moveToNext()) {
+      values.push_back(it->value());
+    }
+  }
 
   FloatArrayVector() : values() {}
 

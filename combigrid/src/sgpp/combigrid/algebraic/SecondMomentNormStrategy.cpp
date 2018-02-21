@@ -69,7 +69,7 @@ double SecondMomentNormStrategy::quad(MultiIndex i, MultiIndex j) {
     auto func = [basisFunction, &degree_i, &degree_j, &weightFunction](double x_unit,
                                                                        double x_prob) {
       return basisFunction->evaluate(degree_i, x_unit) * basisFunction->evaluate(degree_j, x_unit) *
-             weightFunction(x_prob);
+             weightFunction(x_unit);
     };
 
     double a = bounds[2 * idim], b = bounds[2 * idim + 1];
@@ -107,6 +107,7 @@ double SecondMomentNormStrategy::computeSecondMoment(FloatTensorVector& vector) 
 
   sgpp::base::DataMatrix M(numGridPoints, numGridPoints);
   sgpp::base::DataVector result(numGridPoints);
+  std::cout << "-------------------------------------------" << std::endl;
   while (it_i->isValid()) {
     MultiIndex ix = it_i->getMultiIndex();
 
@@ -128,8 +129,6 @@ double SecondMomentNormStrategy::computeSecondMoment(FloatTensorVector& vector) 
         }
 
         // compute the matrix vector product
-        //        M.set(i, j, innerProduct);
-        //        M.set(j, i, innerProduct);
         result[i] += innerProduct * coeffs[j];
         if (j > i) {
           result[j] += innerProduct * coeffs[i];
@@ -143,9 +142,6 @@ double SecondMomentNormStrategy::computeSecondMoment(FloatTensorVector& vector) 
     it_i->moveToNext();
     i += 1;
   }
-
-  // compute the matrix vector product
-  //  M.mult(coeffs, result);
 
   // compute the vector vector product
   double ans = 0.0;
@@ -178,11 +174,6 @@ void SecondMomentNormStrategy::initializeBounds() {
       bounds[2 * idim + 1] = basisFunctions[idim]->upperBound();
     }
   } else {
-    if (bounds.size() != 2 * numDims) {
-      throw sgpp::base::application_exception(
-          "SecondMomentNormStrategy::initializeBounds - not enough arguments for bounds "
-          "specified");
-    }
   }
 }
 

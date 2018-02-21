@@ -46,10 +46,6 @@ class PolynomialChaosExpansion : public CombigridSurrogateModel {
   std::shared_ptr<LevelInfos> getInfoOnAddedLevels() override;
 
  private:
-  void initializeTensorOperation(
-      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-      std::shared_ptr<AbstractCombigridStorage> storage);
-
   bool updateStatus();
   void computeComponentSobolIndices();
 
@@ -57,11 +53,14 @@ class PolynomialChaosExpansion : public CombigridSurrogateModel {
   std::shared_ptr<Pecos::OrthogPolyApproximation> orthogPoly;
 #endif
 
+  // basis functions
+  sgpp::combigrid::OrthogonalBasisFunctionsCollection basisFunctions;
+
   // tensor operation
   std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation;
+  sgpp::combigrid::FloatTensorVector expansionCoefficients;
 
   size_t currentNumGridPoints;
-  sgpp::combigrid::FloatTensorVector expansionCoefficients;
   bool computedSobolIndicesFlag;
   sgpp::base::DataVector sobolIndices;
 };

@@ -27,13 +27,12 @@ namespace combigrid {
 
 PolynomialChaosExpansion::PolynomialChaosExpansion(
     sgpp::combigrid::CombigridSurrogateModelConfiguration& config)
-    : CombigridSurrogateModel(config), currentNumGridPoints(0), computedSobolIndicesFlag(false) {
-  // create vector of function bases
-  if (config.basisFunctions.size() == 0) {
+    : CombigridSurrogateModel(config), basisFunctions(0), computedSobolIndicesFlag(false) {
+  if (config.basisFunctions.size() == 0 && config.basisFunction) {
     for (size_t idim = 0; idim < numDims; idim++) {
-      this->config.basisFunctions.push_back(config.basisFunction);
+      config.basisFunctions.push_back(config.basisFunction);
     }
-  } else if (numDims != config.basisFunctions.size()) {
+  } else if (config.basisFunctions.size() != numDims) {
     throw sgpp::base::application_exception(
         "PolynomialChaosExpansion: number of basis function do not match with the number of "
         "dimensions of the operation");
@@ -43,28 +42,6 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
 }
 
 PolynomialChaosExpansion::~PolynomialChaosExpansion() {}
-
-void PolynomialChaosExpansion::initializeTensorOperation(
-    std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-    std::shared_ptr<AbstractCombigridStorage> storage) {
-  // create tensor operation for pce transformation
-  combigridTensorOperation =
-      sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
-          pointHierarchies, storage, config.basisFunctions);
-
-  currentNumGridPoints = 0;
-}
-
-bool PolynomialChaosExpansion::updateStatus() {
-  if (currentNumGridPoints < combigridTensorOperation->numGridPoints()) {
-    expansionCoefficients = combigridTensorOperation->getResult();
-    currentNumGridPoints = combigridTensorOperation->numGridPoints();
-    computedSobolIndicesFlag = false;
-    return true;
-  } else {
-    return false;
-  }
-}
 
 double PolynomialChaosExpansion::eval(sgpp::base::DataVector& x) {
   double ans = 0.0;
@@ -105,12 +82,10 @@ void PolynomialChaosExpansion::eval(sgpp::base::DataMatrix& xs, sgpp::base::Data
 }
 
 double PolynomialChaosExpansion::mean() {
-  updateStatus();
   return expansionCoefficients.get(MultiIndex(numDims, 0)).getValue();
 }
 
 double PolynomialChaosExpansion::variance() {
-  updateStatus();
   double var = 0.0;
   auto it = expansionCoefficients.getValues()->getStoredDataIterator();
   if (!it->isValid()) {
@@ -184,7 +159,6 @@ void PolynomialChaosExpansion::computeComponentSobolIndices() {
 
 void PolynomialChaosExpansion::getComponentSobolIndices(
     sgpp::base::DataVector& componentSobolIndices, bool normalized) {
-  updateStatus();
   computeComponentSobolIndices();
   // copy sobol indices to output vector
   componentSobolIndices.resize(sobolIndices.getSize());
@@ -201,7 +175,6 @@ void PolynomialChaosExpansion::getComponentSobolIndices(
 
 void PolynomialChaosExpansion::getTotalSobolIndices(sgpp::base::DataVector& totalSobolIndices,
                                                     bool normalized) {
-  updateStatus();
   computeComponentSobolIndices();
   totalSobolIndices.resizeZero(numDims);
   for (size_t idim = 0; idim < numDims; idim++) {
@@ -225,31 +198,41 @@ void PolynomialChaosExpansion::getTotalSobolIndices(sgpp::base::DataVector& tota
 
 void PolynomialChaosExpansion::updateConfig(
     sgpp::combigrid::CombigridSurrogateModelConfiguration config) {
-  // update the tensor operation
-  if (config.pointHierarchies.size() == numDims && config.storage != nullptr) {
-    initializeTensorOperation(config.pointHierarchies, config.storage);
+  if (config.tensorOperation) {
+    config.loadFromCombigridOperation(config.tensorOperation);
+    combigridTensorOperation = config.tensorOperation;
+  } else if (config.pointHierarchies.size() == numDims && config.storage) {
+    combigridTensorOperation =
+        sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
+            config.pointHierarchies, config.storage, config.basisFunctions);
+    config.tensorOperation = combigridTensorOperation;
   }
 
-  if (combigridTensorOperation == nullptr) {
+  if (!combigridTensorOperation) {
     throw sgpp::base::application_exception(
         "PolynomialChaosExpansion:updateConfig - tensor operation is null -> something is "
         "seriously wrong");
   }
 
-  if (config.levelManager != nullptr) {
+  if (config.levelManager) {
     combigridTensorOperation->setLevelManager(config.levelManager);
   }
 
-  if (config.levelStructure != nullptr) {
+  if (config.levelStructure) {
     combigridTensorOperation->getLevelManager()->addLevelsFromStructure(config.levelStructure);
+    computedSobolIndicesFlag = false;
   }
 
   if (config.enableLevelManagerStatsCollection) {
     combigridTensorOperation->getLevelManager()->enableStatsCollection();
   }
+
+  expansionCoefficients = combigridTensorOperation->getResult();
 }
 
-size_t PolynomialChaosExpansion::numGridPoints() { return currentNumGridPoints; }
+size_t PolynomialChaosExpansion::numGridPoints() {
+  return combigridTensorOperation->numGridPoints();
+}
 
 std::shared_ptr<LevelInfos> PolynomialChaosExpansion::getInfoOnAddedLevels() {
   return combigridTensorOperation->getLevelManager()->getInfoOnAddedLevels();

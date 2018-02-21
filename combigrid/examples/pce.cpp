@@ -38,8 +38,8 @@ int main() {
     sgpp::combigrid::Stopwatch stopwatch;
     stopwatch.start();
     tensor_op->getLevelManager()->addRegularLevels(q);
-    tensor_op->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
-    tensor_op->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
+    //    tensor_op->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
+    //    tensor_op->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
     //    pce.getCombigridTensorOperation()->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
     stopwatch.log();
     // compute the variance
@@ -48,7 +48,7 @@ int main() {
     // initialize the surrogate model
     sgpp::combigrid::CombigridSurrogateModelConfiguration config;
     config.type = sgpp::combigrid::CombigridSurrogateModelsType::POLYNOMIAL_CHAOS_EXPANSION;
-    config.loadFromCombigridOperation(tensor_op);
+    config.loadFromCombigridOperation(tensor_op, false);
     config.basisFunction = basisFunction;
     auto pce = sgpp::combigrid::createCombigridSurrogateModel(config);
 
