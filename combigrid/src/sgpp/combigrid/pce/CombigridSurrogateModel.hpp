@@ -63,6 +63,7 @@ class CombigridSurrogateModelConfiguration {
   std::shared_ptr<sgpp::combigrid::SingleFunction> weightFunction;
 
   bool enableLevelManagerStatsCollection;
+  size_t numDimensions;
 
   void loadFromCombigridOperation(std::shared_ptr<CombigridOperation> op,
                                   bool loadLevelStructure = true);

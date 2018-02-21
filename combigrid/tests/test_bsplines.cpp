@@ -219,6 +219,32 @@ BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_AUTO_TEST_SUITE(testBsplines)
 
+// auxiliary function. Creates a regular level structure and calculated the Bspline interpolation
+// coefficients for this structure
+void createRegularLevelStructure(
+    size_t numLevels, size_t degree,
+    sgpp::combigrid::CombiHierarchies::Collection const& pointHierarchies,
+    sgpp::combigrid::GridFunction gf, bool exploitNesting,
+    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>>& newLevelStructure,
+    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage>& coefficientStorage,
+    size_t numDimensions) {
+  sgpp::combigrid::EvaluatorConfiguration EvalConfig(
+      sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, degree);
+  sgpp::combigrid::CombiEvaluators::MultiCollection Evaluators(
+      numDimensions, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(EvalConfig));
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
+      new sgpp::combigrid::RegularLevelManager());
+  sgpp::combigrid::FullGridSummationStrategyType auxiliarySummationStrategyType =
+      sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
+
+  auto Operation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
+      pointHierarchies, Evaluators, levelManager, gf, exploitNesting,
+      auxiliarySummationStrategyType);
+  Operation->getLevelManager()->addRegularLevels(numLevels);
+  coefficientStorage = Operation->getStorage();
+  newLevelStructure = Operation->getLevelManager()->getLevelStructure();
+}
+
 double x1(sgpp::base::DataVector const& v) { return v[0] + v[1]; }
 double x3(sgpp::base::DataVector const& v) { return std::pow(v[0], 3) + std::pow(v[1], 3); }
 double x5(sgpp::base::DataVector const& v) { return std::pow(v[0], 5) + std::pow(v[1], 5); }
@@ -277,6 +303,70 @@ BOOST_AUTO_TEST_CASE(testCorrespondingDegreeInterpolation) {
   BOOST_CHECK_SMALL(L2error1, tolerance);
   BOOST_CHECK_SMALL(L2error3, tolerance);
   BOOST_CHECK_SMALL(L2error5, tolerance);
+}
+
+BOOST_AUTO_TEST_CASE(testBSCInterpolation) {
+  std::cout << "Description" << std::endl;
+
+  size_t numDimensions = 2;
+  sgpp::combigrid::MultiFunction func(x1);
+  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
+      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+  std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> storage;
+  //  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
+  //      new sgpp::combigrid::AveragingLevelManager());
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager =
+      std::make_shared<sgpp::combigrid::AveragingLevelManager>();
+  sgpp::combigrid::CombigridSurrogateModelConfiguration bsc_config;
+  bsc_config.type = sgpp::combigrid::CombigridSurrogateModelsType::BSPLINE_STOCHASTIC_COLLOCATION;
+  bsc_config.pointHierarchies = pointHierarchies;
+  bsc_config.levelManager = levelManager;
+
+  bsc_config.degree = 5;
+  bsc_config.numDimensions = numDimensions;
+  bsc_config.coefficientStorage = storage;
+
+  sgpp::combigrid::BsplineStochasticCollocation bsc(bsc_config);
+
+  // create level Structure and interpolate
+  std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> newLevelStructure;
+  std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> newCoefficientStorage;
+  size_t numLevels = 5;
+  sgpp::combigrid::GridFunction gf =
+      BSplineCoefficientGridFunction(func, pointHierarchies, bsc_config.degree);
+  createRegularLevelStructure(numLevels, bsc_config.degree, pointHierarchies, gf, false,
+                              newLevelStructure, newCoefficientStorage, numDimensions);
+
+  //  update config
+  bsc_config.levelStructure = newLevelStructure;
+  bsc_config.coefficientStorage = newCoefficientStorage;
+
+  bsc.updateConfig(bsc_config);
+
+  // 0.1  0.2  0.3
+  // 0.4  0.5  0.6
+  sgpp::base::DataMatrix pointsT(2, 3);
+  pointsT.set(0, 0, 0.1);
+  pointsT.set(0, 1, 0.2);
+  pointsT.set(0, 2, 0.3);
+  pointsT.set(1, 0, 0.4);
+  pointsT.set(1, 1, 0.5);
+  pointsT.set(1, 2, 0.6);
+  sgpp::base::DataVector res(3);
+  bsc.eval(pointsT, res);
+
+  //  std::cout << res[0] << " " << res[1] << " " << res[2] << std::endl;
+  double tolerance = 1e-13;
+  BOOST_CHECK_SMALL(res[0] - 0.5, tolerance);
+  BOOST_CHECK_SMALL(res[1] - 0.7, tolerance);
+  BOOST_CHECK_SMALL(res[2] - 0.9, tolerance);
+
+  sgpp::base::DataVector point;
+  point.append(0.337);
+  point.append(0.9919);
+  double res1 = bsc.eval(point);
+  //  std::cout << res1 << std::endl;
+  BOOST_CHECK_SMALL(res1 - 1.3289, tolerance);
 }
 
 double BsplineQuadratureError(size_t numDimensions, size_t degree,
@@ -375,58 +465,68 @@ BOOST_AUTO_TEST_CASE(testCorrespondingDegreeOperationMatrixScalarProducts) {
   BOOST_CHECK_SMALL(QuadSquareError5, tolerance);
 }
 
-// ToDo (rehmemk) this works fine. Add Description and BOOST_CHECK_SMALL and finish this test
-// double omscFunc(sgpp::base::DataVector const& v) { return std::pow(v[0], 5) + std::pow(v[1], 5);
-// }
-// double omscWeight(double x) { return sin(x); }
-// BOOST_AUTO_TEST_CASE(testOperationMatrixScalarProductsWithWeightsAndBounds) {
-//  std::cout << "Description comes here" << std::endl;
-//  size_t numDims = 2;
-//  size_t degree = 3;
-//  size_t level = 8;
-//  sgpp::combigrid::MultiFunction func(omscFunc);
-//  sgpp::combigrid::SingleFunction weightfunction(omscWeight);
-//  sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection(0);
-//  for (size_t d = 0; d < numDims; d++) {
-//    weightFunctionsCollection.push_back(weightfunction);
-//  }
-//  sgpp::base::DataVector bounds(std::vector<double>{0, 1, 0, 1});
-//
-//  for (level = 1; level < 9; level++) {
-//    std::shared_ptr<sgpp::base::Grid> grid;
-//    grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDims, degree));
-//    grid->getGenerator().regular(level);
-//    sgpp::optimization::HierarchisationSLE hierSLE(*grid);
-//    sgpp::optimization::sle_solver::Auto sleSolver;
-//    sgpp::base::DataVector alpha(grid->getSize());
-//    sgpp::base::GridStorage& gridStorage = grid->getStorage();
-//    sgpp::base::DataVector f_values(gridStorage.getSize(), 0.0);
-//    for (size_t i = 0; i < gridStorage.getSize(); i++) {
-//      sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
-//      sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
-//      for (size_t j = 0; j < gridStorage.getDimension(); j++) {
-//        p[j] = gp.getStandardCoordinate(j);
-//      }
-//      f_values[i] = func(p);
-//    }
-//
-//    sgpp::optimization::Printer::getInstance().setVerbosity(-1);
-//    if (!sleSolver.solve(hierSLE, f_values, alpha)) {
-//      std::cout << "Solving failed!" << std::endl;
-//    }
-//    sgpp::base::Grid* gridptr = grid.get();
-//    sgpp::combigrid::OperationMatrixLTwoDotNakBsplineBoundaryCombigrid massMatrix(
-//        gridptr, weightFunctionsCollection, bounds);
-//    sgpp::base::DataVector product(alpha.size(), 0);
-//    massMatrix.mult(alpha, product);
-//    double integralSquare = product.dotProduct(alpha);
-//    //  std::cout << integralSquare << std::endl;
-//    std::cout << level << " " << fabs(integralSquare - 0.097430515213498) << std::endl;
-//  }
-//}
+double omscFunc(sgpp::base::DataVector const& v) { return std::pow(v[0], 5) + std::pow(v[1], 5); }
+double omscWeight(double x) { return sin(2 * x); }  // <= sin(x) on [0,2]^2
+
+BOOST_AUTO_TEST_CASE(testBsplineLTwoScalarProductsWithWeightsAndBounds) {
+  std::cout << "calculating mean and variance of x^5 + y^5 on [0,1]^2 using Bspline scalar "
+               "products and the weight function sin(x) on [0,2]^2."
+            << std::endl;
+  size_t numDims = 2;
+  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
+      numDims, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+  std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> storage;
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
+      new sgpp::combigrid::RegularLevelManager());
+  sgpp::combigrid::SingleFunction weightfunction(omscWeight);
+  sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection(0);
+  sgpp::base::DataVector bounds(0);
+  for (size_t d = 0; d < numDims; d++) {
+    bounds.push_back(0);
+    bounds.push_back(2);
+    weightFunctionsCollection.push_back(weightfunction);
+  }
+
+  sgpp::combigrid::CombigridSurrogateModelConfiguration config;
+  config.type = sgpp::combigrid::CombigridSurrogateModelsType::BSPLINE_STOCHASTIC_COLLOCATION;
+  config.pointHierarchies = pointHierarchies;
+  config.storage = storage;
+  config.levelManager = levelManager;
+  config.degree = 3;
+  config.coefficientStorage = storage;
+  config.weightFunctions = weightFunctionsCollection;
+
+  config.bounds = bounds;
+  sgpp::combigrid::BsplineStochasticCollocation BSC(config);
+
+  std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> levelStructure;
+  std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage;
+  sgpp::combigrid::MultiFunction func(omscFunc);
+  sgpp::combigrid::GridFunction gf =
+      BSplineCoefficientGridFunction(func, pointHierarchies, config.degree);
+
+  size_t numLevels = 5;
+
+  createRegularLevelStructure(numLevels, config.degree, pointHierarchies, gf, false, levelStructure,
+                              coefficientStorage, numDims);
+  //  update config
+  config.levelStructure = levelStructure;
+  config.coefficientStorage = coefficientStorage;
+  BSC.updateConfig(config);
+
+  // x^5+y^5 on [0,1]^2 with weight function sin(x) on [0,2]^2
+  double realEv = 0.906028496608237;
+  double realVar = 0.700571273115382;
+
+  double var = BSC.variance();
+  double ev = BSC.mean();
+  //  std::cout << fabs(ev - realEv) << " " << fabs(var - realVar) << std::endl;
+  BOOST_CHECK_SMALL(fabs(ev - realEv), 1e-6);
+  BOOST_CHECK_SMALL(fabs(var - realVar), 1e-6);
+}
 
 /*
- * This test calculates the variance for the test function atanModel (see above) and compares it
+ * This test calculates the variance for the test function atanModel  and compares it
  * to precalculated data.
  *
  */
@@ -679,32 +779,6 @@ BOOST_AUTO_TEST_CASE(testScalarProductsWithWeightFunctionAndBoundsOnLevel) {
   BOOST_CHECK_SMALL(varianceError, 1e13);
 }
 
-// auxiliary function. Creates a regular level structure and calculated the Bspline interpolation
-// coefficients for this structure
-void createRegularLevelStructure(
-    size_t numLevels, size_t degree,
-    sgpp::combigrid::CombiHierarchies::Collection const& pointHierarchies,
-    sgpp::combigrid::GridFunction gf, bool exploitNesting,
-    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>>& newLevelStructure,
-    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage>& coefficientStorage,
-    size_t numDimensions) {
-  sgpp::combigrid::EvaluatorConfiguration EvalConfig(
-      sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, degree);
-  sgpp::combigrid::CombiEvaluators::MultiCollection Evaluators(
-      numDimensions, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(EvalConfig));
-  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
-      new sgpp::combigrid::RegularLevelManager());
-  sgpp::combigrid::FullGridSummationStrategyType auxiliarySummationStrategyType =
-      sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
-
-  auto Operation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
-      pointHierarchies, Evaluators, levelManager, gf, exploitNesting,
-      auxiliarySummationStrategyType);
-  Operation->getLevelManager()->addRegularLevels(numLevels);
-  coefficientStorage = Operation->getStorage();
-  newLevelStructure = Operation->getLevelManager()->getLevelStructure();
-}
-
 #ifdef USE_DAKOTA
 
 BOOST_AUTO_TEST_CASE(testBsplineStochasticCollocation_co2_lognormal) {
@@ -741,7 +815,6 @@ BOOST_AUTO_TEST_CASE(testBsplineStochasticCollocation_co2_lognormal) {
   sgpp::combigrid::CombigridSurrogateModelConfiguration bsc_config;
   bsc_config.type = sgpp::combigrid::CombigridSurrogateModelsType::BSPLINE_STOCHASTIC_COLLOCATION;
   bsc_config.pointHierarchies = pointHierarchies;
-  bsc_config.storage = storage;
   bsc_config.levelManager = levelManager;
   // ToDo (rehmemk) this does not work for degree < 5. Then the iterative calculation of the scalar
   // products with increasing quadrature order does not meet the precision threshold of 1e-14 and

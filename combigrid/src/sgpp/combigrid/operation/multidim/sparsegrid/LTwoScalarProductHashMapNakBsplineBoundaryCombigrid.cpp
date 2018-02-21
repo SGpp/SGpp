@@ -81,12 +81,12 @@ LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::
 LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::
     ~LTwoScalarProductHashMapNakBsplineBoundaryCombigrid() {}
 
-void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::hashLevelIndex(base::level_t li,
-                                                                         base::index_t ii,
-                                                                         base::level_t lj,
-                                                                         base::index_t ij, size_t d,
-                                                                         MultiIndex& hashMI) {
-  if (li > lj) {
+MultiIndex LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::hashLevelIndex(
+    base::level_t li, base::index_t ii, base::level_t lj, base::index_t ij, size_t d) {
+  MultiIndex hashMI(5);
+
+  // use symmetry <(li, ii) , (lj,ij)> = <(lj,ij) , (li,ii)>
+  if ((li > lj) || ((li == lj) && (ii > ij)) || ((li == lj) && (ii == ij))) {
     hashMI[0] = li;
     hashMI[1] = ii;
     hashMI[2] = lj;
@@ -98,6 +98,7 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::hashLevelIndex(base::l
     hashMI[3] = ii;
   }
   hashMI[4] = d;
+  return hashMI;
 }
 
 double LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::calculateScalarProduct(
@@ -164,19 +165,19 @@ double LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::calculateScalarProdu
       // evaluated and from there to the interval[a,b] on which the weight function is defined
       const double x = offset + scaling * (coordinates[c] + static_cast<double>(n));
 
-      //      std::cout << lid << " " << iid << " " << ljd << " " << ijd << " | " << offset << " "
-      //                << scaling << " " << coordinates[c] << " " << n << " " << x << std::endl;
-
       double transX = x;  // bounds[2 * d] + (bounds[2 * d + 1] - bounds[2 * d]) * x;
       temp_res += weights[c] * basis.eval(lid, iid, x) * basis.eval(ljd, ijd, x) *
                   weightFunctionsCollection[d](transX);
     }
   }
+
   return temp_res * scaling;
 }
 
 void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataVector& alpha,
                                                                sgpp::base::DataVector& result) {
+  size_t count = 0;
+
   if ((degree != 1) && (degree != 3) && (degree != 5)) {
     std::cerr << "OperationMatrixLTwoDotNakBsplineBoundary: only B spline degrees 1, 3 and 5 are "
                  "supported."
@@ -205,12 +206,13 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
   // calculateScalarProduct routine is marked critical this is not parallel at all
   //#pragma omp parallel for schedule(static)
   for (size_t i = 0; i < gridSize; i++) {
-    MultiIndex hashMI(5);
     //    std::cout << "OMP uses " << omp_get_num_threads() << " thread(s)" << std::endl;
     for (size_t j = i; j < gridSize; j++) {
       double temp_ij = 1;
 
       for (size_t d = 0; d < gridDim; d++) {
+        count++;
+
         const base::level_t lid = storage[i].getLevel(d);
         const base::level_t ljd = storage[j].getLevel(d);
         const base::index_t iid = storage[i].getIndex(d);
@@ -255,19 +257,22 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
           double temp_res = 0.0;
 
           std::map<MultiIndex, double>::iterator it;
-          hashLevelIndex(lid, iid, ljd, ijd, d, hashMI);
-#pragma omp critical
-          { it = innerProducts.find(hashMI); }
+          MultiIndex hashMI = hashLevelIndex(lid, iid, ljd, ijd, d);
+
+          //#pragma omp critical
+          //          {
+          it = innerProducts.find(hashMI);
+          //          }
           if (it != innerProducts.end()) {
             temp_res = it->second;
           } else {
-#pragma omp critical
-            {
-              gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
-              temp_res = calculateScalarProduct(lid, iid, ljd, ijd, coordinates, weights, basis, d,
-                                                offseti_left, offsetj_left, hInvik, hInvjk, hik,
-                                                hjk, pp1h);
-            }
+            //#pragma omp critical
+            //            {
+            gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
+            temp_res =
+                calculateScalarProduct(lid, iid, ljd, ijd, coordinates, weights, basis, d,
+                                       offseti_left, offsetj_left, hInvik, hInvjk, hik, hjk, pp1h);
+            //            }
             numAdditionalPoints = lastNumAdditionalPoints;
 
             if (isCustomWeightFunction) {
@@ -284,13 +289,13 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
                   break;
                 }
                 double finer_temp_res = 1e+14;
-#pragma omp critical
-                {
-                  gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
-                  finer_temp_res = calculateScalarProduct(lid, iid, ljd, ijd, coordinates, weights,
-                                                          basis, d, offseti_left, offsetj_left,
-                                                          hInvik, hInvjk, hik, hjk, pp1h);
-                }
+                //#pragma omp critical
+                //                {
+                gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
+                finer_temp_res = calculateScalarProduct(lid, iid, ljd, ijd, coordinates, weights,
+                                                        basis, d, offseti_left, offsetj_left,
+                                                        hInvik, hInvjk, hik, hjk, pp1h);
+                //                }
                 err = fabs(temp_res - finer_temp_res);
                 temp_res = finer_temp_res;
               }
@@ -298,12 +303,15 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
             // must this be synchronized for OMP?
             innerProducts[hashMI] = temp_res;
           }
+
           double width = bounds[2 * d + 1] - bounds[2 * d];
-#pragma omp atomic
+          //#pragma omp atomic
           temp_ij *= temp_res * width;
         }
       }
 
+      if (temp_ij < 0) {
+      }
       //#pragma omp atomic
       result[i] += temp_ij * alpha[j];
       if (i != j) {
@@ -312,6 +320,7 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
       }
     }
   }
+
   // std::cout << "map size: " << innerProducts.size() << std::endl;
   //  std::cout << "LTwoScalarProduct numAddP: " << numAdditionalPoints << std::endl;
 }
