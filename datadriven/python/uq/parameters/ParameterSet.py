@@ -21,7 +21,10 @@ from pysgpp import PolynomialChaosExpansion, \
     singleFunc, \
     ProbabilityDensityFunction1DConfiguration, \
     ProbabilityDensityFunctionParameters, \
-    ProbabilityDensityFunction1D
+    ProbabilityDensityFunction1D, \
+    ProbabilityDensityFunctionType_BOUNDED_LOGNORMAL, \
+    ProbabilityDensityFunctionType_BETA, \
+    ProbabilityDensityFunctionType_UNIFORM
 
 from pysgpp.extensions.datadriven.uq.dists import J, Beta, Lognormal, TLognormal, Uniform
 from pysgpp.extensions.datadriven.uq.transformation import (JointTransformation,
