@@ -21,9 +21,11 @@ LevelInfos::LevelInfos() : counterAdaptive(0) {
 LevelInfos::~LevelInfos() {}
 
 void LevelInfos::incrementCounter() {
-  std::map<MultiIndex, LevelInfo> dict;
-  infoOnAddedLevels->push_back(dict);
-  counterAdaptive++;
+  if (!(*infoOnAddedLevels)[counterAdaptive].empty()) {
+    std::map<MultiIndex, LevelInfo> dict;
+    infoOnAddedLevels->push_back(dict);
+    counterAdaptive++;
+  }
 }
 
 void LevelInfos::insert(const MultiIndex &level, LevelInfo &levelInfo) {

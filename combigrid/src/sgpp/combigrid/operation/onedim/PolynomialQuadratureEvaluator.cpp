@@ -57,9 +57,9 @@ double PolynomialQuadratureEvaluator::getWeight(std::vector<double>& points, siz
   size_t numGaussPoints = (p.degree() + 2) / 2 + numAdditionalPoints;
 
   return GaussLegendreQuadrature(numGaussPoints)
-      .evaluate([&p, this](double x_unit, double x_trans) {
+      .evaluate_iteratively([&p, this](double x_unit, double x_trans) {
         return p.evaluate(x_trans) * this->weight_function(x_trans);
-      });
+      }, 0.0, 1.0, numGaussPoints, numAdditionalPoints);
 }
 
 /**
