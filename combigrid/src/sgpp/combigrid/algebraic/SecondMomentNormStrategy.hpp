@@ -10,6 +10,7 @@
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
 #include <sgpp/combigrid/GeneralFunction.hpp>
+#include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
@@ -56,7 +57,8 @@ class SecondMomentNormStrategy : public NormStrategy<FloatTensorVector> {
   sgpp::combigrid::OrthogonalBasisFunctionsCollection basisFunctions;
   sgpp::combigrid::WeightFunctionsCollection weightFunctions;
 
-  double quad(sgpp::combigrid::MultiIndex i, sgpp::combigrid::MultiIndex j);
+  double quad(sgpp::combigrid::MultiIndex i, sgpp::combigrid::MultiIndex j,
+              GaussLegendreQuadrature& quadRule);
   double computeSecondMoment(sgpp::combigrid::FloatTensorVector& vector);
 
   void initializeBounds();

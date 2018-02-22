@@ -10,6 +10,7 @@
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
 #include <sgpp/combigrid/GeneralFunction.hpp>
+#include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
@@ -57,7 +58,7 @@ class FirstMomentNormStrategy : public NormStrategy<FloatTensorVector> {
 
   std::map<MultiIndex, double> lookupTable;
 
-  double quad(MultiIndex i);
+  double quad(MultiIndex i, GaussLegendreQuadrature& quadRule);
   double computeMean(FloatTensorVector& vector);
 
   void initializeBounds();
