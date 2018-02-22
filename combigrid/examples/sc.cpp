@@ -74,7 +74,7 @@ int main() {
   sgpp::combigrid::CombigridSurrogateModelConfiguration update_config;
 
   sgpp::combigrid::Stopwatch stopwatch;
-  for (size_t q = 0; q < 6; ++q) {
+  for (size_t q = 0; q < 8; ++q) {
     op_levelManager->addRegularLevels(q);
     //    tensor_levelManager->addLevelsAdaptive(100);
     // compute the variance
