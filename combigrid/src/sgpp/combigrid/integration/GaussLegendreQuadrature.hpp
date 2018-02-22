@@ -50,17 +50,6 @@ class GaussLegendreQuadrature {
     return width * sum;
   }
 
-  template <typename Func>
-  long double evaluate_long(Func const &func, double a = 0.0, double b = 1.0) {
-    double width = b - a;
-    long double sum = 0.0;
-    for (size_t i = 0; i < roots.getSize(); ++i) {
-      double x_unit = roots[i], x_prob = a + width * roots[i];
-      sum += static_cast<long double>(weights[i]) * func(x_unit, x_prob);
-    }
-    return width * sum;
-  }
-
   //  template <typename Func>
   //  static double evaluate_parallel(Func const &func, double a = 0.0, double b = 1.0,
   //                                  size_t numGaussPoints = 1, size_t incrementQuadraturePoints =
@@ -96,20 +85,22 @@ class GaussLegendreQuadrature {
   //  }
 
   template <typename Func>
-  static double evaluate_iteratively(Func const &func, double a = 0.0, double b = 1.0,
-                                     size_t numGaussPoints = 1,
-                                     size_t incrementQuadraturePoints = 1, double tol = 1e-14) {
+  double evaluate_iteratively(Func const &func, double a = 0.0, double b = 1.0,
+                              size_t numGaussPoints = 0, size_t incrementQuadraturePoints = 1,
+                              double tol = 1e-14) {
     double sum = 0.0, sum_old = 0.0;
     double width = b - a;
 
     auto &quadRule = base::GaussLegendreQuadRule1D::getInstance();
 
+    if (numGaussPoints > 0) {
+      initialize(numGaussPoints);
+    }
+
     // performing Gauss-Legendre integration
     double err = 1e14;
     size_t iteration = 0;
-    //    numGaussPoints = std::max(static_cast<size_t>(10), numGaussPoints);
-    base::DataVector roots(numGaussPoints);
-    base::DataVector weights(numGaussPoints);
+
     while (err > tol && numGaussPoints < quadRule.getMaxSupportedLevel()) {
       quadRule.getLevelPointsAndWeightsNormalized(numGaussPoints, roots, weights);
 
@@ -124,44 +115,7 @@ class GaussLegendreQuadrature {
       if (iteration > 0) {
         err = std::fabs(sum_old - sum);
       }
-      sum_old = sum;
-      numGaussPoints += incrementQuadraturePoints;
-      iteration += 1;
-    }
-    return sum;
-  }
 
-  template <typename Func>
-  static long double evaluate_iteratively_long(Func const &func, double a = 0.0, double b = 1.0,
-                                               size_t numGaussPoints = 1,
-                                               size_t incrementQuadraturePoints = 1,
-                                               double tol = 1e-14) {
-    long double sum = 0.0, sum_old = 0.0;
-    double width = b - a;
-
-    auto &quadRule = base::GaussLegendreQuadRule1D::getInstance();
-
-    // performing Gauss-Legendre integration
-    long double err = 1e14;
-    size_t iteration = 0;
-    //    numGaussPoints = std::max(static_cast<size_t>(10), numGaussPoints);
-    base::DataVector roots(numGaussPoints);
-    base::DataVector weights(numGaussPoints);
-    while (err > tol && numGaussPoints < quadRule.getMaxSupportedLevel()) {
-      quadRule.getLevelPointsAndWeightsNormalized(numGaussPoints, roots, weights);
-
-      sum = 0.0;
-      for (size_t i = 0; i < roots.getSize(); ++i) {
-        double x_unit = roots[i];
-        double x_trans = a + width * x_unit;
-        long double w = weights[i];
-        sum += w * func(x_unit, x_trans);
-      }
-      sum *= width;
-
-      if (iteration > 0) {
-        err = std::fabs(sum_old - sum);
-      }
       sum_old = sum;
       numGaussPoints += incrementQuadraturePoints;
       iteration += 1;

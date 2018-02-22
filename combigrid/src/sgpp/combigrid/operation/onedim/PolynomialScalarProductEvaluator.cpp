@@ -88,8 +88,8 @@ double PolynomialScalarProductEvaluator::quad(LagrangePolynom& p_i, LagrangePoly
     return p_i.evaluate(x_unit) * p_j.evaluate(x_unit) * weight_function(x_prob);
   };
 
-  return GaussLegendreQuadrature::evaluate_iteratively(func, xlower, xupper, numGaussPoints,
-                                                       1 + numAdditionalPoints);
+  return GaussLegendreQuadrature(numGaussPoints)
+      .evaluate_iteratively(func, xlower, xupper, numGaussPoints, 1 + numAdditionalPoints);
 }
 
 FloatArrayVector PolynomialScalarProductEvaluator::get1DMixedIntegral(std::vector<double>& points,

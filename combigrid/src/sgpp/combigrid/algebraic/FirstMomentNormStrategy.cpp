@@ -54,7 +54,7 @@ FirstMomentNormStrategy::FirstMomentNormStrategy(
 
 FirstMomentNormStrategy::~FirstMomentNormStrategy() {}
 
-double FirstMomentNormStrategy::quad(MultiIndex i) {
+double FirstMomentNormStrategy::quad(MultiIndex i, GaussLegendreQuadrature& quadRule) {
   double ans = 1.0;
 
   // Gauss quadrature in each dimension
@@ -71,10 +71,11 @@ double FirstMomentNormStrategy::quad(MultiIndex i) {
 
     double a = bounds[2 * idim], b = bounds[2 * idim + 1];
     if (incrementQuadraturePoints == 0) {
+      quadRule.initialize(numGaussPoints);
       ans *= GaussLegendreQuadrature(numGaussPoints).evaluate(func, a, b);
     } else {
-      ans *= GaussLegendreQuadrature::evaluate_iteratively(func, a, b, numGaussPoints,
-                                                           incrementQuadraturePoints, 1e-14);
+      ans *= quadRule.evaluate_iteratively(func, a, b, numGaussPoints + incrementQuadraturePoints,
+                                           incrementQuadraturePoints, 1e-14);
     }
   }
   return ans;
@@ -82,6 +83,9 @@ double FirstMomentNormStrategy::quad(MultiIndex i) {
 
 double FirstMomentNormStrategy::computeMean(FloatTensorVector& vector) {
   auto it_i = vector.getValues()->getStoredDataIterator();
+
+  // initialize Gauss quadrature
+  GaussLegendreQuadrature quadRule(100);
 
   double ans = 0.0;
   while (it_i->isValid()) {
@@ -94,7 +98,7 @@ double FirstMomentNormStrategy::computeMean(FloatTensorVector& vector) {
     if (it != lookupTable.end()) {
       quadValue = it->second;
     } else {
-      quadValue = quad(ix);
+      quadValue = quad(ix, quadRule);
       lookupTable[ix] = quadValue;
     }
 

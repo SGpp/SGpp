@@ -54,7 +54,8 @@ SecondMomentNormStrategy::SecondMomentNormStrategy(
 
 SecondMomentNormStrategy::~SecondMomentNormStrategy() {}
 
-double SecondMomentNormStrategy::quad(MultiIndex i, MultiIndex j) {
+double SecondMomentNormStrategy::quad(MultiIndex i, MultiIndex j,
+                                      GaussLegendreQuadrature& quadRule) {
   double ans = 1.0;
 
   // Gauss quadrature in each dimension
@@ -74,10 +75,11 @@ double SecondMomentNormStrategy::quad(MultiIndex i, MultiIndex j) {
 
     double a = bounds[2 * idim], b = bounds[2 * idim + 1];
     if (incrementQuadraturePoints == 0) {
-      ans *= GaussLegendreQuadrature(numGaussPoints).evaluate(func, a, b);
+      quadRule.initialize(numGaussPoints);
+      ans *= quadRule.evaluate(func, a, b);
     } else {
-      ans *= GaussLegendreQuadrature::evaluate_iteratively(func, a, b, numGaussPoints,
-                                                           incrementQuadraturePoints, 1e-14);
+      ans *= quadRule.evaluate_iteratively(func, a, b, numGaussPoints + incrementQuadraturePoints,
+                                           incrementQuadraturePoints, 1e-13);
     }
   }
   return ans;
@@ -88,6 +90,9 @@ double SecondMomentNormStrategy::computeSecondMoment(FloatTensorVector& vector) 
   // compute mass matrix and corresponding coefficient vector
   auto multiIndices_i = vector.getValues();
   auto multiIndices_j = vector.getValues();
+
+  // initialize Gauss quadrature
+  GaussLegendreQuadrature quadRule(100);
 
   // count the number of tensor terms and compute coefficient vector
   auto it_counter = multiIndices_i->getStoredDataIterator();
@@ -107,7 +112,6 @@ double SecondMomentNormStrategy::computeSecondMoment(FloatTensorVector& vector) 
 
   sgpp::base::DataMatrix M(numGridPoints, numGridPoints);
   sgpp::base::DataVector result(numGridPoints);
-  std::cout << "-------------------------------------------" << std::endl;
   while (it_i->isValid()) {
     MultiIndex ix = it_i->getMultiIndex();
 
@@ -124,7 +128,7 @@ double SecondMomentNormStrategy::computeSecondMoment(FloatTensorVector& vector) 
         if (it != innerProducts.end()) {
           innerProduct = it->second;
         } else {
-          innerProduct = quad(ix, jx);
+          innerProduct = quad(ix, jx, quadRule);
           innerProducts[kx] = innerProduct;
         }
 
