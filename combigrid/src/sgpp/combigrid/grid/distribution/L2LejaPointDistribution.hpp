@@ -8,6 +8,7 @@
 #include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/grid/distribution/AbstractPointDistribution.hpp>
+#include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
 
 #include <cmath>
 #include <functional>
@@ -40,8 +41,10 @@ class L2LejaPointDistribution : public AbstractPointDistribution {
   virtual double compute(size_t numPoints, size_t j);
 
  private:
-  void evaluate_denominator(size_t& argmaxIndex, double& logIntegral, double tol = 1e-14);
-  void evaluate_numerator(size_t argmaxIndex, double& logIntegral, double tol = 1e-14);
+  double evaluate_denominator(size_t& argmaxIndex, GaussLegendreQuadrature& quadRule,
+                              double tol = 1e-14);
+  double evaluate_numerator(size_t argmaxIndex, GaussLegendreQuadrature& quadRule,
+                            double tol = 1e-14);
 };
 
 } /* namespace combigrid */

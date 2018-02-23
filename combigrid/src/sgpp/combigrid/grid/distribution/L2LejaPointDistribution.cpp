@@ -23,69 +23,36 @@ void sgpp::combigrid::L2LejaPointDistribution::addPoint(double point) {
   }
 }
 
-void L2LejaPointDistribution::evaluate_denominator(size_t& argmaxIndex, double& logIntegral,
-                                                   double tol) {
-  auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
-
+double L2LejaPointDistribution::evaluate_denominator(size_t& argmaxIndex,
+                                                     GaussLegendreQuadrature& quadRule,
+                                                     double tol) {
   // ----------------------------------------------------------------
   // evaluate denominator
   double maxLogIntegral = -std::numeric_limits<double>::max();
   argmaxIndex = 0;
 
+  size_t numGaussPoints = points.size() + 1 + numAdditionalPoints;
+  base::DataVector roots(numGaussPoints);
+  base::DataVector weights(numGaussPoints);
+
   for (size_t i = 0; i < sortedPoints.size() - 1; ++i) {
     // --------------------------------------------------------------
     // do quadrature
-    double logIntegral_old = 0.0;
-    double a = sortedPoints[i], b = sortedPoints[i + 1];
-    double width = b - a;
-
     // performing Gauss-Legendre integration
-    size_t numGaussPoints = points.size() + 1 + numAdditionalPoints;
-    double err = 1e14;
-    size_t iteration = 0;
-    base::DataVector roots(numGaussPoints);
-    base::DataVector weights(numGaussPoints);
+    numGaussPoints = points.size() + 1 + numAdditionalPoints;
 
-    sgpp::base::DataVector psi(numGaussPoints);
-
-    while (err > tol && numGaussPoints < quadRule.getMaxSupportedLevel()) {
-      quadRule.getLevelPointsAndWeightsNormalized(numGaussPoints, roots, weights);
-      psi.resize(numGaussPoints);
-
-      double max_psi = -std::numeric_limits<double>::max();
-      for (size_t j = 0; j < roots.getSize(); ++j) {
-        double x_trans = a + width * roots[j];
-
-        psi[j] = std::log(weights[j]) + std::log(weightFunction(x_trans) * width);
-        for (size_t k = 0; k < points.size(); ++k) {
-          double diff = x_trans - points[k];
-          psi[j] += std::log(diff * diff);
-        }
-
-        if (max_psi < psi[j]) {
-          max_psi = psi[j];
-        }
+    auto logfunc = [this](double x_unit, double x_prob) {
+      double ans = 0.0;
+      for (size_t k = 0; k < points.size(); ++k) {
+        double diff = x_prob - points[k];
+        ans += std::log(diff * diff);
       }
+      return ans;
+    };
 
-      double inner_sum = 0.0;
-      for (size_t j = 0; j < psi.size(); ++j) {
-        inner_sum += std::exp(psi[j] - max_psi);
-      }
-
-      logIntegral = max_psi + std::log(inner_sum);
-
-      if (iteration > 0) {
-        err = std::fabs(std::exp(logIntegral_old) - std::exp(logIntegral));
-      }
-      logIntegral_old = logIntegral;
-      numGaussPoints += numAdditionalPoints;
-      iteration += 1;
-
-      if (numAdditionalPoints == 0) {
-        break;
-      }
-    }
-
+    double a = sortedPoints[i], b = sortedPoints[i + 1];
+    double logIntegral = quadRule.evaluate_sumexp_iteratively(
+        logfunc, weightFunction, a, b, numGaussPoints, numAdditionalPoints, tol);
     // --------------------------------------------------------------
     if (maxLogIntegral < logIntegral) {
       maxLogIntegral = logIntegral;
@@ -93,78 +60,48 @@ void L2LejaPointDistribution::evaluate_denominator(size_t& argmaxIndex, double& 
     }
   }
 
-  logIntegral = maxLogIntegral;
+  return maxLogIntegral;
 }
 
-void L2LejaPointDistribution::evaluate_numerator(size_t argmaxIndex, double& logIntegral,
-                                                 double tol) {
-  auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
-
+double L2LejaPointDistribution::evaluate_numerator(size_t argmaxIndex,
+                                                   GaussLegendreQuadrature& quadRule, double tol) {
   // performing Gauss-Legendre integration
   size_t numGaussPoints = points.size() + 1 + numAdditionalPoints;
-  double err = 1e14;
-  size_t iteration = 0;
-  base::DataVector roots(numGaussPoints);
-  base::DataVector weights(numGaussPoints);
 
-  sgpp::base::DataVector psi(numGaussPoints);
-  double logIntegral_old = 0.0;
-  while (err > tol && numGaussPoints < quadRule.getMaxSupportedLevel()) {
-    // --------------------------------------------------------------
-    // do quadrature
-    quadRule.getLevelPointsAndWeightsNormalized(numGaussPoints, roots, weights);
-    psi.resize(numGaussPoints);
-
-    double a = sortedPoints[argmaxIndex], b = sortedPoints[argmaxIndex + 1];
-    double width = b - a;
-    double max_psi = -std::numeric_limits<double>::max();
-
-    for (size_t i = 0; i < roots.getSize(); ++i) {
-      double x_trans = a + width * roots[i];
-      psi[i] = std::log(weights[i]) + std::log(weightFunction(x_trans) * width) + std::log(x_trans);
-
-      for (size_t j = 0; j < points.size(); ++j) {
-        double diff = x_trans - points[j];
-        psi[i] += std::log(diff * diff);
-      }
-
-      if (max_psi < psi[i]) {
-        max_psi = psi[i];
-      }
+  auto logfunc = [this](double x_unit, double x_prob) {
+    double ans = std::log(x_prob);
+    for (size_t k = 0; k < points.size(); ++k) {
+      double diff = x_prob - points[k];
+      ans += std::log(diff * diff);
     }
+    return ans;
+  };
 
-    double inner_sum = 0.0;
-    for (size_t j = 0; j < psi.size(); ++j) {
-      inner_sum += std::exp(psi[j] - max_psi);
-    }
-    logIntegral = max_psi + std::log(inner_sum);
-    // --------------------------------------------------------------
-    if (iteration > 0) {
-      err = std::fabs(std::exp(logIntegral_old) - std::exp(logIntegral));
-    }
-    logIntegral_old = logIntegral;
-    numGaussPoints += numAdditionalPoints;
-    iteration += 1;
-
-    if (numAdditionalPoints == 0) {
-      break;
-    }
-  }
+  double a = sortedPoints[argmaxIndex], b = sortedPoints[argmaxIndex + 1];
+  return quadRule.evaluate_sumexp_iteratively(logfunc, weightFunction, a, b, numGaussPoints,
+                                              numAdditionalPoints, tol);
 }
 
 void L2LejaPointDistribution::computeNextPoint() {
+  // initialize Gauss quadrature
+  GaussLegendreQuadrature quadRule(points.size() + 1 + numAdditionalPoints);
+
   // ----------------------------------------------------------------
   // evaluate denominator
-  double firstLogIntegral = 0.0;
   size_t argmaxIndex = 0;
-  evaluate_denominator(argmaxIndex, firstLogIntegral);
+  double logDenominator = evaluate_denominator(argmaxIndex, quadRule);
 
   // evaluate numerator
-  double secondLogIntegral = 0.0;
-  evaluate_numerator(argmaxIndex, secondLogIntegral);
+  double logNumerator = evaluate_numerator(argmaxIndex, quadRule);
   // --------------------------------------------------------------
   // compute next L2 Leja point
-  double x = std::exp(secondLogIntegral - firstLogIntegral);
+  double x = std::exp(logNumerator - logDenominator);
+
+  if (x >= 1.0 || x < 1e-15) {
+    throw base::algorithm_exception(
+        "L2LejaPointDistribution::computeNextPoint - no more L2-Leja points available due to "
+        "the limited order of numerical quadrature.");
+  }
 
   addPoint(x);
 }

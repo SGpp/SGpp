@@ -9,6 +9,7 @@
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
+#include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
 
 #include <functional>
 #include <vector>
@@ -68,7 +69,7 @@ class PolynomialQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalar
   bool isCustomWeightFunction;
   size_t numAdditionalPoints;  // additional gauss points used for a custom weight function
 
-  double getWeight(std::vector<double> &points, size_t point);
+  double getWeight(std::vector<double> &points, size_t point, GaussLegendreQuadrature &quadRule);
   void calculateWeights(std::vector<double> &points, std::vector<FloatScalarVector> &weights);
 
  public:
