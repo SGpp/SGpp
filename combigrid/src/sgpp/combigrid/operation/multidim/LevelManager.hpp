@@ -357,7 +357,7 @@ class LevelManager {
   /**
    * Calls addLevel() on the underlying CombigridEvaluator.
    */
-  void addLevel(MultiIndex const &level) { combiEval->addLevel(level); }
+  void addLevel(MultiIndex const &level) { addLevelToCombiEval(level); }
 
   /**
    * Queue based addLevel-type function

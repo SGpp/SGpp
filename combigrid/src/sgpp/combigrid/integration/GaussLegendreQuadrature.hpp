@@ -8,6 +8,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
+#include <sgpp/combigrid/GeneralFunction.hpp>
 
 #include <algorithm>
 #include <cmath>
@@ -93,13 +94,12 @@ class GaussLegendreQuadrature {
 
     auto &quadRule = base::GaussLegendreQuadRule1D::getInstance();
 
-    if (numGaussPoints > 0) {
-      initialize(numGaussPoints);
-    }
-
     // performing Gauss-Legendre integration
     double err = 1e14;
     size_t iteration = 0;
+
+    // make sure that the quadrature is done at least once
+    numGaussPoints = std::min(quadRule.getMaxSupportedLevel(), numGaussPoints);
 
     while (err > tol && numGaussPoints < quadRule.getMaxSupportedLevel()) {
       quadRule.getLevelPointsAndWeightsNormalized(numGaussPoints, roots, weights);
@@ -119,8 +119,116 @@ class GaussLegendreQuadrature {
       sum_old = sum;
       numGaussPoints += incrementQuadraturePoints;
       iteration += 1;
+
+      if (incrementQuadraturePoints == 0) {
+        return sum;
+      }
     }
     return sum;
+  }
+
+  template <typename Func>
+  double evaluate_logsumexp(Func const &logfunc, SingleFunction weightFunction, double a = 0.0,
+                            double b = 1.0) {
+    return std::log(evaluate_sumexp(logfunc, weightFunction, a, b));
+  }
+
+  template <typename Func>
+  double evaluate_sumexp(Func const &logfunc, SingleFunction weightFunction, double a = 0.0,
+                         double b = 1.0) {
+    double width = b - a;
+    double logIntegral = 0.0;
+
+    // performing Gauss-Legendre integration
+    sgpp::base::DataVector psi(roots.size());
+    // --------------------------------------------------------------
+    // do quadrature
+    double max_psi = -std::numeric_limits<double>::max();
+
+    for (size_t i = 0; i < roots.getSize(); ++i) {
+      double x_trans = a + width * roots[i];
+      psi[i] = std::log(weights[i]) + std::log(weightFunction(x_trans) * width) +
+               logfunc(roots[i], x_trans);
+
+      if (max_psi < psi[i]) {
+        max_psi = psi[i];
+      }
+    }
+
+    double inner_sum = 0.0;
+    for (size_t j = 0; j < psi.size(); ++j) {
+      inner_sum += std::exp(psi[j] - max_psi);
+    }
+    logIntegral = max_psi + std::log(inner_sum);
+    // --------------------------------------------------------------
+
+    return logIntegral;
+  }
+
+  template <typename Func>
+  double evaluate_sumexp_iteratively(Func const &logfunc, SingleFunction weightFunction,
+                                     double a = 0.0, double b = 1.0, size_t numGaussPoints = 0,
+                                     size_t incrementQuadraturePoints = 1, double tol = 1e-14) {
+    auto &quadRule = base::GaussLegendreQuadRule1D::getInstance();
+
+    double width = b - a;
+    double logIntegral = 0.0;
+
+    // performing Gauss-Legendre integration
+    double err = 1e14;
+    size_t iteration = 0;
+
+    // make sure that the quadrature is done at least once
+    numGaussPoints = std::min(quadRule.getMaxSupportedLevel() - 1, numGaussPoints);
+
+    sgpp::base::DataVector psi(numGaussPoints);
+    double logIntegral_old = 0.0;
+    while (err > tol && numGaussPoints < quadRule.getMaxSupportedLevel()) {
+      // --------------------------------------------------------------
+      // do quadrature
+      quadRule.getLevelPointsAndWeightsNormalized(numGaussPoints, roots, weights);
+      psi.resize(numGaussPoints);
+
+      double max_psi = -std::numeric_limits<double>::max();
+
+      for (size_t i = 0; i < roots.getSize(); ++i) {
+        double x_trans = a + width * roots[i];
+        psi[i] = std::log(weights[i]) + std::log(weightFunction(x_trans) * width) +
+                 logfunc(roots[i], x_trans);
+
+        if (max_psi < psi[i]) {
+          max_psi = psi[i];
+        }
+      }
+
+      double inner_sum = 0.0;
+      for (size_t j = 0; j < psi.size(); ++j) {
+        inner_sum += std::exp(psi[j] - max_psi);
+      }
+      logIntegral = max_psi + std::log(inner_sum);
+      // --------------------------------------------------------------
+      if (iteration > 0) {
+        err = std::fabs(logIntegral_old - logIntegral);
+      }
+
+      logIntegral_old = logIntegral;
+      numGaussPoints += incrementQuadraturePoints;
+      iteration += 1;
+
+      if (incrementQuadraturePoints == 0) {
+        break;
+      }
+    }
+
+    return logIntegral;
+  }
+
+  template <typename Func>
+  double evaluate_logsumexp_iteratively(Func const &logfunc, SingleFunction weightFunction,
+                                        double a = 0.0, double b = 1.0, size_t numGaussPoints = 0,
+                                        size_t incrementQuadraturePoints = 1, double tol = 1e-14) {
+    return std::log(evaluate_sumexp_iteratively(logfunc, weightFunction, a, b, numGaussPoints,
+                                                incrementQuadraturePoints, tol));
   }
 };
 

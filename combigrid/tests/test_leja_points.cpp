@@ -166,12 +166,16 @@ BOOST_AUTO_TEST_CASE(testWeightedL2LejaPoints) {
       0.0554528,   0.94869,   0.153321,   0.745215};
 
   std::vector<double> points_seq;
-  for (size_t i = 0; i < points_all.size(); i++) {
+  for (size_t i = 0; i < 500; i++) {
     double x = l2leja.compute(i, i);
     points_seq.push_back(x);
     quad.setGridPoints(points_seq);
 
-    BOOST_CHECK_CLOSE(x, points_all[i], 1e-3);
+    std::cout << i << ": " << x << " -> " << quad.getAbsoluteWeightSum() << std::endl;
+
+    if (i < points_all.size()) {
+      BOOST_CHECK_CLOSE(x, points_all[i], 1e-3);
+    }
     BOOST_CHECK(quad.getAbsoluteWeightSum() < 1.4);
   }
 }

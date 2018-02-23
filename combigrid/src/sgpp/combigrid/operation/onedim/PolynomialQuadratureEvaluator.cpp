@@ -51,15 +51,15 @@ PolynomialQuadratureEvaluator::~PolynomialQuadratureEvaluator() {}
 /**
  * Calculates the weight for the specific point
  */
-double PolynomialQuadratureEvaluator::getWeight(std::vector<double>& points, size_t point) {
+double PolynomialQuadratureEvaluator::getWeight(std::vector<double>& points, size_t point,
+                                                GaussLegendreQuadrature& quadRule) {
   LagrangePolynom p;
   p.initialize(point, points);
   size_t numGaussPoints = (p.degree() + 2) / 2 + numAdditionalPoints;
 
-  return GaussLegendreQuadrature(numGaussPoints)
-      .evaluate_iteratively([&p, this](double x_unit, double x_trans) {
-        return p.evaluate(x_trans) * this->weight_function(x_trans);
-      }, 0.0, 1.0, numGaussPoints, numAdditionalPoints);
+  return quadRule.evaluate_iteratively([&p, this](double x_unit, double x_trans) {
+    return p.evaluate(x_trans) * this->weight_function(x_trans);
+  }, 0.0, 1.0, numGaussPoints, numAdditionalPoints);
 }
 
 /**
@@ -73,9 +73,10 @@ double PolynomialQuadratureEvaluator::getWeight(std::vector<double>& points, siz
  */
 void PolynomialQuadratureEvaluator::calculateWeights(std::vector<double>& points,
                                                      std::vector<FloatScalarVector>& weights) {
+  GaussLegendreQuadrature quadRule(100);
   // calc weight for each point
   for (size_t i = 0; i < points.size(); ++i) {
-    weights.push_back(FloatScalarVector(getWeight(points, i)));
+    weights.push_back(FloatScalarVector(getWeight(points, i, quadRule)));
   }
 }
 
