@@ -301,13 +301,13 @@ BOOST_AUTO_TEST_CASE(testBsplinedeg3Interpolation) {
     size_t degree = 3;
     auto ctInterpolator =
         CombigridMultiOperation::createExpUniformBoundaryBsplineInterpolation(d, func, degree);
-    for (size_t w = 2; w <= 8; ++w) {
+    for (size_t w = 2; w <= 6; ++w) {
       computeL2Error(d, w, ctInterpolator, func);
     }
 
     auto ctQuadrature =
         CombigridMultiOperation::createExpUniformBoundaryBsplineQuadrature(d, func, degree);
-    for (size_t w = 2; w <= 8; ++w) {
+    for (size_t w = 2; w <= 6; ++w) {
       computeQuadratureError(d, w, ctQuadrature, func);
     }
   }
