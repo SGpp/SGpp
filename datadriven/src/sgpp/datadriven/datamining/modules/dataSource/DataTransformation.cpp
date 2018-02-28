@@ -17,14 +17,16 @@
 namespace sgpp {
 namespace datadriven {
 
+DataTransformation::DataTransformation() {}
+
 DataTransformation* DataTransformation::initialize(DataTransformationType dataTransformationType,
                                                   Dataset* dataset) {
+  std::cout << "Initializing " <<  DataTransformationTypeParser::toString(dataTransformationType)
+            << " transformation." << std::endl;
   if (dataTransformationType == DataTransformationType::ROSENBLATT) {
-    std::cout << "Initializing " <<  DataTransformationTypeParser::toString(dataTransformationType)
-              << " transformation." << std::endl;
     return new RosenblattTransformation(dataset, 1000);
   } else {
-    return new DataTransformation();
+    return 0;
   }
 }
 

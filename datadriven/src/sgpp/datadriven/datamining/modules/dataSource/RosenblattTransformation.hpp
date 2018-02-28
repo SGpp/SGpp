@@ -28,7 +28,6 @@ using sgpp::base::Grid;
 using sgpp::base::GridStorage;
 using sgpp::base::DataVector;
 using sgpp::base::DataMatrix;
-// using sgpp::optimization::RandomNumberGenerator;
 
 namespace datadriven {
 
@@ -39,8 +38,8 @@ class RosenblattTransformation : public DataTransformation {
    */
   RosenblattTransformation(Dataset* dataset, size_t numSamples);
 
-  Dataset* doTransformation(Dataset* dataset);
-  Dataset* doInverseTransformation(Dataset* dataset);
+  Dataset* doTransformation(Dataset* dataset) override;
+  Dataset* doInverseTransformation(Dataset* dataset) override;
 
   sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
                                                     double lambda);
@@ -67,9 +66,9 @@ class RosenblattTransformation : public DataTransformation {
   Dataset* datasetInvTransformed;
 
   /**
-   * Number of samples for calculation of pdf / alpha, default: 1000
+   * Number of samples for calculation of pdf / alpha
    */
-  size_t numSamples = 1000;
+  size_t numSamples;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

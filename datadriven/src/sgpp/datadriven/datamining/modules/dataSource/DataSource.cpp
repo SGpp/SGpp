@@ -39,7 +39,8 @@ DataSourceIterator DataSource::end() { return DataSourceIterator(*this, config.n
 
 Dataset* DataSource::getNextSamples() {
   // only one iteration: we want all samples
-  Dataset* dataset;
+  Dataset* dataset = new Dataset();
+  // auto dataset = std::make_unique<Dataset>();
   if (config.numBatches == 1 && config.batchSize == 0) {
     currentIteration++;
     dataset = sampleProvider->getAllSamples();
@@ -49,8 +50,11 @@ Dataset* DataSource::getNextSamples() {
   }
   // Transform dataset if wanted
   if (!(config.dataTransformation == DataTransformationType::NONE)) {
-    DataTransformation* dataTr = new DataTransformation();
-    return dataTr->initialize(config.dataTransformation, dataset)->doTransformation(dataset);
+    DataTransformation* dataTr =
+        new RosenblattTransformation(dataset, config.numSamplesForTranformation);
+    // DataTransformation* dataTr = new DataTransformation();
+    // return dataTr->initialize(config.dataTransformation, dataset)->doTransformation(dataset);
+    return dataTr->doTransformation(dataset);
   } else {
     return dataset;
   }

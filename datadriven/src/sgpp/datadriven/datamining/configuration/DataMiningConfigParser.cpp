@@ -88,6 +88,8 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
     config.numBatches =
         parseUInt(*dataSourceConfig, "numBatches", defaults.numBatches, "dataSource");
     config.batchSize = parseUInt(*dataSourceConfig, "batchSize", defaults.batchSize, "dataSource");
+    config.numSamplesForTranformation = parseUInt(*dataSourceConfig, "numSamplesForTranformation",
+        defaults.numSamplesForTranformation, "dataSource");
 
     // parse file type
     if (dataSourceConfig->contains("fileType")) {
@@ -105,7 +107,7 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
     } else {
       config.dataTransformation = defaults.dataTransformation;
     }
-    std::cout << "# Data transformation detected:"
+    std::cout << "# Data transformation detected: "
               << DataTransformationTypeParser::toString(config.dataTransformation) << std::endl;
 
   } else {

@@ -98,14 +98,14 @@
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp"
 #endif /* ZLIB */
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformation.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformationTypeParser.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/RosenblattTransformation.hpp"
 
 
 %ignore sgpp::datadriven::DataSource::begin;
 %ignore sgpp::datadriven::DataSource::end;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformation.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformationTypeParser.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/RosenblattTransformation.hpp"
 %ignore  sgpp::datadriven::FitterConfiguration::operator=(FitterConfiguration&&);
 %rename(__assign__) sgpp::datadriven::FitterConfiguration::operator =;
 %rename (getConstGridConfig) sgpp::datadriven::FitterConfiguration::getGridConfig() const;
