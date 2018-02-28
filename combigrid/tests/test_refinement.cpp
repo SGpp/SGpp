@@ -74,8 +74,8 @@ BOOST_AUTO_TEST_CASE(testVarianceBasedRefinement) {
   //  std::cout << "Quadrature" << std::endl;
   variance_op_lm->addRegularLevels(regularLevel);
   variance_op_lm->addLevelsAdaptive(50);
-  variance_op_lm->addLevelsAdaptive(100);
-  variance_op_lm->addLevelsAdaptive(150);
+  //  variance_op_lm->addLevelsAdaptive(100);
+  //  variance_op_lm->addLevelsAdaptive(150);
 
   // check if both approaches lead to the same result
   //  std::cout << "num grid points: " << tensor_op->numGridPoints() << " = "
