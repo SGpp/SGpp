@@ -6,24 +6,24 @@
 #include <sgpp/combigrid/functions/MonomialFunctionBasis1D.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
-#include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
-#include <sgpp/combigrid/pce/CombigridSurrogateModelFactory.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
-#include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
-#include <sgpp/combigrid/operation/onedim/BSplineQuadratureEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineInterpolationCoefficientEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/BSplineQuadratureEvaluator.hpp>
+#include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
+#include <sgpp/combigrid/pce/CombigridSurrogateModelFactory.hpp>
 #include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
-#include <sgpp/combigrid/utils/Stopwatch.hpp>
-#include <sgpp/combigrid/utils/Utils.hpp>
 #include <sgpp/combigrid/utils/AnalyticModels.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
+#include <sgpp/combigrid/utils/Stopwatch.hpp>
+#include <sgpp/combigrid/utils/Utils.hpp>
 
-#include <sgpp/optimization/sle/solver/UMFPACK.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
+#include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
+#include <sgpp/optimization/tools/Printer.hpp>
 
 #include <cmath>
 
@@ -65,7 +65,7 @@ int main() {
   // compute coeffs for standard bspline basis
   sgpp::base::DataVector coeffs(n);
   sgpp::optimization::FullSLE sle(V);
-  sgpp::optimization::sle_solver::UMFPACK solver;
+  sgpp::optimization::sle_solver::Auto solver;
   sgpp::optimization::Printer::getInstance().setVerbosity(-1);
   solver.solve(sle, rhs, coeffs);
 

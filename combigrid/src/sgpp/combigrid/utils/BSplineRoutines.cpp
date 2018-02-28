@@ -916,7 +916,7 @@ sgpp::combigrid::GridFunction BSplineTensorCoefficientGridFunction(
     //    }
     //    std::cout << numGridPoints << " " << watch.elapsedSeconds() << std::endl;
 
-    sgpp::optimization::sle_solver::UMFPACK solver;
+    sgpp::optimization::sle_solver::Auto solver;
     sgpp::optimization::Printer::getInstance().setVerbosity(-1);
     bool solved = solver.solve(sle, functionValues, coefficients_sle);
 
@@ -951,6 +951,8 @@ sgpp::combigrid::GridFunction BSplineTensorCoefficientGridFunction(
 std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineVarianceRefinementOperation(
     size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func,
     std::shared_ptr<sgpp::combigrid::LevelManager> levelManager) {
+  //   , sgpp::combigrid::WeightFunctionsCollection weightFunctions, sgpp::base::DataVector bounds)
+  //   {
   // levelManager must be an AveragingLevelManager. Otherwise this makes no sense
   sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
       numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
@@ -962,8 +964,14 @@ std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineVarianceR
   sgpp::combigrid::CombiEvaluators::MultiCollection Evaluators(
       numDimensions, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(EvalConfig));
 
-  //  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
-  //      new sgpp::combigrid::AveragingLevelManager());
+  // ToDo(rehmemk) 1. Finish this!
+  // 2. the following adds the wieghts functions and bounds only to the scalar product
+  // operations the quadrature operations need to get them from the sc operations somehow!
+  //  for (size_t d = 0; d < numDimensions; d++) {
+  //    Evaluators[d]->setWeightFunction(weightFunctions[d]);
+  //    Evaluators[d]->setBounds(bounds[2 * d], bounds[2 * d + 1]);
+  //  }
+
   sgpp::combigrid::FullGridSummationStrategyType auxiliarySummationStrategyType =
       sgpp::combigrid::FullGridSummationStrategyType::VARIANCE;
 
@@ -1180,137 +1188,6 @@ void printSGGridToFile(std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> co
   plotfile.close();
 }
 
-std::vector<double> calculateBsplineMeanAndVariance(
-    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
-    size_t numDimensions, size_t degree,
-    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage) {
-  //  size_t numthreads = 4;
-
-  // create CT interpolation operation
-  auto interpolationOperation =
-      createBsplineLinearCoefficientOperation(degree, numDimensions, coefficientStorage);
-
-  // convert level structure to SG
-  std::shared_ptr<sgpp::base::Grid> grid;
-  grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDimensions, degree));
-  sgpp::base::GridStorage& gridStorage = grid->getStorage();
-  convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
-
-  // interpolate on SG
-  sgpp::base::DataMatrix interpolParams(numDimensions, gridStorage.getSize());
-  for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
-    sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
-    for (size_t j = 0; j < gridStorage.getDimension(); j++) {
-      p[j] = gp.getStandardCoordinate(j);
-    }
-    interpolParams.setColumn(i, p);
-  }
-
-  // obtain function values from combigrid surrogate
-  interpolationOperation->setParameters(interpolParams);
-  interpolationOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
-  sgpp::base::DataVector f_values = interpolationOperation->getResult();
-
-  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
-  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
-  sgpp::optimization::sle_solver::UMFPACK sleSolver;
-  sgpp::base::DataVector alpha(grid->getSize());
-  if (!sleSolver.solve(hierSLE, f_values, alpha)) {
-    std::cout << "Solving failed!" << std::endl;
-  }
-
-  //-----------error calculation ---------------------------------
-  //  sgpp::optimization::InterpolantScalarFunction u(*grid, alpha);
-  //  double diff = 0;
-  //  double maxErr = 0;
-  //  double L2Err = 0;
-  //  size_t numMCpoints = 10000;
-  //  sgpp::quadrature::NaiveSampleGenerator generator(numDimensions);
-  //  sgpp::base::DataVector p(numDimensions);
-  //  for (size_t i = 0; i < numMCpoints; i++) {
-  //    generator.getSample(p);
-  //    double functionevaluation = 1;  // f(p)
-  //    diff = fabs(u.eval(p) - functionevaluation);
-  //    maxErr = (diff > maxErr) ? diff : maxErr;
-  //    L2Err += diff * diff;
-  //  }
-  //  L2Err = sqrt(L2Err / static_cast<double>(numMCpoints));
-  //  std::cout << "max err: " << maxErr << " , L2 err: " << L2Err << std::endl;
-  //  p = sgpp::base::DataVector(2, 0.4);
-  //  std::cout << "u(0.4,0.4) = " << u.eval(p) << std::endl;
-  //  std::cout << "|1 - u(0.4,0.4)| = " << fabs(1 - u.eval(p)) << std::endl;
-  //----------------------------------------------------------------
-
-  double numGridPoints = static_cast<double>(gridStorage.getSize());
-
-  // calculate mean value via quadrature
-  auto quadOperation = createexpUniformBsplineQuadratureCoefficientOperation(degree, numDimensions,
-                                                                             coefficientStorage);
-  quadOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
-  double mean = quadOperation->getResult();
-
-  // calculate variance via massMatrix on the SG
-  sgpp::base::Grid* gridptr = grid.get();
-  sgpp::combigrid::LTwoScalarProductHashMapNakBsplineBoundaryCombigrid massMatrix(gridptr);
-  sgpp::base::DataVector product(alpha.size(), 0);
-  massMatrix.mult(alpha, product);
-  double meanSquare = product.dotProduct(alpha);
-
-  double variance = meanSquare - mean * mean;
-
-  return std::vector<double>{mean, variance, numGridPoints};
-}
-
-std::vector<double> evaluateBsplineInterpolant(
-    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
-    size_t numDimensions, size_t degree, sgpp::base::DataMatrix params,
-    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage) {
-  // create CT interpolation operation
-  auto interpolationOperation =
-      createBsplineLinearCoefficientOperation(degree, numDimensions, coefficientStorage);
-
-  // convert level structure to SG
-  std::shared_ptr<sgpp::base::Grid> grid;
-  grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDimensions, degree));
-  sgpp::base::GridStorage& gridStorage = grid->getStorage();
-  convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
-
-  // interpolate on SG
-  sgpp::base::DataMatrix interpolParams(numDimensions, gridStorage.getSize());
-  for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
-    sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
-    for (size_t j = 0; j < gridStorage.getDimension(); j++) {
-      p[j] = gp.getStandardCoordinate(j);
-    }
-    interpolParams.setColumn(i, p);
-  }
-
-  // obtain function values from combigrid surrogate
-  interpolationOperation->setParameters(interpolParams);
-  interpolationOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
-  sgpp::base::DataVector f_values = interpolationOperation->getResult();
-
-  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
-  sgpp::optimization::sle_solver::UMFPACK sleSolver;
-  sgpp::base::DataVector alpha(grid->getSize());
-  if (!sleSolver.solve(hierSLE, f_values, alpha)) {
-    std::cout << "Solving failed!" << std::endl;
-  }
-
-  sgpp::optimization::InterpolantScalarFunction u(*grid, alpha);
-  sgpp::base::DataVector p(numDimensions);
-  std::vector<double> evaluations(params.getNcols(), 0.0);
-// ToDo (rehmemk) set NUM_OMP_THREADS according to python. Measure if this omp directive is useful
-#pragma omp parallel for schedule(static)
-  for (size_t i = 0; i < params.getNcols(); i++) {
-    params.getColumn(i, p);
-    evaluations[i] = u.eval(p);
-  }
-  return evaluations;
-}
-
 sgpp::base::DataVector createInterpolantOnConvertedExpUnifromBoundaryCombigird(
     std::shared_ptr<sgpp::base::Grid>& grid, sgpp::base::GridStorage& gridStorage,
     std::shared_ptr<sgpp::combigrid::CombigridMultiOperation>& combigridInterpolationOperation,
@@ -1333,7 +1210,7 @@ sgpp::base::DataVector createInterpolantOnConvertedExpUnifromBoundaryCombigird(
 
   sgpp::optimization::Printer::getInstance().setVerbosity(-1);
   sgpp::optimization::HierarchisationSLE hierSLE(*grid);
-  sgpp::optimization::sle_solver::UMFPACK sleSolver;
+  sgpp::optimization::sle_solver::Auto sleSolver;
   sgpp::base::DataVector alpha(grid->getSize());
   if (!sleSolver.solve(hierSLE, f_values, alpha)) {
     std::cout << "Solving failed!" << std::endl;
