@@ -5,7 +5,8 @@
 		"compression": false,
 		"numBatches": 1,
 		"batchSize": 0,
-		"dataTransformation": "rosenblatt"
+		"dataTransformation": "rosenblatt",
+		"numSamplesForTranformation": 1000
 	},
 	"scorer": {
 		"testing": {

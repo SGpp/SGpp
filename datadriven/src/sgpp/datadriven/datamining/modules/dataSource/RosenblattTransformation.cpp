@@ -11,11 +11,16 @@
 
 #include <sgpp/datadriven/datamining/modules/dataSource/RosenblattTransformation.hpp>
 
+#include <ctime>
+
 namespace sgpp {
 namespace datadriven {
 
+int RandomNumber () { return (std::rand()%100); }
+
 RosenblattTransformation::RosenblattTransformation(Dataset* dataset, size_t numSamples)
-  : grid(nullptr),
+  : DataTransformation{},
+    grid(nullptr),
     alpha(nullptr),
     datasetTransformed(nullptr),
     datasetInvTransformed(nullptr),
@@ -23,13 +28,14 @@ RosenblattTransformation::RosenblattTransformation(Dataset* dataset, size_t numS
   // Sample #numSamples random samples from dataset
   DataMatrix samples(numSamples, dataset->getDimension());
   DataVector currSample(dataset->getDimension());
-  // DataVector randVector(numSamples);
+  DataVector randVector(numSamples);
 
-  // RandomNumberGenerator randNumGen();
-  // randNumGen().getUniformRV(randVector, 0, static_cast<double>(dataset->getNumberInstances())-1);
-  // below: randVector[i]
+  // Fill vector with random numbers
+  std::srand(std::time(0));
+  std::generate(randVector.begin(), randVector.end(), RandomNumber);
+
   for (unsigned int i = 0; i < numSamples; i++) {
-    dataset->getData().getRow(static_cast<size_t>(i), currSample);
+    dataset->getData().getRow(static_cast<size_t>(randVector[i]), currSample);
     samples.setRow(i, currSample);
   }
 

@@ -11,8 +11,8 @@
 
 #pragma once
 
-#ifndef DATATRANSFORMATION
-#define DATATRANSFORMATION
+#ifndef DATATRANSFORMATION_HPP
+#define DATATRANSFORMATION_HPP
 
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
@@ -30,10 +30,10 @@ class DataTransformation {
   DataTransformation();
   DataTransformation* initialize(DataTransformationType dataTransformationType,
                                 Dataset* dataset);
-  virtual Dataset* doTransformation(Dataset* dataset);
-  virtual Dataset* doInverseTransformation(Dataset* dataset);
-  virtual ~DataTransformation();
+  virtual Dataset* doTransformation(Dataset* dataset) = 0;
+  virtual Dataset* doInverseTransformation(Dataset* dataset) = 0;
+  virtual ~DataTransformation() = default;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
-#endif /* DATATRANSFORMATION */
+#endif /* DATATRANSFORMATION_HPP */

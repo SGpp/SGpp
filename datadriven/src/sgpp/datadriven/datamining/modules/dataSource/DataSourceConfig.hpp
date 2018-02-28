@@ -53,9 +53,13 @@ struct DataSourceConfig {
    */
   size_t batchSize = 0;
   /*
-   * Should the data be transformed? (e.g. by Rosenblatt transformation)
-   */
-  DataTransformationType dataTransformation = DataTransformationType::NONE;
+     * Should the data be transformed? (e.g. by Rosenblatt transformation)
+     */
+    DataTransformationType dataTransformation = DataTransformationType::NONE;
+  /*
+     * Number of samples for calculation of pdf / alpha needed for transformation
+     */
+  size_t numSamplesForTranformation = 1000;
 };
 
 } /* namespace datadriven */
