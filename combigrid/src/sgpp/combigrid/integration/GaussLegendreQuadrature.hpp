@@ -101,7 +101,7 @@ class GaussLegendreQuadrature {
     // make sure that the quadrature is done at least once
     numGaussPoints = std::min(quadRule.getMaxSupportedLevel(), numGaussPoints);
 
-    while (err > tol && numGaussPoints < quadRule.getMaxSupportedLevel()) {
+    while (err > tol && numGaussPoints <= quadRule.getMaxSupportedLevel()) {
       quadRule.getLevelPointsAndWeightsNormalized(numGaussPoints, roots, weights);
 
       sum = 0.0;
@@ -179,11 +179,11 @@ class GaussLegendreQuadrature {
     size_t iteration = 0;
 
     // make sure that the quadrature is done at least once
-    numGaussPoints = std::min(quadRule.getMaxSupportedLevel() - 1, numGaussPoints);
+    numGaussPoints = std::min(quadRule.getMaxSupportedLevel(), numGaussPoints);
 
     sgpp::base::DataVector psi(numGaussPoints);
     double logIntegral_old = 0.0;
-    while (err > tol && numGaussPoints < quadRule.getMaxSupportedLevel()) {
+    while (err > tol && numGaussPoints <= quadRule.getMaxSupportedLevel()) {
       // --------------------------------------------------------------
       // do quadrature
       quadRule.getLevelPointsAndWeightsNormalized(numGaussPoints, roots, weights);
