@@ -30,9 +30,13 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
     : CombigridSurrogateModel(config), basisFunctions(0), computedSobolIndicesFlag(false) {
   if (config.basisFunctions.size() == 0 && config.basisFunction) {
     for (size_t idim = 0; idim < numDims; idim++) {
-      config.basisFunctions.push_back(config.basisFunction);
+      basisFunctions.push_back(config.basisFunction);
     }
-  } else if (config.basisFunctions.size() != numDims) {
+  } else if (config.basisFunctions.size() == numDims) {
+    for (size_t idim = 0; idim < numDims; idim++) {
+      basisFunctions.push_back(config.basisFunctions[idim]);
+    }
+  } else {
     throw sgpp::base::application_exception(
         "PolynomialChaosExpansion: number of basis function do not match with the number of "
         "dimensions of the operation");
@@ -53,7 +57,7 @@ double PolynomialChaosExpansion::eval(sgpp::base::DataVector& x) {
     // evaluate tensor product
     double poly = 1.0;
     for (size_t k = 0; k < ix.size(); k++) {
-      poly *= config.basisFunctions[k]->evaluate(ix[k], x[k]);
+      poly *= basisFunctions[k]->evaluate(ix[k], x[k]);
     }
     ans += coeff * poly;
   }
@@ -73,7 +77,7 @@ void PolynomialChaosExpansion::eval(sgpp::base::DataMatrix& xs, sgpp::base::Data
       // evaluate tensor product
       double poly = 1.0;
       for (size_t k = 0; k < ix.size(); k++) {
-        poly *= config.basisFunctions[k]->evaluate(ix[k], xs.get(i, k));
+        poly *= basisFunctions[k]->evaluate(ix[k], xs.get(i, k));
       }
 
       res[i] += coeff * poly;
@@ -204,7 +208,7 @@ void PolynomialChaosExpansion::updateConfig(
   } else if (config.pointHierarchies.size() == numDims && config.storage) {
     combigridTensorOperation =
         sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
-            config.pointHierarchies, config.storage, config.basisFunctions);
+            config.pointHierarchies, config.storage, basisFunctions);
     config.tensorOperation = combigridTensorOperation;
   }
 

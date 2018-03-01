@@ -23,7 +23,8 @@ CombigridSurrogateModelConfiguration::CombigridSurrogateModelConfiguration()
       degree(3),
       coefficientStorage(nullptr),
       weightFunctions(0),
-      enableLevelManagerStatsCollection(false) {}
+      enableLevelManagerStatsCollection(false),
+      numDimensions(0) {}
 
 CombigridSurrogateModelConfiguration::~CombigridSurrogateModelConfiguration() {}
 
@@ -31,6 +32,7 @@ void CombigridSurrogateModelConfiguration::loadFromCombigridOperation(
     std::shared_ptr<CombigridOperation> op, bool loadLevelStructure) {
   storage = op->getStorage();
   pointHierarchies = op->getPointHierarchies();
+  numDimensions = pointHierarchies.size();
   if (loadLevelStructure) {
     levelStructure = op->getLevelManager()->getLevelStructure();
   }
@@ -40,6 +42,7 @@ void CombigridSurrogateModelConfiguration::loadFromCombigridOperation(
     std::shared_ptr<CombigridMultiOperation> op, bool loadLevelStructure) {
   storage = op->getStorage();
   pointHierarchies = op->getPointHierarchies();
+  numDimensions = pointHierarchies.size();
   if (loadLevelStructure) {
     levelStructure = op->getLevelManager()->getLevelStructure();
   }
@@ -50,6 +53,7 @@ void CombigridSurrogateModelConfiguration::loadFromCombigridOperation(
   storage = op->getStorage();
   pointHierarchies = op->getPointHierarchies();
   tensorOperation = op;
+  numDimensions = pointHierarchies.size();
   if (loadLevelStructure) {
     levelStructure = op->getLevelManager()->getLevelStructure();
   }

@@ -61,6 +61,8 @@ class PolynomialStochasticCollocation : public CombigridSurrogateModel {
   // tensor operation
   std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation;
 
+  sgpp::combigrid::WeightFunctionsCollection weightFunctions;
+
   // expansion coefficients
   sgpp::combigrid::FloatTensorVector expansionCoefficients;
 
