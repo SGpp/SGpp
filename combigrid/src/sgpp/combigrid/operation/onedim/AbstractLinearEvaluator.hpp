@@ -53,11 +53,11 @@ class AbstractLinearEvaluator : public AbstractEvaluator<V> {
   virtual bool needsParameter() = 0;
   virtual void setParameter(V const& param) = 0;
 
-  virtual bool hasCustomWeightFunction() { return false; };
-  virtual void setWeightFunction(sgpp::combigrid::SingleFunction weight_function){};
-  virtual void getWeightFunction(sgpp::combigrid::SingleFunction& weight_function){};
-  virtual void setBounds(double a, double b){};
-  virtual void getBounds(double& a, double& b){};
+  virtual bool hasCustomWeightFunction() { return false; }
+  virtual void setWeightFunction(sgpp::combigrid::SingleFunction weight_function) {}
+  virtual void getWeightFunction(sgpp::combigrid::SingleFunction& weight_function) {}
+  virtual void setBounds(double a, double b) {}
+  virtual void getBounds(double& a, double& b) {}
 
   /**
    * AbstractLinearEvaluator provides a standard implementation of this method based on

@@ -3,10 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <iostream>
 #include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
+
 #include <vector>
+#include <iostream>
 
 namespace sgpp {
 namespace combigrid {
