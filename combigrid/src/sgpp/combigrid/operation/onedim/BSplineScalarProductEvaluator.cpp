@@ -12,10 +12,12 @@
 namespace sgpp {
 namespace combigrid {
 
+// ToDo (rehmemk) This is a lot less efiicient than LTwoScdalarProductHAshMapNakBsplineBoundary.
+// Probably  because of the missing hash map feature
 FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(
     std::vector<double> const& points, size_t const& index_i) {
   FloatArrayVector sums;
-  double transWidth = b - a;
+  //  double transWidth = b - a;
 
   for (size_t index_j = 0; index_j < points.size(); index_j++) {
     // performing Gauss-Legendre integration with twice as many points as for the simple integrals
@@ -104,8 +106,7 @@ void BSplineScalarProductEvaluator::calculate1DBSplineScalarProducts(
     numAdditionalPoints = lastNumAdditionalPoints;
     basisValues[index_i] = get1DL2ScalarProduct(points, index_i);
 
-    // ToDo (rehmemk) in MR_testingBSC example this is false?!
-    //    std::cout << isCustomWeightFunction << std::endl;
+    // ToDo (rehmemk) This is always false!!!
     if (isCustomWeightFunction) {
       while (err > tol) {
         lastNumAdditionalPoints = numAdditionalPoints;
@@ -165,38 +166,39 @@ BSplineScalarProductEvaluator::cloneLinear() {
 
 BSplineScalarProductEvaluator::BSplineScalarProductEvaluator()
     : weight_function(constantFunction<double>(1.0)),
-      numAdditionalPoints(0),
+
       normalizeWeights(false),
       isCustomWeightFunction(false),
       degree(3),
       a(0),
-      b(1) {
+      b(1),
+      numAdditionalPoints(0) {
   evalConfig.type = CombiEvaluatorTypes::Multi_BSplineScalarProduct;
   evalConfig.degree = 3;
 }
 
 BSplineScalarProductEvaluator::BSplineScalarProductEvaluator(size_t degree)
     : weight_function(constantFunction<double>(1.0)),
-      numAdditionalPoints(0),
       normalizeWeights(false),
       isCustomWeightFunction(false),
       degree(degree),
       a(0),
-      b(1) {
+      b(1),
+      numAdditionalPoints(0) {
   evalConfig.type = CombiEvaluatorTypes::Multi_BSplineScalarProduct;
   evalConfig.degree = degree;
 }
 
 BSplineScalarProductEvaluator::BSplineScalarProductEvaluator(
-    size_t degree, sgpp::combigrid::SingleFunction weight_function, size_t numAdditionalPoints,
-    double a, double b, bool normalizeWeights)
+    size_t degree, sgpp::combigrid::SingleFunction weight_function, double a, double b,
+    bool normalizeWeights, size_t numAdditionalPoints)
     : weight_function(weight_function),
-      numAdditionalPoints(numAdditionalPoints),
       normalizeWeights(normalizeWeights),
       isCustomWeightFunction(true),
       degree(degree),
       a(a),
-      b(b) {
+      b(b),
+      numAdditionalPoints(numAdditionalPoints) {
   evalConfig.type = CombiEvaluatorTypes::Multi_BSplineScalarProduct;
   evalConfig.degree = degree;
 }
@@ -206,12 +208,12 @@ BSplineScalarProductEvaluator::BSplineScalarProductEvaluator(
     : xValues(other.xValues),
       basisValues(other.basisValues),
       weight_function(other.weight_function),
-      numAdditionalPoints(other.numAdditionalPoints),
       normalizeWeights(other.normalizeWeights),
       isCustomWeightFunction(other.isCustomWeightFunction),
       degree(other.degree),
       a(other.a),
-      b(other.b) {
+      b(other.b),
+      numAdditionalPoints(other.numAdditionalPoints) {
   evalConfig.type = CombiEvaluatorTypes::Multi_BSplineScalarProduct;
   evalConfig.degree = other.degree;
 }
