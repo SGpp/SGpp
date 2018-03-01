@@ -36,6 +36,7 @@ namespace combigrid {
 PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     sgpp::combigrid::CombigridSurrogateModelConfiguration& config)
     : CombigridSurrogateModel(config),
+      weightFunctions(0),
       computedMeanFlag(false),
       ev(0.0),
       computedVarianceFlag(false),
@@ -48,9 +49,13 @@ PolynomialStochasticCollocation::PolynomialStochasticCollocation(
     }
     sgpp::combigrid::SingleFunction weightFunction = *config.weightFunction.get();
     for (size_t idim = 0; idim < numDims; idim++) {
-      this->config.weightFunctions.push_back(weightFunction);
+      weightFunctions.push_back(weightFunction);
     }
-  } else if (numDims != config.weightFunctions.size()) {
+  } else if (numDims == config.weightFunctions.size()) {
+    for (size_t idim = 0; idim < numDims; idim++) {
+      weightFunctions.push_back(config.weightFunctions[idim]);
+    }
+  } else {
     throw sgpp::base::application_exception(
         "PolynomialStochasticCollocation: number of weight functions do not match with the number "
         "of dimensions of the operation");
@@ -91,9 +96,9 @@ void PolynomialStochasticCollocation::initializeBounds() {
 
 void PolynomialStochasticCollocation::initializeNormStrategies() {
   firstMomentNormstrategy.reset(
-      new FirstMomentNormStrategy(legendreBasis, config.weightFunctions, false, config.bounds));
+      new FirstMomentNormStrategy(legendreBasis, weightFunctions, false, config.bounds));
   varianceNormStrategy.reset(
-      new VarianceNormStrategy(legendreBasis, config.weightFunctions, false, config.bounds));
+      new VarianceNormStrategy(legendreBasis, weightFunctions, false, config.bounds));
 }
 
 double PolynomialStochasticCollocation::eval(sgpp::base::DataVector& x) {
