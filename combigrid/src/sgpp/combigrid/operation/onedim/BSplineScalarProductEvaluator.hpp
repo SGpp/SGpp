@@ -36,12 +36,12 @@ class BSplineScalarProductEvaluator : public AbstractLinearEvaluator<FloatArrayV
   std::vector<FloatArrayVector> basisValues;
   std::vector<double> basisCoefficients;
   sgpp::combigrid::SingleFunction weight_function;
-  size_t numAdditionalPoints;  // additional gauss points used for a custom weight function
   bool normalizeWeights;
   bool isCustomWeightFunction;
   size_t degree;
   double a;
   double b;
+  size_t numAdditionalPoints;  // additional gauss points used for a custom weight function
 
   /**
    * Calculates the one dimensional integrals int b_i(x) b_j(x) dx  for all j
@@ -86,8 +86,8 @@ class BSplineScalarProductEvaluator : public AbstractLinearEvaluator<FloatArrayV
    * on the domain.
    */
   BSplineScalarProductEvaluator(size_t degree, sgpp::combigrid::SingleFunction weight_function,
-                                size_t numAdditionalPoints, double a = 0, double b = 1,
-                                bool normalizeWeights = true);
+                                double a = 0, double b = 1, bool normalizeWeights = true,
+                                size_t numAdditionalPoints = 0);
   BSplineScalarProductEvaluator(BSplineScalarProductEvaluator const &other);
   virtual ~BSplineScalarProductEvaluator();
 
