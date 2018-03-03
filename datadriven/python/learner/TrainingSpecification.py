@@ -18,7 +18,7 @@ class TrainingSpecification(object):
     __cOperator = None      #C operator
     __bOperator = None      #B operator
     __cOperatorType = None  #Type of the c operator as a string
-    __vecType = None
+    #__vecType = None       #Type of vectorization; currently not available
     
     ## Returns the type of the C operator
     # @return: the type of the C operator as a string
@@ -120,15 +120,15 @@ class TrainingSpecification(object):
         if self.__bOperator != None:
             return self.__bOperator[name]
         else: return None
-        
-        
-    def getVectorizationType(self):
-        return self.__vecType
-    
-    
-    def setVectorizationType(self, vecType):
-        self.__vecType = vecType
-    
+
+#   ## Currently unavailable vectorization option
+#
+#     def getVectorizationType(self):
+#         return self.__vecType
+#     
+#     
+#     def setVectorizationType(self, vecType):
+#         self.__vecType = vecType  
     
     ## Calculates the number of points which should be refined
     #
