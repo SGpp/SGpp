@@ -87,15 +87,23 @@ print "Monte Carlo value:     {:.6f}".format(res)
 res = opMC.doQuadrature(alpha)
 print "Monte Carlo value:     {:.6f}".format(res)
 
-### Currently the following functions throw SegFaults !!!
 
-# Monte Carlo quadrature of a function
-#res = opMC.doQuadratureFunc(h)
-#print "MC value (f):          {:.6f}".format(res)
+# Monte Carlo quadrature of a standard parabola
+res = opMC.doQuadratureFunc(f)
+print "MC value (f):          {:.6f}".format(res)
 
 # Monte Carlo quadrature of error
-#res = opMC.doQuadratureL2Error(h, alpha)
-#print "MC L2-error (f-u)      {:.7f}".format(res)
+res = opMC.doQuadratureL2Error(f, alpha)
+print "MC L2-error (f-u)      {:.7f}".format(res)
+
+
+# Monte Carlo quadrature of a piramidal function
+res = opMC.doQuadratureFunc(g)
+print "MC value (g):          {:.6f}".format(res)
+
+# Monte Carlo quadrature of error
+res = opMC.doQuadratureL2Error(g, alpha)
+print "MC L2-error (g-u)      {:.7f}".format(res)
 
 ## This results in an output similar to:
 ## \verbinclude quadrature.output.txt

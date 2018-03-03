@@ -222,16 +222,16 @@ class Learner(object):
     # @return: DataVector alpha vector
     def doLearningIteration(self, set):
         #initialize values
-        # if C Operator is Identity: use the single precision vectorized version
-        if self.specification.getCOperatorType() == 'identity' \
-            and self.specification.getVectorizationType() != None:
-	    # THIS DOESN'T EXIST ANYMORE!!!
-            self.linearSystem = DMSystemMatrixVectorizedIdentity(self.grid,
-                                               set.getPoints(),
-                                               self.specification.getL(),
-                                               self.specification.getVectorizationType())
-        else:
-            self.linearSystem = DMSystemMatrix(self.grid,
+#         # if C Operator is Identity: use the single precision vectorized version
+#         if self.specification.getCOperatorType() == 'identity' \
+#             and self.specification.getVectorizationType() != None:
+# 	    # THIS DOESN'T EXIST ANYMORE!!!
+#             self.linearSystem = DMSystemMatrixVectorizedIdentity(self.grid,
+#                                                set.getPoints(),
+#                                                self.specification.getL(),
+#                                                self.specification.getVectorizationType())
+#         else:
+        self.linearSystem = DMSystemMatrix(self.grid,
                                            set.getPoints(),
                                            self.specification.getCOperator(),
                                            self.specification.getL())

@@ -30,10 +30,10 @@
 namespace sgpp {
 namespace datadriven {
 
-RegressionLearner::RegressionLearner(sgpp::base::RegularGridConfiguration gridConfig,
-                                     sgpp::base::AdpativityConfiguration adaptivityConfig,
-                                     sgpp::solver::SLESolverConfiguration solverConfig,
-                                     sgpp::solver::SLESolverConfiguration finalSolverConfig,
+RegressionLearner::RegressionLearner(base::RegularGridConfiguration gridConfig,
+                                     base::AdpativityConfiguration adaptivityConfig,
+                                     solver::SLESolverConfiguration solverConfig,
+                                     solver::SLESolverConfiguration finalSolverConfig,
                                      datadriven::RegularizationConfiguration regularizationConfig,
                                      std::vector<std::vector<size_t>> terms)
     : gridConfig(gridConfig),
@@ -71,8 +71,8 @@ void RegressionLearner::train(base::DataMatrix& trainDataset, base::DataVector& 
     systemMatrix = createDMSystem(trainDataset);
   }
 
-  op = std::unique_ptr<sgpp::base::OperationMultipleEval>(
-      sgpp::op_factory::createOperationMultipleEval(*grid, trainDataset));
+  std::unique_ptr<base::OperationMultipleEval> op(
+      op_factory::createOperationMultipleEval(*grid, trainDataset));
 
   for (size_t curStep = 0; curStep <= adaptivityConfig.numRefinements_; ++curStep) {
     if (curStep > 0) {
@@ -87,7 +87,8 @@ void RegressionLearner::train(base::DataMatrix& trainDataset, base::DataVector& 
 
 base::DataVector RegressionLearner::predict(base::DataMatrix& data) {
   auto prediction = base::DataVector(data.getNrows());
-  auto multOp = sgpp::op_factory::createOperationMultipleEval(*grid, data);
+  std::unique_ptr<base::OperationMultipleEval> multOp(
+      op_factory::createOperationMultipleEval(*grid, data));
   multOp->mult(weights, prediction);
   return prediction;
 }
@@ -124,7 +125,8 @@ void RegressionLearner::refine(base::DataMatrix& data, base::DataVector& classes
   error.sqr();
 
   // Calculate the weighted errors per basis function.
-  auto multOp = sgpp::op_factory::createOperationMultipleEval(*grid, data);
+  std::unique_ptr<base::OperationMultipleEval> multOp(
+      op_factory::createOperationMultipleEval(*grid, data));
   auto errors = base::DataVector(weights.getSize());
   multOp->multTranspose(error, errors);
   errors.componentwise_mult(weights);
@@ -146,7 +148,7 @@ void RegressionLearner::refine(base::DataMatrix& data, base::DataVector& classes
   weights.resizeZero(grid->getSize());
 }
 
-sgpp::base::Grid& RegressionLearner::getGrid() { return *grid; }
+base::Grid& RegressionLearner::getGrid() { return *grid; }
 
 size_t RegressionLearner::getGridSize() const { return grid->getSize(); }
 

@@ -6,7 +6,7 @@ from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
 from pysgpp.extensions.datadriven.learner import Types
 
 numSamples = 20
-numDims = 1
+numDims = 2
 
 def f(x):
     """
@@ -33,7 +33,7 @@ builder.withLevel(2)
 builder = builder.withSpecification().withAdaptThreshold(0.00003)
 builder.withAdaptPoints(2)
 builder.withLambda(1e-6)
-# does not seem to work!!
+# does not seem to work!! -> problem traced to the UpDown Laplace sweep algorithm
 #builder.withLaplaceOperator()
 builder.withIdentityOperator()
 builder = builder.withStopPolicy().withAdaptiveItarationLimit(3)

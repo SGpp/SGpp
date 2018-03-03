@@ -69,7 +69,7 @@ double OperationQuadratureMC::doQuadratureFunc(FUNC func, void* clientdata) {
           d, static_cast<double>(this->simple_rand()) / RAND_MAX);
     }
 
-    res += func(*reinterpret_cast<int*>(&dim), p, clientdata);
+    res += func(static_cast<int>(dim), p, clientdata);
   }
 
   delete[] p;
@@ -102,7 +102,7 @@ double OperationQuadratureMC::doQuadratureL2Error(FUNC func, void* clientdata, D
       point[d] = p[d];
     }
 
-    res += pow(func(*reinterpret_cast<int*>(&dim), p, clientdata) - opEval->eval(alpha, point), 2);
+    res += pow(func(static_cast<int>(dim), p, clientdata) - opEval->eval(alpha, point), 2);
   }
 
   delete[] p;
