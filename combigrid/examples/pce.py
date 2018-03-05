@@ -4,31 +4,33 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-## \page example_ct_pce_py PCE with Combigrids
+## \page example_ct_pce_py PCE with Combigrids (Python)
 ## This simple example shows how to create a Polynomial Chaos Expansion from an
 ## adaptively refined combigrid.
 
 import numpy as np
 import pysgpp
+import time
 
 ## First we have to define a model to approximate.
 def expModel(x):
     return np.exp(-x[0] * x[1])
 
 ## Then we can create a refined combigrid 
-def ct_to_pce():  
+def ct_to_pce():
+    start_time = time.time()
     # initialize model function
     func = pysgpp.multiFunc(expModel)
     numDims = 2
     # regular sparse grid level q
-    q = 5 
+    q = 6 
     # create polynomial basis
     config = pysgpp.OrthogonalPolynomialBasis1DConfiguration()
     config.polyParameters.type_ = pysgpp.OrthogonalPolynomialBasisType_LEGENDRE
     basisFunction = pysgpp.OrthogonalPolynomialBasis1D(config) 
     # create sprarse grid interpolation operation
     op = pysgpp.CombigridOperation.createExpClenshawCurtisPolynomialInterpolation(numDims, func)
-    # start with regular level q and add some level adaptively
+    # start with regular level q and add some levels adaptively
     op.getLevelManager().addRegularLevels(q)
     op.getLevelManager().addLevelsAdaptiveByNumLevels(5)
     
@@ -48,7 +50,9 @@ def ct_to_pce():
     print("Mean: {} Variance: {}".format(pce.mean(), pce.variance()))
     print("Sobol indices {}".format(sobol_indices.toString()))
     print("Total Sobol indices {}".format(total_indices.toString()))
-    print("Sum {}".format(sobol_indices.sum()))
+    print("Sum {}\n".format(sobol_indices.sum()))
+    
+    print("Elapsed time: {} s".format(time.time() - start_time))
 
 ## Output: 
 ## @verbatim

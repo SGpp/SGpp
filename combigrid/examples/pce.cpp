@@ -3,6 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+/**
+ * \page example_ct_pce_cpp PCE with Combigrids
+ *
+ * This simple example shows how to create a Polynomial Chaos Expansion from an
+ * adaptively refined combigrid.
+ */
+
 #include <sgpp/combigrid/functions/MonomialFunctionBasis1D.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
@@ -23,29 +30,40 @@
 #include <vector>
 
 int main() {
+  /**
+   * First we have to define a model to approximate.
+   */
   sgpp::combigrid::Ishigami ishigamiModel;
   sgpp::combigrid::MultiFunction func(ishigamiModel.eval);
 
+  /**
+   *  Then we can create a refined combigrid
+   */
+
+  // create polynomial basis
   sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
   config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
   auto basisFunction = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
 
   for (size_t q = 6; q < 7; ++q) {
-    // interpolate on adaptively refined grid
+    // create sprarse grid interpolation operation
     auto tensor_op =
         sgpp::combigrid::CombigridTensorOperation::createExpClenshawCurtisPolynomialInterpolation(
             basisFunction, ishigamiModel.numDims, func);
     sgpp::combigrid::Stopwatch stopwatch;
     stopwatch.start();
+    // start with regular level q and add some level adaptively
     tensor_op->getLevelManager()->addRegularLevels(q);
-    //    tensor_op->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
-    //    tensor_op->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
-    //    pce.getCombigridTensorOperation()->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
+    tensor_op->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
+    tensor_op->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
     stopwatch.log();
-    // compute the variance
     stopwatch.start();
 
-    // initialize the surrogate model
+    /**
+     * and construct a PCE representation to easily calculate statistical features of our model.
+     */
+
+    // create polynomial chaos surrogate from sparse grid
     sgpp::combigrid::CombigridSurrogateModelConfiguration config;
     config.type = sgpp::combigrid::CombigridSurrogateModelsType::POLYNOMIAL_CHAOS_EXPANSION;
     config.loadFromCombigridOperation(tensor_op, false);
@@ -53,15 +71,17 @@ int main() {
     auto pce = sgpp::combigrid::createCombigridSurrogateModel(config);
 
     stopwatch.log();
-    // compute the variance
     stopwatch.start();
 
+    // compute mean, variance and sobol indices
     double mean = pce->mean();
     double variance = pce->variance();
     sgpp::base::DataVector sobol_indices;
     sgpp::base::DataVector total_sobol_indices;
     pce->getComponentSobolIndices(sobol_indices);
     pce->getTotalSobolIndices(total_sobol_indices);
+
+    // print results
     std::cout << "Time: "
               << stopwatch.elapsedSeconds() / static_cast<double>(tensor_op->numGridPoints())
               << std::endl;
@@ -75,3 +95,22 @@ int main() {
     std::cout << "---------------------------------------------------------" << std::endl;
   }
 }
+
+/**
+* Output:
+* @verbatim
+* Time: 3.74635s.
+* Time: 3.73112s.
+* Time: 4.96569e-05
+* ---------------------------------------------------------
+* #gp = 1825
+* E(u) = 3.5
+* Var(u) = 13.8446
+* Sobol indices = [3.13905191147811180041e-01, 4.42411144790040733454e-01,
+* 9.56029390935037928152e-31, 5.58403133152096916677e-32, 2.43683664062148142015e-01,
+* 6.16110611418130297137e-32, 8.27081513075557474542e-32]
+* Sum Sobol indices = 1
+* Total Sobol indices = [5.57588855209959377568e-01, 4.42411144790040733454e-01,
+* 2.43683664062148142015e-01]
+* @endverbatim
+*/
