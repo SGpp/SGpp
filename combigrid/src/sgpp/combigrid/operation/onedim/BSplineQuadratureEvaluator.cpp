@@ -3,17 +3,18 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <algorithm>
-#include <cmath>
-#include <iomanip>
-#include <iostream>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineQuadratureEvaluator.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
+
 #include <vector>
+#include <algorithm>
+#include <cmath>
+#include <iomanip>
+#include <iostream>
 
 namespace sgpp {
 namespace combigrid {

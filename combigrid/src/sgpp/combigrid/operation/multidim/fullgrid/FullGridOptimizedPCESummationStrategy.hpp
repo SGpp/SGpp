@@ -21,6 +21,8 @@
 #include <eigen3/Eigen/Dense>
 #endif
 
+#include <vector>
+
 namespace sgpp {
 namespace combigrid {
 

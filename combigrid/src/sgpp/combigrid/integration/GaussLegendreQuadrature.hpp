@@ -15,6 +15,7 @@
 #include <vector>
 // #include <future>
 #include <iostream>
+#include <limits>
 
 #ifdef _OPENMP
 #include <omp.h>

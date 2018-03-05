@@ -77,7 +77,7 @@ class CombigridSurrogateModelConfiguration {
 
 class CombigridSurrogateModel {
  public:
-  CombigridSurrogateModel(sgpp::combigrid::CombigridSurrogateModelConfiguration& config);
+  explicit CombigridSurrogateModel(sgpp::combigrid::CombigridSurrogateModelConfiguration& config);
   virtual ~CombigridSurrogateModel();
 
   virtual double eval(sgpp::base::DataVector& x) = 0;
