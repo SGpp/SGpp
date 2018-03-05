@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_UTILS_BSPLINEROUTINES_HPP_
-#define COMBIGRID_SRC_SGPP_COMBIGRID_UTILS_BSPLINEROUTINES_HPP_
+#pragma once
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -19,11 +18,8 @@
 #include <sgpp/combigrid/operation/multidim/LevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp>
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
-//#include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
-#include <sgpp/optimization/sle/solver/Armadillo.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
-#include <sgpp/optimization/sle/solver/UMFPACK.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
@@ -64,13 +60,6 @@ std::vector<double> createdeg5NakKnots(std::vector<double> const& xValues);
  * @param degree degree of the B spline basis functions
    */
 std::vector<double> createNakKnots(std::vector<double> const& xValues, size_t const& degree);
-
-/**
- * Get corresponding grid level from number of grid points
- * @param numGridPoints number of grid points
- * @return level of grid
- */
-size_t getGridLevelForExpUniformBoundaryGrid(size_t numGridPoints);
 
 /**
  * unique index for level index pair
@@ -118,6 +107,7 @@ sgpp::combigrid::GridFunction BSplineTensorCoefficientGridFunction(
  * @param numDimensions number of dimensions
  * @param func		      the objective function
  * @param levelManager  level manager
+ * @return a combigrid operation calculating the variance on each full grid
  *
  */
 std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineVarianceRefinementOperation(
@@ -125,49 +115,24 @@ std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineVarianceR
     std::shared_ptr<sgpp::combigrid::LevelManager> levelManager,
     sgpp::combigrid::WeightFunctionsCollection weightFunctions, sgpp::base::DataVector bounds);
 
-std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineLinearInterpolationOperation(
-    size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func,
-    std::shared_ptr<sgpp::combigrid::LevelManager> levelManager);
-
-std::shared_ptr<sgpp::combigrid::CombigridMultiOperation>
-createBsplineVarianceRefinementOperationWithWeightsAndBounds(
-    size_t degree, sgpp::combigrid::MultiFunction func,
-    std::shared_ptr<sgpp::combigrid::LevelManager> levelManager,
-    sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection,
-    sgpp::base::DataVector bounds);
-
+/**
+ * Creates a level structure according to an averaging level manager using linear calculations on
+ * each level as norm. This is a very specific case created for the CO2 example. There it serves as
+ * a dummy for storing the levelstructure
+ *
+ * @param degree        B spline degree
+ * @param numDimensions number of dimensions
+ * @param func		      the objective function
+ * @param levelManager  level manager
+ *
+ */
 std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineLinearRefinementOperation(
     size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func,
     std::shared_ptr<sgpp::combigrid::LevelManager> levelManager);
 
+/**
+ * creates a B spline interpolation operation from a storage of interpolation coefficients
+ */
 std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineLinearCoefficientOperation(
     size_t degree, size_t numDimensions,
     std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage);
-
-std::shared_ptr<sgpp::combigrid::CombigridOperation>
-createexpUniformBsplineQuadratureCoefficientOperation(
-    size_t degree, size_t numDimensions,
-    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage);
-
-std::shared_ptr<sgpp::combigrid::CombigridOperation> createBsplineQuadratureCoefficientOperation(
-    size_t degree, size_t numDimensions,
-    std::shared_ptr<sgpp::combigrid::LevelManager> levelManager,
-    sgpp::combigrid::CombiHierarchies::Collection pointHierarchies,
-    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage);
-/**
- * prints a level structure as list MultiIndices
- *
- * @param levelstructure the level structure
- */
-void printLevelStructure(
-    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelstructure);
-
-sgpp::base::DataMatrix convertLevelStructureToMatrix(
-    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelstructure, size_t numDims);
-
-sgpp::base::DataVector createInterpolantOnConvertedExpUnifromBoundaryCombigird(
-    std::shared_ptr<sgpp::base::Grid>& grid, sgpp::base::GridStorage& gridStorage,
-    std::shared_ptr<sgpp::combigrid::CombigridMultiOperation>& combigridInterpolationOperation,
-    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure);
-
-#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_UTILS_BSPLINEROUTINES_HPP_ */

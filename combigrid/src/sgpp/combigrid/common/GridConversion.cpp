@@ -98,16 +98,12 @@ void convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(
   while (it->isValid()) {
     MultiIndex currentLevel = it->getMultiIndex();
 
-    //    std::cout << it->getMultiIndex()[0] << " ";
-
     // now iterate over index
     MultiIndex multiBounds(d);
     for (size_t i = 0; i < d; ++i) {
       // there are 2^l+1 elements in the level
       multiBounds[i] = (1 << currentLevel[i]) + 1;
-      //      std::cout << multiBounds[i] << " ";
     }
-    //    std::cout << "\n";
     MultiIndexIterator indexIt(multiBounds);
     while (indexIt.isValid()) {
       MultiIndex index = indexIt.getMultiIndex();
@@ -133,9 +129,6 @@ void convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(
           sglevel = static_cast<base::HashGridPoint::level_type>(currentLevel[i]);
           sgindex = static_cast<base::HashGridPoint::index_type>(index[i]);
         } else {
-          //          std::cout << "X " << currentLevel[0] << " " << currentLevel[1] << " " <<
-          //          index[0] << " "
-          //                    << index[1] << std::endl;
           isValidPoint = false;
           break;
         }
@@ -144,9 +137,6 @@ void convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(
       if (isValidPoint) {
         point.rehash();
         if (!storage.isContaining(point)) {
-          //          std::cout << point.getLevel(0) << " " << point.getLevel(1) << " " <<
-          //          point.getIndex(0)
-          //                    << " " << point.getIndex(1) << std::endl;
           storage.insert(point);
         }
       }
@@ -157,8 +147,6 @@ void convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(
   }
 
   storage.recalcLeafProperty();
-
-  // Funktionswerte berechnen via Interpolant aus Operation, Punkte aus HashGridStorage
 }
 
 std::shared_ptr<TreeStorage<uint8_t>> allStorageLevels(base::HashGridStorage& storage) {
@@ -215,22 +203,11 @@ std::shared_ptr<TreeStorage<uint8_t>> completeStorageLevels(base::HashGridStorag
   return treeStorage;
 }
 
-// ToDo (rehmemk) make this independent of B splines
-/**
- * converts a given level structure from the combigrid module into a matrix containing all grid
- * points from these levels
- * @param levelStructure the level structure
- * @param numDimensions number of dimensions
- * @param degree B spline degree
- * @return matrix containing the grid points
- */
 sgpp::base::DataMatrix convertLevelStructureToGridPoints(
     std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
-    size_t numDimensions, size_t degree) {
+    size_t numDimensions) {
   sgpp::base::DataMatrix gridpointMatrix(0, numDimensions);
-  std::shared_ptr<sgpp::base::Grid> grid;
-  grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDimensions, degree));
-  sgpp::base::GridStorage& gridStorage = grid->getStorage();
+  sgpp::base::GridStorage gridStorage(numDimensions);
   convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
   for (size_t q = 0; q < gridStorage.getSize(); q++) {
     auto point = gridStorage.getPoint(q);
@@ -241,6 +218,36 @@ sgpp::base::DataMatrix convertLevelStructureToGridPoints(
     gridpointMatrix.appendRow(row);
   }
   return gridpointMatrix;
+}
+
+sgpp::base::DataVector calculateInterpolationCoefficientsForConvertedExpUniformBoundaryCombigird(
+    std::shared_ptr<sgpp::base::Grid>& grid, sgpp::base::GridStorage& gridStorage,
+    std::shared_ptr<sgpp::combigrid::CombigridMultiOperation>& combigridInterpolationOperation,
+    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure) {
+  sgpp::base::DataMatrix interpolParams(gridStorage.getDimension(), gridStorage.getSize());
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
+    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
+    sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
+    for (size_t j = 0; j < gridStorage.getDimension(); j++) {
+      p[j] = gp.getStandardCoordinate(j);
+    }
+    interpolParams.setColumn(i, p);
+  }
+
+  // obtain function values from combigrid surrogate
+  combigridInterpolationOperation->setParameters(interpolParams);
+
+  combigridInterpolationOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
+  sgpp::base::DataVector f_values = combigridInterpolationOperation->getResult();
+
+  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
+  sgpp::optimization::sle_solver::Auto sleSolver;
+  sgpp::base::DataVector alpha(grid->getSize());
+  if (!sleSolver.solve(hierSLE, f_values, alpha)) {
+    std::cout << "Solving failed!" << std::endl;
+  }
+  return alpha;
 }
 
 } /* namespace combigrid */
