@@ -51,7 +51,7 @@ void OperationInverseRosenblattTransformation1DPolyClenshawCurtis::init(base::Da
   std::multimap<double, double>::iterator it1;
   base::GridStorage* gs = &this->grid->getStorage();
   double area = 0.0;
-  double right_coord, right_function_value;
+  double right_coord = 0.0, right_function_value = 0.0;
   size_t p = dynamic_cast<sgpp::base::PolyClenshawCurtisGrid*>(grid)->getDegree();
   quadOrder = (p + 1) / 2;
 

@@ -197,8 +197,8 @@ class BsplineClenshawCurtisBasis : public Basis<LT, IT> {
       double res = 0.0;
 #pragma omp critical
       {
-        constructKnots(l, i);
-        res = nonUniformBSpline(x, bsplineBasis.getDegree(), 0);
+      constructKnots(l, i);
+      res = nonUniformBSpline(x, bsplineBasis.getDegree(), 0);
       }
       return res;
     }
@@ -243,8 +243,8 @@ class BsplineClenshawCurtisBasis : public Basis<LT, IT> {
       double res = 0.0;
 #pragma omp critical
       {
-        constructKnots(l, i);
-        res = nonUniformBSplineDxDx(x, bsplineBasis.getDegree(), 0);
+      constructKnots(l, i);
+      res = nonUniformBSplineDxDx(x, bsplineBasis.getDegree(), 0);
       }
       return res;
     }
@@ -269,30 +269,30 @@ class BsplineClenshawCurtisBasis : public Basis<LT, IT> {
 
 #pragma omp critical
     {
-      const IT hInv = static_cast<IT>(1) << l;
-      size_t degree = bsplineBasis.getDegree();
-      size_t erster_abschnitt = std::max(0, -static_cast<int>(i - (degree + 1) / 2));
-      size_t letzter_abschnitt = std::min(degree, hInv + (degree + 1) / 2 - i - 1);
-      size_t quadLevel = (degree + 1) / 2;
-      if (!integrationInitialized) {
-        sgpp::base::GaussLegendreQuadRule1D gauss;
-        gauss.getLevelPointsAndWeightsNormalized(quadLevel, coordinates, weights);
-        integrationInitialized = true;
+    const IT hInv = static_cast<IT>(1) << l;
+    size_t degree = bsplineBasis.getDegree();
+    size_t erster_abschnitt = std::max(0, -static_cast<int>(i - (degree + 1) / 2));
+    size_t letzter_abschnitt = std::min(degree, hInv + (degree + 1) / 2 - i - 1);
+    size_t quadLevel = (degree + 1) / 2;
+    if (!integrationInitialized) {
+      sgpp::base::GaussLegendreQuadRule1D gauss;
+      gauss.getLevelPointsAndWeightsNormalized(quadLevel, coordinates, weights);
+      integrationInitialized = true;
+    }
+    constructKnots(l, i);
+    for (size_t j = erster_abschnitt; j <= letzter_abschnitt; j++) {
+      double left = std::max(0.0, xi[j]);
+      double right = std::min(1.0, xi[j + 1]);
+      // std::cout << "Left: " << left << std::endl;
+      // std::cout << "Right: " << right << std::endl;
+      double h = right - left;
+      double temp_res = 0.0;
+      for (size_t c = 0; c < quadLevel; c++) {
+        double x = (h * coordinates[c]) + left;
+        temp_res += weights[c] * nonUniformBSpline(x, degree, 0);
       }
-      constructKnots(l, i);
-      for (size_t j = erster_abschnitt; j <= letzter_abschnitt; j++) {
-        double left = std::max(0.0, xi[j]);
-        double right = std::min(1.0, xi[j + 1]);
-        // std::cout << "Left: " << left << std::endl;
-        // std::cout << "Right: " << right << std::endl;
-        double h = right - left;
-        double temp_res = 0.0;
-        for (size_t c = 0; c < quadLevel; c++) {
-          double x = (h * coordinates[c]) + left;
-          temp_res += weights[c] * nonUniformBSpline(x, degree, 0);
-        }
-        res += h * temp_res;
-      }
+      res += h * temp_res;
+    }
     }
     return res;
   }
