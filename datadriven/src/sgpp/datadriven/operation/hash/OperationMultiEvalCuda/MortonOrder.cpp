@@ -14,6 +14,7 @@
 #include "basicCuda.hpp"
 #include "cudaHelper.hpp"
 
+///@cond DOXY_IGNORE // NOLINT()
 namespace sgpp {
 namespace datadriven {
 namespace OpMultiEvalCudaDetail {
@@ -145,3 +146,4 @@ bool MortonOrder::isIdentity() const {
 }  // namespace OpMultiEvalCudaDetail
 }  // namespace datadriven
 }  // namespace sgpp
+///@endcond // NOLINT()
