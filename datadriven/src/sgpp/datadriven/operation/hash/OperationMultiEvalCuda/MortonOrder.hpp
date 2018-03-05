@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <vector>
 
+///@cond DOXY_IGNORE // NOLINT()
 namespace sgpp {
 namespace datadriven {
 namespace OpMultiEvalCudaDetail {
@@ -53,5 +54,6 @@ class MortonOrder {
 }  // namespace OpMultiEvalCudaDetail
 }  // namespace datadriven
 }  // namespace sgpp
+///@endcond // NOLINT()
 
 #endif  // MORTONORDER_HPP
