@@ -272,8 +272,13 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
             temp_res =
                 calculateScalarProduct(lid, iid, ljd, ijd, coordinates, weights, basis, d,
                                        offseti_left, offsetj_left, hInvik, hInvjk, hik, hjk, pp1h);
+            double width = bounds[2 * d + 1] - bounds[2 * d];
+            temp_res *= width;
             //            }
-            numAdditionalPoints = lastNumAdditionalPoints;
+            // ToDo (rehmemk) now for every B spline the numAdditionalPoints is reseted. Use
+            // previous numAdditionalPoints (butn not simply numAdditionalPoints =
+            // lastNumAdditionalPoints, that din't work)
+            numAdditionalPoints = 1;  // lastNumAdditionalPoints;
 
             if (isCustomWeightFunction) {
               double tol = 1e-14;
@@ -295,6 +300,7 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
                 finer_temp_res = calculateScalarProduct(lid, iid, ljd, ijd, coordinates, weights,
                                                         basis, d, offseti_left, offsetj_left,
                                                         hInvik, hInvjk, hik, hjk, pp1h);
+                finer_temp_res *= width;
                 //                }
                 err = fabs(temp_res - finer_temp_res);
                 temp_res = finer_temp_res;
@@ -304,9 +310,8 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
             innerProducts[hashMI] = temp_res;
           }
 
-          double width = bounds[2 * d + 1] - bounds[2 * d];
           // #pragma omp atomic
-          temp_ij *= temp_res * width;
+          temp_ij *= temp_res;
         }
       }
 

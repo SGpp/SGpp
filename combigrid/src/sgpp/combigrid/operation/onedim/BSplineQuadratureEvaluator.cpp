@@ -10,11 +10,11 @@
 #include <sgpp/combigrid/operation/onedim/BSplineQuadratureEvaluator.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 
-#include <vector>
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
@@ -35,7 +35,7 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
   // points are not degree dependent and there is only on segment: the whole [0,1] interval
   if ((xValues.size() == 1) || (degree == 3 && (xValues.size() < 5)) ||
       ((degree == 5) && (xValues.size() < 9))) {
-    numGaussPoints = xValues.size();
+    numGaussPoints = xValues.size() + numAdditionalPoints;
     quadRule.getLevelPointsAndWeightsNormalized(
         std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
     for (size_t i = 0; i < roots.getSize(); ++i) {
@@ -43,12 +43,6 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
       double transX = x;  // a + (b-a) * x;
 
       bsplinevalue = LagrangePolynomial(x, xValues, index);
-
-      //      std::cout << "BsplineQuadratureOperation trying to evaluate weight function in " <<
-      //      transX
-      //                << std::endl;
-      //      std::cout << this->weight_function(transX) << std::endl;
-      //      std::cout << "BsplineQuadratureOperation Success" << std::endl;
 
       double integrand = bsplinevalue * this->weight_function(transX);
       sum += integrand * quadratureweights[i];
@@ -105,7 +99,6 @@ void BSplineQuadratureEvaluator::calculate1DBSplineIntegrals(
         err = std::fabs(newBasisValues[index].getValue() - basisValues[index].getValue());
         basisValues[index] = newBasisValues[index];
 
-        //        std::cout << numAdditionalPoints << " " << err << std::endl;
         if (numAdditionalPoints > 490) {
           break;
         }
