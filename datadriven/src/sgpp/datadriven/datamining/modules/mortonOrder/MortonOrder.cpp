@@ -6,6 +6,7 @@
 #include "MortonOrder.hpp"
 
 #include <stdint.h>
+#include <vector>
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -14,7 +15,7 @@
 namespace sgpp {
 namespace datadriven {
 
-//@cond DOXY_IGNORE
+///@cond DOXY_IGNORE // NOLINT()
 namespace MortonOrderDetail {
 
 union ext_double_t {
@@ -90,9 +91,9 @@ void zorder(const sgpp::base::DataMatrix &data, std::vector<size_t> &perm) {
 }
 
 }  // namespace MortonOrderDetail
-//@endcond
+///@endcond  // NOLINT()
 
-using namespace MortonOrderDetail;
+using MortonOrderDetail::zorder;
 
 /// Constructor. Generates the permuation list on the GPU
 MortonOrder::MortonOrder(sgpp::datadriven::Dataset *dataset) : _dataset(dataset) {
