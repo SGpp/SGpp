@@ -13,9 +13,19 @@
 @version  0.1
 
 """
-from pysgpp import PolynomialChaosExpansion, AbstractInfiniteFunctionBasis1DVector
+from pysgpp import PolynomialChaosExpansion, \
+    AbstractInfiniteFunctionBasis1DVector, \
+    OrthogonalBasisFunctionsCollection, \
+    WeightFunctionsCollection, \
+    singleFunc, \
+    ProbabilityDensityFunction1DConfiguration, \
+    ProbabilityDensityFunctionParameters, \
+    ProbabilityDensityFunction1D, \
+    ProbabilityDensityFunctionType_BOUNDED_LOGNORMAL, \
+    ProbabilityDensityFunctionType_BETA, \
+    ProbabilityDensityFunctionType_UNIFORM
 
-from pysgpp.extensions.datadriven.uq.dists import J
+from pysgpp.extensions.datadriven.uq.dists import J, Beta, Lognormal, TLognormal, Uniform
 from pysgpp.extensions.datadriven.uq.transformation import (JointTransformation,
                                                             RosenblattTransformation,
                                                             LinearTransformation)
@@ -194,20 +204,58 @@ class ParameterSet(object):
         """
         return JointTransformation.byParameters(self.__params)
 
-    def getUnivariateOrthogonalPolynomials(self):
-        basisFunctions = []
+    def getOrthogonalPolynomialBasisFunctions(self):
+        tensorBasis = OrthogonalBasisFunctionsCollection()
+
         for param in self.values():
             if param.isUncertain():
                 orthogPoly = param.getOrthogonalPolynomial()
                 if orthogPoly is not None:
-                    basisFunctions.append(orthogPoly)
+                    tensorBasis.push_back(orthogPoly)
                 else:
                     raise AttributeError("the distributions are not part of the Wiener-Askey scheme")
-        basisFunctions_vec = AbstractInfiniteFunctionBasis1DVector()
-        for basisFunction in basisFunctions:
-            basisFunctions_vec.push_back(basisFunction)
 
-        return basisFunctions_vec
+        return tensorBasis
+
+    # And check if C++ Beta/Lognormal... is euqal to scipy Beta/Lognormal,... via plot/error determiantion
+
+    # creates a DAKOTA distribution from the Python distribution
+    # the DAKOTA distribution can be evaluated much faster in the C++ code
+    def getWeightFunctions(self):
+        weightFunctions = WeightFunctionsCollection()
+        probabilityDensities = []
+
+        for distr in self.uncertainParams().getDistributions():
+            cpp_pdf_param = ProbabilityDensityFunctionParameters()
+            [a, b] = distr.getBounds()
+            cpp_pdf_param.lowerBound_ = a
+            cpp_pdf_param.upperBound_ = b
+            DAKOTA_pdf = False
+            if isinstance(distr, Uniform):
+                cpp_pdf_param.type_ = ProbabilityDensityFunctionType_UNIFORM
+                DAKOTA_pdf = True
+            elif isinstance(distr, Beta):
+                cpp_pdf_param.type_ = ProbabilityDensityFunctionType_BETA
+                cpp_pdf_param.alpha_ = distr.alpha()
+                cpp_pdf_param.beta_ = distr.beta()
+                DAKOTA_pdf = True
+            elif isinstance(distr, TLognormal) or isinstance(distr, Lognormal):
+                cpp_pdf_param.type_ = ProbabilityDensityFunctionType_BOUNDED_LOGNORMAL
+                cpp_pdf_param.logmean_ = np.log(distr.mean())
+                cpp_pdf_param.stddev_ = distr.std()
+                DAKOTA_pdf = True
+
+            if DAKOTA_pdf:
+                cpp_pdf_config = ProbabilityDensityFunction1DConfiguration()
+                cpp_pdf_config.setPdfParameters(cpp_pdf_param)
+
+                cpp_pdf = ProbabilityDensityFunction1D(cpp_pdf_config)
+                weightFunctions.push_back(cpp_pdf.getWeightFunction())
+                probabilityDensities.append(cpp_pdf)
+            else:
+                weightFunctions.push_back(singleFunc(distr.pdf))
+
+        return weightFunctions, probabilityDensities
 
     def getBounds(self):
         """

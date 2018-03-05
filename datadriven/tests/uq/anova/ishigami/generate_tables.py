@@ -25,7 +25,7 @@ latexcode = r"""
     &
     value &
     & & & & & &
-    \multicolumn{4}{c}{with modfied polynomial basis} \\
+    \multicolumn{4}{c}{with modified polynomial basis} \\
     \hline
     & &
     \multicolumn{2}{c}{\citet{Sudret08Global}} &
@@ -149,7 +149,7 @@ if __name__ == "__main__":
     for k in xrange(3):
         for perm in combinations([0, 1, 2], r=k + 1):
             perms.append(perm)
-            
+
     for i, perm in enumerate(sortPermutations(perms)):
         print i, perm
         row_entries[i] = row_entries[i] % (np.abs(results["pce"][pce[0]]["sobol_indices_estimated"][perm]),
