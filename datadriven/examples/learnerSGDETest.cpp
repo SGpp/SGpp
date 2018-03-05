@@ -11,14 +11,14 @@
 #include <random>
 #include <string>
 
-#include "sgpp/base/datatypes/DataMatrix.hpp"
-#include "sgpp/base/grid/Grid.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/datadriven/application/GaussianKDE.hpp"
-#include "sgpp/datadriven/application/LearnerSGDE.hpp"
-#include "sgpp/datadriven/configuration/RegularizationConfiguration.hpp"
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
-#include "sgpp/globaldef.hpp"
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/application/GaussianKDE.hpp>
+#include <sgpp/datadriven/application/LearnerSGDE.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/globaldef.hpp>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -56,7 +56,7 @@ void randu(DataMatrix& rvar, std::uint64_t seedValue = std::mt19937_64::default_
  * filename.
  */
 int main(int argc, char** argv) {
-  std::string filename = "../tests/data/friedman2_4d_10000.arff";
+  std::string filename = "../../datasets/friedman/friedman2_4d_300000.arff";
 
   std::cout << "# loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset dataset = sgpp::datadriven::ARFFTools::readARFF(filename);
