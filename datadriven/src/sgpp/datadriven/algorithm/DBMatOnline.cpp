@@ -3,36 +3,55 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifdef USE_GSL
-
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
+
+#include <list>
+#include <vector>
+
+using sgpp::base::application_exception;
 
 namespace sgpp {
 namespace datadriven {
 
-DBMatOnline::DBMatOnline() : offlineObject_(nullptr) {}
-
-DBMatOnline::DBMatOnline(DBMatOffline* o) { readOffline(o); }
-
-DBMatOnline::~DBMatOnline() {}
+DBMatOnline::DBMatOnline(DBMatOffline& o) : offlineObject{o} {}
 
 void DBMatOnline::setLambda(double lambda) {
-  if (offlineObject_->getConfig()->decomp_type_ == DBMatDecompEigen)
-    offlineObject_->getConfig()->lambda_ = lambda;
-  else if (offlineObject_->getConfig()->decomp_type_ == DBMatDecompChol)
-    offlineObject_->getConfig()->lambda_ = lambda;
-  else
-    throw sgpp::base::application_exception(
-        "Lambda can not be changed in the online step for this decomposition "
-        "type!");
+  switch (offlineObject.getDensityEstimationConfig().decomposition_) {
+    case MatrixDecompositionType::Eigen:
+    case MatrixDecompositionType::Chol:
+    case MatrixDecompositionType::DenseIchol:
+    case MatrixDecompositionType::OrthoAdapt:
+      offlineObject.getRegularizationConfig().lambda_ = lambda;
+      break;
+    case MatrixDecompositionType::LU:
+    default:
+      throw application_exception(
+          "Lambda can not be changed in the online step for this decomposition "
+          "type!");
+  }
 }
 
-void DBMatOnline::readOffline(DBMatOffline* o) { offlineObject_ = o; }
+DBMatOffline& DBMatOnline::getOfflineObject() {
+  return const_cast<DBMatOffline&>(static_cast<const DBMatOnline&>(*this).getOfflineObject());
+}
 
-DBMatOffline* DBMatOnline::getOffline() { return offlineObject_; }
+const DBMatOffline& DBMatOnline::getOfflineObject() const { return offlineObject; }
+
+std::vector<size_t> DBMatOnline::updateSystemMatrixDecomposition(
+    size_t numAddedGridPoints,
+    std::list<size_t> deletedGridPointIndices,
+    double lambda) {
+  if (!getOfflineObject().isRefineable()) {
+    throw base::not_implemented_exception("Attempted to update system matrix on decomposition "
+                                                  "that doesn't support it.");
+  }
+  throw base::application_exception("Decomposition reports refineable but does not "
+                                            "override updateSystemMatrixDecomposition()");
+  std::vector<size_t> return_vector = {};
+  return return_vector;
+}
+
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* USE_GSL */

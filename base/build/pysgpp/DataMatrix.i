@@ -8,23 +8,24 @@
 
 namespace sgpp
 {
-  namespace base
-  {
+namespace base
+{
 
-    %apply double *OUTPUT { double* min, double* max };
-    %apply std::string *OUTPUT { std::string& text };
-    %rename(__str__) DataMatrix::toString const;
+%apply double *OUTPUT { double* min, double* max };
+%apply std::string *OUTPUT { std::string& text };
+%rename(__str__) DataMatrix::toString const;
 
-    //%rename(__getitem__) DataMatrix::get(size_t row, size_t col) const;
-    //%rename(__setitem__) DataMatrix::set(int i, double value);
-    //%rename(assign) DataMatrix::operator=;
-    //%rename(__len__) DataMatrix::getSize const;
+//%rename(__getitem__) DataMatrix::get(size_t row, size_t col) const;
+//%rename(__setitem__) DataMatrix::set(int i, double value);
+//%rename(assign) DataMatrix::operator=;
+//%rename(__len__) DataMatrix::getSize const;
 
 
 
-    class DataMatrix
-    {
-    public:
+class DataMatrix
+{
+public:
+
 
       // typemap allowing to pass sequence of numbers to constructor
       %typemap(in) (double *input, int nrows, int ncols)
@@ -88,108 +89,111 @@ namespace sgpp
           free((double*) $1);
         }
       }
+%typecheck(SWIG_TYPECHECK_FLOAT) (double *input, int nrows, int ncols)
+{
+$1 = PySequence_Check($input) ? 1 : 0;
+}
 
-      %typecheck(SWIG_TYPECHECK_FLOAT) (double *input, int nrows, int ncols)
-      {
-        $1 = PySequence_Check($input) ? 1 : 0;
-      }
+    // Constructors
+    DataMatrix(size_t nrows, size_t ncols);
+    DataMatrix(size_t nrows, size_t ncols, double value);
+    DataMatrix(const DataMatrix& matr);
+    DataMatrix(double* input, int nrows, int ncols);
 
-      // Constructors
-      DataMatrix(size_t nrows, size_t ncols);
-      DataMatrix(size_t nrows, size_t ncols, double value);
-      DataMatrix(const DataMatrix& matr);
-      DataMatrix(double* input, int nrows, int ncols);
+    void resizeRows(size_t nrows);
+    void resizeRowsCols(size_t nrows, size_t ncols);
+    void resizeQuadratic(size_t size);
+    void resizeZero(size_t nrows, size_t ncols);
+    void resizeToSubMatrix(size_t row_1, size_t col_1, size_t row_2, size_t col_2);
 
-      void resize(size_t size);
-      void resizeZero(size_t nrows);
-      void transpose();
+    void reserveAdditionalRows(size_t inc_nrows);
+    size_t appendRow();
+    size_t appendRow(const DataVector& vec);
+    size_t appendCol(const DataVector& vec);
+    void setAll(double value);
+    void copyFrom(const DataMatrix& matr);
+    void transpose();
 
-      void addSize(size_t inc_nrows);
-      size_t appendRow();
-      void setAll(double value);
-      void copyFrom(const DataMatrix& matr);
+    double get(size_t row, size_t col) const;
+    void set(size_t row, size_t col, double value);
 
-      double get(size_t row, size_t col) const;
-      void set(size_t row, size_t col, double value);
+//    %extend {
+//          double getxy(int* INPUT) {
+//            return INPUT[0]*INPUT[1];
+//      };
+//    }
 
-      //    %extend {
-      //          double getxy(int* INPUT) {
-      //            return INPUT[0]*INPUT[1];
-      //      };
-      //    }
+    void getRow(size_t row, DataVector& vec) const;
+    void setRow(size_t row, const DataVector& vec);
+    void getColumn(size_t col, DataVector& vec) const;
+    void setColumn(size_t col, const DataVector& vec);
+    double* getPointer();
 
-      void getRow(size_t row, DataVector& vec) const;
-      void setRow(size_t row, const DataVector& vec);
-      void getColumn(size_t col, DataVector& vec) const;
-      void setColumn(size_t col, const DataVector& vec);
-      double* getPointer();
+    void add(DataMatrix& matr);
+    void sub(DataMatrix& matr);
+    void componentwise_mult(DataMatrix& matr);
+    void componentwise_div(DataMatrix& matr);
+    void mult(double scalar);
+    void sqr();
+    void sqrt();
+    void abs();
+    double sum() const;
 
-      void add(DataMatrix& matr);
-      void sub(DataMatrix& matr);
-      void componentwise_mult(DataMatrix& matr);
-      void componentwise_div(DataMatrix& matr);
-      void mult(double scalar);
-      void sqr();
-      void sqrt();
-      void abs();
-      double sum() const;
+    size_t getSize() const;
+    size_t getNumberNonZero() const;
+    size_t getNrows() const;
+    size_t getNcols() const;
 
-      size_t getSize() const;
-      size_t getUnused() const;
-      size_t getNumberNonZero() const;
-      size_t getNrows() const;
-      size_t getNcols() const;
-      size_t getInc() const;
-      void setInc(size_t inc_rows);
+    void normalizeDimension(size_t d);
+    void normalizeDimension(size_t d, double border);
 
-      void normalizeDimension(size_t d);
-      void normalizeDimension(size_t d, double border);
+    double min(size_t col) const;
+    double min() const;
+    double max(size_t col) const;
+    double max() const;
+    void minmax(size_t col, double* min, double* max) const;
+    void minmax(double* min, double* max) const;
 
-      double min(size_t col) const;
-      double min() const;
-      double max(size_t col) const;
-      double max() const;
-      void minmax(size_t col, double* min, double* max) const;
-      void minmax(double* min, double* max) const;
+//    void toString(std::string& text) const; // otherwise overloaded duplicate
+    std::string toString() const;
+    void toFile(const std::string& fileName) const;
+    static DataMatrix fromFile(const std::string& fileName);
 
-      //    void toString(std::string& text) const; // otherwise overloaded duplicate
-      std::string toString() const;
+    %extend {
+    // Create a ndarray view from the DataMatrix data
+    // an alternative approach using ARGOUTVIEW will fail since it does not allow to do a proper memory management
+    PyObject* __array(PyObject* datavector){
+        //Get the data and number of entries
+      double *vec = $self->getPointer();
+      int rows = $self->getNrows();
+      int cols = $self->getNcols();
 
-      %extend {
-        // Create a ndarray view from the DataMatrix data
-        // an alternative approach using ARGOUTVIEW will fail since it does not allow to do a proper memory management
-        PyObject* __array(PyObject* datavector){
-          //Get the data and number of entries
-          double *vec = $self->getPointer();
-          int rows = $self->getNrows();
-          int cols = $self->getNcols();
+      npy_intp dims[2] = {rows,cols};
 
-          npy_intp dims[2] = {rows,cols};
+      // Create a ndarray with data from vec
+      PyObject* arr = PyArray_SimpleNewFromData(2,dims, NPY_DOUBLE, vec);
 
-          // Create a ndarray with data from vec
-          PyObject* arr = PyArray_SimpleNewFromData(2,dims, NPY_DOUBLE, vec);
+      // Let the array base point on the original data, free_array is a additional destructor for our ndarray,
+      // since we need to DECREF DataVector object
+      PyObject* base = PyCObject_FromVoidPtrAndDesc((void*)vec, (void*)datavector, free_array);
+      PyArray_BASE(arr) = base;
 
-          // Let the array base point on the original data, free_array is a additional destructor for our ndarray,
-          // since we need to DECREF DataVector object
-          PyObject* base = PyCObject_FromVoidPtrAndDesc((void*)vec, (void*)datavector, free_array);
-          PyArray_BASE(arr) = base;
+      // Increase the number of references to PyObject DataMatrix, after the object the variable is reinitialized or deleted the object
+      // will still be on the heap, if the reference counter is positive.
+      Py_INCREF(datavector);
 
-          // Increase the number of references to PyObject DataMatrix, after the object the variable is reinitialized or deleted the object
-          // will still be on the heap, if the reference counter is positive.
-          Py_INCREF(datavector);
-
-          return arr;
-        }
-        %pythoncode
-           {
-             def array(self):
-               return self.__array(self)
-               }
-      }
-
-    };
-
+      return arr;
+    }
+     %pythoncode
+     {
+        def array(self):
+          return self.__array(self)
+     }
   }
+
+};
+
+}
 }
 
 

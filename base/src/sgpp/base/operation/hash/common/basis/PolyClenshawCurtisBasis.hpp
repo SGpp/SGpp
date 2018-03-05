@@ -205,7 +205,7 @@ class PolyClenshawCurtisBasis : public Basis<LT, IT> {
     return eval;
   }
 
-  double getIntegral(LT level, IT index) {
+  double getIntegral(LT level, IT index) override {
     // load boundaries of support
     double xleft = clenshawCurtisTable.getPoint(level, index - 1);
     double xright = clenshawCurtisTable.getPoint(level, index + 1);

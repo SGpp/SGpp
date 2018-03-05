@@ -32,6 +32,7 @@
 
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitPeriodic.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitLinear.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitLinearBoundary.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModLinear.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitBspline.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModBspline.hpp>
@@ -61,9 +62,9 @@
 
 #include <sgpp/pde/operation/hash/OperationLTwoDotProductLinear.hpp>
 #include <sgpp/pde/operation/hash/OperationLTwoDotProductLinearBoundary.hpp>
-#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitLinearBoundary.hpp>
 #include <sgpp/pde/operation/hash/OperationLTwoDotProductLinearStretched.hpp>
 #include <sgpp/pde/operation/hash/OperationLTwoDotProductLinearStretchedBoundary.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotPeriodic.hpp>
 
 #include <sgpp/pde/operation/hash/OperationLaplaceEnhancedLinear.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceEnhancedLinearBoundary.hpp>
@@ -285,8 +286,8 @@ base::OperationMatrix* createOperationLaplaceEnhanced(base::Grid& grid) {
   }
 }
 
-base::OperationMatrix* createOperationLaplaceEnhanced(base::Grid& grid,
-                                                      sgpp::base::DataVector& coef) {
+base::OperationMatrix* createOperationLaplaceEnhanced(
+    base::Grid& grid, sgpp::base::DataVector& coef) {
   if (grid.getType() == base::GridType::Linear) {
     return new pde::OperationLaplaceEnhancedLinear(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||

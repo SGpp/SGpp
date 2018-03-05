@@ -59,7 +59,7 @@
 #define M_1_SQRT2PI 0.398942280401432702863218082712
 
 #if __cplusplus == 201103L
-#include <memory>
+#include <memory>  // NOLINT(build/include)
 
 namespace std {
 // Implementation for "make_unique" in c++11 as
@@ -70,6 +70,13 @@ std::unique_ptr<T> make_unique(Args&&... args) {  // NOLINT(build/c++11)
   return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
 }
+#endif
+
+#if __cplusplus == 201402L
+// Hotfix for c++14, which seems to have stricter requirements for the availability of the size_t
+// type.
+#include <cstddef>
+#include <memory>  // NOLINT(build/include)
 #endif
 
 #endif /* SGPP_GLOBALDEF_HPP_ */

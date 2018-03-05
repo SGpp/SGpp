@@ -3,22 +3,22 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifdef USE_GSL
-
-#ifndef DBMATOFFLINE_H_
-#define DBMATOFFLINE_H_
+#pragma once
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
-
-#include <gsl/gsl_permutation.h>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 
 #include <list>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
+
+using sgpp::base::Grid;
+using sgpp::base::DataVector;
+using sgpp::base::DataMatrix;
 
 /**
  * Class that is used to decompose and store the left-hand-side
@@ -29,129 +29,123 @@ namespace datadriven {
  */
 
 class DBMatOffline {
- protected:
-  DBMatOffline();
-
-  sgpp::datadriven::DBMatDensityConfiguration*
-      config_;                         // configuration for this offline object
-  sgpp::base::DataMatrix* lhsMatrix_;  // stores the (decomposed) matrix
-  bool constructed_;                   // If the matrix was built
-  bool decomposed_;                    // If the matrix was decomposed
-  bool ownsConfig_;  // If the configuration has to be destroyed with the object
-
-  gsl_permutation* perm_;  // Stores the permutation that was
-  // applied on the matrix during decomposition
-
-  // An offline object either works on a
-  // hierarchical basis grid!
-  sgpp::base::Grid* grid_;
-
-  /**
-   * Method to initialize a sparse grid
-   */
-  void InitializeGrid();
-
  public:
   /**
    * Constructor
+   * Build DBMatOffline Object from configuration
    *
-   * @param oc configuration for this offline object
+   * @param gridConfig The configuration of the grid
+   * @param adaptivityConfig The configuration of the grid adaptivity
+   * @param regularizationConfig The configuration of the grid regularization
+   * @param densityEstimationConfig The configuration of the matrix decomposition
    */
-  explicit DBMatOffline(sgpp::datadriven::DBMatDensityConfiguration& oc);
+  explicit DBMatOffline(
+      const sgpp::base::RegularGridConfiguration& gridConfig,
+      const sgpp::base::AdpativityConfiguration& adaptivityConfig,
+      const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+      const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
+
   /**
    * Constructor
+   * Create offline object from serialized offline object
    *
-   * @param fname name of the file that stores the matrix + configuration
+   * @param fileName path to the file that stores serialized offline object
    */
-  explicit DBMatOffline(std::string fname);
+  explicit DBMatOffline(const std::string& fileName);
 
   /**
    * Copy Constructor
    *
-   * The matrix needs to be already decomposed.
+   * @param rhs Object to copy
+   */
+  DBMatOffline(const DBMatOffline& rhs);
+
+  /**
+   * Default move constructor
+   */
+  DBMatOffline(DBMatOffline&& rhs) = default;
+
+  /**
+   * Default virtual destructor
+   */
+  virtual ~DBMatOffline() = default;
+
+  /**
+   * Default copy assign operator
+   */
+  DBMatOffline& operator=(const DBMatOffline& rhs);
+
+  /**
+   * Default move assign operator
+   */
+  DBMatOffline& operator=(DBMatOffline&& rhs) = default;
+
+  /**
+   * Interface for the clone idiom
+   * @return a copy of this very object as a pointer to a new DBMatOffline object which is owned by
+   * the caller.
+   */
+  virtual DBMatOffline* clone() = 0;
+
+  /**
+   * Only Offline objects based on Cholesky decomposition, or orthogonal adaptivity can be refined
+   * @return true if object can be refined, else false;
+   */
+  virtual bool isRefineable() = 0;
+
+  /**
+   * Get a reference to the grid configuration object
+   * @return Grid configuration object
+   */
+  sgpp::base::RegularGridConfiguration& getGridConfig();
+
+  /**
+   * Get a reference to the grid adaptivity configuration object
+   * @return Grid adaptivity configuration object
+   */
+  sgpp::base::AdpativityConfiguration& getAdaptivityConfig();
+
+  /**
+   * Get a reference to the grid regularization configuration object
+   * @return Grid regularization configuration object
+   */
+  sgpp::datadriven::RegularizationConfiguration& getRegularizationConfig();
+
+  /**
+   * Get a reference to the matrix decomposition configuration object
+   * @return Matrix decomposition configuration object
+   */
+  sgpp::datadriven::DensityEstimationConfiguration& getDensityEstimationConfig();
+
+  /**
+   * Get a reference to the decomposed matrix. Throws if matrix has not yet been decomposed.
    *
-   * @param old Object to copy
+   * @return decomposed matrix
    */
-  DBMatOffline(const DBMatOffline& old);
+  DataMatrix& getDecomposedMatrix();
 
   /**
-   * Returns a pointer to the configuration
+   * Allows access to lhs matrix, which is meant ONLY FOR TESTING
    */
-  sgpp::datadriven::DBMatDensityConfiguration* getConfig();
-
-  /**
-   * Returns a pointer to the decomposed matrix
-   */
-  sgpp::base::DataMatrix* getDecomposedMatrix();
+  DataMatrix& getLhsMatrix_ONLY_FOR_TESTING();
 
   /**
    * Returns a reference to the sparse grid
-   * (if this offline object uses a sparse grid, otherwise NULL)
+   * @return grid
    */
-  sgpp::base::Grid& getGrid();
+  Grid& getGrid();
 
   /**
-   * Returns a pointer to the sparse grid
-   * (if this offline object uses a sparse grid, otherwise NULL)
+   * Builds the right hand side matrix with or without the regularization term depending on the type
+   * of decomposition
    */
-  sgpp::base::Grid* getGridPointer();
-
-  /**
-   * Builds the right hand side matrix with or without the regularization term
-   * depending
-   * on the type of decomposition
-   */
-  void buildMatrix();
+  virtual void buildMatrix();
 
   /**
    * Decomposes the matrix according to the chosen decomposition type.
    * The number of rows of the stored result depends on the decomposition type.
    */
-  void decomposeMatrix();
-
-  /**
-   * Applies the permutation that might be done during the matrix decomposition
-   * to a vector
-   * (has to be applied to the right hand side vector if the system of equation
-   * should be solved with a decomposed matrix)
-   *
-   * @param b the vector that has to be permuted
-   */
-  void permuteVector(sgpp::base::DataVector& b);
-
-  /**
-   * Updates offline cholesky factorization based on coarsed (deletedPoints)
-   * and refined (newPoints) gridPoints
-   *
-   * @param deletedPoints list of indices of last coarsed points
-   * @param newPoints amount of refined points
-   */
-  void choleskyModification(size_t newPoints, std::list<size_t> deletedPoints,
-                            double lambda);
-
-  /**
-   * Updates the cholesky factor when a new grid point is added (e.g. refine)
-   *
-   * @param newCol DataVector with column to add to the system matrix
-   * @param size columns/rows of current Cholesky factor, necessary since the
-            allocated memory is increased before the Cholesky factor is modified
-   */
-  void choleskyAddPoint(sgpp::base::DataVector* newCol, size_t size);
-
-  /**
-   * Permutes the rows of the cholesky factor based on permutations
-   * of the system matrix (e.g. coarsening)
-   *
-   * @param k "left" column to permutate
-   * @param l "right" column to permutate
-   * @param job = 2        => left circular shift
-   *	  1,...,k-1,k,k+1, ..., l-1,l,l+1, ..,size  => 1,...,k-1,k+1, ...,
-   *l-1,l,k,l+1,..., size
-   * 	  job = 1       => right circular shift
-   * 	  1,...,k-1,k,k+1, ..., l-1,l,l+1,...size  => 1,...,k-1,l,k,k+1, ...,
-   *l-1,l+1,...size
-   */
-  void choleskyPermutation(size_t k, size_t l, size_t job);
+  virtual void decomposeMatrix() = 0;
 
   /**
    * Prints the matrix onto standard output
@@ -159,34 +153,77 @@ class DBMatOffline {
   void printMatrix();
 
   /**
-   * Stores the matrix + configuration
-   *
-   * @param fname the file name
+   * Serialize the DBMatOffline Object
+   * @param fileName path where to store the file.
    */
-  void store(std::string fname);
+  virtual void store(const std::string& fileName);
 
   /**
-   * Loads matrix and configuration from a file
-   *
-   * @param fname the file name
+   * Sets interaction Term
+   * @param interactions Interaction terms used for geometrically aware grids
    */
-  /*void load(std::string fname);*/
+  void setInter(std::vector<std::vector <size_t>> interactions);
+
+
+ protected:
+  DBMatOffline();
+
+  // configuration of the grid
+  sgpp::base::RegularGridConfiguration gridConfig;
+
+  // config of the grid adaptivity
+  sgpp::base::AdpativityConfiguration adaptivityConfig;
+
+  // config of the grid regularization
+  sgpp::datadriven::RegularizationConfiguration regularizationConfig;
+
+  // config of the matrix decomposition
+  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+  DataMatrix lhsMatrix;              // stores the (decomposed) matrix
+  bool isConstructed;                // If the matrix was built
+  bool isDecomposed;                 // If the matrix was decomposed
 
   /**
-   * Destructor
+   * An offline object works on a hierarchical basis grid.
    */
-  virtual ~DBMatOffline();
+  std::unique_ptr<Grid> grid;
 
- private:
+
+ public:
+  // vector of interactions (if size() == 0: a regular SG is created)
+  std::vector<std::vector <size_t>> interactions;
+
+ protected:
   /**
-   * Used for reading input files
+   * Build the initial sparse grid
    */
-  void Tokenize(std::string&, std::vector<std::string>&, std::string& delimiters);
+  void InitializeGrid();
+
+  /**
+   * Read the configuration from a serialized DBMatOffline object.
+   * 
+   * @param fileName path of the serialized DBMatOffline object
+   * @param gridConfig The configuration of the grid of the file to populate
+   * @param adaptivityConfig The configuration of the grid adaptivity of the file to populate
+   * @param regularizationConfig The configuration of the grid regularization of the file to populate
+   * @param densityEstimationConfig The configuration of the matrix decomposition of the file to populate
+
+   */
+  void parseConfig(const std::string& fileName,
+                   sgpp::base::RegularGridConfiguration& gridConfig,
+                   sgpp::base::AdpativityConfiguration& adaptivityConfig,
+                   sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+                   sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) const;
+
+
+  /**
+   * Read the Interactionsterms from a serialized DBMatOfflibe object.
+   * @param fileName path of the serialized DBMatOffline object
+   * @param interactions the interactions to populate
+   */
+  void parseInter(const std::string& fileName,
+    std::vector<std::vector<size_t>>& interactions) const;
 };
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* DBMATOFFLINE_H_ */
-
-#endif /* USE_GSL */

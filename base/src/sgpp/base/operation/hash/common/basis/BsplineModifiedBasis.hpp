@@ -1250,7 +1250,7 @@ class BsplineModifiedBasis : public Basis<LT, IT> {
    * @param i     index of basis function
    * @return      value of the integral
    */
-  inline double getIntegral(LT l, IT i) {
+  inline double getIntegral(LT l, IT i) override {
     if (l == 1) {
       return 1;
     }

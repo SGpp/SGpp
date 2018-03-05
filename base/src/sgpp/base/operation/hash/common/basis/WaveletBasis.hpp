@@ -83,7 +83,7 @@ class WaveletBasis : public Basis<LT, IT> {
     return -2.0 * (2.0 * t2 * t2 - 7.0 * t2 + 2.0) * std::exp(-t2) * hInv * hInv;
   }
 
-  inline double getIntegral(LT level, IT index) { return -1.0; }
+  inline double getIntegral(LT level, IT index) override { return -1.0; }
 
   inline size_t getDegree() const override { return 0; }
 };

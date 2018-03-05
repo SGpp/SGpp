@@ -10,7 +10,7 @@
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/datadriven/application/Learner.hpp>
 #include <sgpp/datadriven/application/LearnerBase.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/globaldef.hpp>
@@ -38,7 +38,7 @@ class LearnerDensityBased : public datadriven::LearnerBase {
   // vectors of grids
   std::vector<std::unique_ptr<base::Grid>> gridVec;
   // vector of regterms
-  std::vector<std::unique_ptr<base::OperationMatrix>> CVec;
+  std::vector<base::OperationMatrix*> CVec;
 
  public:
   LearnerDensityBased(datadriven::RegularizationType&, const bool isRegression,

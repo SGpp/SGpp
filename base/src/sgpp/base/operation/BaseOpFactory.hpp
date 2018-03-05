@@ -19,16 +19,18 @@
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/operation/hash/OperationStencilHierarchisation.hpp>
 #include <sgpp/base/operation/hash/OperationDiagonal.hpp>
-#include <sgpp/globaldef.hpp>
 
 /*
  * This file contains factory methods for operations.
  */
 
+#include <sgpp/globaldef.hpp>
+
+#include <vector>
+
 #include "hash/OperationEvalGradient.hpp"
 #include "hash/OperationEvalHessian.hpp"
 #include "hash/OperationEvalPartialDerivative.hpp"
-
 
 namespace sgpp {
 
@@ -49,8 +51,8 @@ base::OperationMatrix* createOperationDiagonal(base::Grid& grid,
  * @param grid Grid which is to be used for hierarchisation
  * @return Pointer to the new OperationHierarchisation object for the Grid grid
  */
-base::OperationHierarchisation* createOperationHierarchisation(base::Grid& grid);
-
+base::OperationHierarchisation* createOperationHierarchisation(
+  base::Grid& grid);
 /**
  * Factory method, returning an OperationArbitraryBoundaryHierarchisation for the grid at hand.
  * Note: object has to be freed after use. This operation should be used if the boundary level
@@ -118,8 +120,20 @@ base::OperationEval* createOperationEval(base::Grid& grid);
  * the sparse grid function
  * @return Pointer to the new OperationMultipleEval object for the Grid grid
  */
+
 base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
-                                                         base::DataMatrix& dataset);
+    base::DataMatrix& dataset);
+/**
+ * Similar to createOperationMultipleEval, but makes use of interaction terms during evaluation
+ * 
+ * @param grid Grid which is to be used
+ * @param dataset The dataset (DataMatrix, one datapoint per row) that is to be evaluated for
+ * the sparse grid function
+ * @param interactions A list of Interaction the SG is reduced to
+ * @return Pointer to the new OperationMultipleEval object for the Grid grid
+ */
+base::OperationMultipleEval* createOperationMultipleEvalInter(base::Grid& grid,
+    base::DataMatrix& dataset, std::vector<std::vector<size_t>> interactions);
 
 /**
  * Factory method, returning an OperationMultipleEvalNaive for the grid at hand.
@@ -155,7 +169,9 @@ base::OperationEval* createOperationEvalNaive(base::Grid& grid);
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationEvalGradient object for the Grid grid
  */
-base::OperationEvalGradient* createOperationEvalGradientNaive(base::Grid& grid);
+
+base::OperationEvalGradient* createOperationEvalGradientNaive(
+  base::Grid& grid);
 /**
  * Factory method, returning an OperationEvalHessian for the grid at hand.
  * Implementations of OperationEvalHessianNaive returned by this function should
@@ -166,7 +182,9 @@ base::OperationEvalGradient* createOperationEvalGradientNaive(base::Grid& grid);
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationEvalHessian object for the Grid grid
  */
-base::OperationEvalHessian* createOperationEvalHessianNaive(base::Grid& grid);
+
+base::OperationEvalHessian* createOperationEvalHessianNaive(
+  base::Grid& grid);
 /**
  * Factory method, returning an OperationEvalPartialDerivative for the grid at hand.
  * Implementations of OperationEvalPartialDerivativeNaive returned by this function should
@@ -177,7 +195,8 @@ base::OperationEvalHessian* createOperationEvalHessianNaive(base::Grid& grid);
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationEvalPartialDerivative object for the Grid grid
  */
-base::OperationEvalPartialDerivative* createOperationEvalPartialDerivativeNaive(base::Grid& grid);
+base::OperationEvalPartialDerivative*
+createOperationEvalPartialDerivativeNaive(base::Grid& grid);
 
 }  // namespace op_factory
 }  // namespace sgpp

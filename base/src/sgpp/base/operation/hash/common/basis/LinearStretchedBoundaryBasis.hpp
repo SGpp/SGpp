@@ -121,6 +121,8 @@ class LinearStretchedBoundaryBasis : public LinearBoundaryBasis<LT, IT> {
   }
 
   inline size_t getDegree() const override { return 1; }
+
+  inline double getIntegral(LT level, IT index) override { return -1.0; }
 };
 
 // default type-def (unsigned int for level and index)

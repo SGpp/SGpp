@@ -21,9 +21,10 @@ if env["PLATFORM"] == "cygwin":
 elif env["PLATFORM"] == "darwin":
   pyEnv["SHLIBSUFFIX"] = ".so"
 
+#TODO: bug, plz fix
 # add C++ defines for all modules
 for module in moduleNames:
-  if pyEnv[module]:
+  if pyEnv[module]: 
     pyEnv["CPPDEFINES"][module] = "1"
 
 # build python module with swig
@@ -55,6 +56,9 @@ libs = [flattenedDependencyGraph]
 
 if env["USE_GSL"]:
   libs += ["gsl", "gslcblas"]
+
+if env["USE_ZLIB"]:
+  libs += ["z"]
 
 if (env["PLATFORM"] == "win32") and (env["COMPILER"] == "gnu"):
   pyEnv.AppendUnique(CPPDEFINES=["MS_WIN64"])

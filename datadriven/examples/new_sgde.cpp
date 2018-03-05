@@ -7,7 +7,7 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/application/SparseGridDensityEstimator.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
@@ -212,7 +212,7 @@ void solve_cgal(Grid& grid, DataMatrix& samples, double lambda, DataVector& resu
              G_it, bounds.getPointer(), r,                                    // constraints
              bounded, bounds.getPointer(), bounded, bounds.getPointer(),      // bounds
              P_it, q.getPointer()                                             // optimization goal
-  );
+             );
   Solution s = CGAL::solve_quadratic_program(qp, ET());
   Solution::Variable_value_iterator it = s.variable_values_begin();
   for (size_t i = 0; i < storage_size; i++) {
@@ -268,7 +268,7 @@ int main(int argc, char** argv) {
   std::cout << "Non positive best_alpha:" << std::endl;
   // checkPositive(*grid, result);
   std::cout << "Non positive cmp_alpha:" << std::endl;
-  // checkPositive(*grid, cmp_alpha);
+// checkPositive(*grid, cmp_alpha);
 #endif
   return 0;
 }

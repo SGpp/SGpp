@@ -54,7 +54,9 @@ LearnerScenario::LearnerScenario(std::string datasetFileName, double lambda,
   this->setTestsetConfiguration(testsetConfig);
 }
 
-bool LearnerScenario::isInitialized() const { return initialized; }
+bool LearnerScenario::isInitialized() const {
+  return initialized;
+}
 
 void LearnerScenario::setDatasetFileName(std::string datasetFileName) {
   (*this).replaceTextAttr("datasetFileName", datasetFileName);
@@ -193,7 +195,8 @@ solver::SLESolverConfiguration LearnerScenario::getSolverConfigurationFinal() {
 void LearnerScenario::setAdaptivityConfiguration(base::AdpativityConfiguration& adaptConfig) {
   (*this).replaceDictAttr("adaptivity");
   (*this)["adaptivity"].replaceIDAttr("maxLevelType", adaptConfig.maxLevelType_);
-  (*this)["adaptivity"].replaceIDAttr("noPoints", static_cast<uint64_t>(adaptConfig.noPoints_));
+  (*this)["adaptivity"].replaceIDAttr("noPoints",
+                                      static_cast<uint64_t>(adaptConfig.noPoints_));
   (*this)["adaptivity"].replaceIDAttr("numRefinements",
                                       static_cast<uint64_t>(adaptConfig.numRefinements_));
   (*this)["adaptivity"].replaceIDAttr("percent", adaptConfig.percent_);

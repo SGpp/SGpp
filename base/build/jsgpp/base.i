@@ -35,7 +35,6 @@ namespace std {
 %ignore sgpp::base::DataMatrixSP::operator();
 %ignore sgpp::base::DataMatrix::getPointer const;
 %ignore sgpp::base::DataMatrixSP::getPointer const;
-%include "base/src/sgpp/base/datatypes/DataVectorDefinition.hpp"
 %include "base/src/sgpp/base/datatypes/DataVectorSP.hpp"
 %include "base/src/sgpp/base/datatypes/DataMatrixSP.hpp"
 %include "base/src/sgpp/base/datatypes/DataVector.hpp"
@@ -54,6 +53,7 @@ namespace std {
 %rename(operatorParentheses) sgpp::base::HashGridPointHashFunctor::operator();
 %rename(operatorParentheses) sgpp::base::HashGridPointEqualityFunctor::operator();
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridPoint.hpp"
+%rename(operatorAssignment) sgpp::base::HashGridStorage::operator=;
 %ignore sgpp::base::HashGridStorage::operator[];
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridStorage.hpp"
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridIterator.hpp"

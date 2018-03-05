@@ -105,10 +105,10 @@
 #include <sgpp/base/operation/hash/OperationEvalLinearStretched.hpp>
 #include <sgpp/base/operation/hash/OperationEvalLinearStretchedBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModLinear.hpp>
+#include <sgpp/base/operation/hash/OperationEvalModPoly.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPeriodic.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPoly.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyBoundary.hpp>
-#include <sgpp/base/operation/hash/OperationEvalModPoly.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPrewavelet.hpp>
 
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinear.hpp>
@@ -121,6 +121,8 @@
 #include <sgpp/base/operation/hash/OperationMultipleEvalPoly.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPrewavelet.hpp>
+
+#include <sgpp/base/operation/hash/OperationMultipleEvalInterModLinear.hpp>
 
 #include <sgpp/base/operation/hash/OperationMultipleEvalBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalBsplineBoundaryNaive.hpp>
@@ -144,22 +146,22 @@
 #include <sgpp/base/operation/hash/OperationEvalFundamentalSplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalLinearNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalLinearBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalLinearClenshawCurtisNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalModLinearClenshawCurtisNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalLinearClenshawCurtisBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModBsplineClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModFundamentalSplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModLinearNaive.hpp>
-#include <sgpp/base/operation/hash/OperationEvalModPolyNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModWaveletNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalModPolyNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyClenshawCurtisNaive.hpp>
-#include <sgpp/base/operation/hash/OperationEvalPolyClenshawCurtisBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModPolyClenshawCurtisNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalPolyClenshawCurtisBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalWaveletNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalWaveletBoundaryNaive.hpp>
-#include <sgpp/base/operation/hash/OperationEvalModLinearClenshawCurtisNaive.hpp>
-#include <sgpp/base/operation/hash/OperationEvalLinearClenshawCurtisNaive.hpp>
-#include <sgpp/base/operation/hash/OperationEvalLinearClenshawCurtisBoundaryNaive.hpp>
 
 #include <sgpp/base/operation/hash/OperationEvalGradientBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradientBsplineBoundaryNaive.hpp>
@@ -197,6 +199,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <cstring>
+#include <vector>
 
 namespace sgpp {
 
@@ -215,12 +218,6 @@ base::OperationHierarchisation* createOperationHierarchisation(base::Grid& grid)
     return new base::OperationStencilHierarchisationModLinear(grid.getStorage());
   } else if (grid.getType() == base::GridType::ModLinear) {
     return new base::OperationHierarchisationModLinear(grid.getStorage());
-  } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
-    return new base::OperationHierarchisationLinearClenshawCurtis(grid.getStorage());
-  } else if (grid.getType() == base::GridType::ModLinearClenshawCurtis) {
-    return new base::OperationHierarchisationModLinearClenshawCurtis(grid.getStorage());
-  } else if (grid.getType() == base::GridType::LinearClenshawCurtisBoundary) {
-    return new base::OperationHierarchisationLinearClenshawCurtisBoundary(grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary ||
              grid.getType() == base::GridType::LinearTruncatedBoundary ||
@@ -239,15 +236,6 @@ base::OperationHierarchisation* createOperationHierarchisation(base::Grid& grid)
   } else if (grid.getType() == base::GridType::ModPoly) {
     return new base::OperationHierarchisationModPoly(
         grid.getStorage(), dynamic_cast<base::ModPolyGrid*>(&grid)->getDegree());
-  } else if (grid.getType() == base::GridType::PolyClenshawCurtis) {
-    return new base::OperationHierarchisationPolyClenshawCurtis(
-        grid.getStorage(), dynamic_cast<base::PolyClenshawCurtisGrid*>(&grid)->getDegree());
-  } else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary) {
-    return new base::OperationHierarchisationPolyClenshawCurtisBoundary(
-        grid.getStorage(), dynamic_cast<base::PolyClenshawCurtisBoundaryGrid*>(&grid)->getDegree());
-  } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
-    return new base::OperationHierarchisationModPolyClenshawCurtis(
-        grid.getStorage(), dynamic_cast<base::ModPolyClenshawCurtisGrid*>(&grid)->getDegree());
   } else if (grid.getType() == base::GridType::Prewavelet) {
     return new base::OperationHierarchisationPrewavelet(
         grid.getStorage(), dynamic_cast<base::PrewaveletGrid*>(&grid)->getShadowStorage());
@@ -273,53 +261,12 @@ base::OperationQuadrature* createOperationQuadrature(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
     return new base::OperationQuadratureLinearBoundary(grid.getStorage());
-  } else if (grid.getType() == base::GridType::ModLinear) {
-    return new base::OperationQuadratureModLinear(grid.getStorage());
-  } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
-    return new base::OperationQuadratureLinearClenshawCurtis(grid.getStorage());
-  } else if (grid.getType() == base::GridType::LinearClenshawCurtisBoundary) {
-    return new base::OperationQuadratureLinearClenshawCurtisBoundary(grid.getStorage());
-  } else if (grid.getType() == base::GridType::ModLinearClenshawCurtis) {
-    return new base::OperationQuadratureModLinearClenshawCurtis(grid.getStorage());
   } else if (grid.getType() == base::GridType::Poly) {
     return new base::OperationQuadraturePoly(grid.getStorage(),
                                              dynamic_cast<base::PolyGrid*>(&grid)->getDegree());
-  } else if (grid.getType() == base::GridType::ModPoly) {
-    return new base::OperationQuadratureModPoly(
-        grid.getStorage(), dynamic_cast<base::ModPolyGrid*>(&grid)->getDegree());
   } else if (grid.getType() == base::GridType::PolyBoundary) {
     return new base::OperationQuadraturePolyBoundary(
         grid.getStorage(), dynamic_cast<base::PolyBoundaryGrid*>(&grid)->getDegree());
-  } else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary) {
-    return new base::OperationQuadraturePolyClenshawCurtisBoundary(
-        grid.getStorage(), dynamic_cast<base::PolyClenshawCurtisBoundaryGrid*>(&grid)->getDegree());
-  } else if (grid.getType() == base::GridType::PolyClenshawCurtis) {
-    return new base::OperationQuadraturePolyClenshawCurtis(
-        grid.getStorage(), dynamic_cast<base::PolyClenshawCurtisGrid*>(&grid)->getDegree());
-  } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
-    return new base::OperationQuadratureModPolyClenshawCurtis(
-        grid.getStorage(), dynamic_cast<base::ModPolyClenshawCurtisGrid*>(&grid)->getDegree());
-  } else if (grid.getType() == base::GridType::Bspline) {
-    return new base::OperationQuadratureBspline(
-        grid.getStorage(), dynamic_cast<base::BsplineGrid*>(&grid)->getDegree());
-  } else if (grid.getType() == base::GridType::BsplineBoundary) {
-    return new base::OperationQuadratureBsplineBoundary(
-        grid.getStorage(), dynamic_cast<base::BsplineBoundaryGrid*>(&grid)->getDegree());
-  } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
-    return new base::OperationQuadratureBsplineClenshawCurtis(
-        grid.getStorage(), dynamic_cast<base::BsplineClenshawCurtisGrid*>(&grid)->getDegree());
-  } else if (grid.getType() == base::GridType::ModBspline) {
-    return new base::OperationQuadratureModBspline(
-        grid.getStorage(), dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree());
-  } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
-    return new base::OperationQuadratureModBsplineClenshawCurtis(
-        grid.getStorage(), dynamic_cast<base::ModBsplineClenshawCurtisGrid*>(&grid)->getDegree());
-  } else if (grid.getType() == base::GridType::FundamentalSpline) {
-    return new base::OperationQuadratureFundamentalSpline(
-        grid.getStorage(), dynamic_cast<base::FundamentalSplineGrid*>(&grid)->getDegree());
-  } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
-    return new base::OperationQuadratureModFundamentalSpline(
-        grid.getStorage(), dynamic_cast<base::ModFundamentalSplineGrid*>(&grid)->getDegree());
   } else {
     throw base::factory_exception(
         "createOperationQuadrature is not implemented for this grid type.");
@@ -329,34 +276,6 @@ base::OperationQuadrature* createOperationQuadrature(base::Grid& grid) {
 base::OperationFirstMoment* createOperationFirstMoment(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
     return new base::OperationFirstMomentLinear(grid.getStorage());
-  } else if (grid.getType() == base::GridType::LinearBoundary ||
-             grid.getType() == base::GridType::LinearL0Boundary ||
-             grid.getType() == base::GridType::LinearTruncatedBoundary) {
-    return new base::OperationFirstMomentLinearBoundary(grid.getStorage());
-  } else if (grid.getType() == base::GridType::ModLinear) {
-    return new base::OperationFirstMomentModLinear(grid.getStorage());
-  } else if (grid.getType() == base::GridType::Poly) {
-    return new base::OperationFirstMomentPoly(&grid);
-  } else if (grid.getType() == base::GridType::PolyBoundary) {
-    return new base::OperationFirstMomentPolyBoundary(&grid);
-  } else if (grid.getType() == base::GridType::ModPoly) {
-    return new base::OperationFirstMomentModPoly(&grid);
-  } else if (grid.getType() == base::GridType::PolyClenshawCurtis) {
-    return new base::OperationFirstMomentPolyClenshawCurtis(&grid);
-  } else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary) {
-    return new base::OperationFirstMomentPolyClenshawCurtisBoundary(&grid);
-  } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
-    return new base::OperationFirstMomentModPolyClenshawCurtis(&grid);
-  } else if (grid.getType() == base::GridType::Bspline) {
-    return new base::OperationFirstMomentBspline(&grid);
-  } else if (grid.getType() == base::GridType::ModBspline) {
-    return new base::OperationFirstMomentModBspline(&grid);
-  } else if (grid.getType() == base::GridType::BsplineBoundary) {
-    return new base::OperationFirstMomentBsplineBoundary(&grid);
-  } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
-    return new base::OperationFirstMomentBsplineClenshawCurtis(&grid);
-  } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
-    return new base::OperationFirstMomentModBsplineClenshawCurtis(&grid);
   } else {
     throw base::factory_exception(
         "createOperationFirstMoment is not implemented for this grid type.");
@@ -366,34 +285,6 @@ base::OperationFirstMoment* createOperationFirstMoment(base::Grid& grid) {
 base::OperationSecondMoment* createOperationSecondMoment(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
     return new base::OperationSecondMomentLinear(grid.getStorage());
-  } else if (grid.getType() == base::GridType::LinearBoundary ||
-             grid.getType() == base::GridType::LinearL0Boundary ||
-             grid.getType() == base::GridType::LinearTruncatedBoundary) {
-    return new base::OperationSecondMomentLinearBoundary(grid.getStorage());
-  } else if (grid.getType() == base::GridType::ModLinear) {
-    return new base::OperationSecondMomentModLinear(grid.getStorage());
-  } else if (grid.getType() == base::GridType::Poly) {
-    return new base::OperationSecondMomentPoly(&grid);
-  } else if (grid.getType() == base::GridType::ModPoly) {
-    return new base::OperationSecondMomentModPoly(&grid);
-  } else if (grid.getType() == base::GridType::PolyBoundary) {
-    return new base::OperationSecondMomentPolyBoundary(&grid);
-  } else if (grid.getType() == base::GridType::PolyClenshawCurtis) {
-    return new base::OperationSecondMomentPolyClenshawCurtis(&grid);
-  } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
-    return new base::OperationSecondMomentModPolyClenshawCurtis(&grid);
-  } else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary) {
-    return new base::OperationSecondMomentPolyClenshawCurtisBoundary(&grid);
-  } else if (grid.getType() == base::GridType::Bspline) {
-    return new base::OperationSecondMomentBspline(&grid);
-  } else if (grid.getType() == base::GridType::ModBspline) {
-    return new base::OperationSecondMomentModBspline(&grid);
-  } else if (grid.getType() == base::GridType::BsplineBoundary) {
-    return new base::OperationSecondMomentBsplineBoundary(&grid);
-  } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
-    return new base::OperationSecondMomentBsplineClenshawCurtis(&grid);
-  } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
-    return new base::OperationSecondMomentModBsplineClenshawCurtis(&grid);
   } else {
     throw base::factory_exception(
         "createOperationSecondMoment is not implemented for this grid type.");
@@ -441,9 +332,8 @@ base::OperationEval* createOperationEval(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::Periodic) {
     return new base::OperationEvalPeriodic(grid.getStorage());
   } else {
-    throw base::factory_exception(
-        "createOperationEval is not implemented for this grid type. "
-        "Try createOperationEvalNaive instead.");
+    throw base::factory_exception("createOperationEval is not implemented for this grid type. "
+                                  "Try createOperationEvalNaive instead.");
   }
 }
 
@@ -476,6 +366,16 @@ base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
   } else {
     throw base::factory_exception(
         "createOperationMultipleEval is not implemented for this grid type.");
+  }
+}
+
+base::OperationMultipleEval* createOperationMultipleEvalInter(base::Grid& grid,
+       base::DataMatrix& dataset, std::vector<std::vector<size_t>> interactions) {
+  if (grid.getType() == base::GridType::ModLinear) {
+    return new base::OperationMultipleEvalInterModLinear(grid, dataset, interactions);
+  } else {
+    throw base::factory_exception(
+        "createOperationMultipleEvalInter is not implemented for this grid type.");
   }
 }
 

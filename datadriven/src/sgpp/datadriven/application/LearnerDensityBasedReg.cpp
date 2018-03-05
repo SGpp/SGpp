@@ -130,16 +130,16 @@ LearnerTiming LearnerDensityBasedReg::train(
     // regularization term:
 
     if (this->CMode == datadriven::RegularizationType::Laplace) {
-      C = std::unique_ptr<base::OperationMatrix>(op_factory::createOperationLaplace(*grid));
+      C = op_factory::createOperationLaplace(*grid);
     } else if (this->CMode == datadriven::RegularizationType::Identity) {
-      C = std::unique_ptr<base::OperationMatrix>(op_factory::createOperationIdentity(*grid));
+      C = op_factory::createOperationIdentity(*grid);
     } else {
       throw base::application_exception(
           "LearnerDensityBased::train: Unknown regularization "
           "operator");
     }
 
-    datadriven::DensitySystemMatrix DMatrix(*grid, densityMatrix, C.release(), lambda);
+    datadriven::DensitySystemMatrix DMatrix(*grid, densityMatrix, C, lambda);
     base::DataVector rhs(grid->getSize());
     DMatrix.generateb(rhs);
 

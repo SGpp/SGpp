@@ -49,13 +49,13 @@ void XPhidPhiDownBBLinearStretched::rec(sgpp::base::DataVector& source,
   if (!index.hint()) {
     index.leftChild(dim);
 
-    if (!storage->isValidSequenceNumber(index.seq())) {
+    if (!storage->isInvalidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, fl, fm);
     }
 
     index.stepRight(dim);
 
-    if (!storage->isValidSequenceNumber(index.seq())) {
+    if (!storage->isInvalidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, fm, fr);
     }
 

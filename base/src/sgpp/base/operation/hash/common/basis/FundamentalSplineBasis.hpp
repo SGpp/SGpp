@@ -387,7 +387,7 @@ class FundamentalSplineBasis : public Basis<LT, IT> {
    * @param i     index of basis function
    * @return      value of the integral
    */
-  inline double getIntegral(LT l, IT i) {
+  inline double getIntegral(LT l, IT i) override {
     const IT hInv = static_cast<IT>(1) << l;
     double h = std::pow(2, -static_cast<int>(l));
     size_t degree = bsplineBasis.getDegree();

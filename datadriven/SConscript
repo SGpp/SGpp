@@ -5,24 +5,8 @@
 
 import Helper
 import ModuleHelper
-
-def checkForLibrary(name, flag, headers, libraries):
-  if type(headers) is str: headers = [headers]
-  if type(libraries) is str: libraries = [libraries]
-  if libraries is None: libraries = []
-
-  if (flag not in config.env) or (not config.env[flag]):
-    Helper.printInfo("sgpp::datadriven will be compiled without {} (flag not set).".format(name))
-  elif not config.CheckHeader(headers, language="C++"):
-    Helper.printErrorAndExit("The flag {} was given, but the".format(flag),
-                             "necessary headers {} were not found.".format(headers))
-  elif (len(libraries) > 0) and (not config.CheckLib(libraries, language="C++")):
-    Helper.printErrorAndExit("The flag {} was given, but the".format(flag),
-                             "necessary libraries {} were not found.".format(libraries))
-  else:
-    Helper.printInfo("sgpp::datadriven will be compiled with {}.".format(name))
-    additionalDependencies.extend(libraries)
-    env["CPPDEFINES"][flag] = "1"
+import Helper
+import os
 
 Import("*")
 
@@ -31,12 +15,12 @@ moduleDependencies = ["sgppoptimization", "sgpppde", "sgppsolver", "sgppbase"]
 additionalDependencies = []
 additionalBoostTestDependencies = []
 
-checkForLibrary("CGAL",   "USE_CGAL",   "CGAL/basic.h", None)
-
+if env["USE_ZLIB"]:
+  additionalDependencies += ["z"]
 if env["USE_OCL"]:
   additionalDependencies += ["OpenCL"]
 if env["USE_GSL"]:
-  additionalDependencies += ["gsl", "gslcblas"]
+    additionalDependencies += ["gsl", "gslcblas"]
 if env["USE_CGAL"]:
   additionalDependencies += ["CGAL"]
 
@@ -45,7 +29,7 @@ performanceTestFlag = "COMPILE_BOOST_PERFORMANCE_TESTS"
 performanceTestRunFlag = "RUN_BOOST_PERFORMANCE_TESTS"
 
 if env[performanceTestFlag]:
-  additionalBoostTestDependencies.extend(["boost_filesystem", "boost_system"])
+    additionalBoostTestDependencies.extend(["boost_filesystem", "boost_system"])
 
 module = ModuleHelper.Module(moduleDependencies, additionalDependencies,
                              additionalBoostTestDependencies)
@@ -55,14 +39,21 @@ module.buildLibrary()
 module.generatePythonDocstrings()
 
 if env["ARCH"] == "mic":
-  module.buildExamples("examplesMIC")
+    module.buildExamples("examplesMIC")
 else:
-  module.buildExamples()
+    module.buildExamples()
 if env["USE_OCL"]:
-  module.buildExamples("examplesOCL",
-      additionalExampleDependencies=["boost_program_options",
-                                     "boost_filesystem",
-                                     "boost_system"])
+    module.buildExamples("examplesOCL",
+                         additionalExampleDependencies=["boost_program_options",
+                                                        "boost_filesystem",
+                                                        "boost_system"])
+if env["USE_MPI"] and env["USE_OCL"]:
+    module.buildExamples("examplesMPI")
+if (env["ARCH"].lower() == "avx2"):
+    module.buildExamples("examplesAVX")
+if env["USE_HPX"]:
+    module.buildExamples("examplesHPX")
+
 
 module.runPythonTests()
 module.buildBoostTests()

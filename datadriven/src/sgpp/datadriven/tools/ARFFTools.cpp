@@ -3,16 +3,17 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/base/exception/file_exception.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
 
 #include <sgpp/globaldef.hpp>
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
-#include <algorithm>
 #include <sstream>
 #include <string>
+#include <cstring>
 
 namespace sgpp {
 namespace datadriven {
@@ -20,6 +21,10 @@ namespace datadriven {
 Dataset ARFFTools::readARFF(const std::string& filename) {
   std::string line;
   std::ifstream myfile(filename.c_str());
+  if (!myfile) {
+    const auto msg = "Unable to open file: " + filename;
+    throw sgpp::base::file_exception(msg.c_str());
+  }
   size_t numberInstances;
   size_t dimension;
   bool dataReached = false;
@@ -48,14 +53,14 @@ Dataset ARFFTools::readARFF(const std::string& filename) {
   return dataset;
 }
 
-void ARFFTools::readARFFSize(const std::string& filename,
-                             size_t& numberInstances, size_t& dimension) {
+void ARFFTools::readARFFSize(const std::string& filename, size_t& numberInstances,
+                             size_t& dimension) {
   std::string line;
   std::ifstream myfile(filename.c_str());
   dimension = 0;
   numberInstances = 0;
 
-  if (!myfile.is_open()) {
+  if (!myfile) {
     std::string msg = "Unable to open file: " + filename;
     throw sgpp::base::file_exception(msg.c_str());
   }
@@ -70,6 +75,10 @@ void ARFFTools::readARFFSize(const std::string& filename,
       dimension++;
     } else if (line.find("@DATA", 0) != line.npos) {
       numberInstances = 0;
+    } else if (line.find("% DATA SET SIZE ", 0) != line.npos) {
+      numberInstances = std::stoi(line.substr(strlen("% DATA SET SIZE ")));
+      std::cout << "Set number instances from comment to " << numberInstances << std::endl;
+      break;
     } else if (!line.empty()) {
       numberInstances++;
     }
@@ -78,8 +87,8 @@ void ARFFTools::readARFFSize(const std::string& filename,
   myfile.close();
 }
 
-void ARFFTools::readARFFSizeFromString(const std::string& content,
-                                       size_t& numberInstances, size_t& dimension) {
+void ARFFTools::readARFFSizeFromString(const std::string& content, size_t& numberInstances,
+                                       size_t& dimension) {
   std::string line;
   std::istringstream contentStream(content);
 
@@ -133,8 +142,7 @@ Dataset ARFFTools::readARFFFromString(const std::string& content) {
 }
 
 void ARFFTools::writeNewTrainingDataEntry(const std::string& arffLine,
-    sgpp::base::DataMatrix& destination,
-    size_t instanceNo) {
+                                          sgpp::base::DataMatrix& destination, size_t instanceNo) {
   size_t cur_pos = 0;
   size_t cur_find = 0;
   size_t dim = destination.getNcols();
@@ -150,8 +158,8 @@ void ARFFTools::writeNewTrainingDataEntry(const std::string& arffLine,
   }
 }
 
-void ARFFTools::writeNewClass(const std::string& arffLine,
-                              sgpp::base::DataVector& destination, size_t instanceNo) {
+void ARFFTools::writeNewClass(const std::string& arffLine, sgpp::base::DataVector& destination,
+                              size_t instanceNo) {
   size_t cur_pos = arffLine.find_last_of(",");
   std::string cur_value = arffLine.substr(cur_pos + 1);
   double dbl_cur_value = atof(cur_value.c_str());
@@ -170,4 +178,3 @@ void ARFFTools::writeNewClass(const std::string& arffLine,
 
 }  // namespace datadriven
 }  // namespace sgpp
-
