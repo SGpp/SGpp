@@ -1,3 +1,0 @@
-[submodule "datasets"]
-	path = datasets
-	url = git@simsgs.informatik.uni-stuttgart.de:SGpp/datasets.git
