@@ -5,18 +5,16 @@
 
 #pragma once
 
-#include <sgpp/globaldef.hpp>
-
-#include <sgpp/base/tools/json/JSON.hpp>
-
-#include <vector>
 #include <map>
+#include <sgpp/base/tools/json/JSON.hpp>
+#include <sgpp/globaldef.hpp>
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace base {
 
-class OperationConfiguration: public json::JSON {
+class OperationConfiguration : public json::JSON {
  public:
   OperationConfiguration();
 
@@ -27,4 +25,3 @@ class OperationConfiguration: public json::JSON {
 
 }  // namespace base
 }  // namespace sgpp
-
