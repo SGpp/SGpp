@@ -189,7 +189,7 @@ class PolyBasis : public Basis<LT, IT> {
     return eval;
   }
 
-  double getIntegral(LT level, IT index) {
+  double getIntegral(LT level, IT index) override {
     // grid spacing
     double h = 1.0f / static_cast<double>(1 << level);
 

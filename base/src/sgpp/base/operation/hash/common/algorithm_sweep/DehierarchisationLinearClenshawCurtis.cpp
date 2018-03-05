@@ -49,14 +49,14 @@ void DehierarchisationLinearClenshawCurtis::rec(DataVector& source, DataVector& 
     // descend left
     index.leftChild(dim);
 
-    if (!storage.isValidSequenceNumber(index.seq())) {
+    if (!storage.isInvalidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, xl, fl, xm, fm);
     }
 
     // descend right
     index.stepRight(dim);
 
-    if (!storage.isValidSequenceNumber(index.seq())) {
+    if (!storage.isInvalidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, xm, fm, xr, fr);
     }
 

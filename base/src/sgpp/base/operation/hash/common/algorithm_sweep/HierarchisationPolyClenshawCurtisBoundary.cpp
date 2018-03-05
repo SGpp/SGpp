@@ -41,7 +41,7 @@ void HierarchisationPolyClenshawCurtisBoundary::operator()(DataVector& source, D
   if (!index.hint()) {
     index.resetToLevelOne(dim);
 
-    if (!storage.isValidSequenceNumber(index.seq())) {
+    if (!storage.isInvalidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, coeffs);
     }
 
@@ -74,14 +74,14 @@ void HierarchisationPolyClenshawCurtisBoundary::rec(DataVector& source, DataVect
     // descend left
     index.leftChild(dim);
 
-    if (!storage.isValidSequenceNumber(index.seq())) {
+    if (!storage.isInvalidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, coeffs);
     }
 
     // descend right
     index.stepRight(dim);
 
-    if (!storage.isValidSequenceNumber(index.seq())) {
+    if (!storage.isInvalidSequenceNumber(index.seq())) {
       rec(source, result, index, dim, coeffs);
     }
 

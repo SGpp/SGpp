@@ -66,7 +66,7 @@ class LinearModifiedClenshawCurtisBasis : public Basis<LT, IT> {
     return eval(level, index, (p - offset) / width);
   }
 
-  double getIntegral(LT level, IT index) {
+  double getIntegral(LT level, IT index) override {
     const IT hInv = static_cast<IT>(1) << level;
 
     if (level == 1) {

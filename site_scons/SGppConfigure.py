@@ -104,6 +104,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   checkZlib(config)
   checkGSL(config)
   checkDAKOTA(config)
+  checkCGAL(config)
   checkBoostTests(config)
   checkSWIG(config)
   checkPython(config)
@@ -238,20 +239,16 @@ def checkOpenCL(config):
                                "can be installed to solve this issue.")
 
     config.env["CPPDEFINES"]["USE_OCL"] = "1"
-    
-def checkDAKOTA(config):
-    if config.env["USE_DAKOTA"]:
-        config.env.AppendUnique(CPPPATH=[config.env["DAKOTA_INCLUDE_PATH"]])
-        
-        config.env.AppendUnique(LIBPATH=[config.env["DAKOTA_LIBRARY_PATH"]])
-        
-        if not config.CheckCXXHeader("pecos_global_defs.hpp"):
-            Helper.printErrorAndExit("pecos_global_defs.hpp not found, but required for PECOS")
 
 def checkDAKOTA(config):
     if config.env["USE_DAKOTA"]:
         if not config.CheckCXXHeader("pecos_global_defs.hpp"):
             Helper.printErrorAndExit("pecos_global_defs.hpp not found, but required for PECOS. Consider setting the flag 'CPPPATH'.")
+
+def checkCGAL(config):
+    if config.env["USE_CGAL"]:
+        if not config.CheckCXXHeader("CGAL/basic.h"):
+            Helper.printErrorAndExit("CGAL/basic.h not found, but required for CGAL. Consider setting the flag 'CPPPATH'.")
 
 def checkGSL(config):
   if config.env["USE_GSL"]:
@@ -405,6 +402,8 @@ def configureGNUCompiler(config):
     Helper.printInfo("Using mpich.")
 
   versionString = subprocess.check_output([config.env["CXX"], "-dumpversion"]).strip()
+  if "." not in versionString:
+    versionString = subprocess.check_output([config.env["CXX"], "-dumpfullversion"]).strip()
   version = config.env._get_major_minor_revision(versionString)
   Helper.printInfo("Using {} {}".format(config.env["CXX"], versionString))
 

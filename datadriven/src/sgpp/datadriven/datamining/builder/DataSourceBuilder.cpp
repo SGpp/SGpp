@@ -1,0 +1,134 @@
+/* Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
+ * FileBasedDataSourceBuilder.cpp
+ *
+ *  Created on: 01.06.2016
+ *      Author: Michael Lettrich
+ */
+
+#include "DataSourceBuilder.hpp"
+
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/CSVFileSampleProvider.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceFileTypeParser.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp>
+
+#include <algorithm>
+#include <cstring>
+#include <string>
+#include <vector>
+
+namespace sgpp {
+namespace datadriven {
+
+using sgpp::base::data_exception;
+
+DataSourceBuilder& DataSourceBuilder::withFileType(DataSourceFileType fileType) {
+  config.fileType = fileType;
+  return *this;
+}
+
+DataSourceBuilder& DataSourceBuilder::inBatches(size_t howMany) {
+  config.numBatches = howMany;
+  return *this;
+}
+
+DataSourceBuilder& DataSourceBuilder::withBatchSize(size_t batchSize) {
+  config.batchSize = batchSize;
+  return *this;
+}
+
+DataSourceBuilder& DataSourceBuilder::withCompression(bool isCompressed) {
+  config.isCompressed = isCompressed;
+
+#ifndef ZLIB
+  if (isCompressed) {
+    throw sgpp::base::application_exception{
+        "sgpp has been built without zlib support. Reading compressed files is not possible"};
+  }
+#endif
+
+  return *this;
+}
+
+DataSourceBuilder& DataSourceBuilder::withPath(const std::string& filePath) {
+  config.filePath = filePath;
+  if (config.fileType == DataSourceFileType::NONE) {
+    grabTypeInfoFromFilePath();
+  }
+  return *this;
+}
+
+DataSource* DataSourceBuilder::assemble() const {
+  SampleProvider* sampleProvider = nullptr;
+
+  if (config.fileType == DataSourceFileType::ARFF) {
+    sampleProvider = new ArffFileSampleProvider;
+  } else if (config.fileType == DataSourceFileType::CSV) {
+    sampleProvider = new CSVFileSampleProvider;
+  } else {
+    data_exception("Unknown file type");
+  }
+
+  if (config.isCompressed) {
+#ifndef ZLIB
+    throw sgpp::base::application_exception{
+        "sgpp has been built without zlib support. Reading compressed files is not possible"};
+#else
+    sampleProvider = new GzipFileSampleDecorator(static_cast<FileSampleProvider*>(sampleProvider));
+#endif
+  }
+
+  return new DataSource(config, sampleProvider);
+}
+
+DataSource* DataSourceBuilder::fromConfig(const DataSourceConfig& config) {
+  this->config = config;
+
+  if (config.fileType == DataSourceFileType::NONE) {
+    grabTypeInfoFromFilePath();
+  }
+  return assemble();
+}
+
+void DataSourceBuilder::grabTypeInfoFromFilePath() {
+  // tokenize string
+  std::vector<std::string> tokens;
+
+  // split the string
+  StringTokenizer::tokenize(config.filePath, ".", tokens);
+  // convert to lower case
+  for (auto t : tokens) {
+    // TODO(Michael Lettrich): test if this works with umlauts
+    std::transform(t.begin(), t.end(), t.begin(), ::tolower);
+  }
+  // check if there is gz compression
+  if (tokens.back() == "gz") {
+    withCompression(true);
+  }
+
+  // check if we can find file type
+  auto type = DataSourceFileType::NONE;
+  for (auto t : tokens) {
+    try {
+      type = DataSourceFileTypeParser::parse(t);
+    } catch (data_exception& e) {
+      // wasn't found
+      withFileType(DataSourceFileType::NONE);
+    }
+    if (type != DataSourceFileType::NONE) {
+      withFileType(type);
+    }
+  }
+}
+
+} /* namespace datadriven */
+} /* namespace sgpp */

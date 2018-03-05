@@ -109,7 +109,7 @@ class PolyBoundaryBasis : public Basis<LT, IT> {
     }
   }
 
-  double getIntegral(LT level, IT index) {
+  double getIntegral(LT level, IT index) override {
     if (level == 0) {
       return 0.5;
     } else {

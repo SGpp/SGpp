@@ -12,7 +12,7 @@
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/datadriven/application/SparseGridDensityEstimator.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/application/KernelDensityEstimator.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
@@ -51,8 +51,7 @@ double parabola(DataVector& input) {
   return result;
 }
 
-void hierarchize(Grid* grid, std::uint32_t level, DataVector& alpha,
-                 double (*func)(DataVector&)) {
+void hierarchize(Grid* grid, std::uint32_t level, DataVector& alpha, double (*func)(DataVector&)) {
   size_t dim = grid->getDimension();
   GridStorage& gs = grid->getStorage();
   gs.clear();
@@ -71,7 +70,7 @@ void hierarchize(Grid* grid, std::uint32_t level, DataVector& alpha,
       grid->getType() == sgpp::base::GridType::ModBsplineClenshawCurtis)
     sgpp::op_factory::createOperationMultipleHierarchisation(*grid)->doHierarchisation(alpha);
   else
-  sgpp::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
+    sgpp::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
 }
 
 void randu(DataVector& rvar, std::mt19937& generator) {

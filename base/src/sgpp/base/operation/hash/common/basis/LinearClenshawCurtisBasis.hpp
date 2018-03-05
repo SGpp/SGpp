@@ -56,7 +56,7 @@ class LinearClenshawCurtisBasis : public Basis<LT, IT> {
     return eval(level, index, (p - offset) / width);
   }
 
-  double getIntegral(LT level, IT index) {
+  double getIntegral(LT level, IT index) override {
     // endpoints of support
     const double x0 = clenshawCurtisTable.getPoint(level, index - 1);
     const double x2 = clenshawCurtisTable.getPoint(level, index + 1);

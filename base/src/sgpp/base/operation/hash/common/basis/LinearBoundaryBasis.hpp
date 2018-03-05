@@ -61,7 +61,7 @@ class LinearBoundaryBasis : public Basis<LT, IT> {
     return eval(l, i, (x - t) / q);
   }
 
-  double getIntegral(LT level, IT index) {
+  double getIntegral(LT level, IT index) override {
     if (level == 0) {
       return 0.5;
     } else {

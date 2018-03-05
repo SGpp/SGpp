@@ -20,6 +20,7 @@
 #include <sgpp/base/tools/json/json_exception.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/datadriven/application/SparseGridDensityEstimator.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationCovariance.hpp>
 
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
@@ -78,8 +79,7 @@ SparseGridDensityEstimatorConfiguration::SparseGridDensityEstimatorConfiguration
 
     // configure regularization
     if (this->contains("regularization_type"))
-      regularizationConfig.regType_ =
-          stringToRegularizationType((*this)["regularization_type"].get());
+      regularizationConfig.type_ = stringToRegularizationType((*this)["regularization_type"].get());
 
     // configure cross validation
     if (this->contains("crossValidation_lambda"))
@@ -171,7 +171,7 @@ void SparseGridDensityEstimatorConfiguration::initConfig() {
   solverConfig.verbose_ = false;
 
   // configure regularization
-  regularizationConfig.regType_ = datadriven::RegularizationType::Laplace;
+  regularizationConfig.type_ = datadriven::RegularizationType::Laplace;
 
   // configure cross validation
   crossvalidationConfig.enable_ = true;
@@ -565,9 +565,9 @@ base::OperationMultipleEval* SparseGridDensityEstimator::computeMultipleEvalMatr
 base::OperationMatrix* SparseGridDensityEstimator::computeRegularizationMatrix(base::Grid& grid) {
   base::OperationMatrix* C;
 
-  if (regularizationConfig.regType_ == datadriven::RegularizationType::Identity) {
+  if (regularizationConfig.type_ == datadriven::RegularizationType::Identity) {
     C = op_factory::createOperationIdentity(grid);
-  } else if (regularizationConfig.regType_ == datadriven::RegularizationType::Laplace) {
+  } else if (regularizationConfig.type_ == datadriven::RegularizationType::Laplace) {
     C = op_factory::createOperationLaplace(grid);
   } else {
     throw base::application_exception("LearnerSGDE::train : unknown regularization type");

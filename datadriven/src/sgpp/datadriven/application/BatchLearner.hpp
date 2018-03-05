@@ -18,7 +18,7 @@
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
-#include <sgpp/datadriven/application/BatchConfiguration.hpp>
+#include <sgpp/datadriven/configuration/BatchConfiguration.hpp>
 
 #include <deque>
 #include <string>

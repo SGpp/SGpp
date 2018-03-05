@@ -3,12 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifdef USE_GSL
-
-#ifndef DBMATONLINE_HPP_
-#define DBMATONLINE_HPP_
+#pragma once
 
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
+
+#include <list>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -22,46 +22,49 @@ class DBMatOnline {
  public:
   /**
    * Constructor
-   */
-  DBMatOnline();
-
-  /**
-   * Constructor
    *
    * @param o a offline object
    */
-  explicit DBMatOnline(DBMatOffline* o);
+  explicit DBMatOnline(DBMatOffline& o);
 
+  DBMatOnline(const DBMatOnline& rhs) = delete;
+  DBMatOnline(DBMatOnline&& rhs) = default;
+
+  DBMatOnline& operator=(const DBMatOnline& rhs) = delete;
+  DBMatOnline& operator=(DBMatOnline&& rhs) = default;
   /**
    * Destructor
    */
-  virtual ~DBMatOnline();
+  virtual ~DBMatOnline() = default;
+
+  //  /**
+  //   * Changes the weighting factor for the regularization term,
+  //   * if possible (might depend on the kind of decomposition for classification)
+  //   */
+  void setLambda(double lambda);
 
   /**
-   * Reads an offline object
-   *
-   * @param o the offline object
+   * Returns a reference to the offline object
+   * @return reference to the stored offline object
    */
-  virtual void readOffline(DBMatOffline* o);
+  DBMatOffline& getOfflineObject();
+
+  const DBMatOffline& getOfflineObject() const;
 
   /**
-   * Changes the weighting factor for the regularization term,
-   * if possible (might depend on the kind of decomposition for classification)
+   * Update the system matrix decomposition after the grid has been modified.
+   * @param numAddedGridPoints Number of grid points inserted at the end of the grid storage
+   * @param deletedGridPointIndices Indices of grid points that were deleted
+   * @param lambda The last best lambda value
+   * @return list of grid points, that cannot be coarsened
    */
-  virtual void setLambda(double lambda);
-
-  /**
-   * Returns a pointer to the offline object
-   */
-  DBMatOffline* getOffline();
+  virtual std::vector<size_t> updateSystemMatrixDecomposition(size_t numAddedGridPoints,
+                                                 std::list<size_t> deletedGridPointIndices,
+                                                 double lambda);
 
  protected:
-  DBMatOffline* offlineObject_;
+  DBMatOffline& offlineObject;
 };
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* DBMATONLINE_HPP_ */
-
-#endif /* USE_GSL */

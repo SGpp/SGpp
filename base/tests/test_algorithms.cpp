@@ -276,6 +276,8 @@ void fundamentalSplineTest(SBasis& basis, bool modified = false) {
   }
 }
 
+BOOST_AUTO_TEST_SUITE(TestAlgorithms)
+
 BOOST_AUTO_TEST_CASE(TestLinearBasis) {
   sgpp::base::SLinearBase basis;
   linearUniformUnmodifiedTest(basis);
@@ -494,3 +496,5 @@ BOOST_AUTO_TEST_CASE(TestGetAffectedBasisFunctionsStretched) {
   BOOST_CHECK_EQUAL(x[0].first, 0U);
   BOOST_CHECK_CLOSE(x[0].second, 1.0384615384615385, 1e-5);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

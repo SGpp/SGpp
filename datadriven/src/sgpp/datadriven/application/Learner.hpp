@@ -7,7 +7,7 @@
 #define LEARNER_HPP
 
 #include <sgpp/datadriven/application/LearnerBase.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <string>
@@ -23,8 +23,6 @@ class Learner : public LearnerBase {
  protected:
   /// regularization mode
   sgpp::datadriven::RegularizationType CMode;
-  /// regularization operator
-  std::unique_ptr<sgpp::base::OperationMatrix> C;
 
   /// construct system matrix
   virtual std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> createDMSystem(

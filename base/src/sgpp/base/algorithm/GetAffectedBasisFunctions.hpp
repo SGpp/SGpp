@@ -13,12 +13,12 @@
 #include <sgpp/base/operation/hash/common/basis/LinearPeriodicBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBoundaryBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 #include <vector>
 #include <utility>
-#include "../operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp"
 
 namespace sgpp {
 namespace base {
@@ -149,7 +149,7 @@ class GetAffectedBasisFunctions {
     while (true) {
       size_t seq = working.seq();
 
-      if (storage.isValidSequenceNumber(seq)) {
+      if (storage.isInvalidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -237,7 +237,7 @@ class GetAffectedBasisFunctions<LinearBoundaryBasis<unsigned int, unsigned int> 
       size_t seq = working.seq();
       index_type global_work_index = 0;
 
-      if (storage.isValidSequenceNumber(seq)) {
+      if (storage.isInvalidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -326,7 +326,7 @@ class GetAffectedBasisFunctions<LinearBoundaryBasis<unsigned int, unsigned int> 
       size_t seq = working.seq();
       index_type global_work_index = 0;
 
-      if (storage.isValidSequenceNumber(seq)) {
+      if (storage.isInvalidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -458,7 +458,7 @@ class GetAffectedBasisFunctions<LinearStretchedBoundaryBasis<unsigned int, unsig
       size_t seq = working.seq();
       index_type global_work_index = 0;
 
-      if (storage.isValidSequenceNumber(seq)) {
+      if (storage.isInvalidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -712,7 +712,7 @@ class GetAffectedBasisFunctions<LinearPeriodicBasis<unsigned int, unsigned int> 
       size_t seq = working.seq();
       index_type global_work_index = 0;
 
-      if (storage.isValidSequenceNumber(seq)) {
+      if (storage.isInvalidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -829,7 +829,7 @@ class GetAffectedBasisFunctions<PolyBoundaryBasis<unsigned int, unsigned int> > 
       size_t seq = working.seq();
       index_type global_work_index = 0;
 
-      if (storage.isValidSequenceNumber(seq)) {
+      if (storage.isInvalidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -918,7 +918,7 @@ class GetAffectedBasisFunctions<PolyBoundaryBasis<unsigned int, unsigned int> > 
       size_t seq = working.seq();
       index_type global_work_index = 0;
 
-      if (storage.isValidSequenceNumber(seq)) {
+      if (storage.isInvalidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -1009,12 +1009,11 @@ class GetAffectedBasisFunctions<PolyBoundaryBasis<unsigned int, unsigned int> > 
 };
 
 /**
- * Template Specialization for PolyBoundaryBasis basis.
+ * Template Specialization for PolyClenshawCurtisBoundaryBasis basis.
  */
 template <>
 class GetAffectedBasisFunctions<PolyClenshawCurtisBoundaryBasis<unsigned int, unsigned int> > {
-  typedef PolyClenshawCurtisBoundaryBasis<unsigned int, unsigned int>
-      SPolyClenshawCurtisBoundaryBase;
+  typedef PolyClenshawCurtisBoundaryBasis<unsigned int, unsigned int> SPolyBoundaryBase;
 
  public:
   explicit GetAffectedBasisFunctions(GridStorage& storage)
@@ -1022,7 +1021,7 @@ class GetAffectedBasisFunctions<PolyClenshawCurtisBoundaryBasis<unsigned int, un
 
   ~GetAffectedBasisFunctions() {}
 
-  void operator()(SPolyClenshawCurtisBoundaryBase& basis, const DataVector& point,
+  void operator()(SPolyBoundaryBase& basis, const DataVector& point,
                   std::vector<std::pair<size_t, double> >& result) {
     bool useBB = false;
 
@@ -1047,9 +1046,8 @@ class GetAffectedBasisFunctions<PolyClenshawCurtisBoundaryBasis<unsigned int, un
   GridStorage& storage;
   BoundingBox* BB;
 
-  void rec(SPolyClenshawCurtisBoundaryBase& basis, const DataVector& point, size_t current_dim,
-           double value, GridStorage::grid_iterator& working,
-           std::vector<std::pair<size_t, double> >& result) {
+  void rec(SPolyBoundaryBase& basis, const DataVector& point, size_t current_dim, double value,
+           GridStorage::grid_iterator& working, std::vector<std::pair<size_t, double> >& result) {
     typedef level_t level_type;
     typedef index_t index_type;
 
@@ -1059,7 +1057,7 @@ class GetAffectedBasisFunctions<PolyClenshawCurtisBoundaryBasis<unsigned int, un
       size_t seq = working.seq();
       index_type global_work_index = 0;
 
-      if (storage.isValidSequenceNumber(seq)) {
+      if (storage.isInvalidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -1137,9 +1135,8 @@ class GetAffectedBasisFunctions<PolyClenshawCurtisBoundaryBasis<unsigned int, un
     working.resetToLeftLevelZero(current_dim);
   }
 
-  void recBB(SPolyClenshawCurtisBoundaryBase& basis, const DataVector& point, size_t current_dim,
-             double value, GridStorage::grid_iterator& working,
-             std::vector<std::pair<size_t, double> >& result) {
+  void recBB(SPolyBoundaryBase& basis, const DataVector& point, size_t current_dim, double value,
+             GridStorage::grid_iterator& working, std::vector<std::pair<size_t, double> >& result) {
     typedef level_t level_type;
     typedef index_t index_type;
 
@@ -1149,7 +1146,7 @@ class GetAffectedBasisFunctions<PolyClenshawCurtisBoundaryBasis<unsigned int, un
       size_t seq = working.seq();
       index_type global_work_index = 0;
 
-      if (storage.isValidSequenceNumber(seq)) {
+      if (storage.isInvalidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -1240,11 +1237,11 @@ class GetAffectedBasisFunctions<PolyClenshawCurtisBoundaryBasis<unsigned int, un
 };
 
 /**
- * Template Specialization for LinearClenshawCurtisBasis basis.
+ * Template Specialization for LinearClenshawCurtisBoundaryBasis basis.
  */
 template <>
 class GetAffectedBasisFunctions<LinearClenshawCurtisBoundaryBasis<unsigned int, unsigned int> > {
-  typedef LinearClenshawCurtisBoundaryBasis<unsigned int, unsigned int> SLinearClenshawCurtisBase;
+  typedef LinearClenshawCurtisBoundaryBasis<unsigned int, unsigned int> SPolyBoundaryBase;
 
  public:
   explicit GetAffectedBasisFunctions(GridStorage& storage)
@@ -1252,7 +1249,7 @@ class GetAffectedBasisFunctions<LinearClenshawCurtisBoundaryBasis<unsigned int, 
 
   ~GetAffectedBasisFunctions() {}
 
-  void operator()(SLinearClenshawCurtisBase& basis, const DataVector& point,
+  void operator()(SPolyBoundaryBase& basis, const DataVector& point,
                   std::vector<std::pair<size_t, double> >& result) {
     bool useBB = false;
 
@@ -1277,9 +1274,8 @@ class GetAffectedBasisFunctions<LinearClenshawCurtisBoundaryBasis<unsigned int, 
   GridStorage& storage;
   BoundingBox* BB;
 
-  void rec(SLinearClenshawCurtisBase& basis, const DataVector& point, size_t current_dim,
-           double value, GridStorage::grid_iterator& working,
-           std::vector<std::pair<size_t, double> >& result) {
+  void rec(SPolyBoundaryBase& basis, const DataVector& point, size_t current_dim, double value,
+           GridStorage::grid_iterator& working, std::vector<std::pair<size_t, double> >& result) {
     typedef level_t level_type;
     typedef index_t index_type;
 
@@ -1289,7 +1285,7 @@ class GetAffectedBasisFunctions<LinearClenshawCurtisBoundaryBasis<unsigned int, 
       size_t seq = working.seq();
       index_type global_work_index = 0;
 
-      if (storage.isValidSequenceNumber(seq)) {
+      if (storage.isInvalidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;
@@ -1367,9 +1363,8 @@ class GetAffectedBasisFunctions<LinearClenshawCurtisBoundaryBasis<unsigned int, 
     working.resetToLeftLevelZero(current_dim);
   }
 
-  void recBB(SLinearClenshawCurtisBase& basis, const DataVector& point, size_t current_dim,
-             double value, GridStorage::grid_iterator& working,
-             std::vector<std::pair<size_t, double> >& result) {
+  void recBB(SPolyBoundaryBase& basis, const DataVector& point, size_t current_dim, double value,
+             GridStorage::grid_iterator& working, std::vector<std::pair<size_t, double> >& result) {
     typedef level_t level_type;
     typedef index_t index_type;
 
@@ -1379,7 +1374,7 @@ class GetAffectedBasisFunctions<LinearClenshawCurtisBoundaryBasis<unsigned int, 
       size_t seq = working.seq();
       index_type global_work_index = 0;
 
-      if (storage.isValidSequenceNumber(seq)) {
+      if (storage.isInvalidSequenceNumber(seq)) {
         break;
       } else {
         index_type work_index;

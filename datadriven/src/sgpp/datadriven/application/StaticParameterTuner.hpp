@@ -4,7 +4,6 @@
 // sgpp.sparsegrids.org
 
 #pragma once
-
 #if USE_OCL == 1
 
 #include <utility>

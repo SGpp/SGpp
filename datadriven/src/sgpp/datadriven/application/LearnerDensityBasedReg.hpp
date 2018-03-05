@@ -8,7 +8,7 @@
 
 #include <sgpp/datadriven/application/LearnerBase.hpp>
 #include <sgpp/datadriven/application/Learner.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -83,7 +83,7 @@ class LearnerDensityBasedReg : public LearnerBase {
   /// regularization mode
   sgpp::datadriven::RegularizationType CMode;
   /// regularization operator
-  std::unique_ptr<sgpp::base::OperationMatrix> C;
+  sgpp::base::OperationMatrix* C;
   /// maximum value (used for de-normalization)
   double maxValue;
   /// minimum value (used for de-normalization)

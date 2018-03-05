@@ -3,20 +3,21 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/globaldef.hpp>
-#include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/operation/BaseOpFactory.hpp>
+/**
+ * \page example_learnerSGDETest_cpp learner SGDE
+ * This examples demonstrates density estimation.
+ */
 
-#include <sgpp/datadriven/tools/ARFFTools.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
-#include <sgpp/datadriven/application/KernelDensityEstimator.hpp>
-#include <sgpp/datadriven/application/SparseGridDensityEstimator.hpp>
-#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp>
-
-#include <string>
 #include <random>
+#include <string>
+
+#include "sgpp/base/datatypes/DataMatrix.hpp"
+#include "sgpp/base/grid/Grid.hpp"
+#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
+#include "sgpp/datadriven/application/KernelDensityEstimator.hpp"
+#include "sgpp/datadriven/application/SparseGridDensityEstimator.hpp"
+#include "sgpp/datadriven/configuration/RegularizationConfiguration.hpp"
+#include "sgpp/globaldef.hpp"
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -24,6 +25,9 @@ using sgpp::base::Grid;
 using sgpp::base::GridGenerator;
 using sgpp::base::GridStorage;
 
+/**
+ * First define an auxiliary function randu that returns a random point (uniform, normal).
+ */
 void randu(DataVector& rvar, std::mt19937& generator) {
   std::uniform_real_distribution<double> distribution(0.0, 1.0);
   for (size_t j = 0; j < rvar.getSize(); ++j) {
@@ -31,6 +35,21 @@ void randu(DataVector& rvar, std::mt19937& generator) {
   }
 }
 
+void randn(DataVector& rvar, std::mt19937& generator) {
+  std::normal_distribution<double> distribution(0.5, 0.1);
+  for (size_t j = 0; j < rvar.getSize(); ++j) {
+    double value = -1.0;
+    while (value <= 0.0 || value >= 1.0) {
+      value = distribution(generator);
+      rvar[j] = value;
+    }
+  }
+}
+
+/**
+ * Second define another auxiliary function that calls the one defined above multiple times and
+ * returns a matrix of random points (uniform, normal)
+ */
 void randu(DataMatrix& rvar, std::uint64_t seedValue = std::mt19937_64::default_seed) {
   size_t nsamples = rvar.getNrows(), ndim = rvar.getNcols();
 
@@ -42,29 +61,57 @@ void randu(DataMatrix& rvar, std::uint64_t seedValue = std::mt19937_64::default_
   }
 }
 
+void randn(DataMatrix& rvar, std::uint64_t seedValue = std::mt19937_64::default_seed) {
+  size_t nsamples = rvar.getNrows(), ndim = rvar.getNcols();
+
+  std::mt19937 generator(seedValue);
+  DataVector sample(ndim);
+  for (size_t i = 0; i < nsamples; ++i) {
+    randn(sample, generator);
+    rvar.setRow(i, sample);
+  }
+}
+
+/**
+ * Now the main function begins by loading the test data from a file specified in the string
+ * filename.
+ */
 int main(int argc, char** argv) {
-  std::string filename = "../../parallel/tests/data/friedman_4d_2000.arff";
+  /**
+   * Define number of dimensions of the toy problem.
+   */
+  size_t numDims = 3;
 
-  std::cout << "# loading file: " << filename << std::endl;
-  sgpp::datadriven::Dataset dataset = sgpp::datadriven::ARFFTools::readARFF(filename);
-  sgpp::base::DataMatrix& samples = dataset.getData();
+  /**
+   * Load normally distributed samples.
+   */
+  sgpp::base::DataMatrix samples(1000, numDims);
+  randn(samples);
 
-  // configure grid
+  /**
+   * Configure the sparse grid of level 3 with linear basis functions and the same dimension as the
+   * given test data.\n
+   * Alternatively load a sparse grid that has been saved to a file, see the commented line.
+   */
   std::cout << "# create grid config" << std::endl;
   sgpp::base::RegularGridConfiguration gridConfig;
-  gridConfig.dim_ = dataset.getDimension();
+  gridConfig.dim_ = numDims;
   gridConfig.level_ = 3;
   gridConfig.type_ = sgpp::base::GridType::Linear;
-  gridConfig.maxDegree_ = 3;
-  //  gridConfig.filename_ = "/tmp/sgde-grid-4391dc6e-54cd-4ca2-9510-a9c02a2889ec.grid";
 
-  // configure adaptive refinement
+  /**
+   * Configure the adaptive refinement. Therefore the number of refinements and the number of points
+   * are specified.
+   */
   std::cout << "# create adaptive refinement config" << std::endl;
   sgpp::base::AdpativityConfiguration adaptConfig;
   adaptConfig.numRefinements_ = 0;
   adaptConfig.noPoints_ = 10;
 
-  // configure solver
+  /**
+   * Configure the solver. The solver type is set to the conjugent gradient method and the maximum
+   * number of iterations, the tolerance epsilon and the threshold are specified.
+   */
   std::cout << "# create solver config" << std::endl;
   sgpp::solver::SLESolverConfiguration solverConfig;
   solverConfig.type_ = sgpp::solver::SLESolverType::CG;
@@ -73,13 +120,23 @@ int main(int argc, char** argv) {
   solverConfig.threshold_ = 1e-14;
   solverConfig.verbose_ = true;
 
-  // configure regularization
+  /**
+   * Configure the regularization for the laplacian operator.
+   */
   std::cout << "# create regularization config" << std::endl;
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-  regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Laplace;
+  regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Laplace;
 
-  // configure cross validation
-  std::cout << "# create cross validation config" << std::endl;
+  /**
+   * Configure the learner by specifying: \n
+   * - ??enable,kfold?, \n
+   * - an initial value for the lagrangian multiplier \f$\lambda\f$ and the interval \f$
+   * [\lambda_{Start} , \lambda_{End}] \f$ in which \f$\lambda\f$ will be searched, \n
+   * - whether a logarithmic scale is used, \n
+   * - the parameters shuffle and an initial seed for the random value generation, \n
+   * - whether parts of the output shall be kept off.
+   */
+  std::cout << "# create learner config" << std::endl;
   sgpp::datadriven::CrossvalidationForRegularizationConfiguration crossvalidationConfig;
   crossvalidationConfig.enable_ = false;
   crossvalidationConfig.kfold_ = 3;
@@ -103,35 +160,29 @@ int main(int argc, char** argv) {
   sgdeConfig.makePositive_verbose_ = true;
   sgdeConfig.unitIntegrand_ = true;
 
+  /**
+   * Create the learner using the configuratons set above. Then initialize it with the data read
+   * from the file in the first step and train the learner.
+   */
   std::cout << "# creating the learner" << std::endl;
   sgpp::datadriven::SparseGridDensityEstimator learner(gridConfig, adaptConfig, solverConfig,
                                                        regularizationConfig, crossvalidationConfig,
                                                        sgdeConfig);
-
-  //  std::string s("/tmp/sgde-config-365135c5-fb8a-4377-9fea-e16ef916a5c5.json");
-  //  sgpp::datadriven::LearnerSGDEConfiguration config2(s);
-  //  sgpp::datadriven::LearnerSGDE learner2(config2);
   learner.initialize(samples);
 
-  std::cout << "# estimating a kde" << std::endl;
+  /**
+   * Estimate the probability density function (pdf) via a gaussian kernel density estimation (KDE)
+   * and print the corresponding values.
+   */
   sgpp::datadriven::KernelDensityEstimator kde(samples);
-
   sgpp::base::DataVector x(learner.getDim());
+  x.setAll(0.5);
 
-  for (size_t i = 0; i < x.getSize(); i++) {
-    x[i] = 0.5;
-  }
-
-  //  std::cout << "--------------------------------------------------------" << std::endl;
-  //  std::cout << learner.getSurpluses().getSize() << " -> " << learner.getSurpluses().sum()
-  //            << std::endl;
-  //  std::cout << "pdf_SGDE(x) = " << learner.pdf(x) << " ~ " << kde.pdf(x) << " = pdf_KDE(x)"
-  //            << std::endl;
-  //  std::cout << "mean_SGDE(x) = " << learner.mean() << " ~ " << kde.mean() << " = mean_KDE(x)"
-  //            << std::endl;
-  //  std::cout << "var_SGDE(x) = " << learner.variance() << " ~ " << kde.variance() << " =
-  //  var_KDE(x)"
-  //            << std::endl;
+  std::cout << "--------------------------------------------------------\n";
+  std::cout << learner.getSurpluses().getSize() << " -> " << learner.getSurpluses().sum() << "\n";
+  std::cout << "pdf_SGDE(x) = " << learner.pdf(x) << " ~ " << kde.pdf(x) << " =pdf_KDE(x)\n";
+  std::cout << "mean_SGDE(x) = " << learner.mean() << " ~ " << kde.mean() << " = mean_KDE(x)\n";
+  std::cout << "var_SGDE(x) = " << learner.variance() << " ~ " << kde.variance() << "=var_KDE(x)\n";
 
   sgpp::base::DataMatrix* bounds = new DataMatrix(gridConfig.dim_, 2);
   for (size_t idim = 0; idim < gridConfig.dim_; idim++) {
@@ -139,6 +190,9 @@ int main(int argc, char** argv) {
     bounds->set(idim, 1, 1.0);
   }
 
+  /**
+   * Print the covariances.
+   */
   sgpp::base::DataMatrix C(gridConfig.dim_, gridConfig.dim_);
   std::cout << "---------------------- Cov_SGDE ------------------------------" << std::endl;
   learner.cov(C, bounds);
@@ -147,12 +201,17 @@ int main(int argc, char** argv) {
   std::cout << "---------------------- Cov KDE--------------------------------" << std::endl;
   kde.cov(C);
   std::cout << C.toString() << std::endl;
-  std::cout << "------------------------------------------------------" << std::endl;
 
+  /**
+   * Apply the inverse Rosenblatt transformation to a matrix of random points. To do this first
+   * generate the random points via randu, then initialize an inverse Rosenblatt transformation
+   * operation and apply it to the points. Finally print the calculated values.
+   */
+  std::cout << "------------------------------------------------------" << std::endl;
   // inverse Rosenblatt transformation
-  auto opInvRos =
-      sgpp::op_factory::createOperationInverseRosenblattTransformation(learner.getGrid());
-  sgpp::base::DataMatrix points(3, gridConfig.dim_);
+  sgpp::datadriven::OperationInverseRosenblattTransformation* opInvRos(
+      sgpp::op_factory::createOperationInverseRosenblattTransformation(learner.getGrid()));
+  sgpp::base::DataMatrix points(12, gridConfig.dim_);
   randu(points);
 
   std::cout << "------------------------------------------------------" << std::endl;
@@ -162,8 +221,14 @@ int main(int argc, char** argv) {
   sgpp::base::DataMatrix pointsCdf(points.getNrows(), points.getNcols());
   opInvRos->doTransformation(&learner.getSurpluses(), &points, &pointsCdf);
 
+  /**
+   * To check whether the results are correct perform a Rosenform transformation on the data that
+   * has been created by the inverse Rosenblatt transformation above and print the calculated
+   * values.
+   */
   points.setAll(0.0);
-  auto opRos = sgpp::op_factory::createOperationRosenblattTransformation(learner.getGrid());
+  sgpp::datadriven::OperationRosenblattTransformation* opRos(
+      sgpp::op_factory::createOperationRosenblattTransformation(learner.getGrid()));
   opRos->doTransformation(&learner.getSurpluses(), &pointsCdf, &points);
   std::cout << "------------------------------------------------------" << std::endl;
   std::cout << "original space" << std::endl;

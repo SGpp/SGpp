@@ -23,13 +23,13 @@
 
 #include <unordered_map>
 
-#include <memory>
-#include <vector>
-#include <string>
-#include <sstream>
 #include <exception>
 #include <list>
+#include <memory>
+#include <sstream>
+#include <string>
 #include <typeinfo>
+#include <vector>
 
 namespace sgpp {
 namespace base {
@@ -111,6 +111,11 @@ class HashGridStorage {
    * Copy Constructor
    */
   explicit HashGridStorage(HashGridStorage& copyFrom);
+
+  /**
+   * Assignment operator
+   */
+  void operator=(const HashGridStorage& other);
 
   /**
    * Destructor
@@ -224,7 +229,7 @@ class HashGridStorage {
    *
    * @return
    */
-  size_t insert(point_type& index);
+  size_t insert(const point_type& index);
 
   /**
    * insert a new index into map including all its ancestors. Boundary points are not added
@@ -323,7 +328,7 @@ class HashGridStorage {
    *
    * @return true if we are not EOF
    */
-  bool isValidSequenceNumber(size_t s);
+  bool isInvalidSequenceNumber(size_t s);
 
   /**
    * returns the algorithmic dimensions (the dimensions in which the Up Down
@@ -456,7 +461,7 @@ class HashGridStorage {
    * @param d     dimension
    * @return      coordinate of the point in dimension d
    */
-  inline double getCoordinate(const HashGridPoint& point, size_t d) const {
+  inline double getCoordinate(HashGridPoint point, size_t d) const {
     if ((boundingBox == nullptr) && (stretching == nullptr)) {
       return point.getStandardCoordinate(d);
     } else {
@@ -469,6 +474,23 @@ class HashGridStorage {
       } else {
         return boundingBox->getIntervalWidth(d) * point.getStandardCoordinate(d) +
                boundingBox->getIntervalOffset(d);
+      }
+    }
+  }
+
+  /**
+   * Calculates corresponding unit hypercube coordinate of a given point in specific dimension,
+   * taking into account the BoundingBox and Stretching.
+   */
+  inline double getUnitCoordinate(HashGridPoint point, size_t d) const {
+    double bbox_point = getCoordinate(point, d);
+    if ((boundingBox == nullptr) && (stretching == nullptr)) {
+      return bbox_point;
+    } else {
+      if (bUseStretching) {
+        return stretching->transformPointToUnitCube(d, bbox_point);
+      } else {
+        return boundingBox->transformPointToUnitCube(d, bbox_point);
       }
     }
   }
@@ -554,7 +576,7 @@ size_t inline HashGridStorage::getSequenceNumber(HashGridPoint& index) const {
   }
 }
 
-bool inline HashGridStorage::isValidSequenceNumber(size_t s) { return s > map.size(); }
+bool inline HashGridStorage::isInvalidSequenceNumber(size_t s) { return s > map.size(); }
 
 std::vector<size_t> inline HashGridStorage::getAlgorithmicDimensions() { return algoDims; }
 

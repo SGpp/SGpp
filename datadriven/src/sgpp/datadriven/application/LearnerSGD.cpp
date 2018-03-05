@@ -64,8 +64,7 @@ LearnerSGD::LearnerSGD(base::RegularGridConfiguration& gridConfig,
   // (required for computing error contributions used for predictive refinement)
   if (!useValidData) {
     batchData = new base::DataMatrix(0, trainData.getNcols());
-    batchData->addSize(batchSize);
-    batchData->setAll(0.0);
+    batchData->reserveAdditionalRows(batchSize);
     batchLabels = new base::DataVector(batchSize);
     batchLabels->setAll(0.0);
   } else {
@@ -482,7 +481,7 @@ void LearnerSGD::predict(base::DataMatrix& testData,
 
 void LearnerSGD::pushToBatch(sgpp::base::DataVector& x, double y) {
   static size_t nextIdx = 0;
-  if (batchData->getUnused() > 0) {
+  if (batchData->getNrows() < batchSize) {
     batchData->appendRow(x);
     (*batchLabels)[nextIdx] = y;
   } else {

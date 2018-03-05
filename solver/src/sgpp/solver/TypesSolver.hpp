@@ -8,10 +8,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <cstddef>
-
 namespace sgpp {
-
 namespace solver {
 
 /**
@@ -33,7 +30,6 @@ struct SLESolverSPConfiguration {
   size_t maxIterations_;
   float threshold_;
 };
-
 }  // namespace solver
 }  // namespace sgpp
 
