@@ -37,7 +37,7 @@ class LTwoScalarProductHashMapNakBsplineBoundaryCombigrid {
    *
    * @param grid sparse grid created by converting a expUniformBoundaryGrid to a sgpp::base::Grid
    */
-  LTwoScalarProductHashMapNakBsplineBoundaryCombigrid(sgpp::base::Grid* grid);
+  explicit LTwoScalarProductHashMapNakBsplineBoundaryCombigrid(sgpp::base::Grid* grid);
 
   LTwoScalarProductHashMapNakBsplineBoundaryCombigrid(
       sgpp::base::Grid* grid, sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection);

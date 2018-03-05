@@ -5,6 +5,9 @@
 
 #include <sgpp/combigrid/utils/CombigridBSplineBasis.hpp>
 
+#include <algorithm>
+#include <vector>
+
 constexpr size_t log2(size_t n) { return ((n < 2) ? 1 : 1 + log2(n / 2)); }
 
 /**
