@@ -394,13 +394,14 @@ void BSplineGridConversion(size_t degree, size_t numPoints) {
   //  printSGGridToFile(gridStorage);
   //  printLevelstructureToFile(levelStructure);
 
+  // ToDo (rehmemk) include this in aboves convertexp... routine
   // interpolate on SG
   sgpp::base::DataMatrix interpolParams(numDimensions, gridStorage.getSize());
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
     sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
     sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
     for (size_t j = 0; j < gridStorage.getDimension(); j++) {
-      p[j] = gp.getStandardCoordinate(j);
+      p[j] = gp.getStandardCoordinate(j);  // HashGridStorage.getcoordinates()
     }
     interpolParams.setColumn(i, p);
   }

@@ -6,6 +6,7 @@
 #include <iostream>
 #include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
+#include <sgpp/combigrid/utils/CombigridBSplineBasis.hpp>
 #include <vector>
 
 namespace sgpp {

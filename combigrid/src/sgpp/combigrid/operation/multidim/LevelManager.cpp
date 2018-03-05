@@ -471,6 +471,35 @@ void LevelManager::addLevelsAdaptiveByNumLevels(size_t numLevels) {
   }
 }
 
+sgpp::base::DataMatrix LevelManager::convertLevelStructureToMatrix(
+    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const &levelstructure, size_t numDims) {
+  sgpp::base::DataMatrix levelstructureMatrix(0, numDims);
+  auto it = levelstructure->getStoredDataIterator();
+  while (it->isValid()) {
+    sgpp::combigrid::MultiIndex index = it->getMultiIndex();
+    sgpp::base::DataVector row;
+    for (auto &i : index) {
+      row.push_back(static_cast<double>(i));
+    }
+    levelstructureMatrix.appendRow(row);
+    it->moveToNext();
+  }
+  return levelstructureMatrix;
+}
+
+void LevelManager::printLevelStructure(
+    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const &levelstructure) {
+  auto it = levelstructure->getStoredDataIterator();
+  while (it->isValid()) {
+    sgpp::combigrid::MultiIndex index = it->getMultiIndex();
+    for (auto &i : index) {
+      std::cout << i << " ";
+    }
+    std::cout << "\n";
+    it->moveToNext();
+  }
+}
+
 void LevelManager::enableStatsCollection() { collectStats = true; }
 
 void LevelManager::disableStatsCollection() { collectStats = false; }

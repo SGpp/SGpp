@@ -215,5 +215,33 @@ std::shared_ptr<TreeStorage<uint8_t>> completeStorageLevels(base::HashGridStorag
   return treeStorage;
 }
 
+// ToDo (rehmemk) make this independent of B splines
+/**
+ * converts a given level structure from the combigrid module into a matrix containing all grid
+ * points from these levels
+ * @param levelStructure the level structure
+ * @param numDimensions number of dimensions
+ * @param degree B spline degree
+ * @return matrix containing the grid points
+ */
+sgpp::base::DataMatrix convertLevelStructureToGridPoints(
+    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
+    size_t numDimensions, size_t degree) {
+  sgpp::base::DataMatrix gridpointMatrix(0, numDimensions);
+  std::shared_ptr<sgpp::base::Grid> grid;
+  grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDimensions, degree));
+  sgpp::base::GridStorage& gridStorage = grid->getStorage();
+  convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
+  for (size_t q = 0; q < gridStorage.getSize(); q++) {
+    auto point = gridStorage.getPoint(q);
+    sgpp::base::DataVector row;
+    for (size_t d = 0; d < gridStorage.getDimension(); d++) {
+      row.push_back(point.getStandardCoordinate(d));
+    }
+    gridpointMatrix.appendRow(row);
+  }
+  return gridpointMatrix;
+}
+
 } /* namespace combigrid */
 } /* namespace sgpp */

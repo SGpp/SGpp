@@ -19,7 +19,7 @@
 #include <sgpp/combigrid/operation/multidim/LevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp>
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
-#include <sgpp/combigrid/utils/Stopwatch.hpp>
+//#include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/optimization/sle/solver/Armadillo.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
@@ -30,38 +30,6 @@
 #include <sgpp/quadrature/sampling/NaiveSampleGenerator.hpp>
 
 #include <vector>
-
-/**
-* evaluates a not a knot Bspline on an expUnifromGrid, given by its degree, index and the knot
-* sequence it is defined on in x. This routine is much faster than the general nonUniformBSpline.
-*@param x       evaluation point
-*@param degree     B-spline degree
-*@param i       index of B-spline
-*@param points		points of the 1D grid
-*@return        value of non-uniform B-spline in x
-*/
-double expUniformNakBspline(double const& x, size_t const& degree, size_t i,
-                            std::vector<double> const& points);
-
-/**
- * evaluates a Bspline given by its degree, index and the knot sequence it is defined on in x
-   * @param x     evaluation point
-   * @param deg     B-spline degree
-   * @param index     index of B-spline in the knot sequence
-   * @param xi    vector containing the B-Splines knots
-   * @return      value of non-uniform B-spline in x
-   */
-double nonUniformBSpline(double const& x, size_t const& deg, size_t const& index,
-                         std::vector<double> const& xi);
-
-/**
- * evaluates the Lagrange polynomial given by its index and the knot sequence it is defined on in x
-   * @param x     evaluation point
-   * @param xValues
-   * @param k     index in the knot sequence
-   * @return      value of Lagrange polynomial in x
-   */
-double LagrangePolynomial(double const& x, std::vector<double> const& xValues, size_t const& k);
 
 /**
  * Creates the knot sequence xi needed for the evaluation of B-splines from the evaluation points
@@ -154,9 +122,8 @@ sgpp::combigrid::GridFunction BSplineTensorCoefficientGridFunction(
  */
 std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineVarianceRefinementOperation(
     size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func,
-    std::shared_ptr<sgpp::combigrid::LevelManager> levelManager);
-//	,    sgpp::combigrid::WeightFunctionsCollection weightFunctions, sgpp::base::DataVector
-//bounds);
+    std::shared_ptr<sgpp::combigrid::LevelManager> levelManager,
+    sgpp::combigrid::WeightFunctionsCollection weightFunctions, sgpp::base::DataVector bounds);
 
 std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> createBsplineLinearInterpolationOperation(
     size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func,
@@ -197,13 +164,6 @@ void printLevelStructure(
 
 sgpp::base::DataMatrix convertLevelStructureToMatrix(
     std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelstructure, size_t numDims);
-
-sgpp::base::DataMatrix convertLevelStructureToGridPoints(
-    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
-    size_t numDimensions, size_t degree);
-
-void printSGGridToFile(std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
-                       size_t numDimensions, size_t degree);
 
 sgpp::base::DataVector createInterpolantOnConvertedExpUnifromBoundaryCombigird(
     std::shared_ptr<sgpp::base::Grid>& grid, sgpp::base::GridStorage& gridStorage,

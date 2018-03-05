@@ -11,11 +11,11 @@
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearSummationStrategy.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridOptimizedPCESummationStrategy.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridPCESummationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridQuadraticSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridTensorVarianceSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridVarianceSummationStrategy.hpp>
-#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridOptimizedPCESummationStrategy.hpp>
-#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridPCESummationStrategy.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>

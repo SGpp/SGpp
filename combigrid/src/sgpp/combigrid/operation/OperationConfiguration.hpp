@@ -5,17 +5,17 @@
 
 #pragma once
 
-#include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
-
 #include <iostream>
 #include <memory>
+#include <sgpp/combigrid/GeneralFunction.hpp>
+#include <sgpp/combigrid/definitions.hpp>
+#include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
 
 namespace sgpp {
 namespace combigrid {
 
 enum class CombiEvaluatorTypes {
-  // dummy for construction of evaluators without configuration. This should be removed, when
-  // everything is created via EvaluatorConfigurations
+  // dummy for construction of evaluators without configuration.
   NO_TYPE,
 
   // interpolation
