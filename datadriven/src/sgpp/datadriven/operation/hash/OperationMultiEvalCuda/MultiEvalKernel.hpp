@@ -7,8 +7,9 @@
 #define MULTIEVALKERNEL_HPP
 
 #include <stdint.h>
+#include "basicCuda.hpp"
 
-//@cond DOXY_IGNORE
+///@cond DOXY_IGNORE // NOLINT()
 namespace sgpp {
 namespace datadriven {
 namespace OpMultiEvalCudaDetail {
@@ -36,6 +37,6 @@ void transposedCuda(double* a, gridnode_t* node, double* pos, double* y, limit_t
 }  // namespace OpMultiEvalCudaDetail
 }  // namespace datadriven
 }  // namespace sgpp
-//@endcond
+///@endcond // NOLINT()
 
 #endif  // MULTIEVALKERNEL_HPP

@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include "basicCuda.hpp"
 
-//@cond DOXY_IGNORE
+///@cond DOXY_IGNORE // NOLINT()
 namespace sgpp {
 namespace datadriven {
 namespace OpMultiEvalCudaDetail {
@@ -37,4 +37,4 @@ __global__ void gpu_zbound(uint64_t* idx_p, gridnode_t* node, limit_t* limit, ui
 }  // namespace OpMultiEvalCudaDetail
 }  // namespace datadriven
 }  // namespace sgpp
-//@endcond
+///@endcond // NOLINT()

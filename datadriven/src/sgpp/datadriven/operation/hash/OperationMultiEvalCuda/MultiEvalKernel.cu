@@ -9,7 +9,7 @@
 #include "cudaHelper.hpp"
 #include "kernels.cuh"
 
-//@cond DOXY_IGNORE
+///@cond DOXY_IGNORE // NOLINT()
 namespace sgpp {
 namespace datadriven {
 namespace OpMultiEvalCudaDetail {
@@ -64,4 +64,4 @@ void transposedCuda(double* a, gridnode_t* node, double* pos, double* y, limit_t
 }  // namespace OpMultiEvalCudaDetail
 }  // namespace datadriven
 }  // namespace sgpp
-//@endcon
+///@endcon // NOLINT()

@@ -14,7 +14,7 @@
 #include "cudaHelper.hpp"
 #include "kernels.cuh"
 
-//@cond DOXY_IGNORE
+///@cond DOXY_IGNORE // NOLINT()
 namespace sgpp {
 namespace datadriven {
 namespace OpMultiEvalCudaDetail {
@@ -35,4 +35,4 @@ void zorder(double* pos, size_t* perm, size_t m, size_t DIM) {
 }  // namespace OpMultiEvalCudaDetail
 }  // namespace datadriven
 }  // namespace sgpp
-//@endcond
+///@endcond // NOLINT()
