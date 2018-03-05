@@ -178,7 +178,7 @@ double BsplineStochasticCollocation::computeVariance() {
   convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
 
   // interpolate on SG
-  sgpp::base::DataVector alpha = createInterpolantOnConvertedExpUnifromBoundaryCombigird(
+  sgpp::base::DataVector alpha = calculateInterpolationCoefficientsForConvertedExpUniformBoundaryCombigird(
       grid, gridStorage, combigridMultiOperation, levelStructure);
 
   sgpp::base::Grid* gridptr = grid.get();
