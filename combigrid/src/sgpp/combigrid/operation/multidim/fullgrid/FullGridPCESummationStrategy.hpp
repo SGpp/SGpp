@@ -16,6 +16,8 @@
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
 
+#include <vector>
+
 namespace sgpp {
 namespace combigrid {
 
