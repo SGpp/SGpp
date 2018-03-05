@@ -204,7 +204,7 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
   // ToDo (rehmemk) This parallelization is slower than serial execution. The criticals below are
   // way too big, find out what really causes parallelization problems. While the complete
   // calculateScalarProduct routine is marked critical this is not parallel at all
-  //#pragma omp parallel for schedule(static)
+  // #pragma omp parallel for schedule(static)
   for (size_t i = 0; i < gridSize; i++) {
     //    std::cout << "OMP uses " << omp_get_num_threads() << " thread(s)" << std::endl;
     for (size_t j = i; j < gridSize; j++) {
@@ -259,14 +259,14 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
           std::map<MultiIndex, double>::iterator it;
           MultiIndex hashMI = hashLevelIndex(lid, iid, ljd, ijd, d);
 
-          //#pragma omp critical
+          // #pragma omp critical
           //          {
           it = innerProducts.find(hashMI);
           //          }
           if (it != innerProducts.end()) {
             temp_res = it->second;
           } else {
-            //#pragma omp critical
+            // #pragma omp critical
             //            {
             gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
             temp_res =
@@ -289,7 +289,7 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
                   break;
                 }
                 double finer_temp_res = 1e+14;
-                //#pragma omp critical
+                // #pragma omp critical
                 //                {
                 gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
                 finer_temp_res = calculateScalarProduct(lid, iid, ljd, ijd, coordinates, weights,
@@ -305,17 +305,17 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
           }
 
           double width = bounds[2 * d + 1] - bounds[2 * d];
-          //#pragma omp atomic
+          // #pragma omp atomic
           temp_ij *= temp_res * width;
         }
       }
 
       if (temp_ij < 0) {
       }
-      //#pragma omp atomic
+      // #pragma omp atomic
       result[i] += temp_ij * alpha[j];
       if (i != j) {
-        //#pragma omp atomic
+        // #pragma omp atomic
         result[j] += temp_ij * alpha[i];
       }
     }

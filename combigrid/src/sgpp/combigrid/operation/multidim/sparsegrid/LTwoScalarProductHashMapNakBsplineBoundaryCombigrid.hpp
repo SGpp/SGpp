@@ -31,6 +31,7 @@ class LTwoScalarProductHashMapNakBsplineBoundaryCombigrid {
     isCustomWeightFunction = false;
     incrementQuadraturePoints = 1;
   };
+
   /**
    * Constructor
    *

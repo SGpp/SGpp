@@ -12,7 +12,7 @@
 namespace sgpp {
 namespace combigrid {
 
-// ToDo (rehmemk) This is a lot less efiicient than LTwoScdalarProductHAshMapNakBsplineBoundary.
+// ToDo (rehmemk) This is a lot less efficient than LTwoScalarProductHashMapNakBsplineBoundary.
 // Probably  because of the missing hash map feature
 FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(
     std::vector<double> const& points, size_t const& index_i) {

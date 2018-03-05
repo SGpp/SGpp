@@ -653,14 +653,9 @@ class HierarchisationSLE : public CloneableSLE {
     const base::GridPoint& gpPoint = gridStorage[pointJ];
     double result = 1.0;
 
-    // ToDo (rehmemk) Using HashGridPoint::getStandardCoordinate instead of
-    // HashGridStorage::getUnitCoordinate which takes bounding box and stretching into account. Does
-    // any of our examples rely on bouding box / stretching?
     for (size_t t = 0; t < gridStorage.getDimension(); t++) {
       const double result1d = nakBsplineBoundaryCombigridBasis->eval(
-          //          gpBasis.getLevel(t), gpBasis.getIndex(t),
-          //          gridStorage.getUnitCoordinate(gpPoint, t));
-          gpBasis.getLevel(t), gpBasis.getIndex(t), gpPoint.getStandardCoordinate(t));
+          gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getCoordinate(gpPoint, t));
 
       if (result1d == 0.0) {
         return 0.0;
