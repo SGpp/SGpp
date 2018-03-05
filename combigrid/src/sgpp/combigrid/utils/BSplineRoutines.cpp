@@ -290,13 +290,13 @@ sgpp::combigrid::GridFunction BSplineTensorCoefficientGridFunction(
           "singular.");
     }
 
-    std::cout << "coeff: " << std::endl;
-    std::cout << "[";
-    for (size_t i = 0; i < coefficients_sle.size() - 1; i++) {
-      std::cout << std::setw(15) << std::setprecision(10) << coefficients_sle[i] << ", ";
-    }
-    std::cout << coefficients_sle[coefficients_sle.size() - 1] << "]" << std::endl;
-    std::cout << "----------------------------------" << std::endl;
+    //    std::cout << "coeff: " << std::endl;
+    //    std::cout << "[";
+    //    for (size_t i = 0; i < coefficients_sle.size() - 1; i++) {
+    //      std::cout << std::setw(15) << std::setprecision(10) << coefficients_sle[i] << ", ";
+    //    }
+    //    std::cout << coefficients_sle[coefficients_sle.size() - 1] << "]" << std::endl;
+    //    std::cout << "----------------------------------" << std::endl;
 
     if (!solved) {
       exit(-1);
