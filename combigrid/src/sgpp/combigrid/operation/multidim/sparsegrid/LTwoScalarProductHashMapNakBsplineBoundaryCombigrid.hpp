@@ -30,7 +30,7 @@ class LTwoScalarProductHashMapNakBsplineBoundaryCombigrid {
     numAdditionalPoints = 0;
     isCustomWeightFunction = false;
     incrementQuadraturePoints = 1;
-  };
+  }
 
   /**
    * Constructor
@@ -67,9 +67,9 @@ class LTwoScalarProductHashMapNakBsplineBoundaryCombigrid {
   void setWeightFunction(sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection) {
     this->isCustomWeightFunction = true;
     this->weightFunctionsCollection = weightFunctionsCollection;
-  };
+  }
 
-  void setBounds(sgpp::base::DataVector bounds) { this->bounds = bounds; };
+  void setBounds(sgpp::base::DataVector bounds) { this->bounds = bounds; }
 
   void updateGrid(sgpp::base::Grid* grid) {
     this->grid = grid;
@@ -85,7 +85,7 @@ class LTwoScalarProductHashMapNakBsplineBoundaryCombigrid {
         bounds.push_back(1);
       }
     }
-  };
+  }
 
   /**
    * Creates hash key from the two level-index pairs of two 1D Bsplines
