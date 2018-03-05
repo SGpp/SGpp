@@ -6,11 +6,12 @@
 #include "MortonOrder.hpp"
 
 #include <stdint.h>
-#include <vector>
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/globaldef.hpp>
+
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
