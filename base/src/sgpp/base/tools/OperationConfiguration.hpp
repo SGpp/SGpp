@@ -5,9 +5,10 @@
 
 #pragma once
 
-#include <map>
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/globaldef.hpp>
+
+#include <map>
 #include <string>
 #include <vector>
 
