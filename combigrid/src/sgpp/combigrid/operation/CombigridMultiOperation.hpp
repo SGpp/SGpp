@@ -331,6 +331,51 @@ class CombigridMultiOperation {
      */
   static std::shared_ptr<CombigridMultiOperation> createExpUniformBoundaryBsplineSquareQuadrature(
       size_t numDimensions, MultiFunction func, size_t degree);
+
+  /**
+   * Creates a level structure according to an averaging level manager using variance calculations
+   * on
+   * each level as norm. This is a very specific case created for the CO2 example. It can (should?)
+   * be
+   * generalized
+   *
+   * @param degree        B spline degree
+   * @param numDimensions number of dimensions
+   * @param func		      the objective function
+   * @param levelManager  level manager
+   * @return a combigrid operation calculating the variance on each full grid
+   *
+   */
+  static std::shared_ptr<sgpp::combigrid::CombigridMultiOperation>
+  createBsplineVarianceRefinementOperation(
+      size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func,
+      std::shared_ptr<sgpp::combigrid::LevelManager> levelManager,
+      sgpp::combigrid::WeightFunctionsCollection weightFunctions, sgpp::base::DataVector bounds);
+
+  /**
+   * Creates a level structure according to an averaging level manager using linear calculations on
+   * each level as norm. This is a very specific case created for the CO2 example. There it serves
+   * as
+   * a dummy for storing the levelstructure
+   *
+   * @param degree        B spline degree
+   * @param numDimensions number of dimensions
+   * @param func		      the objective function
+   * @param levelManager  level manager
+   *
+   */
+  static std::shared_ptr<sgpp::combigrid::CombigridMultiOperation>
+  createBsplineLinearRefinementOperation(
+      size_t degree, size_t numDimensions, sgpp::combigrid::MultiFunction func,
+      std::shared_ptr<sgpp::combigrid::LevelManager> levelManager);
+
+  /**
+   * creates a B spline interpolation operation from a storage of interpolation coefficients
+   */
+  static std::shared_ptr<sgpp::combigrid::CombigridMultiOperation>
+  createBsplineLinearCoefficientOperation(
+      size_t degree, size_t numDimensions,
+      std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage);
 };
 } /* namespace combigrid */
 } /* namespace sgpp*/

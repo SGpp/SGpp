@@ -96,8 +96,8 @@ void BsplineStochasticCollocation::updateConfig(
   this->config.coefficientStorage = newConfig.coefficientStorage;
   this->config.levelStructure = newConfig.levelStructure;
 
-  combigridMultiOperation = createBsplineLinearCoefficientOperation(newConfig.degree, numDims,
-                                                                    newConfig.coefficientStorage);
+  combigridMultiOperation = CombigridMultiOperation::createBsplineLinearCoefficientOperation(
+      newConfig.degree, numDims, newConfig.coefficientStorage);
   combigridMultiOperation->getLevelManager()->addLevelsFromStructure(newConfig.levelStructure);
 
   size_t numAdditionalPoints = 0;
@@ -178,8 +178,9 @@ double BsplineStochasticCollocation::computeVariance() {
   convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
 
   // interpolate on SG
-  sgpp::base::DataVector alpha = calculateInterpolationCoefficientsForConvertedExpUniformBoundaryCombigird(
-      grid, gridStorage, combigridMultiOperation, levelStructure);
+  sgpp::base::DataVector alpha =
+      calculateInterpolationCoefficientsForConvertedExpUniformBoundaryCombigird(
+          grid, gridStorage, combigridMultiOperation, levelStructure);
 
   sgpp::base::Grid* gridptr = grid.get();
   sgpp::base::DataVector product(alpha.size());
