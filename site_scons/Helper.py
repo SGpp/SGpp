@@ -45,7 +45,7 @@ def getModules(ignoreFolders):
     module = module[len(path):]
     if module in ignoreFolders:
       continue
-    if module in ["jsgpp", "pysgpp"]:
+    if module in ["jsgpp", "pysgpp", "matsgpp"]:
       languageSupport.append(module)
       continue
     modules.append(module)
