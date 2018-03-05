@@ -306,7 +306,7 @@ BOOST_AUTO_TEST_CASE(testCorrespondingDegreeInterpolation) {
 }
 
 BOOST_AUTO_TEST_CASE(testBSCInterpolation) {
-  std::cout << "Description" << std::endl;
+  std::cout << "Testing Bspline Stochastic Collocation's interpolation eval." << std::endl;
 
   size_t numDimensions = 2;
   sgpp::combigrid::MultiFunction func(x1);

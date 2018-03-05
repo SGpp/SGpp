@@ -18,8 +18,9 @@
 #include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
+#include <sgpp/combigrid/utils/BSplineRoutines.hpp>
+#include <sgpp/combigrid/utils/CombigridBSplineBasis.hpp>
 #include <vector>
-#include "../../utils/BSplineRoutines.hpp"
 
 namespace sgpp {
 namespace combigrid {
@@ -32,6 +33,7 @@ namespace combigrid {
  * multiplied with the given function values.
  */
 class BSplineScalarProductEvaluator : public AbstractLinearEvaluator<FloatArrayVector> {
+ private:
   std::vector<double> xValues;
   std::vector<FloatArrayVector> basisValues;
   std::vector<double> basisCoefficients;

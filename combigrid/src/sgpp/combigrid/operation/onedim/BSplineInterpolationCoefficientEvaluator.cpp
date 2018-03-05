@@ -3,25 +3,33 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/combigrid/operation/onedim/BSplineInterpolationCoefficientEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineScalarProductEvaluator.hpp>
-#include <sgpp/combigrid/operation/onedim/BSplineInterpolationCoefficientEvaluator.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 
 #include <sgpp/base/exception/generation_exception.hpp>
 
-#include <vector>
 #include <algorithm>
-#include <iostream>
 #include <functional>
+#include <iostream>
+#include <vector>
 
 #ifdef USE_EIGEN
-#include <eigen3/Eigen/Dense>
 #include <eigen3/Eigen/Cholesky>
+#include <eigen3/Eigen/Dense>
 #endif
 
 namespace sgpp {
 namespace combigrid {
+
+size_t getGridLevelForExpUniformBoundaryGrid(size_t numGridPoints) {
+  if (numGridPoints > 1) {
+    return log2(numGridPoints - 2);
+  } else {
+    return 0;
+  }
+}
 
 BSplineInterpolationCoefficientEvaluator::BSplineInterpolationCoefficientEvaluator()
     : basisValues(1, FloatTensorVector(1)), basisCoefficients(), degree(3) {}

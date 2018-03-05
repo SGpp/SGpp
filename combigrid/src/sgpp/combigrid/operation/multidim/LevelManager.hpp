@@ -18,13 +18,13 @@
 
 #include <cmath>
 #include <limits>
+#include <map>
 #include <memory>
 #include <mutex>
 #include <queue>
 #include <string>
 #include <unordered_set>
 #include <vector>
-#include <map>
 
 namespace sgpp {
 namespace combigrid {
@@ -363,6 +363,22 @@ class LevelManager {
    * Queue based addLevel-type function
    */
   void addLevelsAdaptiveByNumLevels(size_t numLevels = 1);
+
+  /**
+   * writes a given level structure to a matrix
+   * @param levelstucture the level structure
+   * @param numDims number of dimensions
+   * @return matrix containing the level stucture
+   */
+  sgpp::base::DataMatrix convertLevelStructureToMatrix(
+      std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const &levelstructure, size_t numDims);
+
+  /**
+   * prints a given level structure
+   * @param levelstructure the level stucture
+   */
+  void printLevelStructure(
+      std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const &levelstructure);
 
   /**
    * @return An upper bound for the number of points (function evaluations) used for the current

@@ -9,6 +9,7 @@
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
+#include <sgpp/combigrid/utils/CombigridBSplineBasis.hpp>
 
 #include <functional>
 #include <vector>

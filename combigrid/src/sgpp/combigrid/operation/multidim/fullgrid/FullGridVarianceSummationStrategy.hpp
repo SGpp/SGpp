@@ -27,6 +27,11 @@
 namespace sgpp {
 namespace combigrid {
 
+// This Summation Strategy calculates the variance on each full grid. The variance is calculated as
+//                                  E(u^2) - E(u)^2
+// where E(u)^2 is calculated via the scalarProductEvaluatorPrototypes and E(u^2) is calculated via
+// a quadrature routine created from the scalarProductEvaluatorPrototypes
+
 template <typename V>
 class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrategy<V> {
  public:
@@ -47,7 +52,14 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
       std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> scalarProductEvaluatorPrototypes,
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies)
       : AbstractFullGridSummationStrategy<V>(storage, scalarProductEvaluatorPrototypes,
-                                             pointHierarchies) {}
+                                             pointHierarchies) {
+    //    std::cout << "FullGridVarianceSummationStrategy :" << std::endl;
+    //    sgpp::combigrid::SingleFunction onedim_weight_function;
+    //    for (size_t d = 0; d < scalarProductEvaluatorPrototypes.size(); d++) {
+    //      scalarProductEvaluatorPrototypes[d]->getWeightFunction(onedim_weight_function);
+    //      std::cout << d << " w(0.5) = " << onedim_weight_function(0.5) << std::endl;
+    //  }
+  }
 
   ~FullGridVarianceSummationStrategy() {}
 
@@ -82,15 +94,16 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
 
     // if a custom weight function shall be used it and its bounds are extracted from the scalar
     // product evaluators
+
     double width = 1.0;
     for (size_t d = 0; d < numDimensions; d++) {
       if (this->evaluatorPrototypes[d]->hasCustomWeightFunction()) {
-        sgpp::combigrid::SingleFunction weight_function;
+        sgpp::combigrid::SingleFunction onedim_weight_function;
         double a;
         double b;
-        this->evaluatorPrototypes[d]->getWeightFunction(weight_function);
+        this->evaluatorPrototypes[d]->getWeightFunction(onedim_weight_function);
         this->evaluatorPrototypes[d]->getBounds(a, b);
-        linearEvaluatorPrototypes[d]->setWeightFunction(weight_function);
+        linearEvaluatorPrototypes[d]->setWeightFunction(onedim_weight_function);
         linearEvaluatorPrototypes[d]->setBounds(a, b);
         width *= b - a;
       }
@@ -103,29 +116,16 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
     FullGridQuadraticSummationStrategy<V> quadraticStrategy = FullGridQuadraticSummationStrategy<V>(
         this->storage, this->evaluatorPrototypes, this->pointHierarchies);
 
-    // ToDo (rehmemk) first quadrature => numAdditionalPoints for scalar products?
-
     // Var = E(x^2) - E(x)^2
-    FloatScalarVector mean = linearStrategy.eval(level);
+    FloatScalarVector mean = linearStrategy.eval(level);  // <=
     V meanSquare = quadraticStrategy.eval(level);
     mean.scalarMult(width);
 
     mean.componentwiseMult(mean);
     FloatScalarVector variance = meanSquare[0];
 
-    //    double exactMeanSquare = 0.237373737373740;
-    //    std::cout << "(" << level[0] << " " << level[1] << ")  meanSquare : " <<
-    //    meanSquare[0].value()
-    //              << " error: " << std::fabs(exactMeanSquare - meanSquare[0].value()) <<
-    //              std::endl;
-
     variance.scalarMult(width);
     variance.sub(mean);
-
-    //    double exactVariance = 0.126262626262629;
-    //    std::cout << "(" << level[0] << " " << level[1] << ")  vaiance : " << variance[0]
-    //                  << " error: " << std::fabs(exactVaraince - variance[0].value()) <<
-    //                  std::endl;
 
     V returnVariance(variance);
     return returnVariance;

@@ -374,6 +374,7 @@ namespace std {
 %include "combigrid/src/sgpp/combigrid/utils/Utils.hpp"
 
 %include "combigrid/src/sgpp/combigrid/utils/BSplineRoutines.hpp"
+%include "combigrid/src/sgpp/combigrid/utils/CombigridBSplineBasis.hpp"
 
 // experimental
 

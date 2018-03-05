@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
@@ -66,6 +67,10 @@ std::shared_ptr<TreeStorage<uint8_t>> allStorageLevels(base::HashGridStorage& st
  * @return level structure of anisotropic full grids for CombigridOperations
  */
 std::shared_ptr<TreeStorage<uint8_t>> completeStorageLevels(base::HashGridStorage& storage);
+
+sgpp::base::DataMatrix convertLevelStructureToGridPoints(
+    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
+    size_t numDimensions, size_t degree);
 
 } /* namespace combigrid */
 } /* namespace sgpp */
