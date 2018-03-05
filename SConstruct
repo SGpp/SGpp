@@ -154,6 +154,9 @@ vars.Add(BoolVariable("USE_DAKOTA", "Set if Dakota library should be used " +
                                    "(only relevant for sgpp::combigrid)", False))
 vars.Add(BoolVariable("USE_GSL", "Set if GNU Scientific Library should be used " +
                                      "(only relevant for sgpp::datadriven::application::LearnerSGDEOnOff)", False))
+vars.Add(BoolVariable("USE_CGAL", "Set if Computational Geometry Algorithms Library should be used " +
+                                     "(only relevant for new_sgde)", False))
+
 vars.Add(BoolVariable("USE_ZLIB", "Set if zlib should be used " +
                                      "(relevant for sgpp::datadriven to read compressed dataset files), not available for windows", False))
 vars.Add(BoolVariable("BUILD_STATICLIB", "Set if static libraries should be built " +
@@ -185,7 +188,7 @@ if env["USE_HPX"]:
 
 # fail if unknown variables where encountered on the command line
 unknownVariables = [var for var in vars.UnknownVariables()
-                    if var not in ["CFLAGS", "CPPDEFINES"]]
+                    if var not in ["CXX", "CC", "CFLAGS", "CPPDEFINES"]]
 if len(unknownVariables) > 0:
   Helper.printErrorAndExit("The following command line variables could not be recognized:",
                            unknownVariables,

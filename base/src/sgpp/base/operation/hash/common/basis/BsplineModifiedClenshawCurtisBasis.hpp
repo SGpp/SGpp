@@ -10,7 +10,6 @@
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 #include <sgpp/base/tools/ClenshawCurtisTable.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
-
 #include <sgpp/globaldef.hpp>
 
 #include <cmath>
