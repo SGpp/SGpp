@@ -5,11 +5,12 @@
 
 #pragma once
 
-#include <iostream>
-#include <memory>
 #include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
+
+#include <iostream>
+#include <memory>
 
 namespace sgpp {
 namespace combigrid {
