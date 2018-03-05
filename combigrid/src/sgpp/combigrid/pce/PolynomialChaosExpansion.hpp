@@ -61,10 +61,6 @@ class PolynomialChaosExpansion {
  private:
   void computeComponentSobolIndices();
 
-#ifdef USE_DAKOTA
-  std::shared_ptr<Pecos::OrthogPolyApproximation> orthogPoly;
-#endif
-
   size_t numDims;
   std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation;
   std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation;

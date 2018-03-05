@@ -7,8 +7,8 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
-#include <sgpp/datadriven/application/LearnerSGDE.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/application/SparseGridDensityEstimator.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp_optimization.hpp>

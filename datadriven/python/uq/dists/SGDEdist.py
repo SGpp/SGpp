@@ -7,8 +7,8 @@ from pysgpp import (createOperationQuadrature,
                     createOperationRosenblattTransformation1D,
                     createOperationRosenblattTransformation,
                     DataMatrix, DataVector, Grid,
-                    LearnerSGDEConfiguration,
-                    LearnerSGDE)
+                    SparseGridDensityEstimatorConfiguration,
+                    SparseGridDensityEstimator)
 from pysgpp.extensions.datadriven.uq.operations import (dehierarchize,
                                                         hierarchize,
                                                         hierarchizeBruteForce,
@@ -16,7 +16,9 @@ from pysgpp.extensions.datadriven.uq.operations import (dehierarchize,
 
 import os
 import warnings
-import tempfile, uuid, json
+import tempfile
+import uuid
+import json
 
 from EstimatedDist import EstimatedDist
 
@@ -65,7 +67,7 @@ class SGDEdist(EstimatedDist):
 
         if learner is None and trainData is not None:
             trainData_vec = DataMatrix(trainData)
-            self.learner = LearnerSGDE(self.grid, self.alpha_vec, trainData_vec)
+            self.learner = SparseGridDensityEstimator(self.grid, self.alpha_vec, trainData_vec)
         else:
             self.learner = learner
 
@@ -152,8 +154,8 @@ class SGDEdist(EstimatedDist):
 
         unit_samples_vec = DataMatrix(unit_samples)
         # --------------------------------------------------------------------
-        learnerSGDEConfig = LearnerSGDEConfiguration(filename_config)
-        learner = LearnerSGDE(learnerSGDEConfig)
+        learnerSGDEConfig = SparseGridDensityEstimatorConfiguration(filename_config)
+        learner = SparseGridDensityEstimator(learnerSGDEConfig)
         learner.initialize(unit_samples_vec)
 
         # copy grid and coefficient vector
@@ -173,7 +175,6 @@ class SGDEdist(EstimatedDist):
                   unitIntegrand=unitIntegrand,
                   isPositive=isPositive)
         return ans
-
 
     @classmethod
     def byFiles(cls, gridfile, alphafile, samplesfile, bounds=None, config=None):
@@ -197,10 +198,8 @@ class SGDEdist(EstimatedDist):
 
         return cls(grid, alpha, trainData, bounds, config)
 
-
     def getJointTransformation(self):
         return self.computeLinearTransformation(self.bounds)
-
 
     def pdf(self, x):
         # convert the parameter to the right format

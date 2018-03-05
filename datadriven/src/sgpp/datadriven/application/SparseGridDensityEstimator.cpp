@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/application/LearnerSGDE.hpp>
-
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
@@ -21,6 +19,7 @@
 #include <sgpp/solver/TypesSolver.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/datadriven/application/SparseGridDensityEstimator.hpp>
 
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
@@ -39,9 +38,12 @@ namespace sgpp {
 namespace datadriven {
 
 // --------------------------------------------------------------------------------------------
-LearnerSGDEConfiguration::LearnerSGDEConfiguration() : json::JSON() { initConfig(); }
+SparseGridDensityEstimatorConfiguration::SparseGridDensityEstimatorConfiguration() : json::JSON() {
+  initConfig();
+}
 
-LearnerSGDEConfiguration::LearnerSGDEConfiguration(const std::string& fileName)
+SparseGridDensityEstimatorConfiguration::SparseGridDensityEstimatorConfiguration(
+    const std::string& fileName)
     : json::JSON(fileName) {
   // initialize structs with default values
   initConfig();
@@ -149,7 +151,7 @@ LearnerSGDEConfiguration::LearnerSGDEConfiguration(const std::string& fileName)
   }
 }
 
-void LearnerSGDEConfiguration::initConfig() {
+void SparseGridDensityEstimatorConfiguration::initConfig() {
   // set default config
   gridConfig.dim_ = 0;
   gridConfig.level_ = 6;
@@ -195,12 +197,14 @@ void LearnerSGDEConfiguration::initConfig() {
   sgdeConfig.unitIntegrand_ = false;
 }
 
-LearnerSGDEConfiguration* LearnerSGDEConfiguration::clone() {
-  LearnerSGDEConfiguration* clone = new LearnerSGDEConfiguration(*this);
+SparseGridDensityEstimatorConfiguration* SparseGridDensityEstimatorConfiguration::clone() {
+  SparseGridDensityEstimatorConfiguration* clone =
+      new SparseGridDensityEstimatorConfiguration(*this);
   return clone;
 }
 
-sgpp::datadriven::RegularizationType LearnerSGDEConfiguration::stringToRegularizationType(
+sgpp::datadriven::RegularizationType
+SparseGridDensityEstimatorConfiguration::stringToRegularizationType(
     std::string& regularizationType) {
   if (regularizationType.compare("Identity") == 0) {
     return sgpp::datadriven::RegularizationType::Identity;
@@ -211,7 +215,8 @@ sgpp::datadriven::RegularizationType LearnerSGDEConfiguration::stringToRegulariz
   }
 }
 
-sgpp::solver::SLESolverType LearnerSGDEConfiguration::stringToSolverType(std::string& solverType) {
+sgpp::solver::SLESolverType SparseGridDensityEstimatorConfiguration::stringToSolverType(
+    std::string& solverType) {
   if (solverType.compare("CG")) {
     return sgpp::solver::SLESolverType::CG;
   } else if (solverType.compare("BiCGSTAB")) {
@@ -222,12 +227,13 @@ sgpp::solver::SLESolverType LearnerSGDEConfiguration::stringToSolverType(std::st
 }
 
 // --------------------------------------------------------------------------------------------
-LearnerSGDE::LearnerSGDE(sgpp::base::RegularGridConfiguration& gridConfig,
-                         sgpp::base::AdpativityConfiguration& adaptivityConfig,
-                         sgpp::solver::SLESolverConfiguration& solverConfig,
-                         sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-                         CrossvalidationForRegularizationConfiguration& crossvalidationConfig,
-                         SGDEConfiguration& sgdeConfig)
+SparseGridDensityEstimator::SparseGridDensityEstimator(
+    sgpp::base::RegularGridConfiguration& gridConfig,
+    sgpp::base::AdpativityConfiguration& adaptivityConfig,
+    sgpp::solver::SLESolverConfiguration& solverConfig,
+    sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+    CrossvalidationForRegularizationConfiguration& crossvalidationConfig,
+    SGDEConfiguration& sgdeConfig)
     : grid(nullptr),
       alpha(nullptr),
       samples(nullptr),
@@ -238,12 +244,15 @@ LearnerSGDE::LearnerSGDE(sgpp::base::RegularGridConfiguration& gridConfig,
       crossvalidationConfig(crossvalidationConfig),
       sgdeConfig(sgdeConfig) {}
 
-LearnerSGDE::LearnerSGDE(LearnerSGDEConfiguration& learnerSGDEConfig)
-    : LearnerSGDE(learnerSGDEConfig.gridConfig, learnerSGDEConfig.adaptivityConfig,
-                  learnerSGDEConfig.solverConfig, learnerSGDEConfig.regularizationConfig,
-                  learnerSGDEConfig.crossvalidationConfig, learnerSGDEConfig.sgdeConfig) {}
+SparseGridDensityEstimator::SparseGridDensityEstimator(
+    SparseGridDensityEstimatorConfiguration& learnerSGDEConfig)
+    : SparseGridDensityEstimator(
+          learnerSGDEConfig.gridConfig, learnerSGDEConfig.adaptivityConfig,
+          learnerSGDEConfig.solverConfig, learnerSGDEConfig.regularizationConfig,
+          learnerSGDEConfig.crossvalidationConfig, learnerSGDEConfig.sgdeConfig) {}
 
-LearnerSGDE::LearnerSGDE(const LearnerSGDE& learnerSGDE) {
+SparseGridDensityEstimator::SparseGridDensityEstimator(
+    const SparseGridDensityEstimator& learnerSGDE) {
   grid = learnerSGDE.grid;
   alpha = learnerSGDE.alpha;
   samples = learnerSGDE.samples;
@@ -255,18 +264,19 @@ LearnerSGDE::LearnerSGDE(const LearnerSGDE& learnerSGDE) {
   sgdeConfig = learnerSGDE.sgdeConfig;
 }
 
-LearnerSGDE::LearnerSGDE(base::Grid& grid, base::DataVector& alpha, base::DataMatrix& samples) {
+SparseGridDensityEstimator::SparseGridDensityEstimator(base::Grid& grid, base::DataVector& alpha,
+                                                       base::DataMatrix& samples) {
   std::shared_ptr<base::Grid> sGrid(grid.clone());
   this->grid = sGrid;
   this->alpha = std::make_shared<base::DataVector>(alpha);
   this->samples = std::make_shared<base::DataMatrix>(samples);
 }
 
-LearnerSGDE::~LearnerSGDE() {}
+SparseGridDensityEstimator::~SparseGridDensityEstimator() {}
 
 // -----------------------------------------------------------------------------------------------
 
-void LearnerSGDE::initialize(base::DataMatrix& psamples) {
+void SparseGridDensityEstimator::initialize(base::DataMatrix& psamples) {
   samples = std::make_shared<base::DataMatrix>(psamples);
   gridConfig.dim_ = psamples.getNcols();
   if (gridConfig.dim_ == 0) {
@@ -306,26 +316,26 @@ void LearnerSGDE::initialize(base::DataMatrix& psamples) {
 
 // ---------------------------------------------------------------------------
 
-double LearnerSGDE::pdf(base::DataVector& x) {
+double SparseGridDensityEstimator::pdf(base::DataVector& x) {
   std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*grid));
   return opEval->eval(*alpha, x);
 }
 
-void LearnerSGDE::pdf(base::DataMatrix& points, base::DataVector& res) {
+void SparseGridDensityEstimator::pdf(base::DataMatrix& points, base::DataVector& res) {
   std::unique_ptr<base::OperationMultipleEval> opEval(
       op_factory::createOperationMultipleEval(*grid, points));
   opEval->eval(*alpha, res);
 }
 
-double LearnerSGDE::mean(base::Grid& grid, base::DataVector& alpha) {
+double SparseGridDensityEstimator::mean(base::Grid& grid, base::DataVector& alpha) {
   std::unique_ptr<base::OperationFirstMoment> opFirstMoment(
       op_factory::createOperationFirstMoment(grid));
   return opFirstMoment->doQuadrature(alpha);
 }
 
-double LearnerSGDE::mean() { return mean(*grid, *alpha); }
+double SparseGridDensityEstimator::mean() { return mean(*grid, *alpha); }
 
-double LearnerSGDE::variance(base::Grid& grid, base::DataVector& alpha) {
+double SparseGridDensityEstimator::variance(base::Grid& grid, base::DataVector& alpha) {
   std::unique_ptr<base::OperationFirstMoment> opFirstMoment(
       op_factory::createOperationFirstMoment(grid));
   double firstMoment = opFirstMoment->doQuadrature(alpha);
@@ -336,40 +346,40 @@ double LearnerSGDE::variance(base::Grid& grid, base::DataVector& alpha) {
   return secondMoment - firstMoment * firstMoment;
 }
 
-double LearnerSGDE::variance() { return variance(*grid, *alpha); }
+double SparseGridDensityEstimator::variance() { return variance(*grid, *alpha); }
 
-void LearnerSGDE::cov(base::DataMatrix& cov, base::DataMatrix* bounds) {
+void SparseGridDensityEstimator::cov(base::DataMatrix& cov, base::DataMatrix* bounds) {
   std::unique_ptr<datadriven::OperationCovariance> opCov(
       op_factory::createOperationCovariance(*grid));
   opCov->doQuadrature(*alpha, cov, bounds);
 }
 
-std::shared_ptr<base::DataVector> LearnerSGDE::getSamples(size_t dim) {
+std::shared_ptr<base::DataVector> SparseGridDensityEstimator::getSamples(size_t dim) {
   std::shared_ptr<base::DataVector> isamples = std::make_shared<base::DataVector>(getNsamples());
   samples->getColumn(dim, *isamples);
   return isamples;
 }
 
-std::shared_ptr<base::DataMatrix> LearnerSGDE::getSamples() { return samples; }
+std::shared_ptr<base::DataMatrix> SparseGridDensityEstimator::getSamples() { return samples; }
 
-size_t LearnerSGDE::getDim() { return gridConfig.dim_; }
+size_t SparseGridDensityEstimator::getDim() { return gridConfig.dim_; }
 
-size_t LearnerSGDE::getNsamples() { return samples->getNrows(); }
+size_t SparseGridDensityEstimator::getNsamples() { return samples->getNrows(); }
 
-base::DataVector& LearnerSGDE::getSurpluses() { return *alpha; }
+base::DataVector& SparseGridDensityEstimator::getSurpluses() { return *alpha; }
 
-base::Grid& LearnerSGDE::getGrid() { return *grid; }
+base::Grid& SparseGridDensityEstimator::getGrid() { return *grid; }
 
 // ---------------------------------------------------------------------------
 
-std::shared_ptr<base::Grid> LearnerSGDE::createRegularGrid() {
+std::shared_ptr<base::Grid> SparseGridDensityEstimator::createRegularGrid() {
   // load grid
   std::shared_ptr<base::Grid> sGrid(base::Grid::createGrid(gridConfig));
   sGrid->getGenerator().regular(gridConfig.level_);
   return sGrid;
 }
 
-double LearnerSGDE::optimizeLambdaCV() {
+double SparseGridDensityEstimator::optimizeLambdaCV() {
   double curLambda;
   double bestLambda = 0;
   double curMean = 0;
@@ -454,8 +464,8 @@ double LearnerSGDE::optimizeLambdaCV() {
   return bestLambda;
 }
 
-void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMatrix& train,
-                        double lambdaReg) {
+void SparseGridDensityEstimator::train(base::Grid& grid, base::DataVector& alpha,
+                                       base::DataMatrix& train, double lambdaReg) {
   size_t dim = train.getNcols();
 
   base::GridStorage& gridStorage = grid.getStorage();
@@ -517,8 +527,8 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMat
   return;
 }
 
-double LearnerSGDE::computeResidual(base::Grid& grid, base::DataVector& alpha,
-                                    base::DataMatrix& test, double lambdaReg) {
+double SparseGridDensityEstimator::computeResidual(base::Grid& grid, base::DataVector& alpha,
+                                                   base::DataMatrix& test, double lambdaReg) {
   base::DataVector rhs(grid.getSize());
   base::DataVector res(grid.getSize());
   auto sMatrix = computeDensitySystemMatrix(grid, test, lambdaReg);
@@ -532,12 +542,12 @@ double LearnerSGDE::computeResidual(base::Grid& grid, base::DataVector& alpha,
   return res.l2Norm();
 }
 
-base::OperationMatrix* LearnerSGDE::computeLTwoDotProductMatrix(base::Grid& grid) {
+base::OperationMatrix* SparseGridDensityEstimator::computeLTwoDotProductMatrix(base::Grid& grid) {
   return op_factory::createOperationLTwoDotProduct(grid);
 }
 
-base::OperationMultipleEval* LearnerSGDE::computeMultipleEvalMatrix(base::Grid& grid,
-                                                                    base::DataMatrix& train) {
+base::OperationMultipleEval* SparseGridDensityEstimator::computeMultipleEvalMatrix(
+    base::Grid& grid, base::DataMatrix& train) {
   if (grid.getType() == base::GridType::Bspline ||
       grid.getType() == base::GridType::BsplineBoundary ||
       grid.getType() == base::GridType::BsplineClenshawCurtis ||
@@ -552,7 +562,7 @@ base::OperationMultipleEval* LearnerSGDE::computeMultipleEvalMatrix(base::Grid& 
   }
 }
 
-base::OperationMatrix* LearnerSGDE::computeRegularizationMatrix(base::Grid& grid) {
+base::OperationMatrix* SparseGridDensityEstimator::computeRegularizationMatrix(base::Grid& grid) {
   base::OperationMatrix* C;
 
   if (regularizationConfig.regType_ == datadriven::RegularizationType::Identity) {
@@ -566,8 +576,9 @@ base::OperationMatrix* LearnerSGDE::computeRegularizationMatrix(base::Grid& grid
   return C;
 }
 
-std::shared_ptr<datadriven::DensitySystemMatrix> LearnerSGDE::computeDensitySystemMatrix(
-    base::Grid& grid, base::DataMatrix& train, double lambdaReg) {
+std::shared_ptr<datadriven::DensitySystemMatrix>
+SparseGridDensityEstimator::computeDensitySystemMatrix(base::Grid& grid, base::DataMatrix& train,
+                                                       double lambdaReg) {
   auto A = computeLTwoDotProductMatrix(grid);
   auto B = computeMultipleEvalMatrix(grid, train);
   auto C = computeRegularizationMatrix(grid);
@@ -575,8 +586,8 @@ std::shared_ptr<datadriven::DensitySystemMatrix> LearnerSGDE::computeDensitySyst
   return std::make_shared<datadriven::DensitySystemMatrix>(A, B, C, lambdaReg, train.getNrows());
 }
 
-void LearnerSGDE::splitset(std::vector<std::shared_ptr<base::DataMatrix> >& strain,
-                           std::vector<std::shared_ptr<base::DataMatrix> >& stest) {
+void SparseGridDensityEstimator::splitset(std::vector<std::shared_ptr<base::DataMatrix> >& strain,
+                                          std::vector<std::shared_ptr<base::DataMatrix> >& stest) {
   std::shared_ptr<base::DataMatrix> mydata = std::make_shared<base::DataMatrix>(*samples);
   base::DataVector p(samples->getNcols());
   base::DataVector tmp(samples->getNcols());
@@ -650,7 +661,7 @@ void LearnerSGDE::splitset(std::vector<std::shared_ptr<base::DataMatrix> >& stra
   }
 }
 
-LearnerSGDE* LearnerSGDE::margToDimX(size_t idim) {
+SparseGridDensityEstimator* SparseGridDensityEstimator::margToDimX(size_t idim) {
   std::unique_ptr<datadriven::OperationDensityMargTo1D> opMarg(
       op_factory::createOperationDensityMargTo1D(*grid));
 
@@ -664,7 +675,8 @@ LearnerSGDE* LearnerSGDE::margToDimX(size_t idim) {
   samples->getColumn(idim, samples1d);
   margSamples.setColumn(0, samples1d);
 
-  LearnerSGDE* ans = new LearnerSGDE(*margGrid, *margAlpha, margSamples);
+  SparseGridDensityEstimator* ans =
+      new SparseGridDensityEstimator(*margGrid, *margAlpha, margSamples);
 
   delete margGrid;
   delete margAlpha;
@@ -672,7 +684,7 @@ LearnerSGDE* LearnerSGDE::margToDimX(size_t idim) {
   return ans;
 }
 
-LearnerSGDE* LearnerSGDE::marginalize(size_t idim) {
+SparseGridDensityEstimator* SparseGridDensityEstimator::marginalize(size_t idim) {
   std::unique_ptr<datadriven::OperationDensityMarginalize> opMarg(
       op_factory::createOperationDensityMarginalize(*grid));
 
@@ -693,7 +705,8 @@ LearnerSGDE* LearnerSGDE::marginalize(size_t idim) {
     }
   }
 
-  LearnerSGDE* ans = new LearnerSGDE(*margGrid, margAlpha, margSamples);
+  SparseGridDensityEstimator* ans =
+      new SparseGridDensityEstimator(*margGrid, margAlpha, margSamples);
 
   delete margGrid;
 

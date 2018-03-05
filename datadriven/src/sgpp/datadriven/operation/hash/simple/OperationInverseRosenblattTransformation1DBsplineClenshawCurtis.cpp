@@ -94,7 +94,6 @@ void OperationInverseRosenblattTransformation1DBsplineClenshawCurtis::init(
       // make sure that the cdf is monotonically increasing
       // WARNING: THIS IS A HACK THAT OVERCOMES THE PROBLEM
       // OF NON POSITIVE DENSITY
-      std::cerr << "warning: negative pdf value encountered " << std::endl;
 
       // we look for the next grid point with pdf(x) >= 0
       size_t j;
@@ -259,8 +258,8 @@ double OperationInverseRosenblattTransformation1DBsplineClenshawCurtis::doTransf
     base::DataVector* alpha1d, double coord1d) {
   init(alpha1d);
   // std::cout << "PFs size after exit: " << patch_functions.size() << std::endl;
-  std::function<double(const base::DataVector&)> optFunc =
-      [this, coord1d, alpha1d](const base::DataVector& x) -> double {
+  std::function<double(const base::DataVector&)> optFunc = [this, coord1d, alpha1d](
+      const base::DataVector& x) -> double {
     double F_x = sample(alpha1d, x[0]);
     return (F_x - coord1d) * (F_x - coord1d);
   };

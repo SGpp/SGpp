@@ -98,7 +98,6 @@ double OperationRosenblattTransformation1DBsplineBoundary::doTransformation1D(
       // make sure that the cdf is monotonically increasing
       // WARNING: THIS IS A HACK THAT OVERCOMES THE PROBLEM
       // OF NON POSITIVE DENSITY
-      std::cerr << "warning: negative pdf value encountered " << std::endl;
 
       // we look for the next grid point with pdf(x) >= 0
       size_t j;

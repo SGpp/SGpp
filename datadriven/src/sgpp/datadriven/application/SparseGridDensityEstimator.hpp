@@ -56,16 +56,16 @@ struct SGDEConfiguration {
 };
 
 // --------------------------------------------------------------------------
-class LearnerSGDE;
+class SparseGridDensityEstimator;
 
-class LearnerSGDEConfiguration : public json::JSON {
-  friend class LearnerSGDE;
+class SparseGridDensityEstimatorConfiguration : public json::JSON {
+  friend class SparseGridDensityEstimator;
 
  public:
-  LearnerSGDEConfiguration();
-  explicit LearnerSGDEConfiguration(const std::string& fileName);
+  SparseGridDensityEstimatorConfiguration();
+  explicit SparseGridDensityEstimatorConfiguration(const std::string& fileName);
 
-  LearnerSGDEConfiguration* clone() override;
+  SparseGridDensityEstimatorConfiguration* clone() override;
 
   void initConfig();
   sgpp::datadriven::RegularizationType stringToRegularizationType(std::string& regularizationType);
@@ -80,7 +80,7 @@ class LearnerSGDEConfiguration : public json::JSON {
   sgpp::datadriven::SGDEConfiguration sgdeConfig;
 };
 
-class LearnerSGDE : public datadriven::DensityEstimator {
+class SparseGridDensityEstimator : public datadriven::DensityEstimator {
  public:
   /**
    * Constructor
@@ -92,14 +92,14 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * @param crossvalidationConfig configuration for the cross validation
    * @param sgdeConfig configuration for the sparse grid density estimation
    */
-  LearnerSGDE(sgpp::base::RegularGridConfiguration& gridConfig,
-              sgpp::base::AdpativityConfiguration& adaptivityConfig,
-              sgpp::solver::SLESolverConfiguration& solverConfig,
-              sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-              CrossvalidationForRegularizationConfiguration& crossvalidationConfig,
-              SGDEConfiguration& sgdeConfig);
+  SparseGridDensityEstimator(sgpp::base::RegularGridConfiguration& gridConfig,
+                             sgpp::base::AdpativityConfiguration& adaptivityConfig,
+                             sgpp::solver::SLESolverConfiguration& solverConfig,
+                             sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+                             CrossvalidationForRegularizationConfiguration& crossvalidationConfig,
+                             SGDEConfiguration& sgdeConfig);
 
-  explicit LearnerSGDE(LearnerSGDEConfiguration& learnerSGDEConfig);
+  explicit SparseGridDensityEstimator(SparseGridDensityEstimatorConfiguration& learnerSGDEConfig);
 
   /**
    * construct learner from given grid and coefficients
@@ -108,11 +108,11 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * @param alpha
    * @param samples
    */
-  LearnerSGDE(base::Grid& grid, base::DataVector& alpha, base::DataMatrix& samples);
+  SparseGridDensityEstimator(base::Grid& grid, base::DataVector& alpha, base::DataMatrix& samples);
 
-  LearnerSGDE(const LearnerSGDE& learnerSGDE);
+  SparseGridDensityEstimator(const SparseGridDensityEstimator& learnerSGDE);
 
-  virtual ~LearnerSGDE();
+  virtual ~SparseGridDensityEstimator();
 
   /**
    * Estimate a sparse grid density based on the given data set and
@@ -197,14 +197,14 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    *
    * @param idim dimension which should be left after marginalization
    */
-  virtual sgpp::datadriven::LearnerSGDE* margToDimX(size_t idim);
+  virtual sgpp::datadriven::SparseGridDensityEstimator* margToDimX(size_t idim);
 
   /**
    * Marginalize the density in one dimension and return result
    *
    * @param idim dimension which should be marginalized
    */
-  virtual sgpp::datadriven::LearnerSGDE* marginalize(size_t idim);
+  virtual sgpp::datadriven::SparseGridDensityEstimator* marginalize(size_t idim);
 
  protected:
   /**

@@ -10,7 +10,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
-#include <sgpp/datadriven/application/LearnerSGDE.hpp>
+#include <sgpp/datadriven/application/SparseGridDensityEstimator.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/application/KernelDensityEstimator.hpp>
