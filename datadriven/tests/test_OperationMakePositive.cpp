@@ -238,6 +238,8 @@ BOOST_AUTO_TEST_CASE(testOperationMakePositiveConsistent) {
   size_t level = 4;
   size_t refIterations = 2;
   size_t refnums = 3;
+  double tol = -1e-12;
+  bool verbose = false;
 
   std::unique_ptr<Grid> gridIntersections;
   std::unique_ptr<Grid> gridIntersectionsJoin;
@@ -249,14 +251,17 @@ BOOST_AUTO_TEST_CASE(testOperationMakePositiveConsistent) {
         // check whether both candidate search algorithms lead to the same consistent grid
         gridIntersections.reset(Grid::createLinearGrid(idim));
         testMakePositive(*gridIntersections, idim, ilevel, irefIteration * refnums,
-                         MakePositiveCandidateSearchAlgorithm::Intersections, &normal, true);
+                         MakePositiveCandidateSearchAlgorithm::Intersections, &normal, true,
+                         tol, verbose);
         gridIntersectionsJoin.reset(Grid::createLinearGrid(idim));
         testMakePositive(*gridIntersectionsJoin, idim, ilevel, irefIteration * refnums,
-                         MakePositiveCandidateSearchAlgorithm::IntersectionsJoin, &normal, true);
+                         MakePositiveCandidateSearchAlgorithm::IntersectionsJoin, &normal, true,
+                         tol, verbose);
         if (irefIteration == 0) {
           gridFull.reset(Grid::createLinearGrid(idim));
           testMakePositive(*gridFull, idim, ilevel, irefIteration * refnums,
-                           MakePositiveCandidateSearchAlgorithm::FullGrid, &normal, true);
+                           MakePositiveCandidateSearchAlgorithm::FullGrid, &normal, true,
+                           tol, verbose);
           BOOST_CHECK_EQUAL(gridIntersections->getSize(), gridFull->getSize());
           BOOST_CHECK_EQUAL(gridIntersectionsJoin->getSize(), gridFull->getSize());
         }
@@ -271,6 +276,8 @@ BOOST_AUTO_TEST_CASE(testOperationMakePositiveInconsistent) {
   size_t level = 4;
   size_t refIterations = 2;
   size_t refnums = 3;
+  double tol = -1e-12;
+  bool verbose = false;
 
   std::unique_ptr<Grid> gridIntersections;
   std::unique_ptr<Grid> gridIntersectionsJoin;
@@ -282,14 +289,17 @@ BOOST_AUTO_TEST_CASE(testOperationMakePositiveInconsistent) {
         // check whether the candidate search algorithms lead to the same inconsistent grid
         gridIntersections.reset(Grid::createLinearGrid(idim));
         testMakePositive(*gridIntersections, idim, ilevel, irefIteration * refnums,
-                         MakePositiveCandidateSearchAlgorithm::Intersections, &normal, false);
+                         MakePositiveCandidateSearchAlgorithm::Intersections, &normal, false,
+                         tol, verbose);
         gridIntersectionsJoin.reset(Grid::createLinearGrid(idim));
         testMakePositive(*gridIntersectionsJoin, idim, ilevel, irefIteration * refnums,
-                         MakePositiveCandidateSearchAlgorithm::IntersectionsJoin, &normal, true);
+                         MakePositiveCandidateSearchAlgorithm::IntersectionsJoin, &normal, true,
+                         tol, verbose);
         if (irefIteration == 0) {
           gridFull.reset(Grid::createLinearGrid(idim));
           testMakePositive(*gridFull, idim, ilevel, irefIteration * refnums,
-                           MakePositiveCandidateSearchAlgorithm::FullGrid, &normal, false);
+                           MakePositiveCandidateSearchAlgorithm::FullGrid, &normal, false,
+                           tol, verbose);
           BOOST_CHECK_EQUAL(gridIntersections->getSize(), gridFull->getSize());
         }
       }
