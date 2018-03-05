@@ -157,7 +157,7 @@ void BSplineInterpolationCoefficientEvaluator::setGridPoints(const std::vector<d
   }
 
 #else
-  throw new sgpp::base::generation_exception("need Eigen to use the PCE transformation.");
+  throw sgpp::base::generation_exception("need Eigen to use the PCE transformation.");
 #endif
 }
 
