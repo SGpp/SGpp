@@ -3,7 +3,6 @@
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp
 #
-from pysgpp.pysgpp_swig import ProbabilityDensityFunctionType_UNIFORM
 """
 @file    Parameters.py
 @author  Fabian Franzelin <franzefn@informatik.uni-stuttgart.de>
