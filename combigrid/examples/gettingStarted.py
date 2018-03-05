@@ -451,7 +451,12 @@ def example8(dist_type="uniform"):
     operation.getLevelManager().addRegularLevels(q)
     print "Total function evaluations: %i" % operation.numGridPoints()
     # compute variance of the interpolant
-    pce = pysgpp.PolynomialChaosExpansion(operation, basisFunction)
+    
+    surrogateConfig = pysgpp.CombigridSurrogateModelConfiguration()
+    surrogateConfig.type = pysgpp.CombigridSurrogateModelsType_POLYNOMIAL_CHAOS_EXPANSION
+    surrogateConfig.loadFromCombigridOperation(operation)
+    surrogateConfig.basisFunction = basisFunction
+    pce = pysgpp.createCombigridSurrogateModel(surrogateConfig)
 
     n = 10000
     values = [g(pysgpp.DataVector(xi)) for xi in U.rvs(n)]
