@@ -19,7 +19,7 @@ namespace datadriven {
 /**
  * Supported file types for #sgpp::datadriven::FileSampleProvider
  */
-enum class DataSourceFileType { NONE, ARFF };
+enum class DataSourceFileType { NONE, ARFF, CSV };
 
 /**
  * Configuration structure used for all kinds of SampleProviders including default values.

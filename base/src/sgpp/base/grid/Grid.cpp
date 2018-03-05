@@ -289,7 +289,7 @@ Grid* Grid::clone() {
     default:
       throw generation_exception("Grid::clone - grid type not known");
   }
-  newGrid->storage = HashGridStorage{this->storage};
+  newGrid->storage = this->storage;
 
   return newGrid;
 }
