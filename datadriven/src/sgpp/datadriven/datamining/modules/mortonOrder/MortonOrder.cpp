@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/globaldef.hpp>
 
 namespace sgpp {
@@ -17,12 +17,12 @@ namespace datadriven {
 //@cond DOXY_IGNORE
 namespace MortonOrderDetail {
 
-union ext_double_t{
+union ext_double_t {
   double val;  // Value
   struct {
-    uint64_t dig:52;  // Digits
-    uint32_t exp:11;  // Exponent
-    uint8_t  sig:1;   // Sign
+    uint64_t dig : 52;  // Digits
+    uint32_t exp : 11;  // Exponent
+    uint8_t sig : 1;    // Sign
   } bit;
 };
 
@@ -44,9 +44,12 @@ struct data_perm_t {
 /// Returns MSB from 2 double values
 int XOR_MSB(ext_double_t a, ext_double_t b) {
   int ret;
-  if (a.bit.exp == b.bit.exp) ret = a.bit.exp + MSB(a.bit.dig^b.bit.dig);
-  else if (a.bit.exp > b.bit.exp) ret = a.bit.exp + 52;
-  else ret = b.bit.exp + 52;
+  if (a.bit.exp == b.bit.exp)
+    ret = a.bit.exp + MSB(a.bit.dig ^ b.bit.dig);
+  else if (a.bit.exp > b.bit.exp)
+    ret = a.bit.exp + 52;
+  else
+    ret = b.bit.exp + 52;
   return ret;
 }
 
@@ -56,8 +59,7 @@ bool operator<(const data_perm_t &a, const data_perm_t &b) {
   tmp = 0;
   // search the most differing dimension
   for (size_t i = 0; i < a.pos.size(); i++) {
-    if ((a.pos[i].val < 0) != (b.pos[i].val < 0))
-      return a.pos[i].val < b.pos[i].val;
+    if ((a.pos[i].val < 0) != (b.pos[i].val < 0)) return a.pos[i].val < b.pos[i].val;
 
     y = XOR_MSB(a.pos[i], b.pos[i]);
     if (tmp < y) {
@@ -99,9 +101,8 @@ MortonOrder::MortonOrder(sgpp::datadriven::Dataset *dataset) : _dataset(dataset)
 
   // Check for identity permutation
   _isIdentity = true;
-  for (size_t i=0; i < permutation.size() && _isIdentity; ++i)
-    if (permutation[i] != i)
-      _isIdentity = false;
+  for (size_t i = 0; i < permutation.size() && _isIdentity; ++i)
+    if (permutation[i] != i) _isIdentity = false;
 
   _isOrdered = false;
 }
@@ -135,19 +136,13 @@ void MortonOrder::restoreDataset() {
 }
 
 /// Check if permutation is identity
-bool MortonOrder::isIdentity() const {
-  return _isIdentity;
-}
+bool MortonOrder::isIdentity() const { return _isIdentity; }
 
 /// Check if Dataset is ordered
-bool MortonOrder::isOrdered() const {
-  return _isOrdered;
-}
+bool MortonOrder::isOrdered() const { return _isOrdered; }
 
 /// Access to the permutation vector
-const std::vector<size_t>& MortonOrder::getPermutation() const {
-  return permutation;
-}
+const std::vector<size_t> &MortonOrder::getPermutation() const { return permutation; }
 
 }  // namespace datadriven
 }  // namespace sgpp

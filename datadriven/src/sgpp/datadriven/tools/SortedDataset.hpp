@@ -17,7 +17,7 @@ namespace datadriven {
 class SortedDataset : public Dataset {
  public:
   /// Available permutations
-  enum OrderType {None, External, Random, Morton, Invalid};
+  enum OrderType { None, External, Random, Morton, Invalid };
 
   /**
    * Constructs an empty dataset (zero size).
@@ -35,12 +35,12 @@ class SortedDataset : public Dataset {
   /**
    * Constructs a copy of a dataset.
    */
-  SortedDataset(const Dataset &src);
+  explicit SortedDataset(const Dataset &src);
 
   /** Sets the OrderType to OrderType::Invalid.
    *  @return training data of the dataset
    */
-  sgpp::base::DataMatrix& getData();
+  sgpp::base::DataMatrix &getData();
 
   /** Sets the order for the dataset and rearranges the data.
    *  The order is unchanged in case of OrderType::External.
@@ -50,7 +50,8 @@ class SortedDataset : public Dataset {
 
   /** Reorders the data with a given permutation.
    *  Sets the order type to OrderType::External
-   *  If the permutation is invalid due to a size or index mismatch, ot is set to OrderType::Invalid.
+   *  If the permutation is invalid due to a size or index mismatch, ot is set to
+   * OrderType::Invalid.
    *  The i-th data value is permuted to the permutation[i]-th position.
    */
   void setOrder(const std::vector<size_t> &permutation);
