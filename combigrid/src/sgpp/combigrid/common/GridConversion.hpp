@@ -78,7 +78,8 @@ std::shared_ptr<TreeStorage<uint8_t>> completeStorageLevels(base::HashGridStorag
  * @return matrix containing the grid points
  */
 sgpp::base::DataMatrix convertLevelStructureToGridPoints(
-    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure);
+    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure,
+    size_t numDimensions);
 
 /**
  * after a combigrid has been converted to a hierarchical sparse grid via
