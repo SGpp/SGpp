@@ -6,19 +6,19 @@
 #ifndef OPERATIONMULTIEVALCUDA_HPP
 #define OPERATIONMULTIEVALCUDA_HPP
 
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
-#include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/datatypes/DataMatrix.hpp>
 
 #include <stdint.h>
 
 #include <sgpp/globaldef.hpp>
 
-#include "cudaHelper.hpp"
-#include "basicCuda.hpp"
 #include "MortonOrder.hpp"
+#include "basicCuda.hpp"
 #include "consts.hpp"
+#include "cudaHelper.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -31,7 +31,7 @@ class OperationMultiEvalCuda : public base::OperationMultipleEval {
   bool _ordered;
 
  protected:
-  OpMultiEvalCudaDetail::MortonOrder *zorder;
+  OpMultiEvalCudaDetail::MortonOrder* zorder;
 
   base::SGppStopwatch myTimer;
   double duration;
@@ -72,8 +72,8 @@ class OperationMultiEvalCuda : public base::OperationMultipleEval {
   double getDuration() override;
 
   /// Transposed evaluation with additional FMA. result = 1/M * B*source + lambda * prev
-  void multTransposeFMA(base::DataVector& source, base::DataVector& prev,
-                        double lambda, base::DataVector& result);
+  void multTransposeFMA(base::DataVector& source, base::DataVector& prev, double lambda,
+                        base::DataVector& result);
 };
 
 }  // namespace datadriven

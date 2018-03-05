@@ -11,21 +11,21 @@
 //@cond DOXY_IGNORE
 namespace sgpp {
 namespace datadriven {
-namespace OpMultiEvalCudaDetail { 
+namespace OpMultiEvalCudaDetail {
 
 /// Magic numbers for computing polynomial basis functions
 const double idxtable[] = {1.0, 2.0, -2.0, -1.0};
 /// Magic numbers for computing polynomial basis functions
-const int32_t idxtablei[]  = {1, 2, -2, -1};
+const int32_t idxtablei[] = {1, 2, -2, -1};
 
 /// Struct containing all important information about a grid node in one dimension
 typedef struct {
-  uint32_t index;  /// The node index
-  uint32_t level;  /// The node level
+  uint32_t index;     /// The node index
+  uint32_t level;     /// The node level
   uint32_t child[2];  /// Indices of child nodes
-  uint32_t grad;  /// Maximal polynomial degree
-  double x;  /// Absolute position in hypercube
-  double level2;  /// 2^level
+  uint32_t grad;      /// Maximal polynomial degree
+  double x;           /// Absolute position in hypercube
+  double level2;      /// 2^level
 } gridnode_t;
 
 /// Struct for index limitation of evaluation points

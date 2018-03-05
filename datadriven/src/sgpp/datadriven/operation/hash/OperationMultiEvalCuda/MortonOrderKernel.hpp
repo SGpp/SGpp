@@ -5,7 +5,7 @@
 
 #ifndef MORTONORDERKERNEL_HPP
 #define MORTONORDERKERNEL_HPP
-  
+
 #include <stdint.h>
 
 //@cond DOXY_IGNORE

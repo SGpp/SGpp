@@ -5,23 +5,23 @@
 
 #include "SortedDataset.hpp"
 
-#include <algorithm>    // std::random_shuffle
-#include <vector>       // std::vector
-#include <ctime>        // std::time
-#include <cstdlib>      // std::rand, std::srand
+#include <algorithm>  // std::random_shuffle
+#include <cstdlib>    // std::rand, std::srand
+#include <ctime>      // std::time
+#include <vector>     // std::vector
 
 namespace sgpp {
 namespace datadriven {
 
-//@cond DOXY_IGNORE
+///@cond DOXY_IGNORE // NOLINT()
 namespace SortedDatasetDetail {
 
-union ext_double_t{
+union ext_double_t {
   double val;  // Value
   struct {
-    uint64_t dig:52;  // Digits
-    uint32_t exp:11;  // Exponent
-    uint8_t  sig:1;   // Sign
+    uint64_t dig : 52;  // Digits
+    uint32_t exp : 11;  // Exponent
+    uint8_t sig : 1;    // Sign
   } bit;
 };
 
@@ -43,9 +43,13 @@ struct data_perm_t {
 /// Returns MSB from 2 double values
 int XOR_MSB(ext_double_t a, ext_double_t b) {
   int ret;
-  if (a.bit.exp == b.bit.exp) ret = a.bit.exp + MSB(a.bit.dig^b.bit.dig);
-  else if (a.bit.exp > b.bit.exp) ret = a.bit.exp + 52;
-  else ret = b.bit.exp + 52;
+  if (a.bit.exp == b.bit.exp) {
+    ret = a.bit.exp + MSB(a.bit.dig ^ b.bit.dig);
+  } else if (a.bit.exp > b.bit.exp) {
+    ret = a.bit.exp + 52;
+  } else {
+    ret = b.bit.exp + 52;
+  }
   return ret;
 }
 
@@ -55,8 +59,7 @@ bool operator<(const data_perm_t &a, const data_perm_t &b) {
   tmp = 0;
   // search the most differing dimension
   for (size_t i = 0; i < a.pos.size(); i++) {
-    if ((a.pos[i].val < 0) != (b.pos[i].val < 0))
-      return a.pos[i].val < b.pos[i].val;
+    if ((a.pos[i].val < 0) != (b.pos[i].val < 0)) return a.pos[i].val < b.pos[i].val;
 
     y = XOR_MSB(a.pos[i], b.pos[i]);
     if (tmp < y) {
@@ -87,9 +90,9 @@ void zorder(const sgpp::base::DataMatrix &data, std::vector<size_t> &perm) {
 }
 
 }  // namespace SortedDatasetDetail
-//@endcond
+///@endcond // NOLINT()
 
-using namespace SortedDatasetDetail;
+using SortedDatasetDetail::zorder;
 
 /**
  * Constructs an empty dataset (zero size).
@@ -110,8 +113,7 @@ SortedDataset::SortedDataset(size_t numberInstances, size_t dimension)
     : Dataset(numberInstances, dimension) {
   ot = OrderType::None;
   perm.resize(numberInstances);
-  for (size_t i = 0; i < perm.size(); ++i)
-    perm[i] = i;
+  for (size_t i = 0; i < perm.size(); ++i) perm[i] = i;
   std::srand(static_cast<unsigned>(std::time(0)));
 }
 
@@ -121,15 +123,14 @@ SortedDataset::SortedDataset(size_t numberInstances, size_t dimension)
 SortedDataset::SortedDataset(const Dataset &src) : Dataset(src) {
   ot = OrderType::None;
   perm.resize(src.getNumberInstances());
-  for (size_t i = 0; i < perm.size(); ++i)
-    perm[i] = i;
+  for (size_t i = 0; i < perm.size(); ++i) perm[i] = i;
   std::srand(static_cast<unsigned>(std::time(0)));
 }
 
 /** Sets the OrderType to OrderType::Invalid.
  *  @return training data of the dataset
  */
-sgpp::base::DataMatrix& SortedDataset::getData() {
+sgpp::base::DataMatrix &SortedDataset::getData() {
   ot = OrderType::Invalid;
   return Dataset::getData();
 }
@@ -139,27 +140,27 @@ sgpp::base::DataMatrix& SortedDataset::getData() {
  */
 void SortedDataset::setOrder(OrderType order) {
   switch (order) {
-  case OrderType::None:
-    ot = OrderType::None;
-    perm.resize(numberInstances);
-    for (size_t i = 0; i < perm.size(); ++i)
-      perm[i] = i;
-    break;
-  case OrderType::Random:
-    ot = OrderType::Random;
-    perm.resize(numberInstances);
-    for (size_t i = 0; i < perm.size(); ++i)
-      perm[i] = i;
-    std::random_shuffle(perm.begin(), perm.end());
-    usePermutation();
-    break;
-  case OrderType::Morton:
-    ot = OrderType::Morton;
-    zorder(data, perm);
-    usePermutation();
-    break;
-  default:
-    break;
+    case OrderType::None:
+      ot = OrderType::None;
+      perm.resize(numberInstances);
+      for (size_t i = 0; i < perm.size(); ++i) perm[i] = i;
+      break;
+    case OrderType::Random:
+      ot = OrderType::Random;
+      perm.resize(numberInstances);
+      for (size_t i = 0; i < perm.size(); ++i) perm[i] = i;
+      std::random_shuffle(perm.begin(), perm.end());
+      usePermutation();
+      break;
+    case OrderType::Morton:
+      ot = OrderType::Morton;
+      zorder(data, perm);
+      usePermutation();
+      break;
+    case OrderType::External:
+    case OrderType::Invalid:
+    default:
+      break;
   }
 }
 
@@ -194,9 +195,7 @@ void SortedDataset::setOrder(const std::vector<size_t> &permutation) {
 }
 
 /// Returns current order type
-SortedDataset::OrderType SortedDataset::getOrderType() const {
-  return ot;
-}
+SortedDataset::OrderType SortedDataset::getOrderType() const { return ot; }
 
 /// Restores the original order in case of a valid order type. Sets ot to OrderType::None
 void SortedDataset::restoreOrder() {

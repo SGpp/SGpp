@@ -34,7 +34,7 @@ class MortonOrder {
   bool isOrdered() const;
 
   /// Access to the permutation vector
-  const std::vector<size_t>& getPermutation() const;
+  const std::vector<size_t> &getPermutation() const;
 
  protected:
   bool _isOrdered;

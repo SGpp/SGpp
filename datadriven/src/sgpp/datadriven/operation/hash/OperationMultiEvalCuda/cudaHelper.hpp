@@ -3,9 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <stdio.h>
-#include <stdint.h>
 #include <cuda_runtime.h>
+#include <stdint.h>
+#include <stdio.h>
 
 #ifndef CUDA_ERROR_CHECK
 #define CUDA_ERROR_CHECK
@@ -18,14 +18,13 @@ namespace OpMultiEvalCudaDetail {
 /// Wrapper for __cudaSafeCall
 #define CudaSafeCall(err) __cudaSafeCall(err, __FILE__, __LINE__)
 /// Wrapper for __cudaCheckError
-#define CudaCheckError()    __cudaCheckError(__FILE__, __LINE__)
+#define CudaCheckError() __cudaCheckError(__FILE__, __LINE__)
 
 /// Error catcher for CUDA API calls
-inline void __cudaSafeCall(cudaError err, const char *file, const int line) {
+inline void __cudaSafeCall(cudaError err, const char* file, const int line) {
 #ifdef CUDA_ERROR_CHECK
   if (cudaSuccess != err) {
-    fprintf(stderr, "cudaSafeCall() failed at %s:%i : %s\n",
-            file, line, cudaGetErrorString(err));
+    fprintf(stderr, "cudaSafeCall() failed at %s:%i : %s\n", file, line, cudaGetErrorString(err));
     exit(-1);
   }
 #endif
@@ -33,20 +32,19 @@ inline void __cudaSafeCall(cudaError err, const char *file, const int line) {
 }
 
 /// Checker for previously occured errors in GPU kernel code
-inline void __cudaCheckError(const char *file, const int line) {
+inline void __cudaCheckError(const char* file, const int line) {
 #ifdef CUDA_ERROR_CHECK
   cudaError err = cudaGetLastError();
   if (cudaSuccess != err) {
-    fprintf(stderr, "cudaCheckError() failed at %s:%i : %s\n",
-            file, line, cudaGetErrorString(err));
+    fprintf(stderr, "cudaCheckError() failed at %s:%i : %s\n", file, line, cudaGetErrorString(err));
     exit(-1);
   }
   // More careful checking. However, this will affect performance.
   // Comment away if needed.
   err = cudaDeviceSynchronize();
   if (cudaSuccess != err) {
-    fprintf(stderr, "cudaCheckError() with sync failed at %s:%i : %s\n",
-             file, line, cudaGetErrorString(err));
+    fprintf(stderr, "cudaCheckError() with sync failed at %s:%i : %s\n", file, line,
+            cudaGetErrorString(err));
     exit(-1);
   }
 #endif
@@ -54,7 +52,7 @@ inline void __cudaCheckError(const char *file, const int line) {
 }
 
 /// Template class managing host and device memory
-template<typename _dtype>
+template <typename _dtype>
 class HostDevPtr {
  public:
   /// Constructor does not allocate any memory
@@ -87,13 +85,11 @@ class HostDevPtr {
 
   /// Copies data from host to device
   void CopyToDev() {
-    if (_host && _dev)
-      cudaMemcpy(_dev, _host, sizeof(_dtype) * _size, cudaMemcpyHostToDevice);
+    if (_host && _dev) cudaMemcpy(_dev, _host, sizeof(_dtype) * _size, cudaMemcpyHostToDevice);
   }
   /// Copies data from device to host
   void CopyToHost() {
-    if (_host && _dev)
-      cudaMemcpy(_host, _dev, sizeof(_dtype) * _size, cudaMemcpyDeviceToHost);
+    if (_host && _dev) cudaMemcpy(_host, _dev, sizeof(_dtype) * _size, cudaMemcpyDeviceToHost);
   }
   /// Allocates an array on the host
   void HostAlloc(const size_t& size) {
@@ -125,16 +121,16 @@ class HostDevPtr {
     CudaCheckError();
   }
   /// Excesses elements on the host
-  _dtype& operator[] (const size_t& idx) {
+  _dtype& operator[](const size_t& idx) {
     if (!_host || idx >= _size) throw;
     return _host[idx];
   }
   /// Returns the number of elements
   const size_t& size() const { return _size; }
   /// Returns the pointer to the host memory
-  _dtype* host () const { return _host; }
+  _dtype* host() const { return _host; }
   /// Returns the pointer to the device memory
-  _dtype* dev () const { return _dev; }
+  _dtype* dev() const { return _dev; }
   /// Writes the host data to a binary file
   void Save(const char* file) {
     FILE* handle = fopen(file, "wb");
@@ -148,18 +144,17 @@ class HostDevPtr {
     fseek(handle, 0, SEEK_END);
     fgetpos(handle, &p);
     Free();
-    _size = p.__pos/sizeof(_dtype);
+    _size = p.__pos / sizeof(_dtype);
     _ref = false;
     _host = new _dtype[_size];
     rewind(handle);
-    if (fread(_host, _size, sizeof(_dtype), handle) == _size)
-        printf("OK\n");
+    if (fread(_host, _size, sizeof(_dtype), handle) == _size) printf("OK\n");
     fclose(handle);
   }
 
  private:
-  _dtype *_host;
-  _dtype *_dev;
+  _dtype* _host;
+  _dtype* _dev;
   size_t _size;
   bool _ref;
 };
