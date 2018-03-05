@@ -844,6 +844,81 @@ BOOST_AUTO_TEST_CASE(testBsplineStochasticCollocation_co2_lognormal) {
   BOOST_CHECK_SMALL(std::abs(co2Model.variance - bsc.variance()), 1e-9);
 }
 
+double objectiveFunction(sgpp::base::DataVector const& v) { return 4.0 * v[0] - 1.0; }
+
+BOOST_AUTO_TEST_CASE(testBsplineNormalMeanAndVariance) {
+  std::cout << "testing calculation of mean and variance using normally distribution and linear "
+               "function transformed to [-1,3]"
+            << std::endl;
+  size_t numDimensions = 1;
+  size_t degree = 5;
+  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
+      numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+  sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(
+      sgpp::combigrid::MultiFunction(objectiveFunction), pointHierarchies, degree);
+
+  // set up the weight function collection as normally distributed probability density functions
+  sgpp::combigrid::ProbabilityDensityFunction1DConfiguration pdf_config;
+  pdf_config.pdfParameters.type_ = sgpp::combigrid::ProbabilityDensityFunctionType::NORMAL;
+  pdf_config.pdfParameters.mean_ = 1.0;    // => we should obtain mean = 1.0
+  pdf_config.pdfParameters.stddev_ = 0.1;  // => we should obtain variance = 0.01
+  pdf_config.pdfParameters.lowerBound_ = -1;
+  pdf_config.pdfParameters.upperBound_ = 3;
+  auto probabilityDensityFunction =
+      std::make_shared<sgpp::combigrid::ProbabilityDensityFunction1D>(pdf_config);
+  sgpp::combigrid::SingleFunction oneDimensionsalWeightFunction =
+      probabilityDensityFunction->getWeightFunction();
+  sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection;
+  sgpp::base::DataVector bounds;
+  for (size_t d = 0; d < numDimensions; d++) {
+    bounds.push_back(-1);
+    bounds.push_back(3);
+    weightFunctionsCollection.push_back(oneDimensionsalWeightFunction);
+  }
+
+  // set up the configuration for the B spline Stochastic Collocation
+  std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> storage;
+  sgpp::combigrid::CombigridSurrogateModelConfiguration config;
+  config.type = sgpp::combigrid::CombigridSurrogateModelsType::BSPLINE_STOCHASTIC_COLLOCATION;
+  config.pointHierarchies = pointHierarchies;
+  config.levelManager = std::make_shared<sgpp::combigrid::AveragingLevelManager>();
+  config.degree = degree;
+  config.coefficientStorage = storage;
+  config.weightFunctions = weightFunctionsCollection;
+  config.bounds = bounds;
+  sgpp::combigrid::BsplineStochasticCollocation bsc(config);
+
+  sgpp::combigrid::EvaluatorConfiguration EvalConfig(
+      sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, config.degree);
+  sgpp::combigrid::CombiEvaluators::MultiCollection Evaluators(
+      numDimensions, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(EvalConfig));
+  std::shared_ptr<sgpp::combigrid::LevelManager> varianceLevelManager(
+      new sgpp::combigrid::RegularLevelManager());
+  sgpp::combigrid::FullGridSummationStrategyType auxiliarySummationStrategyType =
+      sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
+  bool exploitNesting = false;
+  auto Operation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
+      pointHierarchies, Evaluators, varianceLevelManager, gf, exploitNesting,
+      auxiliarySummationStrategyType);
+
+  Operation->getLevelManager()->addRegularLevels(1);
+
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager = Operation->getLevelManager();
+  std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage =
+      Operation->getStorage();
+
+  //  update config
+  config.levelStructure = levelManager->getLevelStructure();
+  config.coefficientStorage = coefficientStorage;
+  bsc.updateConfig(config);
+
+  double variance = bsc.variance();
+  double ev = bsc.mean();
+  //  std::cout << "mean: " << ev << " variance: " << variance << std::endl;
+  BOOST_CHECK_SMALL(std::abs(ev - 1), 1e-13);
+  BOOST_CHECK_SMALL(std::abs(variance - 0.01), 1e-13);
+}
+
 #endif
 
 BOOST_AUTO_TEST_SUITE_END()
