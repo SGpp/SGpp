@@ -279,12 +279,53 @@ base::OperationQuadrature* createOperationQuadrature(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
     return new base::OperationQuadratureLinearBoundary(grid.getStorage());
+  } else if (grid.getType() == base::GridType::ModLinear) {
+    return new base::OperationQuadratureModLinear(grid.getStorage());
+  } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
+    return new base::OperationQuadratureLinearClenshawCurtis(grid.getStorage());
+  } else if (grid.getType() == base::GridType::LinearClenshawCurtisBoundary) {
+    return new base::OperationQuadratureLinearClenshawCurtisBoundary(grid.getStorage());
+  } else if (grid.getType() == base::GridType::ModLinearClenshawCurtis) {
+    return new base::OperationQuadratureModLinearClenshawCurtis(grid.getStorage());
   } else if (grid.getType() == base::GridType::Poly) {
     return new base::OperationQuadraturePoly(grid.getStorage(),
                                              dynamic_cast<base::PolyGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::ModPoly) {
+    return new base::OperationQuadratureModPoly(
+        grid.getStorage(), dynamic_cast<base::ModPolyGrid*>(&grid)->getDegree());
   } else if (grid.getType() == base::GridType::PolyBoundary) {
     return new base::OperationQuadraturePolyBoundary(
         grid.getStorage(), dynamic_cast<base::PolyBoundaryGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary) {
+    return new base::OperationQuadraturePolyClenshawCurtisBoundary(
+        grid.getStorage(), dynamic_cast<base::PolyClenshawCurtisBoundaryGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::PolyClenshawCurtis) {
+    return new base::OperationQuadraturePolyClenshawCurtis(
+        grid.getStorage(), dynamic_cast<base::PolyClenshawCurtisGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
+    return new base::OperationQuadratureModPolyClenshawCurtis(
+        grid.getStorage(), dynamic_cast<base::ModPolyClenshawCurtisGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::Bspline) {
+    return new base::OperationQuadratureBspline(
+        grid.getStorage(), dynamic_cast<base::BsplineGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::BsplineBoundary) {
+    return new base::OperationQuadratureBsplineBoundary(
+        grid.getStorage(), dynamic_cast<base::BsplineBoundaryGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
+    return new base::OperationQuadratureBsplineClenshawCurtis(
+        grid.getStorage(), dynamic_cast<base::BsplineClenshawCurtisGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::ModBspline) {
+    return new base::OperationQuadratureModBspline(
+        grid.getStorage(), dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
+    return new base::OperationQuadratureModBsplineClenshawCurtis(
+        grid.getStorage(), dynamic_cast<base::ModBsplineClenshawCurtisGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::FundamentalSpline) {
+    return new base::OperationQuadratureFundamentalSpline(
+        grid.getStorage(), dynamic_cast<base::FundamentalSplineGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
+    return new base::OperationQuadratureModFundamentalSpline(
+        grid.getStorage(), dynamic_cast<base::ModFundamentalSplineGrid*>(&grid)->getDegree());
   } else {
     throw base::factory_exception(
         "createOperationQuadrature is not implemented for this grid type.");
