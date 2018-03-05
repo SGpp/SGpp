@@ -9,7 +9,6 @@
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
-#include <pecos_data_types.hpp>
 
 #include <vector>
 
@@ -109,11 +108,6 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(
 PolynomialChaosExpansion::~PolynomialChaosExpansion() {}
 
 double PolynomialChaosExpansion::mean() {
-  //  if (orthogPoly != nullptr) {
-  // #ifdef USE_DAKOTA
-  //    return orthogPoly->mean();
-  // #endif
-  //  }
   if (numGridPoints < combigridTensorOperation->numGridPoints()) {
     expansionCoefficients = combigridTensorOperation->getResult();
     numGridPoints = combigridTensorOperation->numGridPoints();
@@ -122,11 +116,6 @@ double PolynomialChaosExpansion::mean() {
 }
 
 double PolynomialChaosExpansion::variance() {
-  //  if (orthogPoly != nullptr) {
-  // #ifdef USE_DAKOTA
-  //    return orthogPoly->variance();
-  // #endif
-  //  }
   // PCE norm, i.e. variance (if using appropriate normalized orthogonal polynomials)
   if (numGridPoints < combigridTensorOperation->numGridPoints()) {
     expansionCoefficients = combigridTensorOperation->getResult();

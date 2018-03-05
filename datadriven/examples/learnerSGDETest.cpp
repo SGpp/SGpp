@@ -9,9 +9,9 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
-#include <sgpp/datadriven/application/LearnerSGDE.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/application/KernelDensityEstimator.hpp>
+#include <sgpp/datadriven/application/SparseGridDensityEstimator.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp>
 
@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
   sgpp::base::RegularGridConfiguration gridConfig;
   gridConfig.dim_ = dataset.getDimension();
   gridConfig.level_ = 3;
-  gridConfig.type_ = sgpp::base::GridType::BsplineClenshawCurtis;
+  gridConfig.type_ = sgpp::base::GridType::Linear;
   gridConfig.maxDegree_ = 3;
   //  gridConfig.filename_ = "/tmp/sgde-grid-4391dc6e-54cd-4ca2-9510-a9c02a2889ec.grid";
 
@@ -95,17 +95,18 @@ int main(int argc, char** argv) {
   // configure learner
   std::cout << "# create learner config" << std::endl;
   sgpp::datadriven::SGDEConfiguration sgdeConfig;
-  sgdeConfig.makePositive_ = false;
+  sgdeConfig.makePositive_ = true;
   sgdeConfig.makePositive_candidateSearchAlgorithm_ =
       sgpp::datadriven::MakePositiveCandidateSearchAlgorithm::HybridFullIntersections;
   sgdeConfig.makePositive_interpolationAlgorithm_ =
-      sgpp::datadriven::MakePositiveInterpolationAlgorithm::SetToZero;
-  sgdeConfig.makePositive_verbose_ = false;
+      sgpp::datadriven::MakePositiveInterpolationAlgorithm::InterpolateBoundaries1d;
+  sgdeConfig.makePositive_verbose_ = true;
   sgdeConfig.unitIntegrand_ = true;
 
   std::cout << "# creating the learner" << std::endl;
-  sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptConfig, solverConfig, regularizationConfig,
-                                        crossvalidationConfig, sgdeConfig);
+  sgpp::datadriven::SparseGridDensityEstimator learner(gridConfig, adaptConfig, solverConfig,
+                                                       regularizationConfig, crossvalidationConfig,
+                                                       sgdeConfig);
 
   //  std::string s("/tmp/sgde-config-365135c5-fb8a-4377-9fea-e16ef916a5c5.json");
   //  sgpp::datadriven::LearnerSGDEConfiguration config2(s);

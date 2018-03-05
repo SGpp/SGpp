@@ -8,7 +8,7 @@
 %}
 
 // base class is not exported from the configuration
-%warnfilter(401) sgpp::datadriven::LearnerSGDEConfiguration;
+%warnfilter(401) sgpp::datadriven::SparseGridDensityEstimatorConfiguration;
 
 // The Good, i.e. without any modifications
 #ifdef SG_DATADRIVEN
@@ -40,7 +40,11 @@
 %include "datadriven/src/sgpp/datadriven/application/LearnerBase.hpp"
 %include "datadriven/src/sgpp/datadriven/application/DensityEstimator.hpp"
 %include "datadriven/src/sgpp/datadriven/application/KernelDensityEstimator.hpp"
-%include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
+%newobject sgpp::datadriven::KernelDensityEstimator::margToDimX(size_t idim);
+%newobject sgpp::datadriven::KernelDensityEstimator::marginalize(size_t idim);
+%include "datadriven/src/sgpp/datadriven/application/SparseGridDensityEstimator.hpp"
+%newobject sgpp::datadriven::SparseGridDensityEstimator::margToDimX(size_t idim);
+%newobject sgpp::datadriven::SparseGridDensityEstimator::marginalize(size_t idim);
 
 #ifdef USE_GSL
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGDEOnOff.hpp"

@@ -33,7 +33,7 @@
 #include <sgpp/datadriven/application/Learner.hpp>
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
 #include <sgpp/datadriven/application/KernelDensityEstimator.hpp>
-#include <sgpp/datadriven/application/LearnerSGDE.hpp>
+#include <sgpp/datadriven/application/SparseGridDensityEstimator.hpp>
 #ifdef USE_GSL
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #endif /* USE_GSL */
