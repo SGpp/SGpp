@@ -95,7 +95,7 @@ def refineGrid(grid, alpha, f, refnums):
         gridGen.refine(SurplusRefinementFunctor(alpha, 1))
 
         # extend alpha vector (new entries uninitialized)
-        alpha.resize(gs.getSize())
+        alpha.resizeZero(gs.getSize())
 
         # set function values in alpha
         for i in xrange(gs.getSize()):
