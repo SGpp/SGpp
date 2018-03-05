@@ -30,6 +30,16 @@ jsgpp/jsgpp_wrap.h
 pysgpp/pysgpp_swig.py
 pysgpp/pysgpp_wrap.cc
 pysgpp/pysgpp_wrap.h
+matsgpp/matsgpp_wrap.cc
+matsgpp/matsgpp_wrap.h
+matsgpp/matsgppmex.mexa64
+matsgpp/matsgppmex.mexmaci64
+matsgpp/matsgppmex.mexw64
+matsgpp/matlab/SwigGet.m
+matsgpp/matlab/SwigMem.m
+matsgpp/matlab/SwigRef.m
+matsgpp/matlab/SwigStorage.m
+matsgpp/matlab/+matsgpp/
 
 #ignoring build output
 lib/*
