@@ -27,7 +27,11 @@ namespace datadriven {
  */
 class DBMatOfflineLU : public DBMatOfflineGE {
  public:
-  explicit DBMatOfflineLU(const DBMatDensityConfiguration& oc);
+  explicit DBMatOfflineLU(
+      const sgpp::base::RegularGridConfiguration& gridConfig,
+      const sgpp::base::AdpativityConfiguration& adaptivityConfig,
+      const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+      const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
 
   explicit DBMatOfflineLU(const std::string& fileName);
 

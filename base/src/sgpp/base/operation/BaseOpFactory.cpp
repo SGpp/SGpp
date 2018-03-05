@@ -67,6 +67,8 @@
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPrewavelet.hpp>
 
+#include <sgpp/base/operation/hash/OperationMultipleEvalInterModLinear.hpp>
+
 #include <sgpp/base/operation/hash/OperationEvalBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalBsplineBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalBsplineClenshawCurtisNaive.hpp>
@@ -121,6 +123,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <cstring>
+#include <vector>
 
 namespace sgpp {
 
@@ -283,6 +286,16 @@ base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
   } else {
     throw base::factory_exception(
         "createOperationMultipleEval is not implemented for this grid type.");
+  }
+}
+
+base::OperationMultipleEval* createOperationMultipleEvalInter(base::Grid& grid,
+       base::DataMatrix& dataset, std::vector<std::vector<size_t>> interactions) {
+  if (grid.getType() == base::GridType::ModLinear) {
+    return new base::OperationMultipleEvalInterModLinear(grid, dataset, interactions);
+  } else {
+    throw base::factory_exception(
+        "createOperationMultipleEvalInter is not implemented for this grid type.");
   }
 }
 

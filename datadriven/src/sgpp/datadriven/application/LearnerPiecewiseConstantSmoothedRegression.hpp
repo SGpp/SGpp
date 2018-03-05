@@ -12,7 +12,7 @@
 #include <sgpp/datadriven/operation/hash/OperationPiecewiseConstantRegression/Node.hpp>
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 
 #include <sgpp/globaldef.hpp>

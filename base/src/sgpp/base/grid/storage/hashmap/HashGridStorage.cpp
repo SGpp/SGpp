@@ -106,6 +106,30 @@ HashGridStorage::HashGridStorage(HashGridStorage& copyFrom)
   }
 }
 
+void HashGridStorage::operator=(const HashGridStorage& other) {
+  clear();
+
+  if (bUseStretching) {
+    delete stretching;
+  } else {
+    delete boundingBox;
+  }
+
+  dimension = other.dimension;
+  algoDims = other.algoDims;
+  bUseStretching = other.bUseStretching;
+
+  if (other.bUseStretching) {
+    stretching = new Stretching(*other.stretching);
+  } else {
+    boundingBox = new BoundingBox(*other.boundingBox);
+  }
+
+  for (size_t i = 0; i < other.getSize(); i++) {
+    this->insert(other[i]);
+  }
+}
+
 HashGridStorage::~HashGridStorage() {
   // delete all grid points
   if (bUseStretching) {
@@ -261,7 +285,7 @@ size_t HashGridStorage::getNumberOfInnerPoints() const {
 
 size_t HashGridStorage::getDimension() const { return dimension; }
 
-size_t HashGridStorage::insert(point_type& index) {
+size_t HashGridStorage::insert(const point_type& index) {
   point_pointer insert = new HashGridPoint(index);
   list.push_back(insert);
   return (map[insert] = list.size() - 1);
