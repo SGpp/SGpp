@@ -7,9 +7,9 @@
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/operation/onedim/InterpolationCoefficientEvaluator.hpp>
 
-#include <vector>
 #include <algorithm>
 #include <iostream>
+#include <vector>
 
 #ifdef USE_EIGEN
 #include <eigen3/Eigen/Dense>
@@ -80,7 +80,7 @@ void InterpolationCoefficientEvaluator::setGridPoints(const std::vector<double>&
   }
 
 #else
-  throw new sgpp::base::generation_exception("need Eigen to use the PCE transformation.");
+  throw sgpp::base::generation_exception("need Eigen to use the PCE transformation.");
 #endif
 }
 
