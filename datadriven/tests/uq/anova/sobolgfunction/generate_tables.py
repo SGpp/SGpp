@@ -15,7 +15,7 @@ latexcode_full_model = r"""
     \multicolumn{2}{c}{generalized PC expansion} &
     \multicolumn{2}{c}{sparse grid on Clenshaw-Curtis} \\
     & value & & &
-    \multicolumn{2}{c}{with modfied polynomial basis} \\
+    \multicolumn{2}{c}{with modified polynomial basis} \\
     \hline
     & &
     \multicolumn{1}{l}{Fekete} &
@@ -53,7 +53,7 @@ latexcode_reduced_model = r"""
     &
     value &
     & & & & & &
-    \multicolumn{4}{c}{with modfied polynomial basis} \\
+    \multicolumn{4}{c}{with modified polynomial basis} \\
     \hline
     & &
     \multicolumn{2}{c}{\citet{Sudret08Global}} &
@@ -289,5 +289,3 @@ if __name__ == "__main__":
     fd = open(os.path.join("tables", "sobolgfunction_%s_results_table.tex" % model), "w")
     fd.write(latexcode[model] % tuple(row_entries[model] + [unknowns[model]]))
     fd.close()
-
-
