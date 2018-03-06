@@ -117,9 +117,11 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
         this->storage, this->evaluatorPrototypes, this->pointHierarchies);
 
     // Var = E(x^2) - E(x)^2
-    FloatScalarVector mean = linearStrategy.eval(level);  // <=
+    FloatScalarVector mean = linearStrategy.eval(level);
     V meanSquare = quadraticStrategy.eval(level);
     mean.scalarMult(width);
+    //    std::cout << "FullGridVarianceSummationStrategy:" << std::endl;
+    //    std::cout << "mean: " << mean.value() << std::endl;
 
     mean.componentwiseMult(mean);
     FloatScalarVector variance = meanSquare[0];
@@ -128,6 +130,7 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
     variance.sub(mean);
 
     V returnVariance(variance);
+    //    std::cout << "variance: " << variance[0].value() << std::endl;
     return returnVariance;
   }
 };

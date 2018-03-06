@@ -408,12 +408,11 @@ CombigridMultiOperation::createBsplineVarianceRefinementOperation(
     evaluators.push_back(sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(EvalConfig));
   }
 
-  // ToDo(rehmemk) this leads to a seg fault. Debug it so that weightfunctions and bounds are used
-  // in refinement
-  //  for (size_t d = 0; d < numDimensions; d++) {
-  //    evaluators[d]->setWeightFunction(weightFunctions[d]);
-  //    evaluators[d]->setBounds(bounds[2 * d], bounds[2 * d + 1]);
-  //  }
+  // ToDo(rehmemk) this leads to a wrong adaptive grid generation
+  for (size_t d = 0; d < numDimensions; d++) {
+    evaluators[d]->setWeightFunction(weightFunctions[d]);
+    evaluators[d]->setBounds(bounds[2 * d], bounds[2 * d + 1]);
+  }
 
   sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =
       sgpp::combigrid::FullGridSummationStrategyType::VARIANCE;

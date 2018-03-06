@@ -32,14 +32,14 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(
     // constant function for single point, Lagrange polynomials while not enough knots for not a
     // knot B-splines, nak B-splines otherwise
     if (xValues.size() == 1) {
-      numGaussPoints = 1;
+      numGaussPoints = 1 + numAdditionalPoints;
       quadRule.getLevelPointsAndWeightsNormalized(
           std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
       double x = roots[0];
       double transX = x;  // a + transWidth * x;
       sum = 1.0 * this->weight_function(transX) * quadratureweights[0];
     } else if ((degree == 3 && (xValues.size() < 5)) || ((degree == 5) && (xValues.size() < 9))) {
-      numGaussPoints = 2 * xValues.size();
+      numGaussPoints = 2 * xValues.size() + numAdditionalPoints;
       quadRule.getLevelPointsAndWeightsNormalized(
           std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
       for (size_t i = 0; i < roots.getSize(); ++i) {

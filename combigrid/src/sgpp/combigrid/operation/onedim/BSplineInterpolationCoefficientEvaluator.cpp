@@ -25,7 +25,7 @@ namespace combigrid {
 
 size_t getGridLevelForExpUniformBoundaryGrid(size_t numGridPoints) {
   if (numGridPoints > 1) {
-    return log2(numGridPoints - 2);
+    return static_cast<double>(log2(numGridPoints - 2));
   } else {
     return 0;
   }
