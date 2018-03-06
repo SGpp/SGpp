@@ -7,8 +7,8 @@
 
 #include <sgpp/combigrid/algebraic/FloatTensorVector.hpp>
 #include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
-#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp>
 #include <sgpp/combigrid/grid/TensorGrid.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp>
 
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
@@ -122,7 +122,7 @@ class FullGridOptimizedPCESummationStrategy : public AbstractFullGridSummationSt
 
     return V(resultCoefficients);
 #else
-    throw new sgpp::base::generation_exception("need Eigen to use the PCE transformation.");
+    throw sgpp::base::generation_exception("need Eigen to use the PCE transformation.");
 #endif
   }
 

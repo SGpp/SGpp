@@ -45,7 +45,7 @@ def getModules(ignoreFolders):
     module = module[len(path):]
     if module in ignoreFolders:
       continue
-    if module in ["jsgpp", "pysgpp"]:
+    if module in ["jsgpp", "pysgpp", "matsgpp"]:
       languageSupport.append(module)
       continue
     modules.append(module)
@@ -191,8 +191,8 @@ def setSpawn(env):
   def echoSpawn(sh, escape, cmd, args, spawnEnv):
       """Spawn which echos stdout/stderr from the child."""
       # convert spawnEnv from unicode strings
-      for var in spawnEnv:
-        spawnEnv[var] = spawnEnv[var].encode("ascii", "replace")
+      # for var in spawnEnv:
+      #   spawnEnv[var] = spawnEnv[var].encode("ascii", "replace")
 
       newArgs = " ".join(args[1:])
       cmdLine = cmd + " " + newArgs

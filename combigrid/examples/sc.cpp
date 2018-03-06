@@ -3,9 +3,16 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+/**
+ * \page example_sc_cpp Stochastic Collocation with Combigrids
+ *
+ * This simple example shows how to create a Stochastic Collocation surrogate from a
+ * regular combigrid.
+ */
+
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
 #include <sgpp/combigrid/functions/ProbabilityDensityFunction1D.hpp>
+#include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
@@ -23,8 +30,14 @@
 #include <vector>
 
 int main() {
+  /**
+   * First we create an analytical model for comparison
+   */
   sgpp::combigrid::AtanBeta model;
 
+  /**
+   * and define the corresponding probability density functions.
+   */
   sgpp::combigrid::ProbabilityDensityFunction1DConfiguration config;
   config.pdfParameters.type_ = sgpp::combigrid::ProbabilityDensityFunctionType::BETA;
   config.pdfParameters.lowerBound_ = model.bounds[0];
@@ -44,6 +57,10 @@ int main() {
   weightFunctions.push_back(pdf1->getWeightFunction());
   weightFunctions.push_back(pdf2->getWeightFunction());
 
+  /**
+  * Then we create a combigrid for our model
+  */
+
   sgpp::combigrid::MultiFunction func(model.eval);
 
   sgpp::combigrid::CombiHierarchies::Collection grids{
@@ -61,6 +78,10 @@ int main() {
 
   auto op_levelManager = op->getLevelManager();
 
+  /**
+   * and from that initialize a Stochastic Collocation surrogate.
+   */
+
   // initialize the surrogate model
   std::vector<double> bounds{pdf1->lowerBound(), pdf1->upperBound(), pdf2->lowerBound(),
                              pdf2->upperBound()};
@@ -71,19 +92,26 @@ int main() {
   sc_config.bounds = sgpp::base::DataVector(bounds);
   auto sc = sgpp::combigrid::createCombigridSurrogateModel(sc_config);
 
+  // config used for updating surrogate in loop
   sgpp::combigrid::CombigridSurrogateModelConfiguration update_config;
+
+  /**
+   * Finally levels are added to the combigrid and subsequently the collocation surrogate is updated
+   * and the model's mean and variance error is printed.
+   */
 
   sgpp::combigrid::Stopwatch stopwatch;
   for (size_t q = 0; q < 8; ++q) {
+    // add levels to combigrid
     op_levelManager->addRegularLevels(q);
-    //    tensor_levelManager->addLevelsAdaptive(100);
-    // compute the variance
     std::cout << "---------------------------------------------------------" << std::endl;
     std::cout << "compute mean and variance of stochastic collocation" << std::endl;
     std::cout << "#gp = " << op_levelManager->numGridPoints() << std::endl;
     stopwatch.start();
+    // update surrogate
     update_config.levelStructure = op_levelManager->getLevelStructure();
     sc->updateConfig(update_config);
+    // compute mean and variance
     double mean = sc->mean();
     double variance = sc->variance();
     stopwatch.log();

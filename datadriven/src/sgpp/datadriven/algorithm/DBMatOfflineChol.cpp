@@ -36,7 +36,12 @@ using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 using sgpp::base::algorithm_exception;
 
-DBMatOfflineChol::DBMatOfflineChol(const DBMatDensityConfiguration& oc) : DBMatOfflineGE(oc) {}
+DBMatOfflineChol::DBMatOfflineChol(
+    const sgpp::base::RegularGridConfiguration& gridConfig,
+    const sgpp::base::AdpativityConfiguration& adaptivityConfig,
+    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig)
+    : DBMatOfflineGE(gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig) {}
 
 DBMatOfflineChol::DBMatOfflineChol(const std::string& fileName) : DBMatOfflineGE{fileName} {}
 
@@ -244,6 +249,7 @@ void DBMatOfflineChol::choleskyModification(size_t newPoints, std::list<size_t> 
   throw algorithm_exception("built withot GSL");
 #endif /*USE_GSL*/
 }
+
 
 void DBMatOfflineChol::choleskyAddPoint(DataVector& newCol, size_t size) {
 #ifdef USE_GSL

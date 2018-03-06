@@ -13,6 +13,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <cstring>
 
 namespace sgpp {
 namespace datadriven {
@@ -74,6 +75,10 @@ void ARFFTools::readARFFSize(const std::string& filename, size_t& numberInstance
       dimension++;
     } else if (line.find("@DATA", 0) != line.npos) {
       numberInstances = 0;
+    } else if (line.find("% DATA SET SIZE ", 0) != line.npos) {
+      numberInstances = std::stoi(line.substr(strlen("% DATA SET SIZE ")));
+      std::cout << "Set number instances from comment to " << numberInstances << std::endl;
+      break;
     } else if (!line.empty()) {
       numberInstances++;
     }

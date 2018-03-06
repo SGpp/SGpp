@@ -18,14 +18,16 @@
 #include <sgpp/datadriven/algorithm/DBMatDMSEigen.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineEigen.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEEigen.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDELU.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
 #endif /* USE_GSL */
 
 #include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSDenseIChol.hpp>
+#include <sgpp/datadriven/algorithm/DBMatDMSOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
-#include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
@@ -55,6 +57,19 @@
 #include <sgpp/datadriven/application/LearnerSVM.hpp>
 #include <sgpp/datadriven/application/PrimalDualSVM.hpp>
 #include <sgpp/datadriven/application/RegressionLearner.hpp>
+
+#ifdef USE_MPI
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/AuxiliaryStructures.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIRequestPool.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/MPITaskScheduler.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/NetworkMessageData.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/PendingMPIRequest.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/RefinementHandler.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/RoundRobinScheduler.hpp>
+#endif /* USE_MPI */
+
 #include <sgpp/datadriven/tools/NearestNeighbors.hpp>
 
 #include <sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonal.hpp>
@@ -79,7 +94,10 @@
 
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/BatchConfiguration.hpp>
+#include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 
 /* ************************
  * datamining
@@ -94,7 +112,9 @@
 #include <sgpp/datadriven/datamining/builder/SplittingScorerFactory.hpp>
 
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
+#include <sgpp/datadriven/datamining/configuration/DensityEstimationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
+#include <sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp>
 

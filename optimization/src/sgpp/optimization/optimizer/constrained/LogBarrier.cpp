@@ -169,7 +169,7 @@ void LogBarrier::optimize() {
   xHist.appendRow(x);
   fHist.append(fx);
 
-  base::DataVector xNew(d);
+  base::DataVector xOld(d);
 
   base::DataVector gx(g->getNumberOfComponents());
 
@@ -192,13 +192,12 @@ void LogBarrier::optimize() {
                                                    10.0 * theta);
     unconstrainedOptimizer.setStartingPoint(x);
     unconstrainedOptimizer.optimize();
-    xNew = unconstrainedOptimizer.getOptimalPoint();
+    x = unconstrainedOptimizer.getOptimalPoint();
 
     const base::DataMatrix& innerPoints = unconstrainedOptimizer.getHistoryOfOptimalPoints();
     const size_t numberInnerIterations = innerPoints.getNrows();
     k += numberInnerIterations;
 
-    x = xNew;
     fx = f->eval(x);
     g->eval(x, gx);
     k++;
@@ -222,9 +221,9 @@ void LogBarrier::optimize() {
 
     mu *= rhoMuMinus;
 
-    xNew.sub(x);
+    xOld.sub(x);
 
-    if (xNew.l2Norm() < theta) {
+    if (xOld.l2Norm() < theta) {
       breakIterationCounter++;
 
       if (breakIterationCounter >= BREAK_ITERATION_COUNTER_MAX) {
@@ -233,6 +232,8 @@ void LogBarrier::optimize() {
     } else {
       breakIterationCounter = 0;
     }
+
+    xOld = x;
   }
 
   xOpt.resize(d);
