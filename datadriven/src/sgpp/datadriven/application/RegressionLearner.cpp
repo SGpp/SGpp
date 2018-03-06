@@ -188,7 +188,7 @@ void RegressionLearner::initializeGrid(const base::RegularGridConfiguration grid
 std::unique_ptr<datadriven::DMSystemMatrixBase> RegressionLearner::createDMSystem(
     base::DataMatrix& trainDataset) {
   using datadriven::RegularizationType;
-  base::OperationMatrix* opMatrix = nullptr;
+  base::OperationMatrix* opMatrix;
   switch (regularizationConfig.type_) {
     case RegularizationType::Identity:
       opMatrix = sgpp::op_factory::createOperationIdentity(*grid);
@@ -207,8 +207,9 @@ std::unique_ptr<datadriven::DMSystemMatrixBase> RegressionLearner::createDMSyste
       throw base::application_exception(
           "RegressionLearner::createDMSystem: An unsupported regularization type was chosen!");
   }
-  return std::make_unique<datadriven::DMSystemMatrix>(*grid, trainDataset, opMatrix,
-                                                      regularizationConfig.lambda_);
+  return std::make_unique<datadriven::DMSystemMatrix>(
+      *grid, trainDataset, std::shared_ptr<base::OperationMatrix>(opMatrix),
+      regularizationConfig.lambda_);
 }
 
 RegressionLearner::Solver RegressionLearner::createSolver(size_t n_rows) {
