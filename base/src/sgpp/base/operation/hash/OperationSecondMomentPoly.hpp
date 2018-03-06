@@ -22,7 +22,7 @@ class OperationSecondMomentPoly : public OperationSecondMoment {
   /**
    * Constructor of OperationSecondMomentPoly
    *
-   * @param storage Pointer to the grid's GridStorage object
+   * @param grid Pointer to a sparse grid object
    */
   explicit OperationSecondMomentPoly(Grid* grid) : grid(grid) {}
 

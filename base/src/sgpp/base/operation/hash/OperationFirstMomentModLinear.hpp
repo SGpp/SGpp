@@ -22,7 +22,7 @@ class OperationFirstMomentModLinear : public OperationFirstMoment {
   /**
    * Constructor of OperationFirstMomentModLinear
    *
-   * @param storage Pointer to the grid's GridStorage object
+   * @param grid Pointer to a sparse grid object
    */
   explicit OperationFirstMomentModLinear(GridStorage& storage) : storage(storage) {}
 

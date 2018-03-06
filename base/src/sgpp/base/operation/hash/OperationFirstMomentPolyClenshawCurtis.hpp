@@ -22,10 +22,10 @@ class OperationFirstMomentPolyClenshawCurtis : public OperationFirstMoment {
   /**
    * Constructor of OperationFirstMomentPolyClenshawCurtis
    *
-   * @param storage Pointer to the grid's GridStorage object
+   * @param grid Pointer to a sparse grid object
    */
-  explicit OperationFirstMomentPolyClenshawCurtis(Grid* grid) : grid(grid),
-           clenshawCurtisTable(base::ClenshawCurtisTable::getInstance()) {}
+  explicit OperationFirstMomentPolyClenshawCurtis(Grid* grid)
+      : grid(grid), clenshawCurtisTable(base::ClenshawCurtisTable::getInstance()) {}
   ~OperationFirstMomentPolyClenshawCurtis() override {}
 
   /**

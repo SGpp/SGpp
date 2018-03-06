@@ -1637,9 +1637,9 @@ class BsplineBasis : public Basis<LT, IT> {
   inline size_t getDegree() const override { return degree; }
 
   /**
-   * @param l     level of basis function
-   * @param i     index of basis function
-   * @return      value of the Integral
+   * @param level     level of basis function
+   * @param index     index of basis function
+   * @return          value of the Integral
    */
   inline double getIntegral(LT level, IT index) override {
     size_t erster_abschnitt = std::max(0, -static_cast<int>(index - (degree + 1) / 2));

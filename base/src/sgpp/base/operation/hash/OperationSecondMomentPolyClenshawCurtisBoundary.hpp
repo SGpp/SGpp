@@ -22,10 +22,10 @@ class OperationSecondMomentPolyClenshawCurtisBoundary : public OperationSecondMo
   /**
    * Constructor of OperationSecondMomentPolyClenshawCurtisBoundary
    *
-   * @param storage Pointer to the grid's GridStorage object
+   * @param grid Pointer to a sparse grid object
    */
-  explicit OperationSecondMomentPolyClenshawCurtisBoundary(Grid* grid) : grid(grid),
-           clenshawCurtisTable(base::ClenshawCurtisTable::getInstance()) {}
+  explicit OperationSecondMomentPolyClenshawCurtisBoundary(Grid* grid)
+      : grid(grid), clenshawCurtisTable(base::ClenshawCurtisTable::getInstance()) {}
 
   ~OperationSecondMomentPolyClenshawCurtisBoundary() override {}
 

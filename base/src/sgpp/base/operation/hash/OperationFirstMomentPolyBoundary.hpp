@@ -22,7 +22,7 @@ class OperationFirstMomentPolyBoundary : public OperationFirstMoment {
   /**
    * Constructor of OperationFirstMomentPolyBoundary
    *
-   * @param storage Pointer to the grid's GridStorage object
+   * @param grid Pointer to a sparse grid object
    */
   explicit OperationFirstMomentPolyBoundary(Grid* grid) : grid(grid) {}
 

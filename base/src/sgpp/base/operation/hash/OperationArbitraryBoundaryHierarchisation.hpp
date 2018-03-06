@@ -36,7 +36,7 @@ class OperationArbitraryBoundaryHierarchisation : public OperationHierarchisatio
   /**
    * Implements the hierarchisation on a sparse grid
    *
-   * @param node_values the function's values in the nodal basis
+   * @param nodal_values the function's values in the nodal basis
    */
   void doHierarchisation(DataVector& nodal_values);
 

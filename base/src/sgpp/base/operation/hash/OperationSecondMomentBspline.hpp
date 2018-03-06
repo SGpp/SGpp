@@ -22,7 +22,7 @@ class OperationSecondMomentBspline : public OperationSecondMoment {
   /**
    * Constructor of OperationSecondMomentBspline
    *
-   * @param storage Pointer to the grid's GridStorage object
+   * @param grid Pointer to a sparse grid object
    */
   explicit OperationSecondMomentBspline(Grid* grid) : grid(grid) {}
 
