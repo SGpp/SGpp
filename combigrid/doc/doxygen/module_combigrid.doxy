@@ -16,7 +16,7 @@ The functionality of the module includes
 - optimizations: function evaluations (but not the following computations) can be easily parallelized, interpolation at multiple points at once, operator coefficients and grid points are stored for recomputations at other evaluation points
 - frequent use of abstract base classes such that extensions are easy to implement (e.g. new grids, operators and adaption schemes)
 - various surrogate models for Uncertainty Quantification that are based on the Combination Technique are available:
-  - @ref example_bspline_pce_cpp "B-Spline Collocation"
+  - @ref example_example_BSplineStochasticCollocation_cpp "B-Spline Collocation"
   - @ref example_sc_cpp "Stochastic Collocation" (global polynomial approximation with Legendre polynomials)
   - @ref example_pce_cpp "Polynomial Chaos Expansion" (global polynomial approximation with orthogonal polynomials with respect to univariate weight functions)
 
