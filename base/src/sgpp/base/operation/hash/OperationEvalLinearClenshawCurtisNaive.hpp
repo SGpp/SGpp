@@ -22,7 +22,7 @@ class OperationEvalLinearClenshawCurtisNaive : public OperationEval {
    *
    * @param storage   storage of the sparse grid
    */
-  OperationEvalLinearClenshawCurtisNaive(GridStorage& storage)
+  explicit OperationEvalLinearClenshawCurtisNaive(GridStorage& storage)
       : storage(storage), pointInUnitCube(storage.getDimension()) {}
 
   ~OperationEvalLinearClenshawCurtisNaive() override {}

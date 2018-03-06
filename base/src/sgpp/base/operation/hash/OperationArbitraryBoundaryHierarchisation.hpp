@@ -26,7 +26,7 @@ class OperationArbitraryBoundaryHierarchisation : public OperationHierarchisatio
    * Constructor
    * @param grid Grid which is to be used for hierarchisation
    */
-  OperationArbitraryBoundaryHierarchisation(Grid& grid);
+  explicit OperationArbitraryBoundaryHierarchisation(Grid& grid);
 
   /**
    * Destructor

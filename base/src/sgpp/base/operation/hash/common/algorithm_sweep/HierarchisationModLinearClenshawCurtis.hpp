@@ -43,7 +43,7 @@ class HierarchisationModLinearClenshawCurtis {
    * @param storage the grid storage object of the the grid, on which the hierarchisation should be
    * executed
    */
-  HierarchisationModLinearClenshawCurtis(GridStorage& storage);
+  explicit HierarchisationModLinearClenshawCurtis(GridStorage& storage);
 
   /**
    * Destructor

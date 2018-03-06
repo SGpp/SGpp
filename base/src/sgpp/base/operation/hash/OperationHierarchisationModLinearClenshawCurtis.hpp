@@ -25,7 +25,8 @@ class OperationHierarchisationModLinearClenshawCurtis : public OperationHierarch
    *
    * @param storage the grid's GridStorage object
    */
-  OperationHierarchisationModLinearClenshawCurtis(GridStorage& storage) : storage(storage) {}
+  explicit OperationHierarchisationModLinearClenshawCurtis(GridStorage& storage)
+      : storage(storage) {}
 
   /**
    * Destructor

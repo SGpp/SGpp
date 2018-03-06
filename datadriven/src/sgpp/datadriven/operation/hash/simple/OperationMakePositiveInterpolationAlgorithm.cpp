@@ -4,7 +4,6 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/operation/hash/simple/OperationMakePositiveInterpolationAlgorithm.hpp>
-
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
 #include <vector>

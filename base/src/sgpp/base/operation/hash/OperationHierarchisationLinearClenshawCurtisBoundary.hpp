@@ -25,7 +25,8 @@ class OperationHierarchisationLinearClenshawCurtisBoundary : public OperationHie
    *
    * @param storage the grid's GridStorage object
    */
-  OperationHierarchisationLinearClenshawCurtisBoundary(GridStorage& storage) : storage(storage) {}
+  explicit OperationHierarchisationLinearClenshawCurtisBoundary(GridStorage& storage)
+      : storage(storage) {}
 
   /**
    * Destructor

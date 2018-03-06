@@ -7,11 +7,11 @@
 
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBoundaryBasis.hpp>
 
 #include <sgpp/base/tools/ClenshawCurtisTable.hpp>
 
 #include <sgpp/globaldef.hpp>
-#include "../basis/PolyClenshawCurtisBoundaryBasis.hpp"
 
 namespace sgpp {
 namespace base {
@@ -44,7 +44,8 @@ class DehierarchisationPolyClenshawCurtisBoundary {
    * be executed
    * @param base Polynomial basis
    */
-  explicit DehierarchisationPolyClenshawCurtisBoundary(GridStorage& storage, SPolyClenshawCurtisBoundaryBase* base);
+  explicit DehierarchisationPolyClenshawCurtisBoundary(GridStorage& storage,
+                                                       SPolyClenshawCurtisBoundaryBase* base);
   /**
    * Destructor
    */

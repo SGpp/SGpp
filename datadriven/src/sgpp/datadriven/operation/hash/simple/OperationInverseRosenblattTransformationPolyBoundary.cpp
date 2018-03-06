@@ -12,13 +12,13 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensitySampling1D.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationPolyBoundary.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <algorithm>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <map>
-#include <sgpp/globaldef.hpp>
 #include <utility>
 #include <vector>
 

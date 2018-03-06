@@ -38,8 +38,7 @@ class LinearModifiedClenshawCurtisBasis : public Basis<LT, IT> {
   /**
    * Constructor
    */
-  explicit LinearModifiedClenshawCurtisBasis()
-      : clenshawCurtisTable(ClenshawCurtisTable::getInstance()) {}
+  LinearModifiedClenshawCurtisBasis() : clenshawCurtisTable(ClenshawCurtisTable::getInstance()) {}
 
   /**
    * Destructor
