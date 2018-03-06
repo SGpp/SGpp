@@ -74,7 +74,7 @@ int main(int argc, const char* argv[]) {
   sgpp::optimization::Printer::getInstance().setVerbosity(2);
 
   /**
-   * Here, we set define some parameters: objective function, dimensionality,
+   * Here, we define some parameters: objective function, dimensionality,
    * B-spline degree, maximal number of grid points, and adaptivity.
    */
   // objective function
