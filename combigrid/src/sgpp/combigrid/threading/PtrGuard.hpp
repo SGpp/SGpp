@@ -16,10 +16,10 @@ namespace combigrid {
  * it is nullptr.
  */
 class PtrGuard {
-  std::shared_ptr<std::mutex> mutexPtr;
+  std::shared_ptr<std::recursive_mutex> mutexPtr;
 
  public:
-  explicit PtrGuard(std::shared_ptr<std::mutex> mutexPtr) : mutexPtr(mutexPtr) {
+  explicit PtrGuard(std::shared_ptr<std::recursive_mutex> mutexPtr) : mutexPtr(mutexPtr) {
     if (mutexPtr) {
       mutexPtr->lock();
     }

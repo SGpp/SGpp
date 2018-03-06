@@ -19,6 +19,7 @@
 #include <cmath>
 #include <iostream>
 #include <memory>
+#include <random>
 #include <string>
 #include <utility>
 #include <vector>
@@ -110,6 +111,16 @@ double testFunctionAtan(DataVector const &x) {
          4 * std::pow(x[1], 2);  // + exp(x[0] * x[1] - 1);
 }
 
+double testFunction8(DataVector const &coordinates) {
+  double ans = 0.0;
+
+  for (size_t i = 0; i < coordinates.getSize(); ++i) {
+    ans += coordinates[i];
+  }
+
+  return ans;
+}
+
 /*
  void printCTResults(size_t d, size_t q) {
  const size_t samples = 10;
@@ -146,11 +157,9 @@ void printDifferences(size_t d, std::shared_ptr<AbstractMultiStorage<FloatArrayV
   }
 }
 
-void printCTResults(size_t d, size_t q) {
-  auto func = testFunction3;
-  // const size_t samples = 100;
-  auto ctInterpolator =
-      CombigridMultiOperation::createLinearL2LejaPolynomialInterpolation(d, MultiFunction(func));
+void computeL2Error(size_t d, size_t q, std::shared_ptr<CombigridMultiOperation> ctInterpolator,
+                    MultiFunction &func) {
+  const size_t samples = 100;
   auto domain = std::vector<std::pair<double, double>>(d, std::pair<double, double>(0.0, 1.0));
 
   MCIntegrator integrator(
@@ -168,15 +177,68 @@ void printCTResults(size_t d, size_t q) {
         return result;
       });
 
-  // std::cout << "d = " << d << ", q = " << q << ": "
-  //           << std::sqrt(integrator.average(domain, samples)) << std::endl;
+  std::cout << "d = " << d << ", q = " << q
+            << ": err_l2 = " << std::sqrt(integrator.average(domain, samples)) << std::endl;
 }
 
-BOOST_AUTO_TEST_CASE(testInterpolation) {
+void computeQuadratureError(size_t d, size_t q,
+                            std::shared_ptr<CombigridMultiOperation> ctInterpolator,
+                            MultiFunction &func) {
+  const size_t numSamples = 1e4;
+  auto domain = std::vector<std::pair<double, double>>(d, std::pair<double, double>(0.0, 1.0));
+  static std::default_random_engine generator(
+      std::mt19937_64::default_seed);  // TODO(holzmudd): deterministic
+
+  double result = 0.0;
+  sgpp::base::DataVector coordinates(domain.size());
+  for (size_t i = 0; i < numSamples; ++i) {
+    for (size_t dim = 0; dim < domain.size(); ++dim) {
+      std::uniform_real_distribution<double> distribution(domain[dim].first, domain[dim].second);
+      coordinates[dim] = distribution(generator);
+    }
+    result += func(coordinates);
+  }
+
+  result /= static_cast<double>(numSamples);
+
+  std::cout << "d = " << d << ", q = " << q
+            << ": err_quad = " << std::abs(result - ctInterpolator->evaluate(q)[0]) << std::endl;
+}
+
+BOOST_AUTO_TEST_SUITE(testInterpolation)
+
+BOOST_AUTO_TEST_CASE(testLinearInterpolation) {
+  std::cout << "-------------------------------------------" << std::endl;
+  std::cout << "Linear Interpolation" << std::endl;
+  auto func = MultiFunction(testFunction3);
   for (size_t d = 2; d <= 5; ++d) {
+    auto ctInterpolator =
+        CombigridMultiOperation::createExpUniformBoundaryLinearInterpolation(d, func);
+    std::cout << "- - - - - - - - - - - - - - " << std::endl;
     for (size_t w = 2; w <= 8; ++w) {
       Stopwatch stopwatch;
-      printCTResults(d, w);
+      computeL2Error(d, w, ctInterpolator, func);
+      // stopwatch.log();
+    }
+  }
+  auto quadrature = CombigridMultiOperation::createLinearLejaQuadrature(
+      3, MultiFunction([](sgpp::base::DataVector const &x) { return 1.0; }));
+  std::vector<DataVector> input(1, DataVector(0));
+  auto result = quadrature->evaluate(3, input);
+  std::cout << "Quadrature result: " << result[0] << "\n";
+}
+
+BOOST_AUTO_TEST_CASE(testExpChebyshevPolynomialInterpolation) {
+  std::cout << "-------------------------------------------" << std::endl;
+  std::cout << "Chebyshev Polynomial Interpolation" << std::endl;
+  auto func = MultiFunction(testFunction3);
+  for (size_t d = 2; d <= 5; ++d) {
+    auto ctInterpolator =
+        CombigridMultiOperation::createExpChebyshevPolynomialInterpolation(d, func);
+    std::cout << "- - - - - - - - - - - - - - " << std::endl;
+    for (size_t w = 2; w <= 8; ++w) {
+      Stopwatch stopwatch;
+      computeL2Error(d, w, ctInterpolator, func);
       // stopwatch.log();
     }
   }
@@ -185,5 +247,70 @@ BOOST_AUTO_TEST_CASE(testInterpolation) {
       3, MultiFunction([](sgpp::base::DataVector const &x) { return 1.0; }));
   std::vector<DataVector> input(1, DataVector(0));
   auto result = quadrature->evaluate(3, input);
-  // std::cout << "Quadrature result: " << result[0] << "\n";
+  std::cout << "Quadrature result: " << result[0] << "\n";
 }
+
+BOOST_AUTO_TEST_CASE(testPolynomialInterpolation) {
+  std::cout << "-------------------------------------------" << std::endl;
+  std::cout << "Polynomial Interpolation" << std::endl;
+  auto func = MultiFunction(testFunctionAtan);
+  for (size_t d = 2; d <= 5; ++d) {
+    std::cout << "- - - - - - - - - - - - - - " << std::endl;
+    auto ctInterpolator =
+        CombigridMultiOperation::createExpClenshawCurtisPolynomialInterpolation(d, func);
+    for (size_t w = 2; w <= 8; ++w) {
+      computeL2Error(d, w, ctInterpolator, func);
+    }
+    auto ctQuadrature = CombigridMultiOperation::createExpClenshawCurtisQuadrature(d, func);
+    for (size_t w = 2; w <= 8; ++w) {
+      computeQuadratureError(d, w, ctQuadrature, func);
+    }
+  }
+
+  auto quadrature = CombigridMultiOperation::createLinearLejaQuadrature(
+      3, MultiFunction([](sgpp::base::DataVector const &x) { return 1.0; }));
+  std::vector<DataVector> input(1, DataVector(0));
+  auto result = quadrature->evaluate(3, input);
+  std::cout << "Quadrature result: " << result[0] << "\n";
+}
+
+BOOST_AUTO_TEST_CASE(testLinearL2LejaPolynomialInterpolation) {
+  std::cout << "-------------------------------------------" << std::endl;
+  std::cout << "L2 Leja Polynomial Interpolation" << std::endl;
+  auto func = MultiFunction(testFunction3);
+  for (size_t d = 2; d <= 5; ++d) {
+    std::cout << "- - - - - - - - - - - - - - " << std::endl;
+    auto ctInterpolator =
+        CombigridMultiOperation::createLinearL2LejaPolynomialInterpolation(d, func, 2);
+    for (size_t w = 2; w <= 8; ++w) {
+      computeL2Error(d, w, ctInterpolator, func);
+    }
+    auto ctQuadrature = CombigridMultiOperation::createLinearL2LejaQuadrature(d, func, 2);
+    for (size_t w = 2; w <= 8; ++w) {
+      computeQuadratureError(d, w, ctQuadrature, func);
+    }
+  }
+}
+
+BOOST_AUTO_TEST_CASE(testBsplinedeg3Interpolation) {
+  std::cout << "-------------------------------------------" << std::endl;
+  std::cout << "B-Spline Interpolation, degree=3\n" << std::endl;
+  auto func = MultiFunction(testFunction3);
+  for (size_t d = 2; d <= 5; ++d) {
+    std::cout << "- - - - - - - - - - - - - - " << std::endl;
+    size_t degree = 3;
+    auto ctInterpolator =
+        CombigridMultiOperation::createExpUniformBoundaryBsplineInterpolation(d, func, degree);
+    for (size_t w = 2; w <= 6; ++w) {
+      computeL2Error(d, w, ctInterpolator, func);
+    }
+
+    auto ctQuadrature =
+        CombigridMultiOperation::createExpUniformBoundaryBsplineQuadrature(d, func, degree);
+    for (size_t w = 2; w <= 6; ++w) {
+      computeQuadratureError(d, w, ctQuadrature, func);
+    }
+  }
+}
+
+BOOST_AUTO_TEST_SUITE_END()

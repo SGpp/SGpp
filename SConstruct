@@ -155,6 +155,8 @@ vars.Add(BoolVariable("USE_GMMPP", "Set if Gmm++ should be used " +
                                    "(only relevant for sgpp::optimization)", False))
 vars.Add(BoolVariable("USE_UMFPACK", "Set if UMFPACK should be used " +
                                      "(only relevant for sgpp::optimization)", False))
+vars.Add(BoolVariable("USE_DAKOTA", "Set if Dakota library should be used " +
+                                   "(only relevant for sgpp::combigrid)", False))
 vars.Add(BoolVariable("USE_GSL", "Set if GNU Scientific Library should be used " +
                                      "(only relevant for sgpp::datadriven::application::LearnerSGDEOnOff)", False))
 vars.Add(BoolVariable("USE_ZLIB", "Set if zlib should be used " +

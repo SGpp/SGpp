@@ -15,10 +15,11 @@ namespace combigrid {
 
 class TensorGrid {
   std::vector<base::DataVector> onedimGrids;
+  MultiIndex level;
 
  public:
-  explicit TensorGrid(std::vector<base::DataVector> const &onedimGrids)
-      : onedimGrids(onedimGrids) {}
+  explicit TensorGrid(std::vector<base::DataVector> const &onedimGrids, MultiIndex level)
+      : onedimGrids(onedimGrids), level(level) {}
 
   base::DataVector getGridPoint(MultiIndex const &index) {
     base::DataVector result(onedimGrids.size());  // TODO(holzmudd): dimensionality check?
@@ -43,6 +44,10 @@ class TensorGrid {
   }
 
   std::vector<base::DataVector> const &get1DGrids() { return onedimGrids; }
+
+  MultiIndex getLevel() const { return level; }
+
+  size_t getDimension() const { return onedimGrids.size(); }
 };
 
 } /* namespace combigrid */

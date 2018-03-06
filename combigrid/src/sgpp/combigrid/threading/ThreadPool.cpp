@@ -38,12 +38,12 @@ ThreadPool::~ThreadPool() {
 }
 
 void ThreadPool::addTask(const Task& task) {
-  CGLOG_SURROUND(std::lock_guard<std::mutex> guard(poolMutex));
+  CGLOG_SURROUND(std::lock_guard<std::recursive_mutex> guard(poolMutex));
   tasks.push_back(task);
 }
 
 void ThreadPool::addTasks(const std::vector<Task>& newTasks) {
-  CGLOG_SURROUND(std::lock_guard<std::mutex> guard(poolMutex));
+  CGLOG_SURROUND(std::lock_guard<std::recursive_mutex> guard(poolMutex));
   tasks.insert(tasks.end(), newTasks.begin(), newTasks.end());
 }
 
@@ -56,7 +56,7 @@ void ThreadPool::start() {
         // wait for terminate or next task
         while (true) {
           {
-            CGLOG_SURROUND(std::lock_guard<std::mutex> guard(this->poolMutex));
+            CGLOG_SURROUND(std::lock_guard<std::recursive_mutex> guard(this->poolMutex));
             if (this->terminateFlag) {
               return;
             }
@@ -64,6 +64,8 @@ void ThreadPool::start() {
               nextTask = tasks.front();
               tasks.pop_front();
               break;
+            } else if (!useIdleCallback) {
+              return;
             }
             CGLOG("leave outer guard(this->poolMutex)");
           }
@@ -71,10 +73,10 @@ void ThreadPool::start() {
           // no tasks, so acquire tasks
 
           if (useIdleCallback) {
-            CGLOG_SURROUND(std::lock_guard<std::mutex> idleLock(idleMutex));
+            CGLOG_SURROUND(std::lock_guard<std::recursive_mutex> idleLock(idleMutex));
 
             {
-              CGLOG_SURROUND(std::lock_guard<std::mutex> guard(this->poolMutex));
+              CGLOG_SURROUND(std::lock_guard<std::recursive_mutex> guard(this->poolMutex));
               if (this->terminateFlag || !this->tasks.empty()) {
                 CGLOG("leave inner guard(this->poolMutex)");
                 continue;
@@ -97,7 +99,7 @@ void ThreadPool::start() {
 }
 
 void ThreadPool::triggerTermination() {
-  CGLOG_SURROUND(std::lock_guard<std::mutex> guard(poolMutex));
+  CGLOG_SURROUND(std::lock_guard<std::recursive_mutex> guard(poolMutex));
   terminateFlag = true;
 }
 

@@ -29,6 +29,7 @@ class GeneralFunctionDirector {
 template <typename Out>
 class GeneralFunctionDirector1 {
  public:
+  GeneralFunctionDirector1() {}
   virtual ~GeneralFunctionDirector1() {}
 
   virtual Out eval() = 0;

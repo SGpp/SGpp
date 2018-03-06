@@ -13,9 +13,9 @@
 #include <suitesparse/umfpack.h>
 #endif /* USE_UMFPACK */
 
+#include <algorithm>
 #include <cstddef>
 #include <iostream>
-#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -114,6 +114,7 @@ bool UMFPACK::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const
       // status message
       if (i % 100 == 0) {
 #pragma omp ordered
+
         {
           char str[10];
           snprintf(str, sizeof(str), "%.1f%%",
@@ -131,8 +132,7 @@ bool UMFPACK::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const
   // print ratio of nonzero entries
   {
     char str[10];
-    double nnz_ratio =
-        static_cast<double>(nnz) / (static_cast<double>(n) * static_cast<double>(n));
+    double nnz_ratio = static_cast<double>(nnz) / (static_cast<double>(n) * static_cast<double>(n));
     snprintf(str, sizeof(str), "%.1f%%", nnz_ratio * 100.0);
     Printer::getInstance().printStatusUpdate("nnz ratio: " + std::string(str));
     Printer::getInstance().printStatusNewLine();
