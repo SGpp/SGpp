@@ -1,4 +1,4 @@
-= Welcome to SG++ =
+# Welcome to SG++
 
 This is the current release version 3.0.0 of SG++, a library and framework
 for sparse grids in different flavors. SG++ supports both
