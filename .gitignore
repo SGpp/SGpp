@@ -111,3 +111,5 @@ GTAGS
 # ignoring Windows build directories
 build/
 dist/
+
+custom.py

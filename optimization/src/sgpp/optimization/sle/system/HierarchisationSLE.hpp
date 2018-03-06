@@ -116,8 +116,8 @@ class HierarchisationSLE : public CloneableSLE {
           std::unique_ptr<base::SLinearClenshawCurtisBase>(new base::SLinearClenshawCurtisBase());
       basisType = LINEAR_CLENSHAW_CURTIS;
     } else if (grid.getType() == base::GridType::LinearClenshawCurtisBoundary) {
-      linearClenshawCurtisBoundaryBasis =
-          std::unique_ptr<base::SLinearClenshawCurtisBoundaryBase>(new base::SLinearClenshawCurtisBoundaryBase());
+      linearClenshawCurtisBoundaryBasis = std::unique_ptr<base::SLinearClenshawCurtisBoundaryBase>(
+          new base::SLinearClenshawCurtisBoundaryBase());
       basisType = LINEAR_CLENSHAW_CURTIS_BOUNDARY;
     } else if (grid.getType() == base::GridType::ModLinear) {
       modLinearBasis = std::unique_ptr<base::SLinearModifiedBase>(new base::SLinearModifiedBase());
@@ -541,12 +541,12 @@ class HierarchisationSLE : public CloneableSLE {
     return result;
   }
 
-    /**
-   * @param basisI    basis function index
-   * @param pointJ    grid point index
-   * @return          value of the basisI-th linear Clenshaw-Curtis
-   *                  boundary basis function at the pointJ-th grid point
-   */
+  /**
+ * @param basisI    basis function index
+ * @param pointJ    grid point index
+ * @return          value of the basisI-th linear Clenshaw-Curtis
+ *                  boundary basis function at the pointJ-th grid point
+ */
   inline double evalLinearClenshawCurtisBoundaryFunctionAtGridPoint(size_t basisI, size_t pointJ) {
     const base::GridPoint& gpBasis = gridStorage[basisI];
     const base::GridPoint& gpPoint = gridStorage[pointJ];
