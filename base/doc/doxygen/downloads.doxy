@@ -12,6 +12,30 @@ http://sgpp.sparsegrids.org.
 <!-- ############################################################# -->
 @section downloads__history Versions
 
+@subsection downloads_history_300 Version 3.0.0, 2018/03/12
+New major release due to a lot of changes and transitions. 
+
+Download
+  - Source: <a href="https://github.com/SGpp/SGpp">Fork us on GitHub</a>
+  - We now provide binaries!
+    - for Linux:
+    - for Matlab/Windows:
+    - for Matlab/Linux:
+
+Important changes:
+- We provide a new combigrid module with plenty of functionality!
+  - 
+- A new plug-in-based data mining pipeline, including
+  - data input wrapper and support for CVS data files, sgpp::datadriven::CSVTools
+  - a regression-based fitter sgpp::datadriven::FitterConfiguration
+  - a scorer wrapper for evaluation sgpp::datadriven::Scorer
+  - new classification methods, such as a density-based learner with online-offline splitting sgpp::datadriven::LearnerSGDEOnOff
+  - new adaptive refinement schemes, including joint refinement for multiple classes sgpp::base::MultipleClassRefinement
+- Support for ordered data sets 
+  - pre-ordering of data sets on space-filling curves in Morton order to support data locality, sgpp::datadriven::MortonOrder
+- plenty of fixes and updates
+- ... and much more!
+
 @subsection downloads_history_210 Version 2.1.0, 2016/08/12
 - Download:
   <a href="http://sgpp.sparsegrids.org/downloads/sgpp_2.1.0.tar.gz">
