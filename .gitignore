@@ -35,11 +35,7 @@
 /matsgpp/matsgppmex.mexa64
 /matsgpp/matsgppmex.mexmaci64
 /matsgpp/matsgppmex.mexw64
-/matsgpp/matlab/SwigGet.m
-/matsgpp/matlab/SwigMem.m
-/matsgpp/matlab/SwigRef.m
-/matsgpp/matlab/SwigStorage.m
-/matsgpp/matlab/+matsgpp/
+/matsgpp/matlab/
 
 #ignoring build output
 /lib/*

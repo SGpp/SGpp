@@ -1,4 +1,0 @@
-The /matsgpp/matlab directory is needed by SWIG-matlab (at least of
-March 2018). If deleted, SWIG-matlab fails with the message
-"Unable to open file matsgpp\matlab\SwigRef.m: No such file or directory".
-Therefore, please do not delete this directory.
