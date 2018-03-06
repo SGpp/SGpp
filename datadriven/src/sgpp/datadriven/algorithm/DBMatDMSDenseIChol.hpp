@@ -28,8 +28,9 @@ using sgpp::base::DataVector;
  */
 class DBMatDMSDenseIChol : public DBMatDMSChol {
  public:
-  DBMatDMSDenseIChol(const DBMatOfflineIcholParameters& params, Grid& grid, double lambda,
-                     bool doCV);
+  DBMatDMSDenseIChol(
+      const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+      Grid& grid, double lambda, bool doCV);
 
  protected:
   /**
@@ -68,9 +69,10 @@ class DBMatDMSDenseIChol : public DBMatDMSChol {
   void updateProxyMatrixLambda(double lambda_up) const;
 
   /**
-   * Parameters to configure the amount of sweeps for the parallel algorithms
+   * Configuration of the matrix decomposition. In there we find the parameters
+   * to configure the amount of sweeps for the parallel algorithms
    */
-  DBMatOfflineIcholParameters params;
+  const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig;
 
   /**
    * proxy object to avoid costly copy operations when modifying lambda.

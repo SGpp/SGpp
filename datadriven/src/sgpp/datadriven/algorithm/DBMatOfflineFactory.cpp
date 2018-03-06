@@ -16,6 +16,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineEigen.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
 #include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 
 #include <string>
@@ -27,34 +28,55 @@ namespace datadriven {
 using sgpp::base::GridType;
 using sgpp::base::factory_exception;
 
-DBMatOffline* DBMatOfflineFactory::buildOfflineObject(const DBMatDensityConfiguration& config) {
-  auto type = config.decomp_type_;
+DBMatOffline* DBMatOfflineFactory::buildOfflineObject(
+    const sgpp::base::RegularGridConfiguration& gridConfig,
+    const sgpp::base::AdpativityConfiguration& adaptivityConfig,
+    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
+  auto type = densityEstimationConfig.decomposition_;
 
   switch (type) {
-    case (DBMatDecompostionType::Eigen):
+    case (MatrixDecompositionType::Eigen):
 #ifdef USE_GSL
-      return new DBMatOfflineEigen(config);
+      return new DBMatOfflineEigen(gridConfig, adaptivityConfig,
+                                   regularizationConfig, densityEstimationConfig);
 #else
-      throw factory_exception("built withot GSL");
+      throw factory_exception("built without GSL");
 #endif /* USE_GSL */
       break;
-    case (DBMatDecompostionType::LU):
+
+    case (MatrixDecompositionType::LU):
 #ifdef USE_GSL
-      return new DBMatOfflineLU(config);
+      return new DBMatOfflineLU(gridConfig, adaptivityConfig,
+                                regularizationConfig, densityEstimationConfig);
 #else
-      throw factory_exception("built withot GSL");
+      throw factory_exception("built without GSL");
 #endif /* USE_GSL */
       break;
-    case (DBMatDecompostionType::Chol):
+
+    case (MatrixDecompositionType::Chol):
 #ifdef USE_GSL
-      return new DBMatOfflineChol(config);
+      return new DBMatOfflineChol(gridConfig, adaptivityConfig,
+                                  regularizationConfig, densityEstimationConfig);
 #else
-      throw factory_exception("built withot GSL");
+      throw factory_exception("built without GSL");
 #endif /* USE_GSL */
       break;
-    case (DBMatDecompostionType::DenseIchol):
-      return new DBMatOfflineDenseIChol(config);
+
+    case (MatrixDecompositionType::DenseIchol):
+      return new DBMatOfflineDenseIChol(gridConfig, adaptivityConfig,
+                                        regularizationConfig, densityEstimationConfig);
       break;
+
+    case (MatrixDecompositionType::OrthoAdapt):
+#ifdef USE_GSL
+      return new DBMatOfflineOrthoAdapt(gridConfig, adaptivityConfig,
+                                        regularizationConfig, densityEstimationConfig);
+      break;
+#else
+      throw factory_exception("built without GSL");
+#endif /* USE_GSL */
+
     default:
       throw factory_exception("Trying to build offline object from unknown decomposition type");
       return nullptr;
@@ -82,22 +104,25 @@ DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
   }
   std::cout << std::endl;
 
-  DBMatDecompostionType type = static_cast<DBMatDecompostionType>(std::stoi(tokens.back()));
+  MatrixDecompositionType type = static_cast<MatrixDecompositionType>(std::stoi(tokens[5]));
 
   std::cout << "type: " << static_cast<int>(type) << std::endl;
 
   switch (type) {
-    case (DBMatDecompostionType::Eigen):
+    case (MatrixDecompositionType::Eigen):
       return new DBMatOfflineEigen(fileName);
       break;
-    case (DBMatDecompostionType::LU):
+    case (MatrixDecompositionType::LU):
       return new DBMatOfflineLU(fileName);
       break;
-    case (DBMatDecompostionType::Chol):
+    case (MatrixDecompositionType::Chol):
       return new DBMatOfflineChol(fileName);
       break;
-    case (DBMatDecompostionType::DenseIchol):
+    case (MatrixDecompositionType::DenseIchol):
       return new DBMatOfflineDenseIChol(fileName);
+      break;
+    case (MatrixDecompositionType::OrthoAdapt):
+      return new DBMatOfflineOrthoAdapt(fileName);
       break;
     default:
       throw factory_exception("Trying to build offline object from unknown decomposition type");

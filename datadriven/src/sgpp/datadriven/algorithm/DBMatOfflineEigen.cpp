@@ -32,7 +32,12 @@ using sgpp::base::application_exception;
 using sgpp::base::data_exception;
 using sgpp::base::OperationMatrix;
 
-DBMatOfflineEigen::DBMatOfflineEigen(const DBMatDensityConfiguration& oc) : DBMatOffline(oc) {}
+DBMatOfflineEigen::DBMatOfflineEigen(
+    const sgpp::base::RegularGridConfiguration& gridConfig,
+    const sgpp::base::AdpativityConfiguration& adaptivityConfig,
+    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig)
+    : DBMatOffline(gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig) {}
 
 sgpp::datadriven::DBMatOfflineEigen::DBMatOfflineEigen(const std::string& fileName)
     : DBMatOffline{fileName} {
