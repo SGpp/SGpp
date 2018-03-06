@@ -88,6 +88,9 @@ class Learner(object):
 
     ##List of numbers of point on grid for different refinement iterations
     numberPoints = None
+    
+    ##Verbosity level in the solver iterations
+    useVerbose = None
 
 
     __SERIALIZABLE_ATTRIBUTES = ['eventControllers', 'dataContainer',
@@ -106,6 +109,7 @@ class Learner(object):
         self.numberPoints = []
         self.iteration = 0
         self.eventControllers = []
+        self.useVerbose = False
 
 
     ## Learn data from training data set and use validation data set to prevent overfitting
@@ -192,6 +196,7 @@ class Learner(object):
             self.notifyEventControllers(LearnerEvents.LEARNING_STEP_COMPLETE)
             self.iteration += 1
             if(self.stopPolicy.isTrainingComplete(self)): break
+            
             #refine grid
             self.refineGrid()
 
@@ -231,11 +236,18 @@ class Learner(object):
 #                                                self.specification.getL(),
 #                                                self.specification.getVectorizationType())
 #         else:
+        if self.specification.getCOperatorType() == 'laplace':
+            self.specification.setCOperator(createOperationLaplace(self.grid))
+        else: # identity
+            self.specification.setCOperator(createOperationIdentity(self.grid))
+
         self.linearSystem = DMSystemMatrix(self.grid,
                                            set.getPoints(),
                                            self.specification.getCOperator(),
                                            self.specification.getL())
+        
         size =  self.grid.getSize()
+        
         # Reuse data from old alpha vector increasing its dimension
         self.solver.getReuse()
         if self.solver.getReuse() and self.alpha != None:
@@ -249,7 +261,8 @@ class Learner(object):
         self.linearSystem.generateb(set.getValues(), b)
         #calculates alphas
         self.solver.getReuse()
-        self.solver.solve(self.linearSystem, alpha, b, self.solver.getReuse(), False, self.solver.getThreshold())
+        
+        self.solver.solve(self.linearSystem, alpha, b, self.solver.getReuse(), self.useVerbose, self.solver.getThreshold())
         return alpha
 
 
@@ -268,6 +281,13 @@ class Learner(object):
     # @param testSubset: DataContainer with validation data, default value: None
     def updateResults(self, alpha, trainSubset, testSubset = None):
         raise NotImplementedError
+        
+        
+    ## Sets the verbosity level in the solver (default: False)
+    #
+    # @param value: bool if verbose
+    def setVerbosity(self, verb):
+        self.useVerbose = verb;
 
 
     ## Returns the number of current iteration

@@ -158,4 +158,8 @@ BOOST_AUTO_TEST_CASE(test_DirichletGridConverter) {
 
   delete[] conCoefArray;
   delete innerGridExact;
+
+  // These were created in dirichGridConverter !!!
+  delete innerGridActual;
+  delete innerCoeffsActual;
 }
