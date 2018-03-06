@@ -15,7 +15,7 @@ if os.path.exists("matsgpp_wrap.cc"):
 
 # SCons won't Install the +matsgpp directory from /matsgpp/matlab if
 # it already exists, even when files are new/were changed
-matlabBuildPath = os.path.join(MATSGPP_BUILD_PATH.abspath, "matlab", "+matsgpp")
+matlabBuildPath = os.path.join(MATSGPP_BUILD_PATH.abspath, "+matsgpp")
 if os.path.exists(matlabBuildPath):
   shutil.rmtree(matlabBuildPath)
 
