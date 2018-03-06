@@ -22,7 +22,7 @@ class OperationFirstMomentModPoly : public OperationFirstMoment {
   /**
    * Constructor of OperationFirstMomentModPoly
    *
-   * @param storage Pointer to the grid's GridStorage object
+   * @param grid Pointer to a sparse grid object
    */
   explicit OperationFirstMomentModPoly(Grid* grid) : grid(grid) {}
 

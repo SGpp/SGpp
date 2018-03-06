@@ -25,6 +25,7 @@ class PolyClenshawCurtisBoundaryGrid : public Grid {
    * Constructor Linear Truncated Boundary Clenshaw-Curtis Grid
    *
    * @param dim the dimension of the grid
+   * @param degree maximum degree of the local polynomials
    * @param boundaryLevel 1 + how much levels the boundary is coarser than
    *                      the main axes, 0 means one level finer,
    *                      1 means same level,

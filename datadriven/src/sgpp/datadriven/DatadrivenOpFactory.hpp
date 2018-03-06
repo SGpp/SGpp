@@ -192,20 +192,14 @@ base::OperationMultipleEval* createOperationMultipleEval(
     sgpp::datadriven::OperationMultipleEvalConfiguration& configuration);
 
 /**
- * Factory method, returning an OperationMakePositive for the grid at hand.
- * Note: object has to be freed after use.
- *
- * @param grid Grid which is to be used
- * @return Pointer to the new OperationMakePositive object for the Grid grid
- */
-
-/**
- * Factory method, returning an OperationLimitFunctionValueRange for an arbitrary function f or some
+ * Factory method, returning an OperationMakePositive for an arbitrary function f or some
  * sparse grid, which is yet to be defined.
  * Note: object has to be freed after use.
  *
  * @param candidateSearchAlgorithm defines algorithm for candidate set enumeration
  * @param interpolationAlgorithm defines algorithm for coefficient estimation of extension set
+ * @param generateConsistentGrid if set to true, all hierarchical ancestors are available in the
+ * resulting grid
  * @param verbose verbosity
  * @param f function to be approximated (as an alternative to a sparse grid function)
  *

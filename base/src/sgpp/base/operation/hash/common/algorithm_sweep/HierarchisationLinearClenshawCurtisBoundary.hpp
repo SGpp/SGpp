@@ -71,6 +71,10 @@ class HierarchisationLinearClenshawCurtisBoundary {
    * ansatz-functions
    * @param index a iterator object of the grid
    * @param dim current fixed dimension of the 'execution direction'
+   * @param xl position of closest neighbor to the left
+   * @param fl function value of closest neighbor to the left
+   * @param xr position of closest neighbor to the right
+   * @param fr function value of closest neighbor to the right
    */
   void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double xl,
            double fl, double xr, double fr);

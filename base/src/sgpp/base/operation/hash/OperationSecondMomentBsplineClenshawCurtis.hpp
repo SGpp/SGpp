@@ -22,10 +22,10 @@ class OperationSecondMomentBsplineClenshawCurtis : public OperationSecondMoment 
   /**
    * Constructor of OperationSecondMomentBsplineClenshawCurtis
    *
-   * @param storage Pointer to the grid's GridStorage object
+   * @param grid Pointer to a sparse grid object
    */
-  explicit OperationSecondMomentBsplineClenshawCurtis(Grid* grid) : grid(grid),
-           clenshawCurtisTable(base::ClenshawCurtisTable::getInstance()) {}
+  explicit OperationSecondMomentBsplineClenshawCurtis(Grid* grid)
+      : grid(grid), clenshawCurtisTable(base::ClenshawCurtisTable::getInstance()) {}
 
   ~OperationSecondMomentBsplineClenshawCurtis() override {}
 

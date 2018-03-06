@@ -25,14 +25,14 @@ class OperationLaplaceExplicitLinear : public UpDownOneOpDim {
    * i.e. matrix is NOT destroyed by the destructor of OperationLaplaceExplicitLinear
    *
    * @param m pointer to datamatrix of size (number of grid point) x (number of grid points)
-   * @param grid the sparse grid
+   * @param storage pointer to the sparse grid storage
    */
   OperationLaplaceExplicitLinear(sgpp::base::DataMatrix* m, sgpp::base::GridStorage* storage);
   /**
    * Constructor that creates an own matrix
    * i.e. matrix is destroyed by the destructor of OperationLaplaceExplicitLinear
    *
-   * @param grid the sparse grid
+   * @param storage pointer to the sparse grid storage
    */
   explicit OperationLaplaceExplicitLinear(sgpp::base::GridStorage* storage);
 

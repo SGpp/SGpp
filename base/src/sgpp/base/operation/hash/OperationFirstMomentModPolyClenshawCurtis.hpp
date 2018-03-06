@@ -15,17 +15,17 @@ namespace sgpp {
 namespace base {
 
 /**
- * FirstMomemnt of sparse grid function, ModPolyClenshawCurtis grid 
+ * FirstMomemnt of sparse grid function, ModPolyClenshawCurtis grid
  */
 class OperationFirstMomentModPolyClenshawCurtis : public OperationFirstMoment {
  public:
   /**
    * Constructor of OperationFirstMomentModPolyClenshawCurtis
    *
-   * @param storage Pointer to the grid's GridStorage object
+   * @param grid Pointer to a sparse grid object
    */
-  explicit OperationFirstMomentModPolyClenshawCurtis(Grid* grid) : grid(grid),
-           clenshawCurtisTable(base::ClenshawCurtisTable::getInstance()) {}
+  explicit OperationFirstMomentModPolyClenshawCurtis(Grid* grid)
+      : grid(grid), clenshawCurtisTable(base::ClenshawCurtisTable::getInstance()) {}
   ~OperationFirstMomentModPolyClenshawCurtis() override {}
 
   /**

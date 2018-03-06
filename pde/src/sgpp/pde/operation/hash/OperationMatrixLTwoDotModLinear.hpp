@@ -23,7 +23,7 @@ class OperationMatrixLTwoDotModLinear : public sgpp::base::OperationMatrix {
   /**
    * Constructor
    *
-   * @param gridStorage pointer to the GridStorage of the grid
+   * @param grid  pointer to the sparse grid object
    */
   explicit OperationMatrixLTwoDotModLinear(sgpp::base::Grid* grid);
 

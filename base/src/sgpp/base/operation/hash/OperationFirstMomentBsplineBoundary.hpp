@@ -22,7 +22,7 @@ class OperationFirstMomentBsplineBoundary : public OperationFirstMoment {
   /**
    * Constructor of OperationFirstMomentBsplineBoundary
    *
-   * @param storage Pointer to the grid's GridStorage object
+   * @param grid Pointer to a sparse grid object
    */
   explicit OperationFirstMomentBsplineBoundary(Grid* grid) : grid(grid) {}
 

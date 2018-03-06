@@ -23,7 +23,7 @@ class OperationMatrixLTwoDotModPolyClenshawCurtis : public sgpp::base::Operation
   /**
    * Constructor
    *
-   * @param gridStorage pointer to the GridStorage of the grid
+   * @param grid  pointer to the sparse grid object
    */
   explicit OperationMatrixLTwoDotModPolyClenshawCurtis(sgpp::base::Grid* grid);
 

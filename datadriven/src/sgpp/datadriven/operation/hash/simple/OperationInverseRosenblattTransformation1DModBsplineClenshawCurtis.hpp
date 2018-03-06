@@ -42,6 +42,7 @@ class OperationInverseRosenblattTransformation1DModBsplineClenshawCurtis
 
   /**
    * this performs the actual sampling after the CDF has been computed
+   * @param alpha1d coefficient vector in the current direction
    * @param coord1d point where to evaluate the CDF
    * @return the value of the CDF
    */
