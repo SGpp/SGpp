@@ -25,14 +25,26 @@ Download
 
 Important changes:
 - We provide a new combigrid module with plenty of functionality!
-  - 
+  - an anistropic implementation of the Combination Technique. This means that different 1D-grids and 1D  - operators can be used for each dimension. This allows e.g. interpolating in one direction and integrating the interpolated function in another direction.
+  - @ref example_point_distributions_py "1D Grids" : Uniform (with or without boundary), Clenshaw-Curtis, Chebyshev, (weighted) Leja, (weighted) \f$L^{2}-Leja\f$
+  - Operators: Interpolation (Polynomials, B-Splines, Hat-functions), quadrature (Polynomials, B-Splines, Hat-functions), tensors (Polynomials)
+  - regular and adaptive (also parallel) level-generation: various level managers are available that predict the surplus of each subspace
+  - support for directly working on full-grid subspaces: enables to solve PDEs, regression problems, density estimation on each full-grid separately
+  - simple C++ and python interfaces to get started quickly
+  - serialization and deserialization of computed function values
+  - optimizations: function evaluations (but not the following computations) can be easily parallelized, interpolation at multiple points at once, operator coefficients and grid points are stored for recomputations at other evaluation points
+  - frequent use of abstract base classes such that extensions are easy to implement (e.g. new grids, operators and adaption schemes)
+  - various surrogate models for Uncertainty Quantification that are based on the Combination Technique are available:
+    - @ref example_bspline_pce_cpp "B-Spline Collocation"
+    - @ref example_sc_cpp "Stochastic Collocation" (global polynomial approximation with Legendre polynomials)
+    - @ref example_pce_cpp "Polynomial Chaos Expansion" (global polynomial approximation with orthogonal polynomials with respect to univariate weight functions)
 - A new plug-in-based data mining pipeline, including
   - data input wrapper and support for CVS data files, sgpp::datadriven::CSVTools
   - a regression-based fitter sgpp::datadriven::FitterConfiguration
   - a scorer wrapper for evaluation sgpp::datadriven::Scorer
   - new classification methods, such as a density-based learner with online-offline splitting sgpp::datadriven::LearnerSGDEOnOff, including incomplete Cholesky factorization sgpp::datadriven::DBMatDMSDenseIChol
   - new adaptive refinement schemes, including joint refinement for multiple classes sgpp::base::MultipleClassRefinement
-- Support for ordered data sets 
+- Support for ordered data sets
   - pre-ordering of data sets on space-filling curves in Morton order to support data locality, sgpp::datadriven::MortonOrder
 - New grid spacings
   - general grid stretching sgpp::base::Stretching
@@ -97,7 +109,7 @@ New features:
 - Some refactoring in sgpp::optimization (may break compatibility)
 - Test problems for sgpp::optimization restructured.
 
-@subsection downloads_history_100 Version 1.0.0 
+@subsection downloads_history_100 Version 1.0.0
 - Download:
   <a href="http://sgpp.sparsegrids.org/downloads/release_1.0.0.tgz">
   release_1.0.0.tgz</a>
@@ -134,7 +146,7 @@ Features of Release Version 1.0.0:
 - Minor fixes
 - Changes in basic API
 
-@subsection downloads_history_091 Version 0.9.1 
+@subsection downloads_history_091 Version 0.9.1
 - Download: <a href="http://sgpp.sparsegrids.org/downloads/release_0.9.1.tgz">
   release_0.9.1.tgz</a>
 
@@ -142,7 +154,7 @@ Features of Release Version 1.0.0:
 - Extended use of DataVector from Python.
 - GridDataBase class.
 
-@subsection downloads_history_090 Version 0.9.0 
+@subsection downloads_history_090 Version 0.9.0
 - Download: <a href="http://sgpp.sparsegrids.org/downloads/release_0.9.0.tgz">
   release_0.9.0.tgz</a>
 
