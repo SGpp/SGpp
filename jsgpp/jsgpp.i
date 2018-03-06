@@ -43,9 +43,6 @@
 #ifdef SG_PARALLEL
 #include "sgpp_parallel.hpp"
 #endif
-#ifdef SG_COMBIGRID
-#include "sgpp_combigrid.hpp"
-#endif
 #ifdef SG_QUADRATURE
 #include "sgpp_quadrature.hpp"
 #endif
@@ -54,6 +51,9 @@
 #endif
 #ifdef SG_DATADRIVEN
 #include "sgpp_datadriven.hpp"
+#endif
+#ifdef SG_COMBIGRID
+#include "sgpp_combigrid.hpp"
 #endif
 #ifdef SG_MISC
 #include "sgpp_misc.hpp"
@@ -78,14 +78,14 @@
 %include "quadrature/build/jsgpp/quadrature.i"
 #endif
 
+#ifdef SG_DATADRIVEN
+%include "datadriven/build/jsgpp/datadriven.i"
+#endif
+
 #ifdef SG_COMBIGRID
 %include "combigrid/build/jsgpp/combigrid.i"
 #endif
 
 #ifdef SG_OPTIMIZATION
 %include "optimization/build/jsgpp/optimization.i"
-#endif
-
-#ifdef SG_DATADRIVEN
-%include "datadriven/build/jsgpp/datadriven.i"
 #endif
