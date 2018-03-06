@@ -14,14 +14,16 @@
 #ifdef SG_DATADRIVEN
 %include "datadriven/src/sgpp/datadriven/algorithm/test_dataset.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DensitySystemMatrix.hpp"
-%include "datadriven/src/sgpp/datadriven/application/RegularizationConfiguration.hpp"
+%include "datadriven/src/sgpp/datadriven/configuration/BatchConfiguration.hpp"
+// %include "datadriven/src/sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp"
+%include "datadriven/src/sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp"
+%include "datadriven/src/sgpp/datadriven/configuration/RegularizationConfiguration.hpp"
 %rename (getConstTargets) sgpp::datadriven::Dataset::getTargets() const;
 %rename (getConstData) sgpp::datadriven::Dataset::getData() const;
 %include "datadriven/src/sgpp/datadriven/tools/Dataset.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/ConvergenceMonitor.hpp"
 
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp"
-%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSChol.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSDenseIChol.hpp"
 %ignore *::operator=;
@@ -73,6 +75,18 @@
 %include "datadriven/src/sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp"
 %include "datadriven/src/sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp"
 
+#ifdef USE_MPI
+%include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/AuxiliaryStructures.hpp"
+%include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/MPITaskScheduler.hpp"
+%include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/RefinementHandler.hpp"
+%include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp"
+//%include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp"
+%include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/MPIRequestPool.hpp"
+%include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/NetworkMessageData.hpp"
+%include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/PendingMPIRequest.hpp"
+%include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/RoundRobinScheduler.hpp"
+#endif
+
 %ignore  sgpp::datadriven::SampleProvider::operator=(SampleProvider&&);
 %rename(__assign__) sgpp::datadriven::SampleProvider::operator =;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp"
@@ -94,6 +108,8 @@
 %rename(__assign__) sgpp::datadriven::FitterConfiguration::operator =;
 %rename (getConstGridConfig) sgpp::datadriven::FitterConfiguration::getGridConfig() const;
 %rename (getConstRefinementConfig) sgpp::datadriven::FitterConfiguration::getRefinementConfig() const;
+%rename (getConstCrossvalidationConfig) sgpp::datadriven::FitterConfiguration::getCrossvalidationConfig() const;
+%rename (getConstDensityEstimationConfig) sgpp::datadriven::FitterConfiguration::getDensityEstimationConfig() const;
 %rename (getConstSolverRefineConfig) sgpp::datadriven::FitterConfiguration::getSolverRefineConfig() const;
 %rename (getConstSolverFinalConfig) sgpp::datadriven::FitterConfiguration::getSolverFinalConfig() const;
 %rename (getConstRegularizationConfig) sgpp::datadriven::FitterConfiguration::getRegularizationConfig() const;
@@ -127,7 +143,9 @@
 %ignore  sgpp::datadriven::SparseGridMiner::operator=(SparseGridMiner&&);
 %include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMiner.hpp"
 
+%include "datadriven/src/sgpp/datadriven/datamining/configuration/DensityEstimationTypeParser.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/configuration/GridTypeParser.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp"
 

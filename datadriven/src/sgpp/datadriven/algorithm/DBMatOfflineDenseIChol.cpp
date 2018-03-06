@@ -22,8 +22,13 @@ namespace datadriven {
 
 using sgpp::base::algorithm_exception;
 
-DBMatOfflineDenseIChol::DBMatOfflineDenseIChol(const DBMatDensityConfiguration& oc)
-    : DBMatOfflineChol(oc) {}
+DBMatOfflineDenseIChol::DBMatOfflineDenseIChol(
+    const sgpp::base::RegularGridConfiguration& gridConfig,
+    const sgpp::base::AdpativityConfiguration& adaptivityConfig,
+    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig)
+    : DBMatOfflineChol(gridConfig, adaptivityConfig,
+                       regularizationConfig, densityEstimationConfig) {}
 
 DBMatOfflineDenseIChol::DBMatOfflineDenseIChol(const std::string& fileName)
     : DBMatOfflineChol{fileName} {}
@@ -48,7 +53,7 @@ void DBMatOfflineDenseIChol::decomposeMatrix() {
         }
       }
 
-      ichol(tmpMatrix, lhsMatrix, config.icholParameters.sweepsDecompose);
+      ichol(tmpMatrix, lhsMatrix, densityEstimationConfig.iCholSweepsDecompose_);
     }
     isDecomposed = true;
     //    auto end = std::chrono::high_resolution_clock::now();
@@ -153,7 +158,7 @@ void DBMatOfflineDenseIChol::choleskyModification(size_t newPoints, std::list<si
       }
     }
 
-    ichol(matRefine, lhsMatrix, config.icholParameters.sweepsRefine, (gridSize - newPoints));
+    ichol(matRefine, lhsMatrix, densityEstimationConfig.iCholSweepsRefine_, (gridSize - newPoints));
 
     //    auto end = std::chrono::high_resolution_clock::now();
     //    std::cout << "IChol refinement took "

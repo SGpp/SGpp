@@ -14,7 +14,7 @@ namespace datadriven {
 enum class RegularizationType { Identity, Laplace, Diagonal, Lasso, ElasticNet, GroupLasso };
 
 struct RegularizationConfiguration {
-  RegularizationType regType_;
+  RegularizationType type_;
   double lambda_;
   double l1Ratio_;
   double exponentBase_;

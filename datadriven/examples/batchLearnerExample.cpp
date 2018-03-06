@@ -8,7 +8,7 @@
 
 #include "sgpp/base/grid/Grid.hpp"
 #include "sgpp/datadriven/application/BatchLearner.hpp"
-#include "sgpp/datadriven/application/BatchConfiguration.hpp"
+#include "sgpp/datadriven/configuration/BatchConfiguration.hpp"
 #include "sgpp/datadriven/tools/Dataset.hpp"
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 #include "sgpp/globaldef.hpp"
@@ -40,17 +40,17 @@ int main(int argc, char** args) {
   solverConfig.type_ = sgpp::solver::SLESolverType::CG;
 
   // Set parameters for the batchLearner
-  batchConfig.filename = "../tests/data/friedman_4d_2000.arff";
-  batchConfig.batchsize = 500;
-  batchConfig.samples = 500;
-  batchConfig.seed = 42;
-  batchConfig.wMode = 5;
-  batchConfig.wArgument = 1.0;
-  batchConfig.refineEvery = 0;
-  batchConfig.verbose = true;
-  batchConfig.stack = 0;
-  batchConfig.testsize = 200;
-  batchConfig.lambda = 0.0001f;
+  batchConfig.filename_ = "../tests/data/friedman_4d_2000.arff";
+  batchConfig.batchsize_ = 500;
+  batchConfig.samples_ = 500;
+  batchConfig.seed_ = 42;
+  batchConfig.wMode_ = 5;
+  batchConfig.wArgument_ = 1.0;
+  batchConfig.refineEvery_ = 0;
+  batchConfig.verbose_ = true;
+  batchConfig.stack_ = 0;
+  batchConfig.testsize_ = 200;
+  batchConfig.lambda_ = 0.0001f;
 
   // set up the grid config
   gridConfig.level_ = 4;
