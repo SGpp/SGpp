@@ -3,6 +3,24 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+// According to the SWIG documentation, shared pointers should be declared
+// before the classes are declared themselves.
+%shared_ptr(sgpp::base::OperationMatrix)
+%shared_ptr(sgpp::base::OperationIdentity)
+%shared_ptr(sgpp::base::OperationConvert)
+%shared_ptr(sgpp::base::OperationEval)
+%shared_ptr(sgpp::base::OperationEvalGradient)
+%shared_ptr(sgpp::base::OperationHessian)
+%shared_ptr(sgpp::base::OperationEvalPartialDerivative)
+%shared_ptr(sgpp::base::OperationHierachisation)
+%shared_ptr(sgpp::base::OperationQuadrature)
+%shared_ptr(sgpp::base::OperationQuadratureMC)
+%shared_ptr(sgpp::base::OperationEvalPeriodic)
+%shared_ptr(sgpp::base::OperationEvalPeriodic)
+%shared_ptr(sgpp::parallel::OperationParabolicPDESolverSystemDirichlet)
+%shared_ptr(sgpp::parallel::HeatEquationParabolicPDESolverSystem)
+%shared_ptr(sgpp::parallel::OperationParabolicPDESolverSystemFreeBoundaries)
+
 %include "base/src/sgpp/globaldef.hpp"
 
 %apply (double* IN_ARRAY1, int DIM1) {(double* input, int size)}

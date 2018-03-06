@@ -343,6 +343,7 @@ class CombigridMultiOperation {
    * @param numDimensions number of dimensions
    * @param func		      the objective function
    * @param levelManager  level manager
+   * @param weightFunctions weight functions
    * @return a combigrid operation calculating the variance on each full grid
    *
    */
