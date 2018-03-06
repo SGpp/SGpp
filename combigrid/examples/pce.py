@@ -4,7 +4,7 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-## \page example_ct_pce_py PCE with Combigrids (Python)
+## \page example_pce_py PCE with Combigrids (Python)
 ## This simple example shows how to create a Polynomial Chaos Expansion from an
 ## adaptively refined combigrid.
 

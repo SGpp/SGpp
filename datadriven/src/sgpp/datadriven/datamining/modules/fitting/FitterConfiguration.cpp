@@ -18,6 +18,16 @@ const base::AdpativityConfiguration& FitterConfiguration::getRefinementConfig() 
   return adaptivityConfig;
 }
 
+const datadriven::CrossvalidationConfiguration&
+FitterConfiguration::getCrossvalidationConfig() const {
+  return crossvalidationConfig;
+}
+
+const datadriven::DensityEstimationConfiguration&
+FitterConfiguration::getDensityEstimationConfig() const {
+  return densityEstimationConfig;
+}
+
 const solver::SLESolverConfiguration& FitterConfiguration::getSolverRefineConfig() const {
   return solverRefineConfig;
 }
@@ -44,6 +54,16 @@ base::RegularGridConfiguration& FitterConfiguration::getGridConfig() {
 base::AdpativityConfiguration& FitterConfiguration::getRefinementConfig() {
   return const_cast<base::AdpativityConfiguration&>(
       static_cast<const FitterConfiguration&>(*this).getRefinementConfig());
+}
+
+datadriven::CrossvalidationConfiguration& FitterConfiguration::getCrossvalidationConfig() {
+  return const_cast<datadriven::CrossvalidationConfiguration&>(
+      static_cast<const FitterConfiguration&>(*this).getCrossvalidationConfig());
+}
+
+datadriven::DensityEstimationConfiguration& FitterConfiguration::getDensityEstimationConfig() {
+  return const_cast<datadriven::DensityEstimationConfiguration&>(
+      static_cast<const FitterConfiguration&>(*this).getDensityEstimationConfig());
 }
 
 solver::SLESolverConfiguration& FitterConfiguration::getSolverRefineConfig() {

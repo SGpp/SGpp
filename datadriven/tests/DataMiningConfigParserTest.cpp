@@ -13,7 +13,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
@@ -218,7 +218,7 @@ BOOST_AUTO_TEST_CASE(testFitterRegularizationConfig) {
   DataMiningConfigParser parser{datasetPath};
 
   RegularizationConfiguration defaults;
-  defaults.regType_ = RegularizationType::Laplace;
+  defaults.type_ = RegularizationType::Laplace;
   defaults.lambda_ = 1;
   defaults.exponentBase_ = 2;
   defaults.l1Ratio_ = 3;
@@ -229,7 +229,7 @@ BOOST_AUTO_TEST_CASE(testFitterRegularizationConfig) {
   hasConfig = parser.getFitterRegularizationConfig(config, defaults);
 
   BOOST_CHECK_EQUAL(hasConfig, true);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.regType_),
+  BOOST_CHECK_EQUAL(static_cast<int>(config.type_),
                     static_cast<int>(RegularizationType::Identity));
   BOOST_CHECK_CLOSE(config.lambda_, 10e-7, tolerance);
   BOOST_CHECK_CLOSE(config.exponentBase_, 3.0, tolerance);
