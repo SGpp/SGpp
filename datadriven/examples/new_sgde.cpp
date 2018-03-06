@@ -209,10 +209,12 @@ void solve_cgal(Grid& grid, DataMatrix& samples, double lambda, DataVector& resu
   DataVector bounds(storage_size, 0.0);
   // define the quadratic Programm
   Program qp(static_cast<int>(storage_size), static_cast<int>(storage_size),  // size of problem
-             G_it, bounds.getPointer(), r,                                    // constraints
-             bounded, bounds.getPointer(), bounded, bounds.getPointer(),      // bounds
-             P_it, q.getPointer()                                             // optimization goal
-             );
+             // constraints
+             G_it, bounds.getPointer(), r,
+             // bounds
+             bounded, bounds.getPointer(), bounded, bounds.getPointer(),
+             // optimization goal
+             P_it, q.getPointer());
   Solution s = CGAL::solve_quadratic_program(qp, ET());
   Solution::Variable_value_iterator it = s.variable_values_begin();
   for (size_t i = 0; i < storage_size; i++) {
