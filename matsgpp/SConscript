@@ -13,6 +13,10 @@ Import("*")
 if os.path.exists("matsgpp_wrap.cc"):
   os.remove("matsgpp_wrap.cc")
 
+# create /matsgpp/matlab directory
+if not os.path.exists("matlab"):
+  os.mkdir("matlab")
+
 # SCons won't Install the +sgpp directory from /matsgpp/matlab if
 # it already exists, even when files are new/were changed
 matlabBuildPath = os.path.join(MATSGPP_BUILD_PATH.abspath, "+sgpp")
