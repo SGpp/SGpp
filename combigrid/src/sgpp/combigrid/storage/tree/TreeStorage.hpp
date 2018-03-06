@@ -14,6 +14,7 @@
 #include <sgpp/combigrid/storage/tree/TreeStorageGuidedIterator.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorageStoredDataIterator.hpp>
 
+#include <iostream>
 #include <memory>
 #include <stdexcept>
 
