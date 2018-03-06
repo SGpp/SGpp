@@ -20,6 +20,8 @@
 namespace sgpp {
 namespace base {
 
+DataMatrix::DataMatrix() : DataMatrix(0, 0) {}
+
 DataMatrix::DataMatrix(size_t nrows, size_t ncols) : DataMatrix(nrows, ncols, 0.0) {}
 
 DataMatrix::DataMatrix(size_t nrows, size_t ncols, double value) : nrows(nrows), ncols(ncols) {

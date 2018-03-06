@@ -122,6 +122,11 @@ class DBMatOnlineDE : public DBMatOnline {
    */
   double normalize(size_t samples = 1000);
 
+  /**
+   * Normalize the Density using Quadrature
+   */
+  double normalizeQuadrature();
+
  protected:
   virtual void solveSLE(DataVector& b, bool do_cv) = 0;
   double computeL2Error();

@@ -203,7 +203,7 @@ void SquaredPenalty::optimize() {
   xHist.appendRow(x);
   fHist.append(fx);
 
-  base::DataVector xNew(d);
+  base::DataVector xOld(d);
 
   base::DataVector gx(mG);
   base::DataVector hx(mH);
@@ -227,13 +227,12 @@ void SquaredPenalty::optimize() {
                                                    10.0 * theta);
     unconstrainedOptimizer.setStartingPoint(x);
     unconstrainedOptimizer.optimize();
-    xNew = unconstrainedOptimizer.getOptimalPoint();
+    x = unconstrainedOptimizer.getOptimalPoint();
 
     const base::DataMatrix& innerPoints = unconstrainedOptimizer.getHistoryOfOptimalPoints();
     const size_t numberInnerIterations = innerPoints.getNrows();
     k += numberInnerIterations;
 
-    x = xNew;
     fx = f->eval(x);
     g->eval(x, gx);
     h->eval(x, hx);
@@ -258,9 +257,9 @@ void SquaredPenalty::optimize() {
 
     mu *= rhoMuPlus;
 
-    xNew.sub(x);
+    xOld.sub(x);
 
-    if ((xNew.l2Norm() < theta) && (gx.max() < epsilon) && (hx.maxNorm() < epsilon)) {
+    if ((xOld.l2Norm() < theta) && (gx.max() < epsilon) && (hx.maxNorm() < epsilon)) {
       breakIterationCounter++;
 
       if (breakIterationCounter >= BREAK_ITERATION_COUNTER_MAX) {
@@ -269,6 +268,8 @@ void SquaredPenalty::optimize() {
     } else {
       breakIterationCounter = 0;
     }
+
+    xOld = x;
   }
 
   xOpt.resize(d);

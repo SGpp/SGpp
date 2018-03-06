@@ -5,10 +5,12 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 
+#include <chrono>
 #include <string>
 
 using sgpp::base::DataMatrix;
@@ -33,6 +35,7 @@ using sgpp::base::DataVector;
  */
 
 int main() {
+  auto begin = std::chrono::high_resolution_clock::now();
   /**
    * Specify the number of runs to perform.
    * If only one specific example should be executed, set
@@ -95,32 +98,48 @@ int main() {
        */
       std::cout << "# create regularization config" << std::endl;
       sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-      regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Identity;
+      regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
+
+      // initial regularization parameter lambda
+      regularizationConfig.lambda_ = 0.01;
 
       /**
        * Select the desired decomposition type for the offline step.
-       * Note: Refinement/Coarsening only possible for Cholesky decomposition.
+       * Note: Refinement/Coarsening only possible for Cholesky decomposition
+       * and OrthoAdapt
        */
-      sgpp::datadriven::DBMatDecompostionType dt;
+      sgpp::datadriven::MatrixDecompositionType dt;
       std::string decompType;
       // choose "LU decomposition"
-      // dt = DBMatDecompostionType::DBMatDecompLU;
+      // dt = MatrixDecompositionType::DBMatDecompLU;
       // decompType = "LU decomposition";
+
       // choose"Eigen decomposition"
-      // dt = DBMatDecompostionType::DBMatDecompEigen;
+      // dt = MatrixDecompositionType::DBMatDecompEigen;
       // decompType = "Eigen decomposition";
+
       // choose "Cholesky decomposition"
-      //      dt = sgpp::datadriven::DBMatDecompostionType::Chol;
-      //      decompType = "Cholesky decomposition";
-      //      dt = sgpp::datadriven::DBMatDecompostionType::IChol;
-      //      decompType = "Incomplete Cholesky decomposition";
-      dt = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
-      decompType = "Incomplete Cholesky decomposition on Dense Matrix";
+      // dt = sgpp::datadriven::MatrixDecompositionType::Chol;
+      // decompType = "Cholesky decomposition";
+      // dt = sgpp::datadriven::MatrixDecompositionType::IChol;
+      // decompType = "Incomplete Cholesky decomposition";
+      // dt = sgpp::datadriven::MatrixDecompositionType::DenseIchol;
+
+      // choose "orthogonal Adaptivity"
+      dt = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
+      decompType = "orthogonal Adaptivity";
+      sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+      densityEstimationConfig.decomposition_ = dt;
+
+      // those two are only relevant, when we use iChol decomposition type
+      densityEstimationConfig.iCholSweepsDecompose_ = 2;
+      densityEstimationConfig.iCholSweepsRefine_ = 2;
+
       std::cout << "Decomposition type: " << decompType << std::endl;
 
       /**
-       * Configure adaptive refinement (if Cholesky is chosen). As refinement
-       * monitor the periodic monitor or the convergence monitor
+       * Configure adaptive refinement (if Cholesky or OrthoAdapt is chosen).
+       * As refinement monitor the periodic monitor or the convergence monitor
        * can be chosen. Possible refinement indicators are
        * surplus refinement, data-based refinement, zero-crossings-based
        * refinement.
@@ -146,40 +165,33 @@ int main() {
       std::cout << "Refinement monitor: " << refMonitor << std::endl;
       std::string refType;
       // select surplus refinement
-      // refType = "surplus";
+      refType = "surplus";
       // select data-based refinement
       // refType = "data";
       // select zero-crossings-based refinement
-      refType = "zero";
+      // refType = "zero";
       std::cout << "Refinement type: " << refType << std::endl;
       sgpp::base::AdpativityConfiguration adaptConfig;
       /**
        * Specify number of refinement steps and the max number
        * of grid points to refine each step.
        */
-      adaptConfig.numRefinements_ = 2;
-      adaptConfig.noPoints_ = 7;
+      adaptConfig.numRefinements_ = 10;
+      adaptConfig.noPoints_ = 10;
       adaptConfig.threshold_ = 0.0;  // only required for surplus refinement
 
-      // initial regularization parameter lambda
-      double lambda = 0.01;
       // initial weighting factor
       double beta = 0.0;
-      // configuration
-      sgpp::datadriven::DBMatDensityConfiguration dconf(gridConfig, adaptConfig,
-                                                        regularizationConfig.regType_, lambda, dt);
       // specify if prior should be used to predict class labels
       bool usePrior = false;
-
-      dconf.icholParameters.sweepsDecompose = 2;
-      dconf.icholParameters.sweepsRefine = 2;
 
       /**
        * Create the learner.
        */
       std::cout << "# create learner" << std::endl;
-      sgpp::datadriven::LearnerSGDEOnOff learner(dconf, trainDataset, testDataset, nullptr,
-                                                 classLabels, classNum, usePrior, beta, lambda);
+      sgpp::datadriven::LearnerSGDEOnOff learner(gridConfig, adaptConfig, regularizationConfig,
+                                                 densityEstimationConfig, trainDataset, testDataset,
+                                                 nullptr, classLabels, classNum, usePrior, beta);
 
       /**
        * Configure cross-validation.
@@ -200,7 +212,7 @@ int main() {
 
       // specify batch size
       // (set to 1 for processing only a single data point each iteration)
-      size_t batchSize = 1;
+      size_t batchSize = 10;
       // specify max number of passes over traininig data set
       size_t maxDataPasses = 2;
 
@@ -238,16 +250,20 @@ int main() {
     avgErrorsFolds.mult(1.0 / static_cast<double>(totalFolds));
 
     // write error evaluation to csv-file
-    /*std::ofstream output;
-    output.open("SGDEOnOff_avg_classification_error_"+std::to_string(numSets+1)+".csv");
+    /*
+    std::ofstream output;
+    output.open("SGDEOnOff_avg_classification_error_" + std::to_string(numSets + 1) + ".csv");
     if (output.fail()) {
       std::cout << "failed to create csv file!" << std::endl;
-    }
-    else {
+    } else {
       for (size_t i = 0; i < avgErrorsFolds.getSize(); i++) {
         output << avgErrorsFolds.get(i) << ";" << std::endl;
       }
       output.close();
     }*/
   }
+  auto end = std::chrono::high_resolution_clock::now();
+  std::cout << "whole learnerSGDEOnOff test took "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms"
+            << std::endl;
 }

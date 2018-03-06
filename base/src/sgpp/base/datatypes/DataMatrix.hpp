@@ -28,9 +28,9 @@ namespace base {
 class DataMatrix : public std::vector<double> {
  public:
   /**
-   * Creates a empty two-dimensional DataMatrix.
+   * Creates an empty two-dimensional DataMatrix.
    */
-  DataMatrix() = default;
+  DataMatrix();
 
   /**
    * Copy constructor.
