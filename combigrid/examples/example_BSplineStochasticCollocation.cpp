@@ -9,20 +9,30 @@
 #include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 
-/*
- * In this example the mean and variance of an objective function are calculated with the B spline
+/**
+ * \page example_example_BSplineStochasticCollocation_cpp Stochastic Collocation with
+ * B-Spline Combigrids
+ *
+ * In this example the mean and variance of an objective function are calculated with B-Spline
  * Stochastic Collocation. The objective function is f(x) = x transformed to [-1,3] and the moments
  * are calculated assuming a normal probability density function is used as a weight function w(x)
  * in the
  * integration. This means
- * 			E(f) = \int  f(x) w(x) dx
- * 			V(f) = E(f^2) - E(f)^2
+ *
+ * 			\f$E(f) = \int  f(x) w(x) dx \\
+ * 			V(f) = E(f^2) - E(f)^2 \f$
  *
  */
 
-// w.l.o.g. the objective function takes arguments from the unit cube. We transform the function
-// f(x)=x on [a,b] = [-1,3] to the uni cube via \tilde{f}(x) = a + (b-a) * x = 4x-1
+/**
+ * First we define the objective function,
+ */
+
 double objectiveFunction(sgpp::base::DataVector const& v) { return 4.0 * v[0] - 1.0; }
+
+/**
+ * set up the B-Splines
+ */
 
 int main() {
   // set the number of dimensions
@@ -38,6 +48,10 @@ int main() {
   // corresponding coefficients for the B spline interpolation
   sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(
       sgpp::combigrid::MultiFunction(objectiveFunction), pointHierarchies, degree);
+
+  /**
+   * and intialize the probability density functions for our input.
+   */
 
   // set up the weight function collection as normally distributed probability density functions
   sgpp::combigrid::ProbabilityDensityFunction1DConfiguration pdf_config;
@@ -58,6 +72,10 @@ int main() {
     weightFunctionsCollection.push_back(oneDimensionsalWeightFunction);
   }
 
+  /**
+   * After that we create a B-Spline stochastic collocation surrogate
+   */
+
   // set up the configuration for the B spline Stochastic Collocation
   std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> storage;
   sgpp::combigrid::CombigridSurrogateModelConfiguration config;
@@ -70,6 +88,10 @@ int main() {
   config.bounds = bounds;
   // create the B spline Stochastic Collocation
   sgpp::combigrid::BsplineStochasticCollocation bsc(config);
+
+  /**
+   * and finally finish constructing the combigrid operation.
+   */
 
   // create an operation with a regular level manager to create the level structure
   sgpp::combigrid::EvaluatorConfiguration EvalConfig(
@@ -85,11 +107,19 @@ int main() {
       pointHierarchies, Evaluators, regularLevelManager, gf, exploitNesting,
       auxiliarySummationStrategyType);
 
+  /**
+   * Now we can add some levels to the combigrid,
+   */
+
   // create a regular level structure of level 1. Because the regularLevelManager is part of the
   // above interpolation operation the B spline interpolation coefficients are calculated during the
   // level structure creation. These coefficients can then be used for the quadratures that must be
   // done for the mean and variance calculations
   Operation->getLevelManager()->addRegularLevels(1);
+
+  /**
+   * update the surrogate accordingly
+   */
 
   //  update the B Spline Stochastic Collocation configuration with the level stucture and the
   //  interpolation coefficients from the refinement operation
@@ -99,7 +129,10 @@ int main() {
   // structure and coefficients
   bsc.updateConfig(config);
 
-  // calculate mean and variance
+  /**
+   * and calculate mean and variance of the objective function.
+   */
+
   double variance = bsc.variance();
   double mean = bsc.mean();
   std::cout << "number of grid points: " << Operation->getLevelManager()->numGridPoints()
