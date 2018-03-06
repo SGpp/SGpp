@@ -27,7 +27,11 @@ using sgpp::base::DataVector;
  */
 class DBMatOfflineChol : public DBMatOfflineGE {
  public:
-  explicit DBMatOfflineChol(const DBMatDensityConfiguration& oc);
+  explicit DBMatOfflineChol(
+      const sgpp::base::RegularGridConfiguration& gridConfig,
+      const sgpp::base::AdpativityConfiguration& adaptivityConfig,
+      const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+      const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
 
   explicit DBMatOfflineChol(const std::string& fileName);
 

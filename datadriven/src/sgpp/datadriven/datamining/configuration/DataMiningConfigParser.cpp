@@ -15,9 +15,11 @@
 #include <sgpp/base/grid/LevelIndexTypes.hpp>
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
+#include <sgpp/datadriven/datamining/configuration/DensityEstimationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
+#include <sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceFileTypeParser.hpp>
@@ -260,6 +262,101 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
   return hasFitterAdaptivityConfig;
 }
 
+bool DataMiningConfigParser::getFitterCrossvalidationConfig(
+    CrossvalidationConfiguration& config, const CrossvalidationConfiguration& defaults) const {
+  bool hasFitterCrossvalidationConfig =
+      hasFitterConfig() ? (*configFile)[fitter].contains("crossvalidationConfig") : false;
+
+  if (hasFitterCrossvalidationConfig) {
+    auto crossvalidationConfig =
+    static_cast<DictNode*>(&(*configFile)[fitter]["crossvalidationConfig"]);
+    config.enable_ =
+        parseBool(*crossvalidationConfig, "enable", defaults.enable_, "crossvalidationConfig");
+    config.kfold_ = parseUInt(*crossvalidationConfig, "kFold",
+                                       defaults.kfold_, "crossvalidationConfig");
+    config.seed_ =
+        static_cast<int>(parseInt(*crossvalidationConfig, "randomSeed",
+                                  defaults.seed_, "crossvalidationConfig"));
+    config.shuffle_ =
+        parseBool(*crossvalidationConfig, "shuffle", defaults.shuffle_, "crossvalidationConfig");
+    config.silent_ =
+        parseBool(*crossvalidationConfig, "silent", defaults.silent_, "crossvalidationConfig");
+    config.lambda_ =
+        parseDouble(*crossvalidationConfig, "lambda", defaults.lambda_, "crossvalidationConfig");
+    config.lambdaStart_ =
+        parseDouble(*crossvalidationConfig, "lambdaStart",
+                    defaults.lambdaStart_, "crossvalidationConfig");
+    config.lambdaEnd_ =
+        parseDouble(*crossvalidationConfig, "lambdaEnd",
+                    defaults.lambdaEnd_, "crossvalidationConfig");
+    config.lambdaSteps_ =
+        parseUInt(*crossvalidationConfig, "lambdaSteps",
+                  defaults.lambdaSteps_, "crossvalidationConfig");
+    config.logScale_ =
+        parseBool(*crossvalidationConfig, "logScale", defaults.logScale_, "crossvalidationConfig");
+  } else {
+    std::cout << "# Could not find specification  of fitter[crossvalidationConfig]. Falling "
+                 "Back to default values."
+              << std::endl;
+    config = defaults;
+  }
+  return hasFitterCrossvalidationConfig;
+}
+
+bool DataMiningConfigParser::getFitterDensityEstimationConfig(
+    DensityEstimationConfiguration& config, const DensityEstimationConfiguration& defaults) const {
+  bool hasFitterDensityEstimationConfig =
+      hasFitterConfig() ? (*configFile)[fitter].contains("densityEstimationConfig") : false;
+
+  if (hasFitterDensityEstimationConfig) {
+    auto densityEstimationConfig =
+    static_cast<DictNode*>(&(*configFile)[fitter]["densityEstimationConfig"]);
+    config.iCholSweepsDecompose_ = parseUInt(*densityEstimationConfig,
+                                             "iCholSweepsDecompose",
+                                             defaults.iCholSweepsDecompose_,
+                                             "densityEstimationConfig");
+    config.iCholSweepsRefine_ = parseUInt(*densityEstimationConfig, "iCholSweepsRefine",
+                                          defaults.iCholSweepsRefine_, "densityEstimationConfig");
+    config.iCholSweepsUpdateLambda_ =
+    parseUInt(*densityEstimationConfig, "iCholSweepsUpdateLambda",
+              defaults.iCholSweepsUpdateLambda_, "densityEstimationConfig");
+    config.iCholSweepsSolver_ = parseUInt(*densityEstimationConfig, "iCholSweepsSolver",
+                                          defaults.iCholSweepsSolver_, "densityEstimationConfig");
+
+    // parse  density estimation type
+    if (densityEstimationConfig->contains("densityEstimationType")) {
+      config.type_ =
+      DensityEstimationTypeParser::parse((*densityEstimationConfig)["densityEstimationType"].get());
+    } else {
+      std::cout <<
+      "# Did not find densityEstimationConfig[densityEstimationType]. Setting default value "
+                << DensityEstimationTypeParser::toString(defaults.type_) << "." << std::endl;
+      config.type_ = defaults.type_;
+    }
+
+    // parse matrix decomposition type
+    if (densityEstimationConfig->contains("matrixDecompositionType")) {
+      config.decomposition_ =
+      MatrixDecompositionTypeParser::
+      parse((*densityEstimationConfig)["matrixDecompositionEstimationType"].get());
+    } else {
+      std::cout <<
+      "# Did not find densityEstimationConfig[matrixDecompositionType]. Setting default value "
+                << MatrixDecompositionTypeParser::toString(defaults.decomposition_)
+                << "." << std::endl;
+      config.decomposition_ = defaults.decomposition_;
+    }
+
+  } else {
+    std::cout <<
+    "# Could not find specification  of fitter[densityEstimationConfig]. Falling Back to "
+                 "default values."
+              << std::endl;
+    config = defaults;
+  }
+  return hasFitterDensityEstimationConfig;
+}
+
 bool DataMiningConfigParser::getFitterSolverRefineConfig(
     SLESolverConfiguration& config, const SLESolverConfiguration& defaults) const {
   bool hasFitterSolverRefineConfig =
@@ -307,12 +404,12 @@ bool DataMiningConfigParser::getFitterRegularizationConfig(
 
     // parse  regularization type
     if (regularizationConfig->contains("regularizationType")) {
-      config.regType_ =
+      config.type_ =
           RegularizationTypeParser::parse((*regularizationConfig)["regularizationType"].get());
     } else {
       std::cout << "# Did not find regularizationConfig[regularizationType]. Setting default value "
-                << RegularizationTypeParser::toString(defaults.regType_) << "." << std::endl;
-      config.regType_ = defaults.regType_;
+                << RegularizationTypeParser::toString(defaults.type_) << "." << std::endl;
+      config.type_ = defaults.type_;
     }
 
     config.lambda_ =

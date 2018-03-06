@@ -6,6 +6,9 @@
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 
+#include <list>
+#include <vector>
+
 using sgpp::base::application_exception;
 
 namespace sgpp {
@@ -14,13 +17,14 @@ namespace datadriven {
 DBMatOnline::DBMatOnline(DBMatOffline& o) : offlineObject{o} {}
 
 void DBMatOnline::setLambda(double lambda) {
-  switch (offlineObject.getConfig().decomp_type_) {
-    case DBMatDecompostionType::Eigen:
-    case DBMatDecompostionType::Chol:
-    case DBMatDecompostionType::DenseIchol:
-      offlineObject.getConfig().lambda_ = lambda;
+  switch (offlineObject.getDensityEstimationConfig().decomposition_) {
+    case MatrixDecompositionType::Eigen:
+    case MatrixDecompositionType::Chol:
+    case MatrixDecompositionType::DenseIchol:
+    case MatrixDecompositionType::OrthoAdapt:
+      offlineObject.getRegularizationConfig().lambda_ = lambda;
       break;
-    case DBMatDecompostionType::LU:
+    case MatrixDecompositionType::LU:
     default:
       throw application_exception(
           "Lambda can not be changed in the online step for this decomposition "
@@ -33,6 +37,21 @@ DBMatOffline& DBMatOnline::getOfflineObject() {
 }
 
 const DBMatOffline& DBMatOnline::getOfflineObject() const { return offlineObject; }
+
+std::vector<size_t> DBMatOnline::updateSystemMatrixDecomposition(
+    size_t numAddedGridPoints,
+    std::list<size_t> deletedGridPointIndices,
+    double lambda) {
+  if (!getOfflineObject().isRefineable()) {
+    throw base::not_implemented_exception("Attempted to update system matrix on decomposition "
+                                                  "that doesn't support it.");
+  }
+  throw base::application_exception("Decomposition reports refineable but does not "
+                                            "override updateSystemMatrixDecomposition()");
+  std::vector<size_t> return_vector = {};
+  return return_vector;
+}
+
 
 }  // namespace datadriven
 }  // namespace sgpp

@@ -33,7 +33,12 @@ using sgpp::base::DataMatrix;
 
 DBMatOfflineGE::DBMatOfflineGE() : DBMatOffline() {}
 
-DBMatOfflineGE::DBMatOfflineGE(const DBMatDensityConfiguration& oc) : DBMatOffline(oc) {}
+DBMatOfflineGE::DBMatOfflineGE(
+    const sgpp::base::RegularGridConfiguration& gridConfig,
+    const sgpp::base::AdpativityConfiguration& adaptivityConfig,
+    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig)
+    : DBMatOffline(gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig) {}
 
 sgpp::datadriven::DBMatOfflineGE::DBMatOfflineGE(const std::string& fileName)
     : DBMatOffline{fileName} {
@@ -73,10 +78,10 @@ void DBMatOfflineGE::buildMatrix() {
 
   // Construct matrix lambda * C (just use identity for C)
   DataMatrix lambdaC(size, size);
-  if (config.regularization_ == RegularizationType::Identity) {
+  if (regularizationConfig.type_ == RegularizationType::Identity) {
     lambdaC.setAll(0.);
     for (size_t i = 0; i < size; i++) {
-      lambdaC.set(i, i, config.lambda_);
+      lambdaC.set(i, i, regularizationConfig.lambda_);
     }
   } else {
     throw operation_exception("Unsupported regularization type");

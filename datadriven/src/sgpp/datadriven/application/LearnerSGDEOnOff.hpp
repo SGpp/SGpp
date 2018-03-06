@@ -44,7 +44,10 @@ class LearnerSGDEOnOff {
   /**
    * Constructor.
    *
-   * @param dconf The configuration of the offline object
+   * @param gridConfig The configuration of the grid
+   * @param adaptivityConfig The configuration of the grid adaptivity
+   * @param regularizationConfig The configuration of the grid regularization
+   * @param densityEstimationConfig The configuration of the matrix decomposition
    * @param trainData The (mandatory) training dataset
    * @param testData The (mandatory) test dataset
    * @param validationData The (optional) validation dataset
@@ -53,11 +56,15 @@ class LearnerSGDEOnOff {
    * @param usePrior Determines if prior probabilities should be used to compute
    * class labels
    * @param beta The initial weighting factor
-   * @param lambda The initial regularization parameter
+   * @param matrixfile path to a decomposed matrix file
    */
-  LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& trainData, Dataset& testData,
+  LearnerSGDEOnOff(sgpp::base::RegularGridConfiguration& gridConfig,
+                   sgpp::base::AdpativityConfiguration& adaptivityConfig,
+                   sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+                   sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+                   Dataset& trainData, Dataset& testData,
                    Dataset* validationData, DataVector& classLabels, size_t classNumber,
-                   bool usePrior, double beta, double lambda);
+                   bool usePrior, double beta, std::string matrixfile = "");
 
   /**
    * Trains the learner with the given dataset.
@@ -198,7 +205,7 @@ class LearnerSGDEOnOff {
    */
   ClassDensityConntainer& getDensityFunctions();
 
- private:
+ protected:
   void refine(ConvergenceMonitor& monitor,
               std::vector<std::pair<std::list<size_t>, size_t>>& refineCoarse,
               std::string& refType);

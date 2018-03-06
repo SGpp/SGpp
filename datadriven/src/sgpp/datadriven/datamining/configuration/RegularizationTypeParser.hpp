@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 
 #include <map>
 #include <string>

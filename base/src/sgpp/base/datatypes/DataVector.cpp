@@ -23,6 +23,8 @@
 namespace sgpp {
 namespace base {
 
+DataVector::DataVector() : DataVector(0) {}
+
 DataVector::DataVector(size_t size) : DataVector(size, 0.0) {}
 
 DataVector::DataVector(size_t size, double value) { this->assign(size, value); }

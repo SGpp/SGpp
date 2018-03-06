@@ -13,9 +13,10 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 
 #include <omp.h>
 
@@ -29,14 +30,21 @@ using sgpp::base::DataVector;
 int main() {
 #ifdef USE_GSL
   // ###################################################################################
-  sgpp::datadriven::DBMatDensityConfiguration fullConfig;
-  fullConfig.grid_dim_ = 4;
-  fullConfig.grid_level_ = 5;
-  fullConfig.lambda_ = 10e-4;
-  fullConfig.regularization_ = sgpp::datadriven::RegularizationType::Identity;
-  fullConfig.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::Chol;
+  sgpp::base::RegularGridConfiguration gridConfig;
+  gridConfig.dim_ = 4;
+  gridConfig.level_ = 5;
 
-  sgpp::datadriven::DBMatOfflineChol fullOffline(fullConfig);
+  sgpp::base::AdpativityConfiguration adaptConfig;
+
+  sgpp::datadriven::RegularizationConfiguration regularizationConfig;
+  regularizationConfig.lambda_ = 10e-4;
+  regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
+
+  sgpp::datadriven::DensityEstimationConfiguration fullDensityEstimationConfig;
+  fullDensityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::Chol;
+
+  sgpp::datadriven::DBMatOfflineChol fullOffline(gridConfig, adaptConfig,
+                                                 regularizationConfig, fullDensityEstimationConfig);
   fullOffline.buildMatrix();
   fullOffline.decomposeMatrix();
 
@@ -49,11 +57,13 @@ int main() {
   }
   // ###################################################################################
 
-  sgpp::datadriven::DBMatDensityConfiguration exactIConfig = fullConfig;
-  fullConfig.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
-  exactIConfig.icholParameters.sweepsDecompose = 1;
+  sgpp::datadriven::DensityEstimationConfiguration exactIConfig = fullDensityEstimationConfig;
+  fullDensityEstimationConfig.decomposition_ =
+  sgpp::datadriven::MatrixDecompositionType::DenseIchol;
+  exactIConfig.iCholSweepsDecompose_ = 1;
 
-  sgpp::datadriven::DBMatOfflineDenseIChol exactIOffline(exactIConfig);
+  sgpp::datadriven::DBMatOfflineDenseIChol exactIOffline(gridConfig, adaptConfig,
+                                                         regularizationConfig, exactIConfig);
   exactIOffline.buildMatrix();
 
   auto numThreads = 0;
@@ -79,10 +89,11 @@ int main() {
 
   // ###################################################################################
   for (auto i = 1u; i < 10; i++) {
-    sgpp::datadriven::DBMatDensityConfiguration config = exactIConfig;
-    config.icholParameters.sweepsDecompose = i;
+    sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig = exactIConfig;
+    densityEstimationConfig.iCholSweepsDecompose_ = i;
 
-    sgpp::datadriven::DBMatOfflineDenseIChol offline(config);
+    sgpp::datadriven::DBMatOfflineDenseIChol offline(gridConfig, adaptConfig,
+                                                     regularizationConfig, densityEstimationConfig);
     offline.buildMatrix();
     offline.decomposeMatrix();
 
@@ -98,7 +109,7 @@ int main() {
     tmpIMat.sub(exactIMat);
     tmpIMat.abs();
     tmpIMat.sqr();
-    std::cout << " ||iichol - ichol|| with " << config.icholParameters.sweepsDecompose
+    std::cout << " ||iichol - ichol|| with " << densityEstimationConfig.iCholSweepsDecompose_
               << " sweeps is: " << std::scientific << std::setprecision(10) << sqrt(tmpIMat.sum())
               << "\n";
 
@@ -106,7 +117,7 @@ int main() {
     tmpIMat2.sub(fullMat);
     tmpIMat2.abs();
     tmpIMat2.sqr();
-    std::cout << " ||iichol - chol|| with " << config.icholParameters.sweepsDecompose
+    std::cout << " ||iichol - chol|| with " << densityEstimationConfig.iCholSweepsDecompose_
               << " sweeps is: " << std::scientific << std::setprecision(10) << sqrt(tmpIMat2.sum())
               << "\n";
   }
