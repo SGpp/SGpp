@@ -276,9 +276,9 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
             temp_res *= width;
             //            }
             // ToDo (rehmemk) now for every B spline the numAdditionalPoints is reseted. Use
-            // previous numAdditionalPoints (butn not simply numAdditionalPoints =
-            // lastNumAdditionalPoints, that din't work)
-            numAdditionalPoints = 1;  // lastNumAdditionalPoints;
+            // previous numAdditionalPoints (but not simply numAdditionalPoints =
+            // lastNumAdditionalPoints, that didn't work)
+            numAdditionalPoints = 10;  // lastNumAdditionalPoints;
 
             if (isCustomWeightFunction) {
               double tol = 1e-14;
@@ -288,7 +288,7 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
                 lastNumAdditionalPoints = numAdditionalPoints;
                 numAdditionalPoints += incrementQuadraturePoints;
                 quadOrder = degree + 1 + numAdditionalPoints;
-                // This leads to problems with the simple OMP parallelisation if the abort
+                // This leads to problems with the simple OMP parallelization if the abort
                 // criterion is too close to 500
                 if (quadOrder > 480) {
                   break;

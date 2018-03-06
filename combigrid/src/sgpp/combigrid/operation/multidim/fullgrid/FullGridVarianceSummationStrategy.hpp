@@ -117,7 +117,7 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
         this->storage, this->evaluatorPrototypes, this->pointHierarchies);
 
     // Var = E(x^2) - E(x)^2
-    FloatScalarVector mean = linearStrategy.eval(level);  // <=
+    FloatScalarVector mean = linearStrategy.eval(level);  // <-?
     V meanSquare = quadraticStrategy.eval(level);
     mean.scalarMult(width);
 
