@@ -13,9 +13,9 @@ Import("*")
 if os.path.exists("matsgpp_wrap.cc"):
   os.remove("matsgpp_wrap.cc")
 
-# SCons won't Install the +matsgpp directory from /matsgpp/matlab if
+# SCons won't Install the +sgpp directory from /matsgpp/matlab if
 # it already exists, even when files are new/were changed
-matlabBuildPath = os.path.join(MATSGPP_BUILD_PATH.abspath, "+matsgpp")
+matlabBuildPath = os.path.join(MATSGPP_BUILD_PATH.abspath, "+sgpp")
 if os.path.exists(matlabBuildPath):
   shutil.rmtree(matlabBuildPath)
 
@@ -35,7 +35,7 @@ defines = ["-D" + c + "=" + matlabEnv["CPPDEFINES"][c]
 #swigIncludePaths = ["-I" + module + "/src/" for module in moduleFolders]
 swigIncludePaths = []
 matlabEnv.AppendUnique(SWIGFLAGS=["-c++", "-matlab", "-mexname", "matsgppmex",
-                                  "-pkgname", "matsgpp",
+                                  "-pkgname", "sgpp",
                                   "-outdir", os.path.join(moduleName, "matlab")] +
                                   swigIncludePaths + defines)
 
@@ -64,7 +64,7 @@ else:
 libMatlab = matlabEnv.SharedLibrary(target="matsgpp", source=["matsgpp.i"],
                                     SHLIBPREFIX="", SHLIBSUFFIX=mexSuffix)
 matlabFiles = [os.path.join("matlab", x)
-               for x in ["+matsgpp", "SwigGet.m", "SwigMem.m",
+               for x in ["+sgpp", "SwigGet.m", "SwigMem.m",
                          "SwigRef.m", "SwigStorage.m"]]
 matlabEnv.Depends(libMatlab, matlabFiles)
 
