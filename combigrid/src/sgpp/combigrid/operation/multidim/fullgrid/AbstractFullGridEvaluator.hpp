@@ -36,7 +36,7 @@ class AbstractFullGridEvaluator {
    * Pointer to a mutex that is locked when doing critical operations on data.
    * This is set to nullptr if the action is done in a single thread.
    */
-  std::shared_ptr<std::mutex> mutexPtr;
+  std::shared_ptr<std::recursive_mutex> mutexPtr;
 
  public:
   /**
@@ -58,7 +58,7 @@ class AbstractFullGridEvaluator {
    * Updates the current mutex. If the mutex is set to nullptr, no mutex locking is done. Otherwise,
    * the mutex is locked at critical actions.
    */
-  virtual void setMutex(std::shared_ptr<std::mutex> mutexPtr) {
+  virtual void setMutex(std::shared_ptr<std::recursive_mutex> mutexPtr) {
     this->mutexPtr = mutexPtr;
     storage->setMutex(mutexPtr);
   }

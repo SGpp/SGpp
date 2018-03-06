@@ -3,10 +3,20 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearGridBasedEvaluator.hpp>
+#pragma once
+
+#include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
 
 namespace sgpp {
 namespace combigrid {
+
+/**
+ *
+ * @param config
+ * @return
+ */
+std::shared_ptr<CombigridSurrogateModel> createCombigridSurrogateModel(
+    CombigridSurrogateModelConfiguration& config);
 
 } /* namespace combigrid */
 } /* namespace sgpp */

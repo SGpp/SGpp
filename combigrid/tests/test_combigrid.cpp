@@ -19,6 +19,7 @@
 #include <cmath>
 #include <iostream>
 #include <memory>
+#include <random>
 #include <string>
 #include <utility>
 #include <vector>
@@ -220,7 +221,6 @@ BOOST_AUTO_TEST_CASE(testLinearInterpolation) {
       // stopwatch.log();
     }
   }
-
   auto quadrature = CombigridMultiOperation::createLinearLejaQuadrature(
       3, MultiFunction([](sgpp::base::DataVector const &x) { return 1.0; }));
   std::vector<DataVector> input(1, DataVector(0));
@@ -294,20 +294,20 @@ BOOST_AUTO_TEST_CASE(testLinearL2LejaPolynomialInterpolation) {
 
 BOOST_AUTO_TEST_CASE(testBsplinedeg3Interpolation) {
   std::cout << "-------------------------------------------" << std::endl;
-  std::cout << "B-Spline Interpolation, degree=3\n"
-               "(Levels 0,1 and 2 use Lagrange polynomials. This explains inconsistent errors)"
-            << std::endl;
-  auto func = MultiFunction(testFunction2);
+  std::cout << "B-Spline Interpolation, degree=3\n" << std::endl;
+  auto func = MultiFunction(testFunction3);
   for (size_t d = 2; d <= 5; ++d) {
     std::cout << "- - - - - - - - - - - - - - " << std::endl;
     size_t degree = 3;
     auto ctInterpolator =
         CombigridMultiOperation::createExpUniformBoundaryBsplineInterpolation(d, func, degree);
-    for (size_t w = 2; w <= 8; ++w) {
+    for (size_t w = 2; w <= 6; ++w) {
       computeL2Error(d, w, ctInterpolator, func);
     }
-    auto ctQuadrature = CombigridMultiOperation::createBSplineQuadrature(d, func, 3);
-    for (size_t w = 2; w <= 8; ++w) {
+
+    auto ctQuadrature =
+        CombigridMultiOperation::createExpUniformBoundaryBsplineQuadrature(d, func, degree);
+    for (size_t w = 2; w <= 6; ++w) {
       computeQuadratureError(d, w, ctQuadrature, func);
     }
   }

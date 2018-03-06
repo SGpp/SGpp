@@ -188,6 +188,19 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
   delete alpha;
   delete basis;
 }
+
+BOOST_AUTO_TEST_CASE(test_GaussQuadrature) {
+  sgpp::base::GaussLegendreQuadRule1D quadRule1D;
+
+  size_t level = 10;
+  DataVector pweight(level);
+  DataVector coordinates(level);
+  quadRule1D.getLevelPointsAndWeights(level, coordinates, pweight);
+  std::cout << level << std::endl;
+  std::cout << coordinates.toString() << std::endl;
+  std::cout << pweight.toString() << std::endl;
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_AUTO_TEST_SUITE(testQuadratureBSpline)

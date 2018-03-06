@@ -27,6 +27,7 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
 // For factory exception
+#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/base/tools/QuadRule1D.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 
@@ -35,8 +36,8 @@
 
 // For generic exception
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/generation/PeriodicGridGenerator.hpp>
+#include <sgpp/base/grid/type/LinearGrid.hpp>
 
 // For operation exception
 #include <sgpp/base/operation/BaseOpFactory.hpp>

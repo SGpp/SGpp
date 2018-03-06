@@ -5,69 +5,63 @@
 
 #pragma once
 
+#ifdef USE_DAKOTA
 #include <OrthogPolyApproximation.hpp>
-#include <sgpp/base/datatypes/DataVector.hpp>
+#endif
+
 #include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <sgpp/combigrid/operation/CombigridOperation.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+
+#include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
+#include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
+#include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
-#include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
+#include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
 
 #include <vector>
 
 namespace sgpp {
 namespace combigrid {
 
-class PolynomialChaosExpansion {
+class PolynomialChaosExpansion : public CombigridSurrogateModel {
  public:
-  PolynomialChaosExpansion(
-      std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation,
-      std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D> functionBasis);
-
-  PolynomialChaosExpansion(
-      std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation,
-      std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D> functionBasis);
-
-  PolynomialChaosExpansion(
-      std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation,
-      std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D> functionBasis);
-
-  PolynomialChaosExpansion(
-      std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation,
-      std::vector<std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D>>&
-          functionBases);
-
-  PolynomialChaosExpansion(
-      std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation,
-      std::vector<std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D>>&
-          functionBases);
-
-  PolynomialChaosExpansion(
-      std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation,
-      std::vector<std::shared_ptr<sgpp::combigrid::AbstractInfiniteFunctionBasis1D>>&
-          functionBases);
-
+  explicit PolynomialChaosExpansion(sgpp::combigrid::CombigridSurrogateModelConfiguration& config);
   virtual ~PolynomialChaosExpansion();
 
-  double mean();
-  double variance();
+  double eval(sgpp::base::DataVector& x) override;
+  void eval(sgpp::base::DataMatrix& xs, sgpp::base::DataVector& res) override;
+
+  double mean() override;
+  double variance() override;
 
   void getComponentSobolIndices(sgpp::base::DataVector& componentSsobolIndices,
-                                bool normalized = true);
-  void getTotalSobolIndices(sgpp::base::DataVector& totalSobolIndices, bool normalized = true);
+                                bool normalized = true) override;
+  void getTotalSobolIndices(sgpp::base::DataVector& totalSobolIndices,
+                            bool normalized = true) override;
 
-  std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> getCombigridTensorOperation();
+  void updateConfig(sgpp::combigrid::CombigridSurrogateModelConfiguration config) override;
+
+  size_t numGridPoints() override;
+  std::shared_ptr<LevelInfos> getInfoOnAddedLevels() override;
 
  private:
+  bool updateStatus();
   void computeComponentSobolIndices();
 
-  size_t numDims;
-  std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation;
-  std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation;
-  std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation;
+#ifdef USE_DAKOTA
+  std::shared_ptr<Pecos::OrthogPolyApproximation> orthogPoly;
+#endif
 
-  size_t numGridPoints;
+  // basis functions
+  sgpp::combigrid::OrthogonalBasisFunctionsCollection basisFunctions;
+
+  // tensor operation
+  std::shared_ptr<sgpp::combigrid::CombigridTensorOperation> combigridTensorOperation;
   sgpp::combigrid::FloatTensorVector expansionCoefficients;
+
+  size_t currentNumGridPoints;
+  bool computedSobolIndicesFlag;
   sgpp::base::DataVector sobolIndices;
 };
 

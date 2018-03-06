@@ -6,6 +6,8 @@
 #pragma once
 
 #include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
+#include <sgpp/combigrid/GeneralFunction.hpp>
+
 #include <sgpp/base/tools/json/JSON.hpp>
 
 #ifdef USE_DAKOTA
@@ -13,10 +15,18 @@
 #include <RandomVariable.hpp>
 #endif
 
+#include <string>
+
 namespace sgpp {
 namespace combigrid {
 
-enum class OrthogonalPolynomialBasisType { LEGENDRE, JACOBI, HERMITE, BOUNDED_LOGNORMAL };
+enum class OrthogonalPolynomialBasisType {
+  LEGENDRE,
+  JACOBI,
+  HERMITE,
+  BOUNDED_NORMAL,
+  BOUNDED_LOGNORMAL
+};
 
 struct OrthogonalPolynomialBasis1DParameters {
   // type
@@ -65,6 +75,20 @@ class OrthogonalPolynomialBasis1D : public AbstractInfiniteFunctionBasis1D {
 
   double evaluate(size_t basisIndex, double xValue) override;
   double pdf(double xValue);
+  double mean();
+  double variance();
+
+  double lowerBound();
+  double upperBound();
+
+  OrthogonalPolynomialBasis1DConfiguration getConfiguration();
+
+#ifdef USE_DAKOTA
+  std::shared_ptr<Pecos::RandomVariable> getRandomVariable();
+#endif
+
+  sgpp::combigrid::SingleFunction getWeightFunction();
+  size_t numAdditionalQuadraturePoints();
 
  private:
   double normalizeInput(double xValue);

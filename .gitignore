@@ -103,13 +103,18 @@ datadriven/tests/uq/dists/twoMoons/data/*
 datadriven/tests/uq/dists/twoMoons/plots/*
 datadriven/tests/uq/analysis/genz/plots/
 datadriven/tests/uq/analysis/genz/results/
-GPATH
-GRTAGS
-GSYMS
-GTAGS
 
 # ignoring Windows build directories
 build/
 dist/
 
+# ignoring custom.py file
 custom.py
+
+GPATH
+GRTAGS
+GSYMS
+GTAGS
+
+# output of profiler
+gmon.out

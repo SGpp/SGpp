@@ -51,31 +51,26 @@ class Lognormal(Dist):
             return 0.0
 
     def cdf(self, x):
-        if x <= self.__a:
+        if x < self.__a:
             return 0.0
-        elif x >= self.__b:
+        elif x > self.__b:
             return 1.0
         else:
             x_unit = self._dist.cdf(x)
-            return self.__linearTrans.probabilisticToUnit(value)
+            return self.__linearTrans.probabilisticToUnit(x_unit)
 
     def ppf(self, x):
-        if x <= self.__a:
-            return 1.0
-        elif x >= self.__b:
-            return 0.0
-        else:
-            x_unit = self.__linearTrans.unitToProbabilistic(x)
-            return self._dist.ppf(x_unit)
+        x_prob = self.__linearTrans.unitToProbabilistic(x)
+        return self._dist.ppf(x_prob)
 
     def mean(self):
-        return self._dist.mean()
+        return self.__mu
 
     def var(self):
-        return self._dist.var()
+        return self.__sigma ** 2
 
     def std(self):
-        return self._dist.std()
+        return self.__sigma
 
     def rvs(self, n=1):
         samples = np.zeros(n)

@@ -8,7 +8,7 @@
 #include <sgpp/combigrid/common/MultiIndexIterator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
-#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridLinearEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/threading/PtrGuard.hpp>
@@ -24,7 +24,7 @@ namespace combigrid {
  * a single point and returns a function value at that point.
  */
 template <typename V>
-class FullGridLinearCallbackEvaluator : public AbstractFullGridLinearEvaluator<V> {
+class FullGridCallbackEvaluator : public AbstractFullGridEvaluationStrategy<V> {
  public:
   /**
    * Constructor.
@@ -34,14 +34,18 @@ class FullGridLinearCallbackEvaluator : public AbstractFullGridLinearEvaluator<V
    * evaluator for each dimension and each level.
    * @param pointHierarchies PointHierarchy objects for each dimension providing the points for each
    * level and information about their ordering.
+   * @param summationStrategyType strategy to gather the results of the univariate evaluators on
+   * each anisotropic full grid
    */
-  FullGridLinearCallbackEvaluator(
+  FullGridCallbackEvaluator(
       std::shared_ptr<AbstractCombigridStorage> storage,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<V>>> evaluatorPrototypes,
-      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies)
-      : AbstractFullGridLinearEvaluator<V>(storage, evaluatorPrototypes, pointHierarchies) {}
+      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+      FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR)
+      : AbstractFullGridEvaluationStrategy<V>(storage, evaluatorPrototypes, pointHierarchies,
+                                              summationStrategyType) {}
 
-  virtual ~FullGridLinearCallbackEvaluator() {}
+  virtual ~FullGridCallbackEvaluator() {}
 
   /**
    * @return a vector of tasks which can be precomputed in parallel to make the (serialized)
@@ -51,7 +55,7 @@ class FullGridLinearCallbackEvaluator : public AbstractFullGridLinearEvaluator<V
    * returned tasks when all tasks for the given level are completed and the level can be added.
    */
   std::vector<ThreadPool::Task> getLevelTasks(MultiIndex const &level, ThreadPool::Task callback) {
-    size_t numDimensions = this->evaluators.size();
+    size_t numDimensions = this->pointHierarchies.size();
     MultiIndex multiBounds(numDimensions);
 
     for (size_t d = 0; d < numDimensions; ++d) {
@@ -102,6 +106,8 @@ class FullGridLinearCallbackEvaluator : public AbstractFullGridLinearEvaluator<V
 
     return tasks;
   }
+
+  V eval(MultiIndex const &level) override { return this->summationStrategy->eval(level); }
 };
 
 } /* namespace combigrid */

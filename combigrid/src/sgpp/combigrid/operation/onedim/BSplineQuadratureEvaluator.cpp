@@ -8,8 +8,9 @@
 #include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineQuadratureEvaluator.hpp>
-#include <sgpp/combigrid/operation/onedim/BSplineRoutines.hpp>
+#include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
@@ -17,73 +18,92 @@
 
 namespace sgpp {
 namespace combigrid {
-/**
- * Calculates the weight for the specific point
- * @param points grid points of the one dimensional grid the interpolation will be performed on
- * @param index index of the B-Spline whose integral will be calculated
- */
+
 double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, size_t index) {
-  // performing Gauss-Legendre integration
+  // performing Gauss-Legendre integration. Polynomials of degree 2*numGaussPoints-1 are integrated
+  // exact
   size_t numGaussPoints = (degree + 1) / 2 + numAdditionalPoints;
   base::DataVector roots;
   base::DataVector quadratureweights;
   auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
 
   double sum = 0.0;
-  std::vector<double> xi;
-  createNakKnots(xValues, degree, xi);
+  std::vector<double> xi = createNakKnots(xValues, degree);
   double bsplinevalue = 0.0;
 
-  if (xValues.size() == 1) {
-    numGaussPoints = 1;
-    quadRule.getLevelPointsAndWeightsNormalized(
-        std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
-    sum = 1.0 * this->weight_function(roots[0]) * quadratureweights[0];
-  } else if (xValues.size() < 9) {
+  // on low levels where Lagrange polynomials instead of Bsplines are used the number of Gauss
+  // points are not degree dependent and there is only on segment: the whole [0,1] interval
+  if ((xValues.size() == 1) || (degree == 3 && (xValues.size() < 5)) ||
+      ((degree == 5) && (xValues.size() < 9))) {
+    numGaussPoints = xValues.size() + numAdditionalPoints;
     quadRule.getLevelPointsAndWeightsNormalized(
         std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
     for (size_t i = 0; i < roots.getSize(); ++i) {
       double x = roots[i];
+      double transX = x;  // a + (b-a) * x;
+
       bsplinevalue = LagrangePolynomial(x, xValues, index);
-      double integrand = bsplinevalue * this->weight_function(x);
+
+      double integrand = bsplinevalue * this->weight_function(transX);
       sum += integrand * quadratureweights[i];
     }
   } else {
+    size_t first_segment = std::max(degree, index);
+    size_t last_segment = std::min(xValues.size(), index + degree + 1);
     quadRule.getLevelPointsAndWeightsNormalized(
         std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
-    size_t first_segment = std::max(degree, index);
-    size_t last_segment = std::min(xi.size() - degree - 1, index + degree + 1);
     for (size_t segmentIndex = first_segment; segmentIndex < last_segment; segmentIndex++) {
-      double a = std::max(0.0, xi[segmentIndex]);
-      double b = std::min(1.0, xi[segmentIndex + 1]);
-      double width = b - a;
+      double l = std::max(0.0, xi[segmentIndex]);
+      double r = std::min(1.0, xi[segmentIndex + 1]);
+      double width = r - l;
 
       for (size_t i = 0; i < roots.getSize(); ++i) {
-        double x = a + width * roots[i];
-        bsplinevalue = nonUniformBSpline(x, degree, index, xi);
-        double integrand = bsplinevalue * this->weight_function(x);
+        // transform roots[i], the quadrature points to the segment on which the Bspline is
+        // evaluated and from there to the interval[a,b] on which the weight function is defined
+        double x = l + width * roots[i];
+        double transX = x;  // a + (b-a) * x;
+
+        bsplinevalue = expUniformNakBspline(x, degree, index, xValues);
+        double integrand = bsplinevalue * this->weight_function(transX);
         // multiply weights by length_old_interval / length_new_interval
         sum += integrand * quadratureweights[i] * width;
       }
     }
   }
-  return sum;
+  return (b - a) * sum;
 }
 
-/**
- * This Function calculates the weights of the given points, each weight is calculated individually
- * @param points The vector with the points, they dont need to have a specific order
- * @param integrals The integrals will be added to the back of this vector in the order of the
- * points in the vector with the points,
- * it is recommended to clear the weight vector before calling this function to ensure that the
- * weights are at the same position
- * as their points
- */
 void BSplineQuadratureEvaluator::calculate1DBSplineIntegrals(
-    std::vector<double>& points, std::vector<FloatScalarVector>& integrals) {
-  // "weights" here are the integrals!
+    std::vector<double>& points, std::vector<FloatScalarVector>& basisValues,
+    size_t incrementQuadraturePoints, double tol) {
+  basisValues.resize(points.size());
+  std::vector<FloatScalarVector> newBasisValues(points.size());
+
+  //  std::cout << "BsplineQuadrature calculate1dBsplineIntegrals is called" << std::endl;
+
+  // iteratively increases the numAdditionalPoints until the product of B spline and weight
+  // function is exactly inctegrated
+  // the numAdditionalPoints of the last index is used as an initial guess for the
+  // numAdditionalPoints of the next index. This is serial and must be changed for parallelization
+  size_t lastNumAdditionalPoints = 0;
   for (size_t index = 0; index < points.size(); ++index) {
-    integrals.push_back(FloatScalarVector(get1DIntegral(points, index)));
+    double err = 1e14;
+    numAdditionalPoints = lastNumAdditionalPoints;
+    basisValues[index] = FloatScalarVector(get1DIntegral(points, index));
+    if (isCustomWeightFunction) {
+      while (err > tol) {
+        lastNumAdditionalPoints = numAdditionalPoints;
+        numAdditionalPoints += incrementQuadraturePoints;
+        // recalculate and check for error < tol
+        newBasisValues[index] = FloatScalarVector(get1DIntegral(points, index));
+        err = std::fabs(newBasisValues[index].getValue() - basisValues[index].getValue());
+        basisValues[index] = newBasisValues[index];
+
+        if (numAdditionalPoints > 490) {
+          break;
+        }
+      }
+    }
   }
 }
 
@@ -95,22 +115,22 @@ bool BSplineQuadratureEvaluator::needsParameter() { return false; }
 
 void BSplineQuadratureEvaluator::setGridPoints(std::vector<double> const& newXValues) {
   xValues = newXValues;
-  integrals.clear();
-  calculate1DBSplineIntegrals(xValues, integrals);
+  basisValues.clear();
+  calculate1DBSplineIntegrals(xValues, basisValues);
 
   if (normalizeWeights) {
     double sum = 0.0;
 
     // multiply the weights with the weight function
-    for (size_t i = 0; i < integrals.size(); ++i) {
+    for (size_t i = 0; i < basisValues.size(); ++i) {
       // weights[i].scalarMult(weight_function(xValues[i]));
-      sum += integrals[i].getValue();
+      sum += basisValues[i].getValue();
     }
 
     double sumInv = 1.0 / sum;
 
-    for (size_t i = 0; i < integrals.size(); ++i) {
-      integrals[i].scalarMult(sumInv);
+    for (size_t i = 0; i < basisValues.size(); ++i) {
+      basisValues[i].scalarMult(sumInv);
     }
   }
 }
@@ -123,39 +143,73 @@ BSplineQuadratureEvaluator::cloneLinear() {
 
 BSplineQuadratureEvaluator::BSplineQuadratureEvaluator()
     : weight_function(constantFunction<double>(1.0)),
+      numAdditionalPoints(0),
       normalizeWeights(false),
       isCustomWeightFunction(false),
-      numAdditionalPoints(0),
-      degree(3) {}
+      degree(3),
+      a(0),
+      b(1) {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_BSplineQuadrature;
+  evalConfig.degree = 3;
+}
 
 BSplineQuadratureEvaluator::BSplineQuadratureEvaluator(size_t degree)
     : weight_function(constantFunction<double>(1.0)),
+      numAdditionalPoints(0),
       normalizeWeights(false),
       isCustomWeightFunction(false),
-      numAdditionalPoints(0),
-      degree(degree) {}
+      degree(degree),
+      a(0),
+      b(1) {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_BSplineQuadrature;
+  evalConfig.degree = degree;
+}
 
 BSplineQuadratureEvaluator::BSplineQuadratureEvaluator(
-    size_t degree, sgpp::combigrid::SingleFunction weight_function, bool normalizeWeights,
-    size_t numAdditionalPoints)
+    size_t degree, sgpp::combigrid::SingleFunction weight_function, size_t numAdditionalPoints,
+    bool normalizeWeights)
     : weight_function(weight_function),
+      numAdditionalPoints(numAdditionalPoints),
       normalizeWeights(normalizeWeights),
       isCustomWeightFunction(true),
+      degree(degree),
+      a(0),
+      b(1) {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_BSplineQuadrature;
+  evalConfig.degree = degree;
+}
+
+BSplineQuadratureEvaluator::BSplineQuadratureEvaluator(
+    size_t degree, sgpp::combigrid::SingleFunction weight_function, size_t numAdditionalPoints,
+    double a, double b, bool normalizeWeights)
+    : weight_function(weight_function),
       numAdditionalPoints(numAdditionalPoints),
-      degree(degree) {}
+      normalizeWeights(normalizeWeights),
+      isCustomWeightFunction(true),
+      degree(degree),
+      a(a),
+      b(b) {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_BSplineQuadrature;
+  evalConfig.degree = degree;
+}
 
 BSplineQuadratureEvaluator::BSplineQuadratureEvaluator(BSplineQuadratureEvaluator const& other)
     : xValues(other.xValues),
-      integrals(other.integrals),
+      basisValues(other.basisValues),
       weight_function(other.weight_function),
+      numAdditionalPoints(other.numAdditionalPoints),
       normalizeWeights(other.normalizeWeights),
       isCustomWeightFunction(other.isCustomWeightFunction),
-      numAdditionalPoints(other.numAdditionalPoints),
-      degree(other.degree) {}
+      degree(other.degree),
+      a(other.a),
+      b(other.b) {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_BSplineQuadrature;
+  evalConfig.degree = other.degree;
+}
 
 void BSplineQuadratureEvaluator::setParameter(const FloatScalarVector& param) { return; }
 
-void BSplineQuadratureEvaluator::setFunctionValuesAtGridPoints(
+void BSplineQuadratureEvaluator::setBasisCoefficientsAtGridPoints(
     std::vector<double>& functionValues) {
   basisCoefficients = functionValues;
 }

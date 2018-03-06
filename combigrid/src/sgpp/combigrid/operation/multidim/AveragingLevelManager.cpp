@@ -16,7 +16,7 @@ double AveragingLevelManager::computePriority(const MultiIndex& level) {
   }
 
   double sum = 0.0;
-  double n = 0.0;
+  size_t n = 0;
   for (auto& predLevel : predecessors) {
     if (levelData->containsIndex(predLevel)) {
       auto data = levelData->get(predLevel);
@@ -25,7 +25,22 @@ double AveragingLevelManager::computePriority(const MultiIndex& level) {
     }
   }
 
-  return sum / n;
+  if (n == 0) {
+    return 0.0;
+  } else {
+    return sum / static_cast<double>(n);
+  }
+
+  //  double maxNorm = 0.0;
+  //  for (auto& predLevel : predecessors) {
+  //    if (levelData->containsIndex(predLevel)) {
+  //      auto data = levelData->get(predLevel);
+  //      double dataNorm = data->norm;
+  //      if (dataNorm > maxNorm) {
+  //        maxNorm = dataNorm;
+  //      }
+  //    }
+  //  }
 }
 
 AveragingLevelManager::AveragingLevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator)

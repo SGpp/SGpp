@@ -35,7 +35,7 @@ def load_custom_pgf_preamble(dtype="standard", macros="thesis"):
                     'axes.unicode_minus': True,
                     'figure.figsize': (5, 4.5),
                     'image.cmap': load_default_color_map(dtype="string")
-#                     'axes.titlepad': 25
+                    #                     'axes.titlepad': 25
                     }
 
     if dtype == "springer":
@@ -117,7 +117,7 @@ def load_marker(i):
 
 
 def load_linestyle(i):
-    linestyles = [":", "-.", "--", "-"]
+    linestyles = ["-", ":", "-.", "--"]
     return linestyles[i % len(linestyles)]
 
 
@@ -164,7 +164,7 @@ def savefig(fig, filename, lgd=None, tikz=False, mpl3d=False, crop=False):
                         bbox_extra_artists=(lgd,),
                         bbox_inches='tight')
         if tikz:
-#             try:
+            #             try:
             tikz_save("%s.tex" % filename, fig)
 #             except:
 #                 pass

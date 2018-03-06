@@ -3,10 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridLinearEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridQuadraticSummationStrategy.hpp>
 
 namespace sgpp {
-namespace combigrid {
-
-} /* namespace combigrid */
+namespace combigrid {} /* namespace combigrid */
 } /* namespace sgpp */

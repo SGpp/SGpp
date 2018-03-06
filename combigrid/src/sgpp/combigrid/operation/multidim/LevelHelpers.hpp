@@ -13,11 +13,12 @@
 #include <sgpp/combigrid/utils/BinaryHeap.hpp>
 
 #include <functional>
+#include <list>
+#include <map>
 #include <memory>
 #include <queue>
 #include <unordered_set>
 #include <vector>
-#include <map>
 
 namespace sgpp {
 namespace combigrid {
@@ -48,17 +49,17 @@ class QueueComparator {
   }
 };
 
-// typedef std::priority_queue<QueueEntry, std::vector<QueueEntry>, QueueComparator>
-// MultiIndexQueue;
-/*typedef boost::heap::binomial_heap<QueueEntry, boost::heap::compare<QueueComparator>>
-    MultiIndexQueue;*/
-
 /**
  * use custom binary heap class because std::priority_queue does not provide methods to change an
  * element's priority.
  * We could use boost, but that would introduce an additional dependency
  */
 typedef sgpp::combigrid::BinaryHeap<QueueEntry, QueueComparator> MultiIndexQueue;
+// typedef boost::heap::binomial_heap<QueueEntry, boost::heap::compare<QueueComparator>>
+//    MultiIndexQueue;
+
+// typedef std::priority_queue<QueueEntry, std::vector<QueueEntry>, QueueComparator>
+// MultiIndexQueue;
 
 /**
  * Started: the computation of function values has been started
@@ -157,6 +158,9 @@ class LevelInfo {
 /**
  * Storage for meta information on the levels during adaptive refinement
  */
+
+typedef std::vector<std::map<MultiIndex, LevelInfo>> RefinementInfosPerStep;
+
 class LevelInfos {
  public:
   LevelInfos();
@@ -172,8 +176,7 @@ class LevelInfos {
    * @param level MultiIndex representing the level
    * @param levelInfo information on the level containing norm, priority, numGridPoints, etc.
    */
-  void insert(const MultiIndex &level, std::shared_ptr<LevelInfo> levelInfo);
-
+  void insert(const MultiIndex &level, LevelInfo &levelInfo);
   /**
    * computes the maximum norm of all levels per refinement iteration.
    * This can be used as an indicator for the error of the combigrid solution.
@@ -185,15 +188,13 @@ class LevelInfos {
   /**
    * @return the currently stored information
    */
-  std::shared_ptr<std::vector<std::shared_ptr<std::map<MultiIndex, std::shared_ptr<LevelInfo>>>>>
-  getInfos();
+  std::shared_ptr<RefinementInfosPerStep> getInfos();
 
  private:
   /**
    * hash map that stores the level info per refinement iteration
    */
-  std::shared_ptr<std::vector<std::shared_ptr<std::map<MultiIndex, std::shared_ptr<LevelInfo>>>>>
-      infoOnAddedLevels;
+  std::shared_ptr<RefinementInfosPerStep> infoOnAddedLevels;
   /**
    * counter for adaptive refinements
    */

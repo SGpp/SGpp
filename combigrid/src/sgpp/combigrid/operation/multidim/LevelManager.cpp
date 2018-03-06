@@ -5,31 +5,35 @@
 
 #include "LevelManager.hpp"
 
+#include <sgpp/combigrid/threading/PtrGuard.hpp>
+
 #include <iostream>
-#include <string>
-#include <vector>
-#include <utility>
 #include <map>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
 
-LevelManager::LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator)
+LevelManager::LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator,
+                           bool collectStats)
     : queue(),
       numDimensions(levelEvaluator->numDims()),
       combiEval(levelEvaluator),
-      managerMutex(new std::mutex()) {
+      collectStats(collectStats) {
+  managerMutex = std::make_shared<std::recursive_mutex>();
+  infoOnAddedLevels = std::make_shared<LevelInfos>();
+  levelData = std::make_shared<TreeStorage<std::shared_ptr<LevelInfo>>>(numDimensions);
+}
+
+LevelManager::LevelManager() : queue(), numDimensions(0), combiEval(nullptr), collectStats(false) {
+  managerMutex = std::make_shared<std::recursive_mutex>();
   infoOnAddedLevels = std::make_shared<LevelInfos>();
   levelData = std::make_shared<TreeStorage<std::shared_ptr<LevelInfo>>>(numDimensions);
 }
 
 LevelManager::~LevelManager() {}
-
-LevelManager::LevelManager()
-    : queue(), numDimensions(0), combiEval(nullptr), managerMutex(new std::mutex()) {
-  infoOnAddedLevels = std::make_shared<LevelInfos>();
-  levelData = std::make_shared<TreeStorage<std::shared_ptr<LevelInfo>>>(numDimensions);
-}
 
 void LevelManager::setLevelEvaluator(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator) {
   combiEval = levelEvaluator;
@@ -125,6 +129,9 @@ void LevelManager::addToQueue(const MultiIndex &level, std::shared_ptr<LevelInfo
 void LevelManager::beforeComputation(const MultiIndex &level) {
   auto levelInfo = levelData->get(level);
   levelInfo->computationStage = ComputationStage::STARTED;
+  /*
+   * Invalidate the handle since the element has been popped from the queue.
+   */
   levelInfo->handle = nullptr;
 
   auto successors = getSuccessors(level);
@@ -171,6 +178,8 @@ void LevelManager::predecessorsCompleted(const MultiIndex &level) {
         succInfo->numNotCompletedPredecessors == 0) {
       predecessorsCompleted(succLevel);
     } else if (succInfo->handle != nullptr) {
+      // If handle is nullptr, this means that the element has already been started and thus removed
+      // from the queue.
       updatePriority(succLevel, succInfo);
     }
   }
@@ -265,26 +274,18 @@ void LevelManager::precomputeLevelsParallel(const std::vector<MultiIndex> &level
 
 void LevelManager::addStats(const MultiIndex &level) {
   // load level info. If not existing, load it
-  std::shared_ptr<LevelInfo> levelInfo;
-  if (!levelData->containsIndex(level)) {
-    levelInfo =
-        std::make_shared<LevelInfo>(combiEval->getDifferenceNorm(level),
-                                    combiEval->maxNewPoints(level), combiEval->numPoints(level));
-  } else {
-    levelInfo = levelData->get(level);
-  }
-
-  // store the result
+  LevelInfo levelInfo(combiEval->getDifferenceNorm(level), combiEval->maxNewPoints(level),
+                      combiEval->numPoints(level));
   infoOnAddedLevels->insert(level, levelInfo);
 }
 
 bool LevelManager::addLevelToCombiEval(const MultiIndex &level) {
-  bool wasAdded = !combiEval->containsLevel(level);
-  bool ans = combiEval->addLevel(level);
-  if (ans && wasAdded) {
+  bool isOldSubspace = combiEval->containsLevel(level);
+  bool isValid = combiEval->addLevel(level);
+  if (collectStats && !isOldSubspace) {
     addStats(level);
   }
-  return ans;
+  return isValid;
 }
 
 void LevelManager::addLevels(const std::vector<MultiIndex> &levels) {
@@ -334,27 +335,31 @@ std::string LevelManager::getSerializedLevelStructure() const {
 }
 
 void LevelManager::addLevelsFromStructure(std::shared_ptr<TreeStorage<uint8_t>> storage) {
-  auto it = storage->getStoredDataIterator();
-  // update stats vector
-  infoOnAddedLevels->incrementCounter();
-  while (it->isValid()) {
-    addLevelToCombiEval(it->getMultiIndex());
-    it->moveToNext();
+  if (storage != nullptr) {
+    auto it = storage->getStoredDataIterator();
+    // update stats vector
+    infoOnAddedLevels->incrementCounter();
+    while (it->isValid()) {
+      addLevelToCombiEval(it->getMultiIndex());
+      it->moveToNext();
+    }
   }
 }
 
 void LevelManager::addLevelsFromStructureParallel(std::shared_ptr<TreeStorage<uint8_t>> storage,
                                                   size_t numThreads) {
-  auto it = storage->getStoredDataIterator();
+  if (storage != nullptr) {
+    auto it = storage->getStoredDataIterator();
 
-  std::vector<MultiIndex> levels;
-  while (it->isValid()) {
-    levels.push_back(it->getMultiIndex());
-    it->moveToNext();
+    std::vector<MultiIndex> levels;
+    while (it->isValid()) {
+      levels.push_back(it->getMultiIndex());
+      it->moveToNext();
+    }
+    precomputeLevelsParallel(levels, numThreads);
+    infoOnAddedLevels->incrementCounter();
+    addLevels(levels);
   }
-  precomputeLevelsParallel(levels, numThreads);
-  infoOnAddedLevels->incrementCounter();
-  addLevels(levels);
 }
 
 void LevelManager::addLevelsFromSerializedStructure(std::string serializedStructure) {
@@ -376,6 +381,9 @@ void LevelManager::addLevelsAdaptive(size_t maxNumPoints) {
 
   infoOnAddedLevels->incrementCounter();
   while (!queue.empty()) {
+    // print current queue
+    //    queue.print();
+
     QueueEntry entry = queue.top();
     queue.pop();
 
@@ -395,21 +403,24 @@ void LevelManager::addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThre
   initAdaption();
 
   size_t currentPointBound = 0;
+  infoOnAddedLevels->incrementCounter();
 
   combiEval->setMutex(managerMutex);
 
   auto threadPool = std::make_shared<ThreadPool>(
       numThreads,
       ThreadPool::IdleCallback([&currentPointBound, maxNumPoints, this](ThreadPool &tp) {
-        CGLOG_SURROUND(std::lock_guard<std::mutex> guard(*managerMutex));
+        CGLOG_SURROUND(PtrGuard guard(managerMutex));
         if (queue.empty()) {
           std::cout << "Error: queue is empty\n";
           CGLOG("leave guard(*managerMutex)");
           return;
         }
 
+        // print current queue
+        //        queue.print();
+
         QueueEntry entry = queue.top();
-        queue.pop();
 
         currentPointBound += entry.maxNewPoints;
 
@@ -420,12 +431,20 @@ void LevelManager::addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThre
         }
 
         CGLOG("before beforeComputation()");
+        /*
+         * Must be placed after the triggerTermination() in the if clause since after the pop()
+         * operation, the corresponding handle in the LevelInfo must be set to nullptr in order to
+         * avoid accessing a handle to a popped element. Invalidating the handle is done by
+         * beforeComputation().
+         */
+        queue.pop();  // TODO(rehmemk)
 
         beforeComputation(entry.level);
         CGLOG("before getLevelTasks()");
         auto tasks = combiEval->getLevelTasks(entry.level, ThreadPool::Task([this, entry]() {
                                                 // the mutex will be locked when this callback is
                                                 // called
+                                                // PtrGuard guard(this->managerMutex);
                                                 afterComputation(entry.level);
                                               }));
         CGLOG("before addTasks()");
@@ -451,6 +470,39 @@ void LevelManager::addLevelsAdaptiveByNumLevels(size_t numLevels) {
     afterComputation(entry.level);   // the actual computation is done here
   }
 }
+
+sgpp::base::DataMatrix LevelManager::convertLevelStructureToMatrix(
+    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const &levelstructure, size_t numDims) {
+  sgpp::base::DataMatrix levelstructureMatrix(0, numDims);
+  auto it = levelstructure->getStoredDataIterator();
+  while (it->isValid()) {
+    sgpp::combigrid::MultiIndex index = it->getMultiIndex();
+    sgpp::base::DataVector row;
+    for (auto &i : index) {
+      row.push_back(static_cast<double>(i));
+    }
+    levelstructureMatrix.appendRow(row);
+    it->moveToNext();
+  }
+  return levelstructureMatrix;
+}
+
+void LevelManager::printLevelStructure(
+    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const &levelstructure) {
+  auto it = levelstructure->getStoredDataIterator();
+  while (it->isValid()) {
+    sgpp::combigrid::MultiIndex index = it->getMultiIndex();
+    for (auto &i : index) {
+      std::cout << i << " ";
+    }
+    std::cout << "\n";
+    it->moveToNext();
+  }
+}
+
+void LevelManager::enableStatsCollection() { collectStats = true; }
+
+void LevelManager::disableStatsCollection() { collectStats = false; }
 
 std::shared_ptr<LevelInfos> LevelManager::getInfoOnAddedLevels() { return infoOnAddedLevels; }
 

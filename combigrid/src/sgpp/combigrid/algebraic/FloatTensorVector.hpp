@@ -25,9 +25,9 @@ class FloatTensorVector {
  public:
   explicit FloatTensorVector(std::shared_ptr<TreeStorage<FloatScalarVector>> const &values);
 
-  FloatTensorVector(size_t d = 0);
+  explicit FloatTensorVector(size_t d = 0);
 
-  FloatTensorVector(FloatScalarVector scalar);
+  explicit FloatTensorVector(FloatScalarVector scalar);
 
   FloatTensorVector(FloatTensorVector const &other);
 
@@ -51,6 +51,11 @@ class FloatTensorVector {
    * the number of elements is extended via ensureMinimumSize().
    */
   FloatScalarVector &operator[](MultiIndex i);
+
+  /**
+   * This is an auxiliary function needed in FullGridQuadraticSummationStrategy.
+   */
+  FloatScalarVector operator[](size_t i);
 
   // size_t size() const { return values.size(); }
 

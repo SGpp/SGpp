@@ -28,7 +28,7 @@ def checkForLibrary(name, flag, headers, libraries):
 
 # /home/raphi/Projects/dakota/packages/pecos/src
 
-moduleDependencies = ["sgppoptimization", "sgppquadrature", "sgppbase"]
+moduleDependencies = ["sgppoptimization", "sgpppde", "sgppquadrature", "sgppbase"]
 additionalDependencies = []
 
 checkForLibrary("PECOS",        "USE_DAKOTA",   "pecos_global_defs.hpp", "libpecos_src")

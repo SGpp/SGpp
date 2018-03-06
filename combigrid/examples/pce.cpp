@@ -3,15 +3,24 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+/**
+ * \page example_ct_pce_cpp PCE with Combigrids
+ *
+ * This simple example shows how to create a Polynomial Chaos Expansion from an
+ * adaptively refined combigrid.
+ */
+
 #include <sgpp/combigrid/functions/MonomialFunctionBasis1D.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
-#include <sgpp/combigrid/pce/PolynomialChaosExpansion.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
+#include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
+#include <sgpp/combigrid/pce/CombigridSurrogateModelFactory.hpp>
 #include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
+#include <sgpp/combigrid/utils/AnalyticModels.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
 
@@ -20,65 +29,64 @@
 #include <iostream>
 #include <vector>
 
-double f(sgpp::base::DataVector const &v) {
-  // return v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
-  // return v[0] * v[0] + v[1] * v[1];
-  //  double ans = 1.0;
-  //  for (size_t idim = 0; idim < v.getSize(); idim++) {
-  //    ans *= 4 * v[idim] * (1.0 - v[idim]);
-  //  }
-  //  return ans;
-  //  return exp(3 * v[0] * v[0] + v[1]) * atan(10 * v[2]) + sin(3 * v[1] + v[2]);
-
-  // Ishigami function in (-pi, pi)
-  double a = 7.0, b = 0.1;
-  sgpp::base::DataVector x(v);
-  sgpp::base::DataVector pi(v.getSize());
-  pi.setAll(M_PI);
-  x.mult(2 * M_PI);
-  x.sub(pi);
-  return std::sin(x[0]) + a * std::sin(x[1]) * std::sin(x[1]) +
-         b * x[2] * x[2] * x[2] * x[2] * std::sin(x[0]);
-}
-
-double f_variance(double a = 7., double b = 0.1) {
-  double pi_4 = M_PI * M_PI * M_PI * M_PI;
-  return a * a / 8. + b * pi_4 / 5 + b * b * pi_4 * pi_4 / 18. + 0.5;
-}
-
 int main() {
-  auto func = sgpp::combigrid::MultiFunction(f);
-  size_t d = 3;
+  /**
+   * First we have to define a model to approximate.
+   */
+  sgpp::combigrid::Ishigami ishigamiModel;
+  sgpp::combigrid::MultiFunction func(ishigamiModel.eval);
 
+  /**
+   *  Then we can create a refined combigrid
+   */
+
+  // create polynomial basis
   sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
   config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
-  config.polyParameters.alpha_ = 10.0;
-  config.polyParameters.beta_ = 5.0;
+  auto basisFunction = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
 
-  auto functionBasis = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
-
-  for (size_t q = 0; q < 8; ++q) {
-    // interpolate on adaptively refined grid
-    auto op = sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
-        d, func);
+  for (size_t q = 6; q < 7; ++q) {
+    // create sprarse grid interpolation operation
+    auto tensor_op =
+        sgpp::combigrid::CombigridTensorOperation::createExpClenshawCurtisPolynomialInterpolation(
+            basisFunction, ishigamiModel.numDims, func);
     sgpp::combigrid::Stopwatch stopwatch;
     stopwatch.start();
-    op->getLevelManager()->addRegularLevels(q);
-    //    op->getLevelManager()->addLevelsAdaptive(1000);
+    // start with regular level q and add some level adaptively
+    tensor_op->getLevelManager()->addRegularLevels(q);
+    tensor_op->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
+    tensor_op->getLevelManager()->addLevelsAdaptiveByNumLevels(10);
     stopwatch.log();
-    // compute the variance
     stopwatch.start();
-    sgpp::combigrid::PolynomialChaosExpansion pce(op, functionBasis);
-    double mean = pce.mean();
-    double variance = pce.variance();
+
+    /**
+     * and construct a PCE representation to easily calculate statistical features of our model.
+     */
+
+    // create polynomial chaos surrogate from sparse grid
+    sgpp::combigrid::CombigridSurrogateModelConfiguration config;
+    config.type = sgpp::combigrid::CombigridSurrogateModelsType::POLYNOMIAL_CHAOS_EXPANSION;
+    config.loadFromCombigridOperation(tensor_op, false);
+    config.basisFunction = basisFunction;
+    auto pce = sgpp::combigrid::createCombigridSurrogateModel(config);
+
+    stopwatch.log();
+    stopwatch.start();
+
+    // compute mean, variance and sobol indices
+    double mean = pce->mean();
+    double variance = pce->variance();
     sgpp::base::DataVector sobol_indices;
     sgpp::base::DataVector total_sobol_indices;
-    pce.getComponentSobolIndices(sobol_indices);
-    pce.getTotalSobolIndices(total_sobol_indices);
-    std::cout << "Time " << stopwatch.elapsedSeconds() / static_cast<double>(op->numGridPoints())
+    pce->getComponentSobolIndices(sobol_indices);
+    pce->getTotalSobolIndices(total_sobol_indices);
+
+    // print results
+    std::cout << "Time: "
+              << stopwatch.elapsedSeconds() / static_cast<double>(tensor_op->numGridPoints())
               << std::endl;
     std::cout << "---------------------------------------------------------" << std::endl;
-    std::cout << "#gp = " << op->getLevelManager()->numGridPoints() << std::endl;
+    std::cout << "#gp = " << tensor_op->getLevelManager()->numGridPoints() << std::endl;
     std::cout << "E(u) = " << mean << std::endl;
     std::cout << "Var(u) = " << variance << std::endl;
     std::cout << "Sobol indices = " << sobol_indices.toString() << std::endl;
@@ -87,3 +95,22 @@ int main() {
     std::cout << "---------------------------------------------------------" << std::endl;
   }
 }
+
+/**
+* Output:
+* @verbatim
+* Time: 3.74635s.
+* Time: 3.73112s.
+* Time: 4.96569e-05
+* ---------------------------------------------------------
+* #gp = 1825
+* E(u) = 3.5
+* Var(u) = 13.8446
+* Sobol indices = [3.13905191147811180041e-01, 4.42411144790040733454e-01,
+* 9.56029390935037928152e-31, 5.58403133152096916677e-32, 2.43683664062148142015e-01,
+* 6.16110611418130297137e-32, 8.27081513075557474542e-32]
+* Sum Sobol indices = 1
+* Total Sobol indices = [5.57588855209959377568e-01, 4.42411144790040733454e-01,
+* 2.43683664062148142015e-01]
+* @endverbatim
+*/

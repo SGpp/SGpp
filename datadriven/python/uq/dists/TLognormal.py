@@ -24,20 +24,20 @@ class TLognormal(Lognormal):
     def pdf(self, x):
         return super(TLognormal, self).pdf(x) * self.inv_phi_width
 
-    def cdf(self, x):
-        return super(TLognormal, self).cdf(x) * self.inv_phi_width
-
-    def ppf(self, x):
-        return super(TLognormal, self).cdf(x) * self.phi_width
-
-    def mean(self):
-        return super(TLognormal, self).mean() * self.inv_phi_width
-
-    def var(self):
-        return super(TLognormal, self).var() * self.inv_phi_width ** 2
-
-    def std(self):
-        return np.sqrt(self.var())
+#     def cdf(self, x):
+#         return super(TLognormal, self).cdf(x) * self.inv_phi_width
+#
+#     def ppf(self, x):
+#         return super(TLognormal, self).ppf(x) * self.phi_width
+#
+#     def mean(self):
+#         return super(TLognormal, self).mean() * self.inv_phi_width
+#
+#     def var(self):
+#         return super(TLognormal, self).var() * self.inv_phi_width ** 2
+#
+#     def std(self):
+#         return np.sqrt(self.var())
 
     def getDim(self):
         return 1

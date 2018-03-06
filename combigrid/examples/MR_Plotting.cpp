@@ -15,13 +15,14 @@
 #include <sgpp/combigrid/utils/Utils.hpp>
 #include <sgpp_combigrid.hpp>
 
+#include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
+#include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
+
 #include <cmath>
 #include <iostream>
 #include <memory>
+#include <string>
 #include <vector>
-
-#include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
-#include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
 
 using sgpp::base::DataVector;
 using sgpp::combigrid::MultiFunction;
@@ -37,7 +38,6 @@ using sgpp::combigrid::FloatScalarVector;
 using sgpp::combigrid::ArrayEvaluator;
 using sgpp::combigrid::PolynomialInterpolationEvaluator;
 using sgpp::combigrid::CombigridTreeStorage;
-using sgpp::combigrid::FullGridLinearCallbackEvaluator;
 using sgpp::combigrid::FunctionLookupTable;
 using sgpp::combigrid::CombigridEvaluator;
 using sgpp::combigrid::WeightedRatioLevelManager;
@@ -46,8 +46,8 @@ using sgpp::combigrid::WeightedRatioLevelManager;
 
 int main() {
   size_t d = 1;
-  size_t degree = 3;
-  size_t level = 1;
+  size_t degree = 5;
+  size_t level = 5;
   //  std::vector<double> GridPoints = { 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875};
 
   sgpp::combigrid::CombiHierarchies::Collection grids(
@@ -62,7 +62,7 @@ int main() {
   // uniform grid
   double gridwidth = 0.001;
   for (size_t i = 0; i < 1 / gridwidth + 1; i++) {
-    EvalPoints[i] = (double)i * gridwidth;
+    EvalPoints[i] = static_cast<double>(i) * gridwidth;
   }
 
   std::string plotstr = "/home/rehmemk/SGS_Sync/Plotting/combigrid_bsplines/bsplines.dat";

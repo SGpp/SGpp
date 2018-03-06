@@ -10,20 +10,25 @@
 #include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/combigrid/algebraic/FloatTensorVector.hpp>
+#include <sgpp/combigrid/algebraic/NormStrategy.hpp>
 #include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
+#include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
 #include <sgpp/combigrid/operation/multidim/LevelManager.hpp>
-#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearGridBasedEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
+#include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
+
 #include <sgpp/globaldef.hpp>
 
 #include <cstddef>
 #include <memory>
 #include <vector>
+
+#include "multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp"
 
 namespace sgpp {
 namespace combigrid {
@@ -42,7 +47,9 @@ class CombigridTensorOperation {
   CombigridTensorOperation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>> evaluatorPrototypes,
-      std::shared_ptr<LevelManager> levelManager, MultiFunction func);
+      std::shared_ptr<LevelManager> levelManager, MultiFunction func, bool exploitNesting = true,
+      FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR,
+      std::shared_ptr<NormStrategy<FloatTensorVector>> normStrategy = nullptr);
 
   /**
    * Constructs a CombigridTensorOperation with the given hierarchies, evaluators, level manager and
@@ -51,8 +58,9 @@ class CombigridTensorOperation {
   CombigridTensorOperation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>> evaluatorPrototypes,
-      std::shared_ptr<LevelManager> levelManager,
-      std::shared_ptr<AbstractCombigridStorage> storage);
+      std::shared_ptr<LevelManager> levelManager, std::shared_ptr<AbstractCombigridStorage> storage,
+      FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR,
+      std::shared_ptr<NormStrategy<FloatTensorVector>> normStrategy = nullptr);
 
   /**
    * Constructs a CombigridTensorOperation with the given hierarchies, evaluators, level manager
@@ -62,7 +70,9 @@ class CombigridTensorOperation {
   CombigridTensorOperation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>>> evaluatorPrototypes,
-      std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting);
+      std::shared_ptr<LevelManager> levelManager, GridFunction gridFunc, bool exploitNesting,
+      FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR,
+      std::shared_ptr<NormStrategy<FloatTensorVector>> normStrategy = nullptr);
 
   /**
    * Sets the parameters for upcoming computations and clears the data structures (removes old
@@ -143,6 +153,7 @@ class CombigridTensorOperation {
    * Returns a CombigridTensorOperation doing polynomial interpolation on a Clenshaw-Curtis grid
    * with
    * an exponential growth (nested points).
+   * @param functionBasis global basis to which the result should be transformed
    * @param numDimensions Dimensionality of the problem.
    * @param func Function to be interpolated.
    */
@@ -153,6 +164,7 @@ class CombigridTensorOperation {
   /**
    * Returns a CombigridTensorOperation doing polynomial interpolation on a Chebyshev grid with
    * an exponential growth (nested points).
+   * @param functionBasis global basis to which the result should be transformed
    * @param numDimensions Dimensionality of the problem.
    * @param func Function to be interpolated.
    */
@@ -162,8 +174,8 @@ class CombigridTensorOperation {
 
   /**
    * Returns a CombigridTensorOperation doing polynomial interpolation on a Clenshaw-Curtis grid
-   * with
-   * a linear growth (not nested points).
+   * with a linear growth (not nested points).
+   * @param functionBasis global basis to which the result should be transformed
    * @param numDimensions Dimensionality of the problem.
    * @param func Function to be interpolated.
    */
@@ -175,6 +187,7 @@ class CombigridTensorOperation {
   /**
    * Returns a CombigridTensorOperation doing polynomial interpolation on a Leja grid with
    * an exponential growth (nested points).
+   * @param functionBasis global basis to which the result should be transformed
    * @param numDimensions Dimensionality of the problem.
    * @param func Function to be interpolated.
    */
@@ -185,6 +198,7 @@ class CombigridTensorOperation {
   /**
    * Returns a CombigridTensorOperation doing polynomial interpolation on a L2Leja grid with
    * an exponential growth (nested points).
+   * @param functionBasis global basis to which the result should be transformed
    * @param numDimensions Dimensionality of the problem.
    * @param func Function to be interpolated.
    */
@@ -195,6 +209,7 @@ class CombigridTensorOperation {
   /**
    * Returns a CombigridTensorOperation doing polynomial interpolation on a Leja grid with
    * linear growth (nested points).
+   * @param functionBasis global basis to which the result should be transformed
    * @param numDimensions Dimensionality of the problem.
    * @param func Function to be interpolated.
    * @param growthFactor Parameter for the linear growth strategy. For level l, 1 + growthFactor * l
@@ -207,6 +222,7 @@ class CombigridTensorOperation {
   /**
    * Returns a CombigridTensorOperation doing polynomial interpolation on a L2Leja grid with
    * linear growth (nested points).
+   * @param functionBasis global basis to which the result should be transformed
    * @param numDimensions Dimensionality of the problem.
    * @param func Function to be interpolated.
    * @param growthFactor Parameter for the linear growth strategy. For level l, 1 + growthFactor * l
@@ -217,26 +233,51 @@ class CombigridTensorOperation {
       MultiFunction func, size_t growthFactor = 2);
 
   /**
+   * Transforms the basic structures of an arbitrary operation to a tensor operation
    *
-   * @param operation
-   * @param functionBasis
-   * @return
+   * @param pointHierarchies univariate grids
+   * @param storage function value storage
+   * @param functionBasis global basis function to which the result should be transformed
+   * @param summationStrategyType strategy to gather the results of the univariate evaluators on
+   * @return tensor operation with the same grid as given by the parameters
    */
   static std::shared_ptr<CombigridTensorOperation> createOperationTensorPolynomialInterpolation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
-      std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager,
-      std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis);
+      std::shared_ptr<AbstractCombigridStorage> storage,
+      std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis,
+      FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR);
 
   /**
+   * Transforms the basic structures of an arbitrary operation to a tensor operation
    *
-   * @param operation
-   * @param functionBasis
-   * @return
+   * @param pointHierarchies univariate grids
+   * @param storage function value storage
+   * @param functionBases vector of global basis functions to which the result should be transformed
+   * @param summationStrategyType strategy to gather the results of the univariate evaluators on
+   * @return tensor operation with the same grid as given by the parameters
    */
   static std::shared_ptr<CombigridTensorOperation> createOperationTensorPolynomialInterpolation(
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
+      std::shared_ptr<AbstractCombigridStorage> storage,
+      OrthogonalBasisFunctionsCollection &functionBases,
+      FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR);
+
+  /**
+   * Transforms the basic structures of an arbitrary operation to a tensor operation
+   *
+   * @param pointHierarchies univariate grids
+   * @param storage function value storage
+   * @param levelManager provides level structures that are copied to the new tensor operation
+   * @param summationStrategyType strategy to gather the results of the univariate evaluators on
+   * @return tensor operation with the same grid as given by the parameters
+   */
+  static std::shared_ptr<CombigridTensorOperation> createOperationTensorBSplineInterpolation(
+      std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
       std::shared_ptr<AbstractCombigridStorage> storage, std::shared_ptr<LevelManager> levelManager,
-      std::vector<std::shared_ptr<AbstractInfiniteFunctionBasis1D>> &functionBases);
+      FullGridSummationStrategyType summationStrategyType = FullGridSummationStrategyType::LINEAR);
+
+  static std::shared_ptr<CombigridTensorOperation> createExpUniformBoundaryBSplineInterpolation(
+      size_t numDimensions, MultiFunction func, size_t degree);
 };
 
 } /* namespace combigrid */
