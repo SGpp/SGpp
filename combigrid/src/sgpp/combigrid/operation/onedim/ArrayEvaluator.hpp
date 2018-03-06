@@ -11,7 +11,10 @@
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 
+#include <sgpp/base/exception/operation_exception.hpp>
+
 #include <vector>
+#include "../OperationConfiguration.hpp"
 
 namespace sgpp {
 namespace combigrid {
@@ -85,7 +88,7 @@ class ArrayEvaluator : public AbstractLinearEvaluator<FloatArrayVector> {
     return basisValues;
   }
 
-  std::vector<double> getBasisCoefficients() override { return basisCoefficients; }
+  std::vector<double> getBasisCoefficients() override { return evaluator.getBasisCoefficients(); }
 
   void setGridPoints(std::vector<double> const &xValues) override {
     this->xValues = xValues;
@@ -94,8 +97,8 @@ class ArrayEvaluator : public AbstractLinearEvaluator<FloatArrayVector> {
     valuesComputed = false;
   }
 
-  void setFunctionValuesAtGridPoints(std::vector<double> &functionValues) override {
-    basisCoefficients = functionValues;
+  void setBasisCoefficientsAtGridPoints(std::vector<double> &newBasisCoefficients) override {
+    evaluator.setBasisCoefficientsAtGridPoints(newBasisCoefficients);
   }
 
   std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> cloneLinear() override {
@@ -111,6 +114,25 @@ class ArrayEvaluator : public AbstractLinearEvaluator<FloatArrayVector> {
     this->params = param;
     valuesComputed = false;
   }
+
+  //  CombiEvaluatorTypes getType() override {
+  //    if (evaluator.getType() == CombiEvaluatorTypes::Scalar_BSplineInterpolation) {
+  //      return CombiEvaluatorTypes::Multi_BSplineInterpolation;
+  //    } else if (evaluator.getType() == CombiEvaluatorTypes::Scalar_BSplineQuadrature) {
+  //      return CombiEvaluatorTypes::Multi_BSplineQuadrature;
+  //    } else if (evaluator.getType() == CombiEvaluatorTypes::Scalar_CubicSplineInterpolation) {
+  //      return CombiEvaluatorTypes::Multi_CubicSplineInterpolation;
+  //    } else if (evaluator.getType() == CombiEvaluatorTypes::Scalar_LinearInterpolation) {
+  //      return CombiEvaluatorTypes::Multi_LinearInterpolation;
+  //    } else if (evaluator.getType() == CombiEvaluatorTypes::Scalar_PolynomialInterpolation) {
+  //      return CombiEvaluatorTypes::Multi_PolynomialInterpolation;
+  //    } else if (evaluator.getType() == CombiEvaluatorTypes::Scalar_PolynomialQuadrature) {
+  //      return CombiEvaluatorTypes::Multi_PolynomialQuadrature;
+  //    } else {
+  //      throw sgpp::base::operation_exception(
+  //          "ArrayEvaluator::getType: type of one-dimensional operation is not supported");
+  //    }
+  //  }
 };
 
 } /* namespace combigrid */

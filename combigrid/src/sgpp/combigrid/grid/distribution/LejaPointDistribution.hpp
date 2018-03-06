@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_DISTRIBUTION_LEJAPOINTDISTRIBUTION_HPP_
-#define COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_DISTRIBUTION_LEJAPOINTDISTRIBUTION_HPP_
+#pragma once
 
 #include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/definitions.hpp>
@@ -35,7 +34,7 @@ class LejaPointDistribution : public AbstractPointDistribution {
  public:
   // TODO(holzmudd): add default constructor with constant weight function and precomputed values?
   LejaPointDistribution();
-  LejaPointDistribution(SingleFunction weightFunction);
+  explicit LejaPointDistribution(SingleFunction weightFunction);
   virtual ~LejaPointDistribution();
 
   virtual double compute(size_t numPoints, size_t j);
@@ -51,5 +50,3 @@ class LejaPointDistribution : public AbstractPointDistribution {
 
 } /* namespace combigrid */
 } /* namespace sgpp*/
-
-#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_DISTRIBUTION_LEJAPOINTDISTRIBUTION_HPP_ */

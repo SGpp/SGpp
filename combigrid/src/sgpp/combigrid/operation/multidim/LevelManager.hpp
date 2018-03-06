@@ -18,13 +18,13 @@
 
 #include <cmath>
 #include <limits>
+#include <map>
 #include <memory>
 #include <mutex>
 #include <queue>
 #include <string>
 #include <unordered_set>
 #include <vector>
-#include <map>
 
 namespace sgpp {
 namespace combigrid {
@@ -81,7 +81,12 @@ class LevelManager {
    * Mutex that is shared with all involved objects for evaluation parts that require mutual
    * exclusion.
    */
-  std::shared_ptr<std::mutex> managerMutex;
+  std::shared_ptr<std::recursive_mutex> managerMutex;
+
+  /**
+   * Defines if statistics on the refinement process are collected or not.
+   */
+  bool collectStats;
 
   /**
    * By implementing this method in a derived class, the adaption can be customized.
@@ -188,18 +193,26 @@ class LevelManager {
   bool addLevelToCombiEval(const MultiIndex &level);
 
   /**
-   * update stats for levels that have been added in the current iteration
-   * @param levels newly added levels
+   * update statistics on added levels
    */
   void updateStats();
+
+  /**
+   * update stats for levels that have been added in the current iteration
+   * @param level level to be added to the stats
+   */
   void addStats(const MultiIndex &level);
 
  public:
   /**
    * Constructor. The CombigridEvaluator (or another derived class of AbstractLevelEvaluator) has to
    * be passed.
+   * @param levelEvaluator combigrid evaluator
+   * @param collectStats sets if the collection of statistics should be enabled or not during
+   * refinement
    */
-  explicit LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator);
+  explicit LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator,
+                        bool collectStats = true);
 
   /**
    * Default constructor. If this is used, setLevelEvaluator() has to be called before adding any
@@ -344,12 +357,28 @@ class LevelManager {
   /**
    * Calls addLevel() on the underlying CombigridEvaluator.
    */
-  void addLevel(MultiIndex const &level) { combiEval->addLevel(level); }
+  void addLevel(MultiIndex const &level) { addLevelToCombiEval(level); }
 
   /**
    * Queue based addLevel-type function
    */
   void addLevelsAdaptiveByNumLevels(size_t numLevels = 1);
+
+  /**
+   * writes a given level structure to a matrix
+   * @param levelstucture the level structure
+   * @param numDims number of dimensions
+   * @return matrix containing the level stucture
+   */
+  sgpp::base::DataMatrix convertLevelStructureToMatrix(
+      std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const &levelstructure, size_t numDims);
+
+  /**
+   * prints a given level structure
+   * @param levelstructure the level stucture
+   */
+  void printLevelStructure(
+      std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const &levelstructure);
 
   /**
    * @return An upper bound for the number of points (function evaluations) used for the current
@@ -359,6 +388,21 @@ class LevelManager {
   size_t getUpperPointBound() const { return combiEval->getUpperPointBound(); }
 
   /**
+   * Enables the collection of information on subspaces during refinement
+   */
+  void enableStatsCollection();
+
+  /**
+   * Disables the collection of information on subspaces during refinement
+   */
+  void disableStatsCollection();
+
+  /**
+   * Returns information on all the subspaces that is sorted with respect to the iterations when
+   * they have been added to the combigrid during refinement.
+   *
+   * NOTE: collectStats needs to be set in order to obtain useful information.
+   *
    * @return the infos on the adaptive refinement steps
    */
   std::shared_ptr<LevelInfos> getInfoOnAddedLevels();

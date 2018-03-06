@@ -4,8 +4,9 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
-#include <limits>
+
 #include <cmath>
+#include <limits>
 #include <vector>
 
 namespace sgpp {
@@ -16,10 +17,14 @@ PolynomialInterpolationEvaluator::PolynomialInterpolationEvaluator(
     : evaluationPoint(other.evaluationPoint),
       basisValues(other.basisValues),
       wValues(other.wValues),
-      xValues(other.xValues) {}
+      xValues(other.xValues) {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_PolynomialInterpolation;
+}
 
 PolynomialInterpolationEvaluator::PolynomialInterpolationEvaluator()
-    : evaluationPoint(0.0), basisValues(), wValues(), xValues() {}
+    : evaluationPoint(0.0), basisValues(), wValues(), xValues() {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_PolynomialInterpolation;
+}
 
 PolynomialInterpolationEvaluator::~PolynomialInterpolationEvaluator() {}
 
@@ -67,7 +72,7 @@ void PolynomialInterpolationEvaluator::computeBasisValues() {
     double diff = evaluationPoint - xValues[i];
 
     // very near to a interpolation value, must not divide by zero
-    if (std::abs(diff) < minDeviation) {
+    if (std::fabs(diff) < minDeviation) {
       for (size_t j = 0; j < numPoints; ++j) {
         basisValues[j] = (i == j) ? 1.0 : 0.0;
       }
@@ -90,7 +95,7 @@ void PolynomialInterpolationEvaluator::setParameter(const FloatScalarVector &par
   computeBasisValues();
 }
 
-void PolynomialInterpolationEvaluator::setFunctionValuesAtGridPoints(
+void PolynomialInterpolationEvaluator::setBasisCoefficientsAtGridPoints(
     std::vector<double> &functionValues) {
   basisCoefficients = functionValues;
 }

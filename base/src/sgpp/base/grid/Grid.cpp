@@ -31,6 +31,7 @@
 #include <sgpp/base/grid/type/PolyClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/PolyClenshawCurtisBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
 #include <sgpp/base/grid/type/SquareRootGrid.hpp>
@@ -150,6 +151,10 @@ Grid* Grid::createModPolyGrid(size_t dim, size_t degree) { return new ModPolyGri
 
 Grid* Grid::createPeriodicGrid(size_t dim) { return new PeriodicGrid(dim); }
 
+Grid* Grid::createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree) {
+  return new NakBsplineBoundaryCombigridGrid(dim, degree);
+}
+
 Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
   if (gridConfig.filename_.length() > 0) {
     std::ifstream ifs(gridConfig.filename_);
@@ -222,6 +227,8 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
         return Grid::createLinearStretchedGrid(gridConfig.dim_);
       case GridType::ModLinearStencil:
         return Grid::createModLinearGridStencil(gridConfig.dim_);
+      case GridType::NakBsplineBoundaryCombigrid:
+        return Grid::createNakBsplineBoundaryCombigridGrid(gridConfig.dim_, gridConfig.maxDegree_);
       default:
         throw generation_exception("Grid::createGrid - grid type not known");
     }
@@ -348,6 +355,9 @@ Grid* Grid::createGridOfEquivalentType(size_t numDims) {
       degree = dynamic_cast<ModPolyClenshawCurtisGrid*>(this)->getDegree();
       newGrid = Grid::createModPolyClenshawCurtisGrid(numDims, degree);
       break;
+    case GridType::NakBsplineBoundaryCombigrid:
+      degree = dynamic_cast<NakBsplineBoundaryCombigridGrid*>(this)->getDegree();
+      return Grid::createNakBsplineBoundaryCombigridGrid(numDims, degree);
     default:
       throw generation_exception("Grid::clone - grid type not known");
   }
@@ -405,6 +415,7 @@ GridType Grid::getZeroBoundaryType() {
     // no non-boundary treatment basis available for the following grids
     case GridType::BsplineClenshawCurtis:
     case GridType::ModBsplineClenshawCurtis:
+    case GridType::NakBsplineBoundaryCombigrid:
     default:
       throw generation_exception("Grid::getZeroBoundaryType - no conversion known");
   }

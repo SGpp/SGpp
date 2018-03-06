@@ -8,10 +8,15 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/combigrid/algebraic/FloatTensorVector.hpp>
+
+#ifdef USE_DAKOTA
 #include <pecos_data_types.hpp>
+#endif
 
 namespace sgpp {
 namespace combigrid {
+
+#ifdef USE_DAKOTA
 namespace sgppToDakota {
 
 void convertDataVectorToRealVector(sgpp::base::DataVector& data_vec, Pecos::RealVector& real_vec);
@@ -20,7 +25,8 @@ void convertMultiIndexToUShortArray(MultiIndex& multiIndex, Pecos::UShortArray& 
 void convertTensorToIndexArrayAndCoefficients(sgpp::combigrid::FloatTensorVector& tensorResult,
                                               Pecos::UShort2DArray& multiIndices,
                                               Pecos::RealVector& expansionCoefficients);
-
 } /* namespace sgppToDakota */
+
+#endif
 } /* namespace combigrid */
 } /* namespace sgpp */

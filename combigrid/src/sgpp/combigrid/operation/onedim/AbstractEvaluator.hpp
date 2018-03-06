@@ -3,9 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_ABSTRACTEVALUATOR_HPP_
-#define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_ABSTRACTEVALUATOR_HPP_
+#pragma once
 
+#include <sgpp/combigrid/operation/OperationConfiguration.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <memory>
@@ -15,16 +15,17 @@ namespace sgpp {
 namespace combigrid {
 
 /**
- * Abstract base class for one-dimensional numerical evaluation methods. Currently, only its derived
- * class AbstractLinearEvaluator is used.
- *
- * The template parameter is used for switching between single-evaluation and multi-evaluation, see
- * FloatArrayVector.
- */
+*Abstract base class for one-dimensional numerical evaluation methods. Currently, only its derived
+*class AbstractLinearEvaluator is used.
+*
+*The template parameter is used for switching between single-evaluation and multi-evaluation, see
+*FloatArrayVector.
+*/
 template <typename V>
 class AbstractEvaluator {
  protected:
   size_t level = 0;
+  EvaluatorConfiguration evalConfig;
 
  public:
   virtual ~AbstractEvaluator() {}
@@ -63,15 +64,14 @@ class AbstractEvaluator {
   virtual void setParameter(V const &param) = 0;
 
   /**
-   * sets the function values and can be used to compute the coefficients of the linear combination
-   * @param functionValues
+   * set the basis coefficients for the linear combination. In case of linear or polynomial
+   interpolation these basis coefficients are function evaluations
+   @param newBasisCoefficients the new coefficients
    */
-  virtual void setFunctionValuesAtGridPoints(std::vector<double> &functionValues) = 0;
+  virtual void setBasisCoefficientsAtGridPoints(std::vector<double> &newBasisCoefficients) = 0;
 
   /**
    * Evaluates the numerical method on the already set grid points.
-   * @param functionValues function values at the grid points, the order must match the one of the
-   * grid points.
    */
   virtual V eval() = 0;
 
@@ -82,9 +82,14 @@ class AbstractEvaluator {
    * be able to handle non-linear one-dimensional methods.
    */
   //  virtual V eval(std::vector<V> const &functionValues) = 0;
+
+  /**
+   * @return type of the operation
+   */
+  //    virtual CombiEvaluatorTypes getType() = 0;
+  virtual EvaluatorConfiguration getConfig() { return this->evalConfig; }
+  virtual void setConfig(EvaluatorConfiguration newEvalConfig) { this->evalConfig = newEvalConfig; }
 };
 
 } /* namespace combigrid */
 } /* namespace sgpp*/
-
-#endif /* COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_ONEDIM_ABSTRACTEVALUATOR_HPP_ */

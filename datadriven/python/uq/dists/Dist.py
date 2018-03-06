@@ -12,11 +12,12 @@
 
 @version  0.1
 """
-import numpy as np
 
+from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
 from pysgpp.extensions.datadriven.uq.sampler.Sample import Sample, SampleType
 from pysgpp import DataVector
-from pysgpp.extensions.datadriven.uq.operations.discretization import discretizeFunction
+
+import numpy as np
 
 
 class Dist(object):
@@ -89,20 +90,6 @@ class Dist(object):
         """
         raise NotImplementedError()
 
-    def quad(self):
-        from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
-        from pysgpp.extensions.datadriven.uq.transformation.JointTransformation import JointTransformation
-        usamples = np.random.rand(10000, self.getDim())
-        trans = JointTransformation()
-        if self.getDim() == 1:
-            a, b = self.getBounds()
-            trans.add(LinearTransformation(a, b))
-        else:
-            for a, b in self.getBounds():
-                trans.add(LinearTransformation(a, b))
-        xsamples = trans.unitToProbabilisticMatrix(usamples)
-        return trans.vol() * np.mean([self.pdf(xi) for xi in xsamples])
-
     def cov(self):
         """
         Get covariance matrix
@@ -125,17 +112,6 @@ class Dist(object):
                 corr[idim, jdim] = corr[jdim, idim] = corrij
             corr[idim, idim] = 1.0
         return corr
-
-    def discretize(self, *args, **kws):
-        """
-        discretize the pdf of the current distribution
-        using a sparse grid interpolant
-        """
-        bounds = self.getBounds()
-        if self.getDim() == 1:
-            bounds = [bounds]
-        return discretizeFunction(self.pdf, bounds, hasBorder=False,
-                                  *args, **kws)
 
     def klDivergence(self, dist, testSamplesUnit=None, testSamplesProb=None,
                      n=1e4):

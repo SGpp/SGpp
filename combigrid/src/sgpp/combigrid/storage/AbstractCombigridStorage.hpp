@@ -71,7 +71,7 @@ class AbstractCombigridStorage {
    * Sets a mutex that is locked for critical operations. If the mutex is nullptr, nothing is
    * locked.
    */
-  virtual void setMutex(std::shared_ptr<std::mutex> mutexPtr) = 0;
+  virtual void setMutex(std::shared_ptr<std::recursive_mutex> mutexPtr) = 0;
 };
 
 } /* namespace combigrid */

@@ -5,8 +5,8 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/tools/FileIO.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/optimization/tools/FileIO.hpp>
 
 #include <iostream>
 #include <stdexcept>

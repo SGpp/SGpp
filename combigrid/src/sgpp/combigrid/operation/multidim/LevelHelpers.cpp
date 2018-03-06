@@ -5,30 +5,32 @@
 
 #include "LevelHelpers.hpp"
 
-#include <vector>
+#include <algorithm>
+#include <cmath>
 #include <map>
 #include <utility>
-#include <algorithm>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
 
 LevelInfos::LevelInfos() : counterAdaptive(0) {
-  infoOnAddedLevels = std::make_shared<
-      std::vector<std::shared_ptr<std::map<MultiIndex, std::shared_ptr<LevelInfo>>>>>();
+  infoOnAddedLevels = std::make_shared<RefinementInfosPerStep>();
 }
 
 LevelInfos::~LevelInfos() {}
 
 void LevelInfos::incrementCounter() {
-  infoOnAddedLevels->push_back(
-      std::make_shared<std::map<MultiIndex, std::shared_ptr<LevelInfo>>>());
-  counterAdaptive++;
+  if (infoOnAddedLevels->size() == 0 || !(*infoOnAddedLevels)[counterAdaptive - 1].empty()) {
+    std::map<MultiIndex, LevelInfo> dict;
+    infoOnAddedLevels->push_back(dict);
+    counterAdaptive++;
+  }
 }
 
-void LevelInfos::insert(const MultiIndex &level, std::shared_ptr<LevelInfo> levelInfo) {
-  std::pair<MultiIndex, std::shared_ptr<LevelInfo>> item(level, levelInfo);
-  (*infoOnAddedLevels)[counterAdaptive - 1]->insert(item);
+void LevelInfos::insert(const MultiIndex &level, LevelInfo &levelInfo) {
+  (*infoOnAddedLevels)[counterAdaptive - 1].insert(
+      std::pair<MultiIndex, LevelInfo>(level, levelInfo));
 }
 
 void LevelInfos::maxNormPerIteration(sgpp::base::DataVector &maxNorms) {
@@ -36,19 +38,19 @@ void LevelInfos::maxNormPerIteration(sgpp::base::DataVector &maxNorms) {
   size_t i = 0;
   for (auto &istats : *infoOnAddedLevels) {
     double localMax = 0.0;
-    for (auto &item : *istats) {
+    for (auto &item : istats) {
       auto &levelInfo = item.second;
-      localMax = std::max(localMax, std::abs(levelInfo->norm));
+      auto absNorm = std::fabs(levelInfo.norm);
+      if (localMax < absNorm) {
+        localMax = absNorm;
+      }
     }
     maxNorms[i] = localMax;
     ++i;
   }
 }
 
-std::shared_ptr<std::vector<std::shared_ptr<std::map<MultiIndex, std::shared_ptr<LevelInfo>>>>>
-LevelInfos::getInfos() {
-  return infoOnAddedLevels;
-}
+std::shared_ptr<RefinementInfosPerStep> LevelInfos::getInfos() { return infoOnAddedLevels; }
 
 } /* namespace combigrid */
 } /* namespace sgpp*/

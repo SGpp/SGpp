@@ -11,7 +11,9 @@ namespace sgpp {
 namespace combigrid {
 
 CubicSplineInterpolationEvaluator::CubicSplineInterpolationEvaluator()
-    : evaluationPoint(0.0), basisValues(), xValues(), gridCoefficients() {}
+    : evaluationPoint(0.0), basisValues(), xValues(), gridCoefficients() {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_CubicSplineInterpolation;
+}
 
 CubicSplineInterpolationEvaluator::~CubicSplineInterpolationEvaluator() {}
 
@@ -20,7 +22,9 @@ CubicSplineInterpolationEvaluator::CubicSplineInterpolationEvaluator(
     : evaluationPoint(other.evaluationPoint),
       basisValues(other.basisValues),
       xValues(other.xValues),
-      gridCoefficients(other.gridCoefficients) {}
+      gridCoefficients(other.gridCoefficients) {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_CubicSplineInterpolation;
+}
 
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>
 CubicSplineInterpolationEvaluator::cloneLinear() {
@@ -127,7 +131,7 @@ void CubicSplineInterpolationEvaluator::computeBasisValues() {
   }
 }
 
-void CubicSplineInterpolationEvaluator::setFunctionValuesAtGridPoints(
+void CubicSplineInterpolationEvaluator::setBasisCoefficientsAtGridPoints(
     std::vector<double>& functionValues) {
   basisCoefficients = functionValues;
 }

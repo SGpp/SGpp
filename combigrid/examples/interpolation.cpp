@@ -50,7 +50,6 @@ using sgpp::combigrid::FloatScalarVector;
 using sgpp::combigrid::ArrayEvaluator;
 using sgpp::combigrid::PolynomialInterpolationEvaluator;
 using sgpp::combigrid::CombigridTreeStorage;
-using sgpp::combigrid::FullGridLinearCallbackEvaluator;
 using sgpp::combigrid::FunctionLookupTable;
 using sgpp::combigrid::CombigridEvaluator;
 using sgpp::combigrid::WeightedRatioLevelManager;
@@ -144,8 +143,9 @@ void multistageInterpolation() {
 
   auto storage = std::make_shared<CombigridTreeStorage>(pointHierarchies, MultiFunction(dummyFunc));
 
-  auto fullGridEval = std::make_shared<FullGridLinearCallbackEvaluator<FloatArrayVector>>(
-      storage, evaluators, pointHierarchies);
+  auto fullGridEval =
+      std::make_shared<sgpp::combigrid::FullGridCallbackEvaluator<FloatArrayVector>>(
+          storage, evaluators, pointHierarchies);
 
   auto combiGridEval =
       std::make_shared<CombigridEvaluator<FloatArrayVector>>(numDimensions, fullGridEval);
@@ -178,9 +178,9 @@ void multistageInterpolation() {
       pointHierarchies,
       MultiFunction([&funcLookup](DataVector const &param) { return funcLookup(param); }));
 
-  auto realFullGridEval = std::make_shared<FullGridLinearCallbackEvaluator<FloatArrayVector>>(
-      realStorage, evaluators, pointHierarchies);
-
+  auto realFullGridEval =
+      std::make_shared<sgpp::combigrid::FullGridCallbackEvaluator<FloatArrayVector>>(
+          storage, evaluators, pointHierarchies);
   auto realCombiGridEval =
       std::make_shared<CombigridEvaluator<FloatArrayVector>>(numDimensions, realFullGridEval);
 

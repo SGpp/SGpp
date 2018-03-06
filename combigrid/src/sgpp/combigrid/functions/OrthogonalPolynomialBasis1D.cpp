@@ -4,6 +4,8 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
+#include <sgpp/combigrid/GeneralFunction.hpp>
+
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
@@ -85,7 +87,7 @@ void OrthogonalPolynomialBasis1DConfiguration::initConfig() {
   polyParameters.logmean_ = 0.0;
 
   // bounds
-  polyParameters.lowerBound_ = -1.0;
+  polyParameters.lowerBound_ = 0.0;
   polyParameters.upperBound_ = 1.0;
 }
 
@@ -106,8 +108,11 @@ OrthogonalPolynomialBasis1DConfiguration::stringToOrthogonalPolynomialType(
     return sgpp::combigrid::OrthogonalPolynomialBasisType::HERMITE;
   } else if (polynomialType.compare("Bounded_Lognormal") == 0) {
     return sgpp::combigrid::OrthogonalPolynomialBasisType::BOUNDED_LOGNORMAL;
+  } else if (polynomialType.compare("Bounded_Normal") == 0) {
+    return sgpp::combigrid::OrthogonalPolynomialBasisType::BOUNDED_NORMAL;
+  } else {
+    throw sgpp::base::application_exception("polynomial type is unknown");
   }
-  throw sgpp::base::application_exception("polynomial type is unknown");
 }
 
 // --------------------------------------------------------------------------------------------
@@ -124,11 +129,6 @@ OrthogonalPolynomialBasis1D::OrthogonalPolynomialBasis1D(
       basisPoly = std::make_shared<Pecos::BasisPolynomial>(Pecos::HERMITE_ORTHOG);
       rv = std::make_shared<Pecos::NormalRandomVariable>(config.polyParameters.mean_,
                                                          config.polyParameters.stddev_);
-      break;
-    case OrthogonalPolynomialBasisType::LEGENDRE:
-      basisPoly = std::make_shared<Pecos::BasisPolynomial>(Pecos::LEGENDRE_ORTHOG);
-      rv = std::make_shared<Pecos::UniformRandomVariable>(config.polyParameters.lowerBound_,
-                                                          config.polyParameters.upperBound_);
       break;
     case OrthogonalPolynomialBasisType::JACOBI:
       basisPoly = std::make_shared<Pecos::BasisPolynomial>(Pecos::JACOBI_ORTHOG);
@@ -152,6 +152,13 @@ OrthogonalPolynomialBasis1D::OrthogonalPolynomialBasis1D(
           config.polyParameters.logmean_, config.polyParameters.stddev_,
           config.polyParameters.lowerBound_, config.polyParameters.upperBound_);
       break;
+    case OrthogonalPolynomialBasisType::BOUNDED_NORMAL:
+      basisPoly = std::make_shared<Pecos::BasisPolynomial>(Pecos::HERMITE_ORTHOG);
+      rv = std::make_shared<Pecos::BoundedNormalRandomVariable>(
+          config.polyParameters.mean_, config.polyParameters.stddev_,
+          config.polyParameters.lowerBound_, config.polyParameters.upperBound_);
+      break;
+    case OrthogonalPolynomialBasisType::LEGENDRE:
     default:
       basisPoly = std::make_shared<Pecos::BasisPolynomial>(Pecos::LEGENDRE_ORTHOG);
       rv = std::make_shared<Pecos::UniformRandomVariable>(config.polyParameters.lowerBound_,
@@ -168,6 +175,7 @@ double OrthogonalPolynomialBasis1D::normalizeInput(double xValue) {
     case OrthogonalPolynomialBasisType::JACOBI:
       // [0, 1] -> [-1, 1]
       return 2.0 * xValue - 1.0;
+    case OrthogonalPolynomialBasisType::BOUNDED_NORMAL:
     case OrthogonalPolynomialBasisType::BOUNDED_LOGNORMAL:
       return xValue;
     //      // [0, 1] -> [lower bound, upper bound]
@@ -190,19 +198,90 @@ double OrthogonalPolynomialBasis1D::evaluate(size_t basisIndex, double xValue) {
   return invNorm * basisPoly->type1_value(normalized_xValue, castedBasisIndex);
 #else
   std::cerr << "Error in OrthogonalBasis1D::evaluate: "
-            << "SG++ was compiled without DAKOTAsupport!\n";
-  return false;
+            << "SG++ was compiled without DAKOTAsupport!" << std::endl;
+  return 0.0;
 #endif
 }
 
 double OrthogonalPolynomialBasis1D::pdf(double xValue) {
 #ifdef USE_DAKOTA
   return rv->pdf(xValue);
-}
 #else
   std::cerr << "Error in OrthogonalBasis1D::pdf: "
-            << "SG++ was compiled without DAKOTAsupport!\n";
-  return false;
+            << "SG++ was compiled without DAKOTAsupport!" << std::endl;
+  return 0.0;
 #endif
+}
+
+double OrthogonalPolynomialBasis1D::mean() {
+#ifdef USE_DAKOTA
+  return rv->mean();
+
+#else
+  std::cerr << "Error in OrthogonalBasis1D::mean: "
+            << "SG++ was compiled without DAKOTAsupport!" << std::endl;
+  return 0.0;
+#endif
+}
+
+double OrthogonalPolynomialBasis1D::variance() {
+#ifdef USE_DAKOTA
+  return rv->variance();
+
+#else
+  std::cerr << "Error in OrthogonalBasis1D::variance: "
+            << "SG++ was compiled without DAKOTAsupport!" << std::endl;
+  return 0.0;
+#endif
+}
+
+#ifdef USE_DAKOTA
+std::shared_ptr<Pecos::RandomVariable> OrthogonalPolynomialBasis1D::getRandomVariable() {
+  return rv;
+}
+#endif
+
+sgpp::combigrid::SingleFunction OrthogonalPolynomialBasis1D::getWeightFunction() {
+  return SingleFunction([this](double x_prob) { return this->pdf(x_prob); });
+}
+
+size_t OrthogonalPolynomialBasis1D::numAdditionalQuadraturePoints() {
+  switch (config.polyParameters.type_) {
+    case OrthogonalPolynomialBasisType::LEGENDRE:
+      return 5;
+    case OrthogonalPolynomialBasisType::BOUNDED_LOGNORMAL:
+      return 15;
+    case OrthogonalPolynomialBasisType::JACOBI:
+      return 5;
+    case OrthogonalPolynomialBasisType::HERMITE:
+    case OrthogonalPolynomialBasisType::BOUNDED_NORMAL:
+      return 10;
+    default:
+      return 5;
+  }
+}
+
+double OrthogonalPolynomialBasis1D::lowerBound() {
+#ifdef USE_DAKOTA
+  Pecos::RealRealPair bounds_idim = rv->bounds();
+  return bounds_idim.first;
+#else
+  return 0.0;
+#endif
+}
+
+double OrthogonalPolynomialBasis1D::upperBound() {
+#ifdef USE_DAKOTA
+  Pecos::RealRealPair bounds_idim = rv->bounds();
+  return bounds_idim.second;
+#else
+  return 1.0;
+#endif
+}
+
+OrthogonalPolynomialBasis1DConfiguration OrthogonalPolynomialBasis1D::getConfiguration() {
+  return config;
+}
+
 } /* namespace combigrid */
 } /* namespace sgpp */

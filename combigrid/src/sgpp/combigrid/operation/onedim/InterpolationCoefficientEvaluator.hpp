@@ -10,6 +10,8 @@
 #include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 
+#include <vector>
+
 namespace sgpp {
 namespace combigrid {
 
@@ -24,7 +26,8 @@ class InterpolationCoefficientEvaluator : public AbstractLinearEvaluator<FloatTe
 
  public:
   InterpolationCoefficientEvaluator();
-  InterpolationCoefficientEvaluator(std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis);
+  explicit InterpolationCoefficientEvaluator(
+      std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis);
   virtual ~InterpolationCoefficientEvaluator();
   InterpolationCoefficientEvaluator(InterpolationCoefficientEvaluator const &other);
 
@@ -32,7 +35,7 @@ class InterpolationCoefficientEvaluator : public AbstractLinearEvaluator<FloatTe
   std::vector<double> getBasisCoefficients() override { return basisCoefficients; }
 
   void setGridPoints(std::vector<double> const &newXValues) override;
-  void setFunctionValuesAtGridPoints(std::vector<double> &functionValues) override;
+  void setBasisCoefficientsAtGridPoints(std::vector<double> &functionValues) override;
   std::shared_ptr<AbstractLinearEvaluator<FloatTensorVector>> cloneLinear() override;
   bool needsOrderedPoints() override;
   bool needsParameter() override;

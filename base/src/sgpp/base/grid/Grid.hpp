@@ -54,7 +54,8 @@ enum class GridType {
   PolyClenshawCurtis,            // 27
   LinearClenshawCurtis,          // 28
   ModPolyClenshawCurtis,         // 29
-  ModLinearClenshawCurtis        // 30
+  ModLinearClenshawCurtis,       // 30
+  NakBsplineBoundaryCombigrid    // 31
 };
 
 /**
@@ -599,6 +600,15 @@ class Grid {
    * @return grid
    */
   static Grid* createPeriodicGrid(size_t dim);
+
+  /**
+    * creates a not a knot B-Spline boundary grid
+    *
+    * @param dim the grid's dimension
+    * @param degree the B-spline degree
+    * @return grid
+    */
+  static Grid* createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
 
   /**
    * reads a grid out of a string
