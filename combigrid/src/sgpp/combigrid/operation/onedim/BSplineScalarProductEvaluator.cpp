@@ -124,6 +124,11 @@ void BSplineScalarProductEvaluator::calculate1DBSplineScalarProducts(
         }
       }
     }
+    //    std::cout << "index i: " << index_i << std::endl;
+    //    for (size_t j = 0; j < basisValues[index_i].size(); j++) {
+    //      std::cout << basisValues[index_i].get(j) << " ";
+    //    }
+    //    std::cout << "\n";
   }
 }
 
