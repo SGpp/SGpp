@@ -234,10 +234,10 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
 
 BOOST_AUTO_TEST_CASE(testOperationMakePositiveConsistent) {
   // parameters
-  size_t numDims = 4;
-  size_t level = 4;
+  size_t numDims = 3;
+  size_t level = 3;
   size_t refIterations = 2;
-  size_t refnums = 3;
+  size_t refnums = 2;
   double tol = -1e-12;
   bool verbose = false;
 
@@ -272,10 +272,10 @@ BOOST_AUTO_TEST_CASE(testOperationMakePositiveConsistent) {
 
 BOOST_AUTO_TEST_CASE(testOperationMakePositiveInconsistent) {
   // parameters
-  size_t numDims = 4;
-  size_t level = 4;
+  size_t numDims = 3;
+  size_t level = 3;
   size_t refIterations = 2;
-  size_t refnums = 3;
+  size_t refnums = 2;
   double tol = -1e-12;
   bool verbose = false;
 
