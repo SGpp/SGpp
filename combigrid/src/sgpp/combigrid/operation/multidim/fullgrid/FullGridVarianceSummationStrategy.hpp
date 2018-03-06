@@ -95,7 +95,7 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
     // if a custom weight function shall be used it and its bounds are extracted from the scalar
     // product evaluators
 
-    double width = 1.0;
+    //    double width = 1.0;
     for (size_t d = 0; d < numDimensions; d++) {
       if (this->evaluatorPrototypes[d]->hasCustomWeightFunction()) {
         sgpp::combigrid::SingleFunction onedim_weight_function;
@@ -105,7 +105,7 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
         this->evaluatorPrototypes[d]->getBounds(a, b);
         linearEvaluatorPrototypes[d]->setWeightFunction(onedim_weight_function);
         linearEvaluatorPrototypes[d]->setBounds(a, b);
-        width *= b - a;
+        //        width *= b - a;
       }
     }
 
@@ -116,21 +116,22 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
     FullGridQuadraticSummationStrategy<V> quadraticStrategy = FullGridQuadraticSummationStrategy<V>(
         this->storage, this->evaluatorPrototypes, this->pointHierarchies);
 
-    // Var = E(x^2) - E(x)^2
+    // Var = E(u^2) - E(u)^2
+    // ToDo (rehmemk) this can become unstable and lead to negative variances.
+    // use Var = E( (u-E(u))^2 ) instead
     FloatScalarVector mean = linearStrategy.eval(level);
     V meanSquare = quadraticStrategy.eval(level);
-    mean.scalarMult(width);
-    //    std::cout << "FullGridVarianceSummationStrategy:" << std::endl;
-    //    std::cout << "mean: " << mean.value() << std::endl;
+    //    mean.scalarMult(width);
+    std::cout << "mean: " << mean.value() << std::endl;
 
     mean.componentwiseMult(mean);
     FloatScalarVector variance = meanSquare[0];
 
-    variance.scalarMult(width);
+    //    variance.scalarMult(width);
     variance.sub(mean);
 
     V returnVariance(variance);
-    //    std::cout << "variance: " << variance[0].value() << std::endl;
+    std::cout << "variance: " << variance[0].value() << std::endl;
     return returnVariance;
   }
 };
