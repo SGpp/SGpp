@@ -17,8 +17,7 @@ if os.path.exists("matsgpp_wrap.cc"):
 if not os.path.exists("matlab"):
   os.mkdir("matlab")
 
-# SCons won't Install the +sgpp directory from /matsgpp/matlab if
-# it already exists, even when files are new/were changed
+# remove files in /lib/matsgpp/matlab directory
 matlabBuildPath = os.path.join(MATSGPP_BUILD_PATH.abspath, "+sgpp")
 if os.path.exists(matlabBuildPath):
   shutil.rmtree(matlabBuildPath)
@@ -67,10 +66,10 @@ else:
 
 libMatlab = matlabEnv.SharedLibrary(target="matsgpp", source=["matsgpp.i"],
                                     SHLIBPREFIX="", SHLIBSUFFIX=mexSuffix)
-matlabFiles = [os.path.join("matlab", x)
-               for x in ["+sgpp", "SwigGet.m", "SwigMem.m",
-                         "SwigRef.m", "SwigStorage.m"]]
-matlabEnv.Depends(libMatlab, matlabFiles)
 
 libraryTargetList.append(matlabEnv.Install(MATSGPP_BUILD_PATH, libMatlab))
-libraryTargetList.extend(matlabEnv.Install(MATSGPP_BUILD_PATH, matlabFiles))
+
+matlabFiles = ["+sgpp", "SwigGet.m", "SwigMem.m", "SwigRef.m", "SwigStorage.m"]
+for x in matlabFiles:
+  matlabEnv.AddPostAction(libMatlab, Copy(os.path.join(MATSGPP_BUILD_PATH.abspath, x),
+                                          os.path.join(Dir("matlab").abspath, x)))
