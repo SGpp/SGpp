@@ -5,7 +5,7 @@ import os
 import shutil
 
 def copy_headers(module, package_name):
-    module_src_folder = "../../" + module + "/src/"
+    module_src_folder = "../../../" + module + "/src/"
     # print(module_src_folder)
     # print("package_name: " + package_name)
     package_realpath = os.path.realpath(package_name)
@@ -16,7 +16,7 @@ def copy_headers(module, package_name):
                 continue
             origin_path = os.path.join(root, f)
             # print("origin:" + origin_path)
-            target_suffix = re.search(r"\.\./\.\./" + module + r"/src/" + r"(.*)", origin_path).group(1)
+            target_suffix = re.search(r"\.\./\.\./\.\./" + module + r"/src/" + r"(.*)", origin_path).group(1)
             target_path = os.path.join(package_realpath, "usr/include", target_suffix)
             target_dir = os.path.dirname(target_path)
             print("copy: " + origin_path + " -> " + target_path)
