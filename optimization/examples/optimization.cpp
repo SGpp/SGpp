@@ -7,7 +7,7 @@
  * \page example_optimization_cpp optimization.cpp
  *
  * On this page, we look at an example application of the sgpp::optimization module.
- * Identical versions of the example are given in all languages
+ * Versions of the example are given in all languages
  * currently supported by SG++: C++, Python, Java, and MATLAB.
  *
  * For instructions on how to compile and run the example, please see \ref installation.
