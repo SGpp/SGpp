@@ -23,7 +23,7 @@ BOOST_AUTO_TEST_SUITE(TestOperationDiagonal)
 
 BOOST_AUTO_TEST_CASE(testOperationDiagonalIdentity) {
   size_t dim = 3;
-  auto grid = sgpp::base::Grid::createLinearGrid(dim);
+  std::unique_ptr<sgpp::base::Grid> grid(sgpp::base::Grid::createLinearGrid(dim));
   auto& gen = grid->getGenerator();
   auto& gridStorage = grid->getStorage();
   gen.regular(2);
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(testOperationDiagonalIdentity) {
 
 BOOST_AUTO_TEST_CASE(testOperationDiagonal) {
   size_t dim = 2;
-  auto grid = sgpp::base::Grid::createLinearGrid(dim);
+  std::unique_ptr<sgpp::base::Grid> grid(sgpp::base::Grid::createLinearGrid(dim));
   auto& gen = grid->getGenerator();
   auto& gridStorage = grid->getStorage();
   gen.regular(2);

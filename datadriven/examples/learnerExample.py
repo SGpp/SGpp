@@ -23,25 +23,27 @@ def g(x):
 
 print "generate uniformly distributed samples (%i, %i)" % (numSamples, numDims)
 samples = np.random.rand(numSamples, numDims)
-values = g(samples)
+values = f(samples)
 
 builder = LearnerBuilder()
 builder.buildRegressor()
 builder.withTrainingDataFromNumPyArray(samples, values)
-builder = builder.withGrid().withBorder(Types.BorderTypes.NONE)
+builder = builder.withGrid().withBorder(Types.BorderTypes.NONE) # Modified basis functions
 builder.withLevel(2)
 builder = builder.withSpecification().withAdaptThreshold(0.00003)
-builder.withAdaptPoints(2)
+builder.withAdaptPoints(3)
 builder.withLambda(1e-6)
-# does not seem to work!! -> problem traced to the UpDown Laplace sweep algorithm
-#builder.withLaplaceOperator()
-builder.withIdentityOperator()
-builder = builder.withStopPolicy().withAdaptiveItarationLimit(3)
+
+builder.withLaplaceOperator()
+# Alternative:
+#builder.withIdentityOperator()
+
+builder = builder.withStopPolicy().withAdaptiveIterationLimit(3)
 builder = builder.withCGSolver()
 builder.withAccuracy(1e-7)
 builder.withImax(100)
 
-# # Do the learning
+# Create the final learner object
 learner = builder.andGetResult()
 
 gs = learner.grid.getStorage()
@@ -51,6 +53,7 @@ print "Grid points: %i" % gs.getSize()
 
 print "================== Starting learning =================="
 
+learner.setVerbosity(False)
 learner.learnData()
 print learner.alpha
 
