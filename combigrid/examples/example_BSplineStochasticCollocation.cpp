@@ -20,7 +20,8 @@
  *
  */
 
-// w.l.o.g. the objective function takes arguments from the unit cube
+// w.l.o.g. the objective function takes arguments from the unit cube. We transform the function
+// f(x)=x on [a,b] = [-1,3] to the uni cube via \tilde{f}(x) = a + (b-a) * x = 4x-1
 double objectiveFunction(sgpp::base::DataVector const& v) { return 4.0 * v[0] - 1.0; }
 
 int main() {
