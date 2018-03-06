@@ -24,6 +24,7 @@ from pysgpp import DataVector, DataMatrix
 import subprocess
 import json
 import os
+import sys
 
 from pysgpp.extensions.datadriven.tools import readDataARFF
 from UQSettingFormatter import UQSettingFormatter
@@ -68,6 +69,9 @@ class UQSetting(object):
         self.children = {}  # running worker processes
         self.files = []  # result files written
         self.lastid = 0
+
+        # speed up result loading
+        self.__dictResults = {}
 
     def __getattr__(self, attr):
         """
@@ -531,21 +535,28 @@ class UQSetting(object):
         Run for multiple samples
         @param samples: list of samples
         """
+        cnt = 0
         for i, sample in enumerate(samples):
             if self._verbose:
                 print "-" * 60
                 print "Run: %i/%i (%i)" % (i + 1, len(samples), self.getSize())
 
-            ret = self.run(sample, *args, **kws)
+            ret = self.run(sample, writeToFile=self.getSaveAfterEachRun(cnt),
+                           *args, **kws)
 
             # check if run was successful
             if ret == 1:
                 print "Warning: invalid sample %s" % sample
+            else:
+                cnt += 1
+
+#             if self._verbose:
+#                 sys.out.flush()
 
         if self._verbose:
             print "-" * 60
 
-    def run(self, sample, *args, **kws):
+    def run(self, sample, writeToFile=False, *args, **kws):
         """
         Trigger the pipeline from
          1) Transformation p \in [0, 1]^d -> \Gamma*
@@ -567,9 +578,9 @@ class UQSetting(object):
             n2 = len(self.getSimulationStats())
     
             # serialize the UQSetting to file. As this is the expensive
-            # part, this step is important there is any error in the post
+            # part, this step is important if there is any error in the post
             # processing part
-            if n2 > n1 and self.getSaveAfterEachRun():
+            if n2 > n1 and writeToFile:
                 self .writeToFile()
     
             n1 = len(self.getPostprocessorStats())
@@ -578,7 +589,7 @@ class UQSetting(object):
     
             n2 = len(self.getPostprocessorStats())
             # serialize once more after the post processing has been done
-            if n2 > n1 and self.getSaveAfterEachRun():
+            if n2 > n1 and writeToFile:
                 self.writeToFile()
     
             return 0
@@ -703,6 +714,11 @@ class UQSetting(object):
         # search for explicitly given results
         ans = np.ndarray([len(ts)], dtype='float')
 
+        # just return the value if there is just one available
+        if len(stats_ts) == 1:
+            ans[0] = results[0]
+            return ans
+
         # sort it to search it faster
         stats_ixs = np.argsort(stats_ts)
         stats_ts = [stats_ts[ix] for ix in stats_ixs]
@@ -777,9 +793,15 @@ class UQSetting(object):
 
         @return: dictionary {<time step>: {<Sample>: value}}
         """
+        keyResults = (tuple(ts), qoi)
+        if ps is None and keyResults in self.__dictResults and \
+                np.all([len(self.__dictResults[keyResults][t]) == self.getSize()
+                        for t in ts]):
+            return self.__dictResults[keyResults]
+            
         if qoi not in self.getAvailableQoI():
-            raise AttributeError('the quantity of interest "%s" does not \
-                                  exist. There are "%s" available.' %
+            raise AttributeError(('the quantity of interest "%s" does not ' +
+                                  'exist. There are "%s" available.') %
                                  (qoi, self.getAvailableQoI()))
 
         if ps is None:
@@ -824,10 +846,41 @@ class UQSetting(object):
         if self._verbose:
             print
 
+        # store result
+        self.__dictResults[keyResults] = B
+
         return B
 
-    def getResults(self, *args, **kws):
-        return self.getTimeDependentResults([0], *args, **kws)
+    def getResults(self, qoi="_", sampleType=UQSampleType.RAW):
+        """
+        Collects the simulation results assuming that ts = [0].
+        If just a selection of parameters is needed, one
+        can specify it using the ps parameter.
+        @param sampleType:
+        @return: dictionary {0: {<Sample>: value}}
+        """
+        # collect samples
+        ans = {}
+
+        # collect all available results -> just the ones which have
+        # an entry in the post processing table
+        ps = [None] * len(self.__stats_postprocessor)
+        for i, (q, value) in enumerate(self.__stats_postprocessor.items()):
+            p = self.__stats_preprocessor_reverse[q]
+            if p not in self.__stats_samples:
+                raise AttributeError('Sample is missing for %s' % (p,))
+
+            # select the key
+            sample = self.__stats_samples[p]
+            if sampleType == UQSampleType.PREPROCESSED:
+                key = self.__stats_preprocessor[tuple(self.__stats_samples[p].getExpandedUnit())]
+            else:
+                # sampleType == UQSampleType.RAW
+                key = p
+
+            ans[key] = value[qoi]
+        
+        return {0: ans}
 
     def getSamplesStats(self):
         return self.__stats_samples
@@ -1027,6 +1080,10 @@ class UQSetting(object):
             return len(self.__stats_simulation)
         elif item == "postprocessor":
             return len(self.__stats_postprocessor)
+        elif item == "samples":
+            return len(self.__stats_samples)
+        else:
+            raise AttributeError("item attribute '%s' unknown" % item)
 
     def mergeStats(self, newSetting):
         """
@@ -1149,7 +1206,7 @@ class UQSetting(object):
         #             stats_preprocessor[p] = q
 
         #             # check whether an error occured
-        #             if stats_preprocessor_reversed.has_key(q):
+        #             if stats_preprocessor_reversed.isContaining(q):
         #                 raise AttributeError('Internal error when the parameters are transformed to new parameter setting')
         #             stats_preprocessor_reversed[q] = p
 
@@ -1323,7 +1380,7 @@ class UQSetting(object):
             # print "-"*60
             # cnt_broken, cnt_unbroken = 0, 0
             # for p, item in d.items():
-            #     if item.has_key('_'):
+            #     if item.isContaining('_'):
             #         a = item['_'][0]['post']
             #         if not os.path.exists(a):
             #             continue #print 'file missing', a
@@ -1356,7 +1413,7 @@ class UQSetting(object):
             #         break
             # print "-"*60
             # print cnt_unbroken, "+", cnt_broken, "=", (cnt_broken + cnt_unbroken)
-            # #if d[d.keys()[0]].has_key('_'):
+            # #if d[d.keys()[0]].isContaining('_'):
             # --------------------------------------------------
             # setting.setPostprocessorStats(dd)
 
@@ -1500,7 +1557,6 @@ class UQSetting(object):
                             newSample.getExpandedProbabilistic())
             # check if something changed in the accuracy of float
             p = tuple(sample.getExpandedUnit())
-
             if p not in self.__stats_samples:
                 self.__stats_samples[p] = sample
                 found = self.findEquivalent(sample, self.__stats_preprocessor)
@@ -1523,7 +1579,6 @@ class UQSetting(object):
                     self.remove(sample)
 
     def remove(self, sample):
-        print "removing content in UQSetting"
         p = tuple(sample.getExpandedUnit())
         q = self.__stats_preprocessor[p]
         del self.__stats_samples[sample]
@@ -1531,3 +1586,47 @@ class UQSetting(object):
         del self.__stats_preprocessor_reverse[q]
         del self.__stats_simulation[q]
         del self.__stats_postprocessor[q]
+
+    def changeParamSetting(self, params):
+        stats_samples = {}
+        stats_preprocessor = {}
+        stats_preprocessor_reverse = {}
+        stats_simulation = {}
+        stats_postprocessor = {}
+
+        for p_old, sample_old in self.__stats_samples.items():
+            # check if something changed in the accuracy of float
+            p_new = np.array(p_old)
+            hx = p_new[1]
+            p_new[1] = p_new[2]
+            p_new[2] = p_new[3]
+            p_new[3] = hx
+            sample_new = Sample(params, p_new, dtype=SampleType.EXPANDEDUNIT)
+            assert np.all(sample_old.getActiveUnit() == sample_new.getActiveUnit())
+
+            # load stats of old sample
+            p_old = tuple(sample_old.getExpandedUnit())
+            q_old = self.__stats_preprocessor[p_old]
+            sim_old = self.__stats_simulation[q_old]
+            post_old = self.__stats_postprocessor[q_old]
+
+            p_new = tuple(sample_new.getExpandedUnit())
+            q_new = np.array(q_old)
+            hx = q_new[1]
+            q_new[1] = q_new[2]
+            q_new[2] = q_new[3]
+            q_new[3] = hx
+            q_new = tuple(q_new)
+
+            # remove old one and add new one with old results
+            stats_samples[p_new] = sample_new
+            stats_preprocessor[p_new] = q_new
+            stats_preprocessor_reverse[q_new] = p_new
+            stats_simulation[q_new] = sim_old
+            stats_postprocessor[q_new] = post_old
+
+        self.__stats_samples = stats_samples
+        self.__stats_preprocessor = stats_preprocessor
+        self.__stats_preprocessor_reverse = stats_preprocessor_reverse
+        self.__stats_simulation = stats_simulation
+        self.__stats_postprocessor = stats_postprocessor

@@ -22,6 +22,7 @@
 #include <sgpp/base/operation/hash/common/basis/LinearPeriodicBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearStretchedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearStretchedBoundaryBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryCombigridBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
@@ -78,11 +79,11 @@
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp>
 // #include <sgpp/base/grid/generation/functors/ANOVACoarseningFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/ForwardSelectorRefinementIndicator.hpp>
+#include <sgpp/base/grid/generation/functors/ImpurityRefinementIndicator.hpp>
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusVolumeCoarseningFunctor.hpp>
-#include <sgpp/base/grid/generation/functors/ForwardSelectorRefinementIndicator.hpp>
-#include <sgpp/base/grid/generation/functors/ImpurityRefinementIndicator.hpp>
 /*#include <sgpp/base/grid/generation/functors/WeightedErrorRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 #include <sgpp/base/grid/generation/GeneralizedBoundaryGridGenerator.hpp>
@@ -111,6 +112,7 @@
 #include <sgpp/base/grid/type/ModLinearGridStencil.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/grid/type/PeriodicGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>

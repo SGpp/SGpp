@@ -270,10 +270,10 @@ class SimulationLearner(Learner):
         Create a set of all collocation nodes
         """
         gs = self.grid.getStorage()
-        ps = np.ndarray([gs.getSize(), gs.getDimension()], dtype='float32')
+        ps = np.ndarray([gs.getSize(), gs.getDimension()], dtype='float')
         p = DataVector(gs.getDimension())
         for i in xrange(gs.getSize()):
-            gs.getPoint(i).getStandardCoordinates(p)
+            gs.getCoordinates(gs.getPoint(i), p)
             ps[i, :] = p.array()
 
         return ps
@@ -311,9 +311,9 @@ class SimulationLearner(Learner):
         # parse them to a numpy array
         gs = self.grid.getStorage()
         p = DataVector(gs.getDimension())
-        ans = np.ndarray([len(newCollocationNodes), gs.getDimension()], dtype='float32')
+        ans = np.ndarray([len(newCollocationNodes), gs.getDimension()], dtype='float')
         for i, gp in enumerate(newCollocationNodes):
-            gp.getStandardCoordinates(p)
+            gs.getCoordinates(gp, p)
             ans[i, :] = p.array()
 
         return ans

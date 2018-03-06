@@ -10,31 +10,36 @@ from pysgpp import HashGridPoint, createOperationEval, DataVector, IndexList
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
 import matplotlib.pyplot as plt
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getHierarchicalAncestors, \
-    insertTruncatedBorder, getBoundsOfSupport, evalSGFunctionMulti
+    insertTruncatedBorder, getBoundsOfSupport, evalSGFunctionMulti, \
+    evalSGFunction
 import numpy as np
 from matplotlib.patches import Rectangle
 from pysgpp.extensions.datadriven.uq.transformation import LinearTransformation, \
     JointTransformation
 from pysgpp.extensions.datadriven.uq.operations.forcePositivity.fullGridSearch import FullGridCandidates
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity.localFullGridSearch import LocalFullGridCandidates
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity.findIntersections import IntersectionCandidates
 
 
 class OperationMakePositiveFast(object):
 
     def __init__(self, grid,
-                 candidateSetAlgorithm=None,
-                 interpolationAlgorithm=None,
-                 candidateSearchAlgorithm=None):
+                 candidateSearchAlgorithm=None,
+                 interpolationAlgorithm=None,):
         self.grid = grid
         self.numDims = grid.getStorage().getDimension()
         self.maxLevel = grid.getStorage().getMaxLevel()
-        self.verbose = True
         self.interpolationAlgorithm = interpolationAlgorithm
         self.candidateSearchAlgorithm = candidateSearchAlgorithm
         if self.candidateSearchAlgorithm is None:
-            self.candidateSearchAlgorithm = FullGridCandidates(grid)
+            self.candidateSearchAlgorithm = IntersectionCandidates()
 
         self.maxNewGridPoints = 10
         self.addAllGridPointsOnNextLevel = True
+
+        self.lastMinimumCandidateLevelSum = None
+
+        self.verbose = True
 
 
     def plotDebugIntersections(self, newGrid, overlappingGridPoints):
@@ -108,42 +113,33 @@ class OperationMakePositiveFast(object):
         self.candidateSearchAlgorithm = algorithm
 
 
-    def makeCurrentNodalValuesPositive(self, grid, alpha, addedGridPoints=None):
+    def makeAddedNodalValuesPositive(self, grid, alpha, addedGridPoints, tol=-1e-14):
+        neg = []
+        gs = grid.getStorage()
+        x = DataVector(gs.getDimension())
+        for gp in addedGridPoints:
+            gp.getStandardCoordinates(x)
+            yi = evalSGFunction(grid, alpha, x.array())
+            if yi < tol:
+                i = gs.getSequenceNumber(gp)
+                alpha[i] -= yi
+                assert alpha[i] > -1e-14
+                assert evalSGFunction(grid, alpha, x.array()) < 1e-14
+        return alpha
+
+
+    def makeCurrentNodalValuesPositive(self, grid, alpha, tol=-1e-14):
         nodalValues = dehierarchize(grid, alpha)
         neg = []
         for i, yi in enumerate(nodalValues):
-            if yi < 0:
+            if yi < tol:
                 nodalValues[i] = 0
                 neg.append(i)
         if len(neg) > 0:
             alpha = hierarchize(grid, nodalValues)
 
-            # check if the coefficients of the new grid points are positive
-            if addedGridPoints is not None:
-                gs = grid.getStorage()
-                assert all([alpha[gs.seq(gp)] >= -1e-13 for gp in addedGridPoints])
         return alpha
-
     
-
-    def computeBoundsOfOverlappingPatch(self, gpi, gpj):
-        # compute bounds of the overlapping patch
-        numDims = gpi.getDimension()
-        xlim = np.ndarray((numDims, 2))
-        for d in xrange(numDims):
-            # get level index
-            lid, iid = gpi.getLevel(d), gpi.getIndex(d)
-            ljd, ijd = gpj.getLevel(d), gpj.getIndex(d)
-
-            # check if they have overlapping support
-            xlowi, xhighi = getBoundsOfSupport(lid, iid)
-            xlowj, xhighj = getBoundsOfSupport(ljd, ijd)
-
-            xlim[d, 0] = max(xlowi, xlowj)
-            xlim[d, 1] = min(xhighi, xhighj)
-
-        return xlim
-
 
     def sortCandidatesByLevelSum(self, candidates):
         gps = {}
@@ -156,56 +152,63 @@ class OperationMakePositiveFast(object):
         return gps
 
 
-    def addFullGridPoints(self, grid, alpha, candidates):
+    def addFullGridPoints(self, grid, alpha, candidates, tol=-1e-14):
         """
         Add all those full grid points with |accLevel|_1 <= n, where n is the
         maximun level of the sparse grid
         @param grid: Grid sparse grid to be discretized
         @param candidates:
+        @param tol:
         """
         # remove all the already existing candidates
         gs = grid.getStorage()
-        nonExistingCandidates = [gp for gp in candidates if not gs.has_key(gp)]
-
-        # evaluate the remaining candidates
-        samples = np.ndarray((len(nonExistingCandidates), self.numDims))
-        p = DataVector(self.numDims)
-        for i, gp in enumerate(nonExistingCandidates):
-            gp.getStandardCoordinates(p)
-            samples[i, :] = p.array()
-        eval = evalSGFunctionMulti(grid, alpha, samples)
-
-        negativeNonExistingCandidates = [gp for i, gp in enumerate(nonExistingCandidates) if eval[i] < 0.0]
+        nonExistingCandidates = [gp for gp in candidates if not gs.isContaining(gp)]
 
         # sort the non existing grid points by level
-        finalCandidates = self.sortCandidatesByLevelSum(negativeNonExistingCandidates)
+        finalCandidates = self.sortCandidatesByLevelSum(nonExistingCandidates)
 
         levelSums = sorted(finalCandidates.keys())
-        if self.verbose:
-            cntCandidates = 0
-            for levelSum in levelSums:
-                cntCandidates += len(finalCandidates[levelSum])
-                print "# candidates          : %i/%i at |l|_1 = %i <= %i" % (len(finalCandidates[levelSum]),
-                                                                             len(candidates),
-                                                                             levelSum,
-                                                                             np.max(levelSum))
-            print "                        ----"
-            print "                        %i" % cntCandidates
+        if self.lastMinimumCandidateLevelSum is None:
+            ix = 0
+        else:
+            ixs = np.where(np.array(levelSums) == self.lastMinimumCandidateLevelSum)[0]
+            if len(ixs) == 0:
+                ix = 0
+            elif len(ixs) == 1:
+                ix = ixs[0] + 1
+            else:
+                raise AttributeError("this should never happen")
 
         done = False
-        i = 0
         addedGridPoints = []
         minLevelSum = -1
         nextLevelCosts = 0
 
-        while not done and i < len(levelSums):
-            minLevelSum = levelSums[i]
+        while not done and ix < len(levelSums):
+            minLevelSum = levelSums[ix]
+            self.lastMinimumCandidateLevelSum = minLevelSum
+
+            currentCandidates = finalCandidates[minLevelSum]
             if self.verbose:
-                print "# check candidates    : %i/%i at |l|_1 = %i <= %i" % (len(finalCandidates[minLevelSum]),
-                                                                             len(candidates),
-                                                                             minLevelSum,
-                                                                             np.max(levelSums))
-            for gp in finalCandidates[minLevelSum]:
+                print "# check candidates    : %i/%i (at |l|_1 = %i <= %i)" % (len(currentCandidates),
+                                                                               len(candidates),
+                                                                               minLevelSum,
+                                                                               np.max(levelSums)),
+
+            # evaluate the remaining candidates
+            samples = np.ndarray((len(currentCandidates), self.numDims))
+            p = DataVector(self.numDims)
+            for j, gp in enumerate(currentCandidates):
+                gp.getStandardCoordinates(p)
+                samples[j, :] = p.array()
+            eval = evalSGFunctionMulti(grid, alpha, samples)
+
+            negativeNonExistingCandidates = [gp for j, gp in enumerate(currentCandidates) if eval[j] < tol]
+
+            if self.verbose:
+                print "-> %i : considered candidates" % len(negativeNonExistingCandidates)
+
+            for gp in negativeNonExistingCandidates:
                 addedGridPoints += insertPoint(grid, gp)
                 addedGridPoints += insertHierarchicalAncestors(grid, gp)
 
@@ -217,7 +220,7 @@ class OperationMakePositiveFast(object):
                 nextLevelCosts = len(finalCandidates[minLevelSum])
                 done = True
 
-            i += 1
+            ix += 1
 
         # recompute the leaf property and return the result
         grid.getStorage().recalcLeafProperty()
@@ -225,7 +228,7 @@ class OperationMakePositiveFast(object):
         return addedGridPoints, minLevelSum, nextLevelCosts
 
 
-    def coarsening(self, grid, alpha):
+    def coarsening(self, grid, alpha, newGridPoints, tol=1e-14):
         """
         Removes all unnecessary grid points. A grid point is defined as
         unnecessary if it is a leaf node and its hierarchical coefficient is
@@ -242,11 +245,13 @@ class OperationMakePositiveFast(object):
 
             notAffectedGridPoints = []
             toBeRemoved = IndexList()
-            for ix in xrange(gs.getSize()):
+            for gp in newGridPoints:
                 # if the grid point is a leaf and has negative weight
                 # we dont need it to make the function positive
-                if gs.getPoint(ix).isLeaf() and np.abs(alpha[ix]) < 1e-14:
-                    toBeRemoved.append(ix)
+                if gs.isContaining(gp):
+                    ix = gs.getSequenceNumber(gp)
+                    if gs.getPoint(ix).isLeaf() and np.abs(alpha[ix]) < tol:
+                        toBeRemoved.append(ix)
 
             # remove the identified grid points
             if toBeRemoved.size() > 0:
@@ -258,7 +263,7 @@ class OperationMakePositiveFast(object):
                 # copy the remaining alpha values
                 newAlpha = np.ndarray(newGs.getSize())
                 for i in xrange(newGs.getSize()):
-                    newAlpha[i] = alpha[gs.seq(newGs.getPoint(i))]
+                    newAlpha[i] = alpha[gs.getSequenceNumber(newGs.getPoint(i))]
 
                 grid, alpha = newGrid, newAlpha
                 iteration += 1
@@ -284,8 +289,10 @@ class OperationMakePositiveFast(object):
 
         iteration = 0
         newAlpha = self.makeCurrentNodalValuesPositive(newGrid, newAlpha)
+
         newGs = newGrid.getStorage()
         numDims = newGs.getDimension()
+        newGridPoints = []
         addedGridPoints = {}
 
         numFullGridPoints = (2 ** self.maxLevel - 1) ** numDims
@@ -293,6 +300,7 @@ class OperationMakePositiveFast(object):
         maxLevelSum = self.numDims * self.maxLevel
         totalCosts = 0
         currentCosts = 0
+        candidates = []
         while minLevelSum < maxLevelSum and self.candidateSearchAlgorithm.hasMoreCandidates(newGrid, newAlpha, addedGridPoints):
             candidates, costs = self.candidateSearchAlgorithm.nextCandidateSet()
             totalCosts += costs
@@ -302,7 +310,6 @@ class OperationMakePositiveFast(object):
                 print "iteration             : %i" % self.candidateSearchAlgorithm.iteration
                 print "# found candidates    : %i/%i (costs = %i)" % (len(candidates), numFullGridPoints, costs)
 
-            addedGridPoints = {}
             if len(candidates) > 0:
                 addedGridPoints, minLevelSum, nextLevelCosts = self.addFullGridPoints(newGrid, newAlpha, candidates)
                 currentCosts += nextLevelCosts
@@ -322,32 +329,25 @@ class OperationMakePositiveFast(object):
                                                                                            newAlpha,
                                                                                            addedGridPoints)
                 else:
-                    newAlpha = self.makeCurrentNodalValuesPositive(newGrid, newAlpha, addedGridPoints)
+                    newAlpha = self.makeAddedNodalValuesPositive(newGrid, newAlpha, addedGridPoints)
+
+                # update list of new grid points
+                newGridPoints += addedGridPoints
 
 #                 if newGs.getDimension() == 2:
 #                     self.plotDebug(newGrid, newAlpha, addedGridPoints, candidates)
             else:
                 break
 
-        # coarsening: remove all new grid points with zero surplus
-        coarsedGrid, coarsedAlpha = self.coarsening(newGrid, newAlpha)
-        if self.verbose:
-            print "# coarsed grid        : %i -> %i" % (newGrid.getSize(),
-                                                        coarsedGrid.getSize())
-            print "# full grid           :       %i" % (2 ** self.maxLevel - 1) ** self.numDims
+#         # coarsening: remove all new grid points with zero surplus
+#         coarsedGrid, coarsedAlpha = self.coarsening(newGrid, newAlpha, newGridPoints)
+#         if self.verbose:
+#             print "                        old | coarsed | new | max (cand) | full"
+#             print "# final grid          : %i <= %i <= %i <= %i (%i) <= %i" % (self.grid.getSize(),
+#                                                                                coarsedGrid.getSize(),
+#                                                                                newGrid.getSize(),
+#                                                                                self.grid.getSize() + len(candidates),
+#                                                                                len(candidates),
+#                                                                                (2 ** self.maxLevel - 1) ** self.numDims)
 
-        # security check for positiveness
-        neg = checkPositivity(coarsedGrid, coarsedAlpha)
-        
-        if len(neg) > 0:
-            raise AttributeError("the sparse grid function is not positive")
-            # check at which grid points the function is negative
-#             for i, (yi, gp) in neg.items():
-#                     print "|%s|_1 = %i, %s -> %g" % ([gp.getLevel(d) for d in xrange(numDims)],
-#                                                      np.sum([gp.getLevel(d) for d in xrange(numDims)]),
-#                                                      [gp.getIndex(d) for d in xrange(numDims)],
-#                                                      yi)
-
-        return coarsedGrid, coarsedAlpha
-
-
+        return newGrid, newAlpha

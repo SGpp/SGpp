@@ -5,7 +5,7 @@ from pysgpp.extensions.datadriven.uq.learner.Regressor import Regressor
 from pysgpp.extensions.datadriven.uq.learner.SimulationLearner import SimulationLearner
 from pysgpp.extensions.datadriven.uq.learner.SimulationLearnerSpecification import SimulationLearnerSpecification
 from pysgpp.extensions.datadriven.uq.learner.builder.GridDescriptor import GridDescriptor
-from pysgpp.extensions.datadriven.uq.refinement import RefinementDescriptor
+# from pysgpp.extensions.datadriven.uq.refinement import RefinementDescriptor
 from pysgpp.extensions.datadriven.uq.uq_setting import UQSettingAdapter
 import os
 

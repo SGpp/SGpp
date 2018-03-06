@@ -39,12 +39,12 @@ class AbstractCombigridStorage {
    * underlying MultiIndexIterator.
    * If the values are not already stored, they are created during iteration.
    */
-  virtual std::shared_ptr<AbstractMultiStorageIterator<double> > getGuidedIterator(
+  virtual std::shared_ptr<AbstractMultiStorageIterator<double>> getGuidedIterator(
       MultiIndex const &level, MultiIndexIterator &iterator,
       std::vector<bool> orderingConfiguration) = 0;
 
   /**
-   * @return Returns the number of stored values (cumulated over all levels).
+   * @return Returns the number of stored values (accumulated over all levels).
    */
   virtual size_t getNumEntries() = 0;
 
@@ -65,11 +65,13 @@ class AbstractCombigridStorage {
    */
   virtual void set(MultiIndex const &level, MultiIndex const &index, double value) = 0;
 
+  virtual double get(MultiIndex const &level, MultiIndex const &index) = 0;
+
   /**
    * Sets a mutex that is locked for critical operations. If the mutex is nullptr, nothing is
    * locked.
    */
-  virtual void setMutex(std::shared_ptr<std::mutex> mutexPtr) = 0;
+  virtual void setMutex(std::shared_ptr<std::recursive_mutex> mutexPtr) = 0;
 };
 
 } /* namespace combigrid */

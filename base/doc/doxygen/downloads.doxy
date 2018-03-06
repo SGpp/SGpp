@@ -30,7 +30,7 @@ Important changes:
   - Operators: Interpolation (sgpp::combigrid::PolynomialInterpolationEvaluator, sgpp::combigrid::BSplineInterpolationEvaluator, sgpp::combigrid::LinearInterpolationEvaluator), quadrature (sgpp::combigrid::PolynomialQuadratureEvaluator, sgpp::combigrid::BSplineQuadratureEvaluator), tensors (sgpp::combigrid::InterpolationCoefficientEvaluator)
   - regular and adaptive (also parallel) level-generation: various level managers (sgpp::combigrid::RegularLevelManager, sgpp::combigrid::AveragingLevelManager) are available that predict the surplus of each subspace
   - support for directly working on full-grid subspaces: enables to solve PDEs, regression problems, density estimation on each full-grid separately
-  - @ref example_gettingStarted_py "simple Python example" to get started quickly. The same is available also in C++.
+  - simple @ref example_gettingStarted_py "Python example" and a @ref example_combigrid_gettingStarted_cpp "C++ example" to get started quickly.
   - serialization and deserialization of computed function values
   - optimizations: function evaluations (but not the following computations) can be easily parallelized, interpolation at multiple points at once, operator coefficients and grid points are stored for recomputations at other evaluation points
   - frequent use of abstract base classes such that extensions are easy to implement (e.g. new grids, operators and adaption schemes)

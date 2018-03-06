@@ -18,6 +18,7 @@
 
 #include <cmath>
 #include <limits>
+#include <map>
 #include <memory>
 #include <mutex>
 #include <queue>
@@ -56,6 +57,11 @@ class LevelManager {
   MultiIndexQueue queue;
 
   /**
+   * this object stores information on the levels during adaptive refinement
+   */
+  std::shared_ptr<LevelInfos> infoOnAddedLevels;
+
+  /**
    * Stores level information for already visited (!= computed) levels.
    */
   std::shared_ptr<TreeStorage<std::shared_ptr<LevelInfo>>> levelData;
@@ -75,7 +81,12 @@ class LevelManager {
    * Mutex that is shared with all involved objects for evaluation parts that require mutual
    * exclusion.
    */
-  std::shared_ptr<std::mutex> managerMutex;
+  std::shared_ptr<std::recursive_mutex> managerMutex;
+
+  /**
+   * Defines if statistics on the refinement process are collected or not.
+   */
+  bool collectStats;
 
   /**
    * By implementing this method in a derived class, the adaption can be customized.
@@ -152,13 +163,6 @@ class LevelManager {
   virtual void updatePriority(MultiIndex const &level, std::shared_ptr<LevelInfo> levelInfo);
 
   /**
-   * @param q: Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as
-   * in most papers).
-   * If you have a norm w with levels starting from 1, simply use q = w - dim().
-   */
-  std::vector<MultiIndex> getRegularLevels(size_t q);
-
-  /**
    * @return a set of level multi-indices. The levels are enumerated with increasing 1-norm until
    * the total number of necessary function evaluations would exceed the given limit maxNumPoints.
    * For example, this might return the levels (0, 0), (1, 0), (0, 1), (2, 0), (1, 1) and omit the
@@ -182,12 +186,33 @@ class LevelManager {
    */
   void addLevels(std::vector<MultiIndex> const &levels);
 
+  /**
+   * Adds the level to the combigrid evaluator
+   * @param level level
+   */
+  bool addLevelToCombiEval(const MultiIndex &level);
+
+  /**
+   * update statistics on added levels
+   */
+  void updateStats();
+
+  /**
+   * update stats for levels that have been added in the current iteration
+   * @param level level to be added to the stats
+   */
+  void addStats(const MultiIndex &level);
+
  public:
   /**
    * Constructor. The CombigridEvaluator (or another derived class of AbstractLevelEvaluator) has to
    * be passed.
+   * @param levelEvaluator combigrid evaluator
+   * @param collectStats sets if the collection of statistics should be enabled or not during
+   * refinement
    */
-  explicit LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator);
+  explicit LevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator,
+                        bool collectStats = true);
 
   /**
    * Default constructor. If this is used, setLevelEvaluator() has to be called before adding any
@@ -197,6 +222,8 @@ class LevelManager {
 
   virtual ~LevelManager();
 
+  virtual std::shared_ptr<LevelManager> clone() = 0;
+
   /**
    * Sets the level evaluator (normally a CombigridEvaluator).
    */
@@ -205,7 +232,7 @@ class LevelManager {
   /**
    * @param q: Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as
    * in most papers).
-   * If you have a norm w with levels starting from 1, simply use q = w - dim().
+   * If you have a norm w with levels starting from 1, simply use q = w - numDim().
    */
   void addRegularLevels(size_t q);
 
@@ -228,7 +255,7 @@ class LevelManager {
    * @param q  Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as
    * in most papers).
    * @param numThreads number of threads that should be used for computation
-   * If you have a norm w with levels starting from 1, simply use q = w - dim().
+   * If you have a norm w with levels starting from 1, simply use q = w - numDims().
    */
   void addRegularLevelsParallel(size_t q, size_t numThreads);
 
@@ -241,13 +268,20 @@ class LevelManager {
   /**
    * @return the dimensionality of the problem.
    */
-  virtual size_t dim() const;
+  virtual size_t numDims() const;
 
   /**
    * @return a TreeStorage which contains an entry at an index i iff the level i has been added to
    * this CombigridEvaluator.
    */
   std::shared_ptr<TreeStorage<uint8_t>> getLevelStructure() const;
+
+  /**
+   * @param q: Maximum 1-norm of the level-multi-index, where the levels start from 0 (not from 1 as
+   * in most papers).
+   * If you have a norm w with levels starting from 1, simply use q = w - numDims().
+   */
+  std::vector<MultiIndex> getRegularLevels(size_t q);
 
   /**
    * @return the serialized version of getLevelStructure()
@@ -265,7 +299,7 @@ class LevelManager {
    * using numThreads threads.
    */
   void addLevelsFromStructureParallel(std::shared_ptr<TreeStorage<uint8_t>> storage,
-                                      size_t numThreads);
+                                      size_t numThreads = 4);
 
   /**
    * Equivalent to deserializing serializedStructure and then calling addLevelsFromStructure().
@@ -315,9 +349,15 @@ class LevelManager {
   size_t numGridPoints() { return combiEval->getAllGridPoints().size(); }
 
   /**
+   * @return the maximum number of grid points that have to be evaluated for a regular grid with
+   * maximum multi-index L1 norm of q. For nested grids, this estimate should be exact.
+   */
+  size_t maxNumPointsForRegular(size_t q) { return combiEval->maxNumPointsForRegular(q); }
+
+  /**
    * Calls addLevel() on the underlying CombigridEvaluator.
    */
-  void addLevel(MultiIndex const &level) { combiEval->addLevel(level); }
+  void addLevel(MultiIndex const &level) { addLevelToCombiEval(level); }
 
   /**
    * Queue based addLevel-type function
@@ -325,11 +365,47 @@ class LevelManager {
   void addLevelsAdaptiveByNumLevels(size_t numLevels = 1);
 
   /**
+   * writes a given level structure to a matrix
+   * @param levelstructure the level structure
+   * @param numDims number of dimensions
+   * @return matrix containing the level stucture
+   */
+  sgpp::base::DataMatrix convertLevelStructureToMatrix(
+      std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const &levelstructure, size_t numDims);
+
+  /**
+   * prints a given level structure
+   * @param levelstructure the level stucture
+   */
+  void printLevelStructure(
+      std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const &levelstructure);
+
+  /**
    * @return An upper bound for the number of points (function evaluations) used for the current
    * computation. This bound is exact if nesting is used or if otherwise each grid point only occurs
    * in exactly one level.
    */
   size_t getUpperPointBound() const { return combiEval->getUpperPointBound(); }
+
+  /**
+   * Enables the collection of information on subspaces during refinement
+   */
+  void enableStatsCollection();
+
+  /**
+   * Disables the collection of information on subspaces during refinement
+   */
+  void disableStatsCollection();
+
+  /**
+   * Returns information on all the subspaces that is sorted with respect to the iterations when
+   * they have been added to the combigrid during refinement.
+   *
+   * NOTE: collectStats needs to be set in order to obtain useful information.
+   *
+   * @return the infos on the adaptive refinement steps
+   */
+  std::shared_ptr<LevelInfos> getInfoOnAddedLevels();
 };
 }  // namespace combigrid
 }  // namespace sgpp

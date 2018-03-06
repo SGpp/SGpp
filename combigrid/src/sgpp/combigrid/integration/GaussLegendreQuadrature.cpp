@@ -11,10 +11,14 @@
 namespace sgpp {
 namespace combigrid {
 
-GaussLegendreQuadrature::GaussLegendreQuadrature(size_t numPoints) {
+GaussLegendreQuadrature::GaussLegendreQuadrature(size_t numPoints) { initialize(numPoints); }
+
+void GaussLegendreQuadrature::initialize(size_t numPoints) {
   auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
-  quadRule.getLevelPointsAndWeightsNormalized(std::min(numPoints, quadRule.getMaxSupportedLevel()),
-                                              roots, weights);
+  if (numPoints > 0) {
+    quadRule.getLevelPointsAndWeightsNormalized(
+        std::min(numPoints, quadRule.getMaxSupportedLevel()), roots, weights);
+  }
 }
 
 } /* namespace combigrid */

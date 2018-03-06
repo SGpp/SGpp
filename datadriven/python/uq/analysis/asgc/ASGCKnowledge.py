@@ -1,9 +1,12 @@
+import numpy as np
+
 from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import copyGrid
 from pysgpp import DataVector, Grid
 
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
 import pysgpp.extensions.datadriven.utils.json as json
+from pysgpp.extensions.datadriven.uq.analysis.asgc.ASGCKnowledgeFormatter import ASGCKnowledgeFormatter
 
 
 class ASGCKnowledge(object):
@@ -20,6 +23,13 @@ class ASGCKnowledge(object):
         # {iteration: {qoi: {dtype: {t: <DataVector>}}}}
         self.__alphas = {}
         self.__iteration = 0
+
+
+    @classmethod
+    def initWithStandardValues(cls, grid, alpha):
+        ans = ASGCKnowledge()
+        ans.update(grid, alpha, "_", 0, KnowledgeTypes.SIMPLE, 0)
+        return ans
 
     def getAvailableQoI(self):
         """
@@ -124,7 +134,7 @@ class ASGCKnowledge(object):
             iteration = self.__iteration
 
         if self.hasAlpha(iteration, qoi, t, dtype):
-            return DataVector(self.__alphas[iteration][qoi][dtype][t])
+            return self.__alphas[iteration][qoi][dtype][t]
         else:
             raise AttributeError('no knowledge for (i=%i, t=%g, qoi=%s, dtype=%i)' % (iteration, t, qoi,
                                                                                       dtype))
@@ -188,7 +198,7 @@ class ASGCKnowledge(object):
         """
         Update the knowledge
         @param grid: Grid
-        @param alpha: DataVector surplus vector
+        @param alpha: numpy array surplus vector
         @param qoi: string quantity of interest
         @param t: float time step
         @param dtype: KnowledgeType
@@ -211,8 +221,8 @@ class ASGCKnowledge(object):
 
         # store knowledge
         self.__iteration = iteration
-        self.__grids[iteration][qoi] = copyGrid(grid)
-        self.__alphas[iteration][qoi][dtype][t] = DataVector(alpha)
+        self.__grids[iteration][qoi] = grid.clone()
+        self.__alphas[iteration][qoi][dtype][t] = np.array(alpha)
 
     def clearAlphas(self):
         self.__alphas = {}
@@ -234,6 +244,13 @@ class ASGCKnowledge(object):
         jsonString = self.toJson()
         jsonObject = json.JsonReader().read(jsonString)
         return jsonObject
+
+    def writeToFile(self, filename):
+        """
+        Write knowledge object to file
+        """
+        m = self.createMemento()
+        ASGCKnowledgeFormatter().serializeToFile(m, filename)
 
     @classmethod
     def fromJson(cls, jsonObject):
@@ -278,7 +295,7 @@ class ASGCKnowledge(object):
                     for dtype, v3 in v2.items():
                         d3 = {}
                         for t, alpha in v3.items():
-                            d3[float(t)] = DataVector(alpha)
+                            d3[float(t)] = DataVector(alpha).array()
                         d2[int(dtype)] = d3
                     d1[qoi] = d2
                 alphas[int(iteration)] = d1

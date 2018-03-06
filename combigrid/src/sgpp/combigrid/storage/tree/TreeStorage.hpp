@@ -14,6 +14,7 @@
 #include <sgpp/combigrid/storage/tree/TreeStorageGuidedIterator.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorageStoredDataIterator.hpp>
 
+#include <iostream>
 #include <memory>
 #include <stdexcept>
 
@@ -91,14 +92,13 @@ class TreeStorage : public AbstractMultiStorage<T> {
   virtual bool containsIndex(MultiIndex const &index) const { return root->containsIndex(index); }
 
   virtual std::shared_ptr<AbstractMultiStorageIterator<T>> getStoredDataIterator() {
-    return std::shared_ptr<AbstractMultiStorageIterator<T>>(
-        new TreeStorageStoredDataIterator<T>(root.get(), context.numDimensions));
+    return std::make_shared<TreeStorageStoredDataIterator<T>>(root.get(), context.numDimensions);
   }
 
   virtual std::shared_ptr<AbstractMultiStorageIterator<T>> getGuidedIterator(
       MultiIndexIterator &indexIter, IterationPolicy const &policy = IterationPolicy::Default) {
-    return std::shared_ptr<AbstractMultiStorageIterator<T>>(
-        new TreeStorageGuidedIterator<T>(policy, root.get(), context.numDimensions, indexIter));
+    return std::make_shared<TreeStorageGuidedIterator<T>>(policy, root.get(), context.numDimensions,
+                                                          indexIter);
   }
 };
 
