@@ -13,22 +13,17 @@
  * \page example_example_BSplineStochasticCollocation_cpp Stochastic Collocation with
  * B-Spline Combigrids
  *
- * In this example the mean and variance of an objective function are calculated with B-Spline
- * Stochastic Collocation. The objective function is f(x) = x transformed to [-1,3] and the moments
- * are calculated assuming a normal probability density function is used as a weight function w(x)
- * in the
- * integration. This means
+ * In this example the mean and variance of an objective function are
+ * calculated with B-Spline Stochastic Collocation. The objective
+ * function is \f$ f(x) = x \f$ on \f$[a,b] = [-1,3] \f$ to the unit
+ * cube via \f$\tilde{f}(x) = a + (b-a) x = 4x-1\f$. The moments are
+ * calculated assuming a normal probability density function is used
+ * as a weight function \f$ w(x)\f$ in the integration. This means
  *
  * 			\f$E(f) = \int  f(x) w(x) dx \\
  * 			V(f) = E(f^2) - E(f)^2 \f$
  *
  */
-
-/**
- * w.l.o.g. the objective function takes arguments from the unit cube. We transform the function
- * f(x)=x on [a,b] = [-1,3] to the uni cube via \tilde{f}(x) = a + (b-a) * x = 4x-1
- */
-
 double objectiveFunction(sgpp::base::DataVector const& v) { return 4.0 * v[0] - 1.0; }
 
 int main() {
