@@ -7,8 +7,6 @@
 
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 
-#include <sgpp/base/operation/hash/OperationMatrix.hpp>
-
 #include <sgpp/datadriven/application/Learner.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrix.hpp>
 
@@ -40,21 +38,23 @@ Learner::~Learner() {
 
 std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> Learner::createDMSystem(
     sgpp::base::DataMatrix& trainDataset, double lambda) {
-  base::OperationMatrix* C = nullptr;
+  std::shared_ptr<sgpp::base::OperationMatrix> C;
   if (this->grid == NULL) return NULL;
 
   // Clean up, if needed
   //  if (C_ != NULL) delete C_;
 
   if (this->CMode == datadriven::RegularizationType::Laplace) {
-    C = sgpp::op_factory::createOperationLaplace(*this->grid);
+    C.reset(sgpp::op_factory::createOperationLaplace(*this->grid));
   } else if (this->CMode == datadriven::RegularizationType::Identity) {
-    C = sgpp::op_factory::createOperationIdentity(*this->grid);
+    C.reset(sgpp::op_factory::createOperationIdentity(*this->grid));
   } else {
     // should not happen
   }
 
-  return std::make_unique<sgpp::datadriven::DMSystemMatrix>(*(this->grid), trainDataset, C, lambda);
+  return std::make_unique<sgpp::datadriven::DMSystemMatrix>(*(this->grid), trainDataset,
+                                                            std::move(C),
+                                                            lambda);
 }
 
 }  // namespace datadriven
