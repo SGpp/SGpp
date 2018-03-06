@@ -25,22 +25,19 @@
  */
 
 /**
- * First we define the objective function,
+ * w.l.o.g. the objective function takes arguments from the unit cube. We transform the function
+ * f(x)=x on [a,b] = [-1,3] to the uni cube via \tilde{f}(x) = a + (b-a) * x = 4x-1
  */
 
 double objectiveFunction(sgpp::base::DataVector const& v) { return 4.0 * v[0] - 1.0; }
 
-/**
- * set up the B-Splines
- */
-
 int main() {
   // set the number of dimensions
   size_t numDimensions = 1;
-  // set the degree of the B splien basis functions
+  // set the degree of the B spline basis functions
   size_t degree = 5;
   // set the pointHierarchies (= creation pattern of the grid points) to exponentially growing
-  // uniformly spaced grid points including the boudnary
+  // uniformly spaced grid points including the boundary points
   sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
       numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
 
@@ -50,7 +47,7 @@ int main() {
       sgpp::combigrid::MultiFunction(objectiveFunction), pointHierarchies, degree);
 
   /**
-   * and intialize the probability density functions for our input.
+   * intialize the probability density functions for our input.
    */
 
   // set up the weight function collection as normally distributed probability density functions
@@ -64,6 +61,9 @@ int main() {
       std::make_shared<sgpp::combigrid::ProbabilityDensityFunction1D>(pdf_config);
   sgpp::combigrid::SingleFunction oneDimensionsalWeightFunction =
       probabilityDensityFunction->getWeightFunction();
+
+  // prepare the weight functions and the left and right point of their definition interval
+  // here we use the same weight function in every dimension
   sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection;
   sgpp::base::DataVector bounds;
   for (size_t d = 0; d < numDimensions; d++) {
@@ -73,11 +73,14 @@ int main() {
   }
 
   /**
-   * After that we create a B-Spline stochastic collocation surrogate
+   * After that we create a B-Spline stochastic collocation surrogate. We initialize
+   * an empty storage that will later contain the coefficients of the B spline interpolation
    */
-
-  // set up the configuration for the B spline Stochastic Collocation
   std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> storage;
+
+  /**
+   * set up the configuration for the B spline Stochastic Collocation
+   */
   sgpp::combigrid::CombigridSurrogateModelConfiguration config;
   config.type = sgpp::combigrid::CombigridSurrogateModelsType::BSPLINE_STOCHASTIC_COLLOCATION;
   config.pointHierarchies = pointHierarchies;
@@ -90,10 +93,9 @@ int main() {
   sgpp::combigrid::BsplineStochasticCollocation bsc(config);
 
   /**
-   * and finally finish constructing the combigrid operation.
+   * create a B spline interpolation operation with a regular level manager to create the level
+   * structure and calculate the interpolation coefficients
    */
-
-  // create an operation with a regular level manager to create the level structure
   sgpp::combigrid::EvaluatorConfiguration EvalConfig(
       sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, config.degree);
   sgpp::combigrid::CombiEvaluators::MultiCollection Evaluators(
@@ -114,7 +116,8 @@ int main() {
   // create a regular level structure of level 1. Because the regularLevelManager is part of the
   // above interpolation operation the B spline interpolation coefficients are calculated during the
   // level structure creation. These coefficients can then be used for the quadratures that must be
-  // done for the mean and variance calculations
+  // done for the mean and variance calculations so that the corresponding SLE must not be solved
+  // again
   Operation->getLevelManager()->addRegularLevels(1);
 
   /**
@@ -125,8 +128,6 @@ int main() {
   //  interpolation coefficients from the refinement operation
   config.levelStructure = Operation->getLevelManager()->getLevelStructure();
   config.coefficientStorage = Operation->getStorage();
-  // update the B Spline Stochastic Collocation with the configuration containing the new level
-  // structure and coefficients
   bsc.updateConfig(config);
 
   /**
@@ -135,8 +136,7 @@ int main() {
 
   double variance = bsc.variance();
   double mean = bsc.mean();
-  std::cout << "number of grid points: " << Operation->getLevelManager()->numGridPoints()
-            << std::endl;
+  std::cout << "# grid points: " << Operation->getLevelManager()->numGridPoints() << std::endl;
   std::cout << "mean: " << mean << " variance: " << variance << std::endl;
 
   return 0;
