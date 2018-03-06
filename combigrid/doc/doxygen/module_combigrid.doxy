@@ -7,7 +7,7 @@ The combination technique is an older variant of sparse grids which only allows 
 
 The functionality of the module includes
 - an anistropic implementation of the Combination Technique. This means that different 1D-grids and 1D-operators can be used for each dimension. This allows e.g. interpolating in one direction and integrating the interpolated function in another direction.
-- @ref example_point_distributions_py "1D Grids" : Uniform (with or without boundary), Clenshaw-Curtis, Chebyshev, (weighted) Leja, (weighted) L^2-Leja
+- @ref example_point_distributions_py "1D Grids" : Uniform (with or without boundary), Clenshaw-Curtis, Chebyshev, (weighted) Leja, (weighted) \f$\ell_{2}-Leja\f$
 - Operators: Polynomial Interpolation, Linear Interpolation, quadrature based on the integrals of Lagrange-Polynomials, cubic splines
 - regular and adaptive (also parallel) level-generation
 - support for directly working on full-grid results, e.g. using full-grid PDE solvers with multiple full grids
