@@ -363,7 +363,7 @@ void BsplineTimeComparison() {
   watch.start();
   std::vector<double> xi = createNakKnots(xValues, degree);
   for (unsigned int i = 1; i <= std::pow(2, level) - 1; i++) {
-    Combieval.push_back(nonUniformBSpline(x, degree, i, xi));
+    Combieval.push_back(sgpp::combigrid::nonUniformBSpline(x, degree, i, xi));
   }
   std::cout << watch.elapsedSeconds() << " " << std::endl;
 
