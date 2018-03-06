@@ -33,7 +33,7 @@ class OperationMakePositiveInterpolationAlgorithm {
 // -------------------------------------------------------------------------------------------
 class OperationMakePositiveSetToZero : public OperationMakePositiveInterpolationAlgorithm {
  public:
-  explicit OperationMakePositiveSetToZero();
+  OperationMakePositiveSetToZero();
   virtual ~OperationMakePositiveSetToZero();
 
   void computeHierarchicalCoefficients(base::Grid& grid, base::DataVector& alpha,

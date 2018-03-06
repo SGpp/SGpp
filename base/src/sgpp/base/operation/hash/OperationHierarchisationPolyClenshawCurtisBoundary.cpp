@@ -15,7 +15,8 @@
 namespace sgpp {
 namespace base {
 
-void OperationHierarchisationPolyClenshawCurtisBoundary::doHierarchisation(DataVector& node_values) {
+void OperationHierarchisationPolyClenshawCurtisBoundary::doHierarchisation(
+    DataVector& node_values) {
   HierarchisationPolyClenshawCurtisBoundary func(storage, &base);
   sweep<HierarchisationPolyClenshawCurtisBoundary> s(func, storage);
 

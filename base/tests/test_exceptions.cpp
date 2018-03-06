@@ -29,7 +29,6 @@
 // For factory exception
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/base/tools/QuadRule1D.hpp>
-#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 
 // For file exception
 #include <sgpp/base/grid/GridDataBase.hpp>

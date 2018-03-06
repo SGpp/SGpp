@@ -8,13 +8,14 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearClenshawCurtis.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
-#include "../../../../../../base/src/sgpp/base/operation/hash/OperationEvalLinearClenshawCurtisBoundaryNaive.hpp"
+#include <sgpp/base/operation/hash/OperationEvalLinearClenshawCurtisBoundaryNaive.hpp>
 
 namespace sgpp {
 namespace optimization {
 
 OperationMultipleHierarchisationLinearClenshawCurtis::
-    OperationMultipleHierarchisationLinearClenshawCurtis(base::LinearClenshawCurtisBoundaryGrid& grid)
+    OperationMultipleHierarchisationLinearClenshawCurtis(
+        base::LinearClenshawCurtisBoundaryGrid& grid)
     : grid(grid) {}
 
 OperationMultipleHierarchisationLinearClenshawCurtis::

@@ -10,6 +10,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <algorithm>
 #include <cmath>
 
 namespace sgpp {

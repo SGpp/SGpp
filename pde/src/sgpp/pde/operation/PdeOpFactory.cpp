@@ -64,7 +64,6 @@
 #include <sgpp/pde/operation/hash/OperationLTwoDotProductLinearBoundary.hpp>
 #include <sgpp/pde/operation/hash/OperationLTwoDotProductLinearStretched.hpp>
 #include <sgpp/pde/operation/hash/OperationLTwoDotProductLinearStretchedBoundary.hpp>
-#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotPeriodic.hpp>
 
 #include <sgpp/pde/operation/hash/OperationLaplaceEnhancedLinear.hpp>
 #include <sgpp/pde/operation/hash/OperationLaplaceEnhancedLinearBoundary.hpp>
@@ -86,8 +85,8 @@ base::OperationMatrix* createOperationLaplace(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::ModLinear) {
     return new pde::OperationLaplaceModLinear(&grid.getStorage());
   } else if (grid.getType() == base::GridType::Prewavelet) {
-    return new pde::OperationLaplacePrewavelet(
-            &grid.getStorage(), &((base::PrewaveletGrid*)&grid)->getShadowStorage());
+    return new pde::OperationLaplacePrewavelet(&grid.getStorage(),
+                                               &((base::PrewaveletGrid*)&grid)->getShadowStorage());
   } else if (grid.getType() == base::GridType::LinearStretched) {
     return new pde::OperationLaplaceLinearStretched(&grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearStretchedBoundary) {
@@ -113,14 +112,13 @@ base::OperationMatrix* createOperationLaplace(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
     return new pde::OperationLaplaceBsplineClenshawCurtis(&grid);
   } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
-      return new pde::OperationLaplaceModBsplineClenshawCurtis(&grid);
+    return new pde::OperationLaplaceModBsplineClenshawCurtis(&grid);
   } else {
     throw base::factory_exception("OperationLaplace is not implemented for this grid type.");
   }
 }
 
-base::OperationMatrix* createOperationLaplace(
-    base::Grid& grid, sgpp::base::DataVector& coef) {
+base::OperationMatrix* createOperationLaplace(base::Grid& grid, sgpp::base::DataVector& coef) {
   if (grid.getType() == base::GridType::Linear) {
     return new pde::OperationLaplaceLinear(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
@@ -236,8 +234,7 @@ base::OperationMatrix* createOperationLTwoDotExplicit(base::Grid& grid) {
   }
 }
 
-base::OperationMatrix* createOperationLTwoDotExplicit(
-    base::DataMatrix* m, base::Grid& grid) {
+base::OperationMatrix* createOperationLTwoDotExplicit(base::DataMatrix* m, base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
     return new pde::OperationMatrixLTwoDotExplicitLinear(m, &grid);
   } else if (grid.getType() == base::GridType::LinearL0Boundary) {
@@ -286,8 +283,8 @@ base::OperationMatrix* createOperationLaplaceEnhanced(base::Grid& grid) {
   }
 }
 
-base::OperationMatrix* createOperationLaplaceEnhanced(
-    base::Grid& grid, sgpp::base::DataVector& coef) {
+base::OperationMatrix* createOperationLaplaceEnhanced(base::Grid& grid,
+                                                      sgpp::base::DataVector& coef) {
   if (grid.getType() == base::GridType::Linear) {
     return new pde::OperationLaplaceEnhancedLinear(&grid.getStorage(), coef);
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||

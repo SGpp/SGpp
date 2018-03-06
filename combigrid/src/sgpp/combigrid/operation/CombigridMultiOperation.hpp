@@ -344,6 +344,7 @@ class CombigridMultiOperation {
    * @param func		      the objective function
    * @param levelManager  level manager
    * @param weightFunctions weight functions
+   * @param bounds bounding box
    * @return a combigrid operation calculating the variance on each full grid
    *
    */
@@ -372,6 +373,10 @@ class CombigridMultiOperation {
 
   /**
    * creates a B spline interpolation operation from a storage of interpolation coefficients
+   * @param degree degree of the b-splines
+   * @param numDimensions number of dimensions
+   * @param coefficientStorage storage of the b-spline coefficients
+   * @return combigrid multi operation
    */
   static std::shared_ptr<sgpp::combigrid::CombigridMultiOperation>
   createBsplineLinearCoefficientOperation(

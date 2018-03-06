@@ -8,9 +8,9 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/tools/ClenshawCurtisTable.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
-#include "../basis/LinearClenshawCurtisBoundaryBasis.hpp"
 
 namespace sgpp {
 namespace base {
@@ -40,7 +40,7 @@ class HierarchisationLinearClenshawCurtisBoundary {
    * be
    * executed
    */
-  HierarchisationLinearClenshawCurtisBoundary(GridStorage& storage);
+  explicit HierarchisationLinearClenshawCurtisBoundary(GridStorage& storage);
 
   /**
    * Destructor

@@ -366,7 +366,7 @@ class LevelManager {
 
   /**
    * writes a given level structure to a matrix
-   * @param levelstucture the level structure
+   * @param levelstructure the level structure
    * @param numDims number of dimensions
    * @return matrix containing the level stucture
    */
