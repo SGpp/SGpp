@@ -8,9 +8,6 @@
  * This examples demonstrates density estimation.
  */
 
-#include <random>
-#include <string>
-
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
@@ -19,6 +16,9 @@
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/globaldef.hpp>
+
+#include <random>
+#include <string>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
