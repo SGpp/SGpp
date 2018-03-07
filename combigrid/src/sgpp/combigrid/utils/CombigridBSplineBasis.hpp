@@ -14,13 +14,23 @@
 #include <algorithm>
 #include <vector>
 
+namespace sgpp {
+namespace combigrid {
+
+/**
+ * log 2 for size_t types
+ * @param n size_t number
+ * @return log2 of the parameter as size_t
+ */
+size_t log2(size_t n);
+
 /**
 * evaluates a not a knot Bspline on an expUnifromGrid, given by its degree, index and the knot
 * sequence it is defined on in x. This routine is much faster than the general nonUniformBSpline.
 *@param x       evaluation point
 *@param degree     B-spline degree
 *@param i       index of B-spline
-*@param points		points of the 1D grid
+*@param points    points of the 1D grid
 *@return        value of non-uniform B-spline in x
 */
 double expUniformNakBspline(double const& x, size_t const& degree, size_t i,
@@ -45,3 +55,5 @@ double nonUniformBSpline(double const& x, size_t const& deg, size_t const& index
    * @return      value of Lagrange polynomial in x
    */
 double LagrangePolynomial(double const& x, std::vector<double> const& xValues, size_t const& k);
+}  // namespace combigrid
+}  // namespace sgpp

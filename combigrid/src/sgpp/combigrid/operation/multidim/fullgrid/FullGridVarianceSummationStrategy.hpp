@@ -95,7 +95,6 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
     // if a custom weight function shall be used it and its bounds are extracted from the scalar
     // product evaluators
 
-    double width = 1.0;
     for (size_t d = 0; d < numDimensions; d++) {
       if (this->evaluatorPrototypes[d]->hasCustomWeightFunction()) {
         sgpp::combigrid::SingleFunction onedim_weight_function;
@@ -105,7 +104,6 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
         this->evaluatorPrototypes[d]->getBounds(a, b);
         linearEvaluatorPrototypes[d]->setWeightFunction(onedim_weight_function);
         linearEvaluatorPrototypes[d]->setBounds(a, b);
-        width *= b - a;
       }
     }
 
@@ -113,24 +111,17 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
         FullGridLinearSummationStrategy<FloatScalarVector>(this->storage, linearEvaluatorPrototypes,
                                                            this->pointHierarchies);
 
-    FullGridQuadraticSummationStrategy<V> quadraticStrategy = FullGridQuadraticSummationStrategy<V>(
-        this->storage, this->evaluatorPrototypes, this->pointHierarchies);
-
-    // Var = E(x^2) - E(x)^2
     FloatScalarVector mean = linearStrategy.eval(level);
-    V meanSquare = quadraticStrategy.eval(level);
-    mean.scalarMult(width);
-    //    std::cout << "FullGridVarianceSummationStrategy:" << std::endl;
-    //    std::cout << "mean: " << mean.value() << std::endl;
 
+    // Var = E(u^2) - E(u)^2
+    FullGridQuadraticSummationStrategy<V> quadraticStrategyOld =
+        FullGridQuadraticSummationStrategy<V>(this->storage, this->evaluatorPrototypes,
+                                              this->pointHierarchies);
+    V meanSquare = quadraticStrategyOld.eval(level);
     mean.componentwiseMult(mean);
-    FloatScalarVector variance = meanSquare[0];
-
-    variance.scalarMult(width);
-    variance.sub(mean);
-
-    V returnVariance(variance);
-    //    std::cout << "variance: " << variance[0].value() << std::endl;
+    FloatScalarVector varianceOld = meanSquare[0];
+    varianceOld.sub(mean);
+    V returnVariance(varianceOld);
     return returnVariance;
   }
 };

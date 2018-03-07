@@ -7,6 +7,7 @@
 #include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineScalarProductEvaluator.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
+#include <sgpp/combigrid/utils/CombigridBSplineBasis.hpp>
 
 #include <sgpp/base/exception/generation_exception.hpp>
 
@@ -25,7 +26,7 @@ namespace combigrid {
 
 size_t getGridLevelForExpUniformBoundaryGrid(size_t numGridPoints) {
   if (numGridPoints > 1) {
-    return static_cast<double>(log2(numGridPoints - 2));
+    return sgpp::combigrid::log2(numGridPoints - 2);
   } else {
     return 0;
   }

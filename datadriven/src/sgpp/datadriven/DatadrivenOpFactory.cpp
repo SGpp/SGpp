@@ -117,6 +117,10 @@
 
 #include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 
+#ifdef USE_CUDA
+#include "operation/hash/OperationMultiEvalCuda/OperationMultiEvalCuda.hpp"
+#endif
+
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/globaldef.hpp>
 
@@ -506,6 +510,26 @@ base::OperationMultipleEval* createOperationMultipleEval(
 #else
         throw base::factory_exception(
             "Error creating function: the library wasn't compiled with OpenCL support");
+#endif
+      }
+    }
+  } else if (grid.getType() == base::GridType::Poly) {
+    if (configuration.getType() == datadriven::OperationMultipleEvalType::DEFAULT) {
+      if (configuration.getSubType() == sgpp::datadriven::OperationMultipleEvalSubType::CUDA) {
+#ifdef USE_CUDA
+        return new datadriven::OperationMultiEvalCuda(grid, dataset, grid.getDegree(), false);
+#else
+        throw base::factory_exception(
+            "Error creating function: the library wasn't compiled with CUDA support");
+#endif
+      }
+    } else if (configuration.getType() == datadriven::OperationMultipleEvalType::MORTONORDER) {
+      if (configuration.getSubType() == sgpp::datadriven::OperationMultipleEvalSubType::CUDA) {
+#ifdef USE_CUDA
+        return new datadriven::OperationMultiEvalCuda(grid, dataset, grid.getDegree(), true);
+#else
+        throw base::factory_exception(
+            "Error creating function: the library wasn't compiled with CUDA support");
 #endif
       }
     }

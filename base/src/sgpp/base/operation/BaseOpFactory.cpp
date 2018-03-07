@@ -15,6 +15,7 @@
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
 #include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
 #include <sgpp/base/grid/type/PolyClenshawCurtisBoundaryGrid.hpp>
@@ -153,15 +154,16 @@
 #include <sgpp/base/operation/hash/OperationEvalModBsplineClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModFundamentalSplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModLinearNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalModPolyNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModWaveletNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyNaive.hpp>
-#include <sgpp/base/operation/hash/OperationEvalModPolyNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModPolyClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyClenshawCurtisBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalWaveletNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalWaveletBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalNakBsplineBoundaryCombigridNaive.hpp>
 
 #include <sgpp/base/operation/hash/OperationEvalGradientBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradientBsplineBoundaryNaive.hpp>
@@ -603,6 +605,9 @@ base::OperationEval* createOperationEvalNaive(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
     return new base::OperationEvalModPolyClenshawCurtisNaive(
         grid.getStorage(), dynamic_cast<base::ModPolyClenshawCurtisGrid*>(&grid)->getDegree());
+  }  else if (grid.getType() == base::GridType::NakBsplineBoundaryCombigrid) {
+    return new base::OperationEvalNakBsplineBoundaryCombigridNaive(
+        grid.getStorage(), dynamic_cast<base::NakBsplineBoundaryCombigridGrid&>(grid).getDegree());
   } else {
     throw base::factory_exception(
         "createOperationEvalNaive is not implemented for this grid type.");
@@ -677,7 +682,8 @@ base::OperationEvalHessian* createOperationEvalHessianNaive(base::Grid& grid) {
   }
 }
 
-base::OperationEvalPartialDerivative* createOperationEvalPartialDerivativeNaive(base::Grid& grid) {
+base::OperationEvalPartialDerivative* createOperationEvalPartialDerivativeNaive(
+    base::Grid& grid) {
   if (grid.getType() == base::GridType::Bspline) {
     return new base::OperationEvalPartialDerivativeBsplineNaive(
         grid.getStorage(), dynamic_cast<base::BsplineGrid&>(grid).getDegree());

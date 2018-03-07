@@ -17,7 +17,6 @@ namespace combigrid {
 FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(
     std::vector<double> const& points, size_t const& index_i) {
   FloatArrayVector sums;
-  //  double transWidth = b - a;
 
   for (size_t index_j = 0; index_j < points.size(); index_j++) {
     // performing Gauss-Legendre integration with twice as many points as for the simple integrals
@@ -25,29 +24,20 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(
     sgpp::base::DataVector roots;
     sgpp::base::DataVector quadratureweights;
     auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
-
     double sum = 0.0;
-    double productValue = 0.0;
 
     // constant function for single point, Lagrange polynomials while not enough knots for not a
     // knot B-splines, nak B-splines otherwise
-    if (xValues.size() == 1) {
-      numGaussPoints = 1 + numAdditionalPoints;
-      quadRule.getLevelPointsAndWeightsNormalized(
-          std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
-      double x = roots[0];
-      double transX = x;  // a + transWidth * x;
-      sum = 1.0 * this->weight_function(transX) * quadratureweights[0];
-    } else if ((degree == 3 && (xValues.size() < 5)) || ((degree == 5) && (xValues.size() < 9))) {
+    if ((xValues.size() == 1) || (degree == 3 && (xValues.size() < 5)) ||
+        ((degree == 5) && (xValues.size() < 9))) {
       numGaussPoints = 2 * xValues.size() + numAdditionalPoints;
       quadRule.getLevelPointsAndWeightsNormalized(
           std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
       for (size_t i = 0; i < roots.getSize(); ++i) {
         double x = roots[i];
-        double transX = x;  // a + transWidth * x;
-        productValue =
-            LagrangePolynomial(x, xValues, index_j) * LagrangePolynomial(x, xValues, index_i);
-        double integrand = productValue * this->weight_function(transX);
+        double productValue = expUniformNakBspline(x, degree, index_i, xValues) *
+                              expUniformNakBspline(x, degree, index_j, xValues);
+        double integrand = productValue * this->weight_function(x);
         sum += integrand * quadratureweights[i];
       }
     } else {
@@ -62,23 +52,20 @@ FloatArrayVector BSplineScalarProductEvaluator::get1DL2ScalarProduct(
         size_t last_segment_i = std::min(xValues.size(), index_i + degree + 1);
         size_t first_segment = std::min(first_segment_i, first_segment_j);
         size_t last_segment = std::max(last_segment_i, last_segment_j);
+        // ToDO(rehmemk) Rewrite this whole  routine , don't use createKnots
         std::vector<double> xi = createNakKnots(xValues, degree);
         for (size_t segmentIndex = first_segment; segmentIndex < last_segment; segmentIndex++) {
           double l = std::max(0.0, xi[segmentIndex]);
           double r = std::min(1.0, xi[segmentIndex + 1]);
-          double width = r - l;
+          double segmentWidth = r - l;
 
           for (size_t i = 0; i < roots.getSize(); ++i) {
-            double x = l + width * roots[i];
-            double transX = x;  // a + transWidth * x;
-            // ToDO(rehmemk) Rewrite this whole  routine , don't use createKnots and use the
-            // Lagrange polynomials inside expUuniformNakBspline
-            productValue = expUniformNakBspline(x, degree, index_i, xValues) *
-                           expUniformNakBspline(x, degree, index_j, xValues);
-
-            double integrand = productValue * this->weight_function(transX);
+            double x = l + segmentWidth * roots[i];
+            double productValue = expUniformNakBspline(x, degree, index_i, xValues) *
+                                  expUniformNakBspline(x, degree, index_j, xValues);
+            double integrand = productValue * this->weight_function(x);
             // multiply weights by length_old_interval / length_new_interval
-            sum += integrand * quadratureweights[i] * width;
+            sum += integrand * quadratureweights[i] * segmentWidth;
           }
         }
       }
@@ -124,6 +111,11 @@ void BSplineScalarProductEvaluator::calculate1DBSplineScalarProducts(
         }
       }
     }
+    //    std::cout << "index i: " << index_i << std::endl;
+    //    for (size_t j = 0; j < basisValues[index_i].size(); j++) {
+    //      std::cout << basisValues[index_i].get(j) << " ";
+    //    }
+    //    std::cout << "\n";
   }
 }
 
