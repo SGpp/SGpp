@@ -7,7 +7,15 @@ are not listed here.
 SG++ should at least work with GCC, Clang, or ICC on Linux,
 GCC on OSX, and MinGW on Windows.
 
+If you want to use SG++ with MATLAB, we recommend to use the binaries
+provided on the \ref downloads page (see installation instructions on
+the \ref matlab page).
+There are also other options, if you do not want or are not able to use
+the binaries
+(in this case, proceed as explained on the page for your platform).
+
 - @subpage linux
 - @subpage mac
 - @subpage mingw
+- @subpage matlab
 **/

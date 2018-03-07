@@ -423,6 +423,9 @@ class NakBsplineBoundaryCombigridBasis : public Basis<LT, IT> {
             }
           }
         }
+        return 0.0;
+        break;
+
       default:
         return 0.0;
     }

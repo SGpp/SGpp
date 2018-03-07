@@ -194,7 +194,7 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
     throw sgpp::base::data_exception("Dimensions do not match!");
   }
 
-  size_t lastNumAdditionalPoints = 0;
+  //  size_t lastNumAdditionalPoints = 0;
   size_t quadOrder = degree + 1 + numAdditionalPoints;
   base::DataVector coordinates, weights;
   base::GaussLegendreQuadRule1D gauss;
@@ -285,7 +285,7 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
               double err = 1e14;
 
               while (err > tol) {
-                lastNumAdditionalPoints = numAdditionalPoints;
+                //                lastNumAdditionalPoints = numAdditionalPoints;
                 numAdditionalPoints += incrementQuadraturePoints;
                 quadOrder = degree + 1 + numAdditionalPoints;
                 // This leads to problems with the simple OMP parallelization if the abort

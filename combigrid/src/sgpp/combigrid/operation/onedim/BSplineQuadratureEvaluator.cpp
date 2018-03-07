@@ -28,10 +28,7 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
   base::DataVector roots;
   base::DataVector quadratureweights;
   auto& quadRule = base::GaussLegendreQuadRule1D::getInstance();
-
   double sum = 0.0;
-  std::vector<double> xi = createNakKnots(xValues, degree);
-  double bsplinevalue = 0.0;
 
   // on low levels where Lagrange polynomials instead of Bsplines are used the number of Gauss
   // points are not degree dependent and there is only on segment: the whole [0,1] interval
@@ -43,33 +40,31 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
         std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
     for (size_t i = 0; i < roots.getSize(); ++i) {
       double x = roots[i];
-      double transX = x;  // a + (b-a) * x;
-
-      bsplinevalue = LagrangePolynomial(x, xValues, index);
-
-      double integrand = bsplinevalue * this->weight_function(transX);
+      double basisvalue = expUniformNakBspline(x, degree, index, xValues);
+      double integrand = basisvalue * this->weight_function(x);
       sum += integrand * quadratureweights[i];
     }
+
   } else {
     size_t first_segment = std::max(degree, index);
     size_t last_segment = std::min(xValues.size(), index + degree + 1);
     quadRule.getLevelPointsAndWeightsNormalized(
         std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);
+    std::vector<double> xi = createNakKnots(xValues, degree);
     for (size_t segmentIndex = first_segment; segmentIndex < last_segment; segmentIndex++) {
       double l = std::max(0.0, xi[segmentIndex]);
       double r = std::min(1.0, xi[segmentIndex + 1]);
-      double width = r - l;
+      double segmentWidth = r - l;
 
       for (size_t i = 0; i < roots.getSize(); ++i) {
         // transform roots[i], the quadrature points to the segment on which the Bspline is
         // evaluated and from there to the interval[a,b] on which the weight function is defined
-        double x = l + width * roots[i];
-        double transX = x;  // a + (b-a) * x;
+        double x = l + segmentWidth * roots[i];
 
-        bsplinevalue = expUniformNakBspline(x, degree, index, xValues);
-        double integrand = bsplinevalue * this->weight_function(transX);
+        double basisvalue = expUniformNakBspline(x, degree, index, xValues);
+        double integrand = basisvalue * this->weight_function(x);
         // multiply weights by length_old_interval / length_new_interval
-        sum += integrand * quadratureweights[i] * width;
+        sum += integrand * quadratureweights[i] * segmentWidth;
       }
     }
   }

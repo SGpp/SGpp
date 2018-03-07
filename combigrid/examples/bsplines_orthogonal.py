@@ -4,8 +4,7 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-# \page example_bSplines_py bSplines.py
-# plots anisotropic full grids that form part of the combination technique
+# \page example_bsplines_orthogonal_py bsplines_orthogonal.py
 
 from argparse import ArgumentParser
 from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder

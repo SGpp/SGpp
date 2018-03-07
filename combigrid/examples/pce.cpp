@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 /**
- * \page example_ct_pce_cpp PCE with Combigrids
+ * \page example_pce_cpp PCE with Combigrids
  *
  * This simple example shows how to create a Polynomial Chaos Expansion from an
  * adaptively refined combigrid.

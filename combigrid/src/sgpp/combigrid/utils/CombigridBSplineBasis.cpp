@@ -8,7 +8,10 @@
 #include <algorithm>
 #include <vector>
 
-constexpr size_t log2(size_t n) { return ((n < 2) ? 1 : 1 + log2(n / 2)); }
+namespace sgpp {
+namespace combigrid {
+
+size_t log2(size_t n) { return ((n < 2) ? 1 : 1 + static_cast<size_t>(log2(n / 2))); }
 
 /**
  * Nodal Not-a-Knot B spline basis
@@ -571,3 +574,5 @@ double LagrangePolynomial(double const& x, std::vector<double> const& xValues, s
   }
   return res;
 }
+}  // namespace combigrid
+}  // namespace sgpp
