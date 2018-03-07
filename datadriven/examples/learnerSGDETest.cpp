@@ -11,7 +11,7 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
-#include <sgpp/datadriven/application/GaussianKDE.hpp>
+#include <sgpp/datadriven/application/KernelDensityEstimator.hpp>
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
@@ -136,7 +136,7 @@ int main(int argc, char** argv) {
    * Estimate the probability density function (pdf) via a gaussian kernel density estimation (KDE)
    * and print the corresponding values.
    */
-  sgpp::datadriven::GaussianKDE kde(samples);
+  sgpp::datadriven::KernelDensityEstimator kde(samples);
   sgpp::base::DataVector x(learner.getDim());
   x.setAll(0.5);
 
