@@ -363,7 +363,7 @@ else:
 #########################################################################
 
 def lintAction(target, source, env):
-  p = subprocess.Popen(["python", "tools/cpplint.py", "--ignorecfg=yes",
+  p = subprocess.Popen(["python", "tools/cpplint.py",
                         "--extensions=cpp,hpp", "--linelength=100",
                         source[0].abspath],
                        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -384,7 +384,11 @@ def lintAction(target, source, env):
       parts = line.split(":  ")
       location = parts[0]
       message = ":  ".join(parts[1:])
-      print location + ": warning: " + message
+      if message != "":
+        print location + ": warning: " + message
+      else:
+        # occurs when cpplint excludes file via CPPLINT.cfg
+        print location
   # touch file without writing anything
   # (to indicate for the next run of SCons that we already checked this file)
   with open(target[0].abspath, "w"): pass
