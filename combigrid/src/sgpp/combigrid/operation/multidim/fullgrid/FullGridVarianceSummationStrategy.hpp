@@ -114,9 +114,10 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
     FloatScalarVector mean = linearStrategy.eval(level);
 
     // Var = E(u^2) - E(u)^2
-    FullGridQuadraticSummationStrategy<V> quadraticStrategy = FullGridQuadraticSummationStrategy<V>(
-        this->storage, this->evaluatorPrototypes, this->pointHierarchies);
-    V meanSquare = quadraticStrategy.eval(level);
+    FullGridQuadraticSummationStrategy<V> quadraticStrategyOld =
+        FullGridQuadraticSummationStrategy<V>(this->storage, this->evaluatorPrototypes,
+                                              this->pointHierarchies);
+    V meanSquare = quadraticStrategyOld.eval(level);
     mean.componentwiseMult(mean);
     FloatScalarVector varianceOld = meanSquare[0];
     varianceOld.sub(mean);
