@@ -111,29 +111,10 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
         FullGridLinearSummationStrategy<FloatScalarVector>(this->storage, linearEvaluatorPrototypes,
                                                            this->pointHierarchies);
 
-    //    std::cout << "FullGridVarianceSummationstrategy, (" << level[0] << " " << level[1] << ")
-    //    ";
+    std::cout << "FullGridVarianceSummationstrategy, (" << level[0] << " " << level[1] << " "
+              << level[2] ")";
     FloatScalarVector mean = linearStrategy.eval(level);
-    //    std::cout << " m " << mean << " " << std::endl;
-
-    // print storage = alpha
-    //    std::cout << "alpha: ";
-    //    MultiIndex multiBounds(numDimensions);
-    //    for (size_t d = 0; d < numDimensions; ++d) {
-    //      multiBounds[d] = this->pointHierarchies[d]->getNumPoints(level[d]);
-    //    }
-    //    MultiIndexIterator it(multiBounds);
-    //    std::vector<bool> orderingConfiguration(numDimensions, true);
-    //    auto funcIter = this->storage->getGuidedIterator(level, it, orderingConfiguration);
-    //    while (true) {
-    //      double value = funcIter->value();
-    //      std::cout << value << " ";
-    //      int h = funcIter->moveToNext();
-    //      if (h < 0) {
-    //        break;
-    //      }
-    //    }
-    //    std::cout << "\n";
+    std::cout << " m " << mean << " " << std::endl;
 
     // Var = E(u^2) - E(u)^2
     FullGridQuadraticSummationStrategy<V> quadraticStrategyOld =
@@ -143,24 +124,9 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
     mean.componentwiseMult(mean);
     FloatScalarVector varianceOld = meanSquare[0];
     varianceOld.sub(mean);
-    //    std::cout << "v Old " << varianceOld[0].value() << " ";
+    std::cout << "variance " << varianceOld[0].value() << " " << std::endl;
     V returnVariance(varianceOld);
     return returnVariance;
-
-    // ToDo(rehmemk) Debug and use this (Attention: This applies to B splines and Polynomials!)
-    // Var = E( (u-E(u))^2 )
-    // First Step would be to use CombigridBsplineBasis's expUniformNakSpline in
-    // BsplineInterpolation/-Quadrature and -ScalarProductEvauator !
-    //    MultiIndex levelZero(numDimensions, 0);
-    //    MultiIndex indexZero(numDimensions, 0);
-    //    double alphaZero = this->storage->get(levelZero, indexZero);
-    //    this->storage->set(levelZero, indexZero, alphaZero - mean.value());
-    //    FullGridQuadraticSummationStrategy<V> quadraticStrategy =
-    //    FullGridQuadraticSummationStrategy<V>(
-    //        this->storage, this->evaluatorPrototypes, this->pointHierarchies);
-    //    V variance = quadraticStrategy.eval(level);
-    //    std::cout << "v: " << variance[0].value() << std::endl;
-    //    return variance;
   }
 };
 
