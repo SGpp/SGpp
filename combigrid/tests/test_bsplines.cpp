@@ -706,7 +706,7 @@ BOOST_AUTO_TEST_CASE(testQuadratureWithWeightFunction) {
   double exactSolution = 0.289025354482001;  // 1D: 0.1717381583560983;
   double error = fabs(integral - exactSolution);
   //  std::cout << "error: " << error << std::endl;
-  BOOST_CHECK_SMALL(error, 5e-16);
+  BOOST_CHECK_SMALL(error, 1e-15);
 }
 
 double BSplineVarianceWithWeightsAndBounds(
