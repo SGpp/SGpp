@@ -238,13 +238,13 @@ def checkOpenCL(config):
                                "can be installed to solve this issue.")
 
     config.env["CPPDEFINES"]["USE_OCL"] = "1"
-    
+
 def checkDAKOTA(config):
     if config.env["USE_DAKOTA"]:
         config.env.AppendUnique(CPPPATH=[config.env["DAKOTA_INCLUDE_PATH"]])
-        
+
         config.env.AppendUnique(LIBPATH=[config.env["DAKOTA_LIBRARY_PATH"]])
-        
+
         if not config.CheckCXXHeader("pecos_global_defs.hpp"):
             Helper.printErrorAndExit("pecos_global_defs.hpp not found, but required for PECOS")
 
@@ -543,7 +543,7 @@ def configureIntelCompiler(config):
                                     "-fno-strict-aliasing",
                                     "-ip", "-ipo", "-funroll-loops",
                                     "-ansi-alias", "-fp-speculation=safe",
-                                    "-no-offload"])
+                                    "-qno-offload"])
   if config.env["COMPILER"] == "intel.mpi":
     config.env["CC"] = ("mpiicc")
     config.env["LINK"] = ("mpiicpc")
