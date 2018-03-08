@@ -26,9 +26,9 @@ matlab
 @section matlab_windows Windows
 
 1. Extract the archive to an arbitrary location, say
-   <tt>C:\PATH_TO_BINARIES</tt>.
+   <tt>C:\\PATH_TO_BINARIES</tt>.
 2. Start MATLAB.
-3. Add <tt>C:\PATH_TO_BINARIES</tt> to the MATLAB search path, either by
+3. Add <tt>C:\\PATH_TO_BINARIES</tt> to the MATLAB search path, either by
    changing to that directory or using <tt>pathtool</tt>.
 4. Check if it works via <tt>sgpp.Grid.createLinearGrid(2)</tt>.
 */
