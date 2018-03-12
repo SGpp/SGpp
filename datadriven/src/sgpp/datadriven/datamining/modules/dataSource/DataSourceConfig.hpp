@@ -17,12 +17,12 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * Supported file types for #sgpp::datadriven::FileSampleProvider
+ * Supported file types for sgpp::datadriven::FileSampleProvider
  */
 enum class DataSourceFileType { NONE, ARFF, CSV };
 
 /**
- * Supported transformation types for #sgpp::datadriven::DataTransformation
+ * Supported transformation types for sgpp::datadriven::DataTransformation
  */
 enum class DataTransformationType { NONE, ROSENBLATT };
 

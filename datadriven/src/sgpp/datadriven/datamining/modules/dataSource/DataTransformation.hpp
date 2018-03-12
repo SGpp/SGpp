@@ -27,12 +27,33 @@ namespace datadriven {
 
 class DataTransformation {
  public:
-  DataTransformation();
-  DataTransformation* initialize(DataTransformationType dataTransformationType,
-                                Dataset* dataset);
-  virtual Dataset* doTransformation(Dataset* dataset) = 0;
-  virtual Dataset* doInverseTransformation(Dataset* dataset) = 0;
+  /**
+   * Default constructor
+   */
+  DataTransformation() = default;
+
+  /**
+     * Virtual destructor
+     */
   virtual ~DataTransformation() = default;
+
+  /**
+   * Performs a data transformation on a given dataset for a data transformationn built with
+   * DataTransformationBuilder
+   *
+   * @param dataset pointer to the dataset to be transformed
+   * @return pointer to the transformed dataset
+   */
+  virtual Dataset* doTransformation(Dataset* dataset) = 0;
+
+  /**
+     * Performs the backwards transformation on a given dataset for a data transformationn
+     * built with DataTransformationBuilder
+     *
+     * @param dataset pointer to the dataset to be transformed backwards
+     * @return pointer to the backwards transformed dataset
+     */
+  virtual Dataset* doInverseTransformation(Dataset* dataset) = 0;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
