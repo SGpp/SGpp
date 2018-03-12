@@ -122,7 +122,7 @@ import_array();
 %include "solver/build/pysgpp/solver.i"
 #endif
 
- #ifdef SG_QUADRATURE
+#ifdef SG_QUADRATURE
 #ifdef PYDOC
 %include "quadrature_doc.i"
 #endif

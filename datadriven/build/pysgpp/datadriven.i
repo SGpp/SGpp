@@ -182,6 +182,7 @@
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationLimitFunctionValueRange.hpp"
 
+%include "datadriven/src/sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
 
 // --------------------------------------
 // renaming ambiguous function declarations for python
