@@ -1,12 +1,12 @@
 {
 	"dataSource": {
-		"filePath": "datadriven/tests/data/DR5_train.arff",
+		"filePath": "datadriven/tests/datasets/liver-disorders_normalized.arff",
 		"fileType": "arff",
 		"compression": false,
 		"numBatches": 1,
 		"batchSize": 0,
 		"dataTransformation": "rosenblatt",
-		"numSamplesForTranformation": 1000
+		"numSamplesForTranformation": 2
 	},
 	"scorer": {
 		"testing": {

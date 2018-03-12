@@ -14,7 +14,7 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceIterator.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformation.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp>
-#include <sgpp/datadriven/datamining/modules/dataSource/RosenblattTransformation.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationBuilder.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/globaldef.hpp>
 
@@ -38,9 +38,9 @@ DataSourceIterator DataSource::begin() { return DataSourceIterator(*this, 0); }
 DataSourceIterator DataSource::end() { return DataSourceIterator(*this, config.numBatches); }
 
 Dataset* DataSource::getNextSamples() {
+  Dataset* dataset = nullptr;
+
   // only one iteration: we want all samples
-  Dataset* dataset = new Dataset();
-  // auto dataset = std::make_unique<Dataset>();
   if (config.numBatches == 1 && config.batchSize == 0) {
     currentIteration++;
     dataset = sampleProvider->getAllSamples();
@@ -48,13 +48,12 @@ Dataset* DataSource::getNextSamples() {
     currentIteration++;
     dataset = sampleProvider->getNextSamples(config.batchSize);
   }
-  // Transform dataset if wanted
+
+  // Transform dataset if requested
   if (!(config.dataTransformation == DataTransformationType::NONE)) {
-    DataTransformation* dataTr =
-        new RosenblattTransformation(dataset, config.numSamplesForTranformation);
-    // DataTransformation* dataTr = new DataTransformation();
-    // return dataTr->initialize(config.dataTransformation, dataset)->doTransformation(dataset);
-    return dataTr->doTransformation(dataset);
+    DataTransformationBuilder dataTrBuilder;
+    DataTransformation* dataTransformation = dataTrBuilder.buildTransformation(config, dataset);
+    return dataTransformation->doTransformation(dataset);
   } else {
     return dataset;
   }
