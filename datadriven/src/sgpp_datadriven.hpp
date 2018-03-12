@@ -105,6 +105,8 @@
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+
 /* ************************
  * datamining
  * ************************/

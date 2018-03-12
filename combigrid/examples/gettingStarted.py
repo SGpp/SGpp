@@ -4,13 +4,14 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-## \page example_gettingStarted_py gettingStarted.py (Start Here)
-## This tutorial contains examples with increasing complexity to introduce you to the combigrid
-## module. The combigrid module is quite separated from the other modules. It only refers to the
-## base module for things like DataVector and DataMatrix.
+# \page example_gettingStarted_py gettingStarted.py (Start Here)
+# This tutorial contains examples with increasing complexity to introduce you to the combigrid
+# module. The combigrid module is quite separated from the other modules. It only refers to the
+# base module for things like DataVector and DataMatrix.
 
-## At the beginning of the program, we have to import the pysgpp library.
-from itertools import product
+# At the beginning of the program, we have to import the pysgpp library.
+from itertools import product, combinations, permutations,\
+    combinations_with_replacement
 from pysgpp.extensions.datadriven.uq.dists import J, Beta, Uniform
 from pysgpp.extensions.datadriven.uq.plot.colors import initialize_plotting_style, \
     load_color, load_font_properties, savefig
@@ -25,10 +26,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-## The first thing we need is a function to evaluate. This function will be evaluated on the domain
-## \f$[0, 1]^d\f$. This particular function can be used with any number of dimensions.
-## The input parameter of the function is of type pysgpp.DataVector, so do not treat it like a list.
-## The return type is float.
+# The first thing we need is a function to evaluate. This function will be evaluated on the domain
+# \f$[0, 1]^d\f$. This particular function can be used with any number of dimensions.
+# The input parameter of the function is of type pysgpp.DataVector, so do not treat it like a list.
+# The return type is float.
 def f(x):
     product = 1.0
     for i in range(x.getSize()):
@@ -40,16 +41,16 @@ def g(x):
     return np.prod([4 * xi * (1 - xi) for xi in x.array()])
 
 
-## We have to wrap f in a pysgpp.MultiFunction object.
+# We have to wrap f in a pysgpp.MultiFunction object.
 func = pysgpp.multiFunc(g)
 
-## Let's use a 3D-function.
+# Let's use a 3D-function.
 d = 2
 
 
-## @section py_combigrid_example_1 Example 1: Leja quadrature with linear growth of grid points
+# @section py_combigrid_example_1 Example 1: Leja quadrature with linear growth of grid points
 ##
-## Here comes the first and very simple example.
+# Here comes the first and very simple example.
 def example1():
     # Let's increase the number of points by two for each level.
     growthFactor = 2
@@ -74,9 +75,9 @@ def example1():
     # which stores computed function values:
     print("Number of function evaluations: " + str(operation.numGridPoints()))
 
-## @section py_combigrid_example_2 Example 2: Polynomial interpolation on nested Clenshaw Curtis grids
+# @section py_combigrid_example_2 Example 2: Polynomial interpolation on nested Clenshaw Curtis grids
 ##
-## The next example uses interpolation.
+# The next example uses interpolation.
 
 
 def example2():
@@ -160,9 +161,9 @@ def example2():
     plt.show()
 
 
-## @section py_combigrid_example_3 Example 3: Evaluation at multiple points
+# @section py_combigrid_example_3 Example 3: Evaluation at multiple points
 ##
-## Now, we want to do interpolation at multiple evaluation points efficiently.
+# Now, we want to do interpolation at multiple evaluation points efficiently.
 def example3():
     # Use Leja points unlike example 2 and use CombigridMultiOperation for evaluation at multiple
     # points.
@@ -182,11 +183,11 @@ def example3():
     print("First result: " + str(result[0]) + ", function value: " + str(func(pysgpp.DataVector(firstParam))))
     print("Second result: " + str(result[1]) + ", function value: " + str(func(pysgpp.DataVector(secondParam))))
 
-## @section py_combigrid_example_4 Example 4: Serialization and lookup tables
+# @section py_combigrid_example_4 Example 4: Serialization and lookup tables
 ##
-## This example shows how to store and retrieve computed function values.
-## At first, we create a function that prints a string if it is called.
-## This shows us when it is (not) called.
+# This example shows how to store and retrieve computed function values.
+# At first, we create a function that prints a string if it is called.
+# This shows us when it is (not) called.
 
 
 def loggingF(x):
@@ -234,9 +235,9 @@ def example4():
     result = operation3.evaluate(2)
     print("Result computed (3rd time): " + str(result))
 
-## @section py_combigrid_example_5 Example 5: Using different operations in each dimension
+# @section py_combigrid_example_5 Example 5: Using different operations in each dimension
 ##
-## This example shows how to apply different operators in different dimensions.
+# This example shows how to apply different operators in different dimensions.
 
 
 def example5():
@@ -282,13 +283,13 @@ def example5():
     print("Result: " + str(result))
 
 
-## @section py_combigrid_example_6 Example 6: Using a function operating on grids
-## This example shows how to apply different operators in different dimensions.
+# @section py_combigrid_example_6 Example 6: Using a function operating on grids
+# This example shows how to apply different operators in different dimensions.
 
-## In some applications, you might not want to have a callback function that is called at single
-## points, but on a full grid. One of these applications is solving PDEs. This example provides a
-## simple framework where a PDE solver can be included. It is also suited for other tasks.
-## The core part is a function that computes grid values on a full grid.
+# In some applications, you might not want to have a callback function that is called at single
+# points, but on a full grid. One of these applications is solving PDEs. This example provides a
+# simple framework where a PDE solver can be included. It is also suited for other tasks.
+# The core part is a function that computes grid values on a full grid.
 def gf(grid):
     # We store the results for each grid point, encoded by a MultiIndex, in a TreeStorage
     result = pysgpp.DoubleTreeStorage(d)
@@ -331,51 +332,57 @@ def example6():
     print("Numerical result: " + str(result))
 
 
-## @section py_combigrid_example_7 Example 7: Polynomial interpolation on nested Clenshaw Curtis grids
+# @section py_combigrid_example_7 Example 7: Polynomial interpolation on nested Clenshaw Curtis grids
 ##
-## The next example uses interpolation.
-def example7():
+# The next example uses interpolation.
+def example7(dtype="uniform", maxLevel=1):
     # This time, we use Clenshaw-Curtis points with exponentially growing number of points per level.
     # This is helpful for CC points to make them nested. Nested means that the set of grid points at
     # one level is a subset of the set of grid points at the next level. Nesting can drastically
     # reduce the number of needed function evaluations. Using these grid points, we will do
     # polynomial interpolation at a single point.
-    operation = pysgpp.CombigridOperation.createExpUniformLinearInterpolation(2, func)
+    if dtype == "cc":
+        operation = pysgpp.CombigridOperation.createExpClenshawCurtisPolynomialInterpolation(2, func)
+    elif dtype == "l2leja":
+        operation = pysgpp.CombigridOperation.createExpL2LejaPolynomialInterpolation(2, func)
+    else:
+        operation = pysgpp.CombigridOperation.createExpUniformLinearInterpolation(2, func)
 
     # The level manager provides more options for combigrid evaluation, so let's get it:
     levelManager = operation.getLevelManager()
 
     # We can add regular levels like before:
-    maxLevel = 2
     levelManager.addRegularLevels(maxLevel)
 
     # We can also fetch the used grid points and plot the grid:
     grid = levelManager.getGridPointMatrix()
-    gridList = [[grid.get(r, c) for c in range(grid.getNcols())] for r in range(grid.getNrows())]
+    gridList = np.array([[grid.get(r, c) for c in xrange(grid.getNcols())]
+                         for r in xrange(grid.getNrows())])
 
-    def g(x, y):
-        evaluationPoint = pysgpp.DataVector([x, y])
-        result = operation.evaluate(maxLevel, evaluationPoint)
-        return result
+    initialize_plotting_style()
+#     def g(x, y):
+#         evaluationPoint = pysgpp.DataVector([x, y])
+#         result = operation.evaluate(maxLevel, evaluationPoint)
+#         return result
 
-    fig, ax, _ = plotSG3d(g=g, contour_xy=False)
-    ax.scatter(gridList[0], gridList[1], np.zeros(len(gridList[0])),
-               color=load_color(0),
-               marker='o', s=20)
+#     fig, ax, _ = plotSG3d(g=g, contour_xy=False)
+#     ax.scatter(gridList[0], gridList[1], np.zeros(len(gridList[0])),
+#                color=load_color(0),
+#                marker='o', s=20)
     # ax.set_axis_off()
-    ax.set_xlabel(r"$x$")
-    ax.set_ylabel(r"$y$")
-    ax.set_xticks([0, 0.5, 1])
-    ax.set_yticks([0, 0.5, 1])
-    ax.set_zticks([0, 0.5, 1])
-    ax.xaxis.labelpad = 13
-    ax.yaxis.labelpad = 13
-    ax.set_title(r"$f(x,y) = 16 x(1-x)y(1-y)$",
-                 fontproperties=load_font_properties())
+#     ax.set_xlabel(r"$x$")
+#     ax.set_ylabel(r"$y$")
+#     ax.set_xticks([0, 0.5, 1])
+#     ax.set_yticks([0, 0.5, 1])
+#     ax.set_zticks([0, 0.5, 1])
+#     ax.xaxis.labelpad = 13
+#     ax.yaxis.labelpad = 13
+#     ax.set_title(r"$f(x,y) = 16 x(1-x)y(1-y)$",
+#                  fontproperties=load_font_properties())
     # savefig(fig, "/home/franzefn/Desktop/Mario/normal_parabola", mpl3d=True)
 
     fig = plt.figure()
-    plt.plot(gridList[0], gridList[1], " ",
+    plt.plot(gridList[0, :], gridList[1, :], " ",
              color=load_color(0),
              marker='o', markersize=10)
     plt.axis('off')
@@ -383,51 +390,65 @@ def example7():
     currentAxis.add_patch(Rectangle((0, 0), 1, 1, fill=None, alpha=1, linewidth=2))
     plt.xlim(0, 1)
     plt.ylim(0, 1)
-    plt.title(r"Sparse Grid $\ell=%i$" % maxLevel,
-              fontproperties=load_font_properties())
-    # savefig(fig, "/home/franzefn/Desktop/Mario/sparse_grid", mpl3d=True)
+    if dtype == "uniform":
+        plt.title(r"Sparse Grid $\ell=%i$" % (maxLevel + 1,),
+                  fontproperties=load_font_properties())
+    else:
+        plt.title(r"Sparse Grid $\ell=%i$ (stretched)" % (maxLevel + 1,),
+                  fontproperties=load_font_properties())
 
-    # We can also fetch the used grid points and plot the grid:
-    levels = levelManager.getRegularLevels(maxLevel)
+    savefig(fig, "/home/franzefn/Desktop/Mario/sparse_grid_%s" % dtype,
+            mpl3d=True)
 
-    fig, axarr = plt.subplots(maxLevel + 1, maxLevel + 1,
-                              sharex=True, sharey=True, squeeze=True)
+    for tr in ["fg", "ct"]:
+        # We can also fetch the used grid points and plot the grid:
+        fig, axarr = plt.subplots(maxLevel + 1, maxLevel + 1,
+                                  sharex=True, sharey=True, squeeze=True)
 
-    for level in product(range(maxLevel + 1), repeat=2):
-        ax = axarr[level[0], level[1]]
-        ax.axis('off')
+        levels = []
+        for level in product(range(maxLevel + 1), repeat=2):
+            levels.append(level)
+            ax = axarr[level[0], level[1]]
+            ax.axis('off')
 
-    for level in levels:
-        ax = axarr[level[0], level[1]]
-        h = 2**(-level[0] - 1)
-        n = 2 ** (level[0] + 1) - 1
-        xs = np.linspace(h, 1 - h, n)
+        for level in levels:
+            print tr, level
+            if tr == "ct" and np.sum(level) > maxLevel:
+                print "skip %s" % (level,)
+                continue
 
-        h = 2 ** (-level[1] - 1)
-        n = 2 ** (level[1] + 1) - 1
-        ys = np.linspace(h, 1 - h, n)
+            ax = axarr[level[0], level[1]]
+            if level[0] == 0:
+                xs = np.array([gridList[0, 1]])
+            else:
+                xs = gridList[0, :]
 
-        xv, yv = np.meshgrid(xs, ys, sparse=False, indexing='xy')
+            if level[1] == 0:
+                ys = np.array([gridList[1, 1]])
+            else:
+                ys = gridList[1, :]
 
-        for i in xrange(len(xs)):
-            for j in xrange(len(ys)):
-                ax.plot(xv[j, i], yv[j, i], color=load_color(0),
-                        marker="o", markersize=10)
-        ax.set_title(r"$(%i, %i)$" % (level[0] + 1, level[1] + 1),
-                     fontproperties=load_font_properties())
-        ax.add_patch(Rectangle((0, 0), 1, 1, fill=None, alpha=1, linewidth=1))
+            xv, yv = np.meshgrid(xs, ys, sparse=False, indexing='xy')
 
-    # plt.xlim(0, 1)
-    # plt.ylim(0, 1)
-    fig.set_size_inches(8, 8, forward=True)
-    # savefig(fig, "/home/franzefn/Desktop/Mario/tableau_ct_l%i" % maxLevel,
-    #         mpl3d=True)
+            for i in xrange(len(xs)):
+                for j in xrange(len(ys)):
+                    ax.plot(yv[j, i], xv[j, i], color=load_color(0),
+                            marker="o", markersize=10)
+            ax.set_title(r"$(%i, %i)$" % (level[0] + 1, level[1] + 1),
+                         fontproperties=load_font_properties())
+            ax.add_patch(Rectangle((0, 0), 1, 1, fill=None, alpha=1, linewidth=1))
+
+        # plt.xlim(0, 1)
+        # plt.ylim(0, 1)
+        fig.set_size_inches(6, 6, forward=True)
+        savefig(fig, "/home/franzefn/Desktop/Mario/tableau_%s_%s_l%i" % (dtype, tr, maxLevel, ),
+                mpl3d=True)
 
 
-## @section py_combigrid_example_8 Example 8: UQ setting with variance refinement
+# @section py_combigrid_example_8 Example 8: UQ setting with variance refinement
 ##
-## This example shows how to use the variance refinement method that
-## uses the PCE transformation for variance computation on each subspace.
+# This example shows how to use the variance refinement method that
+# uses the PCE transformation for variance computation on each subspace.
 def example8(dist_type="uniform"):
     operation = pysgpp.CombigridOperation.createExpClenshawCurtisPolynomialInterpolation(d, func)
 
@@ -451,7 +472,7 @@ def example8(dist_type="uniform"):
     operation.getLevelManager().addRegularLevels(q)
     print "Total function evaluations: %i" % operation.numGridPoints()
     # compute variance of the interpolant
-    
+
     surrogateConfig = pysgpp.CombigridSurrogateModelConfiguration()
     surrogateConfig.type = pysgpp.CombigridSurrogateModelsType_POLYNOMIAL_CHAOS_EXPANSION
     surrogateConfig.loadFromCombigridOperation(operation)
@@ -469,29 +490,30 @@ def example8(dist_type="uniform"):
 # Call the examples
 
 #print("Example 1:")
-#example1()
+# example1()
 
 #print("\nExample 2:")
-#example2()
+# example2()
 
 #print("\nExample 3:")
-#example3()
+# example3()
 
 #print("\nExample 4:")
-#example4()
+# example4()
 
 #print("\nExample 5:")
-#example5()
+# example5()
 
 #print("\nExample 6:")
-#example6()
+# example6()
 
 
-#print("\nExample 7:")
-#example7()
+print("\nExample 7:")
+example7(dtype="uniform")
+example7(dtype="l2leja")
 
 
-print("\nExample 8:")
-example8(dist_type="beta")
-print "-" * 80
-example8(dist_type="uniform")
+# print("\nExample 8:")
+# example8(dist_type="beta")
+# print "-" * 80
+# example8(dist_type="uniform")

@@ -6,7 +6,6 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-
 #include <sgpp_base.hpp>
 #include <sgpp_pde.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
@@ -14,12 +13,12 @@
 namespace sgpp {
 namespace pde {
 
-double uniform_distributed_approximation(sgpp::base::Grid* grid, size_t i, size_t j) {
-  const size_t d = grid->getDimension();
+double uniform_distributed_approximation(sgpp::base::Grid& grid, size_t i, size_t j) {
+  const size_t d = grid.getDimension();
   const size_t resolution = 10000;
   const double h = 1.0 / static_cast<double>(resolution);
-  sgpp::base::GridStorage& storage = grid->getStorage();
-  sgpp::base::SBasis& basis = const_cast<sgpp::base::SBasis&>(grid->getBasis());
+  sgpp::base::GridStorage& storage = grid.getStorage();
+  sgpp::base::SBasis& basis = grid.getBasis();
   double res = 1.0;
   for (size_t k = 0; k < d; k++) {
     const sgpp::base::level_t lik = storage.getPoint(i).getLevel(k);
@@ -51,15 +50,15 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitLinear) {
   sgpp::base::Grid* grid(sgpp::base::Grid::createLinearGrid(d));
   grid->getGenerator().regular(l);
 
-  sgpp::base::DataMatrix* m = new sgpp::base::DataMatrix(grid->getSize(), grid->getSize());
+  sgpp::base::DataMatrix m(grid->getSize(), grid->getSize());
   sgpp::base::OperationMatrix* opExplicit =
-    sgpp::op_factory::createOperationLTwoDotExplicit(m, *grid);
+      sgpp::op_factory::createOperationLTwoDotExplicit(&m, *grid);
 
   for (size_t i = 0; i < grid->getSize(); i++) {
     for (size_t j = i; j < grid->getSize(); j++) {
-      double approx = uniform_distributed_approximation(grid, i, j);
-      // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
-      BOOST_CHECK_SMALL(approx - m->get(i, j), 1e-3);
+      double approx = uniform_distributed_approximation(*grid, i, j);
+      // std::cout << std::abs(approx - m.get(i, j)) << std::endl;
+      BOOST_CHECK_SMALL(approx - m.get(i, j), 1e-3);
     }
   }
 
@@ -75,6 +74,10 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitLinear) {
   for (size_t i = 0; i < grid->getSize(); i++) {
     BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-13);
   }
+
+  delete grid;
+  delete opImplicit;
+  delete opExplicit;
 }
 
 // test for ModLinear
@@ -84,15 +87,15 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitModLinear) {
   sgpp::base::Grid* grid(sgpp::base::Grid::createModLinearGrid(d));
   grid->getGenerator().regular(l);
 
-  sgpp::base::DataMatrix* m = new sgpp::base::DataMatrix(grid->getSize(), grid->getSize());
+  sgpp::base::DataMatrix m(grid->getSize(), grid->getSize());
   sgpp::base::OperationMatrix* opExplicit =
-    sgpp::op_factory::createOperationLTwoDotExplicit(m, *grid);
+      sgpp::op_factory::createOperationLTwoDotExplicit(&m, *grid);
 
   for (size_t i = 0; i < grid->getSize(); i++) {
     for (size_t j = i; j < grid->getSize(); j++) {
-      double approx = uniform_distributed_approximation(grid, i, j);
-      // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
-      BOOST_CHECK_SMALL(approx - m->get(i, j), 1e-3);
+      double approx = uniform_distributed_approximation(*grid, i, j);
+      // std::cout << std::abs(approx - m.get(i, j)) << std::endl;
+      BOOST_CHECK_SMALL(approx - m.get(i, j), 1e-3);
     }
   }
 
@@ -108,6 +111,10 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitModLinear) {
   for (size_t i = 0; i < grid->getSize(); i++) {
     BOOST_CHECK(resultImplicit.get(i) == resultExplicit.get(i));
   }
+
+  delete grid;
+  delete opImplicit;
+  delete opExplicit;
 }
 
 // test for Poly
@@ -118,16 +125,16 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitPoly) {
   sgpp::base::Grid* grid(sgpp::base::Grid::createPolyGrid(d, p));
   grid->getGenerator().regular(l);
 
-  sgpp::base::DataMatrix* m = new sgpp::base::DataMatrix(grid->getSize(), grid->getSize());
-  sgpp::base::OperationMatrix* opExplicit
-    = sgpp::op_factory::createOperationLTwoDotExplicit(m, *grid);
+  sgpp::base::DataMatrix m(grid->getSize(), grid->getSize());
+  sgpp::base::OperationMatrix* opExplicit =
+      sgpp::op_factory::createOperationLTwoDotExplicit(&m, *grid);
 
   // test Explicit correctness
   for (size_t i = 0; i < grid->getSize(); i++) {
     for (size_t j = i; j < grid->getSize(); j++) {
-      double approx = uniform_distributed_approximation(grid, i, j);
-      // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
-      BOOST_CHECK_SMALL(approx - m->get(i, j), 1e-3);
+      double approx = uniform_distributed_approximation(*grid, i, j);
+      // std::cout << std::abs(approx - m.get(i, j)) << std::endl;
+      BOOST_CHECK_SMALL(approx - m.get(i, j), 1e-3);
     }
   }
 
@@ -143,6 +150,10 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitPoly) {
   for (size_t i = 0; i < grid->getSize(); i++) {
     BOOST_CHECK(resultImplicit.get(i) == resultExplicit.get(i));
   }
+
+  delete grid;
+  delete opImplicit;
+  delete opExplicit;
 }
 
 // test for PolyBoundary
@@ -153,16 +164,16 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitPolyBoundary) {
   sgpp::base::Grid* grid(sgpp::base::Grid::createPolyBoundaryGrid(d, p));
   grid->getGenerator().regular(l);
 
-  sgpp::base::DataMatrix* m = new sgpp::base::DataMatrix(grid->getSize(), grid->getSize());
+  sgpp::base::DataMatrix m(grid->getSize(), grid->getSize());
   sgpp::base::OperationMatrix* opExplicit =
-    sgpp::op_factory::createOperationLTwoDotExplicit(m, *grid);
+      sgpp::op_factory::createOperationLTwoDotExplicit(&m, *grid);
 
   // test Explicit correctness
   for (size_t i = 0; i < grid->getSize(); i++) {
     for (size_t j = i; j < grid->getSize(); j++) {
-      double approx = uniform_distributed_approximation(grid, i, j);
-      // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
-      BOOST_CHECK_SMALL(approx - m->get(i, j), 1e-3);
+      double approx = uniform_distributed_approximation(*grid, i, j);
+      // std::cout << std::abs(approx - m.get(i, j)) << std::endl;
+      BOOST_CHECK_SMALL(approx - m.get(i, j), 1e-3);
     }
   }
 
@@ -178,6 +189,10 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitPolyBoundary) {
   for (size_t i = 0; i < grid->getSize(); i++) {
     BOOST_CHECK(resultImplicit.get(i) == resultExplicit.get(i));
   }
+
+  delete grid;
+  delete opImplicit;
+  delete opExplicit;
 }
 
 // test for ModPoly
@@ -188,16 +203,16 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitModPoly) {
   sgpp::base::Grid* grid(sgpp::base::Grid::createModPolyGrid(d, p));
   grid->getGenerator().regular(l);
 
-  sgpp::base::DataMatrix* m = new sgpp::base::DataMatrix(grid->getSize(), grid->getSize());
+  sgpp::base::DataMatrix m(grid->getSize(), grid->getSize());
   sgpp::base::OperationMatrix* opExplicit =
-    sgpp::op_factory::createOperationLTwoDotExplicit(m, *grid);
+      sgpp::op_factory::createOperationLTwoDotExplicit(&m, *grid);
 
   // test Explicit correctness
   for (size_t i = 0; i < grid->getSize(); i++) {
     for (size_t j = i; j < grid->getSize(); j++) {
-      double approx = uniform_distributed_approximation(grid, i, j);
-      // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
-      BOOST_CHECK_SMALL(approx - m->get(i, j), 1e-3);
+      double approx = uniform_distributed_approximation(*grid, i, j);
+      std::cout << std::abs(approx - m.get(i, j)) << std::endl;
+      BOOST_CHECK_SMALL(approx - m.get(i, j), 1e-3);
     }
   }
 
@@ -213,6 +228,10 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitModPoly) {
   for (size_t i = 0; i < grid->getSize(); i++) {
     BOOST_CHECK(resultImplicit.get(i) == resultExplicit.get(i));
   }
+
+  delete grid;
+  delete opImplicit;
+  delete opExplicit;
 }
 
 // test for PolyClenshawCurtis
@@ -223,16 +242,16 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitPolyClenshawCurtis) {
   sgpp::base::Grid* grid(sgpp::base::Grid::createPolyClenshawCurtisGrid(d, p));
   grid->getGenerator().regular(l);
 
-  sgpp::base::DataMatrix* m = new sgpp::base::DataMatrix(grid->getSize(), grid->getSize());
+  sgpp::base::DataMatrix m(grid->getSize(), grid->getSize());
   sgpp::base::OperationMatrix* opExplicit =
-    sgpp::op_factory::createOperationLTwoDotExplicit(m, *grid);
+      sgpp::op_factory::createOperationLTwoDotExplicit(&m, *grid);
 
   // test Explicit correctness
   for (size_t i = 0; i < grid->getSize(); i++) {
     for (size_t j = i; j < grid->getSize(); j++) {
-      double approx = uniform_distributed_approximation(grid, i, j);
-      // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
-      BOOST_CHECK_SMALL(approx - m->get(i, j), 1e-3);
+      double approx = uniform_distributed_approximation(*grid, i, j);
+      // std::cout << std::abs(approx - m.get(i, j)) << std::endl;
+      BOOST_CHECK_SMALL(approx - m.get(i, j), 1e-3);
     }
   }
 
@@ -248,6 +267,10 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitPolyClenshawCurtis) {
   for (size_t i = 0; i < grid->getSize(); i++) {
     BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-13);
   }
+
+  delete grid;
+  delete opImplicit;
+  delete opExplicit;
 }
 
 // test for PolyClenshawCurtisBoundary
@@ -258,16 +281,16 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitPolyClenshawCurtisBoundar
   sgpp::base::Grid* grid(sgpp::base::Grid::createPolyClenshawCurtisBoundaryGrid(d, p));
   grid->getGenerator().regular(l);
 
-  sgpp::base::DataMatrix* m = new sgpp::base::DataMatrix(grid->getSize(), grid->getSize());
+  sgpp::base::DataMatrix m(grid->getSize(), grid->getSize());
   sgpp::base::OperationMatrix* opExplicit =
-    sgpp::op_factory::createOperationLTwoDotExplicit(m, *grid);
+      sgpp::op_factory::createOperationLTwoDotExplicit(&m, *grid);
 
   // test Explicit correctness
   for (size_t i = 0; i < grid->getSize(); i++) {
     for (size_t j = i; j < grid->getSize(); j++) {
-      double approx = uniform_distributed_approximation(grid, i, j);
-      // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
-      BOOST_CHECK_SMALL(approx - m->get(i, j), 1e-3);
+      double approx = uniform_distributed_approximation(*grid, i, j);
+      // std::cout << std::abs(approx - m.get(i, j)) << std::endl;
+      BOOST_CHECK_SMALL(approx - m.get(i, j), 1e-3);
     }
   }
 
@@ -283,6 +306,10 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitPolyClenshawCurtisBoundar
   for (size_t i = 0; i < grid->getSize(); i++) {
     BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-13);
   }
+
+  delete grid;
+  delete opImplicit;
+  delete opExplicit;
 }
 
 // test for ModPolyClenshawCurtis
@@ -293,16 +320,16 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitModPolyClenshawCurtis) {
   sgpp::base::Grid* grid(sgpp::base::Grid::createModPolyClenshawCurtisGrid(d, p));
   grid->getGenerator().regular(l);
 
-  sgpp::base::DataMatrix* m = new sgpp::base::DataMatrix(grid->getSize(), grid->getSize());
+  sgpp::base::DataMatrix m(grid->getSize(), grid->getSize());
   sgpp::base::OperationMatrix* opExplicit =
-    sgpp::op_factory::createOperationLTwoDotExplicit(m, *grid);
+      sgpp::op_factory::createOperationLTwoDotExplicit(&m, *grid);
 
   // test Explicit correctness
   for (size_t i = 0; i < grid->getSize(); i++) {
     for (size_t j = i; j < grid->getSize(); j++) {
-      double approx = uniform_distributed_approximation(grid, i, j);
-      // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
-      BOOST_CHECK_SMALL(approx - m->get(i, j), 1e-3);
+      double approx = uniform_distributed_approximation(*grid, i, j);
+      // std::cout << std::abs(approx - m.get(i, j)) << std::endl;
+      BOOST_CHECK_SMALL(approx - m.get(i, j), 1e-3);
     }
   }
 
@@ -318,6 +345,10 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitModPolyClenshawCurtis) {
   for (size_t i = 0; i < grid->getSize(); i++) {
     BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-13);
   }
+
+  delete grid;
+  delete opImplicit;
+  delete opExplicit;
 }
 
 // test for Bspline
@@ -328,15 +359,15 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitBspline) {
   sgpp::base::Grid* grid(sgpp::base::Grid::createBsplineGrid(d, p));
   grid->getGenerator().regular(l);
 
-  sgpp::base::DataMatrix* m = new sgpp::base::DataMatrix(grid->getSize(), grid->getSize());
+  sgpp::base::DataMatrix m(grid->getSize(), grid->getSize());
   sgpp::base::OperationMatrix* opExplicit =
-    sgpp::op_factory::createOperationLTwoDotExplicit(m, *grid);
+      sgpp::op_factory::createOperationLTwoDotExplicit(&m, *grid);
 
   for (size_t i = 0; i < grid->getSize(); i++) {
     for (size_t j = i; j < grid->getSize(); j++) {
-      double approx = uniform_distributed_approximation(grid, i, j);
-      // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
-      BOOST_CHECK_SMALL(approx - m->get(i, j), 1e-3);
+      double approx = uniform_distributed_approximation(*grid, i, j);
+      // std::cout << std::abs(approx - m.get(i, j)) << std::endl;
+      BOOST_CHECK_SMALL(approx - m.get(i, j), 1e-3);
     }
   }
 
@@ -352,6 +383,10 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitBspline) {
   for (size_t i = 0; i < grid->getSize(); i++) {
     BOOST_CHECK(resultImplicit.get(i) == resultExplicit.get(i));
   }
+
+  delete grid;
+  delete opImplicit;
+  delete opExplicit;
 }
 
 // test for BsplineBoundary
@@ -362,15 +397,15 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitBsplineBoundary) {
   sgpp::base::Grid* grid(sgpp::base::Grid::createBsplineBoundaryGrid(d, p));
   grid->getGenerator().regular(l);
 
-  sgpp::base::DataMatrix* m = new sgpp::base::DataMatrix(grid->getSize(), grid->getSize());
+  sgpp::base::DataMatrix m(grid->getSize(), grid->getSize());
   sgpp::base::OperationMatrix* opExplicit =
-    sgpp::op_factory::createOperationLTwoDotExplicit(m, *grid);
+      sgpp::op_factory::createOperationLTwoDotExplicit(&m, *grid);
 
   for (size_t i = 0; i < grid->getSize(); i++) {
     for (size_t j = i; j < grid->getSize(); j++) {
-      double approx = uniform_distributed_approximation(grid, i, j);
-      // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
-      BOOST_CHECK_SMALL(approx - m->get(i, j), 1e-3);
+      double approx = uniform_distributed_approximation(*grid, i, j);
+      // std::cout << std::abs(approx - m.get(i, j)) << std::endl;
+      BOOST_CHECK_SMALL(approx - m.get(i, j), 1e-3);
     }
   }
 
@@ -386,6 +421,10 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitBsplineBoundary) {
   for (size_t i = 0; i < grid->getSize(); i++) {
     BOOST_CHECK(resultImplicit.get(i) == resultExplicit.get(i));
   }
+
+  delete grid;
+  delete opImplicit;
+  delete opExplicit;
 }
 
 // test for ModBspline
@@ -396,15 +435,15 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitModBspline) {
   sgpp::base::Grid* grid(sgpp::base::Grid::createModBsplineGrid(d, p));
   grid->getGenerator().regular(l);
 
-  sgpp::base::DataMatrix* m = new sgpp::base::DataMatrix(grid->getSize(), grid->getSize());
+  sgpp::base::DataMatrix m(grid->getSize(), grid->getSize());
   sgpp::base::OperationMatrix* opExplicit =
-    sgpp::op_factory::createOperationLTwoDotExplicit(m, *grid);
+      sgpp::op_factory::createOperationLTwoDotExplicit(&m, *grid);
 
   for (size_t i = 0; i < grid->getSize(); i++) {
     for (size_t j = i; j < grid->getSize(); j++) {
-      double approx = uniform_distributed_approximation(grid, i, j);
-      // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
-      BOOST_CHECK_SMALL(approx - m->get(i, j), 1e-3);
+      double approx = uniform_distributed_approximation(*grid, i, j);
+      // std::cout << std::abs(approx - m.get(i, j)) << std::endl;
+      BOOST_CHECK_SMALL(approx - m.get(i, j), 1e-3);
     }
   }
 
@@ -420,9 +459,13 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitModBspline) {
   for (size_t i = 0; i < grid->getSize(); i++) {
     BOOST_CHECK(resultImplicit.get(i) == resultExplicit.get(i));
   }
+
+  delete grid;
+  delete opImplicit;
+  delete opExplicit;
 }
 
-  // test for BsplineClenshawCurtis
+// test for BsplineClenshawCurtis
 BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitBsplineClenshawCurtis) {
   const size_t d = 3;
   const size_t l = 3;
@@ -430,15 +473,15 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitBsplineClenshawCurtis) {
   sgpp::base::Grid* grid(sgpp::base::Grid::createBsplineClenshawCurtisGrid(d, p));
   grid->getGenerator().regular(l);
 
-  sgpp::base::DataMatrix* m = new sgpp::base::DataMatrix(grid->getSize(), grid->getSize());
+  sgpp::base::DataMatrix m(grid->getSize(), grid->getSize());
   sgpp::base::OperationMatrix* opExplicit =
-    sgpp::op_factory::createOperationLTwoDotExplicit(m, *grid);
+      sgpp::op_factory::createOperationLTwoDotExplicit(&m, *grid);
 
   for (size_t i = 0; i < grid->getSize(); i++) {
     for (size_t j = i; j < grid->getSize(); j++) {
-      double approx = uniform_distributed_approximation(grid, i, j);
-      // std::cout << std::abs(approx - m->get(i, j)) << std::endl;
-      BOOST_CHECK_SMALL(approx - m->get(i, j), 1e-3);
+      double approx = uniform_distributed_approximation(*grid, i, j);
+      // std::cout << std::abs(approx - m.get(i, j)) << std::endl;
+      BOOST_CHECK_SMALL(approx - m.get(i, j), 1e-3);
     }
   }
 
@@ -454,6 +497,10 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitBsplineClenshawCurtis) {
   for (size_t i = 0; i < grid->getSize(); i++) {
     BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-13);
   }
+
+  delete grid;
+  delete opImplicit;
+  delete opExplicit;
 }
 
 BOOST_AUTO_TEST_SUITE_END()
