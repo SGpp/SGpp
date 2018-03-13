@@ -335,7 +335,7 @@ def example6():
 # @section py_combigrid_example_7 Example 7: Polynomial interpolation on nested Clenshaw Curtis grids
 ##
 # The next example uses interpolation.
-def example7(dtype="uniform", maxLevel=1):
+def example7(dtype="uniform", maxLevel=2):
     # This time, we use Clenshaw-Curtis points with exponentially growing number of points per level.
     # This is helpful for CC points to make them nested. Nested means that the set of grid points at
     # one level is a subset of the set of grid points at the next level. Nesting can drastically
@@ -397,9 +397,10 @@ def example7(dtype="uniform", maxLevel=1):
         plt.title(r"Sparse Grid $\ell=%i$ (stretched)" % (maxLevel + 1,),
                   fontproperties=load_font_properties())
 
-    savefig(fig, "/home/franzefn/Desktop/Mario/sparse_grid_%s" % dtype,
+    savefig(fig, "/home/franzefn/Desktop/tmp/sparse_grid_%s" % dtype,
             mpl3d=True)
 
+    maxLevel = 1
     for tr in ["fg", "ct"]:
         # We can also fetch the used grid points and plot the grid:
         fig, axarr = plt.subplots(maxLevel + 1, maxLevel + 1,
@@ -441,7 +442,7 @@ def example7(dtype="uniform", maxLevel=1):
         # plt.xlim(0, 1)
         # plt.ylim(0, 1)
         fig.set_size_inches(6, 6, forward=True)
-        savefig(fig, "/home/franzefn/Desktop/Mario/tableau_%s_%s_l%i" % (dtype, tr, maxLevel, ),
+        savefig(fig, "/home/franzefn/Desktop/tmp/tableau_%s_%s_l%i" % (dtype, tr, maxLevel, ),
                 mpl3d=True)
 
 
@@ -509,6 +510,7 @@ def example8(dist_type="uniform"):
 
 
 print("\nExample 7:")
+example7(dtype="cc")
 example7(dtype="uniform")
 example7(dtype="l2leja")
 
