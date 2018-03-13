@@ -87,3 +87,10 @@
 # ignoring Windows build directories
 /build/
 /dist/
+
+GPATH
+GRTAGS
+GSYMS
+GTAGS
+custom.py
+gmon.out
