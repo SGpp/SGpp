@@ -479,7 +479,7 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
     tMap->insert(std::pair<std::string, Grid::Factory>("linearClenshawCurtis",
                                                        LinearClenshawCurtisGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>(
-        "linearClenshawCurtisBoundary", LinearClenshawCurtisGridBoundary::unserialize));
+        "linearClenshawCurtisBoundary", LinearClenshawCurtisBoundaryGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("modLinearClenshawCurtis",
                                                        ModLinearClenshawCurtisGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("modlinear", ModLinearGrid::unserialize));
