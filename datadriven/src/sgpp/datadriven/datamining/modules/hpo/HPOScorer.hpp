@@ -53,6 +53,8 @@ class HPOScorer : public Scorer {
                         double* stdDeviation = nullptr) override;
 
   Dataset* prepareTestData(Dataset& dataset);
+
+  void createTestFile(Dataset& dataset);
  
  private:
   /**

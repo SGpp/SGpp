@@ -1,12 +1,12 @@
 {
 	"dataSource": {
-		"filePath": "C:/Users/Eric/Documents/ozoneprepared.csv"
+		"filePath": "C:/Users/Eric/Downloads/friedmantrain.csv"
 	},
 	"scorer": {
 		"testing": {
-			"testingPortion": 0.8,
+			"testingPortion": 0.5,
 			"shuffling": "random",
-			"randomSeed": 43,
+			"randomSeed": 42,
 			"metric": "MSE"
 		}
 	},
@@ -17,7 +17,7 @@
 			"level": 2
 		},
 	"adaptivityConfig": {
-			"numRefinements": 4,
+			"numRefinements": 10,
 			"threshold": 0.001,
 			"maxLevelType": false,
 			"noPoints": 1

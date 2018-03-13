@@ -55,5 +55,6 @@ int main(int argc, char **argv) {
    */
   // hpo->optimizeHyperparameters();
   hpo->runBO();
+  //hpo->runFromFile();
   //miner->learn();
 }

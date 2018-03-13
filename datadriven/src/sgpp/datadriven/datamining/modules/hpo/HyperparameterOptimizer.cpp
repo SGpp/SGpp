@@ -26,6 +26,7 @@
 #include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/BayesianOptimization.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
+#include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -190,12 +191,71 @@ void HyperparameterOptimizer::optimizeHyperparameters(){
   //double score = hpoScorer->calculateScore(*fitter, *dataset, &stdDeviation);
 }
 
+void HyperparameterOptimizer::runFromFile(){
+  DataSourceBuilder dsbuilder;
+  std::unique_ptr<Dataset> configDataset = std::unique_ptr<Dataset>(dsbuilder.withPath("C:/Users/Eric/Documents/fixedconfigs.csv").assemble()->getNextSamples());
+  std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
+  std::unique_ptr<Dataset> trainData[10];
+  trainData[0] = std::unique_ptr<Dataset>(hpoScorer->prepareTestData(*dataset));
+  for(int i=1;i<10;i++){
+    trainData[i] = std::unique_ptr<Dataset>(hpoScorer->prepareTestData(*trainData[i-1]));
+  }
+  //std::unique_ptr<Dataset> trainData = std::unique_ptr<Dataset>(hpoScorer->prepareTestData(*dataset));
+
+
+  int nCont;
+  std::vector<int> nOptions{};
+  fitterFactory->getBOspace(&nCont, nOptions);
+  base::DataVector cont(nCont, 0);
+  std::vector<int> disc(nOptions.size(), 0);
+  double stdDeviation;
+
+
+  for(int i=0; i<configDataset->getNumberInstances();i++){
+    for(int k=0; k<configDataset->getDimension(); k++){
+      if(k<nCont) {
+        cont[k] = configDataset->getData().get(i, k);
+      }else {
+        disc[k-nCont] = lround(configDataset->getData().get(i, k));
+        //std::cout << disc[k] << std::endl; //result
+      }
+    }
+    fitterFactory->setBO(cont, disc);
+    fitterFactory->printConfig();
+
+    for(int k=0; k<10; k++){
+      double result = hpoScorer->calculateScore(*(fitterFactory->buildFitter()), *(trainData[k]), &stdDeviation);
+      std::cout << "Result: " << result << std::endl; //result
+
+      //write results in file
+      std::ofstream myfile("C:/Users/Eric/Documents/resultsconfig.txt", std::ios_base::app);
+      if(myfile.is_open()) {
+        //myfile << "threshold,lambda,nopoints,level,basis" << std::endl;
+
+        for (int i = 0; i < nCont; i++) {
+          myfile << (cont)[i] <<",";
+        }
+        for (int i = 0; i < nOptions.size(); i++) {
+          myfile << (disc)[i]<<",";
+        }
+        myfile << trainData[k]->getNumberInstances() << "," << result << std::endl;
+      }
+      myfile.close();
+      //std::cout<< "Write to file finished." << std::endl;
+    }
+  }
+}
+
 void HyperparameterOptimizer::runBO() {
   double kernelwidth = 1.5;
 
   optimization::Printer::getInstance().disableStatusPrinting();
 
   std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
+
+  //create test data
+  // hpoScorer->createTestFile(*dataset);
+
   std::unique_ptr<Dataset> trainData = std::unique_ptr<Dataset>(hpoScorer->prepareTestData(*dataset));
 
   std::vector<base::DataVector> contPoints{};
@@ -226,7 +286,7 @@ void HyperparameterOptimizer::runBO() {
   contPoints.push_back(cont);
   discPoints.push_back(discrete);
 
-  for(int q=0; q<100; q++) {
+  for(int q=0; q<1000; q++) {
 
 
     std::vector<int> disc(nOptions.size(), 0);
@@ -295,6 +355,22 @@ void HyperparameterOptimizer::runBO() {
     fitterFactory->printConfig();
     std::cout << "Acquistion: " << min << std::endl;
     std::cout << "Result: " << -1/result-1 << std::endl; //result
+
+    //write results in file
+    std::ofstream myfile("C:/Users/Eric/Documents/BOresultsfriedmannew.txt", std::ios_base::app);
+    if(myfile.is_open()) {
+      //myfile << "threshold,lambda,nopoints,level,basis" << std::endl;
+
+      for (int i = 0; i < nCont; i++) {
+        myfile << (*mincon)[i] <<",";
+      }
+      for (int i = 0; i < nOptions.size(); i++) {
+        myfile << (*mindisc)[i]<<",";
+      }
+      myfile << -1/result-1 << std::endl;
+    }
+    myfile.close();
+    std::cout<< "Write to file finished." << std::endl;
 
     if(result<bestsofar){
       bestsofar = result;

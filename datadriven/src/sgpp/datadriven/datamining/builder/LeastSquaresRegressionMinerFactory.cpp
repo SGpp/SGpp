@@ -17,7 +17,7 @@
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/SplittingScorerFactory.hpp>
-#include <sgpp/datadriven/datamining/builder/HPOScorerFactory.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HPOScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquaresFista.hpp>
