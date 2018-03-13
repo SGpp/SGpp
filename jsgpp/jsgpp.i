@@ -78,14 +78,14 @@
 %include "quadrature/build/jsgpp/quadrature.i"
 #endif
 
+#ifdef SG_OPTIMIZATION
+%include "optimization/build/jsgpp/optimization.i"
+#endif
+
 #ifdef SG_DATADRIVEN
 %include "datadriven/build/jsgpp/datadriven.i"
 #endif
 
 #ifdef SG_COMBIGRID
 %include "combigrid/build/jsgpp/combigrid.i"
-#endif
-
-#ifdef SG_OPTIMIZATION
-%include "optimization/build/jsgpp/optimization.i"
 #endif
