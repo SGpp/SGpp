@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitLinear) {
   opExplicit->mult(alpha, resultExplicit);
   opImplicit->mult(alpha, resultImplicit);
   for (size_t i = 0; i < grid->getSize(); i++) {
-    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-13);
+    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-12);
   }
 
   delete grid;
@@ -109,7 +109,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitModLinear) {
   opExplicit->mult(alpha, resultExplicit);
   opImplicit->mult(alpha, resultImplicit);
   for (size_t i = 0; i < grid->getSize(); i++) {
-    BOOST_CHECK(resultImplicit.get(i) == resultExplicit.get(i));
+    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-12);
   }
 
   delete grid;
@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitPoly) {
   opExplicit->mult(alpha, resultExplicit);
   opImplicit->mult(alpha, resultImplicit);
   for (size_t i = 0; i < grid->getSize(); i++) {
-    BOOST_CHECK(resultImplicit.get(i) == resultExplicit.get(i));
+    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-12);
   }
 
   delete grid;
@@ -187,7 +187,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitPolyBoundary) {
   opExplicit->mult(alpha, resultExplicit);
   opImplicit->mult(alpha, resultImplicit);
   for (size_t i = 0; i < grid->getSize(); i++) {
-    BOOST_CHECK(resultImplicit.get(i) == resultExplicit.get(i));
+    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-12);
   }
 
   delete grid;
@@ -211,7 +211,6 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitModPoly) {
   for (size_t i = 0; i < grid->getSize(); i++) {
     for (size_t j = i; j < grid->getSize(); j++) {
       double approx = uniform_distributed_approximation(*grid, i, j);
-      std::cout << std::abs(approx - m.get(i, j)) << std::endl;
       BOOST_CHECK_SMALL(approx - m.get(i, j), 1e-3);
     }
   }
@@ -226,7 +225,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitModPoly) {
   opExplicit->mult(alpha, resultExplicit);
   opImplicit->mult(alpha, resultImplicit);
   for (size_t i = 0; i < grid->getSize(); i++) {
-    BOOST_CHECK(resultImplicit.get(i) == resultExplicit.get(i));
+    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-12);
   }
 
   delete grid;
@@ -265,7 +264,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitPolyClenshawCurtis) {
   opExplicit->mult(alpha, resultExplicit);
   opImplicit->mult(alpha, resultImplicit);
   for (size_t i = 0; i < grid->getSize(); i++) {
-    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-13);
+    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-12);
   }
 
   delete grid;
@@ -304,7 +303,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitPolyClenshawCurtisBoundar
   opExplicit->mult(alpha, resultExplicit);
   opImplicit->mult(alpha, resultImplicit);
   for (size_t i = 0; i < grid->getSize(); i++) {
-    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-13);
+    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-12);
   }
 
   delete grid;
@@ -343,7 +342,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitModPolyClenshawCurtis) {
   opExplicit->mult(alpha, resultExplicit);
   opImplicit->mult(alpha, resultImplicit);
   for (size_t i = 0; i < grid->getSize(); i++) {
-    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-13);
+    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-12);
   }
 
   delete grid;
@@ -381,7 +380,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitBspline) {
   opExplicit->mult(alpha, resultExplicit);
   opImplicit->mult(alpha, resultImplicit);
   for (size_t i = 0; i < grid->getSize(); i++) {
-    BOOST_CHECK(resultImplicit.get(i) == resultExplicit.get(i));
+    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-12);
   }
 
   delete grid;
@@ -419,7 +418,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitBsplineBoundary) {
   opExplicit->mult(alpha, resultExplicit);
   opImplicit->mult(alpha, resultImplicit);
   for (size_t i = 0; i < grid->getSize(); i++) {
-    BOOST_CHECK(resultImplicit.get(i) == resultExplicit.get(i));
+    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-12);
   }
 
   delete grid;
@@ -457,7 +456,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitModBspline) {
   opExplicit->mult(alpha, resultExplicit);
   opImplicit->mult(alpha, resultImplicit);
   for (size_t i = 0; i < grid->getSize(); i++) {
-    BOOST_CHECK(resultImplicit.get(i) == resultExplicit.get(i));
+    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-12);
   }
 
   delete grid;
@@ -495,7 +494,7 @@ BOOST_AUTO_TEST_CASE(testOperationMatrixLTwoDotExplicitBsplineClenshawCurtis) {
   opExplicit->mult(alpha, resultExplicit);
   opImplicit->mult(alpha, resultImplicit);
   for (size_t i = 0; i < grid->getSize(); i++) {
-    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-13);
+    BOOST_CHECK_SMALL(resultImplicit.get(i) - resultExplicit.get(i), 1e-12);
   }
 
   delete grid;
