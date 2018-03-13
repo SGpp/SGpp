@@ -8,9 +8,10 @@
  *  Created on:	10.12.2017
  *      Author: Eric Koepke
  */
-#include <sgpp/datadriven/datamining/modules/scoring/HPOScorer.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HPOScorer.hpp>
 
 #include <vector>
+#include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -42,11 +43,65 @@ Dataset* HPOScorer::prepareTestData(Dataset& dataset){
 
 	  // create test and train datasets.
 	  //Dataset testDataset{testSize, dim};
+
+
 	  testDataset = std::make_unique<Dataset>(testSize, dim);
 	  Dataset* trainDataset = new Dataset{trainSize, dim};
 	  splitSet(dataset, *trainDataset, *testDataset, randomizedIndices);
+
+      //overwrite testdataset with outside test data
+      DataSourceBuilder dsbuilder;
+      testDataset = std::unique_ptr<Dataset>(dsbuilder.withPath("C:/Users/Eric/Downloads/friedmantest.csv").assemble()->getNextSamples());
+
 	  return trainDataset;
 	  //splitSet(dataset, dummyDataset, trainDataset, randomizedIndices, 2000);
+}
+
+void HPOScorer::createTestFile(Dataset& dataset){
+  std::vector<size_t> randomizedIndices(dataset.getNumberInstances());
+  randomizeIndices(dataset, randomizedIndices);
+
+  // calculate size of testing and training portions
+  size_t trainSize = std::lround(static_cast<double>(dataset.getNumberInstances()) * trainPortion);
+  size_t testSize =  dataset.getNumberInstances() - trainSize;
+  size_t dim = dataset.getDimension();
+
+  testDataset = std::make_unique<Dataset>(testSize, dim);
+  Dataset* trainDataset = new Dataset{trainSize, dim};
+  splitSet(dataset, *trainDataset, *testDataset, randomizedIndices);
+
+  DataMatrix data(trainDataset->getData());
+  DataVector targets(trainDataset->getTargets());
+  std::ofstream myfile("C:/Users/Eric/Documents/friedmantrain.txt", std::ios_base::app);
+  if(myfile.is_open()) {
+    //myfile << "threshold,lambda,nopoints,level,basis" << std::endl;
+
+    for (int i = 0; i < data.getNrows(); i++) {
+
+      for (int k = 0; k < data.getNcols(); k++) {
+        myfile << data.get(i,k) << ",";
+      }
+
+      myfile << targets[i]  << std::endl;
+    }
+  }
+  myfile.close();
+  data = testDataset->getData();
+  targets = (testDataset->getTargets());
+  myfile = std::ofstream("C:/Users/Eric/Documents/friedmantest.txt", std::ios_base::app);
+  if(myfile.is_open()) {
+    //myfile << "threshold,lambda,nopoints,level,basis" << std::endl;
+
+    for (int i = 0; i < data.getNrows(); i++) {
+
+      for (int k = 0; k < data.getNcols(); k++) {
+        myfile << data.get(i,k) << ",";
+      }
+
+      myfile << targets[i]  << std::endl;
+    }
+  }
+  myfile.close();
 }
 
 // TODO(lettrich) :recycle

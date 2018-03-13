@@ -10,8 +10,8 @@
  *      Author: Eric Koepke
  */
 
-#include <sgpp/datadriven/datamining/builder/HPOScorerFactory.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/HPOScorer.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HPOScorerFactory.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HPOScorer.hpp>
 
 namespace sgpp {
 namespace datadriven {
