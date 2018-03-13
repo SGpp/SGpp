@@ -10,7 +10,9 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeKDE.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+
 #include <sgpp/optimization/optimizer/unconstrained/NelderMead.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 
 #include <sgpp/globaldef.hpp>
 

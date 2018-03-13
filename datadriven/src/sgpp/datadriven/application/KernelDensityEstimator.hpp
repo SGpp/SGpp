@@ -8,6 +8,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
+
 #include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 
 #include <sgpp/globaldef.hpp>
