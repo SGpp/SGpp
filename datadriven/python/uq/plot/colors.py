@@ -33,7 +33,7 @@ def load_custom_pgf_preamble(dtype="standard", macros="thesis"):
                     'xtick.labelsize': pysgpp_uq_font["size"],
                     'ytick.labelsize': pysgpp_uq_font["size"],
                     'axes.unicode_minus': True,
-                    'figure.figsize': (5, 4.5),
+                    #                     'figure.figsize': (5, 4.5),
                     'image.cmap': load_default_color_map(dtype="string")
                     #                     'axes.titlepad': 25
                     }
@@ -152,7 +152,7 @@ def savefig(fig, filename, lgd=None, tikz=False, mpl3d=False, crop=False):
         fig.savefig("%s.png" % filename)
         fig.savefig("%s.pdf" % filename)
     else:
-        fig.tight_layout()
+        # fig.tight_layout()
         if lgd is None:
             fig.savefig("%s.png" % filename, bbox_inches='tight')
             fig.savefig("%s.pdf" % filename, bbox_inches='tight')
@@ -186,7 +186,7 @@ def insert_legend(fig, loc="right", ncol=3, has_axis=True, shift=0.0):
     elif loc == "bottom":
         lgd = plt.legend(loc='upper center',
                          ncol=ncol,
-                         bbox_to_anchor=(0.5, -0.3 + shift) if has_axis else (0.5, -0.08),
+                         bbox_to_anchor=(0.5, -0.3 + shift) if has_axis else (0.5, -0.08 + shift),
                          borderaxespad=0,
                          prop=load_font_properties())
     elif loc == "top":
