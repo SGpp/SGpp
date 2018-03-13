@@ -569,7 +569,7 @@ void SilvermansRule::optimizeBandwidths(KernelDensityEstimator* kde, base::DataV
       }
     }
 
-    if (numBorder > static_cast<double>(numSamples) / 20.) {
+    if (static_cast<double>(numBorder) > static_cast<double>(numSamples) / 20.) {
       flag[idim] = 0.5;
     }
 
