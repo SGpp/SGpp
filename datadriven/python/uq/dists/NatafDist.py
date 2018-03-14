@@ -1,5 +1,11 @@
 import numpy as np
 
+# try:
+from probability_cpp import NatafDensity, GAUSSIAN, GAMMA, STD_BETA
+from probabilistic_transformations_cpp import NatafTransformationData
+# except:
+#     raise AttributeError("heat library 'https://bitbucket.org/jjakeman/heat' is missing. Nataf density is not available")
+
 from EstimatedDist import EstimatedDist
 from Normal import Normal
 from Beta import Beta
@@ -8,11 +14,6 @@ from Dist import Dist
 from pysgpp.extensions.datadriven.uq.jsonLib import reprVal
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
 
-try:
-    from probabilistic_transformations_cpp import NatafTransformationData
-    from probability_cpp import NatafDensity, GAUSSIAN, GAMMA, STD_BETA
-except:
-    raise AttributeError("heat library is missing. Nataf density is not available")
 
 class NatafDist(EstimatedDist):
     """
@@ -97,6 +98,7 @@ class NatafDist(EstimatedDist):
                                                     [stddev] * num_dims,
                                                     [[alpha, beta]] * num_dims)
         nataf.initialize_random_variable_correlations(corrMatrix)
+
         return cls(nataf, bounds=bounds, params={"name": "beta",
                                                  "lwr": lwr,
                                                  "upr": upr,
