@@ -27,12 +27,50 @@
 #include <sgpp/datadriven/datamining/modules/hpo/BayesianOptimization.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
+#include "Harmonica.hpp"
 
 namespace sgpp {
 namespace datadriven {
 
 HyperparameterOptimizer::HyperparameterOptimizer(DataSource* dataSource, FitterFactory* fitterFactory, Scorer* scorer, HPOScorer* hpoScorer)
     : dataSource(dataSource), fitterFactory(fitterFactory), scorer(scorer), hpoScorer(hpoScorer) {}
+
+void HyperparameterOptimizer::runHarmonica(){
+  Harmonica harmonica{fitterFactory.get()}; //EDIT: use correct constructor
+
+  //prepare data
+  std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
+  std::unique_ptr<Dataset> trainData = std::unique_ptr<Dataset>(hpoScorer->prepareTestData(*dataset));
+
+  double stdDeviation;
+  double best = 1.0/0; //infinity
+
+  int n = 100; //EDIT: metaparameter
+  std::vector<ModelFittingBase*> fitters(n);
+  DataVector scores(n);
+  DataVector transformedScores(n);
+
+for(int q=0;q<3;q++) {
+  harmonica.prepareConfigs(fitters); //EDIT: unique pointer, correct usage?
+
+  //run samples (parallel)
+
+  for (int i = 0; i < n; i++) {
+    scores[i] = hpoScorer->calculateScore(*(fitters[i]), *trainData, &stdDeviation);
+    std::cout << "Score " << i << ":" << scores[i];
+    if (scores[i] < best) {
+      best = scores[i];
+      std::cout << " best!";
+    }
+    std::cout << std::endl;
+  }
+
+  harmonica.transformScores(scores, transformedScores);
+
+  harmonica.calculateConstrainedSpace(transformedScores);
+}
+
+}
 
 void HyperparameterOptimizer::optimizeHyperparameters(){
   // prepare data and scorer

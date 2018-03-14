@@ -15,7 +15,7 @@ namespace sgpp {
 namespace datadriven {
 
 
-int ConfigurationBit::evaluate(int* input){
+int ConfigurationBit::evaluate(){
   if(bVisited){
 	  //std::cout<<"Bit visited!"<<std::endl;
     return value;
@@ -32,7 +32,7 @@ int ConfigurationBit::evaluate(int* input){
     int tmp = constraint->getBias();
     for(auto &bit : constraint->getConfigBits()){
     	if(this!=bit){
-    		tmp = tmp * bit->evaluate(input);
+    		tmp = tmp * bit->evaluate();
     	}
     }
     if(tmp != 0){
@@ -41,9 +41,8 @@ int ConfigurationBit::evaluate(int* input){
     }
   }
   // pull free bit
-  // std::cout<<"input before:"<<(*input)<<std::endl;
-  value = (*input&1)*2-1;
-  *input = (*input>>1);
+  std::cout<<"Error: Bit evaluation failed."<<std::endl;
+
   // std::cout<<"input after:"<<*input<<std::endl;
   return value;
 }
@@ -86,19 +85,28 @@ void ConfigurationBit::addConstraint(ConfigurationRestriction* constraint){
   constraints.push_back(constraint);
 }
 
+void ConfigurationBit::removeLastConstraint(){
+  constraints.pop_back();
+}
+
 void ConfigurationBit::reset(){
   value = 0;
   bVisited = false;
 }
 
+void ConfigurationBit::setBit(int* input){
+  value = (*input&1)*2-1;
+  *input = (*input>>1);
+  bVisited = true;
+}
+
 bool ConfigurationBit::checkConstraints(){
-	int dummy = 0;
 	 for(auto &constraint : constraints){
 	    int tmp = constraint->getBias();
 	    // std::cout<<"Constraint Bias: "<<tmp<<std::endl;
 	    for(auto &bit : constraint->getConfigBits()){
 	    	if(this!=bit){
-	    		tmp = tmp * bit->evaluate(&dummy);
+	    		tmp = tmp * bit->evaluate();
 	    		// std::cout<<"temp: "<<tmp<<std::endl;
 	    	}
 	    }

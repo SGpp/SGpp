@@ -82,6 +82,8 @@ class HyperparameterOptimizer {
 
   void runBO();
 
+  void runHarmonica();
+
  private:
   /**
    * DataSource provides samples that will be used by fitter to generalize data and scorer to

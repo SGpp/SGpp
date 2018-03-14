@@ -37,13 +37,11 @@ void DiscreteParameter::setBO(int option){
   value = min+option;
 }
 void DiscreteParameter::setHarmonica(){
-  int a = 0;
-  int* configID = &a;
   if(std::pow(2,bits.size()) <= max-min+1){
     double v = 0;
     double m = 1;
     for(auto bit : bits){
-      v = v + m* bit->evaluate(configID);
+      v = v + m* bit->evaluate();
       m = m * 2;
     }
     value = lround(static_cast<double>(min+((max-min)*(1+v/(m-1.0))/2)));
@@ -66,11 +64,11 @@ void DiscreteParameter::setHarmonica(){
     ConfigurationBit* last = bits.back();
     bits.pop_back();
     for(auto bit : bits){
-      v = v + m*(bit->evaluate(configID)+1)/2;
+      v = v + m*(bit->evaluate()+1)/2;
       m = m * 2;
     }
     bits.push_back(last);
-    int nv = v + c*(last->evaluate(configID)+1)/2;
+    int nv = v + c*(last->evaluate()+1)/2;
     if(nv >= min+std::pow(2,bits.size()-1) && nv <= max){
       v = nv;
     }
