@@ -173,11 +173,11 @@ sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
 
     // configure regularization
     sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-    regularizationConfig.regType_ =
+    regularizationConfig.type_ =
         sgpp::datadriven::RegularizationType::Laplace;
 
     // configure learner
-    sgpp::datadriven::CrossvalidationForRegularizationConfiguration
+    sgpp::datadriven::CrossvalidationConfiguration
     crossvalidationConfig;
     crossvalidationConfig.enable_ = false;
     crossvalidationConfig.kfold_ = 3;

@@ -7,10 +7,11 @@
 #include <sgpp/combigrid/optimization/MixedOptimizer.hpp>
 
 #include <algorithm>
-#include <cmath>
 #include <functional>
 #include <iostream>
 #include <vector>
+
+#include <cmath>
 
 namespace sgpp {
 namespace combigrid {
@@ -40,7 +41,7 @@ void LejaPointDistribution::calc_leja_points(std::vector<double>& sortedPoints,
     std::function<double(double)> leja_func = [sortedPoints, weight_func](double x) {
       double prod = 1;
       for (size_t i = 0; i < sortedPoints.size(); ++i) {
-        prod *= std::abs(x - sortedPoints.at(i));
+        prod *= std::fabs(x - sortedPoints.at(i));
       }
       return -prod * weight_func(x);
     };
@@ -57,10 +58,10 @@ void LejaPointDistribution::calc_leja_points(std::vector<double>& sortedPoints,
       double y_val = 0.0;
 
       // optimize the remainder polynomial if the current patch is wide enough
-      if (std::abs(x_lower - x_upper) > 1e-10) {
+      if (std::fabs(x_lower - x_upper) > 1e-10) {
         auto myLejaFunc = SingleFunction(leja_func);
-        auto result =
-            MixedOptimizer(myLejaFunc).minimize(OptimizationGuess::initial(0.0, 1.0, myLejaFunc));
+        auto result = MixedOptimizer(myLejaFunc)
+                          .minimize(OptimizationGuess::initial(x_lower, x_upper, myLejaFunc));
         x_val = result.b;
         y_val = result.fb;
       }
@@ -94,16 +95,10 @@ void LejaPointDistribution::calc_leja_points(std::vector<double>& sortedPoints,
 }
 
 /**
- * Calculates the Starting Point by weighting the weight function with a wide normal distribution
- * and searching via optimizer for the maximum
+ * Calculates the Starting Point by searching via optimizer for the maximum of the weight function.
  */
 double LejaPointDistribution::calcStartingPoint(double epsilon) {
-  // weight the weight function with the normal distribution
-  std::function<double(double)> w = [this](double x) {
-    const double factor = 0.2;
-    double evalNormal = std::exp(-(factor * (x - 0.5)) * (factor * (x - 0.5)));
-    return -(evalNormal * this->weightFunction(x));
-  };
+  std::function<double(double)> w = [this](double x) { return -this->weightFunction(x); };
 
   // optimize it
   double x_val = 0.5;
@@ -111,6 +106,14 @@ double LejaPointDistribution::calcStartingPoint(double epsilon) {
   auto result = MixedOptimizer(myFunc).minimize(OptimizationGuess::initial(0.0, 1.0, myFunc));
   x_val = result.b;
   return x_val;
+}
+
+LejaPointDistribution::LejaPointDistribution()
+    : weightFunction(SingleFunction(constantFunction<double>(static_cast<double>(1.0)))),
+      startingPoint(0.5) {
+  // TODO(holzmudd): add precomputed points?
+  points.push_back(this->startingPoint);
+  sortedPoints.push_back(this->startingPoint);
 }
 
 LejaPointDistribution::LejaPointDistribution(SingleFunction weightFunction)

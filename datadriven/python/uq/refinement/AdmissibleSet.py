@@ -21,9 +21,9 @@ class AdmissibleSetGenerator(object):
             if self.refineInnerNodes:
                 levels = [gp.getLevel(d) > 0 for d in xrange(gp.getDimension())]
                 if all(levels):
-                    self.admissibleSet[gp.hash()] = gp
+                    self.admissibleSet[gp.getHash()] = gp
             else:
-                self.admissibleSet[gp.hash()] = gp
+                self.admissibleSet[gp.getHash()] = gp
 
     def getSize(self):
         return len(self.admissibleSet)
@@ -36,6 +36,9 @@ class AdmissibleSetGenerator(object):
 
     def update(self, grid, nps):
         raise NotImplementedError()
+
+    def __contains__(self, elem):
+        return elem.getHash() in self.admissibleSet
 
 
 class RefinableNodesSet(AdmissibleSetGenerator):
@@ -52,11 +55,11 @@ class RefinableNodesSet(AdmissibleSetGenerator):
         for gp in self.admissibleSet.values():
             if not isRefineable(grid, gp) or \
                     not self.checkRange(gp, self.maxLevel):
-                del self.admissibleSet[gp.hash()]
+                del self.admissibleSet[gp.getHash()]
 
         # add the refinable new collocation nodes to the admissible set
         for gp in gps:
-            if gp.hash() not in self.admissibleSet and isRefineable(grid, gp):
+            if gp.getHash() not in self.admissibleSet and isRefineable(grid, gp):
                 self.insertPoint(gp)
 
 
@@ -69,7 +72,7 @@ class AdmissibleSparseGridNodeSet(AdmissibleSetGenerator):
             gs = grid.getStorage()
             gps = getHierarchicalAncestors(grid, gp)
             for _, p in gps:
-                if not gs.has_key(p):
+                if not gs.isContaining(p):
                     self.insertPoint(p)
 
     def addChildren(self, grid, gp):
@@ -77,15 +80,15 @@ class AdmissibleSparseGridNodeSet(AdmissibleSetGenerator):
         for d in xrange(gs.getDimension()):
             # check left child in d
             gpl = HashGridPoint(gp)
-            gs.left_child(gpl, d)
-            if not gs.has_key(gpl) and isValid(grid, gpl) and \
+            gpl.getLeftChild(d)
+            if not gs.isContaining(gpl) and isValid(grid, gpl) and \
                     self.checkRange(gpl, self.maxLevel):
                 self.addCollocationNode(grid, gpl)
 
             # check right child in d
             gpr = HashGridPoint(gp)
-            gs.right_child(gpr, d)
-            if not gs.has_key(gpr) and isValid(grid, gpr) and \
+            gpr.getRightChild(d)
+            if not gs.isContaining(gpr) and isValid(grid, gpr) and \
                     self.checkRange(gpr, self.maxLevel):
                 self.addCollocationNode(grid, gpr)
 
@@ -97,8 +100,8 @@ class AdmissibleSparseGridNodeSet(AdmissibleSetGenerator):
     def update(self, grid, newGridPoints):
         for gp in newGridPoints:
             # remove new points from the set
-            if gp.hash() in self.admissibleSet:
-                del self.admissibleSet[gp.hash()]
+            if gp.getHash() in self.admissibleSet:
+                del self.admissibleSet[gp.getHash()]
 
             # add all its children
             self.addChildren(grid, gp)

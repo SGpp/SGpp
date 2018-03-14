@@ -3,8 +3,11 @@ Created on Aug 6, 2014
 
 @author: franzefn
 """
+import numpy as np
+
 from LinearQuadratureStrategy import LinearQuadratureStrategy
-from pysgpp.extensions.datadriven.uq.operations import getBoundsOfSupport
+from pysgpp.extensions.datadriven.uq.operations import getBoundsOfSupport, bsplineGridTypes
+from pysgpp.extensions.datadriven.uq.dists.Uniform import Uniform
 
 
 class LinearGaussQuadratureStrategy(LinearQuadratureStrategy):
@@ -12,17 +15,7 @@ class LinearGaussQuadratureStrategy(LinearQuadratureStrategy):
     Use Scipy for quadrature
     """
 
-    def __init__(self, U, T):
-        """
-        Constructor
-        @param U list of distribution functions
-        @param T list of transformation functions
-        """
-        super(self.__class__, self).__init__(U, T)
-        self._U = U
-        self._T = T
-
-    def computeLinearFormEntry(self, gp, basis, d):
+    def computeLinearFormEntry(self, gs, gp, basis, d):
         val = 1
         err = 0.
 
@@ -31,11 +24,15 @@ class LinearGaussQuadratureStrategy(LinearQuadratureStrategy):
 
         # compute left and right boundary of the support of both
         # basis functions
-        xlow, xhigh = getBoundsOfSupport(lid, iid)
+        xlow, xhigh = getBoundsOfSupport(gs, lid, iid, self._gridType)
+        xcenter = gs.getCoordinate(gp, d)
 
         # ----------------------------------------------------
         # use gauss-legendre-quadrature
-        if self._U is None:
+        bounds = self._U[d].getBounds()
+        if self._U is None or (isinstance(self._U[d], Uniform) and \
+                               np.abs(bounds[0]) < 1e-14 and \
+                               np.abs(bounds[1] - 1.0) < 1e-14):
             def f(p):
                 return basis.eval(lid, iid, p)
         else:
@@ -44,10 +41,9 @@ class LinearGaussQuadratureStrategy(LinearQuadratureStrategy):
                 return basis.eval(lid, iid, p) * self._U[d].pdf(q)
 
         # compute the piecewise continuous parts separately
-        sleft, err1dleft = self.quad(f, xlow, (xlow + xhigh) / 2,
-                                     deg=gp.getLevel(d) + 2)
-        sright, err1dright = self.quad(f, (xlow + xhigh) / 2, xhigh,
-                                       deg=gp.getLevel(d) + 2)
+        deg = gp.getLevel(d) + 2
+        sleft, err1dleft = self.quad(f, xlow, xcenter, deg=deg)
+        sright, err1dright = self.quad(f, xcenter, xhigh, deg=deg)
 
 #             # -----------------------------------------
 #             # plot the basis

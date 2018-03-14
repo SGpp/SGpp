@@ -30,8 +30,13 @@ using sgpp::base::algorithm_exception;
 using sgpp::base::DataVector;
 using sgpp::base::DataMatrix;
 
-DBMatOfflineLU::DBMatOfflineLU(const DBMatDensityConfiguration& oc)
-    : DBMatOfflineGE{oc}, permutation{nullptr} {}
+DBMatOfflineLU::DBMatOfflineLU(
+    const sgpp::base::RegularGridConfiguration& gridConfig,
+    const sgpp::base::AdpativityConfiguration& adaptivityConfig,
+    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig)
+    : DBMatOfflineGE{gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig},
+    permutation{nullptr} {}
 
 DBMatOfflineLU::DBMatOfflineLU(const DBMatOfflineLU& rhs)
     : DBMatOfflineGE(rhs), permutation(nullptr) {
@@ -77,7 +82,8 @@ void DBMatOfflineLU::decomposeMatrix() {
 
 DBMatOfflineLU::DBMatOfflineLU(const std::string& fileName)
     : DBMatOfflineGE(), permutation{nullptr} {
-  parseConfig(fileName, config);
+  parseConfig(fileName, gridConfig, adaptivityConfig,
+              regularizationConfig, densityEstimationConfig);
   isConstructed = true;
   isDecomposed = true;
   InitializeGrid();

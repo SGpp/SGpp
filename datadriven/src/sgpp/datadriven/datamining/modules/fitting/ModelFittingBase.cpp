@@ -13,7 +13,7 @@
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/solver/sle/BiCGStab.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>

@@ -40,7 +40,7 @@ class TreeStorageGuidedIterator : public AbstractMultiStorageIterator<T> {
 
   /**
    * Helper function that returns the index-th child of the given node. If this child does not
-   * exist, it is created (along with nodes for previous childs that also do not exist).
+   * exist, it is created (along with nodes for previous children that also do not exist).
    * @param depth Depth of the node in the tree (starting from 0)
    * @param node Node to get the child from
    * @param index Index of the child to get.
@@ -56,13 +56,13 @@ class TreeStorageGuidedIterator : public AbstractMultiStorageIterator<T> {
           CGLOG("TreeStorageGuidedIterator::getChild(): create internal tree storage node at depth "
                 << depth);
           node->children.emplace_back(
-              new InternalTreeStorageNode<T>(node->context, remainingDimensions - 1));
+              std::make_unique<InternalTreeStorageNode<T>>(node->context, remainingDimensions - 1));
         }
       } else {
         while (index >= node->children.size()) {
           CGLOG("TreeStorageGuidedIterator::getChild(): create lowest tree storage node at depth "
                 << depth);
-          node->children.emplace_back(new LowestTreeStorageNode<T>(node->context));
+          node->children.emplace_back(std::make_unique<LowestTreeStorageNode<T>>(node->context));
         }
       }
     }

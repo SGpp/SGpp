@@ -12,6 +12,48 @@ http://sgpp.sparsegrids.org.
 <!-- ############################################################# -->
 @section downloads__history Versions
 
+@subsection downloads_history_300 Version 3.0.0, 2018/03/12
+It took us some time, but we now can offer a new major release with a lot of changes and plenty of new functionality!
+
+Download
+  - Source: <a href="https://github.com/SGpp/SGpp">Fork us on GitHub</a>
+  - We now provide binaries!
+    - deb package for Linux (C++): <a href="http://sgpp.sparsegrids.org/downloads/">libsgpp_3.0.0</a>
+    - deb package for Linux (Python support, requires C++ package): <a href="http://sgpp.sparsegrids.org/downloads/">libsgpp_3.0.0</a>
+    - for Matlab/Windows: <a href="http://sgpp.sparsegrids.org/downloads/sgpp_3.0.0_matlab-windows.tar.gz">sgpp_3.0.0_matlab-windows.tar.gz</a>
+    - for Matlab/Linux: <a href="http://sgpp.sparsegrids.org/downloads/sgpp_3.0.0_matlab-linux.tar.gz">sgpp_3.0.0_matlab-linux.tar.gz</a>
+
+Important changes:
+- We provide a new combigrid module with plenty of functionality!
+  - an anistropic implementation of the Combination Technique. This means that different 1D-grids and 1D  - operators can be used for each dimension. This allows e.g. interpolating in one direction and integrating the interpolated function in another direction.
+  - @ref example_point_distributions_py "1D grids": Uniform withoug boundary points gpp::combigrid::UniformPointDistribution, uniform with boundary points gpp::combigrid::UniformBoundaryPointDistribution, Clenshaw-Curtis sgpp::combigrid::ClenshawCurtisDistribution, Chebyshev sgpp::combigrid::ClenshawCurtisDistribution, (weighted) Leja sgpp::combigrid::LejaPointDistribution, (weighted) \f$L^{2}\f$-Leja sgpp::combigrid::L2LejaPointDistribution
+  - Operators: Interpolation (sgpp::combigrid::PolynomialInterpolationEvaluator, sgpp::combigrid::BSplineInterpolationEvaluator, sgpp::combigrid::LinearInterpolationEvaluator), quadrature (sgpp::combigrid::PolynomialQuadratureEvaluator, sgpp::combigrid::BSplineQuadratureEvaluator), tensors (sgpp::combigrid::InterpolationCoefficientEvaluator)
+  - regular and adaptive (also parallel) level-generation: various level managers (sgpp::combigrid::RegularLevelManager, sgpp::combigrid::AveragingLevelManager) are available that predict the surplus of each subspace
+  - support for directly working on full-grid subspaces: enables to solve PDEs, regression problems, density estimation on each full-grid separately
+  - simple @ref example_gettingStarted_py "Python example" and a @ref example_gettingStarted_cpp "C++ example" to get started quickly.
+  - serialization and deserialization of computed function values
+  - optimizations: function evaluations (but not the following computations) can be easily parallelized, interpolation at multiple points at once, operator coefficients and grid points are stored for recomputations at other evaluation points
+  - frequent use of abstract base classes such that extensions are easy to implement (e.g. new grids, operators and adaption schemes)
+  - various surrogate models for Uncertainty Quantification that are based on the Combination Technique are available:
+    - @ref example_example_BSplineStochasticCollocation_cpp "B-Spline Collocation" (collocation with B-splines in the hierarchical sparse grid space, sgpp::base::BsplineStochasticCollocation)
+    - @ref example_sc_cpp "Stochastic Collocation" (global polynomial approximation with Legendre polynomials, sgpp::base::PolynomialStochasticCollocation)
+    - @ref example_pce_cpp "Polynomial Chaos Expansion" (global polynomial approximation with orthogonal polynomials with respect to univariate weight functions, sgpp::combigrid::PolynomialChaosExpansion)
+- A new plug-in-based data mining pipeline, including
+  - data input wrapper and support for CVS data files, sgpp::datadriven::CSVTools
+  - a regression-based fitter sgpp::datadriven::FitterConfiguration
+  - a scorer wrapper for evaluation sgpp::datadriven::Scorer
+  - new classification methods, such as a density-based learner with online-offline splitting sgpp::datadriven::LearnerSGDEOnOff, including incomplete Cholesky factorization sgpp::datadriven::DBMatDMSDenseIChol
+  - new adaptive refinement schemes, including joint refinement for multiple classes sgpp::base::MultipleClassRefinement
+- Support for ordered data sets
+  - pre-ordering of data sets on space-filling curves in Morton order to support data locality, sgpp::datadriven::MortonOrder
+- New grid spacings
+  - general grid stretching sgpp::base::Stretching
+  - reactivation of bounding boxes sgpp::base::BoundingBox
+- Plenty of fixes and updates
+  - improved modularization: it is now easy to add own modules
+  - restructured examples, and a lot more of them
+- ... and much more!
+
 @subsection downloads_history_210 Version 2.1.0, 2016/08/12
 - Download:
   <a href="http://sgpp.sparsegrids.org/downloads/sgpp_2.1.0.tar.gz">
@@ -67,7 +109,7 @@ New features:
 - Some refactoring in sgpp::optimization (may break compatibility)
 - Test problems for sgpp::optimization restructured.
 
-@subsection downloads_history_100 Version 1.0.0 
+@subsection downloads_history_100 Version 1.0.0
 - Download:
   <a href="http://sgpp.sparsegrids.org/downloads/release_1.0.0.tgz">
   release_1.0.0.tgz</a>
@@ -104,7 +146,7 @@ Features of Release Version 1.0.0:
 - Minor fixes
 - Changes in basic API
 
-@subsection downloads_history_091 Version 0.9.1 
+@subsection downloads_history_091 Version 0.9.1
 - Download: <a href="http://sgpp.sparsegrids.org/downloads/release_0.9.1.tgz">
   release_0.9.1.tgz</a>
 
@@ -112,7 +154,7 @@ Features of Release Version 1.0.0:
 - Extended use of DataVector from Python.
 - GridDataBase class.
 
-@subsection downloads_history_090 Version 0.9.0 
+@subsection downloads_history_090 Version 0.9.0
 - Download: <a href="http://sgpp.sparsegrids.org/downloads/release_0.9.0.tgz">
   release_0.9.0.tgz</a>
 

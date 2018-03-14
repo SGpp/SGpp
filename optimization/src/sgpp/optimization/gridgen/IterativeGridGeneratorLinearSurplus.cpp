@@ -5,24 +5,24 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/gridgen/IterativeGridGeneratorLinearSurplus.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp>
-#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/optimization/gridgen/IterativeGridGeneratorLinearSurplus.hpp>
+#include <sgpp/optimization/tools/Printer.hpp>
 
-#include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
-#include <sgpp/base/grid/type/ModLinearGrid.hpp>
+#include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/ModLinearGrid.hpp>
 
-#include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/optimization/sle/solver/BiCGStab.hpp>
+#include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 
+#include <algorithm>
 #include <cstring>
 #include <stdexcept>
-#include <algorithm>
 #include <string>
 
 namespace sgpp {

@@ -3,7 +3,7 @@
 ## \page example_optimization_py optimization.py
 ##
 ## On this page, we look at an example application of the sgpp::optimization module.
-## Identical versions of the example are given in all languages
+## Versions of the example are given in all languages
 ## currently supported by SG++: C++, Python, Java, and MATLAB.
 ##
 ## For instructions on how to run the example, please see \ref installation.
@@ -44,7 +44,7 @@ print "sgpp::optimization example program started.\n"
 # increase verbosity of the output
 pysgpp.OptPrinter.getInstance().setVerbosity(2)
 
-## Here, we set define some parameters: objective function, dimensionality,
+## Here, we define some parameters: objective function, dimensionality,
 ## B-spline degree, maximal number of grid points, and adaptivity.
 # objective function
 f = ExampleFunction()

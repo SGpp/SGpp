@@ -26,16 +26,6 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
   explicit DBMatOnlineDEOrthoAdapt(sgpp::datadriven::DBMatOffline& offline, double beta = 0.);
 
   /**
-   * Performs refinement/coarsening on the offline and/or online objects
-   * Returns points, which could not be coarsened
-   *
-   * @param newPoints amount of refined points
-   * @param deletedPoints list of indices of last coarsened points
-   * @param lambda the regularization parameter
-   */
-  std::vector<size_t> adapt(size_t newPoints, std::list<size_t> deletedPoints, double lambda);
-
-  /**
    * Returns the additive component of the sherman-morrison-formula, which
    * yields all the information about the refined points
    */
@@ -70,14 +60,15 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
 
 
   /**
-   * Delegates call to adapt()
    * @param numAddedGridPoints Number of grid points inserted at the end of the grid storage
    * @param deletedGridPointIndices Indices of grid points that were deleted
    * @param lambda The last best lambda value
+   * @return list of grid points, that cannot be coarsened
    */
-  void updateSystemMatrixDecomposition(size_t numAddedGridPoints,
-                                       std::list<size_t> deletedGridPointIndices,
-                                       double lambda) override;
+  std::vector<size_t> updateSystemMatrixDecomposition(
+      size_t numAddedGridPoints,
+      std::list<size_t> deletedGridPointIndices,
+      double lambda) override;
 
  protected:
   // matrix, which holds information about refined/coarsened points

@@ -60,6 +60,8 @@ for wrapper in languageSupport:
     languageSupportNames.append("SG_PYTHON")
   elif wrapper == "jsgpp":
     languageSupportNames.append("SG_JAVA")
+  elif wrapper == "matsgpp":
+    languageSupportNames.append("SG_MATLAB")
 
 Helper.printInfo("Available modules: {}".format(", ".join(moduleNames)))
 Helper.printInfo("Available language support: {}".format(", ".join(languageSupportNames)))
@@ -98,6 +100,7 @@ vars.Add(BoolVariable("SG_ALL", "Default value for the other SG_* variables; " +
                                 "by setting SG_DATADRIVEN=1", True))
 vars.Add(BoolVariable("SG_PYTHON", "Build with Python support (default: value of SG_ALL)", None))
 vars.Add(BoolVariable("SG_JAVA", "Build with Java support (default: value of SG_ALL)", None))
+vars.Add(BoolVariable("SG_MATLAB", "Build with MATLAB support", False))
 vars.Add("SWIGFLAGS", "Set additional swig flags, they are compiler-dependent " +
                       "(multiple flags combined with comma, e.g. -Wall,-Wextra)", "",
                       converter=Helper.multiParamConverter)
@@ -123,6 +126,8 @@ vars.Add("OCL_INCLUDE_PATH", "Set path to the OpenCL header files (parent direct
 vars.Add("OCL_LIBRARY_PATH", "Set path to the OpenCL library")
 vars.Add("BOOST_INCLUDE_PATH", "Set path to the Boost header files", "/usr/include")
 vars.Add("BOOST_LIBRARY_PATH", "Set path to the Boost library", None)
+vars.Add("MATLAB_INCLUDE_PATH", "Set path to the MATLAB header files", None)
+vars.Add("MATLAB_LIBRARY_PATH", "Set path to the MATLAB libraries", None)
 vars.Add("HPX_DEBUG_LIBRARY_PATH", "Sets the path to the HPX debug libraries", None)
 vars.Add("HPX_RELEASE_LIBRARY_PATH", "Sets the path to the HPX release libraries", None)
 vars.Add("HPX_SHARED_INCLUDE_PATH", "Sets the path to the HPX shared headers", None)
@@ -150,6 +155,8 @@ vars.Add(BoolVariable("USE_GMMPP", "Set if Gmm++ should be used " +
                                    "(only relevant for sgpp::optimization)", False))
 vars.Add(BoolVariable("USE_UMFPACK", "Set if UMFPACK should be used " +
                                      "(only relevant for sgpp::optimization)", False))
+vars.Add(BoolVariable("USE_DAKOTA", "Set if Dakota library should be used " +
+                                   "(only relevant for sgpp::combigrid)", False))
 vars.Add(BoolVariable("USE_GSL", "Set if GNU Scientific Library should be used " +
                                      "(only relevant for sgpp::datadriven::application::LearnerSGDEOnOff)", False))
 vars.Add(BoolVariable("USE_ZLIB", "Set if zlib should be used " +
@@ -195,6 +202,8 @@ env["SG_PYTHON"] = env.get("SG_PYTHON",
                            env["SG_ALL"] and ("SG_PYTHON" in languageSupportNames))
 env["SG_JAVA"] = env.get("SG_JAVA",
                          env["SG_ALL"] and ("SG_JAVA" in languageSupportNames))
+env["SG_MATLAB"] = env.get("SG_MATLAB",
+                           env["SG_ALL"] and ("SG_MATLAB" in languageSupportNames))
 
 for moduleName in moduleNames:
   env[moduleName] = env.get(moduleName, env["SG_ALL"])
@@ -275,6 +284,8 @@ PYSGPP_BUILD_PATH = Dir(os.path.join(PYSGPP_PACKAGE_PATH.abspath, "pysgpp"))
 Export("PYSGPP_BUILD_PATH")
 JSGPP_BUILD_PATH = Dir(os.path.join("lib", "jsgpp"))
 Export("JSGPP_BUILD_PATH")
+MATSGPP_BUILD_PATH = Dir(os.path.join("lib", "matsgpp"))
+Export("MATSGPP_BUILD_PATH")
 EXAMPLE_DIR = Dir(os.path.join("bin", "examples"))
 Export("EXAMPLE_DIR")
 
@@ -352,7 +363,7 @@ else:
 #########################################################################
 
 def lintAction(target, source, env):
-  p = subprocess.Popen(["python", "tools/cpplint.py", "--ignorecfg=yes",
+  p = subprocess.Popen(["python", "tools/cpplint.py",
                         "--extensions=cpp,hpp", "--linelength=100",
                         source[0].abspath],
                        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -373,7 +384,11 @@ def lintAction(target, source, env):
       parts = line.split(":  ")
       location = parts[0]
       message = ":  ".join(parts[1:])
-      print location + ": warning: " + message
+      if message != "":
+        print location + ": warning: " + message
+      else:
+        # occurs when cpplint excludes file via CPPLINT.cfg
+        print location
   # touch file without writing anything
   # (to indicate for the next run of SCons that we already checked this file)
   with open(target[0].abspath, "w"): pass
@@ -441,7 +456,12 @@ if env["SG_PYTHON"]:
 if env["SG_JAVA"]:
   env.SConscript("#/jsgpp/SConscript", {"env": env, "moduleName": "jsgpp"})
 
-if (not env["SG_PYTHON"]) and (not env["SG_JAVA"]) and (len(flattenedDependencyGraph) == 0):
+# compile jsgpp
+if env["SG_MATLAB"]:
+  env.SConscript("#/matsgpp/SConscript", {"env": env, "moduleName": "matsgpp"})
+
+if ((not env["SG_PYTHON"]) and (not env["SG_JAVA"]) and (not env["SG_MATLAB"]) and
+    (len(flattenedDependencyGraph) == 0)):
   Helper.printErrorAndExit("You must enable at least one module (e.g., SG_BASE=1).")
 
 # Python tests

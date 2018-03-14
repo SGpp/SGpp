@@ -5,10 +5,11 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 
 #include <string>
@@ -137,28 +138,32 @@ int main() {
   */
   std::cout << "# create regularization config" << std::endl;
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-  regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Identity;
+  regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
+  // initial regularization parameter lambda
+  regularizationConfig.lambda_ = 0.01;
 
   /**
   * Select the desired decomposition type for the offline step.
   * Note: Refinement/Coarsening only possible for Cholesky decomposition.
   */
-  sgpp::datadriven::DBMatDecompostionType dt;
+  sgpp::datadriven::MatrixDecompositionType dt;
   std::string decompType;
   // choose "LU decomposition"
-  // dt = DBMatDecompostionType::DBMatDecompLU;
+  // dt = MatrixDecompositionType::DBMatDecompLU;
   // decompType = "LU decomposition";
   // choose"Eigen decomposition"
-  // dt = DBMatDecompostionType::DBMatDecompEigen;
+  // dt = MatrixDecompositionType::DBMatDecompEigen;
   // decompType = "Eigen decomposition";
   // choose "Cholesky decomposition"
-  dt = sgpp::datadriven::DBMatDecompostionType::Chol;
+  dt = sgpp::datadriven::MatrixDecompositionType::Chol;
   decompType = "Cholesky decomposition";
-  //      dt = sgpp::datadriven::DBMatDecompostionType::IChol;
+  //      dt = sgpp::datadriven::MatrixDecompositionType::IChol;
   //      decompType = "Incomplete Cholesky decomposition";
-  //    dt = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
+  //    dt = sgpp::datadriven::MatrixDecompositionType::DenseIchol;
   //    decompType = "Incomplete Cholesky decomposition on Dense Matrix";
   std::cout << "Decomposition type: " << decompType << std::endl;
+  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+  densityEstimationConfig.decomposition_ = dt;
 
   /**
   * Configure adaptive refinement (if Cholesky is chosen). As refinement
@@ -189,16 +194,12 @@ int main() {
   adaptConfig.noPoints_ = 7;
   adaptConfig.threshold_ = 0.0;  // only required for surplus refinement
 
-  // initial regularization parameter lambda
-  double lambda = 0.01;
-
-
-  // configuration
-  sgpp::datadriven::DBMatDensityConfiguration dconf(gridConfig, adaptConfig,
-                                              regularizationConfig.regType_, lambda, dt);
 
   sgpp::datadriven::DBMatOffline *offline =
-    sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(dconf);
+    sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(gridConfig,
+                                                              adaptConfig,
+                                                              regularizationConfig,
+                                                              densityEstimationConfig);
     offline->setInter(getDirectNeighbours(res));
   std::cout << "Building Matrix..." << std::endl;
   offline->buildMatrix();
@@ -208,5 +209,3 @@ int main() {
     offline->store(filename);
   }
 }
-
-

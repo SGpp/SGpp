@@ -5,8 +5,9 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 
 #include <chrono>
@@ -97,33 +98,42 @@ int main() {
        */
       std::cout << "# create regularization config" << std::endl;
       sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-      regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Identity;
+      regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
+
+      // initial regularization parameter lambda
+      regularizationConfig.lambda_ = 0.01;
 
       /**
        * Select the desired decomposition type for the offline step.
        * Note: Refinement/Coarsening only possible for Cholesky decomposition
        * and OrthoAdapt
        */
-      sgpp::datadriven::DBMatDecompostionType dt;
+      sgpp::datadriven::MatrixDecompositionType dt;
       std::string decompType;
       // choose "LU decomposition"
-      // dt = DBMatDecompostionType::DBMatDecompLU;
+      // dt = MatrixDecompositionType::DBMatDecompLU;
       // decompType = "LU decomposition";
 
       // choose"Eigen decomposition"
-      // dt = DBMatDecompostionType::DBMatDecompEigen;
+      // dt = MatrixDecompositionType::DBMatDecompEigen;
       // decompType = "Eigen decomposition";
 
       // choose "Cholesky decomposition"
-      // dt = sgpp::datadriven::DBMatDecompostionType::Chol;
+      // dt = sgpp::datadriven::MatrixDecompositionType::Chol;
       // decompType = "Cholesky decomposition";
-      // dt = sgpp::datadriven::DBMatDecompostionType::IChol;
+      // dt = sgpp::datadriven::MatrixDecompositionType::IChol;
       // decompType = "Incomplete Cholesky decomposition";
-      // dt = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
+      // dt = sgpp::datadriven::MatrixDecompositionType::DenseIchol;
 
       // choose "orthogonal Adaptivity"
-      dt = sgpp::datadriven::DBMatDecompostionType::OrthoAdapt;
+      dt = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
       decompType = "orthogonal Adaptivity";
+      sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+      densityEstimationConfig.decomposition_ = dt;
+
+      // those two are only relevant, when we use iChol decomposition type
+      densityEstimationConfig.iCholSweepsDecompose_ = 2;
+      densityEstimationConfig.iCholSweepsRefine_ = 2;
 
       std::cout << "Decomposition type: " << decompType << std::endl;
 
@@ -170,25 +180,18 @@ int main() {
       adaptConfig.noPoints_ = 10;
       adaptConfig.threshold_ = 0.0;  // only required for surplus refinement
 
-      // initial regularization parameter lambda
-      double lambda = 0.01;
       // initial weighting factor
       double beta = 0.0;
-      // configuration
-      sgpp::datadriven::DBMatDensityConfiguration dconf(gridConfig, adaptConfig,
-                                                        regularizationConfig.regType_, lambda, dt);
       // specify if prior should be used to predict class labels
       bool usePrior = false;
-
-      dconf.icholParameters.sweepsDecompose = 2;
-      dconf.icholParameters.sweepsRefine = 2;
 
       /**
        * Create the learner.
        */
       std::cout << "# create learner" << std::endl;
-      sgpp::datadriven::LearnerSGDEOnOff learner(dconf, trainDataset, testDataset, nullptr,
-                                                 classLabels, classNum, usePrior, beta, lambda);
+      sgpp::datadriven::LearnerSGDEOnOff learner(gridConfig, adaptConfig, regularizationConfig,
+                                                 densityEstimationConfig, trainDataset, testDataset,
+                                                 nullptr, classLabels, classNum, usePrior, beta);
 
       /**
        * Configure cross-validation.

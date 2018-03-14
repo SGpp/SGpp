@@ -5,8 +5,9 @@
 
 #ifdef USE_GSL
 
-#include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 
 #endif /* USE_GSL */
 
@@ -118,28 +119,34 @@ int main(int argc, char *argv[]) {
    */
   std::cout << "# create regularization config" << std::endl;
   sgpp::datadriven::RegularizationConfiguration regularizationConfig{};
-  regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Identity;
+  regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
+  // initial regularization parameter lambda
+  regularizationConfig.lambda_ = 0.01;
 
   /**
    * Select the desired decomposition type for the offline step.
    * Note: Refinement/Coarsening only possible for Cholesky decomposition.
    */
-  sgpp::datadriven::DBMatDecompostionType dt;
+  sgpp::datadriven::MatrixDecompositionType dt;
   std::string decompType;
   // choose "LU decomposition"
-  // dt = DBMatDecompostionType::DBMatDecompLU;
+  // dt = MatrixDecompositionType::DBMatDecompLU;
   // decompType = "LU decomposition";
   // choose"Eigen decomposition"
-  // dt = DBMatDecompostionType::DBMatDecompEigen;
+  // dt = MatrixDecompositionType::DBMatDecompEigen;
   // decompType = "Eigen decomposition";
   // choose "Cholesky decomposition"
-  //      dt = sgpp::datadriven::DBMatDecompostionType::Chol;
+  //      dt = sgpp::datadriven::MatrixDecompositionType::Chol;
   //      decompType = "Cholesky decomposition";
-  //      dt = sgpp::datadriven::DBMatDecompostionType::IChol;
+  //      dt = sgpp::datadriven::MatrixDecompositionType::IChol;
   //      decompType = "Incomplete Cholesky decomposition";
-  dt = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
+  dt = sgpp::datadriven::MatrixDecompositionType::DenseIchol;
   decompType = "Incomplete Cholesky decomposition on Dense Matrix";
   std::cout << "Decomposition type: " << decompType << std::endl;
+  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+  densityEstimationConfig.decomposition_ = dt;
+  densityEstimationConfig.iCholSweepsDecompose_ = 2;
+  densityEstimationConfig.iCholSweepsRefine_ = 2;
 
   /**
    * Configure adaptive refinement (if Cholesky is chosen). As refinement
@@ -186,18 +193,10 @@ int main(int argc, char *argv[]) {
   adaptConfig.noPoints_ = 7;
   adaptConfig.threshold_ = 0.0;  // only required for surplus refinement
 
-  // initial regularization parameter lambda
-  double lambda = 0.01;
   // initial weighting factor
   double beta = 0.0;
-  // configuration
-  sgpp::datadriven::DBMatDensityConfiguration dconf(gridConfig, adaptConfig,
-                                                    regularizationConfig.regType_, lambda, dt);
   // specify if prior should be used to predict class labels
   bool usePrior = false;
-
-  dconf.icholParameters.sweepsDecompose = 2;
-  dconf.icholParameters.sweepsRefine = 2;
 
   // specify batch size
   // (set to 1 for processing only a single data point each iteration)
@@ -211,7 +210,10 @@ int main(int argc, char *argv[]) {
    * Create the learner.
    */
   std::cout << "# create learner" << std::endl;
-  sgpp::datadriven::LearnerSGDEOnOffParallel learner(dconf,
+  sgpp::datadriven::LearnerSGDEOnOffParallel learner(gridConfig,
+                                                     adaptConfig,
+                                                     regularizationConfig,
+                                                     densityEstimationConfig,
                                                      trainDataset,
                                                      testDataset,
                                                      nullptr,
@@ -219,7 +221,6 @@ int main(int argc, char *argv[]) {
                                                      classNum,
                                                      usePrior,
                                                      beta,
-                                                     lambda,
                                                      scheduler);
 
   /**

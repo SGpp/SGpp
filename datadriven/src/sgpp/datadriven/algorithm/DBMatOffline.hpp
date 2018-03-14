@@ -6,7 +6,8 @@
 #pragma once
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 
 #include <list>
 #include <string>
@@ -33,9 +34,16 @@ class DBMatOffline {
    * Constructor
    * Build DBMatOffline Object from configuration
    *
-   * @param config configuration for this offline object
+   * @param gridConfig The configuration of the grid
+   * @param adaptivityConfig The configuration of the grid adaptivity
+   * @param regularizationConfig The configuration of the grid regularization
+   * @param densityEstimationConfig The configuration of the matrix decomposition
    */
-  explicit DBMatOffline(const DBMatDensityConfiguration& config);
+  explicit DBMatOffline(
+      const sgpp::base::RegularGridConfiguration& gridConfig,
+      const sgpp::base::AdpativityConfiguration& adaptivityConfig,
+      const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+      const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
 
   /**
    * Constructor
@@ -86,10 +94,28 @@ class DBMatOffline {
   virtual bool isRefineable() = 0;
 
   /**
-   * Get a reference to the configuration object
-   * @return Configuration object
+   * Get a reference to the grid configuration object
+   * @return Grid configuration object
    */
-  DBMatDensityConfiguration& getConfig();
+  sgpp::base::RegularGridConfiguration& getGridConfig();
+
+  /**
+   * Get a reference to the grid adaptivity configuration object
+   * @return Grid adaptivity configuration object
+   */
+  sgpp::base::AdpativityConfiguration& getAdaptivityConfig();
+
+  /**
+   * Get a reference to the grid regularization configuration object
+   * @return Grid regularization configuration object
+   */
+  sgpp::datadriven::RegularizationConfiguration& getRegularizationConfig();
+
+  /**
+   * Get a reference to the matrix decomposition configuration object
+   * @return Matrix decomposition configuration object
+   */
+  sgpp::datadriven::DensityEstimationConfiguration& getDensityEstimationConfig();
 
   /**
    * Get a reference to the decomposed matrix. Throws if matrix has not yet been decomposed.
@@ -142,7 +168,17 @@ class DBMatOffline {
  protected:
   DBMatOffline();
 
-  DBMatDensityConfiguration config;  // configuration for this offline object
+  // configuration of the grid
+  sgpp::base::RegularGridConfiguration gridConfig;
+
+  // config of the grid adaptivity
+  sgpp::base::AdpativityConfiguration adaptivityConfig;
+
+  // config of the grid regularization
+  sgpp::datadriven::RegularizationConfiguration regularizationConfig;
+
+  // config of the matrix decomposition
+  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
   DataMatrix lhsMatrix;              // stores the (decomposed) matrix
   bool isConstructed;                // If the matrix was built
   bool isDecomposed;                 // If the matrix was decomposed
@@ -164,11 +200,20 @@ class DBMatOffline {
   void InitializeGrid();
 
   /**
-   * Read the DBMatDensityConfiguration object from a serialized DBMatOfflibe object.
+   * Read the configuration from a serialized DBMatOffline object.
+   * 
    * @param fileName path of the serialized DBMatOffline object
-   * @param config the configuration file to populate
+   * @param gridConfig The configuration of the grid of the file to populate
+   * @param adaptivityConfig The configuration of the grid adaptivity of the file to populate
+   * @param regularizationConfig The configuration of the grid regularization of the file to populate
+   * @param densityEstimationConfig The configuration of the matrix decomposition of the file to populate
+
    */
-  void parseConfig(const std::string& fileName, DBMatDensityConfiguration& config) const;
+  void parseConfig(const std::string& fileName,
+                   sgpp::base::RegularGridConfiguration& gridConfig,
+                   sgpp::base::AdpativityConfiguration& adaptivityConfig,
+                   sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+                   sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) const;
 
 
   /**
