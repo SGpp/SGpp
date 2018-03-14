@@ -8,7 +8,8 @@ import unittest
 from pysgpp.extensions.datadriven.uq.dists import TNormal, Normal
 
 
-class tNormalTest(unittest.TestCase):
+class TNormalTest(unittest.TestCase):
+
     def test_pdf(self):
         my = 0.
         sigma = 2.
@@ -37,7 +38,7 @@ class tNormalTest(unittest.TestCase):
             # plt.legend()
             # plt.show()
 
-            X = [randrange(my - 4 * sigma, my + 4 * sigma)\
+            X = [randrange(my - 4 * sigma, my + 4 * sigma)
                  for _ in xrange(100)]
 
             for x in X:
@@ -106,6 +107,7 @@ class tNormalTest(unittest.TestCase):
 # -------------------------------------------------------------
 # testing
 # -------------------------------------------------------------
+
 
 if __name__ == "__main__":
     unittest.main()

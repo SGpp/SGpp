@@ -40,23 +40,24 @@ class MonteCarloStrategyTest(unittest.TestCase):
     def setUpClass(cls):
         cls.verbose = True
 
-    def tesst_variance_opt(self):
+    def test_variance_opt(self):
         # parameters
         level = 4
-        
+
         gridConfig = RegularGridConfiguration()
         gridConfig.type_ = GridType_Linear
         gridConfig.maxDegree_ = 2  # max(2, level + 1)
         gridConfig.boundaryLevel_ = 0
         gridConfig.dim_ = 2
-        
+
         # mu = np.ones(gridConfig.dim_) * 0.5
         # cov = np.diag(np.ones(gridConfig.dim_) * 0.1 / 10.)
         # dist = MultivariateNormal(mu, cov, 0, 1)  # problems in 3d/l2
         # f = lambda x: dist.pdf(x)
-        f = lambda x: np.prod(4 * x * (1 - x))
-        f = lambda x: np.arctan(50 * (x[0] - .35)) + np.pi / 2 + 4 * x[1] ** 3 + np.exp(x[0] * x[1] - 1)
-        
+        def f(x): return np.prod(4 * x * (1 - x))
+
+        def f(x): return np.arctan(50 * (x[0] - .35)) + np.pi / 2 + 4 * x[1] ** 3 + np.exp(x[0] * x[1] - 1)
+
         # --------------------------------------------------------------------------
         # define parameters
         paramsBuilder = ParameterBuilder()
@@ -67,32 +68,33 @@ class MonteCarloStrategyTest(unittest.TestCase):
         U = params.getIndependentJointDistribution()
         T = params.getJointTransformation()
         # --------------------------------------------------------------------------
-        
+
         grid = pysgpp.Grid.createGrid(gridConfig)
         gs = grid.getStorage()
         grid.getGenerator().regular(level)
         nodalValues = np.ndarray(gs.getSize())
-        
+
         p = DataVector(gs.getDimension())
         for i in xrange(gs.getSize()):
             gp = gs.getCoordinates(gs.getPoint(i), p)
             nodalValues[i] = f(p.array())
-        
+
         # --------------------------------------------------------------------------
         alpha_vec = pysgpp.DataVector(nodalValues)
         pysgpp.createOperationHierarchisation(grid).doHierarchisation(alpha_vec)
         alpha = alpha_vec.array()
         checkInterpolation(grid, alpha, nodalValues, epsilon=1e-13)
         # --------------------------------------------------------------------------
-        
+
         quad = AnalyticEstimationStrategy()
-        mean, _ = quad.mean(grid, alpha, U, T)
-        var, _ = quad.var(grid, alpha, U, T, mean)
-        
+        mean = quad.mean(grid, alpha, U, T)["value"]
+        var = quad.var(grid, alpha, U, T, mean)["value"]
+
         if self.verbose:
             print "mean: %g" % mean
             print "var : %g" % var
             print "-" * 80
+
         # drop arbitrary grid points and compute the mean and the variance
         # -> just use leaf nodes for simplicity
         bilinearForm = BilinearGaussQuadratureStrategy(grid.getType())
@@ -101,7 +103,7 @@ class MonteCarloStrategyTest(unittest.TestCase):
         linearForm = LinearGaussQuadratureStrategy(grid.getType())
         linearForm.setDistributionAndTransformation(U.getDistributions(),
                                                     T.getTransformations())
-        
+
         i = np.random.randint(0, gs.getSize())
         gpi = gs.getPoint(i)
         # --------------------------------------------------------------------------
@@ -128,30 +130,30 @@ class MonteCarloStrategyTest(unittest.TestCase):
             gpsj.append(gs.getPoint(j))
         # --------------------------------------------------------------------------
         # compute the mean and the variance of the new grid
-        mean_trunc, _ = quad.mean(grid, new_alpha, U, T)
-        var_trunc, _ = quad.var(grid, new_alpha, U, T, mean_trunc)
+        mean_trunc = quad.mean(grid, new_alpha, U, T)["value"]
+        var_trunc = quad.var(grid, new_alpha, U, T, mean_trunc)["value"]
         basis = getBasis(grid)
-        
+
         # compute the covariance
         A, _ = bilinearForm.computeBilinearFormByList(gs, [gpi], basis, gpsj, basis)
         b, _ = linearForm.computeLinearFormByList(gs, gpsj, basis)
-        
+
         mean_uwi_phii = np.dot(new_alpha, A[0, :])
         mean_phii, _ = linearForm.getLinearFormEntry(gs, gpi, basis)
         mean_uwi = np.dot(new_alpha, b)
         cov_uwi_phii = mean_uwi_phii - mean_phii * mean_uwi
-        
+
         # compute the variance of phi_i
         firstMoment, _ = linearForm.getLinearFormEntry(gs, gpi, basis)
         secondMoment, _ = bilinearForm.getBilinearFormEntry(gs, gpi, basis, gpi, basis)
         var_phii = secondMoment - firstMoment ** 2
-        
+
         # update the ranking
         var_estimated = var_trunc + alpha[i] ** 2 * var_phii + 2 * alpha[i] * cov_uwi_phii
-        
+
         mean_diff = np.abs(mean_trunc - mean)
         var_diff = np.abs(var_trunc - var)
-        
+
         if self.verbose:
             print "-" * 80
             print "diff: |var - var_estimated| = %g" % (np.abs(var - var_estimated),)
@@ -161,7 +163,7 @@ class MonteCarloStrategyTest(unittest.TestCase):
         self.assertTrue(np.abs(var - var_estimated) < 1e-14)
         self.assertTrue(np.abs(mean_diff - mean_rank) < 1e-14)
         self.assertTrue(np.abs(var_diff - var_rank) < 1e-14)
-        
+
         # --------------------------------------------------------------------------
         #         if gs.getDimension() == 1:
         #             fig = plt.figure()
@@ -192,8 +194,9 @@ class MonteCarloStrategyTest(unittest.TestCase):
         # cov = np.diag(np.ones(gridConfig.dim_) * 0.1 / 10.)
         # dist = MultivariateNormal(mu, cov, 0, 1)  # problems in 3d/l2
         # f = lambda x: dist.pdf(x)
-        f = lambda x: np.prod(4 * x * (1 - x))
-        f = lambda x: np.arctan(50 * (x[0] - .35)) + np.pi / 2 + 4 * x[1] ** 3 + np.exp(x[0] * x[1] - 1)
+        def f(x): return np.prod(4 * x * (1 - x))
+
+        def f(x): return np.arctan(50 * (x[0] - .35)) + np.pi / 2 + 4 * x[1] ** 3 + np.exp(x[0] * x[1] - 1)
 
         # --------------------------------------------------------------------------
         # define parameters
@@ -265,7 +268,6 @@ class MonteCarloStrategyTest(unittest.TestCase):
         #         else:
         #             print "DONE"
 
-
     def tesst_squared(self):
         # parameters
         level = 3
@@ -276,7 +278,7 @@ class MonteCarloStrategyTest(unittest.TestCase):
         gridConfig.boundaryLevel_ = 0
         gridConfig.dim_ = 2
 
-        f = lambda x: np.prod(8 * x * (1 - x))
+        def f(x): return np.prod(8 * x * (1 - x))
 
         # --------------------------------------------------------------------------
         # define parameters
@@ -337,6 +339,7 @@ class MonteCarloStrategyTest(unittest.TestCase):
 #         self.assertTrue(np.abs(var - var_estimated) < 1e-14)
 #         self.assertTrue(np.abs(mean_diff - mean_rank) < 1e-14)
 #         self.assertTrue(np.abs(var_diff - var_rank) < 1e-14)
+
 
 # -------------------------------------------------------------------------------
 # testing

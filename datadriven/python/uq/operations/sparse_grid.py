@@ -882,7 +882,7 @@ def balance(grid):
     return newgps
 
 
-def getBoundsOfSupport(gs, level, index, gridType):
+def getBoundsOfSupport(gs, level, index, gridType=GridType_Linear):
     if level > 0:
         if gridType in bsplineGridTypes:
             # this is just an approximation of the real boundaries

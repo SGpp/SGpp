@@ -36,7 +36,7 @@ class UQSettingTest(unittest.TestCase):
 
     def testSettings(self):
         if os.path.exists('testSetting.gz'):
-            os.removeSample('testSetting.gz')
+            os.remove('testSetting.gz')
 
         # set distributions of the input parameters
         builder = ParameterBuilder()
@@ -58,51 +58,33 @@ class UQSettingTest(unittest.TestCase):
 
         # run first test session
         uq_a.runSamples(samples)
-        print uq_a.__dict__
+        uq_a_json = uq_a.toJson()
 
         # restore results from file
-        print "Build new UQSetting.........."
         uq_b = self.makeUQSetting()
-        print uq_b.__dict__
+        uq_b_json = uq_b.toJson()
 
         # run second test session
         uq_b.runSamples(samples)
 
         # testing
-        print "=====> The final uq setting:"
-        print uq_b.__dict__
+        uq_c_json = uq_b.toJson()
+
+        assert uq_b_json == uq_c_json
+        assert uq_b_json == uq_a_json
 
         res = uq_b.getResults(qoi='x')
 
         assert res.keys() == [0]
-        keys = sorted([tuple(key.getActiveUnit()) for key in res[0].keys()])
-#         assert all(["(%g, %g)" % x == "(%g, %g)" % y
-#                     for x, y in zip(keys, points)])
 
-        # run third test session with wrong dimension of points
-        points = [(0.1, 0.2, 0.2), (0.2, 0.3, 0.3),
-                  (0.2, 0.4, 0.3), (0.1, 0.2, 0.3)]
-
-        samples = Samples(params)
-        for point in points:
-            try:
-                failed = False
-                sample = Sample(point, dtype=SampleType.ACTIVEUNIT)
-                uq_b.run(sample)
-            except TypeError:
-                failed = True
-
-            assert failed
-
-        d = uq_b.toDataMatrix(qoi='x')
-
-        for t, data in d.items():
+        for t, data in uq_b.toDataMatrix(qoi='x').items():
             writeDataARFF({'filename': 'uqSetting_%g.arff' % t,
                            'data': data})
 
 # -------------------------------------------------------------------
 # testing
 # -------------------------------------------------------------------
+
 
 if __name__ == "__main__":
     unittest.main()

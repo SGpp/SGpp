@@ -6,18 +6,17 @@ Created on Feb 12, 2015
 
 import numpy as np
 import matplotlib.pyplot as plt
-from bin.uq.plot.plot2d import plotDensity2d, plotSG2d, plotSGDE2d
-from bin.uq.dists.MultivariateNormal import MultivariateNormal
-from pysgpp import Grid, DataVector, DataMatrix
-from bin.uq.operations import (hierarchize,
-                               evalSGFunctionMulti)
-from bin.uq.operations.forcePositivity import OperationMakePositive
-from bin.uq.quadrature import doQuadrature
-from bin.uq.operations.forcePositivity.interpolateParents import InterpolateParents
-from bin.uq.parameters.ParameterBuilder import ParameterBuilder
-from bin.uq.dists.SGDEdist import SGDEdist
 import os
-from bin.tools import writeAlphaARFF
+
+from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d, plotSG2d, plotSGDE2d
+from pysgpp.extensions.datadriven.uq.dists.MultivariateNormal import MultivariateNormal
+from pysgpp import Grid, DataVector, DataMatrix
+from pysgpp.extensions.datadriven.uq.operations import (hierarchize,
+                                                        evalSGFunctionMulti)
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity import OperationMakePositive
+from pysgpp.extensions.datadriven.uq.quadrature import doQuadrature
+from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
+from pysgpp.extensions.datadriven.uq.dists.SGDEdist import SGDEdist
 
 
 mu = np.array([0.5, 0.5])
@@ -50,6 +49,7 @@ class myDist(object):
     def getBounds(self):
         return [[0, 1], [0, 1]]
 
+
 dist = myDist()
 
 # plot analytic density
@@ -63,13 +63,13 @@ fig.show()
 # get a sprse grid approximation
 level = 6
 grid = Grid.createLinearGrid(2)
-grid.createGridGenerator().regular(level)
+grid.getGenerator().regular(level)
 gs = grid.getStorage()
 
 nodalValues = DataVector(grid.getSize())
-p = DataVector(gs.dim())
-for i in xrange(gs.size()):
-    gs.get(i).getCoords(p)
+p = DataVector(gs.getDimension())
+for i in xrange(gs.getSize()):
+    gs.getCoordinates(gs.getPoint(i), p)
     nodalValues[i] = dist.pdf(p.array())
 
 alpha = hierarchize(grid, nodalValues)
@@ -93,16 +93,4 @@ plotDensity2d(sgdeDist)
 plt.title("plotDensity: vol = %g" % (doQuadrature(grid, alpha)))
 fig.show()
 
-# write grid and coefficients to file and use sgplot for comparison
-gridfile = "test.grid"
-alphafile = "test.alpha.arff"
-
-fd = open(gridfile, "w")
-fd.write(grid.serialize())
-fd.close()
-
-writeAlphaARFF(alphafile, alpha)
-
-os.environ['PATH'] = os.environ['PATH'] + ":/home/franzefn/Promotion/Studentenarbeiten/Rene/repos/trunk/GUI/build/"
-os.environ['LD_LIBRARY_PATH'] = "/home/franzefn/workspace/SGppUQ/lib/sgpp"
-os.system("SGplot -I %s -P 3 --pstyle=surface" % gridfile)
+plt.show()
