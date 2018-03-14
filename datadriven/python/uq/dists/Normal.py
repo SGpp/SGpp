@@ -79,7 +79,7 @@ class Normal(Dist):
     def cdf(self, x):
         if self.__a <= x <= self.__b:
             x_unit = self._dist.cdf(x)
-            return self.__linearTrans.probabilisticToUnit(value)
+            return self.__linearTrans.probabilisticToUnit(x_unit)
         else:
             raise AttributeError("normal: cdf - x out of range [%g, %g]" % (self.__a, self.__b))
 

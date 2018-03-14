@@ -28,7 +28,6 @@
 #include <sgpp/datadriven/algorithm/DBMatDMSDenseIChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
-#include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
@@ -96,7 +95,10 @@
 
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/BatchConfiguration.hpp>
+#include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 
 /* ************************
  * datamining
@@ -111,7 +113,9 @@
 #include <sgpp/datadriven/datamining/builder/SplittingScorerFactory.hpp>
 
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
+#include <sgpp/datadriven/datamining/configuration/DensityEstimationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
+#include <sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp>
 

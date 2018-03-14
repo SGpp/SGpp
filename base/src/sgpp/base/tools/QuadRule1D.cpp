@@ -6,36 +6,37 @@
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/tools/QuadRule1D.hpp>
 
+#include <cmath>
+
 namespace sgpp {
 namespace base {
 
-QuadRule1D::QuadRule1D() : coordinates(maxSupportedLevel), weights(maxSupportedLevel) {}
+QuadRule1D::QuadRule1D() {}
 
-QuadRule1D::~QuadRule1D() {
-  for (size_t i = 0; i < coordinates.size(); i++) {
-    delete coordinates[i];
-  }
-
-  for (size_t i = 0; i < weights.size(); i++) {
-    delete weights[i];
-  }
-}
+QuadRule1D::~QuadRule1D() {}
 
 // -------------------------------------------------------------------------
 
-void QuadRule1D::getLevelPointsAndWeights(size_t level, DataVector& pcoordinates,
-                                          DataVector& pweights) {
-  if (level < 1 || level > maxSupportedLevel) {
-    throw factory_exception(
-        "QuadRule1D::getLevelPointsAndWeights : "
-        "order of gauss quadrature has to be within {1, ..., 50}");
-  }
-
-  pcoordinates = *coordinates[level - 1];
-  pweights = *weights[level - 1];
+size_t QuadRule1D::getMaxSupportedLevel() const {
+  size_t n = coordinatesWeights.size();
+  return static_cast<size_t>(std::trunc(-1.0 + std::sqrt(1 + 4 * n) / 2.0));
 }
 
-size_t QuadRule1D::getMaxSupportedLevel() const { return maxSupportedLevel; }
+void QuadRule1D::getLevelPointsAndWeights(size_t level, DataVector& pcoordinates,
+                                          DataVector& pweights) {
+  if (level < 1 || level > getMaxSupportedLevel()) {
+    throw factory_exception(
+        "QuadRule1D::getLevelPointsAndWeights : "
+        "order of Gauss quadrature is not available");
+  }
 
+  size_t start_ix = (level - 1) * level;
+  pcoordinates.resize(level);
+  pweights.resize(level);
+  for (size_t i = 0; i < level; i++) {
+    pcoordinates[i] = coordinatesWeights[start_ix + 2 * i];
+    pweights[i] = coordinatesWeights[start_ix + 2 * i + 1];
+  }
+}
 }  // namespace base
 }  // namespace sgpp

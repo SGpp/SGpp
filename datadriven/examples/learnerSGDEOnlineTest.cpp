@@ -6,7 +6,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 
 #include <string>
@@ -162,15 +162,15 @@ int main() {
        */
       std::cout << "# create regularization config" << std::endl;
       sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-      regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Identity;
-      // regularizationConfig.regType_ =
+      regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
+      // regularizationConfig.type_ =
       // sgpp::datadriven::RegularizationType::Laplace;
 
       /**
        * Configure cross-validation.
        */
       std::cout << "# create cross-validation config" << std::endl;
-      sgpp::datadriven::CrossvalidationForRegularizationConfiguration crossvalidationConfig;
+      sgpp::datadriven::CrossvalidationConfiguration crossvalidationConfig;
       crossvalidationConfig.lambda_ = 0.01;
       crossvalidationConfig.enable_ = false;  // set 'true' to perform cv
 

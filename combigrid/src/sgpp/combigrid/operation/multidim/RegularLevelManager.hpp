@@ -21,6 +21,8 @@ class RegularLevelManager : public LevelManager {
   explicit RegularLevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator);
   RegularLevelManager();
 
+  virtual std::shared_ptr<LevelManager> clone();
+
   virtual ~RegularLevelManager();
 };
 

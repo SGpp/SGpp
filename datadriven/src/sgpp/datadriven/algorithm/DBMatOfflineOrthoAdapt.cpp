@@ -16,9 +16,13 @@
 namespace sgpp {
 namespace datadriven {
 
-DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const DBMatDensityConfiguration& config)
-    : DBMatOffline(config) {
-  this->lambda = config.lambda_;
+DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(
+    const sgpp::base::RegularGridConfiguration& gridConfig,
+    const sgpp::base::AdpativityConfiguration& adaptivityConfig,
+    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig)
+    : DBMatOffline(gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig) {
+  this->lambda = regularizationConfig.lambda_;
 
   this->q_ortho_matrix_ = sgpp::base::DataMatrix(1, 1);
   this->t_tridiag_inv_matrix_ = sgpp::base::DataMatrix(1, 1);
@@ -31,7 +35,7 @@ DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const std::string& fileName)
     : DBMatOffline(fileName) {
   // grid already initialized in super constructor
   this->dim_a = this->getGrid().getStorage().getSize();
-  this->lambda = this->config.lambda_;
+  this->lambda = this->regularizationConfig.lambda_;
 
   this->lhsMatrix = sgpp::base::DataMatrix(dim_a, dim_a);
   this->q_ortho_matrix_ = sgpp::base::DataMatrix(dim_a, dim_a);

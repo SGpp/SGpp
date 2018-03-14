@@ -6,12 +6,13 @@ class UncertainParameter(Parameter):
     Uncertain parameter
     """
 
-    def __init__(self, name, dist, trans, value=None):
+    def __init__(self, name, dist, trans, value=None, orthogPoly=None):
         super(UncertainParameter, self).__init__(name)
 
         self._value = value
         self._trans = trans
         self._dist = dist
+        self._orthogPoly = orthogPoly
 
     def getCount(self):
         return self._dist.getDim()
@@ -30,6 +31,9 @@ class UncertainParameter(Parameter):
 
     def setDistribution(self, dist):
         self._dist = dist
+
+    def getOrthogonalPolynomial(self):
+        return self._orthogPoly
 
     def __str__(self):
         if self.isActive():

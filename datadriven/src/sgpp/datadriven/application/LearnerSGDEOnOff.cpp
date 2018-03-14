@@ -39,10 +39,15 @@ using sgpp::base::SurplusRefinementFunctor;
 namespace sgpp {
 namespace datadriven {
 
-LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& trainData,
-                                   Dataset& testData, Dataset* validationData,
-                                   DataVector& classLabels, size_t numClassesInit, bool usePrior,
-                                   double beta, double lambda, std::string matrixfile)
+LearnerSGDEOnOff::LearnerSGDEOnOff(
+    sgpp::base::RegularGridConfiguration& gridConfig,
+    sgpp::base::AdpativityConfiguration& adaptivityConfig,
+    sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+    sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+    Dataset& trainData,
+    Dataset& testData, Dataset* validationData,
+    DataVector& classLabels, size_t numClassesInit, bool usePrior,
+    double beta, std::string matrixfile)
     : trainData{trainData},
       testData{testData},
       validationData{validationData},
@@ -59,14 +64,16 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& tr
       avgErrors{0} {
   // initialize offline object
   if (matrixfile.empty()) {
-    offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildOfflineObject(dconf)};
+    offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildOfflineObject(gridConfig,
+        adaptivityConfig, regularizationConfig, densityEstimationConfig)};
     offline->buildMatrix();
     offline->decomposeMatrix();
   } else {
     offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildFromFile(matrixfile)};
   }
 
-  //  DBMatOfflineChol offlineRef(dconf);
+  //  DBMatOfflineChol offlineRef(gridConfig, adaptivityConfig,
+  //     regularizationConfig, densityEstimationConfig);
   //  offlineRef.buildMatrix();
   //  offlineRef.decomposeMatrix();
   //
@@ -83,7 +90,7 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& tr
   //  cholMat.sub(icholMat);
   //  cholMat.abs();
   //  cholMat.sqr();
-  //  std::cout << "norm with " << dconf.icholParameters.sweepsDecompose
+  //  std::cout << "norm with " << densityEstimationConfig.iCholSweepsDecompose_
   //            << " sweeps is: " << std::scientific << std::setprecision(10) << sqrt(cholMat.sum())
   //            << "\n";
 
@@ -114,7 +121,7 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& tr
   }
 
   for (auto& iter : densityFunctions) {
-    iter.first->setLambda(lambda);
+    iter.first->setLambda(regularizationConfig.lambda_);
   }
 }
 
@@ -209,7 +216,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
       if (refMonitor == "periodic") {
         // check periodic monitor
         if (offline->isRefineable() && (totalInstances > 0) && (totalInstances % refPeriod == 0) &&
-            (refCnt < offline->getConfig().numRefinements_)) {
+            (refCnt < offline->getAdaptivityConfig().numRefinements_)) {
           doRefine = true;
         }
       } else if (refMonitor == "convergence") {
@@ -217,7 +224,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
         if (validationData == nullptr) {
           throw data_exception("No validation data for checking convergence provided!");
         }
-        if (offline->isRefineable() && (refCnt < offline->getConfig().numRefinements_)) {
+        if (offline->isRefineable() && (refCnt < offline->getAdaptivityConfig().numRefinements_)) {
           currentValidError = getError(*validationData);
           currentTrainError = getError(trainData);  // if train dataset is large
                                                     // use a subset for error
@@ -533,7 +540,7 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
   MultiGridRefinementFunctor* func = nullptr;
 
   // Zero-crossing-based refinement
-  ZeroCrossingRefinementFunctor funcZrcr{grids, alphas, offline->getConfig().ref_noPoints_,
+  ZeroCrossingRefinementFunctor funcZrcr{grids, alphas, offline->getAdaptivityConfig().noPoints_,
                                          levelPenalize, preCompute};
 
   // Data-based refinement. Needs a problem dependent coeffA. The values
@@ -547,7 +554,7 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
   DataMatrix* trainDataRef = &(trainData.getData());
   DataVector* trainLabelsRef = &(trainData.getTargets());
   DataBasedRefinementFunctor funcData = DataBasedRefinementFunctor{
-      grids,         alphas, trainDataRef, trainLabelsRef, offline->getConfig().ref_noPoints_,
+      grids,         alphas, trainDataRef, trainLabelsRef, offline->getAdaptivityConfig().noPoints_,
       levelPenalize, coeffA};
 
   if (refType == "zero") {
@@ -597,8 +604,8 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
 
         // forbid coarsening of initial gridpoints in case of OrthoAdapt
         size_t minIndexAllowed = 0;
-        if (offline->getConfig().decomp_type_ ==
-            sgpp::datadriven::DBMatDecompostionType::OrthoAdapt) {
+        if (offline->getDensityEstimationConfig().decomposition_ ==
+            sgpp::datadriven::MatrixDecompositionType::OrthoAdapt) {
           minIndexAllowed =
               static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt&>(*offline).getDimA();
         }
@@ -634,7 +641,7 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
         sizeBeforeRefine = grid.getSize();
         std::cout << "Size before refine: " << sizeBeforeRefine << std::endl;
         // simple refinement based on surpluses
-        SurplusRefinementFunctor srf(alphaWeight, offline->getConfig().ref_noPoints_);
+        SurplusRefinementFunctor srf(alphaWeight, offline->getAdaptivityConfig().noPoints_);
         if (offline->interactions.size() == 0) {
           gridGen.refine(srf);
         } else {
@@ -664,28 +671,15 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
       // std::cout << "will be adding " << newPoints << " new points\n";
       refineCoarse[idx].second = newPoints;
 
-      // if decomp_type_ == ortho_adapt
-      // refines, coarsenes
-      if (offline->getConfig().decomp_type_ ==
-          sgpp::datadriven::DBMatDecompostionType::OrthoAdapt) {
-        // todo: Kilian! the .adapt function of online_ortho_adapt is currently designed to
-        // return a list of gridpoints which weren't allowed to be coarsened. But it seems
-        // appropriate to redesign the functors in a way, that already considers these points
-        // when coarsening the grid itself.
+      // TODO(Kilian) the .updateSystemMatrixDecomposition function
+      // of online_ortho_adapt is currently designed to
+      // return a list of gridpoints which weren't allowed to be coarsened. But it seems
+      // appropriate to redesign the functors in a way, that already considers these points
+      // when coarsening the grid itself.
+      densEst->updateSystemMatrixDecomposition(newPoints,
+                                               deletedGridPoints,
+                                               densEst->getBestLambda());
 
-        // std::vector<size_t> not_coarsened_points =
-        static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt&>(*densEst).adapt(
-            newPoints, deletedGridPoints, densEst->getBestLambda());
-      }
-
-      // if decomp_type_ == cholesky (any of them)
-      if (offline->getConfig().decomp_type_ == sgpp::datadriven::DBMatDecompostionType::Chol ||
-          offline->getConfig().decomp_type_ ==
-              sgpp::datadriven::DBMatDecompostionType::DenseIchol) {
-        // apply grid changes to the Cholesky factorization
-        dynamic_cast<DBMatOfflineChol&>(densEst->getOfflineObject())
-            .choleskyModification(newPoints, deletedGridPoints, densEst->getBestLambda());
-      }
 
       // update alpha vector
       densEst->updateAlpha(&refineCoarse[idx].first, refineCoarse[idx].second);

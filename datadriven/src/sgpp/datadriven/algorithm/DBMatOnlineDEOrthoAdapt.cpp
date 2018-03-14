@@ -27,7 +27,8 @@ namespace datadriven {
 
 DBMatOnlineDEOrthoAdapt::DBMatOnlineDEOrthoAdapt(DBMatOffline& offline, double beta)
     : sgpp::datadriven::DBMatOnlineDE(offline, beta) {
-  if (offline.getConfig().decomp_type_ != sgpp::datadriven::DBMatDecompostionType::OrthoAdapt) {
+  if (offline.getDensityEstimationConfig().decomposition_ !=
+      sgpp::datadriven::MatrixDecompositionType::OrthoAdapt) {
     throw sgpp::base::algorithm_exception(
         "In DBMatOnlineDEOrthoAdapt::DBMatOnlineDEOrthoAdapt: offline object has wrong "
         "decomposition type: DecompositionType::OrthoAdapt needed!");
@@ -42,9 +43,10 @@ DBMatOnlineDEOrthoAdapt::DBMatOnlineDEOrthoAdapt(DBMatOffline& offline, double b
   }
 }
 
-std::vector<size_t> DBMatOnlineDEOrthoAdapt::adapt(size_t newPoints,
-                                                   std::list<size_t> deletedPoints,
-                                                   double newLambda) {
+std::vector<size_t> DBMatOnlineDEOrthoAdapt::updateSystemMatrixDecomposition(
+    size_t newPoints,
+    std::list<size_t> deletedPoints,
+    double newLambda) {
   // points not possible to coarsen
   std::vector<size_t> return_vector = {};
 
@@ -444,11 +446,6 @@ void DBMatOnlineDEOrthoAdapt::compute_L2_gridvectors(size_t newPoints, double ne
   }
 }
 
-void DBMatOnlineDEOrthoAdapt::updateSystemMatrixDecomposition(size_t numAddedGridPoints,
-                                 std::list<size_t> deletedGridPointIndices,
-                                 double lambda) {
-  adapt(numAddedGridPoints, deletedGridPointIndices, lambda);
-}
 
 }  // namespace datadriven
 }  // namespace sgpp

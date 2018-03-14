@@ -13,8 +13,9 @@
 #include <sgpp/globaldef.hpp>
 
 #ifdef USE_GSL
-#include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #endif /* USE_GSL */
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 
@@ -40,30 +41,32 @@ int main() {
   std::cout << "# loading file: " << filename << std::endl;
   auto testDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
 
-  sgpp::datadriven::DBMatDensityConfiguration config;
-  config.grid_type_ = sgpp::base::GridType::Linear;
-  config.grid_dim_ = trainDataset.getDimension();
-  config.grid_level_ = 2;
+  sgpp::base::RegularGridConfiguration gridConfig;
+  gridConfig.type_ = sgpp::base::GridType::Linear;
+  gridConfig.dim_ = trainDataset.getDimension();
+  gridConfig.level_ = 2;
 
-  config.numRefinements_ = 10;
-  config.ref_noPoints_ = 1;
-  config.ref_threshold_ = 0.0;
+  sgpp::base::AdpativityConfiguration adaptConfig;
+  adaptConfig.numRefinements_ = 10;
+  adaptConfig.noPoints_ = 1;
+  adaptConfig.threshold_ = 0.0;
 
-  config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
-  config.lambda_ = 5 * 10e-5;
+  sgpp::datadriven::RegularizationConfiguration regularizationConfig;
+  regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
+  regularizationConfig.lambda_ = 5 * 10e-5;
 
-  config.icholParameters.sweepsDecompose = 2;
-  config.icholParameters.sweepsRefine = 2;
-  config.icholParameters.sweepsSolver = 2;
-
-  config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
+  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+  densityEstimationConfig.iCholSweepsDecompose_ = 2;
+  densityEstimationConfig.iCholSweepsRefine_ = 2;
+  densityEstimationConfig.iCholSweepsSolver_ = 2;
+  densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::DenseIchol;
   auto decompType = "Incomplete Cholesky decomposition on Dense Matrix";
-  //  config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::Chol;
+  //  densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::Chol;
   //  auto decompType = "Cholesky decomposition";
   std::cout << "Decomposition type: " << decompType << std::endl;
 
-  config.icholParameters.sweepsDecompose = 8;
-  config.icholParameters.sweepsRefine = 8;
+  densityEstimationConfig.iCholSweepsDecompose_ = 8;
+  densityEstimationConfig.iCholSweepsRefine_ = 8;
 
   /**
    * Specify the number of classes and the corresponding class labels.
@@ -119,8 +122,9 @@ int main() {
    * Create the learner.
    */
   std::cout << "# create learner" << std::endl;
-  sgpp::datadriven::LearnerSGDEOnOff learner(config, trainDataset, testDataset, nullptr,
-                                             classLabels, classNum, usePrior, beta, config.lambda_);
+  sgpp::datadriven::LearnerSGDEOnOff learner(gridConfig, adaptConfig, regularizationConfig,
+                                             densityEstimationConfig, trainDataset, testDataset,
+                                             nullptr, classLabels, classNum, usePrior, beta);
 
   /**
    * Learn the data.

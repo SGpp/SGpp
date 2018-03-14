@@ -5,6 +5,21 @@
 
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 
+#include <iostream>
+
 namespace sgpp {
-namespace combigrid {} /* namespace combigrid */
+namespace combigrid {
+std::ostream &operator<<(std::ostream &stream, FloatScalarVector v) {
+  stream << v.getValue();
+  return stream;
+}
+
+std::istream &operator>>(std::istream &stream, FloatScalarVector &v) {
+  double val = 0.0;
+  stream >> val;
+  v = FloatScalarVector(val);
+  return stream;
+}
+
+} /* namespace combigrid */
 } /* namespace sgpp*/

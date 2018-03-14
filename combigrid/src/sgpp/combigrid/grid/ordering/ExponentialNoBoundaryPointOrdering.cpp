@@ -23,7 +23,6 @@ size_t ExponentialNoBoundaryPointOrdering::convertIndex(size_t level, size_t num
     ++firstOccurrenceLevel;
     cumulativePoints = 2 * cumulativePoints + 1;
   }
-
   size_t globalIndexInLevel = (index - cumulativePoints / 2);
   // Some elements of this level do belog to previous levels, so we have to add something to the
   // global index
@@ -44,8 +43,9 @@ std::shared_ptr<AbstractPermutationIterator>
 ExponentialNoBoundaryPointOrdering::getSortedPermutationIterator(size_t level,
                                                                  const std::vector<double>& points,
                                                                  size_t numPoints) {
-  return std::shared_ptr<AbstractPermutationIterator>(
-      new ExponentialNoBoundaryPermutationIterator(level, numPoints));
+  std::shared_ptr<AbstractPermutationIterator> ans =
+      std::make_shared<ExponentialNoBoundaryPermutationIterator>(level, numPoints);
+  return ans;
 }
 
 } /* namespace combigrid */
