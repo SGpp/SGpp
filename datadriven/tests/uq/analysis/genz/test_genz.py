@@ -5,6 +5,12 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 import pickle as pkl
+from argparse import ArgumentParser
+
+from probability_cpp import NatafDensity
+from pysgpp.extensions.datadriven.uq.dists.NatafDist import NatafDist
+
+from pysgpp.pysgpp_swig import GridType_PolyBoundary, Grid, DataMatrix
 
 from pysgpp.extensions.datadriven.uq.analysis.asgc import ASGCAnalysisBuilder
 from pysgpp.extensions.datadriven.uq.parameters import ParameterBuilder
@@ -18,9 +24,6 @@ from pysgpp.extensions.datadriven.uq.plot.plot3d import plotFunction3d, plotSG3d
 from pysgpp.extensions.datadriven.uq.estimators.MCEstimator import MCEstimator
 from pysgpp.extensions.datadriven.uq.sampler.MCSampler import MCSampler
 from pysgpp.extensions.datadriven.uq.analysis.mc.MCAnalysis import MCAnalysis
-from pysgpp.pysgpp_swig import GridType_PolyBoundary, Grid, DataMatrix
-from pysgpp.extensions.datadriven.uq.dists.NatafDist import NatafDist
-from argparse import ArgumentParser
 from pysgpp.extensions.datadriven.uq.models.testEnvironments import TestEnvironmentSG
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunction
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d, \
@@ -43,10 +46,10 @@ class AnovaGenzTest(object):
         corrMatrix = np.ones((self.numDims, self.numDims)) * self.correlation
         np.fill_diagonal(corrMatrix, 1.0)
 
-        self.dist = NatafDist.beta_marginals(0, 1, 5.0, 10.0,
+        self.dist = NatafDist.beta_marginals(0, 1,
+                                             5.0, 10.0,
                                              corrMatrix=corrMatrix,
                                              bounds=np.array([[0, 1], [0, 1]]))
-
         # --------------------------------------------------------
         # set distributions of the input parameters
         # --------------------------------------------------------
@@ -62,6 +65,7 @@ class AnovaGenzTest(object):
         # simulation function: oscillatory genz function
         # --------------------------------------------------------
         self.c = 4.5 * (np.arange(0, self.numDims, 1) + 0.5) / self.numDims
+
         def f(x, c=self.c, **kws):
             return np.cos(np.sum(c * x))
 
@@ -115,13 +119,11 @@ class AnovaGenzTest(object):
             test_samples = self.dist.cdf(test_samples)
         return test_samples, test_values
 
-
     def getErrors(self, test_values, test_values_estimated):
         l2error = np.sqrt(np.mean(test_values - test_values_estimated) ** 2)
         l1error = np.mean(np.abs(test_values - test_values_estimated))
         maxError = np.max(np.abs(test_values - test_values_estimated))
         return l2error, l1error, maxError
-
 
     def run_regular_sparse_grid_boundary(self,
                                          gridTypeStr,
@@ -202,7 +204,6 @@ class AnovaGenzTest(object):
                       'results': stats},
                      fd)
             fd.close()
-
 
     def run_regular_sparse_grid(self,
                                 gridTypeStr,
@@ -306,14 +307,13 @@ class AnovaGenzTest(object):
                      fd)
             fd.close()
 
-
     def run_adaptive_sparse_grid(self,
-                                gridTypeStr,
-                                level,
-                                maxGridSize,
-                                boundaryLevel=1,
-                                refinement="l2",
-                                out=False):
+                                 gridTypeStr,
+                                 level,
+                                 maxGridSize,
+                                 boundaryLevel=1,
+                                 refinement="l2",
+                                 out=False):
 
         np.random.seed(1234567)
         test_samples, test_values = self.getTestSamples()
@@ -369,7 +369,7 @@ class AnovaGenzTest(object):
                                      'l2test': l2test,
                                      'l1test': l1test,
                                      'maxErrorTest': maxErrorTest,
-                                     'mean_estimated': None,  #  sg_mean["value"],
+                                     'mean_estimated': None,  # sg_mean["value"],
                                      'var_estimated': None  # sg_var["value"]
                                      }
 
@@ -398,7 +398,6 @@ class AnovaGenzTest(object):
                       'results': stats},
                      fd)
             fd.close()
-
 
     def run_mc(self, N=100000, out=False, plot=False):
         # ----------------------------------------------------------
@@ -449,11 +448,13 @@ class AnovaGenzTest(object):
 # testing
 # --------------------------------------------------------
 
+
 def run_genz_mc(numDims,
                 numSamples,
                 out):
     testSetting = AnovaGenzTest(numDims)
     testSetting.run_mc(N=numSamples, out=out, plot=plot)
+
 
 def run_genz_sg(numDims,
                 level,
@@ -477,6 +478,7 @@ def run_genz_sg(numDims,
                                              boundaryLevel,
                                              refinement,
                                              out)
+
 
 def run_genz_sg_boundary(numDims,
                          gridType,

@@ -14,6 +14,7 @@ from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes
 from pysgpp.extensions.datadriven.uq.plot import plotSobolIndices
 from pysgpp.extensions.datadriven.uq.manager.ASGCUQManagerBuilder import ASGCUQManagerBuilder
 from pysgpp.extensions.datadriven.uq.plot.plot3d import plotFunction3d
+from pysgpp.pysgpp_swig import GridType_PolyBoundary
 
 
 class AnovaTest(unittest.TestCase):
@@ -28,9 +29,6 @@ class AnovaTest(unittest.TestCase):
         up = builder.defineUncertainParameters()
         up.new().isCalled('x').withUniformDistribution(0, 1)
         up.new().isCalled('y').withUniformDistribution(0, 1)
-
-#         up.new().isCalled('x').withNormalDistribution(0.4, 0.1, 0.001)
-#         up.new().isCalled('y').withNormalDistribution(0.4, 0.1, 0.001)
 
         self.params = builder.andGetResult()
 
@@ -55,10 +53,10 @@ class AnovaTest(unittest.TestCase):
         builder.defineUQSetting().withSimulation(self.simulation)
 
         samplerSpec = builder.defineSampler()
-        samplerSpec.withGrid().withLevel(4)\
-                              .withPolynomialBase(5)\
-                              .withBorder(BorderTypes.TRAPEZOIDBOUNDARY)
-                              # .isClenshawCurtis()
+        samplerSpec.withGrid().hasType(GridType_PolyBoundary)\
+                              .withLevel(4)\
+                              .withDegree(5)\
+                              .withBoundaryLevel(1)
 
         # ----------------------------------------------------------
         # discretize the stochastic space with the ASGC method
@@ -87,12 +85,6 @@ class AnovaTest(unittest.TestCase):
 
         # ----------------------------------------------------------
         # check interpolation and decomposition
-#         fig, ax, _ = plotFunction3d(self.simulation)
-#         ax.set_title("analytic")
-#         fig, ax, _ = plotFunction3d(analysis.eval)
-#         ax.set_title("sg")
-#         fig, ax, _ = plotFunction3d(anova.eval)
-#         ax.set_title("anova")
         m = np.random.rand(100, self.params.getDim())
         for i in range(m.shape[0]):
             self.assertTrue(abs(analysis.eval(m[i, :]) - anova.eval(m[i, :])) < 1e-14)
@@ -117,13 +109,13 @@ class AnovaTest(unittest.TestCase):
 
         names = anova.getSortedPermutations(me.keys())
         values = [me[name] for name in names]
-        fig = plotSobolIndices(values, legend=True, names=names)
+        fig, _ = plotSobolIndices(values, legend=True, names=names)
         fig.show()
         plt.show()
 
-## ===================================================================
-# testing
-## ===================================================================
 
+# ===================================================================
+# testing
+# ===================================================================
 if __name__ == "__main__":
     unittest.main()

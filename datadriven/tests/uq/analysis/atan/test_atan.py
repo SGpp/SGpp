@@ -70,13 +70,13 @@ class AtanPeridynamicExample(object):
     def estimate_density(self, plot=False, c=1.1):
         # load two moons data set
         samples = np.loadtxt("data/moon.csv")
-        
+
         xmin = c * samples[0, :].min()
         xmax = c * samples[0, :].max()
         ymin = c * samples[1, :].min()
         ymax = c * samples[1, :].max()
         bounds = np.array([[xmin, xmax], [ymin, ymax]])
-    
+
         grid = Grid.createLinearBoundaryGrid(2)
         grid.getGenerator().regular(0)
         alpha = np.ones(grid.getSize()) / 3.
@@ -106,7 +106,6 @@ class AtanPeridynamicExample(object):
 
         return dist
 
-
     def defineParameters(self, dtype="uniform"):
         # set distributions of the input parameters
         builder = ParameterBuilder()
@@ -126,9 +125,8 @@ class AtanPeridynamicExample(object):
             up.new().isCalled('x,y').withDistribution(sgdeDist)
         else:
             raise AttributeError("dtype '%s' is unknown" % dtype)
-        
-        return builder.andGetResult()
 
+        return builder.andGetResult()
 
     def computeReferenceValues(self, dtype="uniform"):
         # ----------------------------------------------------------
@@ -149,10 +147,9 @@ class AtanPeridynamicExample(object):
 
         E_unit = dblquad(mean, 0, 1, lambda x: 0, lambda x: 1)
         self.E_ana = vol * E_unit[0], E_unit[1]
-        E_squared = vol * dblquad(squared, 0, 1, lambda x: 0, lambda x: 1)
+        E_squared = dblquad(squared, 0, 1, lambda x: 0, lambda x: 1)
         E_squared = vol * E_squared[0], E_squared[1]
         self.V_ana = E_squared[0] - self.E_ana[0] ** 2, E_squared[1] + self.E_ana[0]
-
 
     def getTestSamples(self, num_samples=1000, dtype="unit"):
         trans = self.params.getJointTransformation()
@@ -167,7 +164,6 @@ class AtanPeridynamicExample(object):
                 test_samples[i, :] = y
         return test_samples, test_values
 
-
     def getErrors(self, test_values, test_values_estimated,
                   mean_estimated, var_estimated):
         l2error = np.sqrt(np.mean(test_values - test_values_estimated) ** 2)
@@ -176,7 +172,6 @@ class AtanPeridynamicExample(object):
         mean_error = np.abs(mean_estimated - self.E_ana[0])
         var_error = np.abs(var_estimated - self.V_ana[0])
         return l2error, l1error, maxError, mean_error, var_error
-
 
     def plotResultsPCE(self, pce, train_samples, expansion, sampling_strategy,
                        num_samples, degree_1d, out):
@@ -210,21 +205,20 @@ class AtanPeridynamicExample(object):
         if not out:
             plt.show()
 
-        
     def plotResultsSG(self, grid, alpha, level, maxGridSize, refinement, iteration, out):
         fig, ax, _ = plotSG3d(grid, alpha)
         ax.set_title("eval")
         if out:
             filename = os.path.join(self.pathResults,
-                "%s_%s_d%i_%s_l%i_Nmax%i_N%i_r%s_it%i.pdf" % (self.radix,
-                                                              "sg" if not isFull else "fg",
-                                                              self.numDims,
-                                                              grid.getTypeAsString(),
-                                                              level,
-                                                              maxGridSize,
-                                                              grid.getSize(),
-                                                              refinement,
-                                                              iteration))
+                                    "%s_%s_d%i_%s_l%i_Nmax%i_N%i_r%s_it%i.pdf" % (self.radix,
+                                                                                  "sg" if not isFull else "fg",
+                                                                                  self.numDims,
+                                                                                  grid.getTypeAsString(),
+                                                                                  level,
+                                                                                  maxGridSize,
+                                                                                  grid.getSize(),
+                                                                                  refinement,
+                                                                                  iteration))
             plt.savefig(filename)
 
         trans = self.params.getJointTransformation()
@@ -234,20 +228,19 @@ class AtanPeridynamicExample(object):
         ax.set_title("error")
         if out:
             filename = os.path.join(self.pathResults,
-                "%s_error_%s_d%i_%s_l%i_Nmax%i_N%i_r%s_it%i.pdf" % (self.radix,
-                                                                    "sg" if not isFull else "fg",
-                                                                    self.numDims,
-                                                                    grid.getTypeAsString(),
-                                                                    level,
-                                                                    maxGridSize,
-                                                                    grid.getSize(),
-                                                                    refinement,
-                                                                    iteration))
+                                    "%s_error_%s_d%i_%s_l%i_Nmax%i_N%i_r%s_it%i.pdf" % (self.radix,
+                                                                                        "sg" if not isFull else "fg",
+                                                                                        self.numDims,
+                                                                                        grid.getTypeAsString(),
+                                                                                        level,
+                                                                                        maxGridSize,
+                                                                                        grid.getSize(),
+                                                                                        refinement,
+                                                                                        iteration))
             plt.savefig(filename)
 
         if not out:
             plt.show()
-
 
     def run_mc(self, N, minExp=4, maxExp=12, out=False, plot=False):
         # ----------------------------------------------------------
@@ -265,7 +258,7 @@ class AtanPeridynamicExample(object):
         samples = mcSampler.nextSamples(N)
         mcUQSetting.runSamples(samples)
         samples = mcUQSetting.getResults()[0]
-        
+
         stats = {}
         for iN in np.logspace(minExp, maxExp, maxExp - minExp + 1, base=2):
             # split the results into chunk of Ni samples
@@ -301,7 +294,6 @@ class AtanPeridynamicExample(object):
                       'results': stats},
                      fd)
             fd.close()
-
 
     def run_pce(self,
                 expansion="total_degree",
@@ -375,7 +367,7 @@ class AtanPeridynamicExample(object):
             # get sobol indices
             sobol_indices = builder.getSortedSobolIndices(pce)
             total_effects = computeTotalEffects(sobol_indices)
-    
+
             stats[num_samples] = {"sobol_indices_estimated": sobol_indices,
                                   "total_effects_estimated": total_effects,
                                   "var_estimated": pce.variance(),
@@ -416,7 +408,6 @@ class AtanPeridynamicExample(object):
                       'results': stats},
                      fd)
             fd.close()
-
 
     def run_regular_sparse_grid(self, gridType, level, maxGridSize,
                                 boundaryLevel=1,
@@ -522,7 +513,6 @@ class AtanPeridynamicExample(object):
                       'results': stats},
                      fd)
             fd.close()
-
 
     def run_adaptive_sparse_grid(self, gridType, level, maxGridSize, refinement,
                                  boundaryLevel=None, isFull=False, out=False,
@@ -632,9 +622,11 @@ def run_atan_mc(inputspace, maxNumSamples, out, plot):
     testSetting = AtanPeridynamicExample(inputspace)
     testSetting.run_mc(maxNumSamples, out=out, plot=plot)
 
+
 def run_atan_pce(inputspace, sampler, expansion, maxNumSamples, out, plot):
     testSetting = AtanPeridynamicExample(inputspace)
     return testSetting.run_pce(expansion, sampler, maxNumSamples, out, plot)
+
 
 def run_atan_sg(inputspace, gridType, level, numGridPoints,
                 boundaryLevel, fullGrid, refinement, out, plot):
@@ -648,6 +640,8 @@ def run_atan_sg(inputspace, gridType, level, numGridPoints,
         testSetting.run_regular_sparse_grid(Grid.stringToGridType(gridType),
                                             level, numGridPoints, boundaryLevel,
                                             fullGrid, out, plot)
+
+
 # ----------------------------------------------------------
 # testing
 # ----------------------------------------------------------

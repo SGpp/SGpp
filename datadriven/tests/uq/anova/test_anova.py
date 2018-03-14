@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes
 from pysgpp.extensions.datadriven.uq.plot import plotSobolIndices
 from pysgpp.extensions.datadriven.uq.manager.ASGCUQManagerBuilder import ASGCUQManagerBuilder
+from pysgpp.pysgpp_swig import GridType_LinearBoundary
 
 
 class AnovaTest(unittest.TestCase):
@@ -28,10 +29,6 @@ class AnovaTest(unittest.TestCase):
         up.new().isCalled('x').withUniformDistribution(0, 1)
         up.new().isCalled('y').withUniformDistribution(0, 1)
         up.new().isCalled('z').withUniformDistribution(0, 1)
-
-#         up.new().isCalled('x').withNormalDistribution(0.4, 0.1, 0.001)
-#         up.new().isCalled('y').withNormalDistribution(0.4, 0.1, 0.001)
-#         up.new().isCalled('z').withNormalDistribution(0.4, 0.1, 0.001)
 
         self.params = builder.andGetResult()
 
@@ -85,8 +82,9 @@ class AnovaTest(unittest.TestCase):
         builder.defineUQSetting().withSimulation(self.simulation)
 
         samplerSpec = builder.defineSampler()
-        samplerSpec.withGrid().withLevel(1)\
-                              .withBorder(BorderTypes.TRAPEZOIDBOUNDARY)
+        samplerSpec.withGrid().hasType(GridType_LinearBoundary)\
+                              .withLevel(1)\
+                              .withBoundaryLevel(1)
 
         # ----------------------------------------------------------
         # discretize the stochastic space with the ASGC method
@@ -104,14 +102,14 @@ class AnovaTest(unittest.TestCase):
         analysis = ASGCAnalysisBuilder().withUQManager(uqManager)\
                                         .withAnalyticEstimationStrategy()\
                                         .andGetResult()
-
-        print "-" * 60
-        print "E[x] = %g" % (1.0,)
-        print "V[x] = %g" % (self.vg,)
-
         # ----------------------------------------------------------
         # expectation values and variances
-        _, _ = analysis.mean(), analysis.var()
+        sg_mean, sg_var = analysis.mean(), analysis.var()
+
+        print "-" * 60
+        print "E[x] = %g = %g" % (1.0, sg_mean["value"])
+        print "V[x] = %g = %g" % (self.vg, sg_var["value"])
+        print "-" * 60
 
         # ----------------------------------------------------------
         # estimated anova decomposition
@@ -146,13 +144,14 @@ class AnovaTest(unittest.TestCase):
 
         names = anova.getSortedPermutations(me.keys())
         values = [me[name] for name in names]
-        fig = plotSobolIndices(values, legend=True, names=names)
+        fig, _ = plotSobolIndices(values, legend=True, names=names)
         fig.show()
         plt.show()
 
 # --------------------------------------------------------
 # testing
 # --------------------------------------------------------
+
 
 if __name__ == "__main__":
     unittest.main()
