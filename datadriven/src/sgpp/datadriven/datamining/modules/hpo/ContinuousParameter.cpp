@@ -13,12 +13,10 @@ namespace datadriven {
 
 
 void ContinuousParameter::setHarmonica() {
-  int a = 0;
-  int* configID = &a;
   double v = 0;
   double m = 1;
   for(auto &bit : bits){
-    v = v + m* bit->evaluate(configID);
+    v = v + m* bit->evaluate();
     m = m * 2;
   }
   value = min+((max-min)*(1+v/(m-1.0))/2);

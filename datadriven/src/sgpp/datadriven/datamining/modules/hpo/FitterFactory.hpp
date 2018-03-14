@@ -64,6 +64,7 @@ protected:
   std::map<std::string,ContinuousParameter*> conpar;
   std::map<std::string,DiscreteParameter*> dispar;
   std::vector<std::list<ConfigurationBit*> > parityrow;
+  std::vector<ConfigurationBit*> freeBits;
 
 
   };

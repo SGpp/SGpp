@@ -35,8 +35,12 @@ class ConfigurationBit {
   // ~ConfigurationBit() {}
 
   void addConstraint(ConfigurationRestriction* constraint);
+
+  void removeLastConstraint();
   
-  int evaluate(int* input);
+  int evaluate();
+
+  void setBit(int* input);
   
   int fixFreeBits(std::vector<ConfigurationBit*> &freeBits);
 

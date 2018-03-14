@@ -19,7 +19,7 @@ namespace datadriven {
 
 
 int FitterFactory::buildParity(){
-	std::vector<ConfigurationBit*> freeBits{};
+	freeBits = std::vector<ConfigurationBit*>{};
 	for(auto& bit : configBits){ //reference to prevent unique pointer copying
 	    bit->reset();
 	  }
@@ -78,17 +78,31 @@ int FitterFactory::addConstraint(int idx, int bias){
 		for(auto& bit : configBits){
 			bit->fixFreeBits(freeBits);
 		}
+    for(auto& bit : configBits){
+      if(!bit->checkConstraints()){
+        //EDIT: revert constraint
+        for(auto &bit : parityrow[idx]){
+          bit->removeLastConstraint();
+          std::cout<<"Adding bit from constraint:"<<idx<<std::endl;
+        }
+      }
+    }
 		return freeBits.size();
 }
 
-//check old runs in new space: set free bits, evaluate, then check constraints
-
-
+/*EDIT: check old runs in new space: set free bits, evaluate, then check constraints
+-error handling: prevent conflicting constraints
+ -handle constraints with zero bias
+*/
 
 void FitterFactory::setHarmonica(int configID, int row, DataMatrix &paritymatrix)  {
   // fix ConfigurationBits according to constraints
   for(auto& bit : configBits){
     bit->reset();
+  }
+
+  for(auto& bit : freeBits){
+    bit->setBit(&configID);
   }
   // remove, do this through parameters
 	// for(auto& bit : configBits){
@@ -99,7 +113,7 @@ void FitterFactory::setHarmonica(int configID, int row, DataMatrix &paritymatrix
   for(int i=0;i<parityrow.size();i++){
 	  int tmp = 1;
 	  for(auto& bit : parityrow[i]){
-		  tmp = tmp * bit->evaluate(&configID);
+		  tmp = tmp * bit->evaluate();
 	  }
 	  //std::cout<<"Bitinparity:"<<tmp<<std::endl;
 	  paritymatrix.set(row, i, tmp);
