@@ -22,122 +22,78 @@ from pysgpp.extensions.datadriven.uq.quadrature.bilinearform.PiecewiseConstantQu
 from pysgpp.extensions.datadriven.uq.refinement.AdmissibleSet import AdmissibleSparseGridNodeSet, RefinableNodesSet
 from pysgpp.extensions.datadriven.uq.quadrature.bilinearform.DiscreteBilinearScipyQuadratureStrategy import DiscreteBilinearScipyQuadratureStrategy
 
-# define parameter set
-builder = ParameterBuilder().defineUncertainParameters()
-# builder.new().isCalled('x').withTNormalDistribution(0.5, 0.1, 0, 1)
-# builder.new().isCalled('y').withTNormalDistribution(0.5, 0.1, 0, 1)
-builder.new().isCalled('x').withUniformDistribution(0, 1)
-builder.new().isCalled('y').withUniformDistribution(0, 1)
-params = builder.andGetResult()
-
-U = params.getIndependentJointDistribution()
-T = params.getJointTransformation()
+import unittest
 
 
-def f(x):
-    """
-    Function to be interpolated
-    """
-    # return 2.
-    # return float(np.sin(4 * x[0]) * np.cos(4 * x[1]))
-    return np.prod([4 * xi * (1 - xi) for xi in x])
+class BilinearFormTest(unittest.TestCase):
 
-# define sparse grid function
-grid = Grid.createLinearClenshawCurtisGrid(2)
-# grid = Grid.createLinearTruncatedBoundaryGrid(2)
-grid.getGenerator().regular(2)
-gs = grid.getStorage()
+    def testBilinearForms(self):
+        # define parameter set
+        builder = ParameterBuilder().defineUncertainParameters()
+        # builder.new().isCalled('x').withTNormalDistribution(0.5, 0.1, 0, 1)
+        # builder.new().isCalled('y').withTNormalDistribution(0.5, 0.1, 0, 1)
+        builder.new().isCalled('x').withUniformDistribution(0, 1)
+        builder.new().isCalled('y').withUniformDistribution(0, 1)
+        params = builder.andGetResult()
 
-nodalValues = DataVector(gs.getSize())
-p = DataVector(gs.getDimension())
+        U = params.getIndependentJointDistribution()
+        T = params.getJointTransformation()
 
-for i in xrange(gs.getSize()):
-    gs.getCoordinates(gs.getPoint(i), p)
-    nodalValues[i] = f(p.array())
+        def f(x):
+            """
+            Function to be interpolated
+            """
+            # return 2.
+            # return float(np.sin(4 * x[0]) * np.cos(4 * x[1]))
+            return np.prod([4 * xi * (1 - xi) for xi in x])
 
-v = hierarchize(grid, nodalValues)
-res = DataVector(gs.getSize())
+        # define sparse grid function
+        grid = Grid.createLinearGrid(params.getStochasticDim())
+        grid.getGenerator().regular(2)
+        gs = grid.getStorage()
 
-# -------------------------------------------------------------------------------
-# compute admissible set
-admissibleSet = RefinableNodesSet()
-admissibleSet.create(grid)
+        nodalValues = DataVector(gs.getSize())
+        p = DataVector(gs.getDimension())
 
-# -------------------------------------------------------------------------------
-# define the strategies
-s0 = UniformQuadratureStrategy()
-s1 = PiecewiseConstantQuadratureStrategy(params)
-s2 = BilinearGaussQuadratureStrategy(U.getDistributions(), T.getTransformations())
-s3 = SparseGridQuadratureStrategy(U.getDistributions())
+        for i in xrange(gs.getSize()):
+            gs.getCoordinates(gs.getPoint(i), p)
+            nodalValues[i] = f(p.array())
 
-# print "compute linear bilinear form: SG++ -> works just for U(0, 1)"
-# A = s0.computeBilinearForm(grid)
-# print A.array()
-# print "-" * 60
+        v = hierarchize(grid, nodalValues)
+        res = DataVector(gs.getSize())
 
-# # piecewise constant
-# print "compute piece wise constant bilinear form"
-# B = s1.computeBilinearForm(grid)
-# print B.array()
-print "-" * 60
+        # -------------------------------------------------------------------------------
+        # compute admissible set
+        admissibleSet = RefinableNodesSet()
+        admissibleSet.create(grid)
 
-# Scipy
-print "compute scipy bilinear form"
-C = s2.computeBilinearForm(grid)
-print C
-print "-" * 60
+        # -------------------------------------------------------------------------------
+        # define the strategies
+        s0 = UniformQuadratureStrategy()
+        s1 = PiecewiseConstantQuadratureStrategy(params=params)
+        s2 = BilinearGaussQuadratureStrategy(U=U.getDistributions(),
+                                             T=T.getTransformations())
+        s3 = SparseGridQuadratureStrategy(U=U.getDistributions())
 
-# Sparse Grids
-print "compute full bilinear form with sparse grid integration"
-D = s3.computeBilinearForm(grid)
-print D
-print "-" * 60
+        A = s0.computeBilinearForm(grid)
+        C, _ = s2.computeBilinearForm(grid)
+        D, _ = s3.computeBilinearForm(grid)
 
-# -------------------------------------------------------------------------------
-# compute bilinear form for lists of grid points
-gpsi, basisi = project(grid, [0, 1])
-gpsj, basisj = project(grid, [0, 1])
+        # -------------------------------------------------------------------------------
+        # compute bilinear form for lists of grid points
+        gpsi, basisi = project(grid, [0, 1])
+        gpsj, basisj = project(grid, [0, 1])
 
-print "compute scipy form"
-C = s2.computeBilinearFormByList(gs, gpsi, basisi, gpsj, basisj)
-print C
-print "-" * 60
+        C_list, _ = s2.computeBilinearFormByList(gs, gpsi, basisi, gpsj, basisj)
+        D_list, _ = s3.computeBilinearFormByList(gs, gpsi, basisi, gpsj, basisj)
 
-print "sparse grid integration"
-C = s3.computeBilinearFormByList(gs, gpsi, basisi, gpsj, basisj)
-print C
-print "-" * 60
+        assert np.all(np.abs(C_list - A) < 1e-13)
+        assert np.all(np.abs(C_list - C) < 1e-13)
+        assert np.all(np.abs(D_list - D) < 1e-13)
 
-# # -------------------------------------------------------------------------------
-# # compute variance ranking
-# # -------------------------------------------------------------------------------
-# v0 = VarianceBFRanking(s0)
-# v1 = VarianceBFRanking(s1)
-# v2 = VarianceBFRanking(s2)
-# v3 = VarianceBFRanking(s3)
-#
-# for s, ranking in [("Uniform", v0),
-#                    ("Piecewise constant", v1),
-#                    ("Scipy", v2),
-#                    ("SG", v3)]:
-#     ranking.update(grid, v, admissibleSet)
-#
-#     # get the result
-#     r = np.zeros(admissibleSet.getSize())
-#     for i, gp in enumerate(admissibleSet.values()):
-#         r[i] = ranking.rank(grid, gp, v, params)
-#
-#     rix = np.argsort(np.argsort(r))
-#     print ["%g, %i" % (a, b) for a, b in zip(r, rix)]
-#     fig = plt.figure()
-#     p = DataVector(gs.getDimension())
-#     plotDensity2d(params.getIndependentJointDistribution())
-#     for i, gp in enumerate(admissibleSet.values()):
-#         gp.getCoords(p)
-#         plt.plot(p[0], p[1], marker="o")
-#         plt.text(p[0], p[1], "%i" % rix[i], color='yellow', fontsize=12)
-#     plt.title(s)
-#     plt.xlim(0, 1)
-#     fig.show()
-#
-# plt.show()
+
+# -------------------------------------------------------------------
+# testing
+# -------------------------------------------------------------------
+if __name__ == "__main__":
+    unittest.main()

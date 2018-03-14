@@ -40,30 +40,22 @@ class MonteCarloStrategyTest(unittest.TestCase):
             nodalValues[i] = 16 * (1 - x[0]) * (1 - x[1])
         cls.alpha = hierarchize(cls.grid, nodalValues)
 
-
     def testMonteCarlo(self):
         # initialize pdf and transformation
         U = self.params.getIndependentJointDistribution()
         T = self.params.getJointTransformation()
 
         strategy = MonteCarloStrategy(samples=self.samples, ixs=[0])
-        mean_mc = strategy.mean(self.grid, self.alpha, U, T)
-        var_mc = strategy.var(self.grid, self.alpha, U, T, mean_mc[0])
-
-        print mean_mc
-        print var_mc
-
-        mean_mc = mean_mc[0]
-        var_mc = var_mc[0]
+        mean_mc = strategy.mean(self.grid, self.alpha, U, T)["value"]
+        var_mc = strategy.var(self.grid, self.alpha, U, T, mean_mc)["value"]
 
         strategy = AnalyticEstimationStrategy()
-        mean_ana = strategy.mean(self.grid, self.alpha, U, T)[0]
-        var_ana = strategy.var(self.grid, self.alpha, U, T, mean_ana)[0]
+        mean_ana = strategy.mean(self.grid, self.alpha, U, T)["value"]
+        var_ana = strategy.var(self.grid, self.alpha, U, T, mean_ana)["value"]
 
-        print "mean: %g ~ %g (err=%g)" % (mean_ana, mean_mc, np.abs(mean_mc - mean_ana))
-        print "var:  %g ~ %g (err=%g)" % (var_ana, var_mc, np.abs(var_mc - var_ana))
+        assert np.abs(mean_mc - mean_ana) < 1e-1
+        assert np.abs(var_mc - var_ana) < 1e-1
 
-        return
 
 # -------------------------------------------------------------------------------
 # testing

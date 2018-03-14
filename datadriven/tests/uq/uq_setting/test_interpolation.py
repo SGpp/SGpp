@@ -1,53 +1,78 @@
 # -------------------------------------------------------------------
 # UQSetting test
 # -------------------------------------------------------------------
-from bin.uq.parameters import ParameterBuilder  # , UncertainParameterBuilder
-from bin.uq.uq_setting import UQBuilder
+from pysgpp.extensions.datadriven.uq.parameters import ParameterBuilder
+from pysgpp.extensions.datadriven.uq.uq_setting import UQBuilder
+from pysgpp.extensions.datadriven.uq.manager.ASGCUQManagerBuilder import ASGCUQManagerBuilder
+from pysgpp.extensions.datadriven.uq.analysis.KnowledgeTypes import KnowledgeTypes
+from pysgpp.extensions.datadriven.uq.analysis.asgc.ASGCAnalysisBuilder import ASGCAnalysisBuilder
+from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
+
+from pysgpp import GridType_Poly
+
 import unittest
 
 import numpy as np
 import matplotlib.pyplot as plt
 
 
-class UQSettingTest(unittest.TestCase):
+class InterpolationTest(unittest.TestCase):
 
     def testSettings(self):
         # set distributions of the input parameters
         builder = ParameterBuilder()
         up = builder.defineUncertainParameters()
-        up.new().isCalled('x').withUniformDistribution(0, 1)\
-                              .withLinearTransformation()
+        up.new().isCalled('x').withUniformDistribution(0, 1)
+        up.new().isCalled('y').withUniformDistribution(0, 1)
         params = builder.andGetResult()
 
         def postprocessor(x, *args, **kws):
-            return {'x': x, 'time': range(len(x))}
+            return {'x': np.array([x[0],
+                                   -x[0]]),
+                    'time': range(len(x))}
 
         f = lambda x, **kws: [x[0], 2 * x[0], 4 * x[0], 8 * x[0]]
+        toi = [0, 1]
 
         # set up uq setting
-        builder = UQBuilder()
-        builder.withParameters(params)
-        builder.withSimulation(f)
-        builder.withPostprocessor(postprocessor)
-        builder.interpolateTimeDependentResults()
-        uq_a = builder.andGetResult()
+        builder = ASGCUQManagerBuilder().withParameters(params)\
+                                        .withTypesOfKnowledge([KnowledgeTypes.SIMPLE,
+                                                               KnowledgeTypes.SQUARED])\
+                                        .withQoI("x")\
+                                        .withTimeStepsOfInterest(toi)\
+                                        .useInterpolation()
 
-        # run test session
-        ps = [(p,) for p in np.linspace(0, 1, 20)]
-        ts = np.linspace(0, 3, 100)
-        for p in ps:
-            uq_a.run(p)
+        builder.defineUQSetting().withSimulation(f)\
+                                 .withPostprocessor(postprocessor)
 
-        y = uq_a.getTimeDependentResults(ts, qoi='x')
+        builder.defineSampler().withGrid().withLevel(3)\
+                                          .hasType(GridType_Poly)\
+                                          .withDegree(2)\
+                                          .withBoundaryLevel(1)
 
-        for p in ps:
-            w = [y[t][p] for t in ts]
-            plt.plot(ts, w)
+        uqManager = builder.andGetResult()
+        uqManager.runNextSamples()
+
+        # define analysis
+        uqAnalysis = ASGCAnalysisBuilder().withUQManager(uqManager)\
+                                          .withAnalyticEstimationStrategy()\
+                                          .andGetResult()
+
+        # plot result
+        ans = {}
+        for t in uqManager.getTimeStepsOfInterest():
+            grid, alpha = uqManager.getKnowledge().getSparseGridFunction(t=t,
+                                                                         qoi="x")
+            fig = plt.figure()
+            ans[t] = plotSG2d(grid, alpha, show_grid_points=True, show_numbers=True)
+            fig.show()
+
+        assert all(ans[0] == -ans[1])
         plt.show()
+
 
 # -------------------------------------------------------------------
 # testing
 # -------------------------------------------------------------------
-
 if __name__ == "__main__":
     unittest.main()

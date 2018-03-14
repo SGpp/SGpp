@@ -1,25 +1,37 @@
 from pysgpp.extensions.datadriven.uq.parameters import ParameterBuilder
 
+import unittest
 
-builder = ParameterBuilder()
-dp = builder.defineDeterministicParameters()
-up = builder.defineUncertainParameters()
 
-up.new().isCalled('v').withUniformDistribution(0, 10).withInverseCDFTransformation()
-dp.new().isCalled('density').hasValue(.3)
-up.new().isCalled('theta').withTNormalDistribution(1, 1, -2, 2).withLinearTransformation()
-dp.new().isCalled('radius').hasValue(10)
-up.new().isCalled('height').withBetaDistribution(3, 3, 0, 2).withInverseCDFTransformation()
-params = builder.andGetResult()
+class TransformationTest(unittest.TestCase):
 
-ap = params.activeParams()
+    def testSettings(self):
+        builder = ParameterBuilder()
+        dp = builder.defineDeterministicParameters()
+        up = builder.defineUncertainParameters()
 
-dist = ap.getIndependentJointDistribution()
-trans = ap.getJointTransformation()
+        up.new().isCalled('v').withUniformDistribution(0, 10).withRosenblattTransformation()
+        dp.new().isCalled('density').hasValue(.3)
+        up.new().isCalled('theta').withTNormalDistribution(1, 1, -2, 2).withLinearTransformation()
+        dp.new().isCalled('radius').hasValue(10)
+        up.new().isCalled('height').withBetaDistribution(3, 3, 0, 2).withRosenblattTransformation()
+        params = builder.andGetResult()
 
-for _ in range(1000):
-    prob1 = dist.rvs()[0]
-    unit = trans.probabilisticToUnit(prob1)
-    prob2 = trans.unitToProbabilistic(unit)
+        ap = params.activeParams()
 
-    assert all(["%g" % x == "%g" % y for x, y in zip(prob1, prob2)])
+        dist = ap.getIndependentJointDistribution()
+        trans = ap.getJointTransformation()
+
+        for _ in range(1000):
+            prob1 = dist.rvs()[0]
+            unit = trans.probabilisticToUnit(prob1)
+            prob2 = trans.unitToProbabilistic(unit)
+
+            assert all(["%g" % x == "%g" % y for x, y in zip(prob1, prob2)])
+
+
+# -------------------------------------------------------------------
+# testing
+# -------------------------------------------------------------------
+if __name__ == "__main__":
+    unittest.main()

@@ -25,6 +25,7 @@ from pysgpp.extensions.datadriven.uq.estimators import AnalyticEstimationStrateg
 from pysgpp.extensions.datadriven.uq.plot.plot1d import plotSG1d
 from pysgpp.pysgpp_swig import GridType_PolyBoundary, GridType_Linear, \
     GridType_LinearBoundary, GridType_Poly
+from pysgpp.extensions.datadriven.uq.quadrature.sparse_grid import doQuadrature
 
 
 def interpolate(f, level, dim, gridType=GridType_Linear, deg=2, trans=None):
@@ -94,7 +95,7 @@ class QuadratureTest(unittest.TestCase):
                             "%i: |%g - %g| / %g = %g >= 1e-2" % (i, f1, f2, f1, (abs(f1 - f2) / f1)))
 
     def testQuadratureTruncated(self):
-        f = lambda x: 1.
+        def f(x): return 1.
         grid, alpha = interpolate(f, 2, 3)
         alpha = DataVector(grid.getStorage().getSize())
 
@@ -136,42 +137,46 @@ class QuadratureTest(unittest.TestCase):
 
     def testMarginalization_2D(self):
         xlim = [[0, 1], [0, 1]]
-        f = lambda x: np.prod([4 * xi * (1 - xi) for xi in x])
+
+        def f(x): return np.prod([4 * xi * (1 - xi) for xi in x])
         d = [1]
         p = [0.5, 0.5]
 
         # get marginalized sparse grid function
         level = 5
         grid, alpha = interpolate(f, level, 2)
-        n_grid, n_alpha, err = doMarginalize(grid, alpha, d)
+        n_grid, n_alpha, err = doMarginalize(grid, alpha, linearForm=None, dd=d)
 
         # self.assertTrue(abs(q.quad(f, p, d[:], xlim, 10) - 2./3) < 1e-5)
         # self.assertTrue(abs(q.monte_carlo(f, p, d[:], xlim, 8192) - 2./3) < 1e-2)
         # self.assertTrue(abs(createOperationEval(n_grid).eval(n_alpha, DataVector([p.getCoord(1 - d[0])]])) - 2./3) < 1e-3)
 
-        s1 = createOperationQuadrature(n_grid).doQuadrature(n_alpha)
-        s2 = createOperationQuadrature(grid).doQuadrature(alpha)
+        s1 = doQuadrature(n_grid, n_alpha)
+        s2 = doQuadrature(grid, alpha)
         self.assertTrue(abs(s1 - s2) < 1e-14)
 
     def testMarginalization_3D(self):
         xlim = [[0, 1], [0, 1], [0, 1]]
-        f = lambda x: np.prod([4 * xi * (1 - xi) for xi in x])
+
+        def f(x): return np.prod([4 * xi * (1 - xi) for xi in x])
         d = [0]
         p = [0.1, 0.2, 0.5]
 
         # get marginalized sparse grid function
         level = 5
         grid, alpha = interpolate(f, level, 3)
-        n_grid, n_alpha, _ = doMarginalize(grid, alpha, d[:])
+        n_grid, n_alpha, _ = doMarginalize(grid, alpha, linearForm=None, dd=d[:])
 
-        self.assertEqual(createOperationQuadrature(n_grid).doQuadrature(n_alpha), \
-                         createOperationQuadrature(grid).doQuadrature(alpha))
+        self.assertEqual(doQuadrature(n_grid, n_alpha),
+                         doQuadrature(n_grid, n_alpha))
 
         xlim = [[0, 1], [0, 1], [0, 1]]
         # Quantity of interest
         bs = [0.1, 0.2, 1.5]
-        g = lambda x, a: abs((4. * x - 2.) + a) / (a + 1.)
-        h = lambda xs: np.prod([g(x, b) for x, b in zip(xs, bs)])
+
+        def g(x, a): return abs((4. * x - 2.) + a) / (a + 1.)
+
+        def h(xs): return np.prod([g(x, b) for x, b in zip(xs, bs)])
 
         d = [0]
         p = [0.0, 0.3, 0.2]
@@ -179,12 +184,12 @@ class QuadratureTest(unittest.TestCase):
         # get marginalized sparse grid function
         level = 5
         grid, alpha = interpolate(h, level, 3)
-        n_grid, n_alpha, _ = doMarginalize(grid, alpha, d[:])
+        n_grid, n_alpha, _ = doMarginalize(grid, alpha, linearForm=None, dd=d[:])
 
-        s1 = createOperationQuadrature(n_grid).doQuadrature(n_alpha)
-        n_grid, n_alpha, _ = doMarginalize(grid, alpha, [0])
-        s2 = createOperationQuadrature(n_grid).doQuadrature(n_alpha)
-        s3 = createOperationQuadrature(grid).doQuadrature(alpha)
+        s1 = doQuadrature(n_grid, n_alpha)
+        n_grid, n_alpha, _ = doMarginalize(grid, alpha, linearForm=None, dd=[0])
+        s2 = doQuadrature(n_grid, n_alpha)
+        s3 = doQuadrature(grid, alpha)
 
         self.assertTrue(abs(s1 - s2) < 1e-10)
         self.assertTrue(abs(s1 - s3) < 1e-10)
@@ -199,13 +204,15 @@ class QuadratureTest(unittest.TestCase):
             dists.append(Uniform(xlim[idim, 0], xlim[idim, 1]))
         dist = J(dists)
 
-        f = lambda x: np.prod([(1 + xi) * (1 - xi) for xi in x])
-        F = lambda x: 1. - x ** 3 / 3.
-        grid, alpha = interpolate(f, 1, 2, gridType=GridType_Poly, deg=2, trans=trans)
+        def f(x): return np.prod([(1 + xi) * (1 - xi) for xi in x])
+
+        def F(x): return 1. - x ** 3 / 3.
+        grid, alpha_vec = interpolate(f, 1, 2, gridType=GridType_Poly, deg=2, trans=trans)
+        alpha = alpha_vec.array()
 
         q = (F(1) - F(-1)) ** 2
-        q1 = createOperationQuadrature(grid).doQuadrature(alpha)
-        q2, _ = AnalyticEstimationStrategy().mean(grid, alpha, dist, trans)
+        q1 = doQuadrature(grid, alpha)
+        q2 = AnalyticEstimationStrategy().mean(grid, alpha, dist, trans)["value"]
 
         self.assertTrue(abs(q - q1) < 1e-10)
         self.assertTrue(abs(q - q2) < 1e-10)
@@ -214,14 +221,15 @@ class QuadratureTest(unittest.TestCase):
 
         self.assertTrue(abs(nalpha[0] - 2. / 3.) < 1e-10)
 
-#         plotSG3d(grid, alpha)
-#         plt.figure()
-#         plotSG1d(ngrid, nalpha)
-#         plt.show()
+        plotSG3d(grid, alpha)
+        plt.figure()
+        plotSG1d(ngrid, nalpha)
+        plt.show()
 
 # --------------------------------------------------
 # testing
 # --------------------------------------------------
+
 
 if __name__ == "__main__":
     unittest.main()

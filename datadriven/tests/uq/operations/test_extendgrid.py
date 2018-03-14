@@ -12,9 +12,9 @@ def plotGrid2d(grid):
     plt.xlim(0, 1)
     plt.ylim(0, 1)
     p = DataVector(2)
-    for i in xrange(gs.size()):
-        gp = gs.get(i)
-        gp.getCoords(p)
+    for i in xrange(gs.getSize()):
+        gp = gs.getPoint(i)
+        gs.getCoordinates(gp, p)
         plt.plot(p[0], p[1], marker='o', color='blue')
         plt.text(p[0], p[1], "(%i, %i), (%i, %i)" % (gp.getLevel(0),
                                                      gp.getLevel(1),
@@ -30,9 +30,9 @@ def plotGrid3dSlices(grid):
 
     d = {}
 
-    for i in xrange(gs.size()):
-        gp = gs.get(i)
-        gp.getCoords(p)
+    for i in xrange(gs.getSize()):
+        gp = gs.getPoint(i)
+        gs.getCoordinates(gp, p)
         if p[2] in d:
             d[p[2]].append([p[0], p[1],
                             gp.getLevel(0), gp.getLevel(1),
@@ -59,12 +59,12 @@ def plotGrid3dSlices(grid):
 
 def plot_1d_2d(level=2):
     grid1d = Grid.createLinearGrid(1)
-    grid1d.createGridGenerator().regular(level)
+    grid1d.getGenerator().regular(level)
     grid2d2 = extend_grid(grid1d, 1)
     plotGrid2d(grid2d2)
 
     grid2d = Grid.createLinearGrid(2)
-    grid2d.createGridGenerator().full(level)
+    grid2d.getGenerator().full(level)
     plotGrid2d(grid2d)
 
     plt.show()
@@ -72,8 +72,7 @@ def plot_1d_2d(level=2):
 
 def plot_2d_3d(level=2):
     grid2d = Grid.createLinearGrid(2)
-    # grid2d = Grid.createLinearTruncatedBoundaryGrid(2)
-    grid2d.createGridGenerator().regular(level)
+    grid2d.getGenerator().regular(level)
     plotGrid2d(grid2d)
     grid3d = extend_grid(grid2d, 1)
     plotGrid3dSlices(grid3d)
@@ -82,4 +81,4 @@ def plot_2d_3d(level=2):
 
 
 plot_1d_2d()
-# plot_2d_3d()
+plot_2d_3d()

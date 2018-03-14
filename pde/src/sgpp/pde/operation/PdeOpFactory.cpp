@@ -200,7 +200,8 @@ base::OperationMatrix* createOperationLTwoDotProduct(base::Grid& grid) {
 base::OperationMatrix* createOperationLTwoDotExplicit(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
     return new pde::OperationMatrixLTwoDotExplicitLinear(&grid);
-  } else if (grid.getType() == base::GridType::LinearL0Boundary) {
+  } else if (grid.getType() == base::GridType::LinearL0Boundary ||
+             grid.getType() == base::GridType::LinearBoundary) {
     return new pde::OperationMatrixLTwoDotExplicitLinearBoundary(&grid);
   } else if (grid.getType() == base::GridType::ModLinear) {
     return new pde::OperationMatrixLTwoDotExplicitModLinear(&grid);
