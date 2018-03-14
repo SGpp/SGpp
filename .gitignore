@@ -98,10 +98,6 @@ datadriven/tests/uq/analysis/kraichnanOrszag/results
 datadriven/tests/uq/analysis/kraichnanOrszag/plots
 datadriven/tests/uq/analysis/kraichnanOrszag/*.gz
 
-datadriven/tests/uq/analysis/checkpoints/
-datadriven/tests/uq/analysis/convergence/
-datadriven/tests/uq/analysis/diffusionEquation/
-datadriven/tests/uq/analysis/owhadi10Optimal/
 datadriven/tests/uq/analysis/parabola/plots/plots/
 datadriven/tests/uq/analysis/parabola/results/
 datadriven/tests/uq/analysis/parabolaWithSGDE/
