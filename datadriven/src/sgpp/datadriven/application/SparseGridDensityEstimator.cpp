@@ -59,6 +59,9 @@ SparseGridDensityEstimatorConfiguration::SparseGridDensityEstimatorConfiguration
       gridConfig.type_ = base::Grid::stringToGridType((*this)["grid_type"].get());
     if (this->contains("grid_maxDegree"))
       gridConfig.maxDegree_ = (*this)["grid_maxDegree"].getUInt();
+    if (this->contains("grid_boundaryLevel"))
+      gridConfig.boundaryLevel_ =
+          static_cast<base::level_t>((*this)["grid_boundaryLevel"].getUInt());
 
     // configure adaptive refinement
     if (this->contains("refinement_numSteps"))

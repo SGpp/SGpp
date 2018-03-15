@@ -37,33 +37,33 @@ double OperationSecondMomentModLinear::doQuadrature(DataVector& alpha, DataMatri
       double hInv = 1 << static_cast<int>(level);
       xlower = bounds == nullptr ? 0.0 : bounds->get(dim, 0);
       xupper = bounds == nullptr ? 1.0 : bounds->get(dim, 1);
+
       double width = xupper - xlower;
       double val_secondMoment;
       double val_firstMoment;
       double val_baseIntegral;
+
       if (level == 1) {
-        val_secondMoment = 1./3.0;
+        val_secondMoment = 1. / 3.0;
         val_firstMoment = 0.5;
         val_baseIntegral = 1.0;
       } else if (index == 1) {
-        val_secondMoment = std::pow(2, 2 - 3*level) / 3.0;
+        val_secondMoment = std::pow(2, 2 - 3 * level) / 3.0;
         val_firstMoment = std::pow(4.0, 1 - level) / 3.0;
-        val_baseIntegral = (2. / hInv);
+        val_baseIntegral = 2. / hInv;
       } else if (index == hInv - 1) {
-        val_secondMoment = (std::pow(2.0, 1 - 3*level) *
-                            (2.0 - std::pow(2.0, 2 + level) + 3 * std::pow(4, level)))
-          / 3.0;
-        val_baseIntegral = (2. / hInv);
-        val_firstMoment = std::pow(2.0, 1 - 2*level) * (3. * hInv - 2) / 3.0;
+        val_secondMoment = (std::pow(2.0, 1 - 3 * level) *
+                            (2.0 - std::pow(2.0, 2 + level) + 3 * std::pow(4, level))) /
+                           3.0;
+        val_baseIntegral = 2. / hInv;
+        val_firstMoment = std::pow(2.0, 1 - 2 * level) * (3. * hInv - 2) / 3.0;
       } else {
         val_secondMoment = (index * index + 1. / 6.) * std::pow(8, -level);
         val_baseIntegral = std::pow(2.0, level);
         val_firstMoment = std::pow(4.0, -level);
       }
-      tmpres *=
-        width * width * val_secondMoment
-        + 2 * width * xlower * val_firstMoment
-        + xlower * xlower * val_baseIntegral;
+      tmpres *= width * width * val_secondMoment + 2 * width * xlower * val_firstMoment +
+                xlower * xlower * val_baseIntegral;
     }
 
     res += alpha.get(iter->second) * tmpres;
