@@ -218,7 +218,7 @@ def savefig(fig,
         fig.savefig("%s.png" % filename)
         fig.savefig("%s.pdf" % filename)
     else:
-        fig.tight_layout()
+        # fig.tight_layout()
         if lgd is None:
             fig.savefig("%s.png" % filename, bbox_inches='tight')
             fig.savefig("%s.pdf" % filename, bbox_inches='tight')
