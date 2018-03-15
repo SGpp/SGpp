@@ -552,7 +552,8 @@ base::OperationEval* createOperationEvalNaive(base::Grid& grid) {
     return new base::OperationEvalLinearNaive(grid.getStorage());
   } else if (grid.getType() == base::GridType::ModLinear) {
     return new base::OperationEvalModLinearNaive(grid.getStorage());
-  } else if (grid.getType() == base::GridType::LinearBoundary) {
+  } else if (grid.getType() == base::GridType::LinearBoundary ||
+             grid.getType() == base::GridType::LinearL0Boundary) {
     return new base::OperationEvalLinearBoundaryNaive(grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
     return new base::OperationEvalLinearClenshawCurtisNaive(grid.getStorage());
@@ -605,7 +606,7 @@ base::OperationEval* createOperationEvalNaive(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
     return new base::OperationEvalModPolyClenshawCurtisNaive(
         grid.getStorage(), dynamic_cast<base::ModPolyClenshawCurtisGrid*>(&grid)->getDegree());
-  }  else if (grid.getType() == base::GridType::NakBsplineBoundaryCombigrid) {
+  } else if (grid.getType() == base::GridType::NakBsplineBoundaryCombigrid) {
     return new base::OperationEvalNakBsplineBoundaryCombigridNaive(
         grid.getStorage(), dynamic_cast<base::NakBsplineBoundaryCombigridGrid&>(grid).getDegree());
   } else {
@@ -682,8 +683,7 @@ base::OperationEvalHessian* createOperationEvalHessianNaive(base::Grid& grid) {
   }
 }
 
-base::OperationEvalPartialDerivative* createOperationEvalPartialDerivativeNaive(
-    base::Grid& grid) {
+base::OperationEvalPartialDerivative* createOperationEvalPartialDerivativeNaive(base::Grid& grid) {
   if (grid.getType() == base::GridType::Bspline) {
     return new base::OperationEvalPartialDerivativeBsplineNaive(
         grid.getStorage(), dynamic_cast<base::BsplineGrid&>(grid).getDegree());

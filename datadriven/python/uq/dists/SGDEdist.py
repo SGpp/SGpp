@@ -324,7 +324,6 @@ class SGDEdist(EstimatedDist):
             bounds = DataMatrix(self.trans.getBounds())
             secondMoment = opQuad.doQuadrature(self.unnormalized_alpha_vec,
                                                bounds)
-
         return secondMoment - self.mean() ** 2
 
     def cov(self):
