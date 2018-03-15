@@ -306,7 +306,7 @@ BOOST_AUTO_TEST_CASE(testOperationSecondMomentModLinear) {
   base::Grid* grid(sgpp::base::Grid::createModLinearGrid(d));
   grid->getGenerator().regular(l);
   base::OperationSecondMoment* op = sgpp::op_factory::createOperationSecondMoment(*grid);
-  base::DataVector alpha(grid->getSize(), 0.2345);
+  base::DataVector alpha(grid->getSize(), 1.0);
   double approx = secondMomentApproximation(grid, alpha);
   double res = op->doQuadrature(alpha);
   BOOST_CHECK_SMALL(approx - res, epsilon);

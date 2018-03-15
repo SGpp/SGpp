@@ -43,7 +43,7 @@ double OperationSecondMomentLinear::doQuadrature(DataVector& alpha, DataMatrix* 
         xlower = bounds->get(dim, 0);
         xupper = bounds->get(dim, 1);
         double width = (xupper - xlower);
-        tmpres *= width * width * (index * index + 1. / 6.) * std::pow(8, -level) +
+        tmpres *= width * width * (index * index + 1. / 6.) * std::pow(8.0, -level) +
                   2 * width * xlower * index * std::pow(4.0, -level) +
                   xlower * xlower * std::pow(2.0, -level);
       }

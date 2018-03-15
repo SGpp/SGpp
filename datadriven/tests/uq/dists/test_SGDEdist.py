@@ -108,7 +108,7 @@ class SGDEdistTest(unittest.TestCase):
 
         # build parameter set
         dist = SGDEdist.byLearnerSGDEConfig(trainSamples,
-                                            config={"grid_level": 2,
+                                            config={"grid_level": 6,
                                                     "grid_type": "modlinear",
                                                     "grid_maxDegree": 3,
                                                     "refinement_numSteps": 0,
