@@ -59,6 +59,8 @@ class FitterFactory {
 
   void setBO(base::DataVector& cont, std::vector<int>& disc);
 
+  int moveToNewSpace(int configID);
+
 protected:
   std::list<std::unique_ptr<ConfigurationBit>> configBits;
   std::map<std::string,ContinuousParameter*> conpar;

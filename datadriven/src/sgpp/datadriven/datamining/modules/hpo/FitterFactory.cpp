@@ -71,12 +71,12 @@ int FitterFactory::addConstraint(int idx, int bias){
 		bit->addConstraint(hey);
 		std::cout<<"Adding bit from constraint:"<<idx<<std::endl;
 	}
-	std::vector<ConfigurationBit*> freeBits{};
+	std::vector<ConfigurationBit*> freeBitsn{};
 		for(auto& bit : configBits){ //reference to prevent unique pointer copying
 		    bit->reset();
 		  }
 		for(auto& bit : configBits){
-			bit->fixFreeBits(freeBits);
+			bit->fixFreeBits(freeBitsn);
 		}
     for(auto& bit : configBits){
       if(!bit->checkConstraints()){
@@ -94,6 +94,37 @@ int FitterFactory::addConstraint(int idx, int bias){
 -error handling: prevent conflicting constraints
  -handle constraints with zero bias
 */
+
+int FitterFactory::moveToNewSpace(int configID){
+  std::vector<ConfigurationBit*> freeBitsn{};
+  for(auto& bit : configBits){ //reference to prevent unique pointer copying
+    bit->reset();
+  }
+  for(auto& bit : configBits){
+    bit->fixFreeBits(freeBitsn);
+  }
+  for(auto& bit : configBits){
+    bit->reset();
+  }
+  for(auto& bit : freeBits){
+    bit->setBit(&configID);
+  }
+  for(auto& bit : configBits){
+    bit->evaluate();
+  }
+  for(auto& bit : configBits) {
+    if (!bit->checkConstraints()) {
+      return -1;
+    }
+  }
+  int v = 0;
+  int m = 1;
+  for(auto& bit : freeBitsn){
+    v = v+m*((bit->evaluate()+1)/2);
+    m = m*2;
+  }
+  return v;
+}
 
 void FitterFactory::setHarmonica(int configID, int row, DataMatrix &paritymatrix)  {
   // fix ConfigurationBits according to constraints

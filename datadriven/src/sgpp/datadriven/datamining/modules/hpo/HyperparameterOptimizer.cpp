@@ -67,7 +67,7 @@ for(int q=0;q<3;q++) {
 
   harmonica.transformScores(scores, transformedScores);
 
-  harmonica.calculateConstrainedSpace(transformedScores);
+  harmonica.calculateConstrainedSpace(transformedScores,2,4);
 }
 
 }

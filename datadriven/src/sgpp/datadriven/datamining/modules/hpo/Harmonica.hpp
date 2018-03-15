@@ -23,7 +23,7 @@ public:
 
 
   void prepareConfigs(std::vector<ModelFittingBase*>& fitters);
-  void createRandomConfigs(int nBits, std::vector<int>& configIDs, int seed);
+  void createRandomConfigs(int nBits, std::vector<int>& configIDs, int seed, int start);
   void calculateConstrainedSpace(const DataVector& transformedScores, int lambda, int shrink);
   void transformScores(const DataVector& source, DataVector& target);
 
@@ -34,6 +34,8 @@ protected:
 	base::DataMatrix paritymatrix;
   int nBits;
   FitterFactory* fitterFactory;
+  std::vector<int> configIDs;
+  DataVector savedScores;
 
 
 };
