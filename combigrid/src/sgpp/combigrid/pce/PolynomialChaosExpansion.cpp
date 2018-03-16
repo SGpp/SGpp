@@ -208,8 +208,7 @@ void PolynomialChaosExpansion::updateConfig(
   } else if (config.pointHierarchies.size() == numDims && config.storage) {
     combigridTensorOperation =
         sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
-            config.pointHierarchies, config.storage, basisFunctions,
-            sgpp::combigrid::FullGridSummationStrategyType::FULLSUBSPACEDPCE);
+            config.pointHierarchies, config.storage, basisFunctions);
     config.tensorOperation = combigridTensorOperation;
   }
 
