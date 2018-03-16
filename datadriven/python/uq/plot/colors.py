@@ -85,20 +85,11 @@ def load_custom_pgf_preamble(dtype="standard", macros="thesis"):
     return pgf_preamble
 
 
-def initialize_plotting_style(dtype="standard",
-                              macros="thesis",
-                              style="seaborn-paper"):
-    """
-    Initialize the plotting style for the current python session.
-
-    @param dtype: font style type (standard, springer)
-    @param macros: path to commands latex file -> containing (newcommand)
-    @param style: plot style
-    """
+def initialize_plotting_style(dtype="standard", macros="thesis"):
     import matplotlib as mpl
     import matplotlib.pyplot as plt
 
-    plt.style.use(style)
+    plt.style.use('seaborn-paper')
 
     # Include packages `amssymb` and `amsmath` in LaTeX preamble
     # as they include extended math support (symbols, envisonments etc.)
