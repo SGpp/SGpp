@@ -190,7 +190,7 @@ def insert_legend(fig, loc="right", ncol=3, has_axis=True, shift=0.0):
                          borderaxespad=0,
                          prop=load_font_properties())
     elif loc == "top":
-        lgd = ax.legend(loc='upper center',
+        lgd = plt.legend(loc='upper center',
                         bbox_to_anchor=(0.5, 1.25),
                         ncol=ncol,
                         borderaxespad=0,
@@ -201,7 +201,7 @@ def insert_legend(fig, loc="right", ncol=3, has_axis=True, shift=0.0):
                          borderaxespad=0,
                          prop=load_font_properties())
     else:
-        lgd = plt.legend(loc=loc, prop=load_font_properties())
+        lgd = plt.legend(loc, prop=load_font_properties())
 
     try:
         plt.setp(lgd.get_title(),
