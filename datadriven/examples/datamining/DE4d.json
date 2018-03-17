@@ -1,0 +1,29 @@
+{
+	"dataSource": {
+		"filePath": "C:/Users/Eric/Downloads/DE4dTrain.csv"
+	},
+	"scorer": {
+		"testing": {
+			"testingPortion": 0.5,
+			"shuffling": "random",
+			"randomSeed": 42,
+			"metric": "MSE"
+		}
+	},
+	"fitter": {
+		"type": "densityestimation",
+		"gridConfig": {
+			"gridType": "linear",
+			"dim": 4,
+			"level": 5
+		},
+		"adaptivityConfig": {
+			"numRefinements": 0,
+			"threshold": 0,
+			"noPoints": 0
+		},
+		"regularizationConfig": {
+			"lambda": 10e-6
+		}
+	}
+}

@@ -43,8 +43,8 @@ class LeastSquaresRegressionMinerFactory : public MinerFactory {
    * @param path Path to a configuration file that defines the structure of the miner object.
    */
   virtual SparseGridMiner* buildMiner(const std::string& path) const;
-  virtual void optimizeHyperparameters(const std::string& path);
-  HyperparameterOptimizer* buildHPO(const std::string& path) const ;
+
+  HyperparameterOptimizer* buildHPO(const std::string& path) const override;
 
 
  private:
@@ -76,15 +76,7 @@ class LeastSquaresRegressionMinerFactory : public MinerFactory {
    * configuration file.
    */
   virtual Scorer* createScorer(const DataMiningConfigParser& parser) const;
-  
-  /**
-   * Build an instance of a #sgpp::datadriven::HPOScorer object as specified in the configuration
-   * file.
-   * @param parser parser object that provides methods to query the configuration file.
-   * @return Fully configured instance of a #sgpp::datadriven::HPOScorer object as specified in the
-   * configuration file.
-   */
-  virtual HPOScorer* createHPOScorer(const DataMiningConfigParser& parser) const;
+
 };
 
 } /* namespace datadriven */

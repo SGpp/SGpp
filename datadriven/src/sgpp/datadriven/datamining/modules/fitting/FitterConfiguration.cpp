@@ -10,19 +10,6 @@
 namespace sgpp {
 namespace datadriven {
 
-void FitterConfiguration::setRegularizationConfig(datadriven::RegularizationConfiguration bregularizationConfig){
-  regularizationConfig = bregularizationConfig;
-}
-
-void FitterConfiguration::setRefinementConfig(base::AdpativityConfiguration badaptivityConfig){
-  adaptivityConfig = badaptivityConfig;
-}
-
-void FitterConfiguration::setGridConfig(base::RegularGridConfiguration bgridConfig){
-  gridConfig = bgridConfig;
-}
-
-
 const base::RegularGridConfiguration& FitterConfiguration::getGridConfig() const {
   return gridConfig;
 }

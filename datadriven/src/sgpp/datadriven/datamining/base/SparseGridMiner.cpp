@@ -12,20 +12,17 @@
 
 #include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
-#include <sgpp/datadriven/tools/CSVTools.hpp>
-
 
 #include <iostream>
 
 namespace sgpp {
 namespace datadriven {
 
-SparseGridMiner::SparseGridMiner(DataSource* dataSource, ModelFittingBase* fitter, Scorer* scorer, HPOScorer* hpoScorer)
-    : dataSource(dataSource), fitter(fitter), scorer(scorer), hpoScorer(hpoScorer) {}
+SparseGridMiner::SparseGridMiner(DataSource* dataSource, ModelFittingBase* fitter, Scorer* scorer)
+    : dataSource(dataSource), fitter(fitter), scorer(scorer) {}
 
 void SparseGridMiner::learn() {
   std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
-  //auto dataset = sgpp::datadriven::CSVTools::readCSV("C:/Users/Eric/Documents/Test3.csv", true);
   double stdDeviation;
   std::cout << std::endl;
 
@@ -35,12 +32,6 @@ void SparseGridMiner::learn() {
             << "Score: " << score << std::endl
             << "Standard Deviation: " << stdDeviation << std::endl
             << "###############" << std::endl;
-}
-
-void SparseGridMiner::optimizeHyperparameters(){
-  std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
-  double stdDeviation;
-  double score = hpoScorer->calculateScore(*fitter, *dataset, &stdDeviation);
 }
 
 } /* namespace datadriven */

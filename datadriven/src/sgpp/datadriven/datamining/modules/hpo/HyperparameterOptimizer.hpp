@@ -40,7 +40,7 @@ class HyperparameterOptimizer {
    * generalization provided by the fitter on testing data. The miner instance will take ownership
    * of the passed object.
    */
-  HyperparameterOptimizer(DataSource* dataSource, FitterFactory* fitterFactory, Scorer* scorer, HPOScorer* hpoScorer);
+  HyperparameterOptimizer(DataSource* dataSource, FitterFactory* fitterFactory, DataMiningConfigParser& parser);
 
   /**
    * Copy constructor deleted - not all members can be copied or cloned .
@@ -94,10 +94,6 @@ class HyperparameterOptimizer {
    * Fitter that trains a model based on data samples.
    */
   std::unique_ptr<FitterFactory> fitterFactory;
-  /**
-   * Scorer that quantifies the quality of a fit. (e.g. cross validation or training with testing)
-   */
-  std::unique_ptr<Scorer> scorer;
   /**
    * Scorer for HPO.
    */

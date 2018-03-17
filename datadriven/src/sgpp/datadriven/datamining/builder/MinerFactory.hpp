@@ -15,6 +15,7 @@
 #include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
 
 #include <string>
+#include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -40,6 +41,8 @@ class MinerFactory {
    * @param path Path to a configuration file that defines the structure of the miner object.
    */
   virtual SparseGridMiner* buildMiner(const std::string& path) const = 0;
+
+  virtual HyperparameterOptimizer* buildHPO(const std::string& path) const = 0;
 };
 
 } /* namespace datadriven */
