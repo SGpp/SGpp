@@ -287,9 +287,9 @@ CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
     evaluators.push_back(sgpp::combigrid::CombiEvaluators::tensorInterpolation(functionBases[i]));
   }
 
+  std::shared_ptr<LevelManager> levelManager = std::make_shared<StandardLevelManager>();
   auto tensorOperation = std::make_shared<CombigridTensorOperation>(
-      pointHierarchies, evaluators, std::make_shared<StandardLevelManager>(), storage,
-      summationStrategyType);
+      pointHierarchies, evaluators, levelManager, storage, summationStrategyType);
 
   return tensorOperation;
 }
