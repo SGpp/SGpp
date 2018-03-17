@@ -41,6 +41,10 @@ class FullGridOptimizedPCESummationStrategy : public AbstractFullGridSummationSt
                                              pointHierarchies) {
 #ifdef USE_EIGEN
     inverseMatrices.resize(pointHierarchies.size());
+#else
+    throw sgpp::base::generation_exception(
+        "FullGridOptimizedPCESummationStrategy::FullGridOptimizedPCESummationStrategy - need Eigen "
+        "to use the optimized PCE transformation.");
 #endif
     size_t numDimensions = pointHierarchies.size();
     for (size_t d = 0; d < numDimensions; d++) {
@@ -59,7 +63,6 @@ class FullGridOptimizedPCESummationStrategy : public AbstractFullGridSummationSt
   virtual ~FullGridOptimizedPCESummationStrategy() {}
 
   V eval(MultiIndex const &level) override {
-#ifdef USE_EIGEN
     size_t numDimensions = this->pointHierarchies.size();
     std::vector<bool> orderingConfiguration(numDimensions, false);
 
@@ -71,6 +74,7 @@ class FullGridOptimizedPCESummationStrategy : public AbstractFullGridSummationSt
     }
     auto grids1D = grid->get1DGrids();  // TODO(holzmudd): evtl. optimierbar
 
+#ifdef USE_EIGEN
     // compute 1D basis change matrices if not already computed
     for (size_t dim = 0; dim < numDimensions; ++dim) {
       while (inverseMatrices[dim].size() <= level[dim]) {
@@ -122,7 +126,9 @@ class FullGridOptimizedPCESummationStrategy : public AbstractFullGridSummationSt
 
     return V(resultCoefficients);
 #else
-    throw sgpp::base::generation_exception("need Eigen to use the PCE transformation.");
+    throw sgpp::base::generation_exception(
+        "FullGridOptimizedPCESummationStrategy::eval - need Eigen to use the optimized PCE "
+        "transformation.");
 #endif
   }
 

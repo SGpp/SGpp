@@ -48,8 +48,8 @@ int main() {
   for (size_t q = 6; q < 7; ++q) {
     // create sprarse grid interpolation operation
     auto tensor_op =
-        sgpp::combigrid::CombigridTensorOperation::createExpClenshawCurtisPolynomialInterpolation(
-            basisFunction, ishigamiModel.numDims, func);
+        sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
+            ishigamiModel.numDims, func);
     sgpp::combigrid::Stopwatch stopwatch;
     stopwatch.start();
     // start with regular level q and add some level adaptively
@@ -66,7 +66,7 @@ int main() {
     // create polynomial chaos surrogate from sparse grid
     sgpp::combigrid::CombigridSurrogateModelConfiguration config;
     config.type = sgpp::combigrid::CombigridSurrogateModelsType::POLYNOMIAL_CHAOS_EXPANSION;
-    config.loadFromCombigridOperation(tensor_op, false);
+    config.loadFromCombigridOperation(tensor_op, true);
     config.basisFunction = basisFunction;
     auto pce = sgpp::combigrid::createCombigridSurrogateModel(config);
 
