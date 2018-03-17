@@ -87,6 +87,7 @@ class FullGridOptimizedPCESummationStrategy : public AbstractFullGridSummationSt
                 functionBases[dim]->evaluate(j, this->pointHierarchies[dim]->getPoint(level1D, i));
           }
         }
+        std::cout << level[0] << " " << level[1] << " " << level[2] << " -> " << level[dim] << " " << numPoints << std::endl;
         inverseMatrices[dim].push_back(mat.fullPivHouseholderQr().inverse());
       }
     }

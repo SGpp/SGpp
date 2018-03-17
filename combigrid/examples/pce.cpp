@@ -46,10 +46,10 @@ int main() {
   auto basisFunction = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
 
   for (size_t q = 6; q < 7; ++q) {
-    // create sprarse grid interpolation operation
+    // create sparse grid interpolation operation
     auto tensor_op =
-        sgpp::combigrid::CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(
-            ishigamiModel.numDims, func);
+        sgpp::combigrid::CombigridTensorOperation::createExpClenshawCurtisPolynomialInterpolation(
+          basisFunction, ishigamiModel.numDims, func);
     sgpp::combigrid::Stopwatch stopwatch;
     stopwatch.start();
     // start with regular level q and add some level adaptively

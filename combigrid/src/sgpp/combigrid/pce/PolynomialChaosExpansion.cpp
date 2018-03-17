@@ -203,16 +203,14 @@ void PolynomialChaosExpansion::getTotalSobolIndices(sgpp::base::DataVector& tota
 
 void PolynomialChaosExpansion::updateConfig(
     sgpp::combigrid::CombigridSurrogateModelConfiguration config) {
-  //  if (config.tensorOperation) {
-  //    config.loadFromCombigridOperation(config.tensorOperation);
-  //    combigridTensorOperation = config.tensorOperation;
-  //  } else
-
-  if (config.pointHierarchies.size() == numDims && config.storage) {
+   if (config.tensorOperation) {
+     config.loadFromCombigridOperation(config.tensorOperation);
+     combigridTensorOperation = config.tensorOperation;
+   } else if (config.pointHierarchies.size() == numDims && config.storage) {
     combigridTensorOperation =
         sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
-            config.pointHierarchies, config.storage, basisFunctions,
-            sgpp::combigrid::FullGridSummationStrategyType::ONEDSUBSPACEPCE);
+          config.pointHierarchies, config.storage, basisFunctions);
+            // sgpp::combigrid::FullGridSummationStrategyType::ONEDSUBSPACEPCE);
     config.tensorOperation = combigridTensorOperation;
   }
 
