@@ -15,7 +15,6 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
-#include <sgpp/datadriven/datamining/modules/hpo/HPOScorer.hpp>
 
 #include <memory>
 
@@ -38,7 +37,7 @@ class SparseGridMiner {
    * generalization provided by the fitter on testing data. The miner instance will take ownership
    * of the passed object.
    */
-  SparseGridMiner(DataSource* dataSource, ModelFittingBase* fitter, Scorer* scorer, HPOScorer* hpoScorer);
+  SparseGridMiner(DataSource* dataSource, ModelFittingBase* fitter, Scorer* scorer);
 
   /**
    * Copy constructor deleted - not all members can be copied or cloned .
@@ -74,12 +73,6 @@ class SparseGridMiner {
    * generalize data by fitting and asses quality of the fit.
    */
   void learn();
-  
-  /**
-   * Optimize Hyperparameters with HPOScorer.
-   * Currently no input/output yet.
-   */
-  void optimizeHyperparameters();
 
  private:
   /**
@@ -95,10 +88,6 @@ class SparseGridMiner {
    * Scorer that quantifies the quality of a fit. (e.g. cross validation or training with testing)
    */
   std::unique_ptr<Scorer> scorer;
-  /**
-   * Scorer for HPO.
-   */
-  std::unique_ptr<HPOScorer> hpoScorer;
 };
 
 } /* namespace datadriven */

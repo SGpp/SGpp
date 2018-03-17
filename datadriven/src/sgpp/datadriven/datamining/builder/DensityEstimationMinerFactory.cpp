@@ -19,6 +19,7 @@
 #include <sgpp/datadriven/datamining/builder/SplittingScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/DensityEstimationFitterFactory.hpp>
 
 #include <string>
 
@@ -29,6 +30,11 @@ SparseGridMiner* DensityEstimationMinerFactory::buildMiner(const std::string& pa
   DataMiningConfigParser parser(path);
 
   return new SparseGridMiner(createDataSource(parser), createFitter(parser), createScorer(parser));
+}
+
+HyperparameterOptimizer* DensityEstimationMinerFactory::buildHPO(const std::string& path) const {
+  DataMiningConfigParser parser(path);
+  return new HyperparameterOptimizer(createDataSource(parser), new DensityEstimationFitterFactory(parser), parser);
 }
 
 DataSource* DensityEstimationMinerFactory::createDataSource(

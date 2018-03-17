@@ -18,6 +18,7 @@
 #include <sgpp/datadriven/datamining/modules/hpo/ConfigurationBit.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/ContinuousParameter.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/DiscreteParameter.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/ExponentialParameter.hpp>
 
 
 namespace sgpp {
@@ -65,6 +66,7 @@ protected:
   std::list<std::unique_ptr<ConfigurationBit>> configBits;
   std::map<std::string,ContinuousParameter*> conpar;
   std::map<std::string,DiscreteParameter*> dispar;
+  std::map<std::string,DiscreteParameter*> catpar;
   std::vector<std::list<ConfigurationBit*> > parityrow;
   std::vector<ConfigurationBit*> freeBits;
 

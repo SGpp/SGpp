@@ -48,8 +48,8 @@ double SplittingScorer::calculateScore(ModelFittingBase& model, Dataset& dataset
   double score = train(model, trainDataset, testDataset);
 
   // refine it
-  score = refine(model, testDataset);
-
+  // score = refine(model, testDataset);
+  // EDIT: undo this
   if (stdDeviation) {
     *stdDeviation = 0;
   }

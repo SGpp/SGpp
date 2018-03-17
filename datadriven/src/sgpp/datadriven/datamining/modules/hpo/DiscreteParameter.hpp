@@ -18,7 +18,8 @@ public:
 	DiscreteParameter(int min, int max):min(min),max(max){}
 	//~DiscreteParameter();
 	void makeConfigBits(std::list<std::unique_ptr<ConfigurationBit>>& allbits);
-	int getValue();
+
+  virtual int getValue();
 	int getNOptions();
 	void setBO(int option);
 	void setHarmonica() override;

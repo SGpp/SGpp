@@ -28,12 +28,16 @@
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include "Harmonica.hpp"
+#include "HPOScorerFactory.hpp"
 
 namespace sgpp {
 namespace datadriven {
 
-HyperparameterOptimizer::HyperparameterOptimizer(DataSource* dataSource, FitterFactory* fitterFactory, Scorer* scorer, HPOScorer* hpoScorer)
-    : dataSource(dataSource), fitterFactory(fitterFactory), scorer(scorer), hpoScorer(hpoScorer) {}
+HyperparameterOptimizer::HyperparameterOptimizer(DataSource* dataSource, FitterFactory* fitterFactory, DataMiningConfigParser& parser)
+    : dataSource(dataSource), fitterFactory(fitterFactory) {
+  HPOScorerFactory scorerFactory;
+  hpoScorer.reset(static_cast<HPOScorer*>(scorerFactory.buildScorer(parser)));
+}
 
 void HyperparameterOptimizer::runHarmonica(){
   Harmonica harmonica{fitterFactory.get()}; //EDIT: use correct constructor
@@ -395,7 +399,7 @@ void HyperparameterOptimizer::runBO() {
     std::cout << "Result: " << -1/result-1 << std::endl; //result
 
     //write results in file
-    std::ofstream myfile("C:/Users/Eric/Documents/BOresultsfriedmannew.txt", std::ios_base::app);
+    std::ofstream myfile("C:/Users/Eric/Documents/BOresultsDE.txt", std::ios_base::app);
     if(myfile.is_open()) {
       //myfile << "threshold,lambda,nopoints,level,basis" << std::endl;
 

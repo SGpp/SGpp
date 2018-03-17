@@ -1,10 +1,10 @@
 {
 	"dataSource": {
-		"filePath": "/home/michael/Projects/HiWi/SGpp/datasets/bupa_liver/liver-disorders_normalized.arff.gz"
+		"filePath": "C:/Users/Eric/Downloads/friedmantrain.csv"
 	},
 	"scorer": {
 		"testing": {
-			"testingPortion": 0.75,
+			"testingPortion": 0.125,
 			"shuffling": "random",
 			"randomSeed": 42,
 			"metric": "MSE"
@@ -17,13 +17,13 @@
 			"level": 2
 		},
 	"adaptivityConfig": {
-			"numRefinements": 3,
+			"numRefinements": 10,
 			"threshold": 0.001,
 			"maxLevelType": false,
-			"noPoints": 3
+			"noPoints": 1
 		},
 		"regularizationConfig": {
-			"lambda": 10e-1
+			"lambda": 100
 		}
 	}
 }

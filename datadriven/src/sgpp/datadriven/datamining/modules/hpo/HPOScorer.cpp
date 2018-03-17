@@ -51,7 +51,7 @@ Dataset* HPOScorer::prepareTestData(Dataset& dataset){
 
       //overwrite testdataset with outside test data
       DataSourceBuilder dsbuilder;
-      testDataset = std::unique_ptr<Dataset>(dsbuilder.withPath("C:/Users/Eric/Downloads/friedmantest.csv").assemble()->getNextSamples());
+      testDataset = std::unique_ptr<Dataset>(dsbuilder.withPath("C:/Users/Eric/Downloads/DE4dTest.csv").assemble()->getNextSamples());
 
 	  return trainDataset;
 	  //splitSet(dataset, dummyDataset, trainDataset, randomizedIndices, 2000);

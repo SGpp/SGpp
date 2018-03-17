@@ -17,7 +17,7 @@ class ContinuousParameter: public sgpp::datadriven::HyperParameter {
 public:
 	ContinuousParameter(double min, double max):min(min),max(max){}
 	// ~ContinuousParameter();
-	double getValue();
+	virtual double getValue();
 	void setHarmonica() override;
 	void setBO(double interval);
 

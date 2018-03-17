@@ -10,7 +10,7 @@
  *     Author: Michael Lettrich
  */
 
-#include <sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp>
+#include <sgpp/datadriven/datamining/builder/UniversalMinerFactory.hpp>
 
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/datadriven/datamining/builder/CrossValidationScorerFactory.hpp>
@@ -21,25 +21,38 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/LeastSquaresRegressionFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/DensityEstimationFitterFactory.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
+
 
 #include <string>
 
 namespace sgpp {
 namespace datadriven {
 
-SparseGridMiner* LeastSquaresRegressionMinerFactory::buildMiner(const std::string& path) const {
+SparseGridMiner* UniversalMinerFactory::buildMiner(const std::string& path) const {
   DataMiningConfigParser parser(path);
 
   return new SparseGridMiner(createDataSource(parser), createFitter(parser), createScorer(parser));
 }
 
-HyperparameterOptimizer* LeastSquaresRegressionMinerFactory::buildHPO(const std::string& path) const {
+HyperparameterOptimizer* UniversalMinerFactory::buildHPO(const std::string& path) const {
+
 	DataMiningConfigParser parser(path);
-  return new HyperparameterOptimizer(createDataSource(parser), new LeastSquaresRegressionFitterFactory(parser), parser);
+  FitterType fType = FitterType::RegressionLeastSquares;
+  parser.getFitterConfigType(fType, fType);
+
+  if(fType == FitterType::DensityEstimation){
+    return new HyperparameterOptimizer(createDataSource(parser), new DensityEstimationFitterFactory(parser), parser);
+  }else{
+    return new HyperparameterOptimizer(createDataSource(parser), new LeastSquaresRegressionFitterFactory(parser), parser);
+  }
+
 }
 
 
-DataSource* LeastSquaresRegressionMinerFactory::createDataSource(
+DataSource* UniversalMinerFactory::createDataSource(
     const DataMiningConfigParser& parser) const {
   DataSourceConfig config;
 
@@ -53,14 +66,26 @@ DataSource* LeastSquaresRegressionMinerFactory::createDataSource(
   }
 }
 
-ModelFittingBase* LeastSquaresRegressionMinerFactory::createFitter(
+ModelFittingBase* UniversalMinerFactory::createFitter(
     const DataMiningConfigParser& parser) const {
-  FitterConfigurationLeastSquares config{};
-  config.readParams(parser);
-  return new ModelFittingLeastSquares(config);
+  ModelFittingBase* model;
+
+  FitterType fType = FitterType::RegressionLeastSquares;
+  parser.getFitterConfigType(fType, fType);
+
+  if(fType == FitterType::DensityEstimation){
+    FitterConfigurationDensityEstimation config{};
+    config.readParams(parser);
+    model = new ModelFittingDensityEstimation(config);
+  }else{
+    FitterConfigurationLeastSquares config{};
+    config.readParams(parser);
+    model = new ModelFittingLeastSquares(config);
+  }
+  return model;
 }
 
-Scorer* LeastSquaresRegressionMinerFactory::createScorer(
+Scorer* UniversalMinerFactory::createScorer(
     const DataMiningConfigParser& parser) const {
   std::unique_ptr<ScorerFactory> factory;
 
@@ -71,7 +96,6 @@ Scorer* LeastSquaresRegressionMinerFactory::createScorer(
   }
   return factory->buildScorer(parser);
 }
-
 
 
 } /* namespace datadriven */
