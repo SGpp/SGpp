@@ -14,14 +14,15 @@
 #ifdef SG_DATADRIVEN
 %include "datadriven/src/sgpp/datadriven/algorithm/test_dataset.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DensitySystemMatrix.hpp"
-%include "datadriven/src/sgpp/datadriven/application/RegularizationConfiguration.hpp"
+%include "datadriven/src/sgpp/datadriven/configuration/BatchConfiguration.hpp"
+%include "datadriven/src/sgpp/datadriven/configuration/DecompositionConfiguration.hpp"
+%include "datadriven/src/sgpp/datadriven/configuration/RegularizationConfiguration.hpp"
 %rename (getConstTargets) sgpp::datadriven::Dataset::getTargets() const;
 %rename (getConstData) sgpp::datadriven::Dataset::getData() const;
 %include "datadriven/src/sgpp/datadriven/tools/Dataset.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/ConvergenceMonitor.hpp"
 
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp"
-%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSChol.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSDenseIChol.hpp"
 %ignore *::operator=;
@@ -110,6 +111,7 @@
 %rename(__assign__) sgpp::datadriven::FitterConfiguration::operator =;
 %rename (getConstGridConfig) sgpp::datadriven::FitterConfiguration::getGridConfig() const;
 %rename (getConstRefinementConfig) sgpp::datadriven::FitterConfiguration::getRefinementConfig() const;
+%rename (getConstDecompositionConfig) sgpp::datadriven::FitterConfiguration::getDecompositionConfig() const;
 %rename (getConstSolverRefineConfig) sgpp::datadriven::FitterConfiguration::getSolverRefineConfig() const;
 %rename (getConstSolverFinalConfig) sgpp::datadriven::FitterConfiguration::getSolverFinalConfig() const;
 %rename (getConstRegularizationConfig) sgpp::datadriven::FitterConfiguration::getRegularizationConfig() const;

@@ -28,13 +28,18 @@ namespace datadriven {
 using sgpp::base::GridType;
 using sgpp::base::factory_exception;
 
-DBMatOffline* DBMatOfflineFactory::buildOfflineObject(const DBMatDensityConfiguration& config) {
-  auto type = config.decomp_type_;
+DBMatOffline* DBMatOfflineFactory::buildOfflineObject(
+    const sgpp::base::RegularGridConfiguration& gridConfig,
+    const sgpp::base::AdpativityConfiguration& adaptivityConfig,
+    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+    const sgpp::datadriven::DecompositionConfiguration& decompositionConfig) {
+  auto type = decompositionConfig.type_;
 
   switch (type) {
     case (DBMatDecompostionType::Eigen):
 #ifdef USE_GSL
-      return new DBMatOfflineEigen(config);
+      return new DBMatOfflineEigen(gridConfig, adaptivityConfig,
+                                   regularizationConfig, decompositionConfig);
 #else
       throw factory_exception("built without GSL");
 #endif /* USE_GSL */
@@ -42,7 +47,8 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(const DBMatDensityConfigur
 
     case (DBMatDecompostionType::LU):
 #ifdef USE_GSL
-      return new DBMatOfflineLU(config);
+      return new DBMatOfflineLU(gridConfig, adaptivityConfig,
+                                regularizationConfig, decompositionConfig);
 #else
       throw factory_exception("built without GSL");
 #endif /* USE_GSL */
@@ -50,19 +56,22 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(const DBMatDensityConfigur
 
     case (DBMatDecompostionType::Chol):
 #ifdef USE_GSL
-      return new DBMatOfflineChol(config);
+      return new DBMatOfflineChol(gridConfig, adaptivityConfig,
+                                  regularizationConfig, decompositionConfig);
 #else
       throw factory_exception("built without GSL");
 #endif /* USE_GSL */
       break;
 
     case (DBMatDecompostionType::DenseIchol):
-      return new DBMatOfflineDenseIChol(config);
+      return new DBMatOfflineDenseIChol(gridConfig, adaptivityConfig,
+                                        regularizationConfig, decompositionConfig);
       break;
 
     case (DBMatDecompostionType::OrthoAdapt):
 #ifdef USE_GSL
-      return new DBMatOfflineOrthoAdapt(config);
+      return new DBMatOfflineOrthoAdapt(gridConfig, adaptivityConfig,
+                                        regularizationConfig, decompositionConfig);
       break;
 #else
       throw factory_exception("built without GSL");

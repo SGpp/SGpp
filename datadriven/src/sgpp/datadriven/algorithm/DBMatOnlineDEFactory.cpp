@@ -24,9 +24,9 @@ namespace datadriven {
 using sgpp::base::factory_exception;
 
 DBMatOnlineDE* DBMatOnlineDEFactory::buildDBMatOnlineDE(DBMatOffline& offline, double beta) {
-  auto& config = offline.getConfig();
+  auto& decompositionConfig = offline.getDecompositionConfig();
 
-  switch (config.decomp_type_) {
+  switch (decompositionConfig.type_) {
     case DBMatDecompostionType::Eigen:
 #ifdef USE_GSL
       return new DBMatOnlineDEEigen(offline, beta);

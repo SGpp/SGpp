@@ -94,7 +94,7 @@ def make_estimator(lambda_reg, prior):
     final_solv.maxIterations = 200
 
     regular = sg.RegularizationConfiguration()
-    regular.regType_ = sg.RegularizationType_Diagonal
+    regular.type_ = sg.RegularizationType_Diagonal
     regular.exponentBase_ = prior
     regular.lambda_ = lambda_reg    
 

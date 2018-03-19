@@ -6,6 +6,8 @@
 #include <sgpp/datadriven/algorithm/DBMatDMSOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
+#include <sgpp/datadriven/configuration/DecompositionConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 
 #include <chrono>
 #include <iostream>
@@ -15,22 +17,29 @@ int main() {
   std::cout << "ortho_adapt algorithm benchmarks: \n";
 
   // config
-  sgpp::datadriven::DBMatDensityConfiguration config;
-  config.grid_dim_ = 4;
-  config.grid_level_ = 6;
-  config.lambda_ = 0.0001;
-  config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
-  config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::OrthoAdapt;
+  sgpp::base::RegularGridConfiguration gridConfig;
+  gridConfig.dim_ = 4;
+  gridConfig.level_ = 6;
+
+  sgpp::base::AdpativityConfiguration adaptConfig;
+
+  sgpp::datadriven::RegularizationConfiguration regularizationConfig;
+  regularizationConfig.lambda_ = 0.0001;
+  regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
+
+  sgpp::datadriven::DecompositionConfiguration decompositionConfig;
+  decompositionConfig.type_ = sgpp::datadriven::DBMatDecompostionType::OrthoAdapt;
 
   size_t number_points_to_refine = 1;
   size_t number_points_to_coarsen = 1;
 
-  std::cout << "dim = " << config.grid_dim_ << "\n";
-  std::cout << "lvl = " << config.grid_level_ << "\n";
-  std::cout << "lambda = " << config.lambda_ << "\n\n";
+  std::cout << "dim = " << gridConfig.dim_ << "\n";
+  std::cout << "lvl = " << gridConfig.level_ << "\n";
+  std::cout << "lambda = " << regularizationConfig.lambda_ << "\n\n";
 
   // offline phase
-  sgpp::datadriven::DBMatOfflineOrthoAdapt offline(config);
+  sgpp::datadriven::DBMatOfflineOrthoAdapt offline(gridConfig, adaptConfig,
+                                                   regularizationConfig, decompositionConfig);
 
   offline.buildMatrix();
   std::cout << "initial matrix size = " << offline.getDimA();
