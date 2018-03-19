@@ -71,7 +71,7 @@ class RosenblattTransformation : public DataTransformation {
   /**
    * hierarchical surpluses of the #grid.
    */
-  sgpp::base::DataVector* alpha;
+  std::shared_ptr<base::DataVector> alpha;
 
   /**
    * Pointer to #sgpp::datadriven::Dataset

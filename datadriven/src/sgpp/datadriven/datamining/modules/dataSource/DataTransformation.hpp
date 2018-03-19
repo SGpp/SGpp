@@ -47,12 +47,12 @@ class DataTransformation {
   virtual Dataset* doTransformation(Dataset* dataset) = 0;
 
   /**
-     * Performs the backwards transformation on a given dataset for a data transformationn
-     * built with DataTransformationBuilder
-     *
-     * @param dataset pointer to the dataset to be transformed backwards
-     * @return pointer to the backwards transformed dataset
-     */
+   * Performs the backwards transformation on a given dataset for a data transformationn
+   * built with DataTransformationBuilder
+   *
+   * @param dataset pointer to the dataset to be transformed backwards
+   * @return pointer to the backwards transformed dataset
+   */
   virtual Dataset* doInverseTransformation(Dataset* dataset) = 0;
 };
 } /* namespace datadriven */

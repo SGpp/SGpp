@@ -16,8 +16,7 @@ namespace sgpp {
 namespace datadriven {
 
 DataTransformation* DataTransformationBuilder::buildTransformation(
-    DataSourceConfig config,
-    Dataset* dataset) {
+    DataSourceConfig config, Dataset* dataset) {
   if (config.dataTransformation == DataTransformationType::ROSENBLATT) {
     return new RosenblattTransformation(dataset, config.numSamplesForTranformation);
   } else {

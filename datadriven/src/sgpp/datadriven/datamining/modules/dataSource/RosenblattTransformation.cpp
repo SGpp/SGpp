@@ -13,12 +13,10 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation.hpp>
 
-#include <ctime>
+#include <random>
 
 namespace sgpp {
 namespace datadriven {
-
-int RandomNumber () { return (std::rand()%100); }
 
 RosenblattTransformation::RosenblattTransformation(Dataset* dataset, size_t numSamples)
   : grid(nullptr),
@@ -29,41 +27,36 @@ RosenblattTransformation::RosenblattTransformation(Dataset* dataset, size_t numS
   // Sample #numSamples random samples from dataset
   DataMatrix samples(numSamples, dataset->getDimension());
   DataVector currSample(dataset->getDimension());
-  DataVector randVector(numSamples);
 
-  // Fill vector with random numbers
-  // std::srand(std::time(0));
-  // std::generate(randVector.begin(), randVector.end(), RandomNumber);
+  std::mt19937 generator;
+  std::uniform_real_distribution<double> distr(
+      0, static_cast<double>(dataset->getNumberInstances()-1));
 
   for (unsigned int i = 0; i < numSamples; i++) {
-    dataset->getData().getRow(static_cast<size_t>(i), currSample);
-    samples.setRow(i, currSample);
-  }
+      dataset->getData().getRow(static_cast<size_t>(distr(generator)), currSample);
+      samples.setRow(i, currSample);
+    }
 
   // Approximate probability density function (PDF)
   double lambda = 1e-5;
   size_t dim = dataset->getDimension();
-  size_t level = 2;
+  size_t level = 3;
   sgpp::datadriven::LearnerSGDE learner = createSGDELearner(dim, level, lambda);
   learner.initialize(samples);
   learner.train();
 
   // Get grid and alpha
   grid = learner.getGrid();
-  alpha = learner.getSurpluses().get();
+  alpha = learner.getSurpluses();
 }
 
 
 Dataset* RosenblattTransformation::doTransformation(Dataset* dataset) {
   OperationRosenblattTransformation* opRos(
       sgpp::op_factory::createOperationRosenblattTransformation(*this->grid));
-  std::cout << "RosenblattTransformation-Datei: transforme davor" << std::endl;
-
   datasetTransformed = new Dataset{dataset->getNumberInstances(), dataset->getDimension()};
-  std::cout << "RosenblattTransformation-Datei: transforme dataset instance" << std::endl;
 
-  opRos->doTransformation(this->alpha, &dataset->getData(), &datasetTransformed->getData());
-  std::cout << "RosenblattTransformation-Datei: transforme danach" << std::endl;
+  opRos->doTransformation(this->alpha.get(), &dataset->getData(), &datasetTransformed->getData());
 
   return datasetTransformed;
 }
@@ -72,13 +65,10 @@ Dataset* RosenblattTransformation::doTransformation(Dataset* dataset) {
 Dataset* RosenblattTransformation::doInverseTransformation(Dataset* dataset) {
   std::unique_ptr<sgpp::datadriven::OperationInverseRosenblattTransformation> opInvRos(
       sgpp::op_factory::createOperationInverseRosenblattTransformation(*this->grid));
-  std::cout << "RosenblattTransformation-Datei: inverse-transforme davor" << std::endl;
-
   datasetInvTransformed = new Dataset{dataset->getNumberInstances(), dataset->getDimension()};
-  std::cout << "RosenblattTransformation-Datei: inverse-transforme dataset instance" << std::endl;
 
-  opInvRos->doTransformation(this->alpha, &dataset->getData(), &datasetInvTransformed->getData());
-  std::cout << "RosenblattTransformation-Datei: inverse-transforme danach" << std::endl;
+  opInvRos->doTransformation(
+      this->alpha.get(), &dataset->getData(), &datasetInvTransformed->getData());
 
   return datasetInvTransformed;
 }
