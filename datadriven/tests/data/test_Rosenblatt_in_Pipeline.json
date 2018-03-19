@@ -6,7 +6,7 @@
 		"numBatches": 1,
 		"batchSize": 0,
 		"dataTransformation": "rosenblatt",
-		"numSamplesForTranformation": 2
+		"numSamplesForTranformation": 1000
 	},
 	"scorer": {
 		"testing": {

@@ -40,7 +40,7 @@ RosenblattTransformation::RosenblattTransformation(Dataset* dataset, size_t numS
   // Approximate probability density function (PDF)
   double lambda = 1e-5;
   size_t dim = dataset->getDimension();
-  size_t level = 3;
+  size_t level = 2;
   sgpp::datadriven::LearnerSGDE learner = createSGDELearner(dim, level, lambda);
   learner.initialize(samples);
   learner.train();
@@ -48,10 +48,13 @@ RosenblattTransformation::RosenblattTransformation(Dataset* dataset, size_t numS
   // Get grid and alpha
   grid = learner.getGrid();
   alpha = learner.getSurpluses();
+
+  std::cout << "Rosenblatt transformation initialized" << std::endl;
 }
 
 
 Dataset* RosenblattTransformation::doTransformation(Dataset* dataset) {
+  std::cout << "Performing Rosenblatt transformation" << std::endl;
   OperationRosenblattTransformation* opRos(
       sgpp::op_factory::createOperationRosenblattTransformation(*this->grid));
   datasetTransformed = new Dataset{dataset->getNumberInstances(), dataset->getDimension()};
@@ -63,6 +66,7 @@ Dataset* RosenblattTransformation::doTransformation(Dataset* dataset) {
 
 
 Dataset* RosenblattTransformation::doInverseTransformation(Dataset* dataset) {
+  std::cout << "Performing Rosenblatt inverse transformation" << std::endl;
   std::unique_ptr<sgpp::datadriven::OperationInverseRosenblattTransformation> opInvRos(
       sgpp::op_factory::createOperationInverseRosenblattTransformation(*this->grid));
   datasetInvTransformed = new Dataset{dataset->getNumberInstances(), dataset->getDimension()};
