@@ -1,6 +1,6 @@
 {
 	"dataSource": {
-		"filePath": "datadriven/tests/data/DR5_train.arff",
+		"filePath": "datadriven/tests/data/chess_5d_2000.arff",
 		"fileType": "arff",
 		"compression": false,
 		"numBatches": 1,
