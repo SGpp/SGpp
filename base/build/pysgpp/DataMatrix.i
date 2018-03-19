@@ -100,14 +100,19 @@ $1 = PySequence_Check($input) ? 1 : 0;
     DataMatrix(const DataMatrix& matr);
     DataMatrix(double* input, int nrows, int ncols);
 
-    void resize(size_t size);
-    void resizeZero(size_t nrows);
-    void transpose();
+    void resizeRows(size_t nrows);
+    void resizeRowsCols(size_t nrows, size_t ncols);
+    void resizeQuadratic(size_t size);
+    void resizeZero(size_t nrows, size_t ncols);
+    void resizeToSubMatrix(size_t row_1, size_t col_1, size_t row_2, size_t col_2);
 
     void reserveAdditionalRows(size_t inc_nrows);
     size_t appendRow();
+    size_t appendRow(const DataVector& vec);
+    size_t appendCol(const DataVector& vec);
     void setAll(double value);
     void copyFrom(const DataMatrix& matr);
+    void transpose();
 
     double get(size_t row, size_t col) const;
     void set(size_t row, size_t col, double value);

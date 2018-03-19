@@ -5,8 +5,9 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
+#include <sgpp/datadriven/configuration/DecompositionConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 
 #include <chrono>
@@ -97,7 +98,10 @@ int main() {
        */
       std::cout << "# create regularization config" << std::endl;
       sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-      regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Identity;
+      regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
+
+      // initial regularization parameter lambda
+      regularizationConfig.lambda_ = 0.01;
 
       /**
        * Select the desired decomposition type for the offline step.
@@ -124,6 +128,12 @@ int main() {
       // choose "orthogonal Adaptivity"
       dt = sgpp::datadriven::DBMatDecompostionType::OrthoAdapt;
       decompType = "orthogonal Adaptivity";
+      sgpp::datadriven::DecompositionConfiguration decompositionConfig;
+      decompositionConfig.type_ = dt;
+
+      // those two are only relevant, when we use iChol decomposition type
+      decompositionConfig.iCholSweepsDecompose_ = 2;
+      decompositionConfig.iCholSweepsRefine_ = 2;
 
       std::cout << "Decomposition type: " << decompType << std::endl;
 
@@ -170,25 +180,18 @@ int main() {
       adaptConfig.noPoints_ = 10;
       adaptConfig.threshold_ = 0.0;  // only required for surplus refinement
 
-      // initial regularization parameter lambda
-      double lambda = 0.01;
       // initial weighting factor
       double beta = 0.0;
-      // configuration
-      sgpp::datadriven::DBMatDensityConfiguration dconf(gridConfig, adaptConfig,
-                                                        regularizationConfig.regType_, lambda, dt);
       // specify if prior should be used to predict class labels
       bool usePrior = false;
-
-      dconf.icholParameters.sweepsDecompose = 2;
-      dconf.icholParameters.sweepsRefine = 2;
 
       /**
        * Create the learner.
        */
       std::cout << "# create learner" << std::endl;
-      sgpp::datadriven::LearnerSGDEOnOff learner(dconf, trainDataset, testDataset, nullptr,
-                                                 classLabels, classNum, usePrior, beta, lambda);
+      sgpp::datadriven::LearnerSGDEOnOff learner(gridConfig, adaptConfig, regularizationConfig,
+                                                 decompositionConfig, trainDataset, testDataset,
+                                                 nullptr, classLabels, classNum, usePrior, beta);
 
       /**
        * Configure cross-validation.

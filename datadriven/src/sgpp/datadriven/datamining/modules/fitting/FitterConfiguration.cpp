@@ -18,6 +18,10 @@ const base::AdpativityConfiguration& FitterConfiguration::getRefinementConfig() 
   return adaptivityConfig;
 }
 
+const datadriven::DecompositionConfiguration& FitterConfiguration::getDecompositionConfig() const {
+  return decompositionConfig;
+}
+
 const solver::SLESolverConfiguration& FitterConfiguration::getSolverRefineConfig() const {
   return solverRefineConfig;
 }
@@ -44,6 +48,11 @@ base::RegularGridConfiguration& FitterConfiguration::getGridConfig() {
 base::AdpativityConfiguration& FitterConfiguration::getRefinementConfig() {
   return const_cast<base::AdpativityConfiguration&>(
       static_cast<const FitterConfiguration&>(*this).getRefinementConfig());
+}
+
+datadriven::DecompositionConfiguration& FitterConfiguration::getDecompositionConfig() {
+  return const_cast<datadriven::DecompositionConfiguration&>(
+      static_cast<const FitterConfiguration&>(*this).getDecompositionConfig());
 }
 
 solver::SLESolverConfiguration& FitterConfiguration::getSolverRefineConfig() {

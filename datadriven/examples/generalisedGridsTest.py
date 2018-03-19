@@ -52,7 +52,7 @@ def evaluate(X_tr, y_tr, X_te, y_te, T):
     final_solv.maxIterations = 200
 
     regular = sg.RegularizationConfiguration()
-    regular.regType_ = sg.RegularizationType_Identity
+    regular.type_ = sg.RegularizationType_Identity
     regular.exponentBase_ = 1.0
     regular.lambda_ = 10e-4    
 

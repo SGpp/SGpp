@@ -12,7 +12,7 @@
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/application/GaussianKDE.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>

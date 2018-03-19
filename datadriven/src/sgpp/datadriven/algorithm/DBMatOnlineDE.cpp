@@ -9,7 +9,6 @@
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinear.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalInterModLinear.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
-#include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
@@ -44,8 +43,8 @@ DBMatOnlineDE::DBMatOnlineDE(DBMatOffline& offline, double beta)
   functionComputed = false;
   bSave = DataVector(offlineObject.getDecomposedMatrix().getNcols());
   bTotalPoints = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
-  lambda = offlineObject.getConfig().lambda_;
-  oDim = offlineObject.getConfig().grid_dim_;
+  lambda = offlineObject.getRegularizationConfig().lambda_;
+  oDim = offlineObject.getGridConfig().dim_;
 
   alpha = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
 }
@@ -58,7 +57,7 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
     // in case OrthoAdapt, the current size is not lhs size, but B size
     bool use_B_size = false;
     sgpp::datadriven::DBMatOnlineDEOrthoAdapt* thisOrthoAdaptPtr;
-    if (this->offlineObject.getConfig().decomp_type_ ==
+    if (this->offlineObject.getDecompositionConfig().type_ ==
         sgpp::datadriven::DBMatDecompostionType::OrthoAdapt) {
       thisOrthoAdaptPtr = static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt*>(&*this);
       if (thisOrthoAdaptPtr->getB().getNcols() > 1) {
@@ -88,7 +87,7 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
     B->multTranspose(y, b);
 
     // Perform permutation because of decomposition (LU)
-    if (offlineObject.getConfig().decomp_type_ == DBMatDecompostionType::LU) {
+    if (offlineObject.getDecompositionConfig().type_ == DBMatDecompostionType::LU) {
 #ifdef USE_GSL
       static_cast<DBMatOfflineLU&>(offlineObject).permuteVector(b);
 #else

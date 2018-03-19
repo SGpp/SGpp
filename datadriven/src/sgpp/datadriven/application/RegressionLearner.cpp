@@ -189,7 +189,7 @@ std::unique_ptr<datadriven::DMSystemMatrixBase> RegressionLearner::createDMSyste
     base::DataMatrix& trainDataset) {
   using datadriven::RegularizationType;
   base::OperationMatrix* opMatrix;
-  switch (regularizationConfig.regType_) {
+  switch (regularizationConfig.type_) {
     case RegularizationType::Identity:
       opMatrix = sgpp::op_factory::createOperationIdentity(*grid);
       break;
@@ -235,7 +235,7 @@ RegressionLearner::Solver RegressionLearner::createSolverFista(size_t n_rows) {
   // loss + n * lambda * regularization_penalty instead.
   const double lambda = static_cast<double>(n_rows) * regularizationConfig.lambda_;
   using datadriven::RegularizationType;
-  switch (regularizationConfig.regType_) {
+  switch (regularizationConfig.type_) {
     case RegularizationType::Identity:
       return Solver(
           std::make_unique<solver::Fista<solver::RidgeFunction>>(solver::RidgeFunction(lambda)));

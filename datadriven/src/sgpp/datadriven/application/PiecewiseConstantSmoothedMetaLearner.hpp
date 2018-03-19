@@ -13,7 +13,7 @@
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 

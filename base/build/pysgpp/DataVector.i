@@ -68,6 +68,7 @@ $1 = PySequence_Check($input) ? 1 : 0;
   DataVector(double *input, size_t size);
   DataVector(std::vector<double> input);
 
+  void resize(size_t size);
   void resizeZero(size_t size);
   size_t append();
   size_t append(double value);

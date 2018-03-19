@@ -14,7 +14,7 @@
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/datadriven/application/ClassificationLearner.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 
 #include <string>
@@ -44,7 +44,7 @@ sgpp::datadriven::ClassificationLearner getLearner(size_t dimension) {
   solverConfig.eps_ = 1e-8;
 
   auto regularizationConfig = sgpp::datadriven::RegularizationConfiguration();
-  regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Diagonal;
+  regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Diagonal;
   regularizationConfig.lambda_ = 0.00001;
   regularizationConfig.exponentBase_ = 0.25;
 

@@ -82,7 +82,7 @@ LearnerSGDEConfiguration::LearnerSGDEConfiguration(const std::string& fileName)
 
     // configure regularization
     if (this->contains("regularization_type"))
-      regularizationConfig.regType_ =
+      regularizationConfig.type_ =
           stringToRegularizationType((*this)["regularization_type"].get());
 
     // configure learner
@@ -139,7 +139,7 @@ void LearnerSGDEConfiguration::initConfig() {
   solverConfig.threshold_ = 1e-14;
 
   // configure regularization
-  regularizationConfig.regType_ = datadriven::RegularizationType::Laplace;
+  regularizationConfig.type_ = datadriven::RegularizationType::Laplace;
 
   // configure learner
   crossvalidationConfig.enable_ = true;
@@ -1038,10 +1038,10 @@ std::unique_ptr<base::OperationMatrix> LearnerSGDE::computeRegularizationMatrix(
     base::Grid& grid) {
   std::unique_ptr<base::OperationMatrix> C;
 
-  if (regularizationConfig.regType_ ==
+  if (regularizationConfig.type_ ==
       datadriven::RegularizationType::Identity) {
     C.reset(op_factory::createOperationIdentity(grid));
-  } else if (regularizationConfig.regType_ ==
+  } else if (regularizationConfig.type_ ==
              datadriven::RegularizationType::Laplace) {
     C.reset(op_factory::createOperationLaplace(grid));
   } else {
