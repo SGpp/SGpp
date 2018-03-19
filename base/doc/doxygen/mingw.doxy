@@ -281,11 +281,20 @@ java -cp .;C:\PATH_TO_SGPP\lib\jsgpp\jsgpp.jar tutorial
 
 @subsection mingw_using_matlab MATLAB
 
-MATLAB can use SG++ in two ways.
+MATLAB can use SG++ in three ways.
+
+@subsubsection mingw_using_matlab_binaries Via Binaries
+
+The recommended way is to download the binaries for use with MATLAB
+that are listed at \ref downloads.
+For instructions, please see the \ref matlab page.
 
 @subsubsection mingw_using_matlab_mex Via MEX Interface
 
-One way is to use MATLAB's MEX interface to write a C++ program interacting
+If the binaries don't work for you, then it is possible to write and
+compile a MEX interface yourself (similar to the interface that the
+binaries would provide).
+This means that you have to write a C++ program interacting
 with SG++ directly in C++ and converting input and output arguments
 from and to MATLAB's data structures.
 If
@@ -361,11 +370,13 @@ The final step consists in loading the jsgpp library via
 sgpp.LoadJSGPPLib.loadJSGPPLib();
 @endverbatim
 You should now be able to use SG++ in MATLAB.
-For an example, change to the directory @c base/examples/ and run
-<tt>tutorial.m</tt> with
-@verbatim
-tutorial;
-@endverbatim
+
+For an example, look at <tt>base/examples/tutorial.m</tt>.
+However, note that the example was written for the MATLAB SG++ binaries
+explained above.
+Therefore, you likely have to change some calls especially to static
+methods like <tt>sgpp.createOperationEval</tt>, which are now located
+at <tt>sgpp.jsgpp.*</tt>.
 
 @subsubsection mingw_using_matlab_hints Hints
 

@@ -58,8 +58,7 @@ BOOST_AUTO_TEST_CASE(testQuadrature) {
   // take BoundingBox into account by multiplying with determinant
   qres *= determinant;
 
-  double quadOperation =
-      sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
+  double quadOperation = sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
   BOOST_CHECK_CLOSE(quadOperation, qres, 0.0);
 
   delete alpha;
@@ -88,8 +87,7 @@ BOOST_AUTO_TEST_CASE(testQuadratureMC) {
 
   DataVector* alpha = new DataVector(v);
 
-  double resDirect =
-      sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
+  double resDirect = sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
 
   // Monte Carlo quadrature
   OperationQuadratureMC* opMC = new OperationQuadratureMC(*grid, 100000);
@@ -138,8 +136,7 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBasis) {
   // take BoundingBox into account by multiplying with determinant
   quadManual *= determinant;
 
-  double quadOperation =
-      sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
+  double quadOperation = sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
   BOOST_CHECK_CLOSE(quadOperation, quadManual, 0.00012);
 
   delete alpha;
@@ -167,8 +164,7 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
 
   SPolyBoundaryBase* basis = new SPolyBoundaryBase(deg);
 
-  double quad[9] = {0.5,      0.5,      0.666667, 0.333333, 0.333333,
-                           0.168254, 0.164444, 0.164444, 0.168254};
+  double quad[9] = {0.5, 0.5, 0.666667, 0.333333, 0.333333, 0.168254, 0.164444, 0.164444, 0.168254};
   double quadManual = 0.0;
 
   for (size_t i = 0; i < N; i++) {
@@ -184,11 +180,23 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
   // take BoundingBox into account by multiplying with determinant
   quadManual *= determinant;
 
-  double quadOperation =
-      sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
+  double quadOperation = sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
   BOOST_CHECK_CLOSE(quadOperation, quadManual, 0.0001);
 
   delete alpha;
   delete basis;
 }
+
+BOOST_AUTO_TEST_CASE(test_GaussQuadrature) {
+  sgpp::base::GaussLegendreQuadRule1D quadRule1D;
+
+  size_t level = 10;
+  DataVector pweight(level);
+  DataVector coordinates(level);
+  quadRule1D.getLevelPointsAndWeights(level, coordinates, pweight);
+  std::cout << level << std::endl;
+  std::cout << coordinates.toString() << std::endl;
+  std::cout << pweight.toString() << std::endl;
+}
+
 BOOST_AUTO_TEST_SUITE_END()

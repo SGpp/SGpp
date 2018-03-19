@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 /**
- * \page example_combigrid_gettingStarted_cpp gettingStarted.cpp (Start Here)
+ * \page example_gettingStarted_cpp gettingStarted.cpp (Start Here)
  *
  * This tutorial contains examples with increasing complexity to introduce you to the combigrid
  * module. The combigrid module is quite separated from the other modules. It only refers to the
@@ -14,9 +14,11 @@
 
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
+#include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
+#include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/storage/FunctionLookupTable.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
@@ -389,7 +391,7 @@ void example6() {
    */
   sgpp::combigrid::GridFunction gf([](std::shared_ptr<sgpp::combigrid::TensorGrid> grid) {
     // We store the results for each grid point, encoded by a MultiIndex, in a TreeStorage
-    auto result = std::make_shared<sgpp::combigrid::TreeStorage<double>>(d);
+    auto result = std::make_shared<sgpp::combigrid::TreeStorage<double> >(d);
 
     // Creates an iterator that yields all multi-indices of grid points in the grid.
     sgpp::combigrid::MultiIndexIterator it(grid->numPoints());
@@ -437,10 +439,75 @@ void example6() {
   std::cout << "Numerical result: " << result << "\n";
 }
 
+void example7() {
+  //  std::shared_ptr<sgpp::combigrid::CombigridOperation> operation =
+  //      sgpp::combigrid::CombigridOperation::createExpUniformBoundaryLinearInterpolation(1, func);
+
+  std::shared_ptr<sgpp::combigrid::CombigridOperation> operation =
+      sgpp::combigrid::CombigridOperation::createExpClenshawCurtisBsplineInterpolation(1, func, 3);
+
+  /**
+   * Now create a point where to evaluate the interpolated function:
+   */
+  sgpp::base::DataVector evaluationPoint(d);
+  evaluationPoint[0] = 0.1572;
+
+  /**
+   * We can now evaluate the interpolation at this point (using 3 as a bound for the 1-norm of the
+   * level multi-index):
+   */
+  double result = operation->evaluate(1, evaluationPoint);
+
+  /**
+   * Now compare the result to the actual function value:
+   */
+  std::cout << "Interpolation result: " << result << ", function value: " << func(evaluationPoint)
+            << std::endl;
+}
+
 /**
- * For more information on how to access grid points, compare the results to a full grid etc. please
- * refer to the python tutorials.
+ * @section combigrid_example_8 Example 8: UQ setting with variance refinement
+ *
+ * This example shows how to use the variance refinement method that uses the PCE transformation for
+ * variance computation on each subspace.
  */
+void example8() {
+  sgpp::combigrid::OrthogonalPolynomialBasis1DConfiguration config;
+  config.polyParameters.type_ = sgpp::combigrid::OrthogonalPolynomialBasisType::LEGENDRE;
+
+  auto basisFunction = std::make_shared<sgpp::combigrid::OrthogonalPolynomialBasis1D>(config);
+
+  auto tensor_operation =
+      sgpp::combigrid::CombigridTensorOperation::createExpClenshawCurtisPolynomialInterpolation(
+          basisFunction, d, func);
+
+  auto levelManager = std::make_shared<sgpp::combigrid::AveragingLevelManager>();
+  tensor_operation->setLevelManager(levelManager);
+
+  // add at least the regular levels up to 1 otherwise the refinement criteria
+  // does not converge due to the fact that the variance for the constant basis
+  // is zero.
+  levelManager->addRegularLevels(1);
+  std::cout << "Total function evaluations: " << tensor_operation->numGridPoints() << "\n";
+  levelManager->addLevelsAdaptive(200);
+  std::cout << "Total function evaluations: " << tensor_operation->numGridPoints() << "\n";
+
+  // print the expectation value
+  auto tensorResult = tensor_operation->getResult();
+  std::cout << "result of transformation: E(u) = "
+            << tensorResult.get(sgpp::combigrid::MultiIndex(d, 0)) << std::endl;
+
+  // we use the same level structure and compute the expectation value via quadrature
+  auto quadrature_operation =
+      sgpp::combigrid::CombigridOperation::createExpClenshawCurtisQuadrature(d, func);
+
+  // copy the level information and initialize the combigrid
+  quadrature_operation->getLevelManager()->addLevelsFromStructure(
+      levelManager->getLevelStructure());
+
+  double quadratureResult = quadrature_operation->getResult();
+  std::cout << "result of quadrature    : E(u) = " << quadratureResult << std::endl;
+}
 
 int main() {
   std::cout << "Example 1: \n";
@@ -460,4 +527,10 @@ int main() {
 
   std::cout << "\nExample 6: \n";
   example6();
+
+  std::cout << "\nExample 7: \n";
+  example7();
+
+  std::cout << "\nExample 8: \n";
+  example8();
 }  // end of main

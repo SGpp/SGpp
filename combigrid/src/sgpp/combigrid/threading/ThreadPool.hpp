@@ -34,8 +34,8 @@ class ThreadPool {
   size_t numThreads;
   std::vector<std::shared_ptr<std::thread>> threads;
   std::deque<Task> tasks;
-  std::mutex poolMutex;
-  std::mutex idleMutex;
+  std::recursive_mutex poolMutex;
+  std::recursive_mutex idleMutex;
   bool terminateFlag;
   bool useIdleCallback;
   IdleCallback idleCallback;

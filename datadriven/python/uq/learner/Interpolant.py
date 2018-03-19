@@ -40,14 +40,14 @@ class Interpolant(Learner):
         cnt = 0
         for i in xrange(gs.getSize()):
             gp = gs.getPoint(i)
-            gp.getStandardCoordinates(p)
+            gs.getCoordinates(gp, p)
             x = tuple(p.array())
             if x not in points:
                 # # search for 2*d closest grid points
                 # q = DataVector(gs.getDimension())
                 # l = np.array([])
                 # for j in xrange(gs.getSize()):
-                #     gs.getPoint(j).getStandardCoordinates(q)
+                #     gs.getCoordinates(gs.getPoint(j), q)
                 #     q.sub(p)
                 #     l = np.append(l, q.l2Norm())
 
@@ -62,8 +62,7 @@ class Interpolant(Learner):
                 nodalValues[i] = float(points[x])
 
         if cnt > 0:
-            print '%i/%i of the grid points have \
-                   been set to 0' % (cnt, gs.getSize())
+            print '%i/%i of the grid points have been set to 0' % (cnt, gs.getSize())
             pdb.set_trace()
 
         # hierarchization
@@ -78,11 +77,11 @@ class Interpolant(Learner):
 #         fig, _ = plotSG3d(self.grid, alpha)
 #         fig.show()
 
-        err, _ = checkInterpolation(self.grid, alpha, nodalValues, epsilon=1e-12)
-
-        if len(err) > 0:
-            print "interpolation property not met"
-            pdb.set_trace()
+#         err, _ = checkInterpolation(self.grid, alpha, nodalValues, epsilon=1e-8)
+#
+#         if len(err) > 0:
+#             print "interpolation property not met"
+#             pdb.set_trace()
         # -----------------------------------------
 
         return alpha
@@ -139,16 +138,27 @@ class Interpolant(Learner):
         computes the discrete L2-error of the sparse grid interpolant
         with respect to some MC samples at given time steps
         @param data: DataContainer samples
-        @param alpha: DataVector hierarchical coefficients
+        @param alpha: numpy array hierarchical coefficients
         @return: mean squared error
         """
-        points = data.getPoints().array()
-        values_model = data.getValues().array()
-        if points.shape[1] == 0:
+        # check if points are in [0, 1]^d
+        allPoints = data.getPoints().array()
+        allModelValues = data.getValues().array()
+
+        points = np.ndarray((0, data.dim))
+        modelValues = np.array([])
+        for i, point in enumerate(allPoints):
+            if np.all(point >= 0) and np.all(point <= 1):
+                points = np.vstack((points, point))
+                modelValues = np.append(modelValues, allModelValues[i])
+
+        if allPoints.shape[1] == 0:
             return np.array([])
-        values_surrogate = evalSGFunctionMulti(self.grid, alpha, points)
-        # compute L2 error
-        return np.sqrt((values_surrogate - values_model) ** 2)
+
+        surrogateValues = evalSGFunctionMulti(self.grid, alpha, points)
+
+        # compute error
+        return np.abs(surrogateValues - modelValues)
 
     def getSize(self, dtype="train"):
         if dtype == "train":
@@ -162,11 +172,23 @@ class Interpolant(Learner):
         @return: last L2-norm of error
         """
         if dtype == "train":
-            value = self.trainErrors.sum()
+            value = np.mean(self.trainErrors ** 2)
         else:
-            value = self.testErrors.sum()
+            value = np.mean(self.testErrors ** 2)
             
         return np.sqrt(value)
+
+    def getL1NormError(self, dtype="train"):
+        """
+        calculate L2-norm of error
+        @return: last L2-norm of error
+        """
+        if dtype == "train":
+            value = np.mean(np.abs(self.trainErrors))
+        else:
+            value = np.mean(np.abs(self.testErrors))
+
+        return value
 
     def getMaxError(self, dtype="train"):
         """
@@ -174,11 +196,9 @@ class Interpolant(Learner):
         @return: max error
         """
         if dtype == "train":
-            value = self.trainErrors.max()
+            return self.trainErrors.max()
         else:
-            value = self.testErrors.max()
-
-        return np.sqrt(value)
+            return self.testErrors.max()
 
     def getMinError(self, dtype="train"):
         """
@@ -186,12 +206,9 @@ class Interpolant(Learner):
         @return: min error
         """
         if dtype == "train":
-            value = self.trainErrors.min()
+            return self.trainErrors.min()
         else:
-            value = self.testErrors.min()
-
-        return np.sqrt(value)
-
+            return self.testErrors.min()
 
     def getErrorPerSample(self, dtype="train"):
         if dtype == "sample":
@@ -201,6 +218,6 @@ class Interpolant(Learner):
 
     def getMSE(self, dtype="train"):
         if dtype == "train":
-            return self.trainErrors.sum() / self.getSize("train")
+            return np.mean(self.trainErrors ** 2)
         else:
-            return self.testErrors.sum() / self.getSize("test")
+            return np.mean(self.testErrors ** 2)

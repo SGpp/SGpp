@@ -43,7 +43,7 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(
     sgpp::base::RegularGridConfiguration& gridConfig,
     sgpp::base::AdpativityConfiguration& adaptivityConfig,
     sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    sgpp::datadriven::DecompositionConfiguration& decompositionConfig,
+    sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
     Dataset& trainData,
     Dataset& testData, Dataset* validationData,
     DataVector& classLabels, size_t numClassesInit, bool usePrior,
@@ -65,7 +65,7 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(
   // initialize offline object
   if (matrixfile.empty()) {
     offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildOfflineObject(gridConfig,
-        adaptivityConfig, regularizationConfig, decompositionConfig)};
+        adaptivityConfig, regularizationConfig, densityEstimationConfig)};
     offline->buildMatrix();
     offline->decomposeMatrix();
   } else {
@@ -73,7 +73,7 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(
   }
 
   //  DBMatOfflineChol offlineRef(gridConfig, adaptivityConfig,
-  //     regularizationConfig, decompositionConfig);
+  //     regularizationConfig, densityEstimationConfig);
   //  offlineRef.buildMatrix();
   //  offlineRef.decomposeMatrix();
   //
@@ -90,7 +90,7 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(
   //  cholMat.sub(icholMat);
   //  cholMat.abs();
   //  cholMat.sqr();
-  //  std::cout << "norm with " << decompositionConfig.iCholSweepsDecompose_
+  //  std::cout << "norm with " << densityEstimationConfig.iCholSweepsDecompose_
   //            << " sweeps is: " << std::scientific << std::setprecision(10) << sqrt(cholMat.sum())
   //            << "\n";
 
@@ -604,8 +604,8 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
 
         // forbid coarsening of initial gridpoints in case of OrthoAdapt
         size_t minIndexAllowed = 0;
-        if (offline->getDecompositionConfig().type_ ==
-            sgpp::datadriven::DBMatDecompostionType::OrthoAdapt) {
+        if (offline->getDensityEstimationConfig().decomposition_ ==
+            sgpp::datadriven::MatrixDecompositionType::OrthoAdapt) {
           minIndexAllowed =
               static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt&>(*offline).getDimA();
         }
@@ -671,28 +671,15 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
       // std::cout << "will be adding " << newPoints << " new points\n";
       refineCoarse[idx].second = newPoints;
 
-      // if decomposition type == ortho_adapt
-      // refines, coarsenes
-      if (offline->getDecompositionConfig().type_ ==
-          sgpp::datadriven::DBMatDecompostionType::OrthoAdapt) {
-        // todo: Kilian! the .adapt function of online_ortho_adapt is currently designed to
-        // return a list of gridpoints which weren't allowed to be coarsened. But it seems
-        // appropriate to redesign the functors in a way, that already considers these points
-        // when coarsening the grid itself.
+      // TODO(Kilian) the .updateSystemMatrixDecomposition function
+      // of online_ortho_adapt is currently designed to
+      // return a list of gridpoints which weren't allowed to be coarsened. But it seems
+      // appropriate to redesign the functors in a way, that already considers these points
+      // when coarsening the grid itself.
+      densEst->updateSystemMatrixDecomposition(newPoints,
+                                               deletedGridPoints,
+                                               densEst->getBestLambda());
 
-        // std::vector<size_t> not_coarsened_points =
-        static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt&>(*densEst).adapt(
-            newPoints, deletedGridPoints, densEst->getBestLambda());
-      }
-
-      // if decomposition type == cholesky (any of them)
-      if (offline->getDecompositionConfig().type_ == sgpp::datadriven::DBMatDecompostionType::Chol
-          || offline->getDecompositionConfig().type_ ==
-              sgpp::datadriven::DBMatDecompostionType::DenseIchol) {
-        // apply grid changes to the Cholesky factorization
-        dynamic_cast<DBMatOfflineChol&>(densEst->getOfflineObject())
-            .choleskyModification(newPoints, deletedGridPoints, densEst->getBestLambda());
-      }
 
       // update alpha vector
       densEst->updateAlpha(&refineCoarse[idx].first, refineCoarse[idx].second);

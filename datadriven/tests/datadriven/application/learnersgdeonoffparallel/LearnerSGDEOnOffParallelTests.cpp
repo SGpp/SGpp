@@ -69,8 +69,8 @@ void createInstance() {
     regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
     regularizationConfig.lambda_ = 0.01;
 
-    sgpp::datadriven::DecompositionConfiguration decompositionConfig;
-    decompositionConfig.type_ = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
+    sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+    densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::DenseIchol;
 
     sgpp::base::AdpativityConfiguration adaptConfig;
     adaptConfig.numRefinements_ = 2;
@@ -86,7 +86,7 @@ void createInstance() {
     learnerInstance = new sgpp::datadriven::LearnerSGDEOnOffParallel(gridConfig,
                                                                      adaptConfig,
                                                                      regularizationConfig,
-                                                                     decompositionConfig,
+                                                                     densityEstimationConfig,
                                                                      trainData, testData, nullptr,
                                                                      classLabels, 2, false,
                                                                      0.0, *scheduler);

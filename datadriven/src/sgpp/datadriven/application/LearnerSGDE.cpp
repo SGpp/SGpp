@@ -247,7 +247,7 @@ LearnerSGDE::LearnerSGDE(
     sgpp::base::AdpativityConfiguration& adaptivityConfig,
     sgpp::solver::SLESolverConfiguration& solverConfig,
     sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    CrossvalidationForRegularizationConfiguration& crossvalidationConfig)
+    CrossvalidationConfiguration& crossvalidationConfig)
     : grid(nullptr),
       alpha(nullptr),
       trainData(nullptr),

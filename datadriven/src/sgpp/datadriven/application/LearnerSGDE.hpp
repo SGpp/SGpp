@@ -13,6 +13,7 @@
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
 
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 
@@ -24,25 +25,6 @@
 
 namespace sgpp {
 namespace datadriven {
-
-struct CrossvalidationForRegularizationConfiguration {
-  // parameters for cross-validation
-  bool enable_;   // enables cross-validation
-  size_t kfold_;  // number of batches for cross validation
-  int seed_;      // seed for randomized k-fold
-  bool shuffle_;  // randomized/sequential k-fold
-  bool silent_;   // verbosity
-
-  // regularization parameter optimization
-  double lambda_;       // regularization parameter
-  double lambdaStart_;  // lower bound for lambda search range
-  double lambdaEnd_;    // upper bound for lambda search range
-  // number of lambdas to be tested within the range defined by lambdaStart and
-  // lambdaEdns;
-  // must be > 1
-  size_t lambdaSteps_;
-  bool logScale_;  // search the optimization interval on a log-scale
-};
 
 // --------------------------------------------------------------------------
 class LearnerSGDE;
@@ -67,8 +49,7 @@ class LearnerSGDEConfiguration : public json::JSON {
   sgpp::base::AdpativityConfiguration adaptivityConfig;
   sgpp::solver::SLESolverConfiguration solverConfig;
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-  sgpp::datadriven::CrossvalidationForRegularizationConfiguration
-      crossvalidationConfig;
+  sgpp::datadriven::CrossvalidationConfiguration crossvalidationConfig;
 };
 
 class LearnerSGDE : public datadriven::DensityEstimator {
@@ -87,7 +68,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
       sgpp::base::AdpativityConfiguration& adaptivityConfig,
       sgpp::solver::SLESolverConfiguration& solverConfig,
       sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-      CrossvalidationForRegularizationConfiguration& crossvalidationConfig);
+      CrossvalidationConfiguration& crossvalidationConfig);
 
   explicit LearnerSGDE(LearnerSGDEConfiguration& learnerSGDEConfig);
 
@@ -357,7 +338,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   sgpp::base::AdpativityConfiguration adaptivityConfig;
   sgpp::solver::SLESolverConfiguration solverConfig;
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-  CrossvalidationForRegularizationConfiguration crossvalidationConfig;
+  sgpp::datadriven::CrossvalidationConfiguration crossvalidationConfig;
 };
 
 }  // namespace datadriven

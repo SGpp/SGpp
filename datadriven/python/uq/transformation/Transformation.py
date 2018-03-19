@@ -42,14 +42,21 @@ class Transformation(object):
         """
         raise NotImplementedError
 
-#     @classmethod
-#     def fromJson(cls, jsonObject):
-#         import transformations
-# 
-#         if jsonObject['module'] == 'transformations.LinearTransformation':
-#             return transformations.LinearTransformation.fromJson(jsonObject)
-#         elif jsonObject['module'] == 'transformations.InverseCDFTransformation':
-#             return transformations.InverseCDFTransformation.fromJson(jsonObject)
-#         else:
-#             raise TypeError('Unknown transformation "%s" => Please register \
-#                              it in fromJson function' % jsonObject['module'])
+    def getSize(self):
+        """
+        @return: the number of variables which are transformed
+        """
+        raise NotImplementedError()
+
+    @classmethod
+    def fromJson(cls, jsonObject):
+        import pysgpp.extensions.datadriven.uq.transformation as transformation
+
+        if 'transformation.JointTransformation' in jsonObject['module']:
+            return transformation.JointTransformation.fromJson(jsonObject)
+        if 'transformation.LinearTransformation' in jsonObject['module']:
+            return transformation.LinearTransformation.fromJson(jsonObject)
+        elif 'transformation.RosenblattTransformation' in jsonObject['module']:
+            return transformation.RosenblattTransformation.fromJson(jsonObject)
+        else:
+            raise TypeError('Unknown transformation "%s" => Please register it in fromJson function' % jsonObject['module'])

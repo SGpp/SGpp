@@ -6,7 +6,7 @@
 #include <sgpp/datadriven/algorithm/DBMatDMSOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
-#include <sgpp/datadriven/configuration/DecompositionConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 
 #include <chrono>
@@ -27,8 +27,8 @@ int main() {
   regularizationConfig.lambda_ = 0.0001;
   regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
 
-  sgpp::datadriven::DecompositionConfiguration decompositionConfig;
-  decompositionConfig.type_ = sgpp::datadriven::DBMatDecompostionType::OrthoAdapt;
+  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+  densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
 
   size_t number_points_to_refine = 1;
   size_t number_points_to_coarsen = 1;
@@ -39,7 +39,7 @@ int main() {
 
   // offline phase
   sgpp::datadriven::DBMatOfflineOrthoAdapt offline(gridConfig, adaptConfig,
-                                                   regularizationConfig, decompositionConfig);
+                                                   regularizationConfig, densityEstimationConfig);
 
   offline.buildMatrix();
   std::cout << "initial matrix size = " << offline.getDimA();

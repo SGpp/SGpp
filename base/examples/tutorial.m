@@ -38,10 +38,6 @@
 %% \f$\vec{p} = (0.52, 0.73)\f$.
 %%
 
-%% At the beginning of the program, we have to load the shared library object file.
-%% We can do so by using <tt>sgpp.LoadJSGPPLib.loadJSGPPLib</tt>.
-sgpp.LoadJSGPPLib.loadJSGPPLib();
-
 %% Before starting, the function \f$f\f$, which we want to interpolate, is defined.
 f = @(x0, x1) (16.0 * (x0 - 1.0) * x0 * (x1 - 1.0) * x1);
 
@@ -92,7 +88,7 @@ fprintf('alpha before hierarchization: %s\n', char(alpha.toString()));
 
 %% An object of sgpp::base::OperationHierarchisation is created and used to
 %% hierarchize the coefficient vector, which we print.
-sgpp.jsgpp.createOperationHierarchisation(grid).doHierarchisation(alpha);
+sgpp.createOperationHierarchisation(grid).doHierarchisation(alpha);
 fprintf('alpha after hierarchization:  %s\n', char(alpha.toString()));
 
 %% Finally, a second DataVector is created which is used as a point to
@@ -103,7 +99,7 @@ fprintf('alpha after hierarchization:  %s\n', char(alpha.toString()));
 p = sgpp.DataVector(dim);
 p.set(0, 0.52);
 p.set(1, 0.73);
-opEval = sgpp.jsgpp.createOperationEval(grid);
+opEval = sgpp.createOperationEval(grid);
 fprintf('u(0.52, 0.73) = %.4f\n', opEval.eval(alpha,p));
 
 %% The example results in the following output:

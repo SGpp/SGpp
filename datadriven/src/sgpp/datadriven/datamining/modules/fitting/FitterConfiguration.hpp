@@ -6,8 +6,9 @@
 #pragma once
 
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
-#include <sgpp/datadriven/configuration/DecompositionConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
@@ -20,7 +21,7 @@ class DataMiningConfigParser;
 /**
  * Different fitter scenarios have different default values and support different operations
  */
-enum class FitterType { RegressionLeastSquares };
+enum class FitterType { RegressionLeastSquares, DensityEstimation };
 
 /**
  * General configuration object for fitters. Bundles all structures needed to build a sparse grid,
@@ -83,10 +84,16 @@ class FitterConfiguration {
   const base::AdpativityConfiguration& getRefinementConfig() const;
 
   /**
-   * Get how the density based matrix decomposition should behave.
-   * @return immutable DecompositionConfiguration
+   * Get how the crossvalidation should behave.
+   * @return immutable CrossvalidationConfiguration
    */
-  const datadriven::DecompositionConfiguration& getDecompositionConfig() const;
+  const datadriven::CrossvalidationConfiguration& getCrossvalidationConfig() const;
+
+  /**
+   * Get how the density estimation should behave.
+   * @return immutable DensityEstimationConfiguration
+   */
+  const datadriven::DensityEstimationConfiguration& getDensityEstimationConfig() const;
 
   /**
    * Get configuration for the linear system solver which should be used while building
@@ -127,10 +134,16 @@ class FitterConfiguration {
   base::AdpativityConfiguration& getRefinementConfig();
 
   /**
-   * Get or set how the density based matrix decomposition should behave.
-   * @return DecompositionConfiguration
+   * Get or set how the crossvalidation should behave.
+   * @return CrossvalidationConfiguration
    */
-  datadriven::DecompositionConfiguration& getDecompositionConfig();
+  datadriven::CrossvalidationConfiguration& getCrossvalidationConfig();
+
+  /**
+   * Get or set how the density estimation should behave.
+   * @return DensityEstimationConfiguration
+   */
+  datadriven::DensityEstimationConfiguration& getDensityEstimationConfig();
 
   /**
    * Get or set configuration for the linear system solver which should be used while building
@@ -181,9 +194,14 @@ class FitterConfiguration {
   base::AdpativityConfiguration adaptivityConfig;
 
   /**
-   * Configure how the density based matrix decomposition should behave.
+   * Configure how the crossvalidation should behave.
    */
-  datadriven::DecompositionConfiguration decompositionConfig;
+  datadriven::CrossvalidationConfiguration crossvalidationConfig;
+
+  /**
+   * Configure how the density estimation should behave.
+   */
+  datadriven::DensityEstimationConfiguration densityEstimationConfig;
 
   /**
    * Configuration for the linear system solver which should be used while building adaptive grids

@@ -14,7 +14,7 @@
 
 #ifdef USE_GSL
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
-#include <sgpp/datadriven/configuration/DecompositionConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #endif /* USE_GSL */
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
@@ -55,18 +55,18 @@ int main() {
   regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
   regularizationConfig.lambda_ = 5 * 10e-5;
 
-  sgpp::datadriven::DecompositionConfiguration decompositionConfig;
-  decompositionConfig.iCholSweepsDecompose_ = 2;
-  decompositionConfig.iCholSweepsRefine_ = 2;
-  decompositionConfig.iCholSweepsSolver_ = 2;
-  decompositionConfig.type_ = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
+  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+  densityEstimationConfig.iCholSweepsDecompose_ = 2;
+  densityEstimationConfig.iCholSweepsRefine_ = 2;
+  densityEstimationConfig.iCholSweepsSolver_ = 2;
+  densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::DenseIchol;
   auto decompType = "Incomplete Cholesky decomposition on Dense Matrix";
-  //  decompositionConfig.type_ = sgpp::datadriven::DBMatDecompostionType::Chol;
+  //  densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::Chol;
   //  auto decompType = "Cholesky decomposition";
   std::cout << "Decomposition type: " << decompType << std::endl;
 
-  decompositionConfig.iCholSweepsDecompose_ = 8;
-  decompositionConfig.iCholSweepsRefine_ = 8;
+  densityEstimationConfig.iCholSweepsDecompose_ = 8;
+  densityEstimationConfig.iCholSweepsRefine_ = 8;
 
   /**
    * Specify the number of classes and the corresponding class labels.
@@ -123,7 +123,7 @@ int main() {
    */
   std::cout << "# create learner" << std::endl;
   sgpp::datadriven::LearnerSGDEOnOff learner(gridConfig, adaptConfig, regularizationConfig,
-                                             decompositionConfig, trainDataset, testDataset,
+                                             densityEstimationConfig, trainDataset, testDataset,
                                              nullptr, classLabels, classNum, usePrior, beta);
 
   /**
