@@ -94,11 +94,10 @@ sgpp::datadriven::LearnerSGDE RosenblattTransformation::createSGDELearner(size_t
 
   // configure regularization
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-  regularizationConfig.regType_ =
-    sgpp::datadriven::RegularizationType::Laplace;
+  regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Laplace;
 
   // configure learner
-  sgpp::datadriven::CrossvalidationForRegularizationConfiguration
+  sgpp::datadriven::CrossvalidationConfiguration
     crossvalidationConfig;
   crossvalidationConfig.enable_ = false;
 
