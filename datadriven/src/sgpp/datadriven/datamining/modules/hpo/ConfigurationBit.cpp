@@ -42,7 +42,13 @@ int ConfigurationBit::evaluate(){
   }
   // pull free bit
   std::cout<<"Error: Bit evaluation failed."<<std::endl;
-
+  std::cout<<name<<std::endl;
+  for(auto &constraint : constraints){
+    std::cout<<"Bias: "<<constraint->getBias()<<std::endl;
+    for(auto &bit : constraint->getConfigBits()){
+      std::cout<<"Bit "<<bit->name<<": "<<bit->evaluate()<<std::endl;
+    }
+  }
   // std::cout<<"input after:"<<*input<<std::endl;
   return value;
 }
@@ -56,21 +62,21 @@ int ConfigurationBit::fixFreeBits(std::vector<ConfigurationBit*> &freeBits){
   for(auto &constraint : constraints){
     if(constraint->getConfigBits().size() == 1){
       value = constraint->getBias();
-      std::cout<<"Constraint Single Bias: "<<value<<std::endl;
+      // std::cout<<"Constraint Single Bias: "<<value<<std::endl;
       return value;
     }
   }
   for(auto &constraint : constraints){
     int tmp = constraint->getBias();
-    std::cout<<"Constraint Bias: "<<tmp<<std::endl;
+    // std::cout<<"Constraint Bias: "<<tmp<<std::endl;
     for(auto &bit : constraint->getConfigBits()){
     	if(this!=bit){
     		tmp = tmp * bit->fixFreeBits(freeBits);
-    		std::cout<<"temp: "<<tmp<<std::endl;
+    		// std::cout<<"temp: "<<tmp<<std::endl;
     	}
     }
     if(tmp != 0){
-        std::cout<<"Constraint Resolved!"<<std::endl;
+        // std::cout<<"Constraint Resolved!"<<std::endl;
       value = tmp;
       return value;
     }
@@ -119,6 +125,29 @@ bool ConfigurationBit::checkConstraints(){
 
 	  }
 return true;
+}
+
+bool ConfigurationBit::setValue(int input) {
+  for(auto &constraint : constraints) {
+    constraint->reduceOpenBits();
+  }
+  /*for(auto &constraint : constraints){
+    int nOpen = constraint->getOpenBits();
+    if(nOpen == 0){
+      if(!constraint->check()){
+        return false;
+      }
+    }else if(nOpen == 1){
+      if(!constraint->resolve()){
+        return false;
+      }
+    }
+  }*/
+  return true;
+}
+
+int ConfigurationBit::getValue() {
+  return value;
 }
 
 

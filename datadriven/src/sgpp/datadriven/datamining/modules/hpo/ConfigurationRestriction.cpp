@@ -14,7 +14,7 @@
 namespace sgpp {
 namespace datadriven {
 
-ConfigurationRestriction::ConfigurationRestriction(std::list<ConfigurationBit*> &parameters, int bias)
+ConfigurationRestriction::ConfigurationRestriction(std::vector<ConfigurationBit*> &parameters, int bias)
       : parameters(parameters), bias(bias) {
 }
 
@@ -22,9 +22,44 @@ int ConfigurationRestriction::getBias(){
   return bias;
 }
 
-std::list<ConfigurationBit*> ConfigurationRestriction::getConfigBits(){ // std::list<ConfigurationBit>
+std::vector<ConfigurationBit*> ConfigurationRestriction::getConfigBits(){ // std::list<ConfigurationBit>
   return parameters;
 }
+
+void ConfigurationRestriction::reduceOpenBits() {
+  openBits--;
+}
+
+bool ConfigurationRestriction::resolve() {
+  int idx = -1;
+  int tmp = bias;
+  for (int i = 0; i < parameters.size(); ++i) {
+    int v = parameters[i]->getValue();
+    if(v == 0){
+      idx = i;
+    }else {
+      tmp = tmp * v;
+    }
+  }
+  return parameters[idx]->setValue(tmp);
+}
+
+int ConfigurationRestriction::getOpenBits() {
+  return openBits;
+}
+
+bool ConfigurationRestriction::check() {
+  int tmp = 1;
+  for(auto &bit : parameters){
+      tmp = tmp * bit->getValue();
+  }
+  return tmp == bias;
+}
+
+void ConfigurationRestriction::reset() {
+  openBits = parameters.size();
+}
+
 
 }  // namespace datadriven
 }  // namespace sgpp

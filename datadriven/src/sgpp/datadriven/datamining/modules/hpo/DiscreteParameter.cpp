@@ -14,6 +14,17 @@ namespace sgpp {
 namespace datadriven {
 
 
+DiscreteParameter::DiscreteParameter(std::string& name, int min, int max)
+        :HyperParameter(name), min(min),max(max){
+  int i = 1;
+  int c = 2;
+  while(c < max-min+1){
+    i++;
+    c=c*2;
+  }
+  nBits = i;
+}
+
 
 void DiscreteParameter::makeConfigBits(std::list<std::unique_ptr<ConfigurationBit>>& allbits){
 	int i = 1;

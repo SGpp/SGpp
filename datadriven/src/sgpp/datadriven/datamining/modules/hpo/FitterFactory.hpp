@@ -62,6 +62,8 @@ class FitterFactory {
 
   int moveToNewSpace(int configID);
 
+  void getConfigBits(std::vector<ConfigurationBit*>& configBits);
+
 protected:
   std::list<std::unique_ptr<ConfigurationBit>> configBits;
   std::map<std::string,ContinuousParameter*> conpar;

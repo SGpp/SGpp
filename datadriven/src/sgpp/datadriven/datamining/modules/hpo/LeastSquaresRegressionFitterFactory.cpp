@@ -42,7 +42,7 @@ LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory(DataMin
 	dispar["basisFunction"]->makeConfigBits(configBits);
 
 	conpar["lambda"] = (new ExponentialParameter{-8, 0});
-	conpar["lambda"]->makeConfigBits(4, configBits);
+	conpar["lambda"]->makeConfigBits(6, configBits);
 	std::cout<<"nConfigBits: "<<configBits.size()<<std::endl;
 
 	conpar["threshold"] = (new ExponentialParameter{-5, -2});

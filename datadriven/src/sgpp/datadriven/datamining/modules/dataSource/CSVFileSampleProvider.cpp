@@ -48,7 +48,7 @@ size_t CSVFileSampleProvider::getNumSamples() const {
 
 void CSVFileSampleProvider::readFile(const std::string& fileName) {
   try {
-    //call readCSV with skipfirstline set to true
+    // call readCSV with skipfirstline set to true
     dataset = CSVTools::readCSV(fileName, true);
   } catch (...) {
     // TODO(lettrich): catching all exceptions is bad design. Replace call to CSVTools with
@@ -75,13 +75,13 @@ Dataset* CSVFileSampleProvider::getAllSamples() {
 }
 
 void CSVFileSampleProvider::readString(const std::string& input) {
- // try {
- //   dataset = CSVTools::readCSVFromString(input);
- // } catch (...) {
-    // TODO(lettrich): catching all exceptions is bad design. Replace call to CSVTools with
-    // exception safe implementation.
-    throw base::data_exception{"Failed to parse CSV data. Reading from string is not currently implemented."};
- // }
+  // try {
+  //   dataset = CSVTools::readCSVFromString(input);
+  // } catch (...) {
+  // TODO(lettrich): catching all exceptions is bad design. Replace call to CSVTools with
+  // exception safe implementation.
+  throw base::data_exception{"Failed to parse CSV data. Reading from string is not implemented."};
+  // }
 }
 
 Dataset* CSVFileSampleProvider::splitDataset(size_t howMany) {

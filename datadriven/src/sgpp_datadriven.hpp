@@ -76,7 +76,6 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationTest.hpp>
 
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
-#include <sgpp/datadriven/tools/CSVTools.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp>

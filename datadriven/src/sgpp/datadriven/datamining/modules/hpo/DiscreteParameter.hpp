@@ -15,7 +15,9 @@ namespace datadriven {
 
 class DiscreteParameter: public sgpp::datadriven::HyperParameter {
 public:
-	DiscreteParameter(int min, int max):min(min),max(max){}
+	DiscreteParameter(std::string& name, int min, int max);
+  DiscreteParameter(std::string &name, int min, int max, int nBits)
+          : HyperParameter(name), min(min), max(max), nBits(nBits) {}
 	//~DiscreteParameter();
 	void makeConfigBits(std::list<std::unique_ptr<ConfigurationBit>>& allbits);
 
@@ -27,7 +29,7 @@ public:
 protected:
 	int min;
 	int max;
-	int value;
+	int value = 0;
 };
 
 } /* namespace datadriven */

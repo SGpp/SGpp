@@ -26,8 +26,8 @@ class ConfigurationBit {
    * @param base::Grid base::Grid
    * @param dataset the dataset that should be evaluated
    */
-  ConfigurationBit()
-      : constraints(), value(0), bVisited(false) {}
+  ConfigurationBit(std::string& name)
+      : constraints(), value(0), bVisited(false), name(name) {}
 
   /**
    * Destructor
@@ -47,14 +47,19 @@ class ConfigurationBit {
   bool checkConstraints();
 
   void reset();
+
+  bool setValue(int input);
+
+  int getValue();
   // void mult(base::DataVector& alpha, base::DataVector& result);
   // void multTranspose(base::DataVector& source, base::DataVector& result);
 
   // double getDuration();
+  std::string name;
 
  protected:
   /// reference to the base::Grid's base::GridStorage object
-  std::list<ConfigurationRestriction*> constraints;
+  std::vector<ConfigurationRestriction*> constraints;
   int value;
   bool bVisited;
 };

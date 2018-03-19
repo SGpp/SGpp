@@ -44,12 +44,18 @@ void HyperparameterOptimizer::runHarmonica(){
 
   //prepare data
   std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
-  std::unique_ptr<Dataset> trainData = std::unique_ptr<Dataset>(hpoScorer->prepareTestData(*dataset));
+  Dataset dataone{30000, dataset->getDimension()};
+  Dataset datatwo{1000, dataset->getDimension()};
+  hpoScorer->resizeTrainData(*dataset, dataone);
+  hpoScorer->resizeTrainData(*dataset, datatwo);
+  std::cout << "Shuffle test: "<<dataone.getTargets()[0]<<","<<datatwo.getTargets()[0] << std::endl;
+  Dataset* trainData = &datatwo;
+  //std::unique_ptr<Dataset> trainData = std::unique_ptr<Dataset>(hpoScorer->prepareTestData(*dataset));
 
   double stdDeviation;
   double best = 1.0/0; //infinity
 
-  int n = 100; //EDIT: metaparameter
+  int n = 50; //EDIT: metaparameter
   std::vector<ModelFittingBase*> fitters(n);
   DataVector scores(n);
   DataVector transformedScores(n);
@@ -71,12 +77,15 @@ for(int q=0;q<3;q++) {
 
   harmonica.transformScores(scores, transformedScores);
 
-  harmonica.calculateConstrainedSpace(transformedScores,2,4);
+  harmonica.calculateConstrainedSpace(transformedScores,0.001,3);
 }
 
 }
+
 
 void HyperparameterOptimizer::optimizeHyperparameters(){
+
+/*
   // prepare data and scorer
   std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
   std::unique_ptr<Dataset> trainData = std::unique_ptr<Dataset>(hpoScorer->prepareTestData(*dataset));
@@ -231,6 +240,7 @@ void HyperparameterOptimizer::optimizeHyperparameters(){
 
 
   //double score = hpoScorer->calculateScore(*fitter, *dataset, &stdDeviation);
+  */
 }
 
 void HyperparameterOptimizer::runFromFile(){
@@ -399,6 +409,7 @@ void HyperparameterOptimizer::runBO() {
     std::cout << "Result: " << -1/result-1 << std::endl; //result
 
     //write results in file
+    /*
     std::ofstream myfile("C:/Users/Eric/Documents/BOresultsDE.txt", std::ios_base::app);
     if(myfile.is_open()) {
       //myfile << "threshold,lambda,nopoints,level,basis" << std::endl;
@@ -413,7 +424,7 @@ void HyperparameterOptimizer::runBO() {
     }
     myfile.close();
     std::cout<< "Write to file finished." << std::endl;
-
+    */
     if(result<bestsofar){
       bestsofar = result;
     }

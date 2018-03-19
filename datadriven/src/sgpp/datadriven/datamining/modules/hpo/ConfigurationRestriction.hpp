@@ -6,17 +6,18 @@
 #ifndef ConfigurationRestriction_HPP
 #define ConfigurationRestriction_HPP
 
-// #include <sgpp/datadriven/datamining/modules/hpo/ConfigurationBit.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/ConfigurationBit.hpp>
 
 
 // EDIT: cyclic dependency
+
 
 #include <sgpp/globaldef.hpp>
 #include <list>
 
 namespace sgpp {
 namespace datadriven {
-class ConfigurationBit;
+// class ConfigurationBit;
 
 /**
  * This class implements OperationB for a base::Grids with linear basis ansatzfunctions without boundaries
@@ -29,25 +30,33 @@ class ConfigurationRestriction {
    * @param base::Grid base::Grid
    * @param dataset the dataset that should be evaluated
    */
-  ConfigurationRestriction(std::list<ConfigurationBit*> &parameters, int bias);
+  ConfigurationRestriction(std::vector<ConfigurationBit*> &parameters, int bias);
 
   /**
    * Destructor
    */
   // ~ConfigurationRestriction() {}
 
-  // void mult(base::DataVector& alpha, base::DataVector& result);
-  // void multTranspose(base::DataVector& source, base::DataVector& result);
 
-  // double getDuration();
   int getBias();
 
-  std::list<ConfigurationBit*> getConfigBits();
+  std::vector<ConfigurationBit*> getConfigBits();
+
+  void reduceOpenBits();
+
+  int getOpenBits();
+
+  bool resolve();
+
+  bool check();
+
+  void reset();
 
  protected:
   /// reference to the base::Grid's base::GridStorage object
-  std::list<ConfigurationBit*> parameters;
+  std::vector<ConfigurationBit*> parameters;
   int bias;
+  int openBits = 0;
   // bool visited;
 };
 

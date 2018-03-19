@@ -136,8 +136,8 @@ class ModelFittingBase {
    * Get the configuration of the fitter object.
    * @return configuration of the fitter object
    */
-  FitterConfiguration* getFitterConfiguration();
-  
+  const FitterConfiguration& getFitterConfiguration() const;
+
   /**
    * Whether the Solver produces output or not.
    */
