@@ -13,7 +13,6 @@
 
 #include <cmath>
 #include <cstddef>
-#include <iostream>
 #include <algorithm>
 
 namespace sgpp {
