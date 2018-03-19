@@ -26,15 +26,12 @@ DensityEstimationFitterFactory::DensityEstimationFitterFactory(DataMiningConfigP
 
 	//EDIT: new hier ohne pointer?
 
-  dispar["level"] = (new DiscreteParameter{1,6});
-  dispar["level"]->makeConfigBits(configBits);
+  dispar["level"] = DiscreteParameter("level", 1, 4);
 
-  //EDIT: catpar here
-  dispar["basisFunction"] = (new DiscreteParameter{0,1});
-  dispar["basisFunction"]->makeConfigBits(configBits);
+  catpar["basisFunction"] = DiscreteParameter("basisFunction",0,1);
 
-	conpar["lambda"] = (new ExponentialParameter{-8, 0});
-	conpar["lambda"]->makeConfigBits(4, configBits);
+  conpar["lambda"] = ContinuousParameter(6, "lambda", -8, 0);
+
 
 }
 
@@ -47,9 +44,9 @@ ModelFittingBase* DensityEstimationFitterFactory::buildFitter()  {
   //EDIT: make lambda exponential
   base::GridType basisFunction[] = {base::GridType::Linear,base::GridType::ModLinear};
 
-  config->getGridConfig().level_ = dispar["level"]->getValue();
-  config->getGridConfig().type_ = basisFunction[dispar["basisFunction"]->getValue()];
-  config->getRegularizationConfig().lambda_ = conpar["lambda"]->getValue();
+  config->getGridConfig().level_ = dispar["level"].getValue();
+  config->getGridConfig().type_ = basisFunction[catpar["basisFunction"].getValue()];
+  config->getRegularizationConfig().lambda_ = pow(10, conpar["lambda"].getValue());
 
   return new ModelFittingLeastSquares(*config);
 }
@@ -57,9 +54,9 @@ ModelFittingBase* DensityEstimationFitterFactory::buildFitter()  {
 void DensityEstimationFitterFactory::printConfig(){
 
 	std::string basisFunction[] = {"Linear","ModLinear"};
-	std::cout<<"Level: "<< dispar["level"]->getValue()
-					 <<", Basis: "<<basisFunction[dispar["basisFunction"]->getValue()]
-					 <<", Lambda: "<<conpar["lambda"]->getValue()
+	std::cout<<"Level: "<< dispar["level"].getValue()
+					 <<", Basis: "<<basisFunction[catpar["basisFunction"].getValue()]
+					 <<", Lambda: "<< pow(10, conpar["lambda"].getValue())
 					 <<std::endl;
 }
 

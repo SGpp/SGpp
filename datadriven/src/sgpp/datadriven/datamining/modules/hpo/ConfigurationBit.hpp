@@ -11,6 +11,7 @@
 #include <sgpp/globaldef.hpp>
 #include <list>
 #include <vector>
+#include <iostream>
 
 namespace sgpp {
 namespace datadriven {
@@ -26,8 +27,15 @@ class ConfigurationBit {
    * @param base::Grid base::Grid
    * @param dataset the dataset that should be evaluated
    */
-  ConfigurationBit(std::string& name)
-      : constraints(), value(0), bVisited(false), name(name) {}
+  explicit ConfigurationBit(std::string namen)
+      :name(namen), constraints(0), value(0){
+    //std::cout << "Constructor: " << getName() << std::endl;
+    //name = "test";
+  }
+
+  //~ConfigurationBit(){
+  //  std::cout << "ConfigurationBit destroyed!" << name<<std::endl;
+  //}
 
   /**
    * Destructor
@@ -37,31 +45,24 @@ class ConfigurationBit {
   void addConstraint(ConfigurationRestriction* constraint);
 
   void removeLastConstraint();
-  
-  int evaluate();
-
-  void setBit(int* input);
-  
-  int fixFreeBits(std::vector<ConfigurationBit*> &freeBits);
-
-  bool checkConstraints();
 
   void reset();
 
-  bool setValue(int input);
+  void setValue(int input);
 
   int getValue();
+
+  std::string getName();
   // void mult(base::DataVector& alpha, base::DataVector& result);
   // void multTranspose(base::DataVector& source, base::DataVector& result);
 
   // double getDuration();
-  std::string name;
 
- protected:
-  /// reference to the base::Grid's base::GridStorage object
+
+ private:
+  std::string name;
   std::vector<ConfigurationRestriction*> constraints;
   int value;
-  bool bVisited;
 };
 
 }  // namespace datadriven

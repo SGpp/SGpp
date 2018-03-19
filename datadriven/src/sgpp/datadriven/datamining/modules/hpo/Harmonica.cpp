@@ -25,7 +25,16 @@ namespace sgpp {
 namespace datadriven {
 
 Harmonica::Harmonica(FitterFactory* fitterFactory)
-:fitterFactory(fitterFactory), nBits(0), paritymatrix(0,0), configIDs(), savedScores(){}
+:fitterFactory(fitterFactory), configIDs(), savedScores(), configBits(), constraints() {
+  fitterFactory->getConfigBits(configBits);
+  freeBits = std::vector<ConfigurationBit *>(configBits);
+  for (auto &bit : freeBits) {
+    std::cout << "freeBits: " << bit->getName() << std::endl;
+  }
+  for (auto &bit : configBits) {
+    std::cout << "configBits: " << bit->getName() << std::endl;
+  }
+}
 
 void Harmonica::transformScores(const DataVector& source, DataVector& target){
   for(int i=0;i<source.size();i++){
@@ -77,15 +86,14 @@ void Harmonica::prepareConfigs(std::vector<ModelFittingBase*>& fitters) {
   std::cout << "ConfigIDs: " << configIDs[0] << ", " << configIDs[1] << std::endl;
 
   for (int i = 0; i < nAll; i++) {
-    fitterFactory->setHarmonica(configIDs[i], i, paritymatrix);
+    setParameters(configIDs[i], i);
     if(i>=nOld) {
       fitters[i-nOld] = fitterFactory->buildFitter();
+
     }
   }
 
 }
-
-
 
 
 //EDIT: handle zero bias constraints
@@ -184,7 +192,7 @@ bool Harmonica::fixConfigBits() { //EDIT: einfacherer Approach, nur über constr
     while (configBits[nextFreeBit]->getValue() != 0 && nextFreeBit < configBits.size() - 1) { //EDIT: endpoint
       nextFreeBit++;
     }
-    if (configBits[nextFreeBit]->getValue() != 0) {
+    if (configBits[nextFreeBit]->getValue() == 0) {
       freeBits.push_back(configBits[nextFreeBit]);
       configBits[nextFreeBit]->setValue(1);
       changedFreeBits = true;
@@ -202,7 +210,7 @@ void Harmonica::resetBits() {
   }
 }
 
-void Harmonica::setParameters(int configID) {
+void Harmonica::setParameters(int configID, int matrixrow) {
   resetBits();
   for(auto& bit : freeBits){
     bit->setValue((configID&1)*2-1);
@@ -212,6 +220,16 @@ void Harmonica::setParameters(int configID) {
   if(changed){
     std::cout<<"Error: freeBits changed in setParameters."<<std::endl; //EDIT: throw exception
   }
+  for(int i=0;i<parityrow.size();i++){
+    int tmp = 1;
+    for(auto& bit : parityrow[i]){
+      tmp = tmp * bit->getValue();
+    }
+    paritymatrix.set(matrixrow, i, tmp);
+  }
+
+  fitterFactory->setHarmonica();
+
   //EDIT: set Parameters in fitter and parameter classes
 }
 
@@ -219,7 +237,7 @@ void Harmonica::addConstraint(int idx, int bias){
   constraints.push_back(std::make_unique<ConfigurationRestriction>(parityrow[idx], bias));
   for(auto &bit : parityrow[idx]){
     bit->addConstraint(constraints.back().get());
-    std::cout<<"Adding bit "<<bit->name<<" from constraint:"<<idx<<std::endl;
+    std::cout<<"Adding bit "<<bit->getName()<<" from constraint:"<<idx<<std::endl;
   }
   freeBits = std::vector<ConfigurationBit*>{};
   resetBits();
@@ -259,7 +277,7 @@ int Harmonica::moveToNewSpace(int configID, std::vector<ConfigurationBit*> oldFr
   int v = 0;
   int m = 1;
   for(auto& bit : freeBits){
-    v = v+m*((bit->evaluate()+1)/2);
+    v = v+m*((bit->getValue()+1)/2);
     m = m*2;
   }
   return v;

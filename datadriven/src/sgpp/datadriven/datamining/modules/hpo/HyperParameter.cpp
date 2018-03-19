@@ -5,25 +5,22 @@
  *      Author: Eric
  */
 
+#include <iostream>
 #include "HyperParameter.hpp"
 
 namespace sgpp {
 namespace datadriven {
 
-HyperParameter::HyperParameter() {
-	// TODO Auto-generated constructor stub
 
-}
-
-HyperParameter::~HyperParameter() {
-	// TODO Auto-generated destructor stub
-}
 
 void HyperParameter::makeConfigBits(std::vector<ConfigurationBit*>& configBits){
+  bits.reserve(nBits);
 	for(int i=0;i<nBits;i++){
-    bits.push_back(std::make_unique<ConfigurationBit>(name + std::to_string(i)));
-    configBits.push_back(bits[i].get());
-	}
+    std::string bitName = name + std::to_string(i);
+    bits.emplace_back(bitName);
+    configBits.push_back(&bits[i]);
+  }
+
 }
 
 } /* namespace datadriven */

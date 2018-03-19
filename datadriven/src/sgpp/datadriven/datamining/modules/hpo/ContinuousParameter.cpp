@@ -16,10 +16,10 @@ void ContinuousParameter::setHarmonica() {
   double v = 0;
   double m = 1;
   for(auto &bit : bits){
-    v = v + m* bit->evaluate();
+    v = v + m* bit.getValue();
     m = m * 2;
   }
-  value = min+((max-min)*(1+v/(m-1.0))/2);
+  value = min+((max-min)*(1.0+v/(m-1.0))/2.0);
 }
 
 void ContinuousParameter::setBO(double interval) {
