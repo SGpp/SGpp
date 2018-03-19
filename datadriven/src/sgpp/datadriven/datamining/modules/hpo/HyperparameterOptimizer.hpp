@@ -76,7 +76,6 @@ class HyperparameterOptimizer {
    * Optimize Hyperparameters with HPOScorer.
    * Currently no input/output yet.
    */
-  void optimizeHyperparameters();
 
   void runFromFile();
 

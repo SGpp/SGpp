@@ -5,6 +5,7 @@
 
 #include <sgpp/base/algorithm/AlgorithmMultipleEvaluation.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/ConfigurationRestriction.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/ConfigurationBit.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
@@ -18,19 +19,12 @@ ConfigurationRestriction::ConfigurationRestriction(std::vector<ConfigurationBit*
       : parameters(parameters), bias(bias) {
 }
 
-int ConfigurationRestriction::getBias(){
-  return bias;
-}
-
-std::vector<ConfigurationBit*> ConfigurationRestriction::getConfigBits(){ // std::list<ConfigurationBit>
-  return parameters;
-}
 
 void ConfigurationRestriction::reduceOpenBits() {
   openBits--;
 }
 
-bool ConfigurationRestriction::resolve() {
+void ConfigurationRestriction::resolve() {
   int idx = -1;
   int tmp = bias;
   for (int i = 0; i < parameters.size(); ++i) {
@@ -41,7 +35,7 @@ bool ConfigurationRestriction::resolve() {
       tmp = tmp * v;
     }
   }
-  return parameters[idx]->setValue(tmp);
+  parameters[idx]->setValue(tmp);
 }
 
 int ConfigurationRestriction::getOpenBits() {

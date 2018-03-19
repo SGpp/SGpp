@@ -14,18 +14,10 @@ namespace sgpp {
 namespace datadriven {
 
 void OperationMultipleEvalMatrix::mult(base::DataVector& alpha, base::DataVector& result) {
-  //AlgorithmMultipleEvaluation<SLinearBase> op;
-  //LinearBasis<unsigned int, unsigned int> base;
-
-  //op.mult(storage, base, alpha, this->dataset, result);
   this->dataset.mult(alpha, result);
 }
 
 void OperationMultipleEvalMatrix::multTranspose(base::DataVector& alpha, base::DataVector& result) {
-  //AlgorithmMultipleEvaluation<SLinearBase> op;
-  //LinearBasis<unsigned int, unsigned int> base;
-
-  //op.mult_transpose(storage, base, alpha, this->dataset, result);
   sgpp::base::DataMatrix trans{this->dataset};
   trans.transpose();
   trans.mult(alpha, result);

@@ -1,0 +1,32 @@
+{
+	"dataSource": {
+		"filePath": "C:/Users/Eric/Downloads/DR5_nowarnings_less05_train.arff"
+	},
+	"scorer": {
+		"testing": {
+			"testingPortion": 0.125,
+			"shuffling": "random",
+			"randomSeed": 42,
+			"metric": "MSE"
+		},
+    "testset": {
+      "filePath": "C:/Users/Eric/Downloads/DR5_nowarnings_less05_test.arff"
+    }
+	},
+	"fitter": {
+		"type": "regressionLeastSquares",
+		"gridConfig": {
+			"gridType": "modlinear",
+			"level": 2
+		},
+	"adaptivityConfig": {
+			"numRefinements": 10,
+			"threshold": 0.001,
+			"maxLevelType": false,
+			"noPoints": 1
+		},
+		"regularizationConfig": {
+			"lambda": 100
+		}
+	}
+}

@@ -21,35 +21,18 @@ namespace datadriven {
 
 LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory(DataMiningConfigParser& parser)
   :baseConfig(){
-  // build ConfigurationBits (constructor)
-  // for(int i=0;i<12;i++){
-  //  configBits.push_back(*(new ConfigurationBit()));
-  // }
+
 	baseConfig.readParams(parser);
 
-	//EDIT: new hier ohne pointer?
-	std::cout<<"nConfigBits: "<<configBits.size()<<std::endl;
+  dispar["noPoints"] = DiscreteParameter("noPoints",1,4);
 
-  dispar["noPoints"] = (new DiscreteParameter{1,4});
-  dispar["noPoints"]->makeConfigBits(configBits);
-	std::cout<<"nConfigBits: "<<configBits.size()<<std::endl;
+  dispar["level"] = DiscreteParameter("level", 1, 4);
 
-  dispar["level"] = (new DiscreteParameter{1,4});
-  dispar["level"]->makeConfigBits(configBits);
-	std::cout<<"nConfigBits: "<<configBits.size()<<std::endl;
+	catpar["basisFunction"] = DiscreteParameter("basisFunction",0,1);
 
-	dispar["basisFunction"] = (new DiscreteParameter{0,1});
-	dispar["basisFunction"]->makeConfigBits(configBits);
+	conpar["lambda"] = ContinuousParameter(8, "lambda", -8, 0);
 
-	conpar["lambda"] = (new ExponentialParameter{-8, 0});
-	conpar["lambda"]->makeConfigBits(6, configBits);
-	std::cout<<"nConfigBits: "<<configBits.size()<<std::endl;
-
-	conpar["threshold"] = (new ExponentialParameter{-5, -2});
-	conpar["threshold"]->makeConfigBits(3, configBits);
-	std::cout<<"nConfigBits: "<<configBits.size()<<std::endl;
-
-
+	conpar["threshold"] = ContinuousParameter(3, "threshold", -5, -2);
 
 }
 
@@ -59,15 +42,14 @@ LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory(DataMin
 ModelFittingBase* LeastSquaresRegressionFitterFactory::buildFitter()  {
 
   // build config
-  FitterConfigurationLeastSquares* config = new FitterConfigurationLeastSquares(baseConfig);
-  //EDIT: make lambda exponential
-  base::GridType basisFunction[] = {base::GridType::Linear,base::GridType::ModLinear};
-  config->getGridConfig().level_ = dispar["level"]->getValue();
-  config->getGridConfig().type_ = basisFunction[dispar["basisFunction"]->getValue()];
-  config->getRefinementConfig().noPoints_ = dispar["noPoints"]->getValue();
-  config->getRefinementConfig().threshold_ = conpar["threshold"]->getValue();
-  config->getRegularizationConfig().lambda_ = conpar["lambda"]->getValue();
+  auto* config = new FitterConfigurationLeastSquares(baseConfig);
 
+  base::GridType basisFunction[] = {base::GridType::Linear,base::GridType::ModLinear};
+  config->getGridConfig().level_ = dispar["level"].getValue();
+  config->getGridConfig().type_ = basisFunction[catpar["basisFunction"].getValue()];
+  config->getRefinementConfig().noPoints_ = static_cast<size_t>(dispar["noPoints"].getValue());
+  config->getRefinementConfig().threshold_ = pow(10,conpar["threshold"].getValue());
+  config->getRegularizationConfig().lambda_ = pow(10,conpar["lambda"].getValue());
 
   return new ModelFittingLeastSquares(*config);
 }
@@ -75,11 +57,11 @@ ModelFittingBase* LeastSquaresRegressionFitterFactory::buildFitter()  {
 void LeastSquaresRegressionFitterFactory::printConfig(){
 
 	std::string basisFunction[] = {"Linear","ModLinear"};
-	std::cout<<"Level: "<< dispar["level"]->getValue()
-					 <<", Basis: "<<basisFunction[dispar["basisFunction"]->getValue()]
-					 <<", noPoints: "<< dispar["noPoints"]->getValue()
-					 <<", Threshold: "<<conpar["threshold"]->getValue()<<", "<<pow(10,conpar["threshold"]->getValue())
-					 <<", Lambda: "<<conpar["lambda"]->getValue()<<", "<<pow(10,conpar["lambda"]->getValue())
+	std::cout<<"Level: "<< dispar["level"].getValue()
+					 <<", Basis: "<<basisFunction[catpar["basisFunction"].getValue()]
+					 <<", noPoints: "<< dispar["noPoints"].getValue()
+					 <<", Threshold: "<< pow(10,conpar["threshold"].getValue())
+					 <<", Lambda: "<< pow(10,conpar["lambda"].getValue())
 					 <<std::endl;
 }
 

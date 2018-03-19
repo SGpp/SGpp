@@ -17,13 +17,15 @@ namespace datadriven {
 
 class HyperParameter {
 public:
-	HyperParameter(std::string& name):name(name){}
-	virtual ~HyperParameter();
+  HyperParameter() :bits(), nBits(0), name(){}
+	HyperParameter(int nBits, std::string& name)
+          :bits(), nBits(nBits), name(name){}
+	virtual ~HyperParameter() = default;
 	void makeConfigBits(std::vector<ConfigurationBit*>& configBits);
 	virtual void setHarmonica() = 0;
 
 protected:
-  std::vector<std::unique_ptr<ConfigurationBit>> bits;
+  std::vector<ConfigurationBit> bits;
   int nBits;
   std::string name;
 };

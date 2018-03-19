@@ -28,7 +28,7 @@ public:
   void transformScores(const DataVector& source, DataVector& target);
   bool fixConfigBits();
   void resetBits();
-  void setParameters(int configID);
+  void setParameters(int configID, int matrixrow);
   void addConstraint(int idx, int bias);
   bool checkConstraints();
   int moveToNewSpace(int configID, std::vector<ConfigurationBit*> oldFreeBits);
@@ -38,7 +38,6 @@ public:
   // double expkernel(base::DataVector x1, base::DataVector x2);
 protected:
 	base::DataMatrix paritymatrix;
-  int nBits;
   FitterFactory* fitterFactory;
   std::vector<int> configIDs;
   DataVector savedScores;

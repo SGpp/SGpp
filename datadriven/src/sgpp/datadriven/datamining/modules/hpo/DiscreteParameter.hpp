@@ -15,13 +15,15 @@ namespace datadriven {
 
 class DiscreteParameter: public sgpp::datadriven::HyperParameter {
 public:
-	DiscreteParameter(std::string& name, int min, int max);
-  DiscreteParameter(std::string &name, int min, int max, int nBits)
-          : HyperParameter(name), min(min), max(max), nBits(nBits) {}
-	//~DiscreteParameter();
-	void makeConfigBits(std::list<std::unique_ptr<ConfigurationBit>>& allbits);
+  DiscreteParameter() = default;
 
-  virtual int getValue();
+	DiscreteParameter(std::string&& name, int min, int max);
+
+  DiscreteParameter(int nBits, std::string &name, int min, int max)
+          :HyperParameter(nBits, name), min(min), max(max){}
+	//~DiscreteParameter();
+
+  int getValue();
 	int getNOptions();
 	void setBO(int option);
 	void setHarmonica() override;

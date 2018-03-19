@@ -18,7 +18,6 @@
 #include <sgpp/datadriven/datamining/modules/hpo/ConfigurationBit.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/ContinuousParameter.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/DiscreteParameter.hpp>
-#include <sgpp/datadriven/datamining/modules/hpo/ExponentialParameter.hpp>
 
 
 namespace sgpp {
@@ -32,7 +31,7 @@ class FitterFactory {
   /**
    * Default constructor
    */
-  FitterFactory() = default;
+  FitterFactory():conpar(), dispar(), catpar(){} //= default;
 
   /**
    * Virtual destructor
@@ -48,29 +47,22 @@ class FitterFactory {
 
   virtual ModelFittingBase* buildFitter() = 0;
 
-  int buildParity();
-
-  int addConstraint(int idx, int bias);
 
   virtual void printConfig() = 0;
 
-  void setHarmonica(int configID, int row, DataMatrix &paritymatrix);
+  void setHarmonica();
 
   void getBOspace(int* nCont, std::vector<int>& nOptions); //EDIT: add categorical parameters
 
   void setBO(base::DataVector& cont, std::vector<int>& disc);
 
-  int moveToNewSpace(int configID);
-
   void getConfigBits(std::vector<ConfigurationBit*>& configBits);
 
 protected:
-  std::list<std::unique_ptr<ConfigurationBit>> configBits;
-  std::map<std::string,ContinuousParameter*> conpar;
-  std::map<std::string,DiscreteParameter*> dispar;
-  std::map<std::string,DiscreteParameter*> catpar;
-  std::vector<std::list<ConfigurationBit*> > parityrow;
-  std::vector<ConfigurationBit*> freeBits;
+  std::map<std::string,ContinuousParameter> conpar;
+  std::map<std::string,DiscreteParameter> dispar;
+  std::map<std::string,DiscreteParameter> catpar;
+
 
 
   };
