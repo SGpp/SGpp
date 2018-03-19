@@ -69,7 +69,7 @@ int FitterFactory::addConstraint(int idx, int bias){
 	ConfigurationRestriction* hey = new ConfigurationRestriction(parityrow[idx], bias); //EDIT: store and delete
 	for(auto &bit : parityrow[idx]){
 		bit->addConstraint(hey);
-		std::cout<<"Adding bit from constraint:"<<idx<<std::endl;
+		std::cout<<"Adding bit "<<bit->id<<" from constraint:"<<idx<<std::endl;
 	}
 	std::vector<ConfigurationBit*> freeBitsn{};
 		for(auto& bit : configBits){ //reference to prevent unique pointer copying
@@ -83,11 +83,11 @@ int FitterFactory::addConstraint(int idx, int bias){
         //EDIT: revert constraint
         for(auto &bit : parityrow[idx]){
           bit->removeLastConstraint();
-          std::cout<<"Adding bit from constraint:"<<idx<<std::endl;
+          std::cout<<"Removing bit from constraint:"<<idx<<std::endl;
         }
       }
     }
-		return freeBits.size();
+		return freeBitsn.size();
 }
 
 /*EDIT: check old runs in new space: set free bits, evaluate, then check constraints
@@ -140,18 +140,26 @@ void FitterFactory::setHarmonica(int configID, int row, DataMatrix &paritymatrix
   //  bit.evaluate(&configID);
 	// }
 
-
+  std::cout<<"Config "<<row<<": ";
   for(int i=0;i<parityrow.size();i++){
 	  int tmp = 1;
 	  for(auto& bit : parityrow[i]){
 		  tmp = tmp * bit->evaluate();
 	  }
+    if(i<14 || i==374 || i== 260 || i== 394){
+      std::cout<<tmp<<",";
+    }
 	  //std::cout<<"Bitinparity:"<<tmp<<std::endl;
 	  paritymatrix.set(row, i, tmp);
   }
+  std::cout<<configID<<std::endl;
 
   if(configID != 0){
     std::cout<<"Error: configID not fully used:"<<configID<<std::endl;
+  }
+
+  for(auto& bit : configBits){
+    bit->evaluate();
   }
 
   for(auto pair: dispar){
@@ -181,6 +189,18 @@ void FitterFactory::setBO(base::DataVector& cont, std::vector<int>& disc){
   for(auto pair: conpar){
     pair.second->setBO(cont[i]);
     i++;
+  }
+}
+
+void FitterFactory::getConfigBits(std::vector<ConfigurationBit*>& configBits) {
+  for(auto pair: conpar){
+    pair.second->makeConfigBits(configBits);
+  }
+  for(auto pair: dispar){
+    pair.second->makeConfigBits(configBits);
+  }
+  for(auto pair: catpar){
+    pair.second->makeConfigBits(configBits);
   }
 }
 

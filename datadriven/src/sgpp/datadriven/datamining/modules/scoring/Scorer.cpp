@@ -87,9 +87,6 @@ void Scorer::splitSet(const Dataset& dataset, Dataset& trainDataset, Dataset& te
 double Scorer::test(ModelFittingBase& model, Dataset& testDataset) {
   DataVector predictedValues{testDataset.getNumberInstances()};
   model.evaluate(testDataset.getData(), predictedValues);
-  //for(int i=0;i<predictedValues.getSize();i++){
-  //    std::cout<< "Result "<<i<<": "<<predictedValues.get(i) << " : "<<testDataset.getTargets().get(i)<<std::endl;
-  //}
   // set score
   return metric->measure(predictedValues, testDataset.getTargets());
 }

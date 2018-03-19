@@ -15,7 +15,8 @@ namespace datadriven {
 
 class ContinuousParameter: public sgpp::datadriven::HyperParameter {
 public:
-	ContinuousParameter(double min, double max):min(min),max(max){}
+	ContinuousParameter(std::string &name, double min, double max, int nBits)
+          : HyperParameter(name), min(min), max(max), nBits(nBits) {}
 	// ~ContinuousParameter();
 	virtual double getValue();
 	void setHarmonica() override;
@@ -25,7 +26,7 @@ public:
 protected:
 	double min;
 	double max;
-	double value;
+	double value = 0;
 };
 
 } /* namespace datadriven */

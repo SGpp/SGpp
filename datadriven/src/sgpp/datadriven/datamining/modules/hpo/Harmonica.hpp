@@ -23,19 +23,29 @@ public:
 
 
   void prepareConfigs(std::vector<ModelFittingBase*>& fitters);
-  void createRandomConfigs(int nBits, std::vector<int>& configIDs, int seed, int start);
-  void calculateConstrainedSpace(const DataVector& transformedScores, int lambda, int shrink);
+  void createRandomConfigs(size_t nBits, std::vector<int>& configIDs, int seed, size_t start);
+  void calculateConstrainedSpace(const DataVector& transformedScores, double lambda, int shrink);
   void transformScores(const DataVector& source, DataVector& target);
+  bool fixConfigBits();
+  void resetBits();
+  void setParameters(int configID);
+  void addConstraint(int idx, int bias);
+  bool checkConstraints();
+  int moveToNewSpace(int configID, std::vector<ConfigurationBit*> oldFreeBits);
 
 
 
-    // double expkernel(base::DataVector x1, base::DataVector x2);
+  // double expkernel(base::DataVector x1, base::DataVector x2);
 protected:
 	base::DataMatrix paritymatrix;
   int nBits;
   FitterFactory* fitterFactory;
   std::vector<int> configIDs;
   DataVector savedScores;
+  std::vector<std::vector<ConfigurationBit*> > parityrow;
+  std::vector<ConfigurationBit*> freeBits;
+  std::vector<ConfigurationBit*> configBits;
+  std::vector<std::unique_ptr<ConfigurationRestriction>> constraints;
 
 
 };

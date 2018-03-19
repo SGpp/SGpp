@@ -35,19 +35,19 @@ typedef ::Eigen::MatrixXd EigenMatrix;
  */
 bool solveInternal(const EigenMatrix& A, const ::Eigen::HouseholderQR<EigenMatrix>& A_QR,
                    base::DataVector& b, base::DataVector& x) {
-  const double tolerance = 1e-10;
+  const double tolerance = 1e-12;
 
   // solve system
   EigenVector bEigen = EigenVector::Map(b.getPointer(), b.getSize());
   EigenVector xEigen = A_QR.solve(bEigen);
 
   // check solution
-  // if ((A * xEigen).isApprox(bEigen, tolerance)) {
+  if ((A * xEigen).isApprox(bEigen, tolerance)) {
     x = base::DataVector(xEigen.data(), xEigen.size());
     return true;
-  // } else {
-  //  return false;
-  // }
+  } else {
+    return false;
+  }
 }
 #endif /* USE_EIGEN */
 

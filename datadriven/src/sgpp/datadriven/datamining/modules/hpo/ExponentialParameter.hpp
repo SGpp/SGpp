@@ -17,8 +17,8 @@ namespace datadriven {
 
 class ExponentialParameter: public ContinuousParameter {
 public:
-  ExponentialParameter(double min, double max) :
-          ContinuousParameter(min, max) {}
+  ExponentialParameter(std::string& name, double min, double max, int nBits) :
+          ContinuousParameter(name, min, max, nBits) {}
   //~ExponentialParameter();
 
   double getValue() override;

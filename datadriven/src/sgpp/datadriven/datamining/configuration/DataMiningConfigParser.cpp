@@ -76,6 +76,43 @@ bool DataMiningConfigParser::hasScorerConfigTesting() const {
 
 bool DataMiningConfigParser::hasFitterConfig() const { return configFile->contains(fitter); }
 
+bool DataMiningConfigParser::hasScorerTestset() const {
+  bool hasScorerTestingConfig =
+          hasScorerConfig() ? (*configFile)[scorer].contains("testset") : false;
+  return hasScorerTestingConfig;
+}
+
+bool DataMiningConfigParser::getScorerTestset(DataSourceConfig& config,
+                                                 const DataSourceConfig& defaults) const {
+  bool hasDataSource = hasScorerTestset();
+
+  if (hasDataSource) {
+    auto dataSourceConfig = static_cast<DictNode*>(&(*configFile)[scorer]["testset"]);
+
+    config.filePath = parseString(*dataSourceConfig, "filePath", defaults.filePath, "dataSource");
+    config.isCompressed =
+        parseBool(*dataSourceConfig, "compression", defaults.isCompressed, "dataSource");
+    config.numBatches =
+        parseUInt(*dataSourceConfig, "numBatches", defaults.numBatches, "dataSource");
+    config.batchSize = parseUInt(*dataSourceConfig, "batchSize", defaults.batchSize, "dataSource");
+
+    // parse file type
+    if (dataSourceConfig->contains("fileType")) {
+      config.fileType = DataSourceFileTypeParser::parse((*dataSourceConfig)["fileType"].get());
+    } else {
+      std::cout << "# Did not find " << dataSource << "[fileType]. Setting default value "
+                << DataSourceFileTypeParser::toString(defaults.fileType) << "." << std::endl;
+      config.fileType = defaults.fileType;
+    }
+
+  } else {
+    std::cout << "# Could not find specification  of testset. Falling Back to default values."
+              << std::endl;
+    config = defaults;
+  }
+  return hasDataSource;
+}
+
 bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
                                                  const DataSourceConfig& defaults) const {
   bool hasDataSource = hasDataSourceConfig();
@@ -85,9 +122,9 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
 
     config.filePath = parseString(*dataSourceConfig, "filePath", defaults.filePath, "dataSource");
     config.isCompressed =
-        parseBool(*dataSourceConfig, "compression", defaults.isCompressed, "dataSource");
+            parseBool(*dataSourceConfig, "compression", defaults.isCompressed, "dataSource");
     config.numBatches =
-        parseUInt(*dataSourceConfig, "numBatches", defaults.numBatches, "dataSource");
+            parseUInt(*dataSourceConfig, "numBatches", defaults.numBatches, "dataSource");
     config.batchSize = parseUInt(*dataSourceConfig, "batchSize", defaults.batchSize, "dataSource");
 
     // parse file type

@@ -19,11 +19,10 @@ HyperParameter::~HyperParameter() {
 	// TODO Auto-generated destructor stub
 }
 
-void HyperParameter::makeConfigBits(int nBits, std::list<std::unique_ptr<ConfigurationBit>>& allbits){
+void HyperParameter::makeConfigBits(std::vector<ConfigurationBit*>& configBits){
 	for(int i=0;i<nBits;i++){
-		ConfigurationBit* n = new ConfigurationBit();
-		bits.push_back(n);
-		allbits.push_back(std::unique_ptr<ConfigurationBit>(n));
+    bits.push_back(std::make_unique<ConfigurationBit>(name + std::to_string(i)));
+    configBits.push_back(bits[i].get());
 	}
 }
 

@@ -72,7 +72,6 @@ class ModelFittingLeastSquares : public ModelFittingBase {
    * the current model.
    */
   void evaluate(DataMatrix& samples, DataVector& results) override;
-  
 
  private:
   /**

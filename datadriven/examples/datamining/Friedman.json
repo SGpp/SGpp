@@ -8,7 +8,10 @@
 			"shuffling": "random",
 			"randomSeed": 42,
 			"metric": "MSE"
-		}
+		},
+    "testset": {
+      "filePath": "C:/Users/Eric/Downloads/friedmantest.csv"
+    }
 	},
 	"fitter": {
 		"type": "regressionLeastSquares",

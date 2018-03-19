@@ -19,19 +19,28 @@ namespace datadriven {
 using base::DataVector;
 
 HPOScorer::HPOScorer(Metric* metric, ShufflingFunctor* shuffling, int64_t seed,
-    double trainPortion)
-    : Scorer{metric, shuffling, seed}, trainPortion{trainPortion}, testDataset{} {}
+    double trainPortion, Dataset* testDataset)
+    : Scorer{metric, shuffling, seed}, trainPortion{trainPortion}, testDataset{testDataset} {}
 
 // EDIT: disabled because of unique_ptr copying
 Scorer* HPOScorer::clone() const {
 	// return new HPOScorer{*this};
 }
 
+void HPOScorer::resizeTrainData(Dataset& original, Dataset& smaller){
+  // perform randomization of indices
+  shuffling->setSeed(shuffling->getSeed());
+  std::vector<size_t> randomizedIndices(original.getNumberInstances());
+  randomizeIndices(original, randomizedIndices);
+  Dataset dummyDataset{original.getNumberInstances()-smaller.getNumberInstances(), original.getDimension()};
+  splitSet(original, smaller, dummyDataset, randomizedIndices);
+}
+
+
 Dataset* HPOScorer::prepareTestData(Dataset& dataset){
 	  // perform randomization of indices
 	  std::vector<size_t> randomizedIndices(dataset.getNumberInstances());
 	  randomizeIndices(dataset, randomizedIndices);
-
 	  // calculate size of testing and training portions
 	  size_t trainSize = std::lround(static_cast<double>(dataset.getNumberInstances()) * trainPortion);
 	  size_t testSize =  dataset.getNumberInstances() - trainSize;

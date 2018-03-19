@@ -12,6 +12,8 @@
 
 #include <sgpp/datadriven/datamining/modules/hpo/HPOScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HPOScorer.hpp>
+#include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -21,7 +23,20 @@ Scorer* HPOScorerFactory::buildScorer(const DataMiningConfigParser& parser) cons
 	  parser.getScorerTestingConfig(config, config);
 	  auto metric = buildMetric(config.metric);
 	  auto shuffling = buildShuffling(config.shuffling);
-	  return new HPOScorer(metric, shuffling, config.randomSeed, config.testingPortion);
+
+    DataSourceConfig dsConfig;
+
+    bool hasSource = parser.getScorerTestset(dsConfig, dsConfig);
+
+    if (!(hasSource && dsConfig.filePath.compare("") != 0)) {
+      throw base::data_exception("No file name provided for testset.");
+    }
+
+    DataSourceBuilder builder;
+    std::unique_ptr<DataSource> dataSource;
+    dataSource.reset(builder.fromConfig(dsConfig));
+
+	  return new HPOScorer(metric, shuffling, config.randomSeed, config.testingPortion, dataSource->getNextSamples());
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

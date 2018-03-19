@@ -48,7 +48,7 @@ const Grid& ModelFittingBase::getGrid() const {
 
 const DataVector& ModelFittingBase::getSurpluses() const { return alpha; }
 
-FitterConfiguration* ModelFittingBase::getFitterConfiguration()  { return config.get(); }
+const FitterConfiguration& ModelFittingBase::getFitterConfiguration() const { return *config; }
 
 Grid* ModelFittingBase::buildGrid(const RegularGridConfiguration& gridConfig) const {
   // load grid

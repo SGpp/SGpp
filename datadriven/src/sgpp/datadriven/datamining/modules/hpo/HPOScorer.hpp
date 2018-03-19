@@ -37,7 +37,7 @@ class HPOScorer : public Scorer {
    * training set.
    */
   HPOScorer(Metric* metric, ShufflingFunctor* shuffling, int64_t seed,
-            double trainPortion);
+            double trainPortion, Dataset* testDataset);
 
   Scorer* clone() const override;
 
@@ -53,6 +53,8 @@ class HPOScorer : public Scorer {
                         double* stdDeviation = nullptr) override;
 
   Dataset* prepareTestData(Dataset& dataset);
+
+  void resizeTrainData(Dataset& original, Dataset& smaller);
 
   void createTestFile(Dataset& dataset);
  
