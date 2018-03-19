@@ -4,8 +4,9 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
-#include <limits>
+
 #include <cmath>
+#include <limits>
 #include <vector>
 
 namespace sgpp {
@@ -14,12 +15,16 @@ namespace combigrid {
 PolynomialInterpolationEvaluator::PolynomialInterpolationEvaluator(
     PolynomialInterpolationEvaluator const &other)
     : evaluationPoint(other.evaluationPoint),
-      basisCoefficients(other.basisCoefficients),
+      basisValues(other.basisValues),
       wValues(other.wValues),
-      xValues(other.xValues) {}
+      xValues(other.xValues) {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_PolynomialInterpolation;
+}
 
 PolynomialInterpolationEvaluator::PolynomialInterpolationEvaluator()
-    : evaluationPoint(0.0), basisCoefficients(), wValues(), xValues() {}
+    : evaluationPoint(0.0), basisValues(), wValues(), xValues() {
+  evalConfig.type = CombiEvaluatorTypes::Scalar_PolynomialInterpolation;
+}
 
 PolynomialInterpolationEvaluator::~PolynomialInterpolationEvaluator() {}
 
@@ -43,7 +48,7 @@ void PolynomialInterpolationEvaluator::setGridPoints(std::vector<double> const &
     wValues[i] = 1.0 / wInv;
   }
 
-  computeBasisCoefficients();
+  computeBasisValues();
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector> >
@@ -56,20 +61,20 @@ bool PolynomialInterpolationEvaluator::needsOrderedPoints() { return false; }
 
 bool PolynomialInterpolationEvaluator::needsParameter() { return true; }
 
-void PolynomialInterpolationEvaluator::computeBasisCoefficients() {
+void PolynomialInterpolationEvaluator::computeBasisValues() {
   double sum = 0.0;
   const double minDeviation =
       std::numeric_limits<double>::min() / std::numeric_limits<double>::epsilon();
   size_t numPoints = xValues.size();
-  basisCoefficients.resize(numPoints);
+  basisValues.resize(numPoints);
 
   for (size_t i = 0; i < numPoints; ++i) {
     double diff = evaluationPoint - xValues[i];
 
     // very near to a interpolation value, must not divide by zero
-    if (std::abs(diff) < minDeviation) {
+    if (std::fabs(diff) < minDeviation) {
       for (size_t j = 0; j < numPoints; ++j) {
-        basisCoefficients[j] = (i == j) ? 1.0 : 0.0;
+        basisValues[j] = (i == j) ? 1.0 : 0.0;
       }
       return;
     }
@@ -77,17 +82,22 @@ void PolynomialInterpolationEvaluator::computeBasisCoefficients() {
     double unweightedTerm = wValues[i] / diff;
 
     sum += unweightedTerm;
-    basisCoefficients[i] = unweightedTerm;
+    basisValues[i] = unweightedTerm;
   }
 
   for (size_t i = 0; i < numPoints; ++i) {
-    basisCoefficients[i].value() /= sum;
+    basisValues[i].value() /= sum;
   }
 }
 
 void PolynomialInterpolationEvaluator::setParameter(const FloatScalarVector &param) {
   evaluationPoint = param.value();
-  computeBasisCoefficients();
+  computeBasisValues();
+}
+
+void PolynomialInterpolationEvaluator::setBasisCoefficientsAtGridPoints(
+    std::vector<double> &functionValues) {
+  basisCoefficients = functionValues;
 }
 
 } /* namespace combigrid */

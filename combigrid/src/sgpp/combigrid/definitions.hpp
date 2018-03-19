@@ -14,14 +14,21 @@
 #include <vector>
 
 // defines for turning logging capabilities on or off
+// #define CT_DEBUG
+
+#ifndef CT_DEBUG
 #define CGLOG(str)
 #define CGLOG_SURROUND(cmd) cmd
-/*#include <iostream>
+#endif
+
+#ifdef CT_DEBUG
+#include <iostream>
 #define CGLOG(str) std::cout << str << "\n"
 #define CGLOG_SURROUND(cmd)                                                 \
   std::cout << #cmd << " before: " << __FILE__ << ", " << __LINE__ << "\n"; \
   cmd;                                                                      \
-  std::cout << #cmd << " after: " << __FILE__ << ", " << __LINE__ << "\n"*/
+  std::cout << #cmd << " after: " << __FILE__ << ", " << __LINE__ << "\n"
+#endif
 
 namespace sgpp {
 namespace combigrid {
@@ -45,9 +52,10 @@ std::function<Out(In)> constantFunction(Out fixedValue = Out()) {
  * also has to be specified.
  */
 template <typename Out>
-std::function<Out(MultiIndex const &)> multiIndexToDefaultValue(Out fixedValue = Out()) {
-  return constantFunction<MultiIndex const &, Out>(fixedValue);
+std::function<Out(MultiIndex const&)> multiIndexToDefaultValue(Out fixedValue = Out()) {
+  return constantFunction<MultiIndex const&, Out>(fixedValue);
 }
+
 }  // namespace combigrid
 }  // namespace sgpp
 #endif /* COMBIGRID_SRC_SGPP_COMBIGRID_DEFINITIONS_HPP_ */

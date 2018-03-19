@@ -28,7 +28,7 @@ class Lognormal(Dist):
         """
         Constructor given a interval
         """
-        cls(*args, **kws)
+        return cls(*args, **kws)
 
     @classmethod
     def by_alpha(cls, mu, sigma, alpha, *args, **kws):
@@ -48,30 +48,29 @@ class Lognormal(Dist):
         if self.__a <= x <= self.__b:
             return self._dist.pdf(x)
         else:
-            return 0.0;
+            return 0.0
 
     def cdf(self, x):
-        if self.__a <= x <= self.__b:
-            x_unit = self._dist.cdf(x)
-            return self.__linearTrans.probabilisticToUnit(value)
+        if x < self.__a:
+            return 0.0
+        elif x > self.__b:
+            return 1.0
         else:
-            raise AttributeError("logNormal: cdf - x out of range [%g, %g]" % (self.__a, self.__b))
+            x_unit = self._dist.cdf(x)
+            return self.__linearTrans.probabilisticToUnit(x_unit)
 
     def ppf(self, x):
-        if 0.0 <= x <= 1.0:
-            x_unit = self.__linearTrans.unitToProbabilistic(x)
-            return self._dist.ppf(x_unit)
-        else:
-            raise AttributeError("logNormal: ppf - x out of range [%g, %g]" % (self.__a, self.__b))
+        x_prob = self.__linearTrans.unitToProbabilistic(x)
+        return self._dist.ppf(x_prob)
 
     def mean(self):
-        return self._dist.mean()
+        return self.__mu
 
     def var(self):
-        return self._dist.var()
+        return self.__sigma ** 2
 
     def std(self):
-        return self._dist.std()
+        return self.__sigma
 
     def rvs(self, n=1):
         samples = np.zeros(n)
@@ -86,7 +85,7 @@ class Lognormal(Dist):
         return samples
 
     def getBounds(self):
-        return [self.__a, self.__b]
+        return np.array([self.__a, self.__b])
 
     def getDim(self):
         return 1
@@ -99,7 +98,7 @@ class Lognormal(Dist):
         serializationString = '"module" : "' + \
                               self.__module__ + '",\n'
 
-        for attrName in dir(self):
+        for attrName in ["_Lognormal__mu", "_Lognormal__sigma", "_Lognormal__a", "_Lognormal__b"]:
             attrValue = self.__getattribute__(attrName)
             serializationString += ju.parseAttribute(attrValue, attrName)
 

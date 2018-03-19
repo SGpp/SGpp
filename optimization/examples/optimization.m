@@ -1,8 +1,15 @@
 %% \page example_optimization_m optimization.m
 %%
 %% On this page, we look at an example application of the sgpp::optimization module.
-%% Identical versions of the example are given in all languages
+%% Versions of the example are given in all languages
 %% currently supported by SG++: C++, Python, Java, and MATLAB.
+%%
+%% Note that the MATLAB example differs from the other languages
+%% as we do not optimize a custom objective function, but a built-in one.
+%% This is because the director feature in SWIG-matlab is still buggy.
+%% (In theory, it is possible to define a custom MATLAB class derived from
+%% sgpp.OptScalarFunction, but some SG++ functions then crash with
+%% "Cannot call SwigStorage".)
 %%
 %% The example interpolates a bivariate test function like the \ref example_tutorial_cpp example.
 %% However, we use B-splines here instead to obtain a smoother interpolant.
@@ -27,38 +34,13 @@
 %% Static linking to Armadillo and UMFPACK would be
 %% a possible solution to circumvent this problem.
 %%
-%% To make SG++ usable within MATLAB, please follow
-%% \ref linux_using_matlab_jsgpp "the instructions provided here (for Linux)".
-%% However, to run the MATLAB example, you additionally need to compile
-%% the class \c ExampleFunction into a \c .jar file
-%% (before starting MATLAB):
-%% \verbatim
-%% javac -cp .:/PATH_TO_SGPP/lib/jsgpp/jsgpp.jar ExampleFunction.java
-%% jar -cf ExampleFunction.jar ExampleFunction.class
-%% \endverbatim
-%% Under Windows, note that you have to replace the <tt>:</tt> delimiter in
-%% the first line by <tt>;</tt>
-%% (<tt>:</tt> is reserved for the use after the drive letter).
-%% After setting the environment variables and the
-%% \c librarypath.txt correctly
-%% (\ref linux_using_matlab_jsgpp "as described here (for Linux)"),
-%% you can start MATLAB.
-%% In order to run the example, you need to add the example objective
-%% function to MATLAB's Java search path via
-%% \verbatim
-%% javaaddpath('/PATH_TO_SGPP/optimization/examples/ExampleFunction.jar');
-%% \endverbatim
-%% (i.e., right after adding \c jsgpp.jar to MATLAB's Java path).
-%%
 %% Now, you should be able to run the MATLAB example,
 %% which we describe in the rest of this page.
 %% \dontinclude optimization.m
 %%
-%% At the beginning of the program, we have to load the shared library object file.
-%% We can do so by using <tt>sgpp.LoadJSGPPLib.loadJSGPPLib</tt>.
-%% Also, we disable OpenMP within jsgpp since it interferes with SWIG's director feature.
-sgpp.LoadJSGPPLib.loadJSGPPLib();
-sgpp.jsgpp.omp_set_num_threads(1);
+%% At the beginning of the program, we disable OpenMP within matsgpp since
+%% it interferes with SWIG's director feature.
+sgpp.omp_set_num_threads(1);
 
 fprintf('sgpp::optimization example program started.\n\n');
 % increase output verbosity
@@ -66,10 +48,10 @@ printer = sgpp.OptPrinter.getInstance();
 printer.setVerbosity(2);
 printLine = @() fprintf([repmat('-', 1, 80) '\n']);
 
-%% Here, we set define some parameters: objective function, dimensionality,
+%% Here, we define some parameters: objective function, dimensionality,
 %% B-spline degree, maximal number of grid points, and adaptivity.
 % objective function
-f = ExampleFunction();
+f = sgpp.OptHimmelblauObjective();
 % dimension of domain
 d = f.getNumberOfParameters();
 % B-spline degree
@@ -171,9 +153,9 @@ printLine();
 fprintf('\nsgpp::optimization example program terminated.\n');
 
 %% The example program outputs the following results:
-%% \verbinclude optimization.output.txt
+%% \verbinclude optimization.output_matlab.txt
 %%
 %% We see that both the gradient-based optimization of the smooth sparse grid
 %% interpolant and the gradient-free optimization of the objective function
-%% find reasonable approximations of the minimum, which lies at
-%% \f$(3\pi/16, 3\pi/14) \approx (0.58904862, 0.67319843)\f$.
+%% find reasonable approximations of one of the four global minima
+%% (\f$(0.8, 0.7)\f$).

@@ -40,5 +40,9 @@ double WeightedRatioLevelManager::computePriority(const MultiIndex& level) {
   return ret;
 }
 
+std::shared_ptr<LevelManager> WeightedRatioLevelManager::clone() {
+  return std::make_shared<WeightedRatioLevelManager>(*this);
+}
+
 } /* namespace combigrid */
 } /* namespace sgpp */

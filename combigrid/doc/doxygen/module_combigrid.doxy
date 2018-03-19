@@ -6,15 +6,19 @@
 The combination technique is an older variant of sparse grids which only allows dimensional, but not spatial adaptivity. However, a central advantage is that global interpolation and quadrature schemes can be used, e.g. polynomial interpolation. This allows for high orders of convergence when using sufficiently smooth functions.
 
 The functionality of the module includes
-- an anistropic implementation of the Combination Technique. This means that different 1D-grids and 1D-operators can be used for each dimension. This allows e.g. interpolating in one direction and integrating the interpolated function in another direction.
-- 1D Grids: Uniform (with or without boundary), Clenshaw-Curtis, Chebyshev, (weighted) Leja
-- Operators: Polynomial Interpolation, Linear Interpolation, quadrature based on the integrals of Lagrange-Polynomials, cubic splines
-- regular and adaptive (also parallel) level-generation
-- support for directly working on full-grid results, e.g. using full-grid PDE solvers with multiple full grids
-- simple C++ and python interfaces to get started quickly
+- an anistropic implementation of the Combination Technique. This means that different 1D-grids and 1D  - operators can be used for each dimension. This allows e.g. interpolating in one direction and integrating the interpolated function in another direction.
+- @ref example_point_distributions_py "1D Grids" : Uniform (with or without boundary), Clenshaw-Curtis sgpp::combigrid::ClenshawCurtisDistribution, Chebyshev sgpp::combigrid::ClenshawCurtisDistribution, (weighted) Leja sgpp::combigrid::LejaPointDistribution, (weighted) \f$L^{2}\f$-Leja sgpp::combigrid::L2LejaPointDistribution
+- Operators: Interpolation (sgpp::combigrid::PolynomialInterpolationEvaluator, sgpp::combigrid::BSplineInterpolationEvaluator, sgpp::combigrid::LinearInterpolationEvaluator), quadrature (sgpp::combigrid::PolynomialQuadratureEvaluator, sgpp::combigrid::BSplineQuadratureEvaluator), tensors (sgpp::combigrid::InterpolationCoefficientEvaluator)
+- regular and adaptive (also parallel) level-generation: various level managers (sgpp::combigrid::RegularLevelManager, sgpp::combigrid::AveragingLevelManager) are available that predict the surplus of each subspace
+- support for directly working on full-grid subspaces: enables to solve PDEs, regression problems, density estimation on each full-grid separately
+- simple @ref example_gettingStarted_py "Python example" and a @ref example_gettingStarted_cpp "C++ example" to get started quickly.
 - serialization and deserialization of computed function values
 - optimizations: function evaluations (but not the following computations) can be easily parallelized, interpolation at multiple points at once, operator coefficients and grid points are stored for recomputations at other evaluation points
 - frequent use of abstract base classes such that extensions are easy to implement (e.g. new grids, operators and adaption schemes)
+- various surrogate models for Uncertainty Quantification that are based on the Combination Technique are available:
+  - @ref example_example_BSplineStochasticCollocation_cpp "B-Spline Collocation"
+  - @ref example_sc_cpp "Stochastic Collocation" (global polynomial approximation with Legendre polynomials)
+  - @ref example_pce_cpp "Polynomial Chaos Expansion" (global polynomial approximation with orthogonal polynomials with respect to univariate weight functions)
 
 We will introduce some basic terminology and conventions here. For usage and more details on features, please refer to \ref examples_cpp_module_combigrid "usage examples (C++)" and \ref examples_py_module_combigrid "usage examples (Python)".
 
@@ -34,4 +38,7 @@ The main functionality of the module is containted in
 - FullGrid*Evaluator, which takes the grid points, operators and a storage to compute a value on a regular/full grid \f$X_l\f$
 - CombigridEvaluator, which uses FullGridTensorEvaluator to perform the numeric computation on different regular/full grids and combines the obtained values
 - level manager classes that provide functionality to add a set of levels to the CombigridEvaluator, e.g. regular levels or adaptively generated levels.
+
+To use the UQ methods of the combigrid module, Dakota is required as a dependency.
+@subpage install_dakota
 **/

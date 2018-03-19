@@ -42,7 +42,7 @@ class OperationMakePositive(object):
     def findCandidatesSweep1d(self, d, gp, alpha, grid, acc,
                               negativeAncestorFound=False):
         gs = grid.getStorage()
-        ix = gs.seq(gp)
+        ix = gs.getSequenceNumber(gp)
         negativeAncestorFound |= alpha[ix] < 0.
 
         # just leaf nodes are possible candidates
@@ -51,15 +51,15 @@ class OperationMakePositive(object):
 
         # get left child
         level, index = gp.getLevel(d), gp.getIndex(d)
-        gs.left_child(gp, d)
-        if gs.has_key(gp):
+        gp.getLeftChild(d)
+        if gs.isContaining(gp):
             self.findCandidatesSweep1d(d, gp, alpha, grid, acc,
                                        negativeAncestorFound)
 
         # get right child
         gp.set(d, level, index)
-        gs.right_child(gp, d)
-        if gs.has_key(gp):
+        gp.getRightChild(d)
+        if gs.isContaining(gp):
             self.findCandidatesSweep1d(d, gp, alpha, grid, acc,
                                        negativeAncestorFound)
         gp.set(d, level, index)
@@ -85,7 +85,7 @@ class OperationMakePositive(object):
                 self.findCandidatesSweep1d(d, gp, alpha, grid, acc, False)
                 # store candidates
                 for gp in acc:
-                    ix = gs.seq(gp)
+                    ix = gs.getSequenceNumber(gp)
                     if ix not in candidates:
                         candidates[ix] = HashGridPoint(gp)
 
@@ -109,7 +109,7 @@ class OperationMakePositive(object):
 #                 # negative, then all full grid points in the support of the
 #                 # current node can be negative...
 #                 while not foundNegativeCoefficient and j < len(ancestors):
-#                     ix = gs.seq(ancestors[j][1])
+#                     ix = gs.getSequenceNumber(ancestors[j][1])
 #                     foundNegativeCoefficient = alpha[ix] < 0
 #                     j += 1
 #
@@ -125,7 +125,7 @@ class OperationMakePositive(object):
         # if the function value for the left child
         # is negtive, then add it with all its
         # hierarchical ancestors
-        gs.left_child(gp, d)
+        gp.getLeftChild(d)
         gp.getStandardCoordinates(p)
         if opEval.eval(alpha, p) < 0:
             acc.append(HashGridPoint(gp))
@@ -137,7 +137,7 @@ class OperationMakePositive(object):
         # is negtive, then add it with all its
         # hierarchical ancestors
         gp.set(d, level, index)
-        gs.right_child(gp, d)
+        gp.getRightChild(d)
         gp.getStandardCoordinates(p)
         if opEval.eval(alpha, p) < 0:
             acc.append(HashGridPoint(gp))
@@ -213,7 +213,7 @@ class OperationMakePositive(object):
             notAffectedGridPoints = []
             toBeRemoved = IndexList()
             for gp in newGridPoints:
-                ix = gs.seq(gp)
+                ix = gs.getSequenceNumber(gp)
                 gp.getStandardCoordinates(p)
                 # if the grid point is a leaf and has negative weight
                 # we dont need it to make the function positive
@@ -234,7 +234,7 @@ class OperationMakePositive(object):
                 # copy the remaining alpha values
                 newAlpha = np.ndarray(newGs.getSize())
                 for i in xrange(newGs.getSize()):
-                    newAlpha[i] = alpha[gs.seq(newGs.getPoint(i))]
+                    newAlpha[i] = alpha[gs.getSequenceNumber(newGs.getPoint(i))]
 
                 grid, gs, alpha = newGrid, newGs, newAlpha
                 iteration += 1
@@ -294,7 +294,7 @@ class OperationMakePositive(object):
             newGs = newGrid.getStorage()
             for i in xrange(newGs.getSize()):
                 gp = newGs.getPoint(i)
-                if newNodalValues[newGs.seq(gp)] < 0.:
+                if newNodalValues[newGs.getSequenceNumber(gp)] < 0.:
                     forceToBePositive.append(gp)
 
             if len(forceToBePositive) > 0:

@@ -6,7 +6,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
-#include <sgpp/datadriven/configuration/DecompositionConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 
@@ -95,26 +95,26 @@ int main() {
    * Select the desired decomposition type for the offline step.
    * Note: Refinement/Coarsening only possible for Cholesky decomposition.
    */
-  sgpp::datadriven::DBMatDecompostionType dt;
+  sgpp::datadriven::MatrixDecompositionType dt;
   std::string decompType;
   // choose "LU decomposition"
-  // dt = DBMatDecompostionType::DBMatDecompLU;
+  // dt = MatrixDecompositionType::DBMatDecompLU;
   // decompType = "LU decomposition";
   // choose"Eigen decomposition"
-  // dt = DBMatDecompostionType::DBMatDecompEigen;
+  // dt = MatrixDecompositionType::DBMatDecompEigen;
   // decompType = "Eigen decomposition";
   // choose "Cholesky decomposition"
-  dt = sgpp::datadriven::DBMatDecompostionType::Chol;
+  dt = sgpp::datadriven::MatrixDecompositionType::Chol;
   decompType = "Cholesky decomposition";
-  //      dt = sgpp::datadriven::DBMatDecompostionType::IChol;
+  //      dt = sgpp::datadriven::MatrixDecompositionType::IChol;
   //      decompType = "Incomplete Cholesky decomposition";
-  //    dt = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
+  //    dt = sgpp::datadriven::MatrixDecompositionType::DenseIchol;
   //    decompType = "Incomplete Cholesky decomposition on Dense Matrix";
   std::cout << "Decomposition type: " << decompType << std::endl;
-  sgpp::datadriven::DecompositionConfiguration decompositionConfig;
-  decompositionConfig.type_ = dt;
-  decompositionConfig.iCholSweepsDecompose_ = 2;
-  decompositionConfig.iCholSweepsRefine_ = 2;
+  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+  densityEstimationConfig.decomposition_ = dt;
+  densityEstimationConfig.iCholSweepsDecompose_ = 2;
+  densityEstimationConfig.iCholSweepsRefine_ = 2;
 
   /**
    * Configure adaptive refinement (if Cholesky is chosen). As refinement
@@ -173,14 +173,14 @@ int main() {
   std::cout << "# create learner" << std::endl;
   // Use precomputed matrix
   sgpp::datadriven::LearnerSGDEOnOff learner(gridConfig, adaptConfig, regularizationConfig,
-                                             decompositionConfig, trainDataset, testDataset,
+                                             densityEstimationConfig, trainDataset, testDataset,
                                              nullptr, classLabels, classNum, usePrior, beta,
                                              matrixfile);
 
 
   // Build matrix
   // sgpp::datadriven::LearnerSGDEOnOff learner(gridConfig, adaptConfig, regularizationConfig,
-  //    decompositionConfig, trainDataset, testDataset, nullptr,
+  //    densityEstimationConfig, trainDataset, testDataset, nullptr,
   //                                           classLabels, classNum, usePrior, beta);
   std::cout << "learner set up!" << std::endl;
 

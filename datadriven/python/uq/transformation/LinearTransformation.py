@@ -15,6 +15,8 @@ hypercube to an arbitrary hypercube
 """
 from Transformation import Transformation
 
+import pysgpp.extensions.datadriven.uq.jsonLib as ju
+
 
 class LinearTransformation(Transformation):
 
@@ -53,10 +55,28 @@ class LinearTransformation(Transformation):
     def getBounds(self):
         return [self.__a, self.__b]
 
+    def getSize(self):
+        return 1
+
     def __str__(self):
         return "LinearTransformation: [%g, %g] -> [%g, %g]" % (self.__a,
                                                                self.__b,
                                                                0, 1)
+
+    def toJson(self):
+        """
+        Returns a string that represents the object
+        """
+        serializationString = '"module" : "' + \
+                              self.__module__ + '",\n'
+
+        for attrName in ("_LinearTransformation__a", "_LinearTransformation__b"):
+            attrValue = self.__getattribute__(attrName)
+            serializationString += ju.parseAttribute(attrValue, attrName)
+
+        s = serializationString.rstrip(",\n")
+
+        return "{" + s + "}"
 
     @classmethod
     def fromJson(cls, jsonObject):
