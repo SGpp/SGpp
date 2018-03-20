@@ -243,12 +243,13 @@ def savefig(fig,
     plt.close(fig)
 
 
-def insert_legend(loc="right", ncol=3, has_axis=True, shift=0.0):
+def insert_legend(fig, loc="right", ncol=3, has_axis=True, shift=0.0):
     """
     Inserts a legend outside of the plotting area. It is possible that the
     exact position (bbox_to_anchor) needs to be adjusted but once the
     size of the figures is fixed, this works fine.
 
+    @param fig: figure object
     @param loc: location of the legend (right, bottom, top, left)
     @param ncol: number of columns for the labels
     @param has_axis: defines if xticks labels are shown
