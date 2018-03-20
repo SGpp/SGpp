@@ -30,13 +30,13 @@
 %newobject sgpp::op_factory::createOperationInverseRosenblattTransformation1D(
     sgpp::base::Grid& grid);
 %newobject sgpp::op_factory::createOperationRosenblattTransformationKDE(
-    sgpp::datadriven::GaussianKDE& kde);
+    sgpp::datadriven::KernelDensityEstimator& kde);
 %newobject sgpp::op_factory::createOperationInverseRosenblattTransformationKDE(
-    sgpp::datadriven::GaussianKDE& kde);
+    sgpp::datadriven::KernelDensityEstimator& kde);
 %newobject sgpp::op_factory::createOperationDensityMarginalizeKDE(
-    sgpp::datadriven::GaussianKDE& kde);
+    sgpp::datadriven::KernelDensityEstimator& kde);
 %newobject sgpp::op_factory::createOperationDensityConditionalKDE(
-    sgpp::datadriven::GaussianKDE& kde);
+    sgpp::datadriven::KernelDensityEstimator& kde);
 %newobject sgpp::op_factory::createOperationMultipleEval(
     sgpp::base::Grid& grid, sgpp::base::DataMatrix& dataset,
     sgpp::datadriven::OperationMultipleEvalConfiguration& configuration);
