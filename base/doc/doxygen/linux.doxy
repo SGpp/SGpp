@@ -61,8 +61,19 @@ The following software can be installed for full functionality:
   is optional and generates inheritance diagrams in the Doxygen documentation.
 - <a href="http://www.mathworks.com/" target="_blank">MATLAB</a>,
   if you want to use SG++ within MATLAB.
-- <a href="https://www.gnu.org/software/gsl/" target="_blank">GNU Scientific Library (GSL)</a>,
-  is required for some functionalities of the <tt>SG_DATADRIVEN</tt> module.
+- <a href="https://www.gnu.org/software/gsl/" target="_blank">
+  GNU Scientific Library (GSL)</a>,
+  is required for some functionality of the <tt>SG_DATADRIVEN</tt> module.
+- <a href="http://eigen.tuxfamily.org/" target="_blank">Eigen</a>
+  is required for some functionality of the <tt>SG_COMBIGRID</tt> module
+  and recommended for the <tt>SG_OPTIMIZATION</tt> module.
+- <a href="http://faculty.cse.tamu.edu/davis/suitesparse.html" target="_blank">
+  UMFPACK (in SuiteSparse)</a>
+  is recommended for the <tt>SG_OPTIMIZATION</tt> module.
+- <a href="http://arma.sourceforge.net/" target="_blank">Armadillo</a>
+  is recommended for the <tt>SG_OPTIMIZATION</tt> module.
+- <a href="http://getfem.org/gmm.html" target="_blank">Gmm++</a>
+  can be used in conjunction with the <tt>SG_OPTIMIZATION</tt> module.
 - <a href="https://dakota.sandia.gov/">DAKOTA</a> is required for the Polynomial Chaos Expansion functionalities of the <tt>SG_COMBIGRID</tt> module.
 
 @subsection linux_dependencies_installation Installation
