@@ -36,8 +36,8 @@ BOOST_AUTO_TEST_SUITE(testRosenblattTransformationInPipeline)
 BOOST_AUTO_TEST_CASE(testRosenblattWrapper) {
   double tolerance = 1e-10;
   DataSourceConfig config;
-  config.dataTransformation = DataTransformationType::ROSENBLATT;
-  config.numSamplesForTranformation = 1000;
+  config.dataTransformationConfig.type = DataTransformationType::ROSENBLATT;
+  config.dataTransformationConfig.rosenblattConfig.numSamples = 1000;
 
   // read arff file
   ArffFileSampleProvider arffsp = ArffFileSampleProvider();
@@ -46,7 +46,8 @@ BOOST_AUTO_TEST_CASE(testRosenblattWrapper) {
 
   // do transformations
   DataTransformationBuilder dataTrBuilder;
-  DataTransformation* dataTransformation = dataTrBuilder.buildTransformation(config, dataset);
+  DataTransformation* dataTransformation =
+      dataTrBuilder.buildTransformation(config.dataTransformationConfig, dataset);
 
   Dataset* datasetTr = dataTransformation->doTransformation(dataset);
   Dataset* datasetInvTr = dataTransformation->doInverseTransformation(datasetTr);
@@ -89,7 +90,8 @@ BOOST_AUTO_TEST_CASE(testDataTransformationParser) {
 
   // "manual" transformation
   DataTransformationBuilder dataTrBuilder;
-  DataTransformation* dataTransformation = dataTrBuilder.buildTransformation(config, dataset);
+  DataTransformation* dataTransformation =
+      dataTrBuilder.buildTransformation(config.dataTransformationConfig, dataset);
   Dataset* datasetMan = dataTransformation->doTransformation(dataset);
 
   // check error between original and transformed dataset

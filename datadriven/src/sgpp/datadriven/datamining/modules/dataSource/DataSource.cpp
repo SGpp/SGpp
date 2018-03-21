@@ -50,9 +50,10 @@ Dataset* DataSource::getNextSamples() {
   }
 
   // Transform dataset if requested
-  if (!(config.dataTransformation == DataTransformationType::NONE)) {
+  if (!(config.dataTransformationConfig.type == DataTransformationType::NONE)) {
     DataTransformationBuilder dataTrBuilder;
-    DataTransformation* dataTransformation = dataTrBuilder.buildTransformation(config, dataset);
+    DataTransformation* dataTransformation =
+        dataTrBuilder.buildTransformation(config.dataTransformationConfig, dataset);
     return dataTransformation->doTransformation(dataset);
   } else {
     return dataset;

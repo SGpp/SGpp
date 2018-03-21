@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp>
 
 #include <map>
 #include <string>
@@ -41,7 +41,7 @@ class DataTransformationTypeParser {
   static const std::string& toString(DataTransformationType type);
 
  private:
-  using TransformationTypeMap_t = std::map<DataTransformationType, std::string>;
+  typedef std::map<DataTransformationType, std::string> TransformationTypeMap_t;
 
   /**
    * Map containing all values of  #sgpp::datadriven::DataTransformationType and the corresponding

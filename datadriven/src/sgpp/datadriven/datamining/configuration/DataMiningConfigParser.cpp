@@ -61,6 +61,12 @@ bool DataMiningConfigParser::hasDataSourceConfig() const {
   return configFile->contains(dataSource);
 }
 
+bool DataMiningConfigParser::hasDataTransformationConfig() const {
+  bool hasDataTransformationConfig =
+      hasDataSourceConfig() ? (*configFile)[dataSource].contains("dataTransformation") : false;
+  return hasDataTransformationConfig;
+}
+
 bool DataMiningConfigParser::hasScorerConfig() const { return configFile->contains(scorer); }
 
 bool DataMiningConfigParser::hasScorerConfigCrossValidation() const {
@@ -90,8 +96,6 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
     config.numBatches =
         parseUInt(*dataSourceConfig, "numBatches", defaults.numBatches, "dataSource");
     config.batchSize = parseUInt(*dataSourceConfig, "batchSize", defaults.batchSize, "dataSource");
-    config.numSamplesForTranformation = parseUInt(*dataSourceConfig, "numSamplesForTranformation",
-        defaults.numSamplesForTranformation, "dataSource");
 
     // parse file type
     if (dataSourceConfig->contains("fileType")) {
@@ -102,18 +106,22 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
       config.fileType = defaults.fileType;
     }
 
-    // parse transformation type
-    if (dataSourceConfig->contains("dataTransformation")) {
-      config.dataTransformation =
-          DataTransformationTypeParser::parse((*dataSourceConfig)["dataTransformation"].get());
+    // parse dataTransformationConfig
+    bool hasDataTransformation = hasDataTransformationConfig();
+
+    if (hasDataTransformation) {
+      auto dataTransformationConfig =
+          static_cast<DictNode*>(&(*configFile)[dataSource]["dataTransformation"]);
+      parseDataTransformationConfig(*dataTransformationConfig, config.dataTransformationConfig,
+          defaults.dataTransformationConfig, "dataTransformation");
     } else {
-      config.dataTransformation = defaults.dataTransformation;
+      std::cout << "# Could not find specification of dataSource[dataTransformationConfig]. "
+          "Falling back to default values." << std::endl;
+      config.dataTransformationConfig = defaults.dataTransformationConfig;
     }
-    std::cout << "# Data transformation detected: "
-              << DataTransformationTypeParser::toString(config.dataTransformation) << std::endl;
 
   } else {
-    std::cout << "# Could not find specification  of dataSource. Falling Back to default values."
+    std::cout << "# Could not find specification of dataSource. Falling Back to default values."
               << std::endl;
     config = defaults;
   }
@@ -541,6 +549,49 @@ void DataMiningConfigParser::parseSLESolverConfig(DictNode& dict, SLESolverConfi
               << SLESolverTypeParser::toString(defaults.type_) << "." << std::endl;
     config.type_ = defaults.type_;
   }
+}
+
+void DataMiningConfigParser::parseDataTransformationConfig(
+    DictNode& dict, DataTransformationConfig& config,
+    const DataTransformationConfig& defaults,
+    const std::string& parentNode) const {
+
+  // Parse transformation type
+  if (dict.contains("type")) {
+    config.type = DataTransformationTypeParser::parse(dict["type"].get());
+  } else {
+    std::cout << "# Did not find [dataTransformationType]. Setting default value "
+        << DataTransformationTypeParser::toString(defaults.type) << "." << std::endl;
+    config.type = defaults.type;
+  }
+
+  // If type Rosenblatt parse RosenblattTransformationConfig
+  if (config.type == DataTransformationType::ROSENBLATT) {
+    auto rosenblattTransformationConfig = static_cast<DictNode*>
+       (&(*configFile)[dataSource]["dataTransformation"]["rosenblattConfig"]);
+    parseRosenblattTransformationConfig(*rosenblattTransformationConfig,
+        config.rosenblattConfig, defaults.rosenblattConfig, "rosenblattConfig");
+  } else {
+    std::cout << "# Could not find specification of dataSource[dataTransformationConfig]"
+        "[rosenblattConfig]. Falling back to default values." << std::endl;
+    config.rosenblattConfig = defaults.rosenblattConfig;
+  }
+}
+
+void DataMiningConfigParser::parseRosenblattTransformationConfig(
+    DictNode& dict, RosenblattTransformationConfig& config,
+    const RosenblattTransformationConfig& defaults,
+    const std::string& parentNode) const {
+
+  config.numSamples = parseUInt(dict, "numSamples", defaults.numSamples, parentNode);
+  config.gridLevel = parseUInt(dict, "gridLevel", defaults.gridLevel, parentNode);
+
+  config.solverMaxIterations = parseUInt(dict, "solverMaxIterations",
+      defaults.solverMaxIterations, parentNode);
+  config.solverEps = parseDouble(dict, "solverEps",
+      defaults.solverEps, parentNode);
+  config.solverThreshold = parseDouble(dict, "solverThreshold",
+      defaults.solverThreshold, parentNode);
 }
 
 } /* namespace datadriven */

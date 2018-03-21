@@ -13,6 +13,7 @@
 
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <string>
 
@@ -45,6 +46,7 @@ class DataMiningConfigParser {
   virtual ~DataMiningConfigParser();
 
   bool hasDataSourceConfig() const;
+  bool hasDataTransformationConfig() const;
   bool hasScorerConfig() const;
   bool hasScorerConfigCrossValidation() const;
   bool hasScorerConfigTesting() const;
@@ -93,6 +95,11 @@ class DataMiningConfigParser {
   void parseSLESolverConfig(DictNode& dict, SLESolverConfiguration& config,
                             const SLESolverConfiguration& defaults,
                             const std::string& parentNode) const;
+
+  void parseDataTransformationConfig(DictNode& dict, DataTransformationConfig& config,
+      const DataTransformationConfig& defaults, const std::string& parentNode) const;
+  void parseRosenblattTransformationConfig(DictNode& dict, RosenblattTransformationConfig& config,
+      const RosenblattTransformationConfig& defaults, const std::string& parentNode) const;
 
   template <typename Enumeration>
   int asInteger(Enumeration const value) const {
