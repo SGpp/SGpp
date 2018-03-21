@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp>
+
 #include <string>
 
 namespace sgpp {
@@ -20,11 +22,6 @@ namespace datadriven {
  * Supported file types for sgpp::datadriven::FileSampleProvider
  */
 enum class DataSourceFileType { NONE, ARFF, CSV };
-
-/**
- * Supported transformation types for sgpp::datadriven::DataTransformation
- */
-enum class DataTransformationType { NONE, ROSENBLATT };
 
 /**
  * Configuration structure used for all kinds of SampleProviders including default values.
@@ -52,14 +49,10 @@ struct DataSourceConfig {
    * size of a batch - if 0, take all available samples.
    */
   size_t batchSize = 0;
-  /*
-     * Should the data be transformed? (e.g. by Rosenblatt transformation)
-     */
-    DataTransformationType dataTransformation = DataTransformationType::NONE;
-  /*
-     * Number of samples for calculation of pdf / alpha needed for transformation
-     */
-  size_t numSamplesForTranformation = 1000;
+ /*
+  * Configuration for possible data transformation on dataset
+  */
+  datadriven::DataTransformationConfig dataTransformationConfig;
 };
 
 } /* namespace datadriven */

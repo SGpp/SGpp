@@ -5,8 +5,15 @@
 		"compression": false,
 		"numBatches": 1,
 		"batchSize": 0,
-		"dataTransformation": "rosenblatt",
-		"numSamplesForTranformation": 1000
+		"dataTransformation": {
+			"type": "rosenblatt",
+			"rosenblattConfig": {
+				"numSamples": 1000,
+				"gridLevel": 2,
+				"lambda": 10e-5,
+				"solverMaxIterations": 1000
+			}
+		}
 	},
 	"scorer": {
 		"testing": {

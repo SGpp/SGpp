@@ -16,7 +16,6 @@
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
@@ -24,7 +23,6 @@
 namespace sgpp {
 
 using sgpp::base::Grid;
-using sgpp::base::GridStorage;
 using sgpp::base::DataVector;
 using sgpp::base::DataMatrix;
 
@@ -35,7 +33,7 @@ class RosenblattTransformation : public DataTransformation {
   /**
    * Default constructor
    */
-  RosenblattTransformation(Dataset* dataset, size_t numSamples);
+  RosenblattTransformation(Dataset* dataset,  RosenblattTransformationConfig config);
 
   /**
    * Wrapper for Rosenblatt transformation. Can be called from an initialized
@@ -59,8 +57,8 @@ class RosenblattTransformation : public DataTransformation {
    * Helper function
    * It configures and creates a SGDE learner with meaningful parameters
    */
-  sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
-                                                    double lambda);
+  sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim,
+                                                  RosenblattTransformationConfig config);
 
  private:
   /**
@@ -82,11 +80,6 @@ class RosenblattTransformation : public DataTransformation {
    * Pointer to #sgpp::datadriven::Dataset
    */
   Dataset* datasetInvTransformed;
-
-  /**
-   * Number of samples for calculation of pdf / alpha
-   */
-  size_t numSamples;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
