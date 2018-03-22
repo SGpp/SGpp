@@ -1,6 +1,6 @@
 {
 	"dataSource": {
-		"filePath": "/path/to/some/file.arff",
+		"filePath": "datadriven/tests/data/chess_5d_2000.arff",
 		"fileType": "arff",
 		"compression": false,
 		"numBatches": 1,
@@ -10,9 +10,8 @@
 			"rosenblattConfig": {
 				"numSamples": 1000,
 				"gridLevel": 2,
-				"solverMaxIterations": 1000,
-				"solverEps": 1e-10,
-				"solverThreshold": 1e-10
+				"lambda": 10e-5,
+				"solverMaxIterations": 1000
 			}
 		}
 	},
@@ -63,8 +62,8 @@
 		"regularizationConfig": {
 			"regularizationType": "Identity",
 			"lambda": 10e-7,
-			"exponentBase":3.0,
-			"l1Ratio":4.0
+			"exponentBase":0.0,
+			"l1Ratio":0.0
 		}
 	}
 }
