@@ -12,7 +12,9 @@
 #include "DataSource.hpp"
 
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceIterator.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataTransformation.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationBuilder.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/globaldef.hpp>
 
@@ -36,13 +38,25 @@ DataSourceIterator DataSource::begin() { return DataSourceIterator(*this, 0); }
 DataSourceIterator DataSource::end() { return DataSourceIterator(*this, config.numBatches); }
 
 Dataset* DataSource::getNextSamples() {
+  Dataset* dataset = nullptr;
+
   // only one iteration: we want all samples
   if (config.numBatches == 1 && config.batchSize == 0) {
     currentIteration++;
-    return sampleProvider->getAllSamples();
+    dataset = sampleProvider->getAllSamples();
   } else {
     currentIteration++;
-    return sampleProvider->getNextSamples(config.batchSize);
+    dataset = sampleProvider->getNextSamples(config.batchSize);
+  }
+
+  // Transform dataset if requested
+  if (!(config.dataTransformationConfig.type == DataTransformationType::NONE)) {
+    DataTransformationBuilder dataTrBuilder;
+    DataTransformation* dataTransformation =
+        dataTrBuilder.buildTransformation(config.dataTransformationConfig, dataset);
+    return dataTransformation->doTransformation(dataset);
+  } else {
+    return dataset;
   }
 }
 

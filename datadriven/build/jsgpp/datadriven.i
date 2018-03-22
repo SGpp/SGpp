@@ -92,13 +92,19 @@
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/CSVFileSampleProvider.hpp"
 %ignore  sgpp::datadriven::FileSampleDecorator::operator=(FileSampleDecorator&&);
 %rename(__assign__) sgpp::datadriven::FileSampleDecorator::operator =;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/FileSampleDecorator.hpp"
 #ifdef ZLIB
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp"
 #endif /* ZLIB */
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/RosenblattTransformationConfig.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformation.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformationTypeParser.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/RosenblattTransformation.hpp"
 
 
 %ignore sgpp::datadriven::DataSource::begin;
