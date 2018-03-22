@@ -236,5 +236,40 @@ std::shared_ptr<LevelInfos> BsplineStochasticCollocation::getInfoOnAddedLevels()
   return combigridOperation->getLevelManager()->getInfoOnAddedLevels();
 }
 
+void BsplineStochasticCollocation::differenceCTSG(sgpp::base::DataMatrix& xs,
+                                                  sgpp::base::DataVector& res) {
+  std::shared_ptr<sgpp::base::Grid> grid;
+  grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDims, config.degree));
+  sgpp::base::GridStorage& gridStorage = grid->getStorage();
+  auto levelStructure = this->config.levelStructure;
+  convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
+
+  // interpolate on SG
+  sgpp::base::DataVector alpha =
+      calculateInterpolationCoefficientsForConvertedExpUniformBoundaryCombigird(
+          grid, gridStorage, combigridMultiOperation, levelStructure);
+  sgpp::optimization::InterpolantScalarFunction sparseGridSurrogate(*grid, alpha);
+
+  // evaluate hierarchical sparse grid surrogate in xs
+  size_t numPoints = xs.getNcols();
+  size_t dim = xs.getNrows();
+  sgpp::base::DataVector point(dim, 0.0);
+  sgpp::base::DataVector valuesSG(numPoints, 0.0);
+  for (size_t i = 0; i < numPoints; i++) {
+    xs.getColumn(i, point);
+    valuesSG[i] = sparseGridSurrogate.eval(point);
+  }
+  // evaluate combi technique surrogate in xs
+  sgpp::base::DataVector valuesCT(numPoints, 0.0);
+  eval(xs, valuesCT);
+
+  // difference |u_{CT}(p) - u_{SG}(p)|
+  valuesCT.sub(valuesSG);
+  res.resize(numPoints);
+  for (size_t i = 0; i < numPoints; i++) {
+    res[i] = fabs(valuesCT[i]);
+  }
+}
+
 } /* namespace combigrid */
 } /* namespace sgpp */

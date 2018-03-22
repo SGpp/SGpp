@@ -20,7 +20,14 @@
 
 namespace sgpp {
 namespace combigrid {
-
+/**
+ * This class holds a B-spline combination technique surrogate stored as interpolation coefficients
+ * and level structure (in the CombigridSurrogateModelConfiguration).
+ * It can be used to evaluate the surrogate and to calculate mean and variance.
+ * The mean is calcualted as a sparse grid quadrature.
+ * The variance is calculated by transforming the level structure to a hierarchical sparse grid and
+ * calculation of the neccessary scalar products there
+ */
 class BsplineStochasticCollocation : public CombigridSurrogateModel {
  public:
   explicit BsplineStochasticCollocation(
@@ -42,6 +49,14 @@ class BsplineStochasticCollocation : public CombigridSurrogateModel {
 
   size_t numGridPoints() override;
   std::shared_ptr<LevelInfos> getInfoOnAddedLevels() override;
+
+  /** calculate the difference between the combination technique surrogate u_{CT} and the
+  * corresponding hierarchical sparse grid surrogate u_{SG}. This is close to zero because the
+  * surrogates lie in the same space.
+  * @param xs matrix of points p of which |u_{CT}(p) - u_{SG}(p)| is calculated
+  * @param res returns the absolute differences
+  * **/
+  void differenceCTSG(sgpp::base::DataMatrix& xs, sgpp::base::DataVector& res);
 
  private:
   void initializeOperations(std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
