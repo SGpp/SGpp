@@ -9,6 +9,7 @@
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 
+#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 
 #include <sgpp/combigrid/pce/PolynomialChaosExpansion.hpp>
@@ -202,13 +203,14 @@ void PolynomialChaosExpansion::getTotalSobolIndices(sgpp::base::DataVector& tota
 
 void PolynomialChaosExpansion::updateConfig(
     sgpp::combigrid::CombigridSurrogateModelConfiguration config) {
-  if (config.tensorOperation) {
-    config.loadFromCombigridOperation(config.tensorOperation);
-    combigridTensorOperation = config.tensorOperation;
-  } else if (config.pointHierarchies.size() == numDims && config.storage) {
+   if (config.tensorOperation) {
+     config.loadFromCombigridOperation(config.tensorOperation);
+     combigridTensorOperation = config.tensorOperation;
+   } else if (config.pointHierarchies.size() == numDims && config.storage) {
     combigridTensorOperation =
         sgpp::combigrid::CombigridTensorOperation::createOperationTensorPolynomialInterpolation(
-            config.pointHierarchies, config.storage, basisFunctions);
+          config.pointHierarchies, config.storage, basisFunctions);
+            // sgpp::combigrid::FullGridSummationStrategyType::ONEDSUBSPACEPCE);
     config.tensorOperation = combigridTensorOperation;
   }
 
