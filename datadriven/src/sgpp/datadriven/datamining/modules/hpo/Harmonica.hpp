@@ -22,7 +22,7 @@ public:
 	Harmonica(FitterFactory* fitterFactory);
 
 
-  void prepareConfigs(std::vector<ModelFittingBase*>& fitters);
+  void prepareConfigs(std::vector<std::unique_ptr<ModelFittingBase>>& fitters);
   void createRandomConfigs(size_t nBits, std::vector<int>& configIDs, int seed, size_t start);
   void calculateConstrainedSpace(const DataVector& transformedScores, double lambda, int shrink);
   void transformScores(const DataVector& source, DataVector& target);

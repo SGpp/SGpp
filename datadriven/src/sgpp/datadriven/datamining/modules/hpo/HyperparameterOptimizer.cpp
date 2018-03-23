@@ -44,24 +44,24 @@ void HyperparameterOptimizer::runHarmonica(){
 
   //prepare data
   std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
-  Dataset dataone{30000, dataset->getDimension()};
-  Dataset datatwo{200, dataset->getDimension()};
+  Dataset dataone{10000, dataset->getDimension()}; //30000
+  Dataset datatwo{2000, dataset->getDimension()}; //200
   hpoScorer->resizeTrainData(*dataset, dataone);
   hpoScorer->resizeTrainData(*dataset, datatwo);
   std::cout << "Shuffle test: "<<dataone.getTargets()[0]<<","<<datatwo.getTargets()[0] << std::endl;
-  Dataset* trainData = &datatwo;
+  Dataset* trainData = &dataone;
   //std::unique_ptr<Dataset> trainData = std::unique_ptr<Dataset>(hpoScorer->prepareTestData(*dataset));
 
   double stdDeviation;
   double best = 1.0/0; //infinity
 
-  int n = 150; //EDIT: metaparameter
-  std::vector<ModelFittingBase*> fitters(n);
+  int n = 200; //EDIT: metaparameter
+  std::vector<std::unique_ptr<ModelFittingBase>> fitters(n);
   DataVector scores(n);
   DataVector transformedScores(n);
 
-for(int q=0;q<5;q++) {
-  harmonica.prepareConfigs(fitters); //EDIT: unique pointer, correct usage?
+for(int q=0;q<4;q++) {
+  harmonica.prepareConfigs(fitters);
 
   //run samples (parallel)
 
@@ -84,7 +84,7 @@ for(int q=0;q<5;q++) {
 
 
 
-void HyperparameterOptimizer::runFromFile(){
+void HyperparameterOptimizer::runFromFile(){ //EDIT: rework, not working
   DataSourceBuilder dsbuilder;
   std::unique_ptr<Dataset> configDataset = std::unique_ptr<Dataset>(dsbuilder.withPath("C:/Users/Eric/Documents/fixedconfigs.csv").assemble()->getNextSamples());
   std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
@@ -113,7 +113,8 @@ void HyperparameterOptimizer::runFromFile(){
         //std::cout << disc[k] << std::endl; //result
       }
     }
-    fitterFactory->setBO(cont, disc);
+    //EDIT: rework
+    //fitterFactory->setBO(cont, disc);
     fitterFactory->printConfig();
 
     for(int k=0; k<10; k++){
@@ -139,7 +140,58 @@ void HyperparameterOptimizer::runFromFile(){
   }
 }
 
-void HyperparameterOptimizer::runBO() {
+void HyperparameterOptimizer::runBO(){
+  optimization::Printer::getInstance().disableStatusPrinting();
+
+  //prepare data
+  std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
+  Dataset dataone{30000, dataset->getDimension()};
+  Dataset datatwo{200, dataset->getDimension()};
+  hpoScorer->resizeTrainData(*dataset, dataone);
+  hpoScorer->resizeTrainData(*dataset, datatwo);
+  std::cout << "Shuffle test: "<<dataone.getTargets()[0]<<","<<datatwo.getTargets()[0] << std::endl;
+  Dataset* trainData = &dataone;
+
+  BOConfig prototype = fitterFactory->getBOConfig();
+
+  double stdDeviation;
+  //list/vector of configs, start setup
+  std::vector<BOConfig> initialConfigs{};
+  initialConfigs.reserve(10);
+
+  std::mt19937 generator(42); //EDIT: meta seed
+  //std::uniform_real_distribution<double> dis(0.0, 1.0);
+  //std::cout << "Random test:"<<dis(generator);
+  for (int i = 0; i < 10; ++i) {
+    initialConfigs.emplace_back(prototype);// = BOConfig(prototype);
+    initialConfigs[i].randomize(generator);
+    fitterFactory->setBO(&initialConfigs[i]);
+    fitterFactory->printConfig();
+    std::unique_ptr<ModelFittingBase> fitter(fitterFactory->buildFitter());
+    double result = hpoScorer->calculateScore(*fitter, *trainData, &stdDeviation);
+    initialConfigs[i].setScore(result);
+    std::cout << "Result: " << result << std::endl;
+  }
+
+  std::cout << "Random finished!" << std::endl;
+
+
+  BayesianOptimization bo(initialConfigs);
+
+  for(int q=0; q<500; q++) {
+    BOConfig *nextConfig = bo.main(prototype); //EDIT: give prototype earlier
+    fitterFactory->setBO(nextConfig);
+    fitterFactory->printConfig();
+    std::unique_ptr<ModelFittingBase> fitter(fitterFactory->buildFitter());
+    double result = hpoScorer->calculateScore(*fitter, *trainData, &stdDeviation);
+    nextConfig->setScore(result);
+    bo.updateGP();
+    std::cout << "Result: " << result << std::endl;
+  }
+  // std::cout << "Acquistion: " << min << std::endl;
+}
+
+void HyperparameterOptimizer::testBO() {
   double kernelwidth = 1.5;
 
   optimization::Printer::getInstance().disableStatusPrinting();
@@ -172,10 +224,11 @@ void HyperparameterOptimizer::runBO() {
 
   base::DataVector cont(nCont, 0);
   std::vector<int> discrete(nOptions.size(), 0);
-  fitterFactory->setBO(cont, discrete);
+  //fitterFactory->setBO(cont, discrete);
   double stdDeviation;
   bestsofar = -1/(1+hpoScorer->calculateScore(*(fitterFactory->buildFitter()), *trainData, &stdDeviation)); //-300
-  BayesianOptimization BO(bestsofar);
+  std::vector<BOConfig> initialConfigs{1};
+  BayesianOptimization BO(initialConfigs);
 
   results.push_back(bestsofar);
   contPoints.push_back(cont);
@@ -245,7 +298,7 @@ void HyperparameterOptimizer::runBO() {
       }
       // std::cout<<optimizer.getOptimalPoint()[0]<<","<<optimizer.getOptimalPoint()[1]<<":"<<optimizer.getOptimalValue()<<std::endl;
     }
-    fitterFactory->setBO(*mincon, *mindisc);
+    //fitterFactory->setBO(*mincon, *mindisc);
     double result = -1/(1+hpoScorer->calculateScore(*(fitterFactory->buildFitter()), *trainData, &stdDeviation)); //-300
     fitterFactory->printConfig();
     std::cout << "Acquistion: " << min << std::endl;
@@ -289,7 +342,7 @@ void HyperparameterOptimizer::runBO() {
       kernels[i] = exp((-squaresum[i] - std::pow(tmp.l2Norm(), 2)) / 2 * kernelwidth); //devided by 2
     }
     kernels[kernels.size()-1]=1.0001; //EDIT: noise added
-    BO.updateGP(kernels, results);  //EDIT: ascend or descent?
+    //BO.updateGP(kernels, results);  //EDIT: ascend or descent?
 
   }
   std::cout << "Best: " << -1/bestsofar-1 << std::endl; //+300

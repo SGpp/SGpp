@@ -45,19 +45,22 @@ void FitterFactory::getBOspace(int* nCont, std::vector<int>& nOptions){
 
 } //EDIT: add categorical parameters
 
-void FitterFactory::setBO(base::DataVector& cont, std::vector<int>& disc){
+
+
+void FitterFactory::setBO(BOConfig* config){ //EDIT: old one destroyed
   int i = 0;
   for(auto& pair: dispar){
-    pair.second.setBO(disc[i]);
+    pair.second.setBO(config->getDisc(i));
     i++;
   }
+  i = 0;
   for(auto& pair: catpar){
-    pair.second.setBO(disc[i]);
+    pair.second.setBO(config->getCat(i));
     i++;
   }
   i = 0;
   for(auto& pair: conpar){
-    pair.second.setBO(cont[i]);
+    pair.second.setBO(config->getCont(i));
     i++;
   }
 }
@@ -73,6 +76,16 @@ void FitterFactory::getConfigBits(std::vector<ConfigurationBit*>& configBits) {
     pair.second.makeConfigBits(configBits);
   }
 
+}
+
+BOConfig FitterFactory::getBOConfig() {
+  for(auto& pair: dispar){
+    discOptions.push_back(pair.second.getNOptions());
+  }
+  for(auto& pair: catpar){
+    catOptions.push_back(pair.second.getNOptions());
+  }
+  return BOConfig(&discOptions, &catOptions, conpar.size());
 }
 
 } /* namespace datadriven */
