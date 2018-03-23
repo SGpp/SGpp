@@ -18,6 +18,7 @@
 #include <sgpp/datadriven/datamining/modules/hpo/ConfigurationBit.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/ContinuousParameter.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/DiscreteParameter.hpp>
+#include "BOConfig.hpp"
 
 
 namespace sgpp {
@@ -54,7 +55,9 @@ class FitterFactory {
 
   void getBOspace(int* nCont, std::vector<int>& nOptions); //EDIT: add categorical parameters
 
-  void setBO(base::DataVector& cont, std::vector<int>& disc);
+  BOConfig getBOConfig();
+
+  void setBO(BOConfig* config);
 
   void getConfigBits(std::vector<ConfigurationBit*>& configBits);
 
@@ -62,7 +65,8 @@ protected:
   std::map<std::string,ContinuousParameter> conpar;
   std::map<std::string,DiscreteParameter> dispar;
   std::map<std::string,DiscreteParameter> catpar;
-
+  std::vector<int> discOptions;
+  std::vector<int> catOptions;
 
 
   };

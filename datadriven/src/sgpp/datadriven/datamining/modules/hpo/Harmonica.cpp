@@ -36,13 +36,31 @@ Harmonica::Harmonica(FitterFactory* fitterFactory)
   }
 }
 
+/*
+void Harmonica::transformScores(const DataVector& source, DataVector& target){
+  std::vector<int> idx(source.size());
+  for(int i=0; i<idx.size(); i++){
+    idx[i] = i;
+  }
+  // sort indices based on comparing values in source
+  sort(idx.begin(), idx.end(),
+       [&source](int i1, int i2) {return source[i1] < source[i2];});
+  for(int i=0; i<idx.size(); i++){
+    target[idx[i]] = i;
+    if(i>50){
+      target[idx[i]] = 50;
+    }
+  }
+}
+*/
+
 void Harmonica::transformScores(const DataVector& source, DataVector& target){
   for(int i=0;i<source.size();i++){
     target[i] = std::pow(source[i],0.5);
   }
 }
 
-void Harmonica::prepareConfigs(std::vector<ModelFittingBase*>& fitters) {
+void Harmonica::prepareConfigs(std::vector<std::unique_ptr<ModelFittingBase>>& fitters) {
 
   //migrate samples that fit in the new space
   size_t nOld = configIDs.size();
@@ -87,9 +105,9 @@ void Harmonica::prepareConfigs(std::vector<ModelFittingBase*>& fitters) {
 
   for (int i = 0; i < nAll; i++) {
     setParameters(configIDs[i], i);
+    fitterFactory->printConfig();
     if(i>=nOld) {
-      fitters[i-nOld] = fitterFactory->buildFitter();
-
+      fitters[i-nOld].reset(fitterFactory->buildFitter());
     }
   }
 
@@ -131,8 +149,8 @@ void Harmonica::calculateConstrainedSpace(const DataVector& transformedScores, d
   std::vector<ConfigurationBit*> freeBitsold(freeBits);
 
   while(freeBits.size() > nBitsOld-shrink && alpha[idx[i]] != 0){
-    addConstraint(idx[i], -(alpha[idx[i]]>0)-(alpha[idx[i]]<0)); // -lround(alpha[idx[i]]/fabs(alpha[idx[i]]))
-    std::cout<<"Constraint number:"<<idx[i]<<","<<-(alpha[idx[i]]>0)-(alpha[idx[i]]<0)<<","<<alpha[idx[i]]<<", freebits: "<<freeBits.size()<<std::endl;
+    addConstraint(idx[i], -((alpha[idx[i]]>0)-(alpha[idx[i]]<0))); // -lround(alpha[idx[i]]/fabs(alpha[idx[i]]))
+    std::cout<<"Constraint number:"<<idx[i]<<","<<-((alpha[idx[i]]>0)-(alpha[idx[i]]<0))<<","<<alpha[idx[i]]<<", freebits: "<<freeBits.size()<<std::endl;
     i++;
   }
 
