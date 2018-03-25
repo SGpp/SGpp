@@ -81,31 +81,49 @@ BOOST_AUTO_TEST_CASE(testDataTransformationParser) {
 
   // "automatic" transformation in DataSource->getNextSamples()
   auto dataSource = builder.fromConfig(config);
-  Dataset* datasetAuto = dataSource->getNextSamples();
+  Dataset* datasetAuto1 = dataSource->getNextSamples();
+  Dataset* datasetAuto2 = dataSource->getNextSamples();
 
   // Read arff file manually
   ArffFileSampleProvider arffsp = ArffFileSampleProvider();
   arffsp.readFile("datadriven/tests/data/chess_5d_2000.arff");
-  Dataset* dataset = arffsp.getAllSamples();
+  Dataset* dataset1 = arffsp.getNextSamples(1000);
+  Dataset* dataset2 = arffsp.getNextSamples(1000);
 
   // "manual" transformation
   DataTransformationBuilder dataTrBuilder;
   DataTransformation* dataTransformation =
-      dataTrBuilder.buildTransformation(config.dataTransformationConfig, dataset);
-  Dataset* datasetMan = dataTransformation->doTransformation(dataset);
+      dataTrBuilder.buildTransformation(config.dataTransformationConfig, dataset1);
+  Dataset* datasetMan1 = dataTransformation->doTransformation(dataset1);
+  Dataset* datasetMan2 = dataTransformation->doTransformation(dataset2);
 
-  // check error between original and transformed dataset
-  DataVector sampleAuto(dataset->getDimension());
-  DataVector sampleMan(dataset->getDimension());
+  // check error between original and transformed datasets
+  DataVector sampleAuto1(dataset1->getDimension());
+  DataVector sampleMan1(dataset1->getDimension());
 
-  for (size_t isample = 0; isample < dataset->getNumberInstances(); isample++) {
-    datasetAuto->getData().getRow(isample, sampleAuto);
-    datasetMan->getData().getRow(isample, sampleMan);
+  for (size_t isample = 0; isample < dataset1->getNumberInstances(); isample++) {
+    datasetAuto1->getData().getRow(isample, sampleAuto1);
+    datasetMan1->getData().getRow(isample, sampleMan1);
 
-    for (size_t idim = 0; idim < dataset->getDimension(); idim++) {
+    for (size_t idim = 0; idim < dataset1->getDimension(); idim++) {
       // assert that sampleAuto and sampleMan contain the same samples
       double inversionError =
-          std::abs(sampleAuto[idim] - sampleMan[idim]) / sampleAuto[idim];
+          std::abs(sampleAuto1[idim] - sampleMan1[idim]) / sampleAuto1[idim];
+      BOOST_CHECK_SMALL(inversionError, tolerance);
+    }
+  }
+
+  DataVector sampleAuto2(dataset1->getDimension());
+  DataVector sampleMan2(dataset1->getDimension());
+
+  for (size_t isample = 0; isample < dataset2->getNumberInstances(); isample++) {
+    datasetAuto2->getData().getRow(isample, sampleAuto2);
+    datasetMan2->getData().getRow(isample, sampleMan2);
+
+    for (size_t idim = 0; idim < dataset2->getDimension(); idim++) {
+      // assert that sampleAuto and sampleMan contain the same samples
+      double inversionError =
+          std::abs(sampleAuto2[idim] - sampleMan2[idim]) / sampleAuto2[idim];
       BOOST_CHECK_SMALL(inversionError, tolerance);
     }
   }

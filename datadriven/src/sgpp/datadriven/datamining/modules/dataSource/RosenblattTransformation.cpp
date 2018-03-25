@@ -18,12 +18,15 @@
 namespace sgpp {
 namespace datadriven {
 
-RosenblattTransformation::RosenblattTransformation(Dataset* dataset,
-                                                   RosenblattTransformationConfig config)
+RosenblattTransformation::RosenblattTransformation()
   : grid(nullptr),
     alpha(nullptr),
     datasetTransformed(nullptr),
-    datasetInvTransformed(nullptr) {
+    datasetInvTransformed(nullptr) {}
+
+void RosenblattTransformation::initialize(Dataset* dataset,
+    RosenblattTransformationConfig config) {
+
   // Sample #numSamples random samples from dataset
   DataMatrix samples(config.numSamples, dataset->getDimension());
   DataVector currSample(dataset->getDimension());
@@ -39,8 +42,7 @@ RosenblattTransformation::RosenblattTransformation(Dataset* dataset,
 
   // Approximate probability density function (PDF)
   size_t dim = dataset->getDimension();
-  sgpp::datadriven::LearnerSGDE learner =
-      createSGDELearner(dim, config);
+  LearnerSGDE learner = createSGDELearner(dim, config);
   learner.initialize(samples);
   learner.train();
 
