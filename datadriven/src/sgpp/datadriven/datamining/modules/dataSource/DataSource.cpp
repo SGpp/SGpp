@@ -44,19 +44,33 @@ Dataset* DataSource::getNextSamples() {
   if (config.numBatches == 1 && config.batchSize == 0) {
     currentIteration++;
     dataset = sampleProvider->getAllSamples();
-  } else {
-    currentIteration++;
-    dataset = sampleProvider->getNextSamples(config.batchSize);
-  }
 
-  // Transform dataset if requested
-  if (!(config.dataTransformationConfig.type == DataTransformationType::NONE)) {
-    DataTransformationBuilder dataTrBuilder;
-    DataTransformation* dataTransformation =
-        dataTrBuilder.buildTransformation(config.dataTransformationConfig, dataset);
-    return dataTransformation->doTransformation(dataset);
+    // Transform dataset if wanted
+    if (!(config.dataTransformationConfig.type == DataTransformationType::NONE)) {
+      DataTransformationBuilder dataTrBuilder;
+      return dataTrBuilder.buildTransformation(config.dataTransformationConfig, dataset)
+          ->doTransformation(dataset);
+    } else {
+      return dataset;
+    }
+  // several iterations
   } else {
-    return dataset;
+    dataset = sampleProvider->getNextSamples(config.batchSize);
+
+    // If data transformation wanted and first batch -> initialize transformation
+    if (currentIteration == 0 &&
+        !(config.dataTransformationConfig.type == DataTransformationType::NONE)) {
+      DataTransformationBuilder dataTrBuilder;
+      dataTransformation =
+          dataTrBuilder.buildTransformation(config.dataTransformationConfig, dataset);
+    }
+    currentIteration++;
+
+    // Transform dataset if wanted
+    if (!(config.dataTransformationConfig.type == DataTransformationType::NONE))
+      return dataTransformation->doTransformation(dataset);
+    else
+      return dataset;
   }
 }
 
