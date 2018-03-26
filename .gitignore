@@ -91,6 +91,9 @@
 /build/
 /dist/
 
+# ignore core dump
+core
+
 # ignoring uq tests
 datadriven/tests/uq/analysis/atan/results
 datadriven/tests/uq/analysis/atan/plots
