@@ -8,7 +8,7 @@
 #ifndef DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_MODULES_HPO_HYPERPARAMETER_H_
 #define DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_MODULES_HPO_HYPERPARAMETER_H_
 
-#include <sgpp/datadriven/datamining/modules/hpo/ConfigurationBit.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/harmonica/ConfigurationBit.hpp>
 
 #include <list>
 

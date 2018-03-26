@@ -15,10 +15,10 @@
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
-#include <sgpp/datadriven/datamining/modules/hpo/ConfigurationBit.hpp>
-#include <sgpp/datadriven/datamining/modules/hpo/ContinuousParameter.hpp>
-#include <sgpp/datadriven/datamining/modules/hpo/DiscreteParameter.hpp>
-#include "BOConfig.hpp"
+#include <sgpp/datadriven/datamining/modules/hpo/harmonica/ConfigurationBit.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/parameters/ContinuousParameter.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/parameters/DiscreteParameter.hpp>
+#include "sgpp/datadriven/datamining/modules/hpo/bo/BOConfig.hpp"
 
 
 namespace sgpp {
@@ -49,7 +49,7 @@ class FitterFactory {
   virtual ModelFittingBase* buildFitter() = 0;
 
 
-  virtual void printConfig() = 0;
+  virtual std::string printConfig() = 0;
 
   void setHarmonica();
 

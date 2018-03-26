@@ -51,13 +51,14 @@ ModelFittingBase* DensityEstimationFitterFactory::buildFitter()  {
   return new ModelFittingLeastSquares(*config);
 }
 
-void DensityEstimationFitterFactory::printConfig(){
+std::string DensityEstimationFitterFactory::printConfig(){
 
 	std::string basisFunction[] = {"Linear","ModLinear"};
 	std::cout<<"Level: "<< dispar["level"].getValue()
 					 <<", Basis: "<<basisFunction[catpar["basisFunction"].getValue()]
 					 <<", Lambda: "<< pow(10, conpar["lambda"].getValue())
 					 <<std::endl;
+  return "";
 }
 
 } /* namespace datadriven */

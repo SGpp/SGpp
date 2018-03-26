@@ -6,7 +6,7 @@
 #ifndef ConfigurationBit_HPP
 #define ConfigurationBit_HPP
 
-#include <sgpp/datadriven/datamining/modules/hpo/ConfigurationRestriction.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/harmonica/ConfigurationRestriction.hpp>
 
 #include <sgpp/globaldef.hpp>
 #include <list>

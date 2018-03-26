@@ -6,7 +6,7 @@
  */
 
 #include <sgpp/optimization/sle/solver/Eigen.hpp>
-#include <sgpp/datadriven/datamining/modules/hpo/BayesianOptimization.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/bo/BayesianOptimization.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
 #include <iostream>
 #include <sgpp/optimization/sle/solver/BiCGStab.hpp>
@@ -16,6 +16,7 @@
 #include <sgpp/optimization/sle/solver/GaussianElimination.hpp>
 #include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/MultiStart.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 
 namespace sgpp {
@@ -34,11 +35,18 @@ BayesianOptimization::BayesianOptimization(const std::vector<BOConfig>& initialC
     kernelmatrix.set(i, i, 1+noise);
     rawScores[i] = transformScore(allConfigs[i].getScore());
   }
-  bestsofar = rawScores.min();
+ // bestsofar = rawScores.min();
+  base::DataVector normed(rawScores);
+  normed.normalize();
+  normed.sub(base::DataVector(normed.size(), normed.sum()/normed.size()));
+  bestsofar = normed.min();
+  //transformedOutput = base::DataVector(meaned);
+  transformedOutput = base::DataVector(normed);
 
-  CholeskyDecomposition();
-  transformedOutput = base::DataVector(rawScores);
-  solveCholeskySystem(transformedOutput);
+  decomposeCholesky(kernelmatrix, gleft);
+  //transformedOutput = base::DataVector(rawScores);
+  solveCholeskySystem(gleft, transformedOutput);
+  scales = base::DataVector(5,1);
 }
 
 double BayesianOptimization::transformScore(double original) {
@@ -46,8 +54,8 @@ double BayesianOptimization::transformScore(double original) {
 }
 
 double BayesianOptimization::kernel(double distance) {
-  double kernelwidth = 1.5; //EDIT: metaparameter and based on dimensions?
-  return exp(- distance/ 2 * kernelwidth);
+  double kernelwidth = 8.0; //EDIT: metaparameter and based on dimensions? 1.5
+  return exp(- distance * kernelwidth / 2 );
 }
 
 double BayesianOptimization::acquisitionEI(base::DataVector knew, double kself, double bestsofar){
@@ -59,7 +67,7 @@ double BayesianOptimization::acquisitionEI(base::DataVector knew, double kself, 
 
   //solver.solve(*sle, knew, tmp);
   optimization::sle_solver::GaussianElimination solver{}; //100, 10e-5, tmp
-  solveCholeskySystem(tmp);
+  solveCholeskySystem(gleft, tmp);
   //solver.solve(*sle, knew, tmp);
   base::DataVector check(tmp.size());
   kernelmatrix.mult(tmp, check);
@@ -87,7 +95,7 @@ BOConfig* BayesianOptimization::main(BOConfig& prototype) {
   //EDIT: What if no discrete exist?
   while(nextconfig.nextDisc()){
     for(auto& config: allConfigs){
-      config.calcDiscDistance(nextconfig);
+      config.calcDiscDistance(nextconfig, scales);
     }
     optimization::optimizer::MultiStart optimizer(wrapper);
     optimizer.optimize();
@@ -106,7 +114,7 @@ BOConfig* BayesianOptimization::main(BOConfig& prototype) {
 double BayesianOptimization::acquisitionOuter(const base::DataVector & inp) {
   base::DataVector kernelrow(allConfigs.size());
   for (int i = 0; i < allConfigs.size(); i++) {
-    kernelrow[i] = kernel(allConfigs[i].getTotalDistance(inp)); // divided by 2
+    kernelrow[i] = kernel(allConfigs[i].getTotalDistance(inp, scales)); // divided by 2
     if(kernelrow[i]==1){ //EDIT: good???
       return 1.0/0;
     }
@@ -115,37 +123,55 @@ double BayesianOptimization::acquisitionOuter(const base::DataVector & inp) {
   return acquisitionEI(kernelrow, 1, bestsofar);  //EDIT: ascend or descent?, kself + noise?
 }
 
-/*
-double BayesianOptimization::mean(base::DataVector knew){
-	return knew.dotProduct(transformedOutput);
-}
-
-double BayesianOptimization::var(base::DataVector knew, double kself){
-	base::DataVector tmp(knew.size());
-	// kernelinv.mult(knew, tmp);
-    optimization::FullSLE sle(kernelmatrix);
-    optimization::sle_solver::Eigen solver{};
-    solver.solve(sle, knew, tmp);
-
-  if(knew.dotProduct(tmp) > 1 || knew.dotProduct(tmp)<0){
-      //std::cout << "Error: wrong variance: "<<knew.dotProduct(tmp) <<", knew:"
-      //         <<knew.toString()<<", temp: "<<tmp.toString()<<std::endl;
-    screwedvar = true;
-    return 0;
-  }
-	return kself - knew.dotProduct(tmp);
-}
-
-double BayesianOptimization::acquisitionPI(base::DataVector knew, double kself, double bestsofar){
-    if(var(knew,kself)==0){
-      return 0;
+void BayesianOptimization::fitScales() {
+  optimization::WrapperScalarFunction wrapper(5, std::bind(likelihood, this, std::placeholders::_1)); //EDIT: number of hyperparameters
+  optimization::optimizer::MultiStart optimizer(wrapper, 2000, 200); //10000
+  optimizer.optimize();
+  std::cout<<optimizer.getOptimalPoint().toString()<<std::endl;
+  std::cout<<optimizer.getOptimalValue()<<std::endl;
+  base::DataVector tmp(optimizer.getOptimalPoint());
+  tmp.mult(0.1); //0.3
+  scales.mult(0.9); //0.7
+  scales.add(tmp);
+  std::cout<<scales.toString()<<std::endl;
+  double noise = 1e-4; //EDIT: metaparameter
+  for (size_t i = 0; i < allConfigs.size(); ++i) {
+    for (size_t k = 0; k < i; ++k) {
+      double tmp = kernel(allConfigs[i].getScaledDistance(allConfigs[k], scales));
+      kernelmatrix.set(k, i, tmp);
+      kernelmatrix.set(i, k, tmp);
     }
-    return (mean(knew) - (bestsofar-1))/var(knew, kself); //-5
+    kernelmatrix.set(i, i, 1+noise);
+  }
+  decomposeCholesky(kernelmatrix, gleft);
 }
- */
 
+double BayesianOptimization::likelihood(const base::DataVector &inp) {
+  double noise = 1e-4; //: metaparameter
+  base::DataMatrix km(allConfigs.size(),allConfigs.size());
+  for (size_t i = 0; i < allConfigs.size(); ++i) {
+    for (size_t k = 0; k < i; ++k) {
+      double tmp = kernel(allConfigs[i].getScaledDistance(allConfigs[k], inp));
+      km.set(k, i, tmp);
+      km.set(i, k, tmp);
+    }
+    km.set(i, i, 1+noise);
+  }
+  base::DataMatrix gnew;
+  decomposeCholesky(km, gnew);
 
-
+  base::DataVector normed(rawScores);
+  normed.normalize();
+  normed.sub(base::DataVector(normed.size(), normed.sum()/normed.size()));
+  //transformedOutput = base::DataVector(meaned);
+  base::DataVector transformed(normed);
+  solveCholeskySystem(gnew, transformed);
+  double tmp = 0;
+  for (size_t i = 0; i < allConfigs.size(); ++i) {
+    tmp += std::log(gnew.get(i,i));
+  }
+  return 2*tmp+normed.dotProduct(transformed);
+}
 
 void BayesianOptimization::updateGP(){
   double noise = 1e-4; //EDIT: metaparameter
@@ -154,7 +180,7 @@ void BayesianOptimization::updateGP(){
   kernelmatrix.appendRow();
   kernelmatrix.appendCol(base::DataVector(size+1));
   for (size_t i = 0; i < size; ++i) {
-    double tmp = kernel(allConfigs[i].getDistance(allConfigs.back()));
+    double tmp = kernel(allConfigs[i].getScaledDistance(allConfigs.back(), scales));
     kernelmatrix.set(size, i, tmp);
     kernelmatrix.set(i, size, tmp);
   }
@@ -162,11 +188,17 @@ void BayesianOptimization::updateGP(){
 
 
   rawScores.push_back(transformScore(allConfigs.back().getScore()));
-  bestsofar = std::min(rawScores.back(), bestsofar);
+ // bestsofar = std::min(rawScores.back(), bestsofar);
 
-  CholeskyDecomposition();
-  transformedOutput = base::DataVector(rawScores);
-  solveCholeskySystem(transformedOutput);
+  decomposeCholesky(kernelmatrix, gleft);
+  base::DataVector normed(rawScores);
+  normed.normalize();
+  normed.sub(base::DataVector(normed.size(), normed.sum()/normed.size()));
+  bestsofar = normed.min();
+  //transformedOutput = base::DataVector(meaned);
+  transformedOutput = base::DataVector(normed);
+//  transformedOutput = base::DataVector(rawScores);
+  solveCholeskySystem(gleft, transformedOutput);
 
 
   // optimization::sle_solver::GaussianElimination solver{}; //Eigen
@@ -179,7 +211,7 @@ void BayesianOptimization::updateGP(){
   maxofmax = 0;
   base::DataVector check2(transformedOutput.size());
   kernelmatrix.mult(transformedOutput, check2);
-  check2.sub(rawScores);
+  check2.sub(normed);
   double max = check2.maxNorm();
   std::cout << "Max: "<<max<<std::endl;
    //std::cout<<transformedOutput.toString()<<std::endl;
@@ -189,48 +221,49 @@ void BayesianOptimization::updateGP(){
 
 }
 
-void BayesianOptimization::CholeskyDecomposition(){
-  size_t n = kernelmatrix.getNrows();
-  gleft = base::DataMatrix(n, n, 0);
+void BayesianOptimization::decomposeCholesky(base::DataMatrix &km, base::DataMatrix &gnew) {
+  size_t n = km.getNrows();
+  gnew = base::DataMatrix(n, n, 0); //EDIT: working?
 
   for(size_t i=0; i < n; i++){
   for(size_t j=0; j <= i; j++){
-  double sum = kernelmatrix.get(i,j);
+  double sum = km.get(i,j);
   for(size_t k=0; k < j; k++){
-    sum = sum - gleft.get(i, k) * gleft.get(j, k);
+    sum = sum - gnew.get(i, k) * gnew.get(j, k);
   }
   if(i > j){
-    double value = sum/gleft.get(j,j);
-    gleft.set(i, j, value);
+    double value = sum/gnew.get(j,j);
+    gnew.set(i, j, value);
     //gright.set(j, i, value);
   }else if(sum > 0){
     double value = std::sqrt(sum);
-    gleft.set(i, i, value);
+    gnew.set(i, i, value);
     //gright.set(i, i, value);
   }else {
     std::cout << "Error: CholDecom failed." << std::endl;
-    gleft.set(i,i,10e-8); //EDIT: experimental
+    // std::cout << kernelmatrix.toString() << std::endl;
+    gnew.set(i,i,10e-8); //EDIT: experimental
   }
   }
   }
 
 }
 
-void BayesianOptimization::solveCholeskySystem(base::DataVector& x){
+void BayesianOptimization::solveCholeskySystem(base::DataMatrix &gmatrix, base::DataVector &x) {
   // base::DataVector x(b);
   // std::cout<<"Test Point 1"<<std::endl;
   for(size_t i = 0; i < x.size(); i++){
-    x[i] = x[i] / gleft.get(i,i);
+    x[i] = x[i] / gmatrix.get(i,i);
     for(size_t k = i+1; k < x.size();k++){
-      x[k] = x[k] - gleft.get(k, i)*x[i];
+      x[k] = x[k] - gmatrix.get(k, i)*x[i];
     }
   }
   //std::cout<<"Test Point 2"<<std::endl;
 
   for(int i = x.size()-1; i >= 0; i--){
-    x[i] = x[i] / gleft.get(i,i);
+    x[i] = x[i] / gmatrix.get(i,i);
     for(int k = i-1; k >= 0;k--){
-      x[k] = x[k] - gleft.get(i, k)*x[i];
+      x[k] = x[k] - gmatrix.get(i, k)*x[i];
     }
   }
   // std::cout<<"Test Point 3"<<std::endl;

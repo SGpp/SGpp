@@ -37,27 +37,34 @@ bool BOConfig::nextDisc() {
   return false;
 }
 
-void BOConfig::calcDiscDistance(BOConfig &other) {
+void BOConfig::calcDiscDistance(BOConfig &other, base::DataVector &scales) {
   discDistance = 0;
+  size_t k = cont.size();
   for (size_t i = 0; i < disc.size(); ++i) {
-    discDistance += std::pow((disc[i] - other.disc[i])/(discOptions->at(i)-1.0),2);
+    discDistance += std::pow(scales[k]*(disc[i] - other.disc[i])/(discOptions->at(i)-1.0),2);
+    k++;
   }
   for (size_t i = 0; i < cat.size(); ++i) {
-    discDistance += (cat[i] != other.cat[i]);
+    discDistance += std::pow(scales[k]*(cat[i] != other.cat[i]),2);
+    k++;
   }
 }
 
-double BOConfig::getTotalDistance(const base::DataVector &input) {
+double BOConfig::getTotalDistance(const base::DataVector &input, base::DataVector &scales) {
   double tmp = discDistance;
+  size_t k = 0;
   for (size_t i = 0; i < cont.size(); ++i) {
-    tmp += std::pow((cont[i] - input[i]),2);
+    tmp += std::pow(scales[k]*(cont[i] - input[i]),2);
+    k++;
   }
   return tmp;
 }
 
 double BOConfig::getDistance(BOConfig &other) {
-  calcDiscDistance(other);
-  return getTotalDistance(other.cont);
+
+  //calcDiscDistance(other, <#initializer#>);
+  //return getTotalDistance(other.cont, <#initializer#>);
+  return 0;
 }
 
 size_t BOConfig::getContSize() {
@@ -101,6 +108,24 @@ void BOConfig::randomize(std::mt19937& generator) {
     std::uniform_real_distribution<double> distribution(0.0, 1.0);
     cont[i] = distribution(generator);
   }
+}
+
+double BOConfig::getScaledDistance(BOConfig &other,const base::DataVector &scales) {
+  double tmp = 0;
+  size_t k = 0;
+  for (size_t i = 0; i < cont.size(); ++i) {
+    tmp += std::pow(scales[k]*(cont[i] - other.cont[i]),2);
+    k++;
+  }
+  for (size_t i = 0; i < disc.size(); ++i) {
+    tmp += std::pow(scales[k]*(disc[i] - other.disc[i])/(discOptions->at(i)-1.0),2);
+    k++;
+  }
+  for (size_t i = 0; i < cat.size(); ++i) {
+    tmp += std::pow(scales[k]*(cat[i] != other.cat[i]),2);
+    k++;
+  }
+  return tmp;
 }
 
 

@@ -30,9 +30,9 @@ LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory(DataMin
 
 	catpar["basisFunction"] = DiscreteParameter("basisFunction",0,1);
 
-	conpar["lambda"] = ContinuousParameter(8, "lambda", -8, 0);
+	conpar["lambda"] = ContinuousParameter(5, "lambda", -7, 0); //8
 
-	conpar["threshold"] = ContinuousParameter(3, "threshold", -5, -2);
+	conpar["threshold"] = ContinuousParameter(3, "threshold", -5, -2); //3
 
 }
 
@@ -54,7 +54,7 @@ ModelFittingBase* LeastSquaresRegressionFitterFactory::buildFitter()  {
   return new ModelFittingLeastSquares(*config);
 }
 
-void LeastSquaresRegressionFitterFactory::printConfig(){
+std::string LeastSquaresRegressionFitterFactory::printConfig(){
 
 	std::string basisFunction[] = {"Linear","ModLinear"};
 	std::cout<<"Level: "<< dispar["level"].getValue()
@@ -63,6 +63,12 @@ void LeastSquaresRegressionFitterFactory::printConfig(){
 					 <<", Threshold: "<< pow(10,conpar["threshold"].getValue())
 					 <<", Lambda: "<< pow(10,conpar["lambda"].getValue())
 					 <<std::endl;
+  return std::to_string(dispar["level"].getValue())
+                    + ", " + basisFunction[catpar["basisFunction"].getValue()]
+                    + ", " + std::to_string(dispar["noPoints"].getValue())
+                    + ", " + std::to_string(pow(10,conpar["threshold"].getValue()))
+                    + ", " + std::to_string(pow(10,conpar["lambda"].getValue()));
+                   // + std::endl;
 }
 
 } /* namespace datadriven */

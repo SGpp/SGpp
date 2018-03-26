@@ -6,7 +6,7 @@
  */
 
 #include <sgpp/optimization/sle/solver/Eigen.hpp>
-#include <sgpp/datadriven/datamining/modules/hpo/Harmonica.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/harmonica/Harmonica.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
 #include <iostream>
 #include <sgpp/optimization/sle/solver/BiCGStab.hpp>
@@ -60,7 +60,8 @@ void Harmonica::transformScores(const DataVector& source, DataVector& target){
   }
 }
 
-void Harmonica::prepareConfigs(std::vector<std::unique_ptr<ModelFittingBase>>& fitters) {
+std::vector<int> * Harmonica::prepareConfigs(std::vector<std::unique_ptr<ModelFittingBase>> &fitters, int seed,
+                                             std::vector<std::string> &configStrings) {
 
   //migrate samples that fit in the new space
   size_t nOld = configIDs.size();
@@ -95,22 +96,30 @@ void Harmonica::prepareConfigs(std::vector<std::unique_ptr<ModelFittingBase>>& f
     }
   }
 
+  //nAll = 1000;
   //build matrix
   // EDIT: add bias term? already in there!!!
   paritymatrix = DataMatrix(nAll, ncols);
 
   createRandomConfigs(freeBits.size(), configIDs, 42, nOld); //EDIT: seed
+  /*std::vector<int> shuffleConfigs(configIDs);
+  std::mt19937 sgenerator(seed);
+  std::shuffle(shuffleConfigs.begin(), shuffleConfigs.end(), sgenerator);
+  configIDs.resize(nAll);
+  for (int j = 0; j < nAll; ++j) {
+    configIDs[j] = shuffleConfigs[j];
+  }*/
 
   std::cout << "ConfigIDs: " << configIDs[0] << ", " << configIDs[1] << std::endl;
 
   for (int i = 0; i < nAll; i++) {
     setParameters(configIDs[i], i);
-    fitterFactory->printConfig();
     if(i>=nOld) {
       fitters[i-nOld].reset(fitterFactory->buildFitter());
+      configStrings[i-nOld] = fitterFactory->printConfig();
     }
   }
-
+  return &configIDs;
 }
 
 

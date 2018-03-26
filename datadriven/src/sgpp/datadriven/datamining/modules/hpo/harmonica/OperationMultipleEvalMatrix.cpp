@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/algorithm/AlgorithmMultipleEvaluation.hpp>
-#include <sgpp/datadriven/datamining/modules/hpo/OperationMultipleEvalMatrix.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/harmonica/OperationMultipleEvalMatrix.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
