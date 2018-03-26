@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef LEARNERSGDE_HPP_
-#define LEARNERSGDE_HPP_
+#pragma once
 
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
@@ -290,5 +289,3 @@ class SparseGridDensityEstimator : public datadriven::DensityEstimator {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* LEARNERSGDE_HPP_ */
