@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef LEARNERSGDE_HPP_
-#define LEARNERSGDE_HPP_
+#pragma once
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -80,13 +79,13 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * @param samples DataMatrix (nrows = number of samples, ncols =
    * dimensionality)
    */
-  virtual void initialize(base::DataMatrix& samples);
+  void initialize(base::DataMatrix& samples) override;
 
   /**
    * This methods evaluates the sparse grid density at a single point
    * @param x DataVector length equal to dimensionality
    */
-  virtual double pdf(base::DataVector& x);
+  double pdf(base::DataVector& x) override;
 
   /**
    * Evaluation of the sparse grid density at a set of points.
@@ -95,43 +94,43 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * @param res DataVector (size = number of samples) where the results are
    * stored
    */
-  virtual void pdf(base::DataMatrix& points, base::DataVector& res);
+  void pdf(base::DataMatrix& points, base::DataVector& res) override;
 
   /**
    * This method computes the mean of the density function
    */
-  virtual double mean();
+  double mean() override;
 
   /**
    * Computes the variance of the density function
    */
-  virtual double variance();
+  double variance() override;
 
   /**
    * WARNING: Not yet implemented
    */
-  virtual void cov(base::DataMatrix& cov, base::DataMatrix* bounds = nullptr);
+  void cov(base::DataMatrix& cov, base::DataMatrix* bounds = nullptr) override;
 
   /**
    * returns the samples in the given dimension
    * @param dim
    */
-  virtual std::shared_ptr<base::DataVector> getSamples(size_t dim);
+  std::shared_ptr<base::DataVector> getSamples(size_t dim) override;
 
   /**
    * returns the complete sample set
    */
-  virtual std::shared_ptr<base::DataMatrix> getSamples();
+  std::shared_ptr<base::DataMatrix> getSamples() override;
 
   /**
    * get number of dimensions
    */
-  virtual size_t getDim();
+  size_t getDim() override;
 
   /**
    * get number of samples
    */
-  virtual size_t getNsamples();
+  size_t getNsamples() override;
 
   /**
   * returns the surpluses
@@ -336,5 +335,3 @@ class LearnerSGDE : public datadriven::DensityEstimator {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* LEARNERSGDE_HPP_ */
