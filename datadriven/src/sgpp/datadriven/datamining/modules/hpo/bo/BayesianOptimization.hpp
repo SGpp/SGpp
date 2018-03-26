@@ -23,25 +23,26 @@ public:
 
   double acquisitionOuter(const base::DataVector& inp);
 
-	//double mean(base::DataVector knew);
-	//double var(base::DataVector knew, double kself);
 	void updateGP();
-	//double acquisitionPI(base::DataVector knew, double kself, double bestsofar);
 	double acquisitionEI(base::DataVector knew, double kself, double bestsofar);
-  void CholeskyDecomposition();
-  void solveCholeskySystem(base::DataVector& x);
+  void decomposeCholesky(base::DataMatrix &km, base::DataMatrix &gnew);
+  void solveCholeskySystem(base::DataMatrix &gmatrix, base::DataVector &x);
   BOConfig* main(BOConfig& prototype);
   double transformScore(double original);
   double kernel(double distance);
+  void fitScales();
+  double likelihood(const base::DataVector& inp);
 
 
 
-    // double expkernel(base::DataVector x1, base::DataVector x2);
+
+  // double expkernel(base::DataVector x1, base::DataVector x2);
 protected:
 	base::DataMatrix kernelmatrix;
   base::DataMatrix gleft;
   base::DataVector transformedOutput;
   base::DataVector rawScores;
+  base::DataVector scales;
   double bestsofar;
 	bool screwedvar;
 	double maxofmax;

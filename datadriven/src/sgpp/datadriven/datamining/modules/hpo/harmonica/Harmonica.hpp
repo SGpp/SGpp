@@ -11,7 +11,7 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
-#include "FitterFactory.hpp"
+#include "sgpp/datadriven/datamining/modules/hpo/FitterFactory.hpp"
 
 
 namespace sgpp {
@@ -22,7 +22,8 @@ public:
 	Harmonica(FitterFactory* fitterFactory);
 
 
-  void prepareConfigs(std::vector<std::unique_ptr<ModelFittingBase>>& fitters);
+  std::vector<int> *prepareConfigs(std::vector<std::unique_ptr<ModelFittingBase>> &fitters, int seed,
+                                     std::vector<std::string> &configStrings);
   void createRandomConfigs(size_t nBits, std::vector<int>& configIDs, int seed, size_t start);
   void calculateConstrainedSpace(const DataVector& transformedScores, double lambda, int shrink);
   void transformScores(const DataVector& source, DataVector& target);

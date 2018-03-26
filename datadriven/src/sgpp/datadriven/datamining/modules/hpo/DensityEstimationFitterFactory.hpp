@@ -16,9 +16,9 @@
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
-#include <sgpp/datadriven/datamining/modules/hpo/ConfigurationBit.hpp>
-#include <sgpp/datadriven/datamining/modules/hpo/ContinuousParameter.hpp>
-#include <sgpp/datadriven/datamining/modules/hpo/DiscreteParameter.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/harmonica/ConfigurationBit.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/parameters/ContinuousParameter.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/parameters/DiscreteParameter.hpp>
 
 
 
@@ -44,7 +44,7 @@ class DensityEstimationFitterFactory : public FitterFactory {
    */
   ModelFittingBase* buildFitter() override;
 
-  void printConfig() override;
+  std::string printConfig() override;
 
 
 protected:

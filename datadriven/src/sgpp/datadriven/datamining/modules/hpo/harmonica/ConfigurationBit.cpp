@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/datamining/modules/hpo/ConfigurationBit.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/harmonica/ConfigurationBit.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 

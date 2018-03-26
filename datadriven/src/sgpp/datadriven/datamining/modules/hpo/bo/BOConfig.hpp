@@ -18,9 +18,9 @@ public:
 
   bool nextDisc();
 
-  void calcDiscDistance(BOConfig& other);
+  void calcDiscDistance(BOConfig &other, base::DataVector &scales);
 
-  double getTotalDistance(const base::DataVector& input);
+  double getTotalDistance(const base::DataVector &input, base::DataVector &scales);
 
   size_t getContSize();
 
@@ -37,6 +37,8 @@ public:
   double getScore();
 
   double getDistance(BOConfig& other);
+
+  double getScaledDistance(BOConfig& other, const base::DataVector& scales);
 
   void randomize(std::mt19937& generator);
 

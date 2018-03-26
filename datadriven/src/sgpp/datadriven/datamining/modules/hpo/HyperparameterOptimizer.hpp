@@ -81,8 +81,6 @@ class HyperparameterOptimizer {
 
   void runBO();
 
-  void testBO();
-
   void runHarmonica();
 
  private:
