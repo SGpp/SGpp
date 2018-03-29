@@ -47,7 +47,8 @@ BOOST_AUTO_TEST_CASE(testRosenblattWrapper) {
   // do transformations
   DataTransformationBuilder dataTrBuilder;
   DataTransformation* dataTransformation =
-      dataTrBuilder.buildTransformation(config.dataTransformationConfig, dataset);
+      dataTrBuilder.buildTransformation(config.dataTransformationConfig);
+  dataTransformation->initialize(dataset, config.dataTransformationConfig);
 
   Dataset* datasetTr = dataTransformation->doTransformation(dataset);
   Dataset* datasetInvTr = dataTransformation->doInverseTransformation(datasetTr);
@@ -93,37 +94,36 @@ BOOST_AUTO_TEST_CASE(testDataTransformationParser) {
   // "manual" transformation
   DataTransformationBuilder dataTrBuilder;
   DataTransformation* dataTransformation =
-      dataTrBuilder.buildTransformation(config.dataTransformationConfig, dataset1);
+        dataTrBuilder.buildTransformation(config.dataTransformationConfig);
+  dataTransformation->initialize(dataset1, config.dataTransformationConfig);
+
   Dataset* datasetMan1 = dataTransformation->doTransformation(dataset1);
   Dataset* datasetMan2 = dataTransformation->doTransformation(dataset2);
 
   // check error between original and transformed datasets
-  DataVector sampleAuto1(dataset1->getDimension());
-  DataVector sampleMan1(dataset1->getDimension());
+  DataVector sampleAuto(dataset1->getDimension());
+  DataVector sampleMan(dataset1->getDimension());
 
   for (size_t isample = 0; isample < dataset1->getNumberInstances(); isample++) {
-    datasetAuto1->getData().getRow(isample, sampleAuto1);
-    datasetMan1->getData().getRow(isample, sampleMan1);
+    datasetAuto1->getData().getRow(isample, sampleAuto);
+    datasetMan1->getData().getRow(isample, sampleMan);
 
     for (size_t idim = 0; idim < dataset1->getDimension(); idim++) {
       // assert that sampleAuto and sampleMan contain the same samples
       double inversionError =
-          std::abs(sampleAuto1[idim] - sampleMan1[idim]) / sampleAuto1[idim];
+          std::abs(sampleAuto[idim] - sampleMan[idim]) / sampleAuto[idim];
       BOOST_CHECK_SMALL(inversionError, tolerance);
     }
   }
 
-  DataVector sampleAuto2(dataset1->getDimension());
-  DataVector sampleMan2(dataset1->getDimension());
-
   for (size_t isample = 0; isample < dataset2->getNumberInstances(); isample++) {
-    datasetAuto2->getData().getRow(isample, sampleAuto2);
-    datasetMan2->getData().getRow(isample, sampleMan2);
+    datasetAuto2->getData().getRow(isample, sampleAuto);
+    datasetMan2->getData().getRow(isample, sampleMan);
 
     for (size_t idim = 0; idim < dataset2->getDimension(); idim++) {
       // assert that sampleAuto and sampleMan contain the same samples
       double inversionError =
-          std::abs(sampleAuto2[idim] - sampleMan2[idim]) / sampleAuto2[idim];
+          std::abs(sampleAuto[idim] - sampleMan[idim]) / sampleAuto[idim];
       BOOST_CHECK_SMALL(inversionError, tolerance);
     }
   }

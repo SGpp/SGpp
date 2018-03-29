@@ -39,7 +39,7 @@ class DataTransformationBuilder {
    * @param dataset pointer to the dataset on which transformation will be performed
    * @return pointer to the initialized dataTransformation
    */
-  DataTransformation* buildTransformation(DataTransformationConfig config, Dataset* dataset);
+  DataTransformation* buildTransformation(DataTransformationConfig config);
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
