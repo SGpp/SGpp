@@ -31,6 +31,9 @@ DataSource::DataSource(DataSourceConfig conf, SampleProvider* sp)
   if (!this->config.filePath.empty()) {
     dynamic_cast<FileSampleProvider*>(sampleProvider.get())->readFile(this->config.filePath);
   }
+  // Build data transformation
+  DataTransformationBuilder dataTrBuilder;
+  dataTransformation = dataTrBuilder.buildTransformation(conf.dataTransformationConfig);
 }
 
 DataSourceIterator DataSource::begin() { return DataSourceIterator(*this, 0); }
@@ -47,24 +50,22 @@ Dataset* DataSource::getNextSamples() {
 
     // Transform dataset if wanted
     if (!(config.dataTransformationConfig.type == DataTransformationType::NONE)) {
-      DataTransformationBuilder dataTrBuilder;
-      return dataTrBuilder.buildTransformation(config.dataTransformationConfig, dataset)
-          ->doTransformation(dataset);
+      dataTransformation->initialize(dataset, config.dataTransformationConfig);
+      return dataTransformation->doTransformation(dataset);
     } else {
       return dataset;
     }
   // several iterations
   } else {
     dataset = sampleProvider->getNextSamples(config.batchSize);
+    currentIteration++;
 
     // If data transformation wanted and first batch -> initialize transformation
-    if (currentIteration == 0 &&
+    if (currentIteration == 1 &&
         !(config.dataTransformationConfig.type == DataTransformationType::NONE)) {
-      DataTransformationBuilder dataTrBuilder;
-      dataTransformation =
-          dataTrBuilder.buildTransformation(config.dataTransformationConfig, dataset);
+      dataTransformation->initialize(dataset, config.dataTransformationConfig);
+      return dataTransformation->doTransformation(dataset);
     }
-    currentIteration++;
 
     // Transform dataset if wanted
     if (!(config.dataTransformationConfig.type == DataTransformationType::NONE))

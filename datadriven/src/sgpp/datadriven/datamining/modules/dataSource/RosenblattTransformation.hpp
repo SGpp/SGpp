@@ -37,12 +37,12 @@ class RosenblattTransformation : public DataTransformation {
   RosenblattTransformation();
 
   /**
-   * Initializes transformation by approximating probability density function (PDF),
+   * Initializes a transformation by approximating probability density function (PDF),
    * calculates grid and alpha for #numSamples samples of a dataset
    * @param dataset pointer to the dataset to be initialized
    * @parm config configuration containing parameters for initalization
    */
-  void initialize(Dataset* dataset,  RosenblattTransformationConfig config);
+  void initialize(Dataset* dataset, DataTransformationConfig config) override;
 
   /**
    * Wrapper for Rosenblatt transformation. Can be called from an initialized

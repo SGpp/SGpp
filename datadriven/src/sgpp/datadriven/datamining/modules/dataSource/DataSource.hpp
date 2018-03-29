@@ -85,14 +85,14 @@ class DataSource {
   size_t currentIteration;
 
   /**
-     * pointer to sample provider that actually handles data aquisition.
-     */
+   * pointer to sample provider that actually handles data aquisition.
+   */
   std::unique_ptr<SampleProvider> sampleProvider;
 
   /**
    * pointer to DataTransformation to perform transformations on init.
    */
-  DataTransformation* dataTransformation = nullptr;
+  DataTransformation* dataTransformation;
 };
 
 } /* namespace datadriven */

@@ -16,10 +16,9 @@ namespace sgpp {
 namespace datadriven {
 
 DataTransformation* DataTransformationBuilder::buildTransformation(
-    DataTransformationConfig config, Dataset* dataset) {
+    DataTransformationConfig config) {
   if (config.type == DataTransformationType::ROSENBLATT) {
     RosenblattTransformation* rosenblattTransformation = new RosenblattTransformation;
-    rosenblattTransformation->initialize(dataset, config.rosenblattConfig);
     return static_cast<DataTransformation*>(rosenblattTransformation);
   } else {
     return nullptr;
