@@ -87,3 +87,6 @@
 # ignoring Windows build directories
 /build/
 /dist/
+
+# ignore core dump
+core
