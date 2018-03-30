@@ -35,7 +35,7 @@ sgpp::base::GridType LinearTruncatedBoundaryGrid::getType() {
   return sgpp::base::GridType::LinearTruncatedBoundary;
 }
 
-const SBasis& LinearTruncatedBoundaryGrid::getBasis() {
+SBasis& LinearTruncatedBoundaryGrid::getBasis() {
   static SLinearBoundaryBase basis;
   return basis;
 }

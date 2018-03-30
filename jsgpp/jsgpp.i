@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 %module(directors="1") jsgpp
@@ -40,20 +40,20 @@
 #ifdef SG_SOLVER
 #include "sgpp_solver.hpp"
 #endif
-#ifdef SG_DATADRIVEN
-#include "sgpp_datadriven.hpp"
-#endif
 #ifdef SG_PARALLEL
 #include "sgpp_parallel.hpp"
-#endif
-#ifdef SG_COMBIGRID
-#include "sgpp_combigrid.hpp"
 #endif
 #ifdef SG_QUADRATURE
 #include "sgpp_quadrature.hpp"
 #endif
 #ifdef SG_OPTIMIZATION
 #include "sgpp_optimization.hpp"
+#endif
+#ifdef SG_DATADRIVEN
+#include "sgpp_datadriven.hpp"
+#endif
+#ifdef SG_COMBIGRID
+#include "sgpp_combigrid.hpp"
 #endif
 #ifdef SG_MISC
 #include "sgpp_misc.hpp"
@@ -74,18 +74,18 @@
 %include "solver/build/jsgpp/solver.i"
 #endif
 
-#ifdef SG_DATADRIVEN
-%include "datadriven/build/jsgpp/datadriven.i"
-#endif
-
 #ifdef SG_QUADRATURE
 %include "quadrature/build/jsgpp/quadrature.i"
 #endif
 
-#ifdef SG_COMBIGRID
-%include "combigrid/build/jsgpp/combigrid.i"
-#endif
-
 #ifdef SG_OPTIMIZATION
 %include "optimization/build/jsgpp/optimization.i"
+#endif
+
+#ifdef SG_DATADRIVEN
+%include "datadriven/build/jsgpp/datadriven.i"
+#endif
+
+#ifdef SG_COMBIGRID
+%include "combigrid/build/jsgpp/combigrid.i"
 #endif

@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef POLY_BASE_HPP
-#define POLY_BASE_HPP
+#pragma once
 
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -33,7 +32,8 @@ class PolyBasis : public Basis<LT, IT> {
    *
    * @param degree the polynom's max. degree
    */
-  explicit PolyBasis(size_t degree) : degree(degree) {
+  explicit PolyBasis(size_t degree)
+      : degree(degree), idxtable(4), quadRule(GaussLegendreQuadRule1D::getInstance()) {
     if (degree < 2) {
       throw factory_exception("PolyBasis: degree < 2");
     }
@@ -42,7 +42,6 @@ class PolyBasis : public Basis<LT, IT> {
       throw factory_exception("PolyBasis: degree > 20 is not supported");
     }
 
-    idxtable = new int[4];
     idxtable[0] = 1;
     idxtable[1] = 2;
     idxtable[2] = -2;
@@ -52,7 +51,7 @@ class PolyBasis : public Basis<LT, IT> {
   /**
    * Destructor
    */
-  ~PolyBasis() override { delete[] idxtable; }
+  ~PolyBasis() override {}
 
   /**
    * Evaluates all the hierarchical ancestors of the node defined by level
@@ -84,7 +83,7 @@ class PolyBasis : public Basis<LT, IT> {
     return result;
   }
 
-  size_t getDegree() { return degree; }
+  size_t getDegree() const override { return degree; }
 
   double eval(LT level, IT index, double p) override {
     // spacing on current level
@@ -98,44 +97,30 @@ class PolyBasis : public Basis<LT, IT> {
     }
   }
 
-  double getIntegral(LT level, IT index) {
-    // grid spacing
-    double h = 1.0f / static_cast<double>(1 << level);
+  double evalDx(LT level, IT index, double x) {
+    // uses the logarithmic derivative method from the second answer
+    // http://math.stackexchange.com/questions/809927/first-derivative-of-lagrange-polynomial
 
-    // --------------------------------
-    // Gauss-Legendre quadrature
-    // --------------------------------
+    double hInvDbl = static_cast<double>(1 << level);
+    double h = 1 / hInvDbl;
     size_t deg = std::min<size_t>(degree, level + 1);
-    size_t n_roots = ((deg + 1) >> 1) + 1;  // ceil((deg + 1) / 2) - 1
-    base::DataVector roots(n_roots);
-    base::DataVector weights(n_roots);
-    // getting legendre gauss points and weights in [-1, 1]
-    quadRule.getLevelPointsAndWeights(n_roots, roots, weights);
+    double result = eval(level, index, x);
+    if (result == 0.0) return 0.0;
 
-    double sum = 0.0f;
-    double x = 0.0f;
-
-    for (size_t i = 0; i < n_roots; i++) {
-      // scale the roots to the support of the basis:
-      // [-1, 1] -> [0, 1] -> [a, b]
-      x = h * (roots[i] + static_cast<double>(index));
-      // evaluate the polynom and weight it
-      sum += weights[i] * eval(level, index, x);
+    double sum = 0.0;
+    // see eval-function for explanation of traversal code
+    size_t root = index;
+    size_t id = root;
+    root++;
+    sum += 1 / (x - h * static_cast<double>(root));
+    root -= 2;
+    for (size_t j = 2; j < static_cast<size_t>(1 << deg); j *= 2) {
+      sum += 1 / (x - h * static_cast<double>(root));
+      root += idxtable[id & 3] * j;
+      id >>= 1;
     }
-
-    // scale the result with the width of the support
-    return h * sum;
+    return result * sum;
   }
-
- protected:
-  /// the polynom's max degree
-  size_t degree;
-  // compute values for roots
-  int* idxtable;
-
- private:
-  /// gauss legendre quadrature rule to compute the integral of the bases
-  base::GaussLegendreQuadRule1D quadRule;
 
   /**
    * Evaluate a basis function.
@@ -204,6 +189,45 @@ class PolyBasis : public Basis<LT, IT> {
     return eval;
   }
 
+  double getIntegral(LT level, IT index) override {
+    // grid spacing
+    double h = 1.0f / static_cast<double>(1 << level);
+
+    // --------------------------------
+    // Gauss-Legendre quadrature
+    // --------------------------------
+    size_t deg = std::min<size_t>(degree, level + 1);
+    size_t n_roots = ((deg + 1) >> 1) + 1;  // ceil((deg + 1) / 2) - 1
+    base::DataVector roots(n_roots);
+    base::DataVector weights(n_roots);
+    // getting legendre gauss points and weights in [-1, 1]
+    quadRule.getLevelPointsAndWeights(n_roots, roots, weights);
+
+    double sum = 0.0f;
+    double x = 0.0f;
+
+    for (size_t i = 0; i < n_roots; i++) {
+      // scale the roots to the support of the basis:
+      // [-1, 1] -> [0, 1] -> [a, b]
+      x = h * (roots[i] + static_cast<double>(index));
+      // evaluate the polynom and weight it
+      sum += weights[i] * eval(level, index, x);
+    }
+
+    // scale the result with the width of the support
+    return h * sum;
+  }
+
+ protected:
+  /// the polynom's max degree
+  size_t degree;
+  // compute values for roots
+  std::vector<int> idxtable;
+
+ private:
+  /// gauss legendre quadrature rule to compute the integral of the bases
+  base::GaussLegendreQuadRule1D& quadRule;
+
   double eval(LT level, IT index, double p, double offset, double width) {
     // for bounding box evaluation
     // scale p in [offset, offset + width] linearly to [0, 1] and do simple
@@ -217,5 +241,3 @@ typedef PolyBasis<unsigned int, unsigned int> SPolyBase;
 
 }  // namespace base
 }  // namespace sgpp
-
-#endif /* POLY_BASE_HPP */

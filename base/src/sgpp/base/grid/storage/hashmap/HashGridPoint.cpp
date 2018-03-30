@@ -15,25 +15,26 @@
 #include <algorithm>
 #include <utility>
 #include <map>
+#include <vector>
 
 namespace sgpp {
 namespace base {
 
-HashGridPoint::HashGridPoint(size_t dimension) :
-    dimension(dimension), level(nullptr), index(nullptr), hInv(nullptr), hash(0) {
+HashGridPoint::HashGridPoint(size_t dimension)
+    : dimension(dimension), level(nullptr), index(nullptr), hInv(nullptr), hash(0) {
   level = new level_type[dimension];
   index = new index_type[dimension];
   hInv = new index_type[dimension];
   leaf = false;
 }
 
-HashGridPoint::HashGridPoint() :
-    dimension(0), level(nullptr), index(nullptr), hInv(nullptr), hash(0) {
+HashGridPoint::HashGridPoint()
+    : dimension(0), level(nullptr), index(nullptr), hInv(nullptr), hash(0) {
   leaf = false;
 }
 
-HashGridPoint::HashGridPoint(const HashGridPoint& o) :
-    dimension(o.dimension), level(nullptr), index(nullptr), hInv(nullptr), hash(0) {
+HashGridPoint::HashGridPoint(const HashGridPoint& o)
+    : dimension(o.dimension), level(nullptr), index(nullptr), hInv(nullptr), hash(0) {
   level = new level_type[dimension];
   index = new index_type[dimension];
   hInv = new index_type[dimension];
@@ -48,8 +49,8 @@ HashGridPoint::HashGridPoint(const HashGridPoint& o) :
   rehash();
 }
 
-HashGridPoint::HashGridPoint(std::istream& istream, int version) :
-    dimension(0), level(nullptr), index(nullptr), hInv(nullptr), hash(0) {
+HashGridPoint::HashGridPoint(std::istream& istream, int version)
+    : dimension(0), level(nullptr), index(nullptr), hInv(nullptr), hash(0) {
   size_t temp_leaf;
 
   istream >> dimension;
@@ -123,17 +124,11 @@ void HashGridPoint::serialize(std::ostream& ostream, int version) {
   }
 }
 
-size_t HashGridPoint::getDimension() const {
-  return dimension;
-}
+size_t HashGridPoint::getDimension() const { return dimension; }
 
-void HashGridPoint::setLeaf(bool isLeaf) {
-  leaf = isLeaf;
-}
+void HashGridPoint::setLeaf(bool isLeaf) { leaf = isLeaf; }
 
-bool HashGridPoint::isLeaf() {
-  return leaf;
-}
+bool HashGridPoint::isLeaf() { return leaf; }
 
 void HashGridPoint::getStandardCoordinates(DataVector& coordinates) const {
   coordinates.resize(dimension);
@@ -164,9 +159,7 @@ void HashGridPoint::rehash() {
   this->hash = hash;
 }
 
-size_t HashGridPoint::getHash() const {
-  return hash;
-}
+size_t HashGridPoint::getHash() const { return hash; }
 
 bool HashGridPoint::equals(const HashGridPoint& rhs) const {
   for (size_t d = 0; d < dimension; d++) {
@@ -184,9 +177,7 @@ bool HashGridPoint::equals(const HashGridPoint& rhs) const {
   return true;
 }
 
-HashGridPoint& HashGridPoint::assign(const HashGridPoint& rhs) {
-  return this->operator=(rhs);
-}
+HashGridPoint& HashGridPoint::assign(const HashGridPoint& rhs) { return this->operator=(rhs); }
 
 HashGridPoint& HashGridPoint::operator=(const HashGridPoint& rhs) {
   if (this == &rhs) {
@@ -275,6 +266,26 @@ HashGridPoint::level_type HashGridPoint::getLevelMin() const {
 
   return levelmin;
 }
+
+bool HashGridPoint::isHierarchicalAncestor(HashGridPoint& gpj, size_t dim) {
+  size_t leveli = level[dim], indexi = index[dim];
+  size_t levelj = gpj.getLevel(dim), indexj = gpj.getIndex(dim);
+
+  return (levelj >= leveli) && (indexi == ((indexj >> (levelj - leveli)) | 1));
+}
+
+bool HashGridPoint::isHierarchicalAncestor(HashGridPoint& gpj) {
+  size_t idim = 0;
+
+  while (idim < dimension && isHierarchicalAncestor(gpj, idim)) ++idim;
+
+  // check whether the supports are overlapping in all dimensions
+  return idim == dimension;
+}
+
+std::vector<base::HashGridPoint::level_type> HashGridPoint::multiplyDeBruijnBitPosition = {
+    0,  1,  28, 2,  29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4,  8,
+    31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6,  11, 5,  10, 9};
 
 }  // namespace base
 }  // namespace sgpp

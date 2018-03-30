@@ -1,5 +1,7 @@
 from pysgpp import (createOperationHierarchisation,
                     createOperationEval, createOperationMultipleEval, createOperationEvalNaive,
+                    createOperationMultipleEvalNaive,
+                    OperationMultipleEvalConfiguration, OperationMultipleEvalType_STREAMING, OperationMultipleEvalSubType_DEFAULT,
                     DataVector, DataMatrix,
                     HashGridPoint,
 #                     X86SIMD, createOperationMultipleEvalVectorized,
@@ -7,24 +9,27 @@ from pysgpp import (createOperationHierarchisation,
                     Grid,
                     SLinearBase, SLinearBoundaryBase,
                     SPolyBase, SPolyBoundaryBase,
-                    GridType_Poly, GridType_PolyBoundary,
-                    GridType_Linear, GridType_LinearBoundary,
-                    GridType_LinearL0Boundary, GridType_Bspline,
-                    GridType_ModPoly)
+                    GridType_Poly, GridType_PolyBoundary, GridType_Linear, GridType_LinearBoundary, GridType_LinearL0Boundary, GridType_Bspline)
 
 from scipy.interpolate import interp1d
 
 import numpy as np
-
-from pysgpp import GridType_LinearClenshawCurtis, \
-    GridType_ModLinear, RegularGridConfiguration, \
+from pysgpp import OperationMultipleEvalType_DEFAULT, \
+    GridType_PolyClenshawCurtis, GridType_PolyClenshawCurtisBoundary, \
+    GridType_ModPoly, GridType_ModPolyClenshawCurtis, \
+    GridType_LinearClenshawCurtis, GridType_LinearClenshawCurtisBoundary, \
+    GridType_ModLinear, GridType_ModLinearClenshawCurtis, \
+    RegularGridConfiguration, SLinearModifiedBase, SLinearClenshawCurtisBase, \
+    SLinearClenshawCurtisBoundaryBase, SLinearModifiedClenshawCurtisBase, \
+    SPolyClenshawCurtisBase, SPolyClenshawCurtisBoundaryBase, \
+    SPolyModifiedClenshawCurtisBase, SPolyModifiedBase, \
     GridType_LinearTruncatedBoundary, GridType_BsplineClenshawCurtis, \
     GridType_BsplineBoundary, GridType_ModBsplineClenshawCurtis, \
     GridType_ModBspline, SBsplineModifiedBase, SBsplineBase, \
     SBsplineBoundaryBase, SBsplineClenshawCurtisBase, \
     SBsplineModifiedClenshawCurtisBase, \
-    SLinearModifiedBase, SPolyModifiedBase, \
-    createOperationMultipleHierarchisation
+    createOperationMultipleHierarchisation, \
+    createOperationArbitraryBoundaryHierarchisation
 from pysgpp.pysgpp_swig import IndexVector
 
 
@@ -36,17 +41,35 @@ bsplineNoBoundaryGridTypes = [GridType_Bspline,
                               GridType_ModBsplineClenshawCurtis]
 bsplineGridTypes = bsplineNoBoundaryGridTypes + bsplineBoundaryGridTypes
 
-polyBoundaryGridTypes = [GridType_PolyBoundary]
+polyBoundaryGridTypes = [GridType_PolyBoundary,
+                         GridType_PolyClenshawCurtisBoundary]
 polyNoBoundaryGridTypes = [GridType_Poly,
-                           GridType_ModPoly]
+                           GridType_ModPoly,
+                           GridType_PolyClenshawCurtis,
+                           GridType_ModPolyClenshawCurtis]
 polyGridTypes = polyNoBoundaryGridTypes + polyBoundaryGridTypes
 
 linearBoundaryGridTypes = [GridType_LinearBoundary,
                            GridType_LinearL0Boundary,
-                           GridType_LinearTruncatedBoundary]
+                           GridType_LinearTruncatedBoundary,
+                           GridType_LinearClenshawCurtisBoundary]
 linearNoBoundaryGridTypes = [GridType_Linear,
-                             GridType_ModLinear]
+                             GridType_ModLinear,
+                             GridType_LinearClenshawCurtis,
+                             GridType_ModLinearClenshawCurtis]
 linearGridTypes = linearNoBoundaryGridTypes + linearBoundaryGridTypes
+
+multipleEvalNaiveGridTypes = [GridType_Bspline,
+                              GridType_BsplineClenshawCurtis,
+                              GridType_BsplineBoundary,
+                              GridType_ModBsplineClenshawCurtis,
+                              GridType_ModBspline,
+                              GridType_LinearClenshawCurtis,
+                              GridType_LinearClenshawCurtisBoundary,
+                              GridType_ModLinearClenshawCurtis,
+                              GridType_PolyClenshawCurtis,
+                              GridType_PolyClenshawCurtisBoundary,
+                              GridType_ModPolyClenshawCurtis]
 #######################################################################
 
 def createGrid(grid, dim, deg=1, addTruncatedBorder=False):
@@ -534,41 +557,37 @@ def isRefineable(grid, gp):
     return False
 
 
+def loadOperationMultiEval(grid, samples, isConsistent=True):
+
+    return opEval
+
+
 def evalSGFunctionMulti(grid, alpha, samples, isConsistent=True):
     if len(samples.shape) == 1:
         raise AttributeError('the samples to be evaluated have to be a 2d numpy array')
     if samples.shape[1] != grid.getStorage().getDimension():
         raise AttributeError('the dimensionality of the samples differ from the dimensionality of the grid (%i != %i)' % (samples.shape[1], grid.getStorage().getDimension()))
 
-    multipleEvalNaiveGridTypes = [GridType_Bspline,
-                                  GridType_BsplineClenshawCurtis,
-                                  GridType_BsplineBoundary,
-                                  GridType_ModBsplineClenshawCurtis,
-                                  GridType_ModBspline,
-                                  GridType_LinearClenshawCurtis,
-                                  GridType_LinearClenshawCurtisBoundary,
-                                  GridType_ModLinearClenshawCurtis,
-                                  GridType_PolyClenshawCurtis,
-                                  GridType_PolyClenshawCurtisBoundary,
-                                  GridType_ModPolyClenshawCurtis]
-
     samples_matrix = DataMatrix(samples)
+
+    if isConsistent:
+        if grid.getType() in multipleEvalNaiveGridTypes:
+            opEval = createOperationMultipleEvalNaive(grid, samples_matrix)
+        else:
+            if grid.getType() == GridType_Linear:
+                # use streaming approach for multiple eval
+                evalConfig = OperationMultipleEvalConfiguration(OperationMultipleEvalType_STREAMING, OperationMultipleEvalSubType_DEFAULT)
+                opEval = createOperationMultipleEval(grid, samples_matrix, evalConfig)
+            else:
+                # use standard approach
+                opEval = createOperationMultipleEval(grid, samples_matrix)
+    else:
+        opEval = createOperationMultipleEvalNaive(grid, samples_matrix)
+
     res_vec = DataVector(samples.shape[0])
     alpha_vec = DataVector(alpha)
 
-    if grid.getType() == GridType_Linear:
-        # use streaming approach for multiple eval
-        evalConfig = OperationMultipleEvalConfiguration(OperationMultipleEvalType_STREAMING, OperationMultipleEvalSubType_DEFAULT)
-        opEval = createOperationMultipleEval(grid, samples_matrix, evalConfig)
-    else:
-        # use standard approach
-        opEval = createOperationMultipleEval(grid, samples_matrix)
-
     opEval.mult(alpha_vec, res_vec)
-
-    del opEval
-    del samples_matrix
-    del alpha_vec
 
     return res_vec.array()
 
@@ -768,12 +787,19 @@ def hierarchizeBruteForce(grid, nodalValues, ignore=None):
 def hierarchize(grid, nodalValues, isConsistent=True, ignore=None):
     try:
         # if ignore is None or len(ignore) > 0:
+        maxLevel = grid.getStorage().getMaxLevel()
         if grid.getType() in [GridType_Bspline,
                               GridType_BsplineClenshawCurtis,
                               GridType_BsplineBoundary,
                               GridType_ModBsplineClenshawCurtis,
                               GridType_ModBspline]:
             opHier = createOperationMultipleHierarchisation(grid)
+        elif maxLevel > 1 and \
+             grid.getType() in [GridType_LinearBoundary,
+                                GridType_LinearClenshawCurtisBoundary,
+                                GridType_PolyBoundary,
+                                GridType_PolyClenshawCurtisBoundary]:
+            opHier = createOperationArbitraryBoundaryHierarchisation(grid)
         else:
             opHier = createOperationHierarchisation(grid)
 
@@ -856,7 +882,7 @@ def balance(grid):
     return newgps
 
 
-def getBoundsOfSupport(gs, level, index, gridType):
+def getBoundsOfSupport(gs, level, index, gridType=GridType_Linear):
     if level > 0:
         if gridType in bsplineGridTypes:
             # this is just an approximation of the real boundaries

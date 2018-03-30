@@ -30,13 +30,22 @@
 %newobject sgpp::op_factory::createOperationInverseRosenblattTransformation1D(
     sgpp::base::Grid& grid);
 %newobject sgpp::op_factory::createOperationRosenblattTransformationKDE(
-    sgpp::datadriven::GaussianKDE& kde);
+    sgpp::datadriven::KernelDensityEstimator& kde);
 %newobject sgpp::op_factory::createOperationInverseRosenblattTransformationKDE(
-    sgpp::datadriven::GaussianKDE& kde);
+    sgpp::datadriven::KernelDensityEstimator& kde);
 %newobject sgpp::op_factory::createOperationDensityMarginalizeKDE(
-    sgpp::datadriven::GaussianKDE& kde);
+    sgpp::datadriven::KernelDensityEstimator& kde);
 %newobject sgpp::op_factory::createOperationDensityConditionalKDE(
-    sgpp::datadriven::GaussianKDE& kde);
+    sgpp::datadriven::KernelDensityEstimator& kde);
+%newobject createOperationMakePositive(sgpp::datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
+                                       sgpp::datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm,
+                                       sgpp::optimization::ScalarFunction* f,
+                                       bool generateConsistentGrid, bool verbose);
+%newobject createOperationLimitFunctionValueRange(sgpp::datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
+                                                  sgpp::datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm,
+                                                  sgpp::optimization::ScalarFunction* f,
+                                                  bool generateConsistentGrid, bool verbose);
 %newobject sgpp::op_factory::createOperationMultipleEval(
     sgpp::base::Grid& grid, sgpp::base::DataMatrix& dataset,
     sgpp::datadriven::OperationMultipleEvalConfiguration& configuration);
+%newobject sgpp::op_factory::createOperationCovariance(sgpp::base::Grid& grid);

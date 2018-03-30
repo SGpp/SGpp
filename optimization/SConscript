@@ -10,7 +10,7 @@ def checkForLibrary(name, flag, headers, libraries):
   if type(headers) is str: headers = [headers]
   if type(libraries) is str: libraries = [libraries]
   if libraries is None: libraries = []
-  
+
   if (flag not in config.env) or (not config.env[flag]):
     Helper.printInfo("sgpp::optimization will be compiled without {} (flag not set).".format(name))
   elif not config.CheckHeader(headers, language="C++"):

@@ -130,16 +130,16 @@ LearnerTiming LearnerDensityBasedReg::train(
     // regularization term:
 
     if (this->CMode == datadriven::RegularizationType::Laplace) {
-      C = std::unique_ptr<base::OperationMatrix>(op_factory::createOperationLaplace(*grid));
+      C = op_factory::createOperationLaplace(*grid);
     } else if (this->CMode == datadriven::RegularizationType::Identity) {
-      C = std::unique_ptr<base::OperationMatrix>(op_factory::createOperationIdentity(*grid));
+      C = op_factory::createOperationIdentity(*grid);
     } else {
       throw base::application_exception(
           "LearnerDensityBased::train: Unknown regularization "
           "operator");
     }
 
-    datadriven::DensitySystemMatrix DMatrix(*grid, densityMatrix, *C, lambda);
+    datadriven::DensitySystemMatrix DMatrix(*grid, densityMatrix, C, lambda);
     base::DataVector rhs(grid->getSize());
     DMatrix.generateb(rhs);
 
@@ -211,8 +211,8 @@ base::DataVector LearnerDensityBasedReg::predict(base::DataMatrix& testDataset) 
     // Conditionalize for all dimensions, but the last one:
     for (size_t j = 0; j < dim; j++) {
       base::DataVector* tempAlpha = new base::DataVector(1);
-      op_factory::createOperationDensityConditional(*grid)->doConditional(
-          *lastAlpha, tempGrid, *tempAlpha, 0, point.get(j));
+      op_factory::createOperationDensityConditional(*grid)
+          ->doConditional(*lastAlpha, tempGrid, *tempAlpha, 0, point.get(j));
 
       if (j > 0) {
         delete lastAlpha;
@@ -247,8 +247,8 @@ void LearnerDensityBasedReg::dumpDensityAtPoint(base::DataVector& point, std::st
   // Conditionalize for all dimensions, but the last one:
   for (size_t j = 0; j < dim; j++) {
     base::DataVector* tempAlpha = new base::DataVector(1);
-    op_factory::createOperationDensityConditional(*tempGrid)->doConditional(
-        *lastAlpha, tempGrid, *tempAlpha, 0, point.get(j));
+    op_factory::createOperationDensityConditional(*tempGrid)
+        ->doConditional(*lastAlpha, tempGrid, *tempAlpha, 0, point.get(j));
 
     if (j > 0) {
       delete lastAlpha;

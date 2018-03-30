@@ -26,7 +26,7 @@ BsplineGrid::~BsplineGrid() {}
 
 sgpp::base::GridType BsplineGrid::getType() { return sgpp::base::GridType::Bspline; }
 
-const SBasis& BsplineGrid::getBasis() { return *basis_; }
+SBasis& BsplineGrid::getBasis() { return *basis_; }
 
 size_t BsplineGrid::getDegree() { return this->degree; }
 

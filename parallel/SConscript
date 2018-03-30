@@ -7,7 +7,7 @@ import ModuleHelper
 
 Import("*")
 
-moduleDependencies = ["sgppdatadriven", "sgppfinance", "sgpppde", "sgppsolver", "sgppbase", "sgppmisc"]
+moduleDependencies = ["sgppmisc", "sgppdatadriven", "sgppoptimization", "sgppfinance", "sgpppde", "sgppsolver", "sgppbase"]
 
 # can only build without mpi support, skip those files
 # required define: -DUSE_MPI

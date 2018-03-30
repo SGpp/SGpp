@@ -49,8 +49,7 @@ class HashGridStorage {
   typedef const HashGridPoint* index_const_pointer;
   /// unordered_map of index_pointers
   typedef std::unordered_map<point_pointer, size_t, HashGridPointPointerHashFunctor,
-                             HashGridPointPointerEqualityFunctor>
-      grid_map;
+                             HashGridPointPointerEqualityFunctor> grid_map;
   /// iterator of grid_map
   typedef grid_map::iterator grid_map_iterator;
   /// const_iterator of grid_map
@@ -233,6 +232,16 @@ class HashGridStorage {
   size_t insert(const point_type& index);
 
   /**
+   * insert a new index into map including all its ancestors. Boundary points are not added
+   *
+   * @param index reference to the index that should be inserted
+   * @param insertedPoints containing the indices of the new points
+   *
+   * @return
+   */
+  void insert(point_type& index, std::vector<size_t>& insertedPoints);
+
+  /**
    * updates an already stored index
    *
    * @param index reference to the index that should be updated
@@ -401,6 +410,14 @@ class HashGridStorage {
   void getLevelForIntegral(DataMatrix& level);
 
   /**
+   * Converts this storage from AOS (array of structures) to SOA (structure of array)
+   * to speed up operations on the position of the grid points.
+   *
+   * @param coordinates DataMatrix to store the coordinates of the grid points
+   */
+  void getCoordinateArrays(DataMatrix& coordinates);
+
+  /**
    * returns the max. depth in all dimension of the grid
    */
   size_t getMaxLevel() const;
@@ -486,7 +503,7 @@ class HashGridStorage {
    * @param       point         grid point
    * @param[out]  coordinates   vector of coordinates
    */
-  void getCoordinates(HashGridPoint point, DataVector& coordinates) const;
+  void getCoordinates(const HashGridPoint& point, DataVector& coordinates) const;
 
   /**
    * Calculates the coordinates of a given grid point.
@@ -496,7 +513,7 @@ class HashGridStorage {
    * @param   point   grid point
    * @return          vector of coordinates
    */
-  DataVector getCoordinates(HashGridPoint point) const;
+  DataVector getCoordinates(const HashGridPoint& point) const;
 
  private:
   /// the dimension of the grid

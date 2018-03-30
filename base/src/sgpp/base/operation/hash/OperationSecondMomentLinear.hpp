@@ -8,9 +8,10 @@
 
 #include <sgpp/base/operation/hash/OperationSecondMoment.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace base {
@@ -34,8 +35,9 @@ class OperationSecondMomentLinear : public OperationSecondMoment {
    * @f[ \int_{\Omega} x^2\cdot f(x) dx. @f]
    *
    * @param alpha Coefficient vector for current grid
+   * @param bounds describes the boundaries of the hypercube of the original function
    */
-  double doQuadrature(DataVector& alpha) override;
+  double doQuadrature(DataVector& alpha, DataMatrix* bounds = nullptr) override;
 
  protected:
   // Pointer to the grid's GridStorage object
