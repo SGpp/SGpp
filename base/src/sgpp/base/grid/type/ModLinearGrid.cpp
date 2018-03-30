@@ -33,7 +33,7 @@ sgpp::base::GridType ModLinearGrid::getType() {
   return sgpp::base::GridType::ModLinear;
 }
 
-const SBasis& ModLinearGrid::getBasis() {
+SBasis& ModLinearGrid::getBasis() {
   static SLinearModifiedBase basis;
   return basis;
 }

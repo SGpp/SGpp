@@ -33,6 +33,8 @@ swigFlags = ["-c++", "-python", "-fvirtual", "-threads"] # TODO(holzmudd): Added
 swigFlags.extend(["-D" + c + "=" + pyEnv["CPPDEFINES"][c]
                   for c in pyEnv["CPPDEFINES"]])
 
+swigFlags.extend(env["SWIGFLAGS"])
+
 # Python docstrings in SWIG-generated Python file
 if env["PYDOC"]:
   swigFlags.append("-DPYDOC")

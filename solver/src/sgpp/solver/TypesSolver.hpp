@@ -21,6 +21,7 @@ struct SLESolverConfiguration {
   double eps_;
   size_t maxIterations_;
   double threshold_;
+  bool verbose_;
 };
 
 struct SLESolverSPConfiguration {

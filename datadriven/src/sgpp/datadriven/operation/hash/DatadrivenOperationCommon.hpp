@@ -5,11 +5,11 @@
 
 #pragma once
 
+#include <sgpp/base/tools/OperationConfiguration.hpp>
+#include <sgpp/globaldef.hpp>
+
 #include <memory>
 #include <string>
-
-#include "sgpp/base/tools/OperationConfiguration.hpp"
-#include "sgpp/globaldef.hpp"
 
 namespace sgpp {
 namespace datadriven {

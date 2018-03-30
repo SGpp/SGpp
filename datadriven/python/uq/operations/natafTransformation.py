@@ -2,13 +2,13 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 from pysgpp.extensions.datadriven.uq.plot.plot1d import plotDensity1d
-from pysgpp import createOperationDensityMarginalizeKDE, GaussianKDE, DataMatrix
+from pysgpp import createOperationDensityMarginalizeKDE, KernelDensityEstimator, DataMatrix
 
 
 class NatafTransformation(object):
 
     def __init__(self, data, sample_type=None, dist=None):
-        from pysgpp.extensions.datadriven.uq.dists import Uniform, Beta, SGDEdist, Normal, GaussianKDEDist
+        from pysgpp.extensions.datadriven.uq.dists import Uniform, Beta, SGDEdist, Normal, KDEDist
         from pysgpp.extensions.datadriven.uq.quadrature.marginalization.marginalization import doMarginalize
 
         # fix stochastic setting
@@ -22,14 +22,14 @@ class NatafTransformation(object):
         if sample_type == 'cbeta':
             # marginalize the density
             opMar = createOperationDensityMargTo1DKDE(dist.dist)
-            kdex = GaussianKDE()
+            kdex = KernelDensityEstimator()
             opMar.margToDimX(kdex, 0)
-            kdey = GaussianKDE()
+            kdey = KernelDensityEstimator()
             opMar.margToDimX(kdey, 1)
 
             # set the mean vector and the correlation matrix
-            self.x = [GaussianKDEDist(kdex.getSamples().array()),
-                      GaussianKDEDist(kdey.getSamples().array())]
+            self.x = [KDEDist(kdex.getSamples().array()),
+                      KDEDist(kdey.getSamples().array())]
             self.M = np.array([[kdex.mean(), kdey.mean()]]).T
             self.S = dist.corrcoeff()
         else:

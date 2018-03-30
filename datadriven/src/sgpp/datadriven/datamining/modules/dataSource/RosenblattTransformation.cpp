@@ -13,6 +13,9 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation.hpp>
 
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/application/LearnerSGDE.hpp>
+
 #include <random>
 
 namespace sgpp {
@@ -20,27 +23,23 @@ namespace datadriven {
 
 RosenblattTransformation::RosenblattTransformation(Dataset* dataset,
                                                    RosenblattTransformationConfig config)
-  : grid(nullptr),
-    alpha(nullptr),
-    datasetTransformed(nullptr),
-    datasetInvTransformed(nullptr) {
+    : grid(nullptr), alpha(nullptr), datasetTransformed(nullptr), datasetInvTransformed(nullptr) {
   // Sample #numSamples random samples from dataset
-  DataMatrix samples(config.numSamples, dataset->getDimension());
-  DataVector currSample(dataset->getDimension());
+  sgpp::base::DataMatrix samples(config.numSamples, dataset->getDimension());
+  sgpp::base::DataVector currSample(dataset->getDimension());
 
   std::mt19937 generator;
   std::uniform_real_distribution<double> distr(
-      0, static_cast<double>(dataset->getNumberInstances()-1));
+      0, static_cast<double>(dataset->getNumberInstances() - 1));
 
   for (unsigned int i = 0; i < config.numSamples; i++) {
-      dataset->getData().getRow(static_cast<size_t>(distr(generator)), currSample);
-      samples.setRow(i, currSample);
-    }
+    dataset->getData().getRow(static_cast<size_t>(distr(generator)), currSample);
+    samples.setRow(i, currSample);
+  }
 
   // Approximate probability density function (PDF)
   size_t dim = dataset->getDimension();
-  sgpp::datadriven::LearnerSGDE learner =
-      createSGDELearner(dim, config);
+  sgpp::datadriven::LearnerSGDE learner = createSGDELearner(dim, config);
   learner.initialize(samples);
   learner.train();
 
@@ -50,7 +49,6 @@ RosenblattTransformation::RosenblattTransformation(Dataset* dataset,
 
   std::cout << "Rosenblatt transformation initialized" << std::endl;
 }
-
 
 Dataset* RosenblattTransformation::doTransformation(Dataset* dataset) {
   std::cout << "Performing Rosenblatt transformation" << std::endl;
@@ -63,22 +61,20 @@ Dataset* RosenblattTransformation::doTransformation(Dataset* dataset) {
   return datasetTransformed;
 }
 
-
 Dataset* RosenblattTransformation::doInverseTransformation(Dataset* dataset) {
   std::cout << "Performing Rosenblatt inverse transformation" << std::endl;
   std::unique_ptr<sgpp::datadriven::OperationInverseRosenblattTransformation> opInvRos(
       sgpp::op_factory::createOperationInverseRosenblattTransformation(*this->grid));
   datasetInvTransformed = new Dataset{dataset->getNumberInstances(), dataset->getDimension()};
 
-  opInvRos->doTransformation(
-      this->alpha.get(), &dataset->getData(), &datasetInvTransformed->getData());
+  opInvRos->doTransformation(this->alpha.get(), &dataset->getData(),
+                             &datasetInvTransformed->getData());
 
   return datasetInvTransformed;
 }
 
-
-sgpp::datadriven::LearnerSGDE RosenblattTransformation::createSGDELearner(size_t dim,
-    RosenblattTransformationConfig config) {
+sgpp::datadriven::LearnerSGDE RosenblattTransformation::createSGDELearner(
+    size_t dim, RosenblattTransformationConfig config) {
   sgpp::base::RegularGridConfiguration gridConfig;
   gridConfig.dim_ = dim;
   gridConfig.level_ = static_cast<int>(config.gridLevel);
@@ -103,10 +99,7 @@ sgpp::datadriven::LearnerSGDE RosenblattTransformation::createSGDELearner(size_t
   sgpp::datadriven::CrossvalidationConfiguration crossvalidationConfig;
   crossvalidationConfig.enable_ = false;
 
-  sgpp::datadriven::LearnerSGDE learner(gridConfig,
-                                        adaptConfig,
-                                        solverConfig,
-                                        regularizationConfig,
+  sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptConfig, solverConfig, regularizationConfig,
                                         crossvalidationConfig);
   return learner;
 }
