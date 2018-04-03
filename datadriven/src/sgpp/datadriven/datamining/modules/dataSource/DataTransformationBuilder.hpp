@@ -3,7 +3,7 @@
  * use, please see the copyright notice provided with SG++ or at
  * sgpp.sparsegrids.org
  *
- * DataTransformation.hpp
+ * DataTransformationBuilder.hpp
  *
  *  Created on: 22.01.2018
  *      Author: Lars Wolfsteller
@@ -36,7 +36,6 @@ class DataTransformationBuilder {
    *
    * @param config DataSourceConfig containing DataTransformationType and
    *  numSamplesForTranformation to calculate probability density function pdf / alpha
-   * @param dataset pointer to the dataset on which transformation will be performed
    * @return pointer to the initialized dataTransformation
    */
   DataTransformation* buildTransformation(DataTransformationConfig config);
