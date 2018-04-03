@@ -38,9 +38,9 @@ class RosenblattTransformation : public DataTransformation {
 
   /**
    * Initializes a transformation by approximating probability density function (PDF),
-   * calculates grid and alpha for #numSamples samples of a dataset
+   * calculates grid and alpha for numSamples samples of a dataset
    * @param dataset pointer to the dataset to be initialized
-   * @parm config configuration containing parameters for initalization
+   * @param config configuration containing parameters for initalization
    */
   void initialize(Dataset* dataset, DataTransformationConfig config) override;
 

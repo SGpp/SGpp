@@ -42,7 +42,7 @@ class DataTransformation {
    * config
    *
    * @param dataset pointer to the dataset to be initialized
-   * @parm config configuration containing parameters for initalization
+   * @param config configuration containing parameters for initalization
    */
   virtual void initialize(Dataset* dataset, DataTransformationConfig config) = 0;
 
