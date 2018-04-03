@@ -38,7 +38,7 @@ class LearnerDensityBased : public datadriven::LearnerBase {
   // vectors of grids
   std::vector<std::unique_ptr<base::Grid>> gridVec;
   // vector of regterms
-  std::vector<std::unique_ptr<base::OperationMatrix>> CVec;
+  std::vector<base::OperationMatrix*> CVec;
 
  public:
   LearnerDensityBased(datadriven::RegularizationType&, const bool isRegression,

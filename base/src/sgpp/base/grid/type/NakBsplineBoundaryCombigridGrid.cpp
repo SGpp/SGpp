@@ -35,7 +35,7 @@ sgpp::base::GridType NakBsplineBoundaryCombigridGrid::getType() {
   return sgpp::base::GridType::NakBsplineBoundaryCombigrid;
 }
 
-const SBasis& NakBsplineBoundaryCombigridGrid::getBasis() { return *basis_; }
+SBasis& NakBsplineBoundaryCombigridGrid::getBasis() { return *basis_; }
 
 size_t NakBsplineBoundaryCombigridGrid::getDegree() { return this->degree; }
 

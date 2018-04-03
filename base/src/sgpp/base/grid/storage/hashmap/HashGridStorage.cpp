@@ -291,6 +291,37 @@ size_t HashGridStorage::insert(const point_type& index) {
   return (map[insert] = list.size() - 1);
 }
 
+void HashGridStorage::insert(point_type& index, std::vector<size_t>& insertedPoints) {
+  index_t source_index;
+  level_t source_level;
+
+  if (!isContaining(index)) {
+    // insert the current node
+    size_t i = insert(index);
+    insertedPoints.push_back(i);
+
+    // insert all ancestors if they are missing
+    for (size_t d = 0; d < dimension; d++) {
+      // save level index in current dimension
+      source_level = index.getLevel(d);
+      source_index = index.getIndex(d);
+
+      // go up to the parent node
+      index.getParent(d);
+
+      // insert all the parents until we find one which does already exist
+      while (!isContaining(index)) {
+        // insert the current node and all its missing ancestors
+        insert(index, insertedPoints);
+        index.getParent(d);
+      }
+
+      // reset index
+      index.set(d, source_level, source_index);
+    }
+  }
+}
+
 void HashGridStorage::update(point_type& index, size_t pos) {
   if (pos < list.size()) {
     // Remove old element at pos
@@ -453,6 +484,16 @@ void HashGridStorage::getLevelForIntegral(DataMatrix& level) {
   }
 
   //    }
+}
+
+void HashGridStorage::getCoordinateArrays(DataMatrix& coordinates) {
+  coordinates.resize(list.size(), dimension);
+
+  base::DataVector x(dimension);
+  for (size_t i = 0; i < list.size(); ++i) {
+    getCoordinates(*list[i], x);
+    coordinates.setRow(i, x);
+  }
 }
 
 size_t HashGridStorage::getMaxLevel() const {
@@ -631,7 +672,7 @@ void HashGridStorage::parseGridDescription(std::istream& istream) {
   }
 }
 
-void HashGridStorage::getCoordinates(HashGridPoint point, DataVector& coordinates) const {
+void HashGridStorage::getCoordinates(const HashGridPoint& point, DataVector& coordinates) const {
   coordinates.resize(dimension);
 
   for (size_t d = 0; d < dimension; d++) {
@@ -639,7 +680,7 @@ void HashGridStorage::getCoordinates(HashGridPoint point, DataVector& coordinate
   }
 }
 
-DataVector HashGridStorage::getCoordinates(HashGridPoint point) const {
+DataVector HashGridStorage::getCoordinates(const HashGridPoint& point) const {
   DataVector coordinates(dimension);
 
   for (size_t d = 0; d < dimension; d++) {

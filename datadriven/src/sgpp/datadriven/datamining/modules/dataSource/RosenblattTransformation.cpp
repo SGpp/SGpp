@@ -13,6 +13,9 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation.hpp>
 
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/application/LearnerSGDE.hpp>
+
 #include <random>
 
 namespace sgpp {
@@ -34,7 +37,7 @@ void RosenblattTransformation::initialize(Dataset* dataset,
 
   std::mt19937 generator;
   std::uniform_real_distribution<double> distr(
-      0, static_cast<double>(dataset->getNumberInstances()-1));
+      0, static_cast<double>(dataset->getNumberInstances() - 1));
 
   for (unsigned int i = 0; i < rbConfig.numSamples; i++) {
       dataset->getData().getRow(static_cast<size_t>(distr(generator)), currSample);
@@ -44,6 +47,7 @@ void RosenblattTransformation::initialize(Dataset* dataset,
   // Approximate probability density function (PDF)
   size_t dim = dataset->getDimension();
   LearnerSGDE learner = createSGDELearner(dim, rbConfig);
+
   learner.initialize(samples);
   learner.train();
 
@@ -53,7 +57,6 @@ void RosenblattTransformation::initialize(Dataset* dataset,
 
   std::cout << "Rosenblatt transformation initialized" << std::endl;
 }
-
 
 Dataset* RosenblattTransformation::doTransformation(Dataset* dataset) {
   std::cout << "Performing Rosenblatt transformation" << std::endl;
@@ -66,22 +69,20 @@ Dataset* RosenblattTransformation::doTransformation(Dataset* dataset) {
   return datasetTransformed;
 }
 
-
 Dataset* RosenblattTransformation::doInverseTransformation(Dataset* dataset) {
   std::cout << "Performing Rosenblatt inverse transformation" << std::endl;
   std::unique_ptr<sgpp::datadriven::OperationInverseRosenblattTransformation> opInvRos(
       sgpp::op_factory::createOperationInverseRosenblattTransformation(*this->grid));
   datasetInvTransformed = new Dataset{dataset->getNumberInstances(), dataset->getDimension()};
 
-  opInvRos->doTransformation(
-      this->alpha.get(), &dataset->getData(), &datasetInvTransformed->getData());
+  opInvRos->doTransformation(this->alpha.get(), &dataset->getData(),
+                             &datasetInvTransformed->getData());
 
   return datasetInvTransformed;
 }
 
-
-sgpp::datadriven::LearnerSGDE RosenblattTransformation::createSGDELearner(size_t dim,
-    RosenblattTransformationConfig config) {
+sgpp::datadriven::LearnerSGDE RosenblattTransformation::createSGDELearner(
+    size_t dim, RosenblattTransformationConfig config) {
   sgpp::base::RegularGridConfiguration gridConfig;
   gridConfig.dim_ = dim;
   gridConfig.level_ = static_cast<int>(config.gridLevel);
@@ -106,10 +107,7 @@ sgpp::datadriven::LearnerSGDE RosenblattTransformation::createSGDELearner(size_t
   sgpp::datadriven::CrossvalidationConfiguration crossvalidationConfig;
   crossvalidationConfig.enable_ = false;
 
-  sgpp::datadriven::LearnerSGDE learner(gridConfig,
-                                        adaptConfig,
-                                        solverConfig,
-                                        regularizationConfig,
+  sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptConfig, solverConfig, regularizationConfig,
                                         crossvalidationConfig);
   return learner;
 }

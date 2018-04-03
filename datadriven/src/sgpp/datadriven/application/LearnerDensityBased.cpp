@@ -191,11 +191,9 @@ LearnerTiming LearnerDensityBased::train(base::DataMatrix& trainDataset, base::D
 
     for (size_t j = 0; j < classIndeces.size(); j++) {
       if (CMode == datadriven::RegularizationType::Laplace) {
-        CVec.push_back(std::unique_ptr<base::OperationMatrix>(
-            op_factory::createOperationLaplace(*this->gridVec[j])));
+        CVec.push_back(op_factory::createOperationLaplace(*this->gridVec[j]));
       } else if (CMode == datadriven::RegularizationType::Identity) {
-        CVec.push_back(std::unique_ptr<base::OperationMatrix>(
-            op_factory::createOperationIdentity(*this->gridVec[j])));
+        CVec.push_back(op_factory::createOperationIdentity(*this->gridVec[j]));
       } else {
         throw base::application_exception(
             "LearnerDensityBased::train: Unknown regularization "
@@ -205,7 +203,7 @@ LearnerTiming LearnerDensityBased::train(base::DataMatrix& trainDataset, base::D
 
     // Solve the system for every class and store coefficients:
     for (size_t j = 0; j < trainDataClasses.size(); j++) {
-      datadriven::DensitySystemMatrix DMatrix(*gridVec[j], trainDataClasses[j], *(CVec[j]), lambda);
+      datadriven::DensitySystemMatrix DMatrix(*gridVec[j], trainDataClasses[j], CVec[j], lambda);
       base::DataVector rhs(gridVec[j]->getSize());
       base::DataVector alpha(gridVec[j]->getSize());
       alpha.setAll(0.0);

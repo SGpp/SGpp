@@ -13,7 +13,6 @@
 
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformation.hpp>
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
-#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
@@ -34,6 +33,7 @@ class RosenblattTransformation : public DataTransformation {
   /**
    * Default constructor
    */
+
   RosenblattTransformation();
 
   /**

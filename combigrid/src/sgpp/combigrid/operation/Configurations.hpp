@@ -31,11 +31,13 @@ class CombiHierarchies {
                                                             size_t growthFactor = 2);
   static std::shared_ptr<AbstractPointHierarchy> linearL2Leja(size_t growthFactor = 2);
   static std::shared_ptr<AbstractPointHierarchy> linearL2Leja(SingleFunction weightFunction,
-                                                              size_t growthFactor = 2);
+                                                              size_t growthFactor = 2,
+                                                              size_t numAdditionalPoints = 10);
   static std::shared_ptr<AbstractPointHierarchy> expLeja();
   static std::shared_ptr<AbstractPointHierarchy> expLeja(SingleFunction weightFunction);
   static std::shared_ptr<AbstractPointHierarchy> expL2Leja();
-  static std::shared_ptr<AbstractPointHierarchy> expL2Leja(SingleFunction weightFunction);
+  static std::shared_ptr<AbstractPointHierarchy> expL2Leja(SingleFunction weightFunction,
+                                                           size_t numAdditionalPoints = 10);
   static std::shared_ptr<AbstractPointHierarchy> expUniform();
   static std::shared_ptr<AbstractPointHierarchy> expClenshawCurtis();
   static std::shared_ptr<AbstractPointHierarchy> expChebyshev();

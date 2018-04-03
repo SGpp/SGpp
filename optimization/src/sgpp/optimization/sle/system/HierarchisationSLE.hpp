@@ -22,6 +22,7 @@
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryCombigridBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/WaveletBasis.hpp>
@@ -33,6 +34,7 @@
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
 #include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
@@ -115,6 +117,10 @@ class HierarchisationSLE : public CloneableSLE {
       linearClenshawCurtisBasis =
           std::unique_ptr<base::SLinearClenshawCurtisBase>(new base::SLinearClenshawCurtisBase());
       basisType = LINEAR_CLENSHAW_CURTIS;
+    } else if (grid.getType() == base::GridType::LinearClenshawCurtisBoundary) {
+      linearClenshawCurtisBoundaryBasis = std::unique_ptr<base::SLinearClenshawCurtisBoundaryBase>(
+          new base::SLinearClenshawCurtisBoundaryBase());
+      basisType = LINEAR_CLENSHAW_CURTIS_BOUNDARY;
     } else if (grid.getType() == base::GridType::ModLinear) {
       modLinearBasis = std::unique_ptr<base::SLinearModifiedBase>(new base::SLinearModifiedBase());
       basisType = LINEAR_MODIFIED;
@@ -203,6 +209,8 @@ class HierarchisationSLE : public CloneableSLE {
   std::unique_ptr<base::SLinearBoundaryBase> linearL0BoundaryBasis;
   /// linear Clenshaw-Curtis basis
   std::unique_ptr<base::SLinearClenshawCurtisBase> linearClenshawCurtisBasis;
+  /// linear Clenshaw-Curtis boundary basis
+  std::unique_ptr<base::SLinearClenshawCurtisBoundaryBase> linearClenshawCurtisBoundaryBasis;
   /// modified linear basis
   std::unique_ptr<base::SLinearModifiedBase> modLinearBasis;
   /// wavelet basis
@@ -227,6 +235,7 @@ class HierarchisationSLE : public CloneableSLE {
     LINEAR,
     LINEAR_BOUNDARY,
     LINEAR_CLENSHAW_CURTIS,
+    LINEAR_CLENSHAW_CURTIS_BOUNDARY,
     LINEAR_MODIFIED,
     WAVELET,
     WAVELET_BOUNDARY,
@@ -261,6 +270,8 @@ class HierarchisationSLE : public CloneableSLE {
       return evalLinearBoundaryFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == LINEAR_CLENSHAW_CURTIS) {
       return evalLinearClenshawCurtisFunctionAtGridPoint(basisI, pointJ);
+    } else if (basisType == LINEAR_CLENSHAW_CURTIS_BOUNDARY) {
+      return evalLinearClenshawCurtisBoundaryFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == LINEAR_MODIFIED) {
       return evalLinearModifiedFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == WAVELET) {
@@ -530,6 +541,31 @@ class HierarchisationSLE : public CloneableSLE {
 
     for (size_t t = 0; t < gridStorage.getDimension(); t++) {
       const double result1d = linearClenshawCurtisBasis->eval(
+          gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getUnitCoordinate(gpPoint, t));
+
+      if (result1d == 0.0) {
+        return 0.0;
+      }
+
+      result *= result1d;
+    }
+
+    return result;
+  }
+
+  /**
+ * @param basisI    basis function index
+ * @param pointJ    grid point index
+ * @return          value of the basisI-th linear Clenshaw-Curtis
+ *                  boundary basis function at the pointJ-th grid point
+ */
+  inline double evalLinearClenshawCurtisBoundaryFunctionAtGridPoint(size_t basisI, size_t pointJ) {
+    const base::GridPoint& gpBasis = gridStorage[basisI];
+    const base::GridPoint& gpPoint = gridStorage[pointJ];
+    double result = 1.0;
+
+    for (size_t t = 0; t < gridStorage.getDimension(); t++) {
+      const double result1d = linearClenshawCurtisBoundaryBasis->eval(
           gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getUnitCoordinate(gpPoint, t));
 
       if (result1d == 0.0) {
