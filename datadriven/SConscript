@@ -10,17 +10,19 @@ import os
 
 Import("*")
 
-moduleDependencies = ["sgpppde", "sgppsolver", "sgppbase"]
+moduleDependencies = ["sgppoptimization", "sgpppde", "sgppsolver", "sgppbase"]
 
 additionalDependencies = []
 additionalBoostTestDependencies = []
-        
+
 if env["USE_ZLIB"]:
   additionalDependencies += ["z"]
 if env["USE_OCL"]:
   additionalDependencies += ["OpenCL"]
 if env["USE_GSL"]:
     additionalDependencies += ["gsl", "gslcblas"]
+if env["USE_CGAL"]:
+  additionalDependencies += ["CGAL"]
 
 additionalBoostTestDependencies = ["z"]
 performanceTestFlag = "COMPILE_BOOST_PERFORMANCE_TESTS"

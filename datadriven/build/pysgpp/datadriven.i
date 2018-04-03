@@ -15,7 +15,7 @@
 
 // base class is not exported from the configuration
 %warnfilter(401) sgpp::datadriven::LearnerSGDEConfiguration;
-
+%warnfilter(401) sgpp::datadriven::SparseGridDensityEstimatorConfiguration;
 
 // The Good, i.e. without any modifications
 #ifdef SG_DATADRIVEN
@@ -68,7 +68,14 @@
 %include "datadriven/src/sgpp/datadriven/tools/TypesDatadriven.hpp"
 %include "datadriven/src/sgpp/datadriven/application/LearnerBase.hpp"
 %include "datadriven/src/sgpp/datadriven/application/DensityEstimator.hpp"
-%include "datadriven/src/sgpp/datadriven/application/GaussianKDE.hpp"
+
+%include "datadriven/src/sgpp/datadriven/application/KernelDensityEstimator.hpp"
+%newobject sgpp::datadriven::KernelDensityEstimator::margToDimX(size_t idim);
+%newobject sgpp::datadriven::KernelDensityEstimator::marginalize(size_t idim);
+%include "datadriven/src/sgpp/datadriven/application/SparseGridDensityEstimator.hpp"
+%newobject sgpp::datadriven::SparseGridDensityEstimator::margToDimX(size_t idim);
+%newobject sgpp::datadriven::SparseGridDensityEstimator::marginalize(size_t idim);
+
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
 %include "datadriven/src/sgpp/datadriven/application/RegressionLearner.hpp"
 %include "datadriven/src/sgpp/datadriven/application/ClassificationLearner.hpp"
@@ -175,6 +182,13 @@
 
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMarginalize.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp"
+
+%ignore sgpp::datadriven::HashGridPointCompare::operator();
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationMakePositiveCandidateSetAlgorithm.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationLimitFunctionValueRange.hpp"
+
+%include "datadriven/src/sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
 
 // --------------------------------------
 // renaming ambiguous function declarations for python

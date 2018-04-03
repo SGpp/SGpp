@@ -7,16 +7,17 @@
 #define FUNDAMENTAL_SPLINE_MODIFIED_BASE_HPP
 
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
+#include <sgpp/base/operation/hash/common/basis/FundamentalSplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/FundamentalSplineBasis.hpp>
+#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 
 #include <sgpp/globaldef.hpp>
 
-#include <algorithm>
 #include <cmath>
-#include <stdexcept>
+#include <algorithm>
 #include <vector>
+#include <stdexcept>
 
 namespace sgpp {
 namespace base {
@@ -436,7 +437,42 @@ class FundamentalSplineModifiedBasis : public Basis<LT, IT> {
   /**
    * @return      B-spline degree
    */
-  inline size_t getDegree() const { return bsplineBasis.getDegree(); }
+  inline size_t getDegree() const override { return bsplineBasis.getDegree(); }
+
+  /**
+   * @param l     level of basis function
+   * @param i     index of basis function
+   * @return      value of the integral
+   */
+  inline double getIntegral(LT l, IT i) override {
+    if (l == 1) {
+      return 1;
+    }
+    const IT hInv = static_cast<IT>(1) << l;
+    double h = std::pow(2, -static_cast<int>(l));
+    size_t degree = bsplineBasis.getDegree();
+    size_t co_len = coefficients.size();  // depends on the degree
+    // size_t erster_abschnitt = std::max(0, -static_cast<int>(i-(degree+1)/2));
+    size_t erster_abschnitt = std::max(0, -static_cast<int>(i - co_len));
+    size_t letzter_abschnitt = std::min(2 * co_len - 1, hInv + co_len - i - 1);
+    size_t quadLevel = (degree + 1) / 2;
+    if (!integrationInitialized) {
+      sgpp::base::GaussLegendreQuadRule1D gauss;
+      gauss.getLevelPointsAndWeightsNormalized(quadLevel, coordinates, weights);
+      integrationInitialized = true;
+    }
+    double res = 0.0;
+    for (size_t j = erster_abschnitt; j <= letzter_abschnitt; j++) {
+      double temp_res = 0.0;
+      for (size_t c = 0; c < quadLevel; c++) {
+        double x = h * (coordinates[c] + (static_cast<double>(i) - static_cast<double>(co_len) +
+                                          static_cast<double>(j)));
+        temp_res += weights[c] * eval(l, i, x);
+      }
+      res += h * temp_res;
+    }
+    return res;
+  }
 
  protected:
   /// fundamental spline basis for fundamental spline evaluation
@@ -445,6 +481,10 @@ class FundamentalSplineModifiedBasis : public Basis<LT, IT> {
   BsplineBasis<LT, IT> bsplineBasis;
   /// B-spline coefficients
   std::vector<double> coefficients;
+  /// coordinates and weights for calculating integrals
+  DataVector coordinates;
+  DataVector weights;
+  bool integrationInitialized = false;
 };
 
 // default type-def (unsigned int for level and index)

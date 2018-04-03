@@ -75,11 +75,11 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
           "In DBMatOnlineDE::computeDensityFunction: b doesn't match size of system matrix");
     }
 
-    std::unique_ptr<sgpp::base::OperationMultipleEval> B((offlineObject.interactions.size()== 0)?
-        sgpp::op_factory::createOperationMultipleEval(offlineObject.getGrid(), m):
-        sgpp::op_factory::createOperationMultipleEvalInter(offlineObject.getGrid(),
-            m, offlineObject.interactions));
-
+    std::unique_ptr<sgpp::base::OperationMultipleEval> B(
+        (offlineObject.interactions.size() == 0)
+            ? sgpp::op_factory::createOperationMultipleEval(offlineObject.getGrid(), m)
+            : sgpp::op_factory::createOperationMultipleEvalInter(offlineObject.getGrid(), m,
+                                                                 offlineObject.interactions));
 
     DataVector y(numberOfPoints);
     y.setAll(1.0);
@@ -154,11 +154,10 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, bool save_b, bool do_c
 }
 
 double DBMatOnlineDE::resDensity(DataVector& alpha) {
-  auto C = std::unique_ptr<sgpp::base::OperationMatrix>(
-      sgpp::op_factory::createOperationIdentity(offlineObject.getGrid()));
+  auto C = sgpp::op_factory::createOperationIdentity(offlineObject.getGrid());
   DataVector rhs(offlineObject.getGrid().getSize());
   DataVector res(offlineObject.getGrid().getSize());
-  sgpp::datadriven::DensitySystemMatrix SMatrix(offlineObject.getGrid(), *testMat, *C, 0.0);
+  sgpp::datadriven::DensitySystemMatrix SMatrix(offlineObject.getGrid(), *testMat, C, 0.0);
 
   SMatrix.generateb(rhs);
 
@@ -198,10 +197,10 @@ double DBMatOnlineDE::eval(const DataVector& p, bool force) {
 void DBMatOnlineDE::eval(DataMatrix& values, DataVector& results, bool force) {
   if (functionComputed || force == true) {
     std::unique_ptr<sgpp::base::OperationMultipleEval> opEval(
-      (offlineObject.interactions.size()== 0)?
-        sgpp::op_factory::createOperationMultipleEval(offlineObject.getGrid(), values):
-        sgpp::op_factory::createOperationMultipleEvalInter(offlineObject.getGrid(),
-        values, offlineObject.interactions));
+        (offlineObject.interactions.size() == 0)
+            ? sgpp::op_factory::createOperationMultipleEval(offlineObject.getGrid(), values)
+            : sgpp::op_factory::createOperationMultipleEvalInter(offlineObject.getGrid(), values,
+                                                                 offlineObject.interactions));
     opEval->eval(alpha, results);
     results.mult(normFactor);
   } else {
@@ -267,11 +266,10 @@ double DBMatOnlineDE::normalize(size_t samples) {
   return this->normFactor = static_cast<double>(samples) / sum;
 }
 
-
 double DBMatOnlineDE::normalizeQuadrature() {
   this->normFactor = 1.;
-  double quadrature = sgpp::op_factory::createOperationQuadrature(offlineObject.getGrid())
-    ->doQuadrature(alpha);
+  double quadrature =
+      sgpp::op_factory::createOperationQuadrature(offlineObject.getGrid())->doQuadrature(alpha);
 
   return this->normFactor /= quadrature;
 }

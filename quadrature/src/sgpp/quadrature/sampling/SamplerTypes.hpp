@@ -11,7 +11,7 @@
 namespace sgpp {
 namespace quadrature {
 
-enum class SamplerTypes { Naive, Stratified, LatinHypercube, Halton };
+enum class SamplerTypes { Naive, Stratified, LatinHypercube, Halton, Sobol, ScrambledSobol };
 
 }  // namespace quadrature
 }  // namespace sgpp

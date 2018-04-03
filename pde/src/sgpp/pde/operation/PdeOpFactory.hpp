@@ -37,6 +37,28 @@ base::OperationMatrix* createOperationLaplace(base::Grid& grid);
  */
 base::OperationMatrix* createOperationLaplace(
     base::Grid& grid, sgpp::base::DataVector& coef);
+
+/**
+   * Factory method, returning an OperationLaplaceExplicit (OperationMatrix) for the grid at hand.
+   * Note: object has to be freed after use.
+   *
+   * @param grid Grid which is to be used
+   * @return Pointer to the new OperationMatrix object for the Grid grid
+   */
+base::OperationMatrix* createOperationLaplaceExplicit(base::Grid& grid);
+
+/**
+   * Factory method, returning an OperationLaplaceExplicit (OperationMatrix) for the grid at hand.
+   * Note: object has to be freed after use. The DataMatrix m is used to store the the matrix and
+   * is not destroyed if the OperationMatrix is destroyed.
+   *
+   * @param grid Grid which is to be used
+   * @param m DataMatrix in which the data is stored
+   * @return Pointer to the new OperationMatrix object for the Grid grid
+   */
+base::OperationMatrix* createOperationLaplaceExplicit(
+    base::DataMatrix* m, base::Grid& grid);
+
 /**
  * Factory method, returning an OperationLTwoDotProduct (OperationMatrix) for the grid at hand.
  * Note: object has to be freed after use.
