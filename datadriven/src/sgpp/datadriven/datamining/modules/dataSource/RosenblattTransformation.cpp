@@ -21,25 +21,33 @@
 namespace sgpp {
 namespace datadriven {
 
-RosenblattTransformation::RosenblattTransformation(Dataset* dataset,
-                                                   RosenblattTransformationConfig config)
-    : grid(nullptr), alpha(nullptr), datasetTransformed(nullptr), datasetInvTransformed(nullptr) {
+RosenblattTransformation::RosenblattTransformation()
+  : grid(nullptr),
+    alpha(nullptr),
+    datasetTransformed(nullptr),
+    datasetInvTransformed(nullptr) {}
+
+void RosenblattTransformation::initialize(Dataset* dataset,
+    DataTransformationConfig config) {
+  RosenblattTransformationConfig rbConfig = config.rosenblattConfig;
+
   // Sample #numSamples random samples from dataset
-  sgpp::base::DataMatrix samples(config.numSamples, dataset->getDimension());
-  sgpp::base::DataVector currSample(dataset->getDimension());
+  DataMatrix samples(rbConfig.numSamples, dataset->getDimension());
+  DataVector currSample(dataset->getDimension());
 
   std::mt19937 generator;
   std::uniform_real_distribution<double> distr(
       0, static_cast<double>(dataset->getNumberInstances() - 1));
 
-  for (unsigned int i = 0; i < config.numSamples; i++) {
-    dataset->getData().getRow(static_cast<size_t>(distr(generator)), currSample);
-    samples.setRow(i, currSample);
-  }
+  for (unsigned int i = 0; i < rbConfig.numSamples; i++) {
+      dataset->getData().getRow(static_cast<size_t>(distr(generator)), currSample);
+      samples.setRow(i, currSample);
+    }
 
   // Approximate probability density function (PDF)
   size_t dim = dataset->getDimension();
-  sgpp::datadriven::LearnerSGDE learner = createSGDELearner(dim, config);
+  LearnerSGDE learner = createSGDELearner(dim, rbConfig);
+
   learner.initialize(samples);
   learner.train();
 

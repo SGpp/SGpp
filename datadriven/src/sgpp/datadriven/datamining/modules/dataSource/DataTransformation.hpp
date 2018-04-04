@@ -38,6 +38,15 @@ class DataTransformation {
   virtual ~DataTransformation() = default;
 
   /**
+   * Initializes a data transformation for a given dataset according to the specified
+   * config
+   *
+   * @param dataset pointer to the dataset to be initialized
+   * @param config configuration containing parameters for initalization
+   */
+  virtual void initialize(Dataset* dataset, DataTransformationConfig config) = 0;
+
+  /**
    * Performs a data transformation on a given dataset for a data transformationn built with
    * DataTransformationBuilder
    *

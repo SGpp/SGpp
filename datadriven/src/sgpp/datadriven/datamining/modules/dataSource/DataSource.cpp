@@ -31,6 +31,9 @@ DataSource::DataSource(DataSourceConfig conf, SampleProvider* sp)
   if (!this->config.filePath.empty()) {
     dynamic_cast<FileSampleProvider*>(sampleProvider.get())->readFile(this->config.filePath);
   }
+  // Build data transformation
+  DataTransformationBuilder dataTrBuilder;
+  dataTransformation = dataTrBuilder.buildTransformation(conf.dataTransformationConfig);
 }
 
 DataSourceIterator DataSource::begin() { return DataSourceIterator(*this, 0); }
@@ -44,19 +47,31 @@ Dataset* DataSource::getNextSamples() {
   if (config.numBatches == 1 && config.batchSize == 0) {
     currentIteration++;
     dataset = sampleProvider->getAllSamples();
-  } else {
-    currentIteration++;
-    dataset = sampleProvider->getNextSamples(config.batchSize);
-  }
 
-  // Transform dataset if requested
-  if (!(config.dataTransformationConfig.type == DataTransformationType::NONE)) {
-    DataTransformationBuilder dataTrBuilder;
-    DataTransformation* dataTransformation =
-        dataTrBuilder.buildTransformation(config.dataTransformationConfig, dataset);
-    return dataTransformation->doTransformation(dataset);
+    // Transform dataset if wanted
+    if (!(config.dataTransformationConfig.type == DataTransformationType::NONE)) {
+      dataTransformation->initialize(dataset, config.dataTransformationConfig);
+      return dataTransformation->doTransformation(dataset);
+    } else {
+      return dataset;
+    }
+  // several iterations
   } else {
-    return dataset;
+    dataset = sampleProvider->getNextSamples(config.batchSize);
+    currentIteration++;
+
+    // If data transformation wanted and first batch -> initialize transformation
+    if (currentIteration == 1 &&
+        !(config.dataTransformationConfig.type == DataTransformationType::NONE)) {
+      dataTransformation->initialize(dataset, config.dataTransformationConfig);
+      return dataTransformation->doTransformation(dataset);
+    }
+
+    // Transform dataset if wanted
+    if (!(config.dataTransformationConfig.type == DataTransformationType::NONE))
+      return dataTransformation->doTransformation(dataset);
+    else
+      return dataset;
   }
 }
 
