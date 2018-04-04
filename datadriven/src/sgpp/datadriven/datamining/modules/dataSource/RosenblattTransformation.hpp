@@ -20,6 +20,12 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
 namespace sgpp {
+
+using sgpp::base::Grid;
+using sgpp::base::DataVector;
+using sgpp::base::DataMatrix;
+using sgpp::datadriven::LearnerSGDE;
+
 namespace datadriven {
 
 class RosenblattTransformation : public DataTransformation {
@@ -27,7 +33,16 @@ class RosenblattTransformation : public DataTransformation {
   /**
    * Default constructor
    */
-  RosenblattTransformation(Dataset* dataset, RosenblattTransformationConfig config);
+
+  RosenblattTransformation();
+
+  /**
+   * Initializes a transformation by approximating probability density function (PDF),
+   * calculates grid and alpha for numSamples samples of a dataset
+   * @param dataset pointer to the dataset to be initialized
+   * @param config configuration containing parameters for initalization
+   */
+  void initialize(Dataset* dataset, DataTransformationConfig config) override;
 
   /**
    * Wrapper for Rosenblatt transformation. Can be called from an initialized
@@ -51,8 +66,7 @@ class RosenblattTransformation : public DataTransformation {
    * Helper function
    * It configures and creates a SGDE learner with meaningful parameters
    */
-  sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim,
-                                                  RosenblattTransformationConfig config);
+  LearnerSGDE createSGDELearner(size_t dim, RosenblattTransformationConfig config);
 
  private:
   /**
