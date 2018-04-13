@@ -75,10 +75,12 @@ class NakBsplineBoundaryCombigridBasis : public Basis<LT, IT> {
         if (l == 0) {
           if (i == 0) {
             // l = 0, i = 0
-            return 1 - x * x;
+            //            return 1 - x * x;
+            return (2 * x - 3) * x + 1;
           } else {
             // l = 0, i = 1
-            return x;
+            //            return x;
+            return (2 * x - 1) * x;
           }
         } else if (l == 1) {
           if (i == 0) {
