@@ -271,5 +271,73 @@ void BsplineStochasticCollocation::differenceCTSG(sgpp::base::DataMatrix& xs,
   }
 }
 
+void BsplineStochasticCollocation::sgCoefficientCharacteristics(sgpp::base::DataVector& min,
+                                                                sgpp::base::DataVector& max,
+                                                                sgpp::base::DataVector& l2norm,
+                                                                size_t maxLevel) {
+  min.resize(0);
+  max.resize(0);
+  l2norm.resize(0);
+
+  std::shared_ptr<sgpp::base::Grid> grid;
+  grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDims, config.degree));
+  sgpp::base::GridStorage& gridStorage = grid->getStorage();
+  auto levelStructure = this->config.levelStructure;
+  convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
+
+  // interpolate on SG
+  sgpp::base::DataVector alpha =
+      calculateInterpolationCoefficientsForConvertedExpUniformBoundaryCombigird(
+          grid, gridStorage, combigridMultiOperation, levelStructure);
+
+  // sort coefficients by their levelsum
+  // level enumeration differs a little for hierarchical Sparse Grids and combigrid module grids
+  // becasue of the level 0 and level 1 interchange. Therefore the levelsum here is not equal to the
+  // actual combigrid level.
+  std::map<size_t, sgpp::base::DataVector> coeffMap_levelsum;
+  std::map<std::vector<size_t>, sgpp::base::DataVector> coeffMap_level;
+  std::map<size_t, size_t> numPointsPerLevel;
+  size_t numGP = gridStorage.getSize();
+  size_t numDim = gridStorage.getDimension();
+  for (size_t p = 0; p < numGP; p++) {
+    size_t levelsum = gridStorage[p].getLevelSum();
+    // this is a hack! the level 0/1 mismatch between hierarchical SG and combination technique
+    // leads to high levelsums in hierarchical SG where level 0 is sometimes called level 1
+    // ToDo(rehmemk) recognize maxLevel automatically / fix mismatch in levelsums
+    if (levelsum > maxLevel) {
+      levelsum = 0;
+      for (size_t d = 0; d < numDim; d++) {
+        size_t temp = gridStorage[p].getLevel(d);
+        if (temp != 1) {
+          levelsum += temp;
+        }
+      }
+    }
+    coeffMap_levelsum[levelsum].push_back(alpha[p]);
+    numPointsPerLevel[levelsum]++;
+
+    std::vector<size_t> level(0);
+    for (size_t d = 0; d < numDim; d++) {
+      level.push_back(gridStorage[p].getLevel(d));
+    }
+    coeffMap_level[level].push_back(alpha[p]);
+  }
+  for (auto const& it : coeffMap_levelsum) {
+    // print number of points per level
+    // std::cout << it.first << ": " << numPointsPerLevel[it.first] << std::endl;
+    min.push_back(it.second.min());
+    max.push_back(it.second.max());
+    l2norm.push_back(it.second.l2Norm());
+  }
+  // print level structure
+  //  std::cout << "BSC: Levels:" << std::endl;
+  //  for (auto const& it : coeffMap_level) {
+  //    for (size_t d = 0; d < numDim; d++) {
+  //      std::cout << it.first[d] << " ";
+  //    }
+  //    std::cout << "\n";
+  //  }
+}
+
 } /* namespace combigrid */
 } /* namespace sgpp */
