@@ -1,0 +1,18 @@
+# Copyright (C) 2008-today The SG++ Project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
+
+import ModuleHelper
+Import("*")
+
+moduleDependencies = ["sgppbase"]
+module = ModuleHelper.Module(moduleDependencies)
+
+module.scanSource()
+module.buildLibrary()
+module.generatePythonDocstrings()
+module.buildExamples()
+module.buildBoostTests()
+module.runBoostTests()
+module.runCpplint()

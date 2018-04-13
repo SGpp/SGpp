@@ -1,0 +1,9 @@
+/**
+@page module_quadrature Module sgpp::quadrature
+
+@short Stochastic and deterministic quadrature algorithms.
+
+- Quadrature operations
+- Support for basic Monte Carlo quadrature
+
+**/
