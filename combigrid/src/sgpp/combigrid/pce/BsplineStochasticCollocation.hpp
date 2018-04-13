@@ -58,6 +58,19 @@ class BsplineStochasticCollocation : public CombigridSurrogateModel {
   * **/
   void differenceCTSG(sgpp::base::DataMatrix& xs, sgpp::base::DataVector& res);
 
+  /**
+   * returns characteristic values of the sparse grid coefficients, namely minimum, maximum and L2
+   * norm per level. These values can be used to estimate the quality of the results if no
+   * comparative solution is available
+   * @param min vector of the minimal coefficient of each level
+   * @param max vector of the maximum coefficient of each level
+   * @param l2norm vector of the l2 norm of the coefficients of each level
+   * @param maxLevel to get levelsums matching the combination technique levelsums the maximum level
+   * must be forwarded
+   */
+  void sgCoefficientCharacteristics(sgpp::base::DataVector& min, sgpp::base::DataVector& max,
+                                    sgpp::base::DataVector& l2norm, size_t maxLevel = 1000000);
+
  private:
   void initializeOperations(std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
                             std::shared_ptr<AbstractCombigridStorage> storage,
@@ -68,7 +81,6 @@ class BsplineStochasticCollocation : public CombigridSurrogateModel {
   double computeVariance();
 
   void countPolynomialTerms();
-  size_t additionalQuadraturePoints(OrthogonalPolynomialBasisType polyType);
 
   double quad(sgpp::combigrid::MultiIndex i);
   double quad(sgpp::combigrid::MultiIndex i, sgpp::combigrid::MultiIndex j);
