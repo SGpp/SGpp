@@ -25,4 +25,4 @@ git add .
 git commit -m "New release ${RELEASE}"
 cd ..
 
-echo "Now test!"
+echo "Now test (at least SGpp)!"
