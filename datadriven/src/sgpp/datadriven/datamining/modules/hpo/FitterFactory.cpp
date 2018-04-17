@@ -43,7 +43,7 @@ void FitterFactory::getBOspace(int* nCont, std::vector<int>& nOptions){
     nOptions.push_back(pair.second.getNOptions());
   }
 
-} //EDIT: add categorical parameters
+} //EDIT: remove
 
 
 

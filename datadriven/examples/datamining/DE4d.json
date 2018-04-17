@@ -1,6 +1,6 @@
 {
 	"dataSource": {
-		"filePath": "C:/Users/Eric/Downloads/DE4dTrain.csv"
+		"filePath": "C:/Users/Eric/Downloads/DE4dTrainNoTargets.csv"
 	},
 	"scorer": {
 		"testing": {
@@ -18,7 +18,7 @@
 		"gridConfig": {
 			"gridType": "linear",
 			"dim": 4,
-			"level": 5
+			"level": 6
 		},
 		"adaptivityConfig": {
 			"numRefinements": 0,
@@ -26,7 +26,7 @@
 			"noPoints": 0
 		},
 		"regularizationConfig": {
-			"lambda": 10e-6
+			"lambda": 1e-4
 		}
 	}
 }

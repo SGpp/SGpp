@@ -55,19 +55,24 @@ ModelFittingBase* LeastSquaresRegressionFitterFactory::buildFitter()  {
 }
 
 std::string LeastSquaresRegressionFitterFactory::printConfig(){
-
+  std::stringstream s;
 	std::string basisFunction[] = {"Linear","ModLinear"};
-	std::cout<<"Level: "<< dispar["level"].getValue()
-					 <<", Basis: "<<basisFunction[catpar["basisFunction"].getValue()]
-					 <<", noPoints: "<< dispar["noPoints"].getValue()
-					 <<", Threshold: "<< pow(10,conpar["threshold"].getValue())
-					 <<", Lambda: "<< pow(10,conpar["lambda"].getValue())
-					 <<std::endl;
-  return std::to_string(dispar["level"].getValue())
+	s<< dispar["level"].getValue()
+   <<", "<<basisFunction[catpar["basisFunction"].getValue()]
+   <<", "<< dispar["noPoints"].getValue()
+   <<", "<< pow(10,conpar["threshold"].getValue())
+   <<", "<< pow(10,conpar["lambda"].getValue());
+  /*<<"Level: "<< dispar["level"].getValue()
+   <<", Basis: "<<basisFunction[catpar["basisFunction"].getValue()]
+   <<", noPoints: "<< dispar["noPoints"].getValue()
+   <<", Threshold: "<< pow(10,conpar["threshold"].getValue())
+   <<", Lambda: "<< pow(10,conpar["lambda"].getValue())
+   <<std::endl;*/
+  return s.str();/*std::to_string(dispar["level"].getValue())
                     + ", " + basisFunction[catpar["basisFunction"].getValue()]
                     + ", " + std::to_string(dispar["noPoints"].getValue())
                     + ", " + std::to_string(pow(10,conpar["threshold"].getValue()))
-                    + ", " + std::to_string(pow(10,conpar["lambda"].getValue()));
+                    + ", " + std::to_string(pow(10,conpar["lambda"].getValue())); */
                    // + std::endl;
 }
 

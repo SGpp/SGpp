@@ -40,7 +40,7 @@ void HyperparameterOptimizer::runHarmonica(){
   //prepare data
   std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
   Dataset dataone{30000, dataset->getDimension()}; //30000
-  Dataset datatwo{10000, dataset->getDimension()}; //200
+  Dataset datatwo{50000, dataset->getDimension()}; //200
   hpoScorer->resizeTrainData(*dataset, dataone);
   hpoScorer->resizeTrainData(*dataset, datatwo);
   std::cout << "Shuffle test: "<<dataone.getTargets()[0]<<","<<datatwo.getTargets()[0] << std::endl;
@@ -59,7 +59,7 @@ void HyperparameterOptimizer::runHarmonica(){
   double stdDeviation;
   double best = 1.0/0; //infinity
 
-  size_t runs[] = {200,200,100}; //EDIT: metaparameter
+  size_t runs[] = {50,50,50}; //EDIT: metaparameter 200,200,100
 
 
 for(int q=0;q<3;q++) {
@@ -74,13 +74,13 @@ for(int q=0;q<3;q++) {
   for (size_t i = 0; i < runs[q]; i++) {
     //scores[i] = readResults[i];
     scores[i] = hpoScorer->calculateScore(*(fitters[i]), *trainData, &stdDeviation);
-    std::cout << "Config: "<<configIDs->at(i)<<", Score " << i << ":" << scores[i];
+    std::cout << "Config: "<<configIDs->at(i)<< ", " << configStrings[i]<<", Score " << i << ":" << scores[i];
     if (scores[i] < best) {
       best = scores[i];
       std::cout << " best!";
     }
     std::cout << std::endl;
-    std::ofstream myfile("C:/Users/Eric/Documents/dr5harmonica10k.txt", std::ios_base::app);
+    std::ofstream myfile("C:/Users/Eric/Documents/DE50kharm.txt", std::ios_base::app);
     if (myfile.is_open()) {
       //myfile << "threshold,lambda,nopoints,level,basis" << std::endl;
       myfile << configIDs->at(i) << ", " << configStrings[i] << ", " << scores[i] << std::endl;
@@ -90,14 +90,14 @@ for(int q=0;q<3;q++) {
 
   harmonica.transformScores(scores, transformedScores);
 
-  harmonica.calculateConstrainedSpace(transformedScores,0.001,2); //EDIT: shrink 2
+  harmonica.calculateConstrainedSpace(transformedScores,0.1,1); //EDIT: shrink 2 and lambda, normalization
 
-  std::ofstream myfile("C:/Users/Eric/Documents/dr5harmonica10k.txt", std::ios_base::app);
+  /*std::ofstream myfile("C:/Users/Eric/Documents/dr5harmonica10k.txt", std::ios_base::app);
   if (myfile.is_open()) {
     //myfile << "threshold,lambda,nopoints,level,basis" << std::endl;
     myfile << "#####################################################################" << std::endl;
   }
-  myfile.close();
+  myfile.close();*/
 }
 
 }
@@ -110,7 +110,7 @@ void HyperparameterOptimizer::runBO(){
   //prepare data
   std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
   Dataset dataone{30000, dataset->getDimension()};
-  Dataset datatwo{10000, dataset->getDimension()};
+  Dataset datatwo{50000, dataset->getDimension()};
   hpoScorer->resizeTrainData(*dataset, dataone);
   hpoScorer->resizeTrainData(*dataset, datatwo);
   std::cout << "Shuffle test: "<<dataone.getTargets()[0]<<","<<datatwo.getTargets()[0] << std::endl;
@@ -123,18 +123,24 @@ void HyperparameterOptimizer::runBO(){
   std::vector<BOConfig> initialConfigs{};
   initialConfigs.reserve(10);
 
-  std::mt19937 generator(420); //EDIT: meta seed
+  std::mt19937 generator(42); //EDIT: meta seed 420 for most tests
   //std::uniform_real_distribution<double> dis(0.0, 1.0);
   //std::cout << "Random test:"<<dis(generator);
   for (int i = 0; i < 10; ++i) {
     initialConfigs.emplace_back(prototype);// = BOConfig(prototype);
     initialConfigs[i].randomize(generator);
     fitterFactory->setBO(&initialConfigs[i]);
-    fitterFactory->printConfig();
+    std::string configString = fitterFactory->printConfig();
+    std::cout<<configString<<std::endl;
     std::unique_ptr<ModelFittingBase> fitter(fitterFactory->buildFitter());
     double result = hpoScorer->calculateScore(*fitter, *trainData, &stdDeviation);
     initialConfigs[i].setScore(result);
     std::cout << "Result: " << result << std::endl;
+    std::ofstream myfile("C:/Users/Eric/Documents/DE50kBO.txt", std::ios_base::app);
+    if (myfile.is_open()) {
+      myfile << configString << ", " <<result << std::endl;
+    }
+    myfile.close();
   }
 
   std::cout << "Random finished!" << std::endl;
@@ -144,19 +150,19 @@ void HyperparameterOptimizer::runBO(){
   bo.fitScales();
 
 
-  for(int q=0; q<500; q++) {
+  for(int q=0; q<140; q++) {
     BOConfig *nextConfig = bo.main(prototype); //EDIT: give prototype earlier
     fitterFactory->setBO(nextConfig);
     std::string configString = fitterFactory->printConfig();
     std::unique_ptr<ModelFittingBase> fitter(fitterFactory->buildFitter());
+    std::cout<<configString<<std::endl;
     double result = hpoScorer->calculateScore(*fitter, *trainData, &stdDeviation);
     nextConfig->setScore(result);
     bo.updateGP();
     std::cout << "Result: " << result << std::endl;
     bo.fitScales();
-    std::ofstream myfile("C:/Users/Eric/Documents/BO10kARDfriedman.txt", std::ios_base::app);
+    std::ofstream myfile("C:/Users/Eric/Documents/DE50kBO.txt", std::ios_base::app);
     if (myfile.is_open()) {
-     //myfile << "threshold,lambda,nopoints,level,basis" << std::endl;
      myfile << configString << ", " <<result << std::endl;
     }
     myfile.close();

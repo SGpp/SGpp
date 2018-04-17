@@ -46,7 +46,7 @@ BayesianOptimization::BayesianOptimization(const std::vector<BOConfig>& initialC
   decomposeCholesky(kernelmatrix, gleft);
   //transformedOutput = base::DataVector(rawScores);
   solveCholeskySystem(gleft, transformedOutput);
-  scales = base::DataVector(5,1);
+  scales = base::DataVector(3,1); //EDIT: dimensions
 }
 
 double BayesianOptimization::transformScore(double original) {
@@ -83,8 +83,8 @@ double BayesianOptimization::acquisitionEI(base::DataVector knew, double kself, 
   }
 
   double z = (mean - (bestsofar-0.001))/var;
-  return ((mean - (bestsofar-0.001))*(0.5+0.5*std::erf(-z/1.41))-var*0.4*std::exp(-0.5*z*z)); //erf z
-
+  return ((mean - (bestsofar-0.001))*(0.5+0.5*std::erf(-z/1.41))-var*0.4*std::exp(-0.5*z*z)); //EDIT: is this calculated properly?
+  //return mean; //EDIT
 }
 
 BOConfig* BayesianOptimization::main(BOConfig& prototype) {
@@ -93,7 +93,7 @@ BOConfig* BayesianOptimization::main(BOConfig& prototype) {
   double min = 1.0/0; //infinity
   BOConfig bestConfig;
   //EDIT: What if no discrete exist?
-  while(nextconfig.nextDisc()){
+  do{
     for(auto& config: allConfigs){
       config.calcDiscDistance(nextconfig, scales);
     }
@@ -104,7 +104,16 @@ BOConfig* BayesianOptimization::main(BOConfig& prototype) {
       bestConfig = BOConfig(nextconfig);
       bestConfig.setCont(optimizer.getOptimalPoint());
     }
-  }
+    /*for (int i = 0; i < 101; ++i) {
+      std::ofstream myfile("C:/Users/Eric/Documents/acquisition.txt", std::ios_base::app);
+      if (myfile.is_open()) {
+
+        //myfile << "threshold,lambda,nopoints,level,basis" << std::endl;
+        myfile << nextconfig.getDisc(0) << ", " << i/100.0 << ", " << acquisitionOuter(base::DataVector(1, i/100.0)) << std::endl;
+      }
+      myfile.close();
+    }*/
+  }while(nextconfig.nextDisc());
   std::cout << "Acquistion: " << min << std::endl;
   allConfigs.push_back(bestConfig);
   return &allConfigs.back();
@@ -124,7 +133,7 @@ double BayesianOptimization::acquisitionOuter(const base::DataVector & inp) {
 }
 
 void BayesianOptimization::fitScales() {
-  optimization::WrapperScalarFunction wrapper(5, std::bind(likelihood, this, std::placeholders::_1)); //EDIT: number of hyperparameters
+  optimization::WrapperScalarFunction wrapper(3, std::bind(likelihood, this, std::placeholders::_1)); //EDIT: number of hyperparameters
   optimization::optimizer::MultiStart optimizer(wrapper, 2000, 200); //10000
   optimizer.optimize();
   std::cout<<optimizer.getOptimalPoint().toString()<<std::endl;
@@ -134,7 +143,7 @@ void BayesianOptimization::fitScales() {
   scales.mult(0.9); //0.7
   scales.add(tmp);
   std::cout<<scales.toString()<<std::endl;
-  double noise = 1e-4; //EDIT: metaparameter
+  double noise = pow(10, -scales.back()*10); //EDIT: metaparameter 1e-4
   for (size_t i = 0; i < allConfigs.size(); ++i) {
     for (size_t k = 0; k < i; ++k) {
       double tmp = kernel(allConfigs[i].getScaledDistance(allConfigs[k], scales));
@@ -147,7 +156,7 @@ void BayesianOptimization::fitScales() {
 }
 
 double BayesianOptimization::likelihood(const base::DataVector &inp) {
-  double noise = 1e-4; //: metaparameter
+  double noise = pow(10, -inp.back()*10);; //: metaparameter
   base::DataMatrix km(allConfigs.size(),allConfigs.size());
   for (size_t i = 0; i < allConfigs.size(); ++i) {
     for (size_t k = 0; k < i; ++k) {
@@ -174,7 +183,7 @@ double BayesianOptimization::likelihood(const base::DataVector &inp) {
 }
 
 void BayesianOptimization::updateGP(){
-  double noise = 1e-4; //EDIT: metaparameter
+  double noise = pow(10, -scales.back()*10); //EDIT: metaparameter
   size_t size = kernelmatrix.getNcols();
   //kernelmatrix.resize(size + 1, size + 1); //EDIT: does this work? did I have problems before? IT does not!
   kernelmatrix.appendRow();

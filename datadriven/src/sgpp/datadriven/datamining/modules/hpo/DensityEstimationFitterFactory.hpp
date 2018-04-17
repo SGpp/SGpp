@@ -15,12 +15,10 @@
 #include <sgpp/datadriven/datamining/modules/hpo/FitterFactory.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/ConfigurationBit.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/ContinuousParameter.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/DiscreteParameter.hpp>
-
-
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
 
 
 namespace sgpp {
@@ -48,7 +46,7 @@ class DensityEstimationFitterFactory : public FitterFactory {
 
 
 protected:
-  FitterConfigurationLeastSquares baseConfig;
+  FitterConfigurationDensityEstimation baseConfig;
 
 };
 
