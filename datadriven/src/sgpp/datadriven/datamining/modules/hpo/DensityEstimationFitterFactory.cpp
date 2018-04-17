@@ -12,9 +12,9 @@
 
 #include <sgpp/datadriven/datamining/modules/hpo/DensityEstimationFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -26,11 +26,11 @@ DensityEstimationFitterFactory::DensityEstimationFitterFactory(DataMiningConfigP
 
 	//EDIT: new hier ohne pointer?
 
-  dispar["level"] = DiscreteParameter("level", 1, 4);
+  dispar["level"] = DiscreteParameter("level", 4, 7);
 
-  catpar["basisFunction"] = DiscreteParameter("basisFunction",0,1);
+  //catpar["basisFunction"] = DiscreteParameter("basisFunction",0,1);
 
-  conpar["lambda"] = ContinuousParameter(6, "lambda", -8, 0);
+  conpar["lambda"] = ContinuousParameter(7, "lambda", -10, 0);
 
 
 }
@@ -40,25 +40,24 @@ DensityEstimationFitterFactory::DensityEstimationFitterFactory(DataMiningConfigP
 ModelFittingBase* DensityEstimationFitterFactory::buildFitter()  {
 
   // build config
-  FitterConfigurationLeastSquares* config = new FitterConfigurationLeastSquares(baseConfig);
+  auto* config = new FitterConfigurationDensityEstimation(baseConfig);
   //EDIT: make lambda exponential
   base::GridType basisFunction[] = {base::GridType::Linear,base::GridType::ModLinear};
 
   config->getGridConfig().level_ = dispar["level"].getValue();
-  config->getGridConfig().type_ = basisFunction[catpar["basisFunction"].getValue()];
+  //config->getGridConfig().type_ = basisFunction[catpar["basisFunction"].getValue()];
   config->getRegularizationConfig().lambda_ = pow(10, conpar["lambda"].getValue());
 
-  return new ModelFittingLeastSquares(*config);
+  return new ModelFittingDensityEstimation(*config);
 }
 
 std::string DensityEstimationFitterFactory::printConfig(){
-
+  std::stringstream s;
 	std::string basisFunction[] = {"Linear","ModLinear"};
-	std::cout<<"Level: "<< dispar["level"].getValue()
-					 <<", Basis: "<<basisFunction[catpar["basisFunction"].getValue()]
-					 <<", Lambda: "<< pow(10, conpar["lambda"].getValue())
-					 <<std::endl;
-  return "";
+	s<< dispar["level"].getValue()
+					// <<", "<<basisFunction[catpar["basisFunction"].getValue()]
+					 <<", "<< pow(10, conpar["lambda"].getValue());
+  return s.str();
 }
 
 } /* namespace datadriven */

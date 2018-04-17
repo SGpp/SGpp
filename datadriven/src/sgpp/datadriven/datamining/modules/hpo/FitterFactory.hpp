@@ -48,18 +48,21 @@ class FitterFactory {
 
   virtual ModelFittingBase* buildFitter() = 0;
 
-
   virtual std::string printConfig() = 0;
 
-  void setHarmonica();
 
-  void getBOspace(int* nCont, std::vector<int>& nOptions); //EDIT: add categorical parameters
+
+  void getConfigBits(std::vector<ConfigurationBit*>& configBits);
+
+  void setHarmonica();
 
   BOConfig getBOConfig();
 
   void setBO(BOConfig* config);
 
-  void getConfigBits(std::vector<ConfigurationBit*>& configBits);
+
+  void getBOspace(int* nCont, std::vector<int>& nOptions); //EDIT: delete
+
 
 protected:
   std::map<std::string,ContinuousParameter> conpar;

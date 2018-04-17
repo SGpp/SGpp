@@ -124,7 +124,7 @@ double HPOScorer::calculateScore(ModelFittingBase& model, Dataset& trainDataset,
   bool resetVerbose = model.verboseSolver;
   model.verboseSolver = false;
 
-  
+
   
   
   model.fit(trainDataset);
