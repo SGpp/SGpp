@@ -1,0 +1,23 @@
+{
+	"database" : [
+		{
+			"gridConfiguration" : {
+				"type" : "regular",
+				"dimension" : 2,
+				"level" : 3,
+				"lambda" : 10e-7,
+				"interactions" : 0
+			},
+			"regularizationConfiguration" : {
+				"lambda" : 10e-7
+			},
+			"densityEstimationConfiguration" : {
+				"decomposition" : "Chol"
+			},
+			"filepath" : "/media/d/uni/bachelor_thesis/dbmattest"
+		
+		},
+		{},
+		{}
+	]
+}

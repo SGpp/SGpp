@@ -59,9 +59,21 @@ enum class GridType {
 };
 
 /**
- * structure that can be used by applications to cluster regular grid information
+ * Enum to define all possible grid "super" types (used for GeneralGridConfiguration
  */
-struct RegularGridConfiguration {
+enum class GeneralGridType {
+  RegularSparseGrid,
+  RefinedCoarsenedSparseGrid,
+  CombiGrid,
+  SparseGridWithInteractions
+};
+
+/**
+ * Struct to cluster general grid information for different grid "super" types
+ */
+struct GeneralGridConfiguration {
+  // Grid "super" types
+  GeneralGridType generalType_;
   /// Grid Type, see enum
   sgpp::base::GridType type_;
   /// number of dimensions
@@ -76,6 +88,15 @@ struct RegularGridConfiguration {
   std::string filename_;
   /// subgrid selection value t
   double t_ = 0.0;
+};
+
+/**
+ * structure that can be used by applications to cluster regular grid information
+ */
+struct RegularGridConfiguration : GeneralGridConfiguration {
+  RegularGridConfiguration() {
+    generalType_ = GeneralGridType::RegularSparseGrid;
+  }
 };
 
 /**
