@@ -13,6 +13,8 @@
 #include <string>
 #include <vector>
 
+#include <iostream>
+
 namespace json {
 
 ListNode::ListNode() : list() {}
@@ -112,7 +114,7 @@ void ListNode::parse(std::vector<Token>& stream) {
   throw json_exception("unexpected end-of-file");
 }
 
-Node& ListNode::operator[](size_t index) { return *this->list[index]; }
+Node& ListNode::operator[](size_t index) { return *this->list[index];}
 
 void ListNode::serialize(std::ostream& outFile, size_t indentWidth) {
   outFile << "[";
