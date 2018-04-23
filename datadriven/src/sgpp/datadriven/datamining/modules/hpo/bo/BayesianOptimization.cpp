@@ -89,7 +89,7 @@ double BayesianOptimization::acquisitionEI(base::DataVector knew, double kself, 
 
 BOConfig* BayesianOptimization::main(BOConfig& prototype) {
   BOConfig nextconfig(prototype);
-  optimization::WrapperScalarFunction wrapper(prototype.getContSize(), std::bind(acquisitionOuter, this, std::placeholders::_1));
+  optimization::WrapperScalarFunction wrapper(prototype.getContSize(), std::bind(&BayesianOptimization::acquisitionOuter, this, std::placeholders::_1));
   double min = 1.0/0; //infinity
   BOConfig bestConfig;
   //EDIT: What if no discrete exist?
@@ -133,7 +133,7 @@ double BayesianOptimization::acquisitionOuter(const base::DataVector & inp) {
 }
 
 void BayesianOptimization::fitScales() {
-  optimization::WrapperScalarFunction wrapper(3, std::bind(likelihood, this, std::placeholders::_1)); //EDIT: number of hyperparameters
+  optimization::WrapperScalarFunction wrapper(3, std::bind(&BayesianOptimization::likelihood, this, std::placeholders::_1)); //EDIT: number of hyperparameters
   optimization::optimizer::MultiStart optimizer(wrapper, 2000, 200); //10000
   optimizer.optimize();
   std::cout<<optimizer.getOptimalPoint().toString()<<std::endl;
