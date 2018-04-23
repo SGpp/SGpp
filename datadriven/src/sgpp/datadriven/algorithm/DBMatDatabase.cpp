@@ -13,6 +13,7 @@
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
 
 #include <sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp>
+#include <sgpp/datadriven/datamining/configuration/GeneralGridTypeParser.hpp>
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/base/tools/json/DictNode.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
@@ -25,7 +26,19 @@
 namespace sgpp {
 namespace datadriven {
 
+// Globally define all keys in a database entry
+const std::string keyGridConfiguration = "gridConfiguration";
+const std::string keyRegularizationConfiguration = "regularizationConfiguration";
+const std::string keyDensityEstimationConfiguration = "densityEstimationConfiguration";
+const std::string keyGridType = "type";
+const std::string keyGridDimension = "dimension";
+const std::string keyGridLevel = "level";
+const std::string keyRegularizationStrength = "lambda";
+const std::string keyDecompositionType = "decomposition";
+const std::string keyFilepath = "filepath";
+
 DBMatDatabase::DBMatDatabase(const std::string& filepath) {
+  databaseFilepath = filepath;
   databaseRoot = std::make_unique<json::JSON>(filepath);
   // Get the root node of the database (list)
   if (databaseRoot->contains("database")) {
@@ -36,79 +49,102 @@ DBMatDatabase::DBMatDatabase(const std::string& filepath) {
   }
 }
 
-DBMatOffline* DBMatDatabase::dataMatrixFromDatabase(
+DBMatOffline* DBMatDatabase::getDataMatrix(
     sgpp::base::GeneralGridConfiguration& gridConfig,
     sgpp::base::AdpativityConfiguration& adaptivityConfig,
     sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
-
-  try {
-    std::string matrixfile = matrixFileByConfiguration(gridConfig, adaptivityConfig,
-        regularizationConfig, densityEstimationConfig);
-    // Offline object from file
-    try {
-      return sgpp::datadriven::DBMatOfflineFactory::buildFromFile(matrixfile);
-    } catch (sgpp::base::factory_exception e) {
-      std::cout << "DBMatOfflineFactory threw an exception while deserializing matrix "
-          "decomposition: " << e.what() << std::endl;
-      return nullptr;
-    }
-
-  } catch (sgpp::base::factory_exception& e) {
+  int entry_index = entryIndexByConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
+      densityEstimationConfig);
+  if (entry_index < 0) {
     // No decomposition in database
     return nullptr;
+  } else {
+    json::DictNode* entry = (json::DictNode*)(&((*database)[entry_index]));
+    std::string& filepath = (*entry)[keyFilepath].get();
+    return sgpp::datadriven::DBMatOfflineFactory::buildFromFile(filepath);
   }
 }
 
+void DBMatDatabase::putDataMatrix(sgpp::base::GeneralGridConfiguration& gridConfig,
+    sgpp::base::AdpativityConfiguration& adaptivityConfig,
+    sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+    sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+    std::string filepath, bool overwriteEntry) {
+  // Check if for this setting an entry is already definied
+  int entry_index = entryIndexByConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
+      densityEstimationConfig);
+  if (entry_index < 0) {
+    // Create a new list node in the json object
+    json::DictNode& entry = (json::DictNode&)(database->addDictValue());
+    // Add a grid configuration entry
+    json::DictNode& gridConfigEntry = (json::DictNode&)(entry.addDictAttr(keyGridConfiguration));
+    gridConfigEntry.addTextAttr(keyGridType, sgpp::datadriven::GeneralGridTypeParser::toString(
+        gridConfig.generalType_));
+    gridConfigEntry.addIDAttr(keyGridDimension, (uint64_t)gridConfig.dim_);
+    gridConfigEntry.addIDAttr(keyGridLevel, (int64_t)gridConfig.level_);
+    // Add a regularization configuration entry
+    json::DictNode& regularizationConfigEntry = (json::DictNode&)(entry.addDictAttr(
+        keyRegularizationConfiguration));
+    regularizationConfigEntry.addIDAttr(keyRegularizationStrength, regularizationConfig.lambda_);
+    // Add a density estimation configuration entry
+    json::DictNode& densityEstimationConfigEntry = (json::DictNode&)(entry.addDictAttr(
+        keyDensityEstimationConfiguration));
+    densityEstimationConfigEntry.addTextAttr(keyDecompositionType,
+        sgpp::datadriven::MatrixDecompositionTypeParser::toString(
+            densityEstimationConfig.decomposition_));
+    // Serialize the entire database
+    databaseRoot->serialize(databaseFilepath);
+    std::cout << "Successfully added new matrix decomposition at \"" << filepath <<
+        "\" to the database" << std::endl;
+  } else {
+    // Update only if overwriteEntry is set to true
+    if (overwriteEntry) {
+      json::DictNode* entry = (json::DictNode*)(&((*database)[entry_index]));
+      entry->replaceTextAttr(keyFilepath, filepath);
+      databaseRoot->serialize(databaseFilepath);
+      std::cout << "Updated matrix decomposition to \"" << filepath << "\" in database"
+          << std::endl;
+    } else {
+      std::cout << "Matrix decomposition already present in database. Did not update." << std::endl;
+    }
+  }
+}
 
 bool DBMatDatabase::gridConfigurationMatches(json::DictNode *node,
       sgpp::base::GeneralGridConfiguration& gridConfig, size_t entry_num) {
   // Check if grid general type matches
-  if (node->contains("type")) {
+  if (node->contains(keyGridType)) {
     // Parse the grid general type
-    sgpp::base::GeneralGridType gridType;
-    std::string strGridType = (*node)["type"].get();
-    std::transform(strGridType.begin(), strGridType.end(), strGridType.begin(), ::tolower);
-    if (strGridType == "regular") {
-      gridType = sgpp::base::GeneralGridType::RegularSparseGrid;
-    } else if (strGridType == "refinedcoarsened") {
-      gridType = sgpp::base::GeneralGridType::RefinedCoarsenedSparseGrid;
-    } else if (strGridType == "withinteractions") {
-      gridType = sgpp::base::GeneralGridType::SparseGridWithInteractions;
-    } else if (strGridType == "combi") {
-      gridType = sgpp::base::GeneralGridType::CombiGrid;
-    } else {
-      std::cout << "DBMatDatabase: database entry # " << entry_num <<
-              ": \"gridConfiguration\" contains invalid contain \"type\" value \"" << strGridType
-              << "and therefore is ignored!" << std::endl;
-      return false;
-    }
+    std::string strGridType = (*node)[keyGridType].get();
+    sgpp::base::GeneralGridType gridType = sgpp::datadriven::GeneralGridTypeParser::parse(
+        strGridType);
     // Check if the general grid type matches
     if (gridConfig.generalType_ != gridType) return false;
   } else {
     std::cout << "DBMatDatabase: database entry # " << entry_num <<
-        ": \"gridConfiguration\" node does not contain \"type\" key and therefore is ignored!"
-        << std::endl;
+        ": \"gridConfiguration\" node does not contain \"" << keyGridType <<
+        "\" key and therefore is ignored!"<< std::endl;
     return false;
   }
   // Check if grid dimensionality matches
-  if (node->contains("dimension")) {
-    uint64_t gridDimension = (*node)["dimension"].getUInt();
+  if (node->contains(keyGridDimension)) {
+    uint64_t gridDimension = (*node)[keyGridDimension].getUInt();
     if (gridConfig.dim_ != gridDimension) return false;
   } else {
     std::cout << "DBMatDatabase: database entry # " << entry_num <<
-        ": \"gridConfiguration\" node does not contain \"dimension\" key and therefore is "
-        << "ignored!" << std::endl;
+        ": \"gridConfiguration\" node does not contain \"" << keyGridDimension <<
+        "\" key and therefore is " << "ignored!" << std::endl;
     return false;
   }
   // Check if the grid level matches
-  if (node->contains("level")) {
-    int64_t gridLevel = (*node)["level"].getInt();
+  if (node->contains(keyGridLevel)) {
+    int64_t gridLevel = (*node)[keyGridLevel].getInt();
     if (gridConfig.level_ != gridLevel) return false;
   } else {
     std::cout << "DBMatDatabase: database entry # " << entry_num <<
-        ": \"gridConfiguration\" node does not contain \"level\" key and therefore is ignored!"
-        << std::endl;
+        ": \"gridConfiguration\" node does not contain \"" << keyGridLevel <<
+        "\" key and therefore is ignored!" << std::endl;
     return false;
   }
   // All relevant attributes of the general grid configuration match
@@ -118,13 +154,13 @@ bool DBMatDatabase::gridConfigurationMatches(json::DictNode *node,
 bool DBMatDatabase::regularizationConfigurationMatches(json::DictNode *node,
       sgpp::datadriven::RegularizationConfiguration& regularizationConfig, size_t entry_num) {
   // Check if the reguluarization strength matches
-  if (node->contains("lambda")) {
-    double lambda = (*node)["lambda"].getDouble();
+  if (node->contains(keyRegularizationStrength)) {
+    double lambda = (*node)[keyRegularizationStrength].getDouble();
     if (regularizationConfig.lambda_ != lambda) return false;
   } else {
     std::cout << "DBMatDatabase: database entry # " << entry_num <<
-        ": \"regularizationConfiguration\" node does not contain \"lambda\" key and therefore is "
-        << "ignored!" << std::endl;
+        ": \"regularizationConfiguration\" node does not contain \"" << keyRegularizationStrength <<
+        "\" key and therefore is " << "ignored!" << std::endl;
     return false;
   }
   // Regularization configuration matches
@@ -134,23 +170,23 @@ bool DBMatDatabase::regularizationConfigurationMatches(json::DictNode *node,
 bool DBMatDatabase::densityEstimationConfigurationMatches(json::DictNode *node,
       sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig, size_t entry_num) {
   // Check if the decomposition type matches
-  if (node->contains("decomposition")) {
+  if (node->contains(keyDecompositionType)) {
     // Parse decomposition type
-    sgpp::datadriven::MatrixDecompositionTypeParser typeParser;
-    std::string strDecompType = (*node)["decomposition"].get();
-    sgpp::datadriven::MatrixDecompositionType decompositionType = typeParser.parse(strDecompType);
+    std::string strDecompType = (*node)[keyDecompositionType].get();
+    sgpp::datadriven::MatrixDecompositionType decompositionType =
+        sgpp::datadriven::MatrixDecompositionTypeParser::parse(strDecompType);
     if (densityEstimationConfig.decomposition_ != decompositionType) return false;
   } else {
     std::cout << "DBMatDatabase: database entry # " << entry_num <<
-        ": \"densityEstimationConfiguration\" node does not contain \"decomposition\" key and " <<
-        "therefore is ignored!" << std::endl;
+        ": \"densityEstimationConfiguration\" node does not contain \"" << keyDecompositionType <<
+        "\" key and " << "therefore is ignored!" << std::endl;
     return false;
   }
   // Density estimation configuration matches
   return true;
 }
 
-std::string DBMatDatabase::matrixFileByConfiguration(
+int DBMatDatabase::entryIndexByConfiguration(
     sgpp::base::GeneralGridConfiguration& gridConfig,
     sgpp::base::AdpativityConfiguration& adaptivityConfig,
     sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
@@ -159,46 +195,47 @@ std::string DBMatDatabase::matrixFileByConfiguration(
   for (size_t i = 0; i < database->size(); i++) {
     json::DictNode* entry = (json::DictNode*)(&((*database)[i]));
     // Check if the entry matches the grid configuration
-    if (entry->contains("gridConfiguration")) {
-      json::DictNode *gridConfigNode = (json::DictNode*)(&(*entry)["gridConfiguration"]);
+    if (entry->contains(keyGridConfiguration)) {
+      json::DictNode *gridConfigNode = (json::DictNode*)(&(*entry)[keyGridConfiguration]);
       if (!gridConfigurationMatches(gridConfigNode, gridConfig, i)) continue;
     } else {
       std::cout << "DBMatDatabase: database entry # " << i << " does not contain a " <<
-          "\"gridConfiguration\" key and therefore is ignored!" << std::endl;
+          "\"" << keyGridConfiguration << "\" key and therefore is ignored!" << std::endl;
       continue;
     }
     // Check if the entry matches the regularization configuration
-    if (entry->contains("regularizationConfiguration")) {
+    if (entry->contains(keyRegularizationConfiguration)) {
       json::DictNode *regularizationConfigNode =
-          (json::DictNode*)(&(*entry)["regularizationConfiguration"]);
+          (json::DictNode*)(&(*entry)[keyRegularizationConfiguration]);
       if (!regularizationConfigurationMatches(regularizationConfigNode, regularizationConfig, i))
         continue;
     } else {
       std::cout << "DBMatDatabase: database entry # " << i << " does not contain a " <<
-          "\"regularizationConfiguration\" key and therefore is ignored!" << std::endl;
+          "\"" << keyRegularizationConfiguration << "\" key and therefore is ignored!" << std::endl;
       continue;
     }
     // Check if the entry matches the density estimation configuration
-    if (entry->contains("densityEstimationConfiguration")) {
+    if (entry->contains(keyDensityEstimationConfiguration)) {
       json::DictNode *densityEstimationConfiNode =
-          (json::DictNode*)(&(*entry)["densityEstimationConfiguration"]);
+          (json::DictNode*)(&(*entry)[keyDensityEstimationConfiguration]);
       if (!densityEstimationConfigurationMatches(densityEstimationConfiNode,
           densityEstimationConfig, i))
         continue;
     } else {
       std::cout << "DBMatDatabase: database entry # " << i << " does not contain a " <<
-          "\"densityEstimationConfiguration\" key and therefore is ignored!" << std::endl;
+          "\"" << keyDensityEstimationConfiguration << "\" key and therefore is ignored!" <<
+          std::endl;
       continue;
     }
     // All three configurations match -> return this entry
-    if (entry->contains("filepath")) {
-      return ((*entry)["filepath"]).get();
+    if (entry->contains(keyFilepath)) {
+      return (static_cast<int>(i));
     } else {
       std::cout << "DBMatDatabase: database entry # " << i << " matches but does not contain a " <<
-          "\"filepath\" key and therefore is ignored!" << std::endl;
+          "\"" << keyFilepath << "\" key and therefore is ignored!" << std::endl;
     }
   }
-  throw sgpp::base::factory_exception("No decomposition for given configuration in database");
+  return -1;
 }
 } /* namespace datadriven */
 } /* namespace sgpp */
