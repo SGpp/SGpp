@@ -49,6 +49,7 @@ class LeastSquaresRegressionFitterFactory : public FitterFactory {
 
 protected:
   FitterConfigurationLeastSquares baseConfig;
+  std::vector<base::GridType> basisFunctions;
 
 };
 

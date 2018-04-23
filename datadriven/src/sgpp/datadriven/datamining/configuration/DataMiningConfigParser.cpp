@@ -255,12 +255,18 @@ bool DataMiningConfigParser::getFitterGridConfig(RegularGridConfiguration& confi
 
     // parse  grid type
     if (fitterConfig->contains("gridType")) {
-      config.type_ = GridTypeParser::parse((*fitterConfig)["gridType"].get());
+      std::cout<<(*fitterConfig)["gridType"].size()<<std::endl;
+      if((*fitterConfig)["gridType"].size() == 1){
+        config.type_ = GridTypeParser::parse((*fitterConfig)["gridType"].get());
+      }else{
+        config.type_ = GridTypeParser::parse((*fitterConfig)["gridType"]["value"].get());
+      }
     } else {
       std::cout << "# Did not find gridConfig[gridType]. Setting default value "
                 << GridTypeParser::toString(defaults.type_) << "." << std::endl;
       config.type_ = defaults.type_;
     }
+    std::cout<<"EDIT: gridtype finished."<<std::endl;
 
   } else {
     std::cout << "# Could not find specification  of fitter[gridConfig]. Falling Back to default "
@@ -278,10 +284,13 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
 
   if (hasFitterAdaptivityConfig) {
     auto adaptivityConfig = static_cast<DictNode*>(&(*configFile)[fitter]["adaptivityConfig"]);
+    std::cout<<"EDIT: adaptivity start"<<std::endl;
     config.numRefinements_ = parseUInt(*adaptivityConfig, "numRefinements",
                                        defaults.numRefinements_, "adaptivityConfig");
+    std::cout<<"EDIT: adaptivity 2"<<std::endl;
     config.threshold_ =
         parseDouble(*adaptivityConfig, "threshold", defaults.threshold_, "adaptivityConfig");
+    std::cout<<"EDIT: adaptivity 3"<<std::endl;
     config.maxLevelType_ =
         parseBool(*adaptivityConfig, "maxLevelType", defaults.maxLevelType_, "adaptivityConfig");
     config.noPoints_ =
@@ -469,9 +478,13 @@ std::string DataMiningConfigParser::parseString(DictNode& dict, const std::strin
     try {
       return dict[key].get();
     } catch (json_exception& e) {
-      std::string errorMsg = "# Failed to parse string " + parentDict + "[" + key +
-                             "] from string" + dict[key].get() + ".";
-      throw data_exception(errorMsg.c_str());
+      try {
+        return dict[key]["value"].get();
+      } catch (json_exception &e) {
+        std::string errorMsg = "# Failed to parse string " + parentDict + "[" + key +
+                               "] from string"; //+ dict[key].get() + ".";
+        throw data_exception(errorMsg.c_str());
+      }
     }
   } else {
     std::cout << "# Did not find " << parentDict << "[" << key << "]. Setting default value "
@@ -487,9 +500,13 @@ double DataMiningConfigParser::parseDouble(DictNode& dict, const std::string& ke
     try {
       return dict[key].getDouble();
     } catch (json_exception& e) {
-      std::string errorMsg = "# Failed to parse double " + parentDict + "[" + key +
-                             "] from string" + dict[key].get() + ".";
-      throw data_exception(errorMsg.c_str());
+      try {
+        return dict[key]["value"].getDouble();
+      } catch (json_exception &e) {
+        std::string errorMsg = "# Failed to parse double " + parentDict + "[" + key +
+                               "] from string";// + dict[key].get() + ".";
+        throw data_exception(errorMsg.c_str());
+      }
     }
   } else {
     std::cout << "# Did not find " << parentDict << "[" << key << "]. Setting default value "
@@ -504,9 +521,13 @@ size_t DataMiningConfigParser::parseUInt(DictNode& dict, const std::string& key,
     try {
       return dict[key].getUInt();
     } catch (json_exception& e) {
-      std::string errorMsg = "# Failed to parse unsigned integer " + parentDict + "[" + key +
-                             "] from string" + dict[key].get() + ".";
-      throw data_exception(errorMsg.c_str());
+      try {
+        return dict[key]["value"].getUInt();
+      } catch (json_exception &e) {
+        std::string errorMsg = "# Failed to parse unsigned integer " + parentDict + "[" + key +
+                               "] from string";// + dict[key].get() + ".";
+        throw data_exception(errorMsg.c_str());
+      }
     }
   } else {
     std::cout << "# Did not find " << parentDict << "[" << key << "]. Setting default value "
@@ -539,9 +560,13 @@ int64_t DataMiningConfigParser::parseInt(DictNode& dict, const std::string& key,
     try {
       return dict[key].getInt();
     } catch (json_exception& e) {
-      std::string errorMsg = "# Failed to parse integer " + parentNode + "[" + key +
-                             "] from string" + dict[key].get() + ".";
-      throw data_exception(errorMsg.c_str());
+      try {
+        return dict[key]["value"].getInt();
+      } catch (json_exception &e) {
+        std::string errorMsg = "# Failed to parse integer " + parentNode + "[" + key +
+                               "] from string";// + dict[key].get() + ".";
+        throw data_exception(errorMsg.c_str());
+      }
     }
   } else {
     std::cout << "# Did not find " << parentNode << "[" << key << "]. Setting default value "
@@ -565,6 +590,68 @@ void DataMiningConfigParser::parseSLESolverConfig(DictNode& dict, SLESolverConfi
               << SLESolverTypeParser::toString(defaults.type_) << "." << std::endl;
     config.type_ = defaults.type_;
   }
+}
+
+bool DataMiningConfigParser::getHyperparameters(std::map<std::string, ContinuousParameter>& conpar,
+                                                std::map<std::string, DiscreteParameter>& dispar,
+                                                std::map<std::string, DiscreteParameter>& catpar,
+                                                std::vector<base::GridType>& basisFunctions) const {
+  try {
+    if((*configFile)[fitter]["gridConfig"]["level"]["optimize"].getBool()){
+      int64_t min = (*configFile)[fitter]["gridConfig"]["level"]["min"].getInt();
+      int64_t max = (*configFile)[fitter]["gridConfig"]["level"]["max"].getInt();
+      if(max > min){
+        dispar["level"] = DiscreteParameter("level", min, max);
+      }
+    }
+  }catch (json_exception& e) {
+  }
+  try {
+    if((*configFile)[fitter]["gridConfig"]["gridType"]["optimize"].getBool()){
+      size_t nOptions = (*configFile)[fitter]["gridConfig"]["gridType"]["options"].size();
+      if(nOptions > 1) {
+        for (size_t i = 0; i < nOptions; ++i) {
+          basisFunctions.push_back(
+                  GridTypeParser::parse((*configFile)[fitter]["gridConfig"]["gridType"]["options"][i].get()));
+        }
+        catpar["basisFunction"] = DiscreteParameter("basisFunction", 0, nOptions - 1);
+      }
+    }
+  }catch (json_exception& e) {
+  }
+  try {
+    if((*configFile)[fitter]["adaptivityConfig"]["noPoints"]["optimize"].getBool()){
+      int64_t min = (*configFile)[fitter]["adaptivityConfig"]["noPoints"]["min"].getInt();
+      int64_t max = (*configFile)[fitter]["adaptivityConfig"]["noPoints"]["max"].getInt();
+      if(max > min) {
+        dispar["noPoints"] = DiscreteParameter("noPoints", min, max);
+      }
+    }
+  }catch (json_exception& e) {
+  }
+  try {
+    if((*configFile)[fitter]["adaptivityConfig"]["threshold"]["optimize"].getBool()){
+      double min = (*configFile)[fitter]["adaptivityConfig"]["threshold"]["min"].getDouble();
+      double max = (*configFile)[fitter]["adaptivityConfig"]["threshold"]["max"].getDouble();
+      int64_t bits = (*configFile)[fitter]["adaptivityConfig"]["threshold"]["bits"].getInt();
+      if(max > min) {
+        conpar["threshold"] = ContinuousParameter(bits, "threshold", min, max); //3
+      }
+    }
+  }catch (json_exception& e) {
+  }
+  try {
+    if((*configFile)[fitter]["regularizationConfig"]["lambda"]["optimize"].getBool()){
+      double min = (*configFile)[fitter]["regularizationConfig"]["lambda"]["min"].getDouble();
+      double max = (*configFile)[fitter]["regularizationConfig"]["lambda"]["max"].getDouble();
+      int64_t bits = (*configFile)[fitter]["regularizationConfig"]["lambda"]["bits"].getInt();
+      if(max > min) {
+        conpar["lambda"] = ContinuousParameter(bits, "lambda", min, max); //3
+      }
+    }
+  }catch (json_exception& e) {
+  }
+  return false;
 }
 
 } /* namespace datadriven */

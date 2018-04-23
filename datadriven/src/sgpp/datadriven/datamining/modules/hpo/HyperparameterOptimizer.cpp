@@ -80,12 +80,12 @@ for(int q=0;q<3;q++) {
       std::cout << " best!";
     }
     std::cout << std::endl;
-    std::ofstream myfile("C:/Users/Eric/Documents/DE50kharm.txt", std::ios_base::app);
+   /* std::ofstream myfile("C:/Users/Eric/Documents/DE50kharm.txt", std::ios_base::app);
     if (myfile.is_open()) {
       //myfile << "threshold,lambda,nopoints,level,basis" << std::endl;
       myfile << configIDs->at(i) << ", " << configStrings[i] << ", " << scores[i] << std::endl;
     }
-    myfile.close();
+    myfile.close(); */
   }
 
   harmonica.transformScores(scores, transformedScores);
@@ -136,11 +136,11 @@ void HyperparameterOptimizer::runBO(){
     double result = hpoScorer->calculateScore(*fitter, *trainData, &stdDeviation);
     initialConfigs[i].setScore(result);
     std::cout << "Result: " << result << std::endl;
-    std::ofstream myfile("C:/Users/Eric/Documents/DE50kBO.txt", std::ios_base::app);
+   /* std::ofstream myfile("C:/Users/Eric/Documents/DE50kBO.txt", std::ios_base::app);
     if (myfile.is_open()) {
       myfile << configString << ", " <<result << std::endl;
     }
-    myfile.close();
+    myfile.close(); */
   }
 
   std::cout << "Random finished!" << std::endl;
@@ -161,11 +161,11 @@ void HyperparameterOptimizer::runBO(){
     bo.updateGP();
     std::cout << "Result: " << result << std::endl;
     bo.fitScales();
-    std::ofstream myfile("C:/Users/Eric/Documents/DE50kBO.txt", std::ios_base::app);
+  /*  std::ofstream myfile("C:/Users/Eric/Documents/DE50kBO.txt", std::ios_base::app);
     if (myfile.is_open()) {
      myfile << configString << ", " <<result << std::endl;
     }
-    myfile.close();
+    myfile.close(); */
   }
   // std::cout << "Acquistion: " << min << std::endl;
 }

@@ -15,6 +15,9 @@
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <string>
+#include <sgpp/datadriven/datamining/modules/hpo/parameters/DiscreteParameter.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/parameters/ContinuousParameter.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -52,6 +55,10 @@ class DataMiningConfigParser {
   bool hasScorerTestset() const;
 
   bool getScorerTestset(DataSourceConfig& config, const DataSourceConfig& defaults) const;
+  bool getHyperparameters(std::map<std::string,ContinuousParameter>& conpar,
+                          std::map<std::string,DiscreteParameter>& dispar,
+                          std::map<std::string,DiscreteParameter>& catpar,
+                          std::vector<base::GridType>& basisFunctions) const;
   bool getDataSourceConfig(DataSourceConfig& config, const DataSourceConfig& defaults) const;
   bool getScorerTestingConfig(TestingConfiguration& config,
                               const TestingConfiguration& defaults) const;

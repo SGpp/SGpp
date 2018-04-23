@@ -20,11 +20,13 @@ namespace sgpp {
 namespace datadriven {
 
 LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory(DataMiningConfigParser& parser)
-  :baseConfig(){
+  :baseConfig(),basisFunctions(){
 
 	baseConfig.readParams(parser);
 
-  dispar["noPoints"] = DiscreteParameter("noPoints",1,4);
+  parser.getHyperparameters(conpar, dispar, catpar, basisFunctions);
+
+ /* dispar["noPoints"] = DiscreteParameter("noPoints",1,4);
 
   dispar["level"] = DiscreteParameter("level", 1, 4);
 
@@ -33,7 +35,7 @@ LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory(DataMin
 	conpar["lambda"] = ContinuousParameter(5, "lambda", -7, 0); //8
 
 	conpar["threshold"] = ContinuousParameter(3, "threshold", -5, -2); //3
-
+*/
 }
 
 
@@ -44,24 +46,36 @@ ModelFittingBase* LeastSquaresRegressionFitterFactory::buildFitter()  {
   // build config
   auto* config = new FitterConfigurationLeastSquares(baseConfig);
 
-  base::GridType basisFunction[] = {base::GridType::Linear,base::GridType::ModLinear};
-  config->getGridConfig().level_ = dispar["level"].getValue();
-  config->getGridConfig().type_ = basisFunction[catpar["basisFunction"].getValue()];
-  config->getRefinementConfig().noPoints_ = static_cast<size_t>(dispar["noPoints"].getValue());
-  config->getRefinementConfig().threshold_ = pow(10,conpar["threshold"].getValue());
-  config->getRegularizationConfig().lambda_ = pow(10,conpar["lambda"].getValue());
-
+  //base::GridType basisFunction[] = {base::GridType::Linear,base::GridType::ModLinear};
+  if(dispar.count("level")) {
+    config->getGridConfig().level_ = dispar["level"].getValue();
+  }
+  if(catpar.count("basisFunction")){
+    config->getGridConfig().type_ = basisFunctions[catpar["basisFunction"].getValue()];
+  }
+  if(dispar.count("noPoints")){
+    config->getRefinementConfig().noPoints_ = static_cast<size_t>(dispar["noPoints"].getValue());
+  }
+  if(conpar.count("threshold")){
+    config->getRefinementConfig().threshold_ = pow(10,conpar["threshold"].getValue());
+  }
+  if(conpar.count("lambda")) {
+    config->getRegularizationConfig().lambda_ = pow(10, conpar["lambda"].getValue());
+  }
   return new ModelFittingLeastSquares(*config);
 }
 
 std::string LeastSquaresRegressionFitterFactory::printConfig(){
   std::stringstream s;
-	std::string basisFunction[] = {"Linear","ModLinear"};
+/*	std::string basisFunction[] = {"Linear","ModLinear"};
 	s<< dispar["level"].getValue()
    <<", "<<basisFunction[catpar["basisFunction"].getValue()]
    <<", "<< dispar["noPoints"].getValue()
    <<", "<< pow(10,conpar["threshold"].getValue())
    <<", "<< pow(10,conpar["lambda"].getValue());
+  */
+
+
   /*<<"Level: "<< dispar["level"].getValue()
    <<", Basis: "<<basisFunction[catpar["basisFunction"].getValue()]
    <<", noPoints: "<< dispar["noPoints"].getValue()
