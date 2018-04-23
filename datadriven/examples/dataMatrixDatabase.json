@@ -1,23 +1,34 @@
 {
-	"database" : [
-		{
-			"gridConfiguration" : {
-				"type" : "regular",
-				"dimension" : 2,
-				"level" : 3,
-				"lambda" : 10e-7,
-				"interactions" : 0
-			},
-			"regularizationConfiguration" : {
-				"lambda" : 10e-7
-			},
-			"densityEstimationConfiguration" : {
-				"decomposition" : "Chol"
-			},
-			"filepath" : "/media/d/uni/bachelor_thesis/dbmattest"
-		
-		},
-		{},
-		{}
-	]
+   "database": [{
+         "gridConfiguration": {
+            "type": "regular",
+            "dimension": 2,
+            "level": 3,
+            "lambda": 10e-7,
+            "interactions": 0
+         },
+         "regularizationConfiguration": {
+            "lambda": 10e-7
+         },
+         "densityEstimationConfiguration": {
+            "decomposition": "Chol"
+         },
+         "filepath": "/media/d/uni/bachelor_thesis/dbmattest2"
+      }, {
+
+      }, {
+
+      }, {
+         "gridConfiguration": {
+            "type": "Regular",
+            "dimension": 2,
+            "level": 4
+         },
+         "regularizationConfiguration": {
+            "lambda": 1e-06
+         },
+         "densityEstimationConfiguration": {
+            "decomposition": "Chol"
+         }
+      }]
 }

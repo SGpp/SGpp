@@ -33,20 +33,33 @@ class DBMatDatabase{
    * is created based on the precomputed matrix decomposition the entry is referencing. If no match
    * is obtained then null is returned.
    */
-  DBMatOffline* dataMatrixFromDatabase(sgpp::base::GeneralGridConfiguration& gridConfig,
+  DBMatOffline* getDataMatrix(sgpp::base::GeneralGridConfiguration& gridConfig,
       sgpp::base::AdpativityConfiguration& adaptivityConfig,
       sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
       sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
 
+  /**
+   * Puts a filepath for a given configuration in the database. The filepath refers to the matrix
+   * file. If for this configuration a filepath is already present in the database the filepath
+   * is updated if and only if the overwriteEntry parameter is set (default = false).
+   */
+  void putDataMatrix(sgpp::base::GeneralGridConfiguration& gridConfig,
+      sgpp::base::AdpativityConfiguration& adaptivityConfig,
+      sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+      sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+      std::string filepath, bool overwriteEntry = false);
+
+
  private:
+  std::string databaseFilepath;
   json::ListNode* database;
   std::unique_ptr<json::JSON> databaseRoot;
 
   /**
-   * Scans the entire database and finds the first entry that matches the configurations. If
-   * none matches null is returned. Note that not the "best" but the "first" match is returned.
+   * Scans the entire database and finds the first entry that matches the configurations. Returns
+   * the index of the entry in the database ListNode or -1 if no entry matches.
    */
-  std::string matrixFileByConfiguration(sgpp::base::GeneralGridConfiguration& gridConfig,
+  int entryIndexByConfiguration(sgpp::base::GeneralGridConfiguration& gridConfig,
       sgpp::base::AdpativityConfiguration& adaptivityConfig,
       sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
       sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
@@ -73,7 +86,6 @@ class DBMatDatabase{
       sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
       size_t entry_num);
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */
 
