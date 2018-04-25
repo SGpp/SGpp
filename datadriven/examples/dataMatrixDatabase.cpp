@@ -25,9 +25,10 @@ int main() {
   DBMatDatabase database(databasePath);
 
   // Configure the grid
-  sgpp::base::RegularGridConfiguration gridConfig;
+  sgpp::base::CombiGridConfiguration gridConfig;
   gridConfig.dim_ = 2;
-  gridConfig.level_ = 4;
+  gridConfig.levels.push_back(3);
+  gridConfig.levels.push_back(3);
 
   // Configure adaptivity
   sgpp::base::AdpativityConfiguration adaptivityConfig;
@@ -42,7 +43,7 @@ int main() {
   densityEstimationConfig.type_ = sgpp::datadriven::DensityEstimationType::Decomposition;
   densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::Chol;
 
-
+  /**
   // Create matrix
   std::string dbmatfilepath = "/media/d/uni/bachelor_thesis/dbmattest";
   std::cout << "Creating dbmat" << std::endl;
@@ -54,14 +55,15 @@ int main() {
   std::cout << "Created dbmat" << std::endl;
   database.putDataMatrix(gridConfig, adaptivityConfig, regularizationConfig,
       densityEstimationConfig, dbmatfilepath, true);
+  **/
 
-  /**
+
   sgpp::datadriven::DBMatOffline *offlineGrid = database.getDataMatrix(gridConfig,
       adaptivityConfig, regularizationConfig, densityEstimationConfig);
 
   if (offlineGrid)
     std::cout << "Success" << std::endl;
-  **/
+
 
   return 0;
 }
