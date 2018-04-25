@@ -65,7 +65,7 @@ enum class GeneralGridType {
   RegularSparseGrid,
   RefinedCoarsenedSparseGrid,
   CombiGrid,
-  SparseGridWithInteractions
+  GeometricallyAwareSparseGrid
 };
 
 /**
@@ -96,6 +96,18 @@ struct GeneralGridConfiguration {
 struct RegularGridConfiguration : GeneralGridConfiguration {
   RegularGridConfiguration() {
     generalType_ = GeneralGridType::RegularSparseGrid;
+  }
+};
+
+/**
+ * Structure that can be used by applications to cluster combi grid information
+ */
+struct CombiGridConfiguration : GeneralGridConfiguration {
+  // The level_ member is replaced by a level vector
+  std::vector<int> levels;
+  CombiGridConfiguration() {
+    generalType_ = GeneralGridType::CombiGrid;
+    level_ = -1;
   }
 };
 

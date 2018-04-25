@@ -17,7 +17,7 @@
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/base/tools/json/DictNode.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
-#include <sgpp/base/exception/factory_exception.hpp>
+#include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 
 #include <algorithm>
@@ -93,6 +93,8 @@ void DBMatDatabase::putDataMatrix(sgpp::base::GeneralGridConfiguration& gridConf
     densityEstimationConfigEntry.addTextAttr(keyDecompositionType,
         sgpp::datadriven::MatrixDecompositionTypeParser::toString(
             densityEstimationConfig.decomposition_));
+    // Add the filepath
+    entry.addTextAttr(keyFilepath, filepath);
     // Serialize the entire database
     databaseRoot->serialize(databaseFilepath);
     std::cout << "Successfully added new matrix decomposition at \"" << filepath <<
@@ -114,16 +116,17 @@ void DBMatDatabase::putDataMatrix(sgpp::base::GeneralGridConfiguration& gridConf
 bool DBMatDatabase::gridConfigurationMatches(json::DictNode *node,
       sgpp::base::GeneralGridConfiguration& gridConfig, size_t entry_num) {
   // Check if grid general type matches
+  sgpp::base::GeneralGridType gridType;
   if (node->contains(keyGridType)) {
     // Parse the grid general type
     std::string strGridType = (*node)[keyGridType].get();
-    sgpp::base::GeneralGridType gridType = sgpp::datadriven::GeneralGridTypeParser::parse(
+    gridType = sgpp::datadriven::GeneralGridTypeParser::parse(
         strGridType);
     // Check if the general grid type matches
     if (gridConfig.generalType_ != gridType) return false;
   } else {
     std::cout << "DBMatDatabase: database entry # " << entry_num <<
-        ": \"gridConfiguration\" node does not contain \"" << keyGridType <<
+        ": \"" << keyGridConfiguration << "\" node does not contain \"" << keyGridType <<
         "\" key and therefore is ignored!"<< std::endl;
     return false;
   }
@@ -133,17 +136,45 @@ bool DBMatDatabase::gridConfigurationMatches(json::DictNode *node,
     if (gridConfig.dim_ != gridDimension) return false;
   } else {
     std::cout << "DBMatDatabase: database entry # " << entry_num <<
-        ": \"gridConfiguration\" node does not contain \"" << keyGridDimension <<
+        ": \"" << keyGridConfiguration << "\" node does not contain \"" << keyGridDimension <<
         "\" key and therefore is " << "ignored!" << std::endl;
     return false;
   }
   // Check if the grid level matches
   if (node->contains(keyGridLevel)) {
-    int64_t gridLevel = (*node)[keyGridLevel].getInt();
-    if (gridConfig.level_ != gridLevel) return false;
+    // Combi grids contain a level vector of size d
+    if (gridType == sgpp::base::GeneralGridType::CombiGrid) {
+      json::ListNode* entryLevelVector = (json::ListNode*)(&(*node)[keyGridLevel]);
+      if (entryLevelVector->size() != gridConfig.dim_) {
+        std::cout << "DBMatDatabase: database entry # " << entry_num <<
+            ": \"" << keyGridLevel << "\" size does not match \"" << keyGridDimension <<
+            "\" key and therefore is ignored!" << std::endl;
+        return false;
+      }
+      // Compare configuration level vector with json level vector
+      sgpp::base::CombiGridConfiguration& combiGridConfig =
+          (sgpp::base::CombiGridConfiguration&) gridConfig;
+      if (combiGridConfig.levels.size() != gridConfig.dim_) {
+        std::string what = "Invalid combi grid config: Level vector size " +
+            std::to_string(combiGridConfig.levels.size()) + " does not match dimensionality of grid"
+                + " configuration" + std::to_string(gridConfig.dim_);
+        throw sgpp::base::data_exception(what.c_str());
+      }
+      for (size_t i = 0; i < gridConfig.dim_; i++) {
+        json::Node* indexLevelNode = (json::Node*)(&((*entryLevelVector)[i]));
+        if (indexLevelNode->getInt() != combiGridConfig.levels.at(i)) {
+          return false;
+        }
+      }
+    } else {
+      // Other grid types only contain a single level value
+      int64_t gridLevel = (*node)[keyGridLevel].getInt();
+      if (gridConfig.level_ != gridLevel) return false;
+    }
+
   } else {
     std::cout << "DBMatDatabase: database entry # " << entry_num <<
-        ": \"gridConfiguration\" node does not contain \"" << keyGridLevel <<
+        ": \"" << keyGridConfiguration << "\" node does not contain \"" << keyGridLevel <<
         "\" key and therefore is ignored!" << std::endl;
     return false;
   }
@@ -159,8 +190,8 @@ bool DBMatDatabase::regularizationConfigurationMatches(json::DictNode *node,
     if (regularizationConfig.lambda_ != lambda) return false;
   } else {
     std::cout << "DBMatDatabase: database entry # " << entry_num <<
-        ": \"regularizationConfiguration\" node does not contain \"" << keyRegularizationStrength <<
-        "\" key and therefore is " << "ignored!" << std::endl;
+        ": \"" << keyRegularizationConfiguration << "\" node does not contain \""
+        << keyRegularizationStrength << "\" key and therefore is " << "ignored!" << std::endl;
     return false;
   }
   // Regularization configuration matches
@@ -178,8 +209,8 @@ bool DBMatDatabase::densityEstimationConfigurationMatches(json::DictNode *node,
     if (densityEstimationConfig.decomposition_ != decompositionType) return false;
   } else {
     std::cout << "DBMatDatabase: database entry # " << entry_num <<
-        ": \"densityEstimationConfiguration\" node does not contain \"" << keyDecompositionType <<
-        "\" key and " << "therefore is ignored!" << std::endl;
+        ": \"" << keyDensityEstimationConfiguration << "\" node does not contain \""
+        << keyDecompositionType << "\" key and " << "therefore is ignored!" << std::endl;
     return false;
   }
   // Density estimation configuration matches
@@ -229,6 +260,7 @@ int DBMatDatabase::entryIndexByConfiguration(
     }
     // All three configurations match -> return this entry
     if (entry->contains(keyFilepath)) {
+      std::cout << "config match" << std::endl;
       return (static_cast<int>(i));
     } else {
       std::cout << "DBMatDatabase: database entry # " << i << " matches but does not contain a " <<
