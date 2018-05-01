@@ -68,6 +68,18 @@ int main() {
   std::cout << "length of alpha vector:           " << alpha.getSize() << std::endl;
 
   /**
+   * create a vector storing (possibly expensive) function evaluations at
+   * each gridpoint
+   */
+  DataVector functionEval(gridStorage.getSize());
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
+    GridPoint& gp = gridStorage.getPoint(i);
+    functionEval[i] = f(gp.getStandardCoordinate(0), gp.getStandardCoordinate(1));
+  }
+
+  std::vector<size_t> addedPoints;
+
+  /**
     * Obtain function values and refine adaptively 5 times
     */
   for (int step = 0; step < 5; step++) {
@@ -90,9 +102,7 @@ int main() {
       * added to the grid. Also all missing parents are added (recursively).
       */
     SurplusRefinementFunctor functor(alpha, 1);
-    grid->getGenerator().refine(functor);
-    std::cout << "refinement step " << step + 1 << ", new grid size: " << alpha.getSize()
-              << std::endl;
+    grid->getGenerator().refine(functor, addedPoints);
 
     /**
       * Extend alpha vector (new entries uninitialized). Note that right now, the surplus vector
@@ -100,6 +110,9 @@ int main() {
       * surplus values will be inserted in the next iteration of the refinement loop.
       */
     alpha.resize(gridStorage.getSize());
+    std::cout << "refinement step " << step + 1 << ", new grid size: " << alpha.getSize()
+              << std::endl;
+    //functionEval.resize(gridStorage.getSize());
   }
 }
 
