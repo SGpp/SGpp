@@ -64,8 +64,8 @@ enum class GridType {
 enum class GeneralGridType {
   RegularSparseGrid,
   RefinedCoarsenedSparseGrid,
-  CombiGrid,
-  GeometricallyAwareSparseGrid
+  ComponentGrid,
+  GeometryAwareSparseGrid
 };
 
 /**
@@ -106,7 +106,7 @@ struct CombiGridConfiguration : GeneralGridConfiguration {
   // The level_ member is replaced by a level vector
   std::vector<int> levels;
   CombiGridConfiguration() {
-    generalType_ = GeneralGridType::CombiGrid;
+    generalType_ = GeneralGridType::ComponentGrid;
     level_ = -1;
   }
 };

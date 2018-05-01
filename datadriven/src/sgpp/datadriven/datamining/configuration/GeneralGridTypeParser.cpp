@@ -28,10 +28,10 @@ sgpp::base::GeneralGridType GeneralGridTypeParser::parse(const std::string& inpu
     return sgpp::base::GeneralGridType::RegularSparseGrid;
   } else if (inputLower == "refinedcoarsened") {
     return sgpp::base::GeneralGridType::RefinedCoarsenedSparseGrid;
-  } else if (inputLower == "withinteractions") {
-    return sgpp::base::GeneralGridType::GeometricallyAwareSparseGrid;
-  } else if (inputLower == "combi") {
-    return sgpp::base::GeneralGridType::CombiGrid;
+  } else if (inputLower == "geometryaware") {
+    return sgpp::base::GeneralGridType::GeometryAwareSparseGrid;
+  } else if (inputLower == "component") {
+    return sgpp::base::GeneralGridType::ComponentGrid;
   } else {
     std::string what = "Failed to parse general grid type \"" + input + "\".";
     throw data_exception(what.c_str());
@@ -47,9 +47,9 @@ GeneralGridTypeParser::generalGridTypeMap = []() {
   return GeneralGridTypeMap_t{
       std::make_pair(sgpp::base::GeneralGridType::RegularSparseGrid, "regular"),
       std::make_pair(sgpp::base::GeneralGridType::RefinedCoarsenedSparseGrid, "refinedcoarsened"),
-      std::make_pair(sgpp::base::GeneralGridType::GeometricallyAwareSparseGrid,
-          "geometricallyaware"),
-      std::make_pair(sgpp::base::GeneralGridType::CombiGrid, "combi")
+      std::make_pair(sgpp::base::GeneralGridType::GeometryAwareSparseGrid,
+          "geometryaware"),
+      std::make_pair(sgpp::base::GeneralGridType::ComponentGrid, "component")
   };
 }();
 

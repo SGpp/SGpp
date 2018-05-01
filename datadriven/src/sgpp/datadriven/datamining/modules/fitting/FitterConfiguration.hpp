@@ -13,6 +13,8 @@
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 
+#include <string>
+
 namespace sgpp {
 namespace datadriven {
 // forward declaration to break dependency cycle
@@ -122,6 +124,12 @@ class FitterConfiguration {
   const datadriven::OperationMultipleEvalConfiguration& getMultipleEvalConfig() const;
 
   /**
+     * Returns the path to data matrix database.
+     * @return immutable path to the database matrix database
+     */
+  const std::string& getDatabaseConfig() const;
+
+  /**
    * Get or set initial conditions for the grid before adaptive refinement.
    * @return RegularGridConfiguration
    */
@@ -224,6 +232,11 @@ class FitterConfiguration {
    * #sgpp::base::OperationMultipleEval
    */
   datadriven::OperationMultipleEvalConfiguration multipleEvalConfig;
+
+  /**
+   * Path to the lhs decomposed data matrix database.
+   */
+  std::string dbMatDatabaseFilepath;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
