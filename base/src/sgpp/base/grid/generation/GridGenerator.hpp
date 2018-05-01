@@ -115,6 +115,10 @@ class GridGenerator {
    */
   virtual void refine(RefinementFunctor& func) = 0;
 
+  virtual void refine(RefinementFunctor& func, std::vector<size_t>& addedPoints) {
+    throw sgpp::base::not_implemented_exception("refine with addedPoiints is not implemented for this grid type!");
+  }
+
   /**
    * Refines a grid according to the settings of the RefinementFunctor func.
    * Does not create any interactions, that are not in the list of allowed interactions.

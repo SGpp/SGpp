@@ -59,6 +59,12 @@ void StandardGridGenerator::refine(RefinementFunctor& func) {
   HashRefinement refine;
   refine.free_refine(this->storage, func);
 }
+
+void StandardGridGenerator::refine(RefinementFunctor& func, std::vector<size_t>& addedPoints) {
+  HashRefinement refine;
+  refine.free_refine(this->storage, func, addedPoints);
+}
+
 void StandardGridGenerator::refineInter(RefinementFunctor& func,
                                         const std::unordered_set<std::vector<bool>>& interactions) {
   auto refine = HashRefinementInteraction(interactions);

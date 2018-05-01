@@ -30,7 +30,13 @@ class HashRefinement: public AbstractRefinement {
    * @param storage hashmap that stores the grid points
    * @param functor a RefinementFunctor specifying the refinement criteria
    */
-  void free_refine(GridStorage& storage, RefinementFunctor& functor) override;
+  void free_refine(GridStorage& storage,
+                   RefinementFunctor& functor) override;
+
+  void free_refine(GridStorage& storage,
+                   RefinementFunctor& functor,
+                   std::vector<size_t>& addedPoints) override;
+
 
   /**
    * Computes and returns the number of grid points, which can be refined.
@@ -129,6 +135,7 @@ class HashRefinement: public AbstractRefinement {
     const GridStorage::grid_map_iterator& iter,
     const RefinementFunctor& functor) const override;
 };
+
 
 }  // namespace base
 }  // namespace sgpp
