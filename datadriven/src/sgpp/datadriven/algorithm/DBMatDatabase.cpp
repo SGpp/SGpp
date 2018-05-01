@@ -49,7 +49,17 @@ DBMatDatabase::DBMatDatabase(const std::string& filepath) {
   }
 }
 
-DBMatOffline* DBMatDatabase::getDataMatrix(
+bool DBMatDatabase::hasDataMatrix(
+    sgpp::base::GeneralGridConfiguration& gridConfig,
+    sgpp::base::AdpativityConfiguration& adaptivityConfig,
+    sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+    sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
+  int entry_index = entryIndexByConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
+        densityEstimationConfig);
+  return entry_index >= 0;
+}
+
+std::string& DBMatDatabase::getDataMatrix(
     sgpp::base::GeneralGridConfiguration& gridConfig,
     sgpp::base::AdpativityConfiguration& adaptivityConfig,
     sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
@@ -58,11 +68,12 @@ DBMatOffline* DBMatDatabase::getDataMatrix(
       densityEstimationConfig);
   if (entry_index < 0) {
     // No decomposition in database
-    return nullptr;
+    throw sgpp::base::data_exception("Database does not contain any entry matching the "
+        "decomposition");
   } else {
     json::DictNode* entry = (json::DictNode*)(&((*database)[entry_index]));
     std::string& filepath = (*entry)[keyFilepath].get();
-    return sgpp::datadriven::DBMatOfflineFactory::buildFromFile(filepath);
+    return filepath;
   }
 }
 
@@ -143,7 +154,7 @@ bool DBMatDatabase::gridConfigurationMatches(json::DictNode *node,
   // Check if the grid level matches
   if (node->contains(keyGridLevel)) {
     // Combi grids contain a level vector of size d
-    if (gridType == sgpp::base::GeneralGridType::CombiGrid) {
+    if (gridType == sgpp::base::GeneralGridType::ComponentGrid) {
       json::ListNode* entryLevelVector = (json::ListNode*)(&(*node)[keyGridLevel]);
       if (entryLevelVector->size() != gridConfig.dim_) {
         std::cout << "DBMatDatabase: database entry # " << entry_num <<

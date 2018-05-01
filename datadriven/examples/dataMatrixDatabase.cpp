@@ -58,11 +58,10 @@ int main() {
   **/
 
 
-  sgpp::datadriven::DBMatOffline *offlineGrid = database.getDataMatrix(gridConfig,
+  std::string path = database.getDataMatrix(gridConfig,
       adaptivityConfig, regularizationConfig, densityEstimationConfig);
 
-  if (offlineGrid)
-    std::cout << "Success" << std::endl;
+  std::cout << "Success: " << path << std::endl;
 
 
   return 0;

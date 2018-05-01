@@ -14,7 +14,10 @@
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
+#include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
+
+#include <string>
 
 using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
@@ -31,12 +34,24 @@ ModelFittingDensityEstimation::ModelFittingDensityEstimation(
     : ModelFittingBase{}, refinementsPerformed{0}, offline{nullptr} {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
-  // TODO(roehner): enable loading of decomposition from files
-  offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildOfflineObject(
-      this->config->getGridConfig(),
-      this->config->getRefinementConfig(),
-      this->config->getRegularizationConfig(),
-      this->config->getDensityEstimationConfig())};
+  // TODO(fuchsgdk): support for GeneralGridConfiguration
+  sgpp::datadriven::DBMatDatabase database(this->config->getDatabaseConfig());
+  sgpp::base::RegularGridConfiguration gridConfig = this->config->getGridConfig();
+  sgpp::base::AdpativityConfiguration refinementConfig = this->config->getRefinementConfig();
+  sgpp::datadriven::RegularizationConfiguration regularizationConfig =
+      this->config->getRegularizationConfig();
+  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig =
+      this->config->getDensityEstimationConfig();
+  if (database.hasDataMatrix(gridConfig, refinementConfig, regularizationConfig,
+      densityEstimationConfig)) {
+    std::string dbMatFilepath = database.getDataMatrix(gridConfig, refinementConfig,
+        regularizationConfig, densityEstimationConfig);
+    offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildFromFile(
+        dbMatFilepath)};
+  } else {
+    offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildOfflineObject(
+        gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig)};
+  }
   offline->buildMatrix();
   // grid = offline->getGridPtr();
   offline->decomposeMatrix();

@@ -29,11 +29,19 @@ class DBMatDatabase{
   virtual ~DBMatDatabase() = default;
 
   /**
-   * Scans the entire database and finds the first entry that matches the configurations. A matrix
-   * is created based on the precomputed matrix decomposition the entry is referencing. If no match
-   * is obtained then null is returned.
+   * Scans the entire database and checks weather any entry matches the configuration.
+   * @return weather the configuration is held in the database
    */
-  DBMatOffline* getDataMatrix(sgpp::base::GeneralGridConfiguration& gridConfig,
+  bool hasDataMatrix(sgpp::base::GeneralGridConfiguration& gridConfig,
+      sgpp::base::AdpativityConfiguration& adaptivityConfig,
+      sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+      sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
+
+  /**
+   * Scans the entire database and finds the first entry that matches the configurations. Returns
+   * the string of the datamatrix if any match was obtained and "" otherwise.
+   */
+  std::string& getDataMatrix(sgpp::base::GeneralGridConfiguration& gridConfig,
       sgpp::base::AdpativityConfiguration& adaptivityConfig,
       sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
       sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);

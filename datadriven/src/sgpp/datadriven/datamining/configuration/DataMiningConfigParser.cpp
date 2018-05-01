@@ -44,6 +44,7 @@ namespace datadriven {
 const std::string DataMiningConfigParser::dataSource = "dataSource";
 const std::string DataMiningConfigParser::scorer = "scorer";
 const std::string DataMiningConfigParser::fitter = "fitter";
+const std::string DataMiningConfigParser::database = "database";
 
 DataMiningConfigParser::DataMiningConfigParser(const std::string& filepath) : configFile(nullptr) {
   try {
@@ -82,6 +83,8 @@ bool DataMiningConfigParser::hasScorerConfigTesting() const {
 }
 
 bool DataMiningConfigParser::hasFitterConfig() const { return configFile->contains(fitter); }
+
+bool DataMiningConfigParser::hasDatabaseConfig() const { return configFile->contains(database); }
 
 bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
                                                  const DataSourceConfig& defaults) const {
@@ -594,5 +597,17 @@ void DataMiningConfigParser::parseRosenblattTransformationConfig(
       defaults.solverThreshold, parentNode);
 }
 
+
+bool DataMiningConfigParser::getFitterDatabaseConfig(
+    std::string& config, const std::string& defaults) const {
+  bool hasDatabaseConfig =
+      hasFitterConfig() ? (*configFile)[fitter].contains(database) : false;
+
+  auto fitterConfig = static_cast<DictNode*>(&(*configFile)[fitter]);
+  // Parse the string given in the configuration file or assign default value
+  config = parseString(*fitterConfig, database, defaults, fitter);
+
+  return hasDatabaseConfig;
+}
 } /* namespace datadriven */
 } /* namespace sgpp */

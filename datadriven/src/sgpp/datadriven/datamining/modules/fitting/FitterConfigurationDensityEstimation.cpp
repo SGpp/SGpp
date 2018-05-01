@@ -11,6 +11,7 @@
  */
 
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
+#include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -38,6 +39,10 @@ void FitterConfigurationDensityEstimation::setupDefaults() {
   // configure density estimation
   densityEstimationConfig.type_ = sgpp::datadriven::DensityEstimationType::Decomposition;
   densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::Chol;
+
+  // intialize default database
+  //TODO(fuchsgdk): fuchsgruber: path to database
+  dbMatDatabaseFilepath = "";
 }
 
 void FitterConfigurationDensityEstimation::readParams(const DataMiningConfigParser& parser) {
