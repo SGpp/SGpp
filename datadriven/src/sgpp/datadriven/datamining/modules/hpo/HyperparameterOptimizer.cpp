@@ -32,11 +32,12 @@ HyperparameterOptimizer::HyperparameterOptimizer(DataSource* dataSource, FitterF
     : dataSource(dataSource), fitterFactory(fitterFactory) {
   HPOScorerFactory scorerFactory;
   hpoScorer.reset(static_cast<HPOScorer*>(scorerFactory.buildScorer(parser)));
+  config.setupDefaults();
+  parser.getHPOConfig(config);
 }
 
 void HyperparameterOptimizer::runHarmonica(){
   Harmonica harmonica{fitterFactory.get()}; //EDIT: use correct constructor
-
   //prepare data
   std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
   Dataset dataone{30000, dataset->getDimension()}; //30000
@@ -54,24 +55,22 @@ void HyperparameterOptimizer::runHarmonica(){
   std::mt19937 sgenerator(seed);
   std::shuffle(readResults.begin(), readResults.end(), sgenerator);
 */
-  int seed = 0;
 
   double stdDeviation;
   double best = 1.0/0; //infinity
 
-  size_t runs[] = {50,50,50}; //EDIT: metaparameter 200,200,100
 
 
-for(int q=0;q<3;q++) {
-  std::vector<std::unique_ptr<ModelFittingBase>> fitters(runs[q]);
-  DataVector scores(runs[q]);
-  DataVector transformedScores(runs[q]);
-  std::vector<std::string> configStrings(runs[q]);
-  std::vector<int>* configIDs = harmonica.prepareConfigs(fitters, seed, configStrings);
+for(int q=0;q<config.getStages().size();q++) {
+  std::vector<std::unique_ptr<ModelFittingBase>> fitters(config.getStages()[q]);
+  DataVector scores(config.getStages()[q]);
+  DataVector transformedScores(config.getStages()[q]);
+  std::vector<std::string> configStrings(config.getStages()[q]);
+  std::vector<int>* configIDs = harmonica.prepareConfigs(fitters, config.getSeed(), configStrings);
 
   //run samples (parallel)
 
-  for (size_t i = 0; i < runs[q]; i++) {
+  for (size_t i = 0; i < config.getStages()[q]; i++) {
     //scores[i] = readResults[i];
     scores[i] = hpoScorer->calculateScore(*(fitters[i]), *trainData, &stdDeviation);
     std::cout << "Config: "<<configIDs->at(i)<< ", " << configStrings[i]<<", Score " << i << ":" << scores[i];
@@ -88,10 +87,15 @@ for(int q=0;q<3;q++) {
     myfile.close(); */
   }
 
+
+if(q<config.getStages().size()-1) {
+
+
   harmonica.transformScores(scores, transformedScores);
 
-  harmonica.calculateConstrainedSpace(transformedScores,0.1,1); //EDIT: shrink 2 and lambda, normalization
-
+  harmonica.calculateConstrainedSpace(transformedScores, config.getLambda(),
+                                      config.getConstraints()[q]); //EDIT: shrink 2 and lambda, normalization
+}
   /*std::ofstream myfile("C:/Users/Eric/Documents/dr5harmonica10k.txt", std::ios_base::app);
   if (myfile.is_open()) {
     //myfile << "threshold,lambda,nopoints,level,basis" << std::endl;
@@ -121,12 +125,11 @@ void HyperparameterOptimizer::runBO(){
   double stdDeviation;
   //list/vector of configs, start setup
   std::vector<BOConfig> initialConfigs{};
-  initialConfigs.reserve(10);
+  initialConfigs.reserve(config.getNRandom());
 
-  std::mt19937 generator(42); //EDIT: meta seed 420 for most tests
-  //std::uniform_real_distribution<double> dis(0.0, 1.0);
-  //std::cout << "Random test:"<<dis(generator);
-  for (int i = 0; i < 10; ++i) {
+  std::mt19937 generator(config.getSeed());
+
+  for (int i = 0; i < config.getNRandom(); ++i) {
     initialConfigs.emplace_back(prototype);// = BOConfig(prototype);
     initialConfigs[i].randomize(generator);
     fitterFactory->setBO(&initialConfigs[i]);
@@ -150,7 +153,7 @@ void HyperparameterOptimizer::runBO(){
   bo.fitScales();
 
 
-  for(int q=0; q<140; q++) {
+  for(int q=0; q<config.getNRuns(); q++) {
     BOConfig *nextConfig = bo.main(prototype); //EDIT: give prototype earlier
     fitterFactory->setBO(nextConfig);
     std::string configString = fitterFactory->printConfig();
@@ -170,62 +173,6 @@ void HyperparameterOptimizer::runBO(){
   // std::cout << "Acquistion: " << min << std::endl;
 }
 
-void HyperparameterOptimizer::runFromFile() { //EDIT: rework, not working
-  DataSourceBuilder dsbuilder;
-  std::unique_ptr<Dataset> configDataset = std::unique_ptr<Dataset>(
-          dsbuilder.withPath("C:/Users/Eric/Documents/fixedconfigs.csv").assemble()->getNextSamples());
-  std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
-  std::unique_ptr<Dataset> trainData[10];
-  trainData[0] = std::unique_ptr<Dataset>(hpoScorer->prepareTestData(*dataset));
-  for (int i = 1; i < 10; i++) {
-    trainData[i] = std::unique_ptr<Dataset>(hpoScorer->prepareTestData(*trainData[i - 1]));
-  }
-  //std::unique_ptr<Dataset> trainData = std::unique_ptr<Dataset>(hpoScorer->prepareTestData(*dataset));
-
-
-  int nCont;
-  std::vector<int> nOptions{};
-  fitterFactory->getBOspace(&nCont, nOptions);
-  base::DataVector cont(nCont, 0);
-  std::vector<int> disc(nOptions.size(), 0);
-  double stdDeviation;
-
-
-  for (int i = 0; i < configDataset->getNumberInstances(); i++) {
-    for (int k = 0; k < configDataset->getDimension(); k++) {
-      if (k < nCont) {
-        cont[k] = configDataset->getData().get(i, k);
-      } else {
-        disc[k - nCont] = lround(configDataset->getData().get(i, k));
-        //std::cout << disc[k] << std::endl; //result
-      }
-    }
-    //EDIT: rework
-    //fitterFactory->setBO(cont, disc);
-    fitterFactory->printConfig();
-
-    for (int k = 0; k < 10; k++) {
-      double result = hpoScorer->calculateScore(*(fitterFactory->buildFitter()), *(trainData[k]), &stdDeviation);
-      std::cout << "Result: " << result << std::endl; //result
-
-      //write results in file
-      std::ofstream myfile("C:/Users/Eric/Documents/resultsconfig.txt", std::ios_base::app);
-      if (myfile.is_open()) {
-        //myfile << "threshold,lambda,nopoints,level,basis" << std::endl;
-
-        for (int i = 0; i < nCont; i++) {
-          myfile << (cont)[i] << ",";
-        }
-        for (int i = 0; i < nOptions.size(); i++) {
-          myfile << (disc)[i] << ",";
-        }
-        myfile << trainData[k]->getNumberInstances() << "," << result << std::endl;
-      }
-      myfile.close();
-      //std::cout<< "Write to file finished." << std::endl;
-    }
-  }
-}
 
 } /* namespace datadriven */
 } /* namespace sgpp */

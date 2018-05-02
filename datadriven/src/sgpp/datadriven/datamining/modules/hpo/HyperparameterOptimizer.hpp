@@ -77,7 +77,6 @@ class HyperparameterOptimizer {
    * Currently no input/output yet.
    */
 
-  void runFromFile();
 
   void runBO();
 
@@ -97,6 +96,8 @@ class HyperparameterOptimizer {
    * Scorer for HPO.
    */
   std::unique_ptr<HPOScorer> hpoScorer;
+
+  HPOConfig config;
 };
 
 } /* namespace datadriven */

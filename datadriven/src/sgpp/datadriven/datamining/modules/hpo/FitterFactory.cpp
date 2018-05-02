@@ -33,17 +33,6 @@ void FitterFactory::setHarmonica()  {
   // std::cout<<"Run mark 2.1"<<std::endl;
 }
 
-void FitterFactory::getBOspace(int* nCont, std::vector<int>& nOptions){
-
-  *nCont = conpar.size();
-  for(auto& pair: dispar){
-    nOptions.push_back(pair.second.getNOptions());
-  }
-  for(auto& pair: catpar){
-    nOptions.push_back(pair.second.getNOptions());
-  }
-
-} //EDIT: remove
 
 
 

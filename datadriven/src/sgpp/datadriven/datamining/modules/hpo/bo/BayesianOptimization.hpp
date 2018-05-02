@@ -2,7 +2,7 @@
  * BayesianOptimization.hpp
  *
  *  Created on: Feb 2, 2018
- *      Author: polarbart
+ *      Author: Eric Koepke
  */
 
 #ifndef DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_MODULES_HPO_BAYESIANOPTIMIZATION_HPP_

@@ -18,6 +18,7 @@
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/DiscreteParameter.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/ContinuousParameter.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HPOConfig.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -59,6 +60,10 @@ class DataMiningConfigParser {
                           std::map<std::string,DiscreteParameter>& dispar,
                           std::map<std::string,DiscreteParameter>& catpar,
                           std::vector<base::GridType>& basisFunctions) const;
+  bool getHPOConfig(HPOConfig& config);
+  std::vector<int64_t> parseIntArray(DictNode& dict, const std::string& key,
+                 std::vector<int64_t> defaultValue, const std::string& parentNode) const;
+
   bool getDataSourceConfig(DataSourceConfig& config, const DataSourceConfig& defaults) const;
   bool getScorerTestingConfig(TestingConfiguration& config,
                               const TestingConfiguration& defaults) const;
