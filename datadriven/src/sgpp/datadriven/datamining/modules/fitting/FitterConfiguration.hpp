@@ -9,6 +9,7 @@
 #include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DatabaseConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
@@ -98,6 +99,12 @@ class FitterConfiguration {
   const datadriven::DensityEstimationConfiguration& getDensityEstimationConfig() const;
 
   /**
+   * Get where the database for lhs matrix decompositions is stored
+   * @return immutable DatabaseConfiguration
+   */
+  const datadriven::DatabaseConfiguration& getDatabaseConfiguration() const;
+
+  /**
    * Get configuration for the linear system solver which should be used while building
    * adaptive grids
    * @return immutable SLESolverConfiguration
@@ -124,10 +131,10 @@ class FitterConfiguration {
   const datadriven::OperationMultipleEvalConfiguration& getMultipleEvalConfig() const;
 
   /**
-     * Returns the path to data matrix database.
-     * @return immutable path to the database matrix database
+     * Returns the database configuration, i.e. the filepath
+     * @return immutable DatabaseConfiguration
      */
-  const std::string& getDatabaseConfig() const;
+  const datadriven::DatabaseConfiguration& getDatabaseConfig() const;
 
   /**
    * Get or set initial conditions for the grid before adaptive refinement.
@@ -212,6 +219,11 @@ class FitterConfiguration {
   datadriven::DensityEstimationConfiguration densityEstimationConfig;
 
   /**
+   * Configure where the lhs datamatrix decomposition database is stored
+   */
+  datadriven::DatabaseConfiguration databaseConfig;
+
+  /**
    * Configuration for the linear system solver which should be used while building adaptive grids
    */
   solver::SLESolverConfiguration solverRefineConfig;
@@ -232,11 +244,6 @@ class FitterConfiguration {
    * #sgpp::base::OperationMultipleEval
    */
   datadriven::OperationMultipleEvalConfiguration multipleEvalConfig;
-
-  /**
-   * Path to the lhs decomposed data matrix database.
-   */
-  std::string dbMatDatabaseFilepath;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

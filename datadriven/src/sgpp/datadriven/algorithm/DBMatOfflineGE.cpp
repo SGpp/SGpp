@@ -34,7 +34,7 @@ using sgpp::base::DataMatrix;
 DBMatOfflineGE::DBMatOfflineGE() : DBMatOffline() {}
 
 DBMatOfflineGE::DBMatOfflineGE(
-    const sgpp::base::RegularGridConfiguration& gridConfig,
+    const sgpp::base::GeneralGridConfiguration& gridConfig,
     const sgpp::base::AdpativityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig)

@@ -25,7 +25,7 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    * @param densityEstimationConfig The configuration of the matrix decomposition
    */
   explicit DBMatOfflineOrthoAdapt(
-      const sgpp::base::RegularGridConfiguration& gridConfig,
+      const sgpp::base::GeneralGridConfiguration& gridConfig,
       const sgpp::base::AdpativityConfiguration& adaptivityConfig,
       const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
       const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);

@@ -40,9 +40,8 @@ void FitterConfigurationDensityEstimation::setupDefaults() {
   densityEstimationConfig.type_ = sgpp::datadriven::DensityEstimationType::Decomposition;
   densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::Chol;
 
-  // intialize default database
-  //TODO(fuchsgdk): fuchsgruber: path to database
-  dbMatDatabaseFilepath = "";
+  // intialize empty database
+  databaseConfig.filepath = "";
 }
 
 void FitterConfigurationDensityEstimation::readParams(const DataMiningConfigParser& parser) {
@@ -53,6 +52,7 @@ void FitterConfigurationDensityEstimation::readParams(const DataMiningConfigPars
   parser.getFitterSolverRefineConfig(solverRefineConfig, solverRefineConfig);
   parser.getFitterSolverFinalConfig(solverFinalConfig, solverFinalConfig);
   parser.getFitterRegularizationConfig(regularizationConfig, regularizationConfig);
+  parser.getFitterDatabaseConfig(databaseConfig, databaseConfig);
 }
 } /* namespace datadriven */
 } /* namespace sgpp */
