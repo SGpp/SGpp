@@ -61,7 +61,6 @@ class FitterFactory {
   void setBO(BOConfig* config);
 
 
-  void getBOspace(int* nCont, std::vector<int>& nOptions); //EDIT: delete
 
 
 protected:

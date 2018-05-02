@@ -2,7 +2,7 @@
  * Harmonica.cpp
  *
  *  Created on: Feb 2, 2018
- *      Author: polarbart
+ *      Author: Eric Koepke
  */
 
 #include <sgpp/optimization/sle/solver/Eigen.hpp>

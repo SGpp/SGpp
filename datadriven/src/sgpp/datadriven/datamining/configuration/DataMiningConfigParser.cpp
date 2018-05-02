@@ -575,6 +575,28 @@ int64_t DataMiningConfigParser::parseInt(DictNode& dict, const std::string& key,
   }
 }
 
+std::vector<int64_t> DataMiningConfigParser::parseIntArray(DictNode& dict, const std::string& key,
+                                         std::vector<int64_t> defaultValue,
+                                         const std::string& parentNode) const {
+  if (dict.contains(key)) {
+    try {
+      std::vector<int64_t> array;
+      for (int i = 0; i < dict[key].size(); ++i) {
+        array.push_back(dict[key][i].getInt());
+      }
+      return array;
+    } catch (json_exception& e) {
+        std::string errorMsg = "# Failed to parse integer array" + parentNode + "[" + key +
+                               "] from string" + dict[key].get() + "."; //EDIT: key.get() does this work look above
+        throw data_exception(errorMsg.c_str());
+    }
+  } else {
+    std::cout << "# Did not find " << parentNode << "[" << key << "]. Setting default value " //EDIT: insert array to string?
+              << "." << std::endl;
+    return defaultValue;
+  }
+}
+
 void DataMiningConfigParser::parseSLESolverConfig(DictNode& dict, SLESolverConfiguration& config,
                                                   const SLESolverConfiguration& defaults,
                                                   const std::string& parentNode) const {
@@ -652,6 +674,34 @@ bool DataMiningConfigParser::getHyperparameters(std::map<std::string, Continuous
   }catch (json_exception& e) {
   }
   return false;
+}
+
+bool DataMiningConfigParser::getHPOConfig(HPOConfig &config) {
+  if(configFile->contains("hpo")){
+    auto node = static_cast<DictNode*>(&(*configFile)["hpo"]);
+    config.setSeed(parseInt(*node, "randomSeed", config.getSeed(), "hpo"));
+    if(node->contains("harmonica")) {
+      auto harmonica = static_cast<DictNode *>(&(*node)["harmonica"]);
+      config.setLambda(parseDouble(*harmonica, "lambda", config.getLambda(), "hpo"));
+      config.setStages(parseIntArray(*harmonica, "stages", config.getStages(), "hpo"));
+      config.setConstraints(parseIntArray(*harmonica, "constraints", config.getConstraints(), "hpo"));
+    } else {
+      std::cout << "# Could not find specification  of hpo[harmonica]. Falling Back to "
+              "default values." << std::endl;
+    }
+      if(node->contains("bayesianOptimization")){
+        auto bo = static_cast<DictNode *>(&(*node)["bayesianOptimization"]);
+        config.setNRandom(parseInt(*bo, "nRandom", config.getNRandom(), "hpo"));
+        config.setNRuns(parseInt(*bo, "nRuns", config.getNRuns(), "hpo"));
+      } else {
+        std::cout << "# Could not find specification  of hpo[bayesianOptimization]. Falling Back to "
+                "default values." << std::endl;
+      }
+
+      } else {
+    std::cout << "# Could not find specification  of hpo. Falling Back to "
+            "default values." << std::endl;
+  }
 }
 
 } /* namespace datadriven */
