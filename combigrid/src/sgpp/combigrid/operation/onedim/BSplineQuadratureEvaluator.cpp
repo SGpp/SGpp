@@ -20,6 +20,8 @@ namespace sgpp {
 namespace combigrid {
 
 double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, size_t index) {
+  //  std::cout << "BsplineQuadratureEvaluator: " << std::endl;
+  //  std::cout << "index " << index << std::endl;
   // performing Gauss-Legendre integration. Polynomials of degree 2*numGaussPoints-1 are integrated
   // exact
   size_t numGaussPoints = (degree + 1) / 2 + numAdditionalPoints;
@@ -32,6 +34,7 @@ double BSplineQuadratureEvaluator::get1DIntegral(std::vector<double>& points, si
   // points are not degree dependent and there is only on segment: the whole [0,1] interval
   if ((xValues.size() == 1) || (degree == 3 && (xValues.size() < 5)) ||
       ((degree == 5) && (xValues.size() < 9))) {
+    //    std::cout << "Lagrange" << std::endl;
     numGaussPoints = xValues.size() + numAdditionalPoints;
     quadRule.getLevelPointsAndWeightsNormalized(
         std::min(numGaussPoints, quadRule.getMaxSupportedLevel()), roots, quadratureweights);

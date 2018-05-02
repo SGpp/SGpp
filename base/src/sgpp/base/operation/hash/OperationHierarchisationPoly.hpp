@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef OPERATIONHIERARCHISATIONPOLY_HPP
-#define OPERATIONHIERARCHISATIONPOLY_HPP
+#pragma once
 
 #include <sgpp/base/operation/hash/OperationHierarchisation.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
@@ -12,7 +11,6 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace base {
@@ -28,9 +26,8 @@ class OperationHierarchisationPoly : public OperationHierarchisation {
    * @param storage the grid's GridStorage object
    * @param degree the polynom's max. degree
    */
-  OperationHierarchisationPoly(GridStorage& storage,
-                               size_t degree) :
-    storage(storage), base(degree) {}
+  OperationHierarchisationPoly(GridStorage& storage, size_t degree)
+      : storage(storage), base(degree) {}
 
   /**
    * Destructor
@@ -62,5 +59,3 @@ class OperationHierarchisationPoly : public OperationHierarchisation {
 
 }  // namespace base
 }  // namespace sgpp
-
-#endif /* OPERATIONHIERARCHISATIONPOLY_HPP */

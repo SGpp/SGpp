@@ -37,6 +37,7 @@ class UniformQuadratureStrategy(BilinearQuadratureStrategy):
         A = DataMatrix(gs.getSize(), gs.getSize())
         A.setAll(0.)
         createOperationLTwoDotExplicit(A, grid)
+        A = A.array()
 
         # store the result in the hash map
         for i in xrange(gs.getSize()):
@@ -44,7 +45,8 @@ class UniformQuadratureStrategy(BilinearQuadratureStrategy):
             for j in xrange(gs.getSize()):
                 gpj = gs.getPoint(j)
                 key = self.getKey([gpi, gpj])
-                self._map[key] = A.get(i, j)
+                self._map[key] = A[i, j]
+        
         return A
 
     def computeBilinearFormEntry(self, basis, gpi, gpj):

@@ -11,13 +11,15 @@
 
 #pragma once
 
+#include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp>
+
 #include <string>
 
 namespace sgpp {
 namespace datadriven {
 
 /**
- * Supported file types for #sgpp::datadriven::FileSampleProvider
+ * Supported file types for sgpp::datadriven::FileSampleProvider
  */
 enum class DataSourceFileType { NONE, ARFF, CSV };
 
@@ -47,6 +49,10 @@ struct DataSourceConfig {
    * size of a batch - if 0, take all available samples.
    */
   size_t batchSize = 0;
+ /*
+  * Configuration for possible data transformation on dataset
+  */
+  datadriven::DataTransformationConfig dataTransformationConfig;
 };
 
 } /* namespace datadriven */

@@ -3,23 +3,26 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-%{
-#include <sgpp/base/grid/type/PolyGrid.hpp>
-#include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
-%}
+// %{
+// #include <sgpp/base/grid/type/PolyGrid.hpp>
+// #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
+// #include <sgpp/base/grid/LevelIndexTypes.hpp>
+// %}
 
-%newobject sgpp::base::Grid::createGrid(RegularGridConfiguratio gridConfig);
+%newobject sgpp::base::Grid::createGrid(RegularGridConfiguration gridConfig);
 %newobject sgpp::base::Grid::createLinearGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearStretchedGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearBoundaryGrid(size_t dim, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createLinearClenshawCurtisGrid(size_t dim);
+%newobject sgpp::base::Grid::createLinearClenshawCurtisBoundaryGrid(size_t dim, size_t boundaryLevel);
+%newobject sgpp::base::Grid::createModLinearClenshawCurtisGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearBoundaryGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearBoundaryGrid(sgpp::base::BoudingBox& BB);
 %newobject sgpp::base::Grid::createLinearStretchedBoundaryGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearStretchedBoundaryGrid(sgpp::base::Stretching& BB);
 %newobject sgpp::base::Grid::createModLinearGrid(size_t dim);
 %newobject sgpp::base::Grid::createPolyGrid(size_t dim, size_t degree);
-%newobject sgpp::base::Grid::createPolyBoundaryGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createPolyBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createModPolyGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createWaveletGrid(size_t dim);
 %newobject sgpp::base::Grid::createWaveletBoundaryGrid(size_t dim);
@@ -35,8 +38,13 @@
 %newobject sgpp::base::Grid::createSquareRootGrid(size_t dim);
 %newobject sgpp::base::Grid::createPrewaveletGrid(size_t dim);
 %newobject sgpp::base::Grid::createPeriodicGrid(size_t dim);
+%newobject sgpp::base::Grid::createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
+%newobject sgpp::base::Grid::createPolyClenshawCurtisGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
 
 %newobject sgpp::base::Grid::unserialize(std::string& istr);
+%newobject sgpp::base::Grid::createGridOfEquivalentType(size_t numDims);
 %newobject sgpp::base::Grid::clone();
 
 %include "stl.i"
@@ -52,33 +60,34 @@ namespace sgpp
 namespace base
 {
 struct RegularGridConfiguration {
-      /// Grid Type, see enum
-      sgpp::base::GridType type_;
-      /// number of dimensions
-      size_t dim_;
-      /// number of levels
-      int level_;
-      /// max. polynomial degree for poly basis
-      size_t maxDegree_;
-      /// level of boundary grid
-      size_t boundaryLevel_;
-      /// subgrid selection value t
-      double t_ = 0.0;
-    };
-
+  /// Grid Type, see enum
+  sgpp::base::GridType type_;
+  /// number of dimensions
+  size_t dim_;
+  /// number of levels
+  int level_;
+  /// max. polynomial degree for poly basis
+  size_t maxDegree_;
+  /// level of boundary grid
+  sgpp::base::level_t boundaryLevel_;
+  /// string to serialized grid
+  std::string filename_;
+};
 
 struct AdpativityConfiguration {
-      /// number of refinements
-      size_t numRefinements_;
-      /// refinement threshold for surpluses
-      double threshold_;
-      /// refinement type: false: classic, true: maxLevel
-      bool maxLevelType_;
-      /// max. number of points to be refined
-      size_t noPoints_;
-      /// max. percent of points to be refined
-      double percent_;
-    };
+  /// number of refinements
+  size_t numRefinements_;
+  /// refinement threshold for surpluses
+  double threshold_;
+  /// refinement type: false: classic, true: maxLevel
+  bool maxLevelType_;
+  /// max. number of points to be refined
+  size_t noPoints_;
+  /// max. percent of points to be refined
+  double percent_;
+  /// other refinement strategy, that is more expensive, but yields better results
+  bool errorBasedRefinement = false;
+};
 
 enum class GridType {
   Linear,                       //  0
@@ -96,7 +105,7 @@ enum class GridType {
   Prewavelet,                   // 12
   SquareRoot,                   // 13
   Periodic,                     // 14
-  LinearClenshawCurtis,         // 15
+  LinearClenshawCurtisBoundary, // 15
   Bspline,                      // 16
   BsplineBoundary,              // 17
   BsplineClenshawCurtis,        // 18
@@ -106,22 +115,29 @@ enum class GridType {
   ModFundamentalSpline,         // 22
   ModBsplineClenshawCurtis,     // 23
   LinearStencil,                // 24
-  ModLinearStencil              // 25
+  ModLinearStencil,             // 25
+  PolyClenshawCurtisBoundary,   // 26
+  PolyClenshawCurtis,           // 27
+  LinearClenshawCurtis,         // 28
+  ModPolyClenshawCurtis,        // 29
+  ModLinearClenshawCurtis,      // 30
+  NakBsplineBoundaryCombigrid   // 31
 };
 
 class Grid
 {
 public:
-  static Grid* createGrid(RegularGridConfiguration gridConfig);
+  static Grid* createGrid(sgpp::base::RegularGridConfiguration gridConfig);
   static Grid* createLinearGrid(size_t dim);
   static Grid* createLinearStretchedGrid(size_t dim);
-  static Grid* createLinearBoundaryGrid(size_t dim, size_t boundaryLevel);
+  static Grid* createLinearBoundaryGrid(size_t dim, size_t boundaryLevel=1);
   static Grid* createLinearClenshawCurtisGrid(size_t dim);
-  static Grid* createLinearBoundaryGrid(size_t dim);
+  static Grid* createLinearClenshawCurtisBoundaryGrid(size_t dim, size_t boundaryLevel=1);
+  static Grid* createModLinearClenshawCurtisGrid(size_t dim);
   static Grid* createLinearStretchedBoundaryGrid(size_t dim);
   static Grid* createModLinearGrid(size_t dim);
   static Grid* createPolyGrid(size_t dim, size_t degree);
-  static Grid* createPolyBoundaryGrid(size_t dim, size_t degree);
+  static Grid* createPolyBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createModPolyGrid(size_t dim, size_t degree);
   static Grid* createWaveletGrid(size_t dim);
   static Grid* createWaveletBoundaryGrid(size_t dim);
@@ -139,9 +155,15 @@ public:
   static Grid* createLinearGridStencil(size_t dim);
   static Grid* createModLinearGridStencil(size_t dim);
   static Grid* createPeriodicGrid(size_t dim);
-	
+  static Grid* createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
+  static Grid* createPolyClenshawCurtisGrid(size_t dim, size_t degree);
+  static Grid* createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
+  static Grid* createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
+
   static Grid* unserialize(std::string& istr);
-	
+
+  static sgpp::base::GridType stringToGridType(const std::string& gridType);
+
 protected:
   Grid();
   Grid(Grid& o);
@@ -149,7 +171,7 @@ protected:
 public:
   virtual ~Grid();
 
-public:	
+public:
   virtual sgpp::base::GridStorage& getStorage();
   virtual sgpp::base::BoundingBox& getBoundingBox();
   virtual sgpp::base::Stretching& getStretching();
@@ -161,7 +183,10 @@ public:
   void refine(sgpp::base::DataVector& vector, int num);
   void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
   int getSize();
-  
+
+  std::string getTypeAsString();
+
+  Grid* createGridOfEquivalentType(size_t numDims);
   Grid* clone();
 };
 }
@@ -181,16 +206,21 @@ public:
 // extend the grid by a function that returns the maximum degree of the basis
 // which is important for polynomials and bsplines
 %extend sgpp::base::Grid{
-    int getDegree() {
-        if ($self->getType() == sgpp::base::GridType::Poly) {
-            return ((sgpp::base::PolyGrid*) $self)->getDegree();
-        };
-        if ($self->getType() == sgpp::base::GridType::PolyBoundary) {
-            return ((sgpp::base::PolyBoundaryGrid*) $self)->getDegree();
-        };
-        if ($self->getType() == sgpp::base::GridType::ModPoly) {
-            return ((sgpp::base::ModPolyGrid*) $self)->getDegree();
-        };
-        return 1;
+    size_t getDegree() {
+	return $self->getBasis().getDegree();
     };
 };
+
+%extend sgpp::base::Grid {
+  %pythoncode
+     %{
+    def hash_hexdigest(self):
+      import hashlib
+
+      gs = self.getStorage()
+      gps = [None] * gs.getSize()
+      for i in xrange(gs.getSize()):
+        gps[i] = gs.getPoint(i).getHash()
+      return hashlib.sha512(str(gps)).hexdigest()
+    %}
+}

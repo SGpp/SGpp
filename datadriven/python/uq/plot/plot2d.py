@@ -70,6 +70,7 @@ def plotTimedependentDensity2dWithRawData(xv, yv, Z, ts, us,
     if addContour:
         addContours(xv, yv, Z, levels, clabels, manual_locations)
 
+
 def plotTimedependentDensity2d(Us, us, ts,
                                addContour=True,
                                color_bar_label=r'$\hat{F}(\xi_1, \xi_2)$',
@@ -277,7 +278,7 @@ def plotSG2d(grid, alpha, addContour=True, n=100,
 
     if show_numbers:
         for i, x, y in numbers:
-           plt.text(x, y, "%i" % i, color='yellow', fontsize=12)
+            plt.text(x, y, "%i" % i, color='yellow', fontsize=12)
 
     cbar = plt.colorbar(im)
     cbar.set_label(colorbarLabel)
@@ -321,7 +322,7 @@ def plotGrid2d(grid, alpha=None, show_numbers=True,
 
     if show_numbers:
         for i, x, y in numbers:
-           plt.text(x, y, "%i" % i, color='black', fontsize=12)
+            plt.text(x, y, "%i" % i, color='black', fontsize=12)
 
 
 def plotSamples2d(samples):
@@ -359,6 +360,3 @@ def plotScatter2d(samples, values, bounds=None,
 
     cbar = plt.colorbar()
     cbar.ax.set_ylabel(color_bar_label)
-        
-        
-    

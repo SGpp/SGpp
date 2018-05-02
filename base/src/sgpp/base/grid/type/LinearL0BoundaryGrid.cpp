@@ -29,7 +29,7 @@ sgpp::base::GridType LinearL0BoundaryGrid::getType() {
   return sgpp::base::GridType::LinearL0Boundary;
 }
 
-const SBasis& LinearL0BoundaryGrid::getBasis() {
+SBasis& LinearL0BoundaryGrid::getBasis() {
   static SLinearBoundaryBase basis;
   return basis;
 }
