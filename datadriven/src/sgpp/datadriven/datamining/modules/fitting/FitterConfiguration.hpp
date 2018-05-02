@@ -99,12 +99,6 @@ class FitterConfiguration {
   const datadriven::DensityEstimationConfiguration& getDensityEstimationConfig() const;
 
   /**
-   * Get where the database for lhs matrix decompositions is stored
-   * @return immutable DatabaseConfiguration
-   */
-  const datadriven::DatabaseConfiguration& getDatabaseConfiguration() const;
-
-  /**
    * Get configuration for the linear system solver which should be used while building
    * adaptive grids
    * @return immutable SLESolverConfiguration
