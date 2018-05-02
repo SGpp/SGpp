@@ -59,6 +59,7 @@ class MCSampler(Sampler):
             U = self._params.activeParams().getIndependentJointDistribution()
             for _ in xrange(n):
                 self.__genObj.getSample(p)
+
                 # transform it to the probabilistic space
                 q = U.ppf(p.array())
                 # add it to the output

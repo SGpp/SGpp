@@ -40,7 +40,7 @@ class PolyBoundaryGrid : public Grid {
    */
   ~PolyBoundaryGrid() override;
 
-  const SBasis& getBasis() override;
+  SBasis& getBasis() override;
   sgpp::base::GridType getType() override;
   void serialize(std::ostream& ostr, int version = SERIALIZATION_VERSION) override;
 

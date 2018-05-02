@@ -1,8 +1,7 @@
 import numpy as np
 
-from pysgpp.extensions.datadriven.uq.dists import (Dist, Uniform, Normal, TNormal,
-                                                   Lognormal, Beta, MultivariateNormal,
-                                                   TLognormal)
+from pysgpp.extensions.datadriven.uq.dists import (Dist, Uniform, Normal, TNormal, SGDEdist,
+                          Lognormal, Beta, MultivariateNormal, TLognormal)
 from pysgpp.extensions.datadriven.uq.transformation import (LinearTransformation,
                                                             RosenblattTransformation)
 
@@ -152,8 +151,8 @@ class UncertainParameterDesciptor(ParameterDescriptor):
 
         # check if there is and SGDE involved that need this
         # transformation
-#         if isinstance(self._dist, SGDEdist):
-#             self._dist.transformation = self.__trans
+        if isinstance(self._dist, SGDEdist):
+            self._dist.transformation = self.__trans
 
         # check wiener askey scheme
         partOfWienerAskeyScheme = False

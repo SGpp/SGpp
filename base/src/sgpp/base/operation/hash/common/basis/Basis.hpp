@@ -8,14 +8,13 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace sgpp {
 namespace base {
 
 /**
  * Basis class for basis functions.
  */
-template<class LT, class IT>
+template <class LT, class IT>
 class Basis {
  public:
   /**
@@ -27,6 +26,22 @@ class Basis {
    * @result        value of the basis function.
    */
   virtual double eval(LT level, IT index, double x) = 0;
+
+  /**
+   * Returns the polynomial degree of the basis
+   *
+   * @return polynomial degree of the basis
+   */
+  virtual size_t getDegree() const = 0;
+
+  /**
+   * returns the integal of the current basis function
+   *
+   * @param level   level of the basis function
+   * @param index   index of the basis function
+   * @return
+   */
+  virtual double getIntegral(LT level, IT index) = 0;
 
   /**
    * Destructor.

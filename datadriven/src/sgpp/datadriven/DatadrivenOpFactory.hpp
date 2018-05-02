@@ -18,14 +18,19 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationTransformation1D.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationCovariance.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+
+#include <sgpp/datadriven/operation/hash/simple/OperationLimitFunctionValueRange.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp>
 
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationKDE.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationKDE.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeKDE.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityConditionalKDE.hpp>
 
+#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 
 /*
  * This file contains factory methods for operations.
@@ -52,8 +57,7 @@ datadriven::OperationTest* createOperationTest(base::Grid& grid);
  * @param k Parameter for @f$H^k@f$
  * @return Pointer to the new OperationRegularizationDiagonal object for the Grid grid
  */
-base::OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid,
-                                                                             int mode, double k);
+base::OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid, int mode, double k);
 
 /**
  * Factory method, returning an OperationDensityMarginalize for the grid.
@@ -61,8 +65,7 @@ base::OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid,
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationDensityMarginalize for the Grid grid
  */
-datadriven::OperationDensityMarginalize* createOperationDensityMarginalize(
-    base::Grid& grid);
+datadriven::OperationDensityMarginalize* createOperationDensityMarginalize(base::Grid& grid);
 
 /**
  * Factory method, returning an OperationDensityMargTo1D for the grid.
@@ -70,8 +73,7 @@ datadriven::OperationDensityMarginalize* createOperationDensityMarginalize(
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationDensityMarginalize for the Grid grid
  */
-datadriven::OperationDensityMargTo1D* createOperationDensityMargTo1D(
-    base::Grid& grid);
+datadriven::OperationDensityMargTo1D* createOperationDensityMargTo1D(base::Grid& grid);
 
 /**
  * Factory method, returning an OperationDensitySampling1D for the grid.
@@ -79,8 +81,7 @@ datadriven::OperationDensityMargTo1D* createOperationDensityMargTo1D(
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationDensitySampling1D for the Grid grid
  */
-datadriven::OperationDensitySampling1D* createOperationDensitySampling1D(
-    base::Grid& grid);
+datadriven::OperationDensitySampling1D* createOperationDensitySampling1D(base::Grid& grid);
 
 /**
  * Factory method, returning an OperationDensitySampling for the grid.
@@ -88,8 +89,7 @@ datadriven::OperationDensitySampling1D* createOperationDensitySampling1D(
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationDensitySampling1D for the Grid grid
  */
-datadriven::OperationDensitySampling* createOperationDensitySampling(
-    base::Grid& grid);
+datadriven::OperationDensitySampling* createOperationDensitySampling(base::Grid& grid);
 
 /**
  * Factory method, returning an OperationDensityRejectionSampling for the grid.
@@ -97,8 +97,8 @@ datadriven::OperationDensitySampling* createOperationDensitySampling(
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationDensitySampling1D for the Grid grid
  */
-datadriven::OperationDensityRejectionSampling*
-createOperationDensityRejectionSampling(base::Grid& grid);
+datadriven::OperationDensityRejectionSampling* createOperationDensityRejectionSampling(
+    base::Grid& grid);
 
 /**
  * Factory method, returning an OperationDensityConditional for the grid.
@@ -106,8 +106,7 @@ createOperationDensityRejectionSampling(base::Grid& grid);
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationDensityConditional for the Grid grid
  */
-datadriven::OperationDensityConditional* createOperationDensityConditional(
-    base::Grid& grid);
+datadriven::OperationDensityConditional* createOperationDensityConditional(base::Grid& grid);
 
 /**
  * Factory method, returning an OperationRosenblattTransformation for the grid.
@@ -115,8 +114,8 @@ datadriven::OperationDensityConditional* createOperationDensityConditional(
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationRosenblattTransformation for the Grid grid
  */
-datadriven::OperationRosenblattTransformation*
-createOperationRosenblattTransformation(base::Grid& grid);
+datadriven::OperationRosenblattTransformation* createOperationRosenblattTransformation(
+    base::Grid& grid);
 
 /**
  * Factory method, returning an OperationRosenblattTransformation for the grid.
@@ -124,8 +123,7 @@ createOperationRosenblattTransformation(base::Grid& grid);
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationRosenblattTransformation1D for the Grid grid
  */
-datadriven::OperationTransformation1D* createOperationRosenblattTransformation1D(
-    base::Grid& grid);
+datadriven::OperationTransformation1D* createOperationRosenblattTransformation1D(base::Grid& grid);
 
 /**
  * Factory method, returning an OperationInverseRosenblattTransformation for the grid.
@@ -141,26 +139,27 @@ createOperationInverseRosenblattTransformation(base::Grid& grid);
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationInverseRosenblattTransformation1D for the Grid grid
  */
-datadriven::OperationTransformation1D*
-createOperationInverseRosenblattTransformation1D(base::Grid& grid);
+datadriven::OperationTransformation1D* createOperationInverseRosenblattTransformation1D(
+    base::Grid& grid);
 
 /**
  * Factory method, returning an OperationRosenblattTransformationKDE for the kde.
  *
- * @param kde GaussianKDE for which the Rosenblatt transformation should be computed
+ * @param kde KernelDensityEstimator for which the Rosenblatt transformation should be computed
  * @return Pointer to new OperationRosenblattTransformationKDE for the kde
  */
-datadriven::OperationRosenblattTransformationKDE*
-createOperationRosenblattTransformationKDE(datadriven::GaussianKDE& kde);
+datadriven::OperationRosenblattTransformationKDE* createOperationRosenblattTransformationKDE(
+    datadriven::KernelDensityEstimator& kde);
 
 /**
  * Factory method, returning an OperationInverseRosenblattTransformationKDE for the kde.
  *
- * @param kde GaussianKDE for which the inverse Rosenblatt transformation should be computed
+ * @param kde KernelDensityEstimator for which the inverse Rosenblatt transformation should be
+ * computed
  * @return Pointer to new OperationInverseRosenblattTransformationKDE for the kde
  */
 datadriven::OperationInverseRosenblattTransformationKDE*
-createOperationInverseRosenblattTransformationKDE(datadriven::GaussianKDE& kde);
+createOperationInverseRosenblattTransformationKDE(datadriven::KernelDensityEstimator& kde);
 
 /**
  * Factory method, returning an OperationDensityMarginalizeKDE for the kernel density.
@@ -169,7 +168,7 @@ createOperationInverseRosenblattTransformationKDE(datadriven::GaussianKDE& kde);
  * @return Pointer to new OperationDensityMarginalizeKDE
  */
 datadriven::OperationDensityMarginalizeKDE* createOperationDensityMarginalizeKDE(
-    datadriven::GaussianKDE& kde);
+    datadriven::KernelDensityEstimator& kde);
 
 /**
  * Factory method, returning an OperationDensityConditionalKDE for the kernel density.
@@ -178,7 +177,7 @@ datadriven::OperationDensityMarginalizeKDE* createOperationDensityMarginalizeKDE
  * @return Pointer to new OperationDensityConditionalKDE
  */
 datadriven::OperationDensityConditionalKDE* createOperationDensityConditionalKDE(
-    datadriven::GaussianKDE& kde);
+    datadriven::KernelDensityEstimator& kde);
 
 /**
  * Factory method, returning an OperationMultipleEval for the grid.
@@ -191,6 +190,56 @@ datadriven::OperationDensityConditionalKDE* createOperationDensityConditionalKDE
 base::OperationMultipleEval* createOperationMultipleEval(
     base::Grid& grid, base::DataMatrix& dataset,
     sgpp::datadriven::OperationMultipleEvalConfiguration& configuration);
+
+/**
+ * Factory method, returning an OperationMakePositive for an arbitrary function f or some
+ * sparse grid, which is yet to be defined.
+ * Note: object has to be freed after use.
+ *
+ * @param candidateSearchAlgorithm defines algorithm for candidate set enumeration
+ * @param interpolationAlgorithm defines algorithm for coefficient estimation of extension set
+ * @param generateConsistentGrid if set to true, all hierarchical ancestors are available in the
+ * resulting grid
+ * @param verbose verbosity
+ * @param f function to be approximated (as an alternative to a sparse grid function)
+ *
+ * @return Pointer to the new OperationMakePositive object for the Grid grid
+ */
+datadriven::OperationMakePositive* createOperationMakePositive(
+    datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
+        datadriven::MakePositiveCandidateSearchAlgorithm::Intersections,
+    datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
+        datadriven::MakePositiveInterpolationAlgorithm::SetToZero,
+    bool generateConsistentGrid = true, bool verbose = false,
+    sgpp::optimization::ScalarFunction* f = nullptr);
+
+/**
+ * Factory method, returning an OperationLimitFunctionValueRange for an arbitrary function f or some
+ * sparse grid, which is yet to be defined.
+ * Note: object has to be freed after use.
+ *
+ * @param candidateSearchAlgorithm defines algorithm for candidate set enumeration
+ * @param interpolationAlgorithm defines algorithm for coefficient estimation of extension set
+ * @param verbose verbosity
+ * @param f function to be approximated (as an alternative to a sparse grid function)
+ *
+ * @return Pointer to the new OperationLimitFunctionValueRange object for the Grid grid
+ */
+datadriven::OperationLimitFunctionValueRange* createOperationLimitFunctionValueRange(
+    datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm =
+        datadriven::MakePositiveCandidateSearchAlgorithm::Intersections,
+    datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
+        datadriven::MakePositiveInterpolationAlgorithm::SetToZero,
+    bool verbose = false, sgpp::optimization::ScalarFunction* f = nullptr);
+
+/**
+ * Factory method, returning an OperationCovariance for the grid at hand.
+ * Note: object has to be freed after use.
+ *
+ * @param grid Grid which is to be used
+ * @return Pointer to the new OperationCovariance object for the Grid grid
+ */
+datadriven::OperationCovariance* createOperationCovariance(base::Grid& grid);
 
 }  // namespace op_factory
 }  // namespace sgpp

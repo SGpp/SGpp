@@ -25,7 +25,7 @@ class QuadRule1D {
   void getLevelPointsAndWeights(size_t level, base::DataVector& coordinates,
                                 base::DataVector& weights);
 
- protected:
+ public:
   std::vector<double> coordinatesWeights;
 };
 

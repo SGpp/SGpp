@@ -19,14 +19,13 @@ namespace base {
 /**
  * Linear basis on Noboundary grids.
  */
-template<class LT, class IT>
-class LinearBasis: public Basis<LT, IT> {
+template <class LT, class IT>
+class LinearBasis : public Basis<LT, IT> {
  public:
   /**
    * Destructor.
    */
-  ~LinearBasis() override {
-  }
+  ~LinearBasis() override {}
 
   /**
    * @param l     level of basis function
@@ -35,10 +34,16 @@ class LinearBasis: public Basis<LT, IT> {
    * @return      value of linear basis function
    */
   inline double eval(LT l, IT i, double x) override {
-    return std::max(1.0 - std::abs(static_cast<double>(static_cast<IT>
-                                   (1) << l) * x -
-                                   static_cast<double>(i)), 0.0);
+    return std::max(
+        1.0 - std::abs(static_cast<double>(static_cast<IT>(1) << l) * x - static_cast<double>(i)),
+        0.0);
   }
+
+  double getIntegral(LT level, IT index) override {
+    return 1. / static_cast<double>(static_cast<IT>(1) << level);
+  }
+
+  size_t getDegree() const override { return 1; }
 };
 
 // default type-def (unsigned int for level and index)

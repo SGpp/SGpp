@@ -23,6 +23,7 @@
 #include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceFileTypeParser.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerShufflingTypeParser.hpp>
@@ -58,6 +59,12 @@ DataMiningConfigParser::~DataMiningConfigParser() {}
 
 bool DataMiningConfigParser::hasDataSourceConfig() const {
   return configFile->contains(dataSource);
+}
+
+bool DataMiningConfigParser::hasDataTransformationConfig() const {
+  bool hasDataTransformationConfig =
+      hasDataSourceConfig() ? (*configFile)[dataSource].contains("dataTransformation") : false;
+  return hasDataTransformationConfig;
 }
 
 bool DataMiningConfigParser::hasScorerConfig() const { return configFile->contains(scorer); }
@@ -136,8 +143,22 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
       config.fileType = defaults.fileType;
     }
 
+    // parse dataTransformationConfig
+    bool hasDataTransformation = hasDataTransformationConfig();
+
+    if (hasDataTransformation) {
+      auto dataTransformationConfig =
+          static_cast<DictNode*>(&(*configFile)[dataSource]["dataTransformation"]);
+      parseDataTransformationConfig(*dataTransformationConfig, config.dataTransformationConfig,
+          defaults.dataTransformationConfig, "dataTransformation");
+    } else {
+      std::cout << "# Could not find specification of dataSource[dataTransformationConfig]. "
+          "Falling back to default values." << std::endl;
+      config.dataTransformationConfig = defaults.dataTransformationConfig;
+    }
+
   } else {
-    std::cout << "# Could not find specification  of dataSource. Falling Back to default values."
+    std::cout << "# Could not find specification of dataSource. Falling Back to default values."
               << std::endl;
     config = defaults;
   }
@@ -702,6 +723,49 @@ bool DataMiningConfigParser::getHPOConfig(HPOConfig &config) {
     std::cout << "# Could not find specification  of hpo. Falling Back to "
             "default values." << std::endl;
   }
+
+void DataMiningConfigParser::parseDataTransformationConfig(
+    DictNode& dict, DataTransformationConfig& config,
+    const DataTransformationConfig& defaults,
+    const std::string& parentNode) const {
+
+  // Parse transformation type
+  if (dict.contains("type")) {
+    config.type = DataTransformationTypeParser::parse(dict["type"].get());
+  } else {
+    std::cout << "# Did not find [dataTransformationType]. Setting default value "
+        << DataTransformationTypeParser::toString(defaults.type) << "." << std::endl;
+    config.type = defaults.type;
+  }
+
+  // If type Rosenblatt parse RosenblattTransformationConfig
+  if (config.type == DataTransformationType::ROSENBLATT) {
+    auto rosenblattTransformationConfig = static_cast<DictNode*>
+       (&(*configFile)[dataSource]["dataTransformation"]["rosenblattConfig"]);
+    parseRosenblattTransformationConfig(*rosenblattTransformationConfig,
+        config.rosenblattConfig, defaults.rosenblattConfig, "rosenblattConfig");
+  } else {
+    std::cout << "# Could not find specification of dataSource[dataTransformationConfig]"
+        "[rosenblattConfig]. Falling back to default values." << std::endl;
+    config.rosenblattConfig = defaults.rosenblattConfig;
+  }
+}
+
+void DataMiningConfigParser::parseRosenblattTransformationConfig(
+    DictNode& dict, RosenblattTransformationConfig& config,
+    const RosenblattTransformationConfig& defaults,
+    const std::string& parentNode) const {
+
+  config.numSamples = parseUInt(dict, "numSamples", defaults.numSamples, parentNode);
+  config.gridLevel = parseUInt(dict, "gridLevel", defaults.gridLevel, parentNode);
+
+  config.solverMaxIterations = parseUInt(dict, "solverMaxIterations",
+      defaults.solverMaxIterations, parentNode);
+  config.solverEps = parseDouble(dict, "solverEps",
+      defaults.solverEps, parentNode);
+  config.solverThreshold = parseDouble(dict, "solverThreshold",
+      defaults.solverThreshold, parentNode);
+
 }
 
 } /* namespace datadriven */
