@@ -71,10 +71,9 @@ int main() {
    * create a vector storing (possibly expensive) function evaluations at
    * each gridpoint
    */
-  DataVector functionEval(gridStorage.getSize());
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
     GridPoint& gp = gridStorage.getPoint(i);
-    functionEval[i] = f(gp.getStandardCoordinate(0), gp.getStandardCoordinate(1));
+    alpha[i] = f(gp.getStandardCoordinate(0), gp.getStandardCoordinate(1));
   }
 
   std::vector<size_t> addedPoints;
@@ -83,12 +82,6 @@ int main() {
     * Obtain function values and refine adaptively 5 times
     */
   for (int step = 0; step < 5; step++) {
-    // set function values in alpha
-    for (size_t i = 0; i < gridStorage.getSize(); i++) {
-      GridPoint& gp = gridStorage.getPoint(i);
-      alpha[i] = f(gp.getStandardCoordinate(0), gp.getStandardCoordinate(1));
-    }
-
     /**
       * Each time, we have to hierarchize the grid again, because in the previous interation,
       * new grid points have been added.
@@ -110,9 +103,22 @@ int main() {
       * surplus values will be inserted in the next iteration of the refinement loop.
       */
     alpha.resize(gridStorage.getSize());
+
+    /**
+     * Evaluate the function f at the newly created gridpoints and set the
+     * corresponding entries in the alpha vector with these values
+     */
+    for(size_t i = 0; i < addedPoints.size(); i++) {
+      size_t seq = addedPoints[i];
+      GridPoint& gp = gridStorage.getPoint(seq);
+      alpha[seq] = f(gp.getStandardCoordinate(0), gp.getStandardCoordinate(1));
+    }
+
+    // Clear the addedPoints vector for the next iteration
+    addedPoints.clear();
+
     std::cout << "refinement step " << step + 1 << ", new grid size: " << alpha.getSize()
               << std::endl;
-    //functionEval.resize(gridStorage.getSize());
   }
 }
 

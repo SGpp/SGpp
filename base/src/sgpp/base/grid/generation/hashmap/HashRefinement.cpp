@@ -140,15 +140,15 @@ void HashRefinement::free_refine(GridStorage& storage,
   }
 
   size_t sizeBeforeRefine = storage.getSize();
-  std::cout << "Size before refine: " << sizeBeforeRefine << std::endl;
 
   AbstractRefinement::refinement_container_type collection;
   collectRefinablePoints(storage, functor, collection);
   // now refine all grid points which satisfy the refinement criteria
   refineGridpointsCollection(storage, functor, collection);
 
-  size_t sizeAfterRefine = storage.getSize();
-  std::cout << "Size before refine: " << sizeAfterRefine << std::endl;
+  for(size_t i = sizeBeforeRefine; i < storage.getSize(); i++) {
+    addedPoints.push_back(i);
+  }
 }
 
 
