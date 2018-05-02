@@ -82,6 +82,14 @@ int main() {
     * Obtain function values and refine adaptively 5 times
     */
   for (int step = 0; step < 5; step++) {
+
+    for(size_t i = 0; i < alpha.getSize(); i++) {
+      std::cout << alpha[i] << std::endl;
+    }
+    for(size_t i = 0; i < gridStorage.getSize(); i++) {
+      GridPoint& gp = gridStorage.getPoint(i);
+      //alpha[i] = f(gp.getStandardCoordinate(0), gp.getStandardCoordinate(1));
+    }
     /**
       * Each time, we have to hierarchize the grid again, because in the previous interation,
       * new grid points have been added.
