@@ -40,7 +40,7 @@ class DBMatOffline {
    * @param densityEstimationConfig The configuration of the matrix decomposition
    */
   explicit DBMatOffline(
-      const sgpp::base::RegularGridConfiguration& gridConfig,
+      const sgpp::base::GeneralGridConfiguration& gridConfig,
       const sgpp::base::AdpativityConfiguration& adaptivityConfig,
       const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
       const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
@@ -97,7 +97,7 @@ class DBMatOffline {
    * Get a reference to the grid configuration object
    * @return Grid configuration object
    */
-  sgpp::base::RegularGridConfiguration& getGridConfig();
+  sgpp::base::GeneralGridConfiguration& getGridConfig();
 
   /**
    * Get a reference to the grid adaptivity configuration object
@@ -169,7 +169,7 @@ class DBMatOffline {
   DBMatOffline();
 
   // configuration of the grid
-  sgpp::base::RegularGridConfiguration gridConfig;
+  sgpp::base::GeneralGridConfiguration gridConfig;
 
   // config of the grid adaptivity
   sgpp::base::AdpativityConfiguration adaptivityConfig;
@@ -210,7 +210,7 @@ class DBMatOffline {
 
    */
   void parseConfig(const std::string& fileName,
-                   sgpp::base::RegularGridConfiguration& gridConfig,
+                   sgpp::base::GeneralGridConfiguration& gridConfig,
                    sgpp::base::AdpativityConfiguration& adaptivityConfig,
                    sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
                    sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) const;

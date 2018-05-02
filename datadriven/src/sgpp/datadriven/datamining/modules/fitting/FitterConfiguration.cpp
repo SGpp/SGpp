@@ -46,9 +46,9 @@ const datadriven::OperationMultipleEvalConfiguration& FitterConfiguration::getMu
   return multipleEvalConfig;
 }
 
-const std::string& FitterConfiguration::getDatabaseConfig()
+const datadriven::DatabaseConfiguration& FitterConfiguration::getDatabaseConfig()
     const {
-  return dbMatDatabaseFilepath;
+  return databaseConfig;
 }
 
 base::RegularGridConfiguration& FitterConfiguration::getGridConfig() {

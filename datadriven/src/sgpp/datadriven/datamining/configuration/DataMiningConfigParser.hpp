@@ -51,7 +51,6 @@ class DataMiningConfigParser {
   bool hasScorerConfigCrossValidation() const;
   bool hasScorerConfigTesting() const;
   bool hasFitterConfig() const;
-  bool hasDatabaseConfig() const;
 
   bool getDataSourceConfig(DataSourceConfig& config, const DataSourceConfig& defaults) const;
   bool getScorerTestingConfig(TestingConfiguration& config,
@@ -75,13 +74,15 @@ class DataMiningConfigParser {
                                      const RegularizationConfiguration& defaults) const;
   bool getFitterLambda(double& lambda, double defaultValue) const;
 
+  bool getFitterDatabaseConfig(datadriven::DatabaseConfiguration config,
+      const datadriven::DatabaseConfiguration& defaults) const;
+
  private:
   std::unique_ptr<JSON> configFile;
 
   static const std::string dataSource;
   static const std::string scorer;
   static const std::string fitter;
-  static const std::string database;
 
   std::string parseString(DictNode& dict, const std::string& key, const std::string& defaultValue,
                           const std::string& parentNode) const;
@@ -102,8 +103,6 @@ class DataMiningConfigParser {
       const DataTransformationConfig& defaults, const std::string& parentNode) const;
   void parseRosenblattTransformationConfig(DictNode& dict, RosenblattTransformationConfig& config,
       const RosenblattTransformationConfig& defaults, const std::string& parentNode) const;
-
-  bool getFitterDatabaseConfig(std::string& config, const std::string& defaults) const;
 
   template <typename Enumeration>
   int asInteger(Enumeration const value) const {

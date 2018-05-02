@@ -34,27 +34,42 @@ ModelFittingDensityEstimation::ModelFittingDensityEstimation(
     : ModelFittingBase{}, refinementsPerformed{0}, offline{nullptr} {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
-  // TODO(fuchsgdk): support for GeneralGridConfiguration
-  sgpp::datadriven::DBMatDatabase database(this->config->getDatabaseConfig());
-  sgpp::base::RegularGridConfiguration gridConfig = this->config->getGridConfig();
-  sgpp::base::AdpativityConfiguration refinementConfig = this->config->getRefinementConfig();
-  sgpp::datadriven::RegularizationConfiguration regularizationConfig =
+
+  // Get configurations
+  datadriven::DatabaseConfiguration databaseConfig =
+      this->config->getDatabaseConfig();
+  base::RegularGridConfiguration gridConfig =
+      this->config->getGridConfig();
+  base::AdpativityConfiguration refinementConfig =
+      this->config->getRefinementConfig();
+  datadriven::RegularizationConfiguration regularizationConfig =
       this->config->getRegularizationConfig();
-  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig =
+  datadriven::DensityEstimationConfiguration densityEstimationConfig =
       this->config->getDensityEstimationConfig();
-  if (database.hasDataMatrix(gridConfig, refinementConfig, regularizationConfig,
+
+  bool offlineInitialized = false;
+  // Initialize database if provided (path is not empty)
+  if (!databaseConfig.filepath.empty()) {
+    datadriven::DBMatDatabase database(databaseConfig.filepath);
+    // Check if database holds a fitting lhs matrix decomposition
+    if (database.hasDataMatrix(gridConfig, refinementConfig, regularizationConfig,
       densityEstimationConfig)) {
-    std::string dbMatFilepath = database.getDataMatrix(gridConfig, refinementConfig,
-        regularizationConfig, densityEstimationConfig);
-    offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildFromFile(
-        dbMatFilepath)};
-  } else {
+      std::string offlineFilepath = database.getDataMatrix(gridConfig, refinementConfig,
+          regularizationConfig, densityEstimationConfig);
+      offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildFromFile(
+          offlineFilepath)};
+      offlineInitialized = true;
+    }
+  }
+
+  // Build and decompose offline object if not loaded from database
+  if (!offlineInitialized) {
+    // Build offline object by factory, build matrix and decompose
     offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildOfflineObject(
         gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig)};
+    offline->buildMatrix();
+    offline->decomposeMatrix();
   }
-  offline->buildMatrix();
-  // grid = offline->getGridPtr();
-  offline->decomposeMatrix();
   online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(*offline)};
   alpha = online->getAlpha();
 }
