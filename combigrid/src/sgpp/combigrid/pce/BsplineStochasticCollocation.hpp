@@ -16,6 +16,9 @@
 #include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductHashMapNakBsplineBoundaryCombigrid.hpp>
 #include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
 
+#include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
+
 #include <vector>
 
 namespace sgpp {
@@ -40,6 +43,22 @@ class BsplineStochasticCollocation : public CombigridSurrogateModel {
   double mean() override;
   double variance() override;
 
+  /**
+   * Calculates the variance using the combination technique BSplineScalarProductEvaluator
+   * This is used to compare runtimes between the hierarchical grid (which should be faster)
+   * and the combination technique
+   */
+  double computeVarianceWithCombiTechnique();
+
+  /**
+   * coarsen the hierarchical sparse grid surrogate
+   * @param removements_num Number of grid points which should be removed (if possible - there could
+   * be less removable grid points)
+   * @param threshold The absolute value of the entries have to be greater or equal than the
+   * threshold
+   */
+  void coarsen(size_t removements_num = 1, double threshold = 0.0);
+
   void getComponentSobolIndices(sgpp::base::DataVector& componentSsobolIndices,
                                 bool normalized = true) override;
   void getTotalSobolIndices(sgpp::base::DataVector& totalSobolIndices,
@@ -48,14 +67,15 @@ class BsplineStochasticCollocation : public CombigridSurrogateModel {
   void updateConfig(sgpp::combigrid::CombigridSurrogateModelConfiguration config) override;
 
   size_t numGridPoints() override;
+  size_t numHierarchicalGridPoints();
   std::shared_ptr<LevelInfos> getInfoOnAddedLevels() override;
 
   /** calculate the difference between the combination technique surrogate u_{CT} and the
-  * corresponding hierarchical sparse grid surrogate u_{SG}. This is close to zero because the
-  * surrogates lie in the same space.
-  * @param xs matrix of points p of which |u_{CT}(p) - u_{SG}(p)| is calculated
-  * @param res returns the absolute differences
-  * **/
+   * corresponding hierarchical sparse grid surrogate u_{SG}. This is close to zero because the
+   * surrogates lie in the same space.
+   * @param xs matrix of points p of which |u_{CT}(p) - u_{SG}(p)| is calculated
+   * @param res returns the absolute differences
+   * **/
   void differenceCTSG(sgpp::base::DataMatrix& xs, sgpp::base::DataVector& res);
 
   /**
@@ -80,6 +100,13 @@ class BsplineStochasticCollocation : public CombigridSurrogateModel {
   double computeMean();
   double computeVariance();
 
+  /**
+   * interpolates the combination technique surrogate with hierarchical B-splines
+   * The grid and coefficients are stored in ,hierarchicalGrid and hierarchicalCoefficients
+   * respectively
+   */
+  void transformToHierarchical();
+
   void countPolynomialTerms();
 
   double quad(sgpp::combigrid::MultiIndex i);
@@ -98,13 +125,16 @@ class BsplineStochasticCollocation : public CombigridSurrogateModel {
   double var;
   // basis coefficients for Bspline interpolation
   std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage;
-  //  ToDo(rehmemk)
-  size_t numthreads = 4;
   LTwoScalarProductHashMapNakBsplineBoundaryCombigrid scalarProducts;
 
   // operation
   std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation;
   std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation;
+
+  // hierarchical sparse grid interpolant
+  bool hierarchicalTransformationFlag = false;
+  std::shared_ptr<sgpp::base::Grid> hierarchicalGrid;
+  sgpp::base::DataVector hierarchicalCoefficients;
 };
 
 } /* namespace combigrid */

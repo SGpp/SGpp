@@ -96,6 +96,9 @@ class CombiEvaluators {
 
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> BSplineScalarProduct(
       size_t degree);
+  static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> BSplineScalarProduct(
+      size_t degree, sgpp::combigrid::SingleFunction weight_function, size_t numAdditionalPoints,
+      double a, double b, bool normalizeWeights);
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> polynomialScalarProduct();
 
   static std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> multiPolynomialInterpolation();

@@ -82,6 +82,9 @@ namespace std {
 %include "base/src/sgpp/base/grid/generation/functors/RefinementFunctor.hpp"
 %include "base/src/sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 %include "base/src/sgpp/base/grid/generation/functors/CoarseningFunctor.hpp"
+%include "base/src/sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
+%include "base/src/sgpp/base/grid/generation/functors/SurplusVolumeCoarseningFunctor.hpp"
+
 %include "base/src/sgpp/base/grid/generation/GridGenerator.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationMultipleEval.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationMatrix.hpp"
