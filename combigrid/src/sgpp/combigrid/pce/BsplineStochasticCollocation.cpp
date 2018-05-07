@@ -49,6 +49,7 @@ void BsplineStochasticCollocation::initializeOperations(
     std::shared_ptr<LevelManager> levelManager) {
   customWeightFunction = true;
   numDims = weightFunctions.size();
+  // If no custom weight function is used the numDimensions MUST be set in the config!
   if (numDims == 0) {
     numDims = config.numDimensions;
     customWeightFunction = false;
@@ -124,6 +125,7 @@ void BsplineStochasticCollocation::updateConfig(
 
   computedMeanFlag = false;
   computedVarianceFlag = false;
+  hierarchicalTransformationFlag = false;
 }
 
 bool BsplineStochasticCollocation::updateStatus() {
@@ -171,19 +173,13 @@ double BsplineStochasticCollocation::computeVariance() {
     mean();
   }
 
-  std::shared_ptr<sgpp::base::Grid> grid;
-  grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDims, config.degree));
-  sgpp::base::GridStorage& gridStorage = grid->getStorage();
-  auto levelStructure = this->config.levelStructure;
-  convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
+  // compute hierarchical sparse grid interpolant
+  if (hierarchicalTransformationFlag == false) {
+    transformToHierarchical();
+  }
 
-  // interpolate on SG
-  sgpp::base::DataVector alpha =
-      calculateInterpolationCoefficientsForConvertedExpUniformBoundaryCombigird(
-          grid, gridStorage, combigridMultiOperation, levelStructure);
-
-  sgpp::base::Grid* gridptr = grid.get();
-  sgpp::base::DataVector product(alpha.size());
+  sgpp::base::Grid* gridptr = hierarchicalGrid.get();
+  sgpp::base::DataVector product(hierarchicalCoefficients.size());
 
   scalarProducts.updateGrid(gridptr);
   // scalarProducts.setWeightFunction(weightFunctions);
@@ -193,18 +189,19 @@ double BsplineStochasticCollocation::computeVariance() {
   if (config.degree == 1) {
     // calculate V(u) = E(u^2) - E(u)^2
     // this works for all B spline degrees but may be instable
-    scalarProducts.mult(alpha, product);
-    double meanSquare = product.dotProduct(alpha);
+    //(e.g. ev*ev might be larger than meanSquare => negative variance)
+    scalarProducts.mult(hierarchicalCoefficients, product);
+    double meanSquare = product.dotProduct(hierarchicalCoefficients);
     variance = meanSquare - ev * ev;
   } else {
     // calculate V(u) = E((u-E(u))^2)
     // this is done by subtracting E(u) from the coefficient of the constant function
     // it does not work for B spline degree 1 because there is no constant function in the basis
     // (We could add a constant basis function on level 0)
-    alpha[0] -= ev;
-    scalarProducts.mult(alpha, product);
+    hierarchicalCoefficients[0] -= ev;
+    scalarProducts.mult(hierarchicalCoefficients, product);
 
-    variance = product.dotProduct(alpha);
+    variance = product.dotProduct(hierarchicalCoefficients);
   }
 
   return variance;
@@ -217,6 +214,70 @@ double BsplineStochasticCollocation::variance() {
     computedVarianceFlag = true;
   }
   return var;
+}
+
+double BsplineStochasticCollocation::computeVarianceWithCombiTechnique() {
+  if (!computedMeanFlag) {
+    mean();
+  }
+
+  auto pointHierarchies = combigridOperation->getPointHierarchies();
+  auto levelManager = combigridOperation->getLevelManager();
+  sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =
+      sgpp::combigrid::FullGridSummationStrategyType::QUADRATIC;
+
+  // Scalar products support weight functions. First test some easy case without them!
+  sgpp::combigrid::CombiEvaluators::MultiCollection scalarProductEvaluators(0);
+  if (customWeightFunction) {
+    //    std::cerr
+    //        << "the combination technique scalar products currently do not support weight
+    //        functions!"
+    //        << std::endl;
+    size_t numAdditionalPoints = 0;
+    bool normalizeWeights = false;
+    for (size_t d = 0; d < numDims; d++) {
+      scalarProductEvaluators.push_back(sgpp::combigrid::CombiEvaluators::BSplineScalarProduct(
+          config.degree, weightFunctions[d], numAdditionalPoints, config.bounds[2 * d],
+          config.bounds[2 * d + 1], normalizeWeights));
+    }
+  } else {
+    for (size_t d = 0; d < numDims; d++) {
+      scalarProductEvaluators.push_back(
+          sgpp::combigrid::CombiEvaluators::BSplineScalarProduct(config.degree));
+    }
+  }
+
+  auto varianceOperation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
+      pointHierarchies, scalarProductEvaluators, levelManager, this->config.coefficientStorage,
+      summationStrategyType);
+
+  varianceOperation->getLevelManager()->addLevelsFromStructure(this->config.levelStructure);
+
+  sgpp::base::DataVector meanSquareDataVector = varianceOperation->getResult();
+  double meanSquare = meanSquareDataVector[0];
+
+  return meanSquare - ev * ev;
+}
+
+void BsplineStochasticCollocation::coarsen(size_t removements_num, double threshold) {
+  sgpp::base::HashCoarsening coarsen;
+  sgpp::base::GridStorage& gridStorage = hierarchicalGrid->getStorage();
+  sgpp::base::SurplusCoarseningFunctor functor(hierarchicalCoefficients, removements_num,
+                                               threshold);
+  coarsen.free_coarsen(gridStorage, functor, hierarchicalCoefficients);
+}
+
+void BsplineStochasticCollocation::transformToHierarchical() {
+  hierarchicalGrid.reset(
+      sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDims, config.degree));
+  sgpp::base::GridStorage& gridStorage = hierarchicalGrid->getStorage();
+  auto levelStructure = this->config.levelStructure;
+  convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
+
+  hierarchicalCoefficients =
+      calculateInterpolationCoefficientsForConvertedExpUniformBoundaryCombigird(
+          hierarchicalGrid, gridStorage, combigridMultiOperation, levelStructure);
+  hierarchicalTransformationFlag = true;
 }
 
 void BsplineStochasticCollocation::getComponentSobolIndices(
@@ -232,23 +293,22 @@ void BsplineStochasticCollocation::getTotalSobolIndices(sgpp::base::DataVector& 
 
 size_t BsplineStochasticCollocation::numGridPoints() { return currentNumGridPoints; }
 
+size_t BsplineStochasticCollocation::numHierarchicalGridPoints() {
+  return hierarchicalGrid->getSize();
+}
+
 std::shared_ptr<LevelInfos> BsplineStochasticCollocation::getInfoOnAddedLevels() {
   return combigridOperation->getLevelManager()->getInfoOnAddedLevels();
 }
 
 void BsplineStochasticCollocation::differenceCTSG(sgpp::base::DataMatrix& xs,
                                                   sgpp::base::DataVector& res) {
-  std::shared_ptr<sgpp::base::Grid> grid;
-  grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDims, config.degree));
-  sgpp::base::GridStorage& gridStorage = grid->getStorage();
-  auto levelStructure = this->config.levelStructure;
-  convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
-
-  // interpolate on SG
-  sgpp::base::DataVector alpha =
-      calculateInterpolationCoefficientsForConvertedExpUniformBoundaryCombigird(
-          grid, gridStorage, combigridMultiOperation, levelStructure);
-  sgpp::optimization::InterpolantScalarFunction sparseGridSurrogate(*grid, alpha);
+  // compute hierarchical sparse grid interpolant
+  if (hierarchicalTransformationFlag == false) {
+    transformToHierarchical();
+  }
+  sgpp::optimization::InterpolantScalarFunction sparseGridSurrogate(*hierarchicalGrid,
+                                                                    hierarchicalCoefficients);
 
   // evaluate hierarchical sparse grid surrogate in xs
   size_t numPoints = xs.getNcols();
@@ -279,16 +339,11 @@ void BsplineStochasticCollocation::sgCoefficientCharacteristics(sgpp::base::Data
   max.resize(0);
   l2norm.resize(0);
 
-  std::shared_ptr<sgpp::base::Grid> grid;
-  grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDims, config.degree));
-  sgpp::base::GridStorage& gridStorage = grid->getStorage();
-  auto levelStructure = this->config.levelStructure;
-  convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
-
-  // interpolate on SG
-  sgpp::base::DataVector alpha =
-      calculateInterpolationCoefficientsForConvertedExpUniformBoundaryCombigird(
-          grid, gridStorage, combigridMultiOperation, levelStructure);
+  // compute hierarchical sparse grid interpolant
+  if (hierarchicalTransformationFlag == false) {
+    transformToHierarchical();
+  }
+  sgpp::base::GridStorage& gridStorage = hierarchicalGrid->getStorage();
 
   // sort coefficients by their levelsum
   // level enumeration differs a little for hierarchical Sparse Grids and combigrid module grids
@@ -313,14 +368,14 @@ void BsplineStochasticCollocation::sgCoefficientCharacteristics(sgpp::base::Data
         }
       }
     }
-    coeffMap_levelsum[levelsum].push_back(alpha[p]);
+    coeffMap_levelsum[levelsum].push_back(hierarchicalCoefficients[p]);
     numPointsPerLevel[levelsum]++;
 
     std::vector<size_t> level(0);
     for (size_t d = 0; d < numDim; d++) {
       level.push_back(gridStorage[p].getLevel(d));
     }
-    coeffMap_level[level].push_back(alpha[p]);
+    coeffMap_level[level].push_back(hierarchicalCoefficients[p]);
   }
   for (auto const& it : coeffMap_levelsum) {
     // print number of points per level

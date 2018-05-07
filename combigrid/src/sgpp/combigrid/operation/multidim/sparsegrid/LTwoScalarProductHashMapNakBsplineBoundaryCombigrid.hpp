@@ -57,11 +57,11 @@ class LTwoScalarProductHashMapNakBsplineBoundaryCombigrid {
   virtual ~LTwoScalarProductHashMapNakBsplineBoundaryCombigrid();
 
   /**
-  * Implementation of standard matrix multiplication
-  *
-  * @param alpha DataVector that is multiplied to the matrix
-  * @param result DataVector into which the result of multiplication is stored
-  */
+   * Implementation of standard matrix multiplication
+   *
+   * @param alpha DataVector that is multiplied to the matrix
+   * @param result DataVector into which the result of multiplication is stored
+   */
   virtual void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
   void setWeightFunction(sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection) {

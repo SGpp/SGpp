@@ -251,6 +251,13 @@ std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> CombiEvaluators::BSpl
   return std::make_shared<BSplineScalarProductEvaluator>(degree);
 }
 
+std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> CombiEvaluators::BSplineScalarProduct(
+    size_t degree, sgpp::combigrid::SingleFunction weight_function, size_t numAdditionalPoints,
+    double a, double b, bool normalizeWeights) {
+  return std::make_shared<BSplineScalarProductEvaluator>(
+      degree, weight_function, numAdditionalPoints, a, b, normalizeWeights);
+}
+
 std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>
 CombiEvaluators::polynomialScalarProduct() {
   return std::make_shared<PolynomialScalarProductEvaluator>();
