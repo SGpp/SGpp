@@ -22,20 +22,15 @@ namespace datadriven {
 
 using sgpp::base::algorithm_exception;
 
-DBMatOfflineDenseIChol::DBMatOfflineDenseIChol(
-    const sgpp::base::GeneralGridConfiguration& gridConfig,
-    const sgpp::base::AdpativityConfiguration& adaptivityConfig,
-    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig)
-    : DBMatOfflineChol(gridConfig, adaptivityConfig,
-                       regularizationConfig, densityEstimationConfig) {}
+DBMatOfflineDenseIChol::DBMatOfflineDenseIChol() : DBMatOfflineChol() {}
 
 DBMatOfflineDenseIChol::DBMatOfflineDenseIChol(const std::string& fileName)
     : DBMatOfflineChol{fileName} {}
 
 DBMatOffline* DBMatOfflineDenseIChol::clone() { return new DBMatOfflineDenseIChol{*this}; }
 
-void DBMatOfflineDenseIChol::decomposeMatrix() {
+void DBMatOfflineDenseIChol::decomposeMatrix(RegularizationConfiguration& regularizationConfig,
+    DensityEstimationConfiguration& densityEstimationConfig) {
   if (isConstructed) {
     if (isDecomposed) {
       return;
@@ -66,13 +61,14 @@ void DBMatOfflineDenseIChol::decomposeMatrix() {
   }
 }
 
-void DBMatOfflineDenseIChol::choleskyModification(size_t newPoints, std::list<size_t> deletedPoints,
-                                                  double lambda) {
+void DBMatOfflineDenseIChol::choleskyModification(Grid& grid,
+    datadriven::DensityEstimationConfiguration& densityEstimationConfig, size_t newPoints,
+    std::list<size_t> deletedPoints, double lambda) {
   if (newPoints > 0) {
     //    auto begin = std::chrono::high_resolution_clock::now();
 
-    size_t gridSize = grid->getStorage().getSize();
-    size_t gridDim = grid->getStorage().getDimension();
+    size_t gridSize = grid.getSize();
+    size_t gridDim = grid.getDimension();
 
     DataMatrix tmpMatrix(std::move(lhsMatrix));
 
@@ -97,7 +93,7 @@ void DBMatOfflineDenseIChol::choleskyModification(size_t newPoints, std::list<si
     DataMatrix level(gridSize, gridDim);
     DataMatrix index(gridSize, gridDim);
 
-    grid->getStorage().getLevelIndexArraysForEval(level, index);
+    grid.getStorage().getLevelIndexArraysForEval(level, index);
     double lambda_conf = lambda;
 // Loop to calculate all L2-products of added points based on the
 // hat-function as basis function
@@ -202,5 +198,8 @@ void sgpp::datadriven::DBMatOfflineDenseIChol::ichol(const DataMatrix& matrix, D
   }
 } /* omp parallel */
 
+sgpp::datadriven::MatrixDecompositionType DBMatOfflineDenseIChol::getDecompositionType() {
+  return sgpp::datadriven::MatrixDecompositionType::DenseIchol;
+}
 } /* namespace datadriven */
 } /* namespace sgpp */

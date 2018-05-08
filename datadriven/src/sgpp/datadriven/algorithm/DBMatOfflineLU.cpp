@@ -14,6 +14,7 @@
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
+#include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_math.h>
@@ -30,25 +31,21 @@ using sgpp::base::algorithm_exception;
 using sgpp::base::DataVector;
 using sgpp::base::DataMatrix;
 
-DBMatOfflineLU::DBMatOfflineLU(
-    const sgpp::base::GeneralGridConfiguration& gridConfig,
-    const sgpp::base::AdpativityConfiguration& adaptivityConfig,
-    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig)
-    : DBMatOfflineGE{gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig},
-    permutation{nullptr} {}
+DBMatOfflineLU::DBMatOfflineLU() : DBMatOfflineGE{}, permutation{nullptr} {}
 
 DBMatOfflineLU::DBMatOfflineLU(const DBMatOfflineLU& rhs)
     : DBMatOfflineGE(rhs), permutation(nullptr) {
+  size_t gridSize = rhs.lhsMatrix.getNrows();
   permutation =
-      std::unique_ptr<gsl_permutation>{gsl_permutation_alloc(rhs.grid->getStorage().getSize())};
+      std::unique_ptr<gsl_permutation>{gsl_permutation_alloc(gridSize)};
   gsl_permutation_memcpy(permutation.get(), rhs.permutation.get());
 }
 
 DBMatOfflineLU& DBMatOfflineLU::operator=(const DBMatOfflineLU& rhs) {
+  size_t gridSize = rhs.lhsMatrix.getNrows();
   DBMatOffline::operator=(rhs);
   permutation =
-      std::unique_ptr<gsl_permutation>{gsl_permutation_alloc(rhs.grid->getStorage().getSize())};
+      std::unique_ptr<gsl_permutation>{gsl_permutation_alloc(gridSize)};
   gsl_permutation_memcpy(permutation.get(), rhs.permutation.get());
 
   return *this;
@@ -58,7 +55,8 @@ DBMatOffline* DBMatOfflineLU::clone() { return new DBMatOfflineLU{*this}; }
 
 bool DBMatOfflineLU::isRefineable() { return false; }
 
-void DBMatOfflineLU::decomposeMatrix() {
+void DBMatOfflineLU::decomposeMatrix(RegularizationConfiguration& regularizationConfig,
+    DensityEstimationConfiguration& densityEstimationConfig) {
   if (isConstructed) {
     if (isDecomposed) {
       // Already decomposed => Do nothing
@@ -80,15 +78,30 @@ void DBMatOfflineLU::decomposeMatrix() {
   }
 }
 
-DBMatOfflineLU::DBMatOfflineLU(const std::string& fileName)
+DBMatOfflineLU::DBMatOfflineLU(const std::string& filepath)
     : DBMatOfflineGE(), permutation{nullptr} {
-  parseConfig(fileName, gridConfig, adaptivityConfig,
-              regularizationConfig, densityEstimationConfig);
   isConstructed = true;
   isDecomposed = true;
-  InitializeGrid();
 
-  FILE* file = fopen(fileName.c_str(), "rb");
+  // Same as in DBMatOffline, parse fileheader to get size attributes
+  std::ifstream filestream(filepath, std::istream::in);
+    if (!filestream) {
+      throw algorithm_exception("Failed to open File");
+    }
+    std::string header;
+    std::getline(filestream, header);
+    filestream.close();
+
+    std::vector<std::string> tokens;
+    StringTokenizer::tokenize(header, ",", tokens);
+    if (tokens.size() != 2) {
+      throw algorithm_exception("Invalid DBMatOffline file header!");
+    }
+    size_t nRows = std::stoi(tokens[0]);
+    // size_t nCols = std::stoi(tokens[1]);
+
+
+  FILE* file = fopen(filepath.c_str(), "rb");
   if (!file) {
     throw algorithm_exception{"Failed to open File"};
   }
@@ -101,7 +114,7 @@ DBMatOfflineLU::DBMatOfflineLU(const std::string& fileName)
 
   // TODO(lettrich) : test if we can do this without copying.
   // Read matrix
-  auto size = grid->getStorage().getSize();
+  auto size = nRows;
   gsl_matrix* matrix;
   matrix = gsl_matrix_alloc(size, size);
   gsl_matrix_fread(file, matrix);
@@ -137,6 +150,9 @@ void DBMatOfflineLU::store(const std::string& fileName) {
   fclose(outputCFile);
 }
 
+sgpp::datadriven::MatrixDecompositionType DBMatOfflineLU::getDecompositionType() {
+  return sgpp::datadriven::MatrixDecompositionType::LU;
+}
 } /* namespace datadriven */
 } /* namespace sgpp */
 #endif /* USE_GSL */

@@ -18,12 +18,14 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
  public:
   /**
    * Constructor
-   * Builds DBMatOnlineDEOrthoAdapt object from given offline object
    *
-   * @param offline The offline object
+   * @param offline The offline object we base our evaluations on.
+   * @param lambda The regularization strength (TODO(fuchsgruber) remove this)
+   * @param grid The underlying grid (TODO(fuchsgruber) do we need this?)
    * @param beta The initial weighting factor
    */
-  explicit DBMatOnlineDEOrthoAdapt(sgpp::datadriven::DBMatOffline& offline, double beta = 0.);
+  explicit DBMatOnlineDEOrthoAdapt(DBMatOffline& offline, Grid& grid, double lambda,
+      double beta = 0.);
 
   /**
    * Returns the additive component of the sherman-morrison-formula, which
@@ -66,8 +68,8 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    * @return list of grid points, that cannot be coarsened
    */
   std::vector<size_t> updateSystemMatrixDecomposition(
-      size_t numAddedGridPoints,
-      std::list<size_t> deletedGridPointIndices,
+      DensityEstimationConfiguration& densityEstimationConfig,
+      Grid& grid, size_t numAddedGridPoints, std::list<size_t> deletedGridPointIndices,
       double lambda) override;
 
  protected:
@@ -92,7 +94,8 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    * @param b The right hand side of the system
    * @param do_cv Specifies, if cross-validation should be done (todo: currently not implemented)
    */
-  void solveSLE(sgpp::base::DataVector& b, bool do_cv) override;
+  void solveSLE(DataVector& b, Grid& grid,
+      DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) override;
 
  private:
   /**
@@ -100,10 +103,11 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    * refined_points_ container member. The computed vectors of the products correspond
    * to rows/columns of the lhs matrix
    *
+   * @param grid the underlying grid
    * @param newPoints The number of points to refine
    * @param newLambda The regularization coefficient added to the diagonal elements
    */
-  void compute_L2_gridvectors(size_t newPoints, double newLambda);
+  void compute_L2_gridvectors(Grid& grid, size_t newPoints, double newLambda);
 };
 }  // namespace datadriven
 }  // namespace sgpp
