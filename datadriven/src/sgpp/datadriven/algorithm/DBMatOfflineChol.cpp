@@ -36,12 +36,7 @@ using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 using sgpp::base::algorithm_exception;
 
-DBMatOfflineChol::DBMatOfflineChol(
-    const sgpp::base::GeneralGridConfiguration& gridConfig,
-    const sgpp::base::AdpativityConfiguration& adaptivityConfig,
-    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig)
-    : DBMatOfflineGE(gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig) {}
+DBMatOfflineChol::DBMatOfflineChol() : DBMatOfflineGE() {}
 
 DBMatOfflineChol::DBMatOfflineChol(const std::string& fileName) : DBMatOfflineGE{fileName} {}
 
@@ -49,7 +44,8 @@ DBMatOffline* DBMatOfflineChol::clone() { return new DBMatOfflineChol{*this}; }
 
 bool DBMatOfflineChol::isRefineable() { return true; }
 
-void DBMatOfflineChol::decomposeMatrix() {
+void DBMatOfflineChol::decomposeMatrix(RegularizationConfiguration& regularizationConfig,
+    DensityEstimationConfiguration& densityEstimationConfig) {
 #ifdef USE_GSL
   if (isConstructed) {
     if (isDecomposed) {
@@ -86,14 +82,15 @@ void DBMatOfflineChol::decomposeMatrix() {
 #endif /*USE_GSL*/
 }
 
-void DBMatOfflineChol::choleskyModification(size_t newPoints, std::list<size_t> deletedPoints,
-                                            double lambda) {
+void DBMatOfflineChol::choleskyModification(Grid& grid,
+    datadriven::DensityEstimationConfiguration&, size_t newPoints,
+    std::list<size_t> deletedPoints, double lambda) {
 #ifdef USE_GSL
 
   // Start coarsening
   // If list 'deletedPoints' is not empty, grid points got removed
   if (deletedPoints.size() > 0) {
-    size_t new_size = grid->getSize();
+    size_t new_size = grid.getSize();
     size_t old_size = new_size - newPoints + deletedPoints.size();
 
     // 'c' is the threshold to decide what kind of Cholesky modification should
@@ -162,8 +159,8 @@ void DBMatOfflineChol::choleskyModification(size_t newPoints, std::list<size_t> 
 
   // Start refinement
   if (newPoints > 0) {
-    size_t gridSize = grid->getStorage().getSize();
-    size_t gridDim = grid->getStorage().getDimension();
+    size_t gridSize = grid.getStorage().getSize();
+    size_t gridDim = grid.getStorage().getDimension();
 
     // DataMatrix to collect vectors to append
     DataMatrix mat_refine(gridSize, newPoints);
@@ -171,7 +168,7 @@ void DBMatOfflineChol::choleskyModification(size_t newPoints, std::list<size_t> 
     DataMatrix level(gridSize, gridDim);
     DataMatrix index(gridSize, gridDim);
 
-    grid->getStorage().getLevelIndexArraysForEval(level, index);
+    grid.getStorage().getLevelIndexArraysForEval(level, index);
     double lambda_conf = lambda;
     // Loop to calculate all L2-products of added points based on the
     // hat-function as basis function
@@ -396,6 +393,10 @@ void DBMatOfflineChol::choleskyPermutation(size_t k, size_t l, size_t job) {
 #else
   throw algorithm_exception("built withot GSL");
 #endif /*USE_GSL*/
+}
+
+sgpp::datadriven::MatrixDecompositionType DBMatOfflineChol::getDecompositionType() {
+  return sgpp::datadriven::MatrixDecompositionType::Chol;
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

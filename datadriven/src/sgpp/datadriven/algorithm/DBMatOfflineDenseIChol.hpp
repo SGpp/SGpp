@@ -27,21 +27,21 @@ using sgpp::base::DataMatrix;
  */
 class DBMatOfflineDenseIChol : public DBMatOfflineChol {
  public:
-  explicit DBMatOfflineDenseIChol(
-      const sgpp::base::GeneralGridConfiguration& gridConfig,
-      const sgpp::base::AdpativityConfiguration& adaptivityConfig,
-      const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-      const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
+
+  explicit DBMatOfflineDenseIChol();
 
   explicit DBMatOfflineDenseIChol(const std::string& fileName);
 
   DBMatOffline* clone() override;
 
+  sgpp::datadriven::MatrixDecompositionType getDecompositionType() override;
+
   /**
    * Decomposes the matrix according to the chosen decomposition type.
    * The number of rows of the stored result depends on the decomposition type.
    */
-  void decomposeMatrix() override;
+  void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
+      DensityEstimationConfiguration& densityEstimationConfig) override;
 
   /**
    * Updates offline cholesky factorization based on coarsed (deletedPoints)
@@ -50,8 +50,9 @@ class DBMatOfflineDenseIChol : public DBMatOfflineChol {
    * @param deletedPoints list of indices of last coarsed points that are ignored.
    * @param lambda the regularization parameter
    */
-  void choleskyModification(size_t newPoints, std::list<size_t> deletedPoints,
-                            double lambda) override;
+  void choleskyModification(Grid& grid,
+      datadriven::DensityEstimationConfiguration& densityEstimationConfig, size_t newPoints,
+      std::list<size_t> deletedPoints, double lambda) override;
 
   /**
    * perform parlallel incomplete cholesky factorization of a matrix. This is an out of place

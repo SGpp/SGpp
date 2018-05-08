@@ -32,43 +32,17 @@ using sgpp::base::application_exception;
 using sgpp::base::data_exception;
 using sgpp::base::OperationMatrix;
 
-DBMatOfflineEigen::DBMatOfflineEigen(
-    const sgpp::base::GeneralGridConfiguration& gridConfig,
-    const sgpp::base::AdpativityConfiguration& adaptivityConfig,
-    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig)
-    : DBMatOffline(gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig) {}
+DBMatOfflineEigen::DBMatOfflineEigen() {}
 
 sgpp::datadriven::DBMatOfflineEigen::DBMatOfflineEigen(const std::string& fileName)
-    : DBMatOffline{fileName} {
-  FILE* file = fopen(fileName.c_str(), "rb");
-  if (!file) {
-    throw application_exception{"Failed to open File"};
-  }
-
-  // seek end of first line
-  char c = 0;
-  while (c != '\n') {
-    c = static_cast<char>(fgetc(file));
-  }
-
-  // TODO(lettrich) : test if we can do this without copying.
-  // Read matrix
-  auto size = grid->getStorage().getSize();
-  gsl_matrix* matrix;
-  matrix = gsl_matrix_alloc(size + 1, size);
-  gsl_matrix_fread(file, matrix);
-  fclose(file);
-
-  lhsMatrix = DataMatrix(matrix->data, matrix->size1, matrix->size2);
-  gsl_matrix_free(matrix);
-}
+    : DBMatOffline{fileName} {}
 
 DBMatOffline* DBMatOfflineEigen::clone() { return new DBMatOfflineEigen{*this}; }
 
 bool DBMatOfflineEigen::isRefineable() { return false; }
 
-void DBMatOfflineEigen::decomposeMatrix() {
+void DBMatOfflineEigen::decomposeMatrix(RegularizationConfiguration& regularizationConfig,
+    DensityEstimationConfiguration& densityEstimationConfig) {
   if (isConstructed) {
     if (isDecomposed) {
       // Already decomposed => Do nothing
@@ -102,6 +76,10 @@ void DBMatOfflineEigen::decomposeMatrix() {
   } else {
     throw data_exception("Matrix has to be constructed before it can be decomposed!");
   }
+}
+
+sgpp::datadriven::MatrixDecompositionType DBMatOfflineEigen::getDecompositionType() {
+  return sgpp::datadriven::MatrixDecompositionType::Eigen;
 }
 
 } /* namespace datadriven */

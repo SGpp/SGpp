@@ -26,10 +26,19 @@ using sgpp::datadriven::DataVector;
  */
 class DBMatOnlineDEEigen : public DBMatOnlineDE {
  public:
-  explicit DBMatOnlineDEEigen(DBMatOffline& offline, double beta = 0.);
+  /**
+   * Constructor
+   *
+   * @param offline The offline object we base our evaluations on.
+   * @param lambda The regularization strength (TODO(fuchsgruber) remove this)
+   * @param grid The underlying grid (TODO(fuchsgruber) do we need this?)
+   * @param beta The initial weighting factor
+   */
+  explicit DBMatOnlineDEEigen(DBMatOffline& offline, Grid& grid, double lambda, double beta = 0.);
 
  protected:
-  void solveSLE(DataVector& b, bool do_cv) override;
+  void solveSLE(DataVector& b, Grid& grid,
+      DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) override;
 };
 
 } /* namespace datadriven */
