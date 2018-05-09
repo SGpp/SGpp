@@ -30,6 +30,11 @@ namespace combigrid {
  * The mean is calcualted as a sparse grid quadrature.
  * The variance is calculated by transforming the level structure to a hierarchical sparse grid and
  * calculation of the neccessary scalar products there
+ *
+ * Both interpolants: the original one from the combination technique and the hierarchical one can
+ * be accessed through this class.
+ * The hierarchical one can be coarsened to reduce the number of grid points
+ * After coarsening the two interpolants are no longer equivalent!
  */
 class BsplineStochasticCollocation : public CombigridSurrogateModel {
  public:
@@ -56,8 +61,25 @@ class BsplineStochasticCollocation : public CombigridSurrogateModel {
    * be less removable grid points)
    * @param threshold The absolute value of the entries have to be greater or equal than the
    * threshold
+   * @param recalculateCoefficients calculate new coefficients or use old (and after coarsening
+   * not exact) coefficients)
    */
-  void coarsen(size_t removements_num = 1, double threshold = 0.0);
+  void coarsen(size_t removements_num = 1, double threshold = 0.0,
+               bool recalculateCoefficients = false);
+
+  /**
+   * Applies the coarsen routine and recalcualtes the variance until the difference between old and
+   * new variance is larger than maxvarDiff or no more points are removed
+   * @param maxVarDiff maximal difference of variance of the original and the coarsened surrogate
+   * @param removements_percentage Maximal percentage of total grid points that shall be removed in
+   * one coarsening step (if <0 or >100 default value 10 is used)
+   * @param threshold The absolute value of the entries have to be greater or equal than the
+   * threshold
+   * @param recalculateCoefficients calculate new coefficients or use old (and after coarsening
+   * not exact) coefficients)
+   */
+  void coarsenIteratively(double maxVarDiff, double threshold = 0.0,
+                          double removements_percentage = 10, bool recalculateCoefficients = false);
 
   void getComponentSobolIndices(sgpp::base::DataVector& componentSsobolIndices,
                                 bool normalized = true) override;
@@ -90,6 +112,9 @@ class BsplineStochasticCollocation : public CombigridSurrogateModel {
    */
   void sgCoefficientCharacteristics(sgpp::base::DataVector& min, sgpp::base::DataVector& max,
                                     sgpp::base::DataVector& l2norm, size_t maxLevel = 1000000);
+
+  sgpp::base::DataMatrix getHierarchicalGridPoints();
+  double evalHierarchical(sgpp::base::DataVector& x);
 
  private:
   void initializeOperations(std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
@@ -138,4 +163,4 @@ class BsplineStochasticCollocation : public CombigridSurrogateModel {
 };
 
 } /* namespace combigrid */
-} /* namespace sgpp */
+}  // namespace sgpp
