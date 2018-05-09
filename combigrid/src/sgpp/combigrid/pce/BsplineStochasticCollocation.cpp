@@ -198,10 +198,11 @@ double BsplineStochasticCollocation::computeVariance() {
     // this is done by subtracting E(u) from the coefficient of the constant function
     // it does not work for B spline degree 1 because there is no constant function in the basis
     // (We could add a constant basis function on level 0)
-    hierarchicalCoefficients[0] -= ev;
-    scalarProducts.mult(hierarchicalCoefficients, product);
+    sgpp::base::DataVector copyOfHierarchicalCoefficients(hierarchicalCoefficients);
+    copyOfHierarchicalCoefficients[0] -= ev;
+    scalarProducts.mult(copyOfHierarchicalCoefficients, product);
 
-    variance = product.dotProduct(hierarchicalCoefficients);
+    variance = product.dotProduct(copyOfHierarchicalCoefficients);
   }
 
   return variance;
@@ -259,12 +260,63 @@ double BsplineStochasticCollocation::computeVarianceWithCombiTechnique() {
   return meanSquare - ev * ev;
 }
 
-void BsplineStochasticCollocation::coarsen(size_t removements_num, double threshold) {
+void BsplineStochasticCollocation::coarsen(size_t removements_num, double threshold,
+                                           bool recalculateCoefficients) {
   sgpp::base::HashCoarsening coarsen;
   sgpp::base::GridStorage& gridStorage = hierarchicalGrid->getStorage();
   sgpp::base::SurplusCoarseningFunctor functor(hierarchicalCoefficients, removements_num,
                                                threshold);
-  coarsen.free_coarsen(gridStorage, functor, hierarchicalCoefficients);
+  if (recalculateCoefficients) {
+    std::shared_ptr<sgpp::base::Grid> oldGrid(hierarchicalGrid);
+    sgpp::base::DataVector oldCoefficients(hierarchicalCoefficients);
+    coarsen.free_coarsen(gridStorage, functor, hierarchicalCoefficients);
+    hierarchicalCoefficients = recalculateInterpolationCoefficientsAfterCoarsening(
+        oldGrid, hierarchicalGrid, oldCoefficients);
+  } else {
+    coarsen.free_coarsen(gridStorage, functor, hierarchicalCoefficients);
+  }
+  computedMeanFlag = false;
+  computedVarianceFlag = false;
+}
+
+void BsplineStochasticCollocation::coarsenIteratively(double maxVarDiff, double threshold,
+                                                      double removements_percentage,
+                                                      bool recalculateCoefficients) {
+  if ((removements_percentage < 0) || (removements_percentage > 100)) {
+    removements_percentage = 10;
+  }
+
+  size_t removements_num = static_cast<size_t>(
+      floor(static_cast<double>(hierarchicalGrid->getSize()) * removements_percentage / 100));
+  double oldVariance = var;
+
+  // coarsen
+  sgpp::base::HashCoarsening coarsen;
+  sgpp::base::GridStorage& gridStorage = hierarchicalGrid->getStorage();
+  sgpp::base::SurplusCoarseningFunctor functor(hierarchicalCoefficients, removements_num,
+                                               threshold);
+  if (recalculateCoefficients) {
+    std::shared_ptr<sgpp::base::Grid> oldGrid(hierarchicalGrid);
+    sgpp::base::DataVector oldCoefficients(hierarchicalCoefficients);
+    coarsen.free_coarsen(gridStorage, functor, hierarchicalCoefficients);
+    hierarchicalCoefficients = recalculateInterpolationCoefficientsAfterCoarsening(
+        oldGrid, hierarchicalGrid, oldCoefficients);
+  } else {
+    coarsen.free_coarsen(gridStorage, functor, hierarchicalCoefficients);
+  }
+  computedMeanFlag = false;
+  computedVarianceFlag = false;
+
+  // check for abort criterion and coarsen further if it's not met
+  var = computeVariance();
+  double varDiff = fabs(var - oldVariance);
+  size_t numDeletedPoints = coarsen.getDeletedPoints().size();
+  std::cout << "BSC coarsening, removed " << numDeletedPoints
+            << " points, variance difference: " << varDiff << std::endl;
+
+  if ((varDiff <= maxVarDiff) && (numDeletedPoints != 0)) {
+    coarsenIteratively(maxVarDiff, threshold, removements_percentage, recalculateCoefficients);
+  }
 }
 
 void BsplineStochasticCollocation::transformToHierarchical() {
@@ -394,5 +446,25 @@ void BsplineStochasticCollocation::sgCoefficientCharacteristics(sgpp::base::Data
   //  }
 }
 
-} /* namespace combigrid */
-} /* namespace sgpp */
+sgpp::base::DataMatrix BsplineStochasticCollocation::getHierarchicalGridPoints() {
+  sgpp::base::GridStorage& gridStorage = hierarchicalGrid->getStorage();
+  sgpp::base::DataMatrix points(gridStorage.getDimension(), gridStorage.getSize());
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
+    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
+    sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
+    for (size_t j = 0; j < gridStorage.getDimension(); j++) {
+      p[j] = gp.getStandardCoordinate(j);
+    }
+    points.setColumn(i, p);
+  }
+  return points;
+}
+
+double BsplineStochasticCollocation::evalHierarchical(sgpp::base::DataVector& x) {
+  sgpp::optimization::InterpolantScalarFunction sparseGridSurrogate(*hierarchicalGrid,
+                                                                    hierarchicalCoefficients);
+  return sparseGridSurrogate.eval(x);
+}
+
+}  // namespace combigrid
+}  // namespace sgpp

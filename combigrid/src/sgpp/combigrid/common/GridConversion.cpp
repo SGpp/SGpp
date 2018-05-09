@@ -250,5 +250,32 @@ sgpp::base::DataVector calculateInterpolationCoefficientsForConvertedExpUniformB
   return alpha;
 }
 
+sgpp::base::DataVector recalculateInterpolationCoefficientsAfterCoarsening(
+    std::shared_ptr<sgpp::base::Grid>& oldGrid, std::shared_ptr<sgpp::base::Grid>& newGrid,
+    sgpp::base::DataVector oldCoefficients) {
+  sgpp::base::GridStorage& newGridStorage = newGrid->getStorage();
+  sgpp::optimization::InterpolantScalarFunction oldInterpolant(*oldGrid, oldCoefficients);
+  sgpp::base::DataVector f_values(0);
+  for (size_t i = 0; i < newGridStorage.getSize(); i++) {
+    sgpp::base::GridPoint& gp = newGridStorage.getPoint(i);
+    sgpp::base::DataVector p(newGridStorage.getDimension(), 0.0);
+    for (size_t j = 0; j < newGridStorage.getDimension(); j++) {
+      p[j] = gp.getStandardCoordinate(j);
+    }
+    f_values.push_back(oldInterpolant.eval(p));
+  }
+
+  // obtain function values from not coarsened surrogate
+
+  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+  sgpp::optimization::HierarchisationSLE hierSLE(*newGrid);
+  sgpp::optimization::sle_solver::Auto sleSolver;
+  sgpp::base::DataVector alpha(newGrid->getSize());
+  if (!sleSolver.solve(hierSLE, f_values, alpha)) {
+    std::cout << "Solving failed!" << std::endl;
+  }
+  return alpha;
+}
+
 } /* namespace combigrid */
 } /* namespace sgpp */
