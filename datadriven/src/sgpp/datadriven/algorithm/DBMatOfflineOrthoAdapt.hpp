@@ -24,7 +24,7 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    * @param regularizationConfig The configuration of the grid regularization
    * @param densityEstimationConfig The configuration of the matrix decomposition
    */
-  explicit DBMatOfflineOrthoAdapt();
+  DBMatOfflineOrthoAdapt();
 
   /**
    * Constructor

@@ -7,6 +7,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
@@ -28,7 +29,7 @@ namespace datadriven {
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 
-typedef std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, double>> ClassDensityConntainer;
+typedef std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>> ClassDensityConntainer;
 
 /**
  * LearnerSGDEOnOff learns the data using sparse grid density estimation. The
@@ -91,7 +92,9 @@ class LearnerSGDEOnOff {
    */
   void train(size_t batchSize, size_t maxDataPasses, std::string refType, std::string refMonitor,
              size_t refPeriod, double accDeclineThreshold, size_t accDeclineBufferSize,
-             size_t minRefInterval, bool enableCv, size_t nextCvStep);
+             size_t minRefInterval, bool enableCv, size_t nextCvStep,
+             sgpp::base::AdpativityConfiguration& adaptivityConfig,
+             sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
 
   /**
    * Trains the learner with the given data batch
@@ -102,8 +105,9 @@ class LearnerSGDEOnOff {
    *        of removed grid points and an unsigned int representing added grid
    * points
    */
-  void train(Dataset& dataset, bool doCv = false,
-             std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse = nullptr);
+  void train(Dataset& dataset, sgpp::base::AdpativityConfiguration& adaptiviyConfig,
+      sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+      bool doCv = false, std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse = nullptr);
 
   /**
    * Trains the learner with the given data batch that is already split up wrt
@@ -119,7 +123,8 @@ class LearnerSGDEOnOff {
    *        removed grid points and an unsigned int representing added grid
    * points
    */
-  void train(std::vector<std::pair<DataMatrix*, double>>& trainDataClasses, bool doCv = false,
+  void train(std::vector<std::pair<DataMatrix*, double>>& trainDataClasses,
+      sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig, bool doCv = false,
              std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse = nullptr);
 
   /**
@@ -207,8 +212,14 @@ class LearnerSGDEOnOff {
 
  protected:
   void refine(ConvergenceMonitor& monitor,
+              sgpp::base::AdpativityConfiguration& adaptivityConfig,
+              sgpp::datadriven::DensityEstimationConfiguration&
+              densityEstimationConfig,
               std::vector<std::pair<std::list<size_t>, size_t>>& refineCoarse,
               std::string& refType);
+
+  // Grids TODO(fuchsgruber): Move outwards (just in this class so that it compiles...)
+  std::vector<std::unique_ptr<Grid>> grids;
 
   // The training data
   Dataset& trainData;
@@ -230,8 +241,9 @@ class LearnerSGDEOnOff {
   // Indicates whether the model has been trained or not
   bool trained;
 
-  // The offline object (contains decomposed matrix)
+  // Contains the offline object that was cloned into all other classes
   std::unique_ptr<DBMatOffline> offline;
+  // Contains all offline objects
   std::vector<std::unique_ptr<DBMatOffline>> offlineContainer;
   // The online objects (density functions)
   ClassDensityConntainer densityFunctions;

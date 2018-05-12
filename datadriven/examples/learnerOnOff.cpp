@@ -131,7 +131,8 @@ int main() {
    */
   std::cout << "# start to train the learner" << std::endl;
   learner.train(trainDataset.getNumberInstances(), 10, refType, refMonitor, refPeriod,
-                accDeclineThreshold, accDeclineBufferSize, minRefInterval, false, 0);
+                accDeclineThreshold, accDeclineBufferSize, minRefInterval, false, 0, adaptConfig,
+                densityEstimationConfig);
 
   /**
    * Accuracy on test data.

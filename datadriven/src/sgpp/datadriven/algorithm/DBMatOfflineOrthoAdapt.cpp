@@ -20,16 +20,14 @@ DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt() : DBMatOffline() {
 
   this->q_ortho_matrix_ = sgpp::base::DataMatrix(1, 1);
   this->t_tridiag_inv_matrix_ = sgpp::base::DataMatrix(1, 1);
-
   // Deprecated
   // dim_a = 0, indirectly tells the online object if build() or decompose() were performed
 }
 
 DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const std::string& fileName)
     : DBMatOffline(fileName) {
-
   // lhs matrix initialized in super constructor
-  size_t dim_a = lhsMatrix.getNrows(); // Expect lhs to be quadratic
+  size_t dim_a = lhsMatrix.getNrows();  // Expect lhs to be quadratic
 
   this->q_ortho_matrix_ = sgpp::base::DataMatrix(dim_a, dim_a);
   this->t_tridiag_inv_matrix_ = sgpp::base::DataMatrix(dim_a, dim_a);
