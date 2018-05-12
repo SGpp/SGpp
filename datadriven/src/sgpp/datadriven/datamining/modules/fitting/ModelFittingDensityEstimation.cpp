@@ -67,25 +67,27 @@ ModelFittingDensityEstimation::ModelFittingDensityEstimation(
     // Build offline object by factory, build matrix and decompose
     offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildOfflineObject(
         gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig)};
-    offline->buildMatrix();
-    offline->decomposeMatrix();
+    offline->buildMatrix(&(*grid), regularizationConfig);
+    offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
   }
-  online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(*offline)};
+  online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(*offline,
+      *grid, regularizationConfig.lambda_)};
   alpha = online->getAlpha();
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
 double ModelFittingDensityEstimation::evaluate(const DataVector& sample) const {
-  return online->eval(sample);;
+  return online->eval(sample, *grid);;
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
 void ModelFittingDensityEstimation::evaluate(DataMatrix& samples, DataVector& results) {
-    online->eval(samples, results);
+    online->eval(samples, results, *grid);
 }
 
 void ModelFittingDensityEstimation::fit(Dataset& newDataset) {
-  online->computeDensityFunction(newDataset.getData());
+  online->computeDensityFunction(newDataset.getData(), *grid,
+      this->config->getDensityEstimationConfig());
 }
 
 bool ModelFittingDensityEstimation::refine() {

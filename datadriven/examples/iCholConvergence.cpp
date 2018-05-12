@@ -43,11 +43,19 @@ int main() {
   sgpp::datadriven::DensityEstimationConfiguration fullDensityEstimationConfig;
   fullDensityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::Chol;
 
-  sgpp::datadriven::DBMatOfflineChol fullOffline(gridConfig, adaptConfig,
-                                                 regularizationConfig, fullDensityEstimationConfig);
-  fullOffline.buildMatrix();
-  fullOffline.decomposeMatrix();
+  std::unique_ptr<sgpp::base::Grid> grid;
+  if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
+    grid =
+        std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createModLinearGrid(gridConfig.dim_)};
+  } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
+    grid = std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
+  } else {
+    return 1;
+  }
 
+  sgpp::datadriven::DBMatOfflineChol fullOffline;
+  fullOffline.buildMatrix(&(*grid), regularizationConfig);
+  fullOffline.decomposeMatrix(regularizationConfig, fullDensityEstimationConfig);
   auto& fullMat = fullOffline.getDecomposedMatrix();
 
   for (auto i = 0u; i < fullMat.getNrows(); i++) {
@@ -62,9 +70,8 @@ int main() {
   sgpp::datadriven::MatrixDecompositionType::DenseIchol;
   exactIConfig.iCholSweepsDecompose_ = 1;
 
-  sgpp::datadriven::DBMatOfflineDenseIChol exactIOffline(gridConfig, adaptConfig,
-                                                         regularizationConfig, exactIConfig);
-  exactIOffline.buildMatrix();
+  sgpp::datadriven::DBMatOfflineDenseIChol exactIOffline;
+  exactIOffline.buildMatrix(&(*grid), regularizationConfig);
 
   auto numThreads = 0;
 
@@ -75,7 +82,7 @@ int main() {
   }
   omp_set_num_threads(1);
 
-  exactIOffline.decomposeMatrix();
+  exactIOffline.decomposeMatrix(regularizationConfig, exactIConfig);
 
   omp_set_num_threads(numThreads);
 
@@ -92,10 +99,9 @@ int main() {
     sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig = exactIConfig;
     densityEstimationConfig.iCholSweepsDecompose_ = i;
 
-    sgpp::datadriven::DBMatOfflineDenseIChol offline(gridConfig, adaptConfig,
-                                                     regularizationConfig, densityEstimationConfig);
-    offline.buildMatrix();
-    offline.decomposeMatrix();
+    sgpp::datadriven::DBMatOfflineDenseIChol offline;
+    offline.buildMatrix(&(*grid), regularizationConfig);
+    offline.decomposeMatrix(regularizationConfig, densityEstimationConfig);
 
     auto& iMat = offline.getDecomposedMatrix();
 
