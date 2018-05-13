@@ -68,7 +68,7 @@ for(int q=0;q<config.getStages().size();q++) {
   std::vector<std::string> configStrings(config.getStages()[q]);
   std::vector<int>* configIDs = harmonica.prepareConfigs(fitters, config.getSeed(), configStrings);
 
-  //run samples (parallel)
+  //run samples (parallelize here)
 
   for (size_t i = 0; i < config.getStages()[q]; i++) {
     //scores[i] = readResults[i];

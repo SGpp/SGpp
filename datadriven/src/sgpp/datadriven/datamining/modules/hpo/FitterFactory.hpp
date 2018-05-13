@@ -32,7 +32,7 @@ class FitterFactory {
   /**
    * Default constructor
    */
-  FitterFactory():conpar(), dispar(), catpar(){} //= default;
+  FitterFactory() = default; //EDIT: problem here?
 
   /**
    * Virtual destructor
@@ -41,33 +41,67 @@ class FitterFactory {
 
   /**
    * Assemble a #sgpp::datadriven::ModelFittingBase object based on the configuration
-   * @param parser Instance of #sgpp::datadriven::DataMiningConfigParser that reads the required
-   * data from the config file.
+   * determined by a previous set_() call.
    * @return Fully configured instance of a  #sgpp::datadriven::ModelFittingBase object.
    */
-
   virtual ModelFittingBase* buildFitter() = 0;
 
+  /**
+   * Outputs information about the current hyperparameter configuration.
+   * @return String to print to console or file containing values of manipulated hyperparameters.
+   */
   virtual std::string printConfig() = 0;
 
 
-
+  /**
+   * Setup connection to hyperparameter classes for modifying them through boolean represenations
+   * @param configBits reference to the boolean "configBits"
+   */
   void getConfigBits(std::vector<ConfigurationBit*>& configBits);
 
+  /**
+   * Adjusts the current hyperparameter configuration according to the configBits
+   */
   void setHarmonica();
 
+  /**
+   * Gets a compact representation of the hyperparameter configuration space.
+   * @return Object of type BOConfig that can be cloned to create different
+   * hyperparameter configurations
+   */
   BOConfig getBOConfig();
 
+
+  /**
+   * Adjusts current hyperparameter configuration according to the input
+   * @param config compact representation of hyperparameters
+   */
   void setBO(BOConfig* config);
 
 
 
 
 protected:
+  /**
+   * map to store hyperparameters defined on a continuous domain
+   */
   std::map<std::string,ContinuousParameter> conpar;
+  /**
+   * map to store hyperparameters defined on a discrete domain
+   */
   std::map<std::string,DiscreteParameter> dispar;
+  /**
+    * map to store hyperparameters defined on a discrete domain
+    * without inherent ordering (categorical)
+    */
   std::map<std::string,DiscreteParameter> catpar;
+  /**
+   * number of options for all discrete parameters
+   */
   std::vector<int> discOptions;
+  /**
+   * numer of options for all categorical parameters
+   */
   std::vector<int> catOptions;
 
 

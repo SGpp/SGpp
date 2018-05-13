@@ -25,20 +25,18 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * HyperparameterOptimizer models the entire mining process for data mining with sparse grids. It aggregates
- * and automates data input, fitting and validation modules and controlls the mining process.
+ * HyperparameterOptimizer coordinates data input, fitting and validation modules similarly to SparseGridMiner.
+ * It offers access to different hyperparameter optimization procedures.
  */
 class HyperparameterOptimizer {
  public:
   /**
    * Constructor
    * @param dataSource configured instance of data source object, that will provide samples to learn
-   * from. The miner instance will take ownership of the passed object.
-   * @param fitter configured instance of fitter object that generalize the model. The miner
-   * instance will take ownership of the passed object.
-   * @param scorer configured instance of scorer object that will assess the quality of the
-   * generalization provided by the fitter on testing data. The miner instance will take ownership
-   * of the passed object.
+   * from. The HyperparameterOptimizer instance will take ownership of the passed object.
+   * @param fitterFactory configured instance of factory object that provides fitters with
+   * manipulated hyperparameters. The HyperparameterOptimizer instance will take ownership of the passed object.
+   * @param parser reference to parser object to read configuration info
    */
   HyperparameterOptimizer(DataSource* dataSource, FitterFactory* fitterFactory, DataMiningConfigParser& parser);
 
@@ -73,13 +71,13 @@ class HyperparameterOptimizer {
 
   
   /**
-   * Optimize Hyperparameters with HPOScorer.
-   * Currently no input/output yet.
+   * Run hyperparameter optimization using Bayesian Optimization and random search to warm up.
    */
-
-
   void runBO();
 
+  /**
+   * Run hyperparameter optimization using Harmonica.
+   */
   void runHarmonica();
 
  private:
@@ -89,7 +87,7 @@ class HyperparameterOptimizer {
    */
   std::unique_ptr<DataSource> dataSource;
   /**
-   * Fitter that trains a model based on data samples.
+   * FitterFactory to provide fitters for running different hyperparameter configurations.
    */
   std::unique_ptr<FitterFactory> fitterFactory;
   /**
@@ -97,6 +95,9 @@ class HyperparameterOptimizer {
    */
   std::unique_ptr<HPOScorer> hpoScorer;
 
+  /**
+   * Configuration for all hpo details.
+   */
   HPOConfig config;
 };
 

@@ -6,7 +6,7 @@
  *
  * HPOConfig.hpp
  *
- *  Created on: 01.05.2019
+ *  Created on: 01.05.2018
  *      Author: Eric Koepke
  */
 
@@ -20,7 +20,7 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * Configuration for fitter scenarios using least squares optimization.
+ * Configuration for HyperparameterOptimizer
  */
 class HPOConfig {
  public:
@@ -55,11 +55,29 @@ class HPOConfig {
   void setNRuns(int64_t nRuns);
 
 private:
+  /**
+   * Seed for random sampling in both harmonica and bayesian optimization
+   */
   int64_t seed;
+  /**
+   * Amount of samples to take in each stage of harmonica
+   */
   std::vector<int64_t> stages;
+  /**
+   * Amount of constraints to introduce after each stage of harmonica
+   */
   std::vector<int64_t> constraints;
+  /**
+   * Regularization Lambda used for Lasso Regression in harmonica
+   */
   double lambda;
+  /**
+   * Number of Random samples used to warm up bayesian optimization
+   */
   int64_t nRandom;
+  /**
+   * number of samples bayesian optimization is run for
+   */
   int64_t nRuns;
 };
 
