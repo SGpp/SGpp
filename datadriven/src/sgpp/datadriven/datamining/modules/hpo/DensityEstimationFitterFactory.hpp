@@ -25,28 +25,38 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * Concrete factory to build an instance of #sgpp::datadriven::ModelFittingBase
+ * Concrete factory to build instances of #sgpp::datadriven::ModelFittingDensityEstimation
  */
 class DensityEstimationFitterFactory : public FitterFactory {
  public:
   /**
    * Default constructor
    */
-  DensityEstimationFitterFactory(DataMiningConfigParser& parser);
+  DensityEstimationFitterFactory(DataMiningConfigParser& parser) = default;
 
   /**
-   * Assemble a #sgpp::datadriven::ModelFittingBase object based on the configuration
-   * @param parser Instance of #sgpp::datadriven::DataMiningConfigParser that reads the required
-   * data from the config file.
-   * @return Fully configured instance of a  #sgpp::datadriven::ModelFittingBase object.
+   * Assemble a #sgpp::datadriven::ModelFittingDensityEstimation object based on the configuration
+   * determined by a previous set_() call.
+   * @return Fully configured instance of a  #sgpp::datadriven::ModelFittingDensityEstimation object.
    */
   ModelFittingBase* buildFitter() override;
 
+  /**
+   * Outputs information about the current hyperparameter configuration.
+   * @return String to print to console or file containing values of manipulated hyperparameters.
+   */
   std::string printConfig() override;
 
 
-protected:
+ protected:
+  /**
+   * Configuration for all parameters that are not optimized
+   */
   FitterConfigurationDensityEstimation baseConfig;
+  /**
+   * Container for GridTypes specifically for the basis function hyperparameter
+   */
+  std::vector<base::GridType> basisFunctions;
 
 };
 
