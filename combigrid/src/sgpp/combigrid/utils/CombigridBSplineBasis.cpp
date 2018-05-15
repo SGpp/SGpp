@@ -33,15 +33,15 @@ double expUniformNakBspline(double const& x, size_t const& degree, size_t i,
   double t = x * static_cast<double>(hInv) - static_cast<double>(i);
 
   switch (degree) {
-    case 1:
+    case 1: {
       if (l == 0) {
         return 1.0;
       }
       return std::max(1.0 - std::abs(t), 0.0);
-
+    }
     // degree 3: polynomials on Level 0 and 1, nak Bsplines from Level 2 on
     case 3: {
-      sgpp::base::BsplineBasis<size_t, size_t> bsplineBasis(3);
+      sgpp::base::BsplineBasis<size_t, size_t> bsplineBasis3(3);
       if (l == 0) {
         if (i == 0) {
           // l = 0, i = 0
@@ -62,7 +62,7 @@ double expUniformNakBspline(double const& x, size_t const& degree, size_t i,
         }
       } else if ((i > 3) && (i < hInv - 3)) {
         // l >= 4, 3 < i < 2^l - 3
-        return bsplineBasis.eval(l, i, x);
+        return bsplineBasis3.eval(l, i, x);
       } else {
         if (i > hInv / 2) {
           i = hInv - i;
@@ -196,10 +196,12 @@ double expUniformNakBspline(double const& x, size_t const& degree, size_t i,
           }
         }
       }
+      return 0.0;
+      break;
     }
     // degree 5: Levels 0,1 and 2 polynomials, nak B splines from Level 3 on
     case 5: {
-      sgpp::base::BsplineBasis<size_t, size_t> bsplineBasis(5);
+      sgpp::base::BsplineBasis<size_t, size_t> bsplineBasis5(5);
       if (l == 0) {
         if (i == 0) {
           // l = 0, i = 0
@@ -237,7 +239,7 @@ double expUniformNakBspline(double const& x, size_t const& degree, size_t i,
         }
       } else if ((i > 5) && (i < hInv - 5)) {
         // l >= 4, 5 < i < 2^l - 5
-        return bsplineBasis.eval(l, i, x);
+        return bsplineBasis5.eval(l, i, x);
       } else {
         if (i > hInv / 2) {
           i = hInv - i;
@@ -541,8 +543,9 @@ double expUniformNakBspline(double const& x, size_t const& degree, size_t i,
           }
         }
       }
+      return 0.0;
+      break;
     }
-
     default:
       return 0.0;
   }
