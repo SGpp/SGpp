@@ -39,7 +39,6 @@ class HPOScorer : public Scorer {
   HPOScorer(Metric* metric, ShufflingFunctor* shuffling, int64_t seed,
             double trainPortion, Dataset* testDataset);
 
-  Scorer* clone() const override;
 
   /**
    * Train and test a model on a dataset and provide a score to quantify the approximation quality.

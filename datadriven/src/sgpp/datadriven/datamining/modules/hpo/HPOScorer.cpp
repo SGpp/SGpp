@@ -18,14 +18,12 @@ namespace datadriven {
 
 using base::DataVector;
 
+//EDIT: train and test data handling, save train data in here?
+
 HPOScorer::HPOScorer(Metric* metric, ShufflingFunctor* shuffling, int64_t seed,
     double trainPortion, Dataset* testDataset)
     : Scorer{metric, shuffling, seed}, trainPortion{trainPortion}, testDataset{testDataset} {}
 
-// EDIT: disabled because of unique_ptr copying
-Scorer* HPOScorer::clone() const {
-	// return new HPOScorer{*this};
-}
 
 void HPOScorer::resizeTrainData(Dataset& original, Dataset& smaller){
   // perform randomization of indices
@@ -66,52 +64,6 @@ Dataset* HPOScorer::prepareTestData(Dataset& dataset){
 	  //splitSet(dataset, dummyDataset, trainDataset, randomizedIndices, 2000);
 }
 
-void HPOScorer::createTestFile(Dataset& dataset){
-  std::vector<size_t> randomizedIndices(dataset.getNumberInstances());
-  randomizeIndices(dataset, randomizedIndices);
-
-  // calculate size of testing and training portions
-  size_t trainSize = std::lround(static_cast<double>(dataset.getNumberInstances()) * trainPortion);
-  size_t testSize =  dataset.getNumberInstances() - trainSize;
-  size_t dim = dataset.getDimension();
-
-  testDataset = std::make_unique<Dataset>(testSize, dim);
-  Dataset* trainDataset = new Dataset{trainSize, dim};
-  splitSet(dataset, *trainDataset, *testDataset, randomizedIndices);
-
-  DataMatrix data(trainDataset->getData());
-  DataVector targets(trainDataset->getTargets());
-  std::ofstream myfile("C:/Users/Eric/Documents/friedmantrain.txt", std::ios_base::app);
-  if(myfile.is_open()) {
-    //myfile << "threshold,lambda,nopoints,level,basis" << std::endl;
-
-    for (int i = 0; i < data.getNrows(); i++) {
-
-      for (int k = 0; k < data.getNcols(); k++) {
-        myfile << data.get(i,k) << ",";
-      }
-
-      myfile << targets[i]  << std::endl;
-    }
-  }
-  myfile.close();
-  data = testDataset->getData();
-  targets = (testDataset->getTargets());
-  myfile = std::ofstream("C:/Users/Eric/Documents/friedmantest.txt", std::ios_base::app);
-  if(myfile.is_open()) {
-    //myfile << "threshold,lambda,nopoints,level,basis" << std::endl;
-
-    for (int i = 0; i < data.getNrows(); i++) {
-
-      for (int k = 0; k < data.getNcols(); k++) {
-        myfile << data.get(i,k) << ",";
-      }
-
-      myfile << targets[i]  << std::endl;
-    }
-  }
-  myfile.close();
-}
 
 // TODO(lettrich) :recycle
 double HPOScorer::calculateScore(ModelFittingBase& model, Dataset& trainDataset,
