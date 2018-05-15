@@ -59,7 +59,7 @@ enum class GridType {
 };
 
 /**
- * Enum to define all possible grid "super" types (used for GeneralGridConfiguration
+ * Enum to define all possible grid "super" types (used for GeneralGridConfiguration)
  */
 enum class GeneralGridType {
   RegularSparseGrid,

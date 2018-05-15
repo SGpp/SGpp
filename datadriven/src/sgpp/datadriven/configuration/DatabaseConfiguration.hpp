@@ -17,8 +17,13 @@
 namespace sgpp {
 namespace datadriven {
 
+/**
+ * Configuration structure for the offline datamatrix decomposition database
+ */
 struct DatabaseConfiguration {
-  // Filepath to the database
+  /**
+   * Filepath to the database
+   */
   std::string filepath;
 };
 }  // namespace datadriven
