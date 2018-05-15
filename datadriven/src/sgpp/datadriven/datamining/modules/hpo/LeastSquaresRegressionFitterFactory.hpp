@@ -34,7 +34,7 @@ class LeastSquaresRegressionFitterFactory : public FitterFactory {
   /**
    * Default constructor
    */
-  LeastSquaresRegressionFitterFactory(DataMiningConfigParser& parser) = default;
+  LeastSquaresRegressionFitterFactory(DataMiningConfigParser& parser);
 
   /**
    * Assemble a #sgpp::datadriven::ModelFittingLeastSquares object based on the configuration

@@ -26,7 +26,7 @@ Scorer* HPOScorerFactory::buildScorer(const DataMiningConfigParser& parser) cons
 
     DataSourceConfig dsConfig;
 
-    bool hasSource = parser.getScorerTestset(dsConfig, dsConfig);
+    bool hasSource = parser.getScorerTestset(dsConfig, dsConfig); //EDIT: make this optional?
 
     if (!(hasSource && dsConfig.filePath.compare("") != 0)) {
       throw base::data_exception("No file name provided for testset.");

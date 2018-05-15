@@ -19,8 +19,17 @@ namespace datadriven {
 
 class BayesianOptimization {
 public:
+  /**
+   * Constructor setting up Gaussian Process
+   * @param initialConfigs non-empty vector of initial points to build the Gaussian Process
+   */
   explicit BayesianOptimization(const std::vector<BOConfig>& initialConfigs);
 
+  /**
+   * Wrapper function for use in optimizer
+   * @param inp point in continuous optimization space
+   * @return score to optimize on
+   */
   double acquisitionOuter(const base::DataVector& inp);
 
 	void updateGP();
