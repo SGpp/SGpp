@@ -25,6 +25,9 @@
 namespace sgpp {
 namespace datadriven {
 
+/**
+ * Parser class to parse a general grid type into a GeneralGridType enum type and vice versa
+ */
 class GeneralGridTypeParser {
  public:
   /**
