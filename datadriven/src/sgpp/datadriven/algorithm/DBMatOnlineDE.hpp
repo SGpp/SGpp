@@ -35,6 +35,7 @@ class DBMatOnlineDE : public DBMatOnline {
   /**
    * Computes the density function for a certain data matrix
    *
+   * @param alpha the vector where surplusses for the density function will be stored
    * @param m the matrix that contains the data points
    * @param grid The underlying grid
    * @param densityEstimationConfig Configuration for the density estimation
@@ -45,46 +46,32 @@ class DBMatOnlineDE : public DBMatOnline {
    * coarsening
    * @param newPoints indicates the amount of added points due to refinement
    */
-  void computeDensityFunction(DataMatrix& m, Grid& grid,
+  void computeDensityFunction(DataVector& alpha, DataMatrix& m, Grid& grid,
       DensityEstimationConfiguration& denstiyEstimationConfig, bool save_b = false,
       bool do_cv = false, std::list<size_t>* deletedPoints = nullptr, size_t newPoints = 0);
 
   /**
    * Evaluates the density function at a certain point
    *
+   * @param alpha the vector of surplusses
    * @param p the point at which the function is evaluated
    * @param grid the underlying grid
    * @param force if set, it will even try to evaluate if the internal state recommends otherwise
    * @return the result of the evaluation
    */
-  double eval(const DataVector& p, Grid& grid, bool force = false);
+  double eval(DataVector& alpha, const DataVector& p, Grid& grid, bool force = false);
 
   /**
    * Evaluates the density function on multiple points
    *
+   * @param alpha the vector of surplusses
    * @param values the points at which the function is evaluated
    * @param results the result of the evaluation
    * @param grid the underlying grid
    * @param force if set, it will even try to evaluate if the internal state recommends otherwise
    */
-  void eval(DataMatrix& values, DataVector& results, Grid& grid, bool force = false);
-
-  /**
-   * Return a reference to alpha
-   *
-   */
-  DataVector& getAlpha();
-
-  /**
-   * Update alpha vector, i.e. delete entries specified by 'deletedPoints'
-   * and/or
-   * add 'newPoints' new entries
-   *
-   * @param deletedPoints indices of entries corresponding to deleted grid
-   * points
-   * @param newPoints number of added grid points
-   */
-  void updateAlpha(std::list<size_t>* deletedPoints, size_t newPoints);
+  void eval(DataVector& alpha, DataMatrix& values, DataVector& results, Grid& grid,
+      bool force = false);
 
   /**
    * Returns if the surplus has already been computed
@@ -127,24 +114,25 @@ class DBMatOnlineDE : public DBMatOnline {
   /**
    * Normalize the Density
    *
+   * @param alpha the vector of surplusses
    * @param grid the underlying grid
    */
-  double normalize(Grid& grid, size_t samples = 1000);
+  double normalize(DataVector& alpha, Grid& grid, size_t samples = 1000);
 
   /**
    * Normalize the Density using Quadrature
    *
+   * @param alpha the vector of surplusses
    * @param grid the underlying grid
    */
-  double normalizeQuadrature(Grid& grid);
+  double normalizeQuadrature(DataVector& alpha, Grid& grid);
 
  protected:
-  virtual void solveSLE(DataVector& b, Grid& grid,
+  virtual void solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
       DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) = 0;
-  double computeL2Error(Grid& grid);
+  double computeL2Error(DataVector& alpha, Grid& grid);
   double resDensity(DataVector& alpha, Grid& grid);
 
-  DataVector alpha;
   bool functionComputed;
   DataVector bSave;
   DataVector bTotalPoints;

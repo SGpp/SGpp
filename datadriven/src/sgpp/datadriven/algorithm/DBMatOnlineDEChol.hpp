@@ -56,8 +56,8 @@ class DBMatOnlineDEChol : public DBMatOnlineDE {
       double lambda) override;
 
  protected:
-  void solveSLE(DataVector& b, Grid& grid, DensityEstimationConfiguration& densityEstimationConfig,
-      bool do_cv) override;
+  void solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
+      DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) override;
 
   DBMatDMSChol* buildCholSolver(DBMatOffline& offlineObject, Grid& grid,
       DensityEstimationConfiguration& densityEstimationConfig, bool doCV) const;

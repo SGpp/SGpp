@@ -78,6 +78,7 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(
   grids.reserve(numClasses);
   densityFunctions.reserve(numClasses);
   offlineContainer.reserve(numClasses);
+  alphas.reserve(numClasses);
   for (size_t classIndex = 0; classIndex < numClasses; classIndex++) {
     // Create a grid
     std::unique_ptr<Grid> grid;
@@ -102,6 +103,8 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(
           regularizationConfig.lambda_, beta)};
     densityFunctions.emplace_back(std::make_pair(std::move(densEst), classIndex));
     prior.emplace(classLabels[classIndex], 0.0);
+    DataVector* alpha = new DataVector(offlineCloned->getGridSize()); // TODO(fuchsgruber): ugly
+    alphas.emplace_back(alpha);
   }
 }
 
@@ -307,7 +310,7 @@ void LearnerSGDEOnOff::train(std::vector<std::pair<DataMatrix*, double>>& trainD
       // update density function for current class
       size_t classIndex = densityFunctions[i].second;
       densityFunctions[i].first->computeDensityFunction(
-          *p.first, *(grids[classIndex]), densityEstimationConfig, true, doCv,
+          *(alphas[i]), *p.first, *(grids[classIndex]), densityEstimationConfig, true, doCv,
           &(*refineCoarse)[i].first, (*refineCoarse)[i].second);
       (*refineCoarse)[i].first.clear();
       (*refineCoarse)[i].second = 0;
@@ -357,7 +360,8 @@ void LearnerSGDEOnOff::predict(DataMatrix& data, DataVector& result) const {
   for (auto& densityFunction : densityFunctions) {
     perClassDensities.emplace_back(data.getNrows());
     size_t classIndex = densityFunction.second;
-    densityFunction.first->eval(data, perClassDensities.back(), *(grids[classIndex]), true);
+    densityFunction.first->eval(*(alphas[classIndex]), data, perClassDensities.back(),
+        *(grids[classIndex]), true);
     perClassDensities.back().mult(prior.at(classLabels[classIndex]));
   }
 
@@ -473,7 +477,7 @@ void LearnerSGDEOnOff::storeResults() {
       // get next test sample x
       DataVector x(2);
       values.getRow(i, x);
-      double density = pair.first->eval(x, *(grids[classIndex]), true) *
+      double density = pair.first->eval(*(alphas[classIndex]), x, *(grids[classIndex]), true) *
           this->prior[classLabels[classIndex]];
       output << density << ";"
              << "\n";
@@ -486,7 +490,7 @@ void LearnerSGDEOnOff::getDensities(DataVector& point, DataVector& density) cons
   for (size_t i = 0; i < densityFunctions.size(); i++) {
     auto& pair = densityFunctions[i];
     size_t classIndex = densityFunctions[i].second;
-    density[i] = pair.first->eval(point, *(grids[classIndex]));
+    density[i] = pair.first->eval(*(alphas[classIndex]), point, *(grids[classIndex]));
   }
 }
 
@@ -530,12 +534,6 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
   // bundle grids and surplus vector pointer needed for refinement
   // (for zero-crossings refinement, data-based refinement)
   std::vector<Grid*> grids;
-  std::vector<DataVector*> alphas;
-  for (size_t i = 0; i < getNumClasses(); i++) {
-    auto densEst = onlineObjects[i].first.get();
-    DataVector* alpha = &(densEst->getAlpha());
-    alphas.push_back(alpha);
-  }
   bool levelPenalize = false;  // Multiplies penalzing term for fine levels
   bool preCompute = true;      // Precomputes and caches evals for zrcr
   MultiGridRefinementFunctor* func = nullptr;
@@ -588,7 +586,7 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
       if (refType == "surplus") {
         std::unique_ptr<OperationEval> opEval(op_factory::createOperationEval(*(grids[idx])));
         GridStorage& gridStorage = grids[idx]->getStorage();
-        alphaWork = &(densEst->getAlpha());
+        alphaWork = alphas[idx];
         DataVector alphaWeight(alphaWork->getSize());
         // determine surpluses
         for (size_t k = 0; k < gridStorage.getSize(); k++) {
@@ -681,7 +679,7 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
 
 
       // update alpha vector
-      densEst->updateAlpha(&refineCoarse[idx].first, refineCoarse[idx].second);
+      // densEst->updateAlpha(&refineCoarse[idx].first, refineCoarse[idx].second);
     }
   }
 }

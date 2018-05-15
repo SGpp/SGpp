@@ -62,7 +62,7 @@ class ModelFittingLeastSquares : public ModelFittingBase {
    * @param sample vector with the coordinates in all dimensions of that sample.
    * @return evaluation of the trained grid.
    */
-  double evaluate(const DataVector& sample) const override;
+  double evaluate(const DataVector& sample) override;
 
   /**
    * Evaluate the fitted model on a set of data points - requires a trained grid.

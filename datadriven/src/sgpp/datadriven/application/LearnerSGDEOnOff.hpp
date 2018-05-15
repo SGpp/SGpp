@@ -220,6 +220,8 @@ class LearnerSGDEOnOff {
 
   // Grids TODO(fuchsgruber): Move outwards (just in this class so that it compiles...)
   std::vector<std::unique_ptr<Grid>> grids;
+  // Surplusses TODO(fuchsgruber): Move alphas outwards (just in this class so that it compiles)
+  std::vector<DataVector*> alphas;
 
   // The training data
   Dataset& trainData;

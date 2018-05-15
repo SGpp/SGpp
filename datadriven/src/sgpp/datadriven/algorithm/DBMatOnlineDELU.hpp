@@ -38,7 +38,7 @@ class DBMatOnlineDELU : public DBMatOnlineDE {
       double beta = 0.);
 
  protected:
-  void solveSLE(DataVector& b, Grid& grid,
+  void solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
       DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) override;
 };
 

@@ -24,7 +24,7 @@ sgpp::datadriven::DBMatOnlineDELU::DBMatOnlineDELU(DBMatOffline& offline, Grid& 
     double beta)
     : DBMatOnlineDE{offline, grid, lambda, beta} {}
 
-void sgpp::datadriven::DBMatOnlineDELU::solveSLE(DataVector& b, Grid& grid,
+void sgpp::datadriven::DBMatOnlineDELU::solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
     DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) {
   DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
 

@@ -83,15 +83,15 @@ std::vector<size_t> DBMatOnlineDEOrthoAdapt::updateSystemMatrixDecomposition(
   return return_vector;
 }
 
-void DBMatOnlineDEOrthoAdapt::solveSLE(DataVector& b, Grid& grid,
+void DBMatOnlineDEOrthoAdapt::solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
     DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) {
   sgpp::datadriven::DBMatOfflineOrthoAdapt* offline =
       static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&this->offlineObject);
   // create solver
   sgpp::datadriven::DBMatDMSOrthoAdapt* solver = new sgpp::datadriven::DBMatDMSOrthoAdapt();
   // solve the created system
-  this->alpha = sgpp::base::DataVector(b.getSize());
-  solver->solve(offline->getTinv(), offline->getQ(), this->getB(), b, this->alpha);
+  alpha.resizeZero(b.getSize());
+  solver->solve(offline->getTinv(), offline->getQ(), this->getB(), b, alpha);
 
   free(solver);
 }

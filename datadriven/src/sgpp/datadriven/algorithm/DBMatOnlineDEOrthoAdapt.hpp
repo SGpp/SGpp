@@ -91,10 +91,11 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    * (R + lambda*I)^{-1} * b = ((Q*T^{-1}*Q^{t} + B) * b = alpha,
    * where B holds the refine/coarsen information
    *
+   * @param alpha the datavetor where surplusses will be stored
    * @param b The right hand side of the system
    * @param do_cv Specifies, if cross-validation should be done (todo: currently not implemented)
    */
-  void solveSLE(DataVector& b, Grid& grid,
+  void solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
       DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) override;
 
  private:

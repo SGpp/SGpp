@@ -29,7 +29,6 @@ using sgpp::base::algorithm_exception;
 
 DBMatOnlineDE::DBMatOnlineDE(DBMatOffline& offline, Grid& grid, double lambda, double beta)
     : DBMatOnline{offline},
-      alpha{},
       beta(beta),
       totalPoints(0),
       canCV(false),
@@ -45,11 +44,9 @@ DBMatOnlineDE::DBMatOnlineDE(DBMatOffline& offline, Grid& grid, double lambda, d
   bSave = DataVector(offlineObject.getDecomposedMatrix().getNcols());
   bTotalPoints = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
   oDim = grid.getDimension();
-
-  alpha = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
 }
 
-void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, Grid& grid,
+void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Grid& grid,
     DensityEstimationConfiguration& densityEstimationConfig, bool save_b, bool do_cv,
     std::list<size_t>* deletedPoints,
     size_t newPoints) {
@@ -149,7 +146,7 @@ void DBMatOnlineDE::computeDensityFunction(DataMatrix& m, Grid& grid,
       b.mult(1. / static_cast<double>(numberOfPoints));
     }
 
-    solveSLE(b, grid, densityEstimationConfig, do_cv);
+    solveSLE(alpha, b, grid, densityEstimationConfig, do_cv);
 
     functionComputed = true;
   }
@@ -169,13 +166,13 @@ double DBMatOnlineDE::resDensity(DataVector& alpha, Grid& grid) {
   return res.l2Norm();
 }
 
-double DBMatOnlineDE::computeL2Error(Grid& grid) {
+double DBMatOnlineDE::computeL2Error(DataVector& alpha, Grid& grid) {
   size_t nRows = testMatRes->getNrows();
   DataVector r(nRows);
   DataVector tmp(testMat->getNcols());
   for (size_t i = 0; i < nRows; i++) {
     testMat->getRow(i, tmp);
-    r[i] = this->eval(tmp, grid, true);
+    r[i] = this->eval(alpha, tmp, grid, true);
   }
   double l2err = 0;
   for (size_t i = 0; i < nRows; i++) {
@@ -184,7 +181,7 @@ double DBMatOnlineDE::computeL2Error(Grid& grid) {
   return sqrt(l2err) / static_cast<double>(nRows);
 }
 
-double DBMatOnlineDE::eval(const DataVector& p, Grid& grid, bool force) {
+double DBMatOnlineDE::eval(DataVector& alpha, const DataVector& p, Grid& grid, bool force) {
   if (functionComputed || force == true) {
     double res;
     std::unique_ptr<sgpp::base::OperationEval> opEval(
@@ -196,7 +193,8 @@ double DBMatOnlineDE::eval(const DataVector& p, Grid& grid, bool force) {
   }
 }
 
-void DBMatOnlineDE::eval(DataMatrix& values, DataVector& results, Grid& grid, bool force) {
+void DBMatOnlineDE::eval(DataVector& alpha, DataMatrix& values, DataVector& results, Grid& grid,
+    bool force) {
   if (functionComputed || force == true) {
     std::unique_ptr<sgpp::base::OperationMultipleEval> opEval(
         (offlineObject.interactions.size() == 0)
@@ -210,26 +208,6 @@ void DBMatOnlineDE::eval(DataMatrix& values, DataVector& results, Grid& grid, bo
   }
 }
 
-DataVector& DBMatOnlineDE::getAlpha() { return alpha; }
-
-void DBMatOnlineDE::updateAlpha(std::list<size_t>* deletedPoints, size_t newPoints) {
-  if (alpha.getSize() != 0 && deletedPoints != nullptr && !deletedPoints->empty()) {
-    std::vector<size_t> deletedPoints_{std::begin(*deletedPoints), std::end(*deletedPoints)};
-    DataVector newAlpha{alpha.getSize() - deletedPoints->size() + newPoints};
-    for (size_t i = 0; i < alpha.getSize(); i++) {
-      if (std::find(deletedPoints_.begin(), deletedPoints_.end(), i) != deletedPoints_.end()) {
-        continue;
-      } else {
-        newAlpha.append(alpha.get(i));
-      }
-    }
-    // set new alpha
-    alpha = std::move(newAlpha);
-  }
-  if (newPoints > 0) {
-    alpha.resizeZero(alpha.getSize() + newPoints);
-  }
-}
 
 bool DBMatOnlineDE::isComputed() { return functionComputed; }
 
@@ -256,19 +234,19 @@ void DBMatOnlineDE::setBeta(double newBeta) { beta = newBeta; }
 
 double DBMatOnlineDE::getBeta() { return beta; }
 
-double DBMatOnlineDE::normalize(Grid& grid, size_t samples) {
+double DBMatOnlineDE::normalize(DataVector& alpha, Grid& grid, size_t samples) {
   this->normFactor = 1.;
   double sum = 0.;
   DataVector p(this->oDim);
   srand(static_cast<unsigned int>(time(nullptr)));
   for (size_t i = 0; i < samples; i++) {
     for (size_t j = 0; j < this->oDim; j++) p[j] = (static_cast<double>(rand()) / RAND_MAX);
-    sum += this->eval(p, grid);
+    sum += this->eval(alpha, p, grid);
   }
   return this->normFactor = static_cast<double>(samples) / sum;
 }
 
-double DBMatOnlineDE::normalizeQuadrature(Grid& grid) {
+double DBMatOnlineDE::normalizeQuadrature(DataVector& alpha, Grid& grid) {
   this->normFactor = 1.;
   double quadrature =
       sgpp::op_factory::createOperationQuadrature(grid)->doQuadrature(alpha);
