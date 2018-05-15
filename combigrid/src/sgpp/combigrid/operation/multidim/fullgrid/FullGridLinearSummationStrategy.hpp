@@ -146,7 +146,6 @@ class FullGridLinearSummationStrategy : public AbstractFullGridSummationStrategy
         }
       }
     }
-    //    std::cout << "\n";
     return sum;
   }
 };
