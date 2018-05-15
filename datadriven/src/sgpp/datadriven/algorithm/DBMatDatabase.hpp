@@ -34,6 +34,10 @@ class DBMatDatabase{
 
   /**
    * Scans the entire database and checks weather any entry matches the configuration.
+   * @param gridConfig the grid configuration the matrix must match
+   * @param adaptivityConfig the adaptivity configuration the matrix must match
+   * @param regularizationConfig the regularization configuration the matrix must match
+   * @param densityEstimationConfig the density estimation configuration the matrix must match
    * @return weather the configuration is held in the database
    */
   bool hasDataMatrix(sgpp::base::GeneralGridConfiguration& gridConfig,
@@ -42,8 +46,13 @@ class DBMatDatabase{
       sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
 
   /**
-   * Scans the entire database and finds the first entry that matches the configurations. Returns
-   * the string of the datamatrix if any match was obtained and "" otherwise.
+   * Scans the entire database and finds the first entry that matches the configurations.
+   * @param gridConfig the grid configuration the matrix must match
+   * @param adaptivityConfig the adaptivity configuration the matrix must match
+   * @param regularizationConfig the regularization configuration the matrix must match
+   * @param densityEstimationConfig the density estimation configuration the matrix must match
+   * @return Returns the string of the datamatrix if any match was obtained and throws an exception
+   * otherwise
    */
   std::string& getDataMatrix(sgpp::base::GeneralGridConfiguration& gridConfig,
       sgpp::base::AdpativityConfiguration& adaptivityConfig,
@@ -54,6 +63,13 @@ class DBMatDatabase{
    * Puts a filepath for a given configuration in the database. The filepath refers to the matrix
    * file. If for this configuration a filepath is already present in the database the filepath
    * is updated if and only if the overwriteEntry parameter is set (default = false).
+   * @param gridConfig the grid configuration the matrix matches
+   * @param adaptivityConfig the adaptivity configuration the matrix matches
+   * @param regularizationConfig the regularization configuration the matrix matches
+   * @param densityEstimationConfig the density estimation configuration the matrix matches
+   * @param filepath the path where the matrix decomposition is located at
+   * @param overwriteEntry replaces existing entries with the same configuration if and only if
+   * this parameter is set
    */
   void putDataMatrix(sgpp::base::GeneralGridConfiguration& gridConfig,
       sgpp::base::AdpativityConfiguration& adaptivityConfig,
