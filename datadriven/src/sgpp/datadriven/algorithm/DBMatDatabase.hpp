@@ -23,6 +23,10 @@
 namespace sgpp {
 namespace datadriven {
 
+/**
+ * A database class to store and retrieve online matrix decompositions for the sparse grid
+ * density estimation. The class works on a json file.
+ */
 class DBMatDatabase{
  public:
   explicit DBMatDatabase(const std::string& filepath);
@@ -59,8 +63,20 @@ class DBMatDatabase{
 
 
  private:
+  /**
+   * Path to the json file containing the database
+   */
   std::string databaseFilepath;
+
+  /**
+   * Root json list node containing database entries
+   */
   json::ListNode* database;
+
+  /**
+   * Root node of the json file (since appearantly the json module does not support a list node
+   * as root node of a json file)
+   */
   std::unique_ptr<json::JSON> databaseRoot;
 
   /**
