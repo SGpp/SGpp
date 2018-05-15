@@ -21,12 +21,12 @@ DBMatOnlineDEEigen::DBMatOnlineDEEigen(DBMatOffline& offline, Grid& grid, double
     double beta)
     : DBMatOnlineDE{offline, grid, lambda, beta} {}
 
-void DBMatOnlineDEEigen::solveSLE(DataVector& b, Grid& grid,
+void DBMatOnlineDEEigen::solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
     DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) {
   DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
 
   // Solve the system:
-  alpha = DataVector(lhsMatrix.getNcols());
+  alpha.resizeZero(lhsMatrix.getNcols());
 
   size_t n = lhsMatrix.getNcols();
   DataVector e(n);

@@ -72,21 +72,20 @@ ModelFittingDensityEstimation::ModelFittingDensityEstimation(
   }
   online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(*offline,
       *grid, regularizationConfig.lambda_)};
-  alpha = online->getAlpha();
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
-double ModelFittingDensityEstimation::evaluate(const DataVector& sample) const {
-  return online->eval(sample, *grid);;
+double ModelFittingDensityEstimation::evaluate(const DataVector& sample) {
+  return online->eval(alpha, sample, *grid);
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
 void ModelFittingDensityEstimation::evaluate(DataMatrix& samples, DataVector& results) {
-    online->eval(samples, results, *grid);
+    online->eval(alpha, samples, results, *grid);
 }
 
 void ModelFittingDensityEstimation::fit(Dataset& newDataset) {
-  online->computeDensityFunction(newDataset.getData(), *grid,
+  online->computeDensityFunction(alpha, newDataset.getData(), *grid,
       this->config->getDensityEstimationConfig());
 }
 

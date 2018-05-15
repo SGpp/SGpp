@@ -25,10 +25,10 @@ namespace datadriven {
 DBMatOnlineDEChol::DBMatOnlineDEChol(DBMatOffline& offline, Grid& grid, double lambda, double beta)
     : DBMatOnlineDE{offline, grid, lambda, beta} {}
 
-void DBMatOnlineDEChol::solveSLE(DataVector& b, Grid& grid,
+void DBMatOnlineDEChol::solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
     DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) {
   DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
-  alpha = DataVector(lhsMatrix.getNcols());
+  alpha.resizeZero(lhsMatrix.getNcols());
 
   auto cholsolver = std::unique_ptr<DBMatDMSChol>{buildCholSolver(offlineObject, grid,
       densityEstimationConfig, do_cv)};
