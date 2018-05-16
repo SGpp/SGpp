@@ -18,6 +18,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 
 #include <string>
+#include <list>
 
 using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
@@ -90,7 +91,7 @@ void ModelFittingDensityEstimation::fit(Dataset& newDataset) {
 }
 
 bool ModelFittingDensityEstimation::refine() {
-  /*if (grid != nullptr && offline->isRefineable()) {
+  if (grid != nullptr && offline->isRefineable()) {
     if (refinementsPerformed < config->getRefinementConfig().numRefinements_) {
       // create refinement functor
       SurplusRefinementFunctor refinementFunctor(alpha, config->getRefinementConfig().noPoints_,
@@ -102,11 +103,11 @@ bool ModelFittingDensityEstimation::refine() {
       if (newNoPoints > oldNoPoints) {
         // Tell the SLE manager that the grid changed (for interal data structures)
         alpha.resizeZero(newNoPoints);
-        
         std::list<size_t> deletedGridPoints;
         // TODO(roehner) enable coarsening
-        online->updateSystemMatrixDecomposition(newNoPoints - oldNoPoints,
-                                                deletedGridPoints, online->getBestLambda());
+        // online->updateSystemMatrixDecomposition(this->config->getDensityEstimationConfig(),
+        // *grid, this->denewNoPoints - oldNoPoints,deletedGridPoints,
+        //    online->getBestLambda());
         refinementsPerformed++;
         return true;
       } else {
@@ -120,7 +121,7 @@ bool ModelFittingDensityEstimation::refine() {
     throw application_exception(
         "ModelFittingDensityEstimation: Can't refine before initial grid is created");
     return false;
-  }*/
+  }
   return false;
 }
 
