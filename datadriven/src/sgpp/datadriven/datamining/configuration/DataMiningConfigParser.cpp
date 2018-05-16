@@ -596,7 +596,7 @@ void DataMiningConfigParser::parseRosenblattTransformationConfig(
 
 
 bool DataMiningConfigParser::getFitterDatabaseConfig(
-    datadriven::DatabaseConfiguration config, const datadriven::DatabaseConfiguration& defaults)
+    datadriven::DatabaseConfiguration& config, const datadriven::DatabaseConfiguration& defaults)
 const {
   bool hasDatabaseConfig =
       hasFitterConfig() ? (*configFile)[fitter].contains("database") : false;
