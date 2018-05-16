@@ -8,10 +8,10 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/base/tools/OperationQuadratureMC.hpp>
-#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
+#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
+#include <sgpp/base/tools/OperationQuadratureMC.hpp>
 
 #include <vector>
 

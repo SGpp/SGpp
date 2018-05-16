@@ -4,7 +4,9 @@
 // sgpp.sparsegrids.org
 
 #pragma once
+#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
+#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -12,6 +14,7 @@
 #include <cmath>
 #include <cstddef>
 #include <iostream>
+#include <map>
 
 namespace sgpp {
 namespace base {
@@ -431,6 +434,74 @@ class NakBsplineBoundaryCombigridBasis : public Basis<LT, IT> {
       default:
         return 0.0;
     }
+  }
+
+  /**
+   * @param l     level of basis function
+   * @param i     index of basis function
+   * @return      integral of basis function
+   */
+  inline double getIntegral(LT l, IT i) {
+    size_t degree = getDegree();
+    if ((degree != 1) && (degree != 3) && (degree != 5)) {
+      throw std::runtime_error(
+          "OperationMatrixLTwoDotNakBsplineBoundary: only B spline degrees 1, 3 and 5 are "
+          "supported.");
+    }
+    size_t quadOrder = degree + 1;
+    base::DataVector quadCoordinates, quadWeights;
+    base::GaussLegendreQuadRule1D gauss;
+    double sum = 0.0;
+
+    const size_t pp1h = (degree + 1) >> 1;  //  =|_(p+1)/2_|
+    const size_t hInv = 1 << l;             // = 2^lid
+    const double hik = 1.0 / static_cast<double>(hInv);
+    double offset = (i - static_cast<double>(pp1h)) * hik;
+
+    if (degree == 3) {
+      if (i == 3) offset -= hik;
+    } else if (degree == 5) {
+      if (i == 5) offset -= 2 * hik;
+    }
+    double temp_res = 0.0, scaling = 0.0;
+    gauss.getLevelPointsAndWeightsNormalized(quadOrder, quadCoordinates, quadWeights);
+    // start and stop identify the segments on which the spline is nonzero
+    size_t start = 0, stop = 0;
+    scaling = hik;
+    start = ((i > pp1h) ? 0 : (pp1h - i));
+    stop = std::min(degree, hInv + pp1h - i - 1);
+    // nak special cases
+    if (degree == 3) {
+      if ((i == 3) || (i == hInv - 3)) stop += 1;
+    } else if (degree == 5) {
+      if ((i == 5) || (i == hInv - 5)) stop += 2;
+    }
+    if (l == 2) {
+      start = 1;
+      stop = 4;
+      offset = -0.25;
+      scaling = 0.25;
+    }
+    if ((degree == 5) && (l == 3)) {
+      start = 1;
+      stop = 8;
+      offset = -0.125;
+      scaling = 0.125;
+    }
+
+    for (size_t n = start; n <= stop; n++) {
+      for (size_t c = 0; c < quadCoordinates.getSize(); c++) {
+        // transform  the quadrature points to the segment on which the Bspline is
+        // evaluated
+        const double x = offset + scaling * (quadCoordinates[c] + static_cast<double>(n));
+        if (this->eval(l, i, x) == 0) {
+        }
+        temp_res += quadWeights[c] * this->eval(l, i, x);
+      }
+    }
+    sum = temp_res * scaling;
+
+    return sum;
   }
 
   /**
