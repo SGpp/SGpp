@@ -29,6 +29,10 @@ namespace datadriven {
  */
 class DBMatDatabase{
  public:
+  /**
+   * Initializes the database from a json filepath.
+   * @param filepath the path to the json database
+   */
   explicit DBMatDatabase(const std::string& filepath);
   virtual ~DBMatDatabase() = default;
 
@@ -98,6 +102,11 @@ class DBMatDatabase{
   /**
    * Scans the entire database and finds the first entry that matches the configurations. Returns
    * the index of the entry in the database ListNode or -1 if no entry matches.
+   * @param gridConfig the grid configuration the matrix matches
+   * @param adaptivityConfig the adaptivity configuration the matrix matches
+   * @param regularizationConfig the regularization configuration the matrix matches
+   * @param densityEstimationConfig the density estimation configuration the matrix matches
+   * @return the index of the entry that matches the configuration or -1 if not entry matches
    */
   int entryIndexByConfiguration(sgpp::base::GeneralGridConfiguration& gridConfig,
       sgpp::base::AdpativityConfiguration& adaptivityConfig,
@@ -107,6 +116,10 @@ class DBMatDatabase{
   /**
    * Checks weather the grid configuration of a json dict node representing a database entry root
    * matches the grid configuration passed to the database.
+   * @param node the root node of the grid configuration
+   * @param gridConfig the configuration to check
+   * @param entry_num the index of the entry the root node belongs to
+   * @return if the passed grid configuration matches the grid configuration of the node
    */
   bool gridConfigurationMatches(json::DictNode *node,
       sgpp::base::GeneralGridConfiguration& gridConfig, size_t entry_num);
@@ -114,6 +127,11 @@ class DBMatDatabase{
   /**
    * Checks weather the regularization configuration of a json dict node representing a
    * database entry root matches the regularization configuration passed to the database.
+   * @param node the root node of the regularization configuration
+   * @param regularizationConfig the configuration to check
+   * @param entry_num the index of the entry the root node belongs to
+   * @return if the passed regularization configuration matches the regularization configuration
+   * of the node
    */
   bool regularizationConfigurationMatches(json::DictNode *node,
       sgpp::datadriven::RegularizationConfiguration& gridConfig, size_t entry_num);
@@ -121,6 +139,11 @@ class DBMatDatabase{
   /**
    * Checks weather the regularization configuration of a json dict node representing a
    * database entry root matches the regularization configuration passed to the database.
+   * @param node the root node of the density estimation configuration
+   * @param densityEstimationConfig the configuration to check
+   * @param entry_num the index of the entry the root node belongs to
+   * @return if the passed density estimation configuration matches the density estimation
+   * configuration of the node
    */
   bool densityEstimationConfigurationMatches(json::DictNode *node,
       sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
