@@ -22,6 +22,7 @@
 #include <sgpp/combigrid/operation/onedim/BSplineScalarProductEvaluator.hpp>
 #include <sgpp/combigrid/pce/BsplineStochasticCollocation.hpp>
 #include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
+#include <sgpp/combigrid/pce/HierarchicalBsplineStochasticCollocation.hpp>
 #include <sgpp/combigrid/utils/AnalyticModels.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
@@ -433,36 +434,6 @@ double BsplineQuadratureSquare(size_t numDimensions, size_t degree,
   double integralSquare = product.dotProduct(alpha);
   return integralSquare;
 }
-BOOST_AUTO_TEST_CASE(testCorrespondingDegreeOperationMatrixScalarProducts) {
-  std::cout
-      << "Testing integration of (x^d+y^d)^2 for B splines of degree d on level d, d in {1,3,5}.\n"
-      << "This verifies the scalar product routine." << std::endl;
-  size_t numDimensions = 2;
-  size_t degree = 1;
-  sgpp::combigrid::MultiFunction func1(x1);
-  size_t level = 1;
-  double QuadSquare1 = BsplineQuadratureSquare(numDimensions, degree, func1, level);
-  double QuadSquareError1 = fabs(QuadSquare1 - 7.0 / 6.0);
-  degree = 3;
-  sgpp::combigrid::MultiFunction func3(x3);
-  level = 3;
-  double QuadSquare3 = BsplineQuadratureSquare(numDimensions, degree, func3, level);
-  double QuadSquareError3 = fabs(QuadSquare3 - 23.0 / 56.0);
-  degree = 5;
-  sgpp::combigrid::MultiFunction func5(x5);
-  level = 5;
-  double QuadSquare5 = BsplineQuadratureSquare(numDimensions, degree, func5, level);
-  double QuadSquareError5 = fabs(QuadSquare5 - 47.0 / 198.0);
-  double tolerance = 1e-14;
-
-  //  std::cout << "d = 1: " << QuadSquareError1 << std::endl;
-  //  std::cout << "d = 3: " << QuadSquareError3 << std::endl;
-  //  std::cout << "d = 5: " << QuadSquareError5 << "\n" << std::endl;
-
-  BOOST_CHECK_SMALL(QuadSquareError1, tolerance);
-  BOOST_CHECK_SMALL(QuadSquareError3, tolerance);
-  BOOST_CHECK_SMALL(QuadSquareError5, tolerance);
-}
 
 double omscFunc(sgpp::base::DataVector const& v) { return std::pow(v[0], 5) + std::pow(v[1], 5); }
 double omscWeight(double x) { return sin(2 * x); }  // <= sin(x) on [0,2]^2
@@ -531,7 +502,7 @@ BOOST_AUTO_TEST_CASE(testBsplineLTwoScalarProductsWithWeightsAndBounds) {
  */
 
 BOOST_AUTO_TEST_CASE(testVarianceOnLeveldeg3) {
-  std::cout << "Testing B spline variance calculation  subgridwise on single levels for B splines "
+  std::cout << "Testing B spline variance calculation subgridwise on single levels for B splines "
                "of degree 3."
             << std::endl;
 
@@ -668,60 +639,6 @@ BOOST_AUTO_TEST_CASE(testVarianceOnDiagonaldeg5) {
     //              << std::endl;
     BOOST_CHECK_SMALL(varianceError, tolerance[i]);
   }
-}
-
-// auxiliary function for testing NakBsplineBoundaryCombigrid basis quadrature
-double NakBsplineBoundaryCombigridQuadrature(size_t dim, size_t degree, size_t level,
-                                             sgpp::combigrid::MultiFunction objectiveFunction) {
-  std::unique_ptr<sgpp::base::Grid> grid(
-      sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(dim, degree));
-  sgpp::base::GridStorage& gridStorage = grid->getStorage();
-  grid->getGenerator().regular(level);
-
-  sgpp::base::DataVector f_values(gridStorage.getSize(), 0.0);
-  for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
-    sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
-    for (size_t j = 0; j < gridStorage.getDimension(); j++) {
-      p[j] = gp.getStandardCoordinate(j);
-    }
-    f_values[i] = objectiveFunction(p);
-  }
-  sgpp::optimization::sle_solver::Auto sleSolver;
-  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
-  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
-  sgpp::base::DataVector alpha(grid->getSize());
-  if (!sleSolver.solve(hierSLE, f_values, alpha)) {
-    std::cout << "Solving failed!" << std::endl;
-  }
-  std::unique_ptr<sgpp::base::OperationQuadrature> opQ(
-      sgpp::op_factory::createOperationQuadrature(*grid));
-  double res = opQ->doQuadrature(alpha);
-  return res;
-}
-// various objective functions for testing NakBsplineBoundaryCombigrid basis quadrature
-double f1(sgpp::base::DataVector x) { return 1; }
-double fx(sgpp::base::DataVector x) { return x[0]; }
-double fx3(sgpp::base::DataVector x) { return x[0] * x[0] * x[0]; }
-double fx5(sgpp::base::DataVector x) { return x[0] * x[0] * x[0] * x[0] * x[0]; }
-double f3D(sgpp::base::DataVector x) { return sin(x[0]) * exp(-3 * x[1]) * x[2] * x[2]; }
-
-BOOST_AUTO_TEST_CASE(test_NakBsplineBoundaryCombigridQuadrature) {
-  sgpp::combigrid::MultiFunction f1_handle(f1);
-  double res1 = NakBsplineBoundaryCombigridQuadrature(1, 1, 1, f1_handle);
-  sgpp::combigrid::MultiFunction fx_handle(fx);
-  double res2 = NakBsplineBoundaryCombigridQuadrature(1, 1, 1, fx_handle);
-  sgpp::combigrid::MultiFunction fx3_handle(fx3);
-  double res3 = NakBsplineBoundaryCombigridQuadrature(1, 3, 3, fx3_handle);
-  sgpp::combigrid::MultiFunction fx5_handle(fx5);
-  double res4 = NakBsplineBoundaryCombigridQuadrature(1, 5, 5, fx5_handle);
-  sgpp::combigrid::MultiFunction f3D_handle(f3D);
-  double res5 = NakBsplineBoundaryCombigridQuadrature(3, 5, 3, f3D_handle);
-  BOOST_CHECK_SMALL(res1 - 1, 1e-15);
-  BOOST_CHECK_SMALL(res2 - 0.5, 1e-15);
-  BOOST_CHECK_SMALL(res3 - 0.25, 1e-15);
-  BOOST_CHECK_SMALL(res4 - 0.1666666666666666666, 1e-15);
-  BOOST_CHECK_SMALL(res5 - 0.048534521512305, 1e-4);
 }
 
 double x32D(sgpp::base::DataVector const& v) { return std::pow(v[0], 3) + std::pow(v[1], 3); }
@@ -943,5 +860,202 @@ BOOST_AUTO_TEST_CASE(testBsplineNormalMeanAndVariance) {
 }
 
 #endif
+
+// Test hierarchical functionalities
+
+// auxiliary function for testing NakBsplineBoundaryCombigrid basis quadrature
+double NakBsplineBoundaryCombigridQuadrature(size_t dim, size_t degree, size_t level,
+                                             sgpp::combigrid::MultiFunction objectiveFunction) {
+  std::unique_ptr<sgpp::base::Grid> grid(
+      sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(dim, degree));
+  sgpp::base::GridStorage& gridStorage = grid->getStorage();
+  grid->getGenerator().regular(level);
+
+  sgpp::base::DataVector f_values(gridStorage.getSize(), 0.0);
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
+    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
+    sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
+    for (size_t j = 0; j < gridStorage.getDimension(); j++) {
+      p[j] = gp.getStandardCoordinate(j);
+    }
+    f_values[i] = objectiveFunction(p);
+  }
+  sgpp::optimization::sle_solver::Auto sleSolver;
+  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
+  sgpp::base::DataVector alpha(grid->getSize());
+  if (!sleSolver.solve(hierSLE, f_values, alpha)) {
+    std::cout << "Solving failed!" << std::endl;
+  }
+  std::unique_ptr<sgpp::base::OperationQuadrature> opQ(
+      sgpp::op_factory::createOperationQuadrature(*grid));
+  double res = opQ->doQuadrature(alpha);
+  return res;
+}
+
+// auxiliary function for testing NakBsplineBoundary basis quadrature
+double NakBsplineBoundaryQuadrature(size_t dim, size_t degree, size_t level,
+                                    sgpp::combigrid::MultiFunction objectiveFunction) {
+  std::unique_ptr<sgpp::base::Grid> grid(
+      sgpp::base::Grid::createNakBsplineBoundaryGrid(dim, degree));
+  sgpp::base::GridStorage& gridStorage = grid->getStorage();
+  grid->getGenerator().regular(level);
+
+  sgpp::base::DataVector f_values(gridStorage.getSize(), 0.0);
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
+    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
+    sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
+    for (size_t j = 0; j < gridStorage.getDimension(); j++) {
+      p[j] = gp.getStandardCoordinate(j);
+    }
+    f_values[i] = objectiveFunction(p);
+  }
+  sgpp::optimization::sle_solver::Auto sleSolver;
+  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
+  sgpp::base::DataVector alpha(grid->getSize());
+  if (!sleSolver.solve(hierSLE, f_values, alpha)) {
+    std::cout << "Solving failed!" << std::endl;
+  }
+  std::unique_ptr<sgpp::base::OperationQuadrature> opQ(
+      sgpp::op_factory::createOperationQuadrature(*grid));
+  double res = opQ->doQuadrature(alpha);
+  return res;
+}
+
+BOOST_AUTO_TEST_CASE(testCorrespondingDegreeOperationMatrixScalarProducts) {
+  std::cout
+      << "Testing integration of (x^d+y^d)^2 for B splines of degree d on level d, d in {1,3,5}.\n"
+      << "This verifies the scalar product routine." << std::endl;
+  size_t numDimensions = 2;
+  size_t degree = 1;
+  sgpp::combigrid::MultiFunction func1(x1);
+  size_t level = 1;
+  double QuadSquare1 = BsplineQuadratureSquare(numDimensions, degree, func1, level);
+  double QuadSquareError1 = fabs(QuadSquare1 - 7.0 / 6.0);
+  degree = 3;
+  sgpp::combigrid::MultiFunction func3(x3);
+  level = 3;
+  double QuadSquare3 = BsplineQuadratureSquare(numDimensions, degree, func3, level);
+  double QuadSquareError3 = fabs(QuadSquare3 - 23.0 / 56.0);
+  degree = 5;
+  sgpp::combigrid::MultiFunction func5(x5);
+  level = 5;
+  double QuadSquare5 = BsplineQuadratureSquare(numDimensions, degree, func5, level);
+  double QuadSquareError5 = fabs(QuadSquare5 - 47.0 / 198.0);
+  double tolerance = 1e-14;
+
+  //  std::cout << "d = 1: " << QuadSquareError1 << std::endl;
+  //  std::cout << "d = 3: " << QuadSquareError3 << std::endl;
+  //  std::cout << "d = 5: " << QuadSquareError5 << "\n" << std::endl;
+
+  BOOST_CHECK_SMALL(QuadSquareError1, tolerance);
+  BOOST_CHECK_SMALL(QuadSquareError3, tolerance);
+  BOOST_CHECK_SMALL(QuadSquareError5, tolerance);
+}
+
+// various objective functions for testing NakBsplineBoundaryCombigrid basis quadrature
+double f1(sgpp::base::DataVector x) { return 1; }
+double fx(sgpp::base::DataVector x) { return x[0]; }
+double fx3(sgpp::base::DataVector x) { return x[0] * x[0] * x[0]; }
+double fx5(sgpp::base::DataVector x) { return x[0] * x[0] * x[0] * x[0] * x[0]; }
+double f3D(sgpp::base::DataVector x) { return sin(x[0]) * exp(-3 * x[1]) * x[2] * x[2]; }
+double f1_double(double x) { return 1; }
+
+BOOST_AUTO_TEST_CASE(test_NakBsplineBoundaryCombigridQuadrature) {
+  std::cout << "Testing hierarchical nak Bspline boundary combigrid quadrature" << std::endl;
+  sgpp::combigrid::MultiFunction f1_handle(f1);
+  double res1 = NakBsplineBoundaryCombigridQuadrature(1, 1, 1, f1_handle);
+  sgpp::combigrid::MultiFunction fx_handle(fx);
+  double res2 = NakBsplineBoundaryCombigridQuadrature(1, 1, 1, fx_handle);
+  sgpp::combigrid::MultiFunction fx3_handle(fx3);
+  double res3 = NakBsplineBoundaryCombigridQuadrature(1, 3, 3, fx3_handle);
+  sgpp::combigrid::MultiFunction fx5_handle(fx5);
+  double res4 = NakBsplineBoundaryCombigridQuadrature(1, 5, 5, fx5_handle);
+  sgpp::combigrid::MultiFunction f3D_handle(f3D);
+  double res5 = NakBsplineBoundaryCombigridQuadrature(3, 5, 3, f3D_handle);
+  BOOST_CHECK_SMALL(res1 - 1, 1e-15);
+  BOOST_CHECK_SMALL(res2 - 0.5, 1e-15);
+  BOOST_CHECK_SMALL(res3 - 0.25, 1e-15);
+  BOOST_CHECK_SMALL(res4 - 0.1666666666666666666, 1e-15);
+  BOOST_CHECK_SMALL(res5 - 0.048534521512305, 1e-4);
+}
+
+BOOST_AUTO_TEST_CASE(test_NakBsplineBoundaryQuadrature) {
+  std::cout << "Testing hierarchical nak Bspline boundary  quadrature" << std::endl;
+  sgpp::combigrid::MultiFunction f1_handle(f1);
+  double res1 = NakBsplineBoundaryQuadrature(1, 1, 1, f1_handle);
+  sgpp::combigrid::MultiFunction fx_handle(fx);
+  double res2 = NakBsplineBoundaryQuadrature(1, 1, 1, fx_handle);
+  sgpp::combigrid::MultiFunction fx3_handle(fx3);
+  double res3 = NakBsplineBoundaryQuadrature(1, 3, 3, fx3_handle);
+  sgpp::combigrid::MultiFunction fx5_handle(fx5);
+  double res4 = NakBsplineBoundaryQuadrature(1, 5, 5, fx5_handle);
+  sgpp::combigrid::MultiFunction f3D_handle(f3D);
+  double res5 = NakBsplineBoundaryQuadrature(3, 5, 3, f3D_handle);
+  BOOST_CHECK_SMALL(res1 - 1, 1e-15);
+  BOOST_CHECK_SMALL(res2 - 0.5, 1e-15);
+  BOOST_CHECK_SMALL(res3 - 0.25, 1e-15);
+  BOOST_CHECK_SMALL(res4 - 0.1666666666666666666, 1e-15);
+  BOOST_CHECK_SMALL(res5 - 0.048534521512305, 1e-4);
+}
+
+BOOST_AUTO_TEST_CASE(test_HierarchicalBsplineStochasticCollocation) {
+  std::cout << "Testing HierarchicalBsplineStochasticCollocation" << std::endl;
+  std::vector<double> evalTolerance{0.0, 1e-3, 0.0, 1e-8, 0.0, 1e-10};
+  std::vector<double> meanTolerance{0.0, 1e-3, 0.0, 1e-5, 0.0, 1e-6};
+  std::vector<double> varTolerance{0.0, 1e-4, 0.0, 1e-5, 0.0, 1e-5};
+  size_t dim = 3;
+  std::vector<size_t> degrees{1, 3, 5};
+  for (size_t degree : degrees) {
+    std::shared_ptr<sgpp::base::Grid> grid(
+        sgpp::base::Grid::createNakBsplineBoundaryGrid(dim, degree));
+    sgpp::base::GridStorage& gridStorage = grid->getStorage();
+    size_t level = 4;
+    grid->getGenerator().regular(level);
+
+    sgpp::base::DataVector f_values(gridStorage.getSize(), 0.0);
+    for (size_t i = 0; i < gridStorage.getSize(); i++) {
+      sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
+      sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
+      for (size_t j = 0; j < gridStorage.getDimension(); j++) {
+        p[j] = gp.getStandardCoordinate(j);
+      }
+      f_values[i] = f3D(p);
+    }
+
+    sgpp::optimization::sle_solver::Auto sleSolver;
+    sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+    sgpp::optimization::HierarchisationSLE hierSLE(*grid);
+    sgpp::base::DataVector coefficients(grid->getSize());
+    if (!sleSolver.solve(hierSLE, f_values, coefficients)) {
+      std::cout << "Solving failed!" << std::endl;
+    }
+
+    sgpp::combigrid::SingleFunction weightfunction(f1_double);
+    sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection(dim);
+    sgpp::base::DataVector bounds(2 * dim);
+    for (size_t d = 0; d < dim; d++) {
+      bounds[2 * d] = 0.0;
+      bounds[2 * d + 1] = 1.0;
+      weightFunctionsCollection[d] = weightfunction;
+    }
+
+    sgpp::combigrid::HierarchicalBsplineStochasticCollocation hBSC(
+        grid, degree, coefficients, weightFunctionsCollection, bounds);
+
+    sgpp::base::DataVector x(dim);
+    x[0] = 0.337;
+    x[1] = 0.0;
+    x[2] = 0.76;
+    double eval = hBSC.eval(x);
+    double mean = hBSC.mean();
+    double var = hBSC.variance();
+
+    BOOST_CHECK_SMALL(fabs(eval - 0.190987674787514), evalTolerance[degree]);
+    BOOST_CHECK_SMALL(fabs(mean - 0.048534521512305), meanTolerance[degree]);
+    BOOST_CHECK_SMALL(fabs(var - 0.006711058487499), varTolerance[degree]);
+  }
+}
 
 BOOST_AUTO_TEST_SUITE_END()
