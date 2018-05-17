@@ -21,29 +21,20 @@ namespace sgpp {
 namespace base {
 
 /**
- * Hierarchical Not-a-knot B-spline basis. This basis is designed to represent Bspline boundary
- * interpolants from the combigrid module.
- * Therefore it has the following unusual choice of basis functions:
- * linear and quadratic terms on level 0
- * constant term on level 1
+ * Hierarchical Not-a-knot B-spline basis.
  *
- * This means that this basis of level 0 cannot represent constant functions! It is therefore not
- * suitabe for any application that cannot guarantee the existence of level 1 in every dimension
- *
- * A combigrid interpolant which shall be interpolated with this class needs level (1,...,1)
- * otherwise the boundary points cannot match
- *
- * If the interpolant has not been created by the combigrid module use the NakBsplineBoundaryBasis
- * instead
+ * This basis has the canonical choice of a constant basis function on level 0 in contrast to
+ * NakBsplineBoundaryCombigridBasis which does otherwise to become analogous to the combigrid not a
+ * knot B spline boundary basis.
  */
 
 template <class LT, class IT>
-class NakBsplineBoundaryCombigridBasis : public Basis<LT, IT> {
+class NakBsplineBoundaryBasis : public Basis<LT, IT> {
  public:
   /**
    * Default constructor.
    */
-  NakBsplineBoundaryCombigridBasis() : bsplineBasis(BsplineBasis<LT, IT>()) {}
+  NakBsplineBoundaryBasis() : bsplineBasis(BsplineBasis<LT, IT>()) {}
 
   /**
    * Constructor.
@@ -51,17 +42,16 @@ class NakBsplineBoundaryCombigridBasis : public Basis<LT, IT> {
    * @param degree    B-spline degree, must be odd
    *                  (if it's even, degree - 1 is used)
    */
-  explicit NakBsplineBoundaryCombigridBasis(size_t degree)
-      : bsplineBasis(BsplineBasis<LT, IT>(degree)) {
+  explicit NakBsplineBoundaryBasis(size_t degree) : bsplineBasis(BsplineBasis<LT, IT>(degree)) {
     if (getDegree() > 7) {
-      throw std::runtime_error("NakBsplineBoundaryCombigridBasis: Unsupported B-spline degree.");
+      throw std::runtime_error("NakBsplineBoundaryBasis: Unsupported B-spline degree.");
     }
   }
 
   /**
    * Destructor.
    */
-  ~NakBsplineBoundaryCombigridBasis() override {}
+  ~NakBsplineBoundaryBasis() override {}
 
   /**
    * @param l     level of basis function
@@ -82,23 +72,22 @@ class NakBsplineBoundaryCombigridBasis : public Basis<LT, IT> {
         if (l == 0) {
           if (i == 0) {
             // l = 0, i = 0
-            //            return 1 - x * x;
-            return (2 * x - 3) * x + 1;
+            return 1;
           } else {
             // l = 0, i = 1
             //            return x;
-            return (2 * x - 1) * x;
+            return x;
           }
         } else if (l == 1) {
           if (i == 0) {
             // l = 1, i = 0
-            return 0.5 * x * x - 1.5 * x + 1.0;
+            return -2 * (1 - x) * (x - 0.5);
           } else if (i == 1) {
             // l = 1, i = 1
-            return 1;
+            return -4 * (x - 1) * x;
           } else {
             // l = 1, i = 2
-            return 0.5 * x * x + 1.5 * x + 1.0;
+            return 2 * (x - 0.5) * x;
           }
         } else if ((i > 3) && (i < hInv - 3)) {
           // l >= 4, 3 < i < 2^l - 3
@@ -239,10 +228,11 @@ class NakBsplineBoundaryCombigridBasis : public Basis<LT, IT> {
 
       // degree 5: Levels 0,1 and 2 polynomials, nak Bsplines from Level 3 on
       case 5:
+
         if (l == 0) {
           if (i == 0) {
             // l = 0, i = 0
-            return 1 - x * x;
+            return 1;
           } else {
             // l = 0, i = 1
             return x;
@@ -250,7 +240,7 @@ class NakBsplineBoundaryCombigridBasis : public Basis<LT, IT> {
         } else if (l == 1) {
           if (i == 1) {
             // l = 1, i = 1
-            return 1;
+            return -4 * (x - 1) * x;
           }
         } else if (l == 2) {
           if (i == 1) {
@@ -585,9 +575,7 @@ class NakBsplineBoundaryCombigridBasis : public Basis<LT, IT> {
   /**
    * @return      B-spline degree
    */
-  inline size_t getDegree() const override { return bsplineBasis.getDegree(); }
-
-  inline double getIntegral(LT level, IT index) override { return -1.0; }
+  inline size_t getDegree() const { return bsplineBasis.getDegree(); }
 
  protected:
   /// B-spline basis for B-spline evaluation
@@ -630,8 +618,7 @@ class NakBsplineBoundaryCombigridBasis : public Basis<LT, IT> {
 };
 
 // default type-def (unsigned int for level and index)
-typedef NakBsplineBoundaryCombigridBasis<unsigned int, unsigned int>
-    SNakBsplineBoundaryCombigridBase;
+typedef NakBsplineBoundaryBasis<unsigned int, unsigned int> SNakBsplineBoundaryBase;
 
 }  // namespace base
 }  // namespace sgpp

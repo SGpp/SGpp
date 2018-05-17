@@ -602,12 +602,21 @@ class Grid {
   static Grid* createPeriodicGrid(size_t dim);
 
   /**
-    * creates a not a knot B-Spline boundary grid
-    *
-    * @param dim the grid's dimension
-    * @param degree the B-spline degree
-    * @return grid
-    */
+   * creates a not a knot B-Spline boundary grid
+   *
+   * @param dim the grid's dimension
+   * @param degree the B-spline degree
+   * @return grid
+   */
+  static Grid* createNakBsplineBoundaryGrid(size_t dim, size_t degree);
+
+  /**
+   * creates a not a knot B-Spline boundary combigrid grid
+   *
+   * @param dim the grid's dimension
+   * @param degree the B-spline degree
+   * @return grid
+   */
   static Grid* createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
 
   /**
