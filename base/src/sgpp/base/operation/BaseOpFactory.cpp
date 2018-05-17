@@ -16,6 +16,7 @@
 #include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
@@ -40,6 +41,7 @@
 #include <sgpp/base/operation/hash/OperationQuadrature.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureLinear.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureLinearBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationQuadratureNakBsplineBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureNakBsplineBoundaryCombigrid.hpp>
 #include <sgpp/base/operation/hash/OperationQuadraturePoly.hpp>
 #include <sgpp/base/operation/hash/OperationQuadraturePolyBoundary.hpp>
@@ -85,6 +87,7 @@
 #include <sgpp/base/operation/hash/OperationEvalModPolyNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModWaveletNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalNakBsplineBoundaryCombigridNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalNakBsplineBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalWaveletBoundaryNaive.hpp>
@@ -190,6 +193,9 @@ base::OperationQuadrature* createOperationQuadrature(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::PolyBoundary) {
     return new base::OperationQuadraturePolyBoundary(
         grid.getStorage(), dynamic_cast<base::PolyBoundaryGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
+    return new base::OperationQuadratureNakBsplineBoundary(
+        grid.getStorage(), dynamic_cast<base::NakBsplineBoundaryGrid*>(&grid)->getDegree());
   } else if (grid.getType() == base::GridType::NakBsplineBoundaryCombigrid) {
     return new base::OperationQuadratureNakBsplineBoundaryCombigrid(
         grid.getStorage(),
@@ -354,6 +360,9 @@ base::OperationEval* createOperationEvalNaive(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::ModPoly) {
     return new base::OperationEvalModPolyNaive(
         grid.getStorage(), dynamic_cast<base::ModPolyGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
+    return new base::OperationEvalNakBsplineBoundaryNaive(
+        grid.getStorage(), dynamic_cast<base::NakBsplineBoundaryGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::NakBsplineBoundaryCombigrid) {
     return new base::OperationEvalNakBsplineBoundaryCombigridNaive(
         grid.getStorage(), dynamic_cast<base::NakBsplineBoundaryCombigridGrid&>(grid).getDegree());

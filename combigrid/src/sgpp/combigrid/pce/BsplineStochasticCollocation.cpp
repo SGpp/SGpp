@@ -18,10 +18,6 @@
 #include <cmath>
 #include <vector>
 
-#ifdef _OPENMP
-#include <omp.h>
-#endif
-
 namespace sgpp {
 namespace combigrid {
 
@@ -259,6 +255,9 @@ double BsplineStochasticCollocation::computeVarianceWithCombiTechnique() {
 
   return meanSquare - ev * ev;
 }
+
+// todo (rehmemk) when HierarchicalBsplineStochasticCollocation is finished remove the coarsening
+// routines here and refer to HierarchicalBsplineStochasticCollocation
 
 void BsplineStochasticCollocation::coarsen(size_t removements_num, double threshold,
                                            bool recalculateCoefficients) {
