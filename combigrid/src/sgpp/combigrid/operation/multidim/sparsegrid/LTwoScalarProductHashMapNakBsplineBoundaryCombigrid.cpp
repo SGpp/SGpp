@@ -194,7 +194,6 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
     throw sgpp::base::data_exception("Dimensions do not match!");
   }
 
-  //  size_t lastNumAdditionalPoints = 0;
   size_t quadOrder = degree + 1 + numAdditionalPoints;
   base::DataVector coordinates, weights;
   base::GaussLegendreQuadRule1D gauss;
@@ -237,15 +236,10 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
           if (ijd == 3) offsetj_left -= hjk;
           if (ijd == hInvjk - 3) offsetj_right += hjk;
         } else if (degree == 5) {
-          //          if ((iid == 3) || (iid == 5)) offseti_left -= 2 * hik;
-          //          if ((iid == hInvik - 3) || (iid == hInvik - 5)) offseti_right += 2 * hik;
-          //          if ((ijd == 3) || (ijd == 5)) offsetj_left -= 2 * hjk;
-          //          if ((ijd == hInvjk - 3) || (ijd == hInvjk - 5)) offsetj_right += 2 * hjk;
           if (iid == 5) offseti_left -= 2 * hik;
           if ((iid == hInvik - 3) || (iid == hInvik - 5)) offseti_right += 2 * hik;
           if (ijd == 5) offsetj_left -= 2 * hjk;
           if ((ijd == hInvjk - 3) || (ijd == hInvjk - 5)) offsetj_right += 2 * hjk;
-          //          std::cout << "hInvjk: " << hInvjk << std::endl;
         }
         if (std::max(offseti_left, offsetj_left) >= std::min(offseti_right, offsetj_right)) {
           // B spline supports do not not overlap:
@@ -285,7 +279,6 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
               double err = 1e14;
 
               while (err > tol) {
-                //                lastNumAdditionalPoints = numAdditionalPoints;
                 numAdditionalPoints += incrementQuadraturePoints;
                 quadOrder = degree + 1 + numAdditionalPoints;
                 // This leads to problems with the simple OMP parallelization if the abort
@@ -315,8 +308,6 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
         }
       }
 
-      if (temp_ij < 0) {
-      }
       // #pragma omp atomic
       result[i] += temp_ij * alpha[j];
       if (i != j) {
@@ -325,9 +316,6 @@ void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataV
       }
     }
   }
-
-  // std::cout << "map size: " << innerProducts.size() << std::endl;
-  //  std::cout << "LTwoScalarProduct numAddP: " << numAdditionalPoints << std::endl;
 }
 }  // namespace combigrid
 }  // namespace sgpp

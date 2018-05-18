@@ -75,7 +75,6 @@ class NakBsplineBoundaryBasis : public Basis<LT, IT> {
             return 1;
           } else {
             // l = 0, i = 1
-            //            return x;
             return x;
           }
         } else if (l == 1) {
