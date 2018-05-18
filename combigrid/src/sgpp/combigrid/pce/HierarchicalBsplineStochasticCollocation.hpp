@@ -107,7 +107,8 @@ class HierarchicalBsplineStochasticCollocation {
   LTwoScalarProductHashMapNakBsplineBoundary scalarProducts;
   sgpp::base::DataVector coefficients;
 
-  // pdf values
+  // pdf weightFunctions and the definition domain bounds.
+  // 8the objective function itself is w.l.o.g. assumed to be defined on the unit hypercube)
   sgpp::combigrid::WeightFunctionsCollection weightFunctions;
   sgpp::base::DataVector bounds;
 

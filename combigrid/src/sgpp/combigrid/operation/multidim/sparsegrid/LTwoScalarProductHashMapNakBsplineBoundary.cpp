@@ -155,12 +155,13 @@ double LTwoScalarProductHashMapNakBsplineBoundary::calculateScalarProduct(
 
   for (size_t n = start; n <= stop; n++) {
     for (size_t c = 0; c < coordinates.size(); c++) {
-      // transform  the quadrature points to the segment on which the Bspline is
-      // evaluated and from there to the interval[a,b] on which the weight function is defined
+      // transform  the quadrature points to the segment on which the Bspline is evaluated
+      // the weight functions must be defined on [0,1] (otherwise they have to be transformed to
+      // [0,1] and the original interval must be handed over in 'bounds'
       const double x = offset + scaling * (coordinates[c] + static_cast<double>(n));
 
-      double transX = x;  // bounds[2 * d] + (bounds[2 * d + 1] - bounds[2 * d]) * x;
-      temp_res += weights[c] * basis.eval(lid, iid, x) * basis.eval(ljd, ijd, x) *
+      double transX = x;
+      temp_res += weights[c] * basis.eval(lid, iid, transX) * basis.eval(ljd, ijd, transX) *
                   weightFunctionsCollection[d](transX);
     }
   }
@@ -190,6 +191,7 @@ void LTwoScalarProductHashMapNakBsplineBoundary::mult(sgpp::base::DataVector& al
 
   //  size_t lastNumAdditionalPoints = 0;
   size_t quadOrder = degree + 1 + numAdditionalPoints;
+
   base::DataVector coordinates, weights;
   base::GaussLegendreQuadRule1D gauss;
 
@@ -231,15 +233,10 @@ void LTwoScalarProductHashMapNakBsplineBoundary::mult(sgpp::base::DataVector& al
           if (ijd == 3) offsetj_left -= hjk;
           if (ijd == hInvjk - 3) offsetj_right += hjk;
         } else if (degree == 5) {
-          //          if ((iid == 3) || (iid == 5)) offseti_left -= 2 * hik;
-          //          if ((iid == hInvik - 3) || (iid == hInvik - 5)) offseti_right += 2 * hik;
-          //          if ((ijd == 3) || (ijd == 5)) offsetj_left -= 2 * hjk;
-          //          if ((ijd == hInvjk - 3) || (ijd == hInvjk - 5)) offsetj_right += 2 * hjk;
           if (iid == 5) offseti_left -= 2 * hik;
           if ((iid == hInvik - 3) || (iid == hInvik - 5)) offseti_right += 2 * hik;
           if (ijd == 5) offsetj_left -= 2 * hjk;
           if ((ijd == hInvjk - 3) || (ijd == hInvjk - 5)) offsetj_right += 2 * hjk;
-          //          std::cout << "hInvjk: " << hInvjk << std::endl;
         }
         if (std::max(offseti_left, offsetj_left) >= std::min(offseti_right, offsetj_right)) {
           // B spline supports do not not overlap:
@@ -262,6 +259,7 @@ void LTwoScalarProductHashMapNakBsplineBoundary::mult(sgpp::base::DataVector& al
           } else {
             // #pragma omp critical
             //            {
+
             gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
             temp_res =
                 calculateScalarProduct(lid, iid, ljd, ijd, coordinates, weights, basis, d,
@@ -274,12 +272,12 @@ void LTwoScalarProductHashMapNakBsplineBoundary::mult(sgpp::base::DataVector& al
             // lastNumAdditionalPoints, that didn't work)
             numAdditionalPoints = 10;  // lastNumAdditionalPoints;
 
+            // currently this is always true
             if (isCustomWeightFunction) {
               double tol = 1e-14;
               double err = 1e14;
 
               while (err > tol) {
-                //                lastNumAdditionalPoints = numAdditionalPoints;
                 numAdditionalPoints += incrementQuadraturePoints;
                 quadOrder = degree + 1 + numAdditionalPoints;
                 // This leads to problems with the simple OMP parallelization if the abort
@@ -297,6 +295,8 @@ void LTwoScalarProductHashMapNakBsplineBoundary::mult(sgpp::base::DataVector& al
                 finer_temp_res *= width;
                 //                }
                 err = fabs(temp_res - finer_temp_res);
+                //                std::cout << temp_res << " " << finer_temp_res << " " << err <<
+                //                std::endl;
                 temp_res = finer_temp_res;
               }
             }
@@ -309,8 +309,6 @@ void LTwoScalarProductHashMapNakBsplineBoundary::mult(sgpp::base::DataVector& al
         }
       }
 
-      if (temp_ij < 0) {
-      }
       // #pragma omp atomic
       result[i] += temp_ij * alpha[j];
       if (i != j) {
