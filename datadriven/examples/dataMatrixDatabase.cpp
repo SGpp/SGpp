@@ -101,7 +101,7 @@ int main() {
    * the same configuration will be replaced with a new file path. Note that the database only
    * works on file paths, i.e. strings.
    */
-   database.putDataMatrix(gridConfig, adaptivityConfig, regularizationConfig,
+  database.putDataMatrix(gridConfig, adaptivityConfig, regularizationConfig,
       densityEstimationConfig, dbmatfilepath, true);
 
   /**
