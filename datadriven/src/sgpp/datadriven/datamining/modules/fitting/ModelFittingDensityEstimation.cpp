@@ -105,9 +105,9 @@ bool ModelFittingDensityEstimation::refine() {
         alpha.resizeZero(newNoPoints);
         std::list<size_t> deletedGridPoints;
         // TODO(roehner) enable coarsening
-        // online->updateSystemMatrixDecomposition(this->config->getDensityEstimationConfig(),
-        // *grid, this->denewNoPoints - oldNoPoints,deletedGridPoints,
-        //    online->getBestLambda());
+        online->updateSystemMatrixDecomposition(config->getDensityEstimationConfig(),
+            *grid, newNoPoints - oldNoPoints, deletedGridPoints, online->getBestLambda());
+
         refinementsPerformed++;
         return true;
       } else {

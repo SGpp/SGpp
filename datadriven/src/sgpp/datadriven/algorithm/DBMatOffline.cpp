@@ -138,6 +138,7 @@ void DBMatOffline::buildMatrix(Grid* grid, RegularizationConfiguration& regulari
     throw algorithm_exception("DBMatOffline: grid was not initialized");
   }
 
+
   size = grid->getStorage().getSize();  // Size of the (quadratic) matrices A and C
 
   // Construct matrix A

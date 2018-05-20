@@ -43,13 +43,23 @@ BOOST_AUTO_TEST_CASE(offline_object) {
   sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
   densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
 
-  sgpp::datadriven::DBMatOfflineOrthoAdapt off_object(gridConfig,
-                                                      adaptivityConfig,
-                                                      regularizationConfig,
-                                                      densityEstimationConfig);
-  off_object.buildMatrix();
+  std::unique_ptr<sgpp::base::Grid> grid;
+  if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
+    grid =
+        std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createModLinearGrid(gridConfig.dim_)};
+  } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
+    grid = std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
+  } else {
+    throw sgpp::base::algorithm_exception("LearnerBase::InitializeGrid: An unsupported grid type "
+        "was chosen!");
+  }
 
-  size_t n = off_object.getDimA();
+  sgpp::datadriven::DBMatOfflineOrthoAdapt off_object;
+  off_object.buildMatrix(&(*grid), regularizationConfig);
+
+  size_t n = off_object.getGridSize();
+  std::cout << "Grid size is " << (*grid).getStorage().getSize() << std::endl;
+  std::cout << "Matrix size " << n << std::endl;
 
   std::cout << "Testing hessenberg_decomposition...\n";
 
@@ -169,33 +179,49 @@ BOOST_AUTO_TEST_CASE(online_object) {
   sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
   densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
 
+  std::unique_ptr<sgpp::base::Grid> grid;
+  if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
+    grid =
+        std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createModLinearGrid(gridConfig.dim_)};
+  } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
+    grid = std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
+  } else {
+    throw sgpp::base::algorithm_exception("LearnerBase::InitializeGrid: An unsupported grid type "
+        "was chosen!");
+  }
+
   // creating offline objects
-  sgpp::datadriven::DBMatOfflineOrthoAdapt offline_base(gridConfig,
-                                                        adaptivityConfig,
-                                                        regularizationConfig,
-                                                        densityEstimationConfig);
-  offline_base.buildMatrix();  // creating lhs matrix
+  sgpp::datadriven::DBMatOfflineOrthoAdapt offline_base;
+  offline_base.buildMatrix(&(*grid), regularizationConfig);  // creating lhs matrix
   sgpp::base::DataMatrix lhs(offline_base.getLhsMatrix_ONLY_FOR_TESTING());
   sgpp::base::DataMatrix lhs_copy_small(offline_base.getLhsMatrix_ONLY_FOR_TESTING());
-  offline_base.decomposeMatrix();  // calculating Q and T^{-1}
+  offline_base.decomposeMatrix(regularizationConfig, densityEstimationConfig);
+  // calculating Q and T^{-1}
 
-  // creating online object, based on offline object
   auto online_parent = std::unique_ptr<sgpp::datadriven::DBMatOnlineDE>{
-      sgpp::datadriven::DBMatOnlineDEFactory::buildDBMatOnlineDE(offline_base)};
+      sgpp::datadriven::DBMatOnlineDEFactory::buildDBMatOnlineDE(offline_base,
+          *grid, regularizationConfig.lambda_)};
   sgpp::datadriven::DBMatOnlineDEOrthoAdapt* online =
       static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt*>(&*online_parent);
 
   // creating offline object of one bigger lvl as source for points to refine
   gridConfig.level_++;
-  sgpp::datadriven::DBMatOfflineOrthoAdapt offline_source(gridConfig,
-                                                          adaptivityConfig,
-                                                          regularizationConfig,
-                                                          densityEstimationConfig);
-  offline_source.buildMatrix();
+  std::unique_ptr<sgpp::base::Grid> grid_source;
+  if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
+    grid =
+        std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createModLinearGrid(gridConfig.dim_)};
+  } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
+    grid = std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
+  } else {
+    throw sgpp::base::algorithm_exception("LearnerBase::InitializeGrid: An unsupported grid type "
+        "was chosen!");
+  }
+  sgpp::datadriven::DBMatOfflineOrthoAdapt offline_source;
+  offline_source.buildMatrix(&(*grid), regularizationConfig);
 
   // calculate sizes of old and new matrices
-  size_t oldSize = offline_base.getGrid().getStorage().getSize();
-  size_t newSize = offline_source.getGrid().getStorage().getSize();
+  size_t oldSize = grid->getStorage().getSize();
+  size_t newSize = grid_source->getStorage().getSize();
   size_t numberOfNewPoints = newSize - oldSize;  // always even, due to grid middle point
 
   //############################################################################

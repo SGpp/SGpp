@@ -42,33 +42,30 @@ BOOST_AUTO_TEST_CASE(testReadWriteOrthoAdapt) {
   sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
   densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
 
+  std::unique_ptr<sgpp::base::Grid> grid;
+  if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
+    grid =
+        std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createModLinearGrid(gridConfig.dim_)};
+  } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
+    grid = std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
+  } else {
+    throw sgpp::base::algorithm_exception("LearnerBase::InitializeGrid: An unsupported grid type "
+        "was chosen!");
+  }
+
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
       sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(gridConfig,
                                                                 adaptivityConfig,
                                                                 regularizationConfig,
                                                                 densityEstimationConfig)};
-  offline->buildMatrix();
-  offline->decomposeMatrix();
+  offline->buildMatrix(&(*grid), regularizationConfig);
+  offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
   std::string filename = "test.dbmat";
   offline->store(filename);
   auto newOffline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
       sgpp::datadriven::DBMatOfflineFactory::buildFromFile(filename)};
   std::remove(filename.c_str());
-  auto newGridConfig = newOffline->getGridConfig();
-  auto newRegularizationConfig = newOffline->getRegularizationConfig();
-  auto newDensityEstimationConfig = newOffline->getDensityEstimationConfig();
 
-  /**
-   * Check Configuration
-   */
-  BOOST_CHECK_EQUAL(gridConfig.dim_, newGridConfig.dim_);
-  BOOST_CHECK_EQUAL(gridConfig.level_, newGridConfig.level_);
-  BOOST_CHECK_EQUAL(static_cast<int>(gridConfig.type_), static_cast<int>(newGridConfig.type_));
-  BOOST_CHECK_EQUAL(static_cast<int>(regularizationConfig.type_),
-                    static_cast<int>(newRegularizationConfig.type_));
-  BOOST_CHECK_CLOSE(regularizationConfig.lambda_, newRegularizationConfig.lambda_, 10e-5);
-  BOOST_CHECK_EQUAL(static_cast<int>(densityEstimationConfig.decomposition_),
-                    static_cast<int>(newDensityEstimationConfig.decomposition_));
   /**
    * Check matrices
    */
@@ -122,33 +119,30 @@ BOOST_AUTO_TEST_CASE(testReadWriteCholesky) {
   sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
   densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::Chol;
 
+  std::unique_ptr<sgpp::base::Grid> grid;
+  if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
+    grid =
+        std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createModLinearGrid(gridConfig.dim_)};
+  } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
+    grid = std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
+  } else {
+    throw sgpp::base::algorithm_exception("LearnerBase::InitializeGrid: An unsupported grid type "
+        "was chosen!");
+  }
+
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
       sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(gridConfig,
                                                                 adaptivityConfig,
                                                                 regularizationConfig,
                                                                 densityEstimationConfig)};
-  offline->buildMatrix();
-  offline->decomposeMatrix();
+  offline->buildMatrix(&(*grid), regularizationConfig);
+  offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
 
   std::string filename = "test.dbmat";
   offline->store(filename);
   auto newOffline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
       sgpp::datadriven::DBMatOfflineFactory::buildFromFile(filename)};
   std::remove(filename.c_str());
-  auto newGridConfig = newOffline->getGridConfig();
-  auto newRegularizationConfig = newOffline->getRegularizationConfig();
-  auto newDensityEstimationConfig = newOffline->getDensityEstimationConfig();
-  /**
-   * Check Configuration
-   */
-  BOOST_CHECK_EQUAL(gridConfig.dim_, newGridConfig.dim_);
-  BOOST_CHECK_EQUAL(gridConfig.level_, newGridConfig.level_);
-  BOOST_CHECK_EQUAL(static_cast<int>(gridConfig.type_), static_cast<int>(newGridConfig.type_));
-  BOOST_CHECK_EQUAL(static_cast<int>(regularizationConfig.type_),
-                    static_cast<int>(newRegularizationConfig.type_));
-  BOOST_CHECK_CLOSE(regularizationConfig.lambda_, newRegularizationConfig.lambda_, 10e-5);
-  BOOST_CHECK_EQUAL(static_cast<int>(densityEstimationConfig.decomposition_),
-                    static_cast<int>(newDensityEstimationConfig.decomposition_));
 
   /**
    * Check matrices
@@ -178,33 +172,30 @@ BOOST_AUTO_TEST_CASE(testReadWriteEigen) {
   sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
   densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::Eigen;
 
+  std::unique_ptr<sgpp::base::Grid> grid;
+  if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
+    grid =
+        std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createModLinearGrid(gridConfig.dim_)};
+  } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
+    grid = std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
+  } else {
+    throw sgpp::base::algorithm_exception("LearnerBase::InitializeGrid: An unsupported grid type "
+        "was chosen!");
+  }
+
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
       sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(gridConfig,
                                                                 adaptivityConfig,
                                                                 regularizationConfig,
                                                                 densityEstimationConfig)};
-  offline->buildMatrix();
-  offline->decomposeMatrix();
+  offline->buildMatrix(&(*grid), regularizationConfig);
+  offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
 
   std::string filename = "test.dbmat";
   offline->store(filename);
   auto newOffline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
       sgpp::datadriven::DBMatOfflineFactory::buildFromFile(filename)};
   std::remove(filename.c_str());
-  auto newGridConfig = newOffline->getGridConfig();
-  auto newRegularizationConfig = newOffline->getRegularizationConfig();
-  auto newDensityEstimationConfig = newOffline->getDensityEstimationConfig();
-  /**
-   * Check Configuration
-   */
-  BOOST_CHECK_EQUAL(gridConfig.dim_, newGridConfig.dim_);
-  BOOST_CHECK_EQUAL(gridConfig.level_, newGridConfig.level_);
-  BOOST_CHECK_EQUAL(static_cast<int>(gridConfig.type_), static_cast<int>(newGridConfig.type_));
-  BOOST_CHECK_EQUAL(static_cast<int>(regularizationConfig.type_),
-                    static_cast<int>(newRegularizationConfig.type_));
-  BOOST_CHECK_CLOSE(regularizationConfig.lambda_, newRegularizationConfig.lambda_, 10e-5);
-  BOOST_CHECK_EQUAL(static_cast<int>(densityEstimationConfig.decomposition_),
-                    static_cast<int>(newDensityEstimationConfig.decomposition_));
 
   /**
    * Check matrices
@@ -234,33 +225,30 @@ BOOST_AUTO_TEST_CASE(testReadWriteLU) {
   sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
   densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::LU;
 
+  std::unique_ptr<sgpp::base::Grid> grid;
+  if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
+    grid =
+        std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createModLinearGrid(gridConfig.dim_)};
+  } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
+    grid = std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
+  } else {
+    throw sgpp::base::algorithm_exception("LearnerBase::InitializeGrid: An unsupported grid type "
+        "was chosen!");
+  }
+
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
       sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(gridConfig,
                                                                 adaptivityConfig,
                                                                 regularizationConfig,
                                                                 densityEstimationConfig)};
-  offline->buildMatrix();
-  offline->decomposeMatrix();
+  offline->buildMatrix(&(*grid), regularizationConfig);
+  offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
 
   std::string filename = "test.dbmat";
   offline->store(filename);
   auto newOffline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
       sgpp::datadriven::DBMatOfflineFactory::buildFromFile(filename)};
   std::remove(filename.c_str());
-  auto newGridConfig = newOffline->getGridConfig();
-  auto newRegularizationConfig = newOffline->getRegularizationConfig();
-  auto newDensityEstimationConfig = newOffline->getDensityEstimationConfig();
-  /**
-   * Check Configuration
-   */
-  BOOST_CHECK_EQUAL(gridConfig.dim_, newGridConfig.dim_);
-  BOOST_CHECK_EQUAL(gridConfig.level_, newGridConfig.level_);
-  BOOST_CHECK_EQUAL(static_cast<int>(gridConfig.type_), static_cast<int>(newGridConfig.type_));
-  BOOST_CHECK_EQUAL(static_cast<int>(regularizationConfig.type_),
-                    static_cast<int>(newRegularizationConfig.type_));
-  BOOST_CHECK_CLOSE(regularizationConfig.lambda_, newRegularizationConfig.lambda_, 10e-5);
-  BOOST_CHECK_EQUAL(static_cast<int>(densityEstimationConfig.decomposition_),
-                    static_cast<int>(newDensityEstimationConfig.decomposition_));
 
   /**
    * Check matrices
