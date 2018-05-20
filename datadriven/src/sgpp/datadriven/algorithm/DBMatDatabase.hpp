@@ -134,7 +134,7 @@ class DBMatDatabase{
    * of the node
    */
   bool regularizationConfigurationMatches(json::DictNode *node,
-      sgpp::datadriven::RegularizationConfiguration& gridConfig, size_t entry_num);
+      sgpp::datadriven::RegularizationConfiguration& regularizationConfig, size_t entry_num);
 
   /**
    * Checks weather the regularization configuration of a json dict node representing a
