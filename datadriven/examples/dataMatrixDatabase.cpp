@@ -15,6 +15,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
 
 #include <string>
 
@@ -81,6 +82,20 @@ int main() {
   densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::Chol;
 
   /**
+   * Before the matrix can be initialized the underlying grid needs to be created
+   */
+  std::unique_ptr<sgpp::base::Grid> grid;
+  if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
+    grid =
+        std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createModLinearGrid(gridConfig.dim_)};
+  } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
+    grid = std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
+  } else {
+    throw sgpp::base::algorithm_exception("LearnerBase::InitializeGrid: An unsupported grid type "
+        "was chosen!");
+  }
+
+  /**
    *  This section shows how to store a decomposition in the database. First however the
    *  matrix has to be created and decomposed. This is done using the configuration structures
    *  that the database needs to identify a decomposition.
@@ -89,8 +104,8 @@ int main() {
   std::cout << "Creating dbmat" << std::endl;
   sgpp::datadriven::DBMatOffline *db = sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(
       gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig);
-  db->buildMatrix();
-  db->decomposeMatrix();
+  db->buildMatrix(&(*grid), regularizationConfig);
+  db->decomposeMatrix(regularizationConfig, densityEstimationConfig);
   db->store(dbmatfilepath);
   std::cout << "Created dbmat" << std::endl;
 
@@ -101,7 +116,7 @@ int main() {
    * the same configuration will be replaced with a new file path. Note that the database only
    * works on file paths, i.e. strings.
    */
-   database.putDataMatrix(gridConfig, adaptivityConfig, regularizationConfig,
+  database.putDataMatrix(gridConfig, adaptivityConfig, regularizationConfig,
       densityEstimationConfig, dbmatfilepath, true);
 
   /**
