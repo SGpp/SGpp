@@ -32,16 +32,21 @@ class GeneralGridTypeParser {
  public:
   /**
    * Parses an input string and returns the corresponding sgpp::base::GeneralGridType type.
-   * Throws an exception if the string has no representation.
+   * Throws an exception if the string has no representation
+   * @param input the grid type to parse
+   * @return the parsed grid type
    */
   static sgpp::base::GeneralGridType parse(const std::string& input);
 
   /**
-   * Returns the string representation of a sgpp::base::GeneralGridType type.
+   * Returns the string representation of a sgpp::base::GeneralGridType type
+   * @param type the grid type to retrieve the string representation from
+   * @return the string representation of the the grid type
    */
   static const std::string& toString(sgpp::base::GeneralGridType type);
 
  private:
+  // Define a type for the map grid type -> string
   typedef std::map<sgpp::base::GeneralGridType, std::string> GeneralGridTypeMap_t;
 
   /**
