@@ -594,5 +594,23 @@ void DataMiningConfigParser::parseRosenblattTransformationConfig(
       defaults.solverThreshold, parentNode);
 }
 
+
+bool DataMiningConfigParser::getFitterDatabaseConfig(
+    datadriven::DatabaseConfiguration& config, const datadriven::DatabaseConfiguration& defaults)
+const {
+  bool hasDatabaseConfig =
+      hasFitterConfig() ? (*configFile)[fitter].contains("database") : false;
+  auto databaseConfig = static_cast<DictNode*>(&(*configFile)[fitter]["database"]);
+
+  // Parse filepath
+  if (databaseConfig->contains("filepath")) {
+    config.filepath = (*databaseConfig)["filepath"].get();
+  } else {
+    std::cout << "# Did not find databaseConfig[filepath]. No database loaded" << std::endl;
+    config.filepath = defaults.filepath;
+  }
+
+  return hasDatabaseConfig;
+}
 } /* namespace datadriven */
 } /* namespace sgpp */

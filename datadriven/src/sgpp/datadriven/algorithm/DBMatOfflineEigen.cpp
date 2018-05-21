@@ -33,7 +33,7 @@ using sgpp::base::data_exception;
 using sgpp::base::OperationMatrix;
 
 DBMatOfflineEigen::DBMatOfflineEigen(
-    const sgpp::base::RegularGridConfiguration& gridConfig,
+    const sgpp::base::GeneralGridConfiguration& gridConfig,
     const sgpp::base::AdpativityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig)
