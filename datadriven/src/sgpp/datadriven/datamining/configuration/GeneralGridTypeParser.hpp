@@ -1,15 +1,7 @@
-
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * GeneralGridTypeParser.hpp
- *
- * Created on: 23.04.18
- *     Author: Dominik Fuchsgruber
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_CONFIGURATION_GENERALGRIDTYPEPARSER_HPP_
 #define DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_CONFIGURATION_GENERALGRIDTYPEPARSER_HPP_
