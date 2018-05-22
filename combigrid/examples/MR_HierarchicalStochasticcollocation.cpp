@@ -48,85 +48,6 @@ double l2Error(std::shared_ptr<sgpp::base::Grid> surrogateGrid, sgpp::base::Data
   return sqrt(diffSquare.sum());
 }
 
-double hierarchicalRegularBSC(size_t dim, size_t level, size_t degree,
-                              double (*objFunc)(sgpp::base::DataVector),
-                              sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection,
-                              sgpp::base::DataVector bounds, size_t& numGridPoints) {
-  std::shared_ptr<sgpp::base::Grid> grid(
-      sgpp::base::Grid::createNakBsplineBoundaryGrid(dim, degree));
-  sgpp::base::GridStorage& gridStorage = grid->getStorage();
-  grid->getGenerator().regular(level);
-
-  sgpp::base::DataVector f_values(gridStorage.getSize(), 0.0);
-  for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
-    sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
-    for (size_t j = 0; j < gridStorage.getDimension(); j++) {
-      p[j] = gp.getStandardCoordinate(j);
-    }
-    f_values[i] = objFunc(p);
-  }
-
-  sgpp::optimization::sle_solver::Auto sleSolver;
-  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
-  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
-  sgpp::base::DataVector alpha(grid->getSize());
-  if (!sleSolver.solve(hierSLE, f_values, alpha)) {
-    std::cout << "Solving failed!" << std::endl;
-  }
-
-  //    sgpp::optimization::InterpolantScalarFunction sparseGridSurrogate(*grid, alpha);
-  sgpp::combigrid::HierarchicalBsplineStochasticCollocation hBSC(grid, degree, alpha,
-                                                                 weightFunctionsCollection, bounds);
-  double variance = hBSC.variance();
-  numGridPoints = hBSC.numGridPoints();
-  return variance;
-}
-
-double hierarchicalAdaptiveBSC(size_t dim, size_t numRefine, size_t degree,
-                               double (*objFunc)(sgpp::base::DataVector),
-                               sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection,
-                               sgpp::base::DataVector bounds, size_t& numGridPoints) {
-  std::shared_ptr<sgpp::base::Grid> grid(
-      sgpp::base::Grid::createNakBsplineBoundaryGrid(dim, degree));
-  sgpp::base::GridStorage& gridStorage = grid->getStorage();
-  // initial grid
-  grid->getGenerator().regular(1);
-
-  sgpp::base::DataVector alpha;
-  sgpp::optimization::sle_solver::Auto sleSolver;
-  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
-  for (size_t r = 0; r < numRefine; r++) {
-    sgpp::base::DataVector f_values(gridStorage.getSize(), 0.0);
-    for (size_t i = 0; i < gridStorage.getSize(); i++) {
-      sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
-      sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
-      for (size_t j = 0; j < gridStorage.getDimension(); j++) {
-        p[j] = gp.getStandardCoordinate(j);
-      }
-      f_values[i] = objFunc(p);
-    }
-
-    sgpp::optimization::HierarchisationSLE hierSLE(*grid);
-    alpha.resize(grid->getSize(), 0.0);
-    if (!sleSolver.solve(hierSLE, f_values, alpha)) {
-      std::cout << "Solving failed!" << std::endl;
-    }
-
-    sgpp::base::SurplusRefinementFunctor functor(alpha, 1);
-    // In last step don't refine any more
-    if (r < numRefine - 1) {
-      grid->getGenerator().refine(functor);
-    }
-  }
-  //    sgpp::optimization::InterpolantScalarFunction sparseGridSurrogate(*grid, alpha);
-  sgpp::combigrid::HierarchicalBsplineStochasticCollocation hBSC(grid, degree, alpha,
-                                                                 weightFunctionsCollection, bounds);
-  double variance = hBSC.variance();
-  numGridPoints = hBSC.numGridPoints();
-  return variance;
-}
-
 double combiRegularBSC(size_t dim, size_t level, size_t degree,
                        double (*objFunc)(sgpp::base::DataVector),
                        sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection,
@@ -261,18 +182,21 @@ int main() {
   // genz 2D, uniform on [-1,3] with mean  =1, stddev  =0.1
   double realVar = 0.382923024983218;
 
-  //  for (size_t level = 0; level < 7; level++) {
-  for (size_t numRefine = 1; numRefine < 40; numRefine++) {
+  std::shared_ptr<sgpp::base::Grid> grid(
+      sgpp::base::Grid::createNakBsplineBoundaryGrid(dim, degree));
+  sgpp::combigrid::HierarchicalBsplineStochasticCollocation hBSC(
+      grid, degree, sgpp::combigrid::MultiFunction(genzFunction), weightFunctionsCollection,
+      bounds);
+  hBSC.refineRegular(1);
+  for (size_t numRefine = 1; numRefine < 20; numRefine++) {
     sgpp::combigrid::Stopwatch watch;
     watch.start();
-    //    double hierVariance = hierarchicalRegularBSC(dim, level, degree, objFunc,
-    //                                                 weightFunctionsCollection, bounds,
-    //                                                 numGridPoints);
-    double hierVariance = hierarchicalAdaptiveBSC(dim, numRefine, degree, objFunc,
-                                                  weightFunctionsCollection, bounds, numGridPoints);
+    hBSC.refineSurplusAdaptive(1);
+    double hierVariance = hBSC.variance();
     hierTime.push_back(watch.elapsedSeconds());
     hierError.push_back(fabs(hierVariance - realVar));
-    numHierGP.push_back(numGridPoints);
+    numHierGP.push_back(hBSC.numGridPoints());
+
     watch.start();
     //    double combiVariance = combiRegularBSC(dim, level, degree, objFunc,
     //    weightFunctionsCollection,

@@ -13,6 +13,7 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/combigrid/functions/ProbabilityDensityFunction1D.hpp>
 #include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
@@ -39,12 +40,19 @@ namespace combigrid {
  */
 class HierarchicalBsplineStochasticCollocation {
  public:
+  explicit HierarchicalBsplineStochasticCollocation(
+      std::shared_ptr<sgpp::base::Grid> grid, size_t degree,
+      sgpp::combigrid::MultiFunction objectiveFunction, WeightFunctionsCollection weightFunctions,
+      sgpp::base::DataVector bounds);
   explicit HierarchicalBsplineStochasticCollocation(std::shared_ptr<sgpp::base::Grid> grid,
                                                     size_t degree,
                                                     sgpp::base::DataVector coefficients,
                                                     WeightFunctionsCollection weightFunctions,
                                                     sgpp::base::DataVector bounds);
   virtual ~HierarchicalBsplineStochasticCollocation();
+
+  void refineRegular(size_t level);
+  void refineSurplusAdaptive(size_t refinements_num);
 
   void eval(sgpp::base::DataMatrix& xs, sgpp::base::DataVector& res);
   double eval(sgpp::base::DataVector& x);
@@ -98,6 +106,8 @@ class HierarchicalBsplineStochasticCollocation {
  private:
   void initialize(WeightFunctionsCollection weightFunctions, sgpp::base::DataVector bounds);
 
+  void calculateCoefficients();
+
   bool updateStatus();
   double computeMean();
   double computeVariance();
@@ -106,6 +116,7 @@ class HierarchicalBsplineStochasticCollocation {
   size_t degree;
   LTwoScalarProductHashMapNakBsplineBoundary scalarProducts;
   sgpp::base::DataVector coefficients;
+  sgpp::combigrid::MultiFunction objectiveFunction;
 
   // pdf weightFunctions and the definition domain bounds.
   // 8the objective function itself is w.l.o.g. assumed to be defined on the unit hypercube)
