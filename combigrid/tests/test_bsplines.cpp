@@ -1007,6 +1007,7 @@ double func_HL2ScalarTest(sgpp::base::DataVector const& v) {
 }
 double wfunc_HL2ScalarTest(double x) { return sin(x); }
 BOOST_AUTO_TEST_CASE(test_Weighted_LTWoScalarProductsHashMapNakBsplineBoundary) {
+  std::cout << "Testing hierarchical nak Bspline boundary scalar products" << std::endl;
   size_t numDims = 2;
   size_t degree = 5;
   size_t level = 4;
@@ -1111,90 +1112,87 @@ BOOST_AUTO_TEST_CASE(test_HierarchicalBsplineStochasticCollocation) {
   }
 }
 
-// double funcTemp1(sgpp::base::DataVector const& v) { return 1; }
-// double wfuncTemp1(double x) { return x; }
-//
-//// same test as testHierarchicalBsplineLTwoScalarProductsWithWeightsAndBounds with
-//// hierarchicalBsplineStochasticCollocation instead of BsplineStochasticcollocation
-// BOOST_AUTO_TEST_CASE(testHierarchicalBsplineLTwoScalarProductsWithWeightsAndBounds) {
-//  std::cout
-//      << "calculating mean and variance of x^5 + y^5 on [0,1]^2 using hierarchical Bspline scalar
-//      "
-//         "products and the weight function sin(x) on [0,2]^2."
-//      << std::endl;
-//  size_t numDims = 1;
-//  size_t degree = 5;
-//  size_t level = 2;
-//  sgpp::combigrid::SingleFunction weightfunction(wfuncTemp1);
-//  sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection(0);
-//  sgpp::base::DataVector bounds(0);
-//  for (size_t d = 0; d < numDims; d++) {
-//    bounds.push_back(0);
-//    bounds.push_back(1);
-//    weightFunctionsCollection.push_back(weightfunction);
-//  }
-//
-//  std::shared_ptr<sgpp::base::Grid> grid(
-//      sgpp::base::Grid::createNakBsplineBoundaryGrid(numDims, degree));
-//  sgpp::base::GridStorage& gridStorage = grid->getStorage();
-//  grid->getGenerator().regular(level);
-//
-//  sgpp::base::DataVector f_values(gridStorage.getSize(), 0.0);
-//  for (size_t i = 0; i < gridStorage.getSize(); i++) {
-//    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
-//    sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
-//    for (size_t j = 0; j < gridStorage.getDimension(); j++) {
-//      p[j] = gp.getStandardCoordinate(j);
-//    }
-//    f_values[i] = funcTemp1(p);
-//  }
-//
-//  sgpp::optimization::sle_solver::Auto sleSolver;
-//  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
-//  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
-//  sgpp::base::DataVector coefficients(grid->getSize());
-//  if (!sleSolver.solve(hierSLE, f_values, coefficients)) {
-//    std::cout << "Solving failed!" << std::endl;
-//  }
-//  sgpp::combigrid::HierarchicalBsplineStochasticCollocation hBSC(grid, degree, coefficients,
-//                                                                 weightFunctionsCollection,
-//                                                                 bounds);
-//
-//  // (x^5+y^5)*exp(x-2*y) on [0,1]^2 with weight function 1
-//  //    double realEv = 0.224394761974631;
-//  //    double realVar = 0.110549163320681;
-//
-//  // x^5+y^5 on [0,1]^2 with weight function sin(x) on [0,2]^2
-//  //  double realEv = 0.906028496608237;
-//  //  double realVar = 0.700571273115382;
-//
-//  // f= 1, w=x
-//  double realEv = 0.5;
-//  double realVar = 0.25;
-//
-//  double var = hBSC.variance();
-//  double ev = hBSC.mean();
-//  std::cout << "level: " << level << std::endl;
-//  std::cout << fabs(ev - realEv) << " " << fabs(var - realVar) << std::endl;
-//  std::cout << "#gp: " << hBSC.numGridPoints() << std::endl;
-//  //  BOOST_CHECK_SMALL(fabs(ev - realEv), 1e-6);
-//  //  BOOST_CHECK_SMALL(fabs(var - realVar), 1e-6);
-//}
+// same test as testBsplineLTwoScalarProductsWithWeightsAndBounds with
+// hierarchicalBsplineStochasticCollocation instead of BsplineStochasticcollocation
+BOOST_AUTO_TEST_CASE(testHierarchicalBsplineLTwoScalarProductsWithWeightsAndBounds) {
+  std::cout
+      << "calculating mean and variance of x^5 + y^5 on [0,1]^2 using hierarchical Bspline scalar"
+         "products and the weight function sin(x) on [0,2]^2."
+      << std::endl;
+  size_t numDims = 2;
+  size_t degree = 5;
+  size_t level = 4;
+  sgpp::combigrid::SingleFunction weightfunction(omscWeight);
+  sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection(0);
+  sgpp::base::DataVector bounds(0);
+  for (size_t d = 0; d < numDims; d++) {
+    bounds.push_back(0);
+    bounds.push_back(2);
+    weightFunctionsCollection.push_back(weightfunction);
+  }
 
-// FIX LTWOSCALARPRODUCTHASHMAPNAKBSPLINEBOUNDARY
-// double func4xm1(sgpp::base::DataVector const& v) { return 4.0 * v[0] - 1.0; }
-//
+  std::shared_ptr<sgpp::base::Grid> grid(
+      sgpp::base::Grid::createNakBsplineBoundaryGrid(numDims, degree));
+  sgpp::base::GridStorage& gridStorage = grid->getStorage();
+  grid->getGenerator().regular(level);
+
+  sgpp::base::DataVector f_values(gridStorage.getSize(), 0.0);
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
+    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
+    sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
+    for (size_t j = 0; j < gridStorage.getDimension(); j++) {
+      p[j] = gp.getStandardCoordinate(j);
+    }
+    f_values[i] = omscFunc(p);
+  }
+
+  sgpp::optimization::sle_solver::Auto sleSolver;
+  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
+  sgpp::base::DataVector coefficients(grid->getSize());
+  if (!sleSolver.solve(hierSLE, f_values, coefficients)) {
+    std::cout << "Solving failed!" << std::endl;
+  }
+  sgpp::combigrid::HierarchicalBsplineStochasticCollocation hBSC(grid, degree, coefficients,
+                                                                 weightFunctionsCollection, bounds);
+
+  // (x^5+y^5)*exp(x-2*y) on [0,1]^2 with weight function 1
+  //  double realEv = 0.224394761974631;
+  //  double realVar = 0.110549163320681;
+
+  // x^5+y^5 on [0,1]^2 with weight function sin(x) on [0,2]^2
+  double realEv = 0.906028496608237;
+  double realVar = 0.700571273115382;
+
+  // f= 1, w=x
+  //  double realEv = 0.5;
+  //  double realVar = 0.125;
+
+  // f = 1, w=x on [0,2]
+  // double realEv  = 2;
+  // double realVar = 2;
+
+  double var = hBSC.variance();
+  double ev = hBSC.mean();
+  //  std::cout << fabs(ev - realEv) << " " << fabs(var - realVar) << std::endl;
+  //  std::cout << "#gp: " << hBSC.numGridPoints() << std::endl;
+  BOOST_CHECK_SMALL(fabs(ev - realEv), 1e-14);
+  BOOST_CHECK_SMALL(fabs(var - realVar), 1e-13);
+}
+
+double func4xm1(sgpp::base::DataVector const& v) { return 4.0 * v[0] - 1.0; }
+
 // BOOST_AUTO_TEST_CASE(testHierarchicalBsplineNormalMeanAndVariance) {
 //  std::cout << "testing calculation of mean and variance using normally distribution and linear "
 //               "function transformed to [-1,3] with hierarchical B-splines"
 //            << std::endl;
 //  size_t numDimensions = 1;
-//  size_t degree = 1;
+//  size_t degree = 5;
 //
 //  std::shared_ptr<sgpp::base::Grid> grid(
 //      sgpp::base::Grid::createNakBsplineBoundaryGrid(numDimensions, degree));
 //  sgpp::base::GridStorage& gridStorage = grid->getStorage();
-//  size_t level = 8;
+//  size_t level = 1;
 //  grid->getGenerator().regular(level);
 //
 //  sgpp::base::DataVector f_values(gridStorage.getSize(), 0.0);
