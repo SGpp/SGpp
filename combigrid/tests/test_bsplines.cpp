@@ -1182,63 +1182,62 @@ BOOST_AUTO_TEST_CASE(testHierarchicalBsplineLTwoScalarProductsWithWeightsAndBoun
 
 double func4xm1(sgpp::base::DataVector const& v) { return 4.0 * v[0] - 1.0; }
 
-// BOOST_AUTO_TEST_CASE(testHierarchicalBsplineNormalMeanAndVariance) {
-//  std::cout << "testing calculation of mean and variance using normally distribution and linear "
-//               "function transformed to [-1,3] with hierarchical B-splines"
-//            << std::endl;
-//  size_t numDimensions = 1;
-//  size_t degree = 5;
-//
-//  std::shared_ptr<sgpp::base::Grid> grid(
-//      sgpp::base::Grid::createNakBsplineBoundaryGrid(numDimensions, degree));
-//  sgpp::base::GridStorage& gridStorage = grid->getStorage();
-//  size_t level = 1;
-//  grid->getGenerator().regular(level);
-//
-//  sgpp::base::DataVector f_values(gridStorage.getSize(), 0.0);
-//  for (size_t i = 0; i < gridStorage.getSize(); i++) {
-//    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
-//    sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
-//    for (size_t j = 0; j < gridStorage.getDimension(); j++) {
-//      p[j] = gp.getStandardCoordinate(j);
-//    }
-//    f_values[i] = func4xm1(p);
-//  }
-//
-//  sgpp::optimization::sle_solver::Auto sleSolver;
-//  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
-//  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
-//  sgpp::base::DataVector coefficients(grid->getSize());
-//  if (!sleSolver.solve(hierSLE, f_values, coefficients)) {
-//    std::cout << "Solving failed!" << std::endl;
-//  }
-//
-//  // set up the weight function collection as normally distributed probability density functions
-//  sgpp::combigrid::ProbabilityDensityFunction1DConfiguration pdf_config;
-//  pdf_config.pdfParameters.type_ = sgpp::combigrid::ProbabilityDensityFunctionType::NORMAL;
-//  pdf_config.pdfParameters.mean_ = 1.0;    // => we should obtain mean = 1.0
-//  pdf_config.pdfParameters.stddev_ = 0.1;  // => we should obtain variance = 0.01
-//  pdf_config.pdfParameters.lowerBound_ = -1;
-//  pdf_config.pdfParameters.upperBound_ = 3;
-//  auto probabilityDensityFunction =
-//      std::make_shared<sgpp::combigrid::ProbabilityDensityFunction1D>(pdf_config);
-//  sgpp::combigrid::SingleFunction oneDimensionsalWeightFunction =
-//      probabilityDensityFunction->getWeightFunction();
-//  sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection(numDimensions);
-//  sgpp::base::DataVector bounds(2 * numDimensions);
-//  for (size_t d = 0; d < numDimensions; d++) {
-//    bounds[2 * d] = 0;
-//    bounds[2 * d + 1] = 2;
-//    weightFunctionsCollection[d] = oneDimensionsalWeightFunction;
-//  }
-//
-//  sgpp::combigrid::HierarchicalBsplineStochasticCollocation hBSC(grid, degree, coefficients,
-//                                                                 weightFunctionsCollection,
-//                                                                 bounds);
-//  double variance = hBSC.variance();
-//  double ev = hBSC.mean();
-//  std::cout << "mean: " << ev << " variance: " << variance << std::endl;
-//  //    BOOST_CHECK_SMALL(std::abs(ev - 1), 1e-13);
-//  //    BOOST_CHECK_SMALL(std::abs(variance - 0.01), 1e-13);
-//}
+BOOST_AUTO_TEST_CASE(testHierarchicalBsplineNormalMeanAndVariance) {
+  std::cout << "testing calculation of mean and variance using normally distribution and linear "
+               "function transformed to [-1,3] with hierarchical B-splines"
+            << std::endl;
+  size_t numDimensions = 1;
+  size_t degree = 5;
+
+  std::shared_ptr<sgpp::base::Grid> grid(
+      sgpp::base::Grid::createNakBsplineBoundaryGrid(numDimensions, degree));
+  sgpp::base::GridStorage& gridStorage = grid->getStorage();
+  size_t level = 1;
+  grid->getGenerator().regular(level);
+
+  sgpp::base::DataVector f_values(gridStorage.getSize(), 0.0);
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
+    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
+    sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
+    for (size_t j = 0; j < gridStorage.getDimension(); j++) {
+      p[j] = gp.getStandardCoordinate(j);
+    }
+    f_values[i] = func4xm1(p);
+  }
+
+  sgpp::optimization::sle_solver::Auto sleSolver;
+  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
+  sgpp::base::DataVector coefficients(grid->getSize());
+  if (!sleSolver.solve(hierSLE, f_values, coefficients)) {
+    std::cout << "Solving failed!" << std::endl;
+  }
+
+  // set up the weight function collection as normally distributed probability density functions
+  sgpp::combigrid::ProbabilityDensityFunction1DConfiguration pdf_config;
+  pdf_config.pdfParameters.type_ = sgpp::combigrid::ProbabilityDensityFunctionType::NORMAL;
+  pdf_config.pdfParameters.mean_ = 1.0;    // => we should obtain mean = 1.0
+  pdf_config.pdfParameters.stddev_ = 0.1;  // => we should obtain variance = 0.01
+  pdf_config.pdfParameters.lowerBound_ = -1;
+  pdf_config.pdfParameters.upperBound_ = 3;
+  auto probabilityDensityFunction =
+      std::make_shared<sgpp::combigrid::ProbabilityDensityFunction1D>(pdf_config);
+  sgpp::combigrid::SingleFunction oneDimensionsalWeightFunction =
+      probabilityDensityFunction->getWeightFunction();
+  sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection(numDimensions);
+  sgpp::base::DataVector bounds(2 * numDimensions);
+  for (size_t d = 0; d < numDimensions; d++) {
+    bounds[2 * d] = -1;
+    bounds[2 * d + 1] = 3;
+    weightFunctionsCollection[d] = oneDimensionsalWeightFunction;
+  }
+
+  sgpp::combigrid::HierarchicalBsplineStochasticCollocation hBSC(grid, degree, coefficients,
+                                                                 weightFunctionsCollection, bounds);
+  double variance = hBSC.variance();
+  double ev = hBSC.mean();
+  //  std::cout << "mean: " << ev << " variance: " << variance << std::endl;
+  BOOST_CHECK_SMALL(std::abs(ev - 1), 1e-13);
+  BOOST_CHECK_SMALL(std::abs(variance - 0.01), 1e-12);
+}
 BOOST_AUTO_TEST_SUITE_END()

@@ -86,6 +86,8 @@ double HierarchicalBsplineStochasticCollocation::computeVariance() {
     // calculate V(u) = E(u^2) - E(u)^2
     // this works for all B spline degrees but may be instable
     //(e.g. ev*ev might be larger than meanSquare => negative variance)
+    // It also does not work if the weight function is not a probability density function because
+    // then the algebraic formula for the variance does not hold
     scalarProducts.mult(coefficients, product);
     double meanSquare = product.dotProduct(coefficients);
     variance = meanSquare - ev * ev;
