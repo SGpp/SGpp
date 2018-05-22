@@ -9,6 +9,20 @@ namespace sgpp {
 namespace combigrid {
 
 HierarchicalBsplineStochasticCollocation::HierarchicalBsplineStochasticCollocation(
+    std::shared_ptr<sgpp::base::Grid> grid, size_t degree,
+    sgpp::combigrid::MultiFunction objectiveFunction, WeightFunctionsCollection weightFunctions,
+    sgpp::base::DataVector bounds)
+    : grid(grid),
+      degree(degree),
+      objectiveFunction(objectiveFunction),
+      weightFunctions(weightFunctions),
+      bounds(bounds),
+      currentNumGridPoints(grid->getSize()) {
+  initialize(weightFunctions, bounds);
+  calculateCoefficients();
+}
+
+HierarchicalBsplineStochasticCollocation::HierarchicalBsplineStochasticCollocation(
     std::shared_ptr<sgpp::base::Grid> grid, size_t degree, sgpp::base::DataVector coefficients,
     WeightFunctionsCollection weightFunctions, sgpp::base::DataVector bounds)
     : grid(grid),
@@ -28,15 +42,49 @@ void HierarchicalBsplineStochasticCollocation::initialize(WeightFunctionsCollect
   scalarProducts.setBounds(bounds);
 }
 
+void HierarchicalBsplineStochasticCollocation::refineRegular(size_t level) {
+  grid->getGenerator().regular(level);
+  updateStatus();
+}
+
+void HierarchicalBsplineStochasticCollocation::refineSurplusAdaptive(size_t refinements_num) {
+  sgpp::base::SurplusRefinementFunctor functor(coefficients, refinements_num);
+  grid->getGenerator().refine(functor);
+  updateStatus();
+}
+
 bool HierarchicalBsplineStochasticCollocation::updateStatus() {
   if (currentNumGridPoints < grid->getSize()) {
     currentNumGridPoints = grid->getSize();
     computedMeanFlag = false;
     computedVarianceFlag = false;
+    calculateCoefficients();
     return true;
   } else {
     return false;
   }
+}
+
+void HierarchicalBsplineStochasticCollocation::calculateCoefficients() {
+  sgpp::base::GridStorage& gridStorage = grid->getStorage();
+  sgpp::base::DataVector f_values(gridStorage.getSize(), 0.0);
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
+    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
+    sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
+    for (size_t j = 0; j < gridStorage.getDimension(); j++) {
+      p[j] = gp.getStandardCoordinate(j);
+    }
+    f_values[i] = objectiveFunction(p);
+  }
+
+  sgpp::optimization::sle_solver::Auto sleSolver;
+  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
+  sgpp::base::DataVector alpha(grid->getSize());
+  if (!sleSolver.solve(hierSLE, f_values, alpha)) {
+    std::cout << "Solving failed!" << std::endl;
+  }
+  coefficients = alpha;
 }
 
 void HierarchicalBsplineStochasticCollocation::eval(sgpp::base::DataMatrix& xs,
