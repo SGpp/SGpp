@@ -23,6 +23,7 @@
 #include <gsl/gsl_permute.h>
 
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -78,30 +79,27 @@ void DBMatOfflineLU::decomposeMatrix(RegularizationConfiguration& regularization
   }
 }
 
-DBMatOfflineLU::DBMatOfflineLU(const std::string& filepath)
+DBMatOfflineLU::DBMatOfflineLU(const std::string& fileName)
     : DBMatOfflineGE(), permutation{nullptr} {
   isConstructed = true;
   isDecomposed = true;
 
-  // Same as in DBMatOffline, parse fileheader to get size attributes
-  std::ifstream filestream(filepath, std::istream::in);
-    if (!filestream) {
-      throw algorithm_exception("Failed to open File");
-    }
-    std::string header;
-    std::getline(filestream, header);
-    filestream.close();
+  // Read grid size from header (number of rows in lhsMatrix)
+  std::ifstream filestream(fileName, std::istream::in);
+  // Read configuration
+  if (!filestream) {
+    throw algorithm_exception("Failed to open File");
+  }
+  std::string str;
+  std::getline(filestream, str);
+  filestream.close();
 
-    std::vector<std::string> tokens;
-    StringTokenizer::tokenize(header, ",", tokens);
-    if (tokens.size() < 4) {
-      throw algorithm_exception("Invalid DBMatOffline file header!");
-    }
-    size_t nRows = std::stoi(tokens[0]);
-    // size_t nCols = std::stoi(tokens[1]);
+  std::vector<std::string> tokens;
+  StringTokenizer::tokenize(str, ",", tokens);
 
+  auto size = std::stoi(tokens[0]);
 
-  FILE* file = fopen(filepath.c_str(), "rb");
+  FILE* file = fopen(fileName.c_str(), "rb");
   if (!file) {
     throw algorithm_exception{"Failed to open File"};
   }
@@ -114,7 +112,6 @@ DBMatOfflineLU::DBMatOfflineLU(const std::string& filepath)
 
   // TODO(lettrich) : test if we can do this without copying.
   // Read matrix
-  auto size = nRows;
   gsl_matrix* matrix;
   matrix = gsl_matrix_alloc(size, size);
   gsl_matrix_fread(file, matrix);
@@ -128,6 +125,7 @@ DBMatOfflineLU::DBMatOfflineLU(const std::string& filepath)
   lhsMatrix = DataMatrix(matrix->data, matrix->size1, matrix->size2);
   gsl_matrix_free(matrix);
 }
+
 
 void DBMatOfflineLU::permuteVector(DataVector& b) {
   if (isDecomposed) {
