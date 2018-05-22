@@ -19,6 +19,7 @@
 
 #include <string>
 #include <list>
+#include <vector>
 
 using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
@@ -32,14 +33,14 @@ namespace datadriven {
 
 ModelFittingDensityEstimation::ModelFittingDensityEstimation(
     const FitterConfigurationDensityEstimation& config)
-    : ModelFittingBase{}, refinementsPerformed{0}, offline{nullptr} {
+    : ModelFittingBaseSingleGrid{}, refinementsPerformed{0}, offline{nullptr} {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
 
   // Get configurations
   datadriven::DatabaseConfiguration databaseConfig =
       this->config->getDatabaseConfig();
-  base::RegularGridConfiguration gridConfig =
+  base::GeneralGridConfiguration gridConfig =
       this->config->getGridConfig();
   base::AdpativityConfiguration refinementConfig =
       this->config->getRefinementConfig();
@@ -47,6 +48,12 @@ ModelFittingDensityEstimation::ModelFittingDensityEstimation(
       this->config->getRegularizationConfig();
   datadriven::DensityEstimationConfiguration densityEstimationConfig =
       this->config->getDensityEstimationConfig();
+
+  // Grid *gg = ModelFittingBase::buildGrid(gridConfig);
+
+  // TODO(fuchsgruber): Support for geometry aware sparse grids (pass interactions from config?)
+  // grid = std::unique_ptr<Grid>{buildGrid(gridConfig)};
+  grid = std::unique_ptr<Grid>{buildGrid(this->config->getGridConfig())};
 
   bool offlineInitialized = false;
   // Initialize database if provided (path is not empty)

@@ -15,6 +15,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
@@ -38,7 +39,7 @@ namespace datadriven {
  * Allows usage of different grids, different solvers and different regularization techniques based
  * on the provided configuration objects.
  */
-class ModelFittingDensityEstimation : public ModelFittingBase {
+class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
  public:
   /**
    * Constructor

@@ -29,7 +29,7 @@ namespace sgpp {
 namespace datadriven {
 
 ModelFittingLeastSquares::ModelFittingLeastSquares(const FitterConfigurationLeastSquares& config)
-    : ModelFittingBase{}, refinementsPerformed{0} {
+    : ModelFittingBaseSingleGrid{}, refinementsPerformed{0} {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationLeastSquares>(config));
   solver = std::unique_ptr<SLESolver>{buildSolver(this->config->getSolverFinalConfig())};

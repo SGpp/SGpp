@@ -150,6 +150,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 
 #include <sgpp/datadriven/datamining/modules/scoring/CrossValidation.hpp>

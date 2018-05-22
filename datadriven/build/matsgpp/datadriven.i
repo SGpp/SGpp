@@ -123,6 +123,7 @@
 %ignore  sgpp::datadriven::ModelFittingBase::operator=(ModelFittingBase&&);
 %rename(assign) sgpp::datadriven::ModelFittingBase::operator =;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp"
 
 %ignore  sgpp::datadriven::Metric::operator=(Metric&&);
