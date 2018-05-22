@@ -94,7 +94,7 @@ DBMatOfflineLU::DBMatOfflineLU(const std::string& filepath)
 
     std::vector<std::string> tokens;
     StringTokenizer::tokenize(header, ",", tokens);
-    if (tokens.size() != 2) {
+    if (tokens.size() < 4) {
       throw algorithm_exception("Invalid DBMatOffline file header!");
     }
     size_t nRows = std::stoi(tokens[0]);

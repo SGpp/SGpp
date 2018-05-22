@@ -17,6 +17,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
 
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/algorithm/GridFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
@@ -43,16 +44,10 @@ BOOST_AUTO_TEST_CASE(offline_object) {
   sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
   densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
 
-  std::unique_ptr<sgpp::base::Grid> grid;
-  if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
-    grid =
-        std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createModLinearGrid(gridConfig.dim_)};
-  } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
-    grid = std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
-  } else {
-    throw sgpp::base::algorithm_exception("LearnerBase::InitializeGrid: An unsupported grid type "
-        "was chosen!");
-  }
+  sgpp::datadriven::GridFactory gridFactory;
+  std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
+    gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+  };
 
   sgpp::datadriven::DBMatOfflineOrthoAdapt off_object;
   off_object.buildMatrix(&(*grid), regularizationConfig);
@@ -179,16 +174,10 @@ BOOST_AUTO_TEST_CASE(online_object) {
   sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
   densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
 
-  std::unique_ptr<sgpp::base::Grid> grid;
-  if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
-    grid =
-        std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createModLinearGrid(gridConfig.dim_)};
-  } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
-    grid = std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
-  } else {
-    throw sgpp::base::algorithm_exception("LearnerBase::InitializeGrid: An unsupported grid type "
-        "was chosen!");
-  }
+  sgpp::datadriven::GridFactory gridFactory;
+  std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
+    gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+  };
 
   // creating offline objects
   sgpp::datadriven::DBMatOfflineOrthoAdapt offline_base;
@@ -206,18 +195,11 @@ BOOST_AUTO_TEST_CASE(online_object) {
 
   // creating offline object of one bigger lvl as source for points to refine
   gridConfig.level_++;
-  std::unique_ptr<sgpp::base::Grid> grid_source;
-  if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
-    grid =
-        std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createModLinearGrid(gridConfig.dim_)};
-  } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
-    grid = std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
-  } else {
-    throw sgpp::base::algorithm_exception("LearnerBase::InitializeGrid: An unsupported grid type "
-        "was chosen!");
-  }
+  std::unique_ptr<sgpp::base::Grid> grid_source = std::unique_ptr<sgpp::base::Grid>{
+    gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+  };
   sgpp::datadriven::DBMatOfflineOrthoAdapt offline_source;
-  offline_source.buildMatrix(&(*grid), regularizationConfig);
+  offline_source.buildMatrix(&(*grid_source), regularizationConfig);
 
   // calculate sizes of old and new matrices
   size_t oldSize = grid->getStorage().getSize();
