@@ -105,10 +105,11 @@ double Scorer::refine(ModelFittingBase& model, Dataset& testDataset) {
   auto score = 0.0;
 
   do {
-    std::cout << "###############\nrefining model\n"
-              << "Current size is " << model.getGrid().getSize() << "\n";
+    // TODO(fuchsgruber): Outputs should refer to multiple grids
+    // std::cout << "###############\nrefining model\n"
+    //          << "Current size is " << model.getGrid().getSize() << "\n";
     wasRefined = model.refine();
-    std::cout << "Refined Size is " << model.getGrid().getSize() << "\n";
+    // std::cout << "Refined Size is " << model.getGrid().getSize() << "\n";
     score = test(model, testDataset);
     std::cout << "###############\naccuracy of fit after refinement:" << score << "\n\n";
   } while (wasRefined);

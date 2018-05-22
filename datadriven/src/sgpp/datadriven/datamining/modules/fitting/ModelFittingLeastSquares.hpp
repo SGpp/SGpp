@@ -8,7 +8,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
-
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
@@ -31,7 +31,7 @@ namespace datadriven {
  * Allows usage of different grids, different solvers and different regularization techniques based
  * on the provided configuration objects.
  */
-class ModelFittingLeastSquares : public ModelFittingBase {
+class ModelFittingLeastSquares : public ModelFittingBaseSingleGrid {
  public:
   /**
    * Constructor

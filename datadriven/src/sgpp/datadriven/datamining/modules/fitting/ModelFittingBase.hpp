@@ -121,18 +121,6 @@ class ModelFittingBase {
   virtual void evaluate(DataMatrix& samples, DataVector& results) = 0;
 
   /**
-   * Get the underlying grid object for the current model.
-   * @return the grid object.
-   */
-  const Grid& getGrid() const;
-
-  /**
-   * Get the surpluses of the current grid
-   * @return vector of surpluses.
-   */
-  const DataVector& getSurpluses() const;
-
-  /**
    * Get the configuration of the fitter object.
    * @return configuration of the fitter object
    */
@@ -164,16 +152,6 @@ class ModelFittingBase {
    * Configuration object for the fitter.
    */
   std::unique_ptr<FitterConfiguration> config;
-
-  /**
-   * the sparse grid that approximates the data.
-   */
-  std::unique_ptr<Grid> grid;
-
-  /**
-   * hierarchical surpluses of the #grid.
-   */
-  DataVector alpha;
 
   /**
    * Pointer to #sgpp::datadriven::Dataset. The initial grid is fitted on the given data. Adaptive
