@@ -15,6 +15,8 @@
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 
 #ifdef USE_GSL
 #include <gsl/gsl_linalg.h>
@@ -29,12 +31,28 @@ namespace datadriven {
 
 using sgpp::base::operation_exception;
 using sgpp::base::application_exception;
+using sgpp::base::algorithm_exception;
 using sgpp::base::DataMatrix;
 
 DBMatOfflineGE::DBMatOfflineGE() : DBMatOffline() {}
 
 sgpp::datadriven::DBMatOfflineGE::DBMatOfflineGE(const std::string& fileName)
     : DBMatOffline{fileName} {
+  // Read grid size from header (number of rows in lhsMatrix)
+  std::ifstream filestream(fileName, std::istream::in);
+  // Read configuration
+  if (!filestream) {
+    throw algorithm_exception("Failed to open File");
+  }
+  std::string str;
+  std::getline(filestream, str);
+  filestream.close();
+
+  std::vector<std::string> tokens;
+  StringTokenizer::tokenize(str, ",", tokens);
+
+  auto size = std::stoi(tokens[0]);
+
 #ifdef USE_GSL
   FILE* file = fopen(fileName.c_str(), "rb");
   if (!file) {
@@ -49,7 +67,6 @@ sgpp::datadriven::DBMatOfflineGE::DBMatOfflineGE(const std::string& fileName)
 
   // TODO(lettrich) : test if we can do this without copying.
   // Read matrix
-  auto size = this->getGridSize();
   gsl_matrix* matrix;
   matrix = gsl_matrix_alloc(size, size);
   gsl_matrix_fread(file, matrix);

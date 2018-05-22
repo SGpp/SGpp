@@ -11,13 +11,14 @@
 #endif /* USE_GSL */
 
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
+#include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
 
 DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt() : DBMatOffline() {
-
   this->q_ortho_matrix_ = sgpp::base::DataMatrix(1, 1);
   this->t_tridiag_inv_matrix_ = sgpp::base::DataMatrix(1, 1);
   // Deprecated
@@ -26,18 +27,34 @@ DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt() : DBMatOffline() {
 
 DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const std::string& fileName)
     : DBMatOffline(fileName) {
-  // lhs matrix initialized in super constructor
-  size_t dim_a = lhsMatrix.getNrows();  // Expect lhs to be quadratic
 
-  this->q_ortho_matrix_ = sgpp::base::DataMatrix(dim_a, dim_a);
-  this->t_tridiag_inv_matrix_ = sgpp::base::DataMatrix(dim_a, dim_a);
+  // Read grid size from header (number of rows in lhsMatrix)
+  std::ifstream filestream(fileName, std::istream::in);
+  // Read configuration
+  if (!filestream) {
+    throw sgpp::base::algorithm_exception("Failed to open File");
+  }
+  std::string str;
+  std::getline(filestream, str);
+  filestream.close();
+
+  std::vector<std::string> tokens;
+  StringTokenizer::tokenize(str, ",", tokens);
+
+  auto size = std::stoi(tokens[0]);
+  std::cout << "Grid size " << size << std::endl;
+  // grid already initialized in super constructor
+
+  this->lhsMatrix = sgpp::base::DataMatrix(size, size);
+  this->q_ortho_matrix_ = sgpp::base::DataMatrix(size, size);
+  this->t_tridiag_inv_matrix_ = sgpp::base::DataMatrix(size, size);
 #ifdef USE_GSL
   gsl_matrix_view lhs_view =
-      gsl_matrix_view_array(this->lhsMatrix.getPointer(), dim_a, dim_a);
+      gsl_matrix_view_array(this->lhsMatrix.getPointer(), size, size);
   gsl_matrix_view q_view =
-      gsl_matrix_view_array(this->q_ortho_matrix_.getPointer(), dim_a, dim_a);
+      gsl_matrix_view_array(this->q_ortho_matrix_.getPointer(), size, size);
   gsl_matrix_view t_inv_view =
-      gsl_matrix_view_array(this->t_tridiag_inv_matrix_.getPointer(), dim_a, dim_a);
+      gsl_matrix_view_array(this->t_tridiag_inv_matrix_.getPointer(), size, size);
 
   FILE* file = fopen(fileName.c_str(), "rb");
   if (!file) {
@@ -50,11 +67,11 @@ DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const std::string& fileName)
     c = static_cast<char>(fgetc(file));
   }
 
-  // Process lhs matrix again
+  std::cout << "Fread init" << std::endl;
   gsl_matrix_fread(file, &lhs_view.matrix);
-  // Process q_ortho matrix and t_triag_inv_matrix
   gsl_matrix_fread(file, &q_view.matrix);
   gsl_matrix_fread(file, &t_inv_view.matrix);
+  std::cout << "Fread done" << std::endl;
 
   fclose(file);
 
@@ -64,6 +81,7 @@ DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const std::string& fileName)
   throw sgpp::base::algorithm_exception("USE_GSL has to be set");
 #endif /* USE_GSL */
 }
+
 
 DBMatOffline* DBMatOfflineOrthoAdapt::clone() { return new DBMatOfflineOrthoAdapt{*this}; }
 
@@ -150,7 +168,6 @@ void DBMatOfflineOrthoAdapt::invert_symmetric_tridiag(sgpp::base::DataVector& di
 
 void DBMatOfflineOrthoAdapt::store(const std::string& fileName) {
 #ifdef USE_GSL
-  size_t dim_a = lhsMatrix.getNrows();
   DBMatOffline::store(fileName);
 
   FILE* outCFile = fopen(fileName.c_str(), "ab");
@@ -158,6 +175,7 @@ void DBMatOfflineOrthoAdapt::store(const std::string& fileName) {
     throw sgpp::base::algorithm_exception{"cannot open file for writing"};
   }
 
+  auto dim_a = getGridSize();
   // store q_ortho_matrix_
   gsl_matrix_view q_view =
       gsl_matrix_view_array(this->q_ortho_matrix_.getPointer(), dim_a, dim_a);
@@ -171,6 +189,7 @@ void DBMatOfflineOrthoAdapt::store(const std::string& fileName) {
   fclose(outCFile);
 #endif /* USE_GSL */
 }
+
 
 sgpp::datadriven::MatrixDecompositionType DBMatOfflineOrthoAdapt::getDecompositionType() {
   return sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;

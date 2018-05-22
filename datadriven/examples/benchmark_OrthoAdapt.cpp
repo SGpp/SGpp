@@ -40,9 +40,6 @@ int main() {
   std::cout << "lambda = " << regularizationConfig.lambda_ << "\n\n";
 
   sgpp::datadriven::GridFactory gridFactory;
-
-
-
   std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
     gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
   };
