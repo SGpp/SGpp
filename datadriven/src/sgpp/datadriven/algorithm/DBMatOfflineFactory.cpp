@@ -99,7 +99,7 @@ DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
   }
   std::cout << std::endl;
 
-  MatrixDecompositionType type = static_cast<MatrixDecompositionType>(std::stoi(tokens[5]));
+  MatrixDecompositionType type = static_cast<MatrixDecompositionType>(std::stoi(tokens[3]));
 
   std::cout << "type: " << static_cast<int>(type) << std::endl;
 

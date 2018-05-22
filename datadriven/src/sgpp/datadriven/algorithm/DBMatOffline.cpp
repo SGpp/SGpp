@@ -79,7 +79,8 @@ DBMatOffline::DBMatOffline(const std::string& filepath)
 
   std::vector<std::string> tokens;
   StringTokenizer::tokenize(header, ",", tokens);
-  if (tokens.size() != 2) {
+  std::cout << "Token size is " << tokens.size() << std::endl;
+  if (tokens.size() < 4) {
     throw algorithm_exception("Invalid DBMatOffline file header!");
   }
   size_t nRows = std::stoi(tokens[0]);
@@ -189,7 +190,8 @@ void DBMatOffline::store(const std::string& fileName) {
     throw algorithm_exception{"cannot open file for writing"};
   }
 
-  outputFile << lhsMatrix.getNrows() << "," << lhsMatrix.getNcols();
+  outputFile << lhsMatrix.getNrows() << "," << lhsMatrix.getNcols() << "," <<
+      static_cast<int>(getDecompositionType());
 
   // Write interactions
   std::string inter = "," + std::to_string(interactions.size());
@@ -240,7 +242,7 @@ void sgpp::datadriven::DBMatOffline::parseInter(const std::string& fileName,
   std::vector<std::string> tokens;
   StringTokenizer::tokenize(str, ",", tokens);
 
-  for (size_t i = 3; i < tokens.size(); i+= std::stoi(tokens[i])+1) {
+  for (size_t i = 4; i < tokens.size(); i+= std::stoi(tokens[i])+1) {
     std::vector<size_t> tmp = std::vector<size_t>();
     for (size_t j = 1; j <= std::stoul(tokens[i]); j++) {
       tmp.push_back(std::stoi(tokens[i+j]));

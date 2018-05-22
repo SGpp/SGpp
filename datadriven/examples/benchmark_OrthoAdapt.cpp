@@ -9,6 +9,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/algorithm/GridFactory.hpp>
 
 #include <chrono>
 #include <iostream>
@@ -38,16 +39,13 @@ int main() {
   std::cout << "lvl = " << gridConfig.level_ << "\n";
   std::cout << "lambda = " << regularizationConfig.lambda_ << "\n\n";
 
-  std::unique_ptr<sgpp::base::Grid> grid;
-  if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
-    grid =
-        std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createModLinearGrid(gridConfig.dim_)};
-  } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
-    grid = std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
-  } else {
-    throw sgpp::base::algorithm_exception("LearnerBase::InitializeGrid: An unsupported grid type "
-        "was chosen!");
-  }
+  sgpp::datadriven::GridFactory gridFactory;
+
+
+
+  std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
+    gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+  };
 
   // offline phase
   sgpp::datadriven::DBMatOfflineOrthoAdapt offline;

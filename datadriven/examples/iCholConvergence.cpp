@@ -17,6 +17,7 @@
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/algorithm/GridFactory.hpp>
 
 #include <omp.h>
 
@@ -43,15 +44,10 @@ int main() {
   sgpp::datadriven::DensityEstimationConfiguration fullDensityEstimationConfig;
   fullDensityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::Chol;
 
-  std::unique_ptr<sgpp::base::Grid> grid;
-  if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
-    grid =
-        std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createModLinearGrid(gridConfig.dim_)};
-  } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
-    grid = std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
-  } else {
-    return 1;
-  }
+  sgpp::datadriven::GridFactory gridFactory;
+  std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
+    gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+  };
 
   sgpp::datadriven::DBMatOfflineChol fullOffline;
   fullOffline.buildMatrix(&(*grid), regularizationConfig);

@@ -21,9 +21,11 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/algorithm/GridFactory.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <string>
+#include <vector>
 
 BOOST_AUTO_TEST_SUITE(dBMatOffline_test)
 
@@ -42,16 +44,10 @@ BOOST_AUTO_TEST_CASE(testReadWriteOrthoAdapt) {
   sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
   densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
 
-  std::unique_ptr<sgpp::base::Grid> grid;
-  if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
-    grid =
-        std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createModLinearGrid(gridConfig.dim_)};
-  } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
-    grid = std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
-  } else {
-    throw sgpp::base::algorithm_exception("LearnerBase::InitializeGrid: An unsupported grid type "
-        "was chosen!");
-  }
+  sgpp::datadriven::GridFactory gridFactory;
+  std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
+    gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+  };
 
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
       sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(gridConfig,
@@ -71,13 +67,20 @@ BOOST_AUTO_TEST_CASE(testReadWriteOrthoAdapt) {
    */
   // lhsMatrix of parent object
   auto& oldMatrix = offline->getDecomposedMatrix();
+
+  std::cout << "Got old matrix decom" << std::endl;
   auto& newMatrix = newOffline->getDecomposedMatrix();
+
+  std::cout << "Got decompositions" << std::endl;
 
   BOOST_CHECK_EQUAL(oldMatrix.getSize(), newMatrix.getSize());
 
   for (size_t i = 0; i < newMatrix.getSize(); i++) {
     BOOST_CHECK_CLOSE(newMatrix[i], oldMatrix[i], 10e-5);
   }
+
+
+  std::cout << "Are close" << std::endl;
 
   // q_ortho_matrix_
   sgpp::datadriven::DBMatOfflineOrthoAdapt* child =
@@ -86,6 +89,8 @@ BOOST_AUTO_TEST_CASE(testReadWriteOrthoAdapt) {
   sgpp::datadriven::DBMatOfflineOrthoAdapt* newChild =
       static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&*newOffline);
   auto& newMatrixQ = newChild->getQ();
+
+  std::cout << "Got Q" << std::endl;
 
   BOOST_CHECK_EQUAL(oldMatrixQ.getSize(), newMatrixQ.getSize());
 
@@ -96,6 +101,9 @@ BOOST_AUTO_TEST_CASE(testReadWriteOrthoAdapt) {
   // t_tridiag_inv
   auto& oldMatrixTinv = child->getTinv();
   auto& newMatrixTinv = newChild->getTinv();
+
+
+  std::cout << "Got T" << std::endl;
 
   BOOST_CHECK_EQUAL(oldMatrixTinv.getSize(), newMatrixTinv.getSize());
 
@@ -119,16 +127,10 @@ BOOST_AUTO_TEST_CASE(testReadWriteCholesky) {
   sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
   densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::Chol;
 
-  std::unique_ptr<sgpp::base::Grid> grid;
-  if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
-    grid =
-        std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createModLinearGrid(gridConfig.dim_)};
-  } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
-    grid = std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
-  } else {
-    throw sgpp::base::algorithm_exception("LearnerBase::InitializeGrid: An unsupported grid type "
-        "was chosen!");
-  }
+  sgpp::datadriven::GridFactory gridFactory;
+    std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
+      gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+    };
 
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
       sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(gridConfig,
@@ -172,16 +174,10 @@ BOOST_AUTO_TEST_CASE(testReadWriteEigen) {
   sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
   densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::Eigen;
 
-  std::unique_ptr<sgpp::base::Grid> grid;
-  if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
-    grid =
-        std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createModLinearGrid(gridConfig.dim_)};
-  } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
-    grid = std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
-  } else {
-    throw sgpp::base::algorithm_exception("LearnerBase::InitializeGrid: An unsupported grid type "
-        "was chosen!");
-  }
+  sgpp::datadriven::GridFactory gridFactory;
+    std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
+      gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+    };
 
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
       sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(gridConfig,
@@ -225,16 +221,10 @@ BOOST_AUTO_TEST_CASE(testReadWriteLU) {
   sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
   densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::LU;
 
-  std::unique_ptr<sgpp::base::Grid> grid;
-  if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
-    grid =
-        std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createModLinearGrid(gridConfig.dim_)};
-  } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
-    grid = std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
-  } else {
-    throw sgpp::base::algorithm_exception("LearnerBase::InitializeGrid: An unsupported grid type "
-        "was chosen!");
-  }
+  sgpp::datadriven::GridFactory gridFactory;
+    std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
+      gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+    };
 
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
       sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(gridConfig,
