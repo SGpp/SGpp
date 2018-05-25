@@ -96,7 +96,7 @@ int main() {
       * All new points are appended to the addedPoints vector.
       */
     SurplusRefinementFunctor functor(alpha, 1);
-    grid->getGenerator().refine(functor, addedPoints);
+    grid->getGenerator().refine(functor, &addedPoints);
 
     /**
       * Extend alpha and funEval vector (new entries uninitialized). Note that right now, the size of both vectors

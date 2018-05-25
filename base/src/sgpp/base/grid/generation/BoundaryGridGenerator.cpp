@@ -48,9 +48,9 @@ void BoundaryGridGenerator::full(size_t level) {
   gen.fullWithBoundary(this->storage, static_cast<level_t>(level));
 }
 
-void BoundaryGridGenerator::refine(RefinementFunctor& func) {
+void BoundaryGridGenerator::refine(RefinementFunctor& func, std::vector<size_t>* addedPoints) {
   HashRefinementBoundaries refine;
-  refine.free_refine(this->storage, func);
+  refine.free_refine(this->storage, func, addedPoints);
 }
 
 size_t BoundaryGridGenerator::getNumberOfRefinablePoints() {

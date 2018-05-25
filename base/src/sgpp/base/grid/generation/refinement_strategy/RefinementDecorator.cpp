@@ -14,8 +14,9 @@ namespace sgpp {
 namespace base {
 
 void RefinementDecorator::free_refine(GridStorage& storage,
-                                      RefinementFunctor& functor) {
-  this->decorated_refinement_->free_refine(storage, functor);
+                                      RefinementFunctor& functor,
+                                      std::vector<size_t>* addedPoints) {
+  this->decorated_refinement_->free_refine(storage, functor, addedPoints);
 }
 
 size_t RefinementDecorator::getNumberOfRefinablePoints(GridStorage& storage) {

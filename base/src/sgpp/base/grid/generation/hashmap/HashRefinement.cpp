@@ -121,32 +121,29 @@ void HashRefinement::refineGridpointsCollection(GridStorage& storage,
 }
 
 void HashRefinement::free_refine(GridStorage& storage,
-                                 RefinementFunctor& functor) {
+                                 RefinementFunctor& functor,
+                                 std::vector<size_t>* addedPoints) {
   if (storage.getSize() == 0) {
     throw generation_exception("storage empty");
   }
-
-  AbstractRefinement::refinement_container_type collection;
-  collectRefinablePoints(storage, functor, collection);
-  // now refine all grid points which satisfy the refinement criteria
-  refineGridpointsCollection(storage, functor, collection);
-}
-
-void HashRefinement::free_refine(GridStorage& storage,
-                                 RefinementFunctor& functor,
-                                 std::vector<size_t>& addedPoints) {
   /**
    * Assumption: during the refinement process the only change made
    * to the storage is the following:
    * New (if any) gridpoints are appended (to the end) of the storage
    */
   size_t sizeBeforeRefine = storage.getSize();
-  free_refine(storage, functor);
-  for(size_t i = sizeBeforeRefine; i < storage.getSize(); i++) {
-    addedPoints.push_back(i);
+
+  AbstractRefinement::refinement_container_type collection;
+  collectRefinablePoints(storage, functor, collection);
+  // now refine all grid points which satisfy the refinement criteria
+  refineGridpointsCollection(storage, functor, collection);
+
+  if(addedPoints != 0) {
+    for(size_t i = sizeBeforeRefine; i < storage.getSize(); i++) {
+      addedPoints->push_back(i);
+    }
   }
 }
-
 
 size_t HashRefinement::getNumberOfRefinablePoints(GridStorage& storage) {
   size_t counter = 0;
