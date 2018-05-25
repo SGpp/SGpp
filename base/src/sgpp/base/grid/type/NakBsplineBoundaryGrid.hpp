@@ -7,8 +7,8 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
 #include <sgpp/globaldef.hpp>
-#include "../../operation/hash/common/basis/NakBsplineBoundaryBasis.hpp"
 
 namespace sgpp {
 namespace base {

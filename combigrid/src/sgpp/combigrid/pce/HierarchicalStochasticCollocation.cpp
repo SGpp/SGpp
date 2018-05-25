@@ -3,12 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/pce/HierarchicalBsplineStochasticCollocation.hpp>
+#include "HierarchicalStochasticCollocation.hpp"
 
 namespace sgpp {
 namespace combigrid {
 
-HierarchicalBsplineStochasticCollocation::HierarchicalBsplineStochasticCollocation(
+HierarchicalStochasticCollocation::HierarchicalStochasticCollocation(
     std::shared_ptr<sgpp::base::Grid> grid, sgpp::combigrid::MultiFunction objectiveFunction,
     WeightFunctionsCollection weightFunctions, sgpp::base::DataVector bounds)
     : grid(grid),
@@ -21,7 +21,7 @@ HierarchicalBsplineStochasticCollocation::HierarchicalBsplineStochasticCollocati
   calculateCoefficients();
 }
 
-HierarchicalBsplineStochasticCollocation::HierarchicalBsplineStochasticCollocation(
+HierarchicalStochasticCollocation::HierarchicalStochasticCollocation(
     sgpp::base::GridType gridType, size_t dim, sgpp::combigrid::MultiFunction objectiveFunction,
     WeightFunctionsCollection weightFunctions, sgpp::base::DataVector bounds, size_t degree)
     : gridType(gridType),
@@ -39,7 +39,7 @@ HierarchicalBsplineStochasticCollocation::HierarchicalBsplineStochasticCollocati
   calculateCoefficients();
 }
 
-HierarchicalBsplineStochasticCollocation::HierarchicalBsplineStochasticCollocation(
+HierarchicalStochasticCollocation::HierarchicalStochasticCollocation(
     std::shared_ptr<sgpp::base::Grid> grid, sgpp::base::DataVector coefficients,
     WeightFunctionsCollection weightFunctions, sgpp::base::DataVector bounds)
     : grid(grid),
@@ -51,33 +51,33 @@ HierarchicalBsplineStochasticCollocation::HierarchicalBsplineStochasticCollocati
   initialize(weightFunctions, bounds);
 }
 
-HierarchicalBsplineStochasticCollocation::~HierarchicalBsplineStochasticCollocation() {}
+HierarchicalStochasticCollocation::~HierarchicalStochasticCollocation() {}
 
-void HierarchicalBsplineStochasticCollocation::initialize(WeightFunctionsCollection weightFunctions,
+void HierarchicalStochasticCollocation::initialize(WeightFunctionsCollection weightFunctions,
                                                           sgpp::base::DataVector bounds) {
   scalarProducts.setWeightFunction(weightFunctions);
   scalarProducts.setBounds(bounds);
 }
 
-void HierarchicalBsplineStochasticCollocation::refineRegular(size_t level) {
+void HierarchicalStochasticCollocation::refineRegular(size_t level) {
   grid->getGenerator().regular(level);
   updateStatus();
 }
 
-void HierarchicalBsplineStochasticCollocation::refineSurplusAdaptive(size_t refinementsNum) {
+void HierarchicalStochasticCollocation::refineSurplusAdaptive(size_t refinementsNum) {
   sgpp::base::SurplusRefinementFunctor functor(coefficients, refinementsNum);
   grid->getGenerator().refine(functor);
   updateStatus();
 }
 
-void HierarchicalBsplineStochasticCollocation::refineSurplusAdaptiveByNumGridPoints(
+void HierarchicalStochasticCollocation::refineSurplusAdaptiveByNumGridPoints(
     size_t maxNumGridPoints, size_t refinementsNum) {
   while (currentNumGridPoints < maxNumGridPoints) {
     refineSurplusAdaptive(refinementsNum);
   }
 }
 
-bool HierarchicalBsplineStochasticCollocation::updateStatus() {
+bool HierarchicalStochasticCollocation::updateStatus() {
   if (currentNumGridPoints < grid->getSize()) {
     currentNumGridPoints = grid->getSize();
     computedMeanFlag = false;
@@ -89,7 +89,7 @@ bool HierarchicalBsplineStochasticCollocation::updateStatus() {
   }
 }
 
-void HierarchicalBsplineStochasticCollocation::calculateCoefficients() {
+void HierarchicalStochasticCollocation::calculateCoefficients() {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   sgpp::base::DataVector f_values(gridStorage.getSize(), 0.0);
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
@@ -111,7 +111,7 @@ void HierarchicalBsplineStochasticCollocation::calculateCoefficients() {
   coefficients = alpha;
 }
 
-void HierarchicalBsplineStochasticCollocation::eval(sgpp::base::DataMatrix& xs,
+void HierarchicalStochasticCollocation::eval(sgpp::base::DataMatrix& xs,
                                                     sgpp::base::DataVector& res) {
   res.resizeZero(xs.getNcols());
   sgpp::optimization::InterpolantScalarFunction sparseGridSurrogate(*grid, coefficients);
@@ -122,12 +122,12 @@ void HierarchicalBsplineStochasticCollocation::eval(sgpp::base::DataMatrix& xs,
   }
 }
 
-double HierarchicalBsplineStochasticCollocation::eval(sgpp::base::DataVector& x) {
+double HierarchicalStochasticCollocation::eval(sgpp::base::DataVector& x) {
   sgpp::optimization::InterpolantScalarFunction sparseGridSurrogate(*grid, coefficients);
   return sparseGridSurrogate.eval(x);
 }
 
-double HierarchicalBsplineStochasticCollocation::computeMean() {
+double HierarchicalStochasticCollocation::computeMean() {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   double mean = 0.0;
   if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
@@ -143,7 +143,7 @@ double HierarchicalBsplineStochasticCollocation::computeMean() {
   return mean;
 }
 
-double HierarchicalBsplineStochasticCollocation::mean() {
+double HierarchicalStochasticCollocation::mean() {
   updateStatus();
   if (!computedMeanFlag) {
     ev = computeMean();
@@ -152,7 +152,7 @@ double HierarchicalBsplineStochasticCollocation::mean() {
   return ev;
 }
 
-double HierarchicalBsplineStochasticCollocation::computeVariance() {
+double HierarchicalStochasticCollocation::computeVariance() {
   if (!computedMeanFlag) {
     mean();
   }
@@ -189,7 +189,7 @@ double HierarchicalBsplineStochasticCollocation::computeVariance() {
   return variance;
 }  // namespace combigrid
 
-double HierarchicalBsplineStochasticCollocation::variance() {
+double HierarchicalStochasticCollocation::variance() {
   updateStatus();
   if (!computedVarianceFlag) {
     var = computeVariance();
@@ -198,7 +198,7 @@ double HierarchicalBsplineStochasticCollocation::variance() {
   return var;
 }
 
-void HierarchicalBsplineStochasticCollocation::coarsen(size_t removements_num, double threshold,
+void HierarchicalStochasticCollocation::coarsen(size_t removements_num, double threshold,
                                                        bool recalculateCoefficients) {
   sgpp::base::HashCoarsening coarsen;
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
@@ -216,7 +216,7 @@ void HierarchicalBsplineStochasticCollocation::coarsen(size_t removements_num, d
   computedVarianceFlag = false;
 }
 
-void HierarchicalBsplineStochasticCollocation::coarsenIteratively(double maxVarDiff,
+void HierarchicalStochasticCollocation::coarsenIteratively(double maxVarDiff,
                                                                   double threshold,
                                                                   double removements_percentage,
                                                                   bool recalculateCoefficients) {
@@ -254,9 +254,9 @@ void HierarchicalBsplineStochasticCollocation::coarsenIteratively(double maxVarD
   }
 }
 
-size_t HierarchicalBsplineStochasticCollocation::numGridPoints() { return currentNumGridPoints; }
+size_t HierarchicalStochasticCollocation::numGridPoints() { return currentNumGridPoints; }
 
-sgpp::base::DataMatrix HierarchicalBsplineStochasticCollocation::getHierarchicalGridPoints() {
+sgpp::base::DataMatrix HierarchicalStochasticCollocation::getHierarchicalGridPoints() {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   sgpp::base::DataMatrix points(gridStorage.getDimension(), gridStorage.getSize());
   for (size_t i = 0; i < gridStorage.getSize(); i++) {

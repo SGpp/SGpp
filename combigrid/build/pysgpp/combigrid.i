@@ -65,7 +65,7 @@
 %shared_ptr(sgpp::combigrid::PolynomialChaosExpansion)
 %shared_ptr(sgpp::combigrid::PolynomialStochasticCollocation)
 %shared_ptr(sgpp::combigrid::BsplineStochasticCollocation)
-%shared_ptr(sgpp::combigrid::HierarchicalBsplineStochasticCollocation)
+%shared_ptr(sgpp::combigrid::HierarchicalStochasticCollocation)
 
 %shared_ptr(sgpp::combigrid::AbstractCombigridStorage)
 %shared_ptr(sgpp::combigrid::CombigridTreeStorage)
@@ -365,7 +365,7 @@ namespace std {
 %include "combigrid/src/sgpp/combigrid/pce/PolynomialChaosExpansion.hpp"
 %include "combigrid/src/sgpp/combigrid/pce/PolynomialStochasticCollocation.hpp"
 %include "combigrid/src/sgpp/combigrid/pce/BsplineStochasticCollocation.hpp"
-%include "combigrid/src/sgpp/combigrid/pce/HierarchicalBsplineStochasticCollocation.hpp"
+%include "combigrid/src/sgpp/combigrid/pce/HierarchicalStochasticCollocation.hpp"
                        
 %include "combigrid/src/sgpp/combigrid/pce/CombigridSurrogateModelFactory.hpp"
 

@@ -15,7 +15,6 @@
 #include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductHashMapNakBsplineBoundary.hpp>
 #include <sgpp/combigrid/pce/BsplineStochasticCollocation.hpp>
 #include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
-#include <sgpp/combigrid/pce/HierarchicalBsplineStochasticCollocation.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
@@ -25,6 +24,7 @@
 
 #include <math.h>
 #include <iostream>
+#include "../src/sgpp/combigrid/pce/HierarchicalStochasticCollocation.hpp"
 
 double l2Error(std::shared_ptr<sgpp::base::Grid> surrogateGrid, sgpp::base::DataVector alpha,
                double (*objFunc)(sgpp::base::DataVector), size_t dim) {
@@ -183,7 +183,7 @@ int main() {
   //  std::shared_ptr<sgpp::base::Grid> grid(
   //      sgpp::base::Grid::createNakBsplineBoundaryGrid(dim, degree));
   sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
-  sgpp::combigrid::HierarchicalBsplineStochasticCollocation hBSC(
+  sgpp::combigrid::HierarchicalStochasticCollocation hBSC(
       gridType, dim, sgpp::combigrid::MultiFunction(genzFunction), weightFunctionsCollection,
       bounds, degree);
   hBSC.refineRegular(1);
