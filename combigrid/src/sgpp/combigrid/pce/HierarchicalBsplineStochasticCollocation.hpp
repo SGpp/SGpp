@@ -41,11 +41,14 @@ namespace combigrid {
 class HierarchicalBsplineStochasticCollocation {
  public:
   explicit HierarchicalBsplineStochasticCollocation(
-      std::shared_ptr<sgpp::base::Grid> grid, size_t degree,
-      sgpp::combigrid::MultiFunction objectiveFunction, WeightFunctionsCollection weightFunctions,
-      sgpp::base::DataVector bounds);
+      std::shared_ptr<sgpp::base::Grid> grid, sgpp::combigrid::MultiFunction objectiveFunction,
+      WeightFunctionsCollection weightFunctions, sgpp::base::DataVector bounds);
+
+  explicit HierarchicalBsplineStochasticCollocation(
+      sgpp::base::GridType gridType, size_t dim, sgpp::combigrid::MultiFunction objectiveFunction,
+      WeightFunctionsCollection weightFunctions, sgpp::base::DataVector bounds, size_t degree = 3);
+
   explicit HierarchicalBsplineStochasticCollocation(std::shared_ptr<sgpp::base::Grid> grid,
-                                                    size_t degree,
                                                     sgpp::base::DataVector coefficients,
                                                     WeightFunctionsCollection weightFunctions,
                                                     sgpp::base::DataVector bounds);
@@ -53,6 +56,7 @@ class HierarchicalBsplineStochasticCollocation {
 
   void refineRegular(size_t level);
   void refineSurplusAdaptive(size_t refinements_num);
+  void refineSurplusAdaptiveByNumGridPoints(size_t maxNumGridPoints, size_t refinementsNum = 1);
 
   void eval(sgpp::base::DataMatrix& xs, sgpp::base::DataVector& res);
   double eval(sgpp::base::DataVector& x);
@@ -88,20 +92,9 @@ class HierarchicalBsplineStochasticCollocation {
 
   size_t numGridPoints();
 
-  /**
-   * returns characteristic values of the sparse grid coefficients, namely minimum, maximum and L2
-   * norm per level. These values can be used to estimate the quality of the results if no
-   * comparative solution is available
-   * @param min vector of the minimal coefficient of each level
-   * @param max vector of the maximum coefficient of each level
-   * @param l2norm vector of the l2 norm of the coefficients of each level
-   * @param maxLevel to get levelsums matching the combination technique levelsums the maximum level
-   * must be forwarded
-   */
-  void sgCoefficientCharacteristics(sgpp::base::DataVector& min, sgpp::base::DataVector& max,
-                                    sgpp::base::DataVector& l2norm, size_t maxLevel = 1000000);
-
   sgpp::base::DataMatrix getHierarchicalGridPoints();
+
+  sgpp::base::DataVector getCoefficients() { return coefficients; }
 
  private:
   void initialize(WeightFunctionsCollection weightFunctions, sgpp::base::DataVector bounds);
@@ -113,7 +106,7 @@ class HierarchicalBsplineStochasticCollocation {
   double computeVariance();
 
   std::shared_ptr<sgpp::base::Grid> grid;
-  size_t degree;
+  sgpp::base::GridType gridType;
   LTwoScalarProductHashMapNakBsplineBoundary scalarProducts;
   sgpp::base::DataVector coefficients;
   sgpp::combigrid::MultiFunction objectiveFunction;
