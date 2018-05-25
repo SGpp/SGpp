@@ -23,11 +23,11 @@
 #include <sgpp/combigrid/operation/onedim/BSplineScalarProductEvaluator.hpp>
 #include <sgpp/combigrid/pce/BsplineStochasticCollocation.hpp>
 #include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
-#include <sgpp/combigrid/pce/HierarchicalBsplineStochasticCollocation.hpp>
 #include <sgpp/combigrid/utils/AnalyticModels.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
+#include "../src/sgpp/combigrid/pce/HierarchicalBsplineStochasticCollocation.hpp"
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/quadrature/sampling/NaiveSampleGenerator.hpp>
@@ -1096,7 +1096,7 @@ BOOST_AUTO_TEST_CASE(test_HierarchicalBsplineStochasticCollocation) {
     }
 
     sgpp::combigrid::HierarchicalBsplineStochasticCollocation hBSC(
-        grid, degree, coefficients, weightFunctionsCollection, bounds);
+        grid, coefficients, weightFunctionsCollection, bounds);
 
     sgpp::base::DataVector x(dim);
     x[0] = 0.337;
@@ -1153,7 +1153,7 @@ BOOST_AUTO_TEST_CASE(testHierarchicalBsplineLTwoScalarProductsWithWeightsAndBoun
   if (!sleSolver.solve(hierSLE, f_values, coefficients)) {
     std::cout << "Solving failed!" << std::endl;
   }
-  sgpp::combigrid::HierarchicalBsplineStochasticCollocation hBSC(grid, degree, coefficients,
+  sgpp::combigrid::HierarchicalBsplineStochasticCollocation hBSC(grid, coefficients,
                                                                  weightFunctionsCollection, bounds);
 
   // (x^5+y^5)*exp(x-2*y) on [0,1]^2 with weight function 1
@@ -1232,7 +1232,7 @@ BOOST_AUTO_TEST_CASE(testHierarchicalBsplineNormalMeanAndVariance) {
     weightFunctionsCollection[d] = oneDimensionsalWeightFunction;
   }
 
-  sgpp::combigrid::HierarchicalBsplineStochasticCollocation hBSC(grid, degree, coefficients,
+  sgpp::combigrid::HierarchicalBsplineStochasticCollocation hBSC(grid, coefficients,
                                                                  weightFunctionsCollection, bounds);
   double variance = hBSC.variance();
   double ev = hBSC.mean();

@@ -16,6 +16,7 @@
 #include <sgpp/combigrid/pce/BsplineStochasticCollocation.hpp>
 #include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
 #include <sgpp/combigrid/pce/HierarchicalBsplineStochasticCollocation.hpp>
+#include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
@@ -24,8 +25,6 @@
 
 #include <math.h>
 #include <iostream>
-
-#include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 
 double l2Error(std::shared_ptr<sgpp::base::Grid> surrogateGrid, sgpp::base::DataVector alpha,
                double (*objFunc)(sgpp::base::DataVector), size_t dim) {
@@ -152,7 +151,6 @@ double weight(double x) { return sin(x); }
 
 int main() {
   size_t dim = 2;
-  //  size_t level = 5;
   size_t degree = 3;
   double (*objFunc)(sgpp::base::DataVector) = &genzFunction;
   //  sgpp::combigrid::SingleFunction oneDimensionsalWeightFunction(weight);
@@ -179,14 +177,15 @@ int main() {
   std::vector<size_t> numHierGP, numCombiGP;
   size_t numGridPoints = 0;
 
-  // genz 2D, uniform on [-1,3] with mean  =1, stddev  =0.1
+  // genz 2D, uniform on [-1,3] with mean  =1, stddev  =0.1 (calculated on level 11)
   double realVar = 0.382923024983218;
 
-  std::shared_ptr<sgpp::base::Grid> grid(
-      sgpp::base::Grid::createNakBsplineBoundaryGrid(dim, degree));
+  //  std::shared_ptr<sgpp::base::Grid> grid(
+  //      sgpp::base::Grid::createNakBsplineBoundaryGrid(dim, degree));
+  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
   sgpp::combigrid::HierarchicalBsplineStochasticCollocation hBSC(
-      grid, degree, sgpp::combigrid::MultiFunction(genzFunction), weightFunctionsCollection,
-      bounds);
+      gridType, dim, sgpp::combigrid::MultiFunction(genzFunction), weightFunctionsCollection,
+      bounds, degree);
   hBSC.refineRegular(1);
   for (size_t numRefine = 1; numRefine < 20; numRefine++) {
     sgpp::combigrid::Stopwatch watch;
