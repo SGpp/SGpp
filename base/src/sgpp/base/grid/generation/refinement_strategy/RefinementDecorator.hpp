@@ -47,8 +47,10 @@ class RefinementDecorator: public AbstractRefinement {
    *
    * @param storage hashmap that stores the grid points
    * @param functor a RefinementFunctor specifying the refinement criteria
+   * @param addedPoints pointer to vector to append newly created grid points to
    */
-  virtual void free_refine(GridStorage& storage, RefinementFunctor& functor);
+  virtual void free_refine(GridStorage& storage, RefinementFunctor& functor,
+                           std::vector<size_t>* addedPoints = 0);
 
 
   /**

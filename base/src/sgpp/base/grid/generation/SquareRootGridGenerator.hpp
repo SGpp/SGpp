@@ -35,7 +35,7 @@ class SquareRootGridGenerator : public GridGenerator {
   void regular(size_t level) override;
   void cliques(size_t level, size_t clique_size) override;
   void full(size_t level) override {};
-  void refine(RefinementFunctor& func) override {};
+  void refine(RefinementFunctor& func, std::vector<size_t>* addedPoints = 0) override {};
   size_t getNumberOfRefinablePoints() override {
     return 0;
   };

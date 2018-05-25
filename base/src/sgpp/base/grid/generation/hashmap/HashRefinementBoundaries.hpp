@@ -27,8 +27,9 @@ class HashRefinementBoundaries: public AbstractRefinement {
    *
    * @param storage hashmap that stores the grid points
    * @param functor a function used to determine if refinement is needed
+   * @param addedPoints pointer to vector to append newly created grid points to
    */
-  void free_refine(GridStorage& storage, RefinementFunctor& functor) override;
+  void free_refine(GridStorage& storage, RefinementFunctor& functor, std::vector<size_t>* addedPoints = 0) override;
 
 
   /**

@@ -6,8 +6,6 @@
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp>
 
-#include <sgpp/base/exception/not_implemented_exception.hpp>
-
 
 #include <sgpp/globaldef.hpp>
 
@@ -21,13 +19,6 @@ namespace base {
         return element1.second > element2.second;
 }
 */
-
-void AbstractRefinement::free_refine(GridStorage& storage,
-                                 RefinementFunctor& functor,
-                                 std::vector<size_t>& addedPoints) {
-  throw sgpp::base::not_implemented_exception("free_refine with addedPoints is not implemented for this refinement type!");
-}
-
 
 size_t AbstractRefinement::getIndexOfMin(RefinementFunctor::value_type* array,
     size_t length) {
