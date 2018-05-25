@@ -8,16 +8,14 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
-
+#include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductHashMapNakBsplineBoundaryCombigrid.hpp>
 #include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
-
-#include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
-#include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 
 #include <vector>
 

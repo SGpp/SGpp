@@ -35,6 +35,9 @@
 %newobject sgpp::base::Grid::createSquareRootGrid(size_t dim);
 %newobject sgpp::base::Grid::createPrewaveletGrid(size_t dim);
 %newobject sgpp::base::Grid::createPeriodicGrid(size_t dim);
+%newobject sgpp::base::Grid::createNakBsplineBoundaryGrid(size_t dim, size_t degree);
+
+
 
 %newobject sgpp::base::Grid::unserialize(std::string& istr);
 %newobject sgpp::base::Grid::clone();
@@ -106,7 +109,8 @@ enum class GridType {
   ModFundamentalSpline,         // 22
   ModBsplineClenshawCurtis,     // 23
   LinearStencil,                // 24
-  ModLinearStencil              // 25
+  ModLinearStencil,             // 25
+  NakBsplineBoundary            // 26
 };
 
 class Grid
@@ -139,6 +143,7 @@ public:
   static Grid* createLinearGridStencil(size_t dim);
   static Grid* createModLinearGridStencil(size_t dim);
   static Grid* createPeriodicGrid(size_t dim);
+  static Grid* createNakBsplineBoundaryGrid(size_t dim, size_t degree);
 	
   static Grid* unserialize(std::string& istr);
 	
