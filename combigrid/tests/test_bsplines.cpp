@@ -27,7 +27,7 @@
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
-#include "../src/sgpp/combigrid/pce/HierarchicalBsplineStochasticCollocation.hpp"
+#include "../src/sgpp/combigrid/pce/HierarchicalStochasticCollocation.hpp"
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/quadrature/sampling/NaiveSampleGenerator.hpp>
@@ -1095,7 +1095,7 @@ BOOST_AUTO_TEST_CASE(test_HierarchicalBsplineStochasticCollocation) {
       weightFunctionsCollection[d] = weightfunction;
     }
 
-    sgpp::combigrid::HierarchicalBsplineStochasticCollocation hBSC(
+    sgpp::combigrid::HierarchicalStochasticCollocation hBSC(
         grid, coefficients, weightFunctionsCollection, bounds);
 
     sgpp::base::DataVector x(dim);
@@ -1153,7 +1153,7 @@ BOOST_AUTO_TEST_CASE(testHierarchicalBsplineLTwoScalarProductsWithWeightsAndBoun
   if (!sleSolver.solve(hierSLE, f_values, coefficients)) {
     std::cout << "Solving failed!" << std::endl;
   }
-  sgpp::combigrid::HierarchicalBsplineStochasticCollocation hBSC(grid, coefficients,
+  sgpp::combigrid::HierarchicalStochasticCollocation hBSC(grid, coefficients,
                                                                  weightFunctionsCollection, bounds);
 
   // (x^5+y^5)*exp(x-2*y) on [0,1]^2 with weight function 1
@@ -1232,7 +1232,7 @@ BOOST_AUTO_TEST_CASE(testHierarchicalBsplineNormalMeanAndVariance) {
     weightFunctionsCollection[d] = oneDimensionsalWeightFunction;
   }
 
-  sgpp::combigrid::HierarchicalBsplineStochasticCollocation hBSC(grid, coefficients,
+  sgpp::combigrid::HierarchicalStochasticCollocation hBSC(grid, coefficients,
                                                                  weightFunctionsCollection, bounds);
   double variance = hBSC.variance();
   double ev = hBSC.mean();

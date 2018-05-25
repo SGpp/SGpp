@@ -38,21 +38,21 @@ namespace combigrid {
  * It can be used to evaluate the surrogate and to calculate mean and variance.
  * The hierarchical interpolant can be coarsened to reduce the number of grid points
  */
-class HierarchicalBsplineStochasticCollocation {
+class HierarchicalStochasticCollocation {
  public:
-  explicit HierarchicalBsplineStochasticCollocation(
+  explicit HierarchicalStochasticCollocation(
       std::shared_ptr<sgpp::base::Grid> grid, sgpp::combigrid::MultiFunction objectiveFunction,
       WeightFunctionsCollection weightFunctions, sgpp::base::DataVector bounds);
 
-  explicit HierarchicalBsplineStochasticCollocation(
+  explicit HierarchicalStochasticCollocation(
       sgpp::base::GridType gridType, size_t dim, sgpp::combigrid::MultiFunction objectiveFunction,
       WeightFunctionsCollection weightFunctions, sgpp::base::DataVector bounds, size_t degree = 3);
 
-  explicit HierarchicalBsplineStochasticCollocation(std::shared_ptr<sgpp::base::Grid> grid,
+  explicit HierarchicalStochasticCollocation(std::shared_ptr<sgpp::base::Grid> grid,
                                                     sgpp::base::DataVector coefficients,
                                                     WeightFunctionsCollection weightFunctions,
                                                     sgpp::base::DataVector bounds);
-  virtual ~HierarchicalBsplineStochasticCollocation();
+  virtual ~HierarchicalStochasticCollocation();
 
   void refineRegular(size_t level);
   void refineSurplusAdaptive(size_t refinements_num);
