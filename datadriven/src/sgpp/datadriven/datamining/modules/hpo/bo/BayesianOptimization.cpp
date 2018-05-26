@@ -26,9 +26,10 @@ BayesianOptimization::BayesianOptimization(const std::vector<BOConfig>& initialC
 :kernelmatrix(initialConfigs.size(),initialConfigs.size()), gleft(), transformedOutput(), rawScores(initialConfigs.size()),
  screwedvar(false), maxofmax(0), allConfigs(initialConfigs) {
   double noise = 1e-4; //: metaparameter
+  scales = base::DataVector(3,1); //EDIT: dimensions
   for (size_t i = 0; i < allConfigs.size(); ++i) {
     for (size_t k = 0; k < i; ++k) {
-      double tmp = kernel(allConfigs[i].getDistance(allConfigs[k]));
+      double tmp = kernel(allConfigs[i].getScaledDistance(allConfigs[k], scales));
       kernelmatrix.set(k, i, tmp);
       kernelmatrix.set(i, k, tmp);
     }
@@ -46,7 +47,6 @@ BayesianOptimization::BayesianOptimization(const std::vector<BOConfig>& initialC
   decomposeCholesky(kernelmatrix, gleft);
   //transformedOutput = base::DataVector(rawScores);
   solveCholeskySystem(gleft, transformedOutput);
-  scales = base::DataVector(3,1); //EDIT: dimensions
 }
 
 double BayesianOptimization::transformScore(double original) {

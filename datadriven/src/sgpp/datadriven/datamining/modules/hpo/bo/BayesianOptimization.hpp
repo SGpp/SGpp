@@ -17,6 +17,10 @@
 namespace sgpp {
 namespace datadriven {
 
+
+/**
+ * Class to host all methods to perform Bayesian Optimization
+ */
 class BayesianOptimization {
 public:
   /**
@@ -32,33 +36,105 @@ public:
    */
   double acquisitionOuter(const base::DataVector& inp);
 
+	/**
+	 * Gaussian Process update step. Incorporates most recent sample into Gaussian Process.
+	 */
 	void updateGP();
+
+  /**
+   * Implementation of mathematical formulation of the expected improvement acquisition function
+   */
 	double acquisitionEI(base::DataVector knew, double kself, double bestsofar);
+
+  /**
+   * Perform a Cholesky Decomposition
+   * @param km input matrix
+   * @param gnew output (triangular) matrix
+   */
   void decomposeCholesky(base::DataMatrix &km, base::DataMatrix &gnew);
+
+  /**
+   * Solve a system of linear equations using previously decomposed matrix
+   * @param gmatrix decomposed matrix
+   * @param x target vector
+   */
   void solveCholeskySystem(base::DataMatrix &gmatrix, base::DataVector &x);
+
+  /**
+   * main routine to find new sample point
+   * @param prototype baseline BOConfig
+   * @return new sample point
+   */
   BOConfig* main(BOConfig& prototype);
+
+  /**
+   * Possible score function transformation to accentuate the optimum
+   * @param original
+   * @return transformed value
+   */
   double transformScore(double original);
+
+  /**
+   * kernel function
+   * @param distance as computed according to some spacial representation
+   * @return kernel value representing variance
+   */
   double kernel(double distance);
+
+  /**
+   * fitting the Gaussian Process to the data in the form of scaling the hyperparameters
+   * in relation to each other by likelihood maximization
+   */
   void fitScales();
+
+  /**
+   * Gaussian Process likelihood to perform likelihood maximization over
+   * @param inp vector containing scales of the hyperparameter space
+   * @return value representative of the likelihood
+   */
   double likelihood(const base::DataVector& inp);
 
 
 
 
-  // double expkernel(base::DataVector x1, base::DataVector x2);
 protected:
+  /**
+   * Gram matrix containing all kernel values between all existing samples
+   */
 	base::DataMatrix kernelmatrix;
+  /**
+   * Cholesky Decomposition of the Gram matrix
+   */
   base::DataMatrix gleft;
+  /**
+   * solution of Kx = s where K is the Gram matrix and s the scores of the samples
+   */
   base::DataVector transformedOutput;
+  /**
+   * score values belonging to all existing sample points
+   */
   base::DataVector rawScores;
+  /**
+   * scales of the hyperparameter space used to compute the kernel (set by fitScales())
+   */
   base::DataVector scales;
+  /**
+   * best score encountered so far (used for expected improvement calculation)
+   */
   double bestsofar;
+  /**
+   * debugging variable for numerical instabilities
+   */
 	bool screwedvar;
+  /**
+   * debugging variable for numerical instabilities
+   */
 	double maxofmax;
 
-
+  /**
+   * existing sample points in the Gaussian Process
+   */
   std::vector<BOConfig> allConfigs;
-  // base::DataMatrix gright;
 };
 
 } /* namespace datadriven */
