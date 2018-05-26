@@ -60,13 +60,6 @@ double BOConfig::getTotalDistance(const base::DataVector &input, base::DataVecto
   return tmp;
 }
 
-double BOConfig::getDistance(BOConfig &other) {
-
-  //calcDiscDistance(other, <#initializer#>);
-  //return getTotalDistance(other.cont, <#initializer#>);
-  return 0;
-}
-
 size_t BOConfig::getContSize() {
   return cont.size();
 }

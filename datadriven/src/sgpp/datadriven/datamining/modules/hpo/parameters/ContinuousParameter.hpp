@@ -2,7 +2,7 @@
  * ContinuousParameter.hpp
  *
  *  Created on: Jan 25, 2018
- *      Author: polarbart
+ *      Author: Eric Koepke
  */
 
 #ifndef CONTINUOUSPARAMETER_HPP_
@@ -13,9 +13,22 @@
 namespace sgpp {
 namespace datadriven {
 
+/**
+ * Concrete class for hyperparameter with continuous values
+ */
 class ContinuousParameter: public sgpp::datadriven::HyperParameter {
 public:
+  /**
+   * Default constructor
+   */
   ContinuousParameter() = default;
+  /**
+   * Normal Constructor
+   * @param nBits 
+   * @param name
+   * @param min
+   * @param max
+   */
 	ContinuousParameter(int nBits, std::string&& name, double min, double max)
           :HyperParameter(nBits, name), min(min), max(max){}
 	// ~ContinuousParameter();

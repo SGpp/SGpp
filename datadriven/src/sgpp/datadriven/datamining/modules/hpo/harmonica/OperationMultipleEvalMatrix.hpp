@@ -15,14 +15,14 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * This class implements OperationB for a base::Grids with linear basis ansatzfunctions without boundaries
+ * wrapper class for matrix multiplication for use in solver
  */
 class OperationMultipleEvalMatrix : public base::OperationMultipleEval {
  public:
   /**
-   * Constructor of OperationBLinear
+   * Constructor
    *
-   * @param base::Grid base::Grid
+   * @param base::Grid dummy grid for inheritance reasons
    * @param dataset the dataset that should be evaluated
    */
   OperationMultipleEvalMatrix(base::Grid& grid, base::DataMatrix& dataset)
@@ -38,8 +38,6 @@ class OperationMultipleEvalMatrix : public base::OperationMultipleEval {
 
   double getDuration() override;
 
- protected:
-  /// reference to the base::Grid's base::GridStorage object
 };
 
 }  // namespace datadriven

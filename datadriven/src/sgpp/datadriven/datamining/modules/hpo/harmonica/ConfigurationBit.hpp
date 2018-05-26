@@ -17,41 +17,52 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * This class implements OperationB for a base::Grids with linear basis ansatzfunctions without boundaries
+ * This class implements a boolean representation of hyperparameters for harmonica
  */
 class ConfigurationBit {
  public:
   /**
-   * Constructor of OperationBLinear
-   *
-   * @param base::Grid base::Grid
-   * @param dataset the dataset that should be evaluated
+   * Constructor
+   * @param name to indentify the hyperparameter represented by this bit
    */
-  explicit ConfigurationBit(std::string namen)
-      :name(namen), constraints(0), value(0){
+  explicit ConfigurationBit(std::string name)
+      :name(name), constraints(0), value(0){
     //std::cout << "Constructor: " << getName() << std::endl;
     //name = "test";
   }
 
-  //~ConfigurationBit(){
-  //  std::cout << "ConfigurationBit destroyed!" << name<<std::endl;
-  //}
-
   /**
-   * Destructor
+   * Adds a reference to a new constraint limiting this bit
+   * @param constraint
    */
-  // ~ConfigurationBit() {}
-
   void addConstraint(ConfigurationRestriction* constraint);
 
+  /**
+   * removes last constraint (in case it was not valid)
+   */
   void removeLastConstraint();
 
+  /**
+   * reset the value of this bit
+   */
   void reset();
 
+  /**
+   * Set the value of this bit
+   * @param input new value
+   */
   void setValue(int input);
 
+  /**
+   * Get the value of this bit
+   * @return
+   */
   int getValue();
 
+  /**
+   * Get the name used to identify which hyperparameter is represented by this bit
+   * @return name of the bit
+   */
   std::string getName();
   // void mult(base::DataVector& alpha, base::DataVector& result);
   // void multTranspose(base::DataVector& source, base::DataVector& result);
@@ -60,8 +71,17 @@ class ConfigurationBit {
 
 
  private:
+  /**
+   * name used to identify which hyperparameter is represented by this bit
+   */
   std::string name;
+  /**
+   * vector pointing to the constraints that restrict this bit
+   */
   std::vector<ConfigurationRestriction*> constraints;
+  /**
+   * current value of this bit (-1 or 1 or 0 for unset)
+   */
   int value;
 };
 
