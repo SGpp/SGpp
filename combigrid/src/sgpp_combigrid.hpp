@@ -79,8 +79,6 @@
 #include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialScalarProductEvaluator.hpp>
 
-#include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductHashMapNakBsplineBoundaryCombigrid.hpp>
-
 #include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
 
 #include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
@@ -104,6 +102,7 @@
 #include <sgpp/combigrid/pce/CombigridSurrogateModelFactory.hpp>
 #include <sgpp/combigrid/pce/PolynomialChaosExpansion.hpp>
 #include <sgpp/combigrid/pce/PolynomialStochasticCollocation.hpp>
+#include "sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductNakBsplineBoundaryCombigrid.hpp"
 #include "sgpp/combigrid/pce/HierarchicalStochasticCollocation.hpp"
 #include "sgpp/combigrid/utils/BSplineRoutines.hpp"
 

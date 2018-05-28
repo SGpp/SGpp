@@ -18,8 +18,8 @@
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridCallbackEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridGridBasedEvaluator.hpp>
-#include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductHashMapNakBsplineBoundary.hpp>
-#include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductHashMapNakBsplineBoundaryCombigrid.hpp>
+#include "../src/sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductNakBsplineBoundary.hpp"
+#include "../src/sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductNakBsplineBoundaryCombigrid.hpp"
 #include <sgpp/combigrid/operation/onedim/BSplineScalarProductEvaluator.hpp>
 #include <sgpp/combigrid/pce/BsplineStochasticCollocation.hpp>
 #include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
@@ -429,7 +429,7 @@ double BsplineQuadratureSquare(size_t numDimensions, size_t degree,
     std::cout << "Solving failed!" << std::endl;
   }
   sgpp::base::Grid* gridptr = grid.get();
-  sgpp::combigrid::LTwoScalarProductHashMapNakBsplineBoundaryCombigrid massMatrix(gridptr);
+  sgpp::combigrid::LTwoScalarProductNakBsplineBoundaryCombigrid massMatrix(gridptr);
   sgpp::base::DataVector product(alpha.size(), 0);
   massMatrix.mult(alpha, product);
   double integralSquare = product.dotProduct(alpha);
@@ -1044,7 +1044,7 @@ BOOST_AUTO_TEST_CASE(test_Weighted_LTWoScalarProductsHashMapNakBsplineBoundary) 
   }
 
   sgpp::base::Grid* gridptr = grid.get();
-  sgpp::combigrid::LTwoScalarProductHashMapNakBsplineBoundary scalarProducts(
+  sgpp::combigrid::LTwoScalarProductNakBsplineBoundary scalarProducts(
       gridptr, weightFunctionsCollection, bounds);
   sgpp::base::DataVector product(coefficients.getSize());
   scalarProducts.mult(coefficients, product);

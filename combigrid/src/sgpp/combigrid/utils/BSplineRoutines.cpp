@@ -5,7 +5,6 @@
 
 #include <sgpp/combigrid/algebraic/FloatTensorVector.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp>
-#include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductHashMapNakBsplineBoundaryCombigrid.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 
 #include <sgpp/base/exception/application_exception.hpp>
@@ -14,6 +13,7 @@
 #include <iomanip>
 #include <string>
 #include <vector>
+#include "../operation/multidim/sparsegrid/LTwoScalarProductNakBsplineBoundaryCombigrid.hpp"
 
 // ToDo (rehmemk) Test other strategies for outer points for example placing them uniform using
 // the

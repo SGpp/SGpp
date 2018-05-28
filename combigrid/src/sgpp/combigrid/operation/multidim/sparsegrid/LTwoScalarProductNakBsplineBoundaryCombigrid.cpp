@@ -3,7 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductHashMapNakBsplineBoundaryCombigrid.hpp>
+#include "LTwoScalarProductNakBsplineBoundaryCombigrid.hpp"
+
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
 
 #include <omp.h>
@@ -14,8 +15,8 @@
 namespace sgpp {
 namespace combigrid {
 
-LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::
-    LTwoScalarProductHashMapNakBsplineBoundaryCombigrid(sgpp::base::Grid* grid)
+LTwoScalarProductNakBsplineBoundaryCombigrid::
+    LTwoScalarProductNakBsplineBoundaryCombigrid(sgpp::base::Grid* grid)
     : grid(grid) {
   // initilaize collection
   sgpp::combigrid::SingleFunction constant_weight_function =
@@ -33,8 +34,8 @@ LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::
   degree = dynamic_cast<sgpp::base::NakBsplineBoundaryCombigridGrid*>(grid)->getDegree();
 }
 
-LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::
-    LTwoScalarProductHashMapNakBsplineBoundaryCombigrid(
+LTwoScalarProductNakBsplineBoundaryCombigrid::
+    LTwoScalarProductNakBsplineBoundaryCombigrid(
         sgpp::base::Grid* grid,
         sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection)
     : grid(grid),
@@ -50,8 +51,8 @@ LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::
   degree = dynamic_cast<sgpp::base::NakBsplineBoundaryCombigridGrid*>(grid)->getDegree();
 }
 
-LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::
-    LTwoScalarProductHashMapNakBsplineBoundaryCombigrid(
+LTwoScalarProductNakBsplineBoundaryCombigrid::
+    LTwoScalarProductNakBsplineBoundaryCombigrid(
         sgpp::base::Grid* grid,
         sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection,
         sgpp::base::DataVector bounds)
@@ -64,8 +65,8 @@ LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::
   degree = dynamic_cast<sgpp::base::NakBsplineBoundaryCombigridGrid*>(grid)->getDegree();
 }
 
-LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::
-    LTwoScalarProductHashMapNakBsplineBoundaryCombigrid(
+LTwoScalarProductNakBsplineBoundaryCombigrid::
+    LTwoScalarProductNakBsplineBoundaryCombigrid(
         sgpp::base::Grid* grid,
         sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection,
         sgpp::base::DataVector bounds, size_t numAdditionalPoints, size_t incrementQuadraturePoints)
@@ -78,10 +79,10 @@ LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::
   degree = dynamic_cast<sgpp::base::NakBsplineBoundaryCombigridGrid*>(grid)->getDegree();
 }
 
-LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::
-    ~LTwoScalarProductHashMapNakBsplineBoundaryCombigrid() {}
+LTwoScalarProductNakBsplineBoundaryCombigrid::
+    ~LTwoScalarProductNakBsplineBoundaryCombigrid() {}
 
-MultiIndex LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::hashLevelIndex(
+MultiIndex LTwoScalarProductNakBsplineBoundaryCombigrid::hashLevelIndex(
     base::level_t li, base::index_t ii, base::level_t lj, base::index_t ij, size_t d) {
   MultiIndex hashMI(5);
 
@@ -101,7 +102,7 @@ MultiIndex LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::hashLevelIndex(
   return hashMI;
 }
 
-double LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::calculateScalarProduct(
+double LTwoScalarProductNakBsplineBoundaryCombigrid::calculateScalarProduct(
     base::level_t lid, base::index_t iid, base::level_t ljd, base::index_t ijd,
     base::DataVector coordinates, base::DataVector weights,
     sgpp::base::SNakBsplineBoundaryCombigridBase basis, size_t d, double offseti_left,
@@ -174,7 +175,7 @@ double LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::calculateScalarProdu
   return temp_res * scaling;
 }
 
-void LTwoScalarProductHashMapNakBsplineBoundaryCombigrid::mult(sgpp::base::DataVector& alpha,
+void LTwoScalarProductNakBsplineBoundaryCombigrid::mult(sgpp::base::DataVector& alpha,
                                                                sgpp::base::DataVector& result) {
   size_t count = 0;
 
