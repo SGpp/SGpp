@@ -13,25 +13,70 @@
 namespace sgpp {
 namespace datadriven {
 
-class DiscreteParameter: public sgpp::datadriven::HyperParameter {
-public:
+/**
+ * concrete class for hyperparameter with discrete values
+ */
+class DiscreteParameter : public sgpp::datadriven::HyperParameter {
+ public:
+  /**
+   * Default Constructor
+   */
   DiscreteParameter() = default;
 
-	DiscreteParameter(std::string&& name, int min, int max);
+  /**
+   * Normal constructor, number of bits calculated automatically
+   * @param name name of the hyperparameter
+   * @param min minimum value of the hyperparameter during optimization
+   * @param max maximum value of the hyperparameter during optimization
+   */
+  DiscreteParameter(std::string &&name, int min, int max);
 
+  /**
+   * Constructor with custom number of bits
+   * @param nBits number of bits for representation in harmonica
+   * @param name name of the hyperparameter
+   * @param min minimum value of the hyperparameter during optimization
+   * @param max maximum value of the hyperparameter during optimization
+   */
   DiscreteParameter(int nBits, std::string &name, int min, int max)
-          :HyperParameter(nBits, name), min(min), max(max){}
-	//~DiscreteParameter();
+      : HyperParameter(nBits, name), min(min), max(max) {}
 
+  /**
+  * Retrieve the current value of the hyperparameter
+  * @return value of the hyperparameter
+  */
   int getValue();
-	int getNOptions();
-	void setBO(int option);
-	void setHarmonica() override;
 
-protected:
-	int min;
-	int max;
-	int value = 0;
+  /**
+   * Retrieve the number of options for this parameter
+   * @return
+   */
+  int getNOptions();
+  /**
+   * adjust the current value of the hyperparameter according to the bit
+   * configuration by harmonica
+   */
+  void setHarmonica() override;
+  /**
+   * adjust the current value of the hyperparameter according to the (normalized)
+   * input
+   * @param interval (normalized) value of the hyperparameter
+   */
+  void setBO(int option);
+
+ protected:
+  /**
+   * minimum value of the hyperparameter during optimization
+   */
+  int min;
+  /**
+   * maximum value of the hyperparameter during optimization
+   */
+  int max;
+  /**
+   * current value of the hyperparameter
+   */
+  int value = 0;
 };
 
 } /* namespace datadriven */

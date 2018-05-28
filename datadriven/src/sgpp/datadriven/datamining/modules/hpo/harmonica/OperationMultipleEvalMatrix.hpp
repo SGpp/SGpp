@@ -10,7 +10,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace sgpp {
 namespace datadriven {
 
@@ -25,7 +24,7 @@ class OperationMultipleEvalMatrix : public base::OperationMultipleEval {
    * @param base::Grid dummy grid for inheritance reasons
    * @param dataset the dataset that should be evaluated
    */
-  OperationMultipleEvalMatrix(base::Grid& grid, base::DataMatrix& dataset)
+  OperationMultipleEvalMatrix(base::Grid &grid, base::DataMatrix &dataset)
       : OperationMultipleEval(grid, dataset) {}
 
   /**
@@ -33,8 +32,8 @@ class OperationMultipleEvalMatrix : public base::OperationMultipleEval {
    */
   ~OperationMultipleEvalMatrix() override {}
 
-  void mult(base::DataVector& alpha, base::DataVector& result) override;
-  void multTranspose(base::DataVector& source, base::DataVector& result) override;
+  void mult(base::DataVector &alpha, base::DataVector &result) override;
+  void multTranspose(base::DataVector &source, base::DataVector &result) override;
 
   double getDuration() override;
 

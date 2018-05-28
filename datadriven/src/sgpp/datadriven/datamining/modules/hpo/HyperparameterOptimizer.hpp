@@ -18,7 +18,6 @@
 #include <sgpp/datadriven/datamining/modules/hpo/HPOScorer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/FitterFactory.hpp>
 
-
 #include <memory>
 
 namespace sgpp {
@@ -38,38 +37,39 @@ class HyperparameterOptimizer {
    * manipulated hyperparameters. The HyperparameterOptimizer instance will take ownership of the passed object.
    * @param parser reference to parser object to read configuration info
    */
-  HyperparameterOptimizer(DataSource* dataSource, FitterFactory* fitterFactory, DataMiningConfigParser& parser);
+  HyperparameterOptimizer(DataSource *dataSource,
+                          FitterFactory *fitterFactory,
+                          DataMiningConfigParser &parser);
 
   /**
    * Copy constructor deleted - not all members can be copied or cloned .
    * @param rhs the object to copy from
    */
-  HyperparameterOptimizer(const HyperparameterOptimizer& rhs) = delete;
+  HyperparameterOptimizer(const HyperparameterOptimizer &rhs) = delete;
 
   /**
    * Default Move constructor .
    * @param rhs the object to move from
    */
-  HyperparameterOptimizer(HyperparameterOptimizer&& rhs) = default;
+  HyperparameterOptimizer(HyperparameterOptimizer &&rhs) = default;
 
   /**
    * Default Move assign operator.
    * @param rhs the object to move from
    */
-  HyperparameterOptimizer& operator=(HyperparameterOptimizer&& rhs) = default;
+  HyperparameterOptimizer &operator=(HyperparameterOptimizer &&rhs) = default;
 
   /**
    * Default copy assign operator deleted because not all members can be copied.
    * @param rhs the object to copy from
    */
-  HyperparameterOptimizer& operator=(const HyperparameterOptimizer& rhs) = delete;
+  HyperparameterOptimizer &operator=(const HyperparameterOptimizer &rhs) = delete;
 
   /**
    * Default destructor.
    */
   ~HyperparameterOptimizer() = default;
 
-  
   /**
    * Run hyperparameter optimization using Bayesian Optimization and random search to warm up.
    */

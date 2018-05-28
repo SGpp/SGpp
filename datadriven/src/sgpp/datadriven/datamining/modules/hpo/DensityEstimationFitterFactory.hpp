@@ -20,7 +20,6 @@
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/DiscreteParameter.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
 
-
 namespace sgpp {
 namespace datadriven {
 
@@ -32,21 +31,20 @@ class DensityEstimationFitterFactory : public FitterFactory {
   /**
    * Default constructor
    */
-  DensityEstimationFitterFactory(DataMiningConfigParser& parser);
+  DensityEstimationFitterFactory(DataMiningConfigParser &parser);
 
   /**
    * Assemble a #sgpp::datadriven::ModelFittingDensityEstimation object based on the configuration
    * determined by a previous set_() call.
    * @return Fully configured instance of a  #sgpp::datadriven::ModelFittingDensityEstimation object.
    */
-  ModelFittingBase* buildFitter() override;
+  ModelFittingBase *buildFitter() override;
 
   /**
    * Outputs information about the current hyperparameter configuration.
    * @return String to print to console or file containing values of manipulated hyperparameters.
    */
   std::string printConfig() override;
-
 
  protected:
   /**

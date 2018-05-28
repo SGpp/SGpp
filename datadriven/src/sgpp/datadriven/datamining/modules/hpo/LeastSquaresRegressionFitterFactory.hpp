@@ -20,9 +20,6 @@
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/ContinuousParameter.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/DiscreteParameter.hpp>
 
-
-
-
 namespace sgpp {
 namespace datadriven {
 
@@ -34,14 +31,14 @@ class LeastSquaresRegressionFitterFactory : public FitterFactory {
   /**
    * Default constructor
    */
-  LeastSquaresRegressionFitterFactory(DataMiningConfigParser& parser);
+  LeastSquaresRegressionFitterFactory(DataMiningConfigParser &parser);
 
   /**
    * Assemble a #sgpp::datadriven::ModelFittingLeastSquares object based on the configuration
    * determined by a previous set_() call.
    * @return Fully configured instance of a  #sgpp::datadriven::ModelFittingLeastSquares object.
    */
-  ModelFittingBase* buildFitter() override;
+  ModelFittingBase *buildFitter() override;
 
   /**
    * Outputs information about the current hyperparameter configuration.
@@ -49,8 +46,7 @@ class LeastSquaresRegressionFitterFactory : public FitterFactory {
    */
   std::string printConfig() override;
 
-
-protected:
+ protected:
   /**
    * Configuration for all parameters that are not optimized
    */

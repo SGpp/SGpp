@@ -14,7 +14,6 @@
 
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
 
-
 namespace sgpp {
 namespace datadriven {
 
@@ -36,9 +35,8 @@ class HPOScorer : public Scorer {
    * @param trainPortion value between 0 and 1 to specify the ratio between testing set and
    * training set.
    */
-  HPOScorer(Metric* metric, ShufflingFunctor* shuffling, int64_t seed,
-            double trainPortion, Dataset* testDataset);
-
+  HPOScorer(Metric *metric, ShufflingFunctor *shuffling, int64_t seed,
+            double trainPortion, Dataset *testDataset);
 
   /**
    * Train and test a model on a dataset and provide a score to quantify the approximation quality.
@@ -48,15 +46,21 @@ class HPOScorer : public Scorer {
    * @param stdDeviation return standard deviation. Will always be 0.
    * @return accuracy of the fit as calculated by the #metric provided.
    */
-  double calculateScore(ModelFittingBase& model, Dataset& dataset,
-                        double* stdDeviation = nullptr) override;
+  double calculateScore(ModelFittingBase &model, Dataset &dataset,
+                        double *stdDeviation = nullptr) override;
 
-  Dataset* prepareTestData(Dataset& dataset);
+  Dataset *prepareTestData(Dataset &dataset);
 
-  void resizeTrainData(Dataset& original, Dataset& smaller);
+  void resizeTrainData(Dataset &original, Dataset &smaller);
 
-  void createTestFile(Dataset& dataset);
- 
+  /**
+    * Polymorphic clone pattern
+    * @return deep copy of this object. New object is owned by caller.
+   */
+  Scorer* clone() const override;
+
+  void createTestFile(Dataset &dataset);
+
  private:
   /**
    * value between 0 and 1 to specify the ration between testing set and

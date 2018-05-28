@@ -698,75 +698,84 @@ bool DataMiningConfigParser::getHyperparameters(std::map<std::string, Continuous
 }
 
 bool DataMiningConfigParser::getHPOConfig(HPOConfig &config) {
-  if(configFile->contains("hpo")){
-    auto node = static_cast<DictNode*>(&(*configFile)["hpo"]);
+  if (configFile->contains("hpo")) {
+    auto node = static_cast<DictNode *>(&(*configFile)["hpo"]);
     config.setSeed(parseInt(*node, "randomSeed", config.getSeed(), "hpo"));
-    if(node->contains("harmonica")) {
+    if (node->contains("harmonica")) {
       auto harmonica = static_cast<DictNode *>(&(*node)["harmonica"]);
       config.setLambda(parseDouble(*harmonica, "lambda", config.getLambda(), "hpo"));
       config.setStages(parseIntArray(*harmonica, "stages", config.getStages(), "hpo"));
-      config.setConstraints(parseIntArray(*harmonica, "constraints", config.getConstraints(), "hpo"));
+      config.setConstraints(parseIntArray(*harmonica,
+                                          "constraints",
+                                          config.getConstraints(),
+                                          "hpo"));
     } else {
       std::cout << "# Could not find specification  of hpo[harmonica]. Falling Back to "
-              "default values." << std::endl;
+          "default values." << std::endl;
     }
-      if(node->contains("bayesianOptimization")){
-        auto bo = static_cast<DictNode *>(&(*node)["bayesianOptimization"]);
-        config.setNRandom(parseInt(*bo, "nRandom", config.getNRandom(), "hpo"));
-        config.setNRuns(parseInt(*bo, "nRuns", config.getNRuns(), "hpo"));
-      } else {
-        std::cout << "# Could not find specification  of hpo[bayesianOptimization]. Falling Back to "
-                "default values." << std::endl;
-      }
+    if (node->contains("bayesianOptimization")) {
+      auto bo = static_cast<DictNode *>(&(*node)["bayesianOptimization"]);
+      config.setNRandom(parseInt(*bo, "nRandom", config.getNRandom(), "hpo"));
+      config.setNRuns(parseInt(*bo, "nRuns", config.getNRuns(), "hpo"));
+    } else {
+      std::cout << "# Could not find specification  of hpo[bayesianOptimization]. Falling Back to "
+          "default values." << std::endl;
+    }
 
-      } else {
+  } else {
     std::cout << "# Could not find specification  of hpo. Falling Back to "
-            "default values." << std::endl;
+        "default values." << std::endl;
   }
 
-void DataMiningConfigParser::parseDataTransformationConfig(
-    DictNode& dict, DataTransformationConfig& config,
-    const DataTransformationConfig& defaults,
-    const std::string& parentNode) const {
-
-  // Parse transformation type
-  if (dict.contains("type")) {
-    config.type = DataTransformationTypeParser::parse(dict["type"].get());
-  } else {
-    std::cout << "# Did not find [dataTransformationType]. Setting default value "
-        << DataTransformationTypeParser::toString(defaults.type) << "." << std::endl;
-    config.type = defaults.type;
-  }
-
-  // If type Rosenblatt parse RosenblattTransformationConfig
-  if (config.type == DataTransformationType::ROSENBLATT) {
-    auto rosenblattTransformationConfig = static_cast<DictNode*>
-       (&(*configFile)[dataSource]["dataTransformation"]["rosenblattConfig"]);
-    parseRosenblattTransformationConfig(*rosenblattTransformationConfig,
-        config.rosenblattConfig, defaults.rosenblattConfig, "rosenblattConfig");
-  } else {
-    std::cout << "# Could not find specification of dataSource[dataTransformationConfig]"
-        "[rosenblattConfig]. Falling back to default values." << std::endl;
-    config.rosenblattConfig = defaults.rosenblattConfig;
-  }
 }
 
-void DataMiningConfigParser::parseRosenblattTransformationConfig(
-    DictNode& dict, RosenblattTransformationConfig& config,
-    const RosenblattTransformationConfig& defaults,
-    const std::string& parentNode) const {
+  void DataMiningConfigParser::parseDataTransformationConfig(
+      DictNode &dict, DataTransformationConfig &config,
+      const DataTransformationConfig &defaults,
+      const std::string &parentNode) const {
 
-  config.numSamples = parseUInt(dict, "numSamples", defaults.numSamples, parentNode);
-  config.gridLevel = parseUInt(dict, "gridLevel", defaults.gridLevel, parentNode);
+    // Parse transformation type
+    if (dict.contains("type")) {
+      config.type = DataTransformationTypeParser::parse(dict["type"].get());
+    } else {
+      std::cout << "# Did not find [dataTransformationType]. Setting default value "
+                << DataTransformationTypeParser::toString(defaults.type) << "." << std::endl;
+      config.type = defaults.type;
+    }
 
-  config.solverMaxIterations = parseUInt(dict, "solverMaxIterations",
-      defaults.solverMaxIterations, parentNode);
-  config.solverEps = parseDouble(dict, "solverEps",
-      defaults.solverEps, parentNode);
-  config.solverThreshold = parseDouble(dict, "solverThreshold",
-      defaults.solverThreshold, parentNode);
+    // If type Rosenblatt parse RosenblattTransformationConfig
+    if (config.type == DataTransformationType::ROSENBLATT) {
+      auto rosenblattTransformationConfig = static_cast<DictNode *>
+      (&(*configFile)[dataSource]["dataTransformation"]["rosenblattConfig"]);
+      parseRosenblattTransformationConfig(*rosenblattTransformationConfig,
+                                          config.rosenblattConfig,
+                                          defaults.rosenblattConfig,
+                                          "rosenblattConfig");
+    } else {
+      std::cout << "# Could not find specification of dataSource[dataTransformationConfig]"
+          "[rosenblattConfig]. Falling back to default values." << std::endl;
+      config.rosenblattConfig = defaults.rosenblattConfig;
+    }
+  }
 
-}
+  void DataMiningConfigParser::parseRosenblattTransformationConfig(
+      DictNode &dict, RosenblattTransformationConfig &config,
+      const RosenblattTransformationConfig &defaults,
+      const std::string &parentNode) const {
+
+    config.numSamples = parseUInt(dict, "numSamples", defaults.numSamples, parentNode);
+    config.gridLevel = parseUInt(dict, "gridLevel", defaults.gridLevel, parentNode);
+
+    config.solverMaxIterations = parseUInt(dict, "solverMaxIterations",
+                                           defaults.solverMaxIterations, parentNode);
+    config.solverEps = parseDouble(dict, "solverEps",
+                                   defaults.solverEps, parentNode);
+    config.solverThreshold = parseDouble(dict, "solverThreshold",
+                                         defaults.solverThreshold, parentNode);
+
+  }
+
+
 
 } /* namespace datadriven */
 } /* namespace sgpp */

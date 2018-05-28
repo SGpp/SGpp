@@ -20,7 +20,6 @@
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/DiscreteParameter.hpp>
 #include "sgpp/datadriven/datamining/modules/hpo/bo/BOConfig.hpp"
 
-
 namespace sgpp {
 namespace datadriven {
 
@@ -44,7 +43,7 @@ class FitterFactory {
    * determined by a previous set_() call.
    * @return Fully configured instance of a  #sgpp::datadriven::ModelFittingBase object.
    */
-  virtual ModelFittingBase* buildFitter() = 0;
+  virtual ModelFittingBase *buildFitter() = 0;
 
   /**
    * Outputs information about the current hyperparameter configuration.
@@ -52,12 +51,11 @@ class FitterFactory {
    */
   virtual std::string printConfig() = 0;
 
-
   /**
    * Setup connection to hyperparameter classes for modifying them through boolean represenations
    * @param configBits reference to the boolean "configBits"
    */
-  void getConfigBits(std::vector<ConfigurationBit*>& configBits);
+  void getConfigBits(std::vector<ConfigurationBit *> &configBits);
 
   /**
    * Adjusts the current hyperparameter configuration according to the configBits
@@ -71,30 +69,26 @@ class FitterFactory {
    */
   BOConfig getBOConfig();
 
-
   /**
    * Adjusts current hyperparameter configuration according to the input
    * @param config compact representation of hyperparameters
    */
-  void setBO(BOConfig* config);
+  void setBO(BOConfig *config);
 
-
-
-
-protected:
+ protected:
   /**
    * map to store hyperparameters defined on a continuous domain
    */
-  std::map<std::string,ContinuousParameter> conpar;
+  std::map<std::string, ContinuousParameter> conpar;
   /**
    * map to store hyperparameters defined on a discrete domain
    */
-  std::map<std::string,DiscreteParameter> dispar;
+  std::map<std::string, DiscreteParameter> dispar;
   /**
     * map to store hyperparameters defined on a discrete domain
     * without inherent ordering (categorical)
     */
-  std::map<std::string,DiscreteParameter> catpar;
+  std::map<std::string, DiscreteParameter> catpar;
   /**
    * number of options for all discrete parameters
    */
@@ -104,7 +98,6 @@ protected:
    */
   std::vector<int> catOptions;
 
-
-  };
+};
 } /* namespace datadriven */
 } /* namespace sgpp */

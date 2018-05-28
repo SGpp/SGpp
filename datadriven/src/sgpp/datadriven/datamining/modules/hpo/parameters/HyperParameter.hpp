@@ -19,35 +19,35 @@ namespace datadriven {
  * Class to represent a hyperparameter
  */
 class HyperParameter {
-public:
+ public:
   /**
    * Default constructor for implicit use by data structures
    */
-  HyperParameter() :bits(), nBits(0), name(){}
+  HyperParameter() : bits(), nBits(0), name() {}
   /**
    * Normal constructor
    * @param nBits number of bits for representation in harmonica
    * @param name name of the hyperparameter
    */
-	HyperParameter(int nBits, std::string& name)
-          :bits(), nBits(nBits), name(name){}
+  HyperParameter(int nBits, std::string &name)
+      : bits(), nBits(nBits), name(name) {}
   /**
    * Default Destructor
    */
-	virtual ~HyperParameter() = default;
+  virtual ~HyperParameter() = default;
 
   /**
    * Connects parameter to bit representation in harmonica
    * @param configBits
    */
-	void makeConfigBits(std::vector<ConfigurationBit*>& configBits);
+  void makeConfigBits(std::vector<ConfigurationBit *> &configBits);
 
   /**
    * sets value according to the associated bits
    */
-	virtual void setHarmonica() = 0;
+  virtual void setHarmonica() = 0;
 
-protected:
+ protected:
   /**
    * associated configuration bits for harmonica
    */

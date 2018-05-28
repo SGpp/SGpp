@@ -29,7 +29,7 @@ class ConfigurationRestriction {
    * @param parameters bits restricted by this constraint
    * @param bias value the product of the restricted bits must be equal to
    */
-  ConfigurationRestriction(std::vector<ConfigurationBit*> &parameters, int bias);
+  ConfigurationRestriction(std::vector<ConfigurationBit *> &parameters, int bias);
 
   /**
    * Decrease the counter of open bits during constraint resolution
@@ -62,7 +62,7 @@ class ConfigurationRestriction {
   /**
    * bits affected by the constraint
    */
-  std::vector<ConfigurationBit*> parameters;
+  std::vector<ConfigurationBit *> parameters;
   /**
    * value the product of the restricted bits must be equal to
    */
