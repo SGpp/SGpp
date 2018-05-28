@@ -14,10 +14,10 @@
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
-#include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductHashMapNakBsplineBoundaryCombigrid.hpp>
 #include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
 
 #include <vector>
+#include "../operation/multidim/sparsegrid/LTwoScalarProductNakBsplineBoundaryCombigrid.hpp"
 
 namespace sgpp {
 namespace combigrid {
@@ -148,7 +148,7 @@ class BsplineStochasticCollocation : public CombigridSurrogateModel {
   double var;
   // basis coefficients for Bspline interpolation
   std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage;
-  LTwoScalarProductHashMapNakBsplineBoundaryCombigrid scalarProducts;
+  LTwoScalarProductNakBsplineBoundaryCombigrid scalarProducts;
 
   // operation
   std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation;

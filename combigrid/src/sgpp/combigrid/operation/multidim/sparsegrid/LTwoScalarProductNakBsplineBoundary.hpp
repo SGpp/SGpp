@@ -7,7 +7,7 @@
 
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/combigrid/GeneralFunction.hpp>
@@ -22,9 +22,9 @@
 namespace sgpp {
 namespace combigrid {
 
-class LTwoScalarProductHashMapNakBsplineBoundaryCombigrid {
+class LTwoScalarProductNakBsplineBoundary {
  public:
-  LTwoScalarProductHashMapNakBsplineBoundaryCombigrid() {
+  LTwoScalarProductNakBsplineBoundary() {
     degree = 3;
     grid = nullptr;
     numAdditionalPoints = 0;
@@ -37,16 +37,16 @@ class LTwoScalarProductHashMapNakBsplineBoundaryCombigrid {
    *
    * @param grid sparse grid created by converting a expUniformBoundaryGrid to a sgpp::base::Grid
    */
-  explicit LTwoScalarProductHashMapNakBsplineBoundaryCombigrid(sgpp::base::Grid* grid);
+  explicit LTwoScalarProductNakBsplineBoundary(sgpp::base::Grid* grid);
 
-  LTwoScalarProductHashMapNakBsplineBoundaryCombigrid(
+  LTwoScalarProductNakBsplineBoundary(
       sgpp::base::Grid* grid, sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection);
 
-  LTwoScalarProductHashMapNakBsplineBoundaryCombigrid(
+  LTwoScalarProductNakBsplineBoundary(
       sgpp::base::Grid* grid, sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection,
       sgpp::base::DataVector bounds);
 
-  LTwoScalarProductHashMapNakBsplineBoundaryCombigrid(
+  LTwoScalarProductNakBsplineBoundary(
       sgpp::base::Grid* grid, sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection,
       sgpp::base::DataVector bounds, size_t numAdditionalPoints,
       size_t incrementQuadraturePoints = 5);
@@ -54,7 +54,7 @@ class LTwoScalarProductHashMapNakBsplineBoundaryCombigrid {
   /**
    * Destructor
    */
-  virtual ~LTwoScalarProductHashMapNakBsplineBoundaryCombigrid();
+  virtual ~LTwoScalarProductNakBsplineBoundary();
 
   /**
    * Implementation of standard matrix multiplication
@@ -73,7 +73,7 @@ class LTwoScalarProductHashMapNakBsplineBoundaryCombigrid {
 
   void updateGrid(sgpp::base::Grid* grid) {
     this->grid = grid;
-    degree = dynamic_cast<sgpp::base::NakBsplineBoundaryCombigridGrid*>(grid)->getDegree();
+    degree = dynamic_cast<sgpp::base::NakBsplineBoundaryGrid*>(grid)->getDegree();
     if (!isCustomWeightFunction) {
       sgpp::combigrid::SingleFunction constant_weight_function =
           sgpp::combigrid::SingleFunction(sgpp::combigrid::constantFunction<double>(1.0));
@@ -99,9 +99,8 @@ class LTwoScalarProductHashMapNakBsplineBoundaryCombigrid {
    */
   double calculateScalarProduct(base::level_t lid, base::index_t iid, base::level_t ljd,
                                 base::index_t ijd, base::DataVector coordinates,
-                                base::DataVector weights,
-                                sgpp::base::SNakBsplineBoundaryCombigridBase basis, size_t d,
-                                double offseti_left, double offsetj_left,
+                                base::DataVector weights, sgpp::base::SNakBsplineBoundaryBase basis,
+                                size_t d, double offseti_left, double offsetj_left,
                                 sgpp::base::index_t hInvik, sgpp::base::index_t hInvjk, double hik,
                                 double hjk, size_t pp1h);
 

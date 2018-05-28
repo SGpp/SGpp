@@ -14,11 +14,12 @@
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
+#include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 #include <sgpp/combigrid/functions/ProbabilityDensityFunction1D.hpp>
 #include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
 #include <sgpp/combigrid/operation/hierarchical/OperationWeightedQuadratureNakBsplineBoundary.hpp>
-#include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductHashMapNakBsplineBoundary.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
@@ -29,6 +30,7 @@
 #include <algorithm>
 #include <cmath>
 #include <vector>
+#include "../operation/multidim/sparsegrid/LTwoScalarProductNakBsplineBoundary.hpp"
 
 namespace sgpp {
 namespace combigrid {
@@ -40,23 +42,32 @@ namespace combigrid {
  */
 class HierarchicalStochasticCollocation {
  public:
-  explicit HierarchicalStochasticCollocation(
-      std::shared_ptr<sgpp::base::Grid> grid, sgpp::combigrid::MultiFunction objectiveFunction,
-      WeightFunctionsCollection weightFunctions, sgpp::base::DataVector bounds);
+  explicit HierarchicalStochasticCollocation(std::shared_ptr<sgpp::base::Grid> grid,
+                                             sgpp::combigrid::MultiFunction objectiveFunction,
+                                             WeightFunctionsCollection weightFunctions,
+                                             sgpp::base::DataVector bounds);
 
-  explicit HierarchicalStochasticCollocation(
-      sgpp::base::GridType gridType, size_t dim, sgpp::combigrid::MultiFunction objectiveFunction,
-      WeightFunctionsCollection weightFunctions, sgpp::base::DataVector bounds, size_t degree = 3);
+  explicit HierarchicalStochasticCollocation(sgpp::base::GridType gridType, size_t dim,
+                                             sgpp::combigrid::MultiFunction objectiveFunction,
+                                             WeightFunctionsCollection weightFunctions,
+                                             sgpp::base::DataVector bounds, size_t degree = 3);
 
   explicit HierarchicalStochasticCollocation(std::shared_ptr<sgpp::base::Grid> grid,
-                                                    sgpp::base::DataVector coefficients,
-                                                    WeightFunctionsCollection weightFunctions,
-                                                    sgpp::base::DataVector bounds);
+                                             sgpp::base::DataVector coefficients,
+                                             WeightFunctionsCollection weightFunctions,
+                                             sgpp::base::DataVector bounds);
   virtual ~HierarchicalStochasticCollocation();
 
   void refineRegular(size_t level);
   void refineSurplusAdaptive(size_t refinements_num);
+  /**
+   * refines the grid depending on the surpluses.
+   * @param maxNumGridPoints maximal size of the refined grid
+   * @param refinementsNum   number of points refined in each refinement step
+   */
   void refineSurplusAdaptiveByNumGridPoints(size_t maxNumGridPoints, size_t refinementsNum = 1);
+  void refineSurplusVolumeAdaptive(size_t refinementsNum);
+  void refineSurplusVolumeAdaptiveByNumGridPoints(size_t maxNumGridPoints, size_t refinementsNum);
 
   void eval(sgpp::base::DataMatrix& xs, sgpp::base::DataVector& res);
   double eval(sgpp::base::DataVector& x);
@@ -107,7 +118,7 @@ class HierarchicalStochasticCollocation {
 
   std::shared_ptr<sgpp::base::Grid> grid;
   sgpp::base::GridType gridType;
-  LTwoScalarProductHashMapNakBsplineBoundary scalarProducts;
+  LTwoScalarProductNakBsplineBoundary scalarProducts;
   sgpp::base::DataVector coefficients;
   sgpp::combigrid::MultiFunction objectiveFunction;
 

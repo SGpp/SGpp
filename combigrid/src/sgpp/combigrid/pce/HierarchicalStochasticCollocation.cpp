@@ -31,13 +31,15 @@ HierarchicalStochasticCollocation::HierarchicalStochasticCollocation(
       currentNumGridPoints(0) {
   if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
     grid = std::make_shared<sgpp::base::NakBsplineBoundaryGrid>(dim, degree);
+  } else if (gridType == sgpp::base::GridType::PolyBoundary) {
+    grid = std::make_shared<sgpp::base::PolyBoundaryGrid>(dim, degree);
   } else {
     std::cerr << "HierarchicalStochasticCollocation: grid type currently not supported"
               << std ::endl;
   }
   initialize(weightFunctions, bounds);
   calculateCoefficients();
-}
+}  // namespace combigrid
 
 HierarchicalStochasticCollocation::HierarchicalStochasticCollocation(
     std::shared_ptr<sgpp::base::Grid> grid, sgpp::base::DataVector coefficients,
@@ -54,7 +56,7 @@ HierarchicalStochasticCollocation::HierarchicalStochasticCollocation(
 HierarchicalStochasticCollocation::~HierarchicalStochasticCollocation() {}
 
 void HierarchicalStochasticCollocation::initialize(WeightFunctionsCollection weightFunctions,
-                                                          sgpp::base::DataVector bounds) {
+                                                   sgpp::base::DataVector bounds) {
   scalarProducts.setWeightFunction(weightFunctions);
   scalarProducts.setBounds(bounds);
 }
@@ -74,6 +76,19 @@ void HierarchicalStochasticCollocation::refineSurplusAdaptiveByNumGridPoints(
     size_t maxNumGridPoints, size_t refinementsNum) {
   while (currentNumGridPoints < maxNumGridPoints) {
     refineSurplusAdaptive(refinementsNum);
+  }
+}
+
+void HierarchicalStochasticCollocation::refineSurplusVolumeAdaptive(size_t refinementsNum) {
+  sgpp::base::SurplusVolumeRefinementFunctor functor(coefficients, refinementsNum);
+  grid->getGenerator().refine(functor);
+  updateStatus();
+}
+
+void HierarchicalStochasticCollocation::refineSurplusVolumeAdaptiveByNumGridPoints(
+    size_t maxNumGridPoints, size_t refinementsNum) {
+  while (currentNumGridPoints < maxNumGridPoints) {
+    refineSurplusVolumeAdaptive(refinementsNum);
   }
 }
 
@@ -112,7 +127,7 @@ void HierarchicalStochasticCollocation::calculateCoefficients() {
 }
 
 void HierarchicalStochasticCollocation::eval(sgpp::base::DataMatrix& xs,
-                                                    sgpp::base::DataVector& res) {
+                                             sgpp::base::DataVector& res) {
   res.resizeZero(xs.getNcols());
   sgpp::optimization::InterpolantScalarFunction sparseGridSurrogate(*grid, coefficients);
   for (size_t i = 0; i < xs.getNcols(); i++) {
@@ -199,7 +214,7 @@ double HierarchicalStochasticCollocation::variance() {
 }
 
 void HierarchicalStochasticCollocation::coarsen(size_t removements_num, double threshold,
-                                                       bool recalculateCoefficients) {
+                                                bool recalculateCoefficients) {
   sgpp::base::HashCoarsening coarsen;
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   sgpp::base::SurplusCoarseningFunctor functor(coefficients, removements_num, threshold);
@@ -216,10 +231,9 @@ void HierarchicalStochasticCollocation::coarsen(size_t removements_num, double t
   computedVarianceFlag = false;
 }
 
-void HierarchicalStochasticCollocation::coarsenIteratively(double maxVarDiff,
-                                                                  double threshold,
-                                                                  double removements_percentage,
-                                                                  bool recalculateCoefficients) {
+void HierarchicalStochasticCollocation::coarsenIteratively(double maxVarDiff, double threshold,
+                                                           double removements_percentage,
+                                                           bool recalculateCoefficients) {
   if ((removements_percentage < 0) || (removements_percentage > 100)) {
     removements_percentage = 10;
   }
