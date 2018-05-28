@@ -13,38 +13,36 @@
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
 #include "BOConfig.hpp"
 
-
 namespace sgpp {
 namespace datadriven {
-
 
 /**
  * Class to host all methods to perform Bayesian Optimization
  */
 class BayesianOptimization {
-public:
+ public:
   /**
    * Constructor setting up Gaussian Process
    * @param initialConfigs non-empty vector of initial points to build the Gaussian Process
    */
-  explicit BayesianOptimization(const std::vector<BOConfig>& initialConfigs);
+  explicit BayesianOptimization(const std::vector<BOConfig> &initialConfigs);
 
   /**
    * Wrapper function for use in optimizer
    * @param inp point in continuous optimization space
    * @return score to optimize on
    */
-  double acquisitionOuter(const base::DataVector& inp);
+  double acquisitionOuter(const base::DataVector &inp);
 
-	/**
-	 * Gaussian Process update step. Incorporates most recent sample into Gaussian Process.
-	 */
-	void updateGP();
+  /**
+   * Gaussian Process update step. Incorporates most recent sample into Gaussian Process.
+   */
+  void updateGP();
 
   /**
    * Implementation of mathematical formulation of the expected improvement acquisition function
    */
-	double acquisitionEI(base::DataVector knew, double kself, double bestsofar);
+  double acquisitionEI(base::DataVector knew, double kself, double bestsofar);
 
   /**
    * Perform a Cholesky Decomposition
@@ -65,7 +63,7 @@ public:
    * @param prototype baseline BOConfig
    * @return new sample point
    */
-  BOConfig* main(BOConfig& prototype);
+  BOConfig *main(BOConfig &prototype);
 
   /**
    * Possible score function transformation to accentuate the optimum
@@ -92,16 +90,13 @@ public:
    * @param inp vector containing scales of the hyperparameter space
    * @return value representative of the likelihood
    */
-  double likelihood(const base::DataVector& inp);
+  double likelihood(const base::DataVector &inp);
 
-
-
-
-protected:
+ protected:
   /**
    * Gram matrix containing all kernel values between all existing samples
    */
-	base::DataMatrix kernelmatrix;
+  base::DataMatrix kernelmatrix;
   /**
    * Cholesky Decomposition of the Gram matrix
    */
@@ -125,11 +120,11 @@ protected:
   /**
    * debugging variable for numerical instabilities
    */
-	bool screwedvar;
+  bool screwedvar;
   /**
    * debugging variable for numerical instabilities
    */
-	double maxofmax;
+  double maxofmax;
 
   /**
    * existing sample points in the Gaussian Process

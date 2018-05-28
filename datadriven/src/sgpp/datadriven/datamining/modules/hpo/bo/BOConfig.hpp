@@ -15,7 +15,7 @@ namespace datadriven {
  * Container class to store a conrete hyperparameter configuration for interaction with Bayesian Optimization
  */
 class BOConfig {
-public:
+ public:
   /**
    * Default Constructor.
    */
@@ -27,7 +27,7 @@ public:
    * @param catOptions number of options for each categorical parameter
    * @param nCont number of continuous parameters
    */
-  BOConfig(std::vector<int>* discOptions, std::vector<int>* catOptions, size_t nCont);
+  BOConfig(std::vector<int> *discOptions, std::vector<int> *catOptions, size_t nCont);
 
   /**
    * Iterator over discrete parameter options
@@ -60,7 +60,7 @@ public:
    * Set the continuous parameters according to input
    * @param input DataVector holding continuous parameters
    */
-  void setCont(const base::DataVector& input);
+  void setCont(const base::DataVector &input);
 
   /**
    * Get the value of a specific continuous parameter
@@ -93,22 +93,20 @@ public:
    */
   double getScore();
 
-
   /**
    * Compute complete distance to another BOConfig/sample point
    * @param other sample point to calculate distance to
    * @return distance measure
    */
-  double getScaledDistance(BOConfig& other, const base::DataVector& scales);
+  double getScaledDistance(BOConfig &other, const base::DataVector &scales);
 
   /**
    * Generate a random config
    * @param generator for seeded rng
    */
-  void randomize(std::mt19937& generator);
+  void randomize(std::mt19937 &generator);
 
-
-private:
+ private:
   /**
    * DataVector containing values of continuous parameters (shifted to [0,1])
    */
@@ -124,11 +122,11 @@ private:
   /**
    * pointer to vector containing number of options for each discrete parameter
    */
-  std::vector<int>* discOptions = nullptr;
+  std::vector<int> *discOptions = nullptr;
   /**
    * pointer to vector containing number of options for each categorical parameter
    */
-  std::vector<int>* catOptions = nullptr;
+  std::vector<int> *catOptions = nullptr;
   /**
    * score measured when evaluating this config
    */

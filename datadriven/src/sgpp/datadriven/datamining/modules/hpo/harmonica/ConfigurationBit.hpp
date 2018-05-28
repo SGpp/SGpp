@@ -26,7 +26,7 @@ class ConfigurationBit {
    * @param name to indentify the hyperparameter represented by this bit
    */
   explicit ConfigurationBit(std::string name)
-      :name(name), constraints(0), value(0){
+      : name(name), constraints(0), value(0) {
     //std::cout << "Constructor: " << getName() << std::endl;
     //name = "test";
   }
@@ -35,7 +35,7 @@ class ConfigurationBit {
    * Adds a reference to a new constraint limiting this bit
    * @param constraint
    */
-  void addConstraint(ConfigurationRestriction* constraint);
+  void addConstraint(ConfigurationRestriction *constraint);
 
   /**
    * removes last constraint (in case it was not valid)
@@ -78,7 +78,7 @@ class ConfigurationBit {
   /**
    * vector pointing to the constraints that restrict this bit
    */
-  std::vector<ConfigurationRestriction*> constraints;
+  std::vector<ConfigurationRestriction *> constraints;
   /**
    * current value of this bit (-1 or 1 or 0 for unset)
    */

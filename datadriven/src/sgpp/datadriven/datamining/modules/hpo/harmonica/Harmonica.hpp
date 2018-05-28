@@ -13,7 +13,6 @@
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
 #include "sgpp/datadriven/datamining/modules/hpo/FitterFactory.hpp"
 
-
 namespace sgpp {
 namespace datadriven {
 
@@ -21,25 +20,26 @@ namespace datadriven {
  * Class to host all methods required to perform the harmonica algorithm
  */
 class Harmonica {
-public:
-	/**
-	 * Constructor
-	 * @param fitterFactory to produce fitter type objects
-	 */
-	Harmonica(FitterFactory* fitterFactory);
+ public:
+  /**
+   * Constructor
+   * @param fitterFactory to produce fitter type objects
+   */
+  Harmonica(FitterFactory *fitterFactory);
 
 
   //EDIT: return value?
-	/**
-	 * First step in harmonica. Configurations are prepared for evaluation and the parity
-	 * function matrix is constructed for later use.
-	 * @param fitters container to store fitters for evaluation outside the class
-	 * @param seed for random sampling
-	 * @param configStrings container to store information about the configurations in string form
-	 * @return
-	 */
-  std::vector<int> *prepareConfigs(std::vector<std::unique_ptr<ModelFittingBase>> &fitters, int seed,
-                                     std::vector<std::string> &configStrings);
+  /**
+   * First step in harmonica. Configurations are prepared for evaluation and the parity
+   * function matrix is constructed for later use.
+   * @param fitters container to store fitters for evaluation outside the class
+   * @param seed for random sampling
+   * @param configStrings container to store information about the configurations in string form
+   * @return
+   */
+  std::vector<int> *prepareConfigs(std::vector<std::unique_ptr<ModelFittingBase>> &fitters,
+                                   int seed,
+                                   std::vector<std::string> &configStrings);
 
   /**
    * Function to create a vector of random numbers within the valid range of possible configurations
@@ -49,7 +49,7 @@ public:
    * @param seed to use in random generator
    * @param start to offset newly generated ID's from existing ones from previous iterations
    */
-  void createRandomConfigs(size_t nBits, std::vector<int>& configIDs, int seed, size_t start);
+  void createRandomConfigs(size_t nBits, std::vector<int> &configIDs, int seed, size_t start);
   /**
    * Second step of the harmonica algorithm. Calculates relavance of ConfigurationBits and introduces
    * constraints to reduce the search space
@@ -57,13 +57,13 @@ public:
    * @param lambda used for regression
    * @param shrink number of constraints to introduce
    */
-  void calculateConstrainedSpace(const DataVector& transformedScores, double lambda, int shrink);
+  void calculateConstrainedSpace(const DataVector &transformedScores, double lambda, int shrink);
   /**
    * Transforms scores to accentuate the optimum
    * @param source
    * @param target
    */
-  void transformScores(const DataVector& source, DataVector& target);
+  void transformScores(const DataVector &source, DataVector &target);
   /**
    * resolves constraints, fixing free and dependent bits
    * @return whether bits were fixed or just given values
@@ -97,20 +97,18 @@ public:
    * @param oldFreeBits bits that received the old binary values
    * @return binary configuartion in new space as integer
    */
-  int moveToNewSpace(int configID, std::vector<ConfigurationBit*> oldFreeBits);
+  int moveToNewSpace(int configID, std::vector<ConfigurationBit *> oldFreeBits);
 
-
-
-protected:
+ protected:
   /**
    * matrix that holds the values of the parity function
    * (predictors for regression) for all samples
    */
-	base::DataMatrix paritymatrix;
+  base::DataMatrix paritymatrix;
   /**
    * pointer to the fitterFactory to produce fitters for each configuration
    */
-  FitterFactory* fitterFactory;
+  FitterFactory *fitterFactory;
   /**
    * binary configurations as integers
    */
@@ -122,20 +120,19 @@ protected:
   /**
    * row to create the parity matrix and the constraints
    */
-  std::vector<std::vector<ConfigurationBit*> > parityrow;
+  std::vector<std::vector<ConfigurationBit *> > parityrow;
   /**
    * bits that are not dependent on other bits
    */
-  std::vector<ConfigurationBit*> freeBits;
+  std::vector<ConfigurationBit *> freeBits;
   /**
    * all configuration bits
    */
-  std::vector<ConfigurationBit*> configBits;
+  std::vector<ConfigurationBit *> configBits;
   /**
    * all constraints that currently exist
    */
   std::vector<std::unique_ptr<ConfigurationRestriction>> constraints;
-
 
 };
 

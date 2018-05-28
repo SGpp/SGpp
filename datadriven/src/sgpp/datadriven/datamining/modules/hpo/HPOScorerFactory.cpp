@@ -18,25 +18,29 @@
 namespace sgpp {
 namespace datadriven {
 
-Scorer* HPOScorerFactory::buildScorer(const DataMiningConfigParser& parser) const {
-	  TestingConfiguration config;
-	  parser.getScorerTestingConfig(config, config);
-	  auto metric = buildMetric(config.metric);
-	  auto shuffling = buildShuffling(config.shuffling);
+Scorer *HPOScorerFactory::buildScorer(const DataMiningConfigParser &parser) const {
+  TestingConfiguration config;
+  parser.getScorerTestingConfig(config, config);
+  auto metric = buildMetric(config.metric);
+  auto shuffling = buildShuffling(config.shuffling);
 
-    DataSourceConfig dsConfig;
+  DataSourceConfig dsConfig;
 
-    bool hasSource = parser.getScorerTestset(dsConfig, dsConfig); //EDIT: make this optional?
+  bool hasSource = parser.getScorerTestset(dsConfig, dsConfig); //EDIT: make this optional?
 
-    if (!(hasSource && dsConfig.filePath.compare("") != 0)) {
-      throw base::data_exception("No file name provided for testset.");
-    }
+  if (!(hasSource && dsConfig.filePath.compare("") != 0)) {
+    throw base::data_exception("No file name provided for testset.");
+  }
 
-    DataSourceBuilder builder;
-    std::unique_ptr<DataSource> dataSource;
-    dataSource.reset(builder.fromConfig(dsConfig));
+  DataSourceBuilder builder;
+  std::unique_ptr<DataSource> dataSource;
+  dataSource.reset(builder.fromConfig(dsConfig));
 
-	  return new HPOScorer(metric, shuffling, config.randomSeed, config.testingPortion, dataSource->getNextSamples());
+  return new HPOScorer(metric,
+                       shuffling,
+                       config.randomSeed,
+                       config.testingPortion,
+                       dataSource->getNextSamples());
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

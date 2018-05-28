@@ -19,12 +19,12 @@
 namespace sgpp {
 namespace datadriven {
 
-DensityEstimationFitterFactory::DensityEstimationFitterFactory(DataMiningConfigParser& parser)
-  :baseConfig(){
+DensityEstimationFitterFactory::DensityEstimationFitterFactory(DataMiningConfigParser &parser)
+    : baseConfig() {
 
-	baseConfig.readParams(parser);
+  baseConfig.readParams(parser);
 
-	//EDIT: new hier ohne pointer?
+  //EDIT: new hier ohne pointer?
 
   dispar["level"] = DiscreteParameter("level", 4, 7);
 
@@ -32,17 +32,14 @@ DensityEstimationFitterFactory::DensityEstimationFitterFactory(DataMiningConfigP
 
   conpar["lambda"] = ContinuousParameter(7, "lambda", -10, 0);
 
-
 }
 
-
-
-ModelFittingBase* DensityEstimationFitterFactory::buildFitter()  {
+ModelFittingBase *DensityEstimationFitterFactory::buildFitter() {
 
   // build config
-  auto* config = new FitterConfigurationDensityEstimation(baseConfig);
+  auto *config = new FitterConfigurationDensityEstimation(baseConfig);
   //EDIT: make lambda exponential
-  base::GridType basisFunction[] = {base::GridType::Linear,base::GridType::ModLinear};
+  base::GridType basisFunction[] = {base::GridType::Linear, base::GridType::ModLinear};
 
   config->getGridConfig().level_ = dispar["level"].getValue();
   //config->getGridConfig().type_ = basisFunction[catpar["basisFunction"].getValue()];
@@ -51,12 +48,12 @@ ModelFittingBase* DensityEstimationFitterFactory::buildFitter()  {
   return new ModelFittingDensityEstimation(*config);
 }
 
-std::string DensityEstimationFitterFactory::printConfig(){
+std::string DensityEstimationFitterFactory::printConfig() {
   std::stringstream s;
-	std::string basisFunction[] = {"Linear","ModLinear"};
-	s<< dispar["level"].getValue()
-					// <<", "<<basisFunction[catpar["basisFunction"].getValue()]
-					 <<", "<< pow(10, conpar["lambda"].getValue());
+  std::string basisFunction[] = {"Linear", "ModLinear"};
+  s << dispar["level"].getValue()
+    // <<", "<<basisFunction[catpar["basisFunction"].getValue()]
+    << ", " << pow(10, conpar["lambda"].getValue());
   return s.str();
 }
 

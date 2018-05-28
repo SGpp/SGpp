@@ -14,31 +14,26 @@
 namespace sgpp {
 namespace datadriven {
 
-
-
-void ConfigurationBit::addConstraint(ConfigurationRestriction* constraint){
+void ConfigurationBit::addConstraint(ConfigurationRestriction *constraint) {
   constraints.push_back(constraint);
 }
 
-void ConfigurationBit::removeLastConstraint(){
+void ConfigurationBit::removeLastConstraint() {
   constraints.pop_back();
 }
 
-void ConfigurationBit::reset(){
+void ConfigurationBit::reset() {
   value = 0;
 }
-
-
 
 void ConfigurationBit::setValue(int input) {
   value = input;
 
-
-  for(auto &constraint : constraints) {
-   // std::cout<<"Test Point 178!"<<std::endl; //EDIT: throw exception
+  for (auto &constraint : constraints) {
+    // std::cout<<"Test Point 178!"<<std::endl; //EDIT: throw exception
     constraint->reduceOpenBits();
   }
- // std::cout<<"Test Point 188!"<<std::endl; //EDIT: throw exception
+  // std::cout<<"Test Point 188!"<<std::endl; //EDIT: throw exception
 
   /*for(auto &constraint : constraints){
     int nOpen = constraint->getOpenBits();
@@ -61,7 +56,6 @@ int ConfigurationBit::getValue() {
 std::string ConfigurationBit::getName() {
   return name;
 }
-
 
 }  // namespace datadriven
 }  // namespace sgpp

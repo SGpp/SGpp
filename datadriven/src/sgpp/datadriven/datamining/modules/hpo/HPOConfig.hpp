@@ -12,7 +12,6 @@
 
 #pragma once
 
-
 #include <cstdint>
 #include <vector>
 
@@ -26,9 +25,7 @@ class HPOConfig {
  public:
   HPOConfig() = default;
 
-
   void setupDefaults();
-
 
   int64_t getSeed() const;
 
@@ -54,7 +51,7 @@ class HPOConfig {
 
   void setNRuns(int64_t nRuns);
 
-private:
+ private:
   /**
    * Seed for random sampling in both harmonica and bayesian optimization
    */

@@ -15,15 +15,13 @@
 namespace sgpp {
 namespace datadriven {
 
-
 void HPOConfig::setupDefaults() {
   seed = 42;
-  stages = {200,200,100};
-  constraints = {2,2};
+  stages = {200, 200, 100};
+  constraints = {2, 2};
   lambda = 1;
   nRandom = 10;
 }
-
 
 int64_t HPOConfig::getSeed() const {
   return seed;
