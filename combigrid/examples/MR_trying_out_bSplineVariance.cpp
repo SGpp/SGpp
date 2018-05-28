@@ -18,7 +18,6 @@
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridGridBasedEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridQuadraticSummationStrategy.hpp>
-#include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductHashMapNakBsplineBoundaryCombigrid.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineQuadratureEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/BSplineScalarProductEvaluator.hpp>
@@ -41,6 +40,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "../src/sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductNakBsplineBoundaryCombigrid.hpp"
 
 double atanMean = 3.514491266446367;
 double atanMeanSquare = 15.804752455859360;
@@ -463,7 +463,7 @@ void BSplineGridConversion(size_t degree, size_t numPoints) {
   //  watch_individual.start();
 
   sgpp::base::Grid* gridptr = grid.get();
-  sgpp::combigrid::LTwoScalarProductHashMapNakBsplineBoundaryCombigrid massMatrix(
+  sgpp::combigrid::LTwoScalarProductNakBsplineBoundaryCombigrid massMatrix(
       gridptr, weightFunctionsCollection);
   sgpp::base::DataVector product(alpha.size(), 0);
   massMatrix.mult(alpha, product);

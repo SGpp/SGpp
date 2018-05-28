@@ -12,7 +12,6 @@
 #include <sgpp/combigrid/operation/hierarchical/OperationWeightedQuadratureNakBsplineBoundary.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/RegularLevelManager.hpp>
-#include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductHashMapNakBsplineBoundary.hpp>
 #include <sgpp/combigrid/pce/BsplineStochasticCollocation.hpp>
 #include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
@@ -24,6 +23,8 @@
 
 #include <math.h>
 #include <iostream>
+
+#include "../src/sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductNakBsplineBoundary.hpp"
 #include "../src/sgpp/combigrid/pce/HierarchicalStochasticCollocation.hpp"
 
 double l2Error(std::shared_ptr<sgpp::base::Grid> surrogateGrid, sgpp::base::DataVector alpha,
