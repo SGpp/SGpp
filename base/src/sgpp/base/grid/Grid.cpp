@@ -25,6 +25,7 @@
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/NotAKnotBsplineModifiedGrid.hpp>
 #include <sgpp/base/grid/type/PeriodicGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
@@ -133,6 +134,10 @@ Grid* Grid::createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree) {
   return new NakBsplineBoundaryCombigridGrid(dim, degree);
 }
 
+Grid* Grid::createNotAKnotBsplineModifiedGrid(size_t dim, size_t degree) {
+  return new NotAKnotBsplineModifiedGrid(dim, degree);
+}
+
 Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
   if (gridConfig.filename_.length() > 0) {
     std::ifstream ifs(gridConfig.filename_);
@@ -196,6 +201,8 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
         return Grid::createNakBsplineBoundaryGrid(gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::NakBsplineBoundaryCombigrid:
         return Grid::createNakBsplineBoundaryCombigridGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      case GridType::NotAKnotBsplineModified:
+        return Grid::createNotAKnotBsplineModifiedGrid(gridConfig.dim_, gridConfig.maxDegree_);
       default:
         throw generation_exception("Grid::createGrid - grid type not known");
     }
@@ -307,6 +314,10 @@ Grid* Grid::clone() {
     case GridType::NakBsplineBoundaryCombigrid:
       degree = dynamic_cast<NakBsplineBoundaryCombigridGrid*>(this)->getDegree();
       newGrid = Grid::createNakBsplineBoundaryCombigridGrid(numDims, degree);
+      break;
+    case GridType::NotAKnotBsplineModified:
+      degree = dynamic_cast<NotAKnotBsplineModifiedGrid*>(this)->getDegree();
+      newGrid = Grid::createNotAKnotBsplineModifiedGrid(numDims, degree);
       break;
 
     default:

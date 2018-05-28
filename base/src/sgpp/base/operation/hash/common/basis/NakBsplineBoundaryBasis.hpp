@@ -584,7 +584,9 @@ class NakBsplineBoundaryBasis : public Basis<LT, IT> {
   double integrateBspline(LT l, IT i, size_t start, size_t stop, double offset, double scaling,
                           base::DataVector quadCoordinates, base::DataVector quadWeights) {
     double temp_res = 0.0;
+    // loop over the segments the B-spline is defined on
     for (size_t n = start; n <= stop; n++) {
+      // loop over quadrature points
       for (size_t c = 0; c < quadCoordinates.getSize(); c++) {
         // transform  the quadrature points to the segment on which the Bspline is
         // evaluated

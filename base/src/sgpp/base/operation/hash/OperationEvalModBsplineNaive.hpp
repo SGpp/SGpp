@@ -6,11 +6,11 @@
 #ifndef OPERATIONEVALMODBSPLINENAIVE_HPP
 #define OPERATIONEVALMODBSPLINENAIVE_HPP
 
-#include <sgpp/globaldef.hpp>
-#include <sgpp/base/operation/hash/OperationEval.hpp>
-#include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
+#include <sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp>
+#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace base {
@@ -26,15 +26,13 @@ class OperationEvalModBsplineNaive : public OperationEval {
    * @param storage   storage of the sparse grid
    * @param degree    B-spline degree
    */
-  OperationEvalModBsplineNaive(GridStorage& storage, size_t degree) :
-    storage(storage), base(degree), pointInUnitCube(storage.getDimension()) {
-  }
+  OperationEvalModBsplineNaive(GridStorage& storage, size_t degree)
+      : storage(storage), base(degree), pointInUnitCube(storage.getDimension()) {}
 
   /**
    * Destructor.
    */
-  ~OperationEvalModBsplineNaive() override {
-  }
+  ~OperationEvalModBsplineNaive() override {}
 
   /**
    * @param alpha     coefficient vector
@@ -48,8 +46,7 @@ class OperationEvalModBsplineNaive : public OperationEval {
    * @param      point  evaluation point
    * @param[out] value  values of linear combination
    */
-  void eval(const DataMatrix& alpha, const DataVector& point,
-            DataVector& value) override;
+  void eval(const DataMatrix& alpha, const DataVector& point, DataVector& value) override;
 
  protected:
   /// storage of the sparse grid
