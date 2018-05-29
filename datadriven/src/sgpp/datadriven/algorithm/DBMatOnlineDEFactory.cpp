@@ -26,7 +26,6 @@ using sgpp::base::factory_exception;
 DBMatOnlineDE* DBMatOnlineDEFactory::buildDBMatOnlineDE(DBMatOffline& offline, Grid& grid,
     double lambda,  double beta) {
   auto decompositionType = offline.getDecompositionType();
-
   switch (decompositionType) {
     case MatrixDecompositionType::Eigen:
 #ifdef USE_GSL

@@ -95,14 +95,16 @@ double Scorer::train(ModelFittingBase& model, Dataset& trainDataset, Dataset& te
   // fit model
   std::cout << "###############\nfitting model\n";
   model.fit(trainDataset);
-  auto score = test(model, testDataset);
-  std::cout << "###############\naccuracy of fit:" << score << "\n\n";
-  return score;
+  auto scoreTrain = test(model, trainDataset);
+  auto scoreTest = test(model, testDataset);
+  std::cout << "score on training data:" << scoreTrain << "\nscore of test data:"
+      << scoreTest << "\n\n";
+  return scoreTest;
 }
 
 double Scorer::refine(ModelFittingBase& model, Dataset& testDataset) {
   auto wasRefined = false;
-  auto score = 0.0;
+  auto scoreTest = 0.0;
 
   do {
     // TODO(fuchsgruber): Outputs should refer to multiple grids
@@ -110,10 +112,10 @@ double Scorer::refine(ModelFittingBase& model, Dataset& testDataset) {
     //          << "Current size is " << model.getGrid().getSize() << "\n";
     wasRefined = model.refine();
     // std::cout << "Refined Size is " << model.getGrid().getSize() << "\n";
-    score = test(model, testDataset);
-    std::cout << "###############\naccuracy of fit after refinement:" << score << "\n\n";
+    scoreTest = test(model, testDataset);
+    std::cout << "###############score of test data after refinement:" << scoreTest << "\n\n";
   } while (wasRefined);
-  return score;
+  return scoreTest;
 }
 
 } /* namespace datadriven */
