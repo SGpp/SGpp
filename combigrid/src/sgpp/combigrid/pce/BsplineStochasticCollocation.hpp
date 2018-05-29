@@ -113,6 +113,15 @@ class BsplineStochasticCollocation : public CombigridSurrogateModel {
 
   sgpp::base::DataMatrix getHierarchicalGridPoints();
   double evalHierarchical(sgpp::base::DataVector& x);
+  /**
+   * interpolates the combination technique surrogate with hierarchical B-splines
+   * The grid and coefficients are stored in ,hierarchicalGrid and hierarchicalCoefficients
+   * respectively
+   */
+  void transformToHierarchical();
+
+  std::shared_ptr<sgpp::base::Grid> getHierarchicalGrid() { return hierarchicalGrid; }
+  sgpp::base::DataVector getHierarchicalCoefficients() { return hierarchicalCoefficients; }
 
  private:
   void initializeOperations(std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies,
@@ -122,13 +131,6 @@ class BsplineStochasticCollocation : public CombigridSurrogateModel {
   bool updateStatus();
   double computeMean();
   double computeVariance();
-
-  /**
-   * interpolates the combination technique surrogate with hierarchical B-splines
-   * The grid and coefficients are stored in ,hierarchicalGrid and hierarchicalCoefficients
-   * respectively
-   */
-  void transformToHierarchical();
 
   void countPolynomialTerms();
 

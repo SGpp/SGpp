@@ -30,6 +30,8 @@ HierarchicalStochasticCollocation::HierarchicalStochasticCollocation(
       currentNumGridPoints(0) {
   if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
     grid = std::make_shared<sgpp::base::NakBsplineBoundaryGrid>(dim, degree);
+  } else if (gridType == sgpp::base::GridType::NakBsplineBoundaryCombigrid) {
+    grid = std::make_shared<sgpp::base::NakBsplineBoundaryCombigridGrid>(dim, degree);
   } else if (gridType == sgpp::base::GridType::NotAKnotBsplineModified) {
     grid = std::make_shared<sgpp::base::NotAKnotBsplineModifiedGrid>(dim, degree);
   } else {
@@ -140,6 +142,12 @@ double HierarchicalStochasticCollocation::computeMean() {
     OperationWeightedQuadratureNakBsplineBoundary wopQ(gridStorage, degree, weightFunctions,
                                                        bounds);
     mean = wopQ.doQuadrature(coefficients);
+  } else if (gridType == sgpp::base::GridType::NakBsplineBoundaryCombigrid) {
+    size_t degree = dynamic_cast<base::NakBsplineBoundaryCombigridGrid*>(grid.get())->getDegree();
+    OperationWeightedQuadratureNakBsplineBoundaryCombigrid wopQ(gridStorage, degree,
+                                                                weightFunctions, bounds);
+    mean = wopQ.doQuadrature(coefficients);
+    std::cout << "HSC: mean = " << mean << std::endl;
   } else if (gridType == sgpp::base::GridType::NotAKnotBsplineModified) {
     size_t degree = dynamic_cast<base::NotAKnotBsplineModifiedGrid*>(grid.get())->getDegree();
     OperationWeightedQuadratureNotAKnotBsplineModified wopQ(gridStorage, degree, weightFunctions,
@@ -188,6 +196,20 @@ double HierarchicalStochasticCollocation::computeVariance() {
       // this is done by subtracting E(u) from the coefficient of the constant function
       // it does not work for B spline degree 1 because there is no constant function in the basis
       // (We could add a constant basis function on level 0)
+      sgpp::base::DataVector copyOfCoefficients(coefficients);
+      copyOfCoefficients[0] -= ev;
+      scalarProducts.mult(copyOfCoefficients, product);
+      variance = product.dotProduct(copyOfCoefficients);
+    }
+  }
+  if (gridType == sgpp::base::GridType::NakBsplineBoundaryCombigrid) {
+    LTwoScalarProductNakBsplineBoundaryCombigrid scalarProducts(gridptr, weightFunctions, bounds);
+    size_t degree = dynamic_cast<base::NakBsplineBoundaryCombigridGrid*>(grid.get())->getDegree();
+    if (degree == 1) {
+      scalarProducts.mult(coefficients, product);
+      double meanSquare = product.dotProduct(coefficients);
+      variance = meanSquare - ev * ev;
+    } else {
       sgpp::base::DataVector copyOfCoefficients(coefficients);
       copyOfCoefficients[0] -= ev;
       scalarProducts.mult(copyOfCoefficients, product);

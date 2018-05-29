@@ -20,8 +20,10 @@
 #include <sgpp/combigrid/functions/ProbabilityDensityFunction1D.hpp>
 #include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
 #include <sgpp/combigrid/operation/hierarchical/OperationWeightedQuadratureNakBsplineBoundary.hpp>
+#include <sgpp/combigrid/operation/hierarchical/OperationWeightedQuadratureNakBsplineBoundaryCombigrid.hpp>
 #include <sgpp/combigrid/operation/hierarchical/OperationWeightedQuadratureNotAKnotBsplineModified.hpp>
 #include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductNakBsplineBoundary.hpp>
+#include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductNakBsplineBoundaryCombigrid.hpp>
 #include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductNotAKnotBsplineModified.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>

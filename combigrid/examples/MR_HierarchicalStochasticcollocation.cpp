@@ -172,8 +172,8 @@ int main() {
     bounds[2 * d + 1] = pdf_config.pdfParameters.upperBound_;
     weightFunctionsCollection[d] = oneDimensionsalWeightFunction;
   }
-
   // statistics
+
   std::vector<double> hierError, hierTime, combiError, combiTime;
   std::vector<size_t> numHierGP, numCombiGP;
   size_t numGridPoints = 0;
@@ -182,8 +182,11 @@ int main() {
   double realVar = 0.382923024983218;
 
   //  std::shared_ptr<sgpp::base::Grid> grid(
-  //      sgpp::base::Grid::createNakBsplineBoundaryGrid(dim, degree));
-  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
+  //      sgpp::base::Grid::createNotAKnotBsplineModifiedGrid(dim, degree));
+  //  sgpp::combigrid::HierarchicalStochasticCollocation hBSC(
+  //      grid, sgpp::combigrid::MultiFunction(genzFunction), weightFunctionsCollection, bounds);
+  //    sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
+  sgpp::base::GridType gridType = sgpp::base::GridType::NotAKnotBsplineModified;
   sgpp::combigrid::HierarchicalStochasticCollocation hBSC(
       gridType, dim, sgpp::combigrid::MultiFunction(genzFunction), weightFunctionsCollection,
       bounds, degree);
