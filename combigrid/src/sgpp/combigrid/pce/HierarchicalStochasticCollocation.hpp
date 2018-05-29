@@ -20,6 +20,9 @@
 #include <sgpp/combigrid/functions/ProbabilityDensityFunction1D.hpp>
 #include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
 #include <sgpp/combigrid/operation/hierarchical/OperationWeightedQuadratureNakBsplineBoundary.hpp>
+#include <sgpp/combigrid/operation/hierarchical/OperationWeightedQuadratureNotAKnotBsplineModified.hpp>
+#include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductNakBsplineBoundary.hpp>
+#include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductNotAKnotBsplineModified.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
@@ -30,7 +33,6 @@
 #include <algorithm>
 #include <cmath>
 #include <vector>
-#include "../operation/multidim/sparsegrid/LTwoScalarProductNakBsplineBoundary.hpp"
 
 namespace sgpp {
 namespace combigrid {
@@ -118,7 +120,7 @@ class HierarchicalStochasticCollocation {
 
   std::shared_ptr<sgpp::base::Grid> grid;
   sgpp::base::GridType gridType;
-  LTwoScalarProductNakBsplineBoundary scalarProducts;
+  //  LTwoScalarProductNakBsplineBoundary scalarProducts;
   sgpp::base::DataVector coefficients;
   sgpp::combigrid::MultiFunction objectiveFunction;
 

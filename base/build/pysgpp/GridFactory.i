@@ -43,6 +43,7 @@
 %newobject sgpp::base::Grid::createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createNakBsplineBoundaryGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createNotAKnotBsplineModifiedGrid(size_t dim, size_t degree);
 
 
 
@@ -124,8 +125,9 @@ enum class GridType {
   LinearClenshawCurtis,         // 28
   ModPolyClenshawCurtis,        // 29
   ModLinearClenshawCurtis,      // 30
-  NakBsplineBoundaryCombigrid   // 31
-  NakBsplineBoundary            // 32
+  NakBsplineBoundary,           // 31
+  NakBsplineBoundaryCombigrid,  // 32
+  NotAKnotBsplineModified       // 3
 };
 
 class Grid
