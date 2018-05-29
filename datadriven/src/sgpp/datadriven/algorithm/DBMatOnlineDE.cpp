@@ -50,6 +50,7 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Gri
     DensityEstimationConfiguration& densityEstimationConfig, bool save_b, bool do_cv,
     std::list<size_t>* deletedPoints,
     size_t newPoints) {
+  std::cout << "Computing density function...";
   if (m.getNrows() > 0) {
     DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
 
