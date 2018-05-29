@@ -36,6 +36,7 @@
 %newobject sgpp::base::Grid::createPrewaveletGrid(size_t dim);
 %newobject sgpp::base::Grid::createPeriodicGrid(size_t dim);
 %newobject sgpp::base::Grid::createNakBsplineBoundaryGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createNotAKnotBsplineModifiedGrid(size_t dim, size_t degree);
 
 
 
@@ -110,7 +111,9 @@ enum class GridType {
   ModBsplineClenshawCurtis,     // 23
   LinearStencil,                // 24
   ModLinearStencil,             // 25
-  NakBsplineBoundary            // 26
+  NakBsplineBoundary,           // 26
+  NakBsplineBoundaryCombigrid,  // 27
+  NotAKnotBsplineModified       // 28
 };
 
 class Grid

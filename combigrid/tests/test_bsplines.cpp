@@ -18,8 +18,6 @@
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridCallbackEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/FullGridGridBasedEvaluator.hpp>
-#include "../src/sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductNakBsplineBoundary.hpp"
-#include "../src/sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductNakBsplineBoundaryCombigrid.hpp"
 #include <sgpp/combigrid/operation/onedim/BSplineScalarProductEvaluator.hpp>
 #include <sgpp/combigrid/pce/BsplineStochasticCollocation.hpp>
 #include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
@@ -27,6 +25,8 @@
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
+#include "../src/sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductNakBsplineBoundary.hpp"
+#include "../src/sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductNakBsplineBoundaryCombigrid.hpp"
 #include "../src/sgpp/combigrid/pce/HierarchicalStochasticCollocation.hpp"
 
 #include <sgpp/globaldef.hpp>
@@ -1095,8 +1095,8 @@ BOOST_AUTO_TEST_CASE(test_HierarchicalBsplineStochasticCollocation) {
       weightFunctionsCollection[d] = weightfunction;
     }
 
-    sgpp::combigrid::HierarchicalStochasticCollocation hBSC(
-        grid, coefficients, weightFunctionsCollection, bounds);
+    sgpp::combigrid::HierarchicalStochasticCollocation hBSC(grid, coefficients,
+                                                            weightFunctionsCollection, bounds);
 
     sgpp::base::DataVector x(dim);
     x[0] = 0.337;
@@ -1154,7 +1154,7 @@ BOOST_AUTO_TEST_CASE(testHierarchicalBsplineLTwoScalarProductsWithWeightsAndBoun
     std::cout << "Solving failed!" << std::endl;
   }
   sgpp::combigrid::HierarchicalStochasticCollocation hBSC(grid, coefficients,
-                                                                 weightFunctionsCollection, bounds);
+                                                          weightFunctionsCollection, bounds);
 
   // (x^5+y^5)*exp(x-2*y) on [0,1]^2 with weight function 1
   //  double realEv = 0.224394761974631;
@@ -1233,11 +1233,53 @@ BOOST_AUTO_TEST_CASE(testHierarchicalBsplineNormalMeanAndVariance) {
   }
 
   sgpp::combigrid::HierarchicalStochasticCollocation hBSC(grid, coefficients,
-                                                                 weightFunctionsCollection, bounds);
+                                                          weightFunctionsCollection, bounds);
   double variance = hBSC.variance();
   double ev = hBSC.mean();
   //  std::cout << "mean: " << ev << " variance: " << variance << std::endl;
   BOOST_CHECK_SMALL(std::abs(ev - 1), 1e-13);
   BOOST_CHECK_SMALL(std::abs(variance - 0.01), 1e-12);
 }
+
+BOOST_AUTO_TEST_CASE(testHierarchicalStochasticCollocation_co2_lognormal) {
+  std::cout << "Integrate objective function co2model and lognormal weight function  with "
+               "hierarchical B splines of degree 5 on level 4 in 1D "
+            << std::endl;
+
+  // create CO2 function and pdf weight functions
+  sgpp::combigrid::CO2 co2Model;
+  sgpp::combigrid::ProbabilityDensityFunction1DConfiguration pdf_config;
+  pdf_config.pdfParameters.type_ =
+      sgpp::combigrid::ProbabilityDensityFunctionType::BOUNDED_LOGNORMAL;
+  pdf_config.pdfParameters.logmean_ = co2Model.logmean;
+  pdf_config.pdfParameters.stddev_ = co2Model.stddev;
+  pdf_config.pdfParameters.lowerBound_ = co2Model.bounds[0];
+  pdf_config.pdfParameters.upperBound_ = co2Model.bounds[1];
+  auto probabilityDensityFunction =
+      std::make_shared<sgpp::combigrid::ProbabilityDensityFunction1D>(pdf_config);
+  sgpp::combigrid::MultiFunction func(co2Model.eval);
+  sgpp::combigrid::SingleFunction weight_function = probabilityDensityFunction->getWeightFunction();
+
+  size_t numDims = co2Model.numDims;
+  sgpp::base::DataVector bounds(2 * numDims);
+  sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection;
+  for (size_t d = 0; d < numDims; d++) {
+    bounds[2 * d] = pdf_config.pdfParameters.lowerBound_;
+    bounds[2 * d + 1] = pdf_config.pdfParameters.upperBound_;
+    weightFunctionsCollection.push_back(weight_function);
+  }
+  size_t degree = 5;
+  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
+  sgpp::combigrid::HierarchicalStochasticCollocation hSC(gridType, numDims, func,
+                                                         weightFunctionsCollection, bounds, degree);
+
+  size_t numLevels = 4;
+  hSC.refineRegular(numLevels);
+  // check the moments
+  //  std::cout << std::abs(co2Model.mean - hSC.mean()) << std::endl;
+  //  std::cout << std::abs(co2Model.variance - hSC.variance()) << std::endl;
+  BOOST_CHECK_SMALL(std::abs(co2Model.mean - hSC.mean()), 1e-8);
+  BOOST_CHECK_SMALL(std::abs(co2Model.variance - hSC.variance()), 1e-9);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

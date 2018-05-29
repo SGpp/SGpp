@@ -17,7 +17,6 @@ HierarchicalStochasticCollocation::HierarchicalStochasticCollocation(
       weightFunctions(weightFunctions),
       bounds(bounds),
       currentNumGridPoints(grid->getSize()) {
-  initialize(weightFunctions, bounds);
   calculateCoefficients();
 }
 
@@ -31,13 +30,12 @@ HierarchicalStochasticCollocation::HierarchicalStochasticCollocation(
       currentNumGridPoints(0) {
   if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
     grid = std::make_shared<sgpp::base::NakBsplineBoundaryGrid>(dim, degree);
-  } else if (gridType == sgpp::base::GridType::PolyBoundary) {
-    grid = std::make_shared<sgpp::base::PolyBoundaryGrid>(dim, degree);
+  } else if (gridType == sgpp::base::GridType::NotAKnotBsplineModified) {
+    grid = std::make_shared<sgpp::base::NotAKnotBsplineModifiedGrid>(dim, degree);
   } else {
     std::cerr << "HierarchicalStochasticCollocation: grid type currently not supported"
               << std ::endl;
   }
-  initialize(weightFunctions, bounds);
   calculateCoefficients();
 }  // namespace combigrid
 
@@ -49,17 +47,9 @@ HierarchicalStochasticCollocation::HierarchicalStochasticCollocation(
       coefficients(coefficients),
       weightFunctions(weightFunctions),
       bounds(bounds),
-      currentNumGridPoints(grid->getSize()) {
-  initialize(weightFunctions, bounds);
-}
+      currentNumGridPoints(grid->getSize()) {}
 
 HierarchicalStochasticCollocation::~HierarchicalStochasticCollocation() {}
-
-void HierarchicalStochasticCollocation::initialize(WeightFunctionsCollection weightFunctions,
-                                                   sgpp::base::DataVector bounds) {
-  scalarProducts.setWeightFunction(weightFunctions);
-  scalarProducts.setBounds(bounds);
-}
 
 void HierarchicalStochasticCollocation::refineRegular(size_t level) {
   grid->getGenerator().regular(level);
@@ -150,6 +140,11 @@ double HierarchicalStochasticCollocation::computeMean() {
     OperationWeightedQuadratureNakBsplineBoundary wopQ(gridStorage, degree, weightFunctions,
                                                        bounds);
     mean = wopQ.doQuadrature(coefficients);
+  } else if (gridType == sgpp::base::GridType::NotAKnotBsplineModified) {
+    size_t degree = dynamic_cast<base::NotAKnotBsplineModifiedGrid*>(grid.get())->getDegree();
+    OperationWeightedQuadratureNotAKnotBsplineModified wopQ(gridStorage, degree, weightFunctions,
+                                                            bounds);
+    mean = wopQ.doQuadrature(coefficients);
   } else {
     std::cerr << "HierarchicalStochasticCollocation: grid type currently not supported"
               << std::endl;
@@ -175,10 +170,9 @@ double HierarchicalStochasticCollocation::computeVariance() {
   sgpp::base::Grid* gridptr = grid.get();
   sgpp::base::DataVector product(coefficients.getSize());
 
-  scalarProducts.updateGrid(gridptr);
-
   double variance = 0;
   if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
+    LTwoScalarProductNakBsplineBoundary scalarProducts(gridptr, weightFunctions, bounds);
     size_t degree = dynamic_cast<base::NakBsplineBoundaryGrid*>(grid.get())->getDegree();
     if (degree == 1) {
       // calculate V(u) = E(u^2) - E(u)^2
@@ -197,7 +191,19 @@ double HierarchicalStochasticCollocation::computeVariance() {
       sgpp::base::DataVector copyOfCoefficients(coefficients);
       copyOfCoefficients[0] -= ev;
       scalarProducts.mult(copyOfCoefficients, product);
-
+      variance = product.dotProduct(copyOfCoefficients);
+    }
+  } else if (gridType == sgpp::base::GridType::NotAKnotBsplineModified) {
+    LTwoScalarProductNotAKnotBsplineModified scalarProducts(gridptr, weightFunctions, bounds);
+    size_t degree = dynamic_cast<base::NotAKnotBsplineModifiedGrid*>(grid.get())->getDegree();
+    if (degree == 1) {
+      scalarProducts.mult(coefficients, product);
+      double meanSquare = product.dotProduct(coefficients);
+      variance = meanSquare - ev * ev;
+    } else {
+      sgpp::base::DataVector copyOfCoefficients(coefficients);
+      copyOfCoefficients[0] -= ev;
+      scalarProducts.mult(copyOfCoefficients, product);
       variance = product.dotProduct(copyOfCoefficients);
     }
   }
