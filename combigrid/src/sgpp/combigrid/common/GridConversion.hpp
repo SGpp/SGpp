@@ -95,7 +95,7 @@ sgpp::base::DataMatrix convertLevelStructureToGridPoints(
  * @param levelStructure the level structure of the combigrid
  * @return the coefficients for the hierarchical sparse grid interpolant
  */
-sgpp::base::DataVector calculateInterpolationCoefficientsForConvertedExpUniformBoundaryCombigird(
+sgpp::base::DataVector calculateInterpolationCoefficientsForConvertedCombigird(
     std::shared_ptr<sgpp::base::Grid>& grid, sgpp::base::GridStorage& gridStorage,
     std::shared_ptr<sgpp::combigrid::CombigridMultiOperation>& combigridInterpolationOperation,
     std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure);

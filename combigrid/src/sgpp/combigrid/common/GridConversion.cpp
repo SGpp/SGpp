@@ -220,7 +220,7 @@ sgpp::base::DataMatrix convertLevelStructureToGridPoints(
   return gridpointMatrix;
 }
 
-sgpp::base::DataVector calculateInterpolationCoefficientsForConvertedExpUniformBoundaryCombigird(
+sgpp::base::DataVector calculateInterpolationCoefficientsForConvertedCombigird(
     std::shared_ptr<sgpp::base::Grid>& grid, sgpp::base::GridStorage& gridStorage,
     std::shared_ptr<sgpp::combigrid::CombigridMultiOperation>& combigridInterpolationOperation,
     std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure) {

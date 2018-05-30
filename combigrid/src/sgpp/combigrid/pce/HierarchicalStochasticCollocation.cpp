@@ -127,6 +127,31 @@ void HierarchicalStochasticCollocation::calculateCoefficients() {
   coefficients = alpha;
 }
 
+void HierarchicalStochasticCollocation::createGridFromCombiLevelStructure(
+    std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> levelStructure,
+    std::shared_ptr<AbstractCombigridStorage> coefficientStorage) {
+  sgpp::base::GridStorage& gridStorage = grid->getStorage();
+  convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
+
+  size_t degree = 3;
+  if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
+    degree = dynamic_cast<base::NakBsplineBoundaryGrid*>(grid.get())->getDegree();
+  } else if (gridType == sgpp::base::GridType::NakBsplineBoundaryCombigrid) {
+    degree = dynamic_cast<base::NakBsplineBoundaryCombigridGrid*>(grid.get())->getDegree();
+  } else if (gridType == sgpp::base::GridType::NotAKnotBsplineModified) {
+    degree = dynamic_cast<base::NotAKnotBsplineModifiedGrid*>(grid.get())->getDegree();
+  } else {
+    std::cerr << "HierarchicalStochasticCollocation: grid type currently not supported"
+              << std::endl;
+  }
+  std::shared_ptr<sgpp::combigrid::CombigridMultiOperation> combigridMultiOperation =
+      CombigridMultiOperation::createBsplineLinearCoefficientOperation(degree, grid->getDimension(),
+                                                                       coefficientStorage);
+
+  coefficients = calculateInterpolationCoefficientsForConvertedCombigird(
+      grid, gridStorage, combigridMultiOperation, levelStructure);
+}
+
 void HierarchicalStochasticCollocation::eval(sgpp::base::DataMatrix& xs,
                                              sgpp::base::DataVector& res) {
   res.resizeZero(xs.getNcols());
@@ -156,7 +181,6 @@ double HierarchicalStochasticCollocation::computeMean() {
     OperationWeightedQuadratureNakBsplineBoundaryCombigrid wopQ(gridStorage, degree,
                                                                 weightFunctions, bounds);
     mean = wopQ.doQuadrature(coefficients);
-    std::cout << "HSC: mean = " << mean << std::endl;
   } else if (gridType == sgpp::base::GridType::NotAKnotBsplineModified) {
     size_t degree = dynamic_cast<base::NotAKnotBsplineModifiedGrid*>(grid.get())->getDegree();
     OperationWeightedQuadratureNotAKnotBsplineModified wopQ(gridStorage, degree, weightFunctions,
@@ -195,8 +219,8 @@ double HierarchicalStochasticCollocation::computeVariance() {
       // calculate V(u) = E(u^2) - E(u)^2
       // this works for all B spline degrees but may be instable
       //(e.g. ev*ev might be larger than meanSquare => negative variance)
-      // It also does not work if the weight function is not a probability density function because
-      // then the algebraic formula for the variance does not hold
+      // It also does not work if the weight function is not a probability density function
+      // because then the algebraic formula for the variance does not hold
       scalarProducts.mult(coefficients, product);
       double meanSquare = product.dotProduct(coefficients);
       variance = meanSquare - ev * ev;
