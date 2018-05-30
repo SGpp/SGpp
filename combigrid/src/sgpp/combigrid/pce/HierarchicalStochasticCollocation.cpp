@@ -51,6 +51,15 @@ HierarchicalStochasticCollocation::HierarchicalStochasticCollocation(
       bounds(bounds),
       currentNumGridPoints(grid->getSize()) {}
 
+HierarchicalStochasticCollocation::HierarchicalStochasticCollocation(
+    const HierarchicalStochasticCollocation& other)
+    : grid(other.grid),
+      gridType(other.grid->getType()),
+      coefficients(other.coefficients),
+      weightFunctions(other.weightFunctions),
+      bounds(other.bounds),
+      currentNumGridPoints(other.grid->getSize()) {}
+
 HierarchicalStochasticCollocation::~HierarchicalStochasticCollocation() {}
 
 void HierarchicalStochasticCollocation::refineRegular(size_t level) {
