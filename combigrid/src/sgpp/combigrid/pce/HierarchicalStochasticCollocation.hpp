@@ -17,14 +17,17 @@
 #include <sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
+#include <sgpp/combigrid/common/GridConversion.hpp>
 #include <sgpp/combigrid/functions/ProbabilityDensityFunction1D.hpp>
 #include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
+#include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/hierarchical/OperationWeightedQuadratureNakBsplineBoundary.hpp>
 #include <sgpp/combigrid/operation/hierarchical/OperationWeightedQuadratureNakBsplineBoundaryCombigrid.hpp>
 #include <sgpp/combigrid/operation/hierarchical/OperationWeightedQuadratureNotAKnotBsplineModified.hpp>
 #include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductNakBsplineBoundary.hpp>
 #include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductNakBsplineBoundaryCombigrid.hpp>
 #include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductNotAKnotBsplineModified.hpp>
+#include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
@@ -77,6 +80,10 @@ class HierarchicalStochasticCollocation {
   void refineSurplusAdaptiveByNumGridPoints(size_t maxNumGridPoints, size_t refinementsNum = 1);
   void refineSurplusVolumeAdaptive(size_t refinementsNum);
   void refineSurplusVolumeAdaptiveByNumGridPoints(size_t maxNumGridPoints, size_t refinementsNum);
+
+  void createGridFromCombiLevelStructure(
+      std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> levelStructure,
+      std::shared_ptr<AbstractCombigridStorage> coefficientStorage);
 
   void eval(sgpp::base::DataMatrix& xs, sgpp::base::DataVector& res);
   double eval(sgpp::base::DataVector& x);

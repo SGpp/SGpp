@@ -168,7 +168,6 @@ double BsplineStochasticCollocation::computeVariance() {
   if (!computedMeanFlag) {
     mean();
   }
-
   // compute hierarchical sparse grid interpolant
   if (hierarchicalTransformationFlag == false) {
     transformToHierarchical();
@@ -176,11 +175,9 @@ double BsplineStochasticCollocation::computeVariance() {
 
   sgpp::base::Grid* gridptr = hierarchicalGrid.get();
   sgpp::base::DataVector product(hierarchicalCoefficients.size());
-
   scalarProducts.updateGrid(gridptr);
   // scalarProducts.setWeightFunction(weightFunctions);
   // scalarProducts.setBounds(config.bounds);
-
   double variance = 0;
   if (config.degree == 1) {
     // calculate V(u) = E(u^2) - E(u)^2
@@ -326,7 +323,7 @@ void BsplineStochasticCollocation::transformToHierarchical() {
   convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
 
   hierarchicalCoefficients =
-      calculateInterpolationCoefficientsForConvertedExpUniformBoundaryCombigird(
+      calculateInterpolationCoefficientsForConvertedCombigird(
           hierarchicalGrid, gridStorage, combigridMultiOperation, levelStructure);
   hierarchicalTransformationFlag = true;
 }
