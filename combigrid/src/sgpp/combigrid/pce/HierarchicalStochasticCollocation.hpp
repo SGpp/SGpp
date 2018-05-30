@@ -60,6 +60,11 @@ class HierarchicalStochasticCollocation {
                                              sgpp::base::DataVector coefficients,
                                              WeightFunctionsCollection weightFunctions,
                                              sgpp::base::DataVector bounds);
+
+  // copy constructor
+  // needs additionally either an objectiveFunction or coefficients
+  HierarchicalStochasticCollocation(const HierarchicalStochasticCollocation& other);
+
   virtual ~HierarchicalStochasticCollocation();
 
   void refineRegular(size_t level);
@@ -79,6 +84,7 @@ class HierarchicalStochasticCollocation {
   double mean();
   double variance();
 
+  void calculateCoefficients();
   /**
    * coarsen the hierarchical sparse grid surrogate
    * @param removements_num Number of grid points which should be removed (if possible - there could
@@ -107,14 +113,16 @@ class HierarchicalStochasticCollocation {
 
   size_t numGridPoints();
 
+  void setObjectivefunction(sgpp::combigrid::MultiFunction objectiveFunction) {
+    this->objectiveFunction = objectiveFunction;
+  }
+
   sgpp::base::DataMatrix getHierarchicalGridPoints();
 
   sgpp::base::DataVector getCoefficients() { return coefficients; }
 
  private:
   void initialize(WeightFunctionsCollection weightFunctions, sgpp::base::DataVector bounds);
-
-  void calculateCoefficients();
 
   bool updateStatus();
   double computeMean();
