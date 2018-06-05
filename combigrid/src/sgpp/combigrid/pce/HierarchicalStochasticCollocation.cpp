@@ -131,15 +131,14 @@ void HierarchicalStochasticCollocation::createGridFromCombiLevelStructure(
     std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> levelStructure,
     std::shared_ptr<AbstractCombigridStorage> coefficientStorage) {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
-  convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
 
   size_t degree = 3;
-  if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
-    degree = dynamic_cast<base::NakBsplineBoundaryGrid*>(grid.get())->getDegree();
-  } else if (gridType == sgpp::base::GridType::NakBsplineBoundaryCombigrid) {
+  if (gridType == sgpp::base::GridType::NakBsplineBoundaryCombigrid) {
     degree = dynamic_cast<base::NakBsplineBoundaryCombigridGrid*>(grid.get())->getDegree();
+    convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
   } else if (gridType == sgpp::base::GridType::NotAKnotBsplineModified) {
     degree = dynamic_cast<base::NotAKnotBsplineModifiedGrid*>(grid.get())->getDegree();
+    convertCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
   } else {
     std::cerr << "HierarchicalStochasticCollocation: grid type currently not supported"
               << std::endl;
