@@ -7,7 +7,7 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/OperationQuadrature.hpp>
-#include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineModifiedBasis.hpp>
 #include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -49,7 +49,7 @@ class OperationWeightedQuadratureNotAKnotBsplineModified : public sgpp::base::Op
   // Pointer to the grid's GridStorage object
   sgpp::base::GridStorage& storage;
   /// NakBsplineBoundaryCombigrid Basis object
-  sgpp::base::SNakBsplineBoundaryBase base;
+  sgpp::base::SNotAKnotBsplineModifiedBase base;
   WeightFunctionsCollection weightFunctionsCollection;
   sgpp::base::DataVector bounds;
 };

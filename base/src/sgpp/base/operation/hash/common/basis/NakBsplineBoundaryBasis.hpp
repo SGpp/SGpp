@@ -591,8 +591,6 @@ class NakBsplineBoundaryBasis : public Basis<LT, IT> {
         // transform  the quadrature points to the segment on which the Bspline is
         // evaluated
         const double x = offset + scaling * (quadCoordinates[c] + static_cast<double>(n));
-        if (this->eval(l, i, x) == 0) {
-        }
         temp_res += quadWeights[c] * this->eval(l, i, x);
       }
     }
@@ -609,8 +607,6 @@ class NakBsplineBoundaryBasis : public Basis<LT, IT> {
         // transform  the quadrature points to the segment on which the Bspline is
         // evaluated
         const double x = offset + scaling * (quadCoordinates[c] + static_cast<double>(n));
-        if (this->eval(l, i, x) == 0) {
-        }
         temp_res += quadWeights[c] * this->eval(l, i, x) * weightfunction(x);
       }
     }

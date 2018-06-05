@@ -39,7 +39,7 @@ HierarchicalStochasticCollocation::HierarchicalStochasticCollocation(
               << std ::endl;
   }
   calculateCoefficients();
-}  // namespace combigrid
+}
 
 HierarchicalStochasticCollocation::HierarchicalStochasticCollocation(
     std::shared_ptr<sgpp::base::Grid> grid, sgpp::base::DataVector coefficients,
