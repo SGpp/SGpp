@@ -40,7 +40,7 @@ class DensityEstimationMinerFactory : public MinerFactory {
    */
   virtual SparseGridMiner* buildMiner(const std::string& path) const;
 
-  HyperparameterOptimizer* buildHPO(const std::string& path) const override;
+  sgpp::datadriven::HyperparameterOptimizer* buildHPO(const std::string& path) const override;
 
 
 private:
