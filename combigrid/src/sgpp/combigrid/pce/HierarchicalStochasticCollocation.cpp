@@ -150,6 +150,8 @@ void HierarchicalStochasticCollocation::createGridFromCombiLevelStructure(
 
   coefficients = calculateInterpolationCoefficientsForConvertedCombigird(
       grid, gridStorage, combigridMultiOperation, levelStructure);
+
+  currentNumGridPoints = grid->getSize();
 }
 
 void HierarchicalStochasticCollocation::eval(sgpp::base::DataMatrix& xs,
