@@ -42,7 +42,7 @@ class MinerFactory {
    */
   virtual SparseGridMiner* buildMiner(const std::string& path) const = 0;
 
-  virtual HyperparameterOptimizer* buildHPO(const std::string& path) const = 0;
+  virtual sgpp::datadriven::HyperparameterOptimizer* buildHPO(const std::string& path) const = 0;
 };
 
 } /* namespace datadriven */
