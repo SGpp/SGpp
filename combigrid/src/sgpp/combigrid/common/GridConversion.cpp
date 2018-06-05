@@ -33,16 +33,16 @@ void convertCombigridToHierarchicalSparseGrid(std::shared_ptr<TreeStorage<uint8_
 
   while (it->isValid()) {
     MultiIndex currentLevel = it->getMultiIndex();
-    std::cout << it->getMultiIndex()[0] << " ";
+    //    std::cout << it->getMultiIndex()[0] << " ";
 
     // now iterate over index
     MultiIndex multiBounds(d);
     for (size_t i = 0; i < d; ++i) {
       // there are 2^l elements in the level, subtract 1 because the bound is inclusive
       multiBounds[i] = 1 << currentLevel[i];
-      std::cout << multiBounds[i] << " ";
+      //      std::cout << multiBounds[i] << " ";
     }
-    std::cout << "\n";
+    //    std::cout << "\n";
     MultiIndexIterator indexIt(multiBounds);
 
     while (indexIt.isValid()) {
