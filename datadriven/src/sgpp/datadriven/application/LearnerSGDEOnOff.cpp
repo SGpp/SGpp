@@ -18,6 +18,7 @@
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
+#include <sgpp/datadriven/algorithm/GridFactory.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 
@@ -36,6 +37,7 @@ using sgpp::base::GridGenerator;
 using sgpp::base::OperationEval;
 using sgpp::base::data_exception;
 using sgpp::base::SurplusRefinementFunctor;
+using sgpp::datadriven::GridFactory;
 
 namespace sgpp {
 namespace datadriven {
@@ -79,32 +81,25 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(
   densityFunctions.reserve(numClasses);
   offlineContainer.reserve(numClasses);
   alphas.reserve(numClasses);
+  GridFactory gridFactory;
   for (size_t classIndex = 0; classIndex < numClasses; classIndex++) {
     // Create a grid
-    std::unique_ptr<Grid> grid;
-    if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
-      grid = std::unique_ptr<Grid>{Grid::createModLinearGrid(gridConfig.dim_)};
-    } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
-      grid = std::unique_ptr<Grid>{Grid::createLinearGrid(gridConfig.dim_)};
-    } else {
-      throw sgpp::base::algorithm_exception("LearnerBase::InitializeGrid: An unsupported grid type "
-          "was chosen!");
-    }
-    grids.emplace_back(std::move(grid));
-
+    std::unique_ptr<Grid> grid = std::unique_ptr<Grid> {
+      gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+    };
     std::unique_ptr<DBMatOffline> offlineCloned =
         std::unique_ptr<DBMatOffline>{offline->clone()};
     offlineCloned->buildMatrix(&(*grid), regularizationConfig);
     offlineCloned->decomposeMatrix(regularizationConfig, densityEstimationConfig);
-
-    offlineContainer.emplace_back(std::move(offlineCloned));
     auto densEst = std::unique_ptr<DBMatOnlineDE>{
       DBMatOnlineDEFactory::buildDBMatOnlineDE(*offlineCloned, *grid,
           regularizationConfig.lambda_, beta)};
     densityFunctions.emplace_back(std::make_pair(std::move(densEst), classIndex));
     prior.emplace(classLabels[classIndex], 0.0);
-    DataVector* alpha = new DataVector(offlineCloned->getGridSize()); // TODO(fuchsgruber): ugly
+    DataVector* alpha = new DataVector(offlineCloned->getGridSize());
     alphas.emplace_back(alpha);
+    grids.emplace_back(std::move(grid));
+    offlineContainer.emplace_back(std::move(offlineCloned));
   }
 }
 
@@ -275,8 +270,8 @@ void LearnerSGDEOnOff::train(
   int index = 0;
   for (size_t i = 0; i < classLabels.getSize(); i++) {
     std::unique_ptr<DataMatrix> dataMatrix = std::make_unique<DataMatrix>(0, dim);
-    classData.emplace_back(std::move(dataMatrix));
     auto trainDataClassPair = std::make_pair(&(*dataMatrix), classLabels[i]);
+    classData.emplace_back(std::move(dataMatrix));
     trainDataClasses.emplace_back(trainDataClassPair);
     classIndices.emplace(std::make_pair(classLabels[i], index));
     index++;
@@ -514,6 +509,27 @@ void LearnerSGDEOnOff::getAvgErrors(DataVector& result) const { result = avgErro
 
 ClassDensityConntainer& LearnerSGDEOnOff::getDensityFunctions() { return densityFunctions; }
 
+void LearnerSGDEOnOff::updateAlpha(size_t classIndex, std::list<size_t>* deletedPoints,
+    size_t newPoints) {
+  DataVector& alpha = *(alphas[classIndex]);
+  if (alpha.getSize() != 0 && deletedPoints != nullptr && !deletedPoints->empty()) {
+    std::vector<size_t> deletedPoints_{std::begin(*deletedPoints), std::end(*deletedPoints)};
+    DataVector newAlpha{alpha.getSize() - deletedPoints->size() + newPoints};
+    for (size_t i = 0; i < alpha.getSize(); i++) {
+      if (std::find(deletedPoints_.begin(), deletedPoints_.end(), i) != deletedPoints_.end()) {
+        continue;
+      } else {
+        newAlpha.append(alpha.get(i));
+      }
+    }
+    // set new alpha
+    alpha = std::move(newAlpha);
+  }
+  if (newPoints > 0) {
+    alpha.resizeZero(alpha.getSize() + newPoints);
+  }
+}
+
 void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
                               sgpp::base::AdpativityConfiguration& adaptivityConfig,
                               sgpp::datadriven::DensityEstimationConfiguration&
@@ -533,13 +549,17 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
 
   // bundle grids and surplus vector pointer needed for refinement
   // (for zero-crossings refinement, data-based refinement)
-  std::vector<Grid*> grids;
+  std::vector<Grid*> gridsVector;
   bool levelPenalize = false;  // Multiplies penalzing term for fine levels
   bool preCompute = true;      // Precomputes and caches evals for zrcr
   MultiGridRefinementFunctor* func = nullptr;
+  gridsVector.reserve(grids.size());
+  for (size_t idx = 0; idx < grids.size(); idx++) {
+    gridsVector.push_back(&(*(grids[idx])));
+  }
 
   // Zero-crossing-based refinement
-  ZeroCrossingRefinementFunctor funcZrcr{grids, alphas, adaptivityConfig.noPoints_,
+  ZeroCrossingRefinementFunctor funcZrcr{gridsVector, alphas, adaptivityConfig.noPoints_,
                                          levelPenalize, preCompute};
 
   // Data-based refinement. Needs a problem dependent coeffA. The values
@@ -553,7 +573,7 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
   DataMatrix* trainDataRef = &(trainData.getData());
   DataVector* trainLabelsRef = &(trainData.getTargets());
   DataBasedRefinementFunctor funcData = DataBasedRefinementFunctor{
-      grids,         alphas, trainDataRef, trainLabelsRef, adaptivityConfig.noPoints_,
+      gridsVector, alphas, trainDataRef, trainLabelsRef, adaptivityConfig.noPoints_,
       levelPenalize, coeffA};
 
   if (refType == "zero") {
@@ -679,7 +699,7 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
 
 
       // update alpha vector
-      // densEst->updateAlpha(&refineCoarse[idx].first, refineCoarse[idx].second);
+      updateAlpha(idx, &refineCoarse[idx].first, refineCoarse[idx].second);
     }
   }
 }

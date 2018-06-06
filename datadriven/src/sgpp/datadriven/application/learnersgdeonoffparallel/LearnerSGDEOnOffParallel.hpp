@@ -49,7 +49,8 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
   LearnerSGDEOnOffParallel(sgpp::base::RegularGridConfiguration &gridConfig,
                            sgpp::base::AdpativityConfiguration &adaptivityConfig,
                            sgpp::datadriven::RegularizationConfiguration &regularizationConfig,
-                           sgpp::datadriven::DensityEstimationConfiguration &densityEstimationConfig,
+                           sgpp::datadriven::DensityEstimationConfiguration
+                           &densityEstimationConfig,
                            Dataset &trainData, Dataset &testData,
                            Dataset *validationData, DataVector &classLabels, size_t numClassesInit,
                            bool usePrior, double beta, MPITaskScheduler &mpiTaskScheduler);
@@ -57,6 +58,7 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
   /**
    * Trains the learner with the given dataset.
    *
+   * @param adaptivityConfig configuration of the adapativity
    * @param batchSize Size of subset of data points used for each training step
    * @param maxDataPasses The number of passes over the whole training data
    * @param refinementFunctorType The refinement indicator (surplus, zero-crossings or
@@ -182,7 +184,8 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
    * @param classIndex The class for which to update the system matrix decomposition
    * @param gridVersion The new grid version to set after updating the matrix
    */
-  void computeNewSystemMatrixDecomposition(size_t classIndex, size_t gridVersion);
+  void computeNewSystemMatrixDecomposition(
+      size_t classIndex, size_t gridVersion);
 
   /**
    * Check whether the grid is in a final state where learning can occur.
@@ -256,6 +259,13 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
    */
   size_t assignBatchToWorker(size_t batchOffset, bool doCrossValidation);
 
+  /**
+   * Retrieves the grid for a certain class
+   * @param classIndex the index of the desired class
+   * @return the underlying grid
+   */
+  Grid& getGrid(size_t classIndex);
+
  protected:
   /**
    * Vector that holds the grid version for every class
@@ -276,6 +286,18 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
    * Instance of the currently installed refinement handler
    */
   RefinementHandler refinementHandler;
+
+  // Configuration for the grid TODO(fuchsgruber): Move outwards
+  sgpp::base::GeneralGridConfiguration &gridConfig;
+
+  // Configuration for the adaptivity TODO(fuchsgruber): Move outwards
+  sgpp::base::AdpativityConfiguration &adaptivityConfig;
+
+  // Configuration for the regularization TODO(fuchsgruber): Move outwards
+  sgpp::datadriven::RegularizationConfiguration &regularizationConfig;
+
+  // Configuration for the density estimation TODO(fuchsgruber): Move outwards
+  sgpp::datadriven::DensityEstimationConfiguration &densityEstimationConfig;
 
   /**
    * Allocates memory for every class to hold training data before learning
