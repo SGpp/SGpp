@@ -130,6 +130,8 @@ bool BsplineStochasticCollocation::updateStatus() {
     currentNumGridPoints = combigridMultiOperation->numGridPoints();
     computedMeanFlag = false;
     computedVarianceFlag = false;
+    computedDiscreteMeanFlag = false;
+    computedDiscreteVarianceFlag = false;
     return true;
   } else {
     return false;
@@ -155,6 +157,17 @@ double BsplineStochasticCollocation::computeMean() {
   return mean;
 }
 
+double BsplineStochasticCollocation::computeDiscreteMean(sgpp::base::DataMatrix discretePoints) {
+  if (discretePoints.getNrows() != numDims) {
+    throw sgpp::base::data_exception(
+        "BsplineStochasticCollocation::computeDiscreteMean : Dimensions do not match");
+  }
+  sgpp::base::DataVector evaluations(discretePoints.getNcols());
+  eval(discretePoints, evaluations);
+
+  return evaluations.sum() / discretePoints.getNcols();
+}
+
 double BsplineStochasticCollocation::mean() {
   updateStatus();
   if (!computedMeanFlag) {
@@ -162,6 +175,15 @@ double BsplineStochasticCollocation::mean() {
     computedMeanFlag = true;
   }
   return ev;
+}
+
+double BsplineStochasticCollocation::discreteMean(sgpp::base::DataMatrix discretePoints) {
+  updateStatus();
+  if (!computedDiscreteMeanFlag) {
+    discreteEV = computeDiscreteMean(discretePoints);
+    computedDiscreteMeanFlag = true;
+  }
+  return discreteEV;
 }
 
 double BsplineStochasticCollocation::computeVariance() {
@@ -201,6 +223,27 @@ double BsplineStochasticCollocation::computeVariance() {
   return variance;
 }
 
+double BsplineStochasticCollocation::computeDiscreteVariance(
+    sgpp::base::DataMatrix discretePoints) {
+  if (discretePoints.getNrows() != numDims) {
+    throw sgpp::base::data_exception(
+        "BsplineStochasticCollocation::computeDiscreteVariance : Dimensions do not match");
+  }
+  if (!computedDiscreteMeanFlag) {
+    discreteMean(discretePoints);
+  }
+  sgpp::base::DataVector evaluations(discretePoints.getNcols());
+  eval(discretePoints, evaluations);
+
+  discreteVar = 0.0;
+  for (size_t i = 0; i < evaluations.getSize(); i++) {
+    var += std::pow(evaluations[i] - ev, 2);
+  }
+  discreteVar /= static_cast<double>(discretePoints.getNcols() - 1);
+
+  return discreteVar;
+}
+
 double BsplineStochasticCollocation::variance() {
   updateStatus();
   if (!computedVarianceFlag) {
@@ -208,6 +251,15 @@ double BsplineStochasticCollocation::variance() {
     computedVarianceFlag = true;
   }
   return var;
+}
+
+double BsplineStochasticCollocation::discreteVariance(sgpp::base::DataMatrix discretePoints) {
+  updateStatus();
+  if (!computedDiscreteVarianceFlag) {
+    discreteVar = computeDiscreteVariance(discretePoints);
+    computedDiscreteVarianceFlag = true;
+  }
+  return discreteVar;
 }
 
 double BsplineStochasticCollocation::computeVarianceWithCombiTechnique() {
@@ -322,9 +374,8 @@ void BsplineStochasticCollocation::transformToHierarchical() {
   auto levelStructure = this->config.levelStructure;
   convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
 
-  hierarchicalCoefficients =
-      calculateInterpolationCoefficientsForConvertedCombigird(
-          hierarchicalGrid, gridStorage, combigridMultiOperation, levelStructure);
+  hierarchicalCoefficients = calculateInterpolationCoefficientsForConvertedCombigird(
+      hierarchicalGrid, gridStorage, combigridMultiOperation, levelStructure);
   hierarchicalTransformationFlag = true;
 }
 
