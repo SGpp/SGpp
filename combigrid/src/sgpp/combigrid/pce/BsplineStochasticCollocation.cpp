@@ -165,7 +165,7 @@ double BsplineStochasticCollocation::computeDiscreteMean(sgpp::base::DataMatrix 
   sgpp::base::DataVector evaluations(discretePoints.getNcols());
   eval(discretePoints, evaluations);
 
-  return evaluations.sum() / discretePoints.getNcols();
+  return evaluations.sum() / static_cast<double>(discretePoints.getNcols());
 }
 
 double BsplineStochasticCollocation::mean() {
@@ -237,7 +237,7 @@ double BsplineStochasticCollocation::computeDiscreteVariance(
 
   discreteVar = 0.0;
   for (size_t i = 0; i < evaluations.getSize(); i++) {
-    var += std::pow(evaluations[i] - ev, 2);
+    discreteVar += std::pow(evaluations[i] - ev, 2);
   }
   discreteVar /= static_cast<double>(discretePoints.getNcols() - 1);
 
