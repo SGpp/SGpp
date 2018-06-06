@@ -334,14 +334,14 @@ size_t HierarchicalStochasticCollocation::numGridPoints() { return currentNumGri
 
 sgpp::base::DataMatrix HierarchicalStochasticCollocation::getHierarchicalGridPoints() {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
-  sgpp::base::DataMatrix points(gridStorage.getDimension(), gridStorage.getSize());
+  sgpp::base::DataMatrix points(gridStorage.getSize(), gridStorage.getDimension());
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
     sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
     sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
     for (size_t j = 0; j < gridStorage.getDimension(); j++) {
       p[j] = gp.getStandardCoordinate(j);
     }
-    points.setColumn(i, p);
+    points.setRow(i, p);
   }
   return points;
 }

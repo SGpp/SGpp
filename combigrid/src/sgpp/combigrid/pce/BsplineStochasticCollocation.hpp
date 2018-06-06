@@ -43,8 +43,21 @@ class BsplineStochasticCollocation : public CombigridSurrogateModel {
   void eval(sgpp::base::DataMatrix& xs, sgpp::base::DataVector& res) override;
   double eval(sgpp::base::DataVector& x) override;
 
+  /**
+   * Calculate mean analytically using given weight functions and according bounds
+   * @return mean (expectation value)
+   */
   double mean() override;
+
+  /**
+   * Calculate mean discrete using a set of points. Usually Monte Carlo realisations of the
+   * probability densities
+   * @param discretePoints the set of discrete points
+   * @return mean (expecation value)
+   */
+  double discreteMean(sgpp::base::DataMatrix discretePoints);
   double variance() override;
+  double discreteVariance(sgpp::base::DataMatrix discretePoints);
 
   /**
    * Calculates the variance using the combination technique BSplineScalarProductEvaluator
@@ -130,7 +143,9 @@ class BsplineStochasticCollocation : public CombigridSurrogateModel {
 
   bool updateStatus();
   double computeMean();
+  double computeDiscreteMean(sgpp::base::DataMatrix discretePoints);
   double computeVariance();
+  double computeDiscreteVariance(sgpp::base::DataMatrix discretePoints);
 
   void countPolynomialTerms();
 
@@ -151,6 +166,12 @@ class BsplineStochasticCollocation : public CombigridSurrogateModel {
   // basis coefficients for Bspline interpolation
   std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage;
   LTwoScalarProductNakBsplineBoundaryCombigrid scalarProducts;
+
+  // discrete mean and variance
+  bool computedDiscreteMeanFlag = false;
+  double discreteEV = 0.0;
+  double computedDiscreteVarianceFlag = false;
+  double discreteVar = 0.0;
 
   // operation
   std::shared_ptr<sgpp::combigrid::CombigridOperation> combigridOperation;
