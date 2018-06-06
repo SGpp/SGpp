@@ -119,15 +119,15 @@ int main() {
       // decompType = "Eigen decomposition";
 
       // choose "Cholesky decomposition"
-      // dt = sgpp::datadriven::MatrixDecompositionType::Chol;
-      // decompType = "Cholesky decomposition";
+      dt = sgpp::datadriven::MatrixDecompositionType::Chol;
+      decompType = "Cholesky decomposition";
       // dt = sgpp::datadriven::MatrixDecompositionType::IChol;
       // decompType = "Incomplete Cholesky decomposition";
       // dt = sgpp::datadriven::MatrixDecompositionType::DenseIchol;
 
       // choose "orthogonal Adaptivity"
-      dt = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
-      decompType = "orthogonal Adaptivity";
+      // dt = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
+      // decompType = "orthogonal Adaptivity";
       sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
       densityEstimationConfig.decomposition_ = dt;
 

@@ -190,6 +190,16 @@ class LearnerSGDEOnOff {
                                     DataMatrix* test, DataMatrix* testRes, bool logscale);
 
   /**
+   * Updates the surplus vector of a certain class
+   *
+   * @param classIndex the index of the class
+   * @param deletedPoints a list of indexes of deleted points (coarsening)
+   * @param newPoints the number of new grid points (refinemenet)
+   */
+  void updateAlpha(size_t classIndex, std::list<size_t>* deletedPoints,
+      size_t newPoints);
+
+  /**
   * In case of crossvalidation, returns the current best lambda.
   *
   * @return The lambda value

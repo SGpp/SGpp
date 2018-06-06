@@ -12,11 +12,15 @@
 
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
-
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/operation/hash/OperationMatrix.hpp>
 
 #include <vector>
 
 using sgpp::base::GridType;
+using sgpp::base::Grid;
+using sgpp::base::GridType;
+using sgpp::base::GridGenerator;
 using sgpp::base::algorithm_exception;
 
 namespace sgpp {
@@ -24,7 +28,6 @@ namespace datadriven {
 
 sgpp::base::Grid *GridFactory::createGrid(GeneralGridConfiguration& gridConfig,
     std::vector<std::vector <size_t>> interactions) const {
-
   Grid *grid;
 
   if (gridConfig.type_ == GridType::ModLinear) {

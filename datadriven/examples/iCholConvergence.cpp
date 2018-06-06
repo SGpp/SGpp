@@ -23,6 +23,7 @@
 
 #include <chrono>
 #include <string>
+#include <vector>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
