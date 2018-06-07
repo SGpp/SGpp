@@ -6,11 +6,12 @@
 #ifndef PERIODICGRIDGENERATOR_HPP
 #define PERIODICGRIDGENERATOR_HPP
 
-#include <vector>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <vector>
 
 
 namespace sgpp {

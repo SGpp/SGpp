@@ -6,11 +6,12 @@
 #ifndef GENERALIZEDTRUNCATEDBOUNDARYGRIDGENERATOR_HPP_
 #define GENERALIZEDTRUNCATEDBOUNDARYGRIDGENERATOR_HPP_
 
-#include <vector>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <vector>
 
 
 namespace sgpp {

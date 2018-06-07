@@ -6,11 +6,12 @@
 #ifndef PREWAVELETGRIDGENERATOR_HPP
 #define PREWAVELETGRIDGENERATOR_HPP
 
-#include <vector>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <vector>
 
 
 namespace sgpp {

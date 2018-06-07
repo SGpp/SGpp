@@ -6,13 +6,13 @@
 #ifndef HASHREFINEMENTBOUNDARIES_HPP
 #define HASHREFINEMENTBOUNDARIES_HPP
 
-#include <vector>
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 
-
 #include <sgpp/globaldef.hpp>
+
+#include <vector>
 
 
 namespace sgpp {
