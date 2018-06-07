@@ -6,6 +6,7 @@
 #ifndef TRUNCATEDBOUNDARYGRIDGENERATOR_HPP
 #define TRUNCATEDBOUNDARYGRIDGENERATOR_HPP
 
+#include <vector>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 

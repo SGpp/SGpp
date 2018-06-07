@@ -11,6 +11,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
+
 
 namespace sgpp {
 namespace base {

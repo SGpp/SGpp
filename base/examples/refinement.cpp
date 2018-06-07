@@ -29,6 +29,7 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 
+#include <vector>
 #include <iostream>
 
 using sgpp::base::DataVector;
@@ -87,7 +88,6 @@ int main() {
     * Refine adaptively 5 times.
     */
   for (int step = 0; step < 5; step++) {
-
     /**
       * Refine a single grid point each time.
       * The SurplusRefinementFunctor chooses the grid point with the highest absolute surplus.
@@ -109,7 +109,7 @@ int main() {
      * Evaluate the function f at the newly created gridpoints and set the
      * corresponding entries in the funEval vector with these values.
      */
-    for(size_t i = 0; i < addedPoints.size(); i++) {
+    for (size_t i = 0; i < addedPoints.size(); i++) {
       size_t seq = addedPoints[i];
       GridPoint& gp = gridStorage.getPoint(seq);
       funEvals[seq] = f(gp.getStandardCoordinate(0), gp.getStandardCoordinate(1));
@@ -134,7 +134,7 @@ int main() {
     std::cout << "refinement step " << step + 1 << ", new grid size: " << alpha.getSize()
               << std::endl;
   }
-  for(size_t i = 0; i < alpha.getSize(); i++) {
+  for (size_t i = 0; i < alpha.getSize(); i++) {
     std::cout << alpha[i] << std::endl;
   }
 }

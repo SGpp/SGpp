@@ -150,8 +150,8 @@ void HashRefinementBoundaries::free_refine(GridStorage& storage,
   // can refine grid on several points
   refineGridpointsCollection(storage, functor, collection);
 
-  if(addedPoints != 0) {
-    for(size_t i = sizeBeforeRefine; i < storage.getSize(); i++) {
+  if (addedPoints != 0) {
+    for (size_t i = sizeBeforeRefine; i < storage.getSize(); i++) {
       addedPoints->push_back(i);
     }
   }
