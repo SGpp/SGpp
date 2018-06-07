@@ -20,6 +20,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <vector>
 
 using sgpp::base::DataVector;
 using sgpp::base::DataMatrix;
@@ -39,6 +40,7 @@ using sgpp::base::RefinementFunctor;
 
 BOOST_AUTO_TEST_SUITE(TestRefinementAddedPoints)
 
+
 /*
   Utility for tests
  */
@@ -50,11 +52,11 @@ void gridTest(GridStorage& gridStorage,
   std::vector<size_t> oldPoints; // points before refinement
   std::vector<size_t> newPoints; // points that are new after refinement
   std::vector<size_t> addedPoints; // points that are added by refinement
-  for(auto it = gridStorage.begin(); it != gridStorage.end(); it++) {
+  for (auto it = gridStorage.begin(); it != gridStorage.end(); it++) {
     oldPoints.push_back(gridStorage.getSequenceNumber(*it->first));
   }
 
-  if(isPredictive) {
+  if (isPredictive) {
     PredictiveRefinementIndicator predFun = dynamic_cast<PredictiveRefinementIndicator&>(fun);
     PredictiveRefinement& predRef = dynamic_cast<PredictiveRefinement&>(ref);
     predRef.free_refine(gridStorage, predFun, &addedPoints);
@@ -62,17 +64,20 @@ void gridTest(GridStorage& gridStorage,
     ref.free_refine(gridStorage, fun, &addedPoints);
   }
 
-  for(auto it = gridStorage.begin(); it != gridStorage.end(); it++) {
+  for (auto it = gridStorage.begin(); it != gridStorage.end(); it++) {
     size_t seq = gridStorage.getSequenceNumber(*it->first);
+
+
     // only added points not contained in oldPoints to newPoints
-    if(std::find(oldPoints.begin(), oldPoints.end(),seq) == oldPoints.end()) {
+    if(std::find(oldPoints.begin(), oldPoints.end(), seq) == oldPoints.end()) {
       newPoints.push_back(seq);
     }
   }
 
+
   // check if all newPoints == addedPoints (up to order)
   BOOST_CHECK_EQUAL(addedPoints.size(), newPoints.size());
-  for(size_t i = 0; i < addedPoints.size(); i++) {
+  for (size_t i = 0; i < addedPoints.size(); i++) {
     bool b = std::find(newPoints.begin(), newPoints.end(), addedPoints[i])
       != newPoints.end();
     BOOST_CHECK(b);
@@ -88,6 +93,8 @@ BOOST_AUTO_TEST_CASE(TestBasicHash) {
 
   DataVector alpha(gridStorage.getSize());
   alpha.setAll(0.0);
+
+
   // arbitrary choice
   alpha[3] = 1.0; // level 3 1 1 1
   alpha[37] = 1.0; // level 2 1 1 2
@@ -106,6 +113,8 @@ BOOST_AUTO_TEST_CASE(TestBasicSubspace) {
 
   DataVector alpha(gridStorage.getSize());
   alpha.setAll(0.0);
+
+
   // arbitrary choice
   alpha[3] = 1.0; // level 3 1 1 1
   alpha[37] = 1.0; // level 2 1 1 2
@@ -125,6 +134,8 @@ BOOST_AUTO_TEST_CASE(TestBoundaryHash) {
 
   DataVector alpha(gridStorage.getSize());
   alpha.setAll(0.0);
+
+
   // arbitrary choice
   alpha[30] = 1.0; // level 1 3 0
   alpha[180] = 1.0; // level 1 3 1
@@ -143,6 +154,8 @@ BOOST_AUTO_TEST_CASE(TestBoundarySubspace) {
 
   DataVector alpha(gridStorage.getSize());
   alpha.setAll(0.0);
+
+
   // arbitrary choice
   alpha[30] = 1.0; // level 1 3 0
   alpha[180] = 1.0; // level 1 3 1
@@ -152,6 +165,7 @@ BOOST_AUTO_TEST_CASE(TestBoundarySubspace) {
   SurplusRefinementFunctor fun(alpha, 2);
   gridTest(gridStorage, alpha, refSub, fun);
 }
+
 
 // Blindly taken from test_PredictiveRefinement.cpp
 void populateDataset(DataMatrix& data, DataVector& error) {

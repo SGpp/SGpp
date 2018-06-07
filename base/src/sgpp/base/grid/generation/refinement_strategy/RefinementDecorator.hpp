@@ -6,6 +6,7 @@
 #ifndef REFINEMENTSTRATEGY_HPP_
 #define REFINEMENTSTRATEGY_HPP_
 
+#include <vector>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>

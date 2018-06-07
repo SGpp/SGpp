@@ -6,6 +6,7 @@
 #ifndef HASHREFINEMENTBOUNDARIES_HPP
 #define HASHREFINEMENTBOUNDARIES_HPP
 
+#include <vector>
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
@@ -29,7 +30,9 @@ class HashRefinementBoundaries: public AbstractRefinement {
    * @param functor a function used to determine if refinement is needed
    * @param addedPoints pointer to vector to append newly created grid points to
    */
-  void free_refine(GridStorage& storage, RefinementFunctor& functor, std::vector<size_t>* addedPoints = 0) override;
+  void free_refine(GridStorage& storage,
+                   RefinementFunctor& functor,
+                   std::vector<size_t>* addedPoints = 0) override;
 
 
   /**

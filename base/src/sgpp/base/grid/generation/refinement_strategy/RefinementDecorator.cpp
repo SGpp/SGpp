@@ -3,6 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <vector>
 #include <sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp>
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
 

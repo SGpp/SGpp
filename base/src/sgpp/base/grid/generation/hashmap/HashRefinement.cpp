@@ -8,6 +8,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
 #include <algorithm>
 #include <memory>
 
@@ -138,8 +139,8 @@ void HashRefinement::free_refine(GridStorage& storage,
   // now refine all grid points which satisfy the refinement criteria
   refineGridpointsCollection(storage, functor, collection);
 
-  if(addedPoints != 0) {
-    for(size_t i = sizeBeforeRefine; i < storage.getSize(); i++) {
+  if (addedPoints != 0) {
+    for (size_t i = sizeBeforeRefine; i < storage.getSize(); i++) {
       addedPoints->push_back(i);
     }
   }
