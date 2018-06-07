@@ -237,7 +237,7 @@ double BsplineStochasticCollocation::computeDiscreteVariance(
 
   discreteVar = 0.0;
   for (size_t i = 0; i < evaluations.getSize(); i++) {
-    discreteVar += std::pow(evaluations[i] - ev, 2);
+    discreteVar += std::pow(evaluations[i] - discreteEV, 2);
   }
   discreteVar /= static_cast<double>(discretePoints.getNcols() - 1);
 
