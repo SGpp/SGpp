@@ -42,8 +42,11 @@ BOOST_AUTO_TEST_SUITE(TestRefinementAddedPoints)
 /*
   Utility for tests
  */
-void gridTest(GridStorage& gridStorage, DataVector& alpha, AbstractRefinement& ref,
-              RefinementFunctor& fun) {
+void gridTest(GridStorage& gridStorage,
+              DataVector& alpha,
+              AbstractRefinement& ref,
+              RefinementFunctor& fun,
+              bool isPredictive = false) { // quickfix for inheritance issue
   std::vector<size_t> oldPoints; // points before refinement
   std::vector<size_t> newPoints; // points that are new after refinement
   std::vector<size_t> addedPoints; // points that are added by refinement
@@ -51,7 +54,13 @@ void gridTest(GridStorage& gridStorage, DataVector& alpha, AbstractRefinement& r
     oldPoints.push_back(gridStorage.getSequenceNumber(*it->first));
   }
 
-  ref.free_refine(gridStorage, fun, &addedPoints);
+  if(isPredictive) {
+    PredictiveRefinementIndicator predFun = dynamic_cast<PredictiveRefinementIndicator&>(fun);
+    PredictiveRefinement& predRef = dynamic_cast<PredictiveRefinement&>(ref);
+    predRef.free_refine(gridStorage, predFun, &addedPoints);
+  } else {
+    ref.free_refine(gridStorage, fun, &addedPoints);
+  }
 
   for(auto it = gridStorage.begin(); it != gridStorage.end(); it++) {
     size_t seq = gridStorage.getSequenceNumber(*it->first);
@@ -251,8 +260,8 @@ BOOST_AUTO_TEST_CASE(TestLinearPredictive) {
 
   HashRefinement refHash;
   PredictiveRefinement refPred(&refHash);
-  PredictiveRefinementIndicator fun(*grid, data, error, 2, 0., 0);
-  gridTest(gridStorage, alpha, refPred, fun);
+  PredictiveRefinementIndicator fun(*grid, data, error, 2);
+  gridTest(gridStorage, alpha, refPred, fun, true);
 }
 
 BOOST_AUTO_TEST_CASE(TestBoundaryPredictive) {
@@ -277,8 +286,9 @@ BOOST_AUTO_TEST_CASE(TestBoundaryPredictive) {
 
   HashRefinementBoundaries refHash;
   PredictiveRefinement refPred(&refHash);
-  PredictiveRefinementIndicator fun(*grid, data, error, 2, 0., 0);
-  gridTest(gridStorage, alpha, refPred, fun);
+  PredictiveRefinementIndicator fun(*grid, data, error, 1);
+  gridTest(gridStorage, alpha, refPred, fun, true);
 }
+
 
 BOOST_AUTO_TEST_SUITE_END()
