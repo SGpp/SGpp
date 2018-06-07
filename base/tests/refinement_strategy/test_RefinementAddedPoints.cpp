@@ -48,10 +48,10 @@ void gridTest(GridStorage& gridStorage,
               DataVector& alpha,
               AbstractRefinement& ref,
               RefinementFunctor& fun,
-              bool isPredictive = false) { // quickfix for inheritance issue
-  std::vector<size_t> oldPoints; // points before refinement
-  std::vector<size_t> newPoints; // points that are new after refinement
-  std::vector<size_t> addedPoints; // points that are added by refinement
+              bool isPredictive = false) {  // quickfix for inheritance issue
+  std::vector<size_t> oldPoints;  // points before refinement
+  std::vector<size_t> newPoints;  // points that are new after refinement
+  std::vector<size_t> addedPoints;  // points that are added by refinement
   for (auto it = gridStorage.begin(); it != gridStorage.end(); it++) {
     oldPoints.push_back(gridStorage.getSequenceNumber(*it->first));
   }
@@ -69,7 +69,7 @@ void gridTest(GridStorage& gridStorage,
 
 
     // only added points not contained in oldPoints to newPoints
-    if(std::find(oldPoints.begin(), oldPoints.end(), seq) == oldPoints.end()) {
+    if (std::find(oldPoints.begin(), oldPoints.end(), seq) == oldPoints.end()) {
       newPoints.push_back(seq);
     }
   }
@@ -96,8 +96,8 @@ BOOST_AUTO_TEST_CASE(TestBasicHash) {
 
 
   // arbitrary choice
-  alpha[3] = 1.0; // level 3 1 1 1
-  alpha[37] = 1.0; // level 2 1 1 2
+  alpha[3] = 1.0;  // level 3 1 1 1
+  alpha[37] = 1.0;  // level 2 1 1 2
 
   HashRefinement refHash;
   SurplusRefinementFunctor fun(alpha, 2);
@@ -116,8 +116,8 @@ BOOST_AUTO_TEST_CASE(TestBasicSubspace) {
 
 
   // arbitrary choice
-  alpha[3] = 1.0; // level 3 1 1 1
-  alpha[37] = 1.0; // level 2 1 1 2
+  alpha[3] = 1.0;  // level 3 1 1 1
+  alpha[37] = 1.0;  // level 2 1 1 2
 
   HashRefinement refHash;
   SubspaceRefinement refSub(&refHash);
@@ -137,8 +137,8 @@ BOOST_AUTO_TEST_CASE(TestBoundaryHash) {
 
 
   // arbitrary choice
-  alpha[30] = 1.0; // level 1 3 0
-  alpha[180] = 1.0; // level 1 3 1
+  alpha[30] = 1.0;  // level 1 3 0
+  alpha[180] = 1.0;  // level 1 3 1
 
   HashRefinementBoundaries refHash;
   SurplusRefinementFunctor fun(alpha, 2);
@@ -157,8 +157,8 @@ BOOST_AUTO_TEST_CASE(TestBoundarySubspace) {
 
 
   // arbitrary choice
-  alpha[30] = 1.0; // level 1 3 0
-  alpha[180] = 1.0; // level 1 3 1
+  alpha[30] = 1.0;  // level 1 3 0
+  alpha[180] = 1.0;  // level 1 3 1
 
   HashRefinementBoundaries refHash;
   SubspaceRefinement refSub(&refHash);

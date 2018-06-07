@@ -3,7 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <vector>
 #include <sgpp/base/grid/GridStorage.hpp>
 
 #include <sgpp/base/grid/generation/hashmap/HashRefinementBoundariesMaxLevel.hpp>
@@ -13,6 +12,8 @@
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
+
+#include <vector>
 
 
 namespace sgpp {

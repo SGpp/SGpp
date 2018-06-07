@@ -3,7 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <vector>
 #include <sgpp/base/grid/generation/PeriodicGridGenerator.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 
@@ -13,8 +12,9 @@
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 
-
 #include <sgpp/globaldef.hpp>
+
+#include <vector>
 
 
 namespace sgpp {
