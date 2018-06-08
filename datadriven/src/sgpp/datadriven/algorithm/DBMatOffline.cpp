@@ -46,7 +46,7 @@ using sgpp::base::data_exception;
 using sgpp::base::OperationMatrix;
 
 DBMatOffline::DBMatOffline(
-    const sgpp::base::RegularGridConfiguration& gridConfig,
+    const sgpp::base::GeneralGridConfiguration& gridConfig,
     const sgpp::base::AdpativityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig)
@@ -110,7 +110,7 @@ DBMatOffline::DBMatOffline(const std::string& fileName)
   std::cout << "Grid set up! Start reading Matrix" << std::endl;
 }
 
-sgpp::base::RegularGridConfiguration& DBMatOffline::getGridConfig() {
+sgpp::base::GeneralGridConfiguration& DBMatOffline::getGridConfig() {
     return gridConfig;
 }
 sgpp::base::AdpativityConfiguration& DBMatOffline::getAdaptivityConfig() {
@@ -230,7 +230,7 @@ void DBMatOffline::printMatrix() {
 
 void sgpp::datadriven::DBMatOffline::parseConfig(
     const std::string& fileName,
-    sgpp::base::RegularGridConfiguration& gridConfig,
+    sgpp::base::GeneralGridConfiguration& gridConfig,
     sgpp::base::AdpativityConfiguration& adaptivityConfig,
     sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) const {

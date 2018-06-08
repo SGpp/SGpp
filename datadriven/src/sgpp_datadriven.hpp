@@ -38,6 +38,8 @@
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
 
+#include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
+
 #include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
@@ -104,6 +106,7 @@
 #include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DatabaseConfiguration.hpp>
 
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 
@@ -125,6 +128,7 @@
 #include <sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp>
+#include <sgpp/datadriven/datamining/configuration/GeneralGridTypeParser.hpp>
 
 #include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/CSVFileSampleProvider.hpp>

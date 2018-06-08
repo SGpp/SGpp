@@ -29,7 +29,7 @@ using sgpp::base::GridType;
 using sgpp::base::factory_exception;
 
 DBMatOffline* DBMatOfflineFactory::buildOfflineObject(
-    const sgpp::base::RegularGridConfiguration& gridConfig,
+    const sgpp::base::GeneralGridConfiguration& gridConfig,
     const sgpp::base::AdpativityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
