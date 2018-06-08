@@ -18,6 +18,7 @@
 // %include "datadriven/src/sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/configuration/RegularizationConfiguration.hpp"
+%include "datadriven/src/sgpp/datadriven/configuration/DatabaseConfiguration.hpp"
 %rename (getConstTargets) sgpp::datadriven::Dataset::getTargets() const;
 %rename (getConstData) sgpp::datadriven::Dataset::getData() const;
 %include "datadriven/src/sgpp/datadriven/tools/Dataset.hpp"
@@ -37,6 +38,8 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDEChol.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp"
+
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDatabase.hpp"
 
 #ifdef USE_GSL
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp"
