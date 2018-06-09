@@ -9,6 +9,7 @@
  *  Created on: May 27, 2018
  *      Author: dominik
  */
+#ifdef USE_GSL
 
 #include <boost/test/unit_test_suite.hpp>
 #include <boost/test/test_tools.hpp>
@@ -40,7 +41,7 @@ double testDistribution(std::string testCSV, std::string config) {
   ModelFittingBase *model = miner->getModel();
   // Test
   CSVFileSampleProvider csv;
-  csv.readFile(testCSV);
+  csv.readFile(testCSV, true);
   auto testDataset = *(csv.getAllSamples());
   DataVector predictions(testDataset.getNumberInstances());
   model->evaluate(testDataset.getData(), predictions);
@@ -249,4 +250,4 @@ BOOST_AUTO_TEST_CASE(Test_10D_B4StroSkewSepBiB2TriB1B3ClawKurG) {
 
 BOOST_AUTO_TEST_SUITE_END()
 
-
+#endif /* USE_GSL */

@@ -63,6 +63,7 @@ void ModelFittingDensityEstimation::fit(Dataset& newDataset) {
 
   // build grid
   gridConfig.dim_ = dataset->getDimension();
+  std::cout << "Dataset dimension " << gridConfig.dim_ << std::endl;
   // TODO(fuchsgruber): Support for geometry aware sparse grids (pass interactions from config?)
   // grid = std::unique_ptr<Grid>{buildGrid(gridConfig)};
   grid = std::unique_ptr<Grid>{buildGrid(gridConfig)};
@@ -97,6 +98,7 @@ void ModelFittingDensityEstimation::fit(Dataset& newDataset) {
 
   online->computeDensityFunction(alpha, newDataset.getData(), *grid,
       this->config->getDensityEstimationConfig());
+  online->normalize(alpha, *grid);
 }
 
 bool ModelFittingDensityEstimation::refine() {
@@ -110,7 +112,7 @@ bool ModelFittingDensityEstimation::refine() {
       std::cout << "Old number points " << oldNoPoints << std::endl;
       grid->getGenerator().refine(refinementFunctor);
       auto newNoPoints = grid->getSize();
-      std::cout << "New number points" << newNoPoints << std::endl;
+      std::cout << "New number points " << newNoPoints << std::endl;
       if (newNoPoints != oldNoPoints) {
         // Tell the SLE manager that the grid changed (for interal data structures)
         alpha.resizeZero(newNoPoints);
@@ -120,6 +122,7 @@ bool ModelFittingDensityEstimation::refine() {
             *grid, newNoPoints - oldNoPoints, deletedGridPoints, online->getBestLambda());
         online->computeDensityFunction(alpha, dataset->getData(), *grid,
               this->config->getDensityEstimationConfig());
+        online->normalize(alpha, *grid);
         refinementsPerformed++;
         return true;
       } else {
