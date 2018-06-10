@@ -49,7 +49,13 @@ class FitterFactory {
    * Outputs information about the current hyperparameter configuration.
    * @return String to print to console or file containing values of manipulated hyperparameters.
    */
-  virtual std::string printConfig() = 0;
+  std::string printConfig();
+
+  /**
+   * Outputs the names of the hyperparameters
+   * @return string to pringt ot console or file containing comma seperated names
+   */
+  std::string printHeadline();
 
   /**
    * Setup connection to hyperparameter classes for modifying them through boolean represenations
@@ -98,6 +104,10 @@ class FitterFactory {
    */
   std::vector<int> catOptions;
 
+  /**
+   * Container for GridTypes specifically for the basis function hyperparameter
+   */
+  std::vector<base::GridType> basisFunctions;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

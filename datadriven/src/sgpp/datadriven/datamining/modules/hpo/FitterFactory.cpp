@@ -11,6 +11,7 @@
  */
 
 #include <sgpp/datadriven/datamining/modules/hpo/FitterFactory.hpp>
+#include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -68,6 +69,34 @@ BOConfig FitterFactory::getBOConfig() {
     catOptions.push_back(pair.second.getNOptions());
   }
   return BOConfig(&discOptions, &catOptions, conpar.size());
+}
+
+std::string FitterFactory::printConfig() {
+  std::stringstream s;
+  if (catpar.count("basisFunction")) {
+    s << ", " << GridTypeParser::toString(basisFunctions[catpar["basisFunction"].getValue()]);
+  }
+  for (auto &pair: dispar) {
+    s << ", " << pair.second.getValue();
+  }
+  for (auto &pair: conpar) {
+    s << ", " << pair.second.getValue();
+  }
+  return s.str();
+}
+
+std::string FitterFactory::printHeadline() {
+  std::stringstream s;
+  if (catpar.count("basisFunction")) {
+    s << ", " << "basisFunction";
+  }
+  for (auto &pair: dispar) {
+    s << ", " << pair.first;
+  }
+  for (auto &pair: conpar) {
+    s << ", " << pair.first;
+  }
+  return s.str();
 }
 
 } /* namespace datadriven */

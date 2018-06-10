@@ -27,34 +27,12 @@ Harmonica::Harmonica(FitterFactory *fitterFactory)
     : fitterFactory(fitterFactory), configIDs(), savedScores(), configBits(), constraints() {
   fitterFactory->getConfigBits(configBits);
   freeBits = std::vector<ConfigurationBit *>(configBits);
-  for (auto &bit : freeBits) {
-    std::cout << "freeBits: " << bit->getName() << std::endl;
-  }
-  for (auto &bit : configBits) {
-    std::cout << "configBits: " << bit->getName() << std::endl;
-  }
 }
 
-/*
-void Harmonica::transformScores(const DataVector& source, DataVector& target){
-  std::vector<int> idx(source.size());
-  for(int i=0; i<idx.size(); i++){
-    idx[i] = i;
-  }
-  // sort indices based on comparing values in source
-  sort(idx.begin(), idx.end(),
-       [&source](int i1, int i2) {return source[i1] < source[i2];});
-  for(int i=0; i<idx.size(); i++){
-    target[idx[i]] = i;
-    if(i>50){
-      target[idx[i]] = 50;
-    }
-  }
-}
-*/
+
 
 void Harmonica::transformScores(const DataVector &source, DataVector &target) {
-  for (int i = 0; i < source.size(); i++) {
+  for (size_t i = 0; i < source.size(); i++) {
     target[i] = std::pow(source[i], 0.5);
   }
 }
@@ -63,31 +41,27 @@ std::vector<int> *Harmonica::prepareConfigs(std::vector<std::unique_ptr<ModelFit
                                             int seed,
                                             std::vector<std::string> &configStrings) {
 
-  //migrate samples that fit in the new space
+  // migrate samples that fit in the new space
   size_t nOld = configIDs.size();
-  std::cout << "nOld: " << nOld << std::endl;
+  // std::cout << "nOld: " << nOld << std::endl;
   size_t nAll = nOld + fitters.size();
-  std::cout << "nAll: " << nAll << std::endl;
+  // std::cout << "nAll: " << nAll << std::endl;
   configIDs.resize(nAll);
 
   // get configured models for n samples (call fitterfactory)
-  // EDIT: deleted freeBit assignment here, add in constructor
   size_t ncols = (freeBits.size() * freeBits.size() + 5) * freeBits.size() / 6 + 1;
-  std::cout << "nBits: " << ncols << std::endl;
-  std::cout << "nConfigBits: " << configBits.size() << std::endl;
+  // std::cout << "nBits: " << ncols << std::endl;
+  // std::cout << "nConfigBits: " << configBits.size() << std::endl;
   parityrow = std::vector<std::vector<ConfigurationBit *>>(ncols);
-  /*for(int i = 0; i<ncols;i++){
-    parityrow.emplace_back();
-  }*/
   size_t cnt = freeBits.size();
   size_t cnt2 = (freeBits.size() + 1) * freeBits.size() / 2;
-  for (int i = 0; i < freeBits.size(); i++) {
+  for (size_t i = 0; i < freeBits.size(); i++) {
     parityrow[i].push_back(freeBits[i]);
-    for (int k = i + 1; k < freeBits.size(); k++) {
+    for (size_t k = i + 1; k < freeBits.size(); k++) {
       parityrow[cnt].push_back(freeBits[i]);
       parityrow[cnt].push_back(freeBits[k]);
       cnt++;
-      for (int m = k + 1; m < freeBits.size(); m++) {
+      for (size_t m = k + 1; m < freeBits.size(); m++) {
         parityrow[cnt2].push_back(freeBits[i]);
         parityrow[cnt2].push_back(freeBits[k]);
         parityrow[cnt2].push_back(freeBits[m]);
@@ -96,23 +70,11 @@ std::vector<int> *Harmonica::prepareConfigs(std::vector<std::unique_ptr<ModelFit
     }
   }
 
-  //nAll = 1000;
-  //build matrix
-  // EDIT: add bias term? already in there!!!
   paritymatrix = DataMatrix(nAll, ncols);
 
-  createRandomConfigs(freeBits.size(), configIDs, 42, nOld); //EDIT: seed
-  /*std::vector<int> shuffleConfigs(configIDs);
-  std::mt19937 sgenerator(seed);
-  std::shuffle(shuffleConfigs.begin(), shuffleConfigs.end(), sgenerator);
-  configIDs.resize(nAll);
-  for (int j = 0; j < nAll; ++j) {
-    configIDs[j] = shuffleConfigs[j];
-  }*/
+  createRandomConfigs(freeBits.size(), configIDs, seed, nOld);
 
-  std::cout << "ConfigIDs: " << configIDs[0] << ", " << configIDs[1] << std::endl;
-
-  for (int i = 0; i < nAll; i++) {
+  for (size_t i = 0; i < nAll; i++) {
     setParameters(configIDs[i], i);
     if (i >= nOld) {
       fitters[i - nOld].reset(fitterFactory->buildFitter());
@@ -123,28 +85,32 @@ std::vector<int> *Harmonica::prepareConfigs(std::vector<std::unique_ptr<ModelFit
 }
 
 
-//EDIT: handle zero bias constraints
 
 void Harmonica::calculateConstrainedSpace(const DataVector &transformedScores,
                                           double lambda,
                                           int shrink) {
+  std::cout << savedScores.toString() << std::endl; //EDIT
   size_t nOld = savedScores.size();
   size_t nAll = transformedScores.size() + nOld;
   savedScores.resize(nAll); //EDIT: is this working?
   for (size_t i = nOld; i < nAll; i++) {
     savedScores[i] = transformedScores[i - nOld];
   }
+  std::cout << savedScores.toString() << std::endl; //EDIT
+
+  base::DataVector normed(savedScores);
+  normed.normalize();
 
   // run solver
   solver::LassoFunction g{lambda};
   solver::Fista<solver::LassoFunction> fista{g};
   DataVector alpha = DataVector{paritymatrix.getNcols()};
   base::LinearGrid dummygrid(0);
-  OperationMultipleEvalMatrix opMultEval{dummygrid, paritymatrix}; //EDIT: This okay?
-  fista.solve(opMultEval, alpha, savedScores, 100, DEFAULT_RES_THRESHOLD);
+  OperationMultipleEvalMatrix opMultEval{dummygrid, paritymatrix};
+  fista.solve(opMultEval, alpha, normed, 100, DEFAULT_RES_THRESHOLD);
 
-  std::vector<int> idx(alpha.size() - 1);
-  for (int i = 0; i < idx.size(); i++) {
+  std::vector<size_t> idx(alpha.size() - 1);
+  for (size_t i = 0; i < idx.size(); i++) {
     idx[i] = i;
     // std::cout<<"Alpha: "<<i<<":"<<alpha[i]<<std::endl; //bias term invisible
   }
@@ -154,33 +120,37 @@ void Harmonica::calculateConstrainedSpace(const DataVector &transformedScores,
        [&alpha](int i1, int i2) { return fabs(alpha[i1]) > fabs(alpha[i2]); });
 
   size_t nBitsOld = freeBits.size();
-  int i = 0;
+  size_t i = 0;
 
   //save free Bits for moving configs to new space
   std::vector<ConfigurationBit *> freeBitsold(freeBits);
 
   while (freeBits.size() > nBitsOld - shrink && alpha[idx[i]] != 0) {
-    addConstraint(idx[i],
-                  -((alpha[idx[i]] > 0)
-                      - (alpha[idx[i]] < 0))); // -lround(alpha[idx[i]]/fabs(alpha[idx[i]]))
-    std::cout << "Constraint number:" << idx[i] << ","
-              << -((alpha[idx[i]] > 0) - (alpha[idx[i]] < 0)) << "," << alpha[idx[i]]
-              << ", freebits: " << freeBits.size() << std::endl;
+    int bias = -((alpha[idx[i]] > 0) - (alpha[idx[i]] < 0));
+    if(addConstraint(idx[i], bias)){
+      std::cout << "Constraint added: " << parityrow[idx[i]][0]->getName();
+      for (size_t k = 1; k < parityrow[idx[i]].size(); ++k) {
+        std::cout << " * " << parityrow[idx[i]][k]->getName();
+      }
+      std::cout << " = " << bias << " (Weight: " << alpha[idx[i]] << ")" << std::endl;
+    }
     i++;
   }
 
+  std::cout << "Free bits in new space: " << freeBits.size() << std::endl;
+
   std::vector<int> configIDsNew{};
   DataVector newScores{};
-  for (int i = 0; i < configIDs.size(); i++) {
-    int moved = moveToNewSpace(configIDs[i], freeBitsold);
+  for (size_t k = 0; k < configIDs.size(); k++) {
+    int moved = moveToNewSpace(configIDs[k], freeBitsold);
     // if in new space push back on vector
     // and save Scores
     if (moved >= 0) {
-      newScores.push_back(savedScores[i]);
+      newScores.push_back(savedScores[k]);
       configIDsNew.push_back(moved);
     }
   }
-  configIDs = configIDsNew; //EDIT: is this working?
+  configIDs = configIDsNew;
   savedScores = newScores;
 }
 
@@ -190,7 +160,7 @@ void Harmonica::createRandomConfigs(size_t nBits,
                                     size_t start) {
   std::mt19937 generator = std::mt19937(seed);
   std::uniform_int_distribution<int> distribution(0, static_cast<int>(std::pow(2, nBits) - 1));
-  std::cout << "MaxConfigs: " << std::pow(2, nBits) << std::endl;
+  // std::cout << "MaxConfigs: " << std::pow(2, nBits) << std::endl;
   for (size_t i = start; i < configIDs.size(); i++) {
     configIDs[i] = distribution(generator);
     bool bUnchecked = true;
@@ -206,12 +176,10 @@ void Harmonica::createRandomConfigs(size_t nBits,
   }
 }
 
-bool Harmonica::fixConfigBits() { //EDIT: einfacherer Approach, nur über constraints gehen
-  //EDIT: reset bits and constraints
-  //std::vector<ConfigurationBit*> freeBitsn{};
+bool Harmonica::fixConfigBits() {
   int nextFreeBit = 0;
   bool changedFreeBits = false;
-  bool resolved = true;
+  bool resolved;
   while (nextFreeBit < configBits.size() - 1) {
     resolved = true;
     while (resolved) {
@@ -224,7 +192,7 @@ bool Harmonica::fixConfigBits() { //EDIT: einfacherer Approach, nur über constr
       }
     }
     while (configBits[nextFreeBit]->getValue() != 0
-        && nextFreeBit < configBits.size() - 1) { //EDIT: endpoint
+        && nextFreeBit < configBits.size() - 1) {
       nextFreeBit++;
     }
     if (configBits[nextFreeBit]->getValue() == 0) {
@@ -245,7 +213,7 @@ void Harmonica::resetBits() {
   }
 }
 
-void Harmonica::setParameters(int configID, int matrixrow) {
+void Harmonica::setParameters(int configID, size_t matrixrow) {
   resetBits();
   for (auto &bit : freeBits) {
     bit->setValue((configID & 1) * 2 - 1);
@@ -255,7 +223,7 @@ void Harmonica::setParameters(int configID, int matrixrow) {
   if (changed) {
     std::cout << "Error: freeBits changed in setParameters." << std::endl; //EDIT: throw exception
   }
-  for (int i = 0; i < parityrow.size(); i++) {
+  for (size_t i = 0; i < parityrow.size(); i++) {
     int tmp = 1;
     for (auto &bit : parityrow[i]) {
       tmp = tmp * bit->getValue();
@@ -264,27 +232,26 @@ void Harmonica::setParameters(int configID, int matrixrow) {
   }
 
   fitterFactory->setHarmonica();
-
-  //EDIT: set Parameters in fitter and parameter classes
 }
 
-void Harmonica::addConstraint(int idx, int bias) {
+bool Harmonica::addConstraint(size_t idx, int bias) {
   constraints.push_back(std::make_unique<ConfigurationRestriction>(parityrow[idx], bias));
   for (auto &bit : parityrow[idx]) {
     bit->addConstraint(constraints.back().get());
-    std::cout << "Adding bit " << bit->getName() << " from constraint:" << idx << std::endl;
+    // std::cout << "Adding bit " << bit->getName() << " from constraint:" << idx << std::endl;
   }
   freeBits = std::vector<ConfigurationBit *>{};
   resetBits();
   fixConfigBits();
   if (!checkConstraints()) {
-    //EDIT: revert constraint
     constraints.pop_back();
     for (auto &bit : parityrow[idx]) {
       bit->removeLastConstraint();
-      std::cout << "Removing bit from constraint:" << idx << std::endl;
+      // std::cout << "Removing bit from constraint:" << idx << std::endl;
     }
+    return false;
   }
+  return true;
 }
 
 bool Harmonica::checkConstraints() {

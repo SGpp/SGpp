@@ -64,6 +64,10 @@ size_t BOConfig::getContSize() {
   return cont.size();
 }
 
+size_t BOConfig::getNPar() const {
+  return cont.size() + disc.size() + cat.size();
+}
+
 void BOConfig::setCont(const base::DataVector &input) {
   cont = base::DataVector(input);
 }

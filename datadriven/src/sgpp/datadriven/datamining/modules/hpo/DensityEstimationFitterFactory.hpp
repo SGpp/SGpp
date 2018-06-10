@@ -40,12 +40,6 @@ class DensityEstimationFitterFactory : public FitterFactory {
    */
   ModelFittingBase *buildFitter() override;
 
-  /**
-   * Outputs information about the current hyperparameter configuration.
-   * @return String to print to console or file containing values of manipulated hyperparameters.
-   */
-  std::string printConfig() override;
-
  protected:
   /**
    * Configuration for all parameters that are not optimized
