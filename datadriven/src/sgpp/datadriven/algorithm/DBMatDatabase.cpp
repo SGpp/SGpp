@@ -3,13 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-/*
- * DBMatDatabase.cpp
- *
- *  Created on: Apr 22, 2018
- *      Author: dominik
- */
-
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
 
 #include <sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp>

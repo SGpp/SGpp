@@ -3,13 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-/*
- * DBMatDatabase.hpp
- *
- *  Created on: Apr 22, 2018
- *      Author: dominik
- */
-
 #ifndef DATADRIVEN_SRC_SGPP_DATADRIVEN_ALGORITHM_DBMATDATABASE_HPP_
 #define DATADRIVEN_SRC_SGPP_DATADRIVEN_ALGORITHM_DBMATDATABASE_HPP_
 
@@ -134,7 +127,7 @@ class DBMatDatabase{
    * of the node
    */
   bool regularizationConfigurationMatches(json::DictNode *node,
-      sgpp::datadriven::RegularizationConfiguration& gridConfig, size_t entry_num);
+      sgpp::datadriven::RegularizationConfiguration& regularizationConfig, size_t entry_num);
 
   /**
    * Checks weather the regularization configuration of a json dict node representing a

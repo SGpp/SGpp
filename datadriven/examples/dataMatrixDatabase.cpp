@@ -3,14 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-/*
- * dataMatrixDatabase.cpp
- *
- *  Created on: Apr 22, 2018
- *      Author: dominik
- */
-
-
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
