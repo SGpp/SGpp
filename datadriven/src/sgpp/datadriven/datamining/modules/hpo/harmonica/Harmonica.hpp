@@ -79,13 +79,13 @@ class Harmonica {
    * @param configID bits of the configuration as an integer
    * @param matrixrow index of the row of the parity matrix to be filled
    */
-  void setParameters(int configID, int matrixrow);
+  void setParameters(int configID, size_t matrixrow);
   /**
    * Adds a constraint based on an entry in the parity row.
    * @param idx index of the parity row that holds pointers to the bits that will be constrained
    * @param bias bias value of the constraint
    */
-  void addConstraint(int idx, int bias);
+  bool addConstraint(size_t idx, int bias);
   /**
    * Tests all constraints for validity in the current bit configuration
    * @return true when all constraints are met

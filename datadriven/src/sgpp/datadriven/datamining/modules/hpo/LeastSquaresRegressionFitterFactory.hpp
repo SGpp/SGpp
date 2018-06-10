@@ -40,22 +40,12 @@ class LeastSquaresRegressionFitterFactory : public FitterFactory {
    */
   ModelFittingBase *buildFitter() override;
 
-  /**
-   * Outputs information about the current hyperparameter configuration.
-   * @return String to print to console or file containing values of manipulated hyperparameters.
-   */
-  std::string printConfig() override;
 
  protected:
   /**
    * Configuration for all parameters that are not optimized
    */
   FitterConfigurationLeastSquares baseConfig;
-  /**
-   * Container for GridTypes specifically for the basis function hyperparameter
-   */
-  std::vector<base::GridType> basisFunctions;
-
 };
 
 } /* namespace datadriven */

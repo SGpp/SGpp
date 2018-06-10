@@ -57,6 +57,12 @@ class BOConfig {
   size_t getContSize();
 
   /**
+ * Get number total number of parameters
+ * @return number of continuous parameters
+ */
+  size_t getNPar() const;
+
+  /**
    * Set the continuous parameters according to input
    * @param input DataVector holding continuous parameters
    */

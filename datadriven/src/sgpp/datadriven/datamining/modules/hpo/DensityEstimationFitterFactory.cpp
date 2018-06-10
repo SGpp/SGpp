@@ -48,14 +48,6 @@ ModelFittingBase *DensityEstimationFitterFactory::buildFitter() {
   return new ModelFittingDensityEstimation(*config);
 }
 
-std::string DensityEstimationFitterFactory::printConfig() {
-  std::stringstream s;
-  std::string basisFunction[] = {"Linear", "ModLinear"};
-  s << dispar["level"].getValue()
-    // <<", "<<basisFunction[catpar["basisFunction"].getValue()]
-    << ", " << pow(10, conpar["lambda"].getValue());
-  return s.str();
-}
 
 } /* namespace datadriven */
 } /* namespace sgpp */

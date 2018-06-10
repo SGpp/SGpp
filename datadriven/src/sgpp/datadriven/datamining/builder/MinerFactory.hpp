@@ -13,9 +13,9 @@
 #pragma once
 
 #include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
 
 #include <string>
-#include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
 
 namespace sgpp {
 namespace datadriven {
