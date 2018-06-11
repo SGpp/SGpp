@@ -40,6 +40,7 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp"
 
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDatabase.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/GridFactory.hpp"
 
 #ifdef USE_GSL
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp"
@@ -130,6 +131,7 @@
 %rename(assign) sgpp::datadriven::Metric::operator =;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/Metric.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/MSE.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/NegativeLogLikelihood.hpp"
 %ignore  sgpp::datadriven::ShufflingFunctor::operator=(ShufflingFunctor&&);
 %rename(assign) sgpp::datadriven::ShufflingFunctor::operator =;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/ShufflingFunctor.hpp"

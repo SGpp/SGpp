@@ -96,7 +96,7 @@ int main() {
   std::cout << "Creating dbmat" << std::endl;
   sgpp::datadriven::DBMatOffline *db = sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(
       gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig);
-  db->buildMatrix(&(*grid), regularizationConfig);
+  db->buildMatrix(grid.get(), regularizationConfig);
   db->decomposeMatrix(regularizationConfig, densityEstimationConfig);
   db->store(dbmatfilepath);
   std::cout << "Created dbmat" << std::endl;

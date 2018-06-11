@@ -59,7 +59,7 @@ int main() {
   // sgpp::datadriven::DBMatOfflineChol offline(gridConfig, adaptConfig,
   //           regularizationConfig, densityEstimationConfig);
 
-  offline.buildMatrix(&(*grid), regularizationConfig);
+  offline.buildMatrix(grid.get(), regularizationConfig);
   auto begin = std::chrono::high_resolution_clock::now();
   offline.decomposeMatrix(regularizationConfig, densityEstimationConfig);
   auto end = std::chrono::high_resolution_clock::now();

@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(offline_object) {
   };
 
   sgpp::datadriven::DBMatOfflineOrthoAdapt off_object;
-  off_object.buildMatrix(&(*grid), regularizationConfig);
+  off_object.buildMatrix(grid.get(), regularizationConfig);
 
   size_t n = off_object.getGridSize();
   std::cout << "Grid size is " << (*grid).getStorage().getSize() << std::endl;
@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE(online_object) {
 
   // creating offline objects
   sgpp::datadriven::DBMatOfflineOrthoAdapt offline_base;
-  offline_base.buildMatrix(&(*grid), regularizationConfig);  // creating lhs matrix
+  offline_base.buildMatrix(grid.get(), regularizationConfig);  // creating lhs matrix
   sgpp::base::DataMatrix lhs(offline_base.getLhsMatrix_ONLY_FOR_TESTING());
   sgpp::base::DataMatrix lhs_copy_small(offline_base.getLhsMatrix_ONLY_FOR_TESTING());
   offline_base.decomposeMatrix(regularizationConfig, densityEstimationConfig);

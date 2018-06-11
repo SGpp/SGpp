@@ -51,7 +51,7 @@ int main() {
   };
 
   sgpp::datadriven::DBMatOfflineChol fullOffline;
-  fullOffline.buildMatrix(&(*grid), regularizationConfig);
+  fullOffline.buildMatrix(grid.get(), regularizationConfig);
   fullOffline.decomposeMatrix(regularizationConfig, fullDensityEstimationConfig);
   auto& fullMat = fullOffline.getDecomposedMatrix();
 
@@ -68,7 +68,7 @@ int main() {
   exactIConfig.iCholSweepsDecompose_ = 1;
 
   sgpp::datadriven::DBMatOfflineDenseIChol exactIOffline;
-  exactIOffline.buildMatrix(&(*grid), regularizationConfig);
+  exactIOffline.buildMatrix(grid.get(), regularizationConfig);
 
   auto numThreads = 0;
 
@@ -97,7 +97,7 @@ int main() {
     densityEstimationConfig.iCholSweepsDecompose_ = i;
 
     sgpp::datadriven::DBMatOfflineDenseIChol offline;
-    offline.buildMatrix(&(*grid), regularizationConfig);
+    offline.buildMatrix(grid.get(), regularizationConfig);
     offline.decomposeMatrix(regularizationConfig, densityEstimationConfig);
 
     auto& iMat = offline.getDecomposedMatrix();
