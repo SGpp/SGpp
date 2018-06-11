@@ -25,9 +25,9 @@ void ConfigurationRestriction::reduceOpenBits() {
 }
 
 void ConfigurationRestriction::resolve() {
-  int idx = -1;
+  size_t idx = 100;
   int tmp = bias;
-  for (int i = 0; i < parameters.size(); ++i) {
+  for (size_t i = 0; i < parameters.size(); ++i) {
     int v = parameters[i]->getValue();
     if (v == 0) {
       idx = i;
@@ -51,7 +51,7 @@ bool ConfigurationRestriction::check() {
 }
 
 void ConfigurationRestriction::reset() {
-  openBits = parameters.size();
+  openBits = static_cast<int>(parameters.size());
 }
 
 }  // namespace datadriven

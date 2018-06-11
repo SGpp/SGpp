@@ -28,25 +28,9 @@ void ConfigurationBit::reset() {
 
 void ConfigurationBit::setValue(int input) {
   value = input;
-
   for (auto &constraint : constraints) {
-    // std::cout<<"Test Point 178!"<<std::endl; //EDIT: throw exception
     constraint->reduceOpenBits();
   }
-  // std::cout<<"Test Point 188!"<<std::endl; //EDIT: throw exception
-
-  /*for(auto &constraint : constraints){
-    int nOpen = constraint->getOpenBits();
-    if(nOpen == 0){
-      if(!constraint->check()){
-        return false;
-      }
-    }else if(nOpen == 1){
-      if(!constraint->resolve()){
-        return false;
-      }
-    }
-  }*/
 }
 
 int ConfigurationBit::getValue() {
