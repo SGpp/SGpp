@@ -11,6 +11,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
+
 
 namespace sgpp {
 namespace base {
@@ -81,7 +83,7 @@ class PrewaveletGridGenerator: public GridGenerator {
   void regular(size_t level, double T) override;
   void cliques(size_t level, size_t clique_size, double T) override;
   void full(size_t level) override;
-  void refine(RefinementFunctor& func) override;
+  void refine(RefinementFunctor& func, std::vector<size_t>* addedPoints = 0) override;
   size_t getNumberOfRefinablePoints() override;
 
   void coarsen(CoarseningFunctor& func, DataVector& alpha) override;

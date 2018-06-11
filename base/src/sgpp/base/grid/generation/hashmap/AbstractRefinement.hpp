@@ -135,13 +135,16 @@ class AbstractRefinement {
    * Refines up to RefinementFunctor::getRefinementsNum() grid points if
    * possible, and if their refinement value is larger than RefinementFunctor::start()
    * and their absolute value is larger or equal than RefinementFunctor::getRefinementThreshold()
+   * If addedPoints is supplied and not a zero pointer, then newly created grid points are
+   * appended to this vector.
    *
    * @param storage hashmap that stores the grid points
    * @param functor a RefinementFunctor specifying the refinement criteria
+   * @param addedPoints pointer to vector to append newly created grid points to
    */
   virtual void free_refine(GridStorage& storage,
-                           RefinementFunctor& functor) = 0;
-
+                           RefinementFunctor& functor,
+                           std::vector<size_t>* addedPoints = 0) = 0;
 
   /**
    * Computes and returns the number of grid points, which can be refined.
