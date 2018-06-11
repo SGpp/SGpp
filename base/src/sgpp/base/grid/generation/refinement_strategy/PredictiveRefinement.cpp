@@ -151,10 +151,18 @@ void PredictiveRefinement::refineGridpointsCollection(
 }
 
 void PredictiveRefinement::free_refine(GridStorage& storage,
-                                       PredictiveRefinementIndicator& functor) {
+                                       PredictiveRefinementIndicator& functor,
+                                       std::vector<size_t>* addedPoints) {
   if (storage.getSize() == 0) {
     throw generation_exception("storage empty");
   }
+
+  /**
+   * Assumption: during the refinement process the only change made
+   * to the storage is the following:
+   * New (if any) gridpoints are appended (to the end) of the storage
+   */
+  size_t sizeBeforeRefine = storage.getSize();
 
   // initialization
   AbstractRefinement::refinement_container_type collection;
@@ -163,6 +171,12 @@ void PredictiveRefinement::free_refine(GridStorage& storage,
   // now refine all grid points which satisfy the refinement criteria
   refineGridpointsCollection(storage, functor, collection);
   collection.clear();
+
+  if (addedPoints != 0) {
+    for (size_t i = sizeBeforeRefine; i < storage.getSize(); i++) {
+      addedPoints->push_back(i);
+    }
+  }
 }
 
 }  // namespace base

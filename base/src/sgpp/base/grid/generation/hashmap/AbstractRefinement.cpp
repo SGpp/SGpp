@@ -99,4 +99,3 @@ bool AbstractRefinement::isRefinable(GridStorage& storage, GridPoint& point) {
 
 }  // namespace base
 }  // namespace sgpp
-

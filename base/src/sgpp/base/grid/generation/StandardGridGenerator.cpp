@@ -55,10 +55,11 @@ void StandardGridGenerator::full(size_t level) {
   gen.full(this->storage, static_cast<level_t>(level));
 }
 
-void StandardGridGenerator::refine(RefinementFunctor& func) {
+void StandardGridGenerator::refine(RefinementFunctor& func, std::vector<size_t>* addedPoints) {
   HashRefinement refine;
-  refine.free_refine(this->storage, func);
+  refine.free_refine(this->storage, func, addedPoints);
 }
+
 void StandardGridGenerator::refineInter(RefinementFunctor& func,
                                         const std::unordered_set<std::vector<bool>>& interactions) {
   auto refine = HashRefinementInteraction(interactions);
