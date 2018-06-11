@@ -38,6 +38,10 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
 
   bool isRefineable() override;
 
+  /**
+   * Returns the decomposition type of the DBMatOffline object
+   * @return the type of matrix decomposition
+   */
   sgpp::datadriven::MatrixDecompositionType getDecompositionType() override;
 
   /**
@@ -50,6 +54,8 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    * (lhs + lambda*I)^{-1} = Q * (T + lambda*I)^{-1} * Q^t = Q * T_inv * Q^t
    *
    * The matrix lhsMatrix of the parent object will be altered during the process
+   * @param regularizationConfig the regularization configuration
+   * @param densityEstimationConfig the density estimation configuration
    */
   void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
       DensityEstimationConfiguration& densityEstimationConfig);

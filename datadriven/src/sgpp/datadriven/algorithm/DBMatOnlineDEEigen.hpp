@@ -37,6 +37,14 @@ class DBMatOnlineDEEigen : public DBMatOnlineDE {
   explicit DBMatOnlineDEEigen(DBMatOffline& offline, Grid& grid, double lambda, double beta = 0.);
 
  protected:
+  /**
+   * Solves the SLE for this matrix decomposition
+   * @param alpha the surplusses
+   * @param b the rhs of the system
+   * @param grid the underlying grid
+   * @param densityEstimationConfig configuration for the density estimation
+   * @param do_cv whether cross validation should be performed
+   */
   void solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
       DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) override;
 };
