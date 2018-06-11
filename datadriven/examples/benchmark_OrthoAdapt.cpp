@@ -47,7 +47,7 @@ int main() {
   // offline phase
   sgpp::datadriven::DBMatOfflineOrthoAdapt offline;
 
-  offline.buildMatrix(&(*grid), regularizationConfig);
+  offline.buildMatrix(grid.get(), regularizationConfig);
   std::cout << "initial matrix size = " << offline.getGridSize();
 
   std::cout << "\n\ndecomposition took ";

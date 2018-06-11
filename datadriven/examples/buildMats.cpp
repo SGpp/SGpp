@@ -211,7 +211,7 @@ int main() {
                                                               densityEstimationConfig);
   offline->interactions = getDirectNeighbours(res);
   std::cout << "Building Matrix..." << std::endl;
-  offline->buildMatrix(&(*grid), regularizationConfig);
+  offline->buildMatrix(grid.get(), regularizationConfig);
   std::cout << "Matrix build.\nBegin decomposition..." << std::endl;
   offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
   // offline->printMatrix();

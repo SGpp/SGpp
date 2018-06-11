@@ -89,7 +89,7 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(
     };
     std::unique_ptr<DBMatOffline> offlineCloned =
         std::unique_ptr<DBMatOffline>{offline->clone()};
-    offlineCloned->buildMatrix(&(*grid), regularizationConfig);
+    offlineCloned->buildMatrix(grid.get(), regularizationConfig);
     offlineCloned->decomposeMatrix(regularizationConfig, densityEstimationConfig);
     auto densEst = std::unique_ptr<DBMatOnlineDE>{
       DBMatOnlineDEFactory::buildDBMatOnlineDE(*offlineCloned, *grid,

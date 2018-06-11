@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteOrthoAdapt) {
                                                                 adaptivityConfig,
                                                                 regularizationConfig,
                                                                 densityEstimationConfig)};
-  offline->buildMatrix(&(*grid), regularizationConfig);
+  offline->buildMatrix(grid.get(), regularizationConfig);
   offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
   std::string filename = "test.dbmat";
   offline->store(filename);
@@ -137,7 +137,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteCholesky) {
                                                                 adaptivityConfig,
                                                                 regularizationConfig,
                                                                 densityEstimationConfig)};
-  offline->buildMatrix(&(*grid), regularizationConfig);
+  offline->buildMatrix(grid.get(), regularizationConfig);
   offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
 
   std::string filename = "test.dbmat";
@@ -184,7 +184,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteEigen) {
                                                                 adaptivityConfig,
                                                                 regularizationConfig,
                                                                 densityEstimationConfig)};
-  offline->buildMatrix(&(*grid), regularizationConfig);
+  offline->buildMatrix(grid.get(), regularizationConfig);
   offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
 
   std::string filename = "test.dbmat";
@@ -231,7 +231,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteLU) {
                                                                 adaptivityConfig,
                                                                 regularizationConfig,
                                                                 densityEstimationConfig)};
-  offline->buildMatrix(&(*grid), regularizationConfig);
+  offline->buildMatrix(grid.get(), regularizationConfig);
   offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
 
   std::string filename = "test.dbmat";

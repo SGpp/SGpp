@@ -90,7 +90,7 @@ void ModelFittingDensityEstimation::fit(Dataset& newDataset) {
     // Build offline object by factory, build matrix and decompose
     offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildOfflineObject(
        gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig)};
-    offline->buildMatrix(&(*grid), regularizationConfig);
+    offline->buildMatrix(grid.get(), regularizationConfig);
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
   }
   online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(*offline,
