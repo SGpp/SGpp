@@ -20,8 +20,6 @@
 namespace sgpp {
 namespace datadriven {
 
-using sgpp::base::Grid;
-using sgpp::base::GeneralGridConfiguration;
 
 /**
  * Factory class to create grids based on a configuration file
@@ -34,7 +32,7 @@ class GridFactory {
    * @param interactions the interactions for each dimension
    * @return pointer to the grid object created
    */
-  Grid *createGrid(GeneralGridConfiguration& gridConfig,
+  sgpp::base::Grid *createGrid(sgpp::base::GeneralGridConfiguration& gridConfig,
       std::vector<std::vector <size_t>> interactions) const;
 };
 }  // namespace datadriven
