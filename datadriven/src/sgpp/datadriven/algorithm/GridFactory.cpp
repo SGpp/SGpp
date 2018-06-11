@@ -26,7 +26,7 @@ using sgpp::base::algorithm_exception;
 namespace sgpp {
 namespace datadriven {
 
-sgpp::base::Grid *GridFactory::createGrid(GeneralGridConfiguration& gridConfig,
+sgpp::base::Grid *GridFactory::createGrid(sgpp::base::GeneralGridConfiguration& gridConfig,
     std::vector<std::vector <size_t>> interactions) const {
   Grid *grid;
 

@@ -39,6 +39,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
 
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
+#include <sgpp/datadriven/algorithm/GridFactory.hpp>
 
 #include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 
@@ -155,6 +156,7 @@
 
 #include <sgpp/datadriven/datamining/modules/scoring/CrossValidation.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/NegativeLogLikelihood.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/RandomShufflingFunctor.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
