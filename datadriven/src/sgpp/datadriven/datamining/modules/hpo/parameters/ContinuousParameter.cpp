@@ -5,6 +5,7 @@
  *      Author: polarbart
  */
 
+#include <cmath>
 #include "ContinuousParameter.hpp"
 
 namespace sgpp {
@@ -25,6 +26,9 @@ void ContinuousParameter::setBO(double interval) {
 }
 
 double ContinuousParameter::getValue() {
+  if(logscale){
+    return pow(10, value);
+  }
   return value;
 }
 

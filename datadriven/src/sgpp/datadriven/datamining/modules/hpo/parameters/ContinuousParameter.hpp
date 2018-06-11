@@ -62,6 +62,11 @@ class ContinuousParameter : public sgpp::datadriven::HyperParameter {
    * current value of the hyperparameter
    */
   double value = 0;
+
+  /**
+   * whether the parameter is on a log-scale
+   */
+  bool logscale = False;
 };
 
 } /* namespace datadriven */
