@@ -101,6 +101,8 @@ class DBMatOffline {
   /**
    * Decomposes the matrix according to the chosen decomposition type.
    * The number of rows of the stored result depends on the decomposition type.
+   * @param regularizationConfig the regularization configuration
+   * @param densityEstimationConfig the density estimation configuration
    */
   virtual void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
       DensityEstimationConfiguration& densityEstimationConfig) = 0;
@@ -118,11 +120,13 @@ class DBMatOffline {
 
   /**
    * Returns the dimensionality of the quadratic lhs matrix (i.e. the number of rows)
+   * @return the grid size
    */
   virtual size_t getGridSize();
 
   /**
    * Returns the decomposition type of the DBMatOffline object
+   * @return the type of matrix decomposition
    */
   virtual sgpp::datadriven::MatrixDecompositionType getDecompositionType() = 0;
 

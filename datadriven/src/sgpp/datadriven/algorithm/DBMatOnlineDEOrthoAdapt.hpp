@@ -93,6 +93,8 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    *
    * @param alpha the datavetor where surplusses will be stored
    * @param b The right hand side of the system
+   * @param grid the underlying grid
+   * @param densityEstimationConfig configuration for the density estimation
    * @param do_cv Specifies, if cross-validation should be done (todo: currently not implemented)
    */
   void solveSLE(DataVector& alpha, DataVector& b, Grid& grid,

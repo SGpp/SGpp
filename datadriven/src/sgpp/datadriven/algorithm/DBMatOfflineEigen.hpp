@@ -34,6 +34,10 @@ class DBMatOfflineEigen : public DBMatOffline {
 
   DBMatOffline* clone() override;
 
+  /**
+   * Returns the decomposition type of the DBMatOffline object
+   * @return the type of matrix decomposition
+   */
   sgpp::datadriven::MatrixDecompositionType getDecompositionType() override;
 
   /**
@@ -42,6 +46,13 @@ class DBMatOfflineEigen : public DBMatOffline {
    */
   bool isRefineable() override;
 
+  /**
+   * Decomposes the matrix according to the chosen decomposition type.
+   * The number of rows of the stored result depends on the decomposition type.
+   *
+   * @param regularizationConfig the regularization configuration
+   * @param densityEstimationConfig the density estimation configuration
+   */
   void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
       DensityEstimationConfiguration& densityEstimationConfig) override;
 };
