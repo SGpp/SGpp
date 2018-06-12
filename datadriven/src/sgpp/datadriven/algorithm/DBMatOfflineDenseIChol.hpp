@@ -53,6 +53,8 @@ class DBMatOfflineDenseIChol : public DBMatOfflineChol {
   /**
    * Updates offline cholesky factorization based on coarsed (deletedPoints)
    * and refined (newPoints) gridPoints. We ignore coarsening.
+   * @param grid the underlying grid
+   * @param densityEstimationĆonfig configuration for the density estimation
    * @param newPoints amount of refined points
    * @param deletedPoints list of indices of last coarsed points that are ignored.
    * @param lambda the regularization parameter

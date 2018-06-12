@@ -144,7 +144,6 @@ class Scorer {
    * verbose output.
    *
    * @param model model which is refined based on train dataset.
-   * @param trainDataset dataset used for re-fitting the model.
    * @param testDataset dataset used quantify accuracy using #metric.
    * @return accuracy of the fit after refinement.
    */
