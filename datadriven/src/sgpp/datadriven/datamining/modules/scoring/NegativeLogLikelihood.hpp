@@ -22,6 +22,10 @@ namespace datadriven {
  */
 class NegativeLogLikelihood : public Metric {
  public:
+  /**
+   * Standard clone method
+   * @return the cloned metric instance
+   */
   Metric* clone() const override;
 
   /**

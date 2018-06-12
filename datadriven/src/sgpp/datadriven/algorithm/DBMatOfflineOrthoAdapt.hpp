@@ -18,11 +18,6 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
   /**
    * Constructor
    * Builds DBMatOfflineOrthoAdapt Object from configuration
-   *
-   * @param gridConfig The configuration of the grid
-   * @param adaptivityConfig The configuration of the grid adaptivity
-   * @param regularizationConfig The configuration of the grid regularization
-   * @param densityEstimationConfig The configuration of the matrix decomposition
    */
   DBMatOfflineOrthoAdapt();
 
@@ -46,6 +41,8 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
 
   /**
    * Builds the left hand side matrix without the regularization term
+   * @param grid the underlying grid
+   * @param regularizationConfig configuaration for the regularization employed
    */
   void buildMatrix(Grid* grid, RegularizationConfiguration& regularizationConfig);
 

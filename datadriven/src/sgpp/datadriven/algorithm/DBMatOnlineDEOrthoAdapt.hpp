@@ -62,6 +62,8 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
 
 
   /**
+   * @param densityEstimationConfig configuration for the density estimation
+   * @param grid the underlying grid
    * @param numAddedGridPoints Number of grid points inserted at the end of the grid storage
    * @param deletedGridPointIndices Indices of grid points that were deleted
    * @param lambda The last best lambda value

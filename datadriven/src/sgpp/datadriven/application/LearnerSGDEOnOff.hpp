@@ -89,6 +89,8 @@ class LearnerSGDEOnOff {
    * @param enableCv Specifies whether to perform cross-validation during
    * training process or not
    * @param nextCvStep Determines when next cross-validation has to be triggered
+   * @param adaptivityConfig configuration for the grid's adaptivity behaviour
+   * @param densityEstimationConfig configuration for the density estimation
    */
   void train(size_t batchSize, size_t maxDataPasses, std::string refType, std::string refMonitor,
              size_t refPeriod, double accDeclineThreshold, size_t accDeclineBufferSize,
@@ -99,6 +101,8 @@ class LearnerSGDEOnOff {
   /**
    * Trains the learner with the given data batch
    *
+   * @param adaptivityConfig configuration for the grid's adaptivity behaviour
+   * @param densityEstimationConfig configuration for the density estimation
    * @param dataset The next data batch to process
    * @param doCv Enable cross-validation
    * @param refineCoarse Vector of pairs containing a list representing indices
@@ -116,6 +120,7 @@ class LearnerSGDEOnOff {
    *
    * @param trainDataClasses A vector of pairs; Each pair contains the data
    * points that belong to
+   * @param densityEstimationConfig configuration for the density estimation
    *        one class and the corresponding class label
    * @param doCv Enable cross-validation
    * @param refineCoarse Vector of pairs containing a list representing indices

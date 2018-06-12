@@ -26,8 +26,8 @@ class DBMatOnlineDE : public DBMatOnline {
    * Constructor
    *
    * @param offline The offline object we base our evaluations on.
-   * @param lambda The regularization strength (TODO(fuchsgruber) remove this)
    * @param grid The underlying grid (TODO(fuchsgruber) do we need this?)
+   * @param lambda The regularization strength (TODO(fuchsgruber) remove this)
    * @param beta The initial weighting factor
    */
   explicit DBMatOnlineDE(DBMatOffline& offline, Grid& grid, double lambda, double beta = 0.);
@@ -116,6 +116,7 @@ class DBMatOnlineDE : public DBMatOnline {
    *
    * @param alpha the vector of surplusses
    * @param grid the underlying grid
+   * @param samples number of samples to be used for MC quadrature
    */
   double normalize(DataVector& alpha, Grid& grid, size_t samples = 1000);
 

@@ -137,8 +137,8 @@ class RefinementHandler {
    * @param alpha the surplusses of the current class
    * @param preCompute Whether to precompute the functor's evaluation step
    * @param refinementFunctor The refinement functor to use
-   * @param adaptivityConfig the configuration for the adaptivity of the grids
    * @param classIndex The index of the current class for which refinement is taking place
+   * @param adaptivityConfig the configuration for the adaptivity of the grids
    */
   void doRefinementForClass(const std::string &refType,
                             RefinementResult *refinementResult,

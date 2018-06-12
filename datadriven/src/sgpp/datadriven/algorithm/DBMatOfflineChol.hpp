@@ -57,8 +57,8 @@ class DBMatOfflineChol : public DBMatOfflineGE {
    *
    * @param grid the underlying grid
    * @param densityEstimationConfig configuration for the density estimation
-   * @param deletedPoints list of indices of last coarsed points
    * @param newPoints amount of refined points
+   * @param deletedPoints list of indices of last coarsed points
    * @param lambda the regularization parameter
    */
   virtual void choleskyModification(Grid& grid,
