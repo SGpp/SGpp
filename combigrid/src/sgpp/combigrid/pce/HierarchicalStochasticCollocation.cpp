@@ -98,6 +98,8 @@ bool HierarchicalStochasticCollocation::updateStatus() {
     currentNumGridPoints = grid->getSize();
     computedMeanFlag = false;
     computedVarianceFlag = false;
+    computedDiscreteMeanFlag = false;
+    computedDiscreteVarianceFlag = false;
     calculateCoefficients();
     return true;
   } else {
@@ -195,6 +197,18 @@ double HierarchicalStochasticCollocation::computeMean() {
   return mean;
 }
 
+double HierarchicalStochasticCollocation::computeDiscreteMean(
+    sgpp::base::DataMatrix discretePoints) {
+  //  if (discretePoints.getNrows() != numDims) {
+  //    throw sgpp::base::data_exception(
+  //        "BsplineStochasticCollocation::computeDiscreteMean : Dimensions do not match");
+  //  }
+  sgpp::base::DataVector evaluations(discretePoints.getNcols());
+  eval(discretePoints, evaluations);
+
+  return evaluations.sum() / static_cast<double>(discretePoints.getNcols());
+}
+
 double HierarchicalStochasticCollocation::mean() {
   updateStatus();
   if (!computedMeanFlag) {
@@ -202,6 +216,15 @@ double HierarchicalStochasticCollocation::mean() {
     computedMeanFlag = true;
   }
   return ev;
+}
+
+double HierarchicalStochasticCollocation::discreteMean(sgpp::base::DataMatrix discretePoints) {
+  updateStatus();
+  if (!computedDiscreteMeanFlag) {
+    discreteEV = computeDiscreteMean(discretePoints);
+    computedDiscreteMeanFlag = true;
+  }
+  return discreteEV;
 }
 
 double HierarchicalStochasticCollocation::computeVariance() {
@@ -264,7 +287,28 @@ double HierarchicalStochasticCollocation::computeVariance() {
     }
   }
   return variance;
-}  // namespace combigrid
+}
+
+double HierarchicalStochasticCollocation::computeDiscreteVariance(
+    sgpp::base::DataMatrix discretePoints) {
+  //  if (discretePoints.getNrows() != numDims) {
+  //    throw sgpp::base::data_exception(
+  //        "BsplineStochasticCollocation::computeDiscreteVariance : Dimensions do not match");
+  //  }
+  if (!computedDiscreteMeanFlag) {
+    discreteMean(discretePoints);
+  }
+  sgpp::base::DataVector evaluations(discretePoints.getNcols());
+  eval(discretePoints, evaluations);
+
+  discreteVar = 0.0;
+  for (size_t i = 0; i < evaluations.getSize(); i++) {
+    discreteVar += std::pow(evaluations[i] - discreteEV, 2);
+  }
+  discreteVar /= static_cast<double>(discretePoints.getNcols() - 1);
+
+  return discreteVar;
+}
 
 double HierarchicalStochasticCollocation::variance() {
   updateStatus();
@@ -273,6 +317,15 @@ double HierarchicalStochasticCollocation::variance() {
     computedVarianceFlag = true;
   }
   return var;
+}
+
+double HierarchicalStochasticCollocation::discreteVariance(sgpp::base::DataMatrix discretePoints) {
+  updateStatus();
+  if (!computedDiscreteVarianceFlag) {
+    discreteVar = computeDiscreteVariance(discretePoints);
+    computedDiscreteVarianceFlag = true;
+  }
+  return discreteVar;
 }
 
 void HierarchicalStochasticCollocation::coarsen(size_t removements_num, double threshold,

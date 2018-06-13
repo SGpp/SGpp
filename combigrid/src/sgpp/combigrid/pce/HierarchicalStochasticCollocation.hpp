@@ -89,7 +89,15 @@ class HierarchicalStochasticCollocation {
   double eval(sgpp::base::DataVector& x);
 
   double mean();
+  /**
+   * Calculate mean discrete using a set of points. Usually Monte Carlo realisations of the
+   * probability densities
+   * @param discretePoints the set of discrete points
+   * @return mean (expecation value)
+   */
+  double discreteMean(sgpp::base::DataMatrix discretePoints);
   double variance();
+  double discreteVariance(sgpp::base::DataMatrix discretePoints);
 
   void calculateCoefficients();
   /**
@@ -133,7 +141,9 @@ class HierarchicalStochasticCollocation {
 
   bool updateStatus();
   double computeMean();
+  double computeDiscreteMean(sgpp::base::DataMatrix discretePoints);
   double computeVariance();
+  double computeDiscreteVariance(sgpp::base::DataMatrix discretePoints);
 
   std::shared_ptr<sgpp::base::Grid> grid;
   sgpp::base::GridType gridType;
@@ -153,6 +163,12 @@ class HierarchicalStochasticCollocation {
   double ev = 0.0;
   bool computedVarianceFlag = false;
   double var = 0.0;
+
+  // discrete mean and variance
+  bool computedDiscreteMeanFlag = false;
+  double discreteEV = 0.0;
+  double computedDiscreteVarianceFlag = false;
+  double discreteVar = 0.0;
 };
 
 } /* namespace combigrid */

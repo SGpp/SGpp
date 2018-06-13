@@ -159,9 +159,9 @@ class BsplineStochasticCollocation : public CombigridSurrogateModel {
   size_t currentNumGridPoints;
 
   // mean and variance storage
-  bool computedMeanFlag;
+  bool computedMeanFlag = false;
   double ev;
-  bool computedVarianceFlag;
+  bool computedVarianceFlag = false;
   double var;
   // basis coefficients for Bspline interpolation
   std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage;
