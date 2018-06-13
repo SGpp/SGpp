@@ -27,11 +27,7 @@ namespace datadriven {
  */
 class DBMatOfflineLU : public DBMatOfflineGE {
  public:
-  explicit DBMatOfflineLU(
-      const sgpp::base::GeneralGridConfiguration& gridConfig,
-      const sgpp::base::AdpativityConfiguration& adaptivityConfig,
-      const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-      const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
+  explicit DBMatOfflineLU();
 
   explicit DBMatOfflineLU(const std::string& fileName);
 
@@ -48,12 +44,26 @@ class DBMatOfflineLU : public DBMatOfflineGE {
   DBMatOffline* clone() override;
 
   /**
+   * Returns the decomposition type of the DBMatOffline object
+   * @return the type of matrix decomposition
+   */
+  sgpp::datadriven::MatrixDecompositionType getDecompositionType() override;
+
+  /**
    * This decomposition type is not refineable.
    * @return always returns false;
    */
   bool isRefineable() override;
 
-  void decomposeMatrix() override;
+  /**
+   * Decomposes the matrix according to the chosen decomposition type.
+   * The number of rows of the stored result depends on the decomposition type.
+   *
+   * @param regularizationConfig the regularization configuration
+   * @param densityEstimationConfig the density estimation configuration
+   */
+  void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
+      DensityEstimationConfiguration& densityEstimationConfig) override;
 
   /**
    * Apply permutation vector to the LU factors

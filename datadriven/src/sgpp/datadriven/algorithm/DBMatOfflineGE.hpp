@@ -24,18 +24,15 @@ namespace datadriven {
  */
 class DBMatOfflineGE : public DBMatOffline {
  public:
-  explicit DBMatOfflineGE(
-      const sgpp::base::GeneralGridConfiguration& gridConfig,
-      const sgpp::base::AdpativityConfiguration& adaptivityConfig,
-      const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-      const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
 
   explicit DBMatOfflineGE(const std::string& fileName);
 
   /**
    * Builds the right hand side matrix with identity regularization term
+   * @param grid The grid object the matrix is based on
+   * @param regularizationConfig Configures the regularization which is incorporated into the lhs
    */
-  void buildMatrix() override;
+  void buildMatrix(Grid* grid, RegularizationConfiguration& regularizationConfig) override;
 
  protected:
   DBMatOfflineGE();

@@ -45,82 +45,33 @@ using sgpp::base::algorithm_exception;
 using sgpp::base::data_exception;
 using sgpp::base::OperationMatrix;
 
-DBMatOffline::DBMatOffline(
-    const sgpp::base::GeneralGridConfiguration& gridConfig,
-    const sgpp::base::AdpativityConfiguration& adaptivityConfig,
-    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig)
-    : gridConfig(gridConfig), adaptivityConfig(adaptivityConfig),
-    regularizationConfig(regularizationConfig), densityEstimationConfig(densityEstimationConfig),
-    lhsMatrix(), isConstructed(false), isDecomposed(false), grid(nullptr) {
-  interactions = std::vector<std::vector<size_t>>();
-}
-
-DBMatOffline::DBMatOffline()
-    : gridConfig(), adaptivityConfig(), regularizationConfig(), densityEstimationConfig(),
-    lhsMatrix(), isConstructed(false), isDecomposed(false), grid(nullptr) {
+DBMatOffline::DBMatOffline() : lhsMatrix(), isConstructed(false), isDecomposed(false) {
   interactions = std::vector<std::vector<size_t>>();
 }
 
 DBMatOffline::DBMatOffline(const DBMatOffline& rhs)
-    : gridConfig(rhs.gridConfig),
-      adaptivityConfig(rhs.adaptivityConfig),
-      regularizationConfig(rhs.regularizationConfig),
-      densityEstimationConfig(rhs.densityEstimationConfig),
-      lhsMatrix(rhs.lhsMatrix),
+    : lhsMatrix(rhs.lhsMatrix),
       isConstructed(rhs.isConstructed),
       isDecomposed(rhs.isDecomposed),
-      grid(nullptr),
-      interactions(rhs.interactions) {
-
-  if (rhs.grid != nullptr) {
-    grid = std::unique_ptr<Grid>{rhs.grid->clone()};
-  }
-}
+      interactions(rhs.interactions) { }
 
 DBMatOffline& sgpp::datadriven::DBMatOffline::operator=(const DBMatOffline& rhs) {
   if (&rhs == this) {
     return *this;
   }
-
-  gridConfig = rhs.gridConfig;
-  adaptivityConfig = rhs.adaptivityConfig;
-  regularizationConfig = rhs.regularizationConfig;
-  densityEstimationConfig = rhs.densityEstimationConfig;
   lhsMatrix = rhs.lhsMatrix;
   isConstructed = rhs.isConstructed;
   isDecomposed = rhs.isDecomposed;
   interactions = rhs.interactions;
-
-  if (rhs.grid != nullptr) {
-    grid = std::unique_ptr<Grid>{rhs.grid->clone()};
-  }
   return *this;
 }
 
-DBMatOffline::DBMatOffline(const std::string& fileName)
-    : gridConfig(), adaptivityConfig(), regularizationConfig(), densityEstimationConfig(),
-    lhsMatrix(), isConstructed(true), isDecomposed(true), grid(nullptr) {
-  parseConfig(fileName, gridConfig, adaptivityConfig,
-              regularizationConfig, densityEstimationConfig);
-  interactions = std::vector<std::vector<size_t>>();
-  parseInter(fileName, interactions);
-  std::cout << "Setting up Grid..." << std::endl;
-  InitializeGrid();
-  std::cout << "Grid set up! Start reading Matrix" << std::endl;
-}
+DBMatOffline::DBMatOffline(const std::string& filepath)
+    : lhsMatrix(), isConstructed(true), isDecomposed(true) {
+  // Parse the interactions
+  parseInter(filepath, interactions);
 
-sgpp::base::GeneralGridConfiguration& DBMatOffline::getGridConfig() {
-    return gridConfig;
-}
-sgpp::base::AdpativityConfiguration& DBMatOffline::getAdaptivityConfig() {
-    return adaptivityConfig;
-}
-sgpp::datadriven::RegularizationConfiguration& DBMatOffline::getRegularizationConfig() {
-    return regularizationConfig;
-}
-sgpp::datadriven::DensityEstimationConfiguration& DBMatOffline::getDensityEstimationConfig() {
-    return densityEstimationConfig;
+  // Parsing of lhsMatrix will be done in subclass implementations
 }
 
 DataMatrix& DBMatOffline::getDecomposedMatrix() {
@@ -131,41 +82,17 @@ DataMatrix& DBMatOffline::getDecomposedMatrix() {
   }
 }
 
-Grid& DBMatOffline::getGrid() { return *grid; }
 
-void DBMatOffline::InitializeGrid() {
-  if (gridConfig.type_ == GridType::ModLinear) {
-    grid = std::unique_ptr<Grid>{Grid::createModLinearGrid(gridConfig.dim_)};
-  } else if (gridConfig.type_ == GridType::Linear) {
-    grid = std::unique_ptr<Grid>{Grid::createLinearGrid(gridConfig.dim_)};
-  } else {
-    throw algorithm_exception("LearnerBase::InitializeGrid: An unsupported grid type was chosen!");
-  }
-
-  // Generate regular Grid with LEVELS Levels
-  if (interactions.size() == 0) {
-    grid->getGenerator().regular(gridConfig.level_);
-  } else {
-    grid->getGenerator().regularInter(gridConfig.level_, interactions, 0.0);
-  }
-  std::cout << "Initialized Grid has " << grid->getSize() << "Gridpoints." << std::endl;
-}
-
-void DBMatOffline::buildMatrix() {
+void DBMatOffline::buildMatrix(Grid* grid, RegularizationConfiguration& regularizationConfig) {
   if (isConstructed) {  // Already constructed, do nothing
     return;
   }
-
-  size_t size;
-
-  InitializeGrid();
-
   // check if grid was created
   if (grid == nullptr) {
     throw algorithm_exception("DBMatOffline: grid was not initialized");
   }
 
-  size = grid->getStorage().getSize();  // Size of the (quadratic) matrices A and C
+  size_t size = grid->getStorage().getSize();  // Size of the (quadratic) matrices A and C
 
   // Construct matrix A
   lhsMatrix = DataMatrix(size, size);
@@ -197,10 +124,8 @@ void DBMatOffline::store(const std::string& fileName) {
     }
   }
 
-  outputFile << static_cast<int>(gridConfig.type_) << "," << gridConfig.dim_ << ","
-             << gridConfig.level_ << "," << static_cast<int>(regularizationConfig.type_) << ","
-             << std::setprecision(12) << regularizationConfig.lambda_ << ","
-             << static_cast<int>(densityEstimationConfig.decomposition_) << inter << "\n";
+  outputFile << lhsMatrix.getNrows() << "," << lhsMatrix.getNcols() << ","
+             << static_cast<int>(getDecompositionType()) << inter << "\n";
   outputFile.close();
 
   // write matrix
@@ -214,6 +139,8 @@ void DBMatOffline::store(const std::string& fileName) {
   gsl_matrix_fwrite(outputCFile, &matrixView.matrix);
 
   fclose(outputCFile);
+  std::cout << "Stored " << lhsMatrix.getNrows() << "x" << lhsMatrix.getNcols() << " matrix" <<
+      std::endl;
 #else
   throw base::not_implemented_exception("built withot GSL");
 #endif /* USE_GSL */
@@ -226,33 +153,6 @@ void DBMatOffline::printMatrix() {
   } else {
     throw data_exception("Matrix was not decomposed yet");
   }
-}
-
-void sgpp::datadriven::DBMatOffline::parseConfig(
-    const std::string& fileName,
-    sgpp::base::GeneralGridConfiguration& gridConfig,
-    sgpp::base::AdpativityConfiguration& adaptivityConfig,
-    sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) const {
-  std::ifstream file(fileName, std::istream::in);
-  // Read configuration
-  if (!file) {
-    throw algorithm_exception("Failed to open File");
-  }
-  std::string str;
-  std::getline(file, str);
-  file.close();
-
-  std::vector<std::string> tokens;
-  StringTokenizer::tokenize(str, ",", tokens);
-
-  gridConfig.type_ = static_cast<GridType>(std::stoi(tokens[0]));
-  gridConfig.dim_ = std::stoi(tokens[1]);
-  gridConfig.level_ = std::stoi(tokens[2]);
-  regularizationConfig.type_ = static_cast<RegularizationType>(std::stoi(tokens[3]));
-  regularizationConfig.lambda_ = std::stof(tokens[4]);
-  densityEstimationConfig.decomposition_ =
-  static_cast<MatrixDecompositionType>(std::stoi(tokens[5]));
 }
 
 void sgpp::datadriven::DBMatOffline::parseInter(const std::string& fileName,
@@ -269,7 +169,7 @@ void sgpp::datadriven::DBMatOffline::parseInter(const std::string& fileName,
   std::vector<std::string> tokens;
   StringTokenizer::tokenize(str, ",", tokens);
 
-  for (size_t i = 7; i < tokens.size(); i+= std::stoi(tokens[i])+1) {
+  for (size_t i = 4; i < tokens.size(); i+= std::stoi(tokens[i])+1) {
     std::vector<size_t> tmp = std::vector<size_t>();
     for (size_t j = 1; j <= std::stoul(tokens[i]); j++) {
       tmp.push_back(std::stoi(tokens[i+j]));
@@ -280,9 +180,9 @@ void sgpp::datadriven::DBMatOffline::parseInter(const std::string& fileName,
   std::cout << interactions.size() << std::endl;
 }
 
-void sgpp::datadriven::DBMatOffline::setInter(std::vector<std::vector <size_t>> inter) {
-  interactions = inter;
-}
+
+size_t DBMatOffline::getGridSize() { return lhsMatrix.getNrows(); }
+
 sgpp::base::DataMatrix& DBMatOffline::getLhsMatrix_ONLY_FOR_TESTING() { return this->lhsMatrix; }
 
 }  // namespace datadriven

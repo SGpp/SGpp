@@ -27,7 +27,7 @@ enum class ScorerShufflingType { random, sequential };
  * An entry exists for each object that derives from #sgpp::datadriven::Metric. Used for
  * configuration and factory methods.
  */
-enum class ScorerMetricType { mse };
+enum class ScorerMetricType { mse, nll };
 
 /**
  * Set of parameters required to fully configure #sgpp::datadriven::CrossValidation objects.

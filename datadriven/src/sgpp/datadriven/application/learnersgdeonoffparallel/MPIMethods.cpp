@@ -688,7 +688,8 @@ void MPIMethods::receiveGridComponentsUpdate(RefinementResultNetworkMessage *net
 
 //                    std::cout << "Copy successful" << std::endl;
       if (isMaster() &&
-          systemMatrixNetworkMessage->offset + processedPoints == systemMatrixDecomposition.size()) {
+          systemMatrixNetworkMessage->offset + processedPoints ==
+              systemMatrixDecomposition.size()) {
         learnerInstance->setLocalGridVersion(classIndex, networkMessage->gridversion);
 
         D(std::cout << "Received system matrix decomposition for class " << classIndex
@@ -719,7 +720,8 @@ void MPIMethods::receiveGridComponentsUpdate(RefinementResultNetworkMessage *net
         .updateClassVariablesAfterRefinement(classIndex,
                                              &refinementResult,
                                              learnerInstance->getDensityFunctions()[classIndex]
-                                                 .first.get());
+                                                 .first.get(),
+                                                 learnerInstance->getGrid(classIndex));
   }
   learnerInstance->setLocalGridVersion(classIndex, networkMessage->gridversion);
 }
