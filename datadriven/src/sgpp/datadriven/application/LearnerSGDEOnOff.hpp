@@ -101,9 +101,9 @@ class LearnerSGDEOnOff {
   /**
    * Trains the learner with the given data batch
    *
+   * @param dataset The next data batch to process
    * @param adaptivityConfig configuration for the grid's adaptivity behaviour
    * @param densityEstimationConfig configuration for the density estimation
-   * @param dataset The next data batch to process
    * @param doCv Enable cross-validation
    * @param refineCoarse Vector of pairs containing a list representing indices
    *        of removed grid points and an unsigned int representing added grid
