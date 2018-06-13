@@ -58,7 +58,6 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
   /**
    * Trains the learner with the given dataset.
    *
-   * @param adaptivityConfig configuration of the adapativity
    * @param batchSize Size of subset of data points used for each training step
    * @param maxDataPasses The number of passes over the whole training data
    * @param refinementFunctorType The refinement indicator (surplus, zero-crossings or
