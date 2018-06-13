@@ -109,7 +109,7 @@ class LearnerSGDEOnOff {
    *        of removed grid points and an unsigned int representing added grid
    * points
    */
-  void train(Dataset& dataset, sgpp::base::AdpativityConfiguration& adaptiviyConfig,
+  void train(Dataset& dataset, sgpp::base::AdpativityConfiguration& adaptivityConfig,
       sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
       bool doCv = false, std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse = nullptr);
 
