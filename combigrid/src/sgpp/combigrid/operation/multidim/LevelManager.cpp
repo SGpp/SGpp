@@ -374,7 +374,7 @@ void LevelManager::addLevelsFromSerializedStructureParallel(std::string serializ
       numThreads);
 }
 
-void LevelManager::addLevelsAdaptive(size_t maxNumPoints) {
+void LevelManager::addLevelsAdaptive(size_t maxNumPoints, bool verbose) {
   initAdaption();
 
   size_t currentPointBound = 0;
@@ -396,6 +396,13 @@ void LevelManager::addLevelsAdaptive(size_t maxNumPoints) {
     beforeComputation(entry.level);  // successors may be added here
     afterComputation(entry.level);   // the actual computation is done here, in addLevel() and the
                                      // successors are updated here
+    if (verbose) {
+      std::cout << "added level ";
+      for (auto &index : entry.level) {
+        std::cout << index << " ";
+      }
+      std::cout << "\n";
+    }
   }
 }
 

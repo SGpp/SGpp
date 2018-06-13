@@ -322,7 +322,7 @@ class LevelManager {
    * None of the functions attempts to add levels with few points to reach the point bound as close
    * as possible!
    */
-  virtual void addLevelsAdaptive(size_t maxNumPoints);
+  virtual void addLevelsAdaptive(size_t maxNumPoints, bool verbose = false);
 
   /**
    * Does the same as addLevelsAdaptive(), but with parallel function evaluations.
