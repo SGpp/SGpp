@@ -26,9 +26,7 @@ BsplineStochasticCollocation::BsplineStochasticCollocation(
     : CombigridSurrogateModel(config),
       weightFunctions(config.weightFunctions),
       currentNumGridPoints(0),
-      computedMeanFlag(false),
       ev(0.0),
-      computedVarianceFlag(false),
       var(0.0),
       coefficientStorage(config.coefficientStorage),
       scalarProducts() {
@@ -121,6 +119,8 @@ void BsplineStochasticCollocation::updateConfig(
 
   computedMeanFlag = false;
   computedVarianceFlag = false;
+  computedDiscreteMeanFlag = false;
+  computedDiscreteVarianceFlag = false;
   hierarchicalTransformationFlag = false;
 }
 
