@@ -38,8 +38,7 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(
   switch (type) {
     case (MatrixDecompositionType::Eigen):
 #ifdef USE_GSL
-      return new DBMatOfflineEigen(gridConfig, adaptivityConfig,
-                                   regularizationConfig, densityEstimationConfig);
+      return new DBMatOfflineEigen();
 #else
       throw factory_exception("built without GSL");
 #endif /* USE_GSL */
@@ -47,8 +46,7 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(
 
     case (MatrixDecompositionType::LU):
 #ifdef USE_GSL
-      return new DBMatOfflineLU(gridConfig, adaptivityConfig,
-                                regularizationConfig, densityEstimationConfig);
+      return new DBMatOfflineLU();
 #else
       throw factory_exception("built without GSL");
 #endif /* USE_GSL */
@@ -56,22 +54,19 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(
 
     case (MatrixDecompositionType::Chol):
 #ifdef USE_GSL
-      return new DBMatOfflineChol(gridConfig, adaptivityConfig,
-                                  regularizationConfig, densityEstimationConfig);
+      return new DBMatOfflineChol();
 #else
       throw factory_exception("built without GSL");
 #endif /* USE_GSL */
       break;
 
     case (MatrixDecompositionType::DenseIchol):
-      return new DBMatOfflineDenseIChol(gridConfig, adaptivityConfig,
-                                        regularizationConfig, densityEstimationConfig);
+      return new DBMatOfflineDenseIChol();
       break;
 
     case (MatrixDecompositionType::OrthoAdapt):
 #ifdef USE_GSL
-      return new DBMatOfflineOrthoAdapt(gridConfig, adaptivityConfig,
-                                        regularizationConfig, densityEstimationConfig);
+      return new DBMatOfflineOrthoAdapt();
       break;
 #else
       throw factory_exception("built without GSL");
@@ -104,7 +99,7 @@ DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
   }
   std::cout << std::endl;
 
-  MatrixDecompositionType type = static_cast<MatrixDecompositionType>(std::stoi(tokens[5]));
+  MatrixDecompositionType type = static_cast<MatrixDecompositionType>(std::stoi(tokens[2]));
 
   std::cout << "type: " << static_cast<int>(type) << std::endl;
 

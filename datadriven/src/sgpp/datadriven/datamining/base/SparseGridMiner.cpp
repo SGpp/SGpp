@@ -34,5 +34,9 @@ void SparseGridMiner::learn() {
             << "###############" << std::endl;
 }
 
+ModelFittingBase *SparseGridMiner::getModel() {
+  return &(*fitter);
+}
+
 } /* namespace datadriven */
 } /* namespace sgpp */

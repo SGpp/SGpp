@@ -194,17 +194,26 @@ int main() {
   adaptConfig.noPoints_ = 7;
   adaptConfig.threshold_ = 0.0;  // only required for surplus refinement
 
+  std::unique_ptr<sgpp::base::Grid> grid;
+    if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
+      grid =
+          std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createModLinearGrid(gridConfig.dim_)};
+    } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
+      grid = std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
+    } else {
+      return 1;
+    }
 
   sgpp::datadriven::DBMatOffline *offline =
     sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(gridConfig,
                                                               adaptConfig,
                                                               regularizationConfig,
                                                               densityEstimationConfig);
-    offline->setInter(getDirectNeighbours(res));
+  offline->interactions = getDirectNeighbours(res);
   std::cout << "Building Matrix..." << std::endl;
-  offline->buildMatrix();
+  offline->buildMatrix(grid.get(), regularizationConfig);
   std::cout << "Matrix build.\nBegin decomposition..." << std::endl;
-  offline->decomposeMatrix();
+  offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
   // offline->printMatrix();
     offline->store(filename);
   }

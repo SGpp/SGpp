@@ -58,7 +58,10 @@ LearnerSGDEOnOffParallel::LearnerSGDEOnOffParallel(
     : LearnerSGDEOnOff(gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig,
                        trainData, testData, validationData, classLabels, numClassesInit,
                        usePrior, beta), mpiTaskScheduler(mpiTaskScheduler),
-                       refinementHandler(nullptr, 0) {
+                       refinementHandler(nullptr, 0), gridConfig{gridConfig},
+                       adaptivityConfig{adaptivityConfig},
+                       regularizationConfig{regularizationConfig},
+                       densityEstimationConfig{densityEstimationConfig} {
   localGridVersions.insert(localGridVersions.begin(), numClasses,
                            MINIMUM_CONSISTENT_GRID_VERSION);
   mpiTaskScheduler.setLearnerInstance(this);
@@ -71,6 +74,10 @@ LearnerSGDEOnOffParallel::LearnerSGDEOnOffParallel(
 
 LearnerSGDEOnOffParallel::~LearnerSGDEOnOffParallel() {
   MPIMethods::finalizeMPI();
+}
+
+Grid& LearnerSGDEOnOffParallel::getGrid(size_t classIndex) {
+  return *(grids[classIndex]);
 }
 
 void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPasses,
@@ -159,7 +166,8 @@ void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPas
                                                      currentValidError,
                                                      currentTrainError,
                                                      numberOfCompletedRefinements,
-                                                     monitor)) {
+                                                     monitor,
+                                                     adaptivityConfig)) {
         while (!refinementHandler.checkReadyForRefinement()) {
           D(std::cout << "Waiting for " << MPIMethods::getQueueSize()
                       << " queue operations to complete before continuing" << std::endl;)
@@ -215,35 +223,36 @@ size_t LearnerSGDEOnOffParallel::getDimensionality() {
 void LearnerSGDEOnOffParallel::printGridSizeStatistics(const char *messageString,
                                                        ClassDensityContainer &onlineObjects) {
   // print initial grid size
-  for (auto &onlineObject : onlineObjects) {
-    auto densEst = onlineObject.first.get();
-    Grid &grid = densEst->getOfflineObject().getGrid();
+  for (size_t idx = 0; idx < onlineObjects.size(); idx++) {
+    auto& onlineObject = onlineObjects[idx];
+    Grid &grid = *(grids[idx]);
     std::cout << messageString << onlineObject.second << ", " << grid.getSize() << std::endl;
   }
 }
 
-void LearnerSGDEOnOffParallel::doRefinementForAll(const std::string &refinementFunctorType,
-                                                  const std::string &refinementMonitorType,
-                                                  const ClassDensityContainer &onlineObjects,
-                                                  ConvergenceMonitor &monitor) {
+void LearnerSGDEOnOffParallel::doRefinementForAll(
+    const std::string &refinementFunctorType,
+    const std::string &refinementMonitorType,
+    const ClassDensityContainer &onlineObjects,
+    ConvergenceMonitor &monitor) {
   // acc = getAccuracy();
   // avgErrors.append(1.0 - acc);
 
   // bundle grids and surplus vector pointer needed for refinement
   // (for zero-crossings refinement, data-based refinement)
-  std::vector<Grid *> grids;
-  std::vector<DataVector *> alphas;
-  for (size_t i = 0; i < getNumClasses(); i++) {
-    auto densEst = onlineObjects[i].first.get();
-    grids.push_back(&(densEst->getOfflineObject().getGrid()));
-    alphas.push_back(&(densEst->getAlpha()));
-  }
   bool levelPenalize = false;  // Multiplies penalzing term for fine levels
   bool preCompute = true;      // Precomputes and caches evals for zrcr
   MultiGridRefinementFunctor *func = nullptr;
 
+  // Copy the vector of grids for typecasting
+  std::vector<Grid*> gridVector;
+  gridVector.reserve(grids.size());
+  for (size_t idx = 0; idx < grids.size(); idx++) {
+    gridVector.push_back(&(*(grids[idx])));
+  }
+
   // Zero-crossing-based refinement
-  ZeroCrossingRefinementFunctor funcZrcr{grids, alphas, offline->getAdaptivityConfig().noPoints_,
+  ZeroCrossingRefinementFunctor funcZrcr{gridVector, alphas, adaptivityConfig.noPoints_,
                                          levelPenalize, preCompute};
 
   // Data-based refinement. Needs a problem dependent coeffA. The values
@@ -257,7 +266,7 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(const std::string &refinementF
   DataMatrix *trainDataRef = &(trainData.getData());
   DataVector *trainLabelsRef = &(trainData.getTargets());
   DataBasedRefinementFunctor funcData = DataBasedRefinementFunctor{
-      grids, alphas, trainDataRef, trainLabelsRef, offline->getAdaptivityConfig().noPoints_,
+    gridVector, alphas, trainDataRef, trainLabelsRef, adaptivityConfig.noPoints_,
       levelPenalize, coeffA};
 
   if (refinementFunctorType == "zero") {
@@ -271,7 +280,9 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(const std::string &refinementF
     refinementHandler.doRefinementForClass(refinementFunctorType,
                                            &(refinementHandler.getRefinementResult(classIndex)),
                                            onlineObjects,
-                                           preCompute, func, classIndex);
+                                           *(grids[classIndex]),
+                                           *(alphas[classIndex]),
+                                           preCompute, func, classIndex, adaptivityConfig);
   }
   if (refinementMonitorType == "convergence") {
     monitor.nextRefCnt = monitor.minRefInterval;
@@ -299,7 +310,8 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(const std::string &refinementF
 }
 
 void
-LearnerSGDEOnOffParallel::computeNewSystemMatrixDecomposition(size_t classIndex, size_t gridVersion) {
+LearnerSGDEOnOffParallel::computeNewSystemMatrixDecomposition(
+    size_t classIndex, size_t gridVersion) {
   // The first check is to ensure that all segments of an update have been received
   // (intermediate segments set grid version to TEMPORARILY_INCONSISTENT)
   RefinementResult &refinementResult = refinementHandler.getRefinementResult(classIndex);
@@ -323,7 +335,9 @@ LearnerSGDEOnOffParallel::computeNewSystemMatrixDecomposition(size_t classIndex,
 
   DBMatOnlineDE *densEst = getDensityFunctions()[classIndex].first.get();
   DBMatOffline &dbMatOffline = densEst->getOfflineObject();
-  densEst->updateSystemMatrixDecomposition(refinementResult.addedGridPoints.size(),
+  densEst->updateSystemMatrixDecomposition(densityEstimationConfig,
+                                               *(grids[classIndex]),
+                                               refinementResult.addedGridPoints.size(),
                                                refinementResult.deletedGridPointsIndices,
                                                densEst->getBestLambda());
 
@@ -434,8 +448,8 @@ LearnerSGDEOnOffParallel::train(
                 << classRefinementResult.addedGridPoints.size() << ", -"
                 << classRefinementResult.deletedGridPointsIndices.size() << ")" << std::endl;
       densityFunctions[classIndex].first->computeDensityFunction(
-          *p.first, true, doCrossValidation,
-          &classRefinementResult.deletedGridPointsIndices,
+          *(alphas[classIndex]), *p.first, *(grids[classIndex]), densityEstimationConfig, true,
+          doCrossValidation, &classRefinementResult.deletedGridPointsIndices,
           classRefinementResult.addedGridPoints.size());
       D(std::cout << "Clearing the refinement results class " << classIndex << std::endl;)
       classRefinementResult.deletedGridPointsIndices.clear();
@@ -489,13 +503,11 @@ LearnerSGDEOnOffParallel::workBatch(Dataset dataset, size_t batchOffset, bool do
   // Batch offset was already modified by assembleNextBatch
   D(std::cout << "Batch " << batchOffset - dataset.getNumberInstances() << " completed."
               << std::endl;)
-  auto &densityFunctions = getDensityFunctions();
   for (size_t classIndex = 0; classIndex < getNumClasses(); classIndex++) {
     D(std::cout << "Sending alpha values to master for class " << classIndex
                 << " with grid version "
                 << getLocalGridVersion(classIndex) << std::endl;)
-    auto &classDensityContainer = densityFunctions[classIndex];
-    DataVector alphaVector = classDensityContainer.first->getAlpha();
+    DataVector alphaVector = *(alphas[classIndex]);
     MPIMethods::sendMergeGridNetworkMessage(classIndex, batchOffset,
                                             dataset.getNumberInstances(),
                                             alphaVector);
@@ -627,7 +639,7 @@ void LearnerSGDEOnOffParallel::mergeAlphaValues(size_t classIndex,
     }
   }
 
-  DataVector &localAlpha = getDensityFunctions()[classIndex].first->getAlpha();
+  DataVector &localAlpha = *(alphas[classIndex]);
   if (localAlpha.size() != dataVector.size()) {
     std::cout << "Received merge request with incorrect size (local " << localAlpha.size()
               << ", remote "

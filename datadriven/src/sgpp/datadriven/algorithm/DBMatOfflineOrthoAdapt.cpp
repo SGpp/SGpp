@@ -11,42 +11,50 @@
 #endif /* USE_GSL */
 
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
+#include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
 
-DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(
-    const sgpp::base::GeneralGridConfiguration& gridConfig,
-    const sgpp::base::AdpativityConfiguration& adaptivityConfig,
-    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig)
-    : DBMatOffline(gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig) {
-  this->lambda = regularizationConfig.lambda_;
-
+DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt() : DBMatOffline() {
   this->q_ortho_matrix_ = sgpp::base::DataMatrix(1, 1);
   this->t_tridiag_inv_matrix_ = sgpp::base::DataMatrix(1, 1);
-
+  // Deprecated
   // dim_a = 0, indirectly tells the online object if build() or decompose() were performed
-  this->dim_a = 0;
 }
 
 DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const std::string& fileName)
     : DBMatOffline(fileName) {
-  // grid already initialized in super constructor
-  this->dim_a = this->getGrid().getStorage().getSize();
-  this->lambda = this->regularizationConfig.lambda_;
 
-  this->lhsMatrix = sgpp::base::DataMatrix(dim_a, dim_a);
-  this->q_ortho_matrix_ = sgpp::base::DataMatrix(dim_a, dim_a);
-  this->t_tridiag_inv_matrix_ = sgpp::base::DataMatrix(dim_a, dim_a);
+  // Read grid size from header (number of rows in lhsMatrix)
+  std::ifstream filestream(fileName, std::istream::in);
+  // Read configuration
+  if (!filestream) {
+    throw sgpp::base::algorithm_exception("Failed to open File");
+  }
+  std::string str;
+  std::getline(filestream, str);
+  filestream.close();
+
+  std::vector<std::string> tokens;
+  StringTokenizer::tokenize(str, ",", tokens);
+
+  auto size = std::stoi(tokens[0]);
+  std::cout << "Grid size " << size << std::endl;
+  // grid already initialized in super constructor
+
+  this->lhsMatrix = sgpp::base::DataMatrix(size, size);
+  this->q_ortho_matrix_ = sgpp::base::DataMatrix(size, size);
+  this->t_tridiag_inv_matrix_ = sgpp::base::DataMatrix(size, size);
 #ifdef USE_GSL
   gsl_matrix_view lhs_view =
-      gsl_matrix_view_array(this->lhsMatrix.getPointer(), this->dim_a, this->dim_a);
+      gsl_matrix_view_array(this->lhsMatrix.getPointer(), size, size);
   gsl_matrix_view q_view =
-      gsl_matrix_view_array(this->q_ortho_matrix_.getPointer(), this->dim_a, this->dim_a);
+      gsl_matrix_view_array(this->q_ortho_matrix_.getPointer(), size, size);
   gsl_matrix_view t_inv_view =
-      gsl_matrix_view_array(this->t_tridiag_inv_matrix_.getPointer(), this->dim_a, this->dim_a);
+      gsl_matrix_view_array(this->t_tridiag_inv_matrix_.getPointer(), size, size);
 
   FILE* file = fopen(fileName.c_str(), "rb");
   if (!file) {
@@ -59,9 +67,11 @@ DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const std::string& fileName)
     c = static_cast<char>(fgetc(file));
   }
 
+  std::cout << "Fread init" << std::endl;
   gsl_matrix_fread(file, &lhs_view.matrix);
   gsl_matrix_fread(file, &q_view.matrix);
   gsl_matrix_fread(file, &t_inv_view.matrix);
+  std::cout << "Fread done" << std::endl;
 
   fclose(file);
 
@@ -72,30 +82,34 @@ DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const std::string& fileName)
 #endif /* USE_GSL */
 }
 
+
 DBMatOffline* DBMatOfflineOrthoAdapt::clone() { return new DBMatOfflineOrthoAdapt{*this}; }
 
 bool DBMatOfflineOrthoAdapt::isRefineable() { return true; }
 
-void DBMatOfflineOrthoAdapt::buildMatrix() {
-  DBMatOffline::buildMatrix();
-  this->dim_a = this->getGrid().getStorage().getSize();
+void DBMatOfflineOrthoAdapt::buildMatrix(Grid* grid,
+    RegularizationConfiguration& regularizationConfig) {
+  DBMatOffline::buildMatrix(grid, regularizationConfig);
+  size_t dim_a = grid->getStorage().getSize();
 
   this->q_ortho_matrix_.resizeQuadratic(dim_a);
   this->t_tridiag_inv_matrix_.resizeQuadratic(dim_a);
 }
 
-void DBMatOfflineOrthoAdapt::decomposeMatrix() {
+void DBMatOfflineOrthoAdapt::decomposeMatrix(RegularizationConfiguration& regularizationConfig,
+    DensityEstimationConfiguration& densityEstimationConfig) {
 #ifdef USE_GSL
+  size_t dim_a = lhsMatrix.getNrows();
   // allocating subdiagonal and diagonal vectors of T
   sgpp::base::DataVector diag(dim_a);
-  sgpp::base::DataVector subdiag(this->dim_a - 1);
+  sgpp::base::DataVector subdiag(dim_a - 1);
 
   // decomposing: lhs = Q * T * Q^t
   this->hessenberg_decomposition(diag, subdiag);
 
   // adding configuration parameter lambda to diag before inverting T
-  for (size_t i = 0; i < this->dim_a; i++) {
-    diag.set(i, diag.get(i) + this->lambda);
+  for (size_t i = 0; i < dim_a; i++) {
+    diag.set(i, diag.get(i) + regularizationConfig.lambda_);
   }
 
   // inverting T+lambda*I, by solving L*R*x_i = e_i, for every i-th column x_i of T_inv
@@ -109,9 +123,10 @@ void DBMatOfflineOrthoAdapt::decomposeMatrix() {
 void DBMatOfflineOrthoAdapt::hessenberg_decomposition(sgpp::base::DataVector& diag,
                                                       sgpp::base::DataVector& subdiag) {
 #ifdef USE_GSL
+  size_t dim_a = lhsMatrix.getNrows();
   gsl_vector* tau = gsl_vector_alloc(dim_a - 1);
-  gsl_matrix_view gsl_lhs = gsl_matrix_view_array(this->lhsMatrix.getPointer(), dim_a, dim_a);
-  gsl_matrix_view gsl_q = gsl_matrix_view_array(this->q_ortho_matrix_.getPointer(), dim_a, dim_a);
+  gsl_matrix_view gsl_lhs = gsl_matrix_view_array(lhsMatrix.getPointer(), dim_a, dim_a);
+  gsl_matrix_view gsl_q = gsl_matrix_view_array(q_ortho_matrix_.getPointer(), dim_a, dim_a);
   gsl_vector_view gsl_diag = gsl_vector_view_array(diag.getPointer(), dim_a);
   gsl_vector_view gsl_subdiag = gsl_vector_view_array(subdiag.getPointer(), dim_a - 1);
 
@@ -129,6 +144,7 @@ void DBMatOfflineOrthoAdapt::hessenberg_decomposition(sgpp::base::DataVector& di
 void DBMatOfflineOrthoAdapt::invert_symmetric_tridiag(sgpp::base::DataVector& diag,
                                                       sgpp::base::DataVector& subdiag) {
 #ifdef USE_GSL
+  size_t dim_a = lhsMatrix.getNrows();
   gsl_vector* e = gsl_vector_calloc(diag.getSize());  // calloc sets all values to zero
   gsl_vector* x = gsl_vector_alloc(diag.getSize());   // target of solving
 
@@ -136,10 +152,10 @@ void DBMatOfflineOrthoAdapt::invert_symmetric_tridiag(sgpp::base::DataVector& di
   gsl_vector_view gsl_subdiag = gsl_vector_view_array(subdiag.getPointer(), dim_a - 1);
 
   // loops columns of T_inv
-  for (size_t k = 0; k < this->t_tridiag_inv_matrix_.getNcols(); k++) {
+  for (size_t k = 0; k < t_tridiag_inv_matrix_.getNcols(); k++) {
     e->data[k] = 1;
     gsl_linalg_solve_symm_tridiag(&gsl_diag.vector, &gsl_subdiag.vector, e, x);
-    for (size_t i = 0; i < this->t_tridiag_inv_matrix_.getNrows(); i++) {
+    for (size_t i = 0; i < t_tridiag_inv_matrix_.getNrows(); i++) {
       this->t_tridiag_inv_matrix_.set(k, i, x->data[i]);
     }
     e->data[k] = 0;
@@ -159,18 +175,24 @@ void DBMatOfflineOrthoAdapt::store(const std::string& fileName) {
     throw sgpp::base::algorithm_exception{"cannot open file for writing"};
   }
 
+  auto dim_a = getGridSize();
   // store q_ortho_matrix_
   gsl_matrix_view q_view =
-      gsl_matrix_view_array(this->q_ortho_matrix_.getPointer(), this->dim_a, this->dim_a);
+      gsl_matrix_view_array(this->q_ortho_matrix_.getPointer(), dim_a, dim_a);
   gsl_matrix_fwrite(outCFile, &q_view.matrix);
 
   // store t_inv_tridiag_
   gsl_matrix_view t_inv_view =
-      gsl_matrix_view_array(this->t_tridiag_inv_matrix_.getPointer(), this->dim_a, this->dim_a);
+      gsl_matrix_view_array(this->t_tridiag_inv_matrix_.getPointer(), dim_a, dim_a);
   gsl_matrix_fwrite(outCFile, &t_inv_view.matrix);
 
   fclose(outCFile);
 #endif /* USE_GSL */
+}
+
+
+sgpp::datadriven::MatrixDecompositionType DBMatOfflineOrthoAdapt::getDecompositionType() {
+  return sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
 }
 }  // namespace datadriven
 }  // namespace sgpp

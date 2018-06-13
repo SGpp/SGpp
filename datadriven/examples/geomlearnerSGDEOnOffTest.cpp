@@ -212,7 +212,8 @@ int main() {
    */
   std::cout << "# start to train the learner" << std::endl;
   learner.train(batchSize, maxDataPasses, refType, refMonitor, refPeriod, accDeclineThreshold,
-                accDeclineBufferSize, minRefInterval, enableCv, nextCvStep);
+                accDeclineBufferSize, minRefInterval, enableCv, nextCvStep, adaptConfig,
+                densityEstimationConfig);
 
   // learner.storeResults();
 

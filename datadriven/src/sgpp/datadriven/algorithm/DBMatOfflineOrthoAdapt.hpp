@@ -18,17 +18,8 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
   /**
    * Constructor
    * Builds DBMatOfflineOrthoAdapt Object from configuration
-   *
-   * @param gridConfig The configuration of the grid
-   * @param adaptivityConfig The configuration of the grid adaptivity
-   * @param regularizationConfig The configuration of the grid regularization
-   * @param densityEstimationConfig The configuration of the matrix decomposition
    */
-  explicit DBMatOfflineOrthoAdapt(
-      const sgpp::base::GeneralGridConfiguration& gridConfig,
-      const sgpp::base::AdpativityConfiguration& adaptivityConfig,
-      const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-      const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
+  DBMatOfflineOrthoAdapt();
 
   /**
    * Constructor
@@ -43,17 +34,28 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
   bool isRefineable() override;
 
   /**
-   * Builds the left hand side matrix without the regularization term
+   * Returns the decomposition type of the DBMatOffline object
+   * @return the type of matrix decomposition
    */
-  void buildMatrix();
+  sgpp::datadriven::MatrixDecompositionType getDecompositionType() override;
+
+  /**
+   * Builds the left hand side matrix without the regularization term
+   * @param grid the underlying grid
+   * @param regularizationConfig configuaration for the regularization employed
+   */
+  void buildMatrix(Grid* grid, RegularizationConfiguration& regularizationConfig);
 
   /**
    * Decomposes and inverts the lhsMatrix of the offline object
    * (lhs + lambda*I)^{-1} = Q * (T + lambda*I)^{-1} * Q^t = Q * T_inv * Q^t
    *
    * The matrix lhsMatrix of the parent object will be altered during the process
+   * @param regularizationConfig the regularization configuration
+   * @param densityEstimationConfig the density estimation configuration
    */
-  void decomposeMatrix();
+  void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
+      DensityEstimationConfiguration& densityEstimationConfig);
 
   /**
    * Decomposes the lhsMatrix into lhs = Q * T * Q^t and stores the orthogonal
@@ -86,18 +88,12 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    */
   void store(const std::string& fileName);
 
-  // getter and setter
-  size_t& getDimA() { return this->dim_a; }
-
-  double getLambda() { return this->lambda; }
 
   sgpp::base::DataMatrix& getQ() { return this->q_ortho_matrix_; }
 
   sgpp::base::DataMatrix& getTinv() { return this->t_tridiag_inv_matrix_; }
 
  protected:
-  size_t dim_a;                                  // quadratic matrix size of matrix to decompose
-  double lambda;                                 // regularization parameter
   sgpp::base::DataMatrix q_ortho_matrix_;        // orthogonal matrix of decomposition
   sgpp::base::DataMatrix t_tridiag_inv_matrix_;  // inverse of the tridiag matrix of decomposition
 };

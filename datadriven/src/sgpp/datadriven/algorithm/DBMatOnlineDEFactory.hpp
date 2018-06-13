@@ -20,9 +20,12 @@ namespace DBMatOnlineDEFactory {
 /**
  * Factory to build a DBMatOnlineDE object to manipulate the decomposition in offline object
  * @param offline offline object that holds the decomposed system matrix
+ * @param grid the underlying grid
+ * @param lambda regularization strength (todo(fuchsgruber): maybe remove this)
  * @param beta plasticity weighting factor. If set to 0, no plasticity takes place.
  */
-DBMatOnlineDE* buildDBMatOnlineDE(DBMatOffline& offline, double beta = 0);
+DBMatOnlineDE* buildDBMatOnlineDE(DBMatOffline& offline, Grid& grid,
+    double lambda, double beta = 0);
 } /* namespace DBMatOnlineDEFactory */
 } /* namespace datadriven */
 } /* namespace sgpp */

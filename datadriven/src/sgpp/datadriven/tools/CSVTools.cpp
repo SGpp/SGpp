@@ -7,6 +7,7 @@
 
 #include <sgpp/datadriven/tools/CSVTools.hpp>
 #include <sgpp/base/exception/file_exception.hpp>
+#include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -15,18 +16,19 @@
 #include <algorithm>
 #include <sstream>
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
 
-Dataset CSVTools::readCSV(const std::string& filename, bool skipFirstLine) {
+Dataset CSVTools::readCSV(const std::string& filename, bool skipFirstLine, bool hasTargets) {
   std::string line;
   std::ifstream myfile(filename.c_str());
   size_t numberInstances;
   size_t dimension;
   size_t instanceNo = 0;
 
-  readCSVSize(filename, numberInstances, dimension);
+  readCSVSize(filename, numberInstances, dimension, hasTargets);
   if (skipFirstLine && !myfile.eof()) {
     numberInstances--;
     std::getline(myfile, line);
@@ -37,7 +39,8 @@ Dataset CSVTools::readCSV(const std::string& filename, bool skipFirstLine) {
     std::getline(myfile, line);
 
     if (!line.empty()) {
-      writeNewClass(line, dataset.getTargets(), instanceNo);
+      if (hasTargets)
+        writeNewClass(line, dataset.getTargets(), instanceNo);
       writeNewTrainingDataEntry(line, dataset.getData(), instanceNo);
       instanceNo++;
     }
@@ -49,7 +52,7 @@ Dataset CSVTools::readCSV(const std::string& filename, bool skipFirstLine) {
 }
 
 void CSVTools::readCSVSize(const std::string& filename,
-                             size_t& numberInstances, size_t& dimension) {
+                             size_t& numberInstances, size_t& dimension, bool hasTargets) {
   std::string line;
   std::ifstream myfile(filename.c_str());
   dimension = 0;
@@ -66,7 +69,9 @@ void CSVTools::readCSVSize(const std::string& filename,
     continue;
   if (dimension == 0) {
     dimension = std::count(line.begin(), line.end(), ',');
-  } else if (dimension - std::count(line.begin(), line.end(), ',') != 0) {
+    if (!hasTargets)
+      dimension++;
+  } else if (dimension - std::count(line.begin(), line.end(), ',') != (hasTargets ? 0 : 1)) {
     std::string msg = "Columns missing in line ";
     msg.append(std::to_string(numberInstances));
     msg.append(" in file ");
@@ -83,18 +88,16 @@ void CSVTools::readCSVSize(const std::string& filename,
 void CSVTools::writeNewTrainingDataEntry(const std::string& CSVLine,
     sgpp::base::DataMatrix& destination,
     size_t instanceNo) {
-  size_t cur_pos = 0;
-  size_t cur_find = 0;
   size_t dim = destination.getNcols();
-  std::string cur_value;
   double dbl_cur_value;
 
+  sgpp::datadriven::StringTokenizer tokenizer;
+  std::vector<std::string> tokens;
+  tokenizer.tokenize(CSVLine, ",", tokens);
+
   for (size_t i = 0; i < dim; i++) {
-    cur_find = CSVLine.find(",", cur_pos);
-    cur_value = CSVLine.substr(cur_pos, cur_find - cur_pos);
-    dbl_cur_value = atof(cur_value.c_str());
+    dbl_cur_value = atof(tokens[i].c_str());
     destination.set(instanceNo, i, dbl_cur_value);
-    cur_pos = cur_find + 1;
   }
 }
 

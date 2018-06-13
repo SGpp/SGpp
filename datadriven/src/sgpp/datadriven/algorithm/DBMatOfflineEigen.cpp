@@ -15,14 +15,17 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
+#include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_eigen.h>
 #include <gsl/gsl_linalg.h>
 
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -30,17 +33,29 @@ namespace datadriven {
 using sgpp::base::DataMatrix;
 using sgpp::base::application_exception;
 using sgpp::base::data_exception;
+using sgpp::base::algorithm_exception;
 using sgpp::base::OperationMatrix;
 
-DBMatOfflineEigen::DBMatOfflineEigen(
-    const sgpp::base::GeneralGridConfiguration& gridConfig,
-    const sgpp::base::AdpativityConfiguration& adaptivityConfig,
-    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig)
-    : DBMatOffline(gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig) {}
+DBMatOfflineEigen::DBMatOfflineEigen() {}
 
 sgpp::datadriven::DBMatOfflineEigen::DBMatOfflineEigen(const std::string& fileName)
     : DBMatOffline{fileName} {
+  // Read grid size from header (number of rows in lhsMatrix)
+  std::ifstream filestream(fileName, std::istream::in);
+  // Read configuration
+  if (!filestream) {
+    throw algorithm_exception("Failed to open File");
+  }
+  std::string str;
+  std::getline(filestream, str);
+  filestream.close();
+
+  std::vector<std::string> tokens;
+  StringTokenizer::tokenize(str, ",", tokens);
+
+  auto nCols = std::stoi(tokens[0]);
+  auto nRows = std::stoi(tokens[1]);
+
   FILE* file = fopen(fileName.c_str(), "rb");
   if (!file) {
     throw application_exception{"Failed to open File"};
@@ -54,9 +69,8 @@ sgpp::datadriven::DBMatOfflineEigen::DBMatOfflineEigen(const std::string& fileNa
 
   // TODO(lettrich) : test if we can do this without copying.
   // Read matrix
-  auto size = grid->getStorage().getSize();
   gsl_matrix* matrix;
-  matrix = gsl_matrix_alloc(size + 1, size);
+  matrix = gsl_matrix_alloc(nRows, nCols);
   gsl_matrix_fread(file, matrix);
   fclose(file);
 
@@ -64,11 +78,13 @@ sgpp::datadriven::DBMatOfflineEigen::DBMatOfflineEigen(const std::string& fileNa
   gsl_matrix_free(matrix);
 }
 
+
 DBMatOffline* DBMatOfflineEigen::clone() { return new DBMatOfflineEigen{*this}; }
 
 bool DBMatOfflineEigen::isRefineable() { return false; }
 
-void DBMatOfflineEigen::decomposeMatrix() {
+void DBMatOfflineEigen::decomposeMatrix(RegularizationConfiguration& regularizationConfig,
+    DensityEstimationConfiguration& densityEstimationConfig) {
   if (isConstructed) {
     if (isDecomposed) {
       // Already decomposed => Do nothing
@@ -102,6 +118,10 @@ void DBMatOfflineEigen::decomposeMatrix() {
   } else {
     throw data_exception("Matrix has to be constructed before it can be decomposed!");
   }
+}
+
+sgpp::datadriven::MatrixDecompositionType DBMatOfflineEigen::getDecompositionType() {
+  return sgpp::datadriven::MatrixDecompositionType::Eigen;
 }
 
 } /* namespace datadriven */

@@ -4,7 +4,7 @@
  * use, please see the copyright notice provided with SG++ or at
  * sgpp.sparsegrids.org
  *
- * MinerPrototype.cpp
+ * LSRegressionMinerFromFactory.cpp
  *
  * Created on: Oct 7, 2016
  *     Author: Michael Lettrich
@@ -51,4 +51,5 @@ int main(int argc, char **argv) {
    * Once we have a configured miner object, we can start the learning process.
    */
   miner->learn();
+  std::cout << std::endl;
 }
