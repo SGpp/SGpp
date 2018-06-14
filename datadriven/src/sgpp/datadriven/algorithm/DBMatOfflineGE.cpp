@@ -51,9 +51,9 @@ sgpp::datadriven::DBMatOfflineGE::DBMatOfflineGE(const std::string& fileName)
   std::vector<std::string> tokens;
   StringTokenizer::tokenize(str, ",", tokens);
 
+#ifdef USE_GSL
   auto size = std::stoi(tokens[0]);
 
-#ifdef USE_GSL
   FILE* file = fopen(fileName.c_str(), "rb");
   if (!file) {
     throw application_exception{"Failed to open File"};
