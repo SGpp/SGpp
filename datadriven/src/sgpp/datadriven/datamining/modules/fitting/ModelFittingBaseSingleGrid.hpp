@@ -8,9 +8,6 @@
  *      Author: dominik
  */
 
-#ifndef DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_MODULES_FITTING_MODELFITTINGBASESINGLEGRID_HPP_
-#define DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_MODULES_FITTING_MODELFITTINGBASESINGLEGRID_HPP_
-
 #pragma once
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
@@ -102,5 +99,3 @@ class ModelFittingBaseSingleGrid : public ModelFittingBase {
 
 } /* namespace datadriven */
 } /* namespace sgpp */
-
-#endif /* DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_MODULES_FITTING_MODELFITTINGBASESINGLEGRID_HPP_ */

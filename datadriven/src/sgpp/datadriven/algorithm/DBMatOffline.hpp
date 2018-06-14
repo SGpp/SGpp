@@ -130,10 +130,7 @@ class DBMatOffline {
    */
   virtual sgpp::datadriven::MatrixDecompositionType getDecompositionType() = 0;
 
- public:
-
  protected:
-
   DBMatOffline();
   DataMatrix lhsMatrix;              // stores the (decomposed) matrix
   bool isConstructed;                // If the matrix was built
@@ -150,8 +147,7 @@ class DBMatOffline {
     * @param interactions the interactions to populate
     */
    void parseInter(const std::string& fileName,
-     std::vector<std::vector<size_t>>& interactions) const;
-
+      std::vector<std::vector<size_t>>& interactions) const;
 };
 
 }  // namespace datadriven

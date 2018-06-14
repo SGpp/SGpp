@@ -28,7 +28,7 @@ namespace datadriven {
  */
 class DBMatOfflineEigen : public DBMatOffline {
  public:
-  explicit DBMatOfflineEigen();
+  DBMatOfflineEigen();
 
   explicit DBMatOfflineEigen(const std::string& fileName);
 

@@ -27,7 +27,7 @@ namespace datadriven {
  */
 class DBMatOfflineLU : public DBMatOfflineGE {
  public:
-  explicit DBMatOfflineLU();
+  DBMatOfflineLU();
 
   explicit DBMatOfflineLU(const std::string& fileName);
 
