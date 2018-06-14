@@ -24,7 +24,6 @@ namespace datadriven {
  */
 class DBMatOfflineGE : public DBMatOffline {
  public:
-
   explicit DBMatOfflineGE(const std::string& fileName);
 
   /**
