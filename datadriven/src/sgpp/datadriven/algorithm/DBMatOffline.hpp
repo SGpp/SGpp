@@ -142,11 +142,11 @@ class DBMatOffline {
 
  protected:
   /**
-    * Read the Interactionsterms from a serialized DBMatOfflibe object.
-    * @param fileName path of the serialized DBMatOffline object
-    * @param interactions the interactions to populate
-    */
-   void parseInter(const std::string& fileName,
+   * Read the Interactionsterms from a serialized DBMatOfflibe object.
+   * @param fileName path of the serialized DBMatOffline object
+   * @param interactions the interactions to populate
+   */
+  void parseInter(const std::string& fileName,
       std::vector<std::vector<size_t>>& interactions) const;
 };
 
