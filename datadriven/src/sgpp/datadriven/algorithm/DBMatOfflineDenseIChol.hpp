@@ -27,8 +27,7 @@ using sgpp::base::DataMatrix;
  */
 class DBMatOfflineDenseIChol : public DBMatOfflineChol {
  public:
-
-  explicit DBMatOfflineDenseIChol();
+  DBMatOfflineDenseIChol();
 
   explicit DBMatOfflineDenseIChol(const std::string& fileName);
 

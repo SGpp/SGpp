@@ -27,8 +27,7 @@ using sgpp::base::DataVector;
  */
 class DBMatOfflineChol : public DBMatOfflineGE {
  public:
-
-  explicit DBMatOfflineChol();
+  DBMatOfflineChol();
 
   explicit DBMatOfflineChol(const std::string& fileName);
 

@@ -17,7 +17,6 @@ namespace datadriven {
 DBMatOnline::DBMatOnline(DBMatOffline& o) : offlineObject{o} {}
 
 void DBMatOnline::setLambda(double lambda) {
-
   /**
   switch (offlineObject.getDensityEstimationConfig().decomposition_) {
     case MatrixDecompositionType::Eigen:
