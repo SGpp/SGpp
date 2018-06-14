@@ -29,15 +29,16 @@ namespace datadriven {
 using sgpp::datadriven::DataVector;
 
 class DBMatOnlineDEChol : public DBMatOnlineDE {
- public:/**
-  * Constructor
-  *
-  * @param offline The offline object we base our evaluations on.
-  * @param lambda The regularization strength (TODO(fuchsgruber) remove this)
-  * @param grid The underlying grid (TODO(fuchsgruber) do we need this?)
-  * @param beta The initial weighting factor
-  */
- explicit DBMatOnlineDEChol(DBMatOffline& offline, Grid& grid, double lambda, double beta = 0.);
+ public:
+  /**
+   * Constructor
+   *
+   * @param offline The offline object we base our evaluations on.
+   * @param lambda The regularization strength (TODO(fuchsgruber) remove this)
+   * @param grid The underlying grid (TODO(fuchsgruber) do we need this?)
+   * @param beta The initial weighting factor
+   */
+  explicit DBMatOnlineDEChol(DBMatOffline& offline, Grid& grid, double lambda, double beta = 0.);
 
   /**
    * Delegates call to choleskyModification

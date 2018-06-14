@@ -47,7 +47,7 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param newPoints indicates the amount of added points due to refinement
    */
   void computeDensityFunction(DataVector& alpha, DataMatrix& m, Grid& grid,
-      DensityEstimationConfiguration& denstiyEstimationConfig, bool save_b = false,
+      DensityEstimationConfiguration& densityEstimationConfig, bool save_b = false,
       bool do_cv = false, std::list<size_t>* deletedPoints = nullptr, size_t newPoints = 0);
 
   /**
