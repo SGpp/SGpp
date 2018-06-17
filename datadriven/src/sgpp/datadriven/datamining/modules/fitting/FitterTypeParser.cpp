@@ -22,21 +22,21 @@ namespace datadriven {
 
 using sgpp::base::data_exception;
 
-FitterType FitterTypeParser::parse(const std::string& input) {
+FitterType FitterTypeParser::parse(const std::string &input) {
   auto inputLower = input;
   std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
 
   if (inputLower == "regressionleastsquares") {
     return FitterType::RegressionLeastSquares;
   } else if (inputLower == "densityestimation") {
-      return FitterType::DensityEstimation;
+    return FitterType::DensityEstimation;
   } else {
     std::string errorMsg = "Failed to convert string \"" + input + "\" to any known FitterType";
     throw data_exception(errorMsg.c_str());
   }
 }
 
-const std::string& FitterTypeParser::toString(FitterType type) { return fitterTypeMap.at(type); }
+const std::string &FitterTypeParser::toString(FitterType type) { return fitterTypeMap.at(type); }
 
 const FitterTypeParser::FitterTypeMap_t FitterTypeParser::fitterTypeMap = []() {
   return FitterTypeParser::FitterTypeMap_t{

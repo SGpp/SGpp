@@ -1,4 +1,8 @@
-/*
+/* Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
  * Harmonica.hpp
  *
  *  Created on: Feb 2, 2018
@@ -27,8 +31,6 @@ class Harmonica {
    */
   Harmonica(FitterFactory *fitterFactory);
 
-
-  //EDIT: return value?
   /**
    * First step in harmonica. Configurations are prepared for evaluation and the parity
    * function matrix is constructed for later use.
@@ -37,9 +39,9 @@ class Harmonica {
    * @param configStrings container to store information about the configurations in string form
    * @return
    */
-  std::vector<int> *prepareConfigs(std::vector<std::unique_ptr<ModelFittingBase>> &fitters,
-                                   int seed,
-                                   std::vector<std::string> &configStrings);
+  void prepareConfigs(std::vector<std::unique_ptr<ModelFittingBase>> &fitters,
+                      int seed,
+                      std::vector<std::string> &configStrings);
 
   /**
    * Function to create a vector of random numbers within the valid range of possible configurations

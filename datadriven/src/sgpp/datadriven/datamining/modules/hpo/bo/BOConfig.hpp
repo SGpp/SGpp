@@ -1,6 +1,15 @@
-//
-// Created by Eric on 20.03.2018.
-//
+/*
+ * Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
+ * BOConfig.hpp
+ *
+ *  Created on:	20.03.2018
+ *      Author: Eric Koepke
+ */
+
 
 #ifndef CLION_BOCONFIG_HPP
 #define CLION_BOCONFIG_HPP
@@ -146,4 +155,4 @@ class BOConfig {
 }
 }
 
-#endif //CLION_BOCONFIG_HPP
+#endif // CLION_BOCONFIG_HPP

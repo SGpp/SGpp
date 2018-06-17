@@ -31,22 +31,22 @@ namespace datadriven {
 
 using sgpp::base::data_exception;
 
-DataSourceBuilder& DataSourceBuilder::withFileType(DataSourceFileType fileType) {
+DataSourceBuilder &DataSourceBuilder::withFileType(DataSourceFileType fileType) {
   config.fileType = fileType;
   return *this;
 }
 
-DataSourceBuilder& DataSourceBuilder::inBatches(size_t howMany) {
+DataSourceBuilder &DataSourceBuilder::inBatches(size_t howMany) {
   config.numBatches = howMany;
   return *this;
 }
 
-DataSourceBuilder& DataSourceBuilder::withBatchSize(size_t batchSize) {
+DataSourceBuilder &DataSourceBuilder::withBatchSize(size_t batchSize) {
   config.batchSize = batchSize;
   return *this;
 }
 
-DataSourceBuilder& DataSourceBuilder::withCompression(bool isCompressed) {
+DataSourceBuilder &DataSourceBuilder::withCompression(bool isCompressed) {
   config.isCompressed = isCompressed;
 
 #ifndef ZLIB
@@ -59,7 +59,7 @@ DataSourceBuilder& DataSourceBuilder::withCompression(bool isCompressed) {
   return *this;
 }
 
-DataSourceBuilder& DataSourceBuilder::withPath(const std::string& filePath) {
+DataSourceBuilder &DataSourceBuilder::withPath(const std::string &filePath) {
   config.filePath = filePath;
   if (config.fileType == DataSourceFileType::NONE) {
     grabTypeInfoFromFilePath();
@@ -67,8 +67,8 @@ DataSourceBuilder& DataSourceBuilder::withPath(const std::string& filePath) {
   return *this;
 }
 
-DataSource* DataSourceBuilder::assemble() const {
-  SampleProvider* sampleProvider = nullptr;
+DataSource *DataSourceBuilder::assemble() const {
+  SampleProvider *sampleProvider = nullptr;
 
   if (config.fileType == DataSourceFileType::ARFF) {
     sampleProvider = new ArffFileSampleProvider;
@@ -90,7 +90,7 @@ DataSource* DataSourceBuilder::assemble() const {
   return new DataSource(config, sampleProvider);
 }
 
-DataSource* DataSourceBuilder::fromConfig(const DataSourceConfig& config) {
+DataSource *DataSourceBuilder::fromConfig(const DataSourceConfig &config) {
   this->config = config;
 
   if (config.fileType == DataSourceFileType::NONE) {
@@ -120,7 +120,7 @@ void DataSourceBuilder::grabTypeInfoFromFilePath() {
   for (auto t : tokens) {
     try {
       type = DataSourceFileTypeParser::parse(t);
-    } catch (data_exception& e) {
+    } catch (data_exception &e) {
       // wasn't found
       withFileType(DataSourceFileType::NONE);
     }

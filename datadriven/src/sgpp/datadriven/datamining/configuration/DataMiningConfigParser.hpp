@@ -46,7 +46,7 @@ enum class FitterType;
 
 class DataMiningConfigParser {
  public:
-  explicit DataMiningConfigParser(const std::string& filepath);
+  explicit DataMiningConfigParser(const std::string &filepath);
   virtual ~DataMiningConfigParser();
 
   bool hasDataSourceConfig() const;
@@ -57,36 +57,38 @@ class DataMiningConfigParser {
   bool hasFitterConfig() const;
   bool hasScorerTestset() const;
 
-  bool getScorerTestset(DataSourceConfig& config, const DataSourceConfig& defaults) const;
-  bool getHyperparameters(std::map<std::string,ContinuousParameter>& conpar,
-                          std::map<std::string,DiscreteParameter>& dispar,
-                          std::map<std::string,DiscreteParameter>& catpar,
-                          std::vector<base::GridType>& basisFunctions) const;
-  bool getHPOConfig(HPOConfig& config);
-  std::vector<int64_t> parseIntArray(DictNode& dict, const std::string& key,
-                 std::vector<int64_t> defaultValue, const std::string& parentNode) const;
+  bool getScorerTestset(DataSourceConfig &config, const DataSourceConfig &defaults) const;
+  void getHyperparameters(std::map<std::string, ContinuousParameter> &conpar,
+                          std::map<std::string, DiscreteParameter> &dispar,
+                          std::map<std::string, DiscreteParameter> &catpar,
+                          std::vector<base::GridType> &basisFunctions) const;
+  void getHPOConfig(HPOConfig &config);
+  std::vector<int64_t> parseIntArray(DictNode &dict,
+                                     const std::string &key,
+                                     std::vector<int64_t> defaultValue,
+                                     const std::string &parentNode) const;
 
-  bool getDataSourceConfig(DataSourceConfig& config, const DataSourceConfig& defaults) const;
-  bool getScorerTestingConfig(TestingConfiguration& config,
-                              const TestingConfiguration& defaults) const;
-  bool getScorerCrossValidationConfig(CrossValidationConfiguration& config,
-                                      const CrossValidationConfiguration& defaults) const;
-  bool getFitterConfigType(FitterType& fitter, const FitterType& defaults) const;
-  bool getFitterGridConfig(RegularGridConfiguration& config,
-                           const RegularGridConfiguration& defaults) const;
-  bool getFitterAdaptivityConfig(AdpativityConfiguration& config,
-                                 const AdpativityConfiguration& defaults) const;
-  bool getFitterCrossvalidationConfig(CrossvalidationConfiguration& config,
-                                 const CrossvalidationConfiguration& defaults) const;
-  bool getFitterDensityEstimationConfig(DensityEstimationConfiguration& config,
-                                 const DensityEstimationConfiguration& defaults) const;
-  bool getFitterSolverRefineConfig(SLESolverConfiguration& config,
-                                   const SLESolverConfiguration& defaults) const;
-  bool getFitterSolverFinalConfig(SLESolverConfiguration& config,
-                                  const SLESolverConfiguration& defaults) const;
-  bool getFitterRegularizationConfig(RegularizationConfiguration& config,
-                                     const RegularizationConfiguration& defaults) const;
-  bool getFitterLambda(double& lambda, double defaultValue) const;
+  bool getDataSourceConfig(DataSourceConfig &config, const DataSourceConfig &defaults) const;
+  bool getScorerTestingConfig(TestingConfiguration &config,
+                              const TestingConfiguration &defaults) const;
+  bool getScorerCrossValidationConfig(CrossValidationConfiguration &config,
+                                      const CrossValidationConfiguration &defaults) const;
+  bool getFitterConfigType(FitterType &fitter, const FitterType &defaults) const;
+  bool getFitterGridConfig(RegularGridConfiguration &config,
+                           const RegularGridConfiguration &defaults) const;
+  bool getFitterAdaptivityConfig(AdpativityConfiguration &config,
+                                 const AdpativityConfiguration &defaults) const;
+  bool getFitterCrossvalidationConfig(CrossvalidationConfiguration &config,
+                                      const CrossvalidationConfiguration &defaults) const;
+  bool getFitterDensityEstimationConfig(DensityEstimationConfiguration &config,
+                                        const DensityEstimationConfiguration &defaults) const;
+  bool getFitterSolverRefineConfig(SLESolverConfiguration &config,
+                                   const SLESolverConfiguration &defaults) const;
+  bool getFitterSolverFinalConfig(SLESolverConfiguration &config,
+                                  const SLESolverConfiguration &defaults) const;
+  bool getFitterRegularizationConfig(RegularizationConfiguration &config,
+                                     const RegularizationConfiguration &defaults) const;
+  bool getFitterLambda(double &lambda, double defaultValue) const;
 
  private:
   std::unique_ptr<JSON> configFile;
@@ -95,27 +97,31 @@ class DataMiningConfigParser {
   static const std::string scorer;
   static const std::string fitter;
 
-  std::string parseString(DictNode& dict, const std::string& key, const std::string& defaultValue,
-                          const std::string& parentNode) const;
-  double parseDouble(DictNode& dict, const std::string& key, double defaultValue,
-                     const std::string& parentNode) const;
-  size_t parseUInt(DictNode& dict, const std::string& key, size_t defaultValue,
-                   const std::string& parentNode) const;
-  int64_t parseInt(DictNode& dict, const std::string& key, int64_t defaultValue,
-                   const std::string& parentNode) const;
-  bool parseBool(DictNode& dict, const std::string& key, bool defaultValue,
-                 const std::string& parentNode) const;
+  std::string parseString(DictNode &dict, const std::string &key, const std::string &defaultValue,
+                          const std::string &parentNode) const;
+  double parseDouble(DictNode &dict, const std::string &key, double defaultValue,
+                     const std::string &parentNode) const;
+  size_t parseUInt(DictNode &dict, const std::string &key, size_t defaultValue,
+                   const std::string &parentNode) const;
+  int64_t parseInt(DictNode &dict, const std::string &key, int64_t defaultValue,
+                   const std::string &parentNode) const;
+  bool parseBool(DictNode &dict, const std::string &key, bool defaultValue,
+                 const std::string &parentNode) const;
 
-  void parseSLESolverConfig(DictNode& dict, SLESolverConfiguration& config,
-                            const SLESolverConfiguration& defaults,
-                            const std::string& parentNode) const;
+  void parseSLESolverConfig(DictNode &dict, SLESolverConfiguration &config,
+                            const SLESolverConfiguration &defaults,
+                            const std::string &parentNode) const;
 
-  void parseDataTransformationConfig(DictNode& dict, DataTransformationConfig& config,
-      const DataTransformationConfig& defaults, const std::string& parentNode) const;
-  void parseRosenblattTransformationConfig(DictNode& dict, RosenblattTransformationConfig& config,
-      const RosenblattTransformationConfig& defaults, const std::string& parentNode) const;
+  void parseDataTransformationConfig(DictNode &dict,
+                                     DataTransformationConfig &config,
+                                     const DataTransformationConfig &defaults,
+                                     const std::string &parentNode) const;
+  void parseRosenblattTransformationConfig(DictNode &dict,
+                                           RosenblattTransformationConfig &config,
+                                           const RosenblattTransformationConfig &defaults,
+                                           const std::string &parentNode) const;
 
-  template <typename Enumeration>
+  template<typename Enumeration>
   int asInteger(Enumeration const value) const {
     return static_cast<int>(value);
   }

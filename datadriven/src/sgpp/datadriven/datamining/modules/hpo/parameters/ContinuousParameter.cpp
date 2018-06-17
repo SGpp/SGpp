@@ -1,8 +1,13 @@
 /*
+ * Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
  * ContinuousParameter.cpp
  *
  *  Created on: Jan 25, 2018
- *      Author: polarbart
+ *      Author: Eric Koepke
  */
 
 #include <cmath>
@@ -26,7 +31,7 @@ void ContinuousParameter::setBO(double interval) {
 }
 
 double ContinuousParameter::getValue() {
-  if(logscale){
+  if (logscale) {
     return pow(10, value);
   }
   return value;

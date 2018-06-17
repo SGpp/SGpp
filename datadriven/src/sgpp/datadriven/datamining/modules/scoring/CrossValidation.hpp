@@ -36,10 +36,10 @@ class CrossValidation : public Scorer {
    * puts a random seed.
    * @param foldNumber amount of folds used for cross validation.
    */
-  CrossValidation(Metric* metric, ShufflingFunctor* shuffling, int64_t seed = -1,
+  CrossValidation(Metric *metric, ShufflingFunctor *shuffling, int64_t seed = -1,
                   size_t foldNumber = 5);
 
-  Scorer* clone() const override;
+  Scorer *clone() const override;
 
   /**
    * Train and test a model on a dataset and provide a score to quantify the approximation quality.
@@ -49,8 +49,8 @@ class CrossValidation : public Scorer {
    * @param stdDeviation return standard deviation between different runs.
    * @return average accuracy of all fits as calculated by the #metric provided.
    */
-  double calculateScore(ModelFittingBase& model, Dataset& dataset,
-                        double* stdDeviation = nullptr) override;
+  double calculateScore(ModelFittingBase &model, Dataset &dataset,
+                        double *stdDeviation = nullptr) override;
 
  private:
   /**

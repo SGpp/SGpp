@@ -40,7 +40,6 @@ class LeastSquaresRegressionFitterFactory : public FitterFactory {
    */
   ModelFittingBase *buildFitter() override;
 
-
  protected:
   /**
    * Configuration for all parameters that are not optimized

@@ -17,14 +17,14 @@
 namespace sgpp {
 namespace datadriven {
 
-CrossValidation::CrossValidation(Metric* metric, ShufflingFunctor* shuffling, int64_t seed,
+CrossValidation::CrossValidation(Metric *metric, ShufflingFunctor *shuffling, int64_t seed,
                                  size_t foldNumber)
     : Scorer{metric, shuffling}, foldNumber{foldNumber} {}
 
-Scorer* CrossValidation::clone() const { return new CrossValidation{*this}; }
+Scorer *CrossValidation::clone() const { return new CrossValidation{*this}; }
 
-double CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset,
-                                       double* stdDeviation) {
+double CrossValidation::calculateScore(ModelFittingBase &model, Dataset &dataset,
+                                       double *stdDeviation) {
   std::vector<double> scores(foldNumber);
 
   // perform randomization of indices

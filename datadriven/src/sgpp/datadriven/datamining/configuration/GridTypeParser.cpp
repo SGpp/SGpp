@@ -21,7 +21,7 @@ namespace datadriven {
 
 using sgpp::base::data_exception;
 
-GridType GridTypeParser::parse(const std::string& input) {
+GridType GridTypeParser::parse(const std::string &input) {
   auto inputLower = input;
   std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
 
@@ -83,7 +83,7 @@ GridType GridTypeParser::parse(const std::string& input) {
   }
 }
 
-const std::string& GridTypeParser::toString(GridType type) { return gridTypeMap.at(type); }
+const std::string &GridTypeParser::toString(GridType type) { return gridTypeMap.at(type); }
 
 const GridTypeParser::GridTypeMap_t GridTypeParser::gridTypeMap = []() {
   return GridTypeMap_t{

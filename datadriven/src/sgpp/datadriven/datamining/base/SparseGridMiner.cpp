@@ -18,7 +18,7 @@
 namespace sgpp {
 namespace datadriven {
 
-SparseGridMiner::SparseGridMiner(DataSource* dataSource, ModelFittingBase* fitter, Scorer* scorer)
+SparseGridMiner::SparseGridMiner(DataSource *dataSource, ModelFittingBase *fitter, Scorer *scorer)
     : dataSource(dataSource), fitter(fitter), scorer(scorer) {}
 
 void SparseGridMiner::learn() {

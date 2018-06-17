@@ -81,11 +81,12 @@ class HyperparameterOptimizer {
   void runHarmonica();
 
  private:
+
   /**
-   * DataSource provides samples that will be used by fitter to generalize data and scorer to
-   * validate and assess model robustness.
+   * Training Data
    */
-  std::unique_ptr<DataSource> dataSource;
+  std::unique_ptr<Dataset> trainData;
+
   /**
    * FitterFactory to provide fitters for running different hyperparameter configurations.
    */

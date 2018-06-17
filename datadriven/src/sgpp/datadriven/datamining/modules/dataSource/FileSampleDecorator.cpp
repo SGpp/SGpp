@@ -16,39 +16,39 @@
 namespace sgpp {
 namespace datadriven {
 
-FileSampleDecorator::FileSampleDecorator(FileSampleProvider* const fileSampleProvider)
+FileSampleDecorator::FileSampleDecorator(FileSampleProvider *const fileSampleProvider)
     : FileSampleProvider{},
       fileSampleProvider(std::unique_ptr<FileSampleProvider>{fileSampleProvider}) {}
 
-FileSampleDecorator::FileSampleDecorator(const FileSampleDecorator& rhs) : FileSampleProvider{} {
+FileSampleDecorator::FileSampleDecorator(const FileSampleDecorator &rhs) : FileSampleProvider{} {
   fileSampleProvider = std::unique_ptr<FileSampleProvider>{
-      dynamic_cast<FileSampleProvider*>(rhs.fileSampleProvider->clone())};
+      dynamic_cast<FileSampleProvider *>(rhs.fileSampleProvider->clone())};
 }
 
-FileSampleDecorator& FileSampleDecorator::operator=(const FileSampleDecorator& rhs) {
+FileSampleDecorator &FileSampleDecorator::operator=(const FileSampleDecorator &rhs) {
   if (&rhs == this) {
     return *this;
   }
   fileSampleProvider = std::unique_ptr<FileSampleProvider>{
-      dynamic_cast<FileSampleProvider*>(rhs.fileSampleProvider->clone())};
+      dynamic_cast<FileSampleProvider *>(rhs.fileSampleProvider->clone())};
   return *this;
 }
 
-Dataset* FileSampleDecorator::getNextSamples(size_t howMany) {
+Dataset *FileSampleDecorator::getNextSamples(size_t howMany) {
   return fileSampleProvider->getNextSamples(howMany);
 }
 
-Dataset* FileSampleDecorator::getAllSamples() { return fileSampleProvider->getAllSamples(); }
+Dataset *FileSampleDecorator::getAllSamples() { return fileSampleProvider->getAllSamples(); }
 
 size_t FileSampleDecorator::getDim() const { return fileSampleProvider->getDim(); }
 
 size_t FileSampleDecorator::getNumSamples() const { return fileSampleProvider->getNumSamples(); }
 
-void FileSampleDecorator::readFile(const std::string& fileName) {
+void FileSampleDecorator::readFile(const std::string &fileName) {
   fileSampleProvider->readFile(fileName);
 }
 
-void FileSampleDecorator::readString(const std::string& input) {
+void FileSampleDecorator::readString(const std::string &input) {
   fileSampleProvider->readString(input);
 }
 

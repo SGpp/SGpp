@@ -15,7 +15,7 @@
 
 namespace sgpp {
 namespace datadriven {
-Scorer* CrossValidationScorerFactory::buildScorer(const DataMiningConfigParser& parser) const {
+Scorer *CrossValidationScorerFactory::buildScorer(const DataMiningConfigParser &parser) const {
   CrossValidationConfiguration config;
   parser.getScorerCrossValidationConfig(config, config);
 

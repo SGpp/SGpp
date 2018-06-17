@@ -20,7 +20,6 @@
 #include <sgpp/datadriven/datamining/modules/hpo/HPOScorer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
 
-
 #include <string>
 
 namespace sgpp {
@@ -42,10 +41,9 @@ class LeastSquaresRegressionMinerFactory : public MinerFactory {
    * specification from a configuration file.
    * @param path Path to a configuration file that defines the structure of the miner object.
    */
-  virtual SparseGridMiner* buildMiner(const std::string& path) const;
+  virtual SparseGridMiner *buildMiner(const std::string &path) const;
 
-  sgpp::datadriven::HyperparameterOptimizer* buildHPO(const std::string& path) const override;
-
+  sgpp::datadriven::HyperparameterOptimizer *buildHPO(const std::string &path) const override;
 
  private:
   /**
@@ -55,7 +53,7 @@ class LeastSquaresRegressionMinerFactory : public MinerFactory {
    * @return Fully configured instance of a #sgpp::datadriven::DataSource object as specified in the
    * configuration file.
    */
-  virtual DataSource* createDataSource(const DataMiningConfigParser& parser) const;
+  virtual DataSource *createDataSource(const DataMiningConfigParser &parser) const;
 
   /**
    * Build an instance of a #sgpp::datadriven::ModelFittingBase object as specified in the
@@ -66,7 +64,7 @@ class LeastSquaresRegressionMinerFactory : public MinerFactory {
    * specified in the
    * configuration file.
    */
-  virtual ModelFittingBase* createFitter(const DataMiningConfigParser& parser) const;
+  virtual ModelFittingBase *createFitter(const DataMiningConfigParser &parser) const;
 
   /**
    * Build an instance of a #sgpp::datadriven::Scorer object as specified in the configuration
@@ -75,7 +73,7 @@ class LeastSquaresRegressionMinerFactory : public MinerFactory {
    * @return Fully configured instance of a #sgpp::datadriven::Scorer object as specified in the
    * configuration file.
    */
-  virtual Scorer* createScorer(const DataMiningConfigParser& parser) const;
+  virtual Scorer *createScorer(const DataMiningConfigParser &parser) const;
 
 };
 

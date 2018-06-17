@@ -33,7 +33,7 @@ class CrossValidationScorerFactory : public ScorerFactory {
    * data from the config file.
    * @return Fully configured instance of a  #sgpp::datadriven::CrossValidation object.
    */
-  Scorer* buildScorer(const DataMiningConfigParser& parser) const override;
+  Scorer *buildScorer(const DataMiningConfigParser &parser) const override;
 };
 
 } /* namespace datadriven */

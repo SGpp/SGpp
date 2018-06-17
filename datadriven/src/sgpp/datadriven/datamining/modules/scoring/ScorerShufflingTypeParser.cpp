@@ -21,7 +21,7 @@ namespace datadriven {
 
 using sgpp::base::data_exception;
 
-ScorerShufflingType ScorerShufflingTypeParser::parse(const std::string& input) {
+ScorerShufflingType ScorerShufflingTypeParser::parse(const std::string &input) {
   auto inputLower = input;
   std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
 
@@ -36,7 +36,7 @@ ScorerShufflingType ScorerShufflingTypeParser::parse(const std::string& input) {
   }
 }
 
-const std::string& ScorerShufflingTypeParser::toString(ScorerShufflingType type) {
+const std::string &ScorerShufflingTypeParser::toString(ScorerShufflingType type) {
   return shufflingTypeMap.at(type);
 }
 

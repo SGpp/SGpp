@@ -29,17 +29,17 @@ namespace datadriven {
 class ShufflingFunctor {
  public:
   ShufflingFunctor();
-  ShufflingFunctor(const ShufflingFunctor& rhs) = default;
-  ShufflingFunctor(ShufflingFunctor&& rhs) = default;
-  ShufflingFunctor& operator=(const ShufflingFunctor& rhs) = default;
-  ShufflingFunctor& operator=(ShufflingFunctor&& rhs) = default;
+  ShufflingFunctor(const ShufflingFunctor &rhs) = default;
+  ShufflingFunctor(ShufflingFunctor &&rhs) = default;
+  ShufflingFunctor &operator=(const ShufflingFunctor &rhs) = default;
+  ShufflingFunctor &operator=(ShufflingFunctor &&rhs) = default;
   virtual ~ShufflingFunctor() = default;
 
   /**
    * Polymorphic clone pattern
    * @return deep copy of this object. New object is owned by caller.
    */
-  virtual ShufflingFunctor* clone() const = 0;
+  virtual ShufflingFunctor *clone() const = 0;
 
   /**
    * Create a permutation of a Dataset from a vector of indices. The indices can then be mapped back
@@ -47,7 +47,7 @@ class ShufflingFunctor {
    * @param data: Dataset to be permuted.
    * @param indices: vector containing indices. Will permute indices in place.
    */
-  virtual void shuffle(const Dataset& data, std::vector<size_t>& indices) = 0;
+  virtual void shuffle(const Dataset &data, std::vector<size_t> &indices) = 0;
 
   /**
    * Get random seed for randomized operations

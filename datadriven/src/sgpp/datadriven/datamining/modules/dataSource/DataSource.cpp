@@ -25,11 +25,11 @@
 namespace sgpp {
 namespace datadriven {
 
-DataSource::DataSource(DataSourceConfig conf, SampleProvider* sp)
+DataSource::DataSource(DataSourceConfig conf, SampleProvider *sp)
     : config(conf), currentIteration(0), sampleProvider(std::unique_ptr<SampleProvider>(sp)) {
   // if a file name was specified, we are reading from a file, so we need to open it.
   if (!this->config.filePath.empty()) {
-    dynamic_cast<FileSampleProvider*>(sampleProvider.get())->readFile(this->config.filePath);
+    dynamic_cast<FileSampleProvider *>(sampleProvider.get())->readFile(this->config.filePath);
   }
   // Build data transformation
   DataTransformationBuilder dataTrBuilder;
@@ -40,8 +40,8 @@ DataSourceIterator DataSource::begin() { return DataSourceIterator(*this, 0); }
 
 DataSourceIterator DataSource::end() { return DataSourceIterator(*this, config.numBatches); }
 
-Dataset* DataSource::getNextSamples() {
-  Dataset* dataset = nullptr;
+Dataset *DataSource::getNextSamples() {
+  Dataset *dataset = nullptr;
 
   // only one iteration: we want all samples
   if (config.numBatches == 1 && config.batchSize == 0) {
@@ -55,7 +55,7 @@ Dataset* DataSource::getNextSamples() {
     } else {
       return dataset;
     }
-  // several iterations
+    // several iterations
   } else {
     dataset = sampleProvider->getNextSamples(config.batchSize);
     currentIteration++;
@@ -75,7 +75,7 @@ Dataset* DataSource::getNextSamples() {
   }
 }
 
-const DataSourceConfig& DataSource::getConfig() const { return config; }
+const DataSourceConfig &DataSource::getConfig() const { return config; }
 
 size_t DataSource::getCurrentIteration() const { return currentIteration; }
 

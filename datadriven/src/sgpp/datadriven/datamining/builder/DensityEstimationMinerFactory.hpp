@@ -38,12 +38,11 @@ class DensityEstimationMinerFactory : public MinerFactory {
    * specification from a configuration file.
    * @param path Path to a configuration file that defines the structure of the miner object.
    */
-  virtual SparseGridMiner* buildMiner(const std::string& path) const;
+  virtual SparseGridMiner *buildMiner(const std::string &path) const;
 
-  sgpp::datadriven::HyperparameterOptimizer* buildHPO(const std::string& path) const override;
+  sgpp::datadriven::HyperparameterOptimizer *buildHPO(const std::string &path) const override;
 
-
-private:
+ private:
   /**
    * Build an instance of a #sgpp::datadriven::DataSource object as specified in the configuration
    * file.
@@ -51,7 +50,7 @@ private:
    * @return Fully configured instance of a #sgpp::datadriven::DataSource object as specified in the
    * configuration file.
    */
-  virtual DataSource* createDataSource(const DataMiningConfigParser& parser) const;
+  virtual DataSource *createDataSource(const DataMiningConfigParser &parser) const;
 
   /**
    * Build an instance of a #sgpp::datadriven::ModelFittingBase object as specified in the
@@ -62,7 +61,7 @@ private:
    * specified in the
    * configuration file.
    */
-  virtual ModelFittingBase* createFitter(const DataMiningConfigParser& parser) const;
+  virtual ModelFittingBase *createFitter(const DataMiningConfigParser &parser) const;
 
   /**
    * Build an instance of a #sgpp::datadriven::Scorer object as specified in the configuration
@@ -71,7 +70,7 @@ private:
    * @return Fully configured instance of a #sgpp::datadriven::Scorer object as specified in the
    * configuration file.
    */
-  virtual Scorer* createScorer(const DataMiningConfigParser& parser) const;
+  virtual Scorer *createScorer(const DataMiningConfigParser &parser) const;
 };
 
 } /* namespace datadriven */

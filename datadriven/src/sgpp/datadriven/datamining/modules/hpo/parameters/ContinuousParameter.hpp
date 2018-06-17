@@ -1,4 +1,9 @@
 /*
+ * Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
  * ContinuousParameter.hpp
  *
  *  Created on: Jan 25, 2018
@@ -29,8 +34,12 @@ class ContinuousParameter : public sgpp::datadriven::HyperParameter {
    * @param min minimum value of the hyperparameter during optimization
    * @param max maximum value of the hyperparameter during optimization
    */
-  ContinuousParameter(int nBits, std::string &&name, double min, double max)
-      : HyperParameter(nBits, name), min(min), max(max) {}
+  ContinuousParameter(size_t nBits,
+                      std::string &&name,
+                      double min,
+                      double max,
+                      bool logscale = false)
+      : HyperParameter(nBits, name), min(min), max(max), logscale(logscale) {}
   // ~ContinuousParameter();
   /**
    * Retrieve the current value of the hyperparameter
@@ -66,7 +75,7 @@ class ContinuousParameter : public sgpp::datadriven::HyperParameter {
   /**
    * whether the parameter is on a log-scale
    */
-  bool logscale = False;
+  bool logscale = false;
 };
 
 } /* namespace datadriven */

@@ -17,15 +17,15 @@ namespace datadriven {
 
 using base::DataVector;
 
-SplittingScorer::SplittingScorer(Metric* metric, ShufflingFunctor* shuffling, int64_t seed,
+SplittingScorer::SplittingScorer(Metric *metric, ShufflingFunctor *shuffling, int64_t seed,
                                  double trainPortion)
     : Scorer{metric, shuffling, seed}, trainPortion{trainPortion} {}
 
-Scorer* SplittingScorer::clone() const { return new SplittingScorer{*this}; }
+Scorer *SplittingScorer::clone() const { return new SplittingScorer{*this}; }
 
 // TODO(lettrich) :recycle
-double SplittingScorer::calculateScore(ModelFittingBase& model, Dataset& dataset,
-                                       double* stdDeviation) {
+double SplittingScorer::calculateScore(ModelFittingBase &model, Dataset &dataset,
+                                       double *stdDeviation) {
   // perform randomization of indices
   std::vector<size_t> randomizedIndices(dataset.getNumberInstances());
   randomizeIndices(dataset, randomizedIndices);
@@ -48,8 +48,7 @@ double SplittingScorer::calculateScore(ModelFittingBase& model, Dataset& dataset
   double score = train(model, trainDataset, testDataset);
 
   // refine it
-  // score = refine(model, testDataset);
-  // EDIT: undo this
+  score = refine(model, testDataset);
   if (stdDeviation) {
     *stdDeviation = 0;
   }

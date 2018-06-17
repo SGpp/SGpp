@@ -36,20 +36,20 @@ class DataSource {
    * @param config configuration object used for the data source
    * @param sampleProvider the sample provider to operate on.
    */
-  DataSource(DataSourceConfig config, SampleProvider* sampleProvider);
+  DataSource(DataSourceConfig config, SampleProvider *sampleProvider);
 
   /**
    * Read only access to the configuration used by DataSource and underlying SampleProvider.
    * @return Current configuration object.
    */
-  const DataSourceConfig& getConfig() const;
+  const DataSourceConfig &getConfig() const;
 
   /**
    * Request data from the underlying SampleProvider as specified in the provided configuration
    * object upon construction.
    * @return #sgpp::datadriven::Dataset containing requested amount of samples (if available).
    */
-  Dataset* getNextSamples();
+  Dataset *getNextSamples();
 
   /**
    * Return an iterator object pointing to the first batch of this DataSource. Can be used to obtain
@@ -92,7 +92,7 @@ class DataSource {
   /**
    * pointer to DataTransformation to perform transformations on init.
    */
-  DataTransformation* dataTransformation;
+  DataTransformation *dataTransformation;
 };
 
 } /* namespace datadriven */

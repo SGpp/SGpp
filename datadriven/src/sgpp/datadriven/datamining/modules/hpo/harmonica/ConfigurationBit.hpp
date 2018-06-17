@@ -27,8 +27,8 @@ class ConfigurationBit {
    */
   explicit ConfigurationBit(std::string name)
       : name(name), constraints(0), value(0) {
-    //std::cout << "Constructor: " << getName() << std::endl;
-    //name = "test";
+    // std::cout << "Constructor: " << getName() << std::endl;
+    // name = "test";
   }
 
   /**

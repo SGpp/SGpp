@@ -42,7 +42,7 @@ class ScorerFactory {
    * data from the config file.
    * @return Fully configured instance of a  #sgpp::datadriven::Scorer object.
    */
-  virtual Scorer* buildScorer(const DataMiningConfigParser& parser) const = 0;
+  virtual Scorer *buildScorer(const DataMiningConfigParser &parser) const = 0;
 
  protected:
   /**
@@ -51,7 +51,7 @@ class ScorerFactory {
    * generate.
    * @return  Fully configured instance of a  #sgpp::datadriven::Metric object.
    */
-  Metric* buildMetric(ScorerMetricType config) const;
+  Metric *buildMetric(ScorerMetricType config) const;
 
   /**
    * Build a #sgpp::datadriven::ShufflingFunctor object based on the the given shuffling type enum
@@ -60,7 +60,7 @@ class ScorerFactory {
    * #sgpp::datadriven::ShufflingFunctor to generate.
    * @return Fully configured instance of a  #sgpp::datadriven::ShufflingFunctor object.
    */
-  ShufflingFunctor* buildShuffling(ScorerShufflingType config) const;
+  ShufflingFunctor *buildShuffling(ScorerShufflingType config) const;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

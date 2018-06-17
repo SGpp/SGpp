@@ -31,7 +31,7 @@ class FitterFactory {
   /**
    * Default constructor
    */
-  FitterFactory() = default; //EDIT: problem here?
+  FitterFactory() = default;
 
   /**
    * Virtual destructor

@@ -1,4 +1,8 @@
-/*
+/* Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
  * Harmonica.cpp
  *
  *  Created on: Feb 2, 2018
@@ -18,6 +22,7 @@
 #include <sgpp/solver/sle/fista/LassoFunction.hpp>
 #include <sgpp/solver/sle/fista/Fista.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
 #include "OperationMultipleEvalMatrix.hpp"
 
 namespace sgpp {
@@ -29,17 +34,15 @@ Harmonica::Harmonica(FitterFactory *fitterFactory)
   freeBits = std::vector<ConfigurationBit *>(configBits);
 }
 
-
-
 void Harmonica::transformScores(const DataVector &source, DataVector &target) {
   for (size_t i = 0; i < source.size(); i++) {
     target[i] = std::pow(source[i], 0.5);
   }
 }
 
-std::vector<int> *Harmonica::prepareConfigs(std::vector<std::unique_ptr<ModelFittingBase>> &fitters,
-                                            int seed,
-                                            std::vector<std::string> &configStrings) {
+void Harmonica::prepareConfigs(std::vector<std::unique_ptr<ModelFittingBase>> &fitters,
+                               int seed,
+                               std::vector<std::string> &configStrings) {
 
   // migrate samples that fit in the new space
   size_t nOld = configIDs.size();
@@ -81,22 +84,17 @@ std::vector<int> *Harmonica::prepareConfigs(std::vector<std::unique_ptr<ModelFit
       configStrings[i - nOld] = fitterFactory->printConfig();
     }
   }
-  return &configIDs;
 }
-
-
 
 void Harmonica::calculateConstrainedSpace(const DataVector &transformedScores,
                                           double lambda,
                                           int shrink) {
-  std::cout << savedScores.toString() << std::endl; //EDIT
   size_t nOld = savedScores.size();
   size_t nAll = transformedScores.size() + nOld;
-  savedScores.resize(nAll); //EDIT: is this working?
+  savedScores.resize(nAll);
   for (size_t i = nOld; i < nAll; i++) {
     savedScores[i] = transformedScores[i - nOld];
   }
-  std::cout << savedScores.toString() << std::endl; //EDIT
 
   base::DataVector normed(savedScores);
   normed.normalize();
@@ -112,7 +110,7 @@ void Harmonica::calculateConstrainedSpace(const DataVector &transformedScores,
   std::vector<size_t> idx(alpha.size() - 1);
   for (size_t i = 0; i < idx.size(); i++) {
     idx[i] = i;
-    // std::cout<<"Alpha: "<<i<<":"<<alpha[i]<<std::endl; //bias term invisible
+    // std::cout<<"Alpha: "<<i<<":"<<alpha[i]<<std::endl; // bias term invisible
   }
 
   // sort indices based on comparing values in alpha
@@ -122,12 +120,12 @@ void Harmonica::calculateConstrainedSpace(const DataVector &transformedScores,
   size_t nBitsOld = freeBits.size();
   size_t i = 0;
 
-  //save free Bits for moving configs to new space
+  // save free Bits for moving configs to new space
   std::vector<ConfigurationBit *> freeBitsold(freeBits);
 
   while (freeBits.size() > nBitsOld - shrink && alpha[idx[i]] != 0) {
     int bias = -((alpha[idx[i]] > 0) - (alpha[idx[i]] < 0));
-    if(addConstraint(idx[i], bias)){
+    if (addConstraint(idx[i], bias)) {
       std::cout << "Constraint added: " << parityrow[idx[i]][0]->getName();
       for (size_t k = 1; k < parityrow[idx[i]].size(); ++k) {
         std::cout << " * " << parityrow[idx[i]][k]->getName();
@@ -177,7 +175,7 @@ void Harmonica::createRandomConfigs(size_t nBits,
 }
 
 bool Harmonica::fixConfigBits() {
-  int nextFreeBit = 0;
+  size_t nextFreeBit = 0;
   bool changedFreeBits = false;
   bool resolved;
   while (nextFreeBit < configBits.size() - 1) {
@@ -221,7 +219,7 @@ void Harmonica::setParameters(int configID, size_t matrixrow) {
   }
   bool changed = fixConfigBits();
   if (changed) {
-    std::cout << "Error: freeBits changed in setParameters." << std::endl; //EDIT: throw exception
+    throw base::application_exception("Error: freeBits changed in setParameters.");
   }
   for (size_t i = 0; i < parityrow.size(); i++) {
     int tmp = 1;
@@ -271,7 +269,7 @@ int Harmonica::moveToNewSpace(int configID, std::vector<ConfigurationBit *> oldF
   }
   bool changed = fixConfigBits();
   if (changed) {
-    std::cout << "Error: freeBits changed in moveToNewSpace." << std::endl; //EDIT: throw exception
+    throw base::application_exception("Error: freeBits changed in moveToNewSpace.");
   }
   if (!checkConstraints()) {
     return -1;

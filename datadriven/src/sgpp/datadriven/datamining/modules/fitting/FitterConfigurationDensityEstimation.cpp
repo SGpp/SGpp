@@ -15,7 +15,7 @@
 namespace sgpp {
 namespace datadriven {
 
-FitterConfiguration* FitterConfigurationDensityEstimation::clone() const {
+FitterConfiguration *FitterConfigurationDensityEstimation::clone() const {
   return new FitterConfigurationDensityEstimation(*this);
 }
 
@@ -40,7 +40,7 @@ void FitterConfigurationDensityEstimation::setupDefaults() {
   densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::Chol;
 }
 
-void FitterConfigurationDensityEstimation::readParams(const DataMiningConfigParser& parser) {
+void FitterConfigurationDensityEstimation::readParams(const DataMiningConfigParser &parser) {
   setupDefaults();
 
   parser.getFitterGridConfig(gridConfig, gridConfig);

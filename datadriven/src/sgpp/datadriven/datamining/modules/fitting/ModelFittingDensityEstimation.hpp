@@ -45,14 +45,14 @@ class ModelFittingDensityEstimation : public ModelFittingBase {
    *
    * @param config configuration object that specifies grid, refinement, and regularization
    */
-  explicit ModelFittingDensityEstimation(const FitterConfigurationDensityEstimation& config);
+  explicit ModelFittingDensityEstimation(const FitterConfigurationDensityEstimation &config);
 
   /**
    * Fit the grid to the given dataset by determining the weights of the initial grid by the
    * SGDE approach.
    * @param dataset the training dataset that is used to fit the model.
    */
-  void fit(Dataset& dataset) override;
+  void fit(Dataset &dataset) override;
 
   /**
    * Improve accuracy of the fit on the given training data by adaptive refinement of the grid and
@@ -62,14 +62,14 @@ class ModelFittingDensityEstimation : public ModelFittingBase {
    */
   bool refine() override;
 
-  void update(Dataset& dataset) override;
+  void update(Dataset &dataset) override;
 
   /**
    * Evaluate the fitted density at a single data point - requires a trained grid.
    * @param sample vector with the coordinates in all dimensions of that sample.
    * @return evaluation of the trained grid.
    */
-  double evaluate(const DataVector& sample) const override;
+  double evaluate(const DataVector &sample) const override;
 
   /**
    * Evaluate the fitted density on a set of data points - requires a trained grid.
@@ -78,7 +78,7 @@ class ModelFittingDensityEstimation : public ModelFittingBase {
    * @param results vector where each row will contain the evaluation of the respective sample on
    * the current model.
    */
-  void evaluate(DataMatrix& samples, DataVector& results) override;
+  void evaluate(DataMatrix &samples, DataVector &results) override;
 
  private:
   /**

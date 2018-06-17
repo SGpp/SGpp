@@ -27,7 +27,7 @@ namespace sgpp {
 namespace datadriven {
 
 ModelFittingDensityEstimation::ModelFittingDensityEstimation(
-    const FitterConfigurationDensityEstimation& config)
+    const FitterConfigurationDensityEstimation &config)
     : ModelFittingBase{}, refinementsPerformed{0}, offline{nullptr} {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
@@ -45,16 +45,16 @@ ModelFittingDensityEstimation::ModelFittingDensityEstimation(
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
-double ModelFittingDensityEstimation::evaluate(const DataVector& sample) const {
+double ModelFittingDensityEstimation::evaluate(const DataVector &sample) const {
   return online->eval(sample);;
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
-void ModelFittingDensityEstimation::evaluate(DataMatrix& samples, DataVector& results) {
-    online->eval(samples, results);
+void ModelFittingDensityEstimation::evaluate(DataMatrix &samples, DataVector &results) {
+  online->eval(samples, results);
 }
 
-void ModelFittingDensityEstimation::fit(Dataset& newDataset) {
+void ModelFittingDensityEstimation::fit(Dataset &newDataset) {
   online->computeDensityFunction(newDataset.getData());
 }
 
@@ -93,7 +93,7 @@ bool ModelFittingDensityEstimation::refine() {
   return false;
 }
 
-void ModelFittingDensityEstimation::update(Dataset& newDataset) {
+void ModelFittingDensityEstimation::update(Dataset &newDataset) {
   fit(newDataset);
 }
 

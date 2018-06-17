@@ -35,7 +35,7 @@ class SplittingScorerFactory : public ScorerFactory {
    * data from the config file.
    * @return Fully configured instance of a  #sgpp::datadriven::SplittingScorer object.
    */
-  Scorer* buildScorer(const DataMiningConfigParser& parser) const override;
+  Scorer *buildScorer(const DataMiningConfigParser &parser) const override;
 };
 
 } /* namespace datadriven */
