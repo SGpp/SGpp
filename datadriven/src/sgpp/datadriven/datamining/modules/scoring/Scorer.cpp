@@ -16,7 +16,7 @@
 namespace sgpp {
 namespace datadriven {
 
-Scorer::Scorer(Metric* metric, ShufflingFunctor* shuffling, int64_t seed)
+Scorer::Scorer(Metric *metric, ShufflingFunctor *shuffling, int64_t seed)
     : metric{std::unique_ptr<Metric>{metric}},
       shuffling{std::unique_ptr<ShufflingFunctor>{shuffling}} {
   if (seed != -1) {
@@ -24,12 +24,12 @@ Scorer::Scorer(Metric* metric, ShufflingFunctor* shuffling, int64_t seed)
   }
 }
 
-Scorer::Scorer(const Scorer& rhs) {
+Scorer::Scorer(const Scorer &rhs) {
   metric = std::unique_ptr<Metric>{rhs.metric->clone()};
   shuffling = std::unique_ptr<ShufflingFunctor>{rhs.shuffling->clone()};
 }
 
-Scorer& Scorer::operator=(const Scorer& rhs) {
+Scorer &Scorer::operator=(const Scorer &rhs) {
   if (this != &rhs) {
     metric = std::unique_ptr<Metric>{rhs.metric->clone()};
     shuffling = std::unique_ptr<ShufflingFunctor>{rhs.shuffling->clone()};
@@ -37,15 +37,15 @@ Scorer& Scorer::operator=(const Scorer& rhs) {
   return *this;
 }
 
-void Scorer::randomizeIndices(const Dataset& dataset, std::vector<size_t>& randomizedIndices) {
+void Scorer::randomizeIndices(const Dataset &dataset, std::vector<size_t> &randomizedIndices) {
   for (size_t i = 0; i < randomizedIndices.size(); i++) {
     randomizedIndices[i] = i;
   }
   shuffling->shuffle(dataset, randomizedIndices);
 }
 
-void Scorer::splitSet(const Dataset& dataset, Dataset& trainDataset, Dataset& testDataset,
-                      const std::vector<size_t>& randomizedIndices, size_t offset) {
+void Scorer::splitSet(const Dataset &dataset, Dataset &trainDataset, Dataset &testDataset,
+                      const std::vector<size_t> &randomizedIndices, size_t offset) {
   size_t testSize = testDataset.getNumberInstances();
   size_t dim = dataset.getDimension();
   DataVector tmpRow(dim);
@@ -84,14 +84,14 @@ void Scorer::splitSet(const Dataset& dataset, Dataset& trainDataset, Dataset& te
   }
 }
 
-double Scorer::test(ModelFittingBase& model, Dataset& testDataset) {
+double Scorer::test(ModelFittingBase &model, Dataset &testDataset) {
   DataVector predictedValues{testDataset.getNumberInstances()};
   model.evaluate(testDataset.getData(), predictedValues);
   // set score
   return metric->measure(predictedValues, testDataset.getTargets());
 }
 
-double Scorer::train(ModelFittingBase& model, Dataset& trainDataset, Dataset& testDataset) {
+double Scorer::train(ModelFittingBase &model, Dataset &trainDataset, Dataset &testDataset) {
   // fit model
   std::cout << "###############\nfitting model\n";
   model.fit(trainDataset);
@@ -100,7 +100,7 @@ double Scorer::train(ModelFittingBase& model, Dataset& trainDataset, Dataset& te
   return score;
 }
 
-double Scorer::refine(ModelFittingBase& model, Dataset& testDataset) {
+double Scorer::refine(ModelFittingBase &model, Dataset &testDataset) {
   auto wasRefined = false;
   auto score = 0.0;
 

@@ -16,7 +16,7 @@
 
 namespace sgpp {
 namespace datadriven {
-Metric* ScorerFactory::buildMetric(ScorerMetricType config) const {
+Metric *ScorerFactory::buildMetric(ScorerMetricType config) const {
   if (config == ScorerMetricType::mse) {
     return new MSE{};
   } else {
@@ -24,7 +24,7 @@ Metric* ScorerFactory::buildMetric(ScorerMetricType config) const {
   }
 }
 
-ShufflingFunctor* ScorerFactory::buildShuffling(ScorerShufflingType config) const {
+ShufflingFunctor *ScorerFactory::buildShuffling(ScorerShufflingType config) const {
   if (config == ScorerShufflingType::random) {
     return new RandomShufflingFunctor{};
   } else if (config == ScorerShufflingType::sequential) {

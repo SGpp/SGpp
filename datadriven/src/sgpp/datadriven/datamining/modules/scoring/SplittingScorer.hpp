@@ -36,10 +36,10 @@ class SplittingScorer : public Scorer {
    * @param trainPortion value between 0 and 1 to specify the ratio between testing set and
    * training set.
    */
-  SplittingScorer(Metric* metric, ShufflingFunctor* shuffling, int64_t seed = -1,
+  SplittingScorer(Metric *metric, ShufflingFunctor *shuffling, int64_t seed = -1,
                   double trainPortion = 0.8);
 
-  Scorer* clone() const override;
+  Scorer *clone() const override;
 
   /**
    * Train and test a model on a dataset and provide a score to quantify the approximation quality.
@@ -49,8 +49,8 @@ class SplittingScorer : public Scorer {
    * @param stdDeviation return standard deviation. Will always be 0.
    * @return accuracy of the fit as calculated by the #metric provided.
    */
-  double calculateScore(ModelFittingBase& model, Dataset& dataset,
-                        double* stdDeviation = nullptr) override;
+  double calculateScore(ModelFittingBase &model, Dataset &dataset,
+                        double *stdDeviation = nullptr) override;
 
  private:
   /**

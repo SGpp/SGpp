@@ -1,4 +1,8 @@
-/*
+/* Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
  * BayesianOptimization.cpp
  *
  *  Created on: Feb 2, 2018
@@ -29,12 +33,13 @@ BayesianOptimization::BayesianOptimization(const std::vector<BOConfig> &initialC
       screwedvar(false),
       maxofmax(0),
       allConfigs(initialConfigs) {
-  scales = base::DataVector(initialConfigs.front().getNPar()+1, 1);
+  scales = base::DataVector(initialConfigs.front().getNPar() + 1, 1);
   for (size_t i = 0; i < allConfigs.size(); ++i) {
     rawScores[i] = transformScore(allConfigs[i].getScore());
   }
   rawScores.normalize();
-  rawScores.sub(base::DataVector(rawScores.size(), rawScores.sum() / rawScores.size()));
+  rawScores.sub(base::DataVector(rawScores.size(),
+                                 rawScores.sum() / static_cast<double>(rawScores.size())));
   bestsofar = rawScores.min();
   fitScales();
 }
@@ -44,7 +49,7 @@ double BayesianOptimization::transformScore(double original) {
 }
 
 double BayesianOptimization::kernel(double distance) {
-  double kernelwidth = 8.0; //offset for dimensional scaling
+  double kernelwidth = 8.0; // offset for dimensional scaling
   return exp(-distance * kernelwidth / 2);
 }
 
@@ -54,7 +59,6 @@ double BayesianOptimization::acquisitionEI(base::DataVector knew, double kself, 
   base::DataVector tmp(knew);
   solveCholeskySystem(gleft, tmp);
 
-  //EDIT: tests
   base::DataVector check(tmp.size());
   kernelmatrix.mult(tmp, check);
   check.sub(knew);
@@ -62,7 +66,7 @@ double BayesianOptimization::acquisitionEI(base::DataVector knew, double kself, 
   maxofmax = std::fmax(max, maxofmax);
   double var = kself - knew.dotProduct(tmp);
   if (var > 1 || var < 0) {
-    //std::cout << "Error: wrong variance: "<<var;
+    // std::cout << "Error: wrong variance: "<<var;
     // <<", knew:"<<knew.toString()<<", temp: "<<tmp.toString()<<std::endl;
     screwedvar = true;
     return 0;
@@ -70,7 +74,7 @@ double BayesianOptimization::acquisitionEI(base::DataVector knew, double kself, 
 
   double z = (mean - (bestsofar - 0.001)) / var;
   return ((mean - (bestsofar - 0.001)) * (0.5 + 0.5 * std::erf(-z / 1.41))
-      - var * 0.4 * std::exp(-0.5 * z * z)); //EDIT: is this calculated properly?
+      - var * 0.4 * std::exp(-0.5 * z * z)); // EDIT: is this calculated properly?
 }
 
 BOConfig *BayesianOptimization::main(BOConfig &prototype) {
@@ -79,7 +83,7 @@ BOConfig *BayesianOptimization::main(BOConfig &prototype) {
                                               std::bind(&BayesianOptimization::acquisitionOuter,
                                                         this,
                                                         std::placeholders::_1));
-  double min = 1.0 / 0; //infinity
+  double min = std::numeric_limits<double>::infinity();
   BOConfig bestConfig;
   do {
     for (auto &config: allConfigs) {
@@ -87,8 +91,12 @@ BOConfig *BayesianOptimization::main(BOConfig &prototype) {
     }
     optimization::optimizer::MultiStart optimizer(wrapper);
     optimizer.optimize();
-    if (optimizer.getOptimalValue() < min) {
-      min = optimizer.getOptimalValue();
+    double optv = optimizer.getOptimalValue();
+    if (prototype.getContSize() == 0) {
+      optv = acquisitionOuter(base::DataVector());
+    }
+    if (optv < min) {
+      min = optv;
       bestConfig = BOConfig(nextconfig);
       bestConfig.setCont(optimizer.getOptimalPoint());
     }
@@ -100,27 +108,28 @@ BOConfig *BayesianOptimization::main(BOConfig &prototype) {
 
 double BayesianOptimization::acquisitionOuter(const base::DataVector &inp) {
   base::DataVector kernelrow(allConfigs.size());
-  for (int i = 0; i < allConfigs.size(); i++) {
+  for (size_t i = 0; i < allConfigs.size(); i++) {
     kernelrow[i] = kernel(allConfigs[i].getTotalDistance(inp, scales)); // divided by 2
-    //EDIT: removed kernel = 1 check, okay?
+    // EDIT: removed kernel = 1 check, okay?
   }
-  return acquisitionEI(kernelrow, 1, bestsofar);  //EDIT: kself + noise?
+  return acquisitionEI(kernelrow, 1, bestsofar);  // EDIT: kself + noise?
 }
 
 void BayesianOptimization::fitScales() {
   optimization::WrapperScalarFunction wrapper(scales.size(),
                                               std::bind(&BayesianOptimization::likelihood,
                                                         this,
-                                                        std::placeholders::_1)); //EDIT: number of hyperparameters
-  optimization::optimizer::MultiStart optimizer(wrapper, 2000, 200); //EDIT: parameter?
+                                                        std::placeholders::_1));
+  // adjust resource allocation for optimizer here
+  optimization::optimizer::MultiStart optimizer(wrapper, 2000, 200);
   optimizer.optimize();
-  std::cout << optimizer.getOptimalPoint().toString() << std::endl;
-  std::cout << optimizer.getOptimalValue() << std::endl;
+  // std::cout << optimizer.getOptimalPoint().toString() << std::endl;
+  // std::cout << optimizer.getOptimalValue() << std::endl;
   base::DataVector tmp(optimizer.getOptimalPoint());
-  tmp.mult(0.1); //factor for smooth updating of GP
+  tmp.mult(0.1); // factor for smooth updating of GP
   scales.mult(0.9);
   scales.add(tmp);
-  std::cout << scales.toString() << std::endl;
+  // std::cout << scales.toString() << std::endl;
   double noise = pow(10, -scales.back() * 10);
   for (size_t i = 0; i < allConfigs.size(); ++i) {
     for (size_t k = 0; k < i; ++k) {
@@ -155,7 +164,7 @@ double BayesianOptimization::likelihood(const base::DataVector &inp) {
   for (size_t i = 0; i < allConfigs.size(); ++i) {
     tmp += std::log(gnew.get(i, i));
   }
-  return 2 * tmp + rawScores.dotProduct(transformed); //EDIT: correct likelihood?
+  return 2 * tmp + rawScores.dotProduct(transformed); // EDIT: correct likelihood?
 }
 
 void BayesianOptimization::updateGP() {
@@ -175,24 +184,28 @@ void BayesianOptimization::updateGP() {
   decomposeCholesky(kernelmatrix, gleft);
 
   rawScores.normalize();
-  rawScores.sub(base::DataVector(rawScores.size(), rawScores.sum() / rawScores.size()));
+  rawScores.sub(base::DataVector(rawScores.size(),
+                                 rawScores.sum() / static_cast<double>(rawScores.size())));
   bestsofar = rawScores.min();
   transformedOutput = base::DataVector(rawScores);
   solveCholeskySystem(gleft, transformedOutput);
 
-  //EDIT: decide how to handle these tests
 
-  std::cout << "Maxofmax: " << maxofmax << std::endl;
-  maxofmax = 0;
+  // std::cout << "Maxofmax: " << maxofmax << std::endl;
   base::DataVector check2(transformedOutput.size());
   kernelmatrix.mult(transformedOutput, check2);
   check2.sub(rawScores);
   double max = check2.maxNorm();
-  std::cout << "Max: " << max << std::endl;
-  //std::cout<<transformedOutput.toString()<<std::endl;
+  // std::cout << "Max: " << max << std::endl;
+  // std::cout<<transformedOutput.toString()<<std::endl;
 
-  std::cout << "Var Screwed: " << screwedvar << std::endl;
+  // std::cout << "Var Screwed: " << screwedvar << std::endl;
+  if (decomFailed || screwedvar || maxofmax > 0.1 || max > 0.1) {
+    std::cout << "Numerical instabilities occured. This could lead to bad sampling.";
+  }
+  maxofmax = 0;
   screwedvar = false;
+  decomFailed = false;
 
 }
 
@@ -213,10 +226,8 @@ void BayesianOptimization::decomposeCholesky(base::DataMatrix &km, base::DataMat
         double value = std::sqrt(sum);
         gnew.set(i, i, value);
       } else {
-        //EDIT: how to handle this?
-        std::cout << "Error: CholDecom failed." << std::endl;
-        // std::cout << kernelmatrix.toString() << std::endl;
-        gnew.set(i, i, 10e-8); //EDIT: experimental
+        decomFailed = true;
+        gnew.set(i, i, 10e-8);
       }
     }
   }
@@ -231,10 +242,10 @@ void BayesianOptimization::solveCholeskySystem(base::DataMatrix &gmatrix, base::
     }
   }
 
-  for (int i = (int)x.size() - 1; i >= 0; i--) {
-    x[i] = x[i] / gmatrix.get(i, i);
+  for (int i = (int) x.size() - 1; i >= 0; i--) {
+    x[i] = x[i] / gmatrix.get(static_cast<size_t>(i), static_cast<size_t>(i));
     for (int k = i - 1; k >= 0; k--) {
-      x[k] = x[k] - gmatrix.get(i, k) * x[i];
+      x[k] = x[k] - gmatrix.get(static_cast<size_t>(i), static_cast<size_t>(k)) * x[i];
     }
   }
 }

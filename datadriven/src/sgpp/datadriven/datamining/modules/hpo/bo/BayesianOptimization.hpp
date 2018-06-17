@@ -1,4 +1,8 @@
-/*
+/* Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
  * BayesianOptimization.hpp
  *
  *  Created on: Feb 2, 2018
@@ -121,6 +125,10 @@ class BayesianOptimization {
    * debugging variable for numerical instabilities
    */
   bool screwedvar;
+  /**
+   * debugging variable for numerical instabilities
+   */
+  bool decomFailed = false;
   /**
    * debugging variable for numerical instabilities
    */

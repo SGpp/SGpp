@@ -27,20 +27,21 @@
 namespace sgpp {
 namespace datadriven {
 
-SparseGridMiner* LeastSquaresRegressionMinerFactory::buildMiner(const std::string& path) const {
+SparseGridMiner *LeastSquaresRegressionMinerFactory::buildMiner(const std::string &path) const {
   DataMiningConfigParser parser(path);
 
   return new SparseGridMiner(createDataSource(parser), createFitter(parser), createScorer(parser));
 }
 
-HyperparameterOptimizer* LeastSquaresRegressionMinerFactory::buildHPO(const std::string& path) const {
-	DataMiningConfigParser parser(path);
-  return new HyperparameterOptimizer(createDataSource(parser), new LeastSquaresRegressionFitterFactory(parser), parser);
+HyperparameterOptimizer *LeastSquaresRegressionMinerFactory::buildHPO(const std::string &path) const {
+  DataMiningConfigParser parser(path);
+  return new HyperparameterOptimizer(createDataSource(parser),
+                                     new LeastSquaresRegressionFitterFactory(parser),
+                                     parser);
 }
 
-
-DataSource* LeastSquaresRegressionMinerFactory::createDataSource(
-    const DataMiningConfigParser& parser) const {
+DataSource *LeastSquaresRegressionMinerFactory::createDataSource(
+    const DataMiningConfigParser &parser) const {
   DataSourceConfig config;
 
   bool hasSource = parser.getDataSourceConfig(config, config);
@@ -53,15 +54,15 @@ DataSource* LeastSquaresRegressionMinerFactory::createDataSource(
   }
 }
 
-ModelFittingBase* LeastSquaresRegressionMinerFactory::createFitter(
-    const DataMiningConfigParser& parser) const {
+ModelFittingBase *LeastSquaresRegressionMinerFactory::createFitter(
+    const DataMiningConfigParser &parser) const {
   FitterConfigurationLeastSquares config{};
   config.readParams(parser);
   return new ModelFittingLeastSquares(config);
 }
 
-Scorer* LeastSquaresRegressionMinerFactory::createScorer(
-    const DataMiningConfigParser& parser) const {
+Scorer *LeastSquaresRegressionMinerFactory::createScorer(
+    const DataMiningConfigParser &parser) const {
   std::unique_ptr<ScorerFactory> factory;
 
   if (parser.hasScorerConfigCrossValidation()) {
@@ -71,8 +72,6 @@ Scorer* LeastSquaresRegressionMinerFactory::createScorer(
   }
   return factory->buildScorer(parser);
 }
-
-
 
 } /* namespace datadriven */
 } /* namespace sgpp */

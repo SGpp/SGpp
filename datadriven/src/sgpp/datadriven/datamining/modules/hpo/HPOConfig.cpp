@@ -17,6 +17,7 @@ namespace datadriven {
 
 void HPOConfig::setupDefaults() {
   seed = 42;
+  nTrainSamples = -1;
   stages = {200, 200, 100};
   constraints = {2, 2};
   lambda = 1;
@@ -70,5 +71,14 @@ int64_t HPOConfig::getNRuns() const {
 void HPOConfig::setNRuns(int64_t nRuns) {
   HPOConfig::nRuns = nRuns;
 }
+
+int64_t HPOConfig::getNTrainSamples() const {
+  return nTrainSamples;
+}
+
+void HPOConfig::setNTrainSamples(int64_t nTrainSamples) {
+  HPOConfig::nTrainSamples = nTrainSamples;
+}
+
 } /* namespace datadriven */
 } /* namespace sgpp */

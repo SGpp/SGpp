@@ -32,9 +32,9 @@ LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory(DataMin
 
      catpar["basisFunction"] = DiscreteParameter("basisFunction",0,1);
 
-     conpar["lambda"] = ContinuousParameter(5, "lambda", -7, 0); //8
+     conpar["lambda"] = ContinuousParameter(5, "lambda", -7, 0); // 8
 
-     conpar["threshold"] = ContinuousParameter(3, "threshold", -5, -2); //3
+     conpar["threshold"] = ContinuousParameter(3, "threshold", -5, -2); // 3
  */
 }
 
@@ -43,7 +43,7 @@ ModelFittingBase *LeastSquaresRegressionFitterFactory::buildFitter() {
   // build config
   auto *config = new FitterConfigurationLeastSquares(baseConfig);
 
-  //base::GridType basisFunction[] = {base::GridType::Linear,base::GridType::ModLinear};
+  // base::GridType basisFunction[] = {base::GridType::Linear,base::GridType::ModLinear};
   if (dispar.count("level")) {
     config->getGridConfig().level_ = dispar["level"].getValue();
   }
@@ -54,15 +54,13 @@ ModelFittingBase *LeastSquaresRegressionFitterFactory::buildFitter() {
     config->getRefinementConfig().noPoints_ = static_cast<size_t>(dispar["noPoints"].getValue());
   }
   if (conpar.count("threshold")) {
-    config->getRefinementConfig().threshold_ = pow(10, conpar["threshold"].getValue());
+    config->getRefinementConfig().threshold_ = conpar["threshold"].getValue();
   }
   if (conpar.count("lambda")) {
-    config->getRegularizationConfig().lambda_ = pow(10, conpar["lambda"].getValue());
+    config->getRegularizationConfig().lambda_ = conpar["lambda"].getValue();
   }
   return new ModelFittingLeastSquares(*config);
 }
-
-// EDIT: exponential parameters
 
 } /* namespace datadriven */
 } /* namespace sgpp */

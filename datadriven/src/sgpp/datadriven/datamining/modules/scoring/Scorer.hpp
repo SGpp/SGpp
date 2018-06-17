@@ -41,33 +41,33 @@ class Scorer {
    * @param seed seed for randomization in #sgpp::datadriven::ShufflingFunctor. Default is -1 which
    * puts a random seed.
    */
-  Scorer(Metric* metric, ShufflingFunctor* shuffling, int64_t seed = -1);
+  Scorer(Metric *metric, ShufflingFunctor *shuffling, int64_t seed = -1);
 
   /**
    * Copy constructor
    * @param rhs const reference to the scorer object to copy from.
    */
-  Scorer(const Scorer& rhs);
+  Scorer(const Scorer &rhs);
 
   /**
    * Move constructor
    * @param rhs R-value reference to a scorer object to moved from.
    */
-  Scorer(Scorer&& rhs) = default;
+  Scorer(Scorer &&rhs) = default;
 
   /**
    * Copy assign operator
    * @param rhs const reference to the scorer object to copy from.
    * @return rerefernce to this with updated values.
    */
-  Scorer& operator=(const Scorer& rhs);
+  Scorer &operator=(const Scorer &rhs);
 
   /**
    * Move assign operator
    * @param rhs R-value reference to an a scorer object to move from.
    * @return rerefernce to this with updated values.
    */
-  Scorer& operator=(Scorer&& rhs) = default;
+  Scorer &operator=(Scorer &&rhs) = default;
 
   /**
    * virtual destructor.
@@ -78,7 +78,7 @@ class Scorer {
    * Polymorphic clone pattern
    * @return deep copy of this object. New object is owned by caller.
    */
-  virtual Scorer* clone() const = 0;
+  virtual Scorer *clone() const = 0;
 
   /**
    * Train and test a model on a dataset and provide a score to quantify the approximation quality.
@@ -89,8 +89,8 @@ class Scorer {
    * standard deviation.
    * @return accuracy of the fit as calculated by the #metric provided.
    */
-  virtual double calculateScore(ModelFittingBase& model, Dataset& dataset,
-                                double* stdDeviation = nullptr) = 0;
+  virtual double calculateScore(ModelFittingBase &model, Dataset &dataset,
+                                double *stdDeviation = nullptr) = 0;
 
  protected:
   /**
@@ -100,7 +100,7 @@ class Scorer {
    * @param randomizedIndices: vector with the same size as the dataset. Will be initialized with
    * contiguous values (0 -> vector.size()) and permuted in place
    */
-  void randomizeIndices(const Dataset& data, std::vector<size_t>& randomizedIndices);
+  void randomizeIndices(const Dataset &data, std::vector<size_t> &randomizedIndices);
 
   /**
    * Split dataset into testing and training set.
@@ -116,8 +116,8 @@ class Scorer {
    * and training portions for cross validation. The samples skipped by the training set because of
    * the offset, will be assigned to the training set.
    */
-  void splitSet(const Dataset& fullDataset, Dataset& trainDataset, Dataset& testDataset,
-                const std::vector<size_t>& randomizedIndices, size_t offset = 0);
+  void splitSet(const Dataset &fullDataset, Dataset &trainDataset, Dataset &testDataset,
+                const std::vector<size_t> &randomizedIndices, size_t offset = 0);
 
   /**
    * evaluate the accuracy on the test set using the #metric.
@@ -126,7 +126,7 @@ class Scorer {
    * @param testDataset dataset used quantify accuracy using #metric.
    * @return accuracy of the fit.
    */
-  double test(ModelFittingBase& model, Dataset& testDataset);
+  double test(ModelFittingBase &model, Dataset &testDataset);
 
   /**
    * Fit the model on the train dataset and evaluate the accuracy on the test set. Includes some
@@ -137,7 +137,7 @@ class Scorer {
    * @param testDataset dataset used quantify accuracy using #metric.
    * @return accuracy of the fit.
    */
-  double train(ModelFittingBase& model, Dataset& trainDataset, Dataset& testDataset);
+  double train(ModelFittingBase &model, Dataset &trainDataset, Dataset &testDataset);
 
   /**
    * Fit the model on the train dataset and evaluate the accuracy on the test set. Includes some
@@ -147,7 +147,7 @@ class Scorer {
    * @param testDataset dataset used quantify accuracy using #metric.
    * @return accuracy of the fit after refinement.
    */
-  double refine(ModelFittingBase& model, Dataset& testDataset);
+  double refine(ModelFittingBase &model, Dataset &testDataset);
 
   /**
    * #sgpp::datadriven::Metric to be used to quantify accuracy of the fit.

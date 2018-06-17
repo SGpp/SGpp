@@ -37,29 +37,29 @@ class FileSampleDecorator : public FileSampleProvider {
    * wrapped as a deligate. The decorator will take ownership
    * of this object and take care of its destruction.
    */
-  explicit FileSampleDecorator(FileSampleProvider* const fileSampleProvider);
+  explicit FileSampleDecorator(FileSampleProvider *const fileSampleProvider);
 
-  FileSampleDecorator(const FileSampleDecorator& rhs);
+  FileSampleDecorator(const FileSampleDecorator &rhs);
 
-  FileSampleDecorator(FileSampleDecorator&& rhs) = default;
+  FileSampleDecorator(FileSampleDecorator &&rhs) = default;
 
-  FileSampleDecorator& operator=(const FileSampleDecorator& rhs);
+  FileSampleDecorator &operator=(const FileSampleDecorator &rhs);
 
-  FileSampleDecorator& operator=(FileSampleDecorator&& rhs) = default;
+  FileSampleDecorator &operator=(FileSampleDecorator &&rhs) = default;
 
   ~FileSampleDecorator() = default;
 
-  Dataset* getNextSamples(size_t howMany) override;
+  Dataset *getNextSamples(size_t howMany) override;
 
-  Dataset* getAllSamples() override;
+  Dataset *getAllSamples() override;
 
   size_t getDim() const override;
 
   size_t getNumSamples() const override;
 
-  void readFile(const std::string& fileName) override;
+  void readFile(const std::string &fileName) override;
 
-  void readString(const std::string& input) override;
+  void readString(const std::string &input) override;
 
  protected:
   /**

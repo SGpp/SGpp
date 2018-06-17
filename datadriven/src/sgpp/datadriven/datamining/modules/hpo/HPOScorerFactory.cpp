@@ -26,21 +26,22 @@ Scorer *HPOScorerFactory::buildScorer(const DataMiningConfigParser &parser) cons
 
   DataSourceConfig dsConfig;
 
-  bool hasSource = parser.getScorerTestset(dsConfig, dsConfig); //EDIT: make this optional?
+  bool hasSource = parser.getScorerTestset(dsConfig, dsConfig);
 
-  if (!(hasSource && dsConfig.filePath.compare("") != 0)) {
-    throw base::data_exception("No file name provided for testset.");
+  if ((hasSource && dsConfig.filePath.compare("") != 0)) {
+
+    DataSourceBuilder builder;
+    std::unique_ptr<DataSource> dataSource;
+    dataSource.reset(builder.fromConfig(dsConfig));
+
+    return new HPOScorer(metric,
+                         shuffling,
+                         config.randomSeed,
+                         config.testingPortion,
+                         dataSource->getNextSamples());
   }
 
-  DataSourceBuilder builder;
-  std::unique_ptr<DataSource> dataSource;
-  dataSource.reset(builder.fromConfig(dsConfig));
-
-  return new HPOScorer(metric,
-                       shuffling,
-                       config.randomSeed,
-                       config.testingPortion,
-                       dataSource->getNextSamples());
+  return new HPOScorer(metric, shuffling, config.randomSeed, config.testingPortion, nullptr);
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

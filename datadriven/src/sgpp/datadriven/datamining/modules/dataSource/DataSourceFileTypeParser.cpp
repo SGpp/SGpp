@@ -21,7 +21,7 @@ namespace datadriven {
 
 using sgpp::base::data_exception;
 
-DataSourceFileType DataSourceFileTypeParser::parse(const std::string& input) {
+DataSourceFileType DataSourceFileTypeParser::parse(const std::string &input) {
   auto inputLower = input;
   std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
 
@@ -38,7 +38,7 @@ DataSourceFileType DataSourceFileTypeParser::parse(const std::string& input) {
   }
 }
 
-const std::string& sgpp::datadriven::DataSourceFileTypeParser::toString(DataSourceFileType type) {
+const std::string &sgpp::datadriven::DataSourceFileTypeParser::toString(DataSourceFileType type) {
   return fileTypeMap.at(type);
 }
 

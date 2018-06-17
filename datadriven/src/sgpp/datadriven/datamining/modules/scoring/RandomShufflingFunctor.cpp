@@ -19,11 +19,11 @@
 namespace sgpp {
 namespace datadriven {
 
-ShufflingFunctor* RandomShufflingFunctor::clone() const {
+ShufflingFunctor *RandomShufflingFunctor::clone() const {
   return new RandomShufflingFunctor{*this};
 }
 
-void RandomShufflingFunctor::shuffle(const Dataset& data, std::vector<size_t>& indices) {
+void RandomShufflingFunctor::shuffle(const Dataset &data, std::vector<size_t> &indices) {
   std::shuffle(indices.begin(), indices.end(), generator);
 }
 } /* namespace datadriven */

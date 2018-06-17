@@ -26,8 +26,8 @@ namespace datadriven {
 CSVFileSampleProvider::CSVFileSampleProvider()
     : FileSampleProvider{}, dataset(Dataset{}), counter(0) {}
 
-SampleProvider* CSVFileSampleProvider::clone() const {
-  return dynamic_cast<SampleProvider*>(new CSVFileSampleProvider{*this});
+SampleProvider *CSVFileSampleProvider::clone() const {
+  return dynamic_cast<SampleProvider *>(new CSVFileSampleProvider{*this});
 }
 
 size_t CSVFileSampleProvider::getDim() const {
@@ -46,7 +46,7 @@ size_t CSVFileSampleProvider::getNumSamples() const {
   }
 }
 
-void CSVFileSampleProvider::readFile(const std::string& fileName) {
+void CSVFileSampleProvider::readFile(const std::string &fileName) {
   try {
     // call readCSV with skipfirstline set to true
     dataset = CSVTools::readCSV(fileName, true);
@@ -58,7 +58,7 @@ void CSVFileSampleProvider::readFile(const std::string& fileName) {
   }
 }
 
-Dataset* CSVFileSampleProvider::getNextSamples(size_t howMany) {
+Dataset *CSVFileSampleProvider::getNextSamples(size_t howMany) {
   if (dataset.getDimension() != 0) {
     return splitDataset(howMany);
   } else {
@@ -66,7 +66,7 @@ Dataset* CSVFileSampleProvider::getNextSamples(size_t howMany) {
   }
 }
 
-Dataset* CSVFileSampleProvider::getAllSamples() {
+Dataset *CSVFileSampleProvider::getAllSamples() {
   if (dataset.getDimension() != 0) {
     return new Dataset{dataset};
   } else {
@@ -74,7 +74,7 @@ Dataset* CSVFileSampleProvider::getAllSamples() {
   }
 }
 
-void CSVFileSampleProvider::readString(const std::string& input) {
+void CSVFileSampleProvider::readString(const std::string &input) {
   // try {
   //   dataset = CSVTools::readCSVFromString(input);
   // } catch (...) {
@@ -84,17 +84,17 @@ void CSVFileSampleProvider::readString(const std::string& input) {
   // }
 }
 
-Dataset* CSVFileSampleProvider::splitDataset(size_t howMany) {
+Dataset *CSVFileSampleProvider::splitDataset(size_t howMany) {
   const size_t size = counter + howMany < dataset.getNumberInstances()
-                          ? howMany
-                          : dataset.getNumberInstances() - counter;
+                      ? howMany
+                      : dataset.getNumberInstances() - counter;
   auto tmpDataset = std::make_unique<Dataset>(size, dataset.getDimension());
 
-  base::DataMatrix& srcSamples = dataset.getData();
-  base::DataVector& srcTargets = dataset.getTargets();
+  base::DataMatrix &srcSamples = dataset.getData();
+  base::DataVector &srcTargets = dataset.getTargets();
 
-  base::DataMatrix& destSamples = tmpDataset->getData();
-  base::DataVector& destTargets = tmpDataset->getTargets();
+  base::DataMatrix &destSamples = tmpDataset->getData();
+  base::DataVector &destTargets = tmpDataset->getTargets();
 
   base::DataVector tmpRow{srcSamples.getNcols()};
 

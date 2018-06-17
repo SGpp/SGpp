@@ -30,7 +30,7 @@ void FitterFactory::setHarmonica() {
   // std::cout<<"Run mark 2.1"<<std::endl;
 }
 
-void FitterFactory::setBO(BOConfig *config) { //EDIT: old one destroyed
+void FitterFactory::setBO(BOConfig *config) {
   int i = 0;
   for (auto &pair: dispar) {
     pair.second.setBO(config->getDisc(i));

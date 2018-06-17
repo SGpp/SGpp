@@ -34,6 +34,7 @@ class HPOScorer : public Scorer {
    * puts a random seed.
    * @param trainPortion value between 0 and 1 to specify the ratio between testing set and
    * training set.
+   * @param testDataset test data for doing consistent evaluations
    */
   HPOScorer(Metric *metric, ShufflingFunctor *shuffling, int64_t seed,
             double trainPortion, Dataset *testDataset);
@@ -47,19 +48,27 @@ class HPOScorer : public Scorer {
    * @return accuracy of the fit as calculated by the #metric provided.
    */
   double calculateScore(ModelFittingBase &model, Dataset &dataset,
-                        double *stdDeviation = nullptr) override;
+                        double *stdDeviation) override;
 
+  /**
+   * Splits data and saves test data it in case no seperate test dataset is given.
+   * @param dataset complete dataset
+   * @return train dataset
+   */
   Dataset *prepareTestData(Dataset &dataset);
 
+  /**
+   * subsample training data
+   * @param original
+   * @param smaller
+   */
   void resizeTrainData(Dataset &original, Dataset &smaller);
 
   /**
-    * Polymorphic clone pattern
-    * @return deep copy of this object. New object is owned by caller.
+    * Required by base class but not implemented.
+    * @return nullptr
    */
-  Scorer* clone() const override;
-
-  void createTestFile(Dataset &dataset);
+  Scorer *clone() const override;
 
  private:
   /**
@@ -67,6 +76,9 @@ class HPOScorer : public Scorer {
    * training set.
    */
   double trainPortion;
+  /**
+   * test data saved here to use consistently during hpo
+   */
   std::unique_ptr<Dataset> testDataset;
 
 };

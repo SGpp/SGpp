@@ -1,5 +1,10 @@
 /*
- * HyperParameter.h
+ * Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
+ * HyperParameter.hpp
  *
  *  Created on: 24.01.2018
  *      Author: Eric Koepke
@@ -29,7 +34,7 @@ class HyperParameter {
    * @param nBits number of bits for representation in harmonica
    * @param name name of the hyperparameter
    */
-  HyperParameter(int nBits, std::string &name)
+  HyperParameter(size_t nBits, std::string &name)
       : bits(), nBits(nBits), name(name) {}
   /**
    * Default Destructor
@@ -55,7 +60,7 @@ class HyperParameter {
   /**
    * number of bits for harmonica
    */
-  int nBits;
+  size_t nBits;
   /**
    * name of the hyperparameter
    */

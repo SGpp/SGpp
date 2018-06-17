@@ -26,19 +26,21 @@
 namespace sgpp {
 namespace datadriven {
 
-SparseGridMiner* DensityEstimationMinerFactory::buildMiner(const std::string& path) const {
+SparseGridMiner *DensityEstimationMinerFactory::buildMiner(const std::string &path) const {
   DataMiningConfigParser parser(path);
 
   return new SparseGridMiner(createDataSource(parser), createFitter(parser), createScorer(parser));
 }
 
-HyperparameterOptimizer* DensityEstimationMinerFactory::buildHPO(const std::string& path) const {
+HyperparameterOptimizer *DensityEstimationMinerFactory::buildHPO(const std::string &path) const {
   DataMiningConfigParser parser(path);
-  return new HyperparameterOptimizer(createDataSource(parser), new DensityEstimationFitterFactory(parser), parser);
+  return new HyperparameterOptimizer(createDataSource(parser),
+                                     new DensityEstimationFitterFactory(parser),
+                                     parser);
 }
 
-DataSource* DensityEstimationMinerFactory::createDataSource(
-    const DataMiningConfigParser& parser) const {
+DataSource *DensityEstimationMinerFactory::createDataSource(
+    const DataMiningConfigParser &parser) const {
   DataSourceConfig config;
 
   bool hasSource = parser.getDataSourceConfig(config, config);
@@ -51,15 +53,15 @@ DataSource* DensityEstimationMinerFactory::createDataSource(
   }
 }
 
-ModelFittingBase* DensityEstimationMinerFactory::createFitter(
-    const DataMiningConfigParser& parser) const {
+ModelFittingBase *DensityEstimationMinerFactory::createFitter(
+    const DataMiningConfigParser &parser) const {
   FitterConfigurationDensityEstimation config{};
   config.readParams(parser);
   return new ModelFittingDensityEstimation(config);
 }
 
-Scorer* DensityEstimationMinerFactory::createScorer(
-    const DataMiningConfigParser& parser) const {
+Scorer *DensityEstimationMinerFactory::createScorer(
+    const DataMiningConfigParser &parser) const {
   std::unique_ptr<ScorerFactory> factory;
 
   if (parser.hasScorerConfigCrossValidation()) {

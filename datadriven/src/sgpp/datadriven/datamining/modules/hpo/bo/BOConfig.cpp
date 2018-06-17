@@ -1,6 +1,15 @@
-//
-// Created by Eric on 20.03.2018.
-//
+/*
+ * Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
+ * BOConfig.cpp
+ *
+ *  Created on:	20.03.2018
+ *      Author: Eric Koepke
+ */
+
 
 #include <vector>
 #include <sgpp/base/datatypes/DataVector.hpp>

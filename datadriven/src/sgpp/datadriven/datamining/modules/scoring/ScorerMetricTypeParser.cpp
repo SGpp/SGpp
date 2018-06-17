@@ -25,10 +25,10 @@ const ScorerMetricTypeParser::MetricTypeMap_t ScorerMetricTypeParser::metricType
   return MetricTypeMap_t{std::make_pair(ScorerMetricType::mse, "MSE")};
 }();
 
-const std::string& ScorerMetricTypeParser::toString(ScorerMetricType type) {
+const std::string &ScorerMetricTypeParser::toString(ScorerMetricType type) {
   return metricTypeMap.at(type);
 }
-ScorerMetricType ScorerMetricTypeParser::parse(const std::string& input) {
+ScorerMetricType ScorerMetricTypeParser::parse(const std::string &input) {
   auto inputLower = input;
   std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
 

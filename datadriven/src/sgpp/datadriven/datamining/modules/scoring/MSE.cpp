@@ -15,9 +15,9 @@
 namespace sgpp {
 namespace datadriven {
 
-Metric* MSE::clone() const { return new MSE(*this); }
+Metric *MSE::clone() const { return new MSE(*this); }
 
-double MSE::measure(const DataVector& predictedValues, const DataVector& trueValues) const {
+double MSE::measure(const DataVector &predictedValues, const DataVector &trueValues) const {
   DataVector tmp(predictedValues);
   tmp.sub(trueValues);
   const double error = tmp.l2Norm();

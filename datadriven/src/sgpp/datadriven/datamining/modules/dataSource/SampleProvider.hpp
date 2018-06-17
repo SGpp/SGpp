@@ -25,10 +25,10 @@ namespace datadriven {
 class SampleProvider {
  public:
   SampleProvider() = default;
-  SampleProvider(const SampleProvider& rhs) = default;
-  SampleProvider(SampleProvider&& rhs) = default;
-  SampleProvider& operator=(const SampleProvider& rhs) = default;
-  SampleProvider& operator=(SampleProvider&& rhs) = default;
+  SampleProvider(const SampleProvider &rhs) = default;
+  SampleProvider(SampleProvider &&rhs) = default;
+  SampleProvider &operator=(const SampleProvider &rhs) = default;
+  SampleProvider &operator=(SampleProvider &&rhs) = default;
   virtual ~SampleProvider() = default;
 
   /**
@@ -37,7 +37,7 @@ class SampleProvider {
    * @return #sgpp::datadriven::SampleProvider* pointer to clone of this class. This object is owned
    * by the caller.
    */
-  virtual SampleProvider* clone() const = 0;
+  virtual SampleProvider *clone() const = 0;
 
   /**
    * Lets the user request a certain amount of samples. This functionality is is designed for
@@ -48,7 +48,7 @@ class SampleProvider {
    * containing at most the requested amount of
    * samples. This object is owned by the caller.
    */
-  virtual Dataset* getNextSamples(size_t howMany) = 0;
+  virtual Dataset *getNextSamples(size_t howMany) = 0;
 
   /**
    * Asks to return all available samples. This functionality is designed for returning all
@@ -56,7 +56,7 @@ class SampleProvider {
    * @return #sgpp::datadriven::Dataset* Pointer to a new #sgpp::datadriven::Dataset object. This
    * object is owned by the caller.
    */
-  virtual Dataset* getAllSamples() = 0;
+  virtual Dataset *getAllSamples() = 0;
 
   /**
    * Returns the maximal dimensionality of the data.

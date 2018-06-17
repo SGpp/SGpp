@@ -18,8 +18,6 @@ namespace datadriven {
 
 using base::DataVector;
 
-//EDIT: train and test data handling, save train data in here?
-
 HPOScorer::HPOScorer(Metric *metric, ShufflingFunctor *shuffling, int64_t seed,
                      double trainPortion, Dataset *testDataset)
     : Scorer{metric, shuffling, seed}, trainPortion{trainPortion}, testDataset{testDataset} {}
@@ -39,29 +37,16 @@ Dataset *HPOScorer::prepareTestData(Dataset &dataset) {
   std::vector<size_t> randomizedIndices(dataset.getNumberInstances());
   randomizeIndices(dataset, randomizedIndices);
   // calculate size of testing and training portions
-  size_t trainSize = std::lround(static_cast<double>(dataset.getNumberInstances()) * trainPortion);
+  size_t trainSize = static_cast<size_t>(std::lround(
+      static_cast<double>(dataset.getNumberInstances()) * trainPortion));
   size_t testSize = dataset.getNumberInstances() - trainSize;
   size_t dim = dataset.getDimension();
-
-  //std::cout<< "Test 1" << std::endl;
-
-  //Dataset dummyDataset{dataset.getNumberInstances(), dim};
-
-  // create test and train datasets.
-  //Dataset testDataset{testSize, dim};
-
 
   testDataset = std::make_unique<Dataset>(testSize, dim);
   Dataset *trainDataset = new Dataset{trainSize, dim};
   splitSet(dataset, *trainDataset, *testDataset, randomizedIndices);
 
-  //overwrite testdataset with outside test data
-  DataSourceBuilder dsbuilder;
-  testDataset =
-      std::unique_ptr<Dataset>(dsbuilder.withPath("C:/Users/Eric/Downloads/DE4dTest.csv").assemble()->getNextSamples());
-
   return trainDataset;
-  //splitSet(dataset, dummyDataset, trainDataset, randomizedIndices, 2000);
 }
 
 // TODO(lettrich) :recycle
@@ -78,7 +63,7 @@ double HPOScorer::calculateScore(ModelFittingBase &model, Dataset &trainDataset,
     best = score;
     model.refine();
     score = test(model, *testDataset);
-    //std::cout<<"RefinedScore :"<<score<<std::endl;
+    // std::cout<<"RefinedScore :"<<score<<std::endl;
   }
 
   model.verboseSolver = resetVerbose;
@@ -86,8 +71,6 @@ double HPOScorer::calculateScore(ModelFittingBase &model, Dataset &trainDataset,
   if (stdDeviation) {
     *stdDeviation = 0;
   }
-
-  // double minScore = 1000.0;
 
   return best;
 }

@@ -43,7 +43,7 @@ namespace datadriven {
  */
 class RandomShufflingFunctor : public ShufflingFunctor {
  public:
-  ShufflingFunctor* clone() const override;
+  ShufflingFunctor *clone() const override;
 
   /**
    * Rearange indices of data samples in a dataset based on a random seed.
@@ -51,7 +51,7 @@ class RandomShufflingFunctor : public ShufflingFunctor {
    * @param indices vector containing the indices of the data points to be distributed. Vector is
    * modified in place.
    */
-  void shuffle(const Dataset& dataset, std::vector<size_t>& indices) override;
+  void shuffle(const Dataset &dataset, std::vector<size_t> &indices) override;
 };
 
 } /* namespace datadriven */

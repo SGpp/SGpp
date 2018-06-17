@@ -16,7 +16,7 @@
 
 namespace sgpp {
 namespace datadriven {
-Scorer* SplittingScorerFactory::buildScorer(const DataMiningConfigParser& parser) const {
+Scorer *SplittingScorerFactory::buildScorer(const DataMiningConfigParser &parser) const {
   TestingConfiguration config;
   parser.getScorerTestingConfig(config, config);
 

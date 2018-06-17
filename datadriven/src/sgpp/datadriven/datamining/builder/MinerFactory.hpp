@@ -40,9 +40,9 @@ class MinerFactory {
    * Factory method to build a miner object based on a configuration file.
    * @param path Path to a configuration file that defines the structure of the miner object.
    */
-  virtual SparseGridMiner* buildMiner(const std::string& path) const = 0;
+  virtual SparseGridMiner *buildMiner(const std::string &path) const = 0;
 
-  virtual sgpp::datadriven::HyperparameterOptimizer* buildHPO(const std::string& path) const = 0;
+  virtual sgpp::datadriven::HyperparameterOptimizer *buildHPO(const std::string &path) const = 0;
 };
 
 } /* namespace datadriven */

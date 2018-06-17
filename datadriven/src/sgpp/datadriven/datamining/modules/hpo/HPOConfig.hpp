@@ -51,11 +51,19 @@ class HPOConfig {
 
   void setNRuns(int64_t nRuns);
 
+  int64_t getNTrainSamples() const;
+
+  void setNTrainSamples(int64_t nTrainSamples);
+
  private:
   /**
    * Seed for random sampling in both harmonica and bayesian optimization
    */
   int64_t seed;
+  /**
+   * Number of Training Samples used for HPO
+   */
+  int64_t nTrainSamples;
   /**
    * Amount of samples to take in each stage of harmonica
    */

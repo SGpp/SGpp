@@ -6,12 +6,6 @@
 #ifndef ConfigurationRestriction_HPP
 #define ConfigurationRestriction_HPP
 
-// #include <sgpp/datadriven/datamining/modules/hpo/ConfigurationBit.hpp>
-
-
-// EDIT: cyclic dependency
-
-
 #include <sgpp/globaldef.hpp>
 #include <vector>
 

@@ -37,31 +37,31 @@ class SparseGridMiner {
    * generalization provided by the fitter on testing data. The miner instance will take ownership
    * of the passed object.
    */
-  SparseGridMiner(DataSource* dataSource, ModelFittingBase* fitter, Scorer* scorer);
+  SparseGridMiner(DataSource *dataSource, ModelFittingBase *fitter, Scorer *scorer);
 
   /**
    * Copy constructor deleted - not all members can be copied or cloned .
    * @param rhs the object to copy from
    */
-  SparseGridMiner(const SparseGridMiner& rhs) = delete;
+  SparseGridMiner(const SparseGridMiner &rhs) = delete;
 
   /**
    * Default Move constructor .
    * @param rhs the object to move from
    */
-  SparseGridMiner(SparseGridMiner&& rhs) = default;
+  SparseGridMiner(SparseGridMiner &&rhs) = default;
 
   /**
    * Default Move assign operator.
    * @param rhs the object to move from
    */
-  SparseGridMiner& operator=(SparseGridMiner&& rhs) = default;
+  SparseGridMiner &operator=(SparseGridMiner &&rhs) = default;
 
   /**
    * Default copy assign operator deleted because not all members can be copied.
    * @param rhs the object to copy from
    */
-  SparseGridMiner& operator=(const SparseGridMiner& rhs) = delete;
+  SparseGridMiner &operator=(const SparseGridMiner &rhs) = delete;
 
   /**
    * Default destructor.

@@ -35,7 +35,7 @@ class DataSourceBuilder {
    * @param filePath valid path to a file that should be read by the data source.
    * @return Reference to this object, used for chaining.
    */
-  DataSourceBuilder& withPath(const std::string& filePath);
+  DataSourceBuilder &withPath(const std::string &filePath);
 
   /**
    * Optionally Specify if the file used is gz compressed. If data source does not use any files,
@@ -43,7 +43,7 @@ class DataSourceBuilder {
    * @param isCompressed true if the file is compressed, false otherwise.
    * @return Reference to this object, used for chaining.
    */
-  DataSourceBuilder& withCompression(bool isCompressed);
+  DataSourceBuilder &withCompression(bool isCompressed);
 
   /**
    * Optionally Specify the file type if files are used. If data source does not use any files,
@@ -51,7 +51,7 @@ class DataSourceBuilder {
    * @param fileType value of
    * @return Reference to this object, used for chaining.
    */
-  DataSourceBuilder& withFileType(DataSourceFileType fileType);
+  DataSourceBuilder &withFileType(DataSourceFileType fileType);
 
   /**
    * Optionally Specify the amount of batches if batch learning is used. If no batch learning is
@@ -59,7 +59,7 @@ class DataSourceBuilder {
    * @param howMany amount of batches used in batch learning scenario.
    * @return Reference to this object, used for chaining.
    */
-  DataSourceBuilder& inBatches(size_t howMany);
+  DataSourceBuilder &inBatches(size_t howMany);
 
   /**
    * Optionally Specify the batch size if batch learning is used. If no batch learning is used this
@@ -67,21 +67,21 @@ class DataSourceBuilder {
    * @param batchSize size of batches used in batch learning scenario.
    * @return Reference to this object, used for chaining.
    */
-  DataSourceBuilder& withBatchSize(size_t batchSize);
+  DataSourceBuilder &withBatchSize(size_t batchSize);
 
   /**
    * Based on the currently specified configuration, build and configure an instance of a data
    * source object.
    * @return Fully configured instance of #sgpp::datadriven::DataSource object.
    */
-  DataSource* assemble() const;
+  DataSource *assemble() const;
 
   /**
    * Factory method used to build an instance of a #sgpp::datadriven::DataSource object based on the
    * passed configuration.
    * @return Fully configured instance of #sgpp::datadriven::DataSource object.
    */
-  DataSource* fromConfig(const DataSourceConfig& config);
+  DataSource *fromConfig(const DataSourceConfig &config);
 
  private:
   /**

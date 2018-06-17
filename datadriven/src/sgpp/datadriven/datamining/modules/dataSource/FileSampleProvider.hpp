@@ -37,14 +37,14 @@ class FileSampleProvider : public SampleProvider {
    * member functions.
    * @param filePath valid path to an existing file.
    */
-  virtual void readFile(const std::string& filePath) = 0;
+  virtual void readFile(const std::string &filePath) = 0;
 
   /**
    * Read the contents of a string, for example a deflated archive. Has to throw an exception if
    * string can not be parsed. Results of parsing can be optained via
    * #sgpp::datadriven::SampleProvider member functions.
    */
-  virtual void readString(const std::string& input) = 0;
+  virtual void readString(const std::string &input) = 0;
 };
 
 } /* namespace datadriven */

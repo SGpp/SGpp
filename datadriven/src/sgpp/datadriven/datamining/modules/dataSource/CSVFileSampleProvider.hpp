@@ -39,11 +39,11 @@ class CSVFileSampleProvider : public FileSampleProvider {
    * @return a Pointer to a new instance of #sgpp::datadriven::CSVFileSampleProvider with copied
    * state. Caller owns the new object.
    */
-  SampleProvider* clone() const override;
+  SampleProvider *clone() const override;
 
-  Dataset* getNextSamples(size_t howMany) override;
+  Dataset *getNextSamples(size_t howMany) override;
 
-  Dataset* getAllSamples() override;
+  Dataset *getAllSamples() override;
 
   size_t getDim() const override;
 
@@ -54,13 +54,13 @@ class CSVFileSampleProvider : public FileSampleProvider {
    * can not be opened or parsed.
    * @param filePath Path to an existing file.
    */
-  void readFile(const std::string& filePath) override;
+  void readFile(const std::string &filePath) override;
 
   /**
    * Currently not implemented.
    * @param input string containing information in CSV file format
    */
-  void readString(const std::string& input) override;
+  void readString(const std::string &input) override;
 
  private:
   /**
@@ -80,7 +80,7 @@ class CSVFileSampleProvider : public FileSampleProvider {
    * counter and returns a pointer to a new instance of #sgpp::datadriven::Dataset containing the
    * desired amount of samples (if available - else all remaining samples) and updates counter.
    */
-  Dataset* splitDataset(size_t howMany);
+  Dataset *splitDataset(size_t howMany);
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

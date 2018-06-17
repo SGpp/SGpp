@@ -26,8 +26,8 @@ namespace datadriven {
 ArffFileSampleProvider::ArffFileSampleProvider()
     : FileSampleProvider{}, dataset(Dataset{}), counter(0) {}
 
-SampleProvider* ArffFileSampleProvider::clone() const {
-  return dynamic_cast<SampleProvider*>(new ArffFileSampleProvider{*this});
+SampleProvider *ArffFileSampleProvider::clone() const {
+  return dynamic_cast<SampleProvider *>(new ArffFileSampleProvider{*this});
 }
 
 size_t ArffFileSampleProvider::getDim() const {
@@ -46,7 +46,7 @@ size_t ArffFileSampleProvider::getNumSamples() const {
   }
 }
 
-void ArffFileSampleProvider::readFile(const std::string& fileName) {
+void ArffFileSampleProvider::readFile(const std::string &fileName) {
   try {
     dataset = ARFFTools::readARFF(fileName);
   } catch (...) {
@@ -57,7 +57,7 @@ void ArffFileSampleProvider::readFile(const std::string& fileName) {
   }
 }
 
-Dataset* ArffFileSampleProvider::getNextSamples(size_t howMany) {
+Dataset *ArffFileSampleProvider::getNextSamples(size_t howMany) {
   if (dataset.getDimension() != 0) {
     return splitDataset(howMany);
   } else {
@@ -65,7 +65,7 @@ Dataset* ArffFileSampleProvider::getNextSamples(size_t howMany) {
   }
 }
 
-Dataset* ArffFileSampleProvider::getAllSamples() {
+Dataset *ArffFileSampleProvider::getAllSamples() {
   if (dataset.getDimension() != 0) {
     return new Dataset{dataset};
   } else {
@@ -73,7 +73,7 @@ Dataset* ArffFileSampleProvider::getAllSamples() {
   }
 }
 
-void ArffFileSampleProvider::readString(const std::string& input) {
+void ArffFileSampleProvider::readString(const std::string &input) {
   try {
     dataset = ARFFTools::readARFFFromString(input);
   } catch (...) {
@@ -83,17 +83,17 @@ void ArffFileSampleProvider::readString(const std::string& input) {
   }
 }
 
-Dataset* ArffFileSampleProvider::splitDataset(size_t howMany) {
+Dataset *ArffFileSampleProvider::splitDataset(size_t howMany) {
   const size_t size = counter + howMany < dataset.getNumberInstances()
-                          ? howMany
-                          : dataset.getNumberInstances() - counter;
+                      ? howMany
+                      : dataset.getNumberInstances() - counter;
   auto tmpDataset = std::make_unique<Dataset>(size, dataset.getDimension());
 
-  base::DataMatrix& srcSamples = dataset.getData();
-  base::DataVector& srcTargets = dataset.getTargets();
+  base::DataMatrix &srcSamples = dataset.getData();
+  base::DataVector &srcTargets = dataset.getTargets();
 
-  base::DataMatrix& destSamples = tmpDataset->getData();
-  base::DataVector& destTargets = tmpDataset->getTargets();
+  base::DataMatrix &destSamples = tmpDataset->getData();
+  base::DataVector &destTargets = tmpDataset->getTargets();
 
   base::DataVector tmpRow{srcSamples.getNcols()};
 

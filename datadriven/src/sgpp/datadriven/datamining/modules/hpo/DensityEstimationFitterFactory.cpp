@@ -24,13 +24,14 @@ DensityEstimationFitterFactory::DensityEstimationFitterFactory(DataMiningConfigP
 
   baseConfig.readParams(parser);
 
-  //EDIT: new hier ohne pointer?
+  parser.getHyperparameters(conpar, dispar, catpar, basisFunctions);
 
-  dispar["level"] = DiscreteParameter("level", 4, 7);
+  /*dispar["level"] = DiscreteParameter("level", 4, 7);
 
-  //catpar["basisFunction"] = DiscreteParameter("basisFunction",0,1);
+  catpar["basisFunction"] = DiscreteParameter("basisFunction",0,1);
 
   conpar["lambda"] = ContinuousParameter(7, "lambda", -10, 0);
+  */
 
 }
 
@@ -38,16 +39,25 @@ ModelFittingBase *DensityEstimationFitterFactory::buildFitter() {
 
   // build config
   auto *config = new FitterConfigurationDensityEstimation(baseConfig);
-  //EDIT: make lambda exponential
-  base::GridType basisFunction[] = {base::GridType::Linear, base::GridType::ModLinear};
 
-  config->getGridConfig().level_ = dispar["level"].getValue();
-  //config->getGridConfig().type_ = basisFunction[catpar["basisFunction"].getValue()];
-  config->getRegularizationConfig().lambda_ = pow(10, conpar["lambda"].getValue());
+  if (dispar.count("level")) {
+    config->getGridConfig().level_ = dispar["level"].getValue();
+  }
+  if (catpar.count("basisFunction")) {
+    config->getGridConfig().type_ = basisFunctions[catpar["basisFunction"].getValue()];
+  }
+  if (dispar.count("noPoints")) {
+    config->getRefinementConfig().noPoints_ = static_cast<size_t>(dispar["noPoints"].getValue());
+  }
+  if (conpar.count("threshold")) {
+    config->getRefinementConfig().threshold_ = conpar["threshold"].getValue();
+  }
+  if (conpar.count("lambda")) {
+    config->getRegularizationConfig().lambda_ = conpar["lambda"].getValue();
+  }
 
   return new ModelFittingDensityEstimation(*config);
 }
-
 
 } /* namespace datadriven */
 } /* namespace sgpp */

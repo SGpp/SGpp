@@ -36,9 +36,14 @@ using sgpp::solver::BiCGStab;
 using sgpp::solver::SLESolverConfiguration;
 
 ModelFittingBase::ModelFittingBase()
-    : verboseSolver{true}, config{nullptr}, grid{nullptr}, alpha{}, dataset{nullptr}, solver{nullptr} {}
+    : verboseSolver{true},
+      config{nullptr},
+      grid{nullptr},
+      alpha{},
+      dataset{nullptr},
+      solver{nullptr} {}
 
-const Grid& ModelFittingBase::getGrid() const {
+const Grid &ModelFittingBase::getGrid() const {
   if (grid != nullptr) {
     return *grid;
   } else {
@@ -46,13 +51,13 @@ const Grid& ModelFittingBase::getGrid() const {
   }
 }
 
-const DataVector& ModelFittingBase::getSurpluses() const { return alpha; }
+const DataVector &ModelFittingBase::getSurpluses() const { return alpha; }
 
-const FitterConfiguration& ModelFittingBase::getFitterConfiguration() const { return *config; }
+const FitterConfiguration &ModelFittingBase::getFitterConfiguration() const { return *config; }
 
-Grid* ModelFittingBase::buildGrid(const RegularGridConfiguration& gridConfig) const {
+Grid *ModelFittingBase::buildGrid(const RegularGridConfiguration &gridConfig) const {
   // load grid
-  Grid* tmpGrid;
+  Grid *tmpGrid;
   if (gridConfig.type_ == GridType::Linear) {
     tmpGrid = Grid::createLinearGrid(gridConfig.dim_);
   } else if (gridConfig.type_ == GridType::LinearL0Boundary) {
@@ -66,12 +71,12 @@ Grid* ModelFittingBase::buildGrid(const RegularGridConfiguration& gridConfig) co
     throw factory_exception("ModelFittingBase::createRegularGrid: grid type is not supported");
   }
 
-  GridGenerator& gridGen = tmpGrid->getGenerator();
+  GridGenerator &gridGen = tmpGrid->getGenerator();
   gridGen.regular(gridConfig.level_);
   return tmpGrid;
 }
 
-SLESolver* ModelFittingBase::buildSolver(const SLESolverConfiguration& sleConfig) const {
+SLESolver *ModelFittingBase::buildSolver(const SLESolverConfiguration &sleConfig) const {
   if (sleConfig.type_ == SLESolverType::CG) {
     return new ConjugateGradients(sleConfig.maxIterations_, sleConfig.eps_);
   } else if (sleConfig.type_ == SLESolverType::BiCGSTAB) {
@@ -79,12 +84,12 @@ SLESolver* ModelFittingBase::buildSolver(const SLESolverConfiguration& sleConfig
   } else {
     throw factory_exception(
         "ModelFittingBase: An unsupported SLE solver type was "
-        "chosen");
+            "chosen");
   }
 }
 
-void ModelFittingBase::reconfigureSolver(SLESolver& solver,
-                                         const SLESolverConfiguration& sleConfig) const {
+void ModelFittingBase::reconfigureSolver(SLESolver &solver,
+                                         const SLESolverConfiguration &sleConfig) const {
   solver.setMaxIterations(sleConfig.maxIterations_);
   solver.setEpsilon(sleConfig.eps_);
 }

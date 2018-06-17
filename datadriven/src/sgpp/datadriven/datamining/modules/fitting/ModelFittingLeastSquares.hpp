@@ -38,14 +38,14 @@ class ModelFittingLeastSquares : public ModelFittingBase {
    *
    * @param config configuration object that specifies grid, refinement, and regularization
    */
-  explicit ModelFittingLeastSquares(const FitterConfigurationLeastSquares& config);
+  explicit ModelFittingLeastSquares(const FitterConfigurationLeastSquares &config);
 
   /**
    * Fit the grid to the given dataset by determining the weights of the initial grid by a least
    * squares approach.
    * @param dataset the training dataset that is used to fit the model.
    */
-  void fit(Dataset& dataset) override;
+  void fit(Dataset &dataset) override;
 
   /**
    * Improve accuracy of the fit on the given training data by adaptive refinement of the grid and
@@ -55,14 +55,14 @@ class ModelFittingLeastSquares : public ModelFittingBase {
    */
   bool refine() override;
 
-  void update(Dataset& dataset) override;
+  void update(Dataset &dataset) override;
 
   /**
    * Evaluate the fitted regression model at a single data point - requires a trained grid.
    * @param sample vector with the coordinates in all dimensions of that sample.
    * @return evaluation of the trained grid.
    */
-  double evaluate(const DataVector& sample) const override;
+  double evaluate(const DataVector &sample) const override;
 
   /**
    * Evaluate the fitted model on a set of data points - requires a trained grid.
@@ -71,7 +71,7 @@ class ModelFittingLeastSquares : public ModelFittingBase {
    * @param results vector where each row will contain the evaluation of the respective sample on
    * the current model.
    */
-  void evaluate(DataMatrix& samples, DataVector& results) override;
+  void evaluate(DataMatrix &samples, DataVector &results) override;
 
  private:
   /**
@@ -90,8 +90,8 @@ class ModelFittingLeastSquares : public ModelFittingBase {
    * Factory function to build the System matrix for least squares regression with identity as
    * regularization.
    */
-  DMSystemMatrixBase* buildSystemMatrix(Grid& grid, DataMatrix& trainDataset, double lambda,
-                                        OperationMultipleEvalConfiguration& config) const;
+  DMSystemMatrixBase *buildSystemMatrix(Grid &grid, DataMatrix &trainDataset, double lambda,
+                                        OperationMultipleEvalConfiguration &config) const;
 
   /**
    * based on the current dataset and grid, assemble a system of linear equations and solve for the
@@ -100,7 +100,7 @@ class ModelFittingLeastSquares : public ModelFittingBase {
    * @param alpha: Reference to a data vector where hierarchical surpluses will be stored into. Make
    * sure the vector size is equal to the amount of grid points.
    */
-  void assembleSystemAndSolve(const SLESolverConfiguration& solverConfig, DataVector& alpha) const;
+  void assembleSystemAndSolve(const SLESolverConfiguration &solverConfig, DataVector &alpha) const;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
