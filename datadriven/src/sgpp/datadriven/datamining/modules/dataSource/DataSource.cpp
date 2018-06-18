@@ -78,6 +78,5 @@ Dataset *DataSource::getNextSamples() {
 const DataSourceConfig &DataSource::getConfig() const { return config; }
 
 size_t DataSource::getCurrentIteration() const { return currentIteration; }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

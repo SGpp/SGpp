@@ -50,6 +50,5 @@ void DiscreteParameter::setHarmonica() {
   }
   value = static_cast<int>(lround(min + ((max - min) * (1.0 + v / (m - 1.0)) / 2.0)));
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

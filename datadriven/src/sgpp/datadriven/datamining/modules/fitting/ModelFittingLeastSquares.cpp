@@ -86,7 +86,6 @@ bool ModelFittingLeastSquares::refine() {
     } else {
       return false;
     }
-
   } else {
     throw application_exception(
         "ModelFittingLeastSquares: Can't refine before initial grid is created");
@@ -129,6 +128,5 @@ void ModelFittingLeastSquares::assembleSystemAndSolve(const SLESolverConfigurati
   reconfigureSolver(*solver, solverConfig);
   solver->solve(*systemMatrix, alpha, b, true, verboseSolver, DEFAULT_RES_THRESHOLD);
 }
-
 }  // namespace datadriven
 }  // namespace sgpp

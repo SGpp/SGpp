@@ -44,6 +44,5 @@ class MinerFactory {
 
   virtual sgpp::datadriven::HyperparameterOptimizer *buildHPO(const std::string &path) const = 0;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -42,7 +42,6 @@ class MortonOrder {
   bool _isIdentity;
   sgpp::datadriven::Dataset *_dataset;
 };
-
 }  // namespace datadriven
 }  // namespace sgpp
 

@@ -47,6 +47,5 @@ class MatrixDecompositionTypeParser {
    */
   static const MatrixDecompositionTypeMap_t matrixDecompositionTypeMap;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

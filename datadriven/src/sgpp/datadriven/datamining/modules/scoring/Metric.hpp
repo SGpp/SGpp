@@ -81,6 +81,5 @@ class Metric {
   virtual double measure(const DataVector &predictedValues,
                          const DataVector &trueValues) const = 0;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

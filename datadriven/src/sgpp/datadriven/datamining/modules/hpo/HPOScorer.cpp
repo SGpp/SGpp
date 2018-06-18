@@ -10,9 +10,6 @@
  */
 #include <sgpp/datadriven/datamining/modules/hpo/HPOScorer.hpp>
 
-#include <vector>
-#include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
-
 namespace sgpp {
 namespace datadriven {
 
@@ -49,10 +46,8 @@ Dataset *HPOScorer::prepareTestData(Dataset &dataset) {
   return trainDataset;
 }
 
-// TODO(lettrich) :recycle
 double HPOScorer::calculateScore(ModelFittingBase &model, Dataset &trainDataset,
                                  double *stdDeviation) {
-
   bool resetVerbose = model.verboseSolver;
   model.verboseSolver = false;
 
@@ -77,6 +72,5 @@ double HPOScorer::calculateScore(ModelFittingBase &model, Dataset &trainDataset,
 Scorer *HPOScorer::clone() const {
   return nullptr;
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

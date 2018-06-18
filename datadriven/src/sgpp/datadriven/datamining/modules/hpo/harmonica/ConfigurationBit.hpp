@@ -84,7 +84,6 @@ class ConfigurationBit {
    */
   int value;
 };
-
 }  // namespace datadriven
 }  // namespace sgpp
 

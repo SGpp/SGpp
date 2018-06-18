@@ -55,6 +55,5 @@ double SplittingScorer::calculateScore(ModelFittingBase &model, Dataset &dataset
 
   return score;
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -29,7 +29,7 @@ class Harmonica {
    * Constructor
    * @param fitterFactory to produce fitter type objects
    */
-  Harmonica(FitterFactory *fitterFactory);
+  explicit Harmonica(FitterFactory *fitterFactory);
 
   /**
    * First step in harmonica. Configurations are prepared for evaluation and the parity
@@ -135,9 +135,7 @@ class Harmonica {
    * all constraints that currently exist
    */
   std::vector<std::unique_ptr<ConfigurationRestriction>> constraints;
-
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */
 

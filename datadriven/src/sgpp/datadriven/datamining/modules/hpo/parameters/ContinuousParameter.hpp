@@ -33,6 +33,7 @@ class ContinuousParameter : public sgpp::datadriven::HyperParameter {
    * @param name name of the hyperparameter
    * @param min minimum value of the hyperparameter during optimization
    * @param max maximum value of the hyperparameter during optimization
+   * @param logscale whether this parameter operates on a logscale
    */
   ContinuousParameter(size_t nBits,
                       std::string &&name,
@@ -77,7 +78,6 @@ class ContinuousParameter : public sgpp::datadriven::HyperParameter {
    */
   bool logscale = false;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */
 #endif /* CONTINUOUSPARAMETER_HPP_ */

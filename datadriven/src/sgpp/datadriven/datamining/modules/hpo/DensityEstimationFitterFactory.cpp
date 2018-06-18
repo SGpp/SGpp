@@ -11,9 +11,6 @@
  */
 
 #include <sgpp/datadriven/datamining/modules/hpo/DensityEstimationFitterFactory.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 
 namespace sgpp {
@@ -36,7 +33,6 @@ DensityEstimationFitterFactory::DensityEstimationFitterFactory(DataMiningConfigP
 }
 
 ModelFittingBase *DensityEstimationFitterFactory::buildFitter() {
-
   // build config
   auto *config = new FitterConfigurationDensityEstimation(baseConfig);
 
@@ -58,6 +54,5 @@ ModelFittingBase *DensityEstimationFitterFactory::buildFitter() {
 
   return new ModelFittingDensityEstimation(*config);
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

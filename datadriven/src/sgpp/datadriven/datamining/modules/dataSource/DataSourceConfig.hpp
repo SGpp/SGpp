@@ -54,6 +54,5 @@ struct DataSourceConfig {
    */
   datadriven::DataTransformationConfig dataTransformationConfig;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

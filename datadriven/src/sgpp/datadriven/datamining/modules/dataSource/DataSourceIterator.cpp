@@ -26,6 +26,5 @@ const DataSourceIterator &DataSourceIterator::operator++() {
 }
 
 Dataset *DataSourceIterator::operator*() { return sampleProvider.getNextSamples(); }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

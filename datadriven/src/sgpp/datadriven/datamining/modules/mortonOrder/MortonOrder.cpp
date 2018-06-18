@@ -90,7 +90,6 @@ void zorder(const sgpp::base::DataMatrix &data, std::vector<size_t> &perm) {
     perm[i] = workdata[i].idx;
   }
 }
-
 }  // namespace MortonOrderDetail
 // /@endcond  // NOLINT()
 
@@ -145,6 +144,5 @@ bool MortonOrder::isOrdered() const { return _isOrdered; }
 
 // / Access to the permutation vector
 const std::vector<size_t> &MortonOrder::getPermutation() const { return permutation; }
-
 }  // namespace datadriven
 }  // namespace sgpp

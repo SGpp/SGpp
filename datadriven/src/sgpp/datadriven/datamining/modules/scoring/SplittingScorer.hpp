@@ -59,6 +59,5 @@ class SplittingScorer : public Scorer {
    */
   double trainPortion;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -98,6 +98,5 @@ void ModelFittingDensityEstimation::update(Dataset &newDataset) {
 }
 
 void ModelFittingDensityEstimation::resetState() { refinementsPerformed = 0; }
-
 }  // namespace datadriven
 }  // namespace sgpp

@@ -24,6 +24,5 @@ DataTransformation *DataTransformationBuilder::buildTransformation(
     return nullptr;
   }
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

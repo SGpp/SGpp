@@ -51,6 +51,5 @@ void FileSampleDecorator::readFile(const std::string &fileName) {
 void FileSampleDecorator::readString(const std::string &input) {
   fileSampleProvider->readString(input);
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

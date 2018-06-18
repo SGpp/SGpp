@@ -108,6 +108,5 @@ Dataset *ArffFileSampleProvider::splitDataset(size_t howMany) {
 
   return tmpDataset.release();
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

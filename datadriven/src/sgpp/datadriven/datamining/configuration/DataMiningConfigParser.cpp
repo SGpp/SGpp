@@ -111,7 +111,6 @@ bool DataMiningConfigParser::getScorerTestset(DataSourceConfig &config,
                 << DataSourceFileTypeParser::toString(defaults.fileType) << "." << std::endl;
       config.fileType = defaults.fileType;
     }
-
   } else {
     std::cout << "# Could not find specification  of testset. Falling Back to default values."
               << std::endl;
@@ -156,7 +155,6 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig &config,
           "Falling back to default values." << std::endl;
       config.dataTransformationConfig = defaults.dataTransformationConfig;
     }
-
   } else {
     std::cout << "# Could not find specification of dataSource. Falling Back to default values."
               << std::endl;
@@ -193,7 +191,6 @@ bool DataMiningConfigParser::getScorerTestingConfig(TestingConfiguration &config
       std::cout << "# Did not find testing[metric]. Setting default value "
                 << ScorerMetricTypeParser::toString(defaults.metric) << "." << std::endl;
     }
-
   } else {
     std::cout
         << "# Could not find specification  of scorer[testing]. Falling Back to default values."
@@ -229,7 +226,6 @@ bool DataMiningConfigParser::getScorerCrossValidationConfig(
       std::cout << "# Did not find crossValidation[metric]. Setting default value "
                 << ScorerMetricTypeParser::toString(defaults.metric) << "." << std::endl;
     }
-
   } else {
     std::cout << "# Could not find specification  of scorer[crossValidation]. Falling Back to "
         "default values."
@@ -286,7 +282,6 @@ bool DataMiningConfigParser::getFitterGridConfig(RegularGridConfiguration &confi
                 << GridTypeParser::toString(defaults.type_) << "." << std::endl;
       config.type_ = defaults.type_;
     }
-
   } else {
     std::cout << "# Could not find specification  of fitter[gridConfig]. Falling Back to default "
         "values."
@@ -387,11 +382,12 @@ bool DataMiningConfigParser::getFitterDensityEstimationConfig(
 
     // parse  density estimation type
     if (densityEstimationConfig->contains("densityEstimationType")) {
-      config.type_ =
-          DensityEstimationTypeParser::parse((*densityEstimationConfig)["densityEstimationType"].get());
+      config.type_ = DensityEstimationTypeParser::parse
+          ((*densityEstimationConfig)["densityEstimationType"].get());
     } else {
       std::cout <<
-                "# Did not find densityEstimationConfig[densityEstimationType]. Setting default value "
+                "# Did not find densityEstimationConfig[densityEstimationType]."
+                    " Setting default value "
                 << DensityEstimationTypeParser::toString(defaults.type_) << "." << std::endl;
       config.type_ = defaults.type_;
     }
@@ -403,12 +399,12 @@ bool DataMiningConfigParser::getFitterDensityEstimationConfig(
           parse((*densityEstimationConfig)["matrixDecompositionEstimationType"].get());
     } else {
       std::cout <<
-                "# Did not find densityEstimationConfig[matrixDecompositionType]. Setting default value "
+                "# Did not find densityEstimationConfig[matrixDecompositionType]."
+                    " Setting default value "
                 << MatrixDecompositionTypeParser::toString(defaults.decomposition_)
                 << "." << std::endl;
       config.decomposition_ = defaults.decomposition_;
     }
-
   } else {
     std::cout <<
               "# Could not find specification  of fitter[densityEstimationConfig]. Falling Back to "
@@ -498,7 +494,7 @@ std::string DataMiningConfigParser::parseString(DictNode &dict, const std::strin
         return dict[key]["value"].get();
       } catch (json_exception &e) {
         std::string errorMsg = "# Failed to parse string " + parentDict + "[" + key +
-            "] from string"; // + dict[key].get() + ".";
+            "] from string";   // + dict[key].get() + ".";
         throw data_exception(errorMsg.c_str());
       }
     }
@@ -608,12 +604,12 @@ std::vector<int64_t> DataMiningConfigParser::parseIntArray(DictNode &dict, const
       return array;
     } catch (json_exception &e) {
       std::string errorMsg = "# Failed to parse integer array" + parentNode + "[" + key +
-          "] from string" + dict[key].get() + "."; // EDIT: key.get() does this work look above
+          "] from string" + dict[key].get() + ".";   // EDIT: key.get() does this work look above
       throw data_exception(errorMsg.c_str());
     }
   } else {
     std::cout << "# Did not find " << parentNode << "[" << key
-              << "]. Setting default value " // EDIT: insert array to string?
+              << "]. Setting default value "   // EDIT: insert array to string?
               << "." << std::endl;
     return defaultValue;
   }
@@ -729,12 +725,10 @@ void DataMiningConfigParser::getHPOConfig(HPOConfig &config) {
       std::cout << "# Could not find specification  of hpo[bayesianOptimization]. Falling Back to "
           "default values." << std::endl;
     }
-
   } else {
     std::cout << "# Could not find specification  of hpo. Falling Back to "
         "default values." << std::endl;
   }
-
 }
 
 void DataMiningConfigParser::parseDataTransformationConfig(
@@ -780,8 +774,6 @@ void DataMiningConfigParser::parseRosenblattTransformationConfig(
                                  defaults.solverEps, parentNode);
   config.solverThreshold = parseDouble(dict, "solverThreshold",
                                        defaults.solverThreshold, parentNode);
-
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

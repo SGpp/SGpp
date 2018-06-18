@@ -31,7 +31,6 @@ SparseGridMiner *UniversalMinerFactory::buildMiner(const std::string &path) cons
 }
 
 HyperparameterOptimizer *UniversalMinerFactory::buildHPO(const std::string &path) const {
-
   DataMiningConfigParser parser(path);
   FitterType fType = FitterType::RegressionLeastSquares;
   parser.getFitterConfigType(fType, fType);
@@ -45,7 +44,6 @@ HyperparameterOptimizer *UniversalMinerFactory::buildHPO(const std::string &path
                                        new LeastSquaresRegressionFitterFactory(parser),
                                        parser);
   }
-
 }
 
 DataSource *UniversalMinerFactory::createDataSource(
@@ -92,6 +90,5 @@ Scorer *UniversalMinerFactory::createScorer(
   }
   return factory->buildScorer(parser);
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -76,6 +76,5 @@ struct TestingConfiguration {
    */
   ScorerShufflingType shuffling = ScorerShufflingType::random;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

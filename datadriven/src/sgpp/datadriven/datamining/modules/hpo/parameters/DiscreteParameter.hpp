@@ -65,7 +65,7 @@ class DiscreteParameter : public sgpp::datadriven::HyperParameter {
   /**
    * adjust the current value of the hyperparameter according to the (normalized)
    * input
-   * @param interval (normalized) value of the hyperparameter
+   * @param option value of the parameter from 0
    */
   void setBO(int option);
 
@@ -83,7 +83,6 @@ class DiscreteParameter : public sgpp::datadriven::HyperParameter {
    */
   int value = 0;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */
 #endif /* DISCRETEPARAMETER_HPP_ */

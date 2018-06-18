@@ -89,6 +89,5 @@ class SparseGridMiner {
    */
   std::unique_ptr<Scorer> scorer;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

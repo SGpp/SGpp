@@ -139,7 +139,6 @@ class BayesianOptimization {
    */
   std::vector<BOConfig> allConfigs;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */
 

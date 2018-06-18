@@ -35,6 +35,5 @@ class CrossValidationScorerFactory : public ScorerFactory {
    */
   Scorer *buildScorer(const DataMiningConfigParser &parser) const override;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

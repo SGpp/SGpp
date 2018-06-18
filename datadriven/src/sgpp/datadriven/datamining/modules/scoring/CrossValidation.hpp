@@ -58,6 +58,5 @@ class CrossValidation : public Scorer {
    */
   size_t foldNumber;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -49,6 +49,5 @@ class ScorerShufflingTypeParser {
    */
   static const ShufflingTypeMap_t shufflingTypeMap;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

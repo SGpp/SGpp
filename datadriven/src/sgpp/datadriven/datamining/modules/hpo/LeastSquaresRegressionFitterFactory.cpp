@@ -11,16 +11,13 @@
  */
 
 #include <sgpp/datadriven/datamining/modules/hpo/LeastSquaresRegressionFitterFactory.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 
 namespace sgpp {
 namespace datadriven {
 
-LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory(DataMiningConfigParser &parser)
-    : baseConfig() {
+LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory
+    (DataMiningConfigParser &parser) : baseConfig() {
 
   baseConfig.readParams(parser);
 
@@ -32,14 +29,13 @@ LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory(DataMin
 
      catpar["basisFunction"] = DiscreteParameter("basisFunction",0,1);
 
-     conpar["lambda"] = ContinuousParameter(5, "lambda", -7, 0); // 8
+     conpar["lambda"] = ContinuousParameter(5, "lambda", -7, 0);   // 8
 
-     conpar["threshold"] = ContinuousParameter(3, "threshold", -5, -2); // 3
+     conpar["threshold"] = ContinuousParameter(3, "threshold", -5, -2);   // 3
  */
 }
 
 ModelFittingBase *LeastSquaresRegressionFitterFactory::buildFitter() {
-
   // build config
   auto *config = new FitterConfigurationLeastSquares(baseConfig);
 
@@ -61,6 +57,5 @@ ModelFittingBase *LeastSquaresRegressionFitterFactory::buildFitter() {
   }
   return new ModelFittingLeastSquares(*config);
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

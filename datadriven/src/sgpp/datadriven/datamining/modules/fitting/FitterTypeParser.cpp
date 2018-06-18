@@ -43,6 +43,5 @@ const FitterTypeParser::FitterTypeMap_t FitterTypeParser::fitterTypeMap = []() {
       std::make_pair(FitterType::RegressionLeastSquares, "ModelFittingLeastSquares"),
       std::make_pair(FitterType::DensityEstimation, "ModelFittingDensityEstimation")};
 }();
-
 } /* namespace datadriven */
 } /* namespace sgpp */

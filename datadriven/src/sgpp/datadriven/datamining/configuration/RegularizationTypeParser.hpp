@@ -47,6 +47,5 @@ class RegularizationTypeParser {
    */
   static const RegularizationTypeMap_t regularizationTypeMap;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

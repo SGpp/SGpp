@@ -46,6 +46,5 @@ const DensityEstimationTypeParser::DensityEstimationTypeMap_t
       std::make_pair(DensityEstimationType::CG, "CG"),
       std::make_pair(DensityEstimationType::Decomposition, "Decomposition")};
 }();
-
 } /* namespace datadriven */
 } /* namespace sgpp */

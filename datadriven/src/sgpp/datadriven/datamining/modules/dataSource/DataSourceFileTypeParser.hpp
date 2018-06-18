@@ -50,6 +50,5 @@ class DataSourceFileTypeParser {
    */
   static const FileTypeMap_t fileTypeMap;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

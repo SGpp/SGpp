@@ -72,6 +72,5 @@ Scorer *LeastSquaresRegressionMinerFactory::createScorer(
   }
   return factory->buildScorer(parser);
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -101,6 +101,5 @@ class HyperparameterOptimizer {
    */
   HPOConfig config;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

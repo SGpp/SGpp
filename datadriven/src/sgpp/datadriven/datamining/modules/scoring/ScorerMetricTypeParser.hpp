@@ -50,6 +50,5 @@ class ScorerMetricTypeParser {
    */
   static const MetricTypeMap_t metricTypeMap;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

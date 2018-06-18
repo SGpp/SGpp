@@ -133,6 +133,5 @@ double BOConfig::getScaledDistance(BOConfig &other, const base::DataVector &scal
   }
   return tmp;
 }
-
-}
-}
+} /* namespace datadriven */
+} /* namespace sgpp */

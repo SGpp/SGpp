@@ -34,6 +34,5 @@ class MSE : public Metric {
    */
   double measure(const DataVector &predictedValues, const DataVector &trueValues) const override;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

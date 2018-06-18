@@ -36,6 +36,5 @@ double ContinuousParameter::getValue() {
   }
   return value;
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -114,6 +114,5 @@ double Scorer::refine(ModelFittingBase &model, Dataset &testDataset) {
   } while (wasRefined);
   return score;
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

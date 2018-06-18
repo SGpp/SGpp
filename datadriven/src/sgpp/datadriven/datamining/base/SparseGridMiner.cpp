@@ -33,6 +33,5 @@ void SparseGridMiner::learn() {
             << "Standard Deviation: " << stdDeviation << std::endl
             << "###############" << std::endl;
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

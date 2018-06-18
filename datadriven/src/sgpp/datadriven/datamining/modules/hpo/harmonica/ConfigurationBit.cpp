@@ -5,11 +5,6 @@
 
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/ConfigurationBit.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
-#include <sgpp/base/datatypes/DataMatrix.hpp>
-
-#include <sgpp/globaldef.hpp>
-#include <list>
-#include <iostream>
 
 namespace sgpp {
 namespace datadriven {
@@ -40,6 +35,5 @@ int ConfigurationBit::getValue() {
 std::string ConfigurationBit::getName() {
   return name;
 }
-
 }  // namespace datadriven
 }  // namespace sgpp

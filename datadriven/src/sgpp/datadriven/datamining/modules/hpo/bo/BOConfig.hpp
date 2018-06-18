@@ -104,13 +104,14 @@ class BOConfig {
 
   /**
    * Get score measured on this sample
-   * @param input score
+   * @return score
    */
   double getScore();
 
   /**
    * Compute complete distance to another BOConfig/sample point
    * @param other sample point to calculate distance to
+   * @param scales scaling of hyperparameters in relation to each other
    * @return distance measure
    */
   double getScaledDistance(BOConfig &other, const base::DataVector &scales);
@@ -151,8 +152,7 @@ class BOConfig {
    */
   double discDistance = 0;
 };
+} /* namespace datadriven */
+} /* namespace sgpp */
 
-}
-}
-
-#endif // CLION_BOCONFIG_HPP
+#endif   // CLION_BOCONFIG_HPP

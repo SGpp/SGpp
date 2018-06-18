@@ -67,7 +67,6 @@ class ConfigurationRestriction {
   int openBits = 0;
   // bool visited;
 };
-
 }  // namespace datadriven
 }  // namespace sgpp
 

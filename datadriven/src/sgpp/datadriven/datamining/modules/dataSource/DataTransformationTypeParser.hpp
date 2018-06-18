@@ -49,6 +49,5 @@ class DataTransformationTypeParser {
    */
   static const TransformationTypeMap_t transformationTypeMap;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

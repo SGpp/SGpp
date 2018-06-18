@@ -73,6 +73,5 @@ class ShufflingFunctor {
    */
   std::mt19937 generator;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

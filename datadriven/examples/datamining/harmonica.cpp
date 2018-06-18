@@ -54,6 +54,6 @@ int main(int argc, char **argv) {
    */
   // hpo->optimizeHyperparameters();
   hpo->runHarmonica();
-  //hpo->runFromFile();
-  //miner->learn();
+  // hpo->runFromFile();
+  // miner->learn();
 }

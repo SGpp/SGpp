@@ -47,6 +47,5 @@ const DataSourceFileTypeParser::FileTypeMap_t DataSourceFileTypeParser::fileType
                                                  std::make_pair(DataSourceFileType::ARFF, "ARFF"),
                                                  std::make_pair(DataSourceFileType::CSV, "CSV")};
 }();
-
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -85,6 +85,5 @@ class HPOConfig {
    */
   int64_t nRuns;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

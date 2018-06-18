@@ -20,8 +20,7 @@ class OperationMultipleEvalMatrix : public base::OperationMultipleEval {
  public:
   /**
    * Constructor
-   *
-   * @param base::Grid dummy grid for inheritance reasons
+   * @param grid dummy grid for inheritance reasons
    * @param dataset the dataset that should be evaluated
    */
   OperationMultipleEvalMatrix(base::Grid &grid, base::DataMatrix &dataset)
@@ -36,9 +35,7 @@ class OperationMultipleEvalMatrix : public base::OperationMultipleEval {
   void multTranspose(base::DataVector &source, base::DataVector &result) override;
 
   double getDuration() override;
-
 };
-
 }  // namespace datadriven
 }  // namespace sgpp
 

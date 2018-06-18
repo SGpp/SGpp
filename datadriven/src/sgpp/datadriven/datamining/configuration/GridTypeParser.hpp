@@ -48,6 +48,5 @@ class GridTypeParser {
    */
   static const GridTypeMap_t gridTypeMap;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

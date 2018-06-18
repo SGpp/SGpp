@@ -160,6 +160,5 @@ class Scorer {
    */
   std::unique_ptr<ShufflingFunctor> shuffling;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

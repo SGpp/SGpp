@@ -54,6 +54,5 @@ const RegularizationTypeParser::RegularizationTypeMap_t
       std::make_pair(RegularizationType::ElasticNet, "ElasticNet"),
       std::make_pair(RegularizationType::GroupLasso, "GroupLasso")};
 }();
-
 } /* namespace datadriven */
 } /* namespace sgpp */

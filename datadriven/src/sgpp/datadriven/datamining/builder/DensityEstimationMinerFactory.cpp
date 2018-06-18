@@ -71,6 +71,5 @@ Scorer *DensityEstimationMinerFactory::createScorer(
   }
   return factory->buildScorer(parser);
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

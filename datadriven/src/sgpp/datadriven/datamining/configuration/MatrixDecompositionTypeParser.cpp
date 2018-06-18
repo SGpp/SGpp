@@ -55,6 +55,5 @@ const MatrixDecompositionTypeParser::MatrixDecompositionTypeMap_t
       std::make_pair(MatrixDecompositionType::DenseIchol, "DenseIchol"),
       std::make_pair(MatrixDecompositionType::OrthoAdapt, "OrthoAdapt")};
 }();
-
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -94,6 +94,5 @@ class DataSourceBuilder {
    */
   DataSourceConfig config;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -31,7 +31,7 @@ class DensityEstimationFitterFactory : public FitterFactory {
   /**
    * Default constructor
    */
-  DensityEstimationFitterFactory(DataMiningConfigParser &parser);
+  explicit DensityEstimationFitterFactory(DataMiningConfigParser &parser);
 
   /**
    * Assemble a #sgpp::datadriven::ModelFittingDensityEstimation object based on the configuration
@@ -49,8 +49,6 @@ class DensityEstimationFitterFactory : public FitterFactory {
    * Container for GridTypes specifically for the basis function hyperparameter
    */
   std::vector<base::GridType> basisFunctions;
-
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */
