@@ -12,6 +12,8 @@
 
 #include <sgpp/datadriven/datamining/builder/UniversalMinerFactory.hpp>
 
+#include <string>
+
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/datadriven/datamining/builder/CrossValidationScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>

@@ -8,16 +8,19 @@
  *  Created on: Feb 2, 2018
  *      Author: Eric Koepke
  */
-
-#include <sgpp/optimization/sle/solver/Eigen.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/Harmonica.hpp>
+
+#include <vector>
+#include <string>
+#include <algorithm>
+
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/solver/sle/fista/LassoFunction.hpp>
 #include <sgpp/solver/sle/fista/Fista.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
-#include "OperationMultipleEvalMatrix.hpp"
+#include <sgpp/datadriven/datamining/modules/hpo/harmonica/OperationMultipleEvalMatrix.hpp>
 
 namespace sgpp {
 namespace datadriven {

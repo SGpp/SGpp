@@ -44,13 +44,13 @@ class ModelFittingBaseSingleGrid : public ModelFittingBase {
    * Copy constructor - we cannot deep copy all member variables yet.
    * @param rhs const reference to the scorer object to copy from.
    */
-  ModelFittingBaseSingleGrid(const ModelFittingBaseSingleGrid& rhs) = delete;
+  ModelFittingBaseSingleGrid(const ModelFittingBaseSingleGrid &rhs) = delete;
 
   /**
    * Move constructor
    * @param rhs R-value reference to a scorer object to moved from.
    */
-  ModelFittingBaseSingleGrid(ModelFittingBaseSingleGrid&& rhs) = default;
+  ModelFittingBaseSingleGrid(ModelFittingBaseSingleGrid &&rhs) = default;
 
   // TODO(lettrich): fix this as soon as all member variables are copyable.
   /**
@@ -58,32 +58,31 @@ class ModelFittingBaseSingleGrid : public ModelFittingBase {
    * @param rhs const reference to the scorer object to copy from.
    * @return rerefernce to this with updated values.
    */
-  ModelFittingBaseSingleGrid& operator=(const ModelFittingBaseSingleGrid& rhs) = delete;
+  ModelFittingBaseSingleGrid &operator=(const ModelFittingBaseSingleGrid &rhs) = delete;
 
   /**
    * Move assign operator
    * @param rhs R-value reference to an a scorer object to move from.
    * @return rerefernce to this with updated values.
    */
-  ModelFittingBaseSingleGrid& operator=(ModelFittingBaseSingleGrid&& rhs) = default;
+  ModelFittingBaseSingleGrid &operator=(ModelFittingBaseSingleGrid &&rhs) = default;
 
   /**
    * virtual destructor.
    */
   virtual ~ModelFittingBaseSingleGrid() = default;
 
-
   /**
    * Get the underlying grid object for the current model.
    * @return the grid object.
    */
-  const Grid& getGrid() const;
+  const Grid &getGrid() const;
 
   /**
    * Get the surpluses of the current grid
    * @return vector of surpluses.
    */
-  const DataVector& getSurpluses() const;
+  const DataVector &getSurpluses() const;
 
  protected:
   /**
@@ -96,6 +95,5 @@ class ModelFittingBaseSingleGrid : public ModelFittingBase {
    */
   DataVector alpha;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

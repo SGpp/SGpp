@@ -11,6 +11,8 @@
  */
 
 #pragma once
+#include <vector>
+#include <map>
 
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>

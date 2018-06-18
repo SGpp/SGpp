@@ -12,6 +12,9 @@
 
 #include <sgpp/datadriven/datamining/modules/hpo/HPOConfig.hpp>
 
+#include <vector>
+
+
 namespace sgpp {
 namespace datadriven {
 

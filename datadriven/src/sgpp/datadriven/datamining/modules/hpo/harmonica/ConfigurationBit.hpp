@@ -8,10 +8,11 @@
 
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/ConfigurationRestriction.hpp>
 
-#include <sgpp/globaldef.hpp>
-#include <list>
+#include <string>
 #include <vector>
 #include <iostream>
+
+#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace datadriven {

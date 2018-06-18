@@ -13,6 +13,8 @@
 #ifndef CONTINUOUSPARAMETER_HPP_
 #define CONTINUOUSPARAMETER_HPP_
 
+#include <string>
+
 #include "HyperParameter.hpp"
 
 namespace sgpp {
@@ -31,16 +33,16 @@ class ContinuousParameter : public sgpp::datadriven::HyperParameter {
    * Normal Constructor
    * @param nBits number of bits for representation in harmonica
    * @param name name of the hyperparameter
-   * @param min minimum value of the hyperparameter during optimization
+   * @param minv minimum value of the hyperparameter during optimization
    * @param max maximum value of the hyperparameter during optimization
    * @param logscale whether this parameter operates on a logscale
    */
   ContinuousParameter(size_t nBits,
-                      std::string &&name,
-                      double min,
+                      std::string && name,
+                      double minv,
                       double max,
                       bool logscale = false)
-      : HyperParameter(nBits, name), min(min), max(max), logscale(logscale) {}
+      : HyperParameter(nBits, name), minv(minv), max(max), logscale(logscale) {}
   // ~ContinuousParameter();
   /**
    * Retrieve the current value of the hyperparameter
@@ -63,7 +65,7 @@ class ContinuousParameter : public sgpp::datadriven::HyperParameter {
   /**
    * minimum value of the hyperparameter during optimization
    */
-  double min;
+  double minv;
   /**
    * maximum value of the hyperparameter during optimization
    */

@@ -14,8 +14,10 @@
 #ifndef CLION_BOCONFIG_HPP
 #define CLION_BOCONFIG_HPP
 
-#include <sgpp/base/datatypes/DataVector.hpp>
+#include <vector>
 #include <random>
+
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace sgpp {
 namespace datadriven {

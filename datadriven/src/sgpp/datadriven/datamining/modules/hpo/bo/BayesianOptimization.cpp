@@ -8,10 +8,13 @@
  *  Created on: Feb 2, 2018
  *      Author: Eric Koepke
  */
+#include <sgpp/datadriven/datamining/modules/hpo/bo/BayesianOptimization.hpp>
+
+#include <vector>
+#include <iostream>
+#include <limits>
 
 #include <sgpp/optimization/sle/solver/Eigen.hpp>
-#include <sgpp/datadriven/datamining/modules/hpo/bo/BayesianOptimization.hpp>
-#include <iostream>
 #include <sgpp/optimization/sle/solver/BiCGStab.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>

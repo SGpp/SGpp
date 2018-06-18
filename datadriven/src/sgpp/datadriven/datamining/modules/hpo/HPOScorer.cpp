@@ -10,6 +10,8 @@
  */
 #include <sgpp/datadriven/datamining/modules/hpo/HPOScorer.hpp>
 
+#include <vector>
+
 namespace sgpp {
 namespace datadriven {
 

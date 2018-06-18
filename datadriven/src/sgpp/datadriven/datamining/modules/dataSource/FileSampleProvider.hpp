@@ -38,7 +38,7 @@ class FileSampleProvider : public SampleProvider {
    * @param filePath valid path to an existing file.
    * @param hasTargets whether the file has targets (i.e. supervised learning)
    */
-  virtual void readFile(const std::string& filePath, bool hasTargets) = 0;
+  virtual void readFile(const std::string &filePath, bool hasTargets) = 0;
 
   /**
    * Read the contents of a string, for example a deflated archive. Has to throw an exception if
@@ -47,7 +47,7 @@ class FileSampleProvider : public SampleProvider {
    * @param input the raw string input to parse
    * @param hasTargets whether the file has targest (i.e. supervised learning)
    */
-  virtual void readString(const std::string& input, bool hasTargets) = 0;
+  virtual void readString(const std::string &input, bool hasTargets) = 0;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

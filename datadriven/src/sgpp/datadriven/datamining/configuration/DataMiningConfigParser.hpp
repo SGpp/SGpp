@@ -11,11 +11,14 @@
 
 #pragma once
 
+#include <vector>
+#include <string>
+#include <map>
+
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
-#include <string>
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/DiscreteParameter.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/ContinuousParameter.hpp>
 #include <sgpp/base/grid/Grid.hpp>
@@ -96,8 +99,8 @@ class DataMiningConfigParser {
    * @param defaults default values if the fitter does not contain a database configuration
    * @return whether the fitter contains a database configuration
    */
-  bool getFitterDatabaseConfig(datadriven::DatabaseConfiguration& config,
-      const datadriven::DatabaseConfiguration& defaults) const;
+  bool getFitterDatabaseConfig(datadriven::DatabaseConfiguration &config,
+                               const datadriven::DatabaseConfiguration &defaults) const;
 
  private:
   std::unique_ptr<JSON> configFile;

@@ -11,6 +11,11 @@
  */
 
 #include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
+
+#include <vector>
+#include <string>
+#include <limits>
+
 #include <sgpp/datadriven/datamining/modules/hpo/bo/BayesianOptimization.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/Harmonica.hpp>
@@ -126,8 +131,9 @@ void HyperparameterOptimizer::runBO() {
   double stdDeviation;   // dummy
 
   // output initialization
-  time_t now = time(0);
-  tm *ltm = localtime(&now);
+  time_t now = time(nullptr);
+  tm tmobj{};  // EDIT: working?
+  tm *ltm = localtime_r(&now, &tmobj);
   std::stringstream fn;
   fn << "Bayesian_" << (ltm->tm_year + 1900) << "_" << (ltm->tm_mon + 1) << "_" << ltm->tm_mday
      << "_"
@@ -151,7 +157,7 @@ void HyperparameterOptimizer::runBO() {
 
   // random warmup phase
   for (int i = 0; i < config.getNRandom(); ++i) {
-    initialConfigs.emplace_back(prototype);// = BOConfig(prototype);
+    initialConfigs.emplace_back(prototype);
     initialConfigs[i].randomize(generator);
     fitterFactory->setBO(&initialConfigs[i]);
     std::string configString = fitterFactory->printConfig();

@@ -98,7 +98,7 @@ double Scorer::train(ModelFittingBase &model, Dataset &trainDataset, Dataset &te
   auto scoreTrain = test(model, trainDataset);
   auto scoreTest = test(model, testDataset);
   std::cout << "score on training data:" << scoreTrain << "\nscore of test data:"
-      << scoreTest << "\n\n";
+            << scoreTest << "\n\n";
   return scoreTest;
 }
 

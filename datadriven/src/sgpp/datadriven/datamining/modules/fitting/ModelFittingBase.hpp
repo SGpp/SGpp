@@ -107,7 +107,7 @@ class ModelFittingBase {
    * @param sample vector with the coordinates in all dimensions of that sample.
    * @return evaluation of the model.
    */
-  virtual double evaluate(const DataVector& sample) = 0;
+  virtual double evaluate(const DataVector &sample) = 0;
 
   // TODO(lettrich): this should be a const operation as well as the samples matrix as soon
   // operation multiple eval has been taken care of.

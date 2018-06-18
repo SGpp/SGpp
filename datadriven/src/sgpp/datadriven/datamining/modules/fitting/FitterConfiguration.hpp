@@ -128,7 +128,7 @@ class FitterConfiguration {
      * Returns the database configuration, i.e. the filepath
      * @return immutable DatabaseConfiguration
      */
-  const datadriven::DatabaseConfiguration& getDatabaseConfig() const;
+  const datadriven::DatabaseConfiguration &getDatabaseConfig() const;
 
   /**
    * Get or set initial conditions for the grid before adaptive refinement.

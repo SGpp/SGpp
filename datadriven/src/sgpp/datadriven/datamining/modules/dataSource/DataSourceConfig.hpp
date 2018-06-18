@@ -53,9 +53,9 @@ struct DataSourceConfig {
    * whether the file has targets (i.e. supervised learning)
    */
   bool hasTargets = true;
- /*
-  * Configuration for possible data transformation on dataset
-  */
+  /*
+   * Configuration for possible data transformation on dataset
+   */
   datadriven::DataTransformationConfig dataTransformationConfig;
 };
 } /* namespace datadriven */

@@ -46,7 +46,7 @@ size_t CSVFileSampleProvider::getNumSamples() const {
   }
 }
 
-void CSVFileSampleProvider::readFile(const std::string& fileName, bool hasTargets) {
+void CSVFileSampleProvider::readFile(const std::string &fileName, bool hasTargets) {
   try {
     // call readCSV with skipfirstline set to true
     dataset = CSVTools::readCSV(fileName, true, hasTargets);
@@ -74,7 +74,7 @@ Dataset *CSVFileSampleProvider::getAllSamples() {
   }
 }
 
-void CSVFileSampleProvider::readString(const std::string& input, bool hasTargets) {
+void CSVFileSampleProvider::readString(const std::string &input, bool hasTargets) {
   // try {
   //   dataset = CSVTools::readCSVFromString(input);
   // } catch (...) {

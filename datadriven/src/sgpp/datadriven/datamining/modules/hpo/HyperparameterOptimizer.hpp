@@ -81,7 +81,6 @@ class HyperparameterOptimizer {
   void runHarmonica();
 
  private:
-
   /**
    * Training Data
    */

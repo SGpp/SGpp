@@ -62,14 +62,14 @@ class FileSampleDecorator : public FileSampleProvider {
    * @param fileName path to the file
    * @param hasTargets whether the file has targets (i.e. supervised learning)
    */
-  void readFile(const std::string& fileName, bool hasTargets) override;
+  void readFile(const std::string &fileName, bool hasTargets) override;
 
   /**
    * Reads a file's content
    * @param input the file's content
    * @param hasTargets whether the file has targets (i.e. supervised learning)
    */
-  void readString(const std::string& input, bool hasTargets) override;
+  void readString(const std::string &input, bool hasTargets) override;
 
  protected:
   /**
