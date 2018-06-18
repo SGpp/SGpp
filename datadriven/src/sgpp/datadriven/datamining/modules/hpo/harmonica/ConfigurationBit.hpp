@@ -12,8 +12,6 @@
 #include <vector>
 #include <iostream>
 
-#include <sgpp/globaldef.hpp>
-
 namespace sgpp {
 namespace datadriven {
 

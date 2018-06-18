@@ -8,8 +8,6 @@
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 
-#include <sgpp/globaldef.hpp>
-
 namespace sgpp {
 namespace datadriven {
 

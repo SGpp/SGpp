@@ -5,9 +5,9 @@
 
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/ConfigurationBit.hpp>
 
-#include <string>
-
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
+
+#include <string>
 
 namespace sgpp {
 namespace datadriven {

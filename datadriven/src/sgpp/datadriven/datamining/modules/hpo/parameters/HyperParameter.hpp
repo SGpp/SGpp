@@ -13,11 +13,10 @@
 #ifndef DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_MODULES_HPO_HYPERPARAMETER_H_
 #define DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_MODULES_HPO_HYPERPARAMETER_H_
 
-#include <vector>
-#include <string>
-
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/ConfigurationBit.hpp>
 
+#include <vector>
+#include <string>
 
 namespace sgpp {
 namespace datadriven {

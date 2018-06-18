@@ -11,9 +11,6 @@
  */
 
 #pragma once
-#include <vector>
-#include <map>
-
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
@@ -21,6 +18,10 @@
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/ContinuousParameter.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/DiscreteParameter.hpp>
 #include "sgpp/datadriven/datamining/modules/hpo/bo/BOConfig.hpp"
+
+#include <vector>
+#include <map>
+#include <string>
 
 namespace sgpp {
 namespace datadriven {

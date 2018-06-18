@@ -34,19 +34,19 @@ class DiscreteParameter : public sgpp::datadriven::HyperParameter {
    * Normal constructor, number of bits calculated automatically
    * @param name name of the hyperparameter
    * @param minv minimum value of the hyperparameter during optimization
-   * @param max maximum value of the hyperparameter during optimization
+   * @param maxv maximum value of the hyperparameter during optimization
    */
-  DiscreteParameter(std::string && name, int minv, int max);
+  DiscreteParameter(std::string && name, int minv, int maxv);
 
   /**
    * Constructor with custom number of bits
    * @param nBits number of bits for representation in harmonica
    * @param name name of the hyperparameter
    * @param minv minimum value of the hyperparameter during optimization
-   * @param max maximum value of the hyperparameter during optimization
+   * @param maxv maximum value of the hyperparameter during optimization
    */
-  DiscreteParameter(int nBits, std::string &name, int minv, int max)
-      : HyperParameter(nBits, name), minv(minv), max(max) {}
+  DiscreteParameter(int nBits, std::string &name, int minv, int maxv)
+      : HyperParameter(nBits, name), minv(minv), maxv(maxv) {}
 
   /**
   * Retrieve the current value of the hyperparameter
@@ -79,7 +79,7 @@ class DiscreteParameter : public sgpp::datadriven::HyperParameter {
   /**
    * maximum value of the hyperparameter during optimization
    */
-  int max;
+  int maxv;
   /**
    * current value of the hyperparameter
    */

@@ -4,10 +4,10 @@
 // sgpp.sparsegrids.org
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/ConfigurationRestriction.hpp>
 
-#include <vector>
-
 #include <sgpp/base/algorithm/AlgorithmMultipleEvaluation.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/ConfigurationBit.hpp>
+
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {

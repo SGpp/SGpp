@@ -23,11 +23,11 @@ void ContinuousParameter::setHarmonica() {
     v = v + m * bit.getValue();
     m = m * 2;
   }
-  value = minv + ((max - minv) * (1.0 + v / (m - 1.0)) / 2.0);
+  value = minv + ((maxv - minv) * (1.0 + v / (m - 1.0)) / 2.0);
 }
 
 void ContinuousParameter::setBO(double interval) {
-  value = (max - minv) * interval + minv;
+  value = (maxv - minv) * interval + minv;
 }
 
 double ContinuousParameter::getValue() {

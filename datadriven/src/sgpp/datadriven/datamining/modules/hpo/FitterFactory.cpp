@@ -9,11 +9,11 @@
  *  Created on:	17.12.2017
  *      Author: Eric Koepke
  */
-#include <vector>
-#include <string>
-
 #include <sgpp/datadriven/datamining/modules/hpo/FitterFactory.hpp>
 #include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
+
+#include <vector>
+#include <string>
 
 namespace sgpp {
 namespace datadriven {

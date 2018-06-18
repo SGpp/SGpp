@@ -95,10 +95,8 @@ void ModelFittingDensityEstimation::fit(Dataset &newDataset) {
     offline->buildMatrix(grid.get(), regularizationConfig);
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
   }
-  online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(*offline,
-                                                                                   *grid,
-                                                                                   regularizationConfig.lambda_)};
-
+  online = std::unique_ptr<DBMatOnlineDE>
+      {DBMatOnlineDEFactory::buildDBMatOnlineDE(*offline, *grid, regularizationConfig.lambda_)};
   online->computeDensityFunction(alpha, newDataset.getData(), *grid,
                                  this->config->getDensityEstimationConfig());
   online->normalize(alpha, *grid);
