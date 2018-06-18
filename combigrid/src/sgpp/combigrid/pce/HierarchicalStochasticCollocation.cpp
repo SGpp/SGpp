@@ -62,6 +62,11 @@ HierarchicalStochasticCollocation::HierarchicalStochasticCollocation(
 
 HierarchicalStochasticCollocation::~HierarchicalStochasticCollocation() {}
 
+void HierarchicalStochasticCollocation::refineFull(size_t level) {
+  grid->getGenerator().full(level);
+  updateStatus();
+}
+
 void HierarchicalStochasticCollocation::refineRegular(size_t level) {
   grid->getGenerator().regular(level);
   updateStatus();
@@ -115,9 +120,12 @@ void HierarchicalStochasticCollocation::calculateCoefficients() {
     sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
     for (size_t j = 0; j < gridStorage.getDimension(); j++) {
       p[j] = gp.getStandardCoordinate(j);
+      //      std::cout << p[j] << " ";
     }
+    //    std::cout << " <-p, f->";
     f_values[i] = objectiveFunction(p);
   }
+  //  std::cout << f_values.toString() << std::endl;
 
   sgpp::optimization::sle_solver::Auto sleSolver;
   sgpp::optimization::Printer::getInstance().setVerbosity(-1);
