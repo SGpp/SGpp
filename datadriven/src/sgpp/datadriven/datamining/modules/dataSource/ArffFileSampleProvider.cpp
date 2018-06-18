@@ -46,9 +46,9 @@ size_t ArffFileSampleProvider::getNumSamples() const {
   }
 }
 
-void ArffFileSampleProvider::readFile(const std::string &fileName) {
+void ArffFileSampleProvider::readFile(const std::string& fileName, bool hasTargets) {
   try {
-    dataset = ARFFTools::readARFF(fileName);
+    dataset = ARFFTools::readARFF(fileName, hasTargets);
   } catch (...) {
     // TODO(lettrich): catching all exceptions is bad design. Replace call to ARFFTools with
     // exception safe implementation.
@@ -73,9 +73,9 @@ Dataset *ArffFileSampleProvider::getAllSamples() {
   }
 }
 
-void ArffFileSampleProvider::readString(const std::string &input) {
+void ArffFileSampleProvider::readString(const std::string& input, bool hasTargets) {
   try {
-    dataset = ARFFTools::readARFFFromString(input);
+    dataset = ARFFTools::readARFFFromString(input, hasTargets);
   } catch (...) {
     // TODO(lettrich): catching all exceptions is bad design. Replace call to ARFFTools with
     // exception safe implementation.

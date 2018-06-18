@@ -33,5 +33,9 @@ void SparseGridMiner::learn() {
             << "Standard Deviation: " << stdDeviation << std::endl
             << "###############" << std::endl;
 }
+
+ModelFittingBase *SparseGridMiner::getModel() {
+  return &(*fitter);
+}
 } /* namespace datadriven */
 } /* namespace sgpp */

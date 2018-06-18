@@ -61,13 +61,17 @@ class RefinementHandler {
    * Logic that handles surplus based refinement functors
    * @param densEst Online objects for use in density estimation for the current class
    * @param grid The current classes grid
+   * @param alpha The current surpluss vector
    * @param gridGen The current grid's grid generator
+   * @param adaptivityConfig the configuration for the adaptivity
    * @return The number of added grid points
    */
   size_t
   handleSurplusBasedRefinement(DBMatOnlineDE *densEst,
                                Grid &grid,
-                               base::GridGenerator &gridGen) const;
+                               DataVector& alpha,
+                               base::GridGenerator &gridGen,
+                               sgpp::base::AdpativityConfiguration adaptivityConfig) const;
 
  public:
   /**
@@ -85,10 +89,12 @@ class RefinementHandler {
     * @param classIndex The index of the class being updated
     * @param refinementResult The grid changes from the refinement cycle
     * @param densEst A pointer to the online object specfic to this class
+    * @param grid the grid of the current density function
     */
   void updateClassVariablesAfterRefinement(size_t classIndex,
                                            RefinementResult *refinementResult,
-                                           DBMatOnlineDE *densEst);
+                                           DBMatOnlineDE *densEst,
+                                           Grid& grid);
 
   /**
    * Fetches the currently stored refinement results for a specific class
@@ -112,29 +118,37 @@ class RefinementHandler {
    * @param currentTrainError The current training error
    * @param numberOfCompletedRefinements The number of refinement cycles already completed
    * @param monitor The convergence monitor, if any
+   * @param adaptivityConfig the configuration for the adaptivity of the grids
    * @return Whether a refinement cycle should be started
    */
   bool checkRefinementNecessary(const std::string &refMonitor, size_t refPeriod,
                                 size_t totalInstances,
                                 double currentValidError, double currentTrainError,
                                 size_t numberOfCompletedRefinements,
-                                ConvergenceMonitor &monitor);
+                                ConvergenceMonitor &monitor,
+                                sgpp::base::AdpativityConfiguration adaptivityConfig);
 
   /**
    * Handles refinement for a specific class.
    * @param refType String constant specifying the type of refinement functor
    * @param refinementResult The RefinementResult used to store changes for the grid
    * @param onlineObjects The density estimation online objects
+   * @param grid the grid of the online object of the current class
+   * @param alpha the surplusses of the current class
    * @param preCompute Whether to precompute the functor's evaluation step
    * @param refinementFunctor The refinement functor to use
    * @param classIndex The index of the current class for which refinement is taking place
+   * @param adaptivityConfig the configuration for the adaptivity of the grids
    */
   void doRefinementForClass(const std::string &refType,
                             RefinementResult *refinementResult,
                             const ClassDensityConntainer &onlineObjects,
+                            Grid& grid,
+                            DataVector& alpha,
                             bool preCompute,
                             MultiGridRefinementFunctor *refinementFunctor,
-                            size_t classIndex);
+                            size_t classIndex,
+                            sgpp::base::AdpativityConfiguration& adaptivityConfig);
 };
 }  // namespace datadriven
 }  // namespace sgpp

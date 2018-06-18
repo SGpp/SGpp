@@ -28,15 +28,17 @@ namespace datadriven {
  */
 class DBMatOfflineEigen : public DBMatOffline {
  public:
-  explicit DBMatOfflineEigen(
-      const sgpp::base::RegularGridConfiguration& gridConfig,
-      const sgpp::base::AdpativityConfiguration& adaptivityConfig,
-      const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-      const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
+  DBMatOfflineEigen();
 
   explicit DBMatOfflineEigen(const std::string& fileName);
 
   DBMatOffline* clone() override;
+
+  /**
+   * Returns the decomposition type of the DBMatOffline object
+   * @return the type of matrix decomposition
+   */
+  sgpp::datadriven::MatrixDecompositionType getDecompositionType() override;
 
   /**
    * This decomposition type is not refineable.
@@ -44,7 +46,15 @@ class DBMatOfflineEigen : public DBMatOffline {
    */
   bool isRefineable() override;
 
-  void decomposeMatrix() override;
+  /**
+   * Decomposes the matrix according to the chosen decomposition type.
+   * The number of rows of the stored result depends on the decomposition type.
+   *
+   * @param regularizationConfig the regularization configuration
+   * @param densityEstimationConfig the density estimation configuration
+   */
+  void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
+      DensityEstimationConfiguration& densityEstimationConfig) override;
 };
 
 } /* namespace datadriven */

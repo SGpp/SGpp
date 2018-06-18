@@ -13,6 +13,7 @@
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
 #include <iostream>
 
 
@@ -57,10 +58,10 @@ void PrewaveletGridGenerator::full(size_t level) {
 /**
  * Refines the grid and updates the shadow storage.
  */
-void PrewaveletGridGenerator::refine(RefinementFunctor& func) {
+void PrewaveletGridGenerator::refine(RefinementFunctor& func, std::vector<size_t>* addedPoints) {
   HashRefinement refine;
   size_t start = this->storage.getSize();
-  refine.free_refine(this->storage, func);
+  refine.free_refine(this->storage, func, addedPoints);
   size_t end = this->storage.getSize();
   // All added gridpoint are between [start,end[
 

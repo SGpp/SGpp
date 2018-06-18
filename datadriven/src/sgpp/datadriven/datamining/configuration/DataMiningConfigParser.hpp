@@ -90,6 +90,15 @@ class DataMiningConfigParser {
                                      const RegularizationConfiguration &defaults) const;
   bool getFitterLambda(double &lambda, double defaultValue) const;
 
+  /**
+   * Returns the database configuration of the fitter if it exists
+   * @param config the configuration object that will be initialized
+   * @param defaults default values if the fitter does not contain a database configuration
+   * @return whether the fitter contains a database configuration
+   */
+  bool getFitterDatabaseConfig(datadriven::DatabaseConfiguration& config,
+      const datadriven::DatabaseConfiguration& defaults) const;
+
  private:
   std::unique_ptr<JSON> configFile;
 

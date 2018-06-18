@@ -132,6 +132,8 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig &config,
     config.numBatches =
         parseUInt(*dataSourceConfig, "numBatches", defaults.numBatches, "dataSource");
     config.batchSize = parseUInt(*dataSourceConfig, "batchSize", defaults.batchSize, "dataSource");
+    config.hasTargets =
+        parseBool(*dataSourceConfig, "hasTargets", defaults.hasTargets, "dataSource");
 
     // parse file type
     if (dataSourceConfig->contains("fileType")) {
@@ -774,6 +776,28 @@ void DataMiningConfigParser::parseRosenblattTransformationConfig(
                                  defaults.solverEps, parentNode);
   config.solverThreshold = parseDouble(dict, "solverThreshold",
                                        defaults.solverThreshold, parentNode);
+}
+
+
+bool DataMiningConfigParser::getFitterDatabaseConfig(
+    datadriven::DatabaseConfiguration& config, const datadriven::DatabaseConfiguration& defaults)
+const {
+  bool hasDatabaseConfig =
+      hasFitterConfig() ? (*configFile)[fitter].contains("database") : false;
+
+  if (hasDatabaseConfig) {
+    auto databaseConfig = static_cast<DictNode*>(&(*configFile)[fitter]["database"]);
+
+    // Parse filepath
+    if (databaseConfig->contains("filepath")) {
+      config.filepath = (*databaseConfig)["filepath"].get();
+    } else {
+      std::cout << "# Did not find databaseConfig[filepath]. No database loaded" << std::endl;
+      config.filepath = defaults.filepath;
+    }
+  }
+
+  return hasDatabaseConfig;
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

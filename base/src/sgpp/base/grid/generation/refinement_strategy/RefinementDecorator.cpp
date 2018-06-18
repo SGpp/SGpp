@@ -6,16 +6,18 @@
 #include <sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp>
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
 
-
 #include <sgpp/globaldef.hpp>
+
+#include <vector>
 
 
 namespace sgpp {
 namespace base {
 
 void RefinementDecorator::free_refine(GridStorage& storage,
-                                      RefinementFunctor& functor) {
-  this->decorated_refinement_->free_refine(storage, functor);
+                                      RefinementFunctor& functor,
+                                      std::vector<size_t>* addedPoints) {
+  this->decorated_refinement_->free_refine(storage, functor, addedPoints);
 }
 
 size_t RefinementDecorator::getNumberOfRefinablePoints(GridStorage& storage) {

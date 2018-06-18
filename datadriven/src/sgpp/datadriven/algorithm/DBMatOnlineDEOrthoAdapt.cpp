@@ -25,9 +25,10 @@
 namespace sgpp {
 namespace datadriven {
 
-DBMatOnlineDEOrthoAdapt::DBMatOnlineDEOrthoAdapt(DBMatOffline& offline, double beta)
-    : sgpp::datadriven::DBMatOnlineDE(offline, beta) {
-  if (offline.getDensityEstimationConfig().decomposition_ !=
+DBMatOnlineDEOrthoAdapt::DBMatOnlineDEOrthoAdapt(DBMatOffline& offline, Grid& grid, double lambda,
+    double beta)
+    : sgpp::datadriven::DBMatOnlineDE(offline, grid, lambda, beta) {
+  if (offline.getDecompositionType()!=
       sgpp::datadriven::MatrixDecompositionType::OrthoAdapt) {
     throw sgpp::base::algorithm_exception(
         "In DBMatOnlineDEOrthoAdapt::DBMatOnlineDEOrthoAdapt: offline object has wrong "
@@ -44,28 +45,27 @@ DBMatOnlineDEOrthoAdapt::DBMatOnlineDEOrthoAdapt(DBMatOffline& offline, double b
 }
 
 std::vector<size_t> DBMatOnlineDEOrthoAdapt::updateSystemMatrixDecomposition(
-    size_t newPoints,
-    std::list<size_t> deletedPoints,
-    double newLambda) {
+    DensityEstimationConfiguration& densityEstimationConfig,
+    Grid& grid, size_t numAddedGridPoints, std::list<size_t> deletedGridPointIndices,
+    double lambda) {
   // points not possible to coarsen
   std::vector<size_t> return_vector = {};
 
   // coarsening:
   // split the valid coarsen indices and the non valid ones and do sherman-morrison coarsening
-  if (!deletedPoints.empty()) {
+  if (!deletedGridPointIndices.empty()) {
     // indices of coarsened points and their corresponding slot
     std::vector<size_t> coarsen_points = {};
-    size_t dima =  // dimension of offline lhs matrix
-        (static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&this->offlineObject))->getDimA();
-    while (!deletedPoints.empty()) {
-      size_t cur = deletedPoints.back();
+    size_t dima = offlineObject.getGridSize();
+    while (!deletedGridPointIndices.empty()) {
+      size_t cur = deletedGridPointIndices.back();
       // check, which points can/cannot be coarsened
       if (cur < dima) {  // cannot be coarsened, because part of the offline's initial lhs matrix
         return_vector.push_back(cur);
       } else {
         coarsen_points.push_back(cur);
       }
-      deletedPoints.pop_back();  // throw away already considered indices
+      deletedGridPointIndices.pop_back();  // throw away already considered indices
     }
 
     if (!coarsen_points.empty()) {
@@ -74,23 +74,24 @@ std::vector<size_t> DBMatOnlineDEOrthoAdapt::updateSystemMatrixDecomposition(
   }
 
   // refinement:
-  if (newPoints > 0) {
+  if (numAddedGridPoints > 0) {
     // get the L2_gridvectors from the new refined grid and do Sherman-Morrison refinement
-    this->compute_L2_gridvectors(newPoints, newLambda);
-    this->sherman_morrison_adapt(newPoints, true);
+    this->compute_L2_gridvectors(grid, numAddedGridPoints, lambda);
+    this->sherman_morrison_adapt(numAddedGridPoints, true);
   }
 
   return return_vector;
 }
 
-void DBMatOnlineDEOrthoAdapt::solveSLE(DataVector& b, bool do_cv) {
+void DBMatOnlineDEOrthoAdapt::solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
+    DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) {
   sgpp::datadriven::DBMatOfflineOrthoAdapt* offline =
       static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&this->offlineObject);
   // create solver
   sgpp::datadriven::DBMatDMSOrthoAdapt* solver = new sgpp::datadriven::DBMatDMSOrthoAdapt();
   // solve the created system
-  this->alpha = sgpp::base::DataVector(b.getSize());
-  solver->solve(offline->getTinv(), offline->getQ(), this->getB(), b, this->alpha);
+  alpha.resizeZero(b.getSize());
+  solver->solve(offline->getTinv(), offline->getQ(), this->getB(), b, alpha);
 
   free(solver);
 }
@@ -102,7 +103,7 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
       static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&this->offlineObject);
 
   // dimension of offline's lhs matrix A^{-1} = Q * T^{-1} * Q^t
-  size_t dima = offlinePtr->getDimA();
+  size_t dima = offlinePtr->getGridSize();
 
   // check, if offline object has been decomposed yet
   if (dima == 0) {
@@ -360,10 +361,11 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
  * greets,
  * Dima
  */
-void DBMatOnlineDEOrthoAdapt::compute_L2_gridvectors(size_t newPoints, double newLambda) {
+void DBMatOnlineDEOrthoAdapt::compute_L2_gridvectors(Grid& grid, size_t newPoints,
+    double newLambda) {
   if (newPoints > 0) {
-    size_t gridSize = this->getOfflineObject().getGrid().getStorage().getSize();
-    size_t gridDim = this->getOfflineObject().getGrid().getStorage().getDimension();
+    size_t gridSize = grid.getStorage().getSize();
+    size_t gridDim = grid.getStorage().getDimension();
 
     // allocate the new points
     for (size_t i = 0; i < newPoints; i++) {
@@ -374,7 +376,7 @@ void DBMatOnlineDEOrthoAdapt::compute_L2_gridvectors(size_t newPoints, double ne
     DataMatrix level(gridSize, gridDim);
     DataMatrix index(gridSize, gridDim);
 
-    this->getOfflineObject().getGrid().getStorage().getLevelIndexArraysForEval(level, index);
+    grid.getStorage().getLevelIndexArraysForEval(level, index);
     double lambda_conf = newLambda;
 
     // loop to calculate all L2-products of added points based on the

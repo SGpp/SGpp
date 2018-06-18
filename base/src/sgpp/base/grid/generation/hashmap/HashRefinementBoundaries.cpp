@@ -132,15 +132,29 @@ void HashRefinementBoundaries::refineGridpointsCollection(GridStorage& storage,
 }
 
 void HashRefinementBoundaries::free_refine(GridStorage& storage,
-    RefinementFunctor& functor) {
+                                           RefinementFunctor& functor,
+                                           std::vector<size_t>* addedPoints) {
   if (storage.getSize() == 0) {
     throw generation_exception("storage empty");
   }
+
+  /**
+   * Assumption: during the refinement process the only change made
+   * to the storage is the following:
+   * New (if any) gridpoints are appended (to the end) of the storage
+   */
+  size_t sizeBeforeRefine = storage.getSize();
 
   AbstractRefinement::refinement_container_type collection;
   collectRefinablePoints(storage, functor, collection);
   // can refine grid on several points
   refineGridpointsCollection(storage, functor, collection);
+
+  if (addedPoints != 0) {
+    for (size_t i = sizeBeforeRefine; i < storage.getSize(); i++) {
+      addedPoints->push_back(i);
+    }
+  }
 }
 
 
