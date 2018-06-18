@@ -12,10 +12,12 @@
 #ifndef DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_MODULES_HPO_BAYESIANOPTIMIZATION_HPP_
 #define DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_MODULES_HPO_BAYESIANOPTIMIZATION_HPP_
 
+#include <vector>
+
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
-#include "BOConfig.hpp"
+#include <sgpp/datadriven/datamining/modules/hpo/bo/BOConfig.hpp>
 
 namespace sgpp {
 namespace datadriven {

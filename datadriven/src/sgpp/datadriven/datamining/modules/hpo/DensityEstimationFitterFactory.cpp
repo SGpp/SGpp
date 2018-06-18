@@ -29,7 +29,6 @@ DensityEstimationFitterFactory::DensityEstimationFitterFactory(DataMiningConfigP
 
   conpar["lambda"] = ContinuousParameter(7, "lambda", -10, 0);
   */
-
 }
 
 ModelFittingBase *DensityEstimationFitterFactory::buildFitter() {

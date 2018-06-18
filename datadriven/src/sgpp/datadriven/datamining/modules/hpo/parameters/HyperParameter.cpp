@@ -10,8 +10,12 @@
  *      Author: Eric Koepke
  */
 
+#include <sgpp/datadriven/datamining/modules/hpo/parameters/HyperParameter.hpp>
+
+#include <vector>
 #include <iostream>
-#include "HyperParameter.hpp"
+#include <string>
+
 
 namespace sgpp {
 namespace datadriven {

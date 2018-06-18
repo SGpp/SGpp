@@ -4,6 +4,9 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/ConfigurationBit.hpp>
+
+#include <string>
+
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 
 namespace sgpp {

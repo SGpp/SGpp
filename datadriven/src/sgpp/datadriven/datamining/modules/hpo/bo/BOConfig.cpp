@@ -9,13 +9,14 @@
  *  Created on:	20.03.2018
  *      Author: Eric Koepke
  */
-
+#include "BOConfig.hpp"
 
 #include <vector>
-#include <sgpp/base/datatypes/DataVector.hpp>
 #include <cmath>
 #include <iostream>
-#include "BOConfig.hpp"
+
+#include <sgpp/base/datatypes/DataVector.hpp>
+
 // #include <random>
 
 namespace sgpp {

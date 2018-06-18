@@ -9,20 +9,20 @@
  *  Created on: Jan 25, 2018
  *      Author: Eric Koepke
  */
+#include <cmath>
+#include <string>
 
 #include "DiscreteParameter.hpp"
 
-#include <math.h>
-#include <cmath>
 
 namespace sgpp {
 namespace datadriven {
 
-DiscreteParameter::DiscreteParameter(std::string &&name, int min, int max)
-    : HyperParameter(0, name), min(min), max(max) {
+DiscreteParameter::DiscreteParameter(std::string && name, int minv, int max)
+    : HyperParameter(0, name), minv(minv), max(max) {
   size_t i = 1;
   int c = 2;
-  while (c < max - min + 1) {
+  while (c < max - minv + 1) {
     i++;
     c = c * 2;
   }
@@ -34,21 +34,21 @@ int DiscreteParameter::getValue() {
 }
 
 int DiscreteParameter::getNOptions() {
-  return max - min + 1;
+  return max - minv + 1;
 }
 
 void DiscreteParameter::setBO(int option) {
-  value = min + option;
+  value = minv + option;
 }
 void DiscreteParameter::setHarmonica() {
-  // if(std::pow(2,bits.size()) <= max-min+1){
+  // if(std::pow(2,bits.size()) <= max-minv+1){
   double v = 0;
   double m = 1;
   for (auto bit : bits) {
     v = v + m * bit.getValue();
     m = m * 2;
   }
-  value = static_cast<int>(lround(min + ((max - min) * (1.0 + v / (m - 1.0)) / 2.0)));
+  value = static_cast<int>(lround(minv + ((max - minv) * (1.0 + v / (m - 1.0)) / 2.0)));
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

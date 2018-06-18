@@ -11,6 +11,7 @@
  */
 
 #pragma once
+#include <vector>
 
 #include <sgpp/datadriven/datamining/modules/hpo/FitterFactory.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>

@@ -46,7 +46,7 @@ size_t ArffFileSampleProvider::getNumSamples() const {
   }
 }
 
-void ArffFileSampleProvider::readFile(const std::string& fileName, bool hasTargets) {
+void ArffFileSampleProvider::readFile(const std::string &fileName, bool hasTargets) {
   try {
     dataset = ARFFTools::readARFF(fileName, hasTargets);
   } catch (...) {
@@ -73,7 +73,7 @@ Dataset *ArffFileSampleProvider::getAllSamples() {
   }
 }
 
-void ArffFileSampleProvider::readString(const std::string& input, bool hasTargets) {
+void ArffFileSampleProvider::readString(const std::string &input, bool hasTargets) {
   try {
     dataset = ARFFTools::readARFFFromString(input, hasTargets);
   } catch (...) {

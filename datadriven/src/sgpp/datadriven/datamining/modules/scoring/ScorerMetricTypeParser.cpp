@@ -23,7 +23,7 @@ using sgpp::base::data_exception;
 
 const ScorerMetricTypeParser::MetricTypeMap_t ScorerMetricTypeParser::metricTypeMap = []() {
   return MetricTypeMap_t{std::make_pair(ScorerMetricType::mse, "MSE"),
-  std::make_pair(ScorerMetricType::nll, "NLL")};
+                         std::make_pair(ScorerMetricType::nll, "NLL")};
 }();
 
 const std::string &ScorerMetricTypeParser::toString(ScorerMetricType type) {

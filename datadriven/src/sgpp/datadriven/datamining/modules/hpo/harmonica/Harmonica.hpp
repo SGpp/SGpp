@@ -12,10 +12,13 @@
 #ifndef DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_MODULES_HPO_Harmonica_HPP_
 #define DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_MODULES_HPO_Harmonica_HPP_
 
+#include <vector>
+#include <string>
+
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
-#include "sgpp/datadriven/datamining/modules/hpo/FitterFactory.hpp"
+#include <sgpp/datadriven/datamining/modules/hpo/FitterFactory.hpp>
 
 namespace sgpp {
 namespace datadriven {

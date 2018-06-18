@@ -44,11 +44,11 @@ size_t FileSampleDecorator::getDim() const { return fileSampleProvider->getDim()
 
 size_t FileSampleDecorator::getNumSamples() const { return fileSampleProvider->getNumSamples(); }
 
-void FileSampleDecorator::readFile(const std::string& fileName, bool hasTargets) {
+void FileSampleDecorator::readFile(const std::string &fileName, bool hasTargets) {
   fileSampleProvider->readFile(fileName, hasTargets);
 }
 
-void FileSampleDecorator::readString(const std::string& input, bool hasTargets) {
+void FileSampleDecorator::readString(const std::string &input, bool hasTargets) {
   fileSampleProvider->readString(input, hasTargets);
 }
 } /* namespace datadriven */

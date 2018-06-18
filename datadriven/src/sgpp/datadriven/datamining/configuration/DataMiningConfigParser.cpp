@@ -9,6 +9,12 @@
  *  	Author: Michael Lettrich
  */
 
+#include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
+
+#include <vector>
+#include <string>
+#include <map>
+
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/exception/file_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
@@ -16,7 +22,6 @@
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
-#include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/DensityEstimationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp>
@@ -29,7 +34,6 @@
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerShufflingTypeParser.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 
-#include <string>
 
 using json::JSON;
 using json::json_exception;
@@ -523,7 +527,7 @@ double DataMiningConfigParser::parseDouble(DictNode &dict, const std::string &ke
         return dict[key]["value"].getDouble();
       } catch (json_exception &e) {
         std::string errorMsg = "# Failed to parse double " + parentDict + "[" + key +
-            "] from string";// + dict[key].get() + ".";
+            "] from string";  // + dict[key].get() + ".";
         throw data_exception(errorMsg.c_str());
       }
     }
@@ -544,7 +548,7 @@ size_t DataMiningConfigParser::parseUInt(DictNode &dict, const std::string &key,
         return dict[key]["value"].getUInt();
       } catch (json_exception &e) {
         std::string errorMsg = "# Failed to parse unsigned integer " + parentDict + "[" + key +
-            "] from string";// + dict[key].get() + ".";
+            "] from string";  // + dict[key].get() + ".";
         throw data_exception(errorMsg.c_str());
       }
     }
@@ -583,7 +587,7 @@ int64_t DataMiningConfigParser::parseInt(DictNode &dict, const std::string &key,
         return dict[key]["value"].getInt();
       } catch (json_exception &e) {
         std::string errorMsg = "# Failed to parse integer " + parentNode + "[" + key +
-            "] from string";// + dict[key].get() + ".";
+            "] from string";  // + dict[key].get() + ".";
         throw data_exception(errorMsg.c_str());
       }
     }
@@ -778,15 +782,14 @@ void DataMiningConfigParser::parseRosenblattTransformationConfig(
                                        defaults.solverThreshold, parentNode);
 }
 
-
 bool DataMiningConfigParser::getFitterDatabaseConfig(
-    datadriven::DatabaseConfiguration& config, const datadriven::DatabaseConfiguration& defaults)
+    datadriven::DatabaseConfiguration &config, const datadriven::DatabaseConfiguration &defaults)
 const {
   bool hasDatabaseConfig =
       hasFitterConfig() ? (*configFile)[fitter].contains("database") : false;
 
   if (hasDatabaseConfig) {
-    auto databaseConfig = static_cast<DictNode*>(&(*configFile)[fitter]["database"]);
+    auto databaseConfig = static_cast<DictNode *>(&(*configFile)[fitter]["database"]);
 
     // Parse filepath
     if (databaseConfig->contains("filepath")) {

@@ -2,9 +2,11 @@
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
+#include <sgpp/datadriven/datamining/modules/hpo/harmonica/ConfigurationRestriction.hpp>
+
+#include <vector>
 
 #include <sgpp/base/algorithm/AlgorithmMultipleEvaluation.hpp>
-#include <sgpp/datadriven/datamining/modules/hpo/harmonica/ConfigurationRestriction.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/ConfigurationBit.hpp>
 
 namespace sgpp {

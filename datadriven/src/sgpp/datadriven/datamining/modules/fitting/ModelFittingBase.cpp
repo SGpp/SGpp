@@ -38,7 +38,6 @@ using sgpp::solver::SLESolverConfiguration;
 ModelFittingBase::ModelFittingBase()
     : verboseSolver{true}, config{nullptr}, dataset{nullptr}, solver{nullptr} {}
 
-
 const FitterConfiguration &ModelFittingBase::getFitterConfiguration() const { return *config; }
 
 Grid *ModelFittingBase::buildGrid(const RegularGridConfiguration &gridConfig) const {

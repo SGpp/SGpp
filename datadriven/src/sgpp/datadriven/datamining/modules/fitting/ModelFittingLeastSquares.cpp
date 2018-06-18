@@ -28,7 +28,7 @@ using sgpp::solver::SLESolver;
 namespace sgpp {
 namespace datadriven {
 
-ModelFittingLeastSquares::ModelFittingLeastSquares(const FitterConfigurationLeastSquares& config)
+ModelFittingLeastSquares::ModelFittingLeastSquares(const FitterConfigurationLeastSquares &config)
     : ModelFittingBaseSingleGrid{}, refinementsPerformed{0} {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationLeastSquares>(config));
@@ -36,7 +36,7 @@ ModelFittingLeastSquares::ModelFittingLeastSquares(const FitterConfigurationLeas
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
-double ModelFittingLeastSquares::evaluate(const DataVector& sample) {
+double ModelFittingLeastSquares::evaluate(const DataVector &sample) {
   auto opEval = std::unique_ptr<base::OperationEval>{op_factory::createOperationEval(*grid)};
   return opEval->eval(alpha, sample);
 }

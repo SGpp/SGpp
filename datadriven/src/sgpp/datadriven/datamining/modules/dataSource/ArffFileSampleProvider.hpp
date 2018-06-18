@@ -55,7 +55,7 @@ class ArffFileSampleProvider : public FileSampleProvider {
    * @param filePath Path to an existing file.
    * @param hasTargets whether the file has targest (i.e. supervised learning)
    */
-  void readFile(const std::string& filePath, bool hasTargets) override;
+  void readFile(const std::string &filePath, bool hasTargets) override;
 
   /**
    * Parse contents of a string containing information in ARFF format, parse it and store its
@@ -63,7 +63,7 @@ class ArffFileSampleProvider : public FileSampleProvider {
    * @param input string containing information in ARFF file format
    * @param hasTargets whether the file has targest (i.e. supervised learning)
    */
-  void readString(const std::string& input, bool hasTargets) override;
+  void readString(const std::string &input, bool hasTargets) override;
 
  private:
   /**

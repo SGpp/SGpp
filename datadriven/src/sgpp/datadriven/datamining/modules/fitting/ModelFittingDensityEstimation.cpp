@@ -32,29 +32,29 @@ namespace sgpp {
 namespace datadriven {
 
 ModelFittingDensityEstimation::ModelFittingDensityEstimation(
-    const FitterConfigurationDensityEstimation& config)
+    const FitterConfigurationDensityEstimation &config)
     : ModelFittingBaseSingleGrid{}, refinementsPerformed{0}, offline{nullptr} {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
-double ModelFittingDensityEstimation::evaluate(const DataVector& sample) {
+double ModelFittingDensityEstimation::evaluate(const DataVector &sample) {
   return online->eval(alpha, sample, *grid);
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
-void ModelFittingDensityEstimation::evaluate(DataMatrix& samples, DataVector& results) {
-    online->eval(alpha, samples, results, *grid);
+void ModelFittingDensityEstimation::evaluate(DataMatrix &samples, DataVector &results) {
+  online->eval(alpha, samples, results, *grid);
 }
 
-void ModelFittingDensityEstimation::fit(Dataset& newDataset) {
+void ModelFittingDensityEstimation::fit(Dataset &newDataset) {
   // Get configurations
-  auto& databaseConfig = this->config->getDatabaseConfig();
-  auto& gridConfig = this->config->getGridConfig();
-  auto& refinementConfig = this->config->getRefinementConfig();
-  auto& regularizationConfig = this->config->getRegularizationConfig();
-  auto& densityEstimationConfig = this->config->getDensityEstimationConfig();
+  auto &databaseConfig = this->config->getDatabaseConfig();
+  auto &gridConfig = this->config->getGridConfig();
+  auto &refinementConfig = this->config->getRefinementConfig();
+  auto &regularizationConfig = this->config->getRegularizationConfig();
+  auto &densityEstimationConfig = this->config->getDensityEstimationConfig();
 
   // clear model
   resetState();
@@ -76,11 +76,13 @@ void ModelFittingDensityEstimation::fit(Dataset& newDataset) {
     datadriven::DBMatDatabase database(databaseConfig.filepath);
     // Check if database holds a fitting lhs matrix decomposition
     if (database.hasDataMatrix(gridConfig, refinementConfig, regularizationConfig,
-      densityEstimationConfig)) {
-      std::string offlineFilepath = database.getDataMatrix(gridConfig, refinementConfig,
-         regularizationConfig, densityEstimationConfig);
+                               densityEstimationConfig)) {
+      std::string offlineFilepath = database.getDataMatrix(gridConfig,
+                                                           refinementConfig,
+                                                           regularizationConfig,
+                                                           densityEstimationConfig);
       offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildFromFile(
-         offlineFilepath)};
+          offlineFilepath)};
       offlineInitialized = true;
     }
   }
@@ -89,15 +91,16 @@ void ModelFittingDensityEstimation::fit(Dataset& newDataset) {
   if (!offlineInitialized) {
     // Build offline object by factory, build matrix and decompose
     offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildOfflineObject(
-       gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig)};
+        gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig)};
     offline->buildMatrix(grid.get(), regularizationConfig);
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
   }
   online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(*offline,
-     *grid, regularizationConfig.lambda_)};
+                                                                                   *grid,
+                                                                                   regularizationConfig.lambda_)};
 
   online->computeDensityFunction(alpha, newDataset.getData(), *grid,
-      this->config->getDensityEstimationConfig());
+                                 this->config->getDensityEstimationConfig());
   online->normalize(alpha, *grid);
 }
 
@@ -119,9 +122,12 @@ bool ModelFittingDensityEstimation::refine() {
         std::list<size_t> deletedGridPoints;
         // TODO(roehner) enable coarsening
         online->updateSystemMatrixDecomposition(config->getDensityEstimationConfig(),
-            *grid, newNoPoints - oldNoPoints, deletedGridPoints, online->getBestLambda());
+                                                *grid,
+                                                newNoPoints - oldNoPoints,
+                                                deletedGridPoints,
+                                                online->getBestLambda());
         online->computeDensityFunction(alpha, dataset->getData(), *grid,
-              this->config->getDensityEstimationConfig());
+                                       this->config->getDensityEstimationConfig());
         online->normalize(alpha, *grid);
         refinementsPerformed++;
         return true;
@@ -131,7 +137,6 @@ bool ModelFittingDensityEstimation::refine() {
     } else {
       return false;
     }
-
   } else {
     throw application_exception(
         "ModelFittingDensityEstimation: Can't refine before initial grid is created");
