@@ -11,10 +11,6 @@
 
 #pragma once
 
-#include <vector>
-#include <string>
-#include <map>
-
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp>
@@ -23,6 +19,10 @@
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/ContinuousParameter.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HPOConfig.hpp>
+
+#include <vector>
+#include <string>
+#include <map>
 
 namespace sgpp {
 namespace datadriven {

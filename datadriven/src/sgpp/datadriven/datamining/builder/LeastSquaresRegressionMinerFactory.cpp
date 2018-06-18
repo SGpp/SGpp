@@ -33,7 +33,8 @@ SparseGridMiner *LeastSquaresRegressionMinerFactory::buildMiner(const std::strin
   return new SparseGridMiner(createDataSource(parser), createFitter(parser), createScorer(parser));
 }
 
-HyperparameterOptimizer *LeastSquaresRegressionMinerFactory::buildHPO(const std::string &path) const {
+HyperparameterOptimizer *LeastSquaresRegressionMinerFactory::buildHPO
+                                                             (const std::string &path) const {
   DataMiningConfigParser parser(path);
   return new HyperparameterOptimizer(createDataSource(parser),
                                      new LeastSquaresRegressionFitterFactory(parser),

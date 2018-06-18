@@ -11,13 +11,11 @@
  */
 #include "BOConfig.hpp"
 
+#include <sgpp/base/datatypes/DataVector.hpp>
+
 #include <vector>
 #include <cmath>
 #include <iostream>
-
-#include <sgpp/base/datatypes/DataVector.hpp>
-
-// #include <random>
 
 namespace sgpp {
 namespace datadriven {

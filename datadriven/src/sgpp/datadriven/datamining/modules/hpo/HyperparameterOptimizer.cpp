@@ -12,14 +12,14 @@
 
 #include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
 
-#include <vector>
-#include <string>
-#include <limits>
-
 #include <sgpp/datadriven/datamining/modules/hpo/bo/BayesianOptimization.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/Harmonica.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HPOScorerFactory.hpp>
+
+#include <vector>
+#include <string>
+#include <limits>
 
 namespace sgpp {
 namespace datadriven {

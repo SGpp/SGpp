@@ -12,8 +12,6 @@
 
 #include <sgpp/datadriven/datamining/builder/UniversalMinerFactory.hpp>
 
-#include <string>
-
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/datadriven/datamining/builder/CrossValidationScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
@@ -22,6 +20,8 @@
 #include <sgpp/datadriven/datamining/modules/hpo/LeastSquaresRegressionFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/DensityEstimationFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
+
+#include <string>
 
 namespace sgpp {
 namespace datadriven {

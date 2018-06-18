@@ -34,15 +34,15 @@ class ContinuousParameter : public sgpp::datadriven::HyperParameter {
    * @param nBits number of bits for representation in harmonica
    * @param name name of the hyperparameter
    * @param minv minimum value of the hyperparameter during optimization
-   * @param max maximum value of the hyperparameter during optimization
+   * @param maxv maximum value of the hyperparameter during optimization
    * @param logscale whether this parameter operates on a logscale
    */
   ContinuousParameter(size_t nBits,
                       std::string && name,
                       double minv,
-                      double max,
+                      double maxv,
                       bool logscale = false)
-      : HyperParameter(nBits, name), minv(minv), max(max), logscale(logscale) {}
+      : HyperParameter(nBits, name), minv(minv), maxv(maxv), logscale(logscale) {}
   // ~ContinuousParameter();
   /**
    * Retrieve the current value of the hyperparameter
@@ -69,7 +69,7 @@ class ContinuousParameter : public sgpp::datadriven::HyperParameter {
   /**
    * maximum value of the hyperparameter during optimization
    */
-  double max;
+  double maxv;
   /**
    * current value of the hyperparameter
    */

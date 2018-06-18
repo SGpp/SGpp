@@ -11,10 +11,6 @@
 
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 
-#include <vector>
-#include <string>
-#include <map>
-
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/exception/file_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
@@ -34,6 +30,9 @@
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerShufflingTypeParser.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 
+#include <vector>
+#include <string>
+#include <map>
 
 using json::JSON;
 using json::json_exception;

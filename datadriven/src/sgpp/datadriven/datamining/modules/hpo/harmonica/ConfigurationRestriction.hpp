@@ -6,7 +6,6 @@
 #ifndef ConfigurationRestriction_HPP
 #define ConfigurationRestriction_HPP
 
-#include <sgpp/globaldef.hpp>
 #include <vector>
 
 namespace sgpp {
