@@ -17,6 +17,7 @@ namespace datadriven {
 DBMatOnline::DBMatOnline(DBMatOffline& o) : offlineObject{o} {}
 
 void DBMatOnline::setLambda(double lambda) {
+  /**
   switch (offlineObject.getDensityEstimationConfig().decomposition_) {
     case MatrixDecompositionType::Eigen:
     case MatrixDecompositionType::Chol:
@@ -30,6 +31,7 @@ void DBMatOnline::setLambda(double lambda) {
           "Lambda can not be changed in the online step for this decomposition "
           "type!");
   }
+  */
 }
 
 DBMatOffline& DBMatOnline::getOfflineObject() {
@@ -39,6 +41,8 @@ DBMatOffline& DBMatOnline::getOfflineObject() {
 const DBMatOffline& DBMatOnline::getOfflineObject() const { return offlineObject; }
 
 std::vector<size_t> DBMatOnline::updateSystemMatrixDecomposition(
+    DensityEstimationConfiguration& densityEstimationConfig,
+    Grid& grid,
     size_t numAddedGridPoints,
     std::list<size_t> deletedGridPointIndices,
     double lambda) {

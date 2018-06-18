@@ -27,11 +27,19 @@ class ARFFTools {
    * Reads an ARFF file.
    *
    * @param filename filename of the file to be read
+   * @param hasTargets whether the file has targest (i.e. supervised learning)
    * @return ARFF as Dataset
    */
-  static Dataset readARFF(const std::string& filename);
+  static Dataset readARFF(const std::string& filename, bool hasTargets = true);
 
-  static Dataset readARFFFromString(const std::string& content);
+  /**
+   * Reads an ARFF file content.
+   *
+   * @param content the file content to read
+   * @param hasTargets whether the file has targest (i.e. supervised learning)
+   * @return ARFF as Dataset
+   */
+  static Dataset readARFFFromString(const std::string& content, bool hasTargets = true);
 
   /**
    * Reads the size of an ARFF file.

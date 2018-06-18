@@ -46,9 +46,14 @@ const {
   return multipleEvalConfig;
 }
 
-base::RegularGridConfiguration &FitterConfiguration::getGridConfig() {
-  return const_cast<base::RegularGridConfiguration &>(
-      static_cast<const FitterConfiguration &>(*this).getGridConfig());
+const datadriven::DatabaseConfiguration& FitterConfiguration::getDatabaseConfig()
+    const {
+  return databaseConfig;
+}
+
+base::RegularGridConfiguration& FitterConfiguration::getGridConfig() {
+  return const_cast<base::RegularGridConfiguration&>(
+      static_cast<const FitterConfiguration&>(*this).getGridConfig());
 }
 
 base::AdpativityConfiguration &FitterConfiguration::getRefinementConfig() {

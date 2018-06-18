@@ -49,9 +49,13 @@ struct DataSourceConfig {
    * size of a batch - if 0, take all available samples.
    */
   size_t batchSize = 0;
-  /*
-   * Configuration for possible data transformation on dataset
+  /**
+   * whether the file has targets (i.e. supervised learning)
    */
+  bool hasTargets = true;
+ /*
+  * Configuration for possible data transformation on dataset
+  */
   datadriven::DataTransformationConfig dataTransformationConfig;
 };
 } /* namespace datadriven */
