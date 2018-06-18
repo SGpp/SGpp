@@ -70,6 +70,7 @@ class HierarchicalStochasticCollocation {
 
   virtual ~HierarchicalStochasticCollocation();
 
+  void refineFull(size_t level);
   void refineRegular(size_t level);
   void refineSurplusAdaptive(size_t refinements_num);
   /**
