@@ -37,6 +37,5 @@ class SequentialShufflingFunctor : public ShufflingFunctor {
    */
   void shuffle(const Dataset &data, std::vector<size_t> &indices) override;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

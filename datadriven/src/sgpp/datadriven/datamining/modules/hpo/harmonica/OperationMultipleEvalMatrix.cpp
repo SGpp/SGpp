@@ -6,9 +6,6 @@
 #include <sgpp/base/algorithm/AlgorithmMultipleEvaluation.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/OperationMultipleEvalMatrix.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
-#include <sgpp/base/datatypes/DataMatrix.hpp>
-
-#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -24,6 +21,5 @@ void OperationMultipleEvalMatrix::multTranspose(base::DataVector &alpha, base::D
 }
 
 double OperationMultipleEvalMatrix::getDuration() { return 0.0; }
-
 }  // namespace datadriven
 }  // namespace sgpp

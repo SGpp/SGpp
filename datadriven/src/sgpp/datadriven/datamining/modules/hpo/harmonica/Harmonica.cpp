@@ -11,14 +11,8 @@
 
 #include <sgpp/optimization/sle/solver/Eigen.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/Harmonica.hpp>
-#include <sgpp/optimization/sle/system/FullSLE.hpp>
-#include <iostream>
-#include <sgpp/optimization/sle/solver/BiCGStab.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
-#include <cmath>
 #include <sgpp/optimization/tools/Printer.hpp>
-#include <sgpp/optimization/sle/solver/GaussianElimination.hpp>
-#include <random>
 #include <sgpp/solver/sle/fista/LassoFunction.hpp>
 #include <sgpp/solver/sle/fista/Fista.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
@@ -43,7 +37,6 @@ void Harmonica::transformScores(const DataVector &source, DataVector &target) {
 void Harmonica::prepareConfigs(std::vector<std::unique_ptr<ModelFittingBase>> &fitters,
                                int seed,
                                std::vector<std::string> &configStrings) {
-
   // migrate samples that fit in the new space
   size_t nOld = configIDs.size();
   // std::cout << "nOld: " << nOld << std::endl;
@@ -110,7 +103,7 @@ void Harmonica::calculateConstrainedSpace(const DataVector &transformedScores,
   std::vector<size_t> idx(alpha.size() - 1);
   for (size_t i = 0; i < idx.size(); i++) {
     idx[i] = i;
-    // std::cout<<"Alpha: "<<i<<":"<<alpha[i]<<std::endl; // bias term invisible
+    // std::cout<<"Alpha: "<<i<<":"<<alpha[i]<<std::endl;   // bias term invisible
   }
 
   // sort indices based on comparing values in alpha
@@ -182,7 +175,7 @@ bool Harmonica::fixConfigBits() {
     resolved = true;
     while (resolved) {
       resolved = false;
-      for (auto &constraint: constraints) {
+      for (auto &constraint : constraints) {
         if (constraint->getOpenBits() == 1) {
           constraint->resolve();
           resolved = true;
@@ -206,7 +199,7 @@ void Harmonica::resetBits() {
   for (auto &bit : configBits) {
     bit->reset();
   }
-  for (auto &constraint: constraints) {
+  for (auto &constraint : constraints) {
     constraint->reset();
   }
 }
@@ -253,7 +246,7 @@ bool Harmonica::addConstraint(size_t idx, int bias) {
 }
 
 bool Harmonica::checkConstraints() {
-  for (auto &constraint: constraints) {
+  for (auto &constraint : constraints) {
     if (!constraint->check()) {
       return false;
     }
@@ -282,6 +275,5 @@ int Harmonica::moveToNewSpace(int configID, std::vector<ConfigurationBit *> oldF
   }
   return v;
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

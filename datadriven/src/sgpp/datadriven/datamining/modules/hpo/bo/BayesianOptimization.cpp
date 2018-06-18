@@ -11,16 +11,13 @@
 
 #include <sgpp/optimization/sle/solver/Eigen.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/bo/BayesianOptimization.hpp>
-#include <sgpp/optimization/sle/system/FullSLE.hpp>
 #include <iostream>
 #include <sgpp/optimization/sle/solver/BiCGStab.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
-#include <cmath>
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/sle/solver/GaussianElimination.hpp>
 #include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/MultiStart.hpp>
-#include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -49,7 +46,7 @@ double BayesianOptimization::transformScore(double original) {
 }
 
 double BayesianOptimization::kernel(double distance) {
-  double kernelwidth = 8.0; // offset for dimensional scaling
+  double kernelwidth = 8.0;   // offset for dimensional scaling
   return exp(-distance * kernelwidth / 2);
 }
 
@@ -74,7 +71,7 @@ double BayesianOptimization::acquisitionEI(base::DataVector knew, double kself, 
 
   double z = (mean - (bestsofar - 0.001)) / var;
   return ((mean - (bestsofar - 0.001)) * (0.5 + 0.5 * std::erf(-z / 1.41))
-      - var * 0.4 * std::exp(-0.5 * z * z)); // EDIT: is this calculated properly?
+      - var * 0.4 * std::exp(-0.5 * z * z));   // EDIT: is this calculated properly?
 }
 
 BOConfig *BayesianOptimization::main(BOConfig &prototype) {
@@ -86,7 +83,7 @@ BOConfig *BayesianOptimization::main(BOConfig &prototype) {
   double min = std::numeric_limits<double>::infinity();
   BOConfig bestConfig;
   do {
-    for (auto &config: allConfigs) {
+    for (auto &config : allConfigs) {
       config.calcDiscDistance(nextconfig, scales);
     }
     optimization::optimizer::MultiStart optimizer(wrapper);
@@ -109,7 +106,7 @@ BOConfig *BayesianOptimization::main(BOConfig &prototype) {
 double BayesianOptimization::acquisitionOuter(const base::DataVector &inp) {
   base::DataVector kernelrow(allConfigs.size());
   for (size_t i = 0; i < allConfigs.size(); i++) {
-    kernelrow[i] = kernel(allConfigs[i].getTotalDistance(inp, scales)); // divided by 2
+    kernelrow[i] = kernel(allConfigs[i].getTotalDistance(inp, scales));   // divided by 2
     // EDIT: removed kernel = 1 check, okay?
   }
   return acquisitionEI(kernelrow, 1, bestsofar);  // EDIT: kself + noise?
@@ -126,7 +123,7 @@ void BayesianOptimization::fitScales() {
   // std::cout << optimizer.getOptimalPoint().toString() << std::endl;
   // std::cout << optimizer.getOptimalValue() << std::endl;
   base::DataVector tmp(optimizer.getOptimalPoint());
-  tmp.mult(0.1); // factor for smooth updating of GP
+  tmp.mult(0.1);   // factor for smooth updating of GP
   scales.mult(0.9);
   scales.add(tmp);
   // std::cout << scales.toString() << std::endl;
@@ -164,7 +161,7 @@ double BayesianOptimization::likelihood(const base::DataVector &inp) {
   for (size_t i = 0; i < allConfigs.size(); ++i) {
     tmp += std::log(gnew.get(i, i));
   }
-  return 2 * tmp + rawScores.dotProduct(transformed); // EDIT: correct likelihood?
+  return 2 * tmp + rawScores.dotProduct(transformed);   // EDIT: correct likelihood?
 }
 
 void BayesianOptimization::updateGP() {
@@ -206,7 +203,6 @@ void BayesianOptimization::updateGP() {
   maxofmax = 0;
   screwedvar = false;
   decomFailed = false;
-
 }
 
 void BayesianOptimization::decomposeCholesky(base::DataMatrix &km, base::DataMatrix &gnew) {
@@ -231,7 +227,6 @@ void BayesianOptimization::decomposeCholesky(base::DataMatrix &km, base::DataMat
       }
     }
   }
-
 }
 
 void BayesianOptimization::solveCholeskySystem(base::DataMatrix &gmatrix, base::DataVector &x) {
@@ -242,13 +237,12 @@ void BayesianOptimization::solveCholeskySystem(base::DataMatrix &gmatrix, base::
     }
   }
 
-  for (int i = (int) x.size() - 1; i >= 0; i--) {
+  for (int i = static_cast<int>(x.size()) - 1; i >= 0; i--) {
     x[i] = x[i] / gmatrix.get(static_cast<size_t>(i), static_cast<size_t>(i));
     for (int k = i - 1; k >= 0; k--) {
       x[k] = x[k] - gmatrix.get(static_cast<size_t>(i), static_cast<size_t>(k)) * x[i];
     }
   }
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

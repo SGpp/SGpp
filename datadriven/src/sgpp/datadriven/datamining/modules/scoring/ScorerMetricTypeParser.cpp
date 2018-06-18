@@ -39,6 +39,5 @@ ScorerMetricType ScorerMetricTypeParser::parse(const std::string &input) {
     throw data_exception(errorMsg.c_str());
   }
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

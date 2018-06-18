@@ -6,11 +6,6 @@
 #include <sgpp/base/algorithm/AlgorithmMultipleEvaluation.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/ConfigurationRestriction.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/ConfigurationBit.hpp>
-#include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
-#include <sgpp/base/datatypes/DataMatrix.hpp>
-
-#include <sgpp/globaldef.hpp>
-#include <list>
 
 namespace sgpp {
 namespace datadriven {
@@ -53,6 +48,5 @@ bool ConfigurationRestriction::check() {
 void ConfigurationRestriction::reset() {
   openBits = static_cast<int>(parameters.size());
 }
-
 }  // namespace datadriven
 }  // namespace sgpp

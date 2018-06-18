@@ -46,6 +46,5 @@ class FileSampleProvider : public SampleProvider {
    */
   virtual void readString(const std::string &input) = 0;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -17,14 +17,13 @@ namespace sgpp {
 namespace datadriven {
 
 void FitterFactory::setHarmonica() {
-
-  for (auto &pair: conpar) {
+  for (auto &pair : conpar) {
     pair.second.setHarmonica();
   }
-  for (auto &pair: dispar) {
+  for (auto &pair : dispar) {
     pair.second.setHarmonica();
   }
-  for (auto &pair: catpar) {
+  for (auto &pair : catpar) {
     pair.second.setHarmonica();
   }
   // std::cout<<"Run mark 2.1"<<std::endl;
@@ -32,40 +31,39 @@ void FitterFactory::setHarmonica() {
 
 void FitterFactory::setBO(BOConfig *config) {
   int i = 0;
-  for (auto &pair: dispar) {
+  for (auto &pair : dispar) {
     pair.second.setBO(config->getDisc(i));
     i++;
   }
   i = 0;
-  for (auto &pair: catpar) {
+  for (auto &pair : catpar) {
     pair.second.setBO(config->getCat(i));
     i++;
   }
   i = 0;
-  for (auto &pair: conpar) {
+  for (auto &pair : conpar) {
     pair.second.setBO(config->getCont(i));
     i++;
   }
 }
 
 void FitterFactory::getConfigBits(std::vector<ConfigurationBit *> &configBits) {
-  for (auto &pair: conpar) {
+  for (auto &pair : conpar) {
     pair.second.makeConfigBits(configBits);
   }
-  for (auto &pair: dispar) {
+  for (auto &pair : dispar) {
     pair.second.makeConfigBits(configBits);
   }
-  for (auto &pair: catpar) {
+  for (auto &pair : catpar) {
     pair.second.makeConfigBits(configBits);
   }
-
 }
 
 BOConfig FitterFactory::getBOConfig() {
-  for (auto &pair: dispar) {
+  for (auto &pair : dispar) {
     discOptions.push_back(pair.second.getNOptions());
   }
-  for (auto &pair: catpar) {
+  for (auto &pair : catpar) {
     catOptions.push_back(pair.second.getNOptions());
   }
   return BOConfig(&discOptions, &catOptions, conpar.size());
@@ -76,10 +74,10 @@ std::string FitterFactory::printConfig() {
   if (catpar.count("basisFunction")) {
     s << ", " << GridTypeParser::toString(basisFunctions[catpar["basisFunction"].getValue()]);
   }
-  for (auto &pair: dispar) {
+  for (auto &pair : dispar) {
     s << ", " << pair.second.getValue();
   }
-  for (auto &pair: conpar) {
+  for (auto &pair : conpar) {
     s << ", " << pair.second.getValue();
   }
   return s.str();
@@ -90,14 +88,13 @@ std::string FitterFactory::printHeadline() {
   if (catpar.count("basisFunction")) {
     s << ", " << "basisFunction";
   }
-  for (auto &pair: dispar) {
+  for (auto &pair : dispar) {
     s << ", " << pair.first;
   }
-  for (auto &pair: conpar) {
+  for (auto &pair : conpar) {
     s << ", " << pair.first;
   }
   return s.str();
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

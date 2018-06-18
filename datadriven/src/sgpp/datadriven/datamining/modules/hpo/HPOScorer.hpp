@@ -80,8 +80,6 @@ class HPOScorer : public Scorer {
    * test data saved here to use consistently during hpo
    */
   std::unique_ptr<Dataset> testDataset;
-
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

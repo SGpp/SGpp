@@ -74,8 +74,6 @@ class UniversalMinerFactory : public MinerFactory {
    * configuration file.
    */
   virtual Scorer *createScorer(const DataMiningConfigParser &parser) const;
-
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

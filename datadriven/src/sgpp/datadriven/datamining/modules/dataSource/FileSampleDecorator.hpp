@@ -70,6 +70,5 @@ class FileSampleDecorator : public FileSampleProvider {
    */
   std::unique_ptr<FileSampleProvider> fileSampleProvider;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

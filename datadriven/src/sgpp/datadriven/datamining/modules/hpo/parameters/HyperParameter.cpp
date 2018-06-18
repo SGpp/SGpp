@@ -23,8 +23,6 @@ void HyperParameter::makeConfigBits(std::vector<ConfigurationBit *> &configBits)
     bits.emplace_back(bitName);
     configBits.push_back(&bits[i]);
   }
-
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

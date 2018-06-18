@@ -94,6 +94,5 @@ class DataSource {
    */
   DataTransformation *dataTransformation;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

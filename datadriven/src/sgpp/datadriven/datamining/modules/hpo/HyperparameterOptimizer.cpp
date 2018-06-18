@@ -11,18 +11,10 @@
  */
 
 #include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
-#include <sgpp/datadriven/tools/Dataset.hpp>
-#include <sgpp/solver/sle/fista/Fista.hpp>
-#include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/bo/BayesianOptimization.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
-#include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/Harmonica.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HPOScorerFactory.hpp>
-
-#include <iostream>
-#include <random>
-#include <cmath>
 
 namespace sgpp {
 namespace datadriven {
@@ -55,13 +47,15 @@ void HyperparameterOptimizer::runHarmonica() {
   std::cout << std::endl << "Starting Hyperparameter Optimization using Harmonica. Results"
       " are saved with timestamp." << std::endl << std::endl;
 
-  double stdDeviation; // dummy
+  double stdDeviation;   // dummy
 
   // output initialization
-  time_t now = time(0);
-  tm *ltm = localtime(&now);
+  time_t now = time(nullptr);
+  tm tmobj{};  // EDIT: working?
+  tm *ltm = localtime_r(&now, &tmobj);
   std::stringstream fn;
-  fn << "Harmonica_" << (ltm->tm_year+1900) << "_" << (ltm->tm_mon+1) << "_" << ltm->tm_mday << "_"
+  fn << "Harmonica_" << (ltm->tm_year + 1900) << "_" << (ltm->tm_mon + 1) << "_" << ltm->tm_mday
+     << "_"
      << ltm->tm_hour << "_" << ltm->tm_min;
   std::ofstream myfile(fn.str(), std::ios_base::app);
   if (myfile.is_open()) {
@@ -104,11 +98,10 @@ void HyperparameterOptimizer::runHarmonica() {
 
     // constraint introduction
     if (q < config.getStages().size() - 1) {
-
       harmonica.transformScores(scores, transformedScores);
 
       harmonica.calculateConstrainedSpace(transformedScores, config.getLambda(),
-                                          (int) config.getConstraints()[q]);
+                                          static_cast<int>(config.getConstraints()[q]));
     }
   }
   myfile.open(fn.str(), std::ios_base::app);
@@ -130,13 +123,14 @@ void HyperparameterOptimizer::runBO() {
 
   BOConfig prototype = fitterFactory->getBOConfig();
 
-  double stdDeviation; // dummy
+  double stdDeviation;   // dummy
 
   // output initialization
   time_t now = time(0);
   tm *ltm = localtime(&now);
   std::stringstream fn;
-  fn << "Bayesian_" << (ltm->tm_year+1900) << "_" << (ltm->tm_mon+1) << "_" << ltm->tm_mday << "_"
+  fn << "Bayesian_" << (ltm->tm_year + 1900) << "_" << (ltm->tm_mon + 1) << "_" << ltm->tm_mday
+     << "_"
      << ltm->tm_hour << "_" << ltm->tm_min;
   std::ofstream myfile(fn.str(), std::ios_base::app);
   if (myfile.is_open()) {
@@ -152,8 +146,8 @@ void HyperparameterOptimizer::runBO() {
 
   // list/vector of configs, start setup
   std::vector<BOConfig> initialConfigs{};
-  initialConfigs.reserve(static_cast<unsigned long>(config.getNRandom()));
-  std::mt19937 generator(static_cast<unsigned long>(config.getSeed()));
+  initialConfigs.reserve(static_cast<size_t>(config.getNRandom()));
+  std::mt19937 generator(static_cast<size_t>(config.getSeed()));
 
   // random warmup phase
   for (int i = 0; i < config.getNRandom(); ++i) {
@@ -216,6 +210,5 @@ void HyperparameterOptimizer::runBO() {
   }
   myfile.close();
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

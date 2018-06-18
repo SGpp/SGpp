@@ -47,6 +47,5 @@ class DensityEstimationTypeParser {
    */
   static const DensityEstimationTypeMap_t densityEstimationTypeMap;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

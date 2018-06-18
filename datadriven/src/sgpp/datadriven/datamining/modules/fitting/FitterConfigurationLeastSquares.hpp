@@ -35,6 +35,5 @@ class FitterConfigurationLeastSquares : public FitterConfiguration {
    */
   void readParams(const DataMiningConfigParser &parser) override;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -47,6 +47,5 @@ const SLESolverTypeParser::SLESolverTypeMap_t SLESolverTypeParser::sleSolverType
                                                                 "BiCGSTAB"),
                                                  std::make_pair(SLESolverType::FISTA, "FISTA")};
 }();
-
 } /* namespace datadriven */
 } /* namespace sgpp */

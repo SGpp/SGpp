@@ -192,6 +192,5 @@ class ModelFittingBase {
    */
   std::unique_ptr<SLESolver> solver;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

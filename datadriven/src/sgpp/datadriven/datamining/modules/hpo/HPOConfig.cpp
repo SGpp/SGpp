@@ -79,6 +79,5 @@ int64_t HPOConfig::getNTrainSamples() const {
 void HPOConfig::setNTrainSamples(int64_t nTrainSamples) {
   HPOConfig::nTrainSamples = nTrainSamples;
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

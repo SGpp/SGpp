@@ -12,7 +12,6 @@
 
 #include <sgpp/datadriven/datamining/modules/hpo/HPOScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HPOScorer.hpp>
-#include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 
 namespace sgpp {
@@ -29,7 +28,6 @@ Scorer *HPOScorerFactory::buildScorer(const DataMiningConfigParser &parser) cons
   bool hasSource = parser.getScorerTestset(dsConfig, dsConfig);
 
   if ((hasSource && dsConfig.filePath.compare("") != 0)) {
-
     DataSourceBuilder builder;
     std::unique_ptr<DataSource> dataSource;
     dataSource.reset(builder.fromConfig(dsConfig));

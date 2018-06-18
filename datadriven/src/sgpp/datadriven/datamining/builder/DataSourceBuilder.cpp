@@ -129,6 +129,5 @@ void DataSourceBuilder::grabTypeInfoFromFilePath() {
     }
   }
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

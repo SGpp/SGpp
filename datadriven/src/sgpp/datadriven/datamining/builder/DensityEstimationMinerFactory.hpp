@@ -72,6 +72,5 @@ class DensityEstimationMinerFactory : public MinerFactory {
    */
   virtual Scorer *createScorer(const DataMiningConfigParser &parser) const;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

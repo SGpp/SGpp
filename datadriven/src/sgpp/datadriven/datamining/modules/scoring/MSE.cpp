@@ -23,6 +23,5 @@ double MSE::measure(const DataVector &predictedValues, const DataVector &trueVal
   const double error = tmp.l2Norm();
   return (error * error / static_cast<double>(tmp.getSize()));
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

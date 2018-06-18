@@ -53,6 +53,5 @@ class RandomShufflingFunctor : public ShufflingFunctor {
    */
   void shuffle(const Dataset &dataset, std::vector<size_t> &indices) override;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

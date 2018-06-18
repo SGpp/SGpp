@@ -51,6 +51,5 @@ class FitterTypeParser {
    */
   static const FitterTypeMap_t fitterTypeMap;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -114,6 +114,5 @@ const GridTypeParser::GridTypeMap_t GridTypeParser::gridTypeMap = []() {
       std::make_pair(GridType::LinearStencil, "LinearStencil"),
       std::make_pair(GridType::ModLinearStencil, "ModLinearStencil")};
 }();
-
 } /* namespace datadriven */
 } /* namespace sgpp */

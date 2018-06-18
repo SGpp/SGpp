@@ -66,7 +66,6 @@ class HyperParameter {
    */
   std::string name;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */
 

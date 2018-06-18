@@ -69,6 +69,5 @@ class DataSourceIterator {
    */
   size_t counter;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

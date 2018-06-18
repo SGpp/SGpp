@@ -53,6 +53,5 @@ class SLESolverTypeParser {
    */
   static const SLESolverTypeMap_t sleSolverTypeMap;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

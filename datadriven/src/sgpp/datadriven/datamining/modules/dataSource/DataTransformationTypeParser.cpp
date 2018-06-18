@@ -38,6 +38,5 @@ const DataTransformationTypeParser::TransformationTypeMap_t
       std::make_pair(DataTransformationType::NONE, "None"),
       std::make_pair(DataTransformationType::ROSENBLATT, "Rosenblatt")};
 }();
-
 } /* namespace datadriven */
 } /* namespace sgpp */
