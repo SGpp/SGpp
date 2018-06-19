@@ -542,7 +542,7 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
   DataVector p(trainData.getDimension());
 
   size_t newPoints = 0;
-  std::list<size_t> deletedGridPoints;
+  std::vector<size_t> deletedGridPoints;
 
   // acc = getAccuracy();
   // avgErrors.append(1.0 - acc);
@@ -641,16 +641,20 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
 
           // std::cout << "minIndexAllowed: " << minIndexAllowed << std::endl;
           std::cout << "gridSize: " << grids[idx]->getSize() << std::endl;
-          coarse_.free_coarsen_NFirstOnly(grids[idx]->getStorage(), scf, alphaWeight,
-              grids[idx]->getSize(), minIndexAllowed);
+
+          deletedGridPoints.clear();
+          coarse_.free_coarsen_NFirstOnly(grids[idx]->getStorage(),
+                                          scf,
+                                          alphaWeight,
+                                          grids[idx]->getSize(),
+                                          minIndexAllowed,
+                                          &deletedGridPoints);
 
           std::cout << "Size after coarsening:" << grids[idx]->getSize() << "\n";
           // int new_size = grid->getSize();
 
-          deletedGridPoints.clear();
-          deletedGridPoints = coarse_.getDeletedPoints();
-
-          (refineCoarse)[idx].first = deletedGridPoints;
+          (refineCoarse)[idx].first =
+            std::list<size_t>(deletedGridPoints.begin(), deletedGridPoints.end());
 
           coarseCnt++;
         }
@@ -694,8 +698,12 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
       // return a list of gridpoints which weren't allowed to be coarsened. But it seems
       // appropriate to redesign the functors in a way, that already considers these points
       // when coarsening the grid itself.
-      densEst->updateSystemMatrixDecomposition(densityEstimationConfig,
-          *(grids[idx]), newPoints, deletedGridPoints, densEst->getBestLambda());
+      densEst->updateSystemMatrixDecomposition
+        (densityEstimationConfig,
+         *(grids[idx]),
+         newPoints,
+         std::list<size_t>(deletedGridPoints.begin(), deletedGridPoints.end()),
+         densEst->getBestLambda());
 
 
       // update alpha vector
