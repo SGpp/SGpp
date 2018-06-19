@@ -70,6 +70,7 @@ class DataMiningConfigParser {
                                      const std::string &key,
                                      std::vector<int64_t> defaultValue,
                                      const std::string &parentNode) const;
+  std::string getHPOMethod(std::string defaultValue) const;
 
   bool getDataSourceConfig(DataSourceConfig &config, const DataSourceConfig &defaults) const;
   bool getScorerTestingConfig(TestingConfiguration &config,

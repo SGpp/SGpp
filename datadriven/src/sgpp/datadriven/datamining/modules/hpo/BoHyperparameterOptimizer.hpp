@@ -4,9 +4,9 @@
  * use, please see the copyright notice provided with SG++ or at
  * sgpp.sparsegrids.org
  *
- * HyperparameterOptimizer.hpp
+ * BoHyperparameterOptimizer.hpp
  *
- * Created on: Jan 22, 2018
+ * Created on: June 19, 2018
  *     Author: Eric Koepke
  */
 
@@ -17,6 +17,7 @@
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HPOScorer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/FitterFactory.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
 
 #include <memory>
 
@@ -24,11 +25,11 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * HyperparameterOptimizer coordinates data input, fitting and validation modules similarly to SparseGridMiner.
+ * BoHyperparameterOptimizer coordinates data input, fitting and validation modules similarly to SparseGridMiner.
  * It offers access to different hyperparameter optimization procedures.
  */
-class HyperparameterOptimizer {
-public:
+class BoHyperparameterOptimizer : public HyperparameterOptimizer {
+ public:
   /**
    * Constructor
    * @param dataSource configured instance of data source object, that will provide samples to learn
@@ -37,7 +38,7 @@ public:
    * manipulated hyperparameters. The HyperparameterOptimizer instance will take ownership of the passed object.
    * @param parser reference to parser object to read configuration info
    */
-  HyperparameterOptimizer(DataSource *dataSource,
+  BoHyperparameterOptimizer(DataSource *dataSource,
                           FitterFactory *fitterFactory,
                           DataMiningConfigParser &parser);
 
@@ -45,56 +46,35 @@ public:
    * Copy constructor deleted - not all members can be copied or cloned .
    * @param rhs the object to copy from
    */
-  HyperparameterOptimizer(const HyperparameterOptimizer &rhs) = delete;
+  BoHyperparameterOptimizer(const BoHyperparameterOptimizer &rhs) = delete;
 
   /**
    * Default Move constructor .
    * @param rhs the object to move from
    */
-  HyperparameterOptimizer(HyperparameterOptimizer &&rhs) = default;
+  BoHyperparameterOptimizer(BoHyperparameterOptimizer &&rhs) = default;
 
   /**
    * Default Move assign operator.
    * @param rhs the object to move from
    */
-  HyperparameterOptimizer &operator=(HyperparameterOptimizer &&rhs) = default;
+  BoHyperparameterOptimizer &operator=(BoHyperparameterOptimizer &&rhs) = default;
 
   /**
    * Default copy assign operator deleted because not all members can be copied.
    * @param rhs the object to copy from
    */
-  HyperparameterOptimizer &operator=(const HyperparameterOptimizer &rhs) = delete;
+  BoHyperparameterOptimizer &operator=(const BoHyperparameterOptimizer &rhs) = delete;
 
   /**
    * Default destructor.
    */
-  virtual ~HyperparameterOptimizer() = default;
+  ~BoHyperparameterOptimizer() override = default;
 
   /**
-   * Run hyperparameter optimization
+   * Run hyperparameter optimization using Bayesian Optimization and random search to warm up.
    */
-  virtual void run() = 0;
-
-
-protected:
-  /**
-   * Training Data
-   */
-  std::unique_ptr<Dataset> trainData;
-
-  /**
-   * FitterFactory to provide fitters for running different hyperparameter configurations.
-   */
-  std::unique_ptr<FitterFactory> fitterFactory;
-  /**
-   * Scorer for HPO.
-   */
-  std::unique_ptr<HPOScorer> hpoScorer;
-
-  /**
-   * Configuration for all hpo details.
-   */
-  HPOConfig config;
+  void run() override;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

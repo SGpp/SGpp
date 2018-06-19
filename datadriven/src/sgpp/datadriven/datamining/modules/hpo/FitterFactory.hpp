@@ -17,7 +17,7 @@
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/ConfigurationBit.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/ContinuousParameter.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/DiscreteParameter.hpp>
-#include "sgpp/datadriven/datamining/modules/hpo/bo/BOConfig.hpp"
+#include <sgpp/datadriven/datamining/modules/hpo/bo/BOConfig.hpp>
 
 #include <vector>
 #include <map>

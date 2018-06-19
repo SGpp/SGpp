@@ -20,8 +20,11 @@
 #include <sgpp/datadriven/datamining/modules/hpo/LeastSquaresRegressionFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/DensityEstimationFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 
 #include <string>
+
 
 namespace sgpp {
 namespace datadriven {
@@ -36,15 +39,18 @@ HyperparameterOptimizer *UniversalMinerFactory::buildHPO(const std::string &path
   DataMiningConfigParser parser(path);
   FitterType fType = FitterType::RegressionLeastSquares;
   parser.getFitterConfigType(fType, fType);
+  FitterFactory* fitfac;
 
   if (fType == FitterType::DensityEstimation) {
-    return new HyperparameterOptimizer(createDataSource(parser),
-                                       new DensityEstimationFitterFactory(parser),
-                                       parser);
+    fitfac = new DensityEstimationFitterFactory(parser);
   } else {
-    return new HyperparameterOptimizer(createDataSource(parser),
-                                       new LeastSquaresRegressionFitterFactory(parser),
-                                       parser);
+    fitfac = new LeastSquaresRegressionFitterFactory(parser);
+  }
+
+  if (parser.getHPOMethod("bayesian") == "harmonica") {
+    return new HarmonicaHyperparameterOptimizer(createDataSource(parser), fitfac, parser);
+  } else {
+    return new BoHyperparameterOptimizer(createDataSource(parser), fitfac, parser);
   }
 }
 
