@@ -20,8 +20,11 @@
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/DensityEstimationFitterFactory.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 
 #include <string>
+
 
 namespace sgpp {
 namespace datadriven {
@@ -34,9 +37,13 @@ SparseGridMiner *DensityEstimationMinerFactory::buildMiner(const std::string &pa
 
 HyperparameterOptimizer *DensityEstimationMinerFactory::buildHPO(const std::string &path) const {
   DataMiningConfigParser parser(path);
-  return new HyperparameterOptimizer(createDataSource(parser),
-                                     new DensityEstimationFitterFactory(parser),
-                                     parser);
+  if (parser.getHPOMethod("bayesian") == "harmonica") {
+    return new HarmonicaHyperparameterOptimizer(createDataSource(parser),
+                                                new DensityEstimationFitterFactory(parser), parser);
+  } else {
+    return new BoHyperparameterOptimizer(createDataSource(parser),
+                                         new DensityEstimationFitterFactory(parser), parser);
+  }
 }
 
 DataSource *DensityEstimationMinerFactory::createDataSource(

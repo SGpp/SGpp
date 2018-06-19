@@ -736,6 +736,17 @@ void DataMiningConfigParser::getHPOConfig(HPOConfig &config) {
   }
 }
 
+std::string DataMiningConfigParser::getHPOMethod(std::string defaultValue) const {
+  if (configFile->contains("hpo")) {
+    auto node = static_cast<DictNode *>(&(*configFile)["hpo"]);
+    return parseString(*node, "method", defaultValue, "hpo");
+  } else {
+    std::cout << "# Did not find hpo[method]. Setting default value "
+              << defaultValue << "." << std::endl;
+  }
+  return defaultValue;
+}
+
 void DataMiningConfigParser::parseDataTransformationConfig(
     DictNode &dict, DataTransformationConfig &config,
     const DataTransformationConfig &defaults,

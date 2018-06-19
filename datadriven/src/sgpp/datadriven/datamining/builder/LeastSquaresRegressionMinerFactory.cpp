@@ -21,6 +21,8 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/LeastSquaresRegressionFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 
 #include <string>
 
@@ -36,9 +38,13 @@ SparseGridMiner *LeastSquaresRegressionMinerFactory::buildMiner(const std::strin
 HyperparameterOptimizer *LeastSquaresRegressionMinerFactory::buildHPO
                                                              (const std::string &path) const {
   DataMiningConfigParser parser(path);
-  return new HyperparameterOptimizer(createDataSource(parser),
-                                     new LeastSquaresRegressionFitterFactory(parser),
-                                     parser);
+  if (parser.getHPOMethod("bayesian") == "harmonica") {
+    return new HarmonicaHyperparameterOptimizer(createDataSource(parser),
+                                         new LeastSquaresRegressionFitterFactory(parser), parser);
+  } else {
+    return new BoHyperparameterOptimizer(createDataSource(parser),
+                                         new LeastSquaresRegressionFitterFactory(parser), parser);
+  }
 }
 
 DataSource *LeastSquaresRegressionMinerFactory::createDataSource(
