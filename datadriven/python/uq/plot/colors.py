@@ -73,7 +73,7 @@ def load_custom_pgf_preamble(dtype="standard", macros="thesis"):
     elif get_username() == "rehmemk":
         cmd_filename = "plots/commands.tex"
     else:
-        cmd_filename = r"/home/franzefn/Promotion/Paper/repos/SGA16/paper/commands.tex"
+        cmd_filename = "plots/commands.tex"
 
     if os.path.exists(cmd_filename):
         fd = open(cmd_filename, "r")
