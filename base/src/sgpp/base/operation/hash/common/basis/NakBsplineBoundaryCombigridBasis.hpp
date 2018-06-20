@@ -587,8 +587,6 @@ class NakBsplineBoundaryCombigridBasis : public Basis<LT, IT> {
    */
   inline size_t getDegree() const override { return bsplineBasis.getDegree(); }
 
-  inline double getIntegral(LT level, IT index) override { return -1.0; }
-
  protected:
   /// B-spline basis for B-spline evaluation
   BsplineBasis<LT, IT> bsplineBasis;

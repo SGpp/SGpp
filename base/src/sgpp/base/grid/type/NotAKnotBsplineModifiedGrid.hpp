@@ -48,7 +48,7 @@ class NotAKnotBsplineModifiedGrid : public Grid {
   /**
    * @return B-spline basis
    */
-  const SBasis& getBasis() override;
+  SBasis& getBasis() override;
 
   /**
    * @return pointer to a GridGenerator object

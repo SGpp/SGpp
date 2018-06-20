@@ -737,6 +737,11 @@ class NotAKnotBsplineBasis : public Basis<LT, IT> {
     }
   }
 
+  double getIntegral(LT level, IT index) override {
+    std::cerr << "NotAKnotBsplineBasis: Integral not implemented" << std::endl;
+    return -1;
+  }
+
   /**
    * @return      B-spline degree
    */

@@ -131,9 +131,6 @@ void HierarchicalStochasticCollocation::calculateCoefficients() {
     }
     //    std::cout << " <-p, f->";
     f_values[i] = objectiveFunction(p);
-    //    if (f_values[i] < 0) {
-    std::cout << "hSC: " << p[0] << " " << p[1] << " " << p[2] << " | " << f_values[i] << std::endl;
-    //    }
   }
   //  std::cout << f_values.toString() << std::endl;
 

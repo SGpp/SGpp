@@ -34,7 +34,7 @@ sgpp::base::GridType NakBsplineBoundaryGrid::getType() {
   return sgpp::base::GridType::NakBsplineBoundary;
 }
 
-const SBasis& NakBsplineBoundaryGrid::getBasis() { return *basis_; }
+SBasis& NakBsplineBoundaryGrid::getBasis() { return *basis_; }
 
 size_t NakBsplineBoundaryGrid::getDegree() { return this->degree; }
 

@@ -11,8 +11,8 @@
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
-#include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/LinearGridStencil.hpp>
 #include <sgpp/base/grid/type/LinearL0BoundaryGrid.hpp>
@@ -23,6 +23,7 @@
 #include <sgpp/base/grid/type/ModLinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGridStencil.hpp>
+#include <sgpp/base/grid/type/ModPolyClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
@@ -30,12 +31,9 @@
 #include <sgpp/base/grid/type/NotAKnotBsplineModifiedGrid.hpp>
 #include <sgpp/base/grid/type/PeriodicGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/PolyGrid.hpp>
-#include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/PolyClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/PolyClenshawCurtisBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/ModPolyClenshawCurtisGrid.hpp>
-#include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
+#include <sgpp/base/grid/type/PolyClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/PolyGrid.hpp>
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
 #include <sgpp/base/grid/type/SquareRootGrid.hpp>
 #include <sgpp/base/grid/type/WaveletBoundaryGrid.hpp>
@@ -45,8 +43,8 @@
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
-#include <sgpp/base/exception/generation_exception.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/exception/generation_exception.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearStretchedBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp>
@@ -369,6 +367,7 @@ Grid* Grid::createGridOfEquivalentType(size_t numDims) {
     case GridType::ModPolyClenshawCurtis:
       degree = dynamic_cast<ModPolyClenshawCurtisGrid*>(this)->getDegree();
       newGrid = Grid::createModPolyClenshawCurtisGrid(numDims, degree);
+      break;
     case GridType::NakBsplineBoundary:
       degree = dynamic_cast<NakBsplineBoundaryGrid*>(this)->getDegree();
       newGrid = Grid::createNakBsplineBoundaryGrid(numDims, degree);
@@ -436,10 +435,13 @@ GridType Grid::getZeroBoundaryType() {
     case GridType::PolyClenshawCurtisBoundary:
     case GridType::ModPolyClenshawCurtis:
       return GridType::PolyClenshawCurtis;
+    case GridType::NotAKnotBsplineModified:
+      return GridType::NotAKnotBsplineModified;
     // no non-boundary treatment basis available for the following grids
     case GridType::BsplineClenshawCurtis:
     case GridType::ModBsplineClenshawCurtis:
     case GridType::NakBsplineBoundaryCombigrid:
+    case GridType::NakBsplineBoundary:
     default:
       throw generation_exception("Grid::getZeroBoundaryType - no conversion known");
   }

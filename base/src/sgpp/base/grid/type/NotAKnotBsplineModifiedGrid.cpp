@@ -29,7 +29,7 @@ sgpp::base::GridType NotAKnotBsplineModifiedGrid::getType() {
   return sgpp::base::GridType::NotAKnotBsplineModified;
 }
 
-const SBasis& NotAKnotBsplineModifiedGrid::getBasis() { return *basis_; }
+SBasis& NotAKnotBsplineModifiedGrid::getBasis() { return *basis_; }
 
 size_t NotAKnotBsplineModifiedGrid::getDegree() { return this->degree; }
 
