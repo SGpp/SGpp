@@ -17,6 +17,7 @@
 #include <sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
 #include <sgpp/combigrid/common/GridConversion.hpp>
 #include <sgpp/combigrid/functions/ProbabilityDensityFunction1D.hpp>
 #include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
@@ -31,6 +32,7 @@
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
+#include <sgpp/optimization/sle/solver/Armadillo.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
@@ -101,10 +103,13 @@ class HierarchicalStochasticCollocation {
   double discreteVariance(sgpp::base::DataMatrix discretePoints);
 
   void calculateCoefficients();
+
+  double leastSquaresResidual(sgpp::base::DataMatrix points, sgpp::base::DataVector functionValues,
+                              size_t degree);
   /**
    * coarsen the hierarchical sparse grid surrogate
-   * @param removements_num Number of grid points which should be removed (if possible - there could
-   * be less removable grid points)
+   * @param removements_num Number of grid points which should be removed (if possible - there
+   * could be less removable grid points)
    * @param threshold The absolute value of the entries have to be greater or equal than the
    * threshold
    * @param recalculateCoefficients calculate new coefficients or use old (and after coarsening
