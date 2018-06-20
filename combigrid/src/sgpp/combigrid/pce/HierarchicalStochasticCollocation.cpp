@@ -5,6 +5,13 @@
 
 #include "HierarchicalStochasticCollocation.hpp"
 
+#ifdef USE_ARMADILLO
+#include <armadillo>
+
+typedef arma::vec ArmadilloVector;
+typedef arma::mat ArmadilloMatrix;
+#endif /* USE_ARMADILLO */
+
 namespace sgpp {
 namespace combigrid {
 
@@ -124,6 +131,9 @@ void HierarchicalStochasticCollocation::calculateCoefficients() {
     }
     //    std::cout << " <-p, f->";
     f_values[i] = objectiveFunction(p);
+    //    if (f_values[i] < 0) {
+    std::cout << "hSC: " << p[0] << " " << p[1] << " " << p[2] << " | " << f_values[i] << std::endl;
+    //    }
   }
   //  std::cout << f_values.toString() << std::endl;
 
@@ -135,6 +145,96 @@ void HierarchicalStochasticCollocation::calculateCoefficients() {
     std::cout << "Solving failed!" << std::endl;
   }
   coefficients = alpha;
+}
+
+double HierarchicalStochasticCollocation::leastSquaresResidual(
+    sgpp::base::DataMatrix points, sgpp::base::DataVector functionValues, size_t degree) {
+  //   make system smaller for development
+  points.resize(points.getNrows(), 2000);
+  std::vector<size_t> remainingIndex(2000);
+  for (size_t sth = 0; sth < 2000; sth++) {
+    remainingIndex[sth] = sth;
+  }
+  //  functionValues.restructure(remainingIndex);
+
+  sgpp::base::SNakBsplineBoundaryBase nakBSplineBasis(degree);
+  if (gridType != sgpp::base::GridType::NakBsplineBoundary) {
+    std::cerr << "HierarchicalStochasticCollocation: Currently only NakBsplineBoundaryBasis is "
+                 "supported."
+              << std::endl;
+  }
+
+  size_t numDims = grid->getDimension();
+  sgpp::base::GridStorage& gridStorage = grid->getStorage();
+
+  // set grid points
+  //  points.resizeZero(3, gridStorage.getSize());
+  //  for (size_t i = 0; i < gridStorage.getSize(); i++) {
+  //    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
+  //    sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
+  //    for (size_t j = 0; j < gridStorage.getDimension(); j++) {
+  //      p[j] = gp.getStandardCoordinate(j);
+  //    }
+  //    points.setColumn(i, p);
+  //  }
+
+  size_t numPoints = points.getNcols();
+  std::cout << "calculating leastSquaresResidual with " << numPoints << " points" << std::endl;
+  size_t numBasisFunctions = gridStorage.getSize();
+#ifdef USE_ARMADILLO
+  //  sgpp::base::DataMatrix A(numPoints, numBasisFunctions);
+  ArmadilloMatrix A(static_cast<arma::uword>(numPoints),
+                    static_cast<arma::uword>(numBasisFunctions));
+  ArmadilloVector b(static_cast<arma::uword>(numPoints));
+  for (arma::uword i = 0; i < numPoints; i++) {
+    b(i) = functionValues[static_cast<size_t>(i)];
+    sgpp::base::DataVector evalPoint(points.getNrows(), 0.0);
+    points.getColumn(i, evalPoint);
+    for (arma::uword j = 0; j < numBasisFunctions; j++) {
+      double result = 1.0;
+      const base::GridPoint& gpBasis = gridStorage[j];
+      for (size_t d = 0; d < numDims; d++) {
+        double result1d =
+            nakBSplineBasis.eval(gpBasis.getLevel(d), gpBasis.getIndex(d), evalPoint[d]);
+        if (result1d == 0.0) {
+          result = 0.0;
+          break;
+        }
+        result *= result1d;
+      }
+      A(i, j) = result;
+    }
+  }
+
+  //  auto leastSquaresCoeff = arma::solve(A, b);
+  //  auto resVec = A * leastSquaresCoeff - b;
+  //  double residual = norm(resVec);
+
+  //  auto s = svd(A);
+  //  std::cout << "s size:  " << s.size() << std::endl;
+  //  std::cout << "s(size-1) " << s(s.size() - 1) << std::endl;
+
+  //  ArmadilloMatrix U;
+  //  ArmadilloVector s;
+  //  ArmadilloMatrix V;
+  //  svd(U, s, V, A);
+  //  for (arma::uword i = 0; i < s.size(); i++) {
+  //    if (s(i) > 1e-10)
+  //      s(i) = 1 / s(i);
+  //    else
+  //      s(i) = 0;
+  //  }
+  //  ArmadilloVector coeff = V * arma::diagmat(s) * U * b;
+  //  double residual = norm(A * coeff - b);
+
+  double tolerance = 1e-10;
+  ArmadilloMatrix B = pinv(A, tolerance);
+  ArmadilloVector coeff = B * b;
+  double residual = norm(A * coeff - b);
+  std::cout << "rank: " << rank(A, tolerance) << std::endl;
+
+#endif /* USE_ARMADILLO */
+  return residual;
 }
 
 void HierarchicalStochasticCollocation::createGridFromCombiLevelStructure(
