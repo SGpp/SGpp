@@ -30,6 +30,7 @@ def checkForLibrary(name, flag, headers, libraries):
         additionalDependencies.extend(libraries)
         env["CPPDEFINES"][flag] = "1"
 
+# /home/raphi/Projects/dakota/packages/pecos/src
 
 moduleDependencies = ["sgppoptimization", "sgpppde", "sgppsolver", "sgppquadrature", "sgppbase"]
 additionalDependencies = []
