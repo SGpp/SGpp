@@ -617,5 +617,28 @@ const {
 
   return hasDatabaseConfig;
 }
+
+bool DataMiningConfigParser::getFitterLearnerConfig(
+    datadriven::LearnerConfiguration& config, const datadriven::LearnerConfiguration& defaults)
+const {
+  bool hasLearnerConfig =
+      hasFitterConfig() ? (*configFile)[fitter].contains("learner") : false;
+
+  if (hasLearnerConfig) {
+    auto learnerConfig = static_cast<DictNode*>(&(*configFile)[fitter]["learner"]);
+
+    // Parse beta
+    if (learnerConfig->contains("beta")) {
+      config.beta = (*learnerConfig)["beta"].getDouble();
+    } else {
+      std::cout << "# Did not find learnerConfig[beta]. Setting default beta " <<
+          defaults.beta << std::endl;
+      config.beta = defaults.beta;
+    }
+  }
+
+  return hasLearnerConfig;
+}
+
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -33,6 +33,29 @@ class DBMatOnlineDE : public DBMatOnline {
   explicit DBMatOnlineDE(DBMatOffline& offline, Grid& grid, double lambda, double beta = 0.);
 
   /**
+   * Restructures the rhs (b vector) of the system matrix. This is only availible for streaming,
+   * i.e. when computeDensityFunction was called with save_b = true.
+   * First b is coarsened, then extended according to the new grid size (refinement).
+   *
+   * @param gridSize grid size after coarsening and refinement (inherently gives the number of
+   * points added during refinement after coarsening)
+   * @param deletedPoints pointer to list of indexes that will be removed from b
+   */
+  void updateRhs(size_t gridSize, std::list<size_t> *deletedPoints);
+
+  /**
+  * Computes the density function again based on the saved b's (only applicable for streaming)
+  *
+  * @param alpha the vector where surplusses for the density function will be stored
+  * @param grid The underlying grid
+  * @param densityEstimationConfig Configuration for the density estimation
+  *        combined with the new right hand side (aka streaming)
+  * @param do_cv Indicates whether crossvalidation should take place
+  */
+  void computeDensityFunction(DataVector& alpha, Grid& grid,
+    DensityEstimationConfiguration& densityEstimationConfig, bool do_cv = false);
+
+  /**
    * Computes the density function for a certain data matrix
    *
    * @param alpha the vector where surplusses for the density function will be stored

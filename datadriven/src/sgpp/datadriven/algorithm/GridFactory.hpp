@@ -10,8 +10,7 @@
  *      Author: dominik
  */
 
-#ifndef DATADRIVEN_SRC_SGPP_DATADRIVEN_ALGORITHM_GRIDFACTORY_HPP_
-#define DATADRIVEN_SRC_SGPP_DATADRIVEN_ALGORITHM_GRIDFACTORY_HPP_
+#pragma once
 
 #include <sgpp/base/grid/Grid.hpp>
 
@@ -37,5 +36,3 @@ class GridFactory {
 };
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* DATADRIVEN_SRC_SGPP_DATADRIVEN_ALGORITHM_GRIDFACTORY_HPP_ */

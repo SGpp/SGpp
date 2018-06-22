@@ -42,6 +42,9 @@ void FitterConfigurationDensityEstimation::setupDefaults() {
 
   // intialize empty database
   databaseConfig.filepath = "";
+
+  // configure learner
+  learnerConfig.beta = 1.0;
 }
 
 void FitterConfigurationDensityEstimation::readParams(const DataMiningConfigParser& parser) {
@@ -53,6 +56,7 @@ void FitterConfigurationDensityEstimation::readParams(const DataMiningConfigPars
   parser.getFitterSolverFinalConfig(solverFinalConfig, solverFinalConfig);
   parser.getFitterRegularizationConfig(regularizationConfig, regularizationConfig);
   parser.getFitterDatabaseConfig(databaseConfig, databaseConfig);
+  parser.getFitterLearnerConfig(learnerConfig, learnerConfig);
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -18,8 +18,8 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 
 #include <string>
-#include <list>
 #include <vector>
+#include <list>
 
 using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
@@ -97,8 +97,33 @@ void ModelFittingDensityEstimation::fit(Dataset& newDataset) {
      *grid, regularizationConfig.lambda_)};
 
   online->computeDensityFunction(alpha, newDataset.getData(), *grid,
-      this->config->getDensityEstimationConfig());
+      this->config->getDensityEstimationConfig(), true,
+      this->config->getCrossvalidationConfig().enable_);
   online->normalize(alpha, *grid);
+}
+
+
+bool ModelFittingDensityEstimation::refine(size_t newNoPoints,
+    std::list<size_t> *deletedGridPoints) {
+  // Coarsening, remove idx from alpha
+  if (deletedGridPoints != nullptr && deletedGridPoints->size() > 0) {
+    // Restructure alpha
+    std::vector<size_t> idxToDelete{std::begin(*deletedGridPoints), std::end(*deletedGridPoints)};
+    alpha.remove(idxToDelete);
+  }
+  // oldNoPoint refers to the grid size after coarsening
+  auto oldNoPoints = alpha.size();
+
+  // Refinement, expand alpha
+  if (newNoPoints > oldNoPoints) {
+    alpha.resizeZero(newNoPoints);
+  }
+
+  // Update online object: lhs, rhs and recompute the density function based on the b stored
+  online->updateSystemMatrixDecomposition(config->getDensityEstimationConfig(),
+      *grid, newNoPoints - oldNoPoints, *deletedGridPoints, online->getBestLambda());
+  online->updateRhs(newNoPoints, deletedGridPoints);
+  return true;
 }
 
 bool ModelFittingDensityEstimation::refine() {
@@ -114,15 +139,9 @@ bool ModelFittingDensityEstimation::refine() {
       auto newNoPoints = grid->getSize();
       std::cout << "New number points " << newNoPoints << std::endl;
       if (newNoPoints != oldNoPoints) {
-        // Tell the SLE manager that the grid changed (for interal data structures)
-        alpha.resizeZero(newNoPoints);
-        std::list<size_t> deletedGridPoints;
         // TODO(roehner) enable coarsening
-        online->updateSystemMatrixDecomposition(config->getDensityEstimationConfig(),
-            *grid, newNoPoints - oldNoPoints, deletedGridPoints, online->getBestLambda());
-        online->computeDensityFunction(alpha, dataset->getData(), *grid,
-              this->config->getDensityEstimationConfig());
-        online->normalize(alpha, *grid);
+        std::list<size_t> deletedGridPoints {};
+        this->refine(newNoPoints, &deletedGridPoints);
         refinementsPerformed++;
         return true;
       } else {
@@ -141,7 +160,17 @@ bool ModelFittingDensityEstimation::refine() {
 }
 
 void ModelFittingDensityEstimation::update(Dataset& newDataset) {
-  fit(newDataset);
+  if (grid == nullptr) {
+    // Initial fitting of dataset
+    fit(newDataset);
+  } else {
+    // Update the fit (streaming)
+    dataset = &newDataset;
+    online->computeDensityFunction(alpha, newDataset.getData(), *grid,
+        this->config->getDensityEstimationConfig(), true,
+        this->config->getCrossvalidationConfig().enable_);
+    online->normalize(alpha, *grid);
+  }
 }
 
 void ModelFittingDensityEstimation::resetState() { refinementsPerformed = 0; }

@@ -51,6 +51,11 @@ const datadriven::DatabaseConfiguration& FitterConfiguration::getDatabaseConfig(
   return databaseConfig;
 }
 
+const datadriven::LearnerConfiguration& FitterConfiguration::getLearnerConfig()
+    const {
+  return learnerConfig;
+}
+
 base::RegularGridConfiguration& FitterConfiguration::getGridConfig() {
   return const_cast<base::RegularGridConfiguration&>(
       static_cast<const FitterConfiguration&>(*this).getGridConfig());

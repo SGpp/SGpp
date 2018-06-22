@@ -83,6 +83,15 @@ class DataMiningConfigParser {
   bool getFitterDatabaseConfig(datadriven::DatabaseConfiguration& config,
       const datadriven::DatabaseConfiguration& defaults) const;
 
+  /**
+   * Initializes the learner configuration if it exists
+   * @param config the configuration instance that will be initialized
+   * @param defaults default values if the fitter config does not contain a matching entry
+   * @return whether the configuration contains a learner configuration
+   */
+  bool getFitterLearnerConfig(datadriven::LearnerConfiguration& config,
+      const datadriven::LearnerConfiguration& defaults) const;
+
  private:
   std::unique_ptr<JSON> configFile;
 

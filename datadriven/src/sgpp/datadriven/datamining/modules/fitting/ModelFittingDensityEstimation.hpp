@@ -24,6 +24,8 @@
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 
+#include <list>
+
 using sgpp::base::DataMatrix;
 using sgpp::base::Grid;
 using sgpp::base::DataVector;
@@ -62,6 +64,14 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
    * false.
    */
   bool refine() override;
+
+  /**
+   * Performs a refinement given the new grid size and the points to coarsened
+   * @param newNoPoints the grid size after refinement and coarsening
+   * @param deletedGridPoints a list of indexes for grid points that will be removed
+   * @return if the grid was refined (true)
+   */
+  bool refine(size_t newNoPoints, std::list<size_t> *deletedGridPoints);
 
   void update(Dataset& dataset) override;
 

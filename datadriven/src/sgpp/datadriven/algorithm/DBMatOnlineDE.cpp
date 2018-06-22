@@ -21,6 +21,7 @@
 
 #include <list>
 #include <vector>
+#include <algorithm>
 
 namespace sgpp {
 namespace datadriven {
@@ -41,9 +42,48 @@ DBMatOnlineDE::DBMatOnlineDE(DBMatOffline& offline, Grid& grid, double lambda, d
       normFactor(1.),
       lambda(lambda) {
   functionComputed = false;
-  bSave = DataVector(offlineObject.getDecomposedMatrix().getNcols());
+  bSave = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
   bTotalPoints = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
   oDim = grid.getDimension();
+}
+
+void DBMatOnlineDE::updateRhs(size_t gridSize, std::list<size_t> *deletedPoints) {
+  if (functionComputed) {
+    // Coarsening -> remove all idx in deletedPoints
+    if (deletedPoints != nullptr && deletedPoints->size() > 0) {
+      std::vector<size_t> idxToDelete{std::begin(*deletedPoints), std::end(*deletedPoints)};
+      bSave.remove(idxToDelete);
+      bTotalPoints.remove(idxToDelete);
+    }
+    // Refinement -> append newPoints zeros to b
+    if (gridSize > bSave.size()) {
+      auto oldSize = bSave.size();
+      bSave.resizeZero(gridSize);
+      bTotalPoints.resizeZero(gridSize);
+    }
+
+  }
+}
+
+void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, Grid& grid,
+    DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) {
+  if (functionComputed) {
+    if (alpha.size() == bSave.size() && alpha.size() == bTotalPoints.size()) {
+      // Assemble the rhs
+      DataVector b(alpha.size());
+      for (size_t i = 0; i < b.size(); i++) {
+        b.set(i, bSave.get(i) * (1. / bTotalPoints.get(i)));
+      }
+      // Resolve the SLE
+      solveSLE(alpha, b, grid, densityEstimationConfig, do_cv);
+    } else {
+      throw sgpp::base::algorithm_exception(
+                    "Recomputation of density function with mismatching alpha size and b size");
+    }
+  } else {
+    throw sgpp::base::algorithm_exception(
+              "Density function can not be recomputed without any b stored in DBMatOnlineDE");
+  }
 }
 
 void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Grid& grid,
@@ -98,43 +138,14 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Gri
     // std::cout << b.getSize() << std::endl;
 
     if (save_b) {
-      if (functionComputed) {
-        // double tmpBeta = std::max(beta, (1./(double)totalPoints));
-        // b.mult(tmpBeta);
-        // bSave->mult(1.-tmpBeta);
-
-        // Delete indices when grid got coarsend-> reduce 'bSave'
-        if (deletedPoints != nullptr && !deletedPoints->empty()) {
-          std::vector<size_t> v{std::begin(*deletedPoints), std::end(*deletedPoints)};
-          std::vector<size_t> v1(bSave.getSize() - deletedPoints->size());
-          size_t old_size = bSave.getSize();
-
-          size_t index_coarse = 0;
-          size_t index_remain = 0;
-          size_t temp;
-          for (size_t j = 0; j < old_size; j++) {
-            temp = v[index_coarse];
-            if (temp == j) {
-              index_coarse++;
-              continue;
-            } else {
-              v1[index_remain] = j;
-              index_remain++;
-            }
-          }
-          bSave.restructure(v1);
-          bTotalPoints.restructure(v1);
-        }
-
-        // Expand 'b_save' when grid got refined
-        if (newPoints > 0) {
-          bSave.resizeZero(b.getSize());
-          bTotalPoints.resizeZero(b.getSize());
-        }
-
+        // Note that this is deprecated. Computing the DE should always be done after
+        // the rhs was already restructured (we want the refinement information to be seperate
+        // from the DE information). It is just included such that old learner classes
+        // can still use this system
+        updateRhs(grid.getSize(), deletedPoints);
         b.add(bSave);
         // b.mult(beta);
-      }
+
 
       // Update weighting based on processed data points
       for (size_t i = 0; i < b.getSize(); i++) {
