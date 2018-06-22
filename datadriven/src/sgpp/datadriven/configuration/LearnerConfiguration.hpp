@@ -15,15 +15,15 @@
 namespace sgpp {
 namespace datadriven {
 
+/**
+ * Structure that contains information about the learners behaviour
+ */
+struct LearnerConfiguration {
   /**
-   * Structure that contains information about the learners behaviour
-   */
-  struct LearnerConfiguration {
-    /**
-    * Weigting factor for older batches
-    * TODO(fuchsgruber): This is not yet part of DBMatOnlineDE
-    */
-    double beta = 1.0;
-  };
-}
-}
+  * Weigting factor for older batches
+  * TODO(fuchsgruber): This is not yet part of DBMatOnlineDE
+  */
+  double beta = 1.0;
+};
+} // namespace datadriven
+} // namespace sgpp
