@@ -41,12 +41,4 @@ from Uniform import Uniform
 from MultivariateNormal import MultivariateNormal
 
 from SGDEdist import SGDEdist
-from LibAGFDist import LibAGFDist
-from DTreesDist import DTreesDist
 from KDEDist import KDEDist
-try:
-    from NatafDist import NatafDist
-except:
-    pass
-
-# import optimization
