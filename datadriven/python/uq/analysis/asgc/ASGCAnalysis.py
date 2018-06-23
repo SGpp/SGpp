@@ -16,7 +16,7 @@
 """
 import os
 import json
-from anova import HDMR, HDMRAnalytic
+from anova import HDMRAnalytic
 from pysgpp.extensions.datadriven.uq.estimators import MonteCarloStrategy
 from pysgpp.extensions.datadriven.uq.operations import (evalSGFunctionMulti,
                                evalSGFunction,
@@ -118,7 +118,7 @@ class ASGCAnalysis(Analysis):
         ans = {}
         for t, values in time_dependent_values.items():
             ans[t] = self._estimateDensityByConfig(dtype, values, config)
-        
+
         return ans
 
 
