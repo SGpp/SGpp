@@ -18,6 +18,7 @@
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineModifiedBasis.hpp>
 #include <sgpp/combigrid/common/GridConversion.hpp>
 #include <sgpp/combigrid/functions/ProbabilityDensityFunction1D.hpp>
 #include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
@@ -73,6 +74,12 @@ class HierarchicalStochasticCollocation {
   virtual ~HierarchicalStochasticCollocation();
 
   void refineFull(size_t level);
+  /*@param level 		 level for inner points
+   * @param boundaryLevel 1 + how much levels the boundary is coarser than
+   *                      the main axes, 0 means one level finer,
+   *                      1 means same level,
+   *                      2 means one level coarser, etc.
+   */
   void refineRegular(size_t level);
   void refineSurplusAdaptive(size_t refinements_num);
   /**
@@ -104,8 +111,8 @@ class HierarchicalStochasticCollocation {
 
   void calculateCoefficients();
 
-  double leastSquaresResidual(sgpp::base::DataMatrix points, sgpp::base::DataVector functionValues,
-                              size_t degree);
+  sgpp::base::DataVector leastSquares(sgpp::base::DataMatrix points,
+                                      sgpp::base::DataVector functionValues, size_t degree);
   /**
    * coarsen the hierarchical sparse grid surrogate
    * @param removements_num Number of grid points which should be removed (if possible - there

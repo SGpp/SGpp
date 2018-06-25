@@ -144,7 +144,7 @@ void HierarchicalStochasticCollocation::calculateCoefficients() {
   coefficients = alpha;
 }
 
-double HierarchicalStochasticCollocation::leastSquaresResidual(
+sgpp::base::DataVector HierarchicalStochasticCollocation::leastSquares(
     sgpp::base::DataMatrix points, sgpp::base::DataVector functionValues, size_t degree) {
   //   make system smaller for development
   points.resize(points.getNrows(), 2000);
@@ -152,14 +152,15 @@ double HierarchicalStochasticCollocation::leastSquaresResidual(
   for (size_t sth = 0; sth < 2000; sth++) {
     remainingIndex[sth] = sth;
   }
-  //  functionValues.restructure(remainingIndex);
+  functionValues.restructure(remainingIndex);
 
-  sgpp::base::SNakBsplineBoundaryBase nakBSplineBasis(degree);
-  if (gridType != sgpp::base::GridType::NakBsplineBoundary) {
+  sgpp::base::SNakBsplineBoundaryBase basis(degree);
+  if (gridType == sgpp::base::GridType::NotAKnotBsplineModified) {
     std::cerr << "HierarchicalStochasticCollocation: Currently only NakBsplineBoundaryBasis is "
                  "supported."
               << std::endl;
   }
+  //  sgpp::base::SNotAKnotBsplineModifiedBase basis(degree);
 
   size_t numDims = grid->getDimension();
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
@@ -191,8 +192,7 @@ double HierarchicalStochasticCollocation::leastSquaresResidual(
       double result = 1.0;
       const base::GridPoint& gpBasis = gridStorage[j];
       for (size_t d = 0; d < numDims; d++) {
-        double result1d =
-            nakBSplineBasis.eval(gpBasis.getLevel(d), gpBasis.getIndex(d), evalPoint[d]);
+        double result1d = basis.eval(gpBasis.getLevel(d), gpBasis.getIndex(d), evalPoint[d]);
         if (result1d == 0.0) {
           result = 0.0;
           break;
@@ -207,7 +207,11 @@ double HierarchicalStochasticCollocation::leastSquaresResidual(
   //  auto resVec = A * leastSquaresCoeff - b;
   //  double residual = norm(resVec);
 
-  //  auto s = svd(A);
+  auto s = svd(A);
+  sgpp::base::DataVector singularValues(s.size(), 0.0);
+  for (size_t i = 0; i < singularValues.getSize(); i++) {
+    singularValues[i] = s(static_cast<arma::uword>(i));
+  }
   //  std::cout << "s size:  " << s.size() << std::endl;
   //  std::cout << "s(size-1) " << s(s.size() - 1) << std::endl;
 
@@ -224,14 +228,23 @@ double HierarchicalStochasticCollocation::leastSquaresResidual(
   //  ArmadilloVector coeff = V * arma::diagmat(s) * U * b;
   //  double residual = norm(A * coeff - b);
 
-  double tolerance = 1e-10;
+  double tolerance = 1e-3;
   ArmadilloMatrix B = pinv(A, tolerance);
   ArmadilloVector coeff = B * b;
   double residual = norm(A * coeff - b);
-  std::cout << "rank: " << rank(A, tolerance) << std::endl;
+  std::cout << "residual: " << residual << std::endl;
+  //  std::cout << "rank: " << rank(A, tolerance) << std::endl;
+
+  sgpp::base::DataVector LeastSquaresCoefficients(coeff.size(), 0.0);
+  for (size_t i = 0; i < coeff.size(); i++) {
+    LeastSquaresCoefficients[i] = coeff(static_cast<arma::uword>(i));
+  }
+
+  coefficients = LeastSquaresCoefficients;
 
 #endif /* USE_ARMADILLO */
-  return residual;
+  return LeastSquaresCoefficients;
+  //  return singularValues;
 }
 
 void HierarchicalStochasticCollocation::createGridFromCombiLevelStructure(
