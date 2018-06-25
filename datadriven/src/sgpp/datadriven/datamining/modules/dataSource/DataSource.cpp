@@ -29,8 +29,12 @@ DataSource::DataSource(DataSourceConfig conf, SampleProvider* sp)
     : config(conf), currentIteration(0), sampleProvider(std::unique_ptr<SampleProvider>(sp)) {
   // if a file name was specified, we are reading from a file, so we need to open it.
   if (!this->config.filePath.empty()) {
-    dynamic_cast<FileSampleProvider*>(sampleProvider.get())->readFile(this->config.filePath);
+    dynamic_cast<FileSampleProvider*>(sampleProvider.get())->readFile(this->config.filePath,
+        this->config.hasTargets);
   }
+  // Build data transformation
+  DataTransformationBuilder dataTrBuilder;
+  dataTransformation = dataTrBuilder.buildTransformation(conf.dataTransformationConfig);
 }
 
 DataSourceIterator DataSource::begin() { return DataSourceIterator(*this, 0); }
@@ -44,19 +48,31 @@ Dataset* DataSource::getNextSamples() {
   if (config.numBatches == 1 && config.batchSize == 0) {
     currentIteration++;
     dataset = sampleProvider->getAllSamples();
-  } else {
-    currentIteration++;
-    dataset = sampleProvider->getNextSamples(config.batchSize);
-  }
 
-  // Transform dataset if requested
-  if (!(config.dataTransformationConfig.type == DataTransformationType::NONE)) {
-    DataTransformationBuilder dataTrBuilder;
-    DataTransformation* dataTransformation =
-        dataTrBuilder.buildTransformation(config.dataTransformationConfig, dataset);
-    return dataTransformation->doTransformation(dataset);
+    // Transform dataset if wanted
+    if (!(config.dataTransformationConfig.type == DataTransformationType::NONE)) {
+      dataTransformation->initialize(dataset, config.dataTransformationConfig);
+      return dataTransformation->doTransformation(dataset);
+    } else {
+      return dataset;
+    }
+  // several iterations
   } else {
-    return dataset;
+    dataset = sampleProvider->getNextSamples(config.batchSize);
+    currentIteration++;
+
+    // If data transformation wanted and first batch -> initialize transformation
+    if (currentIteration == 1 &&
+        !(config.dataTransformationConfig.type == DataTransformationType::NONE)) {
+      dataTransformation->initialize(dataset, config.dataTransformationConfig);
+      return dataTransformation->doTransformation(dataset);
+    }
+
+    // Transform dataset if wanted
+    if (!(config.dataTransformationConfig.type == DataTransformationType::NONE))
+      return dataTransformation->doTransformation(dataset);
+    else
+      return dataset;
   }
 }
 

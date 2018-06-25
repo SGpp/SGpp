@@ -46,15 +46,22 @@ int main() {
   auto decompType = "Incomplete Cholesky decomposition on Dense Matrix";
   std::cout << "Decomposition type: " << decompType << std::endl;
 
-  sgpp::datadriven::DBMatOfflineDenseIChol offline(gridConfig, adaptConfig,
-                                                   regularizationConfig, densityEstimationConfig);
+  std::unique_ptr<sgpp::base::Grid> grid;
+  if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
+    grid =
+        std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createModLinearGrid(gridConfig.dim_)};
+  } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
+    grid = std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
+  } else {
+    return 1;
+  }
+  sgpp::datadriven::DBMatOfflineDenseIChol offline;
   // sgpp::datadriven::DBMatOfflineChol offline(gridConfig, adaptConfig,
   //           regularizationConfig, densityEstimationConfig);
 
-  offline.buildMatrix();
-
+  offline.buildMatrix(grid.get(), regularizationConfig);
   auto begin = std::chrono::high_resolution_clock::now();
-  offline.decomposeMatrix();
+  offline.decomposeMatrix(regularizationConfig, densityEstimationConfig);
   auto end = std::chrono::high_resolution_clock::now();
   std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms"
             << std::endl;

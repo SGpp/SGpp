@@ -20,10 +20,12 @@ namespace datadriven {
 
 using sgpp::base::DataMatrix;
 
-sgpp::datadriven::DBMatOnlineDELU::DBMatOnlineDELU(DBMatOffline& offline, double beta)
-    : DBMatOnlineDE{offline, beta} {}
+sgpp::datadriven::DBMatOnlineDELU::DBMatOnlineDELU(DBMatOffline& offline, Grid& grid, double lambda,
+    double beta)
+    : DBMatOnlineDE{offline, grid, lambda, beta} {}
 
-void sgpp::datadriven::DBMatOnlineDELU::solveSLE(DataVector& b, bool do_cv) {
+void sgpp::datadriven::DBMatOnlineDELU::solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
+    DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) {
   DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
 
   // Solve the system:

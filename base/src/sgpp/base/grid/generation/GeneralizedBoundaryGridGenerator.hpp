@@ -5,10 +5,13 @@
 
 #ifndef GENERALIZEDTRUNCATEDBOUNDARYGRIDGENERATOR_HPP_
 #define GENERALIZEDTRUNCATEDBOUNDARYGRIDGENERATOR_HPP_
+
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <vector>
 
 
 namespace sgpp {
@@ -44,7 +47,7 @@ class GeneralizedBoundaryGridGenerator : public GridGenerator {
    * @param l_user the number of fullgrids cut off from the boundaries.
    * */
   void truncated(size_t level, size_t l_user) override;
-  void refine(RefinementFunctor& func) override {}
+  void refine(RefinementFunctor& func, std::vector<size_t>* addedPoints = 0) override {}
   size_t getNumberOfRefinablePoints() override {
     return 0;
   };

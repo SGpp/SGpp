@@ -74,6 +74,12 @@ class SparseGridMiner {
    */
   void learn();
 
+  /**
+   * Returns the trained model
+   * @return the trained model
+   */
+  ModelFittingBase *getModel();
+
  private:
   /**
    * DataSource provides samples that will be used by fitter to generalize data and scorer to

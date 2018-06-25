@@ -12,8 +12,9 @@
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 
-
 #include <sgpp/globaldef.hpp>
+
+#include <vector>
 
 
 namespace sgpp {
@@ -42,7 +43,7 @@ void PeriodicGridGenerator::full(size_t level) {
     "PeriodicGridGenerator::full is not implemented");
 }
 
-void PeriodicGridGenerator::refine(RefinementFunctor& func) {
+void PeriodicGridGenerator::refine(RefinementFunctor& func, std::vector<size_t>* addedPoints) {
   throw generation_exception(
     "PeriodicGridGenerator::refine is not implemented");
 }
