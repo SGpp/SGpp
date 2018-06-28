@@ -25,5 +25,5 @@ struct LearnerConfiguration {
   */
   double beta = 1.0;
 };
-} // namespace datadriven
-} // namespace sgpp
+}  // namespace datadriven
+}  // namespace sgpp

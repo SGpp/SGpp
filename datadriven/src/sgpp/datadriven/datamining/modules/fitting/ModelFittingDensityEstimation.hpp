@@ -102,9 +102,6 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
    */
   void resetState();
 
-  // The offline object (contains decomposed matrix)
-  std::unique_ptr<DBMatOffline> offline;
-
   // The online object
   std::unique_ptr<DBMatOnlineDE> online;
 };

@@ -57,7 +57,6 @@ void DBMatOnlineDE::updateRhs(size_t gridSize, std::list<size_t> *deletedPoints)
     }
     // Refinement -> append newPoints zeros to b
     if (gridSize > bSave.size()) {
-      auto oldSize = bSave.size();
       bSave.resizeZero(gridSize);
       bTotalPoints.resizeZero(gridSize);
     }
