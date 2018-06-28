@@ -33,7 +33,7 @@ namespace datadriven {
 
 ModelFittingDensityEstimation::ModelFittingDensityEstimation(
     const FitterConfigurationDensityEstimation& config)
-    : ModelFittingBaseSingleGrid{}, refinementsPerformed{0}, offline{nullptr} {
+    : ModelFittingBaseSingleGrid{}, refinementsPerformed{0} {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
 }
@@ -70,26 +70,26 @@ void ModelFittingDensityEstimation::fit(Dataset& newDataset) {
   // build surplus vector
   alpha = DataVector{grid->getSize()};
 
-  bool offlineInitialized = false;
-  // Initialize database if provided (path is not empty)
+  // Build the offline instance first
+  DBMatOffline *offline = nullptr;
+
+  // Intialize database if it is provided
   if (!databaseConfig.filepath.empty()) {
     datadriven::DBMatDatabase database(databaseConfig.filepath);
     // Check if database holds a fitting lhs matrix decomposition
     if (database.hasDataMatrix(gridConfig, refinementConfig, regularizationConfig,
-      densityEstimationConfig)) {
+        densityEstimationConfig)) {
       std::string offlineFilepath = database.getDataMatrix(gridConfig, refinementConfig,
-         regularizationConfig, densityEstimationConfig);
-      offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildFromFile(
-         offlineFilepath)};
-      offlineInitialized = true;
+          regularizationConfig, densityEstimationConfig);
+      offline = DBMatOfflineFactory::buildFromFile(offlineFilepath);
     }
   }
 
   // Build and decompose offline object if not loaded from database
-  if (!offlineInitialized) {
+  if (offline == nullptr) {
     // Build offline object by factory, build matrix and decompose
-    offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildOfflineObject(
-       gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig)};
+    offline = DBMatOfflineFactory::buildOfflineObject( gridConfig, refinementConfig,
+        regularizationConfig, densityEstimationConfig);
     offline->buildMatrix(grid.get(), regularizationConfig);
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
   }
@@ -127,7 +127,7 @@ bool ModelFittingDensityEstimation::refine(size_t newNoPoints,
 }
 
 bool ModelFittingDensityEstimation::refine() {
-  if (grid != nullptr && offline->isRefineable()) {
+  if (grid != nullptr && online->getOfflineObject().isRefineable()) {
     if (refinementsPerformed < config->getRefinementConfig().numRefinements_) {
       // create refinement functor
       SurplusRefinementFunctor refinementFunctor(alpha, config->getRefinementConfig().noPoints_,
