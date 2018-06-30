@@ -120,7 +120,7 @@ Collaborative International Dictionary of English v.0.48.
 
 '''
 
-from __future__ import division
+from __future__ import division, print_function
 
 DEBUG = False
 PERSONAL = False
@@ -1204,8 +1204,8 @@ class Comments(dict):
         lines = merge_concatenated_strings(lines)  # 2010 Sep 08
         for (token_type, token_string, start, end, line) in lines:
             if DEBUG:
-                print (token.tok_name)[token_type], token_string, start, \
-                    end, line
+                print((token.tok_name)[token_type], token_string, start, \
+                    end, line)
             (self.max_lineno, scol) = start
             (erow, ecol) = end
             if token_type in [tokenize.COMMENT, tokenize.NL]:
@@ -4823,9 +4823,9 @@ def tidy_up(file_in=sys.stdin, file_out=sys.stdout):  # 2007 Jan 22
 
 def main():                 # 2007 Jan 22
     if DEBUG:
-        print 'Begin doctests.'
+        print('Begin doctests.')
         doctest.testmod()
-        print '  End doctests.'
+        print('  End doctests.')
     if len(sys.argv) > 1:
         file_in = sys.argv[1]
     else:
