@@ -3,6 +3,8 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
+from __future__ import print_function
+
 import atexit
 import glob
 import os
@@ -389,10 +391,10 @@ def lintAction(target, source, env):
       location = parts[0]
       message = ":  ".join(parts[1:])
       if message != "":
-        print location + ": warning: " + message
+        print(location + ": warning: " + message)
       else:
         # occurs when cpplint excludes file via CPPLINT.cfg
-        print location
+        print(location)
   # touch file without writing anything
   # (to indicate for the next run of SCons that we already checked this file)
   with open(target[0].abspath, "w"): pass

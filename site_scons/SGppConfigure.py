@@ -3,6 +3,8 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
+from __future__ import print_function
+
 import distutils.sysconfig
 import os
 import subprocess
@@ -13,8 +15,8 @@ import SCons.Script
 import Helper
 
 def doConfigure(env, moduleFolders, languageWrapperFolders):
-  print
-  print "Checking programs and libraries:"
+  print("")
+  print("Checking programs and libraries:")
 
   config = env.Configure(custom_tests={"CheckExec" : Helper.CheckExec,
                                        "CheckJNI" : Helper.CheckJNI,
@@ -158,8 +160,8 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
 
   env = config.Finish()
 
-  print "Configuration done."
-  print
+  print("Configuration done.")
+  print("")
 
 def checkCpp11(config):
   # check C++11 support
