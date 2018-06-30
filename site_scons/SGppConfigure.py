@@ -7,12 +7,22 @@ from __future__ import print_function
 
 import distutils.sysconfig
 import os
-import subprocess
 import re
+import subprocess
+import sys
 
 import SCons.Script
 
 import Helper
+
+def getOutput(command):
+  # redirect stderr to stdout
+  output = subprocess.check_output(command, stderr=subprocess.STDOUT)
+  # in Python 3.x, check_output returns bytes
+  if sys.version_info >= (3, 0): output = output.decode()
+  # strip trailing newlines
+  output = output.rstrip("\r\n")
+  return output
 
 def doConfigure(env, moduleFolders, languageWrapperFolders):
   print("")
@@ -186,7 +196,7 @@ def checkDoxygen(config):
                         "Check the PATH environment variable!")
   else:
     Helper.printInfo("Using Doxygen " + re.findall(
-       r"[0-9.]*[0-9]+", subprocess.check_output(["doxygen", "--version"]))[0] + ".")
+       r"[0-9.]*[0-9]+", getOutput(["doxygen", "--version"]))[0] + ".")
 
 def checkDot(config):
   # check whether dot installed
@@ -195,8 +205,7 @@ def checkDot(config):
                         "The documentation might lack diagrams.",
                         "Check the PATH environment variable!")
   else:
-    Helper.printInfo("Using " +
-        subprocess.check_output(["dot", "-V"], stderr=subprocess.STDOUT).strip() + ".")
+    Helper.printInfo("Using " + getOutput(["dot", "-V"]) + ".")
 
 def checkOpenCL(config):
 
@@ -307,7 +316,7 @@ def checkSWIG(config):
 
     # make sure swig version is new enough
     swigVersion = re.findall(
-        r"[0-9.]*[0-9]+", subprocess.check_output(["swig", "-version"]))[0]
+        r"[0-9.]*[0-9]+", getOutput(["swig", "-version"]))[0]
 
     swigVersionTuple = config.env._get_major_minor_revision(swigVersion)
     if swigVersionTuple < (3, 0, 0):
@@ -318,9 +327,9 @@ def checkSWIG(config):
 def checkPython(config):
   if config.env["SG_PYTHON"]:
     if config.env["USE_PYTHON3_FOR_PYSGPP"]:
-      pythonpath = subprocess.check_output(["python3", "-c",
+      pythonpath = getOutput(["python3", "-c",
           "import distutils.sysconfig; "
-          "print(distutils.sysconfig.get_python_inc())"]).decode().strip()
+          "print(distutils.sysconfig.get_python_inc())"])
       package = "python3-dev"
     else:
       pythonpath = distutils.sysconfig.get_python_inc()
@@ -419,9 +428,9 @@ def configureGNUCompiler(config):
     config.env["CXX"] = ("mpicxx.mpich")
     Helper.printInfo("Using mpich.")
 
-  versionString = subprocess.check_output([config.env["CXX"], "-dumpversion"]).strip()
+  versionString = getOutput([config.env["CXX"], "-dumpversion"])
   if "." not in versionString:
-    versionString = subprocess.check_output([config.env["CXX"], "-dumpfullversion"]).strip()
+    versionString = getOutput([config.env["CXX"], "-dumpfullversion"])
   version = config.env._get_major_minor_revision(versionString)
   Helper.printInfo("Using {} {}".format(config.env["CXX"], versionString))
 
@@ -506,7 +515,7 @@ def configureClangCompiler(config):
   config.env["LINK"] = ("clang++")
   config.env["CXX"] = ("clang++")
 
-  versionString = subprocess.check_output([config.env["CXX"], "--version"])
+  versionString = getOutput([config.env["CXX"], "--version"])
   try:
     versionString = re.match(r"^.*version ([^ ]+)", versionString).group(1)
   except AttributeError:
@@ -569,7 +578,7 @@ def configureIntelCompiler(config):
     config.env["LINK"] = ("icpc")
     config.env["CXX"] = ("icpc")
 
-  versionString = subprocess.check_output([config.env["CXX"], "-dumpversion"]).strip()
+  versionString = getOutput([config.env["CXX"], "-dumpversion"])
   Helper.printInfo("Using {} {}".format(config.env["CXX"], versionString))
 
   if not config.CheckExec(config.env["CXX"]) or not config.CheckExec(config.env["CC"]) or \
