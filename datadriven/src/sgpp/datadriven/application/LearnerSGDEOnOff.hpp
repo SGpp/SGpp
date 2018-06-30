@@ -10,7 +10,6 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
@@ -22,6 +21,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include "../algorithm/RefinementMonitorConvergence.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -226,7 +226,7 @@ class LearnerSGDEOnOff {
   ClassDensityConntainer& getDensityFunctions();
 
  protected:
-  void refine(ConvergenceMonitor& monitor,
+  void refine(RefinementMonitor& monitor,
               sgpp::base::AdpativityConfiguration& adaptivityConfig,
               sgpp::datadriven::DensityEstimationConfiguration&
               densityEstimationConfig,

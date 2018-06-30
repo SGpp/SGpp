@@ -85,11 +85,12 @@ class Scorer {
    * If multiple models are trained, calculate the standard deviation between the different fits.
    * @param model A model to be fitted on the training part of the dataset.
    * @param dataset Set of samples to use for fitting and testing the model.
+   * @param refine whether the scorer should trigger refinements
    * @param stdDeviation If multiple models are trained (e.g. for cross validation) calculate
    * standard deviation.
    * @return accuracy of the fit as calculated by the #metric provided.
    */
-  virtual double calculateScore(ModelFittingBase& model, Dataset& dataset,
+  virtual double calculateScore(ModelFittingBase& model, Dataset& dataset, bool refine = false,
                                 double* stdDeviation = nullptr) = 0;
 
  protected:

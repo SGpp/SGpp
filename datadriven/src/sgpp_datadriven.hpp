@@ -41,7 +41,9 @@
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
 
-#include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitor.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp>
 
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp>

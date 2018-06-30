@@ -9,7 +9,6 @@
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
-#include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
@@ -31,6 +30,7 @@
 #include <utility>
 #include <list>
 #include <numeric>
+#include "../../algorithm/RefinementMonitorConvergence.hpp"
 
 using sgpp::base::Grid;
 using sgpp::base::GridStorage;
@@ -115,7 +115,7 @@ void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPas
   double currentValidError = 0.0;
   double currentTrainError = 0.0;
   // create convergence monitor object
-  ConvergenceMonitor monitor{accDeclineThreshold, accDeclineBufferSize, minRefInterval};
+  RefinementMonitorConvergence monitor{accDeclineThreshold, accDeclineBufferSize, minRefInterval};
 
   // counts number of performed refinements
   size_t numberOfCompletedRefinements = 0;
@@ -152,8 +152,8 @@ void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPas
           nextCvStep *= 5;
         }
       }
-
-      processedPoints += assignBatchToWorker(processedPoints, doCrossValidation);
+      size_t batchSize = assignBatchToWorker(processedPoints, doCrossValidation);
+      processedPoints += batchSize;
 
       std::cout << processedPoints << " have already been assigned." << std::endl;
 
@@ -234,7 +234,7 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(
     const std::string &refinementFunctorType,
     const std::string &refinementMonitorType,
     const ClassDensityContainer &onlineObjects,
-    ConvergenceMonitor &monitor) {
+    RefinementMonitorConvergence &monitor) {
   // acc = getAccuracy();
   // avgErrors.append(1.0 - acc);
 

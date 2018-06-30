@@ -16,8 +16,10 @@
 #include <sgpp/base/operation/hash/OperationFirstMoment.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
-#include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitor.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp>
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
@@ -533,10 +535,16 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
   // initialize refinement variables
   double currentValidError = 0.0;
   double currentTrainError = 0.0;
+
   // create convergence monitor object
-  std::shared_ptr<ConvergenceMonitor> monitor(
-      new ConvergenceMonitor(accDeclineThreshold, accDeclineBufferSize, minRefInterval));
-  bool doRefine = false;  // set true by monitor to trigger refinement
+  RefinementMonitor *monitor = nullptr;
+  if (refMonitor == "periodic") {
+    monitor = new RefinementMonitorPeriodic(refPeriod);
+  } else if (refMonitor == "convergence") {
+    monitor = new RefinementMonitorConvergence(
+            accDeclineThreshold, accDeclineBufferSize, minRefInterval);
+  }
+
   // counts number of performed refinement steps
   size_t refCnt = 0;
 
@@ -614,33 +622,17 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
       alpha->mult(1.0 / static_cast<double>(alphaCnt));
 
       // check if refinement should be performed
-      if (refMonitor == "periodic") {
-        // check periodic monitor
-        if ((refCnt < adaptivityConfig.numRefinements_) && (processedPoints > 0) &&
-            ((processedPoints + 1) % refPeriod == 0)) {
-          doRefine = true;
-        }
-      } else if (refMonitor == "convergence") {
-        // check convergence monitor
-        if (validData == nullptr) {
-          throw base::data_exception("No validation data for checking convergence provided!");
-        }
-        if (refCnt < adaptivityConfig.numRefinements_) {
-          currentValidError = getError(*validData, *validLabels, 0.0, "Acc");
-          // if train dataset is large use a subset for error evaluation
-          currentTrainError = getError(*trainData, *trainLabels, 0.0, "Acc");
-
-          monitor->pushToBuffer(currentValidError, currentTrainError);
-          if (monitor->nextRefCnt > 0) {
-            monitor->nextRefCnt--;
-          }
-          if (monitor->nextRefCnt == 0) {
-            doRefine = monitor->checkConvergence();
-          }
-        }
+      size_t refinementsNeccessary = 0;
+      if (refCnt < adaptivityConfig.numRefinements_ && processedPoints > 0 && monitor) {
+        currentValidError = getError(*validData, *validLabels, 0.0, "Acc");
+        // if train dataset is large use a subset for error evaluation
+        currentTrainError = getError(*trainData, *trainLabels, 0.0, "Acc");
+        monitor->pushToBuffer(1, currentValidError, currentTrainError);
+        refinementsNeccessary = monitor->refinementsNeccessary();
       }
+
       // refinement
-      if (doRefine) {
+      while (refinementsNeccessary > 0) {
         // acc = getAccuracy(testData, testLabels, 0.0);
         // avgErrors.append(1.0 - acc);
         std::cout << "Refinement at iteration: " << processedPoints + 1 << std::endl;
@@ -722,10 +714,7 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
         }
 
         refCnt++;
-        doRefine = false;
-        if (refMonitor == "convergence") {
-          monitor->nextRefCnt = monitor->minRefInterval;
-        }
+        refinementsNeccessary--;
       }
 
       // update prior probabilities

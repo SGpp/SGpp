@@ -29,7 +29,9 @@
 %include "datadriven/src/sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/configuration/RegularizationConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/configuration/DatabaseConfiguration.hpp"
-%include "datadriven/src/sgpp/datadriven/algorithm/ConvergenceMonitor.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitor.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp"
 
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSChol.hpp"

@@ -14,7 +14,9 @@
 #include <sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
-#include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitor.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp>
 #include <sgpp/datadriven/application/LearnerSGD.hpp>
 
 #include <cmath>
@@ -121,9 +123,13 @@ void LearnerSGD::train(size_t maxDataPasses, std::string refType,
   double threshold = adaptivityConfig.threshold_;
   double currentBatchError = 0.0;
   double currentTrainError = 0.0;
-  bool doRefine = false;  // set true by convergence monitor
-  std::shared_ptr<ConvergenceMonitor> monitor(new ConvergenceMonitor(
-      errorDeclineThreshold, errorDeclineBufferSize, minRefInterval));
+  RefinementMonitor *monitor = nullptr;
+  if (refMonitor == "periodic") {
+    monitor = new RefinementMonitorPeriodic(refPeriod);
+  } else if (refMonitor == "convergence") {
+    monitor = new RefinementMonitorConvergence(
+            errorDeclineThreshold, errorDeclineBufferSize, minRefInterval);
+  }
 
   // reduction factor for addaptive learning rate
   // double lGamma = 0.001;
@@ -224,28 +230,16 @@ void LearnerSGD::train(size_t maxDataPasses, std::string refType,
       alphaAvg.mult(1 - mu);
       alphaAvg.axpy(mu, alpha);
 
-      // check if refinement should be performed
-      if (refMonitor == "periodic") {
-        // periodic monitor
-        if ((refCnt < refNum) && (processedPoints > 0) &&
-            ((processedPoints + 1) % refPeriod == 0)) {
-          doRefine = true;
-        }
-      } else if (refMonitor == "convergence") {
-        // check convergence monitor
-        if (refCnt < refNum) {
-          currentBatchError = getError(*batchData, *batchLabels, "MSE");
-          currentTrainError = getError(trainData, trainLabels, "MSE");
-          monitor->pushToBuffer(currentBatchError, currentTrainError);
-          if (monitor->nextRefCnt > 0) {
-            monitor->nextRefCnt--;
-          }
-          if (monitor->nextRefCnt == 0) {
-            doRefine = monitor->checkConvergence();
-          }
-        }
+      size_t refinementsNeccessary = 0;
+      if (refCnt < refNum && processedPoints > 0 && monitor) {
+        // check if refinement should be performed
+        currentBatchError = getError(*batchData, *batchLabels, "MSE");
+        currentTrainError = getError(trainData, trainLabels, "MSE");
+        monitor->pushToBuffer(1, currentBatchError, currentTrainError);
+        refinementsNeccessary = monitor->refinementsNeccessary();
       }
-      if (doRefine) {
+
+      while (refinementsNeccessary > 0) {
         // acc = getAccuracy(testData, testLabels, 0.0);
         // avgErrors.append(1.0 - acc);
         std::cout << "refinement at iteration: " << processedPoints + 1
@@ -283,10 +277,7 @@ void LearnerSGD::train(size_t maxDataPasses, std::string refType,
         std::cout << "new grid size: " << grid->getSize() << std::endl;
 
         refCnt++;
-        doRefine = false;
-        if (refMonitor == "convergence") {
-          monitor->nextRefCnt = monitor->minRefInterval;
-        }
+        refinementsNeccessary--;
       }
 
       // save current error

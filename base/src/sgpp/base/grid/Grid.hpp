@@ -112,6 +112,24 @@ struct CombiGridConfiguration : GeneralGridConfiguration {
 };
 
 /**
+ * Enumeration that defines different types of refinement indicators / functors
+ */
+enum class RefinementFunctorType {
+  Surplus,
+  SurplusVolume,
+  DataBased,
+  ZeroCrossing,
+};
+
+/**
+ * Enumeration that defines the different types of refinement monitors (that trigger refinements)
+ */
+enum class RefinementMonitorType {
+  Periodic,
+  Error
+};
+
+/**
  * structure that can be used by application to define adaptivity strategies
  */
 struct AdpativityConfiguration {
@@ -124,9 +142,11 @@ struct AdpativityConfiguration {
   /// max. number of points to be refined
   size_t noPoints_;
   /// max. percent of points to be refined
-  double percent_;
+  double percent_ = 1.0;
   /// other refinement strategy, that is more expensive, but yields better results
   bool errorBasedRefinement = false;
+  /// refinement indicator
+  RefinementFunctorType refinementFunctorType = RefinementFunctorType::Surplus;
 };
 
 /**

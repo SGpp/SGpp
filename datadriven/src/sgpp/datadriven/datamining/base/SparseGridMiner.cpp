@@ -22,16 +22,34 @@ SparseGridMiner::SparseGridMiner(DataSource* dataSource, ModelFittingBase* fitte
     : dataSource(dataSource), fitter(fitter), scorer(scorer) {}
 
 void SparseGridMiner::learn() {
-  std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
-  double stdDeviation;
-  std::cout << std::endl;
+  double totalScore = 0.0, totalStdDeviation = 0.0;
 
-  double score = scorer->calculateScore(*fitter, *dataset, &stdDeviation);
-  std::cout << "Learner finished." << std::endl
-            << "###############" << std::endl
-            << "Score: " << score << std::endl
-            << "Standard Deviation: " << stdDeviation << std::endl
-            << "###############" << std::endl;
+  // Process the dataset iteratively
+  size_t iteration = 0;
+  while (true) {
+    std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
+    size_t numInstances = dataset->getNumberInstances();
+    if (numInstances == 0) {
+      // The source does not provide any more samples
+      break;
+    }
+    std::cout <<  "###############" << "Dataset iteration " << (iteration++) << std::endl <<
+        "Number of instances: " << numInstances << std::endl;
+    double stdDeviation;
+    double score = scorer->calculateScore(*fitter, *dataset, &stdDeviation);
+    std::cout << "Iteration finished." << std::endl
+              << "###############" << std::endl
+              << "Score: " << score << std::endl
+              << "Standard Deviation: " << stdDeviation << std::endl
+              << "###############" << std::endl;
+    totalScore += score;
+    totalStdDeviation += stdDeviation;
+  }
+  totalScore /= static_cast<double>(iteration);
+  totalStdDeviation /= static_cast<double>(iteration);
+  std::cout << "###############" << std::endl << "Learner finished." << std::endl <<
+      "Mean score: " << totalScore << std::endl << "Mean standard deviation: " <<
+      totalStdDeviation << std::endl;
 }
 
 ModelFittingBase *SparseGridMiner::getModel() {
