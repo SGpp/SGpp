@@ -32,7 +32,7 @@ class Module(object):
     # (not a very nice method, but passing the variables in function arguments
     # would be very tedious)
     variables = inspect.stack()[1][0].f_globals
-    for name, value in variables.iteritems():
+    for name, value in variables.items():
       globals()[name] = value
 
     # check module dependencies, fail if a dependency is missing
