@@ -375,6 +375,9 @@ def lintAction(target, source, env):
                        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   # wait for termination and get output on stdout and stderr
   stdout, stderr = p.communicate()
+  # in Python 3.x, communicate returns bytes
+  if sys.version_info >= (3, 0):
+    stdout, stderr = stdout.decode(), stderr.decode()
   # cpplint prints on stderr
   for line in stderr.splitlines():
     # skip status lines, empty lines, and some warning types
