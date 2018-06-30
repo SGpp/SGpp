@@ -22,7 +22,9 @@
 %rename (getConstTargets) sgpp::datadriven::Dataset::getTargets() const;
 %rename (getConstData) sgpp::datadriven::Dataset::getData() const;
 %include "datadriven/src/sgpp/datadriven/tools/Dataset.hpp"
-%include "datadriven/src/sgpp/datadriven/algorithm/ConvergenceMonitor.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitor.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp"
 
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSChol.hpp"

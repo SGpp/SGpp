@@ -19,6 +19,7 @@
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/DensityEstimationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
+#include <sgpp/datadriven/datamining/configuration/RefinementFunctorTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp>
@@ -276,6 +277,17 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
         parseDouble(*adaptivityConfig, "percent", defaults.percent_, "adaptivityConfig");
     config.errorBasedRefinement = parseBool(*adaptivityConfig, "errorBasedRefinement",
                                             defaults.errorBasedRefinement, "adaptivityConfig");
+
+    // Parse refinement indicator
+    if (adaptivityConfig->contains("refinementIndicator")) {
+      config.refinementFunctorType =
+          RefinementFunctorTypeParser::parse((*adaptivityConfig)["refinementIndicator"].get());
+    } else {
+      std::cout << "# Did not find adaptivityConfig[refinementIndicator]. Setting default " <<
+          "value " << RefinementFunctorTypeParser::toString(defaults.refinementFunctorType) <<
+          "." << std::endl;
+      config.refinementFunctorType = defaults.refinementFunctorType;
+    }
   } else {
     std::cout << "# Could not find specification  of fitter[adaptivityConfig]. Falling Back to "
                  "default values."

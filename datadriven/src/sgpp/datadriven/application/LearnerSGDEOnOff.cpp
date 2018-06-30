@@ -7,7 +7,6 @@
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
@@ -21,6 +20,9 @@
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitor.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp>
 
 #include <chrono>
 #include <cmath>
@@ -124,8 +126,14 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
   double currentValidError = 0.0;
   double currentTrainError = 0.0;
   // create convergence monitor object
-  ConvergenceMonitor monitor{accDeclineThreshold, accDeclineBufferSize, minRefInterval};
-  bool doRefine = false;  // is set to 'true' by refinement monitor
+  RefinementMonitor *monitor = nullptr;
+  if (refType == "periodic") {
+    monitor = new RefinementMonitorPeriodic(refPeriod);
+  } else {
+    monitor = new RefinementMonitorConvergence(
+      accDeclineThreshold, accDeclineBufferSize, minRefInterval);
+  }
+
   // counts number of performed refinements
   size_t refCnt = 0;
 
@@ -193,44 +201,21 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
       // access DBMatOnlineDE-objects of all classes in order
       // to apply adaptivity to the specific sparse grids later on
 
-      // check if refinement should be performed
-      if (refMonitor == "periodic") {
-        // check periodic monitor
-        if (offline->isRefineable() && (totalInstances > 0) && (totalInstances % refPeriod == 0) &&
-            (refCnt < adaptivityConfig.numRefinements_)) {
-          doRefine = true;
-        }
-      } else if (refMonitor == "convergence") {
-        // check convergence monitor
-        if (validationData == nullptr) {
-          throw data_exception("No validation data for checking convergence provided!");
-        }
-        if (offline->isRefineable() && (refCnt < adaptivityConfig.numRefinements_)) {
-          currentValidError = getError(*validationData);
-          currentTrainError = getError(trainData);  // if train dataset is large
-                                                    // use a subset for error
-                                                    // evaluation
-          monitor.pushToBuffer(currentValidError, currentTrainError);
-          if (monitor.nextRefCnt > 0) {
-            monitor.nextRefCnt--;
-          }
-          if (monitor.nextRefCnt == 0) {
-            doRefine = monitor.checkConvergence();
-          }
-        }
+      size_t refinementsNeccessary = 0;
+      if (offline->isRefineable() && (refCnt < adaptivityConfig.numRefinements_) && monitor) {
+        monitor->pushToBuffer(currentBatch.getNumberInstances(),
+            currentValidError, currentTrainError);
+        refinementsNeccessary = monitor->refinementsNeccessary();
       }
 
       // if the Cholesky decomposition is chosen as factorization method
       // refinement
       // and coarsening methods can be applied
-      if (doRefine) {
+      while (refinementsNeccessary > 0) {
         std::cout << "refinement at iteration: " << totalInstances << "\n";
-        refine(monitor, adaptivityConfig, densityEstimationConfig, refineCoarse, refType);
+        refine(*monitor, adaptivityConfig, densityEstimationConfig, refineCoarse, refType);
         refCnt += 1;
-        doRefine = false;
-        if (refMonitor == "convergence") {
-          monitor.nextRefCnt = monitor.minRefInterval;
-        }
+        refinementsNeccessary--;
       }
 
       // save current error
@@ -530,7 +515,7 @@ void LearnerSGDEOnOff::updateAlpha(size_t classIndex, std::list<size_t>* deleted
   }
 }
 
-void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
+void LearnerSGDEOnOff::refine(RefinementMonitor& monitor,
                               sgpp::base::AdpativityConfiguration& adaptivityConfig,
                               sgpp::datadriven::DensityEstimationConfiguration&
                               densityEstimationConfig,

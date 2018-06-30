@@ -94,7 +94,7 @@ double Scorer::test(ModelFittingBase& model, Dataset& testDataset) {
 double Scorer::train(ModelFittingBase& model, Dataset& trainDataset, Dataset& testDataset) {
   // fit model
   std::cout << "###############\nfitting model\n";
-  model.fit(trainDataset);
+  model.update(trainDataset);
   auto scoreTrain = test(model, trainDataset);
   auto scoreTest = test(model, testDataset);
   std::cout << "score on training data:" << scoreTrain << "\nscore of test data:"

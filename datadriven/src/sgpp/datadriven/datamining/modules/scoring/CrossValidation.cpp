@@ -24,7 +24,7 @@ CrossValidation::CrossValidation(Metric* metric, ShufflingFunctor* shuffling, in
 Scorer* CrossValidation::clone() const { return new CrossValidation{*this}; }
 
 double CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset,
-                                       double* stdDeviation) {
+                                       bool doRefinement, double* stdDeviation) {
   std::vector<double> scores(foldNumber);
 
   // perform randomization of indices
@@ -58,7 +58,9 @@ double CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset
     // fit model
     scores[fold] = train(model, trainDataset, testDataset);
 
-    scores[fold] = refine(model, testDataset);
+    if (doRefinement) {
+      scores[fold] = refine(model, testDataset);
+    }
   }
 
   // calculate final score as AVG

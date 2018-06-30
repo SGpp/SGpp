@@ -3,15 +3,15 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp>
 
 namespace sgpp {
 namespace datadriven {
 
-ConvergenceMonitor::ConvergenceMonitor(double pDeclineThreshold,
+RefinementMonitorConvergence::RefinementMonitorConvergence(double pDeclineThreshold,
                                        size_t pBufferSize,
                                        size_t pMinRefInterval)
-    : nextRefCnt(0),
+    : nextRefCnt(1),
       minRefInterval(pMinRefInterval),
       validErrorSum1(0.0),
       validErrorSum2(0.0),
@@ -22,10 +22,12 @@ ConvergenceMonitor::ConvergenceMonitor(double pDeclineThreshold,
       declineThreshold(pDeclineThreshold),
       bufferSize(pBufferSize) {}
 
-ConvergenceMonitor::~ConvergenceMonitor() {}
+RefinementMonitorConvergence::~RefinementMonitorConvergence() {}
 
-void ConvergenceMonitor::pushToBuffer(double currentValidError,
+void RefinementMonitorConvergence::pushToBuffer(size_t numberInstances,
+                                      double currentValidError,
                                       double currentTrainError) {
+  (void)numberInstances;  // Prevent unused parameter warning
   if (validErrorDeclineBuffer.size() >= bufferSize) {
     validErrorDeclineBuffer.pop_back();
     trainErrorDeclineBuffer.pop_back();
@@ -34,7 +36,7 @@ void ConvergenceMonitor::pushToBuffer(double currentValidError,
   trainErrorDeclineBuffer.push_front(currentTrainError);
 }
 
-bool ConvergenceMonitor::checkConvergence() {
+bool RefinementMonitorConvergence::checkConvergence() {
   bool result = false;
 
   if (validErrorDeclineBuffer.size() == bufferSize) {
@@ -66,6 +68,19 @@ bool ConvergenceMonitor::checkConvergence() {
     }
   }
   return result;
+}
+
+size_t RefinementMonitorConvergence::refinementsNeccessary() {
+
+  if (nextRefCnt > 0) {
+    nextRefCnt--;
+    return 0;
+  }
+  if (this->checkConvergence()) {
+    nextRefCnt = minRefInterval;
+    return 1;
+  }
+  return 0;
 }
 
 }  // namespace datadriven

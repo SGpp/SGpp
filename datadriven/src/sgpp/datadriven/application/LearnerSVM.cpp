@@ -12,8 +12,9 @@
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/ForwardSelectorRefinement.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/ImpurityRefinement.hpp>
-#include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
-
+#include <sgpp/datadriven/algorithm/RefinementMonitor.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <cmath>
@@ -99,11 +100,15 @@ void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef,
   // refinement variables
   // counter for performed refinements
   size_t refCnt = 0;
-  bool doRefine = false;  // set true by monitor to trigger refinement
   double currentValidError = 0.0;
   double currentTrainError = 0.0;
-  std::shared_ptr<ConvergenceMonitor> monitor(new ConvergenceMonitor(
-      errorDeclineThreshold, errorDeclineBufferSize, minRefInterval));
+  RefinementMonitor *monitor = nullptr;
+  if (refMonitor == "periodic") {
+    monitor = new RefinementMonitorPeriodic(refPeriod);
+  } else if (refMonitor == "convergence") {
+    monitor = new RefinementMonitorConvergence(
+            errorDeclineThreshold, errorDeclineBufferSize, minRefInterval);
+  }
 
   // auxiliary variable for accuracy (error) measurement
   double acc = getAccuracy(testData, testLabels, 0.0);
@@ -131,37 +136,16 @@ void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef,
         svm->add(*grid, x, beta, dim);
       }
 
-      // check if refinement should be performed
-      if (refMonitor == "convergence") {
-        // convergence monitor
-        if (refCnt < adaptivityConfig.numRefinements_) {
-          if (validData == nullptr) {
-            throw base::data_exception(
-                "No validation data for checking convergence provided!");
-          }
-          currentValidError = getError(*validData, *validLabels, "Hinge");
-          currentTrainError = getError(trainData, trainLabels, "Hinge");
-
-          monitor->pushToBuffer(currentValidError, currentTrainError);
-
-          if (monitor->nextRefCnt > 0) {
-            monitor->nextRefCnt--;
-          }
-          if (monitor->nextRefCnt == 0) {
-            doRefine = monitor->checkConvergence();
-          }
-        }
-      } else if (refMonitor == "periodic") {
-        // periodic monitor
-        if ((refCnt < adaptivityConfig.numRefinements_) &&
-            (processedPoints > 0) && ((processedPoints + 1) % refPeriod == 0)) {
-          doRefine = true;
-        }
+      size_t refinementsNeccessary = 0;
+      if (refCnt < adaptivityConfig.numRefinements_ && processedPoints > 0 && monitor) {
+        // check if refinement should be performed
+        currentValidError = getError(*validData, *validLabels, "Hinge");
+        currentTrainError = getError(trainData, trainLabels, "Hinge");
+        monitor->pushToBuffer(1, currentValidError, currentTrainError);
+        refinementsNeccessary = monitor->refinementsNeccessary();
       }
 
-      processedPoints++;
-
-      if (doRefine) {
+      while (refinementsNeccessary > 0) {
         // acc = getAccuracy(testData, testLabels, 0.0);
         // avgErrors.append(1.0 - acc);
 
@@ -195,10 +179,7 @@ void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef,
         std::cout << "new grid size: " << grid->getSize() << std::endl;
 
         refCnt++;
-        doRefine = false;
-        if (refMonitor == "convergence") {
-          monitor->nextRefCnt = monitor->minRefInterval;
-        }
+        refinementsNeccessary--;
       }
 
       // save current error

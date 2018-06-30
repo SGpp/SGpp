@@ -9,7 +9,6 @@
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
@@ -27,6 +26,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include "../../algorithm/RefinementMonitorConvergence.hpp"
 
 
 namespace sgpp {
@@ -320,7 +320,7 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
   void doRefinementForAll(const std::string &refinementFunctorType,
                           const std::string &refinementMonitorType,
                           const ClassDensityContainer &onlineObjects,
-                          ConvergenceMonitor &monitor);
+                          RefinementMonitorConvergence &monitor);
 
   /**
    * Shows grid size statistics along with a message

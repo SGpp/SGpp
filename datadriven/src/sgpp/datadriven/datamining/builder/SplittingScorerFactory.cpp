@@ -22,7 +22,7 @@ Scorer* SplittingScorerFactory::buildScorer(const DataMiningConfigParser& parser
 
   auto metric = buildMetric(config.metric);
   auto shuffling = buildShuffling(config.shuffling);
-  return new SplittingScorer(metric, shuffling, config.randomSeed, config.testingPortion);
+  return new SplittingScorer(metric, shuffling, config.randomSeed, 1 - config.testingPortion);
 }
 } /* namespace datadriven */
 } /* namespace sgpp */
