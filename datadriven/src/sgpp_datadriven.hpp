@@ -44,7 +44,7 @@
 #include <sgpp/datadriven/algorithm/RefinementMonitor.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp>
-#include <sgpp/datadriven/algorithm/RefinementMonitor.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitorFactory.hpp>
 
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp>
