@@ -277,6 +277,14 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
         parseDouble(*adaptivityConfig, "percent", defaults.percent_, "adaptivityConfig");
     config.errorBasedRefinement = parseBool(*adaptivityConfig, "errorBasedRefinement",
                                             defaults.errorBasedRefinement, "adaptivityConfig");
+    config.errorConvergenceThreshold = parseDouble(*adaptivityConfig, "errorConvergenceThreshold",
+        defaults.errorConvergenceThreshold, "adaptivityConfig");
+    config.errorBufferSize = parseUInt(*adaptivityConfig, "errorBufferSize",
+        defaults.errorBufferSize, "adaptivityConfig");
+    config.errorMinInterval = parseUInt(*adaptivityConfig, "errorMinInterval",
+        defaults.errorMinInterval, "adaptivityConfig");
+    config.refinementPeriod = parseUInt(*adaptivityConfig, "refinementPeriod",
+        defaults.refinementPeriod, "adaptivityConfig");
 
     // Parse refinement indicator
     if (adaptivityConfig->contains("refinementIndicator")) {

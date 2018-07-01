@@ -31,7 +31,7 @@ class RefinementMonitorPeriodic : public RefinementMonitor {
    * @param period the number of instances that is needed to trigger a new refinement. If set to
    * zero, this monitor will always trigger exactly one refinement
    */
-  RefinementMonitorPeriodic(size_t period);
+  explicit RefinementMonitorPeriodic(size_t period);
   /**
    * Destructor.
    */
@@ -53,7 +53,7 @@ class RefinementMonitorPeriodic : public RefinementMonitor {
    *
    * @return the number of refinements that are triggered by the monitor
    */
-  size_t refinementsNeccessary() override;
+  size_t refinementsNecessary() override;
 
 
  private:

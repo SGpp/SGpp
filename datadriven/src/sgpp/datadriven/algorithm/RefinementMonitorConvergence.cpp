@@ -70,7 +70,7 @@ bool RefinementMonitorConvergence::checkConvergence() {
   return result;
 }
 
-size_t RefinementMonitorConvergence::refinementsNeccessary() {
+size_t RefinementMonitorConvergence::refinementsNecessary() {
 
   if (nextRefCnt > 0) {
     nextRefCnt--;

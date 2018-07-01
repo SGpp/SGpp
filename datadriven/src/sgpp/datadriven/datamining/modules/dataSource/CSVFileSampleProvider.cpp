@@ -68,7 +68,7 @@ Dataset* CSVFileSampleProvider::getNextSamples(size_t howMany) {
 
 Dataset* CSVFileSampleProvider::getAllSamples() {
   if (dataset.getDimension() != 0) {
-    return new Dataset{dataset};
+    return this->getNextSamples(dataset.getNumberInstances());
   } else {
     throw base::file_exception{"No dataset loaded."};
   }

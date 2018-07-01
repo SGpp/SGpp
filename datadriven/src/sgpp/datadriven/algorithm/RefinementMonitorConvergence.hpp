@@ -54,7 +54,7 @@ class RefinementMonitorConvergence : public RefinementMonitor {
    *
    * @return the number of refinements that are triggered by the monitor
    */
-  size_t refinementsNeccessary() override;
+  size_t refinementsNecessary() override;
 
   /**
    * Examines the convergence criterion with the current
@@ -62,6 +62,8 @@ class RefinementMonitorConvergence : public RefinementMonitor {
    *
    * @return True if converged, false otherwise
    */
+
+ private:
   bool checkConvergence();
 
   // counts how many iterations are yet to be performed until
@@ -73,8 +75,6 @@ class RefinementMonitorConvergence : public RefinementMonitor {
   std::deque<double> validErrorDeclineBuffer;
   // stores the latest training error observations
   std::deque<double> trainErrorDeclineBuffer;
-
- private:
   // old validation error
   double validErrorSum1;
   // new validation error

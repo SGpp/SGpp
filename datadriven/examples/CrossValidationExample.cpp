@@ -102,9 +102,10 @@ int main(int argc, char** argv) {
    * cross validation using our least squares model and return the average MSE and the standard
    * deviation of the individual fold MSEs.
    */
-  auto score = scorer.calculateScore(model, *dataset, &stdDeviation);
+  double scoreTrain = 0.0, scoreTest = 0.0;
+  scorer.calculateScore(model, *dataset, &scoreTrain, &scoreTest, &stdDeviation);
 
-  std::cout << "Score = " << score << " with stdDeviation " << stdDeviation << std::endl;
+  std::cout << "Score = " << scoreTest << " with stdDeviation " << stdDeviation << std::endl;
 
   return 0;
 }

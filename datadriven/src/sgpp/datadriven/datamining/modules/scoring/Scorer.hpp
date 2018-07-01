@@ -81,17 +81,17 @@ class Scorer {
   virtual Scorer* clone() const = 0;
 
   /**
-   * Train and test a model on a dataset and provide a score to quantify the approximation quality.
+   * Fit and test a model on a dataset and provide a score to quantify the approximation quality.
    * If multiple models are trained, calculate the standard deviation between the different fits.
    * @param model A model to be fitted on the training part of the dataset.
    * @param dataset Set of samples to use for fitting and testing the model.
-   * @param refine whether the scorer should trigger refinements
+   * @param scoreTrain offset where to return the score on the training data
+   * @param scoreTest offset where to return the score on the test data
    * @param stdDeviation If multiple models are trained (e.g. for cross validation) calculate
    * standard deviation.
-   * @return accuracy of the fit as calculated by the #metric provided.
    */
-  virtual double calculateScore(ModelFittingBase& model, Dataset& dataset, bool refine = false,
-                                double* stdDeviation = nullptr) = 0;
+  virtual void calculateScore(ModelFittingBase& model, Dataset& dataset, double *scoreTrain,
+                                double *scoreTest, double* stdDeviation = nullptr) = 0;
 
  protected:
   /**
@@ -136,9 +136,11 @@ class Scorer {
    * @param model model to be fitted based on the train dataset
    * @param trainDataset dataset used for fitting the model.
    * @param testDataset dataset used quantify accuracy using #metric.
-   * @return accuracy of the fit.
+   * @param scoreTrain offset where to return the score on the training data
+   * @param scoreTest offset where to return the score on the testing data
    */
-  double train(ModelFittingBase& model, Dataset& trainDataset, Dataset& testDataset);
+  void train(ModelFittingBase& model, Dataset& trainDataset, Dataset& testDataset,
+      double *scoreTrain, double *scoreTest);
 
   /**
    * Fit the model on the train dataset and evaluate the accuracy on the test set. Includes some

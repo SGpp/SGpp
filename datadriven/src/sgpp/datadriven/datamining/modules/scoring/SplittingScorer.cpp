@@ -24,8 +24,8 @@ SplittingScorer::SplittingScorer(Metric* metric, ShufflingFunctor* shuffling, in
 Scorer* SplittingScorer::clone() const { return new SplittingScorer{*this}; }
 
 // TODO(lettrich) :recycle
-double SplittingScorer::calculateScore(ModelFittingBase& model, Dataset& dataset, bool doRefinement,
-                                       double* stdDeviation) {
+void SplittingScorer::calculateScore(ModelFittingBase& model, Dataset& dataset, double *scoreTrain,
+                                     double *scoreTest, double* stdDeviation) {
   // perform randomization of indices
   std::vector<size_t> randomizedIndices(dataset.getNumberInstances());
   randomizeIndices(dataset, randomizedIndices);
@@ -44,19 +44,12 @@ double SplittingScorer::calculateScore(ModelFittingBase& model, Dataset& dataset
   Dataset trainDataset{trainSize, dim};
   splitSet(dataset, trainDataset, testDataset, randomizedIndices);
 
-  // fit model
-  double score = train(model, trainDataset, testDataset);
-
-  // refine it
-  if (doRefinement) {
-    score = refine(model, testDataset);
-  }
-
   if (stdDeviation) {
     *stdDeviation = 0;
   }
 
-  return score;
+  // fit model
+  train(model, trainDataset, testDataset, scoreTrain, scoreTest);
 }
 
 } /* namespace datadriven */

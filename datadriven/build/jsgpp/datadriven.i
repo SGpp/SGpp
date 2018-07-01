@@ -26,6 +26,7 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitor.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitorFactory.hpp"
 
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSChol.hpp"

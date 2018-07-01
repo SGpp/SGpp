@@ -201,21 +201,21 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
       // access DBMatOnlineDE-objects of all classes in order
       // to apply adaptivity to the specific sparse grids later on
 
-      size_t refinementsNeccessary = 0;
+      size_t refinementsNecessary = 0;
       if (offline->isRefineable() && (refCnt < adaptivityConfig.numRefinements_) && monitor) {
         monitor->pushToBuffer(currentBatch.getNumberInstances(),
             currentValidError, currentTrainError);
-        refinementsNeccessary = monitor->refinementsNeccessary();
+        refinementsNecessary = monitor->refinementsNecessary();
       }
 
       // if the Cholesky decomposition is chosen as factorization method
       // refinement
       // and coarsening methods can be applied
-      while (refinementsNeccessary > 0) {
+      while (refinementsNecessary > 0) {
         std::cout << "refinement at iteration: " << totalInstances << "\n";
         refine(*monitor, adaptivityConfig, densityEstimationConfig, refineCoarse, refType);
         refCnt += 1;
-        refinementsNeccessary--;
+        refinementsNecessary--;
       }
 
       // save current error

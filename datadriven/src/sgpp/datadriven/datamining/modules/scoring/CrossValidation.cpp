@@ -23,9 +23,10 @@ CrossValidation::CrossValidation(Metric* metric, ShufflingFunctor* shuffling, in
 
 Scorer* CrossValidation::clone() const { return new CrossValidation{*this}; }
 
-double CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset,
-                                       bool doRefinement, double* stdDeviation) {
-  std::vector<double> scores(foldNumber);
+void CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset, double *scoreTrain,
+                                       double *scoreTest, double* stdDeviation) {
+  std::vector<double> scoresTrain(foldNumber);
+  std::vector<double> scoresTest(foldNumber);
 
   // perform randomization of indices
   std::vector<size_t> randomizedIndices(dataset.getNumberInstances());
@@ -56,29 +57,28 @@ double CrossValidation::calculateScore(ModelFittingBase& model, Dataset& dataset
     splitSet(dataset, trainDataset, testDataset, randomizedIndices, offset);
 
     // fit model
-    scores[fold] = train(model, trainDataset, testDataset);
-
-    if (doRefinement) {
-      scores[fold] = refine(model, testDataset);
-    }
+    train(model, trainDataset, testDataset, scoreTrain, scoreTest);
+    scoresTrain[fold] = *scoreTrain;
+    scoresTest[fold] = *scoreTest;
   }
 
   // calculate final score as AVG
-  double avgScore = 0;
-  for (auto i : scores) {
-    avgScore += i;
+  *scoreTrain = 0.0;
+  *scoreTest = 0.0;
+  for (size_t i = 0; i < foldNumber; i++) {
+    *scoreTrain += scoresTrain[i];
+    *scoreTest += scoresTest[i];
   }
-  avgScore = avgScore / static_cast<double>(foldNumber);
+  *scoreTrain /= static_cast<double>(foldNumber);
+  *scoreTest /= static_cast<double>(foldNumber);
 
   // calculate std deviation if desired
   if (stdDeviation) {
-    for (auto i : scores) {
-      *stdDeviation += std::pow(i - avgScore, 2);
+    for (auto i : scoresTest) {
+      *stdDeviation += std::pow(i - *scoreTest, 2);
     }
     *stdDeviation = sqrt((*stdDeviation) / (static_cast<double>(foldNumber) - 1.0));
   }
-
-  return avgScore;
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

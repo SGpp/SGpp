@@ -199,7 +199,7 @@ void RefinementHandler::updateClassVariablesAfterRefinement(
               densEst->getAlpha().size() << ")" << std::endl;)
 }
 
-bool RefinementHandler::checkRefinementNecessary(
+size_t RefinementHandler::checkRefinementNecessary(
     const std::string &refMonitor,
     size_t refPeriod,
     size_t batchSize,
@@ -213,16 +213,16 @@ bool RefinementHandler::checkRefinementNecessary(
   // to apply adaptivity to the specific sparse grids later on
 
   // check if and how many refinements should be performed
-  size_t refinementsNeccessary = 0;
+  size_t refinementsNecessary = 0;
   if (offline->isRefineable() && numberOfCompletedRefinements < adaptivityConfig.numRefinements_) {
     currentValidError = learnerInstance->getError(*learnerInstance->getValidationData());
     currentTrainError = learnerInstance->getError(
         learnerInstance->getTrainData());  // if train dataset is large
     // use a subset for error
     monitor.pushToBuffer(batchSize, currentValidError, currentTrainError);
-    refinementsNeccessary = monitor.refinementsNeccessary();
+    refinementsNecessary = monitor.refinementsNecessary();
   }
-  return refinementsNeccessary;
+  return refinementsNecessary;
 }
 
 size_t

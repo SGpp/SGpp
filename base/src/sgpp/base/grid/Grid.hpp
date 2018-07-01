@@ -145,6 +145,17 @@ struct AdpativityConfiguration {
   double percent_ = 1.0;
   /// other refinement strategy, that is more expensive, but yields better results
   bool errorBasedRefinement = false;
+  /// threshold for convergence in case error based refinement is applied
+  double errorConvergenceThreshold;
+  /// amount of error values to consider when checking for convergence in
+  /// case of error based refinement
+  size_t errorBufferSize;
+  /// minimum amount of iterations before the next refinement is allowed to happen in case of error
+  /// based refinement
+  size_t errorMinInterval;
+  /// refinement will be triggered each refinementPeriod instances (approximately) in case
+  /// of non error based refinement
+  size_t refinementPeriod;
   /// refinement indicator
   RefinementFunctorType refinementFunctorType = RefinementFunctorType::Surplus;
 };
