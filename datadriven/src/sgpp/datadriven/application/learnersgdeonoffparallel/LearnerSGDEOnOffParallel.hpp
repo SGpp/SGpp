@@ -320,7 +320,7 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
   void doRefinementForAll(const std::string &refinementFunctorType,
                           const std::string &refinementMonitorType,
                           const ClassDensityContainer &onlineObjects,
-                          RefinementMonitorConvergence &monitor);
+                          RefinementMonitor &monitor);
 
   /**
    * Shows grid size statistics along with a message

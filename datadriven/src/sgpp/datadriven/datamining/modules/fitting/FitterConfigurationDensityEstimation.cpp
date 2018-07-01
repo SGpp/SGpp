@@ -28,6 +28,8 @@ void FitterConfigurationDensityEstimation::setupDefaults() {
 
   // configure adaptive refinement
   adaptivityConfig.numRefinements_ = 0;
+  adaptivityConfig.refinementPeriod = 1;
+  adaptivityConfig.errorBasedRefinement = false;
 
   // configure regularization
   regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;

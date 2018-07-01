@@ -12,6 +12,8 @@
 
 #include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitorFactory.hpp>
 
 #include <iostream>
 
@@ -22,6 +24,11 @@ SparseGridMiner::SparseGridMiner(DataSource* dataSource, ModelFittingBase* fitte
     : dataSource(dataSource), fitter(fitter), scorer(scorer) {}
 
 void SparseGridMiner::learn() {
+  // Setup refinement monitor
+  RefinementMonitorFactory monitorFactory;
+  RefinementMonitor *monitor = monitorFactory.createRefinementMonitor(
+      fitter->getFitterConfiguration().getRefinementConfig());
+
   double totalScore = 0.0, totalStdDeviation = 0.0;
 
   // Process the dataset iteratively
@@ -35,14 +42,24 @@ void SparseGridMiner::learn() {
     }
     std::cout <<  "###############" << "Dataset iteration " << (iteration++) << std::endl <<
         "Number of instances: " << numInstances << std::endl;
-    double stdDeviation;
-    double score = scorer->calculateScore(*fitter, *dataset, &stdDeviation);
+    double stdDeviation = 0.0;
+    double scoreTrain = 0.0, scoreTest = 0.0;
+    scorer->calculateScore(*fitter, *dataset, &scoreTrain, &scoreTest,
+        &stdDeviation);
+
+    // Refine the model
+    monitor->pushToBuffer(numInstances, scoreTest, scoreTrain);
+    size_t refinements = monitor->refinementsNecessary();
+    while (refinements--) {
+      fitter->refine();
+    }
+
     std::cout << "Iteration finished." << std::endl
               << "###############" << std::endl
-              << "Score: " << score << std::endl
+              << "Score: " << scoreTest << std::endl
               << "Standard Deviation: " << stdDeviation << std::endl
               << "###############" << std::endl;
-    totalScore += score;
+    totalScore += scoreTest;
     totalStdDeviation += stdDeviation;
   }
   totalScore /= static_cast<double>(iteration);

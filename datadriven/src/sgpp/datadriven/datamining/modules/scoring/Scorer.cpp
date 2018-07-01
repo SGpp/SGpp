@@ -91,15 +91,15 @@ double Scorer::test(ModelFittingBase& model, Dataset& testDataset) {
   return metric->measure(predictedValues, testDataset.getTargets());
 }
 
-double Scorer::train(ModelFittingBase& model, Dataset& trainDataset, Dataset& testDataset) {
+void Scorer::train(ModelFittingBase& model, Dataset& trainDataset, Dataset& testDataset,
+    double *scoreTrain, double *scoreTest) {
   // fit model
   std::cout << "###############\nfitting model\n";
   model.update(trainDataset);
-  auto scoreTrain = test(model, trainDataset);
-  auto scoreTest = test(model, testDataset);
-  std::cout << "score on training data:" << scoreTrain << "\nscore of test data:"
-      << scoreTest << "\n\n";
-  return scoreTest;
+  *scoreTrain = test(model, trainDataset);
+  *scoreTest = test(model, testDataset);
+  std::cout << "score on training data:" << (*scoreTrain) << "\nscore of test data:"
+      << (*scoreTest) << "\n\n";
 }
 
 double Scorer::refine(ModelFittingBase& model, Dataset& testDataset) {

@@ -39,7 +39,7 @@ class RefinementMonitor {
    *
    * @return the number of refinements that are triggered by the monitor
    */
-  virtual size_t refinementsNeccessary() = 0;
+  virtual size_t refinementsNecessary() = 0;
 };
 
 }  // namespace datadriven

@@ -46,12 +46,12 @@ class SplittingScorer : public Scorer {
    * Standard deviation is 0 as we only train and test one model.
    * @param model A model to be fitted on the training part of the dataset.
    * @param dataset Set of samples to use for fitting and testing the model.
-   * @param doRefinement whether the scorer should trigger refinements
+   * @param scoreTrain offset where to return the score on the training data
+   * @param scoreTest offset where to return the score on the test data
    * @param stdDeviation return standard deviation. Will always be 0.
-   * @return accuracy of the fit as calculated by the #metric provided.
    */
-  double calculateScore(ModelFittingBase& model, Dataset& dataset, bool doRefinement,
-                        double* stdDeviation = nullptr) override;
+  void calculateScore(ModelFittingBase& model, Dataset& dataset, double *scoreTrain,
+      double *scoreTest, double* stdDeviation = nullptr) override;
 
  private:
   /**

@@ -162,12 +162,14 @@ void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPas
 
       D(std::cout << "Checking if refinement is necessary." << std::endl;)
       // check if refinement should be performed
-      if (refinementHandler.checkRefinementNecessary(refMonitor, refPeriod, processedPoints,
-                                                     currentValidError,
-                                                     currentTrainError,
-                                                     numberOfCompletedRefinements,
-                                                     monitor,
-                                                     adaptivityConfig)) {
+      size_t refinementsNecessary = refinementHandler.checkRefinementNecessary(
+          refMonitor, refPeriod, batchSize,
+          currentValidError,
+          currentTrainError,
+          numberOfCompletedRefinements,
+          monitor,
+          adaptivityConfig);
+      while (refinementsNecessary > 0) {
         while (!refinementHandler.checkReadyForRefinement()) {
           D(std::cout << "Waiting for " << MPIMethods::getQueueSize()
                       << " queue operations to complete before continuing" << std::endl;)
@@ -183,14 +185,13 @@ void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPas
 
         doRefinementForAll(refinementFunctorType, refMonitor, onlineObjects, monitor);
         numberOfCompletedRefinements += 1;
+        refinementsNecessary--;
         D(std::cout << "Refinement at " << processedPoints << " complete" << std::endl;)
 
         // Send the grid component update
         // Note: This was moved to updateClassVariablesAfterRefinement
         // as it needs to run before the system matrix update
 //        MPIMethods::sendGridComponentsUpdate(vectorRefinementResults);
-      } else {
-        D(std::cout << "No refinement necessary" << std::endl;)
       }
 
       D(
@@ -234,7 +235,7 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(
     const std::string &refinementFunctorType,
     const std::string &refinementMonitorType,
     const ClassDensityContainer &onlineObjects,
-    RefinementMonitorConvergence &monitor) {
+    RefinementMonitor &monitor) {
   // acc = getAccuracy();
   // avgErrors.append(1.0 - acc);
 
@@ -283,9 +284,6 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(
                                            *(grids[classIndex]),
                                            *(alphas[classIndex]),
                                            preCompute, func, classIndex, adaptivityConfig);
-  }
-  if (refinementMonitorType == "convergence") {
-    monitor.nextRefCnt = monitor.minRefInterval;
   }
 
   // Wait for all new system matrix decompositions to come back

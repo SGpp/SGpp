@@ -67,7 +67,7 @@ Dataset* ArffFileSampleProvider::getNextSamples(size_t howMany) {
 
 Dataset* ArffFileSampleProvider::getAllSamples() {
   if (dataset.getDimension() != 0) {
-    return new Dataset{dataset};
+    return this->getNextSamples(dataset.getNumberInstances());
   } else {
     throw base::file_exception{"No dataset loaded."};
   }

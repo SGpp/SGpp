@@ -622,17 +622,17 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
       alpha->mult(1.0 / static_cast<double>(alphaCnt));
 
       // check if refinement should be performed
-      size_t refinementsNeccessary = 0;
+      size_t refinementsNecessary = 0;
       if (refCnt < adaptivityConfig.numRefinements_ && processedPoints > 0 && monitor) {
         currentValidError = getError(*validData, *validLabels, 0.0, "Acc");
         // if train dataset is large use a subset for error evaluation
         currentTrainError = getError(*trainData, *trainLabels, 0.0, "Acc");
         monitor->pushToBuffer(1, currentValidError, currentTrainError);
-        refinementsNeccessary = monitor->refinementsNeccessary();
+        refinementsNecessary = monitor->refinementsNecessary();
       }
 
       // refinement
-      while (refinementsNeccessary > 0) {
+      while (refinementsNecessary > 0) {
         // acc = getAccuracy(testData, testLabels, 0.0);
         // avgErrors.append(1.0 - acc);
         std::cout << "Refinement at iteration: " << processedPoints + 1 << std::endl;
@@ -714,7 +714,7 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
         }
 
         refCnt++;
-        refinementsNeccessary--;
+        refinementsNecessary--;
       }
 
       // update prior probabilities

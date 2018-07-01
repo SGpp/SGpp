@@ -136,16 +136,16 @@ void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef,
         svm->add(*grid, x, beta, dim);
       }
 
-      size_t refinementsNeccessary = 0;
+      size_t refinementsNecessary = 0;
       if (refCnt < adaptivityConfig.numRefinements_ && processedPoints > 0 && monitor) {
         // check if refinement should be performed
         currentValidError = getError(*validData, *validLabels, "Hinge");
         currentTrainError = getError(trainData, trainLabels, "Hinge");
         monitor->pushToBuffer(1, currentValidError, currentTrainError);
-        refinementsNeccessary = monitor->refinementsNeccessary();
+        refinementsNecessary = monitor->refinementsNecessary();
       }
 
-      while (refinementsNeccessary > 0) {
+      while (refinementsNecessary > 0) {
         // acc = getAccuracy(testData, testLabels, 0.0);
         // avgErrors.append(1.0 - acc);
 
@@ -179,7 +179,7 @@ void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef,
         std::cout << "new grid size: " << grid->getSize() << std::endl;
 
         refCnt++;
-        refinementsNeccessary--;
+        refinementsNecessary--;
       }
 
       // save current error

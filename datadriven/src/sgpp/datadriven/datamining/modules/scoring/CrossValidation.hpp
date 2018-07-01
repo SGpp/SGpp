@@ -46,12 +46,12 @@ class CrossValidation : public Scorer {
    * If multiple models are trained, calculate the standard deviation between the different fits.
    * @param model A model to be fitted on the training part of the dataset.
    * @param dataset Set of samples to use for fitting and testing the model.
-   * @param doRefinement whether the scorer should trigger refinements
+   * @param scoreTrain pointer where to output the average score on the training set
+   * @param scoreTest pointer where to output the average score on the test set
    * @param stdDeviation return standard deviation between different runs.
-   * @return average accuracy of all fits as calculated by the #metric provided.
    */
-  double calculateScore(ModelFittingBase& model, Dataset& dataset, bool doRefinement,
-                        double* stdDeviation = nullptr) override;
+  void calculateScore(ModelFittingBase& model, Dataset& dataset, double *scoreTrain,
+                        double *scoreTest, double* stdDeviation = nullptr) override;
 
  private:
   /**

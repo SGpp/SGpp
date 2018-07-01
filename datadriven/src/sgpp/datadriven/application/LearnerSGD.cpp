@@ -230,16 +230,16 @@ void LearnerSGD::train(size_t maxDataPasses, std::string refType,
       alphaAvg.mult(1 - mu);
       alphaAvg.axpy(mu, alpha);
 
-      size_t refinementsNeccessary = 0;
+      size_t refinementsNecessary = 0;
       if (refCnt < refNum && processedPoints > 0 && monitor) {
         // check if refinement should be performed
         currentBatchError = getError(*batchData, *batchLabels, "MSE");
         currentTrainError = getError(trainData, trainLabels, "MSE");
         monitor->pushToBuffer(1, currentBatchError, currentTrainError);
-        refinementsNeccessary = monitor->refinementsNeccessary();
+        refinementsNecessary = monitor->refinementsNecessary();
       }
 
-      while (refinementsNeccessary > 0) {
+      while (refinementsNecessary > 0) {
         // acc = getAccuracy(testData, testLabels, 0.0);
         // avgErrors.append(1.0 - acc);
         std::cout << "refinement at iteration: " << processedPoints + 1
@@ -277,7 +277,7 @@ void LearnerSGD::train(size_t maxDataPasses, std::string refType,
         std::cout << "new grid size: " << grid->getSize() << std::endl;
 
         refCnt++;
-        refinementsNeccessary--;
+        refinementsNecessary--;
       }
 
       // save current error

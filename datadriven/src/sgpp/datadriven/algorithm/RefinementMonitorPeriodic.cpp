@@ -27,7 +27,7 @@ void RefinementMonitorPeriodic::pushToBuffer(size_t numberInstances,
   instancesTracked += numberInstances;
 }
 
-size_t RefinementMonitorPeriodic::refinementsNeccessary() {
+size_t RefinementMonitorPeriodic::refinementsNecessary() {
   // If there is no period given, this monitor will always allow refinements
   if (period == 0) return 1;
 
