@@ -123,17 +123,22 @@
 %rename (getConstMultipleEvalConfig) sgpp::datadriven::FitterConfiguration::getMultipleEvalConfig() const;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfigurationClassification.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterTypeParser.hpp"
 %ignore  sgpp::datadriven::ModelFittingBase::operator=(ModelFittingBase&&);
 %rename(assign) sgpp::datadriven::ModelFittingBase::operator =;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp"
 
 %ignore  sgpp::datadriven::Metric::operator=(Metric&&);
 %rename(assign) sgpp::datadriven::Metric::operator =;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/Metric.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/MSE.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/Accuracy.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/NegativeLogLikelihood.hpp"
 %ignore  sgpp::datadriven::ShufflingFunctor::operator=(ShufflingFunctor&&);
 %rename(assign) sgpp::datadriven::ShufflingFunctor::operator =;
@@ -164,6 +169,8 @@
 %include "datadriven/src/sgpp/datadriven/datamining/builder/CrossValidationScorerFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/MinerFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/builder/DensityEstimationMinerFactory.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/builder/ClassificationMinerFactory.hpp"
 
 
 //TODO(lettrich): parser not wrapable because of unwrapped JSON

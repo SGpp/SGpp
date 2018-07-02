@@ -134,13 +134,18 @@
 
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfigurationClassification.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterTypeParser.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp"
 
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/Metric.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/MSE.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/Accuracy.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/NegativeLogLikelihood.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/ShufflingFunctor.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/SequentialShufflingFunctor.hpp"
@@ -166,6 +171,8 @@
 %include "datadriven/src/sgpp/datadriven/datamining/builder/CrossValidationScorerFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/MinerFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/builder/DensityEstimationMinerFactory.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/builder/ClassificationMinerFactory.hpp"
 
 //TODO(lettrich) : parser not wrapable because of unwrapped JSON, but json parsing inside python is easy.
 //%include "datadriven/src/sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp"

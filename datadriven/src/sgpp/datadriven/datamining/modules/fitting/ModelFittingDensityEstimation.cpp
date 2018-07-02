@@ -49,6 +49,11 @@ void ModelFittingDensityEstimation::evaluate(DataMatrix& samples, DataVector& re
 }
 
 void ModelFittingDensityEstimation::fit(Dataset& newDataset) {
+  dataset = &newDataset;
+  fit(newDataset.getData());
+}
+
+void ModelFittingDensityEstimation::fit(DataMatrix& newDataset) {
   // Get configurations
   auto& databaseConfig = this->config->getDatabaseConfig();
   auto& gridConfig = this->config->getGridConfig();
@@ -59,10 +64,9 @@ void ModelFittingDensityEstimation::fit(Dataset& newDataset) {
   // clear model
   resetState();
   grid.reset();
-  dataset = &newDataset;
 
   // build grid
-  gridConfig.dim_ = dataset->getDimension();
+  gridConfig.dim_ = newDataset.getNcols();
   std::cout << "Dataset dimension " << gridConfig.dim_ << std::endl;
   // TODO(fuchsgruber): Support for geometry aware sparse grids (pass interactions from config?)
   // grid = std::unique_ptr<Grid>{buildGrid(gridConfig)};
@@ -88,7 +92,7 @@ void ModelFittingDensityEstimation::fit(Dataset& newDataset) {
   // Build and decompose offline object if not loaded from database
   if (offline == nullptr) {
     // Build offline object by factory, build matrix and decompose
-    offline = DBMatOfflineFactory::buildOfflineObject( gridConfig, refinementConfig,
+    offline = DBMatOfflineFactory::buildOfflineObject(gridConfig, refinementConfig,
         regularizationConfig, densityEstimationConfig);
     offline->buildMatrix(grid.get(), regularizationConfig);
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
@@ -96,7 +100,7 @@ void ModelFittingDensityEstimation::fit(Dataset& newDataset) {
   online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(*offline,
      *grid, regularizationConfig.lambda_)};
 
-  online->computeDensityFunction(alpha, newDataset.getData(), *grid,
+  online->computeDensityFunction(alpha, newDataset, *grid,
       this->config->getDensityEstimationConfig(), true,
       this->config->getCrossvalidationConfig().enable_);
   online->normalize(alpha, *grid);
@@ -160,13 +164,17 @@ bool ModelFittingDensityEstimation::refine() {
 }
 
 void ModelFittingDensityEstimation::update(Dataset& newDataset) {
+  dataset = &newDataset;
+  update(newDataset.getData());
+}
+
+void ModelFittingDensityEstimation::update(DataMatrix& newDataset) {
   if (grid == nullptr) {
     // Initial fitting of dataset
     fit(newDataset);
   } else {
     // Update the fit (streaming)
-    dataset = &newDataset;
-    online->computeDensityFunction(alpha, newDataset.getData(), *grid,
+    online->computeDensityFunction(alpha, newDataset, *grid,
         this->config->getDensityEstimationConfig(), true,
         this->config->getCrossvalidationConfig().enable_);
     online->normalize(alpha, *grid);
