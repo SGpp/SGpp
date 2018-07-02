@@ -14,10 +14,10 @@
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
+#include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductNakBsplineBoundaryCombigrid.hpp>
 #include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
 
 #include <vector>
-#include "../operation/multidim/sparsegrid/LTwoScalarProductNakBsplineBoundaryCombigrid.hpp"
 
 namespace sgpp {
 namespace combigrid {
