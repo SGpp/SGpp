@@ -58,6 +58,14 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
   void fit(Dataset& dataset) override;
 
   /**
+   * Fit the grid to the given dataset by determining the weights of the initial grid by the
+   * SGDE approach. Requires only data samples and no targets (since those are irrelevant for the
+   * density estimation whatsoever)
+   * @param dataset the training dataset that is used to fit the model.
+   */
+  void fit(DataMatrix& dataset);
+
+  /**
    * Improve accuracy of the fit on the given training data by adaptive refinement of the grid and
    * recalculate weights.
    * @return true if refinement could be performed based on the refinement configuration, else
@@ -74,6 +82,14 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
   bool refine(size_t newNoPoints, std::list<size_t> *deletedGridPoints);
 
   void update(Dataset& dataset) override;
+
+  /**
+   * Updates the model based on new data samples (streaming, batch learning). Requires only
+   * the data samples and no targets (since those are irrelevant for the density estimation
+   * whatsoever)
+   * @param samples the new data samples
+   */
+  void update(DataMatrix& samples);
 
   /**
    * Evaluate the fitted density at a single data point - requires a trained grid.

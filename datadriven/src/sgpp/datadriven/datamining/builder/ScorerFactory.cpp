@@ -12,6 +12,7 @@
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/NegativeLogLikelihood.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/Accuracy.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/RandomShufflingFunctor.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/SequentialShufflingFunctor.hpp>
 
@@ -22,6 +23,8 @@ Metric* ScorerFactory::buildMetric(ScorerMetricType config) const {
     return new MSE{};
   } else if (config == ScorerMetricType::nll) {
     return new NegativeLogLikelihood{};
+  } else if (config == ScorerMetricType::accuracy) {
+    return new Accuracy{};
   } else {
     return nullptr;
   }

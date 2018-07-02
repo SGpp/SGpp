@@ -1,0 +1,110 @@
+/*
+ * Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
+ * ModelFittingClassification.hpp
+ *
+ *  Created on: Jul 1, 2018
+ *      Author: dominik
+ */
+
+#pragma once
+
+#include <sgpp/globaldef.hpp>
+
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
+
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationClassification.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+
+#include <vector>
+#include <map>
+
+using sgpp::base::DataMatrix;
+using sgpp::base::Grid;
+using sgpp::base::DataVector;
+
+namespace sgpp {
+namespace datadriven {
+
+/**
+ * Fitter object that encapsulates density based classification using instances of
+ * ModelFittingDensityEstimation for each class.
+ */
+class ModelFittingClassification : public ModelFittingBase {
+ public:
+  /**
+   * Constructor
+   *
+   * @param config configuration object that specifies grid, refinement, and regularization
+   */
+  explicit ModelFittingClassification(const FitterConfigurationClassification& config);
+
+  /**
+   * Fits the models for all classes based on the data given in the dataset parameter
+   * @param dataset the training dataset that is used to fit the models
+   */
+  void fit(Dataset& dataset) override;
+
+  /**
+   * Improve the accuracy of the classification by refining the grids of each class
+   * @return true if refinement could be performed for any grid based on the refinement
+   * configuration, else false.
+   */
+  bool refine() override;
+
+  /**
+   * Updates the models for each class based on new data (streaming or batch learning)
+   * @param dataset the new data
+   */
+  void update(Dataset& dataset) override;
+
+  /**
+   * Predict the class of a data sample based on the density of the sample for each model
+   * @param sample the sample point to classify
+   * @return the predicted class label
+   */
+  double evaluate(const DataVector& sample) override;
+
+  /**
+   * Predicts the class for a set of data points based on the learned densities for each class
+   * @param samples matrix where each row represents a data sample
+   * @param results vector to output the predicted classes
+   */
+  void evaluate(DataMatrix& samples, DataVector& results) override;
+
+ private:
+  /**
+   * Count the amount of refinement operations performed on the current dataset.
+   */
+  size_t refinementsPerformed;
+
+  /**
+   * Reset the state of the object when a new dataset is used;
+   */
+  void resetState();
+
+  /**
+   * Translates a class label to an index for the models vector. If the class is not present
+   * it will create a new index for this class
+   * @param classLabel the label the translate
+   * @return the index of this class label
+   */
+  size_t labelToIdx(double label);
+
+  // The models for each class
+  std::vector<std::unique_ptr<ModelFittingDensityEstimation>> models;
+
+  // Map to index the the models via the class value of a sample
+  std::map<double, size_t> classIdx;
+
+  // Vector to count the number of instances per class
+  std::vector<size_t> classNumberInstances;
+};
+} /* namespace datadriven */
+} /* namespace sgpp */
+
