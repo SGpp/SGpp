@@ -162,6 +162,16 @@ bool ModelFittingDensityEstimation::refine() {
               "for classification!";
           throw new application_exception(errorMessage.c_str());
         }
+        case RefinementFunctorType::MultipleClass : {
+          std::string errorMessage = "Unsupported refinement functor type MultipleClass "
+              "for classification!";
+          throw new application_exception(errorMessage.c_str());
+        }
+        case RefinementFunctorType::GridPointBased : {
+          std::string errorMessage = "Unsupported refinement functor type GridPointBased "
+              "for classification!";
+          throw new application_exception(errorMessage.c_str());
+        }
       }
       // refine grid
       auto oldNoPoints = grid->getSize();
