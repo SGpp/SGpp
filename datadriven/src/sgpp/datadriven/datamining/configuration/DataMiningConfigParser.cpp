@@ -14,6 +14,7 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/LevelIndexTypes.hpp>
 #include <sgpp/base/tools/json/JSON.hpp>
+#include <sgpp/base/tools/json/ListNode.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
@@ -285,6 +286,19 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
         defaults.errorMinInterval, "adaptivityConfig");
     config.refinementPeriod = parseUInt(*adaptivityConfig, "refinementPeriod",
         defaults.refinementPeriod, "adaptivityConfig");
+    config.precomputeEvaluations = parseBool(*adaptivityConfig, "precomputeEvaluations",
+        defaults.precomputeEvaluations, "adaptivityConfig");
+    config.levelPenalize = parseBool(*adaptivityConfig, "penalizeLevels",
+        defaults.levelPenalize, "adaptivityConfig");
+
+    // Parse scaling coefficients if present
+    if (adaptivityConfig->contains("scalingCoefficients")) {
+      json::ListNode& coefs = dynamic_cast<json::ListNode&>(
+          (*adaptivityConfig)["scalingCoefficients"]);
+      for (size_t i = 0; i < coefs.size(); i++) {
+        config.scalingCoefficients.push_back(coefs[i].getDouble());
+      }
+    }
 
     // Parse refinement indicator
     if (adaptivityConfig->contains("refinementIndicator")) {
