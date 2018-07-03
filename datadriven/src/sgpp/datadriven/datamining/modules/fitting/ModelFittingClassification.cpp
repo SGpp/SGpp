@@ -15,9 +15,11 @@
 #include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
+#include <sgpp/datadriven/datamining/configuration/RefinementFunctorTypeParser.hpp>
 
 #include <string>
 #include <vector>
+#include <list>
 #include <map>
 
 using sgpp::base::Grid;
@@ -25,6 +27,8 @@ using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 
 using sgpp::base::application_exception;
+
+using sgpp::base::RefinementFunctorType;
 
 namespace sgpp {
 namespace datadriven {
@@ -61,7 +65,6 @@ double ModelFittingClassification::evaluate(const DataVector& sample) {
   }
 }
 
-// TODO(lettrich): exceptions have to be thrown if not valid.
 void ModelFittingClassification::evaluate(DataMatrix& samples, DataVector& results) {
 #pragma omp parallel for
   for (size_t i = 0; i < samples.getNrows(); i++) {
@@ -108,7 +111,6 @@ size_t ModelFittingClassification::labelToIdx(double label) {
             dynamic_cast<sgpp::datadriven::FitterConfigurationDensityEstimation&>(*config));
     models.push_back(std::move(model));
 
-
     // Count the number of instances for this class
     classNumberInstances.push_back(0u);
 
@@ -120,8 +122,80 @@ size_t ModelFittingClassification::labelToIdx(double label) {
 }
 
 bool ModelFittingClassification::refine() {
-  // TODO(fuchsgdk): obviously needs to be done
-  return true;
+  sgpp::base::AdpativityConfiguration& refinementConfig = this->config->getRefinementConfig();
+  if (refinementsPerformed < refinementConfig.numRefinements_) {
+
+    // Assemble grids and alphas
+    std::vector<Grid*> grids;
+    std::vector<DataVector*> surpluses;
+    grids.reserve(models.size());
+    surpluses.reserve(models.size());
+    for (size_t idx = 0; idx < models.size(); idx++) {
+      grids.push_back(&(models[idx]->getGrid()));
+      surpluses.push_back(&(models[idx]->getSurpluses()));
+    }
+
+    // Create a refinement functor
+    MultiGridRefinementFunctor* func = nullptr;
+    switch (refinementConfig.refinementFunctorType) {
+      case RefinementFunctorType::Surplus : {
+        func = new MultiSurplusRefinementFunctor(grids, surpluses, refinementConfig.noPoints_,
+            refinementConfig.levelPenalize, refinementConfig.threshold_);
+        break;
+      }
+      case RefinementFunctorType::ZeroCrossing : {
+        func = new ZeroCrossingRefinementFunctor(grids, surpluses,
+          refinementConfig.noPoints_, refinementConfig.levelPenalize,
+          refinementConfig.precomputeEvaluations);
+        break;
+      }
+      case RefinementFunctorType::DataBased : {
+        if (refinementConfig.scalingCoefficients.size() != 0) {
+          if (refinementConfig.scalingCoefficients.size() < models.size()) {
+            std::string errorMessage = "Not enough scaling coefficients were given for the amount"
+                "of classes";
+            throw new application_exception(errorMessage.c_str());
+          } else if (refinementConfig.scalingCoefficients.size() > models.size()) {
+            std::cout << "Did not train on at least one sample for every class. Data based " <<
+                "refinement not possible in this iteration..." << std::endl;
+            return false;
+          }
+        }
+        func = new DataBasedRefinementFunctor(grids, surpluses, &(dataset->getData()),
+            &(dataset->getTargets()), refinementConfig.noPoints_, refinementConfig.levelPenalize,
+            refinementConfig.scalingCoefficients);
+        break;
+      }
+      case RefinementFunctorType::SurplusVolume : {
+        std::string errorMessage = "Unsupported refinement functor type SurplusVolume "
+            "for classification!";
+        throw new application_exception(errorMessage.c_str());
+      }
+    }
+
+    // Apply refinements for all models
+    if (func) {
+      for (size_t idx = 0; idx < models.size(); idx++) {
+        // Precompute evaluations in case of data based / zero crossing refinement
+        if (refinementConfig.precomputeEvaluations && (
+            refinementConfig.refinementFunctorType == RefinementFunctorType::DataBased ||
+            refinementConfig.refinementFunctorType == RefinementFunctorType::ZeroCrossing)) {
+          func->preComputeEvaluations();
+        }
+        func->setGridIndex(idx);
+        // TODO(fuchgsdk): Interaction refinement
+        grids[idx]->getGenerator().refine(*func);
+        // TODO(fuchsgdk): Coarsening for classification? Any criteria availible?
+        std::list<size_t> coarsened;
+        models[idx]->refine(grids[idx]->getSize(), &coarsened);
+        std::cout << "Refined model for class index " << idx << " (new size : "
+            << (grids[idx]->getSize()) << ")" << std::endl;
+      }
+    }
+    refinementsPerformed++;
+    return true;
+  }
+  return false;
 }
 
 void ModelFittingClassification::update(Dataset& newDataset) {

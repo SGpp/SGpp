@@ -158,6 +158,12 @@ struct AdpativityConfiguration {
   size_t refinementPeriod;
   /// refinement indicator
   RefinementFunctorType refinementFunctorType = RefinementFunctorType::Surplus;
+  /// in case of zero corssing based refinement: determines if evaluations should be precomupted
+  bool precomputeEvaluations = true;
+  /// determines if finer grid levels should be penalized when finding points to refine
+  bool levelPenalize = false;
+  /// in case of data based refinements: determines the scaling coefficients for each class
+  std::vector<double> scalingCoefficients = std::vector<double>();
 };
 
 /**

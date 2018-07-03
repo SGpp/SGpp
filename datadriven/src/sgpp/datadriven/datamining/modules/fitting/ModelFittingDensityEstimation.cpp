@@ -12,6 +12,8 @@
 
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
@@ -25,6 +27,9 @@ using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 using sgpp::base::SurplusRefinementFunctor;
+using sgpp::base::RefinementFunctor;
+using sgpp::base::SurplusVolumeRefinementFunctor;
+using sgpp::base::RefinementFunctorType;
 
 using sgpp::base::application_exception;
 
@@ -134,12 +139,34 @@ bool ModelFittingDensityEstimation::refine() {
   if (grid != nullptr && online->getOfflineObject().isRefineable()) {
     if (refinementsPerformed < config->getRefinementConfig().numRefinements_) {
       // create refinement functor
-      SurplusRefinementFunctor refinementFunctor(alpha, config->getRefinementConfig().noPoints_,
+      sgpp::base::AdpativityConfiguration& refinementConfig = this->config->getRefinementConfig();
+      RefinementFunctor *func = nullptr;
+      switch (refinementConfig.refinementFunctorType) {
+        case RefinementFunctorType::Surplus : {
+          func = new SurplusRefinementFunctor(alpha, config->getRefinementConfig().noPoints_,
                                                  config->getRefinementConfig().threshold_);
+          break;
+        }
+        case RefinementFunctorType::SurplusVolume : {
+          func = new SurplusVolumeRefinementFunctor(alpha, config->getRefinementConfig().noPoints_,
+              config->getRefinementConfig().threshold_);
+          break;
+        }
+        case RefinementFunctorType::DataBased : {
+          std::string errorMessage = "Unsupported refinement functor type DataBased "
+              "for classification!";
+          throw new application_exception(errorMessage.c_str());
+        }
+        case RefinementFunctorType::ZeroCrossing : {
+          std::string errorMessage = "Unsupported refinement functor type ZeroCrossing "
+              "for classification!";
+          throw new application_exception(errorMessage.c_str());
+        }
+      }
       // refine grid
       auto oldNoPoints = grid->getSize();
       std::cout << "Old number points " << oldNoPoints << std::endl;
-      grid->getGenerator().refine(refinementFunctor);
+      grid->getGenerator().refine(*func);
       auto newNoPoints = grid->getSize();
       std::cout << "New number points " << newNoPoints << std::endl;
       if (newNoPoints != oldNoPoints) {
