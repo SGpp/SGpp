@@ -119,6 +119,8 @@ enum class RefinementFunctorType {
   SurplusVolume,
   DataBased,
   ZeroCrossing,
+  GridPointBased,
+  MultipleClass
 };
 
 /**

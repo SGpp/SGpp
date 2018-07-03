@@ -13,6 +13,8 @@
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
+#include <sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp>
+#include <sgpp/datadriven/functors/classification/MultipleClassRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 #include <sgpp/datadriven/datamining/configuration/RefinementFunctorTypeParser.hpp>
@@ -170,6 +172,16 @@ bool ModelFittingClassification::refine() {
         std::string errorMessage = "Unsupported refinement functor type SurplusVolume "
             "for classification!";
         throw new application_exception(errorMessage.c_str());
+      }
+      case RefinementFunctorType::GridPointBased : {
+        func = new GridPointBasedRefinementFunctor(grids, surpluses, refinementConfig.levelPenalize,
+            refinementConfig.precomputeEvaluations, refinementConfig.threshold_);
+        break;
+      }
+      case RefinementFunctorType::MultipleClass : {
+        func = new MultipleClassRefinementFunctor(grids, surpluses, refinementConfig.noPoints_,
+            1, refinementConfig.threshold_);
+        break;
       }
     }
 
