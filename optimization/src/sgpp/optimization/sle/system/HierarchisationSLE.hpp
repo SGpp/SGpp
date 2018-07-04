@@ -27,6 +27,9 @@
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryCombigridBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/WaveletBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/WaveletModifiedBasis.hpp>
@@ -35,14 +38,17 @@
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
-#include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
 #include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
+#include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NotAKnotBsplineModifiedGrid.hpp>
+#include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/PolyGrid.hpp>
 
 #include <cstddef>
 #include <cstring>
@@ -154,8 +160,20 @@ class HierarchisationSLE : public CloneableSLE {
           new base::SNotAKnotBsplineModifiedBase(
               dynamic_cast<base::NotAKnotBsplineModifiedGrid&>(grid).getDegree()));
       basisType = NOTAKNOT_BSPLINE_MODIFIED;
+    } else if (grid.getType() == base::GridType::ModPoly) {
+      modPolyBasis = std::unique_ptr<base::SPolyModifiedBase>(
+          new base::SPolyModifiedBase(dynamic_cast<base::ModPolyGrid&>(grid).getDegree()));
+      basisType = MOD_POLY;
+    } else if (grid.getType() == base::GridType::Poly) {
+      polyBasis = std::unique_ptr<base::SPolyBase>(
+          new base::SPolyBase(dynamic_cast<base::PolyGrid&>(grid).getDegree()));
+      basisType = POLY;
+    } else if (grid.getType() == base::GridType::PolyBoundary) {
+      polyBoundaryBasis = std::unique_ptr<base::SPolyBoundaryBase>(
+          new base::SPolyBoundaryBase(dynamic_cast<base::PolyBoundaryGrid&>(grid).getDegree()));
+      basisType = POLYBOUNDARY;
     } else {
-      throw std::invalid_argument("Grid type not supported.");
+      throw std::invalid_argument("HierarchisationSLE: Grid type not supported.");
     }
   }
 
@@ -239,6 +257,12 @@ class HierarchisationSLE : public CloneableSLE {
   std::unique_ptr<base::SNakBsplineBoundaryCombigridBase> nakBsplineBoundaryCombigridBasis;
   /// not-a-knot B-spline Boundary combigrid basis
   std::unique_ptr<base::SNotAKnotBsplineModifiedBase> notAKnotBsplineModifiedBasis;
+  /// mod poly basis
+  std::unique_ptr<base::SPolyModifiedBase> modPolyBasis;
+  /// poly basis
+  std::unique_ptr<base::SPolyBase> polyBasis;
+  /// poly boundary basis
+  std::unique_ptr<base::SPolyBoundaryBase> polyBoundaryBasis;
 
   /// type of grid/basis functions
   enum {
@@ -260,7 +284,10 @@ class HierarchisationSLE : public CloneableSLE {
     WAVELET_MODIFIED,
     NAK_BSPLINEBOUNDARY,
     NAK_BSPLINEBOUNDARY_COMBIGRID,
-    NOTAKNOT_BSPLINE_MODIFIED
+    NOTAKNOT_BSPLINE_MODIFIED,
+    MOD_POLY,
+    POLY,
+    POLYBOUNDARY
   } basisType;
 
   /**
@@ -306,6 +333,12 @@ class HierarchisationSLE : public CloneableSLE {
       return evalNakBsplineBoundaryCombigridFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == NOTAKNOT_BSPLINE_MODIFIED) {
       return evalNotAKnotBsplineModifiedFunctionAtGridPoint(basisI, pointJ);
+    } else if (basisType == MOD_POLY) {
+      return evalModPolyFunctionAtGridPoint(basisI, pointJ);
+    } else if (basisType == POLY) {
+      return evalPolyFunctionAtGridPoint(basisI, pointJ);
+    } else if (basisType == POLYBOUNDARY) {
+      return evalPolyBoundaryFunctionAtGridPoint(basisI, pointJ);
     } else {
       return 0.0;
     }
@@ -578,11 +611,11 @@ class HierarchisationSLE : public CloneableSLE {
   }
 
   /**
- * @param basisI    basis function index
- * @param pointJ    grid point index
- * @return          value of the basisI-th linear Clenshaw-Curtis
- *                  boundary basis function at the pointJ-th grid point
- */
+   * @param basisI    basis function index
+   * @param pointJ    grid point index
+   * @return          value of the basisI-th linear Clenshaw-Curtis
+   *                  boundary basis function at the pointJ-th grid point
+   */
   inline double evalLinearClenshawCurtisBoundaryFunctionAtGridPoint(size_t basisI, size_t pointJ) {
     const base::GridPoint& gpBasis = gridStorage[basisI];
     const base::GridPoint& gpPoint = gridStorage[pointJ];
@@ -765,6 +798,81 @@ class HierarchisationSLE : public CloneableSLE {
     for (size_t t = 0; t < gridStorage.getDimension(); t++) {
       const double result1d = notAKnotBsplineModifiedBasis->eval(
           gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getCoordinate(gpPoint, t));
+
+      if (result1d == 0.0) {
+        return 0.0;
+      }
+
+      result *= result1d;
+    }
+
+    return result;
+  }
+
+  /**
+   * @param basisI    basis function index
+   * @param pointJ    grid point index
+   * @return          value of the basisI-th mod poly (modified Bungartz polynomials) basis function
+   *                  at the pointJ-th grid point
+   */
+  inline double evalModPolyFunctionAtGridPoint(size_t basisI, size_t pointJ) {
+    const base::GridPoint& gpBasis = gridStorage[basisI];
+    const base::GridPoint& gpPoint = gridStorage[pointJ];
+    double result = 1.0;
+
+    for (size_t t = 0; t < gridStorage.getDimension(); t++) {
+      const double result1d = modPolyBasis->eval(gpBasis.getLevel(t), gpBasis.getIndex(t),
+                                                 gridStorage.getCoordinate(gpPoint, t));
+
+      if (result1d == 0.0) {
+        return 0.0;
+      }
+
+      result *= result1d;
+    }
+
+    return result;
+  }
+
+  /**
+   * @param basisI    basis function index
+   * @param pointJ    grid point index
+   * @return          value of the basisI-th poly basis (Bungartz polynomials) function
+   *                  at the pointJ-th grid point
+   */
+  inline double evalPolyFunctionAtGridPoint(size_t basisI, size_t pointJ) {
+    const base::GridPoint& gpBasis = gridStorage[basisI];
+    const base::GridPoint& gpPoint = gridStorage[pointJ];
+    double result = 1.0;
+
+    for (size_t t = 0; t < gridStorage.getDimension(); t++) {
+      const double result1d = polyBasis->eval(gpBasis.getLevel(t), gpBasis.getIndex(t),
+                                              gridStorage.getCoordinate(gpPoint, t));
+
+      if (result1d == 0.0) {
+        return 0.0;
+      }
+
+      result *= result1d;
+    }
+
+    return result;
+  }
+
+  /**
+   * @param basisI    basis function index
+   * @param pointJ    grid point index
+   * @return          value of the basisI-th poly boundary basis (Bungartz polynomialswith with
+   * boundary) function at the pointJ-th grid point
+   */
+  inline double evalPolyBoundaryFunctionAtGridPoint(size_t basisI, size_t pointJ) {
+    const base::GridPoint& gpBasis = gridStorage[basisI];
+    const base::GridPoint& gpPoint = gridStorage[pointJ];
+    double result = 1.0;
+
+    for (size_t t = 0; t < gridStorage.getDimension(); t++) {
+      const double result1d = polyBoundaryBasis->eval(gpBasis.getLevel(t), gpBasis.getIndex(t),
+                                                      gridStorage.getCoordinate(gpPoint, t));
 
       if (result1d == 0.0) {
         return 0.0;

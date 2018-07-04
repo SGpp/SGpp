@@ -9,7 +9,7 @@ from pysgpp.extensions.datadriven.uq.operations.sparse_grid import checkInterpol
 from pysgpp.extensions.datadriven.uq.plot import plotNodal3d, plotSGNodal3d
 import matplotlib.pyplot as plt
 from pysgpp.extensions.datadriven.uq.plot.plot3d import plotSG3d
-import pdb
+import ipdb
 from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes
 
 
@@ -63,7 +63,7 @@ class Interpolant(Learner):
 
         if cnt > 0:
             print '%i/%i of the grid points have been set to 0' % (cnt, gs.getSize())
-            pdb.set_trace()
+            ipdb.set_trace()
 
         # hierarchization
         alpha = hierarchize(self.grid, nodalValues)

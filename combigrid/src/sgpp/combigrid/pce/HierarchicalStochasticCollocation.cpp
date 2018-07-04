@@ -41,6 +41,8 @@ HierarchicalStochasticCollocation::HierarchicalStochasticCollocation(
     grid = std::make_shared<sgpp::base::NakBsplineBoundaryCombigridGrid>(dim, degree);
   } else if (gridType == sgpp::base::GridType::NotAKnotBsplineModified) {
     grid = std::make_shared<sgpp::base::NotAKnotBsplineModifiedGrid>(dim, degree);
+  } else if (gridType == sgpp::base::GridType::ModPoly) {
+    grid = std::make_shared<sgpp::base::ModPolyGrid>(dim, degree);
   } else {
     std::cerr << "HierarchicalStochasticCollocation: grid type currently not supported"
               << std ::endl;
@@ -120,6 +122,11 @@ bool HierarchicalStochasticCollocation::updateStatus() {
 }
 
 void HierarchicalStochasticCollocation::calculateCoefficients() {
+  //  if (gridType == sgpp::base::GridType::ModPoly) {
+  //    size_t degree = dynamic_cast<base::ModPolyGrid*>(grid.get())->getDegree();
+  //    sgpp::base::OperationHierarchisationModPoly hierModPoly(grid->getStorage(), degree);
+  //    hierModPoly.doHierarchisation(coefficients);
+  //  } else {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   sgpp::base::DataVector f_values(gridStorage.getSize(), 0.0);
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
@@ -143,6 +150,7 @@ void HierarchicalStochasticCollocation::calculateCoefficients() {
   }
   coefficients = alpha;
 }
+//}
 
 sgpp::base::DataVector HierarchicalStochasticCollocation::leastSquares(
     sgpp::base::DataMatrix points, sgpp::base::DataVector functionValues, size_t degree) {
@@ -155,12 +163,15 @@ sgpp::base::DataVector HierarchicalStochasticCollocation::leastSquares(
   functionValues.restructure(remainingIndex);
 
   sgpp::base::SNakBsplineBoundaryBase basis(degree);
-  if (gridType == sgpp::base::GridType::NotAKnotBsplineModified) {
+  if (gridType != sgpp::base::GridType::NakBsplineBoundary) {
     std::cerr << "HierarchicalStochasticCollocation: Currently only NakBsplineBoundaryBasis is "
                  "supported."
               << std::endl;
   }
   //  sgpp::base::SNotAKnotBsplineModifiedBase basis(degree);
+
+  // HACK!!!
+  //  sgpp::base::SPolyModifiedBase basis(degree);
 
   size_t numDims = grid->getDimension();
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
