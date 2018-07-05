@@ -20,6 +20,7 @@
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationClassification.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 
 #include <vector>
 #include <map>
@@ -91,10 +92,19 @@ class ModelFittingClassification : public ModelFittingBase {
   /**
    * Translates a class label to an index for the models vector. If the class is not present
    * it will create a new index for this class
-   * @param classLabel the label the translate
+   * @param label the label the translate
    * @return the index of this class label
    */
   size_t labelToIdx(double label);
+
+  /**
+   * Returns the refinement functor suitable for the model settings.
+   * @param grids vector of pointers to grids for each class
+   * @param surpluses vector of pointers to the suprluses for each class
+   * @return pointer to a refinement functor that suits the model settings
+   */
+  MultiGridRefinementFunctor *getRefinementFunctor(
+      std::vector<Grid*> grids, std::vector<DataVector*> surpluses);
 
   // The models for each class
   std::vector<std::unique_ptr<ModelFittingDensityEstimation>> models;

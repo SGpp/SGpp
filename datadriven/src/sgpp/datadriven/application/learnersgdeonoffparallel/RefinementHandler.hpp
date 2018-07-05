@@ -115,7 +115,7 @@ class RefinementHandler {
    * Check whether refinement is currently necessary according to the guidelines set by the user
    * @param refMonitor String constant specifying the monitor to use for refinement
    * @param refPeriod The minimum period in which refinement cycles are allowed
-   * @param totalInstances The number of instances that were added by the current batch
+   * @param batchSize The number of instances that were added by the current batch
    * @param currentValidError The current validation error
    * @param currentTrainError The current training error
    * @param numberOfCompletedRefinements The number of refinement cycles already completed
