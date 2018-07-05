@@ -71,7 +71,6 @@ bool RefinementMonitorConvergence::checkConvergence() {
 }
 
 size_t RefinementMonitorConvergence::refinementsNecessary() {
-
   if (nextRefCnt > 0) {
     nextRefCnt--;
     return 0;

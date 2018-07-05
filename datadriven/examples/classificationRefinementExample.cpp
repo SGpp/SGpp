@@ -172,8 +172,8 @@ int main() {
    * Choose the refinement functor to be used
    */
   // fun = &funSrpl;
-  // fun = &funGrid;
-  fun = &funZrcr;
+  fun = &funGrid;
+  // fun = &funZrcr;
   // fun = &funData;
 
 
