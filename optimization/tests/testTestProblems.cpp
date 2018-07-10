@@ -8,8 +8,10 @@
 
 #include <sgpp/optimization/test_problems/unconstrained/AbsoluteValue.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Ackley.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Alpine02.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Beale.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Branin01.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Branin02.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/BubbleWrap.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/EasomYang.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Eggholder.hpp>
@@ -26,6 +28,8 @@
 #include <sgpp/optimization/test_problems/unconstrained/Rastrigin.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Rosenbrock.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/SHCB.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Schwefel06.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Schwefel22.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Schwefel26.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Sphere.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/TremblingParabola.hpp>
@@ -68,9 +72,13 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedTestProblem) {
   testProblems.push_back(std::unique_ptr<UnconstrainedTestProblem>(
       new sgpp::optimization::test_problems::Ackley(d)));
   testProblems.push_back(std::unique_ptr<UnconstrainedTestProblem>(
+      new sgpp::optimization::test_problems::Alpine02(d)));
+  testProblems.push_back(std::unique_ptr<UnconstrainedTestProblem>(
       new sgpp::optimization::test_problems::Beale()));
   testProblems.push_back(std::unique_ptr<UnconstrainedTestProblem>(
       new sgpp::optimization::test_problems::Branin01()));
+  testProblems.push_back(std::unique_ptr<UnconstrainedTestProblem>(
+      new sgpp::optimization::test_problems::Branin02()));
   testProblems.push_back(std::unique_ptr<UnconstrainedTestProblem>(
       new sgpp::optimization::test_problems::BubbleWrap(d)));
   testProblems.push_back(std::unique_ptr<UnconstrainedTestProblem>(
@@ -101,6 +109,10 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedTestProblem) {
       new sgpp::optimization::test_problems::Rastrigin(d)));
   testProblems.push_back(std::unique_ptr<UnconstrainedTestProblem>(
       new sgpp::optimization::test_problems::Rosenbrock(d)));
+  testProblems.push_back(std::unique_ptr<UnconstrainedTestProblem>(
+      new sgpp::optimization::test_problems::Schwefel06()));
+  testProblems.push_back(std::unique_ptr<UnconstrainedTestProblem>(
+      new sgpp::optimization::test_problems::Schwefel22(d)));
   testProblems.push_back(std::unique_ptr<UnconstrainedTestProblem>(
       new sgpp::optimization::test_problems::Schwefel26(d)));
   testProblems.push_back(std::unique_ptr<UnconstrainedTestProblem>(

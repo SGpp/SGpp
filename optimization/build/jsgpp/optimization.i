@@ -130,10 +130,14 @@ const bool UMFPACK_ENABLED;
 %rename(OptAbsoluteValueObjective)      sgpp::optimization::test_problems::AbsoluteValue;
 %rename(OptAckley)                      sgpp::optimization::test_problems::Ackley;
 %rename(OptAckleyObjective)             sgpp::optimization::test_problems::AckleyObjective;
+%rename(OptAlpine02)                    sgpp::optimization::test_problems::Alpine02;
+%rename(OptAlpine02Objective)           sgpp::optimization::test_problems::Alpine02Objective;
 %rename(OptBeale)                       sgpp::optimization::test_problems::Beale;
 %rename(OptBealeObjective)              sgpp::optimization::test_problems::BealeObjective;
 %rename(OptBranin01)                    sgpp::optimization::test_problems::Branin01;
 %rename(OptBranin01Objective)           sgpp::optimization::test_problems::Branin01Objective;
+%rename(OptBranin02)                    sgpp::optimization::test_problems::Branin02;
+%rename(OptBranin02Objective)           sgpp::optimization::test_problems::Branin02Objective;
 %rename(OptBubbleWrap)                  sgpp::optimization::test_problems::BubbleWrap;
 %rename(OptBubbleWrapObjective)         sgpp::optimization::test_problems::BubbleWrapObjective;
 %rename(OptEasomYang)                   sgpp::optimization::test_problems::EasomYang;
@@ -166,6 +170,10 @@ const bool UMFPACK_ENABLED;
 %rename(OptRosenbrockObjective)         sgpp::optimization::test_problems::RosenbrockObjective;
 %rename(OptSHCB)                        sgpp::optimization::test_problems::SHCB;
 %rename(OptSHCBObjective)               sgpp::optimization::test_problems::SHCBObjective;
+%rename(OptSchwefel06)                  sgpp::optimization::test_problems::Schwefel06;
+%rename(OptSchwefel06Objective)         sgpp::optimization::test_problems::Schwefel06Objective;
+%rename(OptSchwefel22)                  sgpp::optimization::test_problems::Schwefel22;
+%rename(OptSchwefel22Objective)         sgpp::optimization::test_problems::Schwefel22Objective;
 %rename(OptSchwefel26)                  sgpp::optimization::test_problems::Schwefel26;
 %rename(OptSchwefel26Objective)         sgpp::optimization::test_problems::Schwefel26Objective;
 %rename(OptSphere)                      sgpp::optimization::test_problems::Sphere;
@@ -425,8 +433,10 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/AbsoluteValue.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/Ackley.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Alpine02.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/Beale.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/Branin01.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Branin02.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/BubbleWrap.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/EasomYang.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/Eggholder.hpp"
@@ -443,6 +453,8 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/Rastrigin.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/Rosenbrock.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/SHCB.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Schwefel06.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Schwefel22.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/Schwefel26.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/Sphere.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/TremblingParabola.hpp"
