@@ -141,7 +141,7 @@ const bool UMFPACK_ENABLED;
 
 %rename(OptUnconstrainedTestProblem)    sgpp::optimization::test_problems::UnconstrainedTestProblem;
 %rename(OptAbsoluteValue)               sgpp::optimization::test_problems::AbsoluteValue;
-%rename(OptAbsoluteValueObjective)      sgpp::optimization::test_problems::AbsoluteValueObjective;
+%rename(OptAbsoluteValueObjective)      sgpp::optimization::test_problems::AbsoluteValue;
 %rename(OptAckley)                      sgpp::optimization::test_problems::Ackley;
 %rename(OptAckleyObjective)             sgpp::optimization::test_problems::AckleyObjective;
 %rename(OptAlpine02)                    sgpp::optimization::test_problems::Alpine02;
