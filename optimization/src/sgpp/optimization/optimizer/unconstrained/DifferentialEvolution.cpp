@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <iostream>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -64,7 +65,7 @@ void DifferentialEvolution::optimize() {
   std::vector<base::DataVector>* xNew = &x2;
 
   // function values at the points of the populations
-  // (no need to swape those)
+  // (no need to swap those)
   base::DataVector fx(populationSize);
 
   // initial pseudorandom points
@@ -77,9 +78,10 @@ void DifferentialEvolution::optimize() {
   }
 
   // smallest function value in the population
-  double fCurrentOpt = INFINITY;
+  double fCurrentOpt = std::numeric_limits<double>::infinity();
   // index of the point with value fOpt
   size_t xOptIndex = 0;
+
   // iteration number of the last iteration with significant improvement
   size_t lastNonidleK = 0;
   // average of all function values
@@ -87,7 +89,7 @@ void DifferentialEvolution::optimize() {
   // average in the previous round
   double lastAvg = 0.0;
   // number of iterations
-  size_t maxK = std::max(static_cast<size_t>(2), N / populationSize) - 1;
+  const size_t maxK = std::max(static_cast<size_t>(2), N / populationSize) - 1;
 
   std::vector<std::vector<size_t>> a(maxK, std::vector<size_t>(populationSize, 0)), b = a, c = a,
                                                                                     j = a;
