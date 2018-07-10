@@ -116,7 +116,7 @@
 #include <sgpp/optimization/test_problems/unconstrained/AbsoluteValue.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Ackley.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Beale.hpp>
-#include <sgpp/optimization/test_problems/unconstrained/Branin.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Branin01.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/BubbleWrap.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/EasomYang.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Eggholder.hpp>

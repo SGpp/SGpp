@@ -99,7 +99,7 @@ pysgpp.OptRNG.getInstance().setSeed(1)
 
 # objective function
 f = BilinearFunction()
-#f = pysgpp.OptBraninObjective()
+#f = pysgpp.OptBranin01Objective()
 #f = pysgpp.OptSchwefelObjective(2)
 
 # create sparse grid interpolants
