@@ -115,8 +115,10 @@
 
 #include <sgpp/optimization/test_problems/unconstrained/AbsoluteValue.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Ackley.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Alpine02.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Beale.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Branin01.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Branin02.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/BubbleWrap.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/EasomYang.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Eggholder.hpp>
@@ -132,6 +134,8 @@
 #include <sgpp/optimization/test_problems/unconstrained/Perm.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Rastrigin.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Rosenbrock.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Schwefel06.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Schwefel22.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Schwefel26.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/SHCB.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Sphere.hpp>
