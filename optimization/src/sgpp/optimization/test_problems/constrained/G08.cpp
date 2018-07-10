@@ -24,9 +24,9 @@ TestVectorFunction& G08::getEqualityConstraintFunction() { return h; }
 
 double G08::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(2);
-  x[0] = 0.1227971;
-  x[1] = 0.4245373;
-  return -0.095825;
+  x[0] = 0.363985679168500;
+  x[1] = 0.415124455491333;
+  return -0.09582504141804;
 }
 
 G08Objective::G08Objective() : TestScalarFunction(2) {}
@@ -34,8 +34,8 @@ G08Objective::G08Objective() : TestScalarFunction(2) {}
 G08Objective::~G08Objective() {}
 
 double G08Objective::evalUndisplaced(const base::DataVector& x) {
-  const double x1 = 10.0 * x[0];
-  const double x2 = 10.0 * x[1];
+  const double x1 = 2.0 * x[0] + 0.5;
+  const double x2 = 3.0 * x[1] + 3.0;
 
   return -std::pow(std::sin(2.0 * M_PI * x1), 3.0) * std::sin(2.0 * M_PI * x2) /
          (x1 * x1 * x1 * (x1 + x2));
@@ -50,8 +50,8 @@ G08InequalityConstraint::G08InequalityConstraint() : TestVectorFunction(2, 2) {}
 G08InequalityConstraint::~G08InequalityConstraint() {}
 
 void G08InequalityConstraint::evalUndisplaced(const base::DataVector& x, base::DataVector& value) {
-  const double x1 = 10.0 * x[0];
-  const double x2 = 10.0 * x[1];
+  const double x1 = 2.0 * x[0] + 0.5;
+  const double x2 = 3.0 * x[1] + 3.0;
 
   value[0] = x1 * x1 - x2 + 1.0;
   value[1] = 1.0 - x1 + std::pow(x2 - 4.0, 2.0);
