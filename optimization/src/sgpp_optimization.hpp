@@ -132,8 +132,8 @@
 #include <sgpp/optimization/test_problems/unconstrained/Perm.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Rastrigin.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Rosenbrock.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Schwefel26.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/SHCB.hpp>
-#include <sgpp/optimization/test_problems/unconstrained/Schwefel.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Sphere.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/TremblingParabola.hpp>

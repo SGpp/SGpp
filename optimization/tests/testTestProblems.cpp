@@ -26,7 +26,7 @@
 #include <sgpp/optimization/test_problems/unconstrained/Rastrigin.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Rosenbrock.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/SHCB.hpp>
-#include <sgpp/optimization/test_problems/unconstrained/Schwefel.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Schwefel26.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Sphere.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/TremblingParabola.hpp>
 
@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedTestProblem) {
   testProblems.push_back(std::unique_ptr<UnconstrainedTestProblem>(
       new sgpp::optimization::test_problems::Rosenbrock(d)));
   testProblems.push_back(std::unique_ptr<UnconstrainedTestProblem>(
-      new sgpp::optimization::test_problems::Schwefel(d)));
+      new sgpp::optimization::test_problems::Schwefel26(d)));
   testProblems.push_back(std::unique_ptr<UnconstrainedTestProblem>(
       new sgpp::optimization::test_problems::SHCB()));
   testProblems.push_back(std::unique_ptr<UnconstrainedTestProblem>(

@@ -166,8 +166,8 @@ const bool UMFPACK_ENABLED;
 %rename(OptRosenbrockObjective)         sgpp::optimization::test_problems::RosenbrockObjective;
 %rename(OptSHCB)                        sgpp::optimization::test_problems::SHCB;
 %rename(OptSHCBObjective)               sgpp::optimization::test_problems::SHCBObjective;
-%rename(OptSchwefel)                    sgpp::optimization::test_problems::Schwefel;
-%rename(OptSchwefelObjective)           sgpp::optimization::test_problems::SchwefelObjective;
+%rename(OptSchwefel26)                  sgpp::optimization::test_problems::Schwefel26;
+%rename(OptSchwefel26Objective)         sgpp::optimization::test_problems::Schwefel26Objective;
 %rename(OptSphere)                      sgpp::optimization::test_problems::Sphere;
 %rename(OptSphereObjective)             sgpp::optimization::test_problems::SphereObjective;
 %rename(OptTremblingParabola)           sgpp::optimization::test_problems::TremblingParabola;
@@ -443,7 +443,7 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/Rastrigin.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/Rosenbrock.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/SHCB.hpp"
-%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Schwefel.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Schwefel26.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/Sphere.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/TremblingParabola.hpp"
 
