@@ -273,6 +273,38 @@ void DifferentialEvolution::setPopulationSize(size_t populationSize) {
   this->populationSize = populationSize;
 }
 
+double DifferentialEvolution::getCrossoverProbability() const { return crossoverProbability; }
+
+void DifferentialEvolution::setCrossoverProbability(double crossoverProbability) {
+  this->crossoverProbability = crossoverProbability;
+}
+
+double DifferentialEvolution::getScalingFactor() const { return scalingFactor; }
+
+void DifferentialEvolution::setScalingFactor(double scalingFactor) {
+  this->scalingFactor = scalingFactor;
+}
+
+size_t DifferentialEvolution::getIdleGenerationsCount() const { return idleGenerationsCount; }
+
+void DifferentialEvolution::setIdleGenerationsCount(size_t idleGenerationsCount) {
+  this->idleGenerationsCount = idleGenerationsCount;
+}
+
+double DifferentialEvolution::getAvgImprovementThreshold() const {
+  return avgImprovementThreshold;
+}
+
+void DifferentialEvolution::setAvgImprovementThreshold(double avgImprovementThreshold) {
+  this->avgImprovementThreshold = avgImprovementThreshold;
+}
+
+double DifferentialEvolution::getMaxDistanceThreshold() const { return maxDistanceThreshold; }
+
+void DifferentialEvolution::setMaxDistanceThreshold(double maxDistanceThreshold) {
+  this->maxDistanceThreshold = maxDistanceThreshold;
+}
+
 void DifferentialEvolution::clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const {
   clone = std::unique_ptr<UnconstrainedOptimizer>(new DifferentialEvolution(*this));
 }

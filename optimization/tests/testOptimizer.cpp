@@ -306,8 +306,27 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
 
     const size_t populationSize = 42;
     differentialEvolution.setPopulationSize(populationSize);
-    BOOST_CHECK_EQUAL(differentialEvolution.getPopulationSize(),
-                      populationSize);
+    BOOST_CHECK_EQUAL(differentialEvolution.getPopulationSize(), populationSize);
+
+    const double crossoverProbability = 0.42;
+    differentialEvolution.setCrossoverProbability(crossoverProbability);
+    BOOST_CHECK_EQUAL(differentialEvolution.getCrossoverProbability(), crossoverProbability);
+
+    const double scalingFactor = 0.43;
+    differentialEvolution.setScalingFactor(scalingFactor);
+    BOOST_CHECK_EQUAL(differentialEvolution.getScalingFactor(), scalingFactor);
+
+    const size_t idleGenerationsCount = 43;
+    differentialEvolution.setIdleGenerationsCount(idleGenerationsCount);
+    BOOST_CHECK_EQUAL(differentialEvolution.getIdleGenerationsCount(), idleGenerationsCount);
+
+    const double avgImprovementThreshold = 0.44;
+    differentialEvolution.setAvgImprovementThreshold(avgImprovementThreshold);
+    BOOST_CHECK_EQUAL(differentialEvolution.getAvgImprovementThreshold(), avgImprovementThreshold);
+
+    const double maxDistanceThreshold = 0.45;
+    differentialEvolution.setMaxDistanceThreshold(maxDistanceThreshold);
+    BOOST_CHECK_EQUAL(differentialEvolution.getMaxDistanceThreshold(), maxDistanceThreshold);
   }
 
   {
