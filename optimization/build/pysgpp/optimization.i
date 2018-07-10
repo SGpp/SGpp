@@ -146,8 +146,8 @@ const bool UMFPACK_ENABLED;
 %rename(OptAckleyObjective)             sgpp::optimization::test_problems::AckleyObjective;
 %rename(OptBeale)                       sgpp::optimization::test_problems::Beale;
 %rename(OptBealeObjective)              sgpp::optimization::test_problems::BealeObjective;
-%rename(OptBranin)                      sgpp::optimization::test_problems::Branin;
-%rename(OptBraninObjective)             sgpp::optimization::test_problems::BraninObjective;
+%rename(OptBranin01)                    sgpp::optimization::test_problems::Branin01;
+%rename(OptBranin01Objective)           sgpp::optimization::test_problems::Branin01Objective;
 %rename(OptBubbleWrap)                  sgpp::optimization::test_problems::BubbleWrap;
 %rename(OptBubbleWrapObjective)         sgpp::optimization::test_problems::BubbleWrapObjective;
 %rename(OptEasomYang)                   sgpp::optimization::test_problems::EasomYang;
@@ -440,7 +440,7 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/AbsoluteValue.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/Ackley.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/Beale.hpp"
-%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Branin.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Branin01.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/BubbleWrap.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/EasomYang.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/Eggholder.hpp"

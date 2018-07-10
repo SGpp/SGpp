@@ -9,7 +9,7 @@
 #include <sgpp/optimization/test_problems/unconstrained/AbsoluteValue.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Ackley.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Beale.hpp>
-#include <sgpp/optimization/test_problems/unconstrained/Branin.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Branin01.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/BubbleWrap.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/EasomYang.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Eggholder.hpp>
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedTestProblem) {
   testProblems.push_back(std::unique_ptr<UnconstrainedTestProblem>(
       new sgpp::optimization::test_problems::Beale()));
   testProblems.push_back(std::unique_ptr<UnconstrainedTestProblem>(
-      new sgpp::optimization::test_problems::Branin()));
+      new sgpp::optimization::test_problems::Branin01()));
   testProblems.push_back(std::unique_ptr<UnconstrainedTestProblem>(
       new sgpp::optimization::test_problems::BubbleWrap(d)));
   testProblems.push_back(std::unique_ptr<UnconstrainedTestProblem>(
