@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_SCHWEFEL_HPP
-#define SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_SCHWEFEL_HPP
+#ifndef SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_SCHWEFEL26_HPP
+#define SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_SCHWEFEL26_HPP
 
 #include <sgpp/globaldef.hpp>
 
@@ -15,25 +15,25 @@ namespace optimization {
 namespace test_problems {
 
 /**
- * Schwefel objective function.
+ * Schwefel26 objective function.
  *
  * Definition:
  * \f[\bar{f}(\bar{\vec{x}}) :=
- * -\sum_{t=1}^d \bar{x}_t \sin \sqrt{|\bar{x}_t|}\f],
+ * -\sum_{t=1}^d \bar{x}_t \sin \sqrt{|\bar{x}_t|}\f]
  */
-class SchwefelObjective : public TestScalarFunction {
+class Schwefel26Objective : public TestScalarFunction {
  public:
   /**
    * Constructor.
    *
    * @param d     dimension of the domain
    */
-  explicit SchwefelObjective(size_t d);
+  explicit Schwefel26Objective(size_t d);
 
   /**
    * Destructor.
    */
-  ~SchwefelObjective() override;
+  ~Schwefel26Objective() override;
 
   /**
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
@@ -48,7 +48,7 @@ class SchwefelObjective : public TestScalarFunction {
 };
 
 /**
- * Schwefel unconstrained test problem.
+ * Schwefel26 unconstrained test problem.
  *
  * * Number of parameters: \f$d\f$
  * * Domain: \f$\bar{\vec{x}} \in [-500, 500]^d\f$
@@ -57,19 +57,19 @@ class SchwefelObjective : public TestScalarFunction {
  * * Optimal function value: \f$\bar{f}(\bar{\vec{x}}_{\text{opt}}) =
  *   -418.9829d\f$
  */
-class Schwefel : public UnconstrainedTestProblem {
+class Schwefel26 : public UnconstrainedTestProblem {
  public:
   /**
    * Constructor.
    *
    * @param d     dimension of the domain
    */
-  explicit Schwefel(size_t d);
+  explicit Schwefel26(size_t d);
 
   /**
    * Destructor.
    */
-  ~Schwefel() override;
+  ~Schwefel26() override;
 
   /**
    * @return  objective function of the test problem
@@ -86,10 +86,10 @@ class Schwefel : public UnconstrainedTestProblem {
 
  protected:
   /// objective function
-  SchwefelObjective f;
+  Schwefel26Objective f;
 };
 }  // namespace test_problems
 }  // namespace optimization
 }  // namespace sgpp
 
-#endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_SCHWEFEL_HPP */
+#endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_SCHWEFEL26_HPP */

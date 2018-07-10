@@ -147,7 +147,7 @@ int main() {
   // objective function
   // BilinearFunction f;
   sgpp::optimization::test_problems::Branin01Objective f;
-  // sgpp::optimization::test_problems::SchwefelObjective f(2);
+  // sgpp::optimization::test_problems::Schwefel26Objective f(2);
 
   // create sparse grid interpolants
   std::unique_ptr<sgpp::base::Grid> gridBSpline;
