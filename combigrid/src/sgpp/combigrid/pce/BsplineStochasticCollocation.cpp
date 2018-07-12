@@ -48,9 +48,14 @@ void BsplineStochasticCollocation::initializeOperations(
     numDims = config.numDimensions;
     customWeightFunction = false;
   }
+
   // initialize interpolation operation
-  sgpp::combigrid::EvaluatorConfiguration evalConfig(
+  sgpp::combigrid::EvaluatorConfiguration evalConfig;
+  //  evalConfig = sgpp::combigrid::EvaluatorConfiguration(
+  //      sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, this->config.degree);
+  evalConfig = sgpp::combigrid::EvaluatorConfiguration(
       sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, this->config.degree);
+
   sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
       numDims, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(evalConfig));
   sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =
@@ -93,7 +98,9 @@ void BsplineStochasticCollocation::updateConfig(
 
   combigridMultiOperation = CombigridMultiOperation::createBsplineLinearCoefficientOperation(
       newConfig.degree, numDims, newConfig.coefficientStorage);
-  combigridMultiOperation->getLevelManager()->addLevelsFromStructure(newConfig.levelStructure);
+
+  auto levelManager = combigridMultiOperation->getLevelManager();
+  levelManager->addLevelsFromStructure(newConfig.levelStructure);
 
   size_t numAdditionalPoints = 0;
   bool normalizeWeights = false;
@@ -248,6 +255,7 @@ double BsplineStochasticCollocation::variance() {
   updateStatus();
   if (!computedVarianceFlag) {
     var = computeVariance();
+    //    var = computeVarianceWithCombiTechnique(); // this does currently not work. Fix!
     computedVarianceFlag = true;
   }
   return var;

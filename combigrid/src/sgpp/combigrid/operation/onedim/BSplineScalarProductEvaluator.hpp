@@ -5,6 +5,11 @@
 
 #pragma once
 
+#include <algorithm>
+#include <cmath>
+#include <functional>
+#include <iomanip>
+#include <iostream>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/combigrid/GeneralFunction.hpp>
@@ -16,11 +21,6 @@
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <sgpp/combigrid/utils/CombigridBSplineBasis.hpp>
 #include <vector>
-#include <algorithm>
-#include <cmath>
-#include <functional>
-#include <iomanip>
-#include <iostream>
 
 namespace sgpp {
 namespace combigrid {

@@ -24,11 +24,13 @@ enum class CombiEvaluatorTypes {
   Scalar_LinearInterpolation,
   Scalar_CubicSplineInterpolation,
   Scalar_BSplineInterpolation,
+  Scalar_ModifiedBSplineInterpolation,
 
   Multi_PolynomialInterpolation,
   Multi_LinearInterpolation,
   Multi_CubicSplineInterpolation,
   Multi_BSplineInterpolation,
+  Multi_ModifiedBSplineInterpolation,
 
   // quadrature
   Scalar_PolynomialQuadrature,

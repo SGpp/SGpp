@@ -6,6 +6,7 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_COMBIGRIDEVALUATOR_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_COMBIGRIDEVALUATOR_HPP_
 
+#include <sgpp/combigrid/algebraic/NormStrategy.hpp>
 #include <sgpp/combigrid/common/BoundedSumMultiIndexIterator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/operation/multidim/AbstractLevelEvaluator.hpp>
@@ -15,7 +16,6 @@
 #include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
 #include <sgpp/combigrid/utils/DataVectorHashing.hpp>
-#include <sgpp/combigrid/algebraic/NormStrategy.hpp>
 
 #include <cmath>
 #include <iostream>

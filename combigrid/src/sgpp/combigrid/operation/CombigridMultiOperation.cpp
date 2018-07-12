@@ -359,6 +359,22 @@ CombigridMultiOperation::createExpUniformBoundaryBsplineInterpolation(size_t num
 }
 
 std::shared_ptr<CombigridMultiOperation>
+CombigridMultiOperation::createExpUniformModifiedBsplineInterpolation(size_t numDimensions,
+                                                                      MultiFunction func,
+                                                                      size_t degree) {
+  std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies(
+      numDimensions, sgpp::combigrid::CombiHierarchies::expUniform());
+  std::vector<std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>> evaluators(
+      numDimensions, sgpp::combigrid::CombiEvaluators::multiModifiedBSplineInterpolation(degree));
+  std::shared_ptr<sgpp::combigrid::LevelManager> levelManager =
+      std::make_shared<sgpp::combigrid::WeightedRatioLevelManager>();
+  sgpp::combigrid::GridFunction gf = BSplineCoefficientGridFunction(func, pointHierarchies, degree);
+  bool exploitNesting = false;
+  return std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
+      pointHierarchies, evaluators, levelManager, gf, exploitNesting);
+}
+
+std::shared_ptr<CombigridMultiOperation>
 CombigridMultiOperation::createExpUniformBoundaryBsplineQuadrature(size_t numDimensions,
                                                                    MultiFunction func,
                                                                    size_t degree) {
@@ -408,7 +424,6 @@ CombigridMultiOperation::createBsplineVarianceRefinementOperation(
     evaluators.push_back(sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(EvalConfig));
   }
 
-  // ToDo(rehmemk) this leads to a wrong adaptive grid generation
   for (size_t d = 0; d < numDimensions; d++) {
     evaluators[d]->setWeightFunction(weightFunctions[d]);
     evaluators[d]->setBounds(bounds[2 * d], bounds[2 * d + 1]);
@@ -454,11 +469,29 @@ std::shared_ptr<sgpp::combigrid::CombigridMultiOperation>
 CombigridMultiOperation::createBsplineLinearCoefficientOperation(
     size_t degree, size_t numDimensions,
     std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage) {
-  //    sgpp::combigrid::MultiFunction func) {
   sgpp::combigrid::EvaluatorConfiguration evalConfig(
       sgpp::combigrid::CombiEvaluatorTypes::Multi_BSplineInterpolation, degree);
   sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
       numDimensions, sgpp::combigrid::CombiHierarchies::expUniformBoundary());
+  sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
+      numDimensions, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(evalConfig));
+  sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =
+      sgpp::combigrid::FullGridSummationStrategyType::LINEAR;
+  std::shared_ptr<sgpp::combigrid::LevelManager> dummyLevelManager(
+      new sgpp::combigrid::AveragingLevelManager());
+  auto interpolationOperation = std::make_shared<sgpp::combigrid::CombigridMultiOperation>(
+      pointHierarchies, evaluators, dummyLevelManager, coefficientStorage, summationStrategyType);
+  return interpolationOperation;
+}
+
+std::shared_ptr<sgpp::combigrid::CombigridMultiOperation>
+CombigridMultiOperation::createModifiedBsplineLinearCoefficientOperation(
+    size_t degree, size_t numDimensions,
+    std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage) {
+  sgpp::combigrid::EvaluatorConfiguration evalConfig(
+      sgpp::combigrid::CombiEvaluatorTypes::Multi_ModifiedBSplineInterpolation, degree);
+  sgpp::combigrid::CombiHierarchies::Collection pointHierarchies(
+      numDimensions, sgpp::combigrid::CombiHierarchies::expUniform());
   sgpp::combigrid::CombiEvaluators::MultiCollection evaluators(
       numDimensions, sgpp::combigrid::CombiEvaluators::createCombiMultiEvaluator(evalConfig));
   sgpp::combigrid::FullGridSummationStrategyType summationStrategyType =

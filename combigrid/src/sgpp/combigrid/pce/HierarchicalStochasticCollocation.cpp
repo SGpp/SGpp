@@ -43,6 +43,8 @@ HierarchicalStochasticCollocation::HierarchicalStochasticCollocation(
     grid = std::make_shared<sgpp::base::NotAKnotBsplineModifiedGrid>(dim, degree);
   } else if (gridType == sgpp::base::GridType::ModPoly) {
     grid = std::make_shared<sgpp::base::ModPolyGrid>(dim, degree);
+  } else if (gridType == sgpp::base::GridType::BsplineBoundary) {
+    grid = std::make_shared<sgpp::base::BsplineBoundaryGrid>(dim, degree);
   } else {
     std::cerr << "HierarchicalStochasticCollocation: grid type currently not supported"
               << std ::endl;
@@ -172,7 +174,7 @@ sgpp::base::DataVector HierarchicalStochasticCollocation::leastSquares(
 
   // HACK!!!
   //  sgpp::base::SPolyModifiedBase basis(degree);
-
+  //  sgpp::base::SBsplineBoundaryBase basis(degree);
   size_t numDims = grid->getDimension();
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
 
@@ -516,14 +518,14 @@ size_t HierarchicalStochasticCollocation::numGridPoints() { return currentNumGri
 
 sgpp::base::DataMatrix HierarchicalStochasticCollocation::getHierarchicalGridPoints() {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
-  sgpp::base::DataMatrix points(gridStorage.getSize(), gridStorage.getDimension());
+  sgpp::base::DataMatrix points(gridStorage.getDimension(), gridStorage.getSize());
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
     sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
     sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
     for (size_t j = 0; j < gridStorage.getDimension(); j++) {
       p[j] = gp.getStandardCoordinate(j);
     }
-    points.setRow(i, p);
+    points.setColumn(i, p);
   }
   return points;
 }

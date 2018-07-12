@@ -308,6 +308,16 @@ class CombigridMultiOperation {
       size_t numDimensions, MultiFunction func, size_t degree = 3);
 
   /**
+   * Returns a CombigridMultiOperation doing modified B-spline  interpolation
+   * on a uniform grid using an exponential growth strategy (nested points).
+   * @param numDimensions Dimensionality of the problem.
+   * @param func Function to be interpolated.
+   * @param degree degree of the B-spline basis functions
+   */
+  static std::shared_ptr<CombigridMultiOperation> createExpUniformModifiedBsplineInterpolation(
+      size_t numDimensions, MultiFunction func, size_t degree = 3);
+
+  /**
    * Returns a CombigridMultiOperation doing quadrature (based on integrals of Bsplines)
    * on a uniform grid with exponential growth (nested points).
    * Note: This method is not useful as a MultiOperation because the quadrature does not need any
@@ -320,15 +330,15 @@ class CombigridMultiOperation {
       size_t numDimensions, MultiFunction func, size_t degree);
 
   /**
-     * Returns a CombigridMultiOperation doing quadrature (based on integrals of Bsplines) of f^2,
-     * where f is the objective function. This is needed for variance calculations.
-     * on a uniform grid with exponential growth (nested points).
-     * Note: This method is not useful as a MultiOperation because the quadrature does not need any
-     * parameters. Use CombigridOperation instead.
-     * @param numDimensions Dimensionality of the problem.
-     * @param func Function to be integrated.
-     * @param degree B-spline degree
-     */
+   * Returns a CombigridMultiOperation doing quadrature (based on integrals of Bsplines) of f^2,
+   * where f is the objective function. This is needed for variance calculations.
+   * on a uniform grid with exponential growth (nested points).
+   * Note: This method is not useful as a MultiOperation because the quadrature does not need any
+   * parameters. Use CombigridOperation instead.
+   * @param numDimensions Dimensionality of the problem.
+   * @param func Function to be integrated.
+   * @param degree B-spline degree
+   */
   static std::shared_ptr<CombigridMultiOperation> createExpUniformBoundaryBsplineSquareQuadrature(
       size_t numDimensions, MultiFunction func, size_t degree);
 
@@ -382,6 +392,19 @@ class CombigridMultiOperation {
   createBsplineLinearCoefficientOperation(
       size_t degree, size_t numDimensions,
       std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage);
+
+  /**
+   * creates a modified B spline interpolation operation from a storage of interpolation
+   * coefficients
+   * @param degree degree of the b-splines
+   * @param numDimensions number of dimensions
+   * @param coefficientStorage storage of the b-spline coefficients
+   * @return combigrid multi operation
+   */
+  static std::shared_ptr<sgpp::combigrid::CombigridMultiOperation>
+  createModifiedBsplineLinearCoefficientOperation(
+      size_t degree, size_t numDimensions,
+      std::shared_ptr<sgpp::combigrid::AbstractCombigridStorage> coefficientStorage);
 };
-} /* namespace combigrid */
-} /* namespace sgpp*/
+}  // namespace combigrid
+}  // namespace sgpp

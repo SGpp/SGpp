@@ -29,6 +29,7 @@
 #include <sgpp/combigrid/operation/onedim/CubicSplineInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/InterpolationCoefficientEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/ModifiedBSplineInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialScalarProductEvaluator.hpp>
@@ -216,6 +217,11 @@ std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> CombiEvaluators::BSp
                                                       a, b, normalizeWeights);
 }
 
+std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>>
+CombiEvaluators::ModifiedBSplineInterpolation(size_t degree) {
+  return std::make_shared<ModifiedBSplineInterpolationEvaluator>(degree);
+}
+
 std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>
 CombiEvaluators::createCombiMultiEvaluator(EvaluatorConfiguration evalConfig) {
   if (evalConfig.type == CombiEvaluatorTypes::Multi_PolynomialInterpolation) {
@@ -228,6 +234,9 @@ CombiEvaluators::createCombiMultiEvaluator(EvaluatorConfiguration evalConfig) {
   } else if (evalConfig.type == CombiEvaluatorTypes::Multi_BSplineQuadrature) {
     return std::make_shared<ArrayEvaluator<BSplineQuadratureEvaluator>>(
         false, BSplineQuadratureEvaluator(evalConfig.degree));
+  } else if (evalConfig.type == CombiEvaluatorTypes::Multi_ModifiedBSplineInterpolation) {
+    return std::make_shared<ArrayEvaluator<ModifiedBSplineInterpolationEvaluator>>(
+        true, ModifiedBSplineInterpolationEvaluator(evalConfig.degree));
   } else if (evalConfig.type == CombiEvaluatorTypes::Multi_BSplineScalarProduct) {
     auto evaluator = std::make_shared<BSplineScalarProductEvaluator>(evalConfig.degree);
     evaluator->setConfig(evalConfig);
@@ -242,7 +251,7 @@ CombiEvaluators::createCombiMultiEvaluator(EvaluatorConfiguration evalConfig) {
     return std::make_shared<ArrayEvaluator<LinearInterpolationEvaluator>>(true);
   } else {
     throw sgpp::base::factory_exception(
-        "CombiEvaluators::createCombiMultiEvaluator: type is not supported");
+        "Configurations.cpp: CombiEvaluators::createCombiMultiEvaluator: type is not supported");
   }
 }
 
@@ -282,6 +291,12 @@ std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>
 CombiEvaluators::multiBSplineInterpolation(size_t degree) {
   return std::make_shared<ArrayEvaluator<BSplineInterpolationEvaluator>>(
       true, BSplineInterpolationEvaluator(degree));
+}
+
+std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>>
+CombiEvaluators::multiModifiedBSplineInterpolation(size_t degree) {
+  return std::make_shared<ArrayEvaluator<ModifiedBSplineInterpolationEvaluator>>(
+      true, ModifiedBSplineInterpolationEvaluator(degree));
 }
 
 std::shared_ptr<AbstractLinearEvaluator<FloatArrayVector>> CombiEvaluators::multiBSplineQuadrature(

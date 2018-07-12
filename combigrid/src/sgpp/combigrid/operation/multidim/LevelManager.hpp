@@ -7,10 +7,12 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/combigrid/common/BoundedSumMultiIndexIterator.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/operation/multidim/AbstractLevelEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/AdaptiveRefinementStrategy.hpp>
+#include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
 #include <sgpp/combigrid/operation/multidim/LevelHelpers.hpp>
 #include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
 #include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>

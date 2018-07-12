@@ -4,6 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include "AveragingLevelManager.hpp"
+#include <algorithm>
 
 namespace sgpp {
 namespace combigrid {
@@ -25,22 +26,23 @@ double AveragingLevelManager::computePriority(const MultiIndex& level) {
     }
   }
 
-  if (n == 0) {
-    return 0.0;
-  } else {
-    return sum / static_cast<double>(n);
+  double res = 0.0;
+  if (n != 0) {
+    res = sum / static_cast<double>(n);
   }
 
-  //  double maxNorm = 0.0;
+  return res;
+
+  //  max over predecessors.This is basically equivalent to classical non predictive
+  //  refinement
+  //  double res = 0;
   //  for (auto& predLevel : predecessors) {
   //    if (levelData->containsIndex(predLevel)) {
   //      auto data = levelData->get(predLevel);
-  //      double dataNorm = data->norm;
-  //      if (dataNorm > maxNorm) {
-  //        maxNorm = dataNorm;
-  //      }
+  //      res = std::max(res, data->norm / static_cast<double>(data->maxNewPoints));
   //    }
   //  }
+  //  return res;
 }
 
 AveragingLevelManager::AveragingLevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator)

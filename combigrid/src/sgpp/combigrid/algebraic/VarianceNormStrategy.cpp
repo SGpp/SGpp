@@ -3,13 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/algebraic/VarianceNormStrategy.hpp>
+#include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/algebraic/FirstMomentNormStrategy.hpp>
 #include <sgpp/combigrid/algebraic/SecondMomentNormStrategy.hpp>
+#include <sgpp/combigrid/algebraic/VarianceNormStrategy.hpp>
 #include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
-#include <sgpp/combigrid/GeneralFunction.hpp>
 
 #include <vector>
 

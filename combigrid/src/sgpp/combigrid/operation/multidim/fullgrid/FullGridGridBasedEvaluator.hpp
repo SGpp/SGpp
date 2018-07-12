@@ -25,6 +25,7 @@ namespace combigrid {
 
 /**
  * Implementation of the AbstractFullGridLinearEvaluator class using a callback function that
+ * takes a whole level and returns a single value based on the gridFunction
  * If you want to be able to use different function values at the same point in different levels
  * (for example because you are implementing a PDE solver), set exploitNesting to false in the
  * constructor of CombigridTreeStorage.
@@ -85,12 +86,12 @@ class FullGridGridBasedEvaluator : public AbstractFullGridEvaluationStrategy<V> 
   virtual ~FullGridGridBasedEvaluator() {}
 
   /**
-     * @return a vector of tasks which can be precomputed in parallel to make the (serialized)
-     * execution of eval() faster. This class only returns one task in the vector.
-     * @param level the level which one wants to compute
-     * @param callback This callback is called (with already locked mutex) from inside one of the
-     * returned tasks when all tasks for the given level are completed and the level can be added.
-     */
+   * @return a vector of tasks which can be precomputed in parallel to make the (serialized)
+   * execution of eval() faster. This class only returns one task in the vector.
+   * @param level the level which one wants to compute
+   * @param callback This callback is called (with already locked mutex) from inside one of the
+   * returned tasks when all tasks for the given level are completed and the level can be added.
+   */
   std::vector<ThreadPool::Task> getLevelTasks(MultiIndex const &level, ThreadPool::Task callback) {
     size_t numDimensions = this->pointHierarchies.size();
     std::vector<bool> orderingConfiguration(numDimensions);

@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/utils/CombigridBSplineBasis.hpp>
+#include "CombigridBSplineBasis.hpp"
 
 #include <algorithm>
 #include <vector>
@@ -11,6 +11,7 @@
 namespace sgpp {
 namespace combigrid {
 
+// log2 for size_t
 size_t log2(size_t n) { return ((n < 2) ? 1 : 1 + static_cast<size_t>(log2(n / 2))); }
 
 /**
@@ -27,9 +28,10 @@ double expUniformNakBspline(double const& x, size_t const& degree, size_t i,
   // derive level from number of gridpoints
   size_t l = 0;
   if (points.size() > 1) {
-    l = log2(points.size() - 2);
+    l = sgpp::combigrid::log2(points.size() - 2);
   }
   const size_t hInv = 1 << l;
+
   double t = x * static_cast<double>(hInv) - static_cast<double>(i);
 
   switch (degree) {
