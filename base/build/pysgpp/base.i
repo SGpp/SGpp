@@ -166,6 +166,7 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/WaveletModifiedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineBoundaryCombigridBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/NotAKnotBsplineModifiedBasis.hpp"
 
 %include "base/src/sgpp/base/operation/hash/OperationEvalPeriodic.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationMultipleEvalPeriodic.hpp"
@@ -208,6 +209,7 @@ namespace std {
 %template(SFundamentalSplineModifiedBase) sgpp::base::FundamentalSplineModifiedBasis<unsigned int, unsigned int>;
 %template(SPrewaveletBase) sgpp::base::PrewaveletBasis<unsigned int, unsigned int>;
 %template(SNakBsplineBoundaryCombigridBase) sgpp::base::NakBsplineBoundaryCombigridBasis<unsigned int, unsigned int>;
+%template(SNotAKnotBsplineModifiedBase) sgpp::base::NotAKnotBsplineModifiedBasis<unsigned int, unsigned int>;
 
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
 %apply std::vector<double> *INPUT { std::vector<double>& point };
