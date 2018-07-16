@@ -262,9 +262,9 @@ class OperationMakePositive(object):
             # add all those grid points which have an ancestor with negative
             # coefficient
             if self.verbose:
-                print "-" * 60
-                print "%i:" % iteration
-                print "adding full grid points"
+                print( "-" * 60 )
+                print( "%i:" % iteration )
+                print( "adding full grid points" )
             addedGridPoints = self.addFullGridPoints(newGrid, alpha)
 
             if len(addedGridPoints) == 0:
@@ -272,7 +272,7 @@ class OperationMakePositive(object):
                 break
 
             if self.verbose:
-                print "learning the new density"
+                print( "learning the new density" )
 
             newGridPoints += addedGridPoints
             # set the function value at the new grid points to zero
@@ -286,7 +286,7 @@ class OperationMakePositive(object):
                                                                       addedGridPoints)
             # the function does not have to be positive now -> check it again
             if self.verbose:
-                print "force function to be positive"
+                print( "force function to be positive" )
             # check manually if all nodal points are positive
             newNodalValues = dehierarchize(newGrid, newAlpha)
             # collect all negative function values
@@ -315,9 +315,9 @@ class OperationMakePositive(object):
                 plt.title("iteration = %i" % iteration)
                 fig.show()
 
-                print "%i + %i = %i for discretization" % (grid.getSize(),
+                print( "%i + %i = %i for discretization" % (grid.getSize(),
                                                            newGrid.getSize() - grid.getSize(),
-                                                           newGrid.getSize(),)
+                                                           newGrid.getSize(),))
 
             iteration += 1
             grid, alpha = newGrid, newAlpha
@@ -325,9 +325,9 @@ class OperationMakePositive(object):
         # coarsening: remove all new grid points with negative surplus
         coarsedGrid, coarsedAlpha, _ = self.coarsening(newGrid, newAlpha, newGridPoints)
         if self.verbose:
-            print "%i - %i = %i grid size after coarsening" % (newGrid.getSize(),
+            print( "%i - %i = %i grid size after coarsening" % (newGrid.getSize(), 
                                                                newGrid.getSize() - coarsedGrid.getSize(),
-                                                               coarsedGrid.getSize(),)
+                                                               coarsedGrid.getSize(),))
 
         # scale the result such that the integral over it is one
 #         c = createOperationQuadrature(coarsedGrid).doQuadrature(coarsedAlpha)

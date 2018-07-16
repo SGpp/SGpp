@@ -22,7 +22,7 @@ sys.path.append("../bin")
 try:
     import psyco
     psyco.full()
-    print "Using psyco"
+    print ("Using psyco" )
 except:
     pass
 
@@ -34,7 +34,7 @@ except:
 # @param value Parameter set by the OptionParser
 # @param parser Parameter set by the OptionParser
 def callback_deprecated(option, opt, value, parser):
-    print "Warning: Option %s is deprecated." % (option)
+    print ("Warning: Option %s is deprecated." % (option) )
     
     
 #-------------------------------------------------------------------------------
@@ -50,22 +50,22 @@ def calc_condition():
     aem = 345
     lam = 0.001
     
-    print "Number of gridpoints:" + str(factory.getSize())
-    print "generating laplacian matrix..."
+    print ("Number of gridpoints:" + str(factory.getSize()) )
+    print ("generating laplacian matrix..." )
     laplace_m = generateCMatrix(factory)
-    print laplace_m
-    print "generating B*B^T matrix..."
+    print (laplace_m )
+    print ("generating B*B^T matrix..." )
     B_res = generateBBTMatrix(factory, training) #np.dot(B_m,Bt_m)
-    print B_res
-    print "multiplying aem*lambda*C..."
+    print (B_res )
+    print ("multiplying aem*lambda*C..." )
     C = aem * lam * laplace_m
-    print "adding C and B_res..."
+    print ("adding C and B_res..." )
     C = C + B_res
-    print C
-    print "calculating condition number..."
+    print( C )
+    print( "calculating condition number..." )
     cond = np.linalg.cond(C)
     
-    print cond
+    print( cond )
     
     
 #===============================================================================

@@ -21,7 +21,7 @@ from array import array
 try:
     import psyco
     psyco.full()
-    print "Using psyco"
+    print( "Using psyco" )
 except:
     pass
 
@@ -37,7 +37,7 @@ except:
 # @param value Parameter set by the OptionParser
 # @param parser Parameter set by the OptionParser
 def callback_deprecated(option, opt, value, parser):
-    print "Warning: Option %s is deprecated." % (option)
+    print( "Warning: Option %s is deprecated." % (option) )
     
 
 #-------------------------------------------------------------------------------    
@@ -84,8 +84,8 @@ def runHierarchisationDehierarchisationLinearBoundaryRegularTestPrintND(dim, lev
 
     function = buildParableBoundary(dim)
     
-    print "The test function is:"
-    print function
+    print( "The test function is:" )
+    print( function )
     
     # generate a regular test grid
     grid = Grid.createLinearBoundaryGrid(dim, 0)
@@ -119,11 +119,11 @@ def runHierarchisationDehierarchisationLinearBoundaryRegularTestPrintND(dim, lev
     #print node_values_back
     
     # test hierarchisation and dehierarchisation
-    print "The maximum error during hierarchisation and dehierarchisation was:"
-    print testHierarchisationResults(node_values, node_values_back)
+    print( "The maximum error during hierarchisation and dehierarchisation was:" )
+    print( testHierarchisationResults(node_values, node_values_back) )
     
-    print "The maximum error during function evaluation was:"
-    print compareResultFiles("hier_Nd_values.out", "ref_Nd_values.out")
+    print( "The maximum error during function evaluation was:" )
+    print( compareResultFiles("hier_Nd_values.out", "ref_Nd_values.out") )
     
     return
 
@@ -142,8 +142,8 @@ def runHierarchisationDehierarchisationLinearTruncatedBoundaryRegularTestPrintND
 
     function = buildParableBoundary(dim)
     
-    print "The test function is:"
-    print function
+    print( "The test function is:" )
+    print( function )
     
     # generate a regular test grid
     grid = Grid.createLinearBoundaryGrid(dim)
@@ -177,11 +177,11 @@ def runHierarchisationDehierarchisationLinearTruncatedBoundaryRegularTestPrintND
     #print node_values_back
     
     # test hierarchisation and dehierarchisation
-    print "The maximum error during hierarchisation and dehierarchisation was:"
-    print testHierarchisationResults(node_values, node_values_back)
+    print( "The maximum error during hierarchisation and dehierarchisation was:" )
+    print( testHierarchisationResults(node_values, node_values_back) )
     
-    print "The maximum error during function evaluation was:"
-    print compareResultFiles("hier_Nd_values.out", "ref_Nd_values.out")
+    print( "The maximum error during function evaluation was:" )
+    print( compareResultFiles("hier_Nd_values.out", "ref_Nd_values.out") )
     
     return
 
@@ -200,8 +200,8 @@ def runHierarchisationDehierarchisationLinearRegularTestPrintND(dim, level, reso
 
     function = buildParable(dim)
     
-    print "The test function is:"
-    print function
+    print( "The test function is:" )
+    print( function )
     
     # generate a regular test grid
     grid = Grid.createLinearGrid(dim)
@@ -235,11 +235,11 @@ def runHierarchisationDehierarchisationLinearRegularTestPrintND(dim, level, reso
     #print node_values_back
     
     # test hierarchisation and dehierarchisation
-    print "The maximum error during hierarchisation and dehierarchisation was:"
-    print testHierarchisationResults(node_values, node_values_back)
+    print( "The maximum error during hierarchisation and dehierarchisation was:" )
+    print( testHierarchisationResults(node_values, node_values_back) )
     
-    print "The maximum error during function evaluation was:"
-    print compareResultFiles("hier_Nd_values.out", "ref_Nd_values.out")
+    print( "The maximum error during function evaluation was:" )
+    print( compareResultFiles("hier_Nd_values.out", "ref_Nd_values.out") )
     
     return
 
@@ -258,8 +258,8 @@ def runHierarchisationDehierarchisationModLinearTestPrintND(dim, level, resoluti
 
     function = buildParable(dim)
     
-    print "The test function is:"
-    print function
+    print( "The test function is:" )
+    print( function )
     
     # generate a regular test grid
     grid = Grid.createModLinearGrid(dim)
@@ -293,11 +293,11 @@ def runHierarchisationDehierarchisationModLinearTestPrintND(dim, level, resoluti
     #print node_values_back
     
     # test hierarchisation and dehierarchisation
-    print "The maximum error during hierarchisation and dehierarchisation was:"
-    print testHierarchisationResults(node_values, node_values_back)
+    print( "The maximum error during hierarchisation and dehierarchisation was:" )
+    print( testHierarchisationResults(node_values, node_values_back) )
     
-    print "The maximum error during function evaluation was:"
-    print compareResultFiles("hier_Nd_values.out", "ref_Nd_values.out")
+    print( "The maximum error during function evaluation was:" )
+    print( compareResultFiles("hier_Nd_values.out", "ref_Nd_values.out") )
     
     return
 
@@ -315,8 +315,8 @@ def runHierarchisationDehierarchisationLinearTruncatedBoundaryRegularTest(dim, l
     #function = buildParableBoundary(dim)
     function = buildParableBoundary(dim)
     
-    print "The test function is:"
-    print function
+    print( "The test function is:" )
+    print( function )
     
     # generate a regular test grid
     grid = Grid.createLinearBoundaryGrid(dim)
@@ -347,8 +347,8 @@ def runHierarchisationDehierarchisationLinearTruncatedBoundaryRegularTest(dim, l
     #print node_values_back
     
     # test hierarchisation and dehierarchisation
-    print "The maximum error during hierarchisation and dehierarchisation was:"
-    print testHierarchisationResults(node_values, node_values_back)
+    print( "The maximum error during hierarchisation and dehierarchisation was:" )
+    print( testHierarchisationResults(node_values, node_values_back) )
     
     return
 
@@ -365,8 +365,8 @@ def runHierarchisationDehierarchisationLinearRegularTest(dim, level):
 
     function = buildParable(dim)
     
-    print "The test function is:"
-    print function
+    print( "The test function is:" )
+    print( function )
     
     # generate a regular test grid
     grid = Grid.createLinearGrid(dim)
@@ -397,8 +397,8 @@ def runHierarchisationDehierarchisationLinearRegularTest(dim, level):
     #print node_values_back
     
     # test hierarchisation and dehierarchisation
-    print "The maximum error during hierarchisation and dehierarchisation was:"
-    print testHierarchisationResults(node_values, node_values_back)
+    print( "The maximum error during hierarchisation and dehierarchisation was:" )
+    print( testHierarchisationResults(node_values, node_values_back) )
     
     return
     
@@ -415,8 +415,8 @@ def runHierarchisationDehierarchisationModLinearRegularTest(dim, level):
 
     function = buildParableBoundary(dim)
     
-    print "The test function is:"
-    print function
+    print( "The test function is:" )
+    print( function )
     
     # generate a regular test grid
     grid = Grid.createModLinearGrid(dim)
@@ -433,21 +433,21 @@ def runHierarchisationDehierarchisationModLinearRegularTest(dim, level):
         node_values[n] = evalFunction(function, points)
         
         
-    print node_values
+    print( node_values )
     
     # do hierarchisation
     alpha = doHierarchisation(node_values, grid)
     
-    print alpha
+    print( alpha )
     
     # do dehierarchisation
     node_values_back = doDehierarchisation(alpha, grid)
      
-    print node_values_back
+    print( node_values_back )
     
     # test hierarchisation and dehierarchisation
-    print "The maximum error during hierarchisation and dehierarchisation was:"
-    print testHierarchisationResults(node_values, node_values_back)
+    print( "The maximum error during hierarchisation and dehierarchisation was:" )
+    print( testHierarchisationResults(node_values, node_values_back) )
     
     return
 

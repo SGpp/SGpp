@@ -134,7 +134,7 @@ class RefinementManager(object):
 
         # get refinement candidates
         if self.verbose:
-            print "compute ranking"
+            print( "compute ranking" )
         B = self.candidates(grid, knowledge, params, qoi, refinets)
 
         # now do the refinement
@@ -197,7 +197,7 @@ class RefinementManager(object):
 #                                                  simulate=True)
 #             for i, t in enumerate(ts):
 #                 if self.verbose:
-#                     print "compute merged ranking: %i/%i" % (i + 1, len(ts))
+#                     print( "compute merged ranking: %i/%i" % (i + 1, len(ts)) )
 #
 #                 # get surpluses
 #                 alphas = learner.getKnowledge().getAlpha(qoi, t, dtype)
@@ -216,7 +216,7 @@ class RefinementManager(object):
 
 #             # simulate the refinement and sum over all subgroup values
 #             for i, t in enumerate(ts):
-#                 print "compute merged ranking: %i/%i" % (i + 1, len(ts))
+#                 print( "compute merged ranking: %i/%i" % (i + 1, len(ts)) )
 #                 # get surpluses
 #                 alphas = learner.getKnowledge().getAlpha(qoi, t, dtype)
 #                 # rank each admissible point
@@ -266,9 +266,9 @@ class RefinementManager(object):
 
             # some printing
             if not simulate and self.verbose:
-                print "refine %i/%i (%i, %i) = %g" % \
+                print( "refine %i/%i (%i, %i) = %g" % \
                     (pointsNum, len(B) + 1, len(newGridPoints),
-                     len(refinedPoints), vi)
+                     len(refinedPoints), vi))
 
             # refine the grid
             oldSize = grid.getSize()

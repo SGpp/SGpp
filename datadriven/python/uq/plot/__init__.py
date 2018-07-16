@@ -62,5 +62,5 @@ try:
     __all__.append('plt')
     __all__.append('mpl')
 except:
-    print "Error initializing plotting style"
+    print( "Error initializing plotting style" )
     pass

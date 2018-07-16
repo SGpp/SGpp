@@ -139,4 +139,4 @@ s = "Results for file %s\n" % (args[0]) + s
 if options.outfile:
     tools.writeStringToFile(s, options.outfile)
 else:
-    print s
+    print( s )

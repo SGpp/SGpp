@@ -576,11 +576,11 @@ def writeDataARFF(data, merge=False):
 
             hasclass = False
             if dataset.has_key("classes"):
-           	hasclass = True
-           	fout.write("@ATTRIBUTE class NUMERIC\n")
-           	fstring = fstring + "%s"
+           	    hasclass = True
+           	    fout.write("@ATTRIBUTE class NUMERIC\n")
+           	     fstring = fstring + "%s"
             else:
-           	fstring = fstring.strip(',')
+                fstring = fstring.strip(',')
 
             fstring = fstring + "\n"
             fout.write("\n@DATA\n")

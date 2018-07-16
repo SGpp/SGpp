@@ -47,7 +47,7 @@ def makePositive(grid, alpha):
     # is lower than zero
     cnt = 1
     while True:
-        print "run %i: full grid size = %i" % (cnt, fgs.size())
+        print( "run %i: full grid size = %i" % (cnt, fgs.size()) )
         gps = []
 
         # insert those fg points, which are not yet positive

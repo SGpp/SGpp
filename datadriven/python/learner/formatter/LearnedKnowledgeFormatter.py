@@ -32,7 +32,7 @@ class LearnedKnowledgeFormatter(GzipSerializer):
     #@param filename The name of file with serialized Grid.
     #@return The LearnedKnowledgeMemento object.
     def deserializeFromFile(self, filename):
-        if type(filename) != type(''): raise AttributeError, "Filename as destination expected"
+        if type(filename) != type(''): raise AttributeError( "Filename as destination expected" )
         serializationStream = self.gzOpen(filename, "r")
         try:
             knowledge = self.deserialize(serializationStream)

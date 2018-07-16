@@ -70,7 +70,7 @@ class GridDescriptor(object):
         if deg > 1:
             self.__deg = deg
         else:
-            print "Warning: GridDescriptor.withDegree - deg < 2 ignored"
+            print( "Warning: GridDescriptor.withDegree - deg < 2 ignored" )
         return self
 
     def withBoundaryLevel(self, boundaryLevel):
@@ -149,7 +149,7 @@ class GridDescriptor(object):
                                        GridType_BsplineBoundary,
                                        GridType_BsplineClenshawCurtis,
                                        GridType_ModBsplineClenshawCurtis]:
-                print "Warning: grid type not fully supported"
+                print( "Warning: grid type not fully supported" )
 
             gridConfig.type_ = self.__gridType
 

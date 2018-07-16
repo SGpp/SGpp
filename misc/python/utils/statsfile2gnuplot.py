@@ -95,4 +95,4 @@ for line in data:
 if options.outfile:
     tools.writeStringToFile(s, options.outfile)
 else:
-    print s
+    print (s )

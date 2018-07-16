@@ -77,7 +77,7 @@ def createGrid(grid, dim, deg=1, addTruncatedBorder=False):
     gridType = grid.getType()
     deg = max(deg, grid.getDegree())
 
-    # print gridType, deg
+    # print( gridType, deg )
     if deg > 1 and gridType in [GridType_Linear]:
         return Grid.createPolyGrid(dim, deg)
     if deg > 1 and gridType in [GridType_LinearBoundary,
@@ -319,7 +319,9 @@ def isHierarchicalAncestor(gpi, gpj):
         return isAncestor
 
 
-def isHierarchicalAncestorByLevelIndex((leveli, indexi), (levelj, indexj)):
+def isHierarchicalAncestorByLevelIndex(location_i, location_j):
+    leveli, indexi = location_i
+    levelj, indexj = location_j
     idim = 0
     numDims = len(leveli)
     isAncestor = True
@@ -335,7 +337,9 @@ def isHierarchicalAncestorByLevelIndex((leveli, indexi), (levelj, indexj)):
     return isAncestor and not isEqual
 
 
-def haveHierarchicalRelationshipByLevelIndex((leveli, indexi), (levelj, indexj)):
+def haveHierarchicalRelationshipByLevelIndex(location_i, location_j):
+    leveli, indexi = location_i
+    levelj, indexj = location_j
     idim = 0
     numDims = len(leveli)
     isAncestorij = True
@@ -391,7 +395,9 @@ def haveOverlappingSupport(gpi, gpj):
     return idim == numDims
 
 
-def haveOverlappingSupportByLevelIndex((leveli, indexi), (levelj, indexj)):
+def haveOverlappingSupportByLevelIndex(location_i, location_j):
+    leveli, indexi = location_i
+    levelj, indexj = location_j
     idim = 0
     numDims = len(leveli)
 
@@ -720,7 +726,7 @@ def evalHierToTop(basis, grid, coeffs, gp, d):
 
 def hierarchizeBruteForce(grid, nodalValues, ignore=None):
     if hasBorder(grid):
-        print 'brute force hierarchization is not supported for boundary grids'
+        print( 'brute force hierarchization is not supported for boundary grids' )
         return nodalValues
 
     alpha = DataVector(nodalValues)
@@ -767,7 +773,7 @@ def hierarchizeBruteForce(grid, nodalValues, ignore=None):
                 # removeSample point from possible starting points
                 starting_points.remove(ix)
                 diff = evalHierToTop(basis, grid, alpha, gpc, d)
-                # print "%i: %.20f - %.20f = %.20f" % (ix, alpha[ix], diff, alpha[ix] - diff)
+                # print( "%i: %.20f - %.20f = %.20f" % (ix, alpha[ix], diff, alpha[ix] - diff) )
                 alpha[ix] -= diff
 
                 # append left and right child
@@ -811,11 +817,11 @@ def hierarchize(grid, nodalValues, isConsistent=True, ignore=None):
         del alpha_vec
 
         return alpha
-#         print "using brute force hierarchization"
+#         print( "using brute force hierarchization" )
 #         return hierarchizeBruteForce(grid, nodalValues, ignore)
-    except Exception, e:
-        print e
-    print "something went wrong during hierarchization"
+    except Exception as e:
+        print( e )
+    print( "something went wrong during hierarchization" )
     import ipdb; ipdb.set_trace()
     return hierarchizeBruteForce(grid, nodalValues, ignore)
 
@@ -936,7 +942,7 @@ def addConst(grid, alpha, c, y):
 #
 #     # surplus is already known
 #     if ix < len(v):
-#         print "warning: not estimated",
+#         print( "warning: not estimated", )
 #         return v[ix]
 #
 #     vgp = []
@@ -1093,25 +1099,25 @@ def checkInterpolation(grid, alpha, nodalValues, epsilon=1e-13):
         if abs_error > epsilon:
             spacing = 12
             if head:
-                print
-                print "%s | %s | %s | %s | %s | %s | %s" % \
+                print( )
+                print( "%s | %s | %s | %s | %s | %s | %s" % \
                     ("index".rjust(spacing),
                      "levelsum".rjust(spacing),
                      "surplus".rjust(spacing),
                      "nodalValue".rjust(spacing),
                      "eval".rjust(spacing),
                      "rel err".rjust(spacing),
-                     "abs err".rjust(spacing))
+                     "abs err".rjust(spacing)))
                 head = False
             gs.getCoordinates(gs.getPoint(i), p)
-            print "%s | %s | %s | %s | %s | %s | %s" % \
+            print( "%s | %s | %s | %s | %s | %s | %s" % \
                 (("%i" % i).rjust(spacing),
                     ("%i" % gs.getPoint(i).getLevelSum()).rjust(spacing),
                     ("%g" % alpha[i]).rjust(spacing),
                     ("%g" % nodal).rjust(spacing),
                     ("%g" % value).rjust(spacing),
                     ("%g" % rel_error).rjust(spacing),
-                    ("%g" % abs_error).rjust(spacing))
+                    ("%g" % abs_error).rjust(spacing)))
             nodes = np.append(nodes, [i])
             error = np.append(abs_error, [abs_error])
 
@@ -1133,15 +1139,15 @@ def checkPositivity(grid, alpha):
     res = evalSGFunctionMulti(grid, alpha, A)
     ymin, ymax, cnt = 0, -1e10, 0
     for i, yi in enumerate(res):
-#         print A[i, :], yi
+#         print( A[i, :], yi )
         if yi < -1e-11:
             cnt += 1
             negativeGridPoints[i] = yi, HashGridPoint(fullHashGridStorage.getPoint(i))
             ymin = min(ymin, yi)
             ymax = max(ymax, yi)
-#             print "  %s = %g" % (A[i, :], yi)
+#             print( "  %s = %g" % (A[i, :], yi) )
     if cnt > 0:
-        print "warning: function is not positive"
-        print "%i/%i: [%g, %g]" % (cnt, fullHashGridStorage.getSize(), ymin, ymax)
+        print( "warning: function is not positive" )
+        print( "%i/%i: [%g, %g]" % (cnt, fullHashGridStorage.getSize(), ymin, ymax) )
 
     return negativeGridPoints

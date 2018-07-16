@@ -162,7 +162,7 @@ class CSVAdapter(DataAdapter):
             for col in xrange(len(first_line)):
                 try:
                     i = float(second_line[col])
-                except ValueError, TypeError:
+                except (ValueError, TypeError):
                     # not numeric
                     spec.addAttribute(first_line[col], "string")
                 else:

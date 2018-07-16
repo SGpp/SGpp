@@ -97,7 +97,7 @@ class TerminalController:
             TerminalController.constructObjectsFromFile(options.jobfile)
         #if job defined with arguments:
         elif options.generate:
-            print TerminalController.generateBuilderCodeFromOptions(options)
+            print (TerminalController.generateBuilderCodeFromOptions(options) )
         else:
             TerminalController.constructObjectsFromOptions(options)
         

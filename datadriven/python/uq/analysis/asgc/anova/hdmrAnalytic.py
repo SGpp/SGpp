@@ -82,19 +82,19 @@ class HDMRAnalytic(object):
 
     def __computeMean(self):
         if self._verbose:
-            print "estimate mean: ",
+            print( "estimate mean: ", )
         self.__E = self.__estimation.mean(self.__grid, self.__alpha,
                                           self.__U, self.__T)["value"]
         if self._verbose:
-            print self.__E
+            print( self.__E )
 
     def __computeVariance(self):
         if self._verbose:
-            print "estimate variance: ",
+            print( "estimate variance: ", )
         self.__V = self.__estimation.var(self.__grid, self.__alpha,
                                          self.__U, self.__T, self.__E)["value"]
         if self._verbose:
-            print self.__V
+            print( self.__V )
 
     def getSortedPermutations(self, keys):
         """
@@ -123,7 +123,7 @@ class HDMRAnalytic(object):
         expec = {}
 
         if self._verbose:
-            print "-" * 60
+            print( "-" * 60 )
 
         # add higher order terms
         for k in xrange(self.__nk):
@@ -133,7 +133,7 @@ class HDMRAnalytic(object):
                 dd = [d for d in self.__U.getTupleIndices() if d not in perm]
 
                 if self._verbose:
-                    print "explore %s, Integrate: %s" % (perm, dd),
+                    print( "explore %s, Integrate: %s" % (perm, dd), )
 
                 # -----------------------------------------------
                 # Make sure that perm and dd are disjoint sets
@@ -150,9 +150,9 @@ class HDMRAnalytic(object):
                 expec[tuple([d for di in perm for d in di])] = grid, alpha
 
                 if self._verbose:
-                    print "# dims = %i, # grid points = %i, L2 err = %g" % (grid.getStorage().getDimension(),
+                    print( "# dims = %i, # grid points = %i, L2 err = %g" % (grid.getStorage().getDimension(), 
                                                                             grid.getSize(),
-                                                                            err)
+                                                                            err))
 
                 # plot result
 #                 if len(perm) == 1:
@@ -165,7 +165,7 @@ class HDMRAnalytic(object):
             expec[perm] = self.__grid, self.__alpha
 
         if self._verbose:
-            print "-" * 60
+            print( "-" * 60 )
 
         return expec
 
@@ -285,7 +285,7 @@ class HDMRAnalytic(object):
         self.__variance_components = {}
 
         if self._verbose:
-            print "-" * 60
+            print( "-" * 60 )
 
         # run over all available permutations and compute the variance
         keys = self.__ap.keys()
@@ -310,7 +310,7 @@ class HDMRAnalytic(object):
             vis[perm] = vi
 
             if self._verbose:
-                print "estimated V[%s]: %g (err=%g)" % (perm, vi, vi_err)
+                print( "estimated V[%s]: %g (err=%g)" % (perm, vi, vi_err) )
 
             # add lower order components
             fi = self.__anova_components[perm]
@@ -321,7 +321,7 @@ class HDMRAnalytic(object):
             self.__variance_components[perm] = vi
 
         if self._verbose:
-            print "-" * 60
+            print( "-" * 60 )
 
         return self.__variance_components
 
