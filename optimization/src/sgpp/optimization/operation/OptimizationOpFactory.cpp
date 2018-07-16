@@ -5,38 +5,40 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/operation/OptimizationOpFactory.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
+#include <sgpp/optimization/operation/OptimizationOpFactory.hpp>
 
-#include <sgpp/base/grid/type/LinearGrid.hpp>
-#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/ModLinearGrid.hpp>
-#include <sgpp/base/grid/type/BsplineGrid.hpp>
 #include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
-#include <sgpp/base/grid/type/ModBsplineGrid.hpp>
-#include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
-#include <sgpp/base/grid/type/WaveletGrid.hpp>
-#include <sgpp/base/grid/type/WaveletBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/ModWaveletGrid.hpp>
+#include <sgpp/base/grid/type/BsplineGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
-#include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
+#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/LinearGrid.hpp>
+#include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/ModBsplineGrid.hpp>
+#include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
+#include <sgpp/base/grid/type/ModLinearGrid.hpp>
+#include <sgpp/base/grid/type/ModWaveletGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/WaveletBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/WaveletGrid.hpp>
 
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBspline.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineClenshawCurtis.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModBspline.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModBsplineClenshawCurtis.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBspline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationFundamentalSpline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinear.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearClenshawCurtis.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModLinear.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinear.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWaveletBoundary.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWavelet.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWavelet.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationFundamentalSpline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModBspline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModBsplineClenshawCurtis.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModFundamentalSpline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModLinear.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWavelet.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationNakBsplineBoundary.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWavelet.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWaveletBoundary.hpp>
 
 #include <cstring>
 
@@ -63,6 +65,9 @@ optimization::OperationMultipleHierarchisation* createOperationMultipleHierarchi
   } else if (grid.getType() == base::GridType::BsplineBoundary) {
     return new optimization::OperationMultipleHierarchisationBsplineBoundary(
         dynamic_cast<base::BsplineBoundaryGrid&>(grid));
+  } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
+    return new optimization::OperationMultipleHierarchisationNakBsplineBoundary(
+        dynamic_cast<base::NakBsplineBoundaryGrid&>(grid));
   } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
     return new optimization::OperationMultipleHierarchisationBsplineClenshawCurtis(
         dynamic_cast<base::BsplineClenshawCurtisGrid&>(grid));
