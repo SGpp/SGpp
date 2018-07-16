@@ -154,10 +154,10 @@ class SimulationLearner(Learner):
         # learn data
         for dtype, values in self.dataContainer.items():
             knowledge = {}
-            print KnowledgeTypes.toString(dtype)
+            print( KnowledgeTypes.toString(dtype) )
             # do the learning
             for t, dataContainer in values.items():
-                print "t = %g, " % t,
+                print( "t = %g, " % t, )
                 if dataContainer is not None:
                     learner = self._learners[t]
                     # learn data, if there is any available
@@ -167,7 +167,7 @@ class SimulationLearner(Learner):
 
                     # prepare the answer
                     knowledge[t] = copyGrid(learner.grid), DataVector(alpha)
-            print
+            print( )
             # update results
             if len(knowledge) > 0:
                 self.updateResults(knowledge, dtype)
@@ -178,7 +178,7 @@ class SimulationLearner(Learner):
             knowledge = {}
             # do the learning
             for t, dataContainer in values.items():
-                print "t = %g, " % t,
+                print( "t = %g, " % t, )
                 if dataContainer is not None:
                     learner = self._learners[t]
                     # learn data, if there is any available
@@ -188,7 +188,7 @@ class SimulationLearner(Learner):
 
                     # prepare the answer
                     knowledge[t] = copyGrid(learner.grid), DataVector(alpha)
-            print
+            print( )
             # update results
             if len(knowledge) > 0:
                 self.updateResults(knowledge, dtype)
@@ -293,14 +293,14 @@ class SimulationLearner(Learner):
 
         # print some information
         if self._verbose:
-            print "iteration: %i" % self.iteration
-            print "old grid size: %i" % oldGridSize
-            print "old AS size: %i" % oldAdmissibleSetSize
-            print "new collocation nodes: %i" % len(newCollocationNodes)
-            print "new grid size:", self.getGrid().getSize()
-            print "new AS size: %i" % self.getRefinement()\
+            print( "iteration: %i" % self.iteration )
+            print( "old grid size: %i" % oldGridSize )
+            print( "old AS size: %i" % oldAdmissibleSetSize )
+            print( "new collocation nodes: %i" % len(newCollocationNodes) )
+            print( "new grid size:", self.getGrid().getSize() )
+            print( "new AS size: %i" % self.getRefinement()\
                                           .getAdmissibleSet()\
-                                          .getSize()
+                                          .getSize())
 
 #         fig = plotGrid(self.__grid, self.__knowledge.getAlpha(self.getQoI()),
 #                        self.getRefinement().getAdmissibleSetCreator()

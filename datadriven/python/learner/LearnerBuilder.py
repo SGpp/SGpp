@@ -432,7 +432,7 @@ class LearnerBuilder(object):
                 self.__builder.getLearner().setGrid(grid)
             else:
                 if self.__dim == None or self.__level == None:
-                    raise AttributeError, "Not all attributes assigned to create grid"
+                    raise AttributeError ("Not all attributes assigned to create grid" )
                 if self.__border != None:
                     if self.__border == BorderTypes.TRAPEZOIDBOUNDARY:
                         grid = Grid.createLinearBoundaryGrid(self.__dim, 1)

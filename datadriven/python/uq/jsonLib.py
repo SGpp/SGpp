@@ -113,8 +113,8 @@ def parseAttribute(attrValue, attrName):
         try:
             s = reprVal(attrValue)
             return '%s: %s,\n' % (reprString(attrName), s)
-        except AttributeError, e:
-            print e
+        except AttributeError as e:
+            print( e )
             return ''
     else:
         return ''

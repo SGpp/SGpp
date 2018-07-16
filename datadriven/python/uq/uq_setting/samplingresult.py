@@ -85,7 +85,7 @@ class Samplingresult:
         elif chunktag is None:
             chunk_ref.update(kwargs)
         else:
-            print "Warning: illegal chunktag", chunktag
+            print( "Warning: illegal chunktag", chunktag )
             return []
         items = []
         if hasattr(self, 'index'):

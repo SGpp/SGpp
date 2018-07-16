@@ -72,7 +72,7 @@ class ScaledMinOfParents(InterpolationAlgorithm):
                 alpha[i] = alpha[i] - nodalValues[i] + self.computeMin(i, grid, alpha, nodalValues) - nodalValues[i]
 
 #             alpha = hierarchize(grid, nodalValues)
-#             print np.all(abs(newAlpha - alpha) < 1e-13)
+#             print( np.all(abs(newAlpha - alpha) < 1e-13) )
 
             gs = grid.getStorage()
 #             for i in xrange(len(alpha)):
@@ -91,11 +91,11 @@ class ScaledMinOfParents(InterpolationAlgorithm):
                 for gp in addedGridPoints:
                     ix = gs.getSequenceNumber(gp)
                     if ix not in neg and alpha[ix] > 1e-13:
-                        print "do not touch the non negative new grid points!!!"
+                        print( "do not touch the non negative new grid points!!!" )
                     if ix in neg and alpha[ix] < -1e-13:
-                        print "negative coefficient found: %s -> %g (nodal=%g)" % ([gp.getStandardCoordinate(d) for d in xrange(gs.getDimension())],
+                        print( "negative coefficient found: %s -> %g (nodal=%g)" % ([gp.getStandardCoordinate(d) for d in xrange(gs.getDimension())], 
                                                                                    alpha[ix],
-                                                                                   nodalValues[ix])
+                                                                                   nodalValues[ix]))
 #                     if ix in neg:
 #                         assert alpha[ix] > -1e-13
         return alpha

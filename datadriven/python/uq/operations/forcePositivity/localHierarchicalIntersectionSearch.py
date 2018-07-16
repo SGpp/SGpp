@@ -319,12 +319,12 @@ class LocalHierarchicalIntersectionCandidates(CandidateSet):
 
             if self.verbose:
                 gs = grid.getStorage()
-                print "# negative candidates : %i/%i" % (len(self.A0), np.sum([1 for i in xrange(gs.getSize()) if alpha[i] < 0.0]))
+                print( "# negative candidates : %i/%i" % (len(self.A0), np.sum([1 for i in xrange(gs.getSize()) if alpha[i] < 0.0])) )
 
             overlappingGridPoints, costsIntersectionSearch = self.findIntersections(self.A0, self.A0.copy(), grid, alpha)
 
             if self.verbose:
-                print "# intersections       : %i" % len(overlappingGridPoints)
+                print( "# intersections       : %i" % len(overlappingGridPoints) )
 
             self.newCandidates = overlappingGridPoints.values()
 

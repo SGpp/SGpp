@@ -13,7 +13,7 @@ def findEquivalent(sample, stats):
         min_diff = 10.
         # DAMN IT => this is shit!!!!
         keys = stats.keys()
-        print "search for equivalent for %s" % (p,)
+        print( "search for equivalent for %s" % (p,) )
         j = 0
         while not found and j < len(keys):
             g = keys[j]
@@ -24,9 +24,9 @@ def findEquivalent(sample, stats):
             if diff < 1e-6:
                 found = True
         if found:
-            print "found equivalent %s" % (g,)
+            print( "found equivalent %s" % (g,) )
         else:
-            print "no equivalent found"
+            print( "no equivalent found" )
 
 
 import json

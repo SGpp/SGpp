@@ -31,7 +31,11 @@ class IntersectionSubspaceCandidates(CandidateSet):
         return ret
 
 
-    def findIntersection(self, gpintersection, (level, index), (leveli, indexi), (levelj, indexj)):
+    def findIntersection(self, gpintersection, location, location_i, location_j):
+        level, index = location 
+        leveli, indexi = location_i
+        levelj, indexj = location_j
+
         # search for intersection
         for idim in xrange(len(level)):
             # search for intersection
@@ -98,14 +102,14 @@ class IntersectionSubspaceCandidates(CandidateSet):
 
             if self.verbose:
                 gs = grid.getStorage()
-                print "# negative subspaces  : %i" % (len(negativeSubspaces),)
+                print( "# negative subspaces  : %i" % (len(negativeSubspaces),) )
 
             self.newCandidates, self.costs = self.findIntersections(grid, negativeSubspaces)
 
             if self.verbose:
-                print "  real costs          : %i" % (self.costs,)
-                print "# considered intersect: %i" % (len(self.newCandidates),)
-                print "-" * 60
+                print( "  real costs          : %i" % (self.costs,) )
+                print( "# considered intersect: %i" % (len(self.newCandidates),) )
+                print( "-" * 60 )
             # -------------------------------------------------------------------------------------------------
             self.candidates = self.newCandidates
         else:

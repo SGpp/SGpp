@@ -56,13 +56,13 @@ class Interpolant(Learner):
                 # ixs = np.argsort(l)
                 # # nodalValues[i] = np.mean(l[ixs[:n]])
                 nodalValues[i] = 0.0
-                print p, nodalValues[i]
+                print( p, nodalValues[i] )
                 cnt += 1
             else:
                 nodalValues[i] = float(points[x])
 
         if cnt > 0:
-            print '%i/%i of the grid points have been set to 0' % (cnt, gs.getSize())
+            print( '%i/%i of the grid points have been set to 0' % (cnt, gs.getSize()) )
             pdb.set_trace()
 
         # hierarchization

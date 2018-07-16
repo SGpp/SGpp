@@ -92,7 +92,7 @@ class ASGCUQManager(object):
             for sample in self.uqSetting.getSamplesStats().values():
                 if sample.getActiveUnit() not in dataContainer:
                     ps.append(sample)
-#             print dataContainer.getSizeTrain(), " = ", self.uqSetting.getSize(), "-", len(ps)
+#             print( dataContainer.getSizeTrain(), " = ", self.uqSetting.getSize(), "-", len(ps) )
 #             assert dataContainer.getSizeTrain() == self.uqSetting.getSize() - len(ps)
 
         resultsDict = self.uqSetting.getTimeDependentResults(self.__timeStepsOfInterest, self._qoi, ps)
@@ -138,18 +138,18 @@ class ASGCUQManager(object):
     def learnDataWithoutTest(self, *args, **kws):
         # learn data
         if self.verbose:
-            print "learning (i=%i, gs=%i, type=%s)" % (self.sampler.getCurrentIterationNumber(),
+            print( "learning (i=%i, gs=%i, type=%s)" % (self.sampler.getCurrentIterationNumber(), 
                                                        self.sampler.getGrid().getSize(),
-                                                       self.sampler.getGrid().getTypeAsString())
+                                                       self.sampler.getGrid().getTypeAsString()))
         self.learner.grid = self.sampler.getGrid()
         for dtype, values in self.dataContainer.items():
             knowledge = {}
             if self.verbose:
-                print KnowledgeTypes.toString(dtype)
+                print( KnowledgeTypes.toString(dtype) )
             # do the learning
             for t, dataContainer in values.items():
                 if self.verbose:
-                    print "t = %g, " % t,
+                    print( "t = %g, " % t, )
                 sys.stdout.flush()
                 if dataContainer is not None:
                     # learn data, if there is any available
@@ -168,12 +168,12 @@ class ASGCUQManager(object):
                     self.stats.updateResults(dtype, t, self.learner)
 
             if self.verbose:
-                print
+                print( )
 
     def learnDataWithTest(self, dataset=None, *args, **kws):
         if self.verbose:
-            print "learning with test (i=%i, gs=%i)" % (self.sampler.getCurrentIterationNumber(),
-                                                        self.sampler.getGrid().getSize())
+            print( "learning with test (i=%i, gs=%i)" % (self.sampler.getCurrentIterationNumber(), 
+                                                        self.sampler.getGrid().getSize()))
         # learn data
         self.learner.grid = self.sampler.getGrid()
         for dtype, values in self.dataContainer.items():
@@ -182,7 +182,7 @@ class ASGCUQManager(object):
             for t in np.sort(values.keys()):
                 dataContainer = values[t]
                 if self.verbose:
-                    print "t = %g, " % t,
+                    print( "t = %g, " % t, )
                 sys.stdout.flush()
                 if dataContainer is not None:
                     # learn data, if there is any available
@@ -201,7 +201,7 @@ class ASGCUQManager(object):
                     self.stats.updateResults(dtype, t, self.learner)
 
             if self.verbose:
-                print
+                print( )
 
 
     def recomputeStats(self):
@@ -226,17 +226,17 @@ class ASGCUQManager(object):
                         # -----------------------------------------------------
                         # do the learning
                         if self.verbose:
-                            print "learning: t = %g," % t,
+                            print( "learning: t = %g," % t, )
                         # learn alpha with corresponding grid
                         self.learner.grid = grid
 
                         if self.learnWithTest:
                             if self.verbose:
-                                print "with test (i=%i, gs=%i)" % (iteration, grid.getSize())
+                                print( "with test (i=%i, gs=%i)" % (iteration, grid.getSize()) )
                             self.learner.learnDataWithTest(dataContainer, dtype=dtype)
                         else:
                             if self.verbose:
-                                print "(i=%i, gs=%i)" % (iteration, grid.getSize())
+                                print( "(i=%i, gs=%i)" % (iteration, grid.getSize()) )
                             self.learner.learnDataWithoutTest(dataContainer, dtype=dtype)
 
                         # -----------------------------------------------------
@@ -251,7 +251,7 @@ class ASGCUQManager(object):
                         self.stats.updateResults(dtype, t, self.learner)
 
             if self.verbose:
-                print
+                print( )
         
 
     def getParameters(self):

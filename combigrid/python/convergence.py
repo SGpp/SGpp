@@ -16,8 +16,8 @@ def integral(dim, f, a=0.0, b=1.0, points=10000):
     for i in range(points):
         vec = DataVector(dim)
         for j in range(dim):
-	    vec[j] = random.random()*(b-a)+a
-	sum += f(vec)
+            vec[j] = random.random()*(b-a)+a
+    sum += f(vec)
     
     return sum/points
 

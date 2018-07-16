@@ -24,7 +24,10 @@ class IntersectionCandidates(CandidateSet):
 
         return ans
 
-    def findIntersection(self, gpintersection, (level, index), (leveli, indexi), (levelj, indexj)):
+    def findIntersection(self, gpintersection, location, location_i, location_j):
+        level, index = location 
+        leveli, indexi = location_i
+        levelj, indexj = location_j 
         # search for intersection
         for idim in xrange(len(level)):
             # search for intersection
@@ -66,8 +69,8 @@ class IntersectionCandidates(CandidateSet):
                 costs += 1
 
         if self.verbose:
-            print "# intersections (k=1) : %i (%i)" % (len(newIntersections),
-                                                       cnt_intersections)
+            print( "# intersections (k=1) : %i (%i)" % (len(newIntersections), 
+                                                       cnt_intersections))
 
         res = {}
         gpintersection = HashGridPoint(numDims)
@@ -103,7 +106,7 @@ class IntersectionCandidates(CandidateSet):
                     costs += 1
 
             if self.verbose:
-                print "# intersections (k=%i) : %i -> %i : resulting unique interactions" % (k, len(newIntersections), len(res))
+                print( "# intersections (k=%i) : %i -> %i : resulting unique interactions" % (k, len(newIntersections), len(res)) )
 
         # flatten list of lists
         return res.values(), costs
@@ -115,14 +118,14 @@ class IntersectionCandidates(CandidateSet):
 
             if self.verbose:
                 gs = grid.getStorage()
-                print "# negative candidates : %i/%i" % (len(negativeGridPoints), gs.getSize())
+                print( "# negative candidates : %i/%i" % (len(negativeGridPoints), gs.getSize()) )
 
             self.newCandidates, self.costs = self.findIntersections(grid, negativeGridPoints)
 
             if self.verbose:
-                print "  real costs          : %i" % (self.costs,)
-                print "# considered intersect: %i" % (len(self.newCandidates),)
-                print "-" * 60
+                print( "  real costs          : %i" % (self.costs,) )
+                print( "# considered intersect: %i" % (len(self.newCandidates),) )
+                print( "-" * 60 )
             # -------------------------------------------------------------------------------------------------
             self.candidates = self.newCandidates
         else:

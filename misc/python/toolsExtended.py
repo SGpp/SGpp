@@ -22,7 +22,7 @@ from array import array
 try:
     import psyco
     psyco.full()
-    print "Using psyco"
+    print ("Using psyco" )
 except:
     pass
 
@@ -497,7 +497,7 @@ def readReferenceMatrix(storage, filename):
     # read reference matrix
     try:
         fd = gzOpen(filename, 'r')
-    except IOError, e:
+    except IOError as e:
         fd = None
         
     if not fd:
@@ -527,7 +527,7 @@ def readDataVector(filename):
     
     try:
         fin = tools.gzOpen(filename, 'r')
-    except IOError, e:
+    except IOError as e:
         fin = None
         
     if not fin:
@@ -594,7 +594,7 @@ def compareBBTMatrices(m1, m2):
     values_ref.sort()
 
     for i in range(n):
-        print values_ref[i], values[i]
+        print (values_ref[i], values[i] )
 
     # check row sum
     v = DataVector(n)
@@ -609,7 +609,7 @@ def compareBBTMatrices(m1, m2):
         values_ref.append(v.sum())
     values_ref.sort()
     for i in range(n):
-        print values_ref[i], values[i]
+        print (values_ref[i], values[i] )
 
     # check col sum
     v = DataVector(n)
@@ -624,7 +624,7 @@ def compareBBTMatrices(m1, m2):
         values_ref.append(v.sum())
     values_ref.sort()
     for i in range(n):
-        print values_ref[i], values[i]
+        print (values_ref[i], values[i] )
 
 #-------------------------------------------------------------------------------
 ##Compares, if two BT matrices are "almost" equal.
@@ -651,7 +651,7 @@ def compareBTMatrices(m1, m2):
         values_ref.append(v.sum())
     values_ref.sort()
     for i in range(n):
-        print values_ref[i], values[i]
+        print (values_ref[i], values[i] )
 
     # check col sum
     v = DataVector(n)
@@ -666,7 +666,7 @@ def compareBTMatrices(m1, m2):
         values_ref.append(v.sum())
     values_ref.sort()
     for i in range(m):
-        print values_ref[i], values[i]
+        print (values_ref[i], values[i] )
 
 #-------------------------------------------------------------------------------
 ## Writes matrix stored in numpy format into a file

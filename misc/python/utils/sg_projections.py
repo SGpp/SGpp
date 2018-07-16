@@ -53,7 +53,7 @@ if __name__ == '__main__':
     
     # check arguments
     if not options.grid:
-        print "--grid missing"
+        print ("--grid missing" )
         parser.parse_args(['-h'])
         
     # read grid
@@ -155,13 +155,13 @@ if __name__ == '__main__':
                 cin.write("""set terminal postscript color enhanced size 10in,10in font "Arial" 10
     set output '%sprojection.eps'"""%(options.prefix) + s)
             cin.close()
-            print couterr.read()
+            print (couterr.read() )
         elif options.png:
             (cin, couterr) = os.popen2('gnuplot')
             cin.write("""set terminal png enhanced small size 1000,1000 enhanced
     set output '%sprojection.png'"""%(options.prefix) + s)
             cin.close()
-            print couterr.read()
+            print (couterr.read() )
         else:
-            #print "set terminal x11"
-            print s
+            #print ("set terminal x11" )
+            print (s )
