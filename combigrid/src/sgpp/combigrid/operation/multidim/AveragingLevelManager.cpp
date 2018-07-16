@@ -32,17 +32,6 @@ double AveragingLevelManager::computePriority(const MultiIndex& level) {
   }
 
   return res;
-
-  //  max over predecessors.This is basically equivalent to classical non predictive
-  //  refinement
-  //  double res = 0;
-  //  for (auto& predLevel : predecessors) {
-  //    if (levelData->containsIndex(predLevel)) {
-  //      auto data = levelData->get(predLevel);
-  //      res = std::max(res, data->norm / static_cast<double>(data->maxNewPoints));
-  //    }
-  //  }
-  //  return res;
 }
 
 AveragingLevelManager::AveragingLevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator)
