@@ -1,6 +1,6 @@
 import numpy as np
 
-from Lognormal import Lognormal
+from .Lognormal import Lognormal
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
 from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
 

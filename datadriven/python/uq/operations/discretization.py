@@ -2,7 +2,7 @@ from pysgpp import (DataVector, DataMatrix,
                     SurplusRefinementFunctor, Grid)
 
 # from epsilonComplexity import getL2EpsilonComplexity
-from sparse_grid import (copyGrid,
+from .sparse_grid import (copyGrid,
                          hierarchize,
                          evalSGFunctionMulti)
 import numpy as np

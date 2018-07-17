@@ -3,11 +3,11 @@ from pysgpp import (DataVector, DataMatrix,
                     GridType_Linear, GridType_Poly)
 
 # from epsilonComplexity import getL2EpsilonComplexity
-from sparse_grid import (hierarchize,
+from .sparse_grid import (hierarchize,
                          evalSGFunctionMulti,
                          getDegree,
                          isRefineable)
-from general import join
+from .general import join
 import numpy as np
 
 

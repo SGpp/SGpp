@@ -27,25 +27,25 @@ __all__ = []
 
 __author__ = "Fabian Franzelin, fabian.franzelin@ipvs.uni-stuttgart.de"
 
-from Beta import Beta
-from Corr import Corr
-from CorrBeta import CorrBeta
-from DataDist import DataDist
-from Dist import Dist
-from J import J
-from Lognormal import Lognormal
-from TLognormal import TLognormal
-from TNormal import TNormal
-from Normal import Normal
-from Uniform import Uniform
-from MultivariateNormal import MultivariateNormal
+from .Beta import Beta
+from .Corr import Corr
+from .CorrBeta import CorrBeta
+from .DataDist import DataDist
+from .Dist import Dist
+from .J import J
+from .Lognormal import Lognormal
+from .TLognormal import TLognormal
+from .TNormal import TNormal
+from .Normal import Normal
+from .Uniform import Uniform
+from .MultivariateNormal import MultivariateNormal
 
-from SGDEdist import SGDEdist
-from LibAGFDist import LibAGFDist
-from DTreesDist import DTreesDist
-from KDEDist import KDEDist
+from .SGDEdist import SGDEdist
+from .LibAGFDist import LibAGFDist
+from .KDEDist import KDEDist
 try:
-    from NatafDist import NatafDist
+    from .NatafDist import NatafDist
+    from .DTreesDist import DTreesDist
 except:
     pass
 

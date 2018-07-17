@@ -14,7 +14,7 @@
 
 """
 
-from Dist import Dist
+from .Dist import Dist
 
 import numpy as np
 

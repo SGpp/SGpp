@@ -16,7 +16,7 @@ from pysgpp.extensions.datadriven.uq.transformation import LinearTransformation
 """
 
 from scipy.stats import norm
-from Dist import Dist
+from .Dist import Dist
 
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
 

@@ -13,7 +13,7 @@ hypercube to an arbitrary hypercube
 
 @version  0.1
 """
-from Transformation import Transformation
+from .Transformation import Transformation
 
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
 

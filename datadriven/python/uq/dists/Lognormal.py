@@ -1,6 +1,6 @@
 from scipy.stats import lognorm
 
-from Dist import Dist
+from .Dist import Dist
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
 import numpy as np
 from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation

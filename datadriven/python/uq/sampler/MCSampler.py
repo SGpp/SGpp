@@ -3,8 +3,8 @@ from pysgpp import (DataVector,
                     LatinHypercubeSampleGenerator,
                     HaltonSampleGenerator,
                     StratifiedSampleGenerator)
-from Sample import Samples, SampleType, DistributionType
-from Sampler import Sampler
+from .Sample import Samples, SampleType, DistributionType
+from .Sampler import Sampler
 
 
 class MCSampler(Sampler):

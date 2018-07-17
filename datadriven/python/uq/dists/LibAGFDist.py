@@ -1,7 +1,7 @@
 import os
 
-from Dist import Dist
-import ConfigParser as cp
+from .Dist import Dist
+import configparser as cp
 import numpy as np
 from pysgpp.extensions.datadriven.uq.operations.general import isNumerical, isList
 from pysgpp import (DataVector, DataMatrix,

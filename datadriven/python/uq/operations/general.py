@@ -1,8 +1,8 @@
 from pysgpp import (Grid, HashGridPoint)
 
-from sparse_grid import createGrid, isValid
+from .sparse_grid import createGrid, isValid
 import numpy as np
-from sparse_grid import(copyGrid,
+from .sparse_grid import(copyGrid,
                         insertPoint,
                         getBasis,
                         getDegree)

@@ -1,1 +1,1 @@
-from leja import leja_points
+from .leja import leja_points
