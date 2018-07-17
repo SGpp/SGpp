@@ -10,17 +10,17 @@ __all__ = []
 
 __author__ = "Fabian Franzelin, fabian.franzelin@ipvs.uni-stuttgart.de"
 
-from discretization import discretize, discretizeFunction
-from discretizeProduct import discretizeProduct
-from epsilonComplexity import getL2EpsilonComplexity
-from general import (isNumerical,
+from .discretization import discretize, discretizeFunction
+from .discretizeProduct import discretizeProduct
+from .epsilonComplexity import getL2EpsilonComplexity
+from .general import (isNumerical,
                      isList,
                      isMatrix,
                      extend_grid_1d,
                      extend_grid,
                      join,
                      project)
-from sparse_grid import (bsplineBoundaryGridTypes,
+from .sparse_grid import (bsplineBoundaryGridTypes,
                          bsplineNoBoundaryGridTypes,
                          bsplineGridTypes,
                          polyBoundaryGridTypes,

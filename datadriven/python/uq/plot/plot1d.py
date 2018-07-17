@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from colors import load_color, load_font_properties
+from .colors import load_color, load_font_properties
 from pysgpp import DataVector, DataMatrix
 from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import dehierarchize

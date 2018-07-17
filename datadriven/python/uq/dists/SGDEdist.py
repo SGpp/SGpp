@@ -20,9 +20,9 @@ import tempfile
 import uuid
 import json
 
-from EstimatedDist import EstimatedDist
+from .EstimatedDist import EstimatedDist
 
-import ConfigParser as cp
+import configparser as cp
 import numpy as np
 from pysgpp.extensions.datadriven.uq.operations import isNumerical, isList
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunctionMulti

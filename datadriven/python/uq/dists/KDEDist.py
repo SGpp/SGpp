@@ -1,6 +1,6 @@
 import numpy as np
 
-from Dist import Dist
+from .Dist import Dist
 from pysgpp import (DataVector, DataMatrix, KernelDensityEstimator,
                     KernelType_GAUSSIAN,
                     createOperationRosenblattTransformationKDE,
@@ -8,7 +8,7 @@ from pysgpp import (DataVector, DataMatrix, KernelDensityEstimator,
                     KernelType_EPANECHNIKOV)
 from pysgpp.extensions.datadriven.uq.operations.general import isNumerical, isList, isMatrix
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
-from EstimatedDist import EstimatedDist
+from .EstimatedDist import EstimatedDist
 from pysgpp.pysgpp_swig import BandwidthOptimizationType_NONE, \
     BandwidthOptimizationType_MAXIMUMLIKELIHOOD, \
     BandwidthOptimizationType_SILVERMANSRULE

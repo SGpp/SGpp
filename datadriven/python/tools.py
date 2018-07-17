@@ -826,7 +826,7 @@ def normalize(data, border=0.0, filename=None, minvals=None, maxvals=None, verbo
 # @param border Classes will be differentiated between greater and less then border
 # @param minborder All classes under the minborder are processed as if they were over border
 # @param verbose Provide additional output
-def normalizeClasses(data, border=0.0, minborder=-sys.maxint-1, verbose=False):
+def normalizeClasses(data, border=0.0, minborder=-sys.maxsize-1, verbose=False):
     if verbose:
         print ("Cut-off at", border)
     for dataset in data:

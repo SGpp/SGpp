@@ -15,7 +15,7 @@
 """
 
 from scipy.stats import truncnorm, norm
-from Dist import Dist
+from .Dist import Dist
 
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
 

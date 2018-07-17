@@ -1,4 +1,4 @@
-from Transformation import Transformation
+from .Transformation import Transformation
 import numpy as np
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
 

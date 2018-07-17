@@ -174,7 +174,7 @@ def example3():
     firstParam = [0.2, 0.6, 0.7]
     secondParam = [0.3, 0.9, 1.0]
     parameters = pysgpp.DataMatrix([firstParam, secondParam])
-    print parameters
+    print( parameters )
 
     ## Let's use the simple interface for this example and stop the time:
     stopwatch = pysgpp.Stopwatch()
@@ -356,8 +356,8 @@ def example7(dtype="uniform", maxLevel=2):
 
     ## We can also fetch the used grid points and plot the grid:
     grid = levelManager.getGridPointMatrix()
-    gridList = np.array([[grid.get(r, c) for c in xrange(grid.getNcols())]
-                         for r in xrange(grid.getNrows())])
+    gridList = np.array([[grid.get(r, c) for c in range(grid.getNcols())]
+                         for r in range(grid.getNrows())])
 
     initialize_plotting_style()
 ##     def g(x, y):
@@ -413,9 +413,9 @@ def example7(dtype="uniform", maxLevel=2):
             ax.axis('off')
 
         for level in levels:
-            print tr, level
+            print( tr, level )
             if tr == "ct" and np.sum(level) > maxLevel:
-                print "skip %s" % (level,)
+                print( "skip %s" % (level,) )
                 continue
 
             ax = axarr[level[0], level[1]]
@@ -431,8 +431,8 @@ def example7(dtype="uniform", maxLevel=2):
 
             xv, yv = np.meshgrid(xs, ys, sparse=False, indexing='xy')
 
-            for i in xrange(len(xs)):
-                for j in xrange(len(ys)):
+            for i in range(len(xs)):
+                for j in range(len(ys)):
                     ax.plot(yv[j, i], xv[j, i], color=load_color(0),
                             marker="o", markersize=10)
             ax.set_title(r"$(%i, %i)$" % (level[0] + 1, level[1] + 1),
@@ -471,7 +471,7 @@ def example8(dist_type="uniform"):
 
     q = 3
     operation.getLevelManager().addRegularLevels(q)
-    print "Total function evaluations: %i" % operation.numGridPoints()
+    print( "Total function evaluations: %i" % operation.numGridPoints() )
     ## compute variance of the interpolant
 
     surrogateConfig = pysgpp.CombigridSurrogateModelConfiguration()
@@ -482,10 +482,10 @@ def example8(dist_type="uniform"):
 
     n = 10000
     values = [g(pysgpp.DataVector(xi)) for xi in U.rvs(n)]
-    print "E(u)   = %g ~ %g" % (np.mean(values),
-                                pce.mean())
-    print "Var(u) = %g ~ %g" % (np.var(values),
-                                pce.variance())
+    print( "E(u)   = %g ~ %g" % (np.mean(values),
+                                pce.mean()))
+    print( "Var(u) = %g ~ %g" % (np.var(values),
+                                pce.variance()))
 
 
 ## Call the examples
@@ -517,5 +517,5 @@ example7(dtype="l2leja")
 
 ## print("\nExample 8:")
 ## example8(dist_type="beta")
-## print "-" * 80
+## print( "-" * 80 )
 ## example8(dist_type="uniform")

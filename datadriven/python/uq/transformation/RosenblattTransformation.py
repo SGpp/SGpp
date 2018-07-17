@@ -15,7 +15,7 @@ inverse of a given distrubution function
 
 """
 
-from Transformation import Transformation
+from .Transformation import Transformation
 
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
 

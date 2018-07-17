@@ -13,8 +13,8 @@
 @version  0.1
 
 """
-from Dist import Dist
-from SGDEdist import SGDEdist
+from .Dist import Dist
+from .SGDEdist import SGDEdist
 import numpy as np
 from pysgpp.extensions.datadriven.uq.operations import discretizeFunction
 
