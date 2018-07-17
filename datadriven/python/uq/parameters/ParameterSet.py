@@ -29,7 +29,7 @@ from pysgpp.extensions.datadriven.uq.dists import J, Beta, Lognormal, TLognormal
 from pysgpp.extensions.datadriven.uq.transformation import (JointTransformation,
                                                             RosenblattTransformation,
                                                             LinearTransformation)
-from Parameter import Parameter
+from .Parameter import Parameter
 
 import numpy as np
 

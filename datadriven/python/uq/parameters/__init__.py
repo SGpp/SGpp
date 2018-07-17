@@ -13,10 +13,10 @@ __all__ = ["ParameterBuilder", "Parameter", "ParameterSet",
 __author__ = "Fabian Franzelin, fabian.franzelin@ipvs.uni-stuttgart.de"
 
 
-from DeterministicParameter import DeterministicParameter
-from Parameter import Parameter
-from ParameterBuilder import (ParameterBuilder,
+from .DeterministicParameter import DeterministicParameter
+from .Parameter import Parameter
+from .ParameterBuilder import (ParameterBuilder,
                               UncertainParameterBuilder,
                               DeterministicParameterBuilder)
-from ParameterSet import ParameterSet
-from UncertainParameter import UncertainParameter
+from .ParameterSet import ParameterSet
+from .UncertainParameter import UncertainParameter
