@@ -1,4 +1,4 @@
-from Parameter import Parameter
+from .Parameter import Parameter
 
 
 class UncertainParameter(Parameter):
