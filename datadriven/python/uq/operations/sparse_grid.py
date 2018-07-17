@@ -36,7 +36,8 @@ from pysgpp.pysgpp_swig import IndexVector
 
 #######################################################################
 bsplineBoundaryGridTypes = [GridType_BsplineBoundary,
-                            GridType_BsplineClenshawCurtis]
+                            GridType_BsplineClenshawCurtis,
+                            GridType_NakBsplineBoundary]
 bsplineNoBoundaryGridTypes = [GridType_Bspline,
                               GridType_ModBspline,
                               GridType_ModBsplineClenshawCurtis]

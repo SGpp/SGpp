@@ -5,8 +5,8 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/solver/Armadillo.hpp>
+#include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/solver/BiCGStab.hpp>
 #include <sgpp/optimization/sle/solver/Eigen.hpp>
 #include <sgpp/optimization/sle/solver/GaussianElimination.hpp>
@@ -14,8 +14,8 @@
 #include <sgpp/optimization/sle/solver/UMFPACK.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 
-#include <cstddef>
 #include <algorithm>
+#include <cstddef>
 #include <map>
 #include <string>
 #include <vector>
