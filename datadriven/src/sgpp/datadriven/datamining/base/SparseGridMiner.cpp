@@ -43,12 +43,17 @@ void SparseGridMiner::learn() {
     std::cout <<  "###############" << "Dataset iteration " << (iteration++) << std::endl <<
         "Number of instances: " << numInstances << std::endl;
     double stdDeviation = 0.0;
-    double scoreTrain = 0.0, scoreTest = 0.0;
-    scorer->calculateScore(*fitter, *dataset, &scoreTrain, &scoreTest,
-        &stdDeviation);
+    double scoreTrain = 0.0, scoreVal = 0.0;
+
+    // Train fitter on new data
+    fitter->update(*dataset);
+
+    // Evaluate score on training and validation data
+    scoreTrain = scorer->test(*fitter, *dataset);
+    scoreVal = scorer->test(*fitter, *(dataSource->getNextValidationData()));
 
     // Refine the model
-    monitor->pushToBuffer(numInstances, scoreTest, scoreTrain);
+    monitor->pushToBuffer(numInstances, scoreVal, scoreTrain);
     size_t refinements = monitor->refinementsNecessary();
     while (refinements--) {
       fitter->refine();
@@ -56,10 +61,10 @@ void SparseGridMiner::learn() {
 
     std::cout << "Iteration finished." << std::endl
               << "###############" << std::endl
-              << "Score: " << scoreTest << std::endl
+              << "Score: " << scoreVal << std::endl
               << "Standard Deviation: " << stdDeviation << std::endl
               << "###############" << std::endl;
-    totalScore += scoreTest;
+    totalScore += scoreVal;
     totalStdDeviation += stdDeviation;
   }
   totalScore /= static_cast<double>(iteration);

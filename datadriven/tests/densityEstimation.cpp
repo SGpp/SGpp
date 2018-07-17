@@ -40,7 +40,7 @@ double testDistribution(std::string testCSV, std::string config) {
   miner->learn();
   ModelFittingBase *model = miner->getModel();
   // Test
-  CSVFileSampleProvider csv;
+  CSVFileSampleProvider csv(0.0);
   csv.readFile(testCSV, true);
   auto testDataset = *(csv.getAllSamples());
   DataVector predictions(testDataset.getNumberInstances());

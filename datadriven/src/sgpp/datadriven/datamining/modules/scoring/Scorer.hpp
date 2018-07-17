@@ -93,6 +93,15 @@ class Scorer {
   virtual void calculateScore(ModelFittingBase& model, Dataset& dataset, double *scoreTrain,
                                 double *scoreTest, double* stdDeviation = nullptr) = 0;
 
+  /**
+   * evaluate the accuracy on the test set using the #metric.
+   *
+   * @param model model to be fitted based on the train dataset.
+   * @param testDataset dataset used quantify accuracy using #metric.
+   * @return accuracy of the fit.
+   */
+  double test(ModelFittingBase& model, Dataset& testDataset);
+
  protected:
   /**
    * Helper method to generate an ordering for the samples of the dataset based on the shuffling
@@ -119,15 +128,6 @@ class Scorer {
    */
   void splitSet(const Dataset& fullDataset, Dataset& trainDataset, Dataset& testDataset,
                 const std::vector<size_t>& randomizedIndices, size_t offset = 0);
-
-  /**
-   * evaluate the accuracy on the test set using the #metric.
-   *
-   * @param model model to be fitted based on the train dataset.
-   * @param testDataset dataset used quantify accuracy using #metric.
-   * @return accuracy of the fit.
-   */
-  double test(ModelFittingBase& model, Dataset& testDataset);
 
   /**
    * Fit the model on the train dataset and evaluate the accuracy on the test set. Includes some

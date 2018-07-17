@@ -15,12 +15,11 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
-
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationClassification.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 
 #include <vector>
 #include <map>
@@ -105,6 +104,14 @@ class ModelFittingClassification : public ModelFittingBase {
    */
   MultiGridRefinementFunctor *getRefinementFunctor(
       std::vector<Grid*> grids, std::vector<DataVector*> surpluses);
+
+  /**
+   * Creates a density estimation model that fits the model settings.
+   * @param densityEstimationConfig configuration for the density estimation
+   * @return a new density estimation model
+   */
+  std::unique_ptr<ModelFittingDensityEstimation> createNewModel(
+      sgpp::datadriven::FitterConfigurationDensityEstimation& densityEstimationConfig);
 
   // The models for each class
   std::vector<std::unique_ptr<ModelFittingDensityEstimation>> models;

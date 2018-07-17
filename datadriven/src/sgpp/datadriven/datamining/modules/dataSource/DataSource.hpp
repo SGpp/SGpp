@@ -73,6 +73,12 @@ class DataSource {
    */
   size_t getCurrentIteration() const;
 
+  /**
+   * Returns the data that is used for validation
+   * @return pointer to the validation dataset
+   */
+  Dataset *getNextValidationData();
+
  private:
   /**
    * Configuration file that determines all relevant properties of the object.

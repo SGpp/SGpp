@@ -100,6 +100,8 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
     config.batchSize = parseUInt(*dataSourceConfig, "batchSize", defaults.batchSize, "dataSource");
     config.hasTargets =
         parseBool(*dataSourceConfig, "hasTargets", defaults.hasTargets, "dataSource");
+    config.validationPortion = parseDouble(*dataSourceConfig, "validationPortion",
+        defaults.validationPortion, "dataSource");
 
     // parse file type
     if (dataSourceConfig->contains("fileType")) {
@@ -659,16 +661,11 @@ const {
       hasFitterConfig() ? (*configFile)[fitter].contains("learner") : false;
 
   if (hasLearnerConfig) {
+    std::cout << "Has Learner config";
     auto learnerConfig = static_cast<DictNode*>(&(*configFile)[fitter]["learner"]);
 
-    // Parse beta
-    if (learnerConfig->contains("beta")) {
-      config.beta = (*learnerConfig)["beta"].getDouble();
-    } else {
-      std::cout << "# Did not find learnerConfig[beta]. Setting default beta " <<
-          defaults.beta << std::endl;
-      config.beta = defaults.beta;
-    }
+    config.beta = parseDouble(*learnerConfig, "beta", defaults.beta, "learnerConfig");
+    config.usePrior = parseBool(*learnerConfig, "usePrior", defaults.usePrior, "learnerConfig");
   }
 
   return hasLearnerConfig;

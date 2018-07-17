@@ -16,8 +16,11 @@
 #include <sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/MultipleClassRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 #include <sgpp/datadriven/datamining/configuration/RefinementFunctorTypeParser.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 
 #include <string>
 #include <vector>
@@ -47,7 +50,16 @@ double ModelFittingClassification::evaluate(const DataVector& sample) {
     std::string errorMessage = "Prediction impossible! No models were trained!";
     throw application_exception(errorMessage.c_str());
   } else {
+    auto& learnerConfig = this->config->getLearnerConfig();
     double prediction = 0.0, maxDensity = 0.0;
+
+    // Pre compute the total number of instances
+    size_t numInstances = 0;
+    for (auto& p : classIdx) {
+      size_t idx = p.second;
+      numInstances += classNumberInstances[idx];
+    }
+
     bool evaluatedModel = false;
     for (auto& p : classIdx) {
       double label = p.first;
@@ -57,8 +69,18 @@ double ModelFittingClassification::evaluate(const DataVector& sample) {
          continue;
       }
       double classConditionalDensity = models[idx]->evaluate(sample);
-      if (!evaluatedModel || classConditionalDensity > maxDensity) {
-        maxDensity = classConditionalDensity;
+      double prior;
+      if (learnerConfig.usePrior) {
+        // Prior is realtive frequency of instances of this class
+        prior = static_cast<double>(classNumberInstances[idx]) / static_cast<double>(numInstances);
+      } else {
+        // Uniform prior
+        prior = 1.0;
+      }
+      double density = prior * classConditionalDensity;
+
+      if (!evaluatedModel || density > maxDensity) {
+        maxDensity = density;
         prediction = label;
       }
         evaluatedModel = true;
@@ -101,6 +123,22 @@ void ModelFittingClassification::fit(Dataset& newDataset) {
   }
 }
 
+std::unique_ptr<ModelFittingDensityEstimation> ModelFittingClassification::createNewModel(
+    sgpp::datadriven::FitterConfigurationDensityEstimation& densityEstimationConfig) {
+  switch (densityEstimationConfig.getDensityEstimationConfig().type_) {
+    case DensityEstimationType::CG : {
+      return std::make_unique<ModelFittingDensityEstimationCG>(densityEstimationConfig);
+    }
+    case DensityEstimationType::Decomposition : {
+      return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig);
+    }
+    default : {
+      std::string errMsg = "Unknown density estimation type";
+      throw application_exception(errMsg.c_str());
+    }
+  }
+}
+
 size_t ModelFittingClassification::labelToIdx(double label) {
   if (classIdx.find(label) == classIdx.end()) {
     // New class
@@ -108,9 +146,8 @@ size_t ModelFittingClassification::labelToIdx(double label) {
     classIdx[label] = idx;
 
     // Create a new model
-    std::unique_ptr<ModelFittingDensityEstimation> model =
-        std::make_unique<ModelFittingDensityEstimation>(
-            dynamic_cast<sgpp::datadriven::FitterConfigurationDensityEstimation&>(*config));
+    std::unique_ptr<ModelFittingDensityEstimation> model = createNewModel(
+                dynamic_cast<sgpp::datadriven::FitterConfigurationDensityEstimation&>(*config));
     models.push_back(std::move(model));
 
     // Count the number of instances for this class

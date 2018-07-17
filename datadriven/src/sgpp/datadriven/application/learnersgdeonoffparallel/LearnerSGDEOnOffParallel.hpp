@@ -81,8 +81,7 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
   void trainParallel(size_t batchSize, size_t maxDataPasses,
                      std::string refinementFunctorType,
                      std::string refMonitor, size_t refPeriod, double accDeclineThreshold,
-                     size_t accDeclineBufferSize, size_t minRefInterval, bool enableCv,
-                     size_t nextCvStep);
+                     size_t accDeclineBufferSize, size_t minRefInterval);
 
   /**
    * Trains the learner with the given data batch

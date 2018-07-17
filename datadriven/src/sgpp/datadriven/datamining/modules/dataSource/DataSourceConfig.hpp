@@ -49,6 +49,10 @@ struct DataSourceConfig {
    * size of a batch - if 0, take all available samples.
    */
   size_t batchSize = 0;
+  /*
+   * The portion of the dataset that is used for validation
+   */
+  double validationPortion = 0.3;
   /**
    * whether the file has targets (i.e. supervised learning)
    */

@@ -80,5 +80,7 @@ const DataSourceConfig& DataSource::getConfig() const { return config; }
 
 size_t DataSource::getCurrentIteration() const { return currentIteration; }
 
+Dataset *DataSource::getNextValidationData() { return sampleProvider->getValidationData(); }
+
 } /* namespace datadriven */
 } /* namespace sgpp */

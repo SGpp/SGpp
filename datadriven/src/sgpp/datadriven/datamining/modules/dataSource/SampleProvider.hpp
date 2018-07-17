@@ -63,6 +63,12 @@ class SampleProvider {
    * @return dimensionality of the #sgpp::datadriven::Dataset.
    */
   virtual size_t getDim() const = 0;
+
+  /**
+   * Returns the data that is used for validation
+   * @return pointer to the validation dataset
+   */
+  virtual Dataset *getValidationData() = 0;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -108,9 +108,9 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(
 
 void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string refType,
                              std::string refMonitor, size_t refPeriod, double accDeclineThreshold,
-                             size_t accDeclineBufferSize, size_t minRefInterval, bool enableCv,
-                             size_t nextCvStep,
+                             size_t accDeclineBufferSize, size_t minRefInterval,
                              sgpp::base::AdpativityConfiguration& adaptivityConfig,
+                             sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
                              sgpp::datadriven::DensityEstimationConfiguration&
                              densityEstimationConfig) {
   // counts total number of processed data points
@@ -173,14 +173,6 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
 
       auto begin = std::chrono::high_resolution_clock::now();
 
-      // check if cross-validation should be performed
-      bool doCv = false;
-      if (enableCv) {
-        if (nextCvStep == step) {
-          doCv = true;
-          nextCvStep *= 5;
-        }
-      }
       // assemble next batch
       Dataset currentBatch(batchSize, dim);
       for (size_t j = 0; j < batchSize; j++) {
@@ -194,7 +186,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
       cnt += batchSize;
 
       // train the model with current batch
-      train(currentBatch, adaptivityConfig, densityEstimationConfig, doCv, &refineCoarse);
+      train(currentBatch, adaptivityConfig, densityEstimationConfig, &refineCoarse);
 
       totalInstances += currentBatch.getNumberInstances();
 
@@ -213,7 +205,8 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
       // and coarsening methods can be applied
       while (refinementsNecessary > 0) {
         std::cout << "refinement at iteration: " << totalInstances << "\n";
-        refine(*monitor, adaptivityConfig, densityEstimationConfig, refineCoarse, refType);
+        refine(*monitor, adaptivityConfig, regularizationConfig, densityEstimationConfig,
+            refineCoarse, refType);
         refCnt += 1;
         refinementsNecessary--;
       }
@@ -241,7 +234,6 @@ void LearnerSGDEOnOff::train(
     Dataset& dataset,
     sgpp::base::AdpativityConfiguration& adaptivityConfig,
     sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
-    bool doCv,
     std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse) {
   size_t dim = dataset.getDimension();
 
@@ -271,13 +263,12 @@ void LearnerSGDEOnOff::train(
   }
 
   // compute density functions
-  train(trainDataClasses, densityEstimationConfig, doCv, refineCoarse);
+  train(trainDataClasses, densityEstimationConfig, refineCoarse);
 }
 
 void LearnerSGDEOnOff::train(std::vector<std::pair<DataMatrix*, double>>& trainDataClasses,
                              sgpp::datadriven::DensityEstimationConfiguration&
                             densityEstimationConfig,
-                             bool doCv,
                              std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse) {
   size_t numberOfDataPoints = 0;
   for (size_t i = 0; i < trainDataClasses.size(); i++) {
@@ -290,7 +281,7 @@ void LearnerSGDEOnOff::train(std::vector<std::pair<DataMatrix*, double>>& trainD
       // update density function for current class
       size_t classIndex = densityFunctions[i].second;
       densityFunctions[i].first->computeDensityFunction(
-          *(alphas[i]), *p.first, *(grids[classIndex]), densityEstimationConfig, true, doCv,
+          *(alphas[i]), *p.first, *(grids[classIndex]), densityEstimationConfig, true, false,
           &(*refineCoarse)[i].first, (*refineCoarse)[i].second);
       (*refineCoarse)[i].first.clear();
       (*refineCoarse)[i].second = 0;
@@ -474,15 +465,6 @@ void LearnerSGDEOnOff::getDensities(DataVector& point, DataVector& density) cons
   }
 }
 
-void LearnerSGDEOnOff::setCrossValidationParameters(int lambdaStep, double lambdaStart,
-                                                    double lambdaEnd, DataMatrix* test,
-                                                    DataMatrix* testRes, bool logscale) {
-  for (auto& destFunction : densityFunctions) {
-    destFunction.first->setCrossValidationParameters(lambdaStep, lambdaStart, lambdaEnd, test,
-                                                     testRes, logscale);
-  }
-}
-
 /*double LearnerSGDEOnOff::getBestLambda() {
   // return online->getBestLambda();
   return 0.; // TODO
@@ -517,6 +499,7 @@ void LearnerSGDEOnOff::updateAlpha(size_t classIndex, std::list<size_t>* deleted
 
 void LearnerSGDEOnOff::refine(RefinementMonitor& monitor,
                               sgpp::base::AdpativityConfiguration& adaptivityConfig,
+                              sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
                               sgpp::datadriven::DensityEstimationConfiguration&
                               densityEstimationConfig,
                               std::vector<std::pair<std::list<size_t>, size_t>>& refineCoarse,
@@ -680,7 +663,7 @@ void LearnerSGDEOnOff::refine(RefinementMonitor& monitor,
       // appropriate to redesign the functors in a way, that already considers these points
       // when coarsening the grid itself.
       densEst->updateSystemMatrixDecomposition(densityEstimationConfig,
-          *(grids[idx]), newPoints, deletedGridPoints, densEst->getBestLambda());
+          *(grids[idx]), newPoints, deletedGridPoints, regularizationConfig.lambda_);
 
 
       // update alpha vector
