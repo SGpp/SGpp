@@ -32,13 +32,8 @@ DBMatOnlineDE::DBMatOnlineDE(DBMatOffline& offline, Grid& grid, double lambda, d
     : DBMatOnline{offline},
       beta(beta),
       totalPoints(0),
-      canCV(false),
-      lambdaStep(0),
-      lambdaStart(0),
-      lambdaEnd(0),
       testMat(nullptr),
       testMatRes(nullptr),
-      cvLogscale(false),
       normFactor(1.),
       lambda(lambda) {
   functionComputed = false;
@@ -136,14 +131,10 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Gri
     // std::cout << b.getSize() << std::endl;
 
     if (save_b) {
-        // Note that this is deprecated. Computing the DE should always be done after
-        // the rhs was already restructured (we want the refinement information to be seperate
-        // from the DE information). It is just included such that old learner classes
-        // can still use this system
         updateRhs(grid.getSize(), deletedPoints);
+        // Old rhs is weighted by beta
+        bSave.mult(beta);
         b.add(bSave);
-        // b.mult(beta);
-
 
       // Update weighting based on processed data points
       for (size_t i = 0; i < b.getSize(); i++) {
@@ -220,25 +211,6 @@ void DBMatOnlineDE::eval(DataVector& alpha, DataMatrix& values, DataVector& resu
 
 
 bool DBMatOnlineDE::isComputed() { return functionComputed; }
-
-void DBMatOnlineDE::setCrossValidationParameters(int lambda_step, double lambda_start,
-                                                 double lambda_end, DataMatrix* test,
-                                                 DataMatrix* test_cc, bool logscale) {
-  lambdaStep = lambda_step;
-  cvLogscale = logscale;
-  if (cvLogscale) {
-    lambdaStart = std::log(lambda_start);
-    lambdaEnd = std::log(lambda_end);
-  } else {
-    lambdaStart = lambda_start;
-    lambdaEnd = lambda_end;
-  }
-  if (test != nullptr) testMat = test;
-  if (test_cc != nullptr) testMatRes = test_cc;
-  canCV = true;
-}
-
-double DBMatOnlineDE::getBestLambda() { return lambda; }
 
 void DBMatOnlineDE::setBeta(double newBeta) { beta = newBeta; }
 

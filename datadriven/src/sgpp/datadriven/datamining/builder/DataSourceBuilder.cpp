@@ -71,9 +71,9 @@ DataSource* DataSourceBuilder::assemble() const {
   SampleProvider* sampleProvider = nullptr;
 
   if (config.fileType == DataSourceFileType::ARFF) {
-    sampleProvider = new ArffFileSampleProvider;
+    sampleProvider = new ArffFileSampleProvider(config.validationPortion);
   } else if (config.fileType == DataSourceFileType::CSV) {
-    sampleProvider = new CSVFileSampleProvider;
+    sampleProvider = new CSVFileSampleProvider(config.validationPortion);
   } else {
     data_exception("Unknown file type");
   }

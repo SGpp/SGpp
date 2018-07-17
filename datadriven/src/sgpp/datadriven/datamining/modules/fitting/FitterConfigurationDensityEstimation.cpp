@@ -12,6 +12,7 @@
 
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
+#include <sgpp/solver/TypesSolver.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -47,6 +48,17 @@ void FitterConfigurationDensityEstimation::setupDefaults() {
 
   // configure learner
   learnerConfig.beta = 1.0;
+
+  // Configure solvers for CG
+  solverFinalConfig.maxIterations_ = 100;
+  solverFinalConfig.eps_ = 1e-14;
+  solverFinalConfig.threshold_ = 1e-14;
+  solverFinalConfig.type_ = sgpp::solver::SLESolverType::CG;
+
+  solverRefineConfig.maxIterations_ = 100;
+  solverRefineConfig.eps_ = 1e-14;
+  solverRefineConfig.threshold_ = 1e-14;
+  solverRefineConfig.type_ = sgpp::solver::SLESolverType::CG;
 }
 
 void FitterConfigurationDensityEstimation::readParams(const DataMiningConfigParser& parser) {
@@ -57,6 +69,7 @@ void FitterConfigurationDensityEstimation::readParams(const DataMiningConfigPars
   parser.getFitterSolverRefineConfig(solverRefineConfig, solverRefineConfig);
   parser.getFitterSolverFinalConfig(solverFinalConfig, solverFinalConfig);
   parser.getFitterRegularizationConfig(regularizationConfig, regularizationConfig);
+  parser.getFitterDensityEstimationConfig(densityEstimationConfig, densityEstimationConfig);
   parser.getFitterDatabaseConfig(databaseConfig, databaseConfig);
   parser.getFitterLearnerConfig(learnerConfig, learnerConfig);
 }

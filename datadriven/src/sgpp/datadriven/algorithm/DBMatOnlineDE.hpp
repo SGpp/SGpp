@@ -102,26 +102,6 @@ class DBMatOnlineDE : public DBMatOnline {
   bool isComputed();
 
   /**
-   * Sets the crossvalidation parameters
-   *
-   * @param lambda_step how many different lambdas are tried out
-   * @param lambda_start The smallest possible lambda
-   * @param lambda_end The biggest possible lambda
-   * @param test The test matrix. If NULL, the value old is not overwritten.
-   * @param test_cc The results of the points in the test matrix.
-   *        If NULL, the value old is not overwritten.
-   * @param logscale Indicates whether the values between lambda_start and
-   *        lambda_end are searched using logscale or not
-   */
-  void setCrossValidationParameters(int lambda_step, double lambda_start, double lambda_end,
-                                    DataMatrix* test, DataMatrix* test_cc, bool logscale);
-
-  /**
-   * Returns the last best lamda
-   */
-  double getBestLambda();
-
-  /**
    * Sets the weighting factor
    *
    * @param beta the new weighting factor. If set to 0, no plasticity takes
@@ -162,11 +142,7 @@ class DBMatOnlineDE : public DBMatOnline {
   DataVector bTotalPoints;
   double beta;
   size_t totalPoints;
-  bool canCV;
-  int lambdaStep;
-  double lambdaStart, lambdaEnd;
   DataMatrix *testMat, *testMatRes;
-  bool cvLogscale;
   double normFactor;
   double lambda;
   size_t oDim;

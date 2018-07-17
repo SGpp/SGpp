@@ -21,9 +21,15 @@ namespace datadriven {
 struct LearnerConfiguration {
   /**
   * Weigting factor for older batches
-  * TODO(fuchsgruber): This is not yet part of DBMatOnlineDE
+  * TODO(fuchsgruber): This is not yet part of DBMatOnlineDE and also not the CG Model
   */
   double beta = 1.0;
+
+  /**
+   * Determine if the relative frequency of instances of a class should be used as prior
+   * (false corresponds to a uniform prior)
+   */
+  bool usePrior = false;
 };
 }  // namespace datadriven
 }  // namespace sgpp

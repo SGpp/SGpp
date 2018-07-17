@@ -31,8 +31,9 @@ class CSVFileSampleProvider : public FileSampleProvider {
  public:
   /**
    * Default constructor
+   * @param validationPortion portion of data that is used for validation
    */
-  CSVFileSampleProvider();
+  explicit CSVFileSampleProvider(double validationPortion);
 
   /**
    * Clone Pattern to allow copying of derived classes.
@@ -64,7 +65,18 @@ class CSVFileSampleProvider : public FileSampleProvider {
    */
   void readString(const std::string& input, bool hasTargets) override;
 
+  /**
+   * Returns the data that is used for validation
+   * @return pointer to the validation dataset
+   */
+  Dataset *getValidationData();
+
  private:
+  /**
+   * Portion of the dataset that is used for validation
+   */
+  double validationPortion;
+
   /**
    * #sgpp::datadriven::Dataset containing the samples read from file or string.
    */

@@ -18,8 +18,7 @@
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/SplittingScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
-
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <string>
 
 namespace sgpp {
@@ -49,7 +48,7 @@ ModelFittingBase* DensityEstimationMinerFactory::createFitter(
     const DataMiningConfigParser& parser) const {
   FitterConfigurationDensityEstimation config{};
   config.readParams(parser);
-  return new ModelFittingDensityEstimation(config);
+  return new ModelFittingDensityEstimationOnOff(config);
 }
 
 Scorer* DensityEstimationMinerFactory::createScorer(

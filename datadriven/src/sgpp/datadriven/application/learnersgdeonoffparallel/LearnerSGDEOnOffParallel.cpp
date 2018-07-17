@@ -84,8 +84,7 @@ void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPas
                                              std::string refinementFunctorType,
                                              std::string refMonitor,
                                              size_t refPeriod, double accDeclineThreshold,
-                                             size_t accDeclineBufferSize, size_t minRefInterval,
-                                             bool enableCv, size_t nextCvStep) {
+                                             size_t accDeclineBufferSize, size_t minRefInterval) {
   if (!MPIMethods::isMaster()) {
     while (workerActive || MPIMethods::hasPendingOutgoingRequests()) {
       D(std::cout << "Client looping" << std::endl;)
@@ -144,15 +143,7 @@ void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPas
       D(std::cout << "#processing batch: " << processedPoints << "\n";
             auto begin = std::chrono::high_resolution_clock::now();)
 
-      // check if cross-validation should be performed
-      bool doCrossValidation = false;
-      if (enableCv) {
-        if (nextCvStep == processedPoints) {
-          doCrossValidation = true;
-          nextCvStep *= 5;
-        }
-      }
-      size_t batchSize = assignBatchToWorker(processedPoints, doCrossValidation);
+      size_t batchSize = assignBatchToWorker(processedPoints, false);
       processedPoints += batchSize;
 
       std::cout << processedPoints << " have already been assigned." << std::endl;
@@ -337,7 +328,7 @@ LearnerSGDEOnOffParallel::computeNewSystemMatrixDecomposition(
                                                *(grids[classIndex]),
                                                refinementResult.addedGridPoints.size(),
                                                refinementResult.deletedGridPointsIndices,
-                                               densEst->getBestLambda());
+                                               regularizationConfig.lambda_);
 
   setLocalGridVersion(classIndex, gridVersion);
   D(std::cout << "Send system matrix update to master for class " << classIndex << std::endl;)
