@@ -183,7 +183,7 @@ class RefinementWrapper:
                                                     degree,
                                                     growthFactor,
                                                     orthogonal_basis=self.orthogonal_basis)
-            print self.tensor_operation.getLevelManager()
+            print( self.tensor_operation.getLevelManager() )
             self.tensor_operation.getLevelManager().addRegularLevels(1)
             self.tensor_operation.setLevelManager(self.levelManager)
         else:
@@ -269,7 +269,7 @@ if __name__ == "__main__":
             y_surrogate = refinement_wrapper.evaluate(n)
 
             if i == 0 or numGridPoints[-1] < n_grid_points:
-                print gridType, basisType, levelManagerType, n, n_grid_points
+                print( gridType, basisType, levelManagerType, n, n_grid_points )
 
                 l2error = np.sqrt(np.mean((y - y_surrogate) ** 2))
                 l2errors = np.append(l2errors, l2error)
@@ -277,8 +277,8 @@ if __name__ == "__main__":
 
         results[basisType, levelManagerType, gridType] = numGridPoints, l2errors
 
-    print "E(u) ~ %g" % np.mean(y)
-    print "V(u) ~ %g" % np.var(y)
+    print( "E(u) ~ %g" % np.mean(y) )
+    print( "V(u) ~ %g" % np.var(y) )
 
     fig = plt.figure()
     ax = plt.subplot(111)

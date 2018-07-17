@@ -83,7 +83,7 @@ print "length of alpha vector: {}".format(len(alpha))
 ## function value at the grid point's coordinates which are obtained by
 ## \c getStandardCoordinate(dim).
 ## The current coefficient vector is then printed.
-for i in xrange(gridStorage.getSize()):
+for i in range(gridStorage.getSize()):
   gp = gridStorage.getPoint(i)
   alpha[i] = f(gp.getStandardCoordinate(0), gp.getStandardCoordinate(1))
 
