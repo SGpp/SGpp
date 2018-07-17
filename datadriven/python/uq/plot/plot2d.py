@@ -80,8 +80,8 @@ def plotTimedependentDensity2d(Us, us, ts,
     Z = np.ones((us.shape[0], ts.shape[0]))
 
     xv, yv = np.meshgrid(ts, us, sparse=False, indexing='xy')
-    for i in xrange(len(ts)):
-        for j in xrange(len(us)):
+    for i in range(len(ts)):
+        for j in range(len(us)):
             Z[j, i] = Us[i](np.array([yv[j, i]]))
 
     # np.savetxt('density2d.csv', z.reshape(n * n, 3), delimiter=' ')
@@ -111,8 +111,8 @@ def plotDensity2d(U, n=50, addContour=True,
     Z = np.ones((n, n))
 
     xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
-    for i in xrange(len(x)):
-        for j in xrange(len(y)):
+    for i in range(len(x)):
+        for j in range(len(y)):
             Z[j, i] = U.pdf(np.array([xv[j, i], yv[j, i]]))
 
     # np.savetxt('density2d.csv', z.reshape(n * n, 3), delimiter=' ')
@@ -134,7 +134,7 @@ def plotSGDE2d(U, n=100):
     x = [0.0] * gs.getSize()
     y = [0.0] * gs.getSize()
 
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         x[i] = gs.getCoordinate(gs.getPoint(i), 0)
         y[i] = gs.getCoordinate(gs.getPoint(i), 1)
 
@@ -144,8 +144,8 @@ def plotSGDE2d(U, n=100):
     xlim, ylim = U.getBounds()
 
     xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
-    for i in xrange(len(x)):
-        for j in xrange(len(y)):
+    for i in range(len(x)):
+        for j in range(len(y)):
             value = U.pdf([xv[j, i], yv[j, i]])
 
             if value < 0 and abs(value) > 1e-14:
@@ -185,8 +185,8 @@ def plotFunction2d(f, addContour=True, n=101,
     Z = np.ones((n, n))
 
     xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
-    for i in xrange(len(x)):
-        for j in xrange(len(y)):
+    for i in range(len(x)):
+        for j in range(len(y)):
             Z[j, i] = f(np.array([xv[j, i], yv[j, i]]))
 
     # np.savetxt('density2d.csv', z.reshape(n * n, 3), delimiter=' ')
@@ -220,7 +220,7 @@ def plotSG2d(grid, alpha, addContour=True, n=100,
     numbers = []
 
     p = DataVector(2)
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         gs.getCoordinates(gs.getPoint(i), p)
 
         if alpha[i] > 1e-14:
@@ -247,16 +247,16 @@ def plotSG2d(grid, alpha, addContour=True, n=100,
     A = np.ndarray((n * n, 2))
     # do vectorized evaluation
     k = 0
-    for i in xrange(len(x)):
-        for j in xrange(len(y)):
+    for i in range(len(x)):
+        for j in range(len(y)):
             A[k, :] = [xv[j, i], yv[j, i]]
             k += 1
 
     res = evalSGFunctionMulti(grid, alpha, A)
 
     k = 0
-    for i in xrange(len(x)):
-        for j in xrange(len(y)):
+    for i in range(len(x)):
+        for j in range(len(y)):
             Z[j, i] = res[k]
             if Z[j, i] < 0 and abs(Z[j, i]) > 1e-13:
                 neg_x.append(xv[j, i])
@@ -299,7 +299,7 @@ def plotGrid2d(grid, alpha=None, show_numbers=True,
 
     p = DataVector(2)
     numbers = []
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         gs.getCoordinates(gs.getPoint(i), p)
         if alpha is None:
             gps['a'] = np.vstack((gps['a'], p.array()))
