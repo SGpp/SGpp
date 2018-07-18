@@ -11,7 +11,11 @@ import math
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from operator import mul
-
+try:
+    from functools import reduce
+except ImportError:
+    pass
+    
 base = 0.1
 
 ## The first thing we need is a function to evaluate. This function will be evaluated on the domain
