@@ -67,6 +67,7 @@
 #include <sgpp/base/operation/hash/OperationMultipleEvalModLinearClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalModPolyClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalNakBsplineBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalNotAKnotBsplineModifiedNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtisBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtisNaive.hpp>
@@ -522,6 +523,9 @@ base::OperationMultipleEval* createOperationMultipleEvalNaive(base::Grid& grid,
   } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
     return new base::OperationMultipleEvalNakBsplineBoundaryNaive(
         grid, dynamic_cast<base::NakBsplineBoundaryGrid*>(&grid)->getDegree(), dataset);
+  } else if (grid.getType() == base::GridType::NotAKnotBsplineModified) {
+    return new base::OperationMultipleEvalNotAKnotBsplineModifiedNaive(
+        grid, dynamic_cast<base::NotAKnotBsplineModifiedGrid*>(&grid)->getDegree(), dataset);
   } else if (grid.getType() == base::GridType::ModBspline) {
     return new base::OperationMultipleEvalModBsplineNaive(
         grid, dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree(), dataset);

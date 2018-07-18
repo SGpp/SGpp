@@ -25,10 +25,11 @@ from pysgpp import OperationMultipleEvalType_DEFAULT, \
     SPolyModifiedClenshawCurtisBase, SPolyModifiedBase, \
     GridType_LinearTruncatedBoundary, GridType_BsplineClenshawCurtis, \
     GridType_BsplineBoundary, GridType_ModBsplineClenshawCurtis, \
-    GridType_NakBsplineBoundary,\
+    GridType_NakBsplineBoundary, GridType_NotAKnotBsplineModified,\
     GridType_ModBspline, SBsplineModifiedBase, SBsplineBase, \
     SBsplineBoundaryBase, SBsplineClenshawCurtisBase, \
     SBsplineModifiedClenshawCurtisBase, SNakBsplineBoundaryBase, \
+    SNotAKnotBsplineModifiedBase, \
     createOperationMultipleHierarchisation, \
     createOperationArbitraryBoundaryHierarchisation
 from pysgpp.pysgpp_swig import IndexVector
@@ -40,7 +41,8 @@ bsplineBoundaryGridTypes = [GridType_BsplineBoundary,
                             GridType_NakBsplineBoundary]
 bsplineNoBoundaryGridTypes = [GridType_Bspline,
                               GridType_ModBspline,
-                              GridType_ModBsplineClenshawCurtis]
+                              GridType_ModBsplineClenshawCurtis,
+                              GridType_NotAKnotBsplineModified]
 bsplineGridTypes = bsplineNoBoundaryGridTypes + bsplineBoundaryGridTypes
 
 polyBoundaryGridTypes = [GridType_PolyBoundary,
@@ -65,6 +67,7 @@ multipleEvalNaiveGridTypes = [GridType_Bspline,
                               GridType_BsplineClenshawCurtis,
                               GridType_BsplineBoundary,
                               GridType_NakBsplineBoundary,
+                              GridType_NotAKnotBsplineModified,
                               GridType_ModBsplineClenshawCurtis,
                               GridType_ModBspline,
                               GridType_LinearClenshawCurtis,
@@ -172,6 +175,8 @@ def getBasis(grid):
         return SBsplineBoundaryBase(grid.getDegree())
     elif gridType == GridType_NakBsplineBoundary:
         return SNakBsplineBoundaryBase(grid.getDegree())
+    elif gridType == GridType_NotAKnotBsplineModified:
+        return SNotAKnotBsplineModifiedBase(grid.getDegree())
     elif gridType == GridType_ModBspline:
         return SBsplineModifiedBase(grid.getDegree())
     elif gridType == GridType_BsplineClenshawCurtis:
@@ -633,6 +638,7 @@ def evalSGFunction(grid, alpha, p, isConsistent=True):
                               GridType_BsplineClenshawCurtis,
                               GridType_BsplineBoundary,
                               GridType_NakBsplineBoundary,
+                              GridType_NotAKnotBsplineModified,
                               GridType_ModBsplineClenshawCurtis,
                               GridType_ModBspline,
                               GridType_LinearClenshawCurtis,
@@ -799,7 +805,8 @@ def hierarchize(grid, nodalValues, isConsistent=True, ignore=None):
                               GridType_BsplineBoundary,
                               GridType_ModBsplineClenshawCurtis,
                               GridType_ModBspline,
-                              GridType_NakBsplineBoundary]:
+                              GridType_NakBsplineBoundary,
+                              GridType_NotAKnotBsplineModified]:
             opHier = createOperationMultipleHierarchisation(grid)
         elif maxLevel > 1 and \
              grid.getType() in [GridType_LinearBoundary,

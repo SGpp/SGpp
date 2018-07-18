@@ -842,6 +842,8 @@ GridType Grid::stringToGridType(const std::string& gridType) {
     return sgpp::base::GridType::ModLinearStencil;
   } else if (gridType.compare("nakbsplineboundary") == 0) {
     return sgpp::base::GridType::NakBsplineBoundary;
+  } else if (gridType.compare("nakbsplinemodified") == 0) {
+    return sgpp::base::GridType::NotAKnotBsplineModified;
   } else {
     std::stringstream errorString;
     errorString << "grid type '" << gridType << "' is unknown" << std::endl;
