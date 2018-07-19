@@ -35,6 +35,7 @@
 ##     conversion type GridConversionTypes_COMPLETESUBSPACES
 ##
 ## First, we import a the methods/classes we need for this example...
+from __future__ import print_function
 import numpy as np
 from argparse import ArgumentParser
 import matplotlib.pyplot as plt
@@ -69,7 +70,7 @@ def interpolate(grid, f):
     gs = grid.getStorage()
     alpha = DataVector(gs.getSize())
     p = DataVector(gs.getDimension())
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         gs.getCoordinates(gs.getPoint(i), p)
         alpha[i] = f(p)
     createOperationHierarchisation(grid).doHierarchisation(alpha)
@@ -90,7 +91,7 @@ def refineGrid(grid, alpha, f, refnums):
     gs = grid.getStorage()
     gridGen = grid.getGenerator()
     x = DataVector(gs.getDimension())
-    for _ in xrange(refnums):
+    for _ in range(refnums):
         # refine a single grid point each time
         gridGen.refine(SurplusRefinementFunctor(alpha, 1))
 
@@ -98,7 +99,7 @@ def refineGrid(grid, alpha, f, refnums):
         alpha.resizeZero(gs.getSize())
 
         # set function values in alpha
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             gs.getCoordinates(gs.getPoint(i), x)
             alpha[i] = f(x)
 
@@ -174,13 +175,13 @@ def regularGridToRegularGrid(numDims,
     ## If you want you can examine the levels of the combination
     ## technique...
     if verbose:
-        print "-" * 80
-        print "just full levels:"
-        print opt_complete.getLevelManager().getSerializedLevelStructure()
-        print "-" * 80
-        print "all levels:"
-        print opt_all.getLevelManager().getSerializedLevelStructure()
-        print "-" * 80
+        print("-" * 80)
+        print("just full levels:")
+        print(opt_complete.getLevelManager().getSerializedLevelStructure())
+        print("-" * 80)
+        print("all levels:")
+        print(opt_all.getLevelManager().getSerializedLevelStructure())
+        print("-" * 80)
 
     ## We start to transform the grids from the combination technique
     ## back to their hierarchical formulation. We, again, create a
@@ -323,13 +324,13 @@ def adaptiveGridToRegularGrid(numDims,
     ## If you want you can examine the levels of the combination
     ## technique...
     if verbose:
-        print "-" * 80
-        print "just full levels:"
-        print opt_complete.getLevelManager().getSerializedLevelStructure()
-        print "-" * 80
-        print "all levels:"
-        print opt_all.getLevelManager().getSerializedLevelStructure()
-        print "-" * 80
+        print("-" * 80)
+        print("just full levels:")
+        print(opt_complete.getLevelManager().getSerializedLevelStructure())
+        print("-" * 80)
+        print("all levels:")
+        print(opt_all.getLevelManager().getSerializedLevelStructure())
+        print("-" * 80)
 
     ## We start to transform the grids from the combination technique
     ## back to their hierarchical formulation. We, again, create a
