@@ -20,10 +20,11 @@
 #include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
+#include "../src/sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBoundaryBasis.hpp"
 
-double basisEvalDx(sgpp::base::SBasis& basis, sgpp::base::level_t l,
-                          sgpp::base::index_t i, double x);
-double basisEvalDxDx(sgpp::base::SBasis& basis, sgpp::base::level_t l,
-                            sgpp::base::index_t i, double x);
+double basisEvalDx(sgpp::base::SBasis& basis, sgpp::base::level_t l, sgpp::base::index_t i,
+                   double x);
+double basisEvalDxDx(sgpp::base::SBasis& basis, sgpp::base::level_t l, sgpp::base::index_t i,
+                     double x);
 
 #endif /* BASIS_EVAL_HPP */

@@ -10,9 +10,12 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
+
 #include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/base/tools/OperationQuadratureMC.hpp>
+
+#include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 
 #include <vector>
 
@@ -25,7 +28,10 @@ using sgpp::base::OperationQuadrature;
 using sgpp::base::OperationQuadratureMC;
 using sgpp::base::SPolyBase;
 using sgpp::base::SPolyBoundaryBase;
+
 using sgpp::base::SPolyModifiedBase;
+
+using sgpp::base::OperationEval;
 
 BOOST_AUTO_TEST_SUITE(testQuadratureLinear)
 
@@ -90,6 +96,8 @@ BOOST_AUTO_TEST_CASE(testQuadratureModLinear) {
 
   double qres = 0.0;
   double lSum;
+
+  // double resDirect = sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
 
   for (size_t i = 0; i < N; i++) {
     lSum = static_cast<double>(gS.getPoint(i).getLevelSum());
@@ -194,6 +202,7 @@ BOOST_AUTO_TEST_CASE(testQuadratureModPolyBasis) {
   double quadOperation =
       std::unique_ptr<OperationQuadrature>(sgpp::op_factory::createOperationQuadrature(*grid))
           ->doQuadrature(*alpha);
+
   BOOST_CHECK_CLOSE(quadOperation, quadManual, 0.00012);
 
   delete alpha;
@@ -240,6 +249,7 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
   double quadOperation =
       std::unique_ptr<OperationQuadrature>(sgpp::op_factory::createOperationQuadrature(*grid))
           ->doQuadrature(*alpha);
+
   BOOST_CHECK_CLOSE(quadOperation, quadManual, 0.0001);
 
   delete alpha;
@@ -281,6 +291,206 @@ BOOST_AUTO_TEST_CASE(testQuadratureMC) {
 
   delete alpha;
   delete opMC;
+}
+
+BOOST_AUTO_TEST_CASE(test_GaussQuadrature) {
+  sgpp::base::GaussLegendreQuadRule1D quadRule1D;
+
+  size_t level = 10;
+  DataVector pweight(level);
+  DataVector coordinates(level);
+  quadRule1D.getLevelPointsAndWeights(level, coordinates, pweight);
+  std::cout << level << std::endl;
+  std::cout << coordinates.toString() << std::endl;
+  std::cout << pweight.toString() << std::endl;
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(testQuadratureBSpline)
+
+double calc_equidistant_sum(Grid& grid, DataVector& alpha) {
+  std::unique_ptr<OperationEval> opEval(sgpp::op_factory::createOperationEvalNaive(grid));
+  double sum = 0.0;
+  double resolution = 10000.0;
+  DataVector point(1);
+  for (int i = 0; i < static_cast<int>(resolution); i++) {
+    point[0] = i / resolution;
+    sum += opEval->eval(alpha, point);
+  }
+  sum /= resolution;
+  return sum;
+}
+
+BOOST_AUTO_TEST_CASE(testQuadratureBSpline) {
+  size_t dim = 1;
+  size_t level = 3;
+  size_t deg = 3;
+
+  std::unique_ptr<Grid> grid(Grid::createBsplineGrid(dim, deg));
+  grid->getGenerator().regular(level);
+  GridStorage& gS = grid->getStorage();
+
+  size_t N = gS.getSize();
+  std::vector<int> v(N);
+
+  for (size_t i = 0; i < N; i++) v[static_cast<int>(i)] = static_cast<int>(i);
+
+  DataVector alpha(v);
+
+  std::unique_ptr<OperationQuadrature> quadOperation(
+      sgpp::op_factory::createOperationQuadrature(*grid));
+  double quadValue = quadOperation->doQuadrature(alpha);
+
+  double equidistant_sum = calc_equidistant_sum(*grid, alpha);
+
+  BOOST_CHECK_CLOSE(quadValue, equidistant_sum, 0.01);
+}
+
+BOOST_AUTO_TEST_CASE(testQuadratureModBSpline) {
+  size_t dim = 1;
+  size_t level = 3;
+  size_t deg = 3;
+
+  std::unique_ptr<Grid> grid(Grid::createModBsplineGrid(dim, deg));
+  grid->getGenerator().regular(level);
+  GridStorage& gS = grid->getStorage();
+
+  size_t N = gS.getSize();
+  std::vector<int> v(N);
+
+  for (size_t i = 0; i < N; i++) v[static_cast<int>(i)] = static_cast<int>(i);
+
+  DataVector alpha(v);
+
+  double quadOperation = sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(alpha);
+
+  double equidistant_sum = calc_equidistant_sum(*grid, alpha);
+
+  BOOST_CHECK_CLOSE(quadOperation, equidistant_sum, 0.01);
+}
+
+BOOST_AUTO_TEST_CASE(testQuadratureBSplineBoundary) {
+  size_t dim = 1;
+  size_t level = 3;
+  size_t deg = 3;
+
+  std::unique_ptr<Grid> grid(Grid::createBsplineBoundaryGrid(dim, deg));
+  grid->getGenerator().regular(level);
+  GridStorage& gS = grid->getStorage();
+
+  size_t N = gS.getSize();
+  std::vector<int> v(N);
+
+  for (size_t i = 0; i < N; i++) v[static_cast<int>(i)] = static_cast<int>(i);
+
+  DataVector alpha(v);
+
+  std::unique_ptr<OperationQuadrature> quadOperation(
+      sgpp::op_factory::createOperationQuadrature(*grid));
+  double quadValue = quadOperation->doQuadrature(alpha);
+
+  double equidistant_sum = calc_equidistant_sum(*grid, alpha);
+
+  BOOST_CHECK_CLOSE(quadValue, equidistant_sum, 0.01);
+}
+
+BOOST_AUTO_TEST_CASE(testQuadratureBSplineClenshawCurtis) {
+  size_t dim = 1;
+  size_t level = 3;
+  size_t deg = 3;
+
+  std::unique_ptr<Grid> grid(Grid::createBsplineClenshawCurtisGrid(dim, deg));
+  grid->getGenerator().regular(level);
+  GridStorage& gS = grid->getStorage();
+
+  size_t N = gS.getSize();
+  std::vector<int> v(N);
+
+  for (size_t i = 0; i < N; i++) v[static_cast<int>(i)] = static_cast<int>(i);
+
+  DataVector alpha(v);
+
+  std::unique_ptr<OperationQuadrature> quadOperation(
+      sgpp::op_factory::createOperationQuadrature(*grid));
+  double quadValue = quadOperation->doQuadrature(alpha);
+
+  double equidistant_sum = calc_equidistant_sum(*grid, alpha);
+
+  BOOST_CHECK_CLOSE(quadValue, equidistant_sum, 0.01);
+}
+
+BOOST_AUTO_TEST_CASE(testQuadratureModBSplineClenshawCurtis) {
+  size_t dim = 1;
+  size_t level = 3;
+  size_t deg = 3;
+
+  std::unique_ptr<Grid> grid(Grid::createBsplineClenshawCurtisGrid(dim, deg));
+  grid->getGenerator().regular(level);
+  GridStorage& gS = grid->getStorage();
+
+  size_t N = gS.getSize();
+  std::vector<int> v(N);
+
+  for (size_t i = 0; i < N; i++) v[static_cast<int>(i)] = static_cast<int>(i);
+
+  DataVector alpha(v);
+
+  std::unique_ptr<OperationQuadrature> quadOperation(
+      sgpp::op_factory::createOperationQuadrature(*grid));
+  double quadValue = quadOperation->doQuadrature(alpha);
+
+  double equidistant_sum = calc_equidistant_sum(*grid, alpha);
+
+  BOOST_CHECK_CLOSE(quadValue, equidistant_sum, 0.01);
+}
+
+BOOST_AUTO_TEST_CASE(testQuadratureFundamentalSpline) {
+  size_t dim = 1;
+  size_t level = 3;
+  size_t deg = 3;
+
+  std::unique_ptr<Grid> grid(Grid::createBsplineClenshawCurtisGrid(dim, deg));
+  grid->getGenerator().regular(level);
+  GridStorage& gS = grid->getStorage();
+
+  size_t N = gS.getSize();
+  std::vector<int> v(N);
+
+  for (size_t i = 0; i < N; i++) v[static_cast<int>(i)] = static_cast<int>(i);
+
+  DataVector alpha(v);
+
+  std::unique_ptr<OperationQuadrature> quadOperation(
+      sgpp::op_factory::createOperationQuadrature(*grid));
+  double quadValue = quadOperation->doQuadrature(alpha);
+
+  double equidistant_sum = calc_equidistant_sum(*grid, alpha);
+
+  BOOST_CHECK_CLOSE(quadValue, equidistant_sum, 0.01);
+}
+
+BOOST_AUTO_TEST_CASE(testQuadratureModFundamentalSpline) {
+  size_t dim = 1;
+  size_t level = 3;
+  size_t deg = 3;
+
+  std::unique_ptr<Grid> grid(Grid::createBsplineClenshawCurtisGrid(dim, deg));
+  grid->getGenerator().regular(level);
+  GridStorage& gS = grid->getStorage();
+
+  size_t N = gS.getSize();
+  std::vector<int> v(N);
+
+  for (size_t i = 0; i < N; i++) v[static_cast<int>(i)] = static_cast<int>(i);
+
+  DataVector alpha(v);
+
+  double quadOperation = sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(alpha);
+
+  double equidistant_sum = calc_equidistant_sum(*grid, alpha);
+
+  BOOST_CHECK_CLOSE(quadOperation, equidistant_sum, 0.01);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

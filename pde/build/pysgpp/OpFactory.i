@@ -9,6 +9,10 @@
     sgpp::base::Grid& grid);
 %newobject sgpp::op_factory::createOperationLaplace(
     sgpp::base::Grid& grid, sgpp::base::DataVector& coef);
+%newobject sgpp::op_factory::createOperationLaplaceExplicit(
+    sgpp::base::Grid& grid);
+%newobject sgpp::op_factory::createOperationLaplaceExplicit(
+    sgpp::base::DataMatrix* m, sgpp::base::Grid& grid);
 %newobject sgpp::op_factory::createOperationLTwoDotProduct(
     sgpp::base::Grid& grid);
 %newobject sgpp::op_factory::createOperationLTwoDotExplicit(

@@ -27,6 +27,7 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
 // For factory exception
+#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/base/tools/QuadRule1D.hpp>
 
 // For file exception
@@ -34,8 +35,8 @@
 
 // For generic exception
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/generation/PeriodicGridGenerator.hpp>
+#include <sgpp/base/grid/type/LinearGrid.hpp>
 
 // For operation exception
 #include <sgpp/base/operation/BaseOpFactory.hpp>
@@ -107,14 +108,14 @@ BOOST_AUTO_TEST_CASE(test_DataException) {
 }
 
 BOOST_AUTO_TEST_CASE(test_FactoryException) {
-  QuadRule1D quadRule1D;
+  sgpp::base::GaussLegendreQuadRule1D quadRule1D;
 
   size_t faultyLevel = -1;
   DataVector pweight(5);
   DataVector coordinates(5);
   factory_exception expectedException(
       "QuadRule1D::getLevelPointsAndWeights : "
-      "order of gauss quadrature has to be within {1, ..., 50}");
+      "order of Gauss quadrature is not available");
   try {
     quadRule1D.getLevelPointsAndWeights(faultyLevel, coordinates, pweight);
   } catch (factory_exception& actualException) {

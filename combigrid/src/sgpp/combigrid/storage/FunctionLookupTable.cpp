@@ -23,13 +23,12 @@ struct FunctionLookupTableImpl {
   std::shared_ptr<std::unordered_map<base::DataVector, double, DataVectorHash, DataVectorEqualTo>>
       hashmap;
   MultiFunction func;
-  std::mutex tableMutex;
+  std::recursive_mutex tableMutex;
 
-  explicit FunctionLookupTableImpl(MultiFunction func)
-      : hashmap(
-            new std::unordered_map<base::DataVector, double, DataVectorHash, DataVectorEqualTo>()),
-        func(func),
-        tableMutex() {}
+  explicit FunctionLookupTableImpl(MultiFunction func) : func(func), tableMutex() {
+    hashmap = std::make_shared<
+        std::unordered_map<base::DataVector, double, DataVectorHash, DataVectorEqualTo>>();
+  }
 };
 
 FunctionLookupTable::FunctionLookupTable(MultiFunction const& func)
@@ -60,7 +59,7 @@ double FunctionLookupTable::evalThreadsafe(const base::DataVector& x) {
     return y;
   }
 
-  std::lock_guard<std::mutex> guard(impl->tableMutex);
+  std::lock_guard<std::recursive_mutex> guard(impl->tableMutex);
   auto y = it->second;
   impl->tableMutex.unlock();
   return y;

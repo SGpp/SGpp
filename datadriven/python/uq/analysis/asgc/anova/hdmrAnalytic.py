@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 #
 """
@@ -19,8 +19,14 @@ from pysgpp.extensions.datadriven.uq.estimators import (AnalyticEstimationStrate
                                                         MarginalAnalyticEstimationStrategy)
 from pysgpp.extensions.datadriven.uq.operations import (evalSGFunction,
                                                         isNumerical)
+from pysgpp.extensions.datadriven.uq.dists import J
 from pysgpp.extensions.datadriven.uq.plot.plot1d import plotSG1d
-from pysgpp import DataVector
+
+from pysgpp.extensions.datadriven.uq.transformation import JointTransformation
+from pysgpp.extensions.datadriven.uq.parameters.ParameterSet import ParameterSet
+from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
+from pysgpp.extensions.datadriven.uq.transformation.RosenblattTransformation import RosenblattTransformation
+from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
 
 import itertools as it
 import numpy as np
@@ -46,11 +52,11 @@ class HDMRAnalytic(object):
         self.__alpha = alpha
         self.__params = params
 
-        self.__ap = self.__params.activeParams()
+        self.__ap = self.__params.activeParams().marginalize()
         self.__U = self.__ap.getIndependentJointDistribution()
         self.__T = self.__ap.getJointTransformation()
         self.__xlim = self.__U.getBounds()
-        self.__dim = len(self.__ap)
+        self.__dim = self.__ap.getStochasticDim()
 
         if self.__dim < 2:
             raise AttributeError('dimensionality has to be > 1')
@@ -71,19 +77,22 @@ class HDMRAnalytic(object):
         self.__marginalization = MarginalAnalyticEstimationStrategy()
         self.__estimation = AnalyticEstimationStrategy()
 
+    def setVerbose(self, verbose):
+        self._verbose = verbose
+
     def __computeMean(self):
         if self._verbose:
             print "estimate mean: ",
-        self.__E, _ = self.__estimation.mean(self.__grid, self.__alpha,
-                                             self.__U, self.__T)
+        self.__E = self.__estimation.mean(self.__grid, self.__alpha,
+                                          self.__U, self.__T)["value"]
         if self._verbose:
             print self.__E
 
     def __computeVariance(self):
         if self._verbose:
             print "estimate variance: ",
-        self.__V, _ = self.__estimation.var(self.__grid, self.__alpha,
-                                            self.__U, self.__T, self.__E)
+        self.__V = self.__estimation.var(self.__grid, self.__alpha,
+                                         self.__U, self.__T, self.__E)["value"]
         if self._verbose:
             print self.__V
 
@@ -92,7 +101,7 @@ class HDMRAnalytic(object):
         Sort keys with respect (1) to their length and (2) their lexical order
         @param keys:
         """
-        ans = [tuple()] * len(keys)
+        ans = [None] * len(keys)
         ix = 0
         for x in sorted(np.unique(map(len, keys))):
             for ck in sorted(filter(lambda k: len(k) == x, keys)):
@@ -141,7 +150,9 @@ class HDMRAnalytic(object):
                 expec[tuple([d for di in perm for d in di])] = grid, alpha
 
                 if self._verbose:
-                    print "L2 err = %g" % err
+                    print "# dims = %i, # grid points = %i, L2 err = %g" % (grid.getStorage().getDimension(),
+                                                                            grid.getSize(),
+                                                                            err)
 
                 # plot result
 #                 if len(perm) == 1:
@@ -206,7 +217,7 @@ class HDMRAnalytic(object):
         """
         Evaluate the higher order components
         @param fi: linear combination of marginalized functions
-        @param x: DataVector coordinate to be evaluated
+        @param x: numpy array coordinate to be evaluated
         """
         # constant term
         sign, f0 = fi['const']
@@ -291,13 +302,15 @@ class HDMRAnalytic(object):
             U = params.getIndependentJointDistribution()
 
             # estimate variance
-            mean, _ = self.__estimation.mean(grid, alpha, U, T)
-            vi, err = self.__estimation.var(grid, alpha, U, T, mean)
+            mean = self.__estimation.mean(grid, alpha, U, T)["value"]
+            res_var = self.__estimation.var(grid, alpha, U, T, mean)
+            vi = res_var["value"]
+            vi_err = res_var["err"]
             # store the variance
             vis[perm] = vi
 
             if self._verbose:
-                print "estimated V[%s]: %g, L2 err = %g" % (perm, vi, err)
+                print "estimated V[%s]: %g (err=%g)" % (perm, vi, vi_err)
 
             # add lower order components
             fi = self.__anova_components[perm]

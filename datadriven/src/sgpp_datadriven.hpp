@@ -47,9 +47,11 @@
 #include <sgpp/datadriven/functors/classification/MultipleClassRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
 
-#include <sgpp/datadriven/application/ClassificationLearner.hpp>
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
-#include <sgpp/datadriven/application/GaussianKDE.hpp>
+#include <sgpp/datadriven/application/KernelDensityEstimator.hpp>
+#include <sgpp/datadriven/application/SparseGridDensityEstimator.hpp>
+
+#include <sgpp/datadriven/application/ClassificationLearner.hpp>
 #include <sgpp/datadriven/application/Learner.hpp>
 #include <sgpp/datadriven/application/LearnerSGD.hpp>
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
@@ -90,6 +92,10 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalize.hpp>
 
+#include <sgpp/datadriven/operation/hash/simple/OperationMakePositiveCandidateSetAlgorithm.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationLimitFunctionValueRange.hpp>
+
 #include <sgpp/datadriven/tools/TypesDatadriven.hpp>
 
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
@@ -98,6 +104,8 @@
 #include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 
 /* ************************
  * datamining
@@ -119,13 +127,19 @@
 #include <sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp>
 
 #include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/CSVFileSampleProvider.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataTransformation.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/RosenblattTransformationConfig.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceFileTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceIterator.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/FileSampleDecorator.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/RosenblattTransformation.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp>
 
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>

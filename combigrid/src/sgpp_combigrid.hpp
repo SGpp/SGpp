@@ -11,13 +11,24 @@
 #include <sgpp/combigrid/GeneralFunctionDirector.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 
+#include <sgpp/combigrid/algebraic/FirstMomentNormStrategy.hpp>
 #include <sgpp/combigrid/algebraic/FloatArrayVector.hpp>
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
+#include <sgpp/combigrid/algebraic/FloatTensorVector.hpp>
+#include <sgpp/combigrid/algebraic/NormStrategy.hpp>
+#include <sgpp/combigrid/algebraic/SecondMomentNormStrategy.hpp>
+#include <sgpp/combigrid/algebraic/VarianceNormStrategy.hpp>
 
 #include <sgpp/combigrid/common/AbstractPermutationIterator.hpp>
 #include <sgpp/combigrid/common/BoundedSumMultiIndexIterator.hpp>
 #include <sgpp/combigrid/common/GridConversion.hpp>
 #include <sgpp/combigrid/common/MultiIndexIterator.hpp>
+#include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
+#include <sgpp/combigrid/functions/MonomialFunctionBasis1D.hpp>
+#include <sgpp/combigrid/functions/OrthogonalBasisFunctionsCollection.hpp>
+#include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
+#include <sgpp/combigrid/functions/ProbabilityDensityFunction1D.hpp>
+#include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
 
 #include <sgpp/combigrid/grid/TensorGrid.hpp>
 #include <sgpp/combigrid/grid/distribution/AbstractPointDistribution.hpp>
@@ -45,17 +56,30 @@
 
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
+#include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/LevelHelpers.hpp>
 #include <sgpp/combigrid/operation/multidim/LevelManager.hpp>
+#include <sgpp/combigrid/operation/multidim/RegularLevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/WeightedRatioLevelManager.hpp>
-#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearCallbackEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridLinearSummationStrategy.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridQuadraticSummationStrategy.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridTensorVarianceSummationStrategy.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridVarianceSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/onedim/ArrayEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/BSplineInterpolationEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/BSplineScalarProductEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/CubicSplineInterpolationEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/InterpolationCoefficientEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/LinearInterpolationEvaluator.hpp>
 #include <sgpp/combigrid/operation/onedim/PolynomialInterpolationEvaluator.hpp>
-#include <sgpp/combigrid/operation/onedim/QuadratureEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/PolynomialQuadratureEvaluator.hpp>
+#include <sgpp/combigrid/operation/onedim/PolynomialScalarProductEvaluator.hpp>
+
+#include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductHashMapNakBsplineBoundaryCombigrid.hpp>
 
 #include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>
 
@@ -68,8 +92,18 @@
 #include <sgpp/combigrid/threading/PtrGuard.hpp>
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
 
+#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridCallbackEvaluator.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/FullGridGridBasedEvaluator.hpp>
 #include <sgpp/combigrid/utils/BinaryHeap.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
 #include <sgpp/combigrid/utils/Utils.hpp>
+
+#include <sgpp/combigrid/pce/BsplineStochasticCollocation.hpp>
+#include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
+#include <sgpp/combigrid/pce/CombigridSurrogateModelFactory.hpp>
+#include <sgpp/combigrid/pce/PolynomialChaosExpansion.hpp>
+#include <sgpp/combigrid/pce/PolynomialStochasticCollocation.hpp>
+#include "sgpp/combigrid/utils/BSplineRoutines.hpp"
 
 #endif /* COMBIGRID_HPP_ */

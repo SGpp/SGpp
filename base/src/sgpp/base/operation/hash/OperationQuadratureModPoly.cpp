@@ -5,7 +5,7 @@
 
 #include <sgpp/base/operation/hash/OperationQuadratureModPoly.hpp>
 
-#include <sgpp/globaldef.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace sgpp {
 namespace base {

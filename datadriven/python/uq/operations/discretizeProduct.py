@@ -62,11 +62,11 @@ def computeErrors(jgrid, jalpha,
 def dehierarchizeOnNewGrid(gridResult, grid, alpha):
     # dehierarchization
     gs = gridResult.getStorage()
-    ps = DataMatrix(gs.size(), gs.getDimension())
+    ps = np.ndarray((gs.getSize(), gs.getDimension()))
     p = DataVector(gs.getDimension())
-    for i in xrange(gs.size()):
-        gs.getPoint(i).getStandardCoordinates(p)
-        ps.setRow(i, p)
+    for i in xrange(gs.getSize()):
+        gs.getCoordinates(gs.getPoint(i), p)
+        ps[i, :] = p.array()
     nodalValues = evalSGFunctionMulti(grid, alpha, ps)
     return nodalValues
 
@@ -74,22 +74,24 @@ def dehierarchizeOnNewGrid(gridResult, grid, alpha):
 def interpolateProduct(grid1, alpha1, grid2, alpha2, grid_result):
     nodalValues1 = dehierarchizeOnNewGrid(grid_result, grid1, alpha1)
     nodalValues2 = dehierarchizeOnNewGrid(grid_result, grid2, alpha2)
-    nodalValues1.componentwise_mult(nodalValues2)
+    nodalValues1 *= nodalValues2
     return hierarchize(grid_result, nodalValues1)
+
 
 refinable = []
 
+
 def refine(jgrid, jalpha):
-#     jgn = jgrid.getGenerator()
-#     rp = jgn.getNumberOfRefinablePoints()
-#     jgn.refine(SurplusRefinementFunctor(jalpha, rp, 0.))
+    #     jgn = jgrid.getGenerator()
+    #     rp = jgn.getNumberOfRefinablePoints()
+    #     jgn.refine(SurplusRefinementFunctor(jalpha, rp, 0.))
     from pysgpp.extensions.datadriven.uq.refinement.LocalRefinementStrategy import CreateAllChildrenRefinement
     global refinable
     jgs = jgrid.getStorage()
     refinementStrategy = CreateAllChildrenRefinement()
     if len(refinable) == 0:
         refinable = []
-        for i in xrange(jgs.size()):
+        for i in xrange(jgs.getSize()):
             gp = jgs.getPoint(i)
             if isRefineable(jgrid, gp):
                 refinable.append(gp)
@@ -131,12 +133,12 @@ def discretizeProduct(grid1, alpha1, grid2, alpha2):
     maxlevel = max(maxlevelGrid1 + deg2, maxlevelGrid2 + deg1)
 
     # check if maximum number of grid points is goint to be exceeded
-    n = 2 ** ((deg - 1) * grid1.getDimension())
+    n = 2 ** ((deg - 1) * grid1.getStorage().getDimension())
     if n > 1e6:
-        raise AttributeError("Can not create a full grid of level %i and dimensionality %i. The number of grid points %i would exceed 10^6" % (deg - 1, grid1.getDimension(), n))
+        raise AttributeError("Can not create a full grid of level %i and dimensionality %i. The number of grid points %i would exceed 10^6" % (deg - 1, grid1.getStorage().getDimension(), n))
 
     # join the two grids
-    joinedGrid = Grid.createPolyGrid(2, deg)
+    joinedGrid = Grid.createPolyGrid(grid1.getStorage().getDimension(), deg)
     joinedGrid.getGenerator().full(maxlevel)
     # interpolate the product on the new grid
     joinedAlpha = interpolateProduct(grid1, alpha1, grid2, alpha2, joinedGrid)

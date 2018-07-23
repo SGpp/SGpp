@@ -1,5 +1,7 @@
 from pysgpp import (createOperationHierarchisation,
-                    createOperationEval, createOperationMultipleEval,
+                    createOperationEval, createOperationMultipleEval, createOperationEvalNaive,
+                    createOperationMultipleEvalNaive,
+                    OperationMultipleEvalConfiguration, OperationMultipleEvalType_STREAMING, OperationMultipleEvalSubType_DEFAULT,
                     DataVector, DataMatrix,
                     HashGridPoint,
 #                     X86SIMD, createOperationMultipleEvalVectorized,
@@ -7,40 +9,94 @@ from pysgpp import (createOperationHierarchisation,
                     Grid,
                     SLinearBase, SLinearBoundaryBase,
                     SPolyBase, SPolyBoundaryBase,
-                    GridType_Poly, GridType_PolyBoundary, GridType_Linear, GridType_LinearBoundary, GridType_LinearL0Boundary)
+                    GridType_Poly, GridType_PolyBoundary, GridType_Linear, GridType_LinearBoundary, GridType_LinearL0Boundary, GridType_Bspline)
 
 from scipy.interpolate import interp1d
 
 import numpy as np
+from pysgpp import OperationMultipleEvalType_DEFAULT, \
+    GridType_PolyClenshawCurtis, GridType_PolyClenshawCurtisBoundary, \
+    GridType_ModPoly, GridType_ModPolyClenshawCurtis, \
+    GridType_LinearClenshawCurtis, GridType_LinearClenshawCurtisBoundary, \
+    GridType_ModLinear, GridType_ModLinearClenshawCurtis, \
+    RegularGridConfiguration, SLinearModifiedBase, SLinearClenshawCurtisBase, \
+    SLinearClenshawCurtisBoundaryBase, SLinearModifiedClenshawCurtisBase, \
+    SPolyClenshawCurtisBase, SPolyClenshawCurtisBoundaryBase, \
+    SPolyModifiedClenshawCurtisBase, SPolyModifiedBase, \
+    GridType_LinearTruncatedBoundary, GridType_BsplineClenshawCurtis, \
+    GridType_BsplineBoundary, GridType_ModBsplineClenshawCurtis, \
+    GridType_ModBspline, SBsplineModifiedBase, SBsplineBase, \
+    SBsplineBoundaryBase, SBsplineClenshawCurtisBase, \
+    SBsplineModifiedClenshawCurtisBase, \
+    createOperationMultipleHierarchisation, \
+    createOperationArbitraryBoundaryHierarchisation
+from pysgpp.pysgpp_swig import IndexVector
 
 
 #######################################################################
+bsplineBoundaryGridTypes = [GridType_BsplineBoundary,
+                            GridType_BsplineClenshawCurtis]
+bsplineNoBoundaryGridTypes = [GridType_Bspline,
+                              GridType_ModBspline,
+                              GridType_ModBsplineClenshawCurtis]
+bsplineGridTypes = bsplineNoBoundaryGridTypes + bsplineBoundaryGridTypes
+
+polyBoundaryGridTypes = [GridType_PolyBoundary,
+                         GridType_PolyClenshawCurtisBoundary]
+polyNoBoundaryGridTypes = [GridType_Poly,
+                           GridType_ModPoly,
+                           GridType_PolyClenshawCurtis,
+                           GridType_ModPolyClenshawCurtis]
+polyGridTypes = polyNoBoundaryGridTypes + polyBoundaryGridTypes
+
+linearBoundaryGridTypes = [GridType_LinearBoundary,
+                           GridType_LinearL0Boundary,
+                           GridType_LinearTruncatedBoundary,
+                           GridType_LinearClenshawCurtisBoundary]
+linearNoBoundaryGridTypes = [GridType_Linear,
+                             GridType_ModLinear,
+                             GridType_LinearClenshawCurtis,
+                             GridType_ModLinearClenshawCurtis]
+linearGridTypes = linearNoBoundaryGridTypes + linearBoundaryGridTypes
+
+multipleEvalNaiveGridTypes = [GridType_Bspline,
+                              GridType_BsplineClenshawCurtis,
+                              GridType_BsplineBoundary,
+                              GridType_ModBsplineClenshawCurtis,
+                              GridType_ModBspline,
+                              GridType_LinearClenshawCurtis,
+                              GridType_LinearClenshawCurtisBoundary,
+                              GridType_ModLinearClenshawCurtis,
+                              GridType_PolyClenshawCurtis,
+                              GridType_PolyClenshawCurtisBoundary,
+                              GridType_ModPolyClenshawCurtis]
+#######################################################################
+
 def createGrid(grid, dim, deg=1, addTruncatedBorder=False):
     # create new grid
     gridType = grid.getType()
-
-    if gridType in [GridType_Poly, GridType_PolyBoundary]:
-        deg = max(deg, grid.getDegree())
+    deg = max(deg, grid.getDegree())
 
     # print gridType, deg
-    if deg > 1:
-        if gridType in [GridType_LinearBoundary, GridType_PolyBoundary]:
-            return Grid.createPolyBoundaryGrid(dim, deg)
-        elif gridType == GridType_LinearL0Boundary:
-            raise NotImplementedError("there is no full boundary polynomial grid")
-        elif gridType in [GridType_Linear, GridType_Poly]:
-            return Grid.createPolyGrid(dim, deg)
-        else:
-            raise Exception('unknown grid type %s' % gridType)
+    if deg > 1 and gridType in [GridType_Linear]:
+        return Grid.createPolyGrid(dim, deg)
+    if deg > 1 and gridType in [GridType_LinearBoundary,
+                                GridType_LinearL0Boundary]:
+        return Grid.createPolyBoundaryGrid(dim, deg)
+    elif deg > 1 and gridType in [GridType_LinearClenshawCurtis]:
+        return Grid.createPolyClenshawCurtisGrid(dim, deg)
+    elif deg > 1 and gridType in [GridType_LinearClenshawCurtisBoundary]:
+        return Grid.createPolyClenshawCurtisBoundaryGrid(dim, deg)
+    elif deg > 1 and gridType in [GridType_ModLinear]:
+        return Grid.createModPolyGrid(dim, deg)
+    elif deg > 1 and gridType in [GridType_ModLinearClenshawCurtis]:
+        return Grid.createModPolyClenshawCurtisGrid(dim, deg)
     else:
-        if gridType == GridType_Linear:
-            return Grid.createLinearGrid(dim)
-        elif gridType == GridType_LinearBoundary:
-            return Grid.createLinearBoundaryGrid(dim, 1)
-        elif gridType == GridType_LinearL0Boundary:
-            return Grid.createLinearBoundaryGrid(dim, 0)
-        else:
-            raise Exception('unknown grid type %s' % gridType)
+        gridConfig = RegularGridConfiguration()
+        gridConfig.type_ = gridType
+        gridConfig.dim_ = dim
+        gridConfig.maxDegree_ = deg
+        return Grid.createGrid(gridConfig)
 
 
 def dehierarchizeOnNewGrid(gridResult, grid, alpha):
@@ -49,9 +105,12 @@ def dehierarchizeOnNewGrid(gridResult, grid, alpha):
     ps = np.ndarray((gsResult.getSize(), gsResult.getDimension()))
     p = DataVector(gsResult.getDimension())
     for i in xrange(gsResult.getSize()):
-        gsResult.getPoint(i).getStandardCoordinates(p)
+        gsResult.getCoordinates(gsResult.getPoint(i), p)
         ps[i, :] = p.array()
     nodalValues = evalSGFunctionMulti(grid, alpha, ps)
+
+    del p
+
     return nodalValues
 
 
@@ -68,7 +127,7 @@ def copyGrid(grid, level=0, deg=1):
         gp = gs.getPoint(i)
 
         # insert grid point
-        if not newGs.has_key(gp):
+        if not newGs.isContaining(gp):
             newGs.insert(HashGridPoint(gp))
 
     newGs.recalcLeafProperty()
@@ -76,20 +135,49 @@ def copyGrid(grid, level=0, deg=1):
 
 
 def getBasis(grid):
-    if grid.getType() == GridType_Linear:
-        return SLinearBase()
-    elif grid.getType() == GridType_LinearBoundary:
-        return SLinearBoundaryBase()
-    elif grid.getType() == GridType_Poly:
-        return SPolyBase(grid.getDegree())
-    elif grid.getType() == GridType_PolyBoundary:
-        return SPolyBoundaryBase(grid.getDegree())
-    else:
-        raise AttributeError('unsupported grid type %s' % grid.getType())
+    gridType = grid.getType()
 
+    if gridType == GridType_Linear:
+        return SLinearBase()
+    elif gridType in [GridType_LinearBoundary,
+                      GridType_LinearL0Boundary,
+                      GridType_LinearTruncatedBoundary]:
+        return SLinearBoundaryBase()
+    elif gridType == GridType_ModLinear:
+        return SLinearModifiedBase()
+    elif gridType == GridType_LinearClenshawCurtis:
+        return SLinearClenshawCurtisBase()
+    elif gridType == GridType_LinearClenshawCurtisBoundary:
+        return SLinearClenshawCurtisBoundaryBase()
+    elif gridType == GridType_ModLinearClenshawCurtis:
+        return SLinearModifiedClenshawCurtisBase()
+    if gridType == GridType_Poly:
+        return SPolyBase(grid.getDegree())
+    elif gridType == GridType_PolyBoundary:
+        return SPolyBoundaryBase(grid.getDegree())
+    elif gridType == GridType_ModPoly:
+        return SPolyModifiedBase(grid.getDegree())
+    elif gridType == GridType_PolyClenshawCurtis:
+        return SPolyClenshawCurtisBase(grid.getDegree())
+    elif gridType == GridType_PolyClenshawCurtisBoundary:
+        return SPolyClenshawCurtisBoundaryBase(grid.getDegree())
+    elif gridType == GridType_ModPolyClenshawCurtis:
+        return SPolyModifiedClenshawCurtisBase(grid.getDegree())
+    elif gridType == GridType_Bspline:
+        return SBsplineBase(grid.getDegree())
+    elif gridType == GridType_BsplineBoundary:
+        return SBsplineBoundaryBase(grid.getDegree())
+    elif gridType == GridType_ModBspline:
+        return SBsplineModifiedBase(grid.getDegree())
+    elif gridType == GridType_BsplineClenshawCurtis:
+        return SBsplineClenshawCurtisBase(grid.getDegree())
+    elif gridType == GridType_ModBsplineClenshawCurtis:
+        return SBsplineModifiedClenshawCurtisBase(grid.getDegree())
+    else:
+        raise AttributeError("basis %i is not supported" % gridType)
 
 def getDegree(grid):
-    if grid.getType() in [GridType_Poly, GridType_PolyBoundary]:
+    if grid.getType() in polyGridTypes + bsplineGridTypes + linearGridTypes:
         return grid.getDegree()
     else:
         return 1
@@ -97,15 +185,14 @@ def getDegree(grid):
 #######################################################################
 
 
-def hasBorder(grid):
-    return grid.getType() in [GridType_PolyBoundary, GridType_LinearBoundary, GridType_LinearL0Boundary]
-
+def hasBorder(gridType):
+    return gridType in bsplineBoundaryGridTypes + linearBoundaryGridTypes + polyBoundaryGridTypes
 
 def isValid1d(grid, level, index):
-    minLevel = 0 if hasBorder(grid) else 1
+    minLevel = 0 if hasBorder(grid.getType()) else 1
     maxLevel = 31
-    minIndex = 0 if hasBorder(grid) else 1
-    maxIndex = 2 ** level if hasBorder(grid) else 2 ** level - 1
+    minIndex = 0 if hasBorder(grid.getType()) else 1
+    maxIndex = 2 ** level if hasBorder(grid.getType()) else 2 ** level - 1
 
     return minLevel <= level <= maxLevel and \
         minIndex <= index <= maxIndex
@@ -121,9 +208,10 @@ def isValid(grid, gp):
 
     # additional security check for starters
     if valid:
-        minLevel = 0 if hasBorder(grid) else 1
+        gs = grid.getStorage()
+        minLevel = 0 if hasBorder(grid.getType()) else 1
         for d in xrange(gp.getDimension()):
-            x = gp.getStandardCoordinate(d)
+            x = gs.getCoordinate(gp, d)
             if x > 1 or x < 0:
                 raise AttributeError('grid point out of range %s, (l=%s, i=%s), minLevel = %i' % (x,
                                                                                                   gp.getLevel(d),
@@ -155,6 +243,48 @@ def parents(grid, gp):
             ans.append((d, ps))
     return ans
 
+def getGridPointsOnBoundary(level, index):
+    # find left boundary
+    left = None
+    value = (index - 1) & (~(index - 1) + 1)
+    if value > 0:
+        n = int(np.log2(value))
+        if level - n > 0:
+            left = (level - n, (index - 1) >> n)
+
+    # find right boundary
+    right = None
+    value = (index + 1) & (~(index + 1) + 1)
+    if value > 0:
+        n = int(np.log2(value))
+        if level - n > 0:
+            right = (level - n, (index + 1) >> n)
+
+    return (left, right)
+
+def getGridPointsOnBoundaryEfficiently(level, index):
+    # find left boundary
+    left = None
+    multiplyDeBruijnBitPosition = [0,  1,  28, 2,  29, 14, 24, 3,  30, 22, 20,
+                                   15, 25, 17, 4,  8,  31, 27, 13, 23, 21, 19,
+                                   16, 7,  26, 12, 18, 6,  11, 5,  10, 9]
+    lindex = index - 1
+    n = multiplyDeBruijnBitPosition[((lindex & -lindex) * 0x077CB531) >> 27]
+    if n == 0 or n >= level:
+        left = (0, 0)
+    else:
+        left = (level - n, lindex >> n)
+
+    # find right boundary
+    right = None
+    rindex = index + 1
+    n = multiplyDeBruijnBitPosition[((rindex & -rindex) * 0x077CB531) >> 27]
+    if n == 0 or n >= level:
+        right = (0, 1)
+    else:
+        right = (level - n, rindex >> n)
+
+    return (left, right)
 
 def getHierarchicalAncestors(grid, gp):
     ans = []
@@ -169,15 +299,57 @@ def getHierarchicalAncestors(grid, gp):
     return ans
 
 
-def isHierarchicalAncestor(grid, gpi, gpj):
-    ancestors = getHierarchicalAncestors(grid, gpj)
-    gs = grid.getStorage()
-    ix = gs.seq(gpi)
-    if len(ancestors) > 0:
-        jxs = [gs.seq(gpk) for _, gpk in ancestors]
-        return ix in jxs
-    else:
+def isHierarchicalAncestorDimx(li, ii, lj, ij):
+    return lj >= li and ii == (ij >> (lj - li)) | 1  # 2 * int(np.floor(ij * 2 ** -(lj - li + 1))) + 1
+
+
+def isHierarchicalAncestor(gpi, gpj):
+    if gpi == gpj:
         return False
+    else:
+        idim = 0
+        numDims = gpi.getDimension()
+        isAncestor = True
+        while isAncestor and idim < numDims:
+            isAncestor &= isHierarchicalAncestorDimx(gpi.getLevel(idim),
+                                                     gpi.getIndex(idim),
+                                                     gpj.getLevel(idim),
+                                                     gpj.getIndex(idim))
+            idim += 1
+        return isAncestor
+
+
+def isHierarchicalAncestorByLevelIndex((leveli, indexi), (levelj, indexj)):
+    idim = 0
+    numDims = len(leveli)
+    isAncestor = True
+    isEqual = False
+    while isAncestor and idim < numDims:
+        isAncestor &= isHierarchicalAncestorDimx(leveli[idim],
+                                                 indexi[idim],
+                                                 levelj[idim],
+                                                 indexj[idim])
+        isEqual &= leveli[idim] == levelj[idim] and indexi[idim] == indexj[idim]
+        idim += 1
+
+    return isAncestor and not isEqual
+
+
+def haveHierarchicalRelationshipByLevelIndex((leveli, indexi), (levelj, indexj)):
+    idim = 0
+    numDims = len(leveli)
+    isAncestorij = True
+    isAncestorji = True
+    isEqual = False
+    while (isAncestorij or isAncestorji) and idim < numDims:
+        li, ii = leveli[idim], indexi[idim]
+        lj, ij = levelj[idim], indexj[idim]
+        isAncestorij &= lj >= li and ii == (ij >> (lj - li)) | 1
+        isAncestorji &= li >= lj and ij == (ii >> (li - lj)) | 1
+        isEqual &= li == lj and ii == ij
+        idim += 1
+
+    return (isAncestorij or isAncestorji) and not isEqual
 
 
 def getNonExistingHierarchicalAncestors(grid, gp):
@@ -187,68 +359,52 @@ def getNonExistingHierarchicalAncestors(grid, gp):
 
     while len(gps) > 0:
         d, p = gps.pop()
-        if isValid(grid, p) and not gs.has_key(p):
+        if isValid(grid, p) and not gs.isContaining(p):
             ans.append((d, p))
             gps += parents(grid, p)
 
     return ans
 
 
+def haveOverlappingSupportDimx(lid, iid, ljd, ijd):
+    if lid == ljd:
+        return iid == ijd
 
-# def insertHierarchicalAncestors(grid, gp):
-#     """
-#     insert all hierarchical ancestors recursively to the grid
-#     @param grid: Grid
-#     @param gp: HashGridPoint
-#     @return: list of HashGridPoint, contains all the newly added grid points
-#     """
-#     newGridPoints = []
-#     gs = grid.getStorage()
-#     gps = [gp]
-#     while len(gps) > 0:
-#         gp = gps.pop()
-#         gpc = HashGridPoint(gp)
-#         for dim in xrange(gp.getDimension()):
-#             oldlevel, oldindex = gpc.getLevel(dim), gpc.getIndex(dim)
-#             # run up to the root node until you find one existing node
-#             level, index = oldlevel, oldindex
-#             while level > 1:
-#                 level -= 1
-#                 index = index / 2 + ((index + 1) / 2) % 2
-#
-#                 gpc.set(dim, level, index)
-#
-#                 if not gs.has_key(gpc):
-#                     newGridPoints.append(HashGridPoint(gpc))
-#                 else:
-#                     break
-#
-#             # reset the point
-#             gpc.set(dim, oldlevel, oldindex)
-#
-#         # insert the grid points in a list and add the hierarchical ancestors
-#         # of them
-#         for gp in newGridPoints:
-#             gps += insertPoint(grid, gp)
-#
-#     return newGridPoints
+    if lid < ljd:
+        return isHierarchicalAncestorDimx(lid, iid, ljd, ijd)
+    else:
+        return isHierarchicalAncestorDimx(ljd, ijd, lid, iid)
 
+
+def haveOverlappingSupport(gpi, gpj):
+    idim = 0
+    numDims = gpi.getDimension()
+
+    while idim < numDims and haveOverlappingSupportDimx(gpi.getLevel(idim),
+                                                        gpi.getIndex(idim),
+                                                        gpj.getLevel(idim),
+                                                        gpj.getIndex(idim)):
+        idim += 1
+
+    # check whether the supports are overlapping
+    # in all dimensions
+    return idim == numDims
+
+
+def haveOverlappingSupportByLevelIndex((leveli, indexi), (levelj, indexj)):
+    idim = 0
+    numDims = len(leveli)
+
+    while idim < numDims and haveOverlappingSupportDimx(leveli[idim], indexi[idim],
+                                                        levelj[idim], indexj[idim]):
+        idim += 1
+
+    # check whether the supports are overlapping
+    # in all dimensions
+    return idim == numDims
 
 def insertHierarchicalAncestors(grid, gp):
-    ans = []
-    gps = [gp]
-
-    while len(gps) > 0:
-        gp = gps.pop()
-        ngps = getNonExistingHierarchicalAncestors(grid, gp)
-        while len(ngps) > 0:
-            _, gp = ngps.pop()
-            res = insertPoint(grid, gp)
-
-            gps += res
-            ans += res
-    return ans
-
+    return insertPoint(grid, gp)
 
 def hasChildren(grid, gp):
     gs = grid.getStorage()
@@ -258,14 +414,14 @@ def hasChildren(grid, gp):
         # load level index
         level, index = gp.getLevel(d), gp.getIndex(d)
         # check left child in d
-        gs.left_child(gp, d)
-        if gs.has_key(gpn):
+        gp.getLeftChild(d)
+        if gs.isContaining(gpn):
             return True
 
         # check right child in d
         gp.set(d, level, index)
-        gs.right_child(gp, d)
-        if gs.has_key(gpn):
+        gp.getRightChild(d)
+        if gs.isContaining(gpn):
             return True
 
         gpn.set(d, level, index)
@@ -275,7 +431,7 @@ def hasChildren(grid, gp):
 
 def getLevel(gp):
     numDims = gp.getDimension()
-    level = np.ndarray(numDims)
+    level = np.ndarray(numDims, dtype="int")
     for i in xrange(numDims):
         level[i] = gp.getLevel(i)
 
@@ -283,7 +439,7 @@ def getLevel(gp):
 
 def getIndex(gp):
     numDims = gp.getDimension()
-    index = np.ndarray(numDims)
+    index = np.ndarray(numDims, dtype="int")
     for i in xrange(numDims):
         index[i] = gp.getIndex(i)
 
@@ -292,8 +448,8 @@ def getIndex(gp):
 
 def getLevelIndex(gp):
     numDims = gp.getDimension()
-    level = np.ndarray(numDims)
-    index = np.ndarray(numDims)
+    level = np.ndarray(numDims, dtype="int")
+    index = np.ndarray(numDims, dtype="int")
     for i in xrange(numDims):
         level[i] = gp.getLevel(i)
         index[i] = gp.getIndex(i)
@@ -310,13 +466,13 @@ def hasAllChildren(grid, gp):
         level, index = gp.getLevel(dim), gp.getIndex(dim)
 
         # check left child in dimension dim
-        gs.left_child(gp, dim)
-        cnt = gs.has_key(gp)
+        gp.getLeftChild(dim)
+        cnt = gs.isContaining(gp)
 
         # check right child in dimension dim
         gp.set(dim, level, index)
-        gs.right_child(gp, dim)
-        cnt += gs.has_key(gp)
+        gp.getRightChild(dim)
+        cnt += gs.isContaining(gp)
 
         # reset grid point
         gp.set(dim, level, index)
@@ -337,28 +493,26 @@ def insertTruncatedBorder(grid, gp):
     """
     gs = grid.getStorage()
     gps = [gp]
-
+    numDims = gp.getDimension()
     ans = []
     while len(gps) > 0:
-        gp = gps.pop()
-        p = DataVector(gp.getDimension())
-        gp.getStandardCoordinates(p)
-        for d in xrange(gs.getDimension()):
+        gpi = gps.pop()
+        for d in xrange(numDims):
             # right border in d
-            rgp = HashGridPoint(gp)
-            gs.right_levelzero(rgp, d)
+            rgp = HashGridPoint(gpi)
+            rgp.getRightLevelZero(d)
             # insert the point
-            if not gs.has_key(rgp):
+            if not gs.isContaining(rgp):
                 added_grid_points = insertPoint(grid, rgp)
                 if len(added_grid_points) > 0:
                     ans += added_grid_points
                     gps.append(rgp)
 
             # left border in d
-            lgp = HashGridPoint(gp)
-            gs.left_levelzero(lgp, d)
+            lgp = HashGridPoint(gpi)
+            lgp.getLeftLevelZero(d)
             # insert the point
-            if not gs.has_key(lgp):
+            if not gs.isContaining(lgp):
                 added_grid_points = insertPoint(grid, lgp)
                 if len(added_grid_points) > 0:
                     ans += added_grid_points
@@ -373,83 +527,194 @@ def insertPoint(grid, gp):
     """
     gs = grid.getStorage()
 
-    if gs.has_key(gp) or not isValid(grid, gp):
+    if gs.isContaining(gp) or not isValid(grid, gp):
         return []
 
-    success = gs.insert(HashGridPoint(gp)) > -1
-    if success:
-        return [HashGridPoint(gp)]
-    else:
-        raise AttributeError('can not insert this new grid point to the storage')
+    added_grid_points = IndexVector()
+    gs.insert(HashGridPoint(gp), added_grid_points) > -1
 
+    ans = []
+    for i in added_grid_points:
+        ans.append(gs.getPoint(i))
+
+    return ans
 
 def isRefineable(grid, gp):
     gs = grid.getStorage()
     for d in xrange(gs.getDimension()):
         # left child in dimension dim
         gpl = HashGridPoint(gp)
-        gs.left_child(gpl, d)
-        if not gs.has_key(gpl) and isValid(grid, gpl):
+        gpl.getLeftChild(d)
+        if not gs.isContaining(gpl) and isValid(grid, gpl):
             return True
 
         # right child in dimension dim
         gpr = HashGridPoint(gp)
-        gs.right_child(gpr, d)
-        if not gs.has_key(gpr) and isValid(grid, gpr):
+        gpr.getRightChild(d)
+        if not gs.isContaining(gpr) and isValid(grid, gpr):
             return True
 
     return False
 
-#
-# def evalSGFunctionMultiVectorized(grid, alpha, A, vecMode=X86SIMD):
-#     if not isinstance(A, DataMatrix):
-#         raise AttributeError('A has to be a DataMatrix')
-#     size = A.getNrows()
-#     numPatchedInstances = DMVectorizationPaddingAssistant_padDataset(A, vecMode)
-#     A.transpose()
-#     opMEval = createOperationMultipleEvalVectorized(grid, vecMode, A)
-#     tmp = DataVector(numPatchedInstances)
-#     opMEval.multVectorized(alpha, tmp)
-#     tmp.resize(size)
-#     return tmp
+
+def loadOperationMultiEval(grid, samples, isConsistent=True):
+
+    return opEval
 
 
-def evalSGFunctionMulti(grid, alpha, samples):
+def evalSGFunctionMulti(grid, alpha, samples, isConsistent=True):
     if len(samples.shape) == 1:
         raise AttributeError('the samples to be evaluated have to be a 2d numpy array')
     if samples.shape[1] != grid.getStorage().getDimension():
         raise AttributeError('the dimensionality of the samples differ from the dimensionality of the grid (%i != %i)' % (samples.shape[1], grid.getStorage().getDimension()))
 
     samples_matrix = DataMatrix(samples)
-    opEval = createOperationMultipleEval(grid, samples_matrix)
+
+    if isConsistent:
+        if grid.getType() in multipleEvalNaiveGridTypes:
+            opEval = createOperationMultipleEvalNaive(grid, samples_matrix)
+        else:
+            if grid.getType() == GridType_Linear:
+                # use streaming approach for multiple eval
+                evalConfig = OperationMultipleEvalConfiguration(OperationMultipleEvalType_STREAMING, OperationMultipleEvalSubType_DEFAULT)
+                opEval = createOperationMultipleEval(grid, samples_matrix, evalConfig)
+            else:
+                # use standard approach
+                opEval = createOperationMultipleEval(grid, samples_matrix)
+    else:
+        opEval = createOperationMultipleEvalNaive(grid, samples_matrix)
+
     res_vec = DataVector(samples.shape[0])
     alpha_vec = DataVector(alpha)
+
     opEval.mult(alpha_vec, res_vec)
+
     return res_vec.array()
 
 
-def evalSGFunction(grid, alpha, p):
+def evalSGFunctionBasedOnParents(grid, alpha, gpi):
+    gs = grid.getStorage()
+    basis = getBasis(grid)
+    ux = 0.0
+    p = DataVector(gs.getDimension())
+    gs.getCoordinates(gpi, p)
+
+    def f(gp, p):
+        ans = 1.0
+        for idim in xrange(p.shape[0]):
+            ans *= basis.eval(gp.getLevel(idim),
+                              gp.getIndex(idim),
+                              p[idim])
+        return ans
+
+    for j in xrange(gs.getSize()):
+        gpp = gs.getPoint(j)
+        if gpp.isHierarchicalAncestor(gpi):
+            ux += alpha[j] * f(gpp, p.array())
+        else:
+            assert f(gpp, p.array()) < 1e-14
+
+    return ux
+
+
+def evalSGFunction(grid, alpha, p, isConsistent=True):
+    if grid.getSize() != len(alpha):
+        raise AttributeError("grid size differs from length of coefficient vector")
     if len(p.shape) == 1:
+        if grid.getStorage().getDimension() != p.shape[0]:
+            raise AttributeError("grid dimension differs from dimension of sample")
+
+        evalNaiveGridTypes = [GridType_Bspline,
+                              GridType_BsplineClenshawCurtis,
+                              GridType_BsplineBoundary,
+                              GridType_ModBsplineClenshawCurtis,
+                              GridType_ModBspline,
+                              GridType_LinearClenshawCurtis,
+                              GridType_LinearClenshawCurtisBoundary,
+                              GridType_ModLinearClenshawCurtis,
+                              GridType_PolyClenshawCurtis,
+                              GridType_PolyClenshawCurtisBoundary,
+                              GridType_ModPolyClenshawCurtis]
+
         p_vec = DataVector(p)
         alpha_vec = DataVector(alpha)
-        return createOperationEval(grid).eval(alpha_vec, p_vec)
+        if isConsistent:
+            if grid.getType() in evalNaiveGridTypes:
+                opEval = createOperationEvalNaive(grid)
+            else:
+                opEval = createOperationEval(grid)
+        else:
+            opEval = createOperationEvalNaive(grid)
+
+        ans = opEval.eval(alpha_vec, p_vec)
+
+        del opEval
+        del alpha_vec
+        del p_vec
+
+        return ans
     else:
-        return evalSGFunctionMulti(grid, alpha, p)
+        if grid.getStorage().getDimension() != p.shape[1]:
+            raise AttributeError("grid dimension differs from dimension of samples")
+        return evalSGFunctionMulti(grid, alpha, p, isConsistent)
+
+def hierarchizeEvalHierToTop(grid, nodalValues):
+    gs = grid.getStorage()
+    numDims = gs.getDimension()
+    # load a new empty grid which we fill step by step
+    newGrid = grid.createGridOfEquivalentType()
+    newGs = newGrid.getStorage()
+    alpha = np.ndarray(1)
+    # add root node to the new grid
+    newGs.insert(gs.getPoint(0))
+    alpha[0] = nodalValues[0]
+
+    # sort points by levelsum
+    ixs = {}
+    for i in xrange(gs.getSize()):
+        levelsum = gs.getPoint(i).getLevelSum()
+        # skip root node
+        if levelsum > numDims:
+            if levelsum in ixs:
+                ixs[levelsum].append(i)
+            else:
+                ixs[levelsum] = [i]
+
+    # run over the grid points by level sum
+    x = DataVector(numDims)
+    for levelsum in np.sort(ixs.keys()):
+        # add the grid points of the current level to the new grid
+        newixs = [None] * len(ixs[levelsum])
+        for i, ix in enumerate(ixs[levelsum]):
+            newixs[i] = (newGs.insert(gs.getPoint(ix)), nodalValues[ix])
+
+        # update the alpha values
+        alpha = np.append(alpha, np.zeros(newGs.getSize() - len(alpha)))
+        newAlpha = np.copy(alpha)
+        for ix, nodalValue in newixs:
+            gs.getCoordinates(newGs.getPoint(ix), x)
+            alpha[ix] = nodalValue - evalSGFunction(newGrid, newAlpha, x.array())
+
+    del x
+
+    # store alphas according to indices of grid
+    ans = np.ndarray(gs.getSize())
+    for i in xrange(gs.getSize()):
+        j = newGs.getSequenceNumber(gs.getPoint(i))
+        ans[i] = alpha[j]
+
+    return ans
 
 def evalHierToTop(basis, grid, coeffs, gp, d):
     gs = grid.getStorage()
     gpa = parent(grid, gp, d)
     ans = 0.
-    # print "======== evalHierToTop (%i, %i) ========" % (gp.getLevel(0), gp.getIndex(0))
     while gpa is not None:
-        ix = gs.seq(gpa)
-        accLevel, i, p = gpa.getLevel(d), gpa.getIndex(d), gp.getStandardCoordinate(d)
+        ix = gs.getSequenceNumber(gpa)
+        accLevel, i, p = gpa.getLevel(d), gpa.getIndex(d), gs.getCoordinate(gp, d)
         b = basis.eval(accLevel, i, p)
-#         print "%i, %i, %.20f: %.20f * %.20f = %.20f (%.20f)" % \
-#             (accLevel, i, p, coeffs[ix], b, coeffs[ix] * b, ans)
         ans += coeffs[ix] * b
         gpa = parent(grid, gpa, d)
-    # print "==============================="
     return ans
 
 
@@ -486,19 +751,19 @@ def hierarchizeBruteForce(grid, nodalValues, ignore=None):
 
             # append left and right child
             gpl = HashGridPoint(gp)
-            gs.left_child(gpl, d)
+            gpl.getLeftChild(d)
             gpr = HashGridPoint(gp)
-            gs.right_child(gpr, d)
+            gpr.getRightChild(d)
 
             gps = []
-            if gs.has_key(gpr):
+            if gs.isContaining(gpr):
                 gps.append(gpr)
-            if gs.has_key(gpl):
+            if gs.isContaining(gpl):
                 gps.append(gpl)
 
             while len(gps) > 0:
                 gpc = gps.pop()
-                ix = gs.seq(gpc)
+                ix = gs.getSequenceNumber(gpc)
                 # removeSample point from possible starting points
                 starting_points.remove(ix)
                 diff = evalHierToTop(basis, grid, alpha, gpc, d)
@@ -507,30 +772,51 @@ def hierarchizeBruteForce(grid, nodalValues, ignore=None):
 
                 # append left and right child
                 gpl = HashGridPoint(gpc)
-                gs.left_child(gpl, d)
+                gpl.getLeftChild(d)
                 gpr = HashGridPoint(gpc)
-                gs.right_child(gpr, d)
+                gpr.getRightChild(d)
 
-                if gs.has_key(gpr):
+                if gs.isContaining(gpr):
                     gps.append(gpr)
-                if gs.has_key(gpl):
+                if gs.isContaining(gpl):
                     gps.append(gpl)
 
     return alpha
 
 
-def hierarchize(grid, nodalValues, ignore=None):
+def hierarchize(grid, nodalValues, isConsistent=True, ignore=None):
     try:
         # if ignore is None or len(ignore) > 0:
-        alpha = DataVector(nodalValues)
-        createOperationHierarchisation(grid).doHierarchisation(alpha)
-        return alpha.array()
+        maxLevel = grid.getStorage().getMaxLevel()
+        if grid.getType() in [GridType_Bspline,
+                              GridType_BsplineClenshawCurtis,
+                              GridType_BsplineBoundary,
+                              GridType_ModBsplineClenshawCurtis,
+                              GridType_ModBspline]:
+            opHier = createOperationMultipleHierarchisation(grid)
+        elif maxLevel > 1 and \
+             grid.getType() in [GridType_LinearBoundary,
+                                GridType_LinearClenshawCurtisBoundary,
+                                GridType_PolyBoundary,
+                                GridType_PolyClenshawCurtisBoundary]:
+            opHier = createOperationArbitraryBoundaryHierarchisation(grid)
+        else:
+            opHier = createOperationHierarchisation(grid)
+
+        alpha_vec = DataVector(nodalValues)
+        opHier.doHierarchisation(alpha_vec)
+
+        alpha = np.array(alpha_vec.array())
+
+        del alpha_vec
+
+        return alpha
 #         print "using brute force hierarchization"
 #         return hierarchizeBruteForce(grid, nodalValues, ignore)
     except Exception, e:
         print e
     print "something went wrong during hierarchization"
-    import pdb; pdb.set_trace()
+    import ipdb; ipdb.set_trace()
     return hierarchizeBruteForce(grid, nodalValues, ignore)
 
 
@@ -539,14 +825,11 @@ def dehierarchize(grid, alpha):
     gs = grid.getStorage()
     p = DataVector(gs.getDimension())
     nodalValues = DataVector(gs.getSize())
-    A = DataMatrix(gs.getSize(), gs.getDimension())
+    A = np.ndarray((gs.getSize(), gs.getDimension()))
     for i in xrange(gs.getSize()):
-        gs.getPoint(i).getStandardCoordinates(p)
-        A.setRow(i, p)
-    opEval = createOperationMultipleEval(grid, A)
-    alphaVec = DataVector(alpha)
-    opEval.mult(alphaVec, nodalValues)
-    return nodalValues.array()
+        gs.getCoordinates(gs.getPoint(i), p)
+        A[i, :] = p.array()
+    return evalSGFunctionMulti(grid, alpha, A)
 
 
 def dehierarchizeList(grid, alpha, gps):
@@ -561,48 +844,67 @@ def dehierarchizeList(grid, alpha, gps):
     nodalValues = DataVector(len(gps))
     A = DataMatrix(len(gps), dim)
     for i, gp in enumerate(gps):
-        gp.getStandardCoordinates(p)
+        gs.getCoordinates(gp, p)
         A.setRow(i, p)
-    createOperationMultipleEval(grid, A).mult(alpha, nodalValues)
+    opEval = createOperationMultipleEval(grid, A)
+    opEval.mult(alpha, nodalValues)
+
+    del opEval
+    del A
+
     return nodalValues
 
 
 def balance(grid):
     gs = grid.getStorage()
     newgps = []
-    gps = [gs.getPoint(i) for i in xrange(gs.getSize())]
 
-    while len(gps) > 0:
-        gp = gps.pop()
+    for gp in [gs.getPoint(i) for i in xrange(gs.getSize())]:
         for dim in xrange(gs.getDimension()):
             # left child in dimension dim
             lgp = HashGridPoint(gp)
-            gs.left_child(lgp, dim)
+            lgp.getLeftChild(dim)
 
             # right child in dimension dim
             rgp = HashGridPoint(gp)
-            gs.right_child(rgp, dim)
+            rgp.getRightChild(dim)
 
-            if gs.has_key(lgp) and not gs.has_key(rgp):
+            if gs.isContaining(lgp) and not gs.isContaining(rgp):
                 inserted = insertPoint(grid, rgp)
-            elif gs.has_key(rgp) and not gs.has_key(lgp):
+            elif gs.isContaining(rgp) and not gs.isContaining(lgp):
                 inserted = insertPoint(grid, lgp)
             else:
                 inserted = []
 
-            # update lists
-            for gpi in inserted:
-                gps.append(gpi)
-                newgps.append(gpi)
+            newgps += inserted
+            gs.recalcLeafProperty()
 
-    gs.recalcLeafProperty()
     return newgps
 
 
-def getBoundsOfSupport(level, index):
+def getBoundsOfSupport(gs, level, index, gridType=GridType_Linear):
     if level > 0:
-        h = 1. / (1 << level)
-        return (index - 1) * h, (index + 1) * h
+        if gridType in bsplineGridTypes:
+            # this is just an approximation of the real boundaries
+            gp = HashGridPoint(1)
+            gp.set(0, level, index)
+            xcenter = gs.getCoordinate(gp, 0)
+            gp.getLeftBoundaryPoint(0)
+            xleft = gs.getCoordinate(gp, 0)
+            gp.set(0, level, index)
+            gp.getRightBoundaryPoint(0)
+            xright = gs.getCoordinate(gp, 0)
+            return (max(0.0, xcenter - level * (xcenter - xleft)),
+                    min(1.0, xcenter + level * (xright - xcenter)))
+        else:
+            gp = HashGridPoint(1)
+            gp.set(0, level, index)
+            gp.getLeftBoundaryPoint(0)
+            xleft = gs.getCoordinate(gp, 0)
+            gp.set(0, level, index)
+            gp.getRightBoundaryPoint(0)
+            xright = gs.getCoordinate(gp, 0)
+            return xleft, xright
     else:
         return 0., 1.
 
@@ -617,17 +919,20 @@ def add(alpha, alphas):
         alpha.add(a)
 
 
-def addConst(grid, alpha, c):
+def addConst(grid, alpha, c, y):
+    alpha_vec = DataVector(alpha)
     opHier = createOperationHierarchisation(grid)
-    opHier.doDehierarchisation(alpha)
-    alpha.add(DataVector([c] * len(alpha)))
-    opHier.doHierarchisation(alpha)
+    opHier.doDehierarchisation(alpha_vec)
+    for i in xrange(alpha_vec.getSize()):
+        alpha_vec[i] = c * alpha_vec[i] + y
+    opHier.doHierarchisation(alpha_vec)
+    return alpha_vec.array()
 
 
 #########################################################
 # def estimateSurplus(grid, gp, v):
 #     gs = grid.getStorage()
-#     ix = gs.seq(gp)
+#     ix = gs.getSequenceNumber(gp)
 #
 #     # surplus is already known
 #     if ix < len(v):
@@ -636,16 +941,16 @@ def addConst(grid, alpha, c):
 #
 #     vgp = []
 #     # get all available parents
-#     myParents = [(d, pgp) for (d, pgp) in parents(grid, gp) if gs.has_key(pgp)]
-#     vparents = np.ndarray(len(myParents), dtype='float32')
+#     myParents = [(d, pgp) for (d, pgp) in parents(grid, gp) if gs.isContaining(pgp)]
+#     vparents = np.ndarray(len(myParents), dtype='float')
 #     for i, (dp, p) in enumerate(myParents):
-#         ipar = gs.seq(p)
+#         ipar = gs.getSequenceNumber(p)
 #         vparents[i] = v[ipar]
 #         # get all grand parents = parents of parents
 #         for dgrp, grp in parents(grid, p):
 #             # use a linear extrapolation through parent and grandparent
 #             # to estimate the surplus of the current collocation node
-#             igrandpar = gs.seq(grp)
+#             igrandpar = gs.getSequenceNumber(grp)
 #             xpar = p.getStandardCoordinate(dgrp)
 #             xgrandpar = grp.getStandardCoordinate(dgrp)
 #             xgp = p.getStandardCoordinate(dgrp) + 2 ** -gp.getLevel(dp)
@@ -701,7 +1006,7 @@ def estimateSurplus(grid, gp, v):
     @return: float, estimated surplus for gp
     """
     gs = grid.getStorage()
-    ix = gs.seq(gp)
+    ix = gs.getSequenceNumber(gp)
 
     # surplus is already known
     if ix < len(v):
@@ -709,16 +1014,16 @@ def estimateSurplus(grid, gp, v):
 
     vgp = []
     # get all available parents
-    myParents = [(d, pgp) for d, pgp in parents(grid, gp) if gs.has_key(pgp)]
-    vparents = np.ndarray(len(myParents), dtype='float32')
+    myParents = [(d, pgp) for d, pgp in parents(grid, gp) if gs.isContaining(pgp)]
+    vparents = np.ndarray(len(myParents), dtype='float')
     for i, (_, p) in enumerate(myParents):
-        ipar = gs.seq(p)
+        ipar = gs.getSequenceNumber(p)
         vparents[i] = v[ipar]
         # get all grand parents = parents of parents
         for _, grp in parents(grid, p):
             # use a linear extrapolation through parent and grandparent
             # to estimate the surplus of the current collocation node
-            igrandpar = gs.seq(grp)
+            igrandpar = gs.getSequenceNumber(grp)
             if abs(v[igrandpar]) > 1e-13:
                 vgp.append(v[ipar] * v[ipar] / v[igrandpar])
 
@@ -733,7 +1038,7 @@ def estimateSurplus(grid, gp, v):
 
 def estimateConvergence(grid, gp, v):
     gs = grid.getStorage()
-    ix = gs.seq(gp)
+    ix = gs.getSequenceNumber(gp)
 
     # surplus is already known
     if ix < len(v):
@@ -741,16 +1046,16 @@ def estimateConvergence(grid, gp, v):
 
     vgp = []
     # get all available parents
-    myParents = [(d, pgp) for d, pgp in parents(grid, gp) if gs.has_key(pgp)]
-    vparents = np.ndarray(len(myParents), dtype='float32')
+    myParents = [(d, pgp) for d, pgp in parents(grid, gp) if gs.isContaining(pgp)]
+    vparents = np.ndarray(len(myParents), dtype='float')
     for i, (_, p) in enumerate(myParents):
-        ipar = gs.seq(p)
+        ipar = gs.getSequenceNumber(p)
         vparents[i] = v[ipar]
         # get all grand parents = parents of parents
         for _, grp in parents(grid, p):
             # use a linear extrapolation through parent and grandparent
             # to estimate the surplus of the current collocation node
-            igrandpar = gs.seq(grp)
+            igrandpar = gs.getSequenceNumber(grp)
             if v[igrandpar] < -1e-10 or v[igrandpar] > 1e-10:
                 vgp.append(v[ipar] / v[igrandpar])
 
@@ -765,22 +1070,27 @@ def estimateConvergence(grid, gp, v):
 
 def checkInterpolation(grid, alpha, nodalValues, epsilon=1e-13):
     # check if interpolation property is given
-    evalValues = dehierarchize(grid, DataVector(alpha))
+    gs = grid.getStorage()
+    evalValues = np.ndarray(gs.getSize())
+    x = DataVector(gs.getDimension())
+    opEval = createOperationEvalNaive(grid)
+    alpha_vec = DataVector(alpha)
+    for i in xrange(gs.getSize()):
+        gs.getCoordinates(gs.getPoint(i), x)
+        evalValues[i] = opEval.eval(alpha_vec, x)
 
     error = np.array([])
     nodes = np.array([])
     head = True
-    gs = grid.getStorage()
     p = DataVector(gs.getDimension())
     for i, (nodal, value) in enumerate(zip(nodalValues, evalValues)):
         # compute the relative error
+        abs_error = np.abs(nodal - value)
+        rel_error = abs_error
         if abs(nodal) > 1e-14:
-            rel_error = min(abs(nodal - value) / nodal,
-                            abs(nodal - value))
-        else:
-            rel_error = abs(nodal - value)
+            rel_error = np.abs(abs_error / nodal)
 
-        if rel_error > epsilon:
+        if abs_error > epsilon:
             spacing = 12
             if head:
                 print
@@ -793,7 +1103,7 @@ def checkInterpolation(grid, alpha, nodalValues, epsilon=1e-13):
                      "rel err".rjust(spacing),
                      "abs err".rjust(spacing))
                 head = False
-            gs.getPoint(i).getStandardCoordinates(p)
+            gs.getCoordinates(gs.getPoint(i), p)
             print "%s | %s | %s | %s | %s | %s | %s" % \
                 (("%i" % i).rjust(spacing),
                     ("%i" % gs.getPoint(i).getLevelSum()).rjust(spacing),
@@ -801,9 +1111,9 @@ def checkInterpolation(grid, alpha, nodalValues, epsilon=1e-13):
                     ("%g" % nodal).rjust(spacing),
                     ("%g" % value).rjust(spacing),
                     ("%g" % rel_error).rjust(spacing),
-                    ("%g" % abs(nodal - value)).rjust(spacing))
+                    ("%g" % abs_error).rjust(spacing))
             nodes = np.append(nodes, [i])
-            error = np.append(rel_error, [rel_error])
+            error = np.append(abs_error, [abs_error])
 
     return error, nodes
 
@@ -817,13 +1127,13 @@ def checkPositivity(grid, alpha):
     A = np.ndarray((fullHashGridStorage.getSize(), fullHashGridStorage.getDimension()))
     p = DataVector(gs.getDimension())
     for i in xrange(fullHashGridStorage.getSize()):
-        fullHashGridStorage.getPoint(i).getStandardCoordinates(p)
+        fullHashGridStorage.getCoordinates(fullHashGridStorage.getPoint(i), p)
         A[i, :] = p.array()
-
     negativeGridPoints = {}
     res = evalSGFunctionMulti(grid, alpha, A)
     ymin, ymax, cnt = 0, -1e10, 0
     for i, yi in enumerate(res):
+#         print A[i, :], yi
         if yi < -1e-11:
             cnt += 1
             negativeGridPoints[i] = yi, HashGridPoint(fullHashGridStorage.getPoint(i))

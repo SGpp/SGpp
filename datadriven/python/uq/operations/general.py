@@ -1,12 +1,10 @@
-from pysgpp import (Grid, HashGridPoint, SPolyBoundaryBase,
-                    SLinearBoundaryBase, SLinearBase, SPolyBase)
+from pysgpp import (Grid, HashGridPoint)
 
 from sparse_grid import createGrid, isValid
 import numpy as np
 from sparse_grid import(copyGrid,
                         insertPoint,
                         getBasis,
-                        hasBorder,
                         getDegree)
 
 
@@ -29,15 +27,15 @@ def insert_children(grid, gp, d):
 
     # left child in dimension dim
     gpl = HashGridPoint(gp)
-    gs.left_child(gpl, d)
-    if not gs.has_key(gpl) and isValid(grid, gpl):
+    gpl.getLeftChild(d)
+    if not gs.isContaining(gpl) and isValid(grid, gpl):
         success = gs.insert(gpl) > -1
         cnt += 1 if success else 0
 
     # right child in dimension dim
     gpr = HashGridPoint(gp)
-    gs.right_child(gpr, d)
-    if not gs.has_key(gpr) and isValid(grid, gpr):
+    gpr.getRightChild(d)
+    if not gs.isContaining(gpr) and isValid(grid, gpr):
         success = gs.insert(gpr) > -1
         cnt += 1 if success else 0
 
@@ -94,10 +92,34 @@ def cross(grid1, grid2):
     """
     return
 
+def projectList(gps, dims):
+    """
+    Project all grid points to the given dimensions
+
+    @param gps: list of grid points
+    @param dims: list dimensions to which the grid points are projected
+    """
+    # create a new empty grid
+    dim = len(dims)
+    projected_gps = [None] * len(gps)
+
+    # run over all grid points in grid and
+    # project them to the dimensions dims
+    for i, gp in enumerate(gps):
+        projected_gp = HashGridPoint(dim)
+        # copy level index to new grid point
+        for k, d in enumerate(dims):
+            projected_gp.set(k, gp.getLevel(d), gp.getIndex(d))
+        # insert it to the list of projected grid points
+        projected_gps[i] = projected_gp
+
+    return projected_gps
+
 
 def project(grid, dims):
     """
     Project all grid points to the given dimensions
+
     @param grid: Grid sparse grid
     @param dims: list dimensions to which the grid points are projected
     """
@@ -153,7 +175,7 @@ def join(grid1, grid2, *args, **kws):
         gp = gs1.getPoint(i)
 
         # insert grid point
-        if not gs2.has_key(gp):
+        if not gs2.isContaining(gp):
             gs2.insert(gp)
 
     gs2.recalcLeafProperty()

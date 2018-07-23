@@ -4,7 +4,7 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-## \page combigrid_gridConverter_py gridConverter.py
+## \page example_gridConverter_py gridConverter.py
 ##
 ## This tutorial
 ## contains examples on how to convert sparse grids with a
@@ -95,7 +95,7 @@ def refineGrid(grid, alpha, f, refnums):
         gridGen.refine(SurplusRefinementFunctor(alpha, 1))
 
         # extend alpha vector (new entries uninitialized)
-        alpha.resize(gs.getSize())
+        alpha.resizeZero(gs.getSize())
 
         # set function values in alpha
         for i in xrange(gs.getSize()):

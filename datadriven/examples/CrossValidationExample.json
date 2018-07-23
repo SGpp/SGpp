@@ -1,6 +1,6 @@
 {
 	"dataSource": {
-		"filePath": "/home/michael/Projects/HiWi/SGpp/datasets/bupa_liver/liver-disorders_normalized.arff.gz"
+		"filePath": "/home/lars/fp/SGpp/datasets/DR5/DR5_nowarnings_less05_test.arff"
 	},
 	"scorer": {
 		"crossValidation": {

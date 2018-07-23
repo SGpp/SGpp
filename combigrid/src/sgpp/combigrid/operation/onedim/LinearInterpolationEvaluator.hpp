@@ -21,23 +21,26 @@ namespace combigrid {
  */
 class LinearInterpolationEvaluator : public AbstractLinearEvaluator<FloatScalarVector> {
   double evaluationPoint;
-  std::vector<FloatScalarVector> basisCoefficients;
+  std::vector<FloatScalarVector> basisValues;
+  std::vector<double> basisCoefficients;
   std::vector<double> xValues;
 
-  void computeBasisCoefficients();
+  void computeBasisValues();
 
  public:
   LinearInterpolationEvaluator();
   virtual ~LinearInterpolationEvaluator();
   LinearInterpolationEvaluator(LinearInterpolationEvaluator const &other);
 
-  virtual std::vector<FloatScalarVector> getBasisCoefficients() { return basisCoefficients; }
+  virtual std::vector<FloatScalarVector> getBasisValues() { return basisValues; }
+  virtual std::vector<double> getBasisCoefficients() { return basisCoefficients; }
 
-  virtual void setGridPoints(std::vector<double> const &newXValues);
-  virtual std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cloneLinear();
-  virtual bool needsOrderedPoints();
-  virtual bool needsParameter();
-  virtual void setParameter(FloatScalarVector const &param);
+  void setGridPoints(std::vector<double> const &newXValues) override;
+  void setBasisCoefficientsAtGridPoints(std::vector<double> &functionValues) override;
+  std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cloneLinear() override;
+  bool needsOrderedPoints() override;
+  bool needsParameter() override;
+  void setParameter(FloatScalarVector const &param) override;
 };
 
 } /* namespace combigrid */

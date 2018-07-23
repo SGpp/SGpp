@@ -36,7 +36,7 @@ class AbstractFullGridEvaluator {
    * Pointer to a mutex that is locked when doing critical operations on data.
    * This is set to nullptr if the action is done in a single thread.
    */
-  std::shared_ptr<std::mutex> mutexPtr;
+  std::shared_ptr<std::recursive_mutex> mutexPtr;
 
  public:
   /**
@@ -58,7 +58,7 @@ class AbstractFullGridEvaluator {
    * Updates the current mutex. If the mutex is set to nullptr, no mutex locking is done. Otherwise,
    * the mutex is locked at critical actions.
    */
-  virtual void setMutex(std::shared_ptr<std::mutex> mutexPtr) {
+  virtual void setMutex(std::shared_ptr<std::recursive_mutex> mutexPtr) {
     this->mutexPtr = mutexPtr;
     storage->setMutex(mutexPtr);
   }
@@ -147,16 +147,17 @@ class AbstractFullGridEvaluator {
   /**
    * @return Returns the grid in the current level as a pointer to a TensorGrid object
    */
-  virtual std::shared_ptr<TensorGrid> getTensorGrid(MultiIndex const &level) {
+  virtual std::shared_ptr<TensorGrid> getTensorGrid(MultiIndex const &level,
+                                                    std::vector<bool> orderingConfiguration) {
     size_t numDimensions = pointHierarchies.size();
     std::vector<base::DataVector> grids1D;
 
     for (size_t d = 0; d < numDimensions; ++d) {
-      bool sorted = false;  // TODO(holzmudd): What if the client wants sorted points?
+      bool sorted = orderingConfiguration[d];
       grids1D.push_back(base::DataVector(pointHierarchies[d]->getPoints(level[d], sorted)));
     }
 
-    return std::make_shared<TensorGrid>(grids1D);
+    return std::make_shared<TensorGrid>(grids1D, level);
   }
 
   /**

@@ -24,32 +24,38 @@ namespace base {
  *
  */
 enum class GridType {
-  Linear,                    //  0
-  LinearStretched,           //  1
-  LinearL0Boundary,          //  2
-  LinearBoundary,            //  3
-  LinearStretchedBoundary,   //  4
-  LinearTruncatedBoundary,   //  5
-  ModLinear,                 //  6
-  Poly,                      //  7
-  PolyBoundary,              //  8
-  ModPoly,                   //  9
-  ModWavelet,                // 10
-  ModBspline,                // 11
-  Prewavelet,                // 12
-  SquareRoot,                // 13
-  Periodic,                  // 14
-  LinearClenshawCurtis,      // 15
-  Bspline,                   // 16
-  BsplineBoundary,           // 17
-  BsplineClenshawCurtis,     // 18
-  Wavelet,                   // 19
-  WaveletBoundary,           // 20
-  FundamentalSpline,         // 21
-  ModFundamentalSpline,      // 22
-  ModBsplineClenshawCurtis,  // 23
-  LinearStencil,             // 24
-  ModLinearStencil           // 25
+  Linear,                        //  0
+  LinearStretched,               //  1
+  LinearL0Boundary,              //  2
+  LinearBoundary,                //  3
+  LinearStretchedBoundary,       //  4
+  LinearTruncatedBoundary,       //  5
+  ModLinear,                     //  6
+  Poly,                          //  7
+  PolyBoundary,                  //  8
+  ModPoly,                       //  9
+  ModWavelet,                    // 10
+  ModBspline,                    // 11
+  Prewavelet,                    // 12
+  SquareRoot,                    // 13
+  Periodic,                      // 14
+  LinearClenshawCurtisBoundary,  // 15
+  Bspline,                       // 16
+  BsplineBoundary,               // 17
+  BsplineClenshawCurtis,         // 18
+  Wavelet,                       // 19
+  WaveletBoundary,               // 20
+  FundamentalSpline,             // 21
+  ModFundamentalSpline,          // 22
+  ModBsplineClenshawCurtis,      // 23
+  LinearStencil,                 // 24
+  ModLinearStencil,              // 25
+  PolyClenshawCurtisBoundary,    // 26
+  PolyClenshawCurtis,            // 27
+  LinearClenshawCurtis,          // 28
+  ModPolyClenshawCurtis,         // 29
+  ModLinearClenshawCurtis,       // 30
+  NakBsplineBoundaryCombigrid    // 31
 };
 
 /**
@@ -216,6 +222,15 @@ class Grid {
   static Grid* createLinearStretchedBoundaryGrid(size_t dim);
 
   /**
+   * creates a linear Clenshaw-Curtis boundary grid
+   *
+   * @param dim the grid's dimension
+   * @param boundaryLevel level of the boundary
+   * @return grid
+   */
+  static Grid* createLinearClenshawCurtisBoundaryGrid(size_t dim, level_t boundaryLevel = 1);
+
+  /**
    * creates a linear Clenshaw-Curtis grid
    *
    * <table border="0"><tr>
@@ -231,6 +246,14 @@ class Grid {
    * @return grid
    */
   static Grid* createLinearClenshawCurtisGrid(size_t dim);
+
+  /**
+   * creates a modified linear Clenshaw-Curtis grid
+   *
+   * @param dim the grid's dimension
+   * @return grid
+   */
+  static Grid* createModLinearClenshawCurtisGrid(size_t dim);
 
   /**
    * creates a modified linear grid
@@ -281,9 +304,39 @@ class Grid {
    *
    * @param dim the grid's dimension
    * @param degree the polynom's max. degree
+   * @param boundaryLevel level at which boundary points are added
    * @return grid
    */
-  static Grid* createPolyBoundaryGrid(size_t dim, size_t degree);
+  static Grid* createPolyBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel = 1);
+
+  /**
+   * creates a poly Clenshaw Curtis boundary grid with clenshaw curtis points
+   *
+   * @param dim the grid's dimension
+   * @param degree the polynom's max. degree
+   * @param boundaryLevel level at which boundary points are added
+   * @return grid
+   */
+  static Grid* createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree,
+                                                    level_t boundaryLevel = 1);
+
+  /**
+   * creates a poly grid with clenshaw curtis points
+   *
+   * @param dim the grid's dimension
+   * @param degree the polynom's max. degree
+   * @return grid
+   */
+  static Grid* createPolyClenshawCurtisGrid(size_t dim, size_t degree);
+
+  /**
+   * creates a modified poly grid with clenshaw curtis points
+   *
+   * @param dim the grid's dimension
+   * @param degree the polynom's max. degree
+   * @return grid
+   */
+  static Grid* createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
 
   /**
    * creates a modified polynomial grid
@@ -549,6 +602,15 @@ class Grid {
   static Grid* createPeriodicGrid(size_t dim);
 
   /**
+    * creates a not a knot B-Spline boundary grid
+    *
+    * @param dim the grid's dimension
+    * @param degree the B-spline degree
+    * @return grid
+    */
+  static Grid* createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
+
+  /**
    * reads a grid out of a string
    *
    * @param istr string that contains the grid information
@@ -609,6 +671,12 @@ class Grid {
   Grid* clone();
 
   /**
+   * creates an equivalent grid without copying the grid points
+   * @param numDims number of dimensions
+   */
+  Grid* createGridOfEquivalentType(size_t numDims);
+
+  /**
    * gets a reference to the GridStorage object
    *
    * @return reference to the GridStorage obeject
@@ -656,11 +724,25 @@ class Grid {
   virtual sgpp::base::GridType getType() = 0;
 
   /**
+   * Returns a string that identifies the grid type uniquely
+   *
+   * @return string that identifies the grid type uniquely
+   */
+  std::string getTypeAsString();
+
+  /**
+   * Returns the grid type that corresponds to the actual type but does no boundary treatment
+   *
+   * @return grid type
+   */
+  sgpp::base::GridType getZeroBoundaryType();
+
+  /**
    * Returns the Basis class associated with the grid
    *
    * @return Basis class associated with the grid
    */
-  virtual const SBasis& getBasis() = 0;
+  virtual SBasis& getBasis() = 0;
 
   /**
    * Serializes grid to a string.
@@ -736,6 +818,14 @@ class Grid {
    * @param newAlgoDims std::vector containing the algorithmic dimensions
    */
   void setAlgorithmicDimensions(std::vector<size_t> newAlgoDims);
+
+  /**
+   * Conversion from string to grid type
+   *
+   * @param gridType grid type as a string
+   * @return actual grid type
+   */
+  static GridType stringToGridType(const std::string& gridType);
 
  protected:
   /// GridStorage object of the grid

@@ -7,7 +7,7 @@
  * \page example_optimization_cpp optimization.cpp
  *
  * On this page, we look at an example application of the sgpp::optimization module.
- * Identical versions of the example are given in all languages
+ * Versions of the example are given in all languages
  * currently supported by SG++: C++, Python, Java, and MATLAB.
  *
  * For instructions on how to compile and run the example, please see \ref installation.
@@ -25,9 +25,9 @@
 #include <sgpp_base.hpp>
 #include <sgpp_optimization.hpp>
 
+#include <algorithm>
 #include <iostream>
 #include <iterator>
-#include <algorithm>
 
 /**
  * The function \f$f\colon [0, 1]^d \to \mathbb{R}\f$ to be minimized
@@ -42,18 +42,15 @@
  */
 class ExampleFunction : public sgpp::optimization::ScalarFunction {
  public:
-  ExampleFunction() : sgpp::optimization::ScalarFunction(2) {
-  }
+  ExampleFunction() : sgpp::optimization::ScalarFunction(2) {}
 
   double eval(const sgpp::base::DataVector& x) {
     // minimum is f(x) = -2 for x[0] = 3*pi/16, x[1] = 3*pi/14
     return std::sin(8.0 * x[0]) + std::sin(7.0 * x[1]);
   }
 
-  virtual void clone(
-    std::unique_ptr<sgpp::optimization::ScalarFunction>& clone) const {
-    clone = std::unique_ptr<sgpp::optimization::ScalarFunction>(
-              new ExampleFunction(*this));
+  virtual void clone(std::unique_ptr<sgpp::optimization::ScalarFunction>& clone) const {
+    clone = std::unique_ptr<sgpp::optimization::ScalarFunction>(new ExampleFunction(*this));
   }
 };
 
@@ -62,7 +59,7 @@ class ExampleFunction : public sgpp::optimization::ScalarFunction {
  */
 void printLine() {
   std::cout << "----------------------------------------"
-            "----------------------------------------\n";
+               "----------------------------------------\n";
 }
 
 int main(int argc, const char* argv[]) {
@@ -74,7 +71,7 @@ int main(int argc, const char* argv[]) {
   sgpp::optimization::Printer::getInstance().setVerbosity(2);
 
   /**
-   * Here, we set define some parameters: objective function, dimensionality,
+   * Here, we define some parameters: objective function, dimensionality,
    * B-spline degree, maximal number of grid points, and adaptivity.
    */
   // objective function
@@ -93,8 +90,7 @@ int main(int argc, const char* argv[]) {
    * an iterative grid generator, which can generate the grid adaptively.
    */
   sgpp::base::ModBsplineGrid grid(d, p);
-  sgpp::optimization::IterativeGridGeneratorRitterNovak gridGen(
-    f, grid, N, gamma);
+  sgpp::optimization::IterativeGridGeneratorRitterNovak gridGen(f, grid, N, gamma);
 
   /**
    * With the iterative grid generator, we generate adaptively a sparse grid.
@@ -150,11 +146,10 @@ int main(int argc, const char* argv[]) {
     sgpp::base::GridStorage& gridStorage = grid.getStorage();
 
     // index of grid point with minimal function value
-    size_t x0Index = std::distance(
-                       functionValues.getPointer(),
-                       std::min_element(functionValues.getPointer(),
-                                        functionValues.getPointer() +
-                                        functionValues.getSize()));
+    size_t x0Index =
+        std::distance(functionValues.getPointer(),
+                      std::min_element(functionValues.getPointer(),
+                                       functionValues.getPointer() + functionValues.getSize()));
 
     x0 = gridStorage.getCoordinates(gridStorage[x0Index]);
 
@@ -191,8 +186,7 @@ int main(int argc, const char* argv[]) {
   const double ftXOptNM = ft.eval(xOptNM);
 
   std::cout << "\nnxOptNM = " << xOptNM.toString() << "\n";
-  std::cout << "f(xOptNM) = " << fXOptNM <<
-            ", ft(xOptNM) = " << ftXOptNM << "\n\n";
+  std::cout << "f(xOptNM) = " << fXOptNM << ", ft(xOptNM) = " << ftXOptNM << "\n\n";
 
   printLine();
   std::cout << "\nsgpp::optimization example program terminated.\n";

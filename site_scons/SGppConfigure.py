@@ -103,6 +103,8 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   checkOpenCL(config)
   checkZlib(config)
   checkGSL(config)
+  checkDAKOTA(config)
+  checkCGAL(config)
   checkBoostTests(config)
   checkSWIG(config)
   checkPython(config)
@@ -238,6 +240,16 @@ def checkOpenCL(config):
 
     config.env["CPPDEFINES"]["USE_OCL"] = "1"
 
+def checkDAKOTA(config):
+    if config.env["USE_DAKOTA"]:
+        if not config.CheckCXXHeader("pecos_global_defs.hpp"):
+            Helper.printErrorAndExit("pecos_global_defs.hpp not found, but required for PECOS. Consider setting the flag 'CPPPATH'.")
+
+def checkCGAL(config):
+    if config.env["USE_CGAL"]:
+        if not config.CheckCXXHeader("CGAL/basic.h"):
+            Helper.printErrorAndExit("CGAL/basic.h not found, but required for CGAL. Consider setting the flag 'CPPPATH'.")
+
 def checkGSL(config):
   if config.env["USE_GSL"]:
     config.env.AppendUnique(CPPPATH=[config.env["GSL_INCLUDE_PATH"]])
@@ -259,7 +271,7 @@ def checkZlib(config):
         else:
             if not config.CheckLibWithHeader("z","zlib.h", language="C++",autoadd=0):
                 Helper.printErrorAndExit("The flag USE_ZLIB was set, but the necessary header 'zlib.h' or library was not found.")
-                
+
             config.env["CPPDEFINES"]["ZLIB"] = "1"
 
 def checkBoostTests(config):
@@ -533,7 +545,7 @@ def configureIntelCompiler(config):
                                     "-fno-strict-aliasing",
                                     "-ip", "-ipo", "-funroll-loops",
                                     "-ansi-alias", "-fp-speculation=safe",
-                                    "-no-offload"])
+                                    "-qno-offload"])
   if config.env["COMPILER"] == "intel.mpi":
     config.env["CC"] = ("mpiicc")
     config.env["LINK"] = ("mpiicpc")

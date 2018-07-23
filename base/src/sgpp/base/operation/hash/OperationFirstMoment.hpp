@@ -7,9 +7,9 @@
 #define OPERATIONFIRSTMOMENT_HPP
 
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace base {
@@ -33,8 +33,9 @@ class OperationFirstMoment {
    * Integrate the sparse grid function
    *
    * @param alpha the function's values in the nodal basis
+   * @param bounds describes the boundaries of the hypercube of the original function
    */
-  virtual double doQuadrature(const DataVector& alpha) = 0;
+  virtual double doQuadrature(const DataVector& alpha, DataMatrix* bounds = nullptr) = 0;
 };
 
 }  // namespace base

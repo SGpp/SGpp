@@ -33,8 +33,9 @@ size_t ExponentialChebyshevPermutationIterator::value() {
 void ExponentialChebyshevPermutationIterator::moveToNext() { ++currentIndex; }
 
 std::shared_ptr<AbstractPermutationIterator> ExponentialChebyshevPermutationIterator::clone() {
-  return std::shared_ptr<AbstractPermutationIterator>(
-      new ExponentialChebyshevPermutationIterator(level, numPoints, currentIndex));
+  std::shared_ptr<AbstractPermutationIterator> ans =
+      std::make_shared<ExponentialChebyshevPermutationIterator>(level, numPoints, currentIndex);
+  return ans;
 }
 
 } /* namespace combigrid */
