@@ -63,7 +63,7 @@ const size_t datasetSize = 10;
 const double tolerance = 1E-5;
 
 BOOST_AUTO_TEST_CASE(arffTestReadFile) {
-  auto sampleProvider = ArffFileSampleProvider(0.0);
+  auto sampleProvider = ArffFileSampleProvider();
   sampleProvider.readFile(datasetPath, true);
   auto dataset = sampleProvider.getAllSamples();
 
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(arffTestReadFile) {
 }
 
 BOOST_AUTO_TEST_CASE(arffTestgetSize) {
-  auto sampleProvider = ArffFileSampleProvider(0.0);
+  auto sampleProvider = ArffFileSampleProvider();
   sampleProvider.readFile(datasetPath, true);
   BOOST_CHECK_EQUAL(datasetSize, sampleProvider.getNumSamples());
 }
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(arffTestGetNextSamples) {
   size_t sampleSize1 = 5;
   size_t sampleSize2 = 3;
 
-  auto sampleProvider = ArffFileSampleProvider(0.0);
+  auto sampleProvider = ArffFileSampleProvider();
   sampleProvider.readFile(datasetPath, true);
 
   auto dataset = std::unique_ptr<Dataset>(sampleProvider.getNextSamples(sampleSize1));
