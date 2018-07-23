@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(testDataTransformationParser) {
   Dataset* datasetAuto2 = dataSource->getNextSamples();
 
   // Read arff file manually
-  ArffFileSampleProvider arffsp = ArffFileSampleProvider(0.0);
+  ArffFileSampleProvider arffsp = ArffFileSampleProvider();
   arffsp.readFile("datadriven/tests/data/chess_5d_2000.arff", true);
   Dataset* dataset1 = arffsp.getNextSamples(1000);
   Dataset* dataset2 = arffsp.getNextSamples(1000);
