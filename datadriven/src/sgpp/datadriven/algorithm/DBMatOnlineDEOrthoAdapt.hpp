@@ -18,12 +18,14 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
  public:
   /**
    * Constructor
-   * Builds DBMatOnlineDEOrthoAdapt object from given offline object
    *
-   * @param offline The offline object
+   * @param offline The offline object we base our evaluations on.
+   * @param lambda The regularization strength (TODO(fuchsgruber) remove this)
+   * @param grid The underlying grid (TODO(fuchsgruber) do we need this?)
    * @param beta The initial weighting factor
    */
-  explicit DBMatOnlineDEOrthoAdapt(sgpp::datadriven::DBMatOffline& offline, double beta = 0.);
+  explicit DBMatOnlineDEOrthoAdapt(DBMatOffline& offline, Grid& grid, double lambda,
+      double beta = 0.);
 
   /**
    * Returns the additive component of the sherman-morrison-formula, which
@@ -60,14 +62,16 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
 
 
   /**
+   * @param densityEstimationConfig configuration for the density estimation
+   * @param grid the underlying grid
    * @param numAddedGridPoints Number of grid points inserted at the end of the grid storage
    * @param deletedGridPointIndices Indices of grid points that were deleted
    * @param lambda The last best lambda value
    * @return list of grid points, that cannot be coarsened
    */
   std::vector<size_t> updateSystemMatrixDecomposition(
-      size_t numAddedGridPoints,
-      std::list<size_t> deletedGridPointIndices,
+      DensityEstimationConfiguration& densityEstimationConfig,
+      Grid& grid, size_t numAddedGridPoints, std::list<size_t> deletedGridPointIndices,
       double lambda) override;
 
  protected:
@@ -89,10 +93,14 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    * (R + lambda*I)^{-1} * b = ((Q*T^{-1}*Q^{t} + B) * b = alpha,
    * where B holds the refine/coarsen information
    *
+   * @param alpha the datavetor where surplusses will be stored
    * @param b The right hand side of the system
+   * @param grid the underlying grid
+   * @param densityEstimationConfig configuration for the density estimation
    * @param do_cv Specifies, if cross-validation should be done (todo: currently not implemented)
    */
-  void solveSLE(sgpp::base::DataVector& b, bool do_cv) override;
+  void solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
+      DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) override;
 
  private:
   /**
@@ -100,10 +108,11 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    * refined_points_ container member. The computed vectors of the products correspond
    * to rows/columns of the lhs matrix
    *
+   * @param grid the underlying grid
    * @param newPoints The number of points to refine
    * @param newLambda The regularization coefficient added to the diagonal elements
    */
-  void compute_L2_gridvectors(size_t newPoints, double newLambda);
+  void compute_L2_gridvectors(Grid& grid, size_t newPoints, double newLambda);
 };
 }  // namespace datadriven
 }  // namespace sgpp

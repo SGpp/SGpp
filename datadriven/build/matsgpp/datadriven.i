@@ -18,6 +18,7 @@
 // %include "datadriven/src/sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/configuration/RegularizationConfiguration.hpp"
+%include "datadriven/src/sgpp/datadriven/configuration/DatabaseConfiguration.hpp"
 %rename (getConstTargets) sgpp::datadriven::Dataset::getTargets() const;
 %rename (getConstData) sgpp::datadriven::Dataset::getData() const;
 %include "datadriven/src/sgpp/datadriven/tools/Dataset.hpp"
@@ -37,6 +38,9 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDEChol.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp"
+
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDatabase.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/GridFactory.hpp"
 
 #ifdef USE_GSL
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp"
@@ -120,12 +124,14 @@
 %ignore  sgpp::datadriven::ModelFittingBase::operator=(ModelFittingBase&&);
 %rename(assign) sgpp::datadriven::ModelFittingBase::operator =;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp"
 
 %ignore  sgpp::datadriven::Metric::operator=(Metric&&);
 %rename(assign) sgpp::datadriven::Metric::operator =;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/Metric.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/MSE.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/NegativeLogLikelihood.hpp"
 %ignore  sgpp::datadriven::ShufflingFunctor::operator=(ShufflingFunctor&&);
 %rename(assign) sgpp::datadriven::ShufflingFunctor::operator =;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/ShufflingFunctor.hpp"

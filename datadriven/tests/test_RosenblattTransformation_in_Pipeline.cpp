@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(testRosenblattWrapper) {
 
   // read arff file
   ArffFileSampleProvider arffsp = ArffFileSampleProvider();
-  arffsp.readFile("datadriven/tests/data/chess_5d_2000.arff");
+  arffsp.readFile("datadriven/tests/data/chess_5d_2000.arff", true);
   Dataset* dataset = arffsp.getAllSamples();
 
   // do transformations
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE(testDataTransformationParser) {
 
   // Read arff file manually
   ArffFileSampleProvider arffsp = ArffFileSampleProvider();
-  arffsp.readFile("datadriven/tests/data/chess_5d_2000.arff");
+  arffsp.readFile("datadriven/tests/data/chess_5d_2000.arff", true);
   Dataset* dataset1 = arffsp.getNextSamples(1000);
   Dataset* dataset2 = arffsp.getNextSamples(1000);
 

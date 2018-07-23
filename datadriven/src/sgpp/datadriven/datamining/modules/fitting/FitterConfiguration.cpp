@@ -46,6 +46,11 @@ const datadriven::OperationMultipleEvalConfiguration& FitterConfiguration::getMu
   return multipleEvalConfig;
 }
 
+const datadriven::DatabaseConfiguration& FitterConfiguration::getDatabaseConfig()
+    const {
+  return databaseConfig;
+}
+
 base::RegularGridConfiguration& FitterConfiguration::getGridConfig() {
   return const_cast<base::RegularGridConfiguration&>(
       static_cast<const FitterConfiguration&>(*this).getGridConfig());

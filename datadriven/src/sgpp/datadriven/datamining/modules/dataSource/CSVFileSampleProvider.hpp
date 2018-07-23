@@ -53,14 +53,16 @@ class CSVFileSampleProvider : public FileSampleProvider {
    * Open an existing CSV file, parse it and store its contents inside this class. Throws if file
    * can not be opened or parsed.
    * @param filePath Path to an existing file.
+   * @param hasTargets whether the file has targest (i.e. supervised learning)
    */
-  void readFile(const std::string& filePath) override;
+  void readFile(const std::string& filePath, bool hasTargets) override;
 
   /**
    * Currently not implemented.
    * @param input string containing information in CSV file format
+   * @param hasTargets whether the file has targest (i.e. supervised learning)
    */
-  void readString(const std::string& input) override;
+  void readString(const std::string& input, bool hasTargets) override;
 
  private:
   /**

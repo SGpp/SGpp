@@ -26,10 +26,28 @@ using sgpp::base::DataVector;
  */
 class DBMatOnlineDELU : public DBMatOnlineDE {
  public:
-  explicit DBMatOnlineDELU(DBMatOffline& offline, double beta = 0.);
+  /**
+   * Constructor
+   *
+   * @param offline The offline object we base our evaluations on.
+   * @param lambda The regularization strength (TODO(fuchsgruber) remove this)
+   * @param grid The underlying grid (TODO(fuchsgruber) do we need this?)
+   * @param beta The initial weighting factor
+   */
+  explicit DBMatOnlineDELU(DBMatOffline& offline, Grid& grid, double lambda,
+      double beta = 0.);
 
  protected:
-  void solveSLE(DataVector& b, bool do_cv) override;
+  /**
+   * Solves the SLE for this matrix decomposition
+   * @param alpha the surplusses
+   * @param b the rhs of the system
+   * @param grid the underlying grid
+   * @param densityEstimationConfig configuration for the density estimation
+   * @param do_cv whether cross validation should be performed
+   */
+  void solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
+      DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) override;
 };
 
 } /* namespace datadriven */
