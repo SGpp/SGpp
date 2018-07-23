@@ -94,6 +94,16 @@
 %include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/RoundRobinScheduler.hpp"
 #endif
 
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp"
+%ignore sgpp::datadriven::DataShufflingFunctor::operator();
+%ignore sgpp::datadriven::DataShufflingFunctorRandom::operator();
+%ignore sgpp::datadriven::DataShufflingFunctorSequential::operator();
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctor.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/shuffling/DataSourceShufflingTypeParser.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorFactory.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorRandom.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorSequential.hpp"
+
 %ignore  sgpp::datadriven::SampleProvider::operator=(SampleProvider&&);
 %rename(assign) sgpp::datadriven::SampleProvider::operator =;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp"
@@ -105,12 +115,12 @@
 #ifdef ZLIB
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp"
 #endif /* ZLIB */
-%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp"
 
 
 %ignore sgpp::datadriven::DataSource::begin;
 %ignore sgpp::datadriven::DataSource::end;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceSplitting.hpp"
 %ignore  sgpp::datadriven::FitterConfiguration::operator=(FitterConfiguration&&);
 %rename(assign) sgpp::datadriven::FitterConfiguration::operator =;
 %rename (getConstGridConfig) sgpp::datadriven::FitterConfiguration::getGridConfig() const;
@@ -156,6 +166,7 @@
 
 %ignore  sgpp::datadriven::SparseGridMiner::operator=(SparseGridMiner&&);
 %include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMiner.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp"
 
 %include "datadriven/src/sgpp/datadriven/datamining/configuration/DensityEstimationTypeParser.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/configuration/GridTypeParser.hpp"

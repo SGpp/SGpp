@@ -23,8 +23,8 @@ namespace sgpp {
 
 namespace datadriven {
 
-ArffFileSampleProvider::ArffFileSampleProvider(double validationPortion)
-    : FileSampleProvider{}, validationPortion(validationPortion), dataset(Dataset{}), counter(0) {}
+ArffFileSampleProvider::ArffFileSampleProvider(DataShufflingFunctor *shuffling)
+    : shuffling{shuffling}, dataset(Dataset{}), counter(0) {}
 
 SampleProvider* ArffFileSampleProvider::clone() const {
   return dynamic_cast<SampleProvider*>(new ArffFileSampleProvider{*this});
@@ -84,12 +84,10 @@ void ArffFileSampleProvider::readString(const std::string& input, bool hasTarget
 }
 
 Dataset* ArffFileSampleProvider::splitDataset(size_t howMany) {
-  const size_t trainingSize = static_cast<size_t>(
-      static_cast<double>(dataset.getNumberInstances()) * (1 - validationPortion));
 
-  const size_t size = counter + howMany <= trainingSize
+  const size_t size = counter + howMany <= dataset.getNumberInstances()
                           ? howMany
-                          : trainingSize - counter;
+                          : dataset.getNumberInstances() - counter;
   auto tmpDataset = std::make_unique<Dataset>(size, dataset.getDimension());
 
   base::DataMatrix& srcSamples = dataset.getData();
@@ -112,20 +110,8 @@ Dataset* ArffFileSampleProvider::splitDataset(size_t howMany) {
   return tmpDataset.release();
 }
 
-Dataset* ArffFileSampleProvider::getValidationData() {
-  const size_t trainingSize = static_cast<size_t>(
-      static_cast<double>(dataset.getNumberInstances()) * (1 - validationPortion));
-  const size_t size = dataset.getNumberInstances() - trainingSize;
-
-  Dataset *validationData = new Dataset(size, dataset.getDimension());
-  base::DataVector tmpRow{dataset.getData().getNcols()};
-
-  for (size_t i = 0; i < size; i++) {
-    dataset.getData().getRow(i + trainingSize, tmpRow);
-    validationData->getData().setRow(i, tmpRow);
-    validationData->getTargets().set(i, dataset.getTargets().get(i + trainingSize));
-  }
-  return validationData;
+void ArffFileSampleProvider::reset() {
+  counter = 0;
 }
 
 } /* namespace datadriven */

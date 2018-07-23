@@ -27,15 +27,20 @@ namespace datadriven {
  * See https://stackoverflow.com/questions/51412182/iteratively-generating-a-permutation-of-natural
  * -numbers?noredirect=1#comment89796197_51412182
  */
-class DataShufflingFunctorRandom : DataShufflingFunctor {
+class DataShufflingFunctorRandom : public DataShufflingFunctor {
  public:
-
   /**
    * Standard constructor
    * @param numSamples the number of samples the source provides
    * @param seed the seed for the random shuffling
    */
-  explicit DataShufflingFunctorRandom(size_t numSamples, size_t seed = 1337);
+  explicit DataShufflingFunctorRandom(size_t numSamples, int64_t seed = 1337);
+
+  /**
+   * Clone pattern.
+   * @return identical copy of this instance
+   */
+  DataShufflingFunctor* clone() const override;
 
   /**
    * Overload the function-call operator that maps indexes to indexes via a permutation

@@ -26,6 +26,7 @@
 #include <sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceFileTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationTypeParser.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/shuffling/DataSourceShufflingTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerShufflingTypeParser.hpp>
@@ -125,6 +126,21 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
           "Falling back to default values." << std::endl;
       config.dataTransformationConfig = defaults.dataTransformationConfig;
     }
+
+    // parse the shuffling
+    if (dataSourceConfig->contains("shuffling")) {
+      config.shuffling =
+          DataSourceShufflingTypeParser::parse((*dataSourceConfig)["shuffling"].get());
+    } else {
+      std::cout << "# Did not find dataSource[shuffling]. Setting default value "
+                << DataSourceShufflingTypeParser::toString(defaults.shuffling) << "." << std::endl;
+      config.shuffling = defaults.shuffling;
+    }
+
+    config.randomSeed =
+        parseUInt(*dataSourceConfig, "randomSeed", defaults.randomSeed, "dataSource");
+    config.epochs =
+        parseUInt(*dataSourceConfig, "epochs", defaults.epochs, "dataSource");
 
   } else {
     std::cout << "# Could not find specification of dataSource. Falling Back to default values."

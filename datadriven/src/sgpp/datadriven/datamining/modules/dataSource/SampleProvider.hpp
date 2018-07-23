@@ -12,6 +12,7 @@
 #pragma once
 
 #include <sgpp/datadriven/tools/Dataset.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctor.hpp>
 #include <sgpp/globaldef.hpp>
 
 namespace sgpp {
@@ -24,7 +25,7 @@ namespace datadriven {
  */
 class SampleProvider {
  public:
-  SampleProvider() = default;
+  explicit SampleProvider(DataShufflingFunctor *shuffling = nullptr);
   SampleProvider(const SampleProvider& rhs) = default;
   SampleProvider(SampleProvider&& rhs) = default;
   SampleProvider& operator=(const SampleProvider& rhs) = default;
@@ -65,10 +66,15 @@ class SampleProvider {
   virtual size_t getDim() const = 0;
 
   /**
-   * Returns the data that is used for validation
-   * @return pointer to the validation dataset
+   * Returns the number of samples availible or throws if not possible
+   * @return the number of samples availible
    */
-  virtual Dataset *getValidationData() = 0;
+  virtual size_t getNumSamples() const = 0;
+
+  /**
+   * Resets the state of the sample provider (e.g. to start a new epoch)
+   */
+  virtual void reset() = 0;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

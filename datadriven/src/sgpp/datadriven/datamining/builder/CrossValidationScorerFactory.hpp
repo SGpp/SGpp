@@ -13,6 +13,7 @@
 #pragma once
 
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceSplitting.hpp>
 
 namespace sgpp {
 namespace datadriven {

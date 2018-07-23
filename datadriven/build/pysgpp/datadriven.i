@@ -111,6 +111,16 @@
 %include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/RoundRobinScheduler.hpp"
 #endif
 
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp"
+%ignore sgpp::datadriven::DataShufflingFunctor::operator();
+%ignore sgpp::datadriven::DataShufflingFunctorRandom::operator();
+%ignore sgpp::datadriven::DataShufflingFunctorSequential::operator();
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctor.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/shuffling/DataSourceShufflingTypeParser.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorFactory.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorRandom.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorSequential.hpp"
+
 %ignore *::operator=;
 
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp"
@@ -122,7 +132,6 @@
 #endif /* ZLIB */
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/RosenblattTransformationConfig.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformation.hpp"
 %ignore sgpp::datadriven::DataTransformation::DataTransformation(DataTransformation &&);
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformationTypeParser.hpp"
@@ -131,6 +140,7 @@
 %ignore sgpp::datadriven::DataSource::begin;
 %ignore sgpp::datadriven::DataSource::end;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceSplitting.hpp"
 
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp"
@@ -158,6 +168,7 @@
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/CrossValidation.hpp"
 
 %include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMiner.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp"
 
 %include "datadriven/src/sgpp/datadriven/datamining/configuration/DensityEstimationTypeParser.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/configuration/GridTypeParser.hpp"

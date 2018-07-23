@@ -20,6 +20,7 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceFileTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorFactory.hpp>
 
 #include <algorithm>
 #include <cstring>
@@ -67,13 +68,17 @@ DataSourceBuilder& DataSourceBuilder::withPath(const std::string& filePath) {
   return *this;
 }
 
-DataSource* DataSourceBuilder::assemble() const {
+DataSourceSplitting* DataSourceBuilder::splittingAssemble() const {
+  // Create a shuffling functor
+  DataShufflingFunctorFactory shufflingFunctorFactory;
+  DataShufflingFunctor *shuffling = shufflingFunctorFactory.buildDataShufflingFunctor(config);
+
   SampleProvider* sampleProvider = nullptr;
 
   if (config.fileType == DataSourceFileType::ARFF) {
-    sampleProvider = new ArffFileSampleProvider(config.validationPortion);
+    sampleProvider = new ArffFileSampleProvider(shuffling);
   } else if (config.fileType == DataSourceFileType::CSV) {
-    sampleProvider = new CSVFileSampleProvider(config.validationPortion);
+    sampleProvider = new CSVFileSampleProvider(shuffling);
   } else {
     data_exception("Unknown file type");
   }
@@ -87,16 +92,16 @@ DataSource* DataSourceBuilder::assemble() const {
 #endif
   }
 
-  return new DataSource(config, sampleProvider);
+  return new DataSourceSplitting(config, sampleProvider);
 }
 
-DataSource* DataSourceBuilder::fromConfig(const DataSourceConfig& config) {
+DataSourceSplitting* DataSourceBuilder::splittingFromConfig(const DataSourceConfig& config) {
   this->config = config;
 
   if (config.fileType == DataSourceFileType::NONE) {
     grabTypeInfoFromFilePath();
   }
-  return assemble();
+  return splittingAssemble();
 }
 
 void DataSourceBuilder::grabTypeInfoFromFilePath() {

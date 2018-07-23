@@ -20,59 +20,8 @@
 namespace sgpp {
 namespace datadriven {
 
-SparseGridMiner::SparseGridMiner(DataSource* dataSource, ModelFittingBase* fitter, Scorer* scorer)
-    : dataSource(dataSource), fitter(fitter), scorer(scorer) {}
-
-void SparseGridMiner::learn() {
-  // Setup refinement monitor
-  RefinementMonitorFactory monitorFactory;
-  RefinementMonitor *monitor = monitorFactory.createRefinementMonitor(
-      fitter->getFitterConfiguration().getRefinementConfig());
-
-  double totalScore = 0.0, totalStdDeviation = 0.0;
-
-  // Process the dataset iteratively
-  size_t iteration = 0;
-  while (true) {
-    std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
-    size_t numInstances = dataset->getNumberInstances();
-    if (numInstances == 0) {
-      // The source does not provide any more samples
-      break;
-    }
-    std::cout <<  "###############" << "Dataset iteration " << (iteration++) << std::endl <<
-        "Number of instances: " << numInstances << std::endl;
-    double stdDeviation = 0.0;
-    double scoreTrain = 0.0, scoreVal = 0.0;
-
-    // Train fitter on new data
-    fitter->update(*dataset);
-
-    // Evaluate score on training and validation data
-    scoreTrain = scorer->test(*fitter, *dataset);
-    scoreVal = scorer->test(*fitter, *(dataSource->getNextValidationData()));
-
-    // Refine the model
-    monitor->pushToBuffer(numInstances, scoreVal, scoreTrain);
-    size_t refinements = monitor->refinementsNecessary();
-    while (refinements--) {
-      fitter->refine();
-    }
-
-    std::cout << "Iteration finished." << std::endl
-              << "###############" << std::endl
-              << "Score: " << scoreVal << std::endl
-              << "Standard Deviation: " << stdDeviation << std::endl
-              << "###############" << std::endl;
-    totalScore += scoreVal;
-    totalStdDeviation += stdDeviation;
-  }
-  totalScore /= static_cast<double>(iteration);
-  totalStdDeviation /= static_cast<double>(iteration);
-  std::cout << "###############" << std::endl << "Learner finished." << std::endl <<
-      "Mean score: " << totalScore << std::endl << "Mean standard deviation: " <<
-      totalStdDeviation << std::endl;
-}
+SparseGridMiner::SparseGridMiner(ModelFittingBase* fitter, Scorer* scorer)
+  : fitter(fitter), scorer(scorer) {}
 
 ModelFittingBase *SparseGridMiner::getModel() {
   return &(*fitter);

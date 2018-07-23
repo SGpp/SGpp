@@ -25,14 +25,25 @@ namespace datadriven {
 class DataShufflingFunctor {
  public:
   DataShufflingFunctor();
+  DataShufflingFunctor(const DataShufflingFunctor& rhs) = default;
+  DataShufflingFunctor(DataShufflingFunctor&& rhs) = default;
+  DataShufflingFunctor& operator=(const DataShufflingFunctor& rhs) = default;
+  DataShufflingFunctor& operator=(DataShufflingFunctor&& rhs) = default;
   virtual ~DataShufflingFunctor() = default;
+
+  /**
+   * Polymorphic clone pattern
+   * @return deep copy of this object. New object is owned by caller.
+   */
+  virtual DataShufflingFunctor* clone() const = 0;
+
   /**
    * Overload the function-call operator that maps indexes to indexes via a permutation
    * of the entire index set.
    * @param idx the original index
    * @return idx the index after the permutation
    */
-  virtual size_t operator()(size_t idx);
+  virtual size_t operator()(size_t idx) = 0;
 };
 
 } /* namespace datadriven */

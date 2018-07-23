@@ -57,7 +57,8 @@ int main(int argc, char** argv) {
    * use all samples it provides, we only pass in the path. Everything else is managed by default
    * values and auto detection of extensions.
    */
-  auto dataSource = std::unique_ptr<DataSource>(DataSourceBuilder().withPath(path).assemble());
+  auto dataSource = std::unique_ptr<DataSource>(
+      DataSourceBuilder().withPath(path).splittingAssemble());
   std::cout << "reading input file: " << path << std::endl;
   /**
    * Once we have a data source, we can read the contents of the stored dataset.
