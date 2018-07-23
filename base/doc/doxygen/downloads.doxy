@@ -12,6 +12,19 @@ http://sgpp.sparsegrids.org.
 <!-- ############################################################# -->
 @section downloads__history Versions
 
+@subsection downloads_history_301 Version 3.0.1, 2018/04/16
+
+Changes
+- added missing folder for the creating of direct Matlab interfaces
+
+Download
+  - Source: <a href="https://github.com/SGpp/SGpp">Fork us on GitHub</a>
+  - We now provide binaries!
+    - deb package for Linux (C++): <a href="http://sgpp.sparsegrids.org/downloads/">libsgpp_3.0.1</a>
+    - deb package for Linux (Python support, requires C++ package): <a href="http://sgpp.sparsegrids.org/downloads/">libsgpp_3.0.1</a>
+    - for Matlab/Windows: <a href="http://sgpp.sparsegrids.org/downloads/sgpp_3.0.1_matlab-windows.tar.gz">sgpp_3.0.1_matlab-windows.tar.gz</a>
+    - for Matlab/Linux: <a href="http://sgpp.sparsegrids.org/downloads/sgpp_3.0.1_matlab-linux.tar.gz">sgpp_3.0.1_matlab-linux.tar.gz</a>
+
 @subsection downloads_history_300 Version 3.0.0, 2018/03/12
 It took us some time, but we now can offer a new major release with a lot of changes and plenty of new functionality!
 
