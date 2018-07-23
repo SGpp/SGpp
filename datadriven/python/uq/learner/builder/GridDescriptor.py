@@ -7,6 +7,14 @@ import os
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import (insertTruncatedBorder,
                                            hasBorder,
                                            getDegree)
+from pysgpp import RegularGridConfiguration, GridType_PolyBoundary, \
+    GridType_PolyClenshawCurtis, GridType_PolyClenshawCurtisBoundary, \
+    GridType_LinearClenshawCurtisBoundary, GridType_LinearClenshawCurtis, \
+    GridType_ModPolyClenshawCurtis, GridType_ModLinearClenshawCurtis, \
+    GridType_ModLinear, GridType_ModPoly, GridType_LinearBoundary
+from pysgpp.pysgpp_swig import GridType_Poly, GridType_Linear, GridType_Bspline, \
+    GridType_BsplineBoundary, GridType_BsplineClenshawCurtis, \
+    GridType_ModBsplineClenshawCurtis, GridType_ModBspline
 
 
 class GridDescriptor(object):
@@ -20,12 +28,15 @@ class GridDescriptor(object):
         Constructor
         """
         self.__dim = None
-        self.__deg = None
+        self.__deg = 1
         self.level = None
         self.__file = None
-        self.__border = None
+        self.__boundaryLevel = None
         self.__grid = None
+        self.__gridType = GridType_Linear
         self.__full = None
+        self.__clenshaw_curtis = False
+        self.__modified = False
 
     def withDimension(self, dim):
         """
@@ -43,23 +54,31 @@ class GridDescriptor(object):
         self.level = level
         return self
 
-    def withPolynomialBase(self, deg):
+    def hasType(self, gridType):
         """
-        Defines the polynomial base of the grid
+        Defines the grid type
+        @param gridType: type of the grid
+        """
+        self.__gridType = gridType
+        return self
+
+    def withDegree(self, deg):
+        """
+        Defines the polynomial degree of the basis
         @param deg: degree of polynomial base as integer
         """
         if deg > 1:
             self.__deg = deg
         else:
-            print "Warning: GridDescriptor.withPolynomialBasis - deg < 2 ignored"
+            print "Warning: GridDescriptor.withDegree - deg < 2 ignored"
         return self
 
-    def withBorder(self, border):
+    def withBoundaryLevel(self, boundaryLevel):
         """
         Defines the border type of the grid
-        @param border: border type as defined in bin.learner.Types.BorderTypes
+        @param boundaryLevel: level of the boundary
         """
-        self.__border = border
+        self.__boundaryLevel = boundaryLevel
         return self
 
     def isFull(self):
@@ -76,11 +95,13 @@ class GridDescriptor(object):
         @param grid:
         """
         self.__grid = grid
-        self.__dim = grid.getDimension()
+        self.__dim = grid.getStorage().getDimension()
         self.__deg = getDegree(grid)
-        self.__border = hasBorder(grid)
-        if self.__border:
+        self.__gridType = grid.getType()
+        if hasBorder(grid.getType()):
+            self.__boundaryLevel = 1
             self.level = 0
+
         return self
 
     def fromFile(self, filename):
@@ -100,36 +121,41 @@ class GridDescriptor(object):
             gridFormatter = GridFormatter()
             grid = gridFormatter.deserializeFromFile(self.__file)
         else:
-            if self.__grid is not None:
-                self.__dim = self.__grid.getDimension()
+            gridConfig = RegularGridConfiguration()
+            gridConfig.dim_ = self.__dim
 
             if (self.__dim is None or self.level is None) and self.__grid is None:
                 raise AttributeError("Not all attributes assigned to create\
                                      grid")
-            if self.__border is not None:
-                if self.__border == BorderTypes.TRAPEZOIDBOUNDARY:
-                    if self.__deg > 1:
-                        grid = Grid.createPolyBoundaryGrid(self.__dim, self.__deg)
-                    else:
-                        grid = Grid.createLinearBoundaryGrid(self.__dim, 1)
-                elif self.__border == BorderTypes.COMPLETEBOUNDARY:
-                    if self.__deg > 1:
-                        raise NotImplementedError()
-                    else:
-                        grid = Grid.createLinearBoundaryGrid(self.__dim, 0)
-                else:
-                    if self.__deg > 1:
-                        grid = Grid.createModPolyGrid(self.__dim, self.__deg)
-                    else:
-                        grid = Grid.createModLinearGrid(self.__dim)
-            else:
-                # no border points
-                if self.__deg > 1:
-                    grid = Grid.createPolyGrid(self.__dim, self.__deg)
-                else:
-                    grid = Grid.createLinearGrid(self.__dim)
+            if self.__boundaryLevel is not None:
+                gridConfig.boundaryLevel_ = self.__boundaryLevel
+
+            gridConfig.maxDegree_ = self.__deg
+
+            if self.__gridType not in [GridType_Linear,
+                                       GridType_LinearBoundary,
+                                       GridType_ModLinear,
+                                       GridType_LinearClenshawCurtis,
+                                       GridType_LinearClenshawCurtisBoundary,
+                                       GridType_ModLinearClenshawCurtis,
+                                       GridType_Poly,
+                                       GridType_PolyBoundary,
+                                       GridType_ModPoly,
+                                       GridType_PolyClenshawCurtis,
+                                       GridType_PolyClenshawCurtisBoundary,
+                                       GridType_ModPolyClenshawCurtis,
+                                       GridType_Bspline,
+                                       GridType_ModBspline,
+                                       GridType_BsplineBoundary,
+                                       GridType_BsplineClenshawCurtis,
+                                       GridType_ModBsplineClenshawCurtis]:
+                print "Warning: grid type not fully supported"
+
+            gridConfig.type_ = self.__gridType
 
             # generate the grid
+            grid = Grid.createGrid(gridConfig)
+
             if self.level is not None:
                 generator = grid.getGenerator()
                 if not self.__full:
@@ -143,12 +169,12 @@ class GridDescriptor(object):
                 copygs = self.__grid.getStorage()
 
                 # insert grid points
-                for i in xrange(copygs.size()):
+                for i in xrange(copygs.getSize()):
                     gp = copygs.getPoint(i)
                     # insert grid point
-                    if not gs.has_key(gp):
+                    if not gs.isContaining(gp):
                         gs.insert(HashGridPoint(gp))
-                    if self.__border == BorderTypes.TRAPEZOIDBOUNDARY:
+                    if self.__boundaryLevel == 1:
                         insertTruncatedBorder(grid, gp)
                 gs.recalcLeafProperty()
 

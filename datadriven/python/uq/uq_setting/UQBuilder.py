@@ -108,12 +108,13 @@ class UQBuilder(object):
         self.__specification.setInterpolationFunction(interpolate)
         return self
 
-    def saveAfterEachRun(self):
-        self.__specification.setSaveAfterEachRun(True)
+    def saveAfterEachRun(self, n=1):
+        self.__specification.setSaveAfterEachRun(n)
         return self
 
     def verbose(self):
         self.__verbose = True
+        return self
 
     def fromFile(self, filename):
         """

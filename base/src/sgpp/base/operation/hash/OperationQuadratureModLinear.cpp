@@ -5,13 +5,12 @@
 
 #include <sgpp/base/operation/hash/OperationQuadratureModLinear.hpp>
 
-#include <sgpp/globaldef.hpp>
-
 namespace sgpp {
 namespace base {
 
 double OperationQuadratureModLinear::doQuadrature(DataVector& alpha) {
   double res = 0;
+
   double tmp;
   int nr_outermost;  // nr. of outermost ("folded up") basis functions
   int cur_ind, cur_lev;
@@ -34,6 +33,20 @@ double OperationQuadratureModLinear::doQuadrature(DataVector& alpha) {
 
     res += tmp;
   }
+
+  /*
+    double tmpres = 0;
+
+    for (size_t i = 0; i < alpha.getSize(); i++) {
+      GridPoint& gp = storage.getPoint(i);
+      tmpres = 1.;
+
+      for (size_t d = 0; d < storage.getDimension(); d++) {
+        tmpres *= base.getIntegral(gp.getLevel(d), gp.getIndex(d));
+      }
+      res += alpha[i] * tmpres;
+    }
+  */
 
   // multiply with determinant of "unit cube -> BoundingBox" transformation
   for (size_t d = 0; d < storage.getDimension(); d++) {

@@ -16,13 +16,27 @@ double RegularLevelManager::computePriority(const MultiIndex& level) {
     sum += level[i];
   }
 
-  return pow(0.5, sum);
+  double sum2 = static_cast<double>(sum);
+  double factor = 1.0 / static_cast<double>(sum + 1);
+  double quot = factor;
+
+  // order the levels with equal sum
+  for (size_t i = 0; i < level.size(); ++i) {
+    sum2 += static_cast<double>(level[i]) * quot;
+    quot *= factor;
+  }
+
+  return std::pow(0.5, sum2);
 }
 
 RegularLevelManager::RegularLevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator)
     : LevelManager(levelEvaluator) {}
 
 RegularLevelManager::RegularLevelManager() {}
+
+std::shared_ptr<LevelManager> RegularLevelManager::clone() {
+  return std::make_shared<RegularLevelManager>(*this);
+}
 
 RegularLevelManager::~RegularLevelManager() {}
 

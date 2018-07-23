@@ -13,8 +13,22 @@
 @version  0.1
 
 """
-from pysgpp.extensions.datadriven.uq.dists import J
-from pysgpp.extensions.datadriven.uq.transformation import JointTransformation
+from pysgpp import PolynomialChaosExpansion, \
+    AbstractInfiniteFunctionBasis1DVector, \
+    OrthogonalBasisFunctionsCollection, \
+    WeightFunctionsCollection, \
+    singleFunc, \
+    ProbabilityDensityFunction1DConfiguration, \
+    ProbabilityDensityFunctionParameters, \
+    ProbabilityDensityFunction1D, \
+    ProbabilityDensityFunctionType_BOUNDED_LOGNORMAL, \
+    ProbabilityDensityFunctionType_BETA, \
+    ProbabilityDensityFunctionType_UNIFORM
+
+from pysgpp.extensions.datadriven.uq.dists import J, Beta, Lognormal, TLognormal, Uniform
+from pysgpp.extensions.datadriven.uq.transformation import (JointTransformation,
+                                                            RosenblattTransformation,
+                                                            LinearTransformation)
 from Parameter import Parameter
 
 import numpy as np
@@ -162,6 +176,14 @@ class ParameterSet(object):
         return [param.getDistribution() for param in self.values()
                 if param.isUncertain()]
 
+    def getParameter(self, name):
+        """
+        """
+        for param in self.__params:
+            if name == param.getName():
+                return param
+        return None
+
     def getIndependentJointDistribution(self):
         """
         Creates a multivariate distributions where the marginal distributions
@@ -181,6 +203,59 @@ class ParameterSet(object):
         Get the transformation operator
         """
         return JointTransformation.byParameters(self.__params)
+
+    def getOrthogonalPolynomialBasisFunctions(self):
+        tensorBasis = OrthogonalBasisFunctionsCollection()
+
+        for param in self.values():
+            if param.isUncertain():
+                orthogPoly = param.getOrthogonalPolynomial()
+                if orthogPoly is not None:
+                    tensorBasis.push_back(orthogPoly)
+                else:
+                    raise AttributeError("the distributions are not part of the Wiener-Askey scheme")
+
+        return tensorBasis
+
+    # And check if C++ Beta/Lognormal... is euqal to scipy Beta/Lognormal,... via plot/error determiantion
+
+    # creates a DAKOTA distribution from the Python distribution
+    # the DAKOTA distribution can be evaluated much faster in the C++ code
+    def getWeightFunctions(self):
+        weightFunctions = WeightFunctionsCollection()
+        probabilityDensities = []
+
+        for distr in self.uncertainParams().getDistributions():
+            cpp_pdf_param = ProbabilityDensityFunctionParameters()
+            [a, b] = distr.getBounds()
+            cpp_pdf_param.lowerBound_ = a
+            cpp_pdf_param.upperBound_ = b
+            DAKOTA_pdf = False
+            if isinstance(distr, Uniform):
+                cpp_pdf_param.type_ = ProbabilityDensityFunctionType_UNIFORM
+                DAKOTA_pdf = True
+            elif isinstance(distr, Beta):
+                cpp_pdf_param.type_ = ProbabilityDensityFunctionType_BETA
+                cpp_pdf_param.alpha_ = distr.alpha()
+                cpp_pdf_param.beta_ = distr.beta()
+                DAKOTA_pdf = True
+            elif isinstance(distr, TLognormal) or isinstance(distr, Lognormal):
+                cpp_pdf_param.type_ = ProbabilityDensityFunctionType_BOUNDED_LOGNORMAL
+                cpp_pdf_param.logmean_ = np.log(distr.mean())
+                cpp_pdf_param.stddev_ = distr.std()
+                DAKOTA_pdf = True
+
+            if DAKOTA_pdf:
+                cpp_pdf_config = ProbabilityDensityFunction1DConfiguration()
+                cpp_pdf_config.setPdfParameters(cpp_pdf_param)
+
+                cpp_pdf = ProbabilityDensityFunction1D(cpp_pdf_config)
+                weightFunctions.push_back(cpp_pdf.getWeightFunction())
+                probabilityDensities.append(cpp_pdf)
+            else:
+                weightFunctions.push_back(singleFunc(distr.pdf))
+
+        return weightFunctions, probabilityDensities
 
     def getBounds(self):
         """
@@ -268,7 +343,7 @@ class ParameterSet(object):
 
             accLevel += cnt
 
-        return ans
+        return tuple(ans)
 
     def extractActiveSubset(self, data):
         """
@@ -279,7 +354,7 @@ class ParameterSet(object):
         ans = {}
         cnt = 0
         for p, v in data.items():
-            if self.isValidUnitSample(p):
+            if len(p) == self.getDim():
                 up = self.extractActiveTuple(p)
                 ans[up] = v
             else:
@@ -375,6 +450,51 @@ class ParameterSet(object):
     def __ne__(self, other):
         return not self.__eq__(other)
 
+    def marginalize(self):
+        """
+        NOTE: just returns the marginalized active subset of params
+        """
+        # marginalize the distribution
+        margDistList = []
+        margTransformations = []
+        activeParams = self.activeParams()
+        distributions = activeParams.getIndependentJointDistribution().getDistributions()
+        transformations = activeParams.getJointTransformation().getTransformations()
+        if len(distributions) == len(activeParams):
+            return self
+        else:
+            for dist, trans in zip(distributions,
+                                   transformations):
+                # check if current parameter is independent
+                if dist.getDim() == 1:
+                    margDistList.append(dist)
+                    margTransformations.append(trans)
+                else:
+                    # marginalize the densities and update the transformations
+                    innertrans = trans.getTransformations()
+                    for idim in xrange(dist.getDim()):
+                        margDist = dist.marginalizeToDimX(idim)
+                        margDistList.append(margDist)
+                        # update transformations
+                        if isinstance(innertrans[idim], RosenblattTransformation):
+                            margTransformations.append(RosenblattTransformation(margDist))
+                        else:
+                            a, b = margDist.getBounds()
+                            margTransformations.append(LinearTransformation(a, b))
+
+            assert len(margDistList) == len(margTransformations) == activeParams.getDim()
+
+            # update the parameter setting
+            from ParameterBuilder import ParameterBuilder
+            builder = ParameterBuilder()
+            up = builder.defineUncertainParameters()
+            for name, dist, trans in zip(activeParams.getNames(),
+                                         margDistList,
+                                         margTransformations):
+                up.new().isCalled(name).withDistribution(dist)\
+                                       .withTransformation(trans)
+            return builder.andGetResult()
+
     def toJson(self):
         """
         Returns a string that represents the object
@@ -409,6 +529,7 @@ class ParameterSetIterator(object):
     """
     Iterator class
     """
+
     def __init__(self, params):
         self.__params = params
         self.__current = 0

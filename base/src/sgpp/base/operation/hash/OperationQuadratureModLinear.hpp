@@ -8,6 +8,7 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/OperationQuadrature.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -36,11 +37,13 @@ class OperationQuadratureModLinear : public OperationQuadrature {
   double doQuadrature(DataVector& alpha) override;
 
  protected:
-  // Pointer to the grid's GridStorage object
+  /// Pointer to the grid's GridStorage object
   GridStorage& storage;
+  /// ModLinear Basis object
+  SLinearModifiedBase base;
 };
 
 }  // namespace base
 }  // namespace sgpp
 
-#endif /* OPERATIONQUADRATURE_HPP */
+#endif /* OPERATIONQUADRATUREMODLINEAR_HPP */

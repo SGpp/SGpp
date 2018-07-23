@@ -36,58 +36,6 @@ class GaussLegendreQuadRule1D : public QuadRule1D {
                                           base::DataVector& weights);
 
   static GaussLegendreQuadRule1D& getInstance();
-
- protected:
-  inline void setGaussLegendreValuesForDegree0();
-  inline void setGaussLegendreValuesForDegree1();
-  inline void setGaussLegendreValuesForDegree2();
-  inline void setGaussLegendreValuesForDegree3();
-  inline void setGaussLegendreValuesForDegree4();
-  inline void setGaussLegendreValuesForDegree5();
-  inline void setGaussLegendreValuesForDegree6();
-  inline void setGaussLegendreValuesForDegree7();
-  inline void setGaussLegendreValuesForDegree8();
-  inline void setGaussLegendreValuesForDegree9();
-  inline void setGaussLegendreValuesForDegree10();
-  inline void setGaussLegendreValuesForDegree11();
-  inline void setGaussLegendreValuesForDegree12();
-  inline void setGaussLegendreValuesForDegree13();
-  inline void setGaussLegendreValuesForDegree14();
-  inline void setGaussLegendreValuesForDegree15();
-  inline void setGaussLegendreValuesForDegree16();
-  inline void setGaussLegendreValuesForDegree17();
-  inline void setGaussLegendreValuesForDegree18();
-  inline void setGaussLegendreValuesForDegree19();
-  inline void setGaussLegendreValuesForDegree20();
-  inline void setGaussLegendreValuesForDegree21();
-  inline void setGaussLegendreValuesForDegree22();
-  inline void setGaussLegendreValuesForDegree23();
-  inline void setGaussLegendreValuesForDegree24();
-  inline void setGaussLegendreValuesForDegree25();
-  inline void setGaussLegendreValuesForDegree26();
-  inline void setGaussLegendreValuesForDegree27();
-  inline void setGaussLegendreValuesForDegree28();
-  inline void setGaussLegendreValuesForDegree29();
-  inline void setGaussLegendreValuesForDegree30();
-  inline void setGaussLegendreValuesForDegree31();
-  inline void setGaussLegendreValuesForDegree32();
-  inline void setGaussLegendreValuesForDegree33();
-  inline void setGaussLegendreValuesForDegree34();
-  inline void setGaussLegendreValuesForDegree35();
-  inline void setGaussLegendreValuesForDegree36();
-  inline void setGaussLegendreValuesForDegree37();
-  inline void setGaussLegendreValuesForDegree38();
-  inline void setGaussLegendreValuesForDegree39();
-  inline void setGaussLegendreValuesForDegree40();
-  inline void setGaussLegendreValuesForDegree41();
-  inline void setGaussLegendreValuesForDegree42();
-  inline void setGaussLegendreValuesForDegree43();
-  inline void setGaussLegendreValuesForDegree44();
-  inline void setGaussLegendreValuesForDegree45();
-  inline void setGaussLegendreValuesForDegree46();
-  inline void setGaussLegendreValuesForDegree47();
-  inline void setGaussLegendreValuesForDegree48();
-  inline void setGaussLegendreValuesForDegree49();
 };
 
 }  // namespace base

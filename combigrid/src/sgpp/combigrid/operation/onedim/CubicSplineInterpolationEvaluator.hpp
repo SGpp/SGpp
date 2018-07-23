@@ -20,19 +20,22 @@ class CubicSplineInterpolationEvaluator : public AbstractLinearEvaluator<FloatSc
   virtual ~CubicSplineInterpolationEvaluator();
   CubicSplineInterpolationEvaluator(CubicSplineInterpolationEvaluator const &other);
 
-  virtual std::vector<FloatScalarVector> getBasisCoefficients() { return basisCoefficients; }
+  std::vector<FloatScalarVector> getBasisValues() override { return basisValues; }
+  std::vector<double> getBasisCoefficients() override { return basisCoefficients; }
 
-  virtual void setGridPoints(std::vector<double> const &newXValues);
-  virtual std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cloneLinear();
-  virtual bool needsOrderedPoints();
-  virtual bool needsParameter();
-  virtual void setParameter(FloatScalarVector const &param);
+  void setGridPoints(std::vector<double> const &newXValues) override;
+  void setBasisCoefficientsAtGridPoints(std::vector<double> &functionValues) override;
+  std::shared_ptr<AbstractLinearEvaluator<FloatScalarVector>> cloneLinear() override;
+  bool needsOrderedPoints() override;
+  bool needsParameter() override;
+  void setParameter(FloatScalarVector const &param) override;
 
  private:
-  void computeBasisCoefficients();
+  void computeBasisValues();
 
   double evaluationPoint;
-  std::vector<FloatScalarVector> basisCoefficients;
+  std::vector<FloatScalarVector> basisValues;
+  std::vector<double> basisCoefficients;
   std::vector<double> xValues;
 
   struct SplineSet {

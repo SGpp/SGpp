@@ -36,7 +36,7 @@ def scatterplot_matrix(data, names, **kwargs):
     # Label the diagonal subplots...
     for i, label in enumerate(names):
         axes[i, i].annotate(label, (0.5, 0.5), xycoords='axes fraction',
-                ha='center', va='center')
+                            ha='center', va='center')
 
     # Turn on the proper x or y axes ticks.
     for i, j in zip(range(numvars), itertools.cycle((-1, 0))):

@@ -8,6 +8,7 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/OperationQuadrature.hpp>
+
 #include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -32,14 +33,14 @@ class OperationQuadratureModPoly : public OperationQuadrature {
   ~OperationQuadratureModPoly() override {}
 
   /**
-   * Quadrature for piecewise modified polynomial basis functions of max. degree 3
+   * Quadrature for piecewise modified polynomial basis functions of max. degree 7
    *
    * @param alpha Coefficient vector for current grid
    */
   double doQuadrature(DataVector& alpha) override;
 
  protected:
-  // Pointer to the grid's GridStorage object
+  /// Pointer to the grid's GridStorage object
   GridStorage& storage;
   /// Poly Modified Basis object
   SPolyModifiedBase base;
@@ -48,4 +49,4 @@ class OperationQuadratureModPoly : public OperationQuadrature {
 }  // namespace base
 }  // namespace sgpp
 
-#endif /* OPERATIONQUADRATURE_HPP */
+#endif /* OPERATIONQUADRATUREMODPOLY_HPP */

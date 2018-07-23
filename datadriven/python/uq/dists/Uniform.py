@@ -17,6 +17,7 @@
 
 from Dist import Dist
 from scipy.stats import uniform
+import numpy as np
 
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
 
@@ -64,7 +65,7 @@ class Uniform(Dist):
         return self._dist.std()
 
     def getBounds(self):
-        return [self.__a, self.__b]
+        return np.array([self.__a, self.__b], dtype="float")
 
     def getDim(self):
         return 1
@@ -79,7 +80,7 @@ class Uniform(Dist):
         serializationString = '"module" : "' + \
                               self.__module__ + '",\n'
 
-        for attrName in dir(self):
+        for attrName in ("_Uniform__a", "_Uniform__b"):
             attrValue = self.__getattribute__(attrName)
             serializationString += ju.parseAttribute(attrValue, attrName)
 

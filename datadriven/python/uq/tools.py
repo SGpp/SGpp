@@ -54,11 +54,13 @@ def createGrid(dim, level, borderType, isFull=False):
 
 
 def natural_sort(accLevel):
-    convert = lambda text:\
+    def convert(text): return \
         int(text) if text.isdigit()else text.lower()
-    alphanum_key = lambda key:\
+
+    def alphanum_key(key): return \
         [convert(c) for c in re.split('([0-9]+)', key)]
     return sorted(accLevel, key=alphanum_key)
+
 
 def unique(accLevel):
     seen = set()
@@ -134,6 +136,7 @@ def writeDataARFF(data, merge=False):
         fout.close()
     return
 
+
 def check(n, dim, nmax=50000):
     if dim > log(nmax) / log(n):
         n = trunc(exp(log(nmax) / dim))
@@ -170,14 +173,14 @@ def eval_fullGrid(level, dim, border=True):
 
     grid.getGenerator().full(level)
     gs = grid.getStorage()
-    ans = DataMatrix(gs.getSize(), dim)
+    ans = np.ndarray((gs.getSize(), dim))
     p = DataVector(dim)
 
     for i in xrange(gs.getSize()):
-        gs.getPoint(i).getStandardCoordinates(p)
-        ans.setRow(i, p)
+        gs.getCoordinates(gs.getPoint(i), p)
+        ans[i, :] = p.array()
 
-    return ans.array()
+    return ans
 
 
 def writeCSV(filename, samples, delim=' '):

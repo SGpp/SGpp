@@ -16,13 +16,31 @@ double AveragingLevelManager::computePriority(const MultiIndex& level) {
   }
 
   double sum = 0.0;
-
+  size_t n = 0;
   for (auto& predLevel : predecessors) {
-    auto data = levelData->get(predLevel);
-    sum += data->norm / static_cast<double>(data->maxNewPoints);
+    if (levelData->containsIndex(predLevel)) {
+      auto data = levelData->get(predLevel);
+      sum += data->norm / static_cast<double>(data->maxNewPoints);
+      n += 1;
+    }
   }
 
-  return sum / static_cast<double>(predecessors.size());
+  if (n == 0) {
+    return 0.0;
+  } else {
+    return sum / static_cast<double>(n);
+  }
+
+  //  double maxNorm = 0.0;
+  //  for (auto& predLevel : predecessors) {
+  //    if (levelData->containsIndex(predLevel)) {
+  //      auto data = levelData->get(predLevel);
+  //      double dataNorm = data->norm;
+  //      if (dataNorm > maxNorm) {
+  //        maxNorm = dataNorm;
+  //      }
+  //    }
+  //  }
 }
 
 AveragingLevelManager::AveragingLevelManager(std::shared_ptr<AbstractLevelEvaluator> levelEvaluator)
@@ -31,6 +49,10 @@ AveragingLevelManager::AveragingLevelManager(std::shared_ptr<AbstractLevelEvalua
 AveragingLevelManager::AveragingLevelManager() : LevelManager() {}
 
 AveragingLevelManager::~AveragingLevelManager() {}
+
+std::shared_ptr<LevelManager> AveragingLevelManager::clone() {
+  return std::make_shared<AveragingLevelManager>(*this);
+}
 
 } /* namespace combigrid */
 } /* namespace sgpp*/

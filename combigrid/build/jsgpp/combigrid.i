@@ -61,7 +61,7 @@
 
 // %shared_ptr(sgpp::combigrid::TensorGrid)
 
-// %shared_ptr(std::mutex)
+// %shared_ptr(std::recursive_mutex)
 
 
 // // %shared_ptr(sgpp::combigrid::AbstractLinearEvaluator<FloatScalarVector>)
@@ -208,5 +208,6 @@
 // // %include "combigrid/src/sgpp/combigrid/utils/BinaryHeap.hpp" // is a template
 // %include "combigrid/src/sgpp/combigrid/utils/Stopwatch.hpp"
 // %include "combigrid/src/sgpp/combigrid/utils/Utils.hpp"
+
 
 #endif

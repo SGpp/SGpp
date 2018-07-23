@@ -26,7 +26,7 @@ def computeCoefficients(jgrid, grid, alpha, f):
     p = DataVector(jgs.getDimension())
     A = DataMatrix(jgs.getSize(), jgs.getDimension())
     for i in xrange(jgs.getSize()):
-        jgs.getPoint(i).getStandardCoordinates(p)
+        jgs.getCoordinates(jgs.getPoint(i), p)
         A.setRow(i, p)
 
     nodalValues = evalSGFunctionMulti(grid, alpha, A.array())
@@ -104,7 +104,7 @@ def estimateL2error(grid1, grid2, alpha2):
     ans = 0
     for i in xrange(gs2.getSize()):
         gp = gs2.getPoint(i)
-        if not gs1.has_key(gp):
+        if not gs1.isContaining(gp):
             ans += abs(alpha2[i])
 
     return ans
@@ -113,16 +113,15 @@ def estimateL2error(grid1, grid2, alpha2):
 def estimateDiscreteL2Error(grid, alpha, f, n=1000):
     gs = grid.getStorage()
     # create control samples
-    samples = DataMatrix(np.random.rand(n, gs.getDimension()))
+    samples = np.random.rand(n, gs.getDimension())
 
     nodalValues = evalSGFunctionMulti(grid, alpha, samples)
-    fvalues = DataVector(samples.getNrows())
-    for i, sample in enumerate(samples.array()):
+    fvalues = np.zeros(samples.shape[0])
+    for i, sample in enumerate(samples):
         fvalues[i] = f(sample)
 
     # compute the difference
-    nodalValues.sub(fvalues)
-    return nodalValues.l2Norm()
+    return np.sqrt(np.mean((nodalValues - fvalues) ** 2))
 
 
 def discretizeFunction(f, bounds, level=2, hasBorder=False, *args, **kws):
@@ -148,7 +147,7 @@ def discretizeFunction(f, bounds, level=2, hasBorder=False, *args, **kws):
     p = DataVector(dim)
     nodalValues = DataVector(gs.getSize())
     for i in xrange(gs.getSize()):
-        gs.getPoint(i).getStandardCoordinates(p)
+        gs.getCoordinates(gs.getPoint(i), p)
         # transform to the right space
         q = T.unitToProbabilistic(p.array())
         # apply the given function
@@ -192,7 +191,7 @@ def discretize(grid, alpha, f, epsilon=0.,
     # compute errors
     maxdrift = None
     accMiseL2 = None
-    l2error_grid = alpha.l2Norm()
+    l2error_grid = DataVector(alpha).l2Norm()
     if useDiscreteL2Error:
         maxdrift, accMiseL2 = computeErrors(jgrid, jalpha, grid, alpha, f)
     else:

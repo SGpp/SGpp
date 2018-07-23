@@ -6,13 +6,23 @@ from LocalRefinementStrategy import (CreateAllChildrenRefinement,
 from RefinementManager import RefinementManager
 from RefinementStrategy import (SurplusRanking,
                                 SquaredSurplusRanking,
+                                WeightedSurplusRanking,
+                                WeightedL2OptRanking,
                                 ExpectationValueOptRanking,
                                 VarianceOptRanking,
+                                MeanSquaredOptRanking,
                                 SurplusRatioRanking,
                                 SurplusRatioEstimationRanking,
                                 ExpectationValueBFRanking,
                                 VarianceBFRanking,
-                                SquaredSurplusBFRanking)
+                                SquaredSurplusBFRanking,
+                                WeightedSurplusBFRanking,
+                                PredictiveRanking,
+                                WeightedL2BFRanking,
+                                AnchoredWeightedL2OptRanking,
+                                AnchoredVarianceOptRanking,
+                                AnchoredMeanSquaredOptRanking,
+                                AnchoredExpectationValueOptRanking)
 from pysgpp.extensions.datadriven.uq.quadrature.bilinearform import BilinearGaussQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.quadrature.HashQuadrature import HashQuadrature
 
@@ -105,6 +115,31 @@ class RefineCurrentNodesDescriptor(AdmissibleSetDescriptor):
     def __init__(self, refinement):
         super(RefineCurrentNodesDescriptor, self).__init__(refinement)
 
+    def withWeightedSurplusRanking(self):
+        ranking = WeightedSurplusRanking()
+        self._refinement.setRefinementCriterion(ranking)
+        return self
+
+    def withWeightedL2OptimizationRanking(self):
+        ranking = WeightedL2OptRanking()
+        self._refinement.setRefinementCriterion(ranking)
+        return self
+
+    def withAnchoredWeightedL2OptimizationRanking(self):
+        ranking = AnchoredWeightedL2OptRanking()
+        self._refinement.setRefinementCriterion(ranking)
+        return self
+
+    def withAnchoredVarianceOptimizationRanking(self):
+        ranking = AnchoredVarianceOptRanking()
+        self._refinement.setRefinementCriterion(ranking)
+        return self
+
+    def withAnchoredExpectationValueOptimizationRanking(self):
+        ranking = AnchoredExpectationValueOptRanking()
+        self._refinement.setRefinementCriterion(ranking)
+        return self
+
     def withExpectationValueOptimizationRanking(self):
         ranking = ExpectationValueOptRanking()
         self._refinement.setRefinementCriterion(ranking)
@@ -112,6 +147,16 @@ class RefineCurrentNodesDescriptor(AdmissibleSetDescriptor):
 
     def withVarianceOptimizationRanking(self):
         ranking = VarianceOptRanking()
+        self._refinement.setRefinementCriterion(ranking)
+        return self
+
+    def withMeanSquaredOptRanking(self):
+        ranking = MeanSquaredOptRanking()
+        self._refinement.setRefinementCriterion(ranking)
+        return self
+
+    def withAnchoredMeanSquaredOptRanking(self):
+        ranking = AnchoredMeanSquaredOptRanking()
         self._refinement.setRefinementCriterion(ranking)
         return self
 
@@ -138,8 +183,23 @@ class MostPromisingChildrenDescriptor(AdmissibleSetDescriptor):
         localRefinementStrategy = AddNode()
         self._refinement.setLocalRefinementStrategy(localRefinementStrategy)
 
+    def withPredictiveRanking(self, f):
+        ranking = PredictiveRanking(f)
+        self._refinement.setRefinementCriterion(ranking)
+        return self
+
     def withSurplusRatioEstimationRanking(self):
         ranking = SurplusRatioEstimationRanking()
+        self._refinement.setRefinementCriterion(ranking)
+        return self
+
+    def withWeightedSurplusOptimizationRanking(self):
+        ranking = WeightedSurplusBFRanking()
+        self._refinement.setRefinementCriterion(ranking)
+        return self
+
+    def withWeightedL2OptimizationRanking(self):
+        ranking = WeightedL2BFRanking()
         self._refinement.setRefinementCriterion(ranking)
         return self
 
