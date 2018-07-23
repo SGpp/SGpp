@@ -33,7 +33,7 @@ class CSVFileSampleProvider : public FileSampleProvider {
    * Default constructor
    * @param shuffling functor to permute the training data indexes
    */
-  explicit CSVFileSampleProvider(DataShufflingFunctor *shuffling);
+  explicit CSVFileSampleProvider(DataShufflingFunctor *shuffling = nullptr);
 
   /**
    * Clone Pattern to allow copying of derived classes.
@@ -69,6 +69,7 @@ class CSVFileSampleProvider : public FileSampleProvider {
    * Resets the state of the sample provider (e.g. to start a new epoch)
    */
   void reset() override;
+
  private:
   /**
    * Functor to shuffle the data (permute the indexes)

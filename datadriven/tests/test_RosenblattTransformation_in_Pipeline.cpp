@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(testRosenblattWrapper) {
   config.dataTransformationConfig.rosenblattConfig.numSamples = 1000;
 
   // read arff file
-  ArffFileSampleProvider arffsp = ArffFileSampleProvider(0.0);
+  ArffFileSampleProvider arffsp = ArffFileSampleProvider();
   arffsp.readFile("datadriven/tests/data/chess_5d_2000.arff", true);
   Dataset* dataset = arffsp.getAllSamples();
 
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE(testDataTransformationParser) {
   parser.getDataSourceConfig(config, defaults);
 
   // "automatic" transformation in DataSource->getNextSamples()
-  auto dataSource = builder.fromConfig(config);
+  auto dataSource = builder.splittingFromConfig(config);
   Dataset* datasetAuto1 = dataSource->getNextSamples();
   Dataset* datasetAuto2 = dataSource->getNextSamples();
 
