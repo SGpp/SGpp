@@ -18,7 +18,8 @@
 namespace sgpp {
 namespace datadriven {
 
-Dataset ARFFTools::readARFF(const std::string& filename) {
+Dataset ARFFTools::readARFF(const std::string& filename, bool hasTargets) {
+  // TODO(fuchsgruber): No idea if this arff interface really can handle data without classes
   std::string line;
   std::ifstream myfile(filename.c_str());
   if (!myfile) {
@@ -38,7 +39,8 @@ Dataset ARFFTools::readARFF(const std::string& filename) {
     std::transform(line.begin(), line.end(), line.begin(), toupper);
 
     if (dataReached && !line.empty()) {
-      writeNewClass(line, dataset.getTargets(), instanceNo);
+      if (hasTargets)
+        writeNewClass(line, dataset.getTargets(), instanceNo);
       writeNewTrainingDataEntry(line, dataset.getData(), instanceNo);
       instanceNo++;
     }
@@ -111,7 +113,7 @@ void ARFFTools::readARFFSizeFromString(const std::string& content, size_t& numbe
   }
 }
 
-Dataset ARFFTools::readARFFFromString(const std::string& content) {
+Dataset ARFFTools::readARFFFromString(const std::string& content, bool hasTargets) {
   std::string line;
   std::stringstream contentStream;
   contentStream << content;
@@ -128,7 +130,8 @@ Dataset ARFFTools::readARFFFromString(const std::string& content) {
     std::transform(line.begin(), line.end(), line.begin(), toupper);
 
     if (dataReached && !line.empty()) {
-      writeNewClass(line, dataset.getTargets(), instanceNo);
+      if (hasTargets)
+        writeNewClass(line, dataset.getTargets(), instanceNo);
       writeNewTrainingDataEntry(line, dataset.getData(), instanceNo);
       instanceNo++;
     }

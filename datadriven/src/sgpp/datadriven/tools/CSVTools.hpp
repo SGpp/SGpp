@@ -30,9 +30,11 @@ class CSVTools {
    *
    * @param filename filename of the file to be read
    * @param skipFirstLine whether to skip the first line while parsing
+   * @param hasTargets whether the csv has columns for targets (supervised learning)
    * @return CSV as Dataset
    */
-  static Dataset readCSV(const std::string& filename, bool skipFirstLine = false);
+  static Dataset readCSV(const std::string& filename, bool skipFirstLine = false,
+      bool hasTargets = true);
 
   /**
    * Reads the size of an CSV file.
@@ -40,9 +42,10 @@ class CSVTools {
    * @param filename filename of the file to be read
    * @param[out] numberInstances number of instances in the dataset
    * @param[out] dimension number of dimensions in the dataset
+   * @param hasTargets whether the csv has a columns for targets (supervised learning)
    */
   static void readCSVSize(const std::string& filename, size_t& numberInstances,
-                           size_t& dimension);
+                           size_t& dimension, bool hasTargets = true);
 
  private:
   /**

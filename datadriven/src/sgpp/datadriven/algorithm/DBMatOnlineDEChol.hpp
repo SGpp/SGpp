@@ -30,24 +30,38 @@ using sgpp::datadriven::DataVector;
 
 class DBMatOnlineDEChol : public DBMatOnlineDE {
  public:
-  explicit DBMatOnlineDEChol(DBMatOffline& offline, double beta = 0.);
+  /**
+   * Constructor
+   *
+   * @param offline The offline object we base our evaluations on.
+   * @param lambda The regularization strength (TODO(fuchsgruber) remove this)
+   * @param grid The underlying grid (TODO(fuchsgruber) do we need this?)
+   * @param beta The initial weighting factor
+   */
+  explicit DBMatOnlineDEChol(DBMatOffline& offline, Grid& grid, double lambda, double beta = 0.);
 
   /**
    * Delegates call to choleskyModification
+   * @param densityEstimationConfig Configuration to the density estimation
+   * @param grid the underlying grid
    * @param numAddedGridPoints Number of grid points inserted at the end of the grid storage
    * @param deletedGridPointIndices Indices of grid points that were deleted
    * @param lambda The last best lambda value
    * @return list of grid points, that cannot be coarsened
    */
   std::vector<size_t> updateSystemMatrixDecomposition(
+      DensityEstimationConfiguration& densityEstimationConfig,
+      Grid& grid,
       size_t numAddedGridPoints,
       std::list<size_t> deletedGridPointIndices,
       double lambda) override;
 
  protected:
-  void solveSLE(DataVector& b, bool do_cv) override;
+  void solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
+      DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) override;
 
-  DBMatDMSChol* buildCholSolver(DBMatOffline& offlineObject, bool doCV) const;
+  DBMatDMSChol* buildCholSolver(DBMatOffline& offlineObject, Grid& grid,
+      DensityEstimationConfiguration& densityEstimationConfig, bool doCV) const;
 };
 
 } /* namespace datadriven */

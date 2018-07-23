@@ -12,6 +12,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
 #include <iostream>
 
 
@@ -43,9 +44,11 @@ class SubspaceRefinement: public RefinementDecorator {
   *
   * @param storage hashmap that stores the grid points
   * @param functor a RefinementFunctor specifying the refinement criteria
+  * @param addedPoints pointer to vector to append newly created grid points to
   */
   void free_refine(GridStorage& storage,
-                   RefinementFunctor& functor) override;
+                   RefinementFunctor& functor,
+                   std::vector<size_t>* addedPoints = 0) override;
 
 
   /**

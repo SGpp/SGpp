@@ -53,15 +53,17 @@ class ArffFileSampleProvider : public FileSampleProvider {
    * Open an existing ARFF file, parse it and store its contents inside this class. Throws if file
    * can not be opened or parsed.
    * @param filePath Path to an existing file.
+   * @param hasTargets whether the file has targest (i.e. supervised learning)
    */
-  void readFile(const std::string& filePath) override;
+  void readFile(const std::string& filePath, bool hasTargets) override;
 
   /**
    * Parse contents of a string containing information in ARFF format, parse it and store its
    * contents inside this class. Throws if string can not be parsed.
    * @param input string containing information in ARFF file format
+   * @param hasTargets whether the file has targest (i.e. supervised learning)
    */
-  void readString(const std::string& input) override;
+  void readString(const std::string& input, bool hasTargets) override;
 
  private:
   /**

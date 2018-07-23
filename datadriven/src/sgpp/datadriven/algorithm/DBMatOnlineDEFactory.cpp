@@ -23,31 +23,31 @@ namespace datadriven {
 
 using sgpp::base::factory_exception;
 
-DBMatOnlineDE* DBMatOnlineDEFactory::buildDBMatOnlineDE(DBMatOffline& offline, double beta) {
-  auto& densityEstimationConfig = offline.getDensityEstimationConfig();
-
-  switch (densityEstimationConfig.decomposition_) {
+DBMatOnlineDE* DBMatOnlineDEFactory::buildDBMatOnlineDE(DBMatOffline& offline, Grid& grid,
+    double lambda,  double beta) {
+  auto decompositionType = offline.getDecompositionType();
+  switch (decompositionType) {
     case MatrixDecompositionType::Eigen:
 #ifdef USE_GSL
-      return new DBMatOnlineDEEigen(offline, beta);
+      return new DBMatOnlineDEEigen(offline, grid, lambda, beta);
 #else
       throw factory_exception("built without GSL");
 #endif /*USE_GSL*/
       break;
     case MatrixDecompositionType::LU:
 #ifdef USE_GSL
-      return new DBMatOnlineDELU(offline, beta);
+      return new DBMatOnlineDELU(offline, grid, lambda, beta);
 #else
       throw factory_exception("built without GSL");
 #endif /*USE_GSL*/
       break;
     case MatrixDecompositionType::Chol:
     case MatrixDecompositionType::DenseIchol:
-      return new DBMatOnlineDEChol(offline, beta);
+      return new DBMatOnlineDEChol(offline, grid, lambda, beta);
       break;
     case MatrixDecompositionType::OrthoAdapt:
 #ifdef USE_GSL
-      return new DBMatOnlineDEOrthoAdapt(offline, beta);
+      return new DBMatOnlineDEOrthoAdapt(offline, grid, lambda, beta);
       break;
 #else
       throw factory_exception("built without GSL");

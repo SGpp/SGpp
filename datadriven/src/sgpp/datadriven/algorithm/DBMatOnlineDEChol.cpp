@@ -22,14 +22,16 @@
 namespace sgpp {
 namespace datadriven {
 
-DBMatOnlineDEChol::DBMatOnlineDEChol(DBMatOffline& offline, double beta)
-    : DBMatOnlineDE{offline, beta} {}
+DBMatOnlineDEChol::DBMatOnlineDEChol(DBMatOffline& offline, Grid& grid, double lambda, double beta)
+    : DBMatOnlineDE{offline, grid, lambda, beta} {}
 
-void DBMatOnlineDEChol::solveSLE(DataVector& b, bool do_cv) {
+void DBMatOnlineDEChol::solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
+    DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) {
   DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
-  alpha = DataVector(lhsMatrix.getNcols());
+  alpha.resizeZero(lhsMatrix.getNcols());
 
-  auto cholsolver = std::unique_ptr<DBMatDMSChol>{buildCholSolver(offlineObject, do_cv)};
+  auto cholsolver = std::unique_ptr<DBMatDMSChol>{buildCholSolver(offlineObject, grid,
+      densityEstimationConfig, do_cv)};
 
   double old_lambda = lambda;
   // Perform cross-validation based on rank one up- and downdates
@@ -47,7 +49,7 @@ void DBMatOnlineDEChol::solveSLE(DataVector& b, bool do_cv) {
       // lambda
       cholsolver->solve(lhsMatrix, alpha, b, old_lambda, cur_lambda);
       old_lambda = cur_lambda;
-      double crit = resDensity(alpha);
+      double crit = resDensity(alpha, grid);
       // std::cout << ", crit: " << crit << std::endl;
       if (i == 0 || crit < best_crit) {
         best_crit = crit;
@@ -72,16 +74,17 @@ void DBMatOnlineDEChol::solveSLE(DataVector& b, bool do_cv) {
   //            << "\n";
 }
 
-DBMatDMSChol* DBMatOnlineDEChol::buildCholSolver(DBMatOffline& offlineObject, bool doCV) const {
+DBMatDMSChol* DBMatOnlineDEChol::buildCholSolver(DBMatOffline& offlineObject, Grid& grid,
+    DensityEstimationConfiguration& densityEstimationConfig, bool doCV) const {
   // const cast is OK here, since we access the config read only.
-  switch (offlineObject.getDensityEstimationConfig().decomposition_) {
+  switch (offlineObject.getDecompositionType()) {
     case (MatrixDecompositionType::Chol):
       return new DBMatDMSChol();
       break;
     case (MatrixDecompositionType::DenseIchol):
-      return new DBMatDMSDenseIChol(offlineObject.getDensityEstimationConfig(),
-                                    offlineObject.getGrid(),
-                                    offlineObject.getRegularizationConfig().lambda_,
+      return new DBMatDMSDenseIChol(densityEstimationConfig,
+                                    grid,
+                                    lambda,
                                     doCV);
       break;
     case (MatrixDecompositionType::LU):
@@ -93,12 +96,15 @@ DBMatDMSChol* DBMatOnlineDEChol::buildCholSolver(DBMatOffline& offlineObject, bo
 }
 
 std::vector<size_t> DBMatOnlineDEChol::updateSystemMatrixDecomposition(
+    DensityEstimationConfiguration& densityEstimationConfig,
+    Grid& grid,
     size_t numAddedGridPoints,
     std::list<size_t> deletedGridPointIndices,
     double lambda)  {
   DBMatOffline* offlineObject = &getOfflineObject();
   dynamic_cast<DBMatOfflineChol *>(offlineObject)
-      ->choleskyModification(numAddedGridPoints, deletedGridPointIndices, lambda);
+      ->choleskyModification(grid, densityEstimationConfig, numAddedGridPoints,
+          deletedGridPointIndices, lambda);
       std::vector<size_t> return_vector = {};
       return return_vector;
 }

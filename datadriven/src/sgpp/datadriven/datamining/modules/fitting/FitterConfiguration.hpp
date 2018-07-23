@@ -9,9 +9,12 @@
 #include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DatabaseConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
+
+#include <string>
 
 namespace sgpp {
 namespace datadriven {
@@ -122,6 +125,12 @@ class FitterConfiguration {
   const datadriven::OperationMultipleEvalConfiguration& getMultipleEvalConfig() const;
 
   /**
+     * Returns the database configuration, i.e. the filepath
+     * @return immutable DatabaseConfiguration
+     */
+  const datadriven::DatabaseConfiguration& getDatabaseConfig() const;
+
+  /**
    * Get or set initial conditions for the grid before adaptive refinement.
    * @return RegularGridConfiguration
    */
@@ -202,6 +211,11 @@ class FitterConfiguration {
    * Configure how the density estimation should behave.
    */
   datadriven::DensityEstimationConfiguration densityEstimationConfig;
+
+  /**
+   * Configure where the lhs datamatrix decomposition database is stored
+   */
+  datadriven::DatabaseConfiguration databaseConfig;
 
   /**
    * Configuration for the linear system solver which should be used while building adaptive grids
