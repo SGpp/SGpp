@@ -31,9 +31,9 @@ class ArffFileSampleProvider : public FileSampleProvider {
  public:
   /**
    * Default constructor
-   * @param validationPortion ratio of data that is kept and used for validation
+   * @param shuffling functor to permute the training data indexes
    */
-  explicit ArffFileSampleProvider(double validationPortion);
+  explicit ArffFileSampleProvider(DataShufflingFunctor *shuffling);
 
   /**
    * Clone Pattern to allow copying of derived classes.
@@ -67,16 +67,14 @@ class ArffFileSampleProvider : public FileSampleProvider {
   void readString(const std::string& input, bool hasTargets) override;
 
   /**
-   * Returns the data that is used for validation
-   * @return pointer to the validation dataset
+   * Resets the state of the sample provider (e.g. to start a new epoch)
    */
-  Dataset *getValidationData();
-
+  void reset() override;
  private:
   /**
-   * Portion of the dataset that is used for validation
+   * Functor to shuffle the data (permute the indexes)
    */
-  double validationPortion;
+  DataShufflingFunctor *shuffling;
 
   /**
    * #sgpp::datadriven::Dataset containing the samples read from file or string.

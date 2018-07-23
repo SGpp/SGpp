@@ -24,8 +24,14 @@ namespace datadriven {
  * A simple shuffling functor for data samples that performs no shuffling at all, i.e. the
  * permutation used is the identity itself.
  */
-class DataShufflingFunctorSequential : DataShufflingFunctor {
+class DataShufflingFunctorSequential : public DataShufflingFunctor {
  public:
+  /**
+   * Clone pattern.
+   * @return identical copy of this instance
+   */
+  DataShufflingFunctor* clone() const override;
+
   /**
    * Overload the function-call operator that maps indexes to indexes via a permutation
    * of the entire index set. The permutation used is the identity.

@@ -24,6 +24,13 @@ namespace datadriven {
 enum class DataSourceFileType { NONE, ARFF, CSV };
 
 /**
+ * Enumeration of all supported shuffling types used to permute samples in a dataset. An entry
+ * exists for each object that derives from #sgpp::datadriven::DataShufflingFunctor. Used for
+ * configuration and factory methods.
+ */
+enum class DataSourceShufflingType { random, sequential };
+
+/**
  * Configuration structure used for all kinds of SampleProviders including default values.
  */
 struct DataSourceConfig {
@@ -61,6 +68,18 @@ struct DataSourceConfig {
   * Configuration for possible data transformation on dataset
   */
   datadriven::DataTransformationConfig dataTransformationConfig;
+  /**
+   * The type of shuffling to be applied to the data
+   */
+  DataSourceShufflingType shuffling;
+  /**
+   * Seed for the shuffling prng
+   */
+  int64_t randomSeed = -1;
+  /**
+   * The number of epochs to train on
+   */
+  size_t epochs = 1;
 };
 
 } /* namespace datadriven */

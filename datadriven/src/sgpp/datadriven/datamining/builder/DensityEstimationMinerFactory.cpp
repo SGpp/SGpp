@@ -19,6 +19,7 @@
 #include <sgpp/datadriven/datamining/builder/SplittingScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
+#include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
 #include <string>
 
 namespace sgpp {
@@ -27,10 +28,16 @@ namespace datadriven {
 SparseGridMiner* DensityEstimationMinerFactory::buildMiner(const std::string& path) const {
   DataMiningConfigParser parser(path);
 
-  return new SparseGridMiner(createDataSource(parser), createFitter(parser), createScorer(parser));
+  if (parser.hasScorerConfigCrossValidation()) {
+    // TODO(fuchsgdk): implement the cv stuff
+    return nullptr;
+  } else {
+    return new SparseGridMinerSplitting(createDataSourceSplitting(parser), createFitter(parser),
+        createScorer(parser));
+  }
 }
 
-DataSource* DensityEstimationMinerFactory::createDataSource(
+DataSourceSplitting* DensityEstimationMinerFactory::createDataSourceSplitting(
     const DataMiningConfigParser& parser) const {
   DataSourceConfig config;
 
@@ -38,7 +45,7 @@ DataSource* DensityEstimationMinerFactory::createDataSource(
 
   if (hasSource && config.filePath.compare("") != 0) {
     DataSourceBuilder builder;
-    return builder.fromConfig(config);
+    return builder.splittingFromConfig(config);
   } else {
     throw base::data_exception("No file name provided for datasource.");
   }

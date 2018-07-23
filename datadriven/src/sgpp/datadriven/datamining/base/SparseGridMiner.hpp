@@ -29,15 +29,13 @@ class SparseGridMiner {
  public:
   /**
    * Constructor
-   * @param dataSource configured instance of data source object, that will provide samples to learn
-   * from. The miner instance will take ownership of the passed object.
    * @param fitter configured instance of fitter object that generalize the model. The miner
    * instance will take ownership of the passed object.
    * @param scorer configured instance of scorer object that will assess the quality of the
    * generalization provided by the fitter on testing data. The miner instance will take ownership
    * of the passed object.
    */
-  SparseGridMiner(DataSource* dataSource, ModelFittingBase* fitter, Scorer* scorer);
+  SparseGridMiner(ModelFittingBase* fitter, Scorer* scorer);
 
   /**
    * Copy constructor deleted - not all members can be copied or cloned .
@@ -66,13 +64,13 @@ class SparseGridMiner {
   /**
    * Default destructor.
    */
-  ~SparseGridMiner() = default;
+  virtual ~SparseGridMiner() = default;
 
   /**
    * Perform Learning cycle: Get samples from data source and based on the scoring procedure,
    * generalize data by fitting and asses quality of the fit.
    */
-  void learn();
+  virtual void learn() = 0;
 
   /**
    * Returns the trained model
@@ -80,12 +78,7 @@ class SparseGridMiner {
    */
   ModelFittingBase *getModel();
 
- private:
-  /**
-   * DataSource provides samples that will be used by fitter to generalize data and scorer to
-   * validate and assess model robustness.
-   */
-  std::unique_ptr<DataSource> dataSource;
+ protected:
   /**
    * Fitter that trains a model based on data samples.
    */

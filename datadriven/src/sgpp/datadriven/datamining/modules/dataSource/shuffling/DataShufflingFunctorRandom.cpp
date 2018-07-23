@@ -15,8 +15,9 @@
 namespace sgpp {
 namespace datadriven {
 
-DataShufflingFunctorRandom::DataShufflingFunctorRandom(size_t numSamples, size_t seed) :
+DataShufflingFunctorRandom::DataShufflingFunctorRandom(size_t numSamples, int64_t seed) :
     numSamples{numSamples} {
+  std::mt19937 generator(seed);
   size_t max = numSamples - 1;
 
   // Calculate the number of bits needed to store max minus 1
@@ -29,10 +30,13 @@ DataShufflingFunctorRandom::DataShufflingFunctorRandom(size_t numSamples, size_t
 
   // Calculate the bit mask for the right half
   bitMask = (1 << bitShift) - 1;
-  std::srand(static_cast<unsigned int>(seed));
   for (size_t i = 0; i < 4; i++) {
-    keys[i] = std::rand();
+    keys[i] = generator();
   }
+}
+
+DataShufflingFunctor* DataShufflingFunctorRandom::clone() const {
+  return new DataShufflingFunctorRandom{*this};
 }
 
 size_t DataShufflingFunctorRandom::feistel(size_t idx) {

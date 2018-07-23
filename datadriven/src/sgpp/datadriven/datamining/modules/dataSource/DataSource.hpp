@@ -38,6 +38,8 @@ class DataSource {
    */
   DataSource(DataSourceConfig config, SampleProvider* sampleProvider);
 
+  virtual ~DataSource() = default;
+
   /**
    * Read only access to the configuration used by DataSource and underlying SampleProvider.
    * @return Current configuration object.
@@ -77,9 +79,9 @@ class DataSource {
    * Returns the data that is used for validation
    * @return pointer to the validation dataset
    */
-  Dataset *getNextValidationData();
+  virtual Dataset *getValidationData() = 0;
 
- private:
+ protected:
   /**
    * Configuration file that determines all relevant properties of the object.
    */

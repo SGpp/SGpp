@@ -13,6 +13,7 @@
 
 #include <memory.h>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceSplitting.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
 #include <string>
 #include <vector>
@@ -72,16 +73,16 @@ class DataSourceBuilder {
   /**
    * Based on the currently specified configuration, build and configure an instance of a data
    * source object.
-   * @return Fully configured instance of #sgpp::datadriven::DataSource object.
+   * @return Fully configured instance of #sgpp::datadriven::DataSourceSplitting object.
    */
-  DataSource* assemble() const;
+  DataSourceSplitting* splittingAssemble() const;
 
   /**
-   * Factory method used to build an instance of a #sgpp::datadriven::DataSource object based on the
-   * passed configuration.
-   * @return Fully configured instance of #sgpp::datadriven::DataSource object.
+   * Factory method used to build an instance of a #sgpp::datadriven::DataSourceSplitting object
+   * based on the passed configuration.
+   * @return Fully configured instance of #sgpp::datadriven::DataSourceSplitting object.
    */
-  DataSource* fromConfig(const DataSourceConfig& config);
+  DataSourceSplitting* splittingFromConfig(const DataSourceConfig& config);
 
  private:
   /**
