@@ -76,9 +76,7 @@
 #include <sgpp/base/operation/hash/OperationQuadratureModBsplineClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureModFundamentalSpline.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureModLinear.hpp>
-#include <sgpp/base/operation/hash/OperationQuadratureModLinear.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureModLinearClenshawCurtis.hpp>
-#include <sgpp/base/operation/hash/OperationQuadratureModPoly.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureModPoly.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureModPolyClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationQuadraturePoly.hpp>
@@ -143,8 +141,6 @@
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyNaive.hpp>
 
-#include <sgpp/base/operation/hash/OperationEvalBsplineNaive.hpp>
-
 #include <sgpp/base/operation/hash/OperationEvalBsplineBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalBsplineClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalBsplineNaive.hpp>
@@ -155,7 +151,6 @@
 #include <sgpp/base/operation/hash/OperationEvalLinearNaive.hpp>
 
 #include <sgpp/base/operation/hash/OperationEvalLinearClenshawCurtisBoundaryNaive.hpp>
-#include <sgpp/base/operation/hash/OperationEvalModBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModLinearClenshawCurtisNaive.hpp>
 
 #include <sgpp/base/operation/hash/OperationEvalModBsplineClenshawCurtisNaive.hpp>
@@ -168,7 +163,6 @@
 
 #include <sgpp/base/operation/hash/OperationEvalPolyNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalWaveletBoundaryNaive.hpp>
-#include <sgpp/base/operation/hash/OperationEvalWaveletNaive.hpp>
 
 #include <sgpp/base/operation/hash/OperationEvalModPolyClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalNakBsplineBoundaryCombigridNaive.hpp>

@@ -285,7 +285,7 @@ class Learner(object):
         
     ## Sets the verbosity level in the solver (default: False)
     #
-    # @param value: bool if verbose
+    # @param verb: bool if verbose
     def setVerbosity(self, verb):
         self.useVerbose = verb;
 
