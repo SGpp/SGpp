@@ -160,9 +160,7 @@
 #include <sgpp/base/operation/hash/OperationEvalModPolyNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModWaveletNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyBoundaryNaive.hpp>
-
 #include <sgpp/base/operation/hash/OperationEvalPolyNaive.hpp>
-#include <sgpp/base/operation/hash/OperationEvalWaveletBoundaryNaive.hpp>
 
 #include <sgpp/base/operation/hash/OperationEvalModPolyClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalNakBsplineBoundaryCombigridNaive.hpp>
