@@ -33,7 +33,7 @@ class ArffFileSampleProvider : public FileSampleProvider {
    * Default constructor
    * @param shuffling functor to permute the training data indexes
    */
-  explicit ArffFileSampleProvider(DataShufflingFunctor *shuffling);
+  explicit ArffFileSampleProvider(DataShufflingFunctor *shuffling = nullptr);
 
   /**
    * Clone Pattern to allow copying of derived classes.
@@ -70,6 +70,7 @@ class ArffFileSampleProvider : public FileSampleProvider {
    * Resets the state of the sample provider (e.g. to start a new epoch)
    */
   void reset() override;
+
  private:
   /**
    * Functor to shuffle the data (permute the indexes)
