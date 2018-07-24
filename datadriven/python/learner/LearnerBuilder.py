@@ -67,7 +67,7 @@ from formatter import LearnedKnowledgeFormatter
 #                     .withTestingDataFromARFFFile("./datasets/classifier.test.arff")\
 #                     .withGrid().withLevel(2)\
 #                     .withSpecification().withLambda(0.00001).withAdaptPoints(2)\
-#                     .withStopPolicy().withAdaptiveItarationLimit(1)\
+#                     .withStopPolicy().withAdaptiveIterationLimit(1)\
 #                     .withCGSolver().withImax(500)\
 #                     .withProgressPresenter(InfoToFile("./presentor.test"))\
 #                     .andGetResult()
@@ -76,7 +76,7 @@ from formatter import LearnedKnowledgeFormatter
 # @section Parameters Parameters and where I can set them?
 # @li <code>level</code>: <i>Gridlevel</i> - @link GridDescriptor.withLevel() <code>withGrid().withLevel(2)</code> @endlink
 # @li <code>dim</code>: <i>Griddimension</i> - Dimension is identified from the %data set (by calling @link withTrainingDataFromARFFFile() <code>.withTrainingDataFromARFFFile(...)</code> @endlink)
-# @li <code>adaptive</code>: <i>Using an adaptive Grid with NUM of refines</i> - @link StopPolicyDescriptor.withAdaptiveItarationLimit() <code>.withStopPolicy().withAdaptiveItarationLimit(10)</code> @endlink
+# @li <code>adaptive</code>: <i>Using an adaptive Grid with NUM of refines</i> - @link StopPolicyDescriptor.withAdaptiveIterationLimit() <code>.withStopPolicy().withAdaptiveIterationLimit(10)</code> @endlink
 # @li <code>adapt_points</code>: <i>Number of points in one refinement iteration</i> - @link SpecificationDescriptor.withAdaptPoints() <code>.withSpecification().withAdaptPoints(100)</code> @endlink
 # @li <code>adapt_rate</code>: <i>Percentage of points from all refinable points in one refinement iteration</i> - @link SpecificationDescriptor.withAdaptRate() <code>.withSpecification().withAdaptRate(0.05)</code> @endlink
 # @li <code>adapt_start</code>: <i>The index of adapt step to begin with</i> - Is know handled by loading the learner with specified iteration level from  CheckpointController using @link python.controller.CheckpointController.CheckpointController.loadAll() <code>checkpointController.loadAll(10)</code> @endlink
@@ -217,13 +217,13 @@ class LearnerBuilder(object):
 
 
     ##
-    # Returns the builded learner (regressor or classifier), should be called in the and of construction
+    # Returns the builded learner (regressor or classifier), should be called at the end of construction
     #
     # @return: Learner (Classifier of Regressor)
     ##
     def andGetResult(self):
         if self.__gridDescriptor == None:
-            self.__gridDescriptor = LearnerBuilder.GridDescriptor()
+            self.__gridDescriptor = LearnerBuilder.GridDescriptor(self)
         if self.__specificationDescriptor == None:
             self.__specificationDescriptor == LearnerBuilder.SpecificationDescriptor(self)
         if self.__learner.specification.getBOperator() == None:
@@ -234,7 +234,6 @@ class LearnerBuilder(object):
             createOperationMultipleEval(self.__learner.grid, self.__learner.dataContainer.getPoints(DataContainer.TEST_CATEGORY)), DataContainer.TEST_CATEGORY)
             except:
                 pass
-
         return self.__learner
 
 
@@ -564,7 +563,7 @@ class LearnerBuilder(object):
         # @param limit: integer for maximal number of refinement steps
         # @return: StopPolicyDescriptor itself
         ##
-        def withAdaptiveItarationLimit(self, limit):
+        def withAdaptiveIterationLimit(self, limit):
             self.__policy.setAdaptiveIterationLimit(limit)
             return self
 
@@ -643,8 +642,8 @@ class LearnerBuilder(object):
         def __getattr__(self, attr):
             # if method called is not a object method of this Descriptor, most probably it's a method of
             # LearnerBuilder so we try to call the method from our builder
-            if self.__specification.getCOperator() == None: #use laplace operator default
-                self.__specification.setCOperator(createOperationIdentity(self.__builder.getLearner().grid))
+            if self.__specification.getCOperator() == None: #use identity operator default
+                #self.__specification.setCOperator(createOperationIdentity(self.__builder.getLearner().grid))
                 self.__specification.setCOperatorType('identity')
             self.__builder.getLearner().setSpecification(self.__specification)
             return getattr(self.__builder, attr)
@@ -697,7 +696,7 @@ class LearnerBuilder(object):
         # @return: SpecificationDescriptor itself
         ##
         def withLaplaceOperator(self, ):
-            self.__specification.setCOperator(createOperationLaplace(self.__builder.getLearner().grid))
+            #self.__specification.setCOperator(createOperationLaplace(self.__builder.getLearner().grid))
             self.__specification.setCOperatorType('laplace')
             return self
 
@@ -707,7 +706,7 @@ class LearnerBuilder(object):
         # @return: SpecificationDescriptor itself
         ##
         def withIdentityOperator(self, ):
-            self.__specification.setCOperator(createOperationIdentity(self.__builder.getLearner().grid))
+            #self.__specification.setCOperator(createOperationIdentity(self.__builder.getLearner().grid))
             self.__specification.setCOperatorType('identity')
             return self
 
