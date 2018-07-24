@@ -287,6 +287,8 @@ BOOST_AUTO_TEST_CASE(testQuadratureMC) {
   OperationQuadratureMC* opMC = new OperationQuadratureMC(*grid, 100000);
   double resMC = opMC->doQuadrature(*alpha);
 
+  std::cout << resDirect << " " << resMC << std::endl;
+
   BOOST_CHECK_CLOSE(resDirect, resMC, 1.0);
 
   delete alpha;

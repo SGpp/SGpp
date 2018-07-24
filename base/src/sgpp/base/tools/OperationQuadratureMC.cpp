@@ -20,8 +20,8 @@ namespace base {
 OperationQuadratureMC::OperationQuadratureMC(Grid& grid, int mcPaths)
     : grid(&grid), mcPaths(mcPaths) {
   // init seed for random number generator
-  /*srand((unsigned)time(0)); */
-  this->simple_rand.seed((unsigned)time(0));
+  srand((unsigned)time(0));
+  // this->simple_rand.seed((unsigned)time(0));
 }
 
 double OperationQuadratureMC::doQuadrature(DataVector& alpha) {
@@ -51,7 +51,7 @@ double OperationQuadratureMC::doQuadrature(DataVector& alpha) {
     determinant *= boundingBox.getIntervalWidth(d);
   }
 
-  return res.sum() / static_cast<double>(mcPaths) * determinant;
+  return (res.sum() / static_cast<double>(mcPaths)) * determinant;
 }
 
 double OperationQuadratureMC::doQuadratureFunc(FUNC func, void* clientdata) {
