@@ -33,10 +33,10 @@ double OperationQuadratureMC::doQuadrature(DataVector& alpha) {
 
   for (size_t i = 0; i < mcPaths; i++) {
     for (size_t d = 0; d < dim; d++) {
-      /*dm.set(i, d, boundingBox.transformPointToBoundingBox(d, static_cast<double>(rand()) /
-       * RAND_MAX));*/
-      dm.set(i, d, boundingBox.transformPointToBoundingBox(
-                       d, static_cast<double>(this->simple_rand()) / RAND_MAX));
+      dm.set(i, d,
+             boundingBox.transformPointToBoundingBox(d, static_cast<double>(rand()) / RAND_MAX));
+      /*dm.set(i, d, boundingBox.transformPointToBoundingBox(
+                       d, static_cast<double>(this->simple_rand()) / RAND_MAX));*/
     }
   }
 
