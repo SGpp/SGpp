@@ -31,11 +31,9 @@ from pysgpp.extensions.datadriven.learner.Types import BorderTypes
 from pysgpp.extensions.datadriven.learner.formatter import LearnedKnowledgeFormatter
 from pysgpp.extensions.datadriven.learner.solver.CGSolver import CGSolver
 from pysgpp.extensions.datadriven.uq.learner.Interpolant import Interpolant
-from pysgpp.extensions.datadriven.uq.learner.Regressor import Regressor
 from pysgpp import createOperationMultipleEval
 
 from GridDescriptor import GridDescriptor
-from RegressorSpecificationDescriptor import RegressorSpecificationDescriptor
 import pysgpp.extensions.datadriven.utils.json as json
 from pysgpp.extensions.datadriven.uq.learner.builder import InterpolantSpecificationDescriptor
 
@@ -49,7 +47,7 @@ from pysgpp.extensions.datadriven.uq.learner.builder import InterpolantSpecifica
 #import pysgpp.extensions.datadriven.learner.LearnerBuilder as LearnerBuilder
 #builder = LearnerBuilder()
 #builder = builder.buildClassifier()
-# @endcode  
+# @endcode
 # or regression
 # @code
 #builder = builder.buildRegressor()
@@ -57,7 +55,7 @@ from pysgpp.extensions.datadriven.uq.learner.builder import InterpolantSpecifica
 #
 # LearnerBuilder is implementing <a href="http://en.wikipedia.org/wiki/Fluent_interface" target="parent">Fluent Interface design pattern</a>
 # it means it operates as an automata, switching in some state
-# where you can set all parameters associated with some category. For example to 
+# where you can set all parameters associated with some category. For example to
 # define the grid parameters you switch the builder into GridDescriptor set with
 # @code
 #builder = builder.withGrid()...
@@ -75,7 +73,7 @@ from pysgpp.extensions.datadriven.uq.learner.builder import InterpolantSpecifica
 # @code
 #builder.andGetResult()
 # @endcode
-# 
+#
 # The complete construction could look like following:
 # @code
 #classifier = builder.buildClassifier()\
@@ -118,14 +116,6 @@ class LearnerBuilder(object):
         """
         return self._checkpointController
 
-    def buildRegressor(self):
-        """
-        Start building regressor
-        """
-        self._learner = Regressor()
-        self._specificationDescriptor = RegressorSpecificationDescriptor(self)
-        return self._specificationDescriptor
-
     def buildInterpolant(self):
         self._learner = Interpolant()
         return self._specificationDescriptor
@@ -150,6 +140,4 @@ class LearnerBuilder(object):
         """
         if self._learner is None:
             raise AttributeError('Learner is not specified -> use buildInterpolant')
-        if isinstance(self._learner, Regressor) and self._gridDescriptor is None:
-            raise AttributeError('No grid is specified for regression')
         return self._learner
