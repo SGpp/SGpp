@@ -18,7 +18,7 @@ from pysgpp.extensions.datadriven.uq.dists.Normal import Normal
 from .J import J
 from .Dist import Dist
 import numpy as np
-import pysgpp.extensions.datadriven.uq.jsonLib as ju
+from pysgpp.extensions.datadriven.uq import jsonLib as ju
 
 class MultivariateNormal(Dist):
     """
