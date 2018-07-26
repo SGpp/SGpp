@@ -33,7 +33,7 @@ from pysgpp import createOperationFirstMoment, \
     createOperationSecondMoment, \
     createOperationDensityMargTo1D, \
     createOperationEval
-import pysgpp.extensions.datadriven.uq.jsonLib as ju
+from pysgpp.extensions.datadriven.uq import jsonLib as ju
 from pysgpp.pysgpp_swig import LatinHypercubeSampleGenerator
 from pysgpp.extensions.datadriven.uq.sampler.Sample import SampleType
 
