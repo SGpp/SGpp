@@ -7,11 +7,11 @@
                                     #
 #############################################################################
 
-from FoldingPolicy import FoldingPolicy
-from RandomFoldingPolicy import RandomFoldingPolicy
-from SequentialFoldingPolicy import SequentialFoldingPolicy
-from StratifiedFoldingPolicy import StratifiedFoldingPolicy
-from FilesFoldingPolicy import FilesFoldingPolicy
+from .FoldingPolicy import FoldingPolicy
+from .RandomFoldingPolicy import RandomFoldingPolicy
+from .SequentialFoldingPolicy import SequentialFoldingPolicy
+from .StratifiedFoldingPolicy import StratifiedFoldingPolicy
+from .FilesFoldingPolicy import FilesFoldingPolicy
 
 __all__ = ['FilesFoldingPolicy',
             'FoldingPolicy',

@@ -7,7 +7,7 @@
                                     #
 #############################################################################
 
-from FoldingPolicy import FoldingPolicy
+from .FoldingPolicy import FoldingPolicy
 from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
 import math
 

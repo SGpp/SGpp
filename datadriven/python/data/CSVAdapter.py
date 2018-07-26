@@ -6,16 +6,16 @@
 #############################################################################
                                     #
 #############################################################################
-from DataSpecification import DataSpecification
+from .DataSpecification import DataSpecification
 
 
 import re
 import gzip
 import csv
-from DataAdapter import DataAdapter
+from .DataAdapter import DataAdapter
 from pysgpp import DataVector, DataMatrix
 
-from DataContainer import DataContainer
+from .DataContainer import DataContainer
 
 
 ## Class implements the interface of DataAdapter for storing and restoring of input

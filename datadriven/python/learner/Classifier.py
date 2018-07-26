@@ -3,7 +3,7 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-from Learner import Learner, LearnerEvents
+from .Learner import Learner, LearnerEvents
 from pysgpp import SurplusRefinementFunctor, createOperationTest
 
 

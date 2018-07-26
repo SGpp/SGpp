@@ -8,7 +8,7 @@ import time
 import random
 import math
 
-from FoldingPolicy import FoldingPolicy
+from .FoldingPolicy import FoldingPolicy
 
 ## Provides functionality for accomplishment of learning with cross-validation
 # by generating a set of training data/validation data pairs randomly
