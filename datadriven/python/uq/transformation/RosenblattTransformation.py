@@ -17,7 +17,7 @@ inverse of a given distrubution function
 
 from .Transformation import Transformation
 
-import pysgpp.extensions.datadriven.uq.jsonLib as ju
+from  pysgpp.extensions.datadriven.uq import jsonLib as ju
 
 
 class RosenblattTransformation(Transformation):
