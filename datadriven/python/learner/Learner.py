@@ -5,13 +5,16 @@
 
 
 from pysgpp import *
-from solver.CGSolver import CGSolver
-from folding.FoldingPolicy import FoldingPolicy
-import pysgpp.extensions.datadriven.utils.json as json
-from TrainingStopPolicy import TrainingStopPolicy
-from TrainingSpecification import TrainingSpecification
+from .solver.CGSolver import CGSolver
+from .folding.FoldingPolicy import FoldingPolicy
+from .TrainingStopPolicy import TrainingStopPolicy
+from .TrainingSpecification import TrainingSpecification
+
 from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
+from pysgpp.extensions.datadriven.utils import json
+
 import types
+
 
 
 ## The class implements the routines common for classifier and regressor.

@@ -7,10 +7,10 @@
                                     #
 #############################################################################
 
-from GridFormatter import GridFormatter
+from .GridFormatter import GridFormatter
 #from GridImageFormatter import GridImageFormatter
-from LearnedKnowledgeFormatter import LearnedKnowledgeFormatter
-from LearnerFormatter import LearnerFormatter
+from .LearnedKnowledgeFormatter import LearnedKnowledgeFormatter
+from .LearnerFormatter import LearnerFormatter
 
 __all__ = ['GridFormatter',
 'GridImageFormatter',

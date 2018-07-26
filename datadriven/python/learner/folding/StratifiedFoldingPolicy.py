@@ -7,7 +7,7 @@
                                     #
 #############################################################################
 
-from FoldingPolicy import FoldingPolicy
+from .FoldingPolicy import FoldingPolicy
 import math
 
 

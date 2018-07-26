@@ -7,8 +7,8 @@
                                     #
 #############################################################################
 
-from CGSolver import CGSolver
-from LinearSolver import LinearSolver, LinearSolverEvents
+from .CGSolver import CGSolver
+from .LinearSolver import LinearSolver, LinearSolverEvents
 
 __all__ = ['CGSolver',
 'LinearSolver']

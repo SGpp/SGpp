@@ -9,11 +9,10 @@
 
 import numpy as np
 
-from DataSpecification import DataSpecification
+from .DataSpecification import DataSpecification
 from pysgpp import DataVector, DataMatrix
-from DataAdapter import DataAdapter
-from DataEntry import DataEntry
-import ARFFAdapter
+from .DataAdapter import DataAdapter
+from .DataEntry import DataEntry
 import types
 
 
@@ -414,6 +413,8 @@ class DataContainer(object):
         # save the data as a file, if it's not saved yet
         for category, specification in self.specifications.items():
             if not self.specifications[category].isSaved():
+                from .ARFFAdapter import ARFFAdapter
+
                 ARFFAdapter.ARFFAdapter(self.specifications[category].getFilename())\
                     .save(self.getPoints(category), self.getValues(category),
                           specification.getAttributes())
@@ -437,6 +438,8 @@ class DataContainer(object):
         # load data for other categories
         for category, specification in jsonObject.items():
             if not (category == 'module' or category == 'train'):
+                from .ARFFAdapter import ARFFAdapter
+                
                 container = ARFFAdapter.ARFFAdapter(specification['filename']).loadData(category)
                 resultContainer = resultContainer.combine(container)
 

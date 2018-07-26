@@ -7,16 +7,16 @@
                                     #
 #############################################################################
 
-import solver
-from LearnedKnowledge import LearnedKnowledge
-from Learner import Learner, LearnerEvents
-from LearnerBuilder import LearnerBuilder
-from Regressor import Regressor
-from TrainingSpecification import TrainingSpecification
-from TrainingStopPolicy import TrainingStopPolicy
-import Types
-from Types import BorderTypes, SolverTypes
-from Classifier import Classifier
+from .solver import *
+from .LearnedKnowledge import LearnedKnowledge
+from .Learner import Learner, LearnerEvents
+from .LearnerBuilder import LearnerBuilder
+from .Regressor import Regressor
+from .TrainingSpecification import TrainingSpecification
+from .TrainingStopPolicy import TrainingStopPolicy
+from .Types import *
+from .Types import BorderTypes, SolverTypes
+from .Classifier import Classifier
 
 __all__ = ['folding'
            'formatter',

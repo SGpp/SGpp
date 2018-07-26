@@ -4,7 +4,7 @@
 # sgpp.sparsegrids.org
 
 
-from Learner import Learner, LearnerEvents
+from .Learner import Learner, LearnerEvents
 from pysgpp import DataVector, SurplusRefinementFunctor
 
 from  math import sqrt

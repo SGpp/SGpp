@@ -7,7 +7,7 @@
 import time
 import math
 
-from FoldingPolicy import FoldingPolicy
+from .FoldingPolicy import FoldingPolicy
 from pysgpp.extensions.datadriven.data.ARFFAdapter import ARFFAdapter
 
 ## Provides functionality for accomplishment of learning with cross-validation

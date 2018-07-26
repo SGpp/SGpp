@@ -7,12 +7,12 @@
                                     #
 #############################################################################
 
-from ARFFAdapter import ARFFAdapter
-from CSVAdapter import CSVAdapter
-from DataAdapter import DataAdapter
-from DataContainer import DataContainer
-from DataEntry import DataEntry
-from DataSpecification import DataSpecification
+from .ARFFAdapter import ARFFAdapter
+from .CSVAdapter import CSVAdapter
+from .DataAdapter import DataAdapter
+from .DataContainer import DataContainer
+from .DataEntry import DataEntry
+from .DataSpecification import DataSpecification
 
 __all__ = ['ARFFAdapter', 'CSVAdapter', 'DataAdapter', 'DataContainer', 'DataEntry',
            'DataSpecification']
