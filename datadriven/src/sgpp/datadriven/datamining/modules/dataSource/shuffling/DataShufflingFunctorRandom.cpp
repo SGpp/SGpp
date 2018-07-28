@@ -12,26 +12,40 @@
 
 #include <sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorRandom.hpp>
 
+#include <iostream>
+#include <ctime>
+
 namespace sgpp {
 namespace datadriven {
 
-DataShufflingFunctorRandom::DataShufflingFunctorRandom(size_t numSamples, int64_t seed) :
-    numSamples{numSamples} {
-  std::mt19937 generator(seed);
-  size_t max = numSamples - 1;
-
-  // Calculate the number of bits needed to store max minus 1
-  bitShift = 0;
-  while (max != 0) {
-    max >>= 1;
-    bitShift++;
+DataShufflingFunctorRandom::DataShufflingFunctorRandom(int64_t seed) :
+    numSamples{0}, bitShift{0}, bitMask{0}, seed{seed} {
+  if (this->seed == -1) {
+    srand(static_cast<unsigned int>(time(NULL)));
+    this->seed = std::rand();
   }
-  bitShift >>= 1;
+  std::cout << "Seed for random shuffling functor: " << (this->seed) << std::endl;
+}
 
-  // Calculate the bit mask for the right half
-  bitMask = (1 << bitShift) - 1;
-  for (size_t i = 0; i < 4; i++) {
-    keys[i] = generator();
+void DataShufflingFunctorRandom::reinitialize(size_t newNumSamples) {
+  if (newNumSamples != numSamples && newNumSamples != 0) {
+    numSamples = newNumSamples;
+    std::mt19937 generator(seed);
+    size_t max = numSamples - 1;
+
+    // Calculate the number of bits needed to store max minus 1
+    bitShift = 0;
+    while (max != 0) {
+      max >>= 1;
+      bitShift++;
+    }
+    bitShift = -(-bitShift / 2);
+
+    // Calculate the bit mask for the right half
+    bitMask = (1 << bitShift) - 1;
+    for (size_t i = 0; i < 4; i++) {
+      keys[i] = generator();
+    }
   }
 }
 
@@ -51,7 +65,8 @@ size_t DataShufflingFunctorRandom::feistel(size_t idx) {
   return (right << bitShift) | left;
 }
 
-size_t DataShufflingFunctorRandom::operator()(size_t idx) {
+size_t DataShufflingFunctorRandom::operator()(size_t idx, size_t numSamples) {
+  reinitialize(numSamples);
   do {
     idx = feistel(idx);
   } while (idx >= numSamples);

@@ -99,28 +99,8 @@ void ModelFittingClassification::evaluate(DataMatrix& samples, DataVector& resul
 }
 
 void ModelFittingClassification::fit(Dataset& newDataset) {
-  dataset = &newDataset;
-
-  // Split the dataset into classes
-  DataVector tmp(newDataset.getDimension());
-  std::map<double, DataMatrix*> classSamples;
-  for (size_t i = 0; i < newDataset.getNumberInstances(); i++) {
-    double label = newDataset.getTargets().get(i);
-    if (classSamples.find(label) == classSamples.end()) {
-      classSamples[label] = new DataMatrix(0, newDataset.getDimension());
-    }
-    newDataset.getData().getRow(i, tmp);
-    classSamples.at(label)->appendRow(tmp);
-  }
-
-  // Update the models
-  for (auto& p : classSamples) {
-    size_t idx = labelToIdx(p.first);
-    DataMatrix *samples = p.second;
-    models[idx]->update(*samples);
-    classNumberInstances[idx] += samples->getNrows();
-    delete samples;
-  }
+  reset();
+  update(newDataset);
 }
 
 std::unique_ptr<ModelFittingDensityEstimation> ModelFittingClassification::createNewModel(
@@ -265,10 +245,36 @@ bool ModelFittingClassification::refine() {
 }
 
 void ModelFittingClassification::update(Dataset& newDataset) {
-  fit(newDataset);
+  dataset = &newDataset;
+
+  // Split the dataset into classes
+  DataVector tmp(newDataset.getDimension());
+  std::map<double, DataMatrix*> classSamples;
+  for (size_t i = 0; i < newDataset.getNumberInstances(); i++) {
+    double label = newDataset.getTargets().get(i);
+    if (classSamples.find(label) == classSamples.end()) {
+      classSamples[label] = new DataMatrix(0, newDataset.getDimension());
+    }
+    newDataset.getData().getRow(i, tmp);
+    classSamples.at(label)->appendRow(tmp);
+  }
+
+  // Update the models
+  for (auto& p : classSamples) {
+    size_t idx = labelToIdx(p.first);
+    DataMatrix *samples = p.second;
+    models[idx]->update(*samples);
+    classNumberInstances[idx] += samples->getNrows();
+    delete samples;
+  }
 }
 
-void ModelFittingClassification::resetState() { refinementsPerformed = 0; }
+void ModelFittingClassification::reset() {
+  models.clear();
+  classNumberInstances.clear();
+  classIdx.clear();
+  refinementsPerformed = 0;
+}
 
 }  // namespace datadriven
 }  // namespace sgpp

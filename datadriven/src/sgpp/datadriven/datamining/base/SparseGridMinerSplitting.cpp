@@ -24,7 +24,6 @@ SparseGridMinerSplitting::SparseGridMinerSplitting(DataSourceSplitting* dataSour
         dataSource{dataSource} {}
 
 void SparseGridMinerSplitting::learn() {
-
   // Setup refinement monitor
   RefinementMonitorFactory monitorFactory;
   RefinementMonitor *monitor = monitorFactory.createRefinementMonitor(
@@ -32,6 +31,7 @@ void SparseGridMinerSplitting::learn() {
 
   for (size_t epoch = 0; epoch < dataSource->getConfig().epochs; epoch++)  {
     std::cout << "###############" << "Starting training epoch #" << epoch << std::endl;
+    dataSource->reset();
     // Process dataset iteratively
     size_t iteration = 0;
     while (true) {
@@ -51,7 +51,7 @@ void SparseGridMinerSplitting::learn() {
       double scoreTrain = scorer->test(*fitter, *dataset);
       double scoreVal = scorer->test(*fitter, *(dataSource->getValidationData()));
 
-      std::cout << "Score on batch: " << scoreTrain << std::endl << "Score on validation data" <<
+      std::cout << "Score on batch: " << scoreTrain << std::endl << "Score on validation data: " <<
           scoreVal << std::endl;
 
       // Refine the model if neccessary

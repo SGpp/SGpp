@@ -19,7 +19,7 @@ DataShufflingFunctor* DataShufflingFunctorSequential::clone() const {
   return new DataShufflingFunctorSequential{*this};
 }
 
-size_t DataShufflingFunctorSequential::operator()(size_t idx) { return idx; }
+size_t DataShufflingFunctorSequential::operator()(size_t idx, size_t numSamples) { return idx; }
 
 } /* namespace datadriven */
 } /* namespace sgpp */

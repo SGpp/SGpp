@@ -100,11 +100,12 @@ class ModelFittingDensityEstimationCG : public ModelFittingDensityEstimation {
    */
   void evaluate(DataMatrix& samples, DataVector& results) override;
 
- private:
   /**
-   * Reset the state of the object when a new dataset is used;
+   * Resets the state of the entire model
    */
-  void resetState();
+  void reset() override;
+
+ private:
 
   /**
    * Creates the regularization operation matrix for the model settings.

@@ -107,12 +107,12 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
    */
   bool isRefinable() override;
 
- private:
   /**
-   * Reset the state of the object when a new dataset is used;
+   * Resets the state of the entire model
    */
-  void resetState();
+  void reset() override;
 
+ private:
   // The online object
   std::unique_ptr<DBMatOnlineDE> online;
 };

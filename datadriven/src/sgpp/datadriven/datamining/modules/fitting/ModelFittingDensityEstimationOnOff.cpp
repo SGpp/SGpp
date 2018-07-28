@@ -65,8 +65,7 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   auto& densityEstimationConfig = this->config->getDensityEstimationConfig();
 
   // clear model
-  resetState();
-  grid.reset();
+  reset();
 
   // build grid
   gridConfig.dim_ = newDataset.getNcols();
@@ -160,7 +159,11 @@ bool ModelFittingDensityEstimationOnOff::isRefinable() {
   return false;
 }
 
-void ModelFittingDensityEstimationOnOff::resetState() { refinementsPerformed = 0; }
+void ModelFittingDensityEstimationOnOff::reset() {
+  grid.reset();
+  online.reset();
+  refinementsPerformed = 0;
+}
 
 }  // namespace datadriven
 }  // namespace sgpp

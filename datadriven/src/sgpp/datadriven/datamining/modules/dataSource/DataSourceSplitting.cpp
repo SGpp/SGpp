@@ -14,17 +14,20 @@
 namespace sgpp {
 namespace datadriven {
 
-DataSourceSplitting::DataSourceSplitting(DataSourceConfig config, SampleProvider* sampleProvider) :
-  DataSource{config, sampleProvider} {
-  size_t validationSize = static_cast<size_t>(config.validationPortion *
-      static_cast<double>(sampleProvider->getNumSamples()));
-  validationData = sampleProvider->getNextSamples(validationSize);
+DataSourceSplitting::DataSourceSplitting(const DataSourceConfig& config,
+    SampleProvider* sampleProvider) :
+  DataSource{config, sampleProvider}, validationData{nullptr} {
 }
 
 Dataset *DataSourceSplitting::getValidationData() { return validationData; }
 
 void DataSourceSplitting::reset() {
   sampleProvider->reset();
+  // Retrieve new validation data
+  delete validationData;
+  size_t validationSize = static_cast<size_t>(config.validationPortion *
+      static_cast<double>(sampleProvider->getNumSamples()));
+  validationData = sampleProvider->getNextSamples(validationSize);
 }
 
 } /* namespace datadriven */

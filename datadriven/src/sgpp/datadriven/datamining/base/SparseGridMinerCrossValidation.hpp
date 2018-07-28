@@ -4,16 +4,16 @@
  * use, please see the copyright notice provided with SG++ or at
  * sgpp.sparsegrids.org
  *
- * SparseGridMinerSplitting.hpp
+ * SparseGridMinerCrossValidation.hpp
  *
- *  Created on: Jul 23, 2018
+ *  Created on: Jul 26, 2018
  *      Author: dominik
  */
 
 #pragma once
 
 #include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
-#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceSplitting.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceCrossValidation.hpp>
 
 #include <memory>
 
@@ -21,11 +21,12 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * SparseGridMiner models a datamining process that involves a dataset that is first split into
- * validation and training data. The model is then trained on the training data for several epochs.
+ * SparseGridMinerCrossValidation models a datamining process that involves cross validation to
+ * validate the accuracy of the model itself. This process it slow and memory consuming and only
+ * recommended for small datasets.
  *
  */
-class SparseGridMinerSplitting : public SparseGridMiner {
+class SparseGridMinerCrossValidation : public SparseGridMiner {
  public:
   /**
    * Constructor
@@ -37,43 +38,42 @@ class SparseGridMinerSplitting : public SparseGridMiner {
    * generalization provided by the fitter on testing data. The miner instance will take ownership
    * of the passed object.
    */
-  SparseGridMinerSplitting(DataSourceSplitting* dataSource, ModelFittingBase* fitter,
+  SparseGridMinerCrossValidation(DataSourceCrossValidation* dataSource, ModelFittingBase* fitter,
       Scorer* scorer);
 
   /**
    * Copy constructor deleted - not all members can be copied or cloned .
    * @param rhs the object to copy from
    */
-  SparseGridMinerSplitting(const SparseGridMinerSplitting& rhs) = delete;
+  SparseGridMinerCrossValidation(const SparseGridMinerCrossValidation& rhs) = delete;
 
   /**
    * Default Move constructor .
    * @param rhs the object to move from
    */
-  SparseGridMinerSplitting(SparseGridMinerSplitting&& rhs) = default;
+  SparseGridMinerCrossValidation(SparseGridMinerCrossValidation&& rhs) = default;
 
   /**
    * Default Move assign operator.
    * @param rhs the object to move from
    */
-  SparseGridMinerSplitting& operator=(SparseGridMinerSplitting&& rhs) = default;
+  SparseGridMinerCrossValidation& operator=(SparseGridMinerCrossValidation&& rhs) = default;
 
   /**
    * Default copy assign operator deleted because not all members can be copied.
    * @param rhs the object to copy from
    */
-  SparseGridMinerSplitting& operator=(const SparseGridMinerSplitting& rhs) = delete;
+  SparseGridMinerCrossValidation& operator=(const SparseGridMinerCrossValidation& rhs) = delete;
 
   /**
    * Default destructor.
    */
-  ~SparseGridMinerSplitting() = default;
+  ~SparseGridMinerCrossValidation() = default;
 
   /**
    * Perform Learning cycle: Get samples from data source and based on the scoring procedure,
-   * generalize data by fitting and asses quality of the fit. The learning process first divides
-   * the data into training and validation data and trains the model for several epochs on the
-   * training data.
+   * generalize data by fitting and asses quality of the fit. Each cycle is performed once per
+   * fold.
    */
   void learn() override;
 
@@ -82,8 +82,9 @@ class SparseGridMinerSplitting : public SparseGridMiner {
    * DataSource provides samples that will be used by fitter to generalize data and scorer to
    * validate and assess model robustness.
    */
-  std::unique_ptr<DataSourceSplitting> dataSource;
+  std::unique_ptr<DataSourceCrossValidation> dataSource;
 };
 
 } /* namespace datadriven */
 } /* namespace sgpp */
+

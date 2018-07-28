@@ -51,7 +51,7 @@ class DataSource {
    * object upon construction.
    * @return #sgpp::datadriven::Dataset containing requested amount of samples (if available).
    */
-  Dataset* getNextSamples();
+  virtual Dataset* getNextSamples();
 
   /**
    * Return an iterator object pointing to the first batch of this DataSource. Can be used to obtain

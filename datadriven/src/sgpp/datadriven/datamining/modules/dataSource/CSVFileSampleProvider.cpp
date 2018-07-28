@@ -101,10 +101,11 @@ Dataset* CSVFileSampleProvider::splitDataset(size_t howMany) {
 
   // copy "size" rows beginning from "counter" to the new dataset.
   for (size_t i = counter; i < counter + size; ++i) {
-    srcSamples.getRow(i, tmpRow);
+    size_t srcIdx = shuffling != nullptr ? (*shuffling)(i, dataset.getNumberInstances()) : i;
+    srcSamples.getRow(srcIdx, tmpRow);
     destSamples.setRow(i - counter, tmpRow);
 
-    destTargets[i - counter] = srcTargets[i];
+    destTargets[i - counter] = srcTargets[srcIdx];
   }
   counter = counter + size;
 

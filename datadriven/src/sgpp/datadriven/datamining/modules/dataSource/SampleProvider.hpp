@@ -25,7 +25,7 @@ namespace datadriven {
  */
 class SampleProvider {
  public:
-  explicit SampleProvider(DataShufflingFunctor *shuffling = nullptr);
+  SampleProvider() = default;
   SampleProvider(const SampleProvider& rhs) = default;
   SampleProvider(SampleProvider&& rhs) = default;
   SampleProvider& operator=(const SampleProvider& rhs) = default;

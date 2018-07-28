@@ -71,7 +71,7 @@ struct DataSourceConfig {
   /**
    * The type of shuffling to be applied to the data
    */
-  DataSourceShufflingType shuffling;
+  DataSourceShufflingType shuffling = DataSourceShufflingType::sequential;
   /**
    * Seed for the shuffling prng
    */
