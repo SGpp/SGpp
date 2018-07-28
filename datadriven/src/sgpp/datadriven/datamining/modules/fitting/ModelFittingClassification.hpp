@@ -77,17 +77,12 @@ class ModelFittingClassification : public ModelFittingBase {
    */
   void evaluate(DataMatrix& samples, DataVector& results) override;
 
+  /**
+   * Resets the state of the entire model
+   */
+  void reset() override;
+
  private:
-  /**
-   * Count the amount of refinement operations performed on the current dataset.
-   */
-  size_t refinementsPerformed;
-
-  /**
-   * Reset the state of the object when a new dataset is used;
-   */
-  void resetState();
-
   /**
    * Translates a class label to an index for the models vector. If the class is not present
    * it will create a new index for this class
@@ -113,13 +108,24 @@ class ModelFittingClassification : public ModelFittingBase {
   std::unique_ptr<ModelFittingDensityEstimation> createNewModel(
       sgpp::datadriven::FitterConfigurationDensityEstimation& densityEstimationConfig);
 
-  // The models for each class
+  /**
+   * Count the amount of refinement operations performed on the current dataset.
+   */
+  size_t refinementsPerformed;
+
+  /**
+   * Models for each class
+   */
   std::vector<std::unique_ptr<ModelFittingDensityEstimation>> models;
 
-  // Map to index the the models via the class value of a sample
+  /**
+   * Index map for each class
+   */
   std::map<double, size_t> classIdx;
 
-  // Vector to count the number of instances per class
+  /**
+   * Number of instances for each class (used for prior)
+   */
   std::vector<size_t> classNumberInstances;
 };
 } /* namespace datadriven */

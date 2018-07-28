@@ -121,6 +121,11 @@ class ModelFittingBase {
   virtual void evaluate(DataMatrix& samples, DataVector& results) = 0;
 
   /**
+   * Resets the state of the entire model
+   */
+  virtual void reset() = 0;
+
+  /**
    * Get the configuration of the fitter object.
    * @return configuration of the fitter object
    */

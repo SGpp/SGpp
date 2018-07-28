@@ -41,9 +41,10 @@ class DataShufflingFunctor {
    * Overload the function-call operator that maps indexes to indexes via a permutation
    * of the entire index set.
    * @param idx the original index
+   * @param numSamples the number of indexes to permute in total
    * @return idx the index after the permutation
    */
-  virtual size_t operator()(size_t idx) = 0;
+  virtual size_t operator()(size_t idx, size_t numSamples) = 0;
 };
 
 } /* namespace datadriven */

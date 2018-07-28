@@ -63,18 +63,13 @@ void ModelFittingDensityEstimationCG::fit(Dataset& newDataset) {
 }
 
 void ModelFittingDensityEstimationCG::fit(DataMatrix& newDataset) {
-  // Get configurations
+  // Reset grid
+  reset();
+
+  // Setup new grid
   auto& gridConfig = this->config->getGridConfig();
-
-  // Clear model
-  resetState();
-  grid.reset();
-
-  // Build grid
   gridConfig.dim_ = newDataset.getNcols();
-  std::cout << "Dataset dimension " << gridConfig.dim_ << std::endl;
   // TODO(fuchsgruber): Support for geometry aware sparse grids (pass interactions from config?)
-  // grid = std::unique_ptr<Grid>{buildGrid(gridConfig)};
   grid = std::unique_ptr<Grid>{buildGrid(gridConfig)};
   // build surplus vector
   alpha = DataVector{grid->getSize()};
@@ -170,7 +165,11 @@ void ModelFittingDensityEstimationCG::update(DataMatrix& newDataset) {
 
 bool ModelFittingDensityEstimationCG::isRefinable() { return true; }
 
-void ModelFittingDensityEstimationCG::resetState() { refinementsPerformed = 0; }
+void ModelFittingDensityEstimationCG::reset() {
+  // Clear model
+  grid.reset();
+  refinementsPerformed = 0;
+}
 
 }  // namespace datadriven
 }  // namespace sgpp

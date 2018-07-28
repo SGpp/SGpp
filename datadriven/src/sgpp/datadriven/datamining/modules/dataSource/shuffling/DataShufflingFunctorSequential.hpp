@@ -36,9 +36,10 @@ class DataShufflingFunctorSequential : public DataShufflingFunctor {
    * Overload the function-call operator that maps indexes to indexes via a permutation
    * of the entire index set. The permutation used is the identity.
    * @param idx the original index
+   * @param numSamples the total number of indexes to permute
    * @return idx the index after the permutation (simply the input)
    */
-  size_t operator()(size_t idx) override;
+  size_t operator()(size_t idx, size_t numSamples) override;
 };
 
 } /* namespace datadriven */
