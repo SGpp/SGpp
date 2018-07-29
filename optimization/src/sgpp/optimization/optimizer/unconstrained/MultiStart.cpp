@@ -163,7 +163,9 @@ void MultiStart::optimize() {
     Printer::getInstance().disableStatusPrinting();
   }
 
-#pragma omp parallel shared(x0, roundN, xCurrentOpt, fCurrentOpt) default(none)
+  size_t pointsDone = 0;
+
+#pragma omp parallel shared(x0, roundN, xCurrentOpt, fCurrentOpt, pointsDone) default(none)
   {
     UnconstrainedOptimizer* curOptimizerPtr = optimizer.get();
 #ifdef _OPENMP
@@ -199,12 +201,14 @@ void MultiStart::optimize() {
         }
       }
 
-// status printing
-#pragma omp ordered
+#pragma omp atomic
+      pointsDone++;
+
+      // status printing
       {
         char str[10];
         snprintf(str, sizeof(str), "%.1f%%",
-                 static_cast<double>(k) / static_cast<double>(populationSize) * 100.0);
+                 static_cast<double>(pointsDone) / static_cast<double>(populationSize) * 100.0);
         Printer::getInstance().getMutex().lock();
         Printer::getInstance().enableStatusPrinting();
         Printer::getInstance().printStatusUpdate(std::string(str) + ", f(x) = " +
