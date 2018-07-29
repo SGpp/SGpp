@@ -13,6 +13,7 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceCrossValidation.hpp>
 
 #include <vector>
+#include <iostream>
 
 using sgpp::base::DataVector;
 using sgpp::base::algorithm_exception;
@@ -22,19 +23,14 @@ namespace datadriven {
 
 DataSourceCrossValidation::DataSourceCrossValidation(
     const DataSourceConfig& dataSourceConfig,
-    const CrossvalidationConfiguration& config,
+    const CrossvalidationConfiguration& crossValidationConfig,
     DataShufflingFunctorCrossValidation* shuffling,
     SampleProvider* sampleProvider) : DataSource{dataSourceConfig, sampleProvider},
         validationData{nullptr}, crossValidationConfig{crossValidationConfig}, shuffling(shuffling)
-         {
-}
+         { }
 
 Dataset* DataSourceCrossValidation::getValidationData() {
   return validationData;
-}
-
-Dataset* DataSourceCrossValidation::getNextSamples() {
-  return sampleProvider->getNextSamples(config.batchSize);
 }
 
 void DataSourceCrossValidation::reset() {
@@ -48,6 +44,11 @@ void DataSourceCrossValidation::reset() {
 
 void DataSourceCrossValidation::setFold(size_t foldIdx) {
   shuffling->setFold(foldIdx);
+}
+
+
+const CrossvalidationConfiguration& DataSourceCrossValidation::getCrossValidationConfig() const {
+  return crossValidationConfig;
 }
 
 } /* namespace datadriven */

@@ -86,6 +86,12 @@ bool DataMiningConfigParser::hasScorerConfigTesting() const {
 
 bool DataMiningConfigParser::hasFitterConfig() const { return configFile->contains(fitter); }
 
+bool DataMiningConfigParser::hasFitterConfigCrossValidation() const {
+  bool hasFitterCrossValidationConfig =
+      hasFitterConfig() ? (*configFile)[fitter].contains("crossValidation") : false;
+  return hasFitterCrossValidationConfig;
+}
+
 bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
                                                  const DataSourceConfig& defaults) const {
   bool hasDataSource = hasDataSourceConfig();
@@ -340,35 +346,35 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
 bool DataMiningConfigParser::getFitterCrossvalidationConfig(
     CrossvalidationConfiguration& config, const CrossvalidationConfiguration& defaults) const {
   bool hasFitterCrossvalidationConfig =
-      hasFitterConfig() ? (*configFile)[fitter].contains("crossvalidationConfig") : false;
+      hasFitterConfig() ? (*configFile)[fitter].contains("crossValidation") : false;
 
   if (hasFitterCrossvalidationConfig) {
     auto crossvalidationConfig =
-    static_cast<DictNode*>(&(*configFile)[fitter]["crossvalidationConfig"]);
+    static_cast<DictNode*>(&(*configFile)[fitter]["crossValidation"]);
     config.enable_ =
-        parseBool(*crossvalidationConfig, "enable", defaults.enable_, "crossvalidationConfig");
+        parseBool(*crossvalidationConfig, "enable", defaults.enable_, "crossValidation");
     config.kfold_ = parseUInt(*crossvalidationConfig, "kFold",
-                                       defaults.kfold_, "crossvalidationConfig");
+                                       defaults.kfold_, "crossValidation");
     config.seed_ =
         static_cast<int>(parseInt(*crossvalidationConfig, "randomSeed",
                                   defaults.seed_, "crossvalidationConfig"));
     config.shuffle_ =
-        parseBool(*crossvalidationConfig, "shuffle", defaults.shuffle_, "crossvalidationConfig");
+        parseBool(*crossvalidationConfig, "shuffle", defaults.shuffle_, "crossValidation");
     config.silent_ =
-        parseBool(*crossvalidationConfig, "silent", defaults.silent_, "crossvalidationConfig");
+        parseBool(*crossvalidationConfig, "silent", defaults.silent_, "crossValidation");
     config.lambda_ =
-        parseDouble(*crossvalidationConfig, "lambda", defaults.lambda_, "crossvalidationConfig");
+        parseDouble(*crossvalidationConfig, "lambda", defaults.lambda_, "crossValidation");
     config.lambdaStart_ =
         parseDouble(*crossvalidationConfig, "lambdaStart",
-                    defaults.lambdaStart_, "crossvalidationConfig");
+                    defaults.lambdaStart_, "crossValidation");
     config.lambdaEnd_ =
         parseDouble(*crossvalidationConfig, "lambdaEnd",
-                    defaults.lambdaEnd_, "crossvalidationConfig");
+                    defaults.lambdaEnd_, "crossValidation");
     config.lambdaSteps_ =
         parseUInt(*crossvalidationConfig, "lambdaSteps",
-                  defaults.lambdaSteps_, "crossvalidationConfig");
+                  defaults.lambdaSteps_, "crossValidation");
     config.logScale_ =
-        parseBool(*crossvalidationConfig, "logScale", defaults.logScale_, "crossvalidationConfig");
+        parseBool(*crossvalidationConfig, "logScale", defaults.logScale_, "crossValidation");
   } else {
     std::cout << "# Could not find specification  of fitter[crossvalidationConfig]. Falling "
                  "Back to default values."

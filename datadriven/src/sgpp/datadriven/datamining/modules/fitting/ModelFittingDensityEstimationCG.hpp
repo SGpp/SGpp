@@ -106,7 +106,6 @@ class ModelFittingDensityEstimationCG : public ModelFittingDensityEstimation {
   void reset() override;
 
  private:
-
   /**
    * Creates the regularization operation matrix for the model settings.
    * @param grid the underlying sparse grid
