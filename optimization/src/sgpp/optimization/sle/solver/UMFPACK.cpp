@@ -99,7 +99,7 @@ bool UMFPACK::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const
     std::vector<double> curTx;
 
 // get indices and values of nonzero entries
-#pragma omp for ordered schedule(dynamic)
+#pragma omp for ordered schedule(static)
 
     for (uint32_t i = 0; i < n; i++) {
       for (uint32_t j = 0; j < n; j++) {
