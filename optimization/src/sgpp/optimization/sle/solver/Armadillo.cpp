@@ -66,7 +66,7 @@ bool Armadillo::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) con
 #endif /* _OPENMP */
 
 // copy system matrix to Armadillo matrix object
-#pragma omp for ordered schedule(dynamic)
+#pragma omp for ordered schedule(static)
 
     for (arma::uword i = 0; i < n; i++) {
       for (arma::uword j = 0; j < n; j++) {
