@@ -94,6 +94,10 @@ bool UMFPACK::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const
 
 #endif /* _OPENMP */
 
+    std::vector<uint32_t> curTi;
+    std::vector<uint32_t> curTj;
+    std::vector<double> curTx;
+
 // get indices and values of nonzero entries
 #pragma omp for ordered schedule(dynamic)
 
@@ -102,13 +106,9 @@ bool UMFPACK::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const
         double entry = system2->getMatrixEntry(i, j);
 
         if (entry != 0) {
-#pragma omp critical
-          {
-            Ti.push_back(i);
-            Tj.push_back(j);
-            Tx.push_back(entry);
-            nnz++;
-          }
+          curTi.push_back(i);
+          curTj.push_back(j);
+          curTx.push_back(entry);
         }
       }
 
@@ -123,6 +123,14 @@ bool UMFPACK::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const
         Printer::getInstance().printStatusUpdate("constructing sparse matrix (" +
                                                  std::string(str) + ")");
       }
+    }
+
+#pragma omp critical
+    {
+      Ti.insert(Ti.end(), curTi.begin(), curTi.end());
+      Tj.insert(Tj.end(), curTj.begin(), curTj.end());
+      Tx.insert(Tx.end(), curTx.begin(), curTx.end());
+      nnz += curTx.size();
     }
   }
 
