@@ -33,7 +33,7 @@ class DataShufflingFunctorCrossValidation : public DataShufflingFunctor {
    * @param crossValidationConfig configuration for the cross validation
    * @param shuffling the shuffling functor this functor is chained after
    */
-  DataShufflingFunctorCrossValidation(CrossvalidationConfiguration& crossValidationConfig,
+  DataShufflingFunctorCrossValidation(const CrossvalidationConfiguration crossValidationConfig,
       DataShufflingFunctor* shuffling);
 
   /**
@@ -73,7 +73,7 @@ class DataShufflingFunctorCrossValidation : public DataShufflingFunctor {
   /**
    * Configuration for the cross validation
    */
-  CrossvalidationConfiguration& crossValidationConfig;
+  const CrossvalidationConfiguration crossValidationConfig;
 
   /**
    * Current fold

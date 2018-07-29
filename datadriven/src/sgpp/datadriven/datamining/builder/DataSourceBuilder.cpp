@@ -104,6 +104,47 @@ DataSourceSplitting* DataSourceBuilder::splittingFromConfig(const DataSourceConf
   return splittingAssemble();
 }
 
+DataSourceCrossValidation* DataSourceBuilder::crossValidationAssemble() const {
+  // Create a shuffling functor
+  DataShufflingFunctorFactory shufflingFunctorFactory;
+  DataShufflingFunctor *shuffling = shufflingFunctorFactory.buildDataShufflingFunctor(config);
+  DataShufflingFunctorCrossValidation *crossValidationShuffling =
+      new DataShufflingFunctorCrossValidation(crossValidationConfig, shuffling);
+
+  SampleProvider* sampleProvider = nullptr;
+
+  if (config.fileType == DataSourceFileType::ARFF) {
+    sampleProvider = new ArffFileSampleProvider(crossValidationShuffling);
+  } else if (config.fileType == DataSourceFileType::CSV) {
+    sampleProvider = new CSVFileSampleProvider(crossValidationShuffling);
+  } else {
+    data_exception("Unknown file type");
+  }
+
+  if (config.isCompressed) {
+#ifndef ZLIB
+    throw sgpp::base::application_exception{
+        "sgpp has been built without zlib support. Reading compressed files is not possible"};
+#else
+    sampleProvider = new GzipFileSampleDecorator(static_cast<FileSampleProvider*>(sampleProvider));
+#endif
+  }
+
+  return new DataSourceCrossValidation(config, crossValidationConfig, crossValidationShuffling,
+      sampleProvider);
+}
+
+DataSourceCrossValidation* DataSourceBuilder::crossValidationFromConfig(
+    const DataSourceConfig& config, const CrossvalidationConfiguration& crossValidationConfig) {
+  this->config = config;
+  this->crossValidationConfig = crossValidationConfig;
+
+  if (config.fileType == DataSourceFileType::NONE) {
+    grabTypeInfoFromFilePath();
+  }
+  return crossValidationAssemble();
+}
+
 void DataSourceBuilder::grabTypeInfoFromFilePath() {
   // tokenize string
   std::vector<std::string> tokens;

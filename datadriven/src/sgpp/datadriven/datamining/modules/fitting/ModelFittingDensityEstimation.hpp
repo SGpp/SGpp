@@ -29,7 +29,6 @@ namespace datadriven {
  */
 class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
  public:
-
   /**
    * Default constructor
    */
@@ -72,6 +71,7 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
    * @return pointer to a refinement functor that suits the model settings
    */
   sgpp::base::RefinementFunctor *getRefinementFunctor();
+
  protected:
   /**
    * Count the amount of refinement operations performed on the current dataset.

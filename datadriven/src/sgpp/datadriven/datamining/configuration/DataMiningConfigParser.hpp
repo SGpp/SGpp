@@ -52,6 +52,12 @@ class DataMiningConfigParser {
   bool hasScorerConfigTesting() const;
   bool hasFitterConfig() const;
 
+  /**
+   * Checks whether the fitter configuration contains a cross validation configuration
+   * @return if the fitter configuration contains a cross validation configuration
+   */
+  bool hasFitterConfigCrossValidation() const;
+
   bool getDataSourceConfig(DataSourceConfig& config, const DataSourceConfig& defaults) const;
   bool getScorerTestingConfig(TestingConfiguration& config,
                               const TestingConfiguration& defaults) const;

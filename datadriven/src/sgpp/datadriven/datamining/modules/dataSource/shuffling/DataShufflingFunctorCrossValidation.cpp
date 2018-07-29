@@ -12,11 +12,13 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorCrossValidation.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 
+#include <iostream>
+
 namespace sgpp {
 namespace datadriven {
 
 DataShufflingFunctorCrossValidation::DataShufflingFunctorCrossValidation(
-    CrossvalidationConfiguration& crossValidationConfig,
+    const CrossvalidationConfiguration crossValidationConfig,
     DataShufflingFunctor* shuffling) :
     shuffling{shuffling}, crossValidationConfig{crossValidationConfig}, currentFold{0} { }
 

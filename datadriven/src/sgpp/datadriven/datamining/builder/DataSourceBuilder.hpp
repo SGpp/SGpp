@@ -14,7 +14,9 @@
 #include <memory.h>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceSplitting.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceCrossValidation.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
+#include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
 #include <string>
 #include <vector>
 
@@ -84,6 +86,22 @@ class DataSourceBuilder {
    */
   DataSourceSplitting* splittingFromConfig(const DataSourceConfig& config);
 
+  /**
+   * Based on the currently specified configuration, build and configure an instance of a data
+   * source object that is able to perform cross validation.
+   * @return Fully configured instance of #sgpp::datadriven::DataSourceCrossValidation object.
+   */
+  DataSourceCrossValidation* crossValidationAssemble() const;
+
+  /**
+   * Factory method used to build an instance of a #sgpp::datadriven::DataSourceCrossValidation
+   * object based on the passed configuration.
+   * @param crossValidationConfig configuration for the cross validation
+   * @return Fully configured instance of #sgpp::datadriven::DataSourceCrossValidation object.
+   */
+  DataSourceCrossValidation* crossValidationFromConfig(const DataSourceConfig& config,
+      const CrossvalidationConfiguration &crossValidationConfig);
+
  private:
   /**
    * Extract file type and compression based on the file extensions.
@@ -94,6 +112,11 @@ class DataSourceBuilder {
    * Current state of the object is stored inside this configuration object.
    */
   DataSourceConfig config;
+
+  /**
+   * Current state of the object is stored inside this configuration object (for cross validation).
+   */
+  CrossvalidationConfiguration crossValidationConfig;
 };
 
 } /* namespace datadriven */

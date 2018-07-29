@@ -25,49 +25,11 @@
 namespace sgpp {
 namespace datadriven {
 
-SparseGridMiner* DensityEstimationMinerFactory::buildMiner(const std::string& path) const {
-  DataMiningConfigParser parser(path);
-
-  if (parser.hasScorerConfigCrossValidation()) {
-    // TODO(fuchsgdk): implement the cv stuff
-    return nullptr;
-  } else {
-    return new SparseGridMinerSplitting(createDataSourceSplitting(parser), createFitter(parser),
-        createScorer(parser));
-  }
-}
-
-DataSourceSplitting* DensityEstimationMinerFactory::createDataSourceSplitting(
-    const DataMiningConfigParser& parser) const {
-  DataSourceConfig config;
-
-  bool hasSource = parser.getDataSourceConfig(config, config);
-
-  if (hasSource && config.filePath.compare("") != 0) {
-    DataSourceBuilder builder;
-    return builder.splittingFromConfig(config);
-  } else {
-    throw base::data_exception("No file name provided for datasource.");
-  }
-}
-
 ModelFittingBase* DensityEstimationMinerFactory::createFitter(
     const DataMiningConfigParser& parser) const {
   FitterConfigurationDensityEstimation config{};
   config.readParams(parser);
   return new ModelFittingDensityEstimationOnOff(config);
-}
-
-Scorer* DensityEstimationMinerFactory::createScorer(
-    const DataMiningConfigParser& parser) const {
-  std::unique_ptr<ScorerFactory> factory;
-
-  if (parser.hasScorerConfigCrossValidation()) {
-    factory = std::make_unique<CrossValidationScorerFactory>();
-  } else {
-    factory = std::make_unique<SplittingScorerFactory>();
-  }
-  return factory->buildScorer(parser);
 }
 
 } /* namespace datadriven */

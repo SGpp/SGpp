@@ -48,15 +48,6 @@ class DataSourceCrossValidation : public DataSource {
   Dataset *getValidationData() override;
 
   /**
-   * Request training data assembled from all fold but the current one. Throws if no folds are
-   * availible any more.
-   * The next time this method will be called, the next fold will be returned, as this method
-   * iterates over the current fold.
-   * @return #sgpp::datadriven::Dataset containing requested amount of samples (if available).
-   */
-  Dataset* getNextSamples() override;
-
-  /**
    * Sets the next fold idx to be used for cross validation
    * @param foldIdx index of the fold
    */
@@ -81,7 +72,7 @@ class DataSourceCrossValidation : public DataSource {
   /**
    * Configuration for the cross validation
    */
-  CrossvalidationConfiguration& crossValidationConfig;
+  CrossvalidationConfiguration crossValidationConfig;
   /**
    * Shuffling functor that is held by the sample provider.
    */
