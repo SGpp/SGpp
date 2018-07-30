@@ -13,10 +13,8 @@
 #include <sgpp/datadriven/datamining/builder/ClassificationMinerFactory.hpp>
 
 #include <sgpp/base/exception/data_exception.hpp>
-#include <sgpp/datadriven/datamining/builder/CrossValidationScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
-#include <sgpp/datadriven/datamining/builder/SplittingScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
