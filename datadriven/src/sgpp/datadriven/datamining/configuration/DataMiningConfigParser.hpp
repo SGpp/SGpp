@@ -13,15 +13,14 @@
 
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <string>
 
 namespace sgpp {
 namespace datadriven {
-struct CrossValidationConfiguration;
 struct DataSourceConfig;
-struct TestingConfiguration;
 } /* namespace datadriven */
 } /* namespace sgpp */
 
@@ -48,8 +47,6 @@ class DataMiningConfigParser {
   bool hasDataSourceConfig() const;
   bool hasDataTransformationConfig() const;
   bool hasScorerConfig() const;
-  bool hasScorerConfigCrossValidation() const;
-  bool hasScorerConfigTesting() const;
   bool hasFitterConfig() const;
 
   /**
@@ -59,10 +56,14 @@ class DataMiningConfigParser {
   bool hasFitterConfigCrossValidation() const;
 
   bool getDataSourceConfig(DataSourceConfig& config, const DataSourceConfig& defaults) const;
-  bool getScorerTestingConfig(TestingConfiguration& config,
-                              const TestingConfiguration& defaults) const;
-  bool getScorerCrossValidationConfig(CrossValidationConfiguration& config,
-                                      const CrossValidationConfiguration& defaults) const;
+  /**
+   * Reads the configuration for the scorer
+   * @param config the configuration instance to initialize
+   * @param defaults a set of configurations initialized with default values
+   * @return if the configuration file contained a scorer configuration
+   */
+  bool getScorerConfig(ScorerConfiguration& config, const ScorerConfiguration& defaults) const;
+
   bool getFitterConfigType(FitterType& fitter, const FitterType& defaults) const;
   bool getFitterGridConfig(RegularGridConfiguration& config,
                            const RegularGridConfiguration& defaults) const;

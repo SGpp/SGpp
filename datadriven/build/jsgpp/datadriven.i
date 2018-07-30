@@ -167,19 +167,11 @@
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/MSE.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/NegativeLogLikelihood.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/Accuracy.hpp"
-%ignore  sgpp::datadriven::ShufflingFunctor::operator=(ShufflingFunctor&&);
-%rename(__assign__) sgpp::datadriven::ShufflingFunctor::operator =;
-%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/ShufflingFunctor.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/SequentialShufflingFunctor.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/RandomShufflingFunctor.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/ScorerShufflingTypeParser.hpp"
 %ignore  sgpp::datadriven::Scorer::operator=(Scorer&&);
-%rename(__assign__) sgpp::datadriven::Scorer::operator =;
+%ignore sgpp::datadriven::Scorer::operator =;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/Scorer.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/SplittingScorer.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/CrossValidation.hpp"
 
 %ignore  sgpp::datadriven::SparseGridMiner::operator=(SparseGridMiner&&);
 %include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMiner.hpp"
@@ -193,8 +185,6 @@
 
 %include "datadriven/src/sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/ScorerFactory.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/builder/SplittingScorerFactory.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/builder/CrossValidationScorerFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/MinerFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/DensityEstimationMinerFactory.hpp"

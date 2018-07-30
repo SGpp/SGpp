@@ -120,14 +120,12 @@
 #include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
 
-#include <sgpp/datadriven/datamining/builder/CrossValidationScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/DensityEstimationMinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/ClassificationMinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/MinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
-#include <sgpp/datadriven/datamining/builder/SplittingScorerFactory.hpp>
 
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/DensityEstimationTypeParser.hpp>
@@ -171,18 +169,12 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 
-#include <sgpp/datadriven/datamining/modules/scoring/CrossValidation.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Accuracy.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/NegativeLogLikelihood.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/RandomShufflingFunctor.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/ScorerShufflingTypeParser.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/SequentialShufflingFunctor.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/ShufflingFunctor.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/SplittingScorer.hpp>
 
 #endif /* DATADRIVEN_HPP */

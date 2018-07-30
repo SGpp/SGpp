@@ -16,13 +16,12 @@
 #include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/ShufflingFunctor.hpp>
 
 namespace sgpp {
 namespace datadriven {
 
 /**
- * Abstract factory to build all kinds of scorers based on a given configuration.
+ * Factory to build the scorer
  */
 class ScorerFactory {
  public:
@@ -32,9 +31,9 @@ class ScorerFactory {
   ScorerFactory() = default;
 
   /**
-   * Virtual destructor
+   * Destructor
    */
-  virtual ~ScorerFactory() = default;
+  ~ScorerFactory() = default;
 
   /**
    * Assemble a #sgpp::datadriven::Scorer object based on the configuration
@@ -42,7 +41,7 @@ class ScorerFactory {
    * data from the config file.
    * @return Fully configured instance of a  #sgpp::datadriven::Scorer object.
    */
-  virtual Scorer* buildScorer(const DataMiningConfigParser& parser) const = 0;
+  Scorer* buildScorer(const DataMiningConfigParser& parser);
 
  protected:
   /**
@@ -52,15 +51,6 @@ class ScorerFactory {
    * @return  Fully configured instance of a  #sgpp::datadriven::Metric object.
    */
   Metric* buildMetric(ScorerMetricType config) const;
-
-  /**
-   * Build a #sgpp::datadriven::ShufflingFunctor object based on the the given shuffling type enum
-   * value.
-   * @param config #sgpp::datadriven::ScorerShufflingType describing which
-   * #sgpp::datadriven::ShufflingFunctor to generate.
-   * @return Fully configured instance of a  #sgpp::datadriven::ShufflingFunctor object.
-   */
-  ShufflingFunctor* buildShuffling(ScorerShufflingType config) const;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

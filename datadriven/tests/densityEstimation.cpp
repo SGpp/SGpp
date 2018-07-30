@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(Test_2D_StroSkewB2) {
   std::ofstream stream(config);
   stream << "{" << "\"dataSource\" : { \"filePath\" : \"" << samples <<
       "\", \"hasTargets\" : false},\"scorer\" : "
-      << "{ \"testing\" : { \"metric\" : \"NLL\"}},\"fitter\" : " <<
+      << "{ \"metric\" : \"NLL\"},\"fitter\" : " <<
       "{ \"type\" : \"densityEstimation\", \"gridConfig\" : { \"gridType\" : \"linear\","
       << "\"level\" : 5},\"adaptivityConfig\" : {\"numRefinements\" : 3, \"threshold\" : 0.001,"
       << "\"maxLevelType\" : false, \"noPoints\" : 3},\"regularizationConfig\" : {\"lambda\" : "
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE(Test_3D_KurB4B1) {
   std::ofstream stream(config);
   stream << "{" << "\"dataSource\" : { \"filePath\" : \"" << samples <<
       "\", \"hasTargets\" : false},\"scorer\" : "
-      << "{ \"testing\" : { \"metric\" : \"NLL\"}},\"fitter\" : " <<
+      << "{ \"metric\" : \"NLL\"},\"fitter\" : " <<
       "{ \"type\" : \"densityEstimation\", \"gridConfig\" : { \"gridType\" : \"linear\","
       << "\"level\" : 5},\"adaptivityConfig\" : {\"numRefinements\" : 3, \"threshold\" : 0.001,"
       << "\"maxLevelType\" : false, \"noPoints\" : 3},\"regularizationConfig\" : {\"lambda\" : "

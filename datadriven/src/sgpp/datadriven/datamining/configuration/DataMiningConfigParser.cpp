@@ -29,7 +29,6 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/shuffling/DataSourceShufflingTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/ScorerShufflingTypeParser.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 
 #include <string>
@@ -71,18 +70,6 @@ bool DataMiningConfigParser::hasDataTransformationConfig() const {
 }
 
 bool DataMiningConfigParser::hasScorerConfig() const { return configFile->contains(scorer); }
-
-bool DataMiningConfigParser::hasScorerConfigCrossValidation() const {
-  bool hasScorerCrossValidationConfig =
-      hasScorerConfig() ? (*configFile)[scorer].contains("crossValidation") : false;
-  return hasScorerCrossValidationConfig;
-}
-
-bool DataMiningConfigParser::hasScorerConfigTesting() const {
-  bool hasScorerTestingConfig =
-      hasScorerConfig() ? (*configFile)[scorer].contains("testing") : false;
-  return hasScorerTestingConfig;
-}
 
 bool DataMiningConfigParser::hasFitterConfig() const { return configFile->contains(fitter); }
 
@@ -156,78 +143,28 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
   return hasDataSource;
 }
 
-bool DataMiningConfigParser::getScorerTestingConfig(TestingConfiguration& config,
-                                                    const TestingConfiguration& defaults) const {
-  bool hasScorerTestingConfig = hasScorerConfigTesting();
+bool DataMiningConfigParser::getScorerConfig(ScorerConfiguration& config,
+                                                    const ScorerConfiguration& defaults) const {
+  bool hasScorer = hasScorerConfig();
 
-  if (hasScorerTestingConfig) {
-    auto scorerTestingConfig = static_cast<DictNode*>(&(*configFile)[scorer]["testing"]);
+  if (hasScorer) {
+    auto scorerConfig = static_cast<DictNode*>(&(*configFile)[scorer]);
 
-    config.testingPortion =
-        parseDouble(*scorerTestingConfig, "testingPortion", defaults.testingPortion, "testing");
-    // parse shuffling type
-    if (scorerTestingConfig->contains("shuffling")) {
-      config.shuffling =
-          ScorerShufflingTypeParser::parse((*scorerTestingConfig)["shuffling"].get());
-    } else {
-      std::cout << "# Did not find testing[shuffling]. Setting default value "
-                << ScorerShufflingTypeParser::toString(defaults.shuffling) << "." << std::endl;
-      config.shuffling = defaults.shuffling;
-    }
-
-    config.randomSeed =
-        parseInt(*scorerTestingConfig, "randomSeed", defaults.randomSeed, "testing");
     // parse metric type
-    if (scorerTestingConfig->contains("metric")) {
-      config.metric = ScorerMetricTypeParser::parse((*scorerTestingConfig)["metric"].get());
+    if (scorerConfig->contains("metric")) {
+      config.metric = ScorerMetricTypeParser::parse((*scorerConfig)["metric"].get());
     } else {
-      std::cout << "# Did not find testing[metric]. Setting default value "
+      std::cout << "# Did not find scorer[metric]. Setting default value "
                 << ScorerMetricTypeParser::toString(defaults.metric) << "." << std::endl;
     }
 
   } else {
     std::cout
-        << "# Could not find specification  of scorer[testing]. Falling Back to default values."
+        << "# Could not find specification  of scorer. Falling Back to default values."
         << std::endl;
     config = defaults;
   }
-  return hasScorerTestingConfig;
-}
-
-bool DataMiningConfigParser::getScorerCrossValidationConfig(
-    CrossValidationConfiguration& config, const CrossValidationConfiguration& defaults) const {
-  bool hasScorerCrossValidationConfig = hasScorerConfigCrossValidation();
-
-  if (hasScorerCrossValidationConfig) {
-    auto scorerTestingConfig = static_cast<DictNode*>(&(*configFile)[scorer]["crossValidation"]);
-
-    config.folds = parseUInt(*scorerTestingConfig, "folds", defaults.folds, "crossValidation");
-    // parse shuffling type
-    if (scorerTestingConfig->contains("shuffling")) {
-      config.shuffling =
-          ScorerShufflingTypeParser::parse((*scorerTestingConfig)["shuffling"].get());
-    } else {
-      std::cout << "# Did not find crossValidation[shuffling]. Setting default value "
-                << ScorerShufflingTypeParser::toString(defaults.shuffling) << "." << std::endl;
-      config.shuffling = defaults.shuffling;
-    }
-    config.randomSeed =
-        parseInt(*scorerTestingConfig, "randomSeed", defaults.randomSeed, "crossValidation");
-    // parse metric type
-    if (scorerTestingConfig->contains("metric")) {
-      config.metric = ScorerMetricTypeParser::parse((*scorerTestingConfig)["metric"].get());
-    } else {
-      std::cout << "# Did not find crossValidation[metric]. Setting default value "
-                << ScorerMetricTypeParser::toString(defaults.metric) << "." << std::endl;
-    }
-
-  } else {
-    std::cout << "# Could not find specification  of scorer[crossValidation]. Falling Back to "
-                 "default values."
-              << std::endl;
-    config = defaults;
-  }
-  return hasScorerCrossValidationConfig;
+  return hasScorer;
 }
 
 // TODO(lettrich): is this consistent with the rest of the parsing?

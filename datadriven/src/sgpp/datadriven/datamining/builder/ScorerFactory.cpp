@@ -13,8 +13,6 @@
 #include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/NegativeLogLikelihood.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Accuracy.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/RandomShufflingFunctor.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/SequentialShufflingFunctor.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -30,14 +28,13 @@ Metric* ScorerFactory::buildMetric(ScorerMetricType config) const {
   }
 }
 
-ShufflingFunctor* ScorerFactory::buildShuffling(ScorerShufflingType config) const {
-  if (config == ScorerShufflingType::random) {
-    return new RandomShufflingFunctor{};
-  } else if (config == ScorerShufflingType::sequential) {
-    return new SequentialShufflingFunctor{};
-  } else {
-    return nullptr;
-  }
+Scorer* ScorerFactory::buildScorer(const DataMiningConfigParser& parser) {
+  ScorerConfiguration config;
+  parser.getScorerConfig(config, config);
+  auto metric = buildMetric(config.metric);
+  return new Scorer(metric);
 }
+
+
 } /* namespace datadriven */
 } /* namespace sgpp */
