@@ -12,15 +12,17 @@
 from pysgpp import *
 
 ## Create a vector with 3 elements
-v = DataVector()
+v = DataVector(3)
 v.append(1.0)
 v.append(2.0)
 v.append(3.0)
 
 ## Store the vector to file
+print v
 v.toFile("dataVectorTest.mat")
 
 ## Load the created DataVector from file and then save it again (for no particular reason)
-v2 = DataMatrix.fromFile("dataVectorTest.mat")
+v2 = DataVector.fromFile("dataVectorTest.mat")
+print v2
 
 v2.toFile("dataVectorTest2.mat")

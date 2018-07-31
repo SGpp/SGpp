@@ -57,12 +57,12 @@ int main() {
       /**
        * Get the training, test and validation data
        */
-      std::string filename = "../../datasets/ripley/ripleyGarcke.train.arff";
+      std::string filename = "../tests/data/ripleyGarcke.train.arff";
       // load training samples
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset trainDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
 
-      filename = "../../datasets/ripley/ripleyGarcke.test.arff";
+      filename = "../tests/data/ripleyGarcke.test.arff";
       // load test samples
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset testDataset = sgpp::datadriven::ARFFTools::readARFF(filename);

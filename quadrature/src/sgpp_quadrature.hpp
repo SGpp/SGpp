@@ -13,8 +13,6 @@
 #include <sgpp/quadrature/sampling/StratifiedSampleGenerator.hpp>
 #include <sgpp/quadrature/sampling/LatinHypercubeSampleGenerator.hpp>
 #include <sgpp/quadrature/sampling/HaltonSampleGenerator.hpp>
-#include <sgpp/quadrature/sampling/ScrambledSobolSampleGenerator.hpp>
-#include <sgpp/quadrature/sampling/SobolSampleGenerator.hpp>
 
 #include <sgpp/quadrature/QuadratureOpFactory.hpp>
 #include <sgpp/quadrature/operation/hash/OperationQuadratureMCAdvanced.hpp>
