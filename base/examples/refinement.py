@@ -67,7 +67,7 @@ for refnum in range(5):
     ## Extend alpha vector (new entries uninitialized). Note that right now, the surplus vector
     ## has the correct size again, but the values of the new points are set to zero. The correct
     ## surplus values will be inserted in the next iteration of the refinement loop.
-    alpha.resize(gridStorage.getSize())
+    alpha.resizeZero(gridStorage.getSize())
 
 ## This results in the following output:
 ## \verbinclude refinement.output.txt

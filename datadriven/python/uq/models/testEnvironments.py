@@ -3,8 +3,6 @@ import numpy as np
 from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
 from pysgpp.extensions.datadriven.uq.helper import findSetBits, sortPermutations
 
-from work.probabilistic_transformations_for_inference.sampling import TensorQuadratureSampleGenerationStrategy, \
-    ApproximateFeketeSampleGeneratorStrategy, LejaSampleGeneratorStrategy
 from pysgpp.extensions.datadriven.uq.manager.ASGCUQManagerBuilder import ASGCUQManagerBuilder
 from pysgpp.extensions.datadriven.uq.analysis.KnowledgeTypes import KnowledgeTypes
 from pysgpp.extensions.datadriven.uq.sampler import MCSampler
@@ -206,43 +204,3 @@ class ProbabilisticSpaceSGpp(object):
         names = ", ".join(["x%i" for i in xrange(numDims)])
         up.new().isCalled(names).withMultivariateNormalDistribution(mu, cov, 0, 1)
         return builder.andGetResult()
-
-
-class PCEBuilderHeat(object):
-
-    def __init__(self, numDims):
-        self.numDims = numDims
-
-
-    def define_expansion(self, pce, expansion, degree_1d):
-        if expansion == "full_tensor":
-            pce.define_full_tensor_expansion(degree_1d)
-        elif expansion == "total_degree":
-            pce.define_isotropic_expansion(degree_1d, 1.0)
-        else:
-            raise AttributeError("expansion '%s' is not supported" % expansion)
-
-    def define_full_tensor_samples(self, sample_type, rv_trans, expansion):
-        return TensorQuadratureSampleGenerationStrategy("uniform", rv_trans, expansion)
-
-    def define_approximate_fekete_samples(self, samples, pce, rv_trans):
-        return ApproximateFeketeSampleGeneratorStrategy(samples, pce, rv_trans)
-
-    def define_approximate_leja_samples(self, samples, pce, rv_trans):
-        return LejaSampleGeneratorStrategy(samples, pce, rv_trans)
-
-    def eval_samples(self, samples, rv_trans, f):
-        trans_samples = rv_trans.map_from_canonical_distributions(samples)
-        values = np.ndarray(trans_samples.shape[1])
-        for i, sample in enumerate(trans_samples.T):
-            values[i] = f(sample)
-        return trans_samples, values
-
-    def getSortedSobolIndices(self, pce):
-        sobol_indices = pce.sobol_indices()
-        indices = [findSetBits(i + 1) for i in xrange(len(sobol_indices))]
-        indices, ixs = sortPermutations(indices, index_return=True)
-        sobol_indices_dict = {}
-        for index, i in zip(indices, ixs):
-            sobol_indices_dict[index] = sobol_indices[i][0]
-        return sobol_indices_dict

@@ -14,4 +14,7 @@ python setup.py install --user
 # following code or by adding it to your ~/.bash_profile file
 
 export PYTHONPATH=$PYSGPP_PACKAGE_PATH:$PYTHONPATH
+
+# For full Python support, we recommend additionally installing the Scipy
+# package.
 # ------------------------------------------------------------------------
