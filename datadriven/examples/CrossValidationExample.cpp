@@ -85,7 +85,6 @@ int main(int argc, char** argv) {
    * Based on our configuration, we then can create a fitter object.
    */
   auto model = ModelFittingLeastSquares{config};
-  double stdDeviation = 0;
   /**
    * We want to perform 5 Fold cross validation on our model. To assess the quality of the
    * regression algorithm, we use the mean squared error (MSE) as an error metric. To ensure testing

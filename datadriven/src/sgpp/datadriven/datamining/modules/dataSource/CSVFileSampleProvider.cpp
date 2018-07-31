@@ -85,7 +85,6 @@ void CSVFileSampleProvider::readString(const std::string& input, bool hasTargets
 }
 
 Dataset* CSVFileSampleProvider::splitDataset(size_t howMany) {
-
   const size_t size = counter + howMany <= dataset.getNumberInstances()
                           ? howMany
                           : dataset.getNumberInstances() - counter;
