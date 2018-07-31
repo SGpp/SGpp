@@ -31,8 +31,7 @@ class DataShufflingFunctorFactory {
   /**
    * Create an instance of a #sgpp::datadriven::DataShufflingFunctor object based on the
    * configuration
-   * @param parser Instance of #sgpp::datadriven::DataMiningConfigParser that reads the required
-   * data from the config file.
+   * @param config configuration for the data source
    * @return Fully configured instance of a  #sgpp::datadriven::DataShufflingFunctor object.
    */
   DataShufflingFunctor* buildDataShufflingFunctor(const DataSourceConfig& config) const;

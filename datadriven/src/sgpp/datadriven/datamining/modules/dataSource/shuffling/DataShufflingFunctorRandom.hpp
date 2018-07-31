@@ -24,8 +24,6 @@ namespace datadriven {
  * A simple shuffling functor for data samples that performs a random shuffling of the data.
  * A Feistel network is used to compute the permutation of [0...N-1] without linear memory
  * complexity.
- * See https://stackoverflow.com/questions/51412182/iteratively-generating-a-permutation-of-natural
- * -numbers?noredirect=1#comment89796197_51412182
  */
 class DataShufflingFunctorRandom : public DataShufflingFunctor {
  public:

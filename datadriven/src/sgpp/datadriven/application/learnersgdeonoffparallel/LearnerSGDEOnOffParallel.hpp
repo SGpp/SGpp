@@ -74,9 +74,6 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
    *        processed before next refinement can be scheduled (if
    * convergence-based refinement
    *        is chosen)
-   * @param enableCv Specifies whether to perform cross-validation during
-   * training process or not
-   * @param nextCvStep Determines when next cross-validation has to be triggered
    */
   void trainParallel(size_t batchSize, size_t maxDataPasses,
                      std::string refinementFunctorType,
