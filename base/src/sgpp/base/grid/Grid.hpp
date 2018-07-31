@@ -148,16 +148,16 @@ struct AdpativityConfiguration {
   /// other refinement strategy, that is more expensive, but yields better results
   bool errorBasedRefinement = false;
   /// threshold for convergence in case error based refinement is applied
-  double errorConvergenceThreshold;
+  double errorConvergenceThreshold = 0.001;
   /// amount of error values to consider when checking for convergence in
   /// case of error based refinement
-  size_t errorBufferSize;
+  size_t errorBufferSize = 3;
   /// minimum amount of iterations before the next refinement is allowed to happen in case of error
   /// based refinement
-  size_t errorMinInterval;
+  size_t errorMinInterval = 0;
   /// refinement will be triggered each refinementPeriod instances (approximately) in case
   /// of non error based refinement
-  size_t refinementPeriod;
+  size_t refinementPeriod = 1;
   /// refinement indicator
   RefinementFunctorType refinementFunctorType = RefinementFunctorType::Surplus;
   /// in case of zero corssing based refinement: determines if evaluations should be precomupted

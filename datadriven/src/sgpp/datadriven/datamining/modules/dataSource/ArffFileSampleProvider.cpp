@@ -84,7 +84,6 @@ void ArffFileSampleProvider::readString(const std::string& input, bool hasTarget
 }
 
 Dataset* ArffFileSampleProvider::splitDataset(size_t howMany) {
-
   const size_t size = counter + howMany <= dataset.getNumberInstances()
                           ? howMany
                           : dataset.getNumberInstances() - counter;
