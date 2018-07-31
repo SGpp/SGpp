@@ -64,10 +64,10 @@ class Scorer {
   ~Scorer() = default;
 
   /**
-   * evaluate the accuracy on the test set using the #metric.
+   * evaluate the accuracy on the test set using the #sgpp::datadriven::Metric.
    *
    * @param model model to be fitted based on the train dataset.
-   * @param testDataset dataset used quantify accuracy using #metric.
+   * @param testDataset dataset used quantify accuracy using #sgpp::datadriven::Metric.
    * @return accuracy of the fit.
    */
   double test(ModelFittingBase& model, Dataset& testDataset);

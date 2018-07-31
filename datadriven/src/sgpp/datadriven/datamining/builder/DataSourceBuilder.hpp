@@ -82,6 +82,7 @@ class DataSourceBuilder {
   /**
    * Factory method used to build an instance of a #sgpp::datadriven::DataSourceSplitting object
    * based on the passed configuration.
+   * @param config configuration for the data source instance
    * @return Fully configured instance of #sgpp::datadriven::DataSourceSplitting object.
    */
   DataSourceSplitting* splittingFromConfig(const DataSourceConfig& config);
@@ -96,6 +97,7 @@ class DataSourceBuilder {
   /**
    * Factory method used to build an instance of a #sgpp::datadriven::DataSourceCrossValidation
    * object based on the passed configuration.
+   * @param config configuration for the data source instance
    * @param crossValidationConfig configuration for the cross validation
    * @return Fully configured instance of #sgpp::datadriven::DataSourceCrossValidation object.
    */
