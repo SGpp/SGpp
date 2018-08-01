@@ -50,7 +50,7 @@ double testDistribution(std::string testCSV, std::string config) {
   return predictions.l2Norm() / static_cast<double>(predictions.getSize());
 }
 
-BOOST_AUTO_TEST_SUITE(testDensityEstimation)
+BOOST_AUTO_TEST_SUITE(testDensityEstimationCG)
 
 
 BOOST_AUTO_TEST_CASE(Test_2D_StroSkewB2) {
@@ -65,7 +65,8 @@ BOOST_AUTO_TEST_CASE(Test_2D_StroSkewB2) {
       "{ \"type\" : \"densityEstimation\", \"gridConfig\" : { \"gridType\" : \"linear\","
       << "\"level\" : 5},\"adaptivityConfig\" : {\"numRefinements\" : 3, \"threshold\" : 0.001,"
       << "\"maxLevelType\" : false, \"noPoints\" : 3},\"regularizationConfig\" : {\"lambda\" : "
-      << "1}}}" << std::endl;
+      << "1}, \"densityEstimationConfig\" : { \"densityEstimationType\" : \"cg\"}}}"
+      << std::endl;
 
   double mse = testDistribution(
       "datadriven/tests/datasets/densityEstimation/2D_StroSkewB2F.csv", config);
@@ -82,12 +83,13 @@ BOOST_AUTO_TEST_CASE(Test_3D_KurB4B1) {
   std::string config = "tmpsgdeconfig.json";
   std::ofstream stream(config);
   stream << "{" << "\"dataSource\" : { \"filePath\" : \"" << samples <<
-      "\", \"hasTargets\" : false},\"scorer\" : "
-      << "{ \"metric\" : \"NLL\"},\"fitter\" : " <<
-      "{ \"type\" : \"densityEstimation\", \"gridConfig\" : { \"gridType\" : \"linear\","
-      << "\"level\" : 5},\"adaptivityConfig\" : {\"numRefinements\" : 3, \"threshold\" : 0.001,"
-      << "\"maxLevelType\" : false, \"noPoints\" : 3},\"regularizationConfig\" : {\"lambda\" : "
-      << "1}}}" << std::endl;
+        "\", \"hasTargets\" : false},\"scorer\" : "
+        << "{ \"metric\" : \"NLL\"},\"fitter\" : " <<
+        "{ \"type\" : \"densityEstimation\", \"gridConfig\" : { \"gridType\" : \"linear\","
+        << "\"level\" : 5},\"adaptivityConfig\" : {\"numRefinements\" : 3, \"threshold\" : 0.001,"
+        << "\"maxLevelType\" : false, \"noPoints\" : 3},\"regularizationConfig\" : {\"lambda\" : "
+        << "1}, \"densityEstimationConfig\" : { \"densityEstimationType\" : \"cg\"}}}"
+        << std::endl;
 
   double mse = testDistribution(
       "datadriven/tests/datasets/densityEstimation/3D_KurB4B1F.csv", config);
