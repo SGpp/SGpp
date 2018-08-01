@@ -33,7 +33,7 @@ using sgpp::datadriven::ModelFittingBase;
 using sgpp::datadriven::CSVFileSampleProvider;
 using sgpp::datadriven::DataVector;
 
-double testDistribution(std::string testCSV, std::string config) {
+double testDistributionOnOff(std::string testCSV, std::string config) {
   // Train model
   DensityEstimationMinerFactory factory;
   auto miner = std::unique_ptr<SparseGridMiner>(factory.buildMiner(config));
@@ -50,7 +50,7 @@ double testDistribution(std::string testCSV, std::string config) {
   return predictions.l2Norm() / static_cast<double>(predictions.getSize());
 }
 
-BOOST_AUTO_TEST_SUITE(testDensityEstimationCG)
+BOOST_AUTO_TEST_SUITE(testDensityEstimationOnOff)
 
 
 BOOST_AUTO_TEST_CASE(Test_2D_StroSkewB2) {
@@ -65,10 +65,10 @@ BOOST_AUTO_TEST_CASE(Test_2D_StroSkewB2) {
       "{ \"type\" : \"densityEstimation\", \"gridConfig\" : { \"gridType\" : \"linear\","
       << "\"level\" : 5},\"adaptivityConfig\" : {\"numRefinements\" : 3, \"threshold\" : 0.001,"
       << "\"maxLevelType\" : false, \"noPoints\" : 3},\"regularizationConfig\" : {\"lambda\" : "
-      << "1}, \"densityEstimationConfig\" : { \"densityEstimationType\" : \"cg\"}}}"
+      << "1}, \"densityEstimationConfig\" : { \"densityEstimationType\" : \"decomposition\"}}}"
       << std::endl;
 
-  double mse = testDistribution(
+  double mse = testDistributionOnOff(
       "datadriven/tests/datasets/densityEstimation/2D_StroSkewB2F.csv", config);
   std::cout << "MSE on test " << mse << std::endl;
   BOOST_CHECK(mse <= 5e-2);
@@ -88,10 +88,10 @@ BOOST_AUTO_TEST_CASE(Test_3D_KurB4B1) {
         "{ \"type\" : \"densityEstimation\", \"gridConfig\" : { \"gridType\" : \"linear\","
         << "\"level\" : 5},\"adaptivityConfig\" : {\"numRefinements\" : 3, \"threshold\" : 0.001,"
         << "\"maxLevelType\" : false, \"noPoints\" : 3},\"regularizationConfig\" : {\"lambda\" : "
-        << "1}, \"densityEstimationConfig\" : { \"densityEstimationType\" : \"cg\"}}}"
+        << "1}, \"densityEstimationConfig\" : { \"densityEstimationType\" : \"decomposition\"}}}"
         << std::endl;
 
-  double mse = testDistribution(
+  double mse = testDistributionOnOff(
       "datadriven/tests/datasets/densityEstimation/3D_KurB4B1F.csv", config);
   std::cout << "MSE between estimation and ground truth density " << mse << std::endl;
   BOOST_CHECK(mse <= 5e-2);
