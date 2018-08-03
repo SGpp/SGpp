@@ -33,7 +33,7 @@ using sgpp::base::DataVector;
 
 using sgpp::base::application_exception;
 
-using sgpp::base::RefinementFunctorType;
+using sgpp::datadriven::RefinementFunctorType;
 
 namespace sgpp {
 namespace datadriven {

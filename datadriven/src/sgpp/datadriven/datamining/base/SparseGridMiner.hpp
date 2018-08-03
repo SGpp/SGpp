@@ -78,6 +78,14 @@ class SparseGridMiner {
    */
   ModelFittingBase *getModel();
 
+  /**
+   * Evaluate the model on a certain test dataset.
+   *
+   * @param testDataset dataset used quantify accuracy using #sgpp::datadriven::Metric.
+   * @return score of the fit.
+   */
+  double test(Dataset& testDataset);
+
  protected:
   /**
    * Fitter that trains a model based on data samples.

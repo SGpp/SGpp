@@ -11,11 +11,13 @@
 
 #include <sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp>
 
+#include <iostream>
+
 namespace sgpp {
 namespace datadriven {
 
 RefinementMonitorPeriodic::RefinementMonitorPeriodic(size_t period)
-    : period(0), instancesTracked(0) {}
+    : period(period), instancesTracked(0) {}
 
 RefinementMonitorPeriodic::~RefinementMonitorPeriodic() {}
 

@@ -125,9 +125,8 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
   // initialize refinement variables
   double currentValidError = 0.0;
   double currentTrainError = 0.0;
-  // create convergence monitor object
   RefinementMonitor *monitor = nullptr;
-  if (refType == "periodic") {
+  if (refMonitor == "periodic") {
     monitor = new RefinementMonitorPeriodic(refPeriod);
   } else {
     monitor = new RefinementMonitorConvergence(
@@ -480,17 +479,8 @@ void LearnerSGDEOnOff::updateAlpha(size_t classIndex, std::list<size_t>* deleted
     size_t newPoints) {
   DataVector& alpha = *(alphas[classIndex]);
   if (alpha.getSize() != 0 && deletedPoints != nullptr && !deletedPoints->empty()) {
-    std::vector<size_t> deletedPoints_{std::begin(*deletedPoints), std::end(*deletedPoints)};
-    DataVector newAlpha{alpha.getSize() - deletedPoints->size() + newPoints};
-    for (size_t i = 0; i < alpha.getSize(); i++) {
-      if (std::find(deletedPoints_.begin(), deletedPoints_.end(), i) != deletedPoints_.end()) {
-        continue;
-      } else {
-        newAlpha.append(alpha.get(i));
-      }
-    }
-    // set new alpha
-    alpha = std::move(newAlpha);
+    std::vector<size_t> vecDeletedPoints{std::begin(*deletedPoints), std::end(*deletedPoints) };
+    alpha.remove(vecDeletedPoints);
   }
   if (newPoints > 0) {
     alpha.resizeZero(alpha.getSize() + newPoints);
@@ -664,10 +654,12 @@ void LearnerSGDEOnOff::refine(RefinementMonitor& monitor,
       // when coarsening the grid itself.
       densEst->updateSystemMatrixDecomposition(densityEstimationConfig,
           *(grids[idx]), newPoints, deletedGridPoints, regularizationConfig.lambda_);
-
+      densEst->updateRhs(newPoints, &refineCoarse[idx].first);
 
       // update alpha vector
       updateAlpha(idx, &refineCoarse[idx].first, refineCoarse[idx].second);
+
+      std::cout << "alpha size" << alphas[idx]->size() << std::endl;
     }
   }
 }

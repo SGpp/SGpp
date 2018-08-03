@@ -23,7 +23,7 @@
 using sgpp::base::RefinementFunctor;
 using sgpp::base::SurplusRefinementFunctor;
 using sgpp::base::SurplusVolumeRefinementFunctor;
-using sgpp::base::RefinementFunctorType;
+using sgpp::datadriven::RefinementFunctorType;
 
 using sgpp::base::application_exception;
 
