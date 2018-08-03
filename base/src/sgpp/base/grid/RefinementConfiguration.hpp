@@ -4,9 +4,9 @@
  * use, please see the copyright notice provided with SG++ or at
  * sgpp.sparsegrids.org
  *
- * RefinementMonitorConfiguration.hpp
+ * RefinementConfiguration.hpp
  *
- *  Created on: Aug 3, 2018
+ *  Created on: Aug 4, 2018
  *      Author: dominik
  */
 
@@ -35,3 +35,4 @@ enum class RefinementMonitorType {
 };
 }  // namespace datadriven
 }  // namespace sgpp
+

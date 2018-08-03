@@ -9,7 +9,7 @@
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
-#include <sgpp/datadriven/configuration/RefinementMonitorConfiguration.hpp>
+#include <sgpp/base/grid/RefinementConfiguration.hpp>
 
 #include <sgpp/globaldef.hpp>
 
