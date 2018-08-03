@@ -23,6 +23,10 @@ namespace datadriven {
 SparseGridMiner::SparseGridMiner(ModelFittingBase* fitter, Scorer* scorer)
   : fitter(fitter), scorer(scorer) {}
 
+double SparseGridMiner::test(Dataset& testDataset) {
+  return scorer->test(*fitter, testDataset);
+}
+
 ModelFittingBase *SparseGridMiner::getModel() {
   return &(*fitter);
 }

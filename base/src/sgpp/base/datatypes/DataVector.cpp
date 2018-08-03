@@ -132,11 +132,10 @@ void DataVector::remove(std::vector<size_t>& indexesToRemove) {
     }
   }
 
-  size_t j = 0;
   newVector.reserve(this->size() - numIndexesToRemove);
   for (size_t i = 0; i < this->size(); i++) {
     if (!willBeRemoved[i]) {
-      newVector[j++] = (*this)[i];
+      newVector.emplace_back((*this)[i]);
     }
   }
 

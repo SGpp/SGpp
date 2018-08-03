@@ -9,6 +9,7 @@
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
+#include <sgpp/datadriven/configuration/RefinementMonitorConfiguration.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -112,26 +113,6 @@ struct CombiGridConfiguration : GeneralGridConfiguration {
 };
 
 /**
- * Enumeration that defines different types of refinement indicators / functors
- */
-enum class RefinementFunctorType {
-  Surplus,
-  SurplusVolume,
-  DataBased,
-  ZeroCrossing,
-  GridPointBased,
-  MultipleClass
-};
-
-/**
- * Enumeration that defines the different types of refinement monitors (that trigger refinements)
- */
-enum class RefinementMonitorType {
-  Periodic,
-  Error
-};
-
-/**
  * structure that can be used by application to define adaptivity strategies
  */
 struct AdpativityConfiguration {
@@ -159,7 +140,8 @@ struct AdpativityConfiguration {
   /// of non error based refinement
   size_t refinementPeriod = 1;
   /// refinement indicator
-  RefinementFunctorType refinementFunctorType = RefinementFunctorType::Surplus;
+  sgpp::datadriven::RefinementFunctorType refinementFunctorType =
+      sgpp::datadriven::RefinementFunctorType::Surplus;
   /// in case of zero corssing based refinement: determines if evaluations should be precomupted
   bool precomputeEvaluations = true;
   /// determines if finer grid levels should be penalized when finding points to refine
