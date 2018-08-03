@@ -51,7 +51,7 @@ class Alpine02Objective : public TestScalarFunction {
  * Alpine02 unconstrained test problem.
  *
  * * Number of parameters: \f$d\f$
- * * Domain: \f$\bar{\vec{x}} \in [0, 10]^d\f$
+ * * Domain: \f$\bar{\vec{x}} \in [2, 10]^d\f$
  * * Optimal point: \f$\bar{\vec{x}}_{\text{opt}} =
  *   7.917052684666 \cdot \vec{1}\f$
  * * Optimal function value: \f$\bar{f}(\bar{\vec{x}}_{\text{opt}}) =
