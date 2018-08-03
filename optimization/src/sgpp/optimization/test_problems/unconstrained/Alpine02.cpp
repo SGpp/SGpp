@@ -20,8 +20,9 @@ TestScalarFunction& Alpine02::getObjectiveFunction() { return f; }
 
 double Alpine02::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(d);
-  x.setAll(0.7917052684666);
-  return -std::pow(std::sqrt(10.0 * x[0]) * std::sin(10.0 * x[0]), static_cast<double>(d));
+  x.setAll(0.739631585583250);
+  return -std::pow(std::sqrt(8.0 * x[0] + 2.0) * std::sin(8.0 * x[0] + 2.0),
+                   static_cast<double>(d));
 }
 
 Alpine02Objective::Alpine02Objective(size_t d) : TestScalarFunction(d) {}
@@ -32,7 +33,7 @@ double Alpine02Objective::evalUndisplaced(const base::DataVector& x) {
   double result = 1.0;
 
   for (size_t t = 0; t < d; t++) {
-    const double xt = 10.0 * x[t];
+    const double xt = 8.0 * x[t] + 2.0;
     result *= std::sqrt(xt) * std::sin(xt);
   }
 
