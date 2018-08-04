@@ -43,6 +43,7 @@
 %newobject sgpp::base::Grid::createLagrangeSplineBoundaryGrid(size_t dim, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createLagrangeNotAKnotSplineBoundaryGrid(size_t dim, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createModLagrangeNotAKnotSplineGrid(size_t dim);
+%newobject sgpp::base::Grid::createFundamentalSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
 
 %newobject sgpp::base::Grid::unserialize(std::string& istr);
 %newobject sgpp::base::Grid::clone();
@@ -114,6 +115,7 @@ enum class GridType {
   LagrangeSplineBoundary,           // 29
   LagrangeNotAKnotSplineBoundary,   // 30
   ModLagrangeNotAKnotSpline,        // 31
+  FundamentalSplineBoundary,        // 32
 };
 
 class Grid
@@ -156,6 +158,7 @@ public:
   static Grid* createModNotAKnotBsplineGrid(size_t dim, size_t degree);
   static Grid* createLagrangeSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
   static Grid* createLagrangeNotAKnotSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
+  static Grid* createFundamentalSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
 	
   static Grid* unserialize(std::string& istr);
 	
