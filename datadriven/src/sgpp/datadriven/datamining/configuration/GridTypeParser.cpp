@@ -69,6 +69,8 @@ GridType GridTypeParser::parse(const std::string& input) {
     return sgpp::base::GridType::WaveletBoundary;
   } else if (inputLower.compare("fundamentalspline") == 0) {
     return sgpp::base::GridType::FundamentalSpline;
+  } else if (inputLower.compare("fundamentalsplineboundary") == 0) {
+    return sgpp::base::GridType::FundamentalSplineBoundary;
   } else if (inputLower.compare("modfundamentalspline") == 0) {
     return sgpp::base::GridType::ModFundamentalSpline;
   } else if (inputLower.compare("modbsplineclenshawcurtis") == 0) {
@@ -109,6 +111,7 @@ const GridTypeParser::GridTypeMap_t GridTypeParser::gridTypeMap = []() {
       std::make_pair(GridType::Wavelet, "Wavelet"),
       std::make_pair(GridType::WaveletBoundary, "WaveletBoundary"),
       std::make_pair(GridType::FundamentalSpline, "FundamentalSpline"),
+      std::make_pair(GridType::FundamentalSplineBoundary, "FundamentalSplineBoundary"),
       std::make_pair(GridType::ModFundamentalSpline, "ModFundamentalSpline"),
       std::make_pair(GridType::ModBsplineClenshawCurtis, "ModBsplineClenshawCurtis"),
       std::make_pair(GridType::LinearStencil, "LinearStencil"),
