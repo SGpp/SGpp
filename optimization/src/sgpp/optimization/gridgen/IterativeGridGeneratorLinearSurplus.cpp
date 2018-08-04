@@ -40,6 +40,7 @@ IterativeGridGeneratorLinearSurplus::IterativeGridGeneratorLinearSurplus(ScalarF
   } else if ((grid.getType() == base::GridType::BsplineBoundary) ||
              (grid.getType() == base::GridType::WaveletBoundary) ||
              (grid.getType() == base::GridType::LinearBoundary) ||
+             (grid.getType() == base::GridType::FundamentalSplineBoundary) ||
              (grid.getType() == base::GridType::LagrangeNotAKnotSplineBoundary) ||
              (grid.getType() == base::GridType::LagrangeSplineBoundary) ||
              (grid.getType() == base::GridType::NaturalBsplineBoundary) ||

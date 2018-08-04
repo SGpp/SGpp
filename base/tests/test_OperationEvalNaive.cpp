@@ -102,6 +102,7 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
   grids.push_back(std::unique_ptr<Grid>(Grid::createModBsplineGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createModBsplineClenshawCurtisGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createFundamentalSplineGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createFundamentalSplineBoundaryGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createModFundamentalSplineGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createLagrangeNotAKnotSplineBoundaryGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createModLagrangeNotAKnotSplineGrid(d, p)));
@@ -126,6 +127,7 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SBsplineClenshawCurtisBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SBsplineModifiedBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SBsplineModifiedClenshawCurtisBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SFundamentalSplineBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SFundamentalSplineBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SFundamentalSplineModifiedBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLagrangeNotAKnotSplineBase(p)));
@@ -157,6 +159,7 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
         (grid.getType() == GridType::ModBspline) ||
         (grid.getType() == GridType::ModBsplineClenshawCurtis) ||
         (grid.getType() == GridType::FundamentalSpline) ||
+        (grid.getType() == GridType::FundamentalSplineBoundary) ||
         (grid.getType() == GridType::ModFundamentalSpline) ||
         (grid.getType() == GridType::LagrangeNotAKnotSplineBoundary) ||
         (grid.getType() == GridType::ModLagrangeNotAKnotSpline) ||
