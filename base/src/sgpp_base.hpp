@@ -111,6 +111,7 @@
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
+#include <sgpp/base/grid/type/FundamentalSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/GridStencil.hpp>
 #include <sgpp/base/grid/type/LagrangeNotAKnotSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LagrangeSplineBoundaryGrid.hpp>
