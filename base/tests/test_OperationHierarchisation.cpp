@@ -54,14 +54,23 @@ void testHierarchisationDehierarchisation(sgpp::base::Grid& grid, size_t level,
   for (size_t n = 0; n < gridStore.getSize(); n++) {
     gridStore.getCoordinates(gridStore[n], coords);
     double eval = op->eval(alpha, coords);
-    BOOST_CHECK_CLOSE(eval, node_values[n], tolerance);
+
+    if (std::abs(node_values[n]) < 1e-10) {
+      BOOST_CHECK_SMALL(eval - node_values[n], tolerance);
+    } else {
+      BOOST_CHECK_CLOSE(eval, node_values[n], tolerance);
+    }
   }
 
   DataVector node_values_back = DataVector(alpha);
   hierarchisation->doDehierarchisation(node_values_back);
 
   for (size_t n = 0; n < gridStore.getSize(); n++) {
-    BOOST_CHECK_CLOSE(node_values_back[n], node_values[n], tolerance);
+    if (std::abs(node_values[n]) < 1e-10) {
+      BOOST_CHECK_SMALL(node_values_back[n] - node_values[n], tolerance);
+    } else {
+      BOOST_CHECK_CLOSE(node_values_back[n], node_values[n], tolerance);
+    }
   }
 }
 
