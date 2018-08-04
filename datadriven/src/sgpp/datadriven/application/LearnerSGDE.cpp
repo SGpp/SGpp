@@ -846,10 +846,7 @@ double LearnerSGDE::getAccuracy(const base::DataVector& referenceLabels, const d
   size_t correct = 0;
 
   for (size_t i = 0; i < predictedLabels.getSize(); i++) {
-    if ((predictedLabels.get(i) >= threshold && referenceLabels.get(i) >= 0.0) ||
-        (predictedLabels.get(i) < threshold && referenceLabels.get(i) < 0.0)) {
-      correct++;
-    }
+    if (predictedLabels.get(i) == referenceLabels.get(i)) correct++;
   }
 
   result = static_cast<double>(correct) / static_cast<double>(predictedLabels.getSize());
@@ -887,9 +884,6 @@ void LearnerSGDE::predict(base::DataMatrix& testData, base::DataVector& predicte
         max = res;
         predLabel = g.first;
       }
-    }
-    if (predLabel == 0) {
-      std::cerr << "LearnerSGDE::predict: Warning: no best class found!" << std::endl;
     }
     predictedLabels.set(i, predLabel);
   }
