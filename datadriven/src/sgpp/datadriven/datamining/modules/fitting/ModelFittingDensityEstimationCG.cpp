@@ -49,7 +49,8 @@ ModelFittingDensityEstimationCG::ModelFittingDensityEstimationCG(
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
 double ModelFittingDensityEstimationCG::evaluate(const DataVector& sample) {
-  return sgpp::op_factory::createOperationEval(*grid)->eval(alpha, sample);
+  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*grid));
+  return opEval->eval(alpha, sample);
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
