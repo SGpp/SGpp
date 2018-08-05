@@ -37,6 +37,7 @@
 #include <sgpp/base/grid/type/LagrangeNotAKnotSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModLagrangeNotAKnotSplineGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/FundamentalNotAKnotSplineBoundaryGrid.hpp>
 
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 
@@ -163,6 +164,11 @@ Grid* Grid::createFundamentalSplineBoundaryGrid(size_t dim, size_t degree, level
   return new FundamentalSplineBoundaryGrid(dim, degree, boundaryLevel);
 }
 
+Grid* Grid::createFundamentalNotAKnotSplineBoundaryGrid(
+    size_t dim, size_t degree, level_t boundaryLevel) {
+  return new FundamentalNotAKnotSplineBoundaryGrid(dim, degree, boundaryLevel);
+}
+
 Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
   if (gridConfig.filename_.length() > 0) {
     std::ifstream ifs(gridConfig.filename_);
@@ -243,6 +249,9 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
         return Grid::createModLagrangeNotAKnotSplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::FundamentalSplineBoundary:
         return Grid::createFundamentalSplineBoundaryGrid(
+            gridConfig.dim_, gridConfig.maxDegree_, gridConfig.boundaryLevel_);
+      case GridType::FundamentalNotAKnotSplineBoundary:
+        return Grid::createFundamentalNotAKnotSplineBoundaryGrid(
             gridConfig.dim_, gridConfig.maxDegree_, gridConfig.boundaryLevel_);
       default:
         throw generation_exception("Grid::createGrid - grid type not known");
@@ -394,6 +403,12 @@ Grid* Grid::clone() {
           dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
       newGrid = Grid::createFundamentalSplineBoundaryGrid(numDims, degree, boundaryLevel);
       break;
+    case GridType::FundamentalNotAKnotSplineBoundary:
+      degree = dynamic_cast<FundamentalNotAKnotSplineBoundaryGrid*>(this)->getDegree();
+      boundaryLevel =
+          dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
+      newGrid = Grid::createFundamentalNotAKnotSplineBoundaryGrid(numDims, degree, boundaryLevel);
+      break;
     default:
       throw generation_exception("Grid::clone - grid type not known");
   }
@@ -498,6 +513,9 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
     tMap->insert(
         std::pair<std::string, Grid::Factory>("fundamentalSplineBoundary",
         FundamentalSplineBoundaryGrid::unserialize));
+    tMap->insert(
+        std::pair<std::string, Grid::Factory>("fundamentalNotAKnotSplineBoundary",
+        FundamentalNotAKnotSplineBoundaryGrid::unserialize));
 #else
     tMap->insert(std::make_pair("NULL", Grid::nullFactory));
     tMap->insert(std::make_pair("linear", LinearGrid::unserialize));
@@ -542,6 +560,8 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
                                 ModLagrangeNotAKnotSplineGrid::unserialize));
     tMap->insert(std::make_pair("fundamentalSplineBoundary",
                                 FundamentalSplineBoundaryGrid::unserialize));
+    tMap->insert(std::make_pair("fundamentalNotAKnotSplineBoundary",
+                                FundamentalNotAKnotSplineBoundaryGrid::unserialize));
 #endif
   }
 
@@ -617,6 +637,9 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
     verboseMap->insert(
         std::pair<sgpp::base::GridType, std::string>(GridType::FundamentalSplineBoundary,
         "fundamentalSplineBoundary"));
+    verboseMap->insert(
+        std::pair<sgpp::base::GridType, std::string>(GridType::FundamentalNotAKnotSplineBoundary,
+        "fundamentalNotAKnotSplineBoundary"));
 #else
     verboseMap->insert(std::make_pair(GridType::Linear, "linear"));
     verboseMap->insert(std::make_pair(GridType::LinearStretched, "linearStretched"));
@@ -660,6 +683,9 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
         std::make_pair(GridType::ModLagrangeNotAKnotSpline, "modLagrangeNotaknotSpline"));
     verboseMap->insert(
         std::make_pair(GridType::FundamentalSplineBoundary, "fundamentalSplineBoundary"));
+    verboseMap->insert(
+        std::make_pair(GridType::FundamentalNotAKnotSplineBoundary,
+                       "fundamentalNotAKnotSplineBoundary"));
 #endif
   }
 
