@@ -20,6 +20,8 @@ void createSupportedGrids(size_t d, size_t p,
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createModBsplineClenshawCurtisGrid(d, p)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
+      sgpp::base::Grid::createFundamentalNotAKnotSplineGrid(d, p)));
+  grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createFundamentalSplineGrid(d, p)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createFundamentalSplineBoundaryGrid(d, p)));

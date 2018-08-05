@@ -17,6 +17,7 @@
 #include <sgpp/base/operation/hash/common/basis/BsplineClenshawCurtisBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineModifiedClenshawCurtisBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/FundamentalNotAKnotSplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/FundamentalSplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/FundamentalSplineModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasis.hpp>
@@ -37,6 +38,7 @@
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
 #include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/FundamentalNotAKnotSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LagrangeNotAKnotSplineBoundaryGrid.hpp>
@@ -105,6 +107,12 @@ class HierarchisationSLE : public CloneableSLE {
           new base::SBsplineModifiedClenshawCurtisBase(
               dynamic_cast<base::ModBsplineClenshawCurtisGrid&>(grid).getDegree()));
       basisType = BSPLINE_MODIFIED_CLENSHAW_CURTIS;
+    } else if (grid.getType() == base::GridType::FundamentalNotAKnotSplineBoundary) {
+      fundamentalNotAKnotSplineBasis =
+          std::unique_ptr<base::SFundamentalNotAKnotSplineBase>(
+            new base::SFundamentalNotAKnotSplineBase(
+              dynamic_cast<base::FundamentalNotAKnotSplineBoundaryGrid&>(grid).getDegree()));
+      basisType = FUNDAMENTAL_NOTAKNOT_SPLINE;
     } else if (grid.getType() == base::GridType::FundamentalSpline) {
       fundamentalSplineBasis =
           std::unique_ptr<base::SFundamentalSplineBase>(new base::SFundamentalSplineBase(
@@ -236,6 +244,8 @@ class HierarchisationSLE : public CloneableSLE {
   std::unique_ptr<base::SBsplineModifiedBase> modBsplineBasis;
   /// modified B-spline Clenshaw-Curtis basis
   std::unique_ptr<base::SBsplineModifiedClenshawCurtisBase> modBsplineClenshawCurtisBasis;
+  /// fundamental not-a-knot spline basis
+  std::unique_ptr<base::SFundamentalNotAKnotSplineBase> fundamentalNotAKnotSplineBasis;
   /// fundamental spline basis
   std::unique_ptr<base::SFundamentalSplineBase> fundamentalSplineBasis;
   /// modified fundamental spline basis
@@ -275,6 +285,7 @@ class HierarchisationSLE : public CloneableSLE {
     BSPLINE_CLENSHAW_CURTIS,
     BSPLINE_MODIFIED,
     BSPLINE_MODIFIED_CLENSHAW_CURTIS,
+    FUNDAMENTAL_NOTAKNOT_SPLINE,
     FUNDAMENTAL_SPLINE,
     FUNDAMENTAL_SPLINE_MODIFIED,
     LAGRANGE_NOTAKNOT_SPLINE,
@@ -309,6 +320,8 @@ class HierarchisationSLE : public CloneableSLE {
       return evalBsplineModifiedFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == BSPLINE_MODIFIED_CLENSHAW_CURTIS) {
       return evalBsplineModifiedClenshawCurtisFunctionAtGridPoint(basisI, pointJ);
+    } else if (basisType == FUNDAMENTAL_NOTAKNOT_SPLINE) {
+      return evalFundamentalNotAKnotSplineFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == FUNDAMENTAL_SPLINE) {
       return evalFundamentalSplineFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == FUNDAMENTAL_SPLINE_MODIFIED) {
@@ -465,6 +478,39 @@ class HierarchisationSLE : public CloneableSLE {
       }
 
       result *= result1d;
+    }
+
+    return result;
+  }
+
+  /**
+   * @param basisI    basis function index
+   * @param pointJ    grid point index
+   * @return          value of the basisI-th fundamental not-a-knot spline basis
+   *                  function at the pointJ-th grid point
+   */
+  inline double evalFundamentalNotAKnotSplineFunctionAtGridPoint(size_t basisI, size_t pointJ) {
+    const base::GridPoint& gpBasis = gridStorage[basisI];
+    const base::GridPoint& gpPoint = gridStorage[pointJ];
+    double result = 1.0;
+
+    for (size_t t = 0; t < gridStorage.getDimension(); t++) {
+      if (gpPoint.getLevel(t) < gpBasis.getLevel(t)) {
+        return 0.0;
+      } else if (gpPoint.getLevel(t) == gpBasis.getLevel(t)) {
+        if (gpPoint.getIndex(t) != gpBasis.getIndex(t)) {
+          return 0.0;
+        }
+      } else {
+        const double result1d = fundamentalNotAKnotSplineBasis->eval(
+            gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getCoordinate(gpPoint, t));
+
+        if (result1d == 0.0) {
+          return 0.0;
+        }
+
+        result *= result1d;
+      }
     }
 
     return result;

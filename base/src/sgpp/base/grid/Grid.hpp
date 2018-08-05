@@ -24,39 +24,40 @@ namespace base {
  *
  */
 enum class GridType {
-  Linear,                           //  0
-  LinearStretched,                  //  1
-  LinearL0Boundary,                 //  2
-  LinearBoundary,                   //  3
-  LinearStretchedBoundary,          //  4
-  LinearTruncatedBoundary,          //  5
-  ModLinear,                        //  6
-  Poly,                             //  7
-  PolyBoundary,                     //  8
-  ModPoly,                          //  9
-  ModWavelet,                       // 10
-  ModBspline,                       // 11
-  Prewavelet,                       // 12
-  SquareRoot,                       // 13
-  Periodic,                         // 14
-  LinearClenshawCurtis,             // 15
-  Bspline,                          // 16
-  BsplineBoundary,                  // 17
-  BsplineClenshawCurtis,            // 18
-  Wavelet,                          // 19
-  WaveletBoundary,                  // 20
-  FundamentalSpline,                // 21
-  ModFundamentalSpline,             // 22
-  ModBsplineClenshawCurtis,         // 23
-  LinearStencil,                    // 24
-  ModLinearStencil,                 // 25
-  NaturalBsplineBoundary,           // 26
-  NotAKnotBsplineBoundary,          // 27
-  ModNotAKnotBspline,               // 28
-  LagrangeSplineBoundary,           // 29
-  LagrangeNotAKnotSplineBoundary,   // 30
-  ModLagrangeNotAKnotSpline,        // 31
-  FundamentalSplineBoundary,        // 32
+  Linear,                             //  0
+  LinearStretched,                    //  1
+  LinearL0Boundary,                   //  2
+  LinearBoundary,                     //  3
+  LinearStretchedBoundary,            //  4
+  LinearTruncatedBoundary,            //  5
+  ModLinear,                          //  6
+  Poly,                               //  7
+  PolyBoundary,                       //  8
+  ModPoly,                            //  9
+  ModWavelet,                         // 10
+  ModBspline,                         // 11
+  Prewavelet,                         // 12
+  SquareRoot,                         // 13
+  Periodic,                           // 14
+  LinearClenshawCurtis,               // 15
+  Bspline,                            // 16
+  BsplineBoundary,                    // 17
+  BsplineClenshawCurtis,              // 18
+  Wavelet,                            // 19
+  WaveletBoundary,                    // 20
+  FundamentalSpline,                  // 21
+  ModFundamentalSpline,               // 22
+  ModBsplineClenshawCurtis,           // 23
+  LinearStencil,                      // 24
+  ModLinearStencil,                   // 25
+  NaturalBsplineBoundary,             // 26
+  NotAKnotBsplineBoundary,            // 27
+  ModNotAKnotBspline,                 // 28
+  LagrangeSplineBoundary,             // 29
+  LagrangeNotAKnotSplineBoundary,     // 30
+  ModLagrangeNotAKnotSpline,          // 31
+  FundamentalSplineBoundary,          // 32
+  FundamentalNotAKnotSplineBoundary,  // 33
 };
 
 /**
@@ -594,6 +595,8 @@ class Grid {
   static Grid* createModLagrangeNotAKnotSplineGrid(size_t dim, size_t degree);
   static Grid* createFundamentalSplineBoundaryGrid(size_t dim, size_t degree,
                                                    level_t boundaryLevel = 1);
+  static Grid* createFundamentalNotAKnotSplineBoundaryGrid(
+      size_t dim, size_t degree, level_t boundaryLevel = 1);
 
   /**
    * reads a grid out of a string
