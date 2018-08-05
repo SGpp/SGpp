@@ -81,7 +81,8 @@ bool UMFPACK::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const
   size_t rowsDone = 0;
 
 // parallelize only if the system is cloneable
-#pragma omp parallel if (system.isCloneable()) shared(system, Ti, Tj, Tx, nnz, rowsDone) default(none)
+#pragma omp parallel if (system.isCloneable()) \
+shared(system, Ti, Tj, Tx, nnz, rowsDone) default(none)
   {
     SLE* system2 = &system;
 #ifdef _OPENMP
