@@ -150,6 +150,17 @@ BOOST_AUTO_TEST_CASE(testHierarchisationPrewavelet) {
   }
 }
 
+BOOST_AUTO_TEST_CASE(testHierarchisationFundamentalNotAKnotSplineBoundary) {
+  int level = 5;
+
+  for (int dim = 1; dim < 4; dim++) {
+    for (int degree = 1; degree < 6; degree += 2) {
+      std::unique_ptr<Grid> grid(Grid::createFundamentalNotAKnotSplineBoundaryGrid(dim, degree));
+      testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-9, true);
+    }
+  }
+}
+
 BOOST_AUTO_TEST_CASE(testHierarchisationFundamentalSpline) {
   int level = 5;
 

@@ -20,6 +20,7 @@
 #include <sgpp/base/grid/type/WaveletGrid.hpp>
 #include <sgpp/base/grid/type/WaveletBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
+#include <sgpp/base/grid/type/FundamentalNotAKnotSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
@@ -36,6 +37,7 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWaveletBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWavelet.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWavelet.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationFundamentalNotAKnotSplineBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationFundamentalSpline.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationFundamentalSplineBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModFundamentalSpline.hpp>
@@ -89,6 +91,9 @@ createOperationMultipleHierarchisation(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::ModWavelet) {
     return new optimization::OperationMultipleHierarchisationModWavelet(
         dynamic_cast<base::ModWaveletGrid&>(grid));
+  } else if (grid.getType() == base::GridType::FundamentalNotAKnotSplineBoundary) {
+    return new optimization::OperationMultipleHierarchisationFundamentalNotAKnotSplineBoundary(
+        dynamic_cast<base::FundamentalNotAKnotSplineBoundaryGrid&>(grid));
   } else if (grid.getType() == base::GridType::FundamentalSpline) {
     return new optimization::OperationMultipleHierarchisationFundamentalSpline(
         dynamic_cast<base::FundamentalSplineGrid&>(grid));
