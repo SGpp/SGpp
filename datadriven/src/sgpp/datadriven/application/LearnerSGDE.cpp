@@ -203,6 +203,8 @@ sgpp::base::GridType LearnerSGDEConfiguration::stringToGridType(
     return sgpp::base::GridType::Wavelet;
   } else if (gridType.compare("WaveletBoundary") == 0) {
     return sgpp::base::GridType::WaveletBoundary;
+  } else if (gridType.compare("FundamentalNotAKnotSpline") == 0) {
+    return sgpp::base::GridType::FundamentalNotAKnotSpline;
   } else if (gridType.compare("FundamentalSpline") == 0) {
     return sgpp::base::GridType::FundamentalSpline;
   } else if (gridType.compare("FundamentalSplineBoundary") == 0) {

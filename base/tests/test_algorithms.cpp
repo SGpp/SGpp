@@ -394,6 +394,17 @@ BOOST_AUTO_TEST_CASE(TestBsplineClenshawCurtisModifiedBasis) {
   }
 }
 
+BOOST_AUTO_TEST_CASE(TestFundamentalNotAKnotSplineBasis) {
+  // Test fundamental not-a-knot spline basis.
+  const size_t pMax = 5;
+
+  for (size_t p = 1; p <= pMax; p++) {
+    sgpp::base::SFundamentalNotAKnotSplineBase basis(p);
+    fundamentalSplineTest(basis);
+    derivativesTest(basis, basis.getDegree() - 1);
+  }
+}
+
 BOOST_AUTO_TEST_CASE(TestFundamentalSplineBasis) {
   // Test fundamental spline basis.
   const size_t pMax = 11;
