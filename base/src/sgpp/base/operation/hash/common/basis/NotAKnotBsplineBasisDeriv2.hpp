@@ -69,7 +69,7 @@ class NotAKnotBsplineBasisDeriv2: public Basis<LT, IT> {
           return 0.0;
         } else if (l == 1) {
           if (i == 0) {
-            // l = 0, i = 0
+            // l = 0, i = 1
             return innerDeriv;
           } else if (i == 1) {
             // l = 1, i = 1
@@ -190,8 +190,16 @@ class NotAKnotBsplineBasisDeriv2: public Basis<LT, IT> {
         if (l == 0) {
           return 0.0;
         } else if (l == 1) {
-          // l = 1, i = 1
-          return -2.0 * innerDeriv;
+          if (i == 0) {
+            // l = 1, i = 0
+            return innerDeriv;
+          } else if (i == 1) {
+            // l = 1, i = 1
+            return -2.0 * innerDeriv;
+          } else {
+            // l = 1, i = 2
+            return innerDeriv;
+          }
         } else if ((i > 5) && (i < hInv - 5)) {
           // l >= 4, 5 < i < 2^l - 5
           return bsplineBasis.evalDxDx(l, i, x);
@@ -201,11 +209,23 @@ class NotAKnotBsplineBasisDeriv2: public Basis<LT, IT> {
             t *= -1.0;
           }
 
-          if (l == 2) {
+          if ((l == 2) && (i == 0)) {
+            // l = 2, i = 0
+            double result = 1.0/2.0;
+            result = -5.0/2.0 + result * t;
+            result = 35.0/12.0 + result * t;
+            return innerDeriv * result;
+          } else if ((l == 2) && (i == 1)) {
             // l = 2, i = 1
             double result = -2.0;
             result = 5.0 + result * t;
             result = -5.0/3.0 + result * t;
+            return innerDeriv * result;
+          } else if ((l == 2) && (i == 2)) {
+            // l = 2, i = 2
+            double result = 3.0;
+            result *= t;
+            result = -5.0/2.0 + result * t;
             return innerDeriv * result;
           } else if ((l == 3) && (i == 3)) {
             // l = 3, i = 3
@@ -239,6 +259,49 @@ class NotAKnotBsplineBasisDeriv2: public Basis<LT, IT> {
               result = 1.2500000000000000e-01 + result * t;
               return innerDeriv * result;
             }
+          } else if ((l == 3) && (i == 4)) {
+            // l = 3, i = 4
+            if ((t < -4.0) || (t > 4.0)) {
+              return 0.0;
+            } else if (t < -1.0) {
+              t += 4.0;
+              double result = -2.7777777777777776e-02;
+              result = 5.5555555555555552e-02 + result * t;
+              result = 5.5555555555555552e-02 + result * t;
+              result = 1.8518518518518517e-02 + result * t;
+              return innerDeriv * result;
+            } else if (t < 0.0) {
+              t += 1.0;
+              double result = 2.5000000000000000e-01;
+              result = -1.9444444444444445e-01 + result * t;
+              result = -3.6111111111111110e-01 + result * t;
+              result = -6.4814814814814811e-02 + result * t;
+              return innerDeriv * result;
+            } else if (t < 1.0) {
+              double result = -2.5000000000000000e-01;
+              result = 5.5555555555555558e-01 + result * t;
+              result *= t;
+              result = -3.7037037037037035e-01 + result * t;
+              return innerDeriv * result;
+            } else {
+              t -= 1.0;
+              double result = 2.7777777777777776e-02;
+              result = -1.9444444444444445e-01 + result * t;
+              result = 3.6111111111111110e-01 + result * t;
+              result = -6.4814814814814811e-02 + result * t;
+              return innerDeriv * result;
+            }
+          } else if (i == 0) {
+            // l >= 3, i = 0
+            if ((t < 0.0) || (t > 3.0)) {
+              return 0.0;
+            } else {
+              double result = -7.9365079365079361e-03;
+              result = 7.1428571428571425e-02 + result * t;
+              result = -2.1428571428571427e-01 + result * t;
+              result = 2.1428571428571427e-01 + result * t;
+              return innerDeriv * result;
+            }
           } else if (i == 1) {
             // l >= 3, i = 1
             if ((t < -1.0) || (t > 3.0)) {
@@ -256,6 +319,32 @@ class NotAKnotBsplineBasisDeriv2: public Basis<LT, IT> {
               result = 7.1428571428571425e-02 + result * t;
               result = -7.1428571428571425e-02 + result * t;
               result = 2.3809523809523808e-02 + result * t;
+              return innerDeriv * result;
+            }
+          } else if (i == 2) {
+            // l >= 3, i = 2
+            if ((t < -2.0) || (t > 3.0)) {
+              return 0.0;
+            } else if (t < 1.0) {
+              t += 2.0;
+              double result = -7.9365079365079361e-02;
+              result = 4.2857142857142855e-01 + result * t;
+              result = -4.2857142857142855e-01 + result * t;
+              result = -2.3809523809523808e-01 + result * t;
+              return innerDeriv * result;
+            } else if (t < 2.0) {
+              t -= 1.0;
+              double result = 1.4285714285714285e-01;
+              result = -2.8571428571428570e-01 + result * t;
+              result *= t;
+              result = 1.9047619047619047e-01 + result * t;
+              return innerDeriv * result;
+            } else {
+              t -= 2.0;
+              double result = -4.7619047619047616e-02;
+              result = 1.4285714285714285e-01 + result * t;
+              result = -1.4285714285714285e-01 + result * t;
+              result = 4.7619047619047616e-02 + result * t;
               return innerDeriv * result;
             }
           } else if (i == 3) {
@@ -288,6 +377,45 @@ class NotAKnotBsplineBasisDeriv2: public Basis<LT, IT> {
               result = 2.3809523809523808e-01 + result * t;
               result = -2.3809523809523808e-01 + result * t;
               result = 7.9365079365079361e-02 + result * t;
+              return innerDeriv * result;
+            }
+          } else if (i == 4) {
+            // l >= 4, i = 4
+            if ((t < -4.0) || (t > 3.0)) {
+              return 0.0;
+            } else if (t < -1.0) {
+              t += 4.0;
+              double result = -3.9682539682539680e-02;
+              result = 7.1428571428571425e-02 + result * t;
+              result = 7.1428571428571425e-02 + result * t;
+              result = 2.3809523809523808e-02 + result * t;
+              return innerDeriv * result;
+            } else if (t < 0.0) {
+              t += 1.0;
+              double result = 5.1587301587301593e-01;
+              result = -2.8571428571428570e-01 + result * t;
+              result = -5.7142857142857140e-01 + result * t;
+              result = -1.9047619047619047e-01 + result * t;
+              return innerDeriv * result;
+            } else if (t < 1.0) {
+              double result = -8.1746031746031744e-01;
+              result = 1.2619047619047619e+00 + result * t;
+              result = 4.0476190476190477e-01 + result * t;
+              result = -5.3174603174603174e-01 + result * t;
+              return innerDeriv * result;
+            } else if (t < 2.0) {
+              t -= 1.0;
+              double result = 5.1587301587301593e-01;
+              result = -1.1904761904761905e+00 + result * t;
+              result = 4.7619047619047616e-01 + result * t;
+              result = 3.1746031746031744e-01 + result * t;
+              return innerDeriv * result;
+            } else {
+              t -= 2.0;
+              double result = -1.1904761904761904e-01;
+              result = 3.5714285714285715e-01 + result * t;
+              result = -3.5714285714285715e-01 + result * t;
+              result = 1.1904761904761904e-01 + result * t;
               return innerDeriv * result;
             }
           } else {
