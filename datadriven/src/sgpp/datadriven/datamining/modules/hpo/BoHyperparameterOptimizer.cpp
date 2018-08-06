@@ -68,7 +68,7 @@ void BoHyperparameterOptimizer::run() {
   for (int i = 0; i < config.getNRandom(); ++i) {
     initialConfigs.emplace_back(prototype);
     initialConfigs[i].randomize(generator);
-    fitterFactory->setBO(&initialConfigs[i]);
+    fitterFactory->setBO(initialConfigs[i]);
     std::string configString = fitterFactory->printConfig();
     std::unique_ptr<ModelFittingBase> fitter(fitterFactory->buildFitter());
     double result = hpoScorer->calculateScore(*fitter, *trainData, &stdDeviation);
@@ -94,13 +94,13 @@ void BoHyperparameterOptimizer::run() {
 
   // main loop
   for (int q = 0; q < config.getNRuns(); q++) {
-    BOConfig *nextConfig = bo.main(prototype);
+    BOConfig nextConfig = bo.main(prototype);
     fitterFactory->setBO(nextConfig);
     std::string configString = fitterFactory->printConfig();
     std::unique_ptr<ModelFittingBase> fitter(fitterFactory->buildFitter());
     double result = hpoScorer->calculateScore(*fitter, *trainData, &stdDeviation);
-    nextConfig->setScore(result);
-    bo.updateGP();
+    nextConfig.setScore(result);
+    bo.updateGP(nextConfig);
     bo.fitScales();
     std::cout << (q + config.getNRandom() + 1) << configString << ", " << result;
     myfile.open(fn.str(), std::ios_base::app);

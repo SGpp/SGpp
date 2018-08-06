@@ -43,12 +43,12 @@ class BayesianOptimization {
   /**
    * Gaussian Process update step. Incorporates most recent sample into Gaussian Process.
    */
-  void updateGP();
+  void updateGP(BOConfig &newConfig);
 
   /**
    * Implementation of mathematical formulation of the expected improvement acquisition function
    */
-  double acquisitionEI(base::DataVector knew, double kself, double bestsofar);
+  double acquisitionEI(double dMean, double dVar, double bestsofar);
 
   /**
    * Perform a Cholesky Decomposition
@@ -69,7 +69,7 @@ class BayesianOptimization {
    * @param prototype baseline BOConfig
    * @return new sample point
    */
-  BOConfig *main(BOConfig &prototype);
+  BOConfig main(BOConfig &prototype);
 
   /**
    * Possible score function transformation to accentuate the optimum
@@ -97,6 +97,10 @@ class BayesianOptimization {
    * @return value representative of the likelihood
    */
   double likelihood(const base::DataVector &inp);
+
+  double mean(base::DataVector &knew);
+
+  double var(base::DataVector &knew, double kself);
 
  protected:
   /**
