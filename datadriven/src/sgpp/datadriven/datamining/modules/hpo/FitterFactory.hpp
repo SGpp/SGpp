@@ -82,7 +82,7 @@ class FitterFactory {
    * Adjusts current hyperparameter configuration according to the input
    * @param config compact representation of hyperparameters
    */
-  void setBO(BOConfig *config);
+  void setBO(BOConfig &config);
 
  protected:
   /**

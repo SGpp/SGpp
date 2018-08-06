@@ -53,9 +53,17 @@ double BayesianOptimization::kernel(double distance) {
   return exp(-distance * kernelwidth / 2);
 }
 
-double BayesianOptimization::acquisitionEI(base::DataVector knew, double kself, double bestsofar) {
-  double mean = knew.dotProduct(transformedOutput);
+double BayesianOptimization::acquisitionEI(double dMean, double dVar, double bestsofar) {
+  double z = (dMean - (bestsofar - 0.001)) / dVar;
+  return ((dMean - (bestsofar - 0.001)) * (0.5 + 0.5 * std::erf(-z / 1.41))
+      - dVar * 0.4 * std::exp(-0.5 * z * z));   // EDIT: is this calculated properly?
+}
 
+double BayesianOptimization::mean(base::DataVector &knew) {
+  return knew.dotProduct(transformedOutput);
+}
+
+double BayesianOptimization::var(base::DataVector &knew, double kself) {
   base::DataVector tmp(knew);
   solveCholeskySystem(gleft, tmp);
 
@@ -66,18 +74,13 @@ double BayesianOptimization::acquisitionEI(base::DataVector knew, double kself, 
   maxofmax = std::fmax(max, maxofmax);
   double var = kself - knew.dotProduct(tmp);
   if (var > 1 || var < 0) {
-    // std::cout << "Error: wrong variance: "<<var;
-    // <<", knew:"<<knew.toString()<<", temp: "<<tmp.toString()<<std::endl;
     screwedvar = true;
     return 0;
   }
-
-  double z = (mean - (bestsofar - 0.001)) / var;
-  return ((mean - (bestsofar - 0.001)) * (0.5 + 0.5 * std::erf(-z / 1.41))
-      - var * 0.4 * std::exp(-0.5 * z * z));   // EDIT: is this calculated properly?
+  return var;
 }
 
-BOConfig *BayesianOptimization::main(BOConfig &prototype) {
+BOConfig BayesianOptimization::main(BOConfig &prototype) {
   BOConfig nextconfig(prototype);
   optimization::WrapperScalarFunction wrapper(prototype.getContSize(),
                                               std::bind(&BayesianOptimization::acquisitionOuter,
@@ -102,8 +105,7 @@ BOConfig *BayesianOptimization::main(BOConfig &prototype) {
     }
   } while (nextconfig.nextDisc());
   // std::cout << "Acquistion: " << min << std::endl;
-  allConfigs.push_back(bestConfig);
-  return &allConfigs.back();
+  return bestConfig;
 }
 
 double BayesianOptimization::acquisitionOuter(const base::DataVector &inp) {
@@ -112,7 +114,9 @@ double BayesianOptimization::acquisitionOuter(const base::DataVector &inp) {
     kernelrow[i] = kernel(allConfigs[i].getTotalDistance(inp, scales));   // divided by 2
     // EDIT: removed kernel = 1 check, okay?
   }
-  return acquisitionEI(kernelrow, 1, bestsofar);  // EDIT: kself + noise?
+  double m = mean(kernelrow);
+  double v = var(kernelrow, 1);
+  return acquisitionEI(m, v, bestsofar);  // EDIT: kself + noise?
 }
 
 void BayesianOptimization::fitScales() {
@@ -167,19 +171,20 @@ double BayesianOptimization::likelihood(const base::DataVector &inp) {
   return 2 * tmp + rawScores.dotProduct(transformed);   // EDIT: correct likelihood?
 }
 
-void BayesianOptimization::updateGP() {
+void BayesianOptimization::updateGP(BOConfig &newConfig) {
+  allConfigs.push_back(newConfig);
   double noise = pow(10, -scales.back() * 10);
   size_t size = kernelmatrix.getNcols();
   kernelmatrix.appendRow();
   kernelmatrix.appendCol(base::DataVector(size + 1));
   for (size_t i = 0; i < size; ++i) {
-    double tmp = kernel(allConfigs[i].getScaledDistance(allConfigs.back(), scales));
+    double tmp = kernel(allConfigs[i].getScaledDistance(newConfig, scales));
     kernelmatrix.set(size, i, tmp);
     kernelmatrix.set(i, size, tmp);
     rawScores[i] = transformScore(allConfigs[i].getScore());
   }
   kernelmatrix.set(size, size, 1 + noise);
-  rawScores.push_back(transformScore(allConfigs.back().getScore()));
+  rawScores.push_back(transformScore(newConfig.getScore()));
 
   decomposeCholesky(kernelmatrix, gleft);
 
