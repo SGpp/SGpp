@@ -13,7 +13,7 @@
 #pragma once
 
 namespace sgpp {
-namespace datadriven {
+namespace base {
 /**
  * Enumeration that defines different types of refinement indicators / functors
  */
