@@ -18,7 +18,7 @@
 
 namespace sgpp {
 namespace datadriven {
-using sgpp::datadriven::RefinementFunctorType;
+using sgpp::base::RefinementFunctorType;
 
 class RefinementFunctorTypeParser {
  public:
