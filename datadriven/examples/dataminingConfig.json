@@ -1,6 +1,6 @@
 {
 	"dataSource": {
-		"filePath": "/media/d/uni/bachelor_thesis/gmm/gmm.arff",
+		"filePath": "path/to/some/file.arff",
 		"fileType": "arff",
 		"compression": false,
 		"numBatches": 1,
