@@ -87,7 +87,7 @@ int main() {
   std::string refMonitor;
   // select periodic monitor - perform refinements in fixed intervals
   refMonitor = "periodic";
-  size_t refPeriod = 1;  // the refinement interval
+  size_t refPeriod = 40;  // the refinement interval
   // select convergence monitor - perform refinements if algorithm has
   // converged
   // (convergence measured with respect to changes of the classification
@@ -131,8 +131,8 @@ int main() {
    */
   std::cout << "# start to train the learner" << std::endl;
   learner.train(trainDataset.getNumberInstances(), 10, refType, refMonitor, refPeriod,
-                accDeclineThreshold, accDeclineBufferSize, minRefInterval, false, 0, adaptConfig,
-                densityEstimationConfig);
+                accDeclineThreshold, accDeclineBufferSize, minRefInterval, adaptConfig,
+                regularizationConfig, densityEstimationConfig);
 
   /**
    * Accuracy on test data.

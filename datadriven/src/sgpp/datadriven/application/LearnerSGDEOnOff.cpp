@@ -7,7 +7,6 @@
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
@@ -21,6 +20,9 @@
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitor.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp>
 
 #include <chrono>
 #include <cmath>
@@ -106,9 +108,9 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(
 
 void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string refType,
                              std::string refMonitor, size_t refPeriod, double accDeclineThreshold,
-                             size_t accDeclineBufferSize, size_t minRefInterval, bool enableCv,
-                             size_t nextCvStep,
+                             size_t accDeclineBufferSize, size_t minRefInterval,
                              sgpp::base::AdpativityConfiguration& adaptivityConfig,
+                             sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
                              sgpp::datadriven::DensityEstimationConfiguration&
                              densityEstimationConfig) {
   // counts total number of processed data points
@@ -123,9 +125,14 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
   // initialize refinement variables
   double currentValidError = 0.0;
   double currentTrainError = 0.0;
-  // create convergence monitor object
-  ConvergenceMonitor monitor{accDeclineThreshold, accDeclineBufferSize, minRefInterval};
-  bool doRefine = false;  // is set to 'true' by refinement monitor
+  RefinementMonitor *monitor = nullptr;
+  if (refMonitor == "periodic") {
+    monitor = new RefinementMonitorPeriodic(refPeriod);
+  } else {
+    monitor = new RefinementMonitorConvergence(
+      accDeclineThreshold, accDeclineBufferSize, minRefInterval);
+  }
+
   // counts number of performed refinements
   size_t refCnt = 0;
 
@@ -165,14 +172,6 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
 
       auto begin = std::chrono::high_resolution_clock::now();
 
-      // check if cross-validation should be performed
-      bool doCv = false;
-      if (enableCv) {
-        if (nextCvStep == step) {
-          doCv = true;
-          nextCvStep *= 5;
-        }
-      }
       // assemble next batch
       Dataset currentBatch(batchSize, dim);
       for (size_t j = 0; j < batchSize; j++) {
@@ -186,51 +185,29 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
       cnt += batchSize;
 
       // train the model with current batch
-      train(currentBatch, adaptivityConfig, densityEstimationConfig, doCv, &refineCoarse);
+      train(currentBatch, adaptivityConfig, densityEstimationConfig, &refineCoarse);
 
       totalInstances += currentBatch.getNumberInstances();
 
       // access DBMatOnlineDE-objects of all classes in order
       // to apply adaptivity to the specific sparse grids later on
 
-      // check if refinement should be performed
-      if (refMonitor == "periodic") {
-        // check periodic monitor
-        if (offline->isRefineable() && (totalInstances > 0) && (totalInstances % refPeriod == 0) &&
-            (refCnt < adaptivityConfig.numRefinements_)) {
-          doRefine = true;
-        }
-      } else if (refMonitor == "convergence") {
-        // check convergence monitor
-        if (validationData == nullptr) {
-          throw data_exception("No validation data for checking convergence provided!");
-        }
-        if (offline->isRefineable() && (refCnt < adaptivityConfig.numRefinements_)) {
-          currentValidError = getError(*validationData);
-          currentTrainError = getError(trainData);  // if train dataset is large
-                                                    // use a subset for error
-                                                    // evaluation
-          monitor.pushToBuffer(currentValidError, currentTrainError);
-          if (monitor.nextRefCnt > 0) {
-            monitor.nextRefCnt--;
-          }
-          if (monitor.nextRefCnt == 0) {
-            doRefine = monitor.checkConvergence();
-          }
-        }
+      size_t refinementsNecessary = 0;
+      if (offline->isRefineable() && (refCnt < adaptivityConfig.numRefinements_) && monitor) {
+        monitor->pushToBuffer(currentBatch.getNumberInstances(),
+            currentValidError, currentTrainError);
+        refinementsNecessary = monitor->refinementsNecessary();
       }
 
       // if the Cholesky decomposition is chosen as factorization method
       // refinement
       // and coarsening methods can be applied
-      if (doRefine) {
+      while (refinementsNecessary > 0) {
         std::cout << "refinement at iteration: " << totalInstances << "\n";
-        refine(monitor, adaptivityConfig, densityEstimationConfig, refineCoarse, refType);
+        refine(*monitor, adaptivityConfig, regularizationConfig, densityEstimationConfig,
+            refineCoarse, refType);
         refCnt += 1;
-        doRefine = false;
-        if (refMonitor == "convergence") {
-          monitor.nextRefCnt = monitor.minRefInterval;
-        }
+        refinementsNecessary--;
       }
 
       // save current error
@@ -256,7 +233,6 @@ void LearnerSGDEOnOff::train(
     Dataset& dataset,
     sgpp::base::AdpativityConfiguration& adaptivityConfig,
     sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
-    bool doCv,
     std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse) {
   size_t dim = dataset.getDimension();
 
@@ -286,13 +262,12 @@ void LearnerSGDEOnOff::train(
   }
 
   // compute density functions
-  train(trainDataClasses, densityEstimationConfig, doCv, refineCoarse);
+  train(trainDataClasses, densityEstimationConfig, refineCoarse);
 }
 
 void LearnerSGDEOnOff::train(std::vector<std::pair<DataMatrix*, double>>& trainDataClasses,
                              sgpp::datadriven::DensityEstimationConfiguration&
                             densityEstimationConfig,
-                             bool doCv,
                              std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse) {
   size_t numberOfDataPoints = 0;
   for (size_t i = 0; i < trainDataClasses.size(); i++) {
@@ -305,7 +280,7 @@ void LearnerSGDEOnOff::train(std::vector<std::pair<DataMatrix*, double>>& trainD
       // update density function for current class
       size_t classIndex = densityFunctions[i].second;
       densityFunctions[i].first->computeDensityFunction(
-          *(alphas[i]), *p.first, *(grids[classIndex]), densityEstimationConfig, true, doCv,
+          *(alphas[i]), *p.first, *(grids[classIndex]), densityEstimationConfig, true, false,
           &(*refineCoarse)[i].first, (*refineCoarse)[i].second);
       (*refineCoarse)[i].first.clear();
       (*refineCoarse)[i].second = 0;
@@ -489,15 +464,6 @@ void LearnerSGDEOnOff::getDensities(DataVector& point, DataVector& density) cons
   }
 }
 
-void LearnerSGDEOnOff::setCrossValidationParameters(int lambdaStep, double lambdaStart,
-                                                    double lambdaEnd, DataMatrix* test,
-                                                    DataMatrix* testRes, bool logscale) {
-  for (auto& destFunction : densityFunctions) {
-    destFunction.first->setCrossValidationParameters(lambdaStep, lambdaStart, lambdaEnd, test,
-                                                     testRes, logscale);
-  }
-}
-
 /*double LearnerSGDEOnOff::getBestLambda() {
   // return online->getBestLambda();
   return 0.; // TODO
@@ -513,25 +479,17 @@ void LearnerSGDEOnOff::updateAlpha(size_t classIndex, std::list<size_t>* deleted
     size_t newPoints) {
   DataVector& alpha = *(alphas[classIndex]);
   if (alpha.getSize() != 0 && deletedPoints != nullptr && !deletedPoints->empty()) {
-    std::vector<size_t> deletedPoints_{std::begin(*deletedPoints), std::end(*deletedPoints)};
-    DataVector newAlpha{alpha.getSize() - deletedPoints->size() + newPoints};
-    for (size_t i = 0; i < alpha.getSize(); i++) {
-      if (std::find(deletedPoints_.begin(), deletedPoints_.end(), i) != deletedPoints_.end()) {
-        continue;
-      } else {
-        newAlpha.append(alpha.get(i));
-      }
-    }
-    // set new alpha
-    alpha = std::move(newAlpha);
+    std::vector<size_t> vecDeletedPoints{std::begin(*deletedPoints), std::end(*deletedPoints) };
+    alpha.remove(vecDeletedPoints);
   }
   if (newPoints > 0) {
     alpha.resizeZero(alpha.getSize() + newPoints);
   }
 }
 
-void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
+void LearnerSGDEOnOff::refine(RefinementMonitor& monitor,
                               sgpp::base::AdpativityConfiguration& adaptivityConfig,
+                              sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
                               sgpp::datadriven::DensityEstimationConfiguration&
                               densityEstimationConfig,
                               std::vector<std::pair<std::list<size_t>, size_t>>& refineCoarse,
@@ -695,11 +653,13 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
       // appropriate to redesign the functors in a way, that already considers these points
       // when coarsening the grid itself.
       densEst->updateSystemMatrixDecomposition(densityEstimationConfig,
-          *(grids[idx]), newPoints, deletedGridPoints, densEst->getBestLambda());
-
+          *(grids[idx]), newPoints, deletedGridPoints, regularizationConfig.lambda_);
+      densEst->updateRhs(newPoints, &refineCoarse[idx].first);
 
       // update alpha vector
       updateAlpha(idx, &refineCoarse[idx].first, refineCoarse[idx].second);
+
+      std::cout << "alpha size" << alphas[idx]->size() << std::endl;
     }
   }
 }

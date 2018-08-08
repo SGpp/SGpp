@@ -29,6 +29,7 @@ DataSource::DataSource(DataSourceConfig conf, SampleProvider* sp)
     : config(conf), currentIteration(0), sampleProvider(std::unique_ptr<SampleProvider>(sp)) {
   // if a file name was specified, we are reading from a file, so we need to open it.
   if (!this->config.filePath.empty()) {
+    std::cout << "Read file " << config.filePath << std::endl;
     dynamic_cast<FileSampleProvider*>(sampleProvider.get())->readFile(this->config.filePath,
         this->config.hasTargets);
   }
