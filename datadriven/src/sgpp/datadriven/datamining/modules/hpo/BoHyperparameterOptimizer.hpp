@@ -75,6 +75,14 @@ class BoHyperparameterOptimizer : public HyperparameterOptimizer {
    * Run hyperparameter optimization using Bayesian Optimization and random search to warm up.
    */
   void run() override;
+
+  /**
+   * Possible score function transformation to accentuate the optimum
+   * @param original
+   * @return transformed value
+   */
+  double transformScore(double original);
+
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

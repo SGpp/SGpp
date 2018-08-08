@@ -72,7 +72,7 @@ void BoHyperparameterOptimizer::run() {
     std::string configString = fitterFactory->printConfig();
     std::unique_ptr<ModelFittingBase> fitter(fitterFactory->buildFitter());
     double result = hpoScorer->calculateScore(*fitter, *trainData, &stdDeviation);
-    initialConfigs[i].setScore(result);
+    initialConfigs[i].setScore(transformScore(result));
     std::cout << (i + 1) << configString << ", " << result;
     myfile.open(fn.str(), std::ios_base::app);
     if (myfile.is_open()) {
@@ -91,6 +91,8 @@ void BoHyperparameterOptimizer::run() {
   std::cout << "############# Random Phase finished! #############" << std::endl;
 
   BayesianOptimization bo(initialConfigs);
+  bo.setScales(bo.fitScales(), 0.7);
+
 
   // main loop
   for (int q = 0; q < config.getNRuns(); q++) {
@@ -99,9 +101,9 @@ void BoHyperparameterOptimizer::run() {
     std::string configString = fitterFactory->printConfig();
     std::unique_ptr<ModelFittingBase> fitter(fitterFactory->buildFitter());
     double result = hpoScorer->calculateScore(*fitter, *trainData, &stdDeviation);
-    nextConfig.setScore(result);
+    nextConfig.setScore(transformScore(result));
     bo.updateGP(nextConfig);
-    bo.fitScales();
+    bo.setScales(bo.fitScales(), 0.1);
     std::cout << (q + config.getNRandom() + 1) << configString << ", " << result;
     myfile.open(fn.str(), std::ios_base::app);
     if (myfile.is_open()) {
@@ -125,5 +127,11 @@ void BoHyperparameterOptimizer::run() {
   }
   myfile.close();
 }
+
+double BoHyperparameterOptimizer::transformScore(double original) {
+  return -1 / (1 + original);
+}
+
+
 } /* namespace datadriven */
 } /* namespace sgpp */
