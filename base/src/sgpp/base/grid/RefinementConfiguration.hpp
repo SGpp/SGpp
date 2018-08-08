@@ -33,6 +33,6 @@ enum class RefinementMonitorType {
   Periodic,
   Error
 };
-}  // namespace datadriven
+}  // namespace base
 }  // namespace sgpp
 
