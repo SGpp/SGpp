@@ -48,7 +48,7 @@ class BayesianOptimization {
   /**
    * Implementation of mathematical formulation of the expected improvement acquisition function
    */
-  double acquisitionEI(double dMean, double dVar, double bestsofar);
+  static double acquisitionEI(double dMean, double dVar, double bestsofar);
 
   /**
    * Perform a Cholesky Decomposition
@@ -71,12 +71,6 @@ class BayesianOptimization {
    */
   BOConfig main(BOConfig &prototype);
 
-  /**
-   * Possible score function transformation to accentuate the optimum
-   * @param original
-   * @return transformed value
-   */
-  double transformScore(double original);
 
   /**
    * kernel function
@@ -89,7 +83,7 @@ class BayesianOptimization {
    * fitting the Gaussian Process to the data in the form of scaling the hyperparameters
    * in relation to each other by likelihood maximization
    */
-  void fitScales();
+  base::DataVector fitScales();
 
   /**
    * Gaussian Process likelihood to perform likelihood maximization over
@@ -101,6 +95,8 @@ class BayesianOptimization {
   double mean(base::DataVector &knew);
 
   double var(base::DataVector &knew, double kself);
+
+  void setScales(base::DataVector nscales, double factor);
 
  protected:
   /**

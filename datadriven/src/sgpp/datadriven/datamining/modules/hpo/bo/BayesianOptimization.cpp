@@ -33,20 +33,17 @@ BayesianOptimization::BayesianOptimization(const std::vector<BOConfig> &initialC
       screwedvar(false),
       maxofmax(0),
       allConfigs(initialConfigs) {
-  scales = base::DataVector(initialConfigs.front().getNPar() + 1, 1);
   for (size_t i = 0; i < allConfigs.size(); ++i) {
-    rawScores[i] = transformScore(allConfigs[i].getScore());
+    rawScores[i] = allConfigs[i].getScore();
   }
   rawScores.normalize();
   rawScores.sub(base::DataVector(rawScores.size(),
                                  rawScores.sum() / static_cast<double>(rawScores.size())));
   bestsofar = rawScores.min();
-  fitScales();
+  scales = base::DataVector(initialConfigs.front().getNPar() + 1, 1);
+  setScales(scales, 1);
 }
 
-double BayesianOptimization::transformScore(double original) {
-  return -1 / (1 + original);
-}
 
 double BayesianOptimization::kernel(double distance) {
   double kernelwidth = 8.0;   // offset for dimensional scaling
@@ -119,20 +116,10 @@ double BayesianOptimization::acquisitionOuter(const base::DataVector &inp) {
   return acquisitionEI(m, v, bestsofar);  // EDIT: kself + noise?
 }
 
-void BayesianOptimization::fitScales() {
-  optimization::WrapperScalarFunction wrapper(scales.size(),
-                                              std::bind(&BayesianOptimization::likelihood,
-                                                        this,
-                                                        std::placeholders::_1));
-  // adjust resource allocation for optimizer here
-  optimization::optimizer::MultiStart optimizer(wrapper, 2000, 200);
-  optimizer.optimize();
-  // std::cout << optimizer.getOptimalPoint().toString() << std::endl;
-  // std::cout << optimizer.getOptimalValue() << std::endl;
-  base::DataVector tmp(optimizer.getOptimalPoint());
-  tmp.mult(0.1);   // factor for smooth updating of GP
-  scales.mult(0.9);
-  scales.add(tmp);
+void BayesianOptimization::setScales(base::DataVector nscales, double factor) {
+  nscales.mult(factor);   // factor for smooth updating of GP
+  scales.mult(1-factor);
+  scales.add(nscales);
   // std::cout << scales.toString() << std::endl;
   double noise = pow(10, -scales.back() * 10);
   for (size_t i = 0; i < allConfigs.size(); ++i) {
@@ -146,6 +133,19 @@ void BayesianOptimization::fitScales() {
   decomposeCholesky(kernelmatrix, gleft);
   transformedOutput = base::DataVector(rawScores);
   solveCholeskySystem(gleft, transformedOutput);
+}
+
+base::DataVector BayesianOptimization::fitScales() {
+  optimization::WrapperScalarFunction wrapper(scales.size(),
+                                              std::bind(&BayesianOptimization::likelihood,
+                                                        this,
+                                                        std::placeholders::_1));
+  // adjust resource allocation for optimizer here
+  optimization::optimizer::MultiStart optimizer(wrapper, 2000, 200);
+  optimizer.optimize();
+  // std::cout << optimizer.getOptimalPoint().toString() << std::endl;
+  // std::cout << optimizer.getOptimalValue() << std::endl;
+  return optimizer.getOptimalPoint();
 }
 
 double BayesianOptimization::likelihood(const base::DataVector &inp) {
@@ -181,10 +181,10 @@ void BayesianOptimization::updateGP(BOConfig &newConfig) {
     double tmp = kernel(allConfigs[i].getScaledDistance(newConfig, scales));
     kernelmatrix.set(size, i, tmp);
     kernelmatrix.set(i, size, tmp);
-    rawScores[i] = transformScore(allConfigs[i].getScore());
+    rawScores[i] = allConfigs[i].getScore();
   }
   kernelmatrix.set(size, size, 1 + noise);
-  rawScores.push_back(transformScore(newConfig.getScore()));
+  rawScores.push_back(newConfig.getScore());
 
   decomposeCholesky(kernelmatrix, gleft);
 
