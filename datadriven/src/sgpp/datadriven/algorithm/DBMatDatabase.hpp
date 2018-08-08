@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef DATADRIVEN_SRC_SGPP_DATADRIVEN_ALGORITHM_DBMATDATABASE_HPP_
-#define DATADRIVEN_SRC_SGPP_DATADRIVEN_ALGORITHM_DBMATDATABASE_HPP_
+#pragma once
 
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/base/tools/json/ListNode.hpp>
@@ -144,5 +143,3 @@ class DBMatDatabase{
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
-
-#endif /* DATADRIVEN_SRC_SGPP_DATADRIVEN_ALGORITHM_DBMATDATABASE_HPP_ */

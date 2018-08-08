@@ -12,12 +12,11 @@
 
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceCrossValidation.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/CrossValidation.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/RandomShufflingFunctor.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/SplittingScorer.hpp>
+#include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -26,15 +25,13 @@
 #include <string>
 
 using sgpp::datadriven::DataSourceBuilder;
-using sgpp::datadriven::DataSource;
+using sgpp::datadriven::DataSourceCrossValidation;
 using sgpp::datadriven::Dataset;
 using sgpp::datadriven::ModelFittingLeastSquares;
 using sgpp::datadriven::FitterConfigurationLeastSquares;
 using sgpp::datadriven::MSE;
 using sgpp::datadriven::Scorer;
-using sgpp::datadriven::CrossValidation;
-using sgpp::datadriven::SplittingScorer;
-using sgpp::datadriven::RandomShufflingFunctor;
+using sgpp::datadriven::SparseGridMinerCrossValidation;
 using sgpp::base::GridType;
 
 int main(int argc, char** argv) {
@@ -57,7 +54,8 @@ int main(int argc, char** argv) {
    * use all samples it provides, we only pass in the path. Everything else is managed by default
    * values and auto detection of extensions.
    */
-  auto dataSource = std::unique_ptr<DataSource>(DataSourceBuilder().withPath(path).assemble());
+  auto dataSource = std::unique_ptr<DataSourceCrossValidation>(
+      DataSourceBuilder().withPath(path).crossValidationAssemble());
   std::cout << "reading input file: " << path << std::endl;
   /**
    * Once we have a data source, we can read the contents of the stored dataset.
@@ -83,28 +81,29 @@ int main(int argc, char** argv) {
   auto& regularizationConfig = config.getRegularizationConfig();
   regularizationConfig.lambda_ = 10e-1;
 
-  std::cout << "starting 5 fold cross validation with seed 42" << std::endl;
   /**
    * Based on our configuration, we then can create a fitter object.
    */
   auto model = ModelFittingLeastSquares{config};
-  double stdDeviation = 0;
   /**
    * We want to perform 5 Fold cross validation on our model. To assess the quality of the
    * regression algorithm, we use the mean squared error (MSE) as an error metric. To ensure testing
    * and training data are not taken from an ordered distribution, we will permute the values that
-   * go into testing and training dataset and use a random seed of 42 for shuffling.
+   * go into testing and training dataset.
    */
-  CrossValidation scorer{new MSE{}, new RandomShufflingFunctor{}, 42, 5};
+  Scorer scorer{new MSE{}};
 
   /**
-   * Here the actual learning process is launched. The calculate Score method will perform 5 fold
-   * cross validation using our least squares model and return the average MSE and the standard
-   * deviation of the individual fold MSEs.
+   * Create a sparse grid miner that performs cross validation. The number of folds is 5 per
+   * default.
    */
-  auto score = scorer.calculateScore(model, *dataset, &stdDeviation);
+  SparseGridMinerCrossValidation miner(dataSource.get(), &model, &scorer);
 
-  std::cout << "Score = " << score << " with stdDeviation " << stdDeviation << std::endl;
+  /**
+   * Here the actual learning process is launched. The miner will perform k-fold cross validation
+   * and print the mean score as well as the standard deviation.
+   */
+  miner.learn();
 
   return 0;
 }

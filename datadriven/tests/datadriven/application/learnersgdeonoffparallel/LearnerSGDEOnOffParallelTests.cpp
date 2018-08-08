@@ -91,19 +91,6 @@ void createInstance() {
                                                                      classLabels, 2, false,
                                                                      0.0, *scheduler);
 
-    double cvLambdaStart = 1e-1;
-    double cvLambdaEnd = 1e-10;
-    int cvLambdaSteps = 10;
-    bool cvLogScale = true;
-    sgpp::base::DataMatrix *cvTestData = &testData.getData();
-    sgpp::base::DataMatrix *cvTestDataRes = nullptr;  // needed?
-    learnerInstance->setCrossValidationParameters(cvLambdaSteps,
-                                                  cvLambdaStart,
-                                                  cvLambdaEnd,
-                                                  cvTestData,
-                                                  cvTestDataRes,
-                                                  cvLogScale);
-
     atexit(freeInstance);
   }
 }

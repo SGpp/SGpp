@@ -10,6 +10,7 @@
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DatabaseConfiguration.hpp>
+#include <sgpp/datadriven/configuration/LearnerConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
@@ -125,10 +126,16 @@ class FitterConfiguration {
   const datadriven::OperationMultipleEvalConfiguration& getMultipleEvalConfig() const;
 
   /**
-     * Returns the database configuration, i.e. the filepath
-     * @return immutable DatabaseConfiguration
-     */
+   * Returns the database configuration, i.e. the filepath
+   * @return immutable DatabaseConfiguration
+   */
   const datadriven::DatabaseConfiguration& getDatabaseConfig() const;
+
+  /**
+   * Returns the configuration for the learner's behaviour
+   * @return immutable LearnerConfiguration
+   */
+  const datadriven::LearnerConfiguration& getLearnerConfig() const;
 
   /**
    * Get or set initial conditions for the grid before adaptive refinement.
@@ -238,6 +245,11 @@ class FitterConfiguration {
    * #sgpp::base::OperationMultipleEval
    */
   datadriven::OperationMultipleEvalConfiguration multipleEvalConfig;
+
+  /**
+   * Configuration for the learner's behaviour
+   */
+  datadriven::LearnerConfiguration learnerConfig;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
