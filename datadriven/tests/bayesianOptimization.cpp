@@ -15,11 +15,17 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/bo/BOConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/bo/BayesianOptimization.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/FitterFactory.hpp>
+
+#define private public
+#include <sgpp/datadriven/datamining/modules/hpo/harmonica/Harmonica.hpp>
+#undef private
 
 using sgpp::datadriven::Dataset;
 using sgpp::base::DataVector;
 using sgpp::base::DataMatrix;
 using sgpp::datadriven::BOConfig;
+using sgpp::datadriven::ConfigurationBit;
 
 BOOST_AUTO_TEST_SUITE(BayesianOptimizationTest)
 
@@ -37,6 +43,63 @@ class ModelFittingTester : public sgpp::datadriven::ModelFittingBase {
     results[0] = samples.get(0,0);
   };
 };
+
+
+
+class FitterFactoryTester : public sgpp::datadriven::FitterFactory {
+ public:
+  FitterFactoryTester(){
+    for (int i = 0; i < 10; ++i) {
+      exconfBits.emplace_back();
+    }
+  };
+
+  virtual sgpp::datadriven::ModelFittingBase *buildFitter() {
+
+  };
+
+  void getConfigBits(std::vector<ConfigurationBit *> &configBits){
+    for (int i = 0; i < exconfBits.size(); ++i) {
+      configBits.push_back(&exconfBits[i]);
+    }
+  };
+
+  std::vector<ConfigurationBit> exconfBits;
+
+};
+
+BOOST_AUTO_TEST_CASE(harmonicaConfigs) {
+  std::mt19937 generator(123);
+  FitterFactoryTester fft{};
+  sgpp::datadriven::Harmonica harmonica(&fft);
+  int nbits = 12;
+  //test chains of calls
+  std::cout << harmonica.parityrow.empty();
+  //also test parityrow content via boolean array
+  //create random constraint->test all possible configurations either all, none or half are viable
+  std::uniform_int_distribution<int> distbit1(0, nbits-1);
+  std::uniform_int_distribution<int> distbit2(0, nbits-2);
+  std::uniform_int_distribution<int> distbit3(0, nbits-3);
+  std::uniform_int_distribution<int> distcons(0, 2);
+
+  int bit1 = distbit1(generator);
+  int bit2 = distbit2(generator);
+  if(bit2>=bit1){
+    bit2++;
+  }
+  int bit3 = distbit3(generator);
+  if(bit3>=bit1){
+    bit3++;
+  }
+  if(bit3>=bit2){
+    bit3++;
+  }
+  if(bit3==bit1){
+    bit3++;
+  }
+  //go through all ids, setParameters, check for doubles in boolean array
+  //also test movetonewspace
+}
 
 // EDIT: add FitterConfig and FitterFactory as well to do complete tests
 //compare both disctance calculations
@@ -133,9 +196,9 @@ BOOST_AUTO_TEST_CASE(fitScales) {
   std::vector<BOConfig> initialConfigs{};
   std::mt19937 generator(100);
 
-  std::vector<int> discOptions = {}; // EDIT: different test case options
-  std::vector<int> catOptions = {};
-  size_t nCont = 2;
+  std::vector<int> discOptions = {2,3}; // EDIT: different test case options
+  std::vector<int> catOptions = {2,3};
+  size_t nCont = 6;
   BOConfig prototype{&discOptions, &catOptions, nCont};
 
   DataVector scores{std::vector<double>({0, 0.5})};
@@ -152,8 +215,9 @@ BOOST_AUTO_TEST_CASE(fitScales) {
   sgpp::datadriven::BayesianOptimization genprocess(initialConfigs);
   sgpp::datadriven::BayesianOptimization fitprocess(initialConfigs);
 
-  DataVector scales{std::vector<double>({1,0.1,0.3})}; //,0.3,0.4,0.01,0.9
+  DataVector scales{std::vector<double>({1,0.1,0.3,0.4,0.01,0.9,0.2,0.8,1,0.5,0.3})}; //,0.3,0.4,0.01,0.9
   genprocess.setScales(scales, 1);
+  DataVector avscales(scales.size(), 1);
 
   for (int j = 0; j < 150; ++j) {
     DataVector kernelrow(initialConfigs.size());
@@ -166,9 +230,11 @@ BOOST_AUTO_TEST_CASE(fitScales) {
     double var = genprocess.var(kernelrow, 1.001); //EDIT: self variance???
     std::cout << "Mean: " << mean << " | sqVar: " << sqrt(var) << std::endl;
     double delta = scores.max() - scores.min();
-    // mean = scores.sum()/scores.size() + mean * delta;
+    //mean = scores.sum()/scores.size() + mean * delta;
     std::normal_distribution<double> distribution(mean, sqrt(var));
-    npoint.setScore(distribution(generator));
+    double tscore = distribution(generator);
+    //double tscore = scores.sum()/scores.size() + distribution(generator) * delta;
+    npoint.setScore(tscore);
     initialConfigs.push_back(npoint);
 
     scores.push_back(npoint.getScore());
@@ -177,10 +243,17 @@ BOOST_AUTO_TEST_CASE(fitScales) {
     DataVector fitscales(fitprocess.fitScales());
     double likelihood = fitprocess.likelihood(fitscales);
     //fitscales.componentwise_div(DataVector(fitscales.size(),fitscales.max()));
-    std::cout << fitscales.toString() << std::endl;
+    //std::cout << fitscales.toString() << std::endl;
     fitscales.sub(scales);
-    std::cout << "Diff: " << fitscales.l2Norm() << std::endl;
-    std::cout << "Likelihood: " << likelihood << " | Original: " << fitprocess.likelihood(scales) << std::endl;
+    std::cout << "Diff: " << fitscales.l2Norm() << " | Max Norm: " << fitscales.maxNorm() << std::endl;
+    //std::cout << "Likelihood: " << likelihood << " | Original: " << fitprocess.likelihood(scales) << std::endl;
+    fitscales.add(scales);
+    fitscales.mult(0.1);
+    avscales.mult(0.9);
+    avscales.add(fitscales);
+    avscales.sub(scales);
+    std::cout << "################################ AvDiff: " << avscales.l2Norm() << " | Max Norm: " << avscales.maxNorm() << std::endl;
+    avscales.add(scales);
   }
 }
 

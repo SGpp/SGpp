@@ -47,7 +47,7 @@ void Harmonica::prepareConfigs(std::vector<std::unique_ptr<ModelFittingBase>> &f
   // std::cout << "nAll: " << nAll << std::endl;
   configIDs.resize(nAll);
 
-  // get configured models for n samples (call fitterfactory)
+  // build row of bit combinations used for the matrix and constraint reconstruction
   size_t ncols = (freeBits.size() * freeBits.size() + 5) * freeBits.size() / 6 + 1;
   // std::cout << "nBits: " << ncols << std::endl;
   // std::cout << "nConfigBits: " << configBits.size() << std::endl;

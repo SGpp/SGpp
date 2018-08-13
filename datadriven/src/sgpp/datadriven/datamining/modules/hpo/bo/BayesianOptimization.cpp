@@ -187,10 +187,13 @@ void BayesianOptimization::updateGP(BOConfig &newConfig) {
   rawScores.push_back(newConfig.getScore());
 
   decomposeCholesky(kernelmatrix, gleft);
-
-  rawScores.normalize();
+  //EDIT: reactivate
+  //rawScores.normalize();
   rawScores.sub(base::DataVector(rawScores.size(),
                                  rawScores.sum() / static_cast<double>(rawScores.size())));
+  base::DataVector sqscores(rawScores);
+  sqscores.sqr();
+  rawScores.mult(rawScores.size()/sqscores.sum());
   bestsofar = rawScores.min();
   transformedOutput = base::DataVector(rawScores);
   solveCholeskySystem(gleft, transformedOutput);
