@@ -20,6 +20,8 @@ double basisEvalDx(sgpp::base::SBasis& basis, sgpp::base::level_t l,
       dynamic_cast<sgpp::base::SBsplineModifiedBase*>(&basis);
   sgpp::base::SBsplineModifiedClenshawCurtisBase* bsplineModifiedClenshawCurtisBasis =
       dynamic_cast<sgpp::base::SBsplineModifiedClenshawCurtisBase*>(&basis);
+  sgpp::base::SFundamentalNotAKnotSplineBase* fundamentalNotAKnotSplineBasis =
+      dynamic_cast<sgpp::base::SFundamentalNotAKnotSplineBase*>(&basis);
   sgpp::base::SFundamentalSplineBase* fundamentalSplineBasis =
       dynamic_cast<sgpp::base::SFundamentalSplineBase*>(&basis);
   sgpp::base::SFundamentalSplineModifiedBase* fundamentalSplineModifiedBasis =
@@ -51,6 +53,8 @@ double basisEvalDx(sgpp::base::SBasis& basis, sgpp::base::level_t l,
     return bsplineModifiedBasis->evalDx(l, i, x);
   } else if (bsplineModifiedClenshawCurtisBasis != nullptr) {
     return bsplineModifiedClenshawCurtisBasis->evalDx(l, i, x);
+  } else if (fundamentalNotAKnotSplineBasis != nullptr) {
+    return fundamentalNotAKnotSplineBasis->evalDx(l, i, x);
   } else if (fundamentalSplineBasis != nullptr) {
     return fundamentalSplineBasis->evalDx(l, i, x);
   } else if (fundamentalSplineModifiedBasis != nullptr) {
@@ -99,6 +103,8 @@ double basisEvalDxDx(sgpp::base::SBasis& basis, sgpp::base::level_t l,
       dynamic_cast<sgpp::base::SBsplineModifiedBase*>(&basis);
   sgpp::base::SBsplineModifiedClenshawCurtisBase* bsplineModifiedClenshawCurtisBasis =
       dynamic_cast<sgpp::base::SBsplineModifiedClenshawCurtisBase*>(&basis);
+  sgpp::base::SFundamentalNotAKnotSplineBase* fundamentalNotAKnotSplineBasis =
+      dynamic_cast<sgpp::base::SFundamentalNotAKnotSplineBase*>(&basis);
   sgpp::base::SFundamentalSplineBase* fundamentalSplineBasis =
       dynamic_cast<sgpp::base::SFundamentalSplineBase*>(&basis);
   sgpp::base::SFundamentalSplineModifiedBase* fundamentalSplineModifiedBasis =
@@ -130,6 +136,8 @@ double basisEvalDxDx(sgpp::base::SBasis& basis, sgpp::base::level_t l,
     return bsplineModifiedBasis->evalDxDx(l, i, x);
   } else if (bsplineModifiedClenshawCurtisBasis != nullptr) {
     return bsplineModifiedClenshawCurtisBasis->evalDxDx(l, i, x);
+  } else if (fundamentalNotAKnotSplineBasis != nullptr) {
+    return fundamentalNotAKnotSplineBasis->evalDxDx(l, i, x);
   } else if (fundamentalSplineBasis != nullptr) {
     return fundamentalSplineBasis->evalDxDx(l, i, x);
   } else if (fundamentalSplineModifiedBasis != nullptr) {
