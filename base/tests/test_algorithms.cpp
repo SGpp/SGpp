@@ -234,7 +234,7 @@ void bsplinePropertiesTest(SBasis& basis, level_t start_level = 1, bool modified
   }
 }
 
-void fundamentalSplineTest(SBasis& basis, bool modified = false) {
+void fundamentalSplineTest(SBasis& basis, bool modified = false, bool notAKnot = false) {
   const level_t startLevel = 1;
   const double tol = 1e-10;
 
@@ -243,8 +243,21 @@ void fundamentalSplineTest(SBasis& basis, bool modified = false) {
 
     for (index_t i = 1; i < hInv; i += 2) {
       // test bounds
-      const double upperBound = (((!modified) || ((i > 1) && (i < hInv - 1))) ? 1.0 : 2.3);
-      boundTest(basis, l, i, -0.3, upperBound + tol);
+      double lowerBound;
+      double upperBound;
+
+      if (modified) {
+        lowerBound = -0.3;
+        upperBound = (((i > 1) && (i < hInv - 1)) ? 1.0 : 2.3);
+      } else if (notAKnot) {
+        lowerBound = -0.5;
+        upperBound = 1.4;
+      } else {
+        lowerBound = -0.3;
+        upperBound = 1.0;
+      }
+
+      boundTest(basis, l, i, lowerBound - tol, upperBound + tol);
 
       for (index_t i2 = 0; i2 <= hInv; i2++) {
         // test Lagrange property
@@ -400,7 +413,7 @@ BOOST_AUTO_TEST_CASE(TestFundamentalNotAKnotSplineBasis) {
 
   for (size_t p = 1; p <= pMax; p++) {
     sgpp::base::SFundamentalNotAKnotSplineBase basis(p);
-    fundamentalSplineTest(basis);
+    fundamentalSplineTest(basis, false, true);
     derivativesTest(basis, basis.getDegree() - 1);
   }
 }
