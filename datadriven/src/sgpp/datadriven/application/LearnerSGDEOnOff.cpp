@@ -542,7 +542,7 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
   DataVector p(trainData.getDimension());
 
   size_t newPoints = 0;
-  std::vector<size_t> deletedGridPoints;
+  std::vector<size_t> deletedGridPointsSeqs;
 
   // acc = getAccuracy();
   // avgErrors.append(1.0 - acc);
@@ -642,19 +642,20 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
           // std::cout << "minIndexAllowed: " << minIndexAllowed << std::endl;
           std::cout << "gridSize: " << grids[idx]->getSize() << std::endl;
 
-          deletedGridPoints.clear();
+          deletedGridPointsSeqs.clear();
           coarse_.free_coarsen_NFirstOnly(grids[idx]->getStorage(),
                                           scf,
                                           alphaWeight,
                                           grids[idx]->getSize(),
                                           minIndexAllowed,
-                                          &deletedGridPoints);
+                                          0,
+                                          &deletedGridPointsSeqs);
 
           std::cout << "Size after coarsening:" << grids[idx]->getSize() << "\n";
           // int new_size = grid->getSize();
 
           (refineCoarse)[idx].first =
-            std::list<size_t>(deletedGridPoints.begin(), deletedGridPoints.end());
+            std::list<size_t>(deletedGridPointsSeqs.begin(), deletedGridPointsSeqs.end());
 
           coarseCnt++;
         }
@@ -702,7 +703,7 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
         (densityEstimationConfig,
          *(grids[idx]),
          newPoints,
-         std::list<size_t>(deletedGridPoints.begin(), deletedGridPoints.end()),
+         std::list<size_t>(deletedGridPointsSeqs.begin(), deletedGridPointsSeqs.end()),
          densEst->getBestLambda());
 
 
@@ -714,4 +715,3 @@ void LearnerSGDEOnOff::refine(ConvergenceMonitor& monitor,
 
 }  // namespace datadriven
 }  // namespace sgpp
-

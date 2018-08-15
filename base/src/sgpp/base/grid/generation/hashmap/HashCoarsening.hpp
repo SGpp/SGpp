@@ -34,6 +34,10 @@ class HashCoarsening {
    * Here only the numFirstPoints are regarded for coarsening, later points
    * are skipped.
    *
+   * Note that seq numbers in @param removedSeq are invalid to use with the resulting grid after coarsening
+   * since the seq numbers get recomputed after removal. Use @param removedPoints unless 
+   * outdated seq numbers are explicitly required.
+   *
    * @param storage hashmap that stores the grid points
    * @param functor a function used to determine if refinement is needed
    * @param alpha pointer to the gridpoints' coefficients removed points must also be considered in
@@ -42,13 +46,15 @@ class HashCoarsening {
    * @param minIndexConsidered indices of coarsen point candidates must be higher than this
    * parameter to be allowed to get coarsened
    * @param removedPoints pointer to vector to append coarsened (removed) grid points to
+   * @param removedSeq pointer to vector to append the seq numbers of coarsened grid points to
    */
   void free_coarsen_NFirstOnly(GridStorage& storage,
                                CoarseningFunctor& functor,
                                DataVector& alpha,
                                size_t numFirstPoints,
                                size_t minIndexConsidered = 0,
-                               std::vector<size_t>* removedPoints = 0);
+                               std::vector<HashGridPoint>* removedPoints = 0,
+                               std::vector<size_t>* removedSeq = 0);
 
   /**
    * Performs coarsening on grid. It's possible to remove a certain number
@@ -60,16 +66,22 @@ class HashCoarsening {
    * This function calls free_coarsen_NFirstOnly with numFirstPoints equal
    * to the grid's size.
    *
+   * Note that seq numbers in @param removedSeq are invalid to use with the resulting grid after coarsening
+   * since the seq numbers get recomputed after removal. Use @param removedPoints unless 
+   * outdated seq numbers are explicitly required.
+   *
    * @param storage hashmap that stores the grid points
    * @param functor a function used to determine if refinement is needed
    * @param alpha pointer to the gridpoints' coefficients removed points must also be considered in
    * this vector
    * @param removedPoints pointer to vector to append coarsened (removed) grid points to
+   * @param removedSeq pointer to vector to append the seq numbers of coarsened grid points to.
    */
   void free_coarsen(GridStorage& storage,
                     CoarseningFunctor& functor,
                     DataVector& alpha,
-                    std::vector<size_t>* removedPoints = 0);
+                    std::vector<HashGridPoint>* removedPoints = 0,
+                    std::vector<size_t>* removedSeq = 0);
 
   /**
    * Calculates the number of points, which can be refined

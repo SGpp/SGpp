@@ -21,7 +21,8 @@ void HashCoarsening::free_coarsen_NFirstOnly(GridStorage& storage,
                                              DataVector& alpha,
                                              size_t numFirstPoints,
                                              size_t minIndexConsidered,
-                                             std::vector<size_t>* removedPoints) {
+                                             std::vector<HashGridPoint>* removedPoints,
+                                             std::vector<size_t>* removedSeq) {
   // check if the grid has any points
   if (storage.getSize() == 0) {
     throw generation_exception("storage empty");
@@ -102,9 +103,11 @@ void HashCoarsening::free_coarsen_NFirstOnly(GridStorage& storage,
   for (size_t i = 0; i < remove_num; i++) {
     if (removeCandidates[i].second < initValue && removeCandidates[i].second <= threshold) {
       localRemovedPoints.push_back(removeCandidates[i].first);
-      // if potional @param is non-zero, add the point to this vector as well
       if(removedPoints != 0) {
-        removedPoints->push_back(removeCandidates[i].first);
+        removedPoints->push_back(GridPoint(storage.getPoint(removeCandidates[i].first)));
+      }
+      if(removedSeq != 0) {
+        removedSeq->push_back(removeCandidates[i].first);
       }
     }
   }
@@ -138,8 +141,9 @@ void HashCoarsening::free_coarsen_NFirstOnly(GridStorage& storage,
 void HashCoarsening::free_coarsen(GridStorage& storage,
                                   CoarseningFunctor& functor,
                                   DataVector& alpha,
-                                  std::vector<size_t>* removedPoints) {
-  free_coarsen_NFirstOnly(storage, functor, alpha, storage.getSize(), 0, removedPoints);
+                                  std::vector<HashGridPoint>* removedPoints,
+                                  std::vector<size_t>* removedSeq) {
+  free_coarsen_NFirstOnly(storage, functor, alpha, storage.getSize(), 0, removedPoints, removedSeq);
 }
 
 
