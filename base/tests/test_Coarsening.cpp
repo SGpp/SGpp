@@ -19,7 +19,7 @@
 
 using sgpp::base::Grid;
 using sgpp::base::GridGenerator;
-using sgpp::base::GridPoint;
+using sgpp::base::HashGridPoint;
 using sgpp::base::GridStorage;
 using sgpp::base::DataVector;
 using sgpp::base::HashGenerator;
@@ -60,18 +60,14 @@ BOOST_AUTO_TEST_CASE(testCoarseningBasic) {
   GridStorage& gridStorage = grid->getStorage();
   grid->getGenerator().regular(level);
 
-  std::vector<size_t> toBeRemoved;
+  std::vector<size_t> toBeRemoved;  // contains grid point hash, not seq numbers!
   DataVector alpha(gridStorage.getSize());
   alpha.setAll(1.0);
   alpha[161] = 0.1;  // should not be coarsed i=0 l=0
   alpha[162] = 0.1;  // should not be coarsed i=1 l=0
-  alpha[203] = 0.1;  toBeRemoved.push_back(gridStorage.getPoint(203).getHash()); // should be coarsed i=1 l=1
-  alpha[204] = 0.1;  toBeRemoved.push_back(gridStorage.getPoint(204).getHash()); // should be coarsed i=1 l=1
-  alpha[208] = 0.1;  toBeRemoved.push_back(gridStorage.getPoint(208).getHash()); // should be coarsed i=1 l=1
-
-  for(size_t i = 0; i < toBeRemoved.size(); i++) {
-    std::cout << toBeRemoved[i] << std::endl;
-  }
+  alpha[203] = 0.1;  toBeRemoved.push_back(gridStorage.getPoint(203).getHash());  // should be coarsed i=1 l=1
+  alpha[204] = 0.1;  toBeRemoved.push_back(gridStorage.getPoint(204).getHash());  // should be coarsed i=1 l=1
+  alpha[208] = 0.1;  toBeRemoved.push_back(gridStorage.getPoint(208).getHash());  // should be coarsed i=1 l=1
 
   std::vector<size_t> before;
   for(auto it = gridStorage.begin(); it != gridStorage.end(); it++) {
@@ -116,18 +112,14 @@ BOOST_AUTO_TEST_CASE(testCoarseningThreshold) {
   GridStorage& gridStorage = grid->getStorage();
   grid->getGenerator().regular(level);
 
-  std::vector<size_t> toBeRemoved;
+  std::vector<size_t> toBeRemoved;  // contains grid point hash, not seq numbers!
   DataVector alpha(gridStorage.getSize());
   alpha.setAll(1.0);
   alpha[161] = 0.1;  // should not be coarsed i=0 l=0
   alpha[162] = 0.1;  // should not be coarsed i=1 l=0
   alpha[203] = 0.3;  // should not be coarsed b/c thresh
-  alpha[204] = 0.1; toBeRemoved.push_back(gridStorage.getPoint(204).getHash()); // should be coarsed i=1 l=1
-  alpha[208] = 0.1; toBeRemoved.push_back(gridStorage.getPoint(208).getHash()); // should be coarsed i=1 l=1
-
-  for(size_t i = 0; i < toBeRemoved.size(); i++) {
-    std::cout << toBeRemoved[i] << std::endl;
-  }
+  alpha[204] = 0.1; toBeRemoved.push_back(gridStorage.getPoint(204).getHash());  // should be coarsed i=1 l=1
+  alpha[208] = 0.1; toBeRemoved.push_back(gridStorage.getPoint(208).getHash());  // should be coarsed i=1 l=1
 
   std::vector<size_t> before;
   for(auto it = gridStorage.begin(); it != gridStorage.end(); it++) {
@@ -135,7 +127,7 @@ BOOST_AUTO_TEST_CASE(testCoarseningThreshold) {
   }
 
   HashCoarsening coarsen;
-  SurplusCoarseningFunctor functor(alpha, 5, 0.2); // threshold of 0.2, max 5 points coarsed
+  SurplusCoarseningFunctor functor(alpha, 5, 0.2);  // threshold of 0.2, max 5 points coarsed
   coarsen.free_coarsen(gridStorage, functor, alpha);
 
   std::vector<size_t> after;
@@ -165,8 +157,60 @@ BOOST_AUTO_TEST_CASE(testCoarseningThreshold) {
 /**
  * Test that the removedPoints vector filled by the coarsening functionallity really contains
  * exactly the removed points
+ * Test further, that removedSeq contains the seq numbers which were removed
  */
 BOOST_AUTO_TEST_CASE(testCoarseningRemovedPoints) {
+  size_t dim = 3;
+  size_t level = 3;
+  std::unique_ptr<Grid> grid(Grid::createLinearBoundaryGrid(dim));
+  GridStorage& gridStorage = grid->getStorage();
+  grid->getGenerator().regular(level);
+
+  std::vector<size_t> toBeRemoved;  // contains grid point hash, not seq numbers!
+  std::vector<size_t> toBeRemovedSeq;  // contains seq numbers of grid points to be removed
+  toBeRemovedSeq.push_back(203);
+  toBeRemovedSeq.push_back(204);
+  toBeRemovedSeq.push_back(208);
+  DataVector alpha(gridStorage.getSize());
+  alpha.setAll(1.0);
+  alpha[161] = 0.1;  // should not be coarsed i=0 l=0
+  alpha[162] = 0.1;  // should not be coarsed i=1 l=0
+  alpha[203] = 0.1;  toBeRemoved.push_back(gridStorage.getPoint(203).getHash());  // should be coarsed i=1 l=1
+  alpha[204] = 0.1;  toBeRemoved.push_back(gridStorage.getPoint(204).getHash());  // should be coarsed i=1 l=1
+  alpha[208] = 0.1;  toBeRemoved.push_back(gridStorage.getPoint(208).getHash());  // should be coarsed i=1 l=1
+
+  std::vector<size_t> before;
+  for(auto it = gridStorage.begin(); it != gridStorage.end(); it++) {
+    before.push_back(it->first->getHash());
+  }
+
+  std::vector<size_t> removedSeq;
+  std::vector<HashGridPoint> removedPoints;
+
+  HashCoarsening coarsen;
+  SurplusCoarseningFunctor functor(alpha, 3, 0.5);
+  coarsen.free_coarsen(gridStorage, functor, alpha, &removedPoints, &removedSeq);
+
+  std::vector<size_t> after;
+  for(auto it = gridStorage.begin(); it != gridStorage.end(); it++) {
+    after.push_back(it->first->getHash());
+  }
+  // Check that toBeRemoved and removedPoints contain the same hash of grid points
+  BOOST_CHECK_EQUAL(toBeRemoved.size(), removedPoints.size());
+  for(size_t i = 0; i < removedPoints.size(); i++) {
+    size_t hash = removedPoints.at(i).getHash();
+    bool okay = false;
+    for(size_t j = 0; j < toBeRemoved.size(); j++) {
+      okay |= (toBeRemoved.at(i) == hash); // compare the hashs
+    }
+    BOOST_CHECK(okay);
+  }
+
+  // Check that toBeRemovedSeq and removedSeq contain the same elements
+  BOOST_CHECK_EQUAL(toBeRemovedSeq.size(), removedSeq.size());
+  for(size_t i = 0; i < toBeRemovedSeq.size(); i++) {
+    BOOST_CHECK(std::find(removedSeq.begin(), removedSeq.end(), toBeRemovedSeq.at(i)) != removedSeq.end());
+  }
 
 }
 
