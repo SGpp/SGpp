@@ -50,8 +50,7 @@ void ModelFittingLeastSquares::evaluate(DataMatrix& samples, DataVector& results
 
 void ModelFittingLeastSquares::fit(Dataset& newDataset) {
   // clear model
-  resetState();
-  grid.reset();
+  reset();
   dataset = &newDataset;
 
   // build grid
@@ -96,7 +95,7 @@ bool ModelFittingLeastSquares::refine() {
 
 void ModelFittingLeastSquares::update(Dataset& newDataset) {
   if (grid != nullptr) {
-    resetState();
+    reset();
     // reassign dataset
     dataset = &newDataset;
     // create sytem matrix
@@ -115,7 +114,10 @@ DMSystemMatrixBase* ModelFittingLeastSquares::buildSystemMatrix(
   return systemMatrix;
 }
 
-void ModelFittingLeastSquares::resetState() { refinementsPerformed = 0; }
+void ModelFittingLeastSquares::reset() {
+  grid.reset();
+  refinementsPerformed = 0;
+}
 
 void ModelFittingLeastSquares::assembleSystemAndSolve(const SLESolverConfiguration& solverConfig,
                                                       DataVector& alpha) const {

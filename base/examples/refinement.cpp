@@ -29,8 +29,8 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 
-#include <vector>
 #include <iostream>
+#include <vector>
 
 using sgpp::base::DataVector;
 using sgpp::base::Grid;
@@ -38,6 +38,7 @@ using sgpp::base::GridGenerator;
 using sgpp::base::GridPoint;
 using sgpp::base::GridStorage;
 using sgpp::base::SurplusRefinementFunctor;
+using sgpp::base::OperationHierarchisation;
 
 /**
   * Function to interpolate. This is a two-dimensional parabola. - nonsymmetric(!).
@@ -99,7 +100,8 @@ int main() {
     grid->getGenerator().refine(functor, &addedPoints);
 
     /**
-      * Extend alpha and funEval vector (new entries uninitialized). Note that right now, the size of both vectors
+      * Extend alpha and funEval vector (new entries uninitialized). Note that right now, the size
+     * of both vectors
       * matches number of gridpoints again, but the values of the new points are set to zero.
       */
     alpha.resize(gridStorage.getSize());

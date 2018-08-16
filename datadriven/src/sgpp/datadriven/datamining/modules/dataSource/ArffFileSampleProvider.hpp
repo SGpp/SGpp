@@ -31,8 +31,9 @@ class ArffFileSampleProvider : public FileSampleProvider {
  public:
   /**
    * Default constructor
+   * @param shuffling functor to permute the training data indexes
    */
-  ArffFileSampleProvider();
+  explicit ArffFileSampleProvider(DataShufflingFunctor *shuffling = nullptr);
 
   /**
    * Clone Pattern to allow copying of derived classes.
@@ -65,7 +66,17 @@ class ArffFileSampleProvider : public FileSampleProvider {
    */
   void readString(const std::string& input, bool hasTargets) override;
 
+  /**
+   * Resets the state of the sample provider (e.g. to start a new epoch)
+   */
+  void reset() override;
+
  private:
+  /**
+   * Functor to shuffle the data (permute the indexes)
+   */
+  DataShufflingFunctor *shuffling;
+
   /**
    * #sgpp::datadriven::Dataset containing the samples read from file or string.
    */

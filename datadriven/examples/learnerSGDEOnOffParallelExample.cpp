@@ -223,23 +223,6 @@ int main(int argc, char *argv[]) {
                                                      beta,
                                                      scheduler);
 
-  /**
-   * Configure cross-validation.
-   * Set enableCv=true to perform cross-validation
-   * during the learning process.
-   */
-  bool enableCv = false;
-  // set cv configuration if cv enabled
-  // cv steps are now measured in data points instead of batches
-  size_t nextCvStep = 50000;
-  double cvLambdaStart = 1e-1;
-  double cvLambdaEnd = 1e-10;
-  int cvLambdaSteps = 10;
-  bool cvLogScale = true;
-  sgpp::base::DataMatrix *cvTestData = &testDataset.getData();
-  sgpp::base::DataMatrix *cvTestDataRes = nullptr;  // needed?
-  learner.setCrossValidationParameters(cvLambdaSteps, cvLambdaStart, cvLambdaEnd, cvTestData,
-                                       cvTestDataRes, cvLogScale);
 
   // specify max number of passes over traininig data set
   size_t maxDataPasses = 1;
@@ -258,7 +241,7 @@ int main(int argc, char *argv[]) {
   stopwatch.start();
   learner.trainParallel(batchSize, maxDataPasses, refType, refMonitor, refPeriod,
                         accDeclineThreshold,
-                        accDeclineBufferSize, minRefInterval, enableCv, nextCvStep);
+                        accDeclineBufferSize, minRefInterval);
   double deltaTime = stopwatch.stop();
 
 //    CALLGRIND_STOP_INSTRUMENTATION;

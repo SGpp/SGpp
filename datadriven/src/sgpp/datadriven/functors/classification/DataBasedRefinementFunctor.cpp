@@ -32,13 +32,14 @@ namespace datadriven {
     means(), coeff_a(coeff_a), current_grid_index(0),
     refinements_num(refinements_num),
     threshold(thresh), level_penalize(levelPen) {
-    // Compute H if data was provided
-    if (data != nullptr && targets != nullptr) {
-      computeH();
-    }
     // Default coeff_a = 1.0
     if (coeff_a.size() == 0) {
       this->coeff_a = std::vector<double>(grids.size(), 1.0);
+    }
+
+    // Compute H if data was provided
+    if (data != nullptr && targets != nullptr) {
+      computeH();
     }
   }
 

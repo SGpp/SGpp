@@ -10,7 +10,6 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
@@ -22,6 +21,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include "../algorithm/RefinementMonitorConvergence.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -86,16 +86,15 @@ class LearnerSGDEOnOff {
    *        processed before next refinement can be scheduled (if
    * convergence-based refinement
    *        is chosen)
-   * @param enableCv Specifies whether to perform cross-validation during
-   * training process or not
-   * @param nextCvStep Determines when next cross-validation has to be triggered
    * @param adaptivityConfig configuration for the grid's adaptivity behaviour
+   * @param regularizationConfig configuration for the regularization
    * @param densityEstimationConfig configuration for the density estimation
    */
   void train(size_t batchSize, size_t maxDataPasses, std::string refType, std::string refMonitor,
              size_t refPeriod, double accDeclineThreshold, size_t accDeclineBufferSize,
-             size_t minRefInterval, bool enableCv, size_t nextCvStep,
+             size_t minRefInterval,
              sgpp::base::AdpativityConfiguration& adaptivityConfig,
+             sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
              sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
 
   /**
@@ -104,14 +103,13 @@ class LearnerSGDEOnOff {
    * @param dataset The next data batch to process
    * @param adaptivityConfig configuration for the grid's adaptivity behaviour
    * @param densityEstimationConfig configuration for the density estimation
-   * @param doCv Enable cross-validation
    * @param refineCoarse Vector of pairs containing a list representing indices
    *        of removed grid points and an unsigned int representing added grid
    * points
    */
   void train(Dataset& dataset, sgpp::base::AdpativityConfiguration& adaptivityConfig,
       sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
-      bool doCv = false, std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse = nullptr);
+      std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse = nullptr);
 
   /**
    * Trains the learner with the given data batch that is already split up wrt
@@ -122,14 +120,13 @@ class LearnerSGDEOnOff {
    * points that belong to
    * @param densityEstimationConfig configuration for the density estimation
    *        one class and the corresponding class label
-   * @param doCv Enable cross-validation
    * @param refineCoarse Vector of pairs containing a list representing indices
    * of
    *        removed grid points and an unsigned int representing added grid
    * points
    */
   void train(std::vector<std::pair<DataMatrix*, double>>& trainDataClasses,
-      sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig, bool doCv = false,
+      sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
              std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse = nullptr);
 
   /**
@@ -180,21 +177,6 @@ class LearnerSGDEOnOff {
   void getDensities(DataVector& point, DataVector& density) const;
 
   /**
-   * Sets the cross-validation parameters.
-   * They get directly passed to the DBMatOnlineDE class-instance.
-   *
-   * @param lambdaStep Defines how many different lambdas are tried out
-   * @param lambdaStart The smallest possible lambda
-   * @param lambdaEnd The biggest possible lambda
-   * @param test The test matrix
-   * @param testRes The results of the points in the test matrix
-   * @param logscale Indicates whether the values between lambdaStart
-   *        and lambdaEnd are searched using logscale or not
-   */
-  void setCrossValidationParameters(int lambdaStep, double lambdaStart, double lambdaEnd,
-                                    DataMatrix* test, DataMatrix* testRes, bool logscale);
-
-  /**
    * Updates the surplus vector of a certain class
    *
    * @param classIndex the index of the class
@@ -226,8 +208,9 @@ class LearnerSGDEOnOff {
   ClassDensityConntainer& getDensityFunctions();
 
  protected:
-  void refine(ConvergenceMonitor& monitor,
+  void refine(RefinementMonitor& monitor,
               sgpp::base::AdpativityConfiguration& adaptivityConfig,
+              sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
               sgpp::datadriven::DensityEstimationConfiguration&
               densityEstimationConfig,
               std::vector<std::pair<std::list<size_t>, size_t>>& refineCoarse,
