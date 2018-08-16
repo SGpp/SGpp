@@ -63,10 +63,8 @@ class ConfigurationBit {
    * @return name of the bit
    */
   std::string getName();
-  // void mult(base::DataVector& alpha, base::DataVector& result);
-  // void multTranspose(base::DataVector& source, base::DataVector& result);
 
-  // double getDuration();
+  void findComplexinner(std::string id, int bias);
 
 
  private:

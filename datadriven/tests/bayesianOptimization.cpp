@@ -16,9 +16,12 @@
 #include <sgpp/datadriven/datamining/modules/hpo/bo/BOConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/bo/BayesianOptimization.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/FitterFactory.hpp>
+#include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 
-#define private public
+
+#define private public //EDIT: change this
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/Harmonica.hpp>
+
 #undef private
 
 using sgpp::datadriven::Dataset;
@@ -31,6 +34,14 @@ BOOST_AUTO_TEST_SUITE(BayesianOptimizationTest)
 
 class ModelFittingTester : public sgpp::datadriven::ModelFittingBase {
 
+public:
+  ModelFittingTester(double x, int y, int z){
+    value = x*x + y*y/100.0 - z/1.4;
+    if(z == 2){
+      value *= -1;
+    }
+  };
+
   void fit(Dataset &dataset){};
 
   bool refine(){};
@@ -40,22 +51,40 @@ class ModelFittingTester : public sgpp::datadriven::ModelFittingBase {
   double evaluate(const DataVector &sample){};
 
   void evaluate(DataMatrix &samples, DataVector &results){
-    results[0] = samples.get(0,0);
+    results[0] = sqrt(value);
   };
+
+  double value;
+
 };
 
 
-
 class FitterFactoryTester : public sgpp::datadriven::FitterFactory {
+public:
+  FitterFactoryTester() {
+    //create parameters
+    conpar["x"] = sgpp::datadriven::ContinuousParameter(5, "x", -1, 1);
+    dispar["y"] = sgpp::datadriven::DiscreteParameter("y", -10, 10);
+    catpar["c"] = sgpp::datadriven::DiscreteParameter("c", 0, 2);
+  };
+
+  sgpp::datadriven::ModelFittingBase *buildFitter() {
+    //make model from parameter values directly (make constructor)
+    return new ModelFittingTester(conpar["x"].getValue(), dispar["y"].getValue(), catpar["c"].getValue());
+  };
+
+};
+
+class FitterFactoryTesterHarm : public sgpp::datadriven::FitterFactory {
  public:
-  FitterFactoryTester(){
-    for (int i = 0; i < 10; ++i) {
-      exconfBits.emplace_back();
+  FitterFactoryTesterHarm(){
+    for (int i = 0; i < 12; ++i) {
+      exconfBits.emplace_back(std::to_string(i));
     }
   };
 
-  virtual sgpp::datadriven::ModelFittingBase *buildFitter() {
-
+  sgpp::datadriven::ModelFittingBase *buildFitter() {
+    return nullptr;
   };
 
   void getConfigBits(std::vector<ConfigurationBit *> &configBits){
@@ -68,19 +97,104 @@ class FitterFactoryTester : public sgpp::datadriven::FitterFactory {
 
 };
 
+BOOST_AUTO_TEST_CASE(upperLevelTest) {
+  //use actual files for data and config
+  sgpp::datadriven::DataMiningConfigParser parser{};
+  sgpp::datadriven::DataSourceBuilder builder;
+
+}
+
 BOOST_AUTO_TEST_CASE(harmonicaConfigs) {
-  std::mt19937 generator(123);
-  FitterFactoryTester fft{};
+  std::mt19937 generator(20); //123
+  FitterFactoryTesterHarm fft{};
   sgpp::datadriven::Harmonica harmonica(&fft);
   int nbits = 12;
+  bool testar [4096];
+  int nIDs = 4096;
   //test chains of calls
-  std::cout << harmonica.parityrow.empty();
+  std::cout << "Test Point 1" << std::endl;
+  std::vector<std::unique_ptr<sgpp::datadriven::ModelFittingBase>> fitters(1);
+  std::vector<std::string> configStrings(1);
+  harmonica.prepareConfigs(fitters, 33, configStrings);
+  std::cout << "Test Point 2" << std::endl;
+  std::vector<sgpp::datadriven::ConfigurationRestriction> constraints{};
+
+  for (int l = 0; l < 10; ++l) {
+    std::uniform_int_distribution<int> distcons(0, harmonica.parityrow.size()-1);
+    std::uniform_int_distribution<int> distbias(0, 1);
+    int consid = distcons(generator);
+    int bias = -1 + 2 * distbias(generator);
+
+    //sgpp::datadriven::ConfigurationRestriction constraint(harmonica.parityrow[consid], bias);
+    constraints.emplace_back(harmonica.parityrow[consid], bias);
+
+    std::cout << "New Bit: ";
+    for(auto &bit : harmonica.parityrow[consid]){
+      std::cout << bit->getName() << ",";
+    }
+    std::cout << "Bias: " << bias << std::endl;
+
+    int cnttrue = 0;
+    std::cout << "Test Point 3" << std::endl;
+
+    for (int k = 0; k < 4096; ++k) {
+      testar[k] = false;
+    }
+    for (int j = 0; j < nIDs; ++j) {
+      harmonica.setParameters(j, 0);
+      int v = 0;
+      int m = 1;
+      for (auto &bit : fft.exconfBits) {
+        v = v + m * ((bit.getValue() + 1) / 2);
+        m = m * 2;
+        //std::cout << bit.getName() << ": " << bit.getValue() << ", ";
+      }
+      if (testar[v]) {
+        //EDIT: some error
+        std::cout << "Duplication Error" << std::endl;
+      }
+      testar[v] = true;
+      bool valid = true;
+      for(auto &constraint : constraints) {
+        if (!constraint.check()) {
+          valid = false;
+        }
+      }
+      if(valid){
+        //std::cout << " valid";
+        cnttrue++;
+      }
+      //std::cout << std::endl;
+    }
+    bool added = harmonica.addConstraint(consid, bias); //if not added, freebits broken
+    std::cout << "Counter true: " << cnttrue << " | Added: "<< added <<std::endl;
+    for (auto &bit : fft.exconfBits) {
+      std::cout << bit.getName() << ": " << bit.getValue() << ", ";
+    }
+    std::cout << std::endl;
+    for (auto &bit : harmonica.freeBits) {
+      std::cout << bit->getName() <<  ", ";
+    }
+    std::cout << std::endl;
+    BOOST_CHECK(((not added) == (cnttrue == 0)));
+    BOOST_CHECK((added == (cnttrue == nIDs || 2*cnttrue == nIDs)));
+    if(added) {
+      nIDs = cnttrue;
+    }else{
+      harmonica.resetBits();
+      harmonica.fixConfigBits(true);
+      constraints.pop_back();
+    }
+  }
+
   //also test parityrow content via boolean array
   //create random constraint->test all possible configurations either all, none or half are viable
+  
+  /*
   std::uniform_int_distribution<int> distbit1(0, nbits-1);
   std::uniform_int_distribution<int> distbit2(0, nbits-2);
   std::uniform_int_distribution<int> distbit3(0, nbits-3);
-  std::uniform_int_distribution<int> distcons(0, 2);
+  //std::uniform_int_distribution<int> distcons(0, 2);
 
   int bit1 = distbit1(generator);
   int bit2 = distbit2(generator);
@@ -96,7 +210,7 @@ BOOST_AUTO_TEST_CASE(harmonicaConfigs) {
   }
   if(bit3==bit1){
     bit3++;
-  }
+  } */
   //go through all ids, setParameters, check for doubles in boolean array
   //also test movetonewspace
 }

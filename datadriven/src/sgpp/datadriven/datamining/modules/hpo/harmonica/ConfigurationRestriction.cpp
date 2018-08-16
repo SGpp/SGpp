@@ -19,6 +19,9 @@ ConfigurationRestriction::ConfigurationRestriction(std::vector<ConfigurationBit 
 
 void ConfigurationRestriction::reduceOpenBits() {
   openBits--;
+  if(openBits == 2){
+    findComplex();
+  }
 }
 
 void ConfigurationRestriction::resolve() {
@@ -50,5 +53,40 @@ bool ConfigurationRestriction::check() {
 void ConfigurationRestriction::reset() {
   openBits = static_cast<int>(parameters.size());
 }
+
+void ConfigurationRestriction::findComplex() {
+  std::string otherbit;
+  size_t idx = 100;
+  int effectivebias = bias;
+  for (size_t i = 0; i < parameters.size(); ++i) {
+    if(parameters[i]->getValue() == 0){
+      if(otherbit.empty()){
+        otherbit = parameters[i]->getName();
+      }else{
+        idx = i;
+      }
+    }else{
+      effectivebias *= parameters[i]->getValue();
+    }
+  }
+  parameters[idx]->findComplexinner(otherbit, effectivebias);
+}
+
+void ConfigurationRestriction::resolveComplex(const std::string &id, const std::string &idtwo, int otherbias) {
+  bool resolve = false;
+  size_t idx = 100;
+  for (size_t i = 0; i < parameters.size(); ++i) {
+    if(parameters[i]->getName() == id){
+      resolve = true;
+    }else if(parameters[i]->getName() != idtwo){
+      idx = i;
+    }
+  }
+  if(resolve){
+    parameters[idx]->setValue(bias*otherbias);
+    //std::cout << "Complex resolve: " << id << " second: " << idtwo << " Bias: " << bias << " other: " << otherbias << std::endl;
+  }
+}
+
 }  // namespace datadriven
 }  // namespace sgpp

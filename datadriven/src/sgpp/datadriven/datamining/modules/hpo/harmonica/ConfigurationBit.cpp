@@ -38,5 +38,13 @@ int ConfigurationBit::getValue() {
 std::string ConfigurationBit::getName() {
   return name;
 }
+
+void ConfigurationBit::findComplexinner(std::string id, int bias) {
+  for (auto &constraint : constraints) {
+    if(constraint->getOpenBits() == 3){
+      constraint->resolveComplex(id, name, bias);
+    }
+  }
+}
 }  // namespace datadriven
 }  // namespace sgpp
