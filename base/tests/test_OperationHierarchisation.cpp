@@ -24,7 +24,7 @@ using sgpp::base::Stretching;
 using sgpp::base::Stretching1D;
 
 void testHierarchisationDehierarchisation(sgpp::base::Grid& grid, size_t level,
-                                          double (*func)(DataVector&), double tolerance = 0.0,
+                                          double (*func)(DataVector&), double tolerance = 1e-12,
                                           bool naiveOp = false) {
   grid.getGenerator().regular(level);
   GridStorage& gridStore = grid.getStorage();
@@ -137,7 +137,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationBoundary) {
 
   for (int dim = 1; dim < 4; dim++) {
     std::unique_ptr<Grid> grid(Grid::createLinearBoundaryGrid(dim, 0));
-    testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-12);
+    testHierarchisationDehierarchisation(*grid, level, &parabola);
   }
 }
 
@@ -146,7 +146,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationPrewavelet) {
 
   for (int dim = 1; dim < 4; dim++) {
     std::unique_ptr<Grid> grid(Grid::createPrewaveletGrid(dim));
-    testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-12);
+    testHierarchisationDehierarchisation(*grid, level, &parabola);
   }
 }
 
@@ -201,7 +201,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationPoly) {
   for (int dim = 1; dim < 4; dim++) {
     for (int i = 0; i < 4; i++) {
       std::unique_ptr<Grid> grid(Grid::createPolyGrid(dim, degree[i]));
-      testHierarchisationDehierarchisation(*grid, level, &parabola, 0.0, true);
+      testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-12, true);
     }
   }
 }
@@ -213,7 +213,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationPolyTruncatedBoundary) {
   for (int dim = 1; dim < 4; dim++) {
     for (int i = 0; i < 4; i++) {
       std::unique_ptr<Grid> grid(Grid::createPolyBoundaryGrid(dim, degree[i]));
-      testHierarchisationDehierarchisation(*grid, level, &parabola, 0.0, true);
+      testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-12, true);
     }
   }
 }
@@ -225,7 +225,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationModPoly) {
   for (int dim = 1; dim < 4; dim++) {
     for (int i = 0; i < 4; i++) {
       std::unique_ptr<Grid> grid(Grid::createModPolyGrid(dim, degree[i]));
-      testHierarchisationDehierarchisation(*grid, level, &parabola, 0.0, true);
+      testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-12, true);
     }
   }
 }
