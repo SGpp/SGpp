@@ -7,6 +7,8 @@
 #define ConfigurationRestriction_HPP
 
 #include <vector>
+#include <string>
+
 
 namespace sgpp {
 namespace datadriven {
@@ -50,6 +52,10 @@ class ConfigurationRestriction {
    * resets constraint resolution state
    */
   void reset();
+
+  void findComplex();
+
+  void resolveComplex(const std::string &id, const std::string &idtwo, int otherbias);
 
  protected:
   /**

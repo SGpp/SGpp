@@ -73,7 +73,7 @@ class Harmonica {
    * resolves constraints, fixing free and dependent bits
    * @return whether bits were fixed or just given values
    */
-  bool fixConfigBits();
+  void fixConfigBits(bool resetFree);
   /**
    * resets bits to be able to resolve constraints again
    */

@@ -170,9 +170,16 @@ void Harmonica::createRandomConfigs(size_t nBits,
   }
 }
 
-bool Harmonica::fixConfigBits() {
+void Harmonica::fixConfigBits(bool resetFree) {
+  if(resetFree){
+    freeBits = std::vector<ConfigurationBit *>{};
+  }
   size_t nextFreeBit = 0;
-  bool changedFreeBits = false;
+  for (auto &constraint : constraints) {
+    if(constraint->getOpenBits() == 2){
+      constraint->findComplex();
+    }
+  }
   bool resolved;
   while (nextFreeBit < configBits.size() - 1) {
     resolved = true;
@@ -192,10 +199,11 @@ bool Harmonica::fixConfigBits() {
     if (configBits[nextFreeBit]->getValue() == 0) {
       freeBits.push_back(configBits[nextFreeBit]);
       configBits[nextFreeBit]->setValue(1);
-      changedFreeBits = true;
+      if(!resetFree){
+        throw base::application_exception("Error in HPO: freeBits changed during evaluation.");
+      }
     }
   }
-  return changedFreeBits;
 }
 
 void Harmonica::resetBits() {
@@ -213,10 +221,7 @@ void Harmonica::setParameters(int configID, size_t matrixrow) {
     bit->setValue((configID & 1) * 2 - 1);
     configID = configID >> 1;
   }
-  bool changed = fixConfigBits();
-  if (changed) {
-    throw base::application_exception("Error: freeBits changed in setParameters.");
-  }
+  fixConfigBits(false);
   for (size_t i = 0; i < parityrow.size(); i++) {
     int tmp = 1;
     for (auto &bit : parityrow[i]) {
@@ -234,9 +239,8 @@ bool Harmonica::addConstraint(size_t idx, int bias) {
     bit->addConstraint(constraints.back().get());
     // std::cout << "Adding bit " << bit->getName() << " from constraint:" << idx << std::endl;
   }
-  freeBits = std::vector<ConfigurationBit *>{};
   resetBits();
-  fixConfigBits();
+  fixConfigBits(true);
   if (!checkConstraints()) {
     constraints.pop_back();
     for (auto &bit : parityrow[idx]) {
@@ -263,10 +267,7 @@ int Harmonica::moveToNewSpace(int configID, std::vector<ConfigurationBit *> oldF
     bit->setValue((configID & 1) * 2 - 1);
     configID = configID >> 1;
   }
-  bool changed = fixConfigBits();
-  if (changed) {
-    throw base::application_exception("Error: freeBits changed in moveToNewSpace.");
-  }
+  fixConfigBits(false);
   if (!checkConstraints()) {
     return -1;
   }

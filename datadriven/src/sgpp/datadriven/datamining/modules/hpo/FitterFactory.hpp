@@ -64,7 +64,7 @@ class FitterFactory {
    * Setup connection to hyperparameter classes for modifying them through boolean represenations
    * @param configBits reference to the boolean "configBits"
    */
-  void getConfigBits(std::vector<ConfigurationBit *> &configBits);
+  virtual void getConfigBits(std::vector<ConfigurationBit *> &configBits);
 
   /**
    * Adjusts the current hyperparameter configuration according to the configBits
