@@ -5,6 +5,7 @@
 		"compression": false,
 		"numBatches": 2,
 		"batchSize": 1000,
+		"validationPortion" : 0.0,
 		"dataTransformation": {
 			"type": "rosenblatt",
 			"rosenblattConfig": {

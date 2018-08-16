@@ -118,6 +118,30 @@ void DataVector::restructure(std::vector<size_t>& remainingIndex) {
   *this = std::move(newVector);
 }
 
+void DataVector::remove(std::vector<size_t>& indexesToRemove) {
+  DataVector newVector;
+  std::vector<bool> willBeRemoved(this->size(), false);
+
+  // Count the indexes to remove for the case when there are duplicates in indexesToRemove
+  size_t numIndexesToRemove = 0;
+  for (size_t i = 0; i < indexesToRemove.size(); i++) {
+    size_t idx = indexesToRemove[i];
+    if (!willBeRemoved[idx]) {
+      willBeRemoved[idx] = true;
+      numIndexesToRemove++;
+    }
+  }
+
+  newVector.reserve(this->size() - numIndexesToRemove);
+  for (size_t i = 0; i < this->size(); i++) {
+    if (!willBeRemoved[i]) {
+      newVector.emplace_back((*this)[i]);
+    }
+  }
+
+  *this = std::move(newVector);
+}
+
 size_t DataVector::append() { return this->append(0.0); }
 
 size_t DataVector::append(double value) {

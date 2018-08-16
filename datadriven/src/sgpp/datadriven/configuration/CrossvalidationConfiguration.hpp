@@ -23,8 +23,8 @@ namespace datadriven {
 
 struct CrossvalidationConfiguration {
   // parameters for cross-validation
-  bool enable_;   // enables cross-validation
-  size_t kfold_;  // number of batches for cross validation
+  bool enable_ = false;   // enables cross-validation
+  size_t kfold_ = 5;  // number of batches for cross validation
   int seed_;      // seed for randomized k-fold
   bool shuffle_;  // randomized/sequential k-fold
   bool silent_;   // verbosity

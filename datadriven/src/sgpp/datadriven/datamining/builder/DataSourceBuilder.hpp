@@ -13,7 +13,10 @@
 
 #include <memory.h>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceSplitting.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceCrossValidation.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
+#include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
 #include <string>
 #include <vector>
 
@@ -72,16 +75,34 @@ class DataSourceBuilder {
   /**
    * Based on the currently specified configuration, build and configure an instance of a data
    * source object.
-   * @return Fully configured instance of #sgpp::datadriven::DataSource object.
+   * @return Fully configured instance of #sgpp::datadriven::DataSourceSplitting object.
    */
-  DataSource* assemble() const;
+  DataSourceSplitting* splittingAssemble() const;
 
   /**
-   * Factory method used to build an instance of a #sgpp::datadriven::DataSource object based on the
-   * passed configuration.
-   * @return Fully configured instance of #sgpp::datadriven::DataSource object.
+   * Factory method used to build an instance of a #sgpp::datadriven::DataSourceSplitting object
+   * based on the passed configuration.
+   * @param config configuration for the data source instance
+   * @return Fully configured instance of #sgpp::datadriven::DataSourceSplitting object.
    */
-  DataSource* fromConfig(const DataSourceConfig& config);
+  DataSourceSplitting* splittingFromConfig(const DataSourceConfig& config);
+
+  /**
+   * Based on the currently specified configuration, build and configure an instance of a data
+   * source object that is able to perform cross validation.
+   * @return Fully configured instance of #sgpp::datadriven::DataSourceCrossValidation object.
+   */
+  DataSourceCrossValidation* crossValidationAssemble() const;
+
+  /**
+   * Factory method used to build an instance of a #sgpp::datadriven::DataSourceCrossValidation
+   * object based on the passed configuration.
+   * @param config configuration for the data source instance
+   * @param crossValidationConfig configuration for the cross validation
+   * @return Fully configured instance of #sgpp::datadriven::DataSourceCrossValidation object.
+   */
+  DataSourceCrossValidation* crossValidationFromConfig(const DataSourceConfig& config,
+      const CrossvalidationConfiguration &crossValidationConfig);
 
  private:
   /**
@@ -93,6 +114,11 @@ class DataSourceBuilder {
    * Current state of the object is stored inside this configuration object.
    */
   DataSourceConfig config;
+
+  /**
+   * Current state of the object is stored inside this configuration object (for cross validation).
+   */
+  CrossvalidationConfiguration crossValidationConfig;
 };
 
 } /* namespace datadriven */

@@ -4,6 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/operation/hash/OperationQuadratureModPoly.hpp>
+
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace sgpp {
@@ -23,6 +24,7 @@ double OperationQuadratureModPoly::doQuadrature(DataVector& alpha) {
 
     res += alpha[i] * tmpres;
   }
+
   // multiply with determinant of "unit cube -> BoundingBox" transformation
   for (size_t d = 0; d < storage.getDimension(); d++) {
     res *= storage.getBoundingBox()->getIntervalWidth(d);

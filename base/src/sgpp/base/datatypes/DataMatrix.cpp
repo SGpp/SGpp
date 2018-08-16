@@ -40,7 +40,7 @@ DataMatrix DataMatrix::fromFile(const std::string& fileName) {
 }
 
 DataMatrix DataMatrix::fromString(const std::string& serializedVector) {
-  DataMatrix m;
+  DataMatrix m(0, 0);
 
   enum class PARSER_STATE { INIT, ROW, ROWVALUE, ROWCOMMAEND, COMMAEND, END };
 
@@ -79,7 +79,7 @@ DataMatrix DataMatrix::fromString(const std::string& serializedVector) {
         state = PARSER_STATE::ROWVALUE;
         ++i;
       } else if (c == ']') {
-        if (m.getNrows() == 0) {
+        if (m.getNcols() == 0 || m.getNrows() == 0) {
           // set up the dimension after having read the first row
           m.resize(0, row.getSize());
         }

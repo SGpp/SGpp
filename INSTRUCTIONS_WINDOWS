@@ -8,4 +8,7 @@ set PATH=%PATH%;$SGPP_BUILD_PATH
 # directory of SG++ to install the python library
 
 python setup.py install --user
+
+# For full Python support, we recommend additionally installing the Scipy
+# package. 
 # ------------------------------------------------------------------------

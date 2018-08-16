@@ -3,10 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/tools/OperationQuadratureMC.hpp>
-#include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/tools/OperationQuadratureMC.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -14,15 +14,14 @@
 #include <cstdlib>
 #include <ctime>
 
-
 namespace sgpp {
 namespace base {
 
-
-OperationQuadratureMC::OperationQuadratureMC(Grid& grid,
-    int mcPaths) : grid(&grid), mcPaths(mcPaths) {
+OperationQuadratureMC::OperationQuadratureMC(Grid& grid, int mcPaths)
+    : grid(&grid), mcPaths(mcPaths) {
   // init seed for random number generator
   srand((unsigned)time(0));
+  // this->simple_rand.seed((unsigned)time(0));
 }
 
 double OperationQuadratureMC::doQuadrature(DataVector& alpha) {
@@ -34,13 +33,16 @@ double OperationQuadratureMC::doQuadrature(DataVector& alpha) {
 
   for (size_t i = 0; i < mcPaths; i++) {
     for (size_t d = 0; d < dim; d++) {
-      dm.set(i, d, boundingBox.transformPointToBoundingBox(
-          d, static_cast<double>(rand()) / RAND_MAX));
+      dm.set(i, d,
+             boundingBox.transformPointToBoundingBox(d, static_cast<double>(rand()) / RAND_MAX));
+      /*dm.set(i, d, boundingBox.transformPointToBoundingBox(
+                       d, static_cast<double>(this->simple_rand()) / RAND_MAX));*/
     }
   }
 
   DataVector res(mcPaths);
-  sgpp::op_factory::createOperationMultipleEval(*grid, dm)->mult(alpha, res);
+  std::unique_ptr<OperationMultipleEval>(sgpp::op_factory::createOperationMultipleEval(*grid, dm))
+      ->mult(alpha, res);
 
   // multiply with determinant of "unit cube -> BoundingBox" transformation
   double determinant = 1.0;
@@ -49,7 +51,7 @@ double OperationQuadratureMC::doQuadrature(DataVector& alpha) {
     determinant *= boundingBox.getIntervalWidth(d);
   }
 
-  return res.sum() / static_cast<double>(mcPaths) * determinant;
+  return (res.sum() / static_cast<double>(mcPaths)) * determinant;
 }
 
 double OperationQuadratureMC::doQuadratureFunc(FUNC func, void* clientdata) {
@@ -62,10 +64,12 @@ double OperationQuadratureMC::doQuadratureFunc(FUNC func, void* clientdata) {
 
   for (size_t i = 0; i < mcPaths; i++) {
     for (size_t d = 0; d < dim; d++) {
-      p[d] = boundingBox.transformPointToBoundingBox(d, static_cast<double>(rand()) / RAND_MAX);
+      /*p[d] = boundingBox.transformPointToBoundingBox(d, static_cast<double>(rand()) / RAND_MAX);*/
+      p[d] = boundingBox.transformPointToBoundingBox(
+          d, static_cast<double>(this->simple_rand()) / RAND_MAX);
     }
 
-    res += func(*reinterpret_cast<int*>(&dim), p, clientdata);
+    res += func(static_cast<int>(dim), p, clientdata);
   }
 
   delete[] p;
@@ -80,8 +84,7 @@ double OperationQuadratureMC::doQuadratureFunc(FUNC func, void* clientdata) {
   return res / static_cast<double>(mcPaths) * determinant;
 }
 
-double OperationQuadratureMC::doQuadratureL2Error(FUNC func, void* clientdata,
-    DataVector& alpha) {
+double OperationQuadratureMC::doQuadratureL2Error(FUNC func, void* clientdata, DataVector& alpha) {
   size_t dim = grid->getDimension();
   BoundingBox& boundingBox = grid->getBoundingBox();
   double* p = new double[dim];
@@ -93,12 +96,13 @@ double OperationQuadratureMC::doQuadratureL2Error(FUNC func, void* clientdata,
 
   for (size_t i = 0; i < mcPaths; i++) {
     for (size_t d = 0; d < dim; d++) {
-      p[d] = boundingBox.transformPointToBoundingBox(d, static_cast<double>(rand()) / RAND_MAX);
+      /*p[d] = boundingBox.transformPointToBoundingBox(d, static_cast<double>(rand()) / RAND_MAX);*/
+      p[d] = boundingBox.transformPointToBoundingBox(
+          d, static_cast<double>(this->simple_rand()) / RAND_MAX);
       point[d] = p[d];
     }
 
-    res += pow(func(*reinterpret_cast<int*>(&dim), p,
-                    clientdata) - opEval->eval(alpha, point), 2);
+    res += pow(func(static_cast<int>(dim), p, clientdata) - opEval->eval(alpha, point), 2);
   }
 
   delete[] p;

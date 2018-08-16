@@ -73,16 +73,16 @@ class ModelFittingLeastSquares : public ModelFittingBaseSingleGrid {
    */
   void evaluate(DataMatrix& samples, DataVector& results) override;
 
+  /**
+   * Resets the state of the entire model
+   */
+  void reset() override;
+
  private:
   /**
    * Count the amount of refinement operations performed on the current dataset.
    */
   size_t refinementsPerformed;
-
-  /**
-   * Reset the state of the object when a new dataset is used;
-   */
-  void resetState();
 
   // TODO(lettrich): grid and train dataset as well as OperationMultipleEvalConfiguration should be
   // const.
