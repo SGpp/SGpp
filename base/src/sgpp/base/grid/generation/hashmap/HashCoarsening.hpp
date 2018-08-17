@@ -89,7 +89,6 @@ class HashCoarsening {
    * @param storage hashmap that stores the grid points
    */
   size_t getNumberOfRemovablePoints(GridStorage& storage);
-
 };
 
 }  // namespace base
