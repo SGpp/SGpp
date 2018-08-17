@@ -52,7 +52,7 @@ class AckleyObjective : public TestScalarFunction {
  * Ackley unconstrained test problem.
  *
  * * Number of parameters: \f$d\f$
- * * Domain: \f$\bar{\vec{x}} \in [1.5, 5.5]^d\f$
+ * * Domain: \f$\bar{\vec{x}} \in [1.5, 6.5]^d\f$
  * * Optimal point: \f$\bar{\vec{x}}_{\text{opt}} =
  *   \vec{2}\f$
  * * Optimal function value: \f$\bar{f}(\bar{\vec{x}}_{\text{opt}}) =
