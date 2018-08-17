@@ -148,6 +148,20 @@ class PenalizedObjectiveGradient : public ScalarFunctionGradient {
 }  // namespace
 
 SquaredPenalty::SquaredPenalty(const ScalarFunction& f,
+                               const VectorFunction& g,
+                               const VectorFunction& h,
+                               size_t maxItCount, double xTolerance, double constraintTolerance,
+                               double penaltyStartValue, double penaltyIncreaseFactor)
+    : ConstrainedOptimizer(f, g, h, maxItCount),
+      theta(xTolerance),
+      epsilon(constraintTolerance),
+      mu0(penaltyStartValue),
+      rhoMuPlus(penaltyIncreaseFactor),
+      xHistInner(0, 0),
+      kHistInner() {
+}
+
+SquaredPenalty::SquaredPenalty(const ScalarFunction& f,
                                const ScalarFunctionGradient& fGradient,
                                const VectorFunction& g,
                                const VectorFunctionGradient& gGradient,
