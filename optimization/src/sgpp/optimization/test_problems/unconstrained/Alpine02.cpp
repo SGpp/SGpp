@@ -30,15 +30,11 @@ Alpine02Objective::Alpine02Objective(size_t d) : TestScalarFunction(d) {}
 Alpine02Objective::~Alpine02Objective() {}
 
 double Alpine02Objective::evalUndisplaced(const base::DataVector& x) {
-  double result = 1.0;
+  double result = -1.0;
 
   for (size_t t = 0; t < d; t++) {
     const double xt = 8.0 * x[t] + 2.0;
     result *= std::sqrt(xt) * std::sin(xt);
-  }
-
-  if (d % 2 == 0) {
-    result *= -1.0;
   }
 
   return result;

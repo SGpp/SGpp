@@ -19,7 +19,7 @@ namespace test_problems {
  *
  * Definition:
  * \f[\bar{f}(\bar{\vec{x}}) :=
- * (-1)^{d+1} \prod_{t=1}^d \sqrt{\bar{x}_t} \sin(\bar{x}_t)\f]
+ * -\prod_{t=1}^d \sqrt{\bar{x}_t} \sin(\bar{x}_t)\f]
  */
 class Alpine02Objective : public TestScalarFunction {
  public:
