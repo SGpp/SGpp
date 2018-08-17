@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE(testCoarseningThreshold) {
   }
 
   // Check that all three points really are removed
-  for(size_t i = 0; i < toBeRemoved.size(); i++) {
+  for (size_t i = 0; i < toBeRemoved.size(); i++) {
     BOOST_CHECK(std::find(after.begin(), after.end(), toBeRemoved.at(i)) == after.end());
   }
 }
