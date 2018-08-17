@@ -98,15 +98,15 @@ void HashCoarsening::free_coarsen_NFirstOnly(GridStorage& storage,
   std::vector<size_t> localRemovedPoints;
 
   // vector to store the points that match all condition for deleting
-  //this->deletePoints.clear();
+  // this->deletePoints.clear();
 
   for (size_t i = 0; i < remove_num; i++) {
     if (removeCandidates[i].second < initValue && removeCandidates[i].second <= threshold) {
       localRemovedPoints.push_back(removeCandidates[i].first);
-      if(removedPoints != 0) {
+      if (removedPoints != 0) {
         removedPoints->push_back(GridPoint(storage.getPoint(removeCandidates[i].first)));
       }
-      if(removedSeq != 0) {
+      if (removedSeq != 0) {
         removedSeq->push_back(removeCandidates[i].first);
       }
     }
