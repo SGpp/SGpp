@@ -31,7 +31,8 @@ class SquaredPenalty : public ConstrainedOptimizer {
   static constexpr double DEFAULT_PENALTY_INCREASE_FACTOR = 10.0;
 
   /**
-   * Constructor.
+   * Constructor with adaptive gradient descent as optimization algorithm
+   * (gradient-based).
    *
    * @param f                     objective function
    * @param fGradient             objective function gradient
@@ -39,8 +40,7 @@ class SquaredPenalty : public ConstrainedOptimizer {
    * @param gGradient             inequality constraint gradient
    * @param h                     equality constraint
    * @param hGradient             equality constraint gradient
-   * @param maxItCount            maximal number of
-   *                              function evaluations
+   * @param maxItCount            maximal number of function evaluations
    * @param xTolerance            point tolerance
    * @param constraintTolerance   constraint tolerance
    * @param penaltyStartValue     penalty start value
@@ -57,6 +57,35 @@ class SquaredPenalty : public ConstrainedOptimizer {
                  double constraintTolerance = DEFAULT_CONSTRAINT_TOLERANCE,
                  double penaltyStartValue = DEFAULT_PENALTY_START_VALUE,
                  double penaltyIncreaseFactor = DEFAULT_PENALTY_INCREASE_FACTOR);
+
+  /**
+   * Constructor with custom unconstrained optimization algorithm
+   * (gradient-free or gradient-based).
+   *
+   * @param unconstrainedOptimizer  unconstrained optimization algorithm
+   * @param g                       inequality constraint
+   * @param gGradient               inequality constraint gradient
+   *                                (nullptr to omit)
+   * @param h                       equality constraint
+   * @param hGradient               equality constraint gradient
+   *                                (nullptr to omit)
+   * @param maxItCount              maximal number of function evaluations
+   * @param xTolerance              point tolerance
+   * @param constraintTolerance     constraint tolerance
+   * @param penaltyStartValue       penalty start value
+   * @param penaltyIncreaseFactor   penalty increase factor
+   */
+  SquaredPenalty(const UnconstrainedOptimizer& unconstrainedOptimizer,
+                 const VectorFunction& g,
+                 const VectorFunctionGradient* gGradient,
+                 const VectorFunction& h,
+                 const VectorFunctionGradient* hGradient,
+                 size_t maxItCount = DEFAULT_N,
+                 double xTolerance = DEFAULT_X_TOLERANCE,
+                 double constraintTolerance = DEFAULT_CONSTRAINT_TOLERANCE,
+                 double penaltyStartValue = DEFAULT_PENALTY_START_VALUE,
+                 double penaltyIncreaseFactor = DEFAULT_PENALTY_INCREASE_FACTOR);
+
   /**
    * Copy constructor.
    *

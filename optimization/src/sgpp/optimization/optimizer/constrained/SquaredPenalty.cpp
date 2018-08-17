@@ -155,7 +155,25 @@ SquaredPenalty::SquaredPenalty(const ScalarFunction& f,
                                const VectorFunctionGradient& hGradient,
                                size_t maxItCount, double xTolerance, double constraintTolerance,
                                double penaltyStartValue, double penaltyIncreaseFactor)
-    : ConstrainedOptimizer(f, &fGradient, g, &gGradient, h, &hGradient, maxItCount),
+    : ConstrainedOptimizer(f, fGradient, g, gGradient, h, hGradient, maxItCount),
+      theta(xTolerance),
+      epsilon(constraintTolerance),
+      mu0(penaltyStartValue),
+      rhoMuPlus(penaltyIncreaseFactor),
+      xHistInner(0, 0),
+      kHistInner() {
+  dynamic_cast<AdaptiveGradientDescent*>(
+      unconstrainedOptimizer.get())->setTolerance(10.0 * theta);
+}
+
+SquaredPenalty::SquaredPenalty(const UnconstrainedOptimizer& unconstrainedOptimizer,
+                               const VectorFunction& g,
+                               const VectorFunctionGradient* gGradient,
+                               const VectorFunction& h,
+                               const VectorFunctionGradient* hGradient,
+                               size_t maxItCount, double xTolerance, double constraintTolerance,
+                               double penaltyStartValue, double penaltyIncreaseFactor)
+    : ConstrainedOptimizer(unconstrainedOptimizer, g, gGradient, h, hGradient, maxItCount),
       theta(xTolerance),
       epsilon(constraintTolerance),
       mu0(penaltyStartValue),
@@ -217,13 +235,14 @@ void SquaredPenalty::optimize() {
     fPenalized.setMu(mu);
     fPenalizedGradient.setMu(mu);
 
-    AdaptiveGradientDescent unconstrainedOptimizer(fPenalized, fPenalizedGradient, unconstrainedN,
-                                                   10.0 * theta);
-    unconstrainedOptimizer.setStartingPoint(x);
-    unconstrainedOptimizer.optimize();
-    xNew = unconstrainedOptimizer.getOptimalPoint();
+    unconstrainedOptimizer->setObjectiveFunction(fPenalized);
+    unconstrainedOptimizer->setObjectiveGradient(&fPenalizedGradient);
+    unconstrainedOptimizer->setN(unconstrainedN);
+    unconstrainedOptimizer->setStartingPoint(x);
+    unconstrainedOptimizer->optimize();
+    xNew = unconstrainedOptimizer->getOptimalPoint();
 
-    const base::DataMatrix& innerPoints = unconstrainedOptimizer.getHistoryOfOptimalPoints();
+    const base::DataMatrix& innerPoints = unconstrainedOptimizer->getHistoryOfOptimalPoints();
     const size_t numberInnerIterations = innerPoints.getNrows();
     k += numberInnerIterations;
 

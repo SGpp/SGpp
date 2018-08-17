@@ -29,14 +29,14 @@ class LogBarrier : public ConstrainedOptimizer {
   static constexpr double DEFAULT_BARRIER_DECREASE_FACTOR = 0.5;
 
   /**
-   * Constructor.
+   * Constructor with adaptive gradient descent as optimization algorithm
+   * (gradient-based).
    *
    * @param f                     objective function
    * @param fGradient             objective function gradient
    * @param g                     inequality constraint
    * @param gGradient             inequality constraint gradient
-   * @param maxItCount            maximal number of
-   *                              function evaluations
+   * @param maxItCount            maximal number of function evaluations
    * @param tolerance             tolerance
    * @param barrierStartValue     barrier start value
    * @param barrierDecreaseFactor barrier decrease factor
@@ -49,6 +49,28 @@ class LogBarrier : public ConstrainedOptimizer {
              double tolerance = DEFAULT_TOLERANCE,
              double barrierStartValue = DEFAULT_BARRIER_START_VALUE,
              double barrierDecreaseFactor = DEFAULT_BARRIER_DECREASE_FACTOR);
+
+  /**
+   * Constructor with custom unconstrained optimization algorithm
+   * (gradient-free or gradient-based).
+   *
+   * @param unconstrainedOptimizer  unconstrained optimization algorithm
+   * @param g                       inequality constraint
+   * @param gGradient               inequality constraint gradient
+   *                                (nullptr to omit)
+   * @param maxItCount              maximal number of function evaluations
+   * @param tolerance               tolerance
+   * @param barrierStartValue       barrier start value
+   * @param barrierDecreaseFactor   barrier decrease factor
+   */
+  LogBarrier(const UnconstrainedOptimizer& unconstrainedOptimizer,
+             const VectorFunction& g,
+             const VectorFunctionGradient* gGradient,
+             size_t maxItCount = DEFAULT_N,
+             double tolerance = DEFAULT_TOLERANCE,
+             double barrierStartValue = DEFAULT_BARRIER_START_VALUE,
+             double barrierDecreaseFactor = DEFAULT_BARRIER_DECREASE_FACTOR);
+
   /**
    * Copy constructor.
    *
