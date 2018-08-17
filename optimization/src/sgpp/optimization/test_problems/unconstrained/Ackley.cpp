@@ -20,7 +20,7 @@ TestScalarFunction& Ackley::getObjectiveFunction() { return f; }
 
 double Ackley::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(d);
-  x.setAll(0.125);
+  x.setAll(0.1);
   return 20.0 - 20.0 * std::exp(-0.4);
 }
 
@@ -35,7 +35,7 @@ double AckleyObjective::evalUndisplaced(const base::DataVector& x) {
   double arg2 = 0.0;
 
   for (size_t t = 0; t < d; t++) {
-    const double xt = 4.0 * x[t] + 1.5;
+    const double xt = 5.0 * x[t] + 1.5;
     arg1 += xt * xt;
     arg2 += std::cos(2.0 * M_PI * xt);
   }
