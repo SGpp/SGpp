@@ -29,6 +29,24 @@ class LogBarrier : public ConstrainedOptimizer {
   static constexpr double DEFAULT_BARRIER_DECREASE_FACTOR = 0.5;
 
   /**
+   * Constructor with Nelder-Mead as optimization algorithm
+   * (gradient-free).
+   *
+   * @param f                     objective function
+   * @param g                     inequality constraint
+   * @param maxItCount            maximal number of function evaluations
+   * @param tolerance             tolerance
+   * @param barrierStartValue     barrier start value
+   * @param barrierDecreaseFactor barrier decrease factor
+   */
+  LogBarrier(const ScalarFunction& f,
+             const VectorFunction& g,
+             size_t maxItCount = DEFAULT_N,
+             double tolerance = DEFAULT_TOLERANCE,
+             double barrierStartValue = DEFAULT_BARRIER_START_VALUE,
+             double barrierDecreaseFactor = DEFAULT_BARRIER_DECREASE_FACTOR);
+
+  /**
    * Constructor with adaptive gradient descent as optimization algorithm
    * (gradient-based).
    *

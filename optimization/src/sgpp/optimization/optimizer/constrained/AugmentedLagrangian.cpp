@@ -363,6 +363,21 @@ class AuxiliaryConstraintGradient : public VectorFunctionGradient {
 }  // namespace
 
 AugmentedLagrangian::AugmentedLagrangian(const ScalarFunction& f,
+                                         const VectorFunction& g,
+                                         const VectorFunction& h,
+                                         size_t maxItCount, double xTolerance,
+                                         double constraintTolerance, double penaltyStartValue,
+                                         double penaltyIncreaseFactor)
+    : ConstrainedOptimizer(f, g, h, maxItCount),
+      theta(xTolerance),
+      epsilon(constraintTolerance),
+      mu0(penaltyStartValue),
+      rhoMuPlus(penaltyIncreaseFactor),
+      xHistInner(0, 0),
+      kHistInner() {
+}
+
+AugmentedLagrangian::AugmentedLagrangian(const ScalarFunction& f,
                                          const ScalarFunctionGradient& fGradient,
                                          const VectorFunction& g,
                                          const VectorFunctionGradient& gGradient,

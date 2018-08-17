@@ -31,6 +31,28 @@ class SquaredPenalty : public ConstrainedOptimizer {
   static constexpr double DEFAULT_PENALTY_INCREASE_FACTOR = 10.0;
 
   /**
+   * Constructor with Nelder-Mead as optimization algorithm
+   * (gradient-free).
+   *
+   * @param f                     objective function
+   * @param g                     inequality constraint
+   * @param h                     equality constraint
+   * @param maxItCount            maximal number of function evaluations
+   * @param xTolerance            point tolerance
+   * @param constraintTolerance   constraint tolerance
+   * @param penaltyStartValue     penalty start value
+   * @param penaltyIncreaseFactor penalty increase factor
+   */
+  SquaredPenalty(const ScalarFunction& f,
+                 const VectorFunction& g,
+                 const VectorFunction& h,
+                 size_t maxItCount = DEFAULT_N,
+                 double xTolerance = DEFAULT_X_TOLERANCE,
+                 double constraintTolerance = DEFAULT_CONSTRAINT_TOLERANCE,
+                 double penaltyStartValue = DEFAULT_PENALTY_START_VALUE,
+                 double penaltyIncreaseFactor = DEFAULT_PENALTY_INCREASE_FACTOR);
+
+  /**
    * Constructor with adaptive gradient descent as optimization algorithm
    * (gradient-based).
    *

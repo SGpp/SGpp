@@ -124,6 +124,19 @@ class PenalizedObjectiveGradient : public ScalarFunctionGradient {
 }  // namespace
 
 LogBarrier::LogBarrier(const ScalarFunction& f,
+                       const VectorFunction& g,
+                       size_t maxItCount, double tolerance,
+                       double barrierStartValue, double barrierDecreaseFactor)
+    : ConstrainedOptimizer(f, g, EmptyVectorFunction::getInstance(),
+                           maxItCount),
+      theta(tolerance),
+      mu0(barrierStartValue),
+      rhoMuMinus(barrierDecreaseFactor),
+      xHistInner(0, 0),
+      kHistInner() {
+}
+
+LogBarrier::LogBarrier(const ScalarFunction& f,
                        const ScalarFunctionGradient& fGradient,
                        const VectorFunction& g,
                        const VectorFunctionGradient& gGradient,
