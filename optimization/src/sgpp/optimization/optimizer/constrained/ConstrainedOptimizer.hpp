@@ -11,6 +11,8 @@
 #include <sgpp/optimization/function/vector/VectorFunction.hpp>
 #include <sgpp/optimization/function/vector/VectorFunctionGradient.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/NelderMead.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <cstddef>
@@ -27,6 +29,8 @@ class ConstrainedOptimizer : public UnconstrainedOptimizer {
  public:
   /**
    * Constructor.
+   * By default, Nelder-Mead is used as optimization algorithm
+   * (gradient-free).
    * The starting point is set to
    * \f$(0.5, \dotsc, 0.5)^{\mathrm{T}}\f$.
    * Depending on the implementation $g$ and/or $h$ may be ignored
@@ -34,10 +38,8 @@ class ConstrainedOptimizer : public UnconstrainedOptimizer {
    * by the underlying algorithm).
    *
    * @param f           function to optimize
-   * @param fGradient   gradient of f (nullptr to omit)
    * @param g           inequality constraint function
    *                    (\f$g(\vec{x}) \le 0\f$)
-   * @param gGradient   gradient of g (nullptr to omit)
    * @param h           equality constraint function
    *                    (\f$h(\vec{x}) = 0\f$)
    * @param hGradient   gradient of h (nullptr to omit)
@@ -46,24 +48,83 @@ class ConstrainedOptimizer : public UnconstrainedOptimizer {
    *                    (depending on the implementation)
    */
   ConstrainedOptimizer(const ScalarFunction& f,
-                       const ScalarFunctionGradient* fGradient,
+                       const VectorFunction& g,
+                       const VectorFunction& h,
+                       size_t N = DEFAULT_N)
+      : UnconstrainedOptimizer(f, nullptr, nullptr, N),
+        unconstrainedOptimizer(new NelderMead(f)) {
+    g.clone(this->g);
+    h.clone(this->h);
+  }
+
+  /**
+   * Constructor.
+   * By default, adaptive gradient descent is used as optimization algorithm
+   * (gradient-based).
+   * The starting point is set to
+   * \f$(0.5, \dotsc, 0.5)^{\mathrm{T}}\f$.
+   * Depending on the implementation $g$ and/or $h$ may be ignored
+   * (if only equality or inequality constraints can be handled
+   * by the underlying algorithm).
+   *
+   * @param f           function to optimize
+   * @param fGradient   gradient of f
+   * @param g           inequality constraint function
+   *                    (\f$g(\vec{x}) \le 0\f$)
+   * @param gGradient   gradient of g
+   * @param h           equality constraint function
+   *                    (\f$h(\vec{x}) = 0\f$)
+   * @param hGradient   gradient of h
+   * @param N           maximal number of iterations or
+   *                    objective function evaluations
+   *                    (depending on the implementation)
+   */
+  ConstrainedOptimizer(const ScalarFunction& f,
+                       const ScalarFunctionGradient& fGradient,
+                       const VectorFunction& g,
+                       const VectorFunctionGradient& gGradient,
+                       const VectorFunction& h,
+                       const VectorFunctionGradient& hGradient,
+                       size_t N = DEFAULT_N)
+      : UnconstrainedOptimizer(f, &fGradient, nullptr, N),
+        unconstrainedOptimizer(new AdaptiveGradientDescent(f, fGradient)) {
+    g.clone(this->g);
+    gGradient.clone(this->gGradient);
+    h.clone(this->h);
+    hGradient.clone(this->hGradient);
+  }
+
+  /**
+   * Constructor with custom unconstrained optimization algorithm
+   * (gradient-free or gradient-based).
+   * The starting point is set to
+   * \f$(0.5, \dotsc, 0.5)^{\mathrm{T}}\f$.
+   * Depending on the implementation $g$ and/or $h$ may be ignored
+   * (if only equality or inequality constraints can be handled
+   * by the underlying algorithm).
+   *
+   * @param unconstrainedOptimizer  unconstrained optimizer
+   * @param g                       inequality constraint function
+   *                                (\f$g(\vec{x}) \le 0\f$)
+   * @param gGradient               gradient of g (nullptr to omit)
+   * @param h                       equality constraint function
+   *                                (\f$h(\vec{x}) = 0\f$)
+   * @param hGradient               gradient of h (nullptr to omit)
+   * @param N                       maximal number of iterations or
+   *                                objective function evaluations
+   *                                (depending on the implementation)
+   */
+  ConstrainedOptimizer(const UnconstrainedOptimizer& unconstrainedOptimizer,
                        const VectorFunction& g,
                        const VectorFunctionGradient* gGradient,
                        const VectorFunction& h,
                        const VectorFunctionGradient* hGradient,
                        size_t N = DEFAULT_N)
-      : UnconstrainedOptimizer(f, fGradient, nullptr, N) {
-    g.clone(this->g);
-
-    if (gGradient != nullptr) {
-      gGradient->clone(this->gGradient);
-    }
-
-    h.clone(this->h);
-
-    if (hGradient != nullptr) {
-      hGradient->clone(this->hGradient);
-    }
+      : UnconstrainedOptimizer(unconstrainedOptimizer.getObjectiveFunction(),
+                               unconstrainedOptimizer.getObjectiveGradient(),
+                               unconstrainedOptimizer.getObjectiveHessian(),
+                               N) {
+    unconstrainedOptimizer.clone(this->unconstrainedOptimizer);
   }
 
   /**
@@ -72,7 +133,7 @@ class ConstrainedOptimizer : public UnconstrainedOptimizer {
    * @param other optimizer to be copied
    */
   ConstrainedOptimizer(const ConstrainedOptimizer& other)
-      : ConstrainedOptimizer(*other.f, other.fGradient.get(),
+      : ConstrainedOptimizer(*unconstrainedOptimizer,
                              *other.g, other.gGradient.get(),
                              *other.h, other.hGradient.get(), N) {
   }
@@ -137,6 +198,8 @@ class ConstrainedOptimizer : public UnconstrainedOptimizer {
   }
 
  protected:
+  /// unconstrained optimization algorithm
+  std::unique_ptr<UnconstrainedOptimizer> unconstrainedOptimizer;
   /// inequality constraint function
   std::unique_ptr<VectorFunction> g;
   /// inequality constraint function gradient

@@ -129,7 +129,25 @@ LogBarrier::LogBarrier(const ScalarFunction& f,
                        const VectorFunctionGradient& gGradient,
                        size_t maxItCount, double tolerance,
                        double barrierStartValue, double barrierDecreaseFactor)
-    : ConstrainedOptimizer(f, &fGradient, g, &gGradient,
+    : ConstrainedOptimizer(f, fGradient, g, gGradient,
+                           EmptyVectorFunction::getInstance(),
+                           EmptyVectorFunctionGradient::getInstance(),
+                           maxItCount),
+      theta(tolerance),
+      mu0(barrierStartValue),
+      rhoMuMinus(barrierDecreaseFactor),
+      xHistInner(0, 0),
+      kHistInner() {
+  dynamic_cast<AdaptiveGradientDescent*>(
+      unconstrainedOptimizer.get())->setTolerance(10.0 * theta);
+}
+
+LogBarrier::LogBarrier(const UnconstrainedOptimizer& unconstrainedOptimizer,
+                       const VectorFunction& g,
+                       const VectorFunctionGradient* gGradient,
+                       size_t maxItCount, double tolerance,
+                       double barrierStartValue, double barrierDecreaseFactor)
+    : ConstrainedOptimizer(unconstrainedOptimizer, g, gGradient,
                            EmptyVectorFunction::getInstance(),
                            &EmptyVectorFunctionGradient::getInstance(),
                            maxItCount),
@@ -188,13 +206,14 @@ void LogBarrier::optimize() {
     fPenalized.setMu(mu);
     fPenalizedGradient.setMu(mu);
 
-    AdaptiveGradientDescent unconstrainedOptimizer(fPenalized, fPenalizedGradient, unconstrainedN,
-                                                   10.0 * theta);
-    unconstrainedOptimizer.setStartingPoint(x);
-    unconstrainedOptimizer.optimize();
-    xNew = unconstrainedOptimizer.getOptimalPoint();
+    unconstrainedOptimizer->setObjectiveFunction(fPenalized);
+    unconstrainedOptimizer->setObjectiveGradient(&fPenalizedGradient);
+    unconstrainedOptimizer->setN(unconstrainedN);
+    unconstrainedOptimizer->setStartingPoint(x);
+    unconstrainedOptimizer->optimize();
+    xNew = unconstrainedOptimizer->getOptimalPoint();
 
-    const base::DataMatrix& innerPoints = unconstrainedOptimizer.getHistoryOfOptimalPoints();
+    const base::DataMatrix& innerPoints = unconstrainedOptimizer->getHistoryOfOptimalPoints();
     const size_t numberInnerIterations = innerPoints.getNrows();
     k += numberInnerIterations;
 
