@@ -559,9 +559,15 @@ base::DataVector AugmentedLagrangian::findFeasiblePoint() const {
   const double sMax = 1.1 * s0;
 
   AuxiliaryObjectiveFunction auxObjFun(d, sMin, sMax);
-  AuxiliaryObjectiveGradient auxObjGrad(d, sMin, sMax);
   AuxiliaryConstraintFunction auxConstrFun(d, *g, *h, sMin, sMax);
-  AuxiliaryConstraintGradient auxConstrGrad(d, *gGradient, *hGradient, sMin, sMax);
+  std::unique_ptr<AuxiliaryObjectiveGradient> auxObjGrad;
+  std::unique_ptr<AuxiliaryConstraintGradient> auxConstrGrad;
+
+  if ((gGradient != nullptr) && (hGradient != nullptr)) {
+    auxObjGrad.reset(new AuxiliaryObjectiveGradient(d, sMin, sMax));
+    auxConstrGrad.reset(new AuxiliaryConstraintGradient(
+        d, *gGradient, *hGradient, sMin, sMax));
+  }
 
   base::DataVector auxX(d + 1);
 
@@ -571,12 +577,21 @@ base::DataVector AugmentedLagrangian::findFeasiblePoint() const {
 
   auxX[d] = (s0 - sMin) / (sMax - sMin);
 
-  AugmentedLagrangian optimizer(auxObjFun, auxObjGrad, auxConstrFun, auxConstrGrad,
-                                EmptyVectorFunction::getInstance(),
-                                EmptyVectorFunctionGradient::getInstance());
-  optimizer.setStartingPoint(auxX);
-  optimizer.optimize();
-  auxX = optimizer.getOptimalPoint();
+  std::unique_ptr<AugmentedLagrangian> optimizer;
+
+  if (auxObjGrad) {
+    optimizer.reset(new AugmentedLagrangian(
+        auxObjFun, *auxObjGrad, auxConstrFun, *auxConstrGrad,
+        EmptyVectorFunction::getInstance(),
+        EmptyVectorFunctionGradient::getInstance()));
+  } else {
+    optimizer.reset(new AugmentedLagrangian(
+        auxObjFun, auxConstrFun, EmptyVectorFunction::getInstance()));
+  }
+
+  optimizer->setStartingPoint(auxX);
+  optimizer->optimize();
+  auxX = optimizer->getOptimalPoint();
 
   for (size_t t = 0; t < d; t++) {
     x[t] = auxX[t];
