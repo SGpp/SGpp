@@ -54,9 +54,9 @@ class AckleyObjective : public TestScalarFunction {
  * * Number of parameters: \f$d\f$
  * * Domain: \f$\bar{\vec{x}} \in [1.5, 6.5]^d\f$
  * * Optimal point: \f$\bar{\vec{x}}_{\text{opt}} =
- *   \vec{2}\f$
+ *   0.0948903972968234 \cdot \vec{1}\f$
  * * Optimal function value: \f$\bar{f}(\bar{\vec{x}}_{\text{opt}}) =
- *   20 - 20 \exp\!\left(-\frac{2}{5}\right)\f$
+ *   6.559645375627878\f$
  */
 class Ackley : public UnconstrainedTestProblem {
  public:
