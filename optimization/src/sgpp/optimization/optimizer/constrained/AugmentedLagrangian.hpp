@@ -28,7 +28,7 @@ class AugmentedLagrangian : public ConstrainedOptimizer {
   /// default penalty start value
   static constexpr double DEFAULT_PENALTY_START_VALUE = 1.0;
   /// default penalty increase factor
-  static constexpr double DEFAULT_PENALTY_INCREASE_FACTOR = 1.0;
+  static constexpr double DEFAULT_PENALTY_INCREASE_FACTOR = 1.5;
 
   /**
    * Constructor with Nelder-Mead as optimization algorithm
