@@ -37,8 +37,7 @@ class AugmentedLagrangian : public ConstrainedOptimizer {
    * @param f                     objective function
    * @param g                     inequality constraint
    * @param h                     equality constraint
-   * @param maxItCount            maximal number of
-   *                              function evaluations
+   * @param maxItCount            maximal number of function evaluations
    * @param xTolerance            point tolerance
    * @param constraintTolerance   constraint tolerance
    * @param penaltyStartValue     penalty start value
@@ -63,8 +62,7 @@ class AugmentedLagrangian : public ConstrainedOptimizer {
    * @param gGradient             inequality constraint gradient
    * @param h                     equality constraint
    * @param hGradient             equality constraint gradient
-   * @param maxItCount            maximal number of
-   *                              function evaluations
+   * @param maxItCount            maximal number of function evaluations
    * @param xTolerance            point tolerance
    * @param constraintTolerance   constraint tolerance
    * @param penaltyStartValue     penalty start value
@@ -93,8 +91,7 @@ class AugmentedLagrangian : public ConstrainedOptimizer {
    * @param h                       equality constraint
    * @param hGradient               equality constraint gradient
    *                                (nullptr to omit)
-   * @param maxItCount              maximal number of
-   *                                function evaluations
+   * @param maxItCount              maximal number of function evaluations
    * @param xTolerance              point tolerance
    * @param constraintTolerance     constraint tolerance
    * @param penaltyStartValue       penalty start value
