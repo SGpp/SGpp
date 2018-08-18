@@ -213,14 +213,22 @@ void LogBarrier::optimize() {
   const size_t unconstrainedN = N / 20;
 
   PenalizedObjectiveFunction fPenalized(*f, *g, mu);
-  PenalizedObjectiveGradient fPenalizedGradient(*fGradient, *gGradient, mu);
+  std::unique_ptr<PenalizedObjectiveGradient> fPenalizedGradient;
+
+  if ((fGradient != nullptr) && (gGradient != nullptr)) {
+    fPenalizedGradient.reset(
+        new PenalizedObjectiveGradient(*fGradient, *gGradient, mu));
+  }
 
   while (k < N) {
     fPenalized.setMu(mu);
-    fPenalizedGradient.setMu(mu);
-
     unconstrainedOptimizer->setObjectiveFunction(fPenalized);
-    unconstrainedOptimizer->setObjectiveGradient(&fPenalizedGradient);
+
+    if (fPenalizedGradient) {
+      fPenalizedGradient->setMu(mu);
+      unconstrainedOptimizer->setObjectiveGradient(fPenalizedGradient.get());
+    }
+
     unconstrainedOptimizer->setN(unconstrainedN);
     unconstrainedOptimizer->setStartingPoint(x);
     unconstrainedOptimizer->optimize();
