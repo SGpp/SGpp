@@ -194,6 +194,9 @@ const bool UMFPACK_ENABLED;
 %rename(OptG04Objective)                    sgpp::optimization::test_problems::G04Objective;
 %rename(OptG04InequalityConstraint)         sgpp::optimization::test_problems::G04InequalityConstraint;
 %rename(OptG04EqualityConstraint)           sgpp::optimization::test_problems::G04EqualityConstraint;
+%rename(OptG04Squared)                             sgpp::optimization::test_problems::G04Squared;
+%rename(OptG04SquaredObjective)                    sgpp::optimization::test_problems::G04SquaredObjective;
+%rename(OptG04SquaredInequalityConstraint)         sgpp::optimization::test_problems::G04SquaredInequalityConstraint;
 %rename(OptG05)                             sgpp::optimization::test_problems::G05;
 %rename(OptG05Objective)                    sgpp::optimization::test_problems::G05Objective;
 %rename(OptG05InequalityConstraint)         sgpp::optimization::test_problems::G05InequalityConstraint;
@@ -463,6 +466,7 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/test_problems/constrained/Floudas.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/constrained/G03.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/constrained/G04.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/constrained/G04Squared.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/constrained/G05.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/constrained/G06.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/constrained/G08.hpp"

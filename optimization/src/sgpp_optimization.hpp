@@ -148,6 +148,7 @@
 #include <sgpp/optimization/test_problems/constrained/Floudas.hpp>
 #include <sgpp/optimization/test_problems/constrained/G03.hpp>
 #include <sgpp/optimization/test_problems/constrained/G04.hpp>
+#include <sgpp/optimization/test_problems/constrained/G04Squared.hpp>
 #include <sgpp/optimization/test_problems/constrained/G05.hpp>
 #include <sgpp/optimization/test_problems/constrained/G06.hpp>
 #include <sgpp/optimization/test_problems/constrained/G08.hpp>

@@ -37,6 +37,7 @@
 #include <sgpp/optimization/test_problems/constrained/Floudas.hpp>
 #include <sgpp/optimization/test_problems/constrained/G03.hpp>
 #include <sgpp/optimization/test_problems/constrained/G04.hpp>
+#include <sgpp/optimization/test_problems/constrained/G04Squared.hpp>
 #include <sgpp/optimization/test_problems/constrained/G05.hpp>
 #include <sgpp/optimization/test_problems/constrained/G06.hpp>
 #include <sgpp/optimization/test_problems/constrained/G08.hpp>
@@ -199,6 +200,8 @@ BOOST_AUTO_TEST_CASE(TestConstrainedTestProblem) {
       std::unique_ptr<ConstrainedTestProblem>(new sgpp::optimization::test_problems::G03(d)));
   testProblems.push_back(
       std::unique_ptr<ConstrainedTestProblem>(new sgpp::optimization::test_problems::G04()));
+  testProblems.push_back(
+      std::unique_ptr<ConstrainedTestProblem>(new sgpp::optimization::test_problems::G04Squared()));
   testProblems.push_back(
       std::unique_ptr<ConstrainedTestProblem>(new sgpp::optimization::test_problems::G05()));
   testProblems.push_back(
