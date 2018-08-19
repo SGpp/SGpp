@@ -197,6 +197,7 @@ const bool UMFPACK_ENABLED;
 %rename(OptG04Squared)                             sgpp::optimization::test_problems::G04Squared;
 %rename(OptG04SquaredObjective)                    sgpp::optimization::test_problems::G04SquaredObjective;
 %rename(OptG04SquaredInequalityConstraint)         sgpp::optimization::test_problems::G04SquaredInequalityConstraint;
+%rename(OptG04SquaredEqualityConstraint)         sgpp::optimization::test_problems::G04SquaredEqualityConstraint;
 %rename(OptG05)                             sgpp::optimization::test_problems::G05;
 %rename(OptG05Objective)                    sgpp::optimization::test_problems::G05Objective;
 %rename(OptG05InequalityConstraint)         sgpp::optimization::test_problems::G05InequalityConstraint;
