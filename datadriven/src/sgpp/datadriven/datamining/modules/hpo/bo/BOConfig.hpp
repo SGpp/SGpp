@@ -84,19 +84,19 @@ class BOConfig {
    * @param idx parameter position
    * @return parameter value
    */
-  double getCont(int idx);
+  double getCont(size_t idx);
   /**
    * Get the value of a specific discrete parameter
    * @param idx parameter position
    * @return parameter value
    */
-  int getDisc(int idx);
+  int getDisc(size_t idx);
   /**
    * Get the value of a specific categorical parameter
    * @param idx parameter position
    * @return parameter value
    */
-  int getCat(int idx);
+  int getCat(size_t idx);
 
   /**
    * Set score measured on this sample

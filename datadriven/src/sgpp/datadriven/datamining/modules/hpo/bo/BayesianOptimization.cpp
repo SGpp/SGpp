@@ -171,7 +171,7 @@ double BayesianOptimization::likelihood(const base::DataVector &inp) {
   return 2 * tmp + rawScores.dotProduct(transformed);   // EDIT: correct likelihood?
 }
 
-void BayesianOptimization::updateGP(BOConfig &newConfig) {
+void BayesianOptimization::updateGP(BOConfig &newConfig, bool normalize) {
   allConfigs.push_back(newConfig);
   double noise = pow(10, -scales.back() * 10);
   size_t size = kernelmatrix.getNcols();
@@ -188,12 +188,14 @@ void BayesianOptimization::updateGP(BOConfig &newConfig) {
 
   decomposeCholesky(kernelmatrix, gleft);
   //EDIT: reactivate
-  //rawScores.normalize();
+  if(normalize) {
+    rawScores.normalize();
   rawScores.sub(base::DataVector(rawScores.size(),
                                  rawScores.sum() / static_cast<double>(rawScores.size())));
-  base::DataVector sqscores(rawScores);
-  sqscores.sqr();
-  rawScores.mult(rawScores.size()/sqscores.sum());
+  }
+  //base::DataVector sqscores(rawScores);
+  //sqscores.sqr();
+  //rawScores.mult(rawScores.size()/sqscores.sum());
   bestsofar = rawScores.min();
   transformedOutput = base::DataVector(rawScores);
   solveCholeskySystem(gleft, transformedOutput);

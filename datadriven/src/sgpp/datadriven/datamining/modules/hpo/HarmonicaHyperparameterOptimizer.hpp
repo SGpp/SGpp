@@ -76,7 +76,7 @@ class HarmonicaHyperparameterOptimizer : public HyperparameterOptimizer{
   /**
    * Run hyperparameter optimization using Harmonica.
    */
-  void run() override;
+  double run(bool writeToFile) override;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

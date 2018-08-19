@@ -80,15 +80,15 @@ void BOConfig::setCont(const base::DataVector &input) {
   cont = base::DataVector(input);
 }
 
-double BOConfig::getCont(int idx) {
+double BOConfig::getCont(size_t idx) {
   return cont[idx];
 }
 
-int BOConfig::getDisc(int idx) {
+int BOConfig::getDisc(size_t idx) {
   return disc[idx];
 }
 
-int BOConfig::getCat(int idx) {
+int BOConfig::getCat(size_t idx) {
   return cat[idx];
 }
 

@@ -45,7 +45,7 @@ class DiscreteParameter : public sgpp::datadriven::HyperParameter {
    * @param minv minimum value of the hyperparameter during optimization
    * @param maxv maximum value of the hyperparameter during optimization
    */
-  DiscreteParameter(int nBits, std::string &name, int minv, int maxv)
+  DiscreteParameter(int nBits, std::string &&name, int minv, int maxv)
       : HyperParameter(nBits, name), minv(minv), maxv(maxv) {}
 
   /**

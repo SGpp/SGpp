@@ -32,7 +32,7 @@ void FitterFactory::setHarmonica() {
 }
 
 void FitterFactory::setBO(BOConfig &config) {
-  int i = 0;
+  size_t i = 0;
   for (auto &pair : dispar) {
     pair.second.setBO(config.getDisc(i));
     i++;
@@ -73,8 +73,12 @@ BOConfig FitterFactory::getBOConfig() {
 
 std::string FitterFactory::printConfig() {
   std::stringstream s;
-  if (catpar.count("basisFunction")) {
-    s << ", " << GridTypeParser::toString(basisFunctions[catpar["basisFunction"].getValue()]);
+  for (auto &pair : catpar) {
+    if (pair.first == "basisFunction") {
+      s << ", " << GridTypeParser::toString(basisFunctions[catpar["basisFunction"].getValue()]);
+    }else{
+      s << ", " << pair.second.getValue();
+    }
   }
   for (auto &pair : dispar) {
     s << ", " << pair.second.getValue();
@@ -87,8 +91,8 @@ std::string FitterFactory::printConfig() {
 
 std::string FitterFactory::printHeadline() {
   std::stringstream s;
-  if (catpar.count("basisFunction")) {
-    s << ", " << "basisFunction";
+  for (auto &pair : catpar) {
+    s << ", " << pair.first;
   }
   for (auto &pair : dispar) {
     s << ", " << pair.first;

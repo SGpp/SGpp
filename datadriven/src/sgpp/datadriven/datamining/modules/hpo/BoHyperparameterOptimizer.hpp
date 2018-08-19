@@ -74,7 +74,7 @@ class BoHyperparameterOptimizer : public HyperparameterOptimizer {
   /**
    * Run hyperparameter optimization using Bayesian Optimization and random search to warm up.
    */
-  void run() override;
+  double run(bool writeToFile) override;
 
   /**
    * Possible score function transformation to accentuate the optimum

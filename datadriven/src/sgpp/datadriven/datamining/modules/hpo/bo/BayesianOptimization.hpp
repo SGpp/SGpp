@@ -43,7 +43,7 @@ class BayesianOptimization {
   /**
    * Gaussian Process update step. Incorporates most recent sample into Gaussian Process.
    */
-  void updateGP(BOConfig &newConfig);
+  void updateGP(BOConfig &newConfig, bool normalize);
 
   /**
    * Implementation of mathematical formulation of the expected improvement acquisition function

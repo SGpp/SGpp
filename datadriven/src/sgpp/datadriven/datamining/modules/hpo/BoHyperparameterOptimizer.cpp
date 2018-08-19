@@ -28,31 +28,37 @@ BoHyperparameterOptimizer::BoHyperparameterOptimizer(DataSource *dataSource,
         : HyperparameterOptimizer(dataSource, fitterFactory, parser) {
 }
 
-void BoHyperparameterOptimizer::run() {
+double BoHyperparameterOptimizer::run(bool writeToFile) {
   // mute auxiliary optimizers
   optimization::Printer::getInstance().disableStatusPrinting();
 
   std::cout << std::endl << "Starting Hyperparameter Optimization using Bayesian Optimization."
-          " Results are saved with timestamp." << std::endl << std::endl;
+      " Results are saved with timestamp." << std::endl << std::endl;
 
   BOConfig prototype = fitterFactory->getBOConfig();
 
   double stdDeviation;   // dummy
 
+
   // output initialization
-  time_t now = time(nullptr);
-  tm tmobj{};  // EDIT: working?
-  tm *ltm = localtime_r(&now, &tmobj);
+  std::ofstream myfile;
   std::stringstream fn;
-  fn << "Bayesian_" << (ltm->tm_year + 1900) << "_" << (ltm->tm_mon + 1) << "_" << ltm->tm_mday
-     << "_"
-     << ltm->tm_hour << "_" << ltm->tm_min;
-  std::ofstream myfile(fn.str(), std::ios_base::app);
-  if (myfile.is_open()) {
-    myfile << "SampleNo" << fitterFactory->printHeadline() << ", Score" << std::endl;
+
+  if (writeToFile) {
+    time_t now = time(nullptr);
+    tm tmobj{};  // EDIT: working?
+    tm *ltm = localtime_r(&now, &tmobj);
+    fn << "Bayesian_" << (ltm->tm_year + 1900) << "_" << (ltm->tm_mon + 1) << "_" << ltm->tm_mday
+       << "_"
+       << ltm->tm_hour << "_" << ltm->tm_min;
+    myfile.open(fn.str(), std::ios_base::app);
+    if (myfile.is_open()) {
+      myfile << "SampleNo" << fitterFactory->printHeadline() << ", Score" << std::endl;
+    }
+    std::cout << "SampleNo" << fitterFactory->printHeadline() << ", Score" << std::endl;
+    myfile.close();
   }
-  std::cout << "SampleNo" << fitterFactory->printHeadline() << ", Score" << std::endl;
-  myfile.close();
+
   double best = std::numeric_limits<double>::infinity();
   int bestscnt = 0;
   std::string bestconfigstring;
@@ -74,11 +80,13 @@ void BoHyperparameterOptimizer::run() {
     double result = hpoScorer->calculateScore(*fitter, *trainData, &stdDeviation);
     initialConfigs[i].setScore(transformScore(result));
     std::cout << (i + 1) << configString << ", " << result;
-    myfile.open(fn.str(), std::ios_base::app);
-    if (myfile.is_open()) {
-      myfile << (i + 1) << configString << ", " << result << std::endl;
+    if (writeToFile) {
+      myfile.open(fn.str(), std::ios_base::app);
+      if (myfile.is_open()) {
+        myfile << (i + 1) << configString << ", " << result << std::endl;
+      }
+      myfile.close();
     }
-    myfile.close();
     if (result < best) {
       best = result;
       bestscnt = i + 1;
@@ -102,14 +110,16 @@ void BoHyperparameterOptimizer::run() {
     std::unique_ptr<ModelFittingBase> fitter(fitterFactory->buildFitter());
     double result = hpoScorer->calculateScore(*fitter, *trainData, &stdDeviation);
     nextConfig.setScore(transformScore(result));
-    bo.updateGP(nextConfig);
+    bo.updateGP(nextConfig, true);
     bo.setScales(bo.fitScales(), 0.1);
     std::cout << (q + config.getNRandom() + 1) << configString << ", " << result;
-    myfile.open(fn.str(), std::ios_base::app);
-    if (myfile.is_open()) {
-      myfile << (q + config.getNRandom() + 1) << configString << ", " << result << std::endl;
+    if (writeToFile) {
+      myfile.open(fn.str(), std::ios_base::app);
+      if (myfile.is_open()) {
+        myfile << (q + config.getNRandom() + 1) << configString << ", " << result << std::endl;
+      }
+      myfile.close();
     }
-    myfile.close();
     if (result < best) {
       best = result;
       bestscnt = static_cast<int>(q + config.getNRandom() + 1);
@@ -118,14 +128,17 @@ void BoHyperparameterOptimizer::run() {
     }
     std::cout << std::endl;
   }
-  myfile.open(fn.str(), std::ios_base::app);
-  if (myfile.is_open()) {
-    myfile << "################## Best Result ###################" << std::endl;
-    myfile << "SampleNo" << fitterFactory->printHeadline() << ", Score" << std::endl;
-    myfile << bestscnt << bestconfigstring << ", " << best << std::endl;
-    myfile << "##################################################" << std::endl;
+  if (writeToFile) {
+    myfile.open(fn.str(), std::ios_base::app);
+    if (myfile.is_open()) {
+      myfile << "################## Best Result ###################" << std::endl;
+      myfile << "SampleNo" << fitterFactory->printHeadline() << ", Score" << std::endl;
+      myfile << bestscnt << bestconfigstring << ", " << best << std::endl;
+      myfile << "##################################################" << std::endl;
+    }
+    myfile.close();
   }
-  myfile.close();
+  return best;
 }
 
 double BoHyperparameterOptimizer::transformScore(double original) {

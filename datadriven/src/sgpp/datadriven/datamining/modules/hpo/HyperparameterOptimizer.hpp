@@ -73,7 +73,7 @@ public:
   /**
    * Run hyperparameter optimization
    */
-  virtual void run() = 0;
+  virtual double run(bool writeToFile) = 0;
 
 
 protected:
