@@ -90,7 +90,9 @@ BOConfig BayesianOptimization::main(BOConfig &prototype) {
       config.calcDiscDistance(nextconfig, scales);
     }
     optimization::optimizer::MultiStart optimizer(wrapper);
+      std::cout << "Test Point 2.1" << std::endl;
     optimizer.optimize();
+      std::cout << "Test Point 2.2" << std::endl;
     double optv = optimizer.getOptimalValue();
     if (prototype.getContSize() == 0) {
       optv = acquisitionOuter(base::DataVector());
@@ -142,7 +144,9 @@ base::DataVector BayesianOptimization::fitScales() {
                                                         std::placeholders::_1));
   // adjust resource allocation for optimizer here
   optimization::optimizer::MultiStart optimizer(wrapper, 2000, 200);
+    std::cout << "Test Point 1.1" << std::endl;
   optimizer.optimize();
+    std::cout << "Test Point 1.2" << std::endl;
   // std::cout << optimizer.getOptimalPoint().toString() << std::endl;
   // std::cout << optimizer.getOptimalValue() << std::endl;
   return optimizer.getOptimalPoint();
