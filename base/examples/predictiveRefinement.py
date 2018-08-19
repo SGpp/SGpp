@@ -144,7 +144,7 @@ for refnum in range(20):
 
     
     # extend alpha vector (new entries uninitialized)
-    alpha.resize(HashGridStorage.getSize())
+    alpha.resizeZero(HashGridStorage.getSize())
 
 
 ## The output of the program should look like this

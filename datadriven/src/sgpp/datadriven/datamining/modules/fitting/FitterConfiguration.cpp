@@ -51,9 +51,14 @@ const {
   return databaseConfig;
 }
 
-base::RegularGridConfiguration &FitterConfiguration::getGridConfig() {
-  return const_cast<base::RegularGridConfiguration &>(
-      static_cast<const FitterConfiguration &>(*this).getGridConfig());
+const datadriven::LearnerConfiguration& FitterConfiguration::getLearnerConfig()
+    const {
+  return learnerConfig;
+}
+
+base::RegularGridConfiguration& FitterConfiguration::getGridConfig() {
+  return const_cast<base::RegularGridConfiguration&>(
+      static_cast<const FitterConfiguration&>(*this).getGridConfig());
 }
 
 base::AdpativityConfiguration &FitterConfiguration::getRefinementConfig() {

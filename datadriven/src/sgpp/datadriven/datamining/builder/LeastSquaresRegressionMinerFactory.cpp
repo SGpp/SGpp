@@ -13,12 +13,11 @@
 #include <sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp>
 
 #include <sgpp/base/exception/data_exception.hpp>
-#include <sgpp/datadriven/datamining/builder/CrossValidationScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
-#include <sgpp/datadriven/datamining/builder/SplittingScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
+#include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/LeastSquaresRegressionFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
@@ -29,55 +28,22 @@
 namespace sgpp {
 namespace datadriven {
 
-SparseGridMiner *LeastSquaresRegressionMinerFactory::buildMiner(const std::string &path) const {
-  DataMiningConfigParser parser(path);
-
-  return new SparseGridMiner(createDataSource(parser), createFitter(parser), createScorer(parser));
-}
-
-HyperparameterOptimizer *LeastSquaresRegressionMinerFactory::buildHPO
-                                                             (const std::string &path) const {
-  DataMiningConfigParser parser(path);
-  if (parser.getHPOMethod("bayesian") == "harmonica") {
-    return new HarmonicaHyperparameterOptimizer(createDataSource(parser),
-                                         new LeastSquaresRegressionFitterFactory(parser), parser);
-  } else {
-    return new BoHyperparameterOptimizer(createDataSource(parser),
-                                         new LeastSquaresRegressionFitterFactory(parser), parser);
-  }
-}
-
-DataSource *LeastSquaresRegressionMinerFactory::createDataSource(
-    const DataMiningConfigParser &parser) const {
-  DataSourceConfig config;
-
-  bool hasSource = parser.getDataSourceConfig(config, config);
-
-  if (hasSource && config.filePath.compare("") != 0) {
-    DataSourceBuilder builder;
-    return builder.fromConfig(config);
-  } else {
-    throw base::data_exception("No file name provided for datasource.");
-  }
-}
-
-ModelFittingBase *LeastSquaresRegressionMinerFactory::createFitter(
-    const DataMiningConfigParser &parser) const {
+ModelFittingBase* LeastSquaresRegressionMinerFactory::createFitter(
+    const DataMiningConfigParser& parser) const {
   FitterConfigurationLeastSquares config{};
   config.readParams(parser);
   return new ModelFittingLeastSquares(config);
 }
-
-Scorer *LeastSquaresRegressionMinerFactory::createScorer(
-    const DataMiningConfigParser &parser) const {
-  std::unique_ptr<ScorerFactory> factory;
-
-  if (parser.hasScorerConfigCrossValidation()) {
-    factory = std::make_unique<CrossValidationScorerFactory>();
+HyperparameterOptimizer *LeastSquaresRegressionMinerFactory::buildHPO
+    (const std::string &path) const {
+  DataMiningConfigParser parser(path);
+  if (parser.getHPOMethod("bayesian") == "harmonica") {
+    return new HarmonicaHyperparameterOptimizer(createDataSource(parser),
+                                                new LeastSquaresRegressionFitterFactory(parser), parser);
   } else {
-    factory = std::make_unique<SplittingScorerFactory>();
+    return new BoHyperparameterOptimizer(createDataSource(parser),
+                                         new LeastSquaresRegressionFitterFactory(parser), parser);
   }
-  return factory->buildScorer(parser);
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

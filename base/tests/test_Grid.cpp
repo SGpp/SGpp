@@ -26,6 +26,8 @@ BOOST_AUTO_TEST_CASE(test_clone) {
 
   BOOST_CHECK_EQUAL(newGrid->getStorage().getSize(), grid->getStorage().getSize());
   BOOST_CHECK_EQUAL(newGrid->getDimension(), grid->getDimension());
+
+  delete newGrid;
 }
 
 BOOST_AUTO_TEST_SUITE_END()

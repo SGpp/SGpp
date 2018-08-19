@@ -13,6 +13,7 @@
 
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/DiscreteParameter.hpp>
@@ -26,9 +27,7 @@
 
 namespace sgpp {
 namespace datadriven {
-struct CrossValidationConfiguration;
 struct DataSourceConfig;
-struct TestingConfiguration;
 } /* namespace datadriven */
 } /* namespace sgpp */
 
@@ -55,8 +54,6 @@ class DataMiningConfigParser {
   bool hasDataSourceConfig() const;
   bool hasDataTransformationConfig() const;
   bool hasScorerConfig() const;
-  bool hasScorerConfigCrossValidation() const;
-  bool hasScorerConfigTesting() const;
   bool hasFitterConfig() const;
   bool hasScorerTestset() const;
 
@@ -72,27 +69,37 @@ class DataMiningConfigParser {
                                      const std::string &parentNode) const;
   std::string getHPOMethod(std::string defaultValue) const;
 
-  bool getDataSourceConfig(DataSourceConfig &config, const DataSourceConfig &defaults) const;
-  bool getScorerTestingConfig(TestingConfiguration &config,
-                              const TestingConfiguration &defaults) const;
-  bool getScorerCrossValidationConfig(CrossValidationConfiguration &config,
-                                      const CrossValidationConfiguration &defaults) const;
-  bool getFitterConfigType(FitterType &fitter, const FitterType &defaults) const;
-  bool getFitterGridConfig(RegularGridConfiguration &config,
-                           const RegularGridConfiguration &defaults) const;
-  bool getFitterAdaptivityConfig(AdpativityConfiguration &config,
-                                 const AdpativityConfiguration &defaults) const;
-  bool getFitterCrossvalidationConfig(CrossvalidationConfiguration &config,
-                                      const CrossvalidationConfiguration &defaults) const;
-  bool getFitterDensityEstimationConfig(DensityEstimationConfiguration &config,
-                                        const DensityEstimationConfiguration &defaults) const;
-  bool getFitterSolverRefineConfig(SLESolverConfiguration &config,
-                                   const SLESolverConfiguration &defaults) const;
-  bool getFitterSolverFinalConfig(SLESolverConfiguration &config,
-                                  const SLESolverConfiguration &defaults) const;
-  bool getFitterRegularizationConfig(RegularizationConfiguration &config,
-                                     const RegularizationConfiguration &defaults) const;
-  bool getFitterLambda(double &lambda, double defaultValue) const;
+  /**
+   * Checks whether the fitter configuration contains a cross validation configuration
+   * @return if the fitter configuration contains a cross validation configuration
+   */
+  bool hasFitterConfigCrossValidation() const;
+
+  bool getDataSourceConfig(DataSourceConfig& config, const DataSourceConfig& defaults) const;
+  /**
+   * Reads the configuration for the scorer
+   * @param config the configuration instance to initialize
+   * @param defaults a set of configurations initialized with default values
+   * @return if the configuration file contained a scorer configuration
+   */
+  bool getScorerConfig(ScorerConfiguration& config, const ScorerConfiguration& defaults) const;
+
+  bool getFitterConfigType(FitterType& fitter, const FitterType& defaults) const;
+  bool getFitterGridConfig(RegularGridConfiguration& config,
+                           const RegularGridConfiguration& defaults) const;
+  bool getFitterAdaptivityConfig(AdpativityConfiguration& config,
+                                 const AdpativityConfiguration& defaults) const;
+  bool getFitterCrossvalidationConfig(CrossvalidationConfiguration& config,
+                                 const CrossvalidationConfiguration& defaults) const;
+  bool getFitterDensityEstimationConfig(DensityEstimationConfiguration& config,
+                                 const DensityEstimationConfiguration& defaults) const;
+  bool getFitterSolverRefineConfig(SLESolverConfiguration& config,
+                                   const SLESolverConfiguration& defaults) const;
+  bool getFitterSolverFinalConfig(SLESolverConfiguration& config,
+                                  const SLESolverConfiguration& defaults) const;
+  bool getFitterRegularizationConfig(RegularizationConfiguration& config,
+                                     const RegularizationConfiguration& defaults) const;
+  bool getFitterLambda(double& lambda, double defaultValue) const;
 
   /**
    * Returns the database configuration of the fitter if it exists
@@ -102,6 +109,15 @@ class DataMiningConfigParser {
    */
   bool getFitterDatabaseConfig(datadriven::DatabaseConfiguration &config,
                                const datadriven::DatabaseConfiguration &defaults) const;
+
+  /**
+   * Initializes the learner configuration if it exists
+   * @param config the configuration instance that will be initialized
+   * @param defaults default values if the fitter config does not contain a matching entry
+   * @return whether the configuration contains a learner configuration
+   */
+  bool getFitterLearnerConfig(datadriven::LearnerConfiguration& config,
+      const datadriven::LearnerConfiguration& defaults) const;
 
  private:
   std::unique_ptr<JSON> configFile;

@@ -20,6 +20,7 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceFileTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorFactory.hpp>
 
 #include <algorithm>
 #include <cstring>
@@ -31,22 +32,22 @@ namespace datadriven {
 
 using sgpp::base::data_exception;
 
-DataSourceBuilder &DataSourceBuilder::withFileType(DataSourceFileType fileType) {
+DataSourceBuilder& DataSourceBuilder::withFileType(DataSourceFileType fileType) {
   config.fileType = fileType;
   return *this;
 }
 
-DataSourceBuilder &DataSourceBuilder::inBatches(size_t howMany) {
+DataSourceBuilder& DataSourceBuilder::inBatches(size_t howMany) {
   config.numBatches = howMany;
   return *this;
 }
 
-DataSourceBuilder &DataSourceBuilder::withBatchSize(size_t batchSize) {
+DataSourceBuilder& DataSourceBuilder::withBatchSize(size_t batchSize) {
   config.batchSize = batchSize;
   return *this;
 }
 
-DataSourceBuilder &DataSourceBuilder::withCompression(bool isCompressed) {
+DataSourceBuilder& DataSourceBuilder::withCompression(bool isCompressed) {
   config.isCompressed = isCompressed;
 
 #ifndef ZLIB
@@ -59,7 +60,7 @@ DataSourceBuilder &DataSourceBuilder::withCompression(bool isCompressed) {
   return *this;
 }
 
-DataSourceBuilder &DataSourceBuilder::withPath(const std::string &filePath) {
+DataSourceBuilder& DataSourceBuilder::withPath(const std::string& filePath) {
   config.filePath = filePath;
   if (config.fileType == DataSourceFileType::NONE) {
     grabTypeInfoFromFilePath();
@@ -67,13 +68,17 @@ DataSourceBuilder &DataSourceBuilder::withPath(const std::string &filePath) {
   return *this;
 }
 
-DataSource *DataSourceBuilder::assemble() const {
-  SampleProvider *sampleProvider = nullptr;
+DataSourceSplitting* DataSourceBuilder::splittingAssemble() const {
+  // Create a shuffling functor
+  DataShufflingFunctorFactory shufflingFunctorFactory;
+  DataShufflingFunctor *shuffling = shufflingFunctorFactory.buildDataShufflingFunctor(config);
+
+  SampleProvider* sampleProvider = nullptr;
 
   if (config.fileType == DataSourceFileType::ARFF) {
-    sampleProvider = new ArffFileSampleProvider;
+    sampleProvider = new ArffFileSampleProvider(shuffling);
   } else if (config.fileType == DataSourceFileType::CSV) {
-    sampleProvider = new CSVFileSampleProvider;
+    sampleProvider = new CSVFileSampleProvider(shuffling);
   } else {
     data_exception("Unknown file type");
   }
@@ -87,16 +92,57 @@ DataSource *DataSourceBuilder::assemble() const {
 #endif
   }
 
-  return new DataSource(config, sampleProvider);
+  return new DataSourceSplitting(config, sampleProvider);
 }
 
-DataSource *DataSourceBuilder::fromConfig(const DataSourceConfig &config) {
+DataSourceSplitting* DataSourceBuilder::splittingFromConfig(const DataSourceConfig& config) {
   this->config = config;
 
   if (config.fileType == DataSourceFileType::NONE) {
     grabTypeInfoFromFilePath();
   }
-  return assemble();
+  return splittingAssemble();
+}
+
+DataSourceCrossValidation* DataSourceBuilder::crossValidationAssemble() const {
+  // Create a shuffling functor
+  DataShufflingFunctorFactory shufflingFunctorFactory;
+  DataShufflingFunctor *shuffling = shufflingFunctorFactory.buildDataShufflingFunctor(config);
+  DataShufflingFunctorCrossValidation *crossValidationShuffling =
+      new DataShufflingFunctorCrossValidation(crossValidationConfig, shuffling);
+
+  SampleProvider* sampleProvider = nullptr;
+
+  if (config.fileType == DataSourceFileType::ARFF) {
+    sampleProvider = new ArffFileSampleProvider(crossValidationShuffling);
+  } else if (config.fileType == DataSourceFileType::CSV) {
+    sampleProvider = new CSVFileSampleProvider(crossValidationShuffling);
+  } else {
+    data_exception("Unknown file type");
+  }
+
+  if (config.isCompressed) {
+#ifndef ZLIB
+    throw sgpp::base::application_exception{
+        "sgpp has been built without zlib support. Reading compressed files is not possible"};
+#else
+    sampleProvider = new GzipFileSampleDecorator(static_cast<FileSampleProvider*>(sampleProvider));
+#endif
+  }
+
+  return new DataSourceCrossValidation(config, crossValidationConfig, crossValidationShuffling,
+      sampleProvider);
+}
+
+DataSourceCrossValidation* DataSourceBuilder::crossValidationFromConfig(
+    const DataSourceConfig& config, const CrossvalidationConfiguration& crossValidationConfig) {
+  this->config = config;
+  this->crossValidationConfig = crossValidationConfig;
+
+  if (config.fileType == DataSourceFileType::NONE) {
+    grabTypeInfoFromFilePath();
+  }
+  return crossValidationAssemble();
 }
 
 void DataSourceBuilder::grabTypeInfoFromFilePath() {
@@ -120,7 +166,7 @@ void DataSourceBuilder::grabTypeInfoFromFilePath() {
   for (auto t : tokens) {
     try {
       type = DataSourceFileTypeParser::parse(t);
-    } catch (data_exception &e) {
+    } catch (data_exception& e) {
       // wasn't found
       withFileType(DataSourceFileType::NONE);
     }
@@ -129,5 +175,6 @@ void DataSourceBuilder::grabTypeInfoFromFilePath() {
     }
   }
 }
+
 } /* namespace datadriven */
 } /* namespace sgpp */

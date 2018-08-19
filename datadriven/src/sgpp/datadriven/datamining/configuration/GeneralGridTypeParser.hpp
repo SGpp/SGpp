@@ -3,9 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_CONFIGURATION_GENERALGRIDTYPEPARSER_HPP_
-#define DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_CONFIGURATION_GENERALGRIDTYPEPARSER_HPP_
-
 #pragma once
 
 #include <sgpp/base/grid/Grid.hpp>
@@ -27,14 +24,14 @@ class GeneralGridTypeParser {
    * @param input the grid type to parse
    * @return the parsed grid type
    */
-  static sgpp::base::GeneralGridType parse(const std::string &input);
+  static sgpp::base::GeneralGridType parse(const std::string& input);
 
   /**
    * Returns the string representation of a sgpp::base::GeneralGridType type
    * @param type the grid type to retrieve the string representation from
    * @return the string representation of the the grid type
    */
-  static const std::string &toString(sgpp::base::GeneralGridType type);
+  static const std::string& toString(sgpp::base::GeneralGridType type);
 
  private:
   // Define a type for the map grid type -> string
@@ -46,7 +43,7 @@ class GeneralGridTypeParser {
    */
   static const GeneralGridTypeMap_t generalGridTypeMap;
 };
+
 } /* namespace datadriven */
 } /* namespace sgpp */
 
-#endif /* DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_CONFIGURATION_GENERALGRIDTYPEPARSER_HPP_ */
