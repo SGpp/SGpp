@@ -6,9 +6,9 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-#include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 // #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
@@ -61,7 +61,9 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
     dataset.setRow(i, temp);
   }
 
-  sgpp::op_factory::createOperationMultipleEval(*grid, dataset)->mult(alpha, result);
+  std::unique_ptr<OperationMultipleEval>(
+      sgpp::op_factory::createOperationMultipleEval(*grid, dataset))
+      ->mult(alpha, result);
 
   BOOST_TEST_MESSAGE(alpha.toString() + "\n");
   BOOST_TEST_MESSAGE(result.toString() + "\n");

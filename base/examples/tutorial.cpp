@@ -123,7 +123,9 @@ int main() {
    * An object of sgpp::base::OperationHierarchisation is created and used to
    * hierarchize the coefficient vector, which we print.
    */
-  sgpp::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
+  std::unique_ptr<sgpp::base::OperationHierarchisation>(
+      sgpp::op_factory::createOperationHierarchisation(*grid))
+      ->doHierarchisation(alpha);
   std::cout << "alpha after hierarchization:  " << alpha.toString() << std::endl;
 
   /**

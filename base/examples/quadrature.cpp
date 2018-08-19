@@ -34,6 +34,8 @@
 
 #include <iostream>
 
+using sgpp::base::OperationHierarchisation;
+
 // function to interpolate
 double f(int dim, double* x, void* clientdata) {
   double res = 1.0;
@@ -78,7 +80,8 @@ int main() {
     alpha[i] = f(2, p, NULL);
   }
 
-  sgpp::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
+  std::unique_ptr<OperationHierarchisation>(sgpp::op_factory::createOperationHierarchisation(*grid))
+      ->doHierarchisation(alpha);
 
   /**
      * Now we compute and compare the quadrature using four different methods available in SG++.

@@ -23,11 +23,11 @@ namespace sgpp {
 
 namespace datadriven {
 
-CSVFileSampleProvider::CSVFileSampleProvider()
-    : FileSampleProvider{}, dataset(Dataset{}), counter(0) {}
+CSVFileSampleProvider::CSVFileSampleProvider(DataShufflingFunctor *shuffling)
+    : shuffling{shuffling}, dataset(Dataset{}), counter(0) {}
 
-SampleProvider *CSVFileSampleProvider::clone() const {
-  return dynamic_cast<SampleProvider *>(new CSVFileSampleProvider{*this});
+SampleProvider* CSVFileSampleProvider::clone() const {
+  return dynamic_cast<SampleProvider*>(new CSVFileSampleProvider{*this});
 }
 
 size_t CSVFileSampleProvider::getDim() const {
@@ -46,7 +46,7 @@ size_t CSVFileSampleProvider::getNumSamples() const {
   }
 }
 
-void CSVFileSampleProvider::readFile(const std::string &fileName, bool hasTargets) {
+void CSVFileSampleProvider::readFile(const std::string& fileName, bool hasTargets) {
   try {
     // call readCSV with skipfirstline set to true
     dataset = CSVTools::readCSV(fileName, true, hasTargets);
@@ -58,7 +58,7 @@ void CSVFileSampleProvider::readFile(const std::string &fileName, bool hasTarget
   }
 }
 
-Dataset *CSVFileSampleProvider::getNextSamples(size_t howMany) {
+Dataset* CSVFileSampleProvider::getNextSamples(size_t howMany) {
   if (dataset.getDimension() != 0) {
     return splitDataset(howMany);
   } else {
@@ -66,15 +66,15 @@ Dataset *CSVFileSampleProvider::getNextSamples(size_t howMany) {
   }
 }
 
-Dataset *CSVFileSampleProvider::getAllSamples() {
+Dataset* CSVFileSampleProvider::getAllSamples() {
   if (dataset.getDimension() != 0) {
-    return new Dataset{dataset};
+    return this->getNextSamples(dataset.getNumberInstances());
   } else {
     throw base::file_exception{"No dataset loaded."};
   }
 }
 
-void CSVFileSampleProvider::readString(const std::string &input, bool hasTargets) {
+void CSVFileSampleProvider::readString(const std::string& input, bool hasTargets) {
   // try {
   //   dataset = CSVTools::readCSVFromString(input);
   // } catch (...) {
@@ -84,30 +84,36 @@ void CSVFileSampleProvider::readString(const std::string &input, bool hasTargets
   // }
 }
 
-Dataset *CSVFileSampleProvider::splitDataset(size_t howMany) {
-  const size_t size = counter + howMany < dataset.getNumberInstances()
-                      ? howMany
-                      : dataset.getNumberInstances() - counter;
+Dataset* CSVFileSampleProvider::splitDataset(size_t howMany) {
+  const size_t size = counter + howMany <= dataset.getNumberInstances()
+                          ? howMany
+                          : dataset.getNumberInstances() - counter;
   auto tmpDataset = std::make_unique<Dataset>(size, dataset.getDimension());
 
-  base::DataMatrix &srcSamples = dataset.getData();
-  base::DataVector &srcTargets = dataset.getTargets();
+  base::DataMatrix& srcSamples = dataset.getData();
+  base::DataVector& srcTargets = dataset.getTargets();
 
-  base::DataMatrix &destSamples = tmpDataset->getData();
-  base::DataVector &destTargets = tmpDataset->getTargets();
+  base::DataMatrix& destSamples = tmpDataset->getData();
+  base::DataVector& destTargets = tmpDataset->getTargets();
 
   base::DataVector tmpRow{srcSamples.getNcols()};
 
   // copy "size" rows beginning from "counter" to the new dataset.
   for (size_t i = counter; i < counter + size; ++i) {
-    srcSamples.getRow(i, tmpRow);
+    size_t srcIdx = shuffling != nullptr ? (*shuffling)(i, dataset.getNumberInstances()) : i;
+    srcSamples.getRow(srcIdx, tmpRow);
     destSamples.setRow(i - counter, tmpRow);
 
-    destTargets[i - counter] = srcTargets[i];
+    destTargets[i - counter] = srcTargets[srcIdx];
   }
   counter = counter + size;
 
   return tmpDataset.release();
 }
+
+void CSVFileSampleProvider::reset() {
+  counter = 0;
+}
+
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -25,13 +25,6 @@ namespace datadriven {
 class FileSampleProvider : public SampleProvider {
  public:
   /**
-   * Returns the total amount of samples available in the file. Only works after calling #readFile
-   * or #readString.
-   * @return the total amount of samples available in the file.
-   */
-  virtual size_t getNumSamples() const = 0;
-
-  /**
    * Read the contents of the file at the given path. Has to throw an exception if file can not be
    * opened or parsed. Results of parsing can be optained via #sgpp::datadriven::SampleProvider
    * member functions.
