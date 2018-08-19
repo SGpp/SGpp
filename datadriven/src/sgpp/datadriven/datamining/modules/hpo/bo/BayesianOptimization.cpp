@@ -89,7 +89,7 @@ BOConfig BayesianOptimization::main(BOConfig &prototype) {
     for (auto &config : allConfigs) {
       config.calcDiscDistance(nextconfig, scales);
     }
-    optimization::optimizer::MultiStart optimizer(wrapper);
+    optimization::optimizer::MultiStart optimizer(wrapper, 1000, 5);
       std::cout << "Test Point 2.1" << std::endl;
     optimizer.optimize();
       std::cout << "Test Point 2.2" << std::endl;
@@ -154,7 +154,6 @@ base::DataVector BayesianOptimization::fitScales() {
 
 double BayesianOptimization::likelihood(const base::DataVector &inp) {
   double noise = pow(10, -inp.back() * 10);
-  std::cout << "a";
   base::DataMatrix km(allConfigs.size(), allConfigs.size());
   for (size_t i = 0; i < allConfigs.size(); ++i) {
     for (size_t k = 0; k < i; ++k) {
@@ -164,14 +163,11 @@ double BayesianOptimization::likelihood(const base::DataVector &inp) {
     }
     km.set(i, i, 1 + noise);
   }
-  std::cout << "b";
   base::DataMatrix gnew;
   decomposeCholesky(km, gnew);
-  std::cout << "c";
 
   base::DataVector transformed(rawScores);
   solveCholeskySystem(gnew, transformed);
-  std::cout << "d";
   double tmp = 0;
   for (size_t i = 0; i < allConfigs.size(); ++i) {
     tmp += std::log(gnew.get(i, i));
@@ -195,15 +191,11 @@ void BayesianOptimization::updateGP(BOConfig &newConfig, bool normalize) {
   rawScores.push_back(newConfig.getScore());
 
   decomposeCholesky(kernelmatrix, gleft);
-  //EDIT: reactivate
-  if(normalize) {
+  if (normalize) {
     rawScores.normalize();
-  rawScores.sub(base::DataVector(rawScores.size(),
+    rawScores.sub(base::DataVector(rawScores.size(),
                                  rawScores.sum() / static_cast<double>(rawScores.size())));
   }
-  //base::DataVector sqscores(rawScores);
-  //sqscores.sqr();
-  //rawScores.mult(rawScores.size()/sqscores.sum());
   bestsofar = rawScores.min();
   transformedOutput = base::DataVector(rawScores);
   solveCholeskySystem(gleft, transformedOutput);

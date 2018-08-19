@@ -28,7 +28,7 @@ namespace datadriven {
  * It offers access to different hyperparameter optimization procedures.
  */
 class HyperparameterOptimizer {
-public:
+ public:
   /**
    * Constructor
    * @param dataSource configured instance of data source object, that will provide samples to learn
@@ -76,7 +76,7 @@ public:
   virtual double run(bool writeToFile) = 0;
 
 
-protected:
+ protected:
   /**
    * Training Data
    */

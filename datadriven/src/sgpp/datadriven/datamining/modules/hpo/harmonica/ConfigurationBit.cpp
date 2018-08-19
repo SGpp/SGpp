@@ -41,7 +41,7 @@ std::string ConfigurationBit::getName() {
 
 void ConfigurationBit::findComplexinner(std::string id, int bias) {
   for (auto &constraint : constraints) {
-    if(constraint->getOpenBits() == 3){
+    if (constraint->getOpenBits() == 3) {
       constraint->resolveComplex(id, name, bias);
     }
   }

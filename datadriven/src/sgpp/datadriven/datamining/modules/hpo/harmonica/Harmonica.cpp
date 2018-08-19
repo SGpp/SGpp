@@ -171,12 +171,12 @@ void Harmonica::createRandomConfigs(size_t nBits,
 }
 
 void Harmonica::fixConfigBits(bool resetFree) {
-  if(resetFree){
+  if (resetFree) {
     freeBits = std::vector<ConfigurationBit *>{};
   }
   size_t nextFreeBit = 0;
   for (auto &constraint : constraints) {
-    if(constraint->getOpenBits() == 2){
+    if (constraint->getOpenBits() == 2) {
       constraint->findComplex();
     }
   }
@@ -199,7 +199,7 @@ void Harmonica::fixConfigBits(bool resetFree) {
     if (configBits[nextFreeBit]->getValue() == 0) {
       freeBits.push_back(configBits[nextFreeBit]);
       configBits[nextFreeBit]->setValue(1);
-      if(!resetFree){
+      if (!resetFree) {
         throw base::application_exception("Error in HPO: freeBits changed during evaluation.");
       }
     }

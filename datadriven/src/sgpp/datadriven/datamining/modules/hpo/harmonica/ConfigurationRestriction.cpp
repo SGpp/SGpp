@@ -8,6 +8,7 @@
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/ConfigurationBit.hpp>
 
 #include <vector>
+#include <string>
 
 namespace sgpp {
 namespace datadriven {
@@ -19,7 +20,7 @@ ConfigurationRestriction::ConfigurationRestriction(std::vector<ConfigurationBit 
 
 void ConfigurationRestriction::reduceOpenBits() {
   openBits--;
-  if(openBits == 2){
+  if (openBits == 2) {
     findComplex();
   }
 }
@@ -59,32 +60,32 @@ void ConfigurationRestriction::findComplex() {
   size_t idx = 100;
   int effectivebias = bias;
   for (size_t i = 0; i < parameters.size(); ++i) {
-    if(parameters[i]->getValue() == 0){
-      if(otherbit.empty()){
+    if (parameters[i]->getValue() == 0) {
+      if (otherbit.empty()) {
         otherbit = parameters[i]->getName();
-      }else{
+      } else {
         idx = i;
       }
-    }else{
+    } else {
       effectivebias *= parameters[i]->getValue();
     }
   }
   parameters[idx]->findComplexinner(otherbit, effectivebias);
 }
 
-void ConfigurationRestriction::resolveComplex(const std::string &id, const std::string &idtwo, int otherbias) {
+void ConfigurationRestriction::resolveComplex(const std::string &id,
+                                              const std::string &idtwo, int otherbias) {
   bool resolve = false;
   size_t idx = 100;
   for (size_t i = 0; i < parameters.size(); ++i) {
-    if(parameters[i]->getName() == id){
+    if (parameters[i]->getName() == id) {
       resolve = true;
-    }else if(parameters[i]->getName() != idtwo){
+    } else if (parameters[i]->getName() != idtwo) {
       idx = i;
     }
   }
-  if(resolve){
+  if (resolve) {
     parameters[idx]->setValue(bias*otherbias);
-    //std::cout << "Complex resolve: " << id << " second: " << idtwo << " Bias: " << bias << " other: " << otherbias << std::endl;
   }
 }
 
