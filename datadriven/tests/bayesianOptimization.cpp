@@ -108,6 +108,7 @@ class HarmonicaTester : public sgpp::datadriven::Harmonica {
   std::vector<ConfigurationBit*> getFreeBits(){return freeBits;};
 };
 
+//EDIT: don't use same objects for hpo constructor twice???
 BOOST_AUTO_TEST_CASE(upperLevelTest) {
   //using actual files for (dummy) data and config
   sgpp::datadriven::DataMiningConfigParser parser{"datadriven/tests/datasets/testconfig.json"};
