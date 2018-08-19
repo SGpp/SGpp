@@ -154,6 +154,7 @@ base::DataVector BayesianOptimization::fitScales() {
 
 double BayesianOptimization::likelihood(const base::DataVector &inp) {
   double noise = pow(10, -inp.back() * 10);
+  std::cout << "a";
   base::DataMatrix km(allConfigs.size(), allConfigs.size());
   for (size_t i = 0; i < allConfigs.size(); ++i) {
     for (size_t k = 0; k < i; ++k) {
@@ -163,11 +164,14 @@ double BayesianOptimization::likelihood(const base::DataVector &inp) {
     }
     km.set(i, i, 1 + noise);
   }
+  std::cout << "b";
   base::DataMatrix gnew;
   decomposeCholesky(km, gnew);
+  std::cout << "c";
 
   base::DataVector transformed(rawScores);
   solveCholeskySystem(gnew, transformed);
+  std::cout << "d";
   double tmp = 0;
   for (size_t i = 0; i < allConfigs.size(); ++i) {
     tmp += std::log(gnew.get(i, i));
