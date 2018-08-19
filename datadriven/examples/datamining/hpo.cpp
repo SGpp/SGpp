@@ -52,5 +52,5 @@ int main(int argc, char **argv) {
   /**
    * Once we have a configured miner object, we can start the learning process.
    */
-  hpo->run();
+  hpo->run(true);
 }

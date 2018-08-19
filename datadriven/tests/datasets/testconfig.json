@@ -1,6 +1,6 @@
 {
 	"dataSource": {
-		"filePath": "C:/Users/Eric/Downloads/DR5_nowarnings_less05_train.arff"
+		"filePath": "datadriven/tests/datasets/dummydata.csv"
 	},
 	"scorer": {
 		"testing": {
@@ -10,7 +10,7 @@
 			"metric": "MSE"
 		},
         "testset": {
-          "filePath": "C:/Users/Eric/Downloads/DR5_nowarnings_less05_train.arff"
+          "filePath": "datadriven/tests/datasets/dummydata.csv"
         }
 	},
 	"fitter": {
@@ -59,16 +59,16 @@
 	},
   "hpo": {
     "method": "harmonica",
-    "randomSeed": 41,
+    "randomSeed": 40,
     "trainSize": 500,
     "harmonica": {
-      "stages": [10,5,3],
-      "constraints": [1,1],
+      "stages": [30,20,10],
+      "constraints": [3,2],
       "lambda": 0.1
     },
     "bayesianOptimization": {
-      "nRandom": 2,
-      "nRuns": 5
+      "nRandom": 10,
+      "nRuns": 20
     }
   }
 }

@@ -104,7 +104,7 @@ class Harmonica {
    */
   int moveToNewSpace(int configID, std::vector<ConfigurationBit *> oldFreeBits);
 
- private:
+ protected:
   /**
    * matrix that holds the values of the parity function
    * (predictors for regression) for all samples

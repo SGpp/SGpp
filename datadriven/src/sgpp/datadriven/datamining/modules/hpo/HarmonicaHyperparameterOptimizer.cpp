@@ -28,7 +28,7 @@ HarmonicaHyperparameterOptimizer::HarmonicaHyperparameterOptimizer(DataSource *d
 }
 
 
-void HarmonicaHyperparameterOptimizer::run() {
+double HarmonicaHyperparameterOptimizer::run(bool writeToFile) {
   Harmonica harmonica{fitterFactory.get()};
 
   std::cout << std::endl << "Starting Hyperparameter Optimization using Harmonica. Results"
@@ -37,19 +37,24 @@ void HarmonicaHyperparameterOptimizer::run() {
   double stdDeviation;   // dummy
 
   // output initialization
-  time_t now = time(nullptr);
-  tm tmobj{};  // EDIT: working?
-  tm *ltm = localtime_r(&now, &tmobj);
+  std::ofstream myfile;
   std::stringstream fn;
-  fn << "Harmonica_" << (ltm->tm_year + 1900) << "_" << (ltm->tm_mon + 1) << "_" << ltm->tm_mday
-     << "_"
-     << ltm->tm_hour << "_" << ltm->tm_min;
-  std::ofstream myfile(fn.str(), std::ios_base::app);
-  if (myfile.is_open()) {
-    myfile << "SampleNo" << fitterFactory->printHeadline() << ", Score" << std::endl;
+
+  if (writeToFile) {
+    time_t now = time(nullptr);
+    tm tmobj{};  // EDIT: working?
+    tm *ltm = localtime_r(&now, &tmobj);
+    std::stringstream fn;
+    fn << "Harmonica_" << (ltm->tm_year + 1900) << "_" << (ltm->tm_mon + 1) << "_" << ltm->tm_mday
+       << "_"
+       << ltm->tm_hour << "_" << ltm->tm_min;
+    myfile.open(fn.str(), std::ios_base::app);
+    if (myfile.is_open()) {
+      myfile << "SampleNo" << fitterFactory->printHeadline() << ", Score" << std::endl;
+    }
+    std::cout << "SampleNo" << fitterFactory->printHeadline() << ", Score" << std::endl;
+    myfile.close();
   }
-  std::cout << "SampleNo" << fitterFactory->printHeadline() << ", Score" << std::endl;
-  myfile.close();
   double best = std::numeric_limits<double>::infinity();
   int scnt = 1;
   int bestscnt = 0;
@@ -75,11 +80,13 @@ void HarmonicaHyperparameterOptimizer::run() {
         std::cout << " new best!";
       }
       std::cout << std::endl;
-      myfile.open(fn.str(), std::ios_base::app);
-      if (myfile.is_open()) {
-        myfile << scnt << configStrings[i] << ", " << scores[i] << std::endl;
+      if (writeToFile) {
+        myfile.open(fn.str(), std::ios_base::app);
+        if (myfile.is_open()) {
+          myfile << scnt << configStrings[i] << ", " << scores[i] << std::endl;
+        }
+        myfile.close();
       }
-      myfile.close();
       scnt++;
     }
 
@@ -91,14 +98,17 @@ void HarmonicaHyperparameterOptimizer::run() {
                                           static_cast<int>(config.getConstraints()[q]));
     }
   }
-  myfile.open(fn.str(), std::ios_base::app);
-  if (myfile.is_open()) {
-    myfile << "################## Best Result ###################" << std::endl;
-    myfile << "SampleNo" << fitterFactory->printHeadline() << ", Score" << std::endl;
-    myfile << bestscnt << bestconfigstring << ", " << best << std::endl;
-    myfile << "##################################################" << std::endl;
+  if (writeToFile) {
+    myfile.open(fn.str(), std::ios_base::app);
+    if (myfile.is_open()) {
+      myfile << "################## Best Result ###################" << std::endl;
+      myfile << "SampleNo" << fitterFactory->printHeadline() << ", Score" << std::endl;
+      myfile << bestscnt << bestconfigstring << ", " << best << std::endl;
+      myfile << "##################################################" << std::endl;
+    }
+    myfile.close();
   }
-  myfile.close();
+  return best;
 }
 } /* namespace datadriven */
 } /* namespace sgpp */
