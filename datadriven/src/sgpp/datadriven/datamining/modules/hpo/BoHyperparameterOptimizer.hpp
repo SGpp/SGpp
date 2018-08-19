@@ -82,7 +82,6 @@ class BoHyperparameterOptimizer : public HyperparameterOptimizer {
    * @return transformed value
    */
   double transformScore(double original);
-
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

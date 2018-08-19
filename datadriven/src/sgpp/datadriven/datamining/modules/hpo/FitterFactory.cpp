@@ -76,7 +76,7 @@ std::string FitterFactory::printConfig() {
   for (auto &pair : catpar) {
     if (pair.first == "basisFunction") {
       s << ", " << GridTypeParser::toString(basisFunctions[catpar["basisFunction"].getValue()]);
-    }else{
+    } else {
       s << ", " << pair.second.getValue();
     }
   }
