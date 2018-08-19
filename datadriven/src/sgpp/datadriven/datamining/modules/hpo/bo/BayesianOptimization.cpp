@@ -143,7 +143,7 @@ base::DataVector BayesianOptimization::fitScales() {
                                                         this,
                                                         std::placeholders::_1));
   // adjust resource allocation for optimizer here
-  optimization::optimizer::MultiStart optimizer(wrapper, 2000, 200);
+  optimization::optimizer::MultiStart optimizer(wrapper, 2000, 5); //200
     std::cout << "Test Point 1.1" << std::endl;
   optimizer.optimize();
     std::cout << "Test Point 1.2" << std::endl;
