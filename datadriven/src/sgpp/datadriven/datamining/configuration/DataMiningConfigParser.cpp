@@ -137,7 +137,7 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
     config.randomSeed =
         parseUInt(*dataSourceConfig, "randomSeed", defaults.randomSeed, "dataSource");
       config.epochs =
-    parseUInt(*dataSourceConfig, "epochs",defaults.epochs, "dataSource");
+    parseUInt(*dataSourceConfig, "epochs", defaults.epochs, "dataSource");
   } else {
     std::cout << "# Could not find specification of dataSource. Falling Back to default values."
               << std::endl;
@@ -146,7 +146,8 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
   return hasDataSource;
 }
 
-bool DataMiningConfigParser::getScorerConfig(ScorerConfiguration& config, const ScorerConfiguration& defaults) const {
+bool DataMiningConfigParser::getScorerConfig(
+    ScorerConfiguration& config, const ScorerConfiguration& defaults) const {
   bool hasScorer = hasScorerConfig();
 
   if (hasScorer) {

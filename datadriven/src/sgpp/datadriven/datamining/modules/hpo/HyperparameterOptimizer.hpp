@@ -16,9 +16,9 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/FitterFactory.hpp>
+#include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
 
 #include <memory>
-#include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
 
 namespace sgpp {
 namespace datadriven {

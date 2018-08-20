@@ -21,11 +21,11 @@
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
 
 
 #include <string>
 #include <vector>
-#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
 
 using sgpp::datadriven::Dataset;
 using sgpp::base::DataVector;
@@ -36,7 +36,6 @@ using sgpp::datadriven::ConfigurationBit;
 BOOST_AUTO_TEST_SUITE(HPOTest)
 
 class ModelFittingTester : public sgpp::datadriven::ModelFittingBase {
-
  public:
   ModelFittingTester(double x, int y, int z) {
     value = x * x + y * y / 100.0 - z / 1.4;
@@ -48,7 +47,7 @@ class ModelFittingTester : public sgpp::datadriven::ModelFittingBase {
       std::cout << "Error! value < 0" << std::endl;
     }
     config.reset(new sgpp::datadriven::FitterConfigurationLeastSquares());
-  };
+  }
 
   void fit(Dataset &dataset) override {}
 
@@ -70,14 +69,14 @@ class ModelFittingTester : public sgpp::datadriven::ModelFittingBase {
 class FitterFactoryTester : public sgpp::datadriven::FitterFactory {
  public:
   FitterFactoryTester() {
-    //create parameters
+    // create parameters
     conpar["x"] = sgpp::datadriven::ContinuousParameter(4, "x", -1, 1);
     dispar["y"] = sgpp::datadriven::DiscreteParameter("y", -10, 10);
     catpar["c"] = sgpp::datadriven::DiscreteParameter("c", 0, 2);
   }
 
   sgpp::datadriven::ModelFittingBase *buildFitter() override {
-    //making model from parameter values directly
+    // making model from parameter values directly
     return new ModelFittingTester(conpar["x"].getValue(),
                                   dispar["y"].getValue(),
                                   catpar["c"].getValue());
@@ -90,26 +89,26 @@ class FitterFactoryTesterHarm : public sgpp::datadriven::FitterFactory {
     for (int i = 0; i < 12; ++i) {
       exconfBits.emplace_back(std::to_string(i));
     }
-  };
+  }
 
   sgpp::datadriven::ModelFittingBase *buildFitter() override {
     return nullptr;
-  };
+  }
 
   void getConfigBits(std::vector<ConfigurationBit *> &configBits) override {
     for (auto &exconfBit : exconfBits) {
       configBits.push_back(&exconfBit);
     }
-  };
+  }
 
   std::vector<ConfigurationBit> exconfBits;
 };
 
 class HarmonicaTester : public sgpp::datadriven::Harmonica {
  public:
-  explicit HarmonicaTester(sgpp::datadriven::FitterFactory *fft) : Harmonica(fft) {};
-  std::vector<std::vector<ConfigurationBit *>> &getParityrow() { return parityrow; };
-  std::vector<ConfigurationBit *> getFreeBits() { return freeBits; };
+  explicit HarmonicaTester(sgpp::datadriven::FitterFactory *fft) : Harmonica(fft) {}
+  std::vector<std::vector<ConfigurationBit *>> &getParityrow() { return parityrow; }
+  std::vector<ConfigurationBit *> getFreeBits() { return freeBits; }
 };
 
 /*
@@ -119,7 +118,7 @@ class HarmonicaTester : public sgpp::datadriven::Harmonica {
 
 
 BOOST_AUTO_TEST_CASE(upperLevelTest) {
-  //using actual files for (dummy) data and config
+  // using actual files for (dummy) data and config
   std::string path("datadriven/tests/datasets/testconfig.json");
   sgpp::datadriven::DataMiningConfigParser parser(path);
   // sgpp::datadriven::DataSourceBuilder builder;
@@ -156,7 +155,7 @@ BOOST_AUTO_TEST_CASE(harmonicaConfigs) {
     std::uniform_int_distribution<int> distcons(0,
                                                 static_cast<int>(harmonica.getParityrow().size()
                                                     - 1));
-    std::geometric_distribution<int> distgeo(0.05 + 0.2 * i); //not completely safe but okay
+    std::geometric_distribution<int> distgeo(0.05 + 0.2 * i);  //not completely safe but okay
     std::uniform_int_distribution<int> distbias(0, 1);
     for (int k = 0; k < 4096; ++k) {
       oldidar[k] = -1;
@@ -203,7 +202,7 @@ BOOST_AUTO_TEST_CASE(harmonicaConfigs) {
           m = m * 2;
         }
         BOOST_CHECK_EQUAL(harmonica.moveToNewSpace(oldidar[v], freeBits), j);
-        BOOST_CHECK(not testar[v]); //duplicate parameter set
+        BOOST_CHECK(!testar[v]);  // duplicate parameter set
         testar[v] = true;
         bool valid = true;
         for (auto &constraint : constraints) {
@@ -215,7 +214,7 @@ BOOST_AUTO_TEST_CASE(harmonicaConfigs) {
           cnttrue++;
         }
       }
-      bool added = harmonica.addConstraint(consid, bias); //if not added, freebits broken
+      bool added = harmonica.addConstraint(consid, bias);  // if not added, freebits broken
       /*
       std::cout << "Counter true: " << cnttrue << " | Added: "<< added <<std::endl;
       for (auto &bit : fft.exconfBits) {
@@ -224,7 +223,7 @@ BOOST_AUTO_TEST_CASE(harmonicaConfigs) {
       std::cout << std::endl;
       */
       // either all, none or half are viable
-      BOOST_CHECK(((not added) == (cnttrue == 0)));
+      BOOST_CHECK(((!added) == (cnttrue == 0)));
       BOOST_CHECK((added == (cnttrue == nIDs || 2 * cnttrue == nIDs)));
       if (added) {
         nIDs = cnttrue;
@@ -355,7 +354,7 @@ BOOST_AUTO_TEST_CASE(addSamplesGP) {
 }
 
 BOOST_AUTO_TEST_CASE(fitScalesGP) {
-  //test gaussian process fitting by fitting to a second GP
+  // test gaussian process fitting by fitting to a second GP
   std::vector<BOConfig> initialConfigs{};
   std::mt19937 generator(100);
 
