@@ -36,7 +36,9 @@ BayesianOptimization::BayesianOptimization(const std::vector<BOConfig> &initialC
   for (size_t i = 0; i < allConfigs.size(); ++i) {
     rawScores[i] = allConfigs[i].getScore();
   }
-  rawScores.normalize();
+  if(rawScores.min()<rawScores.max()) {
+    rawScores.normalize();
+  }
   rawScores.sub(base::DataVector(rawScores.size(),
                                  rawScores.sum() / static_cast<double>(rawScores.size())));
   bestsofar = rawScores.min();
@@ -53,7 +55,7 @@ double BayesianOptimization::kernel(double distance) {
 double BayesianOptimization::acquisitionEI(double dMean, double dVar, double bestsofar) {
   double z = (dMean - (bestsofar - 0.001)) / dVar;
   return ((dMean - (bestsofar - 0.001)) * (0.5 + 0.5 * std::erf(-z / 1.41))
-      - dVar * 0.4 * std::exp(-0.5 * z * z));   // EDIT: is this calculated properly?
+      - dVar * 0.4 * std::exp(-0.5 * z * z));
 }
 
 double BayesianOptimization::mean(base::DataVector &knew) {
@@ -90,9 +92,7 @@ BOConfig BayesianOptimization::main(BOConfig &prototype) {
       config.calcDiscDistance(nextconfig, scales);
     }
     optimization::optimizer::MultiStart optimizer(wrapper, 1000, 5);
-      std::cout << "Test Point 2.1" << std::endl;
     optimizer.optimize();
-      std::cout << "Test Point 2.2" << std::endl;
     double optv = optimizer.getOptimalValue();
     if (prototype.getContSize() == 0) {
       optv = acquisitionOuter(base::DataVector());
@@ -110,12 +110,11 @@ BOConfig BayesianOptimization::main(BOConfig &prototype) {
 double BayesianOptimization::acquisitionOuter(const base::DataVector &inp) {
   base::DataVector kernelrow(allConfigs.size());
   for (size_t i = 0; i < allConfigs.size(); i++) {
-    kernelrow[i] = kernel(allConfigs[i].getTotalDistance(inp, scales));   // divided by 2
-    // EDIT: removed kernel = 1 check, okay?
+    kernelrow[i] = kernel(allConfigs[i].getTotalDistance(inp, scales));
   }
   double m = mean(kernelrow);
   double v = var(kernelrow, 1);
-  return acquisitionEI(m, v, bestsofar);  // EDIT: kself + noise?
+  return acquisitionEI(m, v, bestsofar);
 }
 
 void BayesianOptimization::setScales(base::DataVector nscales, double factor) {
@@ -144,9 +143,7 @@ base::DataVector BayesianOptimization::fitScales() {
                                                         std::placeholders::_1));
   // adjust resource allocation for optimizer here
   optimization::optimizer::MultiStart optimizer(wrapper, 2000, 5); //200
-    std::cout << "Test Point 1.1" << std::endl;
   optimizer.optimize();
-    std::cout << "Test Point 1.2" << std::endl;
   // std::cout << optimizer.getOptimalPoint().toString() << std::endl;
   // std::cout << optimizer.getOptimalValue() << std::endl;
   return optimizer.getOptimalPoint();
@@ -172,7 +169,7 @@ double BayesianOptimization::likelihood(const base::DataVector &inp) {
   for (size_t i = 0; i < allConfigs.size(); ++i) {
     tmp += std::log(gnew.get(i, i));
   }
-  return 2 * tmp + rawScores.dotProduct(transformed);   // EDIT: correct likelihood?
+  return 2 * tmp + rawScores.dotProduct(transformed);
 }
 
 void BayesianOptimization::updateGP(BOConfig &newConfig, bool normalize) {
@@ -192,7 +189,9 @@ void BayesianOptimization::updateGP(BOConfig &newConfig, bool normalize) {
 
   decomposeCholesky(kernelmatrix, gleft);
   if (normalize) {
-    rawScores.normalize();
+    if(rawScores.min()<rawScores.max()) {
+      rawScores.normalize();
+    }
     rawScores.sub(base::DataVector(rawScores.size(),
                                  rawScores.sum() / static_cast<double>(rawScores.size())));
   }

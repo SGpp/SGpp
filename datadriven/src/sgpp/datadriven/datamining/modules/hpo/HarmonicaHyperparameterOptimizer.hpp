@@ -15,7 +15,6 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
-#include <sgpp/datadriven/datamining/modules/hpo/HPOScorer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/FitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
 
@@ -39,7 +38,7 @@ class HarmonicaHyperparameterOptimizer : public HyperparameterOptimizer{
    * manipulated hyperparameters. The HarmonicaHyperparameterOptimizer instance will take ownership of the passed object.
    * @param parser reference to parser object to read configuration info
    */
-  HarmonicaHyperparameterOptimizer(DataSource *dataSource,
+  HarmonicaHyperparameterOptimizer(SparseGridMiner* miner,
                           FitterFactory *fitterFactory,
                           DataMiningConfigParser &parser);
 

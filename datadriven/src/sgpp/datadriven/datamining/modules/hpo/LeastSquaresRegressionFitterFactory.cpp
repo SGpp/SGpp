@@ -17,7 +17,7 @@ namespace sgpp {
 namespace datadriven {
 
 LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory
-    (DataMiningConfigParser &parser) : baseConfig() {
+    (const DataMiningConfigParser &parser) : baseConfig() {
   baseConfig.readParams(parser);
 
   parser.getHyperparameters(conpar, dispar, catpar, basisFunctions);

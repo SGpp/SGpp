@@ -1,17 +1,9 @@
 {
 	"dataSource": {
-		"filePath": "C:/Users/Eric/Downloads/DR5_nowarnings_less05_train.arff"
+		"filePath": "/home/polarbart/CLionProjects/DR5_nowarnings_less05_train.arff"
 	},
 	"scorer": {
-		"testing": {
-			"testingPortion": 0.125,
-			"shuffling": "random",
-			"randomSeed": 42,
-			"metric": "MSE"
-		},
-        "testset": {
-          "filePath": "C:/Users/Eric/Downloads/DR5_nowarnings_less05_train.arff"
-        }
+		"metric": "MSE"
 	},
 	"fitter": {
 		"type": "regressionLeastSquares",

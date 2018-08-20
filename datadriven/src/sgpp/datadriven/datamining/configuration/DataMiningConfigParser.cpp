@@ -76,42 +76,6 @@ bool DataMiningConfigParser::hasScorerConfig() const { return configFile->contai
 
 bool DataMiningConfigParser::hasFitterConfig() const { return configFile->contains(fitter); }
 
-bool DataMiningConfigParser::hasScorerTestset() const {
-  bool hasScorerTestingConfig =
-      hasScorerConfig() ? (*configFile)[scorer].contains("testset") : false;
-  return hasScorerTestingConfig;
-}
-
-bool DataMiningConfigParser::getScorerTestset(DataSourceConfig &config,
-                                              const DataSourceConfig &defaults) const {
-  bool hasDataSource = hasScorerTestset();
-
-  if (hasDataSource) {
-    auto dataSourceConfig = static_cast<DictNode *>(&(*configFile)[scorer]["testset"]);
-
-    config.filePath = parseString(*dataSourceConfig, "filePath", defaults.filePath, "dataSource");
-    config.isCompressed =
-        parseBool(*dataSourceConfig, "compression", defaults.isCompressed, "dataSource");
-    config.numBatches =
-        parseUInt(*dataSourceConfig, "numBatches", defaults.numBatches, "dataSource");
-    config.batchSize = parseUInt(*dataSourceConfig, "batchSize", defaults.batchSize, "dataSource");
-
-    // parse file type
-    if (dataSourceConfig->contains("fileType")) {
-      config.fileType = DataSourceFileTypeParser::parse((*dataSourceConfig)["fileType"].get());
-    } else {
-      std::cout << "# Did not find " << dataSource << "[fileType]. Setting default value "
-                << DataSourceFileTypeParser::toString(defaults.fileType) << "." << std::endl;
-      config.fileType = defaults.fileType;
-    }
-  } else {
-    std::cout << "# Could not find specification  of testset. Falling Back to default values."
-              << std::endl;
-    config = defaults;
-  }
-  return hasDataSource;
-}
-
 bool DataMiningConfigParser::hasFitterConfigCrossValidation() const {
   bool hasFitterCrossValidationConfig =
       hasFitterConfig() ? (*configFile)[fitter].contains("crossValidation") : false;
@@ -604,13 +568,12 @@ std::vector<int64_t> DataMiningConfigParser::parseIntArray(DictNode &dict, const
       return array;
     } catch (json_exception &e) {
       std::string errorMsg = "# Failed to parse integer array" + parentNode + "[" + key +
-          "] from string" + dict[key].get() + ".";   // EDIT: key.get() does this work look above
+          "] from string" + dict[key].get() + ".";
       throw data_exception(errorMsg.c_str());
     }
   } else {
     std::cout << "# Did not find " << parentNode << "[" << key
-              << "]. Setting default value "   // EDIT: insert array to string?
-              << "." << std::endl;
+              << "]. Setting to default value." << std::endl;
     return defaultValue;
   }
 }

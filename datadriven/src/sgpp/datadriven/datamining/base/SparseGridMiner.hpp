@@ -70,13 +70,15 @@ class SparseGridMiner {
    * Perform Learning cycle: Get samples from data source and based on the scoring procedure,
    * generalize data by fitting and asses quality of the fit.
    */
-  virtual void learn() = 0;
+  virtual double learn(bool verbose) = 0;
 
   /**
    * Returns the trained model
    * @return the trained model
    */
   ModelFittingBase *getModel();
+
+  void setModel(ModelFittingBase* model);
 
   /**
    * Evaluate the model on a certain test dataset.

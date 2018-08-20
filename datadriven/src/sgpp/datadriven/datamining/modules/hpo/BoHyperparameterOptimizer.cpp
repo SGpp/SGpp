@@ -22,10 +22,10 @@
 namespace sgpp {
 namespace datadriven {
 
-BoHyperparameterOptimizer::BoHyperparameterOptimizer(DataSource *dataSource,
+BoHyperparameterOptimizer::BoHyperparameterOptimizer(SparseGridMiner* miner,
                                                  FitterFactory *fitterFactory,
                                                  DataMiningConfigParser &parser)
-        : HyperparameterOptimizer(dataSource, fitterFactory, parser) {
+        : HyperparameterOptimizer(miner, fitterFactory, parser) {
 }
 
 double BoHyperparameterOptimizer::run(bool writeToFile) {
@@ -37,8 +37,6 @@ double BoHyperparameterOptimizer::run(bool writeToFile) {
 
   BOConfig prototype = fitterFactory->getBOConfig();
 
-  double stdDeviation;   // dummy
-
 
   // output initialization
   std::ofstream myfile;
@@ -46,7 +44,7 @@ double BoHyperparameterOptimizer::run(bool writeToFile) {
 
   if (writeToFile) {
     time_t now = time(nullptr);
-    tm tmobj{};  // EDIT: working?
+    tm tmobj{};
     tm *ltm = localtime_r(&now, &tmobj);
     fn << "Bayesian_" << (ltm->tm_year + 1900) << "_" << (ltm->tm_mon + 1) << "_" << ltm->tm_mday
        << "_"
@@ -76,8 +74,10 @@ double BoHyperparameterOptimizer::run(bool writeToFile) {
     initialConfigs[i].randomize(generator);
     fitterFactory->setBO(initialConfigs[i]);
     std::string configString = fitterFactory->printConfig();
-    std::unique_ptr<ModelFittingBase> fitter(fitterFactory->buildFitter());
-    double result = hpoScorer->calculateScore(*fitter, *trainData, &stdDeviation);
+    //std::unique_ptr<ModelFittingBase> fitter(fitterFactory->buildFitter());
+    miner->setModel(fitterFactory->buildFitter());
+    double result = miner->learn(false);
+    // hpoScorer->calculateScore(*fitter, *trainData, &stdDeviation);
     initialConfigs[i].setScore(transformScore(result));
     std::cout << (i + 1) << configString << ", " << result;
     if (writeToFile) {
@@ -99,21 +99,16 @@ double BoHyperparameterOptimizer::run(bool writeToFile) {
   std::cout << "############# Random Phase finished! #############" << std::endl;
 
   BayesianOptimization bo(initialConfigs);
-  std::cout << "Test Point 1" << std::endl;
   bo.setScales(bo.fitScales(), 0.7);
-  std::cout << "Test Point 2" << std::endl;
 
 
   // main loop
   for (int q = 0; q < config.getNRuns(); q++) {
     BOConfig nextConfig = bo.main(prototype);
-      std::cout << "Test Point 3" << std::endl;
     fitterFactory->setBO(nextConfig);
-      std::cout << "Test Point 4" << std::endl;
     std::string configString = fitterFactory->printConfig();
-      std::cout << "Test Point 5" << std::endl;
-    std::unique_ptr<ModelFittingBase> fitter(fitterFactory->buildFitter());
-    double result = hpoScorer->calculateScore(*fitter, *trainData, &stdDeviation);
+    miner->setModel(fitterFactory->buildFitter());
+    double result = miner->learn(false);
     nextConfig.setScore(transformScore(result));
     bo.updateGP(nextConfig, true);
     bo.setScales(bo.fitScales(), 0.1);

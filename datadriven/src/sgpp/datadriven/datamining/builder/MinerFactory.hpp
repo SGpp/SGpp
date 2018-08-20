@@ -44,7 +44,7 @@ class MinerFactory {
    */
   virtual SparseGridMiner* buildMiner(const std::string& path) const;
 
-  virtual sgpp::datadriven::HyperparameterOptimizer *buildHPO(const std::string &path) const = 0;
+  virtual sgpp::datadriven::HyperparameterOptimizer *buildHPO(const std::string &path) const;
 
  protected:
   /**
@@ -75,6 +75,8 @@ class MinerFactory {
    * configuration file.
    */
   virtual ModelFittingBase* createFitter(const DataMiningConfigParser& parser) const = 0;
+
+  virtual FitterFactory* createFitterFactory(const DataMiningConfigParser& parser) const = 0;
 
   /**
    * Factory method to build a scorer instance base d on a configuration file.

@@ -12,7 +12,6 @@
 
 #include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
 
-#include <sgpp/datadriven/datamining/modules/hpo/HPOScorerFactory.hpp>
 
 #include <vector>
 #include <string>
@@ -21,15 +20,15 @@
 namespace sgpp {
 namespace datadriven {
 
-HyperparameterOptimizer::HyperparameterOptimizer(DataSource *dataSource,
+HyperparameterOptimizer::HyperparameterOptimizer(SparseGridMiner* miner,
                                                  FitterFactory *fitterFactory,
                                                  DataMiningConfigParser &parser)
-    : fitterFactory(fitterFactory) {
-  HPOScorerFactory scorerFactory;
-  hpoScorer.reset(dynamic_cast<HPOScorer *>(scorerFactory.buildScorer(parser)));
+    : miner(miner), fitterFactory(fitterFactory) {
+  //HPOScorerFactory scorerFactory;
+  //hpoScorer.reset(dynamic_cast<HPOScorer *>(scorerFactory.buildScorer(parser)));
   config.setupDefaults();
   parser.getHPOConfig(config);
-  std::unique_ptr<DataSource> ds(dataSource);
+  /*std::unique_ptr<DataSource> ds(dataSource);
   trainData.reset(ds->getNextSamples());
   if (!parser.hasScorerTestset()) {
     trainData.reset(hpoScorer->prepareTestData(*trainData));
@@ -40,7 +39,7 @@ HyperparameterOptimizer::HyperparameterOptimizer(DataSource *dataSource,
         new Dataset(static_cast<size_t>(config.getNTrainSamples()), trainData->getDimension());
     hpoScorer->resizeTrainData(*trainData, *resize);
     trainData.reset(resize);
-  }
+  } */
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

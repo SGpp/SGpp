@@ -33,7 +33,7 @@ class DensityEstimationFitterFactory : public FitterFactory {
   /**
    * Default constructor
    */
-  explicit DensityEstimationFitterFactory(DataMiningConfigParser &parser);
+  explicit DensityEstimationFitterFactory(const DataMiningConfigParser &parser);
 
   /**
    * Assemble a #sgpp::datadriven::ModelFittingDensityEstimation object based on the configuration
