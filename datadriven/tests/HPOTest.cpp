@@ -155,7 +155,7 @@ BOOST_AUTO_TEST_CASE(harmonicaConfigs) {
     std::uniform_int_distribution<int> distcons(0,
                                                 static_cast<int>(harmonica.getParityrow().size()
                                                     - 1));
-    std::geometric_distribution<int> distgeo(0.05 + 0.2 * i);  //not completely safe but okay
+    std::geometric_distribution<int> distgeo(0.05 + 0.2 * i);  // not completely safe but okay
     std::uniform_int_distribution<int> distbias(0, 1);
     for (int k = 0; k < 4096; ++k) {
       oldidar[k] = -1;

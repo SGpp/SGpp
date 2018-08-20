@@ -31,8 +31,8 @@ class BoHyperparameterOptimizer : public HyperparameterOptimizer {
  public:
   /**
    * Constructor
-   * @param dataSource configured instance of data source object, that will provide samples to learn
-   * from. The HyperparameterOptimizer instance will take ownership of the passed object.
+   * @param miner configured instance of SGMiner object, that will provide the learning process.
+   * The HyperparameterOptimizer instance will take ownership of the passed object.
    * @param fitterFactory configured instance of factory object that provides fitters with
    * manipulated hyperparameters. The HyperparameterOptimizer instance will take ownership of the passed object.
    * @param parser reference to parser object to read configuration info

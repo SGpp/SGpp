@@ -20,10 +20,9 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 
 #include <string>
-
 
 namespace sgpp {
 namespace datadriven {
@@ -39,7 +38,7 @@ ModelFittingBase *UniversalMinerFactory::createFitter(
   if (fType == FitterType::DensityEstimation) {
     FitterConfigurationDensityEstimation config{};
     config.readParams(parser);
-    model = new ModelFittingDensityEstimationCG(config);
+    model = new ModelFittingDensityEstimationOnOff(config);
   } else {
     FitterConfigurationLeastSquares config{};
     config.readParams(parser);

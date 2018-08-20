@@ -24,17 +24,18 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * HyperparameterOptimizer coordinates data input, fitting and validation modules similarly to SparseGridMiner.
+ * HyperparameterOptimizer uses fitters provided by a fitterFactory to test in a SparseGridMiner
  * It offers access to different hyperparameter optimization procedures.
  */
 class HyperparameterOptimizer {
  public:
   /**
    * Constructor
-   * @param dataSource configured instance of data source object, that will provide samples to learn
-   * from. The HyperparameterOptimizer instance will take ownership of the passed object.
+   * @param miner configured instance of SGMiner object, that will provide the learning process.
+   * The HyperparameterOptimizer instance will take ownership of the passed object.
    * @param fitterFactory configured instance of factory object that provides fitters with
-   * manipulated hyperparameters. The HyperparameterOptimizer instance will take ownership of the passed object.
+   * manipulated hyperparameters. The HyperparameterOptimizer instance will take ownership
+   * of the passed object.
    * @param parser reference to parser object to read configuration info
    */
   HyperparameterOptimizer(SparseGridMiner* miner,

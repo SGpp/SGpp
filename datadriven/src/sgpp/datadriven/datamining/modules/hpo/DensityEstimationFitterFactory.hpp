@@ -47,10 +47,6 @@ class DensityEstimationFitterFactory : public FitterFactory {
    * Configuration for all parameters that are not optimized
    */
   FitterConfigurationDensityEstimation baseConfig;
-  /**
-   * Container for GridTypes specifically for the basis function hyperparameter
-   */
-  std::vector<base::GridType> basisFunctions;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
