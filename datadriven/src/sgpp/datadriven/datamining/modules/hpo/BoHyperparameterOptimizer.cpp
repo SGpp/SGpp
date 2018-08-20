@@ -74,7 +74,7 @@ double BoHyperparameterOptimizer::run(bool writeToFile) {
     initialConfigs[i].randomize(generator);
     fitterFactory->setBO(initialConfigs[i]);
     std::string configString = fitterFactory->printConfig();
-    //std::unique_ptr<ModelFittingBase> fitter(fitterFactory->buildFitter());
+    // std::unique_ptr<ModelFittingBase> fitter(fitterFactory->buildFitter());
     miner->setModel(fitterFactory->buildFitter());
     double result = miner->learn(false);
     // hpoScorer->calculateScore(*fitter, *trainData, &stdDeviation);

@@ -43,7 +43,6 @@ double HarmonicaHyperparameterOptimizer::run(bool writeToFile) {
     time_t now = time(nullptr);
     tm tmobj{};
     tm *ltm = localtime_r(&now, &tmobj);
-    std::stringstream fn;
     fn << "Harmonica_" << (ltm->tm_year + 1900) << "_" << (ltm->tm_mon + 1) << "_" << ltm->tm_mday
        << "_"
        << ltm->tm_hour << "_" << ltm->tm_min;
@@ -85,6 +84,8 @@ double HarmonicaHyperparameterOptimizer::run(bool writeToFile) {
         myfile.open(fn.str(), std::ios_base::app);
         if (myfile.is_open()) {
           myfile << scnt << configStrings[i] << ", " << scores[i] << std::endl;
+        }else{
+          std::cout << "Output File '"<<fn.str()<<"' can't be written to." << std::endl;
         }
         myfile.close();
       }

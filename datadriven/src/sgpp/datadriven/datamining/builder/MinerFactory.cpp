@@ -19,10 +19,10 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
-
-#include <string>
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
+
+#include <string>
 
 namespace sgpp {
 namespace datadriven {
@@ -42,7 +42,8 @@ SparseGridMiner* MinerFactory::buildMiner(const std::string& path) const {
 sgpp::datadriven::HyperparameterOptimizer *MinerFactory::buildHPO(const std::string &path) const {
   DataMiningConfigParser parser(path);
   if (parser.getHPOMethod("bayesian") == "harmonica") {
-    return new HarmonicaHyperparameterOptimizer(buildMiner(path), createFitterFactory(parser), parser);
+    return new HarmonicaHyperparameterOptimizer(
+        buildMiner(path), createFitterFactory(parser), parser);
   } else {
     return new BoHyperparameterOptimizer(buildMiner(path), createFitterFactory(parser), parser);
   }
@@ -86,7 +87,3 @@ Scorer* MinerFactory::createScorer(
 }
 } /* namespace datadriven */
 } /* namespace sgpp */
-
-
-
-

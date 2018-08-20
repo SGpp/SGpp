@@ -36,7 +36,7 @@ BayesianOptimization::BayesianOptimization(const std::vector<BOConfig> &initialC
   for (size_t i = 0; i < allConfigs.size(); ++i) {
     rawScores[i] = allConfigs[i].getScore();
   }
-  if(rawScores.min()<rawScores.max()) {
+  if (rawScores.min() < rawScores.max()) {
     rawScores.normalize();
   }
   rawScores.sub(base::DataVector(rawScores.size(),
@@ -142,7 +142,7 @@ base::DataVector BayesianOptimization::fitScales() {
                                                         this,
                                                         std::placeholders::_1));
   // adjust resource allocation for optimizer here
-  optimization::optimizer::MultiStart optimizer(wrapper, 2000, 5); //200
+  optimization::optimizer::MultiStart optimizer(wrapper, 2000, 5);  // EDIT: last should be 200
   optimizer.optimize();
   // std::cout << optimizer.getOptimalPoint().toString() << std::endl;
   // std::cout << optimizer.getOptimalValue() << std::endl;
@@ -189,7 +189,7 @@ void BayesianOptimization::updateGP(BOConfig &newConfig, bool normalize) {
 
   decomposeCholesky(kernelmatrix, gleft);
   if (normalize) {
-    if(rawScores.min()<rawScores.max()) {
+    if (rawScores.min() < rawScores.max()) {
       rawScores.normalize();
     }
     rawScores.sub(base::DataVector(rawScores.size(),

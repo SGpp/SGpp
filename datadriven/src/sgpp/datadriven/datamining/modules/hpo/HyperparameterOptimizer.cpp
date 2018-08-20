@@ -24,22 +24,8 @@ HyperparameterOptimizer::HyperparameterOptimizer(SparseGridMiner* miner,
                                                  FitterFactory *fitterFactory,
                                                  DataMiningConfigParser &parser)
     : miner(miner), fitterFactory(fitterFactory) {
-  //HPOScorerFactory scorerFactory;
-  //hpoScorer.reset(dynamic_cast<HPOScorer *>(scorerFactory.buildScorer(parser)));
   config.setupDefaults();
   parser.getHPOConfig(config);
-  /*std::unique_ptr<DataSource> ds(dataSource);
-  trainData.reset(ds->getNextSamples());
-  if (!parser.hasScorerTestset()) {
-    trainData.reset(hpoScorer->prepareTestData(*trainData));
-  }
-  if (config.getNTrainSamples() > 0
-      && static_cast<size_t>(config.getNTrainSamples()) <= trainData->getNumberInstances()) {
-    Dataset *resize =
-        new Dataset(static_cast<size_t>(config.getNTrainSamples()), trainData->getDimension());
-    hpoScorer->resizeTrainData(*trainData, *resize);
-    trainData.reset(resize);
-  } */
 }
 } /* namespace datadriven */
 } /* namespace sgpp */
