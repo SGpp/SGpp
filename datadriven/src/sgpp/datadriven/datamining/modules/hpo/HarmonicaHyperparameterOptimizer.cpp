@@ -84,8 +84,8 @@ double HarmonicaHyperparameterOptimizer::run(bool writeToFile) {
         myfile.open(fn.str(), std::ios_base::app);
         if (myfile.is_open()) {
           myfile << scnt << configStrings[i] << ", " << scores[i] << std::endl;
-        }else{
-          std::cout << "Output File '"<<fn.str()<<"' can't be written to." << std::endl;
+        } else {
+          std::cout << "Output File '" << fn.str() << "' can't be written to." << std::endl;
         }
         myfile.close();
       }

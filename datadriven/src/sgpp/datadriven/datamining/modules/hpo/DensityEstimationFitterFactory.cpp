@@ -12,13 +12,13 @@
 
 #include <sgpp/datadriven/datamining/modules/hpo/DensityEstimationFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 
 namespace sgpp {
 namespace datadriven {
 
-DensityEstimationFitterFactory::DensityEstimationFitterFactory(const DataMiningConfigParser &parser)
-    : baseConfig() {
+DensityEstimationFitterFactory::DensityEstimationFitterFactory
+    (const DataMiningConfigParser &parser) : baseConfig() {
 
   baseConfig.readParams(parser);
 
@@ -52,7 +52,7 @@ ModelFittingBase *DensityEstimationFitterFactory::buildFitter() {
     config->getRegularizationConfig().lambda_ = conpar["lambda"].getValue();
   }
 
-  return new ModelFittingDensityEstimationCG(*config);
+  return new ModelFittingDensityEstimationOnOff(*config);
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

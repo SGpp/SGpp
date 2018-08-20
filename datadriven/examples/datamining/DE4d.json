@@ -1,32 +1,67 @@
 {
 	"dataSource": {
-		"filePath": "C:/Users/Eric/Downloads/DE4dTrainNoTargets.csv"
+		"filePath": "/home/polarbart/CLionProjects/DE4dTest.csv",
+		"validationPortion" : 0.99
 	},
 	"scorer": {
-		"testing": {
-			"testingPortion": 0.5,
-			"shuffling": "random",
-			"randomSeed": 42,
-			"metric": "MSE"
-		},
-    "testset": {
-      "filePath": "C:/Users/Eric/Downloads/DE4dTest.csv"
-    }
+		"metric": "MSE"
 	},
 	"fitter": {
 		"type": "densityestimation",
 		"gridConfig": {
-			"gridType": "linear",
-			"dim": 4,
-			"level": 6
+			"gridType": {
+				"value": "modlinear",
+				"optimize": true,
+				"options": ["linear", "modlinear"]
+			},
+			"level": {
+				"value": 3,
+				"optimize": true,
+				"min": 1,
+				"max": 4
+			}
 		},
 		"adaptivityConfig": {
-			"numRefinements": 0,
-			"threshold": 0,
-			"noPoints": 0
+			"numRefinements": 10,
+			"threshold": {
+				"value": -3,
+				"optimize": true,
+				"min": -5,
+				"max": -1,
+				"bits": 3,
+				"logscale": true
+			},
+			"maxLevelType": false,
+			"noPoints": {
+				"value": 1,
+				"optimize": true,
+				"min": 1,
+				"max": 4
+			}
 		},
 		"regularizationConfig": {
-			"lambda": 1e-4
+			"lambda": {
+				"value": -4,
+				"optimize": true,
+				"min": -4,
+				"max": -1,
+				"bits": 5,
+				"logscale": true
+			}
+		}
+	},
+	"hpo": {
+		"method": "bayesian",
+		"randomSeed": 41,
+		"trainSize": 500,
+		"harmonica": {
+			"stages": [10,5,3],
+			"constraints": [1,1],
+			"lambda": 0.1
+		},
+		"bayesianOptimization": {
+			"nRandom": 2,
+			"nRuns": 3
 		}
 	}
 }

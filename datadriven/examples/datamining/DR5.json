@@ -1,32 +1,67 @@
 {
 	"dataSource": {
-		"filePath": "C:/Users/Eric/Downloads/DR5_nowarnings_less05_train.arff"
+		"filePath": "/home/polarbart/CLionProjects/DR5_nowarnings_less05_test.arff",
+		"validationPortion" : 0.99
 	},
 	"scorer": {
-		"testing": {
-			"testingPortion": 0.125,
-			"shuffling": "random",
-			"randomSeed": 42,
-			"metric": "MSE"
-		},
-    "testset": {
-      "filePath": "C:/Users/Eric/Downloads/DR5_nowarnings_less05_test.arff"
-    }
+		"metric": "MSE"
 	},
 	"fitter": {
 		"type": "regressionLeastSquares",
 		"gridConfig": {
-			"gridType": "modlinear",
-			"level": 2
+			"gridType": {
+				"value": "modlinear",
+				"optimize": true,
+				"options": ["linear", "modlinear"]
+			},
+			"level": {
+				"value": 3,
+				"optimize": true,
+				"min": 1,
+				"max": 4
+			}
 		},
-	"adaptivityConfig": {
+		"adaptivityConfig": {
 			"numRefinements": 10,
-			"threshold": 0.001,
+			"threshold": {
+				"value": -3,
+				"optimize": false,
+				"min": -5,
+				"max": -1,
+				"bits": 3,
+				"logscale": true
+			},
 			"maxLevelType": false,
-			"noPoints": 1
+			"noPoints": {
+				"value": 1,
+				"optimize": true,
+				"min": 1,
+				"max": 4
+			}
 		},
 		"regularizationConfig": {
-			"lambda": 100
+			"lambda": {
+				"value": -4,
+				"optimize": false,
+				"min": -4,
+				"max": -1,
+				"bits": 5,
+				"logscale": true
+			}
 		}
-	}
+	},
+  "hpo": {
+    "method": "harmonica",
+    "randomSeed": 41,
+    "trainSize": 500,
+    "harmonica": {
+      "stages": [10,5,3],
+      "constraints": [1,1],
+      "lambda": 0.1
+    },
+    "bayesianOptimization": {
+      "nRandom": 2,
+      "nRuns": 5
+    }
+  }
 }
