@@ -13,9 +13,7 @@
 #include <sgpp/datadriven/datamining/builder/UniversalMinerFactory.hpp>
 
 #include <sgpp/base/exception/data_exception.hpp>
-#include <sgpp/datadriven/datamining/builder/CrossValidationScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
-#include <sgpp/datadriven/datamining/builder/SplittingScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/LeastSquaresRegressionFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/DensityEstimationFitterFactory.hpp>
@@ -24,49 +22,12 @@
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 
 #include <string>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
 
 
 namespace sgpp {
 namespace datadriven {
 
-SparseGridMiner *UniversalMinerFactory::buildMiner(const std::string &path) const {
-  DataMiningConfigParser parser(path);
-
-  return new SparseGridMiner(createDataSource(parser), createFitter(parser), createScorer(parser));
-}
-
-HyperparameterOptimizer *UniversalMinerFactory::buildHPO(const std::string &path) const {
-  DataMiningConfigParser parser(path);
-  FitterType fType = FitterType::RegressionLeastSquares;
-  parser.getFitterConfigType(fType, fType);
-  FitterFactory* fitfac;
-
-  if (fType == FitterType::DensityEstimation) {
-    fitfac = new DensityEstimationFitterFactory(parser);
-  } else {
-    fitfac = new LeastSquaresRegressionFitterFactory(parser);
-  }
-
-  if (parser.getHPOMethod("bayesian") == "harmonica") {
-    return new HarmonicaHyperparameterOptimizer(createDataSource(parser), fitfac, parser);
-  } else {
-    return new BoHyperparameterOptimizer(createDataSource(parser), fitfac, parser);
-  }
-}
-
-DataSource *UniversalMinerFactory::createDataSource(
-    const DataMiningConfigParser &parser) const {
-  DataSourceConfig config;
-
-  bool hasSource = parser.getDataSourceConfig(config, config);
-
-  if (hasSource && config.filePath.compare("") != 0) {
-    DataSourceBuilder builder;
-    return builder.fromConfig(config);
-  } else {
-    throw base::data_exception("No file name provided for datasource.");
-  }
-}
 
 ModelFittingBase *UniversalMinerFactory::createFitter(
     const DataMiningConfigParser &parser) const {
@@ -78,7 +39,7 @@ ModelFittingBase *UniversalMinerFactory::createFitter(
   if (fType == FitterType::DensityEstimation) {
     FitterConfigurationDensityEstimation config{};
     config.readParams(parser);
-    model = new ModelFittingDensityEstimation(config);
+    model = new ModelFittingDensityEstimationCG(config);
   } else {
     FitterConfigurationLeastSquares config{};
     config.readParams(parser);
@@ -87,16 +48,20 @@ ModelFittingBase *UniversalMinerFactory::createFitter(
   return model;
 }
 
-Scorer *UniversalMinerFactory::createScorer(
+FitterFactory *UniversalMinerFactory::createFitterFactory(
     const DataMiningConfigParser &parser) const {
-  std::unique_ptr<ScorerFactory> factory;
+  FitterType fType = FitterType::RegressionLeastSquares;
+  parser.getFitterConfigType(fType, fType);
+  FitterFactory* fitfac;
 
-  if (parser.hasScorerConfigCrossValidation()) {
-    factory = std::make_unique<CrossValidationScorerFactory>();
+  if (fType == FitterType::DensityEstimation) {
+    fitfac = new DensityEstimationFitterFactory(parser);
   } else {
-    factory = std::make_unique<SplittingScorerFactory>();
+    fitfac = new LeastSquaresRegressionFitterFactory(parser);
   }
-  return factory->buildScorer(parser);
+  return fitfac;
 }
+
+
 } /* namespace datadriven */
 } /* namespace sgpp */

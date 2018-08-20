@@ -20,9 +20,12 @@
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/Harmonica.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp>
+
 
 #include <string>
 #include <vector>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
 
 using sgpp::datadriven::Dataset;
 using sgpp::base::DataVector;
@@ -44,19 +47,22 @@ class ModelFittingTester : public sgpp::datadriven::ModelFittingBase {
     if (value < 0) {
       std::cout << "Error! value < 0" << std::endl;
     }
+    config.reset(new sgpp::datadriven::FitterConfigurationLeastSquares());
   };
 
-  void fit(Dataset &dataset) override {};
+  void fit(Dataset &dataset) override {}
 
-  bool refine() override { return false; };
+  bool refine() override { return false; }
 
-  void update(Dataset &dataset) override {};
+  void update(Dataset &dataset) override {}
 
-  double evaluate(const DataVector &sample) override { return -420; };
+  void reset() override {}
+
+  double evaluate(const DataVector &sample) override { return -420; }
 
   void evaluate(DataMatrix &samples, DataVector &results) override {
     results[0] = sqrt(value);
-  };
+  }
 
   double value;
 };
@@ -68,14 +74,14 @@ class FitterFactoryTester : public sgpp::datadriven::FitterFactory {
     conpar["x"] = sgpp::datadriven::ContinuousParameter(4, "x", -1, 1);
     dispar["y"] = sgpp::datadriven::DiscreteParameter("y", -10, 10);
     catpar["c"] = sgpp::datadriven::DiscreteParameter("c", 0, 2);
-  };
+  }
 
   sgpp::datadriven::ModelFittingBase *buildFitter() override {
     //making model from parameter values directly
     return new ModelFittingTester(conpar["x"].getValue(),
                                   dispar["y"].getValue(),
                                   catpar["c"].getValue());
-  };
+  }
 };
 
 class FitterFactoryTesterHarm : public sgpp::datadriven::FitterFactory {
@@ -106,17 +112,24 @@ class HarmonicaTester : public sgpp::datadriven::Harmonica {
   std::vector<ConfigurationBit *> getFreeBits() { return freeBits; };
 };
 
-//EDIT: don't use same objects for hpo constructor twice???
+/*
+ * To fix: Verbose miner
+ * dummy set account for validation
+ */
+
+
 BOOST_AUTO_TEST_CASE(upperLevelTest) {
   //using actual files for (dummy) data and config
-  sgpp::datadriven::DataMiningConfigParser parser{"datadriven/tests/datasets/testconfig.json"};
-  sgpp::datadriven::DataSourceBuilder builder;
-  sgpp::datadriven::DataSourceConfig config;
-  parser.getDataSourceConfig(config, config);
+  std::string path("datadriven/tests/datasets/testconfig.json");
+  sgpp::datadriven::DataMiningConfigParser parser(path);
+  // sgpp::datadriven::DataSourceBuilder builder;
+  // sgpp::datadriven::DataSourceConfig config;
+  // parser.getDataSourceConfig(config, config);
+  sgpp::datadriven::LeastSquaresRegressionMinerFactory minfac{};
   sgpp::datadriven::BoHyperparameterOptimizer
-      bohpo(builder.fromConfig(config), new FitterFactoryTester(), parser);
+      bohpo(minfac.buildMiner(path), new FitterFactoryTester(), parser);
   sgpp::datadriven::HarmonicaHyperparameterOptimizer
-      harmhpo(builder.fromConfig(config), new FitterFactoryTester(), parser);
+      harmhpo(minfac.buildMiner(path), new FitterFactoryTester(), parser);
   double res1 = bohpo.run(false);
   double res2 = harmhpo.run(false);
   // testing arbitrary performance lower bound
@@ -134,7 +147,7 @@ BOOST_AUTO_TEST_CASE(harmonicaConfigs) {
   bool testar[4096];
   int oldidar[4096];
   int nIDs = 4096;
-  std::vector<std::unique_ptr<sgpp::datadriven::ModelFittingBase>> fitters(1);
+  std::vector<sgpp::datadriven::ModelFittingBase*> fitters(1);
   std::vector<std::string> configStrings(1);
   std::vector<sgpp::datadriven::ConfigurationRestriction> constraints{};
 

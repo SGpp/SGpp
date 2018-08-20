@@ -3,15 +3,7 @@
 		"filePath": "datadriven/tests/datasets/dummydata.csv"
 	},
 	"scorer": {
-		"testing": {
-			"testingPortion": 0.125,
-			"shuffling": "random",
-			"randomSeed": 42,
-			"metric": "MSE"
-		},
-        "testset": {
-          "filePath": "datadriven/tests/datasets/dummydata.csv"
-        }
+		"metric": "MSE"
 	},
 	"fitter": {
 		"type": "regressionLeastSquares",
@@ -58,7 +50,7 @@
 		}
 	},
   "hpo": {
-    "method": "harmonica",
+    "method": "bayesian",
     "randomSeed": 40,
     "trainSize": 500,
     "harmonica": {

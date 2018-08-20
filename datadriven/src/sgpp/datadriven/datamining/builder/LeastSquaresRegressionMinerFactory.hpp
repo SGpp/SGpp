@@ -17,7 +17,6 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
-#include <sgpp/datadriven/datamining/modules/hpo/HPOScorer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceSplitting.hpp>
 
@@ -37,8 +36,6 @@ class LeastSquaresRegressionMinerFactory : public MinerFactory {
    */
   LeastSquaresRegressionMinerFactory() = default;
 
-  sgpp::datadriven::HyperparameterOptimizer *buildHPO(const std::string &path) const override;
-
  private:
   /**
    * Build an instance of a #sgpp::datadriven::ModelFittingBase object as specified in the
@@ -50,6 +47,9 @@ class LeastSquaresRegressionMinerFactory : public MinerFactory {
    * configuration file.
    */
   ModelFittingBase* createFitter(const DataMiningConfigParser& parser) const override;
+
+  FitterFactory* createFitterFactory(const DataMiningConfigParser& parser) const override;
+
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

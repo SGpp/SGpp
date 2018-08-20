@@ -37,12 +37,16 @@ ModelFittingBase* DensityEstimationMinerFactory::createFitter(
 HyperparameterOptimizer *DensityEstimationMinerFactory::buildHPO(const std::string &path) const {
   DataMiningConfigParser parser(path);
   if (parser.getHPOMethod("bayesian") == "harmonica") {
-    return new HarmonicaHyperparameterOptimizer(createDataSource(parser),
+    return new HarmonicaHyperparameterOptimizer(buildMiner(path),
                                                 new DensityEstimationFitterFactory(parser), parser);
   } else {
-    return new BoHyperparameterOptimizer(createDataSource(parser),
+    return new BoHyperparameterOptimizer(buildMiner(path),
                                          new DensityEstimationFitterFactory(parser), parser);
   }
+}
+FitterFactory *DensityEstimationMinerFactory::createFitterFactory(
+    const DataMiningConfigParser &parser) const {
+  return new DensityEstimationFitterFactory(parser);
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

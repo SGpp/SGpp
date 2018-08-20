@@ -42,7 +42,7 @@ class Harmonica {
    * @param configStrings container to store information about the configurations in string form
    * @return
    */
-  void prepareConfigs(std::vector<std::unique_ptr<ModelFittingBase>> &fitters,
+  void prepareConfigs(std::vector<ModelFittingBase*> &fitters,
                       int seed,
                       std::vector<std::string> &configStrings);
 

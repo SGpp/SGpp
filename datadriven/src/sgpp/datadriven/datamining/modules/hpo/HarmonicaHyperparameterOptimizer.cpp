@@ -21,10 +21,10 @@
 namespace sgpp {
 namespace datadriven {
 
-HarmonicaHyperparameterOptimizer::HarmonicaHyperparameterOptimizer(DataSource *dataSource,
+HarmonicaHyperparameterOptimizer::HarmonicaHyperparameterOptimizer(SparseGridMiner* miner,
                                                  FitterFactory *fitterFactory,
                                                  DataMiningConfigParser &parser)
-        : HyperparameterOptimizer(dataSource, fitterFactory, parser) {
+        : HyperparameterOptimizer(miner, fitterFactory, parser) {
 }
 
 
@@ -34,7 +34,6 @@ double HarmonicaHyperparameterOptimizer::run(bool writeToFile) {
   std::cout << std::endl << "Starting Hyperparameter Optimization using Harmonica. Results"
           " are saved with timestamp." << std::endl << std::endl;
 
-  double stdDeviation;   // dummy
 
   // output initialization
   std::ofstream myfile;
@@ -42,7 +41,7 @@ double HarmonicaHyperparameterOptimizer::run(bool writeToFile) {
 
   if (writeToFile) {
     time_t now = time(nullptr);
-    tm tmobj{};  // EDIT: working?
+    tm tmobj{};
     tm *ltm = localtime_r(&now, &tmobj);
     std::stringstream fn;
     fn << "Harmonica_" << (ltm->tm_year + 1900) << "_" << (ltm->tm_mon + 1) << "_" << ltm->tm_mday
@@ -63,7 +62,7 @@ double HarmonicaHyperparameterOptimizer::run(bool writeToFile) {
   // loop over stages
   for (size_t q = 0; q < config.getStages().size(); q++) {
     size_t nRuns = (size_t) config.getStages()[q];
-    std::vector<std::unique_ptr<ModelFittingBase>> fitters(nRuns);
+    std::vector<ModelFittingBase*> fitters(nRuns);
     DataVector scores(nRuns);
     DataVector transformedScores(nRuns);
     std::vector<std::string> configStrings(nRuns);
@@ -71,7 +70,9 @@ double HarmonicaHyperparameterOptimizer::run(bool writeToFile) {
 
     // run samples (parallelize here)
     for (size_t i = 0; i < nRuns; i++) {
-      scores[i] = hpoScorer->calculateScore(*(fitters[i]), *trainData, &stdDeviation);
+      miner->setModel(fitters[i]);
+      scores[i] = miner->learn(false);
+      // hpoScorer->calculateScore(*(fitters[i]), *trainData, &stdDeviation);
       std::cout << scnt << configStrings[i] << ", " << scores[i];
       if (scores[i] < best) {
         best = scores[i];

@@ -75,7 +75,7 @@ class SparseGridMinerCrossValidation : public SparseGridMiner {
    * generalize data by fitting and asses quality of the fit. Each cycle is performed once per
    * fold.
    */
-  void learn() override;
+  double learn(bool verbose) override;
 
  private:
   /**

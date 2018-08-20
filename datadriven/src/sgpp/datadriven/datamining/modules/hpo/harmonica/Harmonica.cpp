@@ -37,7 +37,7 @@ void Harmonica::transformScores(const DataVector &source, DataVector &target) {
   }
 }
 
-void Harmonica::prepareConfigs(std::vector<std::unique_ptr<ModelFittingBase>> &fitters,
+void Harmonica::prepareConfigs(std::vector<ModelFittingBase*> &fitters,
                                int seed,
                                std::vector<std::string> &configStrings) {
   // migrate samples that fit in the new space
@@ -76,7 +76,7 @@ void Harmonica::prepareConfigs(std::vector<std::unique_ptr<ModelFittingBase>> &f
   for (size_t i = 0; i < nAll; i++) {
     setParameters(configIDs[i], i);
     if (i >= nOld) {
-      fitters[i - nOld].reset(fitterFactory->buildFitter());
+      fitters[i - nOld] = fitterFactory->buildFitter();
       configStrings[i - nOld] = fitterFactory->printConfig();
     }
   }

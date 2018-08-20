@@ -34,16 +34,10 @@ ModelFittingBase* LeastSquaresRegressionMinerFactory::createFitter(
   config.readParams(parser);
   return new ModelFittingLeastSquares(config);
 }
-HyperparameterOptimizer *LeastSquaresRegressionMinerFactory::buildHPO
-    (const std::string &path) const {
-  DataMiningConfigParser parser(path);
-  if (parser.getHPOMethod("bayesian") == "harmonica") {
-    return new HarmonicaHyperparameterOptimizer(createDataSource(parser),
-                                                new LeastSquaresRegressionFitterFactory(parser), parser);
-  } else {
-    return new BoHyperparameterOptimizer(createDataSource(parser),
-                                         new LeastSquaresRegressionFitterFactory(parser), parser);
-  }
+
+FitterFactory *LeastSquaresRegressionMinerFactory::createFitterFactory(
+    const DataMiningConfigParser &parser) const {
+  return new LeastSquaresRegressionFitterFactory(parser);
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -15,10 +15,10 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
-#include <sgpp/datadriven/datamining/modules/hpo/HPOScorer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/FitterFactory.hpp>
 
 #include <memory>
+#include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -37,7 +37,7 @@ class HyperparameterOptimizer {
    * manipulated hyperparameters. The HyperparameterOptimizer instance will take ownership of the passed object.
    * @param parser reference to parser object to read configuration info
    */
-  HyperparameterOptimizer(DataSource *dataSource,
+  HyperparameterOptimizer(SparseGridMiner* miner,
                           FitterFactory *fitterFactory,
                           DataMiningConfigParser &parser);
 
@@ -78,18 +78,14 @@ class HyperparameterOptimizer {
 
  protected:
   /**
-   * Training Data
+   * Miner providing all testing facilities
    */
-  std::unique_ptr<Dataset> trainData;
+  std::unique_ptr<SparseGridMiner> miner;
 
   /**
    * FitterFactory to provide fitters for running different hyperparameter configurations.
    */
   std::unique_ptr<FitterFactory> fitterFactory;
-  /**
-   * Scorer for HPO.
-   */
-  std::unique_ptr<HPOScorer> hpoScorer;
 
   /**
    * Configuration for all hpo details.
