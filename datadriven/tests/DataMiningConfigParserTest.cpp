@@ -16,7 +16,6 @@
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
-#include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <string>
@@ -27,7 +26,6 @@ BOOST_AUTO_TEST_SUITE(dataMiningConfigParserTest)
 
 using sgpp::datadriven::DataMiningConfigParser;
 using sgpp::datadriven::DataSourceConfig;
-using sgpp::datadriven::DataTransformationType;
 using sgpp::datadriven::DataSourceFileType;
 using sgpp::datadriven::TestingConfiguration;
 using sgpp::datadriven::CrossValidationConfiguration;
@@ -59,20 +57,14 @@ BOOST_AUTO_TEST_CASE(testDataSourceConfig) {
   defaults.batchSize = 10;
   DataSourceConfig config;
   bool hasConfig;
-  bool hasDataTransformationConfig;
 
   hasConfig = parser.getDataSourceConfig(config, defaults);
-  hasDataTransformationConfig = parser.hasDataTransformationConfig();
 
   BOOST_CHECK_EQUAL(hasConfig, true);
-  BOOST_CHECK_EQUAL(hasDataTransformationConfig, true);
   BOOST_CHECK_EQUAL(std::strcmp(config.filePath.c_str(), "/path/to/some/file.arff"), 0);
   BOOST_CHECK_EQUAL(static_cast<int>(config.fileType), static_cast<int>(DataSourceFileType::ARFF));
   BOOST_CHECK_EQUAL(config.numBatches, 1);
   BOOST_CHECK_EQUAL(config.batchSize, 0);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.dataTransformationConfig.type),
-      static_cast<int>(DataTransformationType::ROSENBLATT));
-  BOOST_CHECK_EQUAL(config.dataTransformationConfig.rosenblattConfig.solverMaxIterations, 1000);
 }
 
 BOOST_AUTO_TEST_CASE(testScorerTestingConfig) {

@@ -10,8 +10,6 @@
 %include "quadrature/src/sgpp/quadrature/sampling/LatinHypercubeSampleGenerator.hpp"
 %include "quadrature/src/sgpp/quadrature/sampling/StratifiedSampleGenerator.hpp"
 %include "quadrature/src/sgpp/quadrature/sampling/HaltonSampleGenerator.hpp"
-%include "quadrature/src/sgpp/quadrature/sampling/SobolSampleGenerator.hpp"
-%include "quadrature/src/sgpp/quadrature/sampling/ScrambledSobolSampleGenerator.hpp"
 
 %include "OpFactory.i"
 

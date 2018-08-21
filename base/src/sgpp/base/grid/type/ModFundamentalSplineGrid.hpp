@@ -49,7 +49,7 @@ class ModFundamentalSplineGrid : public Grid {
   /**
    * @return fundamental spline basis
    */
-  SBasis& getBasis() override;
+  const SBasis& getBasis() override;
 
   /**
    * @return pointer to a GridGenerator object

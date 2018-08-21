@@ -21,8 +21,7 @@ namespace datadriven {
 
 class OperationDensityMarginalizeLinear : public OperationDensityMarginalize {
  public:
-  explicit OperationDensityMarginalizeLinear(base::Grid* grid)
-      : OperationDensityMarginalize(grid) {}
+  explicit OperationDensityMarginalizeLinear(base::Grid* grid) : grid(grid) {}
   virtual ~OperationDensityMarginalizeLinear() {}
 
   /**
@@ -34,7 +33,10 @@ class OperationDensityMarginalizeLinear : public OperationDensityMarginalize {
    * @param mdim Marginalize in dimension mdim
    */
   void doMarginalize(base::DataVector& alpha, base::Grid*& mg, base::DataVector& malpha,
-                     unsigned int mdim) override;
+                     unsigned int mdim);
+
+ protected:
+  base::Grid* grid;
 };
 }  // namespace datadriven
 }  // namespace sgpp

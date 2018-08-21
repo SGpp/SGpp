@@ -5,24 +5,24 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/gridgen/IterativeGridGeneratorLinearSurplus.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp>
-#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/optimization/gridgen/IterativeGridGeneratorLinearSurplus.hpp>
+#include <sgpp/optimization/tools/Printer.hpp>
 
-#include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/ModLinearGrid.hpp>
+#include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
-#include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/ModLinearGrid.hpp>
 
-#include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/optimization/sle/solver/BiCGStab.hpp>
+#include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 
+#include <algorithm>
 #include <cstring>
 #include <stdexcept>
-#include <algorithm>
 #include <string>
 
 namespace sgpp {
@@ -43,9 +43,9 @@ IterativeGridGeneratorLinearSurplus::IterativeGridGeneratorLinearSurplus(ScalarF
     linearGrid =
         std::unique_ptr<base::Grid>(new base::LinearBoundaryGrid(f.getNumberOfParameters()));
   } else if ((grid.getType() == base::GridType::BsplineClenshawCurtis) ||
-             (grid.getType() == base::GridType::LinearClenshawCurtisBoundary)) {
-    linearGrid = std::unique_ptr<base::Grid>(
-        new base::LinearClenshawCurtisBoundaryGrid(f.getNumberOfParameters()));
+             (grid.getType() == base::GridType::LinearClenshawCurtis)) {
+    linearGrid =
+        std::unique_ptr<base::Grid>(new base::LinearClenshawCurtisGrid(f.getNumberOfParameters()));
   } else if ((grid.getType() == base::GridType::ModBspline) ||
              (grid.getType() == base::GridType::ModWavelet) ||
              (grid.getType() == base::GridType::ModLinear) ||
@@ -82,7 +82,7 @@ bool IterativeGridGeneratorLinearSurplus::generate() {
       (grid.getType() == base::GridType::WaveletBoundary) ||
       (grid.getType() == base::GridType::LinearBoundary) ||
       (grid.getType() == base::GridType::BsplineClenshawCurtis) ||
-      (grid.getType() == base::GridType::LinearClenshawCurtisBoundary)) {
+      (grid.getType() == base::GridType::LinearClenshawCurtis)) {
     // grid with boundaries
     abstractRefinement =
         std::unique_ptr<base::AbstractRefinement>(new base::HashRefinementBoundaries());

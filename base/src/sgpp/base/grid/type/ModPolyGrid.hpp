@@ -39,7 +39,7 @@ class ModPolyGrid : public Grid {
   sgpp::base::GridType getType() override;
   void serialize(std::ostream& ostr, int version = SERIALIZATION_VERSION) override;
 
-  SBasis& getBasis() override;
+  const SBasis& getBasis() override;
 
   GridGenerator& getGenerator() override;
 

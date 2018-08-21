@@ -119,7 +119,7 @@ void OperationDensityConditionalLinear::doConditional(base::DataVector& alpha, b
     malpha[mseqNr] += alpha[seqNr] * zeta[seqNr];
   }
 
-  if (theta != 0) malpha.mult(1. / theta);
+  malpha.mult(1. / theta);
 }
 }  // namespace datadriven
 }  // namespace sgpp

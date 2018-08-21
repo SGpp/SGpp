@@ -70,6 +70,5 @@ void OperationMultipleHierarchisationLinearBoundary::doDehierarchisation(base::D
     alpha.setColumn(i, nodeValues);
   }
 }
-
 }  // namespace optimization
 }  // namespace sgpp

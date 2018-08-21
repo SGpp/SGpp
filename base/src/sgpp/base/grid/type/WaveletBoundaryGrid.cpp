@@ -38,7 +38,7 @@ sgpp::base::GridType WaveletBoundaryGrid::getType() {
   return sgpp::base::GridType::WaveletBoundary;
 }
 
-SBasis& WaveletBoundaryGrid::getBasis() {
+const SBasis& WaveletBoundaryGrid::getBasis() {
   static SWaveletBoundaryBase basis;
   return basis;
 }

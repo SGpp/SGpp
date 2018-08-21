@@ -1,7 +1,8 @@
-// Copyright (C) 2008-today The SG++ project
-// This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at
-// sgpp.sparsegrids.org
+/******************************************************************************
+ * Copyright (C) 2009 Technische Universitaet Muenchen                         *
+ * This file is part of the SG++ project. For conditions of distribution and   *
+ * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+ ******************************************************************************/
 
 #include <sgpp/base/operation/hash/OperationHierarchisationPolyBoundary.hpp>
 
@@ -9,8 +10,6 @@
 #include <sgpp/base/operation/hash/common/algorithm_sweep/DehierarchisationPolyBoundary.hpp>
 
 #include <sgpp/base/algorithm/sweep.hpp>
-
-#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace base {

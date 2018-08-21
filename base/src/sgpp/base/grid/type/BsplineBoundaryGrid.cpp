@@ -35,7 +35,7 @@ sgpp::base::GridType BsplineBoundaryGrid::getType() {
   return sgpp::base::GridType::BsplineBoundary;
 }
 
-SBasis& BsplineBoundaryGrid::getBasis() { return *basis_; }
+const SBasis& BsplineBoundaryGrid::getBasis() { return *basis_; }
 
 size_t BsplineBoundaryGrid::getDegree() { return this->degree; }
 

@@ -20,7 +20,7 @@ namespace datadriven {
 
 class OperationDensityConditional {
  public:
-  explicit OperationDensityConditional(base::Grid* grid) : grid(grid) {}
+  OperationDensityConditional() {}
   virtual ~OperationDensityConditional() {}
 
   /**
@@ -33,10 +33,7 @@ class OperationDensityConditional {
    * @param xbar Point at which to conditionalize
    */
   virtual void doConditional(base::DataVector& alpha, base::Grid*& mg, base::DataVector& malpha,
-                             unsigned int mdim, double xbar);
-
- protected:
-  base::Grid* grid;
+                             unsigned int mdim, double xbar) = 0;
 };
 }  // namespace datadriven
 }  // namespace sgpp

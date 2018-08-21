@@ -8,7 +8,8 @@
 namespace sgpp {
 namespace base {
 
-double OperationEvalPolyNaive::eval(const DataVector& alpha, const DataVector& point) {
+double OperationEvalPolyNaive::eval(const DataVector& alpha,
+                                     const DataVector& point) {
   const size_t n = storage.getSize();
   const size_t d = storage.getDimension();
   double result = 0.0;
@@ -37,7 +38,8 @@ double OperationEvalPolyNaive::eval(const DataVector& alpha, const DataVector& p
   return result;
 }
 
-void OperationEvalPolyNaive::eval(const DataMatrix& alpha, const DataVector& point,
+void OperationEvalPolyNaive::eval(const DataMatrix& alpha,
+                                  const DataVector& point,
                                   DataVector& value) {
   const size_t n = storage.getSize();
   const size_t d = storage.getDimension();

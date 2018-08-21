@@ -6,7 +6,7 @@
 #ifndef OPERATIONDENSITYCONDITIONALKDE_HPP_
 #define OPERATIONDENSITYCONDITIONALKDE_HPP_
 
-#include <sgpp/datadriven/application/KernelDensityEstimator.hpp>
+#include <sgpp/datadriven/application/GaussianKDE.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
@@ -18,7 +18,7 @@ namespace datadriven {
 
 class OperationDensityConditionalKDE {
  public:
-  explicit OperationDensityConditionalKDE(datadriven::KernelDensityEstimator& kde);
+  explicit OperationDensityConditionalKDE(datadriven::GaussianKDE& kde);
   virtual ~OperationDensityConditionalKDE();
 
   /**
@@ -29,7 +29,7 @@ class OperationDensityConditionalKDE {
    * @param conditionalizedKDE conditionalized kernel density
    */
   virtual void doConditional(size_t mdim, double xbar,
-                             datadriven::KernelDensityEstimator& conditionalizedKDE);
+                             datadriven::GaussianKDE& conditionalizedKDE);
 
   /**
    * Conditional (Density) Functions
@@ -39,7 +39,7 @@ class OperationDensityConditionalKDE {
    * @param conditionalizedKDE conditionalized kernel density
    */
   virtual void doConditional(std::vector<size_t>& mdims, base::DataVector& xbar,
-                             datadriven::KernelDensityEstimator& conditionalizedKDE);
+                             datadriven::GaussianKDE& conditionalizedKDE);
 
   /**
    * Conditional (Density) Functions to a 1d density where the remaining
@@ -50,7 +50,7 @@ class OperationDensityConditionalKDE {
    * @param conditionalizedKDE conditionalized kernel density
    */
   virtual void condToDimX(size_t mdim, base::DataVector& xbar,
-                          datadriven::KernelDensityEstimator& conditionalizedKDE);
+                          datadriven::GaussianKDE& conditionalizedKDE);
 
   /**
    * Conditional (Density) Functions to a dd density where the remaining
@@ -61,10 +61,10 @@ class OperationDensityConditionalKDE {
    * @param conditionalizedKDE conditionalized kernel density
    */
   virtual void condToDimXs(std::vector<size_t>& mdims, base::DataVector& xbar,
-                           datadriven::KernelDensityEstimator& conditionalizedKDE);
+                           datadriven::GaussianKDE& conditionalizedKDE);
 
  private:
-  datadriven::KernelDensityEstimator* kde;
+  datadriven::GaussianKDE* kde;
 };
 
 }  // namespace datadriven

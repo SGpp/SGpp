@@ -46,7 +46,7 @@ class LinearStretchedBoundaryGrid : public Grid {
 
   sgpp::base::GridType getType() override;
 
-  SBasis& getBasis() override;
+  const SBasis& getBasis() override;
 
   GridGenerator& getGenerator() override;
 

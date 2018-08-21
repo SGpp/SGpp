@@ -4,12 +4,12 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
 
 #include <sgpp/base/exception/factory_exception.hpp>
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 
 #include <vector>
 
@@ -17,9 +17,13 @@ namespace sgpp {
 namespace base {
 
 LinearClenshawCurtisGrid::LinearClenshawCurtisGrid(std::istream& istr)
-    : Grid(istr), generator(storage) {}
+    : Grid(istr), generator(storage), boundaryLevel(0) {
+  istr >> boundaryLevel;
+  generator.setBoundaryLevel(boundaryLevel);
+}
 
-LinearClenshawCurtisGrid::LinearClenshawCurtisGrid(size_t dim) : Grid(dim), generator(storage) {
+LinearClenshawCurtisGrid::LinearClenshawCurtisGrid(size_t dim, level_t boundaryLevel)
+    : Grid(dim), generator(storage, boundaryLevel), boundaryLevel(boundaryLevel) {
   std::vector<BoundingBox1D> boundingBox1Ds(dim, BoundingBox1D());
   std::vector<Stretching1D> stretching1Ds(dim, Stretching1D("cc"));
   Stretching stretching(boundingBox1Ds, stretching1Ds);
@@ -32,7 +36,10 @@ sgpp::base::GridType LinearClenshawCurtisGrid::getType() {
   return sgpp::base::GridType::LinearClenshawCurtis;
 }
 
-SBasis& LinearClenshawCurtisGrid::getBasis() { return basis_; }
+const SBasis& LinearClenshawCurtisGrid::getBasis() {
+  static SLinearClenshawCurtisBase basis;
+  return basis;
+}
 
 Grid* LinearClenshawCurtisGrid::unserialize(std::istream& istr) {
   return new LinearClenshawCurtisGrid(istr);
@@ -40,6 +47,7 @@ Grid* LinearClenshawCurtisGrid::unserialize(std::istream& istr) {
 
 void LinearClenshawCurtisGrid::serialize(std::ostream& ostr, int version) {
   this->Grid::serialize(ostr, version);
+  ostr << boundaryLevel << std::endl;
 }
 
 /**

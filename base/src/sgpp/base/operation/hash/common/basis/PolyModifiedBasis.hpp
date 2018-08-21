@@ -3,7 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#pragma once
+#ifndef MODIFIED_POLY_BASE_HPP
+#define MODIFIED_POLY_BASE_HPP
 
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -64,23 +65,7 @@ class PolyModifiedBasis : public Basis<LT, IT> {
     return eval(level, index, (p - offset) / width);
   }
 
-  double evalDx(LT level, IT index, double x) {
-    double hInvDbl = static_cast<double>(1 << level);
-    const IT hInv = static_cast<IT>(1) << level;
-    if (level == 1) {
-      // first level
-      return 0.0;
-    } else if (index == 1) {
-      return ((x <= 2.0 / hInvDbl) ? -hInvDbl : 0.0);
-    } else if (index == hInv - 1) {
-      return ((x >= 1.0 - 2.0 / hInvDbl) ? hInvDbl : 0.0);
-    } else {
-      // interior basis function
-      return polyBasis.evalDx(level, index, x);
-    }
-  }
-
-  double getIntegral(LT level, IT index) override {
+  double getIntegral(LT level, IT index) {
     const IT hInv = static_cast<IT>(1) << level;
 
     if (level == 1) {
@@ -125,7 +110,7 @@ class PolyModifiedBasis : public Basis<LT, IT> {
     return result;
   }
 
-  size_t getDegree() const override { return polyBasis.getDegree(); }
+  size_t getDegree() { return polyBasis.getDegree(); }
 
  private:
   /**
@@ -157,3 +142,5 @@ typedef PolyModifiedBasis<unsigned int, unsigned int> SPolyModifiedBase;
 
 }  // namespace base
 }  // namespace sgpp
+
+#endif /* MODIFIED_POLY_BASE_HPP */

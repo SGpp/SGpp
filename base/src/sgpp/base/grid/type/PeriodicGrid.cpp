@@ -36,7 +36,7 @@ Grid* PeriodicGrid::unserialize(std::istream& istr) {
   return new PeriodicGrid(istr);
 }
 
-SBasis& PeriodicGrid::getBasis() {
+const SBasis& PeriodicGrid::getBasis() {
   static SLinearPeriodicBasis basis;
   return basis;
 }

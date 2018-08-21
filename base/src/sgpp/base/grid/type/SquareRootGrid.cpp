@@ -36,7 +36,7 @@ sgpp::base::GridType SquareRootGrid::getType() {
   return sgpp::base::GridType::SquareRoot;
 }
 
-SBasis& SquareRootGrid::getBasis() {
+const SBasis& SquareRootGrid::getBasis() {
   static SLinearBoundaryBase basis;
   return basis;
 }

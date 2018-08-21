@@ -33,7 +33,7 @@ sgpp::base::GridType ModWaveletGrid::getType() {
   return sgpp::base::GridType::ModWavelet;
 }
 
-SBasis& ModWaveletGrid::getBasis() {
+const SBasis& ModWaveletGrid::getBasis() {
   static SWaveletModifiedBase basis;
   return basis;
 }

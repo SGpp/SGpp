@@ -104,7 +104,6 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   checkZlib(config)
   checkGSL(config)
   checkDAKOTA(config)
-  checkCGAL(config)
   checkBoostTests(config)
   checkSWIG(config)
   checkPython(config)
@@ -242,13 +241,17 @@ def checkOpenCL(config):
 
 def checkDAKOTA(config):
     if config.env["USE_DAKOTA"]:
+        config.env.AppendUnique(CPPPATH=[config.env["DAKOTA_INCLUDE_PATH"]])
+
+        config.env.AppendUnique(LIBPATH=[config.env["DAKOTA_LIBRARY_PATH"]])
+
+        if not config.CheckCXXHeader("pecos_global_defs.hpp"):
+            Helper.printErrorAndExit("pecos_global_defs.hpp not found, but required for PECOS")
+
+def checkDAKOTA(config):
+    if config.env["USE_DAKOTA"]:
         if not config.CheckCXXHeader("pecos_global_defs.hpp"):
             Helper.printErrorAndExit("pecos_global_defs.hpp not found, but required for PECOS. Consider setting the flag 'CPPPATH'.")
-
-def checkCGAL(config):
-    if config.env["USE_CGAL"]:
-        if not config.CheckCXXHeader("CGAL/basic.h"):
-            Helper.printErrorAndExit("CGAL/basic.h not found, but required for CGAL. Consider setting the flag 'CPPPATH'.")
 
 def checkGSL(config):
   if config.env["USE_GSL"]:
@@ -308,8 +311,8 @@ def checkSWIG(config):
         r"[0-9.]*[0-9]+", subprocess.check_output(["swig", "-version"]))[0]
 
     swigVersionTuple = config.env._get_major_minor_revision(swigVersion)
-    if swigVersionTuple < (3, 0, 0):
-      Helper.printErrorAndExit("SWIG version too old! At least 3.0 required.")
+    if swigVersionTuple < (3, 0, 3):
+      Helper.printErrorAndExit("SWIG version too old! At least 3.0.3 required.")
 
     Helper.printInfo("Using SWIG {}".format(swigVersion))
 

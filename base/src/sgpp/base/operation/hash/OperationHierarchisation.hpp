@@ -10,6 +10,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+
 namespace sgpp {
 namespace base {
 

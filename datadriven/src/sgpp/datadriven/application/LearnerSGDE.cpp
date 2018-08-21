@@ -24,7 +24,6 @@
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationCovariance.hpp>
 
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
@@ -45,7 +44,9 @@ namespace sgpp {
 namespace datadriven {
 
 // --------------------------------------------------------------------------------------------
-LearnerSGDEConfiguration::LearnerSGDEConfiguration() : json::JSON() { initConfig(); }
+LearnerSGDEConfiguration::LearnerSGDEConfiguration() : json::JSON() {
+  initConfig();
+}
 
 LearnerSGDEConfiguration::LearnerSGDEConfiguration(const std::string& fileName)
     : json::JSON(fileName) {
@@ -53,8 +54,10 @@ LearnerSGDEConfiguration::LearnerSGDEConfiguration(const std::string& fileName)
   // initialize structs from file
   // configure grid
   try {
-    if (this->contains("grid_filename")) gridConfig.filename_ = (*this)["grid_filename"].get();
-    if (this->contains("grid_dim")) gridConfig.dim_ = (*this)["grid_level"].getUInt();
+    if (this->contains("grid_filename"))
+      gridConfig.filename_ = (*this)["grid_filename"].get();
+    if (this->contains("grid_dim"))
+      gridConfig.dim_ = (*this)["grid_level"].getUInt();
     if (this->contains("grid_level"))
       gridConfig.level_ = static_cast<int>((*this)["grid_level"].getInt());
     if (this->contains("grid_type"))
@@ -62,7 +65,8 @@ LearnerSGDEConfiguration::LearnerSGDEConfiguration(const std::string& fileName)
 
     // configure adaptive refinement
     if (this->contains("refinement_numSteps"))
-      adaptivityConfig.numRefinements_ = (*this)["refinement_numSteps"].getUInt();
+      adaptivityConfig.numRefinements_ =
+          (*this)["refinement_numSteps"].getUInt();
     if (this->contains("refinement_numPoints"))
       adaptivityConfig.noPoints_ = (*this)["refinement_numPoints"].getUInt();
 
@@ -71,35 +75,46 @@ LearnerSGDEConfiguration::LearnerSGDEConfiguration(const std::string& fileName)
       solverConfig.type_ = stringToSolverType((*this)["solver_type"].get());
     if (this->contains("solver_maxIterations"))
       solverConfig.maxIterations_ = (*this)["solver_maxIterations"].getUInt();
-    if (this->contains("solver_eps")) solverConfig.eps_ = (*this)["solver_eps"].getDouble();
+    if (this->contains("solver_eps"))
+      solverConfig.eps_ = (*this)["solver_eps"].getDouble();
     if (this->contains("solver_threshold"))
       solverConfig.threshold_ = (*this)["solver_threshold"].getDouble();
 
     // configure regularization
     if (this->contains("regularization_type"))
-      regularizationConfig.type_ = stringToRegularizationType((*this)["regularization_type"].get());
+      regularizationConfig.type_ =
+          stringToRegularizationType((*this)["regularization_type"].get());
 
     // configure learner
     if (this->contains("crossValidation_lambda"))
-      crossvalidationConfig.lambda_ = (*this)["crossValidation_lambda"].getDouble();
+      crossvalidationConfig.lambda_ =
+          (*this)["crossValidation_lambda"].getDouble();
     if (this->contains("crossValidation_enable"))
-      crossvalidationConfig.enable_ = (*this)["crossValidation_enable"].getBool();
+      crossvalidationConfig.enable_ =
+          (*this)["crossValidation_enable"].getBool();
     if (this->contains("crossValidation_kfold"))
       crossvalidationConfig.kfold_ = (*this)["crossValidation_kfold"].getUInt();
     if (this->contains("crossValidation_lambdaStart"))
-      crossvalidationConfig.lambdaStart_ = (*this)["crossValidation_lambdaStart"].getDouble();
+      crossvalidationConfig.lambdaStart_ =
+          (*this)["crossValidation_lambdaStart"].getDouble();
     if (this->contains("crossValidation_lambdaEnd"))
-      crossvalidationConfig.lambdaEnd_ = (*this)["crossValidation_lambdaEnd"].getDouble();
+      crossvalidationConfig.lambdaEnd_ =
+          (*this)["crossValidation_lambdaEnd"].getDouble();
     if (this->contains("crossValidation_lambdaSteps"))
-      crossvalidationConfig.lambdaSteps_ = (*this)["crossValidation_lambdaSteps"].getUInt();
+      crossvalidationConfig.lambdaSteps_ =
+          (*this)["crossValidation_lambdaSteps"].getUInt();
     if (this->contains("crossValidation_logScale"))
-      crossvalidationConfig.logScale_ = (*this)["crossValidation_logScale"].getBool();
+      crossvalidationConfig.logScale_ =
+          (*this)["crossValidation_logScale"].getBool();
     if (this->contains("crossValidation_shuffle"))
-      crossvalidationConfig.shuffle_ = (*this)["crossValidation_shuffle"].getBool();
+      crossvalidationConfig.shuffle_ =
+          (*this)["crossValidation_shuffle"].getBool();
     if (this->contains("crossValidation_seed"))
-      crossvalidationConfig.seed_ = static_cast<int>((*this)["crossValidation_seed"].getInt());
+      crossvalidationConfig.seed_ =
+          static_cast<int>((*this)["crossValidation_seed"].getInt());
     if (this->contains("crossValidation_silent"))
-      crossvalidationConfig.silent_ = (*this)["crossValidation_silent"].getBool();
+      crossvalidationConfig.silent_ =
+          (*this)["crossValidation_silent"].getBool();
   } catch (json::json_exception& e) {
     std::cout << e.what() << std::endl;
   }
@@ -144,7 +159,8 @@ LearnerSGDEConfiguration* LearnerSGDEConfiguration::clone() {
   return clone;
 }
 
-sgpp::base::GridType LearnerSGDEConfiguration::stringToGridType(std::string& gridType) {
+sgpp::base::GridType LearnerSGDEConfiguration::stringToGridType(
+    std::string& gridType) {
   if (gridType.compare("Linear") == 0) {
     return sgpp::base::GridType::Linear;
   } else if (gridType.compare("LinearStretched") == 0) {
@@ -202,7 +218,8 @@ sgpp::base::GridType LearnerSGDEConfiguration::stringToGridType(std::string& gri
   }
 }
 
-sgpp::datadriven::RegularizationType LearnerSGDEConfiguration::stringToRegularizationType(
+sgpp::datadriven::RegularizationType
+LearnerSGDEConfiguration::stringToRegularizationType(
     std::string& regularizationType) {
   if (regularizationType.compare("Identity") == 0) {
     return sgpp::datadriven::RegularizationType::Identity;
@@ -213,7 +230,8 @@ sgpp::datadriven::RegularizationType LearnerSGDEConfiguration::stringToRegulariz
   }
 }
 
-sgpp::solver::SLESolverType LearnerSGDEConfiguration::stringToSolverType(std::string& solverType) {
+sgpp::solver::SLESolverType LearnerSGDEConfiguration::stringToSolverType(
+    std::string& solverType) {
   if (solverType.compare("CG")) {
     return sgpp::solver::SLESolverType::CG;
   } else if (solverType.compare("BiCGSTAB")) {
@@ -224,18 +242,16 @@ sgpp::solver::SLESolverType LearnerSGDEConfiguration::stringToSolverType(std::st
 }
 
 // --------------------------------------------------------------------------------------------
-LearnerSGDE::LearnerSGDE(sgpp::base::RegularGridConfiguration& gridConfig,
-                         sgpp::base::AdpativityConfiguration& adaptivityConfig,
-                         sgpp::solver::SLESolverConfiguration& solverConfig,
-                         sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-                         CrossvalidationConfiguration& crossvalidationConfig)
-    : error(0.0),
-      grid(nullptr),
+LearnerSGDE::LearnerSGDE(
+    sgpp::base::RegularGridConfiguration& gridConfig,
+    sgpp::base::AdpativityConfiguration& adaptivityConfig,
+    sgpp::solver::SLESolverConfiguration& solverConfig,
+    sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+    CrossvalidationConfiguration& crossvalidationConfig)
+    : grid(nullptr),
       alpha(nullptr),
       trainData(nullptr),
       trainLabels(nullptr),
-      usePrior(false),
-      lambdaReg(1e-6),
       gridConfig(gridConfig),
       adaptivityConfig(adaptivityConfig),
       solverConfig(solverConfig),
@@ -243,17 +259,16 @@ LearnerSGDE::LearnerSGDE(sgpp::base::RegularGridConfiguration& gridConfig,
       crossvalidationConfig(crossvalidationConfig) {}
 
 LearnerSGDE::LearnerSGDE(LearnerSGDEConfiguration& learnerSGDEConfig)
-    : LearnerSGDE(learnerSGDEConfig.gridConfig, learnerSGDEConfig.adaptivityConfig,
-                  learnerSGDEConfig.solverConfig, learnerSGDEConfig.regularizationConfig,
+    : LearnerSGDE(learnerSGDEConfig.gridConfig,
+                  learnerSGDEConfig.adaptivityConfig,
+                  learnerSGDEConfig.solverConfig,
+                  learnerSGDEConfig.regularizationConfig,
                   learnerSGDEConfig.crossvalidationConfig) {}
 
 LearnerSGDE::LearnerSGDE(const LearnerSGDE& learnerSGDE) {
-  error = 0.0;
   grid = learnerSGDE.grid;
   alpha = learnerSGDE.alpha;
   trainData = learnerSGDE.trainData;
-  usePrior = false;
-  lambdaReg = 1e-6;
   gridConfig = learnerSGDE.gridConfig;
   adaptivityConfig = learnerSGDE.adaptivityConfig;
   solverConfig = learnerSGDE.solverConfig;
@@ -299,7 +314,8 @@ double LearnerSGDE::mean(base::Grid& grid, base::DataVector& alpha) {
 double LearnerSGDE::mean() { return mean(*grid, *alpha); }
 
 double LearnerSGDE::variance(base::Grid& grid, base::DataVector& alpha) {
-  double secondMoment = op_factory::createOperationSecondMoment(grid)->doQuadrature(alpha);
+  double secondMoment =
+      op_factory::createOperationSecondMoment(grid)->doQuadrature(alpha);
 
   // use Steiners translation theorem to compute the variance
   double firstMoment = mean();
@@ -309,19 +325,73 @@ double LearnerSGDE::variance(base::Grid& grid, base::DataVector& alpha) {
 
 double LearnerSGDE::variance() { return variance(*grid, *alpha); }
 
-void LearnerSGDE::cov(base::DataMatrix& cov, base::DataMatrix* bounds) {
-  std::unique_ptr<datadriven::OperationCovariance> opCov(
-      op_factory::createOperationCovariance(*grid));
-  opCov->doQuadrature(*alpha, cov, bounds);
+void LearnerSGDE::cov(base::DataMatrix& cov) {
+  size_t ndim = grid->getStorage().getDimension();
+
+  if ((cov.getNrows() != ndim) || (cov.getNcols() != ndim)) {
+    // covariance matrix has wrong size -> resize
+    cov.resize(ndim, ndim);
+  }
+
+  // prepare covariance marix
+  cov.setAll(0.0);
+
+  // generate 1d densities and compute means and variances
+  base::DataVector means(ndim);
+  base::DataVector variances(ndim);
+
+  std::unique_ptr<datadriven::OperationDensityMargTo1D> opMarg(
+      op_factory::createOperationDensityMargTo1D(*grid));
+
+  base::Grid* marginalizedGrid = NULL;
+  base::DataVector* marginalizedAlpha = new base::DataVector(0);
+
+  for (size_t idim = 0; idim < ndim; idim++) {
+    opMarg->margToDimX(&*alpha, marginalizedGrid, marginalizedAlpha, idim);
+    // store moments
+    means[idim] = mean(*marginalizedGrid, *marginalizedAlpha);
+    variances[idim] = variance(*marginalizedGrid, *marginalizedAlpha);
+
+    delete marginalizedGrid;
+  }
+
+  // helper variables
+  std::vector<size_t> mdims(2);
+  double covij = 0.0;
+
+  for (size_t idim = 0; idim < ndim; idim++) {
+    // diagonal is equal to the variance of the marginalized densities
+    cov.set(idim, idim, variances[idim]);
+
+    for (size_t jdim = idim + 1; jdim < ndim; jdim++) {
+      // marginalize the density
+      mdims[0] = idim;
+      mdims[1] = jdim;
+      opMarg->margToDimXs(&*alpha, marginalizedGrid, marginalizedAlpha, mdims);
+      // -----------------------------------------------------
+      // compute the covariance of Cov(X_i, X_j)
+      covij = mean(*marginalizedGrid, *marginalizedAlpha) -
+              means[idim] * means[jdim];
+      cov.set(idim, jdim, covij);
+      cov.set(jdim, idim, covij);
+      // -----------------------------------------------------
+      delete marginalizedGrid;
+    }
+  }
+
+  delete marginalizedAlpha;
 }
 
 std::shared_ptr<base::DataVector> LearnerSGDE::getSamples(size_t dim) {
-  std::shared_ptr<base::DataVector> isamples = std::make_shared<base::DataVector>(getNsamples());
+  std::shared_ptr<base::DataVector> isamples =
+      std::make_shared<base::DataVector>(getNsamples());
   trainData->getColumn(dim, *isamples);
   return isamples;
 }
 
-std::shared_ptr<base::DataMatrix> LearnerSGDE::getSamples() { return trainData; }
+std::shared_ptr<base::DataMatrix> LearnerSGDE::getSamples() {
+  return trainData;
+}
 
 size_t LearnerSGDE::getDim() { return gridConfig.dim_; }
 
@@ -338,7 +408,8 @@ std::shared_ptr<base::Grid> LearnerSGDE::createRegularGrid() {
   std::unique_ptr<base::Grid> uGrid;
   if (gridConfig.filename_.length() > 0) {
     std::ifstream ifs(gridConfig.filename_);
-    std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
+    std::string content((std::istreambuf_iterator<char>(ifs)),
+                        (std::istreambuf_iterator<char>()));
     uGrid.reset(base::Grid::unserialize(content));
   } else {
     if (gridConfig.type_ == base::GridType::Linear) {
@@ -348,7 +419,8 @@ std::shared_ptr<base::Grid> LearnerSGDE::createRegularGrid() {
     } else if (gridConfig.type_ == base::GridType::LinearBoundary) {
       uGrid.reset(base::Grid::createLinearBoundaryGrid(gridConfig.dim_, 1));
     } else {
-      throw base::application_exception("LeanerSGDE::initialize : grid type is not supported");
+      throw base::application_exception(
+          "LeanerSGDE::initialize : grid type is not supported");
     }
     uGrid->getGenerator().regular(gridConfig.level_);
   }
@@ -388,9 +460,9 @@ double LearnerSGDE::optimizeLambdaCV() {
 
     if (crossvalidationConfig.logScale_) curLambda = exp(curLambda);
 
-    if (i % static_cast<size_t>(
-                std::max(static_cast<double>(crossvalidationConfig.lambdaSteps_) / 10.0f,
-                         static_cast<double>(1.0f))) ==
+    if (i % static_cast<size_t>(std::max(
+                static_cast<double>(crossvalidationConfig.lambdaSteps_) / 10.0f,
+                static_cast<double>(1.0f))) ==
         0) {
       if (!crossvalidationConfig.silent_) {
         std::cout << i + 1 << "/" << crossvalidationConfig.lambdaSteps_
@@ -417,10 +489,11 @@ double LearnerSGDE::optimizeLambdaCV() {
       curMeanAcc += curMean;
 
       if (!crossvalidationConfig.silent_) {
-        std::cout << "# " << curLambda << " " << i << " " << j << " " << curMeanAcc << " "
-                  << curMean << "; alpha in [" << alpha.min() << ", " << alpha.max() << "]"
-                  << "; data in " << kfold_test[j]->getNrows() << " x " << kfold_test[j]->getNcols()
-                  << std::endl;
+        std::cout << "# " << curLambda << " " << i << " " << j << " "
+                  << curMeanAcc << " " << curMean << "; alpha in ["
+                  << alpha.min() << ", " << alpha.max() << "]"
+                  << "; data in " << kfold_test[j]->getNrows() << " x "
+                  << kfold_test[j]->getNcols() << std::endl;
       }
     }
 
@@ -432,8 +505,8 @@ double LearnerSGDE::optimizeLambdaCV() {
     }
 
     if (!crossvalidationConfig.silent_) {
-      std::cout << "# " << curLambda << " " << bestLambda << " " << i << " " << curMeanAcc
-                << std::endl;
+      std::cout << "# " << curLambda << " " << bestLambda << " " << i << " "
+                << curMeanAcc << std::endl;
     }
   }
 
@@ -449,8 +522,8 @@ void LearnerSGDE::train() {
   train(*grid, *alpha, *trainData, lambdaReg);
 }
 
-void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMatrix& trainData,
-                        double lambdaReg) {
+void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha,
+                        base::DataMatrix& trainData, double lambdaReg) {
   size_t dim = trainData.getNcols();
 
   base::GridStorage& gridStorage = grid.getStorage();
@@ -464,20 +537,23 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMat
   }
 
   for (size_t ref = 0; ref <= adaptivityConfig.numRefinements_; ref++) {
-    auto C = computeRegularizationMatrix(grid);
+    std::unique_ptr<base::OperationMatrix> C =
+        computeRegularizationMatrix(grid);
 
-    datadriven::DensitySystemMatrix SMatrix(grid, trainData, C, lambdaReg);
+    datadriven::DensitySystemMatrix SMatrix(grid, trainData, *C, lambdaReg);
     SMatrix.generateb(rhs);
 
     if (!crossvalidationConfig.silent_) {
       std::cout << "# LearnerSGDE: Solving " << std::endl;
     }
 
-    solver::ConjugateGradients myCG(solverConfig.maxIterations_, solverConfig.eps_);
+    solver::ConjugateGradients myCG(solverConfig.maxIterations_,
+                                    solverConfig.eps_);
     myCG.solve(SMatrix, alpha, rhs, false, false, solverConfig.threshold_);
 
     if (myCG.getResiduum() > solverConfig.threshold_) {
-      throw base::operation_exception("LearnerSGDE - train: conjugate gradients is not converged");
+      throw base::operation_exception(
+          "LearnerSGDE - train: conjugate gradients is not converged");
     }
 
     if (ref < adaptivityConfig.numRefinements_) {
@@ -486,7 +562,8 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMat
       }
 
       // Weight surplus with function evaluation at grid points
-      std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(grid));
+      std::unique_ptr<base::OperationEval> opEval(
+          op_factory::createOperationEval(grid));
       base::DataVector p(dim);
       base::DataVector alphaWeight(alpha.getSize());
 
@@ -495,13 +572,14 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMat
         alphaWeight[i] = alpha.get(i) * opEval->eval(alpha, p);
       }
 
-      base::SurplusRefinementFunctor srf(alphaWeight, adaptivityConfig.noPoints_,
-                                         adaptivityConfig.threshold_);
+      base::SurplusRefinementFunctor srf(
+          alphaWeight, adaptivityConfig.noPoints_, adaptivityConfig.threshold_);
       gridGen.refine(srf);
 
       if (!crossvalidationConfig.silent_) {
-        std::cout << "# LearnerSGDE: ref " << ref << "/" << adaptivityConfig.numRefinements_ - 1
-                  << ": " << grid.getSize() << std::endl;
+        std::cout << "# LearnerSGDE: ref " << ref << "/"
+                  << adaptivityConfig.numRefinements_ - 1 << ": "
+                  << grid.getSize() << std::endl;
       }
 
       alpha.resize(grid.getSize());
@@ -514,12 +592,13 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMat
   return;
 }
 
-void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testData,
-                              base::DataVector& testLabels, base::DataMatrix* validData,
-                              base::DataVector* validLabels, base::DataVector& classLabels,
-                              size_t maxDataPasses, std::string refType, std::string refMonitor,
-                              size_t refPeriod, double accDeclineThreshold,
-                              size_t accDeclineBufferSize, size_t minRefInterval, bool usePrior) {
+void LearnerSGDE::trainOnline(
+    base::DataVector& labels, base::DataMatrix& testData,
+    base::DataVector& testLabels, base::DataMatrix* validData,
+    base::DataVector* validLabels, base::DataVector& classLabels,
+    size_t maxDataPasses, std::string refType, std::string refMonitor,
+    size_t refPeriod, double accDeclineThreshold, size_t accDeclineBufferSize,
+    size_t minRefInterval, bool usePrior) {
   this->trainLabels = std::make_shared<base::DataVector>(labels);
   this->usePrior = usePrior;
 
@@ -534,8 +613,8 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
   double currentValidError = 0.0;
   double currentTrainError = 0.0;
   // create convergence monitor object
-  std::shared_ptr<ConvergenceMonitor> monitor(
-      new ConvergenceMonitor(accDeclineThreshold, accDeclineBufferSize, minRefInterval));
+  std::shared_ptr<ConvergenceMonitor> monitor(new ConvergenceMonitor(
+      accDeclineThreshold, accDeclineBufferSize, minRefInterval));
   bool doRefine = false;  // set true by monitor to trigger refinement
   // counts number of performed refinement steps
   size_t refCnt = 0;
@@ -549,7 +628,8 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
     } else if (gridConfig.type_ == base::GridType::ModLinear) {
       uGrid.reset(base::Grid::createModLinearGrid(gridConfig.dim_));
     } else {
-      throw base::application_exception("LearnerSGDE::trainOnline : grid type is not supported");
+      throw base::application_exception(
+          "LearnerSGDE::trainOnline : grid type is not supported");
     }
 
     uGrid->getGenerator().regular(gridConfig.level_);
@@ -591,10 +671,12 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
       base::DataVector rhs(grid->getSize());
       base::DataMatrix dataSample(0, dim);
       dataSample.appendRow(x);
-      auto C = computeRegularizationMatrix(*grid);
-      datadriven::DensitySystemMatrix SMatrix(*grid, dataSample, C, lambdaReg);
+      std::unique_ptr<base::OperationMatrix> C =
+          computeRegularizationMatrix(*grid);
+      datadriven::DensitySystemMatrix SMatrix(*grid, dataSample, *C, lambdaReg);
       SMatrix.generateb(rhs);
-      solver::ConjugateGradients myCG(solverConfig.maxIterations_, solverConfig.eps_);
+      solver::ConjugateGradients myCG(solverConfig.maxIterations_,
+                                      solverConfig.eps_);
       myCG.solve(SMatrix, newAlpha, rhs, false, false, solverConfig.threshold_);
 
       /*if (myCG.getResiduum() > solverConfig.threshold_) {
@@ -616,14 +698,15 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
       // check if refinement should be performed
       if (refMonitor == "periodic") {
         // check periodic monitor
-        if ((refCnt < adaptivityConfig.numRefinements_) && (processedPoints > 0) &&
-            ((processedPoints + 1) % refPeriod == 0)) {
+        if ((refCnt < adaptivityConfig.numRefinements_) &&
+            (processedPoints > 0) && ((processedPoints + 1) % refPeriod == 0)) {
           doRefine = true;
         }
       } else if (refMonitor == "convergence") {
         // check convergence monitor
         if (validData == nullptr) {
-          throw base::data_exception("No validation data for checking convergence provided!");
+          throw base::data_exception(
+              "No validation data for checking convergence provided!");
         }
         if (refCnt < adaptivityConfig.numRefinements_) {
           currentValidError = getError(*validData, *validLabels, 0.0, "Acc");
@@ -643,7 +726,8 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
       if (doRefine) {
         // acc = getAccuracy(testData, testLabels, 0.0);
         // avgErrors.append(1.0 - acc);
-        std::cout << "Refinement at iteration: " << processedPoints + 1 << std::endl;
+        std::cout << "Refinement at iteration: " << processedPoints + 1
+                  << std::endl;
         // bundle grids and surplus vector pointer needed for refinement
         // (for zero-crossings refinement, data-based refinement)
         std::vector<sgpp::base::Grid*> refGrids;
@@ -652,12 +736,14 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
           refGrids.push_back(&*(g.second));
           refAlphas.push_back(&*(alphas.at(g.first)));
         }
-        bool levelPenalize = false;  // multiplies penalzing term for fine levels
-        bool preCompute = true;      // precomputes and caches evals for zrcr
+        bool levelPenalize =
+            false;               // multiplies penalzing term for fine levels
+        bool preCompute = true;  // precomputes and caches evals for zrcr
         sgpp::datadriven::MultiGridRefinementFunctor* func = nullptr;
         // Zero-crossing-based refinement
         sgpp::datadriven::ZeroCrossingRefinementFunctor funcZrcr(
-            refGrids, refAlphas, adaptivityConfig.noPoints_, levelPenalize, preCompute);
+            refGrids, refAlphas, adaptivityConfig.noPoints_, levelPenalize,
+            preCompute);
         // Data-based refinement. Needs a problem dependent coeffA. The values
         // can be determined by testing (aim at ~10 % of the training data is
         // to be marked relevant). Cross-validation or similar can/should be
@@ -669,8 +755,8 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
         base::DataMatrix* refTrainData = trainData.get();
         base::DataVector* refTrainLabels = trainLabels.get();
         sgpp::datadriven::DataBasedRefinementFunctor funcData(
-            refGrids, refAlphas, refTrainData, refTrainLabels, adaptivityConfig.noPoints_,
-            levelPenalize, coeffA);
+            refGrids, refAlphas, refTrainData, refTrainLabels,
+            adaptivityConfig.noPoints_, levelPenalize, coeffA);
         if (refType == "zero") {
           func = &funcZrcr;
         } else if (refType == "data") {
@@ -686,7 +772,8 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
             // surplus refinement
             // weight surplus with function evaluation at grid points
             base::GridStorage& gridStorage = grid->getStorage();
-            std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*grid));
+            std::unique_ptr<base::OperationEval> opEval(
+                op_factory::createOperationEval(*grid));
             base::DataVector p(dim);
             base::DataVector alphaWeight(alpha->getSize());
             for (size_t j = 0; j < grid->getSize(); j++) {
@@ -694,7 +781,8 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
               alphaWeight[j] = alpha->get(j) * opEval->eval(*alpha, p);
             }
 
-            base::SurplusRefinementFunctor srf(alphaWeight, adaptivityConfig.noPoints_,
+            base::SurplusRefinementFunctor srf(alphaWeight,
+                                               adaptivityConfig.noPoints_,
                                                adaptivityConfig.threshold_);
             // base::SurplusRefinementFunctor srf(
             //  *alpha, adaptivityConfig.noPoints_,
@@ -712,9 +800,9 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
 
             grid->getGenerator().refine(*func);
           }
-          std::cout << "# LearnerSGDE (class " << gIdx << "): ref " << refCnt + 1 << "/"
-                    << adaptivityConfig.numRefinements_ << " new grid size: " << grid->getSize()
-                    << std::endl;
+          std::cout << "# LearnerSGDE (class " << gIdx << "): ref "
+                    << refCnt + 1 << "/" << adaptivityConfig.numRefinements_
+                    << " new grid size: " << grid->getSize() << std::endl;
 
           // keep computed alpha values and append zeros only for new points
           alpha->resizeZero(grid->getSize());
@@ -729,7 +817,8 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
       }
 
       // update prior probabilities
-      priors[label] = ((priors[label] * static_cast<double>(i)) + 1) / (1 + static_cast<double>(i));
+      priors[label] = ((priors[label] * static_cast<double>(i)) + 1) /
+                      (1 + static_cast<double>(i));
 
       // save current error
       if ((processedPoints > 0) && ((processedPoints + 1) % 10 == 0)) {
@@ -771,7 +860,8 @@ void LearnerSGDE::storeResults(base::DataMatrix& testDataset) {
     grid = grids.at(-1);
     base::GridStorage& storage = grid->getStorage();
     base::GridStorage::grid_map_iterator end_iter = storage.end();
-    for (base::GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter; iter++) {
+    for (base::GridStorage::grid_map_iterator iter = storage.begin();
+         iter != end_iter; iter++) {
       base::DataVector gpCoord(testDataset.getNcols());
       storage.getCoordinates(*(iter->first), gpCoord);
       for (size_t d = 0; d < gpCoord.getSize(); d++) {
@@ -791,7 +881,8 @@ void LearnerSGDE::storeResults(base::DataMatrix& testDataset) {
     grid = grids.at(1);
     base::GridStorage& storage = grid->getStorage();
     base::GridStorage::grid_map_iterator end_iter = storage.end();
-    for (base::GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter; iter++) {
+    for (base::GridStorage::grid_map_iterator iter = storage.begin();
+         iter != end_iter; iter++) {
       base::DataVector gpCoord(testDataset.getNcols());
       storage.getCoordinates(*(iter->first), gpCoord);
       for (size_t d = 0; d < gpCoord.getSize(); d++) {
@@ -824,7 +915,8 @@ void LearnerSGDE::storeResults(base::DataMatrix& testDataset) {
   // and write result to csv file
   for (auto const& g : grids) {
     output.open("SGDE_density_fun_" + std::to_string(g.first) + "_evals.csv");
-    std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*g.second));
+    std::unique_ptr<base::OperationEval> opEval(
+        op_factory::createOperationEval(*g.second));
     for (size_t i = 0; i < values.getNrows(); i++) {
       // Get next test sample x
       base::DataVector x(2);
@@ -837,7 +929,8 @@ void LearnerSGDE::storeResults(base::DataMatrix& testDataset) {
 }
 
 double LearnerSGDE::getAccuracy(base::DataMatrix& testDataset,
-                                const base::DataVector& referenceLabels, const double threshold) {
+                                const base::DataVector& referenceLabels,
+                                const double threshold) {
   // evaluate test dataset
   base::DataVector predictedLabels(testDataset.getNrows());
   predict(testDataset, predictedLabels);
@@ -845,7 +938,8 @@ double LearnerSGDE::getAccuracy(base::DataMatrix& testDataset,
   return getAccuracy(referenceLabels, threshold, predictedLabels);
 }
 
-double LearnerSGDE::getAccuracy(const base::DataVector& referenceLabels, const double threshold,
+double LearnerSGDE::getAccuracy(const base::DataVector& referenceLabels,
+                                const double threshold,
                                 const base::DataVector& predictedLabels) {
   double result = -1.0;
 
@@ -857,18 +951,21 @@ double LearnerSGDE::getAccuracy(const base::DataVector& referenceLabels, const d
   size_t correct = 0;
 
   for (size_t i = 0; i < predictedLabels.getSize(); i++) {
-    if ((predictedLabels.get(i) >= threshold && referenceLabels.get(i) >= 0.0) ||
+    if ((predictedLabels.get(i) >= threshold &&
+         referenceLabels.get(i) >= 0.0) ||
         (predictedLabels.get(i) < threshold && referenceLabels.get(i) < 0.0)) {
       correct++;
     }
   }
 
-  result = static_cast<double>(correct) / static_cast<double>(predictedLabels.getSize());
+  result = static_cast<double>(correct) /
+           static_cast<double>(predictedLabels.getSize());
 
   return result;
 }
 
-void LearnerSGDE::predict(base::DataMatrix& testData, base::DataVector& predictedLabels) {
+void LearnerSGDE::predict(base::DataMatrix& testData,
+                          base::DataVector& predictedLabels) {
   predictedLabels.resize(testData.getNrows());
   size_t dim = testData.getNcols();
 
@@ -883,7 +980,8 @@ void LearnerSGDE::predict(base::DataMatrix& testData, base::DataVector& predicte
     int predLabel = 0;
     // compute each density function for current test sample x
     for (auto const& g : grids) {
-      std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*g.second));
+      std::unique_ptr<base::OperationEval> opEval(
+          op_factory::createOperationEval(*g.second));
       double res = opEval->eval(*alphas.at(g.first), x);
       // determine prior
       if (usePrior) {
@@ -900,13 +998,15 @@ void LearnerSGDE::predict(base::DataMatrix& testData, base::DataVector& predicte
       }
     }
     if (predLabel == 0) {
-      std::cerr << "LearnerSGDE::predict: Warning: no best class found!" << std::endl;
+      std::cerr << "LearnerSGDE::predict: Warning: no best class found!"
+                << std::endl;
     }
     predictedLabels.set(i, predLabel);
   }
 }
 
-double LearnerSGDE::getError(base::DataMatrix& data, const base::DataVector& labels,
+double LearnerSGDE::getError(base::DataMatrix& data,
+                             const base::DataVector& labels,
                              const double threshold, std::string errorType) {
   double res = -1.0;
 
@@ -919,11 +1019,11 @@ double LearnerSGDE::getError(base::DataMatrix& data, const base::DataVector& lab
 
 double LearnerSGDE::computeResidual(base::Grid& grid, base::DataVector& alpha,
                                     base::DataMatrix& test, double lambdaReg) {
-  auto C = computeRegularizationMatrix(grid);
+  std::unique_ptr<base::OperationMatrix> C = computeRegularizationMatrix(grid);
 
   base::DataVector rhs(grid.getSize());
   base::DataVector res(grid.getSize());
-  datadriven::DensitySystemMatrix SMatrix(grid, test, C, lambdaReg);
+  datadriven::DensitySystemMatrix SMatrix(grid, test, *C, lambdaReg);
   SMatrix.generateb(rhs);
 
   SMatrix.mult(alpha, res);
@@ -934,23 +1034,29 @@ double LearnerSGDE::computeResidual(base::Grid& grid, base::DataVector& alpha,
   return res.l2Norm();
 }
 
-base::OperationMatrix* LearnerSGDE::computeRegularizationMatrix(base::Grid& grid) {
-  base::OperationMatrix* C;
+std::unique_ptr<base::OperationMatrix> LearnerSGDE::computeRegularizationMatrix(
+    base::Grid& grid) {
+  std::unique_ptr<base::OperationMatrix> C;
 
-  if (regularizationConfig.type_ == datadriven::RegularizationType::Identity) {
-    C = op_factory::createOperationIdentity(grid);
-  } else if (regularizationConfig.type_ == datadriven::RegularizationType::Laplace) {
-    C = op_factory::createOperationLaplace(grid);
+  if (regularizationConfig.type_ ==
+      datadriven::RegularizationType::Identity) {
+    C.reset(op_factory::createOperationIdentity(grid));
+  } else if (regularizationConfig.type_ ==
+             datadriven::RegularizationType::Laplace) {
+    C.reset(op_factory::createOperationLaplace(grid));
   } else {
-    throw base::application_exception("LearnerSGDE::train : unknown regularization type");
+    throw base::application_exception(
+        "LearnerSGDE::train : unknown regularization type");
   }
 
   return C;
 }
 
-void LearnerSGDE::splitset(std::vector<std::shared_ptr<base::DataMatrix>>& strain,
-                           std::vector<std::shared_ptr<base::DataMatrix>>& stest) {
-  std::shared_ptr<base::DataMatrix> mydata = std::make_shared<base::DataMatrix>(*trainData);
+void LearnerSGDE::splitset(
+    std::vector<std::shared_ptr<base::DataMatrix>>& strain,
+    std::vector<std::shared_ptr<base::DataMatrix>>& stest) {
+  std::shared_ptr<base::DataMatrix> mydata =
+      std::make_shared<base::DataMatrix>(*trainData);
   base::DataVector p(trainData->getNcols());
   base::DataVector tmp(trainData->getNcols());
 
@@ -1003,7 +1109,8 @@ void LearnerSGDE::splitset(std::vector<std::shared_ptr<base::DataMatrix>>& strai
   // fill data
   for (size_t i = 0; i < kfold; i++) {
     // allocate memory
-    strain[i] = std::make_shared<base::DataMatrix>(mydata->getNrows() - s[i], mydata->getNcols());
+    strain[i] = std::make_shared<base::DataMatrix>(mydata->getNrows() - s[i],
+                                                   mydata->getNcols());
     stest[i] = std::make_shared<base::DataMatrix>(s[i], mydata->getNcols());
 
     size_t local_test = 0;

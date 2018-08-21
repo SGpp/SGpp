@@ -41,7 +41,7 @@ class PeriodicGrid : public Grid {
 
   GridGenerator& getGenerator() override;
 
-  SBasis& getBasis() override;
+  const SBasis& getBasis() override;
 
   static Grid* unserialize(std::istream& istr);
 };

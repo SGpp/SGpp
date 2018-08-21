@@ -35,7 +35,7 @@ sgpp::base::GridType PrewaveletGrid::getType() {
   return base::GridType::Prewavelet;
 }
 
-SBasis& PrewaveletGrid::getBasis() {
+const SBasis& PrewaveletGrid::getBasis() {
   static SPrewaveletBase basis;
   return basis;
 }

@@ -27,7 +27,7 @@ ModPolyGrid::~ModPolyGrid() {}
 
 sgpp::base::GridType ModPolyGrid::getType() { return sgpp::base::GridType::ModPoly; }
 
-SBasis& ModPolyGrid::getBasis() { return *basis_; }
+const SBasis& ModPolyGrid::getBasis() { return *basis_; }
 
 size_t ModPolyGrid::getDegree() const { return this->degree; }
 

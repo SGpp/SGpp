@@ -33,7 +33,7 @@ sgpp::base::GridType WaveletGrid::getType() {
   return sgpp::base::GridType::Wavelet;
 }
 
-SBasis& WaveletGrid::getBasis() {
+const SBasis& WaveletGrid::getBasis() {
   static SWaveletBase basis;
   return basis;
 }

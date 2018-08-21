@@ -113,15 +113,16 @@ def estimateL2error(grid1, grid2, alpha2):
 def estimateDiscreteL2Error(grid, alpha, f, n=1000):
     gs = grid.getStorage()
     # create control samples
-    samples = np.random.rand(n, gs.getDimension())
+    samples = DataMatrix(np.random.rand(n, gs.getDimension()))
 
     nodalValues = evalSGFunctionMulti(grid, alpha, samples)
-    fvalues = np.zeros(samples.shape[0])
-    for i, sample in enumerate(samples):
+    fvalues = DataVector(samples.getNrows())
+    for i, sample in enumerate(samples.array()):
         fvalues[i] = f(sample)
 
     # compute the difference
-    return np.sqrt(np.mean((nodalValues - fvalues) ** 2))
+    nodalValues.sub(fvalues)
+    return nodalValues.l2Norm()
 
 
 def discretizeFunction(f, bounds, level=2, hasBorder=False, *args, **kws):

@@ -159,9 +159,6 @@ vars.Add(BoolVariable("USE_DAKOTA", "Set if Dakota library should be used " +
                                    "(only relevant for sgpp::combigrid)", False))
 vars.Add(BoolVariable("USE_GSL", "Set if GNU Scientific Library should be used " +
                                      "(only relevant for sgpp::datadriven::application::LearnerSGDEOnOff)", False))
-vars.Add(BoolVariable("USE_CGAL", "Set if Computational Geometry Algorithms Library should be used " +
-                                     "(only relevant for new_sgde)", False))
-
 vars.Add(BoolVariable("USE_ZLIB", "Set if zlib should be used " +
                                      "(relevant for sgpp::datadriven to read compressed dataset files), not available for windows", False))
 vars.Add(BoolVariable("BUILD_STATICLIB", "Set if static libraries should be built " +

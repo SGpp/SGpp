@@ -9,7 +9,6 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/storage/hashmap/SerializationVersion.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/datatypes/DataMatrix.hpp>
 
 #include <cstddef>
 #include <string>
@@ -151,21 +150,6 @@ class BoundingBox {
   bool isUnitCube() const;
 
   /**
-   * Transform points in the unit cube \f$[0, 1]^d\f$ to points in the BoundingBox.
-   *
-   * @param[in,out] points points to be transformed in-place
-   */
-  inline void transformPointsToBoundingBox(DataMatrix& points) const {
-    const size_t n = points.getNrows();
-
-    for (size_t i = 0; i < n; i++) {
-      for (size_t d = 0; d < dimension; d++) {
-        points(i, d) = transformPointToBoundingBox(d, points(i, d));
-      }
-    }
-  }
-
-  /**
    * Transform a point in the unit cube \f$[0, 1]^d\f$ to a point in the BoundingBox.
    *
    * @param[in,out] point point to be transformed in-place
@@ -185,21 +169,6 @@ class BoundingBox {
    */
   inline double transformPointToBoundingBox(size_t d, double point) const {
     return getIntervalOffset(d) + getIntervalWidth(d) * point;
-  }
-
-  /**
-   * Transform points in the BoundingBox to points in the unit cube \f$[0, 1]^d\f$.
-   *
-   * @param[in,out] points points to be transformed in-place (row-wise)
-   */
-  inline void transformPointsToUnitCube(DataMatrix& points) const {
-    const size_t n = points.getNrows();
-
-    for (size_t i = 0; i < n; i++) {
-      for (size_t d = 0; d < dimension; d++) {
-        points(i, d) = transformPointToUnitCube(d, points(i, d));
-      }
-    }
   }
 
   /**

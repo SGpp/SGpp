@@ -373,10 +373,6 @@ class CombigridMultiOperation {
 
   /**
    * creates a B spline interpolation operation from a storage of interpolation coefficients
-   * @param degree degree of the b-splines
-   * @param numDimensions number of dimensions
-   * @param coefficientStorage storage of the b-spline coefficients
-   * @return combigrid multi operation
    */
   static std::shared_ptr<sgpp::combigrid::CombigridMultiOperation>
   createBsplineLinearCoefficientOperation(

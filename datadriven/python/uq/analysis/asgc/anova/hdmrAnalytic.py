@@ -1,9 +1,14 @@
 #!/usr/bin/python
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at
+# use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 #
+from pysgpp.extensions.datadriven.uq.transformation import JointTransformation
+from pysgpp.extensions.datadriven.uq.parameters.ParameterSet import ParameterSet
+from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
+from pysgpp.extensions.datadriven.uq.transformation.RosenblattTransformation import RosenblattTransformation
+from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
 """
 @file    hdmr.py
 @author  Fabian Franzelin <franzefn@ipvs.uni-stuttgart.de>
@@ -21,12 +26,6 @@ from pysgpp.extensions.datadriven.uq.operations import (evalSGFunction,
                                                         isNumerical)
 from pysgpp.extensions.datadriven.uq.dists import J
 from pysgpp.extensions.datadriven.uq.plot.plot1d import plotSG1d
-
-from pysgpp.extensions.datadriven.uq.transformation import JointTransformation
-from pysgpp.extensions.datadriven.uq.parameters.ParameterSet import ParameterSet
-from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
-from pysgpp.extensions.datadriven.uq.transformation.RosenblattTransformation import RosenblattTransformation
-from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
 
 import itertools as it
 import numpy as np

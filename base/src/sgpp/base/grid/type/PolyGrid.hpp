@@ -36,7 +36,7 @@ class PolyGrid : public Grid {
   ~PolyGrid() override;
 
   sgpp::base::GridType getType() override;
-  SBasis& getBasis() override;
+  const SBasis& getBasis() override;
   void serialize(std::ostream& ostr, int version = SERIALIZATION_VERSION) override;
 
   GridGenerator& getGenerator() override;

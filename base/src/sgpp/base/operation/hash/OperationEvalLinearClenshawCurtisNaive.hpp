@@ -3,14 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#pragma once
-
-#include <sgpp/base/operation/hash/OperationEval.hpp>
+#ifndef OPERATIONEVALLINEARCLENSHAWCURTISNAIVE_HPP
+#define OPERATIONEVALLINEARCLENSHAWCURTISNAIVE_HPP
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include "common/basis/LinearClenshawCurtisBasis.hpp"
 
 namespace sgpp {
 namespace base {
@@ -20,12 +20,17 @@ class OperationEvalLinearClenshawCurtisNaive : public OperationEval {
   /**
    * Constructor.
    *
-   * @param storage   storage of the sparse grid
+   * @param storage       storage of the sparse grid
    */
-  explicit OperationEvalLinearClenshawCurtisNaive(GridStorage& storage)
-      : storage(storage), pointInUnitCube(storage.getDimension()) {}
+  explicit OperationEvalLinearClenshawCurtisNaive(GridStorage& storage) :
+    storage(storage), pointInUnitCube(storage.getDimension()) {
+  }
 
-  ~OperationEvalLinearClenshawCurtisNaive() override {}
+  /**
+   * Destructor.
+   */
+  ~OperationEvalLinearClenshawCurtisNaive() override {
+  }
 
   /**
    * @param alpha     coefficient vector
@@ -39,7 +44,8 @@ class OperationEvalLinearClenshawCurtisNaive : public OperationEval {
    * @param      point  evaluation point
    * @param[out] value  values of linear combination
    */
-  void eval(const DataMatrix& alpha, const DataVector& point, DataVector& value) override;
+  void eval(const DataMatrix& alpha, const DataVector& point,
+            DataVector& value) override;
 
  protected:
   /// storage of the sparse grid
@@ -52,3 +58,5 @@ class OperationEvalLinearClenshawCurtisNaive : public OperationEval {
 
 }  // namespace base
 }  // namespace sgpp
+
+#endif /* OPERATIONEVALLINEARCLENSHAWCURTISNAIVE_HPP */

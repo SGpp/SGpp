@@ -37,7 +37,7 @@ sgpp::base::GridType LinearGrid::getType() {
   return sgpp::base::GridType::Linear;
 }
 
-SBasis& LinearGrid::getBasis() {
+const SBasis& LinearGrid::getBasis() {
   static SLinearBase basis;
   return basis;
 }

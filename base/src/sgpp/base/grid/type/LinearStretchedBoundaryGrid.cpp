@@ -37,7 +37,7 @@ sgpp::base::GridType LinearStretchedBoundaryGrid::getType() {
   return sgpp::base::GridType::LinearStretchedBoundary;
 }
 
-SBasis& LinearStretchedBoundaryGrid::getBasis() {
+const SBasis& LinearStretchedBoundaryGrid::getBasis() {
   static SLinearStretchedBoundaryBase basis;
   return basis;
 }
