@@ -56,7 +56,7 @@ enum class GridType {
   LinearClenshawCurtis,               // 28
   ModPolyClenshawCurtis,              // 29
   ModLinearClenshawCurtis,            // 30
-  NakBsplineBoundaryCombigrid         // 31
+  NakBsplineBoundaryCombigrid,        // 31
   NaturalBsplineBoundary,             // 32
   NotAKnotBsplineBoundary,            // 33
   ModNotAKnotBspline,                 // 34

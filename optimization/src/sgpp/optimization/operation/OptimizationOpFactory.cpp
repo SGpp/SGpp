@@ -10,6 +10,8 @@
 
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
 #include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
@@ -23,7 +25,6 @@
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
-#include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineClenshawCurtis.hpp>
@@ -32,6 +33,7 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBspline.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearClenshawCurtis.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearClenshawCurtisBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModLinear.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinear.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWaveletBoundary.hpp>
@@ -61,8 +63,11 @@ optimization::OperationMultipleHierarchisation* createOperationMultipleHierarchi
   } else if (grid.getType() == base::GridType::LinearBoundary) {
     return new optimization::OperationMultipleHierarchisationLinearBoundary(
         dynamic_cast<base::LinearBoundaryGrid&>(grid));
-  } else if (grid.getType() == base::GridType::LinearClenshawCurtisBoundary) {
+  } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
     return new optimization::OperationMultipleHierarchisationLinearClenshawCurtis(
+        dynamic_cast<base::LinearClenshawCurtisGrid&>(grid));
+  } else if (grid.getType() == base::GridType::LinearClenshawCurtisBoundary) {
+    return new optimization::OperationMultipleHierarchisationLinearClenshawCurtisBoundary(
         dynamic_cast<base::LinearClenshawCurtisBoundaryGrid&>(grid));
   } else if (grid.getType() == base::GridType::ModLinear) {
     return new optimization::OperationMultipleHierarchisationModLinear(

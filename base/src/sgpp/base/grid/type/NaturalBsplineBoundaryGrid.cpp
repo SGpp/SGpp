@@ -36,7 +36,7 @@ sgpp::base::GridType NaturalBsplineBoundaryGrid::getType() {
   return sgpp::base::GridType::NaturalBsplineBoundary;
 }
 
-const SBasis& NaturalBsplineBoundaryGrid::getBasis() { return *basis_; }
+SBasis& NaturalBsplineBoundaryGrid::getBasis() { return *basis_; }
 
 size_t NaturalBsplineBoundaryGrid::getDegree() { return this->degree; }
 

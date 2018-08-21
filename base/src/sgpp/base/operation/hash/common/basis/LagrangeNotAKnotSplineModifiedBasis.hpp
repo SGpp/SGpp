@@ -360,6 +360,8 @@ class LagrangeNotAKnotSplineModifiedBasis: public Basis<LT, IT> {
     }
   }
 
+  inline double getIntegral(LT level, IT index) override { return -1.0; }
+
   /**
    * @return      B-spline degree
    */

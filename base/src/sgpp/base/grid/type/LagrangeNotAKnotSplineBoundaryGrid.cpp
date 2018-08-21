@@ -36,7 +36,7 @@ sgpp::base::GridType LagrangeNotAKnotSplineBoundaryGrid::getType() {
   return sgpp::base::GridType::LagrangeNotAKnotSplineBoundary;
 }
 
-const SBasis& LagrangeNotAKnotSplineBoundaryGrid::getBasis() { return *basis_; }
+SBasis& LagrangeNotAKnotSplineBoundaryGrid::getBasis() { return *basis_; }
 
 size_t LagrangeNotAKnotSplineBoundaryGrid::getDegree() { return this->degree; }
 

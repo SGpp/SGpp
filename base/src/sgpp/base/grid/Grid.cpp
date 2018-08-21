@@ -247,7 +247,9 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
         return Grid::createLinearClenshawCurtisBoundaryGrid(gridConfig.dim_,
                                                             gridConfig.boundaryLevel_);
       case GridType::LinearClenshawCurtis:
-        return Grid::createLinearClenshawCurtisGrid(gridConfig.dim_, gridConfig.boundaryLevel_);
+        return Grid::createLinearClenshawCurtisGrid(gridConfig.dim_);
+      case GridType::ModLinearClenshawCurtis:
+        return Grid::createModLinearClenshawCurtisGrid(gridConfig.dim_);
       case GridType::Bspline:
         return Grid::createBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::BsplineBoundary:
@@ -412,6 +414,22 @@ Grid* Grid::createGridOfEquivalentType(size_t numDims) {
     case GridType::ModLinearStencil:
       newGrid = Grid::createModLinearGridStencil(numDims);
       break;
+    case GridType::NaturalBsplineBoundary:
+      degree = dynamic_cast<NaturalBsplineBoundaryGrid*>(this)->getDegree();
+      boundaryLevel =
+          dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
+      newGrid = Grid::createNaturalBsplineBoundaryGrid(numDims, degree, boundaryLevel);
+      break;
+    case GridType::NotAKnotBsplineBoundary:
+      degree = dynamic_cast<NotAKnotBsplineBoundaryGrid*>(this)->getDegree();
+      boundaryLevel =
+          dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
+      newGrid = Grid::createNotAKnotBsplineBoundaryGrid(numDims, degree, boundaryLevel);
+      break;
+    case GridType::ModNotAKnotBspline:
+      degree = dynamic_cast<ModNotAKnotBsplineGrid*>(this)->getDegree();
+      newGrid = Grid::createModNotAKnotBsplineGrid(numDims, degree);
+      break;
     case GridType::PolyClenshawCurtis:
       degree = dynamic_cast<PolyClenshawCurtisGrid*>(this)->getDegree();
       newGrid = Grid::createPolyClenshawCurtisGrid(numDims, degree);
@@ -512,7 +530,7 @@ GridType Grid::getZeroBoundaryType() {
     case GridType::ModPolyClenshawCurtis:
       return GridType::PolyClenshawCurtis;
     case GridType::BsplineClenshawCurtis:
-      return GridType::TypeBsplineClenshawCurtis;
+      return GridType::BsplineClenshawCurtis;
     case GridType::NakBsplineBoundaryCombigrid:
       return GridType::NakBsplineBoundaryCombigrid;
     case GridType::NaturalBsplineBoundary:

@@ -36,7 +36,7 @@ sgpp::base::GridType LagrangeSplineBoundaryGrid::getType() {
   return sgpp::base::GridType::LagrangeSplineBoundary;
 }
 
-const SBasis& LagrangeSplineBoundaryGrid::getBasis() { return *basis_; }
+SBasis& LagrangeSplineBoundaryGrid::getBasis() { return *basis_; }
 
 size_t LagrangeSplineBoundaryGrid::getDegree() { return this->degree; }
 

@@ -44,6 +44,7 @@ namespace std {
     %template(refinement_map) std::map<std::pair<size_t, unsigned int>, double>;
     // For interaction-term-aware sparse grids.
     %template(VecVecSizeT) vector< vector<size_t> >;
+    %template(DataVectorVector) vector<sgpp::base::DataVector>;
 }
 
 //TODO really evil hack, find a better solution! (used e.g. for HashGridPoint->get(dim), the one with a single argument), leads to output tuples to circumvent call-by-reference in python

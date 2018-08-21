@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef NOTAKNOTBSPLINETRUNCATEDBOUNDARYGRID_HPP
-#define NOTAKNOTBSPLINETRUNCATEDBOUNDARYGRID_HPP
+#ifndef NAKBSPLINETRUNCATEDBOUNDARYCOMBIGRIDGRID_HPP
+#define NAKBSPLINETRUNCATEDBOUNDARYCOMBIGRIDGRID_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
@@ -95,4 +95,4 @@ class NakBsplineBoundaryCombigridGrid : public Grid {
 }  // namespace base
 }  // namespace sgpp
 
-#endif /* NOTAKNOTBSPLINETRUNCATEDBOUNDARYGRID_HPP */
+#endif /* NAKBSPLINETRUNCATEDBOUNDARYCOMBIGRIDGRID_HPP */

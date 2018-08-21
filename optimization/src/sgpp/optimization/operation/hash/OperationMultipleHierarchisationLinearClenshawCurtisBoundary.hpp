@@ -3,13 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERLINEARCLENSHAWCURTIS_HPP
-#define SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERLINEARCLENSHAWCURTIS_HPP
+#ifndef SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERLINEARCLENSHAWCURTISBOUNDARY_HPP
+#define SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERLINEARCLENSHAWCURTISBOUNDARY_HPP
 
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisation.hpp>
-#include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace sgpp {
@@ -19,7 +19,7 @@ namespace optimization {
  * Hierarchisation operation for linear basis functions on
  * Clenshaw-Curtis grids.
  */
-class OperationMultipleHierarchisationLinearClenshawCurtis
+class OperationMultipleHierarchisationLinearClenshawCurtisBoundary
     : public OperationMultipleHierarchisation {
  public:
   /**
@@ -27,13 +27,13 @@ class OperationMultipleHierarchisationLinearClenshawCurtis
    *
    * @param grid      grid
    */
-  explicit OperationMultipleHierarchisationLinearClenshawCurtis(
-      base::LinearClenshawCurtisGrid& grid);
+  explicit OperationMultipleHierarchisationLinearClenshawCurtisBoundary(
+      base::LinearClenshawCurtisBoundaryGrid& grid);
 
   /**
    * Destructor.
    */
-  ~OperationMultipleHierarchisationLinearClenshawCurtis() override;
+  ~OperationMultipleHierarchisationLinearClenshawCurtisBoundary() override;
 
   /**
    * @param[in,out] nodeValues before: vector of function values at
@@ -67,9 +67,9 @@ class OperationMultipleHierarchisationLinearClenshawCurtis
 
  protected:
   /// storage of the sparse grid
-  base::LinearClenshawCurtisGrid& grid;
+  base::LinearClenshawCurtisBoundaryGrid& grid;
 };
 }  // namespace optimization
 }  // namespace sgpp
 
-#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERLINEARCLENSHAWCURTIS_HPP */
+#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERLINEARCLENSHAWCURTISBOUNDARY_HPP */
