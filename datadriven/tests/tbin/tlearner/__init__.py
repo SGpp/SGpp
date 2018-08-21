@@ -1,16 +1,17 @@
+from __future__ import absolute_import
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-import test_Classifier
-import test_FilesFoldingPolicy
-import test_GridFormatter
-import test_LearnedKnowledge
-import test_LearnedKnowledgeFormatter
-import test_LearnerBuilder
+from . import test_Classifier
+from . import test_FilesFoldingPolicy
+from . import test_GridFormatter
+from . import test_LearnedKnowledge
+from . import test_LearnedKnowledgeFormatter
+from . import test_LearnerBuilder
 #import test_LinearSystem
-import test_RandomFoldingPolicy
-import test_SequentialFoldingPolicy
-import test_TrainingSpecification
-import test_StratifiedFoldingPolicy
+from . import test_RandomFoldingPolicy
+from . import test_SequentialFoldingPolicy
+from . import test_TrainingSpecification
+from . import test_StratifiedFoldingPolicy

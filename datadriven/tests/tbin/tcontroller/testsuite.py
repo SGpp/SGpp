@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -10,7 +11,7 @@ import sys, os
 pathname = os.path.dirname(__file__)
 sys.path.append(os.path.abspath(pathname) + '/../../..')
 
-from test_CheckpointController import TestCheckpointController
+from .test_CheckpointController import TestCheckpointController
 #from test_TerminalController import TestTerminalController
 
 suite1 = unittest.makeSuite(TestCheckpointController,'test')

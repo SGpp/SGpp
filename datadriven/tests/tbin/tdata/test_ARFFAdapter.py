@@ -1,3 +1,4 @@
+from builtins import range
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
@@ -57,8 +58,8 @@ class TestARFFAdapter(unittest.TestCase):
         point = DataVector(dim)
         points = DataMatrix(size, dim)
 
-        for row in xrange(size):
-            for col in xrange(dim):
+        for row in range(size):
+            for col in range(dim):
                 point[col] = testPoints[row][col]
             points.setRow(row, point)
 
@@ -69,9 +70,9 @@ class TestARFFAdapter(unittest.TestCase):
         size = len(testPoints)
         dim = len(testPoints[0])
         testVector = DataVector(dim)
-        for rowIdx in xrange(size):
+        for rowIdx in range(size):
             points.getRow(rowIdx, testVector)
-            for colIdx in xrange(dim):
+            for colIdx in range(dim):
                 self.assertEqual(testVector[colIdx], testPoints[rowIdx][colIdx])
             self.assertEqual(values[rowIdx], testValues[rowIdx])
 
@@ -101,9 +102,9 @@ class TestARFFAdapter(unittest.TestCase):
         size = len(testPoints)
         dim = len(testPoints[0])
         testVector = DataVector(dim)
-        for rowIdx in xrange(size):
+        for rowIdx in range(size):
             points.getRow(rowIdx, testVector)
-            for colIdx in xrange(dim):
+            for colIdx in range(dim):
                 self.assertEqual(testVector[colIdx], testPoints[rowIdx][colIdx])
             self.assertEqual(values[rowIdx], testValues[rowIdx])
 
@@ -122,7 +123,7 @@ class TestARFFAdapter(unittest.TestCase):
         spec = adapter.loadSpecification()
         testAttributes = spec.getAttributes()
         self.assertEqual(len(testAttributes), len(attributes))
-        for key in testAttributes.keys():
+        for key in list(testAttributes.keys()):
             self.assertEqual(testAttributes[key],attributes[key])
 
 if __name__=="__main__":

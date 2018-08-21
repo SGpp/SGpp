@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -10,14 +11,14 @@ import sys, os
 pathname = os.path.dirname(__file__)
 sys.path.append(os.path.abspath(pathname) + '/../../..')
 
-from test_Classifier import TestClassifier
-from test_GridFormatter import TestGridFormatter
-from test_LearnerBuilder import TestLearnerBuilder
-from test_RandomFoldingPolicy import TestRandomFoldingPolicy
-from test_SequentialFoldingPolicy import TestSequentialFoldingPolicy
-from test_StratifiedFoldingPolicy import TestStratifiedFoldingPolicy
-from test_FilesFoldingPolicy import TestFilesFoldingPolicy
-from test_LearnedKnowledgeFormatter import TestLearnedKnowledgeFormatter
+from .test_Classifier import TestClassifier
+from .test_GridFormatter import TestGridFormatter
+from .test_LearnerBuilder import TestLearnerBuilder
+from .test_RandomFoldingPolicy import TestRandomFoldingPolicy
+from .test_SequentialFoldingPolicy import TestSequentialFoldingPolicy
+from .test_StratifiedFoldingPolicy import TestStratifiedFoldingPolicy
+from .test_FilesFoldingPolicy import TestFilesFoldingPolicy
+from .test_LearnedKnowledgeFormatter import TestLearnedKnowledgeFormatter
 
 suite2 = unittest.makeSuite(TestClassifier,'test')
 suite3 = unittest.makeSuite(TestGridFormatter,'test')

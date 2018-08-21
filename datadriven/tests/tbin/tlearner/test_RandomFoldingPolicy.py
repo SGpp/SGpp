@@ -1,3 +1,4 @@
+from builtins import range
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
@@ -36,7 +37,7 @@ class TestRandomFoldingPolicy(unittest.TestCase):
         self.seed = 42
         points = DataMatrix(self.size,1)
         values = DataVector(self.size)
-        for i in xrange(self.size):
+        for i in range(self.size):
             points.set(i,0, i)
             values[i] = i
         self.dataContainer = DataContainer(points=points, values=values)
