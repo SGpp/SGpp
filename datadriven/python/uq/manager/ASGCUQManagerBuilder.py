@@ -3,7 +3,6 @@ from builtins import object
 from .ASGCUQManager import ASGCUQManager
 from pysgpp.extensions.datadriven.uq.uq_setting.UQBuilder import UQBuilder
 from pysgpp.extensions.datadriven.uq.learner.Interpolant import Interpolant
-from pysgpp.extensions.datadriven.uq.learner.builder import RegressorSpecificationDescriptor
 from pysgpp.extensions.datadriven.uq.learner.builder.LearnerBuilder import LearnerBuilder
 from pysgpp.extensions.datadriven.uq.refinement.RefinementManagerDescriptor import RefinementManagerDescriptor
 from pysgpp.extensions.datadriven.uq.sampler.asgc.ASGCSamplerBuilder import ASGCSamplerBuilder
@@ -13,7 +12,7 @@ from pysgpp.extensions.datadriven.uq.analysis.asgc.ASGCKnowledge import ASGCKnow
 
 
 class ASGCUQManagerBuilder(object):
-    
+
     def __init__(self):
         self.asgcUQManager = ASGCUQManager()
         self.uqSettingBuilder = UQBuilder()
@@ -29,14 +28,11 @@ class ASGCUQManagerBuilder(object):
 
     def defineSampler(self):
         return self.samplerBuilder
-    
+
     def useInterpolation(self):
         self.learnerBuilder.buildInterpolant()
         return self
 
-    def useRegression(self):
-        return self.learnerBuilder.buildRegressor()
-    
     def withParameters(self, params):
         """
         Set the parameter setting
