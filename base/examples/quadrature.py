@@ -36,6 +36,13 @@ def f(x):
     res *= 4.0*x[i]*(1.0-x[i])
   return res
 
+# a pyramid-like shape (arbitrary-dimensional)
+def g(x):
+  res = 1.0
+  for i in range(len(x)):
+    res *= 2.0*min(x[i], 1.0-x[i])
+  return res
+
 
 ## Create a two-dimensional piecewise bi-linear grid with level 3
 dim = 2
@@ -60,7 +67,9 @@ print "number of grid points: {}".format(gridStorage.getSize())
 alpha = pysgpp.DataVector(gridStorage.getSize())
 for i in xrange(gridStorage.getSize()):
   gp = gridStorage.getPoint(i)
-  alpha[i] = f((gp.getStandardCoordinate(0), gp.getStandardCoordinate(1)))
+  p = tuple([gp.getStandardCoordinate(j) for j in range(dim)])
+  alpha[i] = f(p)
+
 pysgpp.createOperationHierarchisation(grid).doHierarchisation(alpha)
 
 
@@ -78,13 +87,23 @@ print "Monte Carlo value:     {:.6f}".format(res)
 res = opMC.doQuadrature(alpha)
 print "Monte Carlo value:     {:.6f}".format(res)
 
-# Monte Carlo quadrature of a function
+
+# Monte Carlo quadrature of a standard parabola
 res = opMC.doQuadratureFunc(f)
 print "MC value (f):          {:.6f}".format(res)
 
 # Monte Carlo quadrature of error
 res = opMC.doQuadratureL2Error(f, alpha)
 print "MC L2-error (f-u)      {:.7f}".format(res)
+
+
+# Monte Carlo quadrature of a piramidal function
+res = opMC.doQuadratureFunc(g)
+print "MC value (g):          {:.6f}".format(res)
+
+# Monte Carlo quadrature of error
+res = opMC.doQuadratureL2Error(g, alpha)
+print "MC L2-error (g-u)      {:.7f}".format(res)
 
 ## This results in an output similar to:
 ## \verbinclude quadrature.output.txt

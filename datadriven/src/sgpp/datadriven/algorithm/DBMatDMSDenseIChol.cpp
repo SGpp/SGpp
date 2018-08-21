@@ -21,9 +21,10 @@ using sgpp::base::DataMatrix;
 using sgpp::base::Grid;
 using sgpp::base::OperationMatrix;
 
-DBMatDMSDenseIChol::DBMatDMSDenseIChol(const DBMatOfflineIcholParameters& params, Grid& grid,
-                                       double lambda, bool doCV)
-    : DBMatDMSChol{}, params{params}, proxyMatrix{} {
+DBMatDMSDenseIChol::DBMatDMSDenseIChol(
+    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig, Grid& grid,
+    double lambda, bool doCV)
+    : DBMatDMSChol{}, densityEstimationConfig{densityEstimationConfig}, proxyMatrix{} {
   // initialize proxy matrix if we do cv
   if (doCV) {
     auto size = grid.getStorage().getSize();
@@ -39,7 +40,8 @@ DBMatDMSDenseIChol::DBMatDMSDenseIChol(const DBMatOfflineIcholParameters& params
 void DBMatDMSDenseIChol::choleskyUpdateLambda(sgpp::base::DataMatrix& decompMatrix,
                                               double lambdaUpdate) const {
   updateProxyMatrixLambda(lambdaUpdate);
-  DBMatOfflineDenseIChol::ichol(proxyMatrix, decompMatrix, params.sweepsUpdateLambda);
+  DBMatOfflineDenseIChol::ichol(proxyMatrix, decompMatrix,
+                                densityEstimationConfig.iCholSweepsUpdateLambda_);
 }
 
 void DBMatDMSDenseIChol::choleskyBackwardSolve(const sgpp::base::DataMatrix& decompMatrix,
@@ -52,7 +54,7 @@ void DBMatDMSDenseIChol::choleskyBackwardSolve(const sgpp::base::DataMatrix& dec
 
 #pragma omp parallel
   {
-    for (auto sweep = 0u; sweep < params.sweepsSolver; sweep++) {
+    for (auto sweep = 0u; sweep < densityEstimationConfig.iCholSweepsSolver_; sweep++) {
       tmpVec.setAll(0.0);
 #pragma omp for schedule(guided) nowait
       for (auto i = 0u; i < size; i++) {
@@ -79,7 +81,7 @@ void DBMatDMSDenseIChol::choleskyForwardSolve(const sgpp::base::DataMatrix& deco
 
 #pragma omp parallel
   {
-    for (auto sweep = 0u; sweep < params.sweepsSolver; sweep++) {
+    for (auto sweep = 0u; sweep < densityEstimationConfig.iCholSweepsSolver_; sweep++) {
 #pragma omp for schedule(guided) nowait
       for (auto i = 0u; i < size; i++) {
         auto tmp = 0.0;

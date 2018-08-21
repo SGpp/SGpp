@@ -15,6 +15,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+/**
+ * Simple Java SG++ example for the SGDE learner
+ */
 public class example_learnerSGDE {
 
     public static DataMatrix readARFF(String fileNameDefined) {
@@ -138,7 +141,7 @@ public class example_learnerSGDE {
 	/**
 	* For comparison, run the sparse grid kernel-based learner
 	*/
-    GaussianKDE kde = new GaussianKDE(samples);
+    KernelDensityEstimator kde = new KernelDensityEstimator(samples);
     DataVector x = new DataVector(3);
 
 	/**

@@ -28,7 +28,7 @@ PolyBoundaryGrid::PolyBoundaryGrid(size_t dim, size_t degree, level_t boundaryLe
 
 PolyBoundaryGrid::~PolyBoundaryGrid() {}
 
-const SBasis& PolyBoundaryGrid::getBasis() { return *basis_; }
+SBasis& PolyBoundaryGrid::getBasis() { return *basis_; }
 
 sgpp::base::GridType PolyBoundaryGrid::getType() { return sgpp::base::GridType::PolyBoundary; }
 

@@ -29,14 +29,16 @@ class DensityEstimator {
   virtual double mean() = 0;
   virtual double variance() = 0;
   virtual double std_deviation();
-  virtual void cov(base::DataMatrix& cov) = 0;
-  virtual void corrcoef(base::DataMatrix& corr);
+  virtual void cov(base::DataMatrix& cov, base::DataMatrix* bounds = nullptr) = 0;
+  virtual void corrcoef(base::DataMatrix& corr, base::DataMatrix* bounds = nullptr);
 
   virtual std::shared_ptr<base::DataVector> getSamples(size_t dim) = 0;
   virtual std::shared_ptr<base::DataMatrix> getSamples() = 0;
 
   virtual size_t getDim() = 0;
   virtual size_t getNsamples() = 0;
+
+  double crossEntropy(sgpp::base::DataMatrix& samples);
 };
 
 }  // namespace datadriven

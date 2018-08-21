@@ -6,21 +6,21 @@
 #include <sgpp/datadriven/application/LearnerBase.hpp>
 
 #include <iostream>
-#include <utility>
 #include <string>
+#include <utility>
 #include <vector>
 
-#include "sgpp/globaldef.hpp"
+#include "sgpp/base/exception/application_exception.hpp"
+#include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
+#include "sgpp/base/grid/type/LinearBoundaryGrid.hpp"
 #include "sgpp/base/grid/type/LinearGrid.hpp"
 #include "sgpp/base/grid/type/ModLinearGrid.hpp"
-#include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
 #include "sgpp/base/operation/BaseOpFactory.hpp"
-#include "sgpp/base/exception/application_exception.hpp"
+#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
 #include "sgpp/base/tools/GridPrinter.hpp"
-#include "sgpp/solver/sle/ConjugateGradients.hpp"
+#include "sgpp/globaldef.hpp"
 #include "sgpp/solver/sle/BiCGStab.hpp"
-#include "sgpp/base/grid/type/LinearBoundaryGrid.hpp"
+#include "sgpp/solver/sle/ConjugateGradients.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -346,20 +346,18 @@ void LearnerBase::predict(sgpp::base::DataMatrix& testDataset,
                           sgpp::base::DataVector& classesComputed) {
   classesComputed.resize(testDataset.getNrows());
 
-  sgpp::base::OperationMultipleEval* MultEval =
-      sgpp::op_factory::createOperationMultipleEval(*grid, testDataset);
+  std::unique_ptr<sgpp::base::OperationMultipleEval> MultEval(
+      sgpp::op_factory::createOperationMultipleEval(*grid, testDataset));
   MultEval->mult(*alpha, classesComputed);
-  delete MultEval;
 }
 
 void LearnerBase::multTranspose(sgpp::base::DataMatrix& dataset, sgpp::base::DataVector& multiplier,
                                 sgpp::base::DataVector& result) {
   result.resize(grid->getSize());
 
-  sgpp::base::OperationMultipleEval* MultEval =
-      sgpp::op_factory::createOperationMultipleEval(*grid, dataset);
+  std::unique_ptr<sgpp::base::OperationMultipleEval> MultEval(
+      sgpp::op_factory::createOperationMultipleEval(*grid, dataset));
   MultEval->multTranspose(multiplier, result);
-  delete MultEval;
 }
 
 void LearnerBase::store(std::string tGridFilename, std::string tAlphaFilename) {
@@ -482,7 +480,7 @@ std::vector<std::pair<size_t, double> > LearnerBase::getRefinementExecTimes() {
 }
 
 sgpp::base::Grid& LearnerBase::getGrid() {
-  if (this->grid == nullptr) {
+  if (this->grid.get() == nullptr) {
     throw;
   }
   return *this->grid;

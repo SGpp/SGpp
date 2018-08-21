@@ -43,43 +43,38 @@ using std::numeric_limits;
 using std::max;
 using std::deque;
 
-
 namespace sgpp {
 namespace datadriven {
 
-BatchLearner::BatchLearner(
-  base::BatchConfiguration batchConfig,
-  base::RegularGridConfiguration gridConfig,
-  solver::SLESolverConfiguration solverConfig,
-  base::AdpativityConfiguration adaptConfig) {
+BatchLearner::BatchLearner(base::BatchConfiguration batchConfig,
+                           base::RegularGridConfiguration gridConfig,
+                           solver::SLESolverConfiguration solverConfig,
+                           base::AdpativityConfiguration adaptConfig) {
   batchConf = batchConfig;
   gridConf = gridConfig;
   solverConf = solverConfig;
   adaptConf = adaptConfig;
 
-
   // cofigure solver
   if (solverConf.type_ == solver::SLESolverType::CG)
-    myCG = new solver::ConjugateGradients(solverConf.maxIterations_,
-        solverConf.eps_);
+    myCG = new solver::ConjugateGradients(solverConf.maxIterations_, solverConf.eps_);
   else if (solverConf.type_ == solver::SLESolverType::BiCGSTAB)
     myCG = new solver::BiCGStab(solverConf.maxIterations_, solverConf.eps_);
   else  // not supported
     throw base::application_exception("BatchLearner: An unsupported SLE solver type was chosen!");
 
   // open file
-  reader.open(batchConf.filename.c_str());
+  reader.open(batchConf.filename_.c_str());
 
   if (!reader) {
-    cout << "ERROR: file does not exist: " << batchConf.filename << endl;
+    cout << "ERROR: file does not exist: " << batchConf.filename_ << endl;
     throw 20;
   }
 }
 
 // read input, save result to dataFound and last entry to classFound,
 // based on ARFFTools.readARFF(..)
-void BatchLearner::stringToDataVector(string input, base::DataVector& dataFound,
-                                      int& classFound) {
+void BatchLearner::stringToDataVector(string input, base::DataVector& dataFound, int& classFound) {
   size_t cur_pos = 0;
   size_t cur_find = 0;
   string cur_value;
@@ -118,7 +113,7 @@ void BatchLearner::stringToDataMatrix(string& input, base::DataMatrix& dataFound
 
   // as data in input is provided as a string containing all lines: split them at '\n'
   // to vector data to iterate over
-  vector <string> data;
+  vector<string> data;
   size_t start = 0, end = 0;
 
   while ((end = input.find('\n', start)) != string::npos) {
@@ -130,8 +125,7 @@ void BatchLearner::stringToDataMatrix(string& input, base::DataMatrix& dataFound
 
   // iterate over all found lines
   for (size_t i = 0; i < data.size() - 1; i++) {
-    size_t classesHere = static_cast<size_t>(
-                           count(data[i].begin(), data[i].end(), ','));
+    size_t classesHere = static_cast<size_t>(count(data[i].begin(), data[i].end(), ','));
 
     // the first data entry ever found determines the number of dimensions of the data
     if (dimensions == 0) {
@@ -139,9 +133,9 @@ void BatchLearner::stringToDataMatrix(string& input, base::DataMatrix& dataFound
       dataFound.resize(dimensions, 0);
       dataFound.setAll(0.0f);
     } else if (classesHere != dimensions) {
-      cout << "skipping line " << i <<
-           " because it contains too few or too many classes (previous/now): " <<
-           dimensions << "/" << classesHere << endl;
+      cout << "skipping line " << i
+           << " because it contains too few or too many classes (previous/now): " << dimensions
+           << "/" << classesHere << endl;
       continue;
     }
 
@@ -152,8 +146,8 @@ void BatchLearner::stringToDataMatrix(string& input, base::DataMatrix& dataFound
     if (mapData) {
       if (dataInBatch.find(lineClass) ==
           dataInBatch.end())  // first data entry for this class in this batch
-        dataInBatch.insert(std::pair<int, base::DataMatrix*>(lineClass, new base::DataMatrix(0,
-                           dimensions, -1.0)));
+        dataInBatch.insert(std::pair<int, base::DataMatrix*>(
+            lineClass, new base::DataMatrix(0, dimensions, -1.0)));
 
       // add found data entry to correct base::DataMatrix in map
       dataInBatch.at(lineClass)->appendRow(lineData);
@@ -166,8 +160,7 @@ void BatchLearner::stringToDataMatrix(string& input, base::DataMatrix& dataFound
 
 base::DataVector BatchLearner::applyWeight(base::DataVector alpha, int grid) {
   // wMode 4: only the last batch is relevant -> no further calculations needed, alpha = new
-  if (batchConf.wMode == 4)
-    return alpha;
+  if (batchConf.wMode_ == 4) return alpha;
 
   if (alphaStorage.find(grid) == alphaStorage.end()) {
     // if there is no previous alpha known for this grid: store this alpha and return the input
@@ -178,13 +171,12 @@ base::DataVector BatchLearner::applyWeight(base::DataVector alpha, int grid) {
   }
 
   // wMode 5: weigh old alpha with new alpha by occurences
-  if (batchConf.wMode == 5) {
+  if (batchConf.wMode_ == 5) {
     double k = static_cast<double>(dataInBatch.at(grid)->getNrows());
     double n = static_cast<double>(occurences.at(grid));
-    double wNew = max(k / (n + k), static_cast<double>(batchConf.wArgument));
+    double wNew = max(k / (n + k), static_cast<double>(batchConf.wArgument_));
 
-    if (batchConf.verbose)
-      cout << "old weight: " << 1.0 - wNew << " new weight: " << wNew << endl;
+    if (batchConf.verbose_) cout << "old weight: " << 1.0 - wNew << " new weight: " << wNew << endl;
 
     base::DataVector* old = new base::DataVector(alphaStorage.at(grid)[0]);  // old alpha
     old->mult(1.0 - wNew);
@@ -200,13 +192,12 @@ base::DataVector BatchLearner::applyWeight(base::DataVector alpha, int grid) {
   }
 
   // move old alphas to add new one
-  if (alphaStorage.at(grid).size() > batchConf.stack && batchConf.stack != 0) {
+  if (alphaStorage.at(grid).size() > batchConf.stack_ && batchConf.stack_ != 0) {
     // remove the last item (assumtion: only need to delete one bcs only added here
     alphaStorage.at(grid).pop_front();
   }
 
-  size_t count = alphaStorage.at(
-                   grid).size();  // count of old alphas available for calculation
+  size_t count = alphaStorage.at(grid).size();  // count of old alphas available for calculation
   vector<double> factors;
 
   // previous alphas exist
@@ -214,20 +205,18 @@ base::DataVector BatchLearner::applyWeight(base::DataVector alpha, int grid) {
   double sum = 0.0f;
 
   for (size_t i = 0; i < count; i++) {
-    if (batchConf.wMode == 0) {
+    if (batchConf.wMode_ == 0) {
       factors.push_back(1.0);  // temp: all alphas are equal
-    } else if (batchConf.wMode == 1) {
-      factors.push_back(static_cast<double>(i + 1)*batchConf.wArgument);  // linear
-    } else if (batchConf.wMode == 2) {
-      factors.push_back(pow(batchConf.wArgument,
-                            static_cast<double>(i + 1)));  // exp
-    } else if (batchConf.wMode == 3) {
-      factors.push_back(static_cast<double>(batchConf.wArgument) / static_cast<double>(
-                          i + 1));  // 1/x bzw arg/x
-    } else if (batchConf.wMode != 4
-             && batchConf.wMode != 5) {  // 4 and 5 treated elsewhere
-      cout << "unsupported weighting mode (mode/arg): " << batchConf.wMode << "/" <<
-           batchConf.wArgument << endl;
+    } else if (batchConf.wMode_ == 1) {
+      factors.push_back(static_cast<double>(i + 1) * batchConf.wArgument_);  // linear
+    } else if (batchConf.wMode_ == 2) {
+      factors.push_back(pow(batchConf.wArgument_, static_cast<double>(i + 1)));  // exp
+    } else if (batchConf.wMode_ == 3) {
+      factors.push_back(static_cast<double>(batchConf.wArgument_) /
+                        static_cast<double>(i + 1));              // 1/x bzw arg/x
+    } else if (batchConf.wMode_ != 4 && batchConf.wMode_ != 5) {  // 4 and 5 treated elsewhere
+      cout << "unsupported weighting mode (mode/arg): " << batchConf.wMode_ << "/"
+           << batchConf.wArgument_ << endl;
       throw 42;
     }
 
@@ -241,14 +230,13 @@ base::DataVector BatchLearner::applyWeight(base::DataVector alpha, int grid) {
 
   for (size_t i = 0; i < count; i++) {
     alphaStorage.at(grid)[i].resizeZero(
-      temp->getSize());  // should have been done already, just to be save
+        temp->getSize());  // should have been done already, just to be save
     base::DataVector* t2 = new base::DataVector(alphaStorage.at(grid)[i]);
-    // if (batchConf.verbose)
+    // if (batchConf.verbose_)
     //  cout << "mult with " << factors[i] << "/" << sum <<  " = " << factors[i]*1.0f/sum << endl;
     t2->mult(factors[i] * 1.0f / sum);
     temp->add(*t2);
   }
-
 
   return *temp;
 }
@@ -261,7 +249,7 @@ base::DataVector BatchLearner::predict(base::DataMatrix& testDataset, bool updat
       //  for each grid
       double evalsum = 0;
 
-      for (size_t x = 0; x < batchConf.samples; x++) {
+      for (size_t x = 0; x < batchConf.samples_; x++) {
         // generate points per grid
         base::DataVector pt(dimensions);
 
@@ -274,19 +262,18 @@ base::DataVector BatchLearner::predict(base::DataMatrix& testDataset, bool updat
             op_factory::createOperationEval(*grids.at(p.first)));
         double temp = opEval->eval(*alphaVectors.at(p.first), pt);
 
-        if (batchConf.verbose && fabs(temp) > 100)
+        if (batchConf.verbose_ && fabs(temp) > 100)
           cout << "warning abs>100: " << temp << " for " << pt.toString() << endl;
 
         evalsum += temp;
       }
 
-      evalsum = evalsum / static_cast<double>(batchConf.samples);
+      evalsum = evalsum / static_cast<double>(batchConf.samples_);
       // update the normFactor
       normFactors.at(p.first) = evalsum;
 
-      if (batchConf.verbose)
-        cout << "grid " << p.first << ", norm factor: " << normFactors.at(
-               p.first) << endl;
+      if (batchConf.verbose_)
+        cout << "grid " << p.first << ", norm factor: " << normFactors.at(p.first) << endl;
     }
   }
 
@@ -306,8 +293,7 @@ base::DataVector BatchLearner::predict(base::DataMatrix& testDataset, bool updat
       // posterior = likelihood*prior
       double res = Eval->eval(*alphaVectors.at(g.first), pt);
 
-      if (batchConf.samples != 0)
-        res /= normFactors.at(g.first);
+      if (batchConf.samples_ != 0) res /= normFactors.at(g.first);
 
       // this->prior[class_index]
       if (res > max) {
@@ -338,26 +324,24 @@ void BatchLearner::processBatch(string workData) {
       // Generate regular Grid with LEVELS Levels
       grids.at(p.first)->getGenerator().regular(gridConf.level_);
 
-      if (batchConf.verbose)
+      if (batchConf.verbose_)
         cout << "found new class " << p.first << ", points in grid " << p.first << ": "
              << grids.at(p.first)->getSize() << endl;
 
-      alphaVectors.insert(std::pair<int, base::DataVector*>(p.first,
-                          new base::DataVector(grids.at(p.first)->getSize())));
+      alphaVectors.insert(std::pair<int, base::DataVector*>(
+          p.first, new base::DataVector(grids.at(p.first)->getSize())));
       alphaVectors.at(p.first)->setAll(0.0);
       normFactors.insert(std::pair<int, double>(p.first, 1));
     }
-
 
     // calculate the new surplusses for the items found of this class in this batch
     // Solve the system for every class and store coefficients in newAlpha
     // set up everything to be able to solve
     base::DataVector newAlpha(grids.at(p.first)->getSize());
     newAlpha.setAll(0.0);
-    std::unique_ptr<base::OperationMatrix> id(
-        op_factory::createOperationIdentity(*grids.at(p.first)));
-    datadriven::DensitySystemMatrix DMatrix(*grids.at(p.first),
-        *dataInBatch.at(p.first), *id, batchConf.lambda);
+    base::OperationMatrix* id = op_factory::createOperationIdentity(*grids.at(p.first));
+    datadriven::DensitySystemMatrix DMatrix(*grids.at(p.first), *dataInBatch.at(p.first), id,
+                                            batchConf.lambda_);
     base::DataVector rhs(grids.at(p.first)->getSize());
     DMatrix.generateb(rhs);
     myCG->setMaxIterations(solverConf.maxIterations_);
@@ -369,13 +353,11 @@ void BatchLearner::processBatch(string workData) {
     alphaVectors.at(p.first)->copyFrom(applyWeight(newAlpha, p.first));
 
     // refine the grids
-    if (batchConf.refineEvery != 0 && batchnum != 0
-        && batchnum % batchConf.refineEvery == 0) {
-      if (batchConf.verbose)
-        cout << "refining ..." << endl;
+    if (batchConf.refineEvery_ != 0 && batchnum != 0 && batchnum % batchConf.refineEvery_ == 0) {
+      if (batchConf.verbose_) cout << "refining ..." << endl;
 
-      base::SurplusRefinementFunctor myRefineFunc(
-        *alphaVectors.at(p.first), adaptConf.noPoints_, adaptConf.threshold_);
+      base::SurplusRefinementFunctor myRefineFunc(*alphaVectors.at(p.first), adaptConf.noPoints_,
+                                                  adaptConf.threshold_);
       grids.at(p.first)->getGenerator().refine(myRefineFunc);
       // change alpha, zeroes to new entries until they will be filled
       alphaVectors.at(p.first)->resizeZero(grids.at(p.first)->getSize());
@@ -392,7 +374,7 @@ void BatchLearner::trainBatch() {
   unsigned int ts = 0;
 
   // collect data from arff to process
-  while (bs + ts != batchConf.batchsize + batchConf.testsize) {
+  while (bs + ts != batchConf.batchsize_ + batchConf.testsize_) {
     isFinished = reader.eof();
 
     if (isFinished) {
@@ -408,42 +390,40 @@ void BatchLearner::trainBatch() {
       continue;
     }
 
-    if (!reachedData)
-      continue;
+    if (!reachedData) continue;
 
     // only count lines after @DATA
     dataLine++;
 
-    if (bs < batchConf.batchsize) {
+    if (bs < batchConf.batchsize_) {
       batch += line + "\n";
       bs++;
-    } else if (ts < batchConf.testsize) {
+    } else if (ts < batchConf.testsize_) {
       test += line + "\n";
       ts++;
     }
   }
 
   // process the batch
-  if (batchConf.verbose)
-    cout << "Processing Data " << batchnum << " @" << startLine << "-" << dataLine
-         << " ..." << endl;
+  if (batchConf.verbose_)
+    cout << "Processing Data " << batchnum << " @" << startLine << "-" << dataLine << " ..."
+         << endl;
 
   processBatch(batch);
 
   // automatic testing if wanted by user
-  if (batchConf.testsize > 0 && test.size() > 0) {
+  if (batchConf.testsize_ > 0 && test.size() > 0) {
     base::DataMatrix testData(0, 0);
     base::DataVector testClasses(0);
     stringToDataMatrix(test, testData, testClasses, false);
     // predict
-    base::DataVector result = predict(testData, batchConf.samples != 0);
+    base::DataVector result = predict(testData, batchConf.samples_ != 0);
 
-    if (batchConf.verbose)
-      cout << "Testing Data (" << result.getSize() << " items)..." << endl;
+    if (batchConf.verbose_) cout << "Testing Data (" << result.getSize() << " items)..." << endl;
 
     // caluclate accuracy
     if (result.getSize() > 0) {
-      if (batchConf.verbose) {
+      if (batchConf.verbose_) {
         cout << "result: " << result.toString() << endl;
         cout << "should: " << testClasses.toString() << endl;
       }
@@ -452,8 +432,7 @@ void BatchLearner::trainBatch() {
       int correct = 0;
 
       for (size_t i = 0; i < result.getSize(); i++) {
-        if (result.get(i) == testClasses.get(i))
-          correct++;
+        if (result.get(i) == testClasses.get(i)) correct++;
       }
 
       // calc accuracy for this batch and all tests
@@ -462,10 +441,9 @@ void BatchLearner::trainBatch() {
       acc_current = 100.0 * correct / static_cast<double>(result.getSize());
       acc_global = 100.0 * t_correct / static_cast<double>(t_total);
       // output accuracy
-      cout << "batch:\t" << acc_current << "% (" << correct << "/" << result.getSize()
-           << ")" << endl;
-      cout << "total:\t" << acc_global << "% (" << t_correct << "/" << t_total << ")"
+      cout << "batch:\t" << acc_current << "% (" << correct << "/" << result.getSize() << ")"
            << endl;
+      cout << "total:\t" << acc_global << "% (" << t_correct << "/" << t_total << ")" << endl;
     }
   }
 
@@ -477,4 +455,3 @@ void BatchLearner::trainBatch() {
 
 }  // namespace datadriven
 }  // namespace sgpp
-

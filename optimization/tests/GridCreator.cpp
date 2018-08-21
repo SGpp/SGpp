@@ -38,6 +38,8 @@ void createSupportedGrids(size_t d, size_t p,
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createLinearBoundaryGrid(d)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
+      sgpp::base::Grid::createLinearClenshawCurtisBoundaryGrid(d)));
+  grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createLinearClenshawCurtisGrid(d)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createModLinearGrid(d)));

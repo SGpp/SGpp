@@ -9,19 +9,26 @@
 
 // base class is not exported from the configuration
 %warnfilter(401) sgpp::datadriven::LearnerSGDEConfiguration;
+%warnfilter(401) sgpp::datadriven::SparseGridDensityEstimatorConfiguration;
 
 // The Good, i.e. without any modifications
 #ifdef SG_DATADRIVEN
 %include "datadriven/src/sgpp/datadriven/algorithm/test_dataset.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DensitySystemMatrix.hpp"
-%include "datadriven/src/sgpp/datadriven/application/RegularizationConfiguration.hpp"
+%include "datadriven/src/sgpp/datadriven/configuration/BatchConfiguration.hpp"
+// %include "datadriven/src/sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp"
+%include "datadriven/src/sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp"
+%include "datadriven/src/sgpp/datadriven/configuration/RegularizationConfiguration.hpp"
+%include "datadriven/src/sgpp/datadriven/configuration/DatabaseConfiguration.hpp"
 %rename (getConstTargets) sgpp::datadriven::Dataset::getTargets() const;
 %rename (getConstData) sgpp::datadriven::Dataset::getData() const;
 %include "datadriven/src/sgpp/datadriven/tools/Dataset.hpp"
-%include "datadriven/src/sgpp/datadriven/algorithm/ConvergenceMonitor.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitor.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitorFactory.hpp"
 
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp"
-%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSChol.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSDenseIChol.hpp"
 %ignore *::operator=;
@@ -35,6 +42,9 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDEChol.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp"
+
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDatabase.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/GridFactory.hpp"
 
 #ifdef USE_GSL
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp"
@@ -57,7 +67,14 @@
 %include "datadriven/src/sgpp/datadriven/tools/TypesDatadriven.hpp"
 %include "datadriven/src/sgpp/datadriven/application/LearnerBase.hpp"
 %include "datadriven/src/sgpp/datadriven/application/DensityEstimator.hpp"
-%include "datadriven/src/sgpp/datadriven/application/GaussianKDE.hpp"
+
+%include "datadriven/src/sgpp/datadriven/application/KernelDensityEstimator.hpp"
+%newobject sgpp::datadriven::KernelDensityEstimator::margToDimX(size_t idim);
+%newobject sgpp::datadriven::KernelDensityEstimator::marginalize(size_t idim);
+%include "datadriven/src/sgpp/datadriven/application/SparseGridDensityEstimator.hpp"
+%newobject sgpp::datadriven::SparseGridDensityEstimator::margToDimX(size_t idim);
+%newobject sgpp::datadriven::SparseGridDensityEstimator::marginalize(size_t idim);
+
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
 %include "datadriven/src/sgpp/datadriven/application/RegressionLearner.hpp"
 %include "datadriven/src/sgpp/datadriven/application/ClassificationLearner.hpp"
@@ -73,70 +90,105 @@
 %include "datadriven/src/sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp"
 %include "datadriven/src/sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp"
 
+#ifdef USE_MPI
+%include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/AuxiliaryStructures.hpp"
+%include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/MPITaskScheduler.hpp"
+%include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/RefinementHandler.hpp"
+%include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp"
+//%include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp"
+%include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/MPIRequestPool.hpp"
+%include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/NetworkMessageData.hpp"
+%include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/PendingMPIRequest.hpp"
+%include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/RoundRobinScheduler.hpp"
+#endif
+
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp"
+%ignore sgpp::datadriven::DataShufflingFunctor::operator();
+%ignore sgpp::datadriven::DataShufflingFunctorRandom::operator();
+%ignore sgpp::datadriven::DataShufflingFunctorSequential::operator();
+%ignore sgpp::datadriven::DataShufflingFunctorCrossValidation::operator();
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctor.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/shuffling/DataSourceShufflingTypeParser.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorFactory.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorRandom.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorSequential.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorCrossValidation.hpp"
+
 %ignore  sgpp::datadriven::SampleProvider::operator=(SampleProvider&&);
 %rename(__assign__) sgpp::datadriven::SampleProvider::operator =;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/CSVFileSampleProvider.hpp"
 %ignore  sgpp::datadriven::FileSampleDecorator::operator=(FileSampleDecorator&&);
 %rename(__assign__) sgpp::datadriven::FileSampleDecorator::operator =;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/FileSampleDecorator.hpp"
 #ifdef ZLIB
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp"
 #endif /* ZLIB */
-%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/RosenblattTransformationConfig.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformation.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformationTypeParser.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/RosenblattTransformation.hpp"
 
 
 %ignore sgpp::datadriven::DataSource::begin;
 %ignore sgpp::datadriven::DataSource::end;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceSplitting.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceCrossValidation.hpp"
 %ignore  sgpp::datadriven::FitterConfiguration::operator=(FitterConfiguration&&);
 %rename(__assign__) sgpp::datadriven::FitterConfiguration::operator =;
 %rename (getConstGridConfig) sgpp::datadriven::FitterConfiguration::getGridConfig() const;
 %rename (getConstRefinementConfig) sgpp::datadriven::FitterConfiguration::getRefinementConfig() const;
+%rename (getConstCrossvalidationConfig) sgpp::datadriven::FitterConfiguration::getCrossvalidationConfig() const;
+%rename (getConstDensityEstimationConfig) sgpp::datadriven::FitterConfiguration::getDensityEstimationConfig() const;
 %rename (getConstSolverRefineConfig) sgpp::datadriven::FitterConfiguration::getSolverRefineConfig() const;
 %rename (getConstSolverFinalConfig) sgpp::datadriven::FitterConfiguration::getSolverFinalConfig() const;
 %rename (getConstRegularizationConfig) sgpp::datadriven::FitterConfiguration::getRegularizationConfig() const;
 %rename (getConstMultipleEvalConfig) sgpp::datadriven::FitterConfiguration::getMultipleEvalConfig() const;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfigurationClassification.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterTypeParser.hpp"
 %ignore  sgpp::datadriven::ModelFittingBase::operator=(ModelFittingBase&&);
 %rename(__assign__) sgpp::datadriven::ModelFittingBase::operator =;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp"
 
 %ignore  sgpp::datadriven::Metric::operator=(Metric&&);
 %rename(__assign__) sgpp::datadriven::Metric::operator =;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/Metric.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/MSE.hpp"
-%ignore  sgpp::datadriven::ShufflingFunctor::operator=(ShufflingFunctor&&);
-%rename(__assign__) sgpp::datadriven::ShufflingFunctor::operator =;
-%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/ShufflingFunctor.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/SequentialShufflingFunctor.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/RandomShufflingFunctor.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/NegativeLogLikelihood.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/Accuracy.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/ScorerShufflingTypeParser.hpp"
 %ignore  sgpp::datadriven::Scorer::operator=(Scorer&&);
-%rename(__assign__) sgpp::datadriven::Scorer::operator =;
+%ignore sgpp::datadriven::Scorer::operator =;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/Scorer.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/SplittingScorer.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/CrossValidation.hpp"
 
 %ignore  sgpp::datadriven::SparseGridMiner::operator=(SparseGridMiner&&);
 %include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMiner.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp"
 
+%include "datadriven/src/sgpp/datadriven/datamining/configuration/DensityEstimationTypeParser.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/configuration/GridTypeParser.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp"
 
 %include "datadriven/src/sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/ScorerFactory.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/builder/SplittingScorerFactory.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/builder/CrossValidationScorerFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/MinerFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/builder/DensityEstimationMinerFactory.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/builder/ClassificationMinerFactory.hpp"
 
 
 //TODO(lettrich): parser not wrapable because of unwrapped JSON
@@ -154,14 +206,27 @@
 
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationTest.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonal.hpp"
+
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationTransformation1D.hpp"
+
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMarginalize.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp"
+
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationKDE.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationKDE.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeKDE.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityConditionalKDE.hpp"
 
+%ignore sgpp::datadriven::HashGridPointCompare::operator();
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationMakePositiveCandidateSetAlgorithm.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationLimitFunctionValueRange.hpp"
 
+// --------------------------------------
+// renaming ambiguous function declarations for python
+%ignore base::datadriven::OperationRosenblattTransformation::doTransformation(base::DataVector* alpha, base::DataMatrix* points, base::DataMatrix* pointscdf, size_t dim_start);
 
 //-     namespace datadriven ------------------------------------------
 namespace datadriven {

@@ -114,6 +114,13 @@ class DataVector : public std::vector<double> {
   void restructure(std::vector<size_t>& remainingIndex);
 
   /**
+   * Removes indexes form the vector. Throws an exception if the boundaries are violated
+   *
+   * @param indexesToRemove a vector if indexes that will be removed from the vector
+   */
+  void remove(std::vector<size_t>& indexesToRemove);
+
+  /**
    * Appends a new element and returns index of it.
    *
    * @return Index of new element

@@ -27,7 +27,7 @@ class MCAnalysis(Analysis):
     """
 
     def __init__(self, params, samples, estimator=None,
-                 npaths=20):
+                 npaths=100):
         """
         Constructor
         @param params: ParameterSet
@@ -57,9 +57,13 @@ class MCAnalysis(Analysis):
                  'iteration',
                  'grid_size',
                  'mean',
-                 'meanVarBootstrapping',
+                 'mean_err',
+                 'meanConfidenceIntervalBootstrapping_lower',
+                 'meanConfidenceIntervalBootstrapping_upper',
                  'var',
-                 'varVarBootstrapping']
+                 'var_err',
+                 'varConfidenceIntervalBootstrapping_lower',
+                 'varConfidenceIntervalBootstrapping_upper']
         # parameters
         ts = self.__samples.keys()
         nrows = len(ts)
@@ -70,11 +74,17 @@ class MCAnalysis(Analysis):
         row = 0
         for t in np.sort(ts):
             v.setAll(0.0)
+            mean = self.mean(ts=[t], iterations=[0])
+            var = self.var(ts=[t], iterations=[0])
+            numSamples = len(self.__samples[t].values())
+
             v[0] = t
             v[1] = 0
-            v[2] = len(self.__samples[t].values())
-            v[3], v[4] = self.mean(ts=[t], iterations=[0])
-            v[5], v[6] = self.var(ts=[t], iterations=[0])
+            v[2] = numSamples
+            v[3], v[4] = mean["value"], mean["err"]
+            v[5], v[6] = mean["confidence_interval"]
+            v[7], v[8] = var["value"], var["err"]
+            v[8], v[9] = var["confidence_interval"]
 
             # write results to matrix
             data.setRow(row, v)
@@ -87,3 +97,15 @@ class MCAnalysis(Analysis):
         stats = self.computeMoments()
         stats['filename'] = filename + ".moments.arff"
         writeDataARFF(stats)
+
+# -----------------------------------------------------------------------------
+
+    def estimateDensity(self, ts=[0], dtype="kde", config={}):
+        if len(ts) == 1:
+            return self._estimateDensityByConfig(dtype, self.__samples[ts[0]].values(), config)
+
+        ans = {}
+        for t, values in time_dependent_values.items():
+            ans[t] = self._estimateDensityByConfig(dtype, values, config)
+
+        return ans

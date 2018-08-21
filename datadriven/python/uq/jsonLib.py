@@ -26,7 +26,7 @@ def reprVal(attrValue):
         return reprInt(attrValue)
     elif isinstance(attrValue, types.DictType):
         return reprDict(attrValue)
-    elif type(attrValue) in (types.FloatType, np.float64, np.float32):
+    elif type(attrValue) in (types.FloatType, np.float64, np.float32, np.float):
         return reprFloat(attrValue)
     elif isinstance(attrValue, types.ListType) or \
             isinstance(attrValue, np.ndarray):
@@ -44,8 +44,10 @@ def reprVal(attrValue):
         text = attrValue.serialize()
         # hack to make the text json compatible
         return reprString(text.replace('\n', '__'))
+    elif attrValue is None:
+        return "null"
     else:
-        raise AttributeError('Unknown type "%s" of "%s"' %
+        raise AttributeError('jsonLib: reprVal - Unknown type "%s" of "%s"' %
                              (type(attrValue), attrValue))
 
 
@@ -146,8 +148,14 @@ def stringToTupleOfFloats(s):
     @param s: string
     @return: tuple represented by s
     """
-    return tuple([float(i) for i in s.strip('()').split(',')
-                  if i.strip() != ''])
+    ans = []
+    for i in s.strip("()").split(","):
+        if i.strip() != "":
+            if i == "null":
+                ans.append(None)
+            else:
+                ans.append(float(i))
+    return tuple(ans)
 
 
 def stringToList(s, f=float):

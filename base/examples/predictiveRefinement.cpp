@@ -48,6 +48,7 @@ using sgpp::base::HashRefinement;
 using sgpp::base::OperationEval;
 using sgpp::base::PredictiveRefinement;
 using sgpp::base::PredictiveRefinementIndicator;
+using sgpp::base::OperationHierarchisation;
 
 /**
    * We define the function \f$ f(x) =
@@ -150,7 +151,9 @@ int main() {
     }
 
     // hierarchize
-    sgpp::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
+    std::unique_ptr<OperationHierarchisation>(
+        sgpp::op_factory::createOperationHierarchisation(*grid))
+        ->doHierarchisation(alpha);
 
     /**
        * Step 2: calculate squared errors.

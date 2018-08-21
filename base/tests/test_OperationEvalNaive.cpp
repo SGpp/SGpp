@@ -9,10 +9,13 @@
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBoundaryBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBasis.hpp>
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
@@ -38,14 +41,13 @@ using sgpp::base::SBasis;
 using sgpp::base::SPolyBase;
 using sgpp::base::SPolyBoundaryBase;
 using sgpp::base::SPolyModifiedBase;
+using sgpp::base::SPolyClenshawCurtisBoundaryBase;
 
 double basisEval(SBasis& basis, GridPoint::level_type l, GridPoint::index_type i, double x) {
   return basis.eval(l, i, x);
 }
 
-void checkClose(double x, double y, double tol = 1e-8) {
-  BOOST_CHECK_CLOSE(x, y, tol);
-}
+void checkClose(double x, double y, double tol = 1e-8) { BOOST_CHECK_CLOSE(x, y, tol); }
 
 void checkClose(const DataVector& x, const DataVector& y, double tol = 1e-8) {
   BOOST_CHECK_EQUAL(x.getSize(), y.getSize());
@@ -111,6 +113,7 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
   grids.push_back(std::unique_ptr<Grid>(Grid::createLinearGrid(d)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createLinearBoundaryGrid(d)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createLinearClenshawCurtisGrid(d)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createLinearClenshawCurtisBoundaryGrid(d)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createModLinearGrid(d)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createNaturalBsplineBoundaryGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createNotAKnotBsplineBoundaryGrid(d, p)));
@@ -121,6 +124,8 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
   grids.push_back(std::unique_ptr<Grid>(Grid::createPolyGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createPolyBoundaryGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createModPolyGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createPolyClenshawCurtisBoundaryGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createPolyClenshawCurtisGrid(d, p)));
 
   std::vector<std::unique_ptr<SBasis>> bases;
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SBsplineBase(p)));
@@ -138,6 +143,7 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearBase()));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearBoundaryBase()));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearClenshawCurtisBase()));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearClenshawCurtisBoundaryBase()));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearModifiedBase()));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SNaturalBsplineBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SNotAKnotBsplineBase(p)));
@@ -148,6 +154,8 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SPolyBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SPolyBoundaryBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SPolyModifiedBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SPolyClenshawCurtisBoundaryBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SPolyClenshawCurtisBase(p)));
 
   for (size_t k = 0; k < grids.size(); k++) {
     Grid& grid = *grids[k];
@@ -178,7 +186,7 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
     const size_t n = grid.getSize();
 
     // set random bounding box
-    BoundingBox &boundingBox = grid.getBoundingBox();
+    BoundingBox& boundingBox = grid.getBoundingBox();
     DataVector innerDerivative(d);
 
     for (size_t t = 0; t < d; t++) {
@@ -250,8 +258,8 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
 
             for (size_t t = 0; t < d; t++) {
               if (t == j) {
-                val *= basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) *
-                    innerDerivative[t];
+                val *=
+                    basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) * innerDerivative[t];
               } else {
                 val *= basisEval(basis, gp.getLevel(t), gp.getIndex(t), x[t]);
               }
@@ -268,10 +276,10 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
               for (size_t t = 0; t < d; t++) {
                 if ((t == j) && (t == k)) {
                   val *= basisEvalDxDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) *
-                      innerDerivative[t] * innerDerivative[t];
+                         innerDerivative[t] * innerDerivative[t];
                 } else if ((t == j) || (t == k)) {
-                  val *= basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) *
-                      innerDerivative[t];
+                  val *=
+                      basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) * innerDerivative[t];
                 } else {
                   val *= basisEval(basis, gp.getLevel(t), gp.getIndex(t), x[t]);
                 }
@@ -365,8 +373,8 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
 
               for (size_t t = 0; t < d; t++) {
                 if (t == j) {
-                  val *= basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) *
-                      innerDerivative[t];
+                  val *=
+                      basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) * innerDerivative[t];
                 } else {
                   val *= basisEval(basis, gp.getLevel(t), gp.getIndex(t), x[t]);
                 }
@@ -383,10 +391,10 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
                 for (size_t t = 0; t < d; t++) {
                   if ((t == j) && (t == k)) {
                     val *= basisEvalDxDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) *
-                        innerDerivative[t] * innerDerivative[t];
+                           innerDerivative[t] * innerDerivative[t];
                   } else if ((t == j) || (t == k)) {
                     val *= basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) *
-                        innerDerivative[t];
+                           innerDerivative[t];
                   } else {
                     val *= basisEval(basis, gp.getLevel(t), gp.getIndex(t), x[t]);
                   }

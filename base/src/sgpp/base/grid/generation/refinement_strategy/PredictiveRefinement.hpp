@@ -79,9 +79,11 @@ class PredictiveRefinement: public virtual RefinementDecorator {
    *
    * @param storage hashmap that stores the grid points
    * @param functor a RefinementFunctor specifying the refinement criteria
+   * @param addedPoints pointer to vector to append newly created grid points to
    */
   void free_refine(GridStorage& storage,
-                   PredictiveRefinementIndicator& functor);
+                   PredictiveRefinementIndicator& functor,
+                   std::vector<size_t>* addedPoints = 0);
 
 
 

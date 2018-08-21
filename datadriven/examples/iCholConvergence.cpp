@@ -13,14 +13,17 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/algorithm/GridFactory.hpp>
 
 #include <omp.h>
 
 #include <chrono>
 #include <string>
+#include <vector>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -29,17 +32,27 @@ using sgpp::base::DataVector;
 int main() {
 #ifdef USE_GSL
   // ###################################################################################
-  sgpp::datadriven::DBMatDensityConfiguration fullConfig;
-  fullConfig.grid_dim_ = 4;
-  fullConfig.grid_level_ = 5;
-  fullConfig.lambda_ = 10e-4;
-  fullConfig.regularization_ = sgpp::datadriven::RegularizationType::Identity;
-  fullConfig.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::Chol;
+  sgpp::base::RegularGridConfiguration gridConfig;
+  gridConfig.dim_ = 4;
+  gridConfig.level_ = 5;
 
-  sgpp::datadriven::DBMatOfflineChol fullOffline(fullConfig);
-  fullOffline.buildMatrix();
-  fullOffline.decomposeMatrix();
+  sgpp::base::AdpativityConfiguration adaptConfig;
 
+  sgpp::datadriven::RegularizationConfiguration regularizationConfig;
+  regularizationConfig.lambda_ = 10e-4;
+  regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
+
+  sgpp::datadriven::DensityEstimationConfiguration fullDensityEstimationConfig;
+  fullDensityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::Chol;
+
+  sgpp::datadriven::GridFactory gridFactory;
+  std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
+    gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+  };
+
+  sgpp::datadriven::DBMatOfflineChol fullOffline;
+  fullOffline.buildMatrix(grid.get(), regularizationConfig);
+  fullOffline.decomposeMatrix(regularizationConfig, fullDensityEstimationConfig);
   auto& fullMat = fullOffline.getDecomposedMatrix();
 
   for (auto i = 0u; i < fullMat.getNrows(); i++) {
@@ -49,12 +62,13 @@ int main() {
   }
   // ###################################################################################
 
-  sgpp::datadriven::DBMatDensityConfiguration exactIConfig = fullConfig;
-  fullConfig.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
-  exactIConfig.icholParameters.sweepsDecompose = 1;
+  sgpp::datadriven::DensityEstimationConfiguration exactIConfig = fullDensityEstimationConfig;
+  fullDensityEstimationConfig.decomposition_ =
+  sgpp::datadriven::MatrixDecompositionType::DenseIchol;
+  exactIConfig.iCholSweepsDecompose_ = 1;
 
-  sgpp::datadriven::DBMatOfflineDenseIChol exactIOffline(exactIConfig);
-  exactIOffline.buildMatrix();
+  sgpp::datadriven::DBMatOfflineDenseIChol exactIOffline;
+  exactIOffline.buildMatrix(grid.get(), regularizationConfig);
 
   auto numThreads = 0;
 
@@ -65,7 +79,7 @@ int main() {
   }
   omp_set_num_threads(1);
 
-  exactIOffline.decomposeMatrix();
+  exactIOffline.decomposeMatrix(regularizationConfig, exactIConfig);
 
   omp_set_num_threads(numThreads);
 
@@ -79,12 +93,12 @@ int main() {
 
   // ###################################################################################
   for (auto i = 1u; i < 10; i++) {
-    sgpp::datadriven::DBMatDensityConfiguration config = exactIConfig;
-    config.icholParameters.sweepsDecompose = i;
+    sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig = exactIConfig;
+    densityEstimationConfig.iCholSweepsDecompose_ = i;
 
-    sgpp::datadriven::DBMatOfflineDenseIChol offline(config);
-    offline.buildMatrix();
-    offline.decomposeMatrix();
+    sgpp::datadriven::DBMatOfflineDenseIChol offline;
+    offline.buildMatrix(grid.get(), regularizationConfig);
+    offline.decomposeMatrix(regularizationConfig, densityEstimationConfig);
 
     auto& iMat = offline.getDecomposedMatrix();
 
@@ -98,7 +112,7 @@ int main() {
     tmpIMat.sub(exactIMat);
     tmpIMat.abs();
     tmpIMat.sqr();
-    std::cout << " ||iichol - ichol|| with " << config.icholParameters.sweepsDecompose
+    std::cout << " ||iichol - ichol|| with " << densityEstimationConfig.iCholSweepsDecompose_
               << " sweeps is: " << std::scientific << std::setprecision(10) << sqrt(tmpIMat.sum())
               << "\n";
 
@@ -106,7 +120,7 @@ int main() {
     tmpIMat2.sub(fullMat);
     tmpIMat2.abs();
     tmpIMat2.sqr();
-    std::cout << " ||iichol - chol|| with " << config.icholParameters.sweepsDecompose
+    std::cout << " ||iichol - chol|| with " << densityEstimationConfig.iCholSweepsDecompose_
               << " sweeps is: " << std::scientific << std::setprecision(10) << sqrt(tmpIMat2.sum())
               << "\n";
   }

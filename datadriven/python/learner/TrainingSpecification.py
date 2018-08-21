@@ -4,6 +4,7 @@
 # sgpp.sparsegrids.org
 
 import types
+import math
 
 
 ## Collection of parameters, which specify the learning process.
@@ -13,11 +14,11 @@ class TrainingSpecification(object):
     __adaptPoints = 0       #Number of points to refine in one refinement iteration
     __l = None              #Regularization parameter
     __adaptRate = 0         #Rate of points to refine in one refinement iteration, between 0 and 1
-    __adaptThreshold = 0.0   #threshold, only the points with greater to equal absolute values of the refinement criterion (e.g. alpha or error) will be refined
+    __adaptThreshold = 0.0  #threshold, only the points with greater to equal absolute values of the refinement criterion (e.g. alpha or error) will be refined
     __cOperator = None      #C operator
     __bOperator = None      #B operator
     __cOperatorType = None  #Type of the c operator as a string
-    __vecType = None
+    #__vecType = None       #Type of vectorization; currently not available
     
     ## Returns the type of the C operator
     # @return: the type of the C operator as a string
@@ -119,15 +120,15 @@ class TrainingSpecification(object):
         if self.__bOperator != None:
             return self.__bOperator[name]
         else: return None
-        
-        
-    def getVectorizationType(self):
-        return self.__vecType
-    
-    
-    def setVectorizationType(self, vecType):
-        self.__vecType = vecType
-    
+
+#   ## Currently unavailable vectorization option
+#
+#     def getVectorizationType(self):
+#         return self.__vecType
+#     
+#     
+#     def setVectorizationType(self, vecType):
+#         self.__vecType = vecType  
     
     ## Calculates the number of points which should be refined
     #
@@ -136,12 +137,11 @@ class TrainingSpecification(object):
     def getNumOfPointsToRefine(self, refinablePoints):
         ratePoints = self.__adaptRate * refinablePoints
         if self.__adaptPoints == 0:
-            return ratePoints
+            return int(math.ceil(ratePoints))
         elif self.__adaptRate == 0:
-            return self.__adaptPoints
+            return int(math.ceil(self.__adaptPoints))
         else: 
-            return min(ratePoints, self.__adaptPoints)
-        
+            return int(math.ceil(min(ratePoints, self.__adaptPoints)))
         
     ##Returns a string that represents the object.
     #

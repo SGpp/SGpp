@@ -11,7 +11,8 @@
 %newobject sgpp::base::Grid::createLinearBoundaryGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearBoundaryGrid(size_t dim, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createLinearClenshawCurtisGrid(size_t dim);
-%newobject sgpp::base::Grid::createLinearClenshawCurtisGrid(size_t dim, size_t boundaryLevel);
+%newobject sgpp::base::Grid::createLinearClenshawCurtisBoundaryGrid(size_t dim, size_t boundaryLevel);
+%newobject sgpp::base::Grid::createModLinearClenshawCurtisGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearBoundaryGrid(sgpp::base::BoudingBox& BB);
 %newobject sgpp::base::Grid::createLinearStretchedBoundaryGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearStretchedBoundaryGrid(sgpp::base::Stretching& BB);
@@ -37,6 +38,10 @@
 %newobject sgpp::base::Grid::createSquareRootGrid(size_t dim);
 %newobject sgpp::base::Grid::createPrewaveletGrid(size_t dim);
 %newobject sgpp::base::Grid::createPeriodicGrid(size_t dim);
+%newobject sgpp::base::Grid::createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
+%newobject sgpp::base::Grid::createPolyClenshawCurtisGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createNaturalBsplineBoundaryGrid(size_t dim, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createNotAKnotBsplineBoundaryGrid(size_t dim, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createModNotAKnotBsplineGrid(size_t dim);
@@ -47,6 +52,7 @@
 %newobject sgpp::base::Grid::createFundamentalNotAKnotSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
 
 %newobject sgpp::base::Grid::unserialize(std::string& istr);
+%newobject sgpp::base::Grid::createGridOfEquivalentType(size_t numDims);
 %newobject sgpp::base::Grid::clone();
 
 %include "stl.i"
@@ -68,6 +74,12 @@ struct RegularGridConfiguration {
       size_t dim_;
       /// number of levels
       int level_;
+  /// max. polynomial degree for poly basis
+  size_t maxDegree_;
+  /// level of boundary grid
+  sgpp::base::level_t boundaryLevel_;
+  /// string to serialized grid
+  std::string filename_;
     };
 
 struct AdpativityConfiguration {
@@ -81,6 +93,8 @@ struct AdpativityConfiguration {
       size_t noPoints_;
       /// max. percent of points to be refined
       double percent_;
+  /// other refinement strategy, that is more expensive, but yields better results
+  bool errorBasedRefinement = false;
     };
 
 enum class GridType {
@@ -99,7 +113,7 @@ enum class GridType {
   Prewavelet,                         // 12
   SquareRoot,                         // 13
   Periodic,                           // 14
-  LinearClenshawCurtis,               // 15
+  LinearClenshawCurtisBoundary,       // 15
   Bspline,                            // 16
   BsplineBoundary,                    // 17
   BsplineClenshawCurtis,              // 18
@@ -110,14 +124,20 @@ enum class GridType {
   ModBsplineClenshawCurtis,           // 23
   LinearStencil,                      // 24
   ModLinearStencil,                   // 25
-  NaturalBsplineBoundary,             // 26
-  NotAKnotBsplineBoundary,            // 27
-  ModNotAKnotBspline,                 // 28
-  LagrangeSplineBoundary,             // 29
-  LagrangeNotAKnotSplineBoundary,     // 30
-  ModLagrangeNotAKnotSpline,          // 31
-  FundamentalSplineBoundary,          // 32
-  FundamentalNotAKnotSplineBoundary,  // 33
+  PolyClenshawCurtisBoundary,         // 26
+  PolyClenshawCurtis,                 // 27
+  LinearClenshawCurtis,               // 28
+  ModPolyClenshawCurtis,              // 29
+  ModLinearClenshawCurtis,            // 30
+  NakBsplineBoundaryCombigrid         // 31
+  NaturalBsplineBoundary,             // 32
+  NotAKnotBsplineBoundary,            // 33
+  ModNotAKnotBspline,                 // 34
+  LagrangeSplineBoundary,             // 35
+  LagrangeNotAKnotSplineBoundary,     // 36
+  ModLagrangeNotAKnotSpline,          // 37
+  FundamentalSplineBoundary,          // 38
+  FundamentalNotAKnotSplineBoundary,  // 39
 };
 
 class Grid
@@ -155,6 +175,10 @@ public:
   static Grid* createLinearGridStencil(size_t dim);
   static Grid* createModLinearGridStencil(size_t dim);
   static Grid* createPeriodicGrid(size_t dim);
+  static Grid* createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
+  static Grid* createPolyClenshawCurtisGrid(size_t dim, size_t degree);
+  static Grid* createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
+  static Grid* createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
   static Grid* createNaturalBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
   static Grid* createNotAKnotBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
   static Grid* createModNotAKnotBsplineGrid(size_t dim, size_t degree);
@@ -172,7 +196,7 @@ protected:
 public:
   virtual ~Grid();
 
-public:	
+public:
   virtual sgpp::base::GridStorage& getStorage();
   virtual sgpp::base::BoundingBox& getBoundingBox();
   virtual sgpp::base::Stretching& getStretching();
@@ -185,6 +209,9 @@ public:
   void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
   int getSize();
   
+  std::string getTypeAsString();
+
+  Grid* createGridOfEquivalentType(size_t numDims);
   Grid* clone();
 };
 }
@@ -204,16 +231,7 @@ public:
 // extend the grid by a function that returns the maximum degree of the basis
 // which is important for polynomials and bsplines
 %extend sgpp::base::Grid{
-    int getDegree() {
-        if ($self->getType() == sgpp::base::GridType::Poly) {
-            return ((sgpp::base::PolyGrid*) $self)->getDegree();
-        };
-        if ($self->getType() == sgpp::base::GridType::PolyBoundary) {
-            return ((sgpp::base::PolyBoundaryGrid*) $self)->getDegree();
-        };
-        if ($self->getType() == sgpp::base::GridType::ModPoly) {
-            return ((sgpp::base::ModPolyGrid*) $self)->getDegree();
-        };
-        return 1;
+    size_t getDegree() {
+	return $self->getBasis().getDegree();
     };
-};	
+};

@@ -6,7 +6,8 @@
 #pragma once
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 
 #include <list>
 #include <string>
@@ -29,14 +30,6 @@ using sgpp::base::DataMatrix;
 
 class DBMatOffline {
  public:
-  /**
-   * Constructor
-   * Build DBMatOffline Object from configuration
-   *
-   * @param config configuration for this offline object
-   */
-  explicit DBMatOffline(const DBMatDensityConfiguration& config);
-
   /**
    * Constructor
    * Create offline object from serialized offline object
@@ -86,12 +79,6 @@ class DBMatOffline {
   virtual bool isRefineable() = 0;
 
   /**
-   * Get a reference to the configuration object
-   * @return Configuration object
-   */
-  DBMatDensityConfiguration& getConfig();
-
-  /**
    * Get a reference to the decomposed matrix. Throws if matrix has not yet been decomposed.
    *
    * @return decomposed matrix
@@ -104,22 +91,21 @@ class DBMatOffline {
   DataMatrix& getLhsMatrix_ONLY_FOR_TESTING();
 
   /**
-   * Returns a reference to the sparse grid
-   * @return grid
-   */
-  Grid& getGrid();
-
-  /**
    * Builds the right hand side matrix with or without the regularization term depending on the type
    * of decomposition
+   * @param grid The grid object the matrix is based on
+   * @param regularizationConfig Configures the regularization which is incorporated into the lhs
    */
-  virtual void buildMatrix();
+  virtual void buildMatrix(Grid* grid, RegularizationConfiguration& regularizationConfig);
 
   /**
    * Decomposes the matrix according to the chosen decomposition type.
    * The number of rows of the stored result depends on the decomposition type.
+   * @param regularizationConfig the regularization configuration
+   * @param densityEstimationConfig the density estimation configuration
    */
-  virtual void decomposeMatrix() = 0;
+  virtual void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
+      DensityEstimationConfiguration& densityEstimationConfig) = 0;
 
   /**
    * Prints the matrix onto standard output
@@ -132,30 +118,36 @@ class DBMatOffline {
    */
   virtual void store(const std::string& fileName);
 
+  /**
+   * Returns the dimensionality of the quadratic lhs matrix (i.e. the number of rows)
+   * @return the grid size
+   */
+  virtual size_t getGridSize();
+
+  /**
+   * Returns the decomposition type of the DBMatOffline object
+   * @return the type of matrix decomposition
+   */
+  virtual sgpp::datadriven::MatrixDecompositionType getDecompositionType() = 0;
+
  protected:
   DBMatOffline();
-
-  DBMatDensityConfiguration config;  // configuration for this offline object
   DataMatrix lhsMatrix;              // stores the (decomposed) matrix
   bool isConstructed;                // If the matrix was built
   bool isDecomposed;                 // If the matrix was decomposed
 
-  /**
-   * An offline object works on a hierarchical basis grid.
-   */
-  std::unique_ptr<Grid> grid;
+ public:
+  // vector of interactions (if size() == 0: a regular SG is created)
+  std::vector<std::vector <size_t>> interactions;
 
+ protected:
   /**
-   * Build the initial sparse grid
-   */
-  void InitializeGrid();
-
-  /**
-   * Read the DBMatDensityConfiguration object from a serialized DBMatOfflibe object.
+   * Read the Interactionsterms from a serialized DBMatOfflibe object.
    * @param fileName path of the serialized DBMatOffline object
-   * @param config the configuration file to populate
+   * @param interactions the interactions to populate
    */
-  void parseConfig(const std::string& fileName, DBMatDensityConfiguration& config) const;
+  void parseInter(const std::string& fileName,
+      std::vector<std::vector<size_t>>& interactions) const;
 };
 
 }  // namespace datadriven

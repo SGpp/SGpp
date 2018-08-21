@@ -21,7 +21,8 @@ namespace datadriven {
 
 class OperationDensityConditionalLinear : public OperationDensityConditional {
  public:
-  explicit OperationDensityConditionalLinear(base::Grid* grid) : grid(grid) {}
+  explicit OperationDensityConditionalLinear(base::Grid* grid)
+      : OperationDensityConditional(grid) {}
   virtual ~OperationDensityConditionalLinear() {}
 
   /**
@@ -34,10 +35,7 @@ class OperationDensityConditionalLinear : public OperationDensityConditional {
    * @param xbar Point at which to conditionalize
    */
   void doConditional(base::DataVector& alpha, base::Grid*& mg, base::DataVector& malpha,
-                     unsigned int mdim, double xbar);
-
- protected:
-  base::Grid* grid;
+                     unsigned int mdim, double xbar) override;
 };
 }  // namespace datadriven
 }  // namespace sgpp

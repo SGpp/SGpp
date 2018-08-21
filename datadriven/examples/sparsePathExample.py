@@ -107,7 +107,7 @@ def make_estimator(penalty, l1_ratio, lambda_reg):
     final_solv = solv
 
     regular = sg.RegularizationConfiguration()
-    regular.regType_ = penalty
+    regular.type_ = penalty
     regular.exponentBase_ = 1.0
     regular.lambda_ = lambda_reg
     regular.l1_ratio_ = l1_ratio

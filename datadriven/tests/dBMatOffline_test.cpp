@@ -14,61 +14,73 @@
 #include <boost/test/unit_test.hpp>
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineEigen.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/algorithm/GridFactory.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <string>
+#include <vector>
 
 BOOST_AUTO_TEST_SUITE(dBMatOffline_test)
 
 BOOST_AUTO_TEST_CASE(testReadWriteOrthoAdapt) {
-  sgpp::datadriven::DBMatDensityConfiguration config;
-  config.grid_dim_ = 2;
-  config.grid_level_ = 3;
-  config.grid_type_ = sgpp::base::GridType::Linear;
-  config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
-  config.lambda_ = 0.1;
-  config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::OrthoAdapt;
+  sgpp::base::RegularGridConfiguration gridConfig;
+  gridConfig.dim_ = 2;
+  gridConfig.level_ = 3;
+  gridConfig.type_ = sgpp::base::GridType::Linear;
+
+  sgpp::base::AdpativityConfiguration adaptivityConfig;
+
+  sgpp::datadriven::RegularizationConfiguration regularizationConfig;
+  regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
+  regularizationConfig.lambda_ = 0.1;
+
+  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+  densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
+
+  sgpp::datadriven::GridFactory gridFactory;
+  std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
+    gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+  };
 
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
-      sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(config)};
-  offline->buildMatrix();
-  offline->decomposeMatrix();
+      sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(gridConfig,
+                                                                adaptivityConfig,
+                                                                regularizationConfig,
+                                                                densityEstimationConfig)};
+  offline->buildMatrix(grid.get(), regularizationConfig);
+  offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
   std::string filename = "test.dbmat";
   offline->store(filename);
   auto newOffline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
       sgpp::datadriven::DBMatOfflineFactory::buildFromFile(filename)};
-  auto newConfig = newOffline->getConfig();
+  std::remove(filename.c_str());
 
-  /**
-   * Check Configuration
-   */
-  BOOST_CHECK_EQUAL(config.grid_dim_, newConfig.grid_dim_);
-  BOOST_CHECK_EQUAL(config.grid_level_, newConfig.grid_level_);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.grid_type_), static_cast<int>(newConfig.grid_type_));
-  BOOST_CHECK_EQUAL(static_cast<int>(config.regularization_),
-                    static_cast<int>(newConfig.regularization_));
-  BOOST_CHECK_CLOSE(config.lambda_, newConfig.lambda_, 10e-5);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.decomp_type_),
-                    static_cast<int>(newConfig.decomp_type_));
   /**
    * Check matrices
    */
   // lhsMatrix of parent object
   auto& oldMatrix = offline->getDecomposedMatrix();
+
+  std::cout << "Got old matrix decom" << std::endl;
   auto& newMatrix = newOffline->getDecomposedMatrix();
+
+  std::cout << "Got decompositions" << std::endl;
 
   BOOST_CHECK_EQUAL(oldMatrix.getSize(), newMatrix.getSize());
 
   for (size_t i = 0; i < newMatrix.getSize(); i++) {
     BOOST_CHECK_CLOSE(newMatrix[i], oldMatrix[i], 10e-5);
   }
+
+
+  std::cout << "Are close" << std::endl;
 
   // q_ortho_matrix_
   sgpp::datadriven::DBMatOfflineOrthoAdapt* child =
@@ -77,6 +89,8 @@ BOOST_AUTO_TEST_CASE(testReadWriteOrthoAdapt) {
   sgpp::datadriven::DBMatOfflineOrthoAdapt* newChild =
       static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&*newOffline);
   auto& newMatrixQ = newChild->getQ();
+
+  std::cout << "Got Q" << std::endl;
 
   BOOST_CHECK_EQUAL(oldMatrixQ.getSize(), newMatrixQ.getSize());
 
@@ -88,6 +102,9 @@ BOOST_AUTO_TEST_CASE(testReadWriteOrthoAdapt) {
   auto& oldMatrixTinv = child->getTinv();
   auto& newMatrixTinv = newChild->getTinv();
 
+
+  std::cout << "Got T" << std::endl;
+
   BOOST_CHECK_EQUAL(oldMatrixTinv.getSize(), newMatrixTinv.getSize());
 
   for (size_t i = 0; i < newMatrixTinv.getSize(); i++) {
@@ -96,37 +113,38 @@ BOOST_AUTO_TEST_CASE(testReadWriteOrthoAdapt) {
 }
 
 BOOST_AUTO_TEST_CASE(testReadWriteCholesky) {
-  sgpp::datadriven::DBMatDensityConfiguration config;
-  config.grid_dim_ = 2;
-  config.grid_level_ = 3;
-  config.grid_type_ = sgpp::base::GridType::Linear;
-  config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
-  config.lambda_ = 0.1;
-  config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::Chol;
+  sgpp::base::RegularGridConfiguration gridConfig;
+  gridConfig.dim_ = 2;
+  gridConfig.level_ = 3;
+  gridConfig.type_ = sgpp::base::GridType::Linear;
+
+  sgpp::base::AdpativityConfiguration adaptivityConfig;
+
+  sgpp::datadriven::RegularizationConfiguration regularizationConfig;
+  regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
+  regularizationConfig.lambda_ = 0.1;
+
+  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+  densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::Chol;
+
+  sgpp::datadriven::GridFactory gridFactory;
+    std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
+      gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+    };
 
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
-      sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(config)};
-  offline->buildMatrix();
-  offline->decomposeMatrix();
+      sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(gridConfig,
+                                                                adaptivityConfig,
+                                                                regularizationConfig,
+                                                                densityEstimationConfig)};
+  offline->buildMatrix(grid.get(), regularizationConfig);
+  offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
 
   std::string filename = "test.dbmat";
   offline->store(filename);
   auto newOffline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
       sgpp::datadriven::DBMatOfflineFactory::buildFromFile(filename)};
-
-  auto newConfig = newOffline->getConfig();
-
-  /**
-   * Check Configuration
-   */
-  BOOST_CHECK_EQUAL(config.grid_dim_, newConfig.grid_dim_);
-  BOOST_CHECK_EQUAL(config.grid_level_, newConfig.grid_level_);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.grid_type_), static_cast<int>(newConfig.grid_type_));
-  BOOST_CHECK_EQUAL(static_cast<int>(config.regularization_),
-                    static_cast<int>(newConfig.regularization_));
-  BOOST_CHECK_CLOSE(config.lambda_, newConfig.lambda_, 10e-5);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.decomp_type_),
-                    static_cast<int>(newConfig.decomp_type_));
+  std::remove(filename.c_str());
 
   /**
    * Check matrices
@@ -142,37 +160,38 @@ BOOST_AUTO_TEST_CASE(testReadWriteCholesky) {
 }
 
 BOOST_AUTO_TEST_CASE(testReadWriteEigen) {
-  sgpp::datadriven::DBMatDensityConfiguration config;
-  config.grid_dim_ = 2;
-  config.grid_level_ = 3;
-  config.grid_type_ = sgpp::base::GridType::Linear;
-  config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
-  config.lambda_ = 0.1;
-  config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::Eigen;
+  sgpp::base::RegularGridConfiguration gridConfig;
+  gridConfig.dim_ = 2;
+  gridConfig.level_ = 3;
+  gridConfig.type_ = sgpp::base::GridType::Linear;
+
+  sgpp::base::AdpativityConfiguration adaptivityConfig;
+
+  sgpp::datadriven::RegularizationConfiguration regularizationConfig;
+  regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
+  regularizationConfig.lambda_ = 0.1;
+
+  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+  densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::Eigen;
+
+  sgpp::datadriven::GridFactory gridFactory;
+    std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
+      gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+    };
 
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
-      sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(config)};
-  offline->buildMatrix();
-  offline->decomposeMatrix();
+      sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(gridConfig,
+                                                                adaptivityConfig,
+                                                                regularizationConfig,
+                                                                densityEstimationConfig)};
+  offline->buildMatrix(grid.get(), regularizationConfig);
+  offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
 
   std::string filename = "test.dbmat";
   offline->store(filename);
   auto newOffline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
       sgpp::datadriven::DBMatOfflineFactory::buildFromFile(filename)};
-
-  auto newConfig = newOffline->getConfig();
-
-  /**
-   * Check Configuration
-   */
-  BOOST_CHECK_EQUAL(config.grid_dim_, newConfig.grid_dim_);
-  BOOST_CHECK_EQUAL(config.grid_level_, newConfig.grid_level_);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.grid_type_), static_cast<int>(newConfig.grid_type_));
-  BOOST_CHECK_EQUAL(static_cast<int>(config.regularization_),
-                    static_cast<int>(newConfig.regularization_));
-  BOOST_CHECK_CLOSE(config.lambda_, newConfig.lambda_, 10e-5);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.decomp_type_),
-                    static_cast<int>(newConfig.decomp_type_));
+  std::remove(filename.c_str());
 
   /**
    * Check matrices
@@ -188,37 +207,38 @@ BOOST_AUTO_TEST_CASE(testReadWriteEigen) {
 }
 
 BOOST_AUTO_TEST_CASE(testReadWriteLU) {
-  sgpp::datadriven::DBMatDensityConfiguration config;
-  config.grid_dim_ = 2;
-  config.grid_level_ = 3;
-  config.grid_type_ = sgpp::base::GridType::Linear;
-  config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
-  config.lambda_ = 0.1;
-  config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::LU;
+  sgpp::base::RegularGridConfiguration gridConfig;
+  gridConfig.dim_ = 2;
+  gridConfig.level_ = 3;
+  gridConfig.type_ = sgpp::base::GridType::Linear;
+
+  sgpp::base::AdpativityConfiguration adaptivityConfig;
+
+  sgpp::datadriven::RegularizationConfiguration regularizationConfig;
+  regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
+  regularizationConfig.lambda_ = 0.1;
+
+  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+  densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::LU;
+
+  sgpp::datadriven::GridFactory gridFactory;
+    std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
+      gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+    };
 
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
-      sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(config)};
-  offline->buildMatrix();
-  offline->decomposeMatrix();
+      sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(gridConfig,
+                                                                adaptivityConfig,
+                                                                regularizationConfig,
+                                                                densityEstimationConfig)};
+  offline->buildMatrix(grid.get(), regularizationConfig);
+  offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
 
   std::string filename = "test.dbmat";
   offline->store(filename);
   auto newOffline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
       sgpp::datadriven::DBMatOfflineFactory::buildFromFile(filename)};
-
-  auto newConfig = newOffline->getConfig();
-
-  /**
-   * Check Configuration
-   */
-  BOOST_CHECK_EQUAL(config.grid_dim_, newConfig.grid_dim_);
-  BOOST_CHECK_EQUAL(config.grid_level_, newConfig.grid_level_);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.grid_type_), static_cast<int>(newConfig.grid_type_));
-  BOOST_CHECK_EQUAL(static_cast<int>(config.regularization_),
-                    static_cast<int>(newConfig.regularization_));
-  BOOST_CHECK_CLOSE(config.lambda_, newConfig.lambda_, 10e-5);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.decomp_type_),
-                    static_cast<int>(newConfig.decomp_type_));
+  std::remove(filename.c_str());
 
   /**
    * Check matrices

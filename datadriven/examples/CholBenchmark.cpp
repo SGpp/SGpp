@@ -13,9 +13,10 @@
 #include <sgpp/globaldef.hpp>
 
 #ifdef USE_GSL
-#include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 
 #include <chrono>
 #include <string>
@@ -28,24 +29,39 @@ using sgpp::base::DataVector;
 int main() {
 #ifdef USE_GSL
 
-  sgpp::datadriven::DBMatDensityConfiguration config;
-  config.grid_dim_ = 4;
-  config.grid_level_ = 5;
-  config.lambda_ = 0;
-  config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
-  config.icholParameters.sweepsDecompose = 2;
+  sgpp::base::RegularGridConfiguration gridConfig;
+  gridConfig.dim_ = 4;
+  gridConfig.level_ = 5;
 
-  config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::Chol;
+  sgpp::base::AdpativityConfiguration adaptConfig;
+
+  sgpp::datadriven::RegularizationConfiguration regularizationConfig;
+  regularizationConfig.lambda_ = 0;
+  regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
+
+  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+  densityEstimationConfig.iCholSweepsDecompose_ = 2;
+  densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::Chol;
+
   auto decompType = "Incomplete Cholesky decomposition on Dense Matrix";
   std::cout << "Decomposition type: " << decompType << std::endl;
 
-  sgpp::datadriven::DBMatOfflineDenseIChol offline(config);
-  // sgpp::datadriven::DBMatOfflineChol offline(config);
+  std::unique_ptr<sgpp::base::Grid> grid;
+  if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
+    grid =
+        std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createModLinearGrid(gridConfig.dim_)};
+  } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
+    grid = std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
+  } else {
+    return 1;
+  }
+  sgpp::datadriven::DBMatOfflineDenseIChol offline;
+  // sgpp::datadriven::DBMatOfflineChol offline(gridConfig, adaptConfig,
+  //           regularizationConfig, densityEstimationConfig);
 
-  offline.buildMatrix();
-
+  offline.buildMatrix(grid.get(), regularizationConfig);
   auto begin = std::chrono::high_resolution_clock::now();
-  offline.decomposeMatrix();
+  offline.decomposeMatrix(regularizationConfig, densityEstimationConfig);
   auto end = std::chrono::high_resolution_clock::now();
   std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms"
             << std::endl;

@@ -8,6 +8,7 @@
 #include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/grid/distribution/AbstractPointDistribution.hpp>
+#include <sgpp/combigrid/integration/GaussLegendreQuadrature.hpp>
 
 #include <cmath>
 #include <functional>
@@ -24,6 +25,12 @@ class L2LejaPointDistribution : public AbstractPointDistribution {
 
   void addPoint(double point);
 
+  /**
+   * This method computes the next L2-Leja point given the current sequence. This method uses
+   * the log-sum-exp trick to compute the relevant integrals. The reason is that the integrals
+   * become very small such that they do not fit anoymore into a double. This tricks avoids this
+   * underflow issue.
+   */
   void computeNextPoint();
 
  public:
@@ -32,6 +39,12 @@ class L2LejaPointDistribution : public AbstractPointDistribution {
   virtual ~L2LejaPointDistribution();
 
   virtual double compute(size_t numPoints, size_t j);
+
+ private:
+  double evaluate_denominator(size_t& argmaxIndex, GaussLegendreQuadrature& quadRule,
+                              double tol = 1e-14);
+  double evaluate_numerator(size_t argmaxIndex, GaussLegendreQuadrature& quadRule,
+                            double tol = 1e-14);
 };
 
 } /* namespace combigrid */

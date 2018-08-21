@@ -13,9 +13,9 @@
 #include <suitesparse/umfpack.h>
 #endif /* USE_UMFPACK */
 
+#include <algorithm>
 #include <cstddef>
 #include <iostream>
-#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -141,8 +141,7 @@ shared(system, Ti, Tj, Tx, nnz, rowsDone) default(none)
   // print ratio of nonzero entries
   {
     char str[10];
-    double nnz_ratio =
-        static_cast<double>(nnz) / (static_cast<double>(n) * static_cast<double>(n));
+    double nnz_ratio = static_cast<double>(nnz) / (static_cast<double>(n) * static_cast<double>(n));
     snprintf(str, sizeof(str), "%.1f%%", nnz_ratio * 100.0);
     Printer::getInstance().printStatusUpdate("nnz ratio: " + std::string(str));
     Printer::getInstance().printStatusNewLine();

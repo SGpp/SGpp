@@ -33,10 +33,7 @@ namespace datadriven {
 void OperationRosenblattTransformationLinear::doTransformation(base::DataVector* alpha,
                                                                base::DataMatrix* points,
                                                                base::DataMatrix* pointscdf) {
-  size_t dim_start = 0;
   size_t num_dims = this->grid->getDimension();
-  size_t num_samples = pointscdf->getNrows();
-  size_t bucket_size = num_samples / num_dims + 1;
 
   // 1. marginalize to all possible start dimensions
   std::vector<base::Grid*> grids1d(num_dims);
@@ -48,10 +45,13 @@ void OperationRosenblattTransformationLinear::doTransformation(base::DataVector*
   }
 
   // 2. compute the start dimension for each sample
+  size_t num_samples = pointscdf->getNrows();
   std::vector<size_t> startindices(num_samples);
   // change the starting dimension when the bucket_size is arrived
   // this distributes the error in the projection uniformly to all
   // dimensions and make it therefore stable
+  size_t dim_start = 0;
+  size_t bucket_size = num_samples / num_dims + 1;
   for (size_t i = 0; i < num_samples; i++) {
     if (((i + 1) % bucket_size) == 0 && (i + 1) < pointscdf->getNrows()) {
       ++dim_start;
@@ -191,7 +191,6 @@ double OperationRosenblattTransformationLinear::doTransformation1D(base::Grid* g
                                                                    base::DataVector* alpha1d,
                                                                    double coord1d) {
   /***************** STEP 1. Compute CDF  ********************/
-
   // compute PDF, sort by coordinates
   std::multimap<double, double> coord_pdf, coord_cdf;
   std::multimap<double, double>::iterator it1, it2, it3;

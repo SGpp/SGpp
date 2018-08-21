@@ -13,7 +13,7 @@
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/solver/sle/BiCGStab.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
@@ -36,17 +36,7 @@ using sgpp::solver::BiCGStab;
 using sgpp::solver::SLESolverConfiguration;
 
 ModelFittingBase::ModelFittingBase()
-    : config{nullptr}, grid{nullptr}, alpha{}, dataset{nullptr}, solver{nullptr} {}
-
-const Grid& ModelFittingBase::getGrid() const {
-  if (grid != nullptr) {
-    return *grid;
-  } else {
-    throw application_exception("No grid was fitted yet");
-  }
-}
-
-const DataVector& ModelFittingBase::getSurpluses() const { return alpha; }
+    : config{nullptr}, dataset{nullptr}, solver{nullptr} {}
 
 const FitterConfiguration& ModelFittingBase::getFitterConfiguration() const { return *config; }
 

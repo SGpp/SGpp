@@ -3,9 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/algorithm/GridFactory.hpp>
 
 #include <chrono>
 #include <iostream>
@@ -15,37 +19,48 @@ int main() {
   std::cout << "ortho_adapt algorithm benchmarks: \n";
 
   // config
-  sgpp::datadriven::DBMatDensityConfiguration config;
-  config.grid_dim_ = 4;
-  config.grid_level_ = 6;
-  config.lambda_ = 0.0001;
-  config.regularization_ = sgpp::datadriven::RegularizationType::Identity;
-  config.decomp_type_ = sgpp::datadriven::DBMatDecompostionType::OrthoAdapt;
+  sgpp::base::RegularGridConfiguration gridConfig;
+  gridConfig.dim_ = 4;
+  gridConfig.level_ = 6;
+
+  sgpp::base::AdpativityConfiguration adaptConfig;
+
+  sgpp::datadriven::RegularizationConfiguration regularizationConfig;
+  regularizationConfig.lambda_ = 0.0001;
+  regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
+
+  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+  densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
 
   size_t number_points_to_refine = 1;
   size_t number_points_to_coarsen = 1;
 
-  std::cout << "dim = " << config.grid_dim_ << "\n";
-  std::cout << "lvl = " << config.grid_level_ << "\n";
-  std::cout << "lambda = " << config.lambda_ << "\n\n";
+  std::cout << "dim = " << gridConfig.dim_ << "\n";
+  std::cout << "lvl = " << gridConfig.level_ << "\n";
+  std::cout << "lambda = " << regularizationConfig.lambda_ << "\n\n";
+
+  sgpp::datadriven::GridFactory gridFactory;
+  std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
+    gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+  };
 
   // offline phase
-  sgpp::datadriven::DBMatOfflineOrthoAdapt offline(config);
+  sgpp::datadriven::DBMatOfflineOrthoAdapt offline;
 
-  offline.buildMatrix();
-  std::cout << "initial matrix size = " << offline.getDimA();
+  offline.buildMatrix(grid.get(), regularizationConfig);
+  std::cout << "initial matrix size = " << offline.getGridSize();
 
   std::cout << "\n\ndecomposition took ";
   auto begin = std::chrono::high_resolution_clock::now();
-  offline.decomposeMatrix();
+  offline.decomposeMatrix(regularizationConfig, densityEstimationConfig);
   auto end = std::chrono::high_resolution_clock::now();
   std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms"
             << std::endl;
 
   // online phase
-  sgpp::datadriven::DBMatOnlineDEOrthoAdapt online(offline);
+  sgpp::datadriven::DBMatOnlineDEOrthoAdapt online(offline, *grid, regularizationConfig.lambda_);
 
-  size_t refine_size = offline.getDimA() + number_points_to_refine;
+  size_t refine_size = offline.getGridSize() + number_points_to_refine;
   size_t coarsen_size = refine_size - number_points_to_coarsen;
 
   // create random points to refine
@@ -68,7 +83,7 @@ int main() {
   // create random indices for coarsening
   std::vector<size_t> coarsen_indices = {};
   for (size_t i = 0; i < number_points_to_coarsen; i++) {
-    size_t index = ((size_t)rand() % (refine_size - coarsen_size)) + offline.getDimA();
+    size_t index = ((size_t)rand() % (refine_size - coarsen_size)) + offline.getGridSize();
     coarsen_indices.push_back(index);
   }
   // DEBUG:

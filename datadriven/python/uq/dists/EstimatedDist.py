@@ -8,12 +8,13 @@ from pysgpp.extensions.datadriven.uq.operations.general import isList, \
 
 class EstimatedDist(Dist):
 
-    def __init__(self, trainData, bounds=None):
+    def __init__(self, numDims, trainData=None, bounds=None):
         super(EstimatedDist, self).__init__()
 
         self.trainData = None
-        self.dim = 0
-
+        self.dim = numDims
+        self.trans = None
+        
         if trainData is not None:
             if isList(trainData) or len(trainData.shape) == 1:
                 trainData = np.array([trainData]).reshape(len(trainData), 1)
@@ -21,12 +22,16 @@ class EstimatedDist(Dist):
             self.trainData = trainData
             self.dim = trainData.shape[1]
 
-        self.trans = None
-        if bounds is not None:
-            self.trans = self.computeLinearTransformation(bounds)
-            self.bounds = self.trans.getBounds()
+            if bounds is None:
+                # estimate bounds from data
+                bounds = np.vstack((np.min(trainData, axis=0), np.max(trainData, axis=0))).T
+
+        if bounds is None:
+            self.bounds = np.array([[0, 1]] * self.dim, dtype="float")
         else:
-            self.bounds = [[0, 1]] * self.dim
+            self.bounds = bounds
+
+        self.trans = self.computeLinearTransformation(self.bounds)
 
     def rvs(self, n=1):
         unif = np.random.rand(self.dim * n).reshape(n, self.dim)
@@ -59,11 +64,17 @@ class EstimatedDist(Dist):
                 x = np.array([x])
         return x
 
+    def marginalizeToDimX(self):
+        raise NotImplementedError()
+
     def getDistributions(self):
         return [self]
 
     def getBounds(self):
-        return self.bounds
+        if self.getDim() == 1 and len(self.bounds.shape) > 1:
+            return self.bounds[0]
+        else:
+            return self.bounds
 
     def getDim(self):
         return self.dim

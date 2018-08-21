@@ -8,17 +8,17 @@
  * This examples demonstrates density estimation.
  */
 
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/application/KernelDensityEstimator.hpp>
+#include <sgpp/datadriven/application/LearnerSGDE.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/globaldef.hpp>
+
 #include <random>
 #include <string>
-
-#include "sgpp/base/datatypes/DataMatrix.hpp"
-#include "sgpp/base/grid/Grid.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/datadriven/application/GaussianKDE.hpp"
-#include "sgpp/datadriven/application/LearnerSGDE.hpp"
-#include "sgpp/datadriven/application/RegularizationConfiguration.hpp"
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
-#include "sgpp/globaldef.hpp"
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -56,7 +56,7 @@ void randu(DataMatrix& rvar, std::uint64_t seedValue = std::mt19937_64::default_
  * filename.
  */
 int main(int argc, char** argv) {
-  std::string filename = "../tests/data/friedman2_4d_10000.arff";
+  std::string filename = "../../datasets/friedman/friedman2_4d_300000.arff";
 
   std::cout << "# loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset dataset = sgpp::datadriven::ARFFTools::readARFF(filename);
@@ -99,7 +99,7 @@ int main(int argc, char** argv) {
    */
   std::cout << "# create regularization config" << std::endl;
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-  regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Laplace;
+  regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Laplace;
 
   /**
    * Configure the learner by specifying: \n
@@ -111,7 +111,7 @@ int main(int argc, char** argv) {
    * - whether parts of the output shall be kept off.
    */
   std::cout << "# create learner config" << std::endl;
-  sgpp::datadriven::CrossvalidationForRegularizationConfiguration crossvalidationConfig;
+  sgpp::datadriven::CrossvalidationConfiguration crossvalidationConfig;
   crossvalidationConfig.enable_ = false;
   crossvalidationConfig.kfold_ = 3;
   crossvalidationConfig.lambda_ = 3.16228e-06;
@@ -136,7 +136,7 @@ int main(int argc, char** argv) {
    * Estimate the probability density function (pdf) via a gaussian kernel density estimation (KDE)
    * and print the corresponding values.
    */
-  sgpp::datadriven::GaussianKDE kde(samples);
+  sgpp::datadriven::KernelDensityEstimator kde(samples);
   sgpp::base::DataVector x(learner.getDim());
   x.setAll(0.5);
 

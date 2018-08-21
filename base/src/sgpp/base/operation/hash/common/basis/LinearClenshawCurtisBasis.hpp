@@ -3,14 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef LINEAR_CLENSHAW_CURTIS_BASE_HPP
-#define LINEAR_CLENSHAW_CURTIS_BASE_HPP
+#pragma once
 
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/base/tools/ClenshawCurtisTable.hpp>
 
 #include <sgpp/globaldef.hpp>
 
+#include <algorithm>
 #include <cmath>
 
 namespace sgpp {
@@ -19,18 +19,15 @@ namespace base {
 /**
  * Linear basis on Clenshaw-Curtis grids.
  */
-template<class LT, class IT>
-class LinearClenshawCurtisBasis: public Basis<LT, IT> {
+template <class LT, class IT>
+class LinearClenshawCurtisBasis : public Basis<LT, IT> {
  public:
-  LinearClenshawCurtisBasis() :
-    clenshawCurtisTable(ClenshawCurtisTable::getInstance()) {
-  }
+  LinearClenshawCurtisBasis() : clenshawCurtisTable(ClenshawCurtisTable::getInstance()) {}
 
   /**
    * Destructor.
    */
-  ~LinearClenshawCurtisBasis() override {
-  }
+  ~LinearClenshawCurtisBasis() override {}
 
   /**
    * @param l     level of basis function
@@ -39,34 +36,35 @@ class LinearClenshawCurtisBasis: public Basis<LT, IT> {
    * @return      value of Clenshaw-Curtis linear basis function
    */
   inline double eval(LT l, IT i, double x) override {
-    if (l == 0) {
-      // first level
-      if (i == 0) {
-        return 1.0 - x;
-      } else {
-        return x;
-      }
+    // endpoints of support
+    const double x0 = clenshawCurtisTable.getPoint(l, i - 1);
+    const double x2 = clenshawCurtisTable.getPoint(l, i + 1);
+    // peak of basis function
+    const double x1 = clenshawCurtisTable.getPoint(l, i);
+
+    // linear interpolation between (x0, x1, x2), (0, 1, 0)
+    if (x < x1) {
+      return std::max(0.0, 1.0 - (x1 - x) / (x1 - x0));
     } else {
-      // endpoints of support
-      const double x0 = clenshawCurtisTable.getPoint(l, i - 1);
-      const double x2 = clenshawCurtisTable.getPoint(l, i + 1);
-
-      if ((x <= x0) || (x >= x2)) {
-        // point out of support
-        return 0.0;
-      }
-
-      // peak of basis function
-      const double x1 = clenshawCurtisTable.getPoint(l, i);
-
-      // linear interpolation between (x0, x1, x2), (0, 1, 0)
-      if (x < x1) {
-        return 1.0 - (x1 - x) / (x1 - x0);
-      } else {
-        return (x2 - x) / (x2 - x1);
-      }
+      return std::max(0.0, (x2 - x) / (x2 - x1));
     }
   }
+
+  double eval(LT level, IT index, double p, double offset, double width) {
+    // for bounding box evaluation
+    // scale p in [offset, offset + width] linearly to [0, 1] and do simple
+    // evaluation
+    return eval(level, index, (p - offset) / width);
+  }
+
+  double getIntegral(LT level, IT index) override {
+    // endpoints of support
+    const double x0 = clenshawCurtisTable.getPoint(level, index - 1);
+    const double x2 = clenshawCurtisTable.getPoint(level, index + 1);
+    return (x2 - x0) / 2.;
+  }
+
+  inline size_t getDegree() const override { return 1; }
 
  protected:
   /// reference to the Clenshaw-Curtis cache table
@@ -74,10 +72,7 @@ class LinearClenshawCurtisBasis: public Basis<LT, IT> {
 };
 
 // default type-def (unsigned int for level and index)
-typedef LinearClenshawCurtisBasis<unsigned int, unsigned int>
-SLinearClenshawCurtisBase;
+typedef LinearClenshawCurtisBasis<unsigned int, unsigned int> SLinearClenshawCurtisBase;
 
 }  // namespace base
 }  // namespace sgpp
-
-#endif /* LINEAR_CLENSHAW_CURTIS_BASE_HPP */

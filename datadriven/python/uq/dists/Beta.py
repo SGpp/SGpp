@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 #
 """
@@ -68,6 +68,12 @@ class Beta(Dist):
     def getDim(self):
         return 1
 
+    def alpha(self):
+        return self.__p
+
+    def beta(self):
+        return self.__q
+
     def __str__(self):
         return "B(%i, %i, %g, %g)" % (self.__p, self.__q,
                                       self.__l, self.__width)
@@ -83,7 +89,7 @@ class Beta(Dist):
         serializationString = '"module" : "' + \
                               self.__module__ + '",\n'
 
-        for attrName in dir(self):
+        for attrName in ["_Beta__p", "_Beta__q", "_Beta__l", "_Beta__width"]:
             attrValue = self.__getattribute__(attrName)
             serializationString += ju.parseAttribute(attrValue, attrName)
 
@@ -111,12 +117,12 @@ class Beta(Dist):
         if key in jsonObject:
             q = int(jsonObject[key])
 
-        key = '_Beta__accLevel'
+        key = '_Beta__l'
         if key in jsonObject:
-            accLevel = float(jsonObject[key])
+            l = float(jsonObject[key])
 
         key = '_Beta__width'
         if key in jsonObject:
             width = float(jsonObject[key])
 
-        return Beta(p, q, accLevel, width)
+        return Beta(p, q, l, width)

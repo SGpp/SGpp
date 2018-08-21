@@ -1,3 +1,11 @@
+#!/usr/bin/python
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
+
+## \page example_example_comparison_py example_comparison.py
+
 import pysgpp
 import math
 import matplotlib.pyplot as plt
@@ -19,6 +27,7 @@ def f(x):
 ## We have to wrap f in a pysgpp.MultiFunction object.
 func = pysgpp.multiFunc(f)
 
+## comparison function
 def compare():
     mydim = 5
     operation = pysgpp.CombigridOperation.createLinearLejaQuadrature(mydim, func)
@@ -49,4 +58,3 @@ def compare():
     print("Number of grid points: " + str(numGridPoints3))
 
 compare()
-

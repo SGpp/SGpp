@@ -7,9 +7,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
@@ -21,6 +21,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include "../algorithm/RefinementMonitorConvergence.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -28,7 +29,7 @@ namespace datadriven {
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 
-typedef std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, double>> ClassDensityConntainer;
+typedef std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>> ClassDensityConntainer;
 
 /**
  * LearnerSGDEOnOff learns the data using sparse grid density estimation. The
@@ -44,7 +45,10 @@ class LearnerSGDEOnOff {
   /**
    * Constructor.
    *
-   * @param dconf The configuration of the offline object
+   * @param gridConfig The configuration of the grid
+   * @param adaptivityConfig The configuration of the grid adaptivity
+   * @param regularizationConfig The configuration of the grid regularization
+   * @param densityEstimationConfig The configuration of the matrix decomposition
    * @param trainData The (mandatory) training dataset
    * @param testData The (mandatory) test dataset
    * @param validationData The (optional) validation dataset
@@ -53,11 +57,15 @@ class LearnerSGDEOnOff {
    * @param usePrior Determines if prior probabilities should be used to compute
    * class labels
    * @param beta The initial weighting factor
-   * @param lambda The initial regularization parameter
+   * @param matrixfile path to a decomposed matrix file
    */
-  LearnerSGDEOnOff(DBMatDensityConfiguration& dconf, Dataset& trainData, Dataset& testData,
+  LearnerSGDEOnOff(sgpp::base::RegularGridConfiguration& gridConfig,
+                   sgpp::base::AdpativityConfiguration& adaptivityConfig,
+                   sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+                   sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+                   Dataset& trainData, Dataset& testData,
                    Dataset* validationData, DataVector& classLabels, size_t classNumber,
-                   bool usePrior, double beta, double lambda);
+                   bool usePrior, double beta, std::string matrixfile = "");
 
   /**
    * Trains the learner with the given dataset.
@@ -78,25 +86,30 @@ class LearnerSGDEOnOff {
    *        processed before next refinement can be scheduled (if
    * convergence-based refinement
    *        is chosen)
-   * @param enableCv Specifies whether to perform cross-validation during
-   * training process or not
-   * @param nextCvStep Determines when next cross-validation has to be triggered
+   * @param adaptivityConfig configuration for the grid's adaptivity behaviour
+   * @param regularizationConfig configuration for the regularization
+   * @param densityEstimationConfig configuration for the density estimation
    */
   void train(size_t batchSize, size_t maxDataPasses, std::string refType, std::string refMonitor,
              size_t refPeriod, double accDeclineThreshold, size_t accDeclineBufferSize,
-             size_t minRefInterval, bool enableCv, size_t nextCvStep);
+             size_t minRefInterval,
+             sgpp::base::AdpativityConfiguration& adaptivityConfig,
+             sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+             sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
 
   /**
    * Trains the learner with the given data batch
    *
    * @param dataset The next data batch to process
-   * @param doCv Enable cross-validation
+   * @param adaptivityConfig configuration for the grid's adaptivity behaviour
+   * @param densityEstimationConfig configuration for the density estimation
    * @param refineCoarse Vector of pairs containing a list representing indices
    *        of removed grid points and an unsigned int representing added grid
    * points
    */
-  void train(Dataset& dataset, bool doCv = false,
-             std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse = nullptr);
+  void train(Dataset& dataset, sgpp::base::AdpativityConfiguration& adaptivityConfig,
+      sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+      std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse = nullptr);
 
   /**
    * Trains the learner with the given data batch that is already split up wrt
@@ -105,14 +118,15 @@ class LearnerSGDEOnOff {
    *
    * @param trainDataClasses A vector of pairs; Each pair contains the data
    * points that belong to
+   * @param densityEstimationConfig configuration for the density estimation
    *        one class and the corresponding class label
-   * @param doCv Enable cross-validation
    * @param refineCoarse Vector of pairs containing a list representing indices
    * of
    *        removed grid points and an unsigned int representing added grid
    * points
    */
-  void train(std::vector<std::pair<DataMatrix*, double>>& trainDataClasses, bool doCv = false,
+  void train(std::vector<std::pair<DataMatrix*, double>>& trainDataClasses,
+      sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
              std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse = nullptr);
 
   /**
@@ -163,19 +177,14 @@ class LearnerSGDEOnOff {
   void getDensities(DataVector& point, DataVector& density) const;
 
   /**
-   * Sets the cross-validation parameters.
-   * They get directly passed to the DBMatOnlineDE class-instance.
+   * Updates the surplus vector of a certain class
    *
-   * @param lambdaStep Defines how many different lambdas are tried out
-   * @param lambdaStart The smallest possible lambda
-   * @param lambdaEnd The biggest possible lambda
-   * @param test The test matrix
-   * @param testRes The results of the points in the test matrix
-   * @param logscale Indicates whether the values between lambdaStart
-   *        and lambdaEnd are searched using logscale or not
+   * @param classIndex the index of the class
+   * @param deletedPoints a list of indexes of deleted points (coarsening)
+   * @param newPoints the number of new grid points (refinemenet)
    */
-  void setCrossValidationParameters(int lambdaStep, double lambdaStart, double lambdaEnd,
-                                    DataMatrix* test, DataMatrix* testRes, bool logscale);
+  void updateAlpha(size_t classIndex, std::list<size_t>* deletedPoints,
+      size_t newPoints);
 
   /**
   * In case of crossvalidation, returns the current best lambda.
@@ -198,10 +207,19 @@ class LearnerSGDEOnOff {
    */
   ClassDensityConntainer& getDensityFunctions();
 
- private:
-  void refine(ConvergenceMonitor& monitor,
+ protected:
+  void refine(RefinementMonitor& monitor,
+              sgpp::base::AdpativityConfiguration& adaptivityConfig,
+              sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+              sgpp::datadriven::DensityEstimationConfiguration&
+              densityEstimationConfig,
               std::vector<std::pair<std::list<size_t>, size_t>>& refineCoarse,
               std::string& refType);
+
+  // Grids TODO(fuchsgruber): Move outwards (just in this class so that it compiles...)
+  std::vector<std::unique_ptr<Grid>> grids;
+  // Surplusses TODO(fuchsgruber): Move alphas outwards (just in this class so that it compiles)
+  std::vector<DataVector*> alphas;
 
   // The training data
   Dataset& trainData;
@@ -223,8 +241,9 @@ class LearnerSGDEOnOff {
   // Indicates whether the model has been trained or not
   bool trained;
 
-  // The offline object (contains decomposed matrix)
+  // Contains the offline object that was cloned into all other classes
   std::unique_ptr<DBMatOffline> offline;
+  // Contains all offline objects
   std::vector<std::unique_ptr<DBMatOffline>> offlineContainer;
   // The online objects (density functions)
   ClassDensityConntainer densityFunctions;

@@ -133,10 +133,10 @@ LearnerPiecewiseConstantSmoothedRegression::computeRegularizationMatrix(
   sgpp::base::Grid& grid) {
   OperationMatrix* C = NULL;
 
-  if (regularizationConfig.regType_ ==
+  if (regularizationConfig.type_ ==
       sgpp::datadriven::RegularizationType::Identity) {
     C = sgpp::op_factory::createOperationIdentity(grid);
-  } else if (regularizationConfig.regType_ ==
+  } else if (regularizationConfig.type_ ==
              sgpp::datadriven::RegularizationType::Laplace) {
     C = sgpp::op_factory::createOperationLaplace(grid);
   } else {
