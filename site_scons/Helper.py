@@ -4,9 +4,6 @@
 # sgpp.sparsegrids.org
 
 from __future__ import print_function
-from builtins import map
-from builtins import str
-from builtins import object
 
 import glob
 import os
