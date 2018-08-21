@@ -5,13 +5,20 @@
 
 __Tested with dakota 6.8__
 
--# Obtain source code either from:
-  - dakota git repository: https://dakota.sandia.gov/content/getting-dakota-source-code
-  - downloading appropriate source package: https://dakota.sandia.gov/downloads
-
 -# Install dependencies as described here: https://dakota.sandia.gov/content/install-required-tools-and-libraries
   - On Ubuntu most dependencies can be installed from standard package repository. \n
     See https://dakota.sandia.gov/content/linux-ubuntu-1404 for reference
+
+-# Obtain source code either from:
+  - dakota git repository: https://dakota.sandia.gov/content/getting-dakota-source-code
+    @verbatim
+git clone https://software.sandia.gov/git/dakota
+edit dakota/.gitmodules to redirect each of the submodule URLs <sm> to https://software.sandia.gov/git/<sm>
+git submodule sync
+git submodule update --init
+    @endverbatim
+  - downloading appropriate source package: https://dakota.sandia.gov/downloads
+
 
 -# Follow compilation and installation example at https://dakota.sandia.gov/content/configure-compile-and-install-dakota
     
