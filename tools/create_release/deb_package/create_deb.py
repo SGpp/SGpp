@@ -18,6 +18,11 @@ if not os.path.exists("../../../lib/sgpp/libsgppbase.so"):
     print("Aborting: At least \"libsgppbase.so\" has to exist in \"../../../lib/sgpp\"")
     sys.exit(1)
 
+# make sure that SG++ was built with python spport
+if not os.path.exists("../../../lib/pysgpp/_pysgpp_swig.so"):
+    print("Aborting: \"_pysgpp_swig.so\" not found, SG++ was probably not build with python support")
+    sys.exit(1)
+
 # figure out which modules were built
 modules = []
 for so_file in os.listdir("../../../lib/sgpp/"):
@@ -87,7 +92,43 @@ with open(package_name + "/DEBIAN/control", "w") as f:
 
 # finally, create the package
 try:
-    subprocess.check_call(["dpkg-deb", "--build", package_name])
+    subprocess.check_call(["fakeroot", "dpkg-deb", "--build", package_name])
+except Exception as e:
+    print("Error: building the deb-file failed")
+    print("reason: ")
+    print(str(e))
+
+# now create the python bindings package
+package_name = "libsgpp-python_" + major_version + "." + minor_version + "-" + package_revision
+print("python bindings package name: " + package_name)
+deb_name = package_name + ".deb"
+
+if os.path.exists(package_name):
+    print("Aborting: build path \"" + package_name + "\" already exists (remove or create different version)")
+    sys.exit(1)
+
+if os.path.exists(deb_name):
+    print("Aborting: The deb file to build (\""+ deb_name + "\") already exists")
+    sys.exit(1)
+
+os.makedirs(os.path.join(package_name, "usr/lib/python2.7/dist-packages/pysgpp/"))
+
+# copy main shared library
+shutil.copy("../../../lib/pysgpp/_pysgpp_swig.so", os.path.join(package_name, "usr/lib/python2.7/dist-packages/pysgpp/_pysgpp_swig.so"))
+# copy library files
+import copy_python
+copy_python.copy_python(package_name)
+# copy meta-files
+os.makedirs(os.path.join(package_name, "DEBIAN"))
+control_template = jinja2_env.get_template('control_python_template')
+rendered = control_template.render(major_version=major_version, minor_version=minor_version, package_revision=package_revision, maintainer_name=maintainer_name, maintainer_email=maintainer_email)
+with open(os.path.join(package_name, "DEBIAN/control"), "w") as f:
+    # dpkg-deb requires newline at the end of the file
+    f.write(rendered + "\n")
+
+# finally, create the package
+try:
+    subprocess.check_call(["fakeroot", "dpkg-deb", "--build", package_name])
 except Exception as e:
     print("Error: building the deb-file failed")
     print("reason: ")
