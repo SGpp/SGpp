@@ -32,7 +32,8 @@ moduleDependencies = ["sgppoptimization", "sgpppde", "sgppsolver", "sgppquadratu
 additionalDependencies = []
 
 checkForLibrary("PECOS",        "USE_DAKOTA",   "pecos_global_defs.hpp", "libpecos_src")
-checkForLibrary("PECOS_teuch",  "USE_DAKOTA",   "pecos_global_defs.hpp", "libteuchos")
+checkForLibrary("PECOS_teuchcore",  "USE_DAKOTA",   "pecos_global_defs.hpp", "libteuchoscore")
+checkForLibrary("PECOS_teuchnumerics",  "USE_DAKOTA",   "pecos_global_defs.hpp", "libteuchosnumerics")
 checkForLibrary("PECOS_dak",    "USE_DAKOTA",   "pecos_global_defs.hpp", "dakota_src")
 
 module = ModuleHelper.Module(moduleDependencies, additionalDependencies)
