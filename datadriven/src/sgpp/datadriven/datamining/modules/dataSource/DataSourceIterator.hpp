@@ -31,7 +31,7 @@ class DataSourceIterator {
    * @param sampleProvider DataSource to iterate over
    * @param counter current iteration of the #sgpp::datadriven::DataSource.
    */
-  DataSourceIterator(DataSource& sampleProvider, size_t counter);
+  DataSourceIterator(DataSource &sampleProvider, size_t counter);
 
   /**
    * Compares two #sgpp::datadriven::DataSourceIterator objects for equality. Required for
@@ -39,7 +39,7 @@ class DataSourceIterator {
    * @param other The other iterator to compare this object to.
    * @return True if the iterators do not have an equal amount of iterations.
    */
-  bool operator!=(const DataSourceIterator& other) const;
+  bool operator!=(const DataSourceIterator &other) const;
   // TODO(lettrich): Discuss if this is robust enough or if we have to check for other stuff as well
   // e.g. equal objects they point to.
 
@@ -47,7 +47,7 @@ class DataSourceIterator {
    * Go to the next #sgpp::datadriven::Dataset (if available).
    * @return const reference to this object with updated state.
    */
-  const DataSourceIterator& operator++();
+  const DataSourceIterator &operator++();
 
   /**
    * Dereferencing an iterator yields the object the iterator currently points to.
@@ -56,19 +56,18 @@ class DataSourceIterator {
    * #sgpp::datadriven::Dataset is owned
    * by the caller.
    */
-  Dataset* operator*();
+  Dataset *operator*();
 
  private:
   /**
    * The sample provider to iterate over
    */
-  DataSource& sampleProvider;
+  DataSource &sampleProvider;
 
   /**
    * Private counter to keep track of the current iteration.
    */
   size_t counter;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

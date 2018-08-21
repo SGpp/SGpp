@@ -21,7 +21,7 @@ namespace datadriven {
 
 using sgpp::base::data_exception;
 
-DensityEstimationType DensityEstimationTypeParser::parse(const std::string& input) {
+DensityEstimationType DensityEstimationTypeParser::parse(const std::string &input) {
   auto inputLower = input;
   std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
 
@@ -31,21 +31,20 @@ DensityEstimationType DensityEstimationTypeParser::parse(const std::string& inpu
     return sgpp::datadriven::DensityEstimationType::Decomposition;
   } else {
     std::string errorMsg = "Failed to convert string \"" + input + "\" to any known "
-    "DensityEstimationType";
+        "DensityEstimationType";
     throw data_exception(errorMsg.c_str());
   }
 }
 
-const std::string& DensityEstimationTypeParser::toString(DensityEstimationType type) {
-    return densityEstimationTypeMap.at(type);
+const std::string &DensityEstimationTypeParser::toString(DensityEstimationType type) {
+  return densityEstimationTypeMap.at(type);
 }
 
 const DensityEstimationTypeParser::DensityEstimationTypeMap_t
-DensityEstimationTypeParser::densityEstimationTypeMap = []() {
+    DensityEstimationTypeParser::densityEstimationTypeMap = []() {
   return DensityEstimationTypeMap_t{
       std::make_pair(DensityEstimationType::CG, "CG"),
       std::make_pair(DensityEstimationType::Decomposition, "Decomposition")};
 }();
-
 } /* namespace datadriven */
 } /* namespace sgpp */

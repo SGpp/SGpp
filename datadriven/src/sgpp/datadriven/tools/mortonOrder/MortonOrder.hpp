@@ -16,24 +16,24 @@
 namespace sgpp {
 namespace datadriven {
 
-/// Class for re-arranging Datasets along a Morton order curve
+// / Class for re-arranging Datasets along a Morton order curve
 class MortonOrder {
  public:
-  /// Generates the permutation according to the given dataset.
+  // / Generates the permutation according to the given dataset.
   explicit MortonOrder(sgpp::datadriven::Dataset *dataset);
 
-  /// Re-arrange the Dataset object along Z-Curve
+  // / Re-arrange the Dataset object along Z-Curve
   void orderDataset();
-  /// Restores the original order of the Dataset object
+  // / Restores the original order of the Dataset object
   void restoreDataset();
 
-  /// Check if permutation is identity
+  // / Check if permutation is identity
   bool isIdentity() const;
 
-  /// Check if Dataset is orderes along Z-Curve
+  // / Check if Dataset is orderes along Z-Curve
   bool isOrdered() const;
 
-  /// Access to the permutation vector
+  // / Access to the permutation vector
   const std::vector<size_t> &getPermutation() const;
 
  protected:
@@ -42,7 +42,6 @@ class MortonOrder {
   bool _isIdentity;
   sgpp::datadriven::Dataset *_dataset;
 };
-
 }  // namespace datadriven
 }  // namespace sgpp
 
