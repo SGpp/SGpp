@@ -1,3 +1,4 @@
+from builtins import range
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
@@ -86,7 +87,7 @@ class TestCheckpointController(unittest.TestCase):
                        0.649230972775,
                       -0.618841896127]
         alpha = DataVector(len(testValues))
-        for i in xrange(len(testValues)):
+        for i in range(len(testValues)):
             alpha[i] = testValues[i]
 
         learnedKnowledge = LearnedKnowledge()
@@ -122,7 +123,7 @@ class TestCheckpointController(unittest.TestCase):
 
         self.assertEqual(len(testValues), len(learnedKnowledge.getAlphas()))
 
-        for i in xrange(len(testValues)):
+        for i in range(len(testValues)):
             self.assertAlmostEqual(testValues[i], learnedKnowledge.getAlphas()[i])
 
 

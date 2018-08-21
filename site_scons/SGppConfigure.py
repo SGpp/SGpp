@@ -350,12 +350,12 @@ def checkPython(config):
                                pythonpath,
                                "Hint: You might have to install the package " + package + ".")
 
-    if config.env["USE_PYTHON3_FOR_PYSGPP"]:
-      if config.env["RUN_PYTHON_TESTS"]:
-        Helper.printWarning("Python unit tests were disabled because "
-                            "they are not supported on Python 3.x.")
-        config.env["RUN_PYTHON_TESTS"] = False
-      return
+    # if config.env["USE_PYTHON3_FOR_PYSGPP"]:
+    #   if config.env["RUN_PYTHON_TESTS"]:
+    #     Helper.printWarning("Python unit tests were disabled because "
+    #                         "they are not supported on Python 3.x.")
+    #     config.env["RUN_PYTHON_TESTS"] = False
+    #   return
 
     try:
       import numpy

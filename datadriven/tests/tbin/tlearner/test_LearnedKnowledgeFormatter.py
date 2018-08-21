@@ -1,3 +1,4 @@
+from builtins import range
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
@@ -45,7 +46,7 @@ class TestLearnedKnowledgeFormatter(unittest.TestCase):
         #self.assertEqual(alphas.getDim(), 1)
         a = 0.1
         row = DataVector(1)
-        for i in xrange(10):
+        for i in range(10):
             row = alphas[i]
             self.assertAlmostEqual(row, a)
             a = a + 0.1
@@ -56,7 +57,7 @@ class TestLearnedKnowledgeFormatter(unittest.TestCase):
     def testSave(self,):
         alphas = DataVector(10)
         a = 0.1
-        for i in xrange(10):
+        for i in range(10):
             alphas[i] = a
             a = a + 0.1
         knowledge = LearnedKnowledge()
@@ -68,7 +69,7 @@ class TestLearnedKnowledgeFormatter(unittest.TestCase):
         #self.assertEqual(alphas.getDim(), 1)
         a = 0.1
         row = DataVector(1)
-        for i in xrange(10):
+        for i in range(10):
             row = alphas[i]
             self.assertAlmostEqual(row, a)
             a = a + 0.1

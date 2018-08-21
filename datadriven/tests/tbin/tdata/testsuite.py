@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -10,9 +11,9 @@ import sys, os
 pathname = os.path.dirname(__file__)
 sys.path.append(os.path.abspath(pathname) + '/../../..')
 
-from test_ARFFAdapter import TestARFFAdapter
-from test_DataContainer import TestDataContainer
-from test_DataEntry import TestDataEntry 
+from .test_ARFFAdapter import TestARFFAdapter
+from .test_DataContainer import TestDataContainer
+from .test_DataEntry import TestDataEntry 
 
 suite1 = unittest.makeSuite(TestARFFAdapter,'test')
 suite2 = unittest.makeSuite(TestDataContainer,'test')

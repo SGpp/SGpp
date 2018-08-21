@@ -1,3 +1,4 @@
+from __future__ import print_function
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
@@ -40,9 +41,9 @@ class TestTerminalController(unittest.TestCase):
         command = "python../../../bin/controller/TerminalController.py --jobfile ./" + jobfile
         [out,err] = Popen(command.split(" "), stdout = PIPE).communicate()
         if err:
-            print err
+            print(err)
         if out:
-            print out
+            print(out)
 
 
 
