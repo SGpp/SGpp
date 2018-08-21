@@ -18,6 +18,10 @@
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/LeastSquaresRegressionFitterFactory.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 
 #include <string>
 
@@ -31,5 +35,9 @@ ModelFittingBase* LeastSquaresRegressionMinerFactory::createFitter(
   return new ModelFittingLeastSquares(config);
 }
 
+FitterFactory *LeastSquaresRegressionMinerFactory::createFitterFactory(
+    const DataMiningConfigParser &parser) const {
+  return new LeastSquaresRegressionFitterFactory(parser);
+}
 } /* namespace datadriven */
 } /* namespace sgpp */

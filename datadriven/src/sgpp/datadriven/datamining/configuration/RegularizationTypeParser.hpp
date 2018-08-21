@@ -29,14 +29,14 @@ class RegularizationTypeParser {
    * #sgpp::datadriven::RegularizationType.
    * @return the corresponding #sgpp::datadriven::RegularizationType.
    */
-  static RegularizationType parse(const std::string& input);
+  static RegularizationType parse(const std::string &input);
 
   /**
    * generate string representations for values of #sgpp::datadriven::RegularizationType.
    * @param type enum value.
    * @return string representation of a #sgpp::datadriven::RegularizationType.
    */
-  static const std::string& toString(RegularizationType type);
+  static const std::string &toString(RegularizationType type);
 
  private:
   typedef std::map<RegularizationType, std::string> RegularizationTypeMap_t;
@@ -47,6 +47,5 @@ class RegularizationTypeParser {
    */
   static const RegularizationTypeMap_t regularizationTypeMap;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

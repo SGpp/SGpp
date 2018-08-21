@@ -22,7 +22,7 @@ namespace datadriven {
  */
 class MSE : public Metric {
  public:
-  Metric* clone() const override;
+  Metric *clone() const override;
 
   /**
    * Quantify the difference between predicted values and actual values in terms of mean
@@ -32,8 +32,7 @@ class MSE : public Metric {
    * @param trueValues actual values as taken from the dataset.
    * @return mean squared error (MSE) - strictly positive such that smaller values are better.
    */
-  double measure(const DataVector& predictedValues, const DataVector& trueValues) const override;
+  double measure(const DataVector &predictedValues, const DataVector &trueValues) const override;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

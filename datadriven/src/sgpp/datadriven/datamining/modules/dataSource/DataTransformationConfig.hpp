@@ -31,6 +31,5 @@ struct DataTransformationConfig {
 
   RosenblattTransformationConfig rosenblattConfig;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

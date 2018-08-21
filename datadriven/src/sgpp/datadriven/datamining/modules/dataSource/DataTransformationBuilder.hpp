@@ -38,7 +38,7 @@ class DataTransformationBuilder {
    *  numSamplesForTranformation to calculate probability density function pdf / alpha
    * @return pointer to the initialized dataTransformation
    */
-  DataTransformation* buildTransformation(DataTransformationConfig config);
+  DataTransformation *buildTransformation(DataTransformationConfig config);
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

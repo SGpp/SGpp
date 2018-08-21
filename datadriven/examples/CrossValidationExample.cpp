@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
    * Here the actual learning process is launched. The miner will perform k-fold cross validation
    * and print the mean score as well as the standard deviation.
    */
-  miner.learn();
+  miner.learn(true);
 
   return 0;
 }

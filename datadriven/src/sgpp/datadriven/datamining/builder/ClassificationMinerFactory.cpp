@@ -31,5 +31,10 @@ ModelFittingBase* ClassificationMinerFactory::createFitter(
   return new ModelFittingClassification(config);
 }
 
+// TODO(dominik/eric): make classification fitter factory and set up all hyperparameters
+FitterFactory *ClassificationMinerFactory::createFitterFactory(
+    const DataMiningConfigParser &parser) const {
+  return nullptr;
+}
 } /* namespace datadriven */
 } /* namespace sgpp */
