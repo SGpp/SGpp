@@ -61,7 +61,6 @@
 #include <sgpp/datadriven/application/Learner.hpp>
 #include <sgpp/datadriven/application/LearnerSGD.hpp>
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
-#include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/application/LearnerSVM.hpp>
 #include <sgpp/datadriven/application/PrimalDualSVM.hpp>
 #include <sgpp/datadriven/application/RegressionLearner.hpp>
