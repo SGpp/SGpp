@@ -45,6 +45,8 @@ class ClassificationMinerFactory : public MinerFactory {
    * configuration file.
    */
   ModelFittingBase* createFitter(const DataMiningConfigParser& parser) const override;
+
+  FitterFactory* createFitterFactory(const DataMiningConfigParser& parser) const override;
 };
 
 } /* namespace datadriven */

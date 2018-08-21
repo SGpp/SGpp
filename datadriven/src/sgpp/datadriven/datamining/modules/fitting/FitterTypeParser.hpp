@@ -33,14 +33,14 @@ class FitterTypeParser {
    * #sgpp::datadriven::FitterType.
    * @return the corresponding #sgpp::datadriven::FitterType.
    */
-  static FitterType parse(const std::string& input);
+  static FitterType parse(const std::string &input);
 
   /**
    * generate string representations for values of #sgpp::datadriven::ScorerMetricType.
    * @param type enum value.
    * @return string representation of a #sgpp::datadriven::FitterType.
    */
-  static const std::string& toString(FitterType type);
+  static const std::string &toString(FitterType type);
 
  private:
   typedef std::map<FitterType, std::string> FitterTypeMap_t;
@@ -51,6 +51,5 @@ class FitterTypeParser {
    */
   static const FitterTypeMap_t fitterTypeMap;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

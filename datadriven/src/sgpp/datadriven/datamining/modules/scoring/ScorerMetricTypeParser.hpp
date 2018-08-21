@@ -33,14 +33,14 @@ class ScorerMetricTypeParser {
    * #sgpp::datadriven::ScorerMetricType.
    * @return the corresponding #sgpp::datadriven::ScorerMetricType.
    */
-  static ScorerMetricType parse(const std::string& input);
+  static ScorerMetricType parse(const std::string &input);
 
   /**
    * generate string representations for values of #sgpp::datadriven::ScorerMetricType.
    * @param type enum value.
    * @return string representation of a #sgpp::datadriven::ScorerMetricType.
    */
-  static const std::string& toString(ScorerMetricType type);
+  static const std::string &toString(ScorerMetricType type);
 
  private:
   typedef std::map<ScorerMetricType, std::string> MetricTypeMap_t;
@@ -50,6 +50,5 @@ class ScorerMetricTypeParser {
    */
   static const MetricTypeMap_t metricTypeMap;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

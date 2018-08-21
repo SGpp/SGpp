@@ -37,7 +37,7 @@ double testDistributionCG(std::string testCSV, std::string config) {
   // Train model
   DensityEstimationMinerFactory factory;
   auto miner = std::unique_ptr<SparseGridMiner>(factory.buildMiner(config));
-  miner->learn();
+  miner->learn(false);
   ModelFittingBase *model = miner->getModel();
   // Test
   CSVFileSampleProvider csv;

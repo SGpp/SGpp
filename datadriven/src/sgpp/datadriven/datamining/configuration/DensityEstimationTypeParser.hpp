@@ -29,14 +29,14 @@ class DensityEstimationTypeParser {
    * #sgpp::datadriven::DensityEstimationType.
    * @return the corresponding #sgpp::datadriven::DensityEstimationType.
    */
-  static DensityEstimationType parse(const std::string& input);
+  static DensityEstimationType parse(const std::string &input);
 
   /**
    * generate string representations for values of #sgpp::datadriven::DensityEstimationType.
    * @param type enum value.
    * @return string representation of a #sgpp::datadriven::DensityEstimationType.
    */
-  static const std::string& toString(DensityEstimationType type);
+  static const std::string &toString(DensityEstimationType type);
 
  private:
   typedef std::map<DensityEstimationType, std::string> DensityEstimationTypeMap_t;
@@ -47,6 +47,5 @@ class DensityEstimationTypeParser {
    */
   static const DensityEstimationTypeMap_t densityEstimationTypeMap;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */
