@@ -165,11 +165,11 @@ class ARFFAdapter(DataAdapter):
     # @param mode default: "r" for read only
     # @return file descriptor
     def __gzOpen(self, filename, mode="r"):
+        # mode set for binary data?
+        if not mode[-1] == "b":
+            mode += "b"
         # gzip-file
         if re.match(".*\.gz$", filename):
-            # mode set for binary data?
-            if not mode[-1] == "b":
-                mode += "b"
             fd = gzip.open(filename, mode)
         # non gzip-file
         else:
