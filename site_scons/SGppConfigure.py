@@ -17,7 +17,10 @@ import Helper
 
 def getOutput(command):
   # redirect stderr to stdout
-  output = subprocess.check_output(command, stderr=subprocess.STDOUT)
+  try:
+    output = subprocess.check_output(command, stderr=subprocess.STDOUT)
+  except subprocess.CalledProcessError as e:
+    output = e.output  
   # in Python 3.x, check_output returns bytes
   if sys.version_info >= (3, 0): output = output.decode()
   # strip trailing newlines
@@ -350,28 +353,34 @@ def checkPython(config):
                                pythonpath,
                                "Hint: You might have to install the package " + package + ".")
 
-    try:
-      import numpy
-      numpy_path = os.path.join(os.path.split(numpy.__file__)[0], "core", "include")
+    numpy_path=getOutput(["python3", "-c", "import numpy, os;"
+    "print(os.path.join(os.path.split(numpy.__file__)[0], \"core\", \"include\"))"]) 
+    print("~~")
+    print(numpy_path)
+    print("~~")
+    if numpy_path.startswith("error"):
+      Helper.printWarning("Warning: Numpy doesn't seem to be installed.")
+      if config.env["RUN_PYTHON_TESTS"]:
+        Helper.printWarning("Python unit tests were disabled because numpy is not available.")
+        config.env["RUN_PYTHON_TESTS"] = False
+    else:
       config.env.AppendUnique(CPPPATH=[numpy_path])
       if not config.CheckCXXHeader(["Python.h", "pyconfig.h", "numpy/arrayobject.h"]):
         Helper.printWarning("Cannot find NumPy header files in " + str(numpy_path) + ".")
         if config.env["RUN_PYTHON_TESTS"]:
           config.env["RUN_PYTHON_TESTS"] = False
           Helper.printWarning("Python unit tests were disabled due to missing numpy development headers.")
-    except:
-      Helper.printWarning("Warning: Numpy doesn't seem to be installed.")
-      if config.env["RUN_PYTHON_TESTS"]:
-        Helper.printWarning("Python unit tests were disabled because numpy is not available.")
-        config.env["RUN_PYTHON_TESTS"] = False
 
-    try:
-      import builtins
-    except:
-      Helper.printWarning("Warning: future doesn't seem to be installed.")
+    if getOutput(["python3", "-c", "import builtins; "]).startswith('error'):
+      Helper.printWarning("Warning: Future doesn't seem to be installed.")
 
   else:
     Helper.printInfo("Python extension (SG_PYTHON) not enabled.")
+
+# def try_import(module_name, package_name):
+#   if "ModuleNotFoundError" in getOutput(["python3", "-c",
+#           "import {builtins}; "]):
+#           raise ModuleNotFoundError
 
 def checkJava(config):
   if config.env["SG_JAVA"]:
