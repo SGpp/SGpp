@@ -11,6 +11,7 @@ namespace std {
     %template(IndexValPair) pair<size_t, double>;
     %template(IndexValVector) vector<pair<size_t, double> >;
     %template(SizeTVector) vector<size_t>;
+    %template(DataVectorVector) vector<sgpp::base::DataVector>;
 }
 
 // include other interface files

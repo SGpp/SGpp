@@ -173,6 +173,8 @@
 #include <sgpp/base/operation/hash/OperationEvalModNotAKnotBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModPolyNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModWaveletNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalNaturalBsplineBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalNotAKnotBsplineBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyNaive.hpp>
 

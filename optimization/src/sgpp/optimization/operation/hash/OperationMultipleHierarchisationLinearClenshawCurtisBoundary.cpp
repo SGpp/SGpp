@@ -5,22 +5,23 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearClenshawCurtis.hpp>
-#include <sgpp/base/operation/hash/OperationEvalLinearClenshawCurtisNaive.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearClenshawCurtisBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationEvalLinearClenshawCurtisBoundaryNaive.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 
 namespace sgpp {
 namespace optimization {
 
-OperationMultipleHierarchisationLinearClenshawCurtis::
-    OperationMultipleHierarchisationLinearClenshawCurtis(base::LinearClenshawCurtisGrid& grid)
+OperationMultipleHierarchisationLinearClenshawCurtisBoundary::
+    OperationMultipleHierarchisationLinearClenshawCurtisBoundary(
+        base::LinearClenshawCurtisBoundaryGrid& grid)
     : grid(grid) {}
 
-OperationMultipleHierarchisationLinearClenshawCurtis::
-    ~OperationMultipleHierarchisationLinearClenshawCurtis() {}
+OperationMultipleHierarchisationLinearClenshawCurtisBoundary::
+    ~OperationMultipleHierarchisationLinearClenshawCurtisBoundary() {}
 
-bool OperationMultipleHierarchisationLinearClenshawCurtis::doHierarchisation(
+bool OperationMultipleHierarchisationLinearClenshawCurtisBoundary::doHierarchisation(
     base::DataVector& nodeValues) {
   HierarchisationSLE system(grid);
   sle_solver::Auto solver;
@@ -28,11 +29,11 @@ bool OperationMultipleHierarchisationLinearClenshawCurtis::doHierarchisation(
   return solver.solve(system, b, nodeValues);
 }
 
-void OperationMultipleHierarchisationLinearClenshawCurtis::doDehierarchisation(
+void OperationMultipleHierarchisationLinearClenshawCurtisBoundary::doDehierarchisation(
     base::DataVector& alpha) {
   base::GridStorage& storage = grid.getStorage();
   const size_t d = storage.getDimension();
-  base::OperationEvalLinearClenshawCurtisNaive opNaiveEval(storage);
+  base::OperationEvalLinearClenshawCurtisBoundaryNaive opNaiveEval(storage);
   base::DataVector nodeValues(storage.getSize());
   base::DataVector x(d, 0.0);
 
@@ -45,7 +46,7 @@ void OperationMultipleHierarchisationLinearClenshawCurtis::doDehierarchisation(
   alpha = nodeValues;
 }
 
-bool OperationMultipleHierarchisationLinearClenshawCurtis::doHierarchisation(
+bool OperationMultipleHierarchisationLinearClenshawCurtisBoundary::doHierarchisation(
     base::DataMatrix& nodeValues) {
   HierarchisationSLE system(grid);
   sle_solver::Auto solver;
@@ -53,11 +54,11 @@ bool OperationMultipleHierarchisationLinearClenshawCurtis::doHierarchisation(
   return solver.solve(system, B, nodeValues);
 }
 
-void OperationMultipleHierarchisationLinearClenshawCurtis::doDehierarchisation(
+void OperationMultipleHierarchisationLinearClenshawCurtisBoundary::doDehierarchisation(
     base::DataMatrix& alpha) {
   base::GridStorage& storage = grid.getStorage();
   const size_t d = storage.getDimension();
-  base::OperationEvalLinearClenshawCurtisNaive opNaiveEval(storage);
+  base::OperationEvalLinearClenshawCurtisBoundaryNaive opNaiveEval(storage);
   base::DataVector nodeValues(storage.getSize(), 0.0);
   base::DataVector x(d, 0.0);
   base::DataVector alpha1(storage.getSize(), 0.0);

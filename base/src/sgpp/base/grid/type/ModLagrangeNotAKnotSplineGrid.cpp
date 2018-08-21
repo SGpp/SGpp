@@ -30,7 +30,7 @@ sgpp::base::GridType ModLagrangeNotAKnotSplineGrid::getType() {
   return sgpp::base::GridType::ModLagrangeNotAKnotSpline;
 }
 
-const SBasis& ModLagrangeNotAKnotSplineGrid::getBasis() { return *basis_; }
+SBasis& ModLagrangeNotAKnotSplineGrid::getBasis() { return *basis_; }
 
 size_t ModLagrangeNotAKnotSplineGrid::getDegree() { return this->degree; }
 

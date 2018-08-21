@@ -129,7 +129,7 @@ enum class GridType {
   LinearClenshawCurtis,               // 28
   ModPolyClenshawCurtis,              // 29
   ModLinearClenshawCurtis,            // 30
-  NakBsplineBoundaryCombigrid         // 31
+  NakBsplineBoundaryCombigrid,        // 31
   NaturalBsplineBoundary,             // 32
   NotAKnotBsplineBoundary,            // 33
   ModNotAKnotBspline,                 // 34
@@ -149,7 +149,8 @@ public:
   static Grid* createLinearBoundaryGrid(size_t dim);
   static Grid* createLinearBoundaryGrid(size_t dim, size_t boundaryLevel);
   static Grid* createLinearClenshawCurtisGrid(size_t dim);
-  static Grid* createLinearClenshawCurtisGrid(size_t dim, size_t boundaryLevel);
+  static Grid* createLinearClenshawCurtisBoundaryGrid(size_t dim, size_t boundaryLevel);
+  static Grid* createModLinearClenshawCurtisGrid(size_t dim);
   static Grid* createLinearStretchedBoundaryGrid(size_t dim);
   static Grid* createModLinearGrid(size_t dim);
   static Grid* createPolyGrid(size_t dim, size_t degree);
