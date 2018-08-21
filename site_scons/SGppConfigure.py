@@ -355,10 +355,7 @@ def checkPython(config):
 
     numpy_path=getOutput(["python3", "-c", "import numpy, os;"
     "print(os.path.join(os.path.split(numpy.__file__)[0], \"core\", \"include\"))"]) 
-    print("~~")
-    print(numpy_path)
-    print("~~")
-    if numpy_path.startswith("error"):
+    if numpy_path.startswith("Traceback"):
       Helper.printWarning("Warning: Numpy doesn't seem to be installed.")
       if config.env["RUN_PYTHON_TESTS"]:
         Helper.printWarning("Python unit tests were disabled because numpy is not available.")
@@ -371,16 +368,11 @@ def checkPython(config):
           config.env["RUN_PYTHON_TESTS"] = False
           Helper.printWarning("Python unit tests were disabled due to missing numpy development headers.")
 
-    if getOutput(["python3", "-c", "import builtins; "]).startswith('error'):
+    if getOutput(["python3", "-c", "import builtins; "]).startswith('Traceback'):
       Helper.printWarning("Warning: Future doesn't seem to be installed.")
 
   else:
     Helper.printInfo("Python extension (SG_PYTHON) not enabled.")
-
-# def try_import(module_name, package_name):
-#   if "ModuleNotFoundError" in getOutput(["python3", "-c",
-#           "import {builtins}; "]):
-#           raise ModuleNotFoundError
 
 def checkJava(config):
   if config.env["SG_JAVA"]:
