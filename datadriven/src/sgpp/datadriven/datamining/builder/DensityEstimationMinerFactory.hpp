@@ -34,6 +34,8 @@ class DensityEstimationMinerFactory : public MinerFactory {
    */
   DensityEstimationMinerFactory() = default;
 
+  sgpp::datadriven::HyperparameterOptimizer *buildHPO(const std::string &path) const override;
+
  private:
   /**
    * Build an instance of a #sgpp::datadriven::ModelFittingBase object as specified in the
@@ -45,7 +47,8 @@ class DensityEstimationMinerFactory : public MinerFactory {
    * configuration file.
    */
   ModelFittingBase* createFitter(const DataMiningConfigParser& parser) const override;
-};
 
+  FitterFactory* createFitterFactory(const DataMiningConfigParser& parser) const override;
+};
 } /* namespace datadriven */
 } /* namespace sgpp */

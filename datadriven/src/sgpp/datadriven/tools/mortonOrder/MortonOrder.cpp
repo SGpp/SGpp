@@ -16,7 +16,7 @@
 namespace sgpp {
 namespace datadriven {
 
-///@cond DOXY_IGNORE // NOLINT()
+// /@cond DOXY_IGNORE // NOLINT()
 namespace MortonOrderDetail {
 
 union ext_double_t {
@@ -28,7 +28,7 @@ union ext_double_t {
   } bit;
 };
 
-/// Returns most significant bit from a integer value
+// / Returns most significant bit from a integer value
 int MSB(size_t value) {
   int ret = 0;
   while (value > 1) {
@@ -43,7 +43,7 @@ struct data_perm_t {
   std::vector<ext_double_t> pos;
 };
 
-/// Returns MSB from 2 double values
+// / Returns MSB from 2 double values
 int XOR_MSB(ext_double_t a, ext_double_t b) {
   int ret;
   if (a.bit.exp == b.bit.exp)
@@ -90,13 +90,12 @@ void zorder(const sgpp::base::DataMatrix &data, std::vector<size_t> &perm) {
     perm[i] = workdata[i].idx;
   }
 }
-
 }  // namespace MortonOrderDetail
-///@endcond  // NOLINT()
+// /@endcond  // NOLINT()
 
 using MortonOrderDetail::zorder;
 
-/// Constructor. Generates the permuation list on the GPU
+// / Constructor. Generates the permuation list on the GPU
 MortonOrder::MortonOrder(sgpp::datadriven::Dataset *dataset) : _dataset(dataset) {
   // Compute permuation
   zorder(_dataset->getData(), permutation);
@@ -109,7 +108,7 @@ MortonOrder::MortonOrder(sgpp::datadriven::Dataset *dataset) : _dataset(dataset)
   _isOrdered = false;
 }
 
-/// Re-arrange a Dataset object along Z-Curve inplace
+// / Re-arrange a Dataset object along Z-Curve inplace
 void MortonOrder::orderDataset() {
   if (_isOrdered) return;
   sgpp::base::DataMatrix matrix(_dataset->getData());
@@ -123,7 +122,7 @@ void MortonOrder::orderDataset() {
   _isOrdered = true;
 }
 
-/// Restores the original order of a Dataset object inplace
+// / Restores the original order of a Dataset object inplace
 void MortonOrder::restoreDataset() {
   if (!_isOrdered) return;
   sgpp::base::DataMatrix matrix(_dataset->getData());
@@ -137,14 +136,13 @@ void MortonOrder::restoreDataset() {
   _isOrdered = false;
 }
 
-/// Check if permutation is identity
+// / Check if permutation is identity
 bool MortonOrder::isIdentity() const { return _isIdentity; }
 
-/// Check if Dataset is ordered
+// / Check if Dataset is ordered
 bool MortonOrder::isOrdered() const { return _isOrdered; }
 
-/// Access to the permutation vector
+// / Access to the permutation vector
 const std::vector<size_t> &MortonOrder::getPermutation() const { return permutation; }
-
 }  // namespace datadriven
 }  // namespace sgpp

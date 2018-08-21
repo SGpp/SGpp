@@ -35,14 +35,14 @@ class SLESolverTypeParser {
    * #sgpp::solver::SLESolverType.
    * @return the corresponding #sgpp::solver::SLESolverType.
    */
-  static SLESolverType parse(const std::string& input);
+  static SLESolverType parse(const std::string &input);
 
   /**
    * generate string representations for values of #sgpp::solver::SLESolverType.
    * @param type enum value.
    * @return string representation of a #sgpp::solver::SLESolverType.
    */
-  static const std::string& toString(SLESolverType type);
+  static const std::string &toString(SLESolverType type);
 
  private:
   typedef std::map<SLESolverType, std::string> SLESolverTypeMap_t;
@@ -53,6 +53,5 @@ class SLESolverTypeParser {
    */
   static const SLESolverTypeMap_t sleSolverTypeMap;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */
