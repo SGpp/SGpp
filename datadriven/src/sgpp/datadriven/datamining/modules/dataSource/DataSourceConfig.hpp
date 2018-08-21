@@ -64,9 +64,9 @@ struct DataSourceConfig {
    * whether the file has targets (i.e. supervised learning)
    */
   bool hasTargets = true;
- /*
-  * Configuration for possible data transformation on dataset
-  */
+  /*
+   * Configuration for possible data transformation on dataset
+   */
   datadriven::DataTransformationConfig dataTransformationConfig;
   /**
    * The type of shuffling to be applied to the data
@@ -81,6 +81,5 @@ struct DataSourceConfig {
    */
   size_t epochs = 1;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

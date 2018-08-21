@@ -42,27 +42,27 @@ class FitterConfiguration {
    * Copy constructor
    * @param rhs const reference to the scorer object to copy from.
    */
-  FitterConfiguration(const FitterConfiguration& rhs) = default;
+  FitterConfiguration(const FitterConfiguration &rhs) = default;
 
   /**
    * Move constructor
    * @param rhs R-value reference to a scorer object to moved from.
    */
-  FitterConfiguration(FitterConfiguration&& rhs) = default;
+  FitterConfiguration(FitterConfiguration &&rhs) = default;
 
   /**
    * Copy assign operator
    * @param rhs const reference to the scorer object to copy from.
    * @return rerefernce to this with updated values.
    */
-  FitterConfiguration& operator=(const FitterConfiguration& rhs) = default;
+  FitterConfiguration &operator=(const FitterConfiguration &rhs) = default;
 
   /**
    * Move assign operator
    * @param rhs R-value reference to an a scorer object to move from.
    * @return rerefernce to this with updated values.
    */
-  FitterConfiguration& operator=(FitterConfiguration&& rhs) = default;
+  FitterConfiguration &operator=(FitterConfiguration &&rhs) = default;
 
   /**
    * virtual destructor.
@@ -73,63 +73,63 @@ class FitterConfiguration {
    * Polymorphic clone pattern
    * @return deep copy of this object. New object is owned by caller.
    */
-  virtual FitterConfiguration* clone() const = 0;
+  virtual FitterConfiguration *clone() const = 0;
 
   /**
    * Get initial conditions for the grid before adaptive refinement.
    * @return immutable RegularGridConfiguration
    */
-  const base::RegularGridConfiguration& getGridConfig() const;
+  const base::RegularGridConfiguration &getGridConfig() const;
 
   /**
    * Get how the adaptivity algorithms for the grid should behave.
    * @return immutable AdpativityConfiguration
    */
-  const base::AdpativityConfiguration& getRefinementConfig() const;
+  const base::AdpativityConfiguration &getRefinementConfig() const;
 
   /**
    * Get how the crossvalidation should behave.
    * @return immutable CrossvalidationConfiguration
    */
-  const datadriven::CrossvalidationConfiguration& getCrossvalidationConfig() const;
+  const datadriven::CrossvalidationConfiguration &getCrossvalidationConfig() const;
 
   /**
    * Get how the density estimation should behave.
    * @return immutable DensityEstimationConfiguration
    */
-  const datadriven::DensityEstimationConfiguration& getDensityEstimationConfig() const;
+  const datadriven::DensityEstimationConfiguration &getDensityEstimationConfig() const;
 
   /**
    * Get configuration for the linear system solver which should be used while building
    * adaptive grids
    * @return immutable SLESolverConfiguration
    */
-  const solver::SLESolverConfiguration& getSolverRefineConfig() const;
+  const solver::SLESolverConfiguration &getSolverRefineConfig() const;
 
   /**
    * Get configuration for the linear system solver when solving the final, refined system
    * @return immutable SLESolverConfiguration
    */
-  const solver::SLESolverConfiguration& getSolverFinalConfig() const;
+  const solver::SLESolverConfiguration &getSolverFinalConfig() const;
 
   /**
    * Get the type of regularization operation to use
    * @return immutable RegularizationConfiguration
    */
-  const datadriven::RegularizationConfiguration& getRegularizationConfig() const;
+  const datadriven::RegularizationConfiguration &getRegularizationConfig() const;
 
   /**
    * Get implementation (openMP, MPI, GPU) that should be used for
    * #sgpp::base::OperationMultipleEval.
    * @return immutable OperationMultipleEvalConfiguration
    */
-  const datadriven::OperationMultipleEvalConfiguration& getMultipleEvalConfig() const;
+  const datadriven::OperationMultipleEvalConfiguration &getMultipleEvalConfig() const;
 
   /**
    * Returns the database configuration, i.e. the filepath
    * @return immutable DatabaseConfiguration
    */
-  const datadriven::DatabaseConfiguration& getDatabaseConfig() const;
+  const datadriven::DatabaseConfiguration &getDatabaseConfig() const;
 
   /**
    * Returns the configuration for the learner's behaviour
@@ -141,51 +141,51 @@ class FitterConfiguration {
    * Get or set initial conditions for the grid before adaptive refinement.
    * @return RegularGridConfiguration
    */
-  base::RegularGridConfiguration& getGridConfig();
+  base::RegularGridConfiguration &getGridConfig();
 
   /**
    * Get or set how the adaptivity algorithms for the grid should behave.
    * @return AdpativityConfiguration
    */
-  base::AdpativityConfiguration& getRefinementConfig();
+  base::AdpativityConfiguration &getRefinementConfig();
 
   /**
    * Get or set how the crossvalidation should behave.
    * @return CrossvalidationConfiguration
    */
-  datadriven::CrossvalidationConfiguration& getCrossvalidationConfig();
+  datadriven::CrossvalidationConfiguration &getCrossvalidationConfig();
 
   /**
    * Get or set how the density estimation should behave.
    * @return DensityEstimationConfiguration
    */
-  datadriven::DensityEstimationConfiguration& getDensityEstimationConfig();
+  datadriven::DensityEstimationConfiguration &getDensityEstimationConfig();
 
   /**
    * Get or set configuration for the linear system solver which should be used while building
    * adaptive grids
    * @return SLESolverConfiguration
    */
-  solver::SLESolverConfiguration& getSolverRefineConfig();
+  solver::SLESolverConfiguration &getSolverRefineConfig();
 
   /**
    * Get or set configuration for the linear system solver when solving the final, refined system
    * @return SLESolverConfiguration
    */
-  solver::SLESolverConfiguration& getSolverFinalConfig();
+  solver::SLESolverConfiguration &getSolverFinalConfig();
 
   /**
    * Get or set the type of regularization operation to use
    * @return RegularizationConfiguration
    */
-  datadriven::RegularizationConfiguration& getRegularizationConfig();
+  datadriven::RegularizationConfiguration &getRegularizationConfig();
 
   /**
    * Get or set implementation (openMP, MPI, GPU) that should be used for
    * #sgpp::base::OperationMultipleEval.
    * @return current OperationMultipleEvalConfiguration
    */
-  datadriven::OperationMultipleEvalConfiguration& getMultipleEvalConfig();
+  datadriven::OperationMultipleEvalConfiguration &getMultipleEvalConfig();
 
   /**
    * set default values for all members based on the desired scenario.
@@ -196,7 +196,7 @@ class FitterConfiguration {
    * obtain parameters from a parser
    * @param parser: the parser object to read from
    */
-  virtual void readParams(const DataMiningConfigParser& parser) = 0;
+  virtual void readParams(const DataMiningConfigParser &parser) = 0;
 
  protected:
   /**
