@@ -370,7 +370,10 @@ def checkPython(config):
 
     if getOutput(["python3", "-c", "import builtins; "]).startswith('Traceback'):
       Helper.printWarning("Warning: Future doesn't seem to be installed.")
-
+        
+    if getOutput(["python3", "-c", "import scipy; "]).startswith('Traceback'):
+      Helper.printWarning("Warning: Scipy doesn't seem to be installed.")
+        
   else:
     Helper.printInfo("Python extension (SG_PYTHON) not enabled.")
 

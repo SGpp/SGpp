@@ -120,7 +120,7 @@ class ASGCAnalysis(Analysis):
         ans = {}
         for t, values in list(time_dependent_values.items()):
             ans[t] = self._estimateDensityByConfig(dtype, values, config)
-        
+
         return ans
 
 
