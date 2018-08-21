@@ -56,7 +56,7 @@ void HashCoarsening::free_coarsen_NFirstOnly(GridStorage& storage,
   for (size_t z = minIndexConsidered; z < numFirstPoints; z++) {
     GridPoint& point = storage.getPoint(z);
 
-    if (point.isLeaf() && point.isInnerPoint()) {
+    if (point.isLeaf()) {
       CoarseningFunctor::value_type current_value = functor(storage, z);
 
       if (current_value < removeCandidates[max_idx].second) {
