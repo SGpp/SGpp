@@ -19,7 +19,7 @@
 ## We first import all pysgpp and other utility libraries.
 import numpy as np
 import pysgpp as sg; sg.omp_set_num_threads(4)
-import pandas as pd
+#import pandas as pd
 import sklearn.datasets as data
 
 ## This function generates the Friedman1 dataset on demand.
@@ -52,7 +52,7 @@ def evaluate(X_tr, y_tr, X_te, y_te, T):
     final_solv.maxIterations = 200
 
     regular = sg.RegularizationConfiguration()
-    regular.regType_ = sg.RegularizationType_Identity
+    regular.type_ = sg.RegularizationType_Identity
     regular.exponentBase_ = 1.0
     regular.lambda_ = 10e-4    
 
@@ -74,3 +74,5 @@ def main():
         mse = evaluate(X_tr, y_tr, X_te, y_te, T)
         print "The sparse grid with T={:2.1f} achieved a testing RMSE of {:2.4f}.".format(T, np.sqrt(mse))
 
+if __name__ == '__main__':
+    main()

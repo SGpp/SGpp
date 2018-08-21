@@ -1,6 +1,6 @@
 from pysgpp.extensions.datadriven.uq.estimators import (MonteCarloStrategy,
-                               AnalyticEstimationStrategy,
-                               CollocationPointsStrategy)
+                                                        AnalyticEstimationStrategy,
+                                                        CollocationPointsStrategy)
 
 from ASGCAnalysis import ASGCAnalysis
 

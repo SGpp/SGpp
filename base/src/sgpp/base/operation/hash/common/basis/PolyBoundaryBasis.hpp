@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef POLYBOUNDARY_BASE_HPP
-#define POLYBOUNDARY_BASE_HPP
+#pragma once
 
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -70,7 +69,7 @@ class PolyBoundaryBasis : public Basis<LT, IT> {
     return result;
   }
 
-  size_t getDegree() { return polyBasis.getDegree(); }
+  size_t getDegree() const override { return polyBasis.getDegree(); }
 
   double eval(LT level, IT index, double p) override {
     // make sure that the point is inside the unit interval
@@ -99,7 +98,18 @@ class PolyBoundaryBasis : public Basis<LT, IT> {
     return eval(level, index, (p - offset) / width);
   }
 
-  double getIntegral(LT level, IT index) {
+  double evalDx(LT level, IT index, double x) {
+    if ((level == 0) && (index == 0)) {
+      return ((0.0 < x && x < 1.0) ? -1.0 : 0.0);
+    } else if ((level == 0) && (index == 1)) {
+      return ((0.0 < x && x < 1.0) ? 1.0 : 0.0);
+    } else {
+      // interior basis function
+      return polyBasis.evalDx(level, index, x);
+    }
+  }
+
+  double getIntegral(LT level, IT index) override {
     if (level == 0) {
       return 0.5;
     } else {
@@ -113,5 +123,3 @@ typedef PolyBoundaryBasis<unsigned int, unsigned int> SPolyBoundaryBase;
 
 }  // namespace base
 }  // namespace sgpp
-
-#endif /* POLYBOUNDARY_BASE_HPP */

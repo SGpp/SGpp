@@ -5,8 +5,9 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/datadriven/algorithm/DBMatDensityConfiguration.hpp>
 #include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 
 #include <chrono>
@@ -56,12 +57,12 @@ int main() {
       /**
        * Get the training, test and validation data
        */
-      std::string filename = "../../datasets/ripley/ripleyGarcke.train.arff";
+      std::string filename = "../tests/data/ripleyGarcke.train.arff";
       // load training samples
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset trainDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
 
-      filename = "../../datasets/ripley/ripleyGarcke.test.arff";
+      filename = "../tests/data/ripleyGarcke.test.arff";
       // load test samples
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset testDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
@@ -97,33 +98,42 @@ int main() {
        */
       std::cout << "# create regularization config" << std::endl;
       sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-      regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Identity;
+      regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
+
+      // initial regularization parameter lambda
+      regularizationConfig.lambda_ = 0.01;
 
       /**
        * Select the desired decomposition type for the offline step.
        * Note: Refinement/Coarsening only possible for Cholesky decomposition
        * and OrthoAdapt
        */
-      sgpp::datadriven::DBMatDecompostionType dt;
+      sgpp::datadriven::MatrixDecompositionType dt;
       std::string decompType;
       // choose "LU decomposition"
-      // dt = DBMatDecompostionType::DBMatDecompLU;
+      // dt = MatrixDecompositionType::DBMatDecompLU;
       // decompType = "LU decomposition";
 
       // choose"Eigen decomposition"
-      // dt = DBMatDecompostionType::DBMatDecompEigen;
+      // dt = MatrixDecompositionType::DBMatDecompEigen;
       // decompType = "Eigen decomposition";
 
       // choose "Cholesky decomposition"
-      // dt = sgpp::datadriven::DBMatDecompostionType::Chol;
-      // decompType = "Cholesky decomposition";
-      // dt = sgpp::datadriven::DBMatDecompostionType::IChol;
+      dt = sgpp::datadriven::MatrixDecompositionType::Chol;
+      decompType = "Cholesky decomposition";
+      // dt = sgpp::datadriven::MatrixDecompositionType::IChol;
       // decompType = "Incomplete Cholesky decomposition";
-      // dt = sgpp::datadriven::DBMatDecompostionType::DenseIchol;
+      // dt = sgpp::datadriven::MatrixDecompositionType::DenseIchol;
 
       // choose "orthogonal Adaptivity"
-      dt = sgpp::datadriven::DBMatDecompostionType::OrthoAdapt;
-      decompType = "orthogonal Adaptivity";
+      // dt = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
+      // decompType = "orthogonal Adaptivity";
+      sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+      densityEstimationConfig.decomposition_ = dt;
+
+      // those two are only relevant, when we use iChol decomposition type
+      densityEstimationConfig.iCholSweepsDecompose_ = 2;
+      densityEstimationConfig.iCholSweepsRefine_ = 2;
 
       std::cout << "Decomposition type: " << decompType << std::endl;
 
@@ -170,42 +180,18 @@ int main() {
       adaptConfig.noPoints_ = 10;
       adaptConfig.threshold_ = 0.0;  // only required for surplus refinement
 
-      // initial regularization parameter lambda
-      double lambda = 0.01;
       // initial weighting factor
       double beta = 0.0;
-      // configuration
-      sgpp::datadriven::DBMatDensityConfiguration dconf(gridConfig, adaptConfig,
-                                                        regularizationConfig.regType_, lambda, dt);
       // specify if prior should be used to predict class labels
       bool usePrior = false;
-
-      dconf.icholParameters.sweepsDecompose = 2;
-      dconf.icholParameters.sweepsRefine = 2;
 
       /**
        * Create the learner.
        */
       std::cout << "# create learner" << std::endl;
-      sgpp::datadriven::LearnerSGDEOnOff learner(dconf, trainDataset, testDataset, nullptr,
-                                                 classLabels, classNum, usePrior, beta, lambda);
-
-      /**
-       * Configure cross-validation.
-       * Set enableCv=true to perform cross-validation
-       * during the learning process.
-       */
-      bool enableCv = false;
-      // set cv configuration if cv enabled
-      size_t nextCvStep = 50;
-      double cvLambdaStart = 1e-1;
-      double cvLambdaEnd = 1e-10;
-      int cvLambdaSteps = 10;
-      bool cvLogScale = true;
-      sgpp::base::DataMatrix* cvTestData = &testDataset.getData();
-      sgpp::base::DataMatrix* cvTestDataRes = nullptr;  // needed?
-      learner.setCrossValidationParameters(cvLambdaSteps, cvLambdaStart, cvLambdaEnd, cvTestData,
-                                           cvTestDataRes, cvLogScale);
+      sgpp::datadriven::LearnerSGDEOnOff learner(gridConfig, adaptConfig, regularizationConfig,
+                                                 densityEstimationConfig, trainDataset, testDataset,
+                                                 nullptr, classLabels, classNum, usePrior, beta);
 
       // specify batch size
       // (set to 1 for processing only a single data point each iteration)
@@ -218,7 +204,8 @@ int main() {
        */
       std::cout << "# start to train the learner" << std::endl;
       learner.train(batchSize, maxDataPasses, refType, refMonitor, refPeriod, accDeclineThreshold,
-                    accDeclineBufferSize, minRefInterval, enableCv, nextCvStep);
+                    accDeclineBufferSize, minRefInterval, adaptConfig,
+                    regularizationConfig, densityEstimationConfig);
 
       /**
        * Accuracy on test data.

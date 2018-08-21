@@ -27,7 +27,7 @@ using sgpp::base::DataVector;
  */
 class DBMatOfflineChol : public DBMatOfflineGE {
  public:
-  explicit DBMatOfflineChol(const DBMatDensityConfiguration& oc);
+  DBMatOfflineChol();
 
   explicit DBMatOfflineChol(const std::string& fileName);
 
@@ -36,21 +36,33 @@ class DBMatOfflineChol : public DBMatOfflineGE {
   bool isRefineable() override;
 
   /**
+   * Returns the decomposition type of the DBMatOffline object
+   * @return the type of matrix decomposition
+   */
+  sgpp::datadriven::MatrixDecompositionType getDecompositionType() override;
+
+  /**
    * Decomposes the matrix according to the chosen decomposition type.
    * The number of rows of the stored result depends on the decomposition type.
+   * @param regularizationConfig the regularization configuration
+   * @param densityEstimationConfig the density estimation configuration
    */
-  void decomposeMatrix() override;
+  void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
+      DensityEstimationConfiguration& densityEstimationConfig) override;
 
   /**
    * Updates offline cholesky factorization based on coarsed (deletedPoints)
    * and refined (newPoints) gridPoints
    *
-   * @param deletedPoints list of indices of last coarsed points
+   * @param grid the underlying grid
+   * @param densityEstimationConfig configuration for the density estimation
    * @param newPoints amount of refined points
+   * @param deletedPoints list of indices of last coarsed points
    * @param lambda the regularization parameter
    */
-  virtual void choleskyModification(size_t newPoints, std::list<size_t> deletedPoints,
-                                    double lambda);
+  virtual void choleskyModification(Grid& grid,
+      datadriven::DensityEstimationConfiguration& densityEstimationConfig, size_t newPoints,
+      std::list<size_t> deletedPoints, double lambda);
 
  protected:
   /**

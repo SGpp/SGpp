@@ -13,6 +13,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
+
 
 namespace sgpp {
 namespace base {
@@ -38,9 +40,9 @@ void L0BoundaryGridGenerator::full(size_t level) {
   gen.fullWithBoundary(this->storage, static_cast<level_t>(level));
 }
 
-void L0BoundaryGridGenerator::refine(RefinementFunctor& func) {
+void L0BoundaryGridGenerator::refine(RefinementFunctor& func, std::vector<size_t>* addedPoints) {
   HashRefinementBoundaries refine;
-  refine.free_refine(this->storage, func);
+  refine.free_refine(this->storage, func, addedPoints);
 }
 
 size_t L0BoundaryGridGenerator::getNumberOfRefinablePoints() {

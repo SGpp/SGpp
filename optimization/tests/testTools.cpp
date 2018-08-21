@@ -7,9 +7,9 @@
 #include <boost/test/unit_test.hpp>
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/optimization/test_problems/unconstrained/Sphere.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Sphere.hpp>
 #include <sgpp/optimization/tools/FileIO.hpp>
 #include <sgpp/optimization/tools/Math.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
@@ -33,10 +33,8 @@ void gridEqualityTest(sgpp::base::Grid& grid1, sgpp::base::Grid& grid2) {
 
   for (size_t k = 0; k < n; k++) {
     for (size_t t = 0; t < d; t++) {
-      BOOST_CHECK_EQUAL(storage1[k].getLevel(t),
-                        storage2[k].getLevel(t));
-      BOOST_CHECK_EQUAL(storage1[k].getIndex(t),
-                        storage2[k].getIndex(t));
+      BOOST_CHECK_EQUAL(storage1[k].getLevel(t), storage2[k].getLevel(t));
+      BOOST_CHECK_EQUAL(storage1[k].getIndex(t), storage2[k].getIndex(t));
     }
   }
 }
@@ -76,8 +74,7 @@ void orthogonalityTest(sgpp::base::DataMatrix& A) {
         entry += A(i, l) * A(j, l);
       }
 
-      BOOST_CHECK_SMALL(entry - ((i == j) ? 1.0 :
-                                 0.0), 1e-10);
+      BOOST_CHECK_SMALL(entry - ((i == j) ? 1.0 : 0.0), 1e-10);
     }
   }
 }
@@ -131,25 +128,21 @@ void randomMatrixEntry(T& x) {
 
 template <>
 void randomMatrixEntry(float& x) {
-  x = static_cast<float>(RandomNumberGenerator::getInstance().getUniformRN(-100.0,
-                         100.0));
+  x = static_cast<float>(RandomNumberGenerator::getInstance().getUniformRN(-100.0, 100.0));
 }
 
 template <>
 void randomMatrixEntry(double& x) {
-  x = static_cast<double>(RandomNumberGenerator::getInstance().getUniformRN(
-                            -100.0, 100.0));
+  x = static_cast<double>(RandomNumberGenerator::getInstance().getUniformRN(-100.0, 100.0));
 }
 
 template <>
 void randomMatrixEntry(std::string& x) {
-  const size_t length = RandomNumberGenerator::getInstance().getUniformIndexRN(
-                          100);
+  const size_t length = RandomNumberGenerator::getInstance().getUniformIndexRN(100);
   x.clear();
 
   for (size_t i = 0; i < length; i++) {
-    x += static_cast<char>(32 +
-                           RandomNumberGenerator::getInstance().getUniformIndexRN(96));
+    x += static_cast<char>(32 + RandomNumberGenerator::getInstance().getUniformIndexRN(96));
   }
 }
 
@@ -373,12 +366,8 @@ BOOST_AUTO_TEST_CASE(TestRandomNumberGenerator) {
       BOOST_CHECK_LE(numbers[i], 1.0);
     }
 
-    BOOST_CHECK_SMALL(calculateMean(numbers) - 0.5,
-                      1e-3);
-    BOOST_CHECK_SMALL(calculateVariance(numbers) -
-                      1.0 /
-                      12.0,
-                      1e-3);
+    BOOST_CHECK_SMALL(calculateMean(numbers) - 0.5, 1e-3);
+    BOOST_CHECK_SMALL(calculateVariance(numbers) - 1.0 / 12.0, 1e-3);
   }
 
   // test Gaussian random numbers
@@ -391,33 +380,24 @@ BOOST_AUTO_TEST_CASE(TestRandomNumberGenerator) {
         numbers[i] = RandomNumberGenerator::getInstance().getGaussianRN(mus[k], sigmas[k]);
       }
 
-      BOOST_CHECK_SMALL(calculateMean(numbers) - mus[k],
-                        0.1 * sigmas[k]);
+      BOOST_CHECK_SMALL(calculateMean(numbers) - mus[k], 0.1 * sigmas[k]);
       BOOST_CHECK_SMALL(calculateVariance(numbers) - sigmas[k] * sigmas[k],
-                        0.1 *
-                        sigmas[k] * sigmas[k]);
+                        0.1 * sigmas[k] * sigmas[k]);
     }
   }
 
   // test discrete uniform random numbers
   for (size_t k = 1; k < 11; k++) {
     for (size_t i = 0; i < N; i++) {
-      numbers[i] = static_cast<double>(
-                     RandomNumberGenerator::getInstance().getUniformIndexRN(k));
+      numbers[i] = static_cast<double>(RandomNumberGenerator::getInstance().getUniformIndexRN(k));
       BOOST_CHECK_EQUAL(numbers[i], static_cast<int>(numbers[i]));
       BOOST_CHECK_GE(numbers[i], 0);
-      BOOST_CHECK_LE(numbers[i], k - 1);
+      BOOST_CHECK_LE(numbers[i], static_cast<double>(k - 1));
     }
 
     double kDbl = static_cast<double>(k);
-    BOOST_CHECK_SMALL(calculateMean(numbers) -
-                      (kDbl - 1.0) /
-                      2.0,
-                      0.01 * kDbl);
-    BOOST_CHECK_SMALL(calculateVariance(numbers) -
-                      (kDbl * kDbl - 1.0) /
-                      12.0,
-                      0.01 * kDbl * kDbl);
+    BOOST_CHECK_SMALL(calculateMean(numbers) - (kDbl - 1.0) / 2.0, 0.01 * kDbl);
+    BOOST_CHECK_SMALL(calculateVariance(numbers) - (kDbl * kDbl - 1.0) / 12.0, 0.01 * kDbl * kDbl);
   }
 }
 

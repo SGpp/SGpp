@@ -6,10 +6,16 @@
 #pragma once
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DatabaseConfiguration.hpp>
+#include <sgpp/datadriven/configuration/LearnerConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
+
+#include <string>
 
 namespace sgpp {
 namespace datadriven {
@@ -19,7 +25,7 @@ class DataMiningConfigParser;
 /**
  * Different fitter scenarios have different default values and support different operations
  */
-enum class FitterType { RegressionLeastSquares };
+enum class FitterType { RegressionLeastSquares, DensityEstimation };
 
 /**
  * General configuration object for fitters. Bundles all structures needed to build a sparse grid,
@@ -82,6 +88,18 @@ class FitterConfiguration {
   const base::AdpativityConfiguration& getRefinementConfig() const;
 
   /**
+   * Get how the crossvalidation should behave.
+   * @return immutable CrossvalidationConfiguration
+   */
+  const datadriven::CrossvalidationConfiguration& getCrossvalidationConfig() const;
+
+  /**
+   * Get how the density estimation should behave.
+   * @return immutable DensityEstimationConfiguration
+   */
+  const datadriven::DensityEstimationConfiguration& getDensityEstimationConfig() const;
+
+  /**
    * Get configuration for the linear system solver which should be used while building
    * adaptive grids
    * @return immutable SLESolverConfiguration
@@ -108,6 +126,18 @@ class FitterConfiguration {
   const datadriven::OperationMultipleEvalConfiguration& getMultipleEvalConfig() const;
 
   /**
+   * Returns the database configuration, i.e. the filepath
+   * @return immutable DatabaseConfiguration
+   */
+  const datadriven::DatabaseConfiguration& getDatabaseConfig() const;
+
+  /**
+   * Returns the configuration for the learner's behaviour
+   * @return immutable LearnerConfiguration
+   */
+  const datadriven::LearnerConfiguration& getLearnerConfig() const;
+
+  /**
    * Get or set initial conditions for the grid before adaptive refinement.
    * @return RegularGridConfiguration
    */
@@ -118,6 +148,18 @@ class FitterConfiguration {
    * @return AdpativityConfiguration
    */
   base::AdpativityConfiguration& getRefinementConfig();
+
+  /**
+   * Get or set how the crossvalidation should behave.
+   * @return CrossvalidationConfiguration
+   */
+  datadriven::CrossvalidationConfiguration& getCrossvalidationConfig();
+
+  /**
+   * Get or set how the density estimation should behave.
+   * @return DensityEstimationConfiguration
+   */
+  datadriven::DensityEstimationConfiguration& getDensityEstimationConfig();
 
   /**
    * Get or set configuration for the linear system solver which should be used while building
@@ -168,6 +210,21 @@ class FitterConfiguration {
   base::AdpativityConfiguration adaptivityConfig;
 
   /**
+   * Configure how the crossvalidation should behave.
+   */
+  datadriven::CrossvalidationConfiguration crossvalidationConfig;
+
+  /**
+   * Configure how the density estimation should behave.
+   */
+  datadriven::DensityEstimationConfiguration densityEstimationConfig;
+
+  /**
+   * Configure where the lhs datamatrix decomposition database is stored
+   */
+  datadriven::DatabaseConfiguration databaseConfig;
+
+  /**
    * Configuration for the linear system solver which should be used while building adaptive grids
    */
   solver::SLESolverConfiguration solverRefineConfig;
@@ -188,6 +245,11 @@ class FitterConfiguration {
    * #sgpp::base::OperationMultipleEval
    */
   datadriven::OperationMultipleEvalConfiguration multipleEvalConfig;
+
+  /**
+   * Configuration for the learner's behaviour
+   */
+  datadriven::LearnerConfiguration learnerConfig;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

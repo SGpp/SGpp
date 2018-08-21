@@ -57,6 +57,8 @@ class CombigridTreeStorage : public AbstractCombigridStorage {
       MultiIndex const &level, MultiIndexIterator &iterator,
       std::vector<bool> orderingConfiguration);
 
+  std::shared_ptr<TreeStorage<double>> getStorage(const MultiIndex &level);
+
   /**
    * Returns the number of entries (all level-index pairs) in the storage, which indicates the
    * number of function evaluations that have been done. Currently, this is an O(n) method.
@@ -67,7 +69,8 @@ class CombigridTreeStorage : public AbstractCombigridStorage {
   virtual void deserialize(std::string const &str);
 
   virtual void set(MultiIndex const &level, MultiIndex const &index, double value);
-  virtual void setMutex(std::shared_ptr<std::mutex> mutexPtr);
+  double get(MultiIndex const &level, MultiIndex const &index) override;
+  virtual void setMutex(std::shared_ptr<std::recursive_mutex> mutexPtr);
 };
 }  // namespace combigrid
 } /* namespace sgpp*/

@@ -13,14 +13,14 @@
 
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <string>
 
 namespace sgpp {
 namespace datadriven {
-struct CrossValidationConfiguration;
 struct DataSourceConfig;
-struct TestingConfiguration;
 } /* namespace datadriven */
 } /* namespace sgpp */
 
@@ -30,6 +30,8 @@ using json::DictNode;
 using sgpp::solver::SLESolverConfiguration;
 using sgpp::base::AdpativityConfiguration;
 using sgpp::base::RegularGridConfiguration;
+using sgpp::datadriven::CrossvalidationConfiguration;
+using sgpp::datadriven::DensityEstimationConfiguration;
 
 namespace sgpp {
 namespace datadriven {
@@ -43,21 +45,34 @@ class DataMiningConfigParser {
   virtual ~DataMiningConfigParser();
 
   bool hasDataSourceConfig() const;
+  bool hasDataTransformationConfig() const;
   bool hasScorerConfig() const;
-  bool hasScorerConfigCrossValidation() const;
-  bool hasScorerConfigTesting() const;
   bool hasFitterConfig() const;
 
+  /**
+   * Checks whether the fitter configuration contains a cross validation configuration
+   * @return if the fitter configuration contains a cross validation configuration
+   */
+  bool hasFitterConfigCrossValidation() const;
+
   bool getDataSourceConfig(DataSourceConfig& config, const DataSourceConfig& defaults) const;
-  bool getScorerTestingConfig(TestingConfiguration& config,
-                              const TestingConfiguration& defaults) const;
-  bool getScorerCrossValidationConfig(CrossValidationConfiguration& config,
-                                      const CrossValidationConfiguration& defaults) const;
+  /**
+   * Reads the configuration for the scorer
+   * @param config the configuration instance to initialize
+   * @param defaults a set of configurations initialized with default values
+   * @return if the configuration file contained a scorer configuration
+   */
+  bool getScorerConfig(ScorerConfiguration& config, const ScorerConfiguration& defaults) const;
+
   bool getFitterConfigType(FitterType& fitter, const FitterType& defaults) const;
   bool getFitterGridConfig(RegularGridConfiguration& config,
                            const RegularGridConfiguration& defaults) const;
   bool getFitterAdaptivityConfig(AdpativityConfiguration& config,
                                  const AdpativityConfiguration& defaults) const;
+  bool getFitterCrossvalidationConfig(CrossvalidationConfiguration& config,
+                                 const CrossvalidationConfiguration& defaults) const;
+  bool getFitterDensityEstimationConfig(DensityEstimationConfiguration& config,
+                                 const DensityEstimationConfiguration& defaults) const;
   bool getFitterSolverRefineConfig(SLESolverConfiguration& config,
                                    const SLESolverConfiguration& defaults) const;
   bool getFitterSolverFinalConfig(SLESolverConfiguration& config,
@@ -65,6 +80,24 @@ class DataMiningConfigParser {
   bool getFitterRegularizationConfig(RegularizationConfiguration& config,
                                      const RegularizationConfiguration& defaults) const;
   bool getFitterLambda(double& lambda, double defaultValue) const;
+
+  /**
+   * Returns the database configuration of the fitter if it exists
+   * @param config the configuration object that will be initialized
+   * @param defaults default values if the fitter does not contain a database configuration
+   * @return whether the fitter contains a database configuration
+   */
+  bool getFitterDatabaseConfig(datadriven::DatabaseConfiguration& config,
+      const datadriven::DatabaseConfiguration& defaults) const;
+
+  /**
+   * Initializes the learner configuration if it exists
+   * @param config the configuration instance that will be initialized
+   * @param defaults default values if the fitter config does not contain a matching entry
+   * @return whether the configuration contains a learner configuration
+   */
+  bool getFitterLearnerConfig(datadriven::LearnerConfiguration& config,
+      const datadriven::LearnerConfiguration& defaults) const;
 
  private:
   std::unique_ptr<JSON> configFile;
@@ -87,6 +120,11 @@ class DataMiningConfigParser {
   void parseSLESolverConfig(DictNode& dict, SLESolverConfiguration& config,
                             const SLESolverConfiguration& defaults,
                             const std::string& parentNode) const;
+
+  void parseDataTransformationConfig(DictNode& dict, DataTransformationConfig& config,
+      const DataTransformationConfig& defaults, const std::string& parentNode) const;
+  void parseRosenblattTransformationConfig(DictNode& dict, RosenblattTransformationConfig& config,
+      const RosenblattTransformationConfig& defaults, const std::string& parentNode) const;
 
   template <typename Enumeration>
   int asInteger(Enumeration const value) const {

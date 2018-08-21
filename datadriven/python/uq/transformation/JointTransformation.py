@@ -1,5 +1,6 @@
 from Transformation import Transformation
 import numpy as np
+import pysgpp.extensions.datadriven.uq.jsonLib as ju
 
 
 class JointTransformation(Transformation):
@@ -8,6 +9,11 @@ class JointTransformation(Transformation):
         self.__trans = []
         self.__ixs = []
         self.__n = 0
+
+    def initialize(self, trans, ixs, n):
+        self.__trans = trans
+        self.__ixs = ixs
+        self.__n = n
 
     @classmethod
     def byParameters(cls, params):
@@ -68,6 +74,9 @@ class JointTransformation(Transformation):
     def vol(self):
         return np.prod([trans.vol() for trans in self.__trans])
 
+    def getSize(self):
+        return np.sum([trans.getSize() for trans in self.__trans])
+
     def getTransformations(self):
         return self.__trans
 
@@ -77,3 +86,59 @@ class JointTransformation(Transformation):
             ans[i, :] = trans.getBounds()
         return ans
 
+
+    def toJson(self):
+        """
+        Returns a string that represents the object
+
+        Arguments:
+
+        Return A string that represents the object
+        """
+        serializationString = '"module" : "' + \
+                              self.__module__ + '",\n'
+
+        for attrName, attrValue in [("_JointTransformation__ixs", self.__ixs),
+                                    ("_JointTransformation__n", self.__n)]:
+            serializationString += ju.parseAttribute(attrValue, attrName)
+
+        # serialize transformations
+        attrName = "_JointTransformation__trans"
+        attrValue = self.__getattribute__(attrName)
+        x = [trans.toJson() for trans in attrValue]
+        x = ['"' + str(i) + '": ' + str(xi) for i, xi in enumerate(x)]
+        serializationString += '"' + attrName + '": {' + ', '.join(x) + '}'
+
+        return "{" + serializationString + "} \n"
+
+    @classmethod
+    def fromJson(cls, jsonObject):
+        """
+        Restores the J object from the json object with its
+        attributes.
+        @param jsonObject: json object
+        @return: the restored J object
+        """
+        key = '_JointTransformation__trans'
+        if key in jsonObject:
+            vals = jsonObject[key]
+            trans = [Transformation.fromJson(vals[key])
+                     for key in sorted(vals.keys())]
+        else:
+            raise AttributeError("JointTransformation: fromJson - the mandatory keyword '%s' does not exist" % key)
+
+        key = '_JointTransformation__ixs'
+        if key in jsonObject:
+            ixs = jsonObject[key]
+        else:
+            raise AttributeError("JointTransformation: fromJson - the mandatory keyword '%s' does not exist" % key)
+
+        key = '_JointTransformation__n'
+        if key in jsonObject:
+            n = jsonObject[key]
+        else:
+            raise AttributeError("JointTransformation: fromJson - the mandatory keyword '%s' does not exist" % key)
+
+        ans = JointTransformation()
+        ans.initialize(trans, ixs, n)
+        return ans

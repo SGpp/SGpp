@@ -6,8 +6,11 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_ALGEBRAIC_FLOATSCALARVECTOR_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_ALGEBRAIC_FLOATSCALARVECTOR_HPP_
 
+#include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
+
 #include <sgpp/globaldef.hpp>
 
+#include <iostream>
 #include <cmath>
 
 namespace sgpp {
@@ -27,6 +30,14 @@ class FloatScalarVector {
   FloatScalarVector() : val(double()) {}
 
   explicit FloatScalarVector(double const &value) : val(value) {}
+
+  explicit FloatScalarVector(std::shared_ptr<TreeStorage<FloatScalarVector>> storage)
+      : val(double()) {
+    auto it = storage->getStoredDataIterator();
+    if (it->isValid()) {
+      val = it->value().value();
+    }
+  }
 
   FloatScalarVector(FloatScalarVector const &other) : val(other.val) {}
 
@@ -54,12 +65,24 @@ class FloatScalarVector {
 
   void scalarMult(double const &factor) { val *= factor; }
 
-  double norm() const { return std::abs(val); }
+  double norm() const { return std::fabs(val); }
 
   static FloatScalarVector zero() { return FloatScalarVector(0.0); }
 
   static FloatScalarVector one() { return FloatScalarVector(1.0); }
+
+  // This is an auxiliary function needed in FullGridQuadraticSummationStrategy.
+  FloatScalarVector const operator[](size_t i) const {
+    if (i != 0) {
+      std::cerr << "FloatScalarVector: operator[] is only defined for argument 0";
+    }
+    return *this;
+  }
 };
+
+std::ostream &operator<<(std::ostream &stream, FloatScalarVector v);
+
+std::istream &operator>>(std::istream &stream, FloatScalarVector &v);
 
 } /* namespace combigrid */
 } /* namespace sgpp*/

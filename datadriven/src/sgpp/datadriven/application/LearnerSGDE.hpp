@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef LEARNERSGDE_HPP_
-#define LEARNERSGDE_HPP_
+#pragma once
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -13,7 +12,8 @@
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -24,25 +24,6 @@
 
 namespace sgpp {
 namespace datadriven {
-
-struct CrossvalidationForRegularizationConfiguration {
-  // parameters for cross-validation
-  bool enable_;   // enables cross-validation
-  size_t kfold_;  // number of batches for cross validation
-  int seed_;      // seed for randomized k-fold
-  bool shuffle_;  // randomized/sequential k-fold
-  bool silent_;   // verbosity
-
-  // regularization parameter optimization
-  double lambda_;       // regularization parameter
-  double lambdaStart_;  // lower bound for lambda search range
-  double lambdaEnd_;    // upper bound for lambda search range
-  // number of lambdas to be tested within the range defined by lambdaStart and
-  // lambdaEdns;
-  // must be > 1
-  size_t lambdaSteps_;
-  bool logScale_;  // search the optimization interval on a log-scale
-};
 
 // --------------------------------------------------------------------------
 class LearnerSGDE;
@@ -58,8 +39,7 @@ class LearnerSGDEConfiguration : public json::JSON {
 
   void initConfig();
   sgpp::base::GridType stringToGridType(std::string& gridType);
-  sgpp::datadriven::RegularizationType stringToRegularizationType(
-      std::string& regularizationType);
+  sgpp::datadriven::RegularizationType stringToRegularizationType(std::string& regularizationType);
   sgpp::solver::SLESolverType stringToSolverType(std::string& solverType);
 
  private:
@@ -67,8 +47,7 @@ class LearnerSGDEConfiguration : public json::JSON {
   sgpp::base::AdpativityConfiguration adaptivityConfig;
   sgpp::solver::SLESolverConfiguration solverConfig;
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-  sgpp::datadriven::CrossvalidationForRegularizationConfiguration
-      crossvalidationConfig;
+  sgpp::datadriven::CrossvalidationConfiguration crossvalidationConfig;
 };
 
 class LearnerSGDE : public datadriven::DensityEstimator {
@@ -82,12 +61,11 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * @param regularizationConfig config for regularization operator
    * @param crossvalidationConfig configuration for the cross validation
    */
-  LearnerSGDE(
-      sgpp::base::RegularGridConfiguration& gridConfig,
-      sgpp::base::AdpativityConfiguration& adaptivityConfig,
-      sgpp::solver::SLESolverConfiguration& solverConfig,
-      sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-      CrossvalidationForRegularizationConfiguration& crossvalidationConfig);
+  LearnerSGDE(sgpp::base::RegularGridConfiguration& gridConfig,
+              sgpp::base::AdpativityConfiguration& adaptivityConfig,
+              sgpp::solver::SLESolverConfiguration& solverConfig,
+              sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+              CrossvalidationConfiguration& crossvalidationConfig);
 
   explicit LearnerSGDE(LearnerSGDEConfiguration& learnerSGDEConfig);
 
@@ -101,13 +79,13 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * @param samples DataMatrix (nrows = number of samples, ncols =
    * dimensionality)
    */
-  virtual void initialize(base::DataMatrix& samples);
+  void initialize(base::DataMatrix& samples) override;
 
   /**
    * This methods evaluates the sparse grid density at a single point
    * @param x DataVector length equal to dimensionality
    */
-  virtual double pdf(base::DataVector& x);
+  double pdf(base::DataVector& x) override;
 
   /**
    * Evaluation of the sparse grid density at a set of points.
@@ -116,43 +94,43 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * @param res DataVector (size = number of samples) where the results are
    * stored
    */
-  virtual void pdf(base::DataMatrix& points, base::DataVector& res);
+  void pdf(base::DataMatrix& points, base::DataVector& res) override;
 
   /**
    * This method computes the mean of the density function
    */
-  virtual double mean();
+  double mean() override;
 
   /**
    * Computes the variance of the density function
    */
-  virtual double variance();
+  double variance() override;
 
   /**
    * WARNING: Not yet implemented
    */
-  virtual void cov(base::DataMatrix& cov);
+  void cov(base::DataMatrix& cov, base::DataMatrix* bounds = nullptr) override;
 
   /**
    * returns the samples in the given dimension
    * @param dim
    */
-  virtual std::shared_ptr<base::DataVector> getSamples(size_t dim);
+  std::shared_ptr<base::DataVector> getSamples(size_t dim) override;
 
   /**
    * returns the complete sample set
    */
-  virtual std::shared_ptr<base::DataMatrix> getSamples();
+  std::shared_ptr<base::DataMatrix> getSamples() override;
 
   /**
    * get number of dimensions
    */
-  virtual size_t getDim();
+  size_t getDim() override;
 
   /**
    * get number of samples
    */
-  virtual size_t getNsamples();
+  size_t getNsamples() override;
 
   /**
   * returns the surpluses
@@ -173,8 +151,8 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * @param trainData sample set
    * @param lambdaReg regularization parameter
    */
-  virtual void train(base::Grid& grid, base::DataVector& alpha,
-                     base::DataMatrix& trainData, double lambdaReg);
+  virtual void train(base::Grid& grid, base::DataVector& alpha, base::DataMatrix& trainData,
+                     double lambdaReg);
 
   /**
    * Learns the data.
@@ -229,8 +207,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * @param testDataset The data for which class labels should be predicted
    * @param predictedLabels The predicted class labels
    */
-  virtual void predict(base::DataMatrix& testDataset,
-                       base::DataVector& predictedLabels);
+  virtual void predict(base::DataMatrix& testDataset, base::DataVector& predictedLabels);
 
   /**
    * Computes the classification accuracy.
@@ -241,8 +218,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * threshold = 0)
    * @return The resulting accuracy
    */
-  virtual double getAccuracy(base::DataMatrix& testDataset,
-                             const base::DataVector& referenceLabels,
+  virtual double getAccuracy(base::DataMatrix& testDataset, const base::DataVector& referenceLabels,
                              const double threshold);
 
   /**
@@ -254,8 +230,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * @param predictedLabels The predicted class labels
    * @return The resulting accuracy
    */
-  virtual double getAccuracy(const base::DataVector& referenceLabels,
-                             const double threshold,
+  virtual double getAccuracy(const base::DataVector& referenceLabels, const double threshold,
                              const base::DataVector& predictedLabels);
 
   /**
@@ -270,8 +245,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    *        based on accuracy)
    * @return The error evaluation
    */
-  virtual double getError(base::DataMatrix& data,
-                          const base::DataVector& labels,
+  virtual double getError(base::DataMatrix& data, const base::DataVector& labels,
                           const double threshold, std::string errorType);
 
   // The final classification error
@@ -305,15 +279,14 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * @param lambdaReg regularization parameters
    * @return
    */
-  double computeResidual(base::Grid& grid, base::DataVector& alpha,
-                         base::DataMatrix& test, double lambdaReg);
+  double computeResidual(base::Grid& grid, base::DataVector& alpha, base::DataMatrix& test,
+                         double lambdaReg);
 
   /**
    * generates the regularization matrix
    * @param grid grid
    */
-  std::unique_ptr<base::OperationMatrix> computeRegularizationMatrix(
-      base::Grid& grid);
+  base::OperationMatrix* computeRegularizationMatrix(base::Grid& grid);
 
   /**
    * splits the complete sample set in a set of smaller training and test
@@ -357,10 +330,8 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   sgpp::base::AdpativityConfiguration adaptivityConfig;
   sgpp::solver::SLESolverConfiguration solverConfig;
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-  CrossvalidationForRegularizationConfiguration crossvalidationConfig;
+  sgpp::datadriven::CrossvalidationConfiguration crossvalidationConfig;
 };
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* LEARNERSGDE_HPP_ */

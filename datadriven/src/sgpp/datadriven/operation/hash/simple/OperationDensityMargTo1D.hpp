@@ -21,7 +21,7 @@ namespace datadriven {
 
 class OperationDensityMargTo1D {
  public:
-  OperationDensityMargTo1D() {}
+  explicit OperationDensityMargTo1D(base::Grid* grid) : grid(grid) {}
   virtual ~OperationDensityMargTo1D() {}
 
   /**
@@ -33,7 +33,7 @@ class OperationDensityMargTo1D {
    * @param dim_x Target dimension, all other dimensions will be marginalized
    */
   virtual void margToDimX(base::DataVector* alpha, base::Grid*& grid_x, base::DataVector*& alpha_x,
-                          size_t dim_x) = 0;
+                          size_t dim_x);
 
   /**
    * Keep applying marginalizes to (Density) Functions, until it's reduced to d dimensions (dim_x)
@@ -44,11 +44,16 @@ class OperationDensityMargTo1D {
    * @param dim_x Target dimension, all other dimensions will be marginalized
    */
   virtual void margToDimXs(base::DataVector* alpha, base::Grid*& grid_x, base::DataVector*& alpha_x,
-                           std::vector<size_t>& dim_x) = 0;
+                           std::vector<size_t>& dim_x);
 
  protected:
+  base::Grid* grid;
+
   void computeMarginalizationIndices(std::vector<size_t>& dim_x, size_t numDims,
                                      std::vector<size_t>& margDims);
+
+  void marg_next_dim(base::Grid* g_in, base::DataVector* a_in, base::Grid*& g_out,
+                     base::DataVector*& a_out, std::vector<size_t> margDims, size_t ix);
 };
 }  // namespace datadriven
 }  // namespace sgpp

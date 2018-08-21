@@ -24,19 +24,31 @@ namespace datadriven {
  */
 class DensitySystemMatrix : public base::OperationMatrix {
  private:
-  /// the lambda, the regularisation parameter
-  double lambda;
   /// Operation A for calculating the data matrix
   /// (L2 Dot-Product of basis functions)
   std::unique_ptr<base::OperationMatrix> A;
   /// OperationB for calculating the data matrix
   std::unique_ptr<base::OperationMultipleEval> B;
   /// OperationMatrix, the regularisation method
-  base::OperationMatrix& C;
-  /// Training data
-  base::DataMatrix& data;
+  std::unique_ptr<base::OperationMatrix> C;
+  /// the lambda, the regularisation parameter
+  double lambda;
+  /// number of training samples
+  size_t numSamples;
 
  public:
+  /**
+   * Std-Constructor
+   *
+   * @param A L^2 dot product matrix of some grid
+   * @param B MultipleEval matrix of grid and data points
+   * @param C the regression functional
+   * @param lambda the regression parameter
+   * @param numSamples number of data samples
+   */
+  DensitySystemMatrix(sgpp::base::OperationMatrix* A, sgpp::base::OperationMultipleEval* B,
+                      sgpp::base::OperationMatrix* C, double lambda, size_t numSamples);
+
   /**
    * Std-Constructor
    *
@@ -45,7 +57,7 @@ class DensitySystemMatrix : public base::OperationMatrix {
    * @param C the regression functional
    * @param lambda the regression parameter
    */
-  DensitySystemMatrix(base::Grid& grid, base::DataMatrix& trainData, base::OperationMatrix& C,
+  DensitySystemMatrix(base::Grid& grid, base::DataMatrix& trainData, base::OperationMatrix* C,
                       double lambda);
 
   /**

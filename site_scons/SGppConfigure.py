@@ -115,13 +115,15 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   checkOpenCL(config)
   checkZlib(config)
   checkGSL(config)
+  checkDAKOTA(config)
+  checkCGAL(config)
   checkBoostTests(config)
   checkSWIG(config)
   checkPython(config)
   checkJava(config)
 
   if config.env["USE_CUDA"] == True:
-    config.env['CUDA_TOOLKIT_PATH'] = '/usr/local.nfs/sw/cuda/cuda-7.5/'
+    config.env['CUDA_TOOLKIT_PATH'] = ''
     config.env['CUDA_SDK_PATH'] = ''
     config.env.Tool('cuda')
     # clean up the flags to forward
@@ -249,6 +251,16 @@ def checkOpenCL(config):
 
     config.env["CPPDEFINES"]["USE_OCL"] = "1"
 
+def checkDAKOTA(config):
+    if config.env["USE_DAKOTA"]:
+        if not config.CheckCXXHeader("pecos_global_defs.hpp"):
+            Helper.printErrorAndExit("pecos_global_defs.hpp not found, but required for PECOS. Consider setting the flag 'CPPPATH'.")
+
+def checkCGAL(config):
+    if config.env["USE_CGAL"]:
+        if not config.CheckCXXHeader("CGAL/basic.h"):
+            Helper.printErrorAndExit("CGAL/basic.h not found, but required for CGAL. Consider setting the flag 'CPPPATH'.")
+
 def checkGSL(config):
   if config.env["USE_GSL"]:
     config.env.AppendUnique(CPPPATH=[config.env["GSL_INCLUDE_PATH"]])
@@ -270,7 +282,7 @@ def checkZlib(config):
         else:
             if not config.CheckLibWithHeader("z","zlib.h", language="C++",autoadd=0):
                 Helper.printErrorAndExit("The flag USE_ZLIB was set, but the necessary header 'zlib.h' or library was not found.")
-                
+
             config.env["CPPDEFINES"]["ZLIB"] = "1"
 
 def checkBoostTests(config):
@@ -359,6 +371,11 @@ def checkPython(config):
       if config.env["RUN_PYTHON_TESTS"]:
         Helper.printWarning("Python unit tests were disabled because numpy is not available.")
         config.env["RUN_PYTHON_TESTS"] = False
+        
+    try:
+        import scipy
+    except:
+        Helper.printWarning("Warning: Scipy doesn't seem to be installed.")
   else:
     Helper.printInfo("Python extension (SG_PYTHON) not enabled.")
 
@@ -555,7 +572,7 @@ def configureIntelCompiler(config):
                                     "-fno-strict-aliasing",
                                     "-ip", "-ipo", "-funroll-loops",
                                     "-ansi-alias", "-fp-speculation=safe",
-                                    "-no-offload"])
+                                    "-qno-offload"])
   if config.env["COMPILER"] == "intel.mpi":
     config.env["CC"] = ("mpiicc")
     config.env["LINK"] = ("mpiicpc")

@@ -9,6 +9,7 @@
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
+#include <sgpp/base/grid/RefinementConfiguration.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -39,7 +40,7 @@ enum class GridType {
   Prewavelet,                         // 12
   SquareRoot,                         // 13
   Periodic,                           // 14
-  LinearClenshawCurtis,               // 15
+  LinearClenshawCurtisBoundary,       // 15
   Bspline,                            // 16
   BsplineBoundary,                    // 17
   BsplineClenshawCurtis,              // 18
@@ -50,20 +51,38 @@ enum class GridType {
   ModBsplineClenshawCurtis,           // 23
   LinearStencil,                      // 24
   ModLinearStencil,                   // 25
-  NaturalBsplineBoundary,             // 26
-  NotAKnotBsplineBoundary,            // 27
-  ModNotAKnotBspline,                 // 28
-  LagrangeSplineBoundary,             // 29
-  LagrangeNotAKnotSplineBoundary,     // 30
-  ModLagrangeNotAKnotSpline,          // 31
-  FundamentalSplineBoundary,          // 32
-  FundamentalNotAKnotSplineBoundary,  // 33
+  PolyClenshawCurtisBoundary,         // 26
+  PolyClenshawCurtis,                 // 27
+  LinearClenshawCurtis,               // 28
+  ModPolyClenshawCurtis,              // 29
+  ModLinearClenshawCurtis,            // 30
+  NakBsplineBoundaryCombigrid         // 31
+  NaturalBsplineBoundary,             // 32
+  NotAKnotBsplineBoundary,            // 33
+  ModNotAKnotBspline,                 // 34
+  LagrangeSplineBoundary,             // 35
+  LagrangeNotAKnotSplineBoundary,     // 36
+  ModLagrangeNotAKnotSpline,          // 37
+  FundamentalSplineBoundary,          // 38
+  FundamentalNotAKnotSplineBoundary,  // 39
 };
 
 /**
- * structure that can be used by applications to cluster regular grid information
+ * Enum to define all possible grid "super" types (used for GeneralGridConfiguration)
  */
-struct RegularGridConfiguration {
+enum class GeneralGridType {
+  RegularSparseGrid,
+  RefinedCoarsenedSparseGrid,
+  ComponentGrid,
+  GeometryAwareSparseGrid
+};
+
+/**
+ * Struct to cluster general grid information for different grid "super" types
+ */
+struct GeneralGridConfiguration {
+  // Grid "super" types
+  GeneralGridType generalType_;
   /// Grid Type, see enum
   sgpp::base::GridType type_;
   /// number of dimensions
@@ -81,6 +100,27 @@ struct RegularGridConfiguration {
 };
 
 /**
+ * structure that can be used by applications to cluster regular grid information
+ */
+struct RegularGridConfiguration : GeneralGridConfiguration {
+  RegularGridConfiguration() {
+    generalType_ = GeneralGridType::RegularSparseGrid;
+  }
+};
+
+/**
+ * Structure that can be used by applications to cluster combi grid information
+ */
+struct CombiGridConfiguration : GeneralGridConfiguration {
+  // The level_ member is replaced by a level vector
+  std::vector<int> levels;
+  CombiGridConfiguration() {
+    generalType_ = GeneralGridType::ComponentGrid;
+    level_ = -1;
+  }
+};
+
+/**
  * structure that can be used by application to define adaptivity strategies
  */
 struct AdpativityConfiguration {
@@ -93,9 +133,28 @@ struct AdpativityConfiguration {
   /// max. number of points to be refined
   size_t noPoints_;
   /// max. percent of points to be refined
-  double percent_;
+  double percent_ = 1.0;
   /// other refinement strategy, that is more expensive, but yields better results
   bool errorBasedRefinement = false;
+  /// threshold for convergence in case error based refinement is applied
+  double errorConvergenceThreshold = 0.001;
+  /// amount of error values to consider when checking for convergence in
+  /// case of error based refinement
+  size_t errorBufferSize = 3;
+  /// minimum amount of iterations before the next refinement is allowed to happen in case of error
+  /// based refinement
+  size_t errorMinInterval = 0;
+  /// refinement will be triggered each refinementPeriod instances (approximately) in case
+  /// of non error based refinement
+  size_t refinementPeriod = 1;
+  /// refinement indicator
+  RefinementFunctorType refinementFunctorType = RefinementFunctorType::Surplus;
+  /// in case of zero corssing based refinement: determines if evaluations should be precomupted
+  bool precomputeEvaluations = true;
+  /// determines if finer grid levels should be penalized when finding points to refine
+  bool levelPenalize = false;
+  /// in case of data based refinements: determines the scaling coefficients for each class
+  std::vector<double> scalingCoefficients = std::vector<double>();
 };
 
 /**
@@ -224,6 +283,15 @@ class Grid {
   static Grid* createLinearStretchedBoundaryGrid(size_t dim);
 
   /**
+   * creates a linear Clenshaw-Curtis boundary grid
+   *
+   * @param dim the grid's dimension
+   * @param boundaryLevel level of the boundary
+   * @return grid
+   */
+  static Grid* createLinearClenshawCurtisBoundaryGrid(size_t dim, level_t boundaryLevel = 1);
+
+  /**
    * creates a linear Clenshaw-Curtis grid
    *
    * <table border="0"><tr>
@@ -236,14 +304,17 @@ class Grid {
    * </tr></table>
    *
    * @param dim the grid's dimension
-   * @param boundaryLevel on which level the boundary grid points and
-   *                      basis functions should be added;
-   *                      the default is 1, which results in a grid with
-   *                      the same resolution on the boundary as on the
-   *                      main axis
    * @return grid
    */
-  static Grid* createLinearClenshawCurtisGrid(size_t dim, level_t boundaryLevel = 1);
+  static Grid* createLinearClenshawCurtisGrid(size_t dim);
+
+  /**
+   * creates a modified linear Clenshaw-Curtis grid
+   *
+   * @param dim the grid's dimension
+   * @return grid
+   */
+  static Grid* createModLinearClenshawCurtisGrid(size_t dim);
 
   /**
    * creates a modified linear grid
@@ -302,6 +373,35 @@ class Grid {
    * @return grid
    */
   static Grid* createPolyBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel = 1);
+
+  /**
+   * creates a poly Clenshaw Curtis boundary grid with clenshaw curtis points
+   *
+   * @param dim the grid's dimension
+   * @param degree the polynom's max. degree
+   * @param boundaryLevel level at which boundary points are added
+   * @return grid
+   */
+  static Grid* createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree,
+                                                    level_t boundaryLevel = 1);
+
+  /**
+   * creates a poly grid with clenshaw curtis points
+   *
+   * @param dim the grid's dimension
+   * @param degree the polynom's max. degree
+   * @return grid
+   */
+  static Grid* createPolyClenshawCurtisGrid(size_t dim, size_t degree);
+
+  /**
+   * creates a modified poly grid with clenshaw curtis points
+   *
+   * @param dim the grid's dimension
+   * @param degree the polynom's max. degree
+   * @return grid
+   */
+  static Grid* createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
 
   /**
    * creates a modified polynomial grid
@@ -583,6 +683,15 @@ class Grid {
    */
   static Grid* createPeriodicGrid(size_t dim);
 
+  /**
+    * creates a not a knot B-Spline boundary grid
+    *
+    * @param dim the grid's dimension
+    * @param degree the B-spline degree
+    * @return grid
+    */
+  static Grid* createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
+
   static Grid* createNaturalBsplineBoundaryGrid(size_t dim, size_t degree,
                                                 level_t boundaryLevel = 1);
   static Grid* createNotAKnotBsplineBoundaryGrid(size_t dim, size_t degree,
@@ -659,6 +768,12 @@ class Grid {
   Grid* clone();
 
   /**
+   * creates an equivalent grid without copying the grid points
+   * @param numDims number of dimensions
+   */
+  Grid* createGridOfEquivalentType(size_t numDims);
+
+  /**
    * gets a reference to the GridStorage object
    *
    * @return reference to the GridStorage obeject
@@ -706,11 +821,25 @@ class Grid {
   virtual sgpp::base::GridType getType() = 0;
 
   /**
+   * Returns a string that identifies the grid type uniquely
+   *
+   * @return string that identifies the grid type uniquely
+   */
+  std::string getTypeAsString();
+
+  /**
+   * Returns the grid type that corresponds to the actual type but does no boundary treatment
+   *
+   * @return grid type
+   */
+  sgpp::base::GridType getZeroBoundaryType();
+
+  /**
    * Returns the Basis class associated with the grid
    *
    * @return Basis class associated with the grid
    */
-  virtual const SBasis& getBasis() = 0;
+  virtual SBasis& getBasis() = 0;
 
   /**
    * Serializes grid to a string.
@@ -786,6 +915,14 @@ class Grid {
    * @param newAlgoDims std::vector containing the algorithmic dimensions
    */
   void setAlgorithmicDimensions(std::vector<size_t> newAlgoDims);
+
+  /**
+   * Conversion from string to grid type
+   *
+   * @param gridType grid type as a string
+   * @return actual grid type
+   */
+  static GridType stringToGridType(const std::string& gridType);
 
  protected:
   /// GridStorage object of the grid

@@ -29,14 +29,14 @@ namespace sgpp {
 namespace datadriven {
 
 ModelFittingLeastSquares::ModelFittingLeastSquares(const FitterConfigurationLeastSquares& config)
-    : ModelFittingBase{}, refinementsPerformed{0} {
+    : ModelFittingBaseSingleGrid{}, refinementsPerformed{0} {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationLeastSquares>(config));
   solver = std::unique_ptr<SLESolver>{buildSolver(this->config->getSolverFinalConfig())};
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
-double ModelFittingLeastSquares::evaluate(const DataVector& sample) const {
+double ModelFittingLeastSquares::evaluate(const DataVector& sample) {
   auto opEval = std::unique_ptr<base::OperationEval>{op_factory::createOperationEval(*grid)};
   return opEval->eval(alpha, sample);
 }
@@ -50,8 +50,7 @@ void ModelFittingLeastSquares::evaluate(DataMatrix& samples, DataVector& results
 
 void ModelFittingLeastSquares::fit(Dataset& newDataset) {
   // clear model
-  resetState();
-  grid.reset();
+  reset();
   dataset = &newDataset;
 
   // build grid
@@ -96,7 +95,7 @@ bool ModelFittingLeastSquares::refine() {
 
 void ModelFittingLeastSquares::update(Dataset& newDataset) {
   if (grid != nullptr) {
-    resetState();
+    reset();
     // reassign dataset
     dataset = &newDataset;
     // create sytem matrix
@@ -115,7 +114,10 @@ DMSystemMatrixBase* ModelFittingLeastSquares::buildSystemMatrix(
   return systemMatrix;
 }
 
-void ModelFittingLeastSquares::resetState() { refinementsPerformed = 0; }
+void ModelFittingLeastSquares::reset() {
+  grid.reset();
+  refinementsPerformed = 0;
+}
 
 void ModelFittingLeastSquares::assembleSystemAndSolve(const SLESolverConfiguration& solverConfig,
                                                       DataVector& alpha) const {

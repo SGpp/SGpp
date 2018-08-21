@@ -23,8 +23,8 @@ namespace sgpp {
 
 namespace datadriven {
 
-ArffFileSampleProvider::ArffFileSampleProvider()
-    : FileSampleProvider{}, dataset(Dataset{}), counter(0) {}
+ArffFileSampleProvider::ArffFileSampleProvider(DataShufflingFunctor *shuffling)
+    : shuffling{shuffling}, dataset(Dataset{}), counter(0) {}
 
 SampleProvider* ArffFileSampleProvider::clone() const {
   return dynamic_cast<SampleProvider*>(new ArffFileSampleProvider{*this});
@@ -46,9 +46,9 @@ size_t ArffFileSampleProvider::getNumSamples() const {
   }
 }
 
-void ArffFileSampleProvider::readFile(const std::string& fileName) {
+void ArffFileSampleProvider::readFile(const std::string& fileName, bool hasTargets) {
   try {
-    dataset = ARFFTools::readARFF(fileName);
+    dataset = ARFFTools::readARFF(fileName, hasTargets);
   } catch (...) {
     // TODO(lettrich): catching all exceptions is bad design. Replace call to ARFFTools with
     // exception safe implementation.
@@ -67,15 +67,15 @@ Dataset* ArffFileSampleProvider::getNextSamples(size_t howMany) {
 
 Dataset* ArffFileSampleProvider::getAllSamples() {
   if (dataset.getDimension() != 0) {
-    return new Dataset{dataset};
+    return this->getNextSamples(dataset.getNumberInstances());
   } else {
     throw base::file_exception{"No dataset loaded."};
   }
 }
 
-void ArffFileSampleProvider::readString(const std::string& input) {
+void ArffFileSampleProvider::readString(const std::string& input, bool hasTargets) {
   try {
-    dataset = ARFFTools::readARFFFromString(input);
+    dataset = ARFFTools::readARFFFromString(input, hasTargets);
   } catch (...) {
     // TODO(lettrich): catching all exceptions is bad design. Replace call to ARFFTools with
     // exception safe implementation.
@@ -84,7 +84,7 @@ void ArffFileSampleProvider::readString(const std::string& input) {
 }
 
 Dataset* ArffFileSampleProvider::splitDataset(size_t howMany) {
-  const size_t size = counter + howMany < dataset.getNumberInstances()
+  const size_t size = counter + howMany <= dataset.getNumberInstances()
                           ? howMany
                           : dataset.getNumberInstances() - counter;
   auto tmpDataset = std::make_unique<Dataset>(size, dataset.getDimension());
@@ -99,14 +99,19 @@ Dataset* ArffFileSampleProvider::splitDataset(size_t howMany) {
 
   // copy "size" rows beginning from "counter" to the new dataset.
   for (size_t i = counter; i < counter + size; ++i) {
-    srcSamples.getRow(i, tmpRow);
+    size_t srcIdx = shuffling != nullptr ? (*shuffling)(i, dataset.getNumberInstances()) : i;
+    srcSamples.getRow(srcIdx, tmpRow);
     destSamples.setRow(i - counter, tmpRow);
 
-    destTargets[i - counter] = srcTargets[i];
+    destTargets[i - counter] = srcTargets[srcIdx];
   }
   counter = counter + size;
 
   return tmpDataset.release();
+}
+
+void ArffFileSampleProvider::reset() {
+  counter = 0;
 }
 
 } /* namespace datadriven */

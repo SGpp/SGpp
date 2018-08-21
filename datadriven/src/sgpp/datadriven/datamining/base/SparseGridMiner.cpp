@@ -12,26 +12,23 @@
 
 #include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitorFactory.hpp>
 
 #include <iostream>
 
 namespace sgpp {
 namespace datadriven {
 
-SparseGridMiner::SparseGridMiner(DataSource* dataSource, ModelFittingBase* fitter, Scorer* scorer)
-    : dataSource(dataSource), fitter(fitter), scorer(scorer) {}
+SparseGridMiner::SparseGridMiner(ModelFittingBase* fitter, Scorer* scorer)
+  : fitter(fitter), scorer(scorer) {}
 
-void SparseGridMiner::learn() {
-  std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
-  double stdDeviation;
-  std::cout << std::endl;
+double SparseGridMiner::test(Dataset& testDataset) {
+  return scorer->test(*fitter, testDataset);
+}
 
-  double score = scorer->calculateScore(*fitter, *dataset, &stdDeviation);
-  std::cout << "Learner finished." << std::endl
-            << "###############" << std::endl
-            << "Score: " << score << std::endl
-            << "Standard Deviation: " << stdDeviation << std::endl
-            << "###############" << std::endl;
+ModelFittingBase *SparseGridMiner::getModel() {
+  return &(*fitter);
 }
 
 } /* namespace datadriven */

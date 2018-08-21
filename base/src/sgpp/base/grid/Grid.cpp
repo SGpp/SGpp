@@ -7,29 +7,31 @@
 
 #include <sgpp/base/exception/factory_exception.hpp>
 
-#include <sgpp/base/grid/type/LinearGridStencil.hpp>
-#include <sgpp/base/grid/type/ModLinearGridStencil.hpp>
-#include <sgpp/base/grid/type/LinearGrid.hpp>
-#include <sgpp/base/grid/type/LinearStretchedGrid.hpp>
-#include <sgpp/base/grid/type/LinearL0BoundaryGrid.hpp>
-#include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
-#include <sgpp/base/grid/type/ModLinearGrid.hpp>
-#include <sgpp/base/grid/type/PolyGrid.hpp>
-#include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/ModPolyGrid.hpp>
-#include <sgpp/base/grid/type/BsplineGrid.hpp>
 #include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
-#include <sgpp/base/grid/type/ModBsplineGrid.hpp>
-#include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/BsplineGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
+#include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/LinearGrid.hpp>
+#include <sgpp/base/grid/type/LinearGridStencil.hpp>
+#include <sgpp/base/grid/type/LinearL0BoundaryGrid.hpp>
+#include <sgpp/base/grid/type/LinearStretchedGrid.hpp>
+#include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/ModBsplineGrid.hpp>
 #include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
-#include <sgpp/base/grid/type/WaveletGrid.hpp>
-#include <sgpp/base/grid/type/WaveletBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/ModLinearClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/ModLinearGrid.hpp>
+#include <sgpp/base/grid/type/ModLinearGridStencil.hpp>
+#include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
-#include <sgpp/base/grid/type/SquareRootGrid.hpp>
-#include <sgpp/base/grid/type/PrewaveletGrid.hpp>
 #include <sgpp/base/grid/type/PeriodicGrid.hpp>
+#include <sgpp/base/grid/type/PolyGrid.hpp>
+#include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/PolyClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/PolyClenshawCurtisBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/ModPolyClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/grid/type/NaturalBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NotAKnotBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModNotAKnotBsplineGrid.hpp>
@@ -38,12 +40,17 @@
 #include <sgpp/base/grid/type/ModLagrangeNotAKnotSplineGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalNotAKnotSplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/PrewaveletGrid.hpp>
+#include <sgpp/base/grid/type/SquareRootGrid.hpp>
+#include <sgpp/base/grid/type/WaveletBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/WaveletGrid.hpp>
 
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
 #include <sgpp/base/exception/generation_exception.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearStretchedBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp>
@@ -77,8 +84,14 @@ Grid* Grid::createLinearStretchedBoundaryGrid(size_t dim) {
   return new LinearStretchedBoundaryGrid(dim);
 }
 
-Grid* Grid::createLinearClenshawCurtisGrid(size_t dim, level_t boundaryLevel) {
-  return new LinearClenshawCurtisGrid(dim, boundaryLevel);
+Grid* Grid::createLinearClenshawCurtisGrid(size_t dim) { return new LinearClenshawCurtisGrid(dim); }
+
+Grid* Grid::createLinearClenshawCurtisBoundaryGrid(size_t dim, level_t boundaryLevel) {
+  return new LinearClenshawCurtisBoundaryGrid(dim, boundaryLevel);
+}
+
+Grid* Grid::createModLinearClenshawCurtisGrid(size_t dim) {
+  return new ModLinearClenshawCurtisGrid(dim);
 }
 
 Grid* Grid::createModLinearGrid(size_t dim) { return new ModLinearGrid(dim); }
@@ -87,6 +100,18 @@ Grid* Grid::createPolyGrid(size_t dim, size_t degree) { return new PolyGrid(dim,
 
 Grid* Grid::createPolyBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel) {
   return new PolyBoundaryGrid(dim, degree, boundaryLevel);
+}
+
+Grid* Grid::createPolyClenshawCurtisGrid(size_t dim, size_t degree) {
+  return new PolyClenshawCurtisGrid(dim, degree);
+}
+
+Grid* Grid::createModPolyClenshawCurtisGrid(size_t dim, size_t degree) {
+  return new ModPolyClenshawCurtisGrid(dim, degree);
+}
+
+Grid* Grid::createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel) {
+  return new PolyClenshawCurtisBoundaryGrid(dim, degree, boundaryLevel);
 }
 
 Grid* Grid::createWaveletGrid(size_t dim) { return new WaveletGrid(dim); }
@@ -134,6 +159,10 @@ Grid* Grid::createLinearTruncatedBoundaryGrid(size_t dim) {
 Grid* Grid::createModPolyGrid(size_t dim, size_t degree) { return new ModPolyGrid(dim, degree); }
 
 Grid* Grid::createPeriodicGrid(size_t dim) { return new PeriodicGrid(dim); }
+
+Grid* Grid::createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree) {
+  return new NakBsplineBoundaryCombigridGrid(dim, degree);
+}
 
 Grid* Grid::createNaturalBsplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel) {
   return new NaturalBsplineBoundaryGrid(dim, degree, boundaryLevel);
@@ -197,6 +226,13 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
                                             gridConfig.boundaryLevel_);
       case GridType::ModPoly:
         return Grid::createModPolyGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      case GridType::PolyClenshawCurtis:
+        return Grid::createPolyClenshawCurtisGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      case GridType::PolyClenshawCurtisBoundary:
+        return Grid::createPolyClenshawCurtisBoundaryGrid(gridConfig.dim_, gridConfig.maxDegree_,
+                                                          gridConfig.boundaryLevel_);
+      case GridType::ModPolyClenshawCurtis:
+        return Grid::createModPolyClenshawCurtisGrid(gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::ModWavelet:
         return Grid::createModWaveletGrid(gridConfig.dim_);
       case GridType::ModBspline:
@@ -207,6 +243,9 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
         return Grid::createSquareRootGrid(gridConfig.dim_);
       case GridType::Periodic:
         return Grid::createPeriodicGrid(gridConfig.dim_);
+      case GridType::LinearClenshawCurtisBoundary:
+        return Grid::createLinearClenshawCurtisBoundaryGrid(gridConfig.dim_,
+                                                            gridConfig.boundaryLevel_);
       case GridType::LinearClenshawCurtis:
         return Grid::createLinearClenshawCurtisGrid(gridConfig.dim_, gridConfig.boundaryLevel_);
       case GridType::Bspline:
@@ -231,6 +270,8 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
         return Grid::createLinearStretchedGrid(gridConfig.dim_);
       case GridType::ModLinearStencil:
         return Grid::createModLinearGridStencil(gridConfig.dim_);
+      case GridType::NakBsplineBoundaryCombigrid:
+        return Grid::createNakBsplineBoundaryCombigridGrid(gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::NaturalBsplineBoundary:
         return Grid::createNaturalBsplineBoundaryGrid(
             gridConfig.dim_, gridConfig.maxDegree_, gridConfig.boundaryLevel_);
@@ -259,11 +300,9 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
   }
 }
 
-Grid* Grid::clone() {
-  // clone grid of the same type
+Grid* Grid::createGridOfEquivalentType(size_t numDims) {
   Grid* newGrid = nullptr;
 
-  size_t numDims = storage.getDimension();
   level_t boundaryLevel = 0;
   size_t degree = 1;
   switch (getType()) {
@@ -296,7 +335,9 @@ Grid* Grid::clone() {
       break;
     case GridType::PolyBoundary:
       degree = dynamic_cast<PolyBoundaryGrid*>(this)->getDegree();
-      newGrid = Grid::createPolyBoundaryGrid(numDims, degree);
+      boundaryLevel =
+          dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
+      newGrid = Grid::createPolyBoundaryGrid(numDims, degree, boundaryLevel);
       break;
     case GridType::ModPoly:
       degree = dynamic_cast<ModPolyGrid*>(this)->getDegree();
@@ -318,10 +359,16 @@ Grid* Grid::clone() {
     case GridType::Periodic:
       newGrid = Grid::createPeriodicGrid(numDims);
       break;
-    case GridType::LinearClenshawCurtis:
+    case GridType::LinearClenshawCurtisBoundary:
       boundaryLevel =
           dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
-      newGrid = Grid::createLinearClenshawCurtisGrid(numDims, boundaryLevel);
+      newGrid = Grid::createLinearClenshawCurtisBoundaryGrid(numDims, boundaryLevel);
+      break;
+    case GridType::LinearClenshawCurtis:
+      newGrid = Grid::createLinearClenshawCurtisGrid(numDims);
+      break;
+    case GridType::ModLinearClenshawCurtis:
+      newGrid = Grid::createModLinearClenshawCurtisGrid(numDims);
       break;
     case GridType::Bspline:
       degree = dynamic_cast<BsplineGrid*>(this)->getDegree();
@@ -365,22 +412,23 @@ Grid* Grid::clone() {
     case GridType::ModLinearStencil:
       newGrid = Grid::createModLinearGridStencil(numDims);
       break;
-    case GridType::NaturalBsplineBoundary:
-      degree = dynamic_cast<NaturalBsplineBoundaryGrid*>(this)->getDegree();
+    case GridType::PolyClenshawCurtis:
+      degree = dynamic_cast<PolyClenshawCurtisGrid*>(this)->getDegree();
+      newGrid = Grid::createPolyClenshawCurtisGrid(numDims, degree);
+      break;
+    case GridType::PolyClenshawCurtisBoundary:
+      degree = dynamic_cast<PolyClenshawCurtisBoundaryGrid*>(this)->getDegree();
       boundaryLevel =
           dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
-      newGrid = Grid::createNaturalBsplineBoundaryGrid(numDims, degree, boundaryLevel);
+      newGrid = Grid::createPolyClenshawCurtisBoundaryGrid(numDims, degree, boundaryLevel);
       break;
-    case GridType::NotAKnotBsplineBoundary:
-      degree = dynamic_cast<NotAKnotBsplineBoundaryGrid*>(this)->getDegree();
-      boundaryLevel =
-          dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
-      newGrid = Grid::createNotAKnotBsplineBoundaryGrid(numDims, degree, boundaryLevel);
+    case GridType::ModPolyClenshawCurtis:
+      degree = dynamic_cast<ModPolyClenshawCurtisGrid*>(this)->getDegree();
+      newGrid = Grid::createModPolyClenshawCurtisGrid(numDims, degree);
       break;
-    case GridType::ModNotAKnotBspline:
-      degree = dynamic_cast<ModNotAKnotBsplineGrid*>(this)->getDegree();
-      newGrid = Grid::createModNotAKnotBsplineGrid(numDims, degree);
-      break;
+    case GridType::NakBsplineBoundaryCombigrid:
+      degree = dynamic_cast<NakBsplineBoundaryCombigridGrid*>(this)->getDegree();
+      return Grid::createNakBsplineBoundaryCombigridGrid(numDims, degree);
     case GridType::LagrangeSplineBoundary:
       degree = dynamic_cast<LagrangeSplineBoundaryGrid*>(this)->getDegree();
       boundaryLevel =
@@ -412,10 +460,83 @@ Grid* Grid::clone() {
     default:
       throw generation_exception("Grid::clone - grid type not known");
   }
+  return newGrid;
+}
+
+Grid* Grid::clone() {
+  // clone grid of the same type
+  Grid* newGrid = createGridOfEquivalentType(getDimension());
   newGrid->storage = this->storage;
 
   return newGrid;
 }
+
+GridType Grid::getZeroBoundaryType() {
+  switch (getType()) {
+    case GridType::Linear:
+    case GridType::LinearL0Boundary:
+    case GridType::LinearBoundary:
+    case GridType::LinearTruncatedBoundary:
+    case GridType::ModLinear:
+    case GridType::SquareRoot:
+    case GridType::Periodic:
+    case GridType::LinearStencil:
+    case GridType::ModLinearStencil:
+      return GridType::Linear;
+    case GridType::LinearStretched:
+    case GridType::LinearStretchedBoundary:
+      return GridType::LinearStretched;
+    case GridType::Poly:
+    case GridType::PolyBoundary:
+    case GridType::ModPoly:
+      return GridType::Poly;
+    case GridType::ModWavelet:
+    case GridType::Wavelet:
+    case GridType::WaveletBoundary:
+      return GridType::Wavelet;
+    case GridType::Bspline:
+    case GridType::BsplineBoundary:
+    case GridType::ModBspline:
+      return GridType::Bspline;
+    case GridType::Prewavelet:
+      return GridType::Prewavelet;
+    case GridType::LinearClenshawCurtis:
+    case GridType::LinearClenshawCurtisBoundary:
+    case GridType::ModLinearClenshawCurtis:
+      return GridType::LinearClenshawCurtis;
+    case GridType::FundamentalSpline:
+    case GridType::ModFundamentalSpline:
+      return GridType::FundamentalSpline;
+    case GridType::PolyClenshawCurtis:
+    case GridType::PolyClenshawCurtisBoundary:
+    case GridType::ModPolyClenshawCurtis:
+      return GridType::PolyClenshawCurtis;
+    case GridType::BsplineClenshawCurtis:
+      return GridType::TypeBsplineClenshawCurtis;
+    case GridType::NakBsplineBoundaryCombigrid:
+      return GridType::NakBsplineBoundaryCombigrid;
+    case GridType::NaturalBsplineBoundary:
+      return GridType::NaturalBsplineBoundary;
+    case GridType::NotAKnotBsplineBoundary:
+    case GridType::ModNotAKnotBspline:
+      return GridType::NotAKnotBsplineBoundary;
+    case GridType::LagrangeSplineBoundary:
+      return GridType::LagrangeSplineBoundary;
+    case GridType::LagrangeNotAKnotSplineBoundary:
+    case GridType::ModLagrangeNotAKnotSpline:
+      return GridType::LagrangeNotAKnotSplineBoundary;
+    case GridType::FundamentalSplineBoundary:
+      return GridType::FundamentalSplineBoundary;
+    case GridType::FundamentalNotAKnotSplineBoundary:
+      return GridType::FundamentalNotAKnotSplineBoundary;
+    // no non-boundary treatment basis available for the following grids
+    case GridType::ModBsplineClenshawCurtis:
+    default:
+      throw generation_exception("Grid::getZeroBoundaryType - no conversion known");
+  }
+}
+
+std::string Grid::getTypeAsString() { return typeVerboseMap()[getType()]; }
 
 Grid* Grid::unserialize(const std::string& istr) {
   std::istringstream istream;
@@ -473,11 +594,21 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
                                                        LinearStretchedBoundaryGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("linearClenshawCurtis",
                                                        LinearClenshawCurtisGrid::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>(
+        "linearClenshawCurtisBoundary", LinearClenshawCurtisBoundaryGrid::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>("modLinearClenshawCurtis",
+                                                       ModLinearClenshawCurtisGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("modlinear", ModLinearGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("poly", PolyGrid::unserialize));
     tMap->insert(
         std::pair<std::string, Grid::Factory>("polyBoundary", PolyBoundaryGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("modpoly", ModPolyGrid::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>("polyClenshawCurtis",
+                                                       PolyClenshawCurtisGrid::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>(
+        "polyClenshawCurtisBoundary", PolyClenshawCurtisBoundaryGrid::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>("modPolyClenshawCurtis",
+                                                       ModPolyClenshawCurtisGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("wavelet", WaveletGrid::unserialize));
     tMap->insert(
         std::pair<std::string, Grid::Factory>("waveletBoundary", WaveletBoundaryGrid::unserialize));
@@ -527,10 +658,17 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
     tMap->insert(
         std::make_pair("linearStretchedBoundary", LinearStretchedBoundaryGrid::unserialize));
     tMap->insert(std::make_pair("linearClenshawCurtis", LinearClenshawCurtisGrid::unserialize));
+    tMap->insert(std::make_pair("modLinearClenshawCurtis", LinearClenshawCurtisGrid::unserialize));
+    tMap->insert(std::make_pair("linearClenshawCurtisBoundary",
+                                LinearClenshawCurtisBoundaryGrid::unserialize));
     tMap->insert(std::make_pair("modlinear", ModLinearGrid::unserialize));
     tMap->insert(std::make_pair("poly", PolyGrid::unserialize));
     tMap->insert(std::make_pair("polyBoundary", PolyBoundaryGrid::unserialize));
     tMap->insert(std::make_pair("modpoly", ModPolyGrid::unserialize));
+    tMap->insert(std::make_pair("polyClenshawCurtis", PolyClenshawCurtisGrid::unserialize));
+    tMap->insert(
+        std::make_pair("polyClenshawCurtisBoundary", PolyClenshawCurtisBoundaryGrid::unserialize));
+    tMap->insert(std::make_pair("modPolyClenshawCurtis", ModPolyClenshawCurtisGrid::unserialize));
     tMap->insert(std::make_pair("wavelet", WaveletGrid::unserialize));
     tMap->insert(std::make_pair("waveletBoundary", WaveletBoundaryGrid::unserialize));
     tMap->insert(std::make_pair("modWavelet", ModWaveletGrid::unserialize));
@@ -592,11 +730,21 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
         GridType::LinearStretchedBoundary, "linearStretchedBoundary"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::LinearClenshawCurtis,
                                                                     "linearClenshawCurtis"));
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
+        GridType::LinearClenshawCurtisBoundary, "linearClenshawCurtisBoundary"));
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
+        GridType::ModLinearClenshawCurtis, "modLinearClenshawCurtis"));
     verboseMap->insert(
         std::pair<sgpp::base::GridType, std::string>(GridType::ModLinear, "modlinear"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::Poly, "poly"));
     verboseMap->insert(
         std::pair<sgpp::base::GridType, std::string>(GridType::PolyBoundary, "polyBoundary"));
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::PolyClenshawCurtis,
+                                                                    "polyClenshawCurtis"));
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
+        GridType::PolyClenshawCurtisBoundary, "polyClenshawCurtisBoundary"));
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::ModPolyClenshawCurtis,
+                                                                    "modPolyClenshawCurtis"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::ModPoly, "modpoly"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::Wavelet, "wavelet"));
     verboseMap->insert(
@@ -650,6 +798,10 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
     verboseMap->insert(
         std::make_pair(GridType::LinearStretchedBoundary, "linearStretchedBoundary"));
     verboseMap->insert(std::make_pair(GridType::LinearClenshawCurtis, "linearClenshawCurtis"));
+    verboseMap->insert(
+        std::make_pair(GridType::LinearClenshawCurtisBoundary, "linearClenshawCurtisBoundary"));
+    verboseMap->insert(
+        std::make_pair(GridType::ModLinearClenshawCurtis, "modLinearClenshawCurtis"));
     verboseMap->insert(std::make_pair(GridType::ModLinear, "modlinear"));
     verboseMap->insert(std::make_pair(GridType::Poly, "poly"));
     verboseMap->insert(std::make_pair(GridType::PolyBoundary, "polyBoundary"));
@@ -669,6 +821,13 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
     verboseMap->insert(std::make_pair(GridType::Periodic, "periodic"));
     verboseMap->insert(
         std::make_pair(GridType::LinearTruncatedBoundary, "linearTruncatedBoundary"));
+    verboseMap->insert(std::make_pair(GridType::PolyClenshawCurtis, "polyClenshawCurtis"));
+    verboseMap->insert(
+        std::make_pair(GridType::PolyClenshawCurtisBoundary, "polyClenshawCurtisBoundary"));
+    verboseMap->insert(std::make_pair(GridType::ModPolyClenshawCurtis, "modPolyClenshawCurtis"));
+    verboseMap->insert(
+        std::make_pair(GridType::ModLinearClenshawCurtis, "modLinearClenshawCurtis"));
+    verboseMap->insert(std::make_pair(GridType::LinearClenshawCurtis, "linearClenshawCurtis"));
     verboseMap->insert(
         std::make_pair(GridType::NaturalBsplineBoundary, "naturalBsplineBoundary"));
     verboseMap->insert(
@@ -774,6 +933,92 @@ std::vector<size_t> Grid::getAlgorithmicDimensions() { return storage.getAlgorit
 
 void Grid::setAlgorithmicDimensions(std::vector<size_t> newAlgoDims) {
   this->storage.setAlgorithmicDimensions(newAlgoDims);
+}
+
+GridType Grid::stringToGridType(const std::string& gridType) {
+  if (gridType.compare("linear") == 0) {
+    return sgpp::base::GridType::Linear;
+  } else if (gridType.compare("linearStretched") == 0) {
+    return sgpp::base::GridType::LinearStretched;
+  } else if (gridType.compare("linearL0Boundary") == 0) {
+    return sgpp::base::GridType::LinearL0Boundary;
+  } else if (gridType.compare("linearBoundary") == 0) {
+    return sgpp::base::GridType::LinearBoundary;
+  } else if (gridType.compare("linearStretchedBoundary") == 0) {
+    return sgpp::base::GridType::LinearStretchedBoundary;
+  } else if (gridType.compare("linearTruncatedBoundary") == 0) {
+    return sgpp::base::GridType::LinearTruncatedBoundary;
+  } else if (gridType.compare("modlinear") == 0) {
+    return sgpp::base::GridType::ModLinear;
+  } else if (gridType.compare("modLinearClenshawCurtis") == 0) {
+    return sgpp::base::GridType::ModLinearClenshawCurtis;
+  } else if (gridType.compare("poly") == 0) {
+    return sgpp::base::GridType::Poly;
+  } else if (gridType.compare("polyBoundary") == 0) {
+    return sgpp::base::GridType::PolyBoundary;
+  } else if (gridType.compare("modpoly") == 0) {
+    return sgpp::base::GridType::ModPoly;
+  } else if (gridType.compare("polyClenshawCurtis") == 0) {
+    return sgpp::base::GridType::PolyClenshawCurtis;
+  } else if (gridType.compare("polyClenshawCurtisBoundary") == 0) {
+    return sgpp::base::GridType::PolyClenshawCurtisBoundary;
+  } else if (gridType.compare("modPolyClenshawCurtis") == 0) {
+    return sgpp::base::GridType::ModPolyClenshawCurtis;
+  } else if (gridType.compare("modWavelet") == 0) {
+    return sgpp::base::GridType::ModWavelet;
+  } else if (gridType.compare("modBspline") == 0) {
+    return sgpp::base::GridType::ModBspline;
+  } else if (gridType.compare("prewavelet") == 0) {
+    return sgpp::base::GridType::Prewavelet;
+  } else if (gridType.compare("squareRoot") == 0) {
+    return sgpp::base::GridType::SquareRoot;
+  } else if (gridType.compare("periodic") == 0) {
+    return sgpp::base::GridType::Periodic;
+  } else if (gridType.compare("linearClenshawCurtis") == 0) {
+    return sgpp::base::GridType::LinearClenshawCurtis;
+  } else if (gridType.compare("linearClenshawCurtisBoundary") == 0) {
+    return sgpp::base::GridType::LinearClenshawCurtisBoundary;
+  } else if (gridType.compare("bspline") == 0) {
+    return sgpp::base::GridType::Bspline;
+  } else if (gridType.compare("bsplineBoundary") == 0) {
+    return sgpp::base::GridType::BsplineBoundary;
+  } else if (gridType.compare("bsplineClenshawCurtis") == 0) {
+    return sgpp::base::GridType::BsplineClenshawCurtis;
+  } else if (gridType.compare("wavelet") == 0) {
+    return sgpp::base::GridType::Wavelet;
+  } else if (gridType.compare("waveletBoundary") == 0) {
+    return sgpp::base::GridType::WaveletBoundary;
+  } else if (gridType.compare("fundamentalSpline") == 0) {
+    return sgpp::base::GridType::FundamentalSpline;
+  } else if (gridType.compare("modFundamentalSpline") == 0) {
+    return sgpp::base::GridType::ModFundamentalSpline;
+  } else if (gridType.compare("modBsplineClenshawCurtis") == 0) {
+    return sgpp::base::GridType::ModBsplineClenshawCurtis;
+  } else if (gridType.compare("linearstencil") == 0) {
+    return sgpp::base::GridType::LinearStencil;
+  } else if (gridType.compare("modlinearstencil") == 0) {
+    return sgpp::base::GridType::ModLinearStencil;
+  } else if (gridType.compare("naturalBsplineBoundary") == 0) {
+    return sgpp::base::GridType::NaturalBsplineBoundary;
+  } else if (gridType.compare("notaknotBsplineBoundary") == 0) {
+    return sgpp::base::GridType::NotAKnotBsplineBoundary;
+  } else if (gridType.compare("modNotaknotBspline") == 0) {
+    return sgpp::base::GridType::ModNotAKnotBspline;
+  } else if (gridType.compare("lagrangeSplineBoundary") == 0) {
+    return sgpp::base::GridType::LagrangeSplineBoundary;
+  } else if (gridType.compare("lagrangeNotaknotSplineBoundary") == 0) {
+    return sgpp::base::GridType::LagrangeNotAKnotSplineBoundary;
+  } else if (gridType.compare("modLagrangeNotaknotSpline") == 0) {
+    return sgpp::base::GridType::ModLagrangeNotAKnotSpline;
+  } else if (gridType.compare("fundamentalSplineBoundary") == 0) {
+    return sgpp::base::GridType::FundamentalSplineBoundary;
+  } else if (gridType.compare("fundamentalNotAKnotSplineBoundary") == 0) {
+    return sgpp::base::GridType::FundamentalNotAKnotSplineBoundary;
+  } else {
+    std::stringstream errorString;
+    errorString << "grid type '" << gridType << "' is unknown" << std::endl;
+    throw base::application_exception(errorString.str().c_str());
+  }
 }
 
 }  // namespace base
