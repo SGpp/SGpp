@@ -46,6 +46,7 @@
 /base/doc/doxygen/GridTypes.doxy
 /combigrid/doc/doxygen/combigrid_gettingStarted_py.doxy
 */doc/doxygen/example_*.doxy
+*/doc/doxygen/snippets/*
 
 #ignoring tests
 */tests/test_*_boost
