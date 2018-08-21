@@ -1,3 +1,5 @@
+from __future__ import print_function
+from builtins import range
 #!/usr/bin/python
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
@@ -41,13 +43,13 @@ def f(x):
 dim = 2
 grid = pysgpp.Grid.createLinearGrid(dim)
 gridStorage = grid.getStorage()
-print "dimensionality:        {}".format(dim)
+print("dimensionality:        {}".format(dim))
 
 # create regular grid, level 3
 level = 3
 gridGen = grid.getGenerator()
 gridGen.regular(level)
-print "number of grid points: {}".format(gridStorage.getSize())
+print("number of grid points: {}".format(gridStorage.getSize()))
 
 
 ## Calculate the surplus vector alpha for the interpolant of \f$
@@ -58,7 +60,7 @@ print "number of grid points: {}".format(gridStorage.getSize())
 
 # create coefficient vector
 alpha = pysgpp.DataVector(gridStorage.getSize())
-for i in xrange(gridStorage.getSize()):
+for i in range(gridStorage.getSize()):
   gp = gridStorage.getPoint(i)
   alpha[i] = f((gp.getStandardCoordinate(0), gp.getStandardCoordinate(1)))
 pysgpp.createOperationHierarchisation(grid).doHierarchisation(alpha)
@@ -69,22 +71,22 @@ pysgpp.createOperationHierarchisation(grid).doHierarchisation(alpha)
 # direct quadrature
 opQ = pysgpp.createOperationQuadrature(grid)
 res = opQ.doQuadrature(alpha)
-print "exact integral value:  {}".format(res)
+print("exact integral value:  {}".format(res))
 
 # Monte Carlo quadrature using 100000 paths
 opMC = pysgpp.OperationQuadratureMC(grid, 100000)
 res = opMC.doQuadrature(alpha)
-print "Monte Carlo value:     {:.6f}".format(res)
+print("Monte Carlo value:     {:.6f}".format(res))
 res = opMC.doQuadrature(alpha)
-print "Monte Carlo value:     {:.6f}".format(res)
+print("Monte Carlo value:     {:.6f}".format(res))
 
 # Monte Carlo quadrature of a function
 res = opMC.doQuadratureFunc(f)
-print "MC value (f):          {:.6f}".format(res)
+print("MC value (f):          {:.6f}".format(res))
 
 # Monte Carlo quadrature of error
 res = opMC.doQuadratureL2Error(f, alpha)
-print "MC L2-error (f-u)      {:.7f}".format(res)
+print("MC L2-error (f-u)      {:.7f}".format(res))
 
 ## This results in an output similar to:
 ## \verbinclude quadrature.output.txt

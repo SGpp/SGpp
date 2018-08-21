@@ -3,6 +3,7 @@ Created on Jul 23, 2014
 
 @author: franzefn
 '''
+from builtins import range
 from pysgpp import (DataVector, Grid, DataMatrix,
                     createOperationLTwoDotExplicit, createOperationEval)
 from pysgpp.extensions.datadriven.uq.operations import (getBasis, hierarchize,
@@ -32,10 +33,10 @@ def computeBFQuad(grid, U, admissibleSet, n=100):
     # run over all rows
     for i, gpi in enumerate(admissibleSet.values()):
         # run over all columns
-        for j in xrange(gs.size()):
+        for j in range(gs.size()):
             # print "%i/%i" % (i * gs.size() + j + 1, gs.size() ** 2)
             gpj = gs.getPoint(j)
-            for d in xrange(gs.getDimension()):
+            for d in range(gs.getDimension()):
                 # get level index
                 lid, iid = gpi.getLevel(d), gpi.getIndex(d)
                 ljd, ijd = gpj.getLevel(d), gpj.getIndex(d)
@@ -90,7 +91,7 @@ def computeBFGridPoint(basis, U, gpi, gps):
 
 
 def computeBFPairwise(basis, U, gpi, gpj):
-    for d in xrange(gpj.getDimension()):
+    for d in range(gpj.getDimension()):
         # get level index
         lid, iid = gpi.getLevel(d), gpi.getIndex(d)
         ljd, ijd = gpj.getLevel(d), gpj.getIndex(d)
@@ -187,10 +188,10 @@ def computeBF(grid, U, admissibleSet):
     # run over all rows
     for i, gpi in enumerate(admissibleSet.values()):
         # run over all columns
-        for j in xrange(gs.size()):
+        for j in range(gs.size()):
             # print "%i/%i" % (i * gs.size() + j + 1, gs.size() ** 2)
             gpj = gs.getPoint(j)
-            for d in xrange(gs.getDimension()):
+            for d in range(gs.getDimension()):
                 # get level index
                 lid, iid = gpi.getLevel(d), gpi.getIndex(d)
                 ljd, ijd = gpj.getLevel(d), gpj.getIndex(d)
@@ -211,7 +212,7 @@ def computeBF(grid, U, admissibleSet):
                     # do the 1d interpolation ...
                     # define transformation function
                     T = LinearTransformation(lb, ub)
-                    for k in xrange(ngs.size()):
+                    for k in range(ngs.size()):
                         x = ngs.getCoordinate(ngs.getPoint(k), 0)
                         x = T.unitToProbabilistic(x)
                         nodalValues[k] = basis.eval(lid, iid, x) * \
@@ -263,7 +264,7 @@ def computePiecewiseConstantBF(grid, U, admissibleSet):
     for k, gpi in enumerate(admissibleSet.values()):
         i = gs.getSequenceNumber(gpi)
         gs.getCoordinates(gpi, p)
-        for j in xrange(gs.size()):
+        for j in range(gs.size()):
             gs.getCoordinates(gs.getPoint(j), q)
 #             for d in xrange(gs.getDimension()):
 #                 # get level index
@@ -300,7 +301,7 @@ def computeExpectationValueEstimation(grid, U, admissibleSet):
     p = DataVector(gs.getDimension())
     for i, gpi in enumerate(admissibleSet.values()):
         gs.getCoordinates(gpi, p)
-        for d in xrange(gs.getDimension()):
+        for d in range(gs.getDimension()):
             # get level index
             lid, iid = gpi.getLevel(d), gpi.getIndex(d)
             xlow = (iid - 1) * 2 ** -lid

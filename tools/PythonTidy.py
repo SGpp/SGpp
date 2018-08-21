@@ -121,6 +121,11 @@ Collaborative International Dictionary of English v.0.48.
 '''
 
 from __future__ import division, print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from past.builtins import basestring
+from builtins import object
 
 DEBUG = False
 PERSONAL = False
@@ -289,7 +294,7 @@ VERSION = '1.21'  # 2010 Sep 03
 import sys
 import os
 import codecs
-import StringIO
+import io
 import re
 import textwrap  # 2007 May 25
 if DEBUG:
@@ -297,6 +302,7 @@ if DEBUG:
     import doctest
 import tokenize
 import compiler
+from itertools import zip_longest
 
 ZERO = 0
 SPACE = ' '
@@ -849,7 +855,7 @@ class InputUnit(object):
         self.end = len(self.lines) - 1
         return self
 
-    def next(self):  # 2006 Dec 05
+    def __next__(self):  # 2006 Dec 05
         if self.ndx > self.end:
             raise StopIteration
         elif self.ndx == self.end:
@@ -864,7 +870,7 @@ class InputUnit(object):
 
     def readline(self):  # 2006 Dec 05
         try:
-            result = self.next()
+            result = next(self)
         except StopIteration:
             result = NULL
         return result
@@ -1158,7 +1164,7 @@ class Comments(dict):
 
             """
             while True:
-                prev_item = lines.next()
+                prev_item = next(lines)
                 yield prev_item
                 (
                     prev_token_type,
@@ -1170,7 +1176,7 @@ class Comments(dict):
                 if prev_token_type in [tokenize.STRING]:
                     on1 = True
                     while True:
-                        next_item  = lines.next()
+                        next_item  = next(lines)
                         yield next_item
                         (
                             next_token_type,
@@ -1898,7 +1904,7 @@ class NodeStr(Node):
 
     def set_as_str(self, str_):
         self.str = str_
-        if isinstance(self.str, unicode):
+        if isinstance(self.str, str):
             pass
         elif not RECODE_STRINGS:  # 2006 Dec 01
             pass
@@ -3151,7 +3157,8 @@ class NodeFunction(Node):
         else:
             stars.insert(ZERO, '**')
             defaults.insert(ZERO, None)
-        result = map(None, args, defaults, stars)
+            
+        result = list(zip_longest(args, defaults, stars))
         result.reverse()
         return result
 

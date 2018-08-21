@@ -1,3 +1,6 @@
+from __future__ import print_function
+from builtins import range
+from builtins import object
 from pysgpp.extensions.datadriven.learner.Types import BorderTypes
 from pysgpp.extensions.datadriven.learner.formatter.GridFormatter import GridFormatter
 
@@ -169,7 +172,7 @@ class GridDescriptor(object):
                 copygs = self.__grid.getStorage()
 
                 # insert grid points
-                for i in xrange(copygs.getSize()):
+                for i in range(copygs.getSize()):
                     gp = copygs.getPoint(i)
                     # insert grid point
                     if not gs.isContaining(gp):

@@ -1,3 +1,7 @@
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import str
+from builtins import range
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -10,7 +14,7 @@
 from optparse import OptionParser
 import sys
 from tools import *
-from toolsExtended import *
+from .toolsExtended import *
 from pysgpp import *
 from math import sqrt
 import random
@@ -49,7 +53,7 @@ def buildParable(dim):
     
     function = str(pow(4.0,dim))
     
-    for i in xrange(dim):
+    for i in range(dim):
         function = function + "*x" + str(i+1) + "*(1-" + "x" + str(i+1) + ")"
         
     return function    
@@ -64,7 +68,7 @@ def buildParableBoundary(dim):
     
     function = "1.0"
     
-    for i in xrange(dim):
+    for i in range(dim):
         function = function + "*(((-1.0)*(x" + str(i+1) + "-0.7)*(x" + str(i+1) + "-0.7))+2.0)"
         
     return function 
@@ -97,7 +101,7 @@ def runHierarchisationDehierarchisationLinearBoundaryRegularTestPrintND(dim, lev
     
     node_values = DataVector(storage.getSize(), 1)
     
-    for n in xrange(storage.getSize()):
+    for n in range(storage.getSize()):
         points = storage.getPoint(n).getCoordinates().split()
         node_values[n] = evalFunction(function, points)
         
@@ -155,7 +159,7 @@ def runHierarchisationDehierarchisationLinearTruncatedBoundaryRegularTestPrintND
     
     node_values = DataVector(storage.getSize(), 1)
     
-    for n in xrange(storage.getSize()):
+    for n in range(storage.getSize()):
         points = storage.getPoint(n).getCoordinates().split()
         node_values[n] = evalFunction(function, points)
         
@@ -213,7 +217,7 @@ def runHierarchisationDehierarchisationLinearRegularTestPrintND(dim, level, reso
     
     node_values = DataVector(storage.getSize(), 1)
     
-    for n in xrange(storage.getSize()):
+    for n in range(storage.getSize()):
         points = storage.getPoint(n).getCoordinates().split()
         node_values[n] = evalFunction(function, points)
         
@@ -271,7 +275,7 @@ def runHierarchisationDehierarchisationModLinearTestPrintND(dim, level, resoluti
     
     node_values = DataVector(storage.getSize(), 1)
     
-    for n in xrange(storage.getSize()):
+    for n in range(storage.getSize()):
         points = storage.getPoint(n).getCoordinates().split()
         node_values[n] = evalFunction(function, points)
         
@@ -328,7 +332,7 @@ def runHierarchisationDehierarchisationLinearTruncatedBoundaryRegularTest(dim, l
     
     node_values = DataVector(storage.getSize(), 1)
     
-    for n in xrange(storage.getSize()):
+    for n in range(storage.getSize()):
         points = storage.getPoint(n).getCoordinates().split()
         node_values[n] = evalFunction(function, points)
         
@@ -378,7 +382,7 @@ def runHierarchisationDehierarchisationLinearRegularTest(dim, level):
     
     node_values = DataVector(storage.getSize(), 1)
     
-    for n in xrange(storage.getSize()):
+    for n in range(storage.getSize()):
         points = storage.getPoint(n).getCoordinates().split()
         node_values[n] = evalFunction(function, points)
         
@@ -428,7 +432,7 @@ def runHierarchisationDehierarchisationModLinearRegularTest(dim, level):
     
     node_values = DataVector(storage.getSize(), 1)
     
-    for n in xrange(storage.getSize()):
+    for n in range(storage.getSize()):
         points = storage.getPoint(n).getCoordinates().split()
         node_values[n] = evalFunction(function, points)
         

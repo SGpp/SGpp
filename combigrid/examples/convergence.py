@@ -7,6 +7,11 @@
 ## \page example_convergence_py convergence.py
 ## simple code that provides convergence plots for various analytic models
 
+from __future__ import division
+from __future__ import print_function
+from builtins import range
+from builtins import object
+from past.utils import old_div
 from argparse import ArgumentParser
 from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
 from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend
@@ -25,7 +30,7 @@ def expModel(x, params):
 
 
 def arctanModel(x, params):
-    return np.arctan(50.0 * (x[0] - .35)) + np.pi / 2.0 + 4.0 * x[1] ** 3 + np.exp(x[0] * x[1] - 1.0)
+    return np.arctan(50.0 * (x[0] - .35)) + old_div(np.pi, 2.0) + 4.0 * x[1] ** 3 + np.exp(x[0] * x[1] - 1.0)
 
 
 def buildAtanParams(dist_type):
@@ -44,8 +49,8 @@ def boreholeModel(x, params):
     z = params.getJointTransformation().unitToProbabilistic(x)
 
     num = 2 * np.pi * z[2] * (z[3] - z[5])
-    den = np.log(z[1] / z[0]) * (1 + (2 * z[6] * z[2]) / (np.log(z[1] / z[0]) * (z[0] ** 2) * z[7]) + z[2] / z[4])
-    return num / den
+    den = np.log(old_div(z[1], z[0])) * (1 + old_div((2 * z[6] * z[2]), (np.log(old_div(z[1], z[0])) * (z[0] ** 2) * z[7])) + old_div(z[2], z[4]))
+    return old_div(num, den)
 
 
 def buildBoreholeParams(dist_type):
@@ -152,7 +157,7 @@ def buildLevelManager(name):
         raise AttributeError("level manager '%s' not supported" % name)
 
 
-class RefinementWrapper:
+class RefinementWrapper(object):
 
     def __init__(self,
                  gridType,
@@ -259,7 +264,7 @@ if __name__ == "__main__":
         if adaptive:
             n_sequence = np.unique(np.logspace(0, np.log10(args.maxNumGridPoints), dtype="int"))
         else:
-            n_sequence = range(args.minLevel, args.maxLevel + 1)
+            n_sequence = list(range(args.minLevel, args.maxLevel + 1))
 
         for i, n in enumerate(n_sequence):
             # refine the grid
@@ -269,7 +274,7 @@ if __name__ == "__main__":
             y_surrogate = refinement_wrapper.evaluate(n)
 
             if i == 0 or numGridPoints[-1] < n_grid_points:
-                print( gridType, basisType, levelManagerType, n, n_grid_points )
+                print(( gridType, basisType, levelManagerType, n, n_grid_points ))
 
                 l2error = np.sqrt(np.mean((y - y_surrogate) ** 2))
                 l2errors = np.append(l2errors, l2error)
@@ -283,7 +288,7 @@ if __name__ == "__main__":
     fig = plt.figure()
     ax = plt.subplot(111)
 
-    for (basisType, levelManagerType, gridType), (numGridPoints, l2errors) in results.items():
+    for (basisType, levelManagerType, gridType), (numGridPoints, l2errors) in list(results.items()):
         plt.loglog(numGridPoints, l2errors, label="%s %s %s" % (gridType, levelManagerType, basisType))
 
     plt.xlabel("number of grid points")

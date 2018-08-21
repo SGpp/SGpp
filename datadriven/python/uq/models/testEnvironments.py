@@ -1,3 +1,6 @@
+from builtins import zip
+from builtins import range
+from builtins import object
 import numpy as np
 
 from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
@@ -180,7 +183,7 @@ class ProbabilisticSpaceSGpp(object):
         # set distributions of the input parameters
         builder = ParameterBuilder()
         up = builder.defineUncertainParameters()
-        for idim in xrange(self.numDims):
+        for idim in range(self.numDims):
             up.new().isCalled("x%i" % idim).withUniformDistribution(a, b)
         return up.andGetResult()
 
@@ -188,7 +191,7 @@ class ProbabilisticSpaceSGpp(object):
         # set distributions of the input parameters
         builder = ParameterBuilder()
         up = builder.defineUncertainParameters()
-        for idim in xrange(self.numDims):
+        for idim in range(self.numDims):
             up.new().isCalled("x%i" % idim).withNormalDistribution(mu, sigma, 0.001)
         return builder.andGetResult()
 
@@ -203,7 +206,7 @@ class ProbabilisticSpaceSGpp(object):
         # estimate the density
         builder = ParameterBuilder()
         up = builder.defineUncertainParameters()
-        names = ", ".join(["x%i" for i in xrange(numDims)])
+        names = ", ".join(["x%i" for i in range(numDims)])
         up.new().isCalled(names).withMultivariateNormalDistribution(mu, cov, 0, 1)
         return builder.andGetResult()
 
@@ -240,7 +243,7 @@ class PCEBuilderHeat(object):
 
     def getSortedSobolIndices(self, pce):
         sobol_indices = pce.sobol_indices()
-        indices = [findSetBits(i + 1) for i in xrange(len(sobol_indices))]
+        indices = [findSetBits(i + 1) for i in range(len(sobol_indices))]
         indices, ixs = sortPermutations(indices, index_return=True)
         sobol_indices_dict = {}
         for index, i in zip(indices, ixs):

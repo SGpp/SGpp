@@ -12,8 +12,12 @@
 # Output either as eps, png, or to stdout.
 #
 
+from __future__ import division
+from __future__ import print_function
+from builtins import range
+from past.utils import old_div
 import sys, os, re, optparse
-if os.environ.has_key("SGPP"):
+if "SGPP" in os.environ:
     sys.path.append(os.environ["SGPP"]+"/bin")
 from bin import tools
 
@@ -100,7 +104,7 @@ if __name__=='__main__':
     # sense to take one the last lines
     line = data[-2].strip().split(options.datsep)
     dim = len(line)-1
-    print( "# dim =", dim )
+    print(( "# dim =", dim ))
     
     # prepare dotwidth
     if options.dotwidth:
@@ -110,8 +114,8 @@ if __name__=='__main__':
     
     # get bounds of intervals
     if options.minima and options.maxima:
-        mmin = map(lambda x: float(x), options.minima.split())
-        mmax = map(lambda x: float(x), options.maxima.split())
+        mmin = [float(x) for x in options.minima.split()]
+        mmax = [float(x) for x in options.maxima.split()]
     else:
         (mmin, mmax) = getminmax(options.data, options.datsep)
     
@@ -122,10 +126,10 @@ if __name__=='__main__':
             xoffset = 0.02
             yoffset = 0.02
         else:
-            xoffset = 1.0/12.0
-            yoffset = 1.0/12.0
-        dx = (1.0-xoffset)/dim
-        dy = (1.0-yoffset)/dim
+            xoffset = old_div(1.0,12.0)
+            yoffset = old_div(1.0,12.0)
+        dx = old_div((1.0-xoffset),dim)
+        dy = old_div((1.0-yoffset),dim)
     
         s = """
     # taking data from %s

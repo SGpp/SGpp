@@ -1,3 +1,4 @@
+from __future__ import print_function
 from pysgpp.extensions.datadriven.learner import LearnerBuilder
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,7 +15,7 @@ def f(x):
     return np.prod(4. * x * (1 - x), axis=1)
 
 
-print "generate uniformly distributed samples (%i, %i)" % (numSamples, numDims)
+print("generate uniformly distributed samples (%i, %i)" % (numSamples, numDims))
 samples = np.random.rand(numSamples, numDims)
 values = f(samples)
 
@@ -38,15 +39,15 @@ learner = builder.andGetResult()
 
 gs = learner.grid.getStorage()
 
-print "Dimensions: %i" % gs.dim()
-print "Grid points: %i" % gs.size()
+print("Dimensions: %i" % gs.dim())
+print("Grid points: %i" % gs.size())
 
-print "================== Starting learning =================="
+print("================== Starting learning ==================")
 
 learner.learnData()
-print learner.alpha
+print(learner.alpha)
 
-print "======================================================="
+print("=======================================================")
 
 if numDims == 1:
     plt.scatter(samples[:, 0], values)

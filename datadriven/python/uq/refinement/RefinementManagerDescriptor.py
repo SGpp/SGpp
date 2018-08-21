@@ -1,10 +1,12 @@
-from AdmissibleSet import (AdmissibleSparseGridNodeSet,
+from __future__ import absolute_import
+from builtins import object
+from .AdmissibleSet import (AdmissibleSparseGridNodeSet,
                            RefinableNodesSet)
-from LocalRefinementStrategy import (CreateAllChildrenRefinement,
+from .LocalRefinementStrategy import (CreateAllChildrenRefinement,
                                      ANOVARefinement,
                                      AddNode)
-from RefinementManager import RefinementManager
-from RefinementStrategy import (SurplusRanking,
+from .RefinementManager import RefinementManager
+from .RefinementStrategy import (SurplusRanking,
                                 SquaredSurplusRanking,
                                 WeightedSurplusRanking,
                                 WeightedL2OptRanking,

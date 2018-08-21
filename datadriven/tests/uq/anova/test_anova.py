@@ -1,3 +1,8 @@
+from __future__ import division
+from __future__ import print_function
+from builtins import zip
+from builtins import range
+from past.utils import old_div
 # --------------------------------------------------------
 # ANOVA test
 # --------------------------------------------------------
@@ -39,7 +44,7 @@ class AnovaTest(unittest.TestCase):
               if ix <= len(self.params)]
 
         def g(x, a):
-            return (abs(4 * x - 2) + a) / (a + 1)
+            return old_div((abs(4 * x - 2) + a), (a + 1))
 
         def f(xs, **kws):
             return np.prod([g(x, b) for x, b in zip(xs, bs)])
@@ -50,21 +55,21 @@ class AnovaTest(unittest.TestCase):
         # --------------------------------------------------------
 
         def vi(i):
-            return 1. / (3 * (1 + bs[i]) ** 2)
+            return old_div(1., (3 * (1 + bs[i]) ** 2))
 
         def vij(i, j):
-            return 1. / (9 * (1 + bs[i]) ** 2 * (1 + bs[j]) ** 2)
+            return old_div(1., (9 * (1 + bs[i]) ** 2 * (1 + bs[j]) ** 2))
 
         def vijk(i, j, k):
-            return 1. / (27 * (1 + bs[i]) ** 2 * (1 + bs[j]) ** 2 *
-                         (1 + bs[k]) ** 2)
+            return old_div(1., (27 * (1 + bs[i]) ** 2 * (1 + bs[j]) ** 2 *
+                         (1 + bs[k]) ** 2))
 
         self.v_t = dict([((i,), vi(i))
                          for i in range(len(bs))] +
                         [((i, j), vij(i, j))
                          for i, j in [(0, 1), (0, 2), (1, 2)]] +
                         [((0, 1, 2), vijk(0, 1, 2))])
-        self.vg = sum([v for v in self.v_t.values()])
+        self.vg = sum([v for v in list(self.v_t.values())])
 
     def testAnova(self):
         # ----------------------------------------------------------
@@ -106,10 +111,10 @@ class AnovaTest(unittest.TestCase):
         # expectation values and variances
         sg_mean, sg_var = analysis.mean(), analysis.var()
 
-        print "-" * 60
-        print "E[x] = %g = %g" % (1.0, sg_mean["value"])
-        print "V[x] = %g = %g" % (self.vg, sg_var["value"])
-        print "-" * 60
+        print("-" * 60)
+        print("E[x] = %g = %g" % (1.0, sg_mean["value"]))
+        print("V[x] = %g = %g" % (self.vg, sg_var["value"]))
+        print("-" * 60)
 
         # ----------------------------------------------------------
         # estimated anova decomposition
@@ -124,25 +129,25 @@ class AnovaTest(unittest.TestCase):
         # ----------------------------------------------------------
         # main effects
         me = anova.getSobolIndices()
-        tme = dict([(k, v / self.vg) for k, v in self.v_t.items()])
+        tme = dict([(k, old_div(v, self.vg)) for k, v in list(self.v_t.items())])
 
-        print "-------------- Sobol Indices (t = %i) ------------------" % 1
+        print("-------------- Sobol Indices (t = %i) ------------------" % 1)
         for (key, val), (k, v) in zip(sorted(me.items()),
                                       sorted(tme.items())):
-            print "%s: %s, %s" % (key, val, v)
-        print sum([val for val in me.values()]), "==", 1
-        print sum([val for val in tme.values()]), "==", 1
+            print("%s: %s, %s" % (key, val, v))
+        print(sum([val for val in list(me.values())]), "==", 1)
+        print(sum([val for val in list(tme.values())]), "==", 1)
 
         # ----------------------------------------------------------
         # total effects
         te = anova.getTotalEffects()
-        print "-------------- Total Effects (t = %i) -----------------" % 1
+        print("-------------- Total Effects (t = %i) -----------------" % 1)
         for key, val in sorted(te.items()):
-            print "%s: %s" % (key, val)
-        print "---------------------------------------------"
-        print
+            print("%s: %s" % (key, val))
+        print("---------------------------------------------")
+        print()
 
-        names = anova.getSortedPermutations(me.keys())
+        names = anova.getSortedPermutations(list(me.keys()))
         values = [me[name] for name in names]
         fig, _ = plotSobolIndices(values, legend=True, names=names)
         fig.show()

@@ -1,3 +1,6 @@
+from __future__ import division
+from __future__ import print_function
+from past.utils import old_div
 from pysgpp.extensions.datadriven.uq.dists import SGDEdist
 from pysgpp.extensions.datadriven.uq.plot import plotSG2d
 import matplotlib.pyplot as plt
@@ -129,7 +132,7 @@ printSurfaceFile = %s
         grid.getGenerator().regular(level)
 
         if grid.getSize() <= n:
-            print( " l=%i" % level, )
+            print(( " l=%i" % level, ))
             fd = open(gridFile, "w")
             fd.write(grid.serialize())
             fd.close()
@@ -197,7 +200,7 @@ printSurfaceFile = %s
 #             grid, alpha = opPositive.makePositive(sgdeDist.alpha)
 
             # scale to unit integrand
-            alpha.mult(1. / createOperationQuadrature(grid).doQuadrature(alpha))
+            alpha.mult(old_div(1., createOperationQuadrature(grid).doQuadrature(alpha)))
 
             sgdeDist.grid = grid
             sgdeDist.alpha = alpha

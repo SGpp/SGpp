@@ -1,6 +1,7 @@
+from __future__ import absolute_import
 from pysgpp.extensions.datadriven.uq.dists import SGDEdist
 
-from SparseGridEstimationStrategy import SparseGridEstimationStrategy
+from .SparseGridEstimationStrategy import SparseGridEstimationStrategy
 from pysgpp import DataVector, DataMatrix
 from pysgpp.extensions.datadriven.uq.quadrature.marginalization import doMarginalize
 

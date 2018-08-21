@@ -407,13 +407,16 @@ env.Export("lintAction")
 # Custom builders for Python and Boost tests
 #########################################################################
 
-if env["RUN_PYTHON_TESTS"] and env["SG_PYTHON"]:
-  # do the actual thing
-  python = ("python3" if env["USE_PYTHON3_FOR_PYSGPP"] else "python")
-  builder = Builder(action=python + " $SOURCE", chdir=0)
-  env.Append(BUILDERS={"Test" : builder})
-  builder = Builder(action=python + " $SOURCE")
-  env.Append(BUILDERS={"SimpleTest" : builder})
+if env["RUN_PYTHON_TESTS"]:
+  if env["SG_PYTHON"]:
+    # do the actual thing
+    python = ("python3" if env["USE_PYTHON3_FOR_PYSGPP"] else "python")
+    builder = Builder(action=python + " $SOURCE", chdir=0)
+    env.Append(BUILDERS={"Test" : builder})
+    builder = Builder(action=python + " $SOURCE")
+    env.Append(BUILDERS={"SimpleTest" : builder})
+  else:
+    Helper.printWarning("Python tests disabled because SG_PYTHON is disabled.")
 
 if env["COMPILE_BOOST_TESTS"]:
   builder = Builder(action="./$SOURCE --log_level=test_suite")

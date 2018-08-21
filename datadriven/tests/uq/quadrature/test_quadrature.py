@@ -1,3 +1,7 @@
+from __future__ import division
+from builtins import zip
+from builtins import range
+from past.utils import old_div
 # --------------------------------------------------
 # Quadrature test setting
 # --------------------------------------------------
@@ -91,8 +95,8 @@ class QuadratureTest(unittest.TestCase):
 
         for i, (f, g) in enumerate(tests):
             f1, f2 = quad(f, g)
-            self.assertTrue((abs(f1 - f2) / f1) < 1e-2,
-                            "%i: |%g - %g| / %g = %g >= 1e-2" % (i, f1, f2, f1, (abs(f1 - f2) / f1)))
+            self.assertTrue((old_div(abs(f1 - f2), f1)) < 1e-2,
+                            "%i: |%g - %g| / %g = %g >= 1e-2" % (i, f1, f2, f1, (old_div(abs(f1 - f2), f1))))
 
     def testQuadratureTruncated(self):
         def f(x): return 1.
@@ -104,7 +108,7 @@ class QuadratureTest(unittest.TestCase):
             alpha[ix] = 1.
             gp = grid.getStorage().getPoint(ix)
 
-            accLevel = sum([max(1, gp.getLevel(d)) for d in xrange(gp.getDimension())])
+            accLevel = sum([max(1, gp.getLevel(d)) for d in range(gp.getDimension())])
             self.assertTrue(createOperationQuadrature(grid).doQuadrature(alpha) == 2 ** -accLevel,
                             "%g != %g" % (createOperationQuadrature(grid).doQuadrature(alpha), 2 ** -accLevel))
 
@@ -174,7 +178,7 @@ class QuadratureTest(unittest.TestCase):
         # Quantity of interest
         bs = [0.1, 0.2, 1.5]
 
-        def g(x, a): return abs((4. * x - 2.) + a) / (a + 1.)
+        def g(x, a): return old_div(abs((4. * x - 2.) + a), (a + 1.))
 
         def h(xs): return np.prod([g(x, b) for x, b in zip(xs, bs)])
 
@@ -199,14 +203,14 @@ class QuadratureTest(unittest.TestCase):
         xlim = np.array([[-1, 1], [-1, 1]])
         trans = JointTransformation()
         dists = []
-        for idim in xrange(xlim.shape[0]):
+        for idim in range(xlim.shape[0]):
             trans.add(LinearTransformation(xlim[idim, 0], xlim[idim, 1]))
             dists.append(Uniform(xlim[idim, 0], xlim[idim, 1]))
         dist = J(dists)
 
         def f(x): return np.prod([(1 + xi) * (1 - xi) for xi in x])
 
-        def F(x): return 1. - x ** 3 / 3.
+        def F(x): return 1. - old_div(x ** 3, 3.)
         grid, alpha_vec = interpolate(f, 1, 2, gridType=GridType_Poly, deg=2, trans=trans)
         alpha = alpha_vec.array()
 
@@ -219,7 +223,7 @@ class QuadratureTest(unittest.TestCase):
 
         ngrid, nalpha, _ = MarginalAnalyticEstimationStrategy().mean(grid, alpha, dist, trans, [[0]])
 
-        self.assertTrue(abs(nalpha[0] - 2. / 3.) < 1e-10)
+        self.assertTrue(abs(nalpha[0] - old_div(2., 3.)) < 1e-10)
 
         plotSG3d(grid, alpha)
         plt.figure()

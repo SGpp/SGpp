@@ -3,6 +3,10 @@ Created on Apr 19, 2016
 
 @author: franzefn
 '''
+from __future__ import print_function
+from builtins import str
+from builtins import range
+from builtins import object
 from pysgpp.extensions.datadriven.uq.operations import checkPositivity, \
     insertHierarchicalAncestors, insertPoint, copyGrid, \
     dehierarchize, hierarchize, hasChildren, hasAllChildren
@@ -48,7 +52,7 @@ class OperationMakePositiveFast(object):
         gs = newGrid.getStorage()
         for n, ((i, j), (gpi, gpj)) in enumerate(overlappingGridPoints.items()):
             fig = plt.figure()
-            for k in xrange(gs.getSize()):
+            for k in range(gs.getSize()):
                 gp = gs.getPoint(k)
                 x, y = gp.getStandardCoordinate(0), gp.getStandardCoordinate(1)
                 if alpha[k] < 0.0:
@@ -190,10 +194,10 @@ class OperationMakePositiveFast(object):
 
             currentCandidates = finalCandidates[minLevelSum]
             if self.verbose:
-                print( "# check candidates    : %i/%i (at |l|_1 = %i <= %i)" % (len(currentCandidates),
+                print(( "# check candidates    : %i/%i (at |l|_1 = %i <= %i)" % (len(currentCandidates),
                                                                                len(candidates),
                                                                                minLevelSum,
-                                                                               np.max(levelSums)),)
+                                                                               np.max(levelSums)),))
 
             # evaluate the remaining candidates
             samples = np.ndarray((len(currentCandidates), self.numDims))
@@ -262,7 +266,7 @@ class OperationMakePositiveFast(object):
                 newGs.recalcLeafProperty()
                 # copy the remaining alpha values
                 newAlpha = np.ndarray(newGs.getSize())
-                for i in xrange(newGs.getSize()):
+                for i in range(newGs.getSize()):
                     newAlpha[i] = alpha[gs.getSequenceNumber(newGs.getPoint(i))]
 
                 grid, alpha = newGrid, newAlpha

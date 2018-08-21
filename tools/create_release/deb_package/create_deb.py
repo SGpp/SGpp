@@ -1,3 +1,6 @@
+from __future__ import print_function
+from builtins import str
+from builtins import input
 #!/usr/bin/python3
 import sys
 import os
@@ -27,20 +30,20 @@ for so_file in os.listdir("../../../lib/sgpp/"):
 print("Found compiled modules: " + str(modules))
 
 # enter version information
-major_version = str(input("Enter major version: "))
+major_version = str(eval(input("Enter major version: ")))
 if major_version == "":
     print("Aborting: You have to specify a major version")
     sys.exit(1)
 if not major_version.isdigit():
     print("Aborting: major version can only contain digits")
     sys.exit(1)
-minor_version = str(input("Enter minor version (default: \"0\"): "))
+minor_version = str(eval(input("Enter minor version (default: \"0\"): ")))
 if minor_version == "":
     minor_version = "0"
 if not minor_version.isdigit():
     print("Aborting: minor version can only contain digits")
     sys.exit(1)
-package_revision = input("Enter package_revision (default: \"1\"): ")
+package_revision = eval(input("Enter package_revision (default: \"1\"): "))
 if package_revision == "":
     package_revision = "1"
 if not package_revision.isdigit():
@@ -48,11 +51,11 @@ if not package_revision.isdigit():
     sys.exit(1)
 
 # enter maintainer information
-maintainer_name = input("Enter the name of the maintainer (default \"Dirk Pflüger\"):")
+maintainer_name = eval(input("Enter the name of the maintainer (default \"Dirk Pflüger\"):"))
 if maintainer_name == "":
     maintainer_name = "Dirk Pflüger"
 
-maintainer_email = input("Enter the email adress of the maintainer (default \"Dirk.Pflueger@ipvs.uni-stuttgart.de\"):")
+maintainer_email = eval(input("Enter the email adress of the maintainer (default \"Dirk.Pflueger@ipvs.uni-stuttgart.de\"):"))
 if maintainer_email == "":
     maintainer_email = "Dirk.Pflueger@ipvs.uni-stuttgart.de"
 

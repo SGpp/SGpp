@@ -21,7 +21,7 @@ class TransformationTest(unittest.TestCase):
                     'latin hypercube': MCSampler.withLatinHypercubeSampleGenerator(params, n)
                     }
 
-        for name, sampler in samplers.items():
+        for name, sampler in list(samplers.items()):
             samples = sampler.nextSamples(n)
             samples.selectProbabilisticSpace().selectActiveElements()
             res = samples.ndarray()

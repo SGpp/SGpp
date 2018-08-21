@@ -33,7 +33,7 @@ class MCAnalysis(Analysis):
         @param params: ParameterSet
         @param samples: dictionary {<time step>: {<Sample>: value}}
         """
-        Analysis.__init__(self, ts=samples.keys())
+        Analysis.__init__(self, ts=list(samples.keys()))
         self.__params = params
         self.__samples = samples
         if estimator is None:
@@ -43,11 +43,11 @@ class MCAnalysis(Analysis):
 
     def computeMean(self, iteration, qoi, t):
         # do the computation
-        values = np.array(self.__samples[t].values())
+        values = np.array(list(self.__samples[t].values()))
         return self.__estimator.mean(values)
 
     def computeVar(self, iteration, qoi, t):
-        values = np.array(self.__samples[t].values())
+        values = np.array(list(self.__samples[t].values()))
         return self.__estimator.var(values)
 
 # -----------------------------------------------------------------------------
@@ -65,7 +65,7 @@ class MCAnalysis(Analysis):
                  'varConfidenceIntervalBootstrapping_lower',
                  'varConfidenceIntervalBootstrapping_upper']
         # parameters
-        ts = self.__samples.keys()
+        ts = list(self.__samples.keys())
         nrows = len(ts)
         ncols = len(names)
         data = DataMatrix(nrows, ncols)
@@ -76,7 +76,7 @@ class MCAnalysis(Analysis):
             v.setAll(0.0)
             mean = self.mean(ts=[t], iterations=[0])
             var = self.var(ts=[t], iterations=[0])
-            numSamples = len(self.__samples[t].values())
+            numSamples = len(list(self.__samples[t].values()))
 
             v[0] = t
             v[1] = 0
@@ -102,10 +102,10 @@ class MCAnalysis(Analysis):
 
     def estimateDensity(self, ts=[0], dtype="kde", config={}):
         if len(ts) == 1:
-            return self._estimateDensityByConfig(dtype, self.__samples[ts[0]].values(), config)
+            return self._estimateDensityByConfig(dtype, list(self.__samples[ts[0]].values()), config)
 
         ans = {}
-        for t, values in time_dependent_values.items():
+        for t, values in list(time_dependent_values.items()):
             ans[t] = self._estimateDensityByConfig(dtype, values, config)
 
         return ans

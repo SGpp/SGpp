@@ -1,3 +1,4 @@
+from builtins import range
 from pysgpp import (DataVector,
                     NaiveSampleGenerator,
                     LatinHypercubeSampleGenerator,
@@ -57,7 +58,7 @@ class MCSampler(Sampler):
             p = DataVector(self._dim)
             ans = Samples(self._params, dtype=DistributionType.UNITUNIFORM)
             U = self._params.activeParams().getIndependentJointDistribution()
-            for _ in xrange(n):
+            for _ in range(n):
                 self.__genObj.getSample(p)
 
                 # transform it to the probabilistic space

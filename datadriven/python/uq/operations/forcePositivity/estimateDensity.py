@@ -4,11 +4,12 @@ Created on Feb 6, 2015
 
 @author: franzefn
 '''
+from __future__ import absolute_import
 
 import os
 import numpy as np
 
-from interpolationAlgorithm import InterpolationAlgorithm
+from .interpolationAlgorithm import InterpolationAlgorithm
 from pysgpp.extensions.datadriven.uq.dists.SGDEdist import SGDEdist
 import tempfile, uuid, json
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import dehierarchize, hierarchize

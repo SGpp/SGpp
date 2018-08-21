@@ -3,10 +3,15 @@ Created on Feb 6, 2015
 
 @author: franzefn
 '''
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import range
+from past.utils import old_div
 
 import numpy as np
 
-from interpolationAlgorithm import InterpolationAlgorithm
+from .interpolationAlgorithm import InterpolationAlgorithm
 from pysgpp import createOperationEval, DataVector
 from pysgpp.extensions.datadriven.uq.operations import (dehierarchize,
                                                         getBoundsOfSupport,
@@ -30,7 +35,7 @@ class ScaledMinOfParents(InterpolationAlgorithm):
         value = float("inf")
         
         level, index = getLevelIndex(gp)
-        for idim in xrange(numDims):
+        for idim in range(numDims):
             left, right = getGridPointsOnBoundary(level[idim], index[idim])
             
             if left is not None:
@@ -47,7 +52,7 @@ class ScaledMinOfParents(InterpolationAlgorithm):
             else:
                 rightValue = 0.0
 
-            interpolatedValue = abs(leftValue - rightValue) / 2
+            interpolatedValue = old_div(abs(leftValue - rightValue), 2)
 
             if interpolatedValue < value:
                 value = interpolatedValue
@@ -93,7 +98,7 @@ class ScaledMinOfParents(InterpolationAlgorithm):
                     if ix not in neg and alpha[ix] > 1e-13:
                         print( "do not touch the non negative new grid points!!!" )
                     if ix in neg and alpha[ix] < -1e-13:
-                        print( "negative coefficient found: %s -> %g (nodal=%g)" % ([gp.getStandardCoordinate(d) for d in xrange(gs.getDimension())], 
+                        print( "negative coefficient found: %s -> %g (nodal=%g)" % ([gp.getStandardCoordinate(d) for d in range(gs.getDimension())], 
                                                                                    alpha[ix],
                                                                                    nodalValues[ix]))
 #                     if ix in neg:

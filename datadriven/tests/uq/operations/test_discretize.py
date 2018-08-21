@@ -1,3 +1,4 @@
+from builtins import range
 # -------------------------------------------------------------------------------
 # Discretization tests
 # -------------------------------------------------------------------------------
@@ -52,7 +53,7 @@ class DiscretizationTest(unittest.TestCase):
 
         # interpolation on nodal basis
         p = DataVector(gs.getDimension())
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             gs.getCoordinates(gs.getPoint(i), p)
             nodalValues[i] = self.f(p.array())
 

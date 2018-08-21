@@ -1,3 +1,5 @@
+from builtins import range
+from builtins import object
 import numpy as np
 
 from pysgpp.extensions.datadriven.uq.dists import (Dist, Uniform, Normal, TNormal, SGDEdist,
@@ -141,7 +143,7 @@ class UncertainParameterDesciptor(ParameterDescriptor):
                 self.__trans = LinearTransformation(bounds[0], bounds[1])
             else:
                 self.__trans = JointTransformation()
-                for i in xrange(self._dist.getDim()):
+                for i in range(self._dist.getDim()):
                     a, b = bounds[i]
                     self.__trans.add(LinearTransformation(a, b))
 

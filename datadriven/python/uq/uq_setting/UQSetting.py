@@ -18,6 +18,14 @@ quantities of interest are computed out of the simulation results.
 @version  0.1
 
 """
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import str
+from builtins import zip
+from builtins import range
+from past.utils import old_div
+from builtins import object
 from pysgpp.extensions.datadriven.uq.sampler import Sample, SampleType
 from math import ceil
 from pysgpp import DataVector, DataMatrix
@@ -27,18 +35,18 @@ import os
 import sys
 
 from pysgpp.extensions.datadriven.tools import readDataARFF
-from UQSettingFormatter import UQSettingFormatter
-from UQSpecification import UQSpecification
+from .UQSettingFormatter import UQSettingFormatter
+from .UQSpecification import UQSpecification
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
 import numpy as np
 import warnings
 
 # for parallelisation
-import remote_worker as remote
+from . import remote_worker as remote
 from multiprocessing import cpu_count
 
 
-class UQSampleType:
+class UQSampleType(object):
     RAW = 1,
     PREPROCESSED = 2
 
@@ -63,7 +71,7 @@ class UQSetting(object):
         self._verbose = True
 
         # parallel stuff (taken from mc_berechnung)
-        self.parallelprocesses = sum([props['cores'] for props in remote.hosts.values()])
+        self.parallelprocesses = sum([props['cores'] for props in list(remote.hosts.values())])
         self.expectedsamplecount = 0  # set to expected number of samples, for parallellisation
         self.__filesuffix = 0  # incremented for each process
         self.children = {}  # running worker processes
@@ -91,28 +99,28 @@ class UQSetting(object):
             # get parameter in probabilistic space
             x = tuple(sample.getExpandedProbabilistic())
             # DAMN IT => this is shit!!!!
-            keys = stats.keys()
+            keys = list(stats.keys())
             if self._verbose:
                 print( "search for equivalent for %s" % (p,) )
             j = 0
             while not found and j < len(keys):
                 g = keys[j]
                 j += 1
-                diff1 = [abs(gi - pi) / pi for gi, pi in zip(g, p) if abs(pi) > 0]
-                diff2 = [abs(gi - pi) / gi for gi, pi in zip(g, p) if abs(gi) > 0]
+                diff1 = [old_div(abs(gi - pi), pi) for gi, pi in zip(g, p) if abs(pi) > 0]
+                diff2 = [old_div(abs(gi - pi), gi) for gi, pi in zip(g, p) if abs(gi) > 0]
                 diff = sum(diff1) + sum(diff2)
                 min_diff = min(min_diff, diff)
                 if diff < 1e-6:
                     found = True
                     old_q = self.__stats_preprocessor[g]
                     if self._verbose:
-                        print( g, old_q )
+                        print(( g, old_q ))
 
                     # save old items
                     q = self.getPreprocessor().unitToProbabilistic(x)
 
-                    diff1 = [abs(gi - pi) / pi for gi, pi in zip(q, old_q) if abs(pi) > 0]
-                    diff2 = [abs(gi - pi) / gi for gi, pi in zip(q, old_q) if abs(gi) > 0]
+                    diff1 = [old_div(abs(gi - pi), pi) for gi, pi in zip(q, old_q) if abs(pi) > 0]
+                    diff2 = [old_div(abs(gi - pi), gi) for gi, pi in zip(q, old_q) if abs(gi) > 0]
                     diff = sum(diff1) + sum(diff2)
 
                     simulation = self.__stats_simulation[old_q].copy()
@@ -135,13 +143,13 @@ class UQSetting(object):
 
             if self._verbose:
                 if found:
-                    print( "found equivalent", )
+                    print(( "found equivalent", ))
                     print( min_diff )
-                    print( len(self.__stats_samples), \
+                    print(( len(self.__stats_samples), \
                         len(self.__stats_preprocessor), \
                         len(self.__stats_preprocessor_reverse), \
                         len(self.__stats_simulation), \
-                        len(self.__stats_postprocessor))
+                        len(self.__stats_postprocessor)))
                 else:
                     print( "no equivalent found" )
         return found
@@ -174,26 +182,26 @@ class UQSetting(object):
                                                          **kws)
 
                     if self._verbose:
-                        print( "Apply pre-processing:", )
+                        print(( "Apply pre-processing:", ))
                 except:
                     raise
             else:
                 q = self.__stats_preprocessor[p]
 
                 if self._verbose:
-                    print( "Restore pre-processing:", )
+                    print(( "Restore pre-processing:", ))
         else:
             q = x
 
             if self._verbose:
-                print( "No pre-processor defined:", )
+                print(( "No pre-processor defined:", ))
 
         if self._verbose:
             print( "%s -> %s -> %s -> %s" % (tuple(sample.getActiveUnit()), p, x, q) )
 
         # check if pre-processed data has the right dimension
         if len(self.__stats_preprocessor) > 0:
-            val = self.__stats_preprocessor.itervalues().next()
+            val = next(iter(self.__stats_preprocessor.values()))
             if type(val) != type(q):
                 raise TypeError('The pre-processor has changed since',
                                 'the last run')
@@ -260,8 +268,8 @@ class UQSetting(object):
             raise Exception('Simulation is missing')
 
         if not len(self.__stats_preprocessor) == len(self.__stats_simulation):
-            print( q, len(self.__stats_preprocessor), \
-                            len(self.__stats_simulation))
+            print(( q, len(self.__stats_preprocessor), \
+                            len(self.__stats_simulation)))
             # import ipdb; ipdb.set_trace()
             # assert len(self.__stats_preprocessor) == len(self.__stats_simulation)
 
@@ -305,7 +313,7 @@ class UQSetting(object):
 
         # check if post-processed data has the right dimension
         if len(self.__stats_postprocessor) > 0:
-            val = self.__stats_postprocessor.itervalues().next()
+            val = next(iter(self.__stats_postprocessor.values()))
             if type(val) != type(B):
                 raise TypeError('The post-processor has changed since the last run')
 
@@ -335,7 +343,7 @@ class UQSetting(object):
         acc = []
         self.__stats_simulation = {}
         for i, (_, q) in enumerate(self.__stats_preprocessor.items()):
-            print( "run simulation %i/%i" % (i + 1, len(self.__stats_preprocessor.items())) )
+            print( "run simulation %i/%i" % (i + 1, len(list(self.__stats_preprocessor.items()))) )
             ans = self.__eval(q)
         return acc
 
@@ -346,7 +354,7 @@ class UQSetting(object):
         acc = []
         self.__stats_postprocessor = {}
         for i, (q, A) in enumerate(self.__stats_simulation.items()):
-            print( "run postprocessing %i/%i" % (i + 1, len(self.__stats_simulation.items())) )
+            print( "run postprocessing %i/%i" % (i + 1, len(list(self.__stats_simulation.items()))) )
             self.__postprocessing(A, q)
             # if len(ans['time']) == 0:
             #     # invalid setting remove it
@@ -361,7 +369,7 @@ class UQSetting(object):
     def runSamples(self, samples, dist=False, *args, **kws):
         # remove those samples from sample list which have already
         # been evaluated
-        samples.removeSet(self.__stats_samples.values())
+        samples.removeSet(list(self.__stats_samples.values()))
         if len(samples) == 0:
             return 0
 
@@ -387,21 +395,21 @@ class UQSetting(object):
             return
 
         # split into smaller chunks
-        jobsize = float(self.expectedsamplecount) / float(self.parallelprocesses)
+        jobsize = old_div(float(self.expectedsamplecount), float(self.parallelprocesses))
         if jobsize < 1:
             jobsize = 1.0
         if len(samples) > jobsize:
-            njobs = ceil(len(samples) / jobsize)  # round up
-            nsamples = int(ceil(len(samples) / njobs))
+            njobs = ceil(old_div(len(samples), jobsize))  # round up
+            nsamples = int(ceil(old_div(len(samples), njobs)))
             njobs = int(njobs)
-            print( "jobconfig:", njobs, jobsize, nsamples, len(samples) )
+            print(( "jobconfig:", njobs, jobsize, nsamples, len(samples) ))
 
             # split into enough chunks to be below jobsize
             for i in range(0, njobs - 1):
                 if (nsamples * (i + 1)) >= len(samples):
-                    print( i, "are enough" )
+                    print(( i, "are enough" ))
                     break
-                print( "job", nsamples * i, len(samples[nsamples * i:nsamples * (i + 1)]) )
+                print(( "job", nsamples * i, len(samples[nsamples * i:nsamples * (i + 1)]) ))
                 self.runSamples_dist(samples[nsamples * i:nsamples * (i + 1)],
                                      starti=nsamples * (njobs - 1), *args, **kws)
             self.runSamples_dist(samples[nsamples * (njobs - 1):],
@@ -419,7 +427,7 @@ class UQSetting(object):
             # look for returned children
             # print( "self.children: ", self.children )
             children_to_remove = []  # collect the finished children here
-            for child_pid, props in self.children.iteritems():
+            for child_pid, props in self.children.items():
                 (pid, res) = os.waitpid(child_pid, os.WNOHANG)
                 if pid != 0:
                     # the child already returned
@@ -469,7 +477,7 @@ class UQSetting(object):
             self.__filesuffix = self.__filesuffix + 1
             return
         else:
-            print( "Error while forking:", starti )
+            print(( "Error while forking:", starti ))
 
 #    def computeResultsOfChild(self, pid):
 #        """
@@ -602,7 +610,7 @@ class UQSetting(object):
         Check for consistency of the UQ setting.
         """
         ans = 0
-        for p, val in self.__stats_preprocessor.items():
+        for p, val in list(self.__stats_preprocessor.items()):
             if val not in self.__stats_preprocessor_reverse:
                 ans += 1
                 print( "pre %s" % (p,) )
@@ -627,8 +635,8 @@ class UQSetting(object):
         nsim = {}
         npost = {}
 
-        pre = self.__stats_preprocessor.items()
-        ixs = range(len(self.__stats_preprocessor))[:n]
+        pre = list(self.__stats_preprocessor.items())
+        ixs = list(range(len(self.__stats_preprocessor)))[:n]
         for i in ixs:
             # copy to new object
             p, val = pre[i]
@@ -663,11 +671,11 @@ class UQSetting(object):
         if self.__stats_postprocessor:
             # get some arbitrary result from which the keys are the
             # available quantities of interest
-            values = self.__stats_postprocessor.values()
+            values = list(self.__stats_postprocessor.values())
             qois = []
             i = 0
             while i < len(values) and len(qois) == 0:
-                qois = values[i].keys()
+                qois = list(values[i].keys())
                 i += 1
             return qois
         else:
@@ -765,7 +773,7 @@ class UQSetting(object):
             interpolant = self.getInterpolationFunction(p, stats_ts, results)
 
             # evaluate interpolation function at each missing time step
-            for i, t in interpolated_ts.items():
+            for i, t in list(interpolated_ts.items()):
                 # load them now by interpolation
                 ans[i] = interpolant(t)
 
@@ -827,7 +835,7 @@ class UQSetting(object):
         # run over all parameters
         for k, p in enumerate(ps):
             if self._verbose:
-                print( " %i/%i \r" % (k + 1, len(ps)), )
+                print(( " %i/%i \r" % (k + 1, len(ps)), ))
 
             res = self.getResult(p, ts, qoi)
             
@@ -1014,17 +1022,17 @@ class UQSetting(object):
             n = len(t)
         else:
             # {p : {qoi: [...]}}
-            for p, val in self.__stats_postprocessor.items():
+            for p, val in list(self.__stats_postprocessor.items()):
                 # search for specific time setting
                 if 'time' in val:
                     t[p] = val['time']
 
                 # maximal number of time steps available
-                n = max(n, len(val.values()[0]))
+                n = max(n, len(list(val.values())[0]))
 
         if len(t) > 0:
             # flatten all the available time steps
-            ts = t.values()
+            ts = list(t.values())
             if len(ts) == 0:
                 return {'t': []}
             t0 = float('inf')
@@ -1057,7 +1065,7 @@ class UQSetting(object):
 
         if len(t) == 0:
             # create t setting
-            n = int(ceil((tn - t0) / dt + 1))
+            n = int(ceil(old_div((tn - t0), dt) + 1))
             t = np.linspace(t0, tn, n, endpoint=True)
 
         # return for given time steps
@@ -1092,7 +1100,7 @@ class UQSetting(object):
         """
         statsSamples = newSetting.getSamplesStats()
         if statsSamples and self.__stats_samples is not None:
-            for key, val in statsSamples.items():
+            for key, val in list(statsSamples.items()):
                 if key not in self.__stats_samples:
                     self.__stats_samples[key] = val
                 else:
@@ -1101,7 +1109,7 @@ class UQSetting(object):
 
         statsPreprocessor = newSetting.getPreprocessorStats()
         if statsPreprocessor and self.__stats_preprocessor is not None:
-            for key, val in statsPreprocessor.items():
+            for key, val in list(statsPreprocessor.items()):
                 if key not in self.__stats_preprocessor:
                     self.__stats_preprocessor[key] = val
                 else:
@@ -1110,7 +1118,7 @@ class UQSetting(object):
 
         statsPreprocessorReverse = newSetting.getPreprocessorStatsReverse()
         if statsPreprocessorReverse and self.__stats_preprocessor_reverse is not None:
-            for key, val in statsPreprocessorReverse.items():
+            for key, val in list(statsPreprocessorReverse.items()):
                 if key not in self.__stats_preprocessor_reverse:
                     self.__stats_preprocessor_reverse[key] = val
                 else:
@@ -1119,7 +1127,7 @@ class UQSetting(object):
 
         statsSimulation = newSetting.getSimulationStats()
         if statsSimulation and self.__stats_simulation is not None:
-            for key, val in statsSimulation.items():
+            for key, val in list(statsSimulation.items()):
                 if key not in self.__stats_simulation:
                     self.__stats_simulation[key] = val
                 else:
@@ -1128,7 +1136,7 @@ class UQSetting(object):
 
         statsPostprocessor = newSetting.getPostprocessorStats()
         if statsPostprocessor and self.__stats_postprocessor is not None:
-            for key, val in statsPostprocessor.items():
+            for key, val in list(statsPostprocessor.items()):
                 if key not in self.__stats_postprocessor:
                     self.__stats_postprocessor[key] = val
                 else:
@@ -1264,7 +1272,7 @@ class UQSetting(object):
             d = ju.parseKeyAsTuple(jsonObject[key])
 
             d0 = {}
-            for key, value in d.items():
+            for key, value in list(d.items()):
                 d0[key] = Sample.fromJson(value)
             setting.setSamplesStats(d0)
 
@@ -1502,14 +1510,14 @@ class UQSetting(object):
         res = self.getTimeDependentResults(ts, qoi,
                                            sampleType=sampleType,
                                            *args, **kws)
-        for t, values in res.items():
+        for t, values in list(res.items()):
             # if no number is specified here, just write all there is to file
             n = len(values)
             if n > 0:
                 if sampleType == UQSampleType.RAW:
-                    dim = values.iterkeys().next().getDim(dtype)
+                    dim = iter(values.keys()).next().getDim(dtype)
                 else:
-                    dim = len(values.iterkeys().next())
+                    dim = len(next(iter(values.keys())))
 
                 data = DataMatrix(n, dim + 1)
                 p = DataVector(dim + 1)
@@ -1567,7 +1575,7 @@ class UQSetting(object):
         """
         remove all the non-complete entries
         """
-        for sample in self.__stats_samples.values():
+        for sample in list(self.__stats_samples.values()):
             p = tuple(sample.getExpandedUnit())
             if p not in self.__stats_preprocessor:
                 self.remove(sample)
@@ -1594,7 +1602,7 @@ class UQSetting(object):
         stats_simulation = {}
         stats_postprocessor = {}
 
-        for p_old, sample_old in self.__stats_samples.items():
+        for p_old, sample_old in list(self.__stats_samples.items()):
             # check if something changed in the accuracy of float
             p_new = np.array(p_old)
             hx = p_new[1]

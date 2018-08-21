@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from builtins import object
 ##############################################################################
 # This file is part of pysgpp, a program package making use of spatially    #
 # adaptive sparse grids to solve numerical problems                         #
@@ -34,8 +36,8 @@ from pysgpp.extensions.datadriven.uq.learner.Interpolant import Interpolant
 from pysgpp.extensions.datadriven.uq.learner.Regressor import Regressor
 from pysgpp import createOperationMultipleEval
 
-from GridDescriptor import GridDescriptor
-from RegressorSpecificationDescriptor import RegressorSpecificationDescriptor
+from .GridDescriptor import GridDescriptor
+from .RegressorSpecificationDescriptor import RegressorSpecificationDescriptor
 import pysgpp.extensions.datadriven.utils.json as json
 from pysgpp.extensions.datadriven.uq.learner.builder import InterpolantSpecificationDescriptor
 

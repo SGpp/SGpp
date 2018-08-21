@@ -10,6 +10,11 @@
 ## base module for things like DataVector and DataMatrix.
 
 ## At the beginning of the program, we have to import the pysgpp library.
+from __future__ import division
+from __future__ import print_function
+from builtins import str
+from builtins import range
+from past.utils import old_div
 from itertools import product, combinations, permutations,\
     combinations_with_replacement
 from pysgpp.extensions.datadriven.uq.dists import J, Beta, Uniform
@@ -69,7 +74,7 @@ def example1():
     result = operation.evaluate(2)
 
     ## Now compare the result to the analytical solution:
-    print("Quadrature result: " + str(result) + ", analytical solution: " + str(math.pow(1.0 - 1.0 / math.e, d)))
+    print("Quadrature result: " + str(result) + ", analytical solution: " + str(math.pow(1.0 - old_div(1.0, math.e), d)))
 
     ## We can also find out how many function evaluations have been used by accessing the storage
     ## which stores computed function values:
@@ -407,13 +412,13 @@ def example7(dtype="uniform", maxLevel=2):
                                   sharex=True, sharey=True, squeeze=True)
 
         levels = []
-        for level in product(range(maxLevel + 1), repeat=2):
+        for level in product(list(range(maxLevel + 1)), repeat=2):
             levels.append(level)
             ax = axarr[level[0], level[1]]
             ax.axis('off')
 
         for level in levels:
-            print( tr, level )
+            print(( tr, level ))
             if tr == "ct" and np.sum(level) > maxLevel:
                 print( "skip %s" % (level,) )
                 continue

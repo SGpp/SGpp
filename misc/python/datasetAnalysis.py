@@ -1,3 +1,7 @@
+from __future__ import division
+from __future__ import print_function
+from builtins import range
+from past.utils import old_div
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -71,8 +75,8 @@ for filename in options.infiles:
         # traverse all attributes
         for i in range(dim):
             total_sum = sum(dataset["data"][i])
-            mean = total_sum/float(numpoints)
-            unbiased_variance = sum(map(lambda x: (x-mean)**2, dataset["data"][i]))/float(numpoints-1)
+            mean = old_div(total_sum,float(numpoints))
+            unbiased_variance = old_div(sum([(x-mean)**2 for x in dataset["data"][i]]),float(numpoints-1))
             sample_stddev = math.sqrt(unbiased_variance)
             print( "  %02d %12f %12f %12f %12f %12f" %(i+1, 
                                                  min(dataset["data"][i]),
@@ -82,19 +86,19 @@ for filename in options.infiles:
                                                  sample_stddev))
         print( "#data points: %d"%(numpoints) )
         # statistics for class distribution
-        if dataset.has_key("classes"):
+        if "classes" in dataset:
             print( "Class distribution:" )
             class_count = {}
             for c in dataset["classes"]:
-                if class_count.has_key(c):
+                if c in class_count:
                     class_count[c] += 1
                 else:
                     class_count[c] = 1
-            class_values = class_count.keys()
+            class_values = list(class_count.keys())
             class_values.sort()
             for c in class_values:
                 print( "  %12f %d" % (c, class_count[c]) )
 
     except Exception as e:
         sys.stderr.write("ERROR: Skipping "+filename+os.linesep)
-        print( "  ",e )
+        print(( "  ",e ))

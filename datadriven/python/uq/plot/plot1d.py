@@ -1,3 +1,7 @@
+from __future__ import division
+from builtins import zip
+from builtins import range
+from past.utils import old_div
 import numpy as np
 import matplotlib.pyplot as plt
 from .colors import load_color, load_font_properties
@@ -87,7 +91,7 @@ def plotDensity1d(U, n=1000,
         if interval_label is None:
             interval_label = r"$[F(\alpha / 2), F(1 - \alpha/2)]$"
         # show interval that contains 1 - alpha
-        x_min, x_max = U.ppf(alpha_value / 2.), U.ppf(1. - alpha_value / 2.)
+        x_min, x_max = U.ppf(old_div(alpha_value, 2.)), U.ppf(1. - old_div(alpha_value, 2.))
         ixs = np.intersect1d(np.where(x_min <= x),
                              np.where(x <= x_max))
 #         plt.vlines(x_min, 0.0, y[ixs.min()], color=facecolor, label=interval_label)
@@ -109,7 +113,7 @@ def plotGrid1d(grid, f=lambda x: x):
     gs = grid.getStorage()
     x = np.zeros(gs.getSize())
     nodalValues = np.zeros(gs.getSize())
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         x[i] = f(gs.getCoordinate(gs.getPoint(i), 0))
 
     plt.scatter(x, nodalValues, marker="o")
@@ -123,7 +127,7 @@ def plotSGNodal1d(grid, alpha):
     A = np.ndarray([gs.getSize(), 2])
 
     p = DataVector(2)
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         gs.getCoordinates(gs.getPoint(i), p)
         A[i, 0] = p[0]
         A[i, 1] = evalSGFunction(grid, alpha, p.array())
@@ -140,7 +144,7 @@ def plotSG1d(grid, alpha, n=1000, f=lambda x: x, show_grid_points=False,
 
     if show_grid_points:
         gs = grid.getStorage()
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             x = gs.getCoordinate(gs.getPoint(i), 0)
             plt.scatter(x, 0, color="black")
 
@@ -166,9 +170,9 @@ def plotPDF(p, buckets):
 
 def plotSurplusLevelWise(data, maxLevel):
     fig = plt.figure()
-    for level, surpluses in data.items():
+    for level, surpluses in list(data.items()):
         plt.plot([level] * len(surpluses), surpluses, ' ', marker='o')
-    plt.xlim(np.min(data.keys()) - 1, maxLevel + 1)
+    plt.xlim(np.min(list(data.keys())) - 1, maxLevel + 1)
     return fig
 
 
@@ -183,7 +187,7 @@ def plotSobolIndices(sobolIndices, ts=None, legend=False,
     lgd = None
     if ts is None:
         y0 = 0
-        for i in xrange(len(sobolIndices)):
+        for i in range(len(sobolIndices)):
             myplot = plt.bar([0], [sobolIndices[i]], 1, bottom=[y0], color=load_color(i))
             y0 += sobolIndices[i]
             plots = [myplot] + plots
@@ -203,7 +207,7 @@ def plotSobolIndices(sobolIndices, ts=None, legend=False,
     else:
         y0 = np.zeros(sobolIndices.shape[0])
         offset = 1 if mc_reference is not None else 0
-        for i in xrange(sobolIndices.shape[1]):
+        for i in range(sobolIndices.shape[1]):
             y1 = y0 + sobolIndices[:, i]
             color = load_color(i + offset)
             myplot, = plt.plot(ts, y1, color=color, lw=2)

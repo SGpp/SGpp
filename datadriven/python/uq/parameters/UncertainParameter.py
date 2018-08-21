@@ -1,3 +1,4 @@
+from builtins import str
 from .Parameter import Parameter
 
 

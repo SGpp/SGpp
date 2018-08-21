@@ -1,8 +1,11 @@
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import object
 from pysgpp.extensions.datadriven.uq.analysis.KnowledgeTypes import KnowledgeTypes
 from pysgpp.extensions.datadriven.uq.uq_setting.UQSettingAdapter import UQSettingAdapter
 from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
 
-from ASGCStatistics import ASGCStatistics
+from .ASGCStatistics import ASGCStatistics
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import copyGrid
 from pysgpp.extensions.datadriven.uq.analysis.asgc.ASGCKnowledge import ASGCKnowledge
 
@@ -88,8 +91,8 @@ class ASGCUQManager(object):
             # load time steps and quantity of interest
             # lookup for new samples
             ps = []
-            dataContainer = self.dataContainer.itervalues().next().itervalues().next()
-            for sample in self.uqSetting.getSamplesStats().values():
+            dataContainer = next(iter(self.dataContainer.values()).next().itervalues())
+            for sample in list(self.uqSetting.getSamplesStats().values()):
                 if sample.getActiveUnit() not in dataContainer:
                     ps.append(sample)
 #             print( dataContainer.getSizeTrain(), " = ", self.uqSetting.getSize(), "-", len(ps) )
@@ -99,11 +102,11 @@ class ASGCUQManager(object):
         # prepare the results as dictionary
         dataContainerDict = self.__prepareDataContainer(resultsDict, 'train')
         # set the new dataContainerDict container
-        for dtype, values in dataContainerDict.items():
+        for dtype, values in list(dataContainerDict.items()):
             if dtype not in self.dataContainer:
                 self.dataContainer[dtype] = {}
 
-            for t, newDataContainer in values.items():
+            for t, newDataContainer in list(values.items()):
                 if t not in self.dataContainer[dtype]:
                     self.dataContainer[dtype][t] = newDataContainer
                 else:
@@ -117,8 +120,8 @@ class ASGCUQManager(object):
         if updateTestData and self.testSet is not None:
             dataContainerDict = self.testSet.getTimeDependentResults(self.__timeStepsOfInterest, self._qoi)
             dataContainerDict = self.__prepareDataContainer(dataContainerDict, 'test')
-            for dtype, values in dataContainerDict.items():
-                for t, newDataContainer in values.items():
+            for dtype, values in list(dataContainerDict.items()):
+                for t, newDataContainer in list(values.items()):
                     if newDataContainer.getSize() > 0:
                         self.dataContainer[dtype][t] = \
                             self.dataContainer[dtype][t].combine(newDataContainer)
@@ -142,14 +145,14 @@ class ASGCUQManager(object):
                                                        self.sampler.getGrid().getSize(),
                                                        self.sampler.getGrid().getTypeAsString()))
         self.learner.grid = self.sampler.getGrid()
-        for dtype, values in self.dataContainer.items():
+        for dtype, values in list(self.dataContainer.items()):
             knowledge = {}
             if self.verbose:
                 print( KnowledgeTypes.toString(dtype) )
             # do the learning
-            for t, dataContainer in values.items():
+            for t, dataContainer in list(values.items()):
                 if self.verbose:
-                    print( "t = %g, " % t, )
+                    print(( "t = %g, " % t, ))
                 sys.stdout.flush()
                 if dataContainer is not None:
                     # learn data, if there is any available
@@ -176,13 +179,13 @@ class ASGCUQManager(object):
                                                         self.sampler.getGrid().getSize()))
         # learn data
         self.learner.grid = self.sampler.getGrid()
-        for dtype, values in self.dataContainer.items():
+        for dtype, values in list(self.dataContainer.items()):
             knowledge = {}
             # do the learning
-            for t in np.sort(values.keys()):
+            for t in np.sort(list(values.keys())):
                 dataContainer = values[t]
                 if self.verbose:
-                    print( "t = %g, " % t, )
+                    print(( "t = %g, " % t, ))
                 sys.stdout.flush()
                 if dataContainer is not None:
                     # learn data, if there is any available
@@ -210,10 +213,10 @@ class ASGCUQManager(object):
 
         self.knowledge.clearAlphas()
 
-        for dtype, values in self.dataContainer.items():
+        for dtype, values in list(self.dataContainer.items()):
             knowledge = {}
             # do the learning
-            for t, dataContainer in values.items():
+            for t, dataContainer in list(values.items()):
                 if dataContainer is not None:
                     for iteration in self.knowledge.getAvailableIterations():
                         grid = self.knowledge.getGrid(self._qoi, iteration)
@@ -226,7 +229,7 @@ class ASGCUQManager(object):
                         # -----------------------------------------------------
                         # do the learning
                         if self.verbose:
-                            print( "learning: t = %g," % t, )
+                            print(( "learning: t = %g," % t, ))
                         # learn alpha with corresponding grid
                         self.learner.grid = grid
 

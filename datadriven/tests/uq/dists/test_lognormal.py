@@ -1,3 +1,4 @@
+from __future__ import print_function
 from pysgpp.extensions.datadriven.uq.dists import Lognormal
 import numpy as np
 import matplotlib.pyplot as plt
@@ -34,5 +35,5 @@ plt.plot(X, Y)
 plt.vlines(bounds, 0, 1)
 plt.show()
 
-print L.mean(), "~", np.mean(samples)
-print L.var(), "~", np.var(samples)
+print(L.mean(), "~", np.mean(samples))
+print(L.var(), "~", np.var(samples))

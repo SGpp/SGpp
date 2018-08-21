@@ -13,6 +13,7 @@
 @version  0.1
 
 """
+from builtins import object
 
 
 from pysgpp.extensions.datadriven.uq.transformation import Transformation

@@ -1,8 +1,10 @@
+from __future__ import absolute_import
+from builtins import object
 from pysgpp.extensions.datadriven.uq.learner.builder.StopPolicyDescriptor import StopPolicyDescriptor
 from pysgpp.extensions.datadriven.uq.learner.builder import GridDescriptor
 
-from ASGCSampler import ASGCSampler
-from ASGCSamplerSpecification import ASGCSamplerSpecification
+from .ASGCSampler import ASGCSampler
+from .ASGCSamplerSpecification import ASGCSamplerSpecification
 
 from pysgpp.extensions.datadriven.uq.refinement.RefinementManagerDescriptor import RefinementManagerDescriptor
 from pysgpp.extensions.datadriven.uq.sampler.asgc.ASGCSamplerStopPolicy import ASGCSamplerStopPolicy

@@ -1,2 +1,3 @@
-from LinearQuadratureStrategy import LinearQuadratureStrategy
-from LinearGaussQuadratureStrategy import LinearGaussQuadratureStrategy
+from __future__ import absolute_import
+from .LinearQuadratureStrategy import LinearQuadratureStrategy
+from .LinearGaussQuadratureStrategy import LinearGaussQuadratureStrategy

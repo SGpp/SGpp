@@ -1,3 +1,4 @@
+from builtins import range
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
@@ -22,7 +23,7 @@ class SequentialFoldingPolicy(FoldingPolicy):
     #@param level: Integer folding level, default value: 1
     def __init__(self, dataContainer, level):
         FoldingPolicy.__init__(self,  dataContainer, level)
-        self.seq = range(self.size)
-        for step in xrange(self.level):
+        self.seq = list(range(self.size))
+        for step in range(self.level):
             validationIndeces = self.seq[ step * self.window : min((step+1) * self.window, self.size)]
             self.dataFold.append(self.createFoldsets(dataContainer, validationIndeces))

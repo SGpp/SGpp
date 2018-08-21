@@ -1,3 +1,5 @@
+from builtins import range
+from builtins import object
 from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes
 from pysgpp.extensions.datadriven.uq.quadrature import getIntegral
 from pysgpp.extensions.datadriven.uq.operations import (estimateConvergence,
@@ -303,7 +305,7 @@ class VarianceOptRanking(Ranking):
         # prepare list of grid points
         gpswi = []
         jx = 0
-        for j in xrange(gs.getSize()):
+        for j in range(gs.getSize()):
             gpj = gs.getPoint(j)
             if gpi.getHash() != gpj.getHash():
                 gpswi.append(gpj)
@@ -386,7 +388,7 @@ class MeanSquaredOptRanking(Ranking):
         # prepare list of grid points
         gs = grid.getStorage()
         gpsi = [None] * gs.getSize()
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             gpsi[i] = gs.getPoint(i)
 
         # compute stiffness matrix for next run
@@ -524,12 +526,12 @@ class VarianceBFRanking(Ranking):
 
     def update(self, grid, v, admissibleSet):
         # prepare data
-        gpsi = admissibleSet.values()
+        gpsi = list(admissibleSet.values())
 
         # prepare list of grid points
         gs = grid.getStorage()
         gpsj = [None] * gs.getSize()
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             gpsj[i] = gs.getPoint(i)
 
         # compute stiffness matrix for next run
@@ -593,7 +595,7 @@ class ExpectationValueBFRanking(Ranking):
     def rank(self, grid, gp, alphas, params, *args, **kws):
         # get grid point associated to ix
         gs = grid.getStorage()
-        p = [gs.getCoordinates(gp, j) for j in xrange(gs.getDimension())]
+        p = [gs.getCoordinates(gp, j) for j in range(gs.getDimension())]
 
         # get joint distribution
         ap = params.activeParams()
@@ -606,7 +608,7 @@ class ExpectationValueBFRanking(Ranking):
 
         # get area of basis function
         A = 1.0
-        for d in xrange(gs.getDimension()):
+        for d in range(gs.getDimension()):
             A *= getIntegral(grid, gp.getLevel(d), gp.getIndex(d))
 
         return abs(alpha) * U.pdf(q) * A
@@ -624,7 +626,7 @@ class SurplusRatioEstimationRanking(Ranking):
         ratio = estimateConvergence(grid, gp, alphas)
 
         # get grid point associated to ix
-        p = [gs.getCoordinates(gp, j) for j in xrange(gs.getDimension())]
+        p = [gs.getCoordinates(gp, j) for j in range(gs.getDimension())]
 
         # get joint distribution
         ap = params.activeParams()
@@ -634,7 +636,7 @@ class SurplusRatioEstimationRanking(Ranking):
 
         # get area of basis function
         A = 1.0
-        for d in xrange(gs.getDimension()):
+        for d in range(gs.getDimension()):
             A *= getIntegral(grid, gp.getLevel(d), gp.getIndex(d))
 
         return abs(ratio) * U.pdf(q) * A
@@ -652,7 +654,7 @@ class LinearSurplusEstimationRanking(Ranking):
         ratio = estimateSurplus(grid, gp, alphas)
 
         # get grid point associated to ix
-        p = [gs.getCoordinates(gp, j) for j in xrange(gs.getDimension())]
+        p = [gs.getCoordinates(gp, j) for j in range(gs.getDimension())]
 
         # get joint distribution
         ap = params.activeParams()
@@ -665,7 +667,7 @@ class LinearSurplusEstimationRanking(Ranking):
 
         # get area of basis function
         A = 1.0
-        for d in xrange(gs.getDimension()):
+        for d in range(gs.getDimension()):
             A *= getIntegral(grid, gp.getLevel(d), gp.getIndex(d))
 
         return a * A

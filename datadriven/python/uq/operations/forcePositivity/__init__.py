@@ -1,12 +1,13 @@
-from operationMakePositive import OperationMakePositive
-from operationMakePositiveFast import OperationMakePositiveFast
+from __future__ import absolute_import
+from .operationMakePositive import OperationMakePositive
+from .operationMakePositiveFast import OperationMakePositiveFast
 
-from scaledMinOfParents import ScaledMinOfParents
-from interpolateFunction import InterpolateFunction
-from estimateDensity import EstimateDensityAlgorithm
-from interpolationAlgorithm import InterpolationAlgorithm
-from setGridPointsToZero import SetGridPointsToZero
+from .scaledMinOfParents import ScaledMinOfParents
+from .interpolateFunction import InterpolateFunction
+from .estimateDensity import EstimateDensityAlgorithm
+from .interpolationAlgorithm import InterpolationAlgorithm
+from .setGridPointsToZero import SetGridPointsToZero
 
-from localFullGridSearch import LocalFullGridCandidates
-from fullGridSearch import FullGridCandidates
-from findIntersectionsSubspaceBased import IntersectionSubspaceCandidates
+from .localFullGridSearch import LocalFullGridCandidates
+from .fullGridSearch import FullGridCandidates
+from .findIntersectionsSubspaceBased import IntersectionSubspaceCandidates

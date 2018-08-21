@@ -1,10 +1,14 @@
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import range
+from builtins import object
 # -*- coding: utf-8 -*-
 
 from pysgpp import *
 import math
 import matplotlib.pyplot as plt
 import numpy as np
-import plot as p
+from . import plot as p
 
 def f(x):
     return math.exp(-x*x)
@@ -64,9 +68,9 @@ def testSingleOperation():
     vec[1] = 0.1
     
     for q in range(0, 11):
-        print(q, op.evaluate(q, vec))
+        print((q, op.evaluate(q, vec)))
 
-class LejaPlotter:
+class LejaPlotter(object):
     def __init__(self):
         self.pd = LejaPointDistribution()
         self.evaluator = BarycentricInterpolationEvaluator()

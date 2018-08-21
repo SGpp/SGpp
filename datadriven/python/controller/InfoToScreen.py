@@ -1,3 +1,4 @@
+from __future__ import print_function
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -40,8 +41,8 @@ class InfoToScreen(LearnerEventController, SolverEventController):
     ##        
     def handleLearningEvent(self, subject, status):
         if status == LearnerEvents.LEARNING_STARTED:
-            print ("Dimension is:", subject.dataContainer.getDim())
-            print ("Number of data entries is:", subject.dataContainer.getSize())
+            print(("Dimension is:", subject.dataContainer.getDim()))
+            print(("Number of data entries is:", subject.dataContainer.getSize()))
             
         elif status == LearnerEvents.LEARNING_COMPLETE:
             print ("Learning complete")
@@ -53,26 +54,26 @@ class InfoToScreen(LearnerEventController, SolverEventController):
             print ("Learning complete")
         
         elif status == LearnerEvents.LEARNING_STEP_STARTED:
-            print ("Adaptive Step: ", subject.iteration)
+            print(("Adaptive Step: ", subject.iteration))
             
         elif status == LearnerEvents.LEARNING_STEP_COMPLETE:
-            print ( "Number of points: ", subject.numberPoints[-1] )
-            print ( "Correct classified on training data: ",subject.trainAccuracy[-1] )
+            print(( "Number of points: ", subject.numberPoints[-1] ))
+            print(( "Correct classified on training data: ",subject.trainAccuracy[-1] ))
             
         elif status == LearnerEvents.LEARNING_WITH_TESTING_STARTED:
-            print ( "Dimension is:", subject.dataContainer.getDim() )
-            print ( "Number of data entries is:", subject.dataContainer.getSize() )
+            print(( "Dimension is:", subject.dataContainer.getDim() ))
+            print(( "Number of data entries is:", subject.dataContainer.getSize() ))
         
         elif status == LearnerEvents.LEARNING_WITH_TESTING_COMPLETE:
             print ( "Learning complete" )
         
         elif status == LearnerEvents.LEARNING_WITH_TESTING_STEP_STARTED:
-            print( "Adaptive Step:", subject.iteration )
+            print(( "Adaptive Step:", subject.iteration ))
             
         elif status == LearnerEvents.LEARNING_WITH_TESTING_STEP_COMPLETE:
-            print ("Number of points: ", subject.numberPoints[-1] )
-            print ("Correct classified on training data: ",subject.trainAccuracy[-1] )
-            print ("Correct classified on testing data:  ",subject.testAccuracy[-1] )
+            print(("Number of points: ", subject.numberPoints[-1] ))
+            print(("Correct classified on training data: ",subject.trainAccuracy[-1] ))
+            print(("Correct classified on testing data:  ",subject.testAccuracy[-1] ))
             
         elif status == LearnerEvents.APPLICATION_STARTED:
             pass

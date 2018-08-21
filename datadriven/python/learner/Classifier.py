@@ -1,3 +1,5 @@
+from __future__ import division
+from past.utils import old_div
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -20,7 +22,7 @@ class Classifier(Learner):
     def evalError(self, data, alpha):
         testOp = createOperationTest(self.grid)
         size = data.getPoints().getNrows()
-        if size != 0: return testOp.test(alpha, data.getPoints(), data.getValues()) / size
+        if size != 0: return old_div(testOp.test(alpha, data.getPoints(), data.getValues()), size)
         else: return 0
     
     
@@ -39,9 +41,9 @@ class Classifier(Learner):
         #eval error for test data and append it to other in this iteration
         if testSubset != None:  
             self.testAccuracy.append(self.evalError(testSubset, alpha))
-            self.testingOverall.append(sum(self.testAccuracy)/i)
+            self.testingOverall.append(old_div(sum(self.testAccuracy),i))
             
-        self.trainingOverall.append(sum(self.trainAccuracy)/i)
+        self.trainingOverall.append(old_div(sum(self.trainAccuracy),i))
 
         self.numberPoints.append(self.grid.getSize())
     

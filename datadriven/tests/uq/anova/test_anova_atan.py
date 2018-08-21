@@ -1,3 +1,7 @@
+from __future__ import division
+from __future__ import print_function
+from builtins import range
+from past.utils import old_div
 # --------------------------------------------------------
 # ANOVA test
 # --------------------------------------------------------
@@ -34,7 +38,7 @@ class AnovaTest(unittest.TestCase):
 
         # define model function
         def g(x, **kws):
-            return np.arctan(50 * (x[0] - .35)) + np.pi / 2 + 4 * x[1] ** 3 + np.exp(x[0] * x[1] - 1)
+            return np.arctan(50 * (x[0] - .35)) + old_div(np.pi, 2) + 4 * x[1] ** 3 + np.exp(x[0] * x[1] - 1)
 
         self.simulation = g
 
@@ -93,21 +97,21 @@ class AnovaTest(unittest.TestCase):
         # main effects
         me = anova.getSobolIndices()
 
-        print "-------------- Sobol Indices (t = %i) ------------------" % 1
+        print("-------------- Sobol Indices (t = %i) ------------------" % 1)
         for (key, val) in sorted(me.items()):
-            print "%s: %s" % (key, val)
-        print sum([val for val in me.values()]), "==", 1
+            print("%s: %s" % (key, val))
+        print(sum([val for val in list(me.values())]), "==", 1)
 
         # ----------------------------------------------------------
         # total effects
         te = anova.getTotalEffects()
-        print "-------------- Total Effects (t = %i) -----------------" % 1
+        print("-------------- Total Effects (t = %i) -----------------" % 1)
         for key, val in sorted(te.items()):
-            print "%s: %s" % (key, val)
-        print "---------------------------------------------"
-        print
+            print("%s: %s" % (key, val))
+        print("---------------------------------------------")
+        print()
 
-        names = anova.getSortedPermutations(me.keys())
+        names = anova.getSortedPermutations(list(me.keys()))
         values = [me[name] for name in names]
         fig, _ = plotSobolIndices(values, legend=True, names=names)
         fig.show()

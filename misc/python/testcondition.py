@@ -1,3 +1,6 @@
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import str
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -8,9 +11,9 @@
 from optparse import OptionParser
 import sys
 from tools import *
-from toolsExtended import *
+from .toolsExtended import *
 from pysgpp import *
-from painlesscg import cg,sd,cg_new
+from .painlesscg import cg,sd,cg_new
 from math import sqrt
 import random
 import numpy as np

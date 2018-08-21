@@ -12,6 +12,7 @@
 
 @version  0.1
 """
+from builtins import object
 
 
 class Transformation(object):

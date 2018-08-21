@@ -86,7 +86,7 @@ if cmd == 'onCreateActions':
 
                 sel = TextSelection(doc, doc.getLineOffset(startLine), 0)
                 self.getTextEditor().getSelectionProvider().setSelection(sel)
-            except java.lang.Exception, e:
+            except java.lang.Exception as e:
                 self.beep(e)
 
     def bindInInterface():

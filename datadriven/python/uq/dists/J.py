@@ -13,6 +13,8 @@
 @version  0.1
 
 """
+from builtins import str
+from builtins import range
 from .Dist import Dist
 from .SGDEdist import SGDEdist
 import numpy as np
@@ -95,7 +97,7 @@ class J(Dist):
             r = self.__dists[i].rvs(n)
             # if r is a matrix
             if len(ix) > 1:
-                for j in xrange(len(ix)):
+                for j in range(len(ix)):
                     ans[ix[j], :] = r[:, j]
             # ... if it is just a vector
             else:

@@ -1,3 +1,11 @@
+from __future__ import division
+from __future__ import print_function
+from builtins import input
+from builtins import map
+from builtins import str
+from builtins import range
+from builtins import object
+from past.utils import old_div
 # Copyright (C) 2008-today The SG++ Project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
@@ -35,7 +43,7 @@ NOTAFILE = -1
 
 
 def appendToDict(dict, key, val):
-    if dict.has_key(key):
+    if key in dict:
         dict[key].append(val)
     else:
         dict[key] = [val]
@@ -119,7 +127,7 @@ def isARFFFile(filename):
 
 def writeStringToFile(s, filename, check=True):
     if check and os.path.exists(filename):
-        i = raw_input("File <%s> exists. Overwrite [y/n]? " % (filename))
+        i = eval(input("File <%s> exists. Overwrite [y/n]? " % (filename)))
         if len(i) > 0 and i[0] == 'y':
             f = gzOpen(filename, 'w')
             f.write(s)
@@ -154,9 +162,9 @@ def readDataTrivial(filename, delim=None, hasclass=True):
 
         # split and convert
         values = sline.split(delim)
-        values = map(lambda x: x.strip(), values)
-        values = filter(lambda x: len(x) > 0, values)
-        values = map(lambda x: float(x), values)
+        values = [x.strip() for x in values]
+        values = [x for x in values if len(x) > 0]
+        values = [float(x) for x in values]
 
         if hasclass:
             data.append(values[:-1])
@@ -212,9 +220,9 @@ def readDataARFF(filename):
 
         # split and convert
         values = sline.split(",")
-        values = map(lambda x: x.strip(), values)
-        values = filter(lambda x: len(x) > 0, values)
-        values = map(lambda x: float(x), values)
+        values = [x.strip() for x in values]
+        values = [x for x in values if len(x) > 0]
+        values = [float(x) for x in values]
 
         if hasclass:
             data.append(values[:-1])
@@ -247,7 +255,7 @@ def readData(filename):
         print ("An error occured while reading " + filename + "!")
         raise e
 
-    if data.has_key("classes") == False:
+    if ("classes" in data) == False:
         print ("No classes found in the given File " + filename + "!")
         sys.exit(1)
 
@@ -277,13 +285,13 @@ def writeGnuplot(filename, grid, alpha, resolution, mode="w", data=None, fvals=N
         fout.write("#set out '%s.png'\n" % (filename))
         if data and fvals:
             fout.write("plot '-' w p lw 2, '-' w l\n")
-            for i in xrange(len(fvals)):
+            for i in range(len(fvals)):
                 fout.write("%g %g\n" % (data.get(i, 0), fvals[i]))
             fout.write("e\n")
         else:
             fout.write("plot '-' w l\n")
-        for x in xrange(resolution):
-            p[0] = float(x) / (resolution - 1)
+        for x in range(resolution):
+            p[0] = old_div(float(x), (resolution - 1))
             pc = createOperationEval(grid).eval(alpha, p)
             fout.write("%f %f\n" % (p[0], pc))
     # evaluate 2d function
@@ -292,16 +300,16 @@ def writeGnuplot(filename, grid, alpha, resolution, mode="w", data=None, fvals=N
         fout.write("#set out '%s.png'\n" % (filename))
         if data and fvals:
             fout.write("splot '-' w p lw 2, '-' w pm3d\n")
-            for i in xrange(len(fvals)):
+            for i in range(len(fvals)):
                 fout.write("%g %g %g\n" %
                            (data.get(i, 0), data.get(i, 1), fvals[i]))
             fout.write("e\n")
         else:
             fout.write("splot '-' w pm3d\n")
-        for x in xrange(resolution):
-            for y in xrange(resolution):
-                p[0] = float(x) / (resolution - 1)
-                p[1] = float(y) / (resolution - 1)
+        for x in range(resolution):
+            for y in range(resolution):
+                p[0] = old_div(float(x), (resolution - 1))
+                p[1] = old_div(float(y), (resolution - 1))
                 pc = createOperationEval(grid).eval(alpha, p)
                 fout.write("%f %f %f\n" % (p[0], p[1], pc))
             fout.write("\n")
@@ -331,16 +339,16 @@ def writeGnuplotFctn(filename, dim, fctn, resolution, mode="w"):
 
     # evaluate 1d function
     if dim == 1:
-        for x in xrange(resolution):
-            p[0] = float(x) / (resolution - 1)
+        for x in range(resolution):
+            p[0] = old_div(float(x), (resolution - 1))
             pc = fctn(p)
             fout.write("%f %f\n" % (p[0], pc))
     # evaluate 2d function
     elif dim == 2:
-        for x in xrange(resolution):
-            for y in xrange(resolution):
-                p[0] = float(x) / (resolution - 1)
-                p[1] = float(y) / (resolution - 1)
+        for x in range(resolution):
+            for y in range(resolution):
+                p[0] = old_div(float(x), (resolution - 1))
+                p[1] = old_div(float(y), (resolution - 1))
                 pc = fctn(p)
                 fout.write("%f %f %f\n" % (p[0], p[1], pc))
             fout.write("\n")
@@ -395,7 +403,7 @@ def writeAlphaARFF(filename, alpha):
 
     fout.write("\n@DATA\n")
 
-    for i in xrange(len(alpha)):
+    for i in range(len(alpha)):
         fout.write("%1.20f\n" % alpha[i])
 
     fout.close()
@@ -520,7 +528,7 @@ def split_n_folds(data, num_partitions, seed=None):
     size = data["data"].getNrows()
     # create permutation
     random.seed(seed)
-    seq = range(size)
+    seq = list(range(size))
     random.shuffle(seq)
     # container for new Data and Classes
     dvec = []
@@ -529,11 +537,11 @@ def split_n_folds(data, num_partitions, seed=None):
 
     size_left = size
     index = 0
-    for i in xrange(num_partitions):
-        size_fold = size_left/(num_partitions-i)
+    for i in range(num_partitions):
+        size_fold = old_div(size_left,(num_partitions-i))
         dvec.append(DataMatrix(size_fold, dim))
         cvec.append(DataVector(size_fold))
-        for rowNum in xrange(size_fold):
+        for rowNum in range(size_fold):
             data["data"].getRow(seq[index], cv)
             dvec[i].setRow(rowNum, cv)
             cvec[i][rowNum] = data["classes"][seq[index]]
@@ -607,12 +615,12 @@ def writeDataARFF(data, merge=False):
             else:
                 dim = len(dataset["data"])
 
-            for i in xrange(dim):
+            for i in range(dim):
                 fout.write("@ATTRIBUTE x%d NUMERIC\n" % i)
                 fstring = fstring + "%s,"
 
             hasclass = False
-            if dataset.has_key("classes"):
+            if "classes" in dataset:
                 hasclass = True
                 fout.write("@ATTRIBUTE class NUMERIC\n")
                 fstring = fstring + "%s"
@@ -624,18 +632,18 @@ def writeDataARFF(data, merge=False):
 
         if isinstance(dataset["data"], DataMatrix):
             num_rows = dataset["data"].getNrows()
-            for row in xrange(num_rows):
+            for row in range(num_rows):
                 lout = []
-                for column in xrange(dim):
+                for column in range(dim):
                     lout.append(dataset["data"].get(row, column))
                 if hasclass:
                     lout.append(dataset["classes"][row])
                 fout.write(fstring % tuple(lout))
         else:
             num_rows = len(dataset["data"][0])
-            for row in xrange(num_rows):
+            for row in range(num_rows):
                 lout = []
-                for column in xrange(dim):
+                for column in range(dim):
                     lout.append(dataset["data"][column][row])
                 if hasclass:
                     lout.append(dataset["classes"][row])
@@ -666,15 +674,15 @@ def writeDataMaple(data, merge):
 
         # transform
         lclass = []
-        for row in xrange(len(dataset["data"][0])):
+        for row in range(len(dataset["data"][0])):
             lout = []
-            for column in xrange(len(dataset["data"])):
+            for column in range(len(dataset["data"])):
                 lout.append(dataset["data"][column][row])
-            if dataset.has_key("classes"):
+            if "classes" in dataset:
                 lclass.append(dataset["classes"][row])
-            s += '['+','.join(map(lambda l: str(l), lout))+'],\n'
+            s += '['+','.join([str(l) for l in lout])+'],\n'
         s = "X := Matrix([%s]);\n" % (s[:-2])
-        s += "Y := Vector([%s]);\n" % (','.join(map(lambda l: str(l), lclass)))
+        s += "Y := Vector([%s]);\n" % (','.join([str(l) for l in lclass]))
 
         # write out
         fout = open(dataset["filename"]+".maple", "w")
@@ -698,9 +706,9 @@ def writeDataVectorMaple(data, filename, format="%s", maple_name="X", check=True
     numrows = data.getSize()
     numcols = data.getDim()
     s = "%s := Matrix([\n" % (maple_name)
-    for row in xrange(numrows):
+    for row in range(numrows):
         col_list = []
-        for col in xrange(numcols):
+        for col in range(numcols):
             col_list.append(format % (data.get(row, col)))
         s += "["+",".join(col_list)+"]"
         if row < numrows-1:
@@ -721,8 +729,8 @@ def writeDataVectorMaple(data, filename, format="%s", maple_name="X", check=True
 # @param maxvals the (original) maximum value of each attribute
 def writeNormfile(filename, border, minvals, maxvals):
     s = "border: %s\n" % (border)
-    s += "min:    %s\n" % (' '.join(map(lambda l: "%s" % l, minvals)))
-    s += "max:    %s\n" % (' '.join(map(lambda l: "%s" % l, maxvals)))
+    s += "min:    %s\n" % (' '.join(["%s" % l for l in minvals]))
+    s += "max:    %s\n" % (' '.join(["%s" % l for l in maxvals]))
     writeStringToFile(s, filename)
 
 # -------------------------------------------------------------------------------
@@ -742,10 +750,10 @@ def readNormfile(filename):
     fd.close()
     try:
         border = float((data[0].strip()).split(None)[1])
-        minvals = map(lambda l: float(l), (data[1].strip()).split(None)[1:])
-        maxvals = map(lambda l: float(l), (data[2].strip()).split(None)[1:])
-        deltavals = map(lambda x, y: (
-            (y-x)/(1.0-2.0*border)), minvals, maxvals)
+        minvals = [float(l) for l in (data[1].strip()).split(None)[1:]]
+        maxvals = [float(l) for l in (data[2].strip()).split(None)[1:]]
+        deltavals = list(map(lambda x, y: (
+            old_div((y-x),(1.0-2.0*border))), minvals, maxvals))
     except:
         raise Exception("ERROR: Unable to read \"%s\"\n" % (filename))
     return (border, minvals, maxvals, deltavals)
@@ -779,7 +787,7 @@ def normalize(data, border=0.0, filename=None, minvals=None, maxvals=None, verbo
             lmax.append(data[0]["data"].get(0, dim))
 
         for dataset in data:
-            for dim in xrange(dataset["data"].getNcols()):
+            for dim in range(dataset["data"].getNcols()):
                 cmin = dataset["data"].min(dim)
                 lmin[dim] = min(cmin, lmin[dim])
 
@@ -787,23 +795,23 @@ def normalize(data, border=0.0, filename=None, minvals=None, maxvals=None, verbo
                 lmax[dim] = max(cmax, lmax[dim])
     # output
     if verbose:
-        print ("Dim:", len(lmin))
-        print ("Boundary:", border)
+        print(("Dim:", len(lmin)))
+        print(("Boundary:", border))
         for d in range(len(lmin)):
             print (" [%f,%f]" % (lmin[d], lmax[d]))
 
     # delta values
-    ldelta = map(lambda x, y: ((y-x)/(1.0-2.0*border)), lmin, lmax)
+    ldelta = list(map(lambda x, y: (old_div((y-x),(1.0-2.0*border))), lmin, lmax))
 
     # write normalization data to file:
     if filename:
         if verbose:
-            print ("Writing normalization information to", filename)
+            print(("Writing normalization information to", filename))
         writeNormfile(filename, border, lmin, lmax)
 
     for dataset in data:
         vec_tmp = DataVector(dataset["data"].getNrows())
-        for dim in xrange(dataset["data"].getNcols()):
+        for dim in range(dataset["data"].getNcols()):
             # special handling for the case that all max==min, i.e. all
             # attribute values are equal: set to 0.5
             if ldelta[dim] == 0:
@@ -813,7 +821,7 @@ def normalize(data, border=0.0, filename=None, minvals=None, maxvals=None, verbo
             else:
                 dataset["data"].getColumn(dim, vec_tmp)
                 for j in range(dataset["data"].getNrows()):
-                    vec_tmp[j] = (vec_tmp[j]-lmin[dim]) / ldelta[dim] + border
+                    vec_tmp[j] = old_div((vec_tmp[j]-lmin[dim]), ldelta[dim]) + border
 
                 dataset["data"].setColumn(dim, vec_tmp)
     return
@@ -828,7 +836,7 @@ def normalize(data, border=0.0, filename=None, minvals=None, maxvals=None, verbo
 # @param verbose Provide additional output
 def normalizeClasses(data, border=0.0, minborder=-sys.maxsize-1, verbose=False):
     if verbose:
-        print ("Cut-off at", border)
+        print(("Cut-off at", border))
     for dataset in data:
         dataset["classes"].partitionClasses(border)
     return
@@ -847,14 +855,14 @@ def checkData(data):
     hasClasses = False
 
     data_len = data[0]["data"].getNcols()
-    if data[0].has_key("classes"):
+    if "classes" in data[0]:
         hasClasses = True
 
     for dataset in data:
         if data_len != dataset["data"].getNcols():
             print("Error! Can't merge data due to different amount of dimensions!")
             sys.exit(1)
-        if dataset.has_key("classes") != hasClasses:
+        if ("classes" in dataset) != hasClasses:
             print(
                 "Error! Can't merge data, because some files have classification data and some not!")
             sys.exit(1)
@@ -878,12 +886,12 @@ def split_n_folds_sequential(data, num_partitions):
     size_left = size
     index = 0
 
-    for i in xrange(num_partitions):
-        size_fold = size_left/(num_partitions-i)
+    for i in range(num_partitions):
+        size_fold = old_div(size_left,(num_partitions-i))
         dvec.append(DataVector(size_fold, dim))
         cvec.append(DataVector(size_fold))
-        for element in xrange(size_fold):
-            for d in xrange(dim):
+        for element in range(size_fold):
+            for d in range(dim):
                 dvec[i][element*dim + d] = data["data"][d][index]
             cvec[i][element] = data["classes"][index]
             index += 1
@@ -903,7 +911,7 @@ def split_n_folds_stratified(data, num_partitions, seed=None):
     # split in pos. and neg sets
     neg = []
     pos = []
-    for i in xrange(size):
+    for i in range(size):
         if data["classes"][i] < 0:
             neg.append(i)
         else:
@@ -922,21 +930,21 @@ def split_n_folds_stratified(data, num_partitions, seed=None):
     index_pos = 0
     index_neg = 0
 
-    for i in xrange(num_partitions):
-        size_fold_pos = size_left_pos/(num_partitions-i)
-        size_fold_neg = size_left_neg/(num_partitions-i)
+    for i in range(num_partitions):
+        size_fold_pos = old_div(size_left_pos,(num_partitions-i))
+        size_fold_neg = old_div(size_left_neg,(num_partitions-i))
         dvec.append(DataVector(size_fold_pos+size_fold_neg, dim))
         cvec.append(DataVector(size_fold_pos+size_fold_neg))
         # add data with class pos first
-        for element in xrange(size_fold_pos):
-            for d in xrange(dim):
+        for element in range(size_fold_pos):
+            for d in range(dim):
                 dvec[i][element*dim + d] = data["data"][d][pos[index_pos]]
             cvec[i][element] = data["classes"][pos[index_pos]]
             index_pos += 1
         size_left_pos = size_left_pos-size_fold_pos
         # then add data with class neg
-        for element in xrange(size_fold_neg):
-            for d in xrange(dim):
+        for element in range(size_fold_neg):
+            for d in range(dim):
                 dvec[i][(size_fold_pos+element)*dim +
                         d] = data["data"][d][neg[index_neg]]
             cvec[i][size_fold_pos+element] = data["classes"][neg[index_neg]]
@@ -962,10 +970,10 @@ def split_DataVector_by_proportion(data, proportion):
     row = DataVector(1, dim)
 
     # copy
-    for i in xrange(splitpoint):
+    for i in range(splitpoint):
         data.getRow(i, row)
         dv1.setRow(i, row)
-    for i in xrange(size-splitpoint):
+    for i in range(size-splitpoint):
         data.getRow(i+splitpoint, row)
         dv2.setRow(i, row)
 
@@ -1063,7 +1071,7 @@ base_types = {
 
 # Class Matrix that incorporates settings and actions for applying
 # the matrix C and computing the RHS b.
-class Matrix:
+class Matrix(object):
     def __init__(self, grid, x, l, mode, Hk, base=None):
         self.grid = grid
         self.x = x

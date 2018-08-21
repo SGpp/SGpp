@@ -1,4 +1,7 @@
-from findCandidateSet import CandidateSet
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import range
+from .findCandidateSet import CandidateSet
 from pysgpp import HashGridPoint, DataVector
 import numpy as np
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import \
@@ -18,7 +21,7 @@ class IntersectionSubspaceCandidates(CandidateSet):
         gs = grid.getStorage()
 
         ret = {}
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             if alpha[i] < 0.0:
                 level, index = getLevelIndex(gs.getPoint(i))
                 tlevel = tuple(level)
@@ -37,7 +40,7 @@ class IntersectionSubspaceCandidates(CandidateSet):
         levelj, indexj = location_j
 
         # search for intersection
-        for idim in xrange(len(level)):
+        for idim in range(len(level)):
             # search for intersection
             if leveli[idim] > levelj[idim]:
                 level[idim], index[idim] = leveli[idim], indexi[idim]
@@ -51,7 +54,7 @@ class IntersectionSubspaceCandidates(CandidateSet):
         gs = grid.getStorage()
         numDims = gs.getDimension()
         maxLevel = gs.getMaxLevel()
-        subspaces = np.vstack(currentSubspaces.keys())
+        subspaces = np.vstack(list(currentSubspaces.keys()))
         costs = 0
 
         # enumerate all the available subspaces in the grid
@@ -63,11 +66,11 @@ class IntersectionSubspaceCandidates(CandidateSet):
         
         while len(currentSubspaces) > 0:
             nextSubspaces = {}
-            levels = currentSubspaces.keys()
-            for i in xrange(len(levels)):
+            levels = list(currentSubspaces.keys())
+            for i in range(len(levels)):
                 levelk = levels[i]
                 gpsk = currentSubspaces[levelk]
-                for j in xrange(i + 1, len(levels)):
+                for j in range(i + 1, len(levels)):
                     levell = levels[j]
                     gpsl = currentSubspaces[levell]
                     for gpk in gpsk:
@@ -93,7 +96,7 @@ class IntersectionSubspaceCandidates(CandidateSet):
             currentSubspaces = nextSubspaces
 
 
-        return intersections.values(), costs
+        return list(intersections.values()), costs
     
 
     def findCandidates(self, grid, alpha, addedGridPoints):

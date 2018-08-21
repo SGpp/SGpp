@@ -1,3 +1,6 @@
+from builtins import str
+from builtins import chr
+from builtins import object
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -35,7 +38,7 @@ class _StringGenerator(object):
 			return self.string[i]
 		else:
 			return None
-	def next(self):
+	def __next__(self):
 		self.index += 1
 		if self.index < len(self.string):
 			return self.string[self.index]
@@ -151,7 +154,7 @@ class JsonReader(object):
                         n += 256 * self._hexDigitToInt(ch256)
                         n += 16  * self._hexDigitToInt(ch16)
                         n += self._hexDigitToInt(ch1)
-                        ch = unichr(n)
+                        ch = chr(n)
                     elif ch not in '"/\\':
                         raise ReadException( "Not a valid escaped JSON character: '%s' in %s" % (ch, self._generator.all()) )
                 result = result + ch
@@ -221,7 +224,7 @@ class JsonReader(object):
         done = self._peek() == '}'
         while not done:
             key = self._read()
-            if type(key) is not types.StringType:
+            if type(key) is not bytes:
                 raise ReadException( "Not a valid JSON object key (should be a string): %s" % key )
             self._eatWhitespace()
             ch = self._next()
@@ -252,7 +255,7 @@ class JsonReader(object):
         return self._generator.peek()
 
     def _next(self):
-        return self._generator.next()
+        return next(self._generator)
 
 
 ## Writer for json-formatted objects
@@ -269,10 +272,10 @@ class JsonWriter(object):
 
     def _write(self, obj):
         ty = type(obj)
-        if ty is types.DictType:
+        if ty is dict:
             n = len(obj)
             self._append("{")
-            for k, v in obj.items():
+            for k, v in list(obj.items()):
                 self._write(k)
                 self._append(":")
                 self._write(v)
@@ -280,7 +283,7 @@ class JsonWriter(object):
                 if n > 0:
                     self._append(",")
             self._append("}")
-        elif ty is types.ListType or ty is types.TupleType:
+        elif ty is list or ty is tuple:
             n = len(obj)
             self._append("[")
             for item in obj:
@@ -289,7 +292,7 @@ class JsonWriter(object):
                 if n > 0:
                     self._append(",")
             self._append("]")
-        elif ty is types.StringType or ty is types.UnicodeType:
+        elif ty is bytes or ty is str:
             self._append('"')
             obj = obj.replace('\\', r'\\')
             if self._escaped_forward_slash:
@@ -302,9 +305,9 @@ class JsonWriter(object):
             obj = obj.replace('\t', r'\t')
             self._append(obj)
             self._append('"')
-        elif ty is types.IntType or ty is types.LongType:
+        elif ty is int or ty is int:
             self._append(str(obj))
-        elif ty is types.FloatType:
+        elif ty is float:
             self._append("%s" % obj)
         elif obj is True:
             self._append("true")
