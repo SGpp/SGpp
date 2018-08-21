@@ -32,14 +32,14 @@ class DataSourceFileTypeParser {
    * #sgpp::datadriven::DataSourceFileType.
    * @return the corresponding #sgpp::datadriven::DataSourceFileType.
    */
-  static DataSourceFileType parse(const std::string& input);
+  static DataSourceFileType parse(const std::string &input);
 
   /**
    * generate string representations for values of #sgpp::datadriven::DataSourceFileType.
    * @param type enum value.
    * @return string representation of a #sgpp::datadriven::DataSourceFileType.
    */
-  static const std::string& toString(DataSourceFileType type);
+  static const std::string &toString(DataSourceFileType type);
 
  private:
   using FileTypeMap_t = std::map<DataSourceFileType, std::string>;
@@ -50,6 +50,5 @@ class DataSourceFileTypeParser {
    */
   static const FileTypeMap_t fileTypeMap;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

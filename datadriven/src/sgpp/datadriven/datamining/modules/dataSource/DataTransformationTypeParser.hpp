@@ -31,14 +31,14 @@ class DataTransformationTypeParser {
    * @param input case insensitive string representation of a #sgpp::datadriven::DataTransformationType.
    * @return the corresponding #sgpp::datadriven::DataTransformationType.
    */
-  static DataTransformationType parse(const std::string& input);
+  static DataTransformationType parse(const std::string &input);
 
   /**
    * Generate string representations for values of #sgpp::datadriven::DataTransformationType.
    * @param type enum value.
    * @return string representation of a #sgpp::datadriven::DataTransformationType.
    */
-  static const std::string& toString(DataTransformationType type);
+  static const std::string &toString(DataTransformationType type);
 
  private:
   typedef std::map<DataTransformationType, std::string> TransformationTypeMap_t;
@@ -49,6 +49,5 @@ class DataTransformationTypeParser {
    */
   static const TransformationTypeMap_t transformationTypeMap;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

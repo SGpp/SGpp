@@ -37,7 +37,7 @@ using sgpp::datadriven::DataVector;
 double testModel(std::string configFile) {
   ClassificationMinerFactory factory;
   SparseGridMiner *miner = factory.buildMiner(configFile);
-  miner->learn();
+  miner->learn(false);
   ModelFittingBase *model = miner->getModel();
 
   // Test

@@ -23,14 +23,16 @@ SparseGridMinerSplitting::SparseGridMinerSplitting(DataSourceSplitting* dataSour
     ModelFittingBase* fitter, Scorer* scorer) : SparseGridMiner(fitter, scorer),
         dataSource{dataSource} {}
 
-void SparseGridMinerSplitting::learn() {
+double SparseGridMinerSplitting::learn(bool verbose) {
+  fitter->verboseSolver = verbose;
   // Setup refinement monitor
   RefinementMonitorFactory monitorFactory;
   RefinementMonitor *monitor = monitorFactory.createRefinementMonitor(
       fitter->getFitterConfiguration().getRefinementConfig());
-
   for (size_t epoch = 0; epoch < dataSource->getConfig().epochs; epoch++)  {
-    std::cout << "###############" << "Starting training epoch #" << epoch << std::endl;
+    if (verbose) {
+      std::cout << "###############" << "Starting training epoch #" << epoch << std::endl;
+    }
     dataSource->reset();
     // Process dataset iteratively
     size_t iteration = 0;
@@ -41,9 +43,10 @@ void SparseGridMinerSplitting::learn() {
         // The source does not provide any more samples
         break;
       }
-      std::cout << "###############" << "Itertation #" << (iteration++) << std::endl <<
-          "Batch size: " << numInstances << std::endl;
-
+      if (verbose) {
+        std::cout << "###############" << "Itertation #" << (iteration++) << std::endl <<
+                  "Batch size: " << numInstances << std::endl;
+      }
       // Train model on new batch
       fitter->update(*dataset);
 
@@ -51,19 +54,22 @@ void SparseGridMinerSplitting::learn() {
       double scoreTrain = scorer->test(*fitter, *dataset);
       double scoreVal = scorer->test(*fitter, *(dataSource->getValidationData()));
 
-      std::cout << "Score on batch: " << scoreTrain << std::endl << "Score on validation data: " <<
-          scoreVal << std::endl;
-
+      if (verbose) {
+        std::cout << "Score on batch: " << scoreTrain << std::endl << "Score on validation data: "
+                  << scoreVal << std::endl;
+      }
       // Refine the model if neccessary
       monitor->pushToBuffer(numInstances, scoreVal, scoreTrain);
       size_t refinements = monitor->refinementsNecessary();
       while (refinements--) {
         fitter->refine();
       }
-
-      std::cout << "###############" << "Iteration finished." << std::endl;
+      if (verbose) {
+        std::cout << "###############" << "Iteration finished." << std::endl;
+      }
     }
   }
+  return scorer->test(*fitter, *(dataSource->getValidationData()));
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

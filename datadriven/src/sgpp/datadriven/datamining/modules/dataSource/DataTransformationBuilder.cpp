@@ -15,15 +15,14 @@
 namespace sgpp {
 namespace datadriven {
 
-DataTransformation* DataTransformationBuilder::buildTransformation(
+DataTransformation *DataTransformationBuilder::buildTransformation(
     DataTransformationConfig config) {
   if (config.type == DataTransformationType::ROSENBLATT) {
-    RosenblattTransformation* rosenblattTransformation = new RosenblattTransformation;
-    return static_cast<DataTransformation*>(rosenblattTransformation);
+    RosenblattTransformation *rosenblattTransformation = new RosenblattTransformation;
+    return static_cast<DataTransformation *>(rosenblattTransformation);
   } else {
     return nullptr;
   }
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -26,7 +26,7 @@ SparseGridMinerCrossValidation::SparseGridMinerCrossValidation(
     ModelFittingBase* fitter, Scorer* scorer) : SparseGridMiner(fitter, scorer),
         dataSource{dataSource} {}
 
-void SparseGridMinerCrossValidation::learn() {
+double SparseGridMinerCrossValidation::learn(bool verbose) {
   // todo(fuchsgdk): see below
 
   const CrossvalidationConfiguration& crossValidationConfig =
@@ -112,6 +112,7 @@ void SparseGridMinerCrossValidation::learn() {
   stdDeviation = std::sqrt(stdDeviation / static_cast<double>(crossValidationConfig.kfold_ - 1));
   std::cout << "###############" << std::endl << "Mean score: " << meanScore << std::endl
       << "Standard deviation: " << stdDeviation << std::endl;
+  return meanScore;
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -31,5 +31,8 @@ ModelFittingBase *SparseGridMiner::getModel() {
   return &(*fitter);
 }
 
+void SparseGridMiner::setModel(ModelFittingBase *model) {
+  fitter.reset(model);
+}
 } /* namespace datadriven */
 } /* namespace sgpp */
