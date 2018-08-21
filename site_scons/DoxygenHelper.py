@@ -22,6 +22,10 @@ def convertExampleSourceToDoxy(sourcePath):
   sourceFileType = os.path.splitext(sourceFileName)[1][1:]
   moduleName = sourcePathComponents[sourcePathComponents.index("examples") - 1]
 
+  doxyFolder = os.path.join(moduleName, "doc", "doxygen")
+  # create path if not there
+  if not os.path.exists(doxyFolder): os.makedirs(doxyFolder)
+
   # feasible languages
   if sourceFileType == "cpp":
     doxygenBlockCommentBegin = "/**"
@@ -111,11 +115,8 @@ def convertExampleSourceToDoxy(sourcePath):
     doxy += "\\include {}\n".format(sourceFileName)
 
   doxy += "*/\n"
-  doxyPath = "{}/doc/doxygen/{}.doxy".format(moduleName, pageName)
+  doxyPath = os.path.join(doxyFolder, "{}.doxy".format(pageName))
 
-  # create path if not there
-  if not os.path.exists(os.path.dirname(doxyPath)):
-    os.makedirs(os.path.dirname(doxyPath))  
   # write *.doxy file
   with open(doxyPath, "w") as f: f.write(doxy)
   return {"pageName" : pageName, "language" : sourceFileType, "moduleName" : moduleName}
@@ -126,12 +127,12 @@ def convertExampleSourcesToDoxy(modules):
 
   # for each module
   for moduleName in modules:
-    examplePath = moduleName + "/examples"
+    examplePath = os.path.join(moduleName, "examples")
 
     # search for examples
     for exampleFileName in os.listdir(examplePath):
       if any([exampleFileName.endswith(ext) for ext in [".cpp", ".py", ".java", ".m"]]):
-        example = convertExampleSourceToDoxy("{}/{}".format(examplePath, exampleFileName))
+        example = convertExampleSourceToDoxy(os.path.join(examplePath, exampleFileName))
         if example is not None:
           examples.append(example)
 
@@ -146,9 +147,9 @@ def createDoxyfile(modules):
 
   for moduleName in modules:
     inputPath = moduleName + "/"
-    examplePath = moduleName + "/examples"
-    testPath = moduleName + "/tests"
-    imagePath = moduleName + "/doc/doxygen/images"
+    examplePath = os.path.join(moduleName, "examples")
+    testPath = os.path.join(moduleName, "tests")
+    imagePath = os.path.join(moduleName, "doc", "doxygen", "images")
 
     if os.path.exists(os.path.join(os.getcwd(), inputPath)):
       inputPaths += " " + inputPath
@@ -182,7 +183,9 @@ def createLanguageExampleDoxy(examples):
     examplesInLanguage = [example for example in examples if example["language"] == language]
 
     # create examples menu page
-    with open("base/doc/doxygen/examples_{}.doxy".format(language), "w") as examplesFile:
+    with open(os.path.join(
+        "base", "doc", "doxygen", "examples_{}.doxy".format(language)),
+        "w") as examplesFile:
       examplesFile.write("/**\n")
       languageName = {"cpp" : "C++", "py" : "Python", "java" : "Java", "m" : "MATLAB"}[language]
       examplesFile.write("@page examples_{} {} Examples\n".format(language, languageName))
@@ -214,10 +217,12 @@ def createLanguageExampleDoxy(examples):
 
 # create module page listing all the available modules
 def createModuleDoxy(modules):
-  with open("base/doc/doxygen/modules.stub0", "r") as f: stub0 = f.read()
-  with open("base/doc/doxygen/modules.stub1", "r") as f: stub1 = f.read()
+  with open(os.path.join("base", "doc", "doxygen", "modules.stub0"), "r") as f:
+    stub0 = f.read()
+  with open(os.path.join("base", "doc", "doxygen", "modules.stub1"), "r") as f:
+    stub1 = f.read()
 
-  with open("base/doc/doxygen/modules.doxy", "w") as f:
+  with open(os.path.join("base", "doc", "doxygen", "modules.doxy"), "w") as f:
     f.write(stub0)
 
     for moduleName in modules:
@@ -235,7 +240,7 @@ def createModuleDoxy(modules):
 # to ensure that users see and read those pages more likely;
 # has to be called after executing Doxygen
 def patchNavtree(target, source, env):
-  navtreePath = "doc/html/navtree.js"
+  navtreePath = os.path.join("doc", "html", "navtree.js")
   with open(navtreePath, "r") as f: navtree = f.read()
 
   # insert patch after
