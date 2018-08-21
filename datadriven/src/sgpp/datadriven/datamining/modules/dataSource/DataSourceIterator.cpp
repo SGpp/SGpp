@@ -13,19 +13,18 @@
 
 namespace sgpp {
 namespace datadriven {
-DataSourceIterator::DataSourceIterator(DataSource& sampleProvider, size_t counter)
+DataSourceIterator::DataSourceIterator(DataSource &sampleProvider, size_t counter)
     : sampleProvider(sampleProvider), counter(counter) {}
 
-bool DataSourceIterator::operator!=(const DataSourceIterator& other) const {
+bool DataSourceIterator::operator!=(const DataSourceIterator &other) const {
   return (counter != other.counter);
 }
 
-const DataSourceIterator& DataSourceIterator::operator++() {
+const DataSourceIterator &DataSourceIterator::operator++() {
   counter++;
   return *this;
 }
 
-Dataset* DataSourceIterator::operator*() { return sampleProvider.getNextSamples(); }
-
+Dataset *DataSourceIterator::operator*() { return sampleProvider.getNextSamples(); }
 } /* namespace datadriven */
 } /* namespace sgpp */

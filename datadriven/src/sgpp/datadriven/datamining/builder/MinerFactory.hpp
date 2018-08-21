@@ -13,6 +13,7 @@
 #pragma once
 
 #include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceSplitting.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceCrossValidation.hpp>
 
@@ -42,6 +43,8 @@ class MinerFactory {
    * @param path Path to a configuration file that defines the structure of the miner object.
    */
   virtual SparseGridMiner* buildMiner(const std::string& path) const;
+
+  virtual sgpp::datadriven::HyperparameterOptimizer *buildHPO(const std::string &path) const;
 
  protected:
   /**
@@ -73,6 +76,8 @@ class MinerFactory {
    */
   virtual ModelFittingBase* createFitter(const DataMiningConfigParser& parser) const = 0;
 
+  virtual FitterFactory* createFitterFactory(const DataMiningConfigParser& parser) const = 0;
+
   /**
    * Factory method to build a scorer instance base d on a configuration file.
    * @param parser the datamining configuration parser instance to create the scorer from
@@ -80,6 +85,5 @@ class MinerFactory {
    */
   virtual Scorer* createScorer(const DataMiningConfigParser& parser) const;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */
