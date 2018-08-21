@@ -350,13 +350,6 @@ def checkPython(config):
                                pythonpath,
                                "Hint: You might have to install the package " + package + ".")
 
-    # if config.env["USE_PYTHON3_FOR_PYSGPP"]:
-    #   if config.env["RUN_PYTHON_TESTS"]:
-    #     Helper.printWarning("Python unit tests were disabled because "
-    #                         "they are not supported on Python 3.x.")
-    #     config.env["RUN_PYTHON_TESTS"] = False
-    #   return
-
     try:
       import numpy
       numpy_path = os.path.join(os.path.split(numpy.__file__)[0], "core", "include")
@@ -371,6 +364,12 @@ def checkPython(config):
       if config.env["RUN_PYTHON_TESTS"]:
         Helper.printWarning("Python unit tests were disabled because numpy is not available.")
         config.env["RUN_PYTHON_TESTS"] = False
+
+    try:
+      import builtins
+    except:
+      Helper.printWarning("Warning: future doesn't seem to be installed.")
+
   else:
     Helper.printInfo("Python extension (SG_PYTHON) not enabled.")
 
