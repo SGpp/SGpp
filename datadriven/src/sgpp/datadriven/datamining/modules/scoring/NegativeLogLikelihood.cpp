@@ -18,10 +18,10 @@
 namespace sgpp {
 namespace datadriven {
 
-Metric* NegativeLogLikelihood::clone() const { return new NegativeLogLikelihood(*this); }
+Metric *NegativeLogLikelihood::clone() const { return new NegativeLogLikelihood(*this); }
 
 double NegativeLogLikelihood::measure(
-    const DataVector& predictedValues, const DataVector& trueValues) const {
+    const DataVector &predictedValues, const DataVector &trueValues) const {
   DataVector tmp(predictedValues);
   double ll = 0.0;
   for (size_t i = 0; i < predictedValues.size(); i++) {
@@ -32,7 +32,6 @@ double NegativeLogLikelihood::measure(
   }
   return -ll;
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */
 

@@ -15,7 +15,7 @@
 namespace sgpp {
 namespace datadriven {
 
-FitterConfiguration* FitterConfigurationLeastSquares::clone() const {
+FitterConfiguration *FitterConfigurationLeastSquares::clone() const {
   return new FitterConfigurationLeastSquares(*this);
 }
 
@@ -34,8 +34,8 @@ void FitterConfigurationLeastSquares::setupDefaults() {
   adaptivityConfig.percent_ = 100.0;
   adaptivityConfig.threshold_ = 0.0,
 
-  // configure solver
-  solverRefineConfig.type_ = sgpp::solver::SLESolverType::CG;
+      // configure solver
+      solverRefineConfig.type_ = sgpp::solver::SLESolverType::CG;
   solverRefineConfig.maxIterations_ = 100;
   solverRefineConfig.eps_ = 1e-10;
   solverRefineConfig.threshold_ = 1e-10;
@@ -53,7 +53,7 @@ void FitterConfigurationLeastSquares::setupDefaults() {
   regularizationConfig.exponentBase_ = 0.0;
 }
 
-void FitterConfigurationLeastSquares::readParams(const DataMiningConfigParser& parser) {
+void FitterConfigurationLeastSquares::readParams(const DataMiningConfigParser &parser) {
   setupDefaults();
 
   parser.getFitterGridConfig(gridConfig, gridConfig);

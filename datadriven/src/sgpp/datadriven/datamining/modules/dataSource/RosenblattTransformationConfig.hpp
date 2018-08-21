@@ -31,6 +31,5 @@ struct RosenblattTransformationConfig {
   double solverEps = 1e-10;
   double solverThreshold = 1e-10;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */
