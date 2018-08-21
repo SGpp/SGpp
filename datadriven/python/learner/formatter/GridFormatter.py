@@ -31,7 +31,7 @@ class GridFormatter(GzipSerializer):
     #@return The Grid memento object.
     def deserialize(self, serializationStream):
         text = serializationStream.read()
-        return Grid.setMemento(text)
+        return Grid.setMemento(text.decode())
 
 
     ##Deserializes the Grid object from the file.
@@ -54,7 +54,7 @@ class GridFormatter(GzipSerializer):
     #@param streamserializationStream: output stream where grid should be serialized to
     def serialize(self, memento, streamserializationStream):
         text = self.toString(memento)
-        streamserializationStream.write(text)
+        streamserializationStream.write(text.encode())
 
 
     ##Serializes grid to the file
