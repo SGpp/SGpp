@@ -19,7 +19,6 @@ namespace datadriven {
 
 DensityEstimationFitterFactory::DensityEstimationFitterFactory
     (const DataMiningConfigParser &parser) : baseConfig() {
-
   baseConfig.readParams(parser);
 
   parser.getHyperparameters(conpar, dispar, catpar, basisFunctions);
