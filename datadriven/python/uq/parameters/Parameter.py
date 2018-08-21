@@ -1,3 +1,4 @@
+from builtins import object
 from pysgpp.extensions.datadriven.uq.dists import Dist
 
 import pysgpp.extensions.datadriven.uq.jsonLib as ju

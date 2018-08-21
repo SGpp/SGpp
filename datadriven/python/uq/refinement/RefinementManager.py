@@ -1,3 +1,6 @@
+from __future__ import print_function
+from builtins import range
+from builtins import object
 from pysgpp.extensions.datadriven.uq.operations import balance
 from pysgpp import (DataVector, HashGridPoint,
                     SurplusRefinementFunctor,
@@ -128,7 +131,7 @@ class RefinementManager(object):
         if params is None:
             # define standard uniform params
             uncertainParams = ParameterBuilder().defineUncertainParameters()
-            for idim in xrange(grid.getStorage().getDimension()):
+            for idim in range(grid.getStorage().getDimension()):
                 uncertainParams.new().isCalled("x_%i" % idim).withUniformDistribution(0, 1)
             params = uncertainParams.andGetResult()
 
@@ -154,7 +157,7 @@ class RefinementManager(object):
         dtype = self._criterion.getKnowledgeType()
 
         # get admissible set
-        data = self._admissibleSet.values()
+        data = list(self._admissibleSet.values())
 
         v = np.ndarray([len(data), len(ts)], dtype='float')
 

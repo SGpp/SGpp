@@ -1,13 +1,14 @@
-from BilinearGaussQuadratureStrategy import BilinearGaussQuadratureStrategy
-from SparseGridQuadratureStrategy import SparseGridQuadratureStrategy
-from UniformQuadratureStrategy import UniformQuadratureStrategy
-from PiecewiseConstantQuadratureStrategy import PiecewiseConstantQuadratureStrategy
+from __future__ import absolute_import
+from .BilinearGaussQuadratureStrategy import BilinearGaussQuadratureStrategy
+from .SparseGridQuadratureStrategy import SparseGridQuadratureStrategy
+from .UniformQuadratureStrategy import UniformQuadratureStrategy
+from .PiecewiseConstantQuadratureStrategy import PiecewiseConstantQuadratureStrategy
 
-from bilinear_form import (computeBilinearForm,
+from .bilinear_form import (computeBilinearForm,
                            computePiecewiseConstantBilinearForm,
                            computeBilinearFormQuad)
 
-from bilinear_form_admissible_set import (computeBF, computeBFGridPoint,
+from .bilinear_form_admissible_set import (computeBF, computeBFGridPoint,
                                           computeBFQuad,
                                           computePiecewiseConstantBF,
                                           computeExpectationValueEstimation)

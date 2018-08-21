@@ -1,3 +1,4 @@
+from builtins import range
 #!/usr/bin/python
 #Copyright(C) 2008 - today The SG++ project
 #This file is part of the SG++ project.For conditions of distribution and

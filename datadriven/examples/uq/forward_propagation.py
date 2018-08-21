@@ -1,3 +1,6 @@
+from __future__ import division
+from __future__ import print_function
+from past.utils import old_div
 from pysgpp.extensions.datadriven.uq.parameters import ParameterBuilder
 from pysgpp.extensions.datadriven.uq.uq_setting import UQBuilder
 from pysgpp.extensions.datadriven.uq.sampler.asgc import ASGCSamplerBuilder
@@ -42,7 +45,7 @@ builder.withParameters(params)\
 
 # define model function
 def g(x, **kws):
-    return np.arctan(50 * (x[0] - .35)) + np.pi / 2 + 4 * x[1] ** 3 + 10 * np.exp(x[0] * x[1] - 1)
+    return np.arctan(50 * (x[0] - .35)) + old_div(np.pi, 2) + 4 * x[1] ** 3 + 10 * np.exp(x[0] * x[1] - 1)
 
 builder.defineUQSetting().withSimulation(g)
 
@@ -91,7 +94,7 @@ anova = analysis.getAnovaDecomposition(nk=len(params))
 me = anova.getSobolIndices()
 te = anova.getTotalEffects()
 
-names = anova.getSortedPermutations(me.keys())
+names = anova.getSortedPermutations(list(me.keys()))
 values = [me[name] for name in names]
 fig = plotSobolIndices(values, legend=True, names=names)
 fig.show()
@@ -109,8 +112,8 @@ config = {"grid_level": 6,
           "crossValidation_silent": False}
 distSGDE = analysis.estimateDensity(dtype="sgde", config=config)
 
-print "mean(u) = %g ~ %g (KDE) ~ %g (SGDE)" % (analysis.mean()[0], distKDE.mean(), distSGDE.mean())
-print "var(u) = %g ~ %g (KDE) ~ %g (SGDE)" % (analysis.var()[0], distKDE.var(), distSGDE.var())
+print("mean(u) = %g ~ %g (KDE) ~ %g (SGDE)" % (analysis.mean()[0], distKDE.mean(), distSGDE.mean()))
+print("var(u) = %g ~ %g (KDE) ~ %g (SGDE)" % (analysis.var()[0], distKDE.var(), distSGDE.var()))
 # ---------------------------------------------------------------------------
 y = analysis.eval(analysis.generateUnitSamples())
 

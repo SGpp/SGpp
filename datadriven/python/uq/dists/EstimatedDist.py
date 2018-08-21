@@ -1,3 +1,4 @@
+from builtins import range
 import numpy as np
 
 from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
@@ -46,7 +47,7 @@ class EstimatedDist(Dist):
 
         # init linear transformation
         trans = JointTransformation()
-        for idim in xrange(bounds.shape[0]):
+        for idim in range(bounds.shape[0]):
             trans.add(LinearTransformation(bounds[idim, 0], bounds[idim, 1]))
 
         return trans

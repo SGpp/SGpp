@@ -1,3 +1,7 @@
+from __future__ import division
+from __future__ import print_function
+from builtins import range
+from past.utils import old_div
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -55,7 +59,7 @@ data = []
 for i in range(len(txt)):
     txt[i] = txt[i].strip()
     if txt[i] != "":
-        data.append(map(lambda x: float(x), txt[i].split(", ")))
+        data.append([float(x) for x in txt[i].split(", ")])
 
 # sort data by lambda
 def sortFun(a,b):
@@ -70,14 +74,14 @@ data.sort(sortFun, reverse=True)
 # init values
 if options.min:
     # minimum
-    opt_tr = sys.maxint
-    opt_te = sys.maxint
+    opt_tr = sys.maxsize
+    opt_te = sys.maxsize
 else:
     # maximum
     opt_tr = 0
     opt_te = 0
-opt_tr_numpoints = sys.maxint
-opt_te_numpoints = sys.maxint
+opt_tr_numpoints = sys.maxsize
+opt_te_numpoints = sys.maxsize
 opt_tr_s = ""
 opt_te_s = ""
 s = ""
@@ -90,8 +94,8 @@ for line in data:
         # get min and max
         if options.min:
             # minimum
-            lopt_tr = sys.maxint
-            lopt_te = sys.maxint
+            lopt_tr = sys.maxsize
+            lopt_te = sys.maxsize
         else:
             # maximum
             lopt_tr = 0
@@ -115,7 +119,7 @@ for line in data:
             i += 3
         # output
         lambda_s = "%-11g" %(line[options.x1-1])
-        counter = "%06.2f" %(math.log(line[options.x1-1], 0.1**(1/30.0)))
+        counter = "%06.2f" %(math.log(line[options.x1-1], 0.1**(old_div(1,30.0))))
         if options.lambdas:
             s = (s + lambda_s + "  " + counter + " - " + lopt_tr_s + " - " + lopt_te_s + "\n")
         if ((not options.min and lopt_tr > opt_tr) or (options.min and lopt_tr < opt_tr) or (lopt_tr == opt_tr and lopt_tr_numpoints < opt_tr_numpoints)):

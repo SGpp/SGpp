@@ -1,3 +1,8 @@
+from __future__ import division
+from __future__ import print_function
+from builtins import range
+from builtins import object
+from past.utils import old_div
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import fftpack
@@ -16,8 +21,8 @@ def f(x):
 class FourierSeries(object):
     
     def __init__(self, x, y, x_steps=256):
-        self.n = y.size / 2
-        ut = np.fft.rfft(y) * np.array([1. / (2. * self.n)] + [1. / self.n for i in range(1, self.n)] + [1. / (2. * self.n)])
+        self.n = old_div(y.size, 2)
+        ut = np.fft.rfft(y) * np.array([old_div(1., (2. * self.n))] + [old_div(1., self.n) for i in range(1, self.n)] + [old_div(1., (2. * self.n))])
         self.f, self.g = (ut.real, -ut.imag[1:-1])
 
     def eval(self, x):
@@ -63,7 +68,7 @@ norms = np.ndarray(ns.shape)
 l2norms = np.ndarray(ns.shape)
 
 for i, n in enumerate(ns):
-    print "n=%i (%i/%i)" % (n, i + 1, len(ns))
+    print("n=%i (%i/%i)" % (n, i + 1, len(ns)))
     x = np.arange(n) * (2. * np.pi / n)
     y = f(x - np.pi)
 
@@ -90,8 +95,8 @@ for i, n in enumerate(ns):
 #     plt.legend()
 #     plt.show()
 
-print np.diff(np.log(norms)) / np.diff(np.log(ns))
-print np.diff(np.log(l2norms)) / np.diff(np.log(ns))
+print(old_div(np.diff(np.log(norms)), np.diff(np.log(ns))))
+print(old_div(np.diff(np.log(l2norms)), np.diff(np.log(ns))))
 
 plt.figure()
 plt.loglog(ns, norms, "o-", label="norm")

@@ -6,6 +6,7 @@ The UQSetting need to have an attribute 'setupCommand' which is a string
 with python code. The code should load a UQSetting with proper
 Simulation set.
 """
+from __future__ import print_function
 import os
 from pysgpp.extensions.datadriven.uq.sampler import Sample
 import json
@@ -63,7 +64,7 @@ def choose_host():
     """
     allslots = []
     sleep_time = 0.5  # seconds
-    for h, props in hosts.iteritems():
+    for h, props in hosts.items():
         allslots = allslots + [h] * props['free_cores']
     if not allslots == []:
         host = random.choice(allslots)
@@ -164,7 +165,7 @@ def dist_main(pwd, setup, uq_in, uq_out, samples, starti, host, scratch_path, sa
     @param starti:
     """
     os.chdir(pwd)
-    print( "Worker ", sample_number, " in %s" % pwd )
+    print(( "Worker ", sample_number, " in %s" % pwd ))
 
     # Parses the list of sample representations to a list of "real" samples
     # print( "=====> samplelist with strings: ", samples[0]  # testing )

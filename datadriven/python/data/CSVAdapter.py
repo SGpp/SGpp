@@ -1,3 +1,6 @@
+from builtins import next
+from builtins import str
+from builtins import range
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -52,13 +55,13 @@ class CSVAdapter(DataAdapter):
             hasclass = True
         
         if attributes == None:
-            for i in xrange(dim):
+            for i in range(dim):
                 fout.write("@ATTRIBUTE x%d NUMERIC\n" % i)
                
             if hasclass:
                 fout.write("@ATTRIBUTE class NUMERIC\n")
         else:
-            for key in attributes.keys():
+            for key in list(attributes.keys()):
                 fout.write("@ATTRIBUTE %s %s\n" % (key, attributes[key]))
             
         fout.write("\n@DATA\n")
@@ -66,10 +69,10 @@ class CSVAdapter(DataAdapter):
         if attributes != None:
             fout.write("%s\n"%','.join(attributes))
 
-        for row in xrange(size):
+        for row in range(size):
             points.getRow(row, point)
             lout = []
-            for col in xrange(dim):
+            for col in range(dim):
                 lout.append(point[col])
             if hasclass:
                 lout.append(values[row])
@@ -93,23 +96,23 @@ class CSVAdapter(DataAdapter):
         hasclass = False
         target_col = -1
         
-        first_line = reader.next()
+        first_line = next(reader)
         
         # training set has to contain targets
         if name == 'train':
             if len(first_line) <= target_col: 
                 raise Exception('Target column does not match total column number.')
-            for i in xrange(len(first_line)-1):
+            for i in range(len(first_line)-1):
                 data.append([])
             hasclass = True
         
         # test set may contain target values
         if name == 'test':
             if len(first_line) > target_col: 
-                for i in xrange(len(first_line)-1):  data.append([])
+                for i in range(len(first_line)-1):  data.append([])
                 hasclass = True
             else:
-                for i in xrange(len(first_line)):  data.append([])
+                for i in range(len(first_line)):  data.append([])
                 hasclass = False
         
         
@@ -121,14 +124,14 @@ class CSVAdapter(DataAdapter):
             if hasclass:
                 classes.append(float(line[target_col]))
                 line.remove(line[target_col])
-            for i in xrange(len(line)):
+            for i in range(len(line)):
                 data[i].append(float(line[i]))
         
         for line in reader:
             if hasclass:
                 classes.append(float(line[target_col]))
                 line.remove(line[target_col])
-            for i in xrange(len(line)):
+            for i in range(len(line)):
                 data[i].append(float(line[i]))
                 
         # cleaning up and return
@@ -139,8 +142,8 @@ class CSVAdapter(DataAdapter):
         dataMatrix = DataMatrix(size, dim)
         tempVector = DataVector(dim)
         valuesVector = DataVector(size)
-        for rowIndex in xrange(size):
-            for colIndex in xrange(dim):
+        for rowIndex in range(size):
+            for colIndex in range(dim):
                 tempVector[colIndex] = data[colIndex][rowIndex]
             dataMatrix.setRow(rowIndex, tempVector)
             valuesVector[rowIndex] = classes[rowIndex]
@@ -156,10 +159,10 @@ class CSVAdapter(DataAdapter):
         spec.setFilename(self.filename)
         fin = self.__gzOpen(self.filename, "r")
         reader = csv.reader(fin, delimiter = delimiter)
-        first_line = reader.next()
-        second_line = reader.next()
+        first_line = next(reader)
+        second_line = next(reader)
         if first_line[0].isalpha():
-            for col in xrange(len(first_line)):
+            for col in range(len(first_line)):
                 try:
                     i = float(second_line[col])
                 except (ValueError, TypeError):

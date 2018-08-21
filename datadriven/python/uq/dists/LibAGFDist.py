@@ -1,3 +1,6 @@
+from __future__ import division
+from builtins import range
+from past.utils import old_div
 import os
 
 from .Dist import Dist
@@ -26,7 +29,7 @@ class LibAGFDist(Dist):
 
         self.trainData = DataMatrix(trainData)
         self.testData = testData
-        self.bounds = [[0, 1] for _ in xrange(trainData.shape[1])]
+        self.bounds = [[0, 1] for _ in range(trainData.shape[1])]
         if len(self.bounds) == 1:
             self.bounds = self.bounds[0]
 
@@ -174,16 +177,16 @@ class LibAGFDist(Dist):
         n = self.trainData.getNrows()
         sigma = self.bandwidths.array()
         # normalization coefficient
-        norm = 1. / (sigma * np.sqrt(2. * np.pi))
+        norm = old_div(1., (sigma * np.sqrt(2. * np.pi)))
 
         trainData = self.trainData.array()
 
         # normalize it
-        trainData = (x - trainData) / sigma
-        trainData = norm * np.exp(-trainData ** 2 / 2.)
+        trainData = old_div((x - trainData), sigma)
+        trainData = norm * np.exp(old_div(-trainData ** 2, 2.))
 
         # scale the result by the number of samples
-        return np.sum(np.prod(trainData, axis=1)) / n
+        return old_div(np.sum(np.prod(trainData, axis=1)), n)
 
     def cdf(self, x):
         # convert the parameter to the right format
@@ -246,17 +249,17 @@ class LibAGFDist(Dist):
 
     def mean(self, n=1e4):
         moment = 0.
-        for sample, _ in self.testData.items():
+        for sample, _ in list(self.testData.items()):
             moment += np.prod(sample)
-        return moment / len(self.testData)
+        return old_div(moment, len(self.testData))
 
     def var(self):
         mean = self.mean()
         moment = 0.
-        for sample, _ in self.testData.items():
+        for sample, _ in list(self.testData.items()):
             moment += (np.prod(sample) - mean) ** 2
 
-        return moment / (len(self.testData) - 1)
+        return old_div(moment, (len(self.testData) - 1))
 
     def getBounds(self):
         return self.bounds

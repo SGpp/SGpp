@@ -1,3 +1,11 @@
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import zip
+from builtins import str
+from builtins import range
+from builtins import object
+from past.utils import old_div
 from multiprocessing import cpu_count
 import inspect
 import itertools
@@ -5,9 +13,10 @@ import math
 import os
 import pysgpp
 
-from samplingresult import Samplingresult
+from .samplingresult import Samplingresult
 import numpy as np
-import remote_worker as remote
+from . import remote_worker as remote
+from functools import reduce
 
 
 class UQSettingManager(object):
@@ -23,12 +32,12 @@ class UQSettingManager(object):
 
         # parallel stuff
         if remote.do_distribution:
-            self.parallelprocesses = sum(remote.hosts.itervalues())
+            self.parallelprocesses = sum(remote.hosts.values())
             # make sure that the file is current
             self.uqsetting.writeToFile()
         else:
             # set to zero for no separate process
-            self.parallelprocesses = cpu_count() / 2
+            self.parallelprocesses = old_div(cpu_count(), 2)
         # set to expected number of samples, for parallelization
         self.expectedsamplecount = 0
         # incremented for each process
@@ -95,23 +104,23 @@ class UQSettingManager(object):
             return
 
         # split into smaller chunks
-        jobsize = float(self.expectedsamplecount) / float(self.parallelprocesses)
+        jobsize = old_div(float(self.expectedsamplecount), float(self.parallelprocesses))
         if jobsize < 1:
             jobsize = 1.0
         if len(sampleList) > jobsize:
             # round up
-            njobs = math.ceil(len(sampleList) / jobsize)
-            nsamples = int(math.ceil(len(sampleList) / njobs))
+            njobs = math.ceil(old_div(len(sampleList), jobsize))
+            nsamples = int(math.ceil(old_div(len(sampleList), njobs)))
             njobs = int(njobs)
-            print( "jobconfig:", njobs, jobsize, nsamples, len(sampleList) )
+            print(( "jobconfig:", njobs, jobsize, nsamples, len(sampleList) ))
 
             # split into enough chunks to be below job size
             for i in range(0, njobs - 1):
                 if (nsamples * (i + 1)) >= len(sampleList):
-                    print( i, "are enough" )
+                    print(( i, "are enough" ))
                     break
-                print( "job", nsamples * i, \
-                    len(sampleList[nsamples * i:nsamples * (i + 1)]))
+                print(( "job", nsamples * i, \
+                    len(sampleList[nsamples * i:nsamples * (i + 1)])))
                 self.run_sampleList(sampleList[nsamples * i:nsamples * (i + 1)],
                                     *tagList, starti=nsamples * i)
             # print( "job", self.__starti, len(sampleList[nsamples*(njobs-1):]) )
@@ -160,7 +169,7 @@ class UQSettingManager(object):
             self.__filesuffix = self.__filesuffix + 1
             return
         else:
-            print( "Error while forking, tags not processed:", tagList, starti )
+            print(( "Error while forking, tags not processed:", tagList, starti ))
 
     def do_sampleList(self, sampleList, tagList, starti=0):
         for i, p in enumerate(sampleList):
@@ -284,14 +293,14 @@ class UQSettingManager(object):
 
         indexLists = []
         for deg in range(1, maxDeg + 1):
-            indexLists = indexLists + [list(x) for x in itertools.combinations(range(activeDim), deg)]
+            indexLists = indexLists + [list(x) for x in itertools.combinations(list(range(activeDim)), deg)]
 
         if samplingType == 'restart':
             samplesA = [self.gen.unitSample() for _ in range(samples)]
             self.gen.reset()
             samplesB = [self.gen.unitSample() for _ in range(samples)]
         elif samplingType == 'interleave':
-            samples = samples / 2  # use no more samples as given by the user, to avoid problmes with sample generators.
+            samples = old_div(samples, 2)  # use no more samples as given by the user, to avoid problmes with sample generators.
             allSamples = [self.gen.unitSample() for _ in range(2 * samples)]
             samplesA = [allSamples[i] for i in range(0, 2 * samples, 2)]
             samplesB = [allSamples[i] for i in range(1, 2 * samples, 2)]
@@ -360,11 +369,11 @@ class UQSettingManager(object):
         return reduce(f, lst, [[]])
 
 
-class Sampler:
+class Sampler(object):
 
     def __init__(self, parameterset, generator=pysgpp.NaiveSampleGenerator):
         self.n = parameterset.getDim()
-        self.relevant = [k for k, i in parameterset.items() if i.isActive()]
+        self.relevant = [k for k, i in list(parameterset.items()) if i.isActive()]
         self.k = len(self.relevant)
 
         if callable(generator):
@@ -391,13 +400,13 @@ class Sampler:
     def expandSample(self, unitsample):
         r = [-1] * self.n
         i = 0
-        for i, j in zip(self.relevant, range(self.k)):
+        for i, j in zip(self.relevant, list(range(self.k))):
             r[i] = unitsample[j]
         return tuple(r)
 
     def transform(self, fullunitsample):
         t = [None] * self.n
-        for i, p in self.params.items():
+        for i, p in list(self.params.items()):
             if not p.isActive():
                 t[i] = p.getSample()
             else:

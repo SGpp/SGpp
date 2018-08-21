@@ -1,3 +1,6 @@
+from __future__ import division
+from __future__ import print_function
+from past.utils import old_div
 from scipy.stats import truncnorm
 import numpy as np
 import matplotlib.pyplot as plt
@@ -6,7 +9,7 @@ a, b = 1., 21.
 my = 17.
 sigma = 5.
 
-trans = lambda x: (x - my) / sigma
+trans = lambda x: old_div((x - my), sigma)
 inv_trans = lambda x: x * sigma + my
 
 t_a, t_b = trans(a), trans(b)
@@ -28,14 +31,14 @@ Y2 = [f(x) * U.pdf(trans(x)) for x in X]
 from scipy.integrate import quad
 
 I = quad(U.pdf, t_a, t_b)[0]
-print I
+print(I)
 I = 1. / sigma * quad(lambda x: U.pdf(trans(x)), a, b)[0]
-print I
+print(I)
 
 c = my
 I1 = quad(U.pdf, t_a, trans(c))[0]
-I2 = quad(lambda x: U.pdf(trans(x)), a, c)[0] / sigma
+I2 = old_div(quad(lambda x: U.pdf(trans(x)), a, c)[0], sigma)
 
-print I1, I2
+print(I1, I2)
 
-print U.ppf(I1), U.ppf(I2)
+print(U.ppf(I1), U.ppf(I2))

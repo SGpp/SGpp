@@ -1,3 +1,4 @@
+from builtins import object
 # Copyright (C) 2008-today The SG++ Project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
@@ -32,7 +33,7 @@ class Module(object):
     # (not a very nice method, but passing the variables in function arguments
     # would be very tedious)
     variables = inspect.stack()[1][0].f_globals
-    for name, value in variables.items():
+    for name, value in list(variables.items()):
       globals()[name] = value
 
     # check module dependencies, fail if a dependency is missing

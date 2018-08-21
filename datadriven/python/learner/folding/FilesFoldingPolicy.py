@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import range
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
@@ -40,7 +42,7 @@ class FilesFoldingPolicy(FoldingPolicy):
         # number of files:
         self.level = fileCounter
 
-        for step in xrange(self.level):
+        for step in range(self.level):
             self.dataFold.append(
                                  # merge all data containers except the one with number =step
                                  DataContainer.merge(datasets[:step] + datasets[step+1:])

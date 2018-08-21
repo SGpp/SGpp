@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import pickle as pkl
 import numpy as np
@@ -51,8 +52,8 @@ def load_results(inputspace, path="results"):
                                      currentStats["num_model_evaluations"])
                     ans["mc"][key] = currentStats
 
-                print "-" * 80
-                print "loaded '%s'" % (key,)
+                print("-" * 80)
+                print("loaded '%s'" % (key,))
 
     return ans
 

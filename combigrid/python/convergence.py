@@ -4,9 +4,14 @@ Created on Sun Mar 20 15:04:55 2016
 
 @author: Julian
 """
+from __future__ import division
+from __future__ import absolute_import
+from builtins import str
+from builtins import range
+from past.utils import old_div
 
 import numpy as np
-import plot as p
+from . import plot as p
 from pysgpp import *
 import random
 
@@ -19,7 +24,7 @@ def integral(dim, f, a=0.0, b=1.0, points=10000):
             vec[j] = random.random()*(b-a)+a
     sum += f(vec)
     
-    return sum/points
+    return old_div(sum,points)
 
 def createConvergenceFunc(approx_func, original_func):
     return lambda x : np.abs(approx_func(inputwrapper(x)) - original_func(inputwrapper(x)))
@@ -67,7 +72,7 @@ def test_func_sin(x):
 def gibbs_function(alpha, x):
     # TODO norm!
     #return 1.0 / (norm(x) ** alpha + 1)
-    return 1.0 / (alpha ** 2 + x[0] ** 2)
+    return old_div(1.0, (alpha ** 2 + x[0] ** 2))
 
 def makePlots(dim, f, title="", filename="test"):
     """
@@ -125,7 +130,7 @@ def makePlots(dim, f, title="", filename="test"):
 def test():
     f = lambda x : 0
     g = lambda x,y : y ** x
-    h = lambda x,y : 1.0 / (x+1)
+    h = lambda x,y : old_div(1.0, (x+1))
 
     plotConvergenceMulti([g,h], f, ["f", "g"], ['or', 'ob'])
     
@@ -139,7 +144,7 @@ def plot_gibbs():
         makePlots(1, f, title=name, filename=fname)
 
 def multiDim_function(alpha, x):
-    return 1.0 / (alpha ** 2 + x[0] ** 2) + np.sin(8* np.pi * x[1]) 
+    return old_div(1.0, (alpha ** 2 + x[0] ** 2)) + np.sin(8* np.pi * x[1]) 
 
 def plot_multiDim():
     for n in range(1, 10):

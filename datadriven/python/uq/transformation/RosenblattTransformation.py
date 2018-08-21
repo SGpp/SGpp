@@ -14,6 +14,7 @@ inverse of a given distrubution function
 @version  0.1
 
 """
+from builtins import str
 
 from .Transformation import Transformation
 

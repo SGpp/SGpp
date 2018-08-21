@@ -1,4 +1,5 @@
 # coding: utf-8
+from __future__ import print_function
 from pysgpp.extensions.datadriven.uq.parameters import ParameterBuilder
 from pysgpp.extensions.datadriven.uq.sampler import MCSampler
 
@@ -28,8 +29,8 @@ a = MCSampler(params).nextSamples(n).ndarray()
 b = MCSampler(params).nextSamples(n + 1).ndarray()
 
 
-print a
-print "-" * 80
-print b
+print(a)
+print("-" * 80)
+print(b)
 
-print a[:n, :] - b[:n, :]
+print(a[:n, :] - b[:n, :])

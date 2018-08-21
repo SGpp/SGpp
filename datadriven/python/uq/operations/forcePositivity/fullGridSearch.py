@@ -1,5 +1,7 @@
+from __future__ import absolute_import
+from builtins import range
 from pysgpp import Grid, DataVector, createOperationEval, HashGridPoint
-from findCandidateSet import CandidateSet
+from .findCandidateSet import CandidateSet
 import numpy as np
 
 
@@ -27,7 +29,7 @@ class FullGridCandidates(CandidateSet):
             return
         
         opEval = createOperationEval(grid)
-        for i in xrange(fullGridStorage.getSize()):
+        for i in range(fullGridStorage.getSize()):
             gp = fullGridStorage.getPoint(i)
             if not gs.isContaining(gp):
                 self.candidates.append(HashGridPoint(gp))

@@ -1,3 +1,6 @@
+from __future__ import division
+from __future__ import print_function
+from past.utils import old_div
 from pysgpp.extensions.datadriven.uq.dists import SGDEdist, MultivariateNormal
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d
 from pysgpp.extensions.datadriven.uq.plot.plot3d import plotDensity3d, plotSG3d
@@ -9,8 +12,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # -------------------- prepare data
-C = np.array([[0.1, 0.08],
-              [0.08, 0.1]]) / 10.
+C = old_div(np.array([[0.1, 0.08],
+              [0.08, 0.1]]), 10.)
 m = np.array([0.5, 0.5])
 U = MultivariateNormal(m, C, 0, 1)
 
@@ -37,11 +40,11 @@ fig, ax, _ = plotSG3d(dist.grid, dist.alpha)
 ax.set_title("estimated density")
 fig.show()
 
-print "mean = %g ~ %g" % (m.prod(), dist.mean())
-print "var = %g ~ %g" % (np.var(testSamples), dist.var())
-print "KL-divergence = %g" % U.klDivergence(dist, testSamples, testSamples)
-print "cross entropy = %g" % dist.crossEntropy(testSamples)
-print "MSE = %g" % dist.l2error(U, testSamples, testSamples)
+print("mean = %g ~ %g" % (m.prod(), dist.mean()))
+print("var = %g ~ %g" % (np.var(testSamples), dist.var()))
+print("KL-divergence = %g" % U.klDivergence(dist, testSamples, testSamples))
+print("cross entropy = %g" % dist.crossEntropy(testSamples))
+print("MSE = %g" % dist.l2error(U, testSamples, testSamples))
 
 # sampling
 uniform_samples = np.random.random((1000, 2))
@@ -57,7 +60,7 @@ fig.show()
 # sample it back
 transformed_uniform_samples = dist.cdf(samples)
 
-errors = np.abs(uniform_samples - transformed_uniform_samples) / uniform_samples
+errors = old_div(np.abs(uniform_samples - transformed_uniform_samples), uniform_samples)
 assert (errors < 1e-12).all()
 
 plt.show()

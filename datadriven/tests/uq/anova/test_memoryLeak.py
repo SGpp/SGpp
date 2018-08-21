@@ -1,3 +1,8 @@
+from __future__ import division
+from __future__ import print_function
+from builtins import zip
+from builtins import range
+from past.utils import old_div
 import numpy as np
 from pysgpp import RegularGridConfiguration, Grid, DataVector, \
     createOperationHierarchisation, GridType_Linear, createOperationEval
@@ -10,7 +15,7 @@ from pysgpp.extensions.datadriven.uq.operations.sparse_grid import hierarchize
 bs = [1, 2, 5, 10, 20, 50, 100, 500]
 
 def g(x, a):
-    return (np.abs(4 * x - 2) + a) / (a + 1)
+    return old_div((np.abs(4 * x - 2) + a), (a + 1))
 
 def f(xs, **kws):
     return np.prod([g(x, b) for x, b in zip(xs, bs)])
@@ -23,7 +28,7 @@ gridConfig.boundaryLevel_ = 0
 gridConfig.dim_ = len(bs)
 
 grids = []
-for i in xrange(10):
+for i in range(10):
     # compute a few hundred interpolations
     grid = Grid.createGrid(gridConfig)
     gridStorage = grid.getStorage()
@@ -31,7 +36,7 @@ for i in xrange(10):
     nodalValues = np.ndarray(gridStorage.getSize())
 
     p = DataVector(gridStorage.getDimension())
-    for i in xrange(gridStorage.getSize()):
+    for i in range(gridStorage.getSize()):
         gp = gridStorage.getCoordinates(gridStorage.getPoint(i), p)
         nodalValues[i] = f(p.array())
 
@@ -43,7 +48,7 @@ for i in xrange(10):
     grids.append((grid, alpha_vec))
 
 for i, sample in enumerate(np.random.random((10, gridConfig.dim_))):
-    print i
+    print(i)
     ans = 0.0
     for grid, alpha in grids:
         sample_vec = DataVector(sample)

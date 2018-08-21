@@ -12,6 +12,10 @@
 
 @version  0.1
 """
+from __future__ import division
+from builtins import range
+from builtins import object
+from past.utils import old_div
 
 from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
 from pysgpp.extensions.datadriven.uq.sampler.Sample import Sample, SampleType
@@ -104,11 +108,11 @@ class Dist(object):
 
         numDims = covMatrix.shape[0]
         corr = np.ndarray(covMatrix.shape)
-        for idim in xrange(numDims):
+        for idim in range(numDims):
             sigmai = np.sqrt(covMatrix[idim, idim])
-            for jdim in xrange(idim + 1, numDims):
+            for jdim in range(idim + 1, numDims):
                 sigmaj = np.sqrt(covMatrix[jdim, jdim])
-                corrij = covMatrix[idim, jdim] / (sigmai * sigmaj)
+                corrij = old_div(covMatrix[idim, jdim], (sigmai * sigmaj))
                 corr[idim, jdim] = corr[jdim, idim] = corrij
             corr[idim, idim] = 1.0
         return corr
@@ -139,7 +143,7 @@ class Dist(object):
 
         p = np.zeros(n)
         q = np.zeros(n)
-        for i in xrange(n):
+        for i in range(n):
             p[i] = self.pdf(testSamplesProb[i, :])
             q[i] = max(1e-10, dist.pdf(testSamplesUnit[i, :]))
 
@@ -197,7 +201,7 @@ class Dist(object):
         n = testSamplesUnit.shape[0]
         # compute the l2error
         err = 0.
-        for i in xrange(n):
+        for i in range(n):
             erri = (self.pdf(testSamplesProb[i, :]) -
                     dist.pdf(testSamplesUnit[i, :])) ** 2
 
@@ -206,7 +210,7 @@ class Dist(object):
 
             err += erri
 
-        return err / n
+        return old_div(err, n)
 
     @classmethod
     def fromJson(cls, jsonObject):

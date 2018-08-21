@@ -1,3 +1,4 @@
+from builtins import range
 # -------------------------------------------------------------
 # TNormal test
 # -------------------------------------------------------------
@@ -39,7 +40,7 @@ class TNormalTest(unittest.TestCase):
             # plt.show()
 
             X = [randrange(my - 4 * sigma, my + 4 * sigma)
-                 for _ in xrange(100)]
+                 for _ in range(100)]
 
             for x in X:
                 b = U.pdf(x)

@@ -9,6 +9,10 @@ for use by SWIG.
 index.xml is your doxygen generated XML file and output.i is where the
 output will be written (the file will be clobbered).
 """
+from __future__ import print_function
+from builtins import str
+from builtins import range
+from builtins import object
 #
 # This code is implemented using Mark Pilgrim's code as a guideline:
 #   http://www.faqs.org/docs/diveintopython/kgp_divein.html
@@ -93,7 +97,7 @@ def shift(txt, indent = '    ', prepend = ''):
         ret.append('')
     return ret
 
-class Doxy2SWIG:
+class Doxy2SWIG(object):
     """Converts Doxygen generated XML files into a file containing
     docstrings that can be used by SWIG-1.3.x that have support for
     feature("docstring").  Once the data is parsed it is stored in
@@ -588,7 +592,7 @@ class Doxy2SWIG:
     def do_parameterlist(self, node):
         self.start_new_paragraph()
         text = 'unknown'
-        for key, val in node.attributes.items():
+        for key, val in list(node.attributes.items()):
             if key == 'kind':
                 if val == 'param':
                     text = 'Parameters'
@@ -724,7 +728,7 @@ class Doxy2SWIG:
         self.add_text('%feature("docstring") %s "\n%s' % (data, data))
 
         for n in node.childNodes:
-            if n not in first.values():
+            if n not in list(first.values()):
                 self.parse(n)
         self.add_text(['";', '\n'])
 

@@ -1,3 +1,5 @@
+from __future__ import division
+from past.utils import old_div
 from scipy.stats import beta
 
 from .Dist import Dist
@@ -15,7 +17,7 @@ class CorrBeta(Dist):
 
     def __getBetaDistribution(self, c):
         # left border
-        a = c - self._e3 / 2.
+        a = c - old_div(self._e3, 2.)
         # width of beta distribution
         b = self._e3
 
@@ -25,7 +27,7 @@ class CorrBeta(Dist):
         phi, e = x
 
         # center of beta distribution
-        c = np.power(e / 4.0929e-11, 1. / 3.6555)
+        c = np.power(old_div(e, 4.0929e-11), old_div(1., 3.6555))
 
         return self._e2 * self.__getBetaDistribution(c).pdf(phi)
 

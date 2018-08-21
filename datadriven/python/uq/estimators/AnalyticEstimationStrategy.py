@@ -1,6 +1,8 @@
+from __future__ import absolute_import
+from builtins import range
 from pysgpp.extensions.datadriven.uq.dists import SGDEdist
 
-from SparseGridEstimationStrategy import SparseGridEstimationStrategy
+from .SparseGridEstimationStrategy import SparseGridEstimationStrategy
 from pysgpp.extensions.datadriven.uq.operations.general import project, projectList
 from pysgpp import DataVector, DataMatrix
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import hierarchize, evalSGFunction, \
@@ -52,7 +54,7 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
             # need to compute the bilinear form of the grids
             # accumulate objects needed for computing the bilinear form
             assert len(dims) == dist.grid.getStorage().getDimension()
-            gpsj, basisj = project(dist.grid, range(len(dims)))
+            gpsj, basisj = project(dist.grid, list(range(len(dims))))
 
             # compute the bilinear form
             # -> the measure needs to be uniform, since it is already
@@ -119,7 +121,7 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
         # compute the integral of the product
         gs = grid.getStorage()
         gps = [None] * gs.getSize()
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             gps[i] = gs.getPoint(i)
         basis = getBasis(grid)
 
@@ -143,7 +145,7 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
             # project distribution on desired dimensions
             # get the objects needed for integrating
             # the current dimensions
-            gpsk, basisk = project(dist.grid, range(len(dims)))
+            gpsk, basisk = project(dist.grid, list(range(len(dims))))
             # compute the bilinear form
             # -> the measure needs to be uniform, since it is already
             #    encoded in the sparse grid density
@@ -209,7 +211,7 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
         # compute the integral of the product
         gs = grid.getStorage()
         gps = [None] * gs.getSize()
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             gps[i] = gs.getPoint(i)
         basis = getBasis(grid)
 

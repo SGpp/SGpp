@@ -1,3 +1,4 @@
+from builtins import range
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -52,7 +53,7 @@ class GridImageFormatter(GridFormatter):
             storage = grid.getStorage()
             coord_vector = DataVector(storage.getDimension())
             points = zeros([storage.getSize(), storage.getDimension()])
-            for i in xrange(storage.getSize()):
+            for i in range(storage.getSize()):
                 point = storage.getPoint(i)
                 storage.getCoordinates(point, coord_vector)
                 points[i] = [j for j in coord_vector.array()]
@@ -61,8 +62,8 @@ class GridImageFormatter(GridFormatter):
             cols = int(floor(sqrt(num_of_sublots)))
             i = 1
             
-            for x1 in xrange(1,storage.getDimension()):
-                for x2 in xrange(2,storage.getDimension()+1):
+            for x1 in range(1,storage.getDimension()):
+                for x2 in range(2,storage.getDimension()+1):
                      figure.add_subplot(rows*100 + cols*10 + i)
                      figure.add_subplot(rows, cols, i)
                      plt.xlabel('x%d'%x1, figure=figure)

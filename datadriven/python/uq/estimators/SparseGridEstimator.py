@@ -1,5 +1,6 @@
-from MonteCarloStrategy import MonteCarloStrategy
-from Estimator import Estimator
+from __future__ import absolute_import
+from .MonteCarloStrategy import MonteCarloStrategy
+from .Estimator import Estimator
 
 
 class SparseGridEstimator(Estimator):

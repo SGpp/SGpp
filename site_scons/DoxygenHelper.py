@@ -224,7 +224,7 @@ def createModuleDoxy(modules):
       for subpage in glob.glob(os.path.join(moduleName, "doc", "doxygen", "module_*.doxy")):
         short_discription = ''
         page = open(subpage, 'rt')
-        for line in page.xreadlines():
+        for line in page:
           if "@short" in line:
             short_discription = line.strip().replace('@short', '')
         f.write("- @subpage %s %s\n"%(os.path.splitext(os.path.split(subpage)[-1])[0], short_discription))

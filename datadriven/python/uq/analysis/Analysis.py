@@ -1,3 +1,5 @@
+from __future__ import print_function
+from builtins import object
 # !/usr/bin/python
 # Copyright (C) 2013 Technische Universitaet Muenchen
 # This file is part of the SG++ project. For conditions of distribution and
@@ -89,8 +91,8 @@ class Analysis(object):
                 # compute mean
                 if self._verbose:
                     print( "-" * 80 )
-                    print( "Estimate E[t = %g] (%i/%i), iteration = %i/%i:" % \
-                        (t, i + 1, len(ts), iteration + 1, len(iterations)),)
+                    print(( "Estimate E[t = %g] (%i/%i), iteration = %i/%i:" % \
+                        (t, i + 1, len(ts), iteration + 1, len(iterations)),))
 
                 if not self._moments.hasMoment(iteration, self._qoi, t, 'mean'):
                     moment = self.computeMean(iteration, self._qoi, t)
@@ -139,8 +141,8 @@ class Analysis(object):
                 # compute variance
                 if self._verbose:
                     print( "-" * 80 )
-                    print( "Estimate V[t = %g] (%i/%i), iteration = %i/%i:" % \
-                        (t, i + 1, len(ts), iteration + 1, len(iterations))),
+                    print(( "Estimate V[t = %g] (%i/%i), iteration = %i/%i:" % \
+                        (t, i + 1, len(ts), iteration + 1, len(iterations))), end=' ')
 
                 if not self._moments.hasMoment(iteration, self._qoi, t, 'var'):
                     moment = self.computeVar(iteration, self._qoi, t)

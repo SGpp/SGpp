@@ -1,3 +1,4 @@
+from __future__ import print_function
 from builtins import range
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
@@ -113,10 +114,10 @@ class TestARFFAdapter(unittest.TestCase):
     # Tests the function @link python.data.ARFFAdapter.ARFFAdapter.loadSpecification() ARFFAdapter.loadSpecification() @endlink
     def testLoadSpecification(self):
         attributes = {
-                      "x0":"NUMERIC",
-                      "x1":"NUMERIC",
-                      "x2":"NUMERIC",
-                      "class":"NUMERIC",
+                      b"x0":b"NUMERIC",
+                      b"x1":b"NUMERIC",
+                      b"x2":b"NUMERIC",
+                      b"class":b"NUMERIC",
                       }
         filename = pathlocal + '/datasets/liver-disorders_normalized.arff.gz'
         adapter = ARFFAdapter(filename)
@@ -124,6 +125,7 @@ class TestARFFAdapter(unittest.TestCase):
         testAttributes = spec.getAttributes()
         self.assertEqual(len(testAttributes), len(attributes))
         for key in list(testAttributes.keys()):
+            print()
             self.assertEqual(testAttributes[key],attributes[key])
 
 if __name__=="__main__":

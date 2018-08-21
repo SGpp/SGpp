@@ -1,3 +1,6 @@
+from __future__ import division
+from builtins import range
+from past.utils import old_div
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -23,15 +26,15 @@ class RandomFoldingPolicy(FoldingPolicy):
     #@param seed: Integer seed, default None so it is set to the timestamp
     def __init__(self,  dataContainer, level=1, seed = None):
         FoldingPolicy.__init__(self,  dataContainer, level)
-        self.window = int( math.ceil( self.size / self.level ) )
+        self.window = int( math.ceil( old_div(self.size, self.level) ) )
         if seed == None:
             self.seed = int(time.time())
         else:
             self.seed = seed
         ## Random number generator
         self.random = random.seed(self.seed)
-        self.seq = range(self.size)
+        self.seq = list(range(self.size))
         random.shuffle(self.seq, self.random)
-        for step in xrange(self.level):
+        for step in range(self.level):
             validationIndeces = self.seq[ step * self.window : min((step+1) * self.window, self.size)]
             self.dataFold.append(self.createFoldsets(dataContainer, validationIndeces))

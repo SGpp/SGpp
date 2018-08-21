@@ -3,7 +3,8 @@ Created on Aug 6, 2014
 
 @author: franzefn
 """
-from TrilinearQuadratureStrategy import TrilinearQuadratureStrategy
+from __future__ import absolute_import
+from .TrilinearQuadratureStrategy import TrilinearQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBoundsOfSupport, bsplineGridTypes, \
     polyGridTypes
 import scipy

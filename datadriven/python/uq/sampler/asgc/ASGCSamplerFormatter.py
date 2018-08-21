@@ -58,7 +58,7 @@ class ASGCSamplerFormatter(GzipSerializer):
         @param filename: the name of the file with serialized ASGC
         @return: the ASGC memento object
         """
-        if not isinstance(filename, types.StringType):
+        if not isinstance(filename, bytes):
             raise AttributeError("Filename as destination expected")
         serializationStream = self.gzOpen(filename, "r")
         try:

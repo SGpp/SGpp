@@ -1,3 +1,4 @@
+from builtins import range
 import numpy as np
 
 from pysgpp import HashGridPoint
@@ -25,7 +26,7 @@ def __doMarginalize(grid, alpha, linearForm, dd, measure=None):
 
     # insert grid points
     n_gp = HashGridPoint(n_dim)
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         gp = gs.getPoint(i)
         for d in range(dim):
             if d == dd:
@@ -47,7 +48,7 @@ def __doMarginalize(grid, alpha, linearForm, dd, measure=None):
 
     basis = getBasis(grid)
     # set function values for n_alpha
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         gp = gs.getPoint(i)
 
         for d in range(dim):
@@ -82,7 +83,7 @@ def __doMarginalize(grid, alpha, linearForm, dd, measure=None):
 
 
 def doMarginalize(grid, alpha, linearForm, dd, measure=None):
-    if isinstance(dd, (int, long)):
+    if isinstance(dd, int):
         return __doMarginalize(grid, alpha, linearForm, dd)
 
     n_grid, n_alpha = grid, alpha

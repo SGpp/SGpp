@@ -1,4 +1,7 @@
-from findCandidateSet import CandidateSet
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import range
+from .findCandidateSet import CandidateSet
 from pysgpp import HashGridPoint, DataVector
 import numpy as np
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import \
@@ -17,7 +20,7 @@ class IntersectionCandidates(CandidateSet):
     def findNodesWithNegativeCoefficients(self, grid, alpha, tol=-1e-14):
         gs = grid.getStorage()
         ans = []
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             if alpha[i] < tol:
                 level, index = getLevelIndex(gs.getPoint(i))
                 ans.append((tuple(level), tuple(index)))
@@ -29,7 +32,7 @@ class IntersectionCandidates(CandidateSet):
         leveli, indexi = location_i
         levelj, indexj = location_j 
         # search for intersection
-        for idim in xrange(len(level)):
+        for idim in range(len(level)):
             # search for intersection
             if leveli[idim] > levelj[idim]:
                 level[idim], index[idim] = leveli[idim], indexi[idim]
@@ -75,10 +78,10 @@ class IntersectionCandidates(CandidateSet):
         res = {}
         gpintersection = HashGridPoint(numDims)
         # check higher interactions
-        for k in xrange(2, numDims + 1):
+        for k in range(2, numDims + 1):
             nextNewIntersections = newIntersections
             newIntersections = {}
-            for gpi in nextNewIntersections.keys():
+            for gpi in list(nextNewIntersections.keys()):
                 for gpj in intersections[gpi]:
                     # find non existing intersections and store them
                     self.findIntersection(gpintersection, (level, index), gpi, gpj)
@@ -109,7 +112,7 @@ class IntersectionCandidates(CandidateSet):
                 print( "# intersections (k=%i) : %i -> %i : resulting unique interactions" % (k, len(newIntersections), len(res)) )
 
         # flatten list of lists
-        return res.values(), costs
+        return list(res.values()), costs
 
 
     def findCandidates(self, grid, alpha, addedGridPoints):

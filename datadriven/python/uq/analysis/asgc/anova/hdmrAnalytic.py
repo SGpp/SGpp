@@ -15,6 +15,12 @@ decomposition for a Sparse-Grid function
 @version  0.1
 
 """
+from __future__ import division
+from __future__ import print_function
+from builtins import map
+from builtins import range
+from builtins import object
+from past.utils import old_div
 from pysgpp.extensions.datadriven.uq.estimators import (AnalyticEstimationStrategy,
                                                         MarginalAnalyticEstimationStrategy)
 from pysgpp.extensions.datadriven.uq.operations import (evalSGFunction,
@@ -82,7 +88,7 @@ class HDMRAnalytic(object):
 
     def __computeMean(self):
         if self._verbose:
-            print( "estimate mean: ", )
+            print(( "estimate mean: ", ))
         self.__E = self.__estimation.mean(self.__grid, self.__alpha,
                                           self.__U, self.__T)["value"]
         if self._verbose:
@@ -90,7 +96,7 @@ class HDMRAnalytic(object):
 
     def __computeVariance(self):
         if self._verbose:
-            print( "estimate variance: ", )
+            print(( "estimate variance: ", ))
         self.__V = self.__estimation.var(self.__grid, self.__alpha,
                                          self.__U, self.__T, self.__E)["value"]
         if self._verbose:
@@ -103,8 +109,8 @@ class HDMRAnalytic(object):
         """
         ans = [None] * len(keys)
         ix = 0
-        for x in sorted(np.unique(map(len, keys))):
-            for ck in sorted(filter(lambda k: len(k) == x, keys)):
+        for x in sorted(np.unique(list(map(len, keys)))):
+            for ck in sorted([k for k in keys if len(k) == x]):
                 ans[ix] = ck
                 ix += 1
 
@@ -126,14 +132,14 @@ class HDMRAnalytic(object):
             print( "-" * 60 )
 
         # add higher order terms
-        for k in xrange(self.__nk):
+        for k in range(self.__nk):
             perms = it.combinations(self.__U.getTupleIndices(), r=k + 1)
             for perm in perms:
                 # select dimensions to be integrated
                 dd = [d for d in self.__U.getTupleIndices() if d not in perm]
 
                 if self._verbose:
-                    print( "explore %s, Integrate: %s" % (perm, dd), )
+                    print(( "explore %s, Integrate: %s" % (perm, dd), ))
 
                 # -----------------------------------------------
                 # Make sure that perm and dd are disjoint sets
@@ -179,7 +185,7 @@ class HDMRAnalytic(object):
               'var': [(1, perm)]}
 
         # add all lower order terms with alternating coefficient
-        for k in xrange(len(perm) - 1):
+        for k in range(len(perm) - 1):
             pperms = it.combinations(list(perm), r=k + 1)
             for pperm in pperms:
                 fi['var'] += [((-1) ** (len(perm) - len(pperm)), pperm)]
@@ -194,7 +200,7 @@ class HDMRAnalytic(object):
         fis = {}
 
         # add higher order terms
-        for perm in self.__expectation_funcs.keys():
+        for perm in list(self.__expectation_funcs.keys()):
             fis[perm] = self.__combine_terms(perm)
 
         return fis
@@ -250,7 +256,7 @@ class HDMRAnalytic(object):
         s = self.__E
 
         # add higher order terms
-        for components in self.__anova_components.values():
+        for components in list(self.__anova_components.values()):
             s += self.__evalHigherOrderComponent(components, x)
 
         return s
@@ -288,8 +294,8 @@ class HDMRAnalytic(object):
             print( "-" * 60 )
 
         # run over all available permutations and compute the variance
-        keys = self.__ap.keys()
-        for perm in self.getSortedPermutations(self.__anova_components.keys()):
+        keys = list(self.__ap.keys())
+        for perm in self.getSortedPermutations(list(self.__anova_components.keys())):
             # get the sparse grid function
             grid, alpha = self.__expectation_funcs[perm]
 
@@ -333,11 +339,11 @@ class HDMRAnalytic(object):
         # make sure that there exists a variance
         if self.__V > 0:
             vis = self.getVarianceDecomposition()
-            ans = dict([(perm, vi / self.__V) for perm, vi in vis.items()])
+            ans = dict([(perm, old_div(vi, self.__V)) for perm, vi in list(vis.items())])
         else:
             ans = {}
-            for k in xrange(self.__nk):
-                perms = it.combinations(range(self.__dim), r=k + 1)
+            for k in range(self.__nk):
+                perms = it.combinations(list(range(self.__dim)), r=k + 1)
                 for perm in perms:
                     ans[perm] = 0.0
             if self.__has_highest_order_term:
@@ -351,7 +357,7 @@ class HDMRAnalytic(object):
         """
         sobol = self.getSobolIndices()
         me = {}
-        for perm in sobol.keys():
+        for perm in list(sobol.keys()):
             if len(perm) == 1:
                 me[perm] = sobol[perm]
         return me
@@ -363,9 +369,9 @@ class HDMRAnalytic(object):
         """
         sobol = self.getSobolIndices()
         te = {}
-        for perm in sobol.keys():
+        for perm in list(sobol.keys()):
             if len(perm) == 1:
-                s = [sobol[pperm] for pperm in sobol.keys()
+                s = [sobol[pperm] for pperm in list(sobol.keys())
                      if perm[0] in pperm]
                 te[perm] = sum(s)
 

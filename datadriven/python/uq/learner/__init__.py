@@ -3,6 +3,7 @@ Learner
 ==========================================
 
 """
+from __future__ import absolute_import
 
 __version__ = "0.1"
 
@@ -16,7 +17,7 @@ from pysgpp.extensions.datadriven.uq.learner.builder.RegressorSpecificationDescr
 # from pysgpp.extensions.datadriven.uq.learner.builder.SimulationLearnerBuilder import SimulationLearnerBuilder
 from pysgpp.extensions.datadriven.uq.learner.builder.StopPolicyDescriptor import StopPolicyDescriptor
 
-from Interpolant import Interpolant
-from Learner import Learner, LearnerEvents
-from Regressor import Regressor
+from .Interpolant import Interpolant
+from .Learner import Learner, LearnerEvents
+from .Regressor import Regressor
 # from SimulationLearner import SimulationLearner

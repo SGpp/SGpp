@@ -1,4 +1,8 @@
-from strategies.QuadratureFactory import QuadratureFactory
+from __future__ import absolute_import
+from builtins import str
+from builtins import range
+from builtins import object
+from .strategies.QuadratureFactory import QuadratureFactory
 
 
 class HashQuadrature(object):
@@ -47,7 +51,7 @@ class HashQuadratureMap(object):
         if d is None:
             return tuple([str(dist)] + [(gp.getLevel(d), gp.getIndex(d))
                                         for gp in gps
-                                        for d in xrange(gp.getDimension())])
+                                        for d in range(gp.getDimension())])
         else:
             return tuple([str(dist)] + [(gp.getLevel(d), gp.getIndex(d))
                                         for gp in gps])

@@ -1,3 +1,4 @@
+from builtins import object
 from pysgpp.extensions.datadriven.learner.solver.CGSolver import CGSolver
 
 

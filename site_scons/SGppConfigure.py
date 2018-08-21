@@ -4,6 +4,7 @@
 # sgpp.sparsegrids.org
 
 from __future__ import print_function
+from builtins import str
 
 import distutils.sysconfig
 import os

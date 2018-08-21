@@ -1,3 +1,5 @@
+from builtins import range
+from builtins import object
 from pysgpp import HashGridPoint, IndexVector
 
 from pysgpp.extensions.datadriven.uq.operations import (insertPoint,
@@ -39,7 +41,7 @@ class CreateAllChildrenRefinement(LocalRefinementStrategy):
     def refine(self, grid, gp):
         ans = []
         gs = grid.getStorage()
-        for d in xrange(gs.getDimension()):
+        for d in range(gs.getDimension()):
             gpl = HashGridPoint(gp)
             gpl.getLeftChild(d)
             if isValid(grid, gpl):

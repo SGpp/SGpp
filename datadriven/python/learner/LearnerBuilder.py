@@ -1,3 +1,4 @@
+from builtins import object
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
@@ -395,7 +396,7 @@ class LearnerBuilder(object):
     ##
     # Grid Descriptor helps to implement fluid interface patter on python
     # it encapsulates functionality concerning creation of the grid
-    class GridDescriptor:
+    class GridDescriptor(object):
         __builder = None
         __deg = None
         __level = None
@@ -520,7 +521,7 @@ class LearnerBuilder(object):
     # TrainingStopPolicy Descriptor helps to implement fluid interface patter on python
     # it encapsulates functionality concerning creation of the training stop policy
     ##
-    class StopPolicyDescriptor:
+    class StopPolicyDescriptor(object):
         __builder = None
         __policy = None
 
@@ -617,7 +618,7 @@ class LearnerBuilder(object):
     # TrainingSpecification Descriptor helps to implement fluid interface patter on python
     # it encapsulates functionality concerning creation of the training specification
     ##
-    class SpecificationDescriptor:
+    class SpecificationDescriptor(object):
         __builder = None
         __specification = None
 
@@ -722,7 +723,7 @@ class LearnerBuilder(object):
     # CGSolver Descriptor helps to implement fluid interface patter on python
     # it encapsulates functionality concerning creation of the CG-Solver
     ##
-    class CGSolverDescriptor:
+    class CGSolverDescriptor(object):
         __builder = None
         __solver = None
 
@@ -797,7 +798,7 @@ class LearnerBuilder(object):
     # Folding Descriptor helps to implement fluid interface patter on python
     # it encapsulates functionality concerning the usage for N-fold cross-validation
     ##
-    class FoldingDescriptor:
+    class FoldingDescriptor(object):
 
         SEQUENTIAL = 100 ## Sequential folding policy
         RANDOM = 200 ## Random folding policy

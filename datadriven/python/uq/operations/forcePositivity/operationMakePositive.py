@@ -3,6 +3,9 @@ Created on Feb 6, 2015
 
 @author: franzefn
 '''
+from __future__ import print_function
+from builtins import range
+from builtins import object
 from pysgpp.extensions.datadriven.uq.operations import checkPositivity, \
     insertHierarchicalAncestors, insertPoint, copyGrid, \
     dehierarchize, hierarchize, hasChildren, hasAllChildren
@@ -69,10 +72,10 @@ class OperationMakePositive(object):
         candidates = {}
 
         # lookup dimension-wise
-        for d in xrange(gs.getDimension()):
+        for d in range(gs.getDimension()):
             # compute starting points by level sum
             anchors = []
-            for i in xrange(gs.getSize()):
+            for i in range(gs.getSize()):
                 accLevel = gs.getPoint(i).getLevel(d)
                 if accLevel == 1:
                     anchors.append(i)
@@ -89,7 +92,7 @@ class OperationMakePositive(object):
                     if ix not in candidates:
                         candidates[ix] = HashGridPoint(gp)
 
-        return candidates.values()
+        return list(candidates.values())
 
 #     def findCandidates(self, grid, alpha):
 #         # 1. create a new grid to work on
@@ -161,7 +164,7 @@ class OperationMakePositive(object):
 
         alphaVec = DataVector(alpha)
         for gp in candidates:
-            for d in xrange(gs.getDimension()):
+            for d in range(gs.getDimension()):
                 if 0 < gp.getLevel(d) < maxLevel:
                     self.lookupFullGridPointsRec1d(grid, alphaVec, gp, d, p,
                                                    opEval, maxLevel, acc)
@@ -233,7 +236,7 @@ class OperationMakePositive(object):
                 newGridPoints = notAffectedGridPoints
                 # copy the remaining alpha values
                 newAlpha = np.ndarray(newGs.getSize())
-                for i in xrange(newGs.getSize()):
+                for i in range(newGs.getSize()):
                     newAlpha[i] = alpha[gs.getSequenceNumber(newGs.getPoint(i))]
 
                 grid, gs, alpha = newGrid, newGs, newAlpha
@@ -292,7 +295,7 @@ class OperationMakePositive(object):
             # collect all negative function values
             forceToBePositive = []
             newGs = newGrid.getStorage()
-            for i in xrange(newGs.getSize()):
+            for i in range(newGs.getSize()):
                 gp = newGs.getPoint(i)
                 if newNodalValues[newGs.getSequenceNumber(gp)] < 0.:
                     forceToBePositive.append(gp)

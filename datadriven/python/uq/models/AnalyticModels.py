@@ -1,4 +1,7 @@
-from Model import Model
+from __future__ import division
+from __future__ import absolute_import
+from past.utils import old_div
+from .Model import Model
 import numpy as np
 from pysgpp.extensions.datadriven.uq.uq_setting.UQBuilder import UQBuilder
 
@@ -11,5 +14,5 @@ class Parabola(Model):
 class Atan(Model):
 
     def buildUQSetting(self):
-        f = lambda x, **kws: np.atan(50 * (x[0] - .35)) + pi / 2 + 4 * x[1] ** 3 + exp(x[0] * x[1] - 1)
+        f = lambda x, **kws: np.atan(50 * (x[0] - .35)) + old_div(pi, 2) + 4 * x[1] ** 3 + exp(x[0] * x[1] - 1)
         self.uqBuilder.withSimulation(f)

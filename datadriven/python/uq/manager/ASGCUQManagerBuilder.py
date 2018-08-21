@@ -1,4 +1,6 @@
-from ASGCUQManager import ASGCUQManager
+from __future__ import absolute_import
+from builtins import object
+from .ASGCUQManager import ASGCUQManager
 from pysgpp.extensions.datadriven.uq.uq_setting.UQBuilder import UQBuilder
 from pysgpp.extensions.datadriven.uq.learner.Interpolant import Interpolant
 from pysgpp.extensions.datadriven.uq.learner.builder import RegressorSpecificationDescriptor

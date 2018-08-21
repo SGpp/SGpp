@@ -12,6 +12,7 @@
 
 @version  0.1
 """
+from builtins import object
 from pysgpp.extensions.datadriven.uq.dists import Corr
 from .ParameterDescriptor import (UncertainParameterDesciptor,
                                  DeterministicParameterDescriptor)
@@ -84,7 +85,7 @@ class GeneralParameterBuilder(object):
         correlated = []
 
         # insert uncorrelated variables
-        for newkey, builder in self._params.items():
+        for newkey, builder in list(self._params.items()):
             newparam = builder.andGetResult()
             correlations = builder.getCorrelations()
             if newparam.isUncertain() and \
@@ -97,7 +98,7 @@ class GeneralParameterBuilder(object):
         for newkey, builder in correlated:
             found = False
             newparam = builder.andGetResult()
-            for key, param in ans.items():
+            for key, param in list(ans.items()):
                 if param.getName() == correlations:
                     # build correlated random variable
                     names = [param.getName(), newparam.getName()]

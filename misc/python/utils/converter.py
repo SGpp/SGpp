@@ -1,3 +1,5 @@
+from __future__ import print_function
+from builtins import range
 
 
 
@@ -35,7 +37,7 @@ if __name__=='__main__':
               help="Specifies the border for the Dataset. If not set 0.0 is used.", default=0.0)
     parser.add_option("-c", "--class", action="store", type="float", dest="c_border",metavar="BORDER", 
               help="Specifies the classification border on which the classification data is put into different classes. If not set classvalue>=0.5 is used.", default=0.5)
-    parser.add_option("--class_min", action="store", type="float", dest="c_border_min", default=-sys.maxint-1, metavar="BORDERMIN", 
+    parser.add_option("--class_min", action="store", type="float", dest="c_border_min", default=-sys.maxsize-1, metavar="BORDERMIN", 
               help="Specifies a second classification border on which the classification data is put into different classes (additionally check for classvalue<=class_min). If not set, it is ignored.")
     parser.add_option("-C", "--noclasses", action="store_true", default=False, dest="noclasses", 
               help="If this is enabled, then inputfiles have no classes.")
@@ -83,7 +85,7 @@ if __name__=='__main__':
     
     # Now all arrays have been created and are only as lang as infile[]
     
-    for i in xrange(len(options.infiles)):
+    for i in range(len(options.infiles)):
         if i >= len(options.outfiles):
             # append ".arff.gz", but strip trailing ".gz"
             if options.infiles[i].endswith(".gz"):
@@ -110,7 +112,7 @@ if __name__=='__main__':
     
     data = []
     
-    for i in xrange(len(options.infiles)):
+    for i in range(len(options.infiles)):
         try:
 #            if options.types[i] == "arff":
 #                data.append(readDataARFF(options.infiles[i]))
@@ -132,10 +134,10 @@ if __name__=='__main__':
     if options.omitt:
         print ("Omitting out of function!" )
         dim = data[0]["data"].getNcols()
-        attribs = range(dim)
+        attribs = list(range(dim))
         for a in options.omitt:
             attribs.remove(a)
-        if options.verbose: print ("Omitting attribute(s)", options.omitt, " taking", attribs )
+        if options.verbose: print(("Omitting attribute(s)", options.omitt, " taking", attribs ))
         for dataset in data:
             dataset["data"] = [dataset["data"][i] for i in attribs]
     

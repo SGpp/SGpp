@@ -1,3 +1,7 @@
+from __future__ import division
+from __future__ import print_function
+from builtins import range
+from past.utils import old_div
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
@@ -56,13 +60,13 @@ class MonteCarloStrategyTest(unittest.TestCase):
         # f = lambda x: dist.pdf(x)
         def f(x): return np.prod(4 * x * (1 - x))
 
-        def f(x): return np.arctan(50 * (x[0] - .35)) + np.pi / 2 + 4 * x[1] ** 3 + np.exp(x[0] * x[1] - 1)
+        def f(x): return np.arctan(50 * (x[0] - .35)) + old_div(np.pi, 2) + 4 * x[1] ** 3 + np.exp(x[0] * x[1] - 1)
 
         # --------------------------------------------------------------------------
         # define parameters
         paramsBuilder = ParameterBuilder()
         up = paramsBuilder.defineUncertainParameters()
-        for idim in xrange(gridConfig.dim_):
+        for idim in range(gridConfig.dim_):
             up.new().isCalled("x_%i" % idim).withBetaDistribution(3, 3, 0, 1)
         params = paramsBuilder.andGetResult()
         U = params.getIndependentJointDistribution()
@@ -75,7 +79,7 @@ class MonteCarloStrategyTest(unittest.TestCase):
         nodalValues = np.ndarray(gs.getSize())
 
         p = DataVector(gs.getDimension())
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             gp = gs.getCoordinates(gs.getPoint(i), p)
             nodalValues[i] = f(p.array())
 
@@ -91,9 +95,9 @@ class MonteCarloStrategyTest(unittest.TestCase):
         var = quad.var(grid, alpha, U, T, mean)["value"]
 
         if self.verbose:
-            print "mean: %g" % mean
-            print "var : %g" % var
-            print "-" * 80
+            print("mean: %g" % mean)
+            print("var : %g" % var)
+            print("-" * 80)
 
         # drop arbitrary grid points and compute the mean and the variance
         # -> just use leaf nodes for simplicity
@@ -111,13 +115,13 @@ class MonteCarloStrategyTest(unittest.TestCase):
         ranking = ExpectationValueOptRanking()
         mean_rank = ranking.rank(grid, gpi, alpha, params)
         if self.verbose:
-            print "rank mean: %g" % (mean_rank,)
+            print("rank mean: %g" % (mean_rank,))
         # --------------------------------------------------------------------------
         # check refinement criterion
         ranking = VarianceOptRanking()
         var_rank = ranking.rank(grid, gpi, alpha, params)
         if self.verbose:
-            print "rank var:  %g" % (var_rank,)
+            print("rank var:  %g" % (var_rank,))
         # --------------------------------------------------------------------------
         # remove one grid point and update coefficients
         toBeRemoved = IndexList()
@@ -125,7 +129,7 @@ class MonteCarloStrategyTest(unittest.TestCase):
         ixs = gs.deletePoints(toBeRemoved)
         gpsj = []
         new_alpha = np.ndarray(gs.getSize())
-        for j in xrange(gs.getSize()):
+        for j in range(gs.getSize()):
             new_alpha[j] = alpha[ixs[j]]
             gpsj.append(gs.getPoint(j))
         # --------------------------------------------------------------------------
@@ -155,10 +159,10 @@ class MonteCarloStrategyTest(unittest.TestCase):
         var_diff = np.abs(var_trunc - var)
 
         if self.verbose:
-            print "-" * 80
-            print "diff: |var - var_estimated| = %g" % (np.abs(var - var_estimated),)
-            print "diff: |var - var_trunc|     = %g = %g = var opt ranking" % (var_diff, var_rank)
-            print "diff: |mean - mean_trunc|   = %g = %g = mean opt ranking" % (mean_diff, mean_rank)
+            print("-" * 80)
+            print("diff: |var - var_estimated| = %g" % (np.abs(var - var_estimated),))
+            print("diff: |var - var_trunc|     = %g = %g = var opt ranking" % (var_diff, var_rank))
+            print("diff: |mean - mean_trunc|   = %g = %g = mean opt ranking" % (mean_diff, mean_rank))
 
         self.assertTrue(np.abs(var - var_estimated) < 1e-14)
         self.assertTrue(np.abs(mean_diff - mean_rank) < 1e-14)
@@ -196,13 +200,13 @@ class MonteCarloStrategyTest(unittest.TestCase):
         # f = lambda x: dist.pdf(x)
         def f(x): return np.prod(4 * x * (1 - x))
 
-        def f(x): return np.arctan(50 * (x[0] - .35)) + np.pi / 2 + 4 * x[1] ** 3 + np.exp(x[0] * x[1] - 1)
+        def f(x): return np.arctan(50 * (x[0] - .35)) + old_div(np.pi, 2) + 4 * x[1] ** 3 + np.exp(x[0] * x[1] - 1)
 
         # --------------------------------------------------------------------------
         # define parameters
         paramsBuilder = ParameterBuilder()
         up = paramsBuilder.defineUncertainParameters()
-        for idim in xrange(gridConfig.dim_):
+        for idim in range(gridConfig.dim_):
             up.new().isCalled("x_%i" % idim).withBetaDistribution(3, 3, 0, 1)
         params = paramsBuilder.andGetResult()
         U = params.getIndependentJointDistribution()
@@ -215,7 +219,7 @@ class MonteCarloStrategyTest(unittest.TestCase):
         nodalValues = np.ndarray(gs.getSize())
 
         p = DataVector(gs.getDimension())
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             gp = gs.getCoordinates(gs.getPoint(i), p)
             nodalValues[i] = f(p.array())
 
@@ -232,7 +236,7 @@ class MonteCarloStrategyTest(unittest.TestCase):
         ranking = AnchoredVarianceOptRanking()
         var_rank = ranking.rank(grid, gpi, alpha, params)
         if self.verbose:
-            print "rank anchored var:  %g" % (var_rank,)
+            print("rank anchored var:  %g" % (var_rank,))
         # --------------------------------------------------------------------------
         # compute the mean and the variance of the new grid
         x = DataVector(gs.getDimension())
@@ -244,11 +248,11 @@ class MonteCarloStrategyTest(unittest.TestCase):
         var_rank_estimated = np.abs((fx - fx ** 2) * (-alpha[i] ** 2 - 2 * alpha[i] * uwxi))
 
         if self.verbose:
-            print "rank anchored var:  %g" % (var_rank_estimated,)
+            print("rank anchored var:  %g" % (var_rank_estimated,))
 
         if self.verbose:
-            print "-" * 80
-            print "diff: |var - var_estimated| = %g" % (np.abs(var_rank - var_rank_estimated),)
+            print("-" * 80)
+            print("diff: |var - var_estimated| = %g" % (np.abs(var_rank - var_rank_estimated),))
 
 #         self.assertTrue(np.abs(var_rank - var_estimated) < 1e-14)
 
@@ -284,7 +288,7 @@ class MonteCarloStrategyTest(unittest.TestCase):
         # define parameters
         paramsBuilder = ParameterBuilder()
         up = paramsBuilder.defineUncertainParameters()
-        for idim in xrange(gridConfig.dim_):
+        for idim in range(gridConfig.dim_):
             up.new().isCalled("x_%i" % idim).withUniformDistribution(0, 1)
         params = paramsBuilder.andGetResult()
         U = params.getIndependentJointDistribution()
@@ -298,7 +302,7 @@ class MonteCarloStrategyTest(unittest.TestCase):
         weightedNodalValues = np.ndarray(gs.getSize())
 
         p = DataVector(gs.getDimension())
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             gp = gs.getCoordinates(gs.getPoint(i), p)
             nodalValues[i] = f(p.array()) ** 2
             weightedNodalValues[i] = f(p.array()) ** 2 * U.pdf(T.unitToProbabilistic(p))
@@ -320,21 +324,21 @@ class MonteCarloStrategyTest(unittest.TestCase):
         gpi = gs.getPoint(i)
 
         gs.getCoordinates(gpi, p)
-        print evalSGFunction(grid, alpha, p.array())
-        print evalSGFunctionBasedOnParents(grid, alpha, gpi)
+        print(evalSGFunction(grid, alpha, p.array()))
+        print(evalSGFunctionBasedOnParents(grid, alpha, gpi))
 
         # --------------------------------------------------------------------------
         # check refinement criterion
         ranking = SquaredSurplusRanking()
         squared_surplus_rank = ranking.rank(grid, gpi, weightedAlpha, params)
         if self.verbose:
-            print "rank squared surplus: %g" % (squared_surplus_rank,)
+            print("rank squared surplus: %g" % (squared_surplus_rank,))
         # --------------------------------------------------------------------------
         # check refinement criterion
         ranking = AnchoredMeanSquaredOptRanking()
         anchored_mean_squared_rank = ranking.rank(grid, gpi, alpha, params)
         if self.verbose:
-            print "rank mean squared   : %g" % (anchored_mean_squared_rank,)
+            print("rank mean squared   : %g" % (anchored_mean_squared_rank,))
 
 #         self.assertTrue(np.abs(var - var_estimated) < 1e-14)
 #         self.assertTrue(np.abs(mean_diff - mean_rank) < 1e-14)

@@ -6,6 +6,8 @@
 #!/usr/bin/python
 
 from __future__ import print_function
+from builtins import str
+from builtins import range
 import re, sys, os
 
 if len(sys.argv) <= 1:
@@ -22,12 +24,12 @@ if not os.path.exists(sys.path[0]+'/move_headers.txt'):
 # read in renames:
 renames = open(sys.path[0]+'/move_headers.txt', 'r').readlines()
 # skip all lines starting with #
-for i in xrange(len(renames)-1,-1,-1):
+for i in range(len(renames)-1,-1,-1):
     if re.match("#", renames[i]):
         print(renames[i])
         del renames[i]
 # split them
-renames = map(lambda x: x.split(), renames)
+renames = [x.split() for x in renames]
 
 # read in files:
 for f in sys.argv[1:]:
@@ -45,7 +47,7 @@ for f in sys.argv[1:]:
     # do replacements:
     for rn in renames:
         if len(rn) == 2:
-            rn = map(lambda l: os.path.relpath(l), rn)
+            rn = [os.path.relpath(l) for l in rn]
             # for xpp files
             txt = re.sub('"'+rn[0]+'"', '"'+rn[1]+'"', txt)
             # for .i files

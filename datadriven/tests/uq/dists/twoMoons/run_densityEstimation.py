@@ -3,6 +3,7 @@ Created on Sep 19, 2016
 
 @author: franzefn
 '''
+from __future__ import print_function
 from argparse import ArgumentParser
 from multiprocessing.process import Process
 from estimateDensity import density_configs, run_densityEstimation
@@ -21,9 +22,9 @@ if __name__ == '__main__':
     processes = []
     for estimationMethod in scenarions['density_configs']:
         for functionName, numDims in scenarions["function_configs"]:
-            print "-" * 80
-            print "scenario: %s, d=%i, %s" % (functionName, numDims, estimationMethod)
-            print "-" * 80
+            print("-" * 80)
+            print("scenario: %s, d=%i, %s" % (functionName, numDims, estimationMethod))
+            print("-" * 80)
 
             if args.parallel:
                 myargs = (functionName,

@@ -110,7 +110,7 @@ builder.withCheckpointController(checkpointController)"""
 
 ## Now you can execute the code and obtain the Learner object with
 # create the Learner object
-exec code
+exec(code)
 learner = builder.andGetResult()
 
 ## Usually if you want to restart your classifier from the checkpoint and to perform

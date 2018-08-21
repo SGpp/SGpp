@@ -1,10 +1,11 @@
+from __future__ import absolute_import
 from pysgpp.extensions.datadriven.uq.dists import Uniform, J
 from pysgpp.extensions.datadriven.uq.operations import discretize
 from pysgpp.extensions.datadriven.uq.quadrature.marginalization import doMarginalize
 from pysgpp.extensions.datadriven.uq.transformation import InverseCDFTransformation, \
     JointTransformation
 
-from SparseGridEstimationStrategy import SparseGridEstimationStrategy
+from .SparseGridEstimationStrategy import SparseGridEstimationStrategy
 import numpy as np
 from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
 

@@ -1,3 +1,7 @@
+from __future__ import division
+from builtins import zip
+from builtins import range
+from past.utils import old_div
 from math import cos, pi
 import numpy as np
 
@@ -7,16 +11,16 @@ def __trapezoidal(k, accLevel):
 
 
 def trapezoidal(n):
-    ks = range(2**n + 1)
+    ks = list(range(2**n + 1))
     return sorted([__trapezoidal(k, n) for k in ks])  # in [0, 1]
 
 
 def __clenshaw_curtis(k, accLevel):
-    return (1 - cos(pi * k / 2**accLevel)) / 2.
+    return old_div((1 - cos(pi * k / 2**accLevel)), 2.)
 
 
 def clenshaw_curtis(n):
-    ks = range(2**n + 1)
+    ks = list(range(2**n + 1))
     return sorted([__clenshaw_curtis(k, n) for k in ks])  # in [0, 1]
 
 
@@ -32,7 +36,7 @@ def __quad(f, pp, dd, n=10, grid=clenshaw_curtis, *args, **kws):
             ys[i] = __quad(f, pp[:], dd[:], n, grid, *args, **kws)
 
         xs = np.diff(ps)
-        hs = np.array([x + y for x, y in zip(ys[1:], ys[:len(ys) - 1])]) / 2.
+        hs = old_div(np.array([x + y for x, y in zip(ys[1:], ys[:len(ys) - 1])]), 2.)
 
         return sum(xs * hs)
 

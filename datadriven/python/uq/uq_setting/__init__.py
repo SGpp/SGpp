@@ -15,6 +15,7 @@ UQSetting
 object, which is capable of restoring preprocessing, simulation and
 postprocessing results.
 """
+from __future__ import absolute_import
 
 __version__ = "0.1"
 
@@ -24,10 +25,10 @@ __all__ = ["UQBuilder", "UQSetting",
 __author__ = "Fabian Franzelin, fabian.franzelin@ipvs.uni-stuttgart.de"
 
 
-from UQBuilder import UQBuilder
-from UQSetting import UQSetting, UQSampleType
-from UQSettingAdapter import UQSettingAdapter
-from UQSettingFormatter import UQSettingFormatter
-from UQSpecification import UQSpecification
-from UQSettingTools import findEquivalent
+from .UQBuilder import UQBuilder
+from .UQSetting import UQSetting, UQSampleType
+from .UQSettingAdapter import UQSettingAdapter
+from .UQSettingFormatter import UQSettingFormatter
+from .UQSpecification import UQSpecification
+from .UQSettingTools import findEquivalent
 

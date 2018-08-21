@@ -1,3 +1,5 @@
+from __future__ import print_function
+from builtins import range
 from pysgpp.extensions.datadriven.uq.operations import estimateSurplus, estimateConvergence, hierarchize
 from pysgpp import Grid, DataVector, HashGridPoint
 import numpy as np
@@ -23,7 +25,7 @@ gsc = grid_control.getStorage()
 nodalValues = DataVector(gsc.getSize())
 p = DataVector(gsc.getDimension())
 
-for i in xrange(gsc.getSize()):
+for i in range(gsc.getSize()):
     gsc.getCoordinates(gsc.getPoint(i), p)
     nodalValues[i] = f(p.array())
 
@@ -39,7 +41,7 @@ gs = grid.getStorage()
 nodalValues = DataVector(gs.getSize())
 p = DataVector(gs.getDimension())
 
-for i in xrange(gs.getSize()):
+for i in range(gs.getSize()):
     gs.getCoordinates(gs.getPoint(i), p)
     nodalValues[i] = f(p.array())
 
@@ -48,8 +50,8 @@ v = hierarchize(grid, nodalValues)
 ipar = 1
 assert ipar < len(v)
 gp = gs.getPoint(ipar)
-print "Grand father:", gs.getCoordinate(gs.getPoint(0), 0), v[0]
-print "Father:", gs.getCoordinate(gs.getPoint(0), 0), v[ipar]
+print("Grand father:", gs.getCoordinate(gs.getPoint(0), 0), v[0])
+print("Father:", gs.getCoordinate(gs.getPoint(0), 0), v[ipar])
 
 gpl = HashGridPoint(gp)
 gpl.getLeftChild(0)
@@ -59,12 +61,12 @@ gpr.getRightChild(0)
 assert gsc.isContaining(gpl)
 assert gsc.isContaining(gpr)
 
-print gs.getCoordinate(gpl, 0), \
+print(gs.getCoordinate(gpl, 0), \
     estimateSurplus(grid, gpl, v), \
     estimateConvergence(grid, gpl, v), \
-    w[gsc.getSequenceNumber(gpl)]
+    w[gsc.getSequenceNumber(gpl)])
 
-print gs.getCoordinate(gpr, 0), \
+print(gs.getCoordinate(gpr, 0), \
     estimateSurplus(grid, gpr, v), \
     estimateConvergence(grid, gpr, v), \
-    w[gsc.getSequenceNumber(gpr)]
+    w[gsc.getSequenceNumber(gpr)])

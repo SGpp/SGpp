@@ -3,9 +3,10 @@ Created on Aug 6, 2014
 
 @author: franzefn
 """
+from __future__ import absolute_import
 import numpy as np
 
-from BilinearQuadratureStrategy import BilinearQuadratureStrategy
+from .BilinearQuadratureStrategy import BilinearQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.operations import getBoundsOfSupport, bsplineGridTypes
 from pysgpp.extensions.datadriven.uq.dists.Uniform import Uniform
 

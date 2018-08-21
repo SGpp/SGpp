@@ -1,3 +1,8 @@
+from __future__ import division
+from __future__ import print_function
+from builtins import zip
+from builtins import range
+from past.utils import old_div
 from pysgpp import (createOperationHierarchisation,
                     createOperationEval, createOperationMultipleEval, createOperationEvalNaive,
                     createOperationMultipleEvalNaive,
@@ -104,7 +109,7 @@ def dehierarchizeOnNewGrid(gridResult, grid, alpha):
     gsResult = gridResult.getStorage()
     ps = np.ndarray((gsResult.getSize(), gsResult.getDimension()))
     p = DataVector(gsResult.getDimension())
-    for i in xrange(gsResult.getSize()):
+    for i in range(gsResult.getSize()):
         gsResult.getCoordinates(gsResult.getPoint(i), p)
         ps[i, :] = p.array()
     nodalValues = evalSGFunctionMulti(grid, alpha, ps)
@@ -123,7 +128,7 @@ def copyGrid(grid, level=0, deg=1):
         newGrid.getGenerator().regular(level)
     newGs = newGrid.getStorage()
     # insert grid points
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         gp = gs.getPoint(i)
 
         # insert grid point
@@ -210,7 +215,7 @@ def isValid(grid, gp):
     if valid:
         gs = grid.getStorage()
         minLevel = 0 if hasBorder(grid.getType()) else 1
-        for d in xrange(gp.getDimension()):
+        for d in range(gp.getDimension()):
             x = gs.getCoordinate(gp, d)
             if x > 1 or x < 0:
                 raise AttributeError('grid point out of range %s, (l=%s, i=%s), minLevel = %i' % (x,
@@ -223,7 +228,7 @@ def isValid(grid, gp):
 def parent(grid, gp, d):
     # get parent
     level = gp.getLevel(d) - 1
-    index = gp.getIndex(d) / 2 + ((gp.getIndex(d) + 1) / 2) % 2
+    index = old_div(gp.getIndex(d), 2) + (old_div((gp.getIndex(d) + 1), 2)) % 2
 
     if isValid1d(grid, level, index):
         # create parent
@@ -237,7 +242,7 @@ def parent(grid, gp, d):
 def parents(grid, gp):
     gs = grid.getStorage()
     ans = []
-    for d in xrange(gs.getDimension()):
+    for d in range(gs.getDimension()):
         ps = parent(grid, gp, d)
         if ps is not None:
             ans.append((d, ps))
@@ -438,7 +443,7 @@ def hasChildren(grid, gp):
 def getLevel(gp):
     numDims = gp.getDimension()
     level = np.ndarray(numDims, dtype="int")
-    for i in xrange(numDims):
+    for i in range(numDims):
         level[i] = gp.getLevel(i)
 
     return level
@@ -446,7 +451,7 @@ def getLevel(gp):
 def getIndex(gp):
     numDims = gp.getDimension()
     index = np.ndarray(numDims, dtype="int")
-    for i in xrange(numDims):
+    for i in range(numDims):
         index[i] = gp.getIndex(i)
 
     return index
@@ -456,7 +461,7 @@ def getLevelIndex(gp):
     numDims = gp.getDimension()
     level = np.ndarray(numDims, dtype="int")
     index = np.ndarray(numDims, dtype="int")
-    for i in xrange(numDims):
+    for i in range(numDims):
         level[i] = gp.getLevel(i)
         index[i] = gp.getIndex(i)
 
@@ -503,7 +508,7 @@ def insertTruncatedBorder(grid, gp):
     ans = []
     while len(gps) > 0:
         gpi = gps.pop()
-        for d in xrange(numDims):
+        for d in range(numDims):
             # right border in d
             rgp = HashGridPoint(gpi)
             rgp.getRightLevelZero(d)
@@ -547,7 +552,7 @@ def insertPoint(grid, gp):
 
 def isRefineable(grid, gp):
     gs = grid.getStorage()
-    for d in xrange(gs.getDimension()):
+    for d in range(gs.getDimension()):
         # left child in dimension dim
         gpl = HashGridPoint(gp)
         gpl.getLeftChild(d)
@@ -607,13 +612,13 @@ def evalSGFunctionBasedOnParents(grid, alpha, gpi):
 
     def f(gp, p):
         ans = 1.0
-        for idim in xrange(p.shape[0]):
+        for idim in range(p.shape[0]):
             ans *= basis.eval(gp.getLevel(idim),
                               gp.getIndex(idim),
                               p[idim])
         return ans
 
-    for j in xrange(gs.getSize()):
+    for j in range(gs.getSize()):
         gpp = gs.getPoint(j)
         if gpp.isHierarchicalAncestor(gpi):
             ux += alpha[j] * f(gpp, p.array())
@@ -677,7 +682,7 @@ def hierarchizeEvalHierToTop(grid, nodalValues):
 
     # sort points by levelsum
     ixs = {}
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         levelsum = gs.getPoint(i).getLevelSum()
         # skip root node
         if levelsum > numDims:
@@ -688,7 +693,7 @@ def hierarchizeEvalHierToTop(grid, nodalValues):
 
     # run over the grid points by level sum
     x = DataVector(numDims)
-    for levelsum in np.sort(ixs.keys()):
+    for levelsum in np.sort(list(ixs.keys())):
         # add the grid points of the current level to the new grid
         newixs = [None] * len(ixs[levelsum])
         for i, ix in enumerate(ixs[levelsum]):
@@ -705,7 +710,7 @@ def hierarchizeEvalHierToTop(grid, nodalValues):
 
     # store alphas according to indices of grid
     ans = np.ndarray(gs.getSize())
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         j = newGs.getSequenceNumber(gs.getPoint(i))
         ans[i] = alpha[j]
 
@@ -735,10 +740,10 @@ def hierarchizeBruteForce(grid, nodalValues, ignore=None):
     basis = getBasis(grid)
 
     # hierarchize dimension-wise
-    for d in xrange(gs.getDimension()):
+    for d in range(gs.getDimension()):
         # compute starting points by level sum
         ixs = {}
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             accLevel = gs.getPoint(i).getLevel(d)
             if accLevel in ixs:
                 ixs[accLevel].append(i)
@@ -832,7 +837,7 @@ def dehierarchize(grid, alpha):
     p = DataVector(gs.getDimension())
     nodalValues = DataVector(gs.getSize())
     A = np.ndarray((gs.getSize(), gs.getDimension()))
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         gs.getCoordinates(gs.getPoint(i), p)
         A[i, :] = p.array()
     return evalSGFunctionMulti(grid, alpha, A)
@@ -865,8 +870,8 @@ def balance(grid):
     gs = grid.getStorage()
     newgps = []
 
-    for gp in [gs.getPoint(i) for i in xrange(gs.getSize())]:
-        for dim in xrange(gs.getDimension()):
+    for gp in [gs.getPoint(i) for i in range(gs.getSize())]:
+        for dim in range(gs.getDimension()):
             # left child in dimension dim
             lgp = HashGridPoint(gp)
             lgp.getLeftChild(dim)
@@ -929,7 +934,7 @@ def addConst(grid, alpha, c, y):
     alpha_vec = DataVector(alpha)
     opHier = createOperationHierarchisation(grid)
     opHier.doDehierarchisation(alpha_vec)
-    for i in xrange(alpha_vec.getSize()):
+    for i in range(alpha_vec.getSize()):
         alpha_vec[i] = c * alpha_vec[i] + y
     opHier.doHierarchisation(alpha_vec)
     return alpha_vec.array()
@@ -1063,7 +1068,7 @@ def estimateConvergence(grid, gp, v):
             # to estimate the surplus of the current collocation node
             igrandpar = gs.getSequenceNumber(grp)
             if v[igrandpar] < -1e-10 or v[igrandpar] > 1e-10:
-                vgp.append(v[ipar] / v[igrandpar])
+                vgp.append(old_div(v[ipar], v[igrandpar]))
 
     if len(vgp) == 0:
         vgp = vparents
@@ -1081,7 +1086,7 @@ def checkInterpolation(grid, alpha, nodalValues, epsilon=1e-13):
     x = DataVector(gs.getDimension())
     opEval = createOperationEvalNaive(grid)
     alpha_vec = DataVector(alpha)
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         gs.getCoordinates(gs.getPoint(i), x)
         evalValues[i] = opEval.eval(alpha_vec, x)
 
@@ -1094,7 +1099,7 @@ def checkInterpolation(grid, alpha, nodalValues, epsilon=1e-13):
         abs_error = np.abs(nodal - value)
         rel_error = abs_error
         if abs(nodal) > 1e-14:
-            rel_error = np.abs(abs_error / nodal)
+            rel_error = np.abs(old_div(abs_error, nodal))
 
         if abs_error > epsilon:
             spacing = 12
@@ -1132,7 +1137,7 @@ def checkPositivity(grid, alpha):
     fullHashGridStorage = fullGrid.getStorage()
     A = np.ndarray((fullHashGridStorage.getSize(), fullHashGridStorage.getDimension()))
     p = DataVector(gs.getDimension())
-    for i in xrange(fullHashGridStorage.getSize()):
+    for i in range(fullHashGridStorage.getSize()):
         fullHashGridStorage.getCoordinates(fullHashGridStorage.getPoint(i), p)
         A[i, :] = p.array()
     negativeGridPoints = {}
