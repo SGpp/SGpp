@@ -8,11 +8,11 @@
 
 #include <sgpp/base/grid/common/DirichletGridConverter.hpp>
 
+#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/LinearStretchedGrid.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <vector>
 
@@ -23,6 +23,7 @@ using sgpp::base::GridGenerator;
 using sgpp::base::GridPoint;
 using sgpp::base::GridStorage;
 using sgpp::base::LinearGrid;
+using sgpp::base::OperationHierarchisation;
 
 BOOST_AUTO_TEST_CASE(test_DirichletGridConverter) {
   /// number of the boundary grid's grid points
@@ -49,12 +50,12 @@ BOOST_AUTO_TEST_CASE(test_DirichletGridConverter) {
   DataVector boundaryGridCoeffs(numTotalGridPoints);
   for (size_t i = 0; i < numTotalGridPoints; ++i) {
     GridPoint& gp = linearBoundaryGridStorageExact.getPoint(i);
-    boundaryGridCoeffs[i] =
-        gp.getStandardCoordinate(0) * (gp.getStandardCoordinate(0)) +
-        gp.getStandardCoordinate(1) * (gp.getStandardCoordinate(1));
+    boundaryGridCoeffs[i] = gp.getStandardCoordinate(0) * (gp.getStandardCoordinate(0)) +
+                            gp.getStandardCoordinate(1) * (gp.getStandardCoordinate(1));
   }
 
-  sgpp::op_factory::createOperationHierarchisation(*linearBoundaryGrid)
+  std::unique_ptr<OperationHierarchisation>(
+      sgpp::op_factory::createOperationHierarchisation(*linearBoundaryGrid))
       ->doHierarchisation(boundaryGridCoeffs);
 
   // allocate the translation array for the coefficients
@@ -157,4 +158,8 @@ BOOST_AUTO_TEST_CASE(test_DirichletGridConverter) {
 
   delete[] conCoefArray;
   delete innerGridExact;
+
+  // These were created in dirichGridConverter !!!
+  delete innerGridActual;
+  delete innerCoeffsActual;
 }
