@@ -412,8 +412,8 @@ def adaptiveGridToRegularGrid(numDims,
 ##
 ## You simply specify the parameters via the command line and run it
 if __name__ == '__main__':
-    parser = ArgumentParser(description='Get a program and run it with input',
-                            version='%(prog)s 1.0')
+    parser = ArgumentParser(description='Get a program and run it with input')
+    parser.add_argument('--version', action='version', version='%(prog)s 1.0')
     parser.add_argument('--numDims', default=4, type=int,
                         help='number of dimensions')
     parser.add_argument('--level', default=4, type=int,

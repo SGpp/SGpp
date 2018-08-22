@@ -31,7 +31,8 @@ numDims = 2
 
 if __name__ == "__main__":
     # parse the input arguments
-    parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
+    parser = ArgumentParser(description='Get a program and run it with input')
+    parser.add_argument('--version', action='version', version='%(prog)s 1.0')
     parser.add_argument('--level', default=2, type=int, help="minimum level of regular grids")
     parser.add_argument('--marginalType', default="beta", type=str, help="marginals")
     args = parser.parse_args()
