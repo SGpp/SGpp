@@ -20,23 +20,22 @@ also meet, for each linked independent module, the terms and
 conditions of this license of that module.
 
 
-Copyright (c) 2008-today The SG++ Project 
-
+Copyright (c) 2008-today, The SG++ Project 
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
- Redistributions of source code must retain the above copyright notice, this
+* Redistributions of source code must retain the above copyright notice, this
     list of conditions and the following disclaimer.
- Redistributions in binary form must reproduce the above copyright notice,
+* Redistributions in binary form must reproduce the above copyright notice,
     this list of conditions and the following disclaimer in the documentation
     and/or other materials provided with the distribution.
- All advertising materials mentioning features or use of this software must
+* All advertising materials mentioning features or use of this software must
     display the following acknowledgement: "This product includes the software
     SG++ developed 2008-today by The SG++ Project and its contributors."
- Neither the name of The SG++ Project nor the names of its contributors 
+* Neither the name of The SG++ Project nor the names of its contributors 
     may be used to endorse or promote products derived from this software 
     without specific prior written permission.
 

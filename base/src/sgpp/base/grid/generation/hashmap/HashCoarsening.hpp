@@ -7,17 +7,12 @@
 #define HASHCOARSENING_HPP
 
 #include <sgpp/base/datatypes/DataVector.hpp>
-
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/functors/CoarseningFunctor.hpp>
-
 #include <sgpp/base/exception/generation_exception.hpp>
 
 #include <sgpp/globaldef.hpp>
 
-#include <cmath>
-#include <list>
-#include <utility>
 #include <vector>
 
 namespace sgpp {
@@ -29,8 +24,6 @@ namespace base {
  */
 class HashCoarsening {
  public:
-  typedef std::pair<size_t, CoarseningFunctor::value_type> GridPointPair;
-
   /**
    * Performs coarsening on grid. It's possible to remove a certain number
    * of gridpoints in one coarsening step. This number is specified within the
@@ -41,6 +34,10 @@ class HashCoarsening {
    * Here only the numFirstPoints are regarded for coarsening, later points
    * are skipped.
    *
+   * Note that seq numbers in @param removedSeq are invalid to use with the resulting grid after coarsening
+   * since the seq numbers get recomputed after removal. Use @param removedPoints unless 
+   * outdated seq numbers are explicitly required.
+   *
    * @param storage hashmap that stores the grid points
    * @param functor a function used to determine if refinement is needed
    * @param alpha pointer to the gridpoints' coefficients removed points must also be considered in
@@ -48,110 +45,16 @@ class HashCoarsening {
    * @param numFirstPoints number of grid points that are regarded to be coarsened
    * @param minIndexConsidered indices of coarsen point candidates must be higher than this
    * parameter to be allowed to get coarsened
+   * @param removedPoints pointer to vector to append coarsened (removed) grid points to
+   * @param removedSeq pointer to vector to append the seq numbers of coarsened grid points to
    */
-  void free_coarsen_NFirstOnly(GridStorage& storage, CoarseningFunctor& functor, DataVector& alpha,
-                               size_t numFirstPoints, size_t minIndexConsidered = 0) {
-    // check if the grid has any points
-    if (storage.getSize() == 0) {
-      throw generation_exception("storage empty");
-    }
-
-    // Perepare temp-data in order to determine the removable grid points
-    // -> leafs with minimal surplus
-    size_t remove_num = functor.getRemovementsNum();
-
-    if (remove_num == 0) return;
-
-    // create an array that will contain the GridPoints
-    // (pair of the grid Point's index and its surplus)
-    // that should be removed
-    GridPointPair* removePoints = new GridPointPair[remove_num];
-
-    // init the removePoints array:
-    // set initial surplus and set all indices to zero
-    for (size_t i = 0; i < remove_num; i++) {
-      removePoints[i].second = functor.start();
-      removePoints[i].first = 0;
-    }
-
-    // help variable to store the gridpoint with highest
-    // surplus in removePoints
-    size_t max_idx = 0;
-
-    // assure that only the first numFirstPoints are checked for coarsening
-    // also assure, that indices bigger than minIndexConsidered are not checked
-    for (size_t z = minIndexConsidered; z < numFirstPoints; z++) {
-      GridPoint& point = storage.getPoint(z);
-
-      if (point.isLeaf() && point.isInnerPoint()) {
-        CoarseningFunctor::value_type current_value = functor(storage, z);
-
-        if (current_value < removePoints[max_idx].second) {
-          // Replace the maximum point array of removable candidates,
-          // find the new maximal point
-          removePoints[max_idx].second = current_value;
-          removePoints[max_idx].first = z;
-
-          // find new maximum entry
-          max_idx = 0;
-
-          for (size_t i = 1; i < remove_num; i++) {
-            if (removePoints[i].second > removePoints[max_idx].second) {
-              max_idx = i;
-            }
-          }
-        }
-      }
-    }
-
-    // DEBUG : print list of removable candidates
-    // std::cout << "list of removable candidates:\n";
-    // for (size_t i = 0; i < remove_num; i++) {
-    //   std::cout << "Index: " << removePoints[i].first << " with surplus " <<
-    //   removePoints[i].second
-    //             << std::endl;
-    // }
-    // std::cout << std::endl;
-
-    // remove the marked grid point if their surplus
-    // is below the given threshold
-    CoarseningFunctor::value_type threshold = functor.getCoarseningThreshold();
-    CoarseningFunctor::value_type initValue = functor.start();
-
-    // vector to save remaining points
-    std::vector<size_t> remainingIndex;
-
-    // vector to store the points that match all condition for deleting
-    this->deletePoints.clear();
-
-    for (size_t i = 0; i < remove_num; i++) {
-      if (removePoints[i].second < initValue && removePoints[i].second <= threshold) {
-        this->deletePoints.push_back(removePoints[i].first);
-      }
-    }
-
-    // DEBUG : print list points to delete
-    // std::cout << "list of points to delete:\n";
-    // for (std::list<size_t>::iterator iter = deletePoints.begin(); iter != deletePoints.end();
-    //      iter++) {
-    //   std::cout << "Index: " << *iter << std::endl;
-    // }
-
-    remainingIndex = storage.deletePoints(this->deletePoints);
-
-    // DEBUG
-    // std::cout << "List of remaining GridPoints (indices)" << std::endl;
-    // for (size_t i = 0; i < remainingIndex.size(); i++)
-    // {
-    //   std::cout << remainingIndex[i] << " ";
-    // }
-    // std::cout << std::endl << std::endl;
-
-    // Drop Elements from DataVector
-    alpha.restructure(remainingIndex);
-
-    delete[] removePoints;
-  }
+  void free_coarsen_NFirstOnly(GridStorage& storage,
+                               CoarseningFunctor& functor,
+                               DataVector& alpha,
+                               size_t numFirstPoints,
+                               size_t minIndexConsidered = 0,
+                               std::vector<HashGridPoint>* removedPoints = 0,
+                               std::vector<size_t>* removedSeq = 0);
 
   /**
    * Performs coarsening on grid. It's possible to remove a certain number
@@ -163,45 +66,29 @@ class HashCoarsening {
    * This function calls free_coarsen_NFirstOnly with numFirstPoints equal
    * to the grid's size.
    *
+   * Note that seq numbers in @param removedSeq are invalid to use with the resulting grid after coarsening
+   * since the seq numbers get recomputed after removal. Use @param removedPoints unless 
+   * outdated seq numbers are explicitly required.
+   *
    * @param storage hashmap that stores the grid points
    * @param functor a function used to determine if refinement is needed
    * @param alpha pointer to the gridpoints' coefficients removed points must also be considered in
    * this vector
+   * @param removedPoints pointer to vector to append coarsened (removed) grid points to
+   * @param removedSeq pointer to vector to append the seq numbers of coarsened grid points to.
    */
-  void free_coarsen(GridStorage& storage, CoarseningFunctor& functor, DataVector& alpha) {
-    free_coarsen_NFirstOnly(storage, functor, alpha, storage.getSize());
-  }
+  void free_coarsen(GridStorage& storage,
+                    CoarseningFunctor& functor,
+                    DataVector& alpha,
+                    std::vector<HashGridPoint>* removedPoints = 0,
+                    std::vector<size_t>* removedSeq = 0);
 
   /**
    * Calculates the number of points, which can be refined
    *
    * @param storage hashmap that stores the grid points
    */
-  size_t getNumberOfRemovablePoints(GridStorage& storage) {
-    size_t counter = 0;
-
-    if (storage.getSize() == 0) {
-      throw generation_exception("storage empty");
-    }
-
-    GridPoint point;
-    GridStorage::grid_map_iterator end_iter = storage.end();
-
-    for (GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter; iter++) {
-      point = *(iter->first);
-
-      if (point.isLeaf()) {
-        counter++;
-      }
-    }
-
-    return counter;
-  }
-
-  std::list<size_t> getDeletedPoints() { return this->deletePoints; }
-
- private:
-  std::list<size_t> deletePoints;
+  size_t getNumberOfRemovablePoints(GridStorage& storage);
 };
 
 }  // namespace base

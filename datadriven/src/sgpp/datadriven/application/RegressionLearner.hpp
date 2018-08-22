@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef REGRESSIONLEARNER_H
-#define REGRESSIONLEARNER_H
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
@@ -218,5 +217,3 @@ class RegressionLearner {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif  // REGRESSIONLEARNER_H

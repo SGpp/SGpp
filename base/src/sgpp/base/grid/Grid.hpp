@@ -76,15 +76,15 @@ struct GeneralGridConfiguration {
   // Grid "super" types
   GeneralGridType generalType_;
   /// Grid Type, see enum
-  sgpp::base::GridType type_;
+  sgpp::base::GridType type_ = GridType::Linear;
   /// number of dimensions
   size_t dim_;
   /// number of levels
   int level_;
   /// max. polynomial degree for poly basis
-  size_t maxDegree_;
+  size_t maxDegree_ = 1;
   /// level of boundary grid
-  level_t boundaryLevel_;
+  level_t boundaryLevel_ = 0;
   /// string to serialized grid
   std::string filename_;
   /// subgrid selection value t
