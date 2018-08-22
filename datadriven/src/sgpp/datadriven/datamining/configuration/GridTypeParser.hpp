@@ -30,14 +30,14 @@ class GridTypeParser {
    * #sgpp::base::GridType.
    * @return the corresponding #sgpp::base::GridType.
    */
-  static GridType parse(const std::string& input);
+  static GridType parse(const std::string &input);
 
   /**
    * generate string representations for values of #sgpp::base::GridType.
    * @param type enum value.
    * @return string representation of a #sgpp::base::GridType.
    */
-  static const std::string& toString(GridType type);
+  static const std::string &toString(GridType type);
 
  private:
   typedef std::map<GridType, std::string> GridTypeMap_t;
@@ -48,6 +48,5 @@ class GridTypeParser {
    */
   static const GridTypeMap_t gridTypeMap;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -10,11 +10,14 @@ git clone git@github.com:SGpp/SGpp.git SGpp_github
 
 # clone SG++ without checkout
 git clone --no-checkout git@simsgs.informatik.uni-stuttgart.de:SGpp/SGpp.git
-# checkout based on whitelist
 cd SGpp
-(git checkout ${REVISION} -- `cat ../../RELEASE_CONTENTS.sh | grep -v "#"`) || exit 1
 # create new release branch
-git checkout -b ${RELEASE}
+git checkout -b ${RELEASE} ${REVISION}
+# checkout based on whitelist
+mv .git ../
+rm -rf * .*
+mv ../.git/ ./
+(git checkout ${REVISION} -- `cat ../../RELEASE_CONTENTS.sh | grep -v "#"`) || exit 1
 git commit -am "New release branch ${RELEASE}"
 
 # write new state for Github release repository

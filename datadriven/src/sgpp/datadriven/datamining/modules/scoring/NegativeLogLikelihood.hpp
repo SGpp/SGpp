@@ -26,7 +26,7 @@ class NegativeLogLikelihood : public Metric {
    * Standard clone method
    * @return the cloned metric instance
    */
-  Metric* clone() const override;
+  Metric *clone() const override;
 
   /**
    * Quantify the NLL of the predicted values (i.e. adding the logs of the predicted values
@@ -37,9 +37,8 @@ class NegativeLogLikelihood : public Metric {
    * @param trueValues ignored
    * @return the negative log likelihood of the predicted probabilities
    */
-  double measure(const DataVector& predictedValues, const DataVector& trueValues) const override;
+  double measure(const DataVector &predictedValues, const DataVector &trueValues) const override;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */
 

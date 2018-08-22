@@ -33,33 +33,9 @@ void DBMatOnlineDEChol::solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
   auto cholsolver = std::unique_ptr<DBMatDMSChol>{buildCholSolver(offlineObject, grid,
       densityEstimationConfig, do_cv)};
 
-  double old_lambda = lambda;
-  // Perform cross-validation based on rank one up- and downdates
-  // -> SHOULD NOT BE USED FOR LARGER GRID SETTINGS
-  // ToDo: May be speed up by parallelization
-  if (canCV && do_cv) {
-    double best_crit = 0;
-    double cur_lambda;
-    for (int i = 0; i < lambdaStep; i++) {
-      cur_lambda = lambdaStart + i * (lambdaEnd - lambdaStart) / (lambdaStep - 1);
-      if (cvLogscale) cur_lambda = exp(cur_lambda);
-      // std::cout << "Cur_lambda: " << cur_lambda << "  Old_lambda: " <<
-      // old_lambda << std::endl;
-      // Solve for density declaring coefficients alpha based on changed
-      // lambda
-      cholsolver->solve(lhsMatrix, alpha, b, old_lambda, cur_lambda);
-      old_lambda = cur_lambda;
-      double crit = resDensity(alpha, grid);
-      // std::cout << ", crit: " << crit << std::endl;
-      if (i == 0 || crit < best_crit) {
-        best_crit = crit;
-        lambda = cur_lambda;
-      }
-    }
-  }
   // Solve for density declaring coefficients alpha
   // std::cout << "lambda: " << lambda << std::endl;
-  cholsolver->solve(lhsMatrix, alpha, b, old_lambda, lambda);
+  cholsolver->solve(lhsMatrix, alpha, b, lambda, lambda);
 
   //  DBMatDMSChol myCholSolver;
   //  DataVector myAlpha{alpha.getSize()};

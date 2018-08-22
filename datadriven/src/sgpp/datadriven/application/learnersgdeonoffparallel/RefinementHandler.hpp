@@ -3,22 +3,22 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_LEARNERSGDEONOFFPARALLELHANDLER_HPP
-#define SGPP_LEARNERSGDEONOFFPARALLELHANDLER_HPP
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
-#include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/AuxiliaryStructures.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/MPITaskScheduler.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitor.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp>
 
 #include <mpi.h>
 
@@ -113,19 +113,19 @@ class RefinementHandler {
    * Check whether refinement is currently necessary according to the guidelines set by the user
    * @param refMonitor String constant specifying the monitor to use for refinement
    * @param refPeriod The minimum period in which refinement cycles are allowed
-   * @param totalInstances The number of batches that have already completed
+   * @param batchSize The number of instances that were added by the current batch
    * @param currentValidError The current validation error
    * @param currentTrainError The current training error
    * @param numberOfCompletedRefinements The number of refinement cycles already completed
    * @param monitor The convergence monitor, if any
    * @param adaptivityConfig the configuration for the adaptivity of the grids
-   * @return Whether a refinement cycle should be started
+   * @return How many refinement cycles should be started
    */
-  bool checkRefinementNecessary(const std::string &refMonitor, size_t refPeriod,
-                                size_t totalInstances,
+  size_t checkRefinementNecessary(const std::string &refMonitor, size_t refPeriod,
+                                size_t batchSize,
                                 double currentValidError, double currentTrainError,
                                 size_t numberOfCompletedRefinements,
-                                ConvergenceMonitor &monitor,
+                                RefinementMonitor &monitor,
                                 sgpp::base::AdpativityConfiguration adaptivityConfig);
 
   /**
@@ -142,7 +142,7 @@ class RefinementHandler {
    */
   void doRefinementForClass(const std::string &refType,
                             RefinementResult *refinementResult,
-                            const ClassDensityConntainer &onlineObjects,
+                            const std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>> &onlineObjects,
                             Grid& grid,
                             DataVector& alpha,
                             bool preCompute,
@@ -152,5 +152,3 @@ class RefinementHandler {
 };
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif  // SGPP_LEARNERSGDEONOFFPARALLELHANDLER_HPP

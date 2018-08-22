@@ -14,21 +14,14 @@
 				"solverEps": 1e-10,
 				"solverThreshold": 1e-10
 			}
-		}
+		},
+		"validationPortion" : 0.634,
+		"epochs" : 12,
+		"shuffling" : "random",
+		"randomSeed" : 37
 	},
 	"scorer": {
-		"testing": {
-			"testingPortion": 0.0,
-			"shuffling": "random",
-			"randomSeed": 42,
-			"metric": "MSE"
-		},
-		"crossValidation": {
-			"folds": 5,
-			"shuffling": "random",
-			"randomSeed": 42,
-			"metric": "MSE"
-		}
+		"metric": "MSE"
 	},
 	"fitter": {
 		"type": "regressionLeastSquares",

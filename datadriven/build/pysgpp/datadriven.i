@@ -29,7 +29,10 @@
 %include "datadriven/src/sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/configuration/RegularizationConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/configuration/DatabaseConfiguration.hpp"
-%include "datadriven/src/sgpp/datadriven/algorithm/ConvergenceMonitor.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitor.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitorFactory.hpp"
 
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSChol.hpp"
@@ -84,7 +87,6 @@
 %include "datadriven/src/sgpp/datadriven/application/RegressionLearner.hpp"
 %include "datadriven/src/sgpp/datadriven/application/ClassificationLearner.hpp"
 %include "datadriven/src/sgpp/datadriven/tools/NearestNeighbors.hpp"
-%include "datadriven/src/sgpp/datadriven/application/LearnerSGDEOnOff.hpp"
 
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGD.hpp"
 %include "datadriven/src/sgpp/datadriven/application/LearnerSVM.hpp"
@@ -108,6 +110,18 @@
 %include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/RoundRobinScheduler.hpp"
 #endif
 
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp"
+%ignore sgpp::datadriven::DataShufflingFunctor::operator();
+%ignore sgpp::datadriven::DataShufflingFunctorRandom::operator();
+%ignore sgpp::datadriven::DataShufflingFunctorSequential::operator();
+%ignore sgpp::datadriven::DataShufflingFunctorCrossValidation::operator();
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctor.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/shuffling/DataSourceShufflingTypeParser.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorFactory.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorRandom.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorSequential.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorCrossValidation.hpp"
+
 %ignore *::operator=;
 
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp"
@@ -119,7 +133,6 @@
 #endif /* ZLIB */
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/RosenblattTransformationConfig.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformation.hpp"
 %ignore sgpp::datadriven::DataTransformation::DataTransformation(DataTransformation &&);
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformationTypeParser.hpp"
@@ -128,28 +141,30 @@
 %ignore sgpp::datadriven::DataSource::begin;
 %ignore sgpp::datadriven::DataSource::end;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceSplitting.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceCrossValidation.hpp"
 
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfigurationClassification.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterTypeParser.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp"
 
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/Metric.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/MSE.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/Accuracy.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/NegativeLogLikelihood.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/ShufflingFunctor.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/SequentialShufflingFunctor.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/RandomShufflingFunctor.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/ScorerShufflingTypeParser.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/Scorer.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/SplittingScorer.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/CrossValidation.hpp"
 
 %include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMiner.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp"
 
 %include "datadriven/src/sgpp/datadriven/datamining/configuration/DensityEstimationTypeParser.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/configuration/GridTypeParser.hpp"
@@ -159,10 +174,10 @@
 
 %include "datadriven/src/sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/ScorerFactory.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/builder/SplittingScorerFactory.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/builder/CrossValidationScorerFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/MinerFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/builder/DensityEstimationMinerFactory.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/builder/ClassificationMinerFactory.hpp"
 
 //TODO(lettrich) : parser not wrapable because of unwrapped JSON, but json parsing inside python is easy.
 //%include "datadriven/src/sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp"

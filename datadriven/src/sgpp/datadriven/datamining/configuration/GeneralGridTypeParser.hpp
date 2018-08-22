@@ -3,10 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_CONFIGURATION_GENERALGRIDTYPEPARSER_HPP_
-#define DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_CONFIGURATION_GENERALGRIDTYPEPARSER_HPP_
-
-
 #pragma once
 
 #include <sgpp/base/grid/Grid.hpp>
@@ -51,4 +47,3 @@ class GeneralGridTypeParser {
 } /* namespace datadriven */
 } /* namespace sgpp */
 
-#endif /* DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_CONFIGURATION_GENERALGRIDTYPEPARSER_HPP_ */

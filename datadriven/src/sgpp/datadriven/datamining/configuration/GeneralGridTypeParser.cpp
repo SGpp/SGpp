@@ -14,7 +14,7 @@ namespace datadriven {
 
 using sgpp::base::data_exception;
 
-sgpp::base::GeneralGridType GeneralGridTypeParser::parse(const std::string& input) {
+sgpp::base::GeneralGridType GeneralGridTypeParser::parse(const std::string &input) {
   auto inputLower = input;
   std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
   if (inputLower == "regular") {
@@ -31,20 +31,19 @@ sgpp::base::GeneralGridType GeneralGridTypeParser::parse(const std::string& inpu
   }
 }
 
-const std::string& GeneralGridTypeParser::toString(sgpp::base::GeneralGridType type) {
+const std::string &GeneralGridTypeParser::toString(sgpp::base::GeneralGridType type) {
   return generalGridTypeMap.at(type);
 }
 
 const GeneralGridTypeParser::GeneralGridTypeMap_t
-GeneralGridTypeParser::generalGridTypeMap = []() {
+    GeneralGridTypeParser::generalGridTypeMap = []() {
   return GeneralGridTypeMap_t{
       std::make_pair(sgpp::base::GeneralGridType::RegularSparseGrid, "regular"),
       std::make_pair(sgpp::base::GeneralGridType::RefinedCoarsenedSparseGrid, "refinedcoarsened"),
       std::make_pair(sgpp::base::GeneralGridType::GeometryAwareSparseGrid,
-          "geometryaware"),
+                     "geometryaware"),
       std::make_pair(sgpp::base::GeneralGridType::ComponentGrid, "component")
   };
 }();
-
 } /* namespace datadriven */
 } /* namespace sgpp */
