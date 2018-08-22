@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_NETWORKMESSAGEDATA_H
-#define SGPP_NETWORKMESSAGEDATA_H
+#pragma once
 
 #define MPI_PACKET_MAX_PAYLOAD_SIZE 4096
 #define MPI_MASTER_RANK 0
@@ -218,5 +217,3 @@ struct AssignSystemMatrixUpdateNetworkMessage {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif  // SGPP_NETWORKMESSAGEDATA_H
