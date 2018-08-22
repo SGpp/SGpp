@@ -1,6 +1,6 @@
 {
 	"dataSource": {
-		"filePath": "/path/to/some/file.arff",
+		"filePath": "path/to/some/file.arff",
 		"fileType": "arff",
 		"compression": false,
 		"numBatches": 1,

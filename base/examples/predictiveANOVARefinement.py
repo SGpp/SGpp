@@ -102,7 +102,7 @@ print "length of alpha vector:           {}".format(alpha.getSize())
 
 for refnum in range(20):
     ## Step 1: calculate the surplus vector alpha. In data
-    ## mining with do it by solving a regression problem as shown in
+    ## mining we do it by solving a regression problem as shown in
     ## example \ref example_classificationRefinementExample_cpp.
     ## Here, the function can be evaluated at any point. Hence. we
     ## simply evaluate it at the coordinates of the grid points to
@@ -141,7 +141,7 @@ for refnum in range(20):
 
 
     # extend alpha vector (new entries uninitialized)
-    alpha.resize(HashGridStorage.getSize())
+    alpha.resizeZero(HashGridStorage.getSize())
 
 ## The output of the program should look like this
 ## 

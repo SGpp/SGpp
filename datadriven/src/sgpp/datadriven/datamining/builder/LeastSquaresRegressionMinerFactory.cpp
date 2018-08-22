@@ -13,37 +13,20 @@
 #include <sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp>
 
 #include <sgpp/base/exception/data_exception.hpp>
-#include <sgpp/datadriven/datamining/builder/CrossValidationScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
-#include <sgpp/datadriven/datamining/builder/SplittingScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
+#include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/LeastSquaresRegressionFitterFactory.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 
 #include <string>
 
 namespace sgpp {
 namespace datadriven {
-
-SparseGridMiner* LeastSquaresRegressionMinerFactory::buildMiner(const std::string& path) const {
-  DataMiningConfigParser parser(path);
-
-  return new SparseGridMiner(createDataSource(parser), createFitter(parser), createScorer(parser));
-}
-
-DataSource* LeastSquaresRegressionMinerFactory::createDataSource(
-    const DataMiningConfigParser& parser) const {
-  DataSourceConfig config;
-
-  bool hasSource = parser.getDataSourceConfig(config, config);
-
-  if (hasSource && config.filePath.compare("") != 0) {
-    DataSourceBuilder builder;
-    return builder.fromConfig(config);
-  } else {
-    throw base::data_exception("No file name provided for datasource.");
-  }
-}
 
 ModelFittingBase* LeastSquaresRegressionMinerFactory::createFitter(
     const DataMiningConfigParser& parser) const {
@@ -52,17 +35,9 @@ ModelFittingBase* LeastSquaresRegressionMinerFactory::createFitter(
   return new ModelFittingLeastSquares(config);
 }
 
-Scorer* LeastSquaresRegressionMinerFactory::createScorer(
-    const DataMiningConfigParser& parser) const {
-  std::unique_ptr<ScorerFactory> factory;
-
-  if (parser.hasScorerConfigCrossValidation()) {
-    factory = std::make_unique<CrossValidationScorerFactory>();
-  } else {
-    factory = std::make_unique<SplittingScorerFactory>();
-  }
-  return factory->buildScorer(parser);
+FitterFactory *LeastSquaresRegressionMinerFactory::createFitterFactory(
+    const DataMiningConfigParser &parser) const {
+  return new LeastSquaresRegressionFitterFactory(parser);
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

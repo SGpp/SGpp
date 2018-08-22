@@ -12,11 +12,12 @@
 
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
+#include <sgpp/solver/TypesSolver.hpp>
 
 namespace sgpp {
 namespace datadriven {
 
-FitterConfiguration* FitterConfigurationDensityEstimation::clone() const {
+FitterConfiguration *FitterConfigurationDensityEstimation::clone() const {
   return new FitterConfigurationDensityEstimation(*this);
 }
 
@@ -28,6 +29,8 @@ void FitterConfigurationDensityEstimation::setupDefaults() {
 
   // configure adaptive refinement
   adaptivityConfig.numRefinements_ = 0;
+  adaptivityConfig.refinementPeriod = 1;
+  adaptivityConfig.errorBasedRefinement = false;
 
   // configure regularization
   regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
@@ -42,9 +45,23 @@ void FitterConfigurationDensityEstimation::setupDefaults() {
 
   // intialize empty database
   databaseConfig.filepath = "";
+
+  // configure learner
+  learnerConfig.beta = 1.0;
+
+  // Configure solvers for CG
+  solverFinalConfig.maxIterations_ = 100;
+  solverFinalConfig.eps_ = 1e-14;
+  solverFinalConfig.threshold_ = 1e-14;
+  solverFinalConfig.type_ = sgpp::solver::SLESolverType::CG;
+
+  solverRefineConfig.maxIterations_ = 100;
+  solverRefineConfig.eps_ = 1e-14;
+  solverRefineConfig.threshold_ = 1e-14;
+  solverRefineConfig.type_ = sgpp::solver::SLESolverType::CG;
 }
 
-void FitterConfigurationDensityEstimation::readParams(const DataMiningConfigParser& parser) {
+void FitterConfigurationDensityEstimation::readParams(const DataMiningConfigParser &parser) {
   setupDefaults();
 
   parser.getFitterGridConfig(gridConfig, gridConfig);
@@ -52,7 +69,9 @@ void FitterConfigurationDensityEstimation::readParams(const DataMiningConfigPars
   parser.getFitterSolverRefineConfig(solverRefineConfig, solverRefineConfig);
   parser.getFitterSolverFinalConfig(solverFinalConfig, solverFinalConfig);
   parser.getFitterRegularizationConfig(regularizationConfig, regularizationConfig);
+  parser.getFitterDensityEstimationConfig(densityEstimationConfig, densityEstimationConfig);
   parser.getFitterDatabaseConfig(databaseConfig, databaseConfig);
+  parser.getFitterLearnerConfig(learnerConfig, learnerConfig);
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

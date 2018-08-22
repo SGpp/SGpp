@@ -9,7 +9,6 @@
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
@@ -27,6 +26,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include "../../algorithm/RefinementMonitorConvergence.hpp"
 
 
 namespace sgpp {
@@ -74,15 +74,11 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
    *        processed before next refinement can be scheduled (if
    * convergence-based refinement
    *        is chosen)
-   * @param enableCv Specifies whether to perform cross-validation during
-   * training process or not
-   * @param nextCvStep Determines when next cross-validation has to be triggered
    */
   void trainParallel(size_t batchSize, size_t maxDataPasses,
                      std::string refinementFunctorType,
                      std::string refMonitor, size_t refPeriod, double accDeclineThreshold,
-                     size_t accDeclineBufferSize, size_t minRefInterval, bool enableCv,
-                     size_t nextCvStep);
+                     size_t accDeclineBufferSize, size_t minRefInterval);
 
   /**
    * Trains the learner with the given data batch
@@ -320,7 +316,7 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
   void doRefinementForAll(const std::string &refinementFunctorType,
                           const std::string &refinementMonitorType,
                           const ClassDensityContainer &onlineObjects,
-                          ConvergenceMonitor &monitor);
+                          RefinementMonitor &monitor);
 
   /**
    * Shows grid size statistics along with a message

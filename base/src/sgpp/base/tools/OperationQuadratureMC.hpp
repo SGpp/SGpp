@@ -6,20 +6,23 @@
 #ifndef OPERATIONQUADRATUREMC_HPP
 #define OPERATIONQUADRATUREMC_HPP
 
-#include <sgpp/base/operation/hash/OperationQuadrature.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/operation/hash/OperationQuadrature.hpp>
 
 #include <sgpp/globaldef.hpp>
 
+// Better random number generator in C++11
+#include <random>
 
 namespace sgpp {
 namespace base {
 
 /**
- * Typedef for general functions that can be passed to integration methods. Requires three parameters. First, the dimensionality, then dim-many coordinates, and then further client data for the function at hand.
+ * Typedef for general functions that can be passed to integration methods. Requires three
+ * parameters. First, the dimensionality, then dim-many coordinates, and then further client data
+ * for the function at hand.
  */
 typedef double (*FUNC)(int, double*, void*);
-
 
 /**
  * Quadrature on any sparse grid (that has OperationMultipleEval implemented)
@@ -66,14 +69,15 @@ class OperationQuadratureMC : public OperationQuadrature {
    * @param clientdata Optional data to pass to FUNC
    * @param alpha Coefficient vector for current grid
    */
-  double doQuadratureL2Error(FUNC func, void* clientdata,
-                              sgpp::base::DataVector& alpha);
+  double doQuadratureL2Error(FUNC func, void* clientdata, sgpp::base::DataVector& alpha);
 
  protected:
   // Pointer to the grid object
   sgpp::base::Grid* grid;
   // Number of MC paths
   size_t mcPaths;
+  // random number generator
+  std::minstd_rand simple_rand;
 };
 
 }  // namespace base

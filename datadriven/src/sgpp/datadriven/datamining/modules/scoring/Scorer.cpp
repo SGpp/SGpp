@@ -16,106 +16,14 @@
 namespace sgpp {
 namespace datadriven {
 
-Scorer::Scorer(Metric* metric, ShufflingFunctor* shuffling, int64_t seed)
-    : metric{std::unique_ptr<Metric>{metric}},
-      shuffling{std::unique_ptr<ShufflingFunctor>{shuffling}} {
-  if (seed != -1) {
-    shuffling->setSeed(seed);
-  }
-}
-
-Scorer::Scorer(const Scorer& rhs) {
-  metric = std::unique_ptr<Metric>{rhs.metric->clone()};
-  shuffling = std::unique_ptr<ShufflingFunctor>{rhs.shuffling->clone()};
-}
-
-Scorer& Scorer::operator=(const Scorer& rhs) {
-  if (this != &rhs) {
-    metric = std::unique_ptr<Metric>{rhs.metric->clone()};
-    shuffling = std::unique_ptr<ShufflingFunctor>{rhs.shuffling->clone()};
-  }
-  return *this;
-}
-
-void Scorer::randomizeIndices(const Dataset& dataset, std::vector<size_t>& randomizedIndices) {
-  for (size_t i = 0; i < randomizedIndices.size(); i++) {
-    randomizedIndices[i] = i;
-  }
-  shuffling->shuffle(dataset, randomizedIndices);
-}
-
-void Scorer::splitSet(const Dataset& dataset, Dataset& trainDataset, Dataset& testDataset,
-                      const std::vector<size_t>& randomizedIndices, size_t offset) {
-  size_t testSize = testDataset.getNumberInstances();
-  size_t dim = dataset.getDimension();
-  DataVector tmpRow(dim);
-  double tmpEntry = 0;
-  size_t targetIdx = 0;
-
-  size_t testBegin = offset;
-  size_t testEnd = testBegin + testSize;
-
-  // before test portion
-  for (size_t i = 0; i < offset; i++) {
-    dataset.getData().getRow(randomizedIndices[i], tmpRow);
-    trainDataset.getData().setRow(i, tmpRow);
-    tmpEntry = dataset.getTargets().get(randomizedIndices[i]);
-    trainDataset.getTargets().set(i, tmpEntry);
-  }
-
-  // test portion
-  targetIdx = 0;
-  for (size_t i = offset; i < testEnd; i++) {
-    dataset.getData().getRow(randomizedIndices[i], tmpRow);
-    testDataset.getData().setRow(targetIdx, tmpRow);
-    tmpEntry = dataset.getTargets().get(randomizedIndices[i]);
-    testDataset.getTargets().set(targetIdx, tmpEntry);
-    targetIdx++;
-  }
-
-  // after test portion
-  targetIdx = offset;
-  for (size_t i = testEnd; i < dataset.getNumberInstances(); i++) {
-    dataset.getData().getRow(randomizedIndices[i], tmpRow);
-    trainDataset.getData().setRow(targetIdx, tmpRow);
-    tmpEntry = dataset.getTargets().get(randomizedIndices[i]);
-    trainDataset.getTargets().set(targetIdx, tmpEntry);
-    targetIdx++;
-  }
-}
+Scorer::Scorer(Metric* metric)
+    : metric{std::unique_ptr<Metric>{metric}} { }
 
 double Scorer::test(ModelFittingBase& model, Dataset& testDataset) {
   DataVector predictedValues{testDataset.getNumberInstances()};
   model.evaluate(testDataset.getData(), predictedValues);
   // set score
   return metric->measure(predictedValues, testDataset.getTargets());
-}
-
-double Scorer::train(ModelFittingBase& model, Dataset& trainDataset, Dataset& testDataset) {
-  // fit model
-  std::cout << "###############\nfitting model\n";
-  model.fit(trainDataset);
-  auto scoreTrain = test(model, trainDataset);
-  auto scoreTest = test(model, testDataset);
-  std::cout << "score on training data:" << scoreTrain << "\nscore of test data:"
-      << scoreTest << "\n\n";
-  return scoreTest;
-}
-
-double Scorer::refine(ModelFittingBase& model, Dataset& testDataset) {
-  auto wasRefined = false;
-  auto scoreTest = 0.0;
-
-  do {
-    // TODO(fuchsgruber): Outputs should refer to multiple grids
-    // std::cout << "###############\nrefining model\n"
-    //          << "Current size is " << model.getGrid().getSize() << "\n";
-    wasRefined = model.refine();
-    // std::cout << "Refined Size is " << model.getGrid().getSize() << "\n";
-    scoreTest = test(model, testDataset);
-    std::cout << "###############score of test data after refinement:" << scoreTest << "\n\n";
-  } while (wasRefined);
-  return scoreTest;
 }
 
 } /* namespace datadriven */

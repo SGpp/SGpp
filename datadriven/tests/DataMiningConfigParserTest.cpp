@@ -29,12 +29,11 @@ using sgpp::datadriven::DataMiningConfigParser;
 using sgpp::datadriven::DataSourceConfig;
 using sgpp::datadriven::DataTransformationType;
 using sgpp::datadriven::DataSourceFileType;
-using sgpp::datadriven::TestingConfiguration;
-using sgpp::datadriven::CrossValidationConfiguration;
+using sgpp::datadriven::ScorerConfiguration;
 using sgpp::datadriven::RegularizationConfiguration;
 using sgpp::datadriven::RegularizationType;
-using sgpp::datadriven::ScorerShufflingType;
 using sgpp::datadriven::ScorerMetricType;
+using sgpp::datadriven::DataSourceShufflingType;
 using sgpp::datadriven::FitterType;
 using sgpp::base::RegularGridConfiguration;
 using sgpp::base::GridType;
@@ -57,6 +56,11 @@ BOOST_AUTO_TEST_CASE(testDataSourceConfig) {
   defaults.isCompressed = true;
   defaults.numBatches = 2;
   defaults.batchSize = 10;
+  defaults.epochs = 1;
+  defaults.shuffling = DataSourceShufflingType::sequential;
+  defaults.validationPortion = 0.1;
+  defaults.randomSeed = 1337;
+
   DataSourceConfig config;
   bool hasConfig;
   bool hasDataTransformationConfig;
@@ -73,50 +77,27 @@ BOOST_AUTO_TEST_CASE(testDataSourceConfig) {
   BOOST_CHECK_EQUAL(static_cast<int>(config.dataTransformationConfig.type),
       static_cast<int>(DataTransformationType::ROSENBLATT));
   BOOST_CHECK_EQUAL(config.dataTransformationConfig.rosenblattConfig.solverMaxIterations, 1000);
+  BOOST_CHECK_EQUAL(config.validationPortion, 0.634);
+  BOOST_CHECK_EQUAL(config.epochs, 12);
+  BOOST_CHECK_EQUAL(static_cast<int>(config.shuffling), static_cast<int>(
+      DataSourceShufflingType::random));
 }
 
-BOOST_AUTO_TEST_CASE(testScorerTestingConfig) {
+BOOST_AUTO_TEST_CASE(testScorerConfig) {
   DataMiningConfigParser parser{datasetPath};
 
-  TestingConfiguration defaults;
-  defaults.testingPortion = 1.0;
-  defaults.shuffling = ScorerShufflingType::sequential;
-  defaults.randomSeed = 40;
-  defaults.metric = ScorerMetricType::mse;
-  TestingConfiguration config;
+  ScorerConfiguration defaults;
+  defaults.metric = ScorerMetricType::nll;
+  ScorerConfiguration config;
   bool hasConfig;
-  double tolerance = 1E-5;
 
-  hasConfig = parser.getScorerTestingConfig(config, defaults);
+  hasConfig = parser.getScorerConfig(config, defaults);
 
   BOOST_CHECK_EQUAL(hasConfig, true);
-  BOOST_CHECK_CLOSE(config.testingPortion, 0.0, tolerance);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.shuffling),
-                    static_cast<int>(ScorerShufflingType::random));
-  BOOST_CHECK_EQUAL(config.randomSeed, 42);
   BOOST_CHECK_EQUAL(static_cast<int>(config.metric), static_cast<int>(ScorerMetricType::mse));
 }
 
-BOOST_AUTO_TEST_CASE(testScorerCrossValidationConfig) {
-  DataMiningConfigParser parser{datasetPath};
 
-  CrossValidationConfiguration defaults;
-  defaults.folds = 3;
-  defaults.shuffling = ScorerShufflingType::sequential;
-  defaults.randomSeed = 40;
-  defaults.metric = ScorerMetricType::mse;
-  CrossValidationConfiguration config;
-  bool hasConfig;
-
-  hasConfig = parser.getScorerCrossValidationConfig(config, defaults);
-
-  BOOST_CHECK_EQUAL(hasConfig, true);
-  BOOST_CHECK_EQUAL(config.folds, 5);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.shuffling),
-                    static_cast<int>(ScorerShufflingType::random));
-  BOOST_CHECK_EQUAL(config.randomSeed, 42);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.metric), static_cast<int>(ScorerMetricType::mse));
-}
 
 BOOST_AUTO_TEST_CASE(testFitterTypeConfig) {
   DataMiningConfigParser parser{datasetPath};
