@@ -38,7 +38,7 @@ LearnerTiming LearnerDensityBasedReg::train(
     const base::RegularGridConfiguration& GridConfig,
     const solver::SLESolverConfiguration& SolverConfigRefine,
     const solver::SLESolverConfiguration& SolverConfigFinal,
-    const base::AdaptivityConfiguration& AdaptConfig, bool testAccDuringAdapt,
+    const base::AdpativityConfiguration& AdaptConfig, bool testAccDuringAdapt,
     const double lambda) {
   LearnerTiming timing = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 

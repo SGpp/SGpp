@@ -27,7 +27,7 @@ namespace datadriven {
 PiecewiseConstantSmoothedRegressionMetaLearner::PiecewiseConstantSmoothedRegressionMetaLearner(
   bool verbose, base::DataMatrix& trainingDataSet,
   base::DataVector& valuesDataSet, base::RegularGridConfiguration gridConfig,
-  base::AdaptivityConfiguration adaptConfig,
+  base::AdpativityConfiguration adaptConfig,
   solver::SLESolverConfiguration solverConfig,
   datadriven::RegularizationConfiguration regularizationConfig) :
   verbose(verbose), dataset(trainingDataSet), datasetValues(valuesDataSet),

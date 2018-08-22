@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
   sgpp::base::RegularGridConfiguration gridConfig;
   sgpp::solver::SLESolverConfiguration SLESolverConfigRefine;
   sgpp::solver::SLESolverConfiguration SLESolverConfigFinal;
-  sgpp::base::AdaptivityConfiguration adaptConfig;
+  sgpp::base::AdpativityConfiguration adaptConfig;
   sgpp::datadriven::TestsetConfiguration testsetConfig;
 
   ///////////////////////////////// Configuration start ////////////////////////////////////

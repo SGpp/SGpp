@@ -160,7 +160,7 @@ sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
     gridConfig.type_ = sgpp::base::GridType::Linear;
 
     // configure adaptive refinement
-    sgpp::base::AdaptivityConfiguration adaptConfig;
+    sgpp::base::AdpativityConfiguration adaptConfig;
     adaptConfig.numRefinements_ = 0;
     adaptConfig.noPoints_ = 10;
 

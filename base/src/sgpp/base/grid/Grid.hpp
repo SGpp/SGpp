@@ -6,10 +6,10 @@
 #ifndef GRID_HPP
 #define GRID_HPP
 
-#include <sgpp/base/grid/RefinementConfiguration.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
+#include <sgpp/base/grid/RefinementConfiguration.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -95,7 +95,9 @@ struct GeneralGridConfiguration {
  * structure that can be used by applications to cluster regular grid information
  */
 struct RegularGridConfiguration : GeneralGridConfiguration {
-  RegularGridConfiguration() { generalType_ = GeneralGridType::RegularSparseGrid; }
+  RegularGridConfiguration() {
+    generalType_ = GeneralGridType::RegularSparseGrid;
+  }
 };
 
 /**
@@ -113,7 +115,7 @@ struct CombiGridConfiguration : GeneralGridConfiguration {
 /**
  * structure that can be used by application to define adaptivity strategies
  */
-struct AdaptivityConfiguration {
+struct AdpativityConfiguration {
   /// number of refinements
   size_t numRefinements_;
   /// refinement threshold for surpluses
@@ -653,12 +655,12 @@ class Grid {
   static Grid* createPeriodicGrid(size_t dim);
 
   /**
-   * creates a not a knot B-Spline boundary grid
-   *
-   * @param dim the grid's dimension
-   * @param degree the B-spline degree
-   * @return grid
-   */
+    * creates a not a knot B-Spline boundary grid
+    *
+    * @param dim the grid's dimension
+    * @param degree the B-spline degree
+    * @return grid
+    */
   static Grid* createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
 
   /**

@@ -73,7 +73,7 @@ class RefinementHandler {
                                Grid &grid,
                                DataVector& alpha,
                                base::GridGenerator &gridGen,
-                               sgpp::base::AdaptivityConfiguration adaptivityConfig) const;
+                               sgpp::base::AdpativityConfiguration adaptivityConfig) const;
 
  public:
   /**
@@ -128,7 +128,7 @@ class RefinementHandler {
                                 double currentValidError, double currentTrainError,
                                 size_t numberOfCompletedRefinements,
                                 RefinementMonitor &monitor,
-                                sgpp::base::AdaptivityConfiguration adaptivityConfig);
+                                sgpp::base::AdpativityConfiguration adaptivityConfig);
 
   /**
    * Handles refinement for a specific class.
@@ -150,7 +150,7 @@ class RefinementHandler {
                             bool preCompute,
                             MultiGridRefinementFunctor *refinementFunctor,
                             size_t classIndex,
-                            sgpp::base::AdaptivityConfiguration& adaptivityConfig);
+                            sgpp::base::AdpativityConfiguration& adaptivityConfig);
 };
 }  // namespace datadriven
 }  // namespace sgpp

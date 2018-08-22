@@ -139,14 +139,14 @@ BOOST_AUTO_TEST_CASE(testFitterGridConfig) {
 BOOST_AUTO_TEST_CASE(testFitterAdaptivityConfig) {
   DataMiningConfigParser parser{datasetPath};
 
-  AdaptivityConfiguration defaults;
+  AdpativityConfiguration defaults;
   defaults.numRefinements_ = 42;
   defaults.threshold_ = 42;
   defaults.maxLevelType_ = true;
   defaults.noPoints_ = 42;
   defaults.percent_ = 0.42;
   defaults.errorBasedRefinement = true;
-  AdaptivityConfiguration config;
+  AdpativityConfiguration config;
   bool hasConfig;
   double tolerance = 1E-5;
 

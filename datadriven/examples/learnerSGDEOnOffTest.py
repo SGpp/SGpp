@@ -127,7 +127,7 @@ def main():
             # Specify number of refinement steps and the maximum number of grid
             # points to refine each step
             ##
-            adaptConfig = sg.AdaptivityConfiguration()
+            adaptConfig = sg.AdpativityConfiguration()
             adaptConfig.numRefinements_ = 2
             adaptConfig.noPoints_ = 7
             adaptConfig.threshold_ = 0.0   # only required for surplus refinement!

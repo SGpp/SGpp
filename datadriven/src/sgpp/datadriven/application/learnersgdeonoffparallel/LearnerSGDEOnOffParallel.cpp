@@ -47,7 +47,7 @@ static const int MINIMUM_CONSISTENT_GRID_VERSION = 10;
 
 LearnerSGDEOnOffParallel::LearnerSGDEOnOffParallel(
     sgpp::base::RegularGridConfiguration &gridConfig,
-    sgpp::base::AdaptivityConfiguration &adaptivityConfig,
+    sgpp::base::AdpativityConfiguration &adaptivityConfig,
     sgpp::datadriven::RegularizationConfiguration &regularizationConfig,
     sgpp::datadriven::DensityEstimationConfiguration &densityEstimationConfig,
     Dataset &trainData, Dataset &testData,
