@@ -28,7 +28,7 @@ using sgpp::solver::SLESolver;
 namespace sgpp {
 namespace datadriven {
 
-ModelFittingLeastSquares::ModelFittingLeastSquares(const FitterConfigurationLeastSquares& config)
+ModelFittingLeastSquares::ModelFittingLeastSquares(const FitterConfigurationLeastSquares &config)
     : ModelFittingBaseSingleGrid{}, refinementsPerformed{0} {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationLeastSquares>(config));
@@ -36,26 +36,25 @@ ModelFittingLeastSquares::ModelFittingLeastSquares(const FitterConfigurationLeas
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
-double ModelFittingLeastSquares::evaluate(const DataVector& sample) {
+double ModelFittingLeastSquares::evaluate(const DataVector &sample) {
   auto opEval = std::unique_ptr<base::OperationEval>{op_factory::createOperationEval(*grid)};
   return opEval->eval(alpha, sample);
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
-void ModelFittingLeastSquares::evaluate(DataMatrix& samples, DataVector& results) {
+void ModelFittingLeastSquares::evaluate(DataMatrix &samples, DataVector &results) {
   auto opMultEval = std::unique_ptr<base::OperationMultipleEval>{
       op_factory::createOperationMultipleEval(*grid, samples, config->getMultipleEvalConfig())};
   opMultEval->eval(alpha, results);
 }
 
-void ModelFittingLeastSquares::fit(Dataset& newDataset) {
+void ModelFittingLeastSquares::fit(Dataset &newDataset) {
   // clear model
-  resetState();
-  grid.reset();
+  reset();
   dataset = &newDataset;
 
   // build grid
-  auto& gridConfig = config->getGridConfig();
+  auto &gridConfig = config->getGridConfig();
   gridConfig.dim_ = dataset->getDimension();
   grid = std::unique_ptr<Grid>{buildGrid(config->getGridConfig())};
   // build surplus vector
@@ -86,7 +85,6 @@ bool ModelFittingLeastSquares::refine() {
     } else {
       return false;
     }
-
   } else {
     throw application_exception(
         "ModelFittingLeastSquares: Can't refine before initial grid is created");
@@ -94,9 +92,9 @@ bool ModelFittingLeastSquares::refine() {
   }
 }
 
-void ModelFittingLeastSquares::update(Dataset& newDataset) {
+void ModelFittingLeastSquares::update(Dataset &newDataset) {
   if (grid != nullptr) {
-    resetState();
+    reset();
     // reassign dataset
     dataset = &newDataset;
     // create sytem matrix
@@ -106,19 +104,22 @@ void ModelFittingLeastSquares::update(Dataset& newDataset) {
   }
 }
 
-DMSystemMatrixBase* ModelFittingLeastSquares::buildSystemMatrix(
-    Grid& grid, DataMatrix& trainDataset, double lambda,
-    OperationMultipleEvalConfiguration& mutipleEvalconfig) const {
+DMSystemMatrixBase *ModelFittingLeastSquares::buildSystemMatrix(
+    Grid &grid, DataMatrix &trainDataset, double lambda,
+    OperationMultipleEvalConfiguration &mutipleEvalconfig) const {
   auto systemMatrix = new SystemMatrixLeastSquaresIdentity(grid, trainDataset, lambda);
   systemMatrix->setImplementation(mutipleEvalconfig);
 
   return systemMatrix;
 }
 
-void ModelFittingLeastSquares::resetState() { refinementsPerformed = 0; }
+void ModelFittingLeastSquares::reset() {
+  grid.reset();
+  refinementsPerformed = 0;
+}
 
-void ModelFittingLeastSquares::assembleSystemAndSolve(const SLESolverConfiguration& solverConfig,
-                                                      DataVector& alpha) const {
+void ModelFittingLeastSquares::assembleSystemAndSolve(const SLESolverConfiguration &solverConfig,
+                                                      DataVector &alpha) const {
   auto systemMatrix = std::unique_ptr<DMSystemMatrixBase>(
       buildSystemMatrix(*grid, dataset->getData(), config->getRegularizationConfig().lambda_,
                         config->getMultipleEvalConfig()));
@@ -127,8 +128,7 @@ void ModelFittingLeastSquares::assembleSystemAndSolve(const SLESolverConfigurati
   systemMatrix->generateb(dataset->getTargets(), b);
 
   reconfigureSolver(*solver, solverConfig);
-  solver->solve(*systemMatrix, alpha, b, true, true, DEFAULT_RES_THRESHOLD);
+  solver->solve(*systemMatrix, alpha, b, true, verboseSolver, DEFAULT_RES_THRESHOLD);
 }
-
 }  // namespace datadriven
 }  // namespace sgpp

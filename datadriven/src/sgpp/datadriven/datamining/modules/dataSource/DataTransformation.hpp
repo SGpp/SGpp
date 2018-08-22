@@ -44,7 +44,7 @@ class DataTransformation {
    * @param dataset pointer to the dataset to be initialized
    * @param config configuration containing parameters for initalization
    */
-  virtual void initialize(Dataset* dataset, DataTransformationConfig config) = 0;
+  virtual void initialize(Dataset *dataset, DataTransformationConfig config) = 0;
 
   /**
    * Performs a data transformation on a given dataset for a data transformationn built with
@@ -53,7 +53,7 @@ class DataTransformation {
    * @param dataset pointer to the dataset to be transformed
    * @return pointer to the transformed dataset
    */
-  virtual Dataset* doTransformation(Dataset* dataset) = 0;
+  virtual Dataset *doTransformation(Dataset *dataset) = 0;
 
   /**
    * Performs the backwards transformation on a given dataset for a data transformationn
@@ -62,7 +62,7 @@ class DataTransformation {
    * @param dataset pointer to the dataset to be transformed backwards
    * @return pointer to the backwards transformed dataset
    */
-  virtual Dataset* doInverseTransformation(Dataset* dataset) = 0;
+  virtual Dataset *doInverseTransformation(Dataset *dataset) = 0;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

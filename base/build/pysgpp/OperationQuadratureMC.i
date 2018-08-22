@@ -20,9 +20,14 @@ namespace base
   PyObject *func, *lst, *arglist;
    PyObject *result;
    double    dres = 0;
+   
+   // ensure thread state
+   PyGILState_STATE d_gstate;
+   d_gstate = PyGILState_Ensure();
 
    // get Python function
    func = (PyObject *) clientdata;
+   
    // build argument list (only Python list, convert double* to Python list)
    lst = PyTuple_New(len);        // alternatively: PyList_New(len)
    if (!lst) {
@@ -30,6 +35,7 @@ namespace base
      return NULL;
    }
    for (int i=0; i<len; i++) {
+   		
      // create new Python double
      PyObject *num = PyFloat_FromDouble(a[i]);
      if (!num) {
@@ -40,19 +46,27 @@ namespace base
      // steals reference to num:
      PyTuple_SetItem(lst, i, num); // alternatively: PyList_SET_ITEM()
    }
+   
    // build list of one Python object
    arglist = Py_BuildValue("(O)", lst);
+   Py_DECREF(lst);
+   
    // call Python
    result = PyEval_CallObject(func,arglist);
    // trash arglist and lst
    Py_DECREF(arglist);
-   Py_DECREF(lst);
+  
    if (result) {
      dres = PyFloat_AsDouble(result);
    }
    Py_XDECREF(result);
+   
+   // release thread state
+   PyGILState_Release(d_gstate);
+   
    return dres;
 }
+
 }}
 %}
 

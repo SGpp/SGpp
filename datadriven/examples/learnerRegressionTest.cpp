@@ -8,18 +8,18 @@
  * This example demonstrates sparse grid regression learning.
  */
 
-#include <sgpp/globaldef.hpp>
-#include <sgpp/datadriven/tools/ARFFTools.hpp>
-#include <sgpp/datadriven/application/RegressionLearner.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/application/RegressionLearner.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/globaldef.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 
-#include <string>
-#include <vector>
 #include <exception>
 #include <limits>
 #include <ostream>
+#include <string>
+#include <vector>
 
 /**
  * @brief getLearner
@@ -58,13 +58,13 @@ std::string showRegularizationConfiguration(
   std::ostringstream ss;
   const auto regType = regularizationConfig.type_;
   if (regType == sgpp::datadriven::RegularizationType::Diagonal) {
-     ss << "type: DiagonalMatrix\t";
+    ss << "type: DiagonalMatrix\t";
   } else if (regType == sgpp::datadriven::RegularizationType::Identity) {
-     ss << "type: IdentityMatrix\t";
+    ss << "type: IdentityMatrix\t";
   } else if (regType == sgpp::datadriven::RegularizationType::Laplace) {
-     ss << "type: Laplace\t";
+    ss << "type: Laplace\t";
   } else {
-     ss << "type: unknown\t";
+    ss << "type: unknown\t";
   }
 
   ss << "lambda: " << regularizationConfig.lambda_
@@ -128,7 +128,15 @@ std::vector<sgpp::datadriven::RegularizationConfiguration> getConfigs() {
     regularizationConfig.lambda_ = lambda;
     regularizationConfig.exponentBase_ = 0.25;
     result.push_back(regularizationConfig);
-
+    {
+      // Laplace
+      const auto regularizationType = sgpp::datadriven::RegularizationType::Laplace;
+      auto regularizationConfig = sgpp::datadriven::RegularizationConfiguration();
+      regularizationConfig.type_ = regularizationType;
+      regularizationConfig.lambda_ = lambda;
+      regularizationConfig.exponentBase_ = 0.25;
+      result.push_back(regularizationConfig);
+    }
     // Diagonal
     for (const auto exponentBase : exponentBases) {
       const auto regularizationType = sgpp::datadriven::RegularizationType::Diagonal;

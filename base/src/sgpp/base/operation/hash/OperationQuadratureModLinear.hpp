@@ -6,18 +6,17 @@
 #ifndef OPERATIONQUADRATUREMODLINEAR_HPP
 #define OPERATIONQUADRATUREMODLINEAR_HPP
 
-#include <sgpp/base/operation/hash/OperationQuadrature.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/operation/hash/OperationQuadrature.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace sgpp {
 namespace base {
 
 /**
- * Quadrature on sparse grid, mod linear grid
+ * Quadrature on sparse grid, modified linear grid
  */
 class OperationQuadratureModLinear : public OperationQuadrature {
  public:
@@ -29,16 +28,22 @@ class OperationQuadratureModLinear : public OperationQuadrature {
   explicit OperationQuadratureModLinear(GridStorage& storage) : storage(storage) {}
 
   ~OperationQuadratureModLinear() override {}
+
+  /**
+   * Quadrature for modified piecewise linear hat basis functions
+   *
+   * @param alpha Coefficient vector for current grid
+   */
   double doQuadrature(DataVector& alpha) override;
 
  protected:
-  // Pointer to the grid's GridStorage object
+  /// Pointer to the grid's GridStorage object
   GridStorage& storage;
-  // ModLinear Basis object
+  /// ModLinear Basis object
   SLinearModifiedBase base;
 };
 
 }  // namespace base
 }  // namespace sgpp
 
-#endif /* OPERATIONQUADRATURE_HPP */
+#endif /* OPERATIONQUADRATUREMODLINEAR_HPP */

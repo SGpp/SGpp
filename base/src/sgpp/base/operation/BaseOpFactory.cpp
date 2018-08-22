@@ -22,6 +22,7 @@
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyClenshawCurtisBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/ModPolyClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
 
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
@@ -47,31 +48,6 @@
 #include <sgpp/base/operation/hash/OperationHierarchisationPrewavelet.hpp>
 #include <sgpp/base/operation/hash/OperationStencilHierarchisationLinear.hpp>
 #include <sgpp/base/operation/hash/OperationStencilHierarchisationModLinear.hpp>
-
-#include <sgpp/base/operation/hash/OperationEvalLinearClenshawCurtisBoundaryNaive.hpp>
-#include <sgpp/base/operation/hash/OperationEvalModLinearClenshawCurtisNaive.hpp>
-#include <sgpp/base/operation/hash/OperationEvalModPolyClenshawCurtisNaive.hpp>
-#include <sgpp/base/operation/hash/OperationEvalNakBsplineBoundaryNaive.hpp>
-#include <sgpp/base/operation/hash/OperationEvalNotAKnotBsplineModifiedNaive.hpp>
-#include <sgpp/base/operation/hash/OperationEvalPolyClenshawCurtisBoundaryNaive.hpp>
-#include <sgpp/base/operation/hash/OperationEvalPolyClenshawCurtisNaive.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalBsplineBoundaryNaive.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalBsplineClenshawCurtisNaive.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalBsplineNaive.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalLinearBoundaryNaive.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalLinearClenshawCurtisBoundaryNaive.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalLinearClenshawCurtisNaive.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalLinearNaive.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalModBsplineClenshawCurtisNaive.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalModBsplineNaive.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalModLinearClenshawCurtisNaive.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalModPolyClenshawCurtisNaive.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalNakBsplineBoundaryNaive.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalNotAKnotBsplineModifiedNaive.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalPolyBoundaryNaive.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtisBoundaryNaive.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtisNaive.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalPolyNaive.hpp>
 
 #include <sgpp/base/operation/hash/OperationArbitraryBoundaryHierarchisation.hpp>
 
@@ -154,6 +130,24 @@
 
 #include <sgpp/base/operation/hash/OperationMultipleEvalInterModLinear.hpp>
 
+#include <sgpp/base/operation/hash/OperationMultipleEvalBsplineBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalBsplineClenshawCurtisNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalBsplineNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalLinearBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalLinearClenshawCurtisBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalLinearClenshawCurtisNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalLinearNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalModBsplineClenshawCurtisNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalModBsplineNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalModLinearClenshawCurtisNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalModPolyClenshawCurtisNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalNakBsplineBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalNotAKnotBsplineModifiedNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalPolyBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtisBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtisNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalPolyNaive.hpp>
+
 #include <sgpp/base/operation/hash/OperationEvalBsplineBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalBsplineClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalBsplineNaive.hpp>
@@ -161,15 +155,22 @@
 #include <sgpp/base/operation/hash/OperationEvalLinearBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalLinearClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalLinearNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalLinearClenshawCurtisBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalModLinearClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModBsplineClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModFundamentalSplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModLinearNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModPolyNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModWaveletNaive.hpp>
-#include <sgpp/base/operation/hash/OperationEvalNakBsplineBoundaryCombigridNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalModPolyClenshawCurtisNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalNakBsplineBoundaryCombigridNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalNakBsplineBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalNotAKnotBsplineModifiedNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalPolyClenshawCurtisBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalPolyClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalWaveletBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalWaveletNaive.hpp>
 
@@ -306,6 +307,11 @@ base::OperationQuadrature* createOperationQuadrature(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::PolyBoundary) {
     return new base::OperationQuadraturePolyBoundary(
         grid.getStorage(), dynamic_cast<base::PolyBoundaryGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::ModLinear) {
+    return new base::OperationQuadratureModLinear(grid.getStorage());
+  } else if (grid.getType() == base::GridType::ModPoly) {
+    return new base::OperationQuadratureModPoly(
+        grid.getStorage(), dynamic_cast<base::ModPolyGrid*>(&grid)->getDegree());
   } else if (grid.getType() == base::GridType::PolyClenshawCurtisBoundary) {
     return new base::OperationQuadraturePolyClenshawCurtisBoundary(
         grid.getStorage(), dynamic_cast<base::PolyClenshawCurtisBoundaryGrid*>(&grid)->getDegree());
