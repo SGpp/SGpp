@@ -69,7 +69,7 @@ void checkClose(const DataMatrix& x, const DataMatrix& y, double tol = 1e-8) {
 }
 
 void checkClose(const std::vector<DataMatrix>& x, const std::vector<DataMatrix>& y,
-                double tol = 1e-8) {
+                double tol = 5e-8) {
   BOOST_CHECK_EQUAL(x.size(), y.size());
 
   for (size_t k = 0; k < x.size(); k++) {
