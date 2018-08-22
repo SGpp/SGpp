@@ -184,7 +184,7 @@ int main() {
   // select zero-crossings-based refinement
   refType = "zero";
   std::cout << "Refinement type: " << refType << std::endl;
-  sgpp::base::AdpativityConfiguration adaptConfig;
+  sgpp::base::AdaptivityConfiguration adaptConfig;
   /**
   * Specify number of refinement steps and the max number
   * of grid points to refine each step.

@@ -80,7 +80,7 @@ struct RegularGridConfiguration {
   std::string filename_;
 };
 
-struct AdpativityConfiguration {
+struct AdaptivityConfiguration {
   /// number of refinements
   size_t numRefinements_;
   /// refinement threshold for surpluses
@@ -96,46 +96,46 @@ struct AdpativityConfiguration {
 };
 
 enum class GridType {
-  Linear,                             //  0
-  LinearStretched,                    //  1
-  LinearL0Boundary,                   //  2
-  LinearBoundary,                     //  3
-  LinearStretchedBoundary,            //  4
-  LinearTruncatedBoundary,            //  5
-  ModLinear,                          //  6
-  Poly,                               //  7
-  PolyBoundary,                       //  8
-  ModPoly,                            //  9
-  ModWavelet,                         // 10
-  ModBspline,                         // 11
-  Prewavelet,                         // 12
-  SquareRoot,                         // 13
-  Periodic,                           // 14
-  LinearClenshawCurtisBoundary,       // 15
-  Bspline,                            // 16
-  BsplineBoundary,                    // 17
-  BsplineClenshawCurtis,              // 18
-  Wavelet,                            // 19
-  WaveletBoundary,                    // 20
-  FundamentalSpline,                  // 21
-  ModFundamentalSpline,               // 22
-  ModBsplineClenshawCurtis,           // 23
-  LinearStencil,                      // 24
-  ModLinearStencil,                   // 25
-  PolyClenshawCurtisBoundary,         // 26
-  PolyClenshawCurtis,                 // 27
-  LinearClenshawCurtis,               // 28
-  ModPolyClenshawCurtis,              // 29
-  ModLinearClenshawCurtis,            // 30
-  NakBsplineBoundaryCombigrid,        // 31
-  NaturalBsplineBoundary,             // 32
-  NotAKnotBsplineBoundary,            // 33
-  ModNotAKnotBspline,                 // 34
-  WeaklyFundamentalSplineBoundary,             // 35
-  WeaklyFundamentalNotAKnotSplineBoundary,     // 36
-  ModWeaklyFundamentalNotAKnotSpline,          // 37
-  FundamentalSplineBoundary,          // 38
-  FundamentalNotAKnotSplineBoundary,  // 39
+  Linear,                                   //  0
+  LinearStretched,                          //  1
+  LinearL0Boundary,                         //  2
+  LinearBoundary,                           //  3
+  LinearStretchedBoundary,                  //  4
+  LinearTruncatedBoundary,                  //  5
+  ModLinear,                                //  6
+  Poly,                                     //  7
+  PolyBoundary,                             //  8
+  ModPoly,                                  //  9
+  ModWavelet,                               // 10
+  ModBspline,                               // 11
+  Prewavelet,                               // 12
+  SquareRoot,                               // 13
+  Periodic,                                 // 14
+  LinearClenshawCurtisBoundary,             // 15
+  Bspline,                                  // 16
+  BsplineBoundary,                          // 17
+  BsplineClenshawCurtis,                    // 18
+  Wavelet,                                  // 19
+  WaveletBoundary,                          // 20
+  FundamentalSpline,                        // 21
+  ModFundamentalSpline,                     // 22
+  ModBsplineClenshawCurtis,                 // 23
+  LinearStencil,                            // 24
+  ModLinearStencil,                         // 25
+  PolyClenshawCurtisBoundary,               // 26
+  PolyClenshawCurtis,                       // 27
+  LinearClenshawCurtis,                     // 28
+  ModPolyClenshawCurtis,                    // 29
+  ModLinearClenshawCurtis,                  // 30
+  NakBsplineBoundaryCombigrid,              // 31
+  NaturalBsplineBoundary,                   // 32
+  NotAKnotBsplineBoundary,                  // 33
+  ModNotAKnotBspline,                       // 34
+  WeaklyFundamentalSplineBoundary,          // 35
+  WeaklyFundamentalNotAKnotSplineBoundary,  // 36
+  ModWeaklyFundamentalNotAKnotSpline,       // 37
+  FundamentalSplineBoundary,                // 38
+  FundamentalNotAKnotSplineBoundary,        // 39
 };
 
 class Grid

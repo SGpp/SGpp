@@ -95,7 +95,7 @@ public class example_learnerSGDE {
 	* Configure adaptive refinement
 	*/
     System.out.println("# create adaptive refinement config");
-    AdpativityConfiguration adaptConfig = new AdpativityConfiguration();
+    AdaptivityConfiguration adaptConfig = new AdaptivityConfiguration();
     adaptConfig.setNoPoints_(5);
     adaptConfig.setNumRefinements_(0);
 

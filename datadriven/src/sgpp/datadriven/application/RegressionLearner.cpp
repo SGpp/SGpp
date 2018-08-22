@@ -31,7 +31,7 @@ namespace sgpp {
 namespace datadriven {
 
 RegressionLearner::RegressionLearner(base::RegularGridConfiguration gridConfig,
-                                     base::AdpativityConfiguration adaptivityConfig,
+                                     base::AdaptivityConfiguration adaptivityConfig,
                                      solver::SLESolverConfiguration solverConfig,
                                      solver::SLESolverConfiguration finalSolverConfig,
                                      datadriven::RegularizationConfiguration regularizationConfig,
@@ -46,7 +46,7 @@ RegressionLearner::RegressionLearner(base::RegularGridConfiguration gridConfig,
 }
 
 RegressionLearner::RegressionLearner(base::RegularGridConfiguration gridConfig,
-                                     base::AdpativityConfiguration adaptivityConfig,
+                                     base::AdaptivityConfiguration adaptivityConfig,
                                      solver::SLESolverConfiguration solverConfig,
                                      solver::SLESolverConfiguration finalSolverConfig,
                                      datadriven::RegularizationConfiguration regularizationConfig)

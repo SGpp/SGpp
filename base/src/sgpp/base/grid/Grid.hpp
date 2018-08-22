@@ -123,7 +123,7 @@ struct CombiGridConfiguration : GeneralGridConfiguration {
 /**
  * structure that can be used by application to define adaptivity strategies
  */
-struct AdpativityConfiguration {
+struct AdaptivityConfiguration {
   /// number of refinements
   size_t numRefinements_;
   /// refinement threshold for surpluses
