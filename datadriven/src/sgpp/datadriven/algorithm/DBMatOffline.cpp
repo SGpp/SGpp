@@ -37,7 +37,7 @@ namespace datadriven {
 using sgpp::base::Grid;
 using sgpp::base::GridType;
 using sgpp::base::RegularGridConfiguration;
-using sgpp::base::AdpativityConfiguration;
+using sgpp::base::AdaptivityConfiguration;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 using sgpp::base::operation_exception;

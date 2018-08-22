@@ -46,7 +46,7 @@ namespace datadriven {
 
 LearnerSGDEOnOff::LearnerSGDEOnOff(
     sgpp::base::RegularGridConfiguration& gridConfig,
-    sgpp::base::AdpativityConfiguration& adaptivityConfig,
+    sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
     Dataset& trainData,
@@ -109,7 +109,7 @@ LearnerSGDEOnOff::LearnerSGDEOnOff(
 void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string refType,
                              std::string refMonitor, size_t refPeriod, double accDeclineThreshold,
                              size_t accDeclineBufferSize, size_t minRefInterval,
-                             sgpp::base::AdpativityConfiguration& adaptivityConfig,
+                             sgpp::base::AdaptivityConfiguration& adaptivityConfig,
                              sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
                              sgpp::datadriven::DensityEstimationConfiguration&
                              densityEstimationConfig) {
@@ -231,7 +231,7 @@ void LearnerSGDEOnOff::train(size_t batchSize, size_t maxDataPasses, std::string
 
 void LearnerSGDEOnOff::train(
     Dataset& dataset,
-    sgpp::base::AdpativityConfiguration& adaptivityConfig,
+    sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
     std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse) {
   size_t dim = dataset.getDimension();
@@ -488,7 +488,7 @@ void LearnerSGDEOnOff::updateAlpha(size_t classIndex, std::list<size_t>* deleted
 }
 
 void LearnerSGDEOnOff::refine(RefinementMonitor& monitor,
-                              sgpp::base::AdpativityConfiguration& adaptivityConfig,
+                              sgpp::base::AdaptivityConfiguration& adaptivityConfig,
                               sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
                               sgpp::datadriven::DensityEstimationConfiguration&
                               densityEstimationConfig,

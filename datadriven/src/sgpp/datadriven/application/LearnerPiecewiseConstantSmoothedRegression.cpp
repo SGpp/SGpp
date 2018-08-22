@@ -44,7 +44,7 @@ namespace datadriven {
 
 LearnerPiecewiseConstantSmoothedRegression::LearnerPiecewiseConstantSmoothedRegression(
   sgpp::base::RegularGridConfiguration& gridConfig,
-  sgpp::base::AdpativityConfiguration& adaptivityConfig,
+  sgpp::base::AdaptivityConfiguration& adaptivityConfig,
   sgpp::solver::SLESolverConfiguration& solverConfig,
   sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
   bool verbose) :

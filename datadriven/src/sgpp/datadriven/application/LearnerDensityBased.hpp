@@ -70,7 +70,7 @@ class LearnerDensityBased : public datadriven::LearnerBase {
                               const base::RegularGridConfiguration& GridConfig,
                               const solver::SLESolverConfiguration& SolverConfigRefine,
                               const solver::SLESolverConfiguration& SolverConfigFinal,
-                              const base::AdpativityConfiguration& AdaptConfig,
+                              const base::AdaptivityConfiguration& AdaptConfig,
                               bool testAccDuringAdapt, const double lambda);
 
   virtual base::DataVector predict(base::DataMatrix& testDataset);

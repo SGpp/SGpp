@@ -60,7 +60,7 @@ class LearnerSGDEOnOff {
    * @param matrixfile path to a decomposed matrix file
    */
   LearnerSGDEOnOff(sgpp::base::RegularGridConfiguration& gridConfig,
-                   sgpp::base::AdpativityConfiguration& adaptivityConfig,
+                   sgpp::base::AdaptivityConfiguration& adaptivityConfig,
                    sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
                    sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
                    Dataset& trainData, Dataset& testData,
@@ -93,7 +93,7 @@ class LearnerSGDEOnOff {
   void train(size_t batchSize, size_t maxDataPasses, std::string refType, std::string refMonitor,
              size_t refPeriod, double accDeclineThreshold, size_t accDeclineBufferSize,
              size_t minRefInterval,
-             sgpp::base::AdpativityConfiguration& adaptivityConfig,
+             sgpp::base::AdaptivityConfiguration& adaptivityConfig,
              sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
              sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
 
@@ -107,7 +107,7 @@ class LearnerSGDEOnOff {
    *        of removed grid points and an unsigned int representing added grid
    * points
    */
-  void train(Dataset& dataset, sgpp::base::AdpativityConfiguration& adaptivityConfig,
+  void train(Dataset& dataset, sgpp::base::AdaptivityConfiguration& adaptivityConfig,
       sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
       std::vector<std::pair<std::list<size_t>, size_t>>* refineCoarse = nullptr);
 
@@ -209,7 +209,7 @@ class LearnerSGDEOnOff {
 
  protected:
   void refine(RefinementMonitor& monitor,
-              sgpp::base::AdpativityConfiguration& adaptivityConfig,
+              sgpp::base::AdaptivityConfiguration& adaptivityConfig,
               sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
               sgpp::datadriven::DensityEstimationConfiguration&
               densityEstimationConfig,

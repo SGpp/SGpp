@@ -34,7 +34,7 @@ sgpp::datadriven::RegressionLearner getLearner(
   gridConfig.level_ = 3;
   gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
-  auto adaptivityConfig = sgpp::base::AdpativityConfiguration();
+  auto adaptivityConfig = sgpp::base::AdaptivityConfiguration();
   adaptivityConfig.noPoints_ = 0;
   adaptivityConfig.numRefinements_ = 0;
 
