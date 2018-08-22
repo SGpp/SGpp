@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef LEARNERSVM_HPP
-#define LEARNERSVM_HPP
+#pragma once
 
 #include <sgpp/datadriven/application/PrimalDualSVM.hpp>
 
@@ -170,5 +169,3 @@ class LearnerSVM {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* LEARNERSVM_HPP */

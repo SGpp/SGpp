@@ -33,23 +33,6 @@ void DBMatOnlineDEEigen::solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
   lhsMatrix.getRow(n, e);
   DBMatDMSEigen esolver;
 
-  if (canCV && do_cv) {
-    double best_crit = 0;
-    double cur_lambda;
-    for (int i = 0; i < lambdaStep; i++) {
-      cur_lambda = lambdaStart + i * (lambdaEnd - lambdaStart) / (lambdaStep - 1);
-      if (cvLogscale) cur_lambda = exp(cur_lambda);
-      esolver.solve(lhsMatrix, e, alpha, b, cur_lambda);
-      // double crit = computeL2Error();
-      double crit = resDensity(alpha, grid);
-      // std::cout << "cur_lambda: " << cur_lambda << ", crit: " << crit <<
-      // std::endl;
-      if (i == 0 || crit < best_crit) {
-        best_crit = crit;
-        lambda = cur_lambda;
-      }
-    }
-  }
   esolver.solve(lhsMatrix, e, alpha, b, lambda);
 }
 

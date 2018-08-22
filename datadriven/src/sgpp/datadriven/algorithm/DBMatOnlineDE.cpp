@@ -21,6 +21,7 @@
 
 #include <list>
 #include <vector>
+#include <algorithm>
 
 namespace sgpp {
 namespace datadriven {
@@ -31,19 +32,51 @@ DBMatOnlineDE::DBMatOnlineDE(DBMatOffline& offline, Grid& grid, double lambda, d
     : DBMatOnline{offline},
       beta(beta),
       totalPoints(0),
-      canCV(false),
-      lambdaStep(0),
-      lambdaStart(0),
-      lambdaEnd(0),
       testMat(nullptr),
       testMatRes(nullptr),
-      cvLogscale(false),
       normFactor(1.),
       lambda(lambda) {
   functionComputed = false;
-  bSave = DataVector(offlineObject.getDecomposedMatrix().getNcols());
+  bSave = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
   bTotalPoints = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
   oDim = grid.getDimension();
+}
+
+void DBMatOnlineDE::updateRhs(size_t gridSize, std::list<size_t> *deletedPoints) {
+  if (functionComputed) {
+    // Coarsening -> remove all idx in deletedPoints
+    if (deletedPoints != nullptr && deletedPoints->size() > 0) {
+      std::vector<size_t> idxToDelete{std::begin(*deletedPoints), std::end(*deletedPoints)};
+      bSave.remove(idxToDelete);
+      bTotalPoints.remove(idxToDelete);
+    }
+    // Refinement -> append newPoints zeros to b
+    if (gridSize > bSave.size()) {
+      bSave.resizeZero(gridSize);
+      bTotalPoints.resizeZero(gridSize);
+    }
+  }
+}
+
+void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, Grid& grid,
+    DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) {
+  if (functionComputed) {
+    if (alpha.size() == bSave.size() && alpha.size() == bTotalPoints.size()) {
+      // Assemble the rhs
+      DataVector b(alpha.size());
+      for (size_t i = 0; i < b.size(); i++) {
+        b.set(i, bSave.get(i) * (1. / bTotalPoints.get(i)));
+      }
+      // Resolve the SLE
+      solveSLE(alpha, b, grid, densityEstimationConfig, do_cv);
+    } else {
+      throw sgpp::base::algorithm_exception(
+                    "Recomputation of density function with mismatching alpha size and b size");
+    }
+  } else {
+    throw sgpp::base::algorithm_exception(
+              "Density function can not be recomputed without any b stored in DBMatOnlineDE");
+  }
 }
 
 void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Grid& grid,
@@ -98,43 +131,10 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Gri
     // std::cout << b.getSize() << std::endl;
 
     if (save_b) {
-      if (functionComputed) {
-        // double tmpBeta = std::max(beta, (1./(double)totalPoints));
-        // b.mult(tmpBeta);
-        // bSave->mult(1.-tmpBeta);
-
-        // Delete indices when grid got coarsend-> reduce 'bSave'
-        if (deletedPoints != nullptr && !deletedPoints->empty()) {
-          std::vector<size_t> v{std::begin(*deletedPoints), std::end(*deletedPoints)};
-          std::vector<size_t> v1(bSave.getSize() - deletedPoints->size());
-          size_t old_size = bSave.getSize();
-
-          size_t index_coarse = 0;
-          size_t index_remain = 0;
-          size_t temp;
-          for (size_t j = 0; j < old_size; j++) {
-            temp = v[index_coarse];
-            if (temp == j) {
-              index_coarse++;
-              continue;
-            } else {
-              v1[index_remain] = j;
-              index_remain++;
-            }
-          }
-          bSave.restructure(v1);
-          bTotalPoints.restructure(v1);
-        }
-
-        // Expand 'b_save' when grid got refined
-        if (newPoints > 0) {
-          bSave.resizeZero(b.getSize());
-          bTotalPoints.resizeZero(b.getSize());
-        }
-
+        updateRhs(grid.getSize(), deletedPoints);
+        // Old rhs is weighted by beta
+        bSave.mult(beta);
         b.add(bSave);
-        // b.mult(beta);
-      }
 
       // Update weighting based on processed data points
       for (size_t i = 0; i < b.getSize(); i++) {
@@ -211,25 +211,6 @@ void DBMatOnlineDE::eval(DataVector& alpha, DataMatrix& values, DataVector& resu
 
 
 bool DBMatOnlineDE::isComputed() { return functionComputed; }
-
-void DBMatOnlineDE::setCrossValidationParameters(int lambda_step, double lambda_start,
-                                                 double lambda_end, DataMatrix* test,
-                                                 DataMatrix* test_cc, bool logscale) {
-  lambdaStep = lambda_step;
-  cvLogscale = logscale;
-  if (cvLogscale) {
-    lambdaStart = std::log(lambda_start);
-    lambdaEnd = std::log(lambda_end);
-  } else {
-    lambdaStart = lambda_start;
-    lambdaEnd = lambda_end;
-  }
-  if (test != nullptr) testMat = test;
-  if (test_cc != nullptr) testMatRes = test_cc;
-  canCV = true;
-}
-
-double DBMatOnlineDE::getBestLambda() { return lambda; }
 
 void DBMatOnlineDE::setBeta(double newBeta) { beta = newBeta; }
 

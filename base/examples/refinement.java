@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 /**
-  * \page example_refinement_cpp Refinement Example
+  * \page example_refinement_java Refinement Example
   *
   * Here we demonstrate how to refine a grid. As a refinement indicator, we take the surpluses
   * of the grid points directly.

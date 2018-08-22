@@ -17,6 +17,7 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceSplitting.hpp>
 
 #include <string>
 
@@ -33,23 +34,9 @@ class DensityEstimationMinerFactory : public MinerFactory {
    */
   DensityEstimationMinerFactory() = default;
 
-  /**
-   * Build an instance of #sgpp::datadriven::SparseGridMiner for Density Estimation based on
-   * specification from a configuration file.
-   * @param path Path to a configuration file that defines the structure of the miner object.
-   */
-  virtual SparseGridMiner* buildMiner(const std::string& path) const;
+  sgpp::datadriven::HyperparameterOptimizer *buildHPO(const std::string &path) const override;
 
  private:
-  /**
-   * Build an instance of a #sgpp::datadriven::DataSource object as specified in the configuration
-   * file.
-   * @param parser parser object that provides methods to query the configuration file.
-   * @return Fully configured instance of a #sgpp::datadriven::DataSource object as specified in the
-   * configuration file.
-   */
-  virtual DataSource* createDataSource(const DataMiningConfigParser& parser) const;
-
   /**
    * Build an instance of a #sgpp::datadriven::ModelFittingBase object as specified in the
    * configuration
@@ -59,17 +46,9 @@ class DensityEstimationMinerFactory : public MinerFactory {
    * specified in the
    * configuration file.
    */
-  virtual ModelFittingBase* createFitter(const DataMiningConfigParser& parser) const;
+  ModelFittingBase* createFitter(const DataMiningConfigParser& parser) const override;
 
-  /**
-   * Build an instance of a #sgpp::datadriven::Scorer object as specified in the configuration
-   * file.
-   * @param parser parser object that provides methods to query the configuration file.
-   * @return Fully configured instance of a #sgpp::datadriven::Scorer object as specified in the
-   * configuration file.
-   */
-  virtual Scorer* createScorer(const DataMiningConfigParser& parser) const;
+  FitterFactory* createFitterFactory(const DataMiningConfigParser& parser) const override;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

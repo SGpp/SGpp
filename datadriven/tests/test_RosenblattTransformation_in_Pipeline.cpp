@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE(testDataTransformationParser) {
   parser.getDataSourceConfig(config, defaults);
 
   // "automatic" transformation in DataSource->getNextSamples()
-  auto dataSource = builder.fromConfig(config);
+  auto dataSource = builder.splittingFromConfig(config);
   Dataset* datasetAuto1 = dataSource->getNextSamples();
   Dataset* datasetAuto2 = dataSource->getNextSamples();
 

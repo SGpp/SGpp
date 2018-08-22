@@ -47,13 +47,13 @@ class ModelFittingBase {
    * Copy constructor - we cannot deep copy all member variables yet.
    * @param rhs const reference to the scorer object to copy from.
    */
-  ModelFittingBase(const ModelFittingBase& rhs) = delete;
+  ModelFittingBase(const ModelFittingBase &rhs) = delete;
 
   /**
    * Move constructor
    * @param rhs R-value reference to a scorer object to moved from.
    */
-  ModelFittingBase(ModelFittingBase&& rhs) = default;
+  ModelFittingBase(ModelFittingBase &&rhs) = default;
 
   // TODO(lettrich): fix this as soon as all member variables are copyable.
   /**
@@ -61,14 +61,14 @@ class ModelFittingBase {
    * @param rhs const reference to the scorer object to copy from.
    * @return rerefernce to this with updated values.
    */
-  ModelFittingBase& operator=(const ModelFittingBase& rhs) = delete;
+  ModelFittingBase &operator=(const ModelFittingBase &rhs) = delete;
 
   /**
    * Move assign operator
    * @param rhs R-value reference to an a scorer object to move from.
    * @return rerefernce to this with updated values.
    */
-  ModelFittingBase& operator=(ModelFittingBase&& rhs) = default;
+  ModelFittingBase &operator=(ModelFittingBase &&rhs) = default;
 
   /**
    * virtual destructor.
@@ -87,7 +87,7 @@ class ModelFittingBase {
    * Fit the grid to the dataset by determinig the weights of an initial grid
    * @param dataset the training dataset that is used to fit the model.
    */
-  virtual void fit(Dataset& dataset) = 0;
+  virtual void fit(Dataset &dataset) = 0;
 
   /**
    * Improve accuracy of the model on the given training data by adaptive refinement of the grid.
@@ -100,14 +100,14 @@ class ModelFittingBase {
    * Train the grid of an existing model with new samples.
    * @param dataset the training dataset that is used to fit the model.
    */
-  virtual void update(Dataset& dataset) = 0;
+  virtual void update(Dataset &dataset) = 0;
 
   /**
    * Evaluate the fitted model at a single data point.
    * @param sample vector with the coordinates in all dimensions of that sample.
    * @return evaluation of the model.
    */
-  virtual double evaluate(const DataVector& sample) = 0;
+  virtual double evaluate(const DataVector &sample) = 0;
 
   // TODO(lettrich): this should be a const operation as well as the samples matrix as soon
   // operation multiple eval has been taken care of.
@@ -118,13 +118,23 @@ class ModelFittingBase {
    * @param results vector where each row will contain the evaluation of the respective sample on
    * the current model.
    */
-  virtual void evaluate(DataMatrix& samples, DataVector& results) = 0;
+  virtual void evaluate(DataMatrix &samples, DataVector &results) = 0;
+
+  /**
+   * Resets the state of the entire model
+   */
+  virtual void reset() = 0;
 
   /**
    * Get the configuration of the fitter object.
    * @return configuration of the fitter object
    */
-  const FitterConfiguration& getFitterConfiguration() const;
+  const FitterConfiguration &getFitterConfiguration() const;
+
+  /**
+   * Whether the Solver produces output or not.
+   */
+  bool verboseSolver;
 
  protected:
   /**
@@ -132,21 +142,21 @@ class ModelFittingBase {
    * @param gridConfig configuration for the grid object
    * @return new grid object that is owned by the caller.
    */
-  Grid* buildGrid(const RegularGridConfiguration& gridConfig) const;
+  Grid *buildGrid(const RegularGridConfiguration &gridConfig) const;
 
   /**
    * Factory member function to build the solver for the least squares regression problem according
    * to the config.
    * @param config configuratin for the solver object
    */
-  SLESolver* buildSolver(const SLESolverConfiguration& config) const;
+  SLESolver *buildSolver(const SLESolverConfiguration &config) const;
 
   /**
    * Configure solver based on the desired configuration
    * @param solver the solver object to be modified.
    * @param config configuration updating the for the solver.
    */
-  void reconfigureSolver(SLESolver& solver, const SLESolverConfiguration& config) const;
+  void reconfigureSolver(SLESolver &solver, const SLESolverConfiguration &config) const;
 
   /**
    * Configuration object for the fitter.
@@ -158,13 +168,12 @@ class ModelFittingBase {
    * refinement is then performed on the very same data. The used dataset used for refinement
    * overwritten once either fit() or update() introduce a new dataset.
    */
-  Dataset* dataset;
+  Dataset *dataset;
 
   /**
    * Solver for the learning problem
    */
   std::unique_ptr<SLESolver> solver;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

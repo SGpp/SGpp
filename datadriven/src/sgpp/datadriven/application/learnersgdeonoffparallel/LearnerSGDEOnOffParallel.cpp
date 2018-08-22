@@ -9,11 +9,11 @@
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
-#include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
+#include <sgpp/datadriven/algorithm/GridFactory.hpp>
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
@@ -31,6 +31,7 @@
 #include <utility>
 #include <list>
 #include <numeric>
+#include "../../algorithm/RefinementMonitorConvergence.hpp"
 
 using sgpp::base::Grid;
 using sgpp::base::GridStorage;
@@ -55,13 +56,58 @@ LearnerSGDEOnOffParallel::LearnerSGDEOnOffParallel(
     sgpp::base::DataVector &classLabels, size_t numClassesInit,
     bool usePrior, double beta,
     MPITaskScheduler &mpiTaskScheduler)
-    : LearnerSGDEOnOff(gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig,
-                       trainData, testData, validationData, classLabels, numClassesInit,
-                       usePrior, beta), mpiTaskScheduler(mpiTaskScheduler),
-                       refinementHandler(nullptr, 0), gridConfig{gridConfig},
+    : trainData{trainData},
+                       testData{testData},
+                       validationData{validationData},
+                       classLabels{classLabels},
+                       numClasses{numClassesInit},
+                       usePrior{usePrior},
+                       prior{},
+                       beta{beta},
+                       trained{false},
+                       offlineContainer{},
+                       densityFunctions{},
+                       processedPoints{0},
+                       avgErrors{0},
+                       mpiTaskScheduler(mpiTaskScheduler),
+                       refinementHandler(nullptr, 0),
+                       gridConfig{gridConfig},
                        adaptivityConfig{adaptivityConfig},
                        regularizationConfig{regularizationConfig},
                        densityEstimationConfig{densityEstimationConfig} {
+  // initialize offline object
+  // Create an offline object that serves as template for all classes
+  offline = std::unique_ptr<DBMatOffline>{
+    DBMatOfflineFactory::buildOfflineObject(gridConfig,
+          adaptivityConfig, regularizationConfig, densityEstimationConfig)
+  };
+
+  // Create a grid TODO(fuchsgruber): Maybe remove the learner class entirely??
+  grids.reserve(numClasses);
+  densityFunctions.reserve(numClasses);
+  offlineContainer.reserve(numClasses);
+  alphas.reserve(numClasses);
+  GridFactory gridFactory;
+  for (size_t classIndex = 0; classIndex < numClasses; classIndex++) {
+    // Create a grid
+    std::unique_ptr<Grid> grid = std::unique_ptr<Grid> {
+      gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+    };
+    std::unique_ptr<DBMatOffline> offlineCloned =
+        std::unique_ptr<DBMatOffline>{offline->clone()};
+    offlineCloned->buildMatrix(grid.get(), regularizationConfig);
+    offlineCloned->decomposeMatrix(regularizationConfig, densityEstimationConfig);
+    auto densEst = std::unique_ptr<DBMatOnlineDE>{
+      DBMatOnlineDEFactory::buildDBMatOnlineDE(*offlineCloned, *grid,
+          regularizationConfig.lambda_, beta)};
+    densityFunctions.emplace_back(std::make_pair(std::move(densEst), classIndex));
+    prior.emplace(classLabels[classIndex], 0.0);
+    DataVector* alpha = new DataVector(offlineCloned->getGridSize());
+    alphas.emplace_back(alpha);
+    grids.emplace_back(std::move(grid));
+    offlineContainer.emplace_back(std::move(offlineCloned));
+  }
+
   localGridVersions.insert(localGridVersions.begin(), numClasses,
                            MINIMUM_CONSISTENT_GRID_VERSION);
   mpiTaskScheduler.setLearnerInstance(this);
@@ -80,12 +126,97 @@ Grid& LearnerSGDEOnOffParallel::getGrid(size_t classIndex) {
   return *(grids[classIndex]);
 }
 
+size_t LearnerSGDEOnOffParallel::getNumClasses() const { return numClasses; }
+
+double LearnerSGDEOnOffParallel::getAccuracy() const {
+  DataVector computedLabels{testData.getNumberInstances()};
+  predict(testData.getData(), computedLabels);
+  size_t correct = 0;
+  size_t correctLabel1 = 0;
+  size_t correctLabel2 = 0;
+  for (size_t i = 0; i < computedLabels.getSize(); i++) {
+    if (computedLabels.get(i) == testData.getTargets().get(i)) {
+      correct++;
+    }
+    if ((computedLabels.get(i) == -1.0) && (testData.getTargets().get(i) == -1.0)) {
+      correctLabel1++;
+    } else if ((computedLabels.get(i) == 1.0) && (testData.getTargets().get(i) == 1.0)) {
+      correctLabel2++;
+    }
+  }
+  // std::cout << "correct label (-1): " << correctLabel1 << "\n";
+  // std::cout << "correct label (1): " << correctLabel2 << "\n";
+
+  double acc = static_cast<double>(correct) / static_cast<double>(computedLabels.getSize());
+  return acc;
+}
+
+
+void LearnerSGDEOnOffParallel::predict(DataMatrix& data, DataVector& result) const {
+  // calculate per class densities
+  std::vector<DataVector> perClassDensities;
+  for (auto& densityFunction : densityFunctions) {
+    perClassDensities.emplace_back(data.getNrows());
+    size_t classIndex = densityFunction.second;
+    densityFunction.first->eval(*(alphas[classIndex]), data, perClassDensities.back(),
+        *(grids[classIndex]), true);
+    perClassDensities.back().mult(prior.at(classLabels[classIndex]));
+  }
+
+// now select the appropriate class
+#pragma omp parallel for
+  for (auto point = 0u; point < data.getNrows(); point++) {
+    auto bestClass = 0.0;
+    auto maxDensity = std::numeric_limits<double>::max() * (-1);
+    for (auto classNum = 0u; classNum < numClasses; classNum++) {
+      auto density = perClassDensities[classNum][point];
+      if (density > maxDensity) {
+        maxDensity = density;
+        bestClass = classLabels[densityFunctions[classNum].second];
+      }
+    }
+    if (bestClass == 0) {
+      std::cerr << "LearnerSGDEOnOff: Warning: no best class found!\n";
+    }
+    result[point] = bestClass;
+  }
+}
+
+double LearnerSGDEOnOffParallel::getError(Dataset& dataset) const {
+  double res = -1.0;
+
+  DataVector computedLabels{dataset.getNumberInstances()};
+  predict(dataset.getData(), computedLabels);
+  size_t correct = 0;
+  for (size_t i = 0; i < computedLabels.getSize(); i++) {
+    if (computedLabels.get(i) == dataset.getTargets().get(i)) {
+      correct++;
+    }
+  }
+
+  double acc = static_cast<double>(correct) / static_cast<double>(computedLabels.getSize());
+  res = 1.0 - acc;
+
+  return res;
+}
+
+void LearnerSGDEOnOffParallel::updateAlpha(size_t classIndex, std::list<size_t>* deletedPoints,
+    size_t newPoints) {
+  DataVector& alpha = *(alphas[classIndex]);
+  if (alpha.getSize() != 0 && deletedPoints != nullptr && !deletedPoints->empty()) {
+    std::vector<size_t> vecDeletedPoints{std::begin(*deletedPoints), std::end(*deletedPoints) };
+    alpha.remove(vecDeletedPoints);
+  }
+  if (newPoints > 0) {
+    alpha.resizeZero(alpha.getSize() + newPoints);
+  }
+}
+
 void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPasses,
                                              std::string refinementFunctorType,
                                              std::string refMonitor,
                                              size_t refPeriod, double accDeclineThreshold,
-                                             size_t accDeclineBufferSize, size_t minRefInterval,
-                                             bool enableCv, size_t nextCvStep) {
+                                             size_t accDeclineBufferSize, size_t minRefInterval) {
   if (!MPIMethods::isMaster()) {
     while (workerActive || MPIMethods::hasPendingOutgoingRequests()) {
       D(std::cout << "Client looping" << std::endl;)
@@ -115,7 +246,7 @@ void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPas
   double currentValidError = 0.0;
   double currentTrainError = 0.0;
   // create convergence monitor object
-  ConvergenceMonitor monitor{accDeclineThreshold, accDeclineBufferSize, minRefInterval};
+  RefinementMonitorConvergence monitor{accDeclineThreshold, accDeclineBufferSize, minRefInterval};
 
   // counts number of performed refinements
   size_t numberOfCompletedRefinements = 0;
@@ -144,16 +275,8 @@ void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPas
       D(std::cout << "#processing batch: " << processedPoints << "\n";
             auto begin = std::chrono::high_resolution_clock::now();)
 
-      // check if cross-validation should be performed
-      bool doCrossValidation = false;
-      if (enableCv) {
-        if (nextCvStep == processedPoints) {
-          doCrossValidation = true;
-          nextCvStep *= 5;
-        }
-      }
-
-      processedPoints += assignBatchToWorker(processedPoints, doCrossValidation);
+      size_t batchSize = assignBatchToWorker(processedPoints, false);
+      processedPoints += batchSize;
 
       std::cout << processedPoints << " have already been assigned." << std::endl;
 
@@ -162,12 +285,14 @@ void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPas
 
       D(std::cout << "Checking if refinement is necessary." << std::endl;)
       // check if refinement should be performed
-      if (refinementHandler.checkRefinementNecessary(refMonitor, refPeriod, processedPoints,
-                                                     currentValidError,
-                                                     currentTrainError,
-                                                     numberOfCompletedRefinements,
-                                                     monitor,
-                                                     adaptivityConfig)) {
+      size_t refinementsNecessary = refinementHandler.checkRefinementNecessary(
+          refMonitor, refPeriod, batchSize,
+          currentValidError,
+          currentTrainError,
+          numberOfCompletedRefinements,
+          monitor,
+          adaptivityConfig);
+      while (refinementsNecessary > 0) {
         while (!refinementHandler.checkReadyForRefinement()) {
           D(std::cout << "Waiting for " << MPIMethods::getQueueSize()
                       << " queue operations to complete before continuing" << std::endl;)
@@ -183,14 +308,13 @@ void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPas
 
         doRefinementForAll(refinementFunctorType, refMonitor, onlineObjects, monitor);
         numberOfCompletedRefinements += 1;
+        refinementsNecessary--;
         D(std::cout << "Refinement at " << processedPoints << " complete" << std::endl;)
 
         // Send the grid component update
         // Note: This was moved to updateClassVariablesAfterRefinement
         // as it needs to run before the system matrix update
 //        MPIMethods::sendGridComponentsUpdate(vectorRefinementResults);
-      } else {
-        D(std::cout << "No refinement necessary" << std::endl;)
       }
 
       D(
@@ -220,8 +344,10 @@ size_t LearnerSGDEOnOffParallel::getDimensionality() {
   return trainData.getDimension();
 }
 
+std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>>& LearnerSGDEOnOffParallel::getDensityFunctions() { return densityFunctions; }
+
 void LearnerSGDEOnOffParallel::printGridSizeStatistics(const char *messageString,
-                                                       ClassDensityContainer &onlineObjects) {
+                                                       std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>> &onlineObjects) {
   // print initial grid size
   for (size_t idx = 0; idx < onlineObjects.size(); idx++) {
     auto& onlineObject = onlineObjects[idx];
@@ -233,8 +359,8 @@ void LearnerSGDEOnOffParallel::printGridSizeStatistics(const char *messageString
 void LearnerSGDEOnOffParallel::doRefinementForAll(
     const std::string &refinementFunctorType,
     const std::string &refinementMonitorType,
-    const ClassDensityContainer &onlineObjects,
-    ConvergenceMonitor &monitor) {
+    const std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>> &onlineObjects,
+    RefinementMonitor &monitor) {
   // acc = getAccuracy();
   // avgErrors.append(1.0 - acc);
 
@@ -283,9 +409,6 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(
                                            *(grids[classIndex]),
                                            *(alphas[classIndex]),
                                            preCompute, func, classIndex, adaptivityConfig);
-  }
-  if (refinementMonitorType == "convergence") {
-    monitor.nextRefCnt = monitor.minRefInterval;
   }
 
   // Wait for all new system matrix decompositions to come back
@@ -339,7 +462,7 @@ LearnerSGDEOnOffParallel::computeNewSystemMatrixDecomposition(
                                                *(grids[classIndex]),
                                                refinementResult.addedGridPoints.size(),
                                                refinementResult.deletedGridPointsIndices,
-                                               densEst->getBestLambda());
+                                               regularizationConfig.lambda_);
 
   setLocalGridVersion(classIndex, gridVersion);
   D(std::cout << "Send system matrix update to master for class " << classIndex << std::endl;)

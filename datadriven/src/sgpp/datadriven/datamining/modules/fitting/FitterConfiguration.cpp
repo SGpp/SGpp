@@ -10,45 +10,50 @@
 namespace sgpp {
 namespace datadriven {
 
-const base::RegularGridConfiguration& FitterConfiguration::getGridConfig() const {
+const base::RegularGridConfiguration &FitterConfiguration::getGridConfig() const {
   return gridConfig;
 }
 
-const base::AdpativityConfiguration& FitterConfiguration::getRefinementConfig() const {
+const base::AdpativityConfiguration &FitterConfiguration::getRefinementConfig() const {
   return adaptivityConfig;
 }
 
-const datadriven::CrossvalidationConfiguration&
+const datadriven::CrossvalidationConfiguration &
 FitterConfiguration::getCrossvalidationConfig() const {
   return crossvalidationConfig;
 }
 
-const datadriven::DensityEstimationConfiguration&
+const datadriven::DensityEstimationConfiguration &
 FitterConfiguration::getDensityEstimationConfig() const {
   return densityEstimationConfig;
 }
 
-const solver::SLESolverConfiguration& FitterConfiguration::getSolverRefineConfig() const {
+const solver::SLESolverConfiguration &FitterConfiguration::getSolverRefineConfig() const {
   return solverRefineConfig;
 }
 
-const solver::SLESolverConfiguration& FitterConfiguration::getSolverFinalConfig() const {
+const solver::SLESolverConfiguration &FitterConfiguration::getSolverFinalConfig() const {
   return solverFinalConfig;
 }
 
-const datadriven::RegularizationConfiguration& FitterConfiguration::getRegularizationConfig()
-    const {
+const datadriven::RegularizationConfiguration &FitterConfiguration::getRegularizationConfig()
+const {
   return regularizationConfig;
 }
 
-const datadriven::OperationMultipleEvalConfiguration& FitterConfiguration::getMultipleEvalConfig()
-    const {
+const datadriven::OperationMultipleEvalConfiguration &FitterConfiguration::getMultipleEvalConfig()
+const {
   return multipleEvalConfig;
 }
 
-const datadriven::DatabaseConfiguration& FitterConfiguration::getDatabaseConfig()
-    const {
+const datadriven::DatabaseConfiguration &FitterConfiguration::getDatabaseConfig()
+const {
   return databaseConfig;
+}
+
+const datadriven::LearnerConfiguration& FitterConfiguration::getLearnerConfig()
+    const {
+  return learnerConfig;
 }
 
 base::RegularGridConfiguration& FitterConfiguration::getGridConfig() {
@@ -56,39 +61,39 @@ base::RegularGridConfiguration& FitterConfiguration::getGridConfig() {
       static_cast<const FitterConfiguration&>(*this).getGridConfig());
 }
 
-base::AdpativityConfiguration& FitterConfiguration::getRefinementConfig() {
-  return const_cast<base::AdpativityConfiguration&>(
-      static_cast<const FitterConfiguration&>(*this).getRefinementConfig());
+base::AdpativityConfiguration &FitterConfiguration::getRefinementConfig() {
+  return const_cast<base::AdpativityConfiguration &>(
+      static_cast<const FitterConfiguration &>(*this).getRefinementConfig());
 }
 
-datadriven::CrossvalidationConfiguration& FitterConfiguration::getCrossvalidationConfig() {
-  return const_cast<datadriven::CrossvalidationConfiguration&>(
-      static_cast<const FitterConfiguration&>(*this).getCrossvalidationConfig());
+datadriven::CrossvalidationConfiguration &FitterConfiguration::getCrossvalidationConfig() {
+  return const_cast<datadriven::CrossvalidationConfiguration &>(
+      static_cast<const FitterConfiguration &>(*this).getCrossvalidationConfig());
 }
 
-datadriven::DensityEstimationConfiguration& FitterConfiguration::getDensityEstimationConfig() {
-  return const_cast<datadriven::DensityEstimationConfiguration&>(
-      static_cast<const FitterConfiguration&>(*this).getDensityEstimationConfig());
+datadriven::DensityEstimationConfiguration &FitterConfiguration::getDensityEstimationConfig() {
+  return const_cast<datadriven::DensityEstimationConfiguration &>(
+      static_cast<const FitterConfiguration &>(*this).getDensityEstimationConfig());
 }
 
-solver::SLESolverConfiguration& FitterConfiguration::getSolverRefineConfig() {
-  return const_cast<solver::SLESolverConfiguration&>(
-      static_cast<const FitterConfiguration&>(*this).getSolverRefineConfig());
+solver::SLESolverConfiguration &FitterConfiguration::getSolverRefineConfig() {
+  return const_cast<solver::SLESolverConfiguration &>(
+      static_cast<const FitterConfiguration &>(*this).getSolverRefineConfig());
 }
 
-solver::SLESolverConfiguration& FitterConfiguration::getSolverFinalConfig() {
-  return const_cast<solver::SLESolverConfiguration&>(
-      static_cast<const FitterConfiguration&>(*this).getSolverFinalConfig());
+solver::SLESolverConfiguration &FitterConfiguration::getSolverFinalConfig() {
+  return const_cast<solver::SLESolverConfiguration &>(
+      static_cast<const FitterConfiguration &>(*this).getSolverFinalConfig());
 }
 
-datadriven::RegularizationConfiguration& FitterConfiguration::getRegularizationConfig() {
-  return const_cast<datadriven::RegularizationConfiguration&>(
-      static_cast<const FitterConfiguration&>(*this).getRegularizationConfig());
+datadriven::RegularizationConfiguration &FitterConfiguration::getRegularizationConfig() {
+  return const_cast<datadriven::RegularizationConfiguration &>(
+      static_cast<const FitterConfiguration &>(*this).getRegularizationConfig());
 }
 
-datadriven::OperationMultipleEvalConfiguration& FitterConfiguration::getMultipleEvalConfig() {
-  return const_cast<datadriven::OperationMultipleEvalConfiguration&>(
-      static_cast<const FitterConfiguration&>(*this).getMultipleEvalConfig());
+datadriven::OperationMultipleEvalConfiguration &FitterConfiguration::getMultipleEvalConfig() {
+  return const_cast<datadriven::OperationMultipleEvalConfiguration &>(
+      static_cast<const FitterConfiguration &>(*this).getMultipleEvalConfig());
 }
 }  // namespace datadriven
 }  // namespace sgpp

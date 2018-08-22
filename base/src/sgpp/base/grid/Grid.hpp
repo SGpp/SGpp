@@ -9,6 +9,7 @@
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
+#include <sgpp/base/grid/RefinementConfiguration.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -75,15 +76,15 @@ struct GeneralGridConfiguration {
   // Grid "super" types
   GeneralGridType generalType_;
   /// Grid Type, see enum
-  sgpp::base::GridType type_;
+  sgpp::base::GridType type_ = GridType::Linear;
   /// number of dimensions
   size_t dim_;
   /// number of levels
   int level_;
   /// max. polynomial degree for poly basis
-  size_t maxDegree_;
+  size_t maxDegree_ = 1;
   /// level of boundary grid
-  level_t boundaryLevel_;
+  level_t boundaryLevel_ = 0;
   /// string to serialized grid
   std::string filename_;
   /// subgrid selection value t
@@ -124,9 +125,28 @@ struct AdpativityConfiguration {
   /// max. number of points to be refined
   size_t noPoints_;
   /// max. percent of points to be refined
-  double percent_;
+  double percent_ = 1.0;
   /// other refinement strategy, that is more expensive, but yields better results
   bool errorBasedRefinement = false;
+  /// threshold for convergence in case error based refinement is applied
+  double errorConvergenceThreshold = 0.001;
+  /// amount of error values to consider when checking for convergence in
+  /// case of error based refinement
+  size_t errorBufferSize = 3;
+  /// minimum amount of iterations before the next refinement is allowed to happen in case of error
+  /// based refinement
+  size_t errorMinInterval = 0;
+  /// refinement will be triggered each refinementPeriod instances (approximately) in case
+  /// of non error based refinement
+  size_t refinementPeriod = 1;
+  /// refinement indicator
+  RefinementFunctorType refinementFunctorType = RefinementFunctorType::Surplus;
+  /// in case of zero corssing based refinement: determines if evaluations should be precomupted
+  bool precomputeEvaluations = true;
+  /// determines if finer grid levels should be penalized when finding points to refine
+  bool levelPenalize = false;
+  /// in case of data based refinements: determines the scaling coefficients for each class
+  std::vector<double> scalingCoefficients = std::vector<double>();
 };
 
 /**
