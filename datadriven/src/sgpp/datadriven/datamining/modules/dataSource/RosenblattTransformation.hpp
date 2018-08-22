@@ -42,7 +42,7 @@ class RosenblattTransformation : public DataTransformation {
    * @param dataset pointer to the dataset to be initialized
    * @param config configuration containing parameters for initalization
    */
-  void initialize(Dataset* dataset, DataTransformationConfig config) override;
+  void initialize(Dataset *dataset, DataTransformationConfig config) override;
 
   /**
    * Wrapper for Rosenblatt transformation. Can be called from an initialized
@@ -51,7 +51,7 @@ class RosenblattTransformation : public DataTransformation {
    * @param dataset pointer to the dataset to be Rosenblatt transformed
    * @return pointer to the transformed dataset
    */
-  Dataset* doTransformation(Dataset* dataset) override;
+  Dataset *doTransformation(Dataset *dataset) override;
 
   /**
    * Wrapper for Rosenblatt inverse transformation. Can be called from an initialized
@@ -60,7 +60,7 @@ class RosenblattTransformation : public DataTransformation {
    * @param dataset pointer to the dataset to be Rosenblatt inverse transformed
    * @return pointer to the backwards transformed dataset
    */
-  Dataset* doInverseTransformation(Dataset* dataset) override;
+  Dataset *doInverseTransformation(Dataset *dataset) override;
 
   /**
    * Helper function
@@ -82,12 +82,12 @@ class RosenblattTransformation : public DataTransformation {
   /**
    * Pointer to #sgpp::datadriven::Dataset
    */
-  Dataset* datasetTransformed;
+  Dataset *datasetTransformed;
 
   /**
    * Pointer to #sgpp::datadriven::Dataset
    */
-  Dataset* datasetInvTransformed;
+  Dataset *datasetInvTransformed;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

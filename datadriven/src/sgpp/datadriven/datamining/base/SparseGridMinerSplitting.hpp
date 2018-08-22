@@ -75,7 +75,7 @@ class SparseGridMinerSplitting : public SparseGridMiner {
    * the data into training and validation data and trains the model for several epochs on the
    * training data.
    */
-  void learn() override;
+  double learn(bool verbose) override;
 
  private:
   /**

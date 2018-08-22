@@ -50,6 +50,6 @@ int main(int argc, char **argv) {
   /**
    * Once we have a configured miner object, we can start the learning process.
    */
-  miner->learn();
+  miner->learn(true);
   std::cout << std::endl;
 }
