@@ -36,7 +36,7 @@ void RefinementHandler::doRefinementForClass(
     bool preCompute,
     MultiGridRefinementFunctor *refinementFunctor,
     size_t classIndex,
-    sgpp::base::AdpativityConfiguration& adaptivityConfig) {
+    sgpp::base::AdaptivityConfiguration& adaptivityConfig) {
   // perform refinement/coarsening for grid which corresponds to current
   // index
   std::cout << "Refinement and coarsening for class: " << classIndex
@@ -207,7 +207,7 @@ size_t RefinementHandler::checkRefinementNecessary(
     double currentTrainError,
     size_t numberOfCompletedRefinements,
     RefinementMonitor &monitor,
-    sgpp::base::AdpativityConfiguration adaptivityConfig) {
+    sgpp::base::AdaptivityConfiguration adaptivityConfig) {
   auto &offline = learnerInstance->getOffline();
   // access DBMatOnlineDE-objects of all classes in order
   // to apply adaptivity to the specific sparse grids later on
@@ -250,7 +250,7 @@ size_t RefinementHandler::handleSurplusBasedRefinement(
     base::Grid &grid,
     DataVector& alpha,
     base::GridGenerator &gridGen,
-    sgpp::base::AdpativityConfiguration adaptivityConfig) const {
+    sgpp::base::AdaptivityConfiguration adaptivityConfig) const {
   DataVector *alphaWork;  // required for surplus refinement
   // auxiliary variables
   DataVector p(learnerInstance->getTrainData().getDimension());
