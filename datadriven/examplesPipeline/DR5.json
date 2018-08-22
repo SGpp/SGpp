@@ -1,6 +1,6 @@
 {
 	"dataSource": {
-		"filePath": "/home/polarbart/CLionProjects/DR5_nowarnings_less05_test.arff",
+		"filePath": "../../datasets/DR5/DR5_nowarnings_less05_test.arff",
 		"validationPortion" : 0.99
 	},
 	"scorer": {

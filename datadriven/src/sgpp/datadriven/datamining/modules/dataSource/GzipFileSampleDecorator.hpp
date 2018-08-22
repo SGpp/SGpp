@@ -40,7 +40,13 @@ class GzipFileSampleDecorator : public FileSampleDecorator {
    *
    * @param filePath valid path to a gzip compressed file.
    */
-  void readFile(const std::string& filePath) override;
+  void readFile(const std::string& filePath);
+
+  /**
+   * Resets the state of the sample provider (e.g. to start a new epoch)
+   */
+  void reset() override;
+
 };
 
 } /* namespace datadriven */

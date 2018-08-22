@@ -41,7 +41,7 @@ sgpp::datadriven::LearnerTiming gtimings;
 double gtrainAcc;
 double gtestAcc;
 sgpp::solver::SLESolverConfiguration gSLEfinal;
-sgpp::base::AdpativityConfiguration gAdapConfig;
+sgpp::base::AdaptivityConfiguration gAdapConfig;
 int gstart_level;
 double glambda;
 
@@ -66,7 +66,7 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
                    const sgpp::base::RegularGridConfiguration& GridConfig,
                    const sgpp::solver::SLESolverConfiguration& SolverConfigRefine,
                    const sgpp::solver::SLESolverConfiguration& SolverConfigFinal,
-                   const sgpp::base::AdpativityConfiguration& AdaptConfig, const double lambda,
+                   const sgpp::base::AdaptivityConfiguration& AdaptConfig, const double lambda,
                    const sgpp::parallel::VectorizationType vecType) {
   if (sgpp::parallel::myGlobalMPIComm->getMyRank() != 0) {
     return;
@@ -271,7 +271,7 @@ void adaptClassificationTestRecursive(
     sgpp::base::RegularGridConfiguration& GridConfig,
     const sgpp::solver::SLESolverConfiguration& SolverConfigRefine,
     const sgpp::solver::SLESolverConfiguration& SolverConfigFinal,
-    const sgpp::base::AdpativityConfiguration& AdaptConfig, const double lambda,
+    const sgpp::base::AdaptivityConfiguration& AdaptConfig, const double lambda,
     const sgpp::parallel::VectorizationType vecType) {
   sgpp::datadriven::LearnerBase* myLearner;
   sgpp::datadriven::RegularizationType C_type;
@@ -309,7 +309,7 @@ void adaptClassificationTest(sgpp::base::DataMatrix& data, sgpp::base::DataVecto
                              bool isRegression, sgpp::base::RegularGridConfiguration& GridConfig,
                              const sgpp::solver::SLESolverConfiguration& SolverConfigRefine,
                              const sgpp::solver::SLESolverConfiguration& SolverConfigFinal,
-                             const sgpp::base::AdpativityConfiguration& AdaptConfig,
+                             const sgpp::base::AdaptivityConfiguration& AdaptConfig,
                              const double lambda, const sgpp::parallel::VectorizationType vecType,
                              const sgpp::parallel::MPIType mpiType) {
   sgpp::datadriven::LearnerBase* myLearner;
@@ -365,7 +365,7 @@ void adaptClassificationTestSP(sgpp::base::DataMatrixSP& dataSP,
                                sgpp::base::RegularGridConfiguration& GridConfig,
                                const sgpp::solver::SLESolverSPConfiguration& SolverConfigRefine,
                                const sgpp::solver::SLESolverSPConfiguration& SolverConfigFinal,
-                               const sgpp::base::AdpativityConfiguration& AdaptConfig,
+                               const sgpp::base::AdaptivityConfiguration& AdaptConfig,
                                const float lambda, const sgpp::parallel::VectorizationType vecType,
                                const sgpp::parallel::MPIType mpiType) {
   sgpp::datadriven::LearnerBaseSP* myLearner;
@@ -491,7 +491,7 @@ int main(int argc, char* argv[]) {
   sgpp::solver::SLESolverConfiguration SLESolverConfigFinal;
   sgpp::solver::SLESolverSPConfiguration SLESolverSPConfigRefine;
   sgpp::solver::SLESolverSPConfiguration SLESolverSPConfigFinal;
-  sgpp::base::AdpativityConfiguration adaptConfig;
+  sgpp::base::AdaptivityConfiguration adaptConfig;
   sgpp::parallel::VectorizationType vecType;
   sgpp::parallel::MPIType mpiType;
 

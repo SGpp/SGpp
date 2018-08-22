@@ -35,7 +35,7 @@ using json::JSON;
 using json::DictNode;
 
 using sgpp::solver::SLESolverConfiguration;
-using sgpp::base::AdpativityConfiguration;
+using sgpp::base::AdaptivityConfiguration;
 using sgpp::base::RegularGridConfiguration;
 using sgpp::datadriven::CrossvalidationConfiguration;
 using sgpp::datadriven::DensityEstimationConfiguration;
@@ -85,8 +85,8 @@ class DataMiningConfigParser {
   bool getFitterConfigType(FitterType& fitter, const FitterType& defaults) const;
   bool getFitterGridConfig(RegularGridConfiguration& config,
                            const RegularGridConfiguration& defaults) const;
-  bool getFitterAdaptivityConfig(AdpativityConfiguration& config,
-                                 const AdpativityConfiguration& defaults) const;
+  bool getFitterAdaptivityConfig(AdaptivityConfiguration& config,
+                                 const AdaptivityConfiguration& defaults) const;
   bool getFitterCrossvalidationConfig(CrossvalidationConfiguration& config,
                                  const CrossvalidationConfiguration& defaults) const;
   bool getFitterDensityEstimationConfig(DensityEstimationConfiguration& config,

@@ -99,7 +99,7 @@ def make_estimator(penalty, l1_ratio, lambda_reg):
     grid.level_ = 2
     grid.type_ = sg.GridType_ModLinear
 
-    adapt = sg.AdpativityConfiguration()
+    adapt = sg.AdaptivityConfiguration()
     adapt.numRefinements_ = 0
     adapt.noPoints_ = 0
 

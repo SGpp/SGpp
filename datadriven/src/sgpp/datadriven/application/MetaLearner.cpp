@@ -26,7 +26,7 @@ namespace datadriven {
 MetaLearner::MetaLearner(sgpp::base::RegularGridConfiguration gridConfig,
                          sgpp::solver::SLESolverConfiguration solverConfig,
                          sgpp::solver::SLESolverConfiguration solverFinalStep,
-                         sgpp::base::AdpativityConfiguration adaptivityConfiguration, double lambda,
+                         sgpp::base::AdaptivityConfiguration adaptivityConfiguration, double lambda,
                          bool verbose) {
   this->csvSep = "& ";
   this->gridConfig = gridConfig;

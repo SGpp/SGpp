@@ -11,7 +11,7 @@
 #include <string>
 
 using sgpp::base::GeneralGridConfiguration;
-using sgpp::base::AdpativityConfiguration;
+using sgpp::base::AdaptivityConfiguration;
 using sgpp::datadriven::RegularizationConfiguration;
 using sgpp::datadriven::DensityEstimationConfiguration;
 using sgpp::datadriven::DBMatDatabase;
@@ -34,7 +34,7 @@ void removeDatabase(std::string& path) {
 
 void initializeStandardConfiguration(
     GeneralGridConfiguration &gridConfig,
-    AdpativityConfiguration& adaptivityConfig,
+    AdaptivityConfiguration& adaptivityConfig,
     RegularizationConfiguration& regularizationConfig,
     DensityEstimationConfiguration& densityEstimationConfig
     ) {
@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(TestPutgMatrix) {
   std::string filepath = createEmptyDatabase();
   DBMatDatabase database(filepath);
   sgpp::base::RegularGridConfiguration gridConfig;
-  AdpativityConfiguration adaptivityConfig;
+  AdaptivityConfiguration adaptivityConfig;
   RegularizationConfiguration regularizationConfig;
   DensityEstimationConfiguration densityEstimationConfig;
   initializeStandardConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(TestGetMatrix) {
   std::string filepath = createEmptyDatabase();
   DBMatDatabase database(filepath);
   sgpp::base::RegularGridConfiguration gridConfig;
-  AdpativityConfiguration adaptivityConfig;
+  AdaptivityConfiguration adaptivityConfig;
   RegularizationConfiguration regularizationConfig;
   DensityEstimationConfiguration densityEstimationConfig;
 
@@ -110,7 +110,7 @@ BOOST_AUTO_TEST_CASE(TestOverwriteMatrix) {
   std::string filepath = createEmptyDatabase();
   DBMatDatabase database(filepath);
   sgpp::base::RegularGridConfiguration gridConfig;
-  AdpativityConfiguration adaptivityConfig;
+  AdaptivityConfiguration adaptivityConfig;
   RegularizationConfiguration regularizationConfig;
   DensityEstimationConfiguration densityEstimationConfig;
 

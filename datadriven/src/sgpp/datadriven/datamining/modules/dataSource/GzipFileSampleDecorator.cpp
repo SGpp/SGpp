@@ -59,7 +59,10 @@ void GzipFileSampleDecorator::readFile(const std::string& fileName) {
 
   gzclose(inFileZ);
 
-  fileSampleProvider->readString(convert);
+  fileSampleProvider->readString(convert, false);
+}
+
+void GzipFileSampleDecorator::reset() {
 }
 
 } /* namespace datadriven */

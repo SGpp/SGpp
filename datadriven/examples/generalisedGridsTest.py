@@ -39,7 +39,7 @@ def evaluate(X_tr, y_tr, X_te, y_te, T):
     grid.t_ = T
     grid.type_ = sg.GridType_ModLinear
 
-    adapt = sg.AdpativityConfiguration()
+    adapt = sg.AdaptivityConfiguration()
     adapt.numRefinements_ = 5
     adapt.noPoints_ = 3
 

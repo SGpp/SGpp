@@ -34,7 +34,7 @@ namespace sgpp {
 namespace datadriven {
 
 LearnerSGD::LearnerSGD(base::RegularGridConfiguration& gridConfig,
-                       base::AdpativityConfiguration& adaptivityConfig,
+                       base::AdaptivityConfiguration& adaptivityConfig,
                        base::DataMatrix& pTrainData,
                        base::DataVector& pTrainLabels,
                        base::DataMatrix& pTestData,
