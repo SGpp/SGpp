@@ -26,7 +26,7 @@ import sklearn.preprocessing as pre
 from sklearn.cross_validation import KFold
 from scipy import stats
 from zipfile import ZipFile
-from io import StringIO
+import io 
 import pysgpp as sg; sg.omp_set_num_threads(4)
 
 ## This function scales all predictors so that they are suitable for sparse grids.
@@ -62,7 +62,7 @@ def get_dataset():
     data_url = "https://archive.ics.uci.edu/ml/machine-learning-databases/00294/CCPP.zip"
     print("Loading power plant dataset from the UCI repository.")
     resp = r.get(data_url, stream=True)
-    data = ZipFile(StringIO(resp.content))
+    data = ZipFile(io.BytesIO(resp.content))
     with data.open('CCPP/Folds5x2_pp.xlsx') as xls:
         df =  pd.read_excel(xls)
     print("Preprocessing dataset.")
