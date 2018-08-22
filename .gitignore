@@ -44,17 +44,9 @@
 /base/doc/doxygen/examples_*.doxy
 /base/doc/doxygen/modules.doxy
 /base/doc/doxygen/GridTypes.doxy
-/base/doc/doxygen/example_*.doxy
-/combigrid/doc/doxygen/example_*.doxy
 /combigrid/doc/doxygen/combigrid_gettingStarted_py.doxy
-/datadriven/doc/doxygen/example_*.doxy
-/finance/doc/doxygen/example_*.doxy
-/misc/doc/doxygen/example_*.doxy
-/optimization/doc/doxygen/example_*.doxy
-/parallel/doc/doxygen/example_*.doxy
-/pde/doc/doxygen/example_*.doxy
-/quadrature/doc/doxygen/example_*.doxy
-/solver/doc/doxygen/example_*.doxy
+*/doc/doxygen/example_*.doxy
+*/doc/doxygen/snippets/*
 
 #ignoring tests
 */tests/test_*_boost
