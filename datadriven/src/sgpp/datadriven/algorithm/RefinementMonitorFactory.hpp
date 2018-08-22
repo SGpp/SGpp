@@ -30,7 +30,7 @@ class RefinementMonitorFactory {
    * @return a new refinement monitor instance
    */
   RefinementMonitor* createRefinementMonitor(
-      const sgpp::base::AdpativityConfiguration& adaptivityConfig) const;
+      const sgpp::base::AdaptivityConfiguration& adaptivityConfig) const;
 };
 
 }  // namespace datadriven

@@ -24,7 +24,7 @@ LearnerScenario::LearnerScenario(std::string datasetFileName, double lambda,
                                  base::RegularGridConfiguration gridConfig,
                                  solver::SLESolverConfiguration SLESolverConfigRefine,
                                  solver::SLESolverConfiguration SLESolverConfigFinal,
-                                 base::AdpativityConfiguration adaptConfig)
+                                 base::AdaptivityConfiguration adaptConfig)
     : initialized(true) {
   this->setDatasetFileName(datasetFileName);
   this->setLambda(lambda);
@@ -41,7 +41,7 @@ LearnerScenario::LearnerScenario(std::string datasetFileName, double lambda,
                                  base::RegularGridConfiguration gridConfig,
                                  solver::SLESolverConfiguration SLESolverConfigRefine,
                                  solver::SLESolverConfiguration SLESolverConfigFinal,
-                                 base::AdpativityConfiguration adaptConfig,
+                                 base::AdaptivityConfiguration adaptConfig,
                                  datadriven::TestsetConfiguration testsetConfig)
     : initialized(true) {
   this->setDatasetFileName(datasetFileName);
@@ -192,7 +192,7 @@ solver::SLESolverConfiguration LearnerScenario::getSolverConfigurationFinal() {
   return solverConfigFinal;
 }
 
-void LearnerScenario::setAdaptivityConfiguration(base::AdpativityConfiguration& adaptConfig) {
+void LearnerScenario::setAdaptivityConfiguration(base::AdaptivityConfiguration& adaptConfig) {
   (*this).replaceDictAttr("adaptivity");
   (*this)["adaptivity"].replaceIDAttr("maxLevelType", adaptConfig.maxLevelType_);
   (*this)["adaptivity"].replaceIDAttr("noPoints",
@@ -203,8 +203,8 @@ void LearnerScenario::setAdaptivityConfiguration(base::AdpativityConfiguration& 
   (*this)["adaptivity"].replaceIDAttr("threshold", adaptConfig.threshold_);
 }
 
-base::AdpativityConfiguration LearnerScenario::getAdaptivityConfiguration() {
-  base::AdpativityConfiguration adaptConfig;
+base::AdaptivityConfiguration LearnerScenario::getAdaptivityConfiguration() {
+  base::AdaptivityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = (*this)["adaptivity"]["maxLevelType"].getBool();
   adaptConfig.noPoints_ = (*this)["adaptivity"]["noPoints"].getUInt();
   adaptConfig.numRefinements_ = (*this)["adaptivity"]["numRefinements"].getUInt();
