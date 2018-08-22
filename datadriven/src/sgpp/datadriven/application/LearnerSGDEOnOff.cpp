@@ -500,7 +500,7 @@ void LearnerSGDEOnOff::refine(RefinementMonitor& monitor,
   DataVector p(trainData.getDimension());
 
   size_t newPoints = 0;
-  std::list<size_t> deletedGridPoints;
+  std::vector<size_t> deletedGridPointsSeqs;
 
   // acc = getAccuracy();
   // avgErrors.append(1.0 - acc);
@@ -599,16 +599,21 @@ void LearnerSGDEOnOff::refine(RefinementMonitor& monitor,
 
           // std::cout << "minIndexAllowed: " << minIndexAllowed << std::endl;
           std::cout << "gridSize: " << grids[idx]->getSize() << std::endl;
-          coarse_.free_coarsen_NFirstOnly(grids[idx]->getStorage(), scf, alphaWeight,
-              grids[idx]->getSize(), minIndexAllowed);
+
+          deletedGridPointsSeqs.clear();
+          coarse_.free_coarsen_NFirstOnly(grids[idx]->getStorage(),
+                                          scf,
+                                          alphaWeight,
+                                          grids[idx]->getSize(),
+                                          minIndexAllowed,
+                                          0,
+                                          &deletedGridPointsSeqs);
 
           std::cout << "Size after coarsening:" << grids[idx]->getSize() << "\n";
           // int new_size = grid->getSize();
 
-          deletedGridPoints.clear();
-          deletedGridPoints = coarse_.getDeletedPoints();
-
-          (refineCoarse)[idx].first = deletedGridPoints;
+          (refineCoarse)[idx].first =
+            std::list<size_t>(deletedGridPointsSeqs.begin(), deletedGridPointsSeqs.end());
 
           coarseCnt++;
         }
@@ -653,7 +658,10 @@ void LearnerSGDEOnOff::refine(RefinementMonitor& monitor,
       // appropriate to redesign the functors in a way, that already considers these points
       // when coarsening the grid itself.
       densEst->updateSystemMatrixDecomposition(densityEstimationConfig,
-          *(grids[idx]), newPoints, deletedGridPoints, regularizationConfig.lambda_);
+                                               *(grids[idx]),
+                                               newPoints,
+                                               refineCoarse[idx].first,
+                                               regularizationConfig.lambda_);
       densEst->updateRhs(newPoints, &refineCoarse[idx].first);
 
       // update alpha vector
@@ -666,4 +674,3 @@ void LearnerSGDEOnOff::refine(RefinementMonitor& monitor,
 
 }  // namespace datadriven
 }  // namespace sgpp
-
