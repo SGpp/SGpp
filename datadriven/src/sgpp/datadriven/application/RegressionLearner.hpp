@@ -130,7 +130,7 @@ class RegressionLearner {
    * include the vector [1,2] in terms.
    */
   RegressionLearner(sgpp::base::RegularGridConfiguration gridConfig,
-                    sgpp::base::AdpativityConfiguration adaptivityConfig,
+                    sgpp::base::AdaptivityConfiguration adaptivityConfig,
                     sgpp::solver::SLESolverConfiguration solverConfig,
                     sgpp::solver::SLESolverConfiguration finalSolverConfig,
                     datadriven::RegularizationConfiguration regularizationConfig,
@@ -145,7 +145,7 @@ class RegressionLearner {
    * @param regularizationConfig
    */
   RegressionLearner(sgpp::base::RegularGridConfiguration gridConfig,
-                    sgpp::base::AdpativityConfiguration adaptivityConfig,
+                    sgpp::base::AdaptivityConfiguration adaptivityConfig,
                     sgpp::solver::SLESolverConfiguration solverConfig,
                     sgpp::solver::SLESolverConfiguration finalSolverConfig,
                     datadriven::RegularizationConfiguration regularizationConfig);
@@ -191,7 +191,7 @@ class RegressionLearner {
 
  private:
   sgpp::base::RegularGridConfiguration gridConfig;
-  sgpp::base::AdpativityConfiguration adaptivityConfig;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
   sgpp::solver::SLESolverConfiguration solverConfig;
   sgpp::solver::SLESolverConfiguration finalSolverConfig;
   datadriven::RegularizationConfiguration regularizationConfig;

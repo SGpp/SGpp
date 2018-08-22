@@ -23,7 +23,7 @@ int main(int argc, char** args) {
   // set variables
   sgpp::base::BatchConfiguration batchConfig;
   sgpp::solver::SLESolverConfiguration solverConfig;
-  sgpp::base::AdpativityConfiguration adaptConfig;
+  sgpp::base::AdaptivityConfiguration adaptConfig;
   sgpp::base::RegularGridConfiguration gridConfig;
 
   // Set Adaptivity

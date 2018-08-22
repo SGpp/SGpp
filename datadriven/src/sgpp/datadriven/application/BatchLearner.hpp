@@ -36,7 +36,7 @@ class BatchLearner {
   base::BatchConfiguration batchConf;  //!< configuration for the BatchLearner
   base::RegularGridConfiguration gridConf;  //!< configuration for the grids
   solver::SLESolverConfiguration solverConf;  //!< configuration for the solver
-  base::AdpativityConfiguration adaptConf;  //!< configuration for the adaptivity
+  base::AdaptivityConfiguration adaptConf;  //!< configuration for the adaptivity
   std::fstream reader;  //!< stream to read in the arff file
   bool reachedData = false;  //!< flag if "\@DATA" has been reached in the arff
   int batchnum = 0;  //!< number of the current batch
@@ -119,7 +119,7 @@ class BatchLearner {
     base::BatchConfiguration batchConfig,
     base::RegularGridConfiguration gridConfig,
     solver::SLESolverConfiguration solverConfig,
-    base::AdpativityConfiguration adaptConfig);
+    base::AdaptivityConfiguration adaptConfig);
 
   /**
    * close the stream

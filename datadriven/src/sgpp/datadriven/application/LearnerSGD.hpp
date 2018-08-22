@@ -43,7 +43,7 @@ class LearnerSGD {
    *        for all error computations
    */
   LearnerSGD(base::RegularGridConfiguration& gridConfig,
-             base::AdpativityConfiguration& adaptivityConfig,
+             base::AdaptivityConfiguration& adaptivityConfig,
              base::DataMatrix& pTrainData,
              base::DataVector& pTrainLabels,
              base::DataMatrix& pTestData,
@@ -180,7 +180,7 @@ class LearnerSGD {
   base::DataVector batchError;
 
   base::RegularGridConfiguration gridConfig;
-  base::AdpativityConfiguration adaptivityConfig;
+  base::AdaptivityConfiguration adaptivityConfig;
 
   double lambda;
   double gamma;
