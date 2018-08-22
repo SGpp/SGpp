@@ -43,10 +43,8 @@ double expUniformNakBspline(double const& x, size_t const& degree, size_t i,
     case 3: {
       sgpp::base::BsplineBasis<size_t, size_t> bsplineBasis(3);
       if (l == 0) {
-        if (i == 0) {
-          // l = 0, i = 0
-          return 1.0;
-        }
+        // l = 0, i = 0
+        return 1.0;
 
       } else if (l == 1) {
         // Lagrange polynomials
@@ -201,10 +199,8 @@ double expUniformNakBspline(double const& x, size_t const& degree, size_t i,
     case 5: {
       sgpp::base::BsplineBasis<size_t, size_t> bsplineBasis(5);
       if (l == 0) {
-        if (i == 0) {
-          // l = 0, i = 0
-          return 1.0;
-        }
+        // l = 0, i = 0
+        return 1.0;
 
       } else if (l == 1) {
         // Lagrange polynomials
