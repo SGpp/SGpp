@@ -152,12 +152,12 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/common/basis/FundamentalNotAKnotSplineBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/FundamentalSplineBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/FundamentalSplineModifiedBasis.hpp"
-%include "base/src/sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasis.hpp"
-%include "base/src/sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasisDeriv1.hpp"
-%include "base/src/sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasisDeriv2.hpp"
-%include "base/src/sgpp/base/operation/hash/common/basis/LagrangeSplineBasis.hpp"
-%include "base/src/sgpp/base/operation/hash/common/basis/LagrangeSplineBasisDeriv1.hpp"
-%include "base/src/sgpp/base/operation/hash/common/basis/LagrangeSplineBasisDeriv2.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/WeaklyFundamentalNotAKnotSplineBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/WeaklyFundamentalNotAKnotSplineBasisDeriv1.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/WeaklyFundamentalNotAKnotSplineBasisDeriv2.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/WeaklyFundamentalSplineBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/WeaklyFundamentalSplineBasisDeriv1.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/WeaklyFundamentalSplineBasisDeriv2.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp"
@@ -225,12 +225,12 @@ namespace std {
 %template(SFundamentalNotAKnotSplineBase) sgpp::base::FundamentalNotAKnotSplineBasis<unsigned int, unsigned int>;
 %template(SFundamentalSplineBase) sgpp::base::FundamentalSplineBasis<unsigned int, unsigned int>;
 %template(SFundamentalSplineModifiedBase) sgpp::base::FundamentalSplineModifiedBasis<unsigned int, unsigned int>;
-%template(SLagrangeSplineBase) sgpp::base::LagrangeSplineBasis<unsigned int, unsigned int>;
-%template(SLagrangeSplineBaseDeriv1) sgpp::base::LagrangeSplineBasisDeriv1<unsigned int, unsigned int>;
-%template(SLagrangeSplineBaseDeriv2) sgpp::base::LagrangeSplineBasisDeriv2<unsigned int, unsigned int>;
-%template(SLagrangeNotAKnotSplineBase) sgpp::base::LagrangeNotAKnotSplineBasis<unsigned int, unsigned int>;
-%template(SLagrangeNotAKnotSplineBaseDeriv1) sgpp::base::LagrangeNotAKnotSplineBasisDeriv1<unsigned int, unsigned int>;
-%template(SLagrangeNotAKnotSplineBaseDeriv2) sgpp::base::LagrangeNotAKnotSplineBasisDeriv2<unsigned int, unsigned int>;
+%template(SWeaklyFundamentalSplineBase) sgpp::base::WeaklyFundamentalSplineBasis<unsigned int, unsigned int>;
+%template(SWeaklyFundamentalSplineBaseDeriv1) sgpp::base::WeaklyFundamentalSplineBasisDeriv1<unsigned int, unsigned int>;
+%template(SWeaklyFundamentalSplineBaseDeriv2) sgpp::base::WeaklyFundamentalSplineBasisDeriv2<unsigned int, unsigned int>;
+%template(SWeaklyFundamentalNotAKnotSplineBase) sgpp::base::WeaklyFundamentalNotAKnotSplineBasis<unsigned int, unsigned int>;
+%template(SWeaklyFundamentalNotAKnotSplineBaseDeriv1) sgpp::base::WeaklyFundamentalNotAKnotSplineBasisDeriv1<unsigned int, unsigned int>;
+%template(SWeaklyFundamentalNotAKnotSplineBaseDeriv2) sgpp::base::WeaklyFundamentalNotAKnotSplineBasisDeriv2<unsigned int, unsigned int>;
 %template(SNaturalBsplineBase) sgpp::base::NaturalBsplineBasis<unsigned int, unsigned int>;
 %template(SNotAKnotBsplineBase) sgpp::base::NotAKnotBsplineBasis<unsigned int, unsigned int>;
 %template(SNotAKnotBsplineBaseDeriv1) sgpp::base::NotAKnotBsplineBasisDeriv1<unsigned int, unsigned int>;

@@ -28,11 +28,11 @@ void createSupportedGrids(size_t d, size_t p,
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createModFundamentalSplineGrid(d, p)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
-      sgpp::base::Grid::createLagrangeNotAKnotSplineBoundaryGrid(d, p)));
+      sgpp::base::Grid::createWeaklyFundamentalNotAKnotSplineBoundaryGrid(d, p)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
-      sgpp::base::Grid::createLagrangeSplineBoundaryGrid(d, p)));
+      sgpp::base::Grid::createWeaklyFundamentalSplineBoundaryGrid(d, p)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
-      sgpp::base::Grid::createModLagrangeNotAKnotSplineGrid(d, p)));
+      sgpp::base::Grid::createModWeaklyFundamentalNotAKnotSplineGrid(d, p)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createLinearGrid(d)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(

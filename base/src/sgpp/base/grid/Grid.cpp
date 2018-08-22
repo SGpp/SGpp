@@ -35,9 +35,9 @@
 #include <sgpp/base/grid/type/NaturalBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NotAKnotBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModNotAKnotBsplineGrid.hpp>
-#include <sgpp/base/grid/type/LagrangeSplineBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/LagrangeNotAKnotSplineBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/ModLagrangeNotAKnotSplineGrid.hpp>
+#include <sgpp/base/grid/type/WeaklyFundamentalSplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/WeaklyFundamentalNotAKnotSplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/ModWeaklyFundamentalNotAKnotSplineGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalNotAKnotSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
@@ -176,17 +176,17 @@ Grid* Grid::createModNotAKnotBsplineGrid(size_t dim, size_t degree) {
   return new ModNotAKnotBsplineGrid(dim, degree);
 }
 
-Grid* Grid::createLagrangeSplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel) {
-  return new LagrangeSplineBoundaryGrid(dim, degree, boundaryLevel);
+Grid* Grid::createWeaklyFundamentalSplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel) {
+  return new WeaklyFundamentalSplineBoundaryGrid(dim, degree, boundaryLevel);
 }
 
-Grid* Grid::createLagrangeNotAKnotSplineBoundaryGrid(size_t dim, size_t degree,
+Grid* Grid::createWeaklyFundamentalNotAKnotSplineBoundaryGrid(size_t dim, size_t degree,
                                                      level_t boundaryLevel) {
-  return new LagrangeNotAKnotSplineBoundaryGrid(dim, degree, boundaryLevel);
+  return new WeaklyFundamentalNotAKnotSplineBoundaryGrid(dim, degree, boundaryLevel);
 }
 
-Grid* Grid::createModLagrangeNotAKnotSplineGrid(size_t dim, size_t degree) {
-  return new ModLagrangeNotAKnotSplineGrid(dim, degree);
+Grid* Grid::createModWeaklyFundamentalNotAKnotSplineGrid(size_t dim, size_t degree) {
+  return new ModWeaklyFundamentalNotAKnotSplineGrid(dim, degree);
 }
 
 Grid* Grid::createFundamentalSplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel) {
@@ -282,14 +282,14 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
             gridConfig.dim_, gridConfig.maxDegree_, gridConfig.boundaryLevel_);
       case GridType::ModNotAKnotBspline:
         return Grid::createModNotAKnotBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
-      case GridType::LagrangeSplineBoundary:
-        return Grid::createLagrangeSplineBoundaryGrid(
+      case GridType::WeaklyFundamentalSplineBoundary:
+        return Grid::createWeaklyFundamentalSplineBoundaryGrid(
             gridConfig.dim_, gridConfig.maxDegree_, gridConfig.boundaryLevel_);
-      case GridType::LagrangeNotAKnotSplineBoundary:
-        return Grid::createLagrangeNotAKnotSplineBoundaryGrid(
+      case GridType::WeaklyFundamentalNotAKnotSplineBoundary:
+        return Grid::createWeaklyFundamentalNotAKnotSplineBoundaryGrid(
             gridConfig.dim_, gridConfig.maxDegree_, gridConfig.boundaryLevel_);
-      case GridType::ModLagrangeNotAKnotSpline:
-        return Grid::createModLagrangeNotAKnotSplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      case GridType::ModWeaklyFundamentalNotAKnotSpline:
+        return Grid::createModWeaklyFundamentalNotAKnotSplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::FundamentalSplineBoundary:
         return Grid::createFundamentalSplineBoundaryGrid(
             gridConfig.dim_, gridConfig.maxDegree_, gridConfig.boundaryLevel_);
@@ -447,21 +447,21 @@ Grid* Grid::createGridOfEquivalentType(size_t numDims) {
     case GridType::NakBsplineBoundaryCombigrid:
       degree = dynamic_cast<NakBsplineBoundaryCombigridGrid*>(this)->getDegree();
       return Grid::createNakBsplineBoundaryCombigridGrid(numDims, degree);
-    case GridType::LagrangeSplineBoundary:
-      degree = dynamic_cast<LagrangeSplineBoundaryGrid*>(this)->getDegree();
+    case GridType::WeaklyFundamentalSplineBoundary:
+      degree = dynamic_cast<WeaklyFundamentalSplineBoundaryGrid*>(this)->getDegree();
       boundaryLevel =
           dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
-      newGrid = Grid::createLagrangeSplineBoundaryGrid(numDims, degree, boundaryLevel);
+      newGrid = Grid::createWeaklyFundamentalSplineBoundaryGrid(numDims, degree, boundaryLevel);
       break;
-    case GridType::LagrangeNotAKnotSplineBoundary:
-      degree = dynamic_cast<LagrangeNotAKnotSplineBoundaryGrid*>(this)->getDegree();
+    case GridType::WeaklyFundamentalNotAKnotSplineBoundary:
+      degree = dynamic_cast<WeaklyFundamentalNotAKnotSplineBoundaryGrid*>(this)->getDegree();
       boundaryLevel =
           dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
-      newGrid = Grid::createLagrangeNotAKnotSplineBoundaryGrid(numDims, degree, boundaryLevel);
+      newGrid = Grid::createWeaklyFundamentalNotAKnotSplineBoundaryGrid(numDims, degree, boundaryLevel);
       break;
-    case GridType::ModLagrangeNotAKnotSpline:
-      degree = dynamic_cast<ModLagrangeNotAKnotSplineGrid*>(this)->getDegree();
-      newGrid = Grid::createModLagrangeNotAKnotSplineGrid(numDims, degree);
+    case GridType::ModWeaklyFundamentalNotAKnotSpline:
+      degree = dynamic_cast<ModWeaklyFundamentalNotAKnotSplineGrid*>(this)->getDegree();
+      newGrid = Grid::createModWeaklyFundamentalNotAKnotSplineGrid(numDims, degree);
       break;
     case GridType::FundamentalSplineBoundary:
       degree = dynamic_cast<FundamentalSplineBoundaryGrid*>(this)->getDegree();
@@ -538,11 +538,11 @@ GridType Grid::getZeroBoundaryType() {
     case GridType::NotAKnotBsplineBoundary:
     case GridType::ModNotAKnotBspline:
       return GridType::NotAKnotBsplineBoundary;
-    case GridType::LagrangeSplineBoundary:
-      return GridType::LagrangeSplineBoundary;
-    case GridType::LagrangeNotAKnotSplineBoundary:
-    case GridType::ModLagrangeNotAKnotSpline:
-      return GridType::LagrangeNotAKnotSplineBoundary;
+    case GridType::WeaklyFundamentalSplineBoundary:
+      return GridType::WeaklyFundamentalSplineBoundary;
+    case GridType::WeaklyFundamentalNotAKnotSplineBoundary:
+    case GridType::ModWeaklyFundamentalNotAKnotSpline:
+      return GridType::WeaklyFundamentalNotAKnotSplineBoundary;
     case GridType::FundamentalSplineBoundary:
       return GridType::FundamentalSplineBoundary;
     case GridType::FundamentalNotAKnotSplineBoundary:
@@ -653,12 +653,12 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
                                                        NotAKnotBsplineBoundaryGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("modNotaknotBspline",
                                                        ModNotAKnotBsplineGrid::unserialize));
-    tMap->insert(std::pair<std::string, Grid::Factory>("lagrangeSplineBoundary",
-                                                       LagrangeSplineBoundaryGrid::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>("weaklyFundamentalSplineBoundary",
+                                                       WeaklyFundamentalSplineBoundaryGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>(
-        "lagrangeNotaknotSplineBoundary", LagrangeNotAKnotSplineBoundaryGrid::unserialize));
+        "weaklyFundamentalNotaknotSplineBoundary", WeaklyFundamentalNotAKnotSplineBoundaryGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>(
-        "modLagrangeNotaknotSpline", ModLagrangeNotAKnotSplineGrid::unserialize));
+        "modWeaklyFundamentalNotaknotSpline", ModWeaklyFundamentalNotAKnotSplineGrid::unserialize));
     tMap->insert(
         std::pair<std::string, Grid::Factory>("fundamentalSplineBoundary",
         FundamentalSplineBoundaryGrid::unserialize));
@@ -708,12 +708,12 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
                                 NotAKnotBsplineBoundaryGrid::unserialize));
     tMap->insert(std::make_pair("modNotaknotBspline",
                                 ModNotAKnotBsplineGrid::unserialize));
-    tMap->insert(std::make_pair("lagrangeSplineBoundary",
-                                LagrangeSplineBoundaryGrid::unserialize));
-    tMap->insert(std::make_pair("lagrangeNotaknotSplineBoundary",
-                                LagrangeNotAKnotSplineBoundaryGrid::unserialize));
-    tMap->insert(std::make_pair("modLagrangeNotaknotSpline",
-                                ModLagrangeNotAKnotSplineGrid::unserialize));
+    tMap->insert(std::make_pair("weaklyFundamentalSplineBoundary",
+                                WeaklyFundamentalSplineBoundaryGrid::unserialize));
+    tMap->insert(std::make_pair("weaklyFundamentalNotaknotSplineBoundary",
+                                WeaklyFundamentalNotAKnotSplineBoundaryGrid::unserialize));
+    tMap->insert(std::make_pair("modWeaklyFundamentalNotaknotSpline",
+                                ModWeaklyFundamentalNotAKnotSplineGrid::unserialize));
     tMap->insert(std::make_pair("fundamentalSplineBoundary",
                                 FundamentalSplineBoundaryGrid::unserialize));
     tMap->insert(std::make_pair("fundamentalNotAKnotSplineBoundary",
@@ -795,11 +795,11 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
         GridType::ModNotAKnotBspline, "modNotaknotBspline"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
-        GridType::LagrangeSplineBoundary, "lagrangeSplineBoundary"));
+        GridType::WeaklyFundamentalSplineBoundary, "weaklyFundamentalSplineBoundary"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
-        GridType::LagrangeNotAKnotSplineBoundary, "lagrangeNotaknotSplineBoundary"));
+        GridType::WeaklyFundamentalNotAKnotSplineBoundary, "weaklyFundamentalNotaknotSplineBoundary"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
-        GridType::ModLagrangeNotAKnotSpline, "modLagrangeNotaknotSpline"));
+        GridType::ModWeaklyFundamentalNotAKnotSpline, "modWeaklyFundamentalNotaknotSpline"));
     verboseMap->insert(
         std::pair<sgpp::base::GridType, std::string>(GridType::FundamentalSplineBoundary,
         "fundamentalSplineBoundary"));
@@ -853,11 +853,11 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
     verboseMap->insert(
         std::make_pair(GridType::ModNotAKnotBspline, "modNotaknotBspline"));
     verboseMap->insert(
-        std::make_pair(GridType::LagrangeSplineBoundary, "lagrangeSplineBoundary"));
+        std::make_pair(GridType::WeaklyFundamentalSplineBoundary, "weaklyFundamentalSplineBoundary"));
     verboseMap->insert(
-        std::make_pair(GridType::LagrangeNotAKnotSplineBoundary, "lagrangeNotaknotSplineBoundary"));
+        std::make_pair(GridType::WeaklyFundamentalNotAKnotSplineBoundary, "weaklyFundamentalNotaknotSplineBoundary"));
     verboseMap->insert(
-        std::make_pair(GridType::ModLagrangeNotAKnotSpline, "modLagrangeNotaknotSpline"));
+        std::make_pair(GridType::ModWeaklyFundamentalNotAKnotSpline, "modWeaklyFundamentalNotaknotSpline"));
     verboseMap->insert(
         std::make_pair(GridType::FundamentalSplineBoundary, "fundamentalSplineBoundary"));
     verboseMap->insert(
@@ -1022,12 +1022,12 @@ GridType Grid::stringToGridType(const std::string& gridType) {
     return sgpp::base::GridType::NotAKnotBsplineBoundary;
   } else if (gridType.compare("modNotaknotBspline") == 0) {
     return sgpp::base::GridType::ModNotAKnotBspline;
-  } else if (gridType.compare("lagrangeSplineBoundary") == 0) {
-    return sgpp::base::GridType::LagrangeSplineBoundary;
-  } else if (gridType.compare("lagrangeNotaknotSplineBoundary") == 0) {
-    return sgpp::base::GridType::LagrangeNotAKnotSplineBoundary;
-  } else if (gridType.compare("modLagrangeNotaknotSpline") == 0) {
-    return sgpp::base::GridType::ModLagrangeNotAKnotSpline;
+  } else if (gridType.compare("weaklyFundamentalSplineBoundary") == 0) {
+    return sgpp::base::GridType::WeaklyFundamentalSplineBoundary;
+  } else if (gridType.compare("weaklyFundamentalNotaknotSplineBoundary") == 0) {
+    return sgpp::base::GridType::WeaklyFundamentalNotAKnotSplineBoundary;
+  } else if (gridType.compare("modWeaklyFundamentalNotaknotSpline") == 0) {
+    return sgpp::base::GridType::ModWeaklyFundamentalNotAKnotSpline;
   } else if (gridType.compare("fundamentalSplineBoundary") == 0) {
     return sgpp::base::GridType::FundamentalSplineBoundary;
   } else if (gridType.compare("fundamentalNotAKnotSplineBoundary") == 0) {

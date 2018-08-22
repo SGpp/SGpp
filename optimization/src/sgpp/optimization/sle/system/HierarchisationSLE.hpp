@@ -20,9 +20,9 @@
 #include <sgpp/base/operation/hash/common/basis/FundamentalNotAKnotSplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/FundamentalSplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/FundamentalSplineModifiedBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/LagrangeNotAKnotSplineModifiedBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/LagrangeSplineBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/WeaklyFundamentalNotAKnotSplineBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/WeaklyFundamentalNotAKnotSplineModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/WeaklyFundamentalSplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
@@ -42,15 +42,15 @@
 #include <sgpp/base/grid/type/FundamentalNotAKnotSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/LagrangeNotAKnotSplineBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/LagrangeSplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/WeaklyFundamentalNotAKnotSplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/WeaklyFundamentalSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
 #include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
-#include <sgpp/base/grid/type/ModLagrangeNotAKnotSplineGrid.hpp>
+#include <sgpp/base/grid/type/ModWeaklyFundamentalNotAKnotSplineGrid.hpp>
 #include <sgpp/base/grid/type/ModNotAKnotBsplineGrid.hpp>
 #include <sgpp/base/grid/type/NaturalBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NotAKnotBsplineBoundaryGrid.hpp>
@@ -132,22 +132,22 @@ class HierarchisationSLE : public CloneableSLE {
           new base::SFundamentalSplineModifiedBase(
               dynamic_cast<base::ModFundamentalSplineGrid&>(grid).getDegree()));
       basisType = FUNDAMENTAL_SPLINE_MODIFIED;
-    } else if (grid.getType() == base::GridType::LagrangeNotAKnotSplineBoundary) {
-      lagrangeNotAKnotSplineBasis =
-          std::unique_ptr<base::SLagrangeNotAKnotSplineBase>(new base::SLagrangeNotAKnotSplineBase(
-              dynamic_cast<base::LagrangeNotAKnotSplineBoundaryGrid&>(grid).getDegree()));
-      basisType = LAGRANGE_NOTAKNOT_SPLINE;
-    } else if (grid.getType() == base::GridType::ModLagrangeNotAKnotSpline) {
-      modLagrangeNotAKnotSplineBasis =
-          std::unique_ptr<base::SLagrangeNotAKnotSplineModifiedBase>(
-              new base::SLagrangeNotAKnotSplineModifiedBase(
-              dynamic_cast<base::ModLagrangeNotAKnotSplineGrid&>(grid).getDegree()));
-      basisType = LAGRANGE_NOTAKNOT_SPLINE_MODIFIED;
-    } else if (grid.getType() == base::GridType::LagrangeSplineBoundary) {
-      lagrangeSplineBasis =
-          std::unique_ptr<base::SLagrangeSplineBase>(new base::SLagrangeSplineBase(
-              dynamic_cast<base::LagrangeSplineBoundaryGrid&>(grid).getDegree()));
-      basisType = LAGRANGE_SPLINE;
+    } else if (grid.getType() == base::GridType::WeaklyFundamentalNotAKnotSplineBoundary) {
+      weaklyFundamentalNotAKnotSplineBasis =
+          std::unique_ptr<base::SWeaklyFundamentalNotAKnotSplineBase>(new base::SWeaklyFundamentalNotAKnotSplineBase(
+              dynamic_cast<base::WeaklyFundamentalNotAKnotSplineBoundaryGrid&>(grid).getDegree()));
+      basisType = WEAKLY_FUNDAMENTAL_NOTAKNOT_SPLINE;
+    } else if (grid.getType() == base::GridType::ModWeaklyFundamentalNotAKnotSpline) {
+      modWeaklyFundamentalNotAKnotSplineBasis =
+          std::unique_ptr<base::SWeaklyFundamentalNotAKnotSplineModifiedBase>(
+              new base::SWeaklyFundamentalNotAKnotSplineModifiedBase(
+              dynamic_cast<base::ModWeaklyFundamentalNotAKnotSplineGrid&>(grid).getDegree()));
+      basisType = WEAKLY_FUNDAMENTAL_NOTAKNOT_SPLINE_MODIFIED;
+    } else if (grid.getType() == base::GridType::WeaklyFundamentalSplineBoundary) {
+      weaklyFundamentalSplineBasis =
+          std::unique_ptr<base::SWeaklyFundamentalSplineBase>(new base::SWeaklyFundamentalSplineBase(
+              dynamic_cast<base::WeaklyFundamentalSplineBoundaryGrid&>(grid).getDegree()));
+      basisType = WEAKLY_FUNDAMENTAL_SPLINE;
     } else if (grid.getType() == base::GridType::Linear) {
       linearBasis = std::unique_ptr<base::SLinearBase>(new base::SLinearBase());
       basisType = LINEAR;
@@ -263,12 +263,12 @@ class HierarchisationSLE : public CloneableSLE {
   std::unique_ptr<base::SFundamentalSplineBase> fundamentalSplineBasis;
   /// modified fundamental spline basis
   std::unique_ptr<base::SFundamentalSplineModifiedBase> modFundamentalSplineBasis;
-  /// Lagrange not-a-knot spline basis
-  std::unique_ptr<base::SLagrangeNotAKnotSplineBase> lagrangeNotAKnotSplineBasis;
-  /// modified Lagrange not-a-knot spline basis
-  std::unique_ptr<base::SLagrangeNotAKnotSplineModifiedBase> modLagrangeNotAKnotSplineBasis;
-  /// Lagrange spline basis
-  std::unique_ptr<base::SLagrangeSplineBase> lagrangeSplineBasis;
+  /// weakly fundamental not-a-knot spline basis
+  std::unique_ptr<base::SWeaklyFundamentalNotAKnotSplineBase> weaklyFundamentalNotAKnotSplineBasis;
+  /// modified weakly fundamental not-a-knot spline basis
+  std::unique_ptr<base::SWeaklyFundamentalNotAKnotSplineModifiedBase> modWeaklyFundamentalNotAKnotSplineBasis;
+  /// weakly fundamental spline basis
+  std::unique_ptr<base::SWeaklyFundamentalSplineBase> weaklyFundamentalSplineBasis;
   /// linear basis
   std::unique_ptr<base::SLinearBase> linearBasis;
   /// linear boundary basis
@@ -305,9 +305,9 @@ class HierarchisationSLE : public CloneableSLE {
     FUNDAMENTAL_NOTAKNOT_SPLINE,
     FUNDAMENTAL_SPLINE,
     FUNDAMENTAL_SPLINE_MODIFIED,
-    LAGRANGE_NOTAKNOT_SPLINE,
-    LAGRANGE_NOTAKNOT_SPLINE_MODIFIED,
-    LAGRANGE_SPLINE,
+    WEAKLY_FUNDAMENTAL_NOTAKNOT_SPLINE,
+    WEAKLY_FUNDAMENTAL_NOTAKNOT_SPLINE_MODIFIED,
+    WEAKLY_FUNDAMENTAL_SPLINE,
     LINEAR,
     LINEAR_BOUNDARY,
     LINEAR_CLENSHAW_CURTIS,
@@ -345,12 +345,12 @@ class HierarchisationSLE : public CloneableSLE {
       return evalFundamentalSplineFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == FUNDAMENTAL_SPLINE_MODIFIED) {
       return evalFundamentalSplineModifiedFunctionAtGridPoint(basisI, pointJ);
-    } else if (basisType == LAGRANGE_NOTAKNOT_SPLINE) {
-      return evalLagrangeNotAKnotSplineFunctionAtGridPoint(basisI, pointJ);
-    } else if (basisType == LAGRANGE_NOTAKNOT_SPLINE_MODIFIED) {
-      return evalLagrangeNotAKnotSplineModifiedFunctionAtGridPoint(basisI, pointJ);
-    } else if (basisType == LAGRANGE_SPLINE) {
-      return evalLagrangeSplineFunctionAtGridPoint(basisI, pointJ);
+    } else if (basisType == WEAKLY_FUNDAMENTAL_NOTAKNOT_SPLINE) {
+      return evalWeaklyFundamentalNotAKnotSplineFunctionAtGridPoint(basisI, pointJ);
+    } else if (basisType == WEAKLY_FUNDAMENTAL_NOTAKNOT_SPLINE_MODIFIED) {
+      return evalWeaklyFundamentalNotAKnotSplineModifiedFunctionAtGridPoint(basisI, pointJ);
+    } else if (basisType == WEAKLY_FUNDAMENTAL_SPLINE) {
+      return evalWeaklyFundamentalSplineFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == LINEAR) {
       return evalLinearFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == LINEAR_BOUNDARY) {
@@ -607,10 +607,10 @@ class HierarchisationSLE : public CloneableSLE {
   /**
    * @param basisI    basis function index
    * @param pointJ    grid point index
-   * @return          value of the basisI-th Lagrange not-a-knot spline basis
+   * @return          value of the basisI-th weakly fundamental not-a-knot spline basis
    *                  function at the pointJ-th grid point
    */
-  inline double evalLagrangeNotAKnotSplineFunctionAtGridPoint(size_t basisI, size_t pointJ) {
+  inline double evalWeaklyFundamentalNotAKnotSplineFunctionAtGridPoint(size_t basisI, size_t pointJ) {
     const base::GridPoint& gpBasis = gridStorage[basisI];
     const base::GridPoint& gpPoint = gridStorage[pointJ];
     double result = 1.0;
@@ -619,7 +619,7 @@ class HierarchisationSLE : public CloneableSLE {
       if (gpPoint.getLevel(t) < gpBasis.getLevel(t)) {
         return 0.0;
       } else {
-        const double result1d = lagrangeNotAKnotSplineBasis->eval(
+        const double result1d = weaklyFundamentalNotAKnotSplineBasis->eval(
             gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getUnitCoordinate(gpPoint, t));
 
         if (result1d == 0.0) {
@@ -636,10 +636,10 @@ class HierarchisationSLE : public CloneableSLE {
   /**
    * @param basisI    basis function index
    * @param pointJ    grid point index
-   * @return          value of the basisI-th modified Lagrange not-a-knot spline basis
+   * @return          value of the basisI-th modified weakly fundamental not-a-knot spline basis
    *                  function at the pointJ-th grid point
    */
-  inline double evalLagrangeNotAKnotSplineModifiedFunctionAtGridPoint(
+  inline double evalWeaklyFundamentalNotAKnotSplineModifiedFunctionAtGridPoint(
       size_t basisI, size_t pointJ) {
     const base::GridPoint& gpBasis = gridStorage[basisI];
     const base::GridPoint& gpPoint = gridStorage[pointJ];
@@ -649,7 +649,7 @@ class HierarchisationSLE : public CloneableSLE {
       if (gpPoint.getLevel(t) < gpBasis.getLevel(t)) {
         return 0.0;
       } else {
-        const double result1d = modLagrangeNotAKnotSplineBasis->eval(
+        const double result1d = modWeaklyFundamentalNotAKnotSplineBasis->eval(
             gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getUnitCoordinate(gpPoint, t));
 
         if (result1d == 0.0) {
@@ -666,10 +666,10 @@ class HierarchisationSLE : public CloneableSLE {
   /**
    * @param basisI    basis function index
    * @param pointJ    grid point index
-   * @return          value of the basisI-th Lagrange spline basis
+   * @return          value of the basisI-th weakly fundamental spline basis
    *                  function at the pointJ-th grid point
    */
-  inline double evalLagrangeSplineFunctionAtGridPoint(size_t basisI, size_t pointJ) {
+  inline double evalWeaklyFundamentalSplineFunctionAtGridPoint(size_t basisI, size_t pointJ) {
     const base::GridPoint& gpBasis = gridStorage[basisI];
     const base::GridPoint& gpPoint = gridStorage[pointJ];
     double result = 1.0;
@@ -678,7 +678,7 @@ class HierarchisationSLE : public CloneableSLE {
       if (gpPoint.getLevel(t) < gpBasis.getLevel(t)) {
         return 0.0;
       } else {
-        const double result1d = lagrangeSplineBasis->eval(
+        const double result1d = weaklyFundamentalSplineBasis->eval(
             gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getUnitCoordinate(gpPoint, t));
 
         if (result1d == 0.0) {

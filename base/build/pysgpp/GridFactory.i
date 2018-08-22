@@ -43,9 +43,9 @@
 %newobject sgpp::base::Grid::createNaturalBsplineBoundaryGrid(size_t dim, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createNotAKnotBsplineBoundaryGrid(size_t dim, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createModNotAKnotBsplineGrid(size_t dim);
-%newobject sgpp::base::Grid::createLagrangeSplineBoundaryGrid(size_t dim, size_t boundaryLevel);
-%newobject sgpp::base::Grid::createLagrangeNotAKnotSplineBoundaryGrid(size_t dim, size_t boundaryLevel);
-%newobject sgpp::base::Grid::createModLagrangeNotAKnotSplineGrid(size_t dim);
+%newobject sgpp::base::Grid::createWeaklyFundamentalSplineBoundaryGrid(size_t dim, size_t boundaryLevel);
+%newobject sgpp::base::Grid::createWeaklyFundamentalNotAKnotSplineBoundaryGrid(size_t dim, size_t boundaryLevel);
+%newobject sgpp::base::Grid::createModWeaklyFundamentalNotAKnotSplineGrid(size_t dim);
 %newobject sgpp::base::Grid::createFundamentalSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createFundamentalNotAKnotSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
 
@@ -131,9 +131,9 @@ enum class GridType {
   NaturalBsplineBoundary,             // 32
   NotAKnotBsplineBoundary,            // 33
   ModNotAKnotBspline,                 // 34
-  LagrangeSplineBoundary,             // 35
-  LagrangeNotAKnotSplineBoundary,     // 36
-  ModLagrangeNotAKnotSpline,          // 37
+  WeaklyFundamentalSplineBoundary,             // 35
+  WeaklyFundamentalNotAKnotSplineBoundary,     // 36
+  ModWeaklyFundamentalNotAKnotSpline,          // 37
   FundamentalSplineBoundary,          // 38
   FundamentalNotAKnotSplineBoundary,  // 39
 };
@@ -179,8 +179,8 @@ public:
   static Grid* createNaturalBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
   static Grid* createNotAKnotBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
   static Grid* createModNotAKnotBsplineGrid(size_t dim, size_t degree);
-  static Grid* createLagrangeSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
-  static Grid* createLagrangeNotAKnotSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
+  static Grid* createWeaklyFundamentalSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
+  static Grid* createWeaklyFundamentalNotAKnotSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
   static Grid* createFundamentalSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
   static Grid* createFundamentalNotAKnotSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
 	

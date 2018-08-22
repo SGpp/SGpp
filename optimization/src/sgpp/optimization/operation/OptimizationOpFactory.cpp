@@ -43,9 +43,9 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationFundamentalSpline.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationFundamentalSplineBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModFundamentalSpline.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLagrangeNotAKnotSplineBoundary.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLagrangeSplineBoundary.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModLagrangeNotAKnotSpline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWeaklyFundamentalNotAKnotSplineBoundary.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWeaklyFundamentalSplineBoundary.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWeaklyFundamentalNotAKnotSpline.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModNotAKnotBspline.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationNaturalBsplineBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationNotAKnotBsplineBoundary.hpp>
@@ -108,15 +108,15 @@ optimization::OperationMultipleHierarchisation* createOperationMultipleHierarchi
   } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
     return new optimization::OperationMultipleHierarchisationModFundamentalSpline(
         dynamic_cast<base::ModFundamentalSplineGrid&>(grid));
-  } else if (grid.getType() == base::GridType::LagrangeNotAKnotSplineBoundary) {
-    return new optimization::OperationMultipleHierarchisationLagrangeNotAKnotSplineBoundary(
-        dynamic_cast<base::LagrangeNotAKnotSplineBoundaryGrid&>(grid));
-  } else if (grid.getType() == base::GridType::LagrangeSplineBoundary) {
-    return new optimization::OperationMultipleHierarchisationLagrangeSplineBoundary(
-        dynamic_cast<base::LagrangeSplineBoundaryGrid&>(grid));
-  } else if (grid.getType() == base::GridType::ModLagrangeNotAKnotSpline) {
-    return new optimization::OperationMultipleHierarchisationModLagrangeNotAKnotSpline(
-        dynamic_cast<base::ModLagrangeNotAKnotSplineGrid&>(grid));
+  } else if (grid.getType() == base::GridType::WeaklyFundamentalNotAKnotSplineBoundary) {
+    return new optimization::OperationMultipleHierarchisationWeaklyFundamentalNotAKnotSplineBoundary(
+        dynamic_cast<base::WeaklyFundamentalNotAKnotSplineBoundaryGrid&>(grid));
+  } else if (grid.getType() == base::GridType::WeaklyFundamentalSplineBoundary) {
+    return new optimization::OperationMultipleHierarchisationWeaklyFundamentalSplineBoundary(
+        dynamic_cast<base::WeaklyFundamentalSplineBoundaryGrid&>(grid));
+  } else if (grid.getType() == base::GridType::ModWeaklyFundamentalNotAKnotSpline) {
+    return new optimization::OperationMultipleHierarchisationModWeaklyFundamentalNotAKnotSpline(
+        dynamic_cast<base::ModWeaklyFundamentalNotAKnotSplineGrid&>(grid));
   } else if (grid.getType() == base::GridType::ModNotAKnotBspline) {
     return new optimization::OperationMultipleHierarchisationModNotAKnotBspline(
         dynamic_cast<base::ModNotAKnotBsplineGrid&>(grid));
