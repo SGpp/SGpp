@@ -1217,7 +1217,8 @@ def solve(trainSamples, gridType, level, lmbd, solver="cvxopt"):
 
 if __name__ == "__main__":
     # parse the input arguments
-    parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
+    parser = ArgumentParser(description='Get a program and run it with input')
+    parser.add_argument('--version', action='version', version='%(prog)s 1.0')
     parser.add_argument('--numDims', default=2, type=int, help="dimensionality")
     parser.add_argument('--gridType', default="linear", type=str, help="define which sparse grid should be used (poly, polyClenshawcCurtis, polyBoundary, modPoly, modPolyClenshawCurtis, ...)")
     parser.add_argument('--level', default=3, type=int, help="level of regular sparse grid")
