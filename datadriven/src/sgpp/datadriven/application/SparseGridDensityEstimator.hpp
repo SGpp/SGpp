@@ -72,7 +72,7 @@ class SparseGridDensityEstimatorConfiguration : public json::JSON {
 
  private:
   sgpp::base::RegularGridConfiguration gridConfig;
-  sgpp::base::AdpativityConfiguration adaptivityConfig;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
   sgpp::solver::SLESolverConfiguration solverConfig;
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
   sgpp::datadriven::CrossvalidationForRegularizationConfiguration crossvalidationConfig;
@@ -92,7 +92,7 @@ class SparseGridDensityEstimator : public datadriven::DensityEstimator {
    * @param sgdeConfig configuration for the sparse grid density estimation
    */
   SparseGridDensityEstimator(sgpp::base::RegularGridConfiguration& gridConfig,
-                             sgpp::base::AdpativityConfiguration& adaptivityConfig,
+                             sgpp::base::AdaptivityConfiguration& adaptivityConfig,
                              sgpp::solver::SLESolverConfiguration& solverConfig,
                              sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
                              CrossvalidationForRegularizationConfiguration& crossvalidationConfig,
@@ -280,7 +280,7 @@ class SparseGridDensityEstimator : public datadriven::DensityEstimator {
   std::shared_ptr<base::DataMatrix> samples;
 
   sgpp::base::RegularGridConfiguration gridConfig;
-  sgpp::base::AdpativityConfiguration adaptivityConfig;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
   sgpp::solver::SLESolverConfiguration solverConfig;
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
   CrossvalidationForRegularizationConfiguration crossvalidationConfig;

@@ -35,7 +35,7 @@ std::string fileName = "friedman2_4d_300000.arff";
 //  std::string fileName = "DR5_train.arff";
 //  std::string fileName = "debugging_small.arff";
 
-sgpp::base::AdpativityConfiguration adaptConfig;
+sgpp::base::AdaptivityConfiguration adaptConfig;
 std::unique_ptr<sgpp::base::Grid> grid(nullptr);
 sgpp::base::DataMatrix trainingData;
 sgpp::base::DataVector alpha;

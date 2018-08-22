@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteOrthoAdapt) {
   gridConfig.level_ = 3;
   gridConfig.type_ = sgpp::base::GridType::Linear;
 
-  sgpp::base::AdpativityConfiguration adaptivityConfig;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
 
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
   regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteCholesky) {
   gridConfig.level_ = 3;
   gridConfig.type_ = sgpp::base::GridType::Linear;
 
-  sgpp::base::AdpativityConfiguration adaptivityConfig;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
 
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
   regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteEigen) {
   gridConfig.level_ = 3;
   gridConfig.type_ = sgpp::base::GridType::Linear;
 
-  sgpp::base::AdpativityConfiguration adaptivityConfig;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
 
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
   regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
@@ -212,7 +212,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteLU) {
   gridConfig.level_ = 3;
   gridConfig.type_ = sgpp::base::GridType::Linear;
 
-  sgpp::base::AdpativityConfiguration adaptivityConfig;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
 
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
   regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
