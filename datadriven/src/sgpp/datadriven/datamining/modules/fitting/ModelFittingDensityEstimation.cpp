@@ -33,7 +33,7 @@ namespace datadriven {
 ModelFittingDensityEstimation::ModelFittingDensityEstimation() : refinementsPerformed{0} {}
 
 RefinementFunctor *ModelFittingDensityEstimation::getRefinementFunctor() {
-  sgpp::base::AdpativityConfiguration& refinementConfig = this->config->getRefinementConfig();
+  sgpp::base::AdaptivityConfiguration& refinementConfig = this->config->getRefinementConfig();
   switch (refinementConfig.refinementFunctorType) {
     case RefinementFunctorType::Surplus : {
       return new SurplusRefinementFunctor(alpha, config->getRefinementConfig().noPoints_,

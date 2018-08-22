@@ -51,7 +51,7 @@ int main() {
    * Next the refinement and coarsening behaviour of the sparse grid is defined. In this example
    * the default values are used.
    */
-  sgpp::base::AdpativityConfiguration adaptivityConfig;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
 
   /**
    * Also the regularization must be specified, namely the type of the regularization operator

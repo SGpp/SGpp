@@ -142,7 +142,7 @@ size_t ModelFittingClassification::labelToIdx(double label) {
 
 MultiGridRefinementFunctor *ModelFittingClassification::getRefinementFunctor(
     std::vector<Grid*> grids, std::vector<DataVector*> surpluses) {
-  sgpp::base::AdpativityConfiguration& refinementConfig = this->config->getRefinementConfig();
+  sgpp::base::AdaptivityConfiguration& refinementConfig = this->config->getRefinementConfig();
   switch (refinementConfig.refinementFunctorType) {
     case RefinementFunctorType::Surplus : {
       return new MultiSurplusRefinementFunctor(grids, surpluses, refinementConfig.noPoints_,
@@ -188,7 +188,7 @@ MultiGridRefinementFunctor *ModelFittingClassification::getRefinementFunctor(
 }
 
 bool ModelFittingClassification::refine() {
-  sgpp::base::AdpativityConfiguration& refinementConfig = this->config->getRefinementConfig();
+  sgpp::base::AdaptivityConfiguration& refinementConfig = this->config->getRefinementConfig();
   if (refinementsPerformed < refinementConfig.numRefinements_) {
     // Assemble grids and alphas
     std::vector<Grid*> grids;

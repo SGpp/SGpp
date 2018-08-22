@@ -140,7 +140,7 @@ int main() {
        * Specify number of refinement steps and the max number
        * of grid points to refine each step.
        */
-      sgpp::base::AdpativityConfiguration adaptConfig;
+      sgpp::base::AdaptivityConfiguration adaptConfig;
       adaptConfig.numRefinements_ = 2;
       adaptConfig.noPoints_ = 7;
       adaptConfig.threshold_ = 0.0;  // only required for surplus refinement

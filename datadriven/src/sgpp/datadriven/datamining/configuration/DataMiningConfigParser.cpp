@@ -225,7 +225,7 @@ bool DataMiningConfigParser::getFitterGridConfig(RegularGridConfiguration &confi
 }
 
 bool DataMiningConfigParser::getFitterAdaptivityConfig(
-    AdpativityConfiguration &config, const AdpativityConfiguration &defaults) const {
+    AdaptivityConfiguration &config, const AdaptivityConfiguration &defaults) const {
   bool hasFitterAdaptivityConfig =
       hasFitterConfig() ? (*configFile)[fitter].contains("adaptivityConfig") : false;
 
