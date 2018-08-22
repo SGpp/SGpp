@@ -25,20 +25,13 @@ namespace datadriven {
 class FileSampleProvider : public SampleProvider {
  public:
   /**
-   * Returns the total amount of samples available in the file. Only works after calling #readFile
-   * or #readString.
-   * @return the total amount of samples available in the file.
-   */
-  virtual size_t getNumSamples() const = 0;
-
-  /**
    * Read the contents of the file at the given path. Has to throw an exception if file can not be
    * opened or parsed. Results of parsing can be optained via #sgpp::datadriven::SampleProvider
    * member functions.
    * @param filePath valid path to an existing file.
    * @param hasTargets whether the file has targets (i.e. supervised learning)
    */
-  virtual void readFile(const std::string& filePath, bool hasTargets) = 0;
+  virtual void readFile(const std::string &filePath, bool hasTargets) = 0;
 
   /**
    * Read the contents of a string, for example a deflated archive. Has to throw an exception if
@@ -47,8 +40,7 @@ class FileSampleProvider : public SampleProvider {
    * @param input the raw string input to parse
    * @param hasTargets whether the file has targest (i.e. supervised learning)
    */
-  virtual void readString(const std::string& input, bool hasTargets) = 0;
+  virtual void readString(const std::string &input, bool hasTargets) = 0;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

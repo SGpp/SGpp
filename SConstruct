@@ -69,7 +69,19 @@ Helper.printInfo("Available language support: {}".format(", ".join(languageSuppo
 # Define and read variables
 #########################################################################
 
-vars = Variables("custom.py")
+AddOption('--configfile',
+          dest='configfile',
+          type='string',
+          nargs=1,
+          action='store',
+          help='specify custom options input file (see custom.py in scons documentation)')
+input_file = GetOption('configfile')
+
+if input_file:
+  vars = Variables(input_file)
+else:
+  vars = Variables("custom.py")
+
 
 # define the flags
 vars.Add("CPPFLAGS", "Set additional compiler flags, they are compiler-dependent " +

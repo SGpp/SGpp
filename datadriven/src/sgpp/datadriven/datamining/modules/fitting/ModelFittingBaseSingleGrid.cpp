@@ -22,7 +22,7 @@ using base::application_exception;
 ModelFittingBaseSingleGrid::ModelFittingBaseSingleGrid()
     : ModelFittingBase(), grid{nullptr}, alpha{} {}
 
-const Grid& ModelFittingBaseSingleGrid::getGrid() const {
+Grid& ModelFittingBaseSingleGrid::getGrid() {
   if (grid != nullptr) {
     return *grid;
   } else {
@@ -30,6 +30,6 @@ const Grid& ModelFittingBaseSingleGrid::getGrid() const {
   }
 }
 
-const DataVector& ModelFittingBaseSingleGrid::getSurpluses() const { return alpha; }
+DataVector& ModelFittingBaseSingleGrid::getSurpluses() { return alpha; }
 } /* namespace datadriven */
 } /* namespace sgpp */

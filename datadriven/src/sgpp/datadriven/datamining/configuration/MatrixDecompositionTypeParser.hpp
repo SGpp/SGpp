@@ -29,14 +29,14 @@ class MatrixDecompositionTypeParser {
    * #sgpp::datadriven::MatrixDecompositionType.
    * @return the corresponding #sgpp::datadriven::MatrixDecompositionType.
    */
-  static MatrixDecompositionType parse(const std::string& input);
+  static MatrixDecompositionType parse(const std::string &input);
 
   /**
    * generate string representations for values of #sgpp::datadriven::MatrixDecompositionType.
    * @param type enum value.
    * @return string representation of a #sgpp::datadriven::MatrixDecompositionType.
    */
-  static const std::string& toString(MatrixDecompositionType type);
+  static const std::string &toString(MatrixDecompositionType type);
 
  private:
   typedef std::map<MatrixDecompositionType, std::string> MatrixDecompositionTypeMap_t;
@@ -47,6 +47,5 @@ class MatrixDecompositionTypeParser {
    */
   static const MatrixDecompositionTypeMap_t matrixDecompositionTypeMap;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

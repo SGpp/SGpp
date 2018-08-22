@@ -21,7 +21,7 @@ namespace datadriven {
 
 using sgpp::base::data_exception;
 
-MatrixDecompositionType MatrixDecompositionTypeParser::parse(const std::string& input) {
+MatrixDecompositionType MatrixDecompositionTypeParser::parse(const std::string &input) {
   auto inputLower = input;
   std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
 
@@ -37,17 +37,17 @@ MatrixDecompositionType MatrixDecompositionTypeParser::parse(const std::string& 
     return sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
   } else {
     std::string errorMsg = "Failed to convert string \"" + input + "\" to any "
-    "known MatrixDecompositionType";
+        "known MatrixDecompositionType";
     throw data_exception(errorMsg.c_str());
   }
 }
 
-const std::string& MatrixDecompositionTypeParser::toString(MatrixDecompositionType type) {
-    return matrixDecompositionTypeMap.at(type);
+const std::string &MatrixDecompositionTypeParser::toString(MatrixDecompositionType type) {
+  return matrixDecompositionTypeMap.at(type);
 }
 
 const MatrixDecompositionTypeParser::MatrixDecompositionTypeMap_t
-MatrixDecompositionTypeParser::matrixDecompositionTypeMap = []() {
+    MatrixDecompositionTypeParser::matrixDecompositionTypeMap = []() {
   return MatrixDecompositionTypeMap_t{
       std::make_pair(MatrixDecompositionType::LU, "LU"),
       std::make_pair(MatrixDecompositionType::Eigen, "Eigen"),
@@ -55,6 +55,5 @@ MatrixDecompositionTypeParser::matrixDecompositionTypeMap = []() {
       std::make_pair(MatrixDecompositionType::DenseIchol, "DenseIchol"),
       std::make_pair(MatrixDecompositionType::OrthoAdapt, "OrthoAdapt")};
 }();
-
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -9,7 +9,6 @@
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
-#include <sgpp/datadriven/algorithm/ConvergenceMonitor.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
@@ -31,6 +30,7 @@
 #include <utility>
 #include <list>
 #include <numeric>
+#include "../../algorithm/RefinementMonitorConvergence.hpp"
 
 using sgpp::base::Grid;
 using sgpp::base::GridStorage;
@@ -84,8 +84,7 @@ void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPas
                                              std::string refinementFunctorType,
                                              std::string refMonitor,
                                              size_t refPeriod, double accDeclineThreshold,
-                                             size_t accDeclineBufferSize, size_t minRefInterval,
-                                             bool enableCv, size_t nextCvStep) {
+                                             size_t accDeclineBufferSize, size_t minRefInterval) {
   if (!MPIMethods::isMaster()) {
     while (workerActive || MPIMethods::hasPendingOutgoingRequests()) {
       D(std::cout << "Client looping" << std::endl;)
@@ -115,7 +114,7 @@ void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPas
   double currentValidError = 0.0;
   double currentTrainError = 0.0;
   // create convergence monitor object
-  ConvergenceMonitor monitor{accDeclineThreshold, accDeclineBufferSize, minRefInterval};
+  RefinementMonitorConvergence monitor{accDeclineThreshold, accDeclineBufferSize, minRefInterval};
 
   // counts number of performed refinements
   size_t numberOfCompletedRefinements = 0;
@@ -144,16 +143,8 @@ void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPas
       D(std::cout << "#processing batch: " << processedPoints << "\n";
             auto begin = std::chrono::high_resolution_clock::now();)
 
-      // check if cross-validation should be performed
-      bool doCrossValidation = false;
-      if (enableCv) {
-        if (nextCvStep == processedPoints) {
-          doCrossValidation = true;
-          nextCvStep *= 5;
-        }
-      }
-
-      processedPoints += assignBatchToWorker(processedPoints, doCrossValidation);
+      size_t batchSize = assignBatchToWorker(processedPoints, false);
+      processedPoints += batchSize;
 
       std::cout << processedPoints << " have already been assigned." << std::endl;
 
@@ -162,12 +153,14 @@ void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPas
 
       D(std::cout << "Checking if refinement is necessary." << std::endl;)
       // check if refinement should be performed
-      if (refinementHandler.checkRefinementNecessary(refMonitor, refPeriod, processedPoints,
-                                                     currentValidError,
-                                                     currentTrainError,
-                                                     numberOfCompletedRefinements,
-                                                     monitor,
-                                                     adaptivityConfig)) {
+      size_t refinementsNecessary = refinementHandler.checkRefinementNecessary(
+          refMonitor, refPeriod, batchSize,
+          currentValidError,
+          currentTrainError,
+          numberOfCompletedRefinements,
+          monitor,
+          adaptivityConfig);
+      while (refinementsNecessary > 0) {
         while (!refinementHandler.checkReadyForRefinement()) {
           D(std::cout << "Waiting for " << MPIMethods::getQueueSize()
                       << " queue operations to complete before continuing" << std::endl;)
@@ -183,14 +176,13 @@ void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPas
 
         doRefinementForAll(refinementFunctorType, refMonitor, onlineObjects, monitor);
         numberOfCompletedRefinements += 1;
+        refinementsNecessary--;
         D(std::cout << "Refinement at " << processedPoints << " complete" << std::endl;)
 
         // Send the grid component update
         // Note: This was moved to updateClassVariablesAfterRefinement
         // as it needs to run before the system matrix update
 //        MPIMethods::sendGridComponentsUpdate(vectorRefinementResults);
-      } else {
-        D(std::cout << "No refinement necessary" << std::endl;)
       }
 
       D(
@@ -234,7 +226,7 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(
     const std::string &refinementFunctorType,
     const std::string &refinementMonitorType,
     const ClassDensityContainer &onlineObjects,
-    ConvergenceMonitor &monitor) {
+    RefinementMonitor &monitor) {
   // acc = getAccuracy();
   // avgErrors.append(1.0 - acc);
 
@@ -283,9 +275,6 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(
                                            *(grids[classIndex]),
                                            *(alphas[classIndex]),
                                            preCompute, func, classIndex, adaptivityConfig);
-  }
-  if (refinementMonitorType == "convergence") {
-    monitor.nextRefCnt = monitor.minRefInterval;
   }
 
   // Wait for all new system matrix decompositions to come back
@@ -339,7 +328,7 @@ LearnerSGDEOnOffParallel::computeNewSystemMatrixDecomposition(
                                                *(grids[classIndex]),
                                                refinementResult.addedGridPoints.size(),
                                                refinementResult.deletedGridPointsIndices,
-                                               densEst->getBestLambda());
+                                               regularizationConfig.lambda_);
 
   setLocalGridVersion(classIndex, gridVersion);
   D(std::cout << "Send system matrix update to master for class " << classIndex << std::endl;)

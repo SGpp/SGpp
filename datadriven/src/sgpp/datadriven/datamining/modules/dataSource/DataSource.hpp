@@ -38,6 +38,8 @@ class DataSource {
    */
   DataSource(DataSourceConfig config, SampleProvider* sampleProvider);
 
+  virtual ~DataSource() = default;
+
   /**
    * Read only access to the configuration used by DataSource and underlying SampleProvider.
    * @return Current configuration object.
@@ -49,7 +51,7 @@ class DataSource {
    * object upon construction.
    * @return #sgpp::datadriven::Dataset containing requested amount of samples (if available).
    */
-  Dataset* getNextSamples();
+  virtual Dataset* getNextSamples();
 
   /**
    * Return an iterator object pointing to the first batch of this DataSource. Can be used to obtain
@@ -73,7 +75,13 @@ class DataSource {
    */
   size_t getCurrentIteration() const;
 
- private:
+  /**
+   * Returns the data that is used for validation
+   * @return pointer to the validation dataset
+   */
+  virtual Dataset *getValidationData() = 0;
+
+ protected:
   /**
    * Configuration file that determines all relevant properties of the object.
    */

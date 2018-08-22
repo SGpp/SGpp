@@ -14,46 +14,49 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
+#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
+
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
 
-#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
-#include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
-#include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
-#include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
-#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
-
-using sgpp::base::DataMatrix;
-using sgpp::base::Grid;
-using sgpp::base::DataVector;
+#include <list>
 
 namespace sgpp {
 namespace datadriven {
 
-// TODO(lettrich): allow different refinement techniques.
 /**
- * Fitter object that encapsulates the usage of sparse grid density estimation with identity as
- * regularization.
- *
- * Allows usage of different grids, different solvers and different regularization techniques based
- * on the provided configuration objects.
+ * Abstract super class to encapsulate density estimation models such as using offline/-online
+ * splitting or conjugate gradients in order to solve the system.
  */
 class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
  public:
   /**
-   * Constructor
-   *
-   * @param config configuration object that specifies grid, refinement, and regularization
+   * Default constructor
    */
-  explicit ModelFittingDensityEstimation(const FitterConfigurationDensityEstimation& config);
+  ModelFittingDensityEstimation();
 
   /**
-   * Fit the grid to the given dataset by determining the weights of the initial grid by the
-   * SGDE approach.
+   * Fit the grid to the given dataset by determining the surpluses of the initial grid by the
+   * SGDE approach. Requires only data samples and no targets (since those are irrelevant for the
+   * density estimation whatsoever)
    * @param dataset the training dataset that is used to fit the model.
    */
-  void fit(Dataset& dataset) override;
+  virtual void fit(DataMatrix& dataset) = 0;
+
+  /**
+   * Updates the model based on new data samples (streaming, batch learning). Requires only
+   * the data samples and no targets (since those are irrelevant for the density estimation
+   * whatsoever)
+   * @param samples the new data samples
+   */
+  virtual void update(DataMatrix& samples) = 0;
+
+  /**
+   * Performs a refinement given the new grid size and the points to coarsened
+   * @param newNoPoints the grid size after refinement and coarsening
+   * @param deletedGridPoints a list of indexes for grid points that will be removed
+   * @return if the grid was refined (true)
+   */
+  virtual bool refine(size_t newNoPoints, std::list<size_t> *deletedGridPoints) = 0;
 
   /**
    * Improve accuracy of the fit on the given training data by adaptive refinement of the grid and
@@ -63,40 +66,24 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
    */
   bool refine() override;
 
-  void update(Dataset& dataset) override;
-
   /**
-   * Evaluate the fitted density at a single data point - requires a trained grid.
-   * @param sample vector with the coordinates in all dimensions of that sample.
-   * @return evaluation of the trained grid.
+   * Returns the refinement functor suitable for the model settings.
+   * @return pointer to a refinement functor that suits the model settings
    */
-  double evaluate(const DataVector& sample) override;
+  sgpp::base::RefinementFunctor *getRefinementFunctor();
 
-  /**
-   * Evaluate the fitted density on a set of data points - requires a trained grid.
-   * @param samples matrix where each row represents a sample and the columns contain the
-   * coordinates in all dimensions of that sample.
-   * @param results vector where each row will contain the evaluation of the respective sample on
-   * the current model.
-   */
-  void evaluate(DataMatrix& samples, DataVector& results) override;
-
- private:
+ protected:
   /**
    * Count the amount of refinement operations performed on the current dataset.
    */
   size_t refinementsPerformed;
 
   /**
-   * Reset the state of the object when a new dataset is used;
+   * Function that indicates whether a model is refinable at all (certain on/off settings do not
+   * allow for refinement)
+   * @return whether the model is refinable
    */
-  void resetState();
-
-  // The offline object (contains decomposed matrix)
-  std::unique_ptr<DBMatOffline> offline;
-
-  // The online object
-  std::unique_ptr<DBMatOnlineDE> online;
+  virtual bool isRefinable() = 0;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -13,6 +13,9 @@
 #pragma once
 
 #include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceSplitting.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceCrossValidation.hpp>
 
 #include <string>
 
@@ -39,8 +42,48 @@ class MinerFactory {
    * Factory method to build a miner object based on a configuration file.
    * @param path Path to a configuration file that defines the structure of the miner object.
    */
-  virtual SparseGridMiner* buildMiner(const std::string& path) const = 0;
-};
+  virtual SparseGridMiner* buildMiner(const std::string& path) const;
 
+  virtual sgpp::datadriven::HyperparameterOptimizer *buildHPO(const std::string &path) const;
+
+ protected:
+  /**
+   * Factory method to build a splitting based data source, i.e. a data source that splits
+   * data into validation and training data.
+   * @param parser the datamining configuration parser instance to create the data source from
+   * @return the data source instance
+   */
+  virtual DataSourceSplitting* createDataSourceSplitting(
+      const DataMiningConfigParser& parser) const;
+
+  /**
+   * Factory method to build a cross validation data source, i.e. a data source that can seperate
+   * one fold from the data as validation set and use the rest for training
+   * @param parser the datamining configuration parser instance to create the data source from
+   * @return the data source instance
+   */
+  virtual DataSourceCrossValidation* createDataSourceCrossValidation(
+      const DataMiningConfigParser& parser) const;
+
+  /**
+   * Build an instance of a #sgpp::datadriven::ModelFittingBase object as specified in the
+   * configuration
+   * file.
+   * @param parser parser object that provides methods to query the configuration file.
+   * @return Fully configured fitter (instance of a #sgpp::datadriven::ModelFittingBase object) as
+   * specified in the
+   * configuration file.
+   */
+  virtual ModelFittingBase* createFitter(const DataMiningConfigParser& parser) const = 0;
+
+  virtual FitterFactory* createFitterFactory(const DataMiningConfigParser& parser) const = 0;
+
+  /**
+   * Factory method to build a scorer instance base d on a configuration file.
+   * @param parser the datamining configuration parser instance to create the scorer from
+   * @return the scorer instance
+   */
+  virtual Scorer* createScorer(const DataMiningConfigParser& parser) const;
+};
 } /* namespace datadriven */
 } /* namespace sgpp */

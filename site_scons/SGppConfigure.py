@@ -344,6 +344,11 @@ def checkPython(config):
       if config.env["RUN_PYTHON_TESTS"]:
         Helper.printWarning("Python unit tests were disabled because numpy is not available.")
         config.env["RUN_PYTHON_TESTS"] = False
+        
+    try:
+        import scipy
+    except:
+        Helper.printWarning("Warning: Scipy doesn't seem to be installed.")
   else:
     Helper.printInfo("Python extension (SG_PYTHON) not enabled.")
 

@@ -77,13 +77,13 @@ class ModelFittingBaseSingleGrid : public ModelFittingBase {
    * Get the underlying grid object for the current model.
    * @return the grid object.
    */
-  const Grid& getGrid() const;
+  Grid& getGrid();
 
   /**
    * Get the surpluses of the current grid
    * @return vector of surpluses.
    */
-  const DataVector& getSurpluses() const;
+  DataVector& getSurpluses();
 
  protected:
   /**

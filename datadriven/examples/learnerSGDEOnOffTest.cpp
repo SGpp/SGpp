@@ -57,12 +57,12 @@ int main() {
       /**
        * Get the training, test and validation data
        */
-      std::string filename = "../../datasets/ripley/ripleyGarcke.train.arff";
+      std::string filename = "../tests/data/ripleyGarcke.train.arff";
       // load training samples
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset trainDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
 
-      filename = "../../datasets/ripley/ripleyGarcke.test.arff";
+      filename = "../tests/data/ripleyGarcke.test.arff";
       // load test samples
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset testDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
@@ -193,23 +193,6 @@ int main() {
                                                  densityEstimationConfig, trainDataset, testDataset,
                                                  nullptr, classLabels, classNum, usePrior, beta);
 
-      /**
-       * Configure cross-validation.
-       * Set enableCv=true to perform cross-validation
-       * during the learning process.
-       */
-      bool enableCv = false;
-      // set cv configuration if cv enabled
-      size_t nextCvStep = 50;
-      double cvLambdaStart = 1e-1;
-      double cvLambdaEnd = 1e-10;
-      int cvLambdaSteps = 10;
-      bool cvLogScale = true;
-      sgpp::base::DataMatrix* cvTestData = &testDataset.getData();
-      sgpp::base::DataMatrix* cvTestDataRes = nullptr;  // needed?
-      learner.setCrossValidationParameters(cvLambdaSteps, cvLambdaStart, cvLambdaEnd, cvTestData,
-                                           cvTestDataRes, cvLogScale);
-
       // specify batch size
       // (set to 1 for processing only a single data point each iteration)
       size_t batchSize = 10;
@@ -221,8 +204,8 @@ int main() {
        */
       std::cout << "# start to train the learner" << std::endl;
       learner.train(batchSize, maxDataPasses, refType, refMonitor, refPeriod, accDeclineThreshold,
-                    accDeclineBufferSize, minRefInterval, enableCv, nextCvStep, adaptConfig,
-                    densityEstimationConfig);
+                    accDeclineBufferSize, minRefInterval, adaptConfig,
+                    regularizationConfig, densityEstimationConfig);
 
       /**
        * Accuracy on test data.
