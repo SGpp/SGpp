@@ -439,12 +439,12 @@ class LearnerBuilder(object):
                     elif self.__border == BorderTypes.COMPLETEBOUNDARY:
                         grid = Grid.createLinearBoundaryGrid(self.__dim, 0)
                     else:
-                        if self.__deg > 1:
+                        if self.__deg != None and self.__deg > 1:
                             grid = Grid.createModPolyGrid(self.__dim, self.__deg)
                         else:
                             grid = Grid.createModLinearGrid(self.__dim)
                 else: #no border points
-                        if self.__deg > 1:
+                        if self.__deg != None and self.__deg > 1:
                             grid = Grid.createPolyGrid(self.__dim, self.__deg)
                         else:
                             grid = Grid.createLinearGrid(self.__dim)
