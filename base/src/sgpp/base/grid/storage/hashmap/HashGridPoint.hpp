@@ -208,8 +208,8 @@ class HashGridPoint {
   void getStandardCoordinates(DataVector& coordinates) const;
 
   /**
-   * Determines if the grid point is an inner grid point
-   * Inner points are exactly those points which are not on the boundary
+   * Determines if the grid point is an inner grid point.
+   * Inner points are exactly those points which are not on the boundary in any dimension.
    *
    * @return true if the grid point is an inner grid point
    */
