@@ -319,8 +319,8 @@ def checkSWIG(config):
         r"[0-9.]*[0-9]+", getOutput(["swig", "-version"]))[0]
 
     swigVersionTuple = config.env._get_major_minor_revision(swigVersion)
-    if swigVersionTuple < (3, 0, 0):
-      Helper.printErrorAndExit("SWIG version too old! At least 3.0 required.")
+    if swigVersionTuple < (3, 0, 3):
+      Helper.printErrorAndExit("SWIG version too old! At least 3.0.3 required.")
 
     Helper.printInfo("Using SWIG {}".format(swigVersion))
 
