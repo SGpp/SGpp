@@ -134,6 +134,7 @@ vars.Add(BoolVariable("USE_OCL", "Enable OpenCL support (only actually enabled i
                                  "also the OpenCL environment variables are set)", False))
 vars.Add(BoolVariable("USE_CUDA", "Enable CUDA support (you might need to provide an 'CUDA_TOOLKIT_PATH')", False))
 vars.Add(BoolVariable("USE_HPX", "Enable HPX support (implies USE_OCL)", False))
+vars.Add(BoolVariable("USE_MPI", "Enable MPI support", False))
 vars.Add("OCL_INCLUDE_PATH", "Set path to the OpenCL header files (parent directory of CL/)")
 vars.Add("OCL_LIBRARY_PATH", "Set path to the OpenCL library")
 vars.Add("BOOST_INCLUDE_PATH", "Set path to the Boost header files", "/usr/include")
@@ -304,7 +305,8 @@ Export("MATSGPP_BUILD_PATH")
 EXAMPLE_DIR = Dir(os.path.join("bin", "examples"))
 Export("EXAMPLE_DIR")
 
-SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
+if not env.GetOption('clean'):
+  SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
 
 # fix for "command line too long" errors on MinGW
 # (from https://bitbucket.org/scons/scons/wiki/LongCmdLinesOnWin32)
