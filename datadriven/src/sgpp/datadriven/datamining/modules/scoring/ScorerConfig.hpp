@@ -32,6 +32,5 @@ struct ScorerConfiguration {
    */
   ScorerMetricType metric;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

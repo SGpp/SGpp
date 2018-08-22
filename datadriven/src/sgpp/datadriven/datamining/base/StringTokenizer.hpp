@@ -21,7 +21,7 @@ namespace datadriven {
 
 class StringTokenizer {
  public:
-  static void tokenize(const std::string& s, const char* delim, std::vector<std::string>& v) {
+  static void tokenize(const std::string &s, const char *delim, std::vector<std::string> &v) {
     size_t pos = 0;
     size_t start = 0;
 

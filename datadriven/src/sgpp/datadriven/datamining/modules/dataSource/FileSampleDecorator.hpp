@@ -37,21 +37,21 @@ class FileSampleDecorator : public FileSampleProvider {
    * wrapped as a deligate. The decorator will take ownership
    * of this object and take care of its destruction.
    */
-  explicit FileSampleDecorator(FileSampleProvider* const fileSampleProvider);
+  explicit FileSampleDecorator(FileSampleProvider *const fileSampleProvider);
 
-  FileSampleDecorator(const FileSampleDecorator& rhs);
+  FileSampleDecorator(const FileSampleDecorator &rhs);
 
-  FileSampleDecorator(FileSampleDecorator&& rhs) = default;
+  FileSampleDecorator(FileSampleDecorator &&rhs) = default;
 
-  FileSampleDecorator& operator=(const FileSampleDecorator& rhs);
+  FileSampleDecorator &operator=(const FileSampleDecorator &rhs);
 
-  FileSampleDecorator& operator=(FileSampleDecorator&& rhs) = default;
+  FileSampleDecorator &operator=(FileSampleDecorator &&rhs) = default;
 
   ~FileSampleDecorator() = default;
 
-  Dataset* getNextSamples(size_t howMany) override;
+  Dataset *getNextSamples(size_t howMany) override;
 
-  Dataset* getAllSamples() override;
+  Dataset *getAllSamples() override;
 
   size_t getDim() const override;
 
@@ -62,14 +62,14 @@ class FileSampleDecorator : public FileSampleProvider {
    * @param fileName path to the file
    * @param hasTargets whether the file has targets (i.e. supervised learning)
    */
-  void readFile(const std::string& fileName, bool hasTargets) override;
+  void readFile(const std::string &fileName, bool hasTargets) override;
 
   /**
    * Reads a file's content
    * @param input the file's content
    * @param hasTargets whether the file has targets (i.e. supervised learning)
    */
-  void readString(const std::string& input, bool hasTargets) override;
+  void readString(const std::string &input, bool hasTargets) override;
 
  protected:
   /**
@@ -80,6 +80,5 @@ class FileSampleDecorator : public FileSampleProvider {
    */
   std::unique_ptr<FileSampleProvider> fileSampleProvider;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

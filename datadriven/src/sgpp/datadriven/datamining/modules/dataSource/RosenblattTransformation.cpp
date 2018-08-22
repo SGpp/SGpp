@@ -22,13 +22,13 @@ namespace sgpp {
 namespace datadriven {
 
 RosenblattTransformation::RosenblattTransformation()
-  : grid(nullptr),
-    alpha(nullptr),
-    datasetTransformed(nullptr),
-    datasetInvTransformed(nullptr) {}
+    : grid(nullptr),
+      alpha(nullptr),
+      datasetTransformed(nullptr),
+      datasetInvTransformed(nullptr) {}
 
-void RosenblattTransformation::initialize(Dataset* dataset,
-    DataTransformationConfig config) {
+void RosenblattTransformation::initialize(Dataset *dataset,
+                                          DataTransformationConfig config) {
   RosenblattTransformationConfig rbConfig = config.rosenblattConfig;
 
   // Sample #numSamples random samples from dataset
@@ -40,9 +40,9 @@ void RosenblattTransformation::initialize(Dataset* dataset,
       0, static_cast<double>(dataset->getNumberInstances() - 1));
 
   for (unsigned int i = 0; i < rbConfig.numSamples; i++) {
-      dataset->getData().getRow(static_cast<size_t>(distr(generator)), currSample);
-      samples.setRow(i, currSample);
-    }
+    dataset->getData().getRow(static_cast<size_t>(distr(generator)), currSample);
+    samples.setRow(i, currSample);
+  }
 
   // Approximate probability density function (PDF)
   size_t dim = dataset->getDimension();
@@ -58,9 +58,9 @@ void RosenblattTransformation::initialize(Dataset* dataset,
   std::cout << "Rosenblatt transformation initialized" << std::endl;
 }
 
-Dataset* RosenblattTransformation::doTransformation(Dataset* dataset) {
+Dataset *RosenblattTransformation::doTransformation(Dataset *dataset) {
   std::cout << "Performing Rosenblatt transformation" << std::endl;
-  OperationRosenblattTransformation* opRos(
+  OperationRosenblattTransformation *opRos(
       sgpp::op_factory::createOperationRosenblattTransformation(*this->grid));
   datasetTransformed = new Dataset{dataset->getNumberInstances(), dataset->getDimension()};
 
@@ -69,7 +69,7 @@ Dataset* RosenblattTransformation::doTransformation(Dataset* dataset) {
   return datasetTransformed;
 }
 
-Dataset* RosenblattTransformation::doInverseTransformation(Dataset* dataset) {
+Dataset *RosenblattTransformation::doInverseTransformation(Dataset *dataset) {
   std::cout << "Performing Rosenblatt inverse transformation" << std::endl;
   std::unique_ptr<sgpp::datadriven::OperationInverseRosenblattTransformation> opInvRos(
       sgpp::op_factory::createOperationInverseRosenblattTransformation(*this->grid));

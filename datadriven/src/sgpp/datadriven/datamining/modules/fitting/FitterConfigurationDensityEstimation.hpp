@@ -25,7 +25,7 @@ class FitterConfigurationDensityEstimation : public FitterConfiguration {
  public:
   FitterConfigurationDensityEstimation() = default;
 
-  FitterConfiguration* clone() const override;
+  FitterConfiguration *clone() const override;
 
   void setupDefaults() override;
 
@@ -33,8 +33,7 @@ class FitterConfigurationDensityEstimation : public FitterConfiguration {
    * First setup default values, then read new input values from configuration file.
    * @param parser the parsed configuration file.
    */
-  void readParams(const DataMiningConfigParser& parser) override;
+  void readParams(const DataMiningConfigParser &parser) override;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */

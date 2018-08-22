@@ -17,7 +17,7 @@
 namespace sgpp {
 namespace datadriven {
 
-DataTransformationType DataTransformationTypeParser::parse(const std::string& input) {
+DataTransformationType DataTransformationTypeParser::parse(const std::string &input) {
   auto inputLower = input;
   std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
 
@@ -28,16 +28,15 @@ DataTransformationType DataTransformationTypeParser::parse(const std::string& in
   }
 }
 
-const std::string& DataTransformationTypeParser::toString(DataTransformationType type) {
+const std::string &DataTransformationTypeParser::toString(DataTransformationType type) {
   return transformationTypeMap.at(type);
 }
 
 const DataTransformationTypeParser::TransformationTypeMap_t
-DataTransformationTypeParser::transformationTypeMap = []() {
+    DataTransformationTypeParser::transformationTypeMap = []() {
   return DataTransformationTypeParser::TransformationTypeMap_t{
-    std::make_pair(DataTransformationType::NONE, "None"),
-    std::make_pair(DataTransformationType::ROSENBLATT, "Rosenblatt")};
+      std::make_pair(DataTransformationType::NONE, "None"),
+      std::make_pair(DataTransformationType::ROSENBLATT, "Rosenblatt")};
 }();
-
 } /* namespace datadriven */
 } /* namespace sgpp */
