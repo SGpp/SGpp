@@ -33,6 +33,7 @@
 #include <sgpp/base/operation/hash/common/basis/LinearStretchedBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedClenshawCurtisBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryCombigridBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NaturalBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineBasisDeriv1.hpp>
