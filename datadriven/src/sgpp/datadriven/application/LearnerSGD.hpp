@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef LEARNERSGD_HPP
-#define LEARNERSGD_HPP
+#pragma once
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -193,5 +192,3 @@ class LearnerSGD {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* LEARNERSGD_HPP */

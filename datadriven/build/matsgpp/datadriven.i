@@ -71,7 +71,6 @@
 %include "datadriven/src/sgpp/datadriven/application/RegressionLearner.hpp"
 %include "datadriven/src/sgpp/datadriven/application/ClassificationLearner.hpp"
 %include "datadriven/src/sgpp/datadriven/tools/NearestNeighbors.hpp"
-%include "datadriven/src/sgpp/datadriven/application/LearnerSGDEOnOff.hpp"
 %include "datadriven/src/sgpp/datadriven/application/LearnerSGD.hpp"
 %include "datadriven/src/sgpp/datadriven/application/LearnerSVM.hpp"
 %include "datadriven/src/sgpp/datadriven/application/PrimalDualSVM.hpp"

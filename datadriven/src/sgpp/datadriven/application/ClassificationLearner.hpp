@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef CLASSIFICATIONLEARNER_HPP
-#define CLASSIFICATIONLEARNER_HPP
+#pragma once
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -115,5 +114,3 @@ class ClassificationLearner {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif  // CLASSIFICATIONLEARNER_HPP

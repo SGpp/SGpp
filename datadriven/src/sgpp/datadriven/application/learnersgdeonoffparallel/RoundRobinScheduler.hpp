@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_ROUNDROBINSCHEDULER_H
-#define SGPP_ROUNDROBINSCHEDULER_H
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 
@@ -84,5 +83,3 @@ class RoundRobinScheduler : public MPITaskScheduler {
 };
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif  // SGPP_ROUNDROBINSCHEDULER_H
