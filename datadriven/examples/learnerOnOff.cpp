@@ -46,7 +46,7 @@ int main() {
   gridConfig.dim_ = trainDataset.getDimension();
   gridConfig.level_ = 2;
 
-  sgpp::base::AdaptivityConfiguration adaptConfig;
+  sgpp::base::AdpativityConfiguration adaptConfig;
   adaptConfig.numRefinements_ = 10;
   adaptConfig.noPoints_ = 1;
   adaptConfig.threshold_ = 0.0;

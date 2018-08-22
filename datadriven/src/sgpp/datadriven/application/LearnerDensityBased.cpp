@@ -79,7 +79,7 @@ LearnerTiming LearnerDensityBased::train(base::DataMatrix& trainDataset, base::D
                                          const base::RegularGridConfiguration& GridConfig,
                                          const solver::SLESolverConfiguration& SolverConfigRefine,
                                          const solver::SLESolverConfiguration& SolverConfigFinal,
-                                         const base::AdaptivityConfiguration& AdaptConfig,
+                                         const base::AdpativityConfiguration& AdaptConfig,
                                          const bool testAccDuringAdapt, const double lambda) {
   LearnerTiming timing = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 

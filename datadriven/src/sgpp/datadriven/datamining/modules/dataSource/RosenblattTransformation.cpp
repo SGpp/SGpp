@@ -89,7 +89,7 @@ sgpp::datadriven::LearnerSGDE RosenblattTransformation::createSGDELearner(
   gridConfig.type_ = sgpp::base::GridType::Linear;
 
   // configure adaptive refinement
-  sgpp::base::AdaptivityConfiguration adaptConfig;
+  sgpp::base::AdpativityConfiguration adaptConfig;
   adaptConfig.numRefinements_ = 0;
 
   // configure solver

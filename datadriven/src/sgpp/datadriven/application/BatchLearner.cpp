@@ -49,7 +49,7 @@ namespace datadriven {
 BatchLearner::BatchLearner(base::BatchConfiguration batchConfig,
                            base::RegularGridConfiguration gridConfig,
                            solver::SLESolverConfiguration solverConfig,
-                           base::AdaptivityConfiguration adaptConfig) {
+                           base::AdpativityConfiguration adaptConfig) {
   batchConf = batchConfig;
   gridConf = gridConfig;
   solverConf = solverConfig;

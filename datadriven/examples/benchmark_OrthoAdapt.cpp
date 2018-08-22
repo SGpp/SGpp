@@ -23,7 +23,7 @@ int main() {
   gridConfig.dim_ = 4;
   gridConfig.level_ = 6;
 
-  sgpp::base::AdaptivityConfiguration adaptConfig;
+  sgpp::base::AdpativityConfiguration adaptConfig;
 
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
   regularizationConfig.lambda_ = 0.0001;

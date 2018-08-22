@@ -56,7 +56,7 @@ class LearnerDensityBasedReg : public LearnerBase {
                               const sgpp::base::RegularGridConfiguration& GridConfig,
                               const sgpp::solver::SLESolverConfiguration& SolverConfigRefine,
                               const sgpp::solver::SLESolverConfiguration& SolverConfigFinal,
-                              const sgpp::base::AdaptivityConfiguration& AdaptConfig,
+                              const sgpp::base::AdpativityConfiguration& AdaptConfig,
                               bool testAccDuringAdapt, const double lambda);
 
   /**

@@ -232,7 +232,7 @@ sgpp::solver::SLESolverType SparseGridDensityEstimatorConfiguration::stringToSol
 // --------------------------------------------------------------------------------------------
 SparseGridDensityEstimator::SparseGridDensityEstimator(
     sgpp::base::RegularGridConfiguration& gridConfig,
-    sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+    sgpp::base::AdpativityConfiguration& adaptivityConfig,
     sgpp::solver::SLESolverConfiguration& solverConfig,
     sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     CrossvalidationForRegularizationConfiguration& crossvalidationConfig,

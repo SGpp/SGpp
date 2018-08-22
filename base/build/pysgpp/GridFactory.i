@@ -74,7 +74,7 @@ struct RegularGridConfiguration {
   std::string filename_;
 };
 
-struct AdaptivityConfiguration {
+struct AdpativityConfiguration {
   /// number of refinements
   size_t numRefinements_;
   /// refinement threshold for surpluses

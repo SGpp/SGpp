@@ -14,7 +14,7 @@ const base::RegularGridConfiguration &FitterConfiguration::getGridConfig() const
   return gridConfig;
 }
 
-const base::AdaptivityConfiguration &FitterConfiguration::getRefinementConfig() const {
+const base::AdpativityConfiguration &FitterConfiguration::getRefinementConfig() const {
   return adaptivityConfig;
 }
 
@@ -61,8 +61,8 @@ base::RegularGridConfiguration& FitterConfiguration::getGridConfig() {
       static_cast<const FitterConfiguration&>(*this).getGridConfig());
 }
 
-base::AdaptivityConfiguration &FitterConfiguration::getRefinementConfig() {
-  return const_cast<base::AdaptivityConfiguration &>(
+base::AdpativityConfiguration &FitterConfiguration::getRefinementConfig() {
+  return const_cast<base::AdpativityConfiguration &>(
       static_cast<const FitterConfiguration &>(*this).getRefinementConfig());
 }
 

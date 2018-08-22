@@ -42,7 +42,7 @@ class LearnerScenario : public json::JSON {
   //  base::RegularGridConfiguration gridConfig;
   //  solver::SLESolverConfiguration solverConfigRefine;
   //  solver::SLESolverConfiguration solverConfigFinal;
-  //  base::AdaptivityConfiguration adaptConfig;
+  //  base::AdpativityConfiguration adaptConfig;
   //  datadriven::TestsetConfiguration testsetConfig;
 
  public:
@@ -54,13 +54,13 @@ class LearnerScenario : public json::JSON {
                   base::RegularGridConfiguration gridConfig,
                   solver::SLESolverConfiguration SLESolverConfigRefine,
                   solver::SLESolverConfiguration SLESolverConfigFinal,
-                  base::AdaptivityConfiguration adaptConfig);
+                  base::AdpativityConfiguration adaptConfig);
 
   LearnerScenario(std::string datasetFileName, double lambda, InternalPrecision internalPrecision,
                   base::RegularGridConfiguration gridConfig,
                   solver::SLESolverConfiguration SLESolverConfigRefine,
                   solver::SLESolverConfiguration SLESolverConfigFinal,
-                  base::AdaptivityConfiguration adaptConfig,
+                  base::AdpativityConfiguration adaptConfig,
                   datadriven::TestsetConfiguration testsetConfiguration);
 
   bool isInitialized() const;
@@ -89,9 +89,9 @@ class LearnerScenario : public json::JSON {
 
   solver::SLESolverConfiguration getSolverConfigurationFinal();
 
-  void setAdaptivityConfiguration(base::AdaptivityConfiguration& adaptConfig);
+  void setAdaptivityConfiguration(base::AdpativityConfiguration& adaptConfig);
 
-  base::AdaptivityConfiguration getAdaptivityConfiguration();
+  base::AdpativityConfiguration getAdaptivityConfiguration();
 
   bool hasTestsetConfiguration();
 
