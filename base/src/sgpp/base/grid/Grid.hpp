@@ -60,9 +60,9 @@ enum class GridType {
   NaturalBsplineBoundary,             // 32
   NotAKnotBsplineBoundary,            // 33
   ModNotAKnotBspline,                 // 34
-  LagrangeSplineBoundary,             // 35
-  LagrangeNotAKnotSplineBoundary,     // 36
-  ModLagrangeNotAKnotSpline,          // 37
+  WeaklyFundamentalSplineBoundary,             // 35
+  WeaklyFundamentalNotAKnotSplineBoundary,     // 36
+  ModWeaklyFundamentalNotAKnotSpline,          // 37
   FundamentalSplineBoundary,          // 38
   FundamentalNotAKnotSplineBoundary,  // 39
 };
@@ -697,11 +697,11 @@ class Grid {
   static Grid* createNotAKnotBsplineBoundaryGrid(size_t dim, size_t degree,
                                                  level_t boundaryLevel = 1);
   static Grid* createModNotAKnotBsplineGrid(size_t dim, size_t degree);
-  static Grid* createLagrangeSplineBoundaryGrid(size_t dim, size_t degree,
+  static Grid* createWeaklyFundamentalSplineBoundaryGrid(size_t dim, size_t degree,
                                                 level_t boundaryLevel = 1);
-  static Grid* createLagrangeNotAKnotSplineBoundaryGrid(size_t dim, size_t degree,
+  static Grid* createWeaklyFundamentalNotAKnotSplineBoundaryGrid(size_t dim, size_t degree,
                                                         level_t boundaryLevel = 1);
-  static Grid* createModLagrangeNotAKnotSplineGrid(size_t dim, size_t degree);
+  static Grid* createModWeaklyFundamentalNotAKnotSplineGrid(size_t dim, size_t degree);
   static Grid* createFundamentalSplineBoundaryGrid(size_t dim, size_t degree,
                                                    level_t boundaryLevel = 1);
   static Grid* createFundamentalNotAKnotSplineBoundaryGrid(

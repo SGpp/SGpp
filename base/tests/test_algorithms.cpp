@@ -289,7 +289,7 @@ void fundamentalSplineTest(SBasis& basis, bool modified = false, bool notAKnot =
   }
 }
 
-void lagrangeSplineTest(SBasis& basis, bool modified = false) {
+void weaklyFundamentalSplineTest(SBasis& basis, bool modified = false) {
   const level_t startLevel = 1;
 
   for (level_t l = startLevel; l < 6; l++) {
@@ -443,29 +443,29 @@ BOOST_AUTO_TEST_CASE(TestFundamentalSplineModifiedBasis) {
   }
 }
 
-BOOST_AUTO_TEST_CASE(TestLagrangeNotAKnotSplineBasis) {
-  // Test Lagrange not-a-knot spline basis.
+BOOST_AUTO_TEST_CASE(TestWeaklyFundamentalNotAKnotSplineBasis) {
+  // Test weakly fundamental not-a-knot spline basis.
   for (size_t p = 1; p <= 7; p++) {
-    sgpp::base::SLagrangeNotAKnotSplineBase basis(p);
-    lagrangeSplineTest(basis);
+    sgpp::base::SWeaklyFundamentalNotAKnotSplineBase basis(p);
+    weaklyFundamentalSplineTest(basis);
     derivativesTest(basis, basis.getDegree() - 1);
   }
 }
 
-BOOST_AUTO_TEST_CASE(TestLagrangeNotAKnotSplineModifiedBasis) {
-  // Test modified Lagrange not-a-knot spline basis.
+BOOST_AUTO_TEST_CASE(TestWeaklyFundamentalNotAKnotSplineModifiedBasis) {
+  // Test modified weakly fundamental not-a-knot spline basis.
   for (size_t p = 1; p <= 7; p++) {
-    sgpp::base::SLagrangeNotAKnotSplineModifiedBase basis(p);
-    lagrangeSplineTest(basis, true);
+    sgpp::base::SWeaklyFundamentalNotAKnotSplineModifiedBase basis(p);
+    weaklyFundamentalSplineTest(basis, true);
     derivativesTest(basis, basis.getDegree() - 1);
   }
 }
 
-BOOST_AUTO_TEST_CASE(TestLagrangeSplineBasis) {
-  // Test Lagrange spline basis.
+BOOST_AUTO_TEST_CASE(TestWeaklyFundamentalSplineBasis) {
+  // Test weakly fundamental spline basis.
   for (size_t p = 1; p <= 7; p++) {
-    sgpp::base::SLagrangeSplineBase basis(p);
-    lagrangeSplineTest(basis);
+    sgpp::base::SWeaklyFundamentalSplineBase basis(p);
+    weaklyFundamentalSplineTest(basis);
     derivativesTest(basis, basis.getDegree() - 1);
   }
 }
@@ -479,7 +479,7 @@ BOOST_AUTO_TEST_CASE(TestNotAKnotBsplineBasis) {
 }
 
 BOOST_AUTO_TEST_CASE(TestNotAKnotBsplineModifiedBasis) {
-  // Test modified Lagrange not-a-knot spline basis.
+  // Test modified weakly fundamental not-a-knot spline basis.
   for (size_t p = 1; p <= 7; p++) {
     sgpp::base::SNotAKnotBsplineModifiedBase basis(p);
     derivativesTest(basis, basis.getDegree() - 1);
