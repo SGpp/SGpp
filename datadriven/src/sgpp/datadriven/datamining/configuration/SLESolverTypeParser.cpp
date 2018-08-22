@@ -21,7 +21,7 @@ namespace datadriven {
 
 using sgpp::solver::SLESolverType;
 
-SLESolverType sgpp::datadriven::SLESolverTypeParser::parse(const std::string& input) {
+SLESolverType sgpp::datadriven::SLESolverTypeParser::parse(const std::string &input) {
   auto inputLower = input;
   std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
 
@@ -37,15 +37,15 @@ SLESolverType sgpp::datadriven::SLESolverTypeParser::parse(const std::string& in
   }
 }
 
-const std::string& sgpp::datadriven::SLESolverTypeParser::toString(SLESolverType type) {
+const std::string &sgpp::datadriven::SLESolverTypeParser::toString(SLESolverType type) {
   return sleSolverTypeMap.at(type);
 }
 
 const SLESolverTypeParser::SLESolverTypeMap_t SLESolverTypeParser::sleSolverTypeMap = []() {
   return SLESolverTypeParser::SLESolverTypeMap_t{std::make_pair(SLESolverType::CG, "CG"),
-                                              std::make_pair(SLESolverType::BiCGSTAB, "BiCGSTAB"),
-                                              std::make_pair(SLESolverType::FISTA, "FISTA")};
+                                                 std::make_pair(SLESolverType::BiCGSTAB,
+                                                                "BiCGSTAB"),
+                                                 std::make_pair(SLESolverType::FISTA, "FISTA")};
 }();
-
 } /* namespace datadriven */
 } /* namespace sgpp */

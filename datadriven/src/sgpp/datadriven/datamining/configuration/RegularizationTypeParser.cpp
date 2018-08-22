@@ -18,7 +18,7 @@
 
 namespace sgpp {
 namespace datadriven {
-RegularizationType RegularizationTypeParser::parse(const std::string& input) {
+RegularizationType RegularizationTypeParser::parse(const std::string &input) {
   auto inputLower = input;
   std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
 
@@ -40,20 +40,19 @@ RegularizationType RegularizationTypeParser::parse(const std::string& input) {
     throw base::data_exception(errorMsg.c_str());
   }
 }
-const std::string& RegularizationTypeParser::toString(RegularizationType type) {
+const std::string &RegularizationTypeParser::toString(RegularizationType type) {
   return regularizationTypeMap.at(type);
 }
 
 const RegularizationTypeParser::RegularizationTypeMap_t
     RegularizationTypeParser::regularizationTypeMap = []() {
-      return RegularizationTypeParser::RegularizationTypeMap_t{
-          std::make_pair(RegularizationType::Identity, "Identity"),
-          std::make_pair(RegularizationType::Laplace, "Laplace"),
-          std::make_pair(RegularizationType::Diagonal, "Diagonal"),
-          std::make_pair(RegularizationType::Lasso, "Lasso"),
-          std::make_pair(RegularizationType::ElasticNet, "ElasticNet"),
-          std::make_pair(RegularizationType::GroupLasso, "GroupLasso")};
-    }();
-
+  return RegularizationTypeParser::RegularizationTypeMap_t{
+      std::make_pair(RegularizationType::Identity, "Identity"),
+      std::make_pair(RegularizationType::Laplace, "Laplace"),
+      std::make_pair(RegularizationType::Diagonal, "Diagonal"),
+      std::make_pair(RegularizationType::Lasso, "Lasso"),
+      std::make_pair(RegularizationType::ElasticNet, "ElasticNet"),
+      std::make_pair(RegularizationType::GroupLasso, "GroupLasso")};
+}();
 } /* namespace datadriven */
 } /* namespace sgpp */

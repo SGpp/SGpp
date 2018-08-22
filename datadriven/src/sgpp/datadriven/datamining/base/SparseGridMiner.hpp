@@ -41,25 +41,25 @@ class SparseGridMiner {
    * Copy constructor deleted - not all members can be copied or cloned .
    * @param rhs the object to copy from
    */
-  SparseGridMiner(const SparseGridMiner& rhs) = delete;
+  SparseGridMiner(const SparseGridMiner &rhs) = delete;
 
   /**
    * Default Move constructor .
    * @param rhs the object to move from
    */
-  SparseGridMiner(SparseGridMiner&& rhs) = default;
+  SparseGridMiner(SparseGridMiner &&rhs) = default;
 
   /**
    * Default Move assign operator.
    * @param rhs the object to move from
    */
-  SparseGridMiner& operator=(SparseGridMiner&& rhs) = default;
+  SparseGridMiner &operator=(SparseGridMiner &&rhs) = default;
 
   /**
    * Default copy assign operator deleted because not all members can be copied.
    * @param rhs the object to copy from
    */
-  SparseGridMiner& operator=(const SparseGridMiner& rhs) = delete;
+  SparseGridMiner &operator=(const SparseGridMiner &rhs) = delete;
 
   /**
    * Default destructor.
@@ -70,13 +70,15 @@ class SparseGridMiner {
    * Perform Learning cycle: Get samples from data source and based on the scoring procedure,
    * generalize data by fitting and asses quality of the fit.
    */
-  virtual void learn() = 0;
+  virtual double learn(bool verbose) = 0;
 
   /**
    * Returns the trained model
    * @return the trained model
    */
   ModelFittingBase *getModel();
+
+  void setModel(ModelFittingBase* model);
 
   /**
    * Evaluate the model on a certain test dataset.
@@ -96,6 +98,5 @@ class SparseGridMiner {
    */
   std::unique_ptr<Scorer> scorer;
 };
-
 } /* namespace datadriven */
 } /* namespace sgpp */
