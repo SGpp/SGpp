@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_PENDINGMPIREQUEST_HPP
-#define SGPP_PENDINGMPIREQUEST_HPP
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 
@@ -67,5 +66,3 @@ class PendingMPIRequest {
 };
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif  // SGPP_PENDINGMPIREQUEST_HPP
