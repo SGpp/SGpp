@@ -44,7 +44,7 @@ DBMatDatabase::DBMatDatabase(const std::string& filepath) {
 
 bool DBMatDatabase::hasDataMatrix(
     sgpp::base::GeneralGridConfiguration& gridConfig,
-    sgpp::base::AdpativityConfiguration& adaptivityConfig,
+    sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
   int entry_index = entryIndexByConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
@@ -54,7 +54,7 @@ bool DBMatDatabase::hasDataMatrix(
 
 std::string& DBMatDatabase::getDataMatrix(
     sgpp::base::GeneralGridConfiguration& gridConfig,
-    sgpp::base::AdpativityConfiguration& adaptivityConfig,
+    sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
   int entry_index = entryIndexByConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
@@ -71,7 +71,7 @@ std::string& DBMatDatabase::getDataMatrix(
 }
 
 void DBMatDatabase::putDataMatrix(sgpp::base::GeneralGridConfiguration& gridConfig,
-    sgpp::base::AdpativityConfiguration& adaptivityConfig,
+    sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
     std::string filepath, bool overwriteEntry) {
@@ -223,7 +223,7 @@ bool DBMatDatabase::densityEstimationConfigurationMatches(json::DictNode *node,
 
 int DBMatDatabase::entryIndexByConfiguration(
     sgpp::base::GeneralGridConfiguration& gridConfig,
-    sgpp::base::AdpativityConfiguration& adaptivityConfig,
+    sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
   // Scan the entire database

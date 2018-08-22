@@ -44,7 +44,7 @@ class LearnerSGDEConfiguration : public json::JSON {
 
  private:
   sgpp::base::RegularGridConfiguration gridConfig;
-  sgpp::base::AdpativityConfiguration adaptivityConfig;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
   sgpp::solver::SLESolverConfiguration solverConfig;
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
   sgpp::datadriven::CrossvalidationConfiguration crossvalidationConfig;
@@ -62,7 +62,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * @param crossvalidationConfig configuration for the cross validation
    */
   LearnerSGDE(sgpp::base::RegularGridConfiguration& gridConfig,
-              sgpp::base::AdpativityConfiguration& adaptivityConfig,
+              sgpp::base::AdaptivityConfiguration& adaptivityConfig,
               sgpp::solver::SLESolverConfiguration& solverConfig,
               sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
               CrossvalidationConfiguration& crossvalidationConfig);
@@ -327,7 +327,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
 
   // configurations
   sgpp::base::RegularGridConfiguration gridConfig;
-  sgpp::base::AdpativityConfiguration adaptivityConfig;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
   sgpp::solver::SLESolverConfiguration solverConfig;
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
   sgpp::datadriven::CrossvalidationConfiguration crossvalidationConfig;

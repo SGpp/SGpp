@@ -36,7 +36,7 @@ class LearnerSVM {
   base::DataVector* validLabels;
 
   base::RegularGridConfiguration gridConfig;
-  base::AdpativityConfiguration adaptivityConfig;
+  base::AdaptivityConfiguration adaptivityConfig;
 
   // the svm object
   std::unique_ptr<PrimalDualSVM> svm;
@@ -62,7 +62,7 @@ class LearnerSVM {
    * @param pValidLabels The corresponding validation labels
    */
   LearnerSVM(base::RegularGridConfiguration& gridConfig,
-             base::AdpativityConfiguration& adaptConfig,
+             base::AdaptivityConfiguration& adaptConfig,
              base::DataMatrix& pTrainData,
              base::DataVector& pTrainLabels,
              base::DataMatrix& pTestData,
