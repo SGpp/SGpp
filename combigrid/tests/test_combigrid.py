@@ -9,9 +9,8 @@ if __name__ == '__main__':
     alltests = unittest.TestSuite()
     
     try:
-        from pysgpp import AbstractCombiGrid
-        import test_newCombi
-        alltests.addTests(unittest.defaultTestLoader.loadTestsFromModule(test_newCombi))
+        import multiFunc_test
+        alltests.addTests(unittest.defaultTestLoader.loadTestsFromModule(multiFunc_test))
     except ImportError:
         pass
     
