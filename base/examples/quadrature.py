@@ -101,11 +101,11 @@ print("MC L2-error (f-u)      {:.7f}".format(res))
 
 # Monte Carlo quadrature of a piramidal function
 res = opMC.doQuadratureFunc(g)
-print "MC value (g):          {:.6f}".format(res)
+print( "MC value (g):          {:.6f}".format(res))
 
 # Monte Carlo quadrature of error
 res = opMC.doQuadratureL2Error(g, alpha)
-print "MC L2-error (g-u)      {:.7f}".format(res)
+print( "MC L2-error (g-u)      {:.7f}".format(res))
 
 ## This results in an output similar to:
 ## \verbinclude quadrature.output.txt
