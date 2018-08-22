@@ -41,7 +41,7 @@ class ClassificationLearner {
    * include the vector [1,2] in terms.
    */
   ClassificationLearner(sgpp::base::RegularGridConfiguration gridConfig,
-                        sgpp::base::AdpativityConfiguration adaptivityConfig,
+                        sgpp::base::AdaptivityConfiguration adaptivityConfig,
                         sgpp::solver::SLESolverConfiguration solverConfig,
                         sgpp::solver::SLESolverConfiguration finalSolverConfig,
                         sgpp::datadriven::RegularizationConfiguration regularizationConfig,
@@ -55,7 +55,7 @@ class ClassificationLearner {
    * @param regularizationConfig
    */
   ClassificationLearner(sgpp::base::RegularGridConfiguration gridConfig,
-                        sgpp::base::AdpativityConfiguration adaptivityConfig,
+                        sgpp::base::AdaptivityConfiguration adaptivityConfig,
                         sgpp::solver::SLESolverConfiguration solverConfig,
                         sgpp::solver::SLESolverConfiguration finalSolverConfig,
                         sgpp::datadriven::RegularizationConfiguration regularizationConfig);
@@ -97,7 +97,7 @@ class ClassificationLearner {
   typedef std::pair<class_t, RegressionLearner> learner_t;
 
   sgpp::base::RegularGridConfiguration gridConfig;
-  sgpp::base::AdpativityConfiguration adaptivityConfig;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
   sgpp::solver::SLESolverConfiguration solverConfig;
   sgpp::solver::SLESolverConfiguration finalSolverConfig;
   RegularizationConfiguration regularizationConfig;

@@ -104,7 +104,7 @@ int main(int argc, char** argv) {
    * are specified.
    */
   std::cout << "# create adaptive refinement config" << std::endl;
-  sgpp::base::AdpativityConfiguration adaptConfig;
+  sgpp::base::AdaptivityConfiguration adaptConfig;
   adaptConfig.numRefinements_ = 0;
   adaptConfig.noPoints_ = 10;
 

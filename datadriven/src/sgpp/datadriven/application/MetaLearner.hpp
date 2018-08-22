@@ -40,7 +40,7 @@ class MetaLearner {
   sgpp::base::RegularGridConfiguration gridConfig;
   sgpp::solver::SLESolverConfiguration solverConfig;
   sgpp::solver::SLESolverConfiguration solverFinalStep;
-  sgpp::base::AdpativityConfiguration adaptivityConfiguration;
+  sgpp::base::AdaptivityConfiguration adaptivityConfiguration;
 
   LearnerTiming myTiming;
   LearnerTiming referenceTiming;
@@ -62,7 +62,7 @@ class MetaLearner {
   MetaLearner(sgpp::base::RegularGridConfiguration gridConfig,
               sgpp::solver::SLESolverConfiguration solverConfig,
               sgpp::solver::SLESolverConfiguration solverFinalStep,
-              sgpp::base::AdpativityConfiguration adaptivityConfiguration, double lambda,
+              sgpp::base::AdaptivityConfiguration adaptivityConfiguration, double lambda,
               bool verbose = false);
 
   ~MetaLearner() {}

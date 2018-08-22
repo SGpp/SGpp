@@ -142,7 +142,7 @@ class LearnerBaseSP {
                               const sgpp::base::RegularGridConfiguration& GridConfig,
                               const sgpp::solver::SLESolverSPConfiguration& SolverConfigRefine,
                               const sgpp::solver::SLESolverSPConfiguration& SolverConfigFinal,
-                              const sgpp::base::AdpativityConfiguration& AdaptConfig,
+                              const sgpp::base::AdaptivityConfiguration& AdaptConfig,
                               bool testAccDuringAdapt, const float lambdaRegularization);
 
   /**

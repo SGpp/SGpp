@@ -57,7 +57,7 @@ struct RegularGridConfiguration {
       int level_;
     };
 
-struct AdpativityConfiguration {
+struct AdaptivityConfiguration {
       /// number of refinements
       size_t numRefinements_;
       /// refinement threshold for surpluses

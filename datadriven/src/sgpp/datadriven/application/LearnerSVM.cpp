@@ -32,7 +32,7 @@ namespace sgpp {
 namespace datadriven {
 
 LearnerSVM::LearnerSVM(base::RegularGridConfiguration& gridConfig,
-                       base::AdpativityConfiguration& adaptConfig,
+                       base::AdaptivityConfiguration& adaptConfig,
                        base::DataMatrix& pTrainData,
                        base::DataVector& pTrainLabels,
                        base::DataMatrix& pTestData,

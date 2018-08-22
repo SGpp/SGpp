@@ -231,7 +231,7 @@ sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
 
 
   // configure adaptive refinement
-  sgpp::base::AdpativityConfiguration adaptConfig;
+  sgpp::base::AdaptivityConfiguration adaptConfig;
   adaptConfig.numRefinements_ = 0;
   adaptConfig.noPoints_ = 10;
 

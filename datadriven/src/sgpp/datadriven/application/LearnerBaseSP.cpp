@@ -134,7 +134,7 @@ LearnerTiming LearnerBaseSP::train(sgpp::base::DataMatrixSP& trainDataset,
                                    const sgpp::base::RegularGridConfiguration& GridConfig,
                                    const sgpp::solver::SLESolverSPConfiguration& SolverConfigRefine,
                                    const sgpp::solver::SLESolverSPConfiguration& SolverConfigFinal,
-                                   const sgpp::base::AdpativityConfiguration& AdaptConfig,
+                                   const sgpp::base::AdaptivityConfiguration& AdaptConfig,
                                    const bool testAccDuringAdapt,
                                    const float lambdaRegularization) {
   LearnerTiming result;
@@ -308,7 +308,7 @@ LearnerTiming LearnerBaseSP::train(sgpp::base::DataMatrixSP& trainDataset,
                                    const sgpp::base::RegularGridConfiguration& GridConfig,
                                    const sgpp::solver::SLESolverSPConfiguration& SolverConfig,
                                    const float lambdaRegularization) {
-  sgpp::base::AdpativityConfiguration AdaptConfig;
+  sgpp::base::AdaptivityConfiguration AdaptConfig;
 
   AdaptConfig.maxLevelType_ = false;
   AdaptConfig.noPoints_ = 0;
