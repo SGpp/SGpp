@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef LEARNER_HPP
-#define LEARNER_HPP
+#pragma once
 
 #include <sgpp/datadriven/application/LearnerBase.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
@@ -47,5 +46,3 @@ class Learner : public LearnerBase {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* LEARNER_HPP */

@@ -8,9 +8,9 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/RefinementHandler.hpp>
-#include <sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitor.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp>
@@ -30,7 +30,7 @@ bool RefinementHandler::checkReadyForRefinement() const {
 void RefinementHandler::doRefinementForClass(
     const std::string &refType,
     RefinementResult *refinementResult,
-    const ClassDensityConntainer &onlineObjects,
+    const std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>> &onlineObjects,
     Grid& grid,
     DataVector& alpha,
     bool preCompute,
