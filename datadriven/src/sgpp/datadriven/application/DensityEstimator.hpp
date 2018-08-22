@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef DENSITYESTIMATOR_HPP_
-#define DENSITYESTIMATOR_HPP_
+#pragma once
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
@@ -43,5 +42,3 @@ class DensityEstimator {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* DENSITYESTIMATOR_HPP_ */

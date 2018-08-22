@@ -5,7 +5,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
