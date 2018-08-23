@@ -46,7 +46,6 @@ class GzipFileSampleDecorator : public FileSampleDecorator {
    * Resets the state of the sample provider (e.g. to start a new epoch)
    */
   void reset() override;
-
 };
 
 } /* namespace datadriven */
