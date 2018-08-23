@@ -47,7 +47,7 @@ def main():
 
     # Config adaptivity
     print("create adaptive refinement config... ", end=' ')
-    adapt = sg.AdpativityConfiguration()
+    adapt = sg.AdaptivityConfiguration()
     adapt.numRefinements_ = 0
     adapt.noPoints_ = 10
     print("Done")
@@ -69,7 +69,7 @@ def main():
 
     # Config cross validation for learner
     print("create learner config... ", end=' ')
-    #crossValid = sg.CrossvalidationForRegularizationConfiguration()
+    #crossValid = sg.CrossvalidationConfiguration()
     crossValid = sg.CrossvalidationConfiguration()
     crossValid.enable_ = False
     crossValid.kfold_ = 3
@@ -104,9 +104,7 @@ def main():
     x.setAll(0.5)
     
     print("-----------------------------------------------")
-    abc = learner.getSurpluses()
-    print(learner, " -> ", abc)
-    print(abc.getSize(), " -> ", abc.sum())
+    print(learner.getSurpluses().getSize(), " -> ", learner.getSurpluses().sum())
     print("pdf_SGDE(x) = ", learner.pdf(x), " ~ ", kde.pdf(x), " = pdf_KDE(x)")
     print("mean_SGDE = ", learner.mean(), " ~ ", kde.mean(), " = mean_KDE")
     print("var_SGDE = ", learner.variance(), " ~ ", kde.variance(), " = var_KDE")

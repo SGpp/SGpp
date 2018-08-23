@@ -6,8 +6,8 @@
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 
-#include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
 
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp>
@@ -15,11 +15,11 @@
 #include <sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
 
-#include <vector>
 #include <cmath>
-#include <string>
-#include <sstream>
 #include <iomanip>
+#include <sstream>
+#include <string>
+#include <vector>
 
 /**
  * \page example_classificationRefinementExample_cpp Classification Example
@@ -33,13 +33,10 @@
  * for any refinement strategy. This example is merely a tech-example.
  */
 
-
-
 /**
  * Helper to create learner
  */
-sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
-                                                double lambda);
+sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level, double lambda);
 /**
  * Helper to evaluate the classifiers
  */
@@ -54,16 +51,15 @@ int main() {
    */
   std::string basePath = "../../datasets/ripley/ripleyGarcke";
   sgpp::datadriven::Dataset datasetTr =
-    sgpp::datadriven::ARFFTools::readARFF(basePath + ".train.arff");
+      sgpp::datadriven::ARFFTools::readARFF(basePath + ".train.arff");
   sgpp::datadriven::Dataset datasetTs =
-    sgpp::datadriven::ARFFTools::readARFF(basePath + ".test.arff");
+      sgpp::datadriven::ARFFTools::readARFF(basePath + ".test.arff");
   sgpp::base::DataMatrix dataTrain = datasetTr.getData();
   sgpp::base::DataVector targetTrain = datasetTr.getTargets();
   sgpp::base::DataMatrix dataTest = datasetTs.getData();
   sgpp::base::DataVector targetTest = datasetTs.getTargets();
   std::cout << "Read training data: " << dataTrain.getNrows() << std::endl;
   std::cout << "Read test data    : " << dataTest.getNrows() << std::endl;
-
 
   /**
    * Only uint class labels starting 0 and incrementing by 1 per class
@@ -88,7 +84,6 @@ int main() {
   }
   std::cout << "Preprocessing the data" << std::endl;
 
-
   /**
    * Split Training data according to class
    */
@@ -106,7 +101,6 @@ int main() {
   std::cout << "Data points of class -1.0 (= 0): " << dataCl1.getNrows() << std::endl;
   std::cout << "Data points of class +1.0 (= 1): " << dataCl2.getNrows() << std::endl;
 
-
   /**
    * Approximate a probability density function for the class data using
    * LearnerSGDE, one for each class. Initialize the learners with the data
@@ -117,18 +111,16 @@ int main() {
   learner1.initialize(dataCl1);
   learner2.initialize(dataCl2);
 
-
   /**
    * Bundle grids and surplus vector pointer needed for refinement and
    * evaluation
    */
   std::vector<sgpp::base::Grid*> grids;
   std::vector<sgpp::base::DataVector*> alphas;
-  grids.push_back(learner1.getGrid().get());
-  grids.push_back(learner2.getGrid().get());
-  alphas.push_back(learner1.getSurpluses().get());
-  alphas.push_back(learner2.getSurpluses().get());
-
+  grids.push_back(learner1.getGrid());
+  grids.push_back(learner2.getGrid());
+  alphas.push_back(learner1.getSurpluses());
+  alphas.push_back(learner2.getSurpluses());
 
   /**
    * Create refinement functors
@@ -139,19 +131,14 @@ int main() {
   sgpp::datadriven::MultiGridRefinementFunctor* fun = nullptr;
 
   // Surplus refinement
-  sgpp::datadriven::MultiSurplusRefinementFunctor funSrpl(grids, alphas,
-                                                          numRefinements,
+  sgpp::datadriven::MultiSurplusRefinementFunctor funSrpl(grids, alphas, numRefinements,
                                                           levelPenalize);
   // Grid point-based refinement
-  sgpp::datadriven::GridPointBasedRefinementFunctor funGrid(grids, alphas,
-                                                            numRefinements,
-                                                            levelPenalize,
-                                                            preCompute);
+  sgpp::datadriven::GridPointBasedRefinementFunctor funGrid(grids, alphas, numRefinements,
+                                                            levelPenalize, preCompute);
   // Zero-crossing-based refinement
-  sgpp::datadriven::ZeroCrossingRefinementFunctor funZrcr(grids, alphas,
-                                                          numRefinements,
-                                                          levelPenalize,
-                                                          preCompute);
+  sgpp::datadriven::ZeroCrossingRefinementFunctor funZrcr(grids, alphas, numRefinements,
+                                                          levelPenalize, preCompute);
   /**
    * Data-based refinement. Needs a problem dependent coeffA. The values
    * were determined by testing (aim at ~10 % of the training data is
@@ -161,12 +148,8 @@ int main() {
   std::vector<double> coeffA;
   coeffA.push_back(1.2);
   coeffA.push_back(1.2);
-  sgpp::datadriven::DataBasedRefinementFunctor funData(grids, alphas,
-                                                       &dataTrain,
-                                                       &targetTrain,
-                                                       numRefinements,
-                                                       levelPenalize,
-                                                       coeffA);
+  sgpp::datadriven::DataBasedRefinementFunctor funData(grids, alphas, &dataTrain, &targetTrain,
+                                                       numRefinements, levelPenalize, coeffA);
 
   /**
    * Choose the refinement functor to be used
@@ -175,7 +158,6 @@ int main() {
   fun = &funGrid;
   // fun = &funZrcr;
   // fun = &funData;
-
 
   /**
    * Repeat alternating refinement and training for n steps and do
@@ -208,27 +190,22 @@ int main() {
     learner2.train(*grids.at(1), *alphas.at(1), dataCl2, lambda);
 
     eval = doClassification(grids, alphas, dataTest, targetTest);
-    std::cout << "   " << i << "   | " << eval.at(0) << " | " << eval.at(1)
-         << std::endl;
+    std::cout << "   " << i << "   | " << eval.at(0) << " | " << eval.at(1) << std::endl;
   }
   std::cout << std::endl << "Done" << std::endl;
   return 0;
 }
-
-
 
 /**
  * Helper function
  * It configures and creates a SGDE learner with meaningful parameters
  */
 
-sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
-                                                double lambda) {
+sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level, double lambda) {
   sgpp::base::RegularGridConfiguration gridConfig;
   gridConfig.dim_ = dim;
   gridConfig.level_ = static_cast<int>(level);
   gridConfig.type_ = sgpp::base::GridType::Linear;
-
 
   // configure adaptive refinement
   sgpp::base::AdaptivityConfiguration adaptConfig;
@@ -244,12 +221,10 @@ sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
 
   // configure regularization
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-  regularizationConfig.type_ =
-    sgpp::datadriven::RegularizationType::Laplace;
+  regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Laplace;
 
   // configure learner
-  sgpp::datadriven::CrossvalidationConfiguration
-    crossvalidationConfig;
+  sgpp::datadriven::CrossvalidationConfiguration crossvalidationConfig;
   crossvalidationConfig.enable_ = false;
   crossvalidationConfig.kfold_ = 3;
   crossvalidationConfig.lambda_ = 3.16228e-06;
@@ -261,10 +236,7 @@ sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
   crossvalidationConfig.seed_ = 1234567;
   crossvalidationConfig.silent_ = true;
 
-  sgpp::datadriven::LearnerSGDE learner(gridConfig,
-                                        adaptConfig,
-                                        solverConfig,
-                                        regularizationConfig,
+  sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptConfig, solverConfig, regularizationConfig,
                                         crossvalidationConfig);
   return learner;
 }
@@ -285,8 +257,8 @@ std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
   sgpp::base::DataVector evals(testData.getNrows());
   std::vector<std::unique_ptr<sgpp::base::OperationEval>> evalOps;
   for (size_t i = 0; i < grids.size(); i++) {
-    std::unique_ptr<sgpp::base::OperationEval>
-      e(sgpp::op_factory::createOperationEval(*grids.at(i)));
+    std::unique_ptr<sgpp::base::OperationEval> e(
+        sgpp::op_factory::createOperationEval(*grids.at(i)));
     evalOps.push_back(std::move(e));
   }
 
@@ -323,8 +295,7 @@ std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
   // Format and return the classification percentages
   std::stringstream ss;
   for (size_t i = 0; i < grids.size(); i++) {
-    double ce = (100.0 * (1.0 - (static_cast<double>(classErrorCounts.at(i)) /
-                                 classCounts.at(i))));
+    double ce = (100.0 * (1.0 - (static_cast<double>(classErrorCounts.at(i)) / classCounts.at(i))));
     ss << std::fixed << std::setprecision(2) << ce;
     if (i < grids.size() - 1) {
       ss << "  ";
@@ -332,8 +303,8 @@ std::vector<std::string> doClassification(std::vector<sgpp::base::Grid*> grids,
   }
   std::stringstream ss2;
   ss2 << std::fixed << std::setprecision(3);
-  ss2 << (100.0 * (1.0 - (static_cast<double>(totalCount) /
-                          static_cast<double>(testData.getNrows()))));
+  ss2 << (100.0 *
+          (1.0 - (static_cast<double>(totalCount) / static_cast<double>(testData.getNrows()))));
   std::vector<std::string> result;
   result.push_back(ss.str());
   result.push_back(ss2.str());
