@@ -166,7 +166,7 @@ int main(int argc, char** argv) {
   std::cout << "------------------------------------------------------" << std::endl;
   // inverse Rosenblatt transformation
   sgpp::datadriven::OperationInverseRosenblattTransformation* opInvRos(
-      sgpp::op_factory::createOperationInverseRosenblattTransformation(*learner.getGrid().get()));
+      sgpp::op_factory::createOperationInverseRosenblattTransformation(*learner.getGrid()));
   sgpp::base::DataMatrix points(12, gridConfig.dim_);
   randu(points);
 
@@ -174,7 +174,7 @@ int main(int argc, char** argv) {
   std::cout << points.toString() << std::endl;
 
   sgpp::base::DataMatrix pointsCdf(points.getNrows(), points.getNcols());
-  opInvRos->doTransformation(learner.getSurpluses().get(), &points, &pointsCdf);
+  opInvRos->doTransformation(learner.getSurpluses(), &points, &pointsCdf);
 
   /**
    * To check whether the results are correct perform a Rosenform transformation on the data that
@@ -183,8 +183,8 @@ int main(int argc, char** argv) {
    */
   points.setAll(0.0);
   sgpp::datadriven::OperationRosenblattTransformation* opRos(
-      sgpp::op_factory::createOperationRosenblattTransformation(*learner.getGrid().get()));
-  opRos->doTransformation(learner.getSurpluses().get(), &pointsCdf, &points);
+      sgpp::op_factory::createOperationRosenblattTransformation(*learner.getGrid()));
+  opRos->doTransformation(learner.getSurpluses(), &pointsCdf, &points);
   std::cout << "------------------------------------------------------" << std::endl;
   std::cout << pointsCdf.toString() << std::endl;
   std::cout << "------------------------------------------------------" << std::endl;
