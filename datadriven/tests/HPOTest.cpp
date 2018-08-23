@@ -413,7 +413,7 @@ BOOST_AUTO_TEST_CASE(fitScalesGP) {
     // << " | Max Norm: " << avscales.maxNorm() << " | size ratio: " << sizeratio << std::endl;
     if (j > 90) {
       // difference is allowed to rise with the squareroot of the dimensionality
-      BOOST_CHECK_LE(avscales.l2Norm(), sqrt(static_cast<double>(prototype.getNPar())) * 0.25);
+      BOOST_CHECK_LE(avscales.l2Norm(), sqrt(static_cast<double>(prototype.getNPar()+1)) * 0.25);
     }
     avscales.add(scales);
   }
