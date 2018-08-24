@@ -39,7 +39,7 @@ FuzzyExtensionPrincipleViaOptimization::FuzzyExtensionPrincipleViaOptimization(
 
 FuzzyExtensionPrincipleViaOptimization::FuzzyExtensionPrincipleViaOptimization(
     const FuzzyExtensionPrincipleViaOptimization& other) :
-    FuzzyExtensionPrinciple(*other.f, other.m),
+    FuzzyExtensionPrinciple(other),
     defaultOptimizer(optimizer::MultiStart(*other.f)) {
   other.optimizer->clone(optimizer);
 
@@ -47,8 +47,20 @@ FuzzyExtensionPrincipleViaOptimization::FuzzyExtensionPrincipleViaOptimization(
     other.fGradient->clone(fGradient);
   }
 
-  if (fHessian.get() != nullptr) {
+  if (other.fHessian.get() != nullptr) {
     other.fHessian->clone(fHessian);
+  }
+
+  if (other.fScaled.get() != nullptr) {
+    other.fScaled->clone(fScaled);
+  }
+
+  if (other.fGradientScaled.get() != nullptr) {
+    other.fGradientScaled->clone(fGradientScaled);
+  }
+
+  if (other.fHessianScaled.get() != nullptr) {
+    other.fHessianScaled->clone(fHessianScaled);
   }
 }
 
