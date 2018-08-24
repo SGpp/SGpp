@@ -41,6 +41,8 @@ class FuzzyExtensionPrinciple {
   const std::vector<base::DataVector>& getMaximumPoints() const;
   const base::DataVector& getMaximumValues() const;
 
+  virtual void clone(std::unique_ptr<FuzzyExtensionPrinciple>& clone) const = 0;
+
  protected:
   std::unique_ptr<ScalarFunction> f;
   size_t m;

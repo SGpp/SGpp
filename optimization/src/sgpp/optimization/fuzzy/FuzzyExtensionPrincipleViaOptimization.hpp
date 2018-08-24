@@ -36,6 +36,8 @@ class FuzzyExtensionPrincipleViaOptimization : public FuzzyExtensionPrinciple {
 
   ~FuzzyExtensionPrincipleViaOptimization() override;
 
+  void clone(std::unique_ptr<FuzzyExtensionPrinciple>& clone) const override;
+
  protected:
   optimizer::MultiStart defaultOptimizer;
   std::unique_ptr<optimizer::UnconstrainedOptimizer> optimizer;

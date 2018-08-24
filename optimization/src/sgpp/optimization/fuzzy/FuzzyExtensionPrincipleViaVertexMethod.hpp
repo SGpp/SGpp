@@ -25,6 +25,8 @@ class FuzzyExtensionPrincipleViaVertexMethod : public FuzzyExtensionPrincipleVia
 
   ~FuzzyExtensionPrincipleViaVertexMethod() override;
 
+  void clone(std::unique_ptr<FuzzyExtensionPrinciple>& clone) const override;
+
  protected:
   std::vector<size_t> powersOfTwo;
   base::DataVector xTmp;

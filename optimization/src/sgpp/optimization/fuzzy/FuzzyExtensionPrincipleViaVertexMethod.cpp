@@ -69,5 +69,11 @@ void FuzzyExtensionPrincipleViaVertexMethod::optimizeForSingleAlphaLevel(
   }
 }
 
+void FuzzyExtensionPrincipleViaVertexMethod::clone(
+    std::unique_ptr<FuzzyExtensionPrinciple>& clone) const {
+  clone = std::unique_ptr<FuzzyExtensionPrinciple>(
+      new FuzzyExtensionPrincipleViaVertexMethod(*this));
+}
+
 }  // namespace optimization
 }  // namespace sgpp
