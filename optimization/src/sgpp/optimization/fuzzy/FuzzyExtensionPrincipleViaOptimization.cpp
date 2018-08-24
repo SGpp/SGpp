@@ -75,32 +75,39 @@ void FuzzyExtensionPrincipleViaOptimization::optimizeForSingleAlphaLevel(
   const base::DataVector& lowerBounds = optimizationDomainsLowerBounds[j];
   const base::DataVector& upperBounds = optimizationDomainsUpperBounds[j];
 
-  fScaled->setLowerBounds(lowerBounds);
-  fScaled->setUpperBounds(upperBounds);
+  ScaledScalarFunction* fScaled2 =
+      dynamic_cast<ScaledScalarFunction*>(fScaled.get());
+  ScaledScalarFunctionGradient* fGradientScaled2 =
+      dynamic_cast<ScaledScalarFunctionGradient*>(fGradientScaled.get());
+  ScaledScalarFunctionHessian* fHessianScaled2 =
+      dynamic_cast<ScaledScalarFunctionHessian*>(fHessianScaled.get());
 
-  if (fGradientScaled.get() != nullptr) {
-    fGradientScaled->setLowerBounds(lowerBounds);
-    fGradientScaled->setUpperBounds(upperBounds);
+  fScaled2->setLowerBounds(lowerBounds);
+  fScaled2->setUpperBounds(upperBounds);
+
+  if (fGradientScaled2 != nullptr) {
+    fGradientScaled2->setLowerBounds(lowerBounds);
+    fGradientScaled2->setUpperBounds(upperBounds);
   }
 
-  if (fHessianScaled.get() != nullptr) {
-    fHessianScaled->setLowerBounds(lowerBounds);
-    fHessianScaled->setUpperBounds(upperBounds);
+  if (fHessianScaled2 != nullptr) {
+    fHessianScaled2->setLowerBounds(lowerBounds);
+    fHessianScaled2->setUpperBounds(upperBounds);
   }
 
   // compute minimum (lower bound of output confidence interval)
   {
     // value factor of 1 means minimization
-    fScaled->setValueFactor(1.0);
+    fScaled2->setValueFactor(1.0);
     optimizer->setObjectiveFunction(*fScaled);
 
-    if (fGradientScaled.get() != nullptr) {
-      fGradientScaled->setValueFactor(1.0);
+    if (fGradientScaled2 != nullptr) {
+      fGradientScaled2->setValueFactor(1.0);
       optimizer->setObjectiveGradient(fGradientScaled.get());
     }
 
-    if (fHessianScaled.get() != nullptr) {
-      fHessianScaled->setValueFactor(1.0);
+    if (fHessianScaled2 != nullptr) {
+      fHessianScaled2->setValueFactor(1.0);
       optimizer->setObjectiveHessian(fHessianScaled.get());
     }
 
@@ -124,16 +131,16 @@ void FuzzyExtensionPrincipleViaOptimization::optimizeForSingleAlphaLevel(
   // compute maximum (upper bound of output confidence interval)
   {
     // value factor of -1 means maximization
-    fScaled->setValueFactor(-1.0);
+    fScaled2->setValueFactor(-1.0);
     optimizer->setObjectiveFunction(*fScaled);
 
-    if (fGradientScaled.get() != nullptr) {
-      fGradientScaled->setValueFactor(-1.0);
+    if (fGradientScaled2 != nullptr) {
+      fGradientScaled2->setValueFactor(-1.0);
       optimizer->setObjectiveGradient(fGradientScaled.get());
     }
 
-    if (fHessianScaled.get() != nullptr) {
-      fHessianScaled->setValueFactor(-1.0);
+    if (fHessianScaled2 != nullptr) {
+      fHessianScaled2->setValueFactor(-1.0);
       optimizer->setObjectiveHessian(fHessianScaled.get());
     }
 

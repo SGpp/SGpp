@@ -43,9 +43,9 @@ class FuzzyExtensionPrincipleViaOptimization : public FuzzyExtensionPrinciple {
   std::unique_ptr<optimizer::UnconstrainedOptimizer> optimizer;
   std::unique_ptr<ScalarFunctionGradient> fGradient;
   std::unique_ptr<ScalarFunctionHessian> fHessian;
-  std::unique_ptr<ScaledScalarFunction> fScaled;
-  std::unique_ptr<ScaledScalarFunctionGradient> fGradientScaled;
-  std::unique_ptr<ScaledScalarFunctionHessian> fHessianScaled;
+  std::unique_ptr<ScalarFunction> fScaled;
+  std::unique_ptr<ScalarFunctionGradient> fGradientScaled;
+  std::unique_ptr<ScalarFunctionHessian> fHessianScaled;
 
   void prepareApply() override;
 
