@@ -25,6 +25,8 @@ class FuzzyExtensionPrincipleViaTransformation : public FuzzyExtensionPrincipleV
 
   ~FuzzyExtensionPrincipleViaTransformation() override;
 
+  void clone(std::unique_ptr<FuzzyExtensionPrinciple>& clone) const override;
+
  protected:
   std::vector<std::vector<base::DataVector>> C;
   std::vector<size_t> gammaSize;
