@@ -7,8 +7,10 @@
 
 #include <sgpp/optimization/fuzzy/FuzzyExtensionPrinciple.hpp>
 #include <sgpp/optimization/fuzzy/InterpolatedFuzzyInterval.hpp>
+#include <sgpp/optimization/tools/Printer.hpp>
 
 #include <limits>
+#include <string>
 #include <vector>
 
 namespace sgpp {
@@ -39,6 +41,8 @@ void FuzzyExtensionPrinciple::prepareApply() {}
 
 FuzzyInterval* FuzzyExtensionPrinciple::apply(
     const std::vector<const FuzzyInterval*>& xFuzzy) {
+  Printer::getInstance().printStatusBegin("Applying fuzzy extension principle...");
+
   const size_t d = f->getNumberOfParameters();
 
   // result data
@@ -51,6 +55,9 @@ FuzzyInterval* FuzzyExtensionPrinciple::apply(
   minimumValues.resize(m + 1);
   maximumPoints.resize(m + 1, base::DataVector(d));
   maximumValues.resize(m + 1);
+
+  Printer::getInstance().printStatusUpdate("calculating confidence intervals");
+  Printer::getInstance().printStatusNewLine();
 
   // calculate alpha levels and corresponding confidence intervals
   for (size_t j = 0; j <= m; j++) {
@@ -66,14 +73,16 @@ FuzzyInterval* FuzzyExtensionPrinciple::apply(
     }
   }
 
-  // call custom preparation method (may be required and implemented by sub-class)
-  prepareApply();
-
   // current optimal points/values
-  base::DataVector minimumPoint(d);
-  double minimumValue;
-  base::DataVector maximumPoint(d);
-  double maximumValue;
+  std::vector<std::unique_ptr<base::DataVector>> curMinimumPoints;
+  base::DataVector curMinimumValues(m + 1);
+  std::vector<std::unique_ptr<base::DataVector>> curMaximumPoints;
+  base::DataVector curMaximumValues(m + 1);
+
+  for (size_t j = 0; j <= m; j++) {
+    curMinimumPoints.emplace_back(new base::DataVector(d));
+    curMaximumPoints.emplace_back(new base::DataVector(d));
+  }
 
   // save last optimal min/max value and corresponding argmin/argmax point
   // to make sure that the optimum for a smaller alpha (hence for a larger optimization domain)
@@ -83,15 +92,61 @@ FuzzyInterval* FuzzyExtensionPrinciple::apply(
   base::DataVector lastOptimalPointMin(d);
   base::DataVector lastOptimalPointMax(d);
 
+  const bool statusPrintingEnabled = Printer::getInstance().isStatusPrintingEnabled();
+
+  if (statusPrintingEnabled) {
+    Printer::getInstance().disableStatusPrinting();
+  }
+
+  size_t alphaLevelsDone = 0;
+
+#pragma omp parallel shared(curMinimumPoints, curMinimumValues, \
+    alphaLevelsDone, curMaximumPoints, curMaximumValues) default(none)
+  {
+    std::unique_ptr<FuzzyExtensionPrinciple> curFuzzyExtensionPrinciple;
+    clone(curFuzzyExtensionPrinciple);
+
+    // call custom preparation method (may be required and implemented by sub-class)
+    curFuzzyExtensionPrinciple->prepareApply();
+
+#pragma omp for schedule(static)
+    for (size_t j = 0; j <= m; j++) {
+      curFuzzyExtensionPrinciple->optimizeForSingleAlphaLevel(
+          j, *curMinimumPoints[j], curMinimumValues[j],
+          *curMaximumPoints[j], curMaximumValues[j]);
+
+#pragma omp atomic
+      alphaLevelsDone++;
+
+      // status message
+      if (statusPrintingEnabled) {
+        char str[10];
+        snprintf(str, sizeof(str), "%.1f%%",
+                 static_cast<double>(alphaLevelsDone) / static_cast<double>(m + 1) * 100.0);
+        Printer::getInstance().getMutex().lock();
+        Printer::getInstance().enableStatusPrinting();
+        Printer::getInstance().printStatusUpdate("optimizing (" + std::string(str) +
+                                                 ")");
+        Printer::getInstance().disableStatusPrinting();
+        Printer::getInstance().getMutex().unlock();
+      }
+    }
+  }
+
+  if (statusPrintingEnabled) {
+    Printer::getInstance().enableStatusPrinting();
+  }
+
+  Printer::getInstance().printStatusUpdate("optimizing (100.0%)");
+  Printer::getInstance().printStatusNewLine();
+
   // iterate through alphas from 1 to 0
   for (size_t j = m + 1; j-- > 0;) {
-    optimizeForSingleAlphaLevel(j, minimumPoint, minimumValue, maximumPoint, maximumValue);
-
     // check if optimal value is indeed smaller than the last minimum
-    if (minimumValue < lastOptimalValueMin) {
-      xData[j] = minimumValue;
-      lastOptimalValueMin = minimumValue;
-      lastOptimalPointMin = minimumPoint;
+    if (curMinimumValues[j] < lastOptimalValueMin) {
+      xData[j] = curMinimumValues[j];
+      lastOptimalValueMin = curMinimumValues[j];
+      lastOptimalPointMin = *curMinimumPoints[j];
     } else {
       xData[j] = lastOptimalValueMin;
     }
@@ -101,10 +156,10 @@ FuzzyInterval* FuzzyExtensionPrinciple::apply(
     alphaData[j] = alphaLevels[j];
 
     // check if optimal value is indeed larger than the last maximum
-    if (maximumValue > lastOptimalValueMax) {
-      xData[2*m+1-j] = maximumValue;
-      lastOptimalValueMax = maximumValue;
-      lastOptimalPointMax = maximumPoint;
+    if (curMaximumValues[j] > lastOptimalValueMax) {
+      xData[2*m+1-j] = curMaximumValues[j];
+      lastOptimalValueMax = curMaximumValues[j];
+      lastOptimalPointMax = *curMaximumPoints[j];
     } else {
       xData[2*m+1-j] = lastOptimalValueMax;
     }
@@ -113,6 +168,8 @@ FuzzyInterval* FuzzyExtensionPrinciple::apply(
     maximumValues[j] = lastOptimalValueMax;
     alphaData[2*m+1-j] = alphaLevels[j];
   }
+
+  Printer::getInstance().printStatusEnd();
 
   // interpolate between alpha data points
   return new InterpolatedFuzzyInterval(xData, alphaData);
