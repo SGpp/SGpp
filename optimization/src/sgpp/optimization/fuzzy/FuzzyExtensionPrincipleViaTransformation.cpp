@@ -24,6 +24,9 @@ FuzzyExtensionPrincipleViaTransformation::FuzzyExtensionPrincipleViaTransformati
 FuzzyExtensionPrincipleViaTransformation::FuzzyExtensionPrincipleViaTransformation(
     const FuzzyExtensionPrincipleViaTransformation& other) :
     FuzzyExtensionPrincipleViaTransformation(*other.f, other.m) {
+  C = other.C;
+  gammaSize = other.gammaSize;
+  xTmp = other.xTmp;
 }
 
 FuzzyExtensionPrincipleViaTransformation::~FuzzyExtensionPrincipleViaTransformation() {}
