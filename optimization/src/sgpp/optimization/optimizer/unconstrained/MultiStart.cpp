@@ -205,7 +205,7 @@ void MultiStart::optimize() {
       pointsDone++;
 
       // status printing
-      {
+      if (statusPrintingEnabled) {
         char str[10];
         snprintf(str, sizeof(str), "%.1f%%",
                  static_cast<double>(pointsDone) / static_cast<double>(populationSize) * 100.0);
