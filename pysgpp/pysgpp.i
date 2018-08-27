@@ -19,7 +19,7 @@
 
 %include "base/src/sgpp/globaldef.hpp"
 
-%include "std_string.i"
+//%include "std_string.i"
 %include "stl.i"
 %include "std_vector.i"
 %include "std_list.i"
