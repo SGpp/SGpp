@@ -22,7 +22,8 @@ from RefinementStrategy import (SurplusRanking,
                                 AnchoredWeightedL2OptRanking,
                                 AnchoredVarianceOptRanking,
                                 AnchoredMeanSquaredOptRanking,
-                                AnchoredExpectationValueOptRanking)
+                                AnchoredExpectationValueOptRanking,
+                                WeightedL2OptRanking_MC_pm1d)
 from pysgpp.extensions.datadriven.uq.quadrature.bilinearform import BilinearGaussQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.quadrature.HashQuadrature import HashQuadrature
 
@@ -174,7 +175,11 @@ class RefineCurrentNodesDescriptor(AdmissibleSetDescriptor):
         localRefinementStrategy = ANOVARefinement()
         self._refinement.setLocalRefinementStrategy(localRefinementStrategy)
         return self
-
+    
+    def withWeightedL2OptimizationRanking_MC_pm1d(self):
+        ranking = WeightedL2OptRanking_MC_pm1d()
+        self._refinement.setRefinementCriterion(ranking)
+        return self
 
 class MostPromisingChildrenDescriptor(AdmissibleSetDescriptor):
 

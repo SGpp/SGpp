@@ -111,6 +111,8 @@ class TestEnvironmentSG(object):
                     refineNodes.withAnchoredWeightedL2OptimizationRanking()
                 elif adaptive == "anchored_mean_squared":
                     refineNodes.withAnchoredMeanSquaredOptRanking()
+                elif adaptive == "l2_mc_pm1d":
+                    refineNodes.withWeightedL2OptimizationRanking_MC_pm1d()
                 else:
                     raise AttributeError("unknown ranking method: refinement, %s" % adaptive)
             else:

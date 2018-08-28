@@ -157,6 +157,7 @@ class WeightedL2OptRanking(Ranking):
             self.vol, self.W, self.D = self._estimationStrategy._extractPDFforMomentEstimation(U, T)
             self.initialized = True
 
+
         # prepare data
         gs = grid.getStorage()
         basisi = getBasis(grid)
@@ -428,6 +429,55 @@ class AnchoredMeanSquaredOptRanking(Ranking):
 
         # update the ranking
         return np.abs(v[ix] * fx)
+
+
+class WeightedL2OptRanking_MC_pm1d(Ranking):
+    """
+    This is a hack! DO NOT MEGE INTO MASTER!
+    Special Refinement criterion for the pm1d CO2 storage example
+    It replicates the WeightedL2OptRanking but calculates the secondMoment with Monte Carlo
+    instead of using estimated densities.
+    This is used in particular for calculating results of the pm1d code with B-splines as currently
+    there are no estimated densities available for them.
+    The Monte Carlo guess is based on 10000 sample points given by the authors of the pm1d code
+    """
+
+    def __init__(self):
+        super(self.__class__, self).__init__()
+        self.MCparameters = np.loadtxt("/home/rehmemk/git/SGpp/misc/python/UnitInputParameters_5023.txt", dtype = np.float64, delimiter=' ')
+
+    def update(self, grid, v, gpi, params, *args, **kws):
+        """
+        Compute ranking for variance estimation
+
+        \argmax_{i \in \A} |v_i| \sqrt{E[\varphi_i^2]} 
+        
+        using E[\varphi_i^2] \approx \sum_{j} \varphi_i^2(x_j),
+        where x_j are realisations of the unknown probability density function.
+
+        @param grid: Grid 
+        @param v: numpy array coefficients
+        """
+
+        self.vol = 4.0 #for the pm1d code the domeain is [0,1] x [0,1] x [-0.5,3.5] 
+        
+        # prepare data
+        gs = grid.getStorage()
+        basisi = getBasis(grid)
+        
+        # compute the second moment for the current grid point using monte carlo estimation 
+        secondMoment = 0
+        for j in range(len(self.MCparameters)):
+            baseEval = 1
+            for d in range(len(self.MCparameters[0])):
+                baseEval *= basisi.eval(gpi.getLevel(d), gpi.getIndex(d),self.MCparameters[j,d])
+            secondMoment += baseEval**2
+        
+        secondMoment = max(0.0, self.vol * secondMoment)
+
+        # update the ranking
+        ix = gs.getSequenceNumber(gpi)
+        return np.abs(v[ix]) * np.sqrt(secondMoment)
 
 # ------------------------------------------------------------------------------
 # Add new collocation nodes
