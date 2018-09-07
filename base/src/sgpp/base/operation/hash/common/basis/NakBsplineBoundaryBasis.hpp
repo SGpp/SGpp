@@ -72,7 +72,8 @@ class NakBsplineBoundaryBasis : public Basis<LT, IT> {
         if (l == 0) {
           if (i == 0) {
             // l = 0, i = 0
-            return 1;
+            // return 1;
+            return 1 - x;
           } else {
             // l = 0, i = 1
             return x;
@@ -83,7 +84,8 @@ class NakBsplineBoundaryBasis : public Basis<LT, IT> {
             return -2 * (1 - x) * (x - 0.5);
           } else if (i == 1) {
             // l = 1, i = 1
-            return -4 * (x - 1) * x;
+            // return -4 * (x - 1) * x;
+            return 4 * x - 4 * x * x;
           } else {
             // l = 1, i = 2
             return 2 * (x - 0.5) * x;
