@@ -176,8 +176,8 @@ class RefineCurrentNodesDescriptor(AdmissibleSetDescriptor):
         self._refinement.setLocalRefinementStrategy(localRefinementStrategy)
         return self
     
-    def withWeightedL2OptimizationRanking_MC_pm1d(self):
-        ranking = WeightedL2OptRanking_MC_pm1d()
+    def withWeightedL2OptimizationRanking_MC_pm1d(self,deg,gridType):
+        ranking = WeightedL2OptRanking_MC_pm1d(deg,gridType)
         self._refinement.setRefinementCriterion(ranking)
         return self
 

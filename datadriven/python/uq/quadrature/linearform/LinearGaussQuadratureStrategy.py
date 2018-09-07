@@ -4,6 +4,7 @@ Created on Aug 6, 2014
 @author: franzefn
 """
 import numpy as np
+from math import floor
 
 from LinearQuadratureStrategy import LinearQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.operations import getBoundsOfSupport, bsplineGridTypes
@@ -11,7 +12,7 @@ from pysgpp.extensions.datadriven.uq.dists.Uniform import Uniform
 
 from pysgpp import GridType_NakBsplineBoundary, GridType_NotAKnotBsplineModified
 
-from math import floor
+
 
 
 class LinearGaussQuadratureStrategy(LinearQuadratureStrategy):
