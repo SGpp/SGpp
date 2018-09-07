@@ -647,6 +647,10 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
         std::pair<sgpp::base::GridType, std::string>(GridType::Periodic, "periodic"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
         GridType::LinearTruncatedBoundary, "linearTruncatedBoundary"));
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::NakBsplineBoundary,
+                                                                    "nakbsplineboundary"));
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
+        GridType::NotAKnotBsplineModified, "nakbsplinemodified"));
 #else
     verboseMap->insert(std::make_pair(GridType::Linear, "linear"));
     verboseMap->insert(std::make_pair(GridType::LinearStretched, "linearStretched"));
@@ -687,6 +691,8 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
     verboseMap->insert(
         std::make_pair(GridType::ModLinearClenshawCurtis, "modLinearClenshawCurtis"));
     verboseMap->insert(std::make_pair(GridType::LinearClenshawCurtis, "linearClenshawCurtis"));
+    verboseMap->insert(std::make_pair(GridType::NakBsplineBoundary, "nakbsplineboundary"));
+    verboseMap->insert(std::make_pair(GridType::NotAKnotBsplineModified, "nakbsplinemodified"));
 #endif
   }
 

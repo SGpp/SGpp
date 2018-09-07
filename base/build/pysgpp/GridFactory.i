@@ -166,6 +166,7 @@ public:
   static Grid* createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
   static Grid* createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
   static Grid* createNakBsplineBoundaryGrid(size_t dim, size_t degree);
+  static Grid* createNotAKnotBsplineModifiedGrid(size_t dim, size_t degree);
 
   static Grid* unserialize(std::string& istr);
 
