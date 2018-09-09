@@ -16,6 +16,7 @@
 #include <sgpp/datadriven/tools/Dataset.hpp>
 
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -36,6 +37,13 @@ class CSVTools {
   static Dataset readCSV(const std::string& filename, bool skipFirstLine = false,
       bool hasTargets = true);
 
+  static Dataset readCSVPartial(const std::string& filename,
+                                bool skipFirstLine = false,
+                                bool hasTargets = true,
+                                size_t instanceCutoff = -1,
+                                std::vector<size_t> selectedCols = std::vector<size_t>(),
+                                std::vector<int> selectedTargets = std::vector<int>());
+
   /**
    * Reads the size of an CSV file.
    *
@@ -47,7 +55,16 @@ class CSVTools {
   static void readCSVSize(const std::string& filename, size_t& numberInstances,
                            size_t& dimension, bool hasTargets = true);
 
+  static void readCSVSizePartial(const std::string& filename,
+                                 size_t& numberInstances,
+                                 size_t& dimension,
+                                 bool skipFirstLine = false,
+                                 bool hasTargets = true,
+                                 std::vector<int> selectedCols = std::vector<int>());
+
  private:
+
+  static std::vector<double> tokenizeLine(const std::string& line);
   /**
    * stores the attribute info of one instance into a sgpp::base::DataMatrix
    *
