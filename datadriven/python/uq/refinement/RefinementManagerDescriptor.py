@@ -23,7 +23,7 @@ from RefinementStrategy import (SurplusRanking,
                                 AnchoredVarianceOptRanking,
                                 AnchoredMeanSquaredOptRanking,
                                 AnchoredExpectationValueOptRanking,
-                                WeightedL2OptRanking_MC_pm1d)
+                                PM1D_MC_Ranking)
 from pysgpp.extensions.datadriven.uq.quadrature.bilinearform import BilinearGaussQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.quadrature.HashQuadrature import HashQuadrature
 
@@ -176,8 +176,8 @@ class RefineCurrentNodesDescriptor(AdmissibleSetDescriptor):
         self._refinement.setLocalRefinementStrategy(localRefinementStrategy)
         return self
     
-    def withWeightedL2OptimizationRanking_MC_pm1d(self,deg,gridType):
-        ranking = WeightedL2OptRanking_MC_pm1d(deg,gridType)
+    def withPM1D_MC_Ranking(self,deg,gridType,refinementType):
+        ranking = PM1D_MC_Ranking(deg,gridType,refinementType)
         self._refinement.setRefinementCriterion(ranking)
         return self
 

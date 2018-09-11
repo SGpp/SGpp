@@ -433,9 +433,9 @@ class AnchoredMeanSquaredOptRanking(Ranking):
         return np.abs(v[ix] * fx)
 
 
-class WeightedL2OptRanking_MC_pm1d(Ranking):
+class PM1D_MC_Ranking(Ranking):
     """
-    This is a hack! DO NOT MERGE INTO MASTER!
+    This is pm1d specific! DO NOT MERGE INTO MASTER!
     Special Refinement criterion for the pm1d CO2 storage example
     It replicates the WeightedL2OptRanking but calculates the secondMoment with Monte Carlo
     instead of using estimated densities.
@@ -445,9 +445,10 @@ class WeightedL2OptRanking_MC_pm1d(Ranking):
     As  the basis function integrals are independent of the actual setting they are precalculated and saved in files.
     """
 
-    def __init__(self,deg,gridType):
-        super(self.__class__, self).__init__()
-        self.momentsFileName = 'E2' + '_' + str(gridType) + '_' + str(deg)
+    def __init__(self,deg,gridType,refinementType):
+        super(self.__class__, self).__init__()#
+        self.refinementType = refinementType
+        self.momentsFileName = refinementType + '_' + str(gridType) + '_' + str(deg)
         self.momentsFilePath = os.path.join('/home/rehmemk/git/uq-raphael/sgpp_pm1d/MR/Bspline_precalc',self.momentsFileName + '.pkl')
         if os.path.exists(self.momentsFilePath):
             with open(self.momentsFilePath, 'rb') as f:
@@ -484,8 +485,12 @@ class WeightedL2OptRanking_MC_pm1d(Ranking):
                 baseEval = 1
                 for d in range(len(self.MCparameters[0])):
                     baseEval *= basisi.eval(gpi.getLevel(d), gpi.getIndex(d),self.MCparameters[j,d])
-                secondMoment += baseEval**2
-            
+                if self.refinementType == 'l2':
+                    secondMoment += baseEval**2
+                elif self.refinementType =='exp':
+                    secondMoment += baseEval
+                elif self.refinementType =='var':
+                    sys.exit('RefinementStrategy: not implemented yet')
             secondMoment = max(0.0, self.vol * secondMoment/ len(self.MCparameters))
             self.moments[key] = secondMoment
             with open(self.momentsFilePath, 'wb+') as f:
@@ -493,7 +498,11 @@ class WeightedL2OptRanking_MC_pm1d(Ranking):
 
         # update the ranking
         ix = gs.getSequenceNumber(gpi)
-        return np.abs(v[ix]) * np.sqrt(secondMoment)
+        if self.refinementType == 'l2':
+            ranking = np.abs(v[ix]) * np.sqrt(secondMoment)
+        elif self.refinementType == 'exp':
+            ranking = np.abs(v[ix]*secondMoment)
+        return ranking
 
 # ------------------------------------------------------------------------------
 # Add new collocation nodes
