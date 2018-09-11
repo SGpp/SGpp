@@ -57,7 +57,7 @@ Dataset CSVTools::readCSVPartial(const std::string& filename,
                                  bool hasTargets,
                                  size_t instanceCutoff,
                                  std::vector<size_t> selectedCols,
-                                 std::vector<int> selectedTargets)
+                                 std::vector<double> selectedTargets)
 {
   size_t maxInst = 0;
   size_t maxDim = 0;
@@ -95,10 +95,9 @@ Dataset CSVTools::readCSVPartial(const std::string& filename,
         // if no classes are specified, always accept the line
         bool isSelectedClass = selectedTargets.size() == 0;
         // TODO(sebastian): this float comp is probably implemented in SGPP
-        double eps = 0.001;
         for(size_t i = 0; i < selectedTargets.size(); i++) {
           isSelectedClass = isSelectedClass ||
-            (fabs(cl - selectedTargets.at(i)) < eps);
+            (fabs(cl - selectedTargets.at(i)) < 0.001);
         }
         if(isSelectedClass) {
           dataset.getTargets().set(rowIndex, cl);
@@ -107,11 +106,13 @@ Dataset CSVTools::readCSVPartial(const std::string& filename,
           continue;
         }
       }
+      // We want all columns as dimensions
       if(selectedCols.size() == 0) {
         for(size_t i = 0; i < rowEntries.size(); i++) {
           dataset.getData().set(rowIndex, i, rowEntries.at(i));
         }
       } else {
+        // only write dimensions specified in selectedCols
         for(size_t i = 0; i < selectedCols.size(); i++) {
           dataset.getData().set(rowIndex, i, rowEntries.at(selectedCols.at(i)));
         }
@@ -174,7 +175,7 @@ void CSVTools::readCSVSizePartial(const std::string& filename,
                                   size_t& dimension,
                                   bool skipFirstLine,
                                   bool hasTargets,
-                                  std::vector<int> selectedCols)
+                                  std::vector<double> selectedTargets)
 {
   std::string line;
   std::ifstream myfile(filename.c_str());
@@ -204,13 +205,16 @@ void CSVTools::readCSVSizePartial(const std::string& filename,
       msg.append(filename);
       throw sgpp::base::file_exception(msg.c_str());
     }
-    if(hasTargets && selectedCols.size() > 0) {
+    if(hasTargets && selectedTargets.size() > 0) {
       size_t cur_pos = line.find_last_of(",");
       std::string cur_value = line.substr(cur_pos + 1);
-      int cl = atoi(cur_value.c_str());
-      if(std::find(selectedCols.begin(), selectedCols.end(), cl) !=
-         selectedCols.end()) {
-        numberInstances++;
+      double cl = atof(cur_value.c_str());
+      for(size_t i = 0; i < selectedTargets.size(); i++) {
+        //TODO(sebastian): Find better solution for float comp
+        if(fabs(cl - selectedTargets.at(i)) < 0.001) {
+          numberInstances++;
+          break;
+        }
       }
     } else {
       numberInstances++;
