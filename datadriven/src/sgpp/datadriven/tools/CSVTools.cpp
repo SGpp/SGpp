@@ -86,41 +86,42 @@ Dataset CSVTools::readCSVPartial(const std::string& filename,
       skipFirstLine = false;
       continue;
     }
-    if(!line.empty()) {
-      rowEntries = tokenizeLine(line);
-      // if we want a target, we remove it from line as we process it
-      if(hasTargets) {
-        double cl = rowEntries.back();
-        rowEntries.pop_back(); // removes last element from vector
-        // if no classes are specified, always accept the line
-        bool isSelectedClass = selectedTargets.size() == 0;
-        // TODO(sebastian): this float comp is probably implemented in SGPP
-        for(size_t i = 0; i < selectedTargets.size(); i++) {
-          isSelectedClass = isSelectedClass ||
-            (fabs(cl - selectedTargets.at(i)) < 0.001);
-        }
-        if(isSelectedClass) {
-          dataset.getTargets().set(rowIndex, cl);
-        } else {
-          // line has class which is not in selectedTargets
-          continue;
-        }
+    if(line.empty()) {
+      continue;
+    }
+    rowEntries = tokenizeLine(line);
+    // if we want a target, we remove it from line as we process it
+    if(hasTargets) {
+      double cl = rowEntries.back();
+      rowEntries.pop_back(); // removes last element from vector
+      // if no classes are specified, always accept the line
+      bool isSelectedClass = selectedTargets.size() == 0;
+      // TODO(sebastian): this float comp is probably implemented in SGPP
+      for(size_t i = 0; i < selectedTargets.size(); i++) {
+        isSelectedClass = isSelectedClass ||
+          (fabs(cl - selectedTargets.at(i)) < 0.001);
       }
-      // We want all columns as dimensions
-      if(selectedCols.size() == 0) {
-        for(size_t i = 0; i < rowEntries.size(); i++) {
-          dataset.getData().set(rowIndex, i, rowEntries.at(i));
-        }
+      if(isSelectedClass) {
+        dataset.getTargets().set(rowIndex, cl);
       } else {
-        // only write dimensions specified in selectedCols
-        for(size_t i = 0; i < selectedCols.size(); i++) {
-          dataset.getData().set(rowIndex, i, rowEntries.at(selectedCols.at(i)));
-        }
+        // line has class which is not in selectedTargets
+        continue;
       }
-      rowIndex++;
-      if(rowIndex >= numberInstances) {
-        break;
+    }
+    // We want all columns as dimensions
+    if(selectedCols.size() == 0) {
+      for(size_t i = 0; i < rowEntries.size(); i++) {
+        dataset.getData().set(rowIndex, i, rowEntries.at(i));
       }
+    } else {
+      // only write dimensions specified in selectedCols
+      for(size_t i = 0; i < selectedCols.size(); i++) {
+        dataset.getData().set(rowIndex, i, rowEntries.at(selectedCols.at(i)));
+      }
+    }
+    rowIndex++;
+    if(rowIndex >= numberInstances) {
+      break;
     }
   }
   myfile.close();
@@ -194,6 +195,7 @@ void CSVTools::readCSVSizePartial(const std::string& filename,
       skipFirstLine = false;
       continue;
     }
+    // Relies on first line being a correct instance line
     if(dimension == 0) {
       dimension = std::count(line.begin(), line.end(), ',');
       dimension += hasTargets ? 0 : 1;

@@ -14,6 +14,7 @@
 #include <sgpp/datadriven/tools/Dataset.hpp>
 
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -31,6 +32,12 @@ class ARFFTools {
    * @return ARFF as Dataset
    */
   static Dataset readARFF(const std::string& filename, bool hasTargets = true);
+
+  static Dataset readARFFPartial(const std::string& filename,
+                                 bool hasTargets = true,
+                                 size_t instanceCutoff = -1,
+                                 std::vector<size_t> selectedCols = std::vector<size_t>(),
+                                 std::vector<double> selectedTargets = std::vector<double>());
 
   /**
    * Reads an ARFF file content.
@@ -50,6 +57,12 @@ class ARFFTools {
    */
   static void readARFFSize(const std::string& filename, size_t& numberInstances,
                            size_t& dimension);
+
+  static void readARFFSizePartial(const std::string& filename,
+                                  size_t& numberInstances,
+                                  size_t& dimension,
+                                  bool hasTargets = true,
+                                  std::vector<double> selectedTargets = std::vector<double>());
 
   static void readARFFSizeFromString(const std::string& content,
                                      size_t& numberInstances, size_t& dimension);
@@ -76,6 +89,8 @@ class ARFFTools {
    */
   static void writeNewClass(const std::string& arffLine,
                             sgpp::base::DataVector& destination, size_t instanceNo);
+
+  static std::vector<double> tokenizeLine(const std::string& line);
 };
 
 }  // namespace datadriven
