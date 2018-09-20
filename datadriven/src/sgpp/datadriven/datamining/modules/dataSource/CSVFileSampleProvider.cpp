@@ -49,7 +49,7 @@ size_t CSVFileSampleProvider::getNumSamples() const {
 void CSVFileSampleProvider::readFile(const std::string& fileName, bool hasTargets) {
   try {
     // call readCSV with skipfirstline set to true
-    dataset = CSVTools::readCSV(fileName, true, hasTargets);
+    dataset = CSVTools::readCSVFromFile(fileName, true, hasTargets);
   } catch (...) {
     // TODO(lettrich): catching all exceptions is bad design. Replace call to CSVTools with
     // exception safe implementation.
