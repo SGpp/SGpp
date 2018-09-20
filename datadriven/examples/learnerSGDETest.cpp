@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
   std::string filename = "../../datasets/friedman/friedman2_4d_300000.arff";
 
   std::cout << "# loading file: " << filename << std::endl;
-  sgpp::datadriven::Dataset dataset = sgpp::datadriven::ARFFTools::readARFF(filename);
+  sgpp::datadriven::Dataset dataset = sgpp::datadriven::ARFFTools::readARFFFromFile(filename);
   sgpp::base::DataMatrix& samples = dataset.getData();
 
   /**
