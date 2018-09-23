@@ -30,7 +30,9 @@ class CSVTools {
    /**
    * Sequentially reads a CSV file.
    *
-   * @param stream constains the raw data
+   * @param stream constains the raw data. Note: After this function exists,
+   *        stream will be at eof. For further use it should be cleared and 
+   *        reset
    * @param skipFirstLine whether to skip the first line while parsing
    *        This accomodates for a comment line with the data layout
    * @param hasTargets whether the csv has columns for targets
@@ -66,7 +68,9 @@ class CSVTools {
   /**
    * Reads the size of a CSV file.
    *
-   * @param stream contains the raw data
+   * @param stream contains the raw data. Note: After this function exists,
+   *        stream will be at eof. For further use it should be cleared and 
+   *        reset
    * @param[out] numberInstances number of instances in the dataset
    * @param[out] number of columns (dimensions) in the dataset
    * @param hasTargets whether the csv has a columns for targets

@@ -27,7 +27,9 @@ class ARFFTools {
   /**
    * Reads the size of a ARFF file.
    *
-   * @param stream contains the raw data
+   * @param stream contains the raw data. Note: After this function exists,
+   *        stream will be at eof. For further use it should be cleared and 
+   *        reset
    * @param[out] numberInstances number of instances in the dataset
    * @param[out] number of columns (dimensions) in the dataset
    * @param hasTargets whether the csv has a columns for targets
@@ -46,7 +48,9 @@ class ARFFTools {
   /**
    * Sequentially reads a ARFF file.
    *
-   * @param stream contains the raw data
+   * @param stream contains the raw data. Note: After this function exists,
+   *        stream will be at eof. For further use it should be cleared and 
+   *        reset
    * @param hasTargets whether the csv has columns for targets
    *        (supervised learning)
    * @param instanceCutoff maximal number of instances to include in the

@@ -30,7 +30,8 @@ BOOST_AUTO_TEST_CASE(testReadCSV) {
 
   double testValues[10] = {-1., 1., 1., 1., 1., 1., -1., -1., -1., -1.};
 
-  sgpp::datadriven::Dataset dataSet = sgpp::datadriven::CSVTools::readCSV(
+  sgpp::datadriven::Dataset dataSet = 
+    sgpp::datadriven::CSVTools::readCSVFromFile(
       "datadriven/tests/datasets/liver-disorders_normalized.csv", true);
 
   sgpp::base::DataVector& classes = dataSet.getTargets();
