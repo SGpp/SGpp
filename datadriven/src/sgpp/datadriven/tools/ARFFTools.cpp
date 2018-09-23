@@ -124,6 +124,9 @@ Dataset ARFFTools::readARFF(std::istream& stream,
   size_t dimension = 0;
   size_t numberInstances = 0;
   readARFFSize(stream, maxInst, maxDim, hasTargets, selectedTargets);
+  // reset the stream
+  stream.clear();
+  stream.seekg(0, std::ios::beg);
   // make sure selectedCols has admissible values if it is not empty
   if(selectedCols.size() > 0) {
     if(*std::max_element(selectedCols.begin(), selectedCols.end()) >= maxDim) {
