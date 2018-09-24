@@ -66,7 +66,7 @@ class BilinearGaussQuadratureStrategy(BilinearQuadratureStrategy):
             return 0,0
         else:
             if lid > ljd:   
-                commonSupport = bSid    #These three are NOT minimal. Speed can be improved!
+                commonSupport = bSid    
             elif lid < ljd:
                 commonSupport = bSjd
             else:
@@ -87,7 +87,7 @@ class BilinearGaussQuadratureStrategy(BilinearQuadratureStrategy):
                         basisj.eval(ljd, ijd, p) * \
                         self._U[d].pdf(q)
 
-            # compute the piecewise continuous parts separately
+            # compute the piecewise continuous parts seperately
             deg = 2 * (max(lid,ljd) + 1) + 1
             basisIntegral = 0
             integrationErr = 0

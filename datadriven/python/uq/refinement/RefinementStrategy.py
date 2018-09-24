@@ -449,7 +449,7 @@ class PM1D_MC_Ranking(Ranking):
         super(self.__class__, self).__init__()#
         self.refinementType = refinementType
         self.momentsFileName = refinementType + '_' + str(gridType) + '_' + str(deg)
-        self.momentsFilePath = os.path.join('/home/rehmemk/git/uq-raphael/sgpp_pm1d/MR/Bspline_precalc',self.momentsFileName + '.pkl')
+        self.momentsFilePath = os.path.join('/home/rehmemk/git/PaperCO2/Code/sgpp_pm1d/MR/Bspline_precalc',self.momentsFileName + '.pkl')
         if os.path.exists(self.momentsFilePath):
             with open(self.momentsFilePath, 'rb') as f:
                 self.moments = pickle.load(f)
