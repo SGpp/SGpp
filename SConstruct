@@ -107,7 +107,7 @@ vars.Add(BoolVariable("OPT", "Set compiler optimization on and off", True))
 vars.Add(BoolVariable("RUN_ON_HAZELHEN", "Add some special options on hazelhen", False))
 vars.Add(BoolVariable("RUN_PYTHON_TESTS", "Run Python unit tests", True))
 vars.Add(BoolVariable("PYDOC", "Build Python wrapper with docstrings", False))
-vars.Add(BoolVariable("USE_PYTHON3_FOR_PYSGPP", "Use Python 3.x for pysgpp", False))
+vars.Add(BoolVariable("USE_PYTHON2_FOR_PYSGPP", "Enforce using Python 2.x for pysgpp", False))
 vars.Add(BoolVariable("SG_ALL", "Default value for the other SG_* variables; " +
                                 "if True, the modules must be disabled explicitly, e.g., " +
                                 "by setting SG_DATADRIVEN=0; " +
@@ -422,7 +422,7 @@ env.Export("lintAction")
 if env["RUN_PYTHON_TESTS"]:
   if env["SG_PYTHON"]:
     # do the actual thing
-    python = ("python3" if env["USE_PYTHON3_FOR_PYSGPP"] else "python")
+    python = ("python2" if env["USE_PYTHON2_FOR_PYSGPP"] else "python3")
     builder = Builder(action=python + " $SOURCE", chdir=0)
     env.Append(BUILDERS={"Test" : builder})
     builder = Builder(action=python + " $SOURCE")
@@ -588,7 +588,7 @@ for module in moduleFolders:
 
 finalMessagePrinter.sgppBuildPath = BUILD_DIR.abspath
 
-if env["USE_PYTHON3_FOR_PYSGPP"]:
+if not env["USE_PYTHON2_FOR_PYSGPP"]:
   finalMessagePrinter.pysgppPackagePath = (
       PYSGPP_PACKAGE_PATH.abspath + ":" + PYSGPP_BUILD_PATH.abspath)
 else:
