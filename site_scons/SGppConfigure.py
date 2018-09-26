@@ -335,13 +335,13 @@ def checkPython(config):
       config.env["USE_PYTHON2_FOR_PYSGPP"] = True
 
     if not config.env["USE_PYTHON2_FOR_PYSGPP"]:
+      pythonpath = distutils.sysconfig.get_python_inc()
+      package = "python-dev"
+    else:
       pythonpath = getOutput(["python3", "-c",
           "import distutils.sysconfig; "
           "print(distutils.sysconfig.get_python_inc())"])
       package = "python3-dev"
-    else:
-      pythonpath = distutils.sysconfig.get_python_inc()
-      package = "python-dev"
 
     config.env.AppendUnique(CPPPATH=[pythonpath])
     Helper.printInfo("pythonpath = " + pythonpath)
@@ -358,14 +358,18 @@ def checkPython(config):
                                pythonpath,
                                "Hint: You might have to install the package " + package + ".")
 
-    numpy_path=getOutput(["python3", "-c", "import numpy, os;"
-    "print(os.path.join(os.path.split(numpy.__file__)[0], \"core\", \"include\"))"]) 
-    if numpy_path.startswith("Traceback"):
+    
+    python_two_or_three = "python2" if self.env["USE_PYTHON2_FOR_PYSGPP"] else "python3"
+
+    if not test_syscall(["{}".format(python_two_or_three), "-c", "import numpy, os;"
+                     "print(os.path.join(os.path.split(numpy.__file__)[0], \"core\", \"include\"))"]):
       Helper.printWarning("Warning: Numpy doesn't seem to be installed.")
       if config.env["RUN_PYTHON_TESTS"]:
         Helper.printWarning("Python unit tests were disabled because numpy is not available.")
         config.env["RUN_PYTHON_TESTS"] = False
     else:
+      numpy_path=getOutput(["{}".format(python_two_or_three), "-c", "import numpy, os;"
+                          "print(os.path.join(os.path.split(numpy.__file__)[0], \"core\", \"include\"))"]) 
       config.env.AppendUnique(CPPPATH=[numpy_path])
       if not config.CheckCXXHeader(["Python.h", "pyconfig.h", "numpy/arrayobject.h"]):
         Helper.printWarning("Cannot find NumPy header files in " + str(numpy_path) + ".")
@@ -373,18 +377,21 @@ def checkPython(config):
           config.env["RUN_PYTHON_TESTS"] = False
           Helper.printWarning("Python unit tests were disabled due to missing numpy development headers.")
 
-    if getOutput(["python3", "-c", "import builtins; "]).startswith('Traceback'):
+    if not test_syscall(["{}".format(python_two_or_three), "-c", "import builtins; "]):
       Helper.printWarning("Warning: Future doesn't seem to be installed.")
         
-    if getOutput(["python3", "-c", "import scipy; "]).startswith('Traceback'):
+    if not test_syscall(["{}".format(python_two_or_three), "-c", "import scipy; "]):
       Helper.printWarning("Warning: Scipy doesn't seem to be installed.")
         
   else:
     Helper.printInfo("Python extension (SG_PYTHON) not enabled.")
 
 def python3_is_installed():
+  test_syscall(["python3", "--version"])
+
+def test_syscall(syscall):
   try:
-    subprocess.check_output(["python3", "--version"])
+    subprocess.check_call(syscall,stderr=open(os.devnull, 'w'))
     return True
   except subprocess.CalledProcessError:
     return False
@@ -394,6 +401,7 @@ def python3_is_installed():
       return False
     else:
       raise
+
 
 def checkJava(config):
   if config.env["SG_JAVA"]:
