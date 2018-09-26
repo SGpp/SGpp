@@ -8,7 +8,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/grid/type/NotAKnotBsplineModifiedGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineModifiedGrid.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisation.hpp>
 
 namespace sgpp {
@@ -18,7 +18,7 @@ namespace optimization {
  * Hierarchisation operation for B-spline basis functions on
  * Boundary grids.
  */
-class OperationMultipleHierarchisationNotAKnotBsplineModified
+class OperationMultipleHierarchisationNakBsplineModified
     : public OperationMultipleHierarchisation {
  public:
   /**
@@ -26,13 +26,13 @@ class OperationMultipleHierarchisationNotAKnotBsplineModified
    *
    * @param grid      grid
    */
-  explicit OperationMultipleHierarchisationNotAKnotBsplineModified(
-      base::NotAKnotBsplineModifiedGrid& grid);
+  explicit OperationMultipleHierarchisationNakBsplineModified(
+      base::NakBsplineModifiedGrid& grid);
 
   /**
    * Destructor.
    */
-  ~OperationMultipleHierarchisationNotAKnotBsplineModified() override;
+  ~OperationMultipleHierarchisationNakBsplineModified() override;
 
   /**
    * @param[in,out] nodeValues before: vector of function values at
@@ -66,7 +66,7 @@ class OperationMultipleHierarchisationNotAKnotBsplineModified
 
  protected:
   /// storage of the sparse grid
-  base::NotAKnotBsplineModifiedGrid& grid;
+  base::NakBsplineModifiedGrid& grid;
 };
 }  // namespace optimization
 }  // namespace sgpp

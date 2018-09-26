@@ -26,7 +26,6 @@
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryCombigridBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
@@ -46,7 +45,6 @@
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/NotAKnotBsplineModifiedGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
 
@@ -54,6 +52,8 @@
 #include <cstring>
 #include <memory>
 #include <stdexcept>
+#include "../../../../../../base/src/sgpp/base/grid/type/NakBsplineModifiedGrid.hpp"
+#include "../../../../../../base/src/sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp"
 
 namespace sgpp {
 namespace optimization {
@@ -155,11 +155,11 @@ class HierarchisationSLE : public CloneableSLE {
           new base::SNakBsplineBoundaryCombigridBase(
               dynamic_cast<base::NakBsplineBoundaryCombigridGrid&>(grid).getDegree()));
       basisType = NAK_BSPLINEBOUNDARY_COMBIGRID;
-    } else if (grid.getType() == base::GridType::NotAKnotBsplineModified) {
-      notAKnotBsplineModifiedBasis = std::unique_ptr<base::SNotAKnotBsplineModifiedBase>(
-          new base::SNotAKnotBsplineModifiedBase(
-              dynamic_cast<base::NotAKnotBsplineModifiedGrid&>(grid).getDegree()));
-      basisType = NOTAKNOT_BSPLINE_MODIFIED;
+    } else if (grid.getType() == base::GridType::NakBsplineModified) {
+      nakBsplineModifiedBasis = std::unique_ptr<base::SNakBsplineModifiedBase>(
+          new base::SNakBsplineModifiedBase(
+              dynamic_cast<base::NakBsplineModifiedGrid&>(grid).getDegree()));
+      basisType = NAK_BSPLINE_MODIFIED;
     } else if (grid.getType() == base::GridType::ModPoly) {
       modPolyBasis = std::unique_ptr<base::SPolyModifiedBase>(
           new base::SPolyModifiedBase(dynamic_cast<base::ModPolyGrid&>(grid).getDegree()));
@@ -256,7 +256,7 @@ class HierarchisationSLE : public CloneableSLE {
   /// not-a-knot B-spline Boundary combigrid basis
   std::unique_ptr<base::SNakBsplineBoundaryCombigridBase> nakBsplineBoundaryCombigridBasis;
   /// not-a-knot B-spline Boundary combigrid basis
-  std::unique_ptr<base::SNotAKnotBsplineModifiedBase> notAKnotBsplineModifiedBasis;
+  std::unique_ptr<base::SNakBsplineModifiedBase> nakBsplineModifiedBasis;
   /// mod poly basis
   std::unique_ptr<base::SPolyModifiedBase> modPolyBasis;
   /// poly basis
@@ -284,7 +284,7 @@ class HierarchisationSLE : public CloneableSLE {
     WAVELET_MODIFIED,
     NAK_BSPLINEBOUNDARY,
     NAK_BSPLINEBOUNDARY_COMBIGRID,
-    NOTAKNOT_BSPLINE_MODIFIED,
+    NAK_BSPLINE_MODIFIED,
     MOD_POLY,
     POLY,
     POLYBOUNDARY
@@ -331,8 +331,8 @@ class HierarchisationSLE : public CloneableSLE {
       return evalNakBsplineBoundaryFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == NAK_BSPLINEBOUNDARY_COMBIGRID) {
       return evalNakBsplineBoundaryCombigridFunctionAtGridPoint(basisI, pointJ);
-    } else if (basisType == NOTAKNOT_BSPLINE_MODIFIED) {
-      return evalNotAKnotBsplineModifiedFunctionAtGridPoint(basisI, pointJ);
+    } else if (basisType == NAK_BSPLINE_MODIFIED) {
+      return evalNakBsplineModifiedFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == MOD_POLY) {
       return evalModPolyFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == POLY) {
@@ -790,13 +790,13 @@ class HierarchisationSLE : public CloneableSLE {
    * @return          value of the basisI-th not-a-knot B-spline modified basis function
    *                  at the pointJ-th grid point
    */
-  inline double evalNotAKnotBsplineModifiedFunctionAtGridPoint(size_t basisI, size_t pointJ) {
+  inline double evalNakBsplineModifiedFunctionAtGridPoint(size_t basisI, size_t pointJ) {
     const base::GridPoint& gpBasis = gridStorage[basisI];
     const base::GridPoint& gpPoint = gridStorage[pointJ];
     double result = 1.0;
 
     for (size_t t = 0; t < gridStorage.getDimension(); t++) {
-      const double result1d = notAKnotBsplineModifiedBasis->eval(
+      const double result1d = nakBsplineModifiedBasis->eval(
           gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getCoordinate(gpPoint, t));
 
       if (result1d == 0.0) {

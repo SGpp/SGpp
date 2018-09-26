@@ -10,7 +10,7 @@ from LinearQuadratureStrategy import LinearQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.operations import getBoundsOfSupport, bsplineGridTypes
 from pysgpp.extensions.datadriven.uq.dists.Uniform import Uniform
 
-from pysgpp import GridType_NakBsplineBoundary, GridType_NotAKnotBsplineModified
+from pysgpp import GridType_NakBsplineBoundary, GridType_NakBsplineModified
 
 
 
@@ -33,7 +33,7 @@ class LinearGaussQuadratureStrategy(LinearQuadratureStrategy):
         # get level index
         lid, iid = gp.getLevel(d), gp.getIndex(d)
         
-        if self._gridType in [GridType_NakBsplineBoundary,GridType_NotAKnotBsplineModified]:
+        if self._gridType in [GridType_NakBsplineBoundary,GridType_NakBsplineModified]:
             
             basisDegree = basis.getDegree()
             pp1h = floor((basisDegree+1)/2)

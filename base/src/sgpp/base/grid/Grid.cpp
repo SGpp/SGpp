@@ -28,7 +28,6 @@
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/NotAKnotBsplineModifiedGrid.hpp>
 #include <sgpp/base/grid/type/PeriodicGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyClenshawCurtisBoundaryGrid.hpp>
@@ -54,6 +53,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include "type/NakBsplineModifiedGrid.hpp"
 
 namespace sgpp {
 namespace base {
@@ -160,8 +160,8 @@ Grid* Grid::createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree) {
   return new NakBsplineBoundaryCombigridGrid(dim, degree);
 }
 
-Grid* Grid::createNotAKnotBsplineModifiedGrid(size_t dim, size_t degree) {
-  return new NotAKnotBsplineModifiedGrid(dim, degree);
+Grid* Grid::createNakBsplineModifiedGrid(size_t dim, size_t degree) {
+  return new NakBsplineModifiedGrid(dim, degree);
 }
 
 Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
@@ -240,8 +240,8 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
         return Grid::createNakBsplineBoundaryGrid(gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::NakBsplineBoundaryCombigrid:
         return Grid::createNakBsplineBoundaryCombigridGrid(gridConfig.dim_, gridConfig.maxDegree_);
-      case GridType::NotAKnotBsplineModified:
-        return Grid::createNotAKnotBsplineModifiedGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      case GridType::NakBsplineModified:
+        return Grid::createNakBsplineModifiedGrid(gridConfig.dim_, gridConfig.maxDegree_);
       default:
         throw generation_exception("Grid::createGrid - grid type not known");
     }
@@ -376,9 +376,9 @@ Grid* Grid::createGridOfEquivalentType(size_t numDims) {
       degree = dynamic_cast<NakBsplineBoundaryCombigridGrid*>(this)->getDegree();
       newGrid = Grid::createNakBsplineBoundaryCombigridGrid(numDims, degree);
       break;
-    case GridType::NotAKnotBsplineModified:
-      degree = dynamic_cast<NotAKnotBsplineModifiedGrid*>(this)->getDegree();
-      newGrid = Grid::createNotAKnotBsplineModifiedGrid(numDims, degree);
+    case GridType::NakBsplineModified:
+      degree = dynamic_cast<NakBsplineModifiedGrid*>(this)->getDegree();
+      newGrid = Grid::createNakBsplineModifiedGrid(numDims, degree);
       break;
 
     default:
@@ -435,8 +435,8 @@ GridType Grid::getZeroBoundaryType() {
     case GridType::PolyClenshawCurtisBoundary:
     case GridType::ModPolyClenshawCurtis:
       return GridType::PolyClenshawCurtis;
-    case GridType::NotAKnotBsplineModified:
-      return GridType::NotAKnotBsplineModified;
+    case GridType::NakBsplineModified:
+      return GridType::NakBsplineModified;
     // no non-boundary treatment basis available for the following grids
     case GridType::BsplineClenshawCurtis:
     case GridType::ModBsplineClenshawCurtis:
@@ -650,7 +650,7 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::NakBsplineBoundary,
                                                                     "nakbsplineboundary"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
-        GridType::NotAKnotBsplineModified, "nakbsplinemodified"));
+        GridType::NakBsplineModified, "nakbsplinemodified"));
 #else
     verboseMap->insert(std::make_pair(GridType::Linear, "linear"));
     verboseMap->insert(std::make_pair(GridType::LinearStretched, "linearStretched"));
@@ -692,7 +692,7 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
         std::make_pair(GridType::ModLinearClenshawCurtis, "modLinearClenshawCurtis"));
     verboseMap->insert(std::make_pair(GridType::LinearClenshawCurtis, "linearClenshawCurtis"));
     verboseMap->insert(std::make_pair(GridType::NakBsplineBoundary, "nakbsplineboundary"));
-    verboseMap->insert(std::make_pair(GridType::NotAKnotBsplineModified, "nakbsplinemodified"));
+    verboseMap->insert(std::make_pair(GridType::NakBsplineModified, "nakbsplinemodified"));
 #endif
   }
 
@@ -849,7 +849,7 @@ GridType Grid::stringToGridType(const std::string& gridType) {
   } else if (gridType.compare("nakbsplineboundary") == 0) {
     return sgpp::base::GridType::NakBsplineBoundary;
   } else if (gridType.compare("nakbsplinemodified") == 0) {
-    return sgpp::base::GridType::NotAKnotBsplineModified;
+    return sgpp::base::GridType::NakBsplineModified;
   } else {
     std::stringstream errorString;
     errorString << "grid type '" << gridType << "' is unknown" << std::endl;

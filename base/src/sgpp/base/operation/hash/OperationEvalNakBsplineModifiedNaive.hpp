@@ -8,8 +8,8 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
-#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineModifiedBasis.hpp>
 #include <sgpp/globaldef.hpp>
+#include "common/basis/NakBsplineModifiedBasis.hpp"
 
 namespace sgpp {
 namespace base {
@@ -17,7 +17,7 @@ namespace base {
 /**
  * Operation for evaluating modified B-spline linear combinations on Noboundary grids.
  */
-class OperationEvalNotAKnotBsplineModifiedNaive : public OperationEval {
+class OperationEvalNakBsplineModifiedNaive : public OperationEval {
  public:
   /**
    * Constructor.
@@ -25,13 +25,13 @@ class OperationEvalNotAKnotBsplineModifiedNaive : public OperationEval {
    * @param storage   storage of the sparse grid
    * @param degree    B-spline degree
    */
-  OperationEvalNotAKnotBsplineModifiedNaive(GridStorage& storage, size_t degree)
+  OperationEvalNakBsplineModifiedNaive(GridStorage& storage, size_t degree)
       : storage(storage), base(degree), pointInUnitCube(storage.getDimension()) {}
 
   /**
    * Destructor.
    */
-  ~OperationEvalNotAKnotBsplineModifiedNaive() override {}
+  ~OperationEvalNakBsplineModifiedNaive() override {}
 
   /**
    * @param alpha     coefficient vector
@@ -51,7 +51,7 @@ class OperationEvalNotAKnotBsplineModifiedNaive : public OperationEval {
   /// storage of the sparse grid
   GridStorage& storage;
   /// 1D B-spline basis
-  SNotAKnotBsplineModifiedBase base;
+  SNakBsplineModifiedBase base;
   /// untransformed evaluation point (temporary vector)
   DataVector pointInUnitCube;
 };

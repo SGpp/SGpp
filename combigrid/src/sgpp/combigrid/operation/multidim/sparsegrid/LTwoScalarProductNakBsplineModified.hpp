@@ -7,9 +7,7 @@
 
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/grid/type/NotAKnotBsplineModifiedGrid.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
-#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineModifiedBasis.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/definitions.hpp>
@@ -19,13 +17,15 @@
 #include <algorithm>
 #include <map>
 #include <vector>
+#include "../../../../../../../base/src/sgpp/base/grid/type/NakBsplineModifiedGrid.hpp"
+#include "../../../../../../../base/src/sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp"
 
 namespace sgpp {
 namespace combigrid {
 
-class LTwoScalarProductNotAKnotBsplineModified {
+class LTwoScalarProductNakBsplineModified {
  public:
-  LTwoScalarProductNotAKnotBsplineModified() {
+  LTwoScalarProductNakBsplineModified() {
     degree = 3;
     grid = nullptr;
     numAdditionalPoints = 0;
@@ -38,16 +38,16 @@ class LTwoScalarProductNotAKnotBsplineModified {
    *
    * @param grid sparse grid created by converting a expUniformBoundaryGrid to a sgpp::base::Grid
    */
-  explicit LTwoScalarProductNotAKnotBsplineModified(sgpp::base::Grid* grid);
+  explicit LTwoScalarProductNakBsplineModified(sgpp::base::Grid* grid);
 
-  LTwoScalarProductNotAKnotBsplineModified(
+  LTwoScalarProductNakBsplineModified(
       sgpp::base::Grid* grid, sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection);
 
-  LTwoScalarProductNotAKnotBsplineModified(
+  LTwoScalarProductNakBsplineModified(
       sgpp::base::Grid* grid, sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection,
       sgpp::base::DataVector bounds);
 
-  LTwoScalarProductNotAKnotBsplineModified(
+  LTwoScalarProductNakBsplineModified(
       sgpp::base::Grid* grid, sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection,
       sgpp::base::DataVector bounds, size_t numAdditionalPoints,
       size_t incrementQuadraturePoints = 5);
@@ -55,7 +55,7 @@ class LTwoScalarProductNotAKnotBsplineModified {
   /**
    * Destructor
    */
-  virtual ~LTwoScalarProductNotAKnotBsplineModified();
+  virtual ~LTwoScalarProductNakBsplineModified();
 
   /**
    * Implementation of standard matrix multiplication
@@ -74,7 +74,7 @@ class LTwoScalarProductNotAKnotBsplineModified {
 
   void updateGrid(sgpp::base::Grid* grid) {
     this->grid = grid;
-    degree = dynamic_cast<sgpp::base::NotAKnotBsplineModifiedGrid*>(grid)->getDegree();
+    degree = dynamic_cast<sgpp::base::NakBsplineModifiedGrid*>(grid)->getDegree();
     if (!isCustomWeightFunction) {
       sgpp::combigrid::SingleFunction constant_weight_function =
           sgpp::combigrid::SingleFunction(sgpp::combigrid::constantFunction<double>(1.0));
@@ -101,7 +101,7 @@ class LTwoScalarProductNotAKnotBsplineModified {
   double calculateScalarProduct(base::level_t lid, base::index_t iid, base::level_t ljd,
                                 base::index_t ijd, base::DataVector coordinates,
                                 base::DataVector weights,
-                                sgpp::base::SNotAKnotBsplineModifiedBase basis, size_t d,
+                                sgpp::base::SNakBsplineModifiedBase basis, size_t d,
                                 double offseti_left, double offsetj_left,
                                 sgpp::base::index_t hInvik, sgpp::base::index_t hInvjk, double hik,
                                 double hjk, size_t pp1h);

@@ -22,12 +22,12 @@ namespace base {
  * Not-a-knot B-spline basis.
  */
 template <class LT, class IT>
-class NotAKnotBsplineBasis : public Basis<LT, IT> {
+class NakBsplineBasis : public Basis<LT, IT> {
  public:
   /**
    * Default constructor.
    */
-  NotAKnotBsplineBasis() : bsplineBasis(BsplineBasis<LT, IT>()) {}
+  NakBsplineBasis() : bsplineBasis(BsplineBasis<LT, IT>()) {}
 
   /**
    * Constructor.
@@ -35,7 +35,7 @@ class NotAKnotBsplineBasis : public Basis<LT, IT> {
    * @param degree    B-spline degree, must be odd
    *                  (if it's even, degree - 1 is used)
    */
-  explicit NotAKnotBsplineBasis(size_t degree) : bsplineBasis(BsplineBasis<LT, IT>(degree)) {
+  explicit NakBsplineBasis(size_t degree) : bsplineBasis(BsplineBasis<LT, IT>(degree)) {
     if (getDegree() > 7) {
       throw std::runtime_error("Unsupported B-spline degree.");
     }
@@ -44,7 +44,7 @@ class NotAKnotBsplineBasis : public Basis<LT, IT> {
   /**
    * Destructor.
    */
-  ~NotAKnotBsplineBasis() override {}
+  ~NakBsplineBasis() override {}
 
   /**
    * @param l     level of basis function
@@ -739,7 +739,7 @@ class NotAKnotBsplineBasis : public Basis<LT, IT> {
   }
 
   double getIntegral(LT level, IT index) override {
-    std::cerr << "NotAKnotBsplineBasis: Integral not implemented" << std::endl;
+    std::cerr << "NakBsplineBasis: Integral not implemented" << std::endl;
     return -1;
   }
 
@@ -754,7 +754,7 @@ class NotAKnotBsplineBasis : public Basis<LT, IT> {
 };
 
 // default type-def (unsigned int for level and index)
-typedef NotAKnotBsplineBasis<unsigned int, unsigned int> SNotAKnotBsplineBase;
+typedef NakBsplineBasis<unsigned int, unsigned int> SNnakBsplineBase;
 
 }  // namespace base
 }  // namespace sgpp

@@ -7,10 +7,10 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/OperationQuadrature.hpp>
-#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineModifiedBasis.hpp>
 #include <sgpp/combigrid/functions/WeightFunctionsCollection.hpp>
 
 #include <sgpp/globaldef.hpp>
+#include "../../../../../../base/src/sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp"
 
 namespace sgpp {
 namespace combigrid {
@@ -20,23 +20,23 @@ namespace combigrid {
  * knot B-spline combigrid In UQ the weights are probability density functions.
  * It is designed analogously to the operations in BaseOpFactory
  */
-class OperationWeightedQuadratureNotAKnotBsplineModified : public sgpp::base::OperationQuadrature {
+class OperationWeightedQuadratureNakBsplineModified : public sgpp::base::OperationQuadrature {
  public:
   /**
-   * Constructor of OperationWeightedQuadratureNotAKnotBsplineModified
+   * Constructor of OperationWeightedQuadratureNakBsplineModified
    *
    * @param storage Pointer to the grid's GridStorage object
    * @param degree the B-spline degree
    */
-  OperationWeightedQuadratureNotAKnotBsplineModified(
-      sgpp::base::GridStorage& storage, size_t degree,
-      WeightFunctionsCollection weightFunctionsCollection, sgpp::base::DataVector bounds)
+  OperationWeightedQuadratureNakBsplineModified(sgpp::base::GridStorage& storage, size_t degree,
+                                                WeightFunctionsCollection weightFunctionsCollection,
+                                                sgpp::base::DataVector bounds)
       : storage(storage),
         base(degree),
         weightFunctionsCollection(weightFunctionsCollection),
         bounds(bounds) {}
 
-  ~OperationWeightedQuadratureNotAKnotBsplineModified() override {}
+  ~OperationWeightedQuadratureNakBsplineModified() override {}
 
   /**
    * Quadrature for weighted not a knot B-spline basis functions
@@ -49,7 +49,7 @@ class OperationWeightedQuadratureNotAKnotBsplineModified : public sgpp::base::Op
   // Pointer to the grid's GridStorage object
   sgpp::base::GridStorage& storage;
   /// NakBsplineBoundaryCombigrid Basis object
-  sgpp::base::SNotAKnotBsplineModifiedBase base;
+  sgpp::base::SNakBsplineModifiedBase base;
   WeightFunctionsCollection weightFunctionsCollection;
   sgpp::base::DataVector bounds;
 };

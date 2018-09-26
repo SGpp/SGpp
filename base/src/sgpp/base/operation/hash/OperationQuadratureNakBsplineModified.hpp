@@ -7,9 +7,8 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/OperationQuadrature.hpp>
-#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineModifiedBasis.hpp>
-
 #include <sgpp/globaldef.hpp>
+#include "common/basis/NakBsplineModifiedBasis.hpp"
 
 namespace sgpp {
 namespace base {
@@ -18,18 +17,18 @@ namespace base {
  * Quadrature on sparse grid, not a knot B-spline grid created by transformation of a not a knot
  * B-spline combigrid
  */
-class OperationQuadratureNotAKnotBsplineModified : public OperationQuadrature {
+class OperationQuadratureNakBsplineModified : public OperationQuadrature {
  public:
   /**
-   * Constructor of OperationQuadratureNotAKnotBsplineModified
+   * Constructor of OperationQuadratureNakBsplineModified
    *
    * @param storage Pointer to the grid's GridStorage object
    * @param degree the B-spline degree
    */
-  OperationQuadratureNotAKnotBsplineModified(GridStorage& storage, size_t degree)
+  OperationQuadratureNakBsplineModified(GridStorage& storage, size_t degree)
       : storage(storage), base(degree) {}
 
-  ~OperationQuadratureNotAKnotBsplineModified() override {}
+  ~OperationQuadratureNakBsplineModified() override {}
 
   /**
    * Quadrature for not a knot B-spline basis functions
@@ -42,7 +41,7 @@ class OperationQuadratureNotAKnotBsplineModified : public OperationQuadrature {
   // Pointer to the grid's GridStorage object
   GridStorage& storage;
   /// NakBsplineBoundaryCombigrid Basis object
-  SNotAKnotBsplineModifiedBase base;
+  SNakBsplineModifiedBase base;
 };
 
 }  // namespace base

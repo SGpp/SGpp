@@ -39,8 +39,8 @@ HierarchicalStochasticCollocation::HierarchicalStochasticCollocation(
     grid = std::make_shared<sgpp::base::NakBsplineBoundaryGrid>(dim, degree);
   } else if (gridType == sgpp::base::GridType::NakBsplineBoundaryCombigrid) {
     grid = std::make_shared<sgpp::base::NakBsplineBoundaryCombigridGrid>(dim, degree);
-  } else if (gridType == sgpp::base::GridType::NotAKnotBsplineModified) {
-    grid = std::make_shared<sgpp::base::NotAKnotBsplineModifiedGrid>(dim, degree);
+  } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
+    grid = std::make_shared<sgpp::base::NakBsplineModifiedGrid>(dim, degree);
   } else if (gridType == sgpp::base::GridType::ModPoly) {
     grid = std::make_shared<sgpp::base::ModPolyGrid>(dim, degree);
   } else if (gridType == sgpp::base::GridType::BsplineBoundary) {
@@ -170,7 +170,7 @@ sgpp::base::DataVector HierarchicalStochasticCollocation::leastSquares(
                  "supported."
               << std::endl;
   }
-  //  sgpp::base::SNotAKnotBsplineModifiedBase basis(degree);
+  //  sgpp::base::SNakBsplineModifiedBase basis(degree);
 
   // HACK!!!
   //  sgpp::base::SPolyModifiedBase basis(degree);
@@ -269,8 +269,8 @@ void HierarchicalStochasticCollocation::createGridFromCombiLevelStructure(
   if (gridType == sgpp::base::GridType::NakBsplineBoundaryCombigrid) {
     degree = dynamic_cast<base::NakBsplineBoundaryCombigridGrid*>(grid.get())->getDegree();
     convertexpUniformBoundaryCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
-  } else if (gridType == sgpp::base::GridType::NotAKnotBsplineModified) {
-    degree = dynamic_cast<base::NotAKnotBsplineModifiedGrid*>(grid.get())->getDegree();
+  } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
+    degree = dynamic_cast<base::NakBsplineModifiedGrid*>(grid.get())->getDegree();
     convertCombigridToHierarchicalSparseGrid(levelStructure, gridStorage);
   } else {
     std::cerr << "HierarchicalStochasticCollocation: grid type currently not supported"
@@ -315,10 +315,10 @@ double HierarchicalStochasticCollocation::computeMean() {
     OperationWeightedQuadratureNakBsplineBoundaryCombigrid wopQ(gridStorage, degree,
                                                                 weightFunctions, bounds);
     mean = wopQ.doQuadrature(coefficients);
-  } else if (gridType == sgpp::base::GridType::NotAKnotBsplineModified) {
-    size_t degree = dynamic_cast<base::NotAKnotBsplineModifiedGrid*>(grid.get())->getDegree();
-    OperationWeightedQuadratureNotAKnotBsplineModified wopQ(gridStorage, degree, weightFunctions,
-                                                            bounds);
+  } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
+    size_t degree = dynamic_cast<base::NakBsplineModifiedGrid*>(grid.get())->getDegree();
+    OperationWeightedQuadratureNakBsplineModified wopQ(gridStorage, degree, weightFunctions,
+                                                       bounds);
     mean = wopQ.doQuadrature(coefficients);
   } else {
     std::cerr << "HierarchicalStochasticCollocation: grid type currently not supported"
@@ -403,9 +403,9 @@ double HierarchicalStochasticCollocation::computeVariance() {
       scalarProducts.mult(copyOfCoefficients, product);
       variance = product.dotProduct(copyOfCoefficients);
     }
-  } else if (gridType == sgpp::base::GridType::NotAKnotBsplineModified) {
-    LTwoScalarProductNotAKnotBsplineModified scalarProducts(gridptr, weightFunctions, bounds);
-    size_t degree = dynamic_cast<base::NotAKnotBsplineModifiedGrid*>(grid.get())->getDegree();
+  } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
+    LTwoScalarProductNakBsplineModified scalarProducts(gridptr, weightFunctions, bounds);
+    size_t degree = dynamic_cast<base::NakBsplineModifiedGrid*>(grid.get())->getDegree();
     if (degree == 1) {
       scalarProducts.mult(coefficients, product);
       double meanSquare = product.dotProduct(coefficients);

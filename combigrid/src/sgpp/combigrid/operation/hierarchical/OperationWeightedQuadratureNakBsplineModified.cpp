@@ -3,14 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "sgpp/combigrid/operation/hierarchical/OperationWeightedQuadratureNotAKnotBsplineModified.hpp"
-
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include "OperationWeightedQuadratureNakBsplineModified.hpp"
 
 namespace sgpp {
 namespace combigrid {
 
-double OperationWeightedQuadratureNotAKnotBsplineModified::doQuadrature(
+double OperationWeightedQuadratureNakBsplineModified::doQuadrature(
     sgpp::base::DataVector& alpha) {
   double res = 0;
   double tmpres = 0;

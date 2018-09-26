@@ -6,10 +6,10 @@
 #ifndef GRID_HPP
 #define GRID_HPP
 
+#include <sgpp/base/grid/RefinementConfiguration.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
-#include <sgpp/base/grid/RefinementConfiguration.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -58,7 +58,7 @@ enum class GridType {
   ModLinearClenshawCurtis,       // 30
   NakBsplineBoundary,            // 31
   NakBsplineBoundaryCombigrid,   // 32
-  NotAKnotBsplineModified        // 33
+  NakBsplineModified             // 33
 };
 
 /**
@@ -97,9 +97,7 @@ struct GeneralGridConfiguration {
  * structure that can be used by applications to cluster regular grid information
  */
 struct RegularGridConfiguration : GeneralGridConfiguration {
-  RegularGridConfiguration() {
-    generalType_ = GeneralGridType::RegularSparseGrid;
-  }
+  RegularGridConfiguration() { generalType_ = GeneralGridType::RegularSparseGrid; }
 };
 
 /**
@@ -681,7 +679,7 @@ class Grid {
    * @param degree the B-spline degree
    * @return grid
    */
-  static Grid* createNotAKnotBsplineModifiedGrid(size_t dim, size_t degree);
+  static Grid* createNakBsplineModifiedGrid(size_t dim, size_t degree);
 
   /**
    * reads a grid out of a string

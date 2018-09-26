@@ -9,7 +9,7 @@ from math import floor
 from BilinearQuadratureStrategy import BilinearQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.operations import getBoundsOfSupport, bsplineGridTypes
 from pysgpp.extensions.datadriven.uq.dists.Uniform import Uniform
-from pysgpp import GridType_NakBsplineBoundary, GridType_NotAKnotBsplineModified
+from pysgpp import GridType_NakBsplineBoundary, GridType_NakBsplineModified
 
 class BilinearGaussQuadratureStrategy(BilinearQuadratureStrategy):
     """
@@ -21,7 +21,7 @@ class BilinearGaussQuadratureStrategy(BilinearQuadratureStrategy):
         else:
             return self.computeBilinearFormEntryForTwoSegments(gs, gpi, basisi, gpj, basisj, d)
         
-    # support for not a knot B spline basis: GridType_NakBsplineBoundary and GridType_NotAKnotBsplineModified]
+    # support for not a knot B spline basis: GridType_NakBsplineBoundary and GridType_NakBsplineModified]
     def getBsplineSupport(self,degree,l,i):
         pp1h = floor((degree+1)/2)
         width = 1.0/2**l
@@ -55,7 +55,7 @@ class BilinearGaussQuadratureStrategy(BilinearQuadratureStrategy):
         lid, iid = gpi.getLevel(d), gpi.getIndex(d)
         ljd, ijd = gpj.getLevel(d), gpj.getIndex(d)
 
-        if self._gridType in [GridType_NakBsplineBoundary,GridType_NotAKnotBsplineModified]:
+        if self._gridType in [GridType_NakBsplineBoundary,GridType_NakBsplineModified]:
             bSid = self.getBsplineSupport(basisi.getDegree(), lid, iid)
             bSjd = self.getBsplineSupport(basisj.getDegree(), ljd, ijd)            
         else:

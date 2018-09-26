@@ -3,13 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include "OperationQuadratureNakBsplineModified.hpp"
+
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/operation/hash/OperationQuadratureNotAKnotBsplineModified.hpp>
 
 namespace sgpp {
 namespace base {
 
-double OperationQuadratureNotAKnotBsplineModified::doQuadrature(DataVector& alpha) {
+double OperationQuadratureNakBsplineModified::doQuadrature(DataVector& alpha) {
   double res = 0;
   double tmpres = 0;
 

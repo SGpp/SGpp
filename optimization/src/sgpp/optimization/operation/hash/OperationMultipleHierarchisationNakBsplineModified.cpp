@@ -3,24 +3,25 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include "OperationMultipleHierarchisationNakBsplineModified.hpp"
+
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/base/operation/hash/OperationEvalNotAKnotBsplineModifiedNaive.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationNotAKnotBsplineModified.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
+#include "../../../../../../base/src/sgpp/base/operation/hash/OperationEvalNakBsplineModifiedNaive.hpp"
 
 namespace sgpp {
 namespace optimization {
 
-OperationMultipleHierarchisationNotAKnotBsplineModified::
-    OperationMultipleHierarchisationNotAKnotBsplineModified(base::NotAKnotBsplineModifiedGrid& grid)
+OperationMultipleHierarchisationNakBsplineModified::
+    OperationMultipleHierarchisationNakBsplineModified(base::NakBsplineModifiedGrid& grid)
     : grid(grid) {}
 
-OperationMultipleHierarchisationNotAKnotBsplineModified::
-    ~OperationMultipleHierarchisationNotAKnotBsplineModified() {}
+OperationMultipleHierarchisationNakBsplineModified::
+    ~OperationMultipleHierarchisationNakBsplineModified() {}
 
-bool OperationMultipleHierarchisationNotAKnotBsplineModified::doHierarchisation(
+bool OperationMultipleHierarchisationNakBsplineModified::doHierarchisation(
     base::DataVector& nodeValues) {
   HierarchisationSLE system(grid);
   sle_solver::Auto solver;
@@ -28,11 +29,11 @@ bool OperationMultipleHierarchisationNotAKnotBsplineModified::doHierarchisation(
   return solver.solve(system, b, nodeValues);
 }
 
-void OperationMultipleHierarchisationNotAKnotBsplineModified::doDehierarchisation(
+void OperationMultipleHierarchisationNakBsplineModified::doDehierarchisation(
     base::DataVector& alpha) {
   base::GridStorage& storage = grid.getStorage();
   const size_t d = storage.getDimension();
-  base::OperationEvalNotAKnotBsplineModifiedNaive opNaiveEval(storage, grid.getDegree());
+  base::OperationEvalNakBsplineModifiedNaive opNaiveEval(storage, grid.getDegree());
   base::DataVector nodeValues(storage.getSize());
   base::DataVector x(d, 0.0);
 
@@ -45,7 +46,7 @@ void OperationMultipleHierarchisationNotAKnotBsplineModified::doDehierarchisatio
   alpha = nodeValues;
 }
 
-bool OperationMultipleHierarchisationNotAKnotBsplineModified::doHierarchisation(
+bool OperationMultipleHierarchisationNakBsplineModified::doHierarchisation(
     base::DataMatrix& nodeValues) {
   HierarchisationSLE system(grid);
   sle_solver::Auto solver;
@@ -53,11 +54,11 @@ bool OperationMultipleHierarchisationNotAKnotBsplineModified::doHierarchisation(
   return solver.solve(system, B, nodeValues);
 }
 
-void OperationMultipleHierarchisationNotAKnotBsplineModified::doDehierarchisation(
+void OperationMultipleHierarchisationNakBsplineModified::doDehierarchisation(
     base::DataMatrix& alpha) {
   base::GridStorage& storage = grid.getStorage();
   const size_t d = storage.getDimension();
-  base::OperationEvalNotAKnotBsplineModifiedNaive opNaiveEval(storage, grid.getDegree());
+  base::OperationEvalNakBsplineModifiedNaive opNaiveEval(storage, grid.getDegree());
   base::DataVector nodeValues(storage.getSize(), 0.0);
   base::DataVector x(d, 0.0);
   base::DataVector alpha1(storage.getSize(), 0.0);

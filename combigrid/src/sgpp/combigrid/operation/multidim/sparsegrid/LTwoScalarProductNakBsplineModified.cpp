@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductNotAKnotBsplineModified.hpp>
+#include "LTwoScalarProductNakBsplineModified.hpp"
 
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
 
@@ -15,7 +15,7 @@
 namespace sgpp {
 namespace combigrid {
 
-LTwoScalarProductNotAKnotBsplineModified::LTwoScalarProductNotAKnotBsplineModified(
+LTwoScalarProductNakBsplineModified::LTwoScalarProductNakBsplineModified(
     sgpp::base::Grid* grid)
     : grid(grid) {
   // initilaize collection
@@ -31,10 +31,10 @@ LTwoScalarProductNotAKnotBsplineModified::LTwoScalarProductNotAKnotBsplineModifi
   }
   numAdditionalPoints = 0;
   incrementQuadraturePoints = 1;
-  degree = dynamic_cast<sgpp::base::NotAKnotBsplineModifiedGrid*>(grid)->getDegree();
+  degree = dynamic_cast<sgpp::base::NakBsplineModifiedGrid*>(grid)->getDegree();
 }
 
-LTwoScalarProductNotAKnotBsplineModified::LTwoScalarProductNotAKnotBsplineModified(
+LTwoScalarProductNakBsplineModified::LTwoScalarProductNakBsplineModified(
     sgpp::base::Grid* grid, sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection)
     : grid(grid),
       weightFunctionsCollection(weightFunctionsCollection),
@@ -46,10 +46,10 @@ LTwoScalarProductNotAKnotBsplineModified::LTwoScalarProductNotAKnotBsplineModifi
   }
   numAdditionalPoints = 0;
   incrementQuadraturePoints = 1;
-  degree = dynamic_cast<sgpp::base::NotAKnotBsplineModifiedGrid*>(grid)->getDegree();
+  degree = dynamic_cast<sgpp::base::NakBsplineModifiedGrid*>(grid)->getDegree();
 }
 
-LTwoScalarProductNotAKnotBsplineModified::LTwoScalarProductNotAKnotBsplineModified(
+LTwoScalarProductNakBsplineModified::LTwoScalarProductNakBsplineModified(
     sgpp::base::Grid* grid, sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection,
     sgpp::base::DataVector bounds)
     : grid(grid),
@@ -58,10 +58,10 @@ LTwoScalarProductNotAKnotBsplineModified::LTwoScalarProductNotAKnotBsplineModifi
       bounds(bounds),
       numAdditionalPoints(0),
       incrementQuadraturePoints(1) {
-  degree = dynamic_cast<sgpp::base::NotAKnotBsplineModifiedGrid*>(grid)->getDegree();
+  degree = dynamic_cast<sgpp::base::NakBsplineModifiedGrid*>(grid)->getDegree();
 }
 
-LTwoScalarProductNotAKnotBsplineModified::LTwoScalarProductNotAKnotBsplineModified(
+LTwoScalarProductNakBsplineModified::LTwoScalarProductNakBsplineModified(
     sgpp::base::Grid* grid, sgpp::combigrid::WeightFunctionsCollection weightFunctionsCollection,
     sgpp::base::DataVector bounds, size_t numAdditionalPoints, size_t incrementQuadraturePoints)
     : grid(grid),
@@ -70,12 +70,12 @@ LTwoScalarProductNotAKnotBsplineModified::LTwoScalarProductNotAKnotBsplineModifi
       bounds(bounds),
       numAdditionalPoints(numAdditionalPoints),
       incrementQuadraturePoints(incrementQuadraturePoints) {
-  degree = dynamic_cast<sgpp::base::NotAKnotBsplineModifiedGrid*>(grid)->getDegree();
+  degree = dynamic_cast<sgpp::base::NakBsplineModifiedGrid*>(grid)->getDegree();
 }
 
-LTwoScalarProductNotAKnotBsplineModified::~LTwoScalarProductNotAKnotBsplineModified() {}
+LTwoScalarProductNakBsplineModified::~LTwoScalarProductNakBsplineModified() {}
 
-MultiIndex LTwoScalarProductNotAKnotBsplineModified::hashLevelIndex(base::level_t li,
+MultiIndex LTwoScalarProductNakBsplineModified::hashLevelIndex(base::level_t li,
                                                                     base::index_t ii,
                                                                     base::level_t lj,
                                                                     base::index_t ij, size_t d) {
@@ -97,10 +97,10 @@ MultiIndex LTwoScalarProductNotAKnotBsplineModified::hashLevelIndex(base::level_
   return hashMI;
 }
 
-double LTwoScalarProductNotAKnotBsplineModified::calculateScalarProduct(
+double LTwoScalarProductNakBsplineModified::calculateScalarProduct(
     base::level_t lid, base::index_t iid, base::level_t ljd, base::index_t ijd,
     base::DataVector coordinates, base::DataVector weights,
-    sgpp::base::SNotAKnotBsplineModifiedBase basis, size_t d, double offseti_left,
+    sgpp::base::SNakBsplineModifiedBase basis, size_t d, double offseti_left,
     double offsetj_left, sgpp::base::index_t hInvik, sgpp::base::index_t hInvjk, double hik,
     double hjk, size_t pp1h) {
   double temp_res = 0.0, scaling = 0.0, offset = 0.0;
@@ -171,7 +171,7 @@ double LTwoScalarProductNotAKnotBsplineModified::calculateScalarProduct(
   return temp_res * scaling;
 }
 
-void LTwoScalarProductNotAKnotBsplineModified::mult(sgpp::base::DataVector& alpha,
+void LTwoScalarProductNakBsplineModified::mult(sgpp::base::DataVector& alpha,
                                                     sgpp::base::DataVector& result) {
   size_t count = 0;
 
@@ -181,7 +181,7 @@ void LTwoScalarProductNotAKnotBsplineModified::mult(sgpp::base::DataVector& alph
               << std::endl;
   }
 
-  sgpp::base::SNotAKnotBsplineModifiedBase basis(degree);
+  sgpp::base::SNakBsplineModifiedBase basis(degree);
   base::GridStorage& storage = grid->getStorage();
   size_t nrows = storage.getSize();
   size_t ncols = storage.getSize();

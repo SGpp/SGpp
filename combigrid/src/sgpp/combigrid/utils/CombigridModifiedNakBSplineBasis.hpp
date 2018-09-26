@@ -7,13 +7,14 @@
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineModifiedBasis.hpp>
 #include <sgpp/combigrid/definitions.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 
 #include <algorithm>
 #include <vector>
+
+#include "../../../../../base/src/sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp"
+#include "../../../../../base/src/sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp"
 
 namespace sgpp {
 namespace combigrid {

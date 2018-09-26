@@ -21,7 +21,6 @@
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/NotAKnotBsplineModifiedGrid.hpp>
 #include <sgpp/base/grid/type/WaveletBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/WaveletGrid.hpp>
 
@@ -38,11 +37,12 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModLinear.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWavelet.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationNakBsplineBoundary.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationNotAKnotBsplineModified.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWavelet.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWaveletBoundary.hpp>
 
 #include <cstring>
+#include "../../../../../base/src/sgpp/base/grid/type/NakBsplineModifiedGrid.hpp"
+#include "hash/OperationMultipleHierarchisationNakBsplineModified.hpp"
 
 namespace sgpp {
 namespace op_factory {
@@ -70,9 +70,9 @@ optimization::OperationMultipleHierarchisation* createOperationMultipleHierarchi
   } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
     return new optimization::OperationMultipleHierarchisationNakBsplineBoundary(
         dynamic_cast<base::NakBsplineBoundaryGrid&>(grid));
-  } else if (grid.getType() == base::GridType::NotAKnotBsplineModified) {
-    return new optimization::OperationMultipleHierarchisationNotAKnotBsplineModified(
-        dynamic_cast<base::NotAKnotBsplineModifiedGrid&>(grid));
+  } else if (grid.getType() == base::GridType::NakBsplineModified) {
+    return new optimization::OperationMultipleHierarchisationNakBsplineModified(
+        dynamic_cast<base::NakBsplineModifiedGrid&>(grid));
   } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
     return new optimization::OperationMultipleHierarchisationBsplineClenshawCurtis(
         dynamic_cast<base::BsplineClenshawCurtisGrid&>(grid));

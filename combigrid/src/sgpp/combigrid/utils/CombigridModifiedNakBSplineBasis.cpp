@@ -84,7 +84,7 @@ double expUniformModifiedNakBspline(double const& x, size_t const& degree, size_
         }
       }
 
-      // cases degree = 1, 5 and 7 could be copied from NotAKnotBsplineModifiedBasis and adjusted
+      // cases degree = 1, 5 and 7 could be copied from NakBsplineModifiedBasis and adjusted
       // Also there are no quadrature routines for these basis functions so they can only be used
       // for interpolation
     default:

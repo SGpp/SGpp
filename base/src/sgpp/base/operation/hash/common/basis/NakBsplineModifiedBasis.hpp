@@ -6,7 +6,6 @@
 #ifndef NOTAKNOT_BSPLINE_MODIFIED_BASE_HPP
 #define NOTAKNOT_BSPLINE_MODIFIED_BASE_HPP
 
-#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineBasis.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/combigrid/GeneralFunction.hpp>
 
@@ -15,6 +14,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include "NakBsplineBasis.hpp"
 
 namespace sgpp {
 namespace base {
@@ -23,12 +23,12 @@ namespace base {
  * Not-a-knot B-spline basis.
  */
 template <class LT, class IT>
-class NotAKnotBsplineModifiedBasis : public Basis<LT, IT> {
+class NakBsplineModifiedBasis : public Basis<LT, IT> {
  public:
   /**
    * Default constructor.
    */
-  NotAKnotBsplineModifiedBasis() : notAKnotBsplineBasis(NotAKnotBsplineBasis<LT, IT>()) {}
+  NakBsplineModifiedBasis() : notAKnotBsplineBasis(NakBsplineBasis<LT, IT>()) {}
 
   /**
    * Constructor.
@@ -36,8 +36,8 @@ class NotAKnotBsplineModifiedBasis : public Basis<LT, IT> {
    * @param degree    B-spline degree, must be odd
    *                  (if it's even, degree - 1 is used)
    */
-  explicit NotAKnotBsplineModifiedBasis(size_t degree)
-      : notAKnotBsplineBasis(NotAKnotBsplineBasis<LT, IT>(degree)) {
+  explicit NakBsplineModifiedBasis(size_t degree)
+      : notAKnotBsplineBasis(NakBsplineBasis<LT, IT>(degree)) {
     if (getDegree() > 7) {
       throw std::runtime_error("Unsupported B-spline degree.");
     }
@@ -46,7 +46,7 @@ class NotAKnotBsplineModifiedBasis : public Basis<LT, IT> {
   /**
    * Destructor.
    */
-  ~NotAKnotBsplineModifiedBasis() override {}
+  ~NakBsplineModifiedBasis() override {}
 
   /**
    * @param l     level of basis function
@@ -409,7 +409,7 @@ class NotAKnotBsplineModifiedBasis : public Basis<LT, IT> {
 
  protected:
   /// B-spline basis for B-spline evaluation
-  NotAKnotBsplineBasis<LT, IT> notAKnotBsplineBasis;
+  NakBsplineBasis<LT, IT> notAKnotBsplineBasis;
 
  private:
   double integrateBspline(LT l, IT i, size_t start, size_t stop, double offset, double scaling,
@@ -450,7 +450,7 @@ class NotAKnotBsplineModifiedBasis : public Basis<LT, IT> {
 };
 
 // default type-def (unsigned int for level and index)
-typedef NotAKnotBsplineModifiedBasis<unsigned int, unsigned int> SNotAKnotBsplineModifiedBase;
+typedef NakBsplineModifiedBasis<unsigned int, unsigned int> SNakBsplineModifiedBase;
 
 }  // namespace base
 }  // namespace sgpp

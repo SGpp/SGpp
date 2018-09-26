@@ -182,11 +182,11 @@ int main() {
   double realVar = 0.382923024983218;
 
   //  std::shared_ptr<sgpp::base::Grid> grid(
-  //      sgpp::base::Grid::createNotAKnotBsplineModifiedGrid(dim, degree));
+  //      sgpp::base::Grid::createNakBsplineModifiedGrid(dim, degree));
   //  sgpp::combigrid::HierarchicalStochasticCollocation hBSC(
   //      grid, sgpp::combigrid::MultiFunction(genzFunction), weightFunctionsCollection, bounds);
   //    sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
-  sgpp::base::GridType gridType = sgpp::base::GridType::NotAKnotBsplineModified;
+  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineModified;
   sgpp::combigrid::HierarchicalStochasticCollocation hBSC(
       gridType, dim, sgpp::combigrid::MultiFunction(genzFunction), weightFunctionsCollection,
       bounds, degree);

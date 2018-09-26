@@ -7,19 +7,18 @@
 
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
-#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineModifiedBasis.hpp>
-
 #include <sgpp/globaldef.hpp>
+#include "common/basis/NakBsplineModifiedBasis.hpp"
 
 namespace sgpp {
 namespace base {
 
-class OperationMultipleEvalNotAKnotBsplineModifiedNaive : public OperationMultipleEval {
+class OperationMultipleEvalNakBsplineModifiedNaive : public OperationMultipleEval {
  public:
-  OperationMultipleEvalNotAKnotBsplineModifiedNaive(Grid& grid, size_t degree, DataMatrix& dataset)
+  OperationMultipleEvalNakBsplineModifiedNaive(Grid& grid, size_t degree, DataMatrix& dataset)
       : OperationMultipleEval(grid, dataset), storage(grid.getStorage()), base(degree) {}
 
-  ~OperationMultipleEvalNotAKnotBsplineModifiedNaive() override {}
+  ~OperationMultipleEvalNakBsplineModifiedNaive() override {}
 
   void mult(DataVector& alpha, DataVector& result) override;
   void multTranspose(DataVector& source, DataVector& result) override;
@@ -30,7 +29,7 @@ class OperationMultipleEvalNotAKnotBsplineModifiedNaive : public OperationMultip
   /// storage of the sparse grid
   GridStorage& storage;
   /// 1D B-spline basis
-  SNotAKnotBsplineModifiedBase base;
+  SNakBsplineModifiedBase base;
   /// untransformed evaluation point (temporary vector)
   DataMatrix pointsInUnitCube;
 };

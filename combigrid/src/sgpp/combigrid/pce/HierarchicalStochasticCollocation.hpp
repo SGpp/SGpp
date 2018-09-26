@@ -20,7 +20,6 @@
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationModPoly.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/NotAKnotBsplineModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
 #include <sgpp/combigrid/common/GridConversion.hpp>
 #include <sgpp/combigrid/functions/ProbabilityDensityFunction1D.hpp>
@@ -28,10 +27,8 @@
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/hierarchical/OperationWeightedQuadratureNakBsplineBoundary.hpp>
 #include <sgpp/combigrid/operation/hierarchical/OperationWeightedQuadratureNakBsplineBoundaryCombigrid.hpp>
-#include <sgpp/combigrid/operation/hierarchical/OperationWeightedQuadratureNotAKnotBsplineModified.hpp>
 #include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductNakBsplineBoundary.hpp>
 #include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductNakBsplineBoundaryCombigrid.hpp>
-#include <sgpp/combigrid/operation/multidim/sparsegrid/LTwoScalarProductNotAKnotBsplineModified.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <sgpp/combigrid/utils/Stopwatch.hpp>
@@ -44,6 +41,9 @@
 #include <algorithm>
 #include <cmath>
 #include <vector>
+#include "../../../../../base/src/sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp"
+#include "../operation/hierarchical/OperationWeightedQuadratureNakBsplineModified.hpp"
+#include "../operation/multidim/sparsegrid/LTwoScalarProductNakBsplineModified.hpp"
 
 namespace sgpp {
 namespace combigrid {

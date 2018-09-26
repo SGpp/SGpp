@@ -17,14 +17,14 @@ namespace base {
 /**
  * Grid with modified Bspline basis functions
  */
-class NotAKnotBsplineModifiedGrid : public Grid {
+class NakBsplineModifiedGrid : public Grid {
  protected:
   /**
    * This constructor creates a new GridStorage out of the stream.
    *
    * @param istr inputstream that contains the grid information
    */
-  explicit NotAKnotBsplineModifiedGrid(std::istream& istr);
+  explicit NakBsplineModifiedGrid(std::istream& istr);
 
  public:
   /**
@@ -33,12 +33,12 @@ class NotAKnotBsplineModifiedGrid : public Grid {
    * @param dim the dimension of the grid
    * @param degree the bspline's degree
    */
-  explicit NotAKnotBsplineModifiedGrid(size_t dim, size_t degree);
+  explicit NakBsplineModifiedGrid(size_t dim, size_t degree);
 
   /**
    * Destructor.
    */
-  ~NotAKnotBsplineModifiedGrid() override;
+  ~NakBsplineModifiedGrid() override;
 
   /**
    * @return string that identifies the grid type uniquely
