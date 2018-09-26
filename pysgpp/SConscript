@@ -39,7 +39,7 @@ swigFlags.extend(env["SWIGFLAGS"])
 if env["PYDOC"]:
   swigFlags.append("-DPYDOC")
 
-if env["USE_PYTHON3_FOR_PYSGPP"]:
+if not env["USE_PYTHON2_FOR_PYSGPP"]:
   swigFlags.append("-py3")
 
 pyEnv.AppendUnique(SWIGFLAGS=swigFlags)
@@ -125,3 +125,4 @@ if env["PLATFORM"] != "win32":
   moduleSetupPython = env.Command("setupPython", [], setupPython)
   pyEnv.Depends(installLibWrapperPython, moduleSetupPython)
 libraryTargetList.append(installLibPython)
+

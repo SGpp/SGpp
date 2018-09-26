@@ -331,7 +331,10 @@ def checkSWIG(config):
 
 def checkPython(config):
   if config.env["SG_PYTHON"]:
-    if config.env["USE_PYTHON3_FOR_PYSGPP"]:
+    if not python3_is_installed():
+      config.env["USE_PYTHON2_FOR_PYSGPP"] = True
+
+    if not config.env["USE_PYTHON2_FOR_PYSGPP"]:
       pythonpath = getOutput(["python3", "-c",
           "import distutils.sysconfig; "
           "print(distutils.sysconfig.get_python_inc())"])
@@ -378,6 +381,19 @@ def checkPython(config):
         
   else:
     Helper.printInfo("Python extension (SG_PYTHON) not enabled.")
+
+def python3_is_installed():
+  try:
+    subprocess.check_output(["python3", "--version"])
+    return True
+  except subprocess.CalledProcessError:
+    return False
+  except OSError as e:
+    # file not found
+    if e.errno == os.errno.ENOENT:
+      return False
+    else:
+      raise
 
 def checkJava(config):
   if config.env["SG_JAVA"]:
