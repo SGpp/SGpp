@@ -589,6 +589,7 @@ for module in moduleFolders:
 finalMessagePrinter.sgppBuildPath = BUILD_DIR.abspath
 
 if not env["USE_PYTHON2_FOR_PYSGPP"]:
+  
   finalMessagePrinter.pysgppPackagePath = (
       PYSGPP_PACKAGE_PATH.abspath + ":" + PYSGPP_BUILD_PATH.abspath)
 else:
