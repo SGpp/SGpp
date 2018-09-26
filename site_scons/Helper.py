@@ -152,11 +152,13 @@ class FinalMessagePrinter(object):
       else:
         filename = "INSTRUCTIONS"
 
+      python_two_or_three = "python2" if self.env["USE_PYTHON2_FOR_PYSGPP"] else "python3"
       with open(filename) as f:
         instructionsTemplate = string.Template(f.read())
         print()
         print(instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=self.sgppBuildPath,
-                                                   PYSGPP_PACKAGE_PATH=self.pysgppPackagePath))
+                                                   PYSGPP_PACKAGE_PATH=self.pysgppPackagePath,
+                                                   PYTHON_TWO_OR_THREE=python_two_or_three))
     else:
       # print error message
       print("""# ------------------------------------------------------------------------
