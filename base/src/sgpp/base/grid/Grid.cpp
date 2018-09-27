@@ -28,6 +28,7 @@
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineGrid.hpp>
 #include <sgpp/base/grid/type/PeriodicGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyClenshawCurtisBoundaryGrid.hpp>
@@ -156,6 +157,10 @@ Grid* Grid::createNakBsplineBoundaryGrid(size_t dim, size_t degree) {
   return new NakBsplineBoundaryGrid(dim, degree);
 }
 
+Grid* Grid::createNakBsplineGrid(size_t dim, size_t degree) {
+  return new NakBsplineGrid(dim, degree);
+}
+
 Grid* Grid::createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree) {
   return new NakBsplineBoundaryCombigridGrid(dim, degree);
 }
@@ -242,6 +247,8 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
         return Grid::createNakBsplineBoundaryCombigridGrid(gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::NakBsplineModified:
         return Grid::createNakBsplineModifiedGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      case GridType::NakBspline:
+        return Grid::createNakBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
       default:
         throw generation_exception("Grid::createGrid - grid type not known");
     }
@@ -380,6 +387,10 @@ Grid* Grid::createGridOfEquivalentType(size_t numDims) {
       degree = dynamic_cast<NakBsplineModifiedGrid*>(this)->getDegree();
       newGrid = Grid::createNakBsplineModifiedGrid(numDims, degree);
       break;
+    case GridType::NakBspline:
+      degree = dynamic_cast<NakBsplineGrid*>(this)->getDegree();
+      newGrid = Grid::createNakBsplineGrid(numDims, degree);
+      break;
 
     default:
       throw generation_exception("Grid::clone - grid type not known");
@@ -437,6 +448,8 @@ GridType Grid::getZeroBoundaryType() {
       return GridType::PolyClenshawCurtis;
     case GridType::NakBsplineModified:
       return GridType::NakBsplineModified;
+    case GridType::NakBspline:
+      return GridType::NakBspline;
     // no non-boundary treatment basis available for the following grids
     case GridType::BsplineClenshawCurtis:
     case GridType::ModBsplineClenshawCurtis:
@@ -649,8 +662,10 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
         GridType::LinearTruncatedBoundary, "linearTruncatedBoundary"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::NakBsplineBoundary,
                                                                     "nakbsplineboundary"));
-    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
-        GridType::NakBsplineModified, "nakbsplinemodified"));
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::NakBsplineModified,
+                                                                    "nakbsplinemodified"));
+    verboseMap->insert(
+        std::pair<sgpp::base::GridType, std::string>(GridType::NakBspline, "nakbspline"));
 #else
     verboseMap->insert(std::make_pair(GridType::Linear, "linear"));
     verboseMap->insert(std::make_pair(GridType::LinearStretched, "linearStretched"));
@@ -693,6 +708,7 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
     verboseMap->insert(std::make_pair(GridType::LinearClenshawCurtis, "linearClenshawCurtis"));
     verboseMap->insert(std::make_pair(GridType::NakBsplineBoundary, "nakbsplineboundary"));
     verboseMap->insert(std::make_pair(GridType::NakBsplineModified, "nakbsplinemodified"));
+    verboseMap->insert(std::make_pair(GridType::NakBspline, "nakbspline"));
 #endif
   }
 
@@ -850,6 +866,8 @@ GridType Grid::stringToGridType(const std::string& gridType) {
     return sgpp::base::GridType::NakBsplineBoundary;
   } else if (gridType.compare("nakbsplinemodified") == 0) {
     return sgpp::base::GridType::NakBsplineModified;
+  } else if (gridType.compare("nakbspline") == 0) {
+    return sgpp::base::GridType::NakBspline;
   } else {
     std::stringstream errorString;
     errorString << "grid type '" << gridType << "' is unknown" << std::endl;

@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef NOTAKNOT_BSPLINE_MODIFIED_BASE_HPP
-#define NOTAKNOT_BSPLINE_MODIFIED_BASE_HPP
+#pragma once
 
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/combigrid/GeneralFunction.hpp>
@@ -454,5 +453,3 @@ typedef NakBsplineModifiedBasis<unsigned int, unsigned int> SNakBsplineModifiedB
 
 }  // namespace base
 }  // namespace sgpp
-
-#endif /* NOTAKNOT_BSPLINE_MODIFIED_BASE_HPP */

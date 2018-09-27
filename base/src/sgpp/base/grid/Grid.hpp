@@ -58,7 +58,8 @@ enum class GridType {
   ModLinearClenshawCurtis,       // 30
   NakBsplineBoundary,            // 31
   NakBsplineBoundaryCombigrid,   // 32
-  NakBsplineModified             // 33
+  NakBsplineModified,            // 33
+  NakBspline                     // 34
 };
 
 /**
@@ -662,6 +663,15 @@ class Grid {
    * @return grid
    */
   static Grid* createNakBsplineBoundaryGrid(size_t dim, size_t degree);
+
+  /**
+   * creates a not a knot B-Spline grid
+   *
+   * @param dim the grid's dimension
+   * @param degree the B-spline degree
+   * @return grid
+   */
+  static Grid* createNakBsplineGrid(size_t dim, size_t degree);
 
   /**
    * creates a not a knot B-Spline boundary combigrid grid

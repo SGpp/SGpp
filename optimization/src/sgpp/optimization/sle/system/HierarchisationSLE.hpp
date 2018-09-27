@@ -24,8 +24,10 @@
 #include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryCombigridBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
@@ -45,6 +47,8 @@
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineModifiedGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
 
@@ -52,8 +56,6 @@
 #include <cstring>
 #include <memory>
 #include <stdexcept>
-#include "../../../../../../base/src/sgpp/base/grid/type/NakBsplineModifiedGrid.hpp"
-#include "../../../../../../base/src/sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp"
 
 namespace sgpp {
 namespace optimization {
@@ -156,8 +158,8 @@ class HierarchisationSLE : public CloneableSLE {
               dynamic_cast<base::NakBsplineBoundaryCombigridGrid&>(grid).getDegree()));
       basisType = NAK_BSPLINEBOUNDARY_COMBIGRID;
     } else if (grid.getType() == base::GridType::NakBsplineModified) {
-      nakBsplineModifiedBasis = std::unique_ptr<base::SNakBsplineModifiedBase>(
-          new base::SNakBsplineModifiedBase(
+      nakBsplineModifiedBasis =
+          std::unique_ptr<base::SNakBsplineModifiedBase>(new base::SNakBsplineModifiedBase(
               dynamic_cast<base::NakBsplineModifiedGrid&>(grid).getDegree()));
       basisType = NAK_BSPLINE_MODIFIED;
     } else if (grid.getType() == base::GridType::ModPoly) {
@@ -172,6 +174,10 @@ class HierarchisationSLE : public CloneableSLE {
       polyBoundaryBasis = std::unique_ptr<base::SPolyBoundaryBase>(
           new base::SPolyBoundaryBase(dynamic_cast<base::PolyBoundaryGrid&>(grid).getDegree()));
       basisType = POLYBOUNDARY;
+    } else if (grid.getType() == base::GridType::NakBspline) {
+      nakBsplineBasis = std::unique_ptr<base::SNakBsplineBase>(
+          new base::SNakBsplineBase(dynamic_cast<base::NakBsplineGrid&>(grid).getDegree()));
+      basisType = NAK_BSPLINE;
     } else {
       throw std::invalid_argument("HierarchisationSLE: Grid type not supported.");
     }
@@ -263,6 +269,8 @@ class HierarchisationSLE : public CloneableSLE {
   std::unique_ptr<base::SPolyBase> polyBasis;
   /// poly boundary basis
   std::unique_ptr<base::SPolyBoundaryBase> polyBoundaryBasis;
+  /// nak Bspline basis
+  std::unique_ptr<base::SNakBsplineBase> nakBsplineBasis;
 
   /// type of grid/basis functions
   enum {
@@ -287,7 +295,8 @@ class HierarchisationSLE : public CloneableSLE {
     NAK_BSPLINE_MODIFIED,
     MOD_POLY,
     POLY,
-    POLYBOUNDARY
+    POLYBOUNDARY,
+    NAK_BSPLINE
   } basisType;
 
   /**
@@ -339,6 +348,8 @@ class HierarchisationSLE : public CloneableSLE {
       return evalPolyFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == POLYBOUNDARY) {
       return evalPolyBoundaryFunctionAtGridPoint(basisI, pointJ);
+    } else if (basisType == NAK_BSPLINE) {
+      return evalNakBsplineFunctionAtGridPoint(basisI, pointJ);
     } else {
       return 0.0;
     }
@@ -873,6 +884,31 @@ class HierarchisationSLE : public CloneableSLE {
     for (size_t t = 0; t < gridStorage.getDimension(); t++) {
       const double result1d = polyBoundaryBasis->eval(gpBasis.getLevel(t), gpBasis.getIndex(t),
                                                       gridStorage.getCoordinate(gpPoint, t));
+
+      if (result1d == 0.0) {
+        return 0.0;
+      }
+
+      result *= result1d;
+    }
+
+    return result;
+  }
+
+  /**
+   * @param basisI    basis function index
+   * @param pointJ    grid point index
+   * @return          value of the basisI-th nak Bspline basis function
+   *                  at the pointJ-th grid point
+   */
+  inline double evalNakBsplineFunctionAtGridPoint(size_t basisI, size_t pointJ) {
+    const base::GridPoint& gpBasis = gridStorage[basisI];
+    const base::GridPoint& gpPoint = gridStorage[pointJ];
+    double result = 1.0;
+
+    for (size_t t = 0; t < gridStorage.getDimension(); t++) {
+      const double result1d = nakBsplineBasis->eval(gpBasis.getLevel(t), gpBasis.getIndex(t),
+                                                    gridStorage.getCoordinate(gpPoint, t));
 
       if (result1d == 0.0) {
         return 0.0;
