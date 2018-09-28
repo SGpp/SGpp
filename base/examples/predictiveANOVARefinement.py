@@ -1,5 +1,3 @@
-from __future__ import print_function
-from builtins import range
 # -*- coding: utf-8 -*-
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
@@ -29,6 +27,7 @@ from builtins import range
 
 
 # import modules
+from __future__ import print_function
 import sys
 import math
 

@@ -9,9 +9,6 @@
 
 from __future__ import division
 from __future__ import print_function
-from builtins import range
-from builtins import object
-from past.utils import old_div
 from argparse import ArgumentParser
 from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
 from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend
@@ -30,7 +27,7 @@ def expModel(x, params):
 
 
 def arctanModel(x, params):
-    return np.arctan(50.0 * (x[0] - .35)) + old_div(np.pi, 2.0) + 4.0 * x[1] ** 3 + np.exp(x[0] * x[1] - 1.0)
+    return np.arctan(50.0 * (x[0] - .35)) + np.pi / 2.0 + 4.0 * x[1] ** 3 + np.exp(x[0] * x[1] - 1.0)
 
 
 def buildAtanParams(dist_type):
@@ -49,8 +46,8 @@ def boreholeModel(x, params):
     z = params.getJointTransformation().unitToProbabilistic(x)
 
     num = 2 * np.pi * z[2] * (z[3] - z[5])
-    den = np.log(old_div(z[1], z[0])) * (1 + old_div((2 * z[6] * z[2]), (np.log(old_div(z[1], z[0])) * (z[0] ** 2) * z[7])) + old_div(z[2], z[4]))
-    return old_div(num, den)
+    den = np.log(z[1] / z[0]) * (1 + (2 * z[6] * z[2]) / (np.log(z[1] / z[0]) * (z[0] ** 2) * z[7]) + z[2] / z[4])
+    return num / den
 
 
 def buildBoreholeParams(dist_type):

@@ -12,9 +12,6 @@
 ## At the beginning of the program, we have to import the pysgpp library.
 from __future__ import division
 from __future__ import print_function
-from builtins import str
-from builtins import range
-from past.utils import old_div
 from itertools import product, combinations, permutations,\
     combinations_with_replacement
 from pysgpp.extensions.datadriven.uq.dists import J, Beta, Uniform
@@ -75,7 +72,7 @@ def example1():
     result = operation.evaluate(2)
 
     ## Now compare the result to the analytical solution:
-    print("Quadrature result: " + str(result) + ", analytical solution: " + str(math.pow(1.0 - old_div(1.0, math.e), d)))
+    print("Quadrature result: " + str(result) + ", analytical solution: " + str(math.pow(1.0 - 1.0 / math.e, d)))
 
     ## We can also find out how many function evaluations have been used by accessing the storage
     ## which stores computed function values:

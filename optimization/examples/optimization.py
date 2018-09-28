@@ -1,5 +1,3 @@
-from __future__ import print_function
-from builtins import range
 #!/usr/bin/python
 
 ## \page example_optimization_py optimization.py
@@ -16,6 +14,7 @@ from builtins import range
 ## For comparison, we also minimize the objective function with Nelder-Mead's method.
 ##
 ## First, we import pysgpp and the required modules.
+from __future__ import print_function
 import pysgpp
 import math
 import sys

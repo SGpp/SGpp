@@ -1,7 +1,5 @@
 from __future__ import division
 from __future__ import print_function
-from builtins import range
-from past.utils import old_div
 import pysgpp
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBasis
 import numpy as np
@@ -16,7 +14,7 @@ def test_base():
         print(l)
         for i in range(1, 2**l, 1):
             s = 1
-            s = old_div(sum([b.eval(l,i,x) for x in np.linspace(0, 1, n)]), n)
+            s = sum([b.eval(l,i,x) for x in np.linspace(0, 1, n)]) / n
             print(("Level:",l , "index:", i))
             epsilon = abs(s - b.getIntegral(l,i))
             if(epsilon > 10**-6):
@@ -48,7 +46,7 @@ def test_LTwoDot(grid, l):
                 ijk = gpj.getIndex(k)
                 # print "i l,i: {},{}   j l,i: {},{}".format(lik, iik, ljk, ijk)
                 xs = np.linspace(0, 1, res)
-                tmp = old_div(sum([b.eval(lik, iik, x)*b.eval(ljk, ijk, x) for x in xs]),res)
+                tmp = sum([b.eval(lik, iik, x)*b.eval(ljk, ijk, x) for x in xs]) / res
                 sol *= tmp
                 # print("lik:{} iik:{} ljk:{} ijk:{} k:{} tmp: {}".format(lik, iik, ljk, ijk, k,tmp))
             # print(sol)
@@ -103,7 +101,7 @@ def test_laplace(grid, lmax):
         alpha[point_i] = 1
         op.mult(alpha, result)
         xs = np.linspace(0, 1, resolution)
-        approx = old_div(sum([b.evalDx(gp_i.getLevel(0), gp_i.getIndex(0), x) * b.evalDx(gp_j.getLevel(0), gp_j.getIndex(0), x) for x in xs]), resolution)
+        approx = sum([b.evalDx(gp_i.getLevel(0), gp_i.getIndex(0), x) * b.evalDx(gp_j.getLevel(0), gp_j.getIndex(0), x) for x in xs]) / resolution
         print("i,j: {},{} result: {} approx:{}".format(point_i, point_j, result[point_j], approx))
         if(abs(result.get(point_j) - approx) > 1e-1):
           print("--------")
@@ -120,7 +118,7 @@ def test_poly_evaldx():
     eps = 0.0001
     b = pysgpp.SPolyModifiedClenshawCurtisBase(3)
     tang = b.evalDx(l, i, x)
-    sec = old_div((b.eval(l, i, x + eps) -  b.eval(l, i, x - eps)), (2*eps))
+    sec = (b.eval(l, i, x + eps) -  b.eval(l, i, x - eps)) / (2*eps)
     print("evalDx:{}".format(tang))
     print("sekante:{}".format(sec))
     print("evals: {} {}".format( b.eval(l, i, x - eps), b.eval(l, i, x + eps) ))
@@ -174,7 +172,7 @@ def test_firstMoment(grid, lmax):
     ind = gridStorage.getPoint(i).getIndex(0)
     temp_res = 0.0
     for c in range(resolution):
-        x = old_div(float(c), resolution)
+        x = float(c) / resolution
         temp_res += x * b.eval(lev, ind, x)
     res += alpha.get(i) * temp_res / resolution
   print("--FirstMoment--")
@@ -198,7 +196,7 @@ def test_secondtMoment(grid, lmax):
     ind = gridStorage.getPoint(i).getIndex(0)
     temp_res = 0.0
     for c in range(resolution):
-        x = old_div(float(c), resolution)
+        x = float(c) / resolution
         temp_res += x * x *b.eval(lev, ind, x)
     res += alpha.get(i) * temp_res / resolution
 

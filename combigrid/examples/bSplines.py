@@ -9,8 +9,6 @@
 
 from __future__ import division
 from __future__ import print_function
-from builtins import range
-from past.utils import old_div
 from argparse import ArgumentParser
 from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
 from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend
@@ -69,5 +67,5 @@ fig = plt.figure()
 #plt.plot(X,B31);plt.plot(X,B33);plt.plot(X,B35);plt.plot(X,B37)
 plt.plot(X,B41);plt.plot(X,B43);plt.plot(X,B45);plt.plot(X,B47);plt.plot(X,B49);plt.plot(X,B411);plt.plot(X,B413);plt.plot(X,B415)
 #plt.plot(X,B51);plt.plot(X,B53);plt.plot(X,B55);plt.plot(X,B57);plt.plot(X,B59);plt.plot(X,B511);plt.plot(X,B513);plt.plot(X,B515);plt.plot(X,B517);plt.plot(X,B519);plt.plot(X,B521);plt.plot(X,B523);plt.plot(X,B525);plt.plot(X,B527);plt.plot(X,B529);plt.plot(X,B531)
-plt.xticks(np.arange(0, 1, old_div(1.0,(2**4))))
+plt.xticks(np.linspace(0, 1, 2**4 + 1))
 plt.show()

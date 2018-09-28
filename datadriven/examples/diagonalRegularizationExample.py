@@ -17,8 +17,6 @@
 ## \f$ \mathbf{\vert \mathbf{l} \vert_1} \f$ to the level sum of the ith grid point.
 
 from __future__ import print_function
-from future import standard_library
-standard_library.install_aliases()
 import requests as r
 import numpy as np
 import pandas as pd

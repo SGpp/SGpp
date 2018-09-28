@@ -1,5 +1,3 @@
-from __future__ import print_function
-from builtins import range
 #!/usr/bin/python
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
@@ -42,6 +40,7 @@ from builtins import range
 ##
 
 ## At the beginning of the program, we have to import the pysgpp library.
+from __future__ import print_function
 import pysgpp
 
 ## Before starting, the function \f$f\f$, which we want to interpolate, is defined.
