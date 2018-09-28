@@ -655,7 +655,6 @@ base::OperationEval* createOperationEvalNaive(base::Grid& grid) {
 }
 
 base::OperationEvalGradient* createOperationEvalGradientNaive(base::Grid& grid) {
-  std::cout << grid.getTypeAsString() << std::endl;
   if (grid.getType() == base::GridType::Bspline) {
     return new base::OperationEvalGradientBsplineNaive(
         grid.getStorage(), dynamic_cast<base::BsplineGrid&>(grid).getDegree());
