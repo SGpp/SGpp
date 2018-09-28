@@ -14,8 +14,6 @@
 
 from __future__ import division
 from __future__ import print_function
-from builtins import range
-from past.utils import old_div
 import numpy as np
 import pysgpp as sg; sg.omp_set_num_threads(4)
 import pandas as pd
@@ -67,7 +65,7 @@ def get_max_lambda(Phi, y, num_rows, l1_ratio=1.0):
         a = np.asarray(Phi[:,i]).flatten()
         prod = np.inner(a, y)
         max_prod = max(max_prod, prod)
-    max_lambda = old_div(max_prod,(l1_ratio * num_rows))
+    max_lambda = max_prod / (l1_ratio * num_rows)
     return max_lambda
 
 ## This function calculates the weights for different lambdas.

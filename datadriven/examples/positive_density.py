@@ -4,7 +4,6 @@ Created on Sep 4, 2017
 @author: franzefn
 '''
 from __future__ import print_function
-from builtins import range
 from argparse import ArgumentParser
 
 import matplotlib.pylab as plt

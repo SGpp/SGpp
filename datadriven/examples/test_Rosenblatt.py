@@ -1,8 +1,5 @@
 from __future__ import division
 from __future__ import print_function
-from builtins import range
-from past.utils import old_div
-from builtins import object
 import pysgpp
 import numpy as np
 import matplotlib.pyplot as plt
@@ -48,7 +45,7 @@ class interpolation_function(object):
 def distrib(x):
     if isinstance(x, list):
         x = x[0]
-    return old_div((np.sin(2.5*pi*x - (pi - old_div(pi,4.))) + old_div(1.,2**0.5)), 0.527044)
+    return (np.sin(2.5*pi*x - (pi - pi / 4.)) + 1. / 2**0.5) / 0.527044
 
 def parabola(x):
   res = 1.

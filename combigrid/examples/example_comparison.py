@@ -1,6 +1,3 @@
-from __future__ import print_function
-from builtins import str
-from builtins import range
 #!/usr/bin/python
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
@@ -9,6 +6,7 @@ from builtins import range
 
 ## \page example_example_comparison_py example_comparison.py
 
+from __future__ import print_function
 import pysgpp
 import math
 import matplotlib.pyplot as plt

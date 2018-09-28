@@ -1,6 +1,5 @@
 from __future__ import division
 from __future__ import print_function
-from past.utils import old_div
 from pysgpp.extensions.datadriven.uq.parameters import ParameterBuilder
 from pysgpp.extensions.datadriven.uq.uq_setting import UQBuilder
 from pysgpp.extensions.datadriven.uq.sampler.asgc import ASGCSamplerBuilder
@@ -45,7 +44,7 @@ builder.withParameters(params)\
 
 # define model function
 def g(x, **kws):
-    return np.arctan(50 * (x[0] - .35)) + old_div(np.pi, 2) + 4 * x[1] ** 3 + 10 * np.exp(x[0] * x[1] - 1)
+    return np.arctan(50 * (x[0] - .35)) + np.pi / 2 + 4 * x[1] ** 3 + 10 * np.exp(x[0] * x[1] - 1)
 
 builder.defineUQSetting().withSimulation(g)
 

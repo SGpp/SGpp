@@ -1,6 +1,5 @@
 from __future__ import division
 from __future__ import print_function
-from past.utils import old_div
 from pysgpp.extensions.datadriven.uq.dists import SGDEdist, MultivariateNormal
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d
 from pysgpp.extensions.datadriven.uq.plot.plot3d import plotDensity3d, plotSG3d
@@ -12,8 +11,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # -------------------- prepare data
-C = old_div(np.array([[0.1, 0.08],
-              [0.08, 0.1]]), 10.)
+C = np.array([[0.1, 0.08],
+              [0.08, 0.1]]) / 10.
 m = np.array([0.5, 0.5])
 U = MultivariateNormal(m, C, 0, 1)
 
@@ -60,7 +59,7 @@ fig.show()
 # sample it back
 transformed_uniform_samples = dist.cdf(samples)
 
-errors = old_div(np.abs(uniform_samples - transformed_uniform_samples), uniform_samples)
+errors = np.abs(uniform_samples - transformed_uniform_samples) / uniform_samples
 assert (errors < 1e-12).all()
 
 plt.show()
