@@ -91,7 +91,7 @@ functionalities, do @em always add unit tests for each functionality!
 
 
 <!-- ############################################################# -->
-@section development_doxygen Doxygen
+@section development_doxygen Documentations, Styleguide, and Doxygen
 
 The documentation has to be Doxygen compatible.
 Doxygen tags must be used in the Java-style way, i.e.,
