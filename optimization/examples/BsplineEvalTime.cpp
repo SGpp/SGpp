@@ -11,6 +11,7 @@
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/optimization/sle/solver/Armadillo.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
+#include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
 double f(sgpp::base::DataVector v) {
   double res = 1;
@@ -22,19 +23,27 @@ int main() {
   size_t numDim = 4;
   size_t degree = 3;
   sgpp::base::DataVector evalPoint(numDim, 0.33762);
-  for (size_t level = 1; level < 12; level++) {
+  for (size_t level = 1; level < 15; level++) {
     sgpp::base::SNakBsplineBase basis(degree);
     auto grid = std::make_shared<sgpp::base::NakBsplineGrid>(numDim, degree);
     sgpp::base::GridStorage& gridStorage = grid->getStorage();
     grid->getGenerator().regular(level);
 
+    sgpp::base::DataMatrix randomMatrix(gridStorage.getSize(), numDim);
+    for (size_t d = 0; d < numDim; d++) {
+      sgpp::base::DataVector randomVector(gridStorage.getSize());
+      sgpp::optimization::RandomNumberGenerator::getInstance().getUniformRV(randomVector, 0.0, 1.0);
+      randomMatrix.setColumn(d, randomVector);
+    }
     sgpp::base::SGppStopwatch watch;
     watch.start();
+#pragma omp parallel for
     for (size_t j = 0; j < gridStorage.getSize(); j++) {
       sgpp::base::GridPoint& gpBasis = gridStorage.getPoint(j);
       double reducedBasisEval = 1;
       for (size_t t = 0; t < numDim; t++) {
-        double basisEval1D = basis.eval(gpBasis.getLevel(t), gpBasis.getIndex(t), evalPoint[t]);
+        double basisEval1D =
+            basis.eval(gpBasis.getLevel(t), gpBasis.getIndex(t), randomMatrix(j, t));
         reducedBasisEval *= basisEval1D;
       }
     }
